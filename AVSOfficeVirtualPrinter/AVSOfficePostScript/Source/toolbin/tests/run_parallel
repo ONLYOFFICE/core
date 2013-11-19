@@ -1,0 +1,203 @@
+#!/usr/bin/env python
+
+#    Copyright (C) 2006-2007 Artifex Software, Inc.
+#
+# This software is provided AS-IS with no warranty, either express or
+# implied.
+#
+# This software is distributed under license and may not be copied,
+# modified or distributed except as expressly authorized under the terms
+# of the license contained in the file LICENSE in this distribution.
+#
+# For more information about licensing, visit http://www.artifex.com/
+# or contact Artifex Software, Inc.,  7 Mt. Lassen Drive - Suite A-134,
+# San Rafael, CA  94903, U.S.A., +1(415)492-9861.
+
+# This is a script to parallelize the regression runs "by hand"
+# for running on a batch-mode cluster under the PBS queue system.
+# it generates a custom testing.cfg and comparefiles directory
+# for each node, creates a set of job description files, and runs them.
+ 
+import os
+import string
+import re
+import sys
+import getopt
+
+## globals -- edit these to make it work
+run=True	# whether to submit the job after creating it
+try:
+  home=os.environ["HOME"]
+except KeyError:
+  home=''
+base=os.getcwd()
+testdir=home+"/tests/ps/ps3fts"	# directory of files to run
+configfile="testing.cfg"	# template config file
+files=os.listdir(testdir)	# list of files to run
+
+## defaults -- override from the command line
+action='run'
+revision=None	# revision we're testing, if known
+
+# parse the command line
+opts, args = getopt.getopt(sys.argv[1:], "r:", ["rev="])
+for o, a in opts:
+  if o in ("-r", "--rev"): 
+    revision = a
+    print "parallel run for r" + revision
+if len(args):
+  action = args[0]
+
+## helper functions
+
+def choosecluster():
+  '''Decide how many nodes of which cluster to run on.
+     returns a (cluster_name, node_count) tuple.'''
+
+  # figure out how many nodes are free
+  upnodes = os.popen("upnodes")
+  r = re.compile('^\s+(?P<cluster>\w+).*\s+(?P<procs>\d+)\s+(?P<free>\d+)\s*$')
+  clusters=[]
+  nodes = 0
+  for line in upnodes.readlines():
+    m = r.match(line)
+    if m: 
+      name = m.group("cluster")
+      procs = int(m.group("procs"))
+      free = int(m.group("free"))
+      # remember the cluster with the most free nodes
+      if free > nodes and name != 'total': 
+        nodes = free
+        cluster = name
+      clusters.append((name,procs,free))
+  return (cluster, nodes)
+
+def makepbs(filename):
+   '''Make a pbs job description file for a command.'''
+   outfile=open(filename+".pbs","w")
+   if cluster == 'red' and nodes > 1:
+     # upnodes reports dual-core nodes twice
+     outfile.write("#PBS -l nodes=%d:run:%s:ppn=2\n" % (nodes/2,cluster))
+   else:
+     outfile.write("#PBS -l nodes=%d:run:%s\n" % (nodes,cluster))
+   outfile.write("cd %s\n" % base)
+   outfile.write("mpiexec -comm none ./%s\n" % filename)
+   outfile.close()
+
+def makepbscleanup(configfiles, comparefiledirs, jobid=None):
+   '''Make a pbs job to cleanup after another.
+      Pass in sequences of the files and directories to be removed
+      and the jobid, if any, that the cleanup should run after.'''
+   outfile=open("run_regression_cleanup.pbs","w")
+   outfile.write("#PBS -l nodes=1:run")
+   # run this on nina by default since it's trivial
+   #outfile.write(":nina")
+   if jobid:
+     outfile.write(" -W depend=afterany:%s\n" % jobid)
+   else:
+     outfile.write("\n")
+   outfile.write("cd %s\n" % base)
+   for node in range(nodes):
+     outfile.write("rm -rf " + comparefiledirs[node] + "\n")
+     outfile.write("rm " + configfiles[node] + "\n")
+   outfile.close()
+
+def makepbsreport(jobid):
+  '''Create a report from the output of a previous job
+     Pass the jobid of the actual regression run so we
+     know which log to parse.'''
+  outfile = open("run_regression_report.pbs","w")
+  outfile.write("#PBS -l nodes=1:run")
+  # run this on nina by default since it's trivial
+  #outfile.write(":nina")
+  # run after the regression job is complete
+  outfile.write(" -W depend=afterany:%s\n" % jobid)
+  outfile.write("cd %s\n" % base)
+  if revision:
+    dest = " >> regression-r%s.log\n" % revision
+  else:
+    dest = " >> regression.%s.log\n" % jobid
+  # hack: we want the stderr output from the regression run, but
+  # the jobid pbs appends to the file isn't quite the same as
+  # what qsub (or qstat) give us.
+  log = "run_regression.pbs.e%s" % string.split(jobid, '.')[0]
+  outfile.write("echo Cluster-based regression report BETA -- may not be accurate" + dest)
+  outfile.write("echo Run split over %d nodes" % nodes + dest)
+  outfile.write("JOBS=`cat %s | egrep ^Ran | wc -l`" % log + dest)
+  outfile.write("echo Run completed $JOBS jobs" + dest)
+  outfile.write("STARTT=`stat -c %Y run_regression.pbs`" + dest)
+  outfile.write("ENDT=`stat -c %Y " + log + "`" + dest)
+  outfile.write("echo elapsed time $(($ENDT - $STARTT)) seconds" + dest)
+  outfile.write("DIFFS=`cat %s | egrep DIFFER$ | wc -l`" % log + dest)
+  outfile.write("echo Run shows $DIFFS differences" + dest)
+  outfile.write("echo" + dest)
+  outfile.write("cat %s | egrep ^Checking | sort" % log + dest)
+  outfile.write("cat %s | grep 'relevant files'" % log + dest)
+  outfile.close()
+
+## create a config files from the template for each node
+(cluster, nodes) = choosecluster()
+print "choosing %s with %d cpus free" % (cluster, nodes)
+
+configfiles=[]
+comparefiledirs=[]
+print "configuring job..."
+for node in range(nodes):
+  infile=open(configfile)
+  outfilename=configfile +"."+ str(node)
+  outfile=open(outfilename,"w")
+  # remember the filename for later cleanup
+  configfiles.append(outfilename)
+  for line in infile.readlines():
+    try: 
+      key,value=string.split(line)
+      if key == "comparefiledir": 
+        value=value[:-1]+"."+str(node)+"/"
+        # remember this for cleanup
+        comparefiledirs.append(value)
+      if key == "log_stderr": value=value[:-4]+"."+str(node)+".log"
+      if key == "log_stdout": value=value[:-4]+"."+str(node)+".log"
+      outfile.write(key+"\t"+value+"\n")
+    except ValueError:
+      outfile.write(line)
+    nodedir=home+"/comparefiles."+str(node)
+  # create the per-node directories
+  os.system("rm -rf " + comparefiledirs[node])
+  os.mkdir(comparefiledirs[node])
+
+# split the test files into directories for each node
+node=0
+for file in files:
+  nodedir=comparefiledirs[node]
+  os.system("ln -s %s/%s %s/" % (testdir,file,nodedir))
+  node=node+1
+  if node >= len(comparefiledirs): node=0
+   
+# create our job description files
+makepbs("run_regression")
+makepbs("make_testdb")
+
+## submit the actual jobs
+if run:
+   # qsub the pbs file
+
+   if action == 'update':
+     job= os.popen("qsub make_testdb.pbs")
+   else:
+     job = os.popen("qsub run_regression.pbs")
+   jobid = string.strip(job.readline())
+   print "run submitted as", jobid 
+
+   # append a follow-up report generation job
+   if action == 'run':
+     makepbsreport(jobid)
+     job = os.popen("qsub run_regression_report.pbs")
+     report_jobid = string.strip(job.readline())
+     print "report job is", report_jobid
+
+   # append a follow-up job to do the cleanup
+   makepbscleanup(configfiles,comparefiledirs,jobid)
+   job = os.popen("qsub run_regression_cleanup.pbs")
+   cleanup_jobid = string.strip(job.readline())
+   print "cleanup job is", cleanup_jobid
+

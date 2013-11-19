@@ -1,0 +1,166 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+#define COMPONENT_NAME "HTMLRenderer"
+#include "../../../../Common/FileInfo.h"
+#include "version.h"
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Russian resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+#ifdef _WIN32
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(1251)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Russian resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+//#ifdef _DEBUG
+IDB_SCRIPT_CM		HTML2                     "Resources\\canvas_norm\\cachemanager.js"
+IDB_SCRIPT_IM		HTML2                     "Resources\\canvas_norm\\images.js"
+IDB_SCRIPT_MAIN		HTML2                     "Resources\\canvas_norm\\main.js"
+IDB_SCRIPT_PAGE		HTML2                     "Resources\\canvas_norm\\page.js"
+IDB_SCRIPT_GR		HTML2					  "Resources\\canvas_norm\\Graphics.js"
+IDB_SCRIPT_VIEW     HTML2                     "Resources\\canvas_norm\\Viewer.html"
+/*#else
+IDB_SCRIPT_CM		HTML2                     "Resources\\canvas\\cachemanager.js"
+IDB_SCRIPT_IM		HTML2                     "Resources\\canvas\\images.js"
+IDB_SCRIPT_MAIN		HTML2                     "Resources\\canvas\\main.js"
+IDB_SCRIPT_PAGE		HTML2                     "Resources\\canvas\\page.js"
+IDB_SCRIPT_GR		HTML2					  "Resources\\canvas\\Graphics.js"
+IDB_SCRIPT_VIEW     HTML2                     "Resources\\canvas\\Viewer.html"
+#endif*/
+
+IDB_COMMON_ZIP		HTML2                     "Resources\\common.zip"
+
+IDB_FONT_SCRIPT_FT	HTML2						"Resources\\fonts\\freetype2.cc.js"
+IDB_FONT_SCRIPT_FM	HTML2						"Resources\\fonts\\FontManager.js"
+IDB_FONT_SCRIPT_1	HTML2						"Resources\\fonts\\FontFile.js"
+IDB_FONT_SCRIPT_E	HTML2						"Resources\\fonts\\FreeTypeFontEngine.js"
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION INTVER
+ PRODUCTVERSION INTVER
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", COMPANY_NAME
+            VALUE "FileDescription", FILE_DESCRIPTION_ACTIVEX
+            VALUE "FileVersion", STRVER
+            VALUE "InternalName", COMPONENT_FILE_NAME_DLL
+            VALUE "LegalCopyright", LEGAL_COPYRIGHT
+            VALUE "OriginalFilename", COMPONENT_FILE_NAME_DLL
+            VALUE "ProductName", FILE_DESCRIPTION_ACTIVEX
+            VALUE "ProductVersion", STRVER
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// REGISTRY
+//
+
+IDR_AVSHTMLRENDERER       REGISTRY                "AVSHTMLRenderer.rgs"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_PROJNAME            "AVSHTMLRenderer"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

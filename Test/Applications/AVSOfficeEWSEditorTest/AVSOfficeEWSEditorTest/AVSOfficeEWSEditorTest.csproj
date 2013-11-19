@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A985B4D0-7469-4616-B81B-390884C0B0F8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AVSOfficeEWSEditorTest</RootNamespace>
+    <AssemblyName>AVSOfficeEWSEditorTest</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AVSOfficeEWSEditor, Version=1.0.0.36, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\AVSOfficeEWSEditor\AVSOfficeEWSEditor\bin\Debug\AVSOfficeEWSEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="csUnit, Version=2.6.3374.34355, Culture=neutral, PublicKeyToken=6871f04765cca910, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Telerik.WinControls, Version=2009.3.9.1203, Culture=neutral, PublicKeyToken=5bb2a467cbec794e" />
+    <Reference Include="Telerik.WinControls.UI, Version=2009.3.9.1203, Culture=neutral, PublicKeyToken=5bb2a467cbec794e" />
+    <Reference Include="TelerikCommon, Version=2009.3.9.1203, Culture=neutral, PublicKeyToken=5bb2a467cbec794e" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\3DReferencesTest.cs" />
+    <Compile Include="Tests\ChartsTest.cs" />
+    <Compile Include="Tests\LocaleTest.cs" />
+    <Compile Include="Tests\CopyRangesTest.cs" />
+    <Compile Include="Tests\NameRangesTest.cs" />
+    <Compile Include="Tests\HyperlinksTest.cs" />
+    <Compile Include="Tests\CSVTest.cs" />
+    <Compile Include="Tests\FormulasFunctionsTest.cs" />
+    <Compile Include="Tests\CyclesDetectionTest.cs" />
+    <Compile Include="Tests\FormatTest.cs" />
+    <Compile Include="Tests\FormulasCommonTest.cs" />
+    <Compile Include="Tests\FormulasOperatorsTest.cs" />
+    <Compile Include="Tests\MergeCellsTest.cs" />
+    <Compile Include="Tests\RelativeReferencesTest.cs" />
+    <Compile Include="Tests\RowsColumnsTest.cs" />
+    <Compile Include="Tests\RangeTest.cs" />
+    <Compile Include="Tests\SortingTest.cs" />
+    <Compile Include="Tests\WorkbookTest.cs" />
+    <Compile Include="Tests\WorksheetTest.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

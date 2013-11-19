@@ -1,0 +1,92 @@
+#include "stdafx.h"
+#include "Window2.h"
+
+namespace XLS
+{;
+
+Window2::Window2()
+{
+}
+
+
+Window2::~Window2()
+{
+}
+
+
+BaseObjectPtr Window2::clone()
+{
+	return BaseObjectPtr(new Window2(*this));
+}
+
+
+void Window2::writeFields(CFRecord& record)
+{
+	WORD flags = 0;
+	SETBIT(flags, 9, fSelected);
+
+	if(is_contained_in_chart_substream)
+	{
+		record << flags;
+		record.reserveNBytes(8); // must be ignored
+		return;
+	}
+
+	SETBIT(flags, 0, fDspFmlaRt);
+	SETBIT(flags, 1, fDspGridRt);
+	SETBIT(flags, 2, fDspRwColRt);
+	SETBIT(flags, 3, fFrozenRt);
+	SETBIT(flags, 4, fDspZerosRt);
+	SETBIT(flags, 5, fDefaultHdr);
+	SETBIT(flags, 6, fRightToLeft);
+	SETBIT(flags, 7, fDspGuts);
+	SETBIT(flags, 8, fFrozenNoSplit);
+	SETBIT(flags, 10, fPaged);
+	SETBIT(flags, 11, fSLV);
+	record << flags;
+
+	CellRef topLeftCellRef(topLeftCell);
+	rwTop = static_cast<WORD>(topLeftCellRef.getRow());
+	colLeft = static_cast<WORD>(topLeftCellRef.getColumn());
+	record << rwTop << colLeft << icvHdr;
+
+	record.reserveNBytes(2); // reserved 
+	record << wScaleSLV << wScaleNormal;
+	record.reserveNBytes(4); // unused / reserved
+}
+
+
+void Window2::readFields(CFRecord& record)
+{
+	is_contained_in_chart_substream = (10 == record.getDataSize());
+	WORD flags;
+	record >> flags;
+
+	fSelected = GETBIT(flags, 9);
+	if(is_contained_in_chart_substream)
+	{
+		record.skipNBytes(8); // must be ignored
+		return;
+	}
+
+	fDspFmlaRt = GETBIT(flags, 0);
+	fDspGridRt = GETBIT(flags, 1);
+	fDspRwColRt = GETBIT(flags, 2);
+	fFrozenRt = GETBIT(flags, 3);
+	fDspZerosRt = GETBIT(flags, 4);
+	fDefaultHdr = GETBIT(flags, 5);
+	fRightToLeft = GETBIT(flags, 6);
+	fDspGuts = GETBIT(flags, 7);
+	fFrozenNoSplit = GETBIT(flags, 8);
+	fPaged = GETBIT(flags, 10);
+	fSLV = GETBIT(flags, 11);
+
+	record >> rwTop >> colLeft >> icvHdr;
+	topLeftCell = static_cast<_bstr_t>(CellRef(rwTop, colLeft, true, true));
+	record.skipNBytes(2); // reserved
+	record >> wScaleSLV >> wScaleNormal;
+	record.skipNBytes(4); // unused / reserved
+}
+
+} // namespace XLS
+

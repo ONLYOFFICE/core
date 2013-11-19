@@ -1,0 +1,63 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH IJS-CONFIG 1 "5 Feb, 2004"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+ijs-config \- script to get information about the installed version of ijs
+.SH SYNOPSIS
+.B ijs-config
+[\-\-prefix\fI[=DIR]\fP] [\-\-exec\-prefix\fI[=DIR]\fP] [\-\-version] [\-\-libs] [\-\-cflags]
+.SH DESCRIPTION
+.PP
+\fIijs-config\fP is a program that is used to determine the compiler and
+linker flags that should be used to compile and link programs that use
+\fIIJS\fP.
+.SH OPTIONS
+This program follows the usual GNU command line syntax, with long
+options starting with two dashes (`-').
+A summary of options is included below.
+.TP
+.B \-\-help
+Show summary of options.  This may list additional advanced package
+configuration options not detailed in this manual page.
+.TP
+.B \-\-version
+Show installed libijs version.
+.TP
+.B  \-\-libs
+Print the linker flags that are necessary to link an \fIIJS\fP program.
+.TP
+.B  \-\-cflags
+Print the compiler flags that are necessary to compile an \fIIJS\fP program.
+.TP
+.B  \-\-prefix=PREFIX
+If specified, use PREFIX instead of the installation prefix that \fIIJS\fP
+was built with when computing the output for the \-\-cflags and
+\-\-libs options. This option is also used for the exec prefix
+if \-\-exec\-prefix was not specified. This option must be specified
+before any \-\-libs or \-\-cflags options.
+.TP
+.B  \-\-exec\-prefix=PREFIX
+If specified, use PREFIX instead of the installation exec prefix that
+\fIIJS\fP was built with when computing the output for the \-\-cflags
+and \-\-libs options.  This option must be specified before any
+\-\-libs or \-\-cflags options.
+.SH SEE ALSO
+.BR gtk-config (1)
+.SH AUTHOR
+This manual page was written by Roger Leigh
+\fI<rleigh@debian.org>\fP, originally for
+the Debian GNU/Linux system.

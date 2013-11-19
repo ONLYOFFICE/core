@@ -1,0 +1,30 @@
+#!/bin/sh
+# $Id: dumphint 9320 2009-01-04 20:11:57Z till $
+# Linearized PDF hint formatting utility.
+
+# This definition is changed on install to match the
+# executable name set in the makefile
+GS_EXECUTABLE=gs
+gs="`dirname $0`/$GS_EXECUTABLE"
+if test ! -x "$gs"; then
+	gs="$GS_EXECUTABLE"
+fi
+GS_EXECUTABLE="$gs"
+
+
+OPTIONS="-dSAFER -dDELAYSAFER"
+while true
+do
+	case "$1" in
+	-?*) OPTIONS="$OPTIONS $1" ;;
+	*)  break ;;
+	esac
+	shift
+done
+
+if [ $# -ne 1 ]; then
+	echo "Usage: `basename $0` input.pdf" 1>&2
+	exit 1
+fi
+
+exec "$GS_EXECUTABLE" -q -dNODISPLAY $OPTIONS -- "`dirname $0`/dumphint.ps" "$1"

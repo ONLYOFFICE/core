@@ -1,0 +1,150 @@
+.TH html2xhtml 1 ""
+.SH NAME
+html2xhtml \- Converts HTML files to XHTML
+.SH SYNTAX 
+
+.B html2xhtml
+[
+.I filename
+] [
+.I options
+] 
+
+.SH DESCRIPTION
+
+Html2xhtml is a command-line tool that converts HTML files to
+XHTML files. The path of the HTML input file can be provided
+as a command-line argument. If not, it is read from stdin.
+.PP
+Xhtml2xhtml tries always to generate valid XHTML files.
+It is able to correct many common errors in input HTML
+files without loose of information. However, for some errors, html2xhtml
+may decide to loose some information in order to generate a valid XHTML output.
+This can be avoided with the 
+.I -e 
+option, which allows html2xhtml to
+generate non-valid output in these cases.
+.PP
+Html2xhtml can generate the XHTML output compliant to one of
+the following document types:
+XHTML 1.0 (Transitional, Strict and Frameset), XHTML 1.1,
+XHTML Basic and XHTML Mobile Profile. 
+.SH OPTIONS
+.if n .ta 2.8i
+.if t .ta 2.1i
+
+The command line options/arguments are:
+.IP \fBfilename\fR 20
+Read the HTML input from
+.I filename
+(optional argument). If this argument is not provided, 
+the HTML input is read from standard input.
+.IP \fB-o\ \fIfilename\fR 20
+Output XHTML file. The file is overwritten if it
+exists. If not provided, the output is written to
+standard output.
+.IP \fB-c\ \fIinput-encoding\fR 20
+Encoding of the input HTML file. Overrides automatic
+input encoding detection (please, read the note about
+input encodings bellow).
+.IP \fB-d\ \fIdefault-input-encoding\fR 20
+Default input encoding, if it is not declared
+in the input file. By default, ISO-8859-1
+(please, read the note about input encodings bellow).
+.IP \fB-e\fR 20
+Instructs the program to propagate input chunks to 
+the output even if it is unable to adapt them to
+the output XHTML doctype. Using this option, 
+the XHTML output may be non-valid. Not using this
+option, some input data could be removed from the
+output in some [rare] cases.
+.IP \fB-t\ \fIoutput-doctype\fR 20
+Doctype of the output XHTML file. If not specified,
+the program selects automatically either 
+XHTML 1.0 Transitional or XHTML 1.0 Frameset 
+depending on the input. Current available
+doctypes are:
+.br
+ o \fItransitional\fR
+XHTML 1.0 Transitional
+.br
+ o \fIframeset\fR
+XHTML 1.0 Frameset
+.br 
+ o \fIstrict\fR
+XHTML 1.0 Strict
+.br 
+ o \fI1.1\fR
+XHTML 1.1
+.br 
+ o \fIbasic-1.0\fR
+XHTML Basic 1.0
+.br 
+ o \fIbasic-1.1\fR
+XHTML Basic 1.1
+.br 
+ o \fImp\fR
+XHTML Mobile Profile
+ o \fIprint-1.0\fR
+XHTML Print 1.0
+.br 
+.IP \fB-l\ \fIline_length\fR 20
+Number of characters per line. The default value is 80.
+It must be greater or equal to 40, otherwise the 
+parameter is ignored.
+.IP \fB-b\ \fItab_length\fR 20
+Tab length in number of characters. It must be a number
+between 0 and 16, otherwise the parameter is ignored.
+Use 0 to avoid indentation in the output.
+.IP \fB--preserve-space-comments\fR 20
+Use this option to preserve white spaces, tabs and 
+ends of lines in HTML comments. The default, if not 
+provided, is to rearrange spacing.
+.IP \fB--no-protect-cdata\fR 20
+Enclose CDATA sections in "script" and "style" following
+the XHTML 1.0 specification (using "<!CDATA[[" and
+"]]>"). It might be incompatible with some browsers.
+The default in this version is to enclose CDATA sections
+using "//<!CDATA[[" and "//]]>", because major browsers
+handle it properly. 
+.IP \fB--compact-block-elements\fR 20
+No white spaces or line breaks are written between  
+the start tag of a block element and the start tag 
+of its first enclosed inline element (or character 
+data) and between the end tag of its last enclosed 
+inline element (or character data) and the end tag 
+of the block element. By default, if this option is
+not set, a new line character and indentation is
+written between them.
+
+.SH NOTE ON CHARACTER ENCODINGS
+
+Html2xhtml does not perform any character encoding conversion.
+The character encoding of the input is propagated to the
+output. The options that set character encodings only declare
+them in the output XHTML file.
+.PP
+This program only works for input encodings that code every ASCI
+character (0-127) only with one byte. This includes, for example,
+ISO-8859-1, ISO-8859-15, UTF-8. However, the program does not work
+for encoding UTF-16. For converting UTF-16 files, please convert it 
+first to UTF-8. UTF-8 is not guaranteed to work always properly, and
+more testing is required.
+.SH ACKNOWLEDGMENTS
+.na 
+.nf
+
+Program developer up to current version:
+Jesus Arias Fisteus <jaf@it.uc3m.es>
+.PP
+The first working version of this program has been developed as 
+a Master Thesis at the University of Vigo (Spain) [http://www.uvigo.es],
+advised by:
+.PP
+Rebeca Diaz Redondo
+Ana Fernandez Vilas
+.PP
+Copyright 2000-2007 by Jesus Arias Fisteus, Rebeca Diaz Redondo, Ana
+Fernandez Vilas.
+
+

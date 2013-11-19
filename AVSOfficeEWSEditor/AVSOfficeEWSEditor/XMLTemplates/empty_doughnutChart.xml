@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <c:date1904 val="0"/>
+  <c:lang val="en-US"/>
+  <c:roundedCorners val="0"/>
+  <mc:AlternateContent xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+    <mc:Choice Requires="c14" xmlns:c14="http://schemas.microsoft.com/office/drawing/2007/8/2/chart">
+      <c14:style val="102"/>
+    </mc:Choice>
+    <mc:Fallback>
+      <c:style val="2"/>
+    </mc:Fallback>
+  </mc:AlternateContent>
+  <c:chart>
+    <c:autoTitleDeleted val="0"/>
+    <c:plotArea>
+      <c:layout/>
+      <c:doughnutChart>
+        <c:varyColors val="1"/>
+        <c:ser>
+          <c:idx val="0"/>
+          <c:order val="0"/>
+          <c:dLbls>
+            <c:showLegendKey val="0" />
+            <c:showVal val="0" />
+            <c:showCatName val="0" />
+            <c:showSerName val="0" />
+            <c:showPercent val="0" />
+            <c:showBubbleSize val="0" />
+            <c:showLeaderLines val="1" />
+          </c:dLbls>
+          <c:val>
+            <c:numRef>
+              <c:f>Лист1!$D$5:$D$12</c:f>
+              <c:numCache>
+                <c:formatCode>General</c:formatCode>
+                <c:ptCount val="1"/>
+                <c:pt idx="0">
+                  <c:v>1</c:v>
+                </c:pt>                
+              </c:numCache>
+            </c:numRef>
+          </c:val>
+        </c:ser>
+        <c:dLbls>
+          <c:showLegendKey val="0"/>
+          <c:showVal val="0"/>
+          <c:showCatName val="0"/>
+          <c:showSerName val="0"/>
+          <c:showPercent val="0"/>
+          <c:showBubbleSize val="0"/>
+          <c:showLeaderLines val="1"/>
+        </c:dLbls>
+        <c:firstSliceAng val="0"/>
+        <c:holeSize val="50"/>
+      </c:doughnutChart>
+    </c:plotArea>
+    <c:legend>
+      <c:legendPos val="r"/>
+      <c:layout/>
+      <c:overlay val="0"/>
+      <c:txPr>
+        <a:bodyPr/>
+        <a:lstStyle/>
+        <a:p>
+          <a:pPr rtl="0">
+            <a:defRPr/>
+          </a:pPr>
+          <a:endParaRPr lang="en-US"/>
+        </a:p>
+      </c:txPr>
+    </c:legend>
+    <c:plotVisOnly val="1"/>
+    <c:dispBlanksAs val="gap"/>
+    <c:showDLblsOverMax val="0"/>
+  </c:chart>
+  <c:printSettings>
+    <c:headerFooter/>
+    <c:pageMargins b="0.75" l="0.7" r="0.7" t="0.75" header="0.3" footer="0.3"/>
+    <c:pageSetup/>
+  </c:printSettings>
+</c:chartSpace>

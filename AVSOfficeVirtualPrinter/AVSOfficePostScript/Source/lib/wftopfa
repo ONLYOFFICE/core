@@ -1,0 +1,13 @@
+#!/bin/sh
+# $Id: wftopfa 8107 2007-07-05 19:04:29Z till $
+
+# This definition is changed on install to match the
+# executable name set in the makefile
+GS_EXECUTABLE=gs
+gs="`dirname $0`/$GS_EXECUTABLE"
+if test ! -x "$gs"; then
+	gs="$GS_EXECUTABLE"
+fi
+GS_EXECUTABLE="$gs"
+
+exec "$GS_EXECUTABLE" -q -dNODISPLAY -- wftopfa.ps "$@"

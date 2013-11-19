@@ -1,0 +1,253 @@
+% Copyright (C) 2003 Artifex Software.  All rights reserved.
+%
+% This software is provided AS-IS with no warranty, either express or
+% implied.
+%
+% This software is distributed under license and may not be copied,
+% modified or distributed except as expressly authorized under the terms
+% of the license contained in the file LICENSE in this distribution.
+%
+% For more information about licensing, please refer to
+% http://www.ghostscript.com/licensing/. For information on
+% commercial licensing, go to http://www.artifex.com/licensing/ or
+% contact Artifex Software, Inc., 101 Lucas Valley Road #110,
+% San Rafael, CA  94903, U.S.A., +1(415)492-9861.
+%
+% $Id: FCO_Wingdings 6858 2006-06-18 19:25:03Z leonardo $
+% FCO_Wingdings Decoding
+% Maps PS and TT names to Unicode UTF-16.
+
+/FCO_Wingdings  % resource name
+230             % tokens
+/ParseDecoding /ProcSet findresource /Parse get exec
+
+
+% Generated for FCO from Wingdings encoding with adding F000 
+% since MTFONTS/PS3/MT3/ps3___xh.fco wants so.
+
+16#0020 space   % Note : UFST uses 0x20 when others are 0xF0**.
+16#F021 pencil
+16#F022 scissors
+16#F023 scissorscutting
+16#F024 readingglasses
+16#F025 bell
+16#F026 book
+16#F027 candle
+16#F028 telephonesolid
+16#F029 telhandsetcirc
+16#F02A envelopeback
+16#F02B envelopefront
+16#F02C mailboxflagdwn
+16#F02D mailboxflagup
+16#F02E mailbxopnflgup
+16#F02F mailbxopnflgdwn
+16#F030 folder
+16#F031 folderopen
+16#F032 filetalltext1
+16#F033 filetalltext
+16#F034 filetalltext3
+16#F035 filecabinet
+16#F036 hourglass
+16#F037 keyboard
+16#F038 mouse2button
+16#F039 ballpoint
+16#F03A pc
+16#F03B harddisk
+16#F03C floppy3
+16#F03D floppy5
+16#F03E tapereel
+16#F03F handwrite
+16#F040 handwriteleft
+16#F041 handv
+16#F042 handok
+16#F043 thumbup
+16#F044 thumbdown
+16#F045 handptleft
+16#F046 handptright
+16#F047 handptup
+16#F048 handptdwn
+16#F049 handhalt
+16#F04A smileface
+16#F04B neutralface
+16#F04C frownface
+16#F04D bomb
+16#F04E skullcrossbones
+16#F04F flag
+16#F050 pennant
+16#F051 airplane
+16#F052 sunshine
+16#F053 droplet
+16#F054 snowflake
+16#F055 crossoutline
+16#F056 crossshadow
+16#F057 crossceltic
+16#F058 crossmaltese
+16#F059 starofdavid
+16#F05A crescentstar
+16#F05B yinyang
+16#F05C om
+16#F05D wheel
+16#F05E aries
+16#F05F taurus
+16#F060 gemini
+16#F061 cancer
+16#F062 leo
+16#F063 virgo
+16#F064 libra
+16#F065 scorpio
+16#F066 saggitarius
+16#F067 capricorn
+16#F068 aquarius
+16#F069 pisces
+16#F06A ampersanditlc
+16#F06B ampersandit
+16#F06C circle6
+16#F06D circleshadowdwn
+16#F06E square6
+16#F06F box3
+16#F070 box4
+16#F071 boxshadowdwn
+16#F072 boxshadowup
+16#F073 lozenge4
+16#F074 lozenge6
+16#F075 rhombus6
+16#F076 xrhombus
+16#F077 rhombus4
+16#F078 clear
+16#F079 escape
+16#F07A command
+16#F07B rosette
+16#F07C rosettesolid
+16#F07D quotedbllftbld
+16#F07E quotedblrtbld
+16#F080 zerosans
+16#F081 onesans
+16#F082 twosans
+16#F083 threesans
+16#F084 foursans
+16#F085 fivesans
+16#F086 sixsans
+16#F087 sevensans
+16#F088 eightsans
+16#F089 ninesans
+16#F08A tensans
+16#F08B zerosansinv
+16#F08C onesansinv
+16#F08D twosansinv
+16#F08E threesansinv
+16#F08F foursansinv
+16#F090 fivesansinv
+16#F091 sixsansinv
+16#F092 sevensansinv
+16#F093 eightsansinv
+16#F094 ninesansinv
+16#F095 tensansinv
+16#F096 budleafne
+16#F097 budleafnw
+16#F098 budleafsw
+16#F099 budleafse
+16#F09A vineleafboldne
+16#F09B vineleafboldnw
+16#F09C vineleafboldsw
+16#F09D vineleafboldse
+16#F09E circle2
+16#F09F circle4
+16#F0A0 square2
+16#F0A1 ring2
+16#F0A2 ring4
+16#F0A3 ring6
+16#F0A4 ringbutton2
+16#F0A5 target
+16#F0A6 circleshadowup
+16#F0A7 square4
+16#F0A8 box2
+16#F0A9 tristar2
+16#F0AA crosstar2
+16#F0AB pentastar2
+16#F0AC hexstar2
+16#F0AD octastar2
+16#F0AE dodecastar3
+16#F0AF octastar4
+16#F0B0 registersquare
+16#F0B1 registercircle
+16#F0B2 cuspopen
+16#F0B3 cuspopen1
+16#F0B4 query
+16#F0B5 circlestar
+16#F0B6 starshadow
+16#F0B7 oneoclock
+16#F0B8 twooclock
+16#F0B9 threeoclock
+16#F0BA fouroclock
+16#F0BB fiveoclock
+16#F0BC sixoclock
+16#F0BD sevenoclock
+16#F0BE eightoclock
+16#F0BF nineoclock
+16#F0C0 tenoclock
+16#F0C1 elevenoclock
+16#F0C2 twelveoclock
+16#F0C3 arrowdwnleft1
+16#F0C4 arrowdwnrt1
+16#F0C5 arrowupleft1
+16#F0C6 arrowuprt1
+16#F0C7 arrowleftup1
+16#F0C8 arrowrtup1
+16#F0C9 arrowleftdwn1
+16#F0CA arrowrtdwn1
+16#F0CB quiltsquare2
+16#F0CC quiltsquare2inv
+16#F0CD leafccwsw
+16#F0CE leafccwnw
+16#F0CF leafccwse
+16#F0D0 leafccwne
+16#F0D1 leafnw
+16#F0D2 leafsw
+16#F0D3 leafne
+16#F0D4 leafse
+16#F0D5 deleteleft
+16#F0D6 deleteright
+16#F0D7 head2left
+16#F0D8 head2right
+16#F0D9 head2up
+16#F0DA head2down
+16#F0DB circleleft
+16#F0DC circleright
+16#F0DD circleup
+16#F0DE circledown
+16#F0DF barb2left
+16#F0E0 barb2right
+16#F0E1 barb2up
+16#F0E2 barb2down
+16#F0E3 barb2nw
+16#F0E4 barb2ne
+16#F0E5 barb2sw
+16#F0E6 barb2se
+16#F0E7 barb4left
+16#F0E8 barb4right
+16#F0E9 barb4up
+16#F0EA barb4down
+16#F0EB barb4nw
+16#F0EC barb4ne
+16#F0ED barb4sw
+16#F0EE barb4se
+16#F0EF bleft
+16#F0F0 bright
+16#F0F1 bup
+16#F0F2 bdown
+16#F0F3 bleftright
+16#F0F4 bupdown
+16#F0F5 bnw
+16#F0F6 bne
+16#F0F7 bsw
+16#F0F8 bse
+16#F0F9 bdash1
+16#F0FA bdash2
+16#F0FB xmarkbld
+16#F0FC checkbld
+16#F0FD boxxmarkbld
+16#F0FE boxcheckbld
+16#F0FF windowslogo
+
+
+%EOF

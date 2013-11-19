@@ -1,0 +1,230 @@
+% Copyright (C) 2003 Artifex Software.  All rights reserved.
+%
+% This software is provided AS-IS with no warranty, either express or
+% implied.
+%
+% This software is distributed under license and may not be copied,
+% modified or distributed except as expressly authorized under the terms
+% of the license contained in the file LICENSE in this distribution.
+%
+% For more information about licensing, please refer to
+% http://www.ghostscript.com/licensing/. For information on
+% commercial licensing, go to http://www.artifex.com/licensing/ or
+% contact Artifex Software, Inc., 101 Lucas Valley Road #110,
+% San Rafael, CA  94903, U.S.A., +1(415)492-9861.
+%
+% $Id: FCO_Dingbats 6858 2006-06-18 19:25:03Z leonardo $
+% FCO_Symbol Decoding
+% Maps PS and TT names to Unicode UTF-16.
+
+/FCO_Dingbats     % resource name
+202             % tokens
+/ParseDecoding /ProcSet findresource /Parse get exec
+
+% Generated for FCO from ZapfDingbats font encoding with adding F000 
+% since MTFONTS/PS3/MT3/ps3___xh.fco wants so.
+
+16#0020 space   % Note : UFST uses 0x20 when others are 0xF0**.
+16#F021 a1
+16#F022 a2
+16#F023 a202
+16#F024 a3
+16#F025 a4
+16#F026 a5
+16#F027 a119
+16#F028 a118
+16#F029 a117
+16#F02A a11
+16#F02B a12
+16#F02C a13
+16#F02D a14
+16#F02E a15
+16#F02F a16
+16#F030 a105
+16#F031 a17
+16#F032 a18
+16#F033 a19
+16#F034 a20
+16#F035 a21
+16#F036 a22
+16#F037 a23
+16#F038 a24
+16#F039 a25
+16#F03A a26
+16#F03B a27
+16#F03C a28
+16#F03D a6
+16#F03E a7
+16#F03F a8
+16#F040 a9
+16#F041 a10
+16#F042 a29
+16#F043 a30
+16#F044 a31
+16#F045 a32
+16#F046 a33
+16#F047 a34
+16#F048 a35
+16#F049 a36
+16#F04A a37
+16#F04B a38
+16#F04C a39
+16#F04D a40
+16#F04E a41
+16#F04F a42
+16#F050 a43
+16#F051 a44
+16#F052 a45
+16#F053 a46
+16#F054 a47
+16#F055 a48
+16#F056 a49
+16#F057 a50
+16#F058 a51
+16#F059 a52
+16#F05A a53
+16#F05B a54
+16#F05C a55
+16#F05D a56
+16#F05E a57
+16#F05F a58
+16#F060 a59
+16#F061 a60
+16#F062 a61
+16#F063 a62
+16#F064 a63
+16#F065 a64
+16#F066 a65
+16#F067 a66
+16#F068 a67
+16#F069 a68
+16#F06A a69
+16#F06B a70
+16#F06C a71
+16#F06D a72
+16#F06E a73
+16#F06F a74
+16#F070 a203
+16#F071 a75
+16#F072 a204
+16#F073 a76
+16#F074 a77
+16#F075 a78
+16#F076 a79
+16#F077 a81
+16#F078 a82
+16#F079 a83
+16#F07A a84
+16#F07B a97
+16#F07C a98
+16#F07D a99
+16#F07E a100
+16#F080 a89
+16#F081 a90
+16#F082 a93
+16#F083 a94
+16#F084 a91
+16#F085 a92
+16#F086 a205
+16#F087 a85
+16#F088 a206
+16#F089 a86
+16#F08A a87
+16#F08B a88
+16#F08C a95
+16#F08D a96
+16#F0A1 a101
+16#F0A2 a102
+16#F0A3 a103
+16#F0A4 a104
+16#F0A5 a106
+16#F0A6 a107
+16#F0A7 a108
+16#F0A8 a112
+16#F0A9 a111
+16#F0AA a110
+16#F0AB a109
+16#F0AC a120
+16#F0AD a121
+16#F0AE a122
+16#F0AF a123
+16#F0B0 a124
+16#F0B1 a125
+16#F0B2 a126
+16#F0B3 a127
+16#F0B4 a128
+16#F0B5 a129
+16#F0B6 a130
+16#F0B7 a131
+16#F0B8 a132
+16#F0B9 a133
+16#F0BA a134
+16#F0BB a135
+16#F0BC a136
+16#F0BD a137
+16#F0BE a138
+16#F0BF a139
+16#F0C0 a140
+16#F0C1 a141
+16#F0C2 a142
+16#F0C3 a143
+16#F0C4 a144
+16#F0C5 a145
+16#F0C6 a146
+16#F0C7 a147
+16#F0C8 a148
+16#F0C9 a149
+16#F0CA a150
+16#F0CB a151
+16#F0CC a152
+16#F0CD a153
+16#F0CE a154
+16#F0CF a155
+16#F0D0 a156
+16#F0D1 a157
+16#F0D2 a158
+16#F0D3 a159
+16#F0D4 a160
+16#F0D5 a161
+16#F0D6 a163
+16#F0D7 a164
+16#F0D8 a196
+16#F0D9 a165
+16#F0DA a192
+16#F0DB a166
+16#F0DC a167
+16#F0DD a168
+16#F0DE a169
+16#F0DF a170
+16#F0E0 a171
+16#F0E1 a172
+16#F0E2 a173
+16#F0E3 a162
+16#F0E4 a174
+16#F0E5 a175
+16#F0E6 a176
+16#F0E7 a177
+16#F0E8 a178
+16#F0E9 a179
+16#F0EA a193
+16#F0EB a180
+16#F0EC a199
+16#F0ED a181
+16#F0EE a200
+16#F0EF a182
+16#F0F1 a201
+16#F0F2 a183
+16#F0F3 a184
+16#F0F4 a197
+16#F0F5 a185
+16#F0F6 a194
+16#F0F7 a198
+16#F0F8 a186
+16#F0F9 a195
+16#F0FA a187
+16#F0FB a188
+16#F0FC a189
+16#F0FD a190
+16#F0FE a191
+
+%EOF

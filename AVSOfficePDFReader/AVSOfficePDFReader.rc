@@ -1,0 +1,200 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+#define COMPONENT_NAME "OfficePDFReader"
+#include "../../../../Common/FileInfo.h"
+#include "version.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RCDATA
+//
+//IDR_Symbol              RCDATA                  "Resources\\Adobe\\SY______.crpt"
+//IDR_ZapfDingbats        RCDATA                  "Resources\\Adobe\\d050000l.crpt"
+//
+//IDR_Helvetica           RCDATA                  "Resources\\Adobe\\MyriadPro-Regular.crpt"
+//IDR_HelveticaBold       RCDATA                  "Resources\\Adobe\\MyriadPro-Bold.crpt"
+//IDR_HelveticaOblique    RCDATA                  "Resources\\Adobe\\MyriadPro-It.crpt"
+//IDR_HelveticaBoldOblique RCDATA                  "Resources\\Adobe\\MyriadPro-BoldIt.crpt"
+//
+//IDR_TimesRoman          RCDATA                  "Resources\\Adobe\\MinionPro-Regular.crpt"
+//IDR_TimesBold           RCDATA                  "Resources\\Adobe\\MinionPro-Bold.crpt"
+//IDR_TimesItalic         RCDATA                  "Resources\\Adobe\\MinionPro-It.crpt"
+//IDR_TimesBoldItalic     RCDATA                  "Resources\\Adobe\\MinionPro-BoldIt.crpt"
+//
+//IDR_Courier             RCDATA                  "Resources\\Adobe\\CourierStd.crpt"
+//IDR_CourierBold         RCDATA                  "Resources\\Adobe\\CourierStd-Bold.crpt"
+//IDR_CourierOblique      RCDATA                  "Resources\\Adobe\\CourierStd-Oblique.crpt"
+//IDR_CourierBoldOblique  RCDATA                  "Resources\\Adobe\\CourierStd-BoldOblique.crpt"
+//
+//
+//IDR_Symbol              RCDATA                  "Resources\\MS\\s050000l.crpt"
+//IDR_ZapfDingbats        RCDATA                  "Resources\\MS\\d050000l.crpt"
+//
+//IDR_Helvetica           RCDATA                  "Resources\\MS\\arial.crpt"
+//IDR_HelveticaBold       RCDATA                  "Resources\\MS\\arialbd.crpt"
+////IDR_Helvetica           RCDATA                  "Resources\\Raw\\Helvetica_Regular.crpt"
+////IDR_HelveticaBold       RCDATA                  "Resources\\Raw\\Helvetica_Bold.crpt"
+//IDR_HelveticaOblique    RCDATA                  "Resources\\MS\\ariali.crpt"
+//IDR_HelveticaBoldOblique RCDATA                  "Resources\\MS\\arialbi.crpt"
+//
+//IDR_TimesRoman          RCDATA                  "Resources\\MS\\times.crpt"
+//IDR_TimesBold           RCDATA                  "Resources\\MS\\timesbd.crpt"
+//IDR_TimesItalic         RCDATA                  "Resources\\MS\\timesi.crpt"
+//IDR_TimesBoldItalic     RCDATA                  "Resources\\MS\\timesbi.crpt"
+//
+//IDR_Courier             RCDATA                  "Resources\\MS\\cour.crpt"
+//IDR_CourierBold         RCDATA                  "Resources\\MS\\courbd.crpt"
+//IDR_CourierOblique      RCDATA                  "Resources\\MS\\couri.crpt"
+//IDR_CourierBoldOblique  RCDATA                  "Resources\\MS\\courbi.crpt"
+
+IDR_Symbol              RCDATA                  "Resources\\s050000l.crpt"
+IDR_ZapfDingbats        RCDATA                  "Resources\\d050000l.crpt"
+IDR_Helvetica           RCDATA                  "Resources\\n019003l.crpt"
+IDR_HelveticaBold       RCDATA                  "Resources\\n019004l.crpt"
+IDR_HelveticaOblique    RCDATA                  "Resources\\n019023l.crpt"
+IDR_HelveticaBoldOblique RCDATA                  "Resources\\n019024l.crpt"
+IDR_TimesRoman          RCDATA                  "Resources\\n021003l.crpt"
+IDR_TimesBold           RCDATA                  "Resources\\n021004l.crpt"
+IDR_TimesItalic         RCDATA                  "Resources\\n021023l.crpt"
+IDR_TimesBoldItalic     RCDATA                  "Resources\\n021024l.crpt"
+IDR_Courier             RCDATA                  "Resources\\n022003l.crpt"
+IDR_CourierBold         RCDATA                  "Resources\\n022004l.crpt"
+IDR_CourierOblique      RCDATA                  "Resources\\n022023l.crpt"
+IDR_CourierBoldOblique  RCDATA                  "Resources\\n022024l.crpt"
+#endif    // Russian resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION INTVER
+ PRODUCTVERSION INTVER
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", COMPANY_NAME
+            VALUE "FileDescription", FILE_DESCRIPTION_ACTIVEX
+            VALUE "FileVersion", STRVER
+            VALUE "LegalCopyright", LEGAL_COPYRIGHT
+            VALUE "InternalName", COMPONENT_FILE_NAME_DLL
+            VALUE "OriginalFilename", COMPONENT_FILE_NAME_DLL
+            VALUE "ProductName", FILE_DESCRIPTION_ACTIVEX
+            VALUE "ProductVersion", STRVER
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// REGISTRY
+//
+
+IDR_AVSOFFICEPDFREADER  REGISTRY                "AVSOfficePDFReader.rgs"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_PROJNAME            "AVSOfficePDFReader"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

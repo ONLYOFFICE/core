@@ -1,0 +1,32 @@
+#pragma once
+
+#include "BiffRecord.h"
+
+namespace XLS
+{;
+
+
+// Logical representation of CalcSaveRecalc record in BIFF8
+class CalcSaveRecalc: public BiffRecord
+{
+	BIFF_RECORD_DEFINE_TYPE_INFO(CalcSaveRecalc)
+	BASE_OBJECT_DEFINE_CLASS_NAME(CalcSaveRecalc)
+public:
+	CalcSaveRecalc();
+	~CalcSaveRecalc();
+
+	BaseObjectPtr clone();
+
+	void writeFields(CFRecord& record);
+	void readFields(CFRecord& record);
+private:
+	Boolean<WORD> fSaveRecalc;
+public:
+	BO_ATTRIB_MARKUP_BEGIN
+		BO_ATTRIB_MARKUP_ATTRIB(fSaveRecalc)
+	BO_ATTRIB_MARKUP_END
+
+};
+
+} // namespace XLS
+

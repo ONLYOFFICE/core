@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual C++ Express 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSOfficePDFReader", "AVSOfficePDFReader_vs2005.vcproj", "{BCE14148-A4AB-4472-B690-E2B31926000F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+		ReleaseASC|Win32 = ReleaseASC|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BCE14148-A4AB-4472-B690-E2B31926000F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BCE14148-A4AB-4472-B690-E2B31926000F}.Debug|Win32.Build.0 = Debug|Win32
+		{BCE14148-A4AB-4472-B690-E2B31926000F}.Release|Win32.ActiveCfg = Release|Win32
+		{BCE14148-A4AB-4472-B690-E2B31926000F}.Release|Win32.Build.0 = Release|Win32
+		{BCE14148-A4AB-4472-B690-E2B31926000F}.ReleaseASC|Win32.ActiveCfg = ReleaseASC|Win32
+		{BCE14148-A4AB-4472-B690-E2B31926000F}.ReleaseASC|Win32.Build.0 = ReleaseASC|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

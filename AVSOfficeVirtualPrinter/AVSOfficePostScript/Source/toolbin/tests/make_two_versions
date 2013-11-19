@@ -1,0 +1,85 @@
+#!/usr/bin/env python
+# -*- Mode: python -*-
+
+#    Copyright (C) 2001-2006 Artifex Software Inc.
+#    All Rights Reserved.
+#
+# This software is provided AS-IS with no warranty, either express or
+# implied.
+#
+# This software is distributed under license and may not be copied, modified
+# or distributed except as expressly authorized under the terms of that
+# license.  Refer to licensing information at http://www.artifex.com/
+# or contact Artifex Software, Inc.,  7 Mt. Lassen Drive - Suite A-134,
+# San Rafael, CA  94903, U.S.A., +1(415)492-9861, for further information.
+
+# $Id: make_two_versions 8409 2007-11-27 20:43:09Z giles $
+
+#
+# make_two_versions <filename> [<device> [<res> [<banding>]]]
+#
+# this script creates two versions of the file specified
+# one from baseline, and one from head
+# these are appropriate for a visual diff
+
+import gstestgs
+import gsconf
+import rasterdb
+import os, sys
+import string
+
+if len(sys.argv) < 2:
+    print "\n    usage: make_two_versions filename [ device:ppmraw [ res:72 [ banding:0 ] ] ]\n"
+    sys.exit()
+
+file = os.path.basename(sys.argv[1])
+if len(sys.argv) > 2:
+    device = sys.argv[2]
+else:
+    device = 'ppmraw'
+if len(sys.argv) > 3:
+    res = int(sys.argv[3])
+else:
+    res = 72
+if len(sys.argv) > 4:
+    banding = int(sys.argv[4])
+else:
+    banding = 0
+
+dbfile = "%s.%s.%d.%d" % (file, device, res, 0)
+ofile = "%s.%s.baseline.pnm" % (file, device)
+
+# check if raster for this baseline is in the database, and if so, use
+# it instead of generating approximate raster via baselinegs
+if rasterdb.exists(dbfile):
+    rasterdb.get_file(dbfile, output=ofile)
+else:
+    gs = gstestgs.Ghostscript()
+    gs.command = gsconf.baselinegs
+    gs.infile = gsconf.comparefiledir + file
+    gs.outfile = ofile
+    gs.device = device
+    gs.dpi = res
+    gs.band = banding
+    gs.log_stdout = gsconf.log_stdout
+    gs.log_stderr = gsconf.log_stderr
+
+    if not gs.process():
+        print "Error occurred running baseline Ghostscript."
+        sys.exit(1)
+
+ofile = "%s.%s.compare.pnm" % (file, device)
+
+gs = gstestgs.Ghostscript()
+gs.command = gsconf.comparegs
+gs.infile = gsconf.comparefiledir + file
+gs.outfile = ofile
+gs.device = device
+gs.dpi = res
+gs.band = banding
+gs.log_stdout = gsconf.log_stdout
+gs.log_stderr = gsconf.log_stderr
+
+if not gs.process():
+    print "Error occurred running compare Ghostscript."
+    sys.exit(1)

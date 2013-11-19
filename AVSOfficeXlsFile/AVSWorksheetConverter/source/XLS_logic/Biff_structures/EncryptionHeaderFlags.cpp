@@ -1,0 +1,54 @@
+#include "stdafx.h"
+#include "EncryptionHeaderFlags.h"
+#include <XLS_bin/CFRecord.h>
+
+namespace CRYPTO
+{;
+
+
+XLS::BiffStructurePtr EncryptionHeaderFlags::clone()
+{
+	return XLS::BiffStructurePtr(new EncryptionHeaderFlags(*this));
+}
+
+
+void EncryptionHeaderFlags::toXML(MSXML2::IXMLDOMElementPtr parent)
+{
+	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::makeXMLNode(getClassName(), parent);
+
+	own_tag->setAttribute(L"fCryptoAPI", fCryptoAPI);
+	own_tag->setAttribute(L"fDocProps", fDocProps);
+	own_tag->setAttribute(L"fExternal", fExternal);
+	own_tag->setAttribute(L"fAES", fAES);
+}
+
+
+const bool EncryptionHeaderFlags::fromXML(MSXML2::IXMLDOMElementPtr parent)
+{
+#pragma message("####################### EncryptionHeaderFlags record has no BiffStructure::fromXML() implemented")
+	Log::error(" Error!!! EncryptionHeaderFlags record has no BiffStructure::fromXML() implemented.");
+	return false;
+}
+
+
+void EncryptionHeaderFlags::store(XLS::CFRecord& record)
+{
+#pragma message("####################### EncryptionHeaderFlags record has no BiffStructure::store() implemented")
+	Log::error(" Error!!! EncryptionHeaderFlags record has no BiffStructure::store() implemented.");
+	//record << something;
+}
+
+
+void EncryptionHeaderFlags::load(XLS::CFRecord& record)
+{
+	WORD flags;
+	record >> flags;
+	fCryptoAPI = GETBIT(flags, 2);
+	fDocProps = GETBIT(flags, 3);
+	fExternal = GETBIT(flags, 4);
+	fAES = GETBIT(flags, 5);
+}
+
+
+} // namespace CRYPTO
+

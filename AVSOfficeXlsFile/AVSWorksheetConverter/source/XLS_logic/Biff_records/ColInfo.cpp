@@ -1,0 +1,51 @@
+#include "stdafx.h"
+#include "ColInfo.h"
+
+namespace XLS
+{;
+
+ColInfo::ColInfo()
+{
+}
+
+
+ColInfo::~ColInfo()
+{
+}
+
+
+BaseObjectPtr ColInfo::clone()
+{
+	return BaseObjectPtr(new ColInfo(*this));
+}
+
+
+void ColInfo::writeFields(CFRecord& record)
+{
+	WORD flags = 0;
+	SETBIT(flags, 0, fHidden);
+	SETBIT(flags, 1, fUserSet);
+	SETBIT(flags, 2, fBestFit);
+	SETBIT(flags, 3, fPhonetic);
+	SETBITS(flags, 8, 10, iOutLevel);
+	SETBIT(flags, 12, fCollapsed);
+	record << colFirst << colLast << coldx << ixfe << flags;
+	record.reserveNBytes(2); // unused
+}
+
+
+void ColInfo::readFields(CFRecord& record)
+{
+	WORD flags;
+	record >> colFirst >> colLast >> coldx >> ixfe >> flags;
+	fHidden = GETBIT(flags, 0);
+	fUserSet = GETBIT(flags, 1);
+	fBestFit = GETBIT(flags, 2);
+	fPhonetic = GETBIT(flags, 3);
+	iOutLevel = GETBITS(flags, 8, 10);
+	fCollapsed = GETBIT(flags, 12);
+	record.skipNBytes(2); // unused
+}
+
+} // namespace XLS
+

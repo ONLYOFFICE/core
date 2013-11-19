@@ -1,0 +1,17 @@
+﻿#pragma once
+
+//
+// interface IAVSOfficeFileTemplate wrapper method implementations
+//
+
+inline HRESULT IAVSOfficeFileTemplate::LoadFromFile ( _bstr_t sSrcFileName, _bstr_t sDstPath, _bstr_t sXMLOptions ) {
+    HRESULT _hr = raw_LoadFromFile(sSrcFileName, sDstPath, sXMLOptions);
+    if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
+    return _hr;
+}
+
+inline HRESULT IAVSOfficeFileTemplate::SaveToFile ( _bstr_t sDstFileName, _bstr_t sSrcPath, _bstr_t sXMLOptions ) {
+    HRESULT _hr = raw_SaveToFile(sDstFileName, sSrcPath, sXMLOptions);
+    if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
+    return _hr;
+}

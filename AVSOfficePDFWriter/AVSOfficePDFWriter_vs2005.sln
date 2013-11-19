@@ -1,0 +1,22 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSOfficePDFWriter", "AVSOfficePDFWriter_vs2005.vcproj", "{FD508B11-154E-491B-BA4A-EA81978955EF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+		ReleaseASC|Win32 = ReleaseASC|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.Debug|Win32.Build.0 = Debug|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.Release|Win32.ActiveCfg = Release|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.Release|Win32.Build.0 = Release|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.ReleaseASC|Win32.ActiveCfg = ReleaseASC|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.ReleaseASC|Win32.Build.0 = ReleaseASC|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

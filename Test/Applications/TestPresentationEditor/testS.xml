@@ -1,0 +1,138 @@
+<mc:AlternateContent>
+	<mc:Choice Requires="wps">
+		<w:drawing>
+			<wp:anchor distT="0" distB="0" distL="114300" distR="114300" simplePos="0" relativeHeight="251659264" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1">
+				<wp:simplePos x="0" y="0"/>
+				<wp:positionH relativeFrom="column">
+					<wp:posOffset>-173050</wp:posOffset>
+				</wp:positionH>
+				<wp:positionV relativeFrom="paragraph">
+					<wp:posOffset>-47092</wp:posOffset>
+				</wp:positionV>
+				<wp:extent cx="4622800" cy="3049905"/>
+				<wp:effectExtent l="19050" t="0" r="44450" b="1617345"/>
+				<wp:wrapNone/>
+				<wp:docPr id="1" name="Выноска-облако 1"/>
+				<wp:cNvGraphicFramePr/>
+				<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+					<a:graphicData uri="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">
+						<wps:wsp>
+							<wps:cNvSpPr/>
+							<wps:spPr>
+								<a:xfrm>
+									<a:off x="0" y="0"/>
+									<a:ext cx="4622800" cy="3049905"/>
+								</a:xfrm>
+								<a:prstGeom prst="cloudCallout">
+									<a:avLst>
+										<a:gd name="adj1" fmla="val 44521"/>
+										<a:gd name="adj2" fmla="val 99677"/>
+									</a:avLst>
+								</a:prstGeom>
+							</wps:spPr>
+							<wps:style>
+								<a:lnRef idx="2">
+									<a:schemeClr val="accent1">
+										<a:shade val="50000"/>
+									</a:schemeClr>
+								</a:lnRef>
+								<a:fillRef idx="1">
+									<a:schemeClr val="accent1"/>
+								</a:fillRef>
+								<a:effectRef idx="0">
+									<a:schemeClr val="accent1"/>
+								</a:effectRef>
+								<a:fontRef idx="minor">
+									<a:schemeClr val="lt1"/>
+								</a:fontRef>
+							</wps:style>
+							<wps:txbx>
+								<w:txbxContent>
+									<w:p w:rsidR="00BC7227" w:rsidRDefault="00BC7227" w:rsidP="00BC7227">
+										<w:pPr>
+											<w:jc w:val="center"/>
+										</w:pPr>
+										<w:bookmarkStart w:id="0" w:name="_GoBack"/>
+										<w:bookmarkEnd w:id="0"/>
+									</w:p>
+								</w:txbxContent>
+							</wps:txbx>
+							<wps:bodyPr rot="0" spcFirstLastPara="0" vertOverflow="overflow" horzOverflow="overflow" vert="horz" wrap="square" lIns="91440" tIns="45720" rIns="91440" bIns="45720" numCol="1" spcCol="0" rtlCol="0" fromWordArt="0" anchor="ctr" anchorCtr="0" forceAA="0" compatLnSpc="1">
+								<a:prstTxWarp prst="textNoShape">
+									<a:avLst/>
+								</a:prstTxWarp>
+								<a:noAutofit/>
+							</wps:bodyPr>
+						</wps:wsp>
+					</a:graphicData>
+				</a:graphic>
+			</wp:anchor>
+		</w:drawing>
+	</mc:Choice>
+	<mc:Fallback>
+		<w:pict>
+			<v:shapetype id="_x0000_t106" coordsize="21600,21600" o:spt="106" adj="1350,25920" path="ar,7165,4345,13110,1950,7185,1080,12690,475,11732,4835,17650,1080,12690,2910,17640,2387,9757,10107,20300,2910,17640,8235,19545,7660,12382,14412,21597,8235,19545,14280,18330,12910,11080,18695,18947,14280,18330,18690,15045,14822,5862,21597,15082,18690,15045,20895,7665,15772,2592,21105,9865,20895,7665,19140,2715,14330,,19187,6595,19140,2715,14910,1170,10992,,15357,5945,14910,1170,11250,1665,6692,650,12025,7917,11250,1665,7005,2580,1912,1972,8665,11162,7005,2580,1950,7185xear,7165,4345,13110,1080,12690,2340,13080nfear475,11732,4835,17650,2910,17640,3465,17445nfear7660,12382,14412,21597,7905,18675,8235,19545nfear7660,12382,14412,21597,14280,18330,14400,17370nfear12910,11080,18695,18947,18690,15045,17070,11475nfear15772,2592,21105,9865,20175,9015,20895,7665nfear14330,,19187,6595,19200,3345,19140,2715nfear14330,,19187,6595,14910,1170,14550,1980nfear10992,,15357,5945,11250,1665,11040,2340nfear1912,1972,8665,11162,7650,3270,7005,2580nfear1912,1972,8665,11162,1950,7185,2070,7890nfem@23@37qx@35@24@23@36@34@24@23@37xem@16@33qx@31@17@16@32@30@17@16@33xem@38@29qx@27@39@38@28@26@39@38@29xe">
+				<v:formulas>
+					<v:f eqn="sum #0 0 10800"/>
+					<v:f eqn="sum #1 0 10800"/>
+					<v:f eqn="cosatan2 10800 @0 @1"/>
+					<v:f eqn="sinatan2 10800 @0 @1"/>
+					<v:f eqn="sum @2 10800 0"/>
+					<v:f eqn="sum @3 10800 0"/>
+					<v:f eqn="sum @4 0 #0"/>
+					<v:f eqn="sum @5 0 #1"/>
+					<v:f eqn="mod @6 @7 0"/>
+					<v:f eqn="prod 600 11 1"/>
+					<v:f eqn="sum @8 0 @9"/>
+					<v:f eqn="prod @10 1 3"/>
+					<v:f eqn="prod 600 3 1"/>
+					<v:f eqn="sum @11 @12 0"/>
+					<v:f eqn="prod @13 @6 @8"/>
+					<v:f eqn="prod @13 @7 @8"/>
+					<v:f eqn="sum @14 #0 0"/>
+					<v:f eqn="sum @15 #1 0"/>
+					<v:f eqn="prod 600 8 1"/>
+					<v:f eqn="prod @11 2 1"/>
+					<v:f eqn="sum @18 @19 0"/>
+					<v:f eqn="prod @20 @6 @8"/>
+					<v:f eqn="prod @20 @7 @8"/>
+					<v:f eqn="sum @21 #0 0"/>
+					<v:f eqn="sum @22 #1 0"/>
+					<v:f eqn="prod 600 2 1"/>
+					<v:f eqn="sum #0 600 0"/>
+					<v:f eqn="sum #0 0 600"/>
+					<v:f eqn="sum #1 600 0"/>
+					<v:f eqn="sum #1 0 600"/>
+					<v:f eqn="sum @16 @25 0"/>
+					<v:f eqn="sum @16 0 @25"/>
+					<v:f eqn="sum @17 @25 0"/>
+					<v:f eqn="sum @17 0 @25"/>
+					<v:f eqn="sum @23 @12 0"/>
+					<v:f eqn="sum @23 0 @12"/>
+					<v:f eqn="sum @24 @12 0"/>
+					<v:f eqn="sum @24 0 @12"/>
+					<v:f eqn="val #0"/>
+					<v:f eqn="val #1"/>
+				</v:formulas>
+				<v:path o:extrusionok="f" o:connecttype="custom" o:connectlocs="67,10800;10800,21577;21582,10800;10800,1235;@38,@39" textboxrect="2977,3262,17087,17337"/>
+				<v:handles>
+					<v:h position="#0,#1"/>
+				</v:handles>
+				<o:complex v:ext="view"/>
+			</v:shapetype>
+			<v:shape id="Выноска-облако 1" o:spid="_x0000_s1026" type="#_x0000_t106" style="position:absolute;margin-left:-13.65pt;margin-top:-3.7pt;width:364pt;height:240.15pt;z-index:251659264;visibility:visible;mso-wrap-style:square;mso-wrap-distance-left:9pt;mso-wrap-distance-top:0;mso-wrap-distance-right:9pt;mso-wrap-distance-bottom:0;mso-position-horizontal:absolute;mso-position-horizontal-relative:text;mso-position-vertical:absolute;mso-position-vertical-relative:text;v-text-anchor:middle" o:gfxdata="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&#xA;BgAAAAAEAAQA8wAAACoGAAAAAA==&#xA;" adj="20417,32330" fillcolor="#4f81bd [3204]" strokecolor="#243f60 [1604]" strokeweight="2pt">
+				<v:textbox>
+					<w:txbxContent>
+						<w:p w:rsidR="00BC7227" w:rsidRDefault="00BC7227" w:rsidP="00BC7227">
+							<w:pPr>
+								<w:jc w:val="center"/>
+							</w:pPr>
+							<w:bookmarkStart w:id="1" w:name="_GoBack"/>
+							<w:bookmarkEnd w:id="1"/>
+						</w:p>
+					</w:txbxContent>
+				</v:textbox>
+			</v:shape>
+		</w:pict>
+	</mc:Fallback>
+</mc:AlternateContent>

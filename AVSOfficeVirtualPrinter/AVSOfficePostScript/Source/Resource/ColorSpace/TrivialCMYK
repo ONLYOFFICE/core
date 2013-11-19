@@ -1,0 +1,39 @@
+%    Copyright (C) 2003 Artifex Software, Inc.  All rights reserved.
+% 
+% This software is provided AS-IS with no warranty, either express or
+% implied.
+% 
+% This software is distributed under license and may not be copied,
+% modified or distributed except as expressly authorized under the terms
+% of the license contained in the file LICENSE in this distribution.
+% 
+% For more information about licensing, please refer to
+% http://www.ghostscript.com/licensing/. For information on
+% commercial licensing, go to http://www.artifex.com/licensing/ or
+% contact Artifex Software, Inc., 101 Lucas Valley Road #110,
+% San Rafael, CA  94903, U.S.A., +1(415)492-9861.
+
+% $Id: TrivialCMYK 8022 2007-06-05 22:23:38Z giles $
+% Color space that simulates appearance of the standard CMYK to RGB conversion.
+
+currentglobal true setglobal
+
+/TrivialCMYK
+[ /CIEBasedDEFG
+  4 dict begin
+     /WhitePoint [ 0.9505 1.0 1.089 ] def
+     /Table [ 2 2 2 2
+              [
+                [ < FFFFFF 000000 FFFF00 000000>
+                  < FF00FF 000000 FF0000 000000> ]
+                [ < 00FFFF 000000 00FF00 000000>
+                  < 0000FF 000000 000000 000000> ]
+              ]
+            ] def
+     /DecodeLMN [ { 1.8 exp } bind dup dup ] def
+     /MatrixLMN [ 0.4439 0.2522 0.0436 0.3341 0.6371 0.1387 0.1725 0.1107 0.9067 ] def
+  currentdict end
+]
+/ColorSpace defineresource pop
+
+setglobal

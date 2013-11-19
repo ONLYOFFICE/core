@@ -1,0 +1,703 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D4C6EAD0-5A97-439C-AC74-E1B89E07CCBE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AVSOfficeEWSEditor</RootNamespace>
+    <AssemblyName>AVSOfficeEWSEditor</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkSubset>
+    </TargetFrameworkSubset>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Debug\AVSOfficeEWSEditor.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\AVSOfficeEWSEditor.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FileConverterUtils2, Version=1.0.0.29, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\TeamlabOffice\trunk\wwwroot\Bin\FileConverterUtils2.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Editor\AutoFilter.cs" />
+    <Compile Include="Editor\CalculationTables\Power.cs" />
+    <Compile Include="Editor\Calculation\CellItem.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Precision.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncInt.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncMod.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncMRound.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncRound.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncRoundUp.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncRoundDown.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncCeiling.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncFloor.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncOdd.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncEven.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncAbs.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncMath.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncSign.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncUnsupported.cs" />
+    <Compile Include="Editor\Calculation\HyperlinkItem.cs" />
+    <Compile Include="Editor\Calculation\Formulas\NameParsedFormula.cs" />
+    <Compile Include="Editor\Calculation\NameItem.cs" />
+    <Compile Include="Editor\Calculation\Formulas\BinOpCalc\AddCalculator.cs" />
+    <Compile Include="Editor\Calculation\Formulas\BinOpCalc\Arithmetic.cs" />
+    <Compile Include="Editor\Calculation\Formulas\BinOpCalc\ConcatCalculator.cs" />
+    <Compile Include="Editor\Calculation\Formulas\BinOpCalc\RangeCalculator.cs" />
+    <Compile Include="Editor\Calculation\Formulas\BinOpCalc\IsectCalculator.cs" />
+    <Compile Include="Editor\Calculation\Formulas\BinOpCalc\ReferenceOperatorsCalculator.cs" />
+    <Compile Include="Editor\Calculation\Formulas\BinOpCalc\UnionCalculator.cs" />
+    <Compile Include="Editor\Calculation\Formulas\BinOpCalc\DivCalculator.cs" />
+    <Compile Include="Editor\Calculation\Formulas\BinOpCalc\EqCalculator.cs" />
+    <Compile Include="Editor\Calculation\Formulas\BinOpCalc\GtCalculator.cs" />
+    <Compile Include="Editor\Calculation\Formulas\BinOpCalc\IFullBinaryOpDispatcher.cs" />
+    <Compile Include="Editor\Calculation\Formulas\BinOpCalc\LtCalculator.cs" />
+    <Compile Include="Editor\Calculation\Formulas\BinOpCalc\MulCalculator.cs" />
+    <Compile Include="Editor\Calculation\Formulas\BinOpCalc\PowerCalculator.cs" />
+    <Compile Include="Editor\Calculation\Formulas\BinOpCalc\SubCalculator.cs" />
+    <Compile Include="Editor\Calculation\Formulas\DataObjects\IDataObject.cs" />
+    <Compile Include="Editor\Calculation\Formulas\DataObjects\ObjectEmpty.cs" />
+    <Compile Include="Editor\Calculation\Formulas\DataObjects\ObjectReference.cs" />
+    <Compile Include="Editor\Calculation\Formulas\DataObjects\ObjectNumber.cs" />
+    <Compile Include="Editor\Calculation\Formulas\DataObjects\ObjectBoolean.cs" />
+    <Compile Include="Editor\Calculation\Formulas\DataObjects\ObjectError.cs" />
+    <Compile Include="Editor\Calculation\Formulas\DataObjects\ObjectString.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgName.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\OperandPtg3D.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgRefErr3D.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgRef3D.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgArea3D.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgRange.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgUnion.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\FunctionsStorage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncAnd.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncAverage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncConcatenate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncCos.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncCount.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncErrorType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncExact.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncFalse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncIf.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncIfError.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncIs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncIsEven.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncIsOdd.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncLower.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncMax.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncMin.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncN.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncNa.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncNot.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncOr.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncPi.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncPower.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncRept.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncSin.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncSqrt.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncSum.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncT.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncTan.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncTrue.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Functions\PtgFuncUpper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgMissedArg.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgConcat.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgLe.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgGe.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgNe.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgGt.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgLt.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgEq.cs" />
+    <Compile Include="Editor\Calculation\RangeSubject.cs" />
+    <Compile Include="Editor\Calculation\Formulas\CellParsedFormula.cs" />
+    <Compile Include="Editor\Calculation\Formulas\ErrorValue.cs" />
+    <Compile Include="Editor\Calculation\Formulas\ParsedFormula.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgArea.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgFunc.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgParen.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgPower.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgPercent.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgUminus.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgUplus.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgDiv.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgMul.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgSub.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgStr.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgErr.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgBool.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgNum.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\OperandPtg.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\OperatorPtg.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\Ptg.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgAdd.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgIsect.cs" />
+    <Compile Include="Editor\Calculation\Formulas\FormulaFormatException.cs" />
+    <Compile Include="Editor\Calculation\Formulas\Ptgs\PtgRef.cs" />
+    <Compile Include="Editor\Calculation\IObserver.cs" />
+    <Compile Include="Editor\Calculation\ISubject.cs" />
+    <Compile Include="Editor\Calculation\SubjectsStorage.cs" />
+    <Compile Include="Editor\Calculation\ValuesUpdateManager.cs" />
+    <Compile Include="Editor\Calculation\WorksheetSubject.cs" />
+    <Compile Include="Editor\Cells\Cell.cs" />
+    <Compile Include="Editor\Cells\CellRange.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Cells\CellRangeRel.cs" />
+    <Compile Include="Editor\Cells\CellRange3D.cs" />
+    <Compile Include="Editor\Cells\Offset.cs" />
+    <Compile Include="Editor\Chartsheet.cs" />
+    <Compile Include="Editor\Charts\Anchor.cs" />
+    <Compile Include="Editor\Charts\Chart.cs" />
+    <Compile Include="Editor\Charts\Layout.cs" />
+    <Compile Include="Editor\Charts\Legend.cs" />
+    <Compile Include="Editor\Charts\Misc.cs" />
+    <Compile Include="Editor\Charts\PlotArea.cs" />
+    <Compile Include="Editor\Charts\BasicChar.cs" />
+    <Compile Include="Editor\Charts\Series.cs" />
+    <Compile Include="Editor\Images\Image.cs" />
+    <Compile Include="Editor\OOX\ChartsheetFile.cs" />
+    <Compile Include="Editor\OOX\TableFile.cs" />
+    <Compile Include="Editor\Sheet.cs" />
+    <Compile Include="Editor\DefinedNames\DefinedName.cs" />
+    <Compile Include="Editor\DefinedNames\DefinedNames.cs" />
+    <Compile Include="Editor\Events\CellsUpdatedEventArg.cs" />
+    <Compile Include="Editor\Events\UnsupportedFileFormatError.cs" />
+    <Compile Include="Editor\Events\FileNotFoundError.cs" />
+    <Compile Include="Editor\Events\SystemIOError.cs" />
+    <Compile Include="Editor\Events\UnknownFunctionError.cs" />
+    <Compile Include="Editor\Events\InternalError.cs" />
+    <Compile Include="Editor\Events\ReportableException.cs" />
+    <Compile Include="Editor\Events\WrongReferenceFormatError.cs" />
+    <Compile Include="Editor\Events\OperandExpectedError.cs" />
+    <Compile Include="Editor\Events\OperatorExpectedError.cs" />
+    <Compile Include="Editor\Events\WrongParenthesisSequenceError.cs" />
+    <Compile Include="Editor\Events\UnknownOperandError.cs" />
+    <Compile Include="Editor\Events\ErrorDescription.cs" />
+    <Compile Include="Editor\Events\FormulaFormatError.cs" />
+    <Compile Include="Editor\Events\UnknownOperatorError.cs" />
+    <Compile Include="Editor\FileFormats\CsvLoader.cs" />
+    <Compile Include="Editor\Format\Alignment\Alignment.cs" />
+    <Compile Include="Editor\Format\Alignment\AlignmentEntity.cs" />
+    <Compile Include="Editor\Format\Alignment\HorizontalProperty.cs" />
+    <Compile Include="Editor\Format\Alignment\IndentProperty.cs" />
+    <Compile Include="Editor\Format\Alignment\JustifyLastLineProperty.cs" />
+    <Compile Include="Editor\Format\Alignment\ReadingOrderProperty.cs" />
+    <Compile Include="Editor\Format\Alignment\RelativeIndentProperty.cs" />
+    <Compile Include="Editor\Format\Alignment\ShrinkToFitProperty.cs" />
+    <Compile Include="Editor\Format\Alignment\TextRotationProperty.cs" />
+    <Compile Include="Editor\Format\Alignment\VerticalProperty.cs" />
+    <Compile Include="Editor\Format\Alignment\WrapTextProperty.cs" />
+    <Compile Include="Editor\Format\Borders\BorderProperty.cs" />
+    <Compile Include="Editor\Format\Borders\Borders.cs" />
+    <Compile Include="Editor\Format\Borders\BorderEntity.cs" />
+    <Compile Include="Editor\Format\Borders\Border.cs" />
+    <Compile Include="Editor\Format\Borders\DiagonalTypeProperty.cs" />
+    <Compile Include="Editor\Format\Borders\OutlineProperty.cs" />
+    <Compile Include="Editor\Format\Borders\StyleProperty.cs" />
+    <Compile Include="Editor\Format\Colors\Color.cs" />
+    <Compile Include="Editor\Format\Colors\ColorProperty.cs" />
+    <Compile Include="Editor\Format\Colors\ColorValue.cs" />
+    <Compile Include="Editor\Format\Colors\Palette.cs" />
+    <Compile Include="Editor\Format\NumberFormat\NumberFormatEntity.cs" />
+    <Compile Include="Editor\Format\SeparateEntity.cs" />
+    <Compile Include="Editor\Format\InlineEntity.cs" />
+    <Compile Include="Editor\Format\IdEntity.cs" />
+    <Compile Include="Editor\Format\Fills\BottomProperty.cs" />
+    <Compile Include="Editor\Format\Fills\DegreeProperty.cs" />
+    <Compile Include="Editor\Format\Fills\FillEntity.cs" />
+    <Compile Include="Editor\Format\Fills\Fills.cs" />
+    <Compile Include="Editor\Format\Fills\GradientFill.cs" />
+    <Compile Include="Editor\Format\Fills\GradientFillProperty.cs" />
+    <Compile Include="Editor\Format\Fills\GradientTypeProperty.cs" />
+    <Compile Include="Editor\Format\Fills\LeftProperty.cs" />
+    <Compile Include="Editor\Format\Fills\PatternFill.cs" />
+    <Compile Include="Editor\Format\Fills\PatternFillProperty.cs" />
+    <Compile Include="Editor\Format\Fills\PatternProperty.cs" />
+    <Compile Include="Editor\Format\Fills\RightProperty.cs" />
+    <Compile Include="Editor\Format\Fills\StopProperty.cs" />
+    <Compile Include="Editor\Format\Fills\TopProperty.cs" />
+    <Compile Include="Editor\Format\Font\BoldProperty.cs" />
+    <Compile Include="Editor\Format\Font\CharsetProperty.cs" />
+    <Compile Include="Editor\Format\Font\CondenseProperty.cs" />
+    <Compile Include="Editor\Format\Font\ExtendProperty.cs" />
+    <Compile Include="Editor\Format\Font\FamilyProperty.cs" />
+    <Compile Include="Editor\Format\Font\Font.cs" />
+    <Compile Include="Editor\Format\Font\FontEntity.cs" />
+    <Compile Include="Editor\Format\Font\FontNameProperty.cs" />
+    <Compile Include="Editor\Format\Font\FontSizeProperty.cs" />
+    <Compile Include="Editor\Format\Font\ItalicProperty.cs" />
+    <Compile Include="Editor\Format\Font\OutlineProperty.cs" />
+    <Compile Include="Editor\Format\Font\SchemeProperty.cs" />
+    <Compile Include="Editor\Format\Font\ShadowProperty.cs" />
+    <Compile Include="Editor\Format\Font\StrikethroughProperty.cs" />
+    <Compile Include="Editor\Format\Font\SubscriptProperty.cs" />
+    <Compile Include="Editor\Format\Font\SuperscriptProperty.cs" />
+    <Compile Include="Editor\Format\Font\UnderlineProperty.cs" />
+    <Compile Include="Editor\Format\IProperty.cs" />
+    <Compile Include="Editor\Format\IStyleEntity.cs" />
+    <Compile Include="Editor\Format\Format.cs" />
+    <Compile Include="Editor\Format\Protection\LockedProperty.cs" />
+    <Compile Include="Editor\Format\Protection\HiddenProperty.cs" />
+    <Compile Include="Editor\Format\Protection\ProtectionEntity.cs" />
+    <Compile Include="Editor\Format\Protection\Protection.cs" />
+    <Compile Include="Editor\Hyperlinks\Hyperlink.cs" />
+    <Compile Include="Editor\Hyperlinks\Hyperlinks.cs" />
+    <Compile Include="Editor\MergeCells.cs" />
+    <Compile Include="Editor\NumberFormat\NumberFormatParser.cs" />
+    <Compile Include="Editor\NumberFormat\NumberFormatsStorage.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\AbstractConverter.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\AbstractPostProcessor.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\ConversionOptions.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\ConversionReport.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\CSharpEval.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\EmbeddedResourceResolver.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\EncryptedDocumentException.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\Matrix.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\NotAnOdfDocumentException.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\NotAnOoxDocumentException.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\OdfCharactersPostProcessor.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\OdfEventArgs.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\OoxCharactersPostProcessor.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\OoxDocument.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\OoxShape.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\OoxSpacesPostProcessor.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\OoxTransform.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\SharedXmlUrlResolver.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\UriLoader.cs" />
+    <Compile Include="Editor\ODSConverter\OdfConverterLib\ZipResolver.cs" />
+    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZipArchiveWriter.cs" />
+    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZipEntryNotFoundException.cs" />
+    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZipException.cs" />
+    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZipFactory.cs" />
+    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZipLib.cs" />
+    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZipReader.cs" />
+    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZipWriter.cs" />
+    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZlibZipReader.cs" />
+    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZlibZipWriter.cs" />
+    <Compile Include="Editor\ODSConverter\ODSConverter.cs" />
+    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\Converter.cs" />
+    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OdfConditionalPostProcessor.cs" />
+    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OdfSharedStringsPostProcessor.cs" />
+    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OoxCommentsPostProcessor.cs" />
+    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OoxDrawingsPostProcessor.cs" />
+    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OOXGroupsPostProcessor.cs" />
+    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OoxHeaderFooterPostProcessor.cs" />
+    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OoxMaximumCellTextPostProcessor.cs" />
+    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OoxPhysicalPathPostProcessor.cs" />
+    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OoxPivotCachePostProcessor.cs" />
+    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OoxPivotCrashHandlingPostProcessor.cs" />
+    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OOXStyleCellPostProcessor.cs" />
+    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\XlsxDocument.cs" />
+    <Compile Include="Editor\OOX\ContentTypes.cs" />
+    <Compile Include="Editor\OOX\WorkbookFile.cs" />
+    <Compile Include="Editor\OOX\Relationships.cs" />
+    <Compile Include="Editor\OOX\IOrderedSections.cs" />
+    <Compile Include="Editor\OOX\SharedStringsFile.cs" />
+    <Compile Include="Editor\OOX\StyleSheetFile.cs" />
+    <Compile Include="Editor\OOX\ThemeFile.cs" />
+    <Compile Include="Editor\OOX\WorksheetFile.cs" />
+    <Compile Include="Editor\OOX\XmlFile.cs" />
+    <Compile Include="Editor\FileFormats\CsvSaver.cs" />
+    <Compile Include="Editor\FileFormats\Serializer.cs" />
+    <Compile Include="Editor\FileFormats\XlsxLoader.cs" />
+    <Compile Include="Editor\FileFormats\XlsxSaver.cs" />
+    <Compile Include="Editor\SharedStrings.cs" />
+    <Compile Include="Editor\Sheets.cs" />
+    <Compile Include="Editor\Sorting\SortParameters.cs" />
+    <Compile Include="Editor\Table.cs" />
+    <Compile Include="Editor\Theme.cs" />
+    <Compile Include="Editor\Walkers\CellDeleter.cs" />
+    <Compile Include="Editor\Walkers\CellSimpleGetter.cs" />
+    <Compile Include="Editor\Walkers\CellsNodesCollector.cs" />
+    <Compile Include="Editor\Walkers\CellsSubstitutionSetter.cs" />
+    <Compile Include="Editor\Walkers\CellsUnregistrer.cs" />
+    <Compile Include="Editor\Walkers\CellWalker.cs" />
+    <Compile Include="Editor\Walkers\CellRowNumberCorrector.cs" />
+    <Compile Include="Editor\Walkers\CellsCopySetter.cs" />
+    <Compile Include="Editor\Walkers\ColsWalker.cs" />
+    <Compile Include="Editor\Walkers\FormulaRecheck.cs" />
+    <Compile Include="Editor\Walkers\HyperlinkGetter.cs" />
+    <Compile Include="Editor\Walkers\HyperlinkSetter.cs" />
+    <Compile Include="Editor\Walkers\WidthSetter.cs" />
+    <Compile Include="Editor\Walkers\IColsSetter.cs" />
+    <Compile Include="Editor\Walkers\FormulaTextAndValueUpdater.cs" />
+    <Compile Include="Editor\Walkers\RowsCellDeleter.cs" />
+    <Compile Include="Editor\Walkers\RowsCellMover.cs" />
+    <Compile Include="Editor\Walkers\RowsCellCollector.cs" />
+    <Compile Include="Editor\Walkers\IRowsCollector.cs" />
+    <Compile Include="Editor\Walkers\SortValuesCollector.cs" />
+    <Compile Include="Editor\Walkers\FirstNonEmptyFormulaValueCollector.cs" />
+    <Compile Include="Editor\Walkers\FormulaSetter.cs" />
+    <Compile Include="Editor\Walkers\FormulaGetter.cs" />
+    <Compile Include="Editor\Walkers\FormulasParser.cs" />
+    <Compile Include="Editor\Walkers\ICellSetter.cs" />
+    <Compile Include="Editor\Walkers\ExistentCellsCollector.cs" />
+    <Compile Include="Editor\Walkers\IRowsSetter.cs" />
+    <Compile Include="Editor\Walkers\IStatCollector.cs" />
+    <Compile Include="Editor\Walkers\NonEmptyCellsCollector.cs" />
+    <Compile Include="Editor\Walkers\RangeWalker.cs" />
+    <Compile Include="Editor\Walkers\RemovedStringsCollector.cs" />
+    <Compile Include="Editor\Walkers\RowsCellSetter.cs" />
+    <Compile Include="Editor\Walkers\RowsHeightSetter.cs" />
+    <Compile Include="Editor\Walkers\RowsRowNumberCorrector.cs" />
+    <Compile Include="Editor\Walkers\RowsWalker.cs" />
+    <Compile Include="Editor\Walkers\StyleCollector.cs" />
+    <Compile Include="Editor\Walkers\StyleSetter.cs" />
+    <Compile Include="Editor\Walkers\ValueGetter.cs" />
+    <Compile Include="Editor\Walkers\ValueSetter.cs" />
+    <Compile Include="Editor\StyleSheet.cs" />
+    <Compile Include="Editor\Worksheets.cs" />
+    <Compile Include="Helpers\Iterator.cs" />
+    <Compile Include="Helpers\XmlUtils.cs" />
+    <Compile Include="ResourceExcelDefaultStyles.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ResourceExcelDefaultStyles.resx</DependentUpon>
+    </Compile>
+    <Compile Include="XMLDataSpecific\Attrib.cs" />
+    <Compile Include="Helpers\ReferencesFormat.cs" />
+    <Compile Include="Resource1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource1.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Editor\Range.cs" />
+    <Compile Include="Editor\Worksheet.cs" />
+    <Compile Include="Editor\Workbook.cs" />
+    <Compile Include="Editor\EWSEditor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Helpers\OOXNavigate.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <EmbeddedResource Include="Editor\ODSConverter\OdfConverterLib\resources\odf2oox\dummy.dtd" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\border.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\cell.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\change_tracking.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\chart.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\comments.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\common.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\conditional.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\connections.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\contentTypes.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\data_consolidation.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\date.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\drawing.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\gradient.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\merge_cell.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\number.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\odf2oox-compute-size.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\odf2oox.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\ole_objects.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\package_relationships.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\page.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\part_relationships.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\pivotTable.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\pixel-measure.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\scenario.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\sharedStrings.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\sortFilter.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\source.xml" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\styles.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\validation.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\workbook.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\worksheets.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\border.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\change_tracking.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\chart.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\common.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\conditional.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\connections.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\content.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\database-ranges.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\date_time.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\elements.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\Gradient.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\groups.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\headers.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\insert_cols.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\insert_text.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\merge_cell.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\note.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\number.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\ole_objects.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\oox2odf-compute-size.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\oox2odf.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\picture.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\pivot_tables.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\relationships.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\scenario.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\settings.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\source.xml" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\styles.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\table_body.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\validation.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\OdfConverterLib\resources\odf2oox\common-meta.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\OdfConverterLib\resources\odf2oox\measures.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\OdfConverterLib\resources\odf2oox\utils.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\OdfConverterLib\resources\oox2odf\common-meta.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\OdfConverterLib\resources\oox2odf\measures.xsl" />
+    <EmbeddedResource Include="Editor\ODSConverter\OdfConverterLib\resources\oox2odf\utils.xsl" />
+    <Content Include="Editor\ODSConverter\OdfConverterLib\resources\source.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleDark1.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleDark2.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleDark3.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleDark4.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleDark5.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleDark6.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleDark7.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleDark8.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleDark9.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleDark10.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleDark11.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight1.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight2.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight3.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight4.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight5.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight6.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight7.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight8.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight9.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight10.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight11.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight12.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight13.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight14.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight15.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight16.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight17.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight18.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight19.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight20.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleLight21.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium1.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium2.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium3.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium4.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium5.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium6.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium7.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium8.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium9.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium10.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium11.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium12.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium13.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium14.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium15.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium16.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium17.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium18.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium19.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium20.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium21.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium22.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium23.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium24.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium25.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium26.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium27.xml" />
+    <None Include="ExcelDefaultFiles\TableStyleMedium28.xml" />
+    <Content Include="XMLTemplates\default_border.xml" />
+    <Content Include="XMLTemplates\default_fill.xml" />
+    <Content Include="XMLTemplates\default_font.xml" />
+    <Content Include="XMLTemplates\empty_areaChart.xml" />
+    <Content Include="XMLTemplates\empty_barChart.xml" />
+    <Content Include="XMLTemplates\empty_bubbleChart.xml" />
+    <Content Include="XMLTemplates\empty_chartDrawing.xml" />
+    <Content Include="XMLTemplates\empty_chartSeriesItem.xml" />
+    <Content Include="XMLTemplates\empty_doughnutChart.xml" />
+    <Content Include="XMLTemplates\empty_imageDrawing.xml" />
+    <Content Include="XMLTemplates\empty_book.xml" />
+    <Content Include="XMLTemplates\empty_lineChart.xml" />
+    <Content Include="XMLTemplates\empty_pieChart.xml" />
+    <Content Include="XMLTemplates\empty_radarChart.xml" />
+    <Content Include="XMLTemplates\empty_scatterChart.xml" />
+    <Content Include="XMLTemplates\empty_sheet.xml" />
+    <Content Include="XMLTemplates\empty_stockChart.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource1.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ResourceExcelDefaultStyles.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResourceExcelDefaultStyles.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="AVSImageFile3">
+      <Guid>{E3305D24-A207-4431-BC43-2C09A53CB9B6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="AVSImageStudio3">
+      <Guid>{69DBBABC-8D59-40B8-9906-DAFD4F3EC346}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="AVSMediaCore3">
+      <Guid>{F0A0AAE5-06FE-4ABC-A9F1-26BFFEE2A11F}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="AVSOfficeFile">
+      <Guid>{74CBF220-BF08-11DE-8A39-0800200C9A66}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="AVSOfficeUtils">
+      <Guid>{92F87FA9-D3C2-4820-82F6-DEAEC0A3539D}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="AVSOfficeWSHtmlFile">
+      <Guid>{25B7D44B-94A1-4C94-9718-102CFA8F00D5}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="AVSOfficeXlsFile">
+      <Guid>{D9F21C35-D46C-42F3-996D-D4912435F7E7}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>copy $(ProjectDir)bin\$(ConfigurationName)\$(TargetFileName) $(ProjectDir)..\..\..\..\Redist\AVSOfficeStudio\
+copy $(ProjectDir)bin\$(ConfigurationName)\$(TargetName).xml $(ProjectDir)..\..\..\..\Redist\AVSOfficeStudio\
+copy $(ProjectDir)bin\$(ConfigurationName)\$(TargetFileName) $(ProjectDir)..\..\..\TeamlabOffice\trunk\wwwroot\Bin\</PostBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+</Project>

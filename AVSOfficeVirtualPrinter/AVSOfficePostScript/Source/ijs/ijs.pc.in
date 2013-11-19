@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: ijs
+Description: IJS (InkJet Server) Raster Image Transport Protocol
+Version: @VERSION@
+Libs: -L${libdir} @ijs_libs@
+Cflags: -I${includedir} @ijs_cflags@

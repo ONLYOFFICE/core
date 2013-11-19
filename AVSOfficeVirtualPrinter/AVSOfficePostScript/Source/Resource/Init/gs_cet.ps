@@ -1,0 +1,61 @@
+%!PS
+% Set defaults for Ghostscript to match Adobe CPSI behaviour for CET
+% $Id: gs_cet.ps 8954 2008-08-08 04:22:38Z ray $
+
+% do this in the server level so it is persistent across jobs
+true 0 startjob not {
+  (*** Warning: CET startup is not in server default) = flush
+} if
+
+300 .sethiresscreen	% needed for language switch build since it
+			% processes gs_init.ps BEFORE setting the resolution
+
+0 array 0 setdash % CET 09-08 wants local setdash
+
+currentglobal true setglobal
+
+{
+  systemdict dup dup dup
+  /version (3017.102) put		% match CPSI 3017.102
+  /product (PhotoPRINT SE 5.0v2) put	% match CPSI 3017.102
+  /revision 0 put			% match CPSI 3017.103 Tek shows revision 5
+  /serialnumber 233640 put		% match CPSI 3017.102 Tek shows serialnumber 1401788461
+  systemdict /deviceinfo undef          % for CET 20-23-1
+} superexec
+
+{ } bind dup
+setblackgeneration
+setundercolorremoval
+0 array cvx readonly dup dup dup setcolortransfer
+
+% CPSI doesn't define "Localization" resource.
+/Localization /Category undefineresource
+
+% Some previously compile time options such as USE_ADOBE_CMYK_RGB
+% and GS_CHAR_FILL are now dynamic. Force CPSI compatibility.
+true .setCPSImode
+
+setglobal
+
+% Remove all but 'letter' page size
+<<
+currentpagedevice /InputAttributes get
+1 1 2 index length 1 sub {
+  1 index exch undef
+} for
+/InputAttributes exch
+>>
+setpagedevice
+
+% Patch setsmoothness, currentsmoothness for a better view of shadings :
+userdict /.smoothness currentsmoothness put
+/setsmoothness { 
+   dup type dup /integertype eq exch /realtype eq or {
+     userdict /.smoothness 3 2 roll cvr put 
+   } {
+     /setsmoothness .systemvar /typecheck signalerror
+   } ifelse
+} bind odef
+/currentsmoothness { userdict /.smoothness get } bind odef % for 09-55.PS, 09-57.PS .
+
+false 0 startjob pop		% re-enter encapsulated mode

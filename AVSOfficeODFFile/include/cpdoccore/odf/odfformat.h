@@ -1,0 +1,4 @@
+#ifndef _CPDOCCORE_ODFFORAMT_H_
+#define _CPDOCCORE_ODFFORMAT_H_
+
+#endif // #ifndef _CPDOCCORE_ODFFORAMT_H_

@@ -25,7 +25,7 @@ ASCOfficeOdpFile/ODPFormat/ReadMe.txt
 ASCOfficeOdpFile/ODPFormat/Release
 ASCOfficeOdpFile/Odp2DrawingXML/Debug
 ASCOfficeOdpFile/Odp2DrawingXML/Release
-AVSOfficeOdtFile/Projects/*
+ASCOfficeOdtFile/Projects/*
 AVSOfficePPTXFile/*.suo
 AVSOfficePPTXFile/Debug
 AVSOfficePPTXFile/PPTX2DrawingXML/Debug

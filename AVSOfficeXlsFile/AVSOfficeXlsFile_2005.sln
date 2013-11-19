@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSOfficeXlsFile", "AVSXlsFile\AVSXlsFile_2005.vcproj", "{E83B5FA5-ACDD-46F5-8E35-B19F398C806D}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{210CA046-BD12-4711-95E6-AF4F35AB3E61} = {210CA046-BD12-4711-95E6-AF4F35AB3E61}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EWSCore", "AVSWorksheetConverter\source\main\EWSCore_2005.vcproj", "{210CA046-BD12-4711-95E6-AF4F35AB3E61}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+		ReleaseASC|Win32 = ReleaseASC|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E83B5FA5-ACDD-46F5-8E35-B19F398C806D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E83B5FA5-ACDD-46F5-8E35-B19F398C806D}.Debug|Win32.Build.0 = Debug|Win32
+		{E83B5FA5-ACDD-46F5-8E35-B19F398C806D}.Release|Win32.ActiveCfg = Release|Win32
+		{E83B5FA5-ACDD-46F5-8E35-B19F398C806D}.Release|Win32.Build.0 = Release|Win32
+		{E83B5FA5-ACDD-46F5-8E35-B19F398C806D}.ReleaseASC|Win32.ActiveCfg = ReleaseASC|Win32
+		{E83B5FA5-ACDD-46F5-8E35-B19F398C806D}.ReleaseASC|Win32.Build.0 = ReleaseASC|Win32
+		{210CA046-BD12-4711-95E6-AF4F35AB3E61}.Debug|Win32.ActiveCfg = Debug|Win32
+		{210CA046-BD12-4711-95E6-AF4F35AB3E61}.Debug|Win32.Build.0 = Debug|Win32
+		{210CA046-BD12-4711-95E6-AF4F35AB3E61}.Release|Win32.ActiveCfg = Release|Win32
+		{210CA046-BD12-4711-95E6-AF4F35AB3E61}.Release|Win32.Build.0 = Release|Win32
+		{210CA046-BD12-4711-95E6-AF4F35AB3E61}.ReleaseASC|Win32.ActiveCfg = ReleaseASC|Win32
+		{210CA046-BD12-4711-95E6-AF4F35AB3E61}.ReleaseASC|Win32.Build.0 = ReleaseASC|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

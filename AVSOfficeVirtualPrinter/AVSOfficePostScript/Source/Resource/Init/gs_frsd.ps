@@ -1,0 +1,81 @@
+%    Copyright (C) 2000 Aladdin Enterprises.  All rights reserved.
+% 
+% This software is provided AS-IS with no warranty, either express or
+% implied.
+% 
+% This software is distributed under license and may not be copied,
+% modified or distributed except as expressly authorized under the terms
+% of the license contained in the file LICENSE in this distribution.
+% 
+% For more information about licensing, please refer to
+% http://www.ghostscript.com/licensing/. For information on
+% commercial licensing, go to http://www.artifex.com/licensing/ or
+% contact Artifex Software, Inc., 101 Lucas Valley Road #110,
+% San Rafael, CA  94903, U.S.A., +1(415)492-9861.
+
+% $Id: gs_frsd.ps 8954 2008-08-08 04:22:38Z ray $
+% Implementation of ReusableStreamDecode filter.
+% This file must be loaded after gs_lev2.ps and gs_res.ps.
+
+level2dict begin
+
+% ------ ReusableStreamDecode filter ------ %
+
+/.reusablestreamdecode {	% <source> <dict> .reusablestreamdecode <file>
+				% <source> .reusablestreamdecode <file>
+		% Collect the filter parameters.
+  dup type /dicttype eq { 2 copy } { dup 0 dict } ifelse
+  dup .rsdparams
+		% Construct the filter pipeline.
+		% The very first filter should use the value of CloseSource
+		% from the RSD dictionary; all the others should have
+		% CloseSource = true.
+		% Stack: source dict filters parms
+  2 index /CloseSource .knownget not { //false } if 5 -1 roll
+		% Stack: dict filters parms CloseSource source
+  0 1 5 index length 1 sub {
+    4 index 1 index get
+		% Stack: dict filters parms CloseSource source index filtname
+    4 index //null eq {
+      0 dict
+    } {
+      4 index 2 index get dup //null eq { pop } if
+    } ifelse
+    3 -1 roll pop exch filter
+    exch pop //true exch		% set CloseSource for further filters
+  } for
+		% If AsyncRead is true, try to create the filter directly.
+		% Stack: dict filters parms CloseSource source
+  4 index /AsyncRead .knownget not { //false } if {
+    1 index { .reusablestream } .internalstopped
+  } {
+    //null //true
+  } ifelse {
+    pop
+		% No luck.  Read the entire contents of the stream now.
+    dup type /filetype ne {
+		% Make a stream from a procedure or string data source.
+      0 () .subfiledecode
+    } if
+		% We must allocate the string in the same VM space as its
+		% source, since the reusable stream must be allocated there.
+
+    .currentglobal 1 index gcheck .setglobal exch
+    currentpacking //false setpacking exch
+       		% Stack: dict filters parms CloseSource oldglobal oldpacking file
+    [ exch { dup 40000 string readstring not { exit } if exch } loop
+      exch pop
+    ]
+              		% Stack: dict filters parms CloseSource oldglobal oldpacking [()...]
+    3 1 roll setpacking setglobal
+              		% Stack: dict filters parms CloseSource [()...]
+    1 index .reusablestream
+  } if
+		% We created the stream successfully: clean up.
+  4 { exch pop } repeat
+  1 index type /dicttype eq { exch pop } if exch pop
+} odef
+
+filterdict /ReusableStreamDecode /.reusablestreamdecode load put
+
+end			% level2dict

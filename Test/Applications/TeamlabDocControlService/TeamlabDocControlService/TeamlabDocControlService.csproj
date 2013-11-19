@@ -1,0 +1,114 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6EF64609-7C67-45E0-8F83-9C53C28C8C87}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TeamlabDocControlService</RootNamespace>
+    <AssemblyName>TeamlabDocControlService</AssemblyName>
+    <TargetZone>LocalIntranet</TargetZone>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ProjectInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProjectInstaller.Designer.cs">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Service1.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Service1.Designer.cs">
+      <DependentUpon>Service1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceSource\ClientRequestHandler.cs" />
+    <Compile Include="ServiceSource\Logger.cs" />
+    <Compile Include="ServiceSource\Monitors\AppPoolMonitorTimer.cs" />
+    <Compile Include="ServiceSource\Monitors\FolderMonitor.cs" />
+    <Compile Include="ServiceSource\Monitors\FolderSizeMonitorTimer.cs" />
+    <Compile Include="ServiceSource\RequestResolvers\AppPoolMonitorResolver.cs" />
+    <Compile Include="ServiceSource\RequestResolvers\ClearFolderResolver.cs" />
+    <Compile Include="ServiceSource\RequestResolvers\RecycleAppPoolResolver.cs" />
+    <Compile Include="ServiceSource\Tasks\AppPoolMonitorTask.cs" />
+    <Compile Include="ServiceSource\Tasks\IServiceTask.cs" />
+    <Compile Include="ServiceSource\Tasks\MemoryMonitorTask.cs" />
+    <Compile Include="ServiceSource\Monitors\MemoryMonitorTimer.cs" />
+    <Compile Include="ServiceSource\Monitors\MonitorByTimer.cs" />
+    <Compile Include="ServiceSource\Monitors\PerformanceMonitorTimer.cs" />
+    <Compile Include="ServiceSource\Tasks\ProcessorMonitorTask.cs" />
+    <Compile Include="ServiceSource\Monitors\ServiceHelpers.cs" />
+    <Compile Include="ServiceSource\Tasks\ServiceTask.cs" />
+    <Compile Include="ServiceSource\Tasks\StatusTask.cs" />
+    <Compile Include="ServiceSource\Monitors\TaskManager.cs" />
+    <Compile Include="ServiceSource\Remoting\ServiceSharedObject.cs" />
+    <Compile Include="ServiceSource\RequestResolvers\IRequestResolver.cs" />
+    <Compile Include="ServiceSource\RequestResolvers\MemoryMonitorResolver.cs" />
+    <Compile Include="ServiceSource\RequestResolvers\ProcessorMonitorResolver.cs" />
+    <Compile Include="ServiceSource\RequestResolvers\StatusResolver.cs" />
+    <Compile Include="ServiceSource\RequestResolvers\UnknownResolver.cs" />
+    <Compile Include="ServiceSource\SettingsReader.cs" />
+    <Compile Include="ServiceSource\Tasks\ClearFolderTask.cs" />
+    <Compile Include="ServiceSource\Tasks\RecycleAppPoolTask.cs" />
+    <Compile Include="ServiceSource\Tasks\ThreadTask.cs" />
+    <Compile Include="ServiceSource\ValueStorage\DataItemBase.cs" />
+    <Compile Include="ServiceSource\ValueStorage\DataStorage.cs" />
+    <Compile Include="ServiceSource\ValueStorage\FloatDataStorage.cs" />
+    <Compile Include="ServiceSource\ValueStorage\IDataItem.cs" />
+    <Compile Include="TcpLib\TcpServiceProvider.cs" />
+    <Compile Include="TcpLib\TcpLib.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ProjectInstaller.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Service1.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Service1.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <BaseApplicationManifest Include="Properties\app.manifest" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

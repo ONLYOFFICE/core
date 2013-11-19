@@ -1,0 +1,287 @@
+<?xml version="1.0"?>
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<fo:layout-master-set>
+<fo:simple-page-master master-name="simple" page-width="21cm" page-height="29.7cm">
+<fo:region-body></fo:region-body>
+</fo:simple-page-master>
+</fo:layout-master-set>
+<!--an optional <fo:declarations> object -->
+<fo:page-sequence master-reference="simple">
+<!--an optional <fo:title> object-->
+<!--an optional <fo:static-content> object-->
+<fo:flow flow-name="xsl-region-body">
+<fo:block color="#FF0000">
+<fo:inline color="#FF0000">Amchitka</fo:inline>
+</fo:block>
+<fo:block>
+<fo:inline font-weight="bold">Amchitka</fo:inline>
+<fo:inline> (pronounced /æmˈtʃɪtkə/; Amchixtax̂</fo:inline>
+<fo:inline>[1] in Aleut) is a volcanic, tectonically unstable island in the Rat Islands group of the Aleutian Islands in southwest Alaska. It is about </fo:inline>
+<fo:inline>68 kilometers</fo:inline>
+<fo:inline> (</fo:inline>
+<fo:inline>42 mi</fo:inline>
+<fo:inline>) long, and varies from 3 to </fo:inline>
+<fo:inline>6 km</fo:inline>
+<fo:inline> (2–3.75 mi) in width.</fo:inline>
+<fo:inline baseline-shift="super" font-size="66.7%">[2]</fo:inline>
+<fo:inline> It has a maritime climate, with many storms, and mostly overcast skies.</fo:inline>
+</fo:block>
+<fo:block font-style="italic">
+<fo:inline font-style="italic">The island was populated for more than 2,500 years by the Aleut people, but has had no permanent population SINCE 1832. It was included in the Alaska Purchase of 1867, and has since been part of the United States. During World War II, it was used as an airfield by US forces in the Aleutian Islands Campaign.</fo:inline>
+</fo:block>
+<fo:block>
+<fo:inline font-size="20pt">Amchitka</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline font-size="18pt">was</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline font-size="16pt">selected</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline font-size="15pt">by</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline font-size="14pt">the</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline font-size="13pt">United</fo:inline>
+<fo:inline> States </fo:inline>
+<fo:inline font-size="11pt">Atomic</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline font-size="10.5pt">Energy</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline font-size="10pt">Commission</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline font-size="9pt">to</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline font-size="8pt">be</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline font-size="7pt">the</fo:inline>
+<fo:inline> site for underground detonations of nuclear weapons. Three such tests were carried out: Long Shot, an 80 kiloton blast in 1965; Milrow, a 1 megaton blast in 1969; and </fo:inline>
+<fo:inline font-style="italic">Cannikin </fo:inline>
+<fo:inline>in 1971 – at "under 5 megatons", the largest underground test ever conducted by the United States. The tests were highly controversial, with environmental groups fearing that the Cannikin explosion, in particular, would cause severe earthquakes and tsunamis. Amchitka is no longer used for nuclear testing, although it is monitored for the leakage of radioactive materials.</fo:inline>
+</fo:block>
+<fo:block>
+<fo:inline>Geography</fo:inline>
+</fo:block>
+<fo:block font-family="Arial">
+<fo:inline font-family="Arial">Amchitka is the southernmost of the Rat Islands group in the Aleutian Chain,</fo:inline>
+<fo:inline font-family="Arial" baseline-shift="super" font-size="66.7%">[2]</fo:inline>
+<fo:inline font-family="Arial"> located between</fo:inline>
+<fo:inline font-family="Arial"> 51°21′N 178°37′E</fo:inline>
+<fo:inline font-family="Arial">﻿ </fo:inline>
+<fo:inline font-family="Arial">/ </fo:inline>
+<fo:inline font-family="Arial">﻿</fo:inline>
+<fo:inline font-family="Arial">51.35°N 178.617°E</fo:inline>
+<fo:inline font-family="Arial">﻿ </fo:inline>
+<fo:inline font-family="Arial">/ 51.35; 178.617</fo:inline>
+<fo:inline font-family="Arial"> and </fo:inline>
+<fo:inline font-family="Arial">51°39′N 179°29′E</fo:inline>
+<fo:inline font-family="Arial">﻿ </fo:inline>
+<fo:inline font-family="Arial">/ </fo:inline>
+<fo:inline font-family="Arial">﻿</fo:inline>
+<fo:inline font-family="Arial">51.65°N 179.483°E</fo:inline>
+<fo:inline font-family="Arial">﻿ </fo:inline>
+<fo:inline font-family="Arial">/ 51.65; 179.483</fo:inline>
+<fo:inline font-family="Arial">.</fo:inline>
+<fo:inline font-family="Arial" baseline-shift="super" font-size="66.7%">[3]</fo:inline>
+<fo:inline font-family="Arial"> It is bounded by the Bering Sea to the north and east, and the Pacific Ocean to the south and west.</fo:inline>
+<fo:inline font-family="Arial" baseline-shift="super" font-size="66.7%">[3]</fo:inline>
+</fo:block>
+<fo:block font-family="Arial">
+<fo:inline font-family="Arial">The eastern part of the island is a lowland plateau, with isolated ponds</fo:inline>
+<fo:inline font-family="Arial" baseline-shift="super" font-size="66.7%">[4]</fo:inline>
+<fo:inline font-family="Arial"> and gently rolling hills.</fo:inline>
+<fo:inline font-family="Arial" baseline-shift="sub" font-size="66.7%">[3]</fo:inline>
+<fo:inline font-family="Arial"> There is low but abundant vegetation,</fo:inline>
+<fo:inline font-family="Arial" baseline-shift="sub" font-size="66.7%">[3]</fo:inline>
+<fo:inline font-family="Arial"> consisting of mosses, lichens, liverworts, ferns, grasses, sedges, and crowberry.</fo:inline>
+<fo:inline font-family="Arial" baseline-shift="sub" font-size="66.7%">[4]</fo:inline>
+<fo:inline font-family="Arial"> The centre of the island is mountainous, and the western end is barren and vegetation is sparse.</fo:inline>
+<fo:inline font-family="Arial" baseline-shift="sub" font-size="66.7%">[3]</fo:inline>
+</fo:block>
+<fo:block font-family="Arial">
+<fo:inline font-family="Arial">Amchitka has a maritime climate, often foggy and windswept, with cloud cover 98 percent of the time.</fo:inline>
+<fo:inline font-family="Arial" baseline-shift="sub" font-size="66.7%">[3]</fo:inline>
+<fo:inline font-family="Arial"> While temperatures are moderated by the ocean, storms are frequent.</fo:inline>
+<fo:inline font-family="Arial" baseline-shift="sub" font-size="66.7%">[5]</fo:inline>
+<fo:inline font-family="Arial"> Geologically, the island is volcanic, being a part of a small crustal block on the Aleutian Volcanic Arc that is being torn apart by oblique subduction. It is "one of the least stable tectonic environments in the United States."</fo:inline>
+<fo:inline font-family="Arial" baseline-shift="sub" font-size="66.7%">[6]</fo:inline>
+</fo:block>
+<fo:block>
+<fo:inline>Early history</fo:inline>
+</fo:block>
+<fo:block font-family="Courier New">
+<fo:inline font-family="Courier New">The </fo:inline>
+<fo:inline font-family="Courier New">human</fo:inline>
+<fo:inline font-family="Courier New"> history</fo:inline>
+<fo:inline font-family="Courier New"></fo:inline>
+<fo:inline font-family="Courier New"> of Amchitka dates back at least 2,500 years, with the Aleut people.</fo:inline>
+<fo:inline font-family="Courier New" baseline-shift="2.5pt" font-size="8.5pt">[5]</fo:inline>
+<fo:inline font-family="Courier New" baseline-shift="-8pt" font-size="5pt">[7]</fo:inline>
+<fo:inline font-family="Courier New"> Human remains, thought to be of an Aleut dating from about 1000 AD, were discovered in 1980.</fo:inline>
+<fo:inline font-family="Courier New">[8]</fo:inline>
+</fo:block>
+<fo:block text-align="justify" font-family="Courier New">
+<fo:inline font-family="Courier New">Amchitka is said to have been seen and named St. Makarius by Bering in 1741, was sighted by Billings in 1790, and visited by Shishmaref in 1820.</fo:inline>
+<fo:inline font-family="Courier New">[9]</fo:inline>
+</fo:block>
+<fo:block font-family="Courier New">
+<fo:inline font-family="Courier New">Islanders received necessities and supplies such as tobacco, ironware, horse- and ox-skins, and cotton in return for hunting otters or seals.</fo:inline>
+</fo:block>
+<fo:block font-family="Courier New">
+<fo:inline font-family="Courier New">Russian trappers and traders established settlements on the islands, exploiting the indigenous people,</fo:inline>
+<fo:inline font-family="Courier New">[10] whose population on the island quickly fell.</fo:inline>
+<fo:inline font-family="Courier New">[8] From 1832, the island was never permanently inhabited,</fo:inline>
+<fo:inline font-family="Courier New">[8] and by the time of World War II, an abandoned Russian fishing village was all that remained.</fo:inline>
+<fo:inline font-family="Courier New">[11] The islands were surveyed by the North Pacific Exploring Expedition in 1855,</fo:inline>
+<fo:inline font-family="Courier New">[9] and were included in the Alaska Purchase of 1867.</fo:inline>
+<fo:inline font-family="Courier New">[10] In 1913, President William Taft set aside the Aleutian chain, including Amchitka, as a wildlife preserve.</fo:inline>
+<fo:inline font-family="Courier New">[11] The Native residents of Atka leased the island for fox hunting in 1920, and continued to use the island until the Japanese invasion of the western Aleutians in 1942.</fo:inline>
+<fo:inline font-family="Courier New">[8]</fo:inline>
+</fo:block>
+<fo:block>
+<fo:inline>World War II</fo:inline>
+</fo:block>
+<fo:block>
+<fo:inline>For more details on this topic, </fo:inline>
+<fo:inline>see</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline>Aleutian</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline text-decoration="underline">Islands</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline text-decoration="line-through">Campaign</fo:inline>
+<fo:inline>.</fo:inline>
+</fo:block>
+<fo:block baseline-shift="-2.5pt" font-size="37.5pt">
+<fo:inline baseline-shift="-2.5pt" font-size="37.5pt">I</fo:inline>
+</fo:block>
+<fo:block>
+<fo:inline>n June 1942, the </fo:inline>
+<fo:inline>Japanese</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline font-weight="bold">occupied</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline font-style="italic">some</fo:inline>
+<fo:inline> of the western </fo:inline>
+<fo:inline font-weight="bold" font-style="italic">Aleutian</fo:inline>
+<fo:inline> islands, and hoped to occupy Amchitka.</fo:inline>
+<fo:inline>[12] Eager to remove the Japanese, the Joint Chiefs of Staff agreed to move quickly to regain the territory. American planners decided to build a series of airfields to the west of Umnak, from which bombers could attack the invading forces.</fo:inline>
+<fo:inline>[13]</fo:inline>
+</fo:block>
+<fo:block text-align="justify">
+<fo:inline>The </fo:inline>
+<fo:inline font-size="32pt">U.S. Army</fo:inline>
+<fo:inline> established bases at Adak and 13 other locations.</fo:inline>
+<fo:inline>[13] At the War Department's suggestion, an initial reconnaissance of Amchitka was carried out in September 1942, which found that it would be difficult to build an airstrip on the island.</fo:inline>
+<fo:inline>[12] Nevertheless, planners decided on December 13 that the airfield "had to be built" to prevent the Japanese from doing the same.</fo:inline>
+<fo:inline>[12] A further reconnaissance mission visited Amchitka from 17 to 19 December, and reported that a fighter strip could be built in two to three weeks, and a main airfield in three to four months.</fo:inline>
+<fo:inline>[12] The plan was </fo:inline>
+<fo:inline font-weight="bold" font-style="italic" text-decoration="underline">approved</fo:inline>
+<fo:inline> and began in 1942.</fo:inline>
+<fo:inline>[12] </fo:inline>
+</fo:block>
+<fo:block text-align="right">
+<fo:inline color="#000080">American</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline color="#008000">forces</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline color="#008080">made</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline color="#800000">an</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline color="#800080">unopposed</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline color="#808000">landing</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline color="#808080">on</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline color="#808080">Amchitka</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline color="#C0C0C0">on</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline color="#0000FF">January</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline color="#00FF00">12</fo:inline>
+<fo:inline color="#00FFFF">,</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline color="#FF0000">1943</fo:inline>
+<fo:inline color="#FF00FF">,</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline color="#FFFF00">although</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline color="#333333">the</fo:inline>
+<fo:inline> </fo:inline>
+<fo:inline color="#4C4C4C">destroyer</fo:inline>
+<fo:inline> Worden (DD-352) grounded and sank with the loss of 14 lives. Despite facing difficult weather conditions and bombing from the Japanese, the airfield was usable by February 16.</fo:inline>
+<fo:inline>[12] The Alaska Command was now </fo:inline>
+<fo:inline>80 km</fo:inline>
+<fo:inline> (</fo:inline>
+<fo:inline>50 mi</fo:inline>
+<fo:inline>) away from their target, Kiska.</fo:inline>
+<fo:inline>[13] The military eventually built numerous buildings, roads, and a total of three airstrips on the island,</fo:inline>
+<fo:inline>[11] some of which would later be renovated and used by the Atomic Energy Commission.</fo:inline>
+<fo:inline>[14] At its peak, the occupancy of Amchitka reached 15,000 troops.</fo:inline>
+<fo:inline>[11]</fo:inline>
+</fo:block>
+<fo:block text-align="center" font-family="Microsoft Sans Serif" font-size="14pt">
+<fo:inline font-family="Microsoft Sans Serif" font-size="14pt">The Aleutian Islands campaign was successfully completed on August 24, 1943.</fo:inline>
+<fo:inline font-family="Microsoft Sans Serif" font-size="14pt">[13] In that month, a strategic intercept station was established on the island, which remained until February 1945.</fo:inline>
+<fo:inline font-family="Microsoft Sans Serif" font-size="14pt">[15] The Army abandoned the site in August 1950.</fo:inline>
+<fo:inline font-family="Microsoft Sans Serif" font-size="14pt">[16] The site later hosted an Air Force weather station in the 1950s, a White Alice telecommunication system in 1959 to 1961, and a temporary relay station in the 1960s and 1970s.</fo:inline>
+<fo:inline font-family="Microsoft Sans Serif" font-size="14pt">[11]</fo:inline>
+</fo:block>
+<fo:block font-family="Microsoft Sans Serif" font-size="14pt"></fo:block>
+<fo:block></fo:block>
+<fo:block>
+<fo:inline>Nuclear tests at Amchitka</fo:inline>
+</fo:block>
+<fo:block font-family="Courier New">
+<fo:inline font-family="Courier New">Long Shot 21:00, October 29, 1965 51°26′12″N 179°10′47″E</fo:inline>
+<fo:inline font-family="Courier New">﻿ </fo:inline>
+<fo:inline font-family="Courier New">/ </fo:inline>
+<fo:inline font-family="Courier New">﻿</fo:inline>
+<fo:inline font-family="Courier New">51.43655°N 179.17976°E</fo:inline>
+<fo:inline font-family="Courier New">﻿ </fo:inline>
+<fo:inline font-family="Courier New">/ 51.43655; 179.17976</fo:inline>
+<fo:inline font-family="Courier New">﻿ </fo:inline>
+<fo:inline font-family="Courier New">(Long Shot Nuclear Test) 80 kt 2,343 ft (</fo:inline>
+<fo:inline font-family="Courier New">714 m</fo:inline>
+<fo:inline font-family="Courier New">) shaft</fo:inline>
+</fo:block>
+<fo:block font-family="Courier New">
+<fo:inline font-family="Courier New">Milrow 22:06, October 2, 1969 51°24′56″N 179°10′48″E</fo:inline>
+<fo:inline font-family="Courier New">﻿ </fo:inline>
+<fo:inline font-family="Courier New">/ </fo:inline>
+<fo:inline font-family="Courier New">﻿</fo:inline>
+<fo:inline font-family="Courier New">51.41559°N 179.17992°E</fo:inline>
+<fo:inline font-family="Courier New">﻿ </fo:inline>
+<fo:inline font-family="Courier New">/ 51.41559; 179.17992</fo:inline>
+<fo:inline font-family="Courier New">﻿ </fo:inline>
+<fo:inline font-family="Courier New">(Milrow Nuclear Test) ~ 1 Mt 4,002 ft (1,220 m) shaft</fo:inline>
+</fo:block>
+<fo:block font-family="Courier New">
+<fo:inline font-family="Courier New">Cannikin 22:00, November 6, 1971 51°28′11″N 179°06′12″E</fo:inline>
+<fo:inline font-family="Courier New">﻿ </fo:inline>
+<fo:inline font-family="Courier New">/ </fo:inline>
+<fo:inline font-family="Courier New">﻿</fo:inline>
+<fo:inline font-family="Courier New">51.46961°N 179.10335°E</fo:inline>
+<fo:inline font-family="Courier New">﻿ </fo:inline>
+<fo:inline font-family="Courier New">/ 51.46961; 179.10335</fo:inline>
+<fo:inline font-family="Courier New">﻿ </fo:inline>
+<fo:inline font-family="Courier New">(Cannikin Nuclear Test) &lt; 5 Mt 6,104 ft (1,860 m) shaft</fo:inline>
+</fo:block>
+<fo:block>
+<fo:inline> </fo:inline>
+</fo:block>
+<fo:block></fo:block>
+<fo:block>
+<fo:inline>Стр.: </fo:inline>
+<fo:inline>4</fo:inline>
+</fo:block>
+<fo:block>
+<fo:inline>Всего страниц: </fo:inline>
+<fo:inline>4</fo:inline>
+</fo:block>
+<fo:block></fo:block>
+<fo:block></fo:block>
+</fo:flow>
+</fo:page-sequence>
+</fo:root>

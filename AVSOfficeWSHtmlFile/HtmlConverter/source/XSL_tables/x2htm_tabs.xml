@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:r="http://schemas.openxmlformats.org/package/2006/relationships"
+                xmlns:mainr="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+                xmlns:main="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+                xmlns:msxsl="urn:schemas-microsoft-com:xslt"
+                xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+                extension-element-prefixes="msxsl">
+
+  <xsl:template name="tabs_file">
+    <file name="tabs.htm">
+      <html xmlns="http://www.w3.org/TR/REC-html40">
+
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset={$charset}"/>
+          <style>
+            <xsl:comment>
+              A {
+                  text-decoration:none;
+                  color:#000000;
+                  font-size:9pt;
+              }
+            </xsl:comment>
+          </style>
+        </head>
+        <body topmargin="0" leftmargin="0" bgcolor="#808080">
+          <table border="0" cellspacing="1">
+            <tr>
+              <xsl:for-each select="$worksheets_info/sheet">
+                <td bgcolor="#FFFFFF" nowrap="" style="padding:0 1ex 0 1ex"><b><small><small>
+                  <a href="{@file_name}" target="frSheet"><font face="Arial" color="#000000"><xsl:value-of select="@name"/></font></a></small></small></b></td>
+              </xsl:for-each>
+            </tr>
+          </table>
+        </body>
+      </html>
+    </file>
+  </xsl:template>
+
+</xsl:stylesheet>

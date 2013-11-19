@@ -1,0 +1,188 @@
+#!/bin/sh
+#
+# "$Id: pstopxl.in 9250 2008-11-29 12:27:04Z till $"
+#
+# CUPS PCL XL/PCL 6 filter script for Ghostscript.
+#
+# Copyright 2001-2005 by Easy Software Products.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+#
+
+# Installation directories...
+prefix=/usr/local
+exec_prefix=${prefix}
+bindir=${exec_prefix}/bin
+
+# Set the library/font path...
+GS_LIB="${CUPS_FONTPATH:=/usr/share/cups/fonts}"
+export GS_LIB
+
+# Determine the PCL XL/PCL 6 driver to use...
+if test "x$PPD" != x; then
+    colordevice=`grep '^*ColorDevice:' "$PPD" | awk -F: '{print $2}'`
+    case "$colordevice" in
+	*True* | *true*)
+	    device="pxlcolor"
+	    ;;
+	*)
+	    device="pxlmono"
+	    ;;
+    esac
+else
+    device="pxlmono"
+fi
+
+# Apply PPD settings.
+
+ps_code=
+ppd_opts=
+
+resolution=
+eval "$(printf "%s" "$5" | sed -nre 's/.*(^|\s)Resolution=([0-9.]+(x[0-9.]+)?).*/resolution="${resolution:-\2}"/p')"
+if test -e "$PPD"; then
+  eval "$(sed -nre 's/^\*DefaultResolution:\s+([0-9.]+(x[0-9.]+)?).*/resolution="${resolution:-\1}"/p' "$PPD")"
+fi
+echo "DEBUG: Resolution: $resolution" >&2
+if test -n "$resolution"; then
+  ppd_opts="${ppd_opts:+$ppd_opts }-r$resolution"
+fi
+
+pagesize=
+eval "$(printf "%s" "$5" | sed -nre 's/.*(^|\s)(media|PageSize)=(\S+).*/pagesize="${pagesize:-\3}"/p')"
+if test -e "$PPD"; then
+  eval "$(sed -nre 's/^\*DefaultPageSize:\s+(\S+).*/pagesize="${pagesize:-\1}"/p' "$PPD")"
+fi
+echo "DEBUG: Page size: $pagesize" >&2
+width=
+height=
+if test -n "$pagesize" && test -e "$PPD"; then
+  eval "$(sed -nre 's|^\*PaperDimension\s+'"$pagesize"'/[^:]+:\s+"(\S+)\s+(\S+)".*|width="\1"; height="\2"|p' "$PPD")"
+fi
+echo "DEBUG: Width: $width, height: $height" >&2
+if test -n "$width"; then
+  ppd_opts="${ppd_opts:+$ppd_opts }-dDEVICEWIDTHPOINTS=$width"
+fi
+if test -n "$height"; then
+  ppd_opts="${ppd_opts:+$ppd_opts }-dDEVICEHEIGHTPOINTS=$height"
+fi
+
+bl_x=
+bl_y=
+tr_x=
+tr_y=
+if test -n "$pagesize" && test -e "$PPD"; then
+  eval "$(sed -nre 's|^\*ImageableArea\s+'"$pagesize"'/[^:]+:\s+"(\S+)\s+(\S+)\s+(\S+)\s+(\S+)".*|bl_x="\1"; bl_y="\2"; tr_x="\3"; tr_y="\4"|p' "$PPD")"
+fi
+echo "DEBUG: Absolute margins: $bl_x, $bl_y, $tr_x, $tr_y" >&2
+margin_l=
+margin_b=
+margin_r=
+margin_t=
+if test -n "$width" && test -n "$height" && \
+   test -n "$bl_x" && test -n "$bl_y" && \
+   test -n "$tr_x" && test -n "$tr_y"; then
+  margin_l="$bl_x"
+  margin_b="$bl_y"
+  margin_r="$(printf "scale=8; (%s)-(%s)\n" "$width" "$tr_x" | bc)"
+  margin_t="$(printf "scale=8; (%s)-(%s)\n" "$height" "$tr_y" | bc)"
+fi
+echo "DEBUG: Relative margins: $margin_l, $margin_b, $margin_r, $margin_t" >&2
+if test -n "$margin_l" && test -n "$margin_b" && \
+   test -n "$margin_r" && test -n "$margin_t"; then
+  ps_code="${ps_code:+$ps_code }<</.HWMargins[$margin_l $margin_b $margin_r $margin_t] /Margins[0 0]>>setpagedevice"
+fi
+
+inputslot=
+eval "$(printf "%s" "$5" | sed -nre 's/.*(^|\s)(InputSlot)=(\S+).*/inputslot="${inputslot:-\3}"/p')"
+if test -e "$PPD"; then
+  eval "$(sed -nre 's/^\*DefaultInputSlot:\s+(\S+).*/inputslot="${inputslot:-\1}"/p' "$PPD")"
+fi
+echo "DEBUG: InputSlot: $inputslot" >&2
+inputslot_val=
+if test -n "$inputslot" && test -e "$PPD"; then
+  eval "$(sed -nre 's|^\*InputSlot\s+'"$inputslot"'/[^:]+:\s+"\s*<\s*<\s*/MediaPosition\s*([0-9]+)\s*>\s*>\s*setpagedevice\s*".*|inputslot_val="\1"|p' "$PPD")"
+fi
+echo "DEBUG: Value for MediaPosition: $inputslot_val" >&2
+if test -n "$inputslot_val"; then
+  ppd_opts="${ppd_opts:+$ppd_opts }-dMediaPosition=$inputslot_val"
+fi
+
+colormodel=
+eval "$(printf "%s" "$5" | sed -nre 's/.*(^|\s)(ColorModel)=(\S+).*/colormodel="${colormodel:-\3}"/p')"
+if test -e "$PPD"; then
+  eval "$(sed -nre 's/^\*DefaultColorModel:\s+(\S+).*/colormodel="${colormodel:-\1}"/p' "$PPD")"
+fi
+echo "DEBUG: ColorModel: $colormodel" >&2
+colormodel_val=
+if test -n "$colormodel" && test -e "$PPD"; then
+  eval "$(sed -nre 's|^\*ColorModel\s+'"$colormodel"'/[^:]+:\s+"\s*<\s*<\s*/BitsPerPixel\s*([0-9]*)\s*>\s*>\s*setpagedevice\s*".*|colormodel_val="\1"|p' "$PPD")"
+fi
+echo "DEBUG: Value for BitsPerPixel: $colormodel_val" >&2
+if test -n "$colormodel_val"; then
+  ppd_opts="${ppd_opts:+$ppd_opts }-dBitsPerPixel=$colormodel_val"
+fi
+
+duplex=
+eval "$(printf "%s" "$5" | sed -nre 's/.*(^|\s)(Duplex)=(\S+).*/duplex="${duplex:-\3}"/p')"
+if test -e "$PPD"; then
+  eval "$(sed -nre 's/^\*DefaultDuplex:\s+(\S+).*/duplex="${duplex:-\1}"/p' "$PPD")"
+fi
+echo "DEBUG: Duplex: $duplex" >&2
+duplex_val=
+tumble_val=
+if test -n "$duplex" && test -e "$PPD"; then
+  eval "$(sed -nre 's|^\*Duplex\s+'"$duplex"'/[^:]+:\s+"\s*<\s*<\s*/Duplex\s*(\S*)\s*(/Tumble\s*(\S*)\s*)?>\s*>\s*setpagedevice\s*".*|duplex_val="\1"; tumble_val="\3"|p' "$PPD")"
+fi
+echo "DEBUG: Value for Duplex: $duplex_val; Value for Tumble: $tumble_val" >&2
+if test -n "$duplex_val"; then
+  ppd_opts="${ppd_opts:+$ppd_opts }-dDuplex=$duplex_val"
+fi
+if test -n "$tumble_val"; then
+  ppd_opts="${ppd_opts:+$ppd_opts }-dTumble=$tumble_val"
+fi
+
+
+echo "DEBUG: PPD options: $ppd_opts" >&2
+echo "DEBUG: PostScript code from options: $ps_code" >&2
+
+# Options we use with Ghostscript...
+gsopts="-dQUIET -dPARANOIDSAFER -dNOPAUSE -dBATCH"
+gsopts="$gsopts -sDEVICE=$device -sstdout=%stderr"
+
+# See if we have a filename on the command-line...
+if [ -n "$6" ]; then
+  exec <"$6"
+fi
+
+# We read the data into a temporary file as Ghostscript needs this to be
+# able to also work with PDF input
+tempfiles=
+trap 'rm -f $tempfiles' 0 1 2 13 15
+
+ifile=$(mktemp -t pstopxl.XXXXXX)
+tempfiles="$tempfiles $ifile"
+
+cat >"$ifile"
+
+echo INFO: Starting GPL Ghostscript `$bindir/gs --version`... 1>&2
+echo DEBUG: Running $bindir/gs $gsopts $ppd_opts -sOUTPUTFILE="%stdout" -c "$ps_code" -f "$ifile" 1>&2
+
+# Now run Ghostscript...
+$bindir/gs $gsopts $ppd_opts -sOUTPUTFILE="%stdout" -c "$ps_code" -f "$ifile"
+
+#
+# End of "$Id: pstopxl.in 9250 2008-11-29 12:27:04Z till $".
+#

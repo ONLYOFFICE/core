@@ -1,0 +1,16 @@
+#pragma once
+
+namespace OfficeArt
+{
+	struct IOfficeArtRecord
+	{
+		virtual operator const byte* () const = 0;
+		virtual operator byte* () const = 0;
+		virtual unsigned int Size() const = 0;
+		virtual IOfficeArtRecord* New() const = 0;
+		virtual IOfficeArtRecord* Clone() const = 0;
+		virtual ~IOfficeArtRecord() {}
+	};
+
+	typedef boost::shared_ptr<IOfficeArtRecord> OfficeArtRecordPtr;
+}

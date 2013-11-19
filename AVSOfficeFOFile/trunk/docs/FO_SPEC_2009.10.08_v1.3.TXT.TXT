@@ -1,0 +1,556 @@
+Полную спецификацию на XSL-FO в формате XSD, которую использует процессор Apache FOP можно посмотреть в fop.xsd
+В данной версии документа представлены основные структуры и атрибуты, документ будет расширяться.
+
+ver 1.3 от 2009.10.08
+
+Новое по сравнению с версией 1.0 от 2009.00.16:
+- Пункт 14 — Таблицы
+
+Новое по сравнению с версией 1.1 от 2009.10.01:
+- Пункт 15 — Списки
+
+Новое по сравнению с версией 1.2 от 2009.10.02:
+- Пункт 16 — Верхний и нижний колонтитулы
+- Пункт 17 — Сноски
+
+
+1. Корневой элемент 
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+используем пространство имен fo
+
+2. Определение параметров страницы (обязательный элемент) находится внутри узла
+<fo:layout-master-set>
+</fo:layout-master-set>
+
+3. Именнованые определения параметров страницы внутри узла <fo:layout-master-set>
+<fo:simple-page-master>
+</fo:simple-page-master>
+Атирбуты:
+master-name — идентификатор
+page-width, page-height, margin, margin-top, margin-bottom, margin-right, margin-left — метрические значения
+по стандарту указываются единицы измерения, например page-width="21cm", margin-left="56.7pt"
+но для простоты можно принять соглашения какие единицы используем
+
+4. Определение частей страницы внтутри узла <fo:simple-page-master>
+4.1 Обязательный узел  — основная часть страницы, 
+<fo:region-body>
+</fo:region-body>
+
+размеры основной части определяются как
+width = simple-page-master.page-width - simple-page-master.margin-left - simple-page-master.margin-right
+height = simple-page-master.page-height - simple-page-master.margin-top - simple-page-master.margin-bottom
+
+Атрибуты 
+margin, margin-bottom, margin-left, margin-right, margin-top — общее значение полей, отдельно поля (метрические значения)
+
+Таким образом, основной текст располагается в блоке размерами
+width = simple-page-master.page-width - simple-page-master.margin-left - simple-page-master.margin-right - region-body.margin-left - region-body.margin-right
+height = simple-page-master.page-height - simple-page-master.margin-top - simple-page-master.margin-bottom - region-body.margin-top - region-body.margin-bottom
+
+4.2 Регионы в основной части (в region-body) сверху, снизу, слева, справа:
+соответственно
+<fo:region-before/>
+<fo:region-after/>
+<fo:region-start/>
+<fo:region-end/>
+
+используются для вывода статического текста, такого как колонтитулы. важно, что эти блоки располагаются в основном регионе (перекрывают его) а не вне его
+(опциональное свойство, в первую очередь надо реализовать вывод основного блока region-body)
+
+аттрибуты
+extent — размер (протяженность) региона
+
+5. Пример определения параметров страницы
+
+<?xml version="1.0" encoding="utf-8"?>
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+  <fo:layout-master-set>
+    <fo:simple-page-master
+        master-name="simple"
+        page-width="10cm"
+        page-height="20cm"
+        margin-bottom="1cm"
+        margin-top="2cm"
+        margin-left="1cm"
+        margin-right="1cm">
+      <fo:region-body margin="0.5cm"/>
+    </fo:simple-page-master>
+  </fo:layout-master-set>
+....
+</fo:root>  
+
+Основной блок текста будет выводится в прямоугольнике, который отстоит сверху на 2cm + 0.5cm, слева на 1cm + 0.5cm,
+имеет размеры width = 10cm - 1cm - 2x0.5cm - 1cm, height = 20cm - 2cm - 2x0.5cm - 1cm
+
+6. Содержимое страницы находится внутри узла
+<fo:page-sequence>
+</fo:page-sequence>
+(потомок fo:root, должен располагаться после fo:layout-master-set)
+
+Обязательный атрибут:
+master-reference — имя-ссылка на определение параметров страницы, используя пример выше
+<fo:page-sequence master-reference="simple">
+
+7. Основной текст находится внутри узла
+<fo:flow></fo:flow>
+(потомок fo:page-sequence)
+имеет атрибут
+flow-name="xsl-region-body" (значение пока принимаем фиксированным)
+
+8. Содержимое узла <fo:flow></fo:flow>:
+По крайней мере, один из тегов block|block-container|table-and-caption|table|list-block (в соответствии со спецификацей)
+
+
+9. <fo:block></fo:block> представялет собой блок текста для отображения параграфов, заголовков и т.д.
+Таким образом можно написать пример простого fo - документа:
+
+<?xml version="1.0" encoding="utf-8"?>
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+  <fo:layout-master-set>
+  
+    <fo:simple-page-master
+        master-name="simple"
+        page-width="21cm"
+        page-height="29.7cm"
+        margin="1cm">
+		
+      <fo:region-body/>
+	  
+    </fo:simple-page-master>
+	
+  </fo:layout-master-set>
+  
+  <fo:page-sequence master-reference="simple">
+	<fo:flow flow-name="xsl-region-body">
+		<fo:block>Текст в блоке</fo:block>
+    </fo:flow>
+  </fo:page-sequence>
+  
+</fo:root>  
+
+документ имеет размеры страницы A4, поля со всех сторон равные 1cm и блок текста с форматированием по умолчанию
+
+10. <fo:inline></fo:inline> используется для формата части текста внутри блока
+
+Например
+<fo:block>Текст в <fo:inline color="red">блоке</fo:inline></fo:block>
+
+слово "блоке" будет выделено красным цветом
+
+11. Применение свойств символов
+Свойства конкретного символа (размер, шрифт, цвет, эффекты шрифта и т.д.) имеют значения по умолчанию, определенные реализацией
+и могут каскадно переопределятся свойствами параграфа или внутри тега inline
+
+Пример:
+
+<fo:block font-size="10pt" color="green">Текст в <fo:inline color="red" font-family="Arial">блоке</fo:inline></fo:block>
+
+Блок переопределяет свойства font-size и color, все символы которые находятся внутри блока и не переопределены,
+имеют эти значения, остальные параметры имеют значение по умолчанию (например, шрифт "Times New Roman", стиль шрифта Normal)
+Внутри блока в теге inline свойства переопределяются: устанавливается конкретное значение шрифта и переопределяется цвет, размер шрифта наследуется от свойств блока (10pt)
+
+12. Атрибуты символов (описываю основные атрибуты и их значения, атрибуты и возможные значения могут добавляться)
+
+12.1 font-family - имя шрифта, например font-family="Times New Roman"
+12.2 font-size - размер шрифта, например font-size="12pt"
+12.3 font-style -  стиль, возможные значения: "normal", "italic" (курсив)
+12.4 text-decoration - возможные значения: "none", "underline"(подчеркнутый), "line-through" (перечеркнутый) — тут стандарт почему-то определяет одно из двух,
+но не вместе, возможно, надо ввести дополнительное значение
+12.5 font-weight — возможные значения: "normal", "bold" (жирный)
+12.6 text-shadow — тень. возможные значения: "none", ColorType, ? — это свойство по стандарту можно применять только к пока не используемому у нас элементу <fo:character/>,
+но для удобства нарушим тут стандарт. Определение типа ColorType должно быть оговорено отдельно
+12.7 color — цвет шрифта, ColorType
+12.8 background-color - цвет фона, ColorType
+12.9 letter-spacing — расстояние между символами
+12.10 font-variant — значение "normal" (выключено), "small-caps" — капитель (см. http://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D0%BF%D0%B8%D1%82%D0%B5%D0%BB%D1%8C_%28%D1%88%D1%80%D0%B8%D1%84%D1%82%29)
+12.11 text-transform — значения "none" (выключено), "capitalize" — первый символ каждой строки печатается заглавным, "uppercase" — все символы печатаются заглавными, "lowercase" — все символы строчные
+12.12 baseline-shift — смещение символов в строке, значения "super" — верхний индекс (о точных значениях необходима договоренность), "sub" — нижний индекс,
+"baseline" — выключено, также возможны конткретные значения (например в процетах)
+12.13 language — язык, "EN", "RU" и т.д. (?)
+12.14 
+
+13. Атрибуты параграфа (блока <fo:block></fo:block>)
+13.1 Атрибуты из п. 12 применимы и к блоку
+13.2 text-align — выравнивание, возможные значения: "left", "right", "center", "justify"
+13.3 break-before — с новой страницы перед параграфом, значения "auto" (выключено), "page" (разрыв сраницы)
+13.4 keep-together.within-page — предотвращает разрыв страницы в данном параграфе, значения "auto" (выключено), "always" (включено)
+13.5 keep-with-next — предотвращает разрыв страницы между текущим и следующим параграфом, применяется, например,
+для заголовков, значения: "auto" (выключено), "always" (включено)
+13.6 widows — запрещает печатать последнюю строку параграфа на новой странице, значения "1" (выключено), "2" (включено)
+13.7 orphans — запрещает печатать первую строку параграфа в конце страницы "1" (выключено), "2" (включено)
+13.8 space-before — отступ перед параграфом в pt (возможно, в дальнейшем сделать значения space-before.minimum space-before.maximum)
+13.9 space-after — аналогично после параграфа
+13.10 line-height — расстояние между строками в параграфе (возможно, в дальнейшем сделать значения line-height.minimum space-before.maximum)
+13.11 start-indent, end-indent — отступ для параграфа слева и справа
+13.12 text-indent — отступ первой строки параграфа
+13.13
+
+Еще один пример FO документа с атрибутами (samples\simple4.fo), результат в файле samples\simple4.fo.pdf
+
+<?xml version="1.0" encoding="utf-8"?>
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+  <fo:layout-master-set>
+  
+    <fo:simple-page-master
+        master-name="simple"
+        page-width="21cm"
+        page-height="29.7cm"
+        margin="1cm">
+		
+      <fo:region-body/>
+	  
+    </fo:simple-page-master>
+	
+  </fo:layout-master-set>
+  
+  <fo:page-sequence master-reference="simple">
+  
+	<fo:flow flow-name="xsl-region-body">
+		<fo:block
+			font-family="Times New Roman"
+			font-weight="bold"
+			font-size="16pt"
+			keep-with-next="always"
+			text-align="center"
+			space-after="1cm">
+		Page footer and page header
+		</fo:block>
+		
+		<fo:block
+			font-family="Arial"
+			font-size="10pt"
+			text-align="justify"
+			space-after="0.5cm">
+		A <fo:inline font-weight="bold" color="blue" text-decoration="underline">page footer</fo:inline> or simply footer in typography is that material which is
+		separated from the main body of text and appears at the bottom of a printed page.
+		Word processing programs<fo:inline baseline-shift="super" font-size="7pt">[1]</fo:inline> usually provide for the creation and maintenance of page footers,
+		which are often the same from page to page, with merely small differences
+		in information, such as page number. Footnotes are usually placed in or near the page footer.
+		</fo:block>
+		
+		<fo:block
+			font-family="Courier New"
+			font-size="12pt"
+			text-align="left">
+		A <fo:inline font-weight="bold" color="blue" text-decoration="underline">page header</fo:inline> or simply header in typography
+		is that material which is separated from the main body
+		of text and appears at the top of a printed page. Word processing programs usually provide for the
+		creation and maintenance of page headers, which are often the same from page to page, with merely
+		small differences in information, such as page number.		
+		</fo:block>
+    </fo:flow>
+	
+  </fo:page-sequence>
+  
+</fo:root>  
+
+
+14. Таблицы
+14.1 Определяются узлом <fo:table></fo:table> — потомок узла <fo:flow></fo:flow>
+14.2 Столбцы определяются тегом <fo:table-column/> (внутри <fo:table>), например, таблица с двумя столбцами (тело таблицы пропущено)
+<fo:table>
+<fo:table-column/>
+<fo:table-column/>
+
+<!-- ................ -->
+</fo:table>
+14.3 Тело таблицы определяется тегом <fo:table-body><fo:table-body/> (внутри <fo:table>)
+14.4 Сторки таблицы задаются тегом <fo:table-row></fo:table-row> (внутри <fo:table-body>)
+14.5 Ячейки таблицы задаются тегом <fo:table-cell></fo:table-cell> (внутри <fo:table-row>).
+Число ячеек в строке (внутри тега <fo:table-row>) должно совпадать с количеством столбцов, заявленных в таблице,
+за исключением случаев объединения ячеек по вертикали и горизонтали (см. пункт 14.11.6 и 14.11.7)
+
+14.6 Содержимое ячейки представляет собой обычный форматированный текст (<fo:block> и т.д.)
+14.7 Пример простой таблицы с форматированием по умолчанию
+
+ <fo:flow>
+ <!-- ..... -->
+  
+   <fo:table>
+      <fo:table-column/>
+      <fo:table-column/>
+      <fo:table-body>
+        <fo:table-row>
+          <fo:table-cell>
+            <fo:block>
+              Cell (0,0)
+            </fo:block>
+          </fo:table-cell>
+          <fo:table-cell>
+            <fo:block>
+              Cell (1,0)              
+            </fo:block>
+          </fo:table-cell>
+        </fo:table-row>
+
+        <fo:table-row>
+          <fo:table-cell>
+            <fo:block>
+              Cell (0,1)
+            </fo:block>
+          </fo:table-cell>
+          <fo:table-cell>
+            <fo:block>
+              Cell (1,1)
+            </fo:block>
+          </fo:table-cell>
+        </fo:table-row>
+
+      </fo:table-body>
+    </fo:table>
+	
+<!-- ..... -->	
+	
+ </fo:flow>
+ 
+14.8 Атрибуты <fo:table> — все атрибуты, которые применены к параграфу, применяются и для таблиц, например, start-indent будет определять левый край таблицы
+Атрибуты, определенные для таблицы, наследуются дальше и применяются к содержимому таблицы, если значение атрибута не было переопределено.
+Например, если мы указали start-indent="0.5cm", то таблица будет отстоять от левого края на 0.5cm, и все блоки (параграфы) внутри ячеек унаследуют это значение
+и будут отстоять на 0.5cm от левого края ячейки
+
+14.9 Атрибуты <fo:table-column>
+14.9.1 column-number — номер столбца
+14.9.2 column-width — ширина столбца (например, column-width="156pt")
+
+14.10 Атрибуты <fo:table-body> — все атрибуты, которые применены к параграфу. Эти атрибуты действуют на содержимое всех ячеек, если они не переопределены внутри.
+Атрибуты <fo:table-body> переопределяют атрибуты узла <fo:table>.
+Например, если указано
+<fo:table start-indent="0.5cm">
+<!-- ... -->
+<fo:table-body start-indent="0pt">
+
+то таблица будет отстоять от левого края на 0.5cm, а для содержимого ячеек значение левого отступа будет равно 0pt
+
+
+14.11 Атрибуты <fo:table-cell>
+14.11.1 border-left-color, border-top-color, border-bottom-color, border-right-color — цвета рамки ячейки (например, border-right-color="#000000")
+14.11.2 border-left-style, border-top-style, border-bottom-style, border-right-style — стили рамки, возможные значения:
+"none", "hidden", "dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset". Сначала сделать поддержку "none", "solid", "dotted", "dashed" 
+14.11.3 border-left-width, border-top-width, border-bottom-width, border-right-width — толщина линии рамки (например, border-left-width="0.25pt")
+14.11.4 padding-left, padding-top, padding-bottom, padding-right — отступы от границ ячейки до содержимого внутри неё (например, padding-left="2.75pt")
+14.11.5 background-color — заливка фона ячейки (напирмер, background-color="#4C4C4C")
+14.11.6 number-columns-spanned — число объединенных столбцов (объединения ячейки по горизонтали)
+14.11.7 number-rows-spanned — число объединенных строк (объединения ячейки по вертикали)
+
+Пример таблицы с объединением:
+
+    <fo:table>
+      <fo:table-column/>
+      <fo:table-column/>
+      <fo:table-column/>
+
+      <fo:table-body>
+		<!-- Первая строка с тремя раздельными ячейками -->
+		<fo:table-row>
+
+          <fo:table-cell>
+            <fo:block>cell (0,0)</fo:block>
+          </fo:table-cell>
+
+          <fo:table-cell>
+            <fo:block>cell (1,0)</fo:block>
+          </fo:table-cell>
+
+          <fo:table-cell>
+            <fo:block>cell (2,0)</fo:block>
+          </fo:table-cell>
+
+        </fo:table-row>
+
+		<!-- Вторая строка, ячейки с координатами (1,1), (2,1), (1,2), (2,2) объеденены в одну -->
+        <fo:table-row>
+          <fo:table-cell>
+            <fo:block>cell (0,1)</fo:block>
+          </fo:table-cell>
+
+          <fo:table-cell number-columns-spanned="2" number-rows-spanned="2">
+            <fo:block>merged cell (1,1), (2,1), (1,2), (2,2)</fo:block>
+          </fo:table-cell>
+
+        </fo:table-row>
+
+		<!-- Третья строка, надо записать только одну из трех ячеек, так как две оставшиеся объеденены с ячейками из верхней строки -->
+        <fo:table-row>
+          <fo:table-cell>
+            <fo:block>cell (0,2)</fo:block>
+          </fo:table-cell>
+        </fo:table-row>
+
+        </fo:table-body>
+    </fo:table>
+
+Условно, получившаяся таблица:	
+* * *
+* 0 0
+* 0 0
+
+Звездочка означает раздельную ячейку, нулями обозначена ячейка, объединенная из четырех.
+
+
+14.12 При форматировании таблиц надо придерживаться следующего правила: ширины столбцов фиксированы, определены в атрибуте узла  <fo:table-column/>
+(или, при отсутствии атрибутов, определяются значением по умолчанию, например равные ширины столбцов, таблица растянута по всей ширине области).
+Высота строк определяется содержимым ячеек, то есть максимальным из значений высоты содержимного ячеек в строке
+
+14.13 Пример форматирования таблицы в файле samples\simple7.fo, результат — в файле samples\simple7.fo.pdf
+
+
+15. Нумерованные списки (numbering)
+15.1 Список определяется внутри тега <fo:list-block></fo:list-block>, тег расположен так же как тег <fo:block> и имеет те же атрибуты, которые применяются к содержимому списка
+15.2 Элемент списка определяется тегом <fo:list-item><fo:list-item> внутри тега <fo:list-block>, тег имеет атрибуты <fo:block>.
+fo:list-item имеет два обязательных потомка — <fo:list-item-label> (п. 15.3) и <fo:list-item-body> (п. 15.4)
+
+15.3 Метка списка (элемент нумерации) <fo:list-item-label> — первый обязательный потомок элемента <fo:list-item>. Определяет элемент, который будет предшествовать элементу списка
+(обычно номер в списке или специальный символ)
+Содержимое элемента — <fo:block>.
+Например 
+....
+<fo:list-block>
+
+ <fo:list-item>
+  <fo:list-item-label>
+  <fo:block>1.</fo:block>
+  </fo:list-item-label>
+.......  
+ </fo:list-item>
+ 
+ <fo:list-item>
+  <fo:list-item-label>
+  <fo:block>2.</fo:block>
+  </fo:list-item-label>
+.......  
+ </fo:list-item>
+ 
+</fo:list-block>
+
+15.4 Содержимое элемента списка внутри тега <fo:list-item-body></fo:list-item-body>, обычно содержимое представлено одним или несколькими элементами <fo:block></fo:block>.
+Тег имеет атрибуты параграфа, эти атрибуты применяются ко всему содержимому
+
+15.5 Пример простого списка
+<fo:list-block font-family="Courier New">
+
+	<fo:list-item>
+	  <fo:list-item-label>
+		<fo:block start-indent="18pt">1.</fo:block>
+	  </fo:list-item-label>
+
+	  <fo:list-item-body start-indent="36pt">
+		<fo:block>Строка 1</fo:block>
+	  </fo:list-item-body>
+
+	</fo:list-item>
+
+	<fo:list-item>
+	  <fo:list-item-label>
+		<fo:block start-indent="18pt">2.</fo:block>
+	  </fo:list-item-label>
+
+	  <fo:list-item-body start-indent="36pt">
+		<fo:block>Строка 2</fo:block>
+	  </fo:list-item-body>
+
+	</fo:list-item>
+
+	<fo:list-item>
+	  <fo:list-item-label>
+		<fo:block start-indent="36pt">2.1</fo:block>
+	  </fo:list-item-label>
+
+	  <fo:list-item-body start-indent="64pt">
+		<fo:block>Строка 2.1</fo:block>
+	  </fo:list-item-body>
+
+	</fo:list-item>
+
+</fo:list-block>
+
+Определяет список вида
+
+1. Строка 1
+2. Строка 2
+   2.1 Строка 2.1
+   
+пример FO-файла: samples\simple9.fo 
+результат: samples\simple9.fo.pdf   
+
+16. Верхний и нижний колонтитул header и footer
+Для определения колонтитулов необходимо:
+16.1 Задать уникальное имя в атрибуте region-name, узлов <fo:region-before/> и <fo:region-after/> (см. п.4.2)
+Например: 
+...
+  <fo:layout-master-set>
+    <fo:simple-page-master master-name="section1-simple-page-sequence-master">
+      <fo:region-body margin-top="34.5pt" margin-bottom="44.25pt" />
+      <fo:region-before region-name="simple-page-header"/>
+      <fo:region-after region-name="simple-page-footer"/>
+	  ...
+
+16.2 Потомком узла <fo:page-sequence> добавить потоки, определяющие содержимое колонтитула,
+эти потоки определяются тегом <fo:static-content> с обязательным атрибутом flow-name, который совпадает с именем, определенным в <fo:region-before> или <fo:region-after>
+Внутри тега <fo:static-content></fo:static-content> находится такое же содержание, как и внутри тега <fo:flow></fo:flow> (параграфы и т.д.)
+Например:
+...
+  <fo:page-sequence master-reference="section1-simple-page-sequence-master">
+    <fo:static-content flow-name="simple-page-header">
+	<!-- Содержимое верхнего колонтитула -->
+      <fo:block widows="2" orphans="2" text-indent="8.5pt" font-size="12pt" text-align="right">
+        <fo:inline language="RU" font-family="Arial" font-weight="bold" font-size="18pt">Верхний колонтитул</fo:inline>
+      </fo:block>	
+    </fo:static-content>
+	
+    <fo:static-content flow-name="simple-page-footer">
+	<!-- Содержимое нижнего колонтитула -->
+      <fo:block widows="2" orphans="2" text-indent="8.5pt" font-size="12pt" text-align="right">
+        <fo:inline language="RU" font-family="Arial" font-weight="bold" font-size="18pt">Нижний колонтитул</fo:inline>
+      </fo:block>	
+	</fo:static-content>
+	
+	<fo:flow flow-name="xsl-region-body">
+	<!-- Основное содержимое страницы -->
+	.....
+	</fo:flow>
+	
+	.....
+
+Соджержимое колонтитулов отображается на каждой странице.
+
+17. Сноски (подстрочные примечания, footnotes)
+Определяются тегом <fo:footnote></fo:footnote>, находящимся внутри параграфа (наряду с inline)
+17.1 Внутри тега определяется символ сноски, например надстрочная цифра 3:
+	<fo:footnote>
+		<fo:inline font-family="Times New Roman" language="RU" baseline-shift="super" font-size="66.7%">3</fo:inline>
+		....
+	</fo:footnote>
+
+17.2 Текст сноски (то, что будет отображено внизу страницы) определяется внутри тега <fo:footnote-body></fo:footnote-body> (внутри него находится обычное содержимое: параграфы и т.д.)
+Например:
+
+	<fo:footnote>
+		<fo:inline font-family="Times New Roman" language="RU" baseline-shift="super" font-size="66.7%">3</fo:inline>
+		<fo:footnote-body>
+			<fo:block font-size="10pt">
+				<fo:inline font-size="66.7%" baseline-shift="super">3</fo:inline>
+				<fo:inline>Текст сноски</fo:inline>
+			</fo:block>
+		</fo:footnote-body>
+	</fo:footnote>
+
+17.3 Сноски отображаются после основного текста до нижнего колонтитула на той странице, с которой ведет ссылка на сноски 
+
+17.4 Разделитель сносок определяется содержимым потока с именеи xsl-footnote-separator и отображается межу основным текстом и сносками внизу страницы.
+Например, разделитель из дефисов:
+  <fo:page-sequence master-reference="simple">
+  
+    <fo:static-content flow-name="xsl-footnote-separator">
+      <fo:block font-size="12pt" font-family="Courier New">
+        <fo:inline>---------------------------------</fo:inline>
+      </fo:block>
+    </fo:static-content>
+
+	....
+
+Пример использования верхних и нижних колонтитулов и сносок в файле samples/simple10.fo, результат — в файле simple10.fo.pdf
+
+
+
+
+

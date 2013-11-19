@@ -1,0 +1,10 @@
+;	'AVSOfficePostScript Interpreter DLL'
+LIBRARY		AVSOfficePostScript
+EXPORTS	
+		DllEntryPoint
+		DllMain
+		NewInstance
+		DeleteInstance
+		InitWithArgs
+		RunFile
+		Exit

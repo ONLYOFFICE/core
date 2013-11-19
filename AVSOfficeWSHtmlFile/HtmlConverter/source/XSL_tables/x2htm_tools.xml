@@ -1,0 +1,320 @@
+<?xml version="1.0"?>
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:r="http://schemas.openxmlformats.org/package/2006/relationships"
+                xmlns:mainr="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+                xmlns:main="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+                xmlns:msxsl="urn:schemas-microsoft-com:xslt"
+                xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+                extension-element-prefixes="msxsl">
+
+  <xsl:variable name="alphabet">ABCDEFGHIJKLMNOPQRSTUVWXYZ</xsl:variable>
+  <xsl:variable name="aaaaaaaa">AAAAAAAAAAAAAAAAAAAAAAAAAA</xsl:variable>
+  
+  <xsl:template name="ref2col">
+    <!-- 1-based -->
+    <xsl:param name="ref"/>
+    <xsl:param name="col">-1</xsl:param>
+    <xsl:if test="$ref">
+      <xsl:variable name="sym">
+        <xsl:value-of select="substring($ref, 1, 1)" />
+      </xsl:variable>
+      <xsl:choose>
+        <xsl:when test="contains($alphabet, $sym)">
+          <xsl:variable name="sym_code">
+            <xsl:value-of select="string-length(substring-before($alphabet, $sym))" />
+          </xsl:variable>
+          <xsl:call-template name="ref2col">
+            <xsl:with-param name="ref" select="substring($ref, 2, string-length($ref) - 1)"/>
+            <xsl:with-param name="col" select="($col + 1) * 26 + $sym_code"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$col + 1"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:if>
+  </xsl:template>
+
+  <xsl:variable name="numbers">0123456789</xsl:variable>
+  <xsl:variable name="zzzeros">0000000000</xsl:variable>
+  <xsl:template name="ref2row">
+    <!-- 1-based -->
+    <xsl:param name="ref"/>
+    <xsl:if test="$ref">
+      <xsl:variable name="pos">
+        <xsl:value-of select="string-length(substring-before(translate($ref, $numbers, $zzzeros), '0'))"/>
+      </xsl:variable>
+      <xsl:value-of select="number(substring($ref, $pos + 1, string-length($ref) - $pos))"/>
+    </xsl:if>
+  </xsl:template>
+
+  <xsl:variable name="standardIndexedColors">
+    <indexedColors xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+      <rgbColor rgb="00000000"/>
+      <rgbColor rgb="00FFFFFF"/>
+      <rgbColor rgb="00FF0000"/>
+      <rgbColor rgb="0000FF00"/>
+      <rgbColor rgb="000000FF"/>
+      <rgbColor rgb="00FFFF00"/>
+      <rgbColor rgb="00FF00FF"/>
+      <rgbColor rgb="0000FFFF"/>
+      <rgbColor rgb="00000000"/>
+      <rgbColor rgb="00FFFFFF"/>
+      <rgbColor rgb="00FF0000"/>
+      <rgbColor rgb="0000FF00"/>
+      <rgbColor rgb="000000FF"/>
+      <rgbColor rgb="00FFFF00"/>
+      <rgbColor rgb="00FF00FF"/>
+      <rgbColor rgb="0000FFFF"/>
+      <rgbColor rgb="00800000"/>
+      <rgbColor rgb="00008000"/>
+      <rgbColor rgb="00000080"/>
+      <rgbColor rgb="00808000"/>
+      <rgbColor rgb="00800080"/>
+      <rgbColor rgb="00008080"/>
+      <rgbColor rgb="00C0C0C0"/>
+      <rgbColor rgb="00808080"/>
+      <rgbColor rgb="009999FF"/>
+      <rgbColor rgb="00993366"/>
+      <rgbColor rgb="00FFFFCC"/>
+      <rgbColor rgb="00CCFFFF"/>
+      <rgbColor rgb="00660066"/>
+      <rgbColor rgb="00FF8080"/>
+      <rgbColor rgb="000066CC"/>
+      <rgbColor rgb="00CCCCFF"/>
+      <rgbColor rgb="00000080"/>
+      <rgbColor rgb="00FF00FF"/>
+      <rgbColor rgb="00FFFF00"/>
+      <rgbColor rgb="0000FFFF"/>
+      <rgbColor rgb="00800080"/>
+      <rgbColor rgb="00800000"/>
+      <rgbColor rgb="00008080"/>
+      <rgbColor rgb="000000FF"/>
+      <rgbColor rgb="0000CCFF"/>
+      <rgbColor rgb="00CCFFFF"/>
+      <rgbColor rgb="00CCFFCC"/>
+      <rgbColor rgb="00FFFF99"/>
+      <rgbColor rgb="0099CCFF"/>
+      <rgbColor rgb="00FF99CC"/>
+      <rgbColor rgb="00CC99FF"/>
+      <rgbColor rgb="00FFCC99"/>
+      <rgbColor rgb="003366FF"/>
+      <rgbColor rgb="0033CCCC"/>
+      <rgbColor rgb="0099CC00"/>
+      <rgbColor rgb="00FFCC00"/>
+      <rgbColor rgb="00FF9900"/>
+      <rgbColor rgb="00FF6600"/>
+      <rgbColor rgb="00666699"/>
+      <rgbColor rgb="00969696"/>
+      <rgbColor rgb="00003366"/>
+      <rgbColor rgb="00339966"/>
+      <rgbColor rgb="00003300"/>
+      <rgbColor rgb="00333300"/>
+      <rgbColor rgb="00993300"/>
+      <rgbColor rgb="00993366"/>
+      <rgbColor rgb="00333399"/>
+      <rgbColor rgb="00333333"/>
+    </indexedColors>
+  </xsl:variable>
+
+  <xsl:template name="ref2topleft">
+    <xsl:param name="ref"/>
+    <xsl:variable name="topleft">
+      <xsl:choose>
+        <xsl:when test="contains($ref, ':')">
+          <xsl:value-of select="substring-before($ref, ':')"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$ref"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:choose>
+    	<xsl:when test="not(contains(translate($topleft, $numbers, $zzzeros), '0'))">
+        <xsl:value-of select="concat($topleft, '1')"/>
+      </xsl:when>
+    	<xsl:when test="not(contains(translate($topleft, $alphabet, $aaaaaaaa), 'A'))">
+        <xsl:value-of select="concat('A', $topleft)"/>
+      </xsl:when>
+    	<xsl:otherwise>
+        <xsl:value-of select="$topleft"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template name="is_cell_inside_ref">
+    <xsl:param name="cell"/>
+    <xsl:param name="ref"/>
+    <xsl:variable name="topleft" select="substring-before($ref, ':')"/>
+    <xsl:variable name="bottomright" select="substring-after($ref, ':')"/>
+    <xsl:choose>
+    	<xsl:when test="string-length($topleft) != 0">
+        <xsl:if test="string-length($bottomright) != 0">
+          <xsl:variable name="col1">
+            <xsl:call-template name="ref2col">
+            	<xsl:with-param name="ref" select="$topleft"/>
+            </xsl:call-template>
+          </xsl:variable>
+          <xsl:variable name="col2">
+            <xsl:call-template name="ref2col">
+            	<xsl:with-param name="ref" select="$bottomright"/>
+            </xsl:call-template>
+          </xsl:variable>
+          <xsl:variable name="row1">
+            <xsl:call-template name="ref2row">
+            	<xsl:with-param name="ref" select="$topleft"/>
+            </xsl:call-template>
+          </xsl:variable>
+          <xsl:variable name="row2">
+            <xsl:call-template name="ref2row">
+            	<xsl:with-param name="ref" select="$bottomright"/>
+            </xsl:call-template>
+          </xsl:variable>
+          <xsl:variable name="cell_col">
+            <xsl:call-template name="ref2col">
+            	<xsl:with-param name="ref" select="$cell"/>
+            </xsl:call-template>
+          </xsl:variable>
+          <xsl:variable name="cell_row">
+            <xsl:call-template name="ref2row">
+            	<xsl:with-param name="ref" select="$cell"/>
+            </xsl:call-template>
+          </xsl:variable>
+          <xsl:if test="$cell_col >= $col1 and $cell_col &lt;= $col2 and $cell_row >= $row1 and $cell_row &lt;= $row2">
+            <xsl:text>true</xsl:text>
+          </xsl:if>
+        </xsl:if>
+      </xsl:when>
+    	<xsl:otherwise>
+        <xsl:if test="$topleft = $cell">
+          <xsl:text>true</xsl:text>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="rowcol2ref">
+    <!-- 'row' and 'col' must be 1-based -->
+    <xsl:param name="row"/>
+    <xsl:param name="col"/>
+    <xsl:call-template name="col2str">
+      <xsl:with-param name="col" select="$col"/>
+    </xsl:call-template>
+    <xsl:value-of select="$row"/>
+  </xsl:template>
+
+  <xsl:variable name="radixZA">26</xsl:variable>
+
+  <xsl:template name="col2str">
+    <!-- 'col' must be 1-based -->
+    <xsl:param name="col"/>
+    <!-- 'result' is not an input parameter -->
+    <xsl:param name="result"/>
+
+    <xsl:choose>
+      <xsl:when test="$col != 0">
+        <xsl:variable name="sym_pos0" select="($col - 1) mod $radixZA"/>
+        <xsl:variable name="sym" select="substring($alphabet, $sym_pos0 + 1, 1)"/>
+        <xsl:call-template name="col2str">
+          <xsl:with-param name="col" select="floor(($col - 1) div $radixZA)"/>
+          <xsl:with-param name="result" select="concat($sym, $result)"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$result"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:variable name="standardNumericFormats">
+    <numFmts>
+      <numFmt numFmtId="0" formatCode="General" />
+      <numFmt numFmtId="1" formatCode="0" />
+      <numFmt numFmtId="2" formatCode="0.00" />
+      <numFmt numFmtId="3" formatCode="#,##0" />
+      <numFmt numFmtId="4" formatCode="#,##0.00" />
+      <numFmt numFmtId="9" formatCode="0%" />
+      <numFmt numFmtId="10" formatCode="0.00%" />
+      <numFmt numFmtId="11" formatCode="0.00E+00" />
+      <numFmt numFmtId="12" formatCode="# ?/?" />
+      <numFmt numFmtId="13" formatCode="# ??/??" />
+      <numFmt numFmtId="14" formatCode="mm-dd-yy" />
+      <numFmt numFmtId="15" formatCode="d-mmm-yy" />
+      <numFmt numFmtId="16" formatCode="d-mmm" />
+      <numFmt numFmtId="17" formatCode="mmm-yy" />
+      <numFmt numFmtId="18" formatCode="h:mm AM/PM" />
+      <numFmt numFmtId="19" formatCode="h:mm:ss AM/PM" />
+      <numFmt numFmtId="20" formatCode="h:mm" />
+      <numFmt numFmtId="21" formatCode="h:mm:ss" />
+      <numFmt numFmtId="22" formatCode="m/d/yy h:mm" />
+      <numFmt numFmtId="37" formatCode="#,##0 ;(#,##0)" />
+      <numFmt numFmtId="38" formatCode="#,##0 ;[Red](#,##0)" />
+      <numFmt numFmtId="39" formatCode="#,##0.00;(#,##0.00)" />
+      <numFmt numFmtId="40" formatCode="#,##0.00;[Red](#,##0.00)" />
+      <numFmt numFmtId="45" formatCode="mm:ss" />
+      <numFmt numFmtId="46" formatCode="[h]:mm:ss" />
+      <numFmt numFmtId="47" formatCode="mmss.0" />
+      <numFmt numFmtId="48" formatCode="##0.0E+0" />
+      <numFmt numFmtId="49" formatCode="@" />
+    </numFmts>
+  </xsl:variable>
+
+  <xsl:variable name="apos">&apos;</xsl:variable>
+  <xsl:variable name="apos2">&apos;&apos;</xsl:variable>
+
+  <xsl:template name="unescape_sheet_name">
+    <xsl:param name="ws_name"/>
+    <xsl:choose>
+      <xsl:when test="starts-with($ws_name, $apos)">
+        <xsl:call-template name="unescape_sheet_name_helper">
+          <xsl:with-param name="ws_name" select="substring($ws_name, 2, string-length($ws_name) - 2)"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$ws_name"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="unescape_sheet_name_helper">
+    <xsl:param name="ws_name"/>
+    <!-- Not an input parameter -->
+    <xsl:param name="result"/>
+    <xsl:choose>
+      <xsl:when test="$ws_name != '' and contains($ws_name, $apos2)">
+        <xsl:call-template name="unescape_sheet_name_helper">
+          <xsl:with-param name="ws_name" select="substring-after($ws_name, $apos2)"/>
+          <xsl:with-param name="result" select="concat($result, substring-before($ws_name, $apos2), $apos)"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="concat($result, $ws_name)"/>
+      </xsl:otherwise>
+    </xsl:choose>
+
+  </xsl:template>
+
+  <xsl:template name="find_last">
+    <!-- Returns 1-based position of last found substring or 0 if not found -->
+    <xsl:param name="str"/>
+    <xsl:param name="searched_str"/>
+    <xsl:param name="result"/>
+
+    <xsl:choose>
+      <xsl:when test="contains($str, $searched_str)">
+        <xsl:call-template name="find_last">
+          <xsl:with-param name="str" select="substring-after($str, $searched_str)"/>
+          <xsl:with-param name="searched_str" select="$searched_str"/>
+          <xsl:with-param name="result" select="concat($result, substring-before($str, $searched_str), $searched_str)"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="string-length($result)"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+
+
+</xsl:stylesheet>

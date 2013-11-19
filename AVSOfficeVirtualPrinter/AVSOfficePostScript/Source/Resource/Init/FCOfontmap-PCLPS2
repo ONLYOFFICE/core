@@ -1,0 +1,107 @@
+%    Copyright (C) 2001, 2002 Aladdin Enterprises.  All rights reserved.
+% 
+% This software is provided AS-IS with no warranty, either express or
+% implied.
+% 
+% This software is distributed under license and may not be copied,
+% modified or distributed except as expressly authorized under the terms
+% of the license contained in the file LICENSE in this distribution.
+% 
+% For more information about licensing, please refer to
+% http://www.ghostscript.com/licensing/. For information on
+% commercial licensing, go to http://www.artifex.com/licensing/ or
+% contact Artifex Software, Inc., 101 Lucas Valley Road #110,
+% San Rafael, CA  94903, U.S.A., +1(415)492-9861.
+
+% $Id: FCOfontmap-PCLPS2 8954 2008-08-08 04:22:38Z ray $
+
+% May add general FAPIfontmap records here like this :
+/Wingdings-Regular << /Path FCOfontfile2 /FontType 1 /FAPI /UFST /SubfontId 0 /Encoding /Wingdings /Decoding /FCO_Wingdings>> ;
+
+% Mapping Postscript fonts to pclp2_xj.fco FCO members :
+FCOfontfile ReadFCOfontmap:
+0     Albertus-Medium
+1     Albertus-ExtraBold
+2     AntiqueOlive
+3     AntiqueOlive-Italic
+4     AntiqueOlive-Bold
+5     Arial
+6     Arial-Italic
+7     Arial-Bold
+8     Arial-BoldItalic
+9     Clarendon-Condensed-Bold
+10    Coronet
+11    CourierHP
+12    CourierHP-Italic
+13    CourierHP-Bold
+14    CourierHP-BoldItalic
+15    Garamond-Antiqua
+16    Garamond-Kursiv
+17    Garamond-Halbfett
+18    Garamond-KursivHalbfett
+19    LetterGothic
+20    LetterGothic-Italic
+21    LetterGothic-Bold
+22    Marigold
+23    CGOmega
+24    CGOmega-Italic
+25    CGOmega-Bold
+26    CGOmega-BoldItalic
+27    SymbolMT  SymbolEncoding  FCO_Symbol
+28    CGTimes
+29    CGTimes-Italic
+30    CGTimes-Bold
+31    CGTimes-BoldItalic
+32    TimesNewRoman
+33    TimesNewRoman-Italic
+34    TimesNewRoman-Bold
+35    TimesNewRoman-BoldItalic
+36    UniversMedium
+37    UniversMedium-Italic
+38    Univers-Bold
+39    Univers-BoldItalic
+40    Univers-Condensed-Medium
+41    Univers-Condensed-MediumItalic
+42    Univers-Condensed-Bold
+43    Univers-Condensed-BoldItalic
+44    Courier-
+45    Courier-Italic
+46    Courier-Bold-
+47    Courier-BoldItalic
+48    AvantGarde-Book
+49    AvantGarde-BookOblique
+50    AvantGarde-Demi
+51    AvantGarde-DemiOblique
+52    Bookman-Light
+53    Bookman-LightItalic
+54    Bookman-Demi
+55    Bookman-DemiItalic
+56    Courier
+57    Courier-Oblique
+58    Courier-Bold
+59    Courier-BoldOblique
+60    Helvetica
+61    Helvetica-Oblique
+62    Helvetica-Bold
+63    Helvetica-BoldOblique
+64    Helvetica-Narrow
+65    Helvetica-Narrow-Oblique
+66    Helvetica-Narrow-Bold
+67    Helvetica-Narrow-BoldOblique
+68    NewCenturySchlbk-Roman
+69    NewCenturySchlbk-Italic
+70    NewCenturySchlbk-Bold
+71    NewCenturySchlbk-BoldItalic
+72    Palatino-Roman
+73    Palatino-Italic
+74    Palatino-Bold
+75    Palatino-BoldItalic
+76    Symbol  SymbolEncoding  FCO_Symbol
+77    Times-Roman
+78    Times-Italic
+79    Times-Bold
+80    Times-BoldItalic
+81    ZapfChancery-MediumItalic
+82    ZapfDingbats DingbatsEncoding FCO_Dingbats
+EndFCOfontmap
+%EOF

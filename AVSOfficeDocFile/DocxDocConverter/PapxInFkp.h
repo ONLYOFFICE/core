@@ -1,0 +1,153 @@
+#pragma once
+
+#include "GrpPrlAndIstd.h"
+
+namespace AVSDocFileFormat
+{
+	class PapxInFkp : public IStreamWriter
+	{
+	public:
+		PapxInFkp() : grpprlInPapx()
+		{
+
+		}
+
+		PapxInFkp(const GrpPrlAndIstd& _grpprlInPapx) : grpprlInPapx(_grpprlInPapx)
+		{
+
+		}
+
+		PapxInFkp(const PapxInFkp& pifkp) : grpprlInPapx(pifkp.grpprlInPapx)
+		{
+
+		}
+
+		virtual ~PapxInFkp()
+		{
+		}
+
+		//
+		inline bool operator == (const PapxInFkp& pifkp)
+		{
+			return ( grpprlInPapx == pifkp.grpprlInPapx );
+		}
+
+		inline bool operator != (const PapxInFkp& pifkp)
+		{
+			return !( *this == pifkp );
+		}
+
+		inline PapxInFkp& operator = (const PapxInFkp& pifkp)
+		{
+			if ( *this != pifkp )
+			{
+				grpprlInPapx = pifkp.grpprlInPapx;
+			}
+
+			return *this;
+		}
+
+		inline unsigned long Size() const
+		{
+			unsigned long sizeInBytes = 0;
+			byte cb		= 0;
+			byte cb_	= 0;
+
+			sizeInBytes = this->grpprlInPapx.Size();
+
+			if ( sizeInBytes % 2 != 0 )
+			{
+				cb = (byte)( ( sizeInBytes + 1 ) / 2 );
+				sizeInBytes += sizeof(cb); 
+			}
+			else
+			{
+				cb = 0;
+				cb_ = (byte)( sizeInBytes / 2 );
+				sizeInBytes += ( sizeof(cb) + sizeof(cb_) );
+			}
+
+			return sizeInBytes;
+		}
+
+		inline Prl operator[] (unsigned int index) const
+		{
+			return grpprlInPapx[index];
+		}
+
+		inline unsigned int GetPrlCount() const
+		{
+			return this->grpprlInPapx.GetPrlCount();
+		}
+
+		inline vector<Prl> GetPrls() const
+		{
+			return this->grpprlInPapx.GetPrls();
+		}
+
+		inline short GetIstd() const
+		{
+			return grpprlInPapx.GetIstd();
+		}
+
+		// IStreamWriter
+		virtual byte* GetBytes(unsigned long* size) const
+		{
+			byte* bytes = NULL;
+
+			if ( size != NULL )
+			{
+				byte cb = 0;
+				byte cb_ = 0;
+
+				*size = this->grpprlInPapx.Size();
+
+				if ( *size % 2 != 0 )
+				{
+					cb = (byte)( ( *size + 1 ) / 2 );
+					*size += sizeof(cb); 
+				}
+				else
+				{
+					cb = 0;
+					cb_ = (byte)( *size / 2 );
+					*size += ( sizeof(cb) + sizeof(cb_) );
+				}
+
+				bytes = new byte[*size];
+
+				if ( bytes != NULL )
+				{
+					memset( bytes, 0, *size );
+					bytes[0] = cb;
+
+					byte cb_offset = 0;
+
+					if ( cb_ != 0 )
+					{
+						bytes[1] = cb_;
+						cb_offset = sizeof(cb_);
+					}
+
+					byte* grpPrlAndIstdBytes = NULL;
+					unsigned long grpPrlAndIstdSize = 0;
+
+					grpPrlAndIstdBytes = this->grpprlInPapx.GetBytes( &grpPrlAndIstdSize );
+
+					if ( grpPrlAndIstdBytes != NULL )
+					{
+						memcpy( ( bytes + sizeof(cb) + cb_offset ), grpPrlAndIstdBytes, grpPrlAndIstdSize );
+
+						RELEASEARRAYOBJECTS (grpPrlAndIstdBytes);
+					}
+				}
+			}
+
+			return bytes;
+		}
+
+	private:
+
+		GrpPrlAndIstd	grpprlInPapx;
+	};
+}

@@ -1,0 +1,113 @@
+HOW TO COMPILE AND INSTALL THE PROGRAM
+-----------------------------------------------------------------------
+
+Enter the main directory of the source distribution and type:
+
+$ ./configure
+$ make 
+
+If you want to install the program in your system, type then (it may
+require root priviledges):
+
+$ make install
+
+See ./INSTALL for more information.
+
+The program has been tested to compile on GNU/Linux and Windows (in
+both Cygwin and MinGW). If compiled in Cygwin, the program depends
+on "cygwin1.dll". 
+
+
+HOW TO RUN THE PROGRAM
+-----------------------------------------------------------------------
+
+html2xhtml [<input_html_file>] [-c <input_encoding>] 
+           [-d <input_encoding>] [-t <output_doctype>] [-e]
+           [-o <output_file>]
+           [-l <line_length>] [-b <tab_length>]
+           [--preserve-space-comments] [--no-protect-cdata]
+           [--compact-block-elements]
+
+html2xhtml reads the HTML input file and converts it to XHTML. The
+output  of the conversion is written in standard output or in the file
+specified with the "-o" option. Warnings and errors are notified
+through standard error.
+
+
+OPTIONS:
+
+<input_html_file>    Input HTML file to be converted to XHTML.
+                     If not provided, the input file is taken from
+                     standard input.
+
+-o <output_file>     Output XHTML file. The file is overwritten if it
+                     exists. If not provided, the output is written to
+                     standard output.
+
+-c <input_encoding>  Encoding of the input HTML file. Overrides automatic
+                     input encoding detection (please, read the note about
+                     input encodings bellow).
+
+-d <input_encoding>  Default input encoding, if it is not automatically
+                     detected from the input. By default, ISO-8859-1
+                     (please, read the note about input encodings bellow).
+
+-e                   Instructs the program to propagate input chunks to 
+                     the output even if it is unable to adapt them to
+                     the output XHTML doctype. Using this option, 
+                     the XHTML output may be non-valid. Not using this
+                     option, some input data could be removed from the
+                     output in some [rare] cases.
+                     
+-t <output_doctype>  Doctype of the output XHTML file. If not specified,
+                     the program selects automatically either 
+                     XHTML 1.0 Transitional or XHTML 1.0 Frameset 
+                     depending on the input. Current available
+                     doctypes are:
+                     * 'transitional' XHTML 1.0 Transitional
+                     * 'frameset'     XHTML 1.0 Frameset
+                     * 'strict'       XHTML 1.0 Strict
+                     * '1.1'          XHTML 1.1
+                     * 'basic-1.0'    XHTML Basic 1.0
+                     * 'basic-1.1'    XHTML Basic 1.1
+                     * 'mp'           XHTML Mobile Profile
+                     * 'print-1.0'    XHTML Print 1.0
+
+-l <line_length>     Number of characters per line. The default value is 80.
+                     It must be greater or equal to 40, otherwise the 
+                     parameter is ignored.
+
+-b <tab_length>      Tab length in number of characters. It must be a number
+                     between 0 and 16, otherwise the parameter is ignored.
+                     Use 0 to avoid indentation in the output.
+
+--preserve-space-comments
+                     Use this option to preserve white spaces, tabs and 
+                     ends of lines in HTML comments. The default, if not 
+                     provided, is to rearrange spacing.
+
+--no-protect-cdata   Enclose CDATA sections in "script" and "style" following
+                     the XHTML 1.0 specification (using "<!CDATA[[" and
+                     "]]>"). It might be incompatible with some browsers.
+                     The default in this version is to enclose CDATA sections
+                     using "//<!CDATA[[" and "//]]>", because major browsers
+                     handle it properly. 
+
+--compact-block-elements
+                     No white spaces or line breaks are written between  
+                     the start tag of a block element and the start tag 
+                     of its first enclosed inline element (or character 
+                     data) and between the end tag of its last enclosed 
+                     inline element (or character data) and the end tag 
+                     of the block element. By default, if this option is
+                     not set, a new line character and indentation is
+                     written between them.
+
+HTML ENCODINGS:
+
+This program only works for input encodings that code every ASCI
+character (0-127) only with one byte. This includes, for example,
+ISO-8859-1, ISO-8859-15, UTF-8. However, the program does not work
+for encoding UTF-16. For converting UTF-16 files, please convert them 
+first to UTF-8. UTF-8 is not guaranteed to work always properly, and
+more testing is required.

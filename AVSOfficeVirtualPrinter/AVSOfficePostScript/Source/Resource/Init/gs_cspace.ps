@@ -1,0 +1,228 @@
+%    Copyright (C) 2002 Aladdin Enterprises.  All rights reserved.
+% 
+% This software is provided AS-IS with no warranty, either express or
+% implied.
+% 
+% This software is distributed under license and may not be copied,
+% modified or distributed except as expressly authorized under the terms
+% of the license contained in the file LICENSE in this distribution.
+% 
+% For more information about licensing, please refer to
+% http://www.ghostscript.com/licensing/. For information on
+% commercial licensing, go to http://www.artifex.com/licensing/ or
+% contact Artifex Software, Inc., 101 Lucas Valley Road #110,
+% San Rafael, CA  94903, U.S.A., +1(415)492-9861.
+
+% $Id: gs_cspace.ps 8962 2008-08-11 14:16:18Z ken $
+% basic colorspace mechanism
+
+%
+% There have been some major changes to the PostScript colour handling.
+% In particular, the vast majority of the colour space code has been
+% converted from PostScript to C. This file has been extensively
+% modified, as has gs_icc.ps. The remaining PostScript files which 
+% previously implemented colour space handling; gs_ciecs2.ps, gs_ciecs3.ps
+% gs_devcs.ps, gs_devn.ps, gs_devpxl.ps, gs_indxd.ps, gs_patrn.ps and
+% gs_sepr.ps have been superceded by the C code and removed.
+%
+% gs_lev2.ps and gs_ll3.ps have also been modified so that they no longer
+% attempt to execute these PostScript files.
+%
+.currentglobal true .setglobal
+systemdict begin
+
+%
+% gs_res.ps, and possibly other files, use this dictionary. Formerly
+% in cspace_util, moved to systemdict.
+%
+20 dict dup /colorspacedict exch def
+
+begin % colorspacedict
+
+%
+% gs_res.ps uses these entries in colorspacedict
+% to populate the ColorSpaceFamily resource, so we need
+% to add the supported spaces.
+%
+/DeviceGray [] def
+/DeviceRGB [] def
+/DeviceCMYK [] def
+end % colorspacedict
+
+%
+% Global, read-only, unpacked, array-form device color spaces
+% We need to return an array argument in response to currentcolorspace
+% even if the argument presented to setcolorspace was a simple device
+% space name. Not only that, but in order to satisfy some Adobe
+% applications, it must be the *same* array every time. The only way
+% to do that is to define an appropriate set initial arrays and always return 
+% one of those. These arrays are defined here.
+%
+/DeviceGray_array /DeviceGray 1 array astore readonly def
+/DeviceRGB_array  /DeviceRGB  1 array astore readonly def
+/DeviceCMYK_array /DeviceCMYK 1 array astore readonly def
+
+%
+%   -   initgraphics   -
+%
+% The internal routine gs_initgraphics doesn't (re)set the color space,
+% so we must redefine the operation to do it here.
+%
+%
+/initgraphics
+  { initgraphics systemdict /DeviceGray_array get setcolorspace }
+.bind odef 
+
+
+%
+% These routines used for the NOSUBSTDEVICECOLORS switch. This prevents 
+% substitution of DeviceGray, DeviceRGB and DeviceCMYK with a Default*
+% colour space when /UseCIEColors is true. If the job includes a
+% definition of /DefaltGray, DefaultRGB or DefaultCMYK then it also executes
+% .includecolorspace to allow the device to record the substitute space.
+%
+/..page_default_spaces 3 dict def
+
+%
+% Used internally to retrieve any relevant default colour space.
+%
+% <Default space name> ..nosubstdevicetest false
+%                                          <Default space name> [space] true
+%
+% If the boolean is true then the C code must set the additional colour space
+% and execute .includecolorspace before finally setting a DeviceGray space.
+%
+/..nosubstdevicetest
+{
+  false mark 3 -1 roll
+  % If we have already recorded this space, don't repeat it.
+  systemdict /..page_default_spaces get 1 index known {
+    cleartomark
+  } {
+    {
+      % Check to see if this space was defined by defineresource, if so then 
+      % the job defined it, otherwise its the usual default, so ignore it. 
+      dup /ColorSpace resourcestatus {
+        pop 0 eq {
+		  % Default* defined by defineresource
+          systemdict /..page_default_spaces get 1 index //true put
+		  dup /ColorSpace findresource 4 2 roll pop pop true 
+        }{
+          cleartomark
+        } ifelse
+      }{
+        cleartomark
+      } ifelse
+    } stopped
+    {cleartomark}if
+  } ifelse
+}bind def
+
+%
+% <color_space_name> ..includecolorspace -
+%
+/..includecolorspace
+{ 
+  % If we have already recorded this space, don't repeat it.
+  systemdict /..page_default_spaces get 1 index known {
+    pop
+  } {
+    mark exch
+    {
+    % Check to see if this space was defined by defineresource, if so then 
+    % the job defined it, otherwise its the usual default, so ignore it. 
+    dup /ColorSpace resourcestatus {
+        pop 0 eq {
+          % Job defined /Default*, so record it and allow the device access to it
+          systemdict /..page_default_spaces get 1 index //true put
+          gsave
+          { dup /ColorSpace findresource //setcolorspace exec .includecolorspace
+          } stopped pop
+          grestore
+        } if
+      } if
+    } stopped pop
+    cleartomark
+  } ifelse
+} bind def
+
+%
+% <color_space> <color_space_name> cs_substitute_generic <color_space1> <color_space2>
+%
+/cs_substitute_generic
+{ .getuseciecolor
+    {NOSUBSTDEVICECOLORS 
+        { //..includecolorspace exec dup }
+        { /ColorSpace findresource }
+      ifelse
+    }
+    { pop dup }
+  ifelse
+}
+bind def
+
+%
+% <color_space> <color_space_name> cs_substitute_DeviceRGB_for_PDFX_or_PDFA <color_space1> <color_space2>
+%
+/cs_substitute_DeviceRGB_for_PDFX_or_PDFA
+{ systemdict /PDFX .knownget not { false } if
+  systemdict /PDFA .knownget not { false } if
+  or {
+    dup /ColorSpace resourcestatus {
+      pop pop
+    } {
+      (Error: Need a /DefaultRGB /ColorSpace resource for generating a PDF/X or PDF/A document.) =
+      /cs_substitute_DeviceRGB_for_PDFX_or_PDFA cvx /undefined signalerror
+    } ifelse
+    /ColorSpace findresource
+  } {
+    //cs_substitute_generic exec
+  } ifelse   
+} bind def
+end 
+
+%
+% used to convert the DataSource of an ICCBased colour space into a 
+% file, if it isn't one already. This is required because the current
+% implementation of ICC spaces requires the data source to be a file.
+% This routine is *only* called from the PostScript interpreter when
+% setting an ICCBased space with a string data source.
+%
+/.convertICCSource 
+{
+  % make DataSource a file
+  dup 1 get /DataSource get type /stringtype eq
+  {
+    % build all new structures in local VM
+    .currentglobal exch //false .setglobal
+
+    % check if we need to copy the color space and dictionary
+    2 copy eq
+    {
+      dup length array copy
+      dup 1 2 copy get dup length dict copy put
+    }
+    if
+
+    % fetch DataSource, setting up stack for multiple puts
+    dup 1 2 copy get dup /DataSource 2 copy get
+
+    % convert the string into a file
+    /ReusableStreamDecode filter
+
+    % put the file into the dictioary, the dictionary into the array
+    put put
+
+    % restore the VM mode
+    exch .setglobal
+  }
+  if
+} bind def
+
+%
+% Set the initial device space
+%
+systemdict /DeviceGray_array get setcolorspace
+
+
+.setglobal

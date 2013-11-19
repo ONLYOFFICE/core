@@ -1,0 +1,120 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSOfficeHtmlFileTest", "AVSOfficeHtmlFileTest\AVSOfficeHtmlFileTest2005.vcproj", "{E976B06C-923E-4957-9DD7-8FE5DA791F00}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{4D78DBB6-81D3-4CE0-89CD-8AF12EF36DB3} = {4D78DBB6-81D3-4CE0-89CD-8AF12EF36DB3}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSOfficeHtmlFile", "AVSOfficeHtmlFile\prj\AVSOfficeHtmlFile2005.vcproj", "{4D78DBB6-81D3-4CE0-89CD-8AF12EF36DB3}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{7B9F3647-32D3-4F82-8CA5-A43E490E1457} = {7B9F3647-32D3-4F82-8CA5-A43E490E1457}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utility", "..\Common\AvsDocxFormat\Projects\Utility2005.vcproj", "{7B9F3647-32D3-4F82-8CA5-A43E490E1457}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{F6A9ED1C-3D23-4246-9366-41373B2E49C6} = {F6A9ED1C-3D23-4246-9366-41373B2E49C6}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "boost_filesystem", "..\Common\AvsDocxFormat\Projects\boost_filesystem2005.vcproj", "{F6A9ED1C-3D23-4246-9366-41373B2E49C6}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{3503791E-20B7-41C9-97D9-BAE92596D648} = {3503791E-20B7-41C9-97D9-BAE92596D648}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "boost_system", "..\Common\AvsDocxFormat\Projects\boost_system2005.vcproj", "{3503791E-20B7-41C9-97D9-BAE92596D648}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSHtml2xhtml", "AVSHtml2xhtml\AVSHtml2xhtml.vcproj", "{95A1CD4B-0E6C-4D3F-BB50-0C607884E10D}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTMLReaderLib", "HTMLReaderLib\HTMLReaderLib.vcproj", "{09A4FCC4-ACDB-47C7-8F7B-208E68A8D84B}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTMLReaderTest", "HTMLReaderTest\HTMLReaderTest.vcproj", "{C9CCE28F-28AC-47BC-ACE8-1919AA22627D}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{09A4FCC4-ACDB-47C7-8F7B-208E68A8D84B} = {09A4FCC4-ACDB-47C7-8F7B-208E68A8D84B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTMLConverterTest", "HTMLConverterTest\HTMLConverterTest.vcproj", "{64CCAC82-A44E-42A5-BE68-E432AD6E87C7}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{09A4FCC4-ACDB-47C7-8F7B-208E68A8D84B} = {09A4FCC4-ACDB-47C7-8F7B-208E68A8D84B}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E976B06C-923E-4957-9DD7-8FE5DA791F00}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E976B06C-923E-4957-9DD7-8FE5DA791F00}.Debug|Win32.Build.0 = Debug|Win32
+		{E976B06C-923E-4957-9DD7-8FE5DA791F00}.Release|Win32.ActiveCfg = Release|Win32
+		{E976B06C-923E-4957-9DD7-8FE5DA791F00}.Release|Win32.Build.0 = Release|Win32
+		{4D78DBB6-81D3-4CE0-89CD-8AF12EF36DB3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4D78DBB6-81D3-4CE0-89CD-8AF12EF36DB3}.Debug|Win32.Build.0 = Debug|Win32
+		{4D78DBB6-81D3-4CE0-89CD-8AF12EF36DB3}.Release|Win32.ActiveCfg = Release|Win32
+		{4D78DBB6-81D3-4CE0-89CD-8AF12EF36DB3}.Release|Win32.Build.0 = Release|Win32
+		{7B9F3647-32D3-4F82-8CA5-A43E490E1457}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7B9F3647-32D3-4F82-8CA5-A43E490E1457}.Debug|Win32.Build.0 = Debug|Win32
+		{7B9F3647-32D3-4F82-8CA5-A43E490E1457}.Release|Win32.ActiveCfg = Release|Win32
+		{7B9F3647-32D3-4F82-8CA5-A43E490E1457}.Release|Win32.Build.0 = Release|Win32
+		{F6A9ED1C-3D23-4246-9366-41373B2E49C6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F6A9ED1C-3D23-4246-9366-41373B2E49C6}.Debug|Win32.Build.0 = Debug|Win32
+		{F6A9ED1C-3D23-4246-9366-41373B2E49C6}.Release|Win32.ActiveCfg = Release|Win32
+		{F6A9ED1C-3D23-4246-9366-41373B2E49C6}.Release|Win32.Build.0 = Release|Win32
+		{3503791E-20B7-41C9-97D9-BAE92596D648}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3503791E-20B7-41C9-97D9-BAE92596D648}.Debug|Win32.Build.0 = Debug|Win32
+		{3503791E-20B7-41C9-97D9-BAE92596D648}.Release|Win32.ActiveCfg = Release|Win32
+		{3503791E-20B7-41C9-97D9-BAE92596D648}.Release|Win32.Build.0 = Release|Win32
+		{95A1CD4B-0E6C-4D3F-BB50-0C607884E10D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{95A1CD4B-0E6C-4D3F-BB50-0C607884E10D}.Release|Win32.ActiveCfg = Release|Win32
+		{09A4FCC4-ACDB-47C7-8F7B-208E68A8D84B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{09A4FCC4-ACDB-47C7-8F7B-208E68A8D84B}.Debug|Win32.Build.0 = Debug|Win32
+		{09A4FCC4-ACDB-47C7-8F7B-208E68A8D84B}.Release|Win32.ActiveCfg = Release|Win32
+		{09A4FCC4-ACDB-47C7-8F7B-208E68A8D84B}.Release|Win32.Build.0 = Release|Win32
+		{C9CCE28F-28AC-47BC-ACE8-1919AA22627D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C9CCE28F-28AC-47BC-ACE8-1919AA22627D}.Debug|Win32.Build.0 = Debug|Win32
+		{C9CCE28F-28AC-47BC-ACE8-1919AA22627D}.Release|Win32.ActiveCfg = Release|Win32
+		{C9CCE28F-28AC-47BC-ACE8-1919AA22627D}.Release|Win32.Build.0 = Release|Win32
+		{64CCAC82-A44E-42A5-BE68-E432AD6E87C7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{64CCAC82-A44E-42A5-BE68-E432AD6E87C7}.Debug|Win32.Build.0 = Debug|Win32
+		{64CCAC82-A44E-42A5-BE68-E432AD6E87C7}.Release|Win32.ActiveCfg = Release|Win32
+		{64CCAC82-A44E-42A5-BE68-E432AD6E87C7}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

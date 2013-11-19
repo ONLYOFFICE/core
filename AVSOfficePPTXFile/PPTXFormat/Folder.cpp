@@ -1,0 +1,158 @@
+#include "./stdafx.h"
+
+#include "Folder.h"
+#include "DocxFormat/Rels/File.h"
+#include "FileMap.h"
+#include "DocxFormat/FileTypes.h"
+#include "Presentation.h"
+#include "Theme.h"
+#include "SlideMaster.h"
+#include "SlideLayout.h"
+#include "Slide.h"
+#include "NotesMaster.h"
+
+namespace PPTX
+{
+	Folder::Folder()
+	{		
+	}
+
+	Folder::Folder(const OOX::CPath& path, IPPTXEvent* Event)
+	{
+		read(path, Event);
+	}
+
+	void Folder::read(const OOX::CPath& path, IPPTXEvent* Event)
+	{
+		OOX::Rels::File rels(path);
+		PPTX::FileMap map;
+		long files = CountFiles(path);
+		if(files == 0)
+			return;
+		m_lPercent = 1000000 / files;
+		FileContainer::read(rels, path, map, Event);
+		if(m_bCancelled)
+			return;
+
+		POSITION pos = NULL;
+		smart_ptr<PPTX::Presentation> _presentation = FileContainer::get(OOX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
+		if (_presentation.is_init())
+		{
+			_presentation->commentAuthors = _presentation->get(OOX::FileTypes::CommentAuthors).smart_dynamic_cast<PPTX::Authors>();
+		}
+
+		pos = map.m_map.GetStartPosition();
+		while (NULL != pos)
+		{
+			CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = map.m_map.GetNext(pos);
+			const OOX::FileType& curType = pPair->m_value->type();
+
+			if (OOX::FileTypes::ThemePPTX == curType)
+			{
+				smart_ptr<PPTX::Theme> pTheme = pPair->m_value.smart_dynamic_cast<PPTX::Theme>();
+				if (pTheme.IsInit())
+					pTheme->Presentation = _presentation;
+			}
+		}
+
+		pos = map.m_map.GetStartPosition();
+		while (NULL != pos)
+		{
+			CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = map.m_map.GetNext(pos);
+			const OOX::FileType& curType = pPair->m_value->type();
+
+			if (OOX::FileTypes::SlideMaster == curType)
+			{
+				smart_ptr<PPTX::SlideMaster> pointer = pPair->m_value.smart_dynamic_cast<PPTX::SlideMaster>();
+				if (pointer.is_init())
+					pointer->ApplyRels();
+			}
+		}
+
+		pos = map.m_map.GetStartPosition();
+		while (NULL != pos)
+		{
+			CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = map.m_map.GetNext(pos);
+			const OOX::FileType& curType = pPair->m_value->type();
+
+			if (OOX::FileTypes::SlideLayout == curType)
+			{
+				smart_ptr<PPTX::SlideLayout> pointer = pPair->m_value.smart_dynamic_cast<PPTX::SlideLayout>();
+				if (pointer.is_init())
+					pointer->ApplyRels();
+			}
+		}
+
+		pos = map.m_map.GetStartPosition();
+		while (NULL != pos)
+		{
+			CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = map.m_map.GetNext(pos);
+			const OOX::FileType& curType = pPair->m_value->type();
+
+			if (OOX::FileTypes::Slide == curType)
+			{
+				smart_ptr<PPTX::Slide> pointer = pPair->m_value.smart_dynamic_cast<PPTX::Slide>();
+				if (pointer.is_init())
+					pointer->ApplyRels();
+			}
+		}
+
+		pos = map.m_map.GetStartPosition();
+		while (NULL != pos)
+		{
+			CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = map.m_map.GetNext(pos);
+			const OOX::FileType& curType = pPair->m_value->type();
+
+			if (OOX::FileTypes::NotesMaster == curType)
+			{
+				smart_ptr<PPTX::NotesMaster> pointer = pPair->m_value.smart_dynamic_cast<PPTX::NotesMaster>();
+				if (pointer.is_init())
+					pointer->ApplyRels();
+			}
+		}
+
+		Event->Progress(0, 1000000);
+	}
+
+	void Folder::write(const OOX::CPath& path)
+	{
+		OOX::CSystemUtility::CreateDirectories(path);
+
+		OOX::Rels::File rels;
+		OOX::ContentTypes::File content;
+
+		OOX::CPath dir = path;
+		FileContainer::write(rels, path, dir, content);
+
+		rels.write(path / _T("/"));
+		content.write(path);
+		FileContainer::WrittenSetFalse();
+	}
+
+	void Folder::createFromTemplate(const OOX::CPath& path)
+	{
+		//read(path);
+	}
+
+	const bool Folder::isValid(const OOX::CPath& path) const
+	{
+		return true;//FileContainer::exist(OOX::FileTypes::Presentation);
+	}
+
+	void Folder::extractPictures(const OOX::CPath& path)
+	{
+		OOX::CSystemUtility::CreateDirectories(path);
+		FileContainer::extractPictures(path);
+	}
+
+	void Folder::extractPictures(const OOX::CPath& source, const OOX::CPath& path)
+	{
+		//read(source);
+		extractPictures(path);
+	}
+
+	long Folder::CountFiles(const OOX::CPath& path)
+	{
+		return OOX::CSystemUtility::GetFilesCount(path.GetDirectory(), true);
+	}
+} // namespace PPTX

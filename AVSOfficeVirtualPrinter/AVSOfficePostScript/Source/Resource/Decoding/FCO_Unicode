@@ -1,0 +1,2516 @@
+% Copyright (C) 2003 Artifex Software.  All rights reserved.
+%
+% This software is provided AS-IS with no warranty, either express or
+% implied.
+%
+% This software is distributed under license and may not be copied,
+% modified or distributed except as expressly authorized under the terms
+% of the license contained in the file LICENSE in this distribution.
+%
+% For more information about licensing, please refer to
+% http://www.ghostscript.com/licensing/. For information on
+% commercial licensing, go to http://www.artifex.com/licensing/ or
+% contact Artifex Software, Inc., 101 Lucas Valley Road #110,
+% San Rafael, CA  94903, U.S.A., +1(415)492-9861.
+%
+% $Id: FCO_Unicode 6799 2006-05-24 07:12:33Z leonardo $
+% Unicode Decoding
+% Maps PS and TT names to Unicode UTF-16.
+
+/FCO_Unicode     % resource name
+3363             % tokens
+/ParseDecoding /ProcSet findresource /Parse get exec
+
+16#0000 .null NUL 
+16#0001 SOH
+16#0002 STX
+16#0003 ETX
+16#0004 EOT
+16#0005 ENQ
+16#0006 ACK
+16#0007 BEL
+16#0008 BS
+16#0009 HT
+16#000A LF
+16#000B VT
+16#000C FF
+16#000D CR nonmarkingreturn 
+16#000E SO
+16#000F SI
+16#0010 DLE DC0 
+16#0011 XON DC1 
+16#0012 DC2
+16#0013 XOF DC3 
+16#0014 DC4
+16#0015 NAK
+16#0016 SYN
+16#0017 ETB
+16#0018 CAN
+16#0019 EM
+16#001A EOF SUB 
+16#001B ESC
+16#001C IFS FS 
+16#001D IGS GS 
+16#001E IRS RS 
+16#001F IUS US 
+16#0020 SP010000 space
+16#0021 SP020000 exclam 
+16#0022 SP040000 quotedbl 
+16#0023 SM010000 numbersign 
+16#0024 SC030000 milreis escudo dollar 
+16#0025 SM020000 percent 
+16#0026 SM030000 ampersand 
+16#0027 SP050000 quotesingle 
+16#0028 SP060000 parenleft 
+16#0029 SP070000 parenright 
+16#002A SM040000 asterisk 
+16#002B SA010000 plus 
+16#002C SP080000 comma 
+16#002D SP100000 hyphen-minus hyphenminus hyphen
+16#002E SP110000 period 
+16#002F SP120000 slash 
+16#0030 ND100000 zerodot zeroslash zero 
+16#0031 ND010000 one 
+16#0032 ND020000 two 
+16#0033 ND030000 three 
+16#0034 ND040000 four 
+16#0035 ND050000 five 
+16#0036 ND060000 six 
+16#0037 ND070000 seven 
+16#0038 ND080000 eight 
+16#0039 ND090000 nine 
+16#003A SP130000 colon 
+16#003B SP140000 semicolon 
+16#003C SA030000 less 
+16#003D SA040000 equal 
+16#003E SA050000 greater 
+16#003F SP150000 question 
+16#0040 SM050000 at 
+16#0041 LA020000 A 
+16#0042 LB020000 B 
+16#0043 LC020000 C 
+16#0044 LD020000 D 
+16#0045 LE020000 E 
+16#0046 LF020000 F 
+16#0047 LG020000 G 
+16#0048 LH020000 H 
+16#0049 LI020000 Inodot I 
+16#004A LJ020000 J 
+16#004B LK020000 K 
+16#004C LL020000 L 
+16#004D LM020000 M 
+16#004E LN020000 N 
+16#004F LO020000 O 
+16#0050 LP020000 P 
+16#0051 LQ020000 Q 
+16#0052 LR020000 R 
+16#0053 LS020000 S 
+16#0054 LT020000 T 
+16#0055 LU020000 U 
+16#0056 LV020000 V 
+16#0057 LW020000 W 
+16#0058 LX020000 X 
+16#0059 LY020000 Y 
+16#005A LZ020000 Z 
+16#005B SM060000 bracketleft 
+16#005C SM070000 backslash 
+16#005D SM080000 bracketright 
+16#005E SD150000 asciicircum 
+16#005F SP090000 underscore 
+16#0060 SD130000 grave 
+16#0061 LA010000 a 
+16#0062 LB010000 b 
+16#0063 LC010000 c 
+16#0064 LD010000 d 
+16#0065 LE010000 e 
+16#0066 LF010000 f 
+16#0067 LG010000 g 
+16#0068 LH010000 h 
+16#0069 LI010000 idot i 
+16#006A LJ010000 j 
+16#006B LK010000 k 
+16#006C LL010000 l 
+16#006D LM010000 m 
+16#006E LN010000 n 
+16#006F LO010000 o 
+16#0070 LP010000 p 
+16#0071 LQ010000 q 
+16#0072 LR010000 r 
+16#0073 LS010000 s 
+16#0074 LT010000 t 
+16#0075 LU010000 u 
+16#0076 LV010000 v 
+16#0077 LW010000 w 
+16#0078 LX010000 x 
+16#0079 LY010000 y 
+16#007A LZ010000 z 
+16#007B SM110000 braceleft 
+16#007C SM130000 bar 
+16#007D SM140000 braceright 
+16#007E SD190000 asciitilde 
+16#007F DEL
+16#0080 SP300000 c128 nbspace 
+16#0081 SP030000 c129 
+16#0082 SC040000
+16#0083 SC020000
+16#0084 SC010000
+16#0085 SC050000
+16#0086 SM650000
+16#0087 SM240000
+16#0088 SD170000 diaeresis 
+16#0089 SM520000
+16#008A SM210000
+16#008B SP170000
+16#008C SM660000
+16#008D SP320000 c141 softhyphen sfthyphen 
+16#008E SM530000 c142 
+16#008F SM150000 overstore c143 
+16#0090 SM190000
+16#0091 SA020000
+16#0092 ND021000
+16#0093 ND031000
+16#0094 SD110000
+16#0095 SM170000 micro 
+16#0096 SM250000
+16#0097 SD630000 middot periodcentered.0 
+16#0098 SD410000
+16#0099 ND011000
+16#009A SM200000
+16#009B SP180000
+16#009C NF040000
+16#009D NF010000
+16#009E NF050000
+16#009F SP160000
+16#00A0 LA140000
+16#00A1 LA120000 exclamdown 
+16#00A2 LA160000 cent 
+16#00A3 LA200000 sterling 
+16#00A4 LA180000 currency 
+16#00A5 LA280000 yen 
+16#00A6 LA520000 brokenbar 
+16#00A7 LC420000 section 
+16#00A8 LE140000 dieresis 
+16#00A9 LE120000 copyright 
+16#00AA LE160000 ordfeminine 
+16#00AB LE180000 guillemotleft 
+16#00AC LI140000 logicalnot 
+16#00AD LI120000
+16#00AE LI160000 registered 
+16#00AF LI180000 ---macron % Disabled for FCO project.
+16#00B0 degree
+16#00B1 LN200000 plusminus 
+16#00B2 LO140000 twosuperior 
+16#00B3 LO120000 threesuperior 
+16#00B4 LO160000 acute 
+16#00B5 LO200000 mu
+16#00B6 LO180000 paragraph 
+16#00B7 SA070000 periodcentered.1
+16#00B8 cedilla
+16#00B9 LU140000 onesuperior 
+16#00BA LU120000 ordmasculine 
+16#00BB LU160000 guillemotright 
+16#00BC LU180000 onequarter 
+16#00BD LY120000 onehalf 
+16#00BE LT640000 threequarters 
+16#00BF LS610000 questiondown 
+16#00C0 LA130000 Agrave 
+16#00C1 LA110000 Aacute 
+16#00C2 LA150000 Acircumflex 
+16#00C3 LA190000 Atilde 
+16#00C4 LA170000 Adieresis 
+16#00C5 LA270000 Aring 
+16#00C6 LA510000 AE 
+16#00C7 LC410000 Ccedilla 
+16#00C8 LE130000 Egrave 
+16#00C9 LE110000 Eacute 
+16#00CA LE150000 Ecircumflex 
+16#00CB LE170000 Edieresis 
+16#00CC LI130000 Igrave 
+16#00CD LI110000 Iacute 
+16#00CE LI150000 Icircumflex 
+16#00CF LI170000 Idieresis 
+16#00D0 LD630000 Eth 
+16#00D1 LN190000 Ntilde 
+16#00D2 LO130000 Ograve 
+16#00D3 LO110000 Oacute 
+16#00D4 LO150000 Ocircumflex 
+16#00D5 LO190000 Otilde 
+16#00D6 LO170000 Odieresis 
+16#00D7 SA060000 multiply 
+16#00D8 Oslash
+16#00D9 LU130000 Ugrave 
+16#00DA LU110000 Uacute 
+16#00DB LU150000 Ucircumflex 
+16#00DC LU170000 Udieresis 
+16#00DD LY110000 Yacute 
+16#00DE LT630000 Thorn 
+16#00DF LY170000 germandbls 
+16#00E0 LA620000 agrave 
+16#00E1 LA610000 aacute 
+16#00E2 LA240000 acircumflex 
+16#00E3 LA230000 atilde 
+16#00E4 LA440000 adieresis 
+16#00E5 LA430000 aring 
+16#00E6 LC120000 ae 
+16#00E7 LC110000 ccedilla 
+16#00E8 LC160000 egrave 
+16#00E9 LC150000 eacute 
+16#00EA LC300000 Cdot ecircumflex 
+16#00EB LC290000 cdot edieresis 
+16#00EC LC220000 igrave 
+16#00ED LC210000 iacute 
+16#00EE LD220000 icircumflex 
+16#00EF LD210000 dquoteright idieresis 
+16#00F0 LD620000 Dslash Dbar Dmacron eth 
+16#00F1 LD610000 dbar dslash dmacron ntilde 
+16#00F2 LE620000 ograve 
+16#00F3 LE610000 oacute 
+16#00F4 LE240000 ocircumflex 
+16#00F5 LE230000 otilde 
+16#00F6 LE300000 Edot odieresis 
+16#00F7 LE290000 c144 edot divide 
+16#00F8 LE440000 oslash 
+16#00F9 LE430000 ugrave 
+16#00FA LE220000 uacute 
+16#00FB LE210000 ucircumflex 
+16#00FC LG160000 udieresis 
+16#00FD LG150000 yacute 
+16#00FE LG240000 thorn 
+16#00FF LG230000 ydieresis 
+16#0100 LG300000 Gdot Amacron 
+16#0101 LG290000 c158 gdot amacron 
+16#0102 LG420000 Gcedilla Abreve 
+16#0103 LG110000 gcedilla abreve 
+16#0104 LH160000 Aogonek 
+16#0105 LH150000 aogonek 
+16#0106 LH620000 Hmacron Cacute 
+16#0107 LH610000 hmacron cacute 
+16#0108 LI200000 Ccircumflex 
+16#0109 LI190000 ccircumflex 
+16#010A LI620000 Cdotaccent 
+16#010B cdotaccent
+16#010C LI240000 Ccaron 
+16#010D LI230000 ccaron 
+16#010E LI440000 Dcaron 
+16#010F LI430000 dcaron 
+16#0110 LI300000 Idot Dcroat 
+16#0111 LI610000 dcroat 
+16#0112 Emacron
+16#0113 emacron
+16#0114 LJ160000 Ebreve 
+16#0115 LJ150000 ebreve 
+16#0116 LK420000 Kcedilla Edotaccent 
+16#0117 LK410000 kcedilla edotaccent 
+16#0118 kra Eogonek 
+16#0119 LL120000 eogonek 
+16#011A LL110000 Ecaron 
+16#011B LL420000 Lcedilla ecaron 
+16#011C LL410000 lcedilla Gcircumflex 
+16#011D LL220000 gcircumflex 
+16#011E LL210000 Gbreve 
+16#011F LL640000 Ldotaccent gbreve 
+16#0120 LL630000 ldotaccent Gdotaccent 
+16#0121 LL620000 gdotaccent 
+16#0122 LL610000 Gcommaaccent 
+16#0123 LN120000 gcommaaccent 
+16#0124 LN110000 Hcircumflex 
+16#0125 LN420000 Ncedilla hcircumflex 
+16#0126 LN410000 ncedilla Hbar 
+16#0127 LN220000 hbar 
+16#0128 LN210000 Itilde 
+16#0129 highcomman itilde 
+16#012A Imacron
+16#012B imacron
+16#012C LO620000 Ibreve 
+16#012D LO610000 ibreve 
+16#012E LO240000 Iogonek 
+16#012F LO230000 iogonek 
+16#0130 LO260000 Odblacute Idotaccent 
+16#0131 LO250000 odblacute dotlessi 
+16#0132 LO520000 IJ 
+16#0133 LO510000 ij 
+16#0134 LR120000 Jcircumflex 
+16#0135 LR110000 jcircumflex 
+16#0136 LR420000 Rcedilla Kcommaaccent 
+16#0137 LR410000 rcedilla kcommaaccent 
+16#0138 LR220000 kgreenlandic 
+16#0139 LR210000 Lacute 
+16#013A LS120000 lacute 
+16#013B LS110000 Lcommaaccent 
+16#013C LS160000 lcommaaccent 
+16#013D LS150000 Lcaron 
+16#013E LS420000 lcaron 
+16#013F LS410000 Ldot 
+16#0140 LS220000 ldot 
+16#0141 LS210000 Lslash 
+16#0142 LT420000 Tcedilla lslash 
+16#0143 LT410000 tcedilla Nacute 
+16#0144 LT220000 nacute 
+16#0145 LT210000 tquoteright Ncommaaccent 
+16#0146 LT620000 Tmacron ncommaaccent 
+16#0147 LT610000 tmacron Ncaron 
+16#0148 LU200000 ncaron 
+16#0149 LU190000 napostrophe 
+16#014A LU620000 Eng 
+16#014B LU610000 eng 
+16#014C LU240000 Omacron 
+16#014D LU230000 omacron 
+16#014E LU280000 Obreve 
+16#014F LU270000 obreve 
+16#0150 LU260000 Udblacute Ohungarumlaut 
+16#0151 LU250000 udblacute ohungarumlaut 
+16#0152 LU440000 OE 
+16#0153 LU430000 oe 
+16#0154 LW160000 Racute 
+16#0155 LW150000 racute 
+16#0156 LY160000 Rcommaaccent 
+16#0157 LY150000 rcommaaccent 
+16#0158 LY180000 Rcaron 
+16#0159 LZ120000 rcaron 
+16#015A LZ110000 Sacute 
+16#015B LZ300000 sacute Zdot 
+16#015C LZ290000 zdot Scircumflex 
+16#015D LZ220000 scircumflex 
+16#015E LZ210000 Scedilla
+16#015F scedilla
+16#015F slong
+16#0160 bbar Scaron 
+16#0161 Bhook scaron 
+16#0162 Btopbar Tcommaaccent
+16#0163 btopbar tcommaaccent
+16#0164 Tonesix Tcaron 
+16#0165 tonesix tcaron 
+16#0166 Oopen Tbar 
+16#0167 Chook tbar 
+16#0168 chook Utilde 
+16#0169 Dbar1 utilde 
+16#016A Dhook Umacron 
+16#016B Dtopbar umacron 
+16#016C dtopbar Ubreve 
+16#016D deltaturn ubreve 
+16#016E Eturn Uring 
+16#016F Schwa uring 
+16#0170 Epsilon1 Uhungarumlaut 
+16#0171 Fhook uhungarumlaut 
+16#0172 SC070000 fscript Uogonek 
+16#0173 Ghook uogonek 
+16#0174 Gamma1 Wcircumflex 
+16#0175 hv wcircumflex 
+16#0176 Iota1 Ycircumflex 
+16#0177 Ibar ycircumflex 
+16#0178 Khook Ydieresis 
+16#0179 khook Zacute 
+16#017A lbar zacute 
+16#017B lambdabar Zdotaccent 
+16#017C mcapturn zdotaccent 
+16#017D Nhook Zcaron 
+16#017E nleg zcaron 
+16#017F Obar longs 
+16#0182 OI
+16#0183 oi
+16#0184 Phook
+16#0185 phook
+16#0186 YR
+16#0187 Tonetwo
+16#0188 tonetwo
+16#0189 Esh
+16#018A eshlooprev
+16#018B tpalatalhook
+16#018C Thook
+16#018D thook
+16#018E Trthook
+16#0191 Upsilon2
+16#0192 Vcursive florin 
+16#0193 Yhook
+16#0194 yhook
+16#0195 Zbar
+16#0196 zbar
+16#0197 Yogh
+16#0198 Yoghrev
+16#0199 yoghrev
+16#019A yoghtail
+16#019B 2bar
+16#019C Tonefive
+16#019D tonefive
+16#019E glottalstopbarinv
+16#019F wynn
+16#01A0 pipe Ohorn 
+16#01A1 pipedbl ohorn 
+16#01A2 pipedblbar
+16#01A3 exclam1
+16#01A4 DZhacek
+16#01A5 Dzhacek
+16#01A6 dzhacek
+16#01A7 LJ
+16#01A8 Lj
+16#01A9 lj
+16#01AA NJ
+16#01AB Nj
+16#01AC nj
+16#01AD Ahacek
+16#01AE ahacek
+16#01AF Ihacek Uhorn 
+16#01B0 ihacek uhorn 
+16#01B1 Ohacek
+16#01B2 ohacek
+16#01B3 Uhacek
+16#01B4 uhacek
+16#01B5 Udieresismacron
+16#01B6 udieresismacron
+16#01B7 Udieresisacute
+16#01B8 udieresisacute
+16#01B9 Udieresishacek
+16#01BA udieresishacek
+16#01BB Udieresisgrave
+16#01BC udieresisgrave
+16#01BD eturn
+16#01BE Adieresismacron
+16#01BF adieresismacron
+16#01C0 Adotmacron
+16#01C1 adotmacron
+16#01C2 AEmacron
+16#01C3 aemacron
+16#01C4 Gbar
+16#01C5 gbar
+16#01C6 Ghacek
+16#01C7 ghacek
+16#01C8 Khacek
+16#01C9 khacek
+16#01CA Oogonek
+16#01CB oogonek
+16#01CC Oogonekmacron
+16#01CD oogonekmacron
+16#01CE Yoghhacek
+16#01CF yoghhacek
+16#01D0 jhacek
+16#01D1 DZ
+16#01D2 Dz
+16#01D4 Gacute
+16#01D5 gacute
+16#01DA Aacutering
+16#01DB aacutering
+16#01E0 aturn
+16#01E1 ascript
+16#01E2 ascriptturn
+16#01E3 bhook
+16#01E4 cturn
+16#01E5 ccurl
+16#01E6 drthook Gcaron 
+16#01E7 dhook gcaron 
+16#01E8 erev
+16#01E9 schwa
+16#01EA schwahook
+16#01EB epsilon1
+16#01EC epsilon1rev
+16#01ED epsilon1revhook
+16#01EE epsilon1revclosed
+16#01EF jdotlessbar
+16#01F0 ghook
+16#01F1 gcursive
+16#01F2 Gsmallcap
+16#01F3 gamma1
+16#01F4 babygamma
+16#01F5 hturn
+16#01F6 hhook
+16#01F7 henghook
+16#01F8 ibar
+16#01F9 iota1
+16#01FA Ismallcap Aringacute 
+16#01FB lmidtilde aringacute 
+16#01FC lbelt AEacute 
+16#01FD lrthook aeacute 
+16#01FE lyogh Oslashacute 
+16#01FF mturn oslashacute 
+16#0200 mturndescend
+16#0201 mhook
+16#0202 nlftlfthook
+16#0203 nrthook
+16#0204 Nsmallcap
+16#0205 obar
+16#0206 OEsmallcap
+16#0207 omegaclosed
+16#0208 philatin
+16#0209 rturn
+16#020A rturnascend
+16#020B rturnrthook rturnhook 
+16#020C rdescend
+16#020D rrthook
+16#020E rfishhook
+16#020F rfishhookrev
+16#0210 Rsmallcap
+16#0211 Rsmallcapinv
+16#0212 srthook
+16#0213 esh
+16#0214 jhookdblbar
+16#0215 eshshortrev
+16#0216 eshcurl
+16#0217 tturn
+16#0218 trthook Scommaaccent 
+16#0219 ubar scommaaccent 
+16#021A upsilonlatin Tcommaaccent
+16#021B vscript
+16#021C vturn
+16#021D wturn
+16#021E yturn
+16#021F Ysmallcap
+16#0220 zrthook
+16#0221 zcurl
+16#0222 yogh
+16#0223 yoghcurl
+16#0224 glottalstop
+16#0225 glottalstoprevinv
+16#0226 glottalstopinv
+16#0227 cstretch
+16#0228 bullseye
+16#0229 Bsmallcap
+16#022A epsilonclosed
+16#022B Gsmallcaphook
+16#022C Hsmallcap
+16#022D jcrosstail
+16#022E kturn
+16#022F Lsmallcap
+16#0230 qhook
+16#0231 glottalstopbar
+16#0232 glottalstopbarrev
+16#0233 dz
+16#0234 dyogh
+16#0235 dzcurl
+16#0236 ts
+16#0237 tesh
+16#0238 tccurl
+16#0239 hsuper
+16#023A hhooksuper
+16#023B jsuper
+16#023C rsuper
+16#023D rturnsuper
+16#023E rturnrthooksuper rturnhooksuper 
+16#023F Rturnsuper
+16#0240 wsuper
+16#0241 ysuper
+16#0242 primemod
+16#0243 primedblmod
+16#0244 quoteleftmod
+16#0245 apostrophe
+16#0246 apostropherev
+16#0247 ringrighthalfsuper
+16#0248 ringlefthalfsuper
+16#0249 glottal
+16#024A glottalrev
+16#024B fronted
+16#024C backed
+16#024D raised
+16#024E lowered
+16#024F SD150100
+16#0250 SD210000
+16#0251 linevert
+16#0252 SD310000 overscore1 macron1 
+16#0253 acute1
+16#0254 grave1
+16#0255 linevertsub
+16#0256 macronsub
+16#0257 gravesub
+16#0258 acutesub
+16#0259 length
+16#025A halflength
+16#025B ringrighthalfcenter
+16#025C ringlefthalfsup
+16#025D tackupmid
+16#025E tackdownmid
+16#025F plusmod
+16#0260 minusmod
+16#0261 SD230000
+16#0262 SD290000
+16#0263 SD270000
+16#0264 SD430000
+16#0265 SD190100
+16#0266 SD250000
+16#0267 rhotichook
+16#0269 gammasuper
+16#026A lsuper
+16#026B ssuper
+16#026C xsuper
+16#026D glottalrevsuper
+16#026E toneextrahigh
+16#026F tonehigh
+16#0270 tonemid
+16#0271 tonelow
+16#0272 toneextralow
+16#0273 gravenosp
+16#0274 acutenosp
+16#0275 circumflexnosp
+16#0276 tildenosp
+16#0277 macronnosp
+16#0278 overscorenosp
+16#0279 brevenosp
+16#027A dotnosp
+16#027B dieresisnosp
+16#027C hooksupnosp
+16#027D ringnosp
+16#027E acutedblnosp
+16#027F haceknosp
+16#0280 linevertnosp
+16#0281 linevertdblnosp
+16#0282 gravedblnosp
+16#0283 candrabindunosp
+16#0284 breveinvnosp
+16#0285 commaturnsupnosp
+16#0286 apostrophesupnosp
+16#0287 commasuprevnosp
+16#0288 commasuprightnosp
+16#0289 gravesubnosp
+16#028A acutesubnosp
+16#028B tackleftsubnosp
+16#028C tackrightsubnosp
+16#028D anglesupnosp
+16#028E hornnosp
+16#028F ringlefthalfsubnosp
+16#0290 tackupsubnosp
+16#0291 tackdownsubnosp
+16#0292 plussubnosp
+16#0293 minussubnosp
+16#0294 hooksubpalatnosp
+16#0295 hooksubretronosp
+16#0296 dotsubnosp
+16#0297 dotdblsubnosp
+16#0298 ringsubnosp
+16#0299 commasubnosp
+16#029A cedillanosp
+16#029B ogoneknosp
+16#029C linevertsubnosp
+16#029D bridgesubnosp
+16#029E archdblsubnosp
+16#029F haceksubnosp
+16#02A0 circumflexsubnosp
+16#02A1 brevesubnosp
+16#02A2 breveinvsubnosp
+16#02A3 tildesubnosp
+16#02A4 macronsubnosp
+16#02A5 underscorenosp
+16#02A6 underscoredblnosp
+16#02A7 tildemidnosp
+16#02A8 barmidshortnosp
+16#02A9 barmidlongnosp
+16#02AA slashshortnosp
+16#02AB slashlongnosp
+16#02AC ringrighthalfsubnosp
+16#02AD bridgeinvsubnosp
+16#02AE squaresubnosp
+16#02AF seagullsubnosp
+16#02B0 xsupnosp
+16#02B1 tildevertsupnosp
+16#02B2 overscoredblnosp
+16#02B3 graveleftnosp
+16#02B4 acuterightnosp
+16#02B7 diaeresistonosnosp
+16#02B8 iotasubnosp
+16#02BC afii57929
+16#02BD afii64937 numeralgreek 
+16#02BE numeralgreeksub
+16#02C3 iotasub
+16#02C6 circumflex
+16#02C7 questiongreek caron 
+16#02C9 macron
+16#02CE diaeresistonos
+16#02D8 breve
+16#02D9 iotadiaeresistonos dotaccent 
+16#02DA GA020000 ring 
+16#02DB GB020000 ogonek 
+16#02DC GG020000 tilde 
+16#02DD GD020000 hungarumlaut 
+16#02DE GE020000
+16#02E1 GT620000
+16#02E9 GP020000
+16#02EC GS020000
+16#02ED GT020000
+16#02EF GF020000
+16#02F2 GO320000
+16#02F3 Iotadiaeresis
+16#02F4 Upsilondiaeresis
+16#02F9 upsilondiaeresistonos
+16#02FA GA010000
+16#02FB GB010000
+16#02FC GG010000
+16#02FD GD010000
+16#02FE GE010000
+16#0300 gravecomb
+16#0301 GT610000 acutecomb 
+16#0303 tildecomb
+16#0309 GP010000 hookabovecomb 
+16#030B sigmafinal
+16#030C GS010000
+16#030D GT010000
+16#030F GF010000
+16#0312 GO310000
+16#0313 iotadiaeresis
+16#0314 upsilondiaeresis
+16#0319 beta1
+16#031C Upsilon1tonos
+16#031D Upsilon1diaeresis Upsilon1dieresis 
+16#031F pi1
+16#0323 Stigma dotbelowcomb 
+16#0325 Digamma
+16#0327 Koppa
+16#0329 Sampi
+16#0337 Dei
+16#0338 dei
+16#0339 kappa1
+16#033A rho1
+16#033B sigmalunate
+16#0384 tonos
+16#0385 dieresistonos
+16#0386 Alphatonos
+16#0387 anoteleia
+16#0388 Epsilontonos
+16#0389 Etatonos
+16#038A Iotatonos
+16#038C Omicrontonos
+16#038E Upsilontonos
+16#038F Omegatonos
+16#0390 iotadieresistonos
+16#0391 Alpha
+16#0392 Beta
+16#0393 Gamma
+16#0394 Delta
+16#0395 Epsilon
+16#0396 Zeta
+16#0397 Eta
+16#0398 Theta
+16#0399 Iota
+16#039A Kappa
+16#039B Lambda
+16#039C Mu 
+16#039D Nu
+16#039E Yat Xi 
+16#039F yat Omicron 
+16#03A0 Pi
+16#03A1 Rho
+16#03A3 Sigma
+16#03A4 Tau
+16#03A5 Upsilon
+16#03A6 Yusbig Phi 
+16#03A7 yusbig Chi 
+16#03A8 Psi
+16#03A9 Omega
+16#03AA Iotadieresis
+16#03AB Upsilondieresis
+16#03AC alphatonos
+16#03AD epsilontonos
+16#03AE etatonos
+16#03AF iotatonos
+16#03B0 upsilondieresistonos
+16#03B1 alpha
+16#03B2 beta
+16#03B3 gamma
+16#03B4 delta
+16#03B5 epsilon
+16#03B6 zeta
+16#03B7 eta
+16#03B8 theta
+16#03B9 iota
+16#03BA kappa
+16#03BB lambda
+% 16#03BC mu % Disabled for FCO project.
+16#03BD nu
+16#03BE xi
+16#03BF omicron
+16#03C0 pi
+16#03C1 rho
+16#03C2 sigma1
+16#03C3 sigma
+16#03C4 tau
+16#03C5 upsilon
+16#03C6 phi
+16#03C7 chi
+16#03C8 psi
+16#03C9 omega
+16#03CA iotadieresis
+16#03CB upsilondieresis
+16#03CC omicrontonos
+16#03CD upsilontonos
+16#03CE Gebar omegatonos 
+16#03CF gebar
+16#03D0 Gehook
+16#03D1 gehook theta1 
+16#03D2 Zhertdes Upsilon1 
+16#03D3 zhertdes
+16#03D4 Zecedilla
+16#03D5 zecedilla phi1 
+16#03D6 Kartdes omega1 
+16#03D7 kartdes
+16#03D8 Kavertbar
+16#03D9 kavertbar
+16#03DA Kabar
+16#03DB kabar
+16#03DC GeKarev
+16#03DD gekarev
+16#03DE Enrtdes
+16#03DF enrtdes
+16#03E0 EnGe
+16#03E1 enge
+16#03E2 Pehook
+16#03E3 pehook
+16#03E4 Ohook
+16#03E5 ohook
+16#03E6 Escedilla
+16#03E7 escedilla
+16#03E8 Tertdes
+16#03E9 tertdes
+16#03EA Ustrt
+16#03EB ustrt
+16#03EC Ustrtbar
+16#03ED ustrtbar
+16#03EE Khartdes
+16#03EF khartdes
+16#03F0 TeTse
+16#03F1 tetse
+16#03F2 Chertdes
+16#03F3 chertdes
+16#03F4 Chevertbar
+16#03F5 chevertbar
+16#03F6 Hcyril
+16#03F7 hcyril
+16#03F8 Iehook
+16#03F9 iehook
+16#03FA Iehookogonek
+16#03FB iehookogonek
+16#03FC Icyril1
+16#03FD Zhebreve
+16#03FE zhebreve
+16#03FF Kahook
+16#0400 kahook
+16#0401 afii10023 Io 
+16#0402 afii10051 Dje 
+16#0403 afii10052 Gje 
+16#0404 afii10053 Ecyril 
+16#0405 afii10054 Dze 
+16#0406 afii10055 Icyril 
+16#0407 afii10056 Yi 
+16#0408 afii10057 Je 
+16#0409 afii10058 Lje 
+16#040A afii10059 Nje 
+16#040B afii10060 Tshe 
+16#040C afii10061 Kje 
+16#040E afii10062 Ucyrilbreve 
+16#040F afii10145 Dzhe 
+16#0410 afii10017 Acyril 
+16#0411 afii10018 Be 
+16#0412 afii10019 Ve 
+16#0413 afii10020 Ge 
+16#0414 afii10021 De 
+16#0415 afii10022 Ie 
+16#0416 afii10024 Zhe 
+16#0417 afii10025 Ze 
+16#0418 afii10026 Ii 
+16#0419 afii10027 Iibreve 
+16#041A afii10028 Ka 
+16#041B afii10029 El 
+16#041C afii10030 Em 
+16#041D afii10031 En 
+16#041E afii10032 Ocyril 
+16#041F afii10033 Pecyril 
+16#0420 afii10034 Er 
+16#0421 afii10035 Es 
+16#0422 afii10036 Te 
+16#0423 afii10037 Ucyril 
+16#0424 afii10038 Ef 
+16#0425 afii10039 Kha 
+16#0426 afii10040 Tse 
+16#0427 afii10041 Che 
+16#0428 afii10042 Sha 
+16#0429 afii10043 Shcha 
+16#042A afii10044 Hard 
+16#042B afii10045 Yeri 
+16#042C afii10046 Soft 
+16#042D afii10047 Ecyrilrev 
+16#042E afii10048 Iu 
+16#042F afii10049 Ia 
+16#0430 afii10065 acyril 
+16#0431 afii10066 be 
+16#0432 afii10067 ve 
+16#0433 afii10068 ge 
+16#0434 afii10069 de 
+16#0435 afii10070 ie 
+16#0436 afii10072 zhe 
+16#0437 afii10073 ze 
+16#0438 afii10074 ii 
+16#0439 afii10075 iibreve 
+16#043A afii10076 ka 
+16#043B afii10077 el 
+16#043C afii10078 em 
+16#043D afii10079 en 
+16#043E afii10080 ocyril 
+16#043F afii10081 pecyril 
+16#0440 afii10082 er 
+16#0441 afii10083 es 
+16#0442 afii10084 te 
+16#0443 afii10085 ucyril 
+16#0444 afii10086 ef 
+16#0445 afii10087 kha 
+16#0446 afii10088 tse 
+16#0447 afii10089 che 
+16#0448 afii10090 sha 
+16#0449 afii10091 shcha 
+16#044A afii10092 hard 
+16#044B afii10093 yeri 
+16#044C afii10094 soft 
+16#044D afii10095 ecyrilrev 
+16#044E afii10096 iu 
+16#044F afii10097 ia 
+16#0451 afii10071 io 
+16#0452 afii10099 dje 
+16#0453 afii10100 gje 
+16#0454 afii10101 ecyril 
+16#0455 afii10102 dze 
+16#0456 afii10103 icyril 
+16#0457 afii10104 yi 
+16#0458 afii10105 je 
+16#0459 afii10106 lje 
+16#045A afii10107 nje 
+16#045B afii10108 tshe 
+16#045C afii10109 kje 
+16#045E afii10110 ucyrilbreve 
+16#045F afii10193 dzhe 
+16#0462 afii10146
+16#0463 afii10194
+16#0472 afii10147
+16#0473 afii10195
+16#0474 afii10148
+16#0475 afii10196 afii10190 
+16#0490 afii10050 Geupturn 
+16#0491 afii10098 geupturn 
+16#04B5 Lcircumflex
+16#04B6 lcircumflex
+16#04D9 afii10846
+16#0579 SM300000
+16#057A SM320000
+16#057B SM310000
+16#057C SM330000
+16#057D SM780000 arrowlongboth 
+16#057E SM760000 arrowlongbothv 
+16#057F arrownorthwest
+16#0580 arrownortheast
+16#0581 arrowsoutheast
+16#0582 arrowsouthwest
+16#0583 arrowleftnot
+16#0584 arrowrightnot
+16#0585 arrowwaveleft
+16#0586 arrowwaveright
+16#0587 dblarrowheadleft
+16#0588 dblarrowheadup
+16#0589 dblarrowheadright
+16#058A dblarrowheaddown
+16#058B arrowtailleft
+16#058C arrowtailright
+16#058D arrowbarleft
+16#058E arrowbarup
+16#058F arrowbarright
+16#0590 arrowbardown
+16#0591 SM770000 arrowbothvbase 
+16#0592 arrowhookleft
+16#0593 arrowhookright
+16#0594 arrowloopleft
+16#0595 arrowloopright
+16#0596 arrowwaveboth
+16#0597 arrowlongbothnot
+16#0598 arrowzigzag
+16#0599 null
+16#059A startofhead
+16#059B starttext
+16#059C endtext
+16#059D endtrans
+16#059E enquiry
+16#059F acknowledge
+16#05A0 bell
+16#05A1 backspace
+16#05A2 horiztab
+16#05A3 linefeed
+16#05A4 verttab
+16#05A5 formfeed
+16#05A7 shiftout
+16#05A8 shiftin
+16#05A9 datalinkescape devcon0 
+16#05AA auxiliaryon devcon1 
+16#05AB devcon2
+16#05AC auxiliaryoff devcon3 
+16#05AD devcon4
+16#05AE negacknowledge
+16#05AF synch
+16#05B0 afii57799 sheva endtransblock 
+16#05B1 afii57801 hatafsegol cancel 
+16#05B2 afii57800 hatafpatah endmedium 
+16#05B3 afii57802 substitute hatafqamats endoffile 
+16#05B4 afii57793 hiriq escape 
+16#05B5 afii57794 tsere fileseparator 
+16#05B6 afii57795 segol groupseparator 
+16#05B7 afii57798 patah recordseparator 
+16#05B8 afii57797 qamats unitseparator 
+16#05B9 afii57806 holam spaceliteral 
+16#05BA delete
+16#05BB afii57796 qubuts qibuts blankb 
+16#05BC afii57807 spaceopenbox dagesh blank 
+16#05BD afii57839 meteg newline 
+16#05BE afii57645 maqaf 
+16#05BF afii57841 rafe 
+16#05C0 afii57842 paseq 
+16#05C1 afii57804 shindot 
+16#05C2 afii57803 sindot 
+16#05C3 afii57658 sofpasuq 
+16#05D0 afii57664 alef 
+16#05D1 afii57665 bet 
+16#05D2 afii57666 gimel 
+16#05D3 afii57667 dalet 
+16#05D4 afii57668 he 
+16#05D5 afii57669 vav 
+16#05D6 afii57670 zayin 
+16#05D7 afii57671 het 
+16#05D8 afii57672 tet 
+16#05D9 afii57673 yod 
+16#05DA afii57674 kaffinal 
+16#05DB afii57675 kaf 
+16#05DC afii57676 lamed 
+16#05DD afii57677 memfinal 
+16#05DE afii57678 mem 
+16#05DF afii57679 nunfinal 
+16#05E0 afii57680 nun 
+16#05E1 afii57681 samekh 
+16#05E2 afii57682 ayin 
+16#05E3 afii57683 pefinal 
+16#05E4 afii57684 pe 
+16#05E5 afii57685 tsadifinal 
+16#05E6 afii57686 tsadi 
+16#05E7 afii57687 qof 
+16#05E8 afii57688 resh 
+16#05E9 afii57689 shin 
+16#05EA afii57690 tav 
+16#05F0 afii57716 vavdbl 
+16#05F1 afii57717 vavyod 
+16#05F2 afii57718 yoddbl 
+16#05F3 geresh
+16#05F4 gershayim
+16#060C afii57388 arabiccomma 
+16#061B afii57403 arabicsemicolon 
+16#061F afii57407 arabicquestionmark 
+16#0621 afii57409 hamza 
+16#0622 afii57410 alefwithmaddaabove 
+16#0623 afii57411 alefwithhamzaabove 
+16#0624 afii57412 wawwithhamzaabove 
+16#0625 afii57413 alefwithhamzabelow 
+16#0626 afii57414 yehwithhamzaabove 
+16#0627 afii57415 arabicalef 
+16#0628 afii57416 beh 
+16#0629 afii57417 tehmarbuta 
+16#062A afii57418 teh 
+16#062B afii57419 theh 
+16#062C afii57420 jeem 
+16#062D afii57421 hah 
+16#062E afii57422 khah 
+16#062F afii57423 dal 
+16#0630 afii57424 thal 
+16#0631 afii57425 reh 
+16#0632 afii57426 zain 
+16#0633 afii57427 seen 
+16#0634 afii57428 sheen 
+16#0635 afii57429 sad 
+16#0636 afii57430 dad 
+16#0637 afii57431 tah 
+16#0638 afii57432 zah 
+16#0639 afii57433 ain 
+16#063A afii57434 ghain 
+16#0640 afii57440 tatweel 
+16#0641 afii57441 feh 
+16#0642 afii57442 qaf 
+16#0643 afii57443 arabickaf 
+16#0644 afii57444 lam 
+16#0645 afii57445 meem 
+16#0646 afii57446 noon 
+16#0647 afii57470 heh 
+16#0648 afii57448 waw 
+16#0649 afii57449 alefmaksura 
+16#064A afii57450 yeh 
+16#064B afii57451 fathatan 
+16#064C afii57452 dammatan 
+16#064D afii57453 kasratan 
+16#064E afii57454 fatha 
+16#064F afii57455 damma 
+16#0650 afii57456 kasra 
+16#0651 afii57457 shadda 
+16#0652 afii57458 sukun 
+16#0660 afii57392 arabicindicdigitzero 
+16#0661 afii57393 arabicindicdigitone 
+16#0662 afii57394 arabicindicdigittwo 
+16#0663 afii57395 arabicindicdigitthree 
+16#0664 afii57396 arabicindicdigitfour 
+16#0665 afii57397 arabicindicdigitfive 
+16#0666 afii57398 arabicindicdigitsix 
+16#0667 afii57399 arabicindicdigitseven 
+16#0668 afii57400 arabicindicdigiteight 
+16#0669 afii57401 arabicindicdigitnine 
+16#066A afii57381 arabicpercentsign 
+16#066D afii63167 arabicfivepointedstar 
+16#0670 superscriptalef
+16#0671 alefwasla
+16#0674 highhamza
+16#0679 afii57511
+16#067E afii57506 peh 
+16#0686 afii57507 tcheh 
+16#0688 afii57512
+16#0691 afii57513
+16#0698 afii57508 jeh 
+16#06A4 afii57505 veh 
+16#06A9 keheh
+16#06AF afii57509 gaf 
+16#06BA afii57514
+16#06CC farsiyeh
+16#06D2 afii57519
+16#06D5 afii57534 arabicae 
+16#06E4 smallhighmadda
+16#06F0 extendedarabicindicdigitzero
+16#06F1 extendedarabicindicdigitone
+16#06F2 extendedarabicindicdigittwo
+16#06F3 extendedarabicindicdigitthree
+16#06F4 extendedarabicindicdigitfour
+16#06F5 extendedarabicindicdigitfive
+16#06F6 extendedarabicindicdigitsix
+16#06F7 extendedarabicindicdigitseven
+16#06F8 extendedarabicindicdigiteight
+16#06F9 extendedarabicindicdigitnine
+16#0E00 0.0
+16#0E01 afii59681
+16#0E02 afii59682
+16#0E03 afii59683
+16#0E04 afii59684
+16#0E05 afii59685
+16#0E06 afii59686
+16#0E07 afii59687
+16#0E08 afii59688
+16#0E09 afii59689
+16#0E0A afii59690
+16#0E0B afii59691
+16#0E0C afii59692
+16#0E0D afii59693
+16#0E0E afii59694
+16#0E0F afii59695
+16#0E10 afii59696
+16#0E11 afii59697
+16#0E12 afii59698
+16#0E13 afii59699
+16#0E14 afii59700
+16#0E15 afii59701
+16#0E16 afii59702
+16#0E17 afii59703
+16#0E18 afii59704
+16#0E19 afii59705
+16#0E1A afii59706
+16#0E1B afii59707
+16#0E1C afii59708
+16#0E1D afii59709
+16#0E1E afii59710
+16#0E1F afii59711
+16#0E20 afii59712
+16#0E21 afii59713
+16#0E22 afii59714
+16#0E23 afii59715
+16#0E24 afii59716
+16#0E25 afii59717
+16#0E26 afii59718
+16#0E27 afii59719
+16#0E28 afii59720
+16#0E29 afii59721
+16#0E2A afii59722
+16#0E2B afii59723
+16#0E2C afii59724
+16#0E2D afii59725
+16#0E2E afii59726
+16#0E2F afii59727
+16#0E30 afii59729
+16#0E31 afii59728
+16#0E32 afii59730
+16#0E33 afii59731
+16#0E34 afii59732
+16#0E35 afii59733
+16#0E36 afii59734
+16#0E37 afii59735
+16#0E38 afii59736
+16#0E39 afii59737
+16#0E3A afii59738
+16#0E3F afii59743
+16#0E40 afii59744
+16#0E41 afii59745
+16#0E42 afii59746
+16#0E43 afii59747
+16#0E44 afii59748
+16#0E45 afii59749
+16#0E46 afii59750
+16#0E47 afii59751
+16#0E48 afii59752
+16#0E49 afii59753
+16#0E4A afii59754
+16#0E4B afii59755
+16#0E4C afii59756
+16#0E4D afii59757
+16#0E4E afii59758
+16#0E4F afii59759
+16#0E50 afii59760
+16#0E51 afii59761
+16#0E52 afii59762
+16#0E53 afii59763
+16#0E54 afii59764
+16#0E55 afii59765
+16#0E56 afii59766
+16#0E57 afii59767
+16#0E58 afii59768
+16#0E59 afii59769
+16#0E5A afii59770
+16#0E5B afii59771
+16#1E80 Wgrave
+16#1E81 wgrave
+16#1E82 Wacute
+16#1E83 wacute
+16#1E84 Wdieresis
+16#1E85 wdieresis
+16#1EF2 Ygrave
+16#1EF3 ygrave
+16#2000 enquad
+16#2001 emquad
+16#2002 enspace
+16#2003 emspace
+16#2004 threeperemspace
+16#2005 fourperemspace
+16#2006 sixperemspace
+16#2007 figurespace
+16#2008 punctuationspace
+16#2009 thinspace
+16#200A hairspace
+16#200B zerospace
+16#200C afii61664 zeronojoin 
+16#200D zerojoin afii301 
+16#200E lefttoright afii299 
+16#200F righttoleft afii300 
+16#2010 hyphen1
+16#2011 hyphennobreak nbhyphen 
+16#2012 figuredash
+16#2013 SS680000 endash 
+16#2014 SM900000 emdash 
+16#2015 afii00208 longdash quotedash 
+16#2016 verticalbardbl vertlinedbl 
+16#2017 SM100000 underscoredbl 
+16#2018 SP190000 quotesinglleft quoteleft 
+16#2019 SP200000 quotesinglright quoteright 
+16#201A SP260000 quotesinglbase 
+16#201B quotesinglrev quotereversed 
+16#201C SP210000 quotedblleft 
+16#201D SP220000 quotedblright 
+16#201E SP230000 quotedblbase 
+16#201F quotedblrev
+16#2020 SM340000 dagger 
+16#2021 SM350000 daggerdbl 
+16#2022 SM570000 bullet periodcentered
+16#2023 trianglebullet
+16#2024 onedotlead onedotleader onedotenleader 
+16#2025 twodotlead twodotleader twodotenleader 
+16#2026 SV520000 ellipsis 
+16#2027 hyphendot
+16#2028 lineseparator
+16#2029 paragraphseparator
+16#202A lre
+16#202B rle
+16#202C afii61573 pdf 
+16#202D afii61574 lro 
+16#202E afii61575 rlo 
+16#2030 SM560000 perthousand 
+16#2031 pertenthousand
+16#2032 prime1 prime minute 
+16#2033 primedbl1 primedbl second 
+16#2034 primetripl1 primetripl 
+16#2035 minuterev primerev1 primerev 
+16#2036 primedblrev1 primedblrev secondrev 
+16#2037 primetriplerev1 primetriplerev 
+16#2038 caret
+16#2039 SP270000 guilsinglleft 
+16#203A SP280000 guilsinglright 
+16#203B refmark
+16#203C SP330000 exclamdbl 
+16#203D interrobang
+16#203E overline overscore 
+16#203F undertie
+16#2040 tie tie1 
+16#2041 caretinsert
+16#2042 asterism
+16#2043 hyphenbullet
+16#2044 fraction1 ----fraction % Disabled for FCO project.
+16#2045 bracketleftquill
+16#2046 bracketrightquill
+16#2070 zerosuperior
+16#2074 foursuperior
+16#2075 fivesuperior
+16#2076 sixsuperior
+16#2077 sevensuperior
+16#2078 eightsuperior
+16#2079 ninesuperior
+16#207A plussuperior
+16#207B minussuperior
+16#207C equalsuperior
+16#207D parenleftsuperior
+16#207E parenrightsuperior
+16#207F LN011000 nsuperior 
+16#2080 zerosub zeroinferior 
+16#2081 onesub oneinferior 
+16#2082 twosub twoinferior 
+16#2083 threesub threeinferior 
+16#2084 foursub fourinferior 
+16#2085 fivesub fiveinferior 
+16#2086 sixsub sixinferior 
+16#2087 sevensub seveninferior 
+16#2088 eightsub eightinferior 
+16#2089 ninesub nineinferior 
+16#208A plussub plusinferior 
+16#208B minussub minusinferior 
+16#208C equalsub equalinferior 
+16#208D parenleftsub parenleftinferior 
+16#208E parenrightsub parenrightinferior 
+16#20A0 eurocurrency
+16#20A1 coloncurrency Colonmonetary coloncur colonmonetary 
+16#20A2 cruzeiro
+16#20A3 franc
+16#20A4 afii08941 lira 
+16#20A5 mill
+16#20A6 naira
+16#20A7 SC060000 Pts pesetas peseta 
+16#20A8 rupees rupee 
+16#20A9 won
+16#20AA afii57636 newsheqel 
+16#20AB dong
+16#20AC Euro
+16#2100 accountof
+16#2101 addresssubject
+16#2102 Cbb Cdblstruck 
+16#2103 degreecentigrade celsius 
+16#2104 centreline CL 
+16#2105 afii61248 careof 
+16#2106 cadauna
+16#2107 Euler
+16#2108 scruple
+16#2109 fahrenheit degreefarenheit degreefahrenheit farenheit 
+16#210A gscript gscriptmath 
+16#210B Hscript
+16#210C Hfractur Hfraktur Hblackletter 
+16#210D Hdblstruck Hbb 
+16#210E planck
+16#210F planckover2pi
+16#2110 Iscript
+16#2111 Ifractur Iblackletter Ifraktur 
+16#2112 Lscript
+16#2113 afii61289 lscript liter 
+16#2114 lbbar
+16#2115 Ndblstruck Nbb 
+16#2116 afii61352 numero 
+16#2117 recordright soundcopyright 
+16#2118 Pscript weierstrass 
+16#2119 Pdblstruck Pbb 
+16#211A Qdblstruck Qbb 
+16#211B Rscript
+16#211C Rblackletter Rfractur Rfraktur 
+16#211D Rdblstruck Rbb 
+16#211E Rx prescription 
+16#211F response
+16#2120 servicemark
+16#2121 telephone tel 
+16#2122 SM540000 trademark 
+16#2123 versicle
+16#2124 Zbb Zdblstruck 
+16#2125 ounce
+16#2126 ohm
+16#2127 Omegainv ohminverted mho 
+16#2128 Zfraktur Zblackletter Zfractur 
+16#2129 iotaturn
+16#212A kelvin degreekelvin 
+16#212B angstrom
+16#212C Bscript
+16#212D Cblackletter Cfraktur Cfractur 
+16#212E estimated
+16#212F escript
+16#2130 Escript
+16#2131 Fscript
+16#2132 Fturn
+16#2133 Mscript
+16#2134 oscript 0script 
+16#2135 alephmath aleph 
+16#2136 bethmath
+16#2137 gimelmath
+16#2138 dalethmath
+16#2153 onethird
+16#2154 twothirds
+16#2155 onefifth
+16#2156 twofifths
+16#2157 threefifths
+16#2158 fourfifths
+16#2159 onesixth
+16#215A fivesixth
+16#215B oneeighth
+16#215C threeeighths
+16#215D fiveeighths
+16#215E seveneighths
+16#2190 arrowleft
+16#2191 arrowup
+16#2192 arrowright
+16#2193 arrowdown
+16#2194 arrowboth
+16#2195 arrowupdn
+16#21A8 arrowupdnbse
+16#21B0 arrowupleft
+16#21B1 arrowupright
+16#21B2 arrowdownleft
+16#21B3 arrowdownright
+16#21B4 arrowrightdown
+16#21B5 carriagerreturn carriagereturn 
+16#21B6 arrowsemanticlockw
+16#21B7 arrowsemclockw
+16#21B8 home
+16#21B9 tableftright
+16#21BA arrowanticlockw
+16#21BB arrowclockw
+16#21BC arrowlefttophalf
+16#21BD arrowleftbothalf
+16#21BE harpoonupright
+16#21BF harpoonupleft
+16#21C0 arrowrighttophalf
+16#21C1 arrowrightbothalf
+16#21C2 harpoondownright
+16#21C3 harpoondownleft
+16#21C4 arrowparrrightleft
+16#21C5 dblarrowupdown
+16#21C6 arrowparrleftright
+16#21C7 dblarrowleft
+16#21C8 dblarrowup
+16#21C9 dblarrowright
+16#21CA dblarrowdown
+16#21CB harpoonleftright
+16#21CC harpoonrightleft
+16#21CD arrowdblleftnot
+16#21CE arrowdbllongbothnot
+16#21CF arrowdblrightnot
+16#21D0 arrowdblleft
+16#21D1 arrowdblup
+16#21D2 arrowdblright
+16#21D3 arrowdbldown
+16#21D4 arrowdbllongboth arrowdblboth 
+16#21D5 arrowdbllongbothv
+16#21D6 arrowdblnw
+16#21D7 arrowdblne
+16#21D8 arrowdblse
+16#21D9 arrowdblsw
+16#21DA arrowtripleleft
+16#21DB arrowtripleright
+16#21DC arrowsquiggleleft
+16#21DD arrowsquiggleright
+16#21DE pageup
+16#21DF pagedown
+16#21E0 arrowdashleft
+16#21E1 arrowdashup
+16#21E2 arrowdashright
+16#21E3 arrowdashdown
+16#21E4 arrowtableft
+16#21E5 arrowtabright
+16#21E6 arrowopenleft
+16#21E7 arrowupwhite arrowopenup 
+16#21E8 arrowopenright
+16#21E9 arrowopendown
+16#21EA capslock
+16#2200 universal
+16#2201 complement
+16#2202 partialdiff
+16#2203 existential
+16#2204 notexistential
+16#2205 emptyset
+16#2206 increment
+16#2207 nabla gradient 
+16#2208 element
+16#2209 notelement
+16#220A elementsmall smallelement 
+16#220B owner contains suchthat 
+16#220C notcontains notowner notsuchthat 
+16#220D ownersmall smallcontains 
+16#220E eop endofproof 
+16#220F product
+16#2210 coproduct
+16#2211 summation
+16#2212 minus
+16#2213 minusplus
+16#2214 dotplus
+16#2215 slashmath fraction
+16#2216 setminus backslashmath 
+16#2217 asteriskmath
+16#2218 openbullet1 ringmath 
+16#2219 productdot bulletmath 
+16#221A squareroot radical 
+16#221B cuberoot
+16#221C fourthroot
+16#221D proportional
+16#221E infinity
+16#221F rightangle orthogonal 
+16#2220 angle
+16#2221 measuredangle
+16#2222 sphericalangle
+16#2223 bar1 divides 
+16#2224 notbar notdivides 
+16#2225 bardbl2 parallel 
+16#2226 notbardbl notparallel 
+16#2227 logicaland
+16#2228 logicalor
+16#2229 intersection
+16#222A union
+16#222B integral
+16#222C integraldbl doubleintegral 
+16#222D tripleintegral integraltrpl 
+16#222E contintegral contourintegral 
+16#222F surfintegral surfaceintegral 
+16#2230 volintegral volumeintegral 
+16#2231 clwintegral
+16#2232 clwcontintegral
+16#2233 cclwcontintegral
+16#2234 therefore
+16#2235 because
+16#2236 ratio
+16#2237 proportion
+16#2238 dotminus
+16#2239 excess
+16#223A geomproportion proportiongeom 
+16#223B homothetic
+16#223C tildemath similar 
+16#223D revsimilar tildereversed 
+16#223E Sinvlazy lazysinv 
+16#223F sine sinewave 
+16#2240 wreathproduct
+16#2241 notsimilar
+16#2242 minustilde
+16#2243 similarequal approxequalalt asymptequal 
+16#2244 notasymptequal
+16#2245 approxorequal congruent 
+16#2246 approxnotequal
+16#2247 notapproxequal
+16#2248 almostequal approxequal 
+16#2249 notalmostequal
+16#224A almostorequal
+16#224B tildetrpl
+16#224C allequal
+16#224D equivasymptotic
+16#224E geomequivalent
+16#224F difference
+16#2250 approachlimit
+16#2251 geomequal
+16#2252 approxequalorimage
+16#2253 imageorapproxequal
+16#2254 colonequal
+16#2255 equalcolon
+16#2256 ringinequal
+16#2257 ringequal
+16#2258 corresponds
+16#2259 estimates
+16#225A equiangular
+16#225B starequal
+16#225C deltaequal
+16#225D definequal
+16#225E measurequal
+16#225F questionequal
+16#2260 notequal
+16#2261 equivalence
+16#2262 notequivalence
+16#2263 strictequivalence
+16#2264 lessequal
+16#2265 greaterequal
+16#2266 lessdblequal
+16#2267 greaterdblequal
+16#2268 lessnotdblequal
+16#2269 greaternotdblequal
+16#226A lessmuch
+16#226B greatermuch
+16#226C between
+16#226D notequivasymptotic
+16#226E notless
+16#226F notgreater
+16#2270 notlessequal1
+16#2271 notgreaterequal1
+16#2272 lessequivlnt
+16#2273 greaterequivlnt
+16#2274 notlessequivlnt
+16#2275 notgreaterequivlnt
+16#2276 lessorgreater
+16#2277 greaterorless
+16#2278 notlessgreater
+16#2279 notgreaterless
+16#227A precedes
+16#227B follows
+16#227C precedesequal1
+16#227D followsequal1
+16#227E precedequivlnt
+16#227F followsequivlnt
+16#2280 notpreceeds
+16#2281 notfollows
+16#2282 propersubset
+16#2283 propersuperset
+16#2284 notpropersubset notsubset 
+16#2285 notpropersuperset notsuperset 
+16#2286 reflexsubset
+16#2287 reflexsuperset
+16#2288 notreflexsubset
+16#2289 notreflexsuperset
+16#228A subsetnotequal
+16#228B supersetnotequal
+16#228C multiset
+16#228D multiplymultiset
+16#228E unionmulti
+16#228F squareimage
+16#2290 squareoriginal
+16#2291 subsetsqequal
+16#2292 supersetsqequal
+16#2293 intersectionsq
+16#2294 unionsq
+16#2295 circleplus
+16#2296 circleminus
+16#2297 circlemultiply
+16#2298 circledivide
+16#2299 circledot
+16#229A circlering
+16#229B circleasterisk
+16#229C circleequal
+16#229D circleminus1
+16#229E squareplus
+16#229F squareminus
+16#22A0 squaremultiply
+16#22A1 squaredot
+16#22A2 turnstileleft
+16#22A3 turnstileright
+16#22A4 latticetop
+16#22A5 perpendicular
+16#22A6 assertion
+16#22A7 truestate
+16#22A8 satisfy
+16#22A9 force
+16#22AA tacktrpl
+16#22AB forceextr
+16#22AC notturnstileleft
+16#22AD notsatisfy
+16#22AE notforce
+16#22AF notforceextr
+16#22B0 lowerrank
+16#22B1 higherrank
+16#22B2 triangleright
+16#22B3 triangleleft
+16#22B4 triangleftequal
+16#22B5 triangrightequal
+16#22B6 original
+16#22B7 image
+16#22B8 multimap
+16#22B9 hermitconjmatrix
+16#22BA intercal
+16#22BB orunderscore xor 
+16#22BC nand
+16#22BD nor
+16#22BE rightanglearc
+16#22BF righttriangle
+16#22C0 narylogicaland
+16#22C1 narylogicalor
+16#22C2 naryintersection
+16#22C3 naryunion
+16#22C4 diamondmath
+16#22C5 dotmath
+16#22C6 star
+16#22C7 divideonmultiply
+16#22C8 bowtie
+16#22C9 multicloseleft
+16#22CA multicloseright
+16#22CB multiopenleft
+16#22CC multiopenright
+16#22CD revasymptequal
+16#22CE curlor
+16#22CF curland
+16#22D0 subsetdbl
+16#22D1 supersetdbl
+16#22D2 uniondbl
+16#22D3 intersectiondbl
+16#22D4 fork
+16#22D5 equalparallel
+16#22D6 lessdot
+16#22D7 greaterdot
+16#22D8 verymuchless
+16#22D9 verymuchgreater
+16#22DA lessequalgreater
+16#22DB greaterequalless
+16#22DC equalless
+16#22DD equalgreater
+16#22DE equalprecedes1
+16#22DF equalfollows1
+16#22E0 preceedsnotequal
+16#22E1 followsnotequal
+16#22E2 notsubsetsqequal
+16#22E3 notsupersetsqequal
+16#22E4 sqimageornotequal
+16#22E5 sqoriginornotequal
+16#22E6 lessnotequivlnt
+16#22E7 greaternotequivlnt
+16#22E8 preceedsnotsimilar
+16#22E9 followsnotequivlnt
+16#22EA nottriangleleft
+16#22EB nottriangleright
+16#22EC nottriangleleftequal
+16#22ED nottrianglerightequal
+16#22EE vertellipsis
+16#22EF midhorizellipsis
+16#22F0 upslopeellipsis
+16#22F1 downslopeellipsis
+16#2302 SM790000 house 
+16#2306 perspcorrespond
+16#2308 ceilingleft
+16#2309 ceilingright
+16#230A floorleft
+16#230B floorright
+16#2310 revlogicalnot
+16#2320 SS260000 integraltp 
+16#2321 SS270000 integralbt 
+16#2322 slurabove
+16#2323 slurbelow
+16#2329 angleleft
+16#232A angleright
+16#2500 SF100000
+16#2502 SF110000
+16#250A 250a
+16#250B 250b
+16#250C SF010000 250c 
+16#250D 250d
+16#250E 250e
+16#250F 250f
+16#2510 SF030000
+16#2514 SF020000
+16#2518 SF040000
+16#251A 251a
+16#251B 251b
+16#251C SF080000 251c 
+16#251D 251d
+16#251E 251e
+16#251F 251f
+16#2524 SF090000
+16#252A 252a
+16#252B 252b
+16#252C SF060000 252c 
+16#252D 252d
+16#252E 252e
+16#252F 252f
+16#2534 SF070000
+16#253A 253a
+16#253B 253b
+16#253C SF050000 253c 
+16#253D 253d
+16#253E 253e
+16#253F 253f
+16#254A 254a
+16#254B 254b
+16#254C 254c
+16#254D 254d
+16#254E 254e
+16#254F 254f
+16#2550 SF430000
+16#2551 SF240000
+16#2552 SF510000
+16#2553 SF520000
+16#2554 SF390000
+16#2555 SF220000
+16#2556 SF210000
+16#2557 SF250000
+16#2558 SF500000
+16#2559 SF490000
+16#255A SF380000 255a 
+16#255B SF280000 255b 
+16#255C SF270000 255c 
+16#255D SF260000 255d 
+16#255E SF360000 255e 
+16#255F SF370000 255f 
+16#2560 SF420000
+16#2561 SF190000
+16#2562 SF200000
+16#2563 SF230000
+16#2564 SF470000
+16#2565 SF480000
+16#2566 SF410000
+16#2567 SF450000
+16#2568 SF460000
+16#2569 SF400000
+16#256A SF540000 256a 
+16#256B SF530000 256b 
+16#256C SF440000 256c 
+16#256D 256d
+16#256E 256e
+16#256F 256f
+16#257A 257a
+16#257B 257b
+16#257C 257c
+16#257D 257d
+16#257E 257e
+16#257F 257f
+16#2580 SF600000 upblock 
+16#2581 dneightblock
+16#2582 dnquarterblock
+16#2583 dnthreeeighthblock
+16#2584 SF570000 dnblock 
+16#2585 dnfiveeighthblock
+16#2586 dnthreequarterblock
+16#2587 dnseveneighthblock
+16#2588 SF610000 block 
+16#2589 lfseveneighthblock
+16#258A lfthreequarterblock
+16#258B lffiveeighthblock
+16#258C SF580000 lfblock 
+16#258D lfthreeeighthblock
+16#258E lfquarterblock
+16#258F lfeighthblock
+16#2590 SF590000 rtblock 
+16#2591 SF140000 ltshade 
+16#2592 SF150000 shade 
+16#2593 SF160000 dkshade 
+16#2594 upeighthblock
+16#2595 rteighthblock
+16#25A0 SM470000 filledbox 
+16#25A1 box H22073 
+16#25A2 boxrounded
+16#25A3 boxnested
+16#25A4 boxhorizhatch
+16#25A5 boxverthatch
+16#25A6 boxcrosshatch
+16#25A7 boxleftdiaghatch
+16#25A8 boxrtdiaghatch
+16#25A9 boxcrossdiaghatch
+16#25AA smallboxfilled H18543 
+16#25AB smallbox H18551 
+16#25AC SM700000 filledrect 
+16#25AD rectangle
+16#25AE filledvertrect
+16#25AF vertrectangle
+16#25B0 filledparallelogram
+16#25B1 parallelogram
+16#25B2 SM600000 triagup 
+16#25B3 triangle
+16#25B4 smalltrianglesld
+16#25B5 smalltriangle
+16#25B6 trianglerightsld1
+16#25B7 triangleright1
+16#25B8 smalltrianglerightsld
+16#25B9 smalltriangleright
+16#25BA SM590000 triagrt 
+16#25BB triagrtopen
+16#25BC SV040000 triagdn 
+16#25BD triangleinv
+16#25BE smalltriangleinvsld
+16#25BF smalltriangleinv
+16#25C0 triangleleftsld1
+16#25C1 triangleleft1
+16#25C2 smalltriangleleftsld
+16#25C3 smalltriangleleft
+16#25C4 SM630000 triaglf 
+16#25C5 triaglfopen
+16#25C6 diamondrhombsolid
+16#25C7 diamondrhomb
+16#25C8 diamondrhombnested
+16#25C9 fisheye
+16#25CA SA660000 lozenge 
+16#25CB SM750000 circle 
+16#25CC circledash
+16#25CD circleverthatch
+16#25CE bullseye1
+16#25CF SM580000 bulletaltone circlesolid H18533 
+16#25D0 circleleftsld
+16#25D1 circlerightsld
+16#25D2 circlebottomsld
+16#25D3 circletopsld
+16#25D4 circlenesld
+16#25D5 circlenwopen
+16#25D6 semicircleleftsld
+16#25D7 semicirclelertsld
+16#25D8 SM570001 invbullet 
+16#25D9 SM750002 invcircle 
+16#25DA invsemicircleup
+16#25DB invsemicircledn
+16#25DC nwquadarc
+16#25DD nequadarc
+16#25DE sequadarc
+16#25DF swquadarc
+16#25E0 toparc
+16#25E1 bottomarc
+16#25E2 trianglesesld
+16#25E3 triangleswsld
+16#25E4 tranglenwsld
+16#25E5 trianglenesld
+16#25E6 openbullet
+16#25E7 squareleftsld
+16#25E8 squarerightsld
+16#25E9 squarenwsld
+16#25EA squaresesld
+16#25EB squarevertbisect
+16#25EC triangledot
+16#25ED triangleleftsld
+16#25EE trianglerightsld
+16#263A SS000000 smileface 
+16#263B SS010000 invsmileface 
+16#263C SM690000 sun 
+16#2640 SM290000 female 
+16#2642 SM280000 male 
+16#2643 u2643
+16#2660 SS050000 spade 
+16#2663 SS040000 club 
+16#2665 SS020000 heart 
+16#2666 SS030000 diamond 
+16#266A SM930000 musicalnote 
+16#266B SM910000 musicalnotedbl 
+16#266D flat
+16#266E natural
+16#266F sharp
+16#E802 finalkafwithsheva
+16#E803 finalkafwithqamats
+16#E804 lamedwithholam
+16#E805 lamedwithdageshandholam
+16#E811 lamwithmeemwithjeeminitial
+16#E812 behwithhehinitial
+16#E813 pehwithhehinitial
+16#E814 tehwithhehinitial
+16#E815 noonwithhehinitial
+16#E816 rayaleflam
+16#E818 shaddawithfathatanisolated
+16#E820 fathalow
+16#E821 dammalow
+16#E822 sukunlow
+16#E823 fathatanlow
+16#E824 dammatanlow
+16#E825 shaddalow
+16#E826 kasralow
+16#E827 kasratanlow
+16#E828 shaddawithfathalow shaddawithfathaisolatedlow 
+16#E829 shaddawithdammalow shaddawithdammaisolatedlow 
+16#E82A shaddawithfathatanisolatedlow shaddawithfathatanlow 
+16#E82B shaddawithdammatanisolatedlow shaddawithdammatanlow 
+16#E82C shaddawithkasraisolatedlow shaddawithkasralow 
+16#E82D shaddawithkasratanisolatedlow shaddawithkasratanlow 
+16#E832 fathaonhamza
+16#E833 fathatanonhamza
+16#E834 sukunonhamza
+16#E835 dammaonhamza
+16#E836 dammatanonhamza
+16#F003 circumflex1
+16#F004 tilde1
+16#F005 dieresis1
+16#F006 breve1
+16#F007 ring1
+16#F008 cedilla1
+16#F009 hungarumlaut1
+16#F00A caron1
+16#F00D cedilla2
+16#F6BE dotlessj
+16#F6BF LL
+16#F6C0 ll
+16#F6C3 commaaccent
+16#F6C4 afii10063
+16#F6C5 afii10064
+16#F6C6 afii10192
+16#F6C7 afii10831
+16#F6C8 afii10832
+16#F6C9 Acute
+16#F6CA Caron
+16#F6CB Dieresis
+16#F6CC DieresisAcute
+16#F6CD DieresisGrave
+16#F6CE Grave
+16#F6CF Hungarumlaut
+16#F6D0 Macron
+16#F6D1 cyrBreve
+16#F6D2 cyrFlex
+16#F6D3 dblGrave
+16#F6D4 cyrbreve
+16#F6D5 cyrflex
+16#F6D6 dblgrave
+16#F6D7 dieresisacute
+16#F6D8 dieresisgrave
+16#F6D9 copyrightserif
+16#F6DA registerserif
+16#F6DB trademarkserif
+16#F6DC onefitted
+16#F6DD rupiah
+16#F6DE threequartersemdash
+16#F6DF centinferior
+16#F6E0 centsuperior
+16#F6E1 commainferior
+16#F6E2 commasuperior
+16#F6E3 dollarinferior
+16#F6E4 dollarsuperior
+16#F6E5 hypheninferior
+16#F6E6 hyphensuperior
+16#F6E7 periodinferior
+16#F6E8 periodsuperior
+16#F6E9 asuperior
+16#F6EA bsuperior
+16#F6EB dsuperior
+16#F6EC esuperior
+16#F6ED isuperior
+16#F6EE lsuperior
+16#F6EF msuperior
+16#F6F0 osuperior
+16#F6F1 rsuperior
+16#F6F2 ssuperior
+16#F6F3 tsuperior
+16#F6F4 Brevesmall
+16#F6F5 Caronsmall
+16#F6F6 Circumflexsmall
+16#F6F7 Dotaccentsmall
+16#F6F8 Hungarumlautsmall
+16#F6F9 Lslashsmall
+16#F6FA OEsmall
+16#F6FB Ogoneksmall
+16#F6FC Ringsmall
+16#F6FD Scaronsmall
+16#F6FE Tildesmall
+16#F6FF Zcaronsmall
+16#F700 f700
+16#F701 f701
+16#F702 f702
+16#F703 f703
+16#F704 f704
+16#F705 f705
+16#F706 f706
+16#F707 f707
+16#F708 f708
+16#F709 f709
+16#F70A f70a
+16#F70B f70b
+16#F70C f70c
+16#F70D f70d
+16#F70E f70e
+16#F70F f70f
+16#F710 f710
+16#F711 f711
+16#F712 f712
+16#F713 f713
+16#F714 f714
+16#F715 f715
+16#F716 f716
+16#F717 f717
+16#F718 f718
+16#F719 f719
+16#F71A f71a
+16#F71C f71c
+16#F71D f71d
+16#F721 exclamsmall
+16#F724 dollaroldstyle
+16#F726 ampersandsmall
+16#F730 zerooldstyle
+16#F731 oneoldstyle
+16#F732 twooldstyle
+16#F733 threeoldstyle
+16#F734 fouroldstyle
+16#F735 fiveoldstyle
+16#F736 sixoldstyle
+16#F737 sevenoldstyle
+16#F738 eightoldstyle
+16#F739 nineoldstyle
+16#F73F questionsmall
+16#F760 Gravesmall
+16#F761 Asmall
+16#F762 Bsmall
+16#F763 Csmall
+16#F764 Dsmall
+16#F765 Esmall
+16#F766 Fsmall
+16#F767 Gsmall
+16#F768 Hsmall
+16#F769 Ismall
+16#F76A Jsmall
+16#F76B Ksmall
+16#F76C Lsmall
+16#F76D Msmall
+16#F76E Nsmall
+16#F76F Osmall
+16#F770 Psmall
+16#F771 Qsmall
+16#F772 Rsmall
+16#F773 Ssmall
+16#F774 Tsmall
+16#F775 Usmall
+16#F776 Vsmall
+16#F777 Wsmall
+16#F778 Xsmall
+16#F779 Ysmall
+16#F77A Zsmall
+16#F7A1 exclamdownsmall
+16#F7A2 centoldstyle
+16#F7A8 Dieresissmall
+16#F7AF Macronsmall
+16#F7B4 Acutesmall
+16#F7B8 Cedillasmall
+16#F7BF questiondownsmall
+16#F7E0 Agravesmall
+16#F7E1 Aacutesmall
+16#F7E2 Acircumflexsmall
+16#F7E3 Atildesmall
+16#F7E4 Adieresissmall
+16#F7E5 Aringsmall
+16#F7E6 AEsmall
+16#F7E7 Ccedillasmall
+16#F7E8 Egravesmall
+16#F7E9 Eacutesmall
+16#F7EA Ecircumflexsmall
+16#F7EB Edieresissmall
+16#F7EC Igravesmall
+16#F7ED Iacutesmall
+16#F7EE Icircumflexsmall
+16#F7EF Idieresissmall
+16#F7F0 Ethsmall
+16#F7F1 Ntildesmall
+16#F7F2 Ogravesmall
+16#F7F3 Oacutesmall
+16#F7F4 Ocircumflexsmall
+16#F7F5 Otildesmall
+16#F7F6 Odieresissmall
+16#F7F8 Oslashsmall
+16#F7F9 Ugravesmall
+16#F7FA Uacutesmall
+16#F7FB Ucircumflexsmall
+16#F7FC Udieresissmall
+16#F7FD Yacutesmall
+16#F7FE Thornsmall
+16#F7FF Ydieresissmall
+16#F810 Dcaron1
+16#F811 dcaron1
+16#F812 Lcaron1
+16#F813 lcaron1
+16#F814 Tcaron1
+16#F815 tcaron1 tcaronaltone 
+16#F816 Scedilla1
+16#F817 scedilla1
+16#F818 Tcedilla1 Kcedilla1 
+16#F819 kcedilla1 tcedilla1 
+16#F81A Lcedilla1 gcedilla1 
+16#F81B lcedilla1 peso1 pesoph 
+16#F81C Ncedilla1
+16#F81D ncedilla1
+16#F81E Rcedilla1
+16#F81F rcedilla1
+16#F820 dotcircle1
+16#F821 ltshade1
+16#F822 shade1
+16#F823 dkshade1
+16#F830 logonek
+16#F831 Rcircumflex
+16#F832 rcircumflex
+16#F833 Ucedilla
+16#F834 ucedilla
+16#F8E5 radicalex
+16#F8E6 arrowvertex
+16#F8E7 arrowhorizex
+16#F8E8 registersans
+16#F8E9 copyrightsans
+16#F8EA trademarksans
+16#F8EB parenlefttp
+16#F8EC parenleftex
+16#F8ED parenleftbt
+16#F8EE bracketlefttp
+16#F8EF bracketleftex
+16#F8F0 bracketleftbt
+16#F8F1 bracelefttp
+16#F8F2 braceleftmid
+16#F8F3 braceleftbt clear 
+16#F8F4 deleteleft braceex 
+16#F8F5 deleteright integralex 
+16#F8F6 parenrighttp help 
+16#F8F7 propellor parenrightex 
+16#F8F8 control parenrightbt 
+16#F8F9 power bracketrighttp 
+16#F8FA option bracketrightex 
+16#F8FB contextmenu bracketrightbt 
+16#F8FC carriagereturnleft bracerighttp 
+16#F8FD enter bracerightmid 
+16#F8FE appleopen bracerightbt 
+16#F8FF apple
+16#FB00 ff
+16#FB01 fi
+16#FB02 fl
+16#FB03 ffi
+16#FB04 ffl
+16#FB05 slongt longst 
+16#FB06 st
+16#FB1E varika
+16#FB1F afii57705
+16#FB20 alternativeayin
+16#FB2A afii57694 shinwithshindot 
+16#FB2B afii57695 shinwithsindot 
+16#FB2C shinwithdageshandshindot
+16#FB2D shinwithdageshandsindot
+16#FB2E alefwithpatah
+16#FB2F alefwithqamats
+16#FB30 alefwithmapiq
+16#FB31 betwithdagesh
+16#FB32 gimelwithdagesh
+16#FB33 daletwithdagesh
+16#FB34 hewithmapiq
+16#FB35 afii57723 vavwithdagesh 
+16#FB36 zayinwithdagesh
+16#FB38 tetwithdagesh
+16#FB39 yodwithdagesh
+16#FB3A finalkafwithdagesh
+16#FB3B kafwithdagesh
+16#FB3C lamedwithdagesh
+16#FB3E memwithdagesh
+16#FB40 nunwithdagesh
+16#FB41 samekhwithdagesh
+16#FB43 finalpewithdagesh
+16#FB44 pewithdagesh
+16#FB46 tsadiwithdagesh
+16#FB47 qofwithdagesh
+16#FB48 reshwithdagesh
+16#FB49 shinwithdagesh
+16#FB4A tavwithdagesh
+16#FB4B afii57700 vavwithholam 
+16#FB4C betwithrafe
+16#FB4D kafwithrafe
+16#FB4E pewithrafe
+16#FB4F aleflamed
+16#FB50 alefwaslaisolated
+16#FB51 alefwaslafinal
+16#FB56 pehisolated
+16#FB57 pehfinal
+16#FB58 pehinitial
+16#FB59 pehmedial
+16#FB6A vehisolated
+16#FB6B vehfinal
+16#FB6C vehinitial
+16#FB6D vehmedial
+16#FB7A tchehisolated
+16#FB7B tchehfinal
+16#FB7C tchehinitial
+16#FB7D tchehmedial
+16#FB8A jehisolated
+16#FB8B jehfinal
+16#FB8E kehehisolated
+16#FB8F kehehfinal
+16#FB90 kehehinitial
+16#FB91 kehehmedial
+16#FB92 gafisolated
+16#FB93 gaffinal
+16#FB94 gafinitial
+16#FB95 gafmedial
+16#FBFC farsiyehisolated
+16#FBFD farsiyehfinal
+16#FC08 behwithmeemisolated
+16#FC09 behwithalefmaksuraisolated
+16#FC0A behwithyehisolated
+16#FC0E tehwithmeemisolated
+16#FC10 tehwithyehisolated
+16#FC12 thehwithmeemisolated
+16#FC31 fehwithalefmaksuraisolated
+16#FC32 fehwithyehisolated
+16#FC3F lamwithjeemisolated
+16#FC40 lamwithhahisolated
+16#FC41 lamwithkhahisolated
+16#FC42 lamwithmeemisolated
+16#FC43 lamwithalefmaksuraisolated
+16#FC44 lamwithyehisolated
+16#FC4E noonwithmeemisolated
+16#FC4F noonwithalefmaksuraisolated
+16#FC50 noonwithyehisolated
+16#FC58 yehwithmeemisolated
+16#FC59 yehwithalefmaksuraisolated
+16#FC5E shaddawithdammatanisolated
+16#FC5F shaddawithkasratanisolated
+16#FC60 shaddawithfathaisolated
+16#FC61 shaddawithdammaisolated
+16#FC62 shaddawithkasraisolated
+16#FC6A behwithrehfinal
+16#FC6D behwithnoonfinal
+16#FC6E behwithalefmaksurafinal
+16#FC6F behwithyehfinal
+16#FC70 noonwithzainfinal
+16#FC73 tehwithnoonfinal
+16#FC74 tehwithalefmaksurafinal
+16#FC75 tehwithyehfinal
+16#FC8E noonwithalefmaksurafinal
+16#FC8F noonwithyehfinal
+16#FC91 yehwithrehfinal
+16#FC94 yehwithnoonfinal
+16#FC95 yehwithalefmaksurafinal
+16#FC9C behwithjeeminitial
+16#FC9D behwithhahinitial
+16#FC9E behwithkhahinitial
+16#FC9F behwithmeeminitial
+16#FCA1 tehwithjeeminitial
+16#FCA2 tehwithhahinitial
+16#FCA3 tehwithkhahinitial
+16#FCA4 tehwithmeeminitial
+16#FCA6 thehwithmeeminitial
+16#FCA8 jeemwithmeeminitial
+16#FCAA hahwithmeeminitial
+16#FCAC khahwithmeeminitial
+16#FCB0 seenwithmeeminitial
+16#FCC9 lamwithjeeminitial
+16#FCCA lamwithhahinitial
+16#FCCB lamwithkhahinitial
+16#FCCC lamwithmeeminitial
+16#FCCD lamwithhehinitial
+16#FCCE meemwithjeeminitial
+16#FCCF meemwithhahinitial
+16#FCD0 meemwithkhahinitial
+16#FCD1 meemwithmeeminitial
+16#FCD2 noonwithjeeminitial
+16#FCD3 noonwithhahinitial
+16#FCD4 noonwithkhahinitial
+16#FCD5 noonwithmeeminitial
+16#FCD8 hehwithmeeminitial
+16#FCDA yehwithjeeminitial
+16#FCDB yehwithhahinitial
+16#FCDC yehwithkhahinitial
+16#FCDD yehwithmeeminitial
+16#FCF2 shaddawithfathamedial
+16#FCF3 shaddawithdammamedial
+16#FCF4 shaddawithkasramedial
+16#FD30 sheenwithmeeminitial
+16#FD3C alefwithfathatanfinal
+16#FD3D alefwithfathatanisolated
+16#FD3E ornateleftparenthesis
+16#FD3F ornaterightparenthesis
+16#FD88 lamwithmeemwithhahinitial
+16#FDF2 allahisolated
+16#FE70 fathatanisolated
+16#FE71 fathatanontatweel tatweelwithfathatanabove 
+16#FE72 dammatanisolated
+16#FE74 kasratanisolated
+16#FE76 fathaisolated
+16#FE77 fathahontatweel fathamedial 
+16#FE78 dammaisolated
+16#FE79 dammahontatweel dammamedial 
+16#FE7A kasraisolated
+16#FE7B kasrahontatweel kasramedial 
+16#FE7C shaddaisolated
+16#FE7D shaddahontatweel shaddamedial 
+16#FE7E sukunisolated
+16#FE7F sukunontatweel sukunmedial 
+16#FE80 hamzaisolated
+16#FE81 alefwithmaddaaboveisolated
+16#FE82 alefwithmaddaabovefinal
+16#FE83 alefwithhamzaaboveisolated
+16#FE84 alefwithhamzaabovefinal
+16#FE85 wawwithhamzaaboveisolated
+16#FE86 wawwithhamzaabovefinal
+16#FE87 alefwithhamzabelowisolated
+16#FE88 alefwithhamzabelowfinal
+16#FE89 yehwithhamzaaboveisolated
+16#FE8A yehwithhamzaabovefinal
+16#FE8B yehwithhamzaaboveinitial
+16#FE8C yehwithhamzaabovemedial
+16#FE8D alefisolated
+16#FE8E aleffinal
+16#FE8F behisolated
+16#FE90 behfinal
+16#FE91 behinitial
+16#FE92 behmedial
+16#FE93 tehmarbutaisolated
+16#FE94 tehmarbutafinal
+16#FE95 tehisolated
+16#FE96 tehfinal
+16#FE97 tehinitial
+16#FE98 tehmedial
+16#FE99 thehisolated
+16#FE9A thehfinal
+16#FE9B thehinitial
+16#FE9C thehmedial
+16#FE9D jeemisolated
+16#FE9E jeemfinal
+16#FE9F jeeminitial
+16#FEA0 jeemmedial
+16#FEA1 hahisolated
+16#FEA2 hahfinal
+16#FEA3 hahinitial
+16#FEA4 hahmedial
+16#FEA5 khahisolated
+16#FEA6 khahfinal
+16#FEA7 khahinitial
+16#FEA8 khahmedial
+16#FEA9 dalisolated
+16#FEAA dalfinal
+16#FEAB thalisolated
+16#FEAC thalfinal
+16#FEAD rehisolated
+16#FEAE rehfinal
+16#FEAF zainisolated
+16#FEB0 zainfinal
+16#FEB1 seenisolated
+16#FEB2 seenfinal
+16#FEB3 seeninitial
+16#FEB4 seenmedial
+16#FEB5 sheenisolated
+16#FEB6 sheenfinal
+16#FEB7 sheeninitial
+16#FEB8 sheenmedial
+16#FEB9 sadisolated
+16#FEBA sadfinal
+16#FEBB sadinitial
+16#FEBC sadmedial
+16#FEBD dadisolated
+16#FEBE dadfinal
+16#FEBF dadinitial
+16#FEC0 dadmedial
+16#FEC1 tahisolated
+16#FEC2 tahfinal
+16#FEC3 tahinitial
+16#FEC4 tahmedial
+16#FEC5 zahisolated
+16#FEC6 zahfinal
+16#FEC7 zahinitial
+16#FEC8 zahmedial
+16#FEC9 ainisolated
+16#FECA ainfinal
+16#FECB aininitial
+16#FECC ainmedial
+16#FECD ghainisolated
+16#FECE ghainfinal
+16#FECF ghaininitial
+16#FED0 ghainmedial
+16#FED1 fehisolated
+16#FED2 fehfinal
+16#FED3 fehinitial
+16#FED4 fehmedial
+16#FED5 qafisolated
+16#FED6 qaffinal
+16#FED7 qafinitial
+16#FED8 qafmedial
+16#FED9 kafisolated
+16#FEDA arabickaffinal
+16#FEDB kafinitial
+16#FEDC kafmedial
+16#FEDD lamisolated
+16#FEDE lamfinal
+16#FEDF laminitial
+16#FEE0 lammedial
+16#FEE1 meemisolated
+16#FEE2 meemfinal
+16#FEE3 meeminitial
+16#FEE4 meemmedial
+16#FEE5 noonisolated
+16#FEE6 noonfinal
+16#FEE7 nooninitial
+16#FEE8 noonmedial
+16#FEE9 hehisolated
+16#FEEA hehfinal
+16#FEEB hehinitial
+16#FEEC hehmedial
+16#FEED wawisolated
+16#FEEE wawfinal
+16#FEEF alefmaksuraisolated
+16#FEF0 alefmaksurafinal
+16#FEF1 yehisolated
+16#FEF2 yehfinal
+16#FEF3 yehinitial
+16#FEF4 yehmedial
+16#FEF5 lamwithalefmaddaaboveisolatedd
+16#FEF6 lamwithalefmaddaabovefinal
+16#FEF7 lamwithalefhamzaaboveisolatedd
+16#FEF8 lamwithalefhamzaabovefinal
+16#FEF9 lamwithalefhamzabelowisolated
+16#FEFA lamwithalefhamzabelowfinal
+16#FEFB lamwithalefisolated
+16#FEFC lamwithaleffinal
+16#FEFF zerowidthnobreakspace bom 
+
+%EOF

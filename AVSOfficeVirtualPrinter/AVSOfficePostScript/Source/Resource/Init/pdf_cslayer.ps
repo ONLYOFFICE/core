@@ -1,0 +1,121 @@
+% Copyright (C) 2007 Artifex Software, Inc.
+% All Rights Reserved.
+%
+% This software is provided AS-IS with no warranty, either express or
+% implied.
+%
+% This software is distributed under license and may not be copied, modified
+% or distributed except as expressly authorized under the terms of that
+% license.  Refer to licensing information at http://www.artifex.com/
+% or contact Artifex Software, Inc.,  7 Mt. Lassen Drive - Suite A-134,
+% San Rafael, CA  94903, U.S.A., +1(415)492-9861, for further information.
+%
+% $Id: pdf_cslayer.ps 8954 2008-08-08 04:22:38Z ray $
+% 
+% Layer data extraction from Illustator CS2/CS3 files
+% 
+
+.languagelevel dup 2 .max .setlanguagelevel
+.currentglobal //true .setglobal
+/pdfdict load dup /pdfopdict get dup length dict copy dup begin /pdfopdict exch put
+
+/BMC {
+  currentdevice //null //false mark
+  /MarkType (BMC)
+  /BMC_Tag  8 1 roll 256 string cvs
+  //systemdict /CSLAYERDEBUG .knownget {
+    { (### BMC to deviceparams, tag: ) print dup = flush } if
+  } if
+  .putdeviceparamsonly dup type /booleantype ne {
+     cleartomark pop
+  } if
+  pop pop 	% discard the device and flag
+  pop pop 	% discard /BMC_Tag and the tag name
+} bind def
+
+/BDC {	% send selected BDC info to the device as properties
+  10 dict begin	% private working dictionary
+  /MarkType (BDC) def	% BDC code
+  % process the tag and Title for now
+  exch 256 string cvs /BDC_Tag exch def	% convert tag to a string
+  dup type /nametype eq {
+    dup Page /Properties rget not {
+      pop 0 dict	% empty dict in case missing Properties Resource
+    } if
+    exch pop		% discard the resource name
+  } if
+
+  dup /Type knownoget { /OCG eq } { //false } ifelse {
+    % Illustrator CS3 and higher
+    dup /Name knownoget not { () } if	% no Name, use an empty string
+    /BDC_Title exch def
+
+    dup /Usage knownoget not { 0 dict } if
+    dup /View knownoget { /ViewState knownoget { /OFF ne } { //true } ifelse } { //true } ifelse
+    /BDC_Visible exch def
+    dup /Print knownoget { /PrintState knownoget { /OFF ne } { //true } ifelse } { //true } ifelse
+    /BDC_Printed exch def
+    pop  % Usage dict
+ 
+    dup /Intent knownoget {
+      dup type /nametype eq {
+        /Design eq
+      } {
+        //false exch { oforce /Design eq or } forall
+      } ifelse
+    } {
+      //false
+    } ifelse
+    /BDC_Editable exch def
+
+    /BDC_Preview //true def
+    /BDC_Dimmed //false def
+    /BDC_Transparency //true def
+    /BDC_FlatLayer //true def
+  } {
+    % Illustrator CS2
+    dup /Title knownoget not { () } if	% no Title, use an empty string
+    /BDC_Title exch def
+    dup /Visible knownoget not { //true } if % no Visible flag, set true
+    /BDC_Visible exch def
+    dup /Preview knownoget not { //true } if % no preview flag, set true
+    /BDC_Preview exch def
+    dup /Editable knownoget not { //true } if % no Editable flag, set true
+    /BDC_Editable exch def
+    dup /Printed knownoget not { //true } if % no printed flag, set true
+    /BDC_Printed exch def
+    dup /Dimmed knownoget not { //true } if % no dimmed flag, set true
+    /BDC_Dimmed exch def
+    dup /Transparency knownoget not { //true } if % no Transparency flag, set true
+    /BDC_Transparency exch def
+    dup /FlatLayer knownoget not { //true } if % no flat layer flag, set true
+    /BDC_FlatLayer exch def
+  } ifelse
+
+  % now send the collected info to the device
+  //systemdict /CSLAYERDEBUG .knownget {
+    { (### BDC info to deviceparams: ) print currentdict === flush } if
+  } if
+  currentdevice //null //false mark currentdict { } forall
+  .putdeviceparamsonly dup type /booleantype ne {
+    cleartomark pop
+  } if
+  pop pop 	% discard the device and flag
+  end		% discard private dict
+  pop		% done with properties dict
+} bind def
+
+/EMC {
+  currentdevice //null //false mark /MarkType (EMC)
+  //systemdict /CSLAYERDEBUG .knownget {
+    { (### EMC to deviceparams) = flush } if
+  } if
+  .putdeviceparamsonly dup type /booleantype ne {
+       cleartomark pop
+  } if
+  pop pop 	% discard the device and flag
+} bind def
+
+currentdict readonly pop end
+.setglobal
+.setlanguagelevel

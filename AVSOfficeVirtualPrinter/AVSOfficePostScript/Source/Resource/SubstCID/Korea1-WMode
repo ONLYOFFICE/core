@@ -1,0 +1,105 @@
+%    Copyright (C) 1992, 1993, 1994, 1995, 1999 Aladdin Enterprises.  All rights reserved.
+% 
+% This software is provided AS-IS with no warranty, either express or
+% implied.
+% 
+% This software is distributed under license and may not be copied,
+% modified or distributed except as expressly authorized under the terms
+% of the license contained in the file LICENSE in this distribution.
+% 
+% For more information about licensing, please refer to
+% http://www.ghostscript.com/licensing/. For information on
+% commercial licensing, go to http://www.artifex.com/licensing/ or
+% contact Artifex Software, Inc., 101 Lucas Valley Road #110,
+% San Rafael, CA  94903, U.S.A., +1(415)492-9861.
+
+% $Id:
+% Horizontal to Vertical CID substitution resource for Ordering=Korea1
+
+/Korea1-WMode 3 dict begin
+/Ordering (Korea1) def
+/Switch /WMode def
+1 [
+8056 102 % 8482
+8057 103 % 8483
+8058 105 % 8485
+8059 109 % 8489
+8060 110 % 8490
+8061 111 % 8491
+8062 113 % 8493
+8063 118 % 8498
+8064 119 % 8499
+8065 120 % 8500
+8066 121 % 8501
+8067 122 % 8502
+8068 123 % 8503
+8069 124 % 8504
+8070 125 % 8505
+8071 126 % 8506
+8072 127 % 8507
+8073 128 % 8508
+8074 129 % 8509
+8075 175 % 8555
+8076 264 % 8993
+8077 271 % 9000
+8078 272 % 9001
+8079 275 % 9004
+8080 277 % 9006
+8081 289 % 9018
+8082 290 % 9019
+8083 291 % 9020
+8084 292 % 9021
+8085 293 % 9022
+8086 294 % 9023
+8087 322 % 9051
+8088 324 % 9053
+8089 326 % 9055
+8090 354 % 9083
+8091 355 % 9084
+8092 356 % 9085
+8093 357 % 9086
+8320 106 % 8486
+] def
+0 [
+102 8056 % 8482
+103 8057 % 8483
+105 8058 % 8485
+106 8320 % 8486
+109 8059 % 8489
+110 8060 % 8490
+111 8061 % 8491
+113 8062 % 8493
+118 8063 % 8498
+119 8064 % 8499
+120 8065 % 8500
+121 8066 % 8501
+122 8067 % 8502
+123 8068 % 8503
+124 8069 % 8504
+125 8070 % 8505
+126 8071 % 8506
+127 8072 % 8507
+128 8073 % 8508
+129 8074 % 8509
+175 8075 % 8555
+264 8076 % 8993
+271 8077 % 9000
+272 8078 % 9001
+275 8079 % 9004
+277 8080 % 9006
+289 8081 % 9018
+290 8082 % 9019
+291 8083 % 9020
+292 8084 % 9021
+293 8085 % 9022
+294 8086 % 9023
+322 8087 % 9051
+324 8088 % 9053
+326 8089 % 9055
+354 8090 % 9083
+355 8091 % 9084
+356 8092 % 9085
+357 8093 % 9086
+] def
+currentdict end /SubstCID defineresource pop
+%EOF

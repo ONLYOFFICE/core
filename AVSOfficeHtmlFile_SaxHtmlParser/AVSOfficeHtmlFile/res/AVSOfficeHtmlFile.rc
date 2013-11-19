@@ -1,0 +1,254 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+#define COMPONENT_NAME "OfficeHtmlFile"
+#include "../../../../Common/FileInfo.h"
+#include "version.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Russian resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+#ifdef _WIN32
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(1251)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// CRPT
+//
+IDR_CRPT1					CRPT                     "xsl\\2htm-comments.crpt"
+IDR_CRPT2					CRPT                     "xsl\\2htm-common.crpt"
+IDR_CRPT3					CRPT                     "xsl\\2htm-content.crpt"
+IDR_CRPT4					CRPT                     "xsl\\2htm-fields.crpt"
+IDR_CRPT5					CRPT                     "xsl\\2htm-fonts.crpt"
+IDR_CRPT6					CRPT                     "xsl\\2htm-footnotes.crpt"
+IDR_CRPT7					CRPT                     "xsl\\2htm-frames.crpt"
+IDR_CRPT8					CRPT                     "xsl\\2htm-indexes.crpt"
+IDR_CRPT9					CRPT                     "xsl\\2htm-lists.crpt"
+IDR_CRPT10					CRPT                     "xsl\\2htm-ole.crpt"
+IDR_CRPT11					CRPT                     "xsl\\2htm-pictures.crpt"
+IDR_CRPT12					CRPT                     "xsl\\2htm-relationships.crpt"
+IDR_CRPT13					CRPT                     "xsl\\2htm-sections.crpt"
+IDR_CRPT14					CRPT                     "xsl\\2htm-settings.crpt"
+IDR_CRPT15					CRPT                     "xsl\\2htm-shapes.crpt"
+IDR_CRPT16					CRPT                     "xsl\\2htm-styles.crpt"
+IDR_CRPT17					CRPT                     "xsl\\2htm-tables.crpt"
+IDR_CRPT18					CRPT                     "xsl\\2htm-track.crpt"
+IDR_CRPT19					CRPT                     "xsl\\common-meta.crpt"
+IDR_CRPT20					CRPT                     "xsl\\measures.crpt"
+IDR_CRPT21					CRPT                     "xsl\\oox2htm.crpt"
+IDR_CRPT22					CRPT                     "xsl\\oox2htm-compute-size.crpt"
+IDR_CRPT23					CRPT                     "xsl\\utils.crpt"
+IDR_CRPT24					CRPT                     "xsl\\2oox-websettings.crpt"
+IDR_CRPT25					CRPT                     "xsl\\2oox-app.crpt"
+IDR_CRPT26					CRPT                     "xsl\\2oox-common.crpt"
+IDR_CRPT27					CRPT                     "xsl\\2oox-content_types.crpt"
+IDR_CRPT28					CRPT                     "xsl\\2oox-core.crpt"
+IDR_CRPT29					CRPT                     "xsl\\2oox-document.crpt"
+IDR_CRPT30					CRPT                     "xsl\\2oox-fonttable.crpt"
+IDR_CRPT31					CRPT                     "xsl\\2oox-relationships.crpt"
+IDR_CRPT32					CRPT                     "xsl\\2oox-rels.crpt"
+IDR_CRPT33					CRPT                     "xsl\\2oox-settings.crpt"
+IDR_CRPT34					CRPT                     "xsl\\2oox-styles.crpt"
+IDR_CRPT35					CRPT                     "xsl\\2oox-theme.crpt"
+IDR_CRPT36					CRPT                     "xsl\\2oox-measures.crpt"
+IDR_CRPT37					CRPT                     "xsl\\2oox-styles-common.crpt"
+IDR_CRPT38					CRPT                     "xsl\\2oox-numbering.crpt"
+IDR_CRPT39					CRPT                     "xsl\\html2xhtml.crpt"
+#endif    // Russian resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// REGISTRY
+//
+
+IDR_AVSHTMLFILE         REGISTRY                "AVSOfficeHtmlFile.rgs"
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "1 TYPELIB ""AVSOfficeHtmlFile.tlb""\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION INTVER
+ PRODUCTVERSION INTVER
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "CompanyName", COMPANY_NAME
+            VALUE "FileDescription", FILE_DESCRIPTION_ACTIVEX
+            VALUE "FileVersion", STRVER
+            VALUE "LegalCopyright", LEGAL_COPYRIGHT
+            VALUE "InternalName", COMPONENT_FILE_NAME_DLL
+            VALUE "OriginalFilename", COMPONENT_FILE_NAME_DLL
+            VALUE "ProductName", FILE_DESCRIPTION_ACTIVEX
+            VALUE "ProductVersion", STRVER
+            VALUE "OLESelfRegister", ""
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_PROJNAME            "AVSOfficeHtmlFile"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_DOCX_XML_01         "_rels/.rels"
+    IDS_DOCX_XML_02         "word/styles.xml"
+    IDS_DOCX_XML_03         "docProps/app.xml"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_DOCX_XML_04         "docProps/core.xml"
+    IDS_DOCX_XML_05         "word/_rels/document.xml.rels"
+    IDS_DOCX_XML_06         "word/document.xml"
+    IDS_DOCX_XML_07         "word/numbering.xml"
+    IDS_DOCX_XML_08         "word/footnotes.xml"
+    IDS_DOCX_XML_09         "word/endnotes.xml"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_CONV_CRPT_01         "2htm-comments.crpt"
+    IDS_CONV_CRPT_02         "2htm-common.crpt"
+    IDS_CONV_CRPT_03         "2htm-content.crpt"
+    IDS_CONV_CRPT_04         "2htm-fields.crpt"
+    IDS_CONV_CRPT_05         "2htm-fonts.crpt"
+    IDS_CONV_CRPT_06         "2htm-footnotes.crpt"
+    IDS_CONV_CRPT_07         "2htm-frames.crpt"
+    IDS_CONV_CRPT_08         "2htm-indexes.crpt"
+    IDS_CONV_CRPT_09         "2htm-lists.crpt"
+    IDS_CONV_CRPT_10         "2htm-ole.crpt"
+    IDS_CONV_CRPT_11         "2htm-pictures.crpt"
+    IDS_CONV_CRPT_12         "2htm-relationships.crpt"
+    IDS_CONV_CRPT_13         "2htm-sections.crpt"
+    IDS_CONV_CRPT_14         "2htm-settings.crpt"
+    IDS_CONV_CRPT_15         "2htm-shapes.crpt"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_CONV_CRPT_16         "2htm-styles.crpt"
+    IDS_CONV_CRPT_17         "2htm-tables.crpt"
+    IDS_CONV_CRPT_18         "2htm-track.crpt"
+    IDS_CONV_CRPT_19         "common-meta.crpt"
+    IDS_CONV_CRPT_20         "measures.crpt"
+    IDS_CONV_CRPT_21         "oox2htm.crpt"
+    IDS_CONV_CRPT_22         "oox2htm-compute-size.crpt"
+    IDS_CONV_CRPT_23         "utils.crpt"
+    IDS_CONV_CRPT_24         "2oox-websettings.crpt"
+    IDS_CONV_CRPT_25         "2oox-app.crpt"
+    IDS_CONV_CRPT_26         "2oox-common.crpt"
+    IDS_CONV_CRPT_27         "2oox-content_types.crpt"
+    IDS_CONV_CRPT_28         "2oox-core.crpt"
+    IDS_CONV_CRPT_29         "2oox-document.crpt"
+    IDS_CONV_CRPT_30         "2oox-fonttable.crpt"
+    IDS_CONV_CRPT_31         "2oox-relationships.crpt"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_CONV_CRPT_32         "2oox-rels.crpt"
+    IDS_CONV_CRPT_33         "2oox-settings.crpt"
+    IDS_CONV_CRPT_34         "2oox-styles.crpt"
+    IDS_CONV_CRPT_35         "2oox-theme.crpt"
+    IDS_CONV_CRPT_36         "2oox-measures.crpt"
+    IDS_CONV_CRPT_37         "2oox-styles-common.crpt"
+	IDS_CONV_CRPT_38         "2oox-numbering.crpt"
+	IDS_CONV_CRPT_39		 "html2xhtml.crpt"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+//1 TYPELIB "AVSOfficeHtmlFile.tlb"
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

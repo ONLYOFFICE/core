@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+  <fo:layout-master-set>
+
+    <fo:simple-page-master
+        master-name="simple"
+        page-width="21cm"
+        page-height="29.7cm"
+        margin-left="2cm"
+        margin-right="3cm"
+        margin-top="2cm"
+        margin-bottom="2cm">
+
+      <fo:region-body margin-top="1cm" margin-bottom="3cm"/>
+      <fo:region-before region-name="simple-page-header" extent="1cm"/>
+      <fo:region-after region-name="simple-page-footer" extent="3cm"/>
+
+    </fo:simple-page-master>
+
+  </fo:layout-master-set>
+
+
+  <fo:page-sequence master-reference="simple">
+
+    <fo:static-content flow-name="simple-page-header">
+      <fo:block text-align="right" background-color="#AAAAAA">
+        <fo:inline font-family="Arial" font-size="15pt" color="#101010">Верхний колонтитул</fo:inline>
+      </fo:block>
+    </fo:static-content>
+
+    <fo:static-content flow-name="simple-page-footer">
+      <fo:block text-align="center" background-color="#DDDDDD">
+        <fo:inline font-family="Arial" font-size="12pt">Нижний колонтитул</fo:inline>
+      </fo:block>
+      <fo:block text-align="right">
+        <fo:inline font-family="Courier New" font-size="7pt">2009.10.08</fo:inline>
+      </fo:block>
+    </fo:static-content>
+
+    <fo:static-content flow-name="xsl-footnote-separator">
+      <fo:block font-size="12pt" font-family="Courier New">
+        <fo:inline>---------------------------------</fo:inline>
+      </fo:block>
+    </fo:static-content>
+
+    <fo:flow flow-name="xsl-region-body">
+      <fo:block text-align="center" font-size="20pt">
+        <fo:inline font-family="Times New Roman">Основной Текст</fo:inline>
+      </fo:block>
+      <fo:block text-align="justify" font-family="Arial" font-size="12pt">
+        <fo:inline>path</fo:inline>
+        <fo:footnote>
+          <fo:inline baseline-shift="super" font-size="8pt">1</fo:inline>
+          <fo:footnote-body>
+            <fo:block font-family="Courier New" font-size="9pt">
+              <fo:inline font-weight="bold">1.</fo:inline>
+              <fo:inline>Сноска к слову path</fo:inline>
+            </fo:block>
+          </fo:footnote-body>
+        </fo:footnote>
+        <fo:inline>: A graphics object that is a container for a series of line and curve segments, and regions in an image. pitch: A property of a font that describes the horizontal density of characters in a font; that is, the number of characters that can fit in a given unit of space. When all the characters in a font have the same width, the font is called "fixed-pitch"; if characters can have various widths, the font is "variable-pitch". "Times New Roman" is a variable-pitch font; it is easy to see that the characters in the font may have different widths. For example, the width of a lowercase "i" is visibly less than the width of an uppercase "W". playback device context: The device_context that defines the current graphics state during playback of the metafile. Playback is always associated with an output device with specific properties, such as resolution, color support, etc. Portable Network Graphics (PNG</fo:inline>
+        <fo:footnote>
+          <fo:inline baseline-shift="super" font-size="8pt">2</fo:inline>
+          <fo:footnote-body>
+            <fo:block font-family="Courier New" font-size="9pt">
+              <fo:inline font-weight="bold">2.</fo:inline>
+              <fo:inline>Сноска к слову PNG</fo:inline>
+            </fo:block>
+          </fo:footnote-body>
+        </fo:footnote>
+        <fo:inline>): A bitmapped graphics file format that provides advanced graphics features such as 48-bit color, alpha channels, built-in gamma and color correction, tight compression, and the ability to display at one resolution and print at another. raster operation: The process of combining the bits in a source bitmap with the bits in a destination bitmap. rasterization: The process of converting geometric shapes into a matrix of discrete pixel settings. rasterized font: A font produced with rasterization. Such fonts are not scalable, but must define glyph bitmaps at specific sizes. Because of this, the appearance of rasterized fonts does not improve in proportion to the resolution of an output device and, when magnified, appear significantly worse than vector fonts. raw mode: Refers to a spool file format that requires no further processing; it is ready to be received by the printer for which the data was formatted. red green blue (RGB): An additive color model  in which red, green, and blue are combined in various ways to reproduce other colors. region: A graphics object that is an area of an image, non-rectilinear in shape, that is defined by an array of scanlines. reverse Polish notation: A mathematical notation wherein every operator follows all of its operands. Also known as "postfix" notation. run-length encoding (RLE) compression: A form of data compression in which repeated values are represented by a count and a single instance of the value. Applied to a bitmap, RLE compression can significantly reduce disk and memory space requirements. See section 3.1.6 for more information. scanline: A row of pixels in a rasterized image or bitmap. Multiple scanlines can be used to define the boundaries and to fill any polygon or shape. sRGB: A standard, predefined color space that is portable across all devices and allows accurate color matching with little overhead. sRGB was developed by Hewlett-Packard and Microsoft and is specified in [IEC-RGB]. It is available to users of Windows. stock object: A predefined graphics object. Stock objects are used as default brush, font, palette, and pen objects in the playback device context. system palette: The palette that is actually in use to reproduce colors on a device such as a computer screen. A system palette has predefined, device-specific colors that are used by default, so that every application does not have to set them up. terminal server: The computer on which nearly all of the computing resources reside that are used in a Terminal Services networking environment. A terminal server receives and processes keystrokes and mouse movements that take place on a client computer, and it displays the desktop and running applications within a window on the client computer. Terminal Services: A technology that allows multiple remote users to connect to a single server system. Clients of Terminal Services include Windows terminals and handheld PCs that are using Remote Desktop Protocol (RDP). top-down bitmap: A bitmap with an origin at the upper-left corner. tri-stimulus: The generation of color using three color components. TrueType: A scalable font technology that renders fonts for both the printer and the screen. Originally developed by Apple, it was enhanced jointly by Apple and Microsoft. Each TrueType font contains its own algorithms for converting printer outlines into screen bitmaps, which means both the outline and bitmap information is rasterized from the same font data. The lower-level language embedded within the TrueType font allows great flexibility in their design. Both TrueType and Type 1 font technologies are part of the OpenType format. Type 1 font: A public, standard, type format originally developed by Adobe for use withPostScript printers. Type 1 fonts contain two components—outline fonts, used for printing; and a bitmap font set, used for screen display. typeface: A term that is used interchangeably with "font"; however, more accurately, a typeface is the primary design of a set of printed characters, such as Courier, Helvetica, and TimesRoman, while a font is the particular implementation and variation of the type face, such asnormal, bold, or italic. The distinguishing characteristic of a typeface is often the presence or absence of serifs. TWIP: A unit of measurement used in printing, equal to 1/20 point, or 1/1440 of an inch. vector font: A font that is defined with geometrical primitives such as points, lines, curves and polygons, which are all based on mathematical equations instead of collections of discrete pixel settings. Vector fonts can be rendered in high quality at arbitrary sizes. Outline fonts are vector fonts. Contrast with rasterized fonts. white point: A set of tri-stimulus values that define the color "white" in graphics image rendering. Depending on the application, different definitions of white may be needed to produce acceptable results. For example, photographs taken indoors may be lit by incandescent lights, which are relatively orange compared to daylight. Defining "white" as daylight will give unacceptable results when attempting to color-correct a photograph taken with incandescent lighting. Windows Color System (WCS</fo:inline>
+        <fo:footnote>
+          <fo:inline baseline-shift="super" font-size="8pt">3</fo:inline>
+          <fo:footnote-body>
+            <fo:block font-family="Courier New" font-size="9pt">
+              <fo:inline font-weight="bold">3.</fo:inline>
+              <fo:inline>Сноска к слову WCS</fo:inline>
+            </fo:block>
+          </fo:footnote-body>
+        </fo:footnote>
+        <fo:inline>): Color management technology that ensures a color image, graphic, or text object is rendered as closely as possible to its original intent on any device, despite differences in imaging technologies and color capabilities between devices. WCS is a superset of ICM APIs and functionality and includes a variety of new functions that provide significant improvements in flexibility, transparency, predictability, and extensibility for vendors.</fo:inline>
+      </fo:block>
+    </fo:flow>
+
+  </fo:page-sequence>
+
+</fo:root>

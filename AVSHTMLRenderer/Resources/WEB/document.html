@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>menu</title>
+	<link rel="stylesheet" type="text/css" href="/styles/MenuStyle.css" />
+	<link rel="stylesheet" type="text/css" href="/styles/docviewer.css" />
+	<link rel="stylesheet" type="text/css" href="/styles/clickmenu.css" />
+	<link rel="stylesheet" type="text/css" href="/jquery/jquery-ui.css" />
+	<script type="text/javascript" src="/jquery/jquery-1.4.2.js"></script>	
+	<script type="text/javascript" src="/jquery/jquery-ui.js"></script>
+	<script type="text/javascript" src="/jquery/jquery.clickmenu.js"></script>
+	<script type="text/javascript" src="/js/docviewer.js"></script>
+	<script type="text/javascript">
+	window.onresize = OnResizeBrowser;
+	
+	function OnResizeBrowser()
+	{
+	var elemMenu = document.getElementById("menu");
+	var heightMenu = elemMenu.offsetHeight;
+	var elemDiv = document.getElementById("content");
+	var __height = (this.innerHeight - heightMenu) + "px";
+	elemDiv.style.height = __height;	
+	}
+	</script>
+</head>
+<body style="padding: 0; margin: 0 auto;">
+	<table id="menu" class="utilFont">
+        <tr class="headerstyle">
+            <td id="logo" class="logo">
+                <img src='/img/tmdocs_logo.png' style="margin-top: 8px;" />
+            </td>
+            <td id="header" style="width:100%">
+                <div>
+                    <span id="docName">Untitled Document</span>
+                    <button id="EditButton" type="button" name="EditButton" class="tmbutton">Edit</button>
+					<button id="ShareButton" type="button" name="ShareButton" class="tmbutton">Share</button>	
+				</div>
+            </td>
+            <!-- bgcolor="#1D6192"-->
+        </tr>
+        <tr style="display:none;">
+            <td id="topmenuSep" colspan="2" class="separatingLine">
+            </td>
+        </tr>
+		<tr>
+			<td colspan="2" id="toolbar">
+				<table style="height: 22px; vertical-align: top; border-collapse: separate; border-bottom: 0px solid #C0C0C0">
+					<tr>
+						<td class="ToolbarIconOut selectableIcon" title="Zoom Out" onclick="funZoomOut()">
+                            <div id="zoomOut" class="iconToolbar">
+                                <img class="ToolbarIcon ToolbarZoomOut" src="/img/spacer.gif" />
+                            </div>
+                        </td>
+                        <td class="ToolbarIconOut selectableIcon" title="Zoom In" onclick="funZoomIn()">
+                            <div id="zoomIn" class="iconToolbar">
+                                <img class="ToolbarIcon ToolbarZoomIn" src="/img/spacer.gif" />
+                            </div>
+                        </td>
+						<td class="ToolbarIconOut selectableIcon" title="Fit To Page" onclick="">
+                            <div id="fitToPage" class="iconToolbar">
+                                <img class="ToolbarIcon ToolbarFitToPage" src="/img/spacer.gif" />
+                            </div>
+                        </td>
+                        <td class="ToolbarIconOut" style="min-width: 20px;">
+                            <div>
+                                <ul id="zoomMenu">
+                                    <li id="zoom" class="item main textSelect textSelectBoard" >
+										<span id="zoomValuePercent">100%</span>
+                                        <ul>
+                                            <li id="8" class="SubItem"  value="8">8%</li>
+                                            <li id="12" class="SubItem" value="12">12%</li>
+                                            <li id="25" class="SubItem" value="25">25%</li>
+                                            <li id="33" class="SubItem" value="33">33%</li>
+                                            <li id="50" class="SubItem" value="50">50%</li>
+                                            <li id="66" class="SubItem" value="66">66%</li>
+                                            <li id="75" class="SubItem" value="75">75%</li>
+                                            <li id="100" class="SubItem" value="100">100%</li>
+                                            <li id="125" class="SubItem" value="125">125%</li>
+                                            <li id="150" class="SubItem" value="150">150%</li>
+                                            <li id="200" class="SubItem" value="200">200%</li>
+                                            <li id="300" class="SubItem" value="300">300%</li>
+                                            <li id="400" class="SubItem" value="400">400%</li>
+                                            <li id="500" class="SubItem" value="500">500%</li>
+                                        </ul>
+                                        <div class="ToolbarDropDown dropdown">
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+						<!--<td class="ToolbarIconOut">			
+							<select size="1" id="zoomPercent" onchange="changeSelPosition()">
+								<option value="8">8%</option>
+								<option value="12">12%</option>
+								<option value="25">25%</option>
+								<option value="33">33%</option>
+								<option value="50">50%</option>
+								<option value="66">66%</option>
+								<option value="75">75%</option>
+								<option value="100">100%</option>
+								<option value="125">125%</option>
+								<option value="150">150%</option>
+								<option value="200">200%</option>
+								<option value="300">300%</option>
+								<option value="400">400%</option>
+								<option value="500">500%</option>
+							</select>
+						</td>-->
+						<td class="ToolbarIconOut"><input class="txblock" style="width: 35px;text-align: center;display:none;" type="text" id="zoomValue" value="100" onchange="OnChangeZoomNum()" /></td>
+						<td class="toolbarSep">
+                            <div class="ToolbarIconOut">
+                                <img src="/img/Border.png" />
+                            </div>
+                        </td>
+						<td class="ToolbarIconOut selectableIcon iconToolbar" title="Prev Page" onclick="OnPagePrev()">
+                            <div id="td_prevPage" class="iconToolbar">
+                                <img class="ToolbarIcon ToolbarPrevPage" src="/img/spacer.gif" />
+                            </div>
+                        </td>
+                        <td class="ToolbarIconOut selectableIcon iconToolbar" title="Next Page" onclick="OnPageNext()">
+                            <div id="td_nextPage" class="iconToolbar">
+                                <img class="ToolbarIcon ToolbarNextPage" src="/img/spacer.gif" />
+                            </div>
+                        </td>
+						<td class="ToolbarIconOut"><input class="txblock" style="width: 28px;text-align: center;" type="text" id="pageNum" value="1" onchange="OnChangePageNum()" /></td>
+						<td class="ToolbarIconOut"><p id="pageCounts" class="txblock" style="margin: 0; padding: 0;min-width: 30px;">/ 1</p></td>
+						<td class="toolbarSep">
+                            <div class="ToolbarIconOut">
+                                <img src="/img/Border.png" />
+                            </div>
+                        </td>
+						<td class="ToolbarIconOut selectableIcon iconToolbar" title="Load Document">
+                            <div id="td_load" class="iconToolbar">
+                                <img class="ToolbarIcon ToolbarLoadDoc" src="/img/spacer.gif" />
+                            </div>
+                        </td>
+						<td class="ToolbarIconOut selectableIcon iconToolbar" title="Print (Ctrl+P)">
+                            <div id="td_print" class="iconToolbar">
+                                <img class="ToolbarIcon ToolbarPrint" src="/img/spacer.gif" />
+                            </div>
+                        </td>
+						<td class="toolbarSep">
+                            <div class="ToolbarIconOut">
+                                <img src="/img/Border.png" />
+                            </div>
+                        </td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+            <td id="topmenuSep" colspan="2" class="separatingLine">
+            </td>
+        </tr>
+    </table>
+	<div  id="content" onclick="closeMenu();" style="width: 100%; margin: 0px auto;">
+		<iframe id="id_viewer" src="__document_path__/viewer.html" name="viewer" noresize width="100%" height="100%"></iframe>
+	</div>
+</body>
+</html>

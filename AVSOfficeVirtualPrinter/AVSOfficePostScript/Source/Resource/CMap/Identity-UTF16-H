@@ -1,0 +1,54 @@
+% Copyright (C) 2003 Artifex Software.  All rights reserved.
+%
+% This software is provided AS-IS with no warranty, either express or
+% implied.
+%
+% This software is distributed under license and may not be copied,
+% modified or distributed except as expressly authorized under the terms
+% of the license contained in the file LICENSE in this distribution.
+%
+% For more information about licensing, please refer to
+% http://www.ghostscript.com/licensing/. For information on
+% commercial licensing, go to http://www.artifex.com/licensing/ or
+% contact Artifex Software, Inc., 101 Lucas Valley Road #110,
+% San Rafael, CA  94903, U.S.A., +1(415)492-9861.
+%
+% $Id: Identity-UTF16-H 7095 2006-10-10 10:03:37Z leonardo $
+% Identity-UTF16-H CMap
+% An identity mapping of UTF16 codes to CIDs.
+
+/CIDInit /ProcSet findresource begin
+
+12 dict begin
+
+begincmap
+
+/CIDSystemInfo 3 dict dup begin
+  /Registry (Artifex) def
+  /Ordering (Unicode) def
+  /Supplement 0 def
+end def
+
+/CMapName /Identity-UTF16-H def
+/CMapVersion 1.000 def
+/CMapType 1 def
+
+/UIDOffset 0 def
+% No XUID yet obtained.
+
+/WMode 0 def
+
+1 begincodespacerange
+  <0000>   <FFFF>
+endcodespacerange
+
+1 begincidrange
+<0000> <FFFF> 0
+endcidrange
+endcmap
+CMapName currentdict /CMap defineresource pop
+end
+end
+
+%%EndResource
+%%EOF

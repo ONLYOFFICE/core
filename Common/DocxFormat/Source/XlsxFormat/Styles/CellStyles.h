@@ -1,0 +1,153 @@
+#pragma once
+#ifndef OOX_CELLSTYLES_FILE_INCLUDE_H_
+#define OOX_CELLSTYLES_FILE_INCLUDE_H_
+
+#include "../CommonInclude.h"
+
+namespace OOX
+{
+	namespace Spreadsheet
+	{
+		//нереализован:
+		//<extLst>
+		class CCellStyle : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CCellStyle)
+			CCellStyle()
+			{
+			}
+			virtual ~CCellStyle()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(CStringWriter& writer) const
+			{
+				writer.WriteStringC(_T("<cellStyle"));
+				if(m_oName.IsInit())
+				{
+					CString sVal;sVal.Format(_T(" name=\"%s\""), XmlUtils::EncodeXmlString(m_oName.get()));
+					writer.WriteStringC(sVal);
+				}
+				if(m_oXfId.IsInit())
+				{
+					CString sVal;sVal.Format(_T(" xfId=\"%d\""), m_oXfId->GetValue());
+					writer.WriteStringC(sVal);
+				}
+				if(m_oBuiltinId.IsInit())
+				{
+					CString sVal;sVal.Format(_T(" builtinId=\"%d\""), m_oBuiltinId->GetValue());
+					writer.WriteStringC(sVal);
+				}
+				writer.WriteStringC(_T("/>"));
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_CellStyle;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("builtinId"),      m_oBuiltinId )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customBuiltin"),      m_oCustomBuiltin )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("hidden"),      m_oHidden )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("iLevel"),      m_oILevel )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("name"),      m_oName )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("xfId"),      m_oXfId )
+
+					WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oBuiltinId;
+			nullable<SimpleTypes::COnOff<>>					m_oCustomBuiltin;
+			nullable<SimpleTypes::COnOff<>>					m_oHidden;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oILevel;
+			nullable<CString>								m_oName;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oXfId;
+		};
+
+		class CCellStyles : public WritingElementWithChilds<CCellStyle>
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CCellStyles)
+			CCellStyles()
+			{
+			}
+			virtual ~CCellStyles()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(CStringWriter& writer) const
+			{
+				writer.WriteStringC(_T("<cellStyles"));
+				if(m_oCount.IsInit())
+				{
+					CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
+					writer.WriteStringC(sVal);
+				}
+				writer.WriteStringC(_T(">"));
+				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+					m_arrItems[i]->toXML(writer);
+				writer.WriteStringC(_T("</cellStyles>"));
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+
+					if ( _T("cellStyle") == sName )
+						m_arrItems.Add( new CCellStyle( oReader ));
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_CellStyles;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
+
+					WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
+		};
+	} //Spreadsheet
+} // namespace OOX
+
+#endif // OOX_CELLSTYLES_FILE_INCLUDE_H_

@@ -1,0 +1,218 @@
+% Copyright (C) 2003 Artifex Software.  All rights reserved.
+%
+% This software is provided AS-IS with no warranty, either express or
+% implied.
+%
+% This software is distributed under license and may not be copied,
+% modified or distributed except as expressly authorized under the terms
+% of the license contained in the file LICENSE in this distribution.
+%
+% For more information about licensing, please refer to
+% http://www.ghostscript.com/licensing/. For information on
+% commercial licensing, go to http://www.artifex.com/licensing/ or
+% contact Artifex Software, Inc., 101 Lucas Valley Road #110,
+% San Rafael, CA  94903, U.S.A., +1(415)492-9861.
+%
+% $Id: FCO_Symbol 6858 2006-06-18 19:25:03Z leonardo $
+% FCO_Symbol Decoding
+% Maps PS and TT names to Unicode UTF-16.
+
+/FCO_Symbol     % resource name
+200             % tokens
+/ParseDecoding /ProcSet findresource /Parse get exec
+
+
+% Generated for FCO from Symbol encoding with adding F000 
+% since MTFONTS/PS3/MT3/ps3___xh.fco wants so.
+
+16#0020 space   % Note : UFST uses 0x20 when others are 0xF0**.
+16#F021 exclam
+16#F022 universal
+16#F023 numbersign
+16#F024 existential
+16#F025 percent
+16#F026 ampersand
+16#F027 suchthat
+16#F028 parenleft
+16#F029 parenright
+16#F02A asteriskmath
+16#F02B plus
+16#F02C comma
+16#F02D minus
+16#F02E period
+16#F02F slash
+16#F030 zero
+16#F031 one
+16#F032 two
+16#F033 three
+16#F034 four
+16#F035 five
+16#F036 six
+16#F037 seven
+16#F038 eight
+16#F039 nine
+16#F03A colon
+16#F03B semicolon
+16#F03C less
+16#F03D equal
+16#F03E greater
+16#F03F question
+16#F040 congruent
+16#F041 Alpha
+16#F042 Beta
+16#F043 Chi
+16#F044 Delta
+16#F045 Epsilon
+16#F046 Phi
+16#F047 Gamma
+16#F048 Eta
+16#F049 Iota
+16#F04A theta1
+16#F04B Kappa
+16#F04C Lambda
+16#F04D Mu
+16#F04E Nu
+16#F04F Omicron
+16#F050 Pi
+16#F051 Theta
+16#F052 Rho
+16#F053 Sigma
+16#F054 Tau
+16#F055 Upsilon
+16#F056 sigma1
+16#F057 Omega
+16#F058 Xi
+16#F059 Psi
+16#F05A Zeta
+16#F05B bracketleft
+16#F05C therefore
+16#F05D bracketright
+16#F05E perpendicular
+16#F05F underscore
+16#F060 radicalex
+16#F061 alpha
+16#F062 beta
+16#F063 chi
+16#F064 delta
+16#F065 epsilon
+16#F066 phi
+16#F067 gamma
+16#F068 eta
+16#F069 iota
+16#F06A phi1
+16#F06B kappa
+16#F06C lambda
+16#F06D mu
+16#F06E nu
+16#F06F omicron
+16#F070 pi
+16#F071 theta
+16#F072 rho
+16#F073 sigma
+16#F074 tau
+16#F075 upsilon
+16#F076 omega1
+16#F077 omega
+16#F078 xi
+16#F079 psi
+16#F07A zeta
+16#F07B braceleft
+16#F07C bar
+16#F07D braceright
+16#F07E similar
+16#F0A0 Euro
+16#F0A1 Upsilon1
+16#F0A2 minute
+16#F0A3 lessequal
+16#F0A4 fraction
+16#F0A5 infinity
+16#F0A6 florin
+16#F0A7 club
+16#F0A8 diamond
+16#F0A9 heart
+16#F0AA spade
+16#F0AB arrowboth
+16#F0AC arrowleft
+16#F0AD arrowup
+16#F0AE arrowright
+16#F0AF arrowdown
+16#F0B0 degree
+16#F0B1 plusminus
+16#F0B2 second
+16#F0B3 greaterequal
+16#F0B4 multiply
+16#F0B5 proportional
+16#F0B6 partialdiff
+16#F0B7 bullet
+16#F0B8 divide
+16#F0B9 notequal
+16#F0BA equivalence
+16#F0BB approxequal
+16#F0BC ellipsis
+16#F0BD arrowvertex
+16#F0BE arrowhorizex
+16#F0BF carriagereturn
+16#F0C0 aleph
+16#F0C1 Ifraktur
+16#F0C2 Rfraktur
+16#F0C3 weierstrass
+16#F0C4 circlemultiply
+16#F0C5 circleplus
+16#F0C6 emptyset
+16#F0C7 intersection
+16#F0C8 union
+16#F0C9 propersuperset
+16#F0CA reflexsuperset
+16#F0CB notsubset
+16#F0CC propersubset
+16#F0CD reflexsubset
+16#F0CE element
+16#F0CF notelement
+16#F0D0 angle
+16#F0D1 gradient
+16#F0D2 registerserif
+16#F0D3 copyrightserif
+16#F0D4 trademarkserif
+16#F0D5 product
+16#F0D6 radical
+16#F0D7 dotmath
+16#F0D8 logicalnot
+16#F0D9 logicaland
+16#F0DA logicalor
+16#F0DB arrowdblboth
+16#F0DC arrowdblleft
+16#F0DD arrowdblup
+16#F0DE arrowdblright
+16#F0DF arrowdbldown
+16#F0E0 lozenge
+16#F0E1 angleleft
+16#F0E2 registersans
+16#F0E3 copyrightsans
+16#F0E4 trademarksans
+16#F0E5 summation
+16#F0E6 parenlefttp
+16#F0E7 parenleftex
+16#F0E8 parenleftbt
+16#F0E9 bracketlefttp
+16#F0EA bracketleftex
+16#F0EB bracketleftbt
+16#F0EC bracelefttp
+16#F0ED braceleftmid
+16#F0EE braceleftbt
+16#F0EF braceex
+16#F0F1 angleright
+16#F0F2 integral
+16#F0F3 integraltp
+16#F0F4 integralex
+16#F0F5 integralbt
+16#F0F6 parenrighttp
+16#F0F7 parenrightex
+16#F0F8 parenrightbt
+16#F0F9 bracketrighttp
+16#F0FA bracketrightex
+16#F0FB bracketrightbt
+16#F0FC bracerighttp
+16#F0FD bracerightmid
+16#F0FE bracerightbt
+
+%EOF

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+  <fo:layout-master-set>
+  
+    <fo:simple-page-master
+        master-name="simple"
+        page-width="21cm"
+        page-height="29.7cm"
+        margin="1cm">
+		
+      <fo:region-body/>
+	  
+    </fo:simple-page-master>
+	
+  </fo:layout-master-set>
+  
+  <fo:page-sequence master-reference="simple">
+  
+	<fo:flow flow-name="xsl-region-body">
+		<fo:block
+			font-family="Times New Roman"
+			font-weight="bold"
+			font-size="16pt"
+			keep-with-next="always"
+			text-align="center"
+			space-after="1cm">
+		Page footer and page header
+		</fo:block>
+		
+		<fo:block
+			font-family="Arial"
+			font-size="10pt"
+			text-align="justify"
+			space-after="0.5cm">
+		A <fo:inline font-weight="bold" color="blue" text-decoration="underline">page footer</fo:inline> or simply footer in typography is that material which is
+		separated from the main body of text and appears at the bottom of a printed page.
+		Word processing programs<fo:inline baseline-shift="super" font-size="7pt">[1]</fo:inline> usually provide for the creation and maintenance of page footers,
+		which are often the same from page to page, with merely small differences
+		in information, such as page number. Footnotes are usually placed in or near the page footer.
+		</fo:block>
+		
+		<fo:block
+			font-family="Courier New"
+			font-size="12pt"
+			text-align="left">
+		A <fo:inline font-weight="bold" color="blue" text-decoration="underline">page header</fo:inline> or simply header in typography
+		is that material which is separated from the main body
+		of text and appears at the top of a printed page. Word processing programs usually provide for the
+		creation and maintenance of page headers, which are often the same from page to page, with merely
+		small differences in information, such as page number.		
+		</fo:block>
+    </fo:flow>
+	
+  </fo:page-sequence>
+  
+</fo:root>  

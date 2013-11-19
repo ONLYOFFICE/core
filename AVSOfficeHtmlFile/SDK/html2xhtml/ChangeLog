@@ -1,0 +1,84 @@
+2008-04-08  Jesus Arias Fisteus <jaf@it.uc3m.es>
+
+	* html2xhtml Fixed two bugs related to incorrect memory access.
+
+2008-03-31  Jesus Arias Fisteus <jaf@it.uc3m.es>
+
+	* html2xhtml Fixed a bug when "<" and "&" follow "]" in CDATA.
+	* html2xhtml Fixed whitespace problems with entity references.
+	* html2xhtml Entity reference "percnt" is replaced by "%". 
+	* html2xhtml Flexibility added to the parser: allows closing 
+	XML PIs with ">" instead of "%>"
+	
+2008-03-03  Jesus Arias Fisteus <jaf@it.uc3m.es>
+
+	* html2xhtml Fixed a bug when an end tags appears inside
+	a script. The end tag was not properly wrapped inside a CDATA
+	section.
+	* html2xhtml Fixed a bug in the CGI: comments were not properly
+	escaped.
+	* html2xhtml Changed the result page of the CGI to make it
+	look closer to the other pages of the html2xhtml website.
+
+2008-01-16  Jesus Arias Fisteus <jaf@it.uc3m.es>
+
+	* html2xhtml Released as 1.1b4
+
+	* html2xhtml Fixed some bugs with Windows carriage returns.
+
+	* html2xhtml Fixed a bug when line breaks appeared inside
+	attribute values.
+
+	* html2xhtml Added the --compact-block-elements option.
+
+2008-01-04  Jesus Arias Fisteus <jaf@it.uc3m.es>
+
+	* html2xhtml New output formatting code. Now indentation 
+	length and line length are configurable. Line wrapping is 
+	now better.
+
+	* html2xhtml Integrated the code of the CGI version of the
+	program in the executable file html2xhtml. Define the
+	macro WITH_CGI to activate it at compilation time. The
+	executable will decide at run time if it works in command
+	line or as a CGI.
+
+	* html2xhtml Better support of XHTML input.
+
+	* html2xhtml Better support for CDATA sections.
+	
+	* html2xhtml Fixed several other minor issues.
+
+2007-10-30  Jesus Arias Fisteus <jaf@it.uc3m.es>
+
+	* html2xhtml Fixed a bug regarding whitespaces: spacing was
+	removed in situations like "<b>1</b> <b>2</b>"
+
+2007-09-16  Jesus Arias Fisteus <jaf@it.uc3m.es>
+
+	* html2xhtml Added support for XHTML Print 1.0
+
+	* html2xhtml Bug fixes and help message improved
+
+	* html2xhtml Now converts from XHTML to XHTML
+
+	* html2xhtml Released as 1.1b3
+	
+2007-09-15  Jesus Arias Fisteus <jaf@it.uc3m.es>
+
+	* html2xhtml Added support for XHTML Basic 1.1 and updated DTDs
+
+	* html2xhtml Released as 1.1b2
+	
+2007-05-19  Jesus Arias Fisteus <jaf@it.uc3m.es>
+
+	* html2xhtml First release under the GNU GPL license (1.1b1)
+	
+	* html2xhtml First version with autotools-based build system
+	
+	* html2xhtml Removed from the source tree the CGI and DLL
+	versions, dtd_test and xhtmlpedia.
+
+	
+	
+

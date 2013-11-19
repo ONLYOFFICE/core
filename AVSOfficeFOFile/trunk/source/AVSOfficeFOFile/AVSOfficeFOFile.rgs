@@ -1,0 +1,11 @@
+HKCR
+{
+	NoRemove AppID
+	{
+		'%APPID%' = s 'AVSOfficeFOFile'
+		'AVSOfficeFOFile.DLL'
+		{
+			val AppID = s '%APPID%'
+		}
+	}
+}

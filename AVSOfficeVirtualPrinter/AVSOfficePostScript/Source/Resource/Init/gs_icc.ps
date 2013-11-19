@@ -1,0 +1,93 @@
+%    Copyright (C) 2001, 2002 Aladdin Enterprises.  All rights reserved.
+% 
+% This software is provided AS-IS with no warranty, either express or
+% implied.
+% 
+% This software is distributed under license and may not be copied,
+% modified or distributed except as expressly authorized under the terms
+% of the license contained in the file LICENSE in this distribution.
+% 
+% For more information about licensing, please refer to
+% http://www.ghostscript.com/licensing/. For information on
+% commercial licensing, go to http://www.artifex.com/licensing/ or
+% contact Artifex Software, Inc., 101 Lucas Valley Road #110,
+% San Rafael, CA  94903, U.S.A., +1(415)492-9861.
+
+% $Id: gs_icc.ps 8962 2008-08-11 14:16:18Z ken $
+% ICCBased color space method dictionaries.
+% This assumes gs_ciecs2.ps has already been processed.
+
+.currentglobal true .setglobal
+
+% gs_res.ps uses these entries in colorspacedict
+% to populate the ColorSpaceFamily resource, so we need
+% to add the supported spaces.
+%
+systemdict /colorspacedict get begin
+/ICCBased [] def
+end
+
+NOPSICC { (%END PSICC) .skipeof } if
+% Now set up ICC profile loading for PostScript %%BeginICCProfile sections.
+
+systemdict begin
+/.ProcessICCcomment { % file comment --  file comment
+  dup
+  (%%BeginICCProfile) anchorsearch {
+    pop pop
+    DEBUG { (.ProcessICCcomment found %%BeginICCProfile) print flush } if
+
+    % load an ICC profile defined as comments (hex encoded).
+    % Ends with %%End at the start of a line. Read the data into
+    % a bytestring to allow seeking. This string can be used as a
+    % seekable ReusableStreamDecode filter source by the ICC logic.
+    %
+    % Since .bigstring needs to know the size, we first read an array of
+    % strings each 64000 max length.
+    %
+    % stack: --file-- (%%BeginICCProfile: ...) 
+    1 index 0 (%%EndICCProfile) /SubFileDecode filter
+    [ { counttomark 1 add index
+        64000 string readhexstring
+        not { exit } if
+      } loop
+    ] exch closefile
+    0 1 index { length add } forall
+    .bigstring
+    exch 0 exch {
+      % stack: --file-- (%%BeginICCProfile: ...) --bytestring-- cur_index --string--
+      2 copy length add 	% calculate next string start point
+      3 1 roll 3 index 3 1 roll putinterval
+    } forall
+    pop				% discard length of bytestring
+    % make a seekable -file- out of the bytestring
+    mark /AsyncRead true .dicttomark /ReusableStreamDecode filter
+    % stack: --file-- (%%BeginICCProfile: ...) --icc_subfile-- 
+    /DeviceCMYK setcolorspace
+    << /DataSource 3 -1 roll
+       /N 4		% Try CMYK first
+    >> { .seticcspace } stopped {
+      /DeviceRGB setcolorspace
+      dup /N 3 put  { .seticcspace } stopped {
+        /DeviceGray setcolorspace
+        dup /N 1 put { .seticcspace } stopped {	% last choice
+          QUIET not { (   *** Unable to load ICC profile from PostScript DSC comments ***) = flush } if
+          pop
+        } if
+      } if
+    } if
+  } {
+    pop % Not interested in this DSC comment
+  } ifelse
+} bind def
+
+% Merge ProcessICCcomment with existing handler
+/.ProcessICCcomment load /exec load
+currentuserparams /ProcessDSCComment get 
+dup null eq {pop {pop pop}} if /exec load
+4 array astore cvx readonly
+<< /ProcessDSCComment 3 -1 roll >> setuserparams
+
+end	% systemdict
+%END PSICC
+.setglobal

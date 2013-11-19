@@ -1,3 +1,0 @@
-#!/bin/sh
-
-/home/regression/regression/run_nightly.py

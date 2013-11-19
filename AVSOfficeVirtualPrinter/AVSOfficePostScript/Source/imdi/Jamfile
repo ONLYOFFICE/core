@@ -1,4 +1,0 @@
-LINKLIBS += -lm ;
-Main imdi_gen : imdi_gen.c cgen.c ;
-GenFile imdi_k.h : imdi_gen ;
-# Library libimdi.lib : imdi.c imdi_tab.c ;

@@ -94,7 +94,7 @@ END
 // REGISTRY
 //
 
-IDR_AVSTXTFILE          REGISTRY                "AVSOfficeTxtFile.rgs"
+IDR_ASCTXTFILE          REGISTRY                "ASCOfficeTxtFile.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -111,7 +111,7 @@ IDR_DOCUMENT2           DOCUMENT                "Resource\\XmlTemplate.docx"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSOfficeTxtFile"
+    IDS_PROJNAME            "ASCOfficeTxtFile"
 END
 
 #endif    // English (U.S.) resources

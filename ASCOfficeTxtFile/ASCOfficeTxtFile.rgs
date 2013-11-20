@@ -2,7 +2,7 @@ HKCR
 {
 	NoRemove AppID
 	{
-		'%APPID%' = s 'AVSOfficeTxtFile'
+		'%APPID%' = s 'ASCOfficeTxtFile'
 		'AVSTxtFile.DLL'
 		{
 			val AppID = s '%APPID%'

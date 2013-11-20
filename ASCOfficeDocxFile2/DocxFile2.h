@@ -1,8 +1,8 @@
 #pragma once
 
 #include "resource.h"       // main symbols
-#include "..\..\AVSVideoStudio3\Common\AVSUtils.h"
-#include "..\..\..\..\Common\MappingFile.h"
+#include "..\Common\ASCUtils.h"
+#include "..\Common\MappingFile.h"
 #include "BinWriter/BinWriters.h"
 #include "BinReader/Readers.h"
 

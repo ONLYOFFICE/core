@@ -2,9 +2,9 @@
 #include "StreamUtils.h"
 #include "BinReaderWriterDefines.h"
 #include "../DocWrapper/FontProcessor.h"
-#include "../../../../Common/Base64.h"
-#include "../../AVSOfficeStudio/AVSOfficePPTXFile/Editor/FontCutter.h"
-#include "../../TeamlabOffice/trunk/XlsxSerializerCom/Reader/BinaryWriter.h"
+#include "../../Common/Base64.h"
+#include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
+#include "../../../XlsxSerializerCom/Reader/BinaryWriter.h"
 
 namespace BinDocxRW
 {

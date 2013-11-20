@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FontProcessor.h"
 
-#include "AVSUtils.h"
+#include "../../Common/ASCUtils.h"
 #include "Foreign/StringWriter.h"
 
 using AVSGraphics::CAVSFontManager;

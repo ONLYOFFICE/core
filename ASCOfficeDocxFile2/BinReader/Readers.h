@@ -3,7 +3,7 @@
 #include "FileWriter.h"
 #include "../BinWriter/BinReaderWriterDefines.h"
 #include "ReaderClasses.h"
-#include "../../TeamlabOffice/trunk/XlsxSerializerCom/Writer/BinaryReader.h"
+#include "../../XlsxSerializerCom/Writer/BinaryReader.h"
 
 
 using namespace BinDocxRW;

@@ -3,7 +3,7 @@
 // Used by AVSOfficeDocxFile2.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_AVSOFFICEDOCXFILE2          101
+#define IDR_ASCOFFICEDOCXFILE2          101
 
 #define IDB_DEFAULT_DOC_RELS			201
 #define IDB_DEFAULT_DOC_APP				202

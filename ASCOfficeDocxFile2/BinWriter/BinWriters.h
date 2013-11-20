@@ -4,7 +4,7 @@
 #include "../DocWrapper/FontProcessor.h"
 #include "../../Common/Base64.h"
 #include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
-#include "../../../XlsxSerializerCom/Reader/BinaryWriter.h"
+#include "../../XlsxSerializerCom/Reader/BinaryWriter.h"
 
 namespace BinDocxRW
 {

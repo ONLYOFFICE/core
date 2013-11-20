@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../../AVSOfficeStudio/AVSOfficeDocxFile2/BinReader/FileDownloader.h"
+#include "../../ASCOfficeDocxFile2/BinReader/FileDownloader.h"
 
 namespace SerializeCommon
 {

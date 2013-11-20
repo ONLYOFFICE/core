@@ -1,12 +1,12 @@
 #pragma once
-#include "../../../../../Common/FileWriter.h"
-#include "../../../../../Common/MappingFile.h"
-#include "../../../../../Common/Base64.h"
-#include "../../../../../Common/ATLDefine.h"
+#include "../../Common/FileWriter.h"
+#include "../../Common/MappingFile.h"
+#include "../../Common/Base64.h"
+#include "../../Common/ATLDefine.h"
 
-#include "../../../AVSOfficeStudio/Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 
-#include "../../AVSOfficeStudio/AVSOfficeDocxFile2/BinWriter/StreamUtils.h"
+#include "../../ASCOfficeDocxFile2/BinWriter/StreamUtils.h"
 #include "../Common/BinReaderWriterDefines.h"
 #include "../Common/Common.h"
 

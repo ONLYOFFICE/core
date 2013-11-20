@@ -10,7 +10,7 @@
 #include <atlcoll.h>
 #include <stdio.h>
 
-#include "AVSUtilsDefines.h"
+#include "ASCUtilsDefines.h"
 
 #define ADDREFINTERFACE(pinterface)\
 {\

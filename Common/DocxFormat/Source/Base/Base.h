@@ -52,7 +52,7 @@
 #include <atlstr.h>
 #include <atltypes.h>
 
-#include "AVSUtils.h"
+#include "..\..\..\ASCUtils.h"
 
 using namespace ATL;
 

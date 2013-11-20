@@ -2,8 +2,8 @@
 	#pragma once			// for MSVS
 #endif	// #ifdef _MSC_VER
 
-#ifndef _AVSUTILSDEFINES_H_	// For Borland compiler
-#define _AVSUTILSDEFINES_H_
+#ifndef _ASCUTILSDEFINES_H_	// For Borland compiler
+#define _ASCUTILSDEFINES_H_
 
 #define ACCURATE_SEEKMODE			0
 #define LEFTNEAREST_SEEKMODE		1
@@ -20,4 +20,4 @@
 #define	PROGRESSVIDEOFILE_INDEXING				3
 #define	PROGRESSVIDEOFILE_PARSING_VBRAUDIO		4
 
-#endif // #ifndef _AVSUTILSDEFINES_H_	// For Borland compiler
+#endif // #ifndef _ASCUTILSDEFINES_H_	// For Borland compiler

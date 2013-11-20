@@ -247,7 +247,7 @@
 			Name="Header Files"
 			>
 			<File
-				RelativePath=".\AVSOfficeXlsxSerizer.h"
+				RelativePath=".\ASCOfficeXlsxSerizer.h"
 				>
 			</File>
 			<File
@@ -283,7 +283,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\AVSOfficeStudio\AVSOfficePPTXFile\Editor\BinReaderWriterDefines.h"
+				RelativePath="..\ASCOfficePPTXFile\Editor\BinReaderWriterDefines.h"
 				>
 			</File>
 			<File

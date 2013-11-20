@@ -1,17 +1,17 @@
 #pragma once
-#include "../../../../AVSOfficeStudio/AVSOfficePPTXFile/Editor/BinReaderWriterDefines.h"
+#include "../../ASCOfficePPTXFile/Editor/BinReaderWriterDefines.h"
 
-#include "../../../../AVSOfficeStudio/Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
-#include "../../../../AVSOfficeStudio/Common/DocxFormat/Source/DocxFormat/Drawing/DrawingColors.h"
-#include "../../../../AVSOfficeStudio/Common/OfficeFileFormats.h"
-#include "../../../../../../Common/Base64.h"
+#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Drawing/DrawingColors.h"
+#include "../../Common/OfficeFileFormats.h"
+#include "../../Common/Base64.h"
 
 #include "FontProcessor.h"
-#include "../../../AVSOfficeStudio/Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../Common/BinReaderWriterDefines.h"
 #include "../Common/Common.h"
-#include "../../AVSOfficeStudio/AVSOfficePPTXFile/Editor/FontCutter.h"
-#include "../../AVSOfficeStudio/AVSOfficeDocxFile2/BinWriter/StreamUtils.h"
+#include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
+#include "../../ASCOfficeDocxFile2/BinWriter/StreamUtils.h"
 #include "../Writer/BinaryReader.h"
 
 //#define DEFAULT_TABLE_STYLES

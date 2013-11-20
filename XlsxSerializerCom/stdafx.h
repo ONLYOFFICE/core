@@ -48,14 +48,14 @@
 #define __USE_XML_COMMON__
 
 using namespace ATL;
-#include "../../../AVSVideoStudio3/Common/AvsUtils.h"
+#include "../Common/ASCUtils.h"
 
-#import "../../../Redist/AVSMediaCore3.dll"						named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
-#import "../../../Redist/AVSImageStudio3.dll"					named_guids raw_interfaces_only rename_namespace("AVSImageStudio")
-#import "../../../Redist/AVSGraphics.dll"						named_guids raw_interfaces_only rename_namespace("AVSGraphics")
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeFile.dll"		raw_interfaces_only rename_namespace("AVSOfficeFile")
-#import "../../../Redist/AVSOfficeStudio/AVSFontConverter.dll"	named_guids raw_interfaces_only rename_namespace("Fonts")
-#import "../../../Redist/AVSOfficeStudio/AVSOfficePPTXFile.dll"	raw_interfaces_only rename_namespace("PPTXFile")
+#import "../../../../../Redist/AVSMediaCore3.dll"						named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
+#import "../../../../../Redist/AVSImageStudio3.dll"					named_guids raw_interfaces_only rename_namespace("AVSImageStudio")
+#import "../../../../../Redist/AVSGraphics.dll"						named_guids raw_interfaces_only rename_namespace("AVSGraphics")
+#import "../../../../../Redist/AVSOfficeStudio/AVSOfficeFile.dll"		raw_interfaces_only rename_namespace("AVSOfficeFile")
+#import "../../../../../Redist/AVSOfficeStudio/AVSFontConverter.dll"	named_guids raw_interfaces_only rename_namespace("Fonts")
+#import "../../../../../Redist/AVSOfficeStudio/AVSOfficePPTXFile.dll"	raw_interfaces_only rename_namespace("PPTXFile")
 
 #include <Gdiplus.h>
 #pragma comment(lib, "gdiplus.lib")

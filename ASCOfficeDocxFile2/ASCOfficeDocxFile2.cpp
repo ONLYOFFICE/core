@@ -6,6 +6,6 @@
 
 // The module attribute causes DllMain, DllRegisterServer and DllUnregisterServer to be automatically implemented for you
 [ module(dll, uuid = "{A1EEE61A-FAA7-47af-B078-4E955623B9CA}", 
-		 name = "AVSOfficeDocxFile2", 
-		 helpstring = "AVSOfficeDocxFile2 1.0 Type Library",
-		 resource_name = "IDR_AVSOFFICEDOCXFILE2") ];
+		 name = "ASCOfficeDocxFile2", 
+		 helpstring = "ASCOfficeDocxFile2 1.0 Type Library",
+		 resource_name = "IDR_ASCOFFICEDOCXFILE2") ];

@@ -1,6 +1,6 @@
 #pragma once
 #include "../stdafx.h"
-#include "../../../AVSOfficeStudio/Common/DocxFormat/Source/XlsxFormat/Styles/Fonts.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Styles/Fonts.h"
 
 namespace BinXlsxRW {
 	static TCHAR* gc_sNoNameFont = _T("NoNameFont");

@@ -1,6 +1,6 @@
 #pragma once
 #include "resource.h" 
-#include "../../../AVSOfficeStudio/Common/OfficeFileTemplate.h"
+#include "../Common/OfficeFileTemplate.h"
 #include "Reader/BinaryWriter.h"
 #include "Reader/FontProcessor.h"
 #include "Writer/BinaryReader.h"
@@ -27,11 +27,11 @@ __interface IAVSOfficeXlsxSerizer : public IAVSOfficeFileTemplate
 	default(IAVSOfficeXlsxSerizer),
 	event_receiver(native),
 	threading(apartment),
-	vi_progid("AVSOfficeXlsxSerizer.AVSDocume"),
-	progid("AVSOfficeXlsxSerizer.AVSDocu.1"),
+	vi_progid("ASCOfficeXlsxSerizer.AVSDocume"),
+	progid("ASCOfficeXlsxSerizer.AVSDocu.1"),
 	version(1.0),
 	uuid("2A6514F2-0C01-4759-89CB-68C38669337D"),
-	helpstring("AVSOfficeXlsxSerizer Class")
+	helpstring("ASCOfficeXlsxSerizer Class")
 ]
 class ATL_NO_VTABLE CAVSOfficeXlsxSerizer : public IAVSOfficeXlsxSerizer
 {

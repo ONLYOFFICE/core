@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "resource.h"
 
-#include "AVSOfficeXlsxSerizer.h"
+#include "ASCOfficeXlsxSerizer.h"
 
 // The module attribute causes DllMain, DllRegisterServer and DllUnregisterServer to be automatically implemented for you
 [ module(dll, uuid = "{E4E17295-6FF8-4bac-B4C2-E17D72111035}", 

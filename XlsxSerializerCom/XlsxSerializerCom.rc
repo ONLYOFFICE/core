@@ -7,8 +7,12 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
+
+#define COMPONENT_NAME "XlsxSerializerCom"
+
 #include "winres.h"
 #include "version.h"
+#include "../Common/FileInfo.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -59,14 +63,14 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "Online Media Technologies Ltd."
-            VALUE "FileDescription", "XlsxSerializerCom ActiveX DLL"
+            VALUE "CompanyName", COMPANY_NAME
+            VALUE "FileDescription", FILE_DESCRIPTION_ACTIVEX
             VALUE "FileVersion", STRVER
-            VALUE "InternalName", "XlsxSerializerCom ActiveX DLL"
-            VALUE "LegalCopyright", "Online Media Technologies Ltd. Copyright 2009"
-            VALUE "LegalTrademarks", "Online Media Technologies Ltd."
-            VALUE "OriginalFilename", "XlsxSerializerCom.dll"
-            VALUE "ProductName", "XlsxSerializerCom ActiveX DLL"
+            VALUE "InternalName", FILE_DESCRIPTION_ACTIVEX
+            VALUE "LegalCopyright", LEGAL_COPYRIGHT
+            VALUE "LegalTrademarks", COMPANY_NAME
+            VALUE "OriginalFilename", COMPONENT_FILE_NAME_DLL
+            VALUE "ProductName", FILE_DESCRIPTION_ACTIVEX
             VALUE "ProductVersion", STRVER
         END
     END

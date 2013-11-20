@@ -9,19 +9,12 @@
 #error Uninitialized COMPONENT_NAME define! It should be like as #define COMPONENT_NAME "ComponentName"
 #endif
 
-#ifndef ASCBUILD
-
-#define COMPANY_NAME				"Online Media Technologies Ltd."
-#define LEGAL_COPYRIGHT				"Online Media Technologies Ltd. Copyright (c) 2005-2012"
-#define COMPONENT_PREFIX			"AVS"
-
-#else
 
 #define COMPANY_NAME				"Ascensio System SIA"
 #define LEGAL_COPYRIGHT				"Ascensio System SIA Copyright (c) 2011-2012"
 #define COMPONENT_PREFIX			"ASC"
 
-#endif
+
 
 #define FILE_DESCRIPTION_ACTIVEX	COMPONENT_PREFIX COMPONENT_NAME " ActiveX DLL"
 #define	COMPONENT_FILE_NAME_DLL		COMPONENT_PREFIX COMPONENT_NAME ".dll"

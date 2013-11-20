@@ -105,7 +105,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories=".\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\..\AVSOfficeOdtFile\Source\OfficeSvmFile"
+				AdditionalIncludeDirectories=".\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\ASCOfficeOdtFile\Source\OfficeSvmFile"
 				PreprocessorDefinitions="USE_LITE_READER;_USE_XMLLITE_READER_;_DOCWRAPPER_"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"

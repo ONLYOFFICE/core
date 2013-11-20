@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="ASCOfficeDocxFile2"
 	ProjectGUID="{D02A88E6-5B2B-4A15-A4F6-C057F698FC53}"
 	RootNamespace="ASCOfficeDocxFile2"
@@ -214,7 +214,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\..\..\Redist\ASCOfficeStudio&quot;&#x0D;&#x0A;"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\Redist&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration

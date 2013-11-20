@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="AVSOfficeTxtFile"
+	Name="ASCOfficeTxtFile"
 	ProjectGUID="{EA304CD3-0CAE-4AD8-AD25-B41735AD7F49}"
-	RootNamespace="AVSOfficeTxtFile"
+	RootNamespace="ASCOfficeTxtFile"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -42,16 +42,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeTxtFile.tlb"
-				HeaderFileName="AVSOfficeTxtFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeTxtFile.tlb"
+				HeaderFileName="ASCOfficeTxtFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeTxtFile_i.c"
-				ProxyFileName="AVSOfficeTxtFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeTxtFile_i.c"
+				ProxyFileName="ASCOfficeTxtFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="Source;.\..\Common\AvsDocxFormat\Source\Utility;.\..\Common\AvsDocxFormat\Source\XML;.\..\Common\AvsDocxFormat\Source\Common;.\..\Common\AvsDocxFormat\Source\DocxFormat;Source\TxtFormat;Source\XmlFormat"
+				AdditionalIncludeDirectories="Source;.\..\Common\ASCDocxFormat\Source\Utility;.\..\Common\ASCDocxFormat\Source\XML;.\..\Common\ASCDocxFormat\Source\Common;.\..\Common\ASCDocxFormat\Source\DocxFormat;Source\TxtFormat;Source\XmlFormat"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -77,14 +77,14 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="comsvcs.lib comsuppw.lib Msimg32.lib"
-				OutputFile="$(OutDir)/AVSOfficeTxtFile.dll"
+				OutputFile="$(OutDir)/ASCOfficeTxtFile.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\AVSOfficeUtils\ZLIB\zlib123dll\static32"
+				AdditionalLibraryDirectories="..\ASCOfficeUtils\ZLIB\zlib123dll\static32"
 				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSOfficeTxtFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeTxtFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSOfficeTxtFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeTxtFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -142,15 +142,15 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeTxtFile.tlb"
-				HeaderFileName="AVSOfficeTxtFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeTxtFile.tlb"
+				HeaderFileName="ASCOfficeTxtFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeTxtFile_i.c"
-				ProxyFileName="AVSOfficeTxtFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeTxtFile_i.c"
+				ProxyFileName="ASCOfficeTxtFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="Source;.\..\Common\AvsDocxFormat\Source\Utility;.\..\Common\AvsDocxFormat\Source\XML;.\..\Common\AvsDocxFormat\Source\Common;.\..\Common\AvsDocxFormat\Source\DocxFormat;Source\TxtFormat;Source\XmlFormat"
+				AdditionalIncludeDirectories="Source;.\..\Common\ASCDocxFormat\Source\Utility;.\..\Common\ASCDocxFormat\Source\XML;.\..\Common\ASCDocxFormat\Source\Common;.\..\Common\ASCDocxFormat\Source\DocxFormat;Source\TxtFormat;Source\XmlFormat"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -174,17 +174,17 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="comsvcs.lib comsuppw.lib Msimg32.lib"
-				OutputFile=".\..\..\..\Redist\AVSOfficeStudio\$(ProjectName).dll"
+				OutputFile="..\Redist\$(ProjectName).dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\AVSOfficeUtils\ZLIB\zlib123dll\static32"
+				AdditionalLibraryDirectories="..\ASCOfficeUtils\ZLIB\zlib123dll\static32"
 				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSOfficeTxtFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeTxtFile.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficeTxtFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeTxtFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -243,15 +243,15 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeTxtFile.tlb"
-				HeaderFileName="AVSOfficeTxtFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeTxtFile.tlb"
+				HeaderFileName="ASCOfficeTxtFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeTxtFile_i.c"
-				ProxyFileName="AVSOfficeTxtFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeTxtFile_i.c"
+				ProxyFileName="ASCOfficeTxtFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="Source;.\..\Common\AvsDocxFormat\Source\Utility;.\..\Common\AvsDocxFormat\Source\XML;.\..\Common\AvsDocxFormat\Source\Common;.\..\Common\AvsDocxFormat\Source\DocxFormat;Source\TxtFormat;Source\XmlFormat"
+				AdditionalIncludeDirectories="Source;.\..\Common\ASCDocxFormat\Source\Utility;.\..\Common\ASCDocxFormat\Source\XML;.\..\Common\ASCDocxFormat\Source\Common;.\..\Common\ASCDocxFormat\Source\DocxFormat;Source\TxtFormat;Source\XmlFormat"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -275,17 +275,17 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="comsvcs.lib comsuppw.lib Msimg32.lib"
-				OutputFile=".\..\..\..\..\ASC\Redist\ASCOfficeStudio\ASCOfficeTxtFile.dll"
+				OutputFile="..\Redist\ASCOfficeTxtFile.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\AVSOfficeUtils\ZLIB\zlib123dll\static32"
+				AdditionalLibraryDirectories="..\ASCOfficeUtils\ZLIB\zlib123dll\static32"
 				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSOfficeTxtFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeTxtFile.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficeTxtFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeTxtFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -325,14 +325,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSOfficeTxtFile.cpp"
+				RelativePath=".\ASCOfficeTxtFile.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -340,7 +340,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -348,7 +348,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 			</File>
@@ -361,7 +361,7 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -370,7 +370,7 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -379,7 +379,7 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 			</File>
@@ -391,7 +391,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -399,7 +399,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -407,7 +407,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 			</File>
@@ -456,11 +456,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficeTxtFile.rc"
+				RelativePath=".\ASCOfficeTxtFile.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeTxtFile.rgs"
+				RelativePath=".\ASCOfficeTxtFile.rgs"
 				>
 			</File>
 			<File

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="XlsxSerializerCom"
 	ProjectGUID="{87476A4D-6A42-44E9-A947-42B8E8613070}"
 	RootNamespace="XlsxSerializerCom"
@@ -206,7 +206,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy to redist"
-				CommandLine="copy $(TargetPath) ..\wwwroot\Bin\XlsxSerializerCom.dll"
+				CommandLine="copy $(TargetPath) ..\Redist\XlsxSerializerCom.dll"
 			/>
 		</Configuration>
 	</Configurations>
@@ -279,11 +279,11 @@
 			Name="Common"
 			>
 			<File
-				RelativePath=".\Common\BinReaderWriterDefines.h"
+				RelativePath="..\ASCOfficePPTXFile\Editor\BinReaderWriterDefines.h"
 				>
 			</File>
 			<File
-				RelativePath="..\ASCOfficePPTXFile\Editor\BinReaderWriterDefines.h"
+				RelativePath=".\Common\BinReaderWriterDefines.h"
 				>
 			</File>
 			<File

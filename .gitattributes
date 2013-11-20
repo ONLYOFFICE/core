@@ -214,6 +214,10 @@ ASCOfficeXlsFile/AVSWorksheetConverter/source/Streams_binaries/SummaryInformatio
 ASCOfficeXlsFile/AVSWorksheetConverter/source/XLS_logic/Biff_structures/ODRAW svnc_bugtraq_003anumber=true
 Common/DocxFormat/Source/SystemUtility/Solution/FileSystemTest/app.ico svn_mime_002dtype=application%2Foctet-stream
 OfficeCore/Fonts/FreeType/freetype242_vs2005.lib svn_mime_002dtype=application%2Foctet-stream
+OfficeCore/Test/AllFontsGen/bin/Debug/AllFontsGen.vshost.exe svn_mime_002dtype=application%2Foctet-stream
+OfficeCore/Test/AllFontsGen/bin/Release/AllFontsGen.exe svn_mime_002dtype=application%2Foctet-stream
+OfficeCore/Test/AllFontsGen/bin/Release/AllFontsGen.pdb svn_mime_002dtype=application%2Foctet-stream
+OfficeCore/Test/AllFontsGen/bin/Release/Interop.OfficeCore.dll svn_mime_002dtype=application%2Foctet-stream
 OfficeCore/Test/TestConsole/bin/Debug/Interop.OfficeCore.dll svn_mime_002dtype=application%2Foctet-stream
 OfficeCore/Test/TestConsole/bin/Debug/TestConsole.exe svn_mime_002dtype=application%2Foctet-stream
 OfficeCore/Test/TestConsole/bin/Debug/TestConsole.pdb svn_mime_002dtype=application%2Foctet-stream

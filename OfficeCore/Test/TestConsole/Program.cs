@@ -33,11 +33,11 @@ namespace TestConsole
         {
             OfficeCore.CWinFontsClass oFonts = new OfficeCore.CWinFontsClass();
 
-            oFonts.Init("", false, true);
+            //oFonts.Init("", false, true);
             //oFonts.Init("", true, true);
             //oFonts.Init("", false, false);
 
-            //oFonts.Init(@"X:\AVS\Sources\TeamlabOffice\trunk\OfficeWeb\Fonts\native", false, true);
+            oFonts.Init(@"X:\AVS\Sources\TeamlabOffice\trunk\OfficeWeb\Fonts\native", false, true);
             //oFonts.Init(@"X:\AVS\Sources\TeamlabOffice\trunk\OfficeWeb\Fonts\native", true, true);
             //oFonts.Init(@"X:\AVS\Sources\TeamlabOffice\trunk\OfficeWeb\Fonts\native", false, false);
 

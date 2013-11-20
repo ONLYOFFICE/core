@@ -1,4 +1,4 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "CommonInclude.h"
 
 //#include "../../../../../AVSEBOOKWriter/Common/File.h"

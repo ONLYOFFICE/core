@@ -19,11 +19,13 @@
 extern "C"   {
 #endif
 
+EXTERN_PROXY_FILE( _ASCOfficeDocxFile2 )
 EXTERN_PROXY_FILE( _AVSOfficeDocxFile2 )
 
 
 PROXYFILE_LIST_START
 /* Start of list */
+  REFERENCE_PROXY_FILE( _ASCOfficeDocxFile2 ),
   REFERENCE_PROXY_FILE( _AVSOfficeDocxFile2 ),
 /* End of list */
 PROXYFILE_LIST_END

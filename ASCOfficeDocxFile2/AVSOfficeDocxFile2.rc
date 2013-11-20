@@ -114,7 +114,7 @@ END
 // REGISTRY
 //
 
-IDR_AVSOFFICEDOCXFILE2       REGISTRY                "AVSOfficeDocxFile2.rgs"
+IDR_ASCOFFICEDOCXFILE2       REGISTRY                "ASCOfficeDocxFile2.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -123,7 +123,7 @@ IDR_AVSOFFICEDOCXFILE2       REGISTRY                "AVSOfficeDocxFile2.rgs"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSOfficeDocxFile2"
+    IDS_PROJNAME            "ASCOfficeDocxFile2"
 END
 
 #endif    // English (U.S.) resources

@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="AVSOfficeDocxFile2"
+	Name="ASCOfficeDocxFile2"
 	ProjectGUID="{D02A88E6-5B2B-4A15-A4F6-C057F698FC53}"
-	RootNamespace="AVSOfficeDocxFile2"
+	RootNamespace="ASCOfficeDocxFile2"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -43,18 +43,18 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeDocxFile2.tlb"
+				TypeLibraryName="$(IntDir)/ASCOfficeDocxFile2.tlb"
 				HeaderFileName="DocxFile2.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeDocxFile2_i.c"
-				ProxyFileName="AVSOfficeDocxFile2_p.c"
+				InterfaceIdentifierFileName="ASCOfficeDocxFile2_i.c"
+				ProxyFileName="ASCOfficeDocxFile2_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm1000"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)/../../AVSImageStudio3/AVSGraphics/Objects&quot;;&quot;$(SolutionDir)/../../AVSImageStudio3/AVSGraphics/Objects/Font/FreeType&quot;;&quot;$(SolutionDir)/../Common/DocxFormat/Source/DocxFormat&quot;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_XMLLITE_READER_;USE_LITE_READER;USE_ATL_CSTRING;USE_AVSOFFICESTUDIO_XMLUTILS;SOLUTION_AVSOFFICEDOCXFILE2"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_XMLLITE_READER_;USE_LITE_READER;USE_ATL_CSTRING;USE_AVSOFFICESTUDIO_XMLUTILS;SOLUTION_ASCOFFICEDOCXFILE2"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -79,14 +79,14 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="comsvcs.lib comsuppw.lib gdiplus.lib DocxFormat.lib"
-				OutputFile="$(OutDir)/AVSOfficeDocxFile2.dll"
+				OutputFile="$(OutDir)/ASCOfficeDocxFile2.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(SolutionDir)/../Common/DocxFormat/Lib/Debug"
 				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSOfficeDocxFile2.idl"
+				MergedIDLBaseFileName="_ASCOfficeDocxFile2.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSOfficeDocxFile2.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeDocxFile2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -144,17 +144,17 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeDocxFile2.tlb"
+				TypeLibraryName="$(IntDir)/ASCOfficeDocxFile2.tlb"
 				HeaderFileName="DocxFile2.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeDocxFile2_i.c"
-				ProxyFileName="AVSOfficeDocxFile2_p.c"
+				InterfaceIdentifierFileName="ASCOfficeDocxFile2_i.c"
+				ProxyFileName="ASCOfficeDocxFile2_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm1000"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)/../../AVSImageStudio3/AVSGraphics/Objects&quot;;&quot;$(SolutionDir)/../../AVSImageStudio3/AVSGraphics/Objects/Font/FreeType&quot;;&quot;$(SolutionDir)/../Common/DocxFormat/Source/DocxFormat&quot;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_XMLLITE_READER_;USE_LITE_READER;USE_ATL_CSTRING;USE_AVSOFFICESTUDIO_XMLUTILS;SOLUTION_AVSOFFICEDOCXFILE2"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_XMLLITE_READER_;USE_LITE_READER;USE_ATL_CSTRING;USE_AVSOFFICESTUDIO_XMLUTILS;SOLUTION_ASCOFFICEDOCXFILE2"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -181,13 +181,13 @@
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(SolutionDir)/../Common/DocxFormat/Lib/Release"
 				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSOfficeDocxFile2.idl"
+				MergedIDLBaseFileName="_ASCOfficeDocxFile2.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficeDocxFile2.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeDocxFile2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -214,7 +214,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\..\..\Redist\AVSOfficeStudio&quot;&#x0D;&#x0A;"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\..\..\Redist\ASCOfficeStudio&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -246,17 +246,17 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeDocxFile2.tlb"
+				TypeLibraryName="$(IntDir)/ASCOfficeDocxFile2.tlb"
 				HeaderFileName="DocxFile2.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeDocxFile2_i.c"
-				ProxyFileName="AVSOfficeDocxFile2_p.c"
+				InterfaceIdentifierFileName="ASCOfficeDocxFile2_i.c"
+				ProxyFileName="ASCOfficeDocxFile2_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm1000"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)/../../AVSImageStudio3/AVSGraphics/Objects&quot;;&quot;$(SolutionDir)/../../AVSImageStudio3/AVSGraphics/Objects/Font/FreeType&quot;;&quot;$(SolutionDir)/../Common/DocxFormat/Source/DocxFormat&quot;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_XMLLITE_READER_;USE_LITE_READER;USE_ATL_CSTRING;USE_AVSOFFICESTUDIO_XMLUTILS;SOLUTION_AVSOFFICEDOCXFILE2"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_XMLLITE_READER_;USE_LITE_READER;USE_ATL_CSTRING;USE_AVSOFFICESTUDIO_XMLUTILS;SOLUTION_ASCOFFICEDOCXFILE2"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -283,13 +283,13 @@
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(SolutionDir)/../Common/DocxFormat/Lib/Release"
 				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSOfficeDocxFile2.idl"
+				MergedIDLBaseFileName="_ASCOfficeDocxFile2.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficeDocxFile2.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeDocxFile2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -329,11 +329,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficeDocxFile2.rc"
+				RelativePath=".\ASCOfficeDocxFile2.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeDocxFile2.rgs"
+				RelativePath=".\ASCOfficeDocxFile2.rgs"
 				>
 			</File>
 		</Filter>
@@ -341,7 +341,7 @@
 			Name="_"
 			>
 			<File
-				RelativePath=".\AVSOfficeDocxFile2.cpp"
+				RelativePath=".\ASCOfficeDocxFile2.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"

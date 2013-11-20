@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual C++ Express 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSOfficeDocxFile2", "AVSOfficeDocxFile2.vcproj", "{D02A88E6-5B2B-4A15-A4F6-C057F698FC53}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeDocxFile2", "ASCOfficeDocxFile2.vcproj", "{D02A88E6-5B2B-4A15-A4F6-C057F698FC53}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
 	EndProjectSection

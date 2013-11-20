@@ -143,6 +143,7 @@ namespace ImageUtils
 
 		if (NULL != pBitmap)
 		{
+			*pImage = pBitmap;
 			return TRUE;
 		}
 
@@ -207,6 +208,9 @@ namespace ImageUtils
 			BSTR bstrFilePath = strFilePath.AllocSysString();
 			Gdiplus::Status nStatus = pBitmap->Save(bstrFilePath, &clsId, NULL);
 			SysFreeString(bstrFilePath);
+
+			if (nStatus == Gdiplus::Ok)
+				return TRUE;
 		}
 		catch(...)
 		{
@@ -323,7 +327,14 @@ public:
 				return S_FALSE;
 			}
 
-			BOOL bIsSaved = ImageUtils::SaveGdipImage((CString)bsFileName, pBitmap, strFormat);
+			BOOL bIsSaved = FALSE;
+			try
+			{
+				bIsSaved = ImageUtils::SaveGdipImage((CString)bsFileName, pBitmap, strFormat);
+			}
+			catch(...)
+			{
+			}
 			RELEASEOBJECT(pBitmap);
 			
 			if (bIsSaved)

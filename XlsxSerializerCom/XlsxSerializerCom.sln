@@ -6,7 +6,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XlsxSerializerCom", "XlsxSe
 		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocxFormat", "..\..\..\AVSOfficeStudio\Common\DocxFormat\Projects\DocxFormat2005.vcproj", "{A100103A-353E-45E8-A9B8-90B87CC5C0B0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocxFormat", "..\Common\DocxFormat\Projects\DocxFormat2005.vcproj", "{A100103A-353E-45E8-A9B8-90B87CC5C0B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -307,6 +307,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Fonts\FontManagerLight.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Fonts\FontUtils.h"
 				>
 			</File>

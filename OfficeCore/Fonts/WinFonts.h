@@ -419,7 +419,7 @@ private:
 		RELEASEINTERFACE(punkFrame);
 
 		CFontManagerLight oFontManager;
-		// default!
+		oFontManager.SetDefaultFont(_T("Arial"), m_pList);
 
 		// и самое главное. Здесь должен скидываться скрипт для работы со всеми шрифтами.
 		// все объекты, которые позволят не знать о существующих фонтах

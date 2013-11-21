@@ -43,6 +43,6 @@
 using namespace ATL;
 
 
-#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficeUtils.dll"		named_guids rename_namespace("AVSOfficeUtils")
+#import "..\Redist\ASCOfficeUtils.dll"		named_guids rename_namespace("AVSOfficeUtils")
 #import "..\..\..\..\AVS\Redist\AVSImageStudio3.dll"				named_guids rename_namespace("ImageStudio")
 #import "..\..\..\..\AVS\Redist\AVSMediaCore3.dll"					named_guids rename_namespace("MediaCore"), exclude("tagRECT")

@@ -1,7 +1,7 @@
 #pragma once
 #include "resource.h"
 #include "IOfficeOCR.h"
-#include "../../../AVSVideoStudio3/Common/AVSATLError.h"
+#include "../../Common/ASCATLError.h"
 
 #define OUTPUT_FORMAT_TYPE_XML	0
 #define OUTPUT_FORMAT_TYPE_TEXT	1

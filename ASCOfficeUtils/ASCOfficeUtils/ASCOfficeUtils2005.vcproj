@@ -124,7 +124,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\..\Redist\VersionControl.exe $(ProjectDir)version.h"
+				CommandLine="..\..\..\..\..\..\Redist\VersionControl.exe $(ProjectDir)version.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -210,7 +210,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="copy $(TargetPath) ..\..\..\..\ASC\Redist\ASCOfficeUtils.dll"
+				CommandLine="copy $(TargetPath) ..\..\Redist\ASCOfficeUtils.dll"
 			/>
 		</Configuration>
 		<Configuration

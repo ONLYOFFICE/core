@@ -45,7 +45,7 @@
 
 using namespace ATL;
 
-#import "..\..\..\..\Redist\AVSMediaCore3.dll"					named_guids rename_namespace ( "MediaCore" ), raw_interfaces_only
+#import "..\..\..\..\..\..\Redist\AVSMediaCore3.dll"					named_guids rename_namespace ( "MediaCore" ), raw_interfaces_only
 
 #ifdef _DEBUG
 	#pragma comment(lib, "..\\GOCR\\Debug\\GOCR.lib")

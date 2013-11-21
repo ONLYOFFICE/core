@@ -528,8 +528,12 @@ private:
 
 				if (bIsSymbol)
 				{
-					oFontManager.LoadFontFromFile(_T("C:\\Windows\\Fonts\\cour.ttf"), 14, 96, 96, lFaceIndex);
-					pFont = oFontManager.GetFont();
+					CString strGetCour = oFontManager.GetFontPath(_T("Courier New"), m_pList);
+					if (_T("") != strGetCour)
+					{
+						oFontManager.LoadFontFromFile(strGetCour, 14, 96, 96, lFaceIndex);
+						pFont = oFontManager.GetFont();
+					}
 				}
 
 				if (pFont)

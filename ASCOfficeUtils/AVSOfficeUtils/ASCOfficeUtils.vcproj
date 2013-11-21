@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="AVSOfficeUtils"
+	Name="ASCOfficeUtils"
 	ProjectGUID="{6215E3BF-2D42-40FB-B951-B8C448A596D2}"
-	RootNamespace="AVSOfficeUtils"
+	RootNamespace="ASCOfficeUtils"
 	Keyword="AtlProj"
 	TargetFrameworkVersion="131072"
 	>
@@ -43,11 +43,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeUtils.tlb"
-				HeaderFileName="AVSOfficeUtils.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeUtils.tlb"
+				HeaderFileName="ASCOfficeUtils.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeUtils_i.c"
-				ProxyFileName="AVSOfficeUtils_p.c"
+				InterfaceIdentifierFileName="ASCOfficeUtils_i.c"
+				ProxyFileName="ASCOfficeUtils_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -77,16 +77,16 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="$(OutDir)/AVSOfficeUtils.dll"
+				OutputFile="$(OutDir)/ASCOfficeUtils.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\ZLIB\zlib123dll\static32"
 				IgnoreDefaultLibraryNames="LIBC.LIB"
-				MergedIDLBaseFileName="_AVSOfficeUtils.idl"
+				MergedIDLBaseFileName="_ASCOfficeUtils.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)/AVSOfficeUtils.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeUtils.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -141,11 +141,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeUtils.tlb"
-				HeaderFileName="AVSOfficeUtils.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeUtils.tlb"
+				HeaderFileName="ASCOfficeUtils.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeUtils_i.c"
-				ProxyFileName="AVSOfficeUtils_p.c"
+				InterfaceIdentifierFileName="ASCOfficeUtils_i.c"
+				ProxyFileName="ASCOfficeUtils_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -173,11 +173,11 @@
 				Name="VCLinkerTool"
 				RegisterOutput="true"
 				IgnoreImportLibrary="true"
-				OutputFile="..\..\..\..\Redist\AVSOfficeStudio\$(ProjectName).dll"
+				OutputFile="..\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\ZLIB\zlib123dll\static32"
 				IgnoreDefaultLibraryNames="LIBC.LIB"
-				MergedIDLBaseFileName="_AVSOfficeUtils.idl"
+				MergedIDLBaseFileName="_ASCOfficeUtils.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="2"
@@ -185,7 +185,7 @@
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)/AVSOfficeUtils.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeUtils.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -222,7 +222,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSOfficeUtils.cpp"
+				RelativePath=".\ASCOfficeUtils.cpp"
 				>
 			</File>
 			<File
@@ -616,7 +616,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\AVSOfficeCriticalSection.h"
+				RelativePath=".\ASCOfficeCriticalSection.h"
 				>
 			</File>
 			<File
@@ -662,11 +662,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficeUtils.rc"
+				RelativePath=".\ASCOfficeUtils.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeUtils.rgs"
+				RelativePath=".\ASCOfficeUtils.rgs"
 				>
 			</File>
 		</Filter>

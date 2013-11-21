@@ -4,7 +4,7 @@
 //
 
 #define IDS_PROJNAME                    100
-#define IDR_AVSOFFICEUTILS	101
+#define IDR_ASCOFFICEUTILS	101
 
 // Next default values for new objects
 // 

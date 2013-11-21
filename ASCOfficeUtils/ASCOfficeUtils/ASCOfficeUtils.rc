@@ -4,7 +4,7 @@
 #include "version.h"
 
 #define COMPONENT_NAME "OfficeUtils"
-#include "../../../../../Common/FileInfo.h"
+#include "../../Common/FileInfo.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////

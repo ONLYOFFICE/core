@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "../../../AVSVideoStudio3/Common/AVSUtils.h"
-#include "../../../AVSVideoStudio3/Common/MediaFormatDefine.h"
+#include "../../Common/ASCUtils.h"
+#include "../../Common/MediaFormatDefine.h"
 #include "OfficeOCR.h"
 #include "ImageToPNM.h"
 #include "gocr.h"

@@ -2,7 +2,7 @@
 //
 #include "resource.h"
 #define COMPONENT_NAME "OfficeRtfFile"
-#include "../../../../Common/FileInfo.h"
+#include "../Common/FileInfo.h"
 #include "version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -87,10 +87,10 @@ END
 
 STRINGTABLE  
 BEGIN
-	IDS_PROJNAME					"AVSOfficeRtfFile"
+	IDS_PROJNAME					"ASCOfficeRtfFile"
 END
 
-IDR_AVSOFFICERTFFILE REGISTRY "AVSOfficeRtfFile.rgs"
+IDR_ASCOFFICERTFFILE REGISTRY "ASCOfficeRtfFile.rgs"
 ////////////////////////////////////////////////////////////////////////////
 
 //

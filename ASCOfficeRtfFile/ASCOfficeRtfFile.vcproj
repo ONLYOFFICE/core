@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="AVSOfficeRtfFile"
+	Name="ASCOfficeRtfFile"
 	ProjectGUID="{BE2FD36F-184C-4F29-BC75-2355AC3A2F27}"
-	RootNamespace="AVSOfficeRtfFile"
+	RootNamespace="ASCOfficeRtfFile"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -42,11 +42,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeRtfFile.tlb"
-				HeaderFileName="AVSOfficeRtfFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeRtfFile.tlb"
+				HeaderFileName="ASCOfficeRtfFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeRtfFile_i.c"
-				ProxyFileName="AVSOfficeRtfFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeRtfFile_i.c"
+				ProxyFileName="ASCOfficeRtfFile_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
@@ -79,7 +79,7 @@
 				RegisterOutput="true"
 				IgnoreImportLibrary="true"
 				LinkIncremental="2"
-				MergedIDLBaseFileName="_AVSOfficeRtfFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeRtfFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -137,11 +137,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeRtfFile.tlb"
-				HeaderFileName="AVSOfficeRtfFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeRtfFile.tlb"
+				HeaderFileName="ASCOfficeRtfFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeRtfFile_i.c"
-				ProxyFileName="AVSOfficeRtfFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeRtfFile_i.c"
+				ProxyFileName="ASCOfficeRtfFile_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
@@ -172,7 +172,7 @@
 				RegisterOutput="true"
 				IgnoreImportLibrary="true"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSOfficeRtfFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeRtfFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -203,7 +203,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy to redist"
-				CommandLine="copy $(TargetPath) ..\..\..\Redist\AVSOfficeStudio\AVSOfficeRtfFile.dll"
+				CommandLine="copy $(TargetPath) ..\Redist\ASCOfficeRtfFile.dll"
 			/>
 		</Configuration>
 		<Configuration
@@ -217,7 +217,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\..\AVS\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
+				CommandLine="..\..\..\..\..\..\AVS\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
 				ExcludedFromBuild="true"
 			/>
 			<Tool
@@ -235,11 +235,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeRtfFile.tlb"
-				HeaderFileName="AVSOfficeRtfFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeRtfFile.tlb"
+				HeaderFileName="ASCOfficeRtfFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeRtfFile_i.c"
-				ProxyFileName="AVSOfficeRtfFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeRtfFile_i.c"
+				ProxyFileName="ASCOfficeRtfFile_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
@@ -271,7 +271,7 @@
 				IgnoreImportLibrary="true"
 				OutputFile="$(OutDir)\ASCOfficeRtfFile.dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSOfficeRtfFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeRtfFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -315,7 +315,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSOfficeRtfFile.cpp"
+				RelativePath=".\ASCOfficeRtfFile.cpp"
 				>
 			</File>
 			<File
@@ -383,11 +383,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficeRtfFile.rc"
+				RelativePath=".\ASCOfficeRtfFile.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeRtfFile.rgs"
+				RelativePath=".\ASCOfficeRtfFile.rgs"
 				>
 			</File>
 			<Filter

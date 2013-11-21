@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)AVSWorksheetConverter\source&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)ASCWorksheetConverter\source&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
@@ -123,7 +123,7 @@
 				AdditionalOptions="/MP"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)AVSWorksheetConverter\source&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)ASCWorksheetConverter\source&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -5052,6 +5052,38 @@
 					>
 				</File>
 				<File
+					RelativePath="..\XLS_logic\Biff_structures\AF12Criteria.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\AF12Criteria.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\AFDOper.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\AFDOper.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\AFDOperRk.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\AFDOperRk.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\AFDOperStr.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\AFDOperStr.h"
+					>
+				</File>
+				<File
 					RelativePath="..\XLS_logic\Biff_structures\AntiMoniker.cpp"
 					>
 				</File>
@@ -5364,6 +5396,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\XLS_logic\Biff_structures\DXFN12List.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\DXFN12List.h"
+					>
+				</File>
+				<File
 					RelativePath="..\XLS_logic\Biff_structures\DXFNum.cpp"
 					>
 				</File>
@@ -5529,6 +5569,22 @@
 				</File>
 				<File
 					RelativePath="..\XLS_logic\Biff_structures\FactoidType.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\Feat11FdaAutoFilter.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\Feat11FdaAutoFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\Feat11FieldDataItem.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\Feat11FieldDataItem.h"
 					>
 				</File>
 				<File
@@ -5825,6 +5881,30 @@
 				</File>
 				<File
 					RelativePath="..\XLS_logic\Biff_structures\LbsDropData.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\List12BlockLevel.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\List12BlockLevel.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\List12DisplayName.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\List12DisplayName.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\List12TableStyleClientInfo.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\List12TableStyleClientInfo.h"
 					>
 				</File>
 				<File
@@ -6225,6 +6305,14 @@
 				</File>
 				<File
 					RelativePath="..\XLS_logic\Biff_structures\SyntaxPtg.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\TableFeatureType.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\TableFeatureType.h"
 					>
 				</File>
 				<File

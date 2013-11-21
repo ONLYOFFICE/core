@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "XmlUtils.h"
+#include "../Common/XmlUtils.h"
 #include "RtfDocument.h"
 
 class OOXRelsWriter

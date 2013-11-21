@@ -1,6 +1,6 @@
 #pragma once 
 #include "Basic.h"
-#include "XmlUtils.h"
+#include "../Common/XmlUtils.h"
 #include "RtfTableCell.h"
 
 class RtfTableRow : public IDocumentElement, public ItemContainer< RtfTableCellPtr >

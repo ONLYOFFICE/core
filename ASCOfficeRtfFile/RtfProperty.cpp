@@ -3,7 +3,7 @@
 #include "RtfWriter.h"
 #include "OOXWriter.h"
 #include "RtfProperty.h"
-#include "XmlUtils.h"
+#include "../Common/XmlUtils.h"
 
 CString RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 		{

@@ -2,7 +2,7 @@
 #include "OOXColorSchemeReader.h"
 #include "OOXFontSchemeReader.h"
 #include "Utils.h"
-#include "ATLDefine.h"
+#include "../Common/ATLDefine.h"
 
 	class OOXThemeReader
 	{

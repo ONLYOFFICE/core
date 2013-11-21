@@ -1,6 +1,6 @@
 #pragma once
 #include "RtfPicture.h"
-#include "XmlUtils.h"
+#include "../Common/XmlUtils.h"
 #include "OOXReaderBasic.h"
 
 #define PICTURE_BUFFER_SIZE 1024

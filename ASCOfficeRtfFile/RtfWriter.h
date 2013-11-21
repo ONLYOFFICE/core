@@ -1,7 +1,7 @@
 #pragma once
-#include "FileWriter.h"
-#include "AtlDefine.h"
-#include "..\AVSOfficeUniversalConverter\Utils.h"
+#include "../Common/FileWriter.h"
+#include "../Common/AtlDefine.h"
+#include "UniversalConverterUtils.h"
 
 class RtfDocument;
 

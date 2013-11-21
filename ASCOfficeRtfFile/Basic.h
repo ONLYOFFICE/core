@@ -1,6 +1,6 @@
 #pragma once
 #include <atlcoll.h>
-#include "XmlUtils.h"
+#include "../Common/XmlUtils.h"
 #include "IdGenerator.h"
 #include "RtfDefine.h"
 #include <boost/shared_ptr.hpp>

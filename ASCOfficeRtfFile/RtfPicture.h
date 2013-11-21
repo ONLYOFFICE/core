@@ -1,7 +1,7 @@
 #pragma once
 #include "RtfProperty.h"
 #include "Utils.h"
-#include "MediaFormatDefine.h"
+#include "../Common/MediaFormatDefine.h"
 class RtfPicture : public IDocumentElement
 {
 	//public: RtfShape m_oShapeProp;

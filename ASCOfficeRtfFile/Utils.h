@@ -1,10 +1,10 @@
 #pragma once
-#include "StringUtils.h"
-#include "ATLDefine.h"
-#include "..\AVSOfficeUniversalConverter\Utils.h"
+#include "../Common/StringUtils.h"
+#include "../Common/ATLDefine.h"
+#include "UniversalConverterUtils.h"
 #include "../Common/OfficeFileTemplate.h"
-#include "FileWriter.h"
-#include "XmlUtils.h"
+#include "../Common/FileWriter.h"
+#include "../Common/XmlUtils.h"
 
 #define BUF_SIZE 2048
 #define ONE_INCH 2.54

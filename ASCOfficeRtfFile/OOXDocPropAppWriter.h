@@ -1,5 +1,5 @@
 #pragma once
-#include "XmlUtils.h"
+#include "../Common/XmlUtils.h"
 #include "OOXRelsWriter.h"
 #include "Resource.h"
 

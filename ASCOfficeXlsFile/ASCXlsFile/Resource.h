@@ -3,7 +3,7 @@
 // Used by AVSXlsFile.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_AVSXLSFILE                  101
+#define IDR_ASCXLSFILE                  101
 
 // Next default values for new objects
 // 

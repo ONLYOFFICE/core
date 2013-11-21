@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSOfficeXlsFile", "AVSXlsFile\AVSXlsFile_2005.vcproj", "{E83B5FA5-ACDD-46F5-8E35-B19F398C806D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeXlsFile", "ASCXlsFile\ASCXlsFile_2005.vcproj", "{E83B5FA5-ACDD-46F5-8E35-B19F398C806D}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -10,7 +10,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSOfficeXlsFile", "AVSXlsF
 		{210CA046-BD12-4711-95E6-AF4F35AB3E61} = {210CA046-BD12-4711-95E6-AF4F35AB3E61}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EWSCore", "AVSWorksheetConverter\source\main\EWSCore_2005.vcproj", "{210CA046-BD12-4711-95E6-AF4F35AB3E61}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EWSCore", "ASCWorksheetConverter\source\main\EWSCore_2005.vcproj", "{210CA046-BD12-4711-95E6-AF4F35AB3E61}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"

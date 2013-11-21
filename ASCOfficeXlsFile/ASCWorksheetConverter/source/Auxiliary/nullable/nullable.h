@@ -3,7 +3,7 @@
 #include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/call_traits.hpp>
-#include <Exception/WrongAPIUsage.h>
+#include "../../Exception/WrongAPIUsage.h"
 
 template<typename T>
 class nullable

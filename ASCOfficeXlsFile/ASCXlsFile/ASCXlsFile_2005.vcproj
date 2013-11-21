@@ -181,7 +181,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="uafxcw.lib LIBCMT.lib EWSCore.res"
 				OutputFile="../../Redist/$(ProjectName).dll"
-				AdditionalLibraryDirectories="&quot;../ASCWorksheetConverter/lib/$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="&quot;../ASCWorksheetConverter/lib/$(ConfigurationName)&quot;;../ASCXlsFile/libs"
 				MidlCommandFile=""
 				IgnoreEmbeddedIDL="false"
 			/>

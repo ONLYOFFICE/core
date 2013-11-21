@@ -62,13 +62,13 @@
 
 // The ones that can be used anywhere
 //#include <Exception/exceptions.h>
-#include <Document/msxml/msxml6.tlh>
-#include <Auxiliary/HelpFunc.h>
-#include <Logging/Log.h>
-#include <Logging/DllLog.h>
-#include <Auxiliary/nullable/nullable.h>
+#include "../Document/msxml/msxml6.tlh"
+#include "../Auxiliary/HelpFunc.h"
+#include "../Logging/Log.h"
+#include "../Logging/DllLog.h"
+#include "../Auxiliary/nullable/nullable.h"
 
-#import "..\..\..\AVSOfficeWeb\wwwroot\Bin\AVSOfficeUtils.dll" named_guids raw_interfaces_only rename_namespace("AVSOfficeUtilsLib")
+#import "..\..\..\..\Redist\ASCOfficeUtils.dll" named_guids raw_interfaces_only rename_namespace("AVSOfficeUtilsLib")
 
 //#include <XLS_logic/Biff_structures/BitMarkedStructs.h>
 

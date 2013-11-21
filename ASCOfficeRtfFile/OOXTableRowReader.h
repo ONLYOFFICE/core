@@ -1,6 +1,6 @@
 #pragma once
 #include "RtfDocument.h"
-#include "XmlUtils.h"
+#include "../Common/XmlUtils.h"
 #include "OOXTableCellReader.h"
 #include "RtfTableRow.h"
 #include "OOXtrPrReader.h"

@@ -1,7 +1,7 @@
 #pragma once
 #include "RtfDocument.h"
-#include "XmlUtils.h"
-#include "StringUtils.h"
+#include "../Common/XmlUtils.h"
+#include "../Common/StringUtils.h"
 #include "RtfProperty.h"
 #include "Utils.h"
 

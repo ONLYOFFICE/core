@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "RtfDocument.h"
 #include "OOXWriter.h"
-#include "FileWriter.h"
+#include "../Common/FileWriter.h"
 
 class OOXDocumentWriter
 {

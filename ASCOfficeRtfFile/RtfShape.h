@@ -1,6 +1,6 @@
 #pragma once
 #include "RtfPicture.h"
-#include "MediaFormatDefine.h"
+#include "../Common/MediaFormatDefine.h"
 
 class RtfShape: public IRenderableProperty
 {

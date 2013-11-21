@@ -1,5 +1,5 @@
 #pragma once
-#include "XmlUtils.h"
+#include "../Common/XmlUtils.h"
 #include "RtfDocument.h"
 #include "RtfProperty.h"
 #include "OOXReaderBasic.h"

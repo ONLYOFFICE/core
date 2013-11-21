@@ -1,8 +1,8 @@
 #pragma once
 #include "stdafx.h"
-#include "XmlUtils.h"
+#include "../Common/XmlUtils.h"
 #include "IdGenerator.h"
-#include "ATLDefine.h"
+#include "../Common/ATLDefine.h"
 #include "Resource.h"
 
 class OOXThemeWriter

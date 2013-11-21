@@ -573,6 +573,11 @@ public:
 	}
 	~CFreeTypeFont()
 	{
+		CloseFile();
+	}
+
+	void CloseFile()
+	{
 		if (NULL != m_pFace) 
 			FT_Done_Face(m_pFace);
 
@@ -582,6 +587,11 @@ public:
 			CloseHandle( m_hMapFile );
 		if ( m_hFile )
 			CloseHandle( m_hFile );
+
+		m_pFace = NULL;
+		m_pBaseAddress = NULL;
+		m_hFile = NULL;
+		m_hMapFile = NULL;
 	}
 
 	void InitCache() 
@@ -2009,6 +2019,8 @@ public:
 public:
 	BOOL LoadFont(FT_Library pLibrary, wchar_t* wsFileName, long lIndex, BOOL bUseAA, BOOL bUseKern)
 	{
+		CloseFile();
+
 		FT_Face pFace = NULL;
 
 		// открываем файл
@@ -2230,13 +2242,13 @@ public:
 
 	~CFontManagerLight()
 	{
+		RELEASEOBJECT(m_pFont);
+
 		if (NULL != m_pLibrary)
 		{
 			FT_Done_FreeType(m_pLibrary);
 			m_pLibrary = NULL;
-		}
-
-		RELEASEOBJECT(m_pFont);
+		}		
 	}
 
 	BOOL LoadFontFromFile(CString sSrcPath, float fEmSize, double dHorDpi, double dVerDpi, long lFaceIndex)

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSOfficeXPSFile", "AVSOfficeXPSFile_vs2008.vcproj", "{D02A88E6-5B2B-4A15-A4F6-C057F698FC53}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeXPSFile", "ASCOfficeXPSFile_vs2008.vcproj", "{D02A88E6-5B2B-4A15-A4F6-C057F698FC53}"
 	ProjectSection(ProjectDependencies) = postProject
 		{75098926-FDF3-4728-831A-6C3060A5D530} = {75098926-FDF3-4728-831A-6C3060A5D530}
 	EndProjectSection

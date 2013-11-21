@@ -126,7 +126,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\Redist\VersionControl.exe $(ProjectDir)version.h"
+				CommandLine="..\..\..\..\..\Redist\VersionControl.exe $(ProjectDir)version.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -212,7 +212,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\Redist\AVSOfficeStudio&quot;&#x0D;&#x0A;"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\Redist&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

@@ -2,9 +2,9 @@
 #ifndef _AVS_GRAPHICS_
 #include "../../../../../Common/XmlUtils.h"
 #else
-#include "../../../AVSImageStudio3/AVSGraphics/Interfaces/XmlUtils.h"
+#include "../../../../../AVSImageStudio3/AVSGraphics/Interfaces/XmlUtils.h"
 #endif
-#include "../../../AVSVideoStudio3/Common/AVSUtils.h"
+#include "../ASCUtils.h"
 #include "windows.h"
 
 #ifndef		pow2_16

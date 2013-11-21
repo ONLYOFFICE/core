@@ -1,5 +1,5 @@
 #pragma once
-#include "TemporaryCS.h"
+#include "../Common/TemporaryCS.h"
 
 template <class T, class Reciever>
 class COfficeEventTemplate : public T

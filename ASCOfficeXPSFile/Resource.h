@@ -3,7 +3,7 @@
 // Used by AVSOfficeXPSFile.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_AVSXPSFILE                  101
+#define IDR_ASCXPSFILE                  101
 
 // Next default values for new objects
 // 

@@ -2,8 +2,8 @@
 #ifndef XPS_DRAWPAGEPROPERTIES_INCLUDE_H_
 #define XPS_DRAWPAGEPROPERTIES_INCLUDE_H_
 
-#import "..\..\..\Redist\AVSGraphics.dll"									named_guids raw_interfaces_only rename_namespace("AVSGraphics")
-#include "..\..\AVSImageStudio3\AVSGraphics\agg\AVSWrapper\Matrix.h"
+#import "..\..\..\..\..\..\..\Redist\AVSGraphics.dll"									named_guids raw_interfaces_only rename_namespace("AVSGraphics")
+#include "..\..\..\..\..\..\AVSImageStudio3\AVSGraphics\agg\AVSWrapper\Matrix.h"
 #include <list>
 
 namespace XPS

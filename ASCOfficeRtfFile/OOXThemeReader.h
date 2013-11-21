@@ -101,8 +101,8 @@
 				CopyFile( sThemeFilename, sTempDirectory + _T("\\theme\\theme\\") + sThemeName ,FALSE );
 
 				//Запаковываем архив
-				AVSOfficeUtils::IOfficeUtils* piZipUtil = NULL;
-				HRESULT hRes = CoCreateInstance( AVSOfficeUtils::CLSID_COfficeUtils , NULL, CLSCTX_INPROC, AVSOfficeUtils::IID_IOfficeUtils, (void**)(&piZipUtil));
+				ASCOfficeUtils::IOfficeUtils* piZipUtil = NULL;
+				HRESULT hRes = CoCreateInstance( ASCOfficeUtils::CLSID_COfficeUtils , NULL, CLSCTX_INPROC, ASCOfficeUtils::IID_IOfficeUtils, (void**)(&piZipUtil));
 				if( FAILED( hRes ) || NULL == piZipUtil )
 				 return false; 
 				BSTR bstrZipFile = sTempZip.AllocSysString();

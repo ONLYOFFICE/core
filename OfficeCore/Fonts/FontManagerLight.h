@@ -2698,6 +2698,28 @@ public:
 		}
 	}
 
+	CString GetFontPath(CString strName, CWinFontList* pList)
+	{
+		CString strFontName = strName;
+		
+		strFontName.Replace(L"&",	L"&amp;");
+		strFontName.Replace(L"'",	L"&apos;");
+		strFontName.Replace(L"<",	L"&lt;");
+		strFontName.Replace(L">",	L"&gt;");
+		strFontName.Replace(L"\"",	L"&quot;");
+
+		CString sXml = _T("<FontProperties><Name value='");
+		sXml += strFontName;
+		sXml += _T("'/>");
+		sXml += _T("</FontProperties>");
+
+		CWinFontInfo *pFontInfo = pList->GetByParams(sXml);
+		if (pFontInfo)
+			return pFontInfo->m_wsFontPath;
+
+		return _T("");		
+	}
+
 private:
 
 	double UpdateSize(double dOldSize, double dDpi, double dNewDpi)

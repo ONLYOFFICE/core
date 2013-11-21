@@ -528,6 +528,9 @@ class CFreeTypeFont
 public:
 	CFreeTypeFont()
 	{
+		m_pDefaultFont = NULL;
+		m_bUseDefaultFont = FALSE;
+
 		m_pSize = NULL;
 		
 		m_dTextScale = 1;
@@ -574,6 +577,20 @@ public:
 	~CFreeTypeFont()
 	{
 		CloseFile();
+	}
+
+	void SetDefaultFont(CFreeTypeFont* pFont)
+	{
+		m_pDefaultFont = pFont;
+	}
+	CFreeTypeFont* GetDefaultFont()
+	{
+		return m_pDefaultFont;
+	}
+
+	void SetUseDefaultFont(BOOL bUse)
+	{
+		m_bUseDefaultFont = bUse;
 	}
 
 	void CloseFile()
@@ -770,6 +787,8 @@ public:
 		FT_GlyphSlot pGlyphSlot = m_pFace->glyph;
 
 		// TO DO: Пропустить нулевой (".notdef") символ в TrueType
+		if (m_pDefaultFont)
+			m_pDefaultFont->UpdateMatrix2();
 		UpdateMatrix2();
 
 		if ( FT_Load_Glyph( m_pFace, unGID, LOAD_MODE ) ) 
@@ -857,7 +876,17 @@ public:
 
 		FT_Face pSrcFace = m_pFace;
 
+		FT_Face pDefFace = NULL;
+		CFreeTypeFont *pDefFont = NULL;
+		if ( m_pDefaultFont )
+		{
+			pDefFont = m_pDefaultFont;
+			pDefFace = m_pDefaultFont->m_pFace;
+		}
+
 		// Сначала мы все рассчитываем исходя только из матрицы шрифта FontMatrix
+		if ( pDefFont )
+			pDefFont->UpdateMatrix1();
 		UpdateMatrix1();
 
 		for ( int nIndex = 0; nIndex < pString->GetLength(); nIndex++ )
@@ -879,14 +908,48 @@ public:
 				if ( !( ( unGID > 0 ) || ( -1 != m_nSymbolic && ( ushUnicode < 0xF000 )  && 0 < ( unGID = (unsigned int)SetCMapForCharCode( ushUnicode + 0xF000, &nCMapIndex ) ) ) ) )
 				{
 					// Пробуем загрузить через стандартный шрифт
-					unGID = m_nDefaultChar;
-					oSizes.eState = glyphstateNormal;
-					pString->SetState( nIndex, glyphstateNormal );					
+					if ( FALSE == m_bUseDefaultFont || NULL == pDefFont || 0 >= ( unGID = pDefFont->SetCMapForCharCode( ushUnicode, &nCMapIndex ) )  )
+					{
+						if ( m_nDefaultChar < 0 )
+						{
+							oSizes.ushGID    = -1;
+							oSizes.eState    = glyphstateMiss;
+							oSizes.fAdvanceX = (float)(pSrcFace->size->metrics.max_advance >> 6) / 2.f;
+
+							// В стандартном шрифте данный символ тоже не рисуется
+							pString->SetStartPoint( nIndex, fPenX, fPenY );
+							pString->SetBBox( nIndex, 0, 0, 0, 0 );
+							pString->SetState( nIndex, glyphstateMiss );
+
+							FT_Fixed lAdv = 0;
+
+							fPenX += oSizes.fAdvanceX + m_fCharSpacing;
+							unPrevGID = 0;
+
+							continue;
+						}
+						else
+						{
+							unGID = m_nDefaultChar;
+							oSizes.eState = glyphstateNormal;
+							pString->SetState( nIndex, glyphstateNormal );
+							pFace = pSrcFace;
+						}
+					}
+					else
+					{
+						oSizes.eState = glyphstateDeafault;
+
+						pString->SetState( nIndex, glyphstateDeafault );
+						pFace = pDefFace;
+					}
 				}
 				else
 				{
 					oSizes.eState = glyphstateNormal;
+
 					pString->SetState( nIndex, glyphstateNormal );
+					pFace = pSrcFace;
 				}
 				oSizes.ushGID     = unGID;
 				oSizes.nCMapIndex = nCMapIndex;
@@ -986,10 +1049,12 @@ public:
 				else if ( glyphstateDeafault == eState )
 				{
 					pString->SetState( nIndex, glyphstateDeafault );
+					pFace = pDefFace;
 				}
 				else // if ( glyphstateNormal == eState )
 				{
 					pString->SetState( nIndex, glyphstateNormal );
+					pFace = pSrcFace;
 				}
 
 				if ( 0 != pFace->num_charmaps )
@@ -1046,6 +1111,8 @@ public:
 		pString->m_fEndX = fPenX + pString->m_fX;
 		pString->m_fEndY = fPenY + pString->m_fY;
 
+		if ( pDefFont )
+			pDefFont->UpdateMatrix2();
 		UpdateMatrix2();
 
 		return TRUE;
@@ -1061,9 +1128,19 @@ public:
 
 		FT_Face pSrcFace = m_pFace;
 
+		FT_Face pDefFace = NULL;
+		CFreeTypeFont* pDefFont = NULL;
+		if ( m_pDefaultFont )
+		{
+			pDefFont = m_pDefaultFont;
+			pDefFace = m_pDefaultFont->m_pFace;
+		}
+
 		for ( int nIndex = 0; nIndex < pString->GetLength(); nIndex++ )
 		{
 			// Сначала мы все рассчитываем исходя только из матрицы шрифта FontMatrix
+			if ( pDefFont )
+				pDefFont->UpdateMatrix1();
 			UpdateMatrix1();
 
 			FT_Face pFace = pSrcFace;
@@ -1083,14 +1160,45 @@ public:
 				if ( !( ( unGID > 0 ) || ( -1 != m_nSymbolic && ( ushUnicode < 0xF000 )  && 0 < ( unGID = (unsigned int)SetCMapForCharCode( ushUnicode + 0xF000, &nCMapIndex ) ) ) ) )
 				{
 					// Пробуем загрузить через стандартный шрифт
-					unGID = m_nDefaultChar;
-					oSizes.eState = glyphstateNormal;
+					if ( FALSE == m_bUseDefaultFont || NULL == pDefFont || 0 >= ( unGID = pDefFont->SetCMapForCharCode( ushUnicode, &nCMapIndex ) )  )
+					{
+						if ( m_nDefaultChar < 0 )
+						{
+							oSizes.ushGID    = -1;
+							oSizes.eState    = glyphstateMiss;
+							oSizes.fAdvanceX = (float)(pSrcFace->size->metrics.max_advance >> 6) / 2.f;
 
-					pString->SetState( nIndex, glyphstateNormal );
+							// В стандартном шрифте данный символ тоже не рисуется
+							pString->SetStartPoint( nIndex, fPenX, fPenY );
+							pString->SetBBox( nIndex, 0, 0, 0, 0 );
+							pString->SetState( nIndex, glyphstateMiss );
+
+							FT_Fixed lAdv = 0;
+
+							fPenX += oSizes.fAdvanceX + m_fCharSpacing;		
+							continue;
+						}
+						else
+						{
+							unGID = m_nDefaultChar;
+							oSizes.eState = glyphstateNormal;
+
+							pString->SetState( nIndex, glyphstateNormal );
+							pFace = pSrcFace;
+						}
+					}
+					else
+					{
+						oSizes.eState = glyphstateDeafault;
+
+						pString->SetState( nIndex, glyphstateDeafault );
+						pFace = pDefFace;
+					}
 				}
 				else
 				{
 					oSizes.eState = glyphstateNormal;
+
 					pString->SetState( nIndex, glyphstateNormal );
 					pFace = pSrcFace;
 				}
@@ -1113,6 +1221,8 @@ public:
 
 				pString->SetStartPoint( nIndex, fXX, fYY);
 
+				if ( pDefFont )
+					pDefFont->UpdateMatrix2();
 				UpdateMatrix2();
 
 				if ( FT_Load_Glyph( pFace, unGID, LOAD_MODE ) )
@@ -1277,10 +1387,12 @@ public:
 				else if ( glyphstateDeafault == eState )
 				{
 					pString->SetState( nIndex, glyphstateDeafault );
+					pFace = pDefFace;
 				}
 				else // if ( glyphstateNormal == eState )
 				{
 					pString->SetState( nIndex, glyphstateNormal );
+					pFace = pSrcFace;
 				}
 
 				if ( 0 != pFace->num_charmaps )
@@ -1328,7 +1440,11 @@ public:
 		pString->m_fEndX = fPenX + pString->m_fX;
 		pString->m_fEndY = fPenY + pString->m_fY;
 
+		if ( pDefFont )
+			pDefFont->UpdateMatrix2();
 		UpdateMatrix2();
+
+
 		return TRUE;
 	}
 
@@ -1412,6 +1528,11 @@ public:
 
 	virtual void SetSizeAndDpi(float fSize, unsigned int unHorDpi, unsigned int unVerDpi)
 	{
+		if ( m_pDefaultFont )
+		{
+			m_pDefaultFont->SetSizeAndDpi( fSize, unHorDpi, unVerDpi );
+		}
+
 		ClearCache();
 		ClearSizesCache();
 
@@ -1606,16 +1727,40 @@ public:
 
 	virtual void ResetFontMatrix()
 	{
-		m_arrdFontMatrix[0] = 1;
-		m_arrdFontMatrix[1] = 0;
-		m_arrdFontMatrix[2] = 0;
-		m_arrdFontMatrix[3] = 1;
-		m_arrdFontMatrix[4] = 0;
-		m_arrdFontMatrix[5] = 0;
+		if ( m_pDefaultFont )
+		{
+			m_pDefaultFont->ResetFontMatrix();
+		}
+
+		if ( m_bNeedDoItalic )
+		{
+			m_arrdFontMatrix[0] = 1;
+			m_arrdFontMatrix[1] = 0;
+			m_arrdFontMatrix[2] = FONT_ITALIC_ANGLE;
+			m_arrdFontMatrix[3] = 1;
+			m_arrdFontMatrix[4] = 0;
+			m_arrdFontMatrix[5] = 0;
+		}
+		else
+		{
+			m_arrdFontMatrix[0] = 1;
+			m_arrdFontMatrix[1] = 0;
+			m_arrdFontMatrix[2] = 0;
+			m_arrdFontMatrix[3] = 1;
+			m_arrdFontMatrix[4] = 0;
+			m_arrdFontMatrix[5] = 0;
+		}
+
+		UpdateMatrix0();
 	}
 
 	virtual void ResetTextMatrix()
 	{
+		if ( m_pDefaultFont )
+		{
+			m_pDefaultFont->ResetTextMatrix();
+		}
+
 		m_arrdTextMatrix[0] = 1;
 		m_arrdTextMatrix[1] = 0;
 		m_arrdTextMatrix[2] = 0;
@@ -1626,6 +1771,11 @@ public:
 
 	virtual void ApplyTransform(float fA, float fB, float fC, float fD, float fE, float fF)
 	{
+		if ( m_pDefaultFont )
+		{
+			m_pDefaultFont->ApplyTransform( fA, fB, fC, fD, fE, fF );
+		}
+
 		double arrTemp[6] = { m_arrdFontMatrix[0], m_arrdFontMatrix[1], m_arrdFontMatrix[2], m_arrdFontMatrix[3] };
 
 		m_arrdFontMatrix[0] = arrTemp[0] * fA + arrTemp[1] * fC;
@@ -1640,6 +1790,11 @@ public:
 
 	virtual void SetFontMatrix(float fA, float fB, float fC, float fD, float fE, float fF)
 	{
+		if ( m_pDefaultFont )
+		{
+			m_pDefaultFont->SetFontMatrix( fA, fB, fC, fD, fE, fF );
+		}
+
 		if ( m_bNeedDoItalic ) 
 		{
 			m_arrdFontMatrix[0] = fA;
@@ -1664,6 +1819,11 @@ public:
 
 	virtual void SetTextMatrix(float fA, float fB, float fC, float fD, float fE, float fF)
 	{
+		if ( m_pDefaultFont )
+		{
+			m_pDefaultFont->SetTextMatrix( fA, fB, fC, fD, fE, fF );
+		}
+
 		m_arrdTextMatrix[0] =  fA;
 		m_arrdTextMatrix[1] = -fB;
 		m_arrdTextMatrix[2] = -fC;
@@ -2134,6 +2294,9 @@ private:
 	HANDLE               m_hFile;
 	HANDLE               m_hMapFile;
 
+	CFreeTypeFont*	m_pDefaultFont;
+	BOOL m_bUseDefaultFont;
+
 	// font
 	double         m_arrdFontMatrix[6]; // FontMatrix (Text space -> Device space)
 	double         m_arrdTextMatrix[6]; // TextMatrix (Text space -> User space)
@@ -2231,18 +2394,36 @@ private:
 	BOOL		m_bUseKerning;
 	BOOL		m_bUseCIDs;
 
+	CFreeTypeFont* m_pDefaultFont[4]; // { Regular, Bold, Italic, Bold Italic}
+
 public:
 
 	CFontManagerLight()
 	{
+		m_pFont = NULL;
+		for (LONG i = 0; i < 4; ++i)
+			m_pDefaultFont[i] = NULL;
+
 		m_pLibrary = NULL;
 		if (FT_Init_FreeType(&m_pLibrary))
 			m_pLibrary = NULL;
+
+		m_bStringGID = FALSE;
+		m_bUseDefaultFont = TRUE;
+
+		m_dCharSpacing = 0;
+
+		m_bAntiAliasing = TRUE;
+		m_bUseKerning = TRUE;
+		m_bUseCIDs = FALSE;
 	}
 
 	~CFontManagerLight()
 	{
 		RELEASEOBJECT(m_pFont);
+
+		for (LONG i = 0; i < 4; ++i)
+			RELEASEOBJECT((m_pDefaultFont[i]));
 
 		if (NULL != m_pLibrary)
 		{
@@ -2256,6 +2437,8 @@ public:
 		if (!m_pLibrary)
 			return FALSE;
 
+		RELEASEOBJECT(m_pFont);
+
 		m_pFont = new CFreeTypeFont();
 		BSTR bsFontPath = sSrcPath.AllocSysString();
 		BOOL bIsOpened = m_pFont->LoadFont(m_pLibrary, bsFontPath, lFaceIndex, m_bAntiAliasing, m_bUseKerning);
@@ -2268,6 +2451,9 @@ public:
 		}
 		
 		m_pFont->UpdateStyles(FALSE, FALSE);
+		m_pFont->SetDefaultFont(m_pDefaultFont[0]);
+		m_pFont->SetUseDefaultFont( m_bUseDefaultFont );
+
 		fEmSize = (float)UpdateSize( (double) fEmSize, dVerDpi, (unsigned int)dVerDpi );
 		m_pFont->SetSizeAndDpi( fEmSize, (unsigned int)dHorDpi, (unsigned int)dVerDpi );
 
@@ -2331,16 +2517,22 @@ public:
 		if (!m_pFont)
 			return ret;
 		
-		if ( glyphstateNormal == oCurGlyph.eState )
+		if ( glyphstateNormal == oCurGlyph.eState || ( glyphstateDeafault == oCurGlyph.eState && NULL != m_pFont->GetDefaultFont() ) )
 		{
 			long lUnicode = oCurGlyph.lUnicode;
+			CFreeTypeFont *pCurFont = NULL;
+
+			if ( glyphstateNormal == oCurGlyph.eState )
+				pCurFont = m_pFont;
+			else
+				pCurFont = m_pFont->GetDefaultFont();
 
 			if ( false == oCurGlyph.bBitmap )
-				m_pFont->GetGlyph( lUnicode, 0, 0, &oBitmap );
+				pCurFont->GetGlyph( lUnicode, 0, 0, &oBitmap );
 			else
 				oBitmap = oCurGlyph.oBitmap;
 
-			if ( oBitmap.nWidth <= 0 || oBitmap.nHeight <= 0)
+			if ( oBitmap.nWidth <= 0 || oBitmap.nHeight <= 0 )
 			{
 				oBitmap.pData = NULL;
 			}
@@ -2450,6 +2642,59 @@ public:
 			}
 
 			pLine += (4 * lWidth);
+		}
+	}
+
+	void SetDefaultFont(CString strName, CWinFontList* pList)
+	{
+		for ( int nIndex = 0; nIndex < 4; nIndex++ )
+		{
+			LONG bBold, bItalic;
+
+			switch(  nIndex )
+			{
+			case 0: bBold = 0; bItalic = 0; break;
+			case 1: bBold = 1;  bItalic = 0; break;
+			case 2: bBold = 0; bItalic = 1;  break;
+			case 3: bBold = 1;  bItalic = 1;  break;
+			}
+
+			CString strStyle = _T("");
+			strStyle.Format(_T("<Style bold='%d' italic='%d'/>"), bBold, bItalic);
+
+			CString strFontName = strName;
+			
+			strFontName.Replace(L"&",	L"&amp;");
+			strFontName.Replace(L"'",	L"&apos;");
+			strFontName.Replace(L"<",	L"&lt;");
+			strFontName.Replace(L">",	L"&gt;");
+			strFontName.Replace(L"\"",	L"&quot;");
+
+			CString sXml = _T("<FontProperties><Name value='");
+			sXml += strFontName;
+			sXml += _T("'/>");
+			sXml += strStyle;
+			sXml += _T("</FontProperties>");
+
+			CWinFontInfo *pFontInfo = pList->GetByParams(sXml);
+			if (NULL == pFontInfo)
+				continue;
+
+			RELEASEOBJECT((m_pDefaultFont[nIndex]));
+
+			m_pDefaultFont[nIndex] = new CFreeTypeFont();
+			
+			BSTR bsFontPath = pFontInfo->m_wsFontPath.AllocSysString();
+			BOOL bIsOpened = m_pDefaultFont[nIndex]->LoadFont(m_pLibrary, bsFontPath, pFontInfo->m_lIndex, m_bAntiAliasing, m_bUseKerning);
+			SysFreeString(bsFontPath);
+
+			if (!bIsOpened)
+			{
+				RELEASEOBJECT(m_pDefaultFont[nIndex]);
+				continue;
+			}
+			
+			m_pDefaultFont[nIndex]->UpdateStyles(bBold, bItalic);
 		}
 	}
 

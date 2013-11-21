@@ -9,7 +9,7 @@
 //
 #include "winres.h"
 #define COMPONENT_NAME "OfficeXlsFile"
-#include "../../../../Common/FileInfo.h"
+#include "../../Common/FileInfo.h"
 #include "version.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -91,7 +91,7 @@ END
 // REGISTRY
 //
 
-IDR_AVSXLSFILE          REGISTRY                "AVSXlsFile.rgs"
+IDR_ASCXLSFILE          REGISTRY                "ASCXlsFile.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -100,7 +100,7 @@ IDR_AVSXLSFILE          REGISTRY                "AVSXlsFile.rgs"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSXlsFile"
+    IDS_PROJNAME            "ASCXlsFile"
 END
 
 #endif    // Russian resources

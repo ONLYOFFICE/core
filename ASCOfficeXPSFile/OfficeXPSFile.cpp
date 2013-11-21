@@ -22,7 +22,7 @@ HRESULT CXPSFile::FinalConstruct()
 	m_pFolder = NULL;
 	m_pOfficeUtils = NULL;
 
-	if(S_OK != CoCreateInstance( __uuidof(AVSOfficeUtils::COfficeUtils), NULL, CLSCTX_INPROC_SERVER, __uuidof(AVSOfficeUtils::IOfficeUtils),
+	if(S_OK != CoCreateInstance( __uuidof(ASCOfficeUtils::COfficeUtils), NULL, CLSCTX_INPROC_SERVER, __uuidof(ASCOfficeUtils::IOfficeUtils),
 		(void **)&(this->m_pOfficeUtils) ))
 		return S_FALSE;
 
@@ -110,7 +110,7 @@ STDMETHODIMP CXPSFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLO
 
 	_bstr_t bs = sDstPath;//m_strTempDirectory;
 
-	OfficeUtilsEvents< AVSOfficeUtils::_IAVSOfficeUtilsEvents, CXPSFile >* oEventUtils = new OfficeUtilsEvents< AVSOfficeUtils::_IAVSOfficeUtilsEvents, CXPSFile >(this);
+	OfficeUtilsEvents< ASCOfficeUtils::_IAVSOfficeUtilsEvents, CXPSFile >* oEventUtils = new OfficeUtilsEvents< ASCOfficeUtils::_IAVSOfficeUtilsEvents, CXPSFile >(this);
 	oEventUtils->AddRef();
 	oEventUtils->Advise( m_pOfficeUtils );
 	

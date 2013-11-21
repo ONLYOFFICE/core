@@ -5,15 +5,15 @@
 #include ".\..\Common\OfficeFileErrorDescription.h"
 #include ".\..\Common\OfficeDefines.h"
 //#include "XmlUtils.h"
-#include "..\..\AVSImageStudio3\AVSGraphics\Interfaces\XmlUtils.h"
-#include "AVSUtils.h"
+#include "..\..\..\..\AVSImageStudio3\AVSGraphics\Interfaces\XmlUtils.h"
+#include "..\Common\ASCUtils.h"
 #include "XPS.h"
 #include "OfficeUtilsEvents.h"
 #include "File.h"
 
 #include "TemporaryCS.h"
 
-#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficeUtils.dll" raw_interfaces_only
+#import "..\Redist\ASCOfficeUtils.dll" raw_interfaces_only rename_namespace("ASCOfficeUtils")
 //using namespace AVSOfficeUtils;
 //#pragma comment( lib, "XPSLib.lib")
 
@@ -68,7 +68,7 @@ private:
 
 	CRITICAL_SECTION m_oCS;
 
-	AVSOfficeUtils::IOfficeUtils*	m_pOfficeUtils;
+	ASCOfficeUtils::IOfficeUtils*	m_pOfficeUtils;
 	XPS::Folder*					m_pFolder;
 
 public:

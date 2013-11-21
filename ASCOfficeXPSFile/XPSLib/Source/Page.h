@@ -2,7 +2,7 @@
 #ifndef XPS_PAGE_INCLUDE_H_
 #define XPS_PAGE_INCLUDE_H_
 
-#include "..\..\AVSImageStudio3\AVSGraphics\Interfaces\XmlUtils.h"
+#include "..\..\..\..\..\..\AVSImageStudio3\AVSGraphics\Interfaces\XmlUtils.h"
 #include <set>
 #include <boost/shared_ptr.hpp>
 #include "Utils.h"

@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="..\..\..\AVSImageStudio3\AVSGraphics\Debug\agg2d.lib"
+				AdditionalDependencies="..\..\..\..\..\AVSImageStudio3\AVSGraphics\Debug\agg2d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -123,7 +123,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="..\..\..\AVSImageStudio3\AVSGraphics\Release\agg2d.lib"
+				AdditionalDependencies="..\..\..\..\..\AVSImageStudio3\AVSGraphics\Release\agg2d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

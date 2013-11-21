@@ -226,6 +226,7 @@ OfficeCore/Test/TestConsole/bin/Release/Interop.OfficeCore.dll svn_mime_002dtype
 OfficeCore/Test/TestConsole/bin/Release/TestConsole.exe svn_mime_002dtype=application%2Foctet-stream
 OfficeCore/Test/TestConsole/bin/Release/TestConsole.pdb svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficeDocxFile2.dll svn_mime_002dtype=application%2Foctet-stream
+Redist/OfficeCore.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/XlsxSerializerCom.dll svn_mime_002dtype=application%2Foctet-stream
 Test/Applications/AVSOfficeDocFileTest/AVSOfficeDocFileTest/AVSDocFileTest.aps svn_mime_002dtype=application%2Foctet-stream
 Test/Applications/AVSOfficeDocFileTest/AVSOfficeDocFileTest/res/AVSDocFileTest.ico svn_mime_002dtype=application%2Foctet-stream

@@ -4,7 +4,7 @@
 //
 
 #define IDS_PROJNAME                    100
-#define IDR_AVSOFFICERTFFILE	101
+#define IDR_ASCOFFICERTFFILE	101
 
 #define IDR_APP			151
 #define IDR_CORE		152

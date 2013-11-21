@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "Structures.h"
-#include <Base64.h>
+#include "../Common/Structures.h"
+#include "../Common/Base64.h"
 	
 #ifdef USE_ATL_CSTRING
 	

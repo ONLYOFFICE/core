@@ -3,8 +3,9 @@
 #pragma once
 
 #include "./File.h"
-#include "./WinFont.h"
+#include "./FontManagerLight.h"
 #include "./WinFontStorage.h"
+#include "./../Images/ImageGdipFile.h"
 
 [object, uuid("F30AE253-88EF-4ae2-81B6-D9E1502082FF"), dual, pointer_default(unique)]
 __interface IWinFonts : IDispatch
@@ -380,14 +381,14 @@ private:
 		}
 		// -------------------------------------------
 
-#if 0
 		// создаем картинку для табнейлов
 		double dW_mm = 80;
 		LONG lH1_px = LONG(7 * 96 / 25.4);
 		LONG lWidthPix = (LONG)(dW_mm * 96 / 25.4);
 		LONG lHeightPix = (LONG)(nCountFonts * lH1_px);
-		MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-		CoCreateInstance(MediaCore::CLSID_CAVSUncompressedVideoFrame, NULL, CLSCTX_ALL, MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
+
+		IUncompressedFrame* pFrame;
+		CoCreateInstance(__uuidof(CUncompressedFrame), NULL, CLSCTX_ALL, __uuidof(IUncompressedFrame), (void**)&pFrame);
 
 		pFrame->put_ColorSpace( ( 1 << 6) | ( 1 << 31) ); // CPS_BGRA | CPS_FLIP
 		pFrame->put_Width( lWidthPix );
@@ -407,29 +408,18 @@ private:
 			pBuffer[i] = 0;
 		}
 
-		IAVSGraphicsRenderer* pRenderer = NULL;
-		CoCreateInstance(__uuidof(CAVSGraphicsRenderer), NULL, CLSCTX_ALL, __uuidof(IAVSGraphicsRenderer), (void**)&pRenderer);
-		//ставим FontManager
+		IImageGdipFile* pImFile;
+		CoCreateInstance(__uuidof(CImageGdipFile), NULL, CLSCTX_ALL, __uuidof(IImageGdipFile), (void**)&pImFile);
 
-		IAVSFontManager* man = NULL;
-		CoCreateInstance(__uuidof(CAVSFontManager), NULL, CLSCTX_INPROC, __uuidof(IAVSFontManager), (void**)&man);
-		man->Initialize(L"");
-		man->SetDefaultFont( L"Arial" );
-		
-		IAVSFontManager2* man2 = NULL;
-		man->QueryInterface(__uuidof(IAVSFontManager2), (void**)&man2);
-		man2->UseDefaultFont(TRUE);
-		RELEASEINTERFACE(man2);
+		IUnknown* punkFrame = NULL;
+		pFrame->QueryInterface(IID_IUnknown, (void**)&punkFrame);
 
-		VARIANT vtVariant;
-		vtVariant.vt = VT_UNKNOWN;
-		vtVariant.punkVal = (IUnknown*)man;
-		pRenderer->SetAdditionalParam( L"FontManager", vtVariant );
+		pImFile->put_Frame(punkFrame);
 
-		pRenderer->put_Width(dW_mm);
-		pRenderer->put_Height(lHeightPix * 25.4 / 96);
-		pRenderer->CreateFromMediaData((IUnknown*)pFrame, 0, 0, lWidthPix, lHeightPix);
-#endif
+		RELEASEINTERFACE(punkFrame);
+
+		CFontManagerLight oFontManager;
+		// default!
 
 		// и самое главное. Здесь должен скидываться скрипт для работы со всеми шрифтами.
 		// все объекты, которые позволят не знать о существующих фонтах
@@ -523,65 +513,52 @@ private:
 					lFaceIndex = pPair->m_value.m_lFaceIndexBI;
 				}
 
-#if 0
 				CString strFontPath = _T("");
 				CAtlMap<LONG, CString>::CPair* _pair = mapFontFiles2.Lookup(lFontIndex);
 				if (NULL != _pair)
 					strFontPath = _pair->m_value;
 
-				BSTR bsFontPath = strFontPath.AllocSysString();
-				LoadFontFromFile(bsFontPath, 10, 72, 72, lFaceIndex);
-				BOOL bIsSymbol = (-1 != ((CFreeTypeFont*)m_pFont)->GetSymbolic()) ? TRUE : FALSE;
+				oFontManager.LoadFontFromFile(strFontPath, 14, 96, 96, lFaceIndex);
 				
+				CFreeTypeFont* pFont = oFontManager.GetFont();
+				BOOL bIsSymbol = FALSE;
+
+				if (pFont)
+					bIsSymbol = (-1 != (pFont->GetSymbolic())) ? TRUE : FALSE;
+
 				if (bIsSymbol)
 				{
-					SysFreeString(bsFontPath);
-					strFontPath = _T("C:\\Windows\\Fonts\\cour.ttf");
-					bsFontPath = strFontPath.AllocSysString();
+					oFontManager.LoadFontFromFile(_T("C:\\Windows\\Fonts\\cour.ttf"), 14, 96, 96, lFaceIndex);
+					pFont = oFontManager.GetFont();
 				}
 
-				pRenderer->put_BrushColor1(0);
+				if (pFont)
+				{
+					pFont->SetStringGID(FALSE);
+					pFont->SetCharSpacing(0);
+				}
+
 				BSTR bsText = pPair->m_value.m_sName.AllocSysString();
-				pRenderer->put_FontPath(bsFontPath);
-				pRenderer->put_FontSize(14);
-				pRenderer->put_FontStringGID(0);
-				pRenderer->put_FontCharSpace(0);
-				pRenderer->CommandDrawText(bsText, 5, 25.4 * (index * lH1_px + lH1_px) / 96 - 2, 0, 0, 0);
+				oFontManager.FillString(bsText, 5, 25.4 * (index * lH1_px + lH1_px) / 96 - 2, 96, 96, pFrame, 255 /* black */); 
 				SysFreeString(bsText);
-				SysFreeString(bsFontPath);
-				// endthumbnail
-#endif
 			}
 			oWriterJS.WriteStringC(_T("];\n\n"));
 
-#if 0
-			// скинем табнейл
-			ImageStudio::IImageTransforms* pTransform = NULL;
-			CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL, CLSCTX_ALL, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
-
-			VARIANT var;
-			var.vt = VT_UNKNOWN;
-			var.punkVal = (IUnknown*)pFrame;
-			
 			wchar_t sTempPath[MAX_PATH], sTempFile[MAX_PATH];
 			if ( 0 == GetTempPath( MAX_PATH, sTempPath ) )
-				return S_FALSE;
+				return;
 
-			if ( 0 == GetTempFileName( sTempPath, "thumbnail", 0, sTempFile ) )
-				return S_FALSE;
+			if ( 0 == GetTempFileName( sTempPath, L"thumbnail", 0, sTempFile ) )
+				return;
 			
 			CString strThumbnailPath(sTempFile);
 
-			VARIANT_BOOL vbSuccess = VARIANT_FALSE;
-			CString _dst = _T("<ImageFile-SaveAsPng destinationpath=\"") + strThumbnailPath + _T("\" format=\"8888\"/>");
-			BSTR bs_dst = _dst.AllocSysString();
-			pTransform->SetSource(0, var);
-			pTransform->SetXml(bs_dst, &vbSuccess);
-			pTransform->Transform(&vbSuccess);
+			BSTR bsThPath = strThumbnailPath.AllocSysString();
+			pImFile->SaveFile(bsThPath, 4);
+			SysFreeString(bsThPath);
 
-			RELEASEINTERFACE(pRenderer);
 			RELEASEINTERFACE(pFrame);
-			RELEASEINTERFACE(pTransform);
+			RELEASEINTERFACE(pImFile);
 
 			CFile oImageFile;
 			oImageFile.OpenFile(strThumbnailPath);
@@ -590,14 +567,19 @@ private:
 			oImageFile.ReadFile(pData, nInputLen);
 			oImageFile.CloseFile();
 
+			BSTR bstrDelFile = strThumbnailPath.AllocSysString();
+
+#ifdef _DEBUG
+			CopyFile(bstrDelFile, L"C:\\thumbnail.png", FALSE);
+#endif
+			DeleteFile(bstrDelFile);
+			SysFreeString(bstrDelFile);
+
 			int nOutputLen = Base64EncodeGetRequiredLength(nInputLen, ATL_BASE64_FLAG_NOCRLF);
 			BYTE* pOutput = new BYTE[nOutputLen];
 			Base64Encode(pData, nInputLen, (LPSTR)pOutput, &nOutputLen, ATL_BASE64_FLAG_NOCRLF);
 
 			CString _s((char*)pOutput, nOutputLen);
-#else
-			CString _s = _T("none");
-#endif
 
 			oWriterJS.WriteStringC(_T("window[\"g_standart_fonts_thumbnail\"] = \"data:image/png;base64,"));
 			oWriterJS.WriteStringC(_s);

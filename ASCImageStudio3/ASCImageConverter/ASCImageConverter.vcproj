@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSImageConverter"
+	Name="ASCImageConverter"
 	ProjectGUID="{CFE8498F-9D55-464B-962C-44EC2CA53D40}"
 	Keyword="AtlProj"
 	>
@@ -41,11 +41,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageConverter.tlb"
-				HeaderFileName="AVSImageConverter.h"
+				TypeLibraryName="$(IntDir)/ASCImageConverter.tlb"
+				HeaderFileName="ASCImageConverter.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageConverter_i.c"
-				ProxyFileName="AVSImageConverter_p.c"
+				InterfaceIdentifierFileName="ASCImageConverter_i.c"
+				ProxyFileName="ASCImageConverter_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
@@ -79,7 +79,7 @@
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="wbemuuid.lib wmiutils.lib gdiplus.lib"
 				LinkIncremental="2"
-				MergedIDLBaseFileName="_AVSImageConverter.idl"
+				MergedIDLBaseFileName="_ASCImageConverter.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -120,7 +120,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\..\AVS\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
+				CommandLine="..\..\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -137,11 +137,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageConverter.tlb"
-				HeaderFileName="AVSImageConverter.h"
+				TypeLibraryName="$(IntDir)/ASCImageConverter.tlb"
+				HeaderFileName="ASCImageConverter.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageConverter_i.c"
-				ProxyFileName="AVSImageConverter_p.c"
+				InterfaceIdentifierFileName="ASCImageConverter_i.c"
+				ProxyFileName="ASCImageConverter_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
@@ -173,7 +173,7 @@
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="wbemuuid.lib wmiutils.lib gdiplus.lib"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSImageConverter.idl"
+				MergedIDLBaseFileName="_ASCImageConverter.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -204,7 +204,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy to redist"
-				CommandLine="copy $(TargetPath) ..\..\..\..\AVS\Redist\AVSImageConverter.dll"
+				CommandLine="copy $(TargetPath) ..\..\Redist\ASCImageConverter.dll"
 			/>
 		</Configuration>
 		<Configuration
@@ -218,7 +218,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\..\AVS\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
+				CommandLine="..\..\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
 				ExcludedFromBuild="true"
 			/>
 			<Tool
@@ -236,11 +236,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageConverter.tlb"
-				HeaderFileName="AVSImageConverter.h"
+				TypeLibraryName="$(IntDir)/ASCImageConverter.tlb"
+				HeaderFileName="ASCImageConverter.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageConverter_i.c"
-				ProxyFileName="AVSImageConverter_p.c"
+				InterfaceIdentifierFileName="ASCImageConverter_i.c"
+				ProxyFileName="ASCImageConverter_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
@@ -273,7 +273,7 @@
 				AdditionalDependencies="wbemuuid.lib wmiutils.lib gdiplus.lib"
 				OutputFile="$(OutDir)\ASCImageConverter.dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSImageConverter.idl"
+				MergedIDLBaseFileName="_ASCImageConverter.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -317,7 +317,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSImageConverter.cpp"
+				RelativePath=".\ASCImageConverter.cpp"
 				>
 			</File>
 			<File
@@ -389,11 +389,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSImageConverter.rc"
+				RelativePath=".\ASCImageConverter.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSImageConverter.rgs"
+				RelativePath=".\ASCImageConverter.rgs"
 				>
 			</File>
 			<File

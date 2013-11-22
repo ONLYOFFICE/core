@@ -99,7 +99,7 @@ END
 // REGISTRY
 //
 
-IDR_AVSIMAGECONVERTER   REGISTRY                "AVSImageConverter.rgs"
+IDR_ASCIMAGECONVERTER   REGISTRY                "ASCImageConverter.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -108,7 +108,7 @@ IDR_AVSIMAGECONVERTER   REGISTRY                "AVSImageConverter.rgs"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSImageConverter"
+    IDS_PROJNAME            "ASCImageConverter"
 END
 
 #endif    // Russian resources

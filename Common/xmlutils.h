@@ -103,7 +103,7 @@ namespace XmlUtils
 	{
 		double d = 0;
 
-		swscanf(string, _T(" %lf"), &d);
+		swscanf(string, L" %lf", &d);
 
 		return d;
 	}
@@ -111,7 +111,7 @@ namespace XmlUtils
 	{
 		float f = 0;
 
-		swscanf(string, _T(" %f"), &f);
+		swscanf(string, L" %f", &f);
 
 		return f;
 	}

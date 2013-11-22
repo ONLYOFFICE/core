@@ -58,6 +58,6 @@ using namespace ATL;
 
 #import <msxml3.dll> rename_namespace("XML")
 
-#import "../../../../AVS/Redist/AVSMediaCore3.dll"				named_guids rename_namespace("MediaCore")
-#import "../../../../AVS/Redist/AVSMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat")
+#import "../../Redist/ASCMediaCore3.dll"				named_guids rename_namespace("MediaCore")
+#import "../../Redist/ASCMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat")
 

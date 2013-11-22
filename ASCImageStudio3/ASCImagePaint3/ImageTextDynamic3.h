@@ -1,7 +1,6 @@
 #pragma once
 		
 #include "resource.h"
-#include <registration.h>
 #include <PaintStruct.h>
 #include <ImageColors.h>
 #include <ImageCore.h>
@@ -209,8 +208,6 @@ public:
 		if (!pSafeArray || !*pSafeArray)
 			return S_FALSE;
 
-		if (!CRegistratorClient::IsRegistered())
-			return S_FALSE;
 
 		int nChannels = 0;
 
@@ -232,8 +229,6 @@ public:
 
 		*pInterfaceOutput = NULL;
 
-		if (!CRegistratorClient::IsRegistered())
-			return S_FALSE;
 
 		if (!m_oMediaData.Create(pInterfaceInput, FALSE) || !m_oMediaData.IsValidBGRA())
 			return S_FALSE;

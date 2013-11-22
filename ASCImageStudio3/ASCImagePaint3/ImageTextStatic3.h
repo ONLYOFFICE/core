@@ -1,7 +1,6 @@
 #pragma once
 	
 #include "resource.h"
-#include <registration.h>
 #include <PaintStruct.h>
 #include "TextFormat.h"
 #include "TextToPath.h"
@@ -310,8 +309,7 @@ protected:
 	}
 	void Draw(void** Image, BSTR Text, long Left, long Top, long Right, long Bottom, BOOL bArray = TRUE)
 	{	
-		if (!CRegistratorClient::IsRegistered())
-			return;
+
 
 		// create bitmap
 		ImageStudio::Core::MediaData oMediaData;
@@ -365,8 +363,7 @@ protected:
 	}
 	void DrawEllipse(void** Image, BSTR Text, long Left, long Top, long Right, long Bottom, double StartAngle, double SweepAngle, BOOL bArray = TRUE)
 	{	
-		if (!CRegistratorClient::IsRegistered())
-			return;
+
 
 		// create bitmap
 		ImageStudio::Core::MediaData oMediaData;
@@ -403,8 +400,7 @@ protected:
 	}
 	void DrawPolyline(void** Image, SAFEARRAY** Array, BSTR Text, BOOL bArray = TRUE)
 	{
-		if (!CRegistratorClient::IsRegistered())
-			return;
+
 
 		// check Polyline
 		if (!Array || !*Array)

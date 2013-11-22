@@ -3,8 +3,8 @@
 // Used by AVSImageConverter.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_AVSIMAGECONVERTER           101
-#define IDB_AVSIMAGECONVERTER           102
+#define IDR_ASCIMAGECONVERTER           101
+#define IDB_ASCIMAGECONVERTER           102
 
 
 

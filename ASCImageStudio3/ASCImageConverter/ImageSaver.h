@@ -11,7 +11,7 @@
 #include "StringUtils.h"
 #include "EventsHandler.h"
 #include "TransformConstants.h"
-#include "../AVSOfficeStudio/Common/OfficeFileErrorDescription.h"
+#include "../../Common/OfficeFileErrorDescription.h"
 
 struct Source{
 	CString sFilename;

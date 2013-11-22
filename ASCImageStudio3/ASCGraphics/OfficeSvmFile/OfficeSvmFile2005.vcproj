@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\Redist;..\..\..\Common;..\..\..\..\..\..\Common;&quot;..\..\..\AVSOfficeUtils\ZLIB\zlib-1.2.3&quot;;Source/vcl/win/inc;Source/vcl/source/gdi;Source\sal\source;Source\sal\inc;Source\i18npool\inc;Source\vcl\inc;Source\tools\inc;AVS"
+				AdditionalIncludeDirectories="..\..\..\..\Redist;..\..\..\Common;..\..\..\..\..\..\Common;&quot;..\..\..\ASCOfficeUtils\ZLIB\zlib-1.2.3&quot;;Source/vcl/win/inc;Source/vcl/source/gdi;Source\sal\source;Source\sal\inc;Source\i18npool\inc;Source\vcl\inc;Source\tools\inc;ASC"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -105,7 +105,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\..\..\Redist;..\..\..\Common;..\..\..\..\..\..\Common;&quot;..\..\..\AVSOfficeUtils\ZLIB\zlib-1.2.3&quot;;Source/vcl/win/inc;Source/vcl/source/gdi;Source\sal\source;Source\sal\inc;Source\i18npool\inc;Source\vcl\inc;Source\tools\inc;AVS"
+				AdditionalIncludeDirectories="..\..\..\..\Redist;..\..\..\Common;..\..\..\..\..\..\Common;&quot;..\..\..\ASCOfficeUtils\ZLIB\zlib-1.2.3&quot;;Source/vcl/win/inc;Source/vcl/source/gdi;Source\sal\source;Source\sal\inc;Source\i18npool\inc;Source\vcl\inc;Source\tools\inc;ASC"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -152,7 +152,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVS\OfficeSvmFile.cpp"
+				RelativePath=".\ASC\OfficeSvmFile.cpp"
 				>
 			</File>
 			<File
@@ -700,38 +700,38 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="AVS"
+			Name="ASC"
 			>
 			<File
-				RelativePath=".\AVS\AvsBasic.cpp"
+				RelativePath=".\ASC\ASCBasic.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\AVS\AvsBasic.h"
+				RelativePath=".\ASC\ASCBasic.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVS\AvsOutputDevice.cpp"
+				RelativePath=".\ASC\ASCOutputDevice.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\AVS\AvsOutputDevice.h"
+				RelativePath=".\ASC\ASCOutputDevice.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVS\AvsStreamReader.h"
+				RelativePath=".\ASC\ASCStreamReader.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVS\OpenOfficeBasic.h"
+				RelativePath=".\ASC\OpenOfficeBasic.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVS\WinDefines.h"
+				RelativePath=".\ASC\WinDefines.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVS\WinStreamReader.h"
+				RelativePath=".\ASC\WinStreamReader.h"
 				>
 			</File>
 		</Filter>

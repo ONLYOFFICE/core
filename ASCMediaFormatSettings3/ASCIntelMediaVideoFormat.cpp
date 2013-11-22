@@ -1,7 +1,7 @@
-// AVSIntelMediaVideoFormat.cpp : Implementation of CAVSIntelMediaVideoFormat
+// ASCIntelMediaVideoFormat.cpp : Implementation of CASCIntelMediaVideoFormat
 
 #include "stdafx.h"
-#include "AVSIntelMediaVideoFormat.h"
+#include "ASCIntelMediaVideoFormat.h"
 
 
 // CAVSIntelMediaVideoFormat

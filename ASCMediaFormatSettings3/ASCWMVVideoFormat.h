@@ -1,9 +1,9 @@
-// AVSWMVVideoFormat.h : Declaration of the CAVSWMVVideoFormat
+// ASCWMVVideoFormat.h : Declaration of the CASCWMVVideoFormat
 
 #pragma once
 #include "resource.h"       // main symbols
 //#include "ATLDefine.h"
-#include "AVSVideoFormat.h"
+#include "ASCVideoFormat.h"
 
 
 // IAVSWMVVideoFormat

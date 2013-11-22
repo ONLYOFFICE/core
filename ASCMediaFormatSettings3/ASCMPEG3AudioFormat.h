@@ -1,4 +1,4 @@
-// AVSMPEG3AudioFormat.h : Declaration of the CAVSMPEG3AudioFormat
+// ASCMPEG3AudioFormat.h : Declaration of the CASCMPEG3AudioFormat
 
 #pragma once
 #include "resource.h"       // main symbols

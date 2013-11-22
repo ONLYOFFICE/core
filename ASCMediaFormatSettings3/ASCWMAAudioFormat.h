@@ -1,9 +1,9 @@
-// AVSWMAAudioFormat.h : Declaration of the CAVSWMAAudioFormat
+// ASCWMAAudioFormat.h : Declaration of the CASCWMAAudioFormat
 
 #pragma once
 #include "resource.h"       // main symbols
 //#include "ATLDefine.h"
-//#include "AVSAudioFormat.h"
+//#include "ASCAudioFormat.h"
 #include "CodecsWMA.h"
 
 // IAVSWMAAudioFormat

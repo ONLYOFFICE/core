@@ -1,9 +1,9 @@
-// AVSH263VideoFormat.h : Declaration of the CAVSH263VideoFormat
+// ASCH263VideoFormat.h : Declaration of the CASCH263VideoFormat
 
 #pragma once
 #include "resource.h"       // main symbols
 #include "ATLDefine.h"
-#include "AVSVideoFormat.h"
+#include "ASCVideoFormat.h"
 
 class CAVSH263VideoFormat;
 // IAVSH263VideoFormat

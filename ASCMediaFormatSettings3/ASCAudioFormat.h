@@ -1,11 +1,11 @@
-// AVSAudioFormat.h : Declaration of the CAVSAudioFormat
+// ASCAudioFormat.h : Declaration of the CASCAudioFormat
 
 #pragma once
 #include "resource.h"       // main symbols
 #include "ATLDefine.h"
-#include "AVSMediaFormat.h"       // main symbols
+#include "ASCMediaFormat.h"       // main symbols
 #include "AudioDefines.h"
-#include "AVSUtils.h"
+#include "ASCUtils.h"
 
 class CAVSAudioFormat;
 // IAVSAudioFormat

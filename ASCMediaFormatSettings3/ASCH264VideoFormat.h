@@ -1,7 +1,7 @@
 #pragma once
 #include "resource.h"       // main symbols
 #include "ATLDefine.h"
-#include "AVSVideoFormat.h"
+#include "ASCVideoFormat.h"
 
 class CAVSH264VideoFormat;
 // IAVSH264VideoFormat

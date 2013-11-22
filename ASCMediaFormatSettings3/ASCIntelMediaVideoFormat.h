@@ -1,12 +1,12 @@
-// AVSIntelMediaVideoFormat.h : Declaration of the CAVSIntelMediaVideoFormat
+// ASCIntelMediaVideoFormat.h : Declaration of the CASCIntelMediaVideoFormat
 
 #pragma once
 #include "resource.h"       // main symbols
-#include "AVSVideoFormat.h"
+#include "ASCVideoFormat.h"
 #include "ATLDefine.h"
 #include "VideoFileErrorDescription.h"
 
-#include "AVSH264VideoFormat.h"
+#include "ASCH264VideoFormat.h"
 #include "..\Common\mfxstructures.h"
 
 #include <math.h>

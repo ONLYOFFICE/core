@@ -1,5 +1,4 @@
 #pragma once
-#include <registration.h>
 
 #define USE_ATL_CSTRING
 #include <StringUtils.h>
@@ -11819,6 +11818,8 @@ namespace ImageStudio
 					int Color;
 					int Alpha;
 				};
+
+				
 				class DrawGraphicPath : public Core::Effect
 				{
 				protected:
@@ -11841,44 +11842,29 @@ namespace ImageStudio
 					}
 					virtual void InternalFromXmlNode(XmlUtils::CXmlNode& oXmlNode)
 					{
-						RELEASEINTERFACE(m_pPainter);
-						CoCreateInstance(AVSGraphics::CLSID_CAVSVMLPainter, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSVMLPainter, (void**)&m_pPainter);
-
-						if (NULL != m_pPainter)
-						{
-							BSTR bsXml = oXmlNode.GetXml().AllocSysString();
-							m_pPainter->OpenXml(bsXml);
-							RELEASESYSSTRING(bsXml);
-						}
+						return;
 					}					
 					virtual void InternalClear()
 					{
-						RELEASEINTERFACE(m_pPainter);
+
 					}
 
 				public:
 
 					DrawGraphicPath()
 					{
-						Initialize(c_nSerializePaintDrawPath, c_strSerializePaintDrawPath);
 
-						m_pPainter = NULL;
-						Clear();
 					}
 
 					BOOL Draw(IUnknown* punkSource)
 					{
-						if (NULL != m_pPainter)
-						{
-							m_pPainter->DrawOnMediaData(punkSource, 1.0);
-							return TRUE;
-						}
+
 						return FALSE;
 					}
 
-				private:
-					AVSGraphics::IAVSVMLPainter* m_pPainter;
+
 				};
+				
 
 				class DrawAutoShape : public Core::Effect
 				{
@@ -11969,6 +11955,7 @@ namespace ImageStudio
 					//IOOXMLShape* m_pShape;
 				};
 
+				
 				class DrawTextEx : public Core::Effect
 				{
 				public:
@@ -11988,38 +11975,23 @@ namespace ImageStudio
 					}
 					virtual void InternalFromXmlNode(XmlUtils::CXmlNode& oXmlNode)
 					{
-						RELEASEINTERFACE(m_pPainter);
-						CoCreateInstance(AVSGraphics::CLSID_CAVSTextPainter, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSTextPainter, (void**)&m_pPainter);
 
-						if (NULL != m_pPainter)
-						{
-							BSTR bsXml = oXmlNode.GetXml().AllocSysString();
-							m_pPainter->OpenXml(bsXml);
-							RELEASESYSSTRING(bsXml);
-						}
 					}
 
 				public:
 					DrawTextEx()
 					{
-						Initialize(c_nSerializePaintDrawTextEx, c_strSerializePaintDrawTextEx);
 
-						m_pPainter = NULL;
-						Clear();
 					}
 					BOOL Draw(IUnknown* punkSource, double dCompleteness)
 					{
-						if (NULL != m_pPainter)
-						{
-							m_pPainter->DrawOnMediaData(punkSource, dCompleteness);
-							return TRUE;
-						}
+
 						return FALSE;
 					}
 
-				private:
-					AVSGraphics::IAVSTextPainter* m_pPainter;
+
 				};
+				
 
 				class DrawCountdown : public Core::Effect
 				{
@@ -15261,10 +15233,7 @@ namespace ImageStudio
 				// проверка регистрации
 				if( nCountNewEffects > 0 )
 				{
-					if (!CRegistratorClient::IsRegistered())
-					{
-						CRegistratorClient::Register();
-					}
+
 				}
 				
 				// теперь мы имеем готовый список с трансформами (часть из которых, вполне возможно, была просто скопирована)

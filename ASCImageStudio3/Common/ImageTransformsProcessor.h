@@ -2618,8 +2618,6 @@ namespace ImageStudio
 			// указатель на ВНЕШНИЙ интерфейс ImageCache
 			IMemoryStorage* m_pMemoryStorage;
 
-			// указатель на ВНУТРЕННИЙ интерфейс ImageRaw для чтения RAW файлов
-			ImageRaw::IImageRaw3* m_pRawFile;
 
 			FileCache::IAVSImageFilesCache* m_pFileCache;
 
@@ -6392,7 +6390,7 @@ namespace ImageStudio
 				{
 					if( m_pFileCache )
 					{
-						m_pFileCache->raw_LoadImageW( _bstr_t( pAction->FilePath ), -1, -1, &pInterfaceImage );
+						//m_pFileCache->raw_LoadImageW( _bstr_t( pAction->FilePath ), -1, -1, &pInterfaceImage );
 
 						if( pInterfaceImage )
 						//if( Core::c_nErrorNone == Core::COM::COM_LoadImage( &pInterfaceImage, pAction->FilePath ) )
@@ -6476,7 +6474,7 @@ namespace ImageStudio
 						{
 							if( m_pFileCache )
 							{
-								m_pFileCache->raw_LoadImageW( _bstr_t( pAction->sFilePath ), -1, -1, &pSrcInterface );
+								//m_pFileCache->raw_LoadImageW( _bstr_t( pAction->sFilePath ), -1, -1, &pSrcInterface );
 
 								if( pSrcInterface )
 								{
@@ -7929,12 +7927,8 @@ namespace ImageStudio
 			
 			BOOL CheckRaw()
 			{
-				if( m_pRawFile )
-					return TRUE;
 
-				::CoCreateInstance( ImageRaw::CLSID_CImageRaw3, NULL, CLSCTX_INPROC, ImageRaw::IID_IImageRaw3, (void**)&m_pRawFile );
-				
-				return m_pRawFile != NULL;
+				return FALSE;
 			}
 
 			BOOL SaveAsGdiplus( int nSrcId, CString path, int type, const Gdiplus::EncoderParameters* pEncoderSettings = NULL, int dpi = 0,CString sMetaData=_T("") )
@@ -8099,7 +8093,6 @@ namespace ImageStudio
 
 				m_pMemoryStorage = NULL;
 
-				m_pRawFile = NULL;
 
 				m_pFileCache = NULL;
 
@@ -8116,7 +8109,6 @@ namespace ImageStudio
 
 				RELEASEINTERFACE(m_pMemoryStorage);
 
-				RELEASEINTERFACE(m_pRawFile);
 
 				RELEASEINTERFACE(m_pFileCache);
 			}
@@ -8158,11 +8150,14 @@ namespace ImageStudio
 			{
 				RELEASEINTERFACE(m_pFileCache);
 
+				/*
 				if( pCache )
 				{
 					pCache->AddRef();
 					m_pFileCache = pCache;
 				}
+				*/
+
 			}
 			void ResizeSourceBuffer( int size )
 			{

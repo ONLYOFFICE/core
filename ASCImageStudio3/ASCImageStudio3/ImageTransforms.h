@@ -235,6 +235,7 @@ public:
 				return S_OK;
 			}
 
+			/*
 			FileCache::IAVSImageFilesCache* pFileCache = NULL;
 			Source.punkVal->QueryInterface( __uuidof(FileCache::IAVSImageFilesCache), (void**)&pFileCache );
 			if( pFileCache )
@@ -243,6 +244,8 @@ public:
 				pFileCache->Release();
 				return S_OK;
 			}
+			*/
+			return S_OK;
 		}
 
 		// инициализируем gdiplus

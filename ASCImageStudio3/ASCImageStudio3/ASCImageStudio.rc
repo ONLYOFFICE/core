@@ -2,7 +2,7 @@
 //
 #include "resource.h"
 #define COMPONENT_NAME "ImageStudio3"
-#include "FileInfo.h"
+#include "../../Common/FileInfo.h"
 #include "version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS

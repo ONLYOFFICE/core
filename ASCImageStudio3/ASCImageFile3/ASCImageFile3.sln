@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSImageFile3", "AVSImageFile3.vcproj", "{17DC3001-566F-4B60-BF77-37BF94162C5D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCImageFile3", "ASCImageFile3.vcproj", "{17DC3001-566F-4B60-BF77-37BF94162C5D}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"

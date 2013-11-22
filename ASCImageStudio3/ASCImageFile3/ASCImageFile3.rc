@@ -117,7 +117,7 @@ END
 // REGISTRY
 //
 
-IDR_AVSIMAGEFILE3        REGISTRY                "AVSImageFile3.rgs"
+IDR_ASCIMAGEFILE3        REGISTRY                "ASCImageFile3.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -126,7 +126,7 @@ IDR_AVSIMAGEFILE3        REGISTRY                "AVSImageFile3.rgs"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSImageFile"
+    IDS_PROJNAME            "ASCImageFile"
 END
 
 #endif    // English (U.S.) resources

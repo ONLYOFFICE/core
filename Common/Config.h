@@ -1,0 +1,4 @@
+#pragma once
+
+#define BUILD_CONFIG_OPENSOURCE_VERSION
+#define BUILD_CONFIG_FULL_VERSION

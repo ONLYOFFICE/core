@@ -1,78 +1,77 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual C++ Express 2005
+# Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TxtFormat", "Projects\TxtFormat2005.vcproj", "{9E492DA4-4A47-40E3-B124-08209AED9484}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{C1587C15-6268-4451-9263-937E63A945F6} = {C1587C15-6268-4451-9263-937E63A945F6}
 		{7B9F3647-32D3-4F82-8CA5-A43E490E1457} = {7B9F3647-32D3-4F82-8CA5-A43E490E1457}
 		{399893AA-3617-4CD8-A980-7F15CDAFA3D2} = {399893AA-3617-4CD8-A980-7F15CDAFA3D2}
-	EndProjectSection
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Docx2Txt", "Projects\Docx2Txt2005.vcproj", "{3D32C752-7DE4-461E-AA77-06BCF9B1E4FD}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{C1587C15-6268-4451-9263-937E63A945F6} = {C1587C15-6268-4451-9263-937E63A945F6}
 		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
 		{9E492DA4-4A47-40E3-B124-08209AED9484} = {9E492DA4-4A47-40E3-B124-08209AED9484}
-	EndProjectSection
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Txt2Docx", "Projects\Txt2Docx2005.vcproj", "{F732FFCC-960B-40D8-A0F3-971465F39948}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{C1587C15-6268-4451-9263-937E63A945F6} = {C1587C15-6268-4451-9263-937E63A945F6}
 		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
 		{9E492DA4-4A47-40E3-B124-08209AED9484} = {9E492DA4-4A47-40E3-B124-08209AED9484}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocxFormat", "..\Common\ASCDocxFormat\Projects\DocxFormat2005.vcproj", "{A100103A-353E-45E8-A9B8-90B87CC5C0B0}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocxFormat", "..\Common\ASCDocxFormat\Projects\DocxFormat2005.vcproj", "{A100103A-353E-45E8-A9B8-90B87CC5C0B0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C1587C15-6268-4451-9263-937E63A945F6} = {C1587C15-6268-4451-9263-937E63A945F6}
-		{918D1327-C6ED-43E6-AE22-84A3736F0E87} = {918D1327-C6ED-43E6-AE22-84A3736F0E87}
 		{7B9F3647-32D3-4F82-8CA5-A43E490E1457} = {7B9F3647-32D3-4F82-8CA5-A43E490E1457}
 		{399893AA-3617-4CD8-A980-7F15CDAFA3D2} = {399893AA-3617-4CD8-A980-7F15CDAFA3D2}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeTxtFile", "ASCOfficeTxtFile2005.vcproj", "{EA304CD3-0CAE-4AD8-AD25-B41735AD7F49}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeTxtFile", "ASCOfficeTxtFile2005.vcproj", "{EA304CD3-0CAE-4AD8-AD25-B41735AD7F49}"
 	ProjectSection(ProjectDependencies) = postProject
 		{5C67969B-0950-47B2-B903-18E782AC7CBB} = {5C67969B-0950-47B2-B903-18E782AC7CBB}
 		{F732FFCC-960B-40D8-A0F3-971465F39948} = {F732FFCC-960B-40D8-A0F3-971465F39948}
 		{3D32C752-7DE4-461E-AA77-06BCF9B1E4FD} = {3D32C752-7DE4-461E-AA77-06BCF9B1E4FD}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XML", "..\Common\ASCDocxFormat\Projects\XML2005.vcproj", "{C1587C15-6268-4451-9263-937E63A945F6}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XML", "..\Common\ASCDocxFormat\Projects\XML2005.vcproj", "{C1587C15-6268-4451-9263-937E63A945F6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7B9F3647-32D3-4F82-8CA5-A43E490E1457} = {7B9F3647-32D3-4F82-8CA5-A43E490E1457}
 	EndProjectSection
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "..\Common\ASCDocxFormat\Projects\Common2005.vcproj", "{399893AA-3617-4CD8-A980-7F15CDAFA3D2}"
-	ProjectSection(ProjectDependencies) = postProject
-		{C1587C15-6268-4451-9263-937E63A945F6} = {C1587C15-6268-4451-9263-937E63A945F6}
-	EndProjectSection
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{C1587C15-6268-4451-9263-937E63A945F6} = {C1587C15-6268-4451-9263-937E63A945F6}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utility", "..\Common\ASCDocxFormat\Projects\Utility2005.vcproj", "{7B9F3647-32D3-4F82-8CA5-A43E490E1457}"
@@ -81,35 +80,26 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utility", "..\Common\ASCDoc
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfficeSvmFile", "..\ASCOfficeOdtFile\Source\OfficeSvmFile\OfficeSvmFile2005.vcproj", "{918D1327-C6ED-43E6-AE22-84A3736F0E87}"
-	ProjectSection(ProjectDependencies) = postProject
-		{7B9F3647-32D3-4F82-8CA5-A43E490E1457} = {7B9F3647-32D3-4F82-8CA5-A43E490E1457}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XmlFormat", "Projects\XmlFormat2005.vcproj", "{3DB9DAEA-B9DA-4E21-AF3F-3B2178521D83}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XmlFormat", "Projects\XmlFormat2005.vcproj", "{3DB9DAEA-B9DA-4E21-AF3F-3B2178521D83}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7B9F3647-32D3-4F82-8CA5-A43E490E1457} = {7B9F3647-32D3-4F82-8CA5-A43E490E1457}
 		{C1587C15-6268-4451-9263-937E63A945F6} = {C1587C15-6268-4451-9263-937E63A945F6}
 		{399893AA-3617-4CD8-A980-7F15CDAFA3D2} = {399893AA-3617-4CD8-A980-7F15CDAFA3D2}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Xml2Docx", "Projects\Xml2Docx2005.vcproj", "{5C67969B-0950-47B2-B903-18E782AC7CBB}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Xml2Docx", "Projects\Xml2Docx2005.vcproj", "{5C67969B-0950-47B2-B903-18E782AC7CBB}"
 	ProjectSection(ProjectDependencies) = postProject
 		{3DB9DAEA-B9DA-4E21-AF3F-3B2178521D83} = {3DB9DAEA-B9DA-4E21-AF3F-3B2178521D83}
 		{C1587C15-6268-4451-9263-937E63A945F6} = {C1587C15-6268-4451-9263-937E63A945F6}
 		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
-	EndProjectSection
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
 Global
@@ -167,12 +157,6 @@ Global
 		{7B9F3647-32D3-4F82-8CA5-A43E490E1457}.Release|Win32.Build.0 = Release|Win32
 		{7B9F3647-32D3-4F82-8CA5-A43E490E1457}.ReleaseASC|Win32.ActiveCfg = Release|Win32
 		{7B9F3647-32D3-4F82-8CA5-A43E490E1457}.ReleaseASC|Win32.Build.0 = Release|Win32
-		{918D1327-C6ED-43E6-AE22-84A3736F0E87}.Debug|Win32.ActiveCfg = Debug|Win32
-		{918D1327-C6ED-43E6-AE22-84A3736F0E87}.Debug|Win32.Build.0 = Debug|Win32
-		{918D1327-C6ED-43E6-AE22-84A3736F0E87}.Release|Win32.ActiveCfg = Release|Win32
-		{918D1327-C6ED-43E6-AE22-84A3736F0E87}.Release|Win32.Build.0 = Release|Win32
-		{918D1327-C6ED-43E6-AE22-84A3736F0E87}.ReleaseASC|Win32.ActiveCfg = Release|Win32
-		{918D1327-C6ED-43E6-AE22-84A3736F0E87}.ReleaseASC|Win32.Build.0 = Release|Win32
 		{3DB9DAEA-B9DA-4E21-AF3F-3B2178521D83}.Debug|Win32.ActiveCfg = Debug|Win32
 		{3DB9DAEA-B9DA-4E21-AF3F-3B2178521D83}.Debug|Win32.Build.0 = Debug|Win32
 		{3DB9DAEA-B9DA-4E21-AF3F-3B2178521D83}.Release|Win32.ActiveCfg = Release|Win32

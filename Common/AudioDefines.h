@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <atlcoll.h>
-#include "Avsmmreg.h"
+#include "ASCmmreg.h"
 
 extern SAFEARRAY* SafeArrayCreateVector(VARTYPE  vt,unsigned int  size);
 extern HRESULT SafeArrayGetUBound(SAFEARRAY* sa,long lo,__int64* size);

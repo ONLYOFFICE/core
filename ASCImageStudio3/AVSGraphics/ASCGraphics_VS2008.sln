@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSGraphics", "AVSGraphics_VS2008.vcproj", "{70078FE7-BE4F-493C-84F3-F98F151587F5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCGraphics", "ASCGraphics_VS2008.vcproj", "{70078FE7-BE4F-493C-84F3-F98F151587F5}"
 	ProjectSection(ProjectDependencies) = postProject
 		{37CA072A-5BDE-498B-B3A7-5E404F5F9BF2} = {37CA072A-5BDE-498B-B3A7-5E404F5F9BF2}
 	EndProjectSection

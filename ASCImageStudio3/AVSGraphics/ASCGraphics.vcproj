@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSGraphics"
+	Name="ASCGraphics"
 	ProjectGUID="{70078FE7-BE4F-493C-84F3-F98F151587F5}"
-	RootNamespace="AVSGraphics"
+	RootNamespace="ASCGraphics"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -44,16 +44,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSGraphics.tlb"
-				HeaderFileName="AVSGraphics.h"
+				TypeLibraryName="$(IntDir)/ASCGraphics.tlb"
+				HeaderFileName="ASCGraphics.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSGraphics_i.c"
-				ProxyFileName="AVSGraphics_p.c"
+				InterfaceIdentifierFileName="ASCGraphics_i.c"
+				ProxyFileName="ASCGraphics_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\Common;..\Common;Objects\Font\FreeType;agg\include;Interfaces\;..\AVSGraphics;x:\Common;x:\AVS\Sources\AVSVideoStudio3\Common"
+				AdditionalIncludeDirectories="..\..\..\..\Common;..\Common;Objects\Font\FreeType;agg\include;Interfaces\;..\ASCGraphics;..\..\Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -78,14 +78,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="$(OutDir)/AVSGraphics.dll"
+				OutputFile="$(OutDir)/ASCGraphics.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="LIBC;LIBCD"
-				MergedIDLBaseFileName="_AVSGraphics.idl"
+				MergedIDLBaseFileName="_ASCGraphics.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSGraphics.lib"
+				ImportLibrary="$(OutDir)/ASCGraphics.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -144,11 +144,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSGraphics.tlb"
-				HeaderFileName="AVSGraphics.h"
+				TypeLibraryName="$(IntDir)/ASCGraphics.tlb"
+				HeaderFileName="ASCGraphics.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSGraphics_i.c"
-				ProxyFileName="AVSGraphics_p.c"
+				InterfaceIdentifierFileName="ASCGraphics_i.c"
+				ProxyFileName="ASCGraphics_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -179,15 +179,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="$(OutDir)/AVSGraphics.dll"
+				OutputFile="$(OutDir)/ASCGraphics.dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC,LIBCMT"
-				MergedIDLBaseFileName="_AVSGraphics.idl"
+				MergedIDLBaseFileName="_ASCGraphics.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSGraphics.lib"
+				ImportLibrary="$(OutDir)/ASCGraphics.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -214,7 +214,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="copy $(TargetPath) ..\..\..\..\AVS\Redist\AVSGraphics.dll"
+				CommandLine="copy $(TargetPath) ..\..\Redist\ASCGraphics.dll"
 			/>
 		</Configuration>
 		<Configuration
@@ -246,11 +246,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSGraphics.tlb"
-				HeaderFileName="AVSGraphics.h"
+				TypeLibraryName="$(IntDir)/ASCGraphics.tlb"
+				HeaderFileName="ASCGraphics.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSGraphics_i.c"
-				ProxyFileName="AVSGraphics_p.c"
+				InterfaceIdentifierFileName="ASCGraphics_i.c"
+				ProxyFileName="ASCGraphics_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -284,12 +284,12 @@
 				OutputFile="$(OutDir)/ASCGraphics.dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC,LIBCMT"
-				MergedIDLBaseFileName="_AVSGraphics.idl"
+				MergedIDLBaseFileName="_ASCGraphics.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSGraphics.lib"
+				ImportLibrary="$(OutDir)/ASCGraphics.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -328,7 +328,7 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
-				RelativePath=".\AVSGraphics.cpp"
+				RelativePath=".\ASCGraphics.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -390,11 +390,11 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath=".\AVSGraphics.rc"
+				RelativePath=".\ASCGraphics.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSGraphics.rgs"
+				RelativePath=".\ASCGraphics.rgs"
 				>
 			</File>
 		</Filter>
@@ -402,102 +402,102 @@
 			Name="Interfaces"
 			>
 			<File
-				RelativePath=".\Interfaces\IAVSBrush.h"
+				RelativePath=".\Interfaces\IASCBrush.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Interfaces\IAVSEdgeText.h"
+				RelativePath=".\Interfaces\IASCEdgeText.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Interfaces\IAVSFontManager.h"
+				RelativePath=".\Interfaces\IASCFontManager.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Interfaces\IAVSGlyphImage.h"
+				RelativePath=".\Interfaces\IASCGlyphImage.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Interfaces\IAVSGraphics.h"
+				RelativePath=".\Interfaces\IASCGraphics.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Interfaces\IAVSGraphicsBase.h"
+				RelativePath=".\Interfaces\IASCGraphicsBase.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Interfaces\IAVSGraphicsPath.h"
+				RelativePath=".\Interfaces\IASCGraphicsPath.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Interfaces\IAVSGraphicsState.h"
+				RelativePath=".\Interfaces\IASCGraphicsState.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Interfaces\IAVSImage.h"
+				RelativePath=".\Interfaces\IASCImage.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Interfaces\IAVSMatrix.h"
+				RelativePath=".\Interfaces\IASCMatrix.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Interfaces\IAVSPattern.h"
+				RelativePath=".\Interfaces\IASCPattern.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Interfaces\IAVSPen.h"
+				RelativePath=".\Interfaces\IASCPen.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Interfaces\IAVSShadow.h"
+				RelativePath=".\Interfaces\IASCShadow.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Interfaces\IAVSStringFormat.h"
+				RelativePath=".\Interfaces\IASCStringFormat.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Interfaces\IAVSWinFonts.h"
+				RelativePath=".\Interfaces\IASCWinFonts.h"
 				>
 			</File>
 			<Filter
 				Name="Renderers"
 				>
 				<File
-					RelativePath=".\Interfaces\AVSDocumentPainter.h"
+					RelativePath=".\Interfaces\ASCDocumentPainter.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\AVSDocumentRenderer.cpp"
+					RelativePath=".\Interfaces\ASCDocumentRenderer.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\AVSDocumentRenderer.h"
+					RelativePath=".\Interfaces\ASCDocumentRenderer.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\AVSEffectPainter.h"
+					RelativePath=".\Interfaces\ASCEffectPainter.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\AVSGdiplusRenderer.h"
+					RelativePath=".\Interfaces\ASCGdiplusRenderer.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\AVSGraphicsRenderer.h"
+					RelativePath=".\Interfaces\ASCGraphicsRenderer.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\AVSGraphicsSimpleConverter.h"
+					RelativePath=".\Interfaces\ASCGraphicsSimpleConverter.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\AVSMetafile.h"
+					RelativePath=".\Interfaces\ASCMetafile.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\AVSRenderer.h"
+					RelativePath=".\Interfaces\ASCRenderer.h"
 					>
 				</File>
 				<File
@@ -517,7 +517,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IAVSGraphicsRenderer.h"
+					RelativePath=".\Interfaces\IASCGraphicsRenderer.h"
 					>
 				</File>
 				<File
@@ -529,7 +529,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\StructuresAVS.h"
+					RelativePath=".\Interfaces\StructuresASC.h"
 					>
 				</File>
 				<File
@@ -714,59 +714,59 @@
 			Name="Objects"
 			>
 			<File
-				RelativePath=".\Objects\AVSBrush.h"
+				RelativePath=".\Objects\ASCBrush.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Objects\AVSEdgeText.h"
+				RelativePath=".\Objects\ASCEdgeText.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Objects\AVSFontManager.cpp"
+				RelativePath=".\Objects\ASCFontManager.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Objects\AVSFontManager.h"
+				RelativePath=".\Objects\ASCFontManager.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Objects\AVSGlyphImage.h"
+				RelativePath=".\Objects\ASCGlyphImage.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Objects\AVSGraphics.h"
+				RelativePath=".\Objects\ASCGraphics.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Objects\AVSGraphicsPath.h"
+				RelativePath=".\Objects\ASCGraphicsPath.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Objects\AVSImage.h"
+				RelativePath=".\Objects\ASCImage.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Objects\AVSMatrix.h"
+				RelativePath=".\Objects\ASCMatrix.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Objects\AVSPen.h"
+				RelativePath=".\Objects\ASCPen.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Objects\AVSShadow.h"
+				RelativePath=".\Objects\ASCShadow.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Objects\AVSSolidPattern.h"
+				RelativePath=".\Objects\ASCSolidPattern.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Objects\AVSStringFormat.h"
+				RelativePath=".\Objects\ASCStringFormat.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Objects\AVSWinFonts.h"
+				RelativePath=".\Objects\ASCWinFonts.h"
 				>
 			</File>
 			<File
@@ -1059,7 +1059,7 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="AVSWrapper"
+			Name="ASCWrapper"
 			>
 			<File
 				RelativePath=".\agg\ap_Mem.cpp"
@@ -1070,35 +1070,35 @@
 				>
 			</File>
 			<File
-				RelativePath=".\agg\AVSWrapper\ArrowHead.h"
+				RelativePath=".\agg\ASCWrapper\ArrowHead.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeStudio\Common\OfficeDrawing\Shapes\BaseShape\BaseShape.cpp"
+				RelativePath="..\..\Common\OfficeDrawing\Shapes\BaseShape\BaseShape.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\agg\AVSWrapper\Brush.h"
+				RelativePath=".\agg\ASCWrapper\Brush.h"
 				>
 			</File>
 			<File
-				RelativePath=".\agg\AVSWrapper\Clip.h"
+				RelativePath=".\agg\ASCWrapper\Clip.h"
 				>
 			</File>
 			<File
-				RelativePath=".\agg\AVSWrapper\Color.h"
+				RelativePath=".\agg\ASCWrapper\Color.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeStudio\Common\OfficeDrawing\Elements.cpp"
+				RelativePath="..\..\Common\OfficeDrawing\Elements.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeStudio\Common\OfficeDrawing\Shapes\BaseShape\PPTXShape\Formula.cpp"
+				RelativePath="..\..\Common\OfficeDrawing\Shapes\BaseShape\PPTXShape\Formula.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeStudio\Common\OfficeDrawing\Shapes\BaseShape\PPTShape\Formula.cpp"
+				RelativePath="..\..\Common\OfficeDrawing\Shapes\BaseShape\PPTShape\Formula.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -1129,43 +1129,43 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\agg\AVSWrapper\Graphics.h"
+				RelativePath=".\agg\ASCWrapper\Graphics.h"
 				>
 			</File>
 			<File
-				RelativePath=".\agg\AVSWrapper\GraphicsPath.h"
+				RelativePath=".\agg\ASCWrapper\GraphicsPath.h"
 				>
 			</File>
 			<File
-				RelativePath=".\agg\AVSWrapper\Image.cpp"
+				RelativePath=".\agg\ASCWrapper\Image.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\agg\AVSWrapper\Image.h"
+				RelativePath=".\agg\ASCWrapper\Image.h"
 				>
 			</File>
 			<File
-				RelativePath=".\agg\AVSWrapper\Matrix.h"
+				RelativePath=".\agg\ASCWrapper\Matrix.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeStudio\Common\OfficeDrawing\Shapes\BaseShape\PPTShape\PPTShape.cpp"
+				RelativePath="..\..\Common\OfficeDrawing\Shapes\BaseShape\PPTShape\PPTShape.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeStudio\Common\OfficeDrawing\Shapes\BaseShape\PPTXShape\PPTXShape.cpp"
+				RelativePath="..\..\Common\OfficeDrawing\Shapes\BaseShape\PPTXShape\PPTXShape.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeStudio\Common\OfficeDrawing\Shapes\shape.cpp"
+				RelativePath="..\..\Common\OfficeDrawing\Shapes\shape.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\agg\AVSWrapper\StringFormat.h"
+				RelativePath=".\agg\ASCWrapper\StringFormat.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeStudio\Common\OfficeDrawing\Structures.cpp"
+				RelativePath="..\..\Common\OfficeDrawing\Structures.cpp"
 				>
 			</File>
 		</Filter>

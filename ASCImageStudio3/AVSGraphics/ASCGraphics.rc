@@ -124,7 +124,7 @@ END
 // REGISTRY
 //
 
-IDR_AVSGRAPHICS         REGISTRY                "AVSGraphics.rgs"
+IDR_ASCGRAPHICS         REGISTRY                "ASCGraphics.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -133,7 +133,7 @@ IDR_AVSGRAPHICS         REGISTRY                "AVSGraphics.rgs"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSGraphics"
+    IDS_PROJNAME            "ASCGraphics"
 END
 
 #endif    // English (U.S.) resources

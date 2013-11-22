@@ -1,11 +1,11 @@
 #include "stdafx.h"
-#include "./AVSSVGWriter.h"
+#include "./ASCSVGWriter.h"
 
-CAVSSVGWriter::CAVSSVGWriter()
+CASCSVGWriter::CASCSVGWriter()
 {
 }
 
-HRESULT CAVSSVGWriter::FinalConstruct()
+HRESULT CASCSVGWriter::FinalConstruct()
 {
 	m_dDpiX = 96.0;
 	m_dDpiY	= 96.0;
@@ -17,7 +17,7 @@ HRESULT CAVSSVGWriter::FinalConstruct()
 	m_lClipMode = c_nClipRegionTypeWinding;
 
 	m_pSimpleGraphicsConverter = NULL;
-	CoCreateInstance(AVSGraphics::CLSID_CAVSGraphicSimpleComverter, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSGraphicSimpleComverter, (void**)&m_pSimpleGraphicsConverter);
+	CoCreateInstance(Graphics::CLSID_CASCGraphicSimpleComverter, NULL, CLSCTX_ALL, Graphics::IID_IASCGraphicSimpleComverter, (void**)&m_pSimpleGraphicsConverter);
 
 	IUnknown* punkRenderer = NULL;
 	this->QueryInterface(IID_IUnknown, (void**)&punkRenderer);
@@ -30,7 +30,7 @@ HRESULT CAVSSVGWriter::FinalConstruct()
 	m_pFonts = NULL;
 	m_pFontManager = NULL;
 
-	CoCreateInstance(__uuidof(AVSGraphics::CAVSFontManager), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::IAVSFontManager), (void**)&m_pFontManager);
+	CoCreateInstance(__uuidof(Graphics::CASCFontManager), NULL, CLSCTX_ALL, __uuidof(Graphics::IASCFontManager), (void**)&m_pFontManager);
 	m_pFontManager->Initialize(L"");
 
 	m_oVectorWriter.m_pSimpleConverter  = m_pSimpleGraphicsConverter;
@@ -40,14 +40,14 @@ HRESULT CAVSSVGWriter::FinalConstruct()
 	return S_OK;
 }
 
-void CAVSSVGWriter::FinalRelease()
+void CASCSVGWriter::FinalRelease()
 {
 	RELEASEINTERFACE(m_pSimpleGraphicsConverter);
 	RELEASEINTERFACE(m_pFonts);
 	RELEASEINTERFACE(m_pFontManager);
 }
 
-STDMETHODIMP CAVSSVGWriter::get_Type(LONG* lType)
+STDMETHODIMP CASCSVGWriter::get_Type(LONG* lType)
 {
 	if (NULL == lType)
 		return S_FALSE;
@@ -56,150 +56,150 @@ STDMETHODIMP CAVSSVGWriter::get_Type(LONG* lType)
 	return S_OK;
 }
 //-------- Функции для работы со страницей --------------------------------------------------
-STDMETHODIMP CAVSSVGWriter::NewPage()
+STDMETHODIMP CASCSVGWriter::NewPage()
 {	
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_Height(double* dHeight)
+STDMETHODIMP CASCSVGWriter::get_Height(double* dHeight)
 {
 	*dHeight = m_dHeight;	
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_Height(double dHeight)
+STDMETHODIMP CASCSVGWriter::put_Height(double dHeight)
 {
 	m_dHeight = dHeight;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_Width(double* dWidth)
+STDMETHODIMP CASCSVGWriter::get_Width(double* dWidth)
 {
 	*dWidth = m_dWidth;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_Width(double dWidth)
+STDMETHODIMP CASCSVGWriter::put_Width(double dWidth)
 {
 	m_dWidth = dWidth;
 	return S_OK;
 }
 
-STDMETHODIMP CAVSSVGWriter::get_DpiX(double* dDpiX)
+STDMETHODIMP CASCSVGWriter::get_DpiX(double* dDpiX)
 {
 	if (NULL != dDpiX)
 		*dDpiX = m_dDpiX;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_DpiY(double* dDpiY)
+STDMETHODIMP CASCSVGWriter::get_DpiY(double* dDpiY)
 {
 	if (NULL != dDpiY)
 		*dDpiY = m_dDpiY;
 	return S_OK;
 }
 // pen --------------------------------------------------------------------------------------
-STDMETHODIMP CAVSSVGWriter::SetPen(BSTR bsXML)
+STDMETHODIMP CASCSVGWriter::SetPen(BSTR bsXML)
 {
 	m_oPen.FromXmlString((CString)bsXML);
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_PenColor(LONG* lColor)
+STDMETHODIMP CASCSVGWriter::get_PenColor(LONG* lColor)
 {
 	*lColor = m_oPen.Color;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_PenColor(LONG lColor)
+STDMETHODIMP CASCSVGWriter::put_PenColor(LONG lColor)
 {
 	m_oPen.Color = lColor;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_PenAlpha(LONG* lAlpha)
+STDMETHODIMP CASCSVGWriter::get_PenAlpha(LONG* lAlpha)
 {
 	*lAlpha = m_oPen.Alpha;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_PenAlpha(LONG lAlpha)
+STDMETHODIMP CASCSVGWriter::put_PenAlpha(LONG lAlpha)
 {
 	m_oPen.Alpha = lAlpha;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_PenSize(double* dSize)
+STDMETHODIMP CASCSVGWriter::get_PenSize(double* dSize)
 {
 	*dSize = m_oPen.Size;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_PenSize(double dSize)
+STDMETHODIMP CASCSVGWriter::put_PenSize(double dSize)
 {
 	m_oPen.Size = dSize;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_PenDashStyle(BYTE* val)
+STDMETHODIMP CASCSVGWriter::get_PenDashStyle(BYTE* val)
 {
 	*val = m_oPen.DashStyle;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_PenDashStyle(BYTE val)
+STDMETHODIMP CASCSVGWriter::put_PenDashStyle(BYTE val)
 {
 	m_oPen.DashStyle = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_PenLineStartCap(BYTE* val)
+STDMETHODIMP CASCSVGWriter::get_PenLineStartCap(BYTE* val)
 {
 	*val = m_oPen.LineStartCap;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_PenLineStartCap(BYTE val)
+STDMETHODIMP CASCSVGWriter::put_PenLineStartCap(BYTE val)
 {
 	m_oPen.LineStartCap = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_PenLineEndCap(BYTE* val)
+STDMETHODIMP CASCSVGWriter::get_PenLineEndCap(BYTE* val)
 {
 	*val = m_oPen.LineEndCap;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_PenLineEndCap(BYTE val)
+STDMETHODIMP CASCSVGWriter::put_PenLineEndCap(BYTE val)
 {
 	m_oPen.LineEndCap = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_PenLineJoin(BYTE* val)
+STDMETHODIMP CASCSVGWriter::get_PenLineJoin(BYTE* val)
 {
 	*val = m_oPen.LineJoin;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_PenLineJoin(BYTE val)
+STDMETHODIMP CASCSVGWriter::put_PenLineJoin(BYTE val)
 {
 	m_oPen.LineJoin = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_PenDashOffset(double* val)
+STDMETHODIMP CASCSVGWriter::get_PenDashOffset(double* val)
 {
 	*val = m_oPen.DashOffset;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_PenDashOffset(double val)
+STDMETHODIMP CASCSVGWriter::put_PenDashOffset(double val)
 {
 	m_oPen.DashOffset = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_PenAlign(LONG* val)
+STDMETHODIMP CASCSVGWriter::get_PenAlign(LONG* val)
 {
 	*val = m_oPen.Align;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_PenAlign(LONG val)
+STDMETHODIMP CASCSVGWriter::put_PenAlign(LONG val)
 {
 	m_oPen.Align = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_PenMiterLimit(double* val)
+STDMETHODIMP CASCSVGWriter::get_PenMiterLimit(double* val)
 {
 	*val = m_oPen.MiterLimit;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_PenMiterLimit(double val)
+STDMETHODIMP CASCSVGWriter::put_PenMiterLimit(double val)
 {
 	m_oPen.MiterLimit = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::PenDashPattern(SAFEARRAY* pPattern)
+STDMETHODIMP CASCSVGWriter::PenDashPattern(SAFEARRAY* pPattern)
 {
 	if (NULL != pPattern)
 	{
@@ -209,102 +209,102 @@ STDMETHODIMP CAVSSVGWriter::PenDashPattern(SAFEARRAY* pPattern)
 	return S_OK;
 }
 // brush ------------------------------------------------------------------------------------
-STDMETHODIMP CAVSSVGWriter::SetBrush(BSTR bsXML)
+STDMETHODIMP CASCSVGWriter::SetBrush(BSTR bsXML)
 {
 	m_oBrush.FromXmlString((CString)bsXML);
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_BrushType(LONG* lType)
+STDMETHODIMP CASCSVGWriter::get_BrushType(LONG* lType)
 {
 	*lType = m_oBrush.Type;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_BrushType(LONG lType)
+STDMETHODIMP CASCSVGWriter::put_BrushType(LONG lType)
 {
 	m_oBrush.Type = lType;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_BrushColor1(LONG* lColor)
+STDMETHODIMP CASCSVGWriter::get_BrushColor1(LONG* lColor)
 {
 	*lColor = m_oBrush.Color1;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_BrushColor1(LONG lColor)
+STDMETHODIMP CASCSVGWriter::put_BrushColor1(LONG lColor)
 {
 	m_oBrush.Color1 = lColor;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_BrushAlpha1(LONG* lAlpha)
+STDMETHODIMP CASCSVGWriter::get_BrushAlpha1(LONG* lAlpha)
 {
 	*lAlpha = m_oBrush.Alpha1;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_BrushAlpha1(LONG lAlpha)
+STDMETHODIMP CASCSVGWriter::put_BrushAlpha1(LONG lAlpha)
 {
 	m_oBrush.Alpha1 = lAlpha;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_BrushColor2(LONG* lColor)
+STDMETHODIMP CASCSVGWriter::get_BrushColor2(LONG* lColor)
 {
 	*lColor = m_oBrush.Color2;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_BrushColor2(LONG lColor)
+STDMETHODIMP CASCSVGWriter::put_BrushColor2(LONG lColor)
 {
 	m_oBrush.Color2 = lColor;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_BrushAlpha2(LONG* lAlpha)
+STDMETHODIMP CASCSVGWriter::get_BrushAlpha2(LONG* lAlpha)
 {
 	*lAlpha = m_oBrush.Alpha2;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_BrushAlpha2(LONG lAlpha)
+STDMETHODIMP CASCSVGWriter::put_BrushAlpha2(LONG lAlpha)
 {
 	m_oBrush.Alpha2 = lAlpha;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_BrushTexturePath(BSTR* bsPath)
+STDMETHODIMP CASCSVGWriter::get_BrushTexturePath(BSTR* bsPath)
 {
 	*bsPath = m_oBrush.TexturePath.AllocSysString();
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_BrushTexturePath(BSTR bsPath)
+STDMETHODIMP CASCSVGWriter::put_BrushTexturePath(BSTR bsPath)
 {
 	m_oBrush.TexturePath = (CString)bsPath;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_BrushTextureMode(LONG* lMode)
+STDMETHODIMP CASCSVGWriter::get_BrushTextureMode(LONG* lMode)
 {
 	*lMode = m_oBrush.TextureMode;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_BrushTextureMode(LONG lMode)
+STDMETHODIMP CASCSVGWriter::put_BrushTextureMode(LONG lMode)
 {
 	m_oBrush.TextureMode = lMode;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_BrushTextureAlpha(LONG* lTxAlpha)
+STDMETHODIMP CASCSVGWriter::get_BrushTextureAlpha(LONG* lTxAlpha)
 {
 	*lTxAlpha = m_oBrush.TextureAlpha;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_BrushTextureAlpha(LONG lTxAlpha)
+STDMETHODIMP CASCSVGWriter::put_BrushTextureAlpha(LONG lTxAlpha)
 {
 	m_oBrush.TextureAlpha = lTxAlpha;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_BrushLinearAngle(double* dAngle)
+STDMETHODIMP CASCSVGWriter::get_BrushLinearAngle(double* dAngle)
 {
 	*dAngle = m_oBrush.LinearAngle;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_BrushLinearAngle(double dAngle)
+STDMETHODIMP CASCSVGWriter::put_BrushLinearAngle(double dAngle)
 {
 	m_oBrush.LinearAngle = dAngle;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::BrushRect(BOOL val, double left, double top, double width, double height)
+STDMETHODIMP CASCSVGWriter::BrushRect(BOOL val, double left, double top, double width, double height)
 {
 	m_oBrush.Rectable = val;
 	m_oBrush.Rect.X = (float)left;
@@ -315,186 +315,186 @@ STDMETHODIMP CAVSSVGWriter::BrushRect(BOOL val, double left, double top, double 
 	return S_OK;
 }
 // font -------------------------------------------------------------------------------------
-STDMETHODIMP CAVSSVGWriter::SetFont(BSTR bsXML)
+STDMETHODIMP CASCSVGWriter::SetFont(BSTR bsXML)
 {
 	m_oFont.FromXmlString((CString)bsXML);
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_FontName(BSTR* bsName)
+STDMETHODIMP CASCSVGWriter::get_FontName(BSTR* bsName)
 {
 	*bsName = m_oFont.Name.AllocSysString();
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_FontName(BSTR bsName)
+STDMETHODIMP CASCSVGWriter::put_FontName(BSTR bsName)
 {
 	m_oFont.Name = (CString)bsName;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_FontPath(BSTR* bsName)
+STDMETHODIMP CASCSVGWriter::get_FontPath(BSTR* bsName)
 {
 	*bsName = m_oFont.Path.AllocSysString();
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_FontPath(BSTR bsName)
+STDMETHODIMP CASCSVGWriter::put_FontPath(BSTR bsName)
 {
 	m_oFont.Path = bsName;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_FontSize(double* dSize)
+STDMETHODIMP CASCSVGWriter::get_FontSize(double* dSize)
 {
 	*dSize = m_oFont.Size;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_FontSize(double dSize)
+STDMETHODIMP CASCSVGWriter::put_FontSize(double dSize)
 {
 	m_oFont.Size = dSize;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_FontStyle(LONG* lStyle)
+STDMETHODIMP CASCSVGWriter::get_FontStyle(LONG* lStyle)
 {
 	*lStyle = m_oFont.GetStyle();
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_FontStyle(LONG lStyle)
+STDMETHODIMP CASCSVGWriter::put_FontStyle(LONG lStyle)
 {
 	m_oFont.SetStyle(lStyle);
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_FontStringGID(BOOL* bGID)
+STDMETHODIMP CASCSVGWriter::get_FontStringGID(BOOL* bGID)
 {
 	*bGID = m_oFont.StringGID;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_FontStringGID(BOOL bGID)
+STDMETHODIMP CASCSVGWriter::put_FontStringGID(BOOL bGID)
 {
 	m_oFont.StringGID = bGID;
 	m_pFontManager->SetStringGID(bGID);
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_FontCharSpace(double* dSpace)
+STDMETHODIMP CASCSVGWriter::get_FontCharSpace(double* dSpace)
 {
 	*dSpace = m_oFont.CharSpace;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_FontCharSpace(double dSpace)
+STDMETHODIMP CASCSVGWriter::put_FontCharSpace(double dSpace)
 {
 	m_oFont.CharSpace = dSpace;
 	return S_OK;
 }
 // shadow -----------------------------------------------------------------------------------
-STDMETHODIMP CAVSSVGWriter::SetShadow(BSTR bsXML)
+STDMETHODIMP CASCSVGWriter::SetShadow(BSTR bsXML)
 {
 	m_oShadow.FromXmlString((CString)bsXML);
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_ShadowDistanceX(double* val)
+STDMETHODIMP CASCSVGWriter::get_ShadowDistanceX(double* val)
 {
 	*val = m_oShadow.DistanceX;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_ShadowDistanceX(double val)
+STDMETHODIMP CASCSVGWriter::put_ShadowDistanceX(double val)
 {
 	m_oShadow.DistanceX = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_ShadowDistanceY(double* val)
+STDMETHODIMP CASCSVGWriter::get_ShadowDistanceY(double* val)
 {
 	*val = m_oShadow.DistanceY;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_ShadowDistanceY(double val)
+STDMETHODIMP CASCSVGWriter::put_ShadowDistanceY(double val)
 {
 	m_oShadow.DistanceY = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_ShadowBlurSize(double* val)
+STDMETHODIMP CASCSVGWriter::get_ShadowBlurSize(double* val)
 {
 	*val = m_oShadow.BlurSize;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_ShadowBlurSize(double val)
+STDMETHODIMP CASCSVGWriter::put_ShadowBlurSize(double val)
 {
 	m_oShadow.BlurSize = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_ShadowColor(LONG* val)
+STDMETHODIMP CASCSVGWriter::get_ShadowColor(LONG* val)
 {
 	*val = m_oShadow.Color;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_ShadowColor(LONG val)
+STDMETHODIMP CASCSVGWriter::put_ShadowColor(LONG val)
 {
 	m_oShadow.Color = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_ShadowAlpha(LONG* val)
+STDMETHODIMP CASCSVGWriter::get_ShadowAlpha(LONG* val)
 {
 	*val = m_oShadow.Alpha;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_ShadowAlpha(LONG val)
+STDMETHODIMP CASCSVGWriter::put_ShadowAlpha(LONG val)
 {
 	m_oShadow.Alpha = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_ShadowVisible(BOOL* val)
+STDMETHODIMP CASCSVGWriter::get_ShadowVisible(BOOL* val)
 {
 	*val = m_oShadow.Visible;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_ShadowVisible(BOOL val)
+STDMETHODIMP CASCSVGWriter::put_ShadowVisible(BOOL val)
 {
 	m_oShadow.Visible = val;
 	return S_OK;
 }
 // edge -------------------------------------------------------------------------------------
-STDMETHODIMP CAVSSVGWriter::SetEdgeText(BSTR bsXML)
+STDMETHODIMP CASCSVGWriter::SetEdgeText(BSTR bsXML)
 {
 	m_oEdge.FromXmlString((CString)bsXML);
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_EdgeVisible(LONG* val)
+STDMETHODIMP CASCSVGWriter::get_EdgeVisible(LONG* val)
 {
 	*val = m_oEdge.Visible;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_EdgeVisible(LONG val)
+STDMETHODIMP CASCSVGWriter::put_EdgeVisible(LONG val)
 {
 	m_oEdge.Visible = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_EdgeColor(LONG* val)
+STDMETHODIMP CASCSVGWriter::get_EdgeColor(LONG* val)
 {
 	*val = m_oEdge.Color;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_EdgeColor(LONG val)
+STDMETHODIMP CASCSVGWriter::put_EdgeColor(LONG val)
 {
 	m_oEdge.Color = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_EdgeAlpha(LONG* val)
+STDMETHODIMP CASCSVGWriter::get_EdgeAlpha(LONG* val)
 {
 	*val = m_oEdge.Alpha;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_EdgeAlpha(LONG val)
+STDMETHODIMP CASCSVGWriter::put_EdgeAlpha(LONG val)
 {
 	m_oEdge.Alpha = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::get_EdgeDist(double* val)
+STDMETHODIMP CASCSVGWriter::get_EdgeDist(double* val)
 {
 	*val = m_oEdge.Dist;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_EdgeDist(double val)
+STDMETHODIMP CASCSVGWriter::put_EdgeDist(double val)
 {
 	m_oEdge.Dist = val;
 	return S_OK;
 }
 //-------- Функции для вывода текста --------------------------------------------------------
-STDMETHODIMP CAVSSVGWriter::CommandDrawText(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
+STDMETHODIMP CASCSVGWriter::CommandDrawText(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
 {
 	if (c_nHyperlinkType == m_lCurrentCommandType)
 		return S_OK;
@@ -510,7 +510,7 @@ STDMETHODIMP CAVSSVGWriter::CommandDrawText(BSTR bsText, double fX, double fY, d
 	PathCommandEnd();
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::CommandDrawTextEx(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
+STDMETHODIMP CASCSVGWriter::CommandDrawTextEx(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
 {
 	if (m_bIsRaster)
 		return S_OK;
@@ -524,7 +524,7 @@ STDMETHODIMP CAVSSVGWriter::CommandDrawTextEx(BSTR bsText, BSTR bsGidText, BSTR 
 	return S_OK;	
 }
 //-------- Маркеры для команд ---------------------------------------------------------------
-STDMETHODIMP CAVSSVGWriter::BeginCommand(DWORD lType)
+STDMETHODIMP CASCSVGWriter::BeginCommand(DWORD lType)
 {
 	if (m_bIsRaster)
 		return S_OK;
@@ -541,7 +541,7 @@ STDMETHODIMP CAVSSVGWriter::BeginCommand(DWORD lType)
 	m_lCurrentCommandType = lType;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::EndCommand(DWORD lType)
+STDMETHODIMP CASCSVGWriter::EndCommand(DWORD lType)
 {
 	if (m_bIsRaster)
 		return S_OK;
@@ -558,7 +558,7 @@ STDMETHODIMP CAVSSVGWriter::EndCommand(DWORD lType)
 	return S_OK;
 }
 //-------- Функции для работы с Graphics Path -----------------------------------------------
-STDMETHODIMP CAVSSVGWriter::PathCommandMoveTo(double fX, double fY)
+STDMETHODIMP CASCSVGWriter::PathCommandMoveTo(double fX, double fY)
 {
 	if (m_bIsRaster)
 		return S_OK;
@@ -573,7 +573,7 @@ STDMETHODIMP CAVSSVGWriter::PathCommandMoveTo(double fX, double fY)
 	}
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::PathCommandLineTo(double fX, double fY)
+STDMETHODIMP CASCSVGWriter::PathCommandLineTo(double fX, double fY)
 {
 	if (m_bIsRaster)
 		return S_OK;
@@ -589,7 +589,7 @@ STDMETHODIMP CAVSSVGWriter::PathCommandLineTo(double fX, double fY)
 
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::PathCommandLinesTo(SAFEARRAY* pPoints)
+STDMETHODIMP CASCSVGWriter::PathCommandLinesTo(SAFEARRAY* pPoints)
 {
 	if (m_bIsRaster)
 		return S_OK;
@@ -597,7 +597,7 @@ STDMETHODIMP CAVSSVGWriter::PathCommandLinesTo(SAFEARRAY* pPoints)
 	m_pSimpleGraphicsConverter->PathCommandLinesTo(pPoints);
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::PathCommandCurveTo(double fX1, double fY1, double fX2, double fY2, double fX3, double fY3)
+STDMETHODIMP CASCSVGWriter::PathCommandCurveTo(double fX1, double fY1, double fX2, double fY2, double fX3, double fY3)
 {
 	if (m_bIsRaster)
 		return S_OK;
@@ -613,7 +613,7 @@ STDMETHODIMP CAVSSVGWriter::PathCommandCurveTo(double fX1, double fY1, double fX
 
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::PathCommandCurvesTo(SAFEARRAY* pPoints)
+STDMETHODIMP CASCSVGWriter::PathCommandCurvesTo(SAFEARRAY* pPoints)
 {
 	if (m_bIsRaster)
 		return S_OK;
@@ -621,7 +621,7 @@ STDMETHODIMP CAVSSVGWriter::PathCommandCurvesTo(SAFEARRAY* pPoints)
 	m_pSimpleGraphicsConverter->PathCommandCurvesTo(pPoints);
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::PathCommandArcTo(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle)
+STDMETHODIMP CASCSVGWriter::PathCommandArcTo(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle)
 {
 	if (m_bIsRaster)
 		return S_OK;
@@ -629,7 +629,7 @@ STDMETHODIMP CAVSSVGWriter::PathCommandArcTo(double fX, double fY, double fWidth
 	m_pSimpleGraphicsConverter->PathCommandArcTo(fX, fY, fWidth, fHeight, fStartAngle, fSweepAngle);
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::PathCommandClose()
+STDMETHODIMP CASCSVGWriter::PathCommandClose()
 {
 	if (m_bIsRaster)
 		return S_OK;
@@ -645,7 +645,7 @@ STDMETHODIMP CAVSSVGWriter::PathCommandClose()
 
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::PathCommandEnd()
+STDMETHODIMP CASCSVGWriter::PathCommandEnd()
 {
 	if (m_bIsRaster)
 		return S_OK;
@@ -661,7 +661,7 @@ STDMETHODIMP CAVSSVGWriter::PathCommandEnd()
 
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::DrawPath(long nType)
+STDMETHODIMP CASCSVGWriter::DrawPath(long nType)
 {
 	if (m_oBrush.Type == c_BrushTypeTexture)
 		m_bIsRaster = true;
@@ -672,7 +672,7 @@ STDMETHODIMP CAVSSVGWriter::DrawPath(long nType)
 	m_oVectorWriter.WriteDrawPath(nType);
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::PathCommandStart()
+STDMETHODIMP CASCSVGWriter::PathCommandStart()
 {
 	if (m_bIsRaster)
 		return S_OK;
@@ -689,12 +689,12 @@ STDMETHODIMP CAVSSVGWriter::PathCommandStart()
 
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::PathCommandGetCurrentPoint(double* fX, double* fY)
+STDMETHODIMP CASCSVGWriter::PathCommandGetCurrentPoint(double* fX, double* fY)
 {
 	m_pSimpleGraphicsConverter->PathCommandGetCurrentPoint(fX, fY);	
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::PathCommandText(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
+STDMETHODIMP CASCSVGWriter::PathCommandText(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
 {
 	if (m_bIsRaster)
 		return S_OK;
@@ -703,7 +703,7 @@ STDMETHODIMP CAVSSVGWriter::PathCommandText(BSTR bsText, double fX, double fY, d
 	m_pSimpleGraphicsConverter->PathCommandText(bsText, m_pFontManager, fX, fY, fWidth, fHeight, fBaseLineOffset);
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::PathCommandTextEx(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
+STDMETHODIMP CASCSVGWriter::PathCommandTextEx(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
 {
 	if (m_bIsRaster)
 		return S_OK;
@@ -722,7 +722,7 @@ STDMETHODIMP CAVSSVGWriter::PathCommandTextEx(BSTR bsText, BSTR bsGidText, BSTR 
 	return S_OK;
 }
 //-------- Функции для вывода изображений ---------------------------------------------------
-STDMETHODIMP CAVSSVGWriter::DrawImage(IUnknown* pInterface, double fX, double fY, double fWidth, double fHeight)
+STDMETHODIMP CASCSVGWriter::DrawImage(IUnknown* pInterface, double fX, double fY, double fWidth, double fHeight)
 {
 	m_bIsRaster = true;
 	/*
@@ -755,7 +755,7 @@ STDMETHODIMP CAVSSVGWriter::DrawImage(IUnknown* pInterface, double fX, double fY
 
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::DrawImageFromFile(BSTR bstrVal, double fX, double fY, double fWidth, double fHeight)
+STDMETHODIMP CASCSVGWriter::DrawImageFromFile(BSTR bstrVal, double fX, double fY, double fWidth, double fHeight)
 {
 	m_bIsRaster = true;
 	/*
@@ -789,11 +789,11 @@ STDMETHODIMP CAVSSVGWriter::DrawImageFromFile(BSTR bstrVal, double fX, double fY
 	return S_OK;
 }
 // transform --------------------------------------------------------------------------------
-STDMETHODIMP CAVSSVGWriter::GetCommandParams(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, DWORD* lFlags)
+STDMETHODIMP CASCSVGWriter::GetCommandParams(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, DWORD* lFlags)
 {
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::SetCommandParams(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags)
+STDMETHODIMP CASCSVGWriter::SetCommandParams(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags)
 {	
 	if ((dWidth <= 1) || (dHeight <= 1))
 		lFlags = 0;
@@ -824,7 +824,7 @@ STDMETHODIMP CAVSSVGWriter::SetCommandParams(double dAngle, double dLeft, double
 
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::SetTransform(double dA, double dB, double dC, double dD, double dE, double dF)
+STDMETHODIMP CASCSVGWriter::SetTransform(double dA, double dB, double dC, double dD, double dE, double dF)
 {
 	NSHtmlRenderer::CMatrix oTrans(dA, dB, dC, dD, dE, dF);
 	m_oTransform = oTrans;
@@ -833,30 +833,30 @@ STDMETHODIMP CAVSSVGWriter::SetTransform(double dA, double dB, double dC, double
 
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF)
+STDMETHODIMP CASCSVGWriter::GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF)
 {
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::ResetTransform(void)
+STDMETHODIMP CASCSVGWriter::ResetTransform(void)
 {
 	m_oTransform.Reset();
 	CalculateFullTransform();
 	return S_OK;
 }
 // -----------------------------------------------------------------------------------------
-STDMETHODIMP CAVSSVGWriter::get_ClipMode(LONG* plMode)
+STDMETHODIMP CASCSVGWriter::get_ClipMode(LONG* plMode)
 {
 	*plMode = m_lClipMode;
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::put_ClipMode(LONG lMode)
+STDMETHODIMP CASCSVGWriter::put_ClipMode(LONG lMode)
 {
 	m_lClipMode = lMode;
 	m_oVectorWriter.SetClipMode(m_lClipMode);
 	return S_OK;
 }
 // additiaonal params ----------------------------------------------------------------------
-STDMETHODIMP CAVSSVGWriter::SetAdditionalParam(BSTR ParamName, VARIANT ParamValue)
+STDMETHODIMP CASCSVGWriter::SetAdditionalParam(BSTR ParamName, VARIANT ParamValue)
 {
 	CString sParamName = ParamName;
 	if ( _T("SaveFile") == sParamName && ParamValue.vt == VT_BSTR)
@@ -892,7 +892,7 @@ STDMETHODIMP CAVSSVGWriter::SetAdditionalParam(BSTR ParamName, VARIANT ParamValu
 		m_lClipMode = c_nClipRegionTypeWinding;
 
 		RELEASEINTERFACE(m_pSimpleGraphicsConverter);
-		CoCreateInstance(AVSGraphics::CLSID_CAVSGraphicSimpleComverter, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSGraphicSimpleComverter, (void**)&m_pSimpleGraphicsConverter);
+		CoCreateInstance(Graphics::CLSID_CASCGraphicSimpleComverter, NULL, CLSCTX_ALL, Graphics::IID_IASCGraphicSimpleComverter, (void**)&m_pSimpleGraphicsConverter);
 
 		IUnknown* punkRenderer = NULL;
 		this->QueryInterface(IID_IUnknown, (void**)&punkRenderer);
@@ -920,7 +920,7 @@ STDMETHODIMP CAVSSVGWriter::SetAdditionalParam(BSTR ParamName, VARIANT ParamValu
 	}
 	return S_OK;
 }
-STDMETHODIMP CAVSSVGWriter::GetAdditionalParam(BSTR ParamName, VARIANT* ParamValue)
+STDMETHODIMP CASCSVGWriter::GetAdditionalParam(BSTR ParamName, VARIANT* ParamValue)
 {
 	CString sParamName = ParamName;
 	if ( _T("IsRaster") == sParamName )

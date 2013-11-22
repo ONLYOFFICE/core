@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSHTMLRenderer"
+	Name="ASCHTMLRenderer"
 	ProjectGUID="{D02A88E6-5B2B-4A15-A4F6-C057F698FC53}"
-	RootNamespace="AVSHTMLRenderer"
+	RootNamespace="ASCHTMLRenderer"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -43,11 +43,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSHTMLRenderer.tlb"
+				TypeLibraryName="$(IntDir)/ASCHTMLRenderer.tlb"
 				HeaderFileName="HTMLRenderer.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSHTMLRenderer_i.c"
-				ProxyFileName="AVSHTMLRenderer_p.c"
+				InterfaceIdentifierFileName="ASCHTMLRenderer_i.c"
+				ProxyFileName="ASCHTMLRenderer_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -78,14 +78,14 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="comsvcs.lib comsuppw.lib Msimg32.lib gdiplus.lib"
-				OutputFile="$(OutDir)/AVSHTMLRenderer.dll"
+				OutputFile="$(OutDir)/ASCHTMLRenderer.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\AVSOfficeUtils\ZLIB\zlib123dll\static32"
+				AdditionalLibraryDirectories="..\ASCOfficeUtils\ZLIB\zlib123dll\static32"
 				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSHTMLRenderer.idl"
+				MergedIDLBaseFileName="_ASCHTMLRenderer.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSHTMLRenderer.lib"
+				ImportLibrary="$(OutDir)/ASCHTMLRenderer.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -126,7 +126,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\Redist\VersionControl.exe $(ProjectDir)version.h"
+				CommandLine="..\Redist\VersionControl.exe $(ProjectDir)version.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -143,11 +143,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSHTMLRenderer.tlb"
+				TypeLibraryName="$(IntDir)/ASCSHTMLRenderer.tlb"
 				HeaderFileName="HTMLRenderer.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSHTMLRenderer_i.c"
-				ProxyFileName="AVSHTMLRenderer_p.c"
+				InterfaceIdentifierFileName="ASCHTMLRenderer_i.c"
+				ProxyFileName="ASCHTMLRenderer_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -177,15 +177,15 @@
 				AdditionalDependencies="comsvcs.lib comsuppw.lib Msimg32.lib gdiplus.lib"
 				OutputFile="Release\$(ProjectName).dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\AVSOfficeUtils\ZLIB\zlib123dll\static32"
+				AdditionalLibraryDirectories="..\ASCOfficeUtils\ZLIB\zlib123dll\static32"
 				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSHTMLRenderer.idl"
+				MergedIDLBaseFileName="_ASCHTMLRenderer.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSHTMLRenderer.lib"
+				ImportLibrary="$(OutDir)/ASCHTMLRenderer.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -212,110 +212,9 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\Redist\AVSOfficeStudio&quot;&#x0D;&#x0A;"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\Redist\&quot;&#x0D;&#x0A;"
 			/>
-		</Configuration>
-		<Configuration
-			Name="ReleaseASC|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
-			ConfigurationType="2"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\Redist\VersionControl.exe $(ProjectDir)version.h"
-				ExcludedFromBuild="true"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSHTMLRenderer.tlb"
-				HeaderFileName="HTMLRenderer.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSHTMLRenderer_i.c"
-				ProxyFileName="AVSHTMLRenderer_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=""
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
-				RuntimeLibrary="2"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;ASCBUILD"
-				Culture="1049"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
-				AdditionalDependencies="comsvcs.lib comsuppw.lib Msimg32.lib gdiplus.lib"
-				OutputFile="Release\ASCHTMLRenderer.dll"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\AVSOfficeUtils\ZLIB\zlib123dll\static32"
-				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSHTMLRenderer.idl"
-				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
-				SubSystem="2"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSHTMLRenderer.lib"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\..\ASC\Redist\ASCOfficeStudio&quot;&#x0D;&#x0A;"
-			/>
-		</Configuration>
+		</Configuration>		
 	</Configurations>
 	<References>
 	</References>
@@ -326,14 +225,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSHTMLRenderer.cpp"
+				RelativePath=".\ASCHTMLRenderer.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -341,7 +240,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -349,12 +248,12 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\AVSSVGWriter.cpp"
+				RelativePath=".\ASCSVGWriter.cpp"
 				>
 			</File>
 			<File
@@ -365,7 +264,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -373,7 +272,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -381,7 +280,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\"
 					/>
 				</FileConfiguration>
 			</File>
@@ -402,7 +301,7 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -411,7 +310,7 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -420,7 +319,7 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\"
 					/>
 				</FileConfiguration>
 			</File>
@@ -431,7 +330,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\AVSSVGWriter.h"
+				RelativePath=".\ASCSVGWriter.h"
 				>
 			</File>
 			<File
@@ -473,11 +372,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSHTMLRenderer.rc"
+				RelativePath=".\ASCHTMLRenderer.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSHTMLRenderer.rgs"
+				RelativePath=".\ASCHTMLRenderer.rgs"
 				>
 			</File>
 		</Filter>

@@ -466,7 +466,7 @@ namespace NSHtmlRenderer
 			m_oPath.AddIntNoCheck(round(y3));
 			m_oPath.AddSpaceNoCheck();
 		}
-		void WriteDrawPath(LONG nType, CMatrix* pTransform, AVSGraphics::IAVSGraphicSimpleComverter* pConverter, CImageInfo& oInfo, const double& dAngle)
+		void WriteDrawPath(LONG nType, CMatrix* pTransform, Graphics::IASCGraphicSimpleComverter* pConverter, CImageInfo& oInfo, const double& dAngle)
 		{
 			if (m_oPath.GetCurSize() < 3)
 				return;

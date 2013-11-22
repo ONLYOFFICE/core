@@ -1,6 +1,6 @@
 #pragma once
 #include "..\stdafx.h"
-#include "..\..\..\..\..\Common\XmlUtils.h"
+#include "..\..\Common\XmlUtils.h"
 #include "windows.h"
 
 class CFile 

@@ -164,7 +164,7 @@ namespace NSHtmlRenderer
 			strPath.Format(g_vml_string_CurveTo, round(x1), round(y1), round(x2), round(y2), round(x3), round(y3));
 			m_oPath.WriteString(strPath);
 		}
-		void WriteDrawPath(LONG lType, CMatrix* pTransform, AVSGraphics::IAVSGraphicSimpleComverter* pConverter, CImageInfo& oInfo, const double& dAngle)
+		void WriteDrawPath(LONG lType, CMatrix* pTransform, Graphics::IASCGraphicSimpleComverter* pConverter, CImageInfo& oInfo, const double& dAngle)
 		{
 			if (m_oPath.GetCurSize() < 3)
 				return;

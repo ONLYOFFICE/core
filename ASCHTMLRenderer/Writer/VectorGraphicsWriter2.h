@@ -14,7 +14,7 @@ namespace NSHtmlRenderer
 		CVMLWriter		m_oVML;
 		CCanvasWriter	m_oCanvas;
 
-		AVSGraphics::IAVSGraphicSimpleComverter*	m_pSimpleConverter;
+		Graphics::IASCGraphicSimpleComverter*	m_pSimpleConverter;
 
 		NSStructures::CPen*		m_pPen;
 		NSStructures::CBrush*	m_pBrush;
@@ -37,7 +37,7 @@ namespace NSHtmlRenderer
 		{
 		}
 
-		void SetSettings(NSStructures::CPen* pPen, NSStructures::CBrush* pBrush, AVSGraphics::IAVSGraphicSimpleComverter* pSimpleConverter)
+		void SetSettings(NSStructures::CPen* pPen, NSStructures::CBrush* pBrush, Graphics::IASCGraphicSimpleComverter* pSimpleConverter)
 		{
 			m_pPen				= pPen;
 			m_pBrush			= pBrush;
@@ -211,7 +211,7 @@ namespace NSHtmlRenderer
 	{
 	public:
 		CSVGWriter		m_oSVG;
-		AVSGraphics::IAVSGraphicSimpleComverter*	m_pSimpleConverter;
+		Graphics::IASCGraphicSimpleComverter*	m_pSimpleConverter;
 
 		NSStructures::CPen*		m_pPen;
 		NSStructures::CBrush*	m_pBrush;
@@ -230,7 +230,7 @@ namespace NSHtmlRenderer
 		{
 		}
 
-		void SetSettings(NSStructures::CPen* pPen, NSStructures::CBrush* pBrush, AVSGraphics::IAVSGraphicSimpleComverter* pSimpleConverter)
+		void SetSettings(NSStructures::CPen* pPen, NSStructures::CBrush* pBrush, Graphics::IASCGraphicSimpleComverter* pSimpleConverter)
 		{
 			m_pPen				= pPen;
 			m_pBrush			= pBrush;

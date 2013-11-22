@@ -2,12 +2,11 @@
 #include "stdafx.h"
 #include "resource.h"       // main symbols
 #include <string>
-#include "..\..\AVSVideoStudio3\Common\AVSUtils.h"
 
-#include "..\..\AVSImageStudio3\AVSGraphics\Interfaces\AVSRenderer.h"
-
-#include "..\..\AVSVideoStudio3\Common\MediaFormatDefine.h"
-#include "..\..\..\..\Common\TemporaryCS.h"
+#include "..\Common\ASCUtils.h"
+#include "..\ASCImageStudio3\ASCGraphics\Interfaces\ASCRenderer.h"
+#include "..\Common\MediaFormatDefine.h"
+#include "..\Common\TemporaryCS.h"
 
 #include "Writer\Writer.h"
 #include "Graphics\Matrix.h"
@@ -16,9 +15,9 @@
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
 #endif
 
-// IAVSHTMLRenderer
+// IASCHTMLRenderer
 [ object, uuid("064C9A71-7852-4fd7-A5AF-16C3D601DCD2"), dual, pointer_default(unique) ]
-__interface IAVSHTMLRenderer: IAVSRenderer
+__interface IASCHTMLRenderer: IASCRenderer
 {
 	[id(5003), propget] HRESULT Mode([out, retval] LONG* plMode);
 	[id(5003), propput] HRESULT Mode([in] LONG lMode);
@@ -27,28 +26,28 @@ __interface IAVSHTMLRenderer: IAVSRenderer
 	[id(5001)] HRESULT CloseFile();
 };
 
-// _IAVSHTMLRendererEvents
+// _IASCHTMLRendererEvents
 [uuid("B838358D-E3F5-40e0-A4DD-E8A95115E83C"), dispinterface]
-__interface _IAVSHTMLRendererEvents
+__interface _IASCHTMLRendererEvents
 {
 };
 
-// CAVSHTMLRenderer
-[ coclass, default(IAVSHTMLRenderer), threading(apartment), event_source(com), vi_progid("AVSHTMLRend.Rend"), progid("AVSHTMLRend.Rend.1"), version(1.0), uuid("BEB6C6D1-EF98-42e7-AC2C-571E4301ECD6") ]
-class ATL_NO_VTABLE CAVSHTMLRenderer : 
-	public IAVSHTMLRenderer,
+// CASCHTMLRenderer
+[ coclass, default(IASCHTMLRenderer), threading(apartment), event_source(com), vi_progid("AVSHTMLRend.Rend"), progid("AVSHTMLRend.Rend.1"), version(1.0), uuid("BEB6C6D1-EF98-42e7-AC2C-571E4301ECD6") ]
+class ATL_NO_VTABLE CASCHTMLRenderer : 
+	public IASCHTMLRenderer,
 	public NSHtmlRenderer::IBaseMatrixUpdater
 {
 private:
 
 public:
-	__event __interface _IAVSHTMLRendererEvents;
+	__event __interface _IASCHTMLRendererEvents;
 
 public:
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
 	
-	CAVSHTMLRenderer();
-	~CAVSHTMLRenderer()
+	CASCHTMLRenderer();
+	~CASCHTMLRenderer()
 	{
 	}
 
@@ -234,8 +233,8 @@ private:
 	CString m_strDstFile;
 	LONG m_lLastSavedPage;
 
-	AVSGraphics::IAVSGraphicSimpleComverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
-	AVSGraphics::IAVSFontManager*				m_pFontManager;					// менеджер шрифтов
+	Graphics::IASCGraphicSimpleComverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
+	Graphics::IASCFontManager*				m_pFontManager;					// менеджер шрифтов
 
 	NSHtmlRenderer::CMatrix			m_oBaseTransform;	// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)
 	NSHtmlRenderer::CMatrix			m_oTransform;		// текущая матрица преобразований рендерера
@@ -264,13 +263,15 @@ private:
 	BOOL							m_bPageClosed;
 	BOOL							m_bPageOpened;
 
-	AVSGraphics::IAVSWinFonts*		m_pFonts;
+	Graphics::IASCWinFonts*		m_pFonts;
 
 	BOOL							m_bIsThumbnailsCreate;
 	BOOL							m_bIsWEB;
 	BOOL							m_bIsMenu;
 
-	AVSGraphics::IAVSEffectPainter* m_pEffectPainter;
+#ifdef BUILD_SUPPORT_UNREGISTERED_WATERMARK
+	Graphics::IAVSEffectPainter*	m_pEffectPainter;
+#endif
 	BOOL							m_bIsWatermarkEnabled;
 
 protected:
@@ -344,6 +345,7 @@ protected:
 			m_oThumbnail.Save(m_oWriter.m_strDstDirectoryFiles + strThumbnail);
 		}
 
+#ifdef BUILD_SUPPORT_UNREGISTERED_WATERMARK
 		if (NULL != m_pEffectPainter)
 		{
 			m_bIsWatermarkEnabled = TRUE;
@@ -355,6 +357,7 @@ protected:
 
 			m_bIsWatermarkEnabled = FALSE;
 		}
+#endif
 
 		m_oWriter.EndPage(m_bIsWEB);
 
@@ -365,7 +368,7 @@ protected:
 	{
 		if (NULL == m_pFontManager)
 		{
-			CoCreateInstance(__uuidof(AVSGraphics::CAVSFontManager), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::IAVSFontManager), (void**)&m_pFontManager);
+			CoCreateInstance(__uuidof(Graphics::CASCFontManager), NULL, CLSCTX_ALL, __uuidof(Graphics::IASCFontManager), (void**)&m_pFontManager);
 			m_pFontManager->Initialize(L"");
 		}
 

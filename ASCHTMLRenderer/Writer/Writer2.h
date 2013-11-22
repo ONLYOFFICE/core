@@ -58,7 +58,7 @@ namespace NSHtmlRenderer
 		LONG m_lHeightDocPix;
 		LONG m_lHeightPagePix;
 
-		AVSGraphics::IAVSGraphicSimpleComverter* m_pSimpleConverter;
+		Graphics::IASCGraphicSimpleComverter* m_pSimpleConverter;
 		CFile m_oFileWriter;
 
 	public:
@@ -144,7 +144,7 @@ namespace NSHtmlRenderer
 			m_oWriterPage.Clear();
 		}
 
-		void SetSimpleConverter(AVSGraphics::IAVSGraphicSimpleComverter* pSimpleConverter, CMatrix* pMatrix)
+		void SetSimpleConverter(Graphics::IASCGraphicSimpleComverter* pSimpleConverter, CMatrix* pMatrix)
 		{
 			m_pSimpleConverter = pSimpleConverter;
 		}

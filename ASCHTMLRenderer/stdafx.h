@@ -43,13 +43,19 @@
 #include <atlctl.h>
 #include <atlhost.h>
 
-#import "..\..\..\Redist\AVSMediaCore3.dll"							named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
-#import "..\..\..\Redist\AVSMediaFormatSettings3.dll"				named_guids raw_interfaces_only rename_namespace("MediaFormat"), exclude("tagRECT")
-#import "..\..\..\Redist\AVSImageStudio3.dll"						named_guids raw_interfaces_only rename_namespace("ImageStudio")
+#include "../Common/Config.h"
 
-#import "..\..\..\Redist\AVSGraphics.dll"							named_guids raw_interfaces_only rename_namespace("AVSGraphics")
-#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficeUtils.dll"		named_guids raw_interfaces_only rename_namespace("OfficeUtils")
+//#define BUILD_SUPPORT_UNREGISTERED_WATERMARK
 
-#import "..\..\..\Redist\AVSOfficeStudio\AVSFontConverter.dll"		named_guids raw_interfaces_only rename_namespace("FontConverter")
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+#import "../Redist/OfficeCore.dll"			named_guids raw_interfaces_only rename_namespace("OfficeCore")
+#else
+#import "../Redist/ASCMediaCore3.dll"		named_guids raw_interfaces_only rename_namespace("MediaCore")
+#import "../Redist/ASCFontConverter.dll"	named_guids raw_interfaces_only rename_namespace("FontConverter")
+#import "../Redist/ASCImageStudio3.dll"		named_guids raw_interfaces_only rename_namespace("ImageStudio")
+#endif // BUILD_CONFIG_OPENSOURCE_VERSION
+
+#import "../Redist/ASCGraphics.dll"			named_guids raw_interfaces_only rename_namespace("Graphics")
+#import "../Redist/ASCOfficeUtils.dll"		named_guids raw_interfaces_only rename_namespace("OfficeUtils")
 
 using namespace ATL;

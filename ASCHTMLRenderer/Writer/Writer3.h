@@ -5,16 +5,14 @@
 #include "..\Graphics\Matrix.h"
 #include "../../Common/OfficeFileFormats.h"
 
-#import "..\..\..\Redist\AVSOfficeStudio\AVSFontConverter.dll"		named_guids raw_interfaces_only rename_namespace("Fonts")
-
 namespace NSHtmlRenderer
 {	
 	class CRenderers
 	{
 	public:
-		AVSGraphics::IAVSGraphicsRenderer*		m_pRendererSimple;
-		AVSGraphics::IAVSGraphicsRenderer*		m_pRenderer;
-		AVSGraphics::IAVSGraphicsRenderer*		m_pRendererDst;
+		Graphics::IASCGraphicsRenderer*		m_pRendererSimple;
+		Graphics::IASCGraphicsRenderer*		m_pRenderer;
+		Graphics::IASCGraphicsRenderer*		m_pRendererDst;
 
 		MediaCore::IAVSUncompressedVideoFrame*	m_pFrameSimple;
 		MediaCore::IAVSUncompressedVideoFrame*	m_pFrame;
@@ -149,9 +147,9 @@ namespace NSHtmlRenderer
 			if (NULL == m_pGraphicsCache)
 				m_pGraphicsCache = new BYTE[4 * m_lWidthPix * m_lHeightPix];
 
-			CoCreateInstance(AVSGraphics::CLSID_CAVSGraphicsRenderer, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSGraphicsRenderer, (void**)&m_pRendererSimple);
-			CoCreateInstance(AVSGraphics::CLSID_CAVSGraphicsRenderer, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSGraphicsRenderer, (void**)&m_pRenderer);
-			CoCreateInstance(AVSGraphics::CLSID_CAVSGraphicsRenderer, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSGraphicsRenderer, (void**)&m_pRendererDst);
+			CoCreateInstance(Graphics::CLSID_CASCGraphicsRenderer, NULL, CLSCTX_ALL, Graphics::IID_IASCGraphicsRenderer, (void**)&m_pRendererSimple);
+			CoCreateInstance(Graphics::CLSID_CASCGraphicsRenderer, NULL, CLSCTX_ALL, Graphics::IID_IASCGraphicsRenderer, (void**)&m_pRenderer);
+			CoCreateInstance(Graphics::CLSID_CASCGraphicsRenderer, NULL, CLSCTX_ALL, Graphics::IID_IASCGraphicsRenderer, (void**)&m_pRendererDst);
 			//ставим FontManager
 			VARIANT vtVariant;
 			vtVariant.vt = VT_UNKNOWN;
@@ -1765,8 +1763,8 @@ namespace NSHtmlRenderer
 			if (bIsGid)
 				lFontConverterFlag |= 0x0080;
 
-			AVSGraphics::IAVSFontManagerPtr pMan;
-			pMan.CreateInstance(AVSGraphics::CLSID_CAVSFontManager);
+			Graphics::IASCFontManagerPtr pMan;
+			pMan.CreateInstance(Graphics::CLSID_CASCFontManager);
 			pMan->Initialize(L"");
 			for (LONG lIndex = 0; lIndex < m_lCountFonts; ++lIndex)
 			{
@@ -2461,7 +2459,7 @@ window.g_font_loader.SetStreamIndexEmb(%d, __font_data%d_idx);"), lFontIndex, lF
 	class CFontManagerWrapper
 	{
 	private:
-		AVSGraphics::IAVSFontManager*	m_pManager;		
+		Graphics::IASCFontManager*	m_pManager;		
 	public:
 		CHFontInfo m_oCurrentInfo;
 		NSStructures::CFont*			m_pFont;
@@ -2473,7 +2471,7 @@ window.g_font_loader.SetStreamIndexEmb(%d, __font_data%d_idx);"), lFontIndex, lF
 		CFontManagerWrapper() : m_mapInfos()
 		{
 			m_pManager = NULL;
-			CoCreateInstance(AVSGraphics::CLSID_CAVSFontManager, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSFontManager, (void**)&m_pManager);
+			CoCreateInstance(Graphics::CLSID_CASCFontManager, NULL, CLSCTX_ALL, Graphics::IID_IASCFontManager, (void**)&m_pManager);
 		}
 		virtual ~CFontManagerWrapper()
 		{
@@ -3411,7 +3409,7 @@ window.g_font_loader.SetStreamIndexEmb(%d, __font_data%d_idx);"), lFontIndex, lF
 		double m_dHeightDocMM;
 		double m_dHeightPageMM;
 
-		AVSGraphics::IAVSGraphicSimpleComverter* m_pSimpleConverter;
+		Graphics::IASCGraphicSimpleComverter* m_pSimpleConverter;
 		CFile m_oFileWriter;
 
 		bool m_bIsGids;
@@ -3511,7 +3509,7 @@ window.g_font_loader.SetStreamIndexEmb(%d, __font_data%d_idx);"), lFontIndex, lF
 			m_oSmartText.m_lCountSpaces = 0;
 		}
 
-		void SetSimpleConverter(AVSGraphics::IAVSGraphicSimpleComverter* pSimpleConverter, CMatrix* pMatrix)
+		void SetSimpleConverter(Graphics::IASCGraphicSimpleComverter* pSimpleConverter, CMatrix* pMatrix)
 		{
 			m_pSimpleConverter = pSimpleConverter;
 		}

@@ -1,9 +1,9 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by AVSHTMLRenderer.rc
+// Used by ASCHTMLRenderer.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_AVSHTMLRENDERER             101
+#define IDR_ASCHTMLRENDERER             101
 
 #define IDB_SCRIPT_CM					301
 #define IDB_SCRIPT_IM					302

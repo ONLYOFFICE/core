@@ -27,7 +27,7 @@ namespace NSHtmlRenderer
 		BOOL					m_bIsClip;
 		BOOL					m_bIsClipping;
 
-		AVSGraphics::IAVSGraphicSimpleComverter* m_pSimpleConverter;
+		Graphics::IASCGraphicSimpleComverter* m_pSimpleConverter;
 		CMatrix*				m_pFullTransform;
 
 		LONG					m_lCurTxBrush;
@@ -235,7 +235,7 @@ namespace NSHtmlRenderer
 
 		CDstInfo m_oDstInfo;
 
-		AVSGraphics::IAVSGraphicSimpleComverter* m_pSimpleConverter;
+		Graphics::IASCGraphicSimpleComverter* m_pSimpleConverter;
 
 	public:
 
@@ -348,7 +348,7 @@ namespace NSHtmlRenderer
 			m_oWriterTextMeasurer.Clear();
 		}
 
-		void SetSimpleConverter(AVSGraphics::IAVSGraphicSimpleComverter* pSimpleConverter, CMatrix* pMatrix)
+		void SetSimpleConverter(Graphics::IASCGraphicSimpleComverter* pSimpleConverter, CMatrix* pMatrix)
 		{
 			m_pSimpleConverter = pSimpleConverter;
 			m_oPage.m_pSimpleConverter = m_pSimpleConverter;

@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSImageFile3"
+	Name="ASCImageFile3"
 	ProjectGUID="{17DC3001-566F-4B60-BF77-37BF94162C5D}"
-	RootNamespace="AVSImageFile3"
+	RootNamespace="ASCImageFile3"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -44,16 +44,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageFile3.tlb"
-				HeaderFileName="AVSImageFile3.h"
+				TypeLibraryName="$(IntDir)/ASCImageFile3.tlb"
+				HeaderFileName="ASCImageFile3.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageFile3_i.c"
-				ProxyFileName="AVSImageFile3_p.c"
+				InterfaceIdentifierFileName="ASCImageFile3_i.c"
+				ProxyFileName="ASCImageFile3_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../Common;../../../../Common;../../AVSVideoStudio3/Common;Libs"
+				AdditionalIncludeDirectories="../Common;../../Common;Libs"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -79,13 +79,13 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="false"
 				AdditionalDependencies="graydither.lib Msimg32.lib"
-				OutputFile="$(OutDir)/AVSImageFile3.dll"
+				OutputFile="$(OutDir)/ASCImageFile3.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="Libs"
-				MergedIDLBaseFileName="_AVSImageFile3.idl"
+				MergedIDLBaseFileName="_ASCImageFile3.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSImageFile3.lib"
+				ImportLibrary="$(OutDir)/ASCImageFile3.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -144,16 +144,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageFile3.tlb"
-				HeaderFileName="AVSImageFile3.h"
+				TypeLibraryName="$(IntDir)/ASCImageFile3.tlb"
+				HeaderFileName="ASCImageFile3.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageFile3_i.c"
-				ProxyFileName="AVSImageFile3_p.c"
+				InterfaceIdentifierFileName="ASCImageFile3_i.c"
+				ProxyFileName="ASCImageFile3_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../Common;../../../../Common;../../AVSVideoStudio3/Common;Libs"
+				AdditionalIncludeDirectories="../Common;../../Common;Libs"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -179,15 +179,15 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="false"
 				AdditionalDependencies="graydither.lib Msimg32.lib"
-				OutputFile="$(OutDir)/AVSImageFile3.dll"
+				OutputFile="$(OutDir)/ASCImageFile3.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="Libs"
-				MergedIDLBaseFileName="_AVSImageFile3.idl"
+				MergedIDLBaseFileName="_ASCImageFile3.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSImageFile3.lib"
+				ImportLibrary="$(OutDir)/ASCImageFile3.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -214,7 +214,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy to redist"
-				CommandLine="copy $(TargetPath) ..\..\..\..\AVS\Redist\AVSImageFile3.dll"
+				CommandLine="copy $(TargetPath) ..\..\Redist\ASCImageFile3.dll"
 			/>
 		</Configuration>
 		<Configuration
@@ -229,7 +229,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="X:\AVS\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
+				CommandLine="../../Redist/VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
 				ExcludedFromBuild="true"
 			/>
 			<Tool
@@ -247,16 +247,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageFile3.tlb"
-				HeaderFileName="AVSImageFile3.h"
+				TypeLibraryName="$(IntDir)/ASCImageFile3.tlb"
+				HeaderFileName="ASCImageFile3.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageFile3_i.c"
-				ProxyFileName="AVSImageFile3_p.c"
+				InterfaceIdentifierFileName="ASCImageFile3_i.c"
+				ProxyFileName="ASCImageFile3_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../Common;../../../../Common;../../AVSVideoStudio3/Common;Libs"
+				AdditionalIncludeDirectories="../Common;../../Common;Libs"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -285,12 +285,12 @@
 				OutputFile="$(OutDir)/ASCImageFile3.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="Libs"
-				MergedIDLBaseFileName="_AVSImageFile3.idl"
+				MergedIDLBaseFileName="_ASCImageFile3.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSImageFile3.lib"
+				ImportLibrary="$(OutDir)/ASCImageFile3.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -329,7 +329,7 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
-				RelativePath="AVSImageFile3.cpp"
+				RelativePath="ASCImageFile3.cpp"
 				>
 			</File>
 			<File
@@ -407,11 +407,11 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="AVSImageFile3.rc"
+				RelativePath="ASCImageFile3.rc"
 				>
 			</File>
 			<File
-				RelativePath="AVSImageFile3.rgs"
+				RelativePath="ASCImageFile3.rgs"
 				>
 			</File>
 		</Filter>
@@ -419,7 +419,7 @@
 			Name="Common Files"
 			>
 			<File
-				RelativePath="..\..\..\..\Common\GdiPlusEx.h"
+				RelativePath="..\..\Common\GdiPlusEx.h"
 				>
 			</File>
 			<File
@@ -431,7 +431,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSVideoStudio3\Common\ImageStudioUtils.h"
+				RelativePath="..\..\Common\ImageStudioUtils.h"
 				>
 			</File>
 			<File
@@ -439,11 +439,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSVideoStudio3\Common\MediaFormatDefine.h"
+				RelativePath="..\..\Common\MediaFormatDefine.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\Common\MemoryUtils.h"
+				RelativePath="..\..\Common\MemoryUtils.h"
 				>
 			</File>
 			<File

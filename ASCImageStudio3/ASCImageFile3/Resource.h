@@ -1,10 +1,10 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by AVSImageFile3.rc
+// Used by ASCImageFile3.rc
 //
 
 #define IDS_PROJNAME                    100
-#define IDR_AVSIMAGEFILE3	101
+#define IDR_ASCIMAGEFILE3	101
 
 // Next default values for new objects
 // 

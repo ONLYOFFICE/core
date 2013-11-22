@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSFontConverter"
+	Name="ASCFontConverter"
 	ProjectGUID="{BC0A8A11-2017-473D-8AB1-86A55116A2F5}"
 	Keyword="AtlProj"
 	>
@@ -41,16 +41,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSFontConverter.tlb"
-				HeaderFileName="AVSFontConverter.h"
+				TypeLibraryName="$(IntDir)/ASCFontConverter.tlb"
+				HeaderFileName="ASCFontConverter.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSFontConverter_i.c"
-				ProxyFileName="AVSFontConverter_p.c"
+				InterfaceIdentifierFileName="ASCFontConverter_i.c"
+				ProxyFileName="ASCFontConverter_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\AVSImageStudio3\AVSGraphics\Objects\Font\FreeType\"
+				AdditionalIncludeDirectories="../OfficeCore/Fonts/FreeType"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -75,12 +75,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="$(OutDir)/AVSFontConverter.dll"
+				OutputFile="$(OutDir)/ASCFontConverter.dll"
 				LinkIncremental="2"
-				MergedIDLBaseFileName="_AVSFontConverter.idl"
+				MergedIDLBaseFileName="_ASCFontConverter.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSFontConverter.lib"
+				ImportLibrary="$(OutDir)/ASCFontConverter.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -121,7 +121,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
+				CommandLine="..\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -138,15 +138,15 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSFontConverter.tlb"
-				HeaderFileName="AVSFontConverter.h"
+				TypeLibraryName="$(IntDir)/ASCFontConverter.tlb"
+				HeaderFileName="ASCFontConverter.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSFontConverter_i.c"
-				ProxyFileName="AVSFontConverter_p.c"
+				InterfaceIdentifierFileName="ASCSFontConverter_i.c"
+				ProxyFileName="ASCFontConverter_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\AVSImageStudio3\AVSGraphics\Objects\Font\FreeType\"
+				AdditionalIncludeDirectories="../OfficeCore/Fonts/FreeType"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -169,113 +169,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="../../../Redist/AVSOfficeStudio/AVSFontConverter.dll"
+				OutputFile="../Redist/ASCFontConverter.dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSFontConverter.idl"
+				MergedIDLBaseFileName="_ASCFontConverter.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSFontConverter.lib"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;"
-			/>
-		</Configuration>
-		<Configuration
-			Name="ReleaseASC|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
-			ConfigurationType="2"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
-				ExcludedFromBuild="true"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSFontConverter.tlb"
-				HeaderFileName="AVSFontConverter.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSFontConverter_i.c"
-				ProxyFileName="AVSFontConverter_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\AVSImageStudio3\AVSGraphics\Objects\Font\FreeType\"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
-				RuntimeLibrary="2"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;ASCBUILD"
-				Culture="1049"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
-				OutputFile="../../../..\ASC\Redist/ASCOfficeStudio/ASCFontConverter.dll"
-				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSFontConverter.idl"
-				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
-				SubSystem="2"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSFontConverter.lib"
+				ImportLibrary="$(OutDir)/ASCFontConverter.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -315,11 +217,31 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSFontConverter.cpp"
+				RelativePath=".\ASCFontConverter.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\FontConverter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FontFileEncodings.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FontFileTrueType.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FontFileType1.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FontFileType1C.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Hash.cpp"
 				>
 			</File>
 			<File
@@ -341,14 +263,10 @@
 						UsePrecompiledHeader="1"
 					/>
 				</FileConfiguration>
-				<FileConfiguration
-					Name="ReleaseASC|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\StringExt.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
@@ -357,23 +275,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\Consts.h"
-				>
-			</File>
-			<File
 				RelativePath=".\FontConverter.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Hash.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Hash.h"
-				>
-			</File>
-			<File
-				RelativePath=".\MemoryUtils.h"
 				>
 			</File>
 			<File
@@ -385,61 +287,9 @@
 				>
 			</File>
 			<File
-				RelativePath=".\StringExt.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\StringExt.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Utils.h"
-				>
-			</File>
-			<File
 				RelativePath=".\version.h"
 				>
 			</File>
-			<Filter
-				Name="FontFile"
-				>
-				<File
-					RelativePath=".\FontFileBase.h"
-					>
-				</File>
-				<File
-					RelativePath=".\FontFileEncodings.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\FontFileEncodings.h"
-					>
-				</File>
-				<File
-					RelativePath=".\FontFileTrueType.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\FontFileTrueType.h"
-					>
-				</File>
-				<File
-					RelativePath=".\FontFileType1.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\FontFileType1.h"
-					>
-				</File>
-				<File
-					RelativePath=".\FontFileType1C.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\FontFileType1C.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -447,11 +297,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSFontConverter.rc"
+				RelativePath=".\ASCFontConverter.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSFontConverter.rgs"
+				RelativePath=".\ASCFontConverter.rgs"
 				>
 			</File>
 		</Filter>

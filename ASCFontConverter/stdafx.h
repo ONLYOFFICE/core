@@ -47,8 +47,5 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-//#ifdef _VS_2005
-#pragma comment (lib, "..\\..\\AVSImageStudio3\\AVSGraphics\\Objects\\Font\\FreeType\\freetype242_vs2005.lib")
-
-
+#pragma comment (lib, "../OfficeCore/Fonts/FreeType/freetype242_vs2005.lib")
 using namespace ATL;

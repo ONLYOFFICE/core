@@ -2,7 +2,7 @@
 //
 #include "resource.h"
 #define COMPONENT_NAME "FontConverter"
-#include "../../../../Common/FileInfo.h"
+#include "../Common/FileInfo.h"
 #include "version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -86,10 +86,10 @@ END
 
 STRINGTABLE  
 BEGIN
-	IDS_PROJNAME					"AVSFontConverter"
+	IDS_PROJNAME					"ASCFontConverter"
 END
 
-IDR_AVSFONTCONVERTER REGISTRY "AVSFontConverter.rgs"
+IDR_ASCFONTCONVERTER REGISTRY "ASCFontConverter.rgs"
 ////////////////////////////////////////////////////////////////////////////
 
 

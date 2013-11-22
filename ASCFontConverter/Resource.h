@@ -4,7 +4,7 @@
 //
 
 #define IDS_PROJNAME                    100
-#define IDR_AVSFONTCONVERTER	101
+#define IDR_ASCFONTCONVERTER			101
 
 // Next default values for new objects
 // 

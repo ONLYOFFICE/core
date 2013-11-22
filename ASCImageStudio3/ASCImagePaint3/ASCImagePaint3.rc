@@ -89,10 +89,10 @@ END
 
 STRINGTABLE  
 BEGIN
-	IDS_PROJNAME					"AVSImagePaint3"
+	IDS_PROJNAME					"ASCImagePaint3"
 END
 
-IDR_AVSIMAGEPAINT3 REGISTRY "AVSImagePaint3.rgs"
+IDR_ASCIMAGEPAINT3 REGISTRY "ASCImagePaint3.rgs"
 ////////////////////////////////////////////////////////////////////////////
 
 

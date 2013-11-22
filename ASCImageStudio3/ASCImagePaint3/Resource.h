@@ -1,10 +1,10 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by AVSImagePaint3.rc
+// Used by ASCImagePaint3.rc
 //
 
 #define IDS_PROJNAME                    100
-#define IDR_AVSIMAGEPAINT3				101
+#define IDR_ASCIMAGEPAINT3				101
 
 // Next default values for new objects
 // 

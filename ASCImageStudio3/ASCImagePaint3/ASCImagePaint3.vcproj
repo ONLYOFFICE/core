@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSImagePaint3"
+	Name="ASCImagePaint3"
 	ProjectGUID="{26D5CD98-3577-4A31-8766-97293230E43E}"
-	RootNamespace="AVSImagePaint3"
+	RootNamespace="ASCImagePaint3"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -44,16 +44,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImagePaint3.tlb"
-				HeaderFileName="AVSImagePaint3.h"
+				TypeLibraryName="$(IntDir)/ASCImagePaint3.tlb"
+				HeaderFileName="ASCImagePaint3.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImagePaint3_i.c"
-				ProxyFileName="AVSImagePaint3_p.c"
+				InterfaceIdentifierFileName="ASCImagePaint3_i.c"
+				ProxyFileName="ASCImagePaint3_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../Common;../../../../Common;../../AVSVideoStudio3/Common"
+				AdditionalIncludeDirectories="../Common;../../Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -78,12 +78,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="$(OutDir)/AVSImagePaint3.dll"
+				OutputFile="$(OutDir)/ASCImagePaint3.dll"
 				LinkIncremental="2"
-				MergedIDLBaseFileName="_AVSImagePaint3.idl"
+				MergedIDLBaseFileName="_ASCImagePaint3.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSImagePaint3.lib"
+				ImportLibrary="$(OutDir)/ASCImagePaint3.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -125,7 +125,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="X:\AVS\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
+				CommandLine="../../Redist/VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -142,16 +142,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImagePaint3.tlb"
-				HeaderFileName="AVSImagePaint3.h"
+				TypeLibraryName="$(IntDir)/ASCImagePaint3.tlb"
+				HeaderFileName="ASCImagePaint3.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImagePaint3_i.c"
-				ProxyFileName="AVSImagePaint3_p.c"
+				InterfaceIdentifierFileName="ASCImagePaint3_i.c"
+				ProxyFileName="ASCImagePaint3_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../Common;../../../../Common;../../AVSVideoStudio3/Common"
+				AdditionalIncludeDirectories="../Common;../../Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -176,14 +176,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="$(OutDir)/AVSImagePaint3.dll"
+				OutputFile="$(OutDir)/ASCImagePaint3.dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSImagePaint3.idl"
+				MergedIDLBaseFileName="_ASCImagePaint3.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSImagePaint3.lib"
+				ImportLibrary="$(OutDir)/ASCImagePaint3.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -210,7 +210,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy to redist"
-				CommandLine="copy $(TargetPath) ..\..\..\..\AVS\Redist\AVSImagePaint3.dll"
+				CommandLine="copy $(TargetPath) ..\..\Redist\ASCImagePaint3.dll"
 			/>
 		</Configuration>
 		<Configuration
@@ -225,7 +225,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="X:\AVS\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
+				CommandLine="../../Redist/VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
 				ExcludedFromBuild="true"
 			/>
 			<Tool
@@ -243,16 +243,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImagePaint3.tlb"
-				HeaderFileName="AVSImagePaint3.h"
+				TypeLibraryName="$(IntDir)/ASCImagePaint3.tlb"
+				HeaderFileName="ASCImagePaint3.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImagePaint3_i.c"
-				ProxyFileName="AVSImagePaint3_p.c"
+				InterfaceIdentifierFileName="ASCImagePaint3_i.c"
+				ProxyFileName="ASCImagePaint3_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../Common;../../../../Common;../../AVSVideoStudio3/Common"
+				AdditionalIncludeDirectories="../Common;../../Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -279,12 +279,12 @@
 				IgnoreImportLibrary="true"
 				OutputFile="$(OutDir)/ASCImagePaint3.dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSImagePaint3.idl"
+				MergedIDLBaseFileName="_ASCImagePaint3.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSImagePaint3.lib"
+				ImportLibrary="$(OutDir)/ASCImagePaint3.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -323,7 +323,7 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
-				RelativePath="AVSImagePaint3.cpp"
+				RelativePath="ASCImagePaint3.cpp"
 				>
 			</File>
 			<File
@@ -417,11 +417,11 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="AVSImagePaint3.rc"
+				RelativePath="ASCImagePaint3.rc"
 				>
 			</File>
 			<File
-				RelativePath="AVSImagePaint3.rgs"
+				RelativePath="ASCImagePaint3.rgs"
 				>
 			</File>
 		</Filter>
@@ -433,7 +433,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSVideoStudio3\Common\ImageStudioUtils.h"
+				RelativePath="..\..\Common\ImageStudioUtils.h"
 				>
 			</File>
 			<File
@@ -441,7 +441,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSVideoStudio3\Common\MediaFormatDefine.h"
+				RelativePath="..\..\Common\MediaFormatDefine.h"
 				>
 			</File>
 			<File

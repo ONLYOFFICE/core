@@ -1,4 +1,4 @@
-// AVSVideoFramePainter.h 
+// ASCVideoFramePainter.h 
 
 #pragma once
 #include "resource.h"       // main symbols

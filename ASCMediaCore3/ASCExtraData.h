@@ -1,14 +1,14 @@
-// AVSExtraData.h : Declaration of the CAVSExtraData
+// ASCExtraData.h : Declaration of the CASCExtraData
 
 #pragma once
 #include "resource.h"       // main symbols
 #include "../Common/AudioDefines.h"       // main symbols
 
-// IAVSExtraData
+// IASCExtraData
 [
 	object,
 	uuid("F04698FD-7956-4BCF-B579-512CBC1ECB0F"),
-	dual,	helpstring("IAVSExtraData Interface"),
+	dual,	helpstring("IASCExtraData Interface"),
 	pointer_default(unique)
 ]
 __interface IAVSExtraData : IDispatch

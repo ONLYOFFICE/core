@@ -1,10 +1,10 @@
 #pragma once
 #include "resource.h"       // main symbols
-#include "AVSUncompressedVideoFrame.h"
-#include "AVSVideoFrameTransform.h" 
+#include "ASCUncompressedVideoFrame.h"
+#include "ASCVideoFrameTransform.h" 
 #include <math.h>
 
-#import "../../../Redist/AVSMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
+#import "../Redist/ASCMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
 typedef IAVSUncompressedVideoFrame IMediaFrame;
 
 class CDrawLogo

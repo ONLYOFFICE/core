@@ -1,12 +1,12 @@
-// AVSAudioBuffer.h : Declaration of the CAVSAudioBuffer
+// ASCAudioBuffer.h : Declaration of the CASCAudioBuffer
 
 #pragma once
 #include "resource.h"       // main symbols
-#include "AVSMediaData.h"
-#include "AVSAudioData.h"
+#include "ASCMediaData.h"
+#include "ASCAudioData.h"
 
 #include "MediaDataDefine.h"
-#include "AVSUtils.h"
+#include "ASCUtils.h"
 
 // IAVSAudioBuffer
 [object, uuid("1CB6CE9F-0E75-4B17-8512-668FF3B10745"), dual, pointer_default(unique)]

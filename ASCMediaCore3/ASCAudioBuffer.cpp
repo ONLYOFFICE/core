@@ -1,7 +1,7 @@
-// AVSAudioBuffer.cpp : Implementation of CAVSAudioBuffer
+// ASCAudioBuffer.cpp : Implementation of CASCAudioBuffer
 
 #include "stdafx.h"
-#include "AVSAudioBuffer.h"
+#include "ASCAudioBuffer.h"
 
 
 // CAVSAudioBuffer

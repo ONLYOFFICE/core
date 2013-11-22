@@ -1,8 +1,8 @@
-// AVSDVDSubpictureFrame.h : Declaration of the CAVSDVDSubpictureFrame
+// ASCDVDSubpictureFrame.h : Declaration of the CASCDVDSubpictureFrame
 
 #pragma once
 #include "resource.h"       // main symbols
-#include "AVSMediaData.h"
+#include "ASCMediaData.h"
 #include "MemoryUtils.h"
 #include <atlcoll.h>
 

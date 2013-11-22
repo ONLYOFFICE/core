@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSMediaCore3"
+	Name="ASCMediaCore3"
 	ProjectGUID="{C39EA7A2-78A4-4C36-8CF6-F175EEB51780}"
-	RootNamespace="AVSMediaCore3"
+	RootNamespace="ASCMediaCore3"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -47,11 +47,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSMediaCore3.tlb"
-				HeaderFileName="AVSMediaCore3.h"
+				TypeLibraryName="$(IntDir)/ASCMediaCore3.tlb"
+				HeaderFileName="ASCMediaCore3.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSMediaCore3_i.c"
-				ProxyFileName="AVSMediaCore3_p.c"
+				InterfaceIdentifierFileName="ASCMediaCore3_i.c"
+				ProxyFileName="ASCMediaCore3_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -82,14 +82,14 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies=".\VideoFrameTransformLib\Debug\VideoFrameTransformLib.lib"
-				OutputFile="$(OutDir)/AVSMediaCore3.dll"
+				OutputFile="$(OutDir)/ASCMediaCore3.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=".\VideoFrameTransformLib\Debug"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD"
-				MergedIDLBaseFileName="_AVSMediaCore3.idl"
+				MergedIDLBaseFileName="_ASCMediaCore3.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSMediaCore3.lib"
+				ImportLibrary="$(OutDir)/ASCMediaCore3.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -148,11 +148,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="3"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSMediaCore3.tlb"
-				HeaderFileName="AVSMediaCore3.h"
+				TypeLibraryName="$(IntDir)/ASCMediaCore3.tlb"
+				HeaderFileName="ASCMediaCore3.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSMediaCore3_i.c"
-				ProxyFileName="AVSMediaCore3_p.c"
+				InterfaceIdentifierFileName="ASCMediaCore3_i.c"
+				ProxyFileName="ASCMediaCore3_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -183,14 +183,14 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies=".\VideoFrameTransformLib\Debug\VideoFrameTransformLib.lib"
-				OutputFile="$(OutDir)/AVSMediaCore3.dll"
+				OutputFile="$(OutDir)/ASCMediaCore3.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=".\VideoFrameTransformLib\Debug"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD"
-				MergedIDLBaseFileName="_AVSMediaCore3.idl"
+				MergedIDLBaseFileName="_ASCMediaCore3.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSMediaCore3.lib"
+				ImportLibrary="$(OutDir)/ASCMediaCore3.lib"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -249,11 +249,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSMediaCore3.tlb"
-				HeaderFileName="AVSMediaCore3.h"
+				TypeLibraryName="$(IntDir)/ASCMediaCore3.tlb"
+				HeaderFileName="ASCMediaCore3.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSMediaCore3_i.c"
-				ProxyFileName="AVSMediaCore3_p.c"
+				InterfaceIdentifierFileName="ASCMediaCore3_i.c"
+				ProxyFileName="ASCMediaCore3_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -284,15 +284,15 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies=".\VideoFrameTransformLib\Release\VideoFrameTransformLib.lib"
-				OutputFile="$(OutDir)/AVSMediaCore3.dll"
+				OutputFile="$(OutDir)/ASCMediaCore3.dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC,LIBCMT"
-				MergedIDLBaseFileName="_AVSMediaCore3.idl"
+				MergedIDLBaseFileName="_ASCMediaCore3.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSMediaCore3.lib"
+				ImportLibrary="$(OutDir)/ASCMediaCore3.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -351,11 +351,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="3"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSMediaCore3.tlb"
-				HeaderFileName="AVSMediaCore3.h"
+				TypeLibraryName="$(IntDir)/ASCMediaCore3.tlb"
+				HeaderFileName="ASCMediaCore3.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSMediaCore3_i.c"
-				ProxyFileName="AVSMediaCore3_p.c"
+				InterfaceIdentifierFileName="ASCMediaCore3_i.c"
+				ProxyFileName="ASCMediaCore3_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -386,15 +386,15 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies=".\VideoFrameTransformLib\Release\VideoFrameTransformLib.lib"
-				OutputFile="$(OutDir)/AVSMediaCore3.dll"
+				OutputFile="$(OutDir)/ASCMediaCore3.dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC,LIBCMT"
-				MergedIDLBaseFileName="_AVSMediaCore3.idl"
+				MergedIDLBaseFileName="_ASCMediaCore3.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSMediaCore3.lib"
+				ImportLibrary="$(OutDir)/ASCMediaCore3.lib"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -454,11 +454,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSMediaCore3.tlb"
-				HeaderFileName="AVSMediaCore3.h"
+				TypeLibraryName="$(IntDir)/ASCMediaCore3.tlb"
+				HeaderFileName="ASCMediaCore3.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSMediaCore3_i.c"
-				ProxyFileName="AVSMediaCore3_p.c"
+				InterfaceIdentifierFileName="ASCMediaCore3_i.c"
+				ProxyFileName="ASCMediaCore3_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -492,12 +492,12 @@
 				OutputFile="$(OutDir)/ASCMediaCore3.dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC,LIBCMT"
-				MergedIDLBaseFileName="_AVSMediaCore3.idl"
+				MergedIDLBaseFileName="_ASCMediaCore3.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSMediaCore3.lib"
+				ImportLibrary="$(OutDir)/ASCMediaCore3.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -595,19 +595,19 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
-				RelativePath="AVSAudioBuffer.cpp"
+				RelativePath="ASCAudioBuffer.cpp"
 				>
 			</File>
 			<File
-				RelativePath="AVSExtraData.cpp"
+				RelativePath="ASCExtraData.cpp"
 				>
 			</File>
 			<File
-				RelativePath="AVSMediaCore3.cpp"
+				RelativePath="ASCMediaCore3.cpp"
 				>
 			</File>
 			<File
-				RelativePath="AVSVideoFrameTransform.cpp"
+				RelativePath="ASCVideoFrameTransform.cpp"
 				>
 			</File>
 			<File
@@ -660,63 +660,63 @@
 			Filter="h;hpp;hxx;hm;inl;inc"
 			>
 			<File
-				RelativePath="AVSAudioBuffer.h"
+				RelativePath="ASCAudioBuffer.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSAudioData.h"
+				RelativePath="ASCAudioData.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSAudioDataEx.h"
+				RelativePath=".\ASCAudioDataEx.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSCompressedVideoFrame.h"
+				RelativePath="ASCCompressedVideoFrame.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSDVDSubpictureFrame.h"
+				RelativePath="ASCDVDSubpictureFrame.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSExtraData.h"
+				RelativePath="ASCExtraData.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSMediaBuffer.h"
+				RelativePath="ASCMediaBuffer.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSMediaData.h"
+				RelativePath="ASCMediaData.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSPacketsAudioData.h"
+				RelativePath=".\ASCPacketsAudioData.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSSubtitleData.h"
+				RelativePath=".\ASCSubtitleData.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSUncompressedVideoFrame.h"
+				RelativePath="ASCUncompressedVideoFrame.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSVideoFrameColorTransform.h"
+				RelativePath="ASCVideoFrameColorTransform.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSVideoFramePainter.h"
+				RelativePath=".\ASCVideoFramePainter.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSVideoFramePainter2.h"
+				RelativePath=".\ASCVideoFramePainter2.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSVideoFrameTransform.h"
+				RelativePath="ASCVideoFrameTransform.h"
 				>
 			</File>
 			<File
@@ -737,11 +737,11 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="AVSMediaCore3.rc"
+				RelativePath="ASCMediaCore3.rc"
 				>
 			</File>
 			<File
-				RelativePath="AVSMediaCore3.rgs"
+				RelativePath="ASCMediaCore3.rgs"
 				>
 			</File>
 		</Filter>
@@ -753,7 +753,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\AVSVideoStudio3ID.h"
+				RelativePath="..\Common\ASCVideoStudio3ID.h"
 				>
 			</File>
 			<File

@@ -4,7 +4,7 @@
 #include <MediaFormatDefine.h>
 #include <MediaDataDefine.h>
 #include <VideoFileErrorDescription.h>
-#include "AVSMediaBuffer.h"
+#include "ASCMediaBuffer.h"
 	
 [object, uuid("C04D2557-D06D-406c-BA7D-27657B1F788C"), dual, pointer_default(unique)]
 __interface IAVSMediaData : IDispatch

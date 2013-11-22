@@ -11,7 +11,7 @@
 
 
 #define COMPANY_NAME				"Ascensio System SIA"
-#define LEGAL_COPYRIGHT				"Ascensio System SIA Copyright (c) 2011-2012"
+#define LEGAL_COPYRIGHT				"Ascensio System SIA Copyright (c) 2013"
 #define COMPONENT_PREFIX			"ASC"
 
 

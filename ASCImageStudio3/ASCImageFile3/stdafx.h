@@ -47,12 +47,20 @@
 
 using namespace ATL;
 
-#include "../../AVSVideoStudio3/Common/VideoFileInterface.h"
+#define NO_RAW_CHECKER
+#define NO_SWF_CHECKER
 
-#import "../../../../AVS/Redist/AVSMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")
-#import "../../../../AVS/Redist/AVSMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
-#import "../../../../AVS/Redist/AVSImageRaw3.dll"	            named_guids rename_namespace("ImageRaw")
-#import "../../../../AVS/Redist/AVSImageJpeg2000.dll"           named_guids rename_namespace("Jpeg2000")
-#import "../../../../AVS/Redist/AVSImageVideoFile3.dll"         named_guids rename_namespace("ImageVideoFile"), raw_interfaces_only exclude("IAVSVideoFileTemplate")
-#import "../../../../AVS/Redist/AVSGraphics.dll"				named_guids rename_namespace("AVSGraphics")
-#import "../../../../AVS/Redist/AVSSWFFile3.dll"				named_guids rename_namespace("SWF")
+#include "../../Common/VideoFileInterface.h"
+
+#import "../../Redist/ASCMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")
+#import "../../Redist/ASCMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
+#import "../../Redist/ASCGraphics.dll"				named_guids rename_namespace("AVSGraphics")
+#ifndef NO_SWF_CHECKER
+#import "../../Redist/ASCSWFFile3.dll"				named_guids rename_namespace("SWF")
+#endif
+
+#ifndef NO_RAW_CHECKER
+#import "../../Redist/ASCImageRaw3.dll"	            named_guids rename_namespace("ImageRaw")
+#endif
+#import "../../Redist/ASCImageJpeg2000.dll"           named_guids rename_namespace("Jpeg2000")
+

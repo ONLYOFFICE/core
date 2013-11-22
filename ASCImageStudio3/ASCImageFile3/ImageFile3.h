@@ -124,7 +124,7 @@ protected:
 	CGdiPlusInit m_oGdiPlusInit;
 
 	Bitmap* m_bitmap;
-	ImageVideoFile::IImageVideoFile4 *m_pImageVideoFile;
+
 	int     m_nMultipagedFormat; // 0 - Tiff, 1 - GIF или APNG
 	double  m_dAnimationDuration; //в миллисекундах
 	long  m_nAnimationWidth;
@@ -180,7 +180,7 @@ protected:
 
 		// setup default values
 		m_bitmap = 0;
-		m_pImageVideoFile = NULL;
+
 		m_nMultipagedFormat = 0;
 		m_dAnimationDuration = 1000;
 		m_nAnimationWidth = -1;
@@ -214,7 +214,6 @@ protected:
 	}
 	~ImageFile3()
 	{
-		RELEASEINTERFACE(m_pImageVideoFile);
 		// delete existing memory
 		ClearBitmap();
 
@@ -1198,6 +1197,7 @@ protected:
 			else
 				if(	eFileType ==_ImageFileFormats::c_RawFotos)
 			{
+#ifndef NO_RAW_CHECKER
 			const TCHAR * settingsXML = _T("<ImageRaw3 mode=\"0\" xmlns=\"http://tempuri.org/ImageRaw3Options.xsd\"> \
 					<SimpleMode ver=\"1\"><CameraWhiteBalance use=\"1\"/><CameraMatrix use=\"0\"/> \
 					</SimpleMode></ImageRaw3>");
@@ -1205,19 +1205,30 @@ protected:
 				ImageStudio::IO::Raw oRenderRaw;
 				bLoading = oRenderRaw.FromFile( sFilePath, nFormat, &oImage, settingsXML);
 				bVerFlip = !(bVerFlip);
+#else
+				bLoading = FALSE;
+#endif
 			}
 			else
 				if( eFileType ==_ImageFileFormats::c_Sfw)
 			{
+				#ifndef NO_SWF_CHECKER
 				ImageStudio::IO::Sfw oRenderSfw;
 				bLoading = oRenderSfw.FromFile( sFilePath, nFormat, &oImage );
 				bVerFlip = !(bVerFlip);
+#else
+				bLoading = FALSE;
+#endif
 			}
 			else
 				if( eFileType ==_ImageFileFormats::c_Swf)
 			{
+#ifndef NO_SWF_CHECKER
 				ImageStudio::IO::Swf oRenderSwf;
 				bLoading = oRenderSwf.FromFile( sFilePath, nFormat, &oImage );
+#else
+				bLoading = FALSE;
+#endif
 			}
 			else
 				if( eFileType ==_ImageFileFormats::c_Svm)
@@ -1676,83 +1687,8 @@ protected:
 	}
 	VARIANT_BOOL SaveImageAsAnimated(BSTR Path, LONG Format, void** Image, BOOL bArrayOrInterface = TRUE)
 	{
-		m_nMultipagedFormat = 1;
-
-		RELEASEINTERFACE( m_pImageVideoFile );
-		::CoCreateInstance( __uuidof(ImageVideoFile::CImageVideoFile3), NULL, CLSCTX_INPROC, __uuidof(ImageVideoFile::IImageVideoFile4), (void**)&m_pImageVideoFile );
-		if ( !m_pImageVideoFile )
-			return VARIANT_FALSE;
-
-		//через VideoFormat выставляется Width, Height, ColorSpace
-		MediaFormat::IAVSVideoFormat *piVideoFormat = NULL;
-		CoCreateInstance(MediaFormat::CLSID_CAVSVideoFormat, NULL, CLSCTX_ALL, MediaFormat::IID_IAVSVideoFormat, (void**)&piVideoFormat);
-		if ( NULL == piVideoFormat )
-		{
-			RELEASEINTERFACE( m_pImageVideoFile );
-			return VARIANT_FALSE;
-		}
-
-		//выставляем тип, по умолчанию - GIF
-		if( IMAGEFORMAT_PNG == Format )
-			m_pImageVideoFile->put_FileType( 2 );//тип APNG
-		else
-			m_pImageVideoFile->put_FileType( 1 );//тип GIF
-
-		//Width, Height выставляется через IAVSVideoFormat
-		//Duration - через свойство IAVSUncompressedVideoFrame
-		MediaCore::IAVSUncompressedVideoFrame* piVideoFrame = NULL;
-		((IUnknown*)*Image)->QueryInterface( __uuidof(MediaCore::IAVSUncompressedVideoFrame), (void**)&piVideoFrame );
-		if( NULL != piVideoFrame )
-		{
-			//выставляем duration
-			piVideoFrame->put_Duration( m_dAnimationDuration );
-
-			//если не заданы m_nAnimationWidth или m_nAnimationHeight, то берем по первому фрейму
-			if( -1 == m_nAnimationWidth || -1 == m_nAnimationHeight )
-			{
-				piVideoFrame->get_Width( &m_nAnimationWidth );
-				piVideoFrame->get_Height( &m_nAnimationHeight );
-			}
-
-			//ColorSpace - CSP_BGR - без прозрачности
-			//CSP_BGRA - с прозрачностью, но в gif прозрачным станет черные цвет
-			if( IMAGEFORMAT_PNG == Format || true == m_bAnimationGifWithAlpha )
-				piVideoFormat->put_ColorSpace( CSP_BGRA );
-			else
-				piVideoFormat->put_ColorSpace( CSP_BGR );
-			//выставляем width, height
-			piVideoFormat->put_Width( m_nAnimationWidth );
-			piVideoFormat->put_Height( m_nAnimationHeight );
-			piVideoFormat->put_AspectRatioX( m_nAnimationWidth );
-			piVideoFormat->put_AspectRatioY( m_nAnimationHeight );
-
-			m_pImageVideoFile->put_videoFormat( piVideoFormat );
-		}
-		RELEASEINTERFACE( piVideoFrame );
-		RELEASEINTERFACE( piVideoFormat );
-
-		// Создаем файл
-		HRESULT hRes = m_pImageVideoFile->CreateVideoFile( Path );
-		if( SUCCEEDED( hRes ) )
-		{
-			// Пишем первый фрейм
-			hRes = m_pImageVideoFile->WriteVideo((IUnknown*) *Image);
-			// Если файл одностраничный закрываем его
-			if ( VARIANT_FALSE == m_TiffMultipaged )
-			{
-				if( SUCCEEDED( hRes ) )
-					hRes = m_pImageVideoFile->CloseFile();
-				else
-					m_pImageVideoFile->CloseFile();//чтобы CloseFile не перекрыл предыдущий hRes
-				RELEASEINTERFACE( m_pImageVideoFile );
-				m_nAnimationWidth = -1;
-				m_nAnimationHeight = -1;
-			}
-		}
-		if( SUCCEEDED( hRes ) )
-			return VARIANT_TRUE;
-		else
-			return VARIANT_FALSE;
+		return S_OK;
+		
 	}
 	VARIANT_BOOL SaveImageAsFrame(void** Image, VARIANT_BOOL LastFrame, BOOL bArrayOrInterface = TRUE)
 	{
@@ -1880,37 +1816,8 @@ protected:
 			// all ok
 			return Success;
 		}
-		else if ( 1 == m_nMultipagedFormat )
-		{
-			if ( !m_pImageVideoFile )
-				return VARIANT_FALSE;
-
-			MediaCore::IAVSUncompressedVideoFrame* piVideoFrame = NULL;
-			((IUnknown*)*Image)->QueryInterface( __uuidof(MediaCore::IAVSUncompressedVideoFrame), (void**)&piVideoFrame );
-			if( NULL != piVideoFrame )
-			{
-				//выставляем duration
-				piVideoFrame->put_Duration( m_dAnimationDuration );
-				RELEASEINTERFACE( piVideoFrame );
-			}
-
-			HRESULT hRes = m_pImageVideoFile->WriteVideo((IUnknown*) *Image);
-			if ( VARIANT_FALSE != LastFrame )
-			{
-				if( SUCCEEDED( hRes ) )
-					hRes = m_pImageVideoFile->CloseFile();
-				else
-					m_pImageVideoFile->CloseFile();//чтобы CloseFile не перекрыл предыдущий hRes
-				RELEASEINTERFACE( m_pImageVideoFile );
-				m_nAnimationWidth = -1;
-				m_nAnimationHeight = -1;
-			}
-			if( SUCCEEDED(hRes) )
-				return VARIANT_TRUE;
-			else
-				return VARIANT_FALSE;
-		}
-		return VARIANT_FALSE;
+		return S_OK;
+		
 	}
 	VARIANT_BOOL SaveImageAsPicture(void** Image, IPictureDisp** Picture, BOOL bArrayOrInterface = TRUE)
 	{

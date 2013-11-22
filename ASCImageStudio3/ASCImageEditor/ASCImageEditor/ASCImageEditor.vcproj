@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSImageEditor"
+	Name="ASCImageEditor"
 	ProjectGUID="{E1A619A1-625C-40CC-A304-42A36D26CF4F}"
-	RootNamespace="AVSImageEditor"
+	RootNamespace="ASCImageEditor"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -43,16 +43,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageEditor.tlb"
-				HeaderFileName="AVSImageEditor.h"
+				TypeLibraryName="$(IntDir)/ASCImageEditor.tlb"
+				HeaderFileName="ASCImageEditor.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageEditor_i.c"
-				ProxyFileName="AVSImageEditor_p.c"
+				InterfaceIdentifierFileName="ASCImageEditor_i.c"
+				ProxyFileName="ASCImageEditor_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../../../Common;../../../../../AVS/Sources/AVSVideoStudio3/Common;../../../../../AVS/Sources/AVSImageStudio3/Common"
+				AdditionalIncludeDirectories="../../../Common;../../Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -77,12 +77,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="bin/AVSImageEditor.dll"
+				OutputFile="bin/ASCImageEditor.dll"
 				LinkIncremental="2"
-				MergedIDLBaseFileName="_AVSImageEditor.idl"
+				MergedIDLBaseFileName="_ASCImageEditor.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSImageEditor.lib"
+				ImportLibrary="$(OutDir)/ASCImageEditor.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -141,11 +141,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageEditor.tlb"
-				HeaderFileName="AVSImageEditor.h"
+				TypeLibraryName="$(IntDir)/ASCImageEditor.tlb"
+				HeaderFileName="ASCImageEditor.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageEditor_i.c"
-				ProxyFileName="AVSImageEditor_p.c"
+				InterfaceIdentifierFileName="ASCImageEditor_i.c"
+				ProxyFileName="ASCImageEditor_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -155,7 +155,7 @@
 				OmitFramePointers="false"
 				EnableFiberSafeOptimizations="false"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="../../../../../Common;../../../../../AVS/Sources/AVSVideoStudio3/Common;../../../../../AVS/Sources/AVSImageStudio3/Common"
+				AdditionalIncludeDirectories="../../../Common;../../Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="false"
@@ -179,14 +179,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="bin/AVSImageEditor.dll"
+				OutputFile="bin/ASCImageEditor.dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSImageEditor.idl"
+				MergedIDLBaseFileName="_ASCImageEditor.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSImageEditor.lib"
+				ImportLibrary="$(OutDir)/ASCImageEditor.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -245,11 +245,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageEditor.tlb"
-				HeaderFileName="AVSImageEditor.h"
+				TypeLibraryName="$(IntDir)/ASCImageEditor.tlb"
+				HeaderFileName="ASCImageEditor.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageEditor_i.c"
-				ProxyFileName="AVSImageEditor_p.c"
+				InterfaceIdentifierFileName="ASCImageEditor_i.c"
+				ProxyFileName="ASCImageEditor_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -259,7 +259,7 @@
 				OmitFramePointers="false"
 				EnableFiberSafeOptimizations="false"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="../../../../../Common;../../../../../AVS/Sources/AVSVideoStudio3/Common;../../../../../AVS/Sources/AVSImageStudio3/Common"
+				AdditionalIncludeDirectories="../../../Common;../../Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -282,14 +282,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="bin/AVSImageEditor.dll"
+				OutputFile="bin/ASCImageEditor.dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSImageEditor.idl"
+				MergedIDLBaseFileName="_ASCImageEditor.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSImageEditor.lib"
+				ImportLibrary="$(OutDir)/ASCImageEditor.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -329,7 +329,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSImageEditor.cpp"
+				RelativePath=".\ASCImageEditor.cpp"
 				>
 			</File>
 			<File
@@ -437,15 +437,15 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSImageEditor.bmp"
+				RelativePath=".\ASCImageEditor.bmp"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSImageEditor.rc"
+				RelativePath=".\ASCImageEditor.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSImageEditor.rgs"
+				RelativePath=".\ASCImageEditor.rgs"
 				>
 			</File>
 			<File

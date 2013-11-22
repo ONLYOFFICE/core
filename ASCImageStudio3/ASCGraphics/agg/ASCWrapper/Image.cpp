@@ -53,29 +53,16 @@ void Aggplus::CImage::Create(const WCHAR *filename)
 void Aggplus::CImage::CreateFromImageStudio(const WCHAR *filename)
 {
 	Destroy();
-	
-	ImageStudio::IImageTransforms* pTransforms = NULL;
-	CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL, CLSCTX_INPROC, ImageStudio::IID_IImageTransforms, (void**)&pTransforms); 
 
-	if (NULL == pTransforms)
-		return;
+	CString s = (CString)filename;
+	BSTR bsFile = s.AllocSysString();
+	IUnknown* punkResult = ImageStudio::ISLoadImage(bsFile);
+	SysFreeString(bsFile);
 
-	CStringW strXml = L"<ImageFile-LoadImage sourcepath='";
-	strXml += CStringW(filename);
-	strXml += L"'/>";
-
-	VARIANT_BOOL vbRes = VARIANT_FALSE;
-	BSTR bsXml = strXml.AllocSysString();
-	pTransforms->SetXml(bsXml, &vbRes);
-	pTransforms->Transform(&vbRes);
-
-	VARIANT var;
-	pTransforms->GetResult(0, &var);
-
-	if (NULL != var.punkVal)
+	if (NULL != punkResult)
 	{
-		var.punkVal->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&m_pFrame);
-		RELEASEINTERFACE((var.punkVal));
+		punkResult->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&m_pFrame);
+		RELEASEINTERFACE(punkResult);
 	}
 
 	if (NULL != m_pFrame)
@@ -93,8 +80,6 @@ void Aggplus::CImage::CreateFromImageStudio(const WCHAR *filename)
 
 		m_Status = Ok;
 	}
-
-	RELEASEINTERFACE(pTransforms);
 }
 
 void Aggplus::CImage::CopyFrom(const CImage *pSource)

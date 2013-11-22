@@ -127,7 +127,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\Redist\VersionControl.exe &quot;$(ProjectDir)\version.h&quot;"
+				CommandLine="..\..\Redist\VersionControl.exe &quot;$(ProjectDir)\version.h&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -153,7 +153,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\..\..\Common;..\Common;Objects\Font\FreeType;agg\include;Interfaces\"
+				AdditionalIncludeDirectories="..\..\..\..\Common;..\Common;Objects\Font\FreeType;agg\include;Interfaces\;..\ASCGraphics;..\..\Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS"
 				StringPooling="true"
 				RuntimeLibrary="2"

@@ -1,5 +1,5 @@
 #pragma once
-#include "AVSVideoFileTemplate.h"
+#include "ASCVideoFileTemplate.h"
 
 // IVideoFile3
 [ object, uuid("3A836AA4-429F-4742-A6B6-98D579FE744F"), dual, pointer_default(unique)]

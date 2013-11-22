@@ -3,12 +3,7 @@
 #include <string>
 #include "./../BaseShape.h"
 
-#ifndef _AVS_GRAPHICS_
-#include "XmlUtils.h"
-#else
-#include "../../../../../../AVSImageStudio3/AVSGraphics/Interfaces/XmlUtils.h"
-#endif
-
+#include "../../../../XmlUtils.h"
 #include "..\..\CustomGeomShape.h"
 
 using namespace NSOfficeDrawing;

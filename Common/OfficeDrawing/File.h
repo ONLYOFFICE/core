@@ -1,9 +1,5 @@
 #pragma once
-#ifndef _ASC_GRAPHICS_
 #include "../XmlUtils.h"
-#else
-#include "../../ASCImageStudio3/ASCGraphics/Interfaces/XmlUtils.h"
-#endif
 #include "../ASCUtils.h"
 #include "windows.h"
 

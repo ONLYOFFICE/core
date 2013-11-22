@@ -1,5 +1,5 @@
 #pragma once
-#include "..\..\..\..\..\AVSImageStudio3\AVSGraphics\Interfaces\AVSRenderer.h"
+#include "..\..\..\..\ASCImageStudio3\ASCGraphics\Interfaces\ASCRenderer.h"
 
 #ifndef ODP_DEF
 #ifdef _AVS_GRAPHICS_
@@ -1210,7 +1210,7 @@ public:
 	//}
 
 #if defined(PPT_DEF)
-	void ToRenderer(IAVSRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, long w, long h)
+	void ToRenderer(IASCRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, long w, long h)
 	{
 		if (rtClose == m_eRuler)
 		{
@@ -2023,7 +2023,7 @@ public:
 	}
 
 #if defined(PPT_DEF)
-	void ToRenderer(IAVSRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, 
+	void ToRenderer(IASCRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, 
 		double dStartTime, double dEndTime, CPen_& pPen, CBrush_& pFore, CMetricInfo& pInfo)
 	{
 		LONG lType = 0;
@@ -2145,7 +2145,7 @@ public:
 	}
 
 #if defined(PPT_DEF)
-	void ToRenderer(IAVSRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, double dStartTime, 
+	void ToRenderer(IASCRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, double dStartTime, 
 		double dEndTime, CPen_& pPen, CBrush_& pFore, CMetricInfo& pInfo)
 	{
 		int nSize = m_arParts.GetSize();

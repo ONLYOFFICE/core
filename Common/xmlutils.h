@@ -1,11 +1,39 @@
 #pragma once
 
 #import <msxml3.dll> rename_namespace("XML")
+
 #include <atlcoll.h>
 #include <atlenc.h>
 
+namespace MSXML
+{
+	struct __declspec(uuid("f6d90f11-9c73-11d3-b32e-00c04f990bb4"))
+		DOMDocument;
+
+	struct __declspec(uuid("f5078f1b-c551-11d3-89b9-0000f81fe221"))
+		DOMDocument26;
+
+	struct __declspec(uuid("f5078f32-c551-11d3-89b9-0000f81fe221"))
+		DOMDocument30;
+
+	struct __declspec(uuid("88d969c0-f192-11d4-a65f-0040963251e5"))
+		DOMDocument40;
+
+	struct __declspec(uuid("88d969e5-f192-11d4-a65f-0040963251e5"))
+		DOMDocument50;
+
+	struct __declspec(uuid("88d96a05-f192-11d4-a65f-0040963251e5"))
+		DOMDocument60;
+}
+
+#define MSXMLDocument __uuidof(MSXML2::DOMDocument60)
+
+
 namespace XmlUtils
 {
+	static CString strInvalidValue		= _T("x(-Jdl%^8sFGs@gkp14jJU(90dyjhjnb*EcfFf%#2124sf98hc");
+	static _bstr_t g_cpszXML_TextExt	= L"./text()";
+
 	// common
 	static int GetDigit(TCHAR c)
 	{
@@ -18,7 +46,7 @@ namespace XmlUtils
 
 		return 0;
 	}
-	static int GetColor(CString string)
+	static int GetColor(const CString& string)
 	{
 		// variables
 		int blue = 0;
@@ -41,17 +69,17 @@ namespace XmlUtils
 
 		return RGB(red, green, blue);
 	}
-	static BOOL GetBoolean(CString string)
+	static BOOL GetBoolean(const CString& string)
 	{
 		CString s = string; s.MakeLower();
 
 		return (s == _T("true"));
 	}
-	static int GetInteger(CString string)
+	inline static int GetInteger(const CString& string)
 	{
 		return _ttoi(string);
 	}
-	static double GetDouble(CString string)
+	inline static double GetDouble(const CString& string)
 	{
 		double d = 0;
 
@@ -59,14 +87,42 @@ namespace XmlUtils
 
 		return d;
 	}
-	static CString GetLower(CString string)
+	inline static float GetFloat(const CString& string)
+	{
+		float f = 0;
+
+		_stscanf(string, _T(" %f"), &f);
+
+		return f;
+	}
+	inline static int GetInteger(BSTR string)
+	{
+		return _wtoi(string);
+	}
+	inline static double GetDouble(BSTR string)
+	{
+		double d = 0;
+
+		swscanf(string, _T(" %lf"), &d);
+
+		return d;
+	}
+	inline static float GetFloat(BSTR string)
+	{
+		float f = 0;
+
+		swscanf(string, _T(" %f"), &f);
+
+		return f;
+	}
+	static CString GetLower(const CString& string)
 	{
 		CString s = string; s.MakeLower();
 
 		return s;
 	}
 		
-	static CString GetNodeAttrib(XML::IXMLDOMNodePtr node, CString attrib, CString def = _T(""))
+	static CString GetNodeAttrib(XML::IXMLDOMNodePtr node, const CString& attrib, const CString& def = _T(""))
 	{
 		try
 		{
@@ -75,10 +131,18 @@ namespace XmlUtils
 
 			_bstr_t x = attrib;
 
-			if (node->attributes == NULL || node->attributes->getNamedItem(x) == NULL)
+			IXMLDOMNamedNodeMapPtr attributes = node->attributes;
+			if (/*node->*/attributes == NULL)// || node->attributes->getNamedItem(x) == NULL)
 				return def;
 
-			CString s; s = node->attributes->getNamedItem(x)->text.GetBSTR();
+			IXMLDOMNodePtr tempNode;
+			/*node->*/attributes->getNamedItem(x, &tempNode);// ->getNamedItem(x);
+			if(tempNode == NULL)
+				return def;
+			BSTR str;
+			tempNode->get_text(&str);//node->attributes->getNamedItem(x)->text.GetBSTR();
+			CString s = CString(str);
+			SysFreeString(str);
 
 			return s;
 		}
@@ -89,7 +153,7 @@ namespace XmlUtils
 		return def;
 	}
 
-	static CString GetNodeAttribExt(XML::IXMLDOMNodePtr node, CString attrib, CString def = _T(""))
+	static CString GetNodeAttribExt(XML::IXMLDOMNodePtr node, const CString& attrib, const CString& def = _T(""))
 	{
 		try
 		{
@@ -120,7 +184,7 @@ namespace XmlUtils
 		return def;
 	}
 
-	static CString GetNodeText(XML::IXMLDOMNodePtr node, CString def = _T(""))
+	static CString GetNodeText(XML::IXMLDOMNodePtr node, const CString& def = _T(""))
 	{
 		try
 		{
@@ -137,7 +201,7 @@ namespace XmlUtils
 
 		return def;
 	}
-	static CString GetNodeXml(XML::IXMLDOMNodePtr node, CString subnode, CString def = _T(""))
+	static CString GetNodeXml(XML::IXMLDOMNodePtr node, const CString& subnode, const CString& def = _T(""))
 	{
 		try
 		{
@@ -162,7 +226,7 @@ namespace XmlUtils
 
 		return def;
 	}
-	static CString GetNodeValue(XML::IXMLDOMNodePtr node, CString subnode, CString def = _T(""))
+	static CString GetNodeValue(XML::IXMLDOMNodePtr node, const CString& subnode, const CString& def = _T(""))
 	{
 		try
 		{
@@ -184,7 +248,7 @@ namespace XmlUtils
 
 		return def;
 	}
-	static CString GetNodeValueExt(XML::IXMLDOMNodePtr ptrNode, const CString &sDef = _T(""))
+	static CString GetNodeValueExt(XML::IXMLDOMNodePtr ptrNode, const CString& sDef = _T(""))
 	{
 		try
 		{
@@ -228,7 +292,7 @@ namespace XmlUtils
 
 		return sDef;
 	}
-	static BOOL GetNodeTextTyped(XML::IXMLDOMNodePtr node, _variant_t* variant, CString type = _T("bin.base64"))
+	static BOOL GetNodeTextTyped(XML::IXMLDOMNodePtr node, _variant_t* variant, const CString& type = _T("bin.base64"))
 	{
 		try
 		{
@@ -252,7 +316,7 @@ namespace XmlUtils
 		return FALSE;
 	}
 		
-	static CString GetNodeAttrib(XML::IXMLDOMNodeListPtr nodes, int index, CString attrib, CString def = _T(""))
+	static CString GetNodeAttrib(XML::IXMLDOMNodeListPtr nodes, int index, const CString& attrib, const CString& def = _T(""))
 	{
 		try
 		{
@@ -269,7 +333,7 @@ namespace XmlUtils
 
 		return def;
 	}
-	static CString GetNodeText(XML::IXMLDOMNodeListPtr nodes, int index, CString def = _T(""))
+	static CString GetNodeText(XML::IXMLDOMNodeListPtr nodes, int index, const CString& def = _T(""))
 	{
 		try
 		{
@@ -286,7 +350,7 @@ namespace XmlUtils
 
 		return def;
 	}
-	static CString GetNodeXml(XML::IXMLDOMNodeListPtr nodes, int index, CString def = _T(""))
+	static CString GetNodeXml(XML::IXMLDOMNodeListPtr nodes, int index, const CString& def = _T(""))
 	{
 		try
 		{
@@ -303,7 +367,7 @@ namespace XmlUtils
 
 		return def;
 	}
-	static CString GetNodeValue(XML::IXMLDOMNodeListPtr nodes, int index, CString subnode, CString def = _T(""))
+	static CString GetNodeValue(XML::IXMLDOMNodeListPtr nodes, int index, const CString& subnode, const CString& def = _T(""))
 	{
 		try
 		{
@@ -320,7 +384,7 @@ namespace XmlUtils
 
 		return def;
 	}
-	static BOOL GetNodeTextTyped(XML::IXMLDOMNodeListPtr nodes, int index, _variant_t* variant, CString type = _T("bin.base64"))
+	static BOOL GetNodeTextTyped(XML::IXMLDOMNodeListPtr nodes, int index, _variant_t* variant, const CString& type = _T("bin.base64"))
 	{
 		try
 		{
@@ -352,12 +416,12 @@ namespace XmlUtils
 		{
 			return m_str;
 		}
-		void SetXmlString(CString strValue)
+		void SetXmlString(const CString& strValue)
 		{
 			m_str = strValue;
 		}
 		
-		BOOL SaveToFile(CString strFilePath, BOOL bEncodingToUTF8 = FALSE)
+		BOOL SaveToFile(const CString& strFilePath, BOOL bEncodingToUTF8 = FALSE)
 		{
 			FILE* pFile = _tfopen(strFilePath, _T("wt"));
 
@@ -418,7 +482,7 @@ namespace XmlUtils
 #endif
 
 
-		void WriteString(CString strValue)
+		void WriteString(const CString& strValue)
 		{
 			m_str += strValue;
 		}
@@ -445,14 +509,14 @@ namespace XmlUtils
 			else
 				m_str += _T("false");
 		}
-		void WriteNodeBegin(CString strNodeName, BOOL bAttributed = FALSE)
+		void WriteNodeBegin(const CString& strNodeName, BOOL bAttributed = FALSE)
 		{
 			m_str += _T("<") + strNodeName;
 
 			if (!bAttributed)
 				m_str += _T(">");
 		}
-		void WriteNodeEnd(CString strNodeName, BOOL bEmptyNode = FALSE, BOOL bEndNode = TRUE)
+		void WriteNodeEnd(const CString& strNodeName, BOOL bEmptyNode = FALSE, BOOL bEndNode = TRUE)
 		{
 			if (bEmptyNode)
 			{
@@ -464,14 +528,14 @@ namespace XmlUtils
 			else
 				m_str += _T("</") + strNodeName + _T(">");
 		}
-		void WriteNode(const CString &strNodeName, const CString &strNodeValue)
+		void WriteNode(const CString& strNodeName, const CString& strNodeValue)
 		{
 			if (strNodeValue.GetLength() == 0)
 				m_str += _T("<") + strNodeName + _T("/>");
 			else
 				m_str += _T("<") + strNodeName + _T(">") + strNodeValue + _T("</") + strNodeName + _T(">");
 		}
-		void WriteNode(CString strNodeName, int nValue, int nBase = 10, CString strTextBeforeValue = _T(""), CString strTextAfterValue = _T(""))
+		void WriteNode(const CString& strNodeName, int nValue, int nBase = 10, const CString& strTextBeforeValue = _T(""), const CString& strTextAfterValue = _T(""))
 		{
 			WriteNodeBegin(strNodeName);
 			WriteString(strTextBeforeValue);
@@ -479,17 +543,17 @@ namespace XmlUtils
 			WriteString(strTextAfterValue);
 			WriteNodeEnd(strNodeName);
 		}
-		void WriteNode(CString strNodeName, double dValue)
+		void WriteNode(const CString& strNodeName, double dValue)
 		{
 			WriteNodeBegin(strNodeName);
 			WriteDouble(dValue);
 			WriteNodeEnd(strNodeName);
 		}
-		void WriteAttribute(CString strAttributeName, CString strAttributeValue)
+		void WriteAttribute(const CString& strAttributeName, const CString& strAttributeValue)
 		{
 			m_str += _T(" ") + strAttributeName + _T("=\"") + strAttributeValue + _T("\"");
 		}
-		void WriteAttribute(CString strAttributeName, int nValue, int nBase = 10, CString strTextBeforeValue = _T(""), CString strTextAfterValue = _T(""))
+		void WriteAttribute(const CString& strAttributeName, int nValue, int nBase = 10, const CString& strTextBeforeValue = _T(""), const CString& strTextAfterValue = _T(""))
 		{
 			WriteString(_T(" ") + strAttributeName + _T("="));
 			WriteString(_T("\""));
@@ -498,7 +562,7 @@ namespace XmlUtils
 			WriteString(strTextAfterValue);
 			WriteString(_T("\""));
 		}
-		void WriteAttribute(CString strAttributeName, double dValue)
+		void WriteAttribute(const CString& strAttributeName, double dValue)
 		{
 			WriteString(_T(" ") + strAttributeName + _T("="));
 			WriteString(_T("\""));
@@ -518,8 +582,8 @@ namespace XmlUtils
 	class CXmlReader
 	{
 		CString m_str;
-		XML::IXMLDOMDocumentPtr	m_pXmlDocument;
-		XML::IXMLDOMNodeListPtr m_pXmlNodeList;
+		XML::IXMLDOMDocument2Ptr	m_pXmlDocument;
+		XML::IXMLDOMNodeListPtr     m_pXmlNodeList;
 
 	protected:
 
@@ -533,7 +597,17 @@ namespace XmlUtils
 
 			m_pXmlDocument = NULL;
 
-			m_pXmlDocument.CreateInstance(CLSID_DOMDocument);
+			if (FAILED(m_pXmlDocument.CreateInstance(__uuidof(MSXML::DOMDocument60))))
+			{
+				if (FAILED(m_pXmlDocument.CreateInstance(__uuidof(MSXML::DOMDocument))))
+				{
+					m_pXmlDocument = NULL;
+				}
+			}
+			if (NULL != m_pXmlDocument)
+			{
+				m_pXmlDocument->setProperty( _bstr_t(_T("SelectionLanguage")), _variant_t(_T("XPath")) );
+			}
 		}
 		CXmlReader(BOOL bCreateDocument)
 		{
@@ -542,7 +616,19 @@ namespace XmlUtils
 			m_pXmlDocument = NULL;
 
 			if (bCreateDocument)
-				m_pXmlDocument.CreateInstance(CLSID_DOMDocument);
+			{
+				if (FAILED(m_pXmlDocument.CreateInstance(__uuidof(MSXML::DOMDocument60))))
+				{
+					if (FAILED(m_pXmlDocument.CreateInstance(__uuidof(MSXML::DOMDocument))))
+					{
+						m_pXmlDocument = NULL;
+					}
+				}
+				if (NULL != m_pXmlDocument)
+				{
+					m_pXmlDocument->setProperty( _bstr_t(_T("SelectionLanguage")), _variant_t(_T("XPath")) );
+				}
+			}
 		}
 		
 		void Clear()
@@ -556,7 +642,7 @@ namespace XmlUtils
 		{
 			return m_str;
 		}
-		BOOL SetXmlString(CString strValue)
+		BOOL SetXmlString(const CString& strValue)
 		{
 			if (NULL == m_pXmlDocument)
 				return FALSE;
@@ -585,7 +671,7 @@ namespace XmlUtils
 			return FALSE;
 		}
 	
-		BOOL OpenFromXmlString(CString strXml)
+		BOOL OpenFromXmlString(const CString& strXml)
 		{
 			return SetXmlString(strXml);
 		}
@@ -598,7 +684,7 @@ namespace XmlUtils
 
 			return TRUE;
 		}
-		BOOL OpenFromFile(CString strFilePath)
+		BOOL OpenFromFile(const CString& strFilePath)
 		{
 			if (NULL == m_pXmlDocument)
 				return FALSE;
@@ -661,7 +747,7 @@ namespace XmlUtils
 
 			return FALSE;
 		}
-		BOOL ReadRootNode(CString strRootNodeName)
+		BOOL ReadRootNode(const CString& strRootNodeName)
 		{
 			if (_T("") == strRootNodeName)
 				return ReadRootNode();
@@ -686,7 +772,7 @@ namespace XmlUtils
 
 			return FALSE;
 		}
-		BOOL ReadNode(CString strSubNodeName)
+		BOOL ReadNode(const CString& strSubNodeName)
 		{
 			if (NULL == m_pXmlNode)
 				return FALSE;
@@ -711,7 +797,7 @@ namespace XmlUtils
 
 			return FALSE;
 		}
-		BOOL ReadNodeList(CString strSubNodesName)
+		BOOL ReadNodeList(const CString& strSubNodesName)
 		{
 			if (NULL == m_pXmlNode)
 				return FALSE;
@@ -737,9 +823,9 @@ namespace XmlUtils
 			return FALSE;
 		}
 	
-		CString ReadNodeAttributeOrValue(CString strSubNodeName, CString def = _T(""))
+		CString ReadNodeAttributeOrValue(const CString& strSubNodeName, const CString& def = _T(""))
 		{
-			CString strInvalidValue = _T("x(-Jdl%^8sFGs@gkp14jJU(90dyjhjnb*EcfFf%#2124sf98hc");
+			//CString strInvalidValue = _T("x(-Jdl%^8sFGs@gkp14jJU(90dyjhjnb*EcfFf%#2124sf98hc");
 
 			CString strAttributeValue = ReadNodeAttribute(strSubNodeName, strInvalidValue);
 
@@ -753,35 +839,35 @@ namespace XmlUtils
 
 			return def;
 		}
-		CString ReadNodeValue(CString strSubNodeName, CString def = _T(""))
+		CString ReadNodeValue(const CString& strSubNodeName, const CString& def = _T(""))
 		{
 			if (NULL == m_pXmlNode)
 				return def;
 
 			return GetNodeValue(m_pXmlNode, strSubNodeName, def);
 		}
-		CString ReadNodeAttribute(CString strAttributeName, CString def = _T(""))
+		CString ReadNodeAttribute(const CString& strAttributeName, const CString& def = _T(""))
 		{
 			if (NULL == m_pXmlNode)
 				return def;
 
 			return GetNodeAttrib(m_pXmlNode, strAttributeName, def);
 		}
-		CString ReadNodeText(CString def = _T(""))
+		CString ReadNodeText(const CString& def = _T(""))
 		{
 			if (NULL == m_pXmlNode)
 				return def;
 
 			return GetNodeText(m_pXmlNode, def);
 		}
-		CString ReadNodeXml(CString def = _T(""))
+		CString ReadNodeXml(const CString& def = _T(""))
 		{
 			if (NULL == m_pXmlNode)
 				return def;
 
 			return GetNodeXml(m_pXmlNode, def);
 		}
-		BOOL ReadNodeTextTyped(_variant_t* variant, CString type = _T("bin.base64"))
+		BOOL ReadNodeTextTyped(_variant_t* variant, const CString& type = _T("bin.base64"))
 		{
 			if (NULL == m_pXmlNode)
 				return FALSE;
@@ -807,9 +893,9 @@ namespace XmlUtils
 			}			
 			return sName;
 		}
-		CString ReadNodeAttributeOrValue(int nIndex, CString strSubNodeName, CString def = _T(""))
+		CString ReadNodeAttributeOrValue(int nIndex, const CString& strSubNodeName, const CString& def = _T(""))
 		{
-			CString strInvalidValue = _T("dx(-Jdl%^8sFGs@gkp14jJU(90dyjhjnb*EcfFf%#2124sf98hc");
+			//CString strInvalidValue = _T("dx(-Jdl%^8sFGs@gkp14jJU(90dyjhjnb*EcfFf%#2124sf98hc");
 
 			CString strAttributeValue = ReadNodeAttribute(nIndex, strSubNodeName, strInvalidValue);
 
@@ -823,35 +909,35 @@ namespace XmlUtils
 
 			return def;
 		}
-		CString ReadNodeValue(int nIndex, CString strSubNodeName, CString def = _T(""))
+		CString ReadNodeValue(int nIndex, const CString& strSubNodeName, const CString& def = _T(""))
 		{
 			if (NULL == m_pXmlNodeList)
 				return def;
 
 			return GetNodeValue(m_pXmlNodeList, nIndex, strSubNodeName, def);
 		}
-		CString ReadNodeAttribute(int nIndex, CString strAttributeName, CString def = _T(""))
+		CString ReadNodeAttribute(int nIndex, const CString& strAttributeName, const CString& def = _T(""))
 		{
 			if (NULL == m_pXmlNodeList)
 				return def;
 
 			return GetNodeAttrib(m_pXmlNodeList, nIndex, strAttributeName, def);
 		}
-		CString ReadNodeText(int nIndex, CString def = _T(""))
+		CString ReadNodeText(int nIndex, const CString& def = _T(""))
 		{
 			if (NULL == m_pXmlNodeList)
 				return def;
 
 			return GetNodeText(m_pXmlNodeList, nIndex, def);
 		}
-		CString ReadNodeXml(int nIndex, CString def = _T(""))
+		CString ReadNodeXml(int nIndex, const CString& def = _T(""))
 		{
 			if (NULL == m_pXmlNodeList)
 				return def;
 
 			return GetNodeXml(m_pXmlNodeList, nIndex, def);
 		}
-		BOOL ReadNodeTextTyped(int nIndex, _variant_t* variant, CString type = _T("bin.base64"))
+		BOOL ReadNodeTextTyped(int nIndex, _variant_t* variant, const CString& type = _T("bin.base64"))
 		{
 			if (NULL == m_pXmlNodeList)
 				return FALSE;
@@ -1038,7 +1124,7 @@ namespace XmlUtils
 		~CDispatchXmlWriter()
 		{
 		}
-		void WriteNode(const CString &sName, const CLSID &clsid)
+		void WriteNode(const CString& sName, const CLSID &clsid)
 		{
 			CStringW swGUID;
 			int nSize = StringFromGUID2(clsid, swGUID.GetBuffer(50), 50);
@@ -1501,20 +1587,35 @@ namespace XmlUtils
 	};
 	class CXmlNode : public IXmlNode
 	{
-		XML::IXMLDOMDocumentPtr	m_pXmlDocument; // для нода, созданного из строки
+		XML::IXMLDOMDocument2Ptr	m_pXmlDocument; // для нода, созданного из строки
 		XML::IXMLDOMNodePtr m_pXmlNode;
+
+		IXMLDOMNamedNodeMapPtr m_pAttributes;
 			
 	private:
 		
 		void CreateDocument()
 		{
 			if (NULL == m_pXmlDocument)
-				m_pXmlDocument.CreateInstance(CLSID_DOMDocument);
+			{
+				if (FAILED(m_pXmlDocument.CreateInstance(__uuidof(MSXML::DOMDocument))))
+				{
+					if (FAILED(m_pXmlDocument.CreateInstance(__uuidof(MSXML::DOMDocument))))
+					{
+						m_pXmlDocument = NULL;
+					}
+				}
+				//if (NULL != m_pXmlDocument)
+				//{
+				//	m_pXmlDocument->setProperty( _bstr_t(_T("SelectionLanguage")), _variant_t(_T("XPath")) );
+				//}
+			}
 		}
 		void ReadRootNode()
 		{
 			m_pXmlNode = m_pXmlDocument->firstChild;
 		}
+	public:
 		void ReadRootNode(const CString& strRootNodeName)
 		{
 			if (strRootNodeName.IsEmpty())
@@ -1534,10 +1635,12 @@ namespace XmlUtils
 		
 		void Clear()
 		{
-			m_pXmlDocument = NULL;
-			m_pXmlNode = NULL;
+			m_pXmlDocument	= NULL;
+			m_pXmlNode		= NULL;
+
+			m_pAttributes	= NULL;
 		}
-		BOOL IsValid()
+		inline BOOL IsValid()
 		{
 			return (NULL != m_pXmlNode);
 		}
@@ -1559,11 +1662,20 @@ namespace XmlUtils
 		}
 		virtual BOOL FromXmlString(const CString& strXml)
 		{
+			return FromXmlString(strXml, _T(""));
+		}
+		virtual BOOL FromXmlString(const CString& strXml, const CString& strNamespaces)
+		{
 			try
 			{
 				Clear();
 
 				CreateDocument();
+
+				if (_T("") != strNamespaces)
+				{
+					m_pXmlDocument->setProperty( _T("SelectionNamespaces"), _variant_t((LPCTSTR)strNamespaces));
+				}
 
 				_bstr_t bstrXml; bstrXml = strXml;
 
@@ -1630,29 +1742,464 @@ namespace XmlUtils
 
 			return strName;
 		}
-		CString GetAttribute(const CString& strAttributeName, const CString& strDefaultValue = _T(""))
+		
+		// attribute ---------------------------------------------------
+		BSTR ReadAttributeBase(const _bstr_t& bstrName)
 		{
 			if (!IsValid())
+				return NULL;
+
+			if (NULL == m_pAttributes)
+			{
+				m_pAttributes = m_pXmlNode->attributes;
+				if (NULL == m_pAttributes)
+					return NULL;
+			}
+
+			IXMLDOMNodePtr tempNode;
+			m_pAttributes->getNamedItem(bstrName, &tempNode);
+			
+			if (NULL == tempNode)
+				return NULL;
+
+			BSTR strRes;
+			tempNode->get_text(&strRes);
+			return strRes;
+		}
+		inline BSTR ReadAttribute(const CString& strAttibuteName)
+		{
+			_bstr_t bstrName = strAttibuteName;
+			return ReadAttributeBase(bstrName);
+		}
+		//text----------------------------------------------------------
+		BSTR ReadNodeTextBase(const _bstr_t& bsName)
+		{
+			if (!IsValid())
+				return NULL;
+
+			try
+			{
+				XML::IXMLDOMNodePtr pNewNode = m_pXmlNode->selectSingleNode(bsName);
+
+				if (NULL == pNewNode)
+					return NULL;
+
+				BSTR bsXml = NULL;
+				pNewNode->get_text(&bsXml);
+				
+				return bsXml;
+			}
+			catch (...)
+			{
+			}
+
+			return NULL;
+
+		}
+		inline BSTR ReadNodeText(const CString& strName)
+		{
+			_bstr_t bsName = strName;
+			return ReadNodeTextBase(bsName);
+		}
+
+		// int ------------------------------------------------------------------------------
+		inline int ReadAttributeIntBase(const _bstr_t& bstrName, const int& nDef = 0)
+		{
+			BSTR bsRes = ReadAttributeBase(bstrName);
+			if (NULL == bsRes)
+				return nDef;
+
+			int nRes = XmlUtils::GetInteger(bsRes);
+			SysFreeString(bsRes);
+			return nRes;
+		}
+		inline int ReadAttributeInt(const CString& str, const int& nDef = 0)
+		{
+			_bstr_t bsName = str;
+			return ReadAttributeIntBase(bsName, nDef);
+		}
+		inline int ReadValueIntBase(const _bstr_t& bstrName, const int& nDef = 0)
+		{
+			BSTR bsRes = ReadNodeTextBase(bstrName);
+			if (NULL == bsRes)
+				return nDef;
+
+			int nRes = XmlUtils::GetInteger(bsRes);
+			SysFreeString(bsRes);
+			return nRes;
+		}
+		inline int ReadValueInt(const CString& str, const int& nDef = 0)
+		{
+			_bstr_t bsName = str;
+			return ReadValueIntBase(bsName, nDef);
+		}
+		inline void UpdateAttributeBase(const _bstr_t& bstrName, int& nValue)
+		{
+			BSTR bsRes = ReadAttributeBase(bstrName);
+			if (NULL == bsRes)
+				return;
+
+			nValue = XmlUtils::GetInteger(bsRes);
+			SysFreeString(bsRes);
+		}
+		inline void UpdateAttributeBase(const _bstr_t& bstrName, long& nValue)
+		{
+			BSTR bsRes = ReadAttributeBase(bstrName);
+			if (NULL == bsRes)
+				return;
+
+			nValue = (long)XmlUtils::GetInteger(bsRes);
+			SysFreeString(bsRes);
+		}
+		inline void UpdateAttribute(const CString& strName, int& nValue)
+		{
+			_bstr_t bsName = strName;
+			return UpdateAttributeBase(bsName, nValue);
+		}
+		inline void UpdateAttribute(const CString& strName, long& nValue)
+		{
+			_bstr_t bsName = strName;
+			return UpdateAttributeBase(bsName, nValue);
+		}
+		inline void UpdateValueBase(const _bstr_t& bstrName, int& nValue)
+		{
+			BSTR bsRes = ReadNodeTextBase(bstrName);
+			if (NULL == bsRes)
+				return;
+
+			nValue = XmlUtils::GetInteger(bsRes);
+			SysFreeString(bsRes);
+		}
+		inline void UpdateValueBase(const _bstr_t& bstrName, long& nValue)
+		{
+			BSTR bsRes = ReadNodeTextBase(bstrName);
+			if (NULL == bsRes)
+				return;
+
+			nValue = (long)XmlUtils::GetInteger(bsRes);
+			SysFreeString(bsRes);
+		}
+		inline void UpdateValue(const CString& strName, int& nValue)
+		{
+			_bstr_t bsName = strName;
+			return UpdateValueBase(bsName, nValue);
+		}
+		inline void UpdateValue(const CString& strName, long& nValue)
+		{
+			_bstr_t bsName = strName;
+			return UpdateValueBase(bsName, nValue);
+		}
+		inline int ReadAttributeOrValueIntBase(const _bstr_t& bstrName, const int& nDef = 0)
+		{
+			BSTR bsRes = ReadAttributeBase(bstrName);
+			if (NULL == bsRes)
+				return ReadValueIntBase(bstrName, nDef);
+		
+			int nRes = XmlUtils::GetInteger(bsRes);
+			SysFreeString(bsRes);
+			return nRes;
+		}
+		inline int ReadAttributeOrValueInt(const CString& strName, const int& nDef = 0)
+		{
+			_bstr_t bsName = strName;
+			return ReadAttributeOrValueIntBase(bsName, nDef);
+		}
+		inline void UpdateAttributeOrValueBase(const _bstr_t& bstrName, int& nValue)
+		{
+			BSTR bsRes = ReadAttributeBase(bstrName);
+			if (NULL == bsRes)
+				return UpdateValueBase(bstrName, nValue);
+
+			nValue = XmlUtils::GetInteger(bsRes);
+			SysFreeString(bsRes);
+		}
+		inline void UpdateAttributeOrValueBase(const _bstr_t& bstrName, long& nValue)
+		{
+			BSTR bsRes = ReadAttributeBase(bstrName);
+			if (NULL == bsRes)
+				return UpdateValueBase(bstrName, nValue);
+
+			nValue = (long)XmlUtils::GetInteger(bsRes);
+			SysFreeString(bsRes);
+		}
+		inline void UpdateAttributeOrValue(const CString& strName, int& nValue)
+		{
+			_bstr_t bsName = strName;
+			return UpdateAttributeOrValueBase(bsName, nValue);
+		}
+		inline void UpdateAttributeOrValue(const CString& strName, long& nValue)
+		{
+			_bstr_t bsName = strName;
+			return UpdateAttributeOrValueBase(bsName, nValue);
+		}
+		// double ---------------------------------------------------------------------
+		inline double ReadAttributeDoubleBase(const _bstr_t& bstrName, const double& nDef = 0)
+		{
+			BSTR bsRes = ReadAttributeBase(bstrName);
+			if (NULL == bsRes)
+				return nDef;
+
+			double nRes = XmlUtils::GetDouble(bsRes);
+			SysFreeString(bsRes);
+			return nRes;
+		}
+		inline double ReadAttributeDouble(const CString& str, const double& nDef = 0)
+		{
+			_bstr_t bsName = str;
+			return ReadAttributeDoubleBase(bsName, nDef);
+		}
+		inline double ReadValueDoubleBase(const _bstr_t& bstrName, const double& nDef = 0)
+		{
+			BSTR bsRes = ReadNodeTextBase(bstrName);
+			if (NULL == bsRes)
+				return nDef;
+
+			double nRes = XmlUtils::GetDouble(bsRes);
+			SysFreeString(bsRes);
+			return nRes;
+		}
+		inline double ReadValueDouble(const CString& str, const double& nDef = 0)
+		{
+			_bstr_t bsName = str;
+			return ReadValueDoubleBase(bsName, nDef);
+		}
+		inline void UpdateAttributeBase(const _bstr_t& bstrName, double& nValue)
+		{
+			BSTR bsRes = ReadAttributeBase(bstrName);
+			if (NULL == bsRes)
+				return;
+
+			nValue = XmlUtils::GetDouble(bsRes);
+			SysFreeString(bsRes);
+		}
+		inline void UpdateAttribute(const CString& strName, double& nValue)
+		{
+			_bstr_t bsName = strName;
+			return UpdateAttributeBase(bsName, nValue);
+		}
+		inline void UpdateValueBase(const _bstr_t& bstrName, double& nValue)
+		{
+			BSTR bsRes = ReadNodeTextBase(bstrName);
+			if (NULL == bsRes)
+				return;
+
+			nValue = XmlUtils::GetDouble(bsRes);
+			SysFreeString(bsRes);
+		}
+		inline void UpdateValue(const CString& strName, double& nValue)
+		{
+			_bstr_t bsName = strName;
+			return UpdateValueBase(bsName, nValue);
+		}
+		inline double ReadAttributeOrValueDoubleBase(const _bstr_t& bstrName, const double& nDef = 0)
+		{
+			BSTR bsRes = ReadAttributeBase(bstrName);
+			if (NULL == bsRes)
+				return ReadValueDoubleBase(bstrName, nDef);
+
+			double nRes = XmlUtils::GetDouble(bsRes);
+			SysFreeString(bsRes);
+			return nRes;
+		}
+		inline double ReadAttributeOrValueDouble(const CString& strName, const double& nDef = 0)
+		{
+			_bstr_t bsName = strName;
+			return ReadAttributeOrValueDoubleBase(bsName, nDef);
+		}
+		inline void UpdateAttributeOrValueBase(const _bstr_t& bstrName, double& nValue)
+		{
+			BSTR bsRes = ReadAttributeBase(bstrName);
+			if (NULL == bsRes)
+				return UpdateValueBase(bstrName, nValue);
+
+			nValue = XmlUtils::GetDouble(bsRes);
+			SysFreeString(bsRes);
+		}
+		inline void UpdateAttributeOrValue(const CString& strName, double& nValue)
+		{
+			_bstr_t bsName = strName;
+			return UpdateAttributeOrValueBase(bsName, nValue);
+		}
+		
+		// float ----------------------------------------------------------------------
+		inline float ReadAttributeFloatBase(const _bstr_t& bstrName, const float& nDef = 0)
+		{
+			BSTR bsRes = ReadAttributeBase(bstrName);
+			if (NULL == bsRes)
+				return nDef;
+
+			float nRes = XmlUtils::GetFloat(bsRes);
+			SysFreeString(bsRes);
+			return nRes;
+		}
+		inline float ReadAttributeFloat(const CString& str, const float& nDef = 0)
+		{
+			_bstr_t bsName = str;
+			return ReadAttributeFloatBase(bsName, nDef);
+		}
+		inline float ReadValueFloatBase(const _bstr_t& bstrName, const float& nDef = 0)
+		{
+			BSTR bsRes = ReadNodeTextBase(bstrName);
+			if (NULL == bsRes)
+				return nDef;
+
+			float nRes = XmlUtils::GetFloat(bsRes);
+			SysFreeString(bsRes);
+			return nRes;
+		}
+		inline float ReadValueFloat(const CString& str, const float& nDef = 0)
+		{
+			_bstr_t bsName = str;
+			return ReadValueFloatBase(bsName, nDef);
+		}
+		inline void UpdateAttributeBase(const _bstr_t& bstrName, float& nValue)
+		{
+			BSTR bsRes = ReadAttributeBase(bstrName);
+			if (NULL == bsRes)
+				return;
+
+			nValue = XmlUtils::GetFloat(bsRes);
+			SysFreeString(bsRes);
+		}
+		inline void UpdateAttribute(const CString& strName, float& nValue)
+		{
+			_bstr_t bsName = strName;
+			return UpdateAttributeBase(bsName, nValue);
+		}
+		inline void UpdateValueBase(const _bstr_t& bstrName, float& nValue)
+		{
+			BSTR bsRes = ReadNodeTextBase(bstrName);
+			if (NULL == bsRes)
+				return;
+
+			nValue = XmlUtils::GetFloat(bsRes);
+			SysFreeString(bsRes);
+		}
+		inline void UpdateValue(const CString& strName, float& nValue)
+		{
+			_bstr_t bsName = strName;
+			return UpdateValueBase(bsName, nValue);
+		}
+		inline float ReadAttributeOrValueFloatBase(const _bstr_t& bstrName, const float& nDef = 0)
+		{
+			BSTR bsRes = ReadAttributeBase(bstrName);
+			if (NULL == bsRes)
+				return ReadValueFloatBase(bstrName, nDef);
+
+			float nRes = XmlUtils::GetFloat(bsRes);
+			SysFreeString(bsRes);
+			return nRes;
+		}
+		inline float ReadAttributeOrValueFloat(const CString& strName, const float& nDef = 0)
+		{
+			_bstr_t bsName = strName;
+			return ReadAttributeOrValueFloatBase(bsName, nDef);
+		}
+		inline void UpdateAttributeOrValueBase(const _bstr_t& bstrName, float& nValue)
+		{
+			BSTR bsRes = ReadAttributeBase(bstrName);
+			if (NULL == bsRes)
+				return UpdateValueBase(bstrName, nValue);
+
+			nValue = XmlUtils::GetFloat(bsRes);
+			SysFreeString(bsRes);
+		}
+		inline void UpdateAttributeOrValue(const CString& strName, float& nValue)
+		{
+			_bstr_t bsName = strName;
+			return UpdateAttributeOrValueBase(bsName, nValue);
+		}
+		//string-----------------------------------------------------------------------
+		inline CString GetAttributeBase(const _bstr_t& strAttributeName, const CString& strDefaultValue = _T(""))
+		{
+			BSTR bsRes = ReadAttributeBase(strAttributeName);
+			if (NULL == bsRes)
 				return strDefaultValue;
 
-			return GetNodeAttrib(m_pXmlNode, strAttributeName, strDefaultValue);
+			CString strRes = (CString)bsRes;
+			SysFreeString(bsRes);
+			return strRes;
 		}
-		CString GetAttributeOrValue(const CString& strSubNodeName, const CString& strDefaultValue = _T(""))
+		inline CString GetAttribute(const CString& strAttributeName, const CString& strDefaultValue = _T(""))
 		{
-			CString strInvalidValue = _T("x(-Jdl%^8sFGs@gkp14jJU(90dyjhjnb*EcfFf%#2124sf98hc");
-
-			CString strAttributeValue = GetAttribute(strSubNodeName, strInvalidValue);
-
-			if (strAttributeValue != strInvalidValue)
-				return strAttributeValue;
-
-			CXmlNode oNode;
-			if (GetNode(strSubNodeName, oNode))
-				return oNode.GetText(strDefaultValue);
-
-			return strDefaultValue;
+			_bstr_t bsName = strAttributeName;
+			return GetAttributeBase(bsName, strDefaultValue);
 		}
-		CString GetXml(const CString strDefaultValue = _T(""))
+		inline CString GetValueBase(const _bstr_t& strAttributeName, const CString& strDefaultValue = _T(""))
+		{
+			BSTR bsRes = ReadNodeTextBase(strAttributeName);
+			if (NULL == bsRes)
+				return strDefaultValue;
+
+			CString strRes = (CString)bsRes;
+			SysFreeString(bsRes);
+			return strRes;
+		}
+		inline CString GetValue(const CString& strAttributeName, const CString& strDefaultValue = _T(""))
+		{
+			_bstr_t bsName = strAttributeName;
+			return GetValueBase(bsName);
+		}
+		inline void UpdateAttributeStringBase(const _bstr_t& strName, CString& strVal)
+		{
+			BSTR bsRes = ReadAttributeBase(strName);
+			if (NULL == bsRes)
+				return;
+
+			strVal = (CString)bsRes;
+			SysFreeString(bsRes);
+		}
+		inline void UpdateAttributeString(const CString& strName, CString& strVal)
+		{
+			_bstr_t bsName = strName;
+			return UpdateAttributeStringBase(bsName, strVal);
+		}
+		inline void UpdateValueStringBase(const _bstr_t& strName, CString& strVal)
+		{
+			BSTR bsRes = ReadNodeTextBase(strName);
+			if (NULL == bsRes)
+				return;
+
+			strVal = (CString)bsRes;
+			SysFreeString(bsRes);
+		}
+		inline void UpdateValueString(const CString& strName, CString& strVal)
+		{
+			_bstr_t bsName = strName;
+			return UpdateValueStringBase(bsName, strVal);
+		}
+		inline CString GetAttributeOrValueBase(const _bstr_t& strAttributeName, const CString& strDefaultValue = _T(""))
+		{
+			BSTR bsRes = ReadAttributeBase(strAttributeName);
+			if (NULL == bsRes)
+				return GetValueBase(strAttributeName, strDefaultValue);
+
+			CString strRes = (CString)bsRes;
+			SysFreeString(bsRes);
+			return strRes;
+		}
+		inline CString GetAttributeOrValue(const CString& strAttributeName, const CString& strDefaultValue = _T(""))
+		{
+			_bstr_t bsName = strAttributeName;
+			return GetAttributeOrValueBase(bsName, strDefaultValue);
+		}
+		inline void UpdateAttributeOrValueStringBase(const _bstr_t& strName, CString& strVal)
+		{
+			BSTR bsRes = ReadAttributeBase(strName);
+			if (NULL == bsRes)
+				return UpdateValueStringBase(strName, strVal);
+
+			strVal = (CString)bsRes;
+			SysFreeString(bsRes);
+		}
+		inline void UpdateAttributeOrValueString(const CString& strName, CString& strVal)
+		{
+			_bstr_t bsName = strName;
+			return UpdateAttributeOrValueStringBase(bsName, strVal);
+		}
+		//-----------------------------------------------------------------------------
+
+		CString GetXml(const CString& strDefaultValue = _T(""))
 		{
 			if (!IsValid())
 				return strDefaultValue;
@@ -1680,7 +2227,11 @@ namespace XmlUtils
 
 			try
 			{
+				//CString strXPath;
+				//strXPath.Format( _T("*[local-name(.) = '%s']"), strSubNodeName);
+
 				_bstr_t bstrNode; bstrNode = strSubNodeName;
+				//_bstr_t bstrNode; bstrNode = strXPath;
 
 				XML::IXMLDOMNodePtr pNewNode = m_pXmlNode->selectSingleNode(bstrNode);
 
@@ -1719,7 +2270,42 @@ namespace XmlUtils
 			if (!IsValid())
 				return strDefaultValue;
 
+			XML::IXMLDOMNode* pNode = NULL;
+			m_pXmlNode->raw_selectSingleNode(g_cpszXML_TextExt.GetBSTR(), &pNode);
+
+			if (NULL != pNode)
+			{
+				VARIANT var;
+				pNode->get_nodeValue(&var);
+				
+				pNode->Release();
+				
+				CString strRet = strDefaultValue;
+				if (VT_BSTR == var.vt)
+				{
+					strRet = var.bstrVal;
+				}
+				
+				VariantClear(&var);
+				return strRet;
+			}
+			return strDefaultValue;
+		}
+
+		CString GetTextExt2(const CString& strDefaultValue = _T(""))
+		{
+			if (!IsValid())
+				return strDefaultValue;
+
 			return GetNodeValueExt(m_pXmlNode, strDefaultValue);
+		}
+
+		LONG GetTextLenExt()
+		{
+			if (!IsValid())
+				return 0;
+
+			return (LONG)m_pXmlNode->xml.length();
 		}
 
 		CString GetAttributeExt(const CString& strAttributeName, const CString& strDefaultValue = _T(""))
@@ -1732,7 +2318,7 @@ namespace XmlUtils
 
 		CString GetAttributeOrValueExt(const CString& strSubNodeName, const CString& strDefaultValue = _T(""))
 		{
-			CString strInvalidValue = _T("x(-Jdl%^8sFGs@gkp14jJU(90dyjhjnb*EcfFf%#2124sf98hc");
+			//CString strInvalidValue = _T("x(-Jdl%^8sFGs@gkp14jJU(90dyjhjnb*EcfFf%#2124sf98hc");
 
 			CString strAttributeValue = GetAttributeExt(strSubNodeName, strInvalidValue);
 
@@ -1745,6 +2331,13 @@ namespace XmlUtils
 
 			return strDefaultValue;
 		}
+
+		XML::IXMLDOMNamedNodeMapPtr GetAttributes()
+		{
+			if (NULL == m_pXmlNode)
+				return NULL;
+			return m_pXmlNode->attributes;
+		}
 	};
 }
 
@@ -1753,13 +2346,24 @@ namespace XmlUtils
 namespace XmlUtils
 {
 	// Remove <?xml .. ?> node
-	static CStringW RemoveXMLRootNode (CStringW aXML)
+	static CStringW RemoveXMLRootNode (const CStringW& aXML)
 	{
 		CStringW sRes;
 		try
 		{
-			XML::IXMLDOMDocumentPtr	pXmlDocument = NULL;
-			pXmlDocument.CreateInstance(CLSID_DOMDocument);
+			XML::IXMLDOMDocument2Ptr	pXmlDocument = NULL;
+
+			if (FAILED(pXmlDocument.CreateInstance(__uuidof(MSXML::DOMDocument60))))
+			{
+				if (FAILED(pXmlDocument.CreateInstance(__uuidof(MSXML::DOMDocument))))
+				{
+					pXmlDocument = NULL;
+				}
+			}
+			if (NULL != pXmlDocument)
+			{
+				pXmlDocument->setProperty( _bstr_t(_T("SelectionLanguage")), _variant_t(_T("XPath")) );
+			}
 
 			_bstr_t bstrXml; bstrXml = aXML;
 
@@ -1782,7 +2386,7 @@ namespace XmlUtils
 		return sRes;
 	}
 
-	static CStringA ConvertToUTF8 (CStringW aUnicodeXML)
+	static CStringA ConvertToUTF8 (const CStringW& aUnicodeXML)
 	{
 		// delete prefix, if exist
 		CStringW sXML = RemoveXMLRootNode(aUnicodeXML);
@@ -1833,8 +2437,19 @@ namespace XmlUtils
 						// Check encoding
 						sXMLNode += _T("<test/>"); // Add extra node
 
-						XML::IXMLDOMDocumentPtr	pXmlDocument = NULL;
-						pXmlDocument.CreateInstance(CLSID_DOMDocument);
+						XML::IXMLDOMDocument2Ptr pXmlDocument = NULL;
+						if (FAILED(pXmlDocument.CreateInstance(__uuidof(MSXML::DOMDocument60))))
+						{
+							if (FAILED(pXmlDocument.CreateInstance(__uuidof(MSXML::DOMDocument))))
+							{
+								pXmlDocument = NULL;
+							}
+						}
+						if (NULL != pXmlDocument)
+						{
+							pXmlDocument->setProperty( _bstr_t(_T("SelectionLanguage")), _variant_t(_T("XPath")) );
+						}
+
 						_bstr_t bstrRootXml; bstrRootXml = sXMLNode;
 
 						if (VARIANT_TRUE == pXmlDocument->loadXML(bstrRootXml))

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSImageEditor", "AVSImageEditor\AVSImageEditor.vcproj", "{E1A619A1-625C-40CC-A304-42A36D26CF4F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCImageEditor", "ASCImageEditor\ASCImageEditor.vcproj", "{E1A619A1-625C-40CC-A304-42A36D26CF4F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestViewManager", "TestViewManager\TestViewManager.csproj", "{BCB61D3D-224D-4FE7-A704-62B9627EC0CA}"
 	ProjectSection(ProjectDependencies) = postProject

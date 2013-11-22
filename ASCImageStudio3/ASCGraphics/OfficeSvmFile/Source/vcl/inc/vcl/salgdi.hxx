@@ -44,7 +44,7 @@
 #include "OpenOfficeBasic.h"
 #include "vcl\salbtype.hxx"
 #include "vcl\salgtype.hxx"
-#include "AvsOutputDevice.h"
+#include "ASCOutputDevice.h"
 #include "outfont.hxx"
 
 #include <map>

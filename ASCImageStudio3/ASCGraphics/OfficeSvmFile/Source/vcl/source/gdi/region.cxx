@@ -54,7 +54,7 @@
 #include "vcl/region.hxx"
 #include "tools/vcompat.hxx"
 
-#include "AvsStreamReader.h"
+#include "ASCStreamReader.h"
 
 namespace SVMCore{
 // =======================================================================

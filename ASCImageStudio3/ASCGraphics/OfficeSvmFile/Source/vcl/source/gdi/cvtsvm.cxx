@@ -53,8 +53,8 @@
 #include "vcl/cvtsvm.hxx"
 #include "vcl/gdimtf.hxx"
 
-#include "AvsOutputDevice.h"
-#include "AvsBasic.h"
+#include "ASCOutputDevice.h"
+#include "ASCBasic.h"
 using namespace SVMCore;
 
 // -----------

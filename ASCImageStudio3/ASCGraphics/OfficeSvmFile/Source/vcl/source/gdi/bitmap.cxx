@@ -54,7 +54,7 @@
 #include "vcl/bmpacc.hxx"
 #include "vcl/alpha.hxx"
 
-#include "AvsOutputDevice.h"
+#include "ASCOutputDevice.h"
 
 using namespace SVMCore;
 // ----------

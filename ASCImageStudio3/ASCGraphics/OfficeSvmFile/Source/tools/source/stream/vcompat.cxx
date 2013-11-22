@@ -36,7 +36,7 @@
 #include <tools/vcompat.hxx>
 #endif
 #include "tools/vcompat.hxx"
-#include "AvsStreamReader.h"
+#include "ASCStreamReader.h"
 
 using namespace SVMCore;
 // -----------------

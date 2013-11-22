@@ -47,7 +47,7 @@
 #include <vcl/lineinfo.hxx>
 #endif
 #include "OpenOfficeBasic.h"
-#include "AvsBasic.h"
+#include "ASCBasic.h"
 #include "tools/gen.hxx"
 #include "tools/color.hxx"
 #include "vcl/lineinfo.hxx"

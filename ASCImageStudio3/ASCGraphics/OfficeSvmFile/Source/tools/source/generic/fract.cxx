@@ -42,7 +42,7 @@
 #endif
 #include "tools/fract.hxx"
 #include "tools/bigint.hxx"
-#include "AvsStreamReader.h"
+#include "ASCStreamReader.h"
 
 namespace SVMCore{
 

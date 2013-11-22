@@ -37,7 +37,7 @@
 #endif
 #include "vcl/gradient.hxx"
 #include "tools/vcompat.hxx"
-#include "AvsStreamReader.h"
+#include "ASCStreamReader.h"
 
 using namespace SVMCore;
 // =======================================================================

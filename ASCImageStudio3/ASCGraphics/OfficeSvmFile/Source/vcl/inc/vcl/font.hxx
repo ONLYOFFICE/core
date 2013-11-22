@@ -46,7 +46,7 @@
 #include "vcl/fntstyle.hxx"
 
 
-#include "AvsBasic.h"
+#include "ASCBasic.h"
 
 namespace SVMCore{
 

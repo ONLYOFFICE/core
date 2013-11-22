@@ -44,7 +44,7 @@
 #endif
 #endif
 #include "tools/color.hxx"
-#include "AvsStreamReader.h"
+#include "ASCStreamReader.h"
 
 
 namespace SVMCore{

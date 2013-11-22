@@ -45,8 +45,8 @@
 #endif
 #include "vcl/metaact.hxx"
 #include "tools/vcompat.hxx"
-#include "AvsStreamReader.h"
-#include "AvsOutputDevice.h"
+#include "ASCStreamReader.h"
+#include "ASCOutputDevice.h"
 #include "poly.h"
 
 namespace SVMCore{

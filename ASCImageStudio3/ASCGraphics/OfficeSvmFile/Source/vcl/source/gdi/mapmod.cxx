@@ -38,7 +38,7 @@
 #include "vcl/mapmod.hxx"
 #include "tools/gen.hxx"
 #include "tools/vcompat.hxx"
-#include "AvsStreamReader.h"
+#include "ASCStreamReader.h"
 
 using namespace SVMCore;
 // =======================================================================

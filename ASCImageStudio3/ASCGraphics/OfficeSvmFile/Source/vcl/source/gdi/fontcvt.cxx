@@ -48,7 +48,7 @@
 #endif
 
 #include "vcl/fontcvt.hxx"
-#include "AvsOutputDevice.h"
+#include "ASCOutputDevice.h"
 
 using namespace SVMCore;
 #ifdef AVS

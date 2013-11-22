@@ -49,7 +49,7 @@
 #include "tools/zcodec.hxx"
 
 
-#include "AvsStreamReader.h"
+#include "ASCStreamReader.h"
 
 using namespace SVMCore;
 

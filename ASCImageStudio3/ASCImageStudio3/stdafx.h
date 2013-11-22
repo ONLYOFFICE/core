@@ -69,6 +69,7 @@ using namespace ATL;
 using namespace Gdiplus;
 
 #define DISABLE_SWF
+#define NO_RAW_CHECKER
 
 #import "../../Redist/ASCImageFile3.dll"				named_guids rename_namespace("ImageFile")
 //#import "../../../../AVS/Redist/AVSImageTransform3.dll"			named_guids rename_namespace("ImageTransform")
@@ -79,11 +80,15 @@ using namespace Gdiplus;
 #import "../../Redist/ASCImageJpeg2000.dll"           named_guids rename_namespace("Jpeg2000")
 #import "../../Redist/ASCGraphics.dll"				named_guids rename_namespace("AVSGraphics")
 
-#import "../../../../AVS/Redist/AVSImagePaint3.dll"				named_guids rename_namespace("ImagePaint")
+#import "../../Redist/ASCImagePaint3.dll"				named_guids rename_namespace("ImagePaint")
 
 #ifndef DISABLE_SWF
 #import "../../Redist/ASCSWFFile3.dll"				named_guids rename_namespace("SWF")
 #endif
 
-#import "../../../../AVS/Redist/AVSUniversalVideoConverter.dll" named_guids rename_namespace("FileCache")
-#import "../../../../AVS/Redist/AVSImageRaw3.dll"	            named_guids rename_namespace("ImageRaw")
+namespace FileCache
+{ 
+	typedef IUnknown IAVSImageFilesCache;
+}
+//#import "../../../../AVS/Redist/AVSUniversalVideoConverter.dll" named_guids rename_namespace("FileCache")
+//#import "../../../../AVS/Redist/AVSImageRaw3.dll"	            named_guids rename_namespace("ImageRaw")

@@ -397,6 +397,7 @@ Redist/ASCGraphics.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCImageFile3.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCImageJpeg2000.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCImagePaint3.dll svn_mime_002dtype=application%2Foctet-stream
+Redist/ASCImageStudio3.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCMediaCore3.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCMediaFormatSettings3.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficeDocxFile2.dll svn_mime_002dtype=application%2Foctet-stream

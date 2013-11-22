@@ -73,8 +73,8 @@ using namespace ATL;
 namespace MediaCore
 {
 	typedef OfficeCore::IUncompressedFrame IAVSUncompressedVideoFrame;
-	const GUID CLSID_CUncompressedVideoFrame = OfficeCore::CLSID_CUncompressedFrame;
-	const GUID IID_IUncompressedVideoFrame = OfficeCore::IID_IUncompressedFrame;
+	const GUID CLSID_CAVSUncompressedVideoFrame = OfficeCore::CLSID_CUncompressedFrame;
+	const GUID IID_IAVSUncompressedVideoFrame = OfficeCore::IID_IUncompressedFrame;
 }
 
 #else

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../../../Common/RSA/XmlDecoder.h"
 #include "../../../../Common/ShareMemArray.h"
 
 // Идентификаторы хранилищ

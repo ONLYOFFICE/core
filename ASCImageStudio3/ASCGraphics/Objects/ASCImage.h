@@ -198,36 +198,7 @@ private:
 			
 			// Исходный файл не явлется метафайлом (Wmf/Emf)
 			// TODO: Сделать чтение Bitmap
-
-			ImageStudio::IImageTransforms* pTransforms = NULL;
-			CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL, CLSCTX_INPROC, ImageStudio::IID_IImageTransforms, (void**)&pTransforms);
-
-			if (NULL == pTransforms)
-				return;
-
-			CStringW strXml = L"<ImageFile-LoadImage sourcepath='";
-			strXml += CStringW(bsFilePath);
-			strXml += L"'/>";
-
-			VARIANT_BOOL vbRes = VARIANT_FALSE;
-
-			BSTR bsXml = strXml.AllocSysString();
-			pTransforms->SetXml(bsXml, &vbRes);
-			if (VARIANT_TRUE == vbRes)
-			{
-				pTransforms->Transform(&vbRes);
-			}
-
-			if (VARIANT_TRUE == vbRes)
-			{
-				VARIANT var;
-				pTransforms->GetResult(0, &var);
-				m_pMediaData = var.punkVal;
-				var.punkVal = NULL;
-			}
-
-			RELEASEINTERFACE(pTransforms);
-
+			m_pMediaData = ImageStudio::ISLoadImage(bsFilePath);
 			m_lImageType = c_lImageTypeBitmap;
 		}
 

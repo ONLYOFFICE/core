@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSVectorImage"
+	Name="ASCVectorImage"
 	ProjectGUID="{D9E5CB83-635D-4234-B53A-2A299FB14B49}"
-	RootNamespace="AVSVectorImage"
+	RootNamespace="ASCVectorImage"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -43,11 +43,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSVectorImage.tlb"
-				HeaderFileName="AVSVectorImage.h"
+				TypeLibraryName="$(IntDir)/ASCVectorImage.tlb"
+				HeaderFileName="ASCVectorImage.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSVectorImage_i.c"
-				ProxyFileName="AVSVectorImage_p.c"
+				InterfaceIdentifierFileName="ASCVectorImage_i.c"
+				ProxyFileName="ASCVectorImage_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -78,13 +78,13 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="..\Debug\agg2D.lib"
-				OutputFile="$(OutDir)/AVSVectorImage.dll"
+				OutputFile="$(OutDir)/ASCVectorImage.dll"
 				LinkIncremental="2"
 				IgnoreAllDefaultLibraries="false"
-				MergedIDLBaseFileName="_AVSVectorImage.idl"
+				MergedIDLBaseFileName="_ASCVectorImage.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSVectorImage.lib"
+				ImportLibrary="$(OutDir)/ASCVectorImage.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -143,11 +143,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSVectorImage.tlb"
-				HeaderFileName="AVSVectorImage.h"
+				TypeLibraryName="$(IntDir)/ASCVectorImage.tlb"
+				HeaderFileName="ASCVectorImage.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSVectorImage_i.c"
-				ProxyFileName="AVSVectorImage_p.c"
+				InterfaceIdentifierFileName="ASCVectorImage_i.c"
+				ProxyFileName="ASCVectorImage_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -175,14 +175,14 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="..\Release\agg2D.lib"
-				OutputFile="$(OutDir)/AVSVectorImage.dll"
+				OutputFile="$(OutDir)/ASCVectorImage.dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSVectorImage.idl"
+				MergedIDLBaseFileName="_ASCVectorImage.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSVectorImage.lib"
+				ImportLibrary="$(OutDir)/ASCVectorImage.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -222,7 +222,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSVectorImage.cpp"
+				RelativePath=".\ASCVectorImage.cpp"
 				>
 			</File>
 			<File
@@ -278,11 +278,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSVectorImage.rc"
+				RelativePath=".\ASCVectorImage.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSVectorImage.rgs"
+				RelativePath=".\ASCVectorImage.rgs"
 				>
 			</File>
 		</Filter>

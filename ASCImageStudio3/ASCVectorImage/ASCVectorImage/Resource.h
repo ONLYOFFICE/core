@@ -1,10 +1,10 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by AVSVectorImage.rc
+// Used by ASCVectorImage.rc
 //
 
 #define IDS_PROJNAME                    100
-#define IDR_AVSVECTORIMAGE	101
+#define IDR_ASCVECTORIMAGE	101
 
 // Next default values for new objects
 // 

@@ -52,7 +52,7 @@
 #include "tools/poly.hxx"
 #include "vcl/saldata.hxx"
 
-#include "AvsOutputDevice.h"
+#include "ASCOutputDevice.h"
 namespace SVMCore{
 SalGraphics* GetWinGraphics()
 {

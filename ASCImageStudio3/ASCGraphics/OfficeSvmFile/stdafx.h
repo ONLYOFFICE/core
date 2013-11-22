@@ -11,5 +11,6 @@
 #include <tchar.h>
 
 
+//#define USE_IMAGESTIDIO
 
 // TODO: reference additional headers your program requires here

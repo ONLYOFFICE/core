@@ -44,7 +44,7 @@
 #endif
 
 #include "tools/zcodec.hxx"
-#include "AvsStreamReader.h"
+#include "ASCStreamReader.h"
 
 #define ZLIB_WINAPI
 #include "zlib.h"

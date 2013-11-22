@@ -46,7 +46,7 @@
 #include "vcl/wall.hxx"
 #include "vcl/wall2.hxx"
 
-#include "AvsStreamReader.h"
+#include "ASCStreamReader.h"
 
 using namespace SVMCore;
 //DBG_NAME( Wallpaper );

@@ -1,6 +1,6 @@
 #pragma once
 
-#import "./../../../../Redist/AVSMediaCore3.dll"		named_guids rename_namespace("MediaCore"), exclude("tagRECT")
+#import "./../../../Redist/ASCMediaCore3.dll"		named_guids rename_namespace("MediaCore"), exclude("tagRECT")
 
 
 namespace SVMCore

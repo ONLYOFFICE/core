@@ -41,7 +41,7 @@
 #endif
 
 #include "vcl/mapmod.hxx"
-#include "AvsStreamReader.h"
+#include "ASCStreamReader.h"
 
 namespace SVMCore{
 #ifdef AVS

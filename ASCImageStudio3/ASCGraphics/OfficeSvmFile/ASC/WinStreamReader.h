@@ -1,5 +1,5 @@
 #pragma once
-#include "AvsStreamReader.h"
+#include "ASCStreamReader.h"
 
 #include <windows.h>
 #include <atlbase.h>

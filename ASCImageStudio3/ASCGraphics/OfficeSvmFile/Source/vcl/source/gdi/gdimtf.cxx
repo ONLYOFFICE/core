@@ -55,8 +55,8 @@
 #include "vcl/alpha.hxx"
 #include "vcl/cvtsvm.hxx"
 
-#include "AvsOutputDevice.h"
-#include "AvsStreamReader.h"
+#include "ASCOutputDevice.h"
+#include "ASCStreamReader.h"
 
 using namespace SVMCore;
 

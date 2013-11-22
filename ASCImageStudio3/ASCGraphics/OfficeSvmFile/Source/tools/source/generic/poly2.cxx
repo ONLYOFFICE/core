@@ -61,7 +61,7 @@ extern "C"
 #include "poly.h"
 #include "tools/vcompat.hxx"
 
-#include "AvsStreamReader.h"
+#include "ASCStreamReader.h"
 
 using namespace SVMCore;
 

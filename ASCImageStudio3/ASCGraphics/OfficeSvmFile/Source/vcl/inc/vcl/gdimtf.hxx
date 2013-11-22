@@ -38,7 +38,7 @@
 #include <tools/string.hxx>
 #include <vcl/mapmod.hxx>
 #endif
-#include "AvsBasic.h"
+#include "ASCBasic.h"
 #include "tools/gen.hxx"
 #include "tools/list.hxx"
 #include "vcl/mapmod.hxx"

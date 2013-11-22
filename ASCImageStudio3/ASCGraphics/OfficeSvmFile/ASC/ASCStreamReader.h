@@ -4,7 +4,7 @@
 #include "tools/errcode.hxx"
 #include "rtl/textenc.h"
 
-#include "AvsBasic.h"
+#include "ASCBasic.h"
 
 
 

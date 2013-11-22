@@ -52,7 +52,7 @@
 #include "vcl/bitmapex.hxx"
 #include "vcl/alpha.hxx"
 
-#include "AvsStreamReader.h"
+#include "ASCStreamReader.h"
 using namespace SVMCore;
 
 

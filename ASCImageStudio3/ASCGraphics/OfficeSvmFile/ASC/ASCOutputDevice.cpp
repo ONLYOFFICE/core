@@ -1,4 +1,4 @@
-#include "AvsOutputDevice.h"
+#include "ASCOutputDevice.h"
 #include "tools/bigint.hxx"
 #include "vcl/salbtype.hxx"
 #include "vcl/alpha.hxx"

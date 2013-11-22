@@ -35,7 +35,7 @@
 #include <tools/stream.hxx>
 #endif
 #include "tools/gen.hxx"
-#include "AvsStreamReader.h"
+#include "ASCStreamReader.h"
 
 namespace SVMCore{
 // =======================================================================

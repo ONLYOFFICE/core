@@ -34,7 +34,7 @@
 #include <vcl/dllapi.h>
 #include <tools/string.hxx>
 #endif
-#include "AvsBasic.h"
+#include "ASCBasic.h"
 
 namespace SVMCore{
 

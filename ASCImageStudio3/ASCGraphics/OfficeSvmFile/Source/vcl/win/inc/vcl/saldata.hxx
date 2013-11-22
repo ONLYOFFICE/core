@@ -51,7 +51,7 @@ struct TempFontItem;
 #endif
 #include <windows.h>
 #include "OpenOfficeBasic.h"
-#include "AvsBasic.h"
+#include "ASCBasic.h"
 // --------------------
 // - Standard-Defines -
 // --------------------

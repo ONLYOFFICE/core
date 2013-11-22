@@ -41,7 +41,7 @@ DBG_NAME( Hatch )
 #endif
 #include "vcl/hatch.hxx"
 #include "tools/vcompat.hxx"
-#include "AvsStreamReader.h"
+#include "ASCStreamReader.h"
 
 using namespace SVMCore;
 // --------------

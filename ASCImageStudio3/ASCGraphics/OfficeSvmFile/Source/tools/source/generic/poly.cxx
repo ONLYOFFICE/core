@@ -64,7 +64,7 @@
 #include <limits.h>
 #include <cmath>
 
-#include "AvsStreamReader.h"
+#include "ASCStreamReader.h"
 
 namespace SVMCore{
 // =======================================================================

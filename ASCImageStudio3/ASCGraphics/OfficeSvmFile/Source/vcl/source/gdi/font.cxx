@@ -48,7 +48,7 @@
 #include "vcl/fontcfg.hxx"
 #include "rtl/textenc.h"
 
-#include "AvsStreamReader.h"
+#include "ASCStreamReader.h"
 
 #include <algorithm>
 

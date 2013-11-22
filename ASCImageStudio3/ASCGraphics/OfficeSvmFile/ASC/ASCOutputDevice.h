@@ -1,6 +1,6 @@
 #pragma once
 #include "OpenOfficeBasic.h"
-#include "AvsBasic.h"
+#include "ASCBasic.h"
 #include "tools/gen.hxx"
 #include "vcl/mapmod.hxx"
 #include "tools/fract.hxx"

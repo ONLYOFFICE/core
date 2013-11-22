@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ImageFileFormatChecker.h"
-#include "..\..\..\..\Common\XmlUtils.h"
+#include "..\..\Common\XmlUtils.h"
 #define MIN_SIZE_BUFFER 4096
 #define MAX_SIZE_BUFFER 102400
 

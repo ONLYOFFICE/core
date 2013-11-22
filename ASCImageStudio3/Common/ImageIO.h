@@ -5,35 +5,35 @@
 #include <Utilities.h>
 
 
-#include "../../AVSOfficeStudio/Common/OfficeFileErrorDescription.h"
+#include "../../Common/OfficeFileErrorDescription.h"
 
-#include <../AVSGraphics/cximage/CxImage/ximage.h>
-#include <../AVSGraphics/OfficeSvmFile/OfficeSvmFile.h>
+#include <../ASCGraphics/cximage/CxImage/ximage.h>
+#include <../ASCGraphics/OfficeSvmFile/OfficeSvmFile.h>
 
 #ifndef _DEBUG
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\jasper\\Release\\jasper.lib")
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\jbig\\Release\\jbig.lib")
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\jpeg\\Release\\jpeg.lib")
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\mng\\Release\\mng.lib")
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\png\\Release\\png.lib")
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\raw\\Release\\libdcr.lib")
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\tiff\\Release\\tiff.lib")
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\zlib\\Release\\zlib.lib")
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\CxImage\\Release\\cximage.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\jasper\\Release\\jasper.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\jbig\\Release\\jbig.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\jpeg\\Release\\jpeg.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\mng\\Release\\mng.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\png\\Release\\png.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\raw\\Release\\libdcr.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\tiff\\Release\\tiff.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\zlib\\Release\\zlib.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\CxImage\\Release\\cximage.lib")
 
-#pragma comment(lib, "..\\AVSGraphics\\OfficeSvmFile\\Release\\OfficeSvmFile.lib")
+#pragma comment(lib, "..\\ASCGraphics\\OfficeSvmFile\\Release\\OfficeSvmFile.lib")
 #else
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\jasper\\Debug\\jasper.lib")
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\jbig\\Debug\\jbig.lib")
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\jpeg\\Debug\\jpeg.lib")
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\mng\\Debug\\mng.lib")
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\png\\Debug\\png.lib")
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\raw\\Debug\\libdcr.lib")
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\tiff\\Debug\\tiff.lib")
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\zlib\\Debug\\zlib.lib")
-#pragma comment(lib, "..\\AVSGraphics\\cximage\\CxImage\\Debug\\cximage.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\jasper\\Debug\\jasper.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\jbig\\Debug\\jbig.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\jpeg\\Debug\\jpeg.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\mng\\Debug\\mng.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\png\\Debug\\png.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\raw\\Debug\\libdcr.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\tiff\\Debug\\tiff.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\zlib\\Debug\\zlib.lib")
+#pragma comment(lib, "..\\ASCGraphics\\cximage\\CxImage\\Debug\\cximage.lib")
 
-#pragma comment(lib, "..\\AVSGraphics\\OfficeSvmFile\\Debug\\OfficeSvmFile.lib")
+#pragma comment(lib, "..\\ASCGraphics\\OfficeSvmFile\\Debug\\OfficeSvmFile.lib")
 
 #endif
 
@@ -133,7 +133,7 @@ namespace ImageStudio
 			{
 				Reset();
 
-				CoCreateInstance( __uuidof(AVSGraphics::CAVSMetafile), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::IAVSMetafile), (void**)(&m_pAVSMetafile) );
+				CoCreateInstance( __uuidof(AVSGraphics::CASCMetafile), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::IASCMetafile), (void**)(&m_pAVSMetafile) );
 				if ( NULL == m_pAVSMetafile )
 					return false;
 
@@ -155,7 +155,7 @@ namespace ImageStudio
 					m_pAVSMetafile->put_Width( m_lWidth );
 					m_pAVSMetafile->put_Height( m_lHeight );
 					
-					HRESULT hr = pImage->raw_DrawOnRenderer( (AVSGraphics::IAVSRenderer *)m_pAVSMetafile, 0, 0, m_lWidth, m_lHeight );
+					HRESULT hr = pImage->raw_DrawOnRenderer( (AVSGraphics::IASCRenderer *)m_pAVSMetafile, 0, 0, m_lWidth, m_lHeight );
 					if( FAILED(hr) )
 						bSuccess = false;
 				}
@@ -169,7 +169,7 @@ namespace ImageStudio
 			{
 				Reset();
 
-				CoCreateInstance( __uuidof(AVSGraphics::CAVSMetafile), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::IAVSMetafile), (void**)(&m_pAVSMetafile) );
+				CoCreateInstance( __uuidof(AVSGraphics::CASCMetafile), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::IASCMetafile), (void**)(&m_pAVSMetafile) );
 				if ( NULL == m_pAVSMetafile )
 					return false;
 
@@ -191,7 +191,7 @@ namespace ImageStudio
 					m_pAVSMetafile->put_Width( m_lWidth );
 					m_pAVSMetafile->put_Height( m_lHeight );
 					
-					HRESULT hr = pImage->raw_DrawOnRenderer( (AVSGraphics::IAVSRenderer *)m_pAVSMetafile, 0, 0, m_lWidth, m_lHeight );
+					HRESULT hr = pImage->raw_DrawOnRenderer( (AVSGraphics::IASCRenderer *)m_pAVSMetafile, 0, 0, m_lWidth, m_lHeight );
 					if( FAILED(hr) )
 						bSuccess = false;
 				}
@@ -207,9 +207,9 @@ namespace ImageStudio
 				if( !m_pAVSMetafile )
 					return false;
 
-				AVSGraphics::IAVSGraphicsRenderer* pGrRenderer = NULL;
+				AVSGraphics::IASCGraphicsRenderer* pGrRenderer = NULL;
 
-				CoCreateInstance(__uuidof( AVSGraphics::CAVSGraphicsRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IAVSGraphicsRenderer), (void **)&pGrRenderer );
+				CoCreateInstance(__uuidof( AVSGraphics::CASCGraphicsRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IASCGraphicsRenderer), (void **)&pGrRenderer );
 				if( !pGrRenderer )
 					return false;
 
@@ -234,9 +234,9 @@ namespace ImageStudio
 				if( !m_pAVSMetafile )
 					return NULL;
 
-				AVSGraphics::IAVSGraphicsRenderer* pGrRenderer = NULL;
+				AVSGraphics::IASCGraphicsRenderer* pGrRenderer = NULL;
 
-				CoCreateInstance(__uuidof( AVSGraphics::CAVSGraphicsRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IAVSGraphicsRenderer), (void **)&pGrRenderer );
+				CoCreateInstance(__uuidof( AVSGraphics::CASCGraphicsRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IASCGraphicsRenderer), (void **)&pGrRenderer );
 				if( !pGrRenderer )
 					return NULL;
 
@@ -410,7 +410,7 @@ namespace ImageStudio
 				return (( 0x1001 == lType ) || ( 0x1002 == lType ) || (0x1004 == lType));
 			}
 
-			IMediaFrame* ConvertToBitmap( AVSGraphics::IAVSGraphicsRenderer* pGrRenderer )
+			IMediaFrame* ConvertToBitmap( AVSGraphics::IASCGraphicsRenderer* pGrRenderer )
 			{
 				HRESULT hr;
 
@@ -516,7 +516,7 @@ namespace ImageStudio
 
 		private:
 
-			AVSGraphics::IAVSMetafile *m_pAVSMetafile;
+			AVSGraphics::IASCMetafile *m_pAVSMetafile;
 
 			LONG                       m_lWidth;
 			LONG                       m_lHeight;
@@ -4612,42 +4612,7 @@ namespace ImageStudio
 		public:
 			virtual BOOL FromFile(const CString& strFilePath, int& nFormat, ImageStudio::Core::Image* pResultImage, const CString& strSettingXML)
 			{
-				//return FALSE;
-				
-				BOOL bRetValue = TRUE;
-
-				BSTR bsFilePath = strFilePath.AllocSysString();
-				
-				ImageRaw::IImageRaw3 *pRawFile;
-				::CoCreateInstance( ImageRaw::CLSID_CImageRaw3, NULL, CLSCTX_INPROC, ImageRaw::IID_IImageRaw3, (void**)&pRawFile );
-
-				if ( !pRawFile )
-					return FALSE;
-
-				pRawFile->raw_OpenFile(bsFilePath);
-				
-				::SysFreeString(bsFilePath);
-
-				IUnknown *pResImage = NULL;
-				
-				BSTR bsSettingXML = strSettingXML.AllocSysString();
-
-				if ( !(_tcslen(strSettingXML) > 0) )
-					pRawFile->raw_GetThumbnailImage( &pResImage );
-				else
-				{
-					pRawFile->raw_ApplyXML( bsSettingXML, 0);
-					pRawFile->raw_GetPreviewImage( &pResImage );
-				}
-				
-				::SysFreeString(bsSettingXML);
-
-				bRetValue = pResultImage->FromMediaData( pResImage, TRUE );
-				pRawFile->raw_CloseFile();
-
-				RELEASEINTERFACE(pRawFile);
-				RELEASEINTERFACE(pResImage);
-				return bRetValue;
+				return FALSE;
 			}
 		};
 
@@ -6145,26 +6110,17 @@ namespace ImageStudio
 			class SwfImageFile
 			{
 			private:
-				SWF::ISWFFile3* m_pSwfFile;
-				SWF::ISWFFileExtractImages* m_pSwfImages;
-				
-				DWORD m_dwCountImages;
+
 
 			public:
 				SwfImageFile()
 				{
-					m_pSwfFile = NULL;
-					m_pSwfImages = NULL;
-					m_dwCountImages = 0;
+
 				}
 
 				SwfImageFile( const CString& sFilePath )
 				{
-					m_pSwfFile = NULL;
-					m_pSwfImages = NULL;
-					m_dwCountImages = 0;
 
-					Open( sFilePath );
 				}
 
 				
@@ -6175,128 +6131,22 @@ namespace ImageStudio
 
 				void Release()
 				{
-					if( m_pSwfImages )
-					{
-						m_pSwfImages->Release();
-						m_pSwfImages = NULL;
-					}
 
-					if( m_pSwfFile )
-					{
-						m_pSwfFile->raw_CloseFile();
-						m_pSwfFile->Release();
-						m_pSwfFile = NULL;
-					}
-
-					m_dwCountImages = 0;
 				}
 
 				
 				BOOL Open( const CString& sFilePath )
 				{
-					Release();
-
-					BOOL bSuccess = FALSE;
-					
-					SWF::ISWFFile3* pFile = NULL;
-					::CoCreateInstance( SWF::CLSID_CSWFFile3, NULL, CLSCTX_ALL, SWF::IID_ISWFFile3, (void**)&pFile );
-					if( pFile )
-					{
-						BSTR bsParam = ::SysAllocString( L"SWF_IMAGES" );
-						if( bsParam )
-						{
-							VARIANT vParam;
-							::memset( &vParam, 0, sizeof(VARIANT) );
-							
-							pFile->raw_SetAdditionalParam( bsParam, vParam );
-
-							BSTR bsFilePath = sFilePath.AllocSysString();
-							if( bsFilePath )
-							{
-								HRESULT hr = pFile->raw_OpenFile( bsFilePath );
-								if( SUCCEEDED(hr) )
-								{
-									SWF::ISWFFileExtractImages* pImages = NULL;
-									pFile->QueryInterface( SWF::IID_ISWFFileExtractImages, (void**)&pImages );
-									if( pImages )
-									{
-										unsigned int nCountImages = 0;
-										pImages->raw_GetImagesCount( &nCountImages );
-
-										if( nCountImages > 0 )
-										{
-											m_pSwfFile = pFile;
-											m_pSwfImages = pImages;
-											m_dwCountImages = nCountImages;
-											bSuccess = TRUE;
-										}
-
-										if( !bSuccess )
-											pImages->Release();
-									}
-
-									if( !bSuccess )
-										pFile->raw_CloseFile();
-								}
-								
-								::SysFreeString( bsFilePath );
-							}
-							
-							::SysFreeString( bsParam );
-						}
-
-						if( !bSuccess )
-							pFile->Release();
-					}
-				
-					return bSuccess;
+					return FALSE;
 				}
 
 				IMediaFrame* GetImage( DWORD nImage ) const
 				{
-					if( nImage >= m_dwCountImages )
-						return NULL;
-
-					if( !m_pSwfImages )
-						return NULL;
-
-					IMediaFrame* pResultFrame = NULL;
-
-					SWF::SWFImageDataType eImageType = SWF::SWFImageUnknown;
-					
-					IUnknown* pDataImage = NULL;
-					m_pSwfImages->raw_GetImageData( nImage, &eImageType, &pDataImage );
-					if( pDataImage )
-					{
-						MediaCore::IAVSMediaData* pMediaData = NULL;
-						pDataImage->QueryInterface( MediaCore::IID_IAVSMediaData, (void**)&pMediaData );
-						if( pMediaData )
-						{
-							BYTE* pBuffer = NULL;
-							long lDataSize = 0;
-
-							pMediaData->get_Buffer( &pBuffer );
-							pMediaData->get_DataSize( &lDataSize );
-
-							pResultFrame = CreateImageFromBuffer( pBuffer, lDataSize );
-							
-							pMediaData->Release();
-						}
-						
-						pDataImage->Release();
-					}
-
-					return pResultFrame;
+					return NULL;
 				}
 
 				IMediaFrame* GetFirstValidImage() const
 				{
-					for( DWORD i = 0; i < m_dwCountImages; ++i )
-					{
-						IMediaFrame* pFrame = GetImage( i );
-						if( pFrame )
-							return pFrame;
-					}
 
 					return NULL;
 				}
@@ -6304,40 +6154,14 @@ namespace ImageStudio
 
 				DWORD GetCountImages() const
 				{
-					return m_dwCountImages;
+					return 0;
 				}
 
 			
 			private:
 				IMediaFrame* CreateImageFromBuffer( BYTE* pBuffer, long lBufSize ) const
 				{
-					if( !pBuffer || lBufSize <= 0 )
-						return NULL;
-
-					IStream* pStream = NULL;
-					
-					::CreateStreamOnHGlobal( NULL, FALSE, &pStream );
-					if( !pStream )
-						return NULL;
-
-					ULONG lWritten = 0;
-					HRESULT hr = pStream->Write( pBuffer, lBufSize, &lWritten );
-					if( FAILED(hr) || lWritten != lBufSize )
-					{
-						pStream->Release();
-						return NULL;
-					}
-
-					LARGE_INTEGER lStartPos;
-					lStartPos.QuadPart = 0;
-
-					pStream->Seek( lStartPos, 0, 0 );
-
-					IMediaFrame* pResultFrame = Utils::CreateBgraFrameFromGdiplusImage( pStream );
-
-					pStream->Release();
-
-					return pResultFrame;
+					return NULL;
 				}
 
 			};
@@ -6345,15 +6169,7 @@ namespace ImageStudio
 		public:
 			virtual BOOL FromFile(const CString& strFilePath, int& nFormat, ImageStudio::Core::Image* pResultImage, int nFrame = 0 )
 			{
-				SwfImageFile pFile( strFilePath );
-
-				IMediaFrame* pImage = pFile.GetImage( nFrame );
-
-				BOOL bRetValue = pResultImage->FromMediaData( (IUnknown *)pImage, FALSE );
-				
-				RELEASEINTERFACE( pImage );
-
-				return bRetValue;
+				return FALSE;
 			}
 			virtual BOOL ToFile(ImageStudio::Core::Image* pSourceImage, const CString& strFilePath, int nFormat)
 			{

@@ -1,11 +1,11 @@
-// AVSExtraData.cpp : Implementation of CAVSExtraData
+// ASCExtraData.cpp : Implementation of CASCExtraData
 
 #include "stdafx.h"
 #include "ATLDefine.h"
-#include "AVSExtraData.h"
+#include "ASCExtraData.h"
 
 
-// CAVSExtraData
+// CASCExtraData
 
 STDMETHODIMP CAVSExtraData::get_Year(long *pVal)
 {

@@ -2,8 +2,8 @@
 
 #pragma once
 #include "resource.h"       // main symbols
-#include "AVSUncompressedVideoFrame.h"
-#include "AVSVideoFrameTransform.h" 
+#include "ASCUncompressedVideoFrame.h"
+#include "ASCVideoFrameTransform.h" 
 #include <math.h>
 
 

@@ -1,10 +1,10 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by AVSMediaCore3.rc
+// Used by ASCMediaCore3.rc
 //
 
 #define IDS_PROJNAME                    100
-#define IDR_AVSMEDIACORE3	101
+#define IDR_ASCMEDIACORE3	101
 
 // Next default values for new objects
 // 

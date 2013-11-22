@@ -1,5 +1,5 @@
 #pragma once
-#include "AVSMediaData.h"
+#include "ASCMediaData.h"
 #include "MediaDataStruct.h"
 #include "atlenc.h"
 	

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AVSMediaData.h"
+#include "ASCMediaData.h"
 
 [object, uuid("D1AB8643-9E1E-4037-A4C1-D166CCF47467"), dual, pointer_default(unique)]
 __interface IAVSCompressedVideoFrame : IAVSMediaData

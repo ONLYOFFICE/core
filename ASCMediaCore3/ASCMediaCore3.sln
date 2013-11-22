@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSMediaCore3", "AVSMediaCore3.vcproj", "{C39EA7A2-78A4-4C36-8CF6-F175EEB51780}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCMediaCore3", "ASCMediaCore3.vcproj", "{C39EA7A2-78A4-4C36-8CF6-F175EEB51780}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DCD092A5-1FC9-4A77-BE0B-56B2407F4328} = {DCD092A5-1FC9-4A77-BE0B-56B2407F4328}
 	EndProjectSection

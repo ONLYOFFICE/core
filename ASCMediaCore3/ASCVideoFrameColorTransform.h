@@ -2,7 +2,7 @@
 
 #pragma once
 #include "resource.h"       // main symbols
-#include "AVSUncompressedVideoFrame.h"
+#include "ASCUncompressedVideoFrame.h"
 #include <math.h>
 
 

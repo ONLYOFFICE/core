@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "DIB.h"
-#include "..\Interfaces\AVSGraphicsRenderer.h"
+#include "..\Interfaces\ASCGraphicsRenderer.h"
 
 void NSDocumentViewer::CPainter::SetDpi(double dDpiX, double dDpiY)
 {

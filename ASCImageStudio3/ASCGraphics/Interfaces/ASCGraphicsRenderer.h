@@ -1,5 +1,5 @@
 #pragma once
-#include "IAVSGraphicsRenderer.h"
+#include "IASCGraphicsRenderer.h"
 #include "GraphicsRenderer.h"
 
 [coclass, uuid("F7D3319F-9B41-4d62-80A0-9D151860E915"), threading(apartment), vi_progid("GraphicsRenderer"), progid("GraphicsRenderer.1"), version(1.0)]

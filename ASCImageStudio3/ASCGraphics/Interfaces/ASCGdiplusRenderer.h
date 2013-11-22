@@ -1,5 +1,5 @@
 #pragma once
-#include "IAVSGraphicsRenderer.h"
+#include "IASCGraphicsRenderer.h"
 #include "GdiplusRenderer.h"
 
 [coclass, uuid("A6145D77-5C72-4d61-A2D7-7D8DB41E8260"), threading(apartment), vi_progid("GraphicsRenderer"), progid("GraphicsRenderer.1"), version(1.0)]

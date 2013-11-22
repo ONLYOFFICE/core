@@ -1,11 +1,11 @@
-// CAVSStringFormat.h : Declaration of the CAVSStringFormat
+// CASCStringFormat.h : Declaration of the CAVSStringFormat
 
 #pragma once
 #include "stdafx.h"
 #include "resource.h"       // main symbols
 #include "Registration.h"
 
-#include "..\Interfaces\IAVSStringFormat.h"
+#include "..\Interfaces\IASCStringFormat.h"
 
 // CAVSStringFormat
 [coclass, uuid("217E68AB-9332-4ef5-B2A6-CE41C60DCE37"), threading(apartment), vi_progid("AVSGraphics.StringFormat"), progid("AVSGraphics.StringFormat"), version(1.0), support_error_info(IAVSStringFormat), registration_script("control.rgs")]

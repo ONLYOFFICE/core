@@ -1,8 +1,8 @@
 #pragma once
 #include "..\stdafx.h"
-#include "..\..\AVSVideoStudio3\Common\mediaformatdefine.h"
-#include "..\agg\AVSWrapper\Graphics.h"
-#include "StructuresAVS.h"
+#include "..\..\..\..\Common\mediaformatdefine.h"
+#include "..\agg\ASCWrapper\Graphics.h"
+#include "StructuresASC.h"
 #include "..\DocumentViewer\ViewerCommon.h"
 #include "ImageFilesCache.h"
 

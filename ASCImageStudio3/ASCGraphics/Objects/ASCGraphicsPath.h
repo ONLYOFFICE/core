@@ -1,4 +1,4 @@
-// AVSGraphicsPath.h : Declaration of the AVSGraphicsPath
+// ASCGraphicsPath.h : Declaration of the AVSGraphicsPath
 
 #pragma once
 #include "..\stdafx.h"
@@ -7,11 +7,11 @@
 
 #include "..\Common\GraphicsPath.h"
 #include "Structures.h"
-#include "..\Interfaces\IAVSGraphicsPath.h"
-#include "..\Interfaces\IAVSPen.h"
-#include "..\Interfaces\IAVSBrush.h"
+#include "..\Interfaces\IASCGraphicsPath.h"
+#include "..\Interfaces\IASCPen.h"
+#include "..\Interfaces\IASCBrush.h"
 
-#include "AVSSolidPattern.h"
+#include "ASCSolidPattern.h"
 
 // CAVSGraphicsPath
 [coclass, uuid("4C016283-8AB5-4fb8-B6BC-86F2AB8A95CF"), threading(apartment), vi_progid("AVSGraphics.GraphicsPath"), progid("AVSGraphics.GraphicsPath"), version(1.0), support_error_info(IAVSGraphicsPath), registration_script("control.rgs")]

@@ -1,4 +1,4 @@
-// CAVSShadow.h : Declaration of the CAVSShadow
+// CASCShadow.h : Declaration of the CAVSShadow
 
 #pragma once
 #include "stdafx.h"
@@ -6,11 +6,11 @@
 #include "Registration.h"
 
 #include "Structures.h"
-#include "..\Interfaces\IAVSShadow.h"
+#include "..\Interfaces\IASCShadow.h"
 
-#include "AVSPen.h"
-#include "AVSBrush.h"
-#include "AVSGraphicsPath.h"
+#include "ASCPen.h"
+#include "ASCBrush.h"
+#include "ASCGraphicsPath.h"
 
 // CAVSShadow
 [coclass, uuid("46E93E51-68B8-4a36-AFFA-F3D8F67C101B"), threading(apartment), vi_progid("AVSGraphics.Shadow"), progid("AVSGraphics.Shadow"), version(1.0), support_error_info(IAVSShadow), registration_script("control.rgs")]

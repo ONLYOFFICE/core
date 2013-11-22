@@ -1,7 +1,7 @@
 #pragma once
 #include "..\stdafx.h"
 
-#include "..\agg\AVSWrapper\Image.h"
+#include "..\agg\ASCWrapper\Image.h"
 #include "TemporaryCS.h"
 
 class CCacheImage

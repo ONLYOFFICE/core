@@ -89,7 +89,7 @@
 #define _AVS_GRAPHICS_
 using namespace ATL;
 
-#include "..\..\AVSVideoStudio3\Common\AVSUtils.h"
+#include "..\..\..\Common\ASCUtils.h"
 
 #import "..\..\..\Redist\AVSMediaCore3.dll"									named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
 #import "..\..\..\Redist\AVSMediaFormatSettings3.dll"						named_guids raw_interfaces_only rename_namespace("MediaFormat"), exclude("tagRECT")

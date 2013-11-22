@@ -7,7 +7,7 @@
 #include "..\DocumentViewer\Viewer.h"
 
 // шифрование XML
-#include "..\..\..\AVSOfficeStudio\Common\RSA\XMLDecoder.h"
+#include "..\..\..\..\Common\RSA\XMLDecoder.h"
 
 using namespace ImageStudio::Serialize::Paint::Common;
 

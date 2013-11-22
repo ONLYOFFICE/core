@@ -1,7 +1,7 @@
 #pragma once
 #include "..\..\DocumentViewer\DIB.h"
 #include "EMFInterpreter.h"
-#include "..\..\Objects\AVSFontManager.h"
+#include "..\..\Objects\ASCFontManager.h"
 #include "TemporaryCS.h"
 
 class CEMFFile

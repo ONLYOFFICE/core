@@ -4,8 +4,8 @@
 const long c_ag_ImageTypeBitmap			= 0;
 const long c_ag_ImageTypeMetafile		= 1;
 
-#include "AVSRenderer.h"
-#include "IAVSFontManager.h"
+#include "ASCRenderer.h"
+#include "IASCFontManager.h"
 
 [object, uuid("73F78025-69A1-4094-8C53-6066930D49E3"), dual, pointer_default(unique)]
 __interface IAVSImage : IAVSGraphicsBase

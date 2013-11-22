@@ -1,7 +1,7 @@
 #pragma once
 //#include "..\stdafx.h"
 #include "..\Interfaces\XmlUtils.h"
-#include "..\..\AVSVideoStudio3\Common\AVSUtils.h"
+#include "..\..\..\..\Common\ASCUtils.h"
 #include "./../Interfaces/ASCRenderer.h"
 #include "./../agg/ap_aggplusenums.h"
 

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "IAVSPen.h"
-#include "IAVSBrush.h"
-#include "IAVSGraphicsPath.h"
-#include "IAVSGraphicsState.h"
-#include "IAVSImage.h"
-#include "IAVSStringFormat.h"
-#include "IAVSFontManager.h"
+#include "IASCPen.h"
+#include "IASCBrush.h"
+#include "IASCGraphicsPath.h"
+#include "IASCGraphicsState.h"
+#include "IASCImage.h"
+#include "IASCStringFormat.h"
+#include "IASCFontManager.h"
 
 [object, uuid("AEC96193-2754-4340-9AEB-365D539C7044"), dual, pointer_default(unique)]
 __interface IAVSGraphics: IAVSGraphicsBase

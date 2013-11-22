@@ -1,15 +1,15 @@
-// AVSGraphicsPath.h : Declaration of the AVSGraphicsPath
+// ASCGraphicsPath.h : Declaration of the AVSGraphicsPath
 
 #pragma once
 #include "stdafx.h"
 #include "resource.h"       // main symbols
 #include "Registration.h"
 
-#include "..\Interfaces\IAVSGraphics.h"
-#include "AVSMatrix.h"
-#include "AVSGraphicsPath.h"
-#include "AVSSolidPattern.h"
-#include "AVSGlyphImage.h"
+#include "..\Interfaces\IASCGraphics.h"
+#include "ASCMatrix.h"
+#include "ASCGraphicsPath.h"
+#include "ASCSolidPattern.h"
+#include "ASCGlyphImage.h"
 
 #include "..\VectorGraphics\STypes.h"
 #include "..\Common\Clip.h"
@@ -19,7 +19,7 @@
 #include "..\VectorGraphics\SXPath.h"
 #include "..\VectorGraphics\SXPathScanner.h"
 #include "..\VectorGraphics\SMathExt.h"
-#include "AVSFontManager.h"
+#include "ASCFontManager.h"
 
 #include "TimeMeasurer.h"
 

@@ -8,16 +8,16 @@
 //#include <GraphicsRenderer.h>
 #include "TimeMeasurer.h"
 
-//#include "..\..\AVSOfficeStudio\Common\OfficeDrawing\Shapes\Shape.h"
-#include "..\..\AVSOfficeStudio\Common\OfficeDrawing\Shapes\ShapeIncluder.h"
+//#include "..\..\..\..\Common\OfficeDrawing\Shapes\Shape.h"
+#include "..\..\..\..\Common\OfficeDrawing\Shapes\ShapeIncluder.h"
 
 #ifdef _AVS_OFFICE_VIEWER_
-#include "..\..\AVSOfficeStudio\Common\OfficeDrawing\Shapes\ShapeCtrl.h"
+#include "..\..\..\..\Common\OfficeDrawing\Shapes\ShapeCtrl.h"
 #endif
 
 #include "StructuresGDI.h"
 #include "TextMeasurer/Structures.h"
-#include "AVSRenderer.h"
+#include "ASCRenderer.h"
 
 #include "XmlConst.h"
 

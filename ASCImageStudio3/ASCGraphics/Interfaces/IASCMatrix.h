@@ -3,7 +3,7 @@
 const long c_ag_MatrixOrderAppend			= 0;
 const long c_ag_MatrixOrderPrepend			= 1;
 
-#include "IAVSGraphicsBase.h"
+#include "IASCGraphicsBase.h"
 
 [object, uuid("5DB462B5-941B-46e7-B80F-9C9B38FF4BE6"), dual, pointer_default(unique)]
 __interface IAVSMatrix : IAVSGraphicsBase

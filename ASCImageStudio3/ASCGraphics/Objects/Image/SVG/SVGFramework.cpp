@@ -1,9 +1,9 @@
 #include "StdAfx.h"
 #include "SVGFramework.h"
 
-#include "..\..\..\Interfaces\AVSGraphicsRenderer.h"
+#include "..\..\..\Interfaces\ASCGraphicsRenderer.h"
 #include "..\..\..\Interfaces\ImageSerializeObjects2.h"
-#include "..\..\AVSVideoStudio3\Common\MediaFormatDefine.h"
+#include "..\..\..\..\Common\MediaFormatDefine.h"
 
 #define ADD_COLOR( COLOR, R, G, B ) m_Table.Add( _T(##COLOR), ( ##R << 16 ) | ( ##G << 8 ) | ##B );
 

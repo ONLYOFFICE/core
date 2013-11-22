@@ -1,11 +1,11 @@
-// CAVSGlyphImage.h : Declaration of the CAVSGlyphImage
+// CASCGlyphImage.h : Declaration of the CAVSGlyphImage
 
 #pragma once
 #include "..\stdafx.h"
 #include "..\resource.h"       // main symbols
 #include "Registration.h"
 
-#include "..\Interfaces\IAVSGlyphImage.h"
+#include "..\Interfaces\IASCGlyphImage.h"
 
 #include "Font\GlyphBitmap.h"
 

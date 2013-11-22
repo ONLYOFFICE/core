@@ -1,7 +1,7 @@
 #pragma once
-#include "..\..\AVSVideoStudio3\Common\MediaFormatDefine.h"
+#include "..\..\..\Common\MediaFormatDefine.h"
 #include "..\Interfaces\ImageSerializeObjects2.h"
-#include "..\Interfaces\AVSGraphicsRenderer.h"
+#include "..\Interfaces\ASCGraphicsRenderer.h"
 
 [object, uuid("786E2B0C-27A4-44bd-9FDD-67CDE59DDEB0"), dual, pointer_default(unique)]
 __interface IAVSVMLPainter : IDispatch

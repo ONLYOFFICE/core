@@ -1,8 +1,8 @@
 #pragma once
 #include "..\stdafx.h"
 
-#include "..\Objects\AVSGraphics.h"
-#include "TimeMeasurer.h"
+#include "..\Objects\ASCGraphics.h"
+#include "..\..\..\Common\TimeMeasurer.h"
 #include "..\agg\Aggplus.h"
 
 class CTester

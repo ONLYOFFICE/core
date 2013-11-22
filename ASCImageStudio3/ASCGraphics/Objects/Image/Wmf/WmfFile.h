@@ -10,7 +10,7 @@
 #include "WmfOutputDevice.h"
 #include "WmfMemory.h"
 
-#include "..\..\AVSFontManager.h"
+#include "..\..\ASCFontManager.h"
 #include "..\..\Font\FontUtils.h"
 
 #ifdef _DEBUG

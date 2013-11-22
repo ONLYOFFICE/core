@@ -55,6 +55,8 @@ using namespace ATL;
 #import "../../Redist/ASCMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")
 #import "../../Redist/ASCMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
 #import "../../Redist/ASCGraphics.dll"				named_guids rename_namespace("AVSGraphics")
+#import "../../Redist/ASCImageJpeg2000.dll"           named_guids rename_namespace("Jpeg2000")
+
 #ifndef NO_SWF_CHECKER
 #import "../../Redist/ASCSWFFile3.dll"				named_guids rename_namespace("SWF")
 #endif
@@ -62,5 +64,5 @@ using namespace ATL;
 #ifndef NO_RAW_CHECKER
 #import "../../Redist/ASCImageRaw3.dll"	            named_guids rename_namespace("ImageRaw")
 #endif
-#import "../../Redist/ASCImageJpeg2000.dll"           named_guids rename_namespace("Jpeg2000")
+
 

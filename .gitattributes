@@ -415,6 +415,7 @@ Redist/ASCMediaFormatSettings3.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficeDocxFile2.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficeRtfFile.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficeUtils.dll svn_mime_002dtype=application%2Foctet-stream
+Redist/ASCOfficeXPSFile.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficeXlsFile.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/OfficeCore.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/VersionControl.exe svn_mime_002dtype=application%2Foctet-stream

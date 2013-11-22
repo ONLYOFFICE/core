@@ -4,7 +4,7 @@
 //
 
 #define IDS_PROJNAME                    100
-#define IDR_AVSMEDIAFORMATSETTINGS3	101
+#define IDR_ASCMEDIAFORMATSETTINGS3	101
 
 // Next default values for new objects
 // 

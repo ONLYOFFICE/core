@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSImageJpeg2000"
+	Name="ASCImageJpeg2000"
 	ProjectGUID="{30AA46FD-CB61-4521-A0DE-176D37E139F0}"
-	RootNamespace="AVSImageJpeg2000"
+	RootNamespace="ASCImageJpeg2000"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -42,11 +42,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageJpeg2000.tlb"
-				HeaderFileName="AVSImageJpeg2000.h"
+				TypeLibraryName="$(IntDir)/ASCImageJpeg2000.tlb"
+				HeaderFileName="ASCImageJpeg2000.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageJpeg2000_i.c"
-				ProxyFileName="AVSImageJpeg2000_p.c"
+				InterfaceIdentifierFileName="ASCImageJpeg2000_i.c"
+				ProxyFileName="ASCImageJpeg2000_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -76,13 +76,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="$(OutDir)/AVSImageJpeg2000.dll"
+				OutputFile="$(OutDir)/ASCImageJpeg2000.dll"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="libc.lib"
-				MergedIDLBaseFileName="_AVSImageJpeg2000.idl"
+				MergedIDLBaseFileName="_ASCImageJpeg2000.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSImageJpeg2000.lib"
+				ImportLibrary="$(OutDir)/ASCImageJpeg2000.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -140,11 +140,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageJpeg2000.tlb"
-				HeaderFileName="AVSImageJpeg2000.h"
+				TypeLibraryName="$(IntDir)/ASCImageJpeg2000.tlb"
+				HeaderFileName="ASCImageJpeg2000.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageJpeg2000_i.c"
-				ProxyFileName="AVSImageJpeg2000_p.c"
+				InterfaceIdentifierFileName="ASCImageJpeg2000_i.c"
+				ProxyFileName="ASCImageJpeg2000_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -171,16 +171,16 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="../../../Redist/AVSImageJpeg2000.dll"
+				OutputFile="../../Redist/ASCImageJpeg2000.dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="libc.lib"
-				MergedIDLBaseFileName="_AVSImageJpeg2000.idl"
+				MergedIDLBaseFileName="_ASCImageJpeg2000.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSImageJpeg2000.lib"
+				ImportLibrary="$(OutDir)/ASCImageJpeg2000.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -239,11 +239,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageJpeg2000.tlb"
-				HeaderFileName="AVSImageJpeg2000.h"
+				TypeLibraryName="$(IntDir)/ASCImageJpeg2000.tlb"
+				HeaderFileName="ASCImageJpeg2000.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageJpeg2000_i.c"
-				ProxyFileName="AVSImageJpeg2000_p.c"
+				InterfaceIdentifierFileName="ASCImageJpeg2000_i.c"
+				ProxyFileName="ASCImageJpeg2000_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -270,15 +270,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="../../../..\ASC\Redist/ASCImageJpeg2000.dll"
+				OutputFile="../../Redist/ASCImageJpeg2000.dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSImageJpeg2000.idl"
+				MergedIDLBaseFileName="_ASCImageJpeg2000.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSImageJpeg2000.lib"
+				ImportLibrary="$(OutDir)/ASCImageJpeg2000.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -318,7 +318,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSImageJpeg2000.cpp"
+				RelativePath=".\ASCImageJpeg2000.cpp"
 				>
 			</File>
 			<File
@@ -466,7 +466,7 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSImageJpeg2000.rc"
+				RelativePath=".\ASCImageJpeg2000.rc"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -494,7 +494,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\AVSImageJpeg2000.rgs"
+				RelativePath=".\ASCImageJpeg2000.rgs"
 				>
 			</File>
 		</Filter>

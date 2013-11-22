@@ -4,7 +4,7 @@
 //
 
 #define IDS_PROJNAME                    100
-#define IDR_AVSIMAGEJPEG2000	101
+#define IDR_ASCIMAGEJPEG2000	101
 
 // Next default values for new objects
 // 

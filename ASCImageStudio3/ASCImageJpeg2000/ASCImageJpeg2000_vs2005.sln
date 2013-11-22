@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSImageJpeg2000", "AVSImageJpeg2000_vs2005.vcproj", "{30AA46FD-CB61-4521-A0DE-176D37E139F0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCImageJpeg2000", "ASCImageJpeg2000_vs2005.vcproj", "{30AA46FD-CB61-4521-A0DE-176D37E139F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

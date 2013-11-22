@@ -7,7 +7,7 @@
 /* Crop COMMAND   -----   ID = 102                                      */
 /************************************************************************/
 
-#include "../../../AVSVideoStudio3/Common/AVSUtils.h"
+#include "../../../Common/ASCUtils.h"
 #include <math.h>
 
 using namespace Gdiplus;

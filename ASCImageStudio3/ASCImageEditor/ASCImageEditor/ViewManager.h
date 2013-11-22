@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../../../../Common/ATLDefine.h"
+#include "../../../Common/ATLDefine.h"
 //#include "x:\Common\WindowsEx.h"
-#include "../../../../../Common/GdiPlusEx.h"
+#include "../../Common/GdiPlusEx.h"
 #include <atlutil.h>
 
 #include <Wingdi.h>

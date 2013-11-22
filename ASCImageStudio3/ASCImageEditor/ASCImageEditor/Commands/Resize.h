@@ -7,7 +7,7 @@
 /* Resize COMMAND   -----   ID = 103                                    */
 /************************************************************************/
 
-#include "AVSUtils.h"
+#include "ASCUtils.h"
 #include <math.h>
 #include "Commands/CommandsUtils.h"
 

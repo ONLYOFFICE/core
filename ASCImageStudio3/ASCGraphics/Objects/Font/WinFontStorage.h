@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../../../../Common/RSA/XmlDecoder.h"
-#include "../../../../../Common/ShareMemArray.h"
+#include "../../../../Common/RSA/XmlDecoder.h"
+#include "../../../../Common/ShareMemArray.h"
 
 // Идентификаторы хранилищ
 #define ISID_DEFAULT                 0x0000 // По умолчанию

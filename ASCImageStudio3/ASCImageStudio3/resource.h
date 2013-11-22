@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by AVSImageStudio.rc
+// Used by ASCImageStudio.rc
 //
 #define IDS_PROJNAME                    100
 #define IDR_NCTIMAGESTUDIO              101

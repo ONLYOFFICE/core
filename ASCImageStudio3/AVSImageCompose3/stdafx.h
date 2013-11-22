@@ -62,5 +62,5 @@
 // include namespaces
 using namespace ATL;
 
-#import "../../Redist/OfficeCore.dll"				named_guids rename_namespace("MediaCore")
-//#import "../../../../AVS/Redist/AVSMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat")
+#import "../../Redist/ASCMediaCore3.dll"				named_guids rename_namespace("MediaCore")
+#import "../../Redist/ASCMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat")

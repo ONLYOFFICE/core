@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "ImageCompose.h"
 #include "ImageComposeIPP.h"
-#include <ImageTransformsCoreWrappers.h>
+#include "../Common/ImageTransformsCoreWrappers.h"
 
 
 inline int AlphaBlend( int dst, int src, int alpha )

@@ -68,6 +68,8 @@
 using namespace ATL;
 using namespace Gdiplus;
 
+#define DISABLE_SWF
+
 #import "../../Redist/ASCImageFile3.dll"				named_guids rename_namespace("ImageFile")
 //#import "../../../../AVS/Redist/AVSImageTransform3.dll"			named_guids rename_namespace("ImageTransform")
 //#import "../../../../AVS/Redist/AVSImageCompose3.dll"			named_guids rename_namespace("ImageCompose")
@@ -78,6 +80,10 @@ using namespace Gdiplus;
 #import "../../Redist/ASCGraphics.dll"				named_guids rename_namespace("AVSGraphics")
 
 #import "../../../../AVS/Redist/AVSImagePaint3.dll"				named_guids rename_namespace("ImagePaint")
-#import "../../../../AVS/Redist/AVSSWFFile3.dll"				named_guids rename_namespace("SWF")
+
+#ifndef DISABLE_SWF
+#import "../../Redist/ASCSWFFile3.dll"				named_guids rename_namespace("SWF")
+#endif
+
 #import "../../../../AVS/Redist/AVSUniversalVideoConverter.dll" named_guids rename_namespace("FileCache")
 #import "../../../../AVS/Redist/AVSImageRaw3.dll"	            named_guids rename_namespace("ImageRaw")

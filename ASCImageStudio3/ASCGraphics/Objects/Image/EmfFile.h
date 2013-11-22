@@ -1,5 +1,4 @@
 #pragma once
-#include "..\..\DocumentViewer\DIB.h"
 #include "EMFInterpreter.h"
 #include "..\..\Objects\ASCFontManager.h"
 #include "TemporaryCS.h"
@@ -30,7 +29,7 @@ public:
 		DeleteCriticalSection(&m_oCS);
 	}
 
-	inline void SetFontManager(IAVSFontManager* pManager)
+	inline void SetFontManager(IASCFontManager* pManager)
 	{
 		m_oEMF.SetFontManager(pManager);
 	}
@@ -67,7 +66,7 @@ public:
 		}
 	}
 
-	void DrawOnRenderer(IAVSRenderer* pRenderer, double x, double y, double width, double height)
+	void DrawOnRenderer(IASCRenderer* pRenderer, double x, double y, double width, double height)
 	{
 		CTemporaryCS oCS (&m_oCS);
 		

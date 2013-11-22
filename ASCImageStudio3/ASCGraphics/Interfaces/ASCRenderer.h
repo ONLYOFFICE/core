@@ -77,9 +77,9 @@ const long c_nDocxWriter		= 0x0008;
 const long c_nVifFormat			= 0x0009;
 
 
-// IAVSRenderer
+// IASCRenderer
 [object, uuid("97F3816A-C2BD-43b2-B480-24711DBE7C8D"), dual, pointer_default(unique)]
-__interface IAVSRenderer : IDispatch
+__interface IASCRenderer : IDispatch
 {
 // тип рендерера-----------------------------------------------------------------------------
 	[id(1),   propget]	HRESULT Type([out, retval] LONG* lType);
@@ -223,9 +223,9 @@ __interface IAVSRenderer : IDispatch
 	[id(10002)]	HRESULT GetAdditionalParam([in] BSTR ParamName, [out] VARIANT *	ParamValue);
 };
 
-// IAVSRenderer2
+// IASCRenderer2
 [object, uuid("37F42FA1-A7DB-466e-ACFB-0E31F5D4126E"), dual, pointer_default(unique)]
-__interface IAVSRenderer2 : IDispatch
+__interface IASCRenderer2 : IDispatch
 {
 	[id(3010)]			HRESULT CommandLong([in] LONG lCommand);
 	[id(3011)]			HRESULT CommandDouble([in] double dCommand);

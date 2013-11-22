@@ -8,7 +8,7 @@ const long c_ag_ImageTypeMetafile		= 1;
 #include "IASCFontManager.h"
 
 [object, uuid("73F78025-69A1-4094-8C53-6066930D49E3"), dual, pointer_default(unique)]
-__interface IAVSImage : IAVSGraphicsBase
+__interface IAVSImage : IASCGraphicsBase
 {
 	[id(100), propget] HRESULT Type([out, retval] LONG* lType);
 
@@ -24,11 +24,11 @@ __interface IAVSImage : IAVSGraphicsBase
 	[id(202), propget] HRESULT DpiY([out, retval] double* dDpiY);
 	[id(202), propput] HRESULT DpiY([in] double dDpiY);
 
-	[id(300)]		   HRESULT Draw([in] IAVSGraphicsBase* pGraphics);
+	[id(300)]		   HRESULT Draw([in] IASCGraphicsBase* pGraphics);
 	
-	[id(301), propget] HRESULT FontManager([out, retval] IAVSFontManager** ppManager);
-	[id(301), propput] HRESULT FontManager([in] IAVSFontManager* pManager);
+	[id(301), propget] HRESULT FontManager([out, retval] IASCFontManager** ppManager);
+	[id(301), propput] HRESULT FontManager([in] IASCFontManager* pManager);
 
 	[id(400)]          HRESULT LoadFromFile([in] BSTR bsFilePath);
-	[id(401)]          HRESULT DrawOnRenderer([in]IAVSRenderer* pRenderer, [in] double dX, [in] double dY, [in] double dWidth, [in] double dHeight);
+	[id(401)]          HRESULT DrawOnRenderer([in]IASCRenderer* pRenderer, [in] double dX, [in] double dY, [in] double dWidth, [in] double dHeight);
 };

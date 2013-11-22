@@ -3,17 +3,17 @@
 #include "GdiplusRenderer.h"
 
 [coclass, uuid("A6145D77-5C72-4d61-A2D7-7D8DB41E8260"), threading(apartment), vi_progid("GraphicsRenderer"), progid("GraphicsRenderer.1"), version(1.0)]
-class ATL_NO_VTABLE CAVSGdiplusRenderer :	public IAVSGraphicsRenderer
+class ATL_NO_VTABLE CASCGdiplusRenderer :	public IASCGraphicsRenderer
 {
 private:
 	CGdiplusRenderer m_oRenderer;
 
 public:
-	CAVSGdiplusRenderer() : m_oRenderer()
+	CASCGdiplusRenderer() : m_oRenderer()
 	{
 	}
 
-	~CAVSGdiplusRenderer()
+	~CASCGdiplusRenderer()
 	{
 	}
 
@@ -498,7 +498,7 @@ public:
 		return S_OK;
 	}
 
-// AVSGraphicsRenderer
+// ASCGraphicsRenderer
 	STDMETHOD(CreateFromMediaData)(IUnknown* punkMediaData, double dLeft, double dTop, double dWidth, double dHeight)
 	{
 		return S_OK;

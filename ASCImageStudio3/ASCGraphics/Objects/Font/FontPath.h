@@ -91,7 +91,6 @@ public:
 	void AddStrokeAdjustHint(int nFirstControl, int nSecondControl, int nFirstPoint, int nLastPoint);
 
 	CString ToXmlString();
-	BOOL    ToInterface(IAVSGraphicsPath **ppPath);
 	BOOL    ToInterface(ISimpleGraphicsPath *pPath);
 
 private:

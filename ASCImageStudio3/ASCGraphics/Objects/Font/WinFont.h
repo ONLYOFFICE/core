@@ -5,7 +5,7 @@
 
 #include "List.h"
 #include "FontUtils.h"
-#include "..\..\Interfaces\XmlUtils.h"
+#include "../../../../Common/XmlUtils.h"
 
 #include "freetype\ftsnames.h"
 #include "freetype\tttables.h"
@@ -1707,7 +1707,8 @@ public:
 	void ToBuffer(BYTE** pDstData, LONG* pLen, CString strDirectory = _T(""))
 	{
 		LONG lDataSize = g_lSizeofLONG;
-		for (size_t i = 0; i < m_pFonts->GetLength(); ++i)
+		size_t nCountFonts = m_pFonts->GetLength();
+		for (size_t i = 0; i < nCountFonts; ++i)
 		{
 			lDataSize += ((CWinFontInfo*)(m_pFonts->GetByIndex((int)i)))->GetBufferLen(strDirectory);
 		}
@@ -1715,10 +1716,10 @@ public:
 		BYTE* pData = new BYTE[lDataSize];
 		BYTE* pDataMem = pData;
 
-		*(LONG*)pDataMem = (LONG)m_pFonts->GetLength();
+		*(LONG*)pDataMem = (LONG)nCountFonts;
 		pDataMem += g_lSizeofLONG;
 
-		for (size_t i = 0; i < m_pFonts->GetLength(); ++i)
+		for (size_t i = 0; i < nCountFonts; ++i)
 		{
 			CWinFontInfo* pInfo = ((CWinFontInfo*)(m_pFonts->GetByIndex((int)i)));
 			pInfo->ToBuffer(pDataMem, strDirectory);

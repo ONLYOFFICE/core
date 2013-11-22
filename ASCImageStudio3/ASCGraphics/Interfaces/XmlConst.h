@@ -1,5 +1,5 @@
 #pragma once
-#include "..\Interfaces\XmlUtils.h"
+#include "../../../Common/XmlUtils.h"
 
 static _bstr_t g_cpszXML_Font_Family						= L"font-family";
 static _bstr_t g_cpszXML_Font_Family_EA						= L"font-family-ea";

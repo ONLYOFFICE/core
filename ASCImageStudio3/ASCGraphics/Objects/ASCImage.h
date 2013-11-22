@@ -3,7 +3,6 @@
 #pragma once
 #include "..\stdafx.h"
 #include "..\resource.h"       // main symbols
-#include "Registration.h"
 
 #include "Image\Wmf\WmfFile.h"
 #include "Image\Wmf\RendererOutput.h"
@@ -340,7 +339,7 @@ public:
 		m_dDpiY = dDpiY;
 		return S_OK;
 	}
-	STDMETHOD(Draw)(IAVSGraphicsBase* pGraphics)
+	STDMETHOD(Draw)(IASCGraphicsBase* pGraphics)
 	{
 		return S_OK;
 	}
@@ -352,7 +351,7 @@ public:
 		return S_OK;
 	}
 
-	STDMETHOD(DrawOnRenderer)(IAVSRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight)
+	STDMETHOD(DrawOnRenderer)(IASCRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight)
 	{
 		if (NULL == pRenderer)
 			return S_FALSE;
@@ -423,7 +422,7 @@ public:
 	}
 
 //-------------------------------------------------------------------------------------------
-//   IAVSGraphicsBase
+//   IASCGraphicsBase
 //-------------------------------------------------------------------------------------------
 	STDMETHOD(SetAdditionalParam)(BSTR ParamName, VARIANT ParamValue)
 	{
@@ -456,12 +455,12 @@ public:
 		return S_OK;
 	}
 
-	STDMETHOD(CreateDublicate)(IAVSGraphicsBase** ppGraphicsBase)
+	STDMETHOD(CreateDublicate)(IASCGraphicsBase** ppGraphicsBase)
 	{
 		return S_OK;
 	}
 
-	STDMETHOD(get_FontManager)(IAVSFontManager** ppManager)
+	STDMETHOD(get_FontManager)(IASCFontManager** ppManager)
 	{
 		if (NULL == ppManager)
 			return S_FALSE;
@@ -470,7 +469,7 @@ public:
 		ADDREFINTERFACE((*ppManager));
 		return S_OK;
 	}
-	STDMETHOD(put_FontManager)(IAVSFontManager* pManager)
+	STDMETHOD(put_FontManager)(IASCFontManager* pManager)
 	{
 		m_oWmfFile.SetFontManager(pManager);
 		m_oEmfFile.SetFontManager(pManager);

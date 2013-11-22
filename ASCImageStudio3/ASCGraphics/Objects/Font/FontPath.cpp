@@ -2,11 +2,10 @@
 
 #include <string.h>
 
-#include <xmlutils.h>
+#include "../../../../Common/XmlUtils.h"
 
 #include "FontPath.h"
-#include "../../Interfaces/IASCGraphicsPath.h"
-
+#include "../../agg/ASCWrapper/GraphicsPath.h"
 //-------------------------------------------------------------------------------------------------------------------------------
 // CPath
 //-------------------------------------------------------------------------------------------------------------------------------
@@ -275,44 +274,6 @@ CString CFontPath::ToXmlString()
 
 	return oWriter.GetXmlString();
 }
-BOOL CFontPath::ToInterface(IAVSGraphicsPath **ppPath)
-{
-	if ( !ppPath || !(*ppPath) )
-		return FALSE;
-
-	IAVSGraphicsPath *pPath = (*ppPath);
-
-	for ( int nIndex = 0; nIndex < m_nPointsCount; )
-	{
-		TPathPoint oPoint = m_pPoints[nIndex];
-		unsigned char nFlag = m_pFlags[nIndex];
-
-		if ( nFlag & PathFirst )
-		{
-			pPath->PathCommandMoveTo( oPoint.dX, oPoint.dY );
-			nIndex++;
-		}
-		else if ( nFlag & PathCurve )
-		{
-			pPath->PathCommandCurveTo( m_pPoints[nIndex + 0].dX, m_pPoints[nIndex + 0].dY, m_pPoints[nIndex + 1].dX, m_pPoints[nIndex + 1].dY, m_pPoints[nIndex + 2].dX, m_pPoints[nIndex + 2].dY );
-			nIndex += 3;
-		}
-		else
-		{
-			pPath->PathCommandLineTo( oPoint.dX, oPoint.dY );
-			nIndex++;
-		}
-
-		if ( nFlag & PathClosed && nFlag & PathLast )
-		{
-			pPath->PathCommandClose( );
-		}
-		
-	}
-
-	return TRUE;
-}
-
 BOOL CFontPath::ToInterface(ISimpleGraphicsPath* pPath)
 {
 	if ( !pPath  )

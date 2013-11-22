@@ -22,13 +22,22 @@
 #include "..\..\Objects\ASCFontManager.h"
 #include "..\..\Objects\Structures.h"
 
+class ISimpleGraphicsPath
+{
+public:
+	virtual bool _MoveTo(double x, double y)													= 0;
+	virtual bool _LineTo(double x, double y)													= 0;
+	virtual bool _CurveTo(double x1, double y1, double x2, double y2, double x3, double y3)		= 0;
+	virtual bool _Close()																		= 0;
+};
+
 namespace Aggplus
 {
 
 class CGraphicsPath : public ISimpleGraphicsPath
 {
 	friend class CClip;
-	friend class CAVSFontManager;
+	friend class CASCFontManager;
 	friend class CGraphics;
 
 public:
@@ -482,14 +491,14 @@ public:
 		return (Ok == CloseFigure());
 	}
 
-	Status AddString(BSTR bstrText, IAVSFontManager* pFont, double x, double y)
+	Status AddString(BSTR bstrText, IASCFontManager* pFont, double x, double y)
 	{
 		if (NULL == pFont)
 			return InvalidParameter;
 		
 		pFont->LoadString(bstrText, (float)x, (float)y);
 
-		CAVSFontManager* pMan = (CAVSFontManager*)pFont;
+		CASCFontManager* pMan = (CASCFontManager*)pFont;
 		
 		return (S_OK == pMan->GetStringPath3(this)) ? Ok : InvalidParameter;
 	}
@@ -763,10 +772,10 @@ public:
 
 class CGraphicsPathSimpleConverter : public ISimpleGraphicsPath
 {
-	friend class CAVSFontManager;
+	friend class CASCFontManager;
 	
 private:
-	IAVSRenderer* m_pRenderer;
+	IASCRenderer* m_pRenderer;
 
 	bool m_bEvenOdd;
 	bool m_bIsMoveTo;
@@ -790,13 +799,13 @@ public:
 	}
 
 public:
-	inline void SetRenderer(IAVSRenderer* pRenderer)
+	inline void SetRenderer(IASCRenderer* pRenderer)
 	{
 		RELEASEINTERFACE(m_pRenderer);
 		m_pRenderer = pRenderer;
 		ADDREFINTERFACE(m_pRenderer);
 	}
-	inline IAVSRenderer* GetRenderer(BOOL bIsAddref = FALSE)
+	inline IASCRenderer* GetRenderer(BOOL bIsAddref = FALSE)
 	{
 		if (bIsAddref)
 		{
@@ -914,11 +923,11 @@ public:
 		m_agg_ps.last_vertex(fX, fY);
 		return true;
 	}
-	inline bool PathCommandText(BSTR bsText, IAVSFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
+	inline bool PathCommandText(BSTR bsText, IASCFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
 	{
 		return AddString(bsText, pManager, fX, fY + fBaseLineOffset);
 	}
-	inline bool PathCommandTextEx(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, IAVSFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
+	inline bool PathCommandTextEx(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, IASCFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
 	{
 		if (NULL != bsGidText)
 		{
@@ -1059,14 +1068,14 @@ public:
 	}
 
 protected:
-	bool AddString(BSTR bstrText, IAVSFontManager* pFont, double x, double y)
+	bool AddString(BSTR bstrText, IASCFontManager* pFont, double x, double y)
 	{
 		if (NULL == pFont)
 			return false;
 		
 		pFont->LoadString(bstrText, (float)x, (float)y);
 
-		CAVSFontManager* pMan = (CAVSFontManager*)pFont;
+		CASCFontManager* pMan = (CASCFontManager*)pFont;
 		
 		return (S_OK == pMan->GetStringPath3(this)) ? true : false;
 	}

@@ -3,13 +3,13 @@
 #include "..\..\..\..\Common\mediaformatdefine.h"
 #include "..\agg\ASCWrapper\Graphics.h"
 #include "StructuresASC.h"
-#include "..\DocumentViewer\ViewerCommon.h"
 #include "ImageFilesCache.h"
+#include "Metafile.h"
 
 class CGraphicsRenderer
 {
 	friend class CAVSMetafile;
-	friend class CAVSGraphicsRenderer;
+	friend class CASCGraphicsRenderer;
 
 protected:
 
@@ -67,18 +67,18 @@ protected:
 
 protected:
 
-	IAVSFontManager*						m_pFontManager;
-	IAVSRenderer*							m_pAVSRenderer;
+	IASCFontManager*						m_pFontManager;
+	IASCRenderer*							m_pASCRenderer;
 
 	Aggplus::CGraphics*						m_pRenderer;
 	Aggplus::CGraphicsPath*					m_pPath;
 
 public:
-	NSStructuresAVS::CPen					m_oPen;
-	NSStructuresAVS::CBrush					m_oBrush;
-	NSStructuresAVS::CFont					m_oFont;
-	NSStructuresAVS::CShadow				m_oShadow;
-	NSStructuresAVS::CEdgeText				m_oEdge;
+	NSStructuresASC::CPen					m_oPen;
+	NSStructuresASC::CBrush					m_oBrush;
+	NSStructuresASC::CFont					m_oFont;
+	NSStructuresASC::CShadow				m_oShadow;
+	NSStructuresASC::CEdgeText				m_oEdge;
 
 protected:
 
@@ -112,7 +112,7 @@ protected:
 
 public:
 
-	CGraphicsRenderer(IAVSFontManager* pManager = NULL)
+	CGraphicsRenderer(IASCFontManager* pManager = NULL)
 	{
 		m_pRenderer = NULL;
 		m_pPath = NULL;
@@ -137,16 +137,16 @@ public:
 
 		m_pCache = NULL;
 
-		m_pAVSRenderer = NULL;
+		m_pASCRenderer = NULL;
 	}
 
-	void SetFontManager(IAVSFontManager* pManager = NULL)
+	void SetFontManager(IASCFontManager* pManager = NULL)
 	{
 		RELEASEINTERFACE(m_pFontManager);
 		
 		if (NULL == pManager)
 		{
-			CoCreateInstance(__uuidof(CAVSFontManager), NULL, CLSCTX_INPROC, __uuidof(IAVSFontManager), (void**)&m_pFontManager);
+			CoCreateInstance(__uuidof(CASCFontManager), NULL, CLSCTX_INPROC, __uuidof(IASCFontManager), (void**)&m_pFontManager);
 			m_pFontManager->Initialize(L"");
 			m_pFontManager->SetDefaultFont( L"Arial" );
 		}
@@ -170,7 +170,7 @@ public:
 		ADDREFINTERFACE(m_pCache);
 	}
 
-	inline IAVSFontManager* GetFontManager()
+	inline IASCFontManager* GetFontManager()
 	{
 		return m_pFontManager;
 	}
@@ -189,9 +189,9 @@ public:
 		RELEASEOBJECT(m_pDIB);
 		RELEASEINTERFACE(m_pFontManager);
 	}
-	inline void SetRenderer(IAVSRenderer* pRenderer)
+	inline void SetRenderer(IASCRenderer* pRenderer)
 	{
-		m_pAVSRenderer = pRenderer;
+		m_pASCRenderer = pRenderer;
 	}
 
 	inline void ClearInstallFont()
@@ -266,7 +266,7 @@ public:
 			}
 		}
 	}
-	BOOL CreateFromHDC(HDC hDC, IAVSFontManager* pManager, double dWidthMM, double dHeightMM, double dLeft, double dTop, double dWidth, double dHeight, double dAngle)
+	BOOL CreateFromHDC(HDC hDC, IASCFontManager* pManager, double dWidthMM, double dHeightMM, double dLeft, double dTop, double dWidth, double dHeight, double dAngle)
 	{
 		RELEASEOBJECT(m_pDIB);
 
@@ -736,7 +736,7 @@ public:
 		LONG lFillType = (nType & 0xFF00);
 		BOOL bIsStroke = (0x01 == (nType & 0x01));
 
-		if ((lFillType != 0) && (m_oBrush.Type == c_BrushTypeTexture || m_oBrush.Type == c_BrushTypePattern) && (NULL != m_pAVSRenderer))
+		if ((lFillType != 0) && (m_oBrush.Type == c_BrushTypeTexture || m_oBrush.Type == c_BrushTypePattern) && (NULL != m_pASCRenderer))
 		{
 			CImageExt oExt;
 			
@@ -750,7 +750,7 @@ public:
 				m_pPath->GetBounds(x, y, w, h);
 
 				BSTR bsPath = m_oBrush.TexturePath.AllocSysString();
-				oExt.DrawOnRenderer(m_pAVSRenderer, bsPath, x, y, w, h);
+				oExt.DrawOnRenderer(m_pASCRenderer, bsPath, x, y, w, h);
 				SysFreeString(bsPath);			
 				
 				if (bIsStroke)
@@ -985,9 +985,9 @@ public:
 			LONG lType = oImageExt.GetImageType((CString)bstrVal);
 			if (0 != lType)
 			{
-				if (NULL != m_pAVSRenderer)
+				if (NULL != m_pASCRenderer)
 				{
-					oImageExt.DrawOnRenderer(m_pAVSRenderer, bstrVal, fX, fY, fWidth, fHeight);
+					oImageExt.DrawOnRenderer(m_pASCRenderer, bstrVal, fX, fY, fWidth, fHeight);
 				}
 				else
 				{

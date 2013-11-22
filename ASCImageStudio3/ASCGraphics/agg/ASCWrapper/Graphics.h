@@ -1,5 +1,6 @@
 #pragma once
 #include "..\..\stdafx.h"
+#include "DIB.h"
 
 
 #include "..\ap_AggPlusEnums.h"
@@ -45,10 +46,7 @@
 #include "Brush.h"
 #include "Image.h"
 #include "..\..\Interfaces\IASCFontManager.h"
-
 #include "..\..\Objects\ASCGlyphImage.h"
-
-#include "..\..\DocumentViewer\DIB.h"
 
 #include "GdiplusEx.h"
 #pragma warning(disable : 4100)
@@ -86,7 +84,7 @@ static inline unsigned char Div255(int nValue)
 
 class CGraphics
 {
-	friend class CAVSGlyphImage;
+	friend class CGlyphImage;
 	friend class CMatrix;
 	friend class CGraphicsPath;
 	friend class CColor;
@@ -537,7 +535,7 @@ public:
 	}
 
 	// измерение текста
-	STDMETHOD(MeasureString)(BSTR bstrText, IAVSFontManager* pManager, double* lWidth, double* lHeight)
+	STDMETHOD(MeasureString)(BSTR bstrText, IASCFontManager* pManager, double* lWidth, double* lHeight)
 	{
 		if (NULL == pManager || NULL == lWidth || NULL == lHeight)
 			return S_FALSE;
@@ -1066,7 +1064,7 @@ public:
 	}
 
 	// отрисовка текста
-	STDMETHOD(DrawString)(BSTR bstrText, IAVSFontManager* pFont, CBrush* pBrush, double x, double y)
+	STDMETHOD(DrawString)(BSTR bstrText, IASCFontManager* pFont, CBrush* pBrush, double x, double y)
 	{		
 		if (pBrush->GetType() != BrushTypeSolidColor)
 			return S_OK;
@@ -1099,7 +1097,7 @@ public:
 
 		while (TRUE)
 		{
-			IAVSGlyphImage* pGlyph = NULL;
+			IGlyphImage* pGlyph = NULL;
 			float fX = 0, fY = 0;
 
 			HRESULT hr = pFont->GetNextChar2(&pGlyph, &fX, &fY, &bRes);
@@ -1120,7 +1118,7 @@ public:
 
 		return S_OK;
 	}
-	STDMETHOD(DrawStringPath)(BSTR bstrText, IAVSFontManager* pFont, CBrush* pBrush, double x, double y)
+	STDMETHOD(DrawStringPath)(BSTR bstrText, IASCFontManager* pFont, CBrush* pBrush, double x, double y)
 	{		
 		if (pBrush->GetType() != BrushTypeSolidColor)
 			return S_OK;
@@ -1136,11 +1134,6 @@ public:
 
 		FillPath(pBrush, &oPath);
 		
-		return S_OK;
-	}
-	STDMETHOD(DrawString2)(BSTR bstrText, IAVSFontManager* pFont, IAVSBrush* pBrush, 
-														IAVSStringFormat* pFormat, double x, double y, double width, double height)
-	{
 		return S_OK;
 	}
 
@@ -1613,7 +1606,7 @@ protected:
 	}
 
 	// text methods
-	int FillGlyph2(int nX, int nY, IAVSGlyphImage* pGlyph, Aggplus::CBrush* pBrush) 
+	int FillGlyph2(int nX, int nY, IGlyphImage* pGlyph, Aggplus::CBrush* pBrush) 
 	{
 		LONG lWidth = 0;
 		pGlyph->get_Width(&lWidth);

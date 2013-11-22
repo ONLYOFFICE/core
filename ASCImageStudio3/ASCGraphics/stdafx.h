@@ -52,46 +52,23 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-//#ifdef _VS_2005
-#pragma comment (lib, "Objects\\Font\\FreeType\\freetype242_vs2005.lib")
-//#pragma comment (lib, "Objects\\Font\\FreeType\\freetype242_vs2005.lib")
-//#endif
-//
-//#ifdef _VS_2008
-//#pragma comment (lib, "FreeType\\freetype2312.lib")
-//#endif
-
-//#define AVS_CXIMAGE_USE
-#define CXIMAGE_SUPPORT_ALPHA
-
-#ifdef AVS_CXIMAGE_USE
-#pragma comment (lib, "Expat\\lib\\libexpat.lib")
-
-#pragma comment (lib, "cximage\\zlib\\Release\\zlib.lib")
-#pragma comment (lib, "cximage\\tiff\\Release\\Tiff.lib")
-#pragma comment (lib, "cximage\\png\\Release\\png.lib")
-#pragma comment (lib, "cximage\\mng\\Release\\mng.lib")
-#pragma comment (lib, "cximage\\jpeg\\Release\\Jpeg.lib")
-#pragma comment (lib, "cximage\\jbig\\Release\\jbig.lib")
-#pragma comment (lib, "cximage\\jasper\\Release\\jasper.lib")
-#pragma comment (lib, "cximage\\raw\\Release\\libdcr.lib")
-
-#pragma comment (lib, "cximage\\CxImage\\Release\\cximage.lib")
-#endif
-#pragma comment (lib, "cximage\\zlib\\Release\\zlib.lib")
+#pragma comment (lib, "Objects/Font/FreeType/freetype242_vs2005.lib")
+//#pragma comment (lib, "cximage/zlib/Release/zlib.lib")
 
 #ifdef _DEBUG
-#pragma comment (lib, "Debug\\agg2d.lib")
+#pragma comment (lib, "Debug/agg2d.lib")
 #else
-#pragma comment (lib, "Release\\agg2d.lib")
+#pragma comment (lib, "Release/agg2d.lib")
 #endif
 
 #define _AVS_GRAPHICS_
 using namespace ATL;
 
-#include "..\..\..\Common\ASCUtils.h"
+#include "../../Common/ASCUtils.h"
 
-#import "..\..\..\Redist\AVSMediaCore3.dll"									named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
-#import "..\..\..\Redist\AVSMediaFormatSettings3.dll"						named_guids raw_interfaces_only rename_namespace("MediaFormat"), exclude("tagRECT")
-#import "..\..\..\Redist\AVSImageStudio3.dll"								named_guids raw_interfaces_only rename_namespace("ImageStudio")
-#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficeUniversalConverter.dll"	named_guids raw_interfaces_only rename_namespace("DocConverter")
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+#import "../../Redist/OfficeCore.dll"					named_guids raw_interfaces_only rename_namespace("OfficeCore")
+#else
+#import "../../Redist/ASCMediaCore3.dll"				named_guids raw_interfaces_only rename_namespace("MediaCore")
+#import "../../Redist/ASCImageStudio3.dll"				named_guids raw_interfaces_only rename_namespace("ImageStudio")
+#endif // BUILD_CONFIG_OPENSOURCE_VERSION

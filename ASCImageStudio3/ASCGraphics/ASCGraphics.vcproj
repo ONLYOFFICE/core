@@ -402,14 +402,6 @@
 			Name="Interfaces"
 			>
 			<File
-				RelativePath=".\Interfaces\IASCBrush.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Interfaces\IASCEdgeText.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Interfaces\IASCFontManager.h"
 				>
 			</File>
@@ -418,43 +410,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Interfaces\IASCGraphics.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Interfaces\IASCGraphicsBase.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Interfaces\IASCGraphicsPath.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Interfaces\IASCGraphicsState.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Interfaces\IASCImage.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Interfaces\IASCMatrix.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Interfaces\IASCPattern.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Interfaces\IASCPen.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Interfaces\IASCShadow.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Interfaces\IASCStringFormat.h"
 				>
 			</File>
 			<File
@@ -464,22 +424,6 @@
 			<Filter
 				Name="Renderers"
 				>
-				<File
-					RelativePath=".\Interfaces\ASCDocumentPainter.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ASCDocumentRenderer.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ASCDocumentRenderer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ASCEffectPainter.h"
-					>
-				</File>
 				<File
 					RelativePath=".\Interfaces\ASCGdiplusRenderer.h"
 					>
@@ -525,10 +469,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\ImageSerializeObjects2.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\StructuresASC.h"
 					>
 				</File>
@@ -550,38 +490,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="TextMeasurer"
-				>
-				<File
-					RelativePath=".\Interfaces\TextMeasurer\Numeration.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\TextMeasurer\RendererCommands.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\TextMeasurer\SharedPtr.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\TextMeasurer\Structures.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\TextMeasurer\TextMeasurer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\TextMeasurer\Wrap.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\TextMeasurer\Xml.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="Animation"
 				>
 				<File
@@ -595,132 +503,8 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="VectorGraphics"
-			>
-			<File
-				RelativePath=".\Common\Clip.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Common\Clip.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Common\GraphicsPath.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Common\GraphicsPath.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\MemoryUtils.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Common\Pixels.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SBitmap.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SBitmap.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SClip.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SClip.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SErrorCodes.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SImage.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SImage.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SMathExt.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SPath.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SPath.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SPattern.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SPattern.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SScreen.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SScreen.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SState.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SState.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\STypes.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SXPath.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SXPath.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SXPathScanner.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\VectorGraphics\SXPathScanner.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Common\Test.h"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="Objects"
 			>
-			<File
-				RelativePath=".\Objects\ASCBrush.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Objects\ASCEdgeText.h"
-				>
-			</File>
 			<File
 				RelativePath=".\Objects\ASCFontManager.cpp"
 				>
@@ -746,47 +530,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Objects\ASCMatrix.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Objects\ASCPen.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Objects\ASCShadow.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Objects\ASCSolidPattern.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Objects\ASCStringFormat.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Objects\ASCWinFonts.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Objects\EffectTransform.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Objects\ImagePainter.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Objects\Structures.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Objects\TextPainter.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Objects\VMLPainter.h"
 				>
 			</File>
 			<Filter
@@ -892,14 +640,6 @@
 			<Filter
 				Name="Image"
 				>
-				<File
-					RelativePath=".\Objects\Image\EmfFile.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Objects\Image\EMFInterpreter.h"
-					>
-				</File>
 				<Filter
 					Name="Wmf"
 					>
@@ -981,82 +721,6 @@
 					</File>
 				</Filter>
 			</Filter>
-			<Filter
-				Name="DocumentViewer"
-				>
-				<File
-					RelativePath=".\DocumentViewer\DIB.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\DocumentViewer\DIB.h"
-					>
-				</File>
-				<File
-					RelativePath=".\DocumentViewer\DocumentViewer.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\DocumentViewer\DocumentViewer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\DocumentViewer\Interfaces.h"
-					>
-				</File>
-				<File
-					RelativePath=".\DocumentViewer\Metafile.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\DocumentViewer\Metafile.h"
-					>
-				</File>
-				<File
-					RelativePath=".\DocumentViewer\OfficeSource.h"
-					>
-				</File>
-				<File
-					RelativePath=".\DocumentViewer\PropertyManager.h"
-					>
-				</File>
-				<File
-					RelativePath=".\DocumentViewer\ThreadSafeList.h"
-					>
-				</File>
-				<File
-					RelativePath=".\DocumentViewer\Viewer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\DocumentViewer\ViewerCommon.h"
-					>
-				</File>
-				<File
-					RelativePath=".\DocumentViewer\ViewerThumbnails.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\DocumentViewer\ViewerThumbnails.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Animation"
-				>
-				<File
-					RelativePath=".\Objects\AnimationFramework.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Objects\AnimationLayer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Objects\AnimationTransformer.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="ASCWrapper"
@@ -1090,11 +754,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\OfficeDrawing\Elements.cpp"
+				RelativePath=".\agg\ASCWrapper\DIB.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\OfficeDrawing\Shapes\BaseShape\PPTXShape\Formula.cpp"
+				RelativePath=".\agg\ASCWrapper\DIB.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\OfficeDrawing\Elements.cpp"
 				>
 			</File>
 			<File
@@ -1127,6 +795,10 @@
 						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\Common\OfficeDrawing\Shapes\BaseShape\PPTXShape\Formula.cpp"
+				>
 			</File>
 			<File
 				RelativePath=".\agg\ASCWrapper\Graphics.h"

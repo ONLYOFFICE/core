@@ -3,7 +3,7 @@
 #include "ASCFontManager.h"
 #include "../Interfaces/ASCGraphicsRenderer.h"
 
-void CAVSFontManager::DumpToJSEditor(CString strDirectory, bool bIsUnionFamily)
+void CASCFontManager::DumpToJSEditor(CString strDirectory, bool bIsUnionFamily)
 {
 	CreateDirectory(strDirectory, NULL);
 	CString strFonts = _T("");
@@ -150,17 +150,17 @@ void CAVSFontManager::DumpToJSEditor(CString strDirectory, bool bIsUnionFamily)
 		pBuffer[i] = 0;
 	}
 
-	IAVSGraphicsRenderer* pRenderer = NULL;
-	CoCreateInstance(__uuidof(CAVSGraphicsRenderer), NULL, CLSCTX_ALL, __uuidof(IAVSGraphicsRenderer), (void**)&pRenderer);
+	IASCGraphicsRenderer* pRenderer = NULL;
+	CoCreateInstance(__uuidof(CASCGraphicsRenderer), NULL, CLSCTX_ALL, __uuidof(IASCGraphicsRenderer), (void**)&pRenderer);
 	//ставим FontManager
 
-	IAVSFontManager* man = NULL;
-	CoCreateInstance(__uuidof(CAVSFontManager), NULL, CLSCTX_INPROC, __uuidof(IAVSFontManager), (void**)&man);
+	IASCFontManager* man = NULL;
+	CoCreateInstance(__uuidof(CASCFontManager), NULL, CLSCTX_INPROC, __uuidof(IASCFontManager), (void**)&man);
 	man->Initialize(L"");
 	man->SetDefaultFont( L"Arial" );
 	
-	IAVSFontManager2* man2 = NULL;
-	man->QueryInterface(__uuidof(IAVSFontManager2), (void**)&man2);
+	IASCFontManager2* man2 = NULL;
+	man->QueryInterface(__uuidof(IASCFontManager2), (void**)&man2);
 	man2->UseDefaultFont(TRUE);
 	RELEASEINTERFACE(man2);
 
@@ -368,7 +368,7 @@ void CAVSFontManager::DumpToJSEditor(CString strDirectory, bool bIsUnionFamily)
 		strArrayInit.Format(_T("window[\"__fonts_infos\"] = [\n"), nCountFonts);
 		oWriterJS.WriteString(strArrayInit);
 
-		for (int index = 0; index < nCountFonts; ++index)
+		for (int index = 0; index < (int)nCountFonts; ++index)
 		{
 			const CAtlMap<CString, CFontInfoJS>::CPair* pPair = mapFonts.Lookup(arrFonts[index]);
 

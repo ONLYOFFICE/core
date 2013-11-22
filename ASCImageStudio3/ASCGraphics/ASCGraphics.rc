@@ -2,7 +2,7 @@
 //
 #include "resource.h"
 #define COMPONENT_NAME "Graphics"
-#include "FileInfo.h"
+#include "../../Common/FileInfo.h"
 #include "version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -43,10 +43,6 @@ END
 //
 // Cursor
 //
-
-IDC_CURSOR_HAND_CLOSE       CURSOR                  "Images\\Cursors\\closehand.cur"
-IDC_CURSOR_HAND             CURSOR                  "Images\\Cursors\\hand.cur"
-IDC_CURSOR_LINK             CURSOR                  "Images\\Cursors\\harrow.cur"
 #endif    // Russian resources
 /////////////////////////////////////////////////////////////////////////////
 

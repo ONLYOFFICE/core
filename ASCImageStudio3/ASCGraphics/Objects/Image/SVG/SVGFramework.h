@@ -12,7 +12,7 @@
 
 #import <msxml3.dll> rename_namespace("XML")
 
-#include <../../../Interfaces/XmlUtils.h>
+#include "../../../../../Common/XmlUtils.h"
 #include <../../../Interfaces/BaseThread.h>
 #include <../../../Objects/ASCFontManager.h>
 #include <../../../Interfaces/ASCRenderer.h>
@@ -5189,7 +5189,7 @@ namespace SVG
 		{
 			m_pPatternFrame	=	NULL;
 		}		
-		PatternImage(Pattern* pattern, IAVSRenderer* baseRender, Painter* basePainter) : m_pFrame(NULL), m_baseRender(baseRender), m_pattern(pattern), m_render(NULL), m_basePainter(basePainter)		
+		PatternImage(Pattern* pattern, IASCRenderer* baseRender, Painter* basePainter) : m_pFrame(NULL), m_baseRender(baseRender), m_pattern(pattern), m_render(NULL), m_basePainter(basePainter)		
 		{
 			m_pPatternFrame	=	NULL;
 		}
@@ -5224,8 +5224,8 @@ namespace SVG
 
 	private:
 
-		IAVSRenderer* m_baseRender;
-		IAVSGraphicsRenderer* m_render;
+		IASCRenderer* m_baseRender;
+		IASCGraphicsRenderer* m_render;
 		MediaCore::IAVSUncompressedVideoFrame* m_pFrame;
 		MediaCore::IAVSUncompressedVideoFrame* m_pPatternFrame;
 
@@ -5851,7 +5851,7 @@ namespace SVG
 			m_CSS	=	css;
 		}
 
-		BOOL Draw(IRefStorage* model, IAVSRenderer* render, const UnitSystem& oUs);
+		BOOL Draw(IRefStorage* model, IASCRenderer* render, const UnitSystem& oUs);
 
 	private:
 
@@ -5969,11 +5969,11 @@ namespace SVG
 		static Point GetCenter(int LargeFlag, int SweepFlag, Point Radi, Point P1, Point P2);
 		static BOOL GetArcAngles(int LargeFlag, int SweepFlag, const double& dStartAngle, const double& dEndAngle, double& dSweep);
 
-		inline IAVSFontManager* GetFontManager()
+		inline IASCFontManager* GetFontManager()
 		{
 			if (NULL == m_pManager)
 			{
-				if (SUCCEEDED(CoCreateInstance(__uuidof(CAVSFontManager), NULL, CLSCTX_INPROC, __uuidof(IAVSFontManager), (void**)&m_pManager)))
+				if (SUCCEEDED(CoCreateInstance(__uuidof(CASCFontManager), NULL, CLSCTX_INPROC, __uuidof(IASCFontManager), (void**)&m_pManager)))
 				{
 					m_pManager->Initialize(L"");
 					m_pManager->SetDefaultFont(L"Arial");
@@ -6023,8 +6023,8 @@ namespace SVG
 
 	private:
 
-		IAVSRenderer*					m_render;
-		IAVSFontManager*				m_pManager;
+		IASCRenderer*					m_render;
+		IASCFontManager*				m_pManager;
 		IRefStorage*					m_model;
 		UnitSystem						m_oUs;
 

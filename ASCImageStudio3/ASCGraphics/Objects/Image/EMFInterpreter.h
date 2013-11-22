@@ -1,5 +1,5 @@
 #pragma once
-#include "..\..\DocumentViewer\DIB.h"
+#include "..\..\agg\ASCWrapper\DIB.h"
 #include "..\..\Interfaces\ASCRenderer.h"
 #include "..\..\Interfaces\IASCFontManager.h"
 #include "..\Structures.h"
@@ -14,8 +14,8 @@
 class CEMFInterpreter
 {
 private:
-	IAVSFontManager* m_pFontManager;
-	IAVSRenderer* m_pRenderer;
+	IASCFontManager* m_pFontManager;
+	IASCRenderer* m_pRenderer;
 
 	void*		  m_pRecord;
 
@@ -59,13 +59,13 @@ public:
 	}
 
 public:
-	inline void SetRenderer(IAVSRenderer* pRenderer)
+	inline void SetRenderer(IASCRenderer* pRenderer)
 	{
 		RELEASEINTERFACE(m_pRenderer);
 		m_pRenderer = pRenderer;
 		ADDREFINTERFACE(m_pRenderer);
 	}
-	inline void SetFontManager(IAVSFontManager* pManager)
+	inline void SetFontManager(IASCFontManager* pManager)
 	{
 		RELEASEINTERFACE(m_pFontManager);
 		m_pFontManager = pManager;

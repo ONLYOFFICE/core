@@ -1,0 +1,5 @@
+1. http://sourceforge.net/projects/openexif/
+OpenExif is an object-oriented library for accessing Exif formated JPEG image files. The toolkit allows creating, reading, and modifying the metadata in the Exif file. It also provides means of getting and setting the main image and the thumbnail image.
+
+2. http://sourceforge.net/projects/libiptcdata/
+libiptcdata is a standalone C-library for reading and writing the International Press Telecommunications Council (IPTC) metadata contained in various data files such as images.

@@ -1,0 +1,49 @@
+<html>
+        <head>
+                <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+                <link rel=StyleSheet href="style.css" type="text/css">
+                <META NAME="keywords" CONTENT="Epson Makernote JPEG Metadata Information EXIF">
+
+                <title>Epson Makernote Format Specification</title>
+        </head>
+
+        <body>
+                <a href="makernotes.html">EXIF Makernotes - Reference Information</a>
+                
+                <H1>Epson Makernote Format Specification</H1>
+
+                <br>
+                <br>
+
+                <table border cellpadding=10 align="center">
+                        <tr>
+                                <th>Field</th>
+                                <th>Size</th>
+                                <th>Description</th>
+                        </tr>
+                        <tr>
+                                <td>Header</td>
+                                <td>8 Bytes</td>
+                                <td>&quot;EPSON\x00\x01\x00&quot;</td>
+                        </tr>
+                        <tr>
+                                <td>IFD Data</td>
+                                <td>Variable</td>
+                                <td>Standard IFD Data using Olympus Tags</td>
+                        </tr>
+                </table>
+
+                <p>For format specifications of TIFF Image File Directory data, see
+                Section 2 of: <a href="standards.html#TIFF">TIFF, Revision 6.0, June 3, 1992, Adobe Systems Incorporated</a></p>
+
+                <p>For details of Olympus tags, <a href="olympus_mn.html#Olympus_Tags">See the Olympus Makernote Page Here</a></p>
+
+                <p>All EXIF offsets are relative to the start of the TIFF header at the beginning of the EXIF segment</p>
+
+
+                <br>
+                <br>
+                <a href="http://electronics.ozhiker.com">http://electronics.ozhiker.com</a>
+
+        </BODY>
+</HTML>

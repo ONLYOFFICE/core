@@ -1,0 +1,52 @@
+//
+// Файл    : ps_ripple.txt
+//
+
+//
+// глобальные константы
+//
+
+sampler BaseTex; // текстура
+
+float2 center = 0;
+float2 radius = 0;
+float  degree = 0;
+
+//
+// стуктуры
+//
+
+struct PS_INPUT
+{
+     float2 base : TEXCOORD0;
+};
+
+struct PS_OUTPUT
+{
+     vector diffuse : COLOR0;
+};
+
+//
+// главная функция
+//
+
+PS_OUTPUT Main(PS_INPUT input)
+{
+	// Обнуляем члены выходной структуры
+	PS_OUTPUT output = (PS_OUTPUT)0;
+
+	float2 pos = (input.base - center);
+	
+	float factor = length( pos * radius );
+	
+	if( factor < 1.0f )
+	{
+		factor = pow( factor, degree );
+		
+		pos *= factor;	
+	}
+	
+	output.diffuse = tex2D(BaseTex, pos + center);
+     
+	return output;
+}

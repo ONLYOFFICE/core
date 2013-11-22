@@ -1,0 +1,234 @@
+<html>
+        <head>
+                <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+                <link rel=StyleSheet href="style.css" type="text/css">
+                <META NAME="keywords" CONTENT="Fujifilm Makernote JPEG Metadata Information EXIF">
+
+                <title>Fujifilm Makernote Format Specification</title>
+        </head>
+
+        <body>
+                <a href="makernotes.html">EXIF Makernotes - Reference Information</a>
+                
+                <H1>Fujifilm Makernote Format Specification</H1>
+
+                <br>
+                <br>
+
+                <table border cellpadding=10 align="center">
+                        <tr>
+                                <th>Field</th>
+                                <th>Size</th>
+                                <th>Description</th>
+                        </tr>
+                        <tr>
+                                <td>Header</td>
+                                <td>8 Bytes</td>
+                                <td>&quot;FUJIFILM&quot;</td>
+                        </tr>
+                        <tr>
+                                <td>IFD Offset</td>
+                                <td>4 Bytes</td>
+                                <td>Intel (Little Endian) byte aligned offset to IFD from start of Makernote (usually 12)</td>
+                        </tr>
+                        <tr>
+                                <td>IFD Data</td>
+                                <td>Variable</td>
+                                <td>
+                                        <b>NON</b>-Standard IFD Data using <a href="fujifilm_mn.html#Fujifilm_Tags">Fujifilm Tags</a>.<br>
+                                        Exif offsets are relative to start of makernote instead of the start of the TIFF header<br>
+                                        Byte alignment is always Intel (Little Endian)
+                                </td>
+                        </tr>
+                </table>
+
+
+                <br>
+                <br>
+
+                <p>For format specifications of TIFF Image File Directory data, see
+                Section 2 of: <a href="standards.html#TIFF">TIFF, Revision 6.0, June 3, 1992, Adobe Systems Incorporated</a></p>
+
+                <br>
+                <br>
+                <br>
+                <br>
+
+                <h2><a name="Fujifilm_Tags">Fujifilm Makernote Tags Definition</a></h2>
+                <table border cellpadding=7 align="center">
+                        <tr>
+                                <th>Tag #</th>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Details</th>
+                        </tr>
+                        <tr>
+                                <td>0</td>
+                                <td>Version</td>
+                                <td>String</td>
+                                <td>
+                                        &nbsp;
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>4096</td>
+                                <td>Quality</td>
+                                <td>String</td>
+                                <td>
+                                        &nbsp;
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>4097</td>
+                                <td>Sharpness</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        1 = Softest<br>
+                                        2 = Soft<br>
+                                        3 = Normal<br>
+                                        4 = Hard<br>
+                                        5 = Hardest
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>4098</td>
+                                <td>White Balance</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Auto<br>
+                                        256 = Daylight<br>
+                                        512 = Cloudy<br>
+                                        768 = DaylightColour-fluorescence<br>
+                                        769 = DaywhiteColour-fluorescence<br>
+                                        770 = White-fluorescence<br>
+                                        1024 = Incandenscense<br>
+                                        3840 = Custom white balance
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>4099</td>
+                                <td>Colour Saturation</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Normal<br>
+                                        256 = High<br>
+                                        512 = Low
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>4100</td>
+                                <td>Tone (Contrast)</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Normal<br>
+                                        256 = High<br>
+                                        512 = Low
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>4112</td>
+                                <td>Flash Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Auto<br>
+                                        1 = On<br>
+                                        2 = Off<br>
+                                        3 = Red-eye Reduction
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>4113</td>
+                                <td>Flash Strength</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Units = EV
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>4128</td>
+                                <td>Macro</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Off<br>
+                                        1 = On
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>4129</td>
+                                <td>Focus Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Auto Focus<br>
+                                        1 = Manual Focus
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>4144</td>
+                                <td>Slow Sync</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Off<br>
+                                        1 = On
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>4145</td>
+                                <td>Picture Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Auto<br>
+                                        1 = Portrait Scene<br>
+                                        2 = Landscape Scene<br>
+                                        4 = Sports Scene<br>
+                                        5 = Night Scene<br>
+                                        6 = Program AE<br>
+                                        256 = Aperture priority AE<br>
+                                        512 = Shutter priority AE<br>
+                                        768 = Manual Exposure
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>4352</td>
+                                <td>Continuous taking or auto bracketing mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Off<br>
+                                        1 = On
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>4864</td>
+                                <td>Blur Warning</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = No Blur Warning<br>
+                                        1 = Blur Warning
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>4865</td>
+                                <td>Focus warning</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Auto Focus Good<br>
+                                        1 = Out of Focus
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>4866</td>
+                                <td>Auto Exposure Warning</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Auto Exposure Good<br>
+                                        1 = Over exposure (>1/1000s,F11)
+                                </td>
+                        </tr>
+
+
+                </table>
+
+                <br>
+                <br>
+                <a href="http://electronics.ozhiker.com">http://electronics.ozhiker.com</a>
+        </BODY>
+</HTML>

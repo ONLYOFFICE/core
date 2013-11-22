@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="ImageMetaDataCommonSchema"
+    elementFormDefault="qualified"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+
+  <xs:include schemaLocation="ImageMetaDataCommon.xsd"/>
+  <xs:element name="AVSImageMetaDataCommon">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="CommonTag" minOccurs="0" maxOccurs="unbounded" type="CommonTagType"/>
+      </xs:sequence>
+      <xs:attribute name="typeid" type="xs:unsignedInt" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+
+</xs:schema>

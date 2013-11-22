@@ -1,7 +1,7 @@
-// AVSXMLImageSource2.cpp : Implementation of CAVSXMLImageSource2
+// ASCXMLImageSource2.cpp : Implementation of CASCXMLImageSource2
 
 #include "stdafx.h"
-#include "AVSXMLImageSource2.h"
+#include "ASCXMLImageSource2.h"
 
 
 // CAVSXMLImageSource2

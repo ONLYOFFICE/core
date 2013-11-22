@@ -2,8 +2,8 @@ HKCR
 {
 	NoRemove AppID
 	{
-		'%APPID%' = s 'AVSImageConverter'
-		'AVSImageConverter.DLL'
+		'%APPID%' = s 'ASCImageConverter'
+		'ASCImageConverter.DLL'
 		{
 			val AppID = s '%APPID%'
 		}

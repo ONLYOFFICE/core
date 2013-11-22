@@ -3,7 +3,6 @@
 #include "resource.h"
 #include "smartimage.h"
 #include "patterns.h"
-#include <registration.h>
 
 [object, oleautomation, uuid("242590FA-727C-4a8e-9784-6CB5B84FF90A"), dual, pointer_default(unique)]
 __interface IImageCompose3 : IDispatch
@@ -954,8 +953,7 @@ public:
 
 	void ApplyRegister()
 	{
-		if (!CRegistratorClient::IsRegistered())
-			CRegistratorClient::Register();
+
 	}
 	double Clamp(double value)
 	{
@@ -1054,7 +1052,7 @@ public:
 	
 	STDMETHOD(Register)(BSTR User, BSTR Password)
 	{
-		CRegistratorClient::Register();
+
 		
 		return S_OK;
 	}

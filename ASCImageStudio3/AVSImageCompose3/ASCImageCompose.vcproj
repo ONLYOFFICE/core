@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSImageCompose"
+	Name="ASCImageCompose"
 	ProjectGUID="{8A87F9AF-915E-441D-B508-7FED14707F47}"
-	RootNamespace="AVSImageCompose"
+	RootNamespace="ASCImageCompose"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -44,16 +44,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageCompose.tlb"
-				HeaderFileName="AVSImageCompose.h"
+				TypeLibraryName="$(IntDir)/ASCImageCompose.tlb"
+				HeaderFileName="ASCImageCompose.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageCompose_i.c"
-				ProxyFileName="AVSImageCompose_p.c"
+				InterfaceIdentifierFileName="ASCImageCompose_i.c"
+				ProxyFileName="ASCImageCompose_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../Common;../../../../Common;../../AVSVideoStudio3/Common"
+				AdditionalIncludeDirectories="../../Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -78,13 +78,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="$(OutDir)/AVSImageCompose3.dll"
+				OutputFile="$(OutDir)/ASCImageCompose3.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
-				MergedIDLBaseFileName="_AVSImageCompose.idl"
+				MergedIDLBaseFileName="_ASCImageCompose.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSImageCompose.lib"
+				ImportLibrary="$(OutDir)/ASCImageCompose.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -126,7 +126,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="X:\AVS\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
+				CommandLine="..\..\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -143,16 +143,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageCompose.tlb"
-				HeaderFileName="AVSImageCompose.h"
+				TypeLibraryName="$(IntDir)/ASCImageCompose.tlb"
+				HeaderFileName="ASCImageCompose.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageCompose_i.c"
-				ProxyFileName="AVSImageCompose_p.c"
+				InterfaceIdentifierFileName="ASCImageCompose_i.c"
+				ProxyFileName="ASCImageCompose_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../Common;../../../../Common;../../AVSVideoStudio3/Common"
+				AdditionalIncludeDirectories="../../Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -177,15 +177,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="$(OutDir)/AVSImageCompose3.dll"
+				OutputFile="$(OutDir)/ASCImageCompose3.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
-				MergedIDLBaseFileName="_AVSImageCompose.idl"
+				MergedIDLBaseFileName="_ASCImageCompose.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSImageCompose.lib"
+				ImportLibrary="$(OutDir)/ASCImageCompose.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -212,7 +212,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy to redist"
-				CommandLine="copy $(TargetPath) ..\..\..\..\AVS\Redist\AVSImageCompose3.dll"
+				CommandLine="copy $(TargetPath) ..\..\Redist\ASCImageCompose3.dll"
 			/>
 		</Configuration>
 		<Configuration
@@ -227,7 +227,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="X:\AVS\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
+				CommandLine="..\..\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
 				ExcludedFromBuild="true"
 			/>
 			<Tool
@@ -245,16 +245,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageCompose.tlb"
-				HeaderFileName="AVSImageCompose.h"
+				TypeLibraryName="$(IntDir)/ASCImageCompose.tlb"
+				HeaderFileName="ASCImageCompose.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageCompose_i.c"
-				ProxyFileName="AVSImageCompose_p.c"
+				InterfaceIdentifierFileName="ASCImageCompose_i.c"
+				ProxyFileName="ASCImageCompose_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../Common;../../../../Common;../../AVSVideoStudio3/Common"
+				AdditionalIncludeDirectories="../../Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -282,12 +282,12 @@
 				OutputFile="$(OutDir)/ASCImageCompose3.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
-				MergedIDLBaseFileName="_AVSImageCompose.idl"
+				MergedIDLBaseFileName="_ASCImageCompose.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSImageCompose.lib"
+				ImportLibrary="$(OutDir)/ASCImageCompose.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -326,7 +326,7 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
-				RelativePath="AVSImageCompose.cpp"
+				RelativePath="ASCImageCompose.cpp"
 				>
 			</File>
 			<File
@@ -404,11 +404,11 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="AVSImageCompose.rc"
+				RelativePath="ASCImageCompose.rc"
 				>
 			</File>
 			<File
-				RelativePath="AVSImageCompose.rgs"
+				RelativePath="ASCImageCompose.rgs"
 				>
 			</File>
 		</Filter>
@@ -416,19 +416,19 @@
 			Name="Common Files"
 			>
 			<File
-				RelativePath="..\..\..\..\Common\Geometry.h"
+				RelativePath="..\..\Common\Geometry.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSVideoStudio3\Common\ImageStudioUtils.h"
+				RelativePath="..\..\ImageStudioUtils.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\Imaging.h"
+				RelativePath="..\..\Common\Imaging.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\Common\Registration.h"
+				RelativePath="..\..\Common\Registration.h"
 				>
 			</File>
 		</Filter>

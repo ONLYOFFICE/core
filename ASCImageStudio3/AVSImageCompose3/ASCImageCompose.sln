@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSImageCompose", "AVSImageCompose.vcproj", "{8A87F9AF-915E-441D-B508-7FED14707F47}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCImageCompose", "ASCImageCompose.vcproj", "{8A87F9AF-915E-441D-B508-7FED14707F47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

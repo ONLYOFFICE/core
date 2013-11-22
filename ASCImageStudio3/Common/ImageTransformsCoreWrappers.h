@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ImageTransformsCoreConstants.h>
+#include "ImageTransformsCoreConstants.h"
 
 namespace ImageStudio
 {

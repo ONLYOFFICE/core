@@ -410,6 +410,8 @@ OfficeCore/Test/TestConsole/bin/Release/Interop.OfficeCore.dll svn_mime_002dtype
 OfficeCore/Test/TestConsole/bin/Release/TestConsole.exe svn_mime_002dtype=application%2Foctet-stream
 OfficeCore/Test/TestConsole/bin/Release/TestConsole.pdb svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCFontConverter.dll svn_mime_002dtype=application%2Foctet-stream
+Redist/ASCMediaCore3.dll svn_mime_002dtype=application%2Foctet-stream
+Redist/ASCMediaFormatSettings3.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficeDocxFile2.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficeRtfFile.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficeUtils.dll svn_mime_002dtype=application%2Foctet-stream

@@ -228,7 +228,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\Redist\VersionControl.exe $(ProjectDir)version.h"
+				CommandLine="..\Redist\VersionControl.exe $(ProjectDir)version.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -314,7 +314,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;../Redist&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -745,19 +745,19 @@
 				Name="common"
 				>
 				<File
-					RelativePath="..\..\..\..\Common\ATLDefine.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Common\AudioGlobal.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\Common\ASCUtils.h"
 					>
 				</File>
 				<File
 					RelativePath="..\Common\ASCVideoStudio3ID.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\Common\ATLDefine.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Common\AudioGlobal.cpp"
 					>
 				</File>
 				<File

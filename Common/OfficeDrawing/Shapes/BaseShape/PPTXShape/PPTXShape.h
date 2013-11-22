@@ -2,11 +2,7 @@
 #include "Formula.h"
 #include "./../BaseShape.h"
 
-#ifndef _AVS_GRAPHICS_
-#include "../../../../../../../Common/XmlUtils.h"
-#else
-#include "../../../../../../AVSImageStudio3/AVSGraphics/Interfaces/XmlUtils.h"
-#endif
+#include "../../../../XmlUtils.h"
 
 using namespace NSOfficeDrawing;
 

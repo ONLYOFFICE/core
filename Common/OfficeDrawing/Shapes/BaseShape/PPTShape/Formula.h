@@ -7,11 +7,7 @@
 #include <math.h>
 #include "./../Common.h"
 
-#ifndef _AVS_GRAPHICS_
-#include "XmlUtils.h"
-#else
-#include "../../../../../../AVSImageStudio3/AVSGraphics/Interfaces/XmlUtils.h"
-#endif
+#include "../../../../XmlUtils.h"
 
 namespace NSGuidesVML
 {

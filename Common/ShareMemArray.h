@@ -12,7 +12,7 @@
 #pragma warning( disable : 4996 4244)	// No CRT-secure warning
 
 #include <atlcoll.h>
-#include "AVSUtils.h"	// CSyncAccess class definition
+#include "ASCUtils.h"	// CSyncAccess class definition
 
 #define AVS_USER_NAME_LEN 1024
 

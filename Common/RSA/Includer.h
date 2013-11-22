@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../AVSVideoStudio3/Common/AVSUtils.h"
+#include "../../Common/ASCUtils.h"
 
 #include "RSA.h"
 #include "Blowfish.h"

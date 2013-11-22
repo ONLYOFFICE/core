@@ -1,5 +1,5 @@
 #pragma once
-#include "IAVSMatrix.h"
+#include "IASCMatrix.h"
 
 const long c_ag_CompositingModeSourceOver				= 0;
 const long c_ag_CompositingModeSourceCopy				= 1;

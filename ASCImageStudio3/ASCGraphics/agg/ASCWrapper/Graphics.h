@@ -44,9 +44,9 @@
 #include "Clip.h"
 #include "Brush.h"
 #include "Image.h"
-#include "..\..\Interfaces\IAVSFontManager.h"
+#include "..\..\Interfaces\IASCFontManager.h"
 
-#include "..\..\Objects\AVSGlyphImage.h"
+#include "..\..\Objects\ASCGlyphImage.h"
 
 #include "..\..\DocumentViewer\DIB.h"
 

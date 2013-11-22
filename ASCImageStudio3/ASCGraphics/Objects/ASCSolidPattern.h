@@ -1,12 +1,12 @@
-// CAVSSolidPattern.h : Declaration of the CAVSSolidPattern
+// CASCSolidPattern.h : Declaration of the CAVSSolidPattern
 
 #pragma once
 #include "..\stdafx.h"
 #include "..\resource.h"       // main symbols
 #include "Registration.h"
 
-#include "..\..\AVSVideoStudio3\Common\AVSUtils.h"
-#include "..\Interfaces\IAVSPattern.h"
+#include "..\..\..\Common\ASCUtils.h"
+#include "..\Interfaces\IASCPattern.h"
 
 // CAVSPen
 [coclass, uuid("71441146-654B-4c7e-9568-69BE27CA192D"), threading(apartment), vi_progid("AVSGraphics.SolidPattern"), progid("AVSGraphics.SolidPattern"), version(1.0), support_error_info(IAVSPattern), registration_script("control.rgs")]

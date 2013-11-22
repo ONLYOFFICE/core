@@ -1,4 +1,4 @@
-// CAVSBrush.h : Declaration of the CAVSBrush
+// CASCBrush.h : Declaration of the CAVSBrush
 
 #pragma once
 #include "stdafx.h"
@@ -6,7 +6,7 @@
 #include "Registration.h"
 
 #include "Structures.h"
-#include "..\Interfaces\IAVSGraphicsPath.h"
+#include "..\Interfaces\IASCGraphicsPath.h"
 
 // CAVSBrush
 [coclass, uuid("76026DDB-9D2A-4462-891C-9BEC13BA049A"), threading(apartment), vi_progid("AVSGraphics.Brush"), progid("AVSGraphics.Brush"), version(1.0), support_error_info(IAVSBrush), registration_script("control.rgs")]

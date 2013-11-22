@@ -2,8 +2,8 @@
 
 #include "..\..\..\..\Common\GdiplusEx.h"
 
-#include "..\..\AVSVideoStudio3\Common\MediaFormatDefine.h"
-#include "..\Interfaces\AVSGraphicsRenderer.h"
+#include "..\..\..\Common\MediaFormatDefine.h"
+#include "..\Interfaces\ASCGraphicsRenderer.h"
 #include "..\Interfaces\ImageSerializeObjects2.h"
 #include "..\Interfaces\ImageFilesCache.h"
 

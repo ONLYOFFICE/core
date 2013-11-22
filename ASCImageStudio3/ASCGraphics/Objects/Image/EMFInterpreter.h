@@ -1,7 +1,7 @@
 #pragma once
 #include "..\..\DocumentViewer\DIB.h"
-#include "..\..\Interfaces\AVSRenderer.h"
-#include "..\..\Interfaces\IAVSFontManager.h"
+#include "..\..\Interfaces\ASCRenderer.h"
+#include "..\..\Interfaces\IASCFontManager.h"
 #include "..\Structures.h"
 
 #define IS_VALID(Renderer)			\

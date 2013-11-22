@@ -1,4 +1,4 @@
-// CAVSBrush.h : Declaration of the CAVSPen
+// CASCBrush.h : Declaration of the CAVSPen
 
 #pragma once
 #include "..\stdafx.h"
@@ -8,8 +8,8 @@
 #include "Image\Wmf\WmfFile.h"
 #include "Image\Wmf\RendererOutput.h"
 
-#include "..\Interfaces\IAVSImage.h"
-#include "..\Interfaces\AVSRenderer.h"
+#include "..\Interfaces\IASCImage.h"
+#include "..\Interfaces\ASCRenderer.h"
 
 #include "GdiplusEx.h"
 

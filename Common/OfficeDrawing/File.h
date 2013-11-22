@@ -1,8 +1,8 @@
 #pragma once
-#ifndef _AVS_GRAPHICS_
-#include "../../../../../Common/XmlUtils.h"
+#ifndef _ASC_GRAPHICS_
+#include "../XmlUtils.h"
 #else
-#include "../../../../../AVSImageStudio3/AVSGraphics/Interfaces/XmlUtils.h"
+#include "../../ASCImageStudio3/ASCGraphics/Interfaces/XmlUtils.h"
 #endif
 #include "../ASCUtils.h"
 #include "windows.h"

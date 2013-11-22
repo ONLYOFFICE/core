@@ -1,7 +1,7 @@
 #ifndef _RENDERER_OUTPUT_H
 #define _RENDERER_OUTPUT_H
 
-#include "..\..\..\Interfaces\AVSRenderer.h"
+#include "..\..\..\Interfaces\ASCRenderer.h"
 #include "..\..\Structures.h"
 #include "WmfUtils.h"
 #include "WmfCharsets.h"

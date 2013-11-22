@@ -1,8 +1,8 @@
 #pragma once
 #include "Common.h"
-#include "..\..\AVSVideoStudio3\Common\MediaFormatDefine.h"
+#include "..\..\..\Common\MediaFormatDefine.h"
 #include "..\Interfaces\ImageSerializeObjects2.h"
-#include "..\Interfaces\AVSGraphicsRenderer.h"
+#include "..\Interfaces\ASCGraphicsRenderer.h"
 
 [object, uuid("BAA18A14-0888-4ed7-9623-C39E4F273F05"), dual, pointer_default(unique)]
 __interface IAVSEffectTransform : IDispatch

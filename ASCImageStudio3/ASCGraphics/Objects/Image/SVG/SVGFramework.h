@@ -16,7 +16,7 @@
 #include <../../../Interfaces/BaseThread.h>
 #include <../../../Objects/ASCFontManager.h>
 #include <../../../Interfaces/ASCRenderer.h>
-#include <../../../agg/AVSWrapper/GraphicsPath.h>
+#include <../../../agg/ASCWrapper/GraphicsPath.h>
 
 #include "../../../Interfaces/IASCGraphicsRenderer.h"
 

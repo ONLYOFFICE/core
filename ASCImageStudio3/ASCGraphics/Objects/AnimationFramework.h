@@ -2,11 +2,11 @@
 #include <atlcoll.h>
 
 #include "..\Interfaces\XMLUtils.h"
-#include "..\..\AVSVideoStudio3\Common\MediaFormatDefine.h"
+#include "..\..\..\..\Common\MediaFormatDefine.h"
 #include "..\Interfaces\ImageSerializeObjects2.h"
-#include "..\Interfaces\AVSGraphicsRenderer.h"
+#include "..\Interfaces\ASCGraphicsRenderer.h"
 #include "..\Interfaces\ISStream.h"
-#include "..\..\AVSImageStudio3\Common\ImagePaintComposeConstants.h"
+#include "..\..\ASCImageStudio3\Common\ImagePaintComposeConstants.h"
 
 #define CENTER_REVOLVE_FADE_TIME_ZONE_IN	0.4
 #define CENTER_REVOLVE_FADE_TIME_ZONE_EXIT	0.1

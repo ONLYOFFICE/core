@@ -10,10 +10,10 @@
 #include "Timer.h"
 using namespace NSDocumentViewer;
 
-#include "..\agg\AVSWrapper\Graphics.h"
-#include "..\Interfaces\AVSDocumentRenderer.h"
+#include "..\agg\ASCWrapper\Graphics.h"
+#include "..\Interfaces\ASCDocumentRenderer.h"
 #include "OfficeSource.h"
-#include "..\Objects\AVSWinFonts.h"
+#include "..\Objects\ASCWinFonts.h"
 
 #include "Interfaces.h"
 

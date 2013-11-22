@@ -1,4 +1,4 @@
-// CAVSPen.h : Declaration of the CAVSPen
+// CASCPen.h : Declaration of the CAVSPen
 
 #pragma once
 #include "stdafx.h"
@@ -6,7 +6,7 @@
 #include "Registration.h"
 
 #include "Structures.h"
-#include "..\Interfaces\IAVSPen.h"
+#include "..\Interfaces\IASCPen.h"
 
 // CAVSPen
 [coclass, uuid("FBBDE648-32C0-4b9c-94BA-FB917511B36D"), threading(apartment), vi_progid("AVSGraphics.Pen"), progid("AVSGraphics.Pen"), version(1.0), support_error_info(IAVSGraphics), registration_script("control.rgs")]

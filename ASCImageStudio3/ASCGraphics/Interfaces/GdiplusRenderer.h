@@ -1,7 +1,7 @@
 #pragma once
 #include "StructuresGDI.h"
 #include "GdiplusEx.h"
-#include "..\..\AVSVideoStudio3\Common\MediaFormatDefine.h"
+#include "..\..\..\..\Common\MediaFormatDefine.h"
 
 class CGdiplusRenderer
 {

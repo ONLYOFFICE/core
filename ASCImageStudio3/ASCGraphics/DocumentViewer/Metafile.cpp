@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "AVSMetafile.h"
+#include "ASCMetafile.h"
 #include "..\Interfaces\ImageSerializeObjects2.h"
 
 void CMetafile::GenerateMetafile(BSTR bsXML)

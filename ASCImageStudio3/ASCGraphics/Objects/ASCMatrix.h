@@ -1,4 +1,4 @@
-// AVSMatrix.h : Declaration of the CAVSMatrix
+// ASCMatrix.h : Declaration of the CAVSMatrix
 
 #pragma once
 #include "..\stdafx.h"
@@ -6,7 +6,7 @@
 #include "Registration.h"
 
 #include "Structures.h"
-#include "..\Interfaces\IAVSMatrix.h"
+#include "..\Interfaces\IASCMatrix.h"
 
 // CAVSMatrix
 [coclass, uuid("E7D46717-49CE-4733-A917-AEF1A1E22738"), threading(apartment), vi_progid("AVSGraphics.Matrix"), progid("AVSGraphics.Matrix"), version(1.0), support_error_info(IAVSMatrix), registration_script("control.rgs")]

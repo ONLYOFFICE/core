@@ -1,7 +1,7 @@
 #pragma once 
 #include "GdiplusEx.h"
 #include "math.h"
-#include "..\Interfaces\AVSRenderer.h"
+#include "..\Interfaces\ASCRenderer.h"
 
 namespace NSDocumentViewer
 {

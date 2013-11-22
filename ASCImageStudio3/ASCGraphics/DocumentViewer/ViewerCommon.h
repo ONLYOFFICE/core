@@ -3,7 +3,7 @@
 #include "atlcoll.h"
 #include "TemporaryCS.h"
 
-#include "..\Interfaces\AVSMetafile.h"
+#include "..\Interfaces\ASCMetafile.h"
 #include "DIB.h"
 #include "..\Interfaces\XmlUtils.h"
 

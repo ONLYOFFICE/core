@@ -4,14 +4,14 @@
 #include "Registration.h"
 
 #include "..\Interfaces\XmlUtils.h"
-#include "..\..\AVSVideoStudio3\Common\AvsUtils.h"
+#include "..\..\..\..\Common\ASCUtils.h"
 #include "ImageSerializeObjects2.h"
-#include "AVSDocumentRenderer.h"
+#include "ASCDocumentRenderer.h"
 #include "GdiPlusEx.h"
 #include "Common.h"
 
 // шифрование XML
-#include "..\..\..\AVSOfficeStudio\Common\RSA\XMLDecoder.h"
+#include "..\..\..\..\Common\RSA\XMLDecoder.h"
 
 // чтоб не копировать - вставим из ремейкера
 #include "..\Interfaces\BaseThread.h"

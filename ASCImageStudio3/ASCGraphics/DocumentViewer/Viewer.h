@@ -4,8 +4,8 @@
 #include "TemporaryCS.h"
 #include "ViewerCommon.h"
 
-#include "..\Interfaces\AVSMetafile.h"
-#include "..\Interfaces\AVSGraphicsRenderer.h"
+#include "..\Interfaces\ASCMetafile.h"
+#include "..\Interfaces\ASCGraphicsRenderer.h"
 #include "..\Interfaces\BaseThread.h"
 
 #include "..\Interfaces\StructuresGDI.h"

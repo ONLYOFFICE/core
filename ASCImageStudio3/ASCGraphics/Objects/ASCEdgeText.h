@@ -1,4 +1,4 @@
-// CAVSEdgeText.h : Declaration of the CAVSEdgeText
+// CASCEdgeText.h : Declaration of the CAVSEdgeText
 
 #pragma once
 #include "stdafx.h"
@@ -6,11 +6,11 @@
 #include "Registration.h"
 
 #include "Structures.h"
-#include "..\Interfaces\IAVSEdgeText.h"
+#include "..\Interfaces\IASCEdgeText.h"
 
-#include "AVSPen.h"
-#include "AVSBrush.h"
-#include "AVSGraphicsPath.h"
+#include "ASCPen.h"
+#include "ASCBrush.h"
+#include "ASCGraphicsPath.h"
 
 #include "..\Common\Test.h"
 

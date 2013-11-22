@@ -1,7 +1,7 @@
 #pragma once
 
 #include "..\Objects\Structures.h"
-#include "..\agg\AVSWrapper\Graphics.h"
+#include "..\agg\ASCWrapper\Graphics.h"
 
 namespace NSStructuresAVS
 {

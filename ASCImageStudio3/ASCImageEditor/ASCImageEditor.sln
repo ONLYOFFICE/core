@@ -1,11 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2008
+# Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCImageEditor", "ASCImageEditor\ASCImageEditor.vcproj", "{E1A619A1-625C-40CC-A304-42A36D26CF4F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestViewManager", "TestViewManager\TestViewManager.csproj", "{BCB61D3D-224D-4FE7-A704-62B9627EC0CA}"
-	ProjectSection(ProjectDependencies) = postProject
-		{E1A619A1-625C-40CC-A304-42A36D26CF4F} = {E1A619A1-625C-40CC-A304-42A36D26CF4F}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,21 +30,6 @@ Global
 		{E1A619A1-625C-40CC-A304-42A36D26CF4F}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{E1A619A1-625C-40CC-A304-42A36D26CF4F}.Release|Win32.ActiveCfg = Release|Win32
 		{E1A619A1-625C-40CC-A304-42A36D26CF4F}.Release|Win32.Build.0 = Release|Win32
-		{BCB61D3D-224D-4FE7-A704-62B9627EC0CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BCB61D3D-224D-4FE7-A704-62B9627EC0CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BCB61D3D-224D-4FE7-A704-62B9627EC0CA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{BCB61D3D-224D-4FE7-A704-62B9627EC0CA}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{BCB61D3D-224D-4FE7-A704-62B9627EC0CA}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{BCB61D3D-224D-4FE7-A704-62B9627EC0CA}.Release UNICODE|Any CPU.ActiveCfg = Release UNICODE|Any CPU
-		{BCB61D3D-224D-4FE7-A704-62B9627EC0CA}.Release UNICODE|Any CPU.Build.0 = Release UNICODE|Any CPU
-		{BCB61D3D-224D-4FE7-A704-62B9627EC0CA}.Release UNICODE|Mixed Platforms.ActiveCfg = Release UNICODE|Any CPU
-		{BCB61D3D-224D-4FE7-A704-62B9627EC0CA}.Release UNICODE|Mixed Platforms.Build.0 = Release UNICODE|Any CPU
-		{BCB61D3D-224D-4FE7-A704-62B9627EC0CA}.Release UNICODE|Win32.ActiveCfg = Release UNICODE|Any CPU
-		{BCB61D3D-224D-4FE7-A704-62B9627EC0CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BCB61D3D-224D-4FE7-A704-62B9627EC0CA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BCB61D3D-224D-4FE7-A704-62B9627EC0CA}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{BCB61D3D-224D-4FE7-A704-62B9627EC0CA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{BCB61D3D-224D-4FE7-A704-62B9627EC0CA}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

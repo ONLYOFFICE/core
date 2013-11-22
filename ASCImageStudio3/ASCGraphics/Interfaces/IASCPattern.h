@@ -1,7 +1,7 @@
 #pragma once
 #include "..\stdafx.h"
 
-#include "IAVSGraphicsBase.h"
+#include "IASCGraphicsBase.h"
 
 [object, uuid("90445113-FEDD-4e88-AC18-06564C5399E6"), dual, pointer_default(unique)]
 __interface IAVSPattern : IAVSGraphicsBase

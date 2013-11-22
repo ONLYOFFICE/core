@@ -13,9 +13,9 @@
 #endif
 
 #include "..\VectorGraphics\SPath.h"
-#include "..\Interfaces\IAVSPen.h"
-#include "..\Interfaces\IAVSBrush.h"
-#include "..\Objects\AVSSolidPattern.h"
+#include "..\Interfaces\IASCPen.h"
+#include "..\Interfaces\IASCBrush.h"
+#include "..\Objects\ASCSolidPattern.h"
 
 class CGraphicsPath : public SPath
 {

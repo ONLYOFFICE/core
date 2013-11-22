@@ -1,6 +1,6 @@
 #pragma once
 #include "..\stdafx.h"
-#include "..\agg\AVSWrapper\GraphicsPath.h"
+#include "..\agg\ASCWrapper\GraphicsPath.h"
 
 // IAVSGraphicSimpleComverter
 [object, uuid("45EC6624-B5E1-4e60-ADD4-8DD310B6CF96"), dual, pointer_default(unique)]

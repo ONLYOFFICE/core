@@ -5,7 +5,7 @@
 #include <xmlutils.h>
 
 #include "FontPath.h"
-#include "../../Interfaces/IAVSGraphicsPath.h"
+#include "../../Interfaces/IASCGraphicsPath.h"
 
 //-------------------------------------------------------------------------------------------------------------------------------
 // CPath

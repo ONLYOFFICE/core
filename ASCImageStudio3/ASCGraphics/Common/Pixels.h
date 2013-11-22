@@ -4,8 +4,8 @@
 #include "..\VectorGraphics\STypes.h"
 #include "..\VectorGraphics\MemoryUtils.h"
 
-#include "..\Interfaces\IAVSPattern.h"
-#include "..\..\AVSVideoStudio3\Common\AVSUtils.h"
+#include "..\Interfaces\IASCPattern.h"
+#include "..\..\..\Common\ASCUtils.h"
 
 class CPixels
 {

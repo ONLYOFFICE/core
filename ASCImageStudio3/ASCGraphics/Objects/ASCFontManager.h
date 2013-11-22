@@ -1,10 +1,10 @@
 // FontManager.h : Declaration of the CFontManager
 
 #pragma once
-#include "../Interfaces/IAVSFontManager.h"
-#include "../Interfaces/IAVSGraphicsPath.h"
-#include "../Interfaces/IAVSWinFonts.h"
-#include "../Objects/AVSWinFonts.h"
+#include "../Interfaces/IASCFontManager.h"
+#include "../Interfaces/IASCGraphicsPath.h"
+#include "../Interfaces/IASCWinFonts.h"
+#include "../Objects/ASCWinFonts.h"
 
 #include "Font/FontConsts.h"
 #include "Font/WinFont.h"
@@ -19,12 +19,12 @@
 
 #include "Font/WinFontStorage.h"
 
-#include "AVSGlyphImage.h"
-#include "AVSGraphicsPath.h"
+#include "ASCGlyphImage.h"
+#include "ASCGraphicsPath.h"
 
 #include "TimeMeasurer.h"
 #include "../Interfaces/XmlUtils.h"
-#include "../../../AVSOfficeStudio/Common/OfficeDrawing/File.h"
+#include "../../../Common/OfficeDrawing/File.h"
 
 #include FT_ADVANCES_H
 #include FT_GLYPH_H

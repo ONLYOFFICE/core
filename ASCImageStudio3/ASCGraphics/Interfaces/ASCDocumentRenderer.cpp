@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "AVSDocumentRenderer.h"
+#include "ASCDocumentRenderer.h"
 #include "ImageSerializeObjects2.h"
 
 void CAVSDocumentRenderer::DrawWatermark(LONG lPageNumber, IUnknown* punkRenderer)

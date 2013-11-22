@@ -14,11 +14,11 @@
 
 #include <../../../Interfaces/XmlUtils.h>
 #include <../../../Interfaces/BaseThread.h>
-#include <../../../Objects/AVSFontManager.h>
-#include <../../../Interfaces/AVSRenderer.h>
+#include <../../../Objects/ASCFontManager.h>
+#include <../../../Interfaces/ASCRenderer.h>
 #include <../../../agg/AVSWrapper/GraphicsPath.h>
 
-#include "../../../Interfaces/IAVSGraphicsRenderer.h"
+#include "../../../Interfaces/IASCGraphicsRenderer.h"
 
 #define GET_ATTRIBUTEN(NAME)	if(style==##NAME)return m_n##NAME;
 #define GET_ATTRIBUTED(NAME)	if(style==##NAME)return m_n##NAME;

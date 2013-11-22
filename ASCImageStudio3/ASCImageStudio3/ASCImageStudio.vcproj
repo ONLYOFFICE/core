@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSImageStudio"
+	Name="ASCImageStudio"
 	ProjectGUID="{E30A258F-667E-483A-937D-F4C16A6C82AA}"
-	RootNamespace="AVSImageStudio"
+	RootNamespace="ASCImageStudio"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -44,16 +44,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageStudio.tlb"
-				HeaderFileName="AVSImageStudio.h"
+				TypeLibraryName="$(IntDir)/ASCImageStudio.tlb"
+				HeaderFileName="ASCImageStudio.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageStudio_i.c"
-				ProxyFileName="AVSImageStudio_p.c"
+				InterfaceIdentifierFileName="ASCImageStudio_i.c"
+				ProxyFileName="ASCImageStudio_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../Common;../../../../Common;../../AVSVideoStudio3/Common"
+				AdditionalIncludeDirectories="../Common;../../Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;_UNICODE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -79,14 +79,14 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies=" Msimg32.lib"
-				OutputFile="$(OutDir)/AVSImageStudio3.dll"
+				OutputFile="$(OutDir)/ASCImageStudio3.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../Common/libs/Debug"
 				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSImageStudio.idl"
+				MergedIDLBaseFileName="_ASCImageStudio.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSImageStudio.lib"
+				ImportLibrary="$(OutDir)/ASCImageStudio.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -145,18 +145,18 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageStudio.tlb"
-				HeaderFileName="AVSImageStudio.h"
+				TypeLibraryName="$(IntDir)/ASCImageStudio.tlb"
+				HeaderFileName="ASCImageStudio.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageStudio_i.c"
-				ProxyFileName="AVSImageStudio_p.c"
+				InterfaceIdentifierFileName="ASCImageStudio_i.c"
+				ProxyFileName="ASCImageStudio_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="false"
 				FavorSizeOrSpeed="0"
-				AdditionalIncludeDirectories="../Common;../../../../Common;../../AVSVideoStudio3/Common"
+				AdditionalIncludeDirectories="../Common;../../Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_UNICODE"
 				StringPooling="true"
 				BasicRuntimeChecks="0"
@@ -187,15 +187,15 @@
 				RegisterOutput="true"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies=" Msimg32.lib"
-				OutputFile="$(OutDir)/AVSImageStudio3.dll"
+				OutputFile="$(OutDir)/ASCImageStudio3.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\Common\libs\Release\"
-				MergedIDLBaseFileName="_AVSImageStudio.idl"
+				MergedIDLBaseFileName="_ASCImageStudio.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSImageStudio.lib"
+				ImportLibrary="$(OutDir)/ASCImageStudio.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -222,7 +222,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy to redist"
-				CommandLine="copy $(TargetPath) ..\..\..\..\AVS\Redist\AVSImageStudio3.dll"
+				CommandLine="copy $(TargetPath) ..\..\Redist\ASCImageStudio3.dll"
 			/>
 		</Configuration>
 		<Configuration
@@ -237,7 +237,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="X:\AVS\Redist\VersionControl.exe &quot;$(SolutionDir)\..\version.h&quot;"
+				CommandLine="../../Redist/VersionControl.exe &quot;$(SolutionDir)\..\version.h&quot;"
 				ExcludedFromBuild="true"
 			/>
 			<Tool
@@ -255,18 +255,18 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageStudio.tlb"
-				HeaderFileName="AVSImageStudio.h"
+				TypeLibraryName="$(IntDir)/ASCImageStudio.tlb"
+				HeaderFileName="ASCImageStudio.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageStudio_i.c"
-				ProxyFileName="AVSImageStudio_p.c"
+				InterfaceIdentifierFileName="ASCImageStudio_i.c"
+				ProxyFileName="ASCImageStudio_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="false"
 				FavorSizeOrSpeed="0"
-				AdditionalIncludeDirectories="../Common;../../../../Common;../../AVSVideoStudio3/Common"
+				AdditionalIncludeDirectories="../Common;../../Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_UNICODE"
 				StringPooling="true"
 				BasicRuntimeChecks="0"
@@ -299,12 +299,12 @@
 				OutputFile="$(OutDir)/ASCImageStudio3.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
-				MergedIDLBaseFileName="_AVSImageStudio.idl"
+				MergedIDLBaseFileName="_ASCImageStudio.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSImageStudio.lib"
+				ImportLibrary="$(OutDir)/ASCImageStudio.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -343,7 +343,7 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
-				RelativePath="AVSImageStudio.cpp"
+				RelativePath="ASCImageStudio.cpp"
 				>
 			</File>
 			<File
@@ -409,11 +409,11 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="AVSImageStudio.rc"
+				RelativePath="ASCImageStudio.rc"
 				>
 			</File>
 			<File
-				RelativePath="AVSImageStudio.rgs"
+				RelativePath="ASCImageStudio.rgs"
 				>
 			</File>
 			<Filter
@@ -517,7 +517,7 @@
 			Name="Common Files"
 			>
 			<File
-				RelativePath=".\AVSImageFilesCache.h"
+				RelativePath=".\ASCImageFilesCache.h"
 				>
 			</File>
 			<File
@@ -525,7 +525,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\Common\GdiPlusEx.h"
+				RelativePath="..\..\Common\GdiPlusEx.h"
 				>
 			</File>
 			<File

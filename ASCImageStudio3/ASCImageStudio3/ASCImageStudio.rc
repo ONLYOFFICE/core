@@ -141,7 +141,7 @@ END
 // REGISTRY
 //
 
-IDR_NCTIMAGESTUDIO      REGISTRY                "AVSImageStudio.rgs"
+IDR_NCTIMAGESTUDIO      REGISTRY                "ASCImageStudio.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -150,7 +150,7 @@ IDR_NCTIMAGESTUDIO      REGISTRY                "AVSImageStudio.rgs"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSImageStudio"
+    IDS_PROJNAME            "ASCImageStudio"
 END
 
 #endif    // English (U.S.) resources

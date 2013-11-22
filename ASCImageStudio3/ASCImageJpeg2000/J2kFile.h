@@ -3,8 +3,7 @@
 #pragma once
 #include "resource.h"       // main symbols
 
-#include "Registration.h"
-#include "XmlUtils.h"
+#include "..\..\Common\XmlUtils.h"
 #include "Types.h"
 
 #define PROGRESS_MAX 1000000

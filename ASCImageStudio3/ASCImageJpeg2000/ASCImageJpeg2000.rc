@@ -2,7 +2,7 @@
 //
 #include "resource.h"
 #define COMPONENT_NAME "ImageJpeg2000"
-#include "../../../../Common/FileInfo.h"
+#include "../../Common/FileInfo.h"
 #include "version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -86,10 +86,10 @@ END
 
 STRINGTABLE  
 BEGIN
-	IDS_PROJNAME					"AVSImageJpeg2000"
+	IDS_PROJNAME					"ASCImageJpeg2000"
 END
 
-IDR_AVSIMAGEJPEG2000 REGISTRY "AVSImageJpeg2000.rgs"
+IDR_ASCIMAGEJPEG2000 REGISTRY "ASCImageJpeg2000.rgs"
 ////////////////////////////////////////////////////////////////////////////
 
 

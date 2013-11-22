@@ -107,8 +107,6 @@ int check_j2000_type(HANDLE hFile)
 
 STDMETHODIMP CJ2kFile::J2kToInterface(BSTR bsSrcPath, IUnknown **ppImage, BSTR bsXmlOptions)
 {
-	if ( !CRegistratorClient::IsRegistered() )
-		return S_FALSE;
 	
 	Image *pImage = NULL;
 	bool bOpenResult = FALSE;
@@ -413,8 +411,6 @@ STDMETHODIMP CJ2kFile::J2kToInterface(BSTR bsSrcPath, IUnknown **ppImage, BSTR b
 
 STDMETHODIMP CJ2kFile::InterfaceToJ2k(IUnknown **ppImage, BSTR bsDstPath, BSTR bsXmlOptions)
 {
-	if ( !CRegistratorClient::IsRegistered() )
-		return S_FALSE;
 
 	CStringA sFilePath( bsDstPath );
 

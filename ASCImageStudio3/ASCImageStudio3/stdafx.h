@@ -68,14 +68,16 @@
 using namespace ATL;
 using namespace Gdiplus;
 
-#import "../../../../AVS/Redist/AVSImageFile3.dll"				named_guids rename_namespace("ImageFile")
+#import "../../Redist/ASCImageFile3.dll"				named_guids rename_namespace("ImageFile")
 //#import "../../../../AVS/Redist/AVSImageTransform3.dll"			named_guids rename_namespace("ImageTransform")
-#import "../../../../AVS/Redist/AVSImagePaint3.dll"				named_guids rename_namespace("ImagePaint")
 //#import "../../../../AVS/Redist/AVSImageCompose3.dll"			named_guids rename_namespace("ImageCompose")
-#import "../../../../AVS/Redist/AVSMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")
-#import "../../../../AVS/Redist/AVSMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
+#import "../../Redist/ASCMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")
+#import "../../Redist/ASCMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
+
+#import "../../Redist/ASCImageJpeg2000.dll"           named_guids rename_namespace("Jpeg2000")
+#import "../../Redist/ASCGraphics.dll"				named_guids rename_namespace("AVSGraphics")
+
+#import "../../../../AVS/Redist/AVSImagePaint3.dll"				named_guids rename_namespace("ImagePaint")
+#import "../../../../AVS/Redist/AVSSWFFile3.dll"				named_guids rename_namespace("SWF")
 #import "../../../../AVS/Redist/AVSUniversalVideoConverter.dll" named_guids rename_namespace("FileCache")
 #import "../../../../AVS/Redist/AVSImageRaw3.dll"	            named_guids rename_namespace("ImageRaw")
-#import "../../../../AVS/Redist/AVSImageJpeg2000.dll"           named_guids rename_namespace("Jpeg2000")
-#import "../../../../AVS/Redist/AVSGraphics.dll"				named_guids rename_namespace("AVSGraphics")
-#import "../../../../AVS/Redist/AVSSWFFile3.dll"				named_guids rename_namespace("SWF")

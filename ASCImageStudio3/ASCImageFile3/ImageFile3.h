@@ -4,7 +4,6 @@
 #include <atlsafe.h>
 #include <comdef.h>
 #include <stdio.h>
-#include <registration.h>
 #include <gdiplusex.h>
 #include <graydither.h>
 #include <math.h>
@@ -1261,12 +1260,6 @@ protected:
 		// reset output value
 		VARIANT_BOOL Success = VARIANT_FALSE;
 
-#ifndef DISABLE_REGISTRATION
-
-		// check for registered component
-		if (!CRegistratorClient::IsRegistered())
-			return Success;
-#endif
 		try 
 		{
 			MetaDataFromFile( Path );		// load metadata from file			
@@ -1411,13 +1404,6 @@ protected:
 		// reset output value
 		VARIANT_BOOL Success = VARIANT_TRUE;
 
-#ifndef DISABLE_REGISTRATION
-
-		// check for registered component
-		if (!CRegistratorClient::IsRegistered())
-			return VARIANT_FALSE;
-
-#endif
 
 		// Gdi+ Bitmap object
 		BYTE* pixels = 0;
@@ -1460,13 +1446,7 @@ protected:
 		// reset output value
 		VARIANT_BOOL Success = VARIANT_FALSE;
 
-#ifndef DISABLE_REGISTRATION
 
-		// check for registered component
-		if (!CRegistratorClient::IsRegistered())
-			return VARIANT_FALSE;
-
-#endif
 		// check for valid input parameters
 		if (Frame < 0)
 			return VARIANT_FALSE;
@@ -1539,13 +1519,6 @@ protected:
 	{
 		// update result flag
 		VARIANT_BOOL Success = VARIANT_TRUE;
-
-#ifndef DISABLE_REGISTRATION
-
-		// check for registered component
-		if (!CRegistratorClient::IsRegistered())
-			return Success;
-#endif
 
 		// variables
 		Bitmap* bitmap = 0;
@@ -1870,12 +1843,6 @@ protected:
 	{
 		VARIANT_BOOL Success = VARIANT_FALSE;
 
-#ifndef DISABLE_REGISTRATION
-
-		if (!CRegistratorClient::IsRegistered())
-			return VARIANT_FALSE;
-
-#endif
 
 		int nWidth = 0;
 		int nHeight = 0;
@@ -1912,12 +1879,6 @@ protected:
 
 		VARIANT_BOOL Success = VARIANT_TRUE;
 
-#ifndef DISABLE_REGISTRATION
-
-		if (!CRegistratorClient::IsRegistered())
-			return VARIANT_FALSE;
-		
-#endif
 
 		int nWidth = 0;
 		int nHeight = 0;
@@ -2256,14 +2217,6 @@ public:
 	{
 		// update result flag
 		*Success = VARIANT_FALSE;
-
-#ifndef DISABLE_REGISTRATION
-
-		// check for registered component
-		if (!CRegistratorClient::IsRegistered())
-			return S_OK;
-
-#endif
 		// save image to file
 		try 
 		{

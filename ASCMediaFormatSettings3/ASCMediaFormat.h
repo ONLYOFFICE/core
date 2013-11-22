@@ -1,4 +1,4 @@
-// AVSMediaFormat.h : Declaration of the CAVSMediaFormat
+// ASCMediaFormat.h : Declaration of the CASCMediaFormat
 
 #pragma once
 #include "resource.h"       // main symbols

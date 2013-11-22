@@ -1,9 +1,9 @@
-// AVSRMVideoFormat.h : Declaration of the CAVSRMAudioFormat
+// ASCRMVideoFormat.h : Declaration of the CASCRMAudioFormat
 
 #pragma once
 #include "resource.h"       // main symbols
 //#include "ATLDefine.h"
-//#include "AVSAudioFormat.h"
+//#include "ASCAudioFormat.h"
 
 
 // IAVSRMAudioFormat

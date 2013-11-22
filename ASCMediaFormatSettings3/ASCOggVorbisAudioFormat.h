@@ -1,8 +1,8 @@
-// AVSOggVorbisAudioFormat.h : Declaration of the CAVSOggVorbisAudioFormat
+// ASCOggVorbisAudioFormat.h : Declaration of the CASCOggVorbisAudioFormat
 
 #pragma once
 #include "resource.h"       // main symbols
-#include "AVSAudioFormat.h" 
+#include "ASCAudioFormat.h" 
 
 
 #if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)

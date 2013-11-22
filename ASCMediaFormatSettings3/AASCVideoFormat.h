@@ -1,8 +1,8 @@
-// AVSVideoFormat.h : Declaration of the CAVSVideoFormat
+// ASCVideoFormat.h : Declaration of the CASCVideoFormat
 
 #pragma once
 #include "resource.h"       // main symbols
-#include "AVSMediaFormat.h"       // main symbols
+#include "ASCMediaFormat.h"       // main symbols
 
 #include "../Common/FourCCDefines.h"
 

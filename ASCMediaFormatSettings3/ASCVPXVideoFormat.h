@@ -1,9 +1,9 @@
-// AVSVPXVideoFormat.h : Declaration of the CAVSVPXVideoFormat
+// ASCVPXVideoFormat.h : Declaration of the CASCVPXVideoFormat
 
 #pragma once
 #include "resource.h"       // main symbols
 #include "ATLDefine.h"
-#include "AVSVideoFormat.h"
+#include "ASCVideoFormat.h"
 
 class CAVSVPXVideoFormat;
 // IAVSVPXVideoFormat

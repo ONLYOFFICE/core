@@ -1,4 +1,4 @@
-// AVSExternalVideoFormat.h : Declaration of the CAVSExternalVideoFormat
+// ASCExternalVideoFormat.h : Declaration of the CASCExternalVideoFormat
 
 #pragma once
 #include "resource.h"       // main symbols
@@ -6,7 +6,7 @@
 
 
 #include "ATLDefine.h"
-//#include "AVSVideoFormat.h"
+//#include "ASCVideoFormat.h"
 
 class CAVSExternalVideoFormat;
 

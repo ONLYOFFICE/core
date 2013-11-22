@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSMediaFormatSettings3"
+	Name="ASCMediaFormatSettings3"
 	ProjectGUID="{5D3CBFB5-3C8C-41E4-AF70-A09CB991E4F2}"
-	RootNamespace="AVSMediaFormatSettings3"
+	RootNamespace="ASCMediaFormatSettings3"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -47,11 +47,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSMediaFormatSettings3.tlb"
-				HeaderFileName="AVSMediaFormatSettings3.h"
+				TypeLibraryName="$(IntDir)/ASCMediaFormatSettings3.tlb"
+				HeaderFileName="ASCMediaFormatSettings3.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSMediaFormatSettings3_i.c"
-				ProxyFileName="AVSMediaFormatSettings3_p.c"
+				InterfaceIdentifierFileName="ASCMediaFormatSettings3_i.c"
+				ProxyFileName="ASCMediaFormatSettings3_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -82,12 +82,12 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="Vfw32.lib "
-				OutputFile="$(OutDir)/AVSMediaFormatSettings3.dll"
+				OutputFile="$(OutDir)/ASCMediaFormatSettings3.dll"
 				LinkIncremental="2"
-				MergedIDLBaseFileName="_AVSMediaFormatSettings3.idl"
+				MergedIDLBaseFileName="_ASCMediaFormatSettings3.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSMediaFormatSettings3.lib"
+				ImportLibrary="$(OutDir)/ASCMediaFormatSettings3.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -146,11 +146,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="3"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSMediaFormatSettings3.tlb"
-				HeaderFileName="AVSMediaFormatSettings3.h"
+				TypeLibraryName="$(IntDir)/ASCMediaFormatSettings3.tlb"
+				HeaderFileName="ASCMediaFormatSettings3.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSMediaFormatSettings3_i.c"
-				ProxyFileName="AVSMediaFormatSettings3_p.c"
+				InterfaceIdentifierFileName="ASCMediaFormatSettings3_i.c"
+				ProxyFileName="ASCMediaFormatSettings3_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -181,12 +181,12 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="Vfw32.lib "
-				OutputFile="$(OutDir)/AVSMediaFormatSettings3.dll"
+				OutputFile="$(OutDir)/ASCMediaFormatSettings3.dll"
 				LinkIncremental="2"
-				MergedIDLBaseFileName="_AVSMediaFormatSettings3.idl"
+				MergedIDLBaseFileName="_ASCMediaFormatSettings3.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSMediaFormatSettings3.lib"
+				ImportLibrary="$(OutDir)/ASCMediaFormatSettings3.lib"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -245,11 +245,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSMediaFormatSettings3.tlb"
-				HeaderFileName="AVSMediaFormatSettings3.h"
+				TypeLibraryName="$(IntDir)/ASCMediaFormatSettings3.tlb"
+				HeaderFileName="ASCMediaFormatSettings3.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSMediaFormatSettings3_i.c"
-				ProxyFileName="AVSMediaFormatSettings3_p.c"
+				InterfaceIdentifierFileName="ASCMediaFormatSettings3_i.c"
+				ProxyFileName="ASCMediaFormatSettings3_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -282,12 +282,12 @@
 				AdditionalDependencies="Vfw32.lib "
 				OutputFile="..\..\..\redist\$(ProjectName).dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSMediaFormatSettings3.idl"
+				MergedIDLBaseFileName="_ASCMediaFormatSettings3.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSMediaFormatSettings3.lib"
+				ImportLibrary="$(OutDir)/ASCMediaFormatSettings3.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -346,11 +346,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="3"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSMediaFormatSettings3.tlb"
-				HeaderFileName="AVSMediaFormatSettings3.h"
+				TypeLibraryName="$(IntDir)/ASCMediaFormatSettings3.tlb"
+				HeaderFileName="ASCMediaFormatSettings3.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSMediaFormatSettings3_i.c"
-				ProxyFileName="AVSMediaFormatSettings3_p.c"
+				InterfaceIdentifierFileName="ASCMediaFormatSettings3_i.c"
+				ProxyFileName="ASCMediaFormatSettings3_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -383,12 +383,12 @@
 				AdditionalDependencies="Vfw32.lib "
 				OutputFile="..\..\..\redist\x64\$(ProjectName).dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSMediaFormatSettings3.idl"
+				MergedIDLBaseFileName="_ASCMediaFormatSettings3.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSMediaFormatSettings3.lib"
+				ImportLibrary="$(OutDir)/ASCMediaFormatSettings3.lib"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -448,11 +448,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSMediaFormatSettings3.tlb"
-				HeaderFileName="AVSMediaFormatSettings3.h"
+				TypeLibraryName="$(IntDir)/ASCMediaFormatSettings3.tlb"
+				HeaderFileName="ASCMediaFormatSettings3.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSMediaFormatSettings3_i.c"
-				ProxyFileName="AVSMediaFormatSettings3_p.c"
+				InterfaceIdentifierFileName="ASCMediaFormatSettings3_i.c"
+				ProxyFileName="ASCMediaFormatSettings3_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -485,12 +485,12 @@
 				AdditionalDependencies="Vfw32.lib "
 				OutputFile="..\..\..\..\ASC\redist\ASCMediaFormatSettings3.dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSMediaFormatSettings3.idl"
+				MergedIDLBaseFileName="_ASCMediaFormatSettings3.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSMediaFormatSettings3.lib"
+				ImportLibrary="$(OutDir)/ASCMediaFormatSettings3.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -589,11 +589,11 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
-				RelativePath=".\AVSIntelMediaVideoFormat.cpp"
+				RelativePath=".\ASCIntelMediaVideoFormat.cpp"
 				>
 			</File>
 			<File
-				RelativePath="AVSMediaFormatSettings3.cpp"
+				RelativePath="ASCMediaFormatSettings3.cpp"
 				>
 			</File>
 			<File
@@ -646,87 +646,87 @@
 			Filter="h;hpp;hxx;hm;inl;inc"
 			>
 			<File
-				RelativePath="AVSAudioFormat.h"
+				RelativePath="ASCAudioFormat.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSExternalVideoFormat.h"
+				RelativePath=".\ASCExternalVideoFormat.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSH263VideoFormat.h"
+				RelativePath="ASCH263VideoFormat.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSH264ExtVideoFormat.h"
+				RelativePath=".\ASCH264ExtVideoFormat.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSH264VideoFormat.h"
+				RelativePath="ASCH264VideoFormat.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSIntelMediaVideoFormat.h"
+				RelativePath=".\ASCIntelMediaVideoFormat.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSMediaFormat.h"
+				RelativePath="ASCMediaFormat.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSMediaFormatSerialize.h"
+				RelativePath=".\ASCMediaFormatSerialize.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSMPEG2VideoFormat.h"
+				RelativePath="ASCMPEG2VideoFormat.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSMPEG3AudioFormat.h"
+				RelativePath="ASCMPEG3AudioFormat.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSMPEG4AudioFormat.h"
+				RelativePath="ASCMPEG4AudioFormat.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSMPEG4VideoFormat.h"
+				RelativePath="ASCMPEG4VideoFormat.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSMPEGsVideoFormat.h"
+				RelativePath="ASCMPEGsVideoFormat.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOggVorbisAudioFormat.h"
+				RelativePath=".\ASCOggVorbisAudioFormat.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSRMAudioFormat.h"
+				RelativePath="ASCRMAudioFormat.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSRMVideoFormat.h"
+				RelativePath="ASCRMVideoFormat.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSSubPictureFormat.h"
+				RelativePath=".\ASCSubPictureFormat.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSVideoFormat.h"
+				RelativePath="ASCVideoFormat.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSVPXVideoFormat.h"
+				RelativePath=".\ASCVPXVideoFormat.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSWMAAudioFormat.h"
+				RelativePath="ASCWMAAudioFormat.h"
 				>
 			</File>
 			<File
-				RelativePath="AVSWMVVideoFormat.h"
+				RelativePath="ASCWMVVideoFormat.h"
 				>
 			</File>
 			<File
@@ -753,11 +753,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Common\AVSUtils.h"
+					RelativePath="..\Common\ASCUtils.h"
 					>
 				</File>
 				<File
-					RelativePath="..\Common\AVSVideoStudio3ID.h"
+					RelativePath="..\Common\ASCVideoStudio3ID.h"
 					>
 				</File>
 				<File
@@ -787,11 +787,11 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="AVSMediaFormatSettings3.rc"
+				RelativePath="ASCMediaFormatSettings3.rc"
 				>
 			</File>
 			<File
-				RelativePath="AVSMediaFormatSettings3.rgs"
+				RelativePath="ASCMediaFormatSettings3.rgs"
 				>
 			</File>
 		</Filter>

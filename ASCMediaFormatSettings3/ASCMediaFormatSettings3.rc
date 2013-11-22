@@ -85,10 +85,10 @@ END
 
 STRINGTABLE  
 BEGIN
-	IDS_PROJNAME					"AVSMediaFormatSettings3"
+	IDS_PROJNAME					"ASCMediaFormatSettings3"
 END
 
-IDR_AVSMEDIAFORMATSETTINGS3 REGISTRY "AVSMediaFormatSettings3.rgs"
+IDR_ASCMEDIAFORMATSETTINGS3 REGISTRY "ASCMediaFormatSettings3.rgs"
 ////////////////////////////////////////////////////////////////////////////
 
 

@@ -2,8 +2,8 @@ HKCR
 {
 	NoRemove AppID
 	{
-		'%APPID%' = s 'AVSMediaFormatSettings3'
-		'AVSMediaFormatSettings3.DLL'
+		'%APPID%' = s 'ASCMediaFormatSettings3'
+		'ASCMediaFormatSettings3.DLL'
 		{
 			val AppID = s '%APPID%'
 		}

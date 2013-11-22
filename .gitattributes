@@ -54,6 +54,7 @@ ASCImageStudio3/ASCImageFile3/Libs/GrayDither/GrayDither.lib svn_mime_002dtype=a
 ASCImageStudio3/ASCImageFile3/Libs/LibJ2K.lib svn_mime_002dtype=application%2Foctet-stream
 ASCImageStudio3/ASCImageFile3/Libs/LibJ2K/libjasper.lib svn_mime_002dtype=application%2Foctet-stream
 ASCImageStudio3/ASCImageFile3/MetaData.h svn_mime_002dtype=application%2Foctet-stream
+ASCImageStudio3/ASCImageJpeg2000/zlib.lib svn_mime_002dtype=application%2Foctet-stream
 ASCImageStudio3/AVSImageMetaData/trunk/common/xsd.exe svn_mime_002dtype=application%2Foctet-stream
 ASCImageStudio3/AVSImageMetaData/trunk/doc/AVSImageMetaData.odt svn_mime_002dtype=application%2Foctet-stream
 ASCImageStudio3/AVSImageMetaData/trunk/doc/IPTC-PhotoMetadata-2008.pdf svn_mime_002dtype=application%2Foctet-stream

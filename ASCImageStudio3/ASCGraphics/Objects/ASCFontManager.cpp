@@ -178,7 +178,7 @@ void CASCFontManager::DumpToJSEditor(CString strDirectory, bool bIsUnionFamily)
 	while (NULL != pos)
 	{
 		const CAtlMap<CString, LONG>::CPair* pPair = mapFontFiles.GetNext(pos);
-		DumpJSFontFile6(pPair->m_key, strDirectory, pPair->m_value);
+		DumpJSFontFile(pPair->m_key, strDirectory, pPair->m_value);
 	}
 	// -------------------------------------------
 	
@@ -445,25 +445,11 @@ void CASCFontManager::DumpToJSEditor(CString strDirectory, bool bIsUnionFamily)
 #endif
 	
 		// скинем табнейл
-		ImageStudio::IImageTransforms* pTransform = NULL;
-		CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL, CLSCTX_ALL, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
-
-		VARIANT var;
-		var.vt = VT_UNKNOWN;
-		var.punkVal = (IUnknown*)pFrame;
-
 		CString strThumbnailPath = strDirectory + _T("\\Fonts_JS") + _T("\\thumbnail.png");
-
-		VARIANT_BOOL vbSuccess = VARIANT_FALSE;
-		CString _dst = _T("<ImageFile-SaveAsPng destinationpath=\"") + strThumbnailPath + _T("\" format=\"8888\"/>");
-		BSTR bs_dst = _dst.AllocSysString();
-		pTransform->SetSource(0, var);
-		pTransform->SetXml(bs_dst, &vbSuccess);
-		pTransform->Transform(&vbSuccess);
+		ImageStudio::SaveImageAsPNG((IUnknown*)pFrame, strThumbnailPath);	
 
 		RELEASEINTERFACE(pRenderer);
 		RELEASEINTERFACE(pFrame);
-		RELEASEINTERFACE(pTransform);
 
 		CFile oImageFile;
 		oImageFile.OpenFile(strThumbnailPath);

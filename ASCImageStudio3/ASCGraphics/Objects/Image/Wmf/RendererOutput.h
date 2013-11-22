@@ -1,6 +1,8 @@
 #ifndef _RENDERER_OUTPUT_H
 #define _RENDERER_OUTPUT_H
 
+#include "../../../stdafx.h"
+
 #include "..\..\..\Interfaces\ASCRenderer.h"
 #include "..\..\Structures.h"
 #include "WmfUtils.h"
@@ -1492,15 +1494,6 @@ private:
 				pBufferPtr += 4;
 			}
 
-			// Пишем во временный файл
-			ImageStudio::IImageTransforms *pTransform = NULL;
-			CoCreateInstance( __uuidof( ImageStudio::ImageTransforms ), NULL, CLSCTX_INPROC_SERVER, __uuidof(ImageStudio::IImageTransforms), (void **)(&pTransform) );
-			if ( !pTransform )
-			{
-				RELEASEINTERFACE( pInterface );
-				return false;
-			}
-
 			FILE *pTempFile = NULL;
 			CString wsTempFileName;
 			if ( !WmfOpenTempFile( &wsTempFileName, &pTempFile, _T("wb"), _T(".wmf0"), NULL ) ) 
@@ -1510,43 +1503,12 @@ private:
 			}
 			::fclose( pTempFile );
 
-			VARIANT vSource;
-			vSource.vt = VT_UNKNOWN;
-			vSource.punkVal = (IUnknown *)(pInterface);
-			pTransform->SetSource( 0, vSource );
-
-			CString sXml("<transforms><ImageFile-SaveAsPng destinationpath=\"");
-			sXml += wsTempFileName.GetBuffer();
-			sXml += "\"></ImageFile-SaveAsPng></transforms>";
-
-			BSTR bsXML = sXml.AllocSysString();
-
-			VARIANT_BOOL vbSuccess = VARIANT_FALSE;
-			pTransform->SetXml( bsXML, &vbSuccess );
-			if ( VARIANT_TRUE != vbSuccess )
-			{
-				::SysFreeString( bsXML );
-				RELEASEINTERFACE( pInterface );
-				RELEASEINTERFACE( pTransform );
-				_wunlink( wsTempFileName.GetBuffer() );
+			BOOL bRet = ImageStudio::SaveImageAsPNG(pInterface, wsTempFileName);
+			if (!bRet)
 				return false;
-			}
-
-			pTransform->Transform( &vbSuccess );
-			if ( VARIANT_TRUE != vbSuccess )
-			{
-				::SysFreeString( bsXML );
-				RELEASEINTERFACE( pInterface );
-				RELEASEINTERFACE( pTransform );
-				_wunlink( wsTempFileName.GetBuffer() );
-				return false;
-			}
-
-			::SysFreeString( bsXML );
+			
 			RELEASEINTERFACE( pInterface );
-			RELEASEINTERFACE( pTransform );
-
-
+			
 			m_oBrush.TexturePath = wsTempFileName;
 			m_oBrush.TextureMode = c_BrushTextureModeTile;
 			m_oBrush.Type = c_BrushTypeTexture;
@@ -1714,43 +1676,16 @@ private:
 			::fwrite( pBuffer, 1, unImageSize, pTempFile );
 			::fclose( pTempFile );
 
-			ImageStudio::IImageTransforms *pTransform = NULL;
-			CoCreateInstance( __uuidof( ImageStudio::ImageTransforms ), NULL, CLSCTX_INPROC_SERVER, __uuidof(ImageStudio::IImageTransforms), (void **)(&pTransform) );
-			if ( !pTransform )
-				return false;
-
-			CString sXml("<transforms><ImageFile-LoadImage sourcepath=\"");
-			sXml += wsTempFileName.GetBuffer();
-			sXml += "\"></ImageFile-LoadImage>";
-
-			BSTR bsXML = sXml.AllocSysString();
-
-			VARIANT_BOOL vbSuccess = VARIANT_FALSE;
-			pTransform->SetXml( bsXML, &vbSuccess );
-			if ( VARIANT_TRUE != vbSuccess )
-			{
-				::SysFreeString( bsXML );
-				RELEASEINTERFACE( pTransform );
-				_wunlink( wsTempFileName.GetBuffer() );
-				return false;
-			}
-
-			pTransform->Transform( &vbSuccess );
-			if ( VARIANT_TRUE != vbSuccess )
-			{
-				::SysFreeString( bsXML );
-				RELEASEINTERFACE( pTransform );
-				_wunlink( wsTempFileName.GetBuffer() );
-				return false;
-			}
+			BSTR bsFilePath = wsTempFileName.AllocSysString();
+			IUnknown* punkFrame = ImageStudio::ISLoadImage(bsFilePath);
+			SysFreeString(bsFilePath);
 
 			// TO DO: Сделать чтение
+			RELEASEINTERFACE(punkFrame);
 
 			//VARIANT oVar;
 			//pTransform->GetResult( 0, &oVar );
 
-			::SysFreeString( bsXML );
-			RELEASEINTERFACE( pTransform );
 			::_wunlink( wsTempFileName.GetBuffer() );
 
 

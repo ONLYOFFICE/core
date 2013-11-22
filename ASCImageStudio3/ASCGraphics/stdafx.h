@@ -43,7 +43,7 @@
 #include <atlctl.h>
 #include <atlhost.h>
 #include <atlcoll.h>
-#include <atldefine.h>
+#include "../../Common/atldefine.h"
 
 #include "Gdiplus.h"
 #pragma comment(lib, "gdiplus.lib")
@@ -65,10 +65,100 @@
 using namespace ATL;
 
 #include "../../Common/ASCUtils.h"
+#include "../../Common/Config.h"
 
 #ifdef BUILD_CONFIG_OPENSOURCE_VERSION
 #import "../../Redist/OfficeCore.dll"					named_guids raw_interfaces_only rename_namespace("OfficeCore")
+
+namespace MediaCore
+{
+	typedef OfficeCore::IUncompressedFrame IAVSUncompressedVideoFrame;
+	const GUID CLSID_CUncompressedVideoFrame = OfficeCore::CLSID_CUncompressedFrame;
+	const GUID IID_IUncompressedVideoFrame = OfficeCore::IID_IUncompressedFrame;
+}
+
 #else
 #import "../../Redist/ASCMediaCore3.dll"				named_guids raw_interfaces_only rename_namespace("MediaCore")
 #import "../../Redist/ASCImageStudio3.dll"				named_guids raw_interfaces_only rename_namespace("ImageStudio")
 #endif // BUILD_CONFIG_OPENSOURCE_VERSION
+
+namespace ImageStudio
+{
+	static IUnknown* ISLoadImage(BSTR filename)
+	{
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+		OfficeCore::IImageGdipFilePtr pImageFile;
+		pImageFile.CreateInstance(OfficeCore::CLSID_CImageGdipFile);
+
+		pImageFile->OpenFile(filename);
+
+		IUnknown* punkFrame = NULL;
+		pImageFile->get_Frame(&punkFrame);
+		return punkFrame;
+#else
+		ImageStudio::IImageTransforms* pTransforms = NULL;
+		CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL, CLSCTX_INPROC, ImageStudio::IID_IImageTransforms, (void**)&pTransforms); 
+
+		if (NULL == pTransforms)
+			return NULL;
+
+		IUnknown* pResult = NULL;
+
+		CStringW strXml = L"<ImageFile-LoadImage sourcepath='";
+		strXml += CStringW(filename);
+		strXml += L"'/>";
+
+		VARIANT_BOOL vbRes = VARIANT_FALSE;
+		BSTR bsXml = strXml.AllocSysString();
+		pTransforms->SetXml(bsXml, &vbRes);
+		pTransforms->Transform(&vbRes);
+
+		SysFreeString(bsXml);
+
+		VARIANT var;
+		pTransforms->GetResult(0, &var);
+
+		pResult = var.punkVal;
+		var.punkVal = NULL;
+
+		RELEASEINTERFACE(pTransforms);
+
+		return pResult;
+#endif // BUILD_CONFIG_OPENSOURCE_VERSION
+	}
+
+	static BOOL SaveImageAsPNG(IUnknown* punkFrame, CString file)
+	{
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+		OfficeCore::IImageGdipFilePtr pImageFile;
+		pImageFile.CreateInstance(OfficeCore::CLSID_CImageGdipFile);
+
+		pImageFile->put_Frame(punkFrame);
+		BSTR bsFile = file.AllocSysString();
+		HRESULT hr = pImageFile->SaveFile(bsFile, 4); 
+		
+		return (hr == S_OK);		
+#else
+		ImageStudio::IImageTransforms* pTransform = NULL;
+		CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL ,CLSCTX_INPROC_SERVER, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
+
+		VARIANT var;
+		var.vt = VT_UNKNOWN;
+		var.punkVal = punkFrame;
+		pTransform->SetSource(0, var);
+
+		CString strXml = _T("<transforms><ImageFile-SaveAsPng destinationpath=\"") + file + _T("\" format=\"888\"/></transforms>");
+
+		VARIANT_BOOL vbSuccess = VARIANT_FALSE;
+		BSTR bsXml = strXml.AllocSysString();
+		pTransform->SetXml(bsXml, &vbSuccess);
+		SysFreeString(bsXml);
+
+		pTransform->Transform(&vbSuccess);
+
+		RELEASEINTERFACE(pTransform);
+
+		return TRUE;
+#endif // BUILD_CONFIG_OPENSOURCE_VERSION		
+	}
+}

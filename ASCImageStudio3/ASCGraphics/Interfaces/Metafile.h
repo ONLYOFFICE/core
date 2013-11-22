@@ -81,38 +81,6 @@ public:
 		return 0;
 	}
 
-	IUnknown* ISLoadImage(BSTR filename)
-	{
-		ImageStudio::IImageTransforms* pTransforms = NULL;
-		CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL, CLSCTX_INPROC, ImageStudio::IID_IImageTransforms, (void**)&pTransforms); 
-
-		if (NULL == pTransforms)
-			return NULL;
-
-		IUnknown* pResult = NULL;
-
-		CStringW strXml = L"<ImageFile-LoadImage sourcepath='";
-		strXml += CStringW(filename);
-		strXml += L"'/>";
-
-		VARIANT_BOOL vbRes = VARIANT_FALSE;
-		BSTR bsXml = strXml.AllocSysString();
-		pTransforms->SetXml(bsXml, &vbRes);
-		pTransforms->Transform(&vbRes);
-
-		SysFreeString(bsXml);
-
-		VARIANT var;
-		pTransforms->GetResult(0, &var);
-
-		pResult = var.punkVal;
-		var.punkVal = NULL;
-
-		RELEASEINTERFACE(pTransforms);
-
-		return pResult;
-	}
-
 	void DrawOnRenderer(IASCRenderer* pRenderer, BSTR strFile, double dX, double dY, double dW, double dH, BOOL bIsFromFileUse = TRUE)
 	{
 		if (NULL == pRenderer)
@@ -154,7 +122,7 @@ public:
 			}
 			else
 			{
-				IUnknown* pImage = ISLoadImage(strFile);
+				IUnknown* pImage = ImageStudio::ISLoadImage(strFile);
 				pRenderer->DrawImage(pImage, dX, dY, dW, dH);
 				RELEASEINTERFACE(pImage);
 			}

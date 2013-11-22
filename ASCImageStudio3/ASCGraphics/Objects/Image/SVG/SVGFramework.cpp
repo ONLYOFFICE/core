@@ -2569,26 +2569,7 @@ namespace SVG
 	}
 	BOOL PatternImage::SaveImage(IUnknown* punkFrame, CString file)
 	{
-		ImageStudio::IImageTransforms* pTransform = NULL;
-		CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL ,CLSCTX_INPROC_SERVER, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
-
-		VARIANT var;
-		var.vt = VT_UNKNOWN;
-		var.punkVal = punkFrame;
-		pTransform->SetSource(0, var);
-
-		CString strXml = _T("<transforms><ImageFile-SaveAsPng destinationpath=\"") + file + _T("\" format=\"888\"/></transforms>");
-
-		VARIANT_BOOL vbSuccess = VARIANT_FALSE;
-		BSTR bsXml = strXml.AllocSysString();
-		pTransform->SetXml(bsXml, &vbSuccess);
-		SysFreeString(bsXml);
-
-		pTransform->Transform(&vbSuccess);
-
-		RELEASEINTERFACE(pTransform);
-
-		return TRUE;
+		return ImageStudio::SaveImageAsPNG(punkFrame, file);		
 	}
 	Point PatternImage::GetNormalizeFactor()
 	{

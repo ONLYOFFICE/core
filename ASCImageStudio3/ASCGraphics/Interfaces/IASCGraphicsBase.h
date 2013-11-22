@@ -17,10 +17,10 @@ const long c_ag_PageUnitInch					= 2;
 const long c_ag_PageUnitMillimeter				= 3;
 
 [object, uuid("01CD8265-7CF2-4af6-819D-73B27542D8CA"), dual, pointer_default(unique)]
-__interface IAVSGraphicsBase : IDispatch
+__interface IASCGraphicsBase : IDispatch
 {
 	[id(1001)]			HRESULT SetAdditionalParam([in] BSTR ParamName, [in] VARIANT ParamValue);
 	[id(1002)]			HRESULT GetAdditionalParam([in] BSTR ParamName, [out, retval] VARIANT* ParamValue);
 
-	[id(1003)]			HRESULT CreateDublicate([out, retval] IAVSGraphicsBase** ppGraphicsBase);
+	[id(1003)]			HRESULT CreateDublicate([out, retval] IASCGraphicsBase** ppGraphicsBase);
 };

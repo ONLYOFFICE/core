@@ -1,9 +1,8 @@
 #pragma once
-//#include "..\stdafx.h"
-#include "..\Interfaces\XmlUtils.h"
-#include "..\..\..\..\Common\ASCUtils.h"
-#include "./../Interfaces/ASCRenderer.h"
-#include "./../agg/ap_aggplusenums.h"
+#include "../../../Common\ASCUtils.h"
+#include "../Interfaces/ASCRenderer.h"
+#include "../../../Common/XmlUtils.h"
+#include "../agg/ap_aggplusenums.h"
 
 #include <gdiplus.h>
 
@@ -335,7 +334,7 @@ namespace NSStructures
 				(DashStyle == pPen->DashStyle) && (LineStartCap == pPen->LineStartCap) &&
 				(LineEndCap == pPen->LineEndCap) && (LineJoin == pPen->LineJoin));
 		}
-		void SetToRenderer(IAVSRenderer *pRenderer)
+		void SetToRenderer(IASCRenderer *pRenderer)
 		{
 			pRenderer->put_PenColor(Color);
 			pRenderer->put_PenAlpha(Alpha);
@@ -809,7 +808,7 @@ namespace NSStructures
 					(c_BrushTypeHatch1 <= Type && c_BrushTypeHatch53 >= Type));
 		}
 
-		void	SetToRenderer(IAVSRenderer *pRenderer)
+		void	SetToRenderer(IASCRenderer *pRenderer)
 		{
 			Type = ConstantCompatible(Type);
 			pRenderer->put_BrushType(Type);
@@ -836,7 +835,7 @@ namespace NSStructures
 			}
 		}
 
-		void	SetToRenderer(IAVSRenderer *pRenderer, const float &fTransparency)
+		void	SetToRenderer(IASCRenderer *pRenderer, const float &fTransparency)
 		{
 			Type = ConstantCompatible(Type);
 			pRenderer->put_BrushType(Type);
@@ -992,7 +991,7 @@ namespace NSStructures
 			Underline = (byte)(0x7C & lStyle) >> 2;
 			Strikeout = (byte)(0x0180 & lStyle) >> 7;
 		}
-		void	SetToRenderer(IAVSRenderer *pRenderer)
+		void	SetToRenderer(IASCRenderer *pRenderer)
 		{
 			BSTR bstrName = Name.AllocSysString();			
 			pRenderer->put_FontName(bstrName);			

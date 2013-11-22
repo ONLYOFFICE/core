@@ -1,7 +1,7 @@
 #pragma once
 #include "ASCRenderer.h"
-#include "..\DocumentViewer\Metafile.h"
-#include "..\..\ASCOfficeStudio\Common\OfficeFileTemplate.h"
+#include "Metafile.h"
+#include "..\..\..\Common\OfficeFileTemplate.h"
 
 
 #define PROPERTY_META(NameBase, Name, Type)				\
@@ -19,7 +19,7 @@
 	}
 
 [coclass, uuid("40D33F34-B681-46be-8649-FFBE7146569D"), threading(apartment), vi_progid("AVSMetafile"), progid("AVSMetafile.1"), version(1.0)]
-class ATL_NO_VTABLE CAVSMetafile :	public IAVSMetafile, public IAVSRenderer2
+class ATL_NO_VTABLE CASCMetafile :	public IASCMetafile, public IASCRenderer2
 {
 protected:
 
@@ -34,7 +34,7 @@ protected:
 
 public:
 
-	CAVSMetafile() : m_oPage()
+	CASCMetafile() : m_oPage()
 	{
 		m_pDocInstance	= NULL;
 		m_lPageIndex	= NULL;
@@ -42,7 +42,7 @@ public:
 		m_lCommandType  = c_nNone;
 	}
 
-	~CAVSMetafile()
+	~CASCMetafile()
 	{
 		RELEASEINTERFACE(m_pDocInstance);
 	}
@@ -312,8 +312,8 @@ public:
 	// отрисовка страницы
 	STDMETHOD(Draw)(IUnknown* punkRenderer, BOOL* pBreak)
 	{		
-		IAVSRenderer* pRenderer = NULL;
-		punkRenderer->QueryInterface(__uuidof(IAVSRenderer), (void**)&pRenderer);
+		IASCRenderer* pRenderer = NULL;
+		punkRenderer->QueryInterface(__uuidof(IASCRenderer), (void**)&pRenderer);
 
 		if (NULL == pRenderer)
 			return S_FALSE;
@@ -339,8 +339,8 @@ public:
 			return S_FALSE;
 
 		//C2DRenderer* p2D = dynamic_cast<C2DRenderer*>(pRenderer);
-		IAVSRenderer* pRen = NULL;
-		pRenderer->QueryInterface(__uuidof(IAVSRenderer), (void**)&pRen);
+		IASCRenderer* pRen = NULL;
+		pRenderer->QueryInterface(__uuidof(IASCRenderer), (void**)&pRen);
 
 		if (NULL == m_pDocInstance)
 		{
@@ -442,7 +442,6 @@ public:
 	}
 	STDMETHOD(SetAdditionalCommands)(BSTR bsXML)
 	{
-		m_oPage.SetAdditionalCommands(bsXML);
 		return S_OK;
 	}
 

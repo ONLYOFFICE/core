@@ -2,8 +2,7 @@
 #include "SVGFramework.h"
 
 #include "..\..\..\Interfaces\ASCGraphicsRenderer.h"
-#include "..\..\..\Interfaces\ImageSerializeObjects2.h"
-#include "..\..\..\..\Common\MediaFormatDefine.h"
+#include "..\..\..\..\..\Common\MediaFormatDefine.h"
 
 #define ADD_COLOR( COLOR, R, G, B ) m_Table.Add( _T(##COLOR), ( ##R << 16 ) | ( ##G << 8 ) | ##B );
 
@@ -460,7 +459,7 @@ namespace SVG
 
 namespace SVG
 {
-	BOOL Painter::Draw(IRefStorage* model, IAVSRenderer* render, const UnitSystem& oUs)
+	BOOL Painter::Draw(IRefStorage* model, IASCRenderer* render, const UnitSystem& oUs)
 	{
 		if (NULL == model || NULL == render)
 			return FALSE;
@@ -634,7 +633,7 @@ namespace SVG
 		if (!m_bEnableFonts)
 			return FALSE;
 
-		IAVSFontManager* fontManager = GetFontManager();
+		IASCFontManager* fontManager = GetFontManager();
 		if (NULL == fontManager)
 			return FALSE;
 
@@ -2456,7 +2455,7 @@ namespace SVG
 		if (m_render)
 			return TRUE;
 
-		if (SUCCEEDED(CoCreateInstance(__uuidof(CAVSGraphicsRenderer), NULL, CLSCTX_ALL, __uuidof(IAVSGraphicsRenderer), (void**)&m_render)))
+		if (SUCCEEDED(CoCreateInstance(__uuidof(CASCGraphicsRenderer), NULL, CLSCTX_ALL, __uuidof(IASCGraphicsRenderer), (void**)&m_render)))
 		{
 			m_render->CreateFromMediaData(frame, 0, 0, frameWidth, frameHeight);
 

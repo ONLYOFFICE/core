@@ -3,9 +3,9 @@
 #include "..\Objects\Structures.h"
 #include "..\agg\ASCWrapper\Graphics.h"
 
-namespace NSStructuresAVS
+namespace NSStructuresASC
 {
-	inline void DrawBlurString(int currentBlurSize, Aggplus::CGraphics* Gr, IAVSFontManager* font, 
+	inline void DrawBlurString(int currentBlurSize, Aggplus::CGraphics* Gr, IASCFontManager* font, 
 		Aggplus::CStringFormat* format, Aggplus::CBrush* brush, BSTR Text, double x, double y, double width, double height)
 	{
 		for(int j = 0; j < currentBlurSize; j++) 
@@ -196,7 +196,7 @@ namespace NSStructuresAVS
 		{
 		}
 
-		void Draw(Aggplus::CGraphics* Gr, IAVSFontManager* font, BSTR Text, double x, double y, double width, double height, BYTE alpha = 0xFF)
+		void Draw(Aggplus::CGraphics* Gr, IASCFontManager* font, BSTR Text, double x, double y, double width, double height, BYTE alpha = 0xFF)
 		{
 			if (!Visible || !Gr)
 				return;
@@ -246,7 +246,7 @@ namespace NSStructuresAVS
 		{
 		}
 
-		void Draw(Aggplus::CGraphics* Gr, IAVSFontManager* font, BSTR Text, double x, double y, double width, double height, BYTE alpha = 0xFF)
+		void Draw(Aggplus::CGraphics* Gr, IASCFontManager* font, BSTR Text, double x, double y, double width, double height, BYTE alpha = 0xFF)
 		{
 			if (!Visible || !Gr)
 				return;

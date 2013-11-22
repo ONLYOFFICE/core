@@ -5,7 +5,7 @@
 #include "IASCGlyphImage.h"
 
 [object, uuid("472691CD-1FC6-424a-A44E-8E7549ECDCFF"), dual, pointer_default(unique)]
-__interface IAVSFontManager : IAVSGraphicsBase
+__interface IASCFontManager : IASCGraphicsBase
 {
 	//----- Открытие/закрытие шрифта --------------------------------------------------------------------
 	[id(001)]  HRESULT Initialize([in] BSTR bsXmlOptions);
@@ -46,9 +46,8 @@ __interface IAVSFontManager : IAVSGraphicsBase
 	[id(301)]  HRESULT LoadString([in] BSTR bsString, [in] float fX, [in] float fY);
 	[id(302)]  HRESULT LoadString2([in] BSTR bsString, [in] float fX, [in] float fY);
 	[id(303)]  HRESULT GetStringPath([out, retval] BSTR *pbsXmlPath);
-	[id(304)]  HRESULT GetStringPath2([out, retval] IAVSGraphicsBase **ppPath);
 	[id(305)]  HRESULT GetNextChar([out] IUnknown **ppImage, [out] float *pfX, [out] float *pfY, [out, retval] VARIANT_BOOL *pvbSuccess);
-	[id(306)]  HRESULT GetNextChar2([out] IAVSGlyphImage **ppImage, [out] float *pfX, [out] float *pfY, [out, retval] VARIANT_BOOL *pvbSuccess);
+	[id(306)]  HRESULT GetNextChar2([out] IGlyphImage **ppImage, [out] float *pfX, [out] float *pfY, [out, retval] VARIANT_BOOL *pvbSuccess);
 	[id(307)]  HRESULT GetCharBBox([out] float *pfX, [out] float *pfY, [out] float *pfWidth, [out] float *pfHeight);
 	[id(308)]  HRESULT GetUnderline([out] float *pfStartX, [out] float *pfStartY, [out] float *pfEndX, [out] float *pfEndY, [out] float *pfSize);
 	[id(309)]  HRESULT MeasureString([out] float *pfX, [out] float *pfY, [out] float *pfWidth, [out] float *pfHeight);
@@ -70,7 +69,7 @@ __interface IAVSFontManager : IAVSGraphicsBase
 };
 
 [object, uuid("2A13E1F7-424C-4996-A39B-A1449C9F232C"), dual, pointer_default(unique)]
-__interface IAVSFontManager2 : IDispatch
+__interface IASCFontManager2 : IDispatch
 {
 	[id(1001)]  HRESULT UseDefaultFont([in] BOOL bUseDefFont);
 	[id(1002)]  HRESULT GetFontPath([out]BSTR *pbsFontPath);

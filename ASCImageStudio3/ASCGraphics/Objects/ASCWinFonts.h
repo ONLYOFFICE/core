@@ -13,11 +13,11 @@
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
 #endif
 
-// CAVSWinFonts
+// CASCWinFonts
 
 [
 	coclass,
-	default(IAVSWinFonts),
+	default(IASCWinFonts),
 	threading(apartment),
 	vi_progid("AVSOfficeWinFonts.WinFonts"),
 	progid("AVSOfficeWinFonts.WinFonts.1"),
@@ -25,7 +25,7 @@
 	uuid("051DCF8B-2932-4f04-A50F-5BDDC1DF3384"),
 	helpstring("WinFonts Class")
 ]
-class ATL_NO_VTABLE CAVSWinFonts : public IAVSWinFonts
+class ATL_NO_VTABLE CASCWinFonts : public IASCWinFonts
 {
 
 private:
@@ -39,7 +39,7 @@ private:
 	CString	m_strDumpFontSelectionFile; // "debug" teamlab server fonts
 
 public:
-	CAVSWinFonts()
+	CASCWinFonts()
 	{
 		m_strDumpFontSelectionFile = _T("");
 		m_strInputFontDirectory = _T("");
@@ -188,7 +188,7 @@ private:
 
 public:
 
-	//----- IAVSGraphicsBase ----------------------------------------------------------------------------
+	//----- IASCGraphicsBase ----------------------------------------------------------------------------
 	STDMETHOD(SetAdditionalParam)(BSTR ParamName, VARIANT ParamValue)
 	{
 		CString sParamName = ParamName;
@@ -207,7 +207,7 @@ public:
 	{
 		return S_OK;
 	}
-	STDMETHOD(CreateDublicate)(IAVSGraphicsBase** ppGraphicsBase)
+	STDMETHOD(CreateDublicate)(IASCGraphicsBase** ppGraphicsBase)
 	{
 		return S_OK;
 	}
@@ -217,7 +217,7 @@ public:
 class CThreadFonts : public CBaseThread
 {
 private:
-	IAVSWinFonts* m_pFonts;
+	IASCWinFonts* m_pFonts;
 
 public:
 	CThreadFonts() : CBaseThread(0)
@@ -235,7 +235,7 @@ protected:
 	virtual DWORD ThreadProc()
 	{
 		CoInitialize(NULL);
-		CoCreateInstance(__uuidof(CAVSWinFonts), NULL, CLSCTX_INPROC, __uuidof(IAVSWinFonts), (void**)&m_pFonts);
+		CoCreateInstance(__uuidof(CASCWinFonts), NULL, CLSCTX_INPROC, __uuidof(IASCWinFonts), (void**)&m_pFonts);
 		CoUninitialize();
 
 		m_bRunThread = FALSE;

@@ -4,7 +4,7 @@
 #include "IASCGraphicsBase.h"
 
 [object, uuid("280F9CFE-D5F6-4594-B6C5-A7F3D6984CF2"), dual, pointer_default(unique)]
-__interface IAVSGlyphImage : IAVSGraphicsBase
+__interface IGlyphImage : IASCGraphicsBase
 {
 	[id(101), propget]	HRESULT Width([out, retval] LONG* width);
 
@@ -16,7 +16,7 @@ __interface IAVSGlyphImage : IAVSGraphicsBase
 };
 
 [object, uuid("1F21202B-9983-4164-B6B8-1BF82D66BF90"), dual, pointer_default(unique)]
-__interface IAVSGlyphImage2 : IAVSGlyphImage
+__interface IGlyphImage2 : IGlyphImage
 {
 	[id(401)]			HRESULT Create([in] BYTE* pBuffer, [in] LONG lX, [in] LONG lY, [in] LONG lWidth, [in] LONG lHeight, [in] BOOL bIsFreeData);
 };

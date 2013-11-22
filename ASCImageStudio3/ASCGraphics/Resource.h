@@ -3,7 +3,7 @@
 // Used by AVSGraphics.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_AVSGRAPHICS                 101
+#define IDR_ASCGRAPHICS                 101
 #define IDC_CURSOR_HAND_CLOSE           202
 #define IDC_CURSOR_HAND                 203
 #define IDC_CURSOR_LINK                 204

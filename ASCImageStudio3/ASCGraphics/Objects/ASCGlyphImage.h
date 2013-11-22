@@ -1,18 +1,17 @@
-// CASCGlyphImage.h : Declaration of the CAVSGlyphImage
+// CASCGlyphImage.h : Declaration of the CGlyphImage
 
 #pragma once
 #include "..\stdafx.h"
 #include "..\resource.h"       // main symbols
-#include "Registration.h"
 
 #include "..\Interfaces\IASCGlyphImage.h"
 
 #include "Font\GlyphBitmap.h"
 
-// CAVSGlyphImage
-[coclass, uuid("F891A27A-A985-4b85-BCB8-039AAC2A9A76"), threading(apartment), vi_progid("AVSGraphics.GlyphImage"), progid("AVSGraphics.GlyphImage"), version(1.0), support_error_info(IAVSGlyphImage), registration_script("control.rgs")]
-class ATL_NO_VTABLE CAVSGlyphImage
-	:	public IAVSGlyphImage2
+// CGlyphImage
+[coclass, uuid("F891A27A-A985-4b85-BCB8-039AAC2A9A76"), threading(apartment), vi_progid("AVSGraphics.GlyphImage"), progid("AVSGraphics.GlyphImage"), version(1.0), support_error_info(IGlyphImage), registration_script("control.rgs")]
+class ATL_NO_VTABLE CGlyphImage
+	:	public IGlyphImage2
 {
 
 public:
@@ -20,13 +19,13 @@ public:
 
 public:
 
-	CAVSGlyphImage() : m_oGlyph()
+	CGlyphImage() : m_oGlyph()
 	{
 		m_oGlyph.bFreeData	= false;
 		m_oGlyph.pData		= NULL;
 	}
 
-	~CAVSGlyphImage()
+	~CGlyphImage()
 	{
 		Destroy();
 	}
@@ -40,15 +39,15 @@ public:
 	{
 		return S_OK;
 	}
-	STDMETHOD(CreateDublicate)(IAVSGraphicsBase** ppGraphicsBase)
+	STDMETHOD(CreateDublicate)(IASCGraphicsBase** ppGraphicsBase)
 	{
 		if (NULL == ppGraphicsBase)
 			return S_FALSE;
 
 		RELEASEINTERFACE((*ppGraphicsBase));
-		if (SUCCEEDED(CoCreateInstance(__uuidof(CAVSGlyphImage), NULL, CLSCTX_INPROC, __uuidof(IAVSGraphicsBase), (void**)ppGraphicsBase)))
+		if (SUCCEEDED(CoCreateInstance(__uuidof(CGlyphImage), NULL, CLSCTX_INPROC, __uuidof(IASCGraphicsBase), (void**)ppGraphicsBase)))
 		{
-			((CAVSGlyphImage*)(*ppGraphicsBase))->m_oGlyph = m_oGlyph;
+			((CGlyphImage*)(*ppGraphicsBase))->m_oGlyph = m_oGlyph;
 			return S_OK;
 		}
 		return S_FALSE;

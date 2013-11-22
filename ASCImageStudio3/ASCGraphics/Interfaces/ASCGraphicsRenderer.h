@@ -3,18 +3,18 @@
 #include "GraphicsRenderer.h"
 
 [coclass, uuid("F7D3319F-9B41-4d62-80A0-9D151860E915"), threading(apartment), vi_progid("GraphicsRenderer"), progid("GraphicsRenderer.1"), version(1.0)]
-class ATL_NO_VTABLE CAVSGraphicsRenderer :	public IAVSGraphicsRenderer
+class ATL_NO_VTABLE CASCGraphicsRenderer :	public IASCGraphicsRenderer
 {
 public:
 	CGraphicsRenderer m_oRenderer;
 
 public:
-	CAVSGraphicsRenderer() : m_oRenderer()
+	CASCGraphicsRenderer() : m_oRenderer()
 	{
-		m_oRenderer.SetRenderer((IAVSRenderer*)this);
+		m_oRenderer.SetRenderer((IASCRenderer*)this);
 	}
 
-	~CAVSGraphicsRenderer()
+	~CASCGraphicsRenderer()
 	{
 	}
 
@@ -503,7 +503,7 @@ public:
 		else
 		if (_T("FontManager") == strParamName)
 		{
-			SetFontManager((IAVSFontManager*)ParamValue.punkVal);
+			SetFontManager((IASCFontManager*)ParamValue.punkVal);
 			return S_OK;
 		}
 		else if ( _T("BaseTransform") == strParamName && VT_ARRAY == ParamValue.vt )
@@ -572,7 +572,7 @@ public:
 			ParamValue->vt		= VT_UNKNOWN;
 			ParamValue->punkVal	= NULL;
 
-			IAVSFontManager* pManager = m_oRenderer.GetFontManager();
+			IASCFontManager* pManager = m_oRenderer.GetFontManager();
 			if (NULL != pManager)
 			{
 				pManager->QueryInterface(IID_IUnknown, (void**)&ParamValue->punkVal);
@@ -583,7 +583,7 @@ public:
 		return S_OK;
 	}
 
-// AVSGraphicsRenderer
+// ASCGraphicsRenderer
 	STDMETHOD(CreateFromMediaData)(IUnknown* punkMediaData, double dLeft, double dTop, double dWidth, double dHeight)
 	{
 		m_oRenderer.CreateFromMediaData(punkMediaData);
@@ -595,9 +595,9 @@ public:
 		if (NULL == pHDC)
 			return S_FALSE;
 
-		IAVSFontManager* pManager = NULL;
+		IASCFontManager* pManager = NULL;
 		if (NULL != punkFontManager)
-			punkFontManager->QueryInterface(__uuidof(IAVSFontManager), (void**)&pManager);
+			punkFontManager->QueryInterface(__uuidof(IASCFontManager), (void**)&pManager);
 
 		m_oRenderer.CreateFromHDC((HDC)(*pHDC), pManager, dWidthMM, dHeightMM, dLeft, dTop, dWidth, dHeight, dAngle);
 
@@ -615,7 +615,7 @@ public:
 	}
 
 public:
-	STDMETHOD(SetFontManager)(IAVSFontManager* pMan)
+	STDMETHOD(SetFontManager)(IASCFontManager* pMan)
 	{
 		m_oRenderer.SetFontManager(pMan);
 		return S_OK;
@@ -661,7 +661,7 @@ public:
 
 		m_oRenderer.m_oBrush.m_arrSubColors.RemoveAll();
 
-		NSStructuresAVS::CBrush::TSubColor tSubColor;
+		NSStructuresASC::CBrush::TSubColor tSubColor;
 
 		for( int i = 0; i < count; i++ )
 		{

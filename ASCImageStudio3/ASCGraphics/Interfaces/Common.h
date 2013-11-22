@@ -1,9 +1,6 @@
 #pragma once
 #include "..\stdafx.h"
 
-#define AVS_OFFICEEDITOR_STATUS_NONE					0
-#define AVS_OFFICEEDITOR_STATUS_STARTED					1
-
 static LPCTSTR g_cpszXMLMultiSource				= _T("MultiSource");
 static LPCTSTR g_cpszXMLSingleSource			= _T("SingleSource");
 static LPCTSTR g_cpszXMLVideoSources			= _T("VideoSources");

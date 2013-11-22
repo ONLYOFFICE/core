@@ -2,9 +2,9 @@
 #include "..\stdafx.h"
 #include "..\agg\ASCWrapper\GraphicsPath.h"
 
-// IAVSGraphicSimpleComverter
+// IASCGraphicSimpleComverter
 [object, uuid("45EC6624-B5E1-4e60-ADD4-8DD310B6CF96"), dual, pointer_default(unique)]
-__interface IAVSGraphicSimpleComverter : IDispatch
+__interface IASCGraphicSimpleComverter : IDispatch
 {
 	[id(0), propget]	HRESULT Renderer([out, retval] IUnknown** ppunkRenderer);
 	[id(0), propput]	HRESULT Renderer([in] IUnknown* punkRenderer);
@@ -19,9 +19,9 @@ __interface IAVSGraphicSimpleComverter : IDispatch
 	[id(107)]			HRESULT PathCommandEnd();
 	[id(108)]			HRESULT PathCommandStart();
 	[id(109)]			HRESULT PathCommandGetCurrentPoint([out] double* fX, [out] double* fY);
-	[id(110)]			HRESULT PathCommandText([in] BSTR bsText, [in] IAVSFontManager* pManager, 
+	[id(110)]			HRESULT PathCommandText([in] BSTR bsText, [in] IASCFontManager* pManager, 
 												[in] double fX, [in] double fY, [in] double fWidth, [in] double fHeight, [in] double fBaseLineOffset);
-	[id(111)]			HRESULT PathCommandTextEx([in] BSTR bsText, [in] BSTR bsGidText, [in] BSTR bsSourceCodeText, [in] IAVSFontManager* pManager, 
+	[id(111)]			HRESULT PathCommandTextEx([in] BSTR bsText, [in] BSTR bsGidText, [in] BSTR bsSourceCodeText, [in] IASCFontManager* pManager, 
 												  [in] double fX, [in] double fY, [in] double fWidth, [in] double fHeight, [in] double fBaseLineOffset, [in] DWORD lFlags);
 
 	[id(112)]			HRESULT PathCommandGetBounds([out] double* dLeft, [out] double* dTop, [out] double* dWidth, [out] double* dHeight);
@@ -31,25 +31,25 @@ __interface IAVSGraphicSimpleComverter : IDispatch
 };
 
 [dispinterface, uuid("DA3B4916-0C9E-4845-BD8C-FFC9CE6D3DB2")]
-__interface _IAVSGraphicSimpleComverterEvents
+__interface _IASCGraphicSimpleComverterEvents
 {
 };
 
-// CAVSGraphicSimpleComverter
+// CASCGraphicSimpleComverter
 [coclass, uuid("48AC5FEC-13E9-413b-BCB5-E74B55ACF4D3"), event_source(com), threading(apartment), vi_progid("SimpleComverter"), progid("SimpleComverter.1"), version(1.0)]
-class ATL_NO_VTABLE CAVSGraphicSimpleComverter : public IAVSGraphicSimpleComverter
+class ATL_NO_VTABLE CASCGraphicSimpleComverter : public IASCGraphicSimpleComverter
 {
 protected:
 	Aggplus::CGraphicsPathSimpleConverter m_oConverter;
 	
 public:
-	__event __interface _IAVSGraphicSimpleComverterEvents;
+	__event __interface _IASCGraphicSimpleComverterEvents;
 
-	CAVSGraphicSimpleComverter() : m_oConverter()
+	CASCGraphicSimpleComverter() : m_oConverter()
 	{
 	}
 
-	~CAVSGraphicSimpleComverter()
+	~CASCGraphicSimpleComverter()
 	{
 	}
 
@@ -113,11 +113,11 @@ public:
 		return S_OK;
 	}
 
-	STDMETHOD(PathCommandText)(BSTR bsText, IAVSFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
+	STDMETHOD(PathCommandText)(BSTR bsText, IASCFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
 	{
 		return (true == m_oConverter.PathCommandText(bsText, pManager, fX, fY, fWidth, fHeight, fBaseLineOffset)) ? S_OK : S_FALSE;
 	}
-	STDMETHOD(PathCommandTextEx)(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, IAVSFontManager* pManager, 
+	STDMETHOD(PathCommandTextEx)(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, IASCFontManager* pManager, 
 												  double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
 	{
 		return (true == m_oConverter.PathCommandTextEx(bsText, bsGidText, bsSourceCodeText, pManager,
@@ -138,7 +138,7 @@ public:
 		if (NULL == ppunkRenderer)
 			return S_FALSE;
 
-		IAVSRenderer* pRenderer = m_oConverter.GetRenderer();
+		IASCRenderer* pRenderer = m_oConverter.GetRenderer();
 
 		if (NULL == pRenderer)
 			return S_FALSE;
@@ -149,7 +149,7 @@ public:
 	
 	STDMETHOD(put_Renderer)(IUnknown* punkRenderer)
 	{
-		m_oConverter.SetRenderer((IAVSRenderer*)punkRenderer);
+		m_oConverter.SetRenderer((IASCRenderer*)punkRenderer);
 		return S_OK;
 	}
 };

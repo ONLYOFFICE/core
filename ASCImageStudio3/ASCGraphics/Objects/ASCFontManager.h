@@ -2,7 +2,6 @@
 
 #pragma once
 #include "../Interfaces/IASCFontManager.h"
-#include "../Interfaces/IASCGraphicsPath.h"
 #include "../Interfaces/IASCWinFonts.h"
 #include "../Objects/ASCWinFonts.h"
 
@@ -20,10 +19,9 @@
 #include "Font/WinFontStorage.h"
 
 #include "ASCGlyphImage.h"
-#include "ASCGraphicsPath.h"
 
 #include "TimeMeasurer.h"
-#include "../Interfaces/XmlUtils.h"
+#include "../../../Common/XmlUtils.h"
 #include "../../../Common/OfficeDrawing/File.h"
 
 #include FT_ADVANCES_H
@@ -37,7 +35,7 @@
 
 [
 	coclass,
-	default(IAVSFontManager),
+	default(IASCFontManager),
 	threading(apartment),
 	vi_progid("AVSOfficeFontManager.FontManager"),
 	progid("AVSOfficeFontManager.FontManager.1"),
@@ -45,8 +43,8 @@
 	uuid("0FF37CE6-DD3C-488F-8319-13D9E392F1D8"),
 	helpstring("FontManager Class")
 ]
-class ATL_NO_VTABLE CAVSFontManager :
-	public IAVSFontManager, public IAVSFontManager2
+class ATL_NO_VTABLE CASCFontManager :
+	public IASCFontManager, public IASCFontManager2
 {
 	friend class CGraphics;
 public:
@@ -123,7 +121,7 @@ private:
 	} m_oTextMatrix;
 
 public:
-	CAVSFontManager()
+	CASCFontManager()
 	{
 	}
 
@@ -298,7 +296,7 @@ public:
 		}
 
 		if ( !pFontFile )
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_OPEN_ERROR;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_OPEN_ERROR;
 
 		m_pFont = m_pFontEngine->GetFont( pFontFile );
 		
@@ -369,7 +367,7 @@ public:
 		m_pFont->SetTextMatrix( 1, 0, 0, 1, 0, 0 );
 
 		if ( TRUE == bDefaultFont )
-			return AVS_OFFICEFONTMANAGER_ERROR_DEFAULT_FONT_WAS_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_DEFAULT_FONT_WAS_LOAD;
 		else
 			return S_OK;
 	}
@@ -379,7 +377,7 @@ public:
 		if ( !m_pFont )
 		{
 			*pbsType = wsType.AllocSysString();
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 		}
 
 		wsType = m_pFont->GetFontFormat();
@@ -402,7 +400,7 @@ public:
 		if ( !m_pFont )
 		{
 			*pusAscent = 0;
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 		}
 
 		*pusAscent = m_pFont->GetAscender();
@@ -414,7 +412,7 @@ public:
 		if ( !m_pFont )
 		{
 			*pusDescent = 0;
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 		}
 
 		*pusDescent = fabs( m_pFont->GetDescender() );
@@ -426,7 +424,7 @@ public:
 		if ( !m_pFont )
 		{
 			*pusEmHeight = 0;
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 		}
 
 		*pusEmHeight = m_pFont->GetUnitsPerEm();
@@ -439,7 +437,7 @@ public:
 		{
 			CString sFamilyName( _T("") );
 			*pbsFamilyName = sFamilyName.AllocSysString();
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 		}
 
 		CString sFamilyName( m_pFont->GetFamilyName() );
@@ -453,7 +451,7 @@ public:
 		if ( !m_pFont )
 		{
 			*pusLineSpacing = 0;
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 		}
 
 		*pusLineSpacing = m_pFont->GetLineSpacing();
@@ -480,7 +478,7 @@ public:
 		if ( !m_pFont )
 		{
 			*pfHeight = 0.0f;
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 		}
 
 		unsigned short usEmHeight = 0;
@@ -631,7 +629,7 @@ public:
 		if ( !m_pFont )
 		{
 			*pshUnderPos = 0;
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 		}
 
 		*pshUnderPos = m_pFont->GetUnderlinePosition();
@@ -643,7 +641,7 @@ public:
 		if ( !m_pFont )
 		{
 			*pshUnderThick = 0;
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 		}
 
 		*pshUnderThick = m_pFont->GetUnderlineThickness();
@@ -655,7 +653,7 @@ public:
 		if ( !m_pFont )
 		{
 			*pshMaxAdvWidth = 0;
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 		}
 
 		*pshMaxAdvWidth = m_pFont->GetMaxAdvanceWidth();
@@ -667,7 +665,7 @@ public:
 		if ( !m_pFont )
 		{
 			*pshMaxAdvHeight = 0;
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 		}
 
 		*pshMaxAdvHeight = m_pFont->GetMaxAdvanceHeight();
@@ -682,7 +680,7 @@ public:
 			*plMinY = 0;
 			*plMaxX = 0;
 			*plMaxY = 0;
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 		}
 
 		m_pFont->GetBBox( plMinX, plMinY, plMaxX, plMaxY );
@@ -693,7 +691,7 @@ public:
 	{
 		*pvbSuccess = VARIANT_FALSE;
 		if ( !m_pFont )
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 
 		if ( m_pFont->IsUnicodeRangeAvailable( ulBit, unLongIndex ) > 0 )
 			*pvbSuccess = VARIANT_TRUE;
@@ -703,7 +701,7 @@ public:
 	STDMETHOD(GetNameIndex)(BSTR bsName, unsigned short *pushGID)
 	{
 		if ( !m_pFont )
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 
 		USES_CONVERSION;
 		*pushGID = m_pFont->GetNameIndex( W2A(bsName) );
@@ -713,7 +711,7 @@ public:
 	STDMETHOD(GetCodeByGID)(unsigned short ushGID, unsigned long *pulCharCode)
 	{
 		if ( !m_pFont )
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 
 		//*pulCharCode = m_pFont->GetCodeByGID( ushGID );
 
@@ -722,11 +720,11 @@ public:
 	STDMETHOD(GetPanose)(SAFEARRAY **ppsaPanose)
 	{
 		if ( !m_pFont )
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 
 		signed char *sPanose = new signed char[10];
 		if ( !sPanose )
-			return AVS_OFFICEFONTMANAGER_ERROR_NOT_ENOUGH_MEMORY;
+			return ASC_OFFICEFONTMANAGER_ERROR_NOT_ENOUGH_MEMORY;
 
 		m_pFont->GetPanose( (char **)&sPanose );
 
@@ -745,7 +743,7 @@ public:
 	STDMETHOD(IsFixedWidth)(BOOL *pbIsFixedWidth)
 	{
 		if ( !m_pFont )
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 
 		*pbIsFixedWidth = ( m_pFont->IsFixedWidth() ? TRUE : FALSE );
 
@@ -792,7 +790,7 @@ public:
 
 		CFontPath *pOverallPath = new CFontPath();
 		if ( !pOverallPath )
-			return AVS_OFFICEFONTMANAGER_ERROR_NOT_ENOUGH_MEMORY;
+			return ASC_OFFICEFONTMANAGER_ERROR_NOT_ENOUGH_MEMORY;
 
 		for ( int nIndex = 0; nIndex < m_oGlyphString.GetLength(); nIndex++ )
 		{
@@ -820,59 +818,6 @@ public:
 		}
 
 		*pbsXmlPath = pOverallPath->ToXmlString().AllocSysString();
-		delete pOverallPath;
-
-		return S_OK;
-	}
-	STDMETHOD(GetStringPath2)(IAVSGraphicsBase **ppPath)
-	{
-		if ( !m_pFont || m_oGlyphString.GetLength() <= 0 )
-			return S_FALSE;
-
-		CFontPath *pOverallPath = new CFontPath();
-		if ( !pOverallPath )
-			return AVS_OFFICEFONTMANAGER_ERROR_NOT_ENOUGH_MEMORY;
-
-		for ( int nIndex = 0; nIndex < m_oGlyphString.GetLength(); nIndex++ )
-		{
-			TGlyph *pCurGlyph = m_oGlyphString.GetAt(nIndex);
-			CFontPath *pPath = NULL;
-			if ( glyphstateNormal == pCurGlyph->eState || ( glyphstateDeafault == pCurGlyph->eState && NULL != m_pFont->GetDefaultFont() ) )
-			{
-				if ( glyphstateNormal == pCurGlyph->eState )
-				{
-					pPath = m_pFont->GetGlyphPath( pCurGlyph->lUnicode );
-				}
-				else
-				{
-					pPath = m_pFont->GetDefaultFont()->GetGlyphPath( pCurGlyph->lUnicode );
-				}
-			}
-
-			if ( !pPath )
-				continue;
-
-			pPath->Reverse();
-			pPath->Offset( m_oGlyphString.GetAt(nIndex)->fX + m_oGlyphString.m_fX, m_oGlyphString.GetAt(nIndex)->fY + m_oGlyphString.m_fY );
-			pOverallPath->Append( pPath );
-			delete pPath;
-		}
-
-		if ( !ppPath )
-		{
-			delete pOverallPath;
-			return S_FALSE;
-		}
-
-		*ppPath = NULL;
-		HRESULT hRes = CoCreateInstance( __uuidof(CAVSGraphicsPath), NULL, CLSCTX_ALL, __uuidof(IAVSGraphicsPath), (void**)ppPath );
-		if ( hRes != S_OK || NULL == *ppPath )
-		{
-			delete pOverallPath;
-			return S_FALSE;
-		}
-
-		pOverallPath->ToInterface( (IAVSGraphicsPath **)ppPath );
 		delete pOverallPath;
 
 		return S_OK;
@@ -997,7 +942,7 @@ public:
 
 		return S_OK;
 	}
-	STDMETHOD(GetNextChar2)(IAVSGlyphImage **ppImage, float *pfX, float *pfY, VARIANT_BOOL *pvbSuccess)
+	STDMETHOD(GetNextChar2)(IGlyphImage **ppImage, float *pfX, float *pfY, VARIANT_BOOL *pvbSuccess)
 	{
 		*pvbSuccess = VARIANT_FALSE;
 		BOOL bNotLast = TRUE;
@@ -1041,19 +986,19 @@ public:
 
 				// create result interface
 				*ppImage = NULL;
-				HRESULT hRes = CoCreateInstance( __uuidof(CAVSGlyphImage), NULL, CLSCTX_ALL, __uuidof(IAVSGlyphImage), (void**)ppImage );
+				HRESULT hRes = CoCreateInstance( __uuidof(CGlyphImage), NULL, CLSCTX_ALL, __uuidof(IGlyphImage), (void**)ppImage );
 				if ( hRes != S_OK || NULL == *ppImage )
 					return S_FALSE;
 
-				IAVSGlyphImage2* pGlyph2 = NULL;
-				(*ppImage)->QueryInterface(__uuidof(IAVSGlyphImage2), (void**)&pGlyph2);
+				IGlyphImage2* pGlyph2 = NULL;
+				(*ppImage)->QueryInterface(__uuidof(IGlyphImage2), (void**)&pGlyph2);
 
 				if (NULL != pGlyph2)
 					pGlyph2->Create(oBitmap.pData, oBitmap.nX, oBitmap.nY, oBitmap.nWidth, oBitmap.nHeight, FALSE/*oBitmap.bFreeData*/);
 
 				RELEASEINTERFACE(pGlyph2);
 
-				//CAVSGlyphImage* pClassImage = dynamic_cast<CAVSGlyphImage*>(*ppImage);
+				//CGlyphImage* pClassImage = dynamic_cast<CGlyphImage*>(*ppImage);
 				//if (NULL != pClassImage)
 				//	pClassImage->Create( &oBitmap );
 			}
@@ -1337,7 +1282,7 @@ public:
 
 		return S_OK;
 	}
-	//----- IAVSGraphicsBase ----------------------------------------------------------------------------
+	//----- IASCGraphicsBase ----------------------------------------------------------------------------
 	STDMETHOD(SetAdditionalParam)(BSTR ParamName, VARIANT ParamValue)
 	{
 		CString sParamName = ParamName;
@@ -1394,12 +1339,12 @@ public:
 
 		return S_OK;
 	}
-	STDMETHOD(CreateDublicate)(IAVSGraphicsBase** ppGraphicsBase)
+	STDMETHOD(CreateDublicate)(IASCGraphicsBase** ppGraphicsBase)
 	{
 		return S_OK;
 	}
 	//---------------------------------------------------------------------------------------------------
-	// IAVSFontManager2
+	// IASCFontManager2
 	//---------------------------------------------------------------------------------------------------
 	STDMETHOD(UseDefaultFont)(BOOL bUseDefFont)
 	{
@@ -1465,11 +1410,11 @@ public:
 	{
 		*bsPanose = NULL;
 		if ( !m_pFont )
-			return AVS_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
+			return ASC_OFFICEFONTMANAGER_ERROR_FONT_WASNT_LOAD;
 
 		BYTE *sPanose = new BYTE[10];
 		if ( !sPanose )
-			return AVS_OFFICEFONTMANAGER_ERROR_NOT_ENOUGH_MEMORY;
+			return ASC_OFFICEFONTMANAGER_ERROR_NOT_ENOUGH_MEMORY;
 
 		m_pFont->GetPanose( (char **)&sPanose );
 
@@ -1495,7 +1440,7 @@ public:
 
 		CFontPath *pOverallPath = new CFontPath();
 		if ( !pOverallPath )
-			return AVS_OFFICEFONTMANAGER_ERROR_NOT_ENOUGH_MEMORY;
+			return ASC_OFFICEFONTMANAGER_ERROR_NOT_ENOUGH_MEMORY;
 
 		for ( int nIndex = 0; nIndex < m_oGlyphString.GetLength(); nIndex++ )
 		{

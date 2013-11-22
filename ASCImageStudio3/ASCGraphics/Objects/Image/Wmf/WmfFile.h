@@ -103,11 +103,11 @@ public:
 		return TRUE;
 	}
 
-	void SetFontManager(IAVSFontManager* pManager = NULL)
+	void SetFontManager(IASCFontManager* pManager = NULL)
 	{
 		if (NULL == pManager)
 		{
-			::CoCreateInstance( __uuidof(CAVSFontManager), NULL, CLSCTX_INPROC, __uuidof(IAVSFontManager), (void **)&m_pFontManager );
+			::CoCreateInstance( __uuidof(CASCFontManager), NULL, CLSCTX_INPROC, __uuidof(IASCFontManager), (void **)&m_pFontManager );
 
 			if ( m_pFontManager )
 			{
@@ -122,7 +122,7 @@ public:
 		}
 	}
 
-	inline IAVSFontManager* GetFontManager()
+	inline IASCFontManager* GetFontManager()
 	{
 		return m_pFontManager;
 	}
@@ -5371,7 +5371,7 @@ private:
 	TWmfAttributeStore      m_oStore;               // Хранение Xml
 
 	TWmfPlayer             *m_pPlayerData;          // Проигрыватель Wmf файла
-	IAVSFontManager        *m_pFontManager;         // Интерефейс для работы с шрифтами
+	IASCFontManager        *m_pFontManager;         // Интерефейс для работы с шрифтами
 	CWmfColor               m_oColorData;           // Паллитра
 	CWmfOutputDevice       *m_pOutput;              // Выходное устройство, для изображения данного метафайла
 

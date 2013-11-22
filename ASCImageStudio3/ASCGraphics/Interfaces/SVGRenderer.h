@@ -1,5 +1,6 @@
 #pragma once
 #include "ASCRenderer.h"
+#include "ASCMetafile.h"
 #include "StringWriter.h"
 #include "..\Objects\Structures.h"
 #include "ASCGraphicsSimpleConverter.h"
@@ -49,9 +50,9 @@ static CString g_string_vml_Style1								= _T("class=\"stroke%d\" style=\"fill:
 static CString g_string_vml_Style2								= _T("class=\"fill%d\" style=\"fill-opacity:%.2lf;fill-rule:%s;stroke:#%06x;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
 static CString g_string_vml_Style3								= _T("class=\"stroke%d fill%d\" style=\"fill-opacity:%.2lf;fill-rule:%s;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
 
-// IAVSSVGRenderer
+// IASCSVGRenderer
 [ object, uuid("B6C464AA-20C6-4054-AF62-BCF0F61BE70B"), dual, pointer_default(unique) ]
-__interface IAVSSVGRenderer: IAVSRenderer
+__interface IASCSVGRenderer: IASCRenderer
 {
 	[id(5000)]			HRESULT CreateOfficeFile([in] BSTR bsFileName, [in] LONG lFonts);
 	[id(5001)]			HRESULT CloseFile([in] LONG lSave);
@@ -59,25 +60,25 @@ __interface IAVSSVGRenderer: IAVSRenderer
 	[id(6000), propget] HRESULT Data([out, retval] BSTR* pbstrSVG); 
 };
 
-// _IAVSSVGRendererEvents
+// _IASCSVGRendererEvents
 [uuid("C52A6CF5-83F2-4085-8CF2-5387A0790634"), dispinterface]
-__interface _IAVSSVGRendererEvents
+__interface _IASCSVGRendererEvents
 {
 };
 
-// CAVSSVGRenderer
-[ coclass, default(IAVSSVGRenderer), threading(apartment), event_source(com), vi_progid("SVGRenderer.Rend"), progid("SVGRenderer.Rend.1"), version(1.0), uuid("877EADD9-87FE-4c82-BB7A-CAC90BE1B22C") ]
-class ATL_NO_VTABLE CAVSSVGRenderer : 
-	public IAVSSVGRenderer
+// CASCSVGRenderer
+[ coclass, default(IASCSVGRenderer), threading(apartment), event_source(com), vi_progid("SVGRenderer.Rend"), progid("SVGRenderer.Rend.1"), version(1.0), uuid("877EADD9-87FE-4c82-BB7A-CAC90BE1B22C") ]
+class ATL_NO_VTABLE CASCSVGRenderer : 
+	public IASCSVGRenderer
 {
 public:
-	__event __interface _IAVSSVGRendererEvents;
+	__event __interface _IASCSVGRendererEvents;
 
 public:
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
 	
-	CAVSSVGRenderer();
-	~CAVSSVGRenderer()
+	CASCSVGRenderer();
+	~CASCSVGRenderer()
 	{
 	}
 
@@ -227,8 +228,8 @@ private:
 	NSTextRenderer::CStringWriter	m_oWriterVML;
 	CString							m_strDstFile;
 
-	IAVSGraphicSimpleComverter*		m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
-	IAVSFontManager*				m_pFontManager;					// менеджер шрифтов
+	IASCGraphicSimpleComverter*		m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
+	IASCFontManager*				m_pFontManager;					// менеджер шрифтов
 
 	Aggplus::CMatrix				m_oBaseTransform;	// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)
 	Aggplus::CMatrix				m_oTransform;		// текущая матрица преобразований рендерера
@@ -255,7 +256,7 @@ private:
 
 	NSStructures::CFont				m_oInstalledFont;
 
-	IAVSWinFonts*					m_pFonts;
+	IASCWinFonts*					m_pFonts;
 
 	CGdiPlusInit					m_oInit;			// инициализация gdi+
 

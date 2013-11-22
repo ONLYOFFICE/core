@@ -27,7 +27,7 @@ class CRendererOutput : public CWmfOutputDevice
 
 public:
 
-	CRendererOutput(CWmfFile *pFile, IAVSRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
+	CRendererOutput(CWmfFile *pFile, IASCRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
 	{
 		m_pWmfFile = pFile;
 
@@ -1996,7 +1996,7 @@ private:
 	
 private:
 
-	IAVSRenderer *m_pRenderer;
+	IASCRenderer *m_pRenderer;
 
 	NSStructures::CPen      m_oPen;
 	NSStructures::CBrush    m_oBrush;

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSVectorImage", "AVSVectorImage\AVSVectorImage.vcproj", "{D9E5CB83-635D-4234-B53A-2A299FB14B49}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCVectorImage", "ASCVectorImage\ASCVectorImage.vcproj", "{D9E5CB83-635D-4234-B53A-2A299FB14B49}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{7502B6CC-D361-491D-B898-61D601F0B5F6}"
 EndProject

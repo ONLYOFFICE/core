@@ -1270,20 +1270,6 @@ namespace ImageStudio
 							bVerFlip = !(bVerFlip);
 							break;
 						}
-					case c_Sfw:
-						{
-							ImageStudio::IO::Sfw oRenderSfw;
-							bLoading = oRenderSfw.FromFile( sFilePath, nFormatOutput, oImage );
-							bVerFlip = !(bVerFlip);
-							break;
-						}
-					case c_Swf:
-						{
-							ImageStudio::IO::Swf oRenderSwf;
-							bLoading = oRenderSwf.FromFile( sFilePath, nFormatOutput, oImage, nFrame );
-							bVerFlip = !(bVerFlip);
-							break;
-						}
 					case c_Wbz:
 						{
 							ImageStudio::IO::WebShots::Wbz oRenderWbz;

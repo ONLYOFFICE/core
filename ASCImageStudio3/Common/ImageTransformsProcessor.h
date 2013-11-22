@@ -260,48 +260,7 @@ namespace ImageStudio
 
 			void SetAnimImageSwf( LPCWCH wsFilePath )
 			{
-				ImageStudio::IO::Swf::SwfImageFile file;
 				
-				file.Open( CString( wsFilePath ) );
-
-				m_nCountFrames = file.GetCountImages();
-				if( !m_nCountFrames )
-					return;
-
-				m_pFrameDelays = new int[m_nCountFrames];
-				if( !m_pFrameDelays )
-					return;
-
-				memset( m_pFrameDelays, 0, sizeof(int) );
-
-				m_pSizeFrames = new SIZE[m_nCountFrames];
-				if( !m_pSizeFrames )
-				{
-					delete [] m_pFrameDelays;
-					m_pFrameDelays = NULL;
-					return;
-				}
-
-				for( int i = 0; i < m_nCountFrames; i++ )
-				{
-					IMediaFrame* pFrame = file.GetImage( i );
-					if( !pFrame )
-					{
-						m_pSizeFrames[i].cx = 0;
-						m_pSizeFrames[i].cy = 0;
-					}
-					else
-					{
-						long lWidth, lHeight;
-						pFrame->get_Width( &lWidth );
-						pFrame->get_Height( &lHeight );
-
-						m_pSizeFrames[i].cx = lWidth;
-						m_pSizeFrames[i].cy = lHeight;
-
-						pFrame->Release();
-					}
-				}
 			}
 
 			void SetAnimImage( LPCWCH wsFilePath )

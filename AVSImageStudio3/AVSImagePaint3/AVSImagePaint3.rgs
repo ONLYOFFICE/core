@@ -1,0 +1,11 @@
+HKCR
+{
+	NoRemove AppID
+	{
+		'%APPID%' = s 'AVSImagePaint3'
+		'AVSImagePaint3.DLL'
+		{
+			val AppID = s '%APPID%'
+		}
+	}
+}

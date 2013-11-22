@@ -1,0 +1,2197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Olympus Tags</title>
+<link rel=stylesheet type='text/css' href='style.css' title='Style'>
+</head>
+<body>
+<h2 class=top>Olympus Tags</h2>
+<p>
+Tags 0x0000 through 0x0103 are used by some older Olympus cameras, and are
+the same as Konica/Minolta tags.  The Olympus tags are also used for Epson
+and Agfa cameras.
+</p>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Tag&nbsp;ID</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td title='0x0000 = 0'>0x0000</td>
+<td>MakerNoteVersion</td>
+<td class=c>undef</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0001 = 1'>0x0001</td>
+<td>MinoltaCameraSettingsOld</td>
+<td class=c>-</td>
+<td>--&gt; <a href='Minolta.html#CameraSettings'>Minolta CameraSettings Tags</a></td></tr>
+<tr>
+<td title='0x0003 = 3'>0x0003</td>
+<td>MinoltaCameraSettings</td>
+<td class=c>-</td>
+<td>--&gt; <a href='Minolta.html#CameraSettings'>Minolta CameraSettings Tags</a></td></tr>
+<tr class=b>
+<td title='0x0040 = 64'>0x0040</td>
+<td>CompressedImageSize</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0081 = 129'>0x0081</td>
+<td>PreviewImageData</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0088 = 136'>0x0088</td>
+<td>PreviewImageStart</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0089 = 137'>0x0089</td>
+<td>PreviewImageLength</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0100 = 256'>0x0100</td>
+<td>ThumbnailImage</td>
+<td class=c>undef</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0101 = 257'>0x0101</td>
+<td>ColorMode</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Natural color
+  <br>1 = Black&amp;white
+  <br>2 = Vivid color
+  <br>3 = Solarization
+  <br>4 = Adobe RGB</span></td></tr>
+<tr class=b>
+<td title='0x0102 = 258'>0x0102</td>
+<td>MinoltaQuality</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Raw
+  <br>1 = Superfine
+  <br>2 = Fine
+  <br>3 = Normal
+  <br>4 = Economy
+  <br>5 = Extra fine</span></td></tr>
+<tr>
+<td title='0x0103 = 259'>0x0103</td>
+<td>MinoltaQuality</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Raw
+  <br>1 = Superfine
+  <br>2 = Fine
+  <br>3 = Normal
+  <br>4 = Economy
+  <br>5 = Extra fine</span></td></tr>
+<tr class=b>
+<td title='0x0104 = 260'>0x0104</td>
+<td>BodyFirmwareVersion</td>
+<td class=c>string</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0200 = 512'>0x0200</td>
+<td>SpecialMode</td>
+<td class=c>int32u[3]~</td>
+<td><span class=s><span class=n>(3 numbers: 1. Shooting mode: 0=Normal, 2=Fast, 3=Panorama;
+2. Sequence Number; 3. Panorama Direction: 1=Left-Right,
+2=Right-Left, 3=Bottom-Top, 4=Top-Bottom)</span></span></td></tr>
+<tr class=b>
+<td title='0x0201 = 513'>0x0201</td>
+<td>Quality</td>
+<td class=c>int16u~</td>
+<td><span class=s><span class=n>(Quality values are decoded based on the CameraType tag. All types
+represent SQ, HQ and SHQ as sequential integers, but in general
+SX-type cameras start with a value of 0 for SQ while others start
+with 1)</span></span></td></tr>
+<tr>
+<td title='0x0202 = 514'>0x0202</td>
+<td>Macro</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Off
+  <br>1 = On
+  <br>2 = Super Macro</span></td></tr>
+<tr class=b>
+<td title='0x0203 = 515'>0x0203</td>
+<td>BWMode</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Off
+  <br>1 = On</span></td></tr>
+<tr>
+<td title='0x0204 = 516'>0x0204</td>
+<td>DigitalZoom</td>
+<td class=c>rational64u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0205 = 517'>0x0205</td>
+<td>FocalPlaneDiagonal</td>
+<td class=c>rational64u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0206 = 518'>0x0206</td>
+<td>LensDistortionParams</td>
+<td class=c>int16s[6]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0207 = 519'>0x0207</td>
+<td>CameraType</td>
+<td class=c>string</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0208 = 520'>0x0208</td>
+<td>TextInfo</td>
+<td class=c>-</td>
+<td>--&gt; <a href='Olympus.html#TextInfo'>Olympus TextInfo Tags</a></td></tr>
+<tr class=b>
+<td title='0x0209 = 521'>0x0209</td>
+<td>CameraID</td>
+<td class=c>string</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x020b = 523'>0x020b</td>
+<td>EpsonImageWidth</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x020c = 524'>0x020c</td>
+<td>EpsonImageHeight</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x020d = 525'>0x020d</td>
+<td>EpsonSoftware</td>
+<td class=c>string</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0280 = 640'>0x0280</td>
+<td>PreviewImage</td>
+<td class=c>int8u</td>
+<td><span class=s><span class=n>(found in ERF and JPG images from some Epson models)</span></span></td></tr>
+<tr>
+<td title='0x0300 = 768'>0x0300</td>
+<td>PreCaptureFrames</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0301 = 769'>0x0301</td>
+<td>WhiteBoard</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0302 = 770'>0x0302</td>
+<td>OneTouchWB</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Off
+  <br>1 = On
+  <br>2 = On (Preset)</span></td></tr>
+<tr class=b>
+<td title='0x0303 = 771'>0x0303</td>
+<td>WhiteBalanceBracket</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0304 = 772'>0x0304</td>
+<td>WhiteBalanceBias</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0403 = 1027'>0x0403</td>
+<td>SceneMode</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Normal
+  <br>1 = Standard
+  <br>2 = Auto
+  <br>4 = Portrait
+  <br>5 = Landscape+Portrait
+  <br>6 = Landscape
+  <br>7 = Night Scene
+  <br>8 = Night+Portrait
+  <br>9 = Sport
+  <br>10 = Self Portrait
+  <br>11 = Indoor
+  <br>12 = Beach &amp; Snow
+  <br>13 = Beach
+  <br>14 = Snow
+  <br>15 = Self Portrait+Self Timer
+  <br>16 = Sunset
+  <br>17 = Cuisine
+  <br>18 = Documents
+  <br>19 = Candle
+  <br>20 = Fireworks
+  <br>21 = Available Light
+  <br>22 = Vivid
+  <br>23 = Underwater Wide1
+  <br>24 = Underwater Macro
+  <br>25 = Museum
+  <br>26 = Behind Glass
+  <br>27 = Auction
+  <br>28 = Shoot &amp; Select1
+  <br>29 = Shoot &amp; Select2
+  <br>30 = Underwater Wide2
+  <br>31 = Digital Image Stabilization
+  <br>32 = Face Portrait
+  <br>33 = Pet
+  <br>34 = Smile Shot</span></td></tr>
+<tr>
+<td title='0x0404 = 1028'>0x0404</td>
+<td>SerialNumber</td>
+<td class=c>string</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0405 = 1029'>0x0405</td>
+<td>Firmware</td>
+<td class=c>string</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0e00 = 3584'>0x0e00</td>
+<td>PrintIM</td>
+<td class=c>-</td>
+<td>--&gt; <a href='PrintIM.html'>PrintIM Tags</a></td></tr>
+<tr class=b>
+<td title='0x0f00 = 3840'>0x0f00</td>
+<td>DataDump</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0f01 = 3841'>0x0f01</td>
+<td>DataDump2</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1000 = 4096'>0x1000</td>
+<td>ShutterSpeedValue</td>
+<td class=c>rational64s</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1001 = 4097'>0x1001</td>
+<td>ISOValue</td>
+<td class=c>rational64s</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1002 = 4098'>0x1002</td>
+<td>ApertureValue</td>
+<td class=c>rational64s</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1003 = 4099'>0x1003</td>
+<td>BrightnessValue</td>
+<td class=c>rational64s</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1004 = 4100'>0x1004</td>
+<td>FlashMode</td>
+<td class=c>int16u</td>
+<td><span class=s>2 = On
+  <br>3 = Off</span></td></tr>
+<tr>
+<td title='0x1005 = 4101'>0x1005</td>
+<td>FlashDevice</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = None
+  <br>1 = Internal
+  <br>4 = External
+  <br>5 = Internal + External</span></td></tr>
+<tr class=b>
+<td title='0x1006 = 4102'>0x1006</td>
+<td>ExposureCompensation</td>
+<td class=c>rational64s</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1007 = 4103'>0x1007</td>
+<td>SensorTemperature</td>
+<td class=c>int16s</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1008 = 4104'>0x1008</td>
+<td>LensTemperature</td>
+<td class=c>int16s</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1009 = 4105'>0x1009</td>
+<td>LightCondition</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x100a = 4106'>0x100a</td>
+<td>FocusRange</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Normal
+  <br>1 = Macro</span></td></tr>
+<tr>
+<td title='0x100b = 4107'>0x100b</td>
+<td>FocusMode</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Auto
+  <br>1 = Manual</span></td></tr>
+<tr class=b>
+<td title='0x100c = 4108'>0x100c</td>
+<td>ManualFocusDistance</td>
+<td class=c>rational64u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x100d = 4109'>0x100d</td>
+<td>ZoomStepCount</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x100e = 4110'>0x100e</td>
+<td>FocusStepCount</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x100f = 4111'>0x100f</td>
+<td>Sharpness</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Normal
+  <br>1 = Hard
+  <br>2 = Soft</span></td></tr>
+<tr class=b>
+<td title='0x1010 = 4112'>0x1010</td>
+<td>FlashChargeLevel</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1011 = 4113'>0x1011</td>
+<td>ColorMatrix</td>
+<td class=c>int16u[9]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1012 = 4114'>0x1012</td>
+<td>BlackLevel</td>
+<td class=c>int16u[4]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1013 = 4115'>0x1013</td>
+<td>ColorTemperatureBG?</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1014 = 4116'>0x1014</td>
+<td>ColorTemperatureRG?</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1015 = 4117'>0x1015</td>
+<td>WBMode</td>
+<td class=c>int16u[2]</td>
+<td><span class=s>1 = Auto
+  <br>&#39;1 0&#39; = Auto
+  <br>&#39;1 2&#39; = Auto (2)
+  <br>&#39;1 4&#39; = Auto (4)
+  <br>&#39;2 2&#39; = 3000 Kelvin
+  <br>&#39;2 3&#39; = 3700 Kelvin
+  <br>&#39;2 4&#39; = 4000 Kelvin
+  <br>&#39;2 5&#39; = 4500 Kelvin
+  <br>&#39;2 6&#39; = 5500 Kelvin
+  <br>&#39;2 7&#39; = 6500 Kelvin
+  <br>&#39;2 8&#39; = 7500 Kelvin
+  <br>&#39;3 0&#39; = One-touch</span></td></tr>
+<tr class=b>
+<td title='0x1017 = 4119'>0x1017</td>
+<td>RedBalance</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1018 = 4120'>0x1018</td>
+<td>BlueBalance</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1019 = 4121'>0x1019</td>
+<td>ColorMatrixNumber</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x101a = 4122'>0x101a</td>
+<td>SerialNumber</td>
+<td class=c>string</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x101b = 4123'>0x101b</td>
+<td>ExternalFlashAE1_0?</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x101c = 4124'>0x101c</td>
+<td>ExternalFlashAE2_0?</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x101d = 4125'>0x101d</td>
+<td>InternalFlashAE1_0?</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x101e = 4126'>0x101e</td>
+<td>InternalFlashAE2_0?</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x101f = 4127'>0x101f</td>
+<td>ExternalFlashAE1?</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1020 = 4128'>0x1020</td>
+<td>ExternalFlashAE2?</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1021 = 4129'>0x1021</td>
+<td>InternalFlashAE1?</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1022 = 4130'>0x1022</td>
+<td>InternalFlashAE2?</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1023 = 4131'>0x1023</td>
+<td>FlashExposureComp</td>
+<td class=c>rational64s</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1024 = 4132'>0x1024</td>
+<td>InternalFlashTable</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1025 = 4133'>0x1025</td>
+<td>ExternalFlashGValue</td>
+<td class=c>rational64s</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1026 = 4134'>0x1026</td>
+<td>ExternalFlashBounce</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = No
+  <br>1 = Yes</span></td></tr>
+<tr class=b>
+<td title='0x1027 = 4135'>0x1027</td>
+<td>ExternalFlashZoom</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1028 = 4136'>0x1028</td>
+<td>ExternalFlashMode</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1029 = 4137'>0x1029</td>
+<td>Contrast</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = High
+  <br>1 = Normal
+  <br>2 = Low</span></td></tr>
+<tr>
+<td title='0x102a = 4138'>0x102a</td>
+<td>SharpnessFactor</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x102b = 4139'>0x102b</td>
+<td>ColorControl</td>
+<td class=c>int16u[6]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x102c = 4140'>0x102c</td>
+<td>ValidBits</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x102d = 4141'>0x102d</td>
+<td>CoringFilter</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x102e = 4142'>0x102e</td>
+<td>OlympusImageWidth</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x102f = 4143'>0x102f</td>
+<td>OlympusImageHeight</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1030 = 4144'>0x1030</td>
+<td>SceneDetect</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1031 = 4145'>0x1031</td>
+<td>SceneArea?</td>
+<td class=c>int32u[8]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1033 = 4147'>0x1033</td>
+<td>SceneDetectData?</td>
+<td class=c>int32u[720]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1034 = 4148'>0x1034</td>
+<td>CompressionRatio</td>
+<td class=c>rational64u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1035 = 4149'>0x1035</td>
+<td>PreviewImageValid</td>
+<td class=c>int32u</td>
+<td><span class=s>0 = No
+  <br>1 = Yes</span></td></tr>
+<tr class=b>
+<td title='0x1036 = 4150'>0x1036</td>
+<td>PreviewImageStart</td>
+<td class=c>int32u*</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1037 = 4151'>0x1037</td>
+<td>PreviewImageLength</td>
+<td class=c>int32u*</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1038 = 4152'>0x1038</td>
+<td>AFResult</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1039 = 4153'>0x1039</td>
+<td>CCDScanMode</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Interlaced
+  <br>1 = Progressive</span></td></tr>
+<tr class=b>
+<td title='0x103a = 4154'>0x103a</td>
+<td>NoiseReduction</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Off
+  <br>1 = On</span></td></tr>
+<tr>
+<td title='0x103b = 4155'>0x103b</td>
+<td>InfinityLensStep</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x103c = 4156'>0x103c</td>
+<td>NearLensStep</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x103d = 4157'>0x103d</td>
+<td>LightValueCenter</td>
+<td class=c>rational64s</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x103e = 4158'>0x103e</td>
+<td>LightValuePeriphery</td>
+<td class=c>rational64s</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x103f = 4159'>0x103f</td>
+<td>FieldCount?</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x2010 = 8208'>0x2010</td>
+<td>Equipment
+  <br>Equipment2</td>
+<td class=c>-<br>-</td>
+<td>--&gt; <a href='Olympus.html#Equipment'>Olympus Equipment Tags</a>
+  <br>--&gt; <a href='Olympus.html#Equipment'>Olympus Equipment Tags</a></td></tr>
+<tr>
+<td title='0x2020 = 8224'>0x2020</td>
+<td>CameraSettings
+  <br>CameraSettings2</td>
+<td class=c>-<br>-</td>
+<td>--&gt; <a href='Olympus.html#CameraSettings'>Olympus CameraSettings Tags</a>
+  <br>--&gt; <a href='Olympus.html#CameraSettings'>Olympus CameraSettings Tags</a></td></tr>
+<tr class=b>
+<td title='0x2030 = 8240'>0x2030</td>
+<td>RawDevelopment
+  <br>RawDevelopment2</td>
+<td class=c>-<br>-</td>
+<td>--&gt; <a href='Olympus.html#RawDevelopment'>Olympus RawDevelopment Tags</a>
+  <br>--&gt; <a href='Olympus.html#RawDevelopment'>Olympus RawDevelopment Tags</a></td></tr>
+<tr>
+<td title='0x2031 = 8241'>0x2031</td>
+<td>RawDev2
+  <br>RawDev2_2</td>
+<td class=c>-<br>-</td>
+<td>--&gt; <a href='Olympus.html#RawDevelopment2'>Olympus RawDevelopment2 Tags</a>
+  <br>--&gt; <a href='Olympus.html#RawDevelopment2'>Olympus RawDevelopment2 Tags</a></td></tr>
+<tr class=b>
+<td title='0x2040 = 8256'>0x2040</td>
+<td>ImageProcessing
+  <br>ImageProcessing2</td>
+<td class=c>-<br>-</td>
+<td>--&gt; <a href='Olympus.html#ImageProcessing'>Olympus ImageProcessing Tags</a>
+  <br>--&gt; <a href='Olympus.html#ImageProcessing'>Olympus ImageProcessing Tags</a></td></tr>
+<tr>
+<td title='0x2050 = 8272'>0x2050</td>
+<td>FocusInfo
+  <br>FocusInfo2
+  <br>CameraParameters</td>
+<td class=c>-<br>-<br>undef</td>
+<td>--&gt; <a href='Olympus.html#FocusInfo'>Olympus FocusInfo Tags</a>
+  <br>--&gt; <a href='Olympus.html#FocusInfo'>Olympus FocusInfo Tags</a></td></tr>
+<tr class=b>
+<td title='0x2100 = 8448'>0x2100</td>
+<td>Olympus2100</td>
+<td class=c>-</td>
+<td>--&gt; <a href='Olympus.html#FE'>Olympus FE Tags</a></td></tr>
+<tr>
+<td title='0x2200 = 8704'>0x2200</td>
+<td>Olympus2200</td>
+<td class=c>-</td>
+<td>--&gt; <a href='Olympus.html#FE'>Olympus FE Tags</a></td></tr>
+<tr class=b>
+<td title='0x2300 = 8960'>0x2300</td>
+<td>Olympus2300</td>
+<td class=c>-</td>
+<td>--&gt; <a href='Olympus.html#FE'>Olympus FE Tags</a></td></tr>
+<tr>
+<td title='0x2400 = 9216'>0x2400</td>
+<td>Olympus2400</td>
+<td class=c>-</td>
+<td>--&gt; <a href='Olympus.html#FE'>Olympus FE Tags</a></td></tr>
+<tr class=b>
+<td title='0x2500 = 9472'>0x2500</td>
+<td>Olympus2500</td>
+<td class=c>-</td>
+<td>--&gt; <a href='Olympus.html#FE'>Olympus FE Tags</a></td></tr>
+<tr>
+<td title='0x2600 = 9728'>0x2600</td>
+<td>Olympus2600</td>
+<td class=c>-</td>
+<td>--&gt; <a href='Olympus.html#FE'>Olympus FE Tags</a></td></tr>
+<tr class=b>
+<td title='0x2700 = 9984'>0x2700</td>
+<td>Olympus2700</td>
+<td class=c>-</td>
+<td>--&gt; <a href='Olympus.html#FE'>Olympus FE Tags</a></td></tr>
+<tr>
+<td title='0x2800 = 10240'>0x2800</td>
+<td>Olympus2800</td>
+<td class=c>-</td>
+<td>--&gt; <a href='Olympus.html#FE'>Olympus FE Tags</a></td></tr>
+<tr class=b>
+<td title='0x2900 = 10496'>0x2900</td>
+<td>Olympus2900</td>
+<td class=c>-</td>
+<td>--&gt; <a href='Olympus.html#FE'>Olympus FE Tags</a></td></tr>
+<tr>
+<td title='0x3000 = 12288'>0x3000</td>
+<td>RawInfo
+  <br>RawInfo2</td>
+<td class=c>-<br>-</td>
+<td>--&gt; <a href='Olympus.html#RawInfo'>Olympus RawInfo Tags</a>
+  <br>--&gt; <a href='Olympus.html#RawInfo'>Olympus RawInfo Tags</a></td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='TextInfo'>Olympus TextInfo Tags</a></h2>
+<p>This information is in text format (similar to APP12 information, but with
+spaces instead of linefeeds).  Below are tags which have been observed, but
+any information found here will be extracted, even if the tag is not listed.</p>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Tag&nbsp;ID</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td>'Resolution'</td>
+<td>Resolution</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td>'Type'</td>
+<td>CameraType</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='Equipment'>Olympus Equipment Tags</a></h2>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Tag&nbsp;ID</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td title='0x0000 = 0'>0x0000</td>
+<td>EquipmentVersion</td>
+<td class=c>undef[4]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0100 = 256'>0x0100</td>
+<td>CameraType2</td>
+<td class=c>string[6]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0101 = 257'>0x0101</td>
+<td>SerialNumber</td>
+<td class=c>string[32]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0102 = 258'>0x0102</td>
+<td>InternalSerialNumber</td>
+<td class=c>string[32]</td>
+<td><span class=s><span class=n>(16 digits: 0-3=model, 4=year, 5-6=month, 8-12=unit number)</span></span></td></tr>
+<tr>
+<td title='0x0103 = 259'>0x0103</td>
+<td>FocalPlaneDiagonal</td>
+<td class=c>rational64u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0104 = 260'>0x0104</td>
+<td>BodyFirmwareVersion</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0201 = 513'>0x0201</td>
+<td>LensType</td>
+<td class=c>int8u[6]~</td>
+<td><span class=s><span class=n>(6 numbers: 1. Make, 2. Unknown, 3. Model, 4. Release, 5-6. Unknown)</span></span></td></tr>
+<tr class=b>
+<td title='0x0202 = 514'>0x0202</td>
+<td>LensSerialNumber</td>
+<td class=c>string[32]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0204 = 516'>0x0204</td>
+<td>LensFirmwareVersion</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0205 = 517'>0x0205</td>
+<td>MaxApertureAtMinFocal</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0206 = 518'>0x0206</td>
+<td>MaxApertureAtMaxFocal</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0207 = 519'>0x0207</td>
+<td>MinFocalLength</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0208 = 520'>0x0208</td>
+<td>MaxFocalLength</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x020a = 522'>0x020a</td>
+<td>MaxApertureAtCurrentFocal</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x020b = 523'>0x020b</td>
+<td>LensProperties</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0301 = 769'>0x0301</td>
+<td>Extender</td>
+<td class=c>int8u[6]~</td>
+<td><span class=s><span class=n>(6 numbers: 1. Make, 2. Unknown, 3. Model, 4. Release, 5-6. Unknown)</span></span></td></tr>
+<tr>
+<td title='0x0302 = 770'>0x0302</td>
+<td>ExtenderSerialNumber</td>
+<td class=c>string[32]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0303 = 771'>0x0303</td>
+<td>ExtenderModel</td>
+<td class=c>string</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0304 = 772'>0x0304</td>
+<td>ExtenderFirmwareVersion</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1000 = 4096'>0x1000</td>
+<td>FlashType</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = None
+  <br>2 = Simple E-System
+  <br>3 = E-System</span></td></tr>
+<tr>
+<td title='0x1001 = 4097'>0x1001</td>
+<td>FlashModel</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = None
+  <br>1 = FL-20
+  <br>2 = FL-50
+  <br>3 = RF-11
+  <br>4 = TF-22
+  <br>5 = FL-36
+  <br>6 = FL-50R
+  <br>7 = FL-36R</span></td></tr>
+<tr class=b>
+<td title='0x1002 = 4098'>0x1002</td>
+<td>FlashFirmwareVersion</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1003 = 4099'>0x1003</td>
+<td>FlashSerialNumber</td>
+<td class=c>string[32]</td>
+<td>&nbsp;</td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='CameraSettings'>Olympus CameraSettings Tags</a></h2>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Tag&nbsp;ID</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td title='0x0000 = 0'>0x0000</td>
+<td>CameraSettingsVersion</td>
+<td class=c>undef[4]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0100 = 256'>0x0100</td>
+<td>PreviewImageValid</td>
+<td class=c>int32u</td>
+<td><span class=s>0 = No
+  <br>1 = Yes</span></td></tr>
+<tr>
+<td title='0x0101 = 257'>0x0101</td>
+<td>PreviewImageStart</td>
+<td class=c>int32u*</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0102 = 258'>0x0102</td>
+<td>PreviewImageLength</td>
+<td class=c>int32u*</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0200 = 512'>0x0200</td>
+<td>ExposureMode</td>
+<td class=c>int16u</td>
+<td><span class=s>1 = Manual
+  <br>2 = Program
+  <br>3 = Aperture-priority AE
+  <br>4 = Shutter speed priority AE
+  <br>5 = Program-shift</span></td></tr>
+<tr class=b>
+<td title='0x0201 = 513'>0x0201</td>
+<td>AELock</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Off
+  <br>1 = On</span></td></tr>
+<tr>
+<td title='0x0202 = 514'>0x0202</td>
+<td>MeteringMode</td>
+<td class=c>int16u</td>
+<td><span class=s>2 = Center-weighted average
+  <br>3 = Spot
+  <br>5 = ESP
+  <br>261 = Pattern+AF
+  <br>515 = Spot+Highlight control
+  <br>1027 = Spot+Shadow control</span></td></tr>
+<tr class=b>
+<td title='0x0300 = 768'>0x0300</td>
+<td>MacroMode</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Off
+  <br>1 = On
+  <br>2 = Super Macro</span></td></tr>
+<tr>
+<td title='0x0301 = 769'>0x0301</td>
+<td>FocusMode</td>
+<td class=c>int16u[n]</td>
+<td><span class=s><span class=n>(1 or 2 values)</span>
+  <br>[Value 0]
+  <br>0 = Single AF
+  <br>1 = Sequential shooting AF
+  <br>2 = Continuous AF
+  <br>3 = Multi AF
+  <br>10 = MF</span></td></tr>
+<tr class=b>
+<td title='0x0302 = 770'>0x0302</td>
+<td>FocusProcess</td>
+<td class=c>int16u[n]</td>
+<td><span class=s><span class=n>(1 or 2 values)</span>
+  <br>[Value 0]
+  <br>0 = AF Not Used
+  <br>1 = AF Used</span></td></tr>
+<tr>
+<td title='0x0303 = 771'>0x0303</td>
+<td>AFSearch</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Not Ready
+  <br>1 = Ready</span></td></tr>
+<tr class=b>
+<td title='0x0304 = 772'>0x0304</td>
+<td>AFAreas</td>
+<td class=c>int32u[64]~</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0400 = 1024'>0x0400</td>
+<td>FlashMode</td>
+<td class=c>int16u</td>
+<td><span class=s>0x0 = Off
+  <br>Bit 0 = On
+  <br>Bit 1 = Fill-in
+  <br>Bit 2 = Red-eye
+  <br>Bit 3 = Slow-sync
+  <br>Bit 4 = Forced On
+  <br>Bit 5 = 2nd Curtain</span></td></tr>
+<tr class=b>
+<td title='0x0401 = 1025'>0x0401</td>
+<td>FlashExposureComp</td>
+<td class=c>rational64s</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0500 = 1280'>0x0500</td>
+<td>WhiteBalance2</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Auto
+  <br>16 = 7500K (Fine Weather with Shade)
+  <br>17 = 6000K (Cloudy)
+  <br>18 = 5300K (Fine Weather)
+  <br>20 = 3000K (Tungsten light)
+  <br>21 = 3600K (Tungsten light-like)
+  <br>33 = 6600K (Daylight fluorescent)
+  <br>34 = 4500K (Neutral white fluorescent)
+  <br>35 = 4000K (Cool white fluorescent)
+  <br>48 = 3600K (Tungsten light-like)
+  <br>256 = Custom WB 1
+  <br>257 = Custom WB 2
+  <br>258 = Custom WB 3
+  <br>259 = Custom WB 4
+  <br>512 = Custom WB 5400K
+  <br>513 = Custom WB 2900K
+  <br>514 = Custom WB 8000K</span></td></tr>
+<tr class=b>
+<td title='0x0501 = 1281'>0x0501</td>
+<td>WhiteBalanceTemperature</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0502 = 1282'>0x0502</td>
+<td>WhiteBalanceBracket</td>
+<td class=c>int16s</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0503 = 1283'>0x0503</td>
+<td>CustomSaturation</td>
+<td class=c>int16s[3]~</td>
+<td><span class=s><span class=n>(3 numbers: 1. CS Value, 2. Min, 3. Max)</span></span></td></tr>
+<tr>
+<td title='0x0504 = 1284'>0x0504</td>
+<td>ModifiedSaturation</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Off
+  <br>1 = CM1 (Red Enhance)
+  <br>2 = CM2 (Green Enhance)
+  <br>3 = CM3 (Blue Enhance)
+  <br>4 = CM4 (Skin Tones)</span></td></tr>
+<tr class=b>
+<td title='0x0505 = 1285'>0x0505</td>
+<td>ContrastSetting</td>
+<td class=c>int16s[3]</td>
+<td><span class=s><span class=n>(value, min, max)</span></span></td></tr>
+<tr>
+<td title='0x0506 = 1286'>0x0506</td>
+<td>SharpnessSetting</td>
+<td class=c>int16s[3]</td>
+<td><span class=s><span class=n>(value, min, max)</span></span></td></tr>
+<tr class=b>
+<td title='0x0507 = 1287'>0x0507</td>
+<td>ColorSpace</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = sRGB
+  <br>1 = Adobe RGB
+  <br>2 = Pro Photo RGB</span></td></tr>
+<tr>
+<td title='0x0509 = 1289'>0x0509</td>
+<td>SceneMode</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Standard
+  <br>6 = Auto
+  <br>7 = Sport
+  <br>8 = Portrait
+  <br>9 = Landscape+Portrait
+  <br>10 = Landscape
+  <br>11 = Night Scene
+  <br>12 = Self Portrait
+  <br>13 = Panorama
+  <br>14 = 2 in 1
+  <br>15 = Movie
+  <br>16 = Landscape+Portrait
+  <br>17 = Night+Portrait
+  <br>18 = Indoor
+  <br>19 = Fireworks
+  <br>20 = Sunset
+  <br>22 = Macro
+  <br>23 = Super Macro
+  <br>24 = Food
+  <br>25 = Documents
+  <br>26 = Museum
+  <br>27 = Shoot &amp; Select
+  <br>28 = Beach &amp; Snow
+  <br>29 = Self Protrait+Timer
+  <br>30 = Candle
+  <br>31 = Available Light
+  <br>32 = Behind Glass
+  <br>33 = My Mode
+  <br>34 = Pet
+  <br>35 = Underwater Wide1
+  <br>36 = Underwater Macro
+  <br>37 = Shoot &amp; Select1
+  <br>38 = Shoot &amp; Select2
+  <br>39 = High Key
+  <br>40 = Digital Image Stabilization
+  <br>41 = Auction
+  <br>42 = Beach
+  <br>43 = Snow
+  <br>44 = Underwater Wide2
+  <br>45 = Low Key
+  <br>46 = Children
+  <br>47 = Vivid
+  <br>48 = Nature Macro
+  <br>49 = Underwater Snapshot
+  <br>50 = Shooting Guide</span></td></tr>
+<tr class=b>
+<td title='0x050a = 1290'>0x050a</td>
+<td>NoiseReduction</td>
+<td class=c>int16u</td>
+<td><span class=s>Bit 0 = Noise Reduction
+  <br>Bit 1 = Noise Filter
+  <br>Bit 2 = Noise Filter (ISO Boost)</span></td></tr>
+<tr>
+<td title='0x050b = 1291'>0x050b</td>
+<td>DistortionCorrection</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Off
+  <br>1 = On</span></td></tr>
+<tr class=b>
+<td title='0x050c = 1292'>0x050c</td>
+<td>ShadingCompensation</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Off
+  <br>1 = On</span></td></tr>
+<tr>
+<td title='0x050d = 1293'>0x050d</td>
+<td>CompressionFactor</td>
+<td class=c>rational64u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x050f = 1295'>0x050f</td>
+<td>Gradation</td>
+<td class=c>int16s[n]</td>
+<td><span class=s><span class=n>(3 or 4 values)</span>
+  <br>[Values 0-2]
+  <br>&#39;-1 -1 1&#39; = Low Key
+  <br>&#39;0 -1 1&#39; = Normal
+  <br>&#39;1 -1 1&#39; = High Key
+  <br>[Value 3]
+  <br>0 = User-Selected
+  <br>1 = Auto-Override</span></td></tr>
+<tr>
+<td title='0x0520 = 1312'>0x0520</td>
+<td>PictureMode</td>
+<td class=c>int16u[n]</td>
+<td><span class=s><span class=n>(1 or 2 values)</span>
+  <br>[Value 0]
+  <br>1 = Vivid
+  <br>2 = Natural
+  <br>3 = Muted
+  <br>4 = Portrait
+  <br>256 = Monotone
+  <br>512 = Sepia</span></td></tr>
+<tr class=b>
+<td title='0x0521 = 1313'>0x0521</td>
+<td>PictureModeSaturation</td>
+<td class=c>int16s[3]</td>
+<td><span class=s><span class=n>(value, min, max)</span></span></td></tr>
+<tr>
+<td title='0x0522 = 1314'>0x0522</td>
+<td>PictureModeHue?</td>
+<td class=c>int16s</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0523 = 1315'>0x0523</td>
+<td>PictureModeContrast</td>
+<td class=c>int16s[3]</td>
+<td><span class=s><span class=n>(value, min, max)</span></span></td></tr>
+<tr>
+<td title='0x0524 = 1316'>0x0524</td>
+<td>PictureModeSharpness</td>
+<td class=c>int16s[3]</td>
+<td><span class=s><span class=n>(value, min, max)</span></span></td></tr>
+<tr class=b>
+<td title='0x0525 = 1317'>0x0525</td>
+<td>PictureModeBWFilter</td>
+<td class=c>int16s</td>
+<td><span class=s>0 = n/a
+  <br>1 = Neutral
+  <br>2 = Yellow
+  <br>3 = Orange
+  <br>4 = Red
+  <br>5 = Green</span></td></tr>
+<tr>
+<td title='0x0526 = 1318'>0x0526</td>
+<td>PictureModeTone</td>
+<td class=c>int16s</td>
+<td><span class=s>0 = n/a
+  <br>1 = Neutral
+  <br>2 = Sepia
+  <br>3 = Blue
+  <br>4 = Purple
+  <br>5 = Green</span></td></tr>
+<tr class=b>
+<td title='0x0527 = 1319'>0x0527</td>
+<td>NoiseFilter</td>
+<td class=c>int16s[3]</td>
+<td><span class=s>&#39;-1 -2 1&#39; = Low
+  <br>&#39;-2 -2 1&#39; = Off
+  <br>&#39;0 -2 1&#39; = Standard
+  <br>&#39;1 -2 1&#39; = High</span></td></tr>
+<tr>
+<td title='0x0529 = 1321'>0x0529</td>
+<td>ArtFilter</td>
+<td class=c>int16u[4]</td>
+<td><span class=s>&#39;0 0 0 0&#39; = Off
+  <br>&#39;1 1280 0 0&#39; = Soft Focus
+  <br>&#39;2 1280 0 0&#39; = Pop Art
+  <br>&#39;3 1280 0 0&#39; = Pale &amp; Light Color
+  <br>&#39;4 1280 0 0&#39; = Light Tone
+  <br>&#39;5 1280 0 0&#39; = Pin Hole
+  <br>&#39;6 1280 0 0&#39; = Grainy Film</span></td></tr>
+<tr class=b>
+<td title='0x0600 = 1536'>0x0600</td>
+<td>DriveMode</td>
+<td class=c>int16u[n]~</td>
+<td><span class=s><span class=n>(2 or 3 numbers: 1. Mode, 2. Shot number, 3. Mode bits)</span></span></td></tr>
+<tr>
+<td title='0x0601 = 1537'>0x0601</td>
+<td>PanoramaMode</td>
+<td class=c>int16u~</td>
+<td><span class=s><span class=n>(2 numbers: 1. Mode, 2. Shot number)</span></span></td></tr>
+<tr class=b>
+<td title='0x0603 = 1539'>0x0603</td>
+<td>ImageQuality2</td>
+<td class=c>int16u</td>
+<td><span class=s>1 = SQ
+  <br>2 = HQ
+  <br>3 = SHQ
+  <br>4 = RAW</span></td></tr>
+<tr>
+<td title='0x0900 = 2304'>0x0900</td>
+<td>ManometerPressure</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0901 = 2305'>0x0901</td>
+<td>ManometerReading</td>
+<td class=c>int32s[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0902 = 2306'>0x0902</td>
+<td>ExtendedWBDetect</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Off
+  <br>1 = On</span></td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='RawDevelopment'>Olympus RawDevelopment Tags</a></h2>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Tag&nbsp;ID</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td title='0x0000 = 0'>0x0000</td>
+<td>RawDevVersion</td>
+<td class=c>undef[4]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0100 = 256'>0x0100</td>
+<td>RawDevExposureBiasValue</td>
+<td class=c>rational64s</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0101 = 257'>0x0101</td>
+<td>RawDevWhiteBalanceValue</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0102 = 258'>0x0102</td>
+<td>RawDevWBFineAdjustment</td>
+<td class=c>int16s</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0103 = 259'>0x0103</td>
+<td>RawDevGrayPoint</td>
+<td class=c>int16u[3]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0104 = 260'>0x0104</td>
+<td>RawDevSaturationEmphasis</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0105 = 261'>0x0105</td>
+<td>RawDevMemoryColorEmphasis</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0106 = 262'>0x0106</td>
+<td>RawDevContrastValue</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0107 = 263'>0x0107</td>
+<td>RawDevSharpnessValue</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0108 = 264'>0x0108</td>
+<td>RawDevColorSpace</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = sRGB
+  <br>1 = Adobe RGB
+  <br>2 = Pro Photo RGB</span></td></tr>
+<tr>
+<td title='0x0109 = 265'>0x0109</td>
+<td>RawDevEngine</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = High Speed
+  <br>1 = High Function
+  <br>2 = Advanced High Speed
+  <br>3 = Advanced High Function</span></td></tr>
+<tr class=b>
+<td title='0x010a = 266'>0x010a</td>
+<td>RawDevNoiseReduction</td>
+<td class=c>int16u</td>
+<td><span class=s>Bit 0 = Noise Reduction
+  <br>Bit 1 = Noise Filter
+  <br>Bit 2 = Noise Filter (ISO Boost)</span></td></tr>
+<tr>
+<td title='0x010b = 267'>0x010b</td>
+<td>RawDevEditStatus</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Original
+  <br>1 = Edited (Landscape)
+  <br>6 = Edited (Portrait)
+  <br>8 = Edited (Portrait)</span></td></tr>
+<tr class=b>
+<td title='0x010c = 268'>0x010c</td>
+<td>RawDevSettings</td>
+<td class=c>int16u</td>
+<td><span class=s>Bit 0 = WB Color Temp
+  <br>Bit 2 = WB Gray Point
+  <br>Bit 3 = Saturation
+  <br>Bit 4 = Contrast
+  <br>Bit 5 = Sharpness
+  <br>Bit 6 = Color Space
+  <br>Bit 7 = High Function
+  <br>Bit 8 = Noise Reduction</span></td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='RawDevelopment2'>Olympus RawDevelopment2 Tags</a></h2>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Tag&nbsp;ID</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td title='0x0000 = 0'>0x0000</td>
+<td>RawDevVersion</td>
+<td class=c>undef[4]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0100 = 256'>0x0100</td>
+<td>RawDevExposureBiasValue</td>
+<td class=c>rational64s</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0101 = 257'>0x0101</td>
+<td>RawDevWhiteBalance</td>
+<td class=c>int16u</td>
+<td><span class=s>1 = Color Temperature
+  <br>2 = Gray Point</span></td></tr>
+<tr class=b>
+<td title='0x0102 = 258'>0x0102</td>
+<td>RawDevWhiteBalanceValue</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0103 = 259'>0x0103</td>
+<td>RawDevWBFineAdjustment</td>
+<td class=c>int16s</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0104 = 260'>0x0104</td>
+<td>RawDevGrayPoint</td>
+<td class=c>int16u[3]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0105 = 261'>0x0105</td>
+<td>RawDevContrastValue</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0106 = 262'>0x0106</td>
+<td>RawDevSharpnessValue</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0107 = 263'>0x0107</td>
+<td>RawDevSaturationEmphasis</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0108 = 264'>0x0108</td>
+<td>RawDevMemoryColorEmphasis</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0109 = 265'>0x0109</td>
+<td>RawDevColorSpace</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = sRGB
+  <br>1 = Adobe RGB
+  <br>2 = Pro Photo RGB</span></td></tr>
+<tr class=b>
+<td title='0x010a = 266'>0x010a</td>
+<td>RawDevNoiseReduction</td>
+<td class=c>int16u</td>
+<td><span class=s>Bit 0 = Noise Reduction
+  <br>Bit 1 = Noise Filter
+  <br>Bit 2 = Noise Filter (ISO Boost)</span></td></tr>
+<tr>
+<td title='0x010b = 267'>0x010b</td>
+<td>RawDevEngine</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = High Speed
+  <br>1 = High Function</span></td></tr>
+<tr class=b>
+<td title='0x010c = 268'>0x010c</td>
+<td>RawDevPictureMode</td>
+<td class=c>int16u</td>
+<td><span class=s>1 = Vivid
+  <br>2 = Natural
+  <br>3 = Muted
+  <br>256 = Monotone
+  <br>512 = Sepia</span></td></tr>
+<tr>
+<td title='0x010d = 269'>0x010d</td>
+<td>RawDevPMSaturation</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x010e = 270'>0x010e</td>
+<td>RawDevPMContrast</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x010f = 271'>0x010f</td>
+<td>RawDevPMSharpness</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0110 = 272'>0x0110</td>
+<td>RawDevPM_BWFilter</td>
+<td class=c>int16u</td>
+<td><span class=s>1 = Neutral
+  <br>2 = Yellow
+  <br>3 = Orange
+  <br>4 = Red
+  <br>5 = Green</span></td></tr>
+<tr>
+<td title='0x0111 = 273'>0x0111</td>
+<td>RawDevPMPictureTone</td>
+<td class=c>int16u</td>
+<td><span class=s>1 = Neutral
+  <br>2 = Sepia
+  <br>3 = Blue
+  <br>4 = Purple
+  <br>5 = Green</span></td></tr>
+<tr class=b>
+<td title='0x0112 = 274'>0x0112</td>
+<td>RawDevGradation</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0113 = 275'>0x0113</td>
+<td>RawDevSaturation3</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0119 = 281'>0x0119</td>
+<td>RawDevAutoGradation</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Off
+  <br>1 = On</span></td></tr>
+<tr>
+<td title='0x0120 = 288'>0x0120</td>
+<td>RawDevPMNoiseFilter</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='ImageProcessing'>Olympus ImageProcessing Tags</a></h2>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Tag&nbsp;ID</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td title='0x0000 = 0'>0x0000</td>
+<td>ImageProcessingVersion</td>
+<td class=c>undef[4]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0100 = 256'>0x0100</td>
+<td>WB_RBLevels</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0102 = 258'>0x0102</td>
+<td>WB_RBLevels3000K</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0103 = 259'>0x0103</td>
+<td>WB_RBLevels3300K</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0104 = 260'>0x0104</td>
+<td>WB_RBLevels3600K</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0105 = 261'>0x0105</td>
+<td>WB_RBLevels3900K</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0106 = 262'>0x0106</td>
+<td>WB_RBLevels4000K</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0107 = 263'>0x0107</td>
+<td>WB_RBLevels4300K</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0108 = 264'>0x0108</td>
+<td>WB_RBLevels4500K</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0109 = 265'>0x0109</td>
+<td>WB_RBLevels4800K</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x010a = 266'>0x010a</td>
+<td>WB_RBLevels5300K</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x010b = 267'>0x010b</td>
+<td>WB_RBLevels6000K</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x010c = 268'>0x010c</td>
+<td>WB_RBLevels6600K</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x010d = 269'>0x010d</td>
+<td>WB_RBLevels7500K</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x010e = 270'>0x010e</td>
+<td>WB_RBLevelsCWB1</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x010f = 271'>0x010f</td>
+<td>WB_RBLevelsCWB2</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0110 = 272'>0x0110</td>
+<td>WB_RBLevelsCWB3</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0111 = 273'>0x0111</td>
+<td>WB_RBLevelsCWB4</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0113 = 275'>0x0113</td>
+<td>WB_GLevel3000K</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0114 = 276'>0x0114</td>
+<td>WB_GLevel3300K</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0115 = 277'>0x0115</td>
+<td>WB_GLevel3600K</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0116 = 278'>0x0116</td>
+<td>WB_GLevel3900K</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0117 = 279'>0x0117</td>
+<td>WB_GLevel4000K</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0118 = 280'>0x0118</td>
+<td>WB_GLevel4300K</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0119 = 281'>0x0119</td>
+<td>WB_GLevel4500K</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x011a = 282'>0x011a</td>
+<td>WB_GLevel4800K</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x011b = 283'>0x011b</td>
+<td>WB_GLevel5300K</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x011c = 284'>0x011c</td>
+<td>WB_GLevel6000K</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x011d = 285'>0x011d</td>
+<td>WB_GLevel6600K</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x011e = 286'>0x011e</td>
+<td>WB_GLevel7500K</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x011f = 287'>0x011f</td>
+<td>WB_GLevel</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0200 = 512'>0x0200</td>
+<td>ColorMatrix</td>
+<td class=c>int16u[9]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0300 = 768'>0x0300</td>
+<td>Enhancer</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0301 = 769'>0x0301</td>
+<td>EnhancerValues</td>
+<td class=c>int16u[7]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0310 = 784'>0x0310</td>
+<td>CoringFilter</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0311 = 785'>0x0311</td>
+<td>CoringValues</td>
+<td class=c>int16u[7]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0600 = 1536'>0x0600</td>
+<td>BlackLevel2</td>
+<td class=c>int16u[4]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0610 = 1552'>0x0610</td>
+<td>GainBase</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0611 = 1553'>0x0611</td>
+<td>ValidBits</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0612 = 1554'>0x0612</td>
+<td>CropLeft</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0613 = 1555'>0x0613</td>
+<td>CropTop</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0614 = 1556'>0x0614</td>
+<td>CropWidth</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0615 = 1557'>0x0615</td>
+<td>CropHeight</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1010 = 4112'>0x1010</td>
+<td>NoiseReduction2</td>
+<td class=c>int16u</td>
+<td><span class=s>Bit 0 = Noise Reduction
+  <br>Bit 1 = Noise Filter
+  <br>Bit 2 = Noise Filter (ISO Boost)</span></td></tr>
+<tr>
+<td title='0x1011 = 4113'>0x1011</td>
+<td>DistortionCorrection2</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Off
+  <br>1 = On</span></td></tr>
+<tr class=b>
+<td title='0x1012 = 4114'>0x1012</td>
+<td>ShadingCompensation2</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Off
+  <br>1 = On</span></td></tr>
+<tr>
+<td title='0x1103 = 4355'>0x1103</td>
+<td>UnknownBlock?</td>
+<td class=c>undef</td>
+<td><span class=s><span class=n>(unknown 142kB block in ORF images, not copied to JPEG images)</span></span></td></tr>
+<tr class=b>
+<td title='0x1200 = 4608'>0x1200</td>
+<td>FaceDetect</td>
+<td class=c>int32u[n]</td>
+<td><span class=s><span class=n>(2 or 3 values)</span>
+  <br>[Values 0-1]
+  <br>&#39;0 0&#39; = Off
+  <br>&#39;1 0&#39; = On</span></td></tr>
+<tr>
+<td title='0x1201 = 4609'>0x1201</td>
+<td>FaceDetectArea</td>
+<td class=c>int16s[80]</td>
+<td>&nbsp;</td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='FocusInfo'>Olympus FocusInfo Tags</a></h2>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Tag&nbsp;ID</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td title='0x0000 = 0'>0x0000</td>
+<td>FocusInfoVersion</td>
+<td class=c>undef[4]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0209 = 521'>0x0209</td>
+<td>AutoFocus?</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Off
+  <br>1 = On</span></td></tr>
+<tr>
+<td title='0x0210 = 528'>0x0210</td>
+<td>SceneDetect</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0211 = 529'>0x0211</td>
+<td>SceneArea?</td>
+<td class=c>int32u[8]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0212 = 530'>0x0212</td>
+<td>SceneDetectData?</td>
+<td class=c>int32u[720]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0300 = 768'>0x0300</td>
+<td>ZoomStepCount</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0301 = 769'>0x0301</td>
+<td>FocusStepCount</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0303 = 771'>0x0303</td>
+<td>FocusStepInfinity</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0304 = 772'>0x0304</td>
+<td>FocusStepNear</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0305 = 773'>0x0305</td>
+<td>FocusDistance</td>
+<td class=c>rational64u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0308 = 776'>0x0308</td>
+<td>AFPoint</td>
+<td class=c>int16u</td>
+<td><span class=s><span class=n>(for E-3, the value is separated into 2 parts: low 5 bits give AP point,
+upper bits give AF target selection mode)</span>
+  <br>[Value 0]
+  <br>0x0 = (none)
+  <br>0x1 = Top-left (horizontal)
+  <br>0x2 = Top-center (horizontal)
+  <br>0x3 = Top-right (horizontal)
+  <br>0x4 = Left (horizontal)
+  <br>0x5 = Mid-left (horizontal)
+  <br>0x6 = Center (horizontal)
+  <br>0x7 = Mid-right (horizontal)
+  <br>0x8 = Right (horizontal)
+  <br>0x9 = Bottom-left (horizontal)
+  <br>0xa = Bottom-center (horizontal)
+  <br>0xb = Bottom-right (horizontal)
+  <br>0xc = Top-left (vertical)
+  <br>0xd = Top-center (vertical)
+  <br>0xe = Top-right (vertical)
+  <br>0xf = Left (vertical)
+  <br>0x10 = Mid-left (vertical)
+  <br>0x11 = Center (vertical)
+  <br>0x12 = Mid-right (vertical)
+  <br>0x13 = Right (vertical)
+  <br>0x14 = Bottom-left (vertical)
+  <br>0x15 = Bottom-center (vertical)
+  <br>0x16 = Bottom-right (vertical)
+  <br>[Value 1]
+  <br>0x0 = Single Target
+  <br>0x40 = All Target
+  <br>0x80 = Dynamic Single Target
+  <br><span class=n>(other models)</span>
+  <br>0 = Left
+  <br>1 = Center (horizontal)
+  <br>2 = Right
+  <br>3 = Center (vertical)
+  <br>255 = None</span></td></tr>
+<tr class=b>
+<td title='0x1201 = 4609'>0x1201</td>
+<td>ExternalFlash</td>
+<td class=c>int16u[2]</td>
+<td><span class=s>&#39;0 0&#39; = Off
+  <br>&#39;1 0&#39; = On</span></td></tr>
+<tr>
+<td title='0x1203 = 4611'>0x1203</td>
+<td>ExternalFlashGuideNumber?</td>
+<td class=c>rational64s</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1204 = 4612'>0x1204</td>
+<td>ExternalFlashBounce</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Bounce or Off
+  <br>1 = Direct</span></td></tr>
+<tr>
+<td title='0x1205 = 4613'>0x1205</td>
+<td>ExternalFlashZoom</td>
+<td class=c>rational64u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1208 = 4616'>0x1208</td>
+<td>InternalFlash</td>
+<td class=c>int16u[n]</td>
+<td><span class=s>0 = Off
+  <br>1 = On
+  <br>&#39;0 0&#39; = Off
+  <br>&#39;1 0&#39; = On</span></td></tr>
+<tr>
+<td title='0x1209 = 4617'>0x1209</td>
+<td>ManualFlash</td>
+<td class=c>int16u[2]~</td>
+<td><span class=s><span class=n>(2 numbers: 1. 0=Off, 1=On, 2. Flash strength)</span></span></td></tr>
+<tr class=b>
+<td title='0x1500 = 5376'>0x1500</td>
+<td>SensorTemperature</td>
+<td class=c>int16s</td>
+<td><span class=s><span class=n>(approximately Celsius for E-1, unknown calibration for E-3/410/420/510, and
+always zero for E-300/330/400/500)</span></span></td></tr>
+<tr>
+<td title='0x1600 = 5632'>0x1600</td>
+<td>ImageStabilization</td>
+<td class=c>undef~</td>
+<td>&nbsp;</td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='FE'>Olympus FE Tags</a></h2>
+<p>Some FE models write a large number of tags here, but most of this
+information remains unknown.</p>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Tag&nbsp;ID</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td title='0x0100 = 256'>0x0100</td>
+<td>BodyFirmwareVersion</td>
+<td class=c>string</td>
+<td>&nbsp;</td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='RawInfo'>Olympus RawInfo Tags</a></h2>
+<p>These tags are found only in ORF images of some models (ie. C8080WZ).</p>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Tag&nbsp;ID</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td title='0x0000 = 0'>0x0000</td>
+<td>RawInfoVersion</td>
+<td class=c>undef[4]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0100 = 256'>0x0100</td>
+<td>WB_RBLevelsUsed</td>
+<td class=c>int16[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0110 = 272'>0x0110</td>
+<td>WB_RBLevelsAuto</td>
+<td class=c>int16[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0120 = 288'>0x0120</td>
+<td>WB_RBLevelsShade</td>
+<td class=c>int16[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0121 = 289'>0x0121</td>
+<td>WB_RBLevelsCloudy</td>
+<td class=c>int16[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0122 = 290'>0x0122</td>
+<td>WB_RBLevelsFineWeather</td>
+<td class=c>int16[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0123 = 291'>0x0123</td>
+<td>WB_RBLevelsTungsten</td>
+<td class=c>int16[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0124 = 292'>0x0124</td>
+<td>WB_RBLevelsEveningSunlight</td>
+<td class=c>int16[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0130 = 304'>0x0130</td>
+<td>WB_RBLevelsDaylightFluor</td>
+<td class=c>int16[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0131 = 305'>0x0131</td>
+<td>WB_RBLevelsDayWhiteFluor</td>
+<td class=c>int16[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0132 = 306'>0x0132</td>
+<td>WB_RBLevelsCoolWhiteFluor</td>
+<td class=c>int16[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0133 = 307'>0x0133</td>
+<td>WB_RBLevelsWhiteFluorescent</td>
+<td class=c>int16[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0200 = 512'>0x0200</td>
+<td>ColorMatrix2</td>
+<td class=c>int16u[9]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0310 = 784'>0x0310</td>
+<td>CoringFilter</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0311 = 785'>0x0311</td>
+<td>CoringValues</td>
+<td class=c>int16u[11]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0600 = 1536'>0x0600</td>
+<td>BlackLevel2</td>
+<td class=c>int16u[4]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0601 = 1537'>0x0601</td>
+<td>YCbCrCoefficients</td>
+<td class=c>N</td>
+<td><span class=s><span class=n>(stored as int16u[6], but extracted as rational32u[3])</span></span></td></tr>
+<tr class=b>
+<td title='0x0611 = 1553'>0x0611</td>
+<td>ValidPixelDepth</td>
+<td class=c>int16u[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0612 = 1554'>0x0612</td>
+<td>CropLeft</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0613 = 1555'>0x0613</td>
+<td>CropTop</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0614 = 1556'>0x0614</td>
+<td>CropWidth</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0615 = 1557'>0x0615</td>
+<td>CropHeight</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1000 = 4096'>0x1000</td>
+<td>LightSource</td>
+<td class=c>int16u</td>
+<td><span class=s>0 = Unknown
+  <br>16 = Shade
+  <br>17 = Cloudy
+  <br>18 = Fine Weather
+  <br>20 = Tungsten (incandescent)
+  <br>22 = Evening Sunlight
+  <br>33 = Daylight Fluorescent (D 5700 - 7100K)
+  <br>34 = Day White Fluorescent (N 4600 - 5400K)
+  <br>35 = Cool White Fluorescent (W 3900 - 4500K)
+  <br>36 = White Fluorescent (WW 3200 - 3700K)
+  <br>256 = One Touch White Balance
+  <br>512 = Custom 1-4</span></td></tr>
+<tr class=b>
+<td title='0x1001 = 4097'>0x1001</td>
+<td>WhiteBalanceComp</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1010 = 4112'>0x1010</td>
+<td>SaturationSetting</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1011 = 4113'>0x1011</td>
+<td>HueSetting</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x1012 = 4114'>0x1012</td>
+<td>ContrastSetting</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x1013 = 4115'>0x1013</td>
+<td>SharpnessSetting</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x2000 = 8192'>0x2000</td>
+<td>CMExposureCompensation</td>
+<td class=c>rational64s</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x2001 = 8193'>0x2001</td>
+<td>CMWhiteBalance</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x2002 = 8194'>0x2002</td>
+<td>CMWhiteBalanceComp</td>
+<td class=c>int16s</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x2010 = 8208'>0x2010</td>
+<td>CMWhiteBalanceGrayPoint</td>
+<td class=c>int16u[3]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x2020 = 8224'>0x2020</td>
+<td>CMSaturation</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x2021 = 8225'>0x2021</td>
+<td>CMHue</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x2022 = 8226'>0x2022</td>
+<td>CMContrast</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x2023 = 8227'>0x2023</td>
+<td>CMSharpness</td>
+<td class=c>int16s[3]</td>
+<td>&nbsp;</td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='MOV1'>Olympus MOV1 Tags</a></h2>
+<p>This information is found in MOV videos from Olympus models such as the
+D540Z, D595Z, FE100, FE110, FE115, FE170 and FE200.</p>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Index</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td class=r title='0 = 0x0'>0</td>
+<td>Make</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td class=r title='24 = 0x18'>24</td>
+<td>Model</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td class=r title='38 = 0x26'>38</td>
+<td>ExposureUnknown?</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td class=r title='42 = 0x2a'>42</td>
+<td>FNumber</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td class=r title='50 = 0x32'>50</td>
+<td>ExposureCompensation</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td class=r title='72 = 0x48'>72</td>
+<td>FocalLength</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='MOV2'>Olympus MOV2 Tags</a></h2>
+<p>This information is found in MOV videos from Olympus models such as the
+FE120, FE140 and FE190.</p>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Index</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td class=r title='0 = 0x0'>0</td>
+<td>Make</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td class=r title='24 = 0x18'>24</td>
+<td>Model</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td class=r title='54 = 0x36'>54</td>
+<td>ExposureTime</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td class=r title='58 = 0x3a'>58</td>
+<td>FNumber</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td class=r title='66 = 0x42'>66</td>
+<td>ExposureCompensation</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td class=r title='88 = 0x58'>88</td>
+<td>FocalLength</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td class=r title='193 = 0xc1'>193</td>
+<td>ISO</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='AVI'>Olympus AVI Tags</a></h2>
+<p>This information is found in Olympus AVI videos.</p>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Index</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td class=r title='18 = 0x12'>18</td>
+<td>Make</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td class=r title='44 = 0x2c'>44</td>
+<td>ModelType</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td class=r title='94 = 0x5e'>94</td>
+<td>FNumber</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td class=r title='131 = 0x83'>131</td>
+<td>DateTime1</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td class=r title='157 = 0x9d'>157</td>
+<td>DateTime2</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td class=r title='301 = 0x12d'>301</td>
+<td>ThumbnailLength</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td class=r title='305 = 0x131'>305</td>
+<td>ThumbnailImage</td>
+<td class=c>N</td>
+<td><span class=s><span class=n>(160x120 JPEG thumbnail image)</span></span></td></tr>
+</table></td></tr></table></blockquote>
+
+<hr>
+(This document generated automatically by Image::ExifTool::BuildTagLookup)
+<br><i>Last revised May 19, 2009</i>
+<p class=lf><a href='index.html'>&lt;-- ExifTool Tag Names</a></p>
+</body>
+</html>

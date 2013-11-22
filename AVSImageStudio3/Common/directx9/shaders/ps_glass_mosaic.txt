@@ -1,0 +1,83 @@
+//
+// Файл    : shader.txt
+// Описание: Пиксельный шейдер
+//
+
+//
+// Глобальные переменные
+//
+
+sampler BaseTex; // текстура
+
+uniform int samples = 0;
+
+float2 curv   = {1, 1};       // x = curvature, y = curvature;
+float2 level  = {1, 1};       // x = level / samples; y = 1 / samples;
+float2 scale  = {1, 1};       // x = scaleX, y = scaleY;
+float2 smooth = {1, 1};       // x = smooth, y = smooth;
+float2 size   = {1, 1};       // x = width, y = height;
+float2 resize = {1, 1};      // 1 / (width * sx), 1 / (height * sy);
+float2 disp   = {0.5, 0.5};   // x = 0.5 + offsetX / width, y = 0.5 - offsetY / height;
+float4 rotate = {1, 0, 0, 1}; // (cos, sin, -sin, cos)
+float2 factor = {1, 1};       // atan(abs(const / curv)) / (Pi / 2);
+
+float3 out_mx = {1, 0, 0};
+float3 out_my = {0, 1, 0};
+
+//
+// Структуры
+//
+
+struct PS_INPUT
+{
+     float2 base : TEXCOORD0;
+};
+
+struct PS_OUTPUT
+{
+     vector diffuse : COLOR0;
+};
+
+//
+// Точка входа
+//
+
+PS_OUTPUT Main(PS_INPUT input)
+{
+	PS_OUTPUT output = (PS_OUTPUT)0;
+
+	vector sum = 0;
+	
+	float2 p0;
+	float2 p1;
+	float2 p2;
+	
+	p0 = (input.base - disp) * size;
+
+	for( int i = 0; i < samples; i++ )
+	{
+		p1 = i * level;
+		p1.x = frac( p1.x );
+		
+		p2.x = p1.x * rotate.x + p1.y * rotate.y;
+		p2.y = p1.x * rotate.z + p1.y * rotate.w;
+	
+		p1 = p2 * smooth + p0;
+		
+		p2.x = p1.x * rotate.x + p1.y * rotate.y;
+		p2.y = p1.x * rotate.z + p1.y * rotate.w;
+		
+		p1 = (frac( p2 * scale + 0.5 ) - 0.5) * 3.14159274 * factor;
+		
+		p2 += curv * tan( p1 );
+		
+		p1.x = rotate.x * p2.x + rotate.z * p2.y;
+		p1.y = rotate.y * p2.x + rotate.w * p2.y;
+		
+		sum += tex2D(BaseTex, p1 * resize + disp);
+	}
+	
+	output.diffuse = sum * level.y;
+
+	return output;
+}

@@ -1,6 +1,8 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
+#define COMPONENT_NAME "ImageEditor"
+#include "../../Common/FileInfo.h"
 #include "version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -56,7 +58,7 @@ IDC_CURSOR_MOVE3        CURSOR                  "Commands\\Images\\Cursors\\move
 // Bitmap
 //
 
-IDB_AVSIMAGEEDITOR      BITMAP                  "AVSImageEditor.bmp"
+IDB_ASCIMAGEEDITOR      BITMAP                  "ASCImageEditor.bmp"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -104,22 +106,22 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "000904e2"
+        BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "Online Media Technologies Ltd."
-            VALUE "FileDescription", "AVSImageEditor ActiveX DLL"
+            VALUE "CompanyName", COMPANY_NAME
+            VALUE "FileDescription", FILE_DESCRIPTION_ACTIVEX
             VALUE "FileVersion", STRVER
-            VALUE "InternalName", "AVSImageEditor ActiveX DLL"
-            VALUE "LegalCopyright", "Online Media Technologies Ltd. Copyright 2009"
-            VALUE "LegalTrademarks", "Online Media Technologies Ltd."
-            VALUE "OriginalFilename", "AVSImageEditor.dll"
-            VALUE "ProductName", "AVSImageEditor ActiveX DLL"
+            VALUE "InternalName", COMPONENT_FILE_NAME_DLL
+            VALUE "LegalCopyright", LEGAL_COPYRIGHT
+            VALUE "LegalTrademarks", LEGAL_COPYRIGHT
+            VALUE "OriginalFilename", COMPONENT_FILE_NAME_DLL
+            VALUE "ProductName", FILE_DESCRIPTION_ACTIVEX
             VALUE "ProductVersion", STRVER
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x9, 1250
+        VALUE "Translation", 0x409, 1252
     END
 END
 
@@ -129,7 +131,7 @@ END
 // REGISTRY
 //
 
-IDR_AVSIMAGEEDITOR      REGISTRY                "AVSImageEditor.rgs"
+IDR_ASCIMAGEEDITOR      REGISTRY                "ASCImageEditor.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -138,7 +140,7 @@ IDR_AVSIMAGEEDITOR      REGISTRY                "AVSImageEditor.rgs"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSImageEditor"
+    IDS_PROJNAME            "ASCImageEditor"
 END
 
 #endif    // English (U.S.) resources

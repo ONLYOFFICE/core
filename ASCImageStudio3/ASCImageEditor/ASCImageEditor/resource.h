@@ -1,10 +1,10 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by AVSImageEditor.rc
+// Used by ASCImageEditor.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_AVSIMAGEEDITOR              101
-#define IDB_AVSIMAGEEDITOR              102
+#define IDR_ASCIMAGEEDITOR              101
+#define IDB_ASCIMAGEEDITOR              102
 #define IDB_PNG1                        207
 #define IDB_PNG2                        208
 #define IDB_APPLY_DOWN_PNG              209

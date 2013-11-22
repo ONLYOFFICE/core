@@ -123,7 +123,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
+				CommandLine="..\..\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -207,7 +207,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\Redist&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -503,7 +503,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\Zlib.lib"
+			RelativePath=".\zlib.lib"
 			>
 		</File>
 	</Files>

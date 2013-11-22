@@ -3,7 +3,7 @@
 #include "resource.h"
 
 #define COMPONENT_NAME "ImageFile3"
-#include "FileInfo.h"
+#include "../../Common/FileInfo.h"
 
 #include "version.h"
 

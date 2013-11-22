@@ -2,7 +2,7 @@
 //#include "..\stdafx.h"
 #include "..\Interfaces\XmlUtils.h"
 #include "..\..\AVSVideoStudio3\Common\AVSUtils.h"
-#include "./../Interfaces/AVSRenderer.h"
+#include "./../Interfaces/ASCRenderer.h"
 #include "./../agg/ap_aggplusenums.h"
 
 #include <gdiplus.h>

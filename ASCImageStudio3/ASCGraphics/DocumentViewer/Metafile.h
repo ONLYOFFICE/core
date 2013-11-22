@@ -2,18 +2,18 @@
 #include "..\stdafx.h"
 
 #include "..\Objects\Structures.h"
-#include "..\Interfaces\AVSRenderer.h"
-#include "..\Interfaces\IAVSGraphicsRenderer.h"
+#include "..\Interfaces\ASCRenderer.h"
+#include "..\Interfaces\IASCGraphicsRenderer.h"
 #include "TemporaryCS.h"
 
-#include "..\..\AVSOfficeStudio\Common\OfficeDrawing\File.h"
-#include "..\Objects\AVSImage.h"
+#include "..\..\..\Common\OfficeDrawing\File.h"
+#include "..\Objects\ASCImage.h"
 #include "..\DocumentViewer\DIB.h"
 
 #include "..\Objects\Image\EmfFile.h"
-#include "..\agg\AVSWrapper\ArrowHead.h"
+#include "..\agg\ASCWrapper\ArrowHead.h"
 
-#include "..\..\AVSVideoStudio3\Common\MediaFormatDefine.h"
+#include "..\..\..\Common\MediaFormatDefine.h"
 
 // IAVSMetafile
 [object, uuid("8E19E616-F99C-46c9-B56D-BFF98241EB39"), dual, pointer_default(unique)]

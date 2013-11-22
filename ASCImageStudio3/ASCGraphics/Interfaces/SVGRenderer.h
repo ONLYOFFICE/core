@@ -1,10 +1,10 @@
 #pragma once
-#include "AVSRenderer.h"
+#include "ASCRenderer.h"
 #include "StringWriter.h"
 #include "..\Objects\Structures.h"
-#include "AVSGraphicsSimpleConverter.h"
-#include "..\Objects\AVSWinFonts.h"
-#include "..\Objects\AVSFontManager.h"
+#include "ASCGraphicsSimpleConverter.h"
+#include "..\Objects\ASCWinFonts.h"
+#include "..\Objects\ASCFontManager.h"
 #include "GdiplusEx.h"
 
 namespace NSSVG

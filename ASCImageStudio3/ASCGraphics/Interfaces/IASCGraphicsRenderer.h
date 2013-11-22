@@ -1,5 +1,5 @@
 #pragma once
-#include "AVSRenderer.h"
+#include "ASCRenderer.h"
 
 // IAVSGraphicsRenderer
 [object, uuid("A278FE9F-622A-43a3-9F18-363311637073"), dual, pointer_default(unique)]

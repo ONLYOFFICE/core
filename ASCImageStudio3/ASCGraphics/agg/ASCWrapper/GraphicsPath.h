@@ -19,7 +19,7 @@
 
 #include "Matrix.h"
 
-#include "..\..\Objects\AVSFontManager.h"
+#include "..\..\Objects\ASCFontManager.h"
 #include "..\..\Objects\Structures.h"
 
 namespace Aggplus

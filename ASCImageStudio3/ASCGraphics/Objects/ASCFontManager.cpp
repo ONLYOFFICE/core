@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include "AVSFontManager.h"
-#include "../Interfaces/AVSGraphicsRenderer.h"
+#include "ASCFontManager.h"
+#include "../Interfaces/ASCGraphicsRenderer.h"
 
 void CAVSFontManager::DumpToJSEditor(CString strDirectory, bool bIsUnionFamily)
 {

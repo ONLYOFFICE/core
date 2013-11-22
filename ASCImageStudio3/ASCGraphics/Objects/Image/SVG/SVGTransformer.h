@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../../Interfaces/AVSRenderer.h"
-#include "../../../../../AVSOfficeStudio/Common/OfficeFileErrorDescription.h"
-#include "../../../../../../../Common/GdiPlusEx.h"
+#include "../../../Interfaces/ASCRenderer.h"
+#include "../../../../../Common/OfficeFileErrorDescription.h"
+#include "../../../../../Common/GdiPlusEx.h"
 
 #include "SVGFramework.h"
 

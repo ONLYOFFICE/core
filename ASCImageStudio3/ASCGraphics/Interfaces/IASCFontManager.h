@@ -1,8 +1,8 @@
 #pragma once
 #include "../stdafx.h"
 
-#include "IAVSGraphicsBase.h"
-#include "IAVSGlyphImage.h"
+#include "IASCGraphicsBase.h"
+#include "IASCGlyphImage.h"
 
 [object, uuid("472691CD-1FC6-424a-A44E-8E7549ECDCFF"), dual, pointer_default(unique)]
 __interface IAVSFontManager : IAVSGraphicsBase

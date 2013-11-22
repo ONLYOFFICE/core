@@ -1,7 +1,7 @@
 #pragma once
-#include "AVSRenderer.h"
+#include "ASCRenderer.h"
 #include "..\DocumentViewer\Metafile.h"
-#include "..\..\AVSOfficeStudio\Common\OfficeFileTemplate.h"
+#include "..\..\ASCOfficeStudio\Common\OfficeFileTemplate.h"
 
 
 #define PROPERTY_META(NameBase, Name, Type)				\

@@ -1,9 +1,9 @@
 #pragma once
 #include "../stdafx.h"
 
-#include "IAVSStringFormat.h"
-#include "IAVSFontManager.h"
-#include "IAVSPattern.h"
+#include "IASCStringFormat.h"
+#include "IASCFontManager.h"
+#include "IASCPattern.h"
 
 const long c_ag_FillModeAlternate			= 0;
 const long c_ag_FillModeWinding				= 1;

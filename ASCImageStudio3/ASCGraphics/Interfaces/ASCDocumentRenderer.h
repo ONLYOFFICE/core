@@ -1,6 +1,6 @@
 #pragma once
-#include "AVSMetafile.h"
-#include "AVSGraphicsRenderer.h"
+#include "ASCMetafile.h"
+#include "ASCGraphicsRenderer.h"
 #include "..\DocumentViewer\Viewer.h"
 
 // IAVSDocumentRenderer

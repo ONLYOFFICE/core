@@ -54,10 +54,11 @@ using namespace ATL;
 #include "ATLDefine.h"
 #include "../../ASCGraphics/Interfaces/BaseThread.h"
 
-#import "../../../Redist/ASCImageFile3.dll"					named_guids rename_namespace("ImageFile"),		raw_interfaces_only
+
 #import "../../../Redist/ASCMediaCore3.dll"					named_guids rename_namespace("MediaCore"),		raw_interfaces_only, exclude("tagRECT")
 #import "../../../Redist/ASCImageStudio3.dll"					named_guids rename_namespace("ImageStudio3"),		raw_interfaces_only, exclude("tagRECT")
 #import "../../../Redist/ASCVectorImage.dll"					named_guids rename_namespace("VectorImage"),		raw_interfaces_only, exclude("tagRECT")
+#import "../../../Redist/ASCImageFile3.dll"					named_guids rename_namespace("ImageFile"),		raw_interfaces_only
 
 
 #include <math.h>

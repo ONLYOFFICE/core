@@ -19,11 +19,13 @@
 extern "C"   {
 #endif
 
+EXTERN_PROXY_FILE( _ASCVectorImage )
 EXTERN_PROXY_FILE( _AVSVectorImage )
 
 
 PROXYFILE_LIST_START
 /* Start of list */
+  REFERENCE_PROXY_FILE( _ASCVectorImage ),
   REFERENCE_PROXY_FILE( _AVSVectorImage ),
 /* End of list */
 PROXYFILE_LIST_END

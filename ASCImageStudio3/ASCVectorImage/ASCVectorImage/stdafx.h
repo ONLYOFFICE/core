@@ -41,7 +41,7 @@
 #include <atlctl.h>
 #include <atlhost.h>
 
-#import "X:\AVS\Redist\AVSMediaCore3.dll"					named_guids rename_namespace("MediaCore"),		raw_interfaces_only, exclude("tagRECT")
+#import "../../../Redist/ASCMediaCore3.dll"					named_guids rename_namespace("MediaCore"),		raw_interfaces_only, exclude("tagRECT")
 
 
 using namespace ATL;

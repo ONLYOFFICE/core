@@ -1,6 +1,10 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
+#define COMPONENT_NAME "VectorImage"
+#include "../../../Common/FileInfo.h"
+
+#include "version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -52,8 +56,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,3
- PRODUCTVERSION 1,0,0,3
+ FILEVERSION INTVER
+ PRODUCTVERSION INTVER
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -66,32 +70,31 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "000904b0"
+        BLOCK "040904B0"
         BEGIN
-            VALUE "CompanyName", "Online Media Technologies Ltd."
-            VALUE "FileDescription", "AVSVectorImage ActiveX DLL"
-            VALUE "FileVersion", "1.0.0.3"
-            VALUE "InternalName", "AVSVectorImage ActiveX DLL"
-            VALUE "LegalCopyright", "Online Media Technologies Ltd. Copyright 2010"
-            VALUE "LegalTrademarks", "Online Media Technologies Ltd."
-            VALUE "OriginalFilename", "AVSVectorImage.dll"
-            VALUE "ProductName", "AVSVectorImage ActiveX DLL"
-            VALUE "ProductVersion", "1.0.0.3"
+            VALUE "CompanyName", COMPANY_NAME
+            VALUE "FileDescription", FILE_DESCRIPTION_ACTIVEX
+            VALUE "FileVersion", STRVER
+            VALUE "InternalName", COMPONENT_FILE_NAME_DLL
+            VALUE "LegalCopyright", LEGAL_COPYRIGHT
+            VALUE "LegalTrademarks", LEGAL_COPYRIGHT
+            VALUE "OriginalFilename", COMPONENT_FILE_NAME_DLL
+            VALUE "ProductName", FILE_DESCRIPTION_ACTIVEX
+            VALUE "ProductVersion", STRVER
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x9, 1200
+        VALUE "Translation", 0x409, 1200
     END
 END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // REGISTRY
 //
 
-IDR_AVSVECTORIMAGE      REGISTRY                "AVSVectorImage.rgs"
+IDR_ASCVECTORIMAGE      REGISTRY                "ASCVectorImage.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -100,7 +103,7 @@ IDR_AVSVECTORIMAGE      REGISTRY                "AVSVectorImage.rgs"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSVectorImage"
+    IDS_PROJNAME            "ASCVectorImage"
 END
 
 #endif    // Russian resources

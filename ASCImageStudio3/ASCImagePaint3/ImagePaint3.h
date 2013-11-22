@@ -1,7 +1,6 @@
 #pragma once
 			
 #include "resource.h"
-#include <registration.h>
 #include <PaintStruct.h>
 #include <ImageColors.h>
 #include <ImageCore.h>
@@ -205,8 +204,6 @@ protected:
 	}
 	void Start()
 	{
-		if (!CRegistratorClient::IsRegistered())
-			return;
 
 		// variables
 		BITMAPINFO info;

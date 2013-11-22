@@ -125,7 +125,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="../../Redist/VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
+				CommandLine="&quot;../../Redist/VersionControl.exe&quot; &quot;$(SolutionDir)\version.h&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -210,7 +210,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy to redist"
-				CommandLine="copy $(TargetPath) ..\..\Redist\ASCImagePaint3.dll"
+				CommandLine="copy &quot;$(TargetPath)&quot; &quot;../../Redist&quot;"
 			/>
 		</Configuration>
 		<Configuration

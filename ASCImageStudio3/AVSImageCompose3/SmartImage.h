@@ -1,7 +1,7 @@
 #pragma once
 
-#include <ImageColors.h>
-#include <ImageCore.h>
+#include "../Common/ImageColors.h"
+#include "../Common/ImageCore.h"
 
 class SmartImage
 {

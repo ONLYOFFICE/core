@@ -33,34 +33,15 @@
 
 // turns off ATL's hiding of some common and often safely ignored warning messages
 #define _ATL_ALL_WARNINGS
-#define _CRT_SECURE_NO_DEPRECATE
 
-#pragma comment(lib, "ippcorel.lib")
-#pragma comment(lib, "ippiemerged.lib")
-#pragma comment(lib, "ippimerged.lib")
-#pragma comment(lib, "ippsemerged.lib")
-#pragma comment(lib, "ippsmerged.lib")
-#pragma comment(lib, "ippcvemerged.lib")
-#pragma comment(lib, "ippcvmerged.lib")
-
-// include headers
 #include <atlbase.h>
 #include <atlcom.h>
-#include <atlwin.h>
+//#include <atlwin.h>
 #include <atltypes.h>
 #include <atlctl.h>
 #include <atlhost.h>
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include <algorithm>
+#include <atlcoll.h>
 
-#include <ippcore.h>
-#include <ippdefs.h>
-#include <ippi.h>
-#include <ippcv.h>
-
-// include namespaces
 using namespace ATL;
 
-#import "../../Redist/OfficeCore.dll"				named_guids rename_namespace("MediaCore")
-//#import "../../../../AVS/Redist/AVSMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat")
+#import "..\..\..\Redist\AVSMediaFormatSettings3.dll" named_guids rename_namespace("MediaFormat") 

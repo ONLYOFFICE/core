@@ -2,13 +2,13 @@
 #include "HTMLRenderer.h"
 #include "Resource.h"
 #include "math.h"
-#include "..\..\..\..\Common\TimeMeasurer.h"
+#include "..\Common\TimeMeasurer.h"
 
-CAVSHTMLRenderer::CAVSHTMLRenderer()
+CASCHTMLRenderer::CASCHTMLRenderer()
 {
 }
 
-HRESULT CAVSHTMLRenderer::FinalConstruct()
+HRESULT CASCHTMLRenderer::FinalConstruct()
 {
 	m_lLastSavedPage = 0;
 	m_oDocument.SetUpdater(this);
@@ -26,7 +26,7 @@ HRESULT CAVSHTMLRenderer::FinalConstruct()
 	m_oWriter.m_pFont	= &m_oFont;
 
 	m_pSimpleGraphicsConverter = NULL;
-	CoCreateInstance(AVSGraphics::CLSID_CAVSGraphicSimpleComverter, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSGraphicSimpleComverter, (void**)&m_pSimpleGraphicsConverter);
+	CoCreateInstance(Graphics::CLSID_CASCGraphicSimpleComverter, NULL, CLSCTX_ALL, Graphics::IID_IASCGraphicSimpleComverter, (void**)&m_pSimpleGraphicsConverter);
 
 	IUnknown* punkRenderer = NULL;
 	this->QueryInterface(IID_IUnknown, (void**)&punkRenderer);
@@ -51,19 +51,24 @@ HRESULT CAVSHTMLRenderer::FinalConstruct()
 	m_bIsMetafileDrawing = false;
 	m_bIsTextGraphicType = false;
 
+#ifdef BUILD_SUPPORT_UNREGISTERED_WATERMARK
 	m_pEffectPainter	= NULL;
+#endif
 
 	return S_OK;
 }
 
-void CAVSHTMLRenderer::FinalRelease()
+void CASCHTMLRenderer::FinalRelease()
 {
 	RELEASEINTERFACE(m_pSimpleGraphicsConverter);
 	RELEASEINTERFACE(m_pFonts);
+
+#ifdef BUILD_SUPPORT_UNREGISTERED_WATERMARK
 	RELEASEINTERFACE(m_pEffectPainter);
+#endif
 }
 
-STDMETHODIMP CAVSHTMLRenderer::get_Type(LONG* lType)
+STDMETHODIMP CASCHTMLRenderer::get_Type(LONG* lType)
 {
 	if (NULL == lType)
 		return S_FALSE;
@@ -72,7 +77,7 @@ STDMETHODIMP CAVSHTMLRenderer::get_Type(LONG* lType)
 	return S_OK;
 }
 //-------- Функции для работы со страницей --------------------------------------------------
-STDMETHODIMP CAVSHTMLRenderer::NewPage()
+STDMETHODIMP CASCHTMLRenderer::NewPage()
 {
 	if (m_bPageOpened)
 	{
@@ -87,7 +92,7 @@ STDMETHODIMP CAVSHTMLRenderer::NewPage()
 	m_bIsTextGraphicType = false;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_Height(double* dHeight)
+STDMETHODIMP CASCHTMLRenderer::get_Height(double* dHeight)
 {
 	size_t nCount = m_oDocument.m_arrPages.GetCount();
 	if ((nCount > 0) && (NULL != dHeight))
@@ -97,7 +102,7 @@ STDMETHODIMP CAVSHTMLRenderer::get_Height(double* dHeight)
 	
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_Height(double dHeight)
+STDMETHODIMP CASCHTMLRenderer::put_Height(double dHeight)
 {
 	LONG lCount = (LONG)m_oDocument.m_arrPages.GetCount();
 	if (0 != lCount)
@@ -111,7 +116,7 @@ STDMETHODIMP CAVSHTMLRenderer::put_Height(double dHeight)
 
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_Width(double* dWidth)
+STDMETHODIMP CASCHTMLRenderer::get_Width(double* dWidth)
 {
 	size_t nCount = m_oDocument.m_arrPages.GetCount();
 	if ((nCount > 0) && (NULL != dWidth))
@@ -121,7 +126,7 @@ STDMETHODIMP CAVSHTMLRenderer::get_Width(double* dWidth)
 
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_Width(double dWidth)
+STDMETHODIMP CASCHTMLRenderer::put_Width(double dWidth)
 {
 	LONG lCount = (LONG)m_oDocument.m_arrPages.GetCount();
 	if (0 != lCount)
@@ -136,20 +141,20 @@ STDMETHODIMP CAVSHTMLRenderer::put_Width(double dWidth)
 	return S_OK;
 }
 
-STDMETHODIMP CAVSHTMLRenderer::get_DpiX(double* dDpiX)
+STDMETHODIMP CASCHTMLRenderer::get_DpiX(double* dDpiX)
 {
 	if (NULL != dDpiX)
 		*dDpiX = m_dDpiX;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_DpiY(double* dDpiY)
+STDMETHODIMP CASCHTMLRenderer::get_DpiY(double* dDpiY)
 {
 	if (NULL != dDpiY)
 		*dDpiY = m_dDpiY;
 	return S_OK;
 }
 // pen --------------------------------------------------------------------------------------
-STDMETHODIMP CAVSHTMLRenderer::SetPen(BSTR bsXML)
+STDMETHODIMP CASCHTMLRenderer::SetPen(BSTR bsXML)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -158,12 +163,12 @@ STDMETHODIMP CAVSHTMLRenderer::SetPen(BSTR bsXML)
 	m_oPen.FromXmlString((CString)bsXML);
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_PenColor(LONG* lColor)
+STDMETHODIMP CASCHTMLRenderer::get_PenColor(LONG* lColor)
 {
 	*lColor = m_oPen.Color;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_PenColor(LONG lColor)
+STDMETHODIMP CASCHTMLRenderer::put_PenColor(LONG lColor)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -172,12 +177,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_PenColor(LONG lColor)
 	m_oPen.Color = lColor;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_PenAlpha(LONG* lAlpha)
+STDMETHODIMP CASCHTMLRenderer::get_PenAlpha(LONG* lAlpha)
 {
 	*lAlpha = m_oPen.Alpha;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_PenAlpha(LONG lAlpha)
+STDMETHODIMP CASCHTMLRenderer::put_PenAlpha(LONG lAlpha)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -186,12 +191,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_PenAlpha(LONG lAlpha)
 	m_oPen.Alpha = lAlpha;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_PenSize(double* dSize)
+STDMETHODIMP CASCHTMLRenderer::get_PenSize(double* dSize)
 {
 	*dSize = m_oPen.Size;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_PenSize(double dSize)
+STDMETHODIMP CASCHTMLRenderer::put_PenSize(double dSize)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -200,12 +205,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_PenSize(double dSize)
 	m_oPen.Size = dSize;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_PenDashStyle(BYTE* val)
+STDMETHODIMP CASCHTMLRenderer::get_PenDashStyle(BYTE* val)
 {
 	*val = m_oPen.DashStyle;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_PenDashStyle(BYTE val)
+STDMETHODIMP CASCHTMLRenderer::put_PenDashStyle(BYTE val)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -214,12 +219,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_PenDashStyle(BYTE val)
 	m_oPen.DashStyle = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_PenLineStartCap(BYTE* val)
+STDMETHODIMP CASCHTMLRenderer::get_PenLineStartCap(BYTE* val)
 {
 	*val = m_oPen.LineStartCap;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_PenLineStartCap(BYTE val)
+STDMETHODIMP CASCHTMLRenderer::put_PenLineStartCap(BYTE val)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -228,12 +233,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_PenLineStartCap(BYTE val)
 	m_oPen.LineStartCap = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_PenLineEndCap(BYTE* val)
+STDMETHODIMP CASCHTMLRenderer::get_PenLineEndCap(BYTE* val)
 {
 	*val = m_oPen.LineEndCap;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_PenLineEndCap(BYTE val)
+STDMETHODIMP CASCHTMLRenderer::put_PenLineEndCap(BYTE val)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -242,12 +247,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_PenLineEndCap(BYTE val)
 	m_oPen.LineEndCap = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_PenLineJoin(BYTE* val)
+STDMETHODIMP CASCHTMLRenderer::get_PenLineJoin(BYTE* val)
 {
 	*val = m_oPen.LineJoin;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_PenLineJoin(BYTE val)
+STDMETHODIMP CASCHTMLRenderer::put_PenLineJoin(BYTE val)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -256,12 +261,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_PenLineJoin(BYTE val)
 	m_oPen.LineJoin = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_PenDashOffset(double* val)
+STDMETHODIMP CASCHTMLRenderer::get_PenDashOffset(double* val)
 {
 	*val = m_oPen.DashOffset;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_PenDashOffset(double val)
+STDMETHODIMP CASCHTMLRenderer::put_PenDashOffset(double val)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -270,12 +275,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_PenDashOffset(double val)
 	m_oPen.DashOffset = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_PenAlign(LONG* val)
+STDMETHODIMP CASCHTMLRenderer::get_PenAlign(LONG* val)
 {
 	*val = m_oPen.Align;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_PenAlign(LONG val)
+STDMETHODIMP CASCHTMLRenderer::put_PenAlign(LONG val)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -284,12 +289,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_PenAlign(LONG val)
 	m_oPen.Align = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_PenMiterLimit(double* val)
+STDMETHODIMP CASCHTMLRenderer::get_PenMiterLimit(double* val)
 {
 	*val = m_oPen.MiterLimit;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_PenMiterLimit(double val)
+STDMETHODIMP CASCHTMLRenderer::put_PenMiterLimit(double val)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -298,7 +303,7 @@ STDMETHODIMP CAVSHTMLRenderer::put_PenMiterLimit(double val)
 	m_oPen.MiterLimit = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::PenDashPattern(SAFEARRAY* pPattern)
+STDMETHODIMP CASCHTMLRenderer::PenDashPattern(SAFEARRAY* pPattern)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -313,7 +318,7 @@ STDMETHODIMP CAVSHTMLRenderer::PenDashPattern(SAFEARRAY* pPattern)
 	return S_OK;
 }
 // brush ------------------------------------------------------------------------------------
-STDMETHODIMP CAVSHTMLRenderer::SetBrush(BSTR bsXML)
+STDMETHODIMP CASCHTMLRenderer::SetBrush(BSTR bsXML)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -322,12 +327,12 @@ STDMETHODIMP CAVSHTMLRenderer::SetBrush(BSTR bsXML)
 	m_oBrush.FromXmlString((CString)bsXML);
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_BrushType(LONG* lType)
+STDMETHODIMP CASCHTMLRenderer::get_BrushType(LONG* lType)
 {
 	*lType = m_oBrush.Type;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_BrushType(LONG lType)
+STDMETHODIMP CASCHTMLRenderer::put_BrushType(LONG lType)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -336,12 +341,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_BrushType(LONG lType)
 	m_oBrush.Type = lType;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_BrushColor1(LONG* lColor)
+STDMETHODIMP CASCHTMLRenderer::get_BrushColor1(LONG* lColor)
 {
 	*lColor = m_oBrush.Color1;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_BrushColor1(LONG lColor)
+STDMETHODIMP CASCHTMLRenderer::put_BrushColor1(LONG lColor)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -350,12 +355,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_BrushColor1(LONG lColor)
 	m_oBrush.Color1 = lColor;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_BrushAlpha1(LONG* lAlpha)
+STDMETHODIMP CASCHTMLRenderer::get_BrushAlpha1(LONG* lAlpha)
 {
 	*lAlpha = m_oBrush.Alpha1;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_BrushAlpha1(LONG lAlpha)
+STDMETHODIMP CASCHTMLRenderer::put_BrushAlpha1(LONG lAlpha)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -364,12 +369,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_BrushAlpha1(LONG lAlpha)
 	m_oBrush.Alpha1 = lAlpha;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_BrushColor2(LONG* lColor)
+STDMETHODIMP CASCHTMLRenderer::get_BrushColor2(LONG* lColor)
 {
 	*lColor = m_oBrush.Color2;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_BrushColor2(LONG lColor)
+STDMETHODIMP CASCHTMLRenderer::put_BrushColor2(LONG lColor)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -378,12 +383,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_BrushColor2(LONG lColor)
 	m_oBrush.Color2 = lColor;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_BrushAlpha2(LONG* lAlpha)
+STDMETHODIMP CASCHTMLRenderer::get_BrushAlpha2(LONG* lAlpha)
 {
 	*lAlpha = m_oBrush.Alpha2;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_BrushAlpha2(LONG lAlpha)
+STDMETHODIMP CASCHTMLRenderer::put_BrushAlpha2(LONG lAlpha)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -392,12 +397,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_BrushAlpha2(LONG lAlpha)
 	m_oBrush.Alpha2 = lAlpha;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_BrushTexturePath(BSTR* bsPath)
+STDMETHODIMP CASCHTMLRenderer::get_BrushTexturePath(BSTR* bsPath)
 {
 	*bsPath = m_oBrush.TexturePath.AllocSysString();
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_BrushTexturePath(BSTR bsPath)
+STDMETHODIMP CASCHTMLRenderer::put_BrushTexturePath(BSTR bsPath)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -406,12 +411,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_BrushTexturePath(BSTR bsPath)
 	m_oBrush.TexturePath = (CString)bsPath;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_BrushTextureMode(LONG* lMode)
+STDMETHODIMP CASCHTMLRenderer::get_BrushTextureMode(LONG* lMode)
 {
 	*lMode = m_oBrush.TextureMode;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_BrushTextureMode(LONG lMode)
+STDMETHODIMP CASCHTMLRenderer::put_BrushTextureMode(LONG lMode)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -420,12 +425,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_BrushTextureMode(LONG lMode)
 	m_oBrush.TextureMode = lMode;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_BrushTextureAlpha(LONG* lTxAlpha)
+STDMETHODIMP CASCHTMLRenderer::get_BrushTextureAlpha(LONG* lTxAlpha)
 {
 	*lTxAlpha = m_oBrush.TextureAlpha;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_BrushTextureAlpha(LONG lTxAlpha)
+STDMETHODIMP CASCHTMLRenderer::put_BrushTextureAlpha(LONG lTxAlpha)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -434,12 +439,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_BrushTextureAlpha(LONG lTxAlpha)
 	m_oBrush.TextureAlpha = lTxAlpha;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_BrushLinearAngle(double* dAngle)
+STDMETHODIMP CASCHTMLRenderer::get_BrushLinearAngle(double* dAngle)
 {
 	*dAngle = m_oBrush.LinearAngle;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_BrushLinearAngle(double dAngle)
+STDMETHODIMP CASCHTMLRenderer::put_BrushLinearAngle(double dAngle)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -448,7 +453,7 @@ STDMETHODIMP CAVSHTMLRenderer::put_BrushLinearAngle(double dAngle)
 	m_oBrush.LinearAngle = dAngle;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::BrushRect(BOOL val, double left, double top, double width, double height)
+STDMETHODIMP CASCHTMLRenderer::BrushRect(BOOL val, double left, double top, double width, double height)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -464,7 +469,7 @@ STDMETHODIMP CAVSHTMLRenderer::BrushRect(BOOL val, double left, double top, doub
 	return S_OK;
 }
 // font -------------------------------------------------------------------------------------
-STDMETHODIMP CAVSHTMLRenderer::SetFont(BSTR bsXML)
+STDMETHODIMP CASCHTMLRenderer::SetFont(BSTR bsXML)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -473,12 +478,12 @@ STDMETHODIMP CAVSHTMLRenderer::SetFont(BSTR bsXML)
 	m_oFont.FromXmlString((CString)bsXML);
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_FontName(BSTR* bsName)
+STDMETHODIMP CASCHTMLRenderer::get_FontName(BSTR* bsName)
 {
 	*bsName = m_oFont.Name.AllocSysString();
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_FontName(BSTR bsName)
+STDMETHODIMP CASCHTMLRenderer::put_FontName(BSTR bsName)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -487,12 +492,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_FontName(BSTR bsName)
 	m_oFont.Name = (CString)bsName;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_FontPath(BSTR* bsName)
+STDMETHODIMP CASCHTMLRenderer::get_FontPath(BSTR* bsName)
 {
 	*bsName = m_oFont.Path.AllocSysString();
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_FontPath(BSTR bsName)
+STDMETHODIMP CASCHTMLRenderer::put_FontPath(BSTR bsName)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -501,12 +506,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_FontPath(BSTR bsName)
 	m_oFont.Path = bsName;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_FontSize(double* dSize)
+STDMETHODIMP CASCHTMLRenderer::get_FontSize(double* dSize)
 {
 	*dSize = m_oFont.Size;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_FontSize(double dSize)
+STDMETHODIMP CASCHTMLRenderer::put_FontSize(double dSize)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -515,12 +520,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_FontSize(double dSize)
 	m_oFont.Size = dSize;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_FontStyle(LONG* lStyle)
+STDMETHODIMP CASCHTMLRenderer::get_FontStyle(LONG* lStyle)
 {
 	*lStyle = m_oFont.GetStyle();
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_FontStyle(LONG lStyle)
+STDMETHODIMP CASCHTMLRenderer::put_FontStyle(LONG lStyle)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -529,12 +534,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_FontStyle(LONG lStyle)
 	m_oFont.SetStyle(lStyle);
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_FontStringGID(BOOL* bGID)
+STDMETHODIMP CASCHTMLRenderer::get_FontStringGID(BOOL* bGID)
 {
 	*bGID = m_oFont.StringGID;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_FontStringGID(BOOL bGID)
+STDMETHODIMP CASCHTMLRenderer::put_FontStringGID(BOOL bGID)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -544,12 +549,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_FontStringGID(BOOL bGID)
 	m_pFontManager->SetStringGID(bGID);
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_FontCharSpace(double* dSpace)
+STDMETHODIMP CASCHTMLRenderer::get_FontCharSpace(double* dSpace)
 {
 	*dSpace = m_oFont.CharSpace;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_FontCharSpace(double dSpace)
+STDMETHODIMP CASCHTMLRenderer::put_FontCharSpace(double dSpace)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -559,7 +564,7 @@ STDMETHODIMP CAVSHTMLRenderer::put_FontCharSpace(double dSpace)
 	return S_OK;
 }
 // shadow -----------------------------------------------------------------------------------
-STDMETHODIMP CAVSHTMLRenderer::SetShadow(BSTR bsXML)
+STDMETHODIMP CASCHTMLRenderer::SetShadow(BSTR bsXML)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -568,12 +573,12 @@ STDMETHODIMP CAVSHTMLRenderer::SetShadow(BSTR bsXML)
 	m_oShadow.FromXmlString((CString)bsXML);
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_ShadowDistanceX(double* val)
+STDMETHODIMP CASCHTMLRenderer::get_ShadowDistanceX(double* val)
 {
 	*val = m_oShadow.DistanceX;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_ShadowDistanceX(double val)
+STDMETHODIMP CASCHTMLRenderer::put_ShadowDistanceX(double val)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -582,12 +587,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_ShadowDistanceX(double val)
 	m_oShadow.DistanceX = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_ShadowDistanceY(double* val)
+STDMETHODIMP CASCHTMLRenderer::get_ShadowDistanceY(double* val)
 {
 	*val = m_oShadow.DistanceY;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_ShadowDistanceY(double val)
+STDMETHODIMP CASCHTMLRenderer::put_ShadowDistanceY(double val)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -596,12 +601,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_ShadowDistanceY(double val)
 	m_oShadow.DistanceY = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_ShadowBlurSize(double* val)
+STDMETHODIMP CASCHTMLRenderer::get_ShadowBlurSize(double* val)
 {
 	*val = m_oShadow.BlurSize;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_ShadowBlurSize(double val)
+STDMETHODIMP CASCHTMLRenderer::put_ShadowBlurSize(double val)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -610,12 +615,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_ShadowBlurSize(double val)
 	m_oShadow.BlurSize = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_ShadowColor(LONG* val)
+STDMETHODIMP CASCHTMLRenderer::get_ShadowColor(LONG* val)
 {
 	*val = m_oShadow.Color;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_ShadowColor(LONG val)
+STDMETHODIMP CASCHTMLRenderer::put_ShadowColor(LONG val)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -624,12 +629,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_ShadowColor(LONG val)
 	m_oShadow.Color = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_ShadowAlpha(LONG* val)
+STDMETHODIMP CASCHTMLRenderer::get_ShadowAlpha(LONG* val)
 {
 	*val = m_oShadow.Alpha;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_ShadowAlpha(LONG val)
+STDMETHODIMP CASCHTMLRenderer::put_ShadowAlpha(LONG val)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -638,12 +643,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_ShadowAlpha(LONG val)
 	m_oShadow.Alpha = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_ShadowVisible(BOOL* val)
+STDMETHODIMP CASCHTMLRenderer::get_ShadowVisible(BOOL* val)
 {
 	*val = m_oShadow.Visible;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_ShadowVisible(BOOL val)
+STDMETHODIMP CASCHTMLRenderer::put_ShadowVisible(BOOL val)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -653,7 +658,7 @@ STDMETHODIMP CAVSHTMLRenderer::put_ShadowVisible(BOOL val)
 	return S_OK;
 }
 // edge -------------------------------------------------------------------------------------
-STDMETHODIMP CAVSHTMLRenderer::SetEdgeText(BSTR bsXML)
+STDMETHODIMP CASCHTMLRenderer::SetEdgeText(BSTR bsXML)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -662,12 +667,12 @@ STDMETHODIMP CAVSHTMLRenderer::SetEdgeText(BSTR bsXML)
 	m_oEdge.FromXmlString((CString)bsXML);
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_EdgeVisible(LONG* val)
+STDMETHODIMP CASCHTMLRenderer::get_EdgeVisible(LONG* val)
 {
 	*val = m_oEdge.Visible;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_EdgeVisible(LONG val)
+STDMETHODIMP CASCHTMLRenderer::put_EdgeVisible(LONG val)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -676,12 +681,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_EdgeVisible(LONG val)
 	m_oEdge.Visible = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_EdgeColor(LONG* val)
+STDMETHODIMP CASCHTMLRenderer::get_EdgeColor(LONG* val)
 {
 	*val = m_oEdge.Color;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_EdgeColor(LONG val)
+STDMETHODIMP CASCHTMLRenderer::put_EdgeColor(LONG val)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -690,12 +695,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_EdgeColor(LONG val)
 	m_oEdge.Color = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_EdgeAlpha(LONG* val)
+STDMETHODIMP CASCHTMLRenderer::get_EdgeAlpha(LONG* val)
 {
 	*val = m_oEdge.Alpha;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_EdgeAlpha(LONG val)
+STDMETHODIMP CASCHTMLRenderer::put_EdgeAlpha(LONG val)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -704,12 +709,12 @@ STDMETHODIMP CAVSHTMLRenderer::put_EdgeAlpha(LONG val)
 	m_oEdge.Alpha = val;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::get_EdgeDist(double* val)
+STDMETHODIMP CASCHTMLRenderer::get_EdgeDist(double* val)
 {
 	*val = m_oEdge.Dist;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_EdgeDist(double val)
+STDMETHODIMP CASCHTMLRenderer::put_EdgeDist(double val)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -719,7 +724,7 @@ STDMETHODIMP CAVSHTMLRenderer::put_EdgeDist(double val)
 	return S_OK;
 }
 //-------- Функции для вывода текста --------------------------------------------------------
-STDMETHODIMP CAVSHTMLRenderer::CommandDrawText(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
+STDMETHODIMP CASCHTMLRenderer::CommandDrawText(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
 {
 	if (c_nHyperlinkType == m_lCurrentCommandType)
 		return S_OK;
@@ -752,7 +757,7 @@ STDMETHODIMP CAVSHTMLRenderer::CommandDrawText(BSTR bsText, double fX, double fY
 
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::CommandDrawTextEx(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
+STDMETHODIMP CASCHTMLRenderer::CommandDrawTextEx(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
 {
 	if ((abs(m_dTransformAngle) > 1) || (m_bIsMetafileDrawing == true) || m_bIsWatermarkEnabled)
 	{
@@ -782,7 +787,7 @@ STDMETHODIMP CAVSHTMLRenderer::CommandDrawTextEx(BSTR bsText, BSTR bsGidText, BS
 	return S_OK;
 }
 //-------- Маркеры для команд ---------------------------------------------------------------
-STDMETHODIMP CAVSHTMLRenderer::BeginCommand(DWORD lType)
+STDMETHODIMP CASCHTMLRenderer::BeginCommand(DWORD lType)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -818,7 +823,7 @@ STDMETHODIMP CAVSHTMLRenderer::BeginCommand(DWORD lType)
 
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::EndCommand(DWORD lType)
+STDMETHODIMP CASCHTMLRenderer::EndCommand(DWORD lType)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -867,7 +872,7 @@ STDMETHODIMP CAVSHTMLRenderer::EndCommand(DWORD lType)
 	return S_OK;
 }
 //-------- Функции для работы с Graphics Path -----------------------------------------------
-STDMETHODIMP CAVSHTMLRenderer::PathCommandMoveTo(double fX, double fY)
+STDMETHODIMP CASCHTMLRenderer::PathCommandMoveTo(double fX, double fY)
 {
 	if (c_nSimpleGraphicType == m_lCurrentCommandType)
 	{
@@ -885,7 +890,7 @@ STDMETHODIMP CAVSHTMLRenderer::PathCommandMoveTo(double fX, double fY)
 
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::PathCommandLineTo(double fX, double fY)
+STDMETHODIMP CASCHTMLRenderer::PathCommandLineTo(double fX, double fY)
 {
 	if (c_nSimpleGraphicType == m_lCurrentCommandType)
 	{
@@ -903,7 +908,7 @@ STDMETHODIMP CAVSHTMLRenderer::PathCommandLineTo(double fX, double fY)
 
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::PathCommandLinesTo(SAFEARRAY* pPoints)
+STDMETHODIMP CASCHTMLRenderer::PathCommandLinesTo(SAFEARRAY* pPoints)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -912,7 +917,7 @@ STDMETHODIMP CAVSHTMLRenderer::PathCommandLinesTo(SAFEARRAY* pPoints)
 	m_pSimpleGraphicsConverter->PathCommandLinesTo(pPoints);
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::PathCommandCurveTo(double fX1, double fY1, double fX2, double fY2, double fX3, double fY3)
+STDMETHODIMP CASCHTMLRenderer::PathCommandCurveTo(double fX1, double fY1, double fX2, double fY2, double fX3, double fY3)
 {
 	if (c_nSimpleGraphicType == m_lCurrentCommandType)
 	{
@@ -930,7 +935,7 @@ STDMETHODIMP CAVSHTMLRenderer::PathCommandCurveTo(double fX1, double fY1, double
 
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::PathCommandCurvesTo(SAFEARRAY* pPoints)
+STDMETHODIMP CASCHTMLRenderer::PathCommandCurvesTo(SAFEARRAY* pPoints)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -940,7 +945,7 @@ STDMETHODIMP CAVSHTMLRenderer::PathCommandCurvesTo(SAFEARRAY* pPoints)
 	m_pSimpleGraphicsConverter->PathCommandCurvesTo(pPoints);
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::PathCommandArcTo(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle)
+STDMETHODIMP CASCHTMLRenderer::PathCommandArcTo(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -950,7 +955,7 @@ STDMETHODIMP CAVSHTMLRenderer::PathCommandArcTo(double fX, double fY, double fWi
 	m_pSimpleGraphicsConverter->PathCommandArcTo(fX, fY, fWidth, fHeight, fStartAngle, fSweepAngle);
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::PathCommandClose()
+STDMETHODIMP CASCHTMLRenderer::PathCommandClose()
 {
 	if (c_nSimpleGraphicType == m_lCurrentCommandType)
 	{
@@ -968,7 +973,7 @@ STDMETHODIMP CAVSHTMLRenderer::PathCommandClose()
 
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::PathCommandEnd()
+STDMETHODIMP CASCHTMLRenderer::PathCommandEnd()
 {
 	if (c_nSimpleGraphicType == m_lCurrentCommandType)
 	{
@@ -986,7 +991,7 @@ STDMETHODIMP CAVSHTMLRenderer::PathCommandEnd()
 
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::DrawPath(long nType)
+STDMETHODIMP CASCHTMLRenderer::DrawPath(long nType)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -999,7 +1004,7 @@ STDMETHODIMP CAVSHTMLRenderer::DrawPath(long nType)
 
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::PathCommandStart()
+STDMETHODIMP CASCHTMLRenderer::PathCommandStart()
 {
 	if (c_nSimpleGraphicType == m_lCurrentCommandType)
 	{
@@ -1018,12 +1023,12 @@ STDMETHODIMP CAVSHTMLRenderer::PathCommandStart()
 
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::PathCommandGetCurrentPoint(double* fX, double* fY)
+STDMETHODIMP CASCHTMLRenderer::PathCommandGetCurrentPoint(double* fX, double* fY)
 {
 	m_pSimpleGraphicsConverter->PathCommandGetCurrentPoint(fX, fY);	
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::PathCommandText(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
+STDMETHODIMP CASCHTMLRenderer::PathCommandText(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
 {
 	_SetFont();
 	if (m_bIsThumbnailsCreate)
@@ -1033,7 +1038,7 @@ STDMETHODIMP CAVSHTMLRenderer::PathCommandText(BSTR bsText, double fX, double fY
 	m_pSimpleGraphicsConverter->PathCommandText(bsText, m_pFontManager, fX, fY, fWidth, fHeight, fBaseLineOffset);
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::PathCommandTextEx(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
+STDMETHODIMP CASCHTMLRenderer::PathCommandTextEx(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
 {
 	BOOL bGid = m_oFont.StringGID;
 	if (NULL != bsGidText)
@@ -1049,7 +1054,7 @@ STDMETHODIMP CAVSHTMLRenderer::PathCommandTextEx(BSTR bsText, BSTR bsGidText, BS
 	return S_OK;
 }
 //-------- Функции для вывода изображений ---------------------------------------------------
-STDMETHODIMP CAVSHTMLRenderer::DrawImage(IUnknown* pInterface, double fX, double fY, double fWidth, double fHeight)
+STDMETHODIMP CASCHTMLRenderer::DrawImage(IUnknown* pInterface, double fX, double fY, double fWidth, double fHeight)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -1084,7 +1089,7 @@ STDMETHODIMP CAVSHTMLRenderer::DrawImage(IUnknown* pInterface, double fX, double
 
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::DrawImageFromFile(BSTR bstrVal, double fX, double fY, double fWidth, double fHeight)
+STDMETHODIMP CASCHTMLRenderer::DrawImageFromFile(BSTR bstrVal, double fX, double fY, double fWidth, double fHeight)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -1120,11 +1125,11 @@ STDMETHODIMP CAVSHTMLRenderer::DrawImageFromFile(BSTR bstrVal, double fX, double
 	return S_OK;
 }
 // transform --------------------------------------------------------------------------------
-STDMETHODIMP CAVSHTMLRenderer::GetCommandParams(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, DWORD* lFlags)
+STDMETHODIMP CASCHTMLRenderer::GetCommandParams(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, DWORD* lFlags)
 {
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::SetCommandParams(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags)
+STDMETHODIMP CASCHTMLRenderer::SetCommandParams(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -1160,7 +1165,7 @@ STDMETHODIMP CAVSHTMLRenderer::SetCommandParams(double dAngle, double dLeft, dou
 
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::SetTransform(double dA, double dB, double dC, double dD, double dE, double dF)
+STDMETHODIMP CASCHTMLRenderer::SetTransform(double dA, double dB, double dC, double dD, double dE, double dF)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -1174,11 +1179,11 @@ STDMETHODIMP CAVSHTMLRenderer::SetTransform(double dA, double dB, double dC, dou
 
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF)
+STDMETHODIMP CASCHTMLRenderer::GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF)
 {
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::ResetTransform(void)
+STDMETHODIMP CASCHTMLRenderer::ResetTransform(void)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -1192,12 +1197,12 @@ STDMETHODIMP CAVSHTMLRenderer::ResetTransform(void)
 	return S_OK;
 }
 // -----------------------------------------------------------------------------------------
-STDMETHODIMP CAVSHTMLRenderer::get_ClipMode(LONG* plMode)
+STDMETHODIMP CASCHTMLRenderer::get_ClipMode(LONG* plMode)
 {
 	*plMode = m_lClipMode;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_ClipMode(LONG lMode)
+STDMETHODIMP CASCHTMLRenderer::put_ClipMode(LONG lMode)
 {
 	if (m_bIsThumbnailsCreate)
 	{
@@ -1208,7 +1213,7 @@ STDMETHODIMP CAVSHTMLRenderer::put_ClipMode(LONG lMode)
 	return S_OK;
 }
 // additiaonal params ----------------------------------------------------------------------
-STDMETHODIMP CAVSHTMLRenderer::SetAdditionalParam(BSTR ParamName, VARIANT ParamValue)
+STDMETHODIMP CASCHTMLRenderer::SetAdditionalParam(BSTR ParamName, VARIANT ParamValue)
 {
 	//CString strParamName = (CString)ParamName; 
 	//	
@@ -1229,12 +1234,14 @@ STDMETHODIMP CAVSHTMLRenderer::SetAdditionalParam(BSTR ParamName, VARIANT ParamV
 	}
 	else if (_T("EffectPainter") == sParamName && VT_UNKNOWN == ParamValue.vt)
 	{
+#ifdef BUILD_SUPPORT_UNREGISTERED_WATERMARK
 		RELEASEINTERFACE(m_pEffectPainter);
 		
 		if (NULL != ParamValue.punkVal)
 		{
-			ParamValue.punkVal->QueryInterface(AVSGraphics::IID_IAVSEffectPainter, (void**)&m_pEffectPainter);
+			ParamValue.punkVal->QueryInterface(Graphics::IID_IAVSEffectPainter, (void**)&m_pEffectPainter);
 		}
+#endif
 	}
 
 	if (m_bIsThumbnailsCreate)
@@ -1243,7 +1250,7 @@ STDMETHODIMP CAVSHTMLRenderer::SetAdditionalParam(BSTR ParamName, VARIANT ParamV
 	}
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::GetAdditionalParam(BSTR ParamName, VARIANT* ParamValue)
+STDMETHODIMP CASCHTMLRenderer::GetAdditionalParam(BSTR ParamName, VARIANT* ParamValue)
 {
 	CString sParamName = ParamName;
 	if ( _T("MaxImageSize") == sParamName )
@@ -1256,7 +1263,7 @@ STDMETHODIMP CAVSHTMLRenderer::GetAdditionalParam(BSTR ParamName, VARIANT* Param
 // --------------------------------------------------------------------------------------------
 
 // file
-STDMETHODIMP CAVSHTMLRenderer::CreateOfficeFile(BSTR bsFilePath)
+STDMETHODIMP CASCHTMLRenderer::CreateOfficeFile(BSTR bsFilePath)
 {
 	m_strDstFile = (CString)bsFilePath;
 
@@ -1281,11 +1288,11 @@ STDMETHODIMP CAVSHTMLRenderer::CreateOfficeFile(BSTR bsFilePath)
 
 	if (NULL == m_pFonts)
 	{
-		CoCreateInstance(AVSGraphics::CLSID_CAVSWinFonts, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSWinFonts, (void**)&m_pFonts);
+		CoCreateInstance(Graphics::CLSID_CASCWinFonts, NULL, CLSCTX_ALL, Graphics::IID_IASCWinFonts, (void**)&m_pFonts);
 	}
 	if (NULL == m_pFontManager)
 	{
-		CoCreateInstance(AVSGraphics::CLSID_CAVSFontManager, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSFontManager, (void**)&m_pFontManager);
+		CoCreateInstance(Graphics::CLSID_CASCFontManager, NULL, CLSCTX_ALL, Graphics::IID_IASCFontManager, (void**)&m_pFontManager);
 
 		m_pFontManager->Initialize(L"");
 		m_pFontManager->SetDefaultFont(L"Arial");
@@ -1296,7 +1303,7 @@ STDMETHODIMP CAVSHTMLRenderer::CreateOfficeFile(BSTR bsFilePath)
 
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::CloseFile()
+STDMETHODIMP CASCHTMLRenderer::CloseFile()
 {
 	if (m_bPageOpened)
 	{
@@ -1313,11 +1320,13 @@ STDMETHODIMP CAVSHTMLRenderer::CloseFile()
 			m_oWriter.WriteEndDocument3(m_oDocument);
 	}
 
+#ifdef BUILD_SUPPORT_UNREGISTERED_WATERMARK
 	RELEASEINTERFACE(m_pEffectPainter);
+#endif
 	return S_OK;
 }
 
-STDMETHODIMP CAVSHTMLRenderer::get_Mode(LONG* plMode)
+STDMETHODIMP CASCHTMLRenderer::get_Mode(LONG* plMode)
 {
 	LONG lMode = 0;
 	if (m_oWriter.m_bIsThumbnails)
@@ -1328,7 +1337,7 @@ STDMETHODIMP CAVSHTMLRenderer::get_Mode(LONG* plMode)
 	*plMode = lMode;
 	return S_OK;
 }
-STDMETHODIMP CAVSHTMLRenderer::put_Mode(LONG lMode)
+STDMETHODIMP CASCHTMLRenderer::put_Mode(LONG lMode)
 {
 	m_oWriter.m_bIsThumbnails	= (0x01 == (lMode & 0x01));
 	m_oWriter.m_bIsMenu			= (0x02 == (lMode & 0x02));

@@ -15,10 +15,10 @@ namespace NSHtmlRenderer
 	class CRendererGr
 	{
 	public:
-		AVSGraphics::IAVSGraphicsRenderer*		m_pRenderer;
+		Graphics::IASCGraphicsRenderer*		m_pRenderer;
 		MediaCore::IAVSUncompressedVideoFrame*	m_pFrame;
 
-		AVSGraphics::IAVSMetafile*				m_pMetafile;		
+		Graphics::IASCMetafile*				m_pMetafile;		
 		
 		double							m_dWidth;
 		double							m_dHeight;
@@ -35,7 +35,7 @@ namespace NSHtmlRenderer
 			m_pFrame			= NULL;
 			m_pMetafile			= NULL;
 
-			CoCreateInstance(AVSGraphics::CLSID_CAVSMetafile, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSMetafile, (void**)&m_pMetafile);			
+			CoCreateInstance(Graphics::CLSID_CASCMetafile, NULL, CLSCTX_ALL, Graphics::IID_IASCMetafile, (void**)&m_pMetafile);			
 			
 			m_dWidth			= -1;
 			m_dHeight			= -1;
@@ -97,7 +97,7 @@ namespace NSHtmlRenderer
 
 			memset(pBuffer, 0xFF, 4 * m_lWidthPix * m_lHeightPix);
 
-			CoCreateInstance(AVSGraphics::CLSID_CAVSGraphicsRenderer, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSGraphicsRenderer, (void**)&m_pRenderer);
+			CoCreateInstance(Graphics::CLSID_CASCGraphicsRenderer, NULL, CLSCTX_ALL, Graphics::IID_IASCGraphicsRenderer, (void**)&m_pRenderer);
 			
 			m_pRenderer->put_Width(m_dWidth);
 			m_pRenderer->put_Height(m_dHeight);
@@ -300,7 +300,7 @@ namespace NSHtmlRenderer
 
 		// сохранение в растр. (если сложна€ заливка, или слишком больша€ векторна€ графика)
 		//CRendererGr						m_oGrRenderer;
-		//AVSGraphics::IAVSMetafile*		m_pGrRenderer;
+		//Graphics::IASCMetafile*		m_pGrRenderer;
 
 		// клип дл€ картинок. » дл€ конвертации сложной векторной графики в растр
 		CMetafile						m_oClipMetafile;
@@ -659,7 +659,7 @@ namespace NSHtmlRenderer
 			m_oPath.AddSpaceNoCheck();
 			*/
 		}
-		void WriteDrawPath(LONG nType, AVSGraphics::IAVSGraphicSimpleComverter* pConverter, CImageInfo& oInfo)
+		void WriteDrawPath(LONG nType, Graphics::IASCGraphicSimpleComverter* pConverter, CImageInfo& oInfo)
 		{
 			if (m_lPathTypesSizeCur == 0)
 				return;

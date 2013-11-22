@@ -35,7 +35,7 @@ namespace NSHtmlRenderer
 		CStringWriter m_oWriterCanvas;
 		CStringWriter m_oWriterVML;
 
-		AVSGraphics::IAVSGraphicSimpleComverter* m_pSimpleConverter;
+		Graphics::IASCGraphicSimpleComverter* m_pSimpleConverter;
 
 		NSStructures::CPen*		m_pPen;
 		NSStructures::CBrush*	m_pBrush;

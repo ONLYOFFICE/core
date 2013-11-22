@@ -365,7 +365,7 @@ namespace NSHtmlRenderer
 	class CThumbnails
 	{
 	private:
-		AVSGraphics::IAVSRenderer*				m_pRenderer;
+		Graphics::IASCRenderer*				m_pRenderer;
 		MediaCore::IAVSUncompressedVideoFrame*	m_pFrame;
 
 		LONG	m_lWidth;
@@ -450,9 +450,9 @@ namespace NSHtmlRenderer
 			// теперь на всякий случай (сбросить все состояния) - пересоздадим рендерер
 			RELEASEINTERFACE(m_pRenderer);
 			
-			AVSGraphics::IAVSGraphicsRenderer* pGrRenderer;			
-			CoCreateInstance(__uuidof( AVSGraphics::CAVSGraphicsRenderer), NULL, CLSCTX_INPROC_SERVER, 
-				__uuidof(AVSGraphics::IAVSGraphicsRenderer), (void**)&pGrRenderer);
+			Graphics::IASCGraphicsRenderer* pGrRenderer;			
+			CoCreateInstance(__uuidof( Graphics::CASCGraphicsRenderer), NULL, CLSCTX_INPROC_SERVER, 
+				__uuidof(Graphics::IASCGraphicsRenderer), (void**)&pGrRenderer);
 						
 			//ставим FontManager
 			VARIANT vtVariant;
@@ -466,7 +466,7 @@ namespace NSHtmlRenderer
 			pGrRenderer->CreateFromMediaData(punkFrame, 0, 0, m_lWidth, m_lHeight);
 
 			RELEASEINTERFACE(punkFrame);
-			pGrRenderer->QueryInterface(AVSGraphics::IID_IAVSRenderer, (void**)&m_pRenderer);
+			pGrRenderer->QueryInterface(Graphics::IID_IASCRenderer, (void**)&m_pRenderer);
 			RELEASEINTERFACE(pGrRenderer);
 		}
 

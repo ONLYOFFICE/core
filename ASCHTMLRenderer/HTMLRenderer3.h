@@ -10,24 +10,24 @@
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
 #endif
 
-// CAVSHTMLRenderer
-[ coclass, default(IAVSHTMLRenderer2), threading(apartment), event_source(com), vi_progid("AVSHTMLRend.Rend3"), progid("AVSHTMLRend.Rend3.1"), version(1.0), uuid("6B2D3D65-16FE-41c1-AF76-E2D3F6754B90") ]
-class ATL_NO_VTABLE CAVSHTMLRenderer3 : 
-	public IAVSHTMLRenderer2,
+// CASCHTMLRenderer
+[ coclass, default(IASCHTMLRenderer2), threading(apartment), event_source(com), vi_progid("AVSHTMLRend.Rend3"), progid("AVSHTMLRend.Rend3.1"), version(1.0), uuid("6B2D3D65-16FE-41c1-AF76-E2D3F6754B90") ]
+class ATL_NO_VTABLE CASCHTMLRenderer3 : 
+	public IASCHTMLRenderer2,
 	public NSHtmlRenderer::IBaseMatrixUpdater
 {
 private:
 
 public:
-	__event __interface _IAVSHTMLRenderer2Events;
+	__event __interface _IASCHTMLRenderer2Events;
 
 public:
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
 	
-	CAVSHTMLRenderer3()
+	CASCHTMLRenderer3()
 	{
 	}
-	~CAVSHTMLRenderer3()
+	~CASCHTMLRenderer3()
 	{
 	}
 
@@ -197,8 +197,8 @@ private:
 	CString m_strDstFile;
 	LONG m_lLastSavedPage;
 
-	AVSGraphics::IAVSGraphicSimpleComverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
-	AVSGraphics::IAVSFontManager*				m_pFontManager;					// менеджер шрифтов
+	Graphics::IASCGraphicSimpleComverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
+	Graphics::IASCFontManager*				m_pFontManager;					// менеджер шрифтов
 
 	NSHtmlRenderer::CMatrix			m_oTransform;		// текущая матрица преобразований рендерера
 	double							m_dTransformAngle;
@@ -221,7 +221,7 @@ private:
 	BOOL							m_bPageClosed;
 	BOOL							m_bPageOpened;
 
-	AVSGraphics::IAVSWinFonts*		m_pFonts;
+	Graphics::IASCWinFonts*		m_pFonts;
 
 	bool							m_bIsChangedFontParamBetweenDrawText;
 
@@ -271,7 +271,7 @@ protected:
 	{
 		if (NULL == m_pFontManager)
 		{
-			CoCreateInstance(__uuidof(AVSGraphics::CAVSFontManager), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::IAVSFontManager), (void**)&m_pFontManager);
+			CoCreateInstance(__uuidof(Graphics::CASCFontManager), NULL, CLSCTX_ALL, __uuidof(Graphics::IASCFontManager), (void**)&m_pFontManager);
 			m_pFontManager->Initialize(L"");
 		}
 

@@ -101,7 +101,7 @@ namespace NSHtmlRenderer
 	class CGraphicsDumper
 	{
 	public:
-		AVSGraphics::IAVSGraphicsRenderer*		m_pRenderer;
+		Graphics::IASCGraphicsRenderer*		m_pRenderer;
 		MediaCore::IAVSUncompressedVideoFrame*	m_pFrame;
 
 		double							m_dWidth;
@@ -171,7 +171,7 @@ namespace NSHtmlRenderer
 
 			memset(pBuffer, 0xFF, 4 * m_lWidthPix * m_lHeightPix);
 
-			CoCreateInstance(AVSGraphics::CLSID_CAVSGraphicsRenderer, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSGraphicsRenderer, (void**)&m_pRenderer);
+			CoCreateInstance(Graphics::CLSID_CASCGraphicsRenderer, NULL, CLSCTX_ALL, Graphics::IID_IASCGraphicsRenderer, (void**)&m_pRenderer);
 			//ставим FontManager
 			VARIANT vtVariant;
 			vtVariant.vt = VT_UNKNOWN;
@@ -800,7 +800,7 @@ namespace NSHtmlRenderer
 		double m_dHeightDocMM;
 		double m_dHeightPageMM;
 
-		AVSGraphics::IAVSGraphicSimpleComverter*	m_pSimpleConverter;
+		Graphics::IASCGraphicSimpleComverter*	m_pSimpleConverter;
 		CFile m_oFileWriter;
 
 		bool m_bIsGids;
@@ -906,7 +906,7 @@ namespace NSHtmlRenderer
 			m_oSmartText.m_lCountSpaces = 0;
 		}
 
-		void SetSimpleConverter(AVSGraphics::IAVSGraphicSimpleComverter* pSimpleConverter, CMatrix* pMatrix)
+		void SetSimpleConverter(Graphics::IASCGraphicSimpleComverter* pSimpleConverter, CMatrix* pMatrix)
 		{
 			m_pSimpleConverter = pSimpleConverter;
 			m_pTransform = pMatrix;
@@ -2023,8 +2023,8 @@ protected:
 			pFrame->put_AspectRatioX( nWidth );
 			pFrame->put_AspectRatioY( nHeight );
 
-			AVSGraphics::IAVSGraphicsRenderer* pGrRenderer;
-			CoCreateInstance( AVSGraphics::CLSID_CAVSGraphicsRenderer, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSGraphicsRenderer, (void**)(&pGrRenderer) );
+			Graphics::IASCGraphicsRenderer* pGrRenderer;
+			CoCreateInstance( Graphics::CLSID_CASCGraphicsRenderer, NULL, CLSCTX_ALL, Graphics::IID_IASCGraphicsRenderer, (void**)(&pGrRenderer) );
 			if( !pGrRenderer )
 			{
 				pFrame->Release();
@@ -2044,8 +2044,8 @@ protected:
 				return false;
 			}
 
-			AVSGraphics::ISVGTransformer* pTransformer;
-			CoCreateInstance( AVSGraphics::CLSID_SVGTransformer, NULL, CLSCTX_ALL, AVSGraphics::IID_ISVGTransformer, (void**)(&pTransformer) );
+			Graphics::ISVGTransformer* pTransformer;
+			CoCreateInstance( Graphics::CLSID_SVGTransformer, NULL, CLSCTX_ALL, Graphics::IID_ISVGTransformer, (void**)(&pTransformer) );
 			if( !pTransformer )
 			{
 				pFrame->Release();

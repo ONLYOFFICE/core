@@ -156,8 +156,8 @@ namespace NSFontManager
 		};
 
 	protected:
-		AVSGraphics::IAVSWinFonts*		m_pWinFonts;
-		AVSGraphics::IAVSFontManager*	m_pManager;
+		Graphics::IASCWinFonts*		m_pWinFonts;
+		Graphics::IASCFontManager*	m_pManager;
 		CString							m_strDefaultFont;
 
 	public:
@@ -183,7 +183,7 @@ namespace NSFontManager
 		CFontManagerBase() : m_oFont(), m_mapFontPathToProperties()
 		{
 			m_pManager = NULL;
-			CoCreateInstance(AVSGraphics::CLSID_CAVSFontManager, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSFontManager, (void**)&m_pManager);
+			CoCreateInstance(Graphics::CLSID_CASCFontManager, NULL, CLSCTX_ALL, Graphics::IID_IASCFontManager, (void**)&m_pManager);
 
 			m_pManager->Initialize(L"");
 
@@ -434,8 +434,8 @@ namespace NSFontManager
 				m_oFont.m_oProperties.m_lStyle = 0x00;
 			}
 
-			AVSGraphics::IAVSFontManager2* pManager2 = NULL;
-			m_pManager->QueryInterface(AVSGraphics::IID_IAVSFontManager2, (void**)&pManager2);
+			Graphics::IASCFontManager2* pManager2 = NULL;
+			m_pManager->QueryInterface(Graphics::IID_IASCFontManager2, (void**)&pManager2);
 			
 			BSTR bsPanose = NULL;
 
@@ -1502,8 +1502,8 @@ namespace NSFontManager
 			oPick.m_strPickFont	= m_oFont.m_oProperties.m_strFamilyName;
 			oPick.m_lPickStyle	= m_oFont.m_oProperties.m_lStyle;
 
-			AVSGraphics::IAVSFontManager2* pManager2 = NULL;
-			m_pManager->QueryInterface(AVSGraphics::IID_IAVSFontManager2, (void**)&pManager2);
+			Graphics::IASCFontManager2* pManager2 = NULL;
+			m_pManager->QueryInterface(Graphics::IID_IASCFontManager2, (void**)&pManager2);
 
 			BSTR bsFontName = m_oFont.m_oProperties.m_strFamilyName.AllocSysString();
 			BSTR bsNewFontName = NULL;

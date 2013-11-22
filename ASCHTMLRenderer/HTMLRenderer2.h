@@ -2,12 +2,11 @@
 #include "stdafx.h"
 #include "resource.h"       // main symbols
 #include <string>
-#include "..\..\AVSVideoStudio3\Common\AVSUtils.h"
 
-#include "..\..\AVSImageStudio3\AVSGraphics\Interfaces\AVSRenderer.h"
-
-#include "..\..\AVSVideoStudio3\Common\MediaFormatDefine.h"
-#include "..\..\..\..\Common\TemporaryCS.h"
+#include "..\Common\ASCUtils.h"
+#include "..\ASCImageStudio3\ASCGraphics\Interfaces\ASCRenderer.h"
+#include "..\Common\MediaFormatDefine.h"
+#include "..\Common\TemporaryCS.h"
 
 #include "Writer\Writer3.h"
 
@@ -15,9 +14,9 @@
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
 #endif
 
-// IAVSHTMLRenderer
+// IASCHTMLRenderer
 [ object, uuid("7E973D3E-34ED-45ea-90A4-775E70AEBE0B"), dual, pointer_default(unique) ]
-__interface IAVSHTMLRenderer2: IAVSRenderer
+__interface IASCHTMLRenderer2: IASCRenderer
 {
 	[id(5003), propget] HRESULT Mode([out, retval] LONG* plMode);
 	[id(5003), propput] HRESULT Mode([in] LONG lMode);
@@ -26,30 +25,30 @@ __interface IAVSHTMLRenderer2: IAVSRenderer
 	[id(5001)] HRESULT CloseFile();
 };
 
-// _IAVSHTMLRendererEvents
+// _IASCHTMLRendererEvents
 [uuid("9B423367-F5BD-4bfa-8858-EC34049EC248"), dispinterface]
-__interface _IAVSHTMLRenderer2Events
+__interface _IASCHTMLRenderer2Events
 {
 };
 
-// CAVSHTMLRenderer
-[ coclass, default(IAVSHTMLRenderer2), threading(apartment), event_source(com), vi_progid("AVSHTMLRend.Rend2"), progid("AVSHTMLRend.Rend2.1"), version(1.0), uuid("310AD7B8-4A70-47d6-815E-A20A71B2AE59") ]
-class ATL_NO_VTABLE CAVSHTMLRenderer2 : 
-	public IAVSHTMLRenderer2,
+// CASCHTMLRenderer
+[ coclass, default(IASCHTMLRenderer2), threading(apartment), event_source(com), vi_progid("AVSHTMLRend.Rend2"), progid("AVSHTMLRend.Rend2.1"), version(1.0), uuid("310AD7B8-4A70-47d6-815E-A20A71B2AE59") ]
+class ATL_NO_VTABLE CASCHTMLRenderer2 : 
+	public IASCHTMLRenderer2,
 	public NSHtmlRenderer::IBaseMatrixUpdater
 {
 private:
 
 public:
-	__event __interface _IAVSHTMLRenderer2Events;
+	__event __interface _IASCHTMLRenderer2Events;
 
 public:
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
 	
-	CAVSHTMLRenderer2()
+	CASCHTMLRenderer2()
 	{
 	}
-	~CAVSHTMLRenderer2()
+	~CASCHTMLRenderer2()
 	{
 	}
 
@@ -219,8 +218,8 @@ private:
 	CString m_strDstFile;
 	LONG m_lLastSavedPage;
 
-	AVSGraphics::IAVSGraphicSimpleComverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
-	AVSGraphics::IAVSFontManager*				m_pFontManager;					// менеджер шрифтов
+	Graphics::IASCGraphicSimpleComverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
+	Graphics::IASCFontManager*				m_pFontManager;					// менеджер шрифтов
 
 	NSHtmlRenderer::CMatrix			m_oTransform;		// текущая матрица преобразований рендерера
 	double							m_dTransformAngle;
@@ -245,7 +244,7 @@ private:
 	BOOL							m_bPageClosed;
 	BOOL							m_bPageOpened;
 
-	AVSGraphics::IAVSWinFonts*		m_pFonts;
+	Graphics::IASCWinFonts*		m_pFonts;
 
 protected:
 	void CalculateFullTransform()
@@ -314,7 +313,7 @@ protected:
 	{
 		if (NULL == m_pFontManager)
 		{
-			CoCreateInstance(__uuidof(AVSGraphics::CAVSFontManager), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::IAVSFontManager), (void**)&m_pFontManager);
+			CoCreateInstance(__uuidof(Graphics::CASCFontManager), NULL, CLSCTX_ALL, __uuidof(Graphics::IASCFontManager), (void**)&m_pFontManager);
 			m_pFontManager->Initialize(L"");
 		}
 

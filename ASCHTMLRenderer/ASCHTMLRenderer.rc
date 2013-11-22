@@ -2,7 +2,7 @@
 //
 #include "resource.h"
 #define COMPONENT_NAME "HTMLRenderer"
-#include "../../../../Common/FileInfo.h"
+#include "../Common/FileInfo.h"
 #include "version.h"
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ IDB_SCRIPT_GR		HTML2					  "Resources\\canvas\\Graphics.js"
 IDB_SCRIPT_VIEW     HTML2                     "Resources\\canvas\\Viewer.html"
 #endif*/
 
-IDB_COMMON_ZIP		HTML2                     "Resources\\common.zip"
+IDB_COMMON_ZIP		HTML2                     	"Resources\\common.zip"
 
 IDB_FONT_SCRIPT_FT	HTML2						"Resources\\fonts\\freetype2.cc.js"
 IDB_FONT_SCRIPT_FM	HTML2						"Resources\\fonts\\FontManager.js"
@@ -137,7 +137,7 @@ END
 // REGISTRY
 //
 
-IDR_AVSHTMLRENDERER       REGISTRY                "AVSHTMLRenderer.rgs"
+IDR_ASCHTMLRENDERER       REGISTRY                "ASCHTMLRenderer.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -146,7 +146,7 @@ IDR_AVSHTMLRENDERER       REGISTRY                "AVSHTMLRenderer.rgs"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSHTMLRenderer"
+    IDS_PROJNAME            "ASCHTMLRenderer"
 END
 
 #endif    // English (U.S.) resources

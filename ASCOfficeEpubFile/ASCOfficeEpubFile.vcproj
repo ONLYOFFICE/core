@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSOfficeEpubFile"
+	Name="ASCOfficeEpubFile"
 	ProjectGUID="{CF852DB8-5A50-4C30-B683-5503D8DAF7B3}"
-	RootNamespace="AVSOfficeEpubFile"
+	RootNamespace="ASCOfficeEpubFile"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -43,17 +43,17 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeEpubFile.tlb"
-				HeaderFileName="AVSOfficeEpubFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeEpubFile.tlb"
+				HeaderFileName="ASCOfficeEpubFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeEpubFile_i.c"
-				ProxyFileName="AVSOfficeEpubFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeEpubFile_i.c"
+				ProxyFileName="ASCOfficeEpubFile_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\Common;..\..\..\Common;..\..\Common;..\..\AVSImageStudio3\Common"
+				AdditionalIncludeDirectories="..\Common;..\..\Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;_CRT_NONSTDC_NO_DEPRECATE;ZLIB_WINAPI;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -82,7 +82,7 @@
 				AdditionalDependencies="gdiplus.lib"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames=""
-				MergedIDLBaseFileName="_AVSOfficeEpubFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeEpubFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -124,7 +124,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\..\AVS\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
+				CommandLine="..\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -141,17 +141,17 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeEpubFile.tlb"
-				HeaderFileName="AVSOfficeEpubFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeEpubFile.tlb"
+				HeaderFileName="ASCOfficeEpubFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeEpubFile_i.c"
-				ProxyFileName="AVSOfficeEpubFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeEpubFile_i.c"
+				ProxyFileName="ASCOfficeEpubFile_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\..\..\..\Common;..\..\..\Common;..\..\Common;..\..\AVSImageStudio3\Common"
+				AdditionalIncludeDirectories="..\Common;..\..\Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_CRT_NONSTDC_NO_DEPRECATE;ZLIB_WINAPI;_CRT_SECURE_NO_DEPRECATE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -178,7 +178,7 @@
 				AdditionalDependencies="gdiplus.lib zlib.lib"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC.LIB"
-				MergedIDLBaseFileName="_AVSOfficeEpubFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeEpubFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -209,7 +209,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy to redist"
-				CommandLine="copy $(TargetPath) ..\..\..\..\AVS\Redist\AVSOfficeStudio\AVSOfficeEpubFile.dll"
+				CommandLine="copy $(TargetPath) &quot;..\Redist\&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -223,7 +223,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\..\AVS\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
+				CommandLine="..\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
 				ExcludedFromBuild="true"
 			/>
 			<Tool
@@ -241,17 +241,17 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeEpubFile.tlb"
-				HeaderFileName="AVSOfficeEpubFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeEpubFile.tlb"
+				HeaderFileName="ASCOfficeEpubFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeEpubFile_i.c"
-				ProxyFileName="AVSOfficeEpubFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeEpubFile_i.c"
+				ProxyFileName="ASCOfficeEpubFile_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\..\..\..\Common;..\..\..\Common;..\..\Common;..\..\AVSImageStudio3\Common"
+				AdditionalIncludeDirectories="..\Common;..\..\Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_CRT_NONSTDC_NO_DEPRECATE;ZLIB_WINAPI;_CRT_SECURE_NO_DEPRECATE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -279,7 +279,7 @@
 				OutputFile="$(OutDir)\ASCOfficeEpubFile.dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC.LIB"
-				MergedIDLBaseFileName="_AVSOfficeEpubFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeEpubFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -323,7 +323,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSOfficeEpubFile.cpp"
+				RelativePath=".\ASCOfficeEpubFile.cpp"
 				>
 			</File>
 			<File
@@ -403,11 +403,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficeEpubFile.rc"
+				RelativePath=".\ASCOfficeEpubFile.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeEpubFile.rgs"
+				RelativePath=".\ASCOfficeEpubFile.rgs"
 				>
 			</File>
 		</Filter>
@@ -427,7 +427,7 @@
 			Name="zip"
 			>
 			<File
-				RelativePath="..\AVSOfficeUtils\ZLIB\zlib-1.2.3\adler32.c"
+				RelativePath="..\ASCOfficeUtils\ZLIB\zlib-1.2.3\adler32.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -455,7 +455,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\AVSOfficeUtils\ZLIB\zlib-1.2.3\compress.c"
+				RelativePath="..\ASCOfficeUtils\ZLIB\zlib-1.2.3\compress.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -483,7 +483,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\AVSOfficeUtils\ZLIB\zlib-1.2.3\crc32.c"
+				RelativePath="..\ASCOfficeUtils\ZLIB\zlib-1.2.3\crc32.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -511,7 +511,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\AVSOfficeUtils\ZLIB\zlib-1.2.3\deflate.c"
+				RelativePath="..\ASCOfficeUtils\ZLIB\zlib-1.2.3\deflate.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -539,7 +539,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\AVSOfficeUtils\ZLIB\zlib-1.2.3\contrib\masmx86\gvmat32c.c"
+				RelativePath="..\ASCOfficeUtils\ZLIB\zlib-1.2.3\contrib\masmx86\gvmat32c.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -567,7 +567,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\AVSOfficeUtils\ZLIB\zlib-1.2.3\gzio.c"
+				RelativePath="..\ASCOfficeUtils\ZLIB\zlib-1.2.3\gzio.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -595,7 +595,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\AVSOfficeUtils\ZLIB\zlib-1.2.3\infback.c"
+				RelativePath="..\ASCOfficeUtils\ZLIB\zlib-1.2.3\infback.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -623,7 +623,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\AVSOfficeUtils\ZLIB\zlib-1.2.3\contrib\masmx64\inffas8664.c"
+				RelativePath="..\ASCOfficeUtils\ZLIB\zlib-1.2.3\contrib\masmx64\inffas8664.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -651,7 +651,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\AVSOfficeUtils\ZLIB\zlib-1.2.3\inffast.c"
+				RelativePath="..\ASCOfficeUtils\ZLIB\zlib-1.2.3\inffast.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -679,7 +679,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\AVSOfficeUtils\ZLIB\zlib-1.2.3\inflate.c"
+				RelativePath="..\ASCOfficeUtils\ZLIB\zlib-1.2.3\inflate.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -707,7 +707,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\AVSOfficeUtils\ZLIB\zlib-1.2.3\inftrees.c"
+				RelativePath="..\ASCOfficeUtils\ZLIB\zlib-1.2.3\inftrees.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -735,7 +735,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\AVSOfficeUtils\ZLIB\zlib-1.2.3\contrib\minizip\ioapi.c"
+				RelativePath="..\ASCOfficeUtils\ZLIB\zlib-1.2.3\contrib\minizip\ioapi.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -763,7 +763,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\AVSOfficeUtils\ZLIB\zlib-1.2.3\trees.c"
+				RelativePath="..\ASCOfficeUtils\ZLIB\zlib-1.2.3\trees.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -791,7 +791,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\AVSOfficeUtils\ZLIB\zlib-1.2.3\uncompr.c"
+				RelativePath="..\ASCOfficeUtils\ZLIB\zlib-1.2.3\uncompr.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -819,7 +819,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\AVSOfficeUtils\ZLIB\zlib-1.2.3\contrib\minizip\unzip.c"
+				RelativePath="..\ASCOfficeUtils\ZLIB\zlib-1.2.3\contrib\minizip\unzip.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -847,7 +847,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\AVSOfficeUtils\ZLIB\zlib-1.2.3\contrib\minizip\zip.c"
+				RelativePath="..\ASCOfficeUtils\ZLIB\zlib-1.2.3\contrib\minizip\zip.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -875,7 +875,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\AVSOfficeUtils\ZLIB\zlib-1.2.3\zutil.c"
+				RelativePath="..\ASCOfficeUtils\ZLIB\zlib-1.2.3\zutil.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"

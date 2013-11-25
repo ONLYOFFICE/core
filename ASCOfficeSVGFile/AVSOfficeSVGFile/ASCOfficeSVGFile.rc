@@ -1,6 +1,8 @@
 //Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
+#define COMPONENT_NAME "OfficeSvgFile"
+#include "../Common/FileInfo.h"
 #include "version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -57,22 +59,22 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "041904e3"
+        BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "Online Media Technologies Ltd."
-            VALUE "FileDescription", "AVSOfficeSVGFile ActiveX DLL"
+            VALUE "CompanyName", COMPANY_NAME
+            VALUE "FileDescription", FILE_DESCRIPTION_ACTIVEX
             VALUE "FileVersion", STRVER
-            VALUE "LegalCopyright", "Online Media Technologies Ltd. Copyright 2011"
-            VALUE "LegalTrademarks", "Online Media Technologies Ltd."
-            VALUE "InternalName", "AVSOfficeSVGFile.dll"
-            VALUE "OriginalFilename", "AVSOfficeSVGFile.dll"
-            VALUE "ProductName", "AVSOfficeSVGFile ActiveX DLL"
+            VALUE "InternalName", COMPONENT_FILE_NAME_DLL
+            VALUE "LegalCopyright", LEGAL_COPYRIGHT
+            VALUE "LegalTrademarks", LEGAL_COPYRIGHT
+            VALUE "OriginalFilename", COMPONENT_FILE_NAME_DLL
+            VALUE "ProductName", FILE_DESCRIPTION_ACTIVEX
             VALUE "ProductVersion", STRVER
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-		VALUE "Translation", 0x0419, 1251
+		VALUE "Translation", 0x0409, 1252
     END
 END
 
@@ -85,10 +87,10 @@ END
 
 STRINGTABLE  
 BEGIN
-	IDS_PROJNAME					"AVSOfficeSVGFile"
+	IDS_PROJNAME					"ASCOfficeSVGFile"
 END
 
-IDR_AVSOFFICESVGFILE REGISTRY "AVSOfficeSVGFile.rgs"
+IDR_ASCOFFICESVGFILE REGISTRY "ASCOfficeSVGFile.rgs"
 ////////////////////////////////////////////////////////////////////////////
 
 

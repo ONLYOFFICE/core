@@ -1,9 +1,9 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by AVSOfficeCAVSOfficeEpubFile.rc
+// Used by ASCOfficeCASCOfficeEpubFile.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_AVSOFFICEEPUBFILE			101
+#define IDR_ASCOFFICEEPUBFILE			101
 #define IDR_CRPT1                       202
 
 // Next default values for new objects

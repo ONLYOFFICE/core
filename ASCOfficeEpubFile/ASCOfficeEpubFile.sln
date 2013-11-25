@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSOfficeEpubFile", "AVSOfficeEpubFile.vcproj", "{CF852DB8-5A50-4C30-B683-5503D8DAF7B3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeEpubFile", "ASCOfficeEpubFile.vcproj", "{CF852DB8-5A50-4C30-B683-5503D8DAF7B3}"
 	ProjectSection(ProjectDependencies) = postProject
 		{52B37168-F0D9-403D-ADD4-5C07B4602643} = {52B37168-F0D9-403D-ADD4-5C07B4602643}
 	EndProjectSection

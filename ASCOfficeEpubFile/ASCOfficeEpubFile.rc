@@ -82,7 +82,7 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-IDR_AVSOFFICEEPUBFILE REGISTRY                "AVSOfficeEpubFile.rgs"
+IDR_ASCOFFICEEPUBFILE REGISTRY                "ASCOfficeEpubFile.rgs"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -92,7 +92,7 @@ IDR_AVSOFFICEEPUBFILE REGISTRY                "AVSOfficeEpubFile.rgs"
 
 STRINGTABLE 
 BEGIN
-	IDS_PROJNAME					"AVSOfficeEpubFile"
+	IDS_PROJNAME					"ASCOfficeEpubFile"
 END
 
 /////////////////////////////////////////////////////////////////////////////

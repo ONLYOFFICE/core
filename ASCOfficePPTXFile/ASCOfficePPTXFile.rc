@@ -120,7 +120,7 @@ END
 // REGISTRY
 //
 
-IDR_AVSOFFICEPPTXFILE       REGISTRY                "AVSOfficePPTXFile.rgs"
+IDR_ASCOFFICEPPTXFILE       REGISTRY                "ASCOfficePPTXFile.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -129,7 +129,7 @@ IDR_AVSOFFICEPPTXFILE       REGISTRY                "AVSOfficePPTXFile.rgs"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSOfficePPTXFile"
+    IDS_PROJNAME            "ASCOfficePPTXFile"
 END
 
 #endif    // English (U.S.) resources

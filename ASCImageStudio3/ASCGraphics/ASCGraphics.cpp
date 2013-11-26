@@ -12,6 +12,7 @@
 #include "Interfaces\ASCGraphicsSimpleConverter.h"
 #include "Interfaces\SVGRenderer.h"
 #include "Interfaces\ASCMetafile.h"
+#include "Interfaces\ASCDocumentRenderer.h"
 
 // The module attribute causes DllMain, DllRegisterServer and DllUnregisterServer to be automatically implemented for you
 [ module(dll, uuid = "{AB5F2678-2773-44c4-A637-33DFBC51233B}", 

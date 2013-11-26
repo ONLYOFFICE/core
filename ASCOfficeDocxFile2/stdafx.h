@@ -54,7 +54,7 @@ using namespace ATL;
 #import "../Redist/ASCMediaCore3.dll"		named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
 #import "../Redist/ASCImageStudio3.dll"	named_guids raw_interfaces_only rename_namespace("AVSImageStudio")
 #import "../Redist/ASCFontConverter.dll"	named_guids raw_interfaces_only rename_namespace("Fonts")
-#import "../../../../../Redist/AVSOfficeStudio/AVSOfficePPTXFile.dll"	raw_interfaces_only rename_namespace("PPTXFile")
+#import "../Redist/AVSOfficePPTXFile.dll"	raw_interfaces_only rename_namespace("PPTXFile")
 
 #ifdef SOLUTION_ASCOFFICEDOCXFILE2
 #import "../Redist/ASCGraphics.dll"		named_guids raw_interfaces_only rename_namespace("AVSGraphics")//, exclude(IAVSRenderer)

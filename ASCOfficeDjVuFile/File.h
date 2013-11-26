@@ -1,6 +1,6 @@
 #pragma once
-#include "XmlUtils.h"
-#include "AVSUtils.h"
+#include ".\..\Common\XmlUtils.h"
+#include ".\..\Common\ASCUtils.h"
 #include "windows.h"
 
 #ifndef		pow2_16

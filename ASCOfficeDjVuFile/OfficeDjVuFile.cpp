@@ -2,7 +2,7 @@
 #include "OfficeDjVuFile.h"
 #include "Resource.h"
 #include "math.h"
-#include "TimeMeasurer.h"
+#include "../Common/TimeMeasurer.h"
 
 #define VER_DPI		96
 #define HOR_DPI		96
@@ -164,8 +164,8 @@ STDMETHODIMP CDjVuFile::DrawPage(int nPage, IUnknown* punkRenderer, BOOL* pBreak
 	
 		//RELEASEOBJECT(pCS);
 
-		AVSGraphics::IAVSGraphicsRenderer* pGrRenderer = NULL;
-		punkRenderer->QueryInterface(__uuidof(AVSGraphics::IAVSGraphicsRenderer), (void**)&pGrRenderer);
+		AVSGraphics::IASCGraphicsRenderer* pGrRenderer = NULL;
+		punkRenderer->QueryInterface(__uuidof(AVSGraphics::IASCGraphicsRenderer), (void**)&pGrRenderer);
 
 		if (NULL != pGrRenderer)
 		{
@@ -176,8 +176,8 @@ STDMETHODIMP CDjVuFile::DrawPage(int nPage, IUnknown* punkRenderer, BOOL* pBreak
 
 		XmlUtils::CXmlNode text = ParseText(pPage);
 
-		AVSGraphics::IAVSRenderer* renderer;
-		punkRenderer->QueryInterface(__uuidof(AVSGraphics::IAVSRenderer), (void**)&renderer);
+		AVSGraphics::IASCRenderer* renderer;
+		punkRenderer->QueryInterface(__uuidof(AVSGraphics::IASCRenderer), (void**)&renderer);
 		CreateFrame2(renderer, pPage, nPage, text);
 		RELEASEINTERFACE(renderer);
 	}
@@ -402,7 +402,7 @@ void CDjVuFile::CreateFrame(GP<DjVuImage>& pPage, int nPage, XmlUtils::CXmlNode&
 
 
 
-void CDjVuFile::CreateFrame2(AVSGraphics::IAVSRenderer* renderer, GP<DjVuImage>& pPage, int nPage, XmlUtils::CXmlNode& text)
+void CDjVuFile::CreateFrame2(AVSGraphics::IASCRenderer* renderer, GP<DjVuImage>& pPage, int nPage, XmlUtils::CXmlNode& text)
 {			
 	int nWidth	= pPage->get_real_width();
 	int nHeight	= pPage->get_real_height();
@@ -614,7 +614,7 @@ void CDjVuFile::CreateFrame2(AVSGraphics::IAVSRenderer* renderer, GP<DjVuImage>&
 	renderer->EndCommand(0x0001); // CompletePage
 }
 
-void CDjVuFile::CreateFrame3(AVSGraphics::IAVSGraphicsRenderer* renderer, GP<DjVuImage>& pPage, BOOL* pBreak)
+void CDjVuFile::CreateFrame3(AVSGraphics::IASCGraphicsRenderer* renderer, GP<DjVuImage>& pPage, BOOL* pBreak)
 {			
 	int nWidth	= pPage->get_real_width();
 	int nHeight	= pPage->get_real_height();
@@ -773,7 +773,7 @@ void CDjVuFile::CreateFrame3(AVSGraphics::IAVSGraphicsRenderer* renderer, GP<DjV
 	}
 }
 
-void CDjVuFile::CreateFrame(AVSGraphics::IAVSRenderer* renderer, GP<DjVuImage>& pPage, int nPage, XmlUtils::CXmlNode& text)
+void CDjVuFile::CreateFrame(AVSGraphics::IASCRenderer* renderer, GP<DjVuImage>& pPage, int nPage, XmlUtils::CXmlNode& text)
 {			
 	CString strNum;
 	strNum.Format(_T("%d"), nPage);
@@ -916,7 +916,7 @@ void CDjVuFile::PageToRenderer(double width, double height)
 }
 
 
-void CDjVuFile::PageToRenderer(AVSGraphics::IAVSRenderer* renderer, double width, double height)
+void CDjVuFile::PageToRenderer(AVSGraphics::IASCRenderer* renderer, double width, double height)
 {
 	renderer->NewPage();
 	renderer->put_Width(width);
@@ -951,7 +951,7 @@ void CDjVuFile::TextToRenderer(XmlUtils::CXmlNode text, double koef, bool isView
 }
 
 
-void CDjVuFile::TextToRenderer(AVSGraphics::IAVSRenderer* renderer, XmlUtils::CXmlNode text, double koef, bool isView)
+void CDjVuFile::TextToRenderer(AVSGraphics::IASCRenderer* renderer, XmlUtils::CXmlNode text, double koef, bool isView)
 {
 	renderer->put_ShadowVisible(0);
 
@@ -989,7 +989,7 @@ void CDjVuFile::ImageToRenderer(const CString& strName, double width, double hei
 }
 
 
-void CDjVuFile::ImageToRenderer(AVSGraphics::IAVSRenderer* renderer, const CString& strName, double width, double height)
+void CDjVuFile::ImageToRenderer(AVSGraphics::IASCRenderer* renderer, const CString& strName, double width, double height)
 {
 	BSTR bsPath = strName.AllocSysString();
 	renderer->DrawImageFromFile(bsPath, 0, 0, (float)width, (float)height);
@@ -1023,7 +1023,7 @@ void CDjVuFile::DrawRect(double* coords)
 }
 
 
-void CDjVuFile::DrawRect(AVSGraphics::IAVSRenderer* renderer, double* coords)
+void CDjVuFile::DrawRect(AVSGraphics::IASCRenderer* renderer, double* coords)
 {
 	renderer->PathCommandMoveTo(coords[0], coords[3]);
 	renderer->PathCommandLineTo(coords[2], coords[3]);
@@ -1052,7 +1052,7 @@ void CDjVuFile::DrawText(double* coords, CString text)
 	SysFreeString(bsText);
 }
 
-void CDjVuFile::DrawText(AVSGraphics::IAVSRenderer* renderer, double* coords, CString text)
+void CDjVuFile::DrawText(AVSGraphics::IASCRenderer* renderer, double* coords, CString text)
 {
 	/*CString strFont;
 	strFont.Format(_T("<font name='Arial' size='%lf'/>"), min( 100 , max( 1, fabs((float)(coords[3] - coords[1]))) * 72 / 25.4));

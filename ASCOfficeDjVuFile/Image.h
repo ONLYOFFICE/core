@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "File.h"
-#include "GdiplusEx.h"
+#include ".\..\Common\GdiplusEx.h"
 using namespace Gdiplus;
 
 #include "libdjvu\GBitmap.h"

@@ -4,8 +4,8 @@
 #include ".\..\Common\OfficeFileTemplate.h"
 #include ".\..\Common\OfficeFileErrorDescription.h"
 #include ".\..\Common\OfficeDefines.h"
-#include "XmlUtils.h"
-#include "AVSUtils.h"
+#include ".\..\Common\XmlUtils.h"
+#include ".\..\Common\ASCUtils.h"
 
 #include "libdjvu/DjVuDocument.h"
 #include "libdjvu/DjVuImage.h"
@@ -17,9 +17,9 @@
 #include "libdjvu/DjVuText.h"
 #include "libdjvu/DjVmNav.h"
 
-#include "MediaFormatDefine.h"
+#include ".\..\Common\MediaFormatDefine.h"
 #include "Image.h"
-#include "TemporaryCS.h"
+#include ".\..\Common\TemporaryCS.h"
 
 #if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
@@ -85,13 +85,13 @@ public:
 		(*ppRenderer) = NULL;
 		if( NULL == m_pDocumentRenderer )
 			return S_OK;
-		return m_pDocumentRenderer->QueryInterface(__uuidof(AVSGraphics::IAVSDocumentRenderer), (void**)ppRenderer);
+		return m_pDocumentRenderer->QueryInterface(__uuidof(AVSGraphics::IASCRenderer), (void**)ppRenderer);
 	}
 	STDMETHOD(put_DocumentRenderer)(IUnknown* pRenderer)
 	{
 		RELEASEINTERFACE( m_pDocumentRenderer );
 		if( NULL != pRenderer )
-			pRenderer->QueryInterface(__uuidof(AVSGraphics::IAVSDocumentRenderer), (void**)&m_pDocumentRenderer);
+			pRenderer->QueryInterface(__uuidof(AVSGraphics::IASCRenderer), (void**)&m_pDocumentRenderer);
 		return S_OK;
 	}
 	STDMETHOD(get_TempDirectory)(BSTR* pbsPath)
@@ -132,25 +132,25 @@ public:
 
 private:
 	void CreateFrame(GP<DjVuImage>& pImage, int nPage, XmlUtils::CXmlNode& text);
-	void CreateFrame(AVSGraphics::IAVSRenderer* renderer, GP<DjVuImage>& pImage, int nPage, XmlUtils::CXmlNode& text);
-	void CreateFrame2(AVSGraphics::IAVSRenderer* renderer, GP<DjVuImage>& pImage, int nPage, XmlUtils::CXmlNode& text);
-	void CreateFrame3(AVSGraphics::IAVSGraphicsRenderer* renderer, GP<DjVuImage>& pImage, BOOL* pBreak);
+	void CreateFrame(AVSGraphics::IASCRenderer* renderer, GP<DjVuImage>& pImage, int nPage, XmlUtils::CXmlNode& text);
+	void CreateFrame2(AVSGraphics::IASCRenderer* renderer, GP<DjVuImage>& pImage, int nPage, XmlUtils::CXmlNode& text);
+	void CreateFrame3(AVSGraphics::IASCGraphicsRenderer* renderer, GP<DjVuImage>& pImage, BOOL* pBreak);
 	CString SavePage(int nPageNum, IUnknown* pPage);
 	XmlUtils::CXmlNode ParseText(GP<DjVuImage> pPage);
 	void PageToRenderer(double width, double height);
 	void TextToRenderer(XmlUtils::CXmlNode text, double koef, bool isView = true);
 	void ImageToRenderer(const CString& strName, double width, double height);
 
-	void PageToRenderer(AVSGraphics::IAVSRenderer* renderer, double width, double height);
-	void TextToRenderer(AVSGraphics::IAVSRenderer* renderer, XmlUtils::CXmlNode text, double koef, bool isView = true);
-	void ImageToRenderer(AVSGraphics::IAVSRenderer* renderer, const CString& strName, double width, double height);
+	void PageToRenderer(AVSGraphics::IASCRenderer* renderer, double width, double height);
+	void TextToRenderer(AVSGraphics::IASCRenderer* renderer, XmlUtils::CXmlNode text, double koef, bool isView = true);
+	void ImageToRenderer(AVSGraphics::IASCRenderer* renderer, const CString& strName, double width, double height);
 
 	void ParseCoords(CString& coordsStr, double* coords, double koef);
 	void DrawRect(double* coords);
 	void DrawText(double* coords, CString text);
 
-	void DrawRect(AVSGraphics::IAVSRenderer* renderer, double* coords);
-	void DrawText(AVSGraphics::IAVSRenderer* renderer, double* coords, CString text);
+	void DrawRect(AVSGraphics::IASCRenderer* renderer, double* coords);
+	void DrawText(AVSGraphics::IASCRenderer* renderer, double* coords, CString text);
 
 private:
 	GP<DjVuDocument> m_pDoc;

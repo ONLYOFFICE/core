@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSImageJBig2", "AVSImageJBig2.vcproj", "{CA273012-D186-450B-ACEA-2619B30F927E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCImageJBig2", "ASCImageJBig2.vcproj", "{CA273012-D186-450B-ACEA-2619B30F927E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

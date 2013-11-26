@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="AVSImageJBig2"
+	Name="ASCImageJBig2"
 	ProjectGUID="{CA273012-D186-450B-ACEA-2619B30F927E}"
 	Keyword="AtlProj"
 	TargetFrameworkVersion="196613"
@@ -42,11 +42,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageJBig2.tlb"
-				HeaderFileName="AVSImageJBig2.h"
+				TypeLibraryName="$(IntDir)/ASCImageJBig2.tlb"
+				HeaderFileName="ASCImageJBig2.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageJBig2_i.c"
-				ProxyFileName="AVSImageJBig2_p.c"
+				InterfaceIdentifierFileName="ASCImageJBig2_i.c"
+				ProxyFileName="ASCImageJBig2_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -76,12 +76,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="$(OutDir)/AVSImageJBig2.dll"
+				OutputFile="$(OutDir)/ASCImageJBig2.dll"
 				LinkIncremental="2"
-				MergedIDLBaseFileName="_AVSImageJBig2.idl"
+				MergedIDLBaseFileName="_ASCImageJBig2.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSImageJBig2.lib"
+				ImportLibrary="$(OutDir)/ASCImageJBig2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -136,11 +136,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSImageJBig2.tlb"
-				HeaderFileName="AVSImageJBig2.h"
+				TypeLibraryName="$(IntDir)/ASCImageJBig2.tlb"
+				HeaderFileName="ASCImageJBig2.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSImageJBig2_i.c"
-				ProxyFileName="AVSImageJBig2_p.c"
+				InterfaceIdentifierFileName="ASCImageJBig2_i.c"
+				ProxyFileName="ASCImageJBig2_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -167,15 +167,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="../../../Redist/AVSImageJBig2.dll"
+				OutputFile="../../Redist/ASCImageJBig2.dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSImageJBig2.idl"
+				MergedIDLBaseFileName="_ASCImageJBig2.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSImageJBig2.lib"
+				ImportLibrary="$(OutDir)/ASCImageJBig2.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -212,7 +212,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSImageJBig2.cpp"
+				RelativePath=".\ASCImageJBig2.cpp"
 				>
 			</File>
 			<File
@@ -2208,11 +2208,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSImageJBig2.rc"
+				RelativePath=".\ASCImageJBig2.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSImageJBig2.rgs"
+				RelativePath=".\ASCImageJBig2.rgs"
 				>
 			</File>
 		</Filter>

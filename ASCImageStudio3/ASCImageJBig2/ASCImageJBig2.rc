@@ -87,10 +87,10 @@ END
 
 STRINGTABLE  
 BEGIN
-	IDS_PROJNAME					"AVSImageJBig2"
+	IDS_PROJNAME					"ASCImageJBig2"
 END
 
-IDR_AVSIMAGEJBIG2 REGISTRY "AVSImageJBig2.rgs"
+IDR_ASCIMAGEJBIG2 REGISTRY "ASCImageJBig2.rgs"
 ////////////////////////////////////////////////////////////////////////////
 
 

@@ -1,13 +1,16 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
-#include "version.h"
+
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include "winres.h"
+#define COMPONENT_NAME "OfficeDocxRenderer"
+#include "../../../Common/FileInfo.h"
+#include "version.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -534,15 +537,14 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "CompanyName", "Online Media Technologies Ltd."
-            VALUE "FileDescription", "AVSOfficeDocxRenderer ActiveX DLL"
+            VALUE "CompanyName", COMPANY_NAME
+            VALUE "FileDescription", FILE_DESCRIPTION_ACTIVEX
             VALUE "FileVersion", STRVER
-            VALUE "LegalCopyright", "Online Media Technologies Ltd. Copyright (c) 2010"
-            VALUE "InternalName", "AVSOfficeDocxRenderer.dll"
-            VALUE "OriginalFilename", "AVSOfficeDocxRenderer.dll"
-            VALUE "ProductName", "AVSOfficeDocxRenderer ActiveX DLL"
+            VALUE "InternalName", COMPONENT_FILE_NAME_DLL
+            VALUE "LegalCopyright", LEGAL_COPYRIGHT
+            VALUE "OriginalFilename", COMPONENT_FILE_NAME_DLL
+            VALUE "ProductName", FILE_DESCRIPTION_ACTIVEX
             VALUE "ProductVersion", STRVER
-            VALUE "OLESelfRegister", ""
         END
     END
     BLOCK "VarFileInfo"
@@ -557,7 +559,7 @@ END
 // REGISTRY
 //
 
-IDR_AVSOFFICEDOCXRENDERER REGISTRY                "AVSOfficeDocxRenderer.rgs"
+IDR_ASCOFFICEDOCXRENDERER REGISTRY                "ASCOfficeDocxRenderer.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -566,7 +568,7 @@ IDR_AVSOFFICEDOCXRENDERER REGISTRY                "AVSOfficeDocxRenderer.rgs"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSOfficeDocxRenderer"
+    IDS_PROJNAME            "ASCOfficeDocxRenderer"
 END
 
 #endif    // English (U.S.) resources

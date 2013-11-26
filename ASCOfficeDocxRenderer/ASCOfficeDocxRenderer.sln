@@ -1,21 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSOfficeDocxRenderer", "AVSOfficeDocxRenderer\AVSOfficeDocxRenderer.vcproj", "{B9D1A580-70B2-4CF0-A8D4-152A8E84015E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeDocxRenderer", "ASCOfficeDocxRenderer\ASCOfficeDocxRenderer.vcproj", "{B9D1A580-70B2-4CF0-A8D4-152A8E84015E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "boost_filesystem", "..\Common\AvsDocxFormat\Projects\boost_filesystem.vcproj", "{3C7D3E76-9C62-4D0E-9645-8731700B1D70}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "boost_filesystem", "..\Common\ASCDocxFormat\Projects\boost_filesystem.vcproj", "{3C7D3E76-9C62-4D0E-9645-8731700B1D70}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "boost_system", "..\Common\AvsDocxFormat\Projects\boost_system.vcproj", "{7A3C0AE1-9FA1-4F56-99C0-139192364F57}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "boost_system", "..\Common\ASCDocxFormat\Projects\boost_system.vcproj", "{7A3C0AE1-9FA1-4F56-99C0-139192364F57}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "..\Common\AvsDocxFormat\Projects\Common.vcproj", "{873D625C-37E4-47C4-8120-2D9FC6A98765}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "..\Common\ASCDocxFormat\Projects\Common.vcproj", "{873D625C-37E4-47C4-8120-2D9FC6A98765}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocxFormat", "..\Common\AvsDocxFormat\Projects\DocxFormat.vcproj", "{67EB0D73-21A0-44C9-ADB2-109526E60429}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocxFormat", "..\Common\ASCDocxFormat\Projects\DocxFormat.vcproj", "{67EB0D73-21A0-44C9-ADB2-109526E60429}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfficeSvmFile", "..\AVSOfficeOdtFile\Source\OfficeSvmFile\OfficeSvmFile.vcproj", "{7D2165DA-B528-4318-A03F-6E922547C09D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfficeSvmFile", "..\ASCOfficeOdtFile\Source\OfficeSvmFile\OfficeSvmFile.vcproj", "{7D2165DA-B528-4318-A03F-6E922547C09D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utility", "..\Common\AvsDocxFormat\Projects\Utility.vcproj", "{56F6B346-D0EA-4149-88C4-B6D09E0E9BA6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utility", "..\Common\ASCDocxFormat\Projects\Utility.vcproj", "{56F6B346-D0EA-4149-88C4-B6D09E0E9BA6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XML", "..\Common\AvsDocxFormat\Projects\XML.vcproj", "{CF068422-CD0A-484E-B4A9-A0CD108EBBB9}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XML", "..\Common\ASCDocxFormat\Projects\XML.vcproj", "{CF068422-CD0A-484E-B4A9-A0CD108EBBB9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

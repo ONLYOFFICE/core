@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSOfficeDjVuFile"
+	Name="ASCOfficeDjVuFile"
 	ProjectGUID="{D02A88E6-5B2B-4A15-A4F6-C057F698FC53}"
-	RootNamespace="AVSOfficeDjVuFile"
+	RootNamespace="ASCOfficeDjVuFile"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -43,16 +43,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeDjVuFile.tlb"
-				HeaderFileName="AVSOfficeDjVuFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeDjVuFile.tlb"
+				HeaderFileName="ASCOfficeDjVuFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeDjVuFile_i.c"
-				ProxyFileName="AVSOfficeDjVuFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeDjVuFile_i.c"
+				ProxyFileName="ASCOfficeDjVuFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="Source;.\..\Common\AvsDocxFormat\Source\Utility;.\..\Common\AvsDocxFormat\Source\XML;.\..\Common\AvsDocxFormat\Source\Common;.\..\Common\AvsDocxFormat\Source\DocxFormat;Source\TxtFormat"
+				AdditionalIncludeDirectories="Source;.\..\Common\ASCDocxFormat\Source\Utility;.\..\Common\ASCDocxFormat\Source\XML;.\..\Common\ASCDocxFormat\Source\Common;.\..\Common\ASCDocxFormat\Source\DocxFormat;Source\TxtFormat"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -78,14 +78,14 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="comsvcs.lib comsuppw.lib Msimg32.lib"
-				OutputFile="$(OutDir)/AVSOfficeDjVuFile.dll"
+				OutputFile="$(OutDir)/ASCOfficeDjVuFile.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories=".\..\Common\AvsDocxFormat\Lib\Debug; ..\AVSOfficeUtils\ZLIB\zlib123dll\static32"
+				AdditionalLibraryDirectories=".\..\Common\ASCDocxFormat\Lib\Debug; ..\ASCOfficeUtils\ZLIB\zlib123dll\static32"
 				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSOfficeDjVuFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeDjVuFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSOfficeDjVuFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeDjVuFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -143,11 +143,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeDjVuFile.tlb"
-				HeaderFileName="AVSOfficeDjVuFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeDjVuFile.tlb"
+				HeaderFileName="ASCOfficeDjVuFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeDjVuFile_i.c"
-				ProxyFileName="AVSOfficeDjVuFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeDjVuFile_i.c"
+				ProxyFileName="ASCOfficeDjVuFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -177,15 +177,15 @@
 				AdditionalDependencies="comsvcs.lib comsuppw.lib Msimg32.lib"
 				OutputFile="Release\$(ProjectName).dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories=".\..\Common\AvsDocxFormat\Lib\Release; ..\AVSOfficeUtils\ZLIB\zlib123dll\static32"
+				AdditionalLibraryDirectories=".\..\Common\ASCDocxFormat\Lib\Release; ..\ASCOfficeUtils\ZLIB\zlib123dll\static32"
 				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSOfficeDjVuFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeDjVuFile.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficeDjVuFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeDjVuFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -212,7 +212,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\Redist\AVSOfficeStudio&quot;&#x0D;&#x0A;"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\Redist&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -244,11 +244,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeDjVuFile.tlb"
-				HeaderFileName="AVSOfficeDjVuFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeDjVuFile.tlb"
+				HeaderFileName="ASCOfficeDjVuFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeDjVuFile_i.c"
-				ProxyFileName="AVSOfficeDjVuFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeDjVuFile_i.c"
+				ProxyFileName="ASCOfficeDjVuFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -278,15 +278,15 @@
 				AdditionalDependencies="comsvcs.lib comsuppw.lib Msimg32.lib"
 				OutputFile="Release\ASCOfficeDjVuFile.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories=".\..\Common\AvsDocxFormat\Lib\Release; ..\AVSOfficeUtils\ZLIB\zlib123dll\static32"
+				AdditionalLibraryDirectories=".\..\Common\ASCDocxFormat\Lib\Release; ..\ASCOfficeUtils\ZLIB\zlib123dll\static32"
 				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSOfficeDjVuFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeDjVuFile.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficeDjVuFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeDjVuFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -326,14 +326,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSOfficeDjVuFile.cpp"
+				RelativePath=".\ASCOfficeDjVuFile.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -341,7 +341,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -349,7 +349,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 			</File>
@@ -361,7 +361,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -369,7 +369,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -377,7 +377,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 			</File>
@@ -390,7 +390,7 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -399,7 +399,7 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -408,7 +408,7 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"
-						ObjectFile="$(IntDir)\Avs\"
+						ObjectFile="$(IntDir)\ASC\"
 					/>
 				</FileConfiguration>
 			</File>
@@ -457,11 +457,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficeDjVuFile.rc"
+				RelativePath=".\ASCOfficeDjVuFile.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeDjVuFile.rgs"
+				RelativePath=".\ASCOfficeDjVuFile.rgs"
 				>
 			</File>
 		</Filter>

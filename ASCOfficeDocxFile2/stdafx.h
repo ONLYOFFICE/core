@@ -50,14 +50,14 @@
 using namespace ATL;
 #include "../Common/ASCUtils.h"
 
-#include "../../../../AVSImageStudio3/AVSGraphics/Interfaces/AVSRenderer.h"
-#import "../../../../../Redist/AVSMediaCore3.dll"		named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
-#import "../../../../../Redist/AVSImageStudio3.dll"	named_guids raw_interfaces_only rename_namespace("AVSImageStudio")
-#import "../../../../../Redist/AVSOfficeStudio/AVSFontConverter.dll"	named_guids raw_interfaces_only rename_namespace("Fonts")
+#include "../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
+#import "../Redist/ASCMediaCore3.dll"		named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
+#import "../Redist/ASCImageStudio3.dll"	named_guids raw_interfaces_only rename_namespace("AVSImageStudio")
+#import "../Redist/ASCFontConverter.dll"	named_guids raw_interfaces_only rename_namespace("Fonts")
 #import "../../../../../Redist/AVSOfficeStudio/AVSOfficePPTXFile.dll"	raw_interfaces_only rename_namespace("PPTXFile")
 
 #ifdef SOLUTION_ASCOFFICEDOCXFILE2
-#import "../../../../../Redist\AVSGraphics.dll"		named_guids raw_interfaces_only rename_namespace("AVSGraphics")//, exclude(IAVSRenderer)
+#import "../Redist/ASCGraphics.dll"		named_guids raw_interfaces_only rename_namespace("AVSGraphics")//, exclude(IAVSRenderer)
 #endif
 
 #include "../Common/DocxFormat/Source/DocxFormat/Docx.h"

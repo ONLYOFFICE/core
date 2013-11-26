@@ -1,9 +1,9 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by AVSOfficeDocxRenderer.rc
+// Used by ASCOfficeDocxRenderer.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_AVSOFFICEDOCXRENDERER       101
+#define IDR_ASCOFFICEDOCXRENDERER       101
 #define IDR_DOCUMENT1                   201
 
 // Next default values for new objects

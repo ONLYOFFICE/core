@@ -1063,6 +1063,18 @@ struct ImageUtils
 {
 	static inline IUnknown* LoadImage(CString sFilePath)
 	{
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+		OfficeCore::IImageGdipFilePtr pImageFile;
+		pImageFile.CreateInstance(OfficeCore::CLSID_CImageGdipFile);
+
+		BSTR filename = sFilePath.AllocSysString();
+		pImageFile->OpenFile(filename);
+		SysFreeString(filename);
+
+		IUnknown* punkFrame = NULL;
+		pImageFile->get_Frame(&punkFrame);
+		return punkFrame;
+#else
 		ImageStudio::IImageTransforms* pTransform = NULL;
 		if (FAILED(CoCreateInstance(__uuidof(ImageStudio::ImageTransforms), NULL, CLSCTX_INPROC_SERVER, __uuidof(ImageStudio::IImageTransforms), (void**)(&pTransform))))
 			return NULL;
@@ -1124,6 +1136,7 @@ struct ImageUtils
 			return NULL;
 
 		return vImage.punkVal;
+#endif
 	}
 };
 

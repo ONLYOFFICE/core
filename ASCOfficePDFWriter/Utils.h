@@ -1014,8 +1014,62 @@ BOOL        GetFontFile (NSStructures::CFont *pFont, LPCTSTR lpszFontName, LPTST
 	return bResult;
 }
 
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+BOOL GetFontFile2(NSStructures::CFont *pFont, LPCTSTR lpszFontName, LPTSTR lpszDisplayName, int nDisplayNameSize, LPTSTR lpszFontFile, int nFontFileSize, BOOL *bBold, BOOL *bItalic, OfficeCore::IWinFonts *pFontManager = NULL)
+{
+	if ( pFontManager )
+	{
+		long lStyle = *bBold + 2 * *bItalic;
 
-BOOL        GetFontFile2(NSStructures::CFont *pFont, LPCTSTR lpszFontName, LPTSTR lpszDisplayName, int nDisplayNameSize, LPTSTR lpszFontFile, int nFontFileSize, BOOL *bBold, BOOL *bItalic, AVSGraphics::IAVSFontManager *pFontManager = NULL)
+		CString sParams;
+		sParams.Format( _T("<FontProperties><Name value='%s'/><Style bold='%d' italic='%d'/></FontProperties>"), lpszFontName, ( *bBold ? 1 : 0 ), ( *bItalic ? 1 : 0 ) );
+		BSTR bsParams = sParams.AllocSysString();
+		
+		BSTR bsFontName = NULL;
+		BSTR bsFontPath = NULL;
+		BSTR bsFontStyle = NULL;
+		LONG lIndex = 0;
+
+		if ( FAILED( pFontManager->raw_GetWinFontByParams( bsParams, &bsFontName, &bsFontPath, &bsFontStyle, &lIndex ) ) )
+		{
+			::SysFreeString( bsParams );
+			::SysFreeString( bsFontName );
+			::SysFreeString( bsFontPath );
+			::SysFreeString( bsFontStyle );
+			return FALSE;
+		}
+
+		::SysFreeString( bsParams );
+
+		::memset( lpszFontFile,    0x00, nFontFileSize    );
+		::memset( lpszDisplayName, 0x00, nDisplayNameSize );
+
+		_tcsncpy( lpszFontFile, bsFontPath, min( nFontFileSize - 1, wcslen( bsFontPath ) ) );
+		::SysFreeString( bsFontPath );
+
+		_tcsncpy( lpszDisplayName, bsFontName, min( nDisplayNameSize - 1, wcslen( bsFontName ) ) );
+		::SysFreeString( bsFontName );
+
+		// pFontManager->raw_GetAdditionalParam( _T("GetFontIndex"), &vTemp );
+
+		CString sStyle( bsFontStyle );
+		::SysFreeString( bsFontStyle );
+
+		if ( *bBold && -1 != sStyle.Find( _T("Bold") ) )
+			*bBold = FALSE;
+
+		if ( *bItalic && ( -1 != sStyle.Find( _T("Italic") ) || -1 != sStyle.Find( _T("Oblique") ) ) )
+			*bItalic = FALSE;
+
+		return TRUE;
+	}
+	else
+	{
+		return GetFontFile( pFont, lpszFontName, lpszDisplayName, nDisplayNameSize, lpszFontFile, nFontFileSize, bBold, bItalic );
+	}
+}
+#else
+BOOL GetFontFile2(NSStructures::CFont *pFont, LPCTSTR lpszFontName, LPTSTR lpszDisplayName, int nDisplayNameSize, LPTSTR lpszFontFile, int nFontFileSize, BOOL *bBold, BOOL *bItalic, AVSGraphics::IAVSFontManager *pFontManager = NULL)
 {
 	if ( pFontManager )
 	{
@@ -1086,6 +1140,7 @@ BOOL        GetFontFile2(NSStructures::CFont *pFont, LPCTSTR lpszFontName, LPTST
 		return GetFontFile( pFont, lpszFontName, lpszDisplayName, nDisplayNameSize, lpszFontFile, nFontFileSize, bBold, bItalic );
 	}
 }
+#endif
 //-----------------------------------------------------------------------------------------------------
 //  CRC 32
 //-----------------------------------------------------------------------------------------------------

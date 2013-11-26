@@ -3,7 +3,7 @@
 #include <float.h>
 #include <atlstr.h>
 #include <atlcoll.h>
-#include <atldefine.h>
+#include "../Common/atldefine.h"
 
 #include "Utils.h"
 #include "Objects.h"

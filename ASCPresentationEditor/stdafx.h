@@ -54,16 +54,16 @@ using namespace Gdiplus;
 #define _PRESENTATION_WRITER_
 
 #include "../Common/OfficeFileTemplate.h"
-#include "../../AVSImageStudio3/AVSGraphics/Interfaces/AVSRenderer.h"
+#include "../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
 
-#import "../../../../AVS/Redist/AVSMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")
-#import "../../../../AVS/Redist/AVSImageFile3.dll"				named_guids rename_namespace("ImageFile")
-#import "../../../../AVS/Redist/AVSVideoFile3.dll"				named_guids rename_namespace("VideoFile"), raw_interfaces_only
-#import "../../../../AVS/Redist/AVSGraphics.dll"				named_guids rename_namespace("AVSGraphics"), raw_interfaces_only, exclude("IAVSRenderer")
-#import "../../../../AVS/Redist/AVSOfficeStudio/AVSHTMLRenderer.dll"			named_guids rename_namespace("HTMLRenderer"), raw_interfaces_only, exclude("IAVSRenderer")
+#import "../Redist/ASCMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")
+#import "../Redist/ASCImageFile3.dll"				named_guids rename_namespace("ImageFile")
+#import "../Redist/ASCVideoFile3.dll"				named_guids rename_namespace("VideoFile"), raw_interfaces_only
+#import "../Redist/ASCGraphics.dll"				named_guids rename_namespace("AVSGraphics"), raw_interfaces_only, exclude("IAVSRenderer")
+#import "../Redist/ASCHTMLRenderer.dll"			named_guids rename_namespace("HTMLRenderer"), raw_interfaces_only, exclude("IAVSRenderer")
 
-#import "../../../../AVS/Redist/AVSOfficeStudio\AVSOfficePPTFile.dll"	named_guids rename_namespace("PPTFile"),  raw_interfaces_only, exclude("IAVSOfficeFileTemplate", "_IAVSOfficeFileTemplateEvents", "_IAVSOfficeFileTemplateEvents2", "IAVSOfficeFile") 
-#import "../../../../AVS/Redist/AVSOfficeStudio\AVSOfficePPTXFile.dll"	named_guids rename_namespace("PPTXFile"), raw_interfaces_only, exclude("IAVSOfficeFileTemplate", "_IAVSOfficeFileTemplateEvents", "_IAVSOfficeFileTemplateEvents2", "IAVSOfficeFile")
-#import "../../../../AVS/Redist/AVSOfficeStudio\AVSOfficeOdpFile.dll"	named_guids rename_namespace("ODPFile"),  raw_interfaces_only, exclude("IAVSOfficeFileTemplate", "_IAVSOfficeFileTemplateEvents", "_IAVSOfficeFileTemplateEvents2", "IAVSOfficeFile") 
-#import "../../../../AVS/Redist/AVSOfficeStudio\AVSOfficePDFWriter.dll"	named_guids rename_namespace("PDFFile"),  raw_interfaces_only, exclude("IAVSRenderer")
+#import "../Redist/ASCOfficePPTFile.dll"	named_guids rename_namespace("PPTFile"),  raw_interfaces_only, exclude("IAVSOfficeFileTemplate", "_IAVSOfficeFileTemplateEvents", "_IAVSOfficeFileTemplateEvents2", "IAVSOfficeFile") 
+#import "../Redist/ASCOfficePPTXFile.dll"	named_guids rename_namespace("PPTXFile"), raw_interfaces_only, exclude("IAVSOfficeFileTemplate", "_IAVSOfficeFileTemplateEvents", "_IAVSOfficeFileTemplateEvents2", "IAVSOfficeFile")
+#import "../Redist/ASCOfficeOdpFile.dll"	named_guids rename_namespace("ODPFile"),  raw_interfaces_only, exclude("IAVSOfficeFileTemplate", "_IAVSOfficeFileTemplateEvents", "_IAVSOfficeFileTemplateEvents2", "IAVSOfficeFile") 
+#import "../Redist/ASCOfficePDFWriter.dll"	named_guids rename_namespace("PDFFile"),  raw_interfaces_only, exclude("IAVSRenderer")
 

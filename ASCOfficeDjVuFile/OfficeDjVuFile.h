@@ -70,7 +70,7 @@ class ATL_NO_VTABLE CDjVuFile : public IDjVuFile, public IAVSOfficePages
 {
 private:
 	CString m_strTempDirectory;
-	AVSGraphics::IAVSDocumentRenderer* m_pDocumentRenderer;
+	AVSGraphics::IASCDocumentRenderer* m_pDocumentRenderer;
 	//OfficeEditor::IAVSCommandsRenderer* m_pDocumentRenderer;
 	NSImage::CImage m_oImage;
 

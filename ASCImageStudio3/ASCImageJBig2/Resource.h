@@ -1,10 +1,10 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by AVSImageJBig2.rc
+// Used by ASCImageJBig2.rc
 //
 
 #define IDS_PROJNAME                    100
-#define IDR_AVSIMAGEJBIG2	101
+#define IDR_ASCIMAGEJBIG2	101
 
 // Next default values for new objects
 // 

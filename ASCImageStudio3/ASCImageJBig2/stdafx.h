@@ -43,5 +43,5 @@
 
 using namespace ATL;
 
-#import "../../../../AVS/Redist/AVSMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")
-#import "../../../../AVS/Redist/AVSMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
+#import "../../Redist/ASCMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")
+#import "../../Redist/ASCMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat"), exclude("tagRECT")

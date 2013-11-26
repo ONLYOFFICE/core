@@ -425,6 +425,10 @@
 				Name="Renderers"
 				>
 				<File
+					RelativePath=".\Interfaces\ASCDocumentRenderer.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\ASCGdiplusRenderer.h"
 					>
 				</File>
@@ -486,18 +490,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\XmlConst.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Animation"
-				>
-				<File
-					RelativePath=".\Interfaces\IAnimationLayer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ISStream.h"
 					>
 				</File>
 			</Filter>

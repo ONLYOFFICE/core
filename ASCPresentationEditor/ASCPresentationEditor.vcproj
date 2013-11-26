@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="AVSPresentationEditor"
+	Name="ASCPresentationEditor"
 	ProjectGUID="{61BE1BAC-A599-48FF-B44E-097C9D2DF0E9}"
 	Keyword="AtlProj"
 	TargetFrameworkVersion="131072"
@@ -42,17 +42,17 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSPresentationEditor.tlb"
-				HeaderFileName="AVSPresentationEditor.h"
+				TypeLibraryName="$(IntDir)/ASCPresentationEditor.tlb"
+				HeaderFileName="ASCPresentationEditor.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSPresentationEditor_i.c"
-				ProxyFileName="AVSPresentationEditor_p.c"
+				InterfaceIdentifierFileName="ASCPresentationEditor_i.c"
+				ProxyFileName="ASCPresentationEditor_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\AVSPresentationEditor"
+				AdditionalIncludeDirectories="..\ASCPresentationEditor"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -79,7 +79,7 @@
 				RegisterOutput="true"
 				IgnoreImportLibrary="true"
 				LinkIncremental="2"
-				MergedIDLBaseFileName="_AVSPresentationEditor.idl"
+				MergedIDLBaseFileName="_ASCPresentationEditor.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
@@ -138,17 +138,17 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSPresentationEditor.tlb"
-				HeaderFileName="AVSPresentationEditor.h"
+				TypeLibraryName="$(IntDir)/ASCPresentationEditor.tlb"
+				HeaderFileName="ASCPresentationEditor.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSPresentationEditor_i.c"
-				ProxyFileName="AVSPresentationEditor_p.c"
+				InterfaceIdentifierFileName="ASCPresentationEditor_i.c"
+				ProxyFileName="ASCPresentationEditor_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\AVSPresentationEditor"
+				AdditionalIncludeDirectories="..\ASCPresentationEditor"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -174,7 +174,7 @@
 				RegisterOutput="true"
 				IgnoreImportLibrary="true"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSPresentationEditor.idl"
+				MergedIDLBaseFileName="_ASCPresentationEditor.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -204,7 +204,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\Redist\AVSOfficeStudio&quot;&#x0D;&#x0A;"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\Redist&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -217,7 +217,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSPresentationEditor.cpp"
+				RelativePath=".\ASCPresentationEditor.cpp"
 				>
 			</File>
 			<File
@@ -247,7 +247,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\AVSPresentationEditor.h"
+				RelativePath=".\ASCPresentationEditor.h"
 				>
 			</File>
 			<File
@@ -269,11 +269,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSPresentationEditor.rc"
+				RelativePath=".\ASCPresentationEditor.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSPresentationEditor.rgs"
+				RelativePath=".\ASCPresentationEditor.rgs"
 				>
 			</File>
 		</Filter>

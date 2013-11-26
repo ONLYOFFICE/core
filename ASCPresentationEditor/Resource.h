@@ -1,10 +1,10 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by AVSPresentationEditor.rc
+// Used by ASCPresentationEditor.rc
 //
 
 #define IDS_PROJNAME                    100
-#define IDR_AVSPRESENTATIONEDITOR		101
+#define IDR_ASCPRESENTATIONEDITOR		101
 
 #define IDB_XML_NOTESTHEME				201
 #define IDB_XML_NOTESMASTER				202

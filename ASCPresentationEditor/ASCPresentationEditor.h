@@ -1,4 +1,4 @@
-// CAVSPresentationEditor.h : Declaration of the CAVSOfficeViewer
+// CASCPresentationEditor.h : Declaration of the CASCOfficeViewer
 #pragma once
 #include "stdafx.h"
 #include "resource.h"       // main symbols

@@ -2,7 +2,7 @@
 //
 #include "resource.h"
 #define COMPONENT_NAME "PresentationEditor"
-#include "../../../../Common/FileInfo.h"
+#include "../Common/FileInfo.h"
 #include "version.h"
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -91,10 +91,10 @@ END
 
 STRINGTABLE  
 BEGIN
-	IDS_PROJNAME					"AVSPresentationEditor"
+	IDS_PROJNAME					"ASCPresentationEditor"
 END
 
-IDR_AVSPRESENTATIONEDITOR REGISTRY "AVSPresentationEditor.rgs"
+IDR_ASCPRESENTATIONEDITOR REGISTRY "ASCPresentationEditor.rgs"
 ////////////////////////////////////////////////////////////////////////////
 
 

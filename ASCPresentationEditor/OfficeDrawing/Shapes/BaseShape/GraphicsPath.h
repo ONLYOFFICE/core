@@ -1,5 +1,5 @@
 #pragma once
-#include "..\..\..\..\..\AVSImageStudio3\AVSGraphics\Interfaces\AVSRenderer.h"
+#include "../../../../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
 
 #include "..\..\Metric.h"
 #include "..\..\Attributes.h"
@@ -142,7 +142,7 @@ namespace NSPresentationEditor
 			InternalClear();
 		}
 
-		virtual void Draw(IAVSRenderer* pRenderer)
+		virtual void Draw(IASCRenderer* pRenderer)
 		{
 			if (NULL == pRenderer)
 				return;
@@ -180,7 +180,7 @@ namespace NSPresentationEditor
 			pRenderer->PathCommandEnd();
 			pRenderer->EndCommand(c_nPathType);
 		}
-		void ConvertVector(IAVSRenderer* pRenderer)
+		void ConvertVector(IASCRenderer* pRenderer)
 		{
 			pRenderer->SetCommandParams(m_dAngle, m_oBounds.left, m_oBounds.top, m_oBounds.GetWidth(), m_oBounds.GetHeight(), m_lFlags);
 
@@ -300,7 +300,7 @@ namespace NSPresentationEditor
 				};
 			}
 
-			void CheckLastPoint(IAVSRenderer* pRenderer, CDoublePoint& pointCur)
+			void CheckLastPoint(IASCRenderer* pRenderer, CDoublePoint& pointCur)
 			{
 				if (NULL == pRenderer)
 					return;
@@ -445,7 +445,7 @@ namespace NSPresentationEditor
 			}
 
 
-			void GetSafearrayPoints(IAVSRenderer* pRenderer, SAFEARRAY** ppArray, CDoublePoint& pointCur, BOOL bR = FALSE)
+			void GetSafearrayPoints(IASCRenderer* pRenderer, SAFEARRAY** ppArray, CDoublePoint& pointCur, BOOL bR = FALSE)
 			{
 				if (NULL == ppArray)
 					return;
@@ -497,7 +497,7 @@ namespace NSPresentationEditor
 				*ppArray = pArray;
 			}
 
-			void Draw(IAVSRenderer* pRenderer, CDoublePoint& pointCur)
+			void Draw(IASCRenderer* pRenderer, CDoublePoint& pointCur)
 			{
 				switch (m_eType)
 				{
@@ -791,7 +791,7 @@ namespace NSPresentationEditor
 				};
 			}
 
-			inline void AddEllipticalQuadr(IAVSRenderer*& pRenderer, bool& bIsX, double& x1, double& y1, double& x2, double& y2, double& dRadX, double& dRadY)
+			inline void AddEllipticalQuadr(IASCRenderer*& pRenderer, bool& bIsX, double& x1, double& y1, double& x2, double& y2, double& dRadX, double& dRadY)
 			{
 				if (bIsX)
 				{

@@ -352,7 +352,7 @@ public:
 		return strImageTransform;
 	}
 
-	void ToRenderer(IAVSRenderer* pRenderer, CGeomShapeInfo& oGeomInfo, CMetricInfo& pInfo, double dStartTime, double dEndTime)
+	void ToRenderer(IASCRenderer* pRenderer, CGeomShapeInfo& oGeomInfo, CMetricInfo& pInfo, double dStartTime, double dEndTime)
 	{
 		oGeomInfo.m_dLimoX = m_lLimoX;
 		oGeomInfo.m_dLimoY = m_lLimoY;

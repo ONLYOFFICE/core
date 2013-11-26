@@ -500,7 +500,7 @@ public:
 
 		return m_oPath.ToXml(GeomInfo, StartTime, EndTime, Pen, Brush, MetricInfo, NSBaseShape::pptx);
 	}
-	virtual void ToRenderer(IAVSRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo)
+	virtual void ToRenderer(IASCRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo)
 	{
 		FManager.SetWidthHeight(pGeomInfo.m_dWidth, pGeomInfo.m_dHeight);
 		ReCalculate();

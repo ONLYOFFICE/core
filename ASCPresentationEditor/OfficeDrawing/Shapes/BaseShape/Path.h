@@ -1946,7 +1946,7 @@ namespace NSPresentationEditor
 			return strResult;
 		}
 
-		void ToRenderer(IAVSRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, double dStartTime, 
+		void ToRenderer(IASCRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, double dStartTime, 
 			double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo, NSBaseShape::ClassType ClassType)
 		{
 			CGraphicPath oPath;

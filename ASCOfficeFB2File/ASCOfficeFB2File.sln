@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSOfficeFB2File", "AVSOfficeFB2File\AVSOfficeFB2File.vcproj", "{84A86D26-5F0F-431F-97DD-AA10E62973B4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeFB2File", "ASCOfficeFB2File\ASCOfficeFB2File.vcproj", "{84A86D26-5F0F-431F-97DD-AA10E62973B4}"
 	ProjectSection(ProjectDependencies) = postProject
 		{3D32C752-7DE4-461E-AA77-06BCF9B1E4FD} = {3D32C752-7DE4-461E-AA77-06BCF9B1E4FD}
 	EndProjectSection

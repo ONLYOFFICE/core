@@ -2,13 +2,14 @@
 #include "OfficeSvmFile.h"
 #include "ATLDefine.h"
 
-#ifdef USE_IMAGESTIDIO
+#define USE_IMAGESTUDIO
+#ifdef USE_IMAGESTUDIO
 #import "../../../Redist/ASCImageStudio3.dll"		rename_namespace("ImageStudio")
 #endif
 
 void ConvertSvmToImage( const boost::filesystem::wpath & oSource, const boost::filesystem::wpath & oDestination )
 {
-#ifdef USE_IMAGESTIDIO
+#ifdef USE_IMAGESTUDIO
 	std::wstring sXmlExt = L"";
 	std::wstring sExt = oDestination.extension();
 	std::transform( sExt.begin(), sExt.end(), sExt.begin(), tolower);

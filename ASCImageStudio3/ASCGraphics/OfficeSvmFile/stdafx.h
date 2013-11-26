@@ -11,6 +11,6 @@
 #include <tchar.h>
 
 
-//#define USE_IMAGESTIDIO
+#define USE_IMAGESTUDIO
 
 // TODO: reference additional headers your program requires here

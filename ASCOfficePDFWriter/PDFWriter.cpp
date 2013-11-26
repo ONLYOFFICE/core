@@ -4,7 +4,7 @@
 HRESULT CPDFWriter::OnlineWordToPdf (BSTR sPathXml, BSTR sDstFile, BSTR sHtmlPlace, LONG nReg)
 {
 	using namespace NOnlineOfficeBinToPdf;
-	bool hRes = S_OK;
+	HRESULT hRes = S_OK;
 
 	NOnlineOfficeBinToPdf::CommandType eCommand = NOnlineOfficeBinToPdf::ctError;
 	CString sTempLogo;
@@ -14,6 +14,11 @@ HRESULT CPDFWriter::OnlineWordToPdf (BSTR sPathXml, BSTR sDstFile, BSTR sHtmlPla
 	try
 	{
 		hRes = CoCreateInstance (AVSGraphics::CLSID_CAVSWinFonts, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSWinFonts, (void **) &piWinFonts);
+
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+		piWinFonts->Init(L"", TRUE, TRUE);
+#endif
+
 		if (S_OK != hRes)
 			throw "Can't create IAVSWinFonts object!";
 

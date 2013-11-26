@@ -51,7 +51,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\AVSVideoStudio3\Common;..\..\AVSOfficeStudio\AVSOfficePDFWriter\Zlib;..\..\AVSImageStudio3\AVSGraphics\Objects\Font\FreeType"
+				AdditionalIncludeDirectories="../OfficeCore/Fonts/FreeType"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -122,7 +122,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\..\AVS\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
+				CommandLine="..\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -147,7 +147,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\AVSVideoStudio3\Common;..\..\AVSOfficeStudio\AVSOfficePDFWriter\Zlib;..\..\AVSImageStudio3\AVSGraphics\Objects\Font\FreeType"
+				AdditionalIncludeDirectories="../OfficeCore/Fonts/FreeType"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"

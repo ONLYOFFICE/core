@@ -1086,6 +1086,9 @@ ImageDict LoadRawImageFromMem  (Doc pPDF, const BYTE *pBuffer,   unsigned int nW
 }
 ImageDict LoadJbig2ImageFromInt(Doc pPDF, IUnknown **pInterface, unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, BOOL bAlpha = FALSE, const BYTE *pAlphaBuffer = NULL, unsigned int unAlphaCheckSum = 0)
 {
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+	return NULL;
+#else
 	ImageDict pImage = NULL;
 
 	if ( !(HasDoc(pPDF)) )
@@ -1125,6 +1128,7 @@ ImageDict LoadJbig2ImageFromInt(Doc pPDF, IUnknown **pInterface, unsigned int nW
 #endif
 
 	return pImage;
+#endif
 }
 ImageDict LoadJpegImageFromFile(Doc pPDF, const wchar_t *wsFileName)
 {
@@ -1173,6 +1177,9 @@ ImageDict LoadJpxImageFromFile (Doc pPDF, const wchar_t *wsFileName, long nOpaci
 }
 ImageDict LoadJpxImageFromMem  (Doc pPDF, const BYTE *pBuffer,   unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, BOOL bAlpha = FALSE, const BYTE *pAlphaBuffer = NULL, unsigned int unAlphaCheckSum = 0)
 {
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+	return NULL;
+#else
     if ( !HasDoc( pPDF ))
         return NULL;
 
@@ -1319,6 +1326,7 @@ ImageDict LoadJpxImageFromMem  (Doc pPDF, const BYTE *pBuffer,   unsigned int nW
 #endif
 
     return pImage;
+#endif
 }
 ImageDict LoadJpegImageFromMem (Doc pPDF, const BYTE *pBuffer,   unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, BOOL bAlpha = FALSE, const BYTE *pAlphaBuffer = NULL, unsigned int unAlphaCheckSum = 0)
 {
@@ -1372,6 +1380,15 @@ ImageDict LoadJpegImageFromMem (Doc pPDF, const BYTE *pBuffer,   unsigned int nW
 		return NULL;
 	}
 
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+	OfficeCore::IImageGdipFilePtr pImageFile;
+	pImageFile.CreateInstance(OfficeCore::CLSID_CImageGdipFile);
+
+	pImageFile->put_Frame((IUnknown*)pInterface);
+	BSTR bsTempFile = ::SysAllocString( wsTempFile );
+	pImageFile->SaveFile(bsTempFile, 3); 
+	SysFreeString(bsTempFile);
+#else
 	// Записываем во временный файл картинку в формате Jpx
 	ImageFile::IImageFile3 *pImageFile = NULL;
 	::CoCreateInstance( __uuidof( ImageFile::ImageFile3 ), NULL, CLSCTX_ALL, __uuidof( ImageFile::IImageFile3 ), (void**)&pImageFile );
@@ -1387,6 +1404,7 @@ ImageDict LoadJpegImageFromMem (Doc pPDF, const BYTE *pBuffer,   unsigned int nW
 
 	RELEASEINTERFACE( pInterface );
 	RELEASEINTERFACE( pImageFile );
+#endif
 
 	if ( bAlpha )
 	{

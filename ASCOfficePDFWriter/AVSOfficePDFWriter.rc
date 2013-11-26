@@ -1,7 +1,7 @@
 //Microsoft Visual C++ generated resource script.
 //
 #define COMPONENT_NAME "OfficePDFWriter"
-#include "../../../../Common/FileInfo.h"
+#include "../Common/FileInfo.h"
 #include "version.h"
 #include "resource.h"
 

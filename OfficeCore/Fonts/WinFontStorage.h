@@ -1,5 +1,5 @@
 #pragma once
-#include "../../AVSVideoStudio3/Common/ShareMemArray.h"
+#include "../../Common/ShareMemArray.h"
 
 // Идентификаторы хранилищ
 #define ISID_DEFAULT                 0x0000 // По умолчанию

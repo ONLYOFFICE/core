@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual C++ Express 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSOfficePDFWriter", "AVSOfficePDFWriter_vs2005.vcproj", "{FD508B11-154E-491B-BA4A-EA81978955EF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficePDFWriter", "ASCOfficePDFWriter_vs2005.vcproj", "{FD508B11-154E-491B-BA4A-EA81978955EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

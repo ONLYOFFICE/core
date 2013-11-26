@@ -1069,7 +1069,7 @@ BOOL GetFontFile2(NSStructures::CFont *pFont, LPCTSTR lpszFontName, LPTSTR lpszD
 	}
 }
 #else
-BOOL GetFontFile2(NSStructures::CFont *pFont, LPCTSTR lpszFontName, LPTSTR lpszDisplayName, int nDisplayNameSize, LPTSTR lpszFontFile, int nFontFileSize, BOOL *bBold, BOOL *bItalic, AVSGraphics::IAVSFontManager *pFontManager = NULL)
+BOOL GetFontFile2(NSStructures::CFont *pFont, LPCTSTR lpszFontName, LPTSTR lpszDisplayName, int nDisplayNameSize, LPTSTR lpszFontFile, int nFontFileSize, BOOL *bBold, BOOL *bItalic, AVSGraphics::IASCFontManager *pFontManager = NULL)
 {
 	if ( pFontManager )
 	{

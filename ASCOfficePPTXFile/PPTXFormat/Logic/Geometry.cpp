@@ -3,14 +3,13 @@
 #ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 
 #include "Geometry.h"
-#include "../../../AVSPresentationEditor/OfficeDrawing/Elements.h"
-#include "../../ConverterAdvanced/Structures.h"
+#include "../../../ASCPresentationEditor/OfficeDrawing/Elements.h"
 
 namespace PPTX
 {
 	namespace Logic
 	{
-		void Geometry::ConvertToCustomVML(IAVSRenderer* pOOXToVMLRenderer, CString& strPath, CString& strRect, LONG& lWidth, LONG& lHeight)
+		void Geometry::ConvertToCustomVML(IASCRenderer* pOOXToVMLRenderer, CString& strPath, CString& strRect, LONG& lWidth, LONG& lHeight)
 		{
 			NSPresentationEditor::CShapeElement* lpShapeElement = NULL;
 			if (this->is<PPTX::Logic::PrstGeom>())

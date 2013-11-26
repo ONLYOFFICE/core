@@ -5,7 +5,6 @@
 #include "resource.h"       // main symbols
 
 #include "../Common/OfficeFileTemplate.h"
-#include "../Common/RSA/XMLEncoder.h"
 
 #include "PPTXFormat/PPTXEvent.h"
 #include "../../../../Common/GdiPlusEx.h"
@@ -19,8 +18,6 @@
 #ifdef __USE_SIMPLE_PPTX_CONVERTER_
 #include "ConverterSimple\ConverterSimpleHeader.h"
 #endif
-
-#include "ConverterAdvanced\Converter.h"
 #include "Editor\PPTXWriter.h"
 
 #import "..\..\..\Redist\AVSOfficeStudio\AVSOfficeUtils.dll" raw_interfaces_only
@@ -70,10 +67,6 @@ private:
 	PPTX::Folder*					m_pFolder;
 	CStringW						m_strTempDir;
 	CString							m_strDirectory;
-
-	NSPresentationEditor::CDocument	m_oDocument;
-
-	CXMLEncoder m_oEncoder;
 
 	// writer to ppty
 	CString		m_strFontDirectory;
@@ -192,8 +185,6 @@ public:
 		if (-1 != nIndex)
 			m_strDirectory = m_strDirectory.Mid(0, nIndex);
 
-		PPTX2EditorAdvanced::Convert(*m_pFolder, m_oDocument, m_strDirectory);
-
 		return S_OK;
 	}
 public:
@@ -242,19 +233,6 @@ public:
 		if ((NULL == m_pFolder) || (NULL == pVal))
 			return S_FALSE;
 
-		CString xml = m_oDocument.ToXmlVideoSource2();
-
-		#ifdef _DEBUG
-		m_oDocument.SaveThemeThumbnail(m_strTempDir, 180, 135, false);
-		CString xml2 = m_oDocument.ToXmlEditor2();
-
-		XmlUtils::SaveToFile(_T("C:\\pptx_editor.xml"), xml2);
-		XmlUtils::SaveToFile(_T("C:\\VideoSourcePPTX.xml"), xml);
-		#endif
-
-		CStringA str = m_oEncoder.EncryptXML(xml);
-		*pVal = str.AllocSysString();
-
 		return S_OK;
 	}
 
@@ -274,24 +252,6 @@ public:
 		if (NULL == ParamValue)
 			return S_FALSE;
 
-		CString sParamName; sParamName = ParamName;
-		if (g_csBlowfishKeyParamName == sParamName)
-		{		
-			ParamValue->punkVal = m_oEncoder.GetBlowfishKey();
-			return S_OK;
-		}		
-		if (_T("EditorXml") == sParamName)
-		{		
-			CString xml = m_oDocument.ToXmlEditor2();
-			if (TRUE)
-				m_oDocument.SaveThemeThumbnail(m_strTempDir, 180, 135, false);
-		
-			ParamValue->bstrVal = xml.AllocSysString();
-
-			#ifdef _DEBUG
-			XmlUtils::SaveToFile(_T("C:\\pptx_editor.xml"), xml);
-			#endif
-		}
 		return S_OK;
 	}
 

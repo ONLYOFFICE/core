@@ -341,7 +341,7 @@ namespace PPTX
 			};
 
 #ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
-			void ConvertToCustomVML(IAVSRenderer* punkRenderer, CString& strPath, CString& strRect, LONG& lWidth, LONG& lHeight);
+			void ConvertToCustomVML(IASCRenderer* punkRenderer, CString& strPath, CString& strRect, LONG& lWidth, LONG& lHeight);
 #endif
 		};
 	} // namespace Logic

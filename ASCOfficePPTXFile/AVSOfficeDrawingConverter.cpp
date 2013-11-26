@@ -14,10 +14,10 @@
 #include "./PPTXFormat/Logic/Colors/SysClr.h"
 
 #include "./PPTXFormat/DocxFormat/Media/Image.h"
-#include "../AVSPresentationEditor/OfficeDrawing/Elements.h"
+#include "../ASCPresentationEditor/OfficeDrawing/Elements.h"
 
-#include "../AVSPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTXShape/pptx2pptshapeconverter.h"
-#include "./ConverterAdvanced/Structures.h"
+#include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTXShape/pptx2pptshapeconverter.h"
+#include "PPTXFormat/PPTX.h"
 
 const double g_emu_koef	= 25.4 * 36000 / 72.0;
 
@@ -2652,13 +2652,16 @@ HRESULT CAVSOfficeDrawingConverter::SaveObject(SAFEARRAY* pBinaryObj, LONG lStar
 
 	oXmlWriter.m_bIsTop = (1 == m_nCurrentIndexObject) ? true : false;
 
+#ifdef BUILD_CONFIG_FULL_VERSION
 	if (NULL == m_pOOXToVMLRenderer)
 	{
-		CoCreateInstance(__uuidof(CAVSOOXToVMLGeometry), NULL, CLSCTX_ALL, __uuidof(IAVSRenderer), (void**)&m_pOOXToVMLRenderer);		
+		CoCreateInstance(__uuidof(CAVSOOXToVMLGeometry), NULL, CLSCTX_ALL, __uuidof(IASCRenderer), (void**)&m_pOOXToVMLRenderer);		
 	}
-	m_pOOXToVMLRenderer->QueryInterface(__uuidof(IAVSRenderer), (void**)(&(oXmlWriter.m_pOOXToVMLRenderer)));
+	m_pOOXToVMLRenderer->QueryInterface(__uuidof(IASCRenderer), (void**)(&(oXmlWriter.m_pOOXToVMLRenderer)));
+#endif
 	
 	BOOL bIsNeedConvert2007 = FALSE;
+#ifdef BUILD_CONFIG_FULL_VERSION
 	if (m_bIsUseConvertion2007)
 	{
 		if (oElem.is<PPTX::Logic::SpTree>())
@@ -2672,6 +2675,7 @@ HRESULT CAVSOfficeDrawingConverter::SaveObject(SAFEARRAY* pBinaryObj, LONG lStar
 			bIsNeedConvert2007 = TRUE;
 		}
 	}
+#endif
 
 	oXmlWriter.WriteString(_T("<w:drawing>"));
 	oXmlWriter.WriteString(strMainProps);

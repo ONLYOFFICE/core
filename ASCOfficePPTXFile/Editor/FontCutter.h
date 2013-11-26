@@ -79,7 +79,7 @@ namespace NSFontCutter
 			m_strEmbeddedFontsFolder = _T("");
 		}
 
-		void CheckFont(const CString& strName, AVSGraphics::IAVSFontManager* pManager)
+		void CheckFont(const CString& strName, ASCGraphics::IASCFontManager* pManager)
 		{
 			CAtlMap<CString, CEmbeddedFontInfo>::CPair* pPair = m_mapFontsEmbeddded.Lookup(strName);
 			if (NULL != pPair)
@@ -170,6 +170,7 @@ namespace NSFontCutter
 		template<typename T>
 		void WriteEmbeddedFonts(T* pWriter)
 		{
+#ifdef BUILD_CONFIG_FULL_VERSION
 			ULONG nCount = 0;
 			POSITION pos = m_mapFontsEmbeddded.GetStartPosition();
 			while (pos != NULL)
@@ -327,6 +328,7 @@ namespace NSFontCutter
 
 			RELEASEARRAY(pArrayUnicodes);
 			RELEASEINTERFACE(pFontConverter);
+#endif
 		}
 
 		SAFEARRAY* GenerateSafearray()
@@ -362,6 +364,7 @@ namespace NSFontCutter
 			return pArray;
 		}
 
+#ifdef BUILD_CONFIG_FULL_VERSION
 		void WriteFont(CString& strName, LONG& lFaceIndex, CString& strFontPath, CFile* pFile, SAFEARRAY* pArrayUnicodes, Fonts::IFontConverter* pFontConverter)
 		{	
 			LONG lFontConverterFlag = 16; // truetype only
@@ -396,6 +399,7 @@ namespace NSFontCutter
 
 			RELEASEARRAY(pArrayData);			
 		}
+#endif
 	};
 }
 

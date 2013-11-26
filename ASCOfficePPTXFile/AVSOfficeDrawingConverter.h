@@ -8,7 +8,7 @@
 #include "./PPTXFormat/Logic/SpTreeElem.h"
 
 #include "../Common/DocxFormat/Source/Common/SimpleTypes_Base.h"
-#include "../AVSPresentationEditor/OfficeDrawing/Shapes/Shape.h"
+#include "../ASCPresentationEditor/OfficeDrawing/Shapes/Shape.h"
 
 #include "./PPTXFormat/Logic/Geometry.h"
 
@@ -494,7 +494,7 @@ public:
 	NSBinPptxRW::CXmlWriter					m_oXmlWriter;
 	int										m_nCurrentIndexObject;
 
-	IAVSRenderer*							m_pOOXToVMLRenderer;
+	IASCRenderer*							m_pOOXToVMLRenderer;
 	BOOL									m_bIsUseConvertion2007;
 
 	NSCommon::smart_ptr<PPTX::WrapperFile>				m_oTheme;

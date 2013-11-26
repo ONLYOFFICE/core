@@ -241,7 +241,7 @@ namespace NSBinPptxRW
 		CString m_strStyleMain;
 		CString m_strAttributesMain;
 		CString m_strNodes;
-		IAVSRenderer* m_pOOXToVMLRenderer;
+		IASCRenderer* m_pOOXToVMLRenderer;
 		bool m_bIsTop;
 	
 	public:

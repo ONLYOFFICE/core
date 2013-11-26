@@ -404,11 +404,11 @@
 			Name="EditorSource"
 			>
 			<File
-				RelativePath="..\AVSPresentationEditor\OfficeDrawing\Shapes\BaseShape\BaseShape.cpp"
+				RelativePath="..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\BaseShape.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\AVSPresentationEditor\OfficeDrawing\Elements.cpp"
+				RelativePath="..\ASCPresentationEditor\OfficeDrawing\Elements.cpp"
 				>
 			</File>
 			<File
@@ -416,7 +416,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\AVSPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\Formula.cpp"
+				RelativePath="..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTXShape\Formula.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -447,99 +447,23 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\AVSPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTXShape\Formula.cpp"
+				RelativePath="..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\Formula.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\AVSPresentationEditor\OfficeDrawing\Layout.cpp"
+				RelativePath="..\ASCPresentationEditor\OfficeDrawing\Layout.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\AVSPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\PPTShape.cpp"
+				RelativePath="..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\PPTShape.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\AVSPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTXShape\PPTXShape.cpp"
+				RelativePath="..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTXShape\PPTXShape.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\AVSPresentationEditor\OfficeDrawing\TextAttributesEx.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\AVSPresentationEditor\OfficeDrawing\Theme.cpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="ConverterSimple"
-			>
-			<File
-				RelativePath=".\ConverterSimple\ConverterSimpleHeader.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="ConverterAdvanced"
-			>
-			<File
-				RelativePath=".\ConverterAdvanced\ColorConvert.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConverterAdvanced\Converter.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConverterAdvanced\FillToBrush.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConverterAdvanced\LayoutConvert.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConverterAdvanced\LnToPen.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PathHelpers.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConverterAdvanced\ShapeConvert.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConverterAdvanced\SlideConvert.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConverterAdvanced\Structures.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConverterAdvanced\TableConvert.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConverterAdvanced\TextParce.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConverterAdvanced\TextStyleConvert.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConverterAdvanced\ThemeConvert.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConverterAdvanced\TimingConvert.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConverterAdvanced\TransitionConvert.h"
+				RelativePath="..\ASCPresentationEditor\OfficeDrawing\TextAttributesEx.cpp"
 				>
 			</File>
 		</Filter>

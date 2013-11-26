@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual C++ Express 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSOfficeWSHtmlFile", "AVSOfficeWSHtmlFile\AVSOfficeWSHtmlFile2005.vcproj", "{84A86D26-5F0F-431F-97DD-AA10E62973B4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeWSHtmlFile", "ASCOfficeWSHtmlFile\ASCOfficeWSHtmlFile2005.vcproj", "{84A86D26-5F0F-431F-97DD-AA10E62973B4}"
 	ProjectSection(ProjectDependencies) = postProject
 		{88B68BC0-9F1B-4E11-8DB3-4F96A6629D94} = {88B68BC0-9F1B-4E11-8DB3-4F96A6629D94}
 	EndProjectSection

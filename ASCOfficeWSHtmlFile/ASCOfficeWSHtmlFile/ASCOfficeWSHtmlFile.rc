@@ -94,7 +94,7 @@ END
 // REGISTRY
 //
 
-IDR_AVSWSHTMLFILE       REGISTRY                "AVSOfficeWSHtmlFile.rgs"
+IDR_ASCWSHTMLFILE       REGISTRY                "ASCOfficeWSHtmlFile.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -103,7 +103,7 @@ IDR_AVSWSHTMLFILE       REGISTRY                "AVSOfficeWSHtmlFile.rgs"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSOfficeWSHtmlFile"
+    IDS_PROJNAME            "ASCOfficeWSHtmlFile"
 END
 
 #endif    // Russian resources

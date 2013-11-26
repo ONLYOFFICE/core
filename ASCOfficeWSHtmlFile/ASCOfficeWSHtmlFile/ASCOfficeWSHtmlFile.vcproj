@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="AVSOfficeWSHtmlFile"
+	Name="ASCOfficeWSHtmlFile"
 	ProjectGUID="{E83B5FA5-ACDD-46F5-8E35-B19F398C806D}"
-	RootNamespace="AVSXlsFile"
+	RootNamespace="ASCXlsFile"
 	Keyword="AtlProj"
 	TargetFrameworkVersion="196613"
 	>
@@ -44,11 +44,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeWSHtmlFile.tlb"
-				HeaderFileName="AVSOfficeWSHtmlFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeWSHtmlFile.tlb"
+				HeaderFileName="ASCOfficeWSHtmlFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeWSHtmlFile_i.c"
-				ProxyFileName="AVSOfficeWSHtmlFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeWSHtmlFile_i.c"
+				ProxyFileName="ASCOfficeWSHtmlFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -87,10 +87,10 @@
 				IgnoreDefaultLibraryNames=""
 				AddModuleNamesToAssembly=""
 				AssemblyLinkResource=""
-				MergedIDLBaseFileName="_AVSOfficeWSHtmlFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeWSHtmlFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSOfficeWSHtmlFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeWSHtmlFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -145,11 +145,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeWSHtmlFile.tlb"
-				HeaderFileName="AVSOfficeWSHtmlFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeWSHtmlFile.tlb"
+				HeaderFileName="ASCOfficeWSHtmlFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeWSHtmlFile_i.c"
-				ProxyFileName="AVSOfficeWSHtmlFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeWSHtmlFile_i.c"
+				ProxyFileName="ASCOfficeWSHtmlFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -177,7 +177,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="uafxcw.lib LIBCMT.lib HtmlConverter.res"
-				OutputFile="../../../../Redist/AVSOfficeStudio/$(ProjectName).dll"
+				OutputFile="../../Redist/ASCOfficeStudio/$(ProjectName).dll"
 				AdditionalLibraryDirectories="&quot;../HtmlConverter/lib/$(ConfigurationName)&quot;"
 				MidlCommandFile=""
 				IgnoreEmbeddedIDL="false"
@@ -216,7 +216,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSOfficeWSHtmlFile.cpp"
+				RelativePath=".\ASCOfficeWSHtmlFile.cpp"
 				>
 			</File>
 			<File
@@ -272,11 +272,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficeWSHtmlFile.rc"
+				RelativePath=".\ASCOfficeWSHtmlFile.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeWSHtmlFile.rgs"
+				RelativePath=".\ASCOfficeWSHtmlFile.rgs"
 				>
 			</File>
 		</Filter>

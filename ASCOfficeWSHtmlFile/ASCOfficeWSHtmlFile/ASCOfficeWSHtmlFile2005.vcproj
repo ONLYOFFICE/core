@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSOfficeWSHtmlFile"
+	Name="ASCOfficeWSHtmlFile"
 	ProjectGUID="{84A86D26-5F0F-431F-97DD-AA10E62973B4}"
-	RootNamespace="AVSXlsFile"
+	RootNamespace="ASCXlsFile"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -43,11 +43,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeWSHtmlFile.tlb"
-				HeaderFileName="AVSOfficeWSHtmlFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeWSHtmlFile.tlb"
+				HeaderFileName="ASCOfficeWSHtmlFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeWSHtmlFile_i.c"
-				ProxyFileName="AVSOfficeWSHtmlFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeWSHtmlFile_i.c"
+				ProxyFileName="ASCOfficeWSHtmlFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -86,10 +86,10 @@
 				IgnoreDefaultLibraryNames=""
 				AddModuleNamesToAssembly=""
 				AssemblyLinkResource=""
-				MergedIDLBaseFileName="_AVSOfficeWSHtmlFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeWSHtmlFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSOfficeWSHtmlFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeWSHtmlFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -131,7 +131,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\..\Redist\VersionControl.exe version.h"
+				CommandLine="..\..\Redist\VersionControl.exe version.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -148,11 +148,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeWSHtmlFile.tlb"
-				HeaderFileName="AVSOfficeWSHtmlFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeWSHtmlFile.tlb"
+				HeaderFileName="ASCOfficeWSHtmlFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeWSHtmlFile_i.c"
-				ProxyFileName="AVSOfficeWSHtmlFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeWSHtmlFile_i.c"
+				ProxyFileName="ASCOfficeWSHtmlFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -180,7 +180,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="uafxcw.lib LIBCMT.lib HtmlConverter.res"
-				OutputFile="../../../../Redist/AVSOfficeStudio/$(ProjectName).dll"
+				OutputFile="../../Redist/ASCOfficeStudio/$(ProjectName).dll"
 				AdditionalLibraryDirectories="&quot;../HtmlConverter/lib/$(ConfigurationName)&quot;"
 				MidlCommandFile=""
 				IgnoreEmbeddedIDL="false"
@@ -209,7 +209,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;../../Redist&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -242,11 +242,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeWSHtmlFile.tlb"
-				HeaderFileName="AVSOfficeWSHtmlFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeWSHtmlFile.tlb"
+				HeaderFileName="ASCOfficeWSHtmlFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeWSHtmlFile_i.c"
-				ProxyFileName="AVSOfficeWSHtmlFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeWSHtmlFile_i.c"
+				ProxyFileName="ASCOfficeWSHtmlFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -316,7 +316,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSOfficeWSHtmlFile.cpp"
+				RelativePath=".\ASCOfficeWSHtmlFile.cpp"
 				>
 			</File>
 			<File
@@ -380,11 +380,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficeWSHtmlFile.rc"
+				RelativePath=".\ASCOfficeWSHtmlFile.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeWSHtmlFile.rgs"
+				RelativePath=".\ASCOfficeWSHtmlFile.rgs"
 				>
 			</File>
 		</Filter>

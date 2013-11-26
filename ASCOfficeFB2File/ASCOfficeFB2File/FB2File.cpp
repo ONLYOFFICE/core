@@ -17,10 +17,10 @@
 HRESULT CFB2File::FinalConstruct()
 {
 	m_pOfficeUtils = NULL;
-	return CoCreateInstance(__uuidof(AVSOfficeUtils::COfficeUtils),
+	return CoCreateInstance(__uuidof(ASCOfficeUtils::COfficeUtils),
 													NULL, 
 													CLSCTX_INPROC_SERVER, 
-													__uuidof(AVSOfficeUtils::IOfficeUtils), 
+													__uuidof(ASCOfficeUtils::IOfficeUtils), 
 													(void **)&(m_pOfficeUtils));
 }
 

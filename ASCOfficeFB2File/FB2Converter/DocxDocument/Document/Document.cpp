@@ -1,7 +1,7 @@
 #include "Document.h"
 #include <string>
 #include "./../../msxml/XML.h"
-#include "GdiPlusEx.h"
+#include "../../../../Common/GdiPlusEx.h"
 #define NOMINMAX
 
 

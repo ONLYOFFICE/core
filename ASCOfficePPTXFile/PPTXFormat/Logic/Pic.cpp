@@ -353,7 +353,9 @@ namespace PPTX
 					lH = spPr.xfrm->extY.get_value_or(43200);
 				}
 
+#ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 				spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH);
+#endif
 
 				pWriter->StartNode(_T("v:shape"));
 

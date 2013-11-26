@@ -1,4 +1,5 @@
 #pragma once
+#include "../stdafx.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "BinReaderWriterDefines.h"
 #include "FontCutter.h"
@@ -9,7 +10,7 @@ namespace NSFontCutter
 	{
 	public:		
 		CAtlMap<CString, CString> m_mapPicks;
-		AVSGraphics::IAVSFontManager* m_pFontManager;
+		ASCGraphics::IASCFontManager* m_pFontManager;
 
 		CString m_strFontsDir;
 
@@ -22,7 +23,7 @@ namespace NSFontCutter
 			m_strFontsDir = _T("");
 
 			m_pFontManager = NULL;
-			CoCreateInstance(AVSGraphics::CLSID_CAVSFontManager, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSFontManager, (void**)&m_pFontManager);
+			CoCreateInstance(ASCGraphics::CLSID_CASCFontManager, NULL, CLSCTX_ALL, ASCGraphics::IID_IASCFontManager, (void**)&m_pFontManager);
 
 			m_bIsEmbeddedFonts = FALSE;
 		}
@@ -35,6 +36,16 @@ namespace NSFontCutter
 		{
 			m_strFontsDir = strDir;
 
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+			if (_T("") != m_strFontsDir)
+				m_pFontManager->Init(L"", TRUE, TRUE);
+			else
+			{
+				BSTR bsFolder = m_strFontsDir.AllocSysString();
+				m_pFontManager->Init(bsFolder, FALSE, TRUE);
+				SysFreeString(bsFolder);
+			}
+#else
 			if (_T("") != m_strFontsDir)
 			{
 				VARIANT var;
@@ -52,6 +63,7 @@ namespace NSFontCutter
 			BSTR defFontName = defaultFontName.AllocSysString();
 			m_pFontManager->SetDefaultFont(defFontName);
 			SysFreeString(defFontName);
+#endif
 		}
 
 		CString GetTypefacePickByName(const CString& strTypeface)
@@ -85,9 +97,12 @@ namespace NSFontCutter
 			CString strPick = _T("<FontProperties><Name value=\"") + sFind + _T("\"/></FontProperties>");
 
 			BSTR bsResult = NULL;
-			LONG lFontIndex = NULL;
+			LONG lFontIndex = 0;
 			BSTR bsInput = strPick.AllocSysString();
 			
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+			m_pFontManager->GetWinFontByParams(bsInput, &bsResult, NULL, NULL, &lFontIndex);
+#else
 			m_pFontManager->GetWinFontByParams(bsInput, &bsResult, &lFontIndex);
 			CString strPath = (CString)bsResult;
 
@@ -97,6 +112,7 @@ namespace NSFontCutter
 			SysFreeString(bsResult);
 
 			m_pFontManager->GetFamilyName(&bsResult);
+#endif
 
 			CString sRes = bsResult;
 
@@ -194,7 +210,7 @@ public:
 			return S_OK;
 
 		RELEASEINTERFACE((m_oPicker.m_pFontManager));
-		newVal->QueryInterface(AVSGraphics::IID_IAVSFontManager, (void**)&(m_oPicker.m_pFontManager));
+		newVal->QueryInterface(ASCGraphics::IID_IASCFontManager, (void**)&(m_oPicker.m_pFontManager));
 		return S_OK;
 	}
 

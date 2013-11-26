@@ -10,7 +10,7 @@ using namespace NSFontCutter;
 #define AVSINLINE __forceinline
 #endif
 
-#include "../../AVSPresentationEditor/PPTXWriter/FileDownloader.h"
+#include "../../ASCPresentationEditor/PPTXWriter/FileDownloader.h"
 #include "WMFToImageConverter.h"
 
 namespace NSShapeImageGen
@@ -107,7 +107,9 @@ namespace NSShapeImageGen
 
 		LONG							m_lDstFormat;
 
+#ifdef BUILD_CONFIG_FULL_VERSION
 		NSWMFToImageConverter::CImageExt	m_oExt;
+#endif
 
 	public:
 
@@ -277,12 +279,138 @@ namespace NSShapeImageGen
 		{
 			_CopyFile(strFileSrc, strFileDst, NULL, NULL);
 		}
+
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+		void SaveImage(CString& strFileSrc, CImageInfo& oInfo, LONG __width, LONG __height)
+		{
+			OfficeCore::IImageGdipFilePtr pImageFile;
+			pImageFile.CreateInstance(OfficeCore::CLSID_CImageGdipFile);
+
+			BSTR bsSrc = strFileSrc.AllocSysString();
+			pImageFile->OpenFile(bsSrc);
+			SysFreeString(bsSrc);
+
+			IUnknown* punkFrame = NULL;
+			pImageFile->get_Frame(&punkFrame);
+
+			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
+			punkFrame->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
+
+			RELEASEINTERFACE(punkFrame);
+
+			LONG lWidth		= 0;
+			LONG lHeight	= 0;
+			pFrame->get_Width(&lWidth);
+			pFrame->get_Height(&lHeight);
+
+			oInfo.m_eType = GetImageType(pFrame);
+
+			RELEASEINTERFACE(pFrame);
+
+			LONG lMaxSize = min(max(lWidth, lHeight), m_lMaxSizeImage);
+
+			if ((lWidth > lMaxSize) || (lHeight > lMaxSize))
+			{
+				LONG lW = 0;
+				LONG lH = 0;
+				double dAspect = (double)lWidth / lHeight;
+
+				if (lWidth >= lHeight)
+				{
+					lW = lMaxSize;
+					lH = (LONG)((double)lW / dAspect);
+				}
+				else
+				{
+					lH = lMaxSize;
+					lW = (LONG)(dAspect * lH);
+				}
+
+				pImageFile->Resize(lW, lH, 3);
+			}
+
+			LONG lSaveType = 4;
+			CString strSaveItem = _T("");
+			strSaveItem.Format(_T("\\image%d."), oInfo.m_lID);
+			if (itJPG == oInfo.m_eType)
+			{
+				strSaveItem = m_strDstMedia + strSaveItem + _T("jpg");
+				lSaveType = 3;
+			}
+			else
+			{				
+				strSaveItem = m_strDstMedia + strSaveItem + _T("png");
+			}
+			BSTR bsDst = strSaveItem.AllocSysString();
+			pImageFile->SaveFile(bsDst, lSaveType);
+			SysFreeString(bsDst);
+		}
+		void SaveImage(IUnknown* punkImage, CImageInfo& oInfo, LONG __width, LONG __height)
+		{
+			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
+			punkImage->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
+
+			if (NULL == pFrame)
+				return;
+
+			LONG lWidth		= 0;
+			LONG lHeight	= 0;
+			pFrame->get_Width(&lWidth);
+			pFrame->get_Height(&lHeight);
+
+			oInfo.m_eType = GetImageType(pFrame);
+
+			RELEASEINTERFACE(pFrame);
+
+			OfficeCore::IImageGdipFilePtr pImageFile;
+			pImageFile.CreateInstance(OfficeCore::CLSID_CImageGdipFile);
+			pImageFile->put_Frame(punkImage);
+
+			LONG lMaxSize = min(max(lWidth, lHeight), m_lMaxSizeImage);
+
+			if ((lWidth > lMaxSize) || (lHeight > lMaxSize))
+			{
+				LONG lW = 0;
+				LONG lH = 0;
+				double dAspect = (double)lWidth / lHeight;
+
+				if (lWidth >= lHeight)
+				{
+					lW = lMaxSize;
+					lH = (LONG)((double)lW / dAspect);
+				}
+				else
+				{
+					lH = lMaxSize;
+					lW = (LONG)(dAspect * lH);
+				}
+
+				pImageFile->Resize(lW, lH, 3);
+			}
+
+			LONG lSaveType = 4;
+			CString strSaveItem = _T("");
+			strSaveItem.Format(_T("\\image%d."), oInfo.m_lID);
+			if (itJPG == oInfo.m_eType)
+			{
+				strSaveItem = m_strDstMedia + strSaveItem + _T("jpg");
+				lSaveType = 3;
+			}
+			else
+			{				
+				strSaveItem = m_strDstMedia + strSaveItem + _T("png");
+			}
+			BSTR bsDst = strSaveItem.AllocSysString();
+			pImageFile->SaveFile(bsDst, lSaveType);
+			SysFreeString(bsDst);
+		}
+#else
 		void SaveImage(CString& strFileSrc, CImageInfo& oInfo, LONG __width, LONG __height)
 		{
 			CString strLoadXml = _T("<transforms><ImageFile-LoadImage sourcepath=\"") + strFileSrc + _T("\"/></transforms>");
 
-			AVSImageStudio::IImageTransforms* pTransform = NULL;
-			CoCreateInstance(AVSImageStudio::CLSID_ImageTransforms, NULL, CLSCTX_INPROC_SERVER, AVSImageStudio::IID_IImageTransforms, (void**)&pTransform);
+			ImageStudio::IImageTransforms* pTransform = NULL;
+			CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL, CLSCTX_INPROC_SERVER, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
 
 			VARIANT_BOOL vbRes = VARIANT_FALSE;
 			BSTR bsLoad = strLoadXml.AllocSysString();
@@ -389,8 +517,8 @@ namespace NSShapeImageGen
 
 			RELEASEINTERFACE(pFrame);
 			
-			AVSImageStudio::IImageTransforms* pTransform = NULL;
-			CoCreateInstance(AVSImageStudio::CLSID_ImageTransforms, NULL ,CLSCTX_INPROC_SERVER, AVSImageStudio::IID_IImageTransforms, (void**)&pTransform);
+			ImageStudio::IImageTransforms* pTransform = NULL;
+			CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL ,CLSCTX_INPROC_SERVER, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
 
 			VARIANT var;
 			var.vt = VT_UNKNOWN;
@@ -447,6 +575,7 @@ namespace NSShapeImageGen
 
 			RELEASEINTERFACE(pTransform);
 		}
+#endif
 
 		CImageInfo GenerateImageID(IUnknown* punkData, double dWidth, double dHeight)
 		{
@@ -500,6 +629,7 @@ namespace NSShapeImageGen
 
 			if (NULL == pPair)
 			{
+#ifdef BUILD_CONFIG_FULL_VERSION
 				LONG lImageType = m_oExt.GetImageType(strFileName);
 
 				if (1 == lImageType || 2 == lImageType)
@@ -535,6 +665,7 @@ namespace NSShapeImageGen
 						oInfo.m_eType = itJPG;
 					}
 				}
+#endif
 
 				// нужно добавить
 				++m_lNextIDImage;
@@ -558,6 +689,7 @@ namespace NSShapeImageGen
 			LONG lWidth		= (LONG)(dWidth * 96 / 25.4);
 			LONG lHeight	= (LONG)(dHeight * 96 / 25.4);
 
+#ifdef BUILD_CONFIG_FULL_VERSION
 			LONG lImageType = m_oExt.GetImageType(strFileName);
 
 			if (1 == lImageType || 2 == lImageType)
@@ -592,6 +724,7 @@ namespace NSShapeImageGen
 					oInfo.m_eType = itJPG;
 				}
 			}
+#endif
 
 			// нужно добавить
 			++m_lNextIDImage;

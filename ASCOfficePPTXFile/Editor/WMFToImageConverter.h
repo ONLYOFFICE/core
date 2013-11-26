@@ -1,12 +1,14 @@
 #pragma once
 #include "../stdafx.h"
 
+#ifdef BUILD_CONFIG_FULL_VERSION
+
 namespace NSWMFToImageConverter
 {
 	class CImageExt
 	{
 	private:
-		IAVSRenderer* m_pSVGRenderer;
+		IASCRenderer* m_pSVGRenderer;
 
 		void Init()
 		{
@@ -19,7 +21,7 @@ namespace NSWMFToImageConverter
 			}
 			else
 			{
-				CoCreateInstance( HtmlRenderer::CLSID_CAVSSVGWriter, NULL, CLSCTX_ALL, __uuidof(IAVSRenderer), (void**)(&m_pSVGRenderer) );
+				CoCreateInstance( HtmlRenderer::CLSID_CASCSVGWriter, NULL, CLSCTX_ALL, __uuidof(IASCRenderer), (void**)(&m_pSVGRenderer) );
 			}
 		}
 
@@ -88,7 +90,7 @@ namespace NSWMFToImageConverter
 			return 0;
 		}
 
-		void MetaDrawOnRenderer(IAVSRenderer* pRenderer, BSTR strFile, double dW, double dH)
+		void MetaDrawOnRenderer(IASCRenderer* pRenderer, BSTR strFile, double dW, double dH)
 		{
 			if (NULL == pRenderer)
 				return;
@@ -133,8 +135,8 @@ namespace NSWMFToImageConverter
 			pRenderer->get_PenAlpha( &pen_Alpha );
 			pRenderer->get_PenColor( &pen_Color );
 
-			AVSGraphics::IAVSImage *pImage = NULL;
-			CoCreateInstance( __uuidof(AVSGraphics::CAVSImage), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::IAVSImage), (void**)(&pImage) );
+			ASCGraphics::IAVSImage *pImage = NULL;
+			CoCreateInstance( __uuidof(ASCGraphics::CAVSImage), NULL, CLSCTX_ALL, __uuidof(ASCGraphics::IAVSImage), (void**)(&pImage) );
 
 			pImage->put_FontManager(NULL);
 
@@ -212,3 +214,5 @@ namespace NSWMFToImageConverter
 		}
 	};
 }
+
+#endif

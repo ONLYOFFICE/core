@@ -4,8 +4,6 @@
 
 #include "BinWriters.h"
 
-#include "../ConverterAdvanced/Converter.h"
-
 namespace PPTX2EditorAdvanced
 {
 	using namespace NSBinPptxRW;
@@ -268,24 +266,6 @@ namespace PPTX2EditorAdvanced
 				_notesMasters[i]->toPPTY(&oBinaryWriter);
 			}
 		}
-
-		/*
-		// теперь нужно сгенерить картинки
-		NSPresentationEditor::CDocument oDocument;
-		CString strDir = strSourceDirectory;
-		PPTX2EditorAdvanced::Convert(oFolder, oDocument, strDir);
-
-		double _pres_w = oDocument.m_oInfo.m_lMillimetresHor;
-		double _pres_h = oDocument.m_oInfo.m_lMillimetresVer;
-
-		LONG _theme_h = 40;
-		LONG _theme_w = (LONG)((_pres_w * _theme_h) / _pres_h);
-
-		LONG _layout_h = 67;
-		LONG _layout_w = (LONG)((_pres_w * _layout_h) / _pres_h);
-
-		oDocument.ExtractPresentationInfo(_T(""), _theme_w, _theme_h, _layout_w, _layout_h, &oBinaryWriter);
-		*/
 
 		// ImageMap ---------------------------------------
 		oBinaryWriter.StartMainRecord(NSMainTables::ImageMap);

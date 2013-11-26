@@ -289,11 +289,12 @@ namespace NSBinPptxRW
 
 		void SaveImageAsPng(const CString& strFileSrc, const CString& strFileDst)
 		{
+#ifdef BUILD_CONFIG_FULL_VERSION
 			CString strLoadXml = _T("<transforms><ImageFile-LoadImage sourcepath=\"") + strFileSrc + 
 				_T("\"/><ImageFile-SaveAsPng destinationpath=\"") + strFileDst + _T("\" format=\"888\"/></transforms>");
 
-			AVSImageStudio::IImageTransforms* pTransform = NULL;
-			CoCreateInstance(AVSImageStudio::CLSID_ImageTransforms, NULL, CLSCTX_INPROC_SERVER, AVSImageStudio::IID_IImageTransforms, (void**)&pTransform);
+			ImageStudio::IImageTransforms* pTransform = NULL;
+			CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL, CLSCTX_INPROC_SERVER, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
 
 			VARIANT_BOOL vbRes = VARIANT_FALSE;
 			BSTR bsLoad = strLoadXml.AllocSysString();
@@ -302,15 +303,27 @@ namespace NSBinPptxRW
 
 			pTransform->Transform(&vbRes);
 			RELEASEINTERFACE(pTransform);
+#else
+			OfficeCore::IImageGdipFilePtr pImageFile;
+			pImageFile.CreateInstance(OfficeCore::CLSID_CImageGdipFile);
+
+			BSTR bs1 = strFileSrc.AllocSysString();
+			BSTR bs2 = strFileDst.AllocSysString();
+			pImageFile->OpenFile(bs1);
+			pImageFile->SaveFile(bs2, 4);
+			SysFreeString(bs1);
+			SysFreeString(bs2);
+#endif
 		}
 
 		void SaveImageAsJPG(const CString& strFileSrc, const CString& strFileDst)
 		{
+#ifdef BUILD_CONFIG_FULL_VERSION
 			CString strLoadXml = _T("<transforms><ImageFile-LoadImage sourcepath=\"") + strFileSrc + 
 				_T("\"/><ImageFile-SaveAsJpeg destinationpath=\"") + strFileDst + _T("\" format=\"888\"/></transforms>");
 
-			AVSImageStudio::IImageTransforms* pTransform = NULL;
-			CoCreateInstance(AVSImageStudio::CLSID_ImageTransforms, NULL, CLSCTX_INPROC_SERVER, AVSImageStudio::IID_IImageTransforms, (void**)&pTransform);
+			ImageStudio::IImageTransforms* pTransform = NULL;
+			CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL, CLSCTX_INPROC_SERVER, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
 
 			VARIANT_BOOL vbRes = VARIANT_FALSE;
 			BSTR bsLoad = strLoadXml.AllocSysString();
@@ -319,6 +332,17 @@ namespace NSBinPptxRW
 
 			pTransform->Transform(&vbRes);
 			RELEASEINTERFACE(pTransform);
+#else
+			OfficeCore::IImageGdipFilePtr pImageFile;
+			pImageFile.CreateInstance(OfficeCore::CLSID_CImageGdipFile);
+
+			BSTR bs1 = strFileSrc.AllocSysString();
+			BSTR bs2 = strFileDst.AllocSysString();
+			pImageFile->OpenFile(bs1);
+			pImageFile->SaveFile(bs2, 3);
+			SysFreeString(bs1);
+			SysFreeString(bs2);
+#endif
 		}
 
 		AVSINLINE bool IsNeedDownload(const CString& strFile)

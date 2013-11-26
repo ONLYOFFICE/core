@@ -3,12 +3,12 @@
 #pragma once
 #include "resource.h"       // main symbols
 
-#include "..\..\..\ASCImageStudio3\ASCGraphics\Interfaces\ASCRenderer.h"
-#include "..\..\..\Common\ASCUtils.h"
-#include "..\..\..\Common\xmlutils.h"
+#include "..\..\ASCImageStudio3\ASCGraphics\Interfaces\ASCRenderer.h"
+#include "..\..\Common\ASCUtils.h"
+#include "..\..\Common\xmlutils.h"
 
-#import ".\..\..\..\Redist\ASCOfficeUtils.dll" raw_interfaces_only
-#import ".\..\..\..\Redist\ASCImageStudio3.dll" raw_interfaces_only
+#import ".\..\..\Redist\ASCOfficeUtils.dll" raw_interfaces_only
+#import ".\..\..\Redist\ASCImageStudio3.dll" raw_interfaces_only
 
 #include <io.h>
 #include <fcntl.h>

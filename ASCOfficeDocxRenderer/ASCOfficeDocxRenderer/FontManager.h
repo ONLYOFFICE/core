@@ -4,7 +4,7 @@
 #include "Singleton.h"
 #include "Utils.h"
 
-#import ".\..\..\..\..\Redist\AVSGraphics.dll" raw_interfaces_only
+#import ".\..\..\Redist\ASCGraphics.dll" raw_interfaces_only
 
 namespace DocxRenderer
 {

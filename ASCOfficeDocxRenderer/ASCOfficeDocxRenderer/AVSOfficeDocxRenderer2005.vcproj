@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSOfficeDocxRenderer"
+	Name="ASCOfficeDocxRenderer"
 	ProjectGUID="{BAB70A60-2DA0-4149-B8FC-99D7007E9BDB}"
-	RootNamespace="AVSOfficeDocxRenderer"
+	RootNamespace="ASCOfficeDocxRenderer"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -43,16 +43,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeDocxRenderer.tlb"
-				HeaderFileName="AVSOfficeDocxRenderer.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeDocxRenderer.tlb"
+				HeaderFileName="ASCOfficeDocxRenderer.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeDocxRenderer_i.c"
-				ProxyFileName="AVSOfficeDocxRenderer_p.c"
+				InterfaceIdentifierFileName="ASCOfficeDocxRenderer_i.c"
+				ProxyFileName="ASCOfficeDocxRenderer_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\Common\AvsDocxFormat\Source\DocxFormat;..\..\Common\AvsDocxFormat\Source\XML;..\..\Common\AvsDocxFormat\Source\Utility;..\..\Common\AvsDocxFormat\Source\Common"
+				AdditionalIncludeDirectories="..\..\Common\ASCDocxFormat\Source\DocxFormat;..\..\Common\ASCDocxFormat\Source\XML;..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -78,14 +78,14 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="Msimg32.lib"
-				OutputFile="$(OutDir)/AVSOfficeDocxRenderer.dll"
+				OutputFile="$(OutDir)/ASCOfficeDocxRenderer.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\AVSOfficeUtils\ZLIB\zlib123dll\static32;..\..\Common\AvsDocxFormat\Lib\Debug"
+				AdditionalLibraryDirectories="..\..\ASCOfficeUtils\ZLIB\zlib123dll\static32;..\..\Common\ASCDocxFormat\Lib\Debug"
 				IgnoreDefaultLibraryNames="LIBC.LIB"
-				MergedIDLBaseFileName="_AVSOfficeDocxRenderer.idl"
+				MergedIDLBaseFileName="_ASCOfficeDocxRenderer.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSOfficeDocxRenderer.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeDocxRenderer.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -143,15 +143,15 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeDocxRenderer.tlb"
-				HeaderFileName="AVSOfficeDocxRenderer.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeDocxRenderer.tlb"
+				HeaderFileName="ASCOfficeDocxRenderer.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeDocxRenderer_i.c"
-				ProxyFileName="AVSOfficeDocxRenderer_p.c"
+				InterfaceIdentifierFileName="ASCOfficeDocxRenderer_i.c"
+				ProxyFileName="ASCOfficeDocxRenderer_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\Common\AvsDocxFormat\Source\DocxFormat;..\..\Common\AvsDocxFormat\Source\XML;..\..\Common\AvsDocxFormat\Source\Utility;..\..\Common\AvsDocxFormat\Source\Common"
+				AdditionalIncludeDirectories="..\..\Common\ASCDocxFormat\Source\DocxFormat;..\..\Common\ASCDocxFormat\Source\XML;..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -175,16 +175,16 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="Msimg32.lib"
-				OutputFile="..\..\..\..\Redist\AVSOfficeStudio\$(ProjectName).dll"
+				OutputFile="..\..\Redist\$(ProjectName).dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\AVSOfficeUtils\ZLIB\zlib123dll\static32;..\..\Common\AvsDocxFormat\Lib\Release"
+				AdditionalLibraryDirectories="..\..\ASCOfficeUtils\ZLIB\zlib123dll\static32;..\..\Common\ASCDocxFormat\Lib\Release"
 				IgnoreDefaultLibraryNames="LIBC.LIB"
-				MergedIDLBaseFileName="_AVSOfficeDocxRenderer.idl"
+				MergedIDLBaseFileName="_ASCOfficeDocxRenderer.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficeDocxRenderer.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeDocxRenderer.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -224,11 +224,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSDocxRenderer.cpp"
+				RelativePath=".\ASCDocxRenderer.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeDocxRenderer.cpp"
+				RelativePath=".\ASCOfficeDocxRenderer.cpp"
 				>
 			</File>
 			<File
@@ -282,15 +282,15 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\AVSDocxRenderer.h"
+				RelativePath=".\ASCDocxRenderer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeCriticalSection.h"
+				RelativePath=".\ASCOfficeCriticalSection.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\AVSImageStudio3\AVSGraphics\Interfaces\AVSRenderer.h"
+				RelativePath="..\..\ASCImageStudio3\ASCGraphics\Interfaces\ASCRenderer.h"
 				>
 			</File>
 			<File
@@ -356,11 +356,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficeDocxRenderer.rc"
+				RelativePath=".\ASCOfficeDocxRenderer.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeDocxRenderer.rgs"
+				RelativePath=".\ASCOfficeDocxRenderer.rgs"
 				>
 			</File>
 		</Filter>

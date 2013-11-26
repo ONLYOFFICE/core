@@ -79,15 +79,6 @@ ASCOfficeOdpFile/Odp2DrawingXML/Release
 ASCOfficeOdtFile/Projects/*
 ASCOfficePPTXFile/*.suo
 ASCOfficePPTXFile/Debug
-ASCOfficePPTXFile/PPTX2DrawingXML/Debug
-ASCOfficePPTXFile/PPTX2DrawingXML/Release
-ASCOfficePPTXFile/PPTX2OfficeDrawing/Debug
 ASCOfficePPTXFile/PPTXFormat/!_
 ASCOfficePPTXFile/PPTXFormat/_
-ASCOfficePPTXFile/PPTXLib/PPTXFormat/*.suo
-ASCOfficePPTXFile/PPTXLib/PPTXFormat/PPTXFormat/Debug
-ASCOfficePPTXFile/PPTXLib/PPTXFormat/PPTXFormat/Release
-ASCOfficePPTXFile/PPTXLib/PPTXFormat/debug
-ASCOfficePPTXFile/PPTXLib/Source/!_
-ASCOfficePPTXFile/PPTXLib/Source/_
 ASCOfficePPTXFile/Release

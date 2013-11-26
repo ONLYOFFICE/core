@@ -76,14 +76,14 @@ namespace AVSGraphics
 
 #else
 
-#import "../../../../../Redist/AVSMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")
-#import "../../../../../Redist/AVSMediaFormatSettings3.dll"		named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
-#import "../../../../../Redist/AVSImageStudio3.dll"				named_guids rename_namespace("ImageStudio")
-#import "../../../../../Redist/AVSImageJbig2.dll"				named_guids rename_namespace("JBig2")
-#import "../../../../../Redist/AVSImageJpeg2000.dll"			named_guids rename_namespace("Jpx")
-#import "../../../../../Redist/AVSImageFile3.dll"				named_guids rename_namespace("ImageFile")
+#import "../Redist/ASCMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")
+#import "../Redist/ASCMediaFormatSettings3.dll"		named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
+#import "../Redist/ASCImageStudio3.dll"				named_guids rename_namespace("ImageStudio")
+#import "../Redist/ASCImageJbig2.dll"				named_guids rename_namespace("JBig2")
+#import "../Redist/ASCImageJpeg2000.dll"			named_guids rename_namespace("Jpx")
+#import "../Redist/ASCImageFile3.dll"				named_guids rename_namespace("ImageFile")
 
-#import "../Redist/ASCGraphics.dll"								named_guids rename_namespace("AVSGraphics")
+#import "../Redist/ASCGraphics.dll"					named_guids rename_namespace("AVSGraphics")
 #endif
 
 using namespace ATL;

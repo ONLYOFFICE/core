@@ -1,7 +1,7 @@
-// AVSDocxRenderer.cpp : Implementation of CAVSDocxRenderer
+// ASCDocxRenderer.cpp : Implementation of CASCDocxRenderer
 
 #include "stdafx.h"
-#include "AVSDocxRenderer.h"
+#include "ASCDocxRenderer.h"
 
 
 // CAVSDocxRenderer

@@ -2,7 +2,7 @@
 //
 
 #define COMPONENT_NAME "ImageJBig2"
-#include "../../../../Common/FileInfo.h"
+#include "../../Common/FileInfo.h"
 #include "version.h"
 #include "resource.h"
 

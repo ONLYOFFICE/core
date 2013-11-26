@@ -1,9 +1,9 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by AVSOfficeDjVuFile.rc
+// Used by ASCOfficeDjVuFile.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_AVSDJVUFILE                 101
+#define IDR_ASCDJVUFILE                 101
 
 // Next default values for new objects
 // 

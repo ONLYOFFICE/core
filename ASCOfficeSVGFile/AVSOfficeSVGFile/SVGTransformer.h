@@ -1,11 +1,11 @@
 #pragma once
 #include "resource.h"  
 
-#include "x:\Common\GdiPlusEx.h"
+#include "..\..\Common\GdiPlusEx.h"
 
-#include "x:\AVS\Sources\AVSImageStudio3\AVSGraphics\Interfaces\AVSRenderer.h"
-#include "x:\AVS\Sources\AVSOfficeStudio\Common\OfficeFileErrorDescription.h"
-#include "x:\AVS\Sources\AVSImageStudio3\AVSGraphics\Objects\Image\SVG\SVGFramework.h"
+#include "..\..\ASCImageStudio3\ASCGraphics\Interfaces\ASCRenderer.h"
+#include "..\..\Common\OfficeFileErrorDescription.h"
+#include "..\..\ASCImageStudio3\ASCGraphics\Objects\Image\SVG\SVGFramework.h"
 
 // ISVGTransformer
 [
@@ -93,7 +93,7 @@ private:
 
 	SVG::Parser		m_oParser;
 	SVG::Storage	m_oStorage;
-	SVG::Drawer		m_oRender;
+	SVG::Painter	m_oRender;
 
 	CGdiPlusInit	m_oGdiPlusInit;
 };

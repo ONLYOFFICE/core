@@ -52,7 +52,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Common;agg\;agg\include;Expat\;..\ASCImageStudio3\ASCGraphics\Objects\Font\FreeType"
+				AdditionalIncludeDirectories="..\..\Common;agg\;agg\include;Expat\;..\..\ASCImageStudio3\ASCGraphics\Objects\Font\FreeType;..\..\ASCImageStudio3\ASCGraphics\agg;..\..\ASCImageStudio3\ASCGraphics\agg\include;..\..\ASCImageStudio3\ASCGraphics"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;__FOR_TESTS__"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -79,7 +79,7 @@
 				IgnoreImportLibrary="true"
 				OutputFile="$(OutDir)/ASCOfficeSVGFile.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\ASCImageStudio3\ASCGraphics;$(NOINHERIT)"
+				AdditionalLibraryDirectories="..\..\ASCImageStudio3\ASCGraphics;..\..\ASCImageStudio3\ASCGraphics\Objects\Font\FreeType;E:\activex\AVS\Sources\TeamlabOffice\trunk\ServerComponents\ASCImageStudio3\ASCGraphics"
 				MergedIDLBaseFileName="_ASCOfficeSVGFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -122,7 +122,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\Redist\VersionControl.exe &quot;$(ProjectDir)\version.h&quot;"
+				CommandLine="..\..\Redist\VersionControl.exe &quot;$(ProjectDir)\version.h&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -147,7 +147,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Common;agg\;agg\include;Expat\;..\ASCImageStudio3\ASCGraphics\Objects\Font\FreeType"
+				AdditionalIncludeDirectories="..\..\Common;agg\;agg\include;Expat\;..\..\ASCImageStudio3\ASCGraphics\Objects\Font\FreeType"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;__FOR_TESTS__"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -172,7 +172,7 @@
 				IgnoreImportLibrary="true"
 				OutputFile="$(OutDir)/ASCOfficeSVGFile.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\ASCImageStudio3\ASCGraphics\Objects\Font\FreeType;$(NOINHERIT)"
+				AdditionalLibraryDirectories="..\..\ASCImageStudio3\ASCGraphics\Objects\Font\FreeType;$(NOINHERIT)"
 				MergedIDLBaseFileName="_ASCOfficeSVGFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -202,7 +202,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy $(TargetPath) &quot..\Redist\&quot&#x0D;&#x0A;"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy $(TargetPath) &quot;..\..\Redist\&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -271,31 +271,31 @@
 			Name="Common"
 			>
 			<File
-				RelativePath="..\ASCImageStudio3\ASCGraphics\Interfaces\ASCRenderer.h"
+				RelativePath="..\..\ASCImageStudio3\ASCGraphics\Interfaces\ASCRenderer.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\ASCUtils.h"
+				RelativePath="..\..\Common\ASCUtils.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\OfficeCommandsRenderer.h"
+				RelativePath="..\..\Common\OfficeCommandsRenderer.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\OfficeDefines.h"
+				RelativePath="..\..\Common\OfficeDefines.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\OfficeFileErrorDescription.h"
+				RelativePath="..\..\Common\OfficeFileErrorDescription.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\OfficeFileFormats.h"
+				RelativePath="..\..\Common\OfficeFileFormats.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Common\OfficeFileTemplate.h"
+				RelativePath="..\..\Common\OfficeFileTemplate.h"
 				>
 			</File>
 		</Filter>
@@ -315,11 +315,11 @@
 			Name="SVG Files"
 			>
 			<File
-				RelativePath="..\ASCImageStudio3\ASCGraphics\Objects\Image\SVG\SVGFramework.cpp"
+				RelativePath="..\..\ASCImageStudio3\ASCGraphics\Objects\Image\SVG\SVGFramework.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\ASCImageStudio3\ASCGraphics\Objects\Image\SVG\SVGFramework.h"
+				RelativePath="..\..\ASCImageStudio3\ASCGraphics\Objects\Image\SVG\SVGFramework.h"
 				>
 			</File>
 		</Filter>

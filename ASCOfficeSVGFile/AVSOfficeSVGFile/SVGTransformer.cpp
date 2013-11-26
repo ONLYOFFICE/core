@@ -35,7 +35,7 @@ HRESULT SVGTransformer::Draw ( IUnknown* pUnk, double dX, double dY, double dWid
 	if ( NULL == pUnk )
 		return S_FALSE;
 
-	IAVSRenderer* render = NULL;
+	IASCRenderer* render = NULL;
 	pUnk->QueryInterface ( &render );
 	pUnk->Release ();
 

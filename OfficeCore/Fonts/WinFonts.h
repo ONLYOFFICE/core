@@ -11,7 +11,7 @@
 __interface IWinFonts : IDispatch
 {
 	[id(1)]		HRESULT Init([in] BSTR bsFolder, [in] VARIANT_BOOL bIsUseSharedMemory, [in] VARIANT_BOOL bIsSaved);
-	[id(2)]		HRESULT GetWinFontByParams([in] BSTR bsFontParams, [out] BSTR* pbsFontName, [out] BSTR *pbsFontPath, [out] long *plIndex);
+	[id(2)]		HRESULT GetWinFontByParams([in] BSTR bsFontParams, [out] BSTR* pbsFontName, [out] BSTR* pbsFontPath, [out] BSTR* pbsFontStyle, [out] long *plIndex);
 
 	[id(1001)]	HRESULT SetAdditionalParam([in] BSTR ParamName, [in] VARIANT ParamValue);
 	[id(1002)]	HRESULT GetAdditionalParam([in] BSTR ParamName, [out, retval] VARIANT* ParamValue);
@@ -110,7 +110,7 @@ public:
 		return S_OK;
 	}
 
-	STDMETHOD(GetWinFontByParams)(BSTR bsFontParams, BSTR* pbsFontName, BSTR *pbsFontPath, long *plIndex)
+	STDMETHOD(GetWinFontByParams)(BSTR bsFontParams, BSTR* pbsFontName, BSTR *pbsFontPath, BSTR* pbsFontStyle, long *plIndex)
 	{
 		if (!m_bIsInit || !m_pList)
 			return S_FALSE;
@@ -124,6 +124,9 @@ public:
 
 		if (pbsFontPath != NULL)
 			*pbsFontPath = pFontInfo->m_wsFontPath.AllocSysString();
+
+		if (pbsFontStyle != NULL)
+			*pbsFontStyle = pFontInfo->m_wsStyle.AllocSysString();
 
 		if (plIndex != NULL)
 			*plIndex     = pFontInfo->m_lIndex;

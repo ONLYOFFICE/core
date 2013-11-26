@@ -14,7 +14,7 @@
 
 #include "List.h"
 #include "FontUtils.h"
-#include "../../../../../AVSImageStudio3/AVSGraphics/Interfaces/XmlUtils.h"
+#include "../../Common/XmlUtils.h"
 
 static _bstr_t g_cpszXML_Font_Name    = L"name";
 static _bstr_t g_cpszXML_Font_Bold	  = L"bold";

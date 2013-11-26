@@ -50,7 +50,7 @@
 #ifdef BUILD_CONFIG_OPENSOURCE_VERSION
 #import "../Redist/OfficeCore.dll"			named_guids raw_interfaces_only rename_namespace("OfficeCore")
 #else
-#import "../Redist/ASCMediaCore3.dll"		named_guids raw_interfaces_only rename_namespace("MediaCore")
+#import "../Redist/ASCMediaCore3.dll"		named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
 #import "../Redist/ASCFontConverter.dll"	named_guids raw_interfaces_only rename_namespace("FontConverter")
 #import "../Redist/ASCImageStudio3.dll"		named_guids raw_interfaces_only rename_namespace("ImageStudio")
 #endif // BUILD_CONFIG_OPENSOURCE_VERSION

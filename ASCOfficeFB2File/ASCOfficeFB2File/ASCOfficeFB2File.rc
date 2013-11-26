@@ -101,7 +101,7 @@ IDR_DOCX_TEMPLATE		DOCUMENT				"Resource\\DocxTemplate.docx"
 // REGISTRY
 //
 
-IDR_AVSFB2FILE       REGISTRY                "AVSOfficeFB2File.rgs"
+IDR_ASCFB2FILE       REGISTRY                "ASCOfficeFB2File.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -110,7 +110,7 @@ IDR_AVSFB2FILE       REGISTRY                "AVSOfficeFB2File.rgs"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSOfficeFB2File"
+    IDS_PROJNAME            "ASCOfficeFB2File"
 END
 
 #endif    // Russian resources

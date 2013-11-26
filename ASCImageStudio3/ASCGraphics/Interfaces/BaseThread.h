@@ -49,7 +49,14 @@ public:
 		m_bRunThread = FALSE;
 		if (NULL!=m_hThread)
 			WaitForSingleObject(m_hThread,INFINITE);
-		RELEASEHANDLE(m_hThread);
+
+		if (NULL != m_hThread)
+		{
+			CloseHandle (m_hThread);
+			m_hThread = NULL;
+		}
+
+		//RELEASEHANDLE(m_hThread);
 	}
 	inline BOOL IsSuspended() const
 	{		

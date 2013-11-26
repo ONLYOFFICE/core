@@ -2315,7 +2315,7 @@ public:
 	{
 		IS_VALID(m_pRenderer)
 
-		EMRALPHABLEND *pRec = (EMRALPHABLEND*)m_pRecord;
+		//EMRALPHABLEND *pRec = (EMRALPHABLEND*)m_pRecord;
 
 		//ASSERT(pRec->offBmiSrc && pRec->offBitsSrc);
 
@@ -2362,7 +2362,7 @@ public:
 	{
 		IS_VALID(m_pRenderer)
 
-		EMRTRANSPARENTBLT *pRec = (EMRTRANSPARENTBLT*)m_pRecord;
+		//EMRTRANSPARENTBLT *pRec = (EMRTRANSPARENTBLT*)m_pRecord;
 		//ASSERT(pRec->offBmiSrc && pRec->offBitsSrc);
 
 		//// Check if there is a bitmap
@@ -2396,7 +2396,7 @@ public:
 	{
 		IS_VALID(m_pRenderer)
 
-		EMRGRADIENTFILL *pRec = (EMRGRADIENTFILL*)m_pRecord;
+		//EMRGRADIENTFILL *pRec = (EMRGRADIENTFILL*)m_pRecord;
 
 		//LPBYTE pMesh = (LPBYTE)&pRec->Ver[pRec->nVer];
 		//m_pRenderer->SCGradientFill(pRec->Ver, pRec->nVer, pMesh, pRec->nTri, pRec->ulMode);

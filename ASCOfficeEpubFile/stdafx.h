@@ -42,9 +42,10 @@
 
 using namespace ATL;
 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeDocxRenderer.dll"			raw_interfaces_only rename_namespace("DocxRenderer")
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeUtils.dll"				raw_interfaces_only rename_namespace("OfficeUtils")
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeHtmlFile.dll"				raw_interfaces_only rename_namespace("OfficeHtmlFile")
-#import "../../../Redist/AVSGraphics.dll"									raw_interfaces_only rename_namespace("AVSGraphics")
-#import "../../../Redist/AVSImageFile3.dll"									raw_interfaces_only rename_namespace("ImageFile")
-#import "../../../Redist/AVSMediaCore3.dll"			rename_namespace("AVSMediaCore3"), exclude("tagRECT")
+
+#import "../Redist/ASCOfficeUtils.dll"			raw_interfaces_only rename_namespace("OfficeUtils")
+#import "../Redist/ASCGraphics.dll"				raw_interfaces_only rename_namespace("AVSGraphics")
+#import "../Redist/ASCImageFile3.dll"			raw_interfaces_only rename_namespace("ImageFile")
+#import "../Redist/ASCMediaCore3.dll"			rename_namespace("AVSMediaCore3"), exclude("tagRECT")
+#import "../Redist/ASCOfficeHtmlFile.dll"		raw_interfaces_only rename_namespace("OfficeHtmlFile")
+#import "../Redist/ASCOfficeDocxRenderer.dll"	raw_interfaces_only rename_namespace("DocxRenderer")

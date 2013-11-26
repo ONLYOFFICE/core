@@ -4,12 +4,12 @@
 #include "Metric.h"
 #include "Effects.h"
 #include "../../Common/DocxFormat/Source/XML/XmlUtils.h"
-#include "AVSUtils.h"
+#include "../../Common/ASCUtils.h"
 #include "XmlWriter.h"
 
 #include "Gdiplus.h"
 
-#include "..\..\..\AVSImageStudio3\AVSGraphics\Interfaces\AVSRenderer.h"
+#include "../../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
 
 namespace NSPresentationEditor
 {
@@ -528,7 +528,7 @@ namespace NSPresentationEditor
 				(DashStyle == pPen->DashStyle) && (LineStartCap == pPen->LineStartCap) &&
 				(LineEndCap == pPen->LineEndCap) && (LineJoin == pPen->LineJoin));
 		}
-		void SetToRenderer(IAVSRenderer *pRenderer)
+		void SetToRenderer(IASCRenderer *pRenderer)
 		{
 			if (-1 == Color.m_lSchemeIndex)
 				pRenderer->put_PenColor(Color.GetLONG());
@@ -844,7 +844,7 @@ namespace NSPresentationEditor
 					(c_BrushTypeHatch1 <= Type && c_BrushTypeHatch53 >= Type));
 		}
 
-		void SetToRenderer(IAVSRenderer *pRenderer)
+		void SetToRenderer(IASCRenderer *pRenderer)
 		{
 			Type = ConstantCompatible(Type);
 			pRenderer->put_BrushType(Type);
@@ -976,7 +976,7 @@ namespace NSPresentationEditor
 			Underline = (byte)(0x7C & lStyle) >> 2;
 			Strikeout = (byte)(0x0180 & lStyle) >> 7;
 		}
-		void SetToRenderer(IAVSRenderer *pRenderer)
+		void SetToRenderer(IASCRenderer *pRenderer)
 		{
 			BSTR bstrName = Name.AllocSysString();			
 			pRenderer->put_FontName(bstrName);			

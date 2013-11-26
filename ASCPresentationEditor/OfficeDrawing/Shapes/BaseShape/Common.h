@@ -384,15 +384,15 @@ namespace NSStringUtils
 
 #ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 
-#include "../../../../../AVSImageStudio3/AVSGraphics/Interfaces/AVSRenderer.h"
+#include "../../../../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
 
 #if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
 #endif
 
 // CAVSOOXToVMLGeometry
-[ coclass, default(IAVSRenderer), threading(apartment), vi_progid("AVSPPTX.VMLShape"), progid("AVSPPTX.VMLShape.1"), version(1.0), uuid("3266F3E4-B6AB-4440-BC58-F38E78BBCCBD") ]
-class ATL_NO_VTABLE CAVSOOXToVMLGeometry : public IAVSRenderer
+[ coclass, default(IASCRenderer), threading(apartment), vi_progid("AVSPPTX.VMLShape"), progid("AVSPPTX.VMLShape.1"), version(1.0), uuid("3266F3E4-B6AB-4440-BC58-F38E78BBCCBD") ]
+class ATL_NO_VTABLE CAVSOOXToVMLGeometry : public IASCRenderer
 {
 private:
 	class _CStringWriter
@@ -812,8 +812,8 @@ public:
 		m_dScaleY = 1.0;
 
 		m_pSimpleGraphicsConverter = NULL;
-		CoCreateInstance(AVSGraphics::CLSID_CAVSGraphicSimpleComverter, NULL, CLSCTX_ALL, 
-			AVSGraphics::IID_IAVSGraphicSimpleComverter, (void**)&m_pSimpleGraphicsConverter);
+		CoCreateInstance(ASCGraphics::CLSID_CASCGraphicSimpleComverter, NULL, CLSCTX_ALL, 
+			ASCGraphics::IID_IASCGraphicSimpleComverter, (void**)&m_pSimpleGraphicsConverter);
 
 		IUnknown* punkRenderer = NULL;
 		this->QueryInterface(IID_IUnknown, (void**)&punkRenderer);
@@ -832,7 +832,7 @@ public:
 
 private:
 	
-	AVSGraphics::IAVSGraphicSimpleComverter*	m_pSimpleGraphicsConverter;
+	ASCGraphics::IASCGraphicSimpleComverter*	m_pSimpleGraphicsConverter;
 	BOOL m_bIsFillPart;
 	BOOL m_bIsStrokePart;
 

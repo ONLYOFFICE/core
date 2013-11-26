@@ -85,7 +85,7 @@ namespace NSGuidesVML
 			void Convert ( CPPTXShape* pPPTXShape )
 			{
 				ConvertAdjastments ( pPPTXShape->m_arAdjustments, pPPTXShape->FManager.mapAdjustments );
-				AddSizeGuides (pPPTXShape->FManager.GetWidth(), pPPTXShape->FManager.GetHeight());
+				AddSizeGuides ((LONG)pPPTXShape->FManager.GetWidth(), (LONG)pPPTXShape->FManager.GetHeight());
 				ConvertGuides ( pPPTXShape->FManager.strGuides, pPPTXShape->FManager.mapGuides);
 				ConvertPath( pPPTXShape->m_strPath, pPPTXShape->FManager.strGuides, pPPTXShape->FManager.mapGuides);
 

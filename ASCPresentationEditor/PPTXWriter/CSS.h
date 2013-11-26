@@ -1,5 +1,5 @@
 #pragma once
-#include "AvsUtils.h"
+#include "../../Common/ASCUtils.h"
 #include "../OfficeDrawing/TextAttributesEx.h"
 
 #define _USE_XMLLITE_READER_

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BaseThread.h"
+#include "../../Common/BaseThread.h"
 
 #include <wininet.h>
 #pragma comment(lib, "Wininet")

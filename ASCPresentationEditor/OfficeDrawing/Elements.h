@@ -549,6 +549,9 @@ namespace NSPresentationEditor
 		}
 		virtual CString ToXmlEditor()
 		{
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+			return _T("");
+#else
 			ASCGraphics::IASCSVGRenderer* pSVG = NULL;
 			CoCreateInstance(ASCGraphics::CLSID_CASCSVGRenderer, NULL, CLSCTX_ALL, ASCGraphics::IID_IASCSVGRenderer, (void**)&pSVG);
 
@@ -592,6 +595,7 @@ namespace NSPresentationEditor
 			strXml = strElement + strXml + _T("</shape>");
 
 			return strXml;
+#endif
 		}
 
 		AVSINLINE CString DownloadImage(const CString& strFile)
@@ -925,6 +929,9 @@ namespace NSPresentationEditor
 
 		virtual CString ToXmlEditor()
 		{
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+			return _T("");
+#else
 			CString strPPTXShape = _T("");
 			
 			NSBaseShape::ClassType eShapeType = NSBaseShape::unknown;
@@ -1055,6 +1062,7 @@ namespace NSPresentationEditor
 			oElemInfo.m_bIsChangeable = m_bIsChangeable;
 			oElemInfo.m_lID			  = m_lID;
 			return strXml + m_oShape.GetTextXHTML(oInfo, m_oMetric, m_dStartTime, m_dEndTime, oElemInfo, m_pTheme, m_pLayout);
+#endif
 		}
 
 #ifdef _PRESENTATION_WRITER_

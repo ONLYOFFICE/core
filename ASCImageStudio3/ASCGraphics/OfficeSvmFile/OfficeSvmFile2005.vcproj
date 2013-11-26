@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\Redist;..\..\..\Common;..\..\..\..\..\..\Common;&quot;..\..\..\ASCOfficeUtils\ZLIB\zlib-1.2.3&quot;;Source/vcl/win/inc;Source/vcl/source/gdi;Source\sal\source;Source\sal\inc;Source\i18npool\inc;Source\vcl\inc;Source\tools\inc;ASC"
+				AdditionalIncludeDirectories="..\..\..\Redist;..\..\Common;..\..\..\Common;&quot;..\..\..\ASCOfficeUtils\ZLIB\zlib-1.2.3&quot;;Source/vcl/win/inc;Source/vcl/source/gdi;Source\sal\source;Source\sal\inc;Source\i18npool\inc;Source\vcl\inc;Source\tools\inc;ASC"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

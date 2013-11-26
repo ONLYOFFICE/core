@@ -4,7 +4,7 @@
 //
 
 #define IDS_PROJNAME                    100
-#define IDR_AVSOFFICEPPTXFILE           101
+#define IDR_ASCOFFICEPPTXFILE           101
 
 #define IDB_XML_NOTESTHEME				201
 #define IDB_XML_NOTESMASTER				202

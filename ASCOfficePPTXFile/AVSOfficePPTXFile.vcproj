@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSOfficePPTXFile"
+	Name="ASCOfficePPTXFile"
 	ProjectGUID="{70078FE7-BE4F-493C-84F3-F98F151587F5}"
-	RootNamespace="AVSOfficePPTXFile"
+	RootNamespace="ASCOfficePPTXFile"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -44,11 +44,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficePPTXFile.tlb"
-				HeaderFileName="AVSOfficePPTXFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficePPTXFile.tlb"
+				HeaderFileName="ASCOfficePPTXFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficePPTXFile_i.c"
-				ProxyFileName="AVSOfficePPTXFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficePPTXFile_i.c"
+				ProxyFileName="ASCOfficePPTXFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -79,15 +79,15 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="Msimg32.lib"
-				OutputFile="$(OutDir)/AVSOfficePPTXFile.dll"
+				OutputFile="$(OutDir)/ASCOfficePPTXFile.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="LIBC;LIBCD"
 				ModuleDefinitionFile=""
-				MergedIDLBaseFileName="_AVSOfficePPTXFile.idl"
+				MergedIDLBaseFileName="_ASCOfficePPTXFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSOfficePPTXFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficePPTXFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -146,11 +146,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficePPTXFile.tlb"
-				HeaderFileName="AVSOfficePPTXFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficePPTXFile.tlb"
+				HeaderFileName="ASCOfficePPTXFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficePPTXFile_i.c"
-				ProxyFileName="AVSOfficePPTXFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficePPTXFile_i.c"
+				ProxyFileName="ASCOfficePPTXFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -181,15 +181,15 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="Msimg32.lib"
-				OutputFile="$(OutDir)/AVSOfficePPTXFile.dll"
+				OutputFile="$(OutDir)/ASCOfficePPTXFile.dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC,LIBCMT"
-				MergedIDLBaseFileName="_AVSOfficePPTXFile.idl"
+				MergedIDLBaseFileName="_ASCOfficePPTXFile.idl"
 				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficePPTXFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficePPTXFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -216,7 +216,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="copy $(TargetPath) ..\..\..\Redist\AVSOfficeStudio\AVSOfficePPTXFile.dll"
+				CommandLine="copy $(TargetPath) ..\Redist\ASCOfficePPTXFile.dll"
 			/>
 		</Configuration>
 		<Configuration
@@ -248,11 +248,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficePPTXFile.tlb"
-				HeaderFileName="AVSOfficePPTXFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficePPTXFile.tlb"
+				HeaderFileName="ASCOfficePPTXFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficePPTXFile_i.c"
-				ProxyFileName="AVSOfficePPTXFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficePPTXFile_i.c"
+				ProxyFileName="ASCOfficePPTXFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -283,15 +283,15 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="Msimg32.lib"
-				OutputFile="$(OutDir)/AVSOfficePPTXFile.dll"
+				OutputFile="$(OutDir)/ASCOfficePPTXFile.dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC,LIBCMT"
-				MergedIDLBaseFileName="_AVSOfficePPTXFile.idl"
+				MergedIDLBaseFileName="_ASCOfficePPTXFile.idl"
 				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficePPTXFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficePPTXFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -330,11 +330,11 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
-				RelativePath=".\AVSOfficeDrawingConverter.cpp"
+				RelativePath=".\ASCOfficeDrawingConverter.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficePPTXFile.cpp"
+				RelativePath=".\ASCOfficePPTXFile.cpp"
 				>
 			</File>
 			<File
@@ -371,11 +371,11 @@
 			Filter="h;hpp;hxx;hm;inl;inc"
 			>
 			<File
-				RelativePath=".\AVSOfficeDrawingConverter.h"
+				RelativePath=".\ASCOfficeDrawingConverter.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficePPTXFile.h"
+				RelativePath=".\ASCOfficePPTXFile.h"
 				>
 			</File>
 			<File
@@ -392,11 +392,11 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath=".\AVSOfficePPTXFile.rc"
+				RelativePath=".\ASCOfficePPTXFile.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficePPTXFile.rgs"
+				RelativePath=".\ASCOfficePPTXFile.rgs"
 				>
 			</File>
 		</Filter>

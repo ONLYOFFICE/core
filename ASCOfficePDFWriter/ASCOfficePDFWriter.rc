@@ -86,10 +86,10 @@ END
 
 STRINGTABLE  
 BEGIN
-	IDS_PROJNAME					"AVSOfficePDFWriter"
+	IDS_PROJNAME					"ASCOfficePDFWriter"
 END
 
-IDR_AVSOFFICEPDFWRITER REGISTRY "AVSOfficePDFWriter.rgs"
+IDR_ASCOFFICEPDFWRITER REGISTRY "ASCOfficePDFWriter.rgs"
 ////////////////////////////////////////////////////////////////////////////
 
 

@@ -50,12 +50,12 @@
 
 #include "../Common/Config.h"
 
-#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
-
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
 #pragma comment (lib, "../OfficeCore/Fonts/FreeType/freetype242_vs2005.lib")
+
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
 
 #import "../Redist/OfficeCore.dll"								named_guids rename_namespace("OfficeCore")
 
@@ -68,27 +68,22 @@ namespace MediaCore
 
 namespace AVSGraphics
 {
-	typedef OfficeCore::IWinFonts IAVSWinFonts;
+	typedef OfficeCore::IWinFonts IASCWinFonts;
 
-	const GUID CLSID_CAVSWinFonts = OfficeCore::CLSID_CWinFonts;
-	const GUID IID_IAVSWinFonts = OfficeCore::IID_IWinFonts;
+	const GUID CLSID_CASCWinFonts = OfficeCore::CLSID_CWinFonts;
+	const GUID IID_IASCWinFonts = OfficeCore::IID_IWinFonts;
 }
 
 #else
 
-// FreeType
-#include <ft2build.h>
-#include FT_FREETYPE_H
+#import "../../../../../Redist/AVSMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")
+#import "../../../../../Redist/AVSMediaFormatSettings3.dll"		named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
+#import "../../../../../Redist/AVSImageStudio3.dll"				named_guids rename_namespace("ImageStudio")
+#import "../../../../../Redist/AVSImageJbig2.dll"				named_guids rename_namespace("JBig2")
+#import "../../../../../Redist/AVSImageJpeg2000.dll"			named_guids rename_namespace("Jpx")
+#import "../../../../../Redist/AVSImageFile3.dll"				named_guids rename_namespace("ImageFile")
 
-#pragma comment (lib, "..\\..\\AVSImageStudio3\\AVSGraphics\\Objects\\Font\\FreeType\\freetype242_vs2005.lib")
-
-#import "../../../../AVS/Redist/AVSMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")
-#import "../../../../AVS/Redist/AVSMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
-#import "../../../../AVS/Redist/AVSImageStudio3.dll"            named_guids rename_namespace("ImageStudio")
-#import "../../../../AVS/Redist/AVSImageJbig2.dll"              named_guids rename_namespace("JBig2")
-#import "../../../../AVS/Redist/AVSImageJpeg2000.dll"           named_guids rename_namespace("Jpx")
-#import "../../../../AVS/Redist/AVSImageFile3.dll"              named_guids rename_namespace("ImageFile")
-#import "../../../../AVS/Redist/AVSGraphics.dll"                named_guids rename_namespace("AVSGraphics")
+#import "../Redist/ASCGraphics.dll"								named_guids rename_namespace("AVSGraphics")
 #endif
 
 using namespace ATL;

@@ -9,11 +9,11 @@ HRESULT CPDFWriter::OnlineWordToPdf (BSTR sPathXml, BSTR sDstFile, BSTR sHtmlPla
 	NOnlineOfficeBinToPdf::CommandType eCommand = NOnlineOfficeBinToPdf::ctError;
 	CString sTempLogo;
 
-	AVSGraphics::IAVSWinFonts *piWinFonts = NULL;
+	AVSGraphics::IASCWinFonts *piWinFonts = NULL;
 
 	try
 	{
-		hRes = CoCreateInstance (AVSGraphics::CLSID_CAVSWinFonts, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSWinFonts, (void **) &piWinFonts);
+		hRes = CoCreateInstance (AVSGraphics::CLSID_CASCWinFonts, NULL, CLSCTX_ALL, AVSGraphics::IID_IASCWinFonts, (void **) &piWinFonts);
 
 #ifdef BUILD_CONFIG_OPENSOURCE_VERSION
 		piWinFonts->Init(L"", TRUE, TRUE);

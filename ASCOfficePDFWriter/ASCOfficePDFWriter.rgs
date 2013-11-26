@@ -2,8 +2,8 @@ HKCR
 {
 	NoRemove AppID
 	{
-		'%APPID%' = s 'AVSOfficePDFWriter'
-		'AVSOfficePDFWriter.DLL'
+		'%APPID%' = s 'ASCOfficePDFWriter'
+		'ASCOfficePDFWriter.DLL'
 		{
 			val AppID = s '%APPID%'
 		}

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
-	Name="AVSOfficePDFWriter"
+	Version="8,00"
+	Name="ASCOfficePDFWriter"
 	ProjectGUID="{FD508B11-154E-491B-BA4A-EA81978955EF}"
-	RootNamespace="AVSOfficePDFWriter"
+	RootNamespace="ASCOfficePDFWriter"
 	Keyword="AtlProj"
-	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
 		<Platform
@@ -43,16 +42,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficePDFWriter.tlb"
-				HeaderFileName="AVSOfficePDFWriter.h"
+				TypeLibraryName="$(IntDir)/ASCOfficePDFWriter.tlb"
+				HeaderFileName="ASCOfficePDFWriter.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficePDFWriter_i.c"
-				ProxyFileName="AVSOfficePDFWriter_p.c"
+				InterfaceIdentifierFileName="ASCOfficePDFWriter_i.c"
+				ProxyFileName="ASCOfficePDFWriter_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="X:\AVS\Sources\AVSOfficeStudio\AVSOfficePDFWriter\Zlib;x:\AVS\Sources\AVSImageStudio3\AVSGraphics\Objects\Font\FreeType\"
+				AdditionalIncludeDirectories="../OfficeCore/Fonts/FreeType"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -77,12 +76,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="$(OutDir)/AVSOfficePDFWriter.dll"
+				OutputFile="$(OutDir)/ASCOfficePDFWriter.dll"
 				LinkIncremental="2"
-				MergedIDLBaseFileName="_AVSOfficePDFWriter.idl"
+				MergedIDLBaseFileName="_ASCOfficePDFWriter.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSOfficePDFWriter.lib"
+				ImportLibrary="$(OutDir)/ASCOfficePDFWriter.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -104,6 +103,9 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
 				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;"
@@ -120,7 +122,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="X:\AVS\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
+				CommandLine="..\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -137,15 +139,15 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficePDFWriter.tlb"
-				HeaderFileName="AVSOfficePDFWriter.h"
+				TypeLibraryName="$(IntDir)/ASCOfficePDFWriter.tlb"
+				HeaderFileName="ASCOfficePDFWriter.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficePDFWriter_i.c"
-				ProxyFileName="AVSOfficePDFWriter_p.c"
+				InterfaceIdentifierFileName="ASCOfficePDFWriter_i.c"
+				ProxyFileName="ASCOfficePDFWriter_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="X:\AVS\Sources\AVSOfficeStudio\AVSOfficePDFWriter\Zlib;x:\AVS\Sources\AVSImageStudio3\AVSGraphics\Objects\Font\FreeType\"
+				AdditionalIncludeDirectories="../OfficeCore/Fonts/FreeType"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -168,15 +170,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="../Redist/AVSOfficePDFWriter.dll"
+				OutputFile="$(OutDir)/ASCOfficePDFWriter.dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSOfficePDFWriter.idl"
+				MergedIDLBaseFileName="_ASCOfficePDFWriter.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficePDFWriter.lib"
+				ImportLibrary="$(OutDir)/ASCOfficePDFWriter.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -198,9 +200,12 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;"
+				CommandLine="&#x0D;&#x0A;copy $(TargetPath) ..\Redist\ASCOfficePDFWriter.dll"
 			/>
 		</Configuration>
 	</Configurations>
@@ -213,7 +218,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSOfficePDFWriter.cpp"
+				RelativePath=".\ASCOfficePDFWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OnlineOfficeBinToPdf.cpp"
 				>
 			</File>
 			<File
@@ -233,6 +242,14 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseASC|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -283,7 +300,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ImageExt.h"
+				>
+			</File>
+			<File
 				RelativePath=".\List.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LZWEncoder.h"
 				>
 			</File>
 			<File
@@ -296,6 +321,10 @@
 			</File>
 			<File
 				RelativePath=".\Objects.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OnlineOfficeBinToPdf.h"
 				>
 			</File>
 			<File
@@ -361,12 +390,20 @@
 					RelativePath=".\EncoderConstants.h"
 					>
 				</File>
+				<File
+					RelativePath=".\ToUnicode.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Font"
 				>
 				<File
 					RelativePath=".\Font.h"
+					>
+				</File>
+				<File
+					RelativePath=".\FontBase.h"
 					>
 				</File>
 				<File
@@ -379,6 +416,10 @@
 				</File>
 				<File
 					RelativePath=".\FontTrueType.h"
+					>
+				</File>
+				<File
+					RelativePath=".\FontTrueTypeWriter.h"
 					>
 				</File>
 				<File
@@ -409,11 +450,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficePDFWriter.rc"
+				RelativePath=".\ASCOfficePDFWriter.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficePDFWriter.rgs"
+				RelativePath=".\ASCOfficePDFWriter.rgs"
 				>
 			</File>
 		</Filter>

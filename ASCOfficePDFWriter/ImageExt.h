@@ -308,9 +308,9 @@ namespace NSImageExt
 			return 0;
 		}
 
-		BOOL DrawOnRenderer(IASCRenderer* pRenderer, BSTR strFile, double dX, double dY, double dW, double dH)
+#ifdef BUILD_CONFIG_FULL_VERSION
+		BOOL DrawOnRenderer(AVSGraphics::IASCRenderer* pRenderer, BSTR strFile, double dX, double dY, double dW, double dH)
 		{
-#if BUILD_CONFIG_FULL_VERSION
 			if (NULL == pRenderer)
 				return FALSE;
 
@@ -379,9 +379,9 @@ namespace NSImageExt
 
 				return TRUE;
 			}
-#endif
-			
+		
 			return FALSE;
 		}
+#endif
 	};
 }

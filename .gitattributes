@@ -401,6 +401,7 @@ Redist/ASCOfficeDjVuFile.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficeDocFile.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficeDocxFile.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficeDocxFile2.dll svn_mime_002dtype=application%2Foctet-stream
+Redist/ASCOfficeDocxRenderer.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficeFB2File.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficePDFWriter.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficePPTXFile.dll svn_mime_002dtype=application%2Foctet-stream

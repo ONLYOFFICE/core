@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\..\..\AVSImageStudio3\AVSGraphics\OfficeSvmFile\"
+				AdditionalIncludeDirectories=".\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\Redist;..\..\..\ASCImageStudio3\ASCGraphics\OfficeSvmFile\"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"

@@ -3,7 +3,7 @@
 // Used by AVSOfficeDocFile.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_AVSDOCFILE                  101
+#define IDR_ASCDOCFILE                  101
 
 // Next default values for new objects
 // 

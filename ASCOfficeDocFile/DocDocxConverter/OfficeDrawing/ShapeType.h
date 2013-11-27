@@ -1,6 +1,6 @@
 #pragma once
 
-#include <XmlUtils.h>
+#include <../../../Common/XmlUtils.h>
 
 #include "ProtectionBooleanProperties.h"
 #include "..\IVisitable.h"

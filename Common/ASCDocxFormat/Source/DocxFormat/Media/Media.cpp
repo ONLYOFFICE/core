@@ -5,8 +5,8 @@
 
 #include "Media.h"
 #include "..\FileTypes.h"
-#include "OfficeSvmFile.h"
-#include "SvmConverter.h"
+#include "../../../../../ASCImageStudio3/ASCGraphics/OfficeSvmFile/OfficeSvmFile.h"
+#include "../../../../../ASCImageStudio3/ASCGraphics/OfficeSvmFile/SvmConverter.h"
 #include "FileNameUtility.h"
 #include <boost/algorithm/string/replace.hpp>
 

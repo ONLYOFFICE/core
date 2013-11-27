@@ -111,7 +111,7 @@ public:
 			pFontPicker->GetAdditionalParam(_T("NativeCutter"), &vt);
 			pEmbeddedFontsManager = (NSFontCutter::CEmbeddedFontsManager*)vt.pvRecord;
 
-			AVSGraphics::IAVSFontManager* pFontManager = m_oFontProcessor.getFontManager();
+			ASCGraphics::IASCFontManager* pFontManager = m_oFontProcessor.getFontManager();
 			//המבאגטל לודא רנטפע
 			pEmbeddedFontsManager->CheckFont(_T("Wingdings 3"), pFontManager);
 			pEmbeddedFontsManager->CheckFont(_T("Arial"), pFontManager);

@@ -7,7 +7,7 @@ namespace BinXlsxRW {
 	static TCHAR* gc_sDefaultFontName = _T("Arial");
 
 	class FontProcessor {
-		AVSGraphics::IAVSFontManager* m_pFontManager;
+		ASCGraphics::IASCFontManager* m_pFontManager;
 		CAtlMap<CString, CString> m_mapFontMap;
 
 		CString m_sFontDir;
@@ -37,7 +37,7 @@ namespace BinXlsxRW {
 						addToFontMap(*pFont);
 			}
 		}
-		AVSGraphics::IAVSFontManager* getFontManager()
+		ASCGraphics::IASCFontManager* getFontManager()
 		{
 			return m_pFontManager;
 		}
@@ -66,7 +66,7 @@ namespace BinXlsxRW {
 		void initFontManager()
 		{
 			RELEASEINTERFACE(m_pFontManager);
-			CoCreateInstance(__uuidof(AVSGraphics::CAVSFontManager), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::IAVSFontManager), (void**) &m_pFontManager);
+			CoCreateInstance(ASCGraphics::CLSID_CASCFontManager, NULL, CLSCTX_ALL, ASCGraphics::IID_IASCFontManager, (void**) &m_pFontManager);
 
 			VARIANT var;
 			var.vt = VT_BSTR;
@@ -74,10 +74,12 @@ namespace BinXlsxRW {
 			m_pFontManager->SetAdditionalParam(L"InitializeFromFolder", var);
 			RELEASESYSSTRING(var.bstrVal);
 
+#ifdef BUILD_CONFIG_FULL_VERSION
 			CString defaultFontName = gc_sDefaultFontName;
 			BSTR defFontName = defaultFontName.AllocSysString();
 			m_pFontManager->SetDefaultFont(defFontName);
 			SysFreeString(defFontName);
+#endif
 		}
 
 		void addToFontMap(OOX::Spreadsheet::CFont& font)
@@ -118,17 +120,23 @@ namespace BinXlsxRW {
 			CString params = parw;
 
 			BSTR fontPath;
+			BSTR familyName;
 			long index = 0;
 			BSTR bstrParams = params.AllocSysString();
+
+#ifdef BUILD_CONFIG_FULL_VERSION
 			m_pFontManager->GetWinFontByParams(bstrParams, &fontPath, &index);
-			SysFreeString(bstrParams);
 			int status = m_pFontManager->LoadFontFromFile(fontPath, 12, 72, 72, index);
 			SysFreeString(fontPath);
-
-			BSTR familyName;
 			m_pFontManager->GetFamilyName(&familyName);
+#else
+			m_pFontManager->GetWinFontByParams(bstrParams, &familyName, &fontPath, NULL, &index);
+#endif
+			
 			CString resFontName = familyName;
+			SysFreeString(fontPath);
 			SysFreeString(familyName);
+			SysFreeString(bstrParams);
 
 			m_mapFontMap.SetAt(sFontName, resFontName);
 		}	

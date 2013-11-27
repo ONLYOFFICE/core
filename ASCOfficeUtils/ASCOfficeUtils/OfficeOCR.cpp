@@ -26,6 +26,7 @@ void COfficeOCR::FinalRelease()
 // ѕолучает изображение, возвращает текст
 STDMETHODIMP COfficeOCR::Recognize ( IUnknown *Image, BSTR* Text )
 {
+#ifdef BUILD_CONFIG_FULL_VERSION
 	if ( NULL == Text )
 		return CAVSATLError::Error ( MEMORY );
 
@@ -92,7 +93,7 @@ STDMETHODIMP COfficeOCR::Recognize ( IUnknown *Image, BSTR* Text )
 		sResult += _T ("</Text>");
 
 	*Text = sResult.AllocSysString();
-
+#endif
 	return S_OK;
 }
 // ¬ыставл€ет формат выходного текста ( по умолчанию XML )

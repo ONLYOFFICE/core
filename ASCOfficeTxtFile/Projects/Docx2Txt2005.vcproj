@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\..\..\Common\AvsDocxFormat\Source\Utility;.\..\..\Common\AvsDocxFormat\Source\XML;.\..\..\Common\AvsDocxFormat\Source\Common;.\..\Source/TxtFormat;.\..\..\Common\AvsDocxFormat\Source\DocxFormat"
+				AdditionalIncludeDirectories=".\..\..\Common\ASCDocxFormat\Source\Utility;.\..\..\Common\ASCDocxFormat\Source\XML;.\..\..\Common\ASCDocxFormat\Source\Common;.\..\Source/TxtFormat;.\..\..\Common\ASCDocxFormat\Source\DocxFormat"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -101,7 +101,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories=".\..\..\Common\AvsDocxFormat\Source\Utility;.\..\..\Common\AvsDocxFormat\Source\XML;.\..\..\Common\AvsDocxFormat\Source\Common;.\..\Source/TxtFormat;.\..\..\Common\AvsDocxFormat\Source\DocxFormat"
+				AdditionalIncludeDirectories=".\..\..\Common\ASCDocxFormat\Source\Utility;.\..\..\Common\ASCDocxFormat\Source\XML;.\..\..\Common\ASCDocxFormat\Source\Common;.\..\Source/TxtFormat;.\..\..\Common\ASCDocxFormat\Source\DocxFormat"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"

@@ -10,7 +10,7 @@
 #include "Resource.h"
 
 #include "XmlFile.h"
-#include "XmlUtils.h"
+#include "../Common/XmlUtils.h"
 
 
 CTxtFile::CTxtFile()
@@ -21,10 +21,10 @@ CTxtFile::CTxtFile()
 HRESULT CTxtFile::FinalConstruct()
 {
 	m_pOfficeUtils = NULL;
-	return CoCreateInstance(__uuidof(AVSOfficeUtils::COfficeUtils),
+	return CoCreateInstance(__uuidof(ASCOfficeUtils::COfficeUtils),
 													NULL, 
 													CLSCTX_INPROC_SERVER, 
-													__uuidof(AVSOfficeUtils::IOfficeUtils), 
+													__uuidof(ASCOfficeUtils::IOfficeUtils), 
 													(void **)&(m_pOfficeUtils));
 }
 
@@ -168,7 +168,7 @@ void CTxtFile::createOriginDocx(const boost::filesystem::wpath& path) const
 
 const unsigned long CTxtFile::LoadFromResource(LPCWSTR lpResName, LPCWSTR lpResType, LPCWSTR fileName) const
 {
-	HMODULE hMod = GetModuleHandle(L"AVSOfficeTxtFile.dll");
+	HMODULE hMod = GetModuleHandle(L"ASCOfficeTxtFile.dll");
 	if (hMod)
 	{
 		HRSRC hRes = FindResource(hMod, lpResName, lpResType);

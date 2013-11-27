@@ -1,9 +1,9 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by AVSOfficeTxtFile.rc
+// Used by ASCOfficeTxtFile.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_AVSTXTFILE                  101
+#define IDR_ASCTXTFILE                  101
 #define IDR_DOCUMENT1                   207
 #define IDR_DOCUMENT2                   208
 

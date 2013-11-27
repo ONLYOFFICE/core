@@ -9,7 +9,7 @@
 [ module(dll, uuid = "{30D961A6-9131-48E8-A7D9-3826E3D7818A}", 
 		 name = "ASCOfficeTxtFile", 
 		 helpstring = "ASCOfficeTxtFile 1.0 Type Library",
-		 resource_name = "IDR_AVSTXTFILE") ]
+		 resource_name = "IDR_ASCTXTFILE") ]
 class CAVSTxtFileModule
 {
 public:

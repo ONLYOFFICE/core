@@ -8,6 +8,7 @@ namespace XPS
 		,	m_lDrawingPages(0)
 	{
 		InitializeCriticalSection(&m_oFontCS);
+		m_fontMap = new CAtlMap<CString, bool>();
 	}
 
 	Folder::~Folder()
@@ -29,8 +30,8 @@ namespace XPS
 
 		m_path = Path;
 		m_pages.erase(m_pages.begin(), m_pages.end());
-		m_fontMap.reset(new std::set<CString>);//->erase(m_fontMap->begin(), m_fontMap->end());
-
+		m_fontMap->RemoveAll();
+		
 		//XmlUtils::CXmlNodes	nodes;
 		//XmlUtils::CXmlNode	node;
 		
@@ -114,7 +115,7 @@ namespace XPS
 
 	int Folder::GetPageCount()const
 	{
-		return m_pages.size();
+		return (int)m_pages.size();
 	}
 
 	void Folder::GetPageSize(int Number, int& w, int& h)
@@ -129,7 +130,7 @@ namespace XPS
 		m_lDrawingPages--;
 	}
 
-	void Folder::DrawPage(int Number, AVSGraphics::IAVSRenderer* pRenderer, BOOL* pBreak)
+	void Folder::DrawPage(int Number, ASCGraphics::IASCRenderer* pRenderer, BOOL* pBreak)
 	{
 		if(m_bIsClosed)
 			return;

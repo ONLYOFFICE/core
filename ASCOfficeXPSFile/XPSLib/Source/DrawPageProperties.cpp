@@ -7,7 +7,7 @@ namespace XPS
 		:	m_CurrentTransform(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
 	{
 		//HRESULT res;
-		/*res = */CoCreateInstance( __uuidof(AVSGraphics::CAVSFontManager), NULL, CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IAVSFontManager), (void **)&(m_FontManager));
+		/*res = */CoCreateInstance( __uuidof(ASCGraphics::CASCFontManager), NULL, CLSCTX_INPROC_SERVER, __uuidof(ASCGraphics::IASCFontManager), (void **)&(m_FontManager));
 		//assert(res == S_OK);
 
 		_bstr_t options(L"");

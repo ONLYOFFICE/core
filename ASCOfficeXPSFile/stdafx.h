@@ -43,4 +43,4 @@
 
 using namespace ATL;
 
-//#import "..\..\..\Redist\AVSGraphics.dll"									named_guids raw_interfaces_only rename_namespace("AVSGraphics")
+#import "../Redist/ASCOfficeUtils.dll"						named_guids raw_interfaces_only rename_namespace("ASCOfficeUtils")

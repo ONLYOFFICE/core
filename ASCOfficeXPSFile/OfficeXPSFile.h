@@ -1,21 +1,17 @@
 #pragma once
 #include "resource.h"       // main symbols
 #include <string>
-#include ".\..\Common\OfficeFileTemplate.h"
-#include ".\..\Common\OfficeFileErrorDescription.h"
-#include ".\..\Common\OfficeDefines.h"
-//#include "XmlUtils.h"
-#include "..\..\..\..\AVSImageStudio3\AVSGraphics\Interfaces\XmlUtils.h"
-#include "..\Common\ASCUtils.h"
+#include "./../Common/OfficeFileTemplate.h"
+#include "./../Common/OfficeFileErrorDescription.h"
+#include "./../Common/OfficeDefines.h"
+
+#include "../Common/XmlUtils.h"
+#include "../Common/ASCUtils.h"
 #include "XPS.h"
 #include "OfficeUtilsEvents.h"
 #include "File.h"
 
 #include "TemporaryCS.h"
-
-#import "..\Redist\ASCOfficeUtils.dll" raw_interfaces_only rename_namespace("ASCOfficeUtils")
-//using namespace AVSOfficeUtils;
-//#pragma comment( lib, "XPSLib.lib")
 
 #if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
@@ -64,7 +60,7 @@ class ATL_NO_VTABLE CXPSFile: public IXPSFile, public IAVSOfficePages
 {
 private:
 	CString m_strTempDirectory;
-	AVSGraphics::IAVSDocumentRenderer* m_pDocumentRenderer;
+	ASCGraphics::IASCDocumentRenderer* m_pDocumentRenderer;
 
 	CRITICAL_SECTION m_oCS;
 
@@ -82,13 +78,13 @@ public:
 		(*ppRenderer) = NULL;
 		if( NULL == m_pDocumentRenderer )
 			return S_OK;
-		return m_pDocumentRenderer->QueryInterface(__uuidof(AVSGraphics::IAVSDocumentRenderer), (void**)ppRenderer);
+		return m_pDocumentRenderer->QueryInterface(__uuidof(ASCGraphics::IASCDocumentRenderer), (void**)ppRenderer);
 	}
 	STDMETHOD(put_DocumentRenderer)(IUnknown* pRenderer)
 	{
 		RELEASEINTERFACE( m_pDocumentRenderer );
 		if( NULL != pRenderer )
-			pRenderer->QueryInterface(__uuidof(AVSGraphics::IAVSDocumentRenderer), (void**)&m_pDocumentRenderer);
+			pRenderer->QueryInterface(__uuidof(ASCGraphics::IASCDocumentRenderer), (void**)&m_pDocumentRenderer);
 		return S_OK;
 	}
 	STDMETHOD(get_TempDirectory)(BSTR* pbsPath)

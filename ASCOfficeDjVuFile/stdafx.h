@@ -57,10 +57,8 @@
 #pragma comment(lib, "Release\\libdjvu.lib")
 #endif
 
-#import "..\Redist\ASCMediaCore3.dll"									named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
-#import "..\Redist\ASCMediaFormatSettings3.dll"						named_guids raw_interfaces_only rename_namespace("MediaFormat"), exclude("tagRECT")
+#import "..\Redist\ASCMediaCore3.dll"								named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
 #import "..\Redist\ASCImageStudio3.dll"								named_guids raw_interfaces_only rename_namespace("ImageStudio")
-//#import "..\Redist\ASCOfficeEditor.dll"				named_guids raw_interfaces_only rename_namespace("OfficeEditor")
 #import "..\Redist\ASCGraphics.dll"									named_guids raw_interfaces_only rename_namespace("AVSGraphics")
 
 

@@ -136,7 +136,7 @@ void CFB2File::createOriginDocx(const CString path) const
 
 const unsigned long CFB2File::LoadFromResource(LPCWSTR lpResName, LPCWSTR lpResType, LPCWSTR fileName) const
 {
-	HMODULE hMod = GetModuleHandle(_T("AVSOfficeFB2File.dll"));
+	HMODULE hMod = GetModuleHandle(_T("ASCOfficeFB2File.dll"));
 	if (hMod)
 	{
 		HRSRC hRes = FindResource(hMod, lpResName, lpResType);

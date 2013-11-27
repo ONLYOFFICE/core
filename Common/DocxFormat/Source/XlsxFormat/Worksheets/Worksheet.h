@@ -151,7 +151,7 @@ namespace OOX
 								pCommentItem->m_nCol = nCol - 1;
 
 								unsigned int nAuthorId = pComment->m_oAuthorId->GetValue();
-								if(nAuthorId < aAuthors.GetSize())
+								if(nAuthorId < (unsigned int)aAuthors.GetSize())
 									pCommentItem->m_sAuthor = *aAuthors[nAuthorId];
 
 								OOX::Spreadsheet::CSi* pSi = pComment->m_oText.GetPointerEmptyNullable();

@@ -1,5 +1,5 @@
 #pragma once
-#include "..\..\AVSPresentationEditor\OfficeDrawing\Document.h"
+#include "../../ASCPresentationEditor/OfficeDrawing/Document.h"
 
 class CElementInfo
 {

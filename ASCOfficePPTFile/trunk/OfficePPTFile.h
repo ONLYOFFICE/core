@@ -2,11 +2,10 @@
 #pragma once
 #include "resource.h"       // main symbols
 
-#include "AVSUtils.h"
-#include "..\..\Common\OfficeFileTemplate.h"
-#include "..\..\Common\RSA\XMLEncoder.h"
+#include "../../Common/ASCUtils.h"
+#include "../../Common/OfficeFileTemplate.h"
 
-#include "VideoFileErrorDescription.h"
+#include "../../Common/VideoFileErrorDescription.h"
 
 #include "Reader\PPTFileReader.h"
 
@@ -81,59 +80,12 @@ private:
 	CString	m_strEditorXml;
 
 	CStringW m_strTempDirectory;
-
-	CXMLEncoder m_oEncoder;
 	
 public:
 	STDMETHOD(get_DrawingXml)(BSTR* pbstrXml)
 	{
 		if (NULL == pbstrXml)
 			return S_FALSE;
-		
-		if (1 == m_arUserSources.GetCount())
-		{
-			CString strXml = m_arUserSources[0];
-
-#ifdef _DEBUG
-			CFile oFile;
-			oFile.CreateFile(_T("C:\\PPT_drawing.xml"));
-			oFile.WriteStringUTF8(strXml);
-			oFile.CloseFile();
-			//XmlUtils::CXmlWriter oWriter;
-			//oWriter.WriteString(strXml);
-			//oWriter.SaveToFile(_T("C:\\PPT_drawing.xml"), TRUE);
-
-			oFile.CreateFile(_T("C:\\ppt_editor.xml"));
-			oFile.WriteStringUTF8(m_strEditorXml);
-			oFile.CloseFile();
-			//XmlUtils::CXmlWriter oWriter2;
-			//oWriter2.WriteString(m_strEditorXml);
-			//oWriter2.SaveToFile(_T("C:\\PPT_editor.xml"), TRUE);
-#endif
-
-			strXml = m_oEncoder.EncryptXML(strXml);
-			*pbstrXml = strXml.AllocSysString();
-			return S_OK;
-		}
-		
-		CString strXml = _T("");
-		for (size_t nIndex = 0; nIndex < m_arUserSources.GetCount(); ++nIndex)
-		{
-			strXml += m_arUserSources[nIndex];
-		}
-
-		strXml = _T("<Tracks>") + strXml + _T("</Tracks>");
-
-#ifdef _DEBUG
-		XmlUtils::CXmlWriter oWriter;
-		oWriter.WriteString(strXml);
-		oWriter.SaveToFile(_T("C:\\PPT_drawing.xml"), TRUE);
-#endif
-
-		CStringA strA = m_oEncoder.EncryptXML(strXml);
-
-		*pbstrXml = strA.AllocSysString();
-
 		return S_OK;
 	}
 	STDMETHOD(get_TempDirectory)(BSTR* pbstrDir)
@@ -219,24 +171,14 @@ public:
 			return S_FALSE;
 
 		CString sParamName; sParamName = ParamName;
-		if (g_csBlowfishKeyParamName == sParamName)
-		{		
-			ParamValue->punkVal = m_oEncoder.GetBlowfishKey();
-		}		
-		else if (_T("EditorXml") == sParamName)
+		if (_T("EditorXml") == sParamName)
 		{		
 			m_strEditorXml = _T("");
 			if (0 < m_pReader->m_oDocumentInfo.m_arUsers.GetCount())
 			{
 				m_strEditorXml = m_pReader->m_oDocumentInfo.m_arUsers[0]->ToXmlEditor2();
-				if (FALSE)
-					m_pReader->m_oDocumentInfo.m_arUsers[0]->SaveThemeThumbnail(m_strTempDirectory, 180, 135, false);
 			}
 			ParamValue->bstrVal = m_strEditorXml.AllocSysString();
-
-#ifdef AVS_PPT_LOG_FILE
-			CDirectory::SaveToFile(_T("C:\\editor.xml"), m_strEditorXml);
-#endif
 		}
 		return S_OK;
 	}

@@ -1,5 +1,5 @@
 #pragma once
-#include "..\..\AVSPresentationEditor\OfficeDrawing\TextAttributesEx.h"
+#include "..\..\ASCPresentationEditor\OfficeDrawing\TextAttributesEx.h"
 #include "SlidePersist.h"
 
 #include "gdiplus.h"

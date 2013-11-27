@@ -1195,50 +1195,6 @@ void CPPTUserInfo::AddAudioTransition (long nSlide, CTransition* pTransition, co
 	CAudioElement* pAudio		=	new CAudioElement ();
 	if (pAudio)
 	{
-		pAudio->m_strFileName	=	strFilePath;
-
-		BSTR bstrFile			=	strFilePath.AllocSysString();
-
-		VideoFile::IVideoFile3* pVideoFile = NULL;
-		if (SUCCEEDED(CoCreateInstance(__uuidof(VideoFile::CVideoFile3), NULL, CLSCTX_ALL, __uuidof(VideoFile::IVideoFile3), (void**)(&pVideoFile))))
-		{
-			double dDuration	=	0;
-			if (pVideoFile)
-			{
-				if (FAILED(pVideoFile->OpenFile(bstrFile)))
-				{
-					RELEASEINTERFACE (pVideoFile); 
-					RELEASEOBJECT (pAudio);
-
-					return;
-				}
-
-				pVideoFile->get_audioDuration (&dDuration);
-				pVideoFile->CloseFile();							
-
-				SysFreeString(bstrFile);
-				RELEASEINTERFACE(pVideoFile);
-
-				pAudio->m_dStartTime		=	0;
-				pAudio->m_dEndTime			=	dDuration;
-				pAudio->m_dClipStartTime	=	0.0;
-				pAudio->m_dClipEndTime		=	dDuration;
-
-				if (pTransition->m_bLoopSound)
-					pAudio->m_bLoop			=	TRUE;
-
-				CAnimationSimple oPlayAudio;
-
-				oPlayAudio.m_nEffectType	=	6;
-				oPlayAudio.m_nMediaCMD		=	1;
-				oPlayAudio.m_nBeginTime		=	-0.0001;				//	
-				oPlayAudio.m_nBeginTime		=	-pTransition->m_dSpeed;
-				oPlayAudio.m_nDuration		=	dDuration;
-
-				pAudio->m_oAnimations.m_arAnimations.Add (oPlayAudio);
-
-				m_arSlides[nSlide].m_arElements.Add(pAudio);
-			}
-		}
+		pAudio->m_strFileName	=	strFilePath;				
 	}
 }

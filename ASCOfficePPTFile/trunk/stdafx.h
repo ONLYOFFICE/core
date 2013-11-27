@@ -66,8 +66,7 @@ using namespace Gdiplus;
 #define ENABLE_PPT_TO_PPTX_CONVERT
 #define ENABLE_ODP_AND_PPT_CONVERT
 
-#include "../Common/AVSATLError.h"
+#include "../../Common/ASCATLError.h"
 
-#import "../../../../AVS/Redist/AVSMediaCore3.dll"				named_guids rename_namespace("MediaCore"), raw_interfaces_only, exclude("tagRECT")
-#import "../../../../AVS/Redist/AVSVideoFile3.dll"				named_guids rename_namespace("VideoFile"), raw_interfaces_only
-#import "../../../../AVS/Redist/AVSGraphics.dll"				named_guids rename_namespace("AVSGraphics"), raw_interfaces_only
+#import "../../Redist/ASCMediaCore3.dll"			named_guids rename_namespace("MediaCore"), raw_interfaces_only, exclude("tagRECT")
+#import "../../Redist/ASCGraphics.dll"				named_guids rename_namespace("ASCGraphics"), raw_interfaces_only

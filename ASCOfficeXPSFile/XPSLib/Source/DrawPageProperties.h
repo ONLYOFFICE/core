@@ -2,8 +2,8 @@
 #ifndef XPS_DRAWPAGEPROPERTIES_INCLUDE_H_
 #define XPS_DRAWPAGEPROPERTIES_INCLUDE_H_
 
-#import "..\..\..\..\..\..\..\Redist\AVSGraphics.dll"									named_guids raw_interfaces_only rename_namespace("AVSGraphics")
-#include "..\..\..\..\..\..\AVSImageStudio3\AVSGraphics\agg\AVSWrapper\Matrix.h"
+#import "../../../Redist/ASCGraphics.dll"				named_guids raw_interfaces_only rename_namespace("ASCGraphics")
+#include "../../../ASCImageStudio3/ASCGraphics/agg/ASCWrapper\Matrix.h"
 #include <list>
 
 namespace XPS
@@ -11,7 +11,7 @@ namespace XPS
 	class DrawPageProperties
 	{
 	public:
-		AVSGraphics::IAVSFontManager* m_FontManager;
+		ASCGraphics::IASCFontManager* m_FontManager;
 
 		Aggplus::CMatrix m_CurrentTransform;
 		std::list<Aggplus::CMatrix> m_TransformStack;

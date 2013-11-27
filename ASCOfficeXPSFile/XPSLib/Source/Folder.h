@@ -4,6 +4,7 @@
 
 #include "Page.h"
 #include <map>
+#include "../../../Common/DocxFormat/Source/Base/SmartPtr.h";
 
 namespace XPS
 {
@@ -17,7 +18,7 @@ namespace XPS
 		XmlUtils::CXmlNodes	m_nodes;
 
 		std::map<int, XPS::Page*> m_pages;
-		boost::shared_ptr<std::set<CString> > m_fontMap;
+		NSCommon::smart_ptr<CAtlMap<CString, bool>> m_fontMap;
 
 		CRITICAL_SECTION m_oFontCS;
 
@@ -32,7 +33,7 @@ namespace XPS
 		void ReadFromPath(const CString& Path);
 		int GetPageCount()const;
 		void GetPageSize(int Number, int& w, int& h);
-		void DrawPage(int Number, AVSGraphics::IAVSRenderer* pRenderer, BOOL* pBreak);
+		void DrawPage(int Number, ASCGraphics::IASCRenderer* pRenderer, BOOL* pBreak);
 		void Close();
 	};
 } // namespace XPS

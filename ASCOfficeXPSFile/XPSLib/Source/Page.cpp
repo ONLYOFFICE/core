@@ -13,7 +13,7 @@ namespace XPS
 //#define xpsUnitToMM(x) (x)
 #define xpsUnitToMM(x) ((x)*cdk)
 
-	Page::Page(const CString& File, const CString& Path, boost::shared_ptr<std::set<CString> > fontMap, CRITICAL_SECTION* fontCS)
+	Page::Page(const CString& File, const CString& Path, NSCommon::smart_ptr<CAtlMap<CString, bool>> fontMap, CRITICAL_SECTION* fontCS)
 		:	m_strFilename(File)
 		,	m_strPath(Path)
 		,	m_fontMap(fontMap)
@@ -98,7 +98,7 @@ namespace XPS
 	}
 
 
-	bool Page::VmlToRenderer(CString& str, AVSGraphics::IAVSRenderer* pRenderer)
+	bool Page::VmlToRenderer(CString& str, ASCGraphics::IASCRenderer* pRenderer)
 	{
 		bool result = false;
 		double x_cur = 0.0, y_cur = 0.0;
@@ -108,7 +108,7 @@ namespace XPS
 		std::vector<CString> dest;
 		PrepareVML(str);
 		DelimString(str, dest, _T(" ,"));
-		int elems = dest.size();
+		int elems = (int)dest.size();
 		for(int i = 0; i < elems; i++)
 		{
 			if(dest[i] == _T("F"))
@@ -837,7 +837,7 @@ namespace XPS
 	}
 
 
-	void Page::TransformToRenderer(CString& str, AVSGraphics::IAVSRenderer* pRenderer, DrawPageProperties* pProps)const
+	void Page::TransformToRenderer(CString& str, ASCGraphics::IASCRenderer* pRenderer, DrawPageProperties* pProps)const
 	{
 		std::vector<CString> dest;
 		DelimString(str, dest, _T(','));
@@ -854,7 +854,7 @@ namespace XPS
 	}
 
 
-	void Page::ResetTransform(AVSGraphics::IAVSRenderer* pRenderer, DrawPageProperties* pProps)const
+	void Page::ResetTransform(ASCGraphics::IASCRenderer* pRenderer, DrawPageProperties* pProps)const
 	{
 		pProps->m_TransformStack.pop_back();
 		pProps->m_CurrentTransform = pProps->m_TransformStack.back();
@@ -875,7 +875,7 @@ namespace XPS
 	}
 
 
-	void Page::Draw(AVSGraphics::IAVSRenderer* pRenderer, BOOL* pBreak)const
+	void Page::Draw(ASCGraphics::IASCRenderer* pRenderer, BOOL* pBreak)const
 	{
 		XmlUtils::CXmlNode	lNode;
 
@@ -944,7 +944,7 @@ namespace XPS
 	}
 
 
-	void Page::DrawCanvas(XmlUtils::CXmlNode& canvas, AVSGraphics::IAVSRenderer* pRenderer, DrawPageProperties* pProps, BOOL* pBreak)const
+	void Page::DrawCanvas(XmlUtils::CXmlNode& canvas, ASCGraphics::IASCRenderer* pRenderer, DrawPageProperties* pProps, BOOL* pBreak)const
 	{
 		bool isClipped = false;
 		bool isTransformed = false;
@@ -1017,7 +1017,7 @@ namespace XPS
 	}
 
 
-	void Page::DrawGlyph(XmlUtils::CXmlNode& node, AVSGraphics::IAVSRenderer* pRenderer, DrawPageProperties* pProps)const
+	void Page::DrawGlyph(XmlUtils::CXmlNode& node, ASCGraphics::IASCRenderer* pRenderer, DrawPageProperties* pProps)const
 	{
 		//CString font = m_Path + node.GetAttribute(_T("FontUri"));
 		//font.Replace(_T("\\/"), _T("\\"));
@@ -1046,15 +1046,15 @@ namespace XPS
 				EnterCriticalSection(m_pFontCS);
 				
 				fname.MakeLower();
-				if(m_fontMap->find(fname) == m_fontMap->end())
+				if (NULL != m_fontMap->Lookup(fname))
 				{
-					if(m_fontMap->insert(fname).second)
+					if (m_fontMap->SetAt(fname, true))
 					{
 						unsigned char key[16];
 						GetFontKey(fname, key);
 						CFile fontFile;
 						HRESULT res = fontFile.OpenFileRW(font);
-						assert(res == S_OK);
+						//assert(res == S_OK);
 						unsigned char fontData[32];
 						fontFile.ReadFile(fontData, 32);
 						for(int i = 0; i < 32; i++)
@@ -1174,7 +1174,7 @@ namespace XPS
 	}
 
 
-	void Page::DrawPath(XmlUtils::CXmlNode& node, AVSGraphics::IAVSRenderer* pRenderer, DrawPageProperties* pProps)const
+	void Page::DrawPath(XmlUtils::CXmlNode& node, ASCGraphics::IASCRenderer* pRenderer, DrawPageProperties* pProps)const
 	{
 		CString transform = node.GetAttribute(_T("RenderTransform"), _T(""));
 		bool isTransformed = false;
@@ -1265,7 +1265,7 @@ namespace XPS
 	}
 
 
-	void Page::CanvasTransform(XmlUtils::CXmlNode& node, AVSGraphics::IAVSRenderer* pRenderer, DrawPageProperties* pProps)const
+	void Page::CanvasTransform(XmlUtils::CXmlNode& node, ASCGraphics::IASCRenderer* pRenderer, DrawPageProperties* pProps)const
 	{
 		XmlUtils::CXmlNode transform;
 		node.GetNode(_T("MatrixTransform"), transform);
@@ -1274,7 +1274,7 @@ namespace XPS
 	}
 
 
-	void Page::FillToRenderer(XmlUtils::CXmlNode& node, AVSGraphics::IAVSRenderer* pRenderer)const
+	void Page::FillToRenderer(XmlUtils::CXmlNode& node, ASCGraphics::IASCRenderer* pRenderer)const
 	{
 		XmlUtils::CXmlNode brush;
 		if(node.GetNode(_T("SolidColorBrush"), brush))

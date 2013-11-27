@@ -90,8 +90,8 @@ STDMETHODIMP CXPSFile::DrawPage(int nPage, IUnknown* punkRenderer, BOOL* pBreak)
 {
 	if(m_pFolder != NULL)
 	{
-		AVSGraphics::IAVSRenderer* pRenderer = NULL;
-		punkRenderer->QueryInterface(AVSGraphics::IID_IAVSRenderer, (void**)&pRenderer);
+		ASCGraphics::IASCRenderer* pRenderer = NULL;
+		punkRenderer->QueryInterface(ASCGraphics::IID_IASCRenderer, (void**)&pRenderer);
 		if(pRenderer != NULL)
 		{
 			m_pFolder->DrawPage(nPage, pRenderer, pBreak);

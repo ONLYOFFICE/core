@@ -1,9 +1,9 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by AVSOfficeHtmlFile.rc
+// Used by ASCOfficeHtmlFile.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_AVSHTMLFILE                 101
+#define IDR_ASCHTMLFILE                 101
 #define IDR_HTMLFILE                    102
 /*
 #define IDR_XSL1                        201

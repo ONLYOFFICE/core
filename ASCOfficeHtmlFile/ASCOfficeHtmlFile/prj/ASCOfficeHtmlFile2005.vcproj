@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSOfficeHtmlFile"
+	Name="ASCOfficeHtmlFile"
 	ProjectGUID="{4D78DBB6-81D3-4CE0-89CD-8AF12EF36DB3}"
-	RootNamespace="AVSOfficeHtmlFile"
+	RootNamespace="ASCOfficeHtmlFile"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -45,16 +45,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeHtmlFile.tlb"
-				HeaderFileName="AVSOfficeHtmlFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeHtmlFile.tlb"
+				HeaderFileName="ASCOfficeHtmlFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeHtmlFile_i.c"
-				ProxyFileName="AVSOfficeHtmlFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeHtmlFile_i.c"
+				ProxyFileName="ASCOfficeHtmlFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\res;..\include;..\..\..\Common;&quot;$(IntDir)&quot;;..\..\..\Common\AvsDocxFormat\Source\Utility;..\prj;..\..\..\..\..\..\Common;..\HTMLReaderLib"
+				AdditionalIncludeDirectories="..\res;..\include;..\..\..\Common;..\HTMLReaderLib"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				ExceptionHandling="1"
@@ -84,10 +84,10 @@
 				AdditionalDependencies="gdiplus.lib"
 				OutputFile="$(OutDir)/$(ProjectName).dll"
 				LinkIncremental="2"
-				MergedIDLBaseFileName="_AVSOfficeHtmlFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeHtmlFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSOfficeHtmlFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeHtmlFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -128,7 +128,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\..\..\Redist\VersionControl.exe $(ProjectDir)\..\res\version.h"
+				CommandLine="..\..\..\Redist\VersionControl.exe $(ProjectDir)\..\res\version.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -145,16 +145,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeHtmlFile.tlb"
-				HeaderFileName="AVSOfficeHtmlFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeHtmlFile.tlb"
+				HeaderFileName="ASCOfficeHtmlFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeHtmlFile_i.c"
-				ProxyFileName="AVSOfficeHtmlFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeHtmlFile_i.c"
+				ProxyFileName="ASCOfficeHtmlFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\res;..\include;..\..\..\Common;&quot;$(IntDir)&quot;;..\..\..\Common\AvsDocxFormat\Source\Utility;..\prj;..\..\..\..\..\..\Common;..\HTMLReaderLib"
+				AdditionalIncludeDirectories="..\res;..\include;..\..\..\Common;..\prj;..\HTMLReaderLib"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -180,13 +180,13 @@
 				AdditionalDependencies="gdiplus.lib"
 				OutputFile="$(OutDir)/$(ProjectName).dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSOfficeHtmlFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeHtmlFile.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficeHTMLFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeHTMLFile.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -211,7 +211,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;../../../../../Redist/AVSOfficeStudio/$(ProjectName).dll&quot;&#x0D;&#x0A;"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;../../../Redist/$(ProjectName).dll&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -225,7 +225,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\..\..\Redist\VersionControl.exe $(ProjectDir)\..\res\version.h"
+				CommandLine="..\..\..\Redist\VersionControl.exe $(ProjectDir)\..\res\version.h"
 				ExcludedFromBuild="true"
 			/>
 			<Tool
@@ -243,16 +243,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeHtmlFile.tlb"
-				HeaderFileName="AVSOfficeHtmlFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeHtmlFile.tlb"
+				HeaderFileName="ASCOfficeHtmlFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeHtmlFile_i.c"
-				ProxyFileName="AVSOfficeHtmlFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeHtmlFile_i.c"
+				ProxyFileName="ASCOfficeHtmlFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\res;..\include;..\..\..\Common;&quot;$(IntDir)&quot;;..\..\..\Common\AvsDocxFormat\Source\Utility;..\prj;..\..\..\..\..\..\Common;..\HTMLReaderLib"
+				AdditionalIncludeDirectories="..\res;..\include;..\..\..\Common;..\prj;..\HTMLReaderLib"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -278,13 +278,13 @@
 				AdditionalDependencies="gdiplus.lib"
 				OutputFile="$(OutDir)/ASCOfficeHtmlFile.dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSOfficeHtmlFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeHtmlFile.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficeHTMLFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeHTMLFile.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -322,7 +322,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\src\AVSOfficeHtmlFile.cpp"
+				RelativePath="..\src\ASCOfficeHtmlFile.cpp"
 				>
 			</File>
 			<File
@@ -592,11 +592,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath="..\res\AVSOfficeHtmlFile.rc"
+				RelativePath="..\res\ASCOfficeHtmlFile.rc"
 				>
 			</File>
 			<File
-				RelativePath="..\res\AVSOfficeHtmlFile.rgs"
+				RelativePath="..\res\ASCOfficeHtmlFile.rgs"
 				>
 			</File>
 			<Filter

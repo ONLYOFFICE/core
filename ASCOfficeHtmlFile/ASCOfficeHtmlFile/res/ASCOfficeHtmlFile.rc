@@ -88,7 +88,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // REGISTRY
 //
 
-IDR_AVSHTMLFILE         REGISTRY                "AVSOfficeHtmlFile.rgs"
+IDR_ASCHTMLFILE         REGISTRY                "ASCOfficeHtmlFile.rgs"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@ END
 
 3 TEXTINCLUDE 
 BEGIN
-    "1 TYPELIB ""AVSOfficeHtmlFile.tlb""\r\n"
+    "1 TYPELIB ""ASCOfficeHtmlFile.tlb""\r\n"
     "\0"
 END
 
@@ -166,7 +166,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSOfficeHtmlFile"
+    IDS_PROJNAME            "ASCOfficeHtmlFile"
 END
 
 STRINGTABLE 
@@ -247,7 +247,7 @@ END
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
-//1 TYPELIB "AVSOfficeHtmlFile.tlb"
+//1 TYPELIB "ASCOfficeHtmlFile.tlb"
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED

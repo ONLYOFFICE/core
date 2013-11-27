@@ -5,7 +5,7 @@
 #include "gdiplus.h"
 #include "CHtmlUtility.h"
 
-#include "Base64.h"
+#include "../prj/Base64.h"
 	
 
 class CHtmlBitmap

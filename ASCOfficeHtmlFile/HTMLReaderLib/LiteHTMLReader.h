@@ -1,6 +1,6 @@
 #pragma once
 #include "LiteHTMLTag.h"
-#include "UnicodeTextFile.h"
+#include "../prj/UnicodeTextFile.h"
 
 using namespace NUnicodeTextFile;
 

@@ -2,7 +2,7 @@
 #include "LiteHTMLReader.h"
 #include <exception>
 #include "LiteHTMLEntityResolver.h"
-#include "UnicodeTextFile.h"
+#include "../prj/UnicodeTextFile.h"
 
 
 #pragma warning(push, 4)

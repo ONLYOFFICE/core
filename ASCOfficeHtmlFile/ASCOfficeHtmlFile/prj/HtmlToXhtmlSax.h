@@ -2,7 +2,7 @@
 
 #import "shdocvw.dll" exclude ("OLECMDID", "OLECMDF", "OLECMDEXECOPT", "tagREADYSTATE")
 
-#include "shdocvw.tlh"
+//#include "shdocvw.tlh"
 #include <string>
 #include <excpt.h>
 #include <map>

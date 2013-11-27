@@ -8,7 +8,7 @@
 #include "utils.h"
 #include "./../Common/RSA/XMLDecoder.h"
 #include "./../Common/OfficeDrawing/file.h"
-#include "..\AVSOfficeUtils\AVSOfficeUtils\AVSOfficeCriticalSection.h"
+#include "../../../ASCOfficeUtils/ASCOfficeUtils/ASCOfficeCriticalSection.h"
 #include "utf8.h"
 
 using namespace MSXML2;

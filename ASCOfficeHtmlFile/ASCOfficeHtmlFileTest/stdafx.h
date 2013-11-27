@@ -13,7 +13,7 @@
 
 // TODO: reference additional headers your program requires here
 #ifdef DEBUG
-#import "..\bin\Debug\AVSOfficeHtmlFile.dll"							rename_namespace("AVSOfficeHtmlFile")
+#import "..\bin\Debug\ASCOfficeHtmlFile.dll"							rename_namespace("AVSOfficeHtmlFile")
 #else
-#import "..\bin\Release\AVSOfficeHtmlFile.dll"							rename_namespace("AVSOfficeHtmlFile")
+#import "..\bin\Release\ASCOfficeHtmlFile.dll"							rename_namespace("AVSOfficeHtmlFile")
 #endif

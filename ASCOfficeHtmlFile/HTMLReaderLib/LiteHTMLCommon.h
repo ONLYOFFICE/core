@@ -1,5 +1,5 @@
 #pragma once
-#include "../AVSOfficeHtmlFile/src/stdafx.h"
+#include "../ASCOfficeHtmlFile/src/stdafx.h"
 
 #pragma warning(push, 4)
 

@@ -13,7 +13,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include "UnicodeTextFile.h"
+#include "../prj/UnicodeTextFile.h"
 
 namespace Names
 {

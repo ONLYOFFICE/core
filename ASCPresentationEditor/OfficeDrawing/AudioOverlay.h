@@ -122,22 +122,6 @@ namespace NSPresentationEditor
 		{
 			if (0.0 < m_dAudioDuration || _T("") == m_strFile)
 				return;
-
-			VideoFile::IVideoFile3* pVideoFile = NULL;
-			if (SUCCEEDED(CoCreateInstance(VideoFile::CLSID_CVideoFile3, NULL, CLSCTX_ALL, VideoFile::IID_IVideoFile3, (void**)(&pVideoFile))))
-			{
-				if (NULL != pVideoFile)
-				{
-					BSTR bsFile = m_strFile.AllocSysString();
-					if (S_OK == pVideoFile->OpenFile(bsFile))
-					{
-						pVideoFile->get_audioDuration(&m_dAudioDuration);						
-					}
-					SysFreeString(bsFile);
-
-					RELEASEINTERFACE(pVideoFile);
-				}
-			}
 		}
 	};
 

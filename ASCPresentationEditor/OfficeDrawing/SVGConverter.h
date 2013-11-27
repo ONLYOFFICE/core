@@ -3,7 +3,7 @@
 
 #include "Shapes\Shape.h"
 #include "Shapes\Graphics\Matrix.h"
-#include "../../../AVSImageStudio3/AVSGraphics/Interfaces/AVSRenderer.h"
+#include "../../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
 
 namespace NSPresentationEditor
 {
@@ -13,7 +13,7 @@ namespace NSPresentationEditor
 
 	// ISVGConverter
 	[ object, uuid("4EE9D2C3-7317-4540-A205-DB78DBEB9BD0"), dual, pointer_default(unique) ]
-	__interface ISVGConverter : IAVSRenderer
+	__interface ISVGConverter : IASCRenderer
 	{
 		[id(5000)] HRESULT OpenFile([in] BSTR bsFileName);
 		[id(5001)] HRESULT CloseFile();
@@ -184,8 +184,8 @@ namespace NSPresentationEditor
 
 	private:
 		
-		AVSGraphics::IAVSGraphicSimpleComverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
-		AVSGraphics::IAVSFontManager*				m_pFontManager;					// менеджер шрифтов
+		ASCGraphics::IASCGraphicSimpleComverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
+		ASCGraphics::IASCFontManager*				m_pFontManager;					// менеджер шрифтов
 
 		CMatrix							m_oBaseTransform;	// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)
 		CMatrix							m_oTransform;		// текущая матрица преобразований рендерера
@@ -315,7 +315,7 @@ namespace NSPresentationEditor
 		{
 			if (NULL == m_pFontManager)
 			{
-				CoCreateInstance(__uuidof(AVSGraphics::CAVSFontManager), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::IAVSFontManager), (void**)&m_pFontManager);
+				CoCreateInstance(__uuidof(ASCGraphics::CASCFontManager), NULL, CLSCTX_ALL, __uuidof(ASCGraphics::IASCFontManager), (void**)&m_pFontManager);
 				m_pFontManager->Initialize(L"");
 			}
 

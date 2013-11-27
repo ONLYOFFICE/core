@@ -2,7 +2,6 @@
 #pragma once
 #include "stdafx.h"
 #include "resource.h"       // main symbols
-#include "Registration.h"
 
 #ifdef PPT_DEF
 #include "OfficeDrawing\Shapes\BaseShape\PPTShape\Formula.cpp"
@@ -75,7 +74,7 @@ class ATL_NO_VTABLE CAVSPresentationEditor:
 	public IAVSPresentationEditor 
 {
 protected:
-	AVSGraphics::IAVSWinFonts*		m_pWinFonts;
+	ASCGraphics::IASCWinFonts*		m_pWinFonts;
 
 	LONG m_lFileType;
 	PPTFile::IAVSOfficePPTFile*		m_pPPTFile;
@@ -113,7 +112,7 @@ public:
 		m_hSynchMutex = CreateMutex(NULL, FALSE, NULL);
 
 		m_pWinFonts = NULL;
-		CoCreateInstance(AVSGraphics::CLSID_CAVSWinFonts, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSWinFonts, (void**)&m_pWinFonts);
+		CoCreateInstance(ASCGraphics::CLSID_CASCWinFonts, NULL, CLSCTX_ALL, ASCGraphics::IID_IASCWinFonts, (void**)&m_pWinFonts);
 		
 		m_pPPTFile	= NULL;
 		m_pPPTXFile = NULL;
@@ -458,111 +457,7 @@ public:
 				oWriter.CreateFile(&m_oDocument);
 				oWriter.CloseFile();
 				break;
-			}
-		case 2:
-			{
-				AVSGraphics::IAVSDocumentPainter* pPainter = NULL;
-				CoCreateInstance(AVSGraphics::CLSID_CAVSDocumentPainter, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSDocumentPainter, (void**)&pPainter);
-
-				CString strXml = m_oDocument.ToXmlVideoSource2();
-				BSTR bsXml = strXml.AllocSysString();
-				pPainter->SetXml(bsXml);
-				SysFreeString(bsXml);
-
-				PDFFile::IPDFWriter* pPdfWriter = NULL;
-				CoCreateInstance(PDFFile::CLSID_CPDFWriter, NULL, CLSCTX_ALL, PDFFile::IID_IPDFWriter, (void**)&pPdfWriter);
-
-				pPdfWriter->CreatePDF();
-		
-				IUnknown* punkPDF = NULL;
-				pPdfWriter->QueryInterface(IID_IUnknown, (void**)&punkPDF);
-				pPainter->AddRenderer(punkPDF);
-				RELEASEINTERFACE(punkPDF);
-
-				pPainter->Start();
-
-				LONG lStatus = 1;
-				while (lStatus)
-				{
-					pPainter->get_Status(&lStatus);
-					::Sleep(100);
-				}
-
-				CString strFile = (CString)bsFilePath;
-				BSTR bsFile = strFile.AllocSysString();
-				pPdfWriter->SaveToFile(bsFile);
-				RELEASEINTERFACE(pPdfWriter);
-				SysFreeString(bsFile);
-				break;
-			}
-		case 3:
-			{
-				AVSGraphics::IAVSDocumentPainter* pPainter = NULL;
-				CoCreateInstance(AVSGraphics::CLSID_CAVSDocumentPainter, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSDocumentPainter, (void**)&pPainter);
-
-				CString strXml = m_oDocument.ToXmlVideoSource2();
-				BSTR bsXml = strXml.AllocSysString();
-				pPainter->SetXml(bsXml);
-				SysFreeString(bsXml);
-
-				HTMLRenderer::IAVSHTMLRenderer* pHTML = NULL;
-				CoCreateInstance(HTMLRenderer::CLSID_CAVSHTMLRenderer, NULL, CLSCTX_ALL, HTMLRenderer::IID_IAVSHTMLRenderer, (void**)&pHTML);
-
-				pHTML->put_Mode(20);
-				pHTML->CreateOfficeFile(bsFilePath);
-		
-				IUnknown* punkHTML = NULL;
-				pHTML->QueryInterface(IID_IUnknown, (void**)&punkHTML);
-				pPainter->AddRenderer(punkHTML);
-				RELEASEINTERFACE(punkHTML);
-
-				pPainter->Start();
-
-				LONG lStatus = 1;
-				while (lStatus)
-				{
-					pPainter->get_Status(&lStatus);
-					::Sleep(100);
-				}
-
-				pHTML->CloseFile();
-				RELEASEINTERFACE(pHTML);
-				break;
-			}
-		case 4:
-			{
-				AVSGraphics::IAVSDocumentPainter* pPainter = NULL;
-				CoCreateInstance(AVSGraphics::CLSID_CAVSDocumentPainter, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSDocumentPainter, (void**)&pPainter);
-
-				CString strXml = m_oDocument.ToXmlVideoSource2();
-				BSTR bsXml = strXml.AllocSysString();
-				pPainter->SetXml(bsXml);
-				SysFreeString(bsXml);
-
-				HTMLRenderer::IAVSHTMLRenderer2* pHTML = NULL;
-				CoCreateInstance(HTMLRenderer::CLSID_CAVSHTMLRenderer2, NULL, CLSCTX_ALL, HTMLRenderer::IID_IAVSHTMLRenderer2, (void**)&pHTML);
-
-				pHTML->put_Mode(20);
-				pHTML->CreateOfficeFile(bsFilePath);
-		
-				IUnknown* punkHTML = NULL;
-				pHTML->QueryInterface(IID_IUnknown, (void**)&punkHTML);
-				pPainter->AddRenderer(punkHTML);
-				RELEASEINTERFACE(punkHTML);
-
-				pPainter->Start();
-
-				LONG lStatus = 1;
-				while (lStatus)
-				{
-					pPainter->get_Status(&lStatus);
-					::Sleep(100);
-				}
-
-				pHTML->CloseFile();
-				RELEASEINTERFACE(pHTML);
-				break;
-			}
+			}	
 		default:
 			break;
 		}

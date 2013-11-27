@@ -23,6 +23,7 @@
 #include "Shapes/BaseShape/PPTShape/PPT2PPTXShapeConverter.h"
 #endif
 
+#if defined(PPTX_DEF)
 namespace PPTX2EditorAdvanced
 {
 	AVSINLINE OOXMLShapes::ShapeType GetShapeTypeFromStr(const CString& str)//const
@@ -264,6 +265,7 @@ namespace PPTX2EditorAdvanced
 		return OOXMLShapes::sptNil;
 	}
 }
+#endif
 
 namespace NSPresentationEditor
 {
@@ -977,9 +979,9 @@ namespace NSPresentationEditor
 				//	m_oShape.m_oPen.LineEndCap == 0x13 ||
 				//	m_oShape.m_oPen.LineEndCap == 0x12)
 				//{
-				//	AVSGraphics::IAVSMetafile* pMetafile = NULL;
-				//	CoCreateInstance(AVSGraphics::CLSID_CAVSMetafile, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSMetafile, (void**)&pMetafile);
-				//	m_oShape.ToRenderer((IAVSRenderer*)pMetafile, oInfo, m_oMetric, m_dStartTime, m_dEndTime);
+				//	ASCGraphics::IAVSMetafile* pMetafile = NULL;
+				//	CoCreateInstance(ASCGraphics::CLSID_CAVSMetafile, NULL, CLSCTX_ALL, ASCGraphics::IID_IAVSMetafile, (void**)&pMetafile);
+				//	m_oShape.ToRenderer((IASCRenderer*)pMetafile, oInfo, m_oMetric, m_dStartTime, m_dEndTime);
 				//	pMetafile->Draw2((IUnknown*)pSVG, 96.0, 96.0, NULL);
 				//	RELEASEINTERFACE(pMetafile);
 				//}
@@ -1220,8 +1222,8 @@ namespace NSPresentationEditor
 			
 			strSvg += _T("</svg>");			
 			
-			AVSGraphics::ISVGTransformer* pSVGTransformer = NULL;
-			CoCreateInstance(__uuidof(AVSGraphics::SVGTransformer), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::ISVGTransformer), (void**)&pSVGTransformer);
+			ASCGraphics::ISVGTransformer* pSVGTransformer = NULL;
+			CoCreateInstance(__uuidof(ASCGraphics::SVGTransformer), NULL, CLSCTX_ALL, __uuidof(ASCGraphics::ISVGTransformer), (void**)&pSVGTransformer);
 
 			ISVGConverter* pSVGConverter = NULL;
 			CoCreateInstance(__uuidof(CSVGConverter), NULL, CLSCTX_ALL, __uuidof(ISVGConverter), (void**)&pSVGConverter);

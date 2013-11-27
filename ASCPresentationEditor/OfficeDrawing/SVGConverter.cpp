@@ -13,7 +13,7 @@ HRESULT NSPresentationEditor::CSVGConverter::FinalConstruct()
 	m_lClipMode = c_nClipRegionTypeWinding;
 
 	m_pSimpleGraphicsConverter = NULL;
-	CoCreateInstance(AVSGraphics::CLSID_CAVSGraphicSimpleComverter, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSGraphicSimpleComverter, (void**)&m_pSimpleGraphicsConverter);
+	CoCreateInstance(ASCGraphics::CLSID_CASCGraphicSimpleComverter, NULL, CLSCTX_ALL, ASCGraphics::IID_IASCGraphicSimpleComverter, (void**)&m_pSimpleGraphicsConverter);
 
 	IUnknown* punkRenderer = NULL;
 	this->QueryInterface(IID_IUnknown, (void**)&punkRenderer);
@@ -115,7 +115,7 @@ STDMETHODIMP NSPresentationEditor::CSVGConverter::get_PenColor(LONG* lColor)
 }
 STDMETHODIMP NSPresentationEditor::CSVGConverter::put_PenColor(LONG lColor)
 {
-	BYTE lScheme = ((DWORD)(lColor)) >> 24;
+	BYTE lScheme = (BYTE)(((DWORD)(lColor)) >> 24);
 
 	if (0xFF != lScheme)
 		m_oPen.Color.SetBGR(lColor);
@@ -243,7 +243,7 @@ STDMETHODIMP NSPresentationEditor::CSVGConverter::get_BrushColor1(LONG* lColor)
 }
 STDMETHODIMP NSPresentationEditor::CSVGConverter::put_BrushColor1(LONG lColor)
 {
-	BYTE lScheme = ((DWORD)(lColor)) >> 24;
+	BYTE lScheme = (BYTE)(((DWORD)(lColor)) >> 24);
 
 	if (0xFF != lScheme)
 		m_oBrush.Color1.SetBGR(lColor);
@@ -857,7 +857,7 @@ STDMETHODIMP NSPresentationEditor::CSVGConverter::OpenFile(BSTR bsFilePath)
 {
 	if (NULL == m_pFontManager)
 	{
-		CoCreateInstance(AVSGraphics::CLSID_CAVSFontManager, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSFontManager, (void**)&m_pFontManager);
+		CoCreateInstance(ASCGraphics::CLSID_CASCFontManager, NULL, CLSCTX_ALL, ASCGraphics::IID_IASCFontManager, (void**)&m_pFontManager);
 
 		m_pFontManager->Initialize(L"");
 		m_pFontManager->SetDefaultFont(L"Arial");

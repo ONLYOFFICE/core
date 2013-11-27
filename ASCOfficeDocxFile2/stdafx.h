@@ -45,25 +45,38 @@
 #include <atlhost.h>
 #include <atlcoll.h>
 
-#define __USE_XML_COMMON__
-
 using namespace ATL;
 #include "../Common/ASCUtils.h"
-
-#include "../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
-#import "../Redist/ASCMediaCore3.dll"		named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
-#import "../Redist/ASCImageStudio3.dll"	named_guids raw_interfaces_only rename_namespace("AVSImageStudio")
-#import "../Redist/ASCFontConverter.dll"	named_guids raw_interfaces_only rename_namespace("Fonts")
-#import "../Redist/AVSOfficePPTXFile.dll"	raw_interfaces_only rename_namespace("PPTXFile")
-
-#ifdef SOLUTION_ASCOFFICEDOCXFILE2
-#import "../Redist/ASCGraphics.dll"		named_guids raw_interfaces_only rename_namespace("AVSGraphics")//, exclude(IAVSRenderer)
-#endif
-
-#include "../Common/DocxFormat/Source/DocxFormat/Docx.h"
-#include "../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
+#include "../Common/Config.h"
 
 #include <Gdiplus.h>
 #pragma comment(lib, "gdiplus.lib")
 
 using namespace Gdiplus;
+
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+
+#import "../Redist/OfficeCore.dll"			named_guids raw_interfaces_only rename_namespace("OfficeCore")
+
+#ifndef _DEFINE_NAMESPACE_ASC_GRAPHICS_
+#define _DEFINE_NAMESPACE_ASC_GRAPHICS_
+namespace ASCGraphics
+{
+	typedef OfficeCore::IWinFonts IASCFontManager;
+	const GUID CLSID_CASCFontManager = OfficeCore::CLSID_CWinFonts;
+	const GUID IID_IASCFontManager = OfficeCore::IID_IWinFonts;
+}
+#endif
+
+#else
+
+#import "../Redist/ASCGraphics.dll"			named_guids raw_interfaces_only rename_namespace("ASCGraphics")
+#import "../Redist/ASCFontConverter.dll"	named_guids raw_interfaces_only rename_namespace("Fonts")
+
+#endif
+
+#import "../Redist/ASCOfficePPTXFile.dll"	named_guids raw_interfaces_only rename_namespace("PPTXFile"), exclude("_IAVSOfficeFileTemplateEvents"), exclude("_IAVSOfficeFileTemplateEvents2")
+
+#include "../Common/DocxFormat/Source/DocxFormat/Docx.h"
+#include "../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
+

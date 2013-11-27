@@ -7,7 +7,7 @@
 namespace DocWrapper {
 	
 	class FontProcessor {
-		AVSGraphics::IAVSFontManager* fontManager;
+		ASCGraphics::IASCFontManager* fontManager;
 		std::map<CString, CString> fontMap;
 
 		CString fontDir;
@@ -25,7 +25,7 @@ namespace DocWrapper {
 		CString getFont(const CString& name);
 		void getFonts(CAtlArray<CString>& fonts);
 
-		AVSGraphics::IAVSFontManager* getFontManager() {
+		ASCGraphics::IASCFontManager* getFontManager() {
 			return fontManager;
 		}
 		

@@ -8,13 +8,11 @@
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
 #endif
 
-/*#ifdef _DEBUG
-#import "..\AVSOfficeUtils\AVSOfficeUtils\Debug\AVSOfficeUtils.dll" raw_interfaces_only
-#else*/
-#import "..\..\..\..\..\..\Redist\AVSOfficeStudio\AVSOfficeUtils.dll" raw_interfaces_only
-//#endif
 
-using namespace AVSOfficeUtils;
+#import "..\Redist\ASCOfficeUtils.dll" raw_interfaces_only
+
+
+using namespace ASCOfficeUtils;
 
 /*
 Compression levels:

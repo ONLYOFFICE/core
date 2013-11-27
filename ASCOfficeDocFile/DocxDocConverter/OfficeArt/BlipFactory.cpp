@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "BlipFactory.h"
 
-#include "GdiplusEx.h"
+#include "../../../Common/GdiplusEx.h"
 
 namespace GdiPlusHelper
 {

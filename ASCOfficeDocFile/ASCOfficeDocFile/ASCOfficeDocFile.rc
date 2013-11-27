@@ -2,7 +2,7 @@
 //
 #include "resource.h"
 #define COMPONENT_NAME "OfficeDocFile"
-#include "../../../../Common/FileInfo.h"
+#include "../../Common/FileInfo.h"
 #include "version.h"
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -108,7 +108,7 @@ END
 // REGISTRY
 //
 
-IDR_AVSDOCFILE          REGISTRY                "AVSOfficeDocFile.rgs"
+IDR_ASCDOCFILE          REGISTRY                "ASCOfficeDocFile.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -117,7 +117,7 @@ IDR_AVSDOCFILE          REGISTRY                "AVSOfficeDocFile.rgs"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSOfficeDocFile"
+    IDS_PROJNAME            "ASCOfficeDocFile"
 END
 
 #endif    // English (U.S.) resources

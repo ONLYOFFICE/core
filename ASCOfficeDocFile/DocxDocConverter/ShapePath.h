@@ -1,6 +1,6 @@
 #pragma once
 
-#include <XmlUtils.h>
+#include "../../Common/XmlUtils.h"
 #include <math.h>
 
 #include "OfficeArt\Common.h"

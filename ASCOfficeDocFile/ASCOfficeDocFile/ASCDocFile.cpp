@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "AVSDocFile.h"
+#include "ASCDocFile.h"
 
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC

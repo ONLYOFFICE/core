@@ -32,7 +32,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utility", "Projects\Utility
 		{F6A9ED1C-3D23-4246-9366-41373B2E49C6} = {F6A9ED1C-3D23-4246-9366-41373B2E49C6}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfficeSvmFile", "..\..\ASCOfficeOdtFile\Source\OfficeSvmFile\OfficeSvmFile2005.vcproj", "{918D1327-C6ED-43E6-AE22-84A3736F0E87}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfficeSvmFile", "..\..\ASCImageStudio3\ASCGraphics\OfficeSvmFile\OfficeSvmFile2005.vcproj", "{918D1327-C6ED-43E6-AE22-84A3736F0E87}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F6A9ED1C-3D23-4246-9366-41373B2E49C6} = {F6A9ED1C-3D23-4246-9366-41373B2E49C6}
 	EndProjectSection

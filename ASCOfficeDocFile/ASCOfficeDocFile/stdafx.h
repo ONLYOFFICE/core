@@ -55,7 +55,7 @@ using namespace ATL;
 
 #include "..\..\Common\OfficeFileErrorDescription.h"
 
-#include "AVSOfficeCriticalSection.h"
+#include "ASCOfficeCriticalSection.h"
 
 using namespace AVSDocFormatUtils;
 

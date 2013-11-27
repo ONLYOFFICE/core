@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSOfficeDocFile"
+	Name="ASCOfficeDocFile"
 	ProjectGUID="{da13d6d4-39b5-49db-b5d7-d1afdbb7c320}"
-	RootNamespace="AVSOfficeDocFile"
+	RootNamespace="ASCOfficeDocFile"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -42,16 +42,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeDocFile.tlb"
-				HeaderFileName="AVSOfficeDocFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeDocFile.tlb"
+				HeaderFileName="ASCOfficeDocFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeDocFile_i.c"
-				ProxyFileName="AVSOfficeDocFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeDocFile_i.c"
+				ProxyFileName="ASCOfficeDocFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\Common\AvsDocxFormat\Source\Utility;..\..\Common\AvsDocxFormat\Source\DocxFormat;..\..\Common\AvsDocxFormat\Source\Common;..\..\Common\AvsDocxFormat\Source\XML;&quot;..\ZLIB\zlib-1.2.3\contrib\minizip&quot;;&quot;..\ZLIB\zlib-1.2.3&quot;"
+				AdditionalIncludeDirectories="..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\DocxFormat;..\..\Common\ASCDocxFormat\Source\Common;..\..\Common\ASCDocxFormat\Source\XML;&quot;..\ZLIB\zlib-1.2.3\contrib\minizip&quot;;&quot;..\ZLIB\zlib-1.2.3&quot;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -77,14 +77,14 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="Msimg32.lib"
-				OutputFile="$(OutDir)/AVSOfficeDocFile.dll"
+				OutputFile="$(OutDir)/ASCOfficeDocFile.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\AVSOfficeUtils\ZLIB\zlib123dll\static32;..\..\Common\AvsDocxFormat\Lib\Debug"
+				AdditionalLibraryDirectories="..\..\ASCOfficeUtils\ZLIB\zlib123dll\static32;..\..\Common\ASCDocxFormat\Lib\Debug"
 				IgnoreDefaultLibraryNames="LIBC.LIB"
-				MergedIDLBaseFileName="_AVSOfficeDocFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeDocFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSOfficeDocFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeDocFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -125,7 +125,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\..\Redist\VersionControl.exe $(ProjectDir)version.h"
+				CommandLine="..\..\Redist\VersionControl.exe $(ProjectDir)version.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -142,15 +142,15 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeDocFile.tlb"
-				HeaderFileName="AVSOfficeDocFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeDocFile.tlb"
+				HeaderFileName="ASCOfficeDocFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeDocFile_i.c"
-				ProxyFileName="AVSOfficeDocFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeDocFile_i.c"
+				ProxyFileName="ASCOfficeDocFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\Common\AvsDocxFormat\Source\Utility;..\..\Common\AvsDocxFormat\Source\DocxFormat;..\..\Common\AvsDocxFormat\Source\Common;..\..\Common\AvsDocxFormat\Source\XML;&quot;..\ZLIB\zlib-1.2.3\contrib\minizip&quot;;&quot;..\ZLIB\zlib-1.2.3&quot;"
+				AdditionalIncludeDirectories="..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\DocxFormat;..\..\Common\ASCDocxFormat\Source\Common;..\..\Common\ASCDocxFormat\Source\XML;&quot;..\ZLIB\zlib-1.2.3\contrib\minizip&quot;;&quot;..\ZLIB\zlib-1.2.3&quot;;..\..\ASCImageStudio3\ASCGraphics\OfficeSvmFile"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -175,17 +175,17 @@
 				RegisterOutput="true"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="Msimg32.lib"
-				OutputFile="..\..\..\..\Redist\AVSOfficeStudio\$(ProjectName).dll"
+				OutputFile="..\..\Redist\$(ProjectName).dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\AVSOfficeUtils\ZLIB\zlib123dll\static32;..\..\Common\AvsDocxFormat\Lib\Release"
+				AdditionalLibraryDirectories="..\..\ASCOfficeUtils\ZLIB\zlib123dll\static32;..\..\Common\ASCDocxFormat\Lib\Release"
 				IgnoreDefaultLibraryNames="LIBC.LIB"
-				MergedIDLBaseFileName="_AVSOfficeDocFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeDocFile.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficeDocFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeDocFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -244,15 +244,15 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeDocFile.tlb"
-				HeaderFileName="AVSOfficeDocFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeDocFile.tlb"
+				HeaderFileName="ASCOfficeDocFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeDocFile_i.c"
-				ProxyFileName="AVSOfficeDocFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeDocFile_i.c"
+				ProxyFileName="ASCOfficeDocFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\Common\AvsDocxFormat\Source\Utility;..\..\Common\AvsDocxFormat\Source\DocxFormat;..\..\Common\AvsDocxFormat\Source\Common;..\..\Common\AvsDocxFormat\Source\XML;&quot;..\ZLIB\zlib-1.2.3\contrib\minizip&quot;;&quot;..\ZLIB\zlib-1.2.3&quot;"
+				AdditionalIncludeDirectories="..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\DocxFormat;..\..\Common\ASCDocxFormat\Source\Common;..\..\Common\ASCDocxFormat\Source\XML;&quot;..\ZLIB\zlib-1.2.3\contrib\minizip&quot;;&quot;..\ZLIB\zlib-1.2.3&quot;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -279,15 +279,15 @@
 				AdditionalDependencies="Msimg32.lib"
 				OutputFile="..\..\..\..\..\ASC\Redist\ASCOfficeStudio\ASCOfficeDocFile.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\AVSOfficeUtils\ZLIB\zlib123dll\static32;..\..\Common\AvsDocxFormat\Lib\Release"
+				AdditionalLibraryDirectories="..\..\ASCOfficeUtils\ZLIB\zlib123dll\static32;..\..\Common\ASCDocxFormat\Lib\Release"
 				IgnoreDefaultLibraryNames="LIBC.LIB"
-				MergedIDLBaseFileName="_AVSOfficeDocFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeDocFile.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficeDocFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeDocFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -327,11 +327,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSDocFile.cpp"
+				RelativePath=".\ASCDocFile.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeDocFile.cpp"
+				RelativePath=".\ASCOfficeDocFile.cpp"
 				>
 			</File>
 			<File
@@ -369,11 +369,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\AVSDocFile.h"
+				RelativePath=".\ASCDocFile.h"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeCriticalSection.h"
+				RelativePath=".\ASCOfficeCriticalSection.h"
 				>
 			</File>
 			<File
@@ -403,11 +403,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficeDocFile.rc"
+				RelativePath=".\ASCOfficeDocFile.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeDocFile.rgs"
+				RelativePath=".\ASCOfficeDocFile.rgs"
 				>
 			</File>
 		</Filter>

@@ -386,6 +386,7 @@ OfficeCore/Test/TestConsole/bin/Debug/TestConsole.vshost.exe svn_mime_002dtype=a
 OfficeCore/Test/TestConsole/bin/Release/Interop.OfficeCore.dll svn_mime_002dtype=application%2Foctet-stream
 OfficeCore/Test/TestConsole/bin/Release/TestConsole.exe svn_mime_002dtype=application%2Foctet-stream
 OfficeCore/Test/TestConsole/bin/Release/TestConsole.pdb svn_mime_002dtype=application%2Foctet-stream
+Redist/ASCEBOOKWriter.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCFontConverter.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCGraphics.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCHTMLRenderer.dll svn_mime_002dtype=application%2Foctet-stream

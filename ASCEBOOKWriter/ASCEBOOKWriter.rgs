@@ -2,8 +2,8 @@ HKCR
 {
 	NoRemove AppID
 	{
-		'%APPID%' = s 'AVSEBOOKWriter'
-		'AVSEBOOKWriter.DLL'
+		'%APPID%' = s 'ASCEBOOKWriter'
+		'ASCEBOOKWriter.DLL'
 		{
 			val AppID = s '%APPID%'
 		}

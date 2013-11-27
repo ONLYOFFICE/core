@@ -1,7 +1,7 @@
 #pragma once
 #include "MobiReader.h"
 #include "..\..\Common\OfficeFileTemplate.h"
-#include "..\..\AVSOfficeFile\OfficeEventsTemplate.h"
+#include "..\..\ASCOfficeFile\OfficeEventsTemplate.h"
 #include "..\..\Common\OfficeFileFormats.h"
 #include "..\..\Common\OfficeFileErrorDescription.h"
 

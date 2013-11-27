@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual C++ Express 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSEBOOKWriter", "AVSEBOOKWriter.vcproj", "{BAB70A60-2DA0-4149-B8FC-99D7007E9BDB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCEBOOKWriter", "ASCEBOOKWriter.vcproj", "{BAB70A60-2DA0-4149-B8FC-99D7007E9BDB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

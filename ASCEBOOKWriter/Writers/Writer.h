@@ -19,12 +19,10 @@ namespace NSEBook
 		bool			m_bIsEmbeddedFonts;
 		bool			m_bIsSrcCoverExist;
 
-		AVSGraphics::IAVSEffectPainter* m_pPainter;
 	public:
 		CWriter()
 		{
 			m_pCurrentPage		= NULL;
-			m_pPainter			= NULL;
 
 			m_lCurrentPageIndex	= -1;
 			m_lCountPages		= 0;
@@ -37,7 +35,6 @@ namespace NSEBook
 		}
 		~CWriter()
 		{
-			RELEASEINTERFACE(m_pPainter);
 		}
 
 		CRenderers* CreateDocument(LONG lSrcType, LONG lDstType)
@@ -63,7 +60,7 @@ namespace NSEBook
 
 		void SetParametres(NSStructures::CPen* pPen, NSStructures::CBrush* pBrush, NSStructures::CFont* pFont,
 			NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, 
-			AVSGraphics::IAVSGraphicSimpleComverter* pSimpleConverter, NSCommon::CMatrix* pTransform)
+			ASCGraphics::IASCGraphicSimpleComverter* pSimpleConverter, NSCommon::CMatrix* pTransform)
 		{
 			m_pCurrentPage->m_pPen		= pPen;
 			m_pCurrentPage->m_pBrush	= pBrush;
@@ -198,78 +195,6 @@ namespace NSEBook
 		AVSINLINE void DrawPath(long nType)
 		{
 			m_pCurrentPage->DrawPath(nType);
-		}
-
-	public:
-		void InitWatermark()
-		{
-			if (NULL == m_pCurrentPage)
-				return;
-
-			if (NULL == m_pPainter)
-			{
-				m_pCurrentPage->m_oInfoWatermark.m_lID	= -1;
-				m_pCurrentPage->m_oRectWatermark.left	= 0;
-				m_pCurrentPage->m_oRectWatermark.top	= 0;
-				m_pCurrentPage->m_oRectWatermark.right	= 0;
-				m_pCurrentPage->m_oRectWatermark.bottom	= 0;
-				
-				return;
-			}
-			
-			LONG lWidthPix	= 400;
-			LONG lHeightPix	= 75;
-
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			CoCreateInstance(MediaCore::CLSID_CAVSUncompressedVideoFrame, NULL, CLSCTX_ALL, 
-				MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
-
-			pFrame->put_ColorSpace( ( 1 << 6) | ( 1 << 31) ); // CPS_BGRA | CPS_FLIP
-			pFrame->put_Width( lWidthPix );
-			pFrame->put_Height( lHeightPix );
-			pFrame->put_AspectRatioX( lWidthPix );
-			pFrame->put_AspectRatioY( lHeightPix );
-			pFrame->put_Interlaced( VARIANT_FALSE );
-			pFrame->put_Stride( 0, 4 * lWidthPix );
-			pFrame->AllocateBuffer( -1 );
-
-			BYTE* pBuffer = NULL;
-			pFrame->get_Buffer(&pBuffer);
-			memset(pBuffer, 0xFF, 4 * lWidthPix * lHeightPix);
-
-			AVSGraphics::IAVSGraphicsRenderer* pRenderer = NULL;
-			CoCreateInstance(AVSGraphics::CLSID_CAVSGraphicsRenderer, NULL, CLSCTX_ALL, 
-				AVSGraphics::IID_IAVSGraphicsRenderer, (void**)&pRenderer);
-
-			//ставим FontManager
-			VARIANT vtVariant;
-			vtVariant.vt = VT_UNKNOWN;
-			vtVariant.punkVal = NULL;
-			pRenderer->SetAdditionalParam( L"FontManager", vtVariant );
-
-			IUnknown* punkWatermark = NULL;
-			pFrame->QueryInterface(IID_IUnknown, (void**)&punkWatermark);
-
-			pRenderer->put_Width(140);
-			pRenderer->put_Height(30);
-			pRenderer->CreateFromMediaData(punkWatermark, 0, 0, lWidthPix, lHeightPix);
-
-			m_pPainter->Draw((IUnknown*)pRenderer);
-
-			RELEASEINTERFACE(pFrame);
-			RELEASEINTERFACE(pRenderer);
-
-			m_pCurrentPage->m_oRectWatermark.left	= 0;
-			m_pCurrentPage->m_oRectWatermark.top	= 0;
-			m_pCurrentPage->m_oRectWatermark.right	= 140;
-			m_pCurrentPage->m_oRectWatermark.bottom	= 30;
-
-			double _x = 0;
-			double _y = 0;
-			double _w = 140;
-			double _h = 30;
-
-			m_pCurrentPage->m_oInfoWatermark = m_oFormat.m_oImageManager.WriteImage(punkWatermark, _x, _y, _w, _h);
 		}
 	};
 }

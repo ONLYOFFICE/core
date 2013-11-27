@@ -46,11 +46,10 @@ using namespace ATL;
 #define DOCX_RENDERER
 #define _USE_XMLLITE_READER_
 
-#import "..\..\..\Redist\AVSGraphics.dll"						named_guids raw_interfaces_only rename_namespace("AVSGraphics")
-#import "..\..\..\Redist\AVSMediaCore3.dll"						named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
-#import "..\..\..\Redist\AVSMediaFormatSettings3.dll"			named_guids raw_interfaces_only rename_namespace("MediaFormat"), exclude("tagRECT")
-#import "..\..\..\Redist\AVSImageStudio3.dll"					named_guids raw_interfaces_only rename_namespace("ImageStudio")
-#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficeUtils.dll"	named_guids rename_namespace("AVSOfficeUtils"), raw_interfaces_only
+#import "../Redist/ASCMediaCore3.dll"					named_guids raw_interfaces_only rename_namespace("MediaCore")
+#import "../Redist/ASCGraphics.dll"						named_guids raw_interfaces_only rename_namespace("ASCGraphics")
+#import "../Redist/ASCImageStudio3.dll"					named_guids raw_interfaces_only rename_namespace("ImageStudio")
+#import "../Redist/ASCOfficeUtils.dll"					named_guids raw_interfaces_only rename_namespace("ASCOfficeUtils")
 
-#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficeHtmlFile.dll"				raw_interfaces_only rename_namespace("OfficeHtmlFile")
-#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficeTxtFile.dll"				raw_interfaces_only rename_namespace("OfficeTxtFile")
+#import "../Redist/ASCOfficeHtmlFile.dll"				raw_interfaces_only rename_namespace("OfficeHtmlFile")
+#import "../Redist/ASCOfficeTxtFile.dll"				raw_interfaces_only rename_namespace("OfficeTxtFile")

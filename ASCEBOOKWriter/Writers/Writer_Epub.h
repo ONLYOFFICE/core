@@ -2,7 +2,7 @@
 #include "Writer.h"
 
 #define CODEPAGE_ISSUE_FIX
-#include "../AVSOfficeUtils/ZLIB/zlib-1.2.3/contrib/minizip/zip.h"
+#include "../ASCOfficeUtils/ZLIB/zlib-1.2.3/contrib/minizip/zip.h"
 
 #define BUFSIZE 2048
 #define MAXHTMLSIZE 130000 // 130000 bytes

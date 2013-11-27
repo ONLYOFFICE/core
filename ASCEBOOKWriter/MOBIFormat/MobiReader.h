@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "../Writers/Writer.h"
-#include "../AVSOfficeUtils/ZLIB/zlib-1.2.3/contrib/minizip/zip.h"
+#include "../ASCOfficeUtils/ZLIB/zlib-1.2.3/contrib/minizip/zip.h"
 
 namespace NSMobi
 {

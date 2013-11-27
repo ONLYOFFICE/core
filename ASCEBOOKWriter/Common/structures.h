@@ -1,8 +1,8 @@
 #pragma once
-#include "..\stdafx.h"
+#include "../stdafx.h"
 #include "../../Common/DocxFormat/Source/XML/XmlUtils.h"
-#include "AVSUtils.h"
-#include "..\..\..\AVSImageStudio3\AVSGraphics\Interfaces\AVSRenderer.h"
+#include "../../Common/ASCUtils.h"
+#include "../../ASCImageStudio3\ASCGraphics\Interfaces\ASCRenderer.h"
 #include "ap_aggplusenums.h"
 
 #include <gdiplus.h>
@@ -333,7 +333,7 @@ namespace NSStructures
 				(DashStyle == pPen->DashStyle) && (LineStartCap == pPen->LineStartCap) &&
 				(LineEndCap == pPen->LineEndCap) && (LineJoin == pPen->LineJoin));
 		}
-		void	SetToRenderer(IAVSRenderer *pRenderer)
+		void	SetToRenderer(IASCRenderer *pRenderer)
 		{
 			pRenderer->put_PenColor(Color);
 			pRenderer->put_PenAlpha(Alpha);
@@ -762,7 +762,7 @@ namespace NSStructures
 					(c_BrushTypeHatch1 <= Type && c_BrushTypeHatch53 >= Type));
 		}
 
-		void	SetToRenderer(IAVSRenderer *pRenderer)
+		void	SetToRenderer(IASCRenderer *pRenderer)
 		{
 			Type = ConstantCompatible(Type);
 			pRenderer->put_BrushType(Type);
@@ -946,7 +946,7 @@ namespace NSStructures
 			Underline = (byte)(0x7C & lStyle) >> 2;
 			Strikeout = (byte)(0x0180 & lStyle) >> 7;
 		}
-		void SetToRenderer(IAVSRenderer *pRenderer)
+		void SetToRenderer(IASCRenderer *pRenderer)
 		{
 			BSTR bstrName = Name.AllocSysString();			
 			pRenderer->put_FontName(bstrName);			

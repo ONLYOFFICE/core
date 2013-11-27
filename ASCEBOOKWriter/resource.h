@@ -3,7 +3,7 @@
 // Used by AVSEBOOKWriter.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_AVSEBOOKWRITER       		101
+#define IDR_ASCEBOOKWRITER       		101
 
 // Next default values for new objects
 // 

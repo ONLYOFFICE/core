@@ -2,7 +2,7 @@
 //
 #include "resource.h"
 #define COMPONENT_NAME "EBOOKWriter"
-#include "../../../../Common/FileInfo.h"
+#include "../Common/FileInfo.h"
 #include "version.h"
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -117,7 +117,7 @@ END
 // REGISTRY
 //
 
-IDR_AVSEBOOKWRITER REGISTRY                "AVSEBOOKWriter.rgs"
+IDR_ASCEBOOKWRITER REGISTRY                "ASCEBOOKWriter.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -126,7 +126,7 @@ IDR_AVSEBOOKWRITER REGISTRY                "AVSEBOOKWriter.rgs"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSEBOOKWriter"
+    IDS_PROJNAME            "ASCEBOOKWriter"
 END
 
 #endif    // English (U.S.) resources

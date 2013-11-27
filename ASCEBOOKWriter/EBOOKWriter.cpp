@@ -1138,17 +1138,6 @@ STDMETHODIMP CAVSEBOOKWriter::SetAdditionalParam(BSTR ParamName, VARIANT ParamVa
 	if (NULL != m_pRenderers)
 		m_pRenderers->SetAdditionalParam(ParamName, ParamValue);
 
-	CString sParamName = ParamName;
-	if (_T("EffectPainter") == sParamName && VT_UNKNOWN == ParamValue.vt)
-	{
-		RELEASEINTERFACE(m_oWriter.m_pPainter);
-		
-		if (NULL != ParamValue.punkVal)
-		{
-			ParamValue.punkVal->QueryInterface(AVSGraphics::IID_IAVSEffectPainter, (void**)&m_oWriter.m_pPainter);
-		}
-	}
-
 	return S_OK;
 }
 
@@ -1240,8 +1229,6 @@ STDMETHODIMP CAVSEBOOKWriter::CreateOfficeFile(BSTR bsFilePath, LONG lFileType)
 		SaveCover();
 	}
 	// ----------------------------------------------
-
-	m_oWriter.InitWatermark();
 
 	return S_OK;
 }

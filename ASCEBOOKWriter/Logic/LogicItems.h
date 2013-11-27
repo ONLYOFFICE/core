@@ -488,7 +488,7 @@ namespace NSEBook
 				return l;
 			}
 		public:
-			BOOL Draw(IAVSRenderer* pRenderer)
+			BOOL Draw(IASCRenderer* pRenderer)
 			{
 				if (NULL == pRenderer)
 					return FALSE;
@@ -682,7 +682,7 @@ namespace NSEBook
 		NSStructures::CEdgeText*					m_pEdgeText;
 
 		NSCommon::CMatrix*							m_pTransform;
-		AVSGraphics::IAVSGraphicSimpleComverter*	m_pSimpleGraphicsConverter;
+		ASCGraphics::IASCGraphicSimpleComverter*	m_pSimpleGraphicsConverter;
 
 		double										m_dWidth;
 		double										m_dHeight;

@@ -52,8 +52,8 @@ namespace NSCommon
 
 		void ZipDirectory(CString strDstFile)
 		{
-			AVSOfficeUtils::IOfficeUtils* pOfficeUtils = NULL;
-			if (S_OK != CoCreateInstance(__uuidof(AVSOfficeUtils::COfficeUtils), NULL, CLSCTX_INPROC_SERVER, __uuidof(AVSOfficeUtils::IOfficeUtils),(void**)&pOfficeUtils))
+			ASCOfficeUtils::IOfficeUtils* pOfficeUtils = NULL;
+			if (S_OK != CoCreateInstance(__uuidof(ASCOfficeUtils::COfficeUtils), NULL, CLSCTX_INPROC_SERVER, __uuidof(ASCOfficeUtils::IOfficeUtils),(void**)&pOfficeUtils))
 				return;
 
 			BSTR bstrSrcPath = m_strTempDirectory.AllocSysString();

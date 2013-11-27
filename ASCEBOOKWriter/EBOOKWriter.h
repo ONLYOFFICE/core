@@ -16,7 +16,7 @@
 
 // IAVSEBOOKWriter
 [object, uuid("304A27A4-1792-4a1b-BD44-CE5F127D2895"), dual, pointer_default(unique)]
-__interface IAVSEBOOKWriter : IAVSRenderer
+__interface IAVSEBOOKWriter : IASCRenderer
 {
 	[id(11001)]				HRESULT Initialize([in]BSTR bsXMLOptions);
 	[id(11002)]				HRESULT SetMetadata([in]BSTR bsXMLOptions);
@@ -37,7 +37,7 @@ __interface IAVSEBOOKWriter : IAVSRenderer
 // CAVSEBOOKWriter
 [coclass, default(IAVSEBOOKWriter), threading(apartment), vi_progid("AVSEBOOKWriter.EBOOKWriter"), progid("AVSEBOOKWriter.EBOOKWriter.1"), version(1.0), uuid("8B8FEDFC-38D5-4d13-BDE5-549CD09A6809")]
 class ATL_NO_VTABLE CAVSEBOOKWriter :
-	public IAVSEBOOKWriter, public IAVSRenderer2
+	public IAVSEBOOKWriter, public IASCRenderer2
 {
 private:
 	NSStructures::CPen		m_oPen;							// настройки всей графики (скопирован ашник из AVSGraphics)
@@ -47,8 +47,8 @@ private:
 	NSStructures::CShadow	m_oShadow;
 	NSStructures::CEdgeText	m_oEdge;
 
-	AVSGraphics::IAVSGraphicSimpleComverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
-	AVSGraphics::IAVSFontManager*				m_pFontManager;					// менеджер шрифтов
+	ASCGraphics::IASCGraphicSimpleComverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
+	ASCGraphics::IASCFontManager*				m_pFontManager;					// менеджер шрифтов
 
 	NSCommon::CMatrix			m_oBaseTransform;		// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)
 	NSCommon::CMatrix			m_oTransform;			// текущая матрица преобразований рендерера
@@ -84,7 +84,7 @@ private:
 
 	DWORD							m_lCommandFlags;
 
-	AVSGraphics::IAVSDocumentRenderer *	m_piCommandsRenderer;
+	ASCGraphics::IASCDocumentRenderer *	m_piCommandsRenderer;
 
 public:
 	CAVSEBOOKWriter()
@@ -124,7 +124,7 @@ public:
 		m_lCommandFlags = 0;
 
 		m_pSimpleGraphicsConverter = NULL;
-		CoCreateInstance(AVSGraphics::CLSID_CAVSGraphicSimpleComverter, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSGraphicSimpleComverter, (void**)&m_pSimpleGraphicsConverter);
+		CoCreateInstance(ASCGraphics::CLSID_CASCGraphicSimpleComverter, NULL, CLSCTX_ALL, ASCGraphics::IID_IASCGraphicSimpleComverter, (void**)&m_pSimpleGraphicsConverter);
 
 		IUnknown* punkRenderer = NULL;
 		this->QueryInterface(IID_IUnknown, (void**)&punkRenderer);
@@ -151,7 +151,7 @@ public:
 	}
 
 public:
-    // IAVSRenderer Methods
+    // IASCRenderer Methods
 
 	// тип рендерера-----------------------------------------------------------------------------
 	STDMETHOD(get_Type)(LONG* lType);
@@ -314,13 +314,13 @@ public:
 		(*ppunkRend) = NULL;
 		if(NULL == m_piCommandsRenderer)
 			return S_OK;
-		return m_piCommandsRenderer->QueryInterface(__uuidof(AVSGraphics::IAVSDocumentRenderer), (void**)&ppunkRend);
+		return m_piCommandsRenderer->QueryInterface(__uuidof(ASCGraphics::IASCDocumentRenderer), (void**)&ppunkRend);
 	}
 	STDMETHOD(put_CommandRenderer)(IUnknown* ppunkRend)
 	{
 		RELEASEINTERFACE(m_piCommandsRenderer);
 		if(NULL != ppunkRend)
-			ppunkRend->QueryInterface(__uuidof( AVSGraphics::IAVSDocumentRenderer), (void**)&m_piCommandsRenderer);
+			ppunkRend->QueryInterface(__uuidof( ASCGraphics::IASCDocumentRenderer), (void**)&m_piCommandsRenderer);
 		return S_OK;
 	}
 
@@ -438,7 +438,7 @@ private:
 	{
 		if (NULL == m_pFontManager)
 		{
-			CoCreateInstance(__uuidof(AVSGraphics::CAVSFontManager), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::IAVSFontManager), (void**)&m_pFontManager);
+			CoCreateInstance(__uuidof(ASCGraphics::CASCFontManager), NULL, CLSCTX_ALL, __uuidof(ASCGraphics::IASCFontManager), (void**)&m_pFontManager);
 			m_pFontManager->Initialize(L"");
 		}
 
@@ -522,7 +522,7 @@ private:
 					nWidth = nHeight * dWidthMM / dHeightMM;
 				}
 				MediaCore::IAVSUncompressedVideoFrame* piImage = NULL;
-				AVSGraphics::IAVSGraphicsRenderer* piGraphicsRenderer = NULL;
+				ASCGraphics::IASCGraphicsRenderer* piGraphicsRenderer = NULL;
 				UpdateGdiPlusRenderer( dWidthMM, dHeightMM, &piImage, &piGraphicsRenderer );
 				if( NULL != piGraphicsRenderer )
 				{
@@ -542,13 +542,13 @@ private:
 		return false;
 	}
 
-	void UpdateGdiPlusRenderer(double dWidthMm, double dHeightMm, MediaCore::IAVSUncompressedVideoFrame** piImage, AVSGraphics::IAVSGraphicsRenderer** piRend)
+	void UpdateGdiPlusRenderer(double dWidthMm, double dHeightMm, MediaCore::IAVSUncompressedVideoFrame** piImage, ASCGraphics::IASCGraphicsRenderer** piRend)
 	{
 		(*piImage) = NULL;
 		(*piRend) = NULL;
 		CoCreateInstance(__uuidof( MediaCore::CAVSUncompressedVideoFrame), NULL ,CLSCTX_INPROC_SERVER, __uuidof(MediaCore::IAVSUncompressedVideoFrame), (void **)piImage);
-		AVSGraphics::IAVSFontManagerPtr piFontManager;
-		piFontManager.CreateInstance( __uuidof(AVSGraphics::CAVSFontManager) );
+		ASCGraphics::IASCFontManagerPtr piFontManager;
+		piFontManager.CreateInstance( __uuidof(ASCGraphics::CASCFontManager) );
 		piFontManager->Initialize( L"" );
 
 		//задаем dpi без привязки к монитору
@@ -581,7 +581,7 @@ private:
 		(*piImage)->get_Buffer(&pBuffer);
 		memset(pBuffer, 255, 4 * nWidthPix * nHeightPix);
 
-		CoCreateInstance(__uuidof( AVSGraphics::CAVSGraphicsRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IAVSGraphicsRenderer), (void **)piRend);
+		CoCreateInstance(__uuidof( ASCGraphics::CASCGraphicsRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(ASCGraphics::IASCGraphicsRenderer), (void **)piRend);
 		//ставим FontManager
 		VARIANT vtVariant;
 		vtVariant.vt = VT_UNKNOWN;

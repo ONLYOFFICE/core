@@ -255,7 +255,7 @@ namespace NSEBook
 		public:
 			CDoubleRect								m_rcBounds;
 			MediaCore::IAVSUncompressedVideoFrame*	m_pFrame;
-			AVSGraphics::IAVSGraphicsRenderer*		m_pGraphicsRenderer;			
+			ASCGraphics::IASCGraphicsRenderer*		m_pGraphicsRenderer;			
 
 		public:
 			CLogicShape()
@@ -315,8 +315,8 @@ namespace NSEBook
 				m_pFrame->get_Buffer(&pBuffer);
 				memset(pBuffer, 0xFF, 4 * lWidthCur * lHeightCur);
 
-				CoCreateInstance(AVSGraphics::CLSID_CAVSGraphicsRenderer, NULL, CLSCTX_ALL, 
-					AVSGraphics::IID_IAVSGraphicsRenderer, (void**)&m_pGraphicsRenderer);
+				CoCreateInstance(ASCGraphics::CLSID_CASCGraphicsRenderer, NULL, CLSCTX_ALL, 
+					ASCGraphics::IID_IASCGraphicsRenderer, (void**)&m_pGraphicsRenderer);
 
 				//ставим FontManager
 				VARIANT vtVariant;
@@ -427,8 +427,8 @@ namespace NSEBook
 			{
 				if (NULL != m_pGraphicsRenderer)
 				{
-					pFont->SetToRenderer((IAVSRenderer*)m_pGraphicsRenderer);
-					pBrush->SetToRenderer((IAVSRenderer*)m_pGraphicsRenderer);
+					pFont->SetToRenderer((IASCRenderer*)m_pGraphicsRenderer);
+					pBrush->SetToRenderer((IASCRenderer*)m_pGraphicsRenderer);
 					
 					if (NULL == bsGid)
 						m_pGraphicsRenderer->CommandDrawText(bsText, x, y, width, height, baselineoffset);
@@ -443,8 +443,8 @@ namespace NSEBook
 			{
 				if (NULL != m_pGraphicsRenderer)
 				{
-					pPen->SetToRenderer((IAVSRenderer*)m_pGraphicsRenderer);
-					pBrush->SetToRenderer((IAVSRenderer*)m_pGraphicsRenderer);
+					pPen->SetToRenderer((IASCRenderer*)m_pGraphicsRenderer);
+					pBrush->SetToRenderer((IASCRenderer*)m_pGraphicsRenderer);
 					m_pGraphicsRenderer->DrawPath(lPath);
 				}
 			}

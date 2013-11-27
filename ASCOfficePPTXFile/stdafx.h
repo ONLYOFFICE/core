@@ -60,6 +60,7 @@ using namespace ATL;
 #include "../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
 #include "../Common/Config.h"
 
+#import "../Redist/ASCOfficeUtils.dll"			named_guids raw_interfaces_only rename_namespace("OfficeUtils")
 #import "../Redist/ASCOfficeDocxFile2.dll"		named_guids raw_interfaces_only rename_namespace("DocxFile2")
 #import "../Redist/XlsxSerializerCom.dll"		named_guids raw_interfaces_only rename_namespace("XlsxCom"), exclude("_IAVSOfficeFileTemplateEvents"), exclude("_IAVSOfficeFileTemplateEvents2")
 

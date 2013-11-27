@@ -58,12 +58,15 @@ using namespace Gdiplus;
 
 #import "../Redist/OfficeCore.dll"			named_guids raw_interfaces_only rename_namespace("OfficeCore")
 
+#ifndef _DEFINE_NAMESPACE_ASC_GRAPHICS_
+#define _DEFINE_NAMESPACE_ASC_GRAPHICS_
 namespace ASCGraphics
 {
 	typedef OfficeCore::IWinFonts IASCFontManager;
 	const GUID CLSID_CASCFontManager = OfficeCore::CLSID_CWinFonts;
 	const GUID IID_IASCFontManager = OfficeCore::IID_IWinFonts;
 }
+#endif
 
 #else
 

@@ -45,7 +45,13 @@
 
 using namespace ATL;
 
-#import "..\..\..\..\..\..\Redist\AVSMediaCore3.dll"					named_guids rename_namespace ( "MediaCore" ), raw_interfaces_only
+#include "../../Common/Config.h"
+
+#ifdef BUILD_CONFIG_FULL_VERSION
+#import "../../Redist/ASCMediaCore3.dll"					named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
+#else
+#import "../../Redist/OfficeCore.dll"						named_guids raw_interfaces_only rename_namespace("OfficeCore")
+#endif
 
 #ifdef _DEBUG
 	#pragma comment(lib, "..\\GOCR\\Debug\\GOCR.lib")

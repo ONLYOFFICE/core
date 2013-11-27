@@ -162,7 +162,7 @@
 	<References>
 		<ProjectReference
 			ReferencedProjectIdentifier="{4D78DBB6-81D3-4CE0-89CD-8AF12EF36DB3}"
-			RelativePathToProject=".\AVSOfficeHtmlFile\prj\AVSOfficeHtmlFile2005.vcproj"
+			RelativePathToProject=".\ASCOfficeHtmlFile\prj\ASCOfficeHtmlFile2005.vcproj"
 		/>
 	</References>
 	<Files>

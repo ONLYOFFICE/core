@@ -4,7 +4,6 @@
 #include "../../Common/ASCUtils.h"
 #include "Foreign/StringWriter.h"
 
-using AVSGraphics::CAVSFontManager;
 using SimpleTypes::EPitch;
 
 namespace DocWrapper {
@@ -60,7 +59,7 @@ namespace DocWrapper {
 
 		fontManager = NULL;
 		CoInitialize(NULL);
-		CoCreateInstance(__uuidof(CAVSFontManager), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::IAVSFontManager), (void**) &fontManager);
+		CoCreateInstance(ASCGraphics::CLSID_CASCFontManager, NULL, CLSCTX_ALL, __uuidof(ASCGraphics::IASCFontManager), (void**) &fontManager);
 
 		VARIANT var;
 		var.vt = VT_BSTR;
@@ -71,14 +70,24 @@ namespace DocWrapper {
 		if (useSystemFonts) {
 			CString options = _T("<FontManagerOptions><FontDir path='") + fontDir + _T("' /></FontManagerOptions>");
 			BSTR bsOptions = options.AllocSysString();
+
+
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+			fontManager->Init(bsOptions, FALSE, TRUE);
+#else
 			fontManager->Initialize(bsOptions);
+#endif
+
+
 			SysFreeString(bsOptions);
 		}
 
+#ifdef BUILD_CONFIG_FULL_VERSION
 		CString defaultFontName = _T("Arial");
 		BSTR defFontName = defaultFontName.AllocSysString();
 		fontManager->SetDefaultFont(defFontName);
 		SysFreeString(defFontName);
+#endif
 	}
 	void FontProcessor::addToFontMap(OOX::CFont& font) {
 		CStringWriter parw;
@@ -128,11 +137,15 @@ namespace DocWrapper {
 		parw.WriteString(CString(_T("</FontProperties>")));
 		CString params = parw.GetData();
 		
-		BSTR fontPath;
+		BSTR fontPath = NULL;
+		BSTR familyName = NULL;
 		long index = 0;
 		BSTR bstrParams = params.AllocSysString();
+
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+		fontManager->GetWinFontByParams(bstrParams, &familyName, &fontPath, NULL, &index);
+#else
 		fontManager->GetWinFontByParams(bstrParams, &fontPath, &index);
-		SysFreeString(bstrParams);
 		int status = fontManager->LoadFontFromFile(fontPath, 12, 72, 72, index);
 		SysFreeString(fontPath);
 		/*if (!CheckRange(fontManager))
@@ -152,9 +165,13 @@ namespace DocWrapper {
 			status = fontManager->LoadFontFromFile(bstrFontPath, 12, 72, 72, index);
 			SysFreeString(bstrFontPath);
 		}*/
-		BSTR familyName;
-		fontManager->GetFamilyName(&familyName);
+		fontManager->GetFamilyName(&familyName);		
+#endif
+
 		CString resFontName = familyName;
+
+		SysFreeString(bstrParams);
+		SysFreeString(fontPath);
 		SysFreeString(familyName);
 
 		fontMap[font.m_sName] = resFontName;

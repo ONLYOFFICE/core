@@ -10,7 +10,7 @@ namespace Writers
 	{
 		CStringWriter	m_oWriter;
 		CString	m_sDir;
-		AVSGraphics::IAVSFontManagerPtr m_pFontManager;
+		ASCGraphics::IASCFontManager* m_pFontManager;
 	public:
 		CAtlMap<CString, int> m_mapFonts;
 	public:
@@ -19,7 +19,7 @@ namespace Writers
 			m_pFontManager = NULL;
 			if(!sFontDir.IsEmpty())
 			{
-				m_pFontManager.CreateInstance(__uuidof(AVSGraphics::CAVSFontManager));
+				CoCreateInstance(ASCGraphics::CLSID_CASCFontManager, NULL, CLSCTX_ALL, __uuidof(ASCGraphics::IASCFontManager), (void**)&m_pFontManager);
 				if(NULL != m_pFontManager)
 				{
 					VARIANT var;
@@ -28,14 +28,20 @@ namespace Writers
 					m_pFontManager->SetAdditionalParam(L"InitializeFromFolder", var);
 					RELEASESYSSTRING(var.bstrVal);
 
-
+#ifdef BUILD_CONFIG_FULL_VERSION
 					CString defaultFontName = _T("Arial");
 					BSTR defFontName = defaultFontName.AllocSysString();
 					m_pFontManager->SetDefaultFont(defFontName);
 					SysFreeString(defFontName);
+#endif
 				}
 			}
 		}
+		~FontTableWriter()
+		{
+			RELEASEINTERFACE(m_pFontManager);
+		}
+
 		void Write()
 		{
 			m_oWriter.WriteString(g_string_ft_Start);
@@ -81,10 +87,14 @@ namespace Writers
 			{
 				long index = 0;
 				BSTR bstrFontName = sFontName.AllocSysString();
-				m_pFontManager->LoadFontByName(bstrFontName, 12, 0, 72, 72);
-				SysFreeString(bstrFontName);
 				SAFEARRAY *psaArray = NULL;
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+				m_pFontManager->GetParamsByFontName(bstrFontName, &psaArray, NULL);
+#else
+				m_pFontManager->LoadFontByName(bstrFontName, 12, 0, 72, 72);
 				m_pFontManager->GetPanose(&psaArray);
+#endif
+				SysFreeString(bstrFontName);
 				if(NULL != psaArray)
 				{
 					unsigned char* pData = static_cast<unsigned char*>(psaArray->pvData);

@@ -4,9 +4,9 @@
 #include <boost/regex.hpp>
 #include "PaintStruct.h"
 #include "XmlUtils.h"
-#include "../AVSOfficePDFWriter/Consts.h"
-#include "../AVSOfficePDFWriter/Utils.h"
-#include "../AVSOfficeUniversalConverter/Utils.h"
+#include "../ASCOfficePDFWriter/Consts.h"
+#include "../ASCOfficePDFWriter/Utils.h"
+#include "../ASCOfficeUniversalConverter/Utils.h"
 #include "EpubCrypt.h"
 #include "OfficeDrawing/File.h"
 

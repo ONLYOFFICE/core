@@ -74,10 +74,10 @@ public:
 private: 
 	BOOL IsEpubFile(CString sFilename, long& nError );
 	bool SaveCover( CString sFilename, long& nWidth, long& nHeight );
-	void UpdateGdiPlusRenderer(double dWidthMm, double dHeightMm,AVSMediaCore3::IAVSUncompressedVideoFrame** piImage,AVSGraphics::IAVSGraphicsRenderer** piRend);
+	void UpdateGdiPlusRenderer(double dWidthMm, double dHeightMm,AVSMediaCore3::IAVSUncompressedVideoFrame** piImage,AVSGraphics::IASCGraphicsRenderer** piRend);
 private: 
 
-	AVSGraphics::IAVSDocumentRenderer *	m_piCommandsRenderer;
+	AVSGraphics::IASCDocumentRenderer *	m_piCommandsRenderer;
 	int m_nTasksAll;
 	int m_nTasksComplete;
 	bool m_bCancel;

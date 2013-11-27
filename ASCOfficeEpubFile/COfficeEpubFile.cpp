@@ -850,7 +850,7 @@ STDMETHODIMP COfficeEpubFile::get_CommandRenderer(IUnknown** ppunkRend)
 	(*ppunkRend) = NULL;
 	if(NULL == m_piCommandsRenderer)
 		return S_OK;
-	return m_piCommandsRenderer->QueryInterface(__uuidof(AVSGraphics::IAVSDocumentRenderer), (void**)&ppunkRend);
+	return m_piCommandsRenderer->QueryInterface(__uuidof(AVSGraphics::IASCDocumentRenderer), (void**)&ppunkRend);
 }
 
 
@@ -858,7 +858,7 @@ STDMETHODIMP COfficeEpubFile::put_CommandRenderer(IUnknown* ppunkRend)
 {
 	RELEASEINTERFACE(m_piCommandsRenderer);
 	if(NULL != ppunkRend)
-		ppunkRend->QueryInterface(__uuidof( AVSGraphics::IAVSDocumentRenderer), (void**)&m_piCommandsRenderer);
+		ppunkRend->QueryInterface(__uuidof( AVSGraphics::IASCDocumentRenderer), (void**)&m_piCommandsRenderer);
 	return S_OK;
 }
 
@@ -909,7 +909,7 @@ bool COfficeEpubFile::SaveCover( CString sFilename, long& nWidth, long& nHeight 
 				nWidth = nHeight * dWidthMM / dHeightMM;
 			}
 			AVSMediaCore3::IAVSUncompressedVideoFrame* piImage = NULL;
-			AVSGraphics::IAVSGraphicsRenderer* piGraphicsRenderer = NULL;
+			AVSGraphics::IASCGraphicsRenderer* piGraphicsRenderer = NULL;
 			UpdateGdiPlusRenderer( dWidthMM, dHeightMM, &piImage, &piGraphicsRenderer );
 			if( NULL != piGraphicsRenderer )
 			{
@@ -932,7 +932,7 @@ bool COfficeEpubFile::SaveCover( CString sFilename, long& nWidth, long& nHeight 
 	}
 	return false;
 }
-void COfficeEpubFile::UpdateGdiPlusRenderer(double dWidthMm, double dHeightMm, AVSMediaCore3::IAVSUncompressedVideoFrame** piImage, AVSGraphics::IAVSGraphicsRenderer** piRend)
+void COfficeEpubFile::UpdateGdiPlusRenderer(double dWidthMm, double dHeightMm, AVSMediaCore3::IAVSUncompressedVideoFrame** piImage, AVSGraphics::IASCGraphicsRenderer** piRend)
 {
 	(*piImage) = NULL;
 	(*piRend) = NULL;
@@ -963,7 +963,7 @@ void COfficeEpubFile::UpdateGdiPlusRenderer(double dWidthMm, double dHeightMm, A
 
 	memset((*piImage)->Buffer, 255, (*piImage)->BufferSize);
 
-	CoCreateInstance(__uuidof( AVSGraphics::CAVSGraphicsRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IAVSGraphicsRenderer), (void **)piRend);
+	CoCreateInstance(__uuidof( AVSGraphics::CAVSGraphicsRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IASCGraphicsRenderer), (void **)piRend);
 	//ставим FontManager
 	VARIANT vtVariant;
 	vtVariant.vt = VT_UNKNOWN;

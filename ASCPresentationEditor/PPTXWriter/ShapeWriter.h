@@ -30,8 +30,8 @@ namespace NSPresentationEditor
 		return _T("body");
 	}
 
-	[ coclass, default(IAVSRenderer), threading(apartment), vi_progid("Drawing.SW"), progid("Drawing.SW.1"), version(1.0), uuid("3C1D8C77-D249-47a4-8D7A-7F7BEE66741E") ]
-	class ATL_NO_VTABLE CShapeWriter : public IAVSRenderer
+	[ coclass, default(IASCRenderer), threading(apartment), vi_progid("Drawing.SW"), progid("Drawing.SW.1"), version(1.0), uuid("3C1D8C77-D249-47a4-8D7A-7F7BEE66741E") ]
+	class ATL_NO_VTABLE CShapeWriter : public IASCRenderer
 	{
 	private:
 		NSPresentationEditor::CStringWriter m_oWriterPath;
@@ -55,8 +55,8 @@ namespace NSPresentationEditor
 		CShapeWriter()
 		{
 			m_pShapeElement = NULL;
-			CoCreateInstance(AVSGraphics::CLSID_CAVSGraphicSimpleComverter, NULL, CLSCTX_ALL, 
-				AVSGraphics::IID_IAVSGraphicSimpleComverter, (void**)&m_pSimpleGraphicsConverter);
+			CoCreateInstance(ASCGraphics::CLSID_CASCGraphicSimpleComverter, NULL, CLSCTX_ALL, 
+				ASCGraphics::IID_IASCGraphicSimpleComverter, (void**)&m_pSimpleGraphicsConverter);
 
 			m_pRels			= NULL;
 			m_lNextShapeID	= 1000;
@@ -415,7 +415,7 @@ namespace NSPresentationEditor
 		{
 			if (NULL == m_pFontManager)
 			{
-				CoCreateInstance(__uuidof(AVSGraphics::CAVSFontManager), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::IAVSFontManager), (void**)&m_pFontManager);
+				CoCreateInstance(__uuidof(ASCGraphics::CASCFontManager), NULL, CLSCTX_ALL, __uuidof(ASCGraphics::IASCFontManager), (void**)&m_pFontManager);
 				m_pFontManager->Initialize(L"");
 			}
 
@@ -440,8 +440,8 @@ namespace NSPresentationEditor
 
 	public:
 
-		AVSGraphics::IAVSGraphicSimpleComverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
-		AVSGraphics::IAVSFontManager*				m_pFontManager;					// менеджер шрифтов
+		ASCGraphics::IASCGraphicSimpleComverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
+		ASCGraphics::IASCFontManager*				m_pFontManager;					// менеджер шрифтов
 
 		CMatrix							m_oBaseTransform;	// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)
 		CMatrix							m_oTransform;		// текущая матрица преобразований рендерера

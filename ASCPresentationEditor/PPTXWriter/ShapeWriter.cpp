@@ -9,7 +9,7 @@ HRESULT NSPresentationEditor::CShapeWriter::FinalConstruct()
 	m_lClipMode = c_nClipRegionTypeWinding;
 
 	m_pSimpleGraphicsConverter = NULL;
-	CoCreateInstance(AVSGraphics::CLSID_CAVSGraphicSimpleComverter, NULL, CLSCTX_ALL, AVSGraphics::IID_IAVSGraphicSimpleComverter, (void**)&m_pSimpleGraphicsConverter);
+	CoCreateInstance(ASCGraphics::CLSID_CASCGraphicSimpleComverter, NULL, CLSCTX_ALL, ASCGraphics::IID_IASCGraphicSimpleComverter, (void**)&m_pSimpleGraphicsConverter);
 
 	IUnknown* punkRenderer = NULL;
 	this->QueryInterface(IID_IUnknown, (void**)&punkRenderer);

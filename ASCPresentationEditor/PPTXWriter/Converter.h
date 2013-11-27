@@ -1,5 +1,5 @@
 #pragma once
-#include "AvsUtils.h"
+#include "../../Common/ASCUtils.h"
 #include "../OfficeDrawing/Document.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 
@@ -7,7 +7,7 @@
 #include "StylesWriter.h"
 #include "ImageManager.h"
 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeUtils.dll"		named_guids rename_namespace("AVSOfficeUtils"), raw_interfaces_only
+#import "../../Redist/ASCOfficeUtils.dll"		named_guids rename_namespace("AVSOfficeUtils"), raw_interfaces_only
 
 namespace NSPresentationEditor
 {
@@ -48,8 +48,8 @@ namespace NSPresentationEditor
 
 			m_pDocument			= NULL;
 
-			IAVSRenderer* pRenderer = NULL;
-			CoCreateInstance(__uuidof(CShapeWriter), NULL, CLSCTX_ALL, __uuidof(IAVSRenderer), (void**)&pRenderer);
+			IASCRenderer* pRenderer = NULL;
+			CoCreateInstance(__uuidof(CShapeWriter), NULL, CLSCTX_ALL, __uuidof(IASCRenderer), (void**)&pRenderer);
 
 			m_pShapeWriter = (CShapeWriter*)pRenderer;
 		}

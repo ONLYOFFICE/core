@@ -4,7 +4,7 @@
 #include <atlsimpcoll.h>
 
 #include "../../Reader/Records.h"
-#include "../../AVSPresentationEditor/OfficeDrawing/Document.h"
+#include "../../ASCPresentationEditor/OfficeDrawing/Document.h"
 
 #ifdef _DEBUG
 #define	_DEBUG_LOG		//	_DEBUG_LOG

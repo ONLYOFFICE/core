@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSOfficePPTFile"
+	Name="ASCOfficePPTFile"
 	ProjectGUID="{C1E5043D-4844-4893-980D-BD79CDCD05C1}"
-	RootNamespace="AVSOfficePPTFile"
+	RootNamespace="ASCOfficePPTFile"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -42,17 +42,17 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficePPTFile.tlb"
-				HeaderFileName="AVSOfficePPTFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficePPTFile.tlb"
+				HeaderFileName="ASCOfficePPTFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficePPTFile_i.c"
-				ProxyFileName="AVSOfficePPTFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficePPTFile_i.c"
+				ProxyFileName="ASCOfficePPTFile_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\..\..\AVSOfficeStudio\Common\OfficeDrawing\Shapes;..\..\..\AVSOfficeStudio\Common\OfficeDrawing"
+				AdditionalIncludeDirectories=".;..\..\..\ASCOfficeStudio\Common\OfficeDrawing\Shapes;..\..\..\ASCOfficeStudio\Common\OfficeDrawing"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -79,7 +79,7 @@
 				RegisterOutput="true"
 				IgnoreImportLibrary="true"
 				LinkIncremental="2"
-				MergedIDLBaseFileName="_AVSOfficePPTFile.idl"
+				MergedIDLBaseFileName="_ASCOfficePPTFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -122,7 +122,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\..\Redist\VersionControl.exe $(ProjectDir)version.h"
+				CommandLine="..\..\Redist\VersionControl.exe $(ProjectDir)version.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -139,17 +139,17 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficePPTFile.tlb"
-				HeaderFileName="AVSOfficePPTFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficePPTFile.tlb"
+				HeaderFileName="ASCOfficePPTFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficePPTFile_i.c"
-				ProxyFileName="AVSOfficePPTFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficePPTFile_i.c"
+				ProxyFileName="ASCOfficePPTFile_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories=".;..\..\AVSOfficeStudio\Common\OfficeDrawing\Shapes;..\..\AVSOfficeStudio\Common\OfficeDrawing"
+				AdditionalIncludeDirectories=".;..\..\ASCOfficeStudio\Common\OfficeDrawing\Shapes;..\..\ASCOfficeStudio\Common\OfficeDrawing"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -176,7 +176,7 @@
 				IgnoreImportLibrary="true"
 				OutputFile="..\..\..\redist\$(ProjectName).dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSOfficePPTFile.idl"
+				MergedIDLBaseFileName="_ASCOfficePPTFile.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="2"
@@ -209,107 +209,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\..\Redist\AVSOfficeStudio&quot;&#x0D;&#x0A;"
-			/>
-		</Configuration>
-		<Configuration
-			Name="ReleaseASC|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="2"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficePPTFile.tlb"
-				HeaderFileName="AVSOfficePPTFile.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficePPTFile_i.c"
-				ProxyFileName="AVSOfficePPTFile_p.c"
-				ValidateParameters="false"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				AdditionalIncludeDirectories=".;..\..\AVSOfficeStudio\Common\OfficeDrawing\Shapes;..\..\AVSOfficeStudio\Common\OfficeDrawing"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
-				StringPooling="true"
-				RuntimeLibrary="2"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG; ASCBUILD"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				RegisterOutput="true"
-				IgnoreImportLibrary="true"
-				OutputFile="..\..\..\redist\$(ProjectName).dll"
-				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSOfficePPTFile.idl"
-				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
-				SubSystem="2"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/$(TargetName).lib"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				Description="Performing registration"
-				CommandLine="copy $(TargetPath) ..\..\..\..\..\ASC\Redist\ASCOfficeStudio\ASCOfficePPTFile.dll"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\Redist&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -322,7 +222,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSOfficePPTFile.cpp"
+				RelativePath=".\ASCOfficePPTFile.cpp"
 				>
 			</File>
 			<File
@@ -360,11 +260,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficePPTFile.rc"
+				RelativePath=".\ASCOfficePPTFile.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficePPTFile.rgs"
+				RelativePath=".\ASCOfficePPTFile.rgs"
 				>
 			</File>
 		</Filter>
@@ -390,31 +290,31 @@
 			Name="Common"
 			>
 			<File
-				RelativePath="..\..\AVSPresentationEditor\OfficeDrawing\Shapes\BaseShape\BaseShape.cpp"
+				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\BaseShape.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSPresentationEditor\OfficeDrawing\Elements.cpp"
+				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Elements.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\Formula.cpp"
+				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\Formula.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSPresentationEditor\OfficeDrawing\Layout.cpp"
+				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Layout.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\PPTShape.cpp"
+				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\PPTShape.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSPresentationEditor\OfficeDrawing\TextAttributesEx.cpp"
+				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\TextAttributesEx.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSPresentationEditor\OfficeDrawing\Theme.cpp"
+				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Theme.cpp"
 				>
 			</File>
 		</Filter>
@@ -430,7 +330,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\AVSPresentationEditor\OfficeDrawing\Document.h"
+				RelativePath="..\ASCPresentationEditor\OfficeDrawing\Document.h"
 				>
 			</File>
 			<File

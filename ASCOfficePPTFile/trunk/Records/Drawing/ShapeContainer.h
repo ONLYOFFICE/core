@@ -9,12 +9,12 @@
 #include "..\InteractiveInfoAtom.h"
 #include "..\TextInteractiveInfoAtom.h"
 //#include "..\..\Reader\Slide.h"
-#include "..\..\..\..\AVSPresentationEditor\OfficeDrawing\Document.h"
+#include "../../../../ASCPresentationEditor/OfficeDrawing/Document.h"
 #include "Shape.h"
 #include "ShapeProperties.h"
-#include "..\..\Reader\ClassesAtom.h"
-#include "..\..\Reader\SlideInfo.h"
-#include "..\..\..\..\AVSPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\ElementSettings.h"
+#include "../../Reader/ClassesAtom.h"
+#include "../../Reader/SlideInfo.h"
+#include "../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/ElementSettings.h"
 
 const double EMU_MM = 36000;
 
@@ -1018,104 +1018,6 @@ public:
 						CVideoElement* pVideoElem	= new CVideoElement();
 						pVideoElem->m_strFileName	= oInfo.m_strFilePath;
 
-						VideoFile::IVideoFile3* pVideoFile = NULL;
-
-						if (SUCCEEDED(CoCreateInstance(VideoFile::CLSID_CVideoFile3, NULL, CLSCTX_ALL, VideoFile::IID_IVideoFile3, (void**)(&pVideoFile))))
-						{
-							if (NULL != pVideoFile)
-							{
-								BSTR bsFile = pVideoElem->m_strFileName.AllocSysString();
-								if (S_OK == pVideoFile->OpenFile(bsFile))
-								{
-									pVideoFile->get_videoDuration(&pVideoElem->m_dVideoDuration);
-
-									CAudioElement* pAudioElem	= new CAudioElement();
-									pAudioElem->m_bWithVideo	= true;
-
-									pAudioElem->m_dAudioDuration	= pVideoElem->m_dVideoDuration;
-									pAudioElem->m_strFileName		= pVideoElem->m_strFileName;
-
-									pVideoElem->m_dClipStartTime	= oInfo.m_dStartTime;
-									pVideoElem->m_dClipEndTime		= oInfo.m_dEndTime;
-									pAudioElem->m_dClipStartTime	= oInfo.m_dStartTime;
-									pAudioElem->m_dClipEndTime		= oInfo.m_dEndTime;
-									
-									if (pVideoElem->m_dClipStartTime < 0.0)
-										pVideoElem->m_dClipStartTime	=	0.0;
-
-									if (pVideoElem->m_dClipEndTime < 0.0)
-										pVideoElem->m_dClipEndTime	=	pVideoElem->m_dVideoDuration;					
-									
-									if (pAudioElem->m_dClipStartTime < 0.0)
-										pAudioElem->m_dClipStartTime	=	0.0;
-
-									if (pAudioElem->m_dClipEndTime < 0.0)
-										pAudioElem->m_dClipEndTime	=	pVideoElem->m_dVideoDuration;
-
-									if (NULL != pSlide)
-									{
-										pAudioElem->m_dStartTime	= pSlide->m_dStartTime;
-										pAudioElem->m_dEndTime		= pSlide->m_dEndTime;
-
-										pSlide->m_arElements.Add(pAudioElem);
-									}
-									else
-										pLayout->m_arElements.Add(pAudioElem);
-								}
-								else
-								{
-									// поуэрпоинт смотрит еще на директорию, где лежит файл
-									SysFreeString(bsFile);
-
-									CString strFile = pMapIDs->m_strSourceDirectory + GetFileName(oInfo.m_strFilePath);
-									bsFile = strFile.AllocSysString();
-
-									if (S_OK == pVideoFile->OpenFile(bsFile))
-									{
-										pVideoElem->m_strFileName = strFile;
-
-										pVideoFile->get_videoDuration(&pVideoElem->m_dVideoDuration);
-
-										CAudioElement* pAudioElem	= new CAudioElement();
-										pAudioElem->m_bWithVideo	= true;
-
-										pAudioElem->m_dAudioDuration	= pVideoElem->m_dVideoDuration;
-										pAudioElem->m_strFileName		= pVideoElem->m_strFileName;
-
-										pVideoElem->m_dClipStartTime	= oInfo.m_dStartTime;
-										pVideoElem->m_dClipEndTime		= oInfo.m_dEndTime;
-										pAudioElem->m_dClipStartTime	= oInfo.m_dStartTime;
-										pAudioElem->m_dClipEndTime		= oInfo.m_dEndTime;
-
-										if (pVideoElem->m_dClipStartTime < 0.0)
-											pVideoElem->m_dClipStartTime	=	0.0;
-
-										if (pVideoElem->m_dClipEndTime < 0.0)
-											pVideoElem->m_dClipEndTime	=	pVideoElem->m_dVideoDuration;					
-
-										if (pAudioElem->m_dClipStartTime < 0.0)
-											pAudioElem->m_dClipStartTime	=	0.0;
-
-										if (pAudioElem->m_dClipEndTime < 0.0)
-											pAudioElem->m_dClipEndTime	=	pVideoElem->m_dVideoDuration;
-
-										if (NULL != pSlide)
-										{
-											pAudioElem->m_dStartTime	= pSlide->m_dStartTime;
-											pAudioElem->m_dEndTime		= pSlide->m_dEndTime;
-
-											pSlide->m_arElements.Add(pAudioElem);
-										}
-										else
-											pLayout->m_arElements.Add(pAudioElem);
-									}
-								}
-								SysFreeString(bsFile);
-
-								RELEASEINTERFACE(pVideoFile);
-							}
-						}
-
 						pElem = (IElement*)pVideoElem;
 					}
 					else if (CExFilesInfo::eftAudio == exType)
@@ -1126,37 +1028,7 @@ public:
 						pAudioElem->m_dClipStartTime	= oInfo.m_dStartTime;
 						pAudioElem->m_dClipEndTime		= oInfo.m_dEndTime;
 
-						pAudioElem->m_bLoop				= oInfo.m_bLoop;
-
-						VideoFile::IVideoFile3* pVideoFile = NULL;
-						if (SUCCEEDED(CoCreateInstance(VideoFile::CLSID_CVideoFile3, NULL, CLSCTX_ALL, VideoFile::IID_IVideoFile3, (void**)(&pVideoFile))))
-						{
-							if (NULL != pVideoFile)
-							{
-								BSTR bsFile = pAudioElem->m_strFileName.AllocSysString();
-								if (S_OK == pVideoFile->OpenFile(bsFile))
-								{
-									pVideoFile->get_audioDuration(&pAudioElem->m_dAudioDuration);						
-								}
-								else
-								{
-									// поуэрпоинт смотрит еще на директорию, где лежит файл
-									SysFreeString(bsFile);
-
-									CString strFile = pMapIDs->m_strSourceDirectory + GetFileName(oInfo.m_strFilePath);
-									bsFile = strFile.AllocSysString();
-
-									if (S_OK == pVideoFile->OpenFile(bsFile))
-									{
-										pAudioElem->m_strFileName = strFile;
-										pVideoFile->get_audioDuration(&pAudioElem->m_dAudioDuration);
-									}
-								}
-								SysFreeString(bsFile);
-
-								RELEASEINTERFACE(pVideoFile);
-							}
-						}
+						pAudioElem->m_bLoop				= oInfo.m_bLoop;						
 
 						if (NULL != pSlide)
 						{

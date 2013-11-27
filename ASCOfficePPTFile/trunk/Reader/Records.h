@@ -2,8 +2,8 @@
 #include "../stdafx.h"
 
 #include "PPTFileDefines.h"
-#include "..\Reader\ReadStructures.h"
-#include "..\..\AVSPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\Enums.h"
+#include "../Reader/ReadStructures.h"
+#include "../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/Enums.h"
 
 using namespace NSPresentationEditor;
 

@@ -1,7 +1,10 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
+#define COMPONENT_NAME "OfficePPTFile"
+#include "../../Common/FileInfo.h"
 #include "version.h"
+
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -58,20 +61,19 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "CompanyName"), "Online Media Technologies Ltd."
-            VALUE "FileDescription"), "AVSOfficePPTFile ActiveX DLL"
-            VALUE "FileVersion"), STRVER
-            VALUE "LegalCopyright"), "Online Media Technologies Ltd. Copyright (c) 2009"
-            VALUE "InternalName"), "AVSOfficePPTFile.dll"
-            VALUE "OriginalFilename"), "AVSOfficePPTFile.dll"
-            VALUE "ProductName"), "AVSOfficePPTFile ActiveX DLL"
-            VALUE "ProductVersion"), STRVER
-            VALUE "OLESelfRegister"), ""
+            VALUE "CompanyName", COMPANY_NAME
+            VALUE "FileDescription", FILE_DESCRIPTION_ACTIVEX
+            VALUE "FileVersion", STRVER
+            VALUE "InternalName", COMPONENT_FILE_NAME_DLL
+            VALUE "LegalCopyright", LEGAL_COPYRIGHT
+            VALUE "OriginalFilename", COMPONENT_FILE_NAME_DLL
+            VALUE "ProductName", FILE_DESCRIPTION_ACTIVEX
+            VALUE "ProductVersion", STRVER
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation"), 0x0409, 0x04B0
+        VALUE "Translation", 0x409, 1200
     END
 END
 
@@ -84,10 +86,10 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSOfficePPTFile"
+    IDS_PROJNAME            "ASCOfficePPTFile"
 END
 
-IDR_AVSOFFICEPPTFILE REGISTRY "AVSOfficePPTFile.rgs"
+IDR_ASCOFFICEPPTFILE REGISTRY "ASCOfficePPTFile.rgs"
 ////////////////////////////////////////////////////////////////////////////
 
 

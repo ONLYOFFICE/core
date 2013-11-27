@@ -2,8 +2,8 @@ HKCR
 {
 	NoRemove AppID
 	{
-		'%APPID%' = s 'AVSOfficePPTFile'
-		'AVSOfficePPTFile.DLL'
+		'%APPID%' = s 'ASCOfficePPTFile'
+		'ASCOfficePPTFile.DLL'
 		{
 			val AppID = s '%APPID%'
 		}

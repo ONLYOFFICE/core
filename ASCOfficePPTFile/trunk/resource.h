@@ -3,7 +3,7 @@
 // Used by AVSOfficePPTFile.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_AVSOFFICEPPTFILE            101
+#define IDR_ASCOFFICEPPTFILE            101
 #define IDB_COFFICEPPTFILE              102
 #define IDB_OFFICEPPTFILE               103
 

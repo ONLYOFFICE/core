@@ -14,14 +14,7 @@
 #include <shlwapi.h>
 #pragma comment( lib, "shell32.lib" ) // добавить shell32.lib
 
-//#define __USE_SIMPLE_PPTX_CONVERTER_
-#ifdef __USE_SIMPLE_PPTX_CONVERTER_
-#include "ConverterSimple\ConverterSimpleHeader.h"
-#endif
 #include "Editor\PPTXWriter.h"
-
-#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficeUtils.dll" raw_interfaces_only
-//using namespace AVSOfficeUtils;
 
 // IAVSOfficePPTXFile
 [object, uuid("ED1EC17E-EE0E-4cae-9E63-1C57235CE286"), dual, pointer_default(unique)]
@@ -63,7 +56,7 @@ class ATL_NO_VTABLE CAVSOfficePPTXFile
 	,	public PPTX::IPPTXEvent
 {
 private:
-	AVSOfficeUtils::IOfficeUtils*	m_pOfficeUtils;
+	OfficeUtils::IOfficeUtils*		m_pOfficeUtils;
 	PPTX::Folder*					m_pFolder;
 	CStringW						m_strTempDir;
 	CString							m_strDirectory;
@@ -109,7 +102,7 @@ public:
 		m_pFolder		= NULL;
 		m_pOfficeUtils	= NULL;
 
-		if (S_OK != CoCreateInstance(__uuidof(AVSOfficeUtils::COfficeUtils), NULL, CLSCTX_INPROC_SERVER, __uuidof(AVSOfficeUtils::IOfficeUtils),(void**)&m_pOfficeUtils))
+		if (S_OK != CoCreateInstance(__uuidof(OfficeUtils::COfficeUtils), NULL, CLSCTX_INPROC_SERVER, __uuidof(OfficeUtils::IOfficeUtils),(void**)&m_pOfficeUtils))
 			return S_FALSE;
 
 		m_oInit.Init();

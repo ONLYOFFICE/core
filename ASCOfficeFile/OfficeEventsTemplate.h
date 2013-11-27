@@ -1,5 +1,5 @@
 #pragma once
-#include "TemporaryCS.h"
+#include "../Common/TemporaryCS.h"
 
 //class CVideoFile3;
 template <class T, class Reciever>

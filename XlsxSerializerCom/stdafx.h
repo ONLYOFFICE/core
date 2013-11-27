@@ -45,19 +45,31 @@
 #include <atlhost.h>
 #include <atlcoll.h>
 
-#define __USE_XML_COMMON__
-
 using namespace ATL;
 #include "../Common/ASCUtils.h"
-
-#import "../../../../../Redist/AVSMediaCore3.dll"						named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
-#import "../../../../../Redist/AVSImageStudio3.dll"					named_guids raw_interfaces_only rename_namespace("AVSImageStudio")
-#import "../../../../../Redist/AVSGraphics.dll"						named_guids raw_interfaces_only rename_namespace("AVSGraphics")
-#import "../../../../../Redist/AVSOfficeStudio/AVSOfficeFile.dll"		raw_interfaces_only rename_namespace("AVSOfficeFile")
-#import "../../../../../Redist/AVSOfficeStudio/AVSFontConverter.dll"	named_guids raw_interfaces_only rename_namespace("Fonts")
-#import "../../../../../Redist/AVSOfficeStudio/AVSOfficePPTXFile.dll"	raw_interfaces_only rename_namespace("PPTXFile")
+#include "../Common/Config.h"
 
 #include <Gdiplus.h>
 #pragma comment(lib, "gdiplus.lib")
 
 using namespace Gdiplus;
+
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+
+#import "../Redist/OfficeCore.dll"			named_guids raw_interfaces_only rename_namespace("OfficeCore")
+
+namespace ASCGraphics
+{
+	typedef OfficeCore::IWinFonts IASCFontManager;
+	const GUID CLSID_CASCFontManager = OfficeCore::CLSID_CWinFonts;
+	const GUID IID_IASCFontManager = OfficeCore::IID_IWinFonts;
+}
+
+#else
+
+#import "../Redist/ASCGraphics.dll"			named_guids raw_interfaces_only rename_namespace("ASCGraphics")
+#import "../Redist/ASCFontConverter.dll"	named_guids raw_interfaces_only rename_namespace("Fonts")
+
+#endif
+
+#import "../Redist/ASCOfficePPTXFile.dll"	named_guids raw_interfaces_only rename_namespace("PPTXFile"), exclude("_IAVSOfficeFileTemplateEvents"), exclude("_IAVSOfficeFileTemplateEvents2")

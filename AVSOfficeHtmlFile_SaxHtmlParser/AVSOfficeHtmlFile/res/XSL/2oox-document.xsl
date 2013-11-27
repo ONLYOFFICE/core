@@ -1256,9 +1256,9 @@
 					</xsl:call-template>
 				</w:tblPr>
 				<w:tblGrid>
-					<!--<xsl:call-template name="setTableGrid">
+					<xsl:call-template name="setTableGrid">
 						<xsl:with-param name="node" select="."/>
-						</xsl:call-template>-->
+					</xsl:call-template>
 				</w:tblGrid>
 
 				<!--<xsl:apply-templates mode="table">
@@ -2702,16 +2702,28 @@
                 <xsl:text>top</xsl:text>
               </wp:align>
             </wp:positionV>
-
-            <wp:extent>
-              <xsl:attribute name="cx">
-                <xsl:value-of select="$width"/>
-              </xsl:attribute>
-              <xsl:attribute name="cy">
-                <xsl:value-of select="$height"/>
-              </xsl:attribute>
-            </wp:extent>
-
+                <wp:extent>  
+                  <xsl:attribute name="cx">
+                    <xsl:choose>
+                      <xsl:when test="$width != ''">
+                        <xsl:value-of select="$width"/>
+                      </xsl:when>
+                      <xsl:otherwise>
+                        <xsl:value-of select="0"/>
+                      </xsl:otherwise>
+                    </xsl:choose>
+                  </xsl:attribute>
+                  <xsl:attribute name="cy">
+                    <xsl:choose>
+                      <xsl:when test="$height != ''">
+                        <xsl:value-of select="$height"/>
+                      </xsl:when>
+                      <xsl:otherwise>
+                        <xsl:value-of select="0"/>
+                       </xsl:otherwise>
+                     </xsl:choose>
+                  </xsl:attribute>     
+                </wp:extent>
             <wp:effectExtent l="0" t="0" r="0" b="0"/>
             <wp:wrapSquare wrapText="bothSides"/>
             <wp:docPr>
@@ -2777,14 +2789,28 @@
                   <pic:spPr bwMode="auto">
                     <a:xfrm>
                       <a:off x="0" y="0"/>
-                      <a:ext>
-                        <xsl:attribute name="cx">
-                          <xsl:value-of select="$width"/>
-                        </xsl:attribute>
-                        <xsl:attribute name="cy">
-                          <xsl:value-of select="$height"/>
-                        </xsl:attribute>
-                      </a:ext>
+                        <a:ext>
+                          <xsl:attribute name="cx">
+                            <xsl:choose>
+                              <xsl:when test="$width != ''">
+                                <xsl:value-of select="$width"/>
+                              </xsl:when>
+                              <xsl:otherwise>
+                                <xsl:value-of select="0"/>
+                               </xsl:otherwise>
+                            </xsl:choose>
+                          </xsl:attribute>
+                          <xsl:attribute name="cy">
+                            <xsl:choose>
+                              <xsl:when test="$height != ''">
+                                <xsl:value-of select="$height"/>
+                              </xsl:when>
+                              <xsl:otherwise>
+                                <xsl:value-of select="0"/>
+                              </xsl:otherwise>
+                             </xsl:choose>
+                          </xsl:attribute>
+                        </a:ext>
                     </a:xfrm>
                     <a:prstGeom prst="rect">
                       <a:avLst/>
@@ -2807,15 +2833,28 @@
 
         <w:drawing>
           <wp:inline distT="0" distB="0" distL="0" distR="0">
-
-            <wp:extent>
-              <xsl:attribute name="cx">
-                <xsl:value-of select="$width"/>
-              </xsl:attribute>
-              <xsl:attribute name="cy">
-                <xsl:value-of select="$height"/>
-              </xsl:attribute>
-            </wp:extent>
+              <wp:extent>
+                <xsl:attribute name="cx">
+                  <xsl:choose>
+                    <xsl:when test="$width != ''">
+                      <xsl:value-of select="$width"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of select="0"/>
+                    </xsl:otherwise>
+                   </xsl:choose>
+                </xsl:attribute>
+                <xsl:attribute name="cy">
+                  <xsl:choose>
+                    <xsl:when test="$height != ''">
+                      <xsl:value-of select="$height"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of select="0"/>
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:attribute>
+              </wp:extent>
             <wp:effectExtent l="0" t="0" r="0" b="0"/>
             <wp:docPr>
               <xsl:attribute name="id">
@@ -2880,14 +2919,28 @@
                   <pic:spPr bwMode="auto">
                     <a:xfrm>
                       <a:off x="0" y="0"/>
-                      <a:ext>
-                        <xsl:attribute name="cx">
-                          <xsl:value-of select="$width"/>
-                        </xsl:attribute>
-                        <xsl:attribute name="cy">
-                          <xsl:value-of select="$height"/>
-                        </xsl:attribute>
-                      </a:ext>
+                        <a:ext>
+                          <xsl:attribute name="cx">
+                            <xsl:choose>
+                              <xsl:when test="$width != ''">
+                                <xsl:value-of select="$width"/>
+                              </xsl:when>
+                              <xsl:otherwise>
+                                <xsl:value-of select="0"/>
+                              </xsl:otherwise>
+                            </xsl:choose>
+                          </xsl:attribute>
+                          <xsl:attribute name="cy">
+                            <xsl:choose>
+                              <xsl:when test="$height != ''">
+                                <xsl:value-of select="$height"/>
+                              </xsl:when>
+                              <xsl:otherwise>
+                                <xsl:value-of select="0"/>
+                              </xsl:otherwise>
+                             </xsl:choose>
+                          </xsl:attribute>
+                        </a:ext>
                     </a:xfrm>
                     <a:prstGeom prst="rect">
                       <a:avLst/>

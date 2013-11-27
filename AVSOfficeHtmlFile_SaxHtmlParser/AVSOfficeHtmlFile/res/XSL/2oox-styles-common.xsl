@@ -453,6 +453,7 @@
 
 	<xsl:template name="getFontSize">
 		<xsl:param name="style"/>
+    <xsl:param name="isDefaultSize"/>
 
 		<xsl:variable name="size">
 			<xsl:call-template name="GetPropertyFromStyle">
@@ -492,11 +493,15 @@
 					<xsl:when test="$size != ''">
 						<xsl:call-template name="ConvertFontSize">
 							<xsl:with-param name="size" select="$size"/>
-						</xsl:call-template>
+              <xsl:with-param name="isDefaultSize" select="$isDefaultSize"/>
+            </xsl:call-template>
 					</xsl:when>
 				</xsl:choose>
 			</xsl:when>
-			<xsl:otherwise>
+      <xsl:when test="$isDefaultSize != ''">
+        <xsl:text>12</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
 				<xsl:text>24</xsl:text>
 			</xsl:otherwise>
 		</xsl:choose>
@@ -646,8 +651,9 @@
 
 	<xsl:template name="ConvertFontSize">
 		<xsl:param name="size"/>
-
-		<xsl:variable name="numeric">
+    <xsl:param name="isDefaultSize"/>
+    
+    <xsl:variable name="numeric">
 			<xsl:choose>
 				<xsl:when test="contains($size, 'pt')">
 					<xsl:call-template name="ConvertMeasure">
@@ -704,7 +710,10 @@
 				<!-- Stub: use 12pt font as normal -->
 				<xsl:value-of select="round( ( number( substring-before( $size, '%' ) ) * 24 ) div 100 )"/>
 			</xsl:when>
-			<xsl:otherwise>
+      <xsl:when test="$isDefaultSize != ''">
+        <xsl:value-of select="$numeric"/>
+      </xsl:when>
+      <xsl:otherwise>
 				<xsl:value-of select="$numeric * 2"/>
 			</xsl:otherwise>
 		</xsl:choose>
@@ -836,19 +845,7 @@
 					<xsl:with-param name="propertyName" select="'float'"/>
 				</xsl:call-template>
 			</xsl:variable>
-      <xsl:variable name="styleCurrentAlign">
-        <xsl:value-of select="contains(@style, 'align')"/>
-      </xsl:variable>
-      <xsl:variable name="styleCurrentTextAlign">
-        <xsl:value-of select="contains(@style, 'text-align')"/>
-      </xsl:variable>
-      <xsl:variable name="styleCurrentFloat">
-        <xsl:value-of select="contains(@style, 'float')"/>
-      </xsl:variable>
 			<xsl:choose>
-        <xsl:when test="$styleCurrentFloat = 'true' and $styleCurrentTextAlign = 'false' and $styleCurrentAlign = 'false'">
-          <xsl:value-of select="$a3"/>
-        </xsl:when>
 				<xsl:when test="$a1 != ''">
 					<xsl:value-of select="$a1"/>
 				</xsl:when>
@@ -3114,19 +3111,275 @@
     <xsl:value-of select="concat( $tagStyle, $classStyle, $specStyle, $IDStyle )"/>
 	</xsl:template>
 
+  <!--<xsl:template name="setTableGrid">
+    <xsl:param name="node"/>
+    <xsl:for-each select="$node//col">
+      <xsl:call-template name="setCols">
+        <xsl:with-param name="node" select="."/>
+      </xsl:call-template>
+    </xsl:for-each>
+  </xsl:template>-->
 
-
-	<xsl:template name="setTableGrid">
+  <xsl:template name="setTableGrid">
 		<xsl:param name="node"/>
-		<xsl:for-each select="$node//col">
-			<xsl:call-template name="setCols">
-				<xsl:with-param name="node" select="."/>
-			</xsl:call-template>
-		</xsl:for-each>
+
+    <xsl:variable name="widthTable">
+      <xsl:call-template name="getWidthTable">
+        <xsl:with-param name="node" select="$node"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:variable name="marginLeft">
+      <xsl:call-template name="GetPropertyFromStyle">
+        <xsl:with-param name="styleString" select="@style"/>
+        <xsl:with-param name="propertyName" select="'margin-left'"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:variable name="marginRight">
+      <xsl:call-template name="GetPropertyFromStyle">
+        <xsl:with-param name="styleString" select="@style"/>
+        <xsl:with-param name="propertyName" select="'margin-rigth'"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:variable name="marginLeftTwips">
+      <xsl:choose>
+        <xsl:when test="$marginLeft != ''">
+          <xsl:call-template name="ConvertMeasure">
+            <xsl:with-param name="length" select="$marginLeft"/>
+            <xsl:with-param name="unit" select="'twips'"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="1701"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
+    <xsl:variable name="marginRightTwips">
+      <xsl:choose>
+        <xsl:when test="$marginRight != ''">
+          <xsl:call-template name="ConvertMeasure">
+            <xsl:with-param name="length" select="$marginRight"/>
+            <xsl:with-param name="unit" select="'twips'"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="850"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    
+    <xsl:variable name="widthPage">
+      <xsl:value-of select="11906 - ($marginRightTwips + $marginLeftTwips)"/>
+    </xsl:variable>
+
+    <xsl:choose>
+      <xsl:when test="$node//tr[1]//th != '' and $node//tr[1]//td != ''">
+        <xsl:for-each select="$node//tr[1]/*">
+          <xsl:variable name="curPosition">
+            <xsl:value-of select="position()"/>
+          </xsl:variable>
+          <xsl:variable name="maxWidth">
+            <xsl:call-template name="getMaxWidthColumns">
+              <xsl:with-param name="list" select="$node//tr//child::*[position()= $curPosition]"/>
+            </xsl:call-template>
+          </xsl:variable>
+          <xsl:variable name="trueWidth">
+            <xsl:value-of select="(($maxWidth) div ($widthTable))*($widthPage)"/>
+          </xsl:variable>
+          <w:gridCol>
+            <xsl:attribute name="w:w">
+              <xsl:value-of select="round($trueWidth)"/>
+            </xsl:attribute>
+          </w:gridCol>
+        </xsl:for-each>
+      </xsl:when>
+      <xsl:when test="$node//tr[1]//th != ''">
+        <xsl:for-each select="$node//tr[1]//th">
+          <xsl:variable name="curPosition">
+            <xsl:value-of select="position()"/>
+          </xsl:variable>
+          <xsl:variable name="maxWidth">
+            <xsl:call-template name="getMaxWidthColumns">
+              <xsl:with-param name="list" select="$node//tr//child::*[position()= $curPosition]"/>
+            </xsl:call-template>
+          </xsl:variable>
+          <xsl:variable name="trueWidth">
+            <xsl:value-of select="(($maxWidth) div ($widthTable))*($widthPage)"/>
+          </xsl:variable>
+          <w:gridCol>
+            <xsl:attribute name="w:w">
+              <xsl:value-of select="round($trueWidth)"/>
+            </xsl:attribute>
+          </w:gridCol>
+        </xsl:for-each>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:for-each select="$node//tr[1]//td">
+          <xsl:variable name="curPosition">
+            <xsl:value-of select="position()"/>
+          </xsl:variable>
+          <xsl:variable name="maxWidth">
+            <xsl:call-template name="getMaxWidthColumns">
+              <xsl:with-param name="list" select="$node//tr//child::*[position()= $curPosition]"/>
+            </xsl:call-template>
+          </xsl:variable>
+          <xsl:variable name="trueWidth">
+            <xsl:value-of select="(($maxWidth) div ($widthTable))*($widthPage)"/>
+          </xsl:variable>
+          <w:gridCol>
+            <xsl:attribute name="w:w">
+              <xsl:value-of select="round($trueWidth)"/>
+            </xsl:attribute>
+          </w:gridCol>
+        </xsl:for-each>
+      </xsl:otherwise>
+    </xsl:choose> 
 	</xsl:template>
 
+  <xsl:template name="getWidthTable">
+    <xsl:param name="node"/>
+    <xsl:variable name="widthTable">
+      <xsl:choose>
+        <xsl:when test="$node//tr[1]//th != ''">
+          <xsl:call-template name="for">
+            <xsl:with-param name="count" select="count($node//tr[1]//th)"/>
+            <xsl:with-param name="node" select="$node"/>
+            <xsl:with-param name="allWidth" select="0"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="for">
+            <xsl:with-param name="count" select="count($node//tr[1]//td)"/>
+            <xsl:with-param name="node" select="$node"/>
+            <xsl:with-param name="allWidth" select="0"/>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:value-of select="$widthTable"/>
+  </xsl:template>
 
-	<xsl:template name="setCols">
+  <xsl:template name="for">
+    <xsl:param name="i" select="1" />
+    <xsl:param name="count" />
+    <xsl:param name="node" />
+    <xsl:param name="allWidth"/>
+    <xsl:variable name="maxWidth">
+      <xsl:call-template name="getMaxWidthColumns">
+        <xsl:with-param name="list" select="current()//tr//child::*[position()= $i]"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="$i &lt;= ($count)">
+        <xsl:call-template name="for">
+          <xsl:with-param name="i" select="$i + 1"/>
+          <xsl:with-param name="count" select="$count"/>
+          <xsl:with-param name="allWidth" select="$allWidth + $maxWidth"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$allWidth"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <!--get width table cell(real width in style attribute or width of word)-->
+  <xsl:template name ="getMaxWidthColumns">
+    <xsl:param name ="list" />
+    <xsl:param name ="prevVal" />
+    <xsl:param name ="prevStyleWidth" />
+
+    <xsl:variable name="style">
+      <xsl:value-of select="$list/@style"/>
+    </xsl:variable>
+    
+    <xsl:variable name="fontSize">
+      <xsl:call-template name="getFontSize">
+        <xsl:with-param name="style" select="$style"/>
+        <xsl:with-param name="isDefaultSize" select="'true'"/>
+      </xsl:call-template>
+    </xsl:variable>
+    
+    <xsl:variable name="text">
+      <xsl:value-of select="normalize-space($list/child::text())"/>
+    </xsl:variable>
+
+    <!--<xsl:variable name="text">
+      <xsl:value-of select="normalize-space($list)"/>
+    </xsl:variable>-->
+
+    <xsl:variable name="fontSize2">
+      <xsl:call-template name="ConvertMeasure">
+        <xsl:with-param name="length" select="concat($fontSize*0.6, 'px')"/>
+        <xsl:with-param name="unit" select="'twips'"/>
+      </xsl:call-template>
+    </xsl:variable>
+    
+    <xsl:variable name="lengthText">
+      <xsl:value-of select="(string-length($text))*($fontSize2)"/>
+    </xsl:variable>
+
+    <xsl:variable name="widthTd">
+      <xsl:call-template name="GetPropertyFromStyle">
+        <xsl:with-param name="styleString" select="$style"/>
+        <xsl:with-param name="propertyName" select="'width'"/>
+      </xsl:call-template>
+    </xsl:variable>
+    
+    <xsl:variable name="widthCell">
+      <xsl:choose>
+        <xsl:when test="$widthTd != ''">
+          <xsl:call-template name="ConvertMeasure">
+            <xsl:with-param name="length" select="$widthTd"/>
+            <xsl:with-param name="unit" select="'twips'"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="0"/>
+        </xsl:otherwise>
+     </xsl:choose>
+    </xsl:variable>
+    
+    <xsl:variable name="lengthTextNew">
+      <xsl:choose>
+          <xsl:when test="($prevStyleWidth != '') and ($prevStyleWidth != 0) and ($widthCell != 0) and ($widthCell > $prevStyleWidth)">
+            <xsl:value-of select="$widthCell"/>
+          </xsl:when>
+          <xsl:when test="($widthCell != '') and ($widthCell != 0)">
+            <xsl:value-of select="$widthCell"/>
+          </xsl:when>
+          <xsl:when test="($prevVal = '') or (($lengthText > $prevVal) and ($prevVal != ''))">
+              <xsl:value-of select="$lengthText"/>
+          </xsl:when>
+          <xsl:otherwise>
+              <xsl:value-of select="$prevVal"/>
+          </xsl:otherwise>
+        </xsl:choose>
+    </xsl:variable>
+
+    <xsl:variable name ="rest">   
+      <xsl:choose>
+          <xsl:when test="count($list) != 0">
+              <xsl:call-template name ="getMaxWidthColumns">
+                <xsl:with-param name ="list" select ="$list[position() != 1]" />
+                <xsl:with-param name ="prevVal" select ="$lengthTextNew" />
+                <xsl:with-param name ="prevStyleWidth" select ="$widthCell" />
+              </xsl:call-template>
+          </xsl:when>
+          <xsl:when test="count($list) = 0">
+              <xsl:value-of select="$lengthTextNew"/>
+          </xsl:when>
+        </xsl:choose>
+    </xsl:variable>
+
+    <xsl:value-of select="$rest"/>
+  </xsl:template>
+  
+  
+ 	<xsl:template name="setCols">
 		<xsl:param name="node"/>
 
 		<xsl:for-each select="$node">

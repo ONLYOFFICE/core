@@ -14,12 +14,9 @@
 #endif
 
 
-#ifdef _DEBUG
-//#import "..\AVSOfficeUtils\AVSOfficeUtils\Debug\AVSOfficeUtils.dll" raw_interfaces_only
-#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficeUtils.dll" raw_interfaces_only
-#else
-#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficeUtils.dll" raw_interfaces_only
-#endif
+
+#import "..\Redist\ASCOfficeUtils.dll" raw_interfaces_only
+
 
 
 #define ZIP_NO_COMPRESSION         0
@@ -74,5 +71,5 @@ private:
 	const unsigned long LoadFromResource(LPCWSTR lpResName, LPCWSTR lpResType, LPCWSTR fileName) const;
 
 private:
-		AVSOfficeUtils::IOfficeUtils*		m_pOfficeUtils;
+		ASCOfficeUtils::IOfficeUtils*		m_pOfficeUtils;
 };

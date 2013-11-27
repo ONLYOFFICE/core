@@ -43,3 +43,12 @@
 
 
 using namespace ATL;
+
+#ifndef DEBUG
+#define SVMLIB_ROOT "../ASCImageStudio3/ASCGraphics/OfficeSvmFile/Release/"
+#else
+#define SVMLIB_ROOT "../ASCImageStudio3/ASCGraphics/OfficeSvmFile/Debug/"
+#endif
+
+#pragma message ("Using library: OfficeSvmFile.lib")
+#pragma comment(lib, SVMLIB_ROOT "OfficeSvmFile.lib")

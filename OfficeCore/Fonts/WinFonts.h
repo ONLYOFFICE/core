@@ -12,6 +12,7 @@ __interface IWinFonts : IDispatch
 {
 	[id(1)]		HRESULT Init([in] BSTR bsFolder, [in] VARIANT_BOOL bIsUseSharedMemory, [in] VARIANT_BOOL bIsSaved);
 	[id(2)]		HRESULT GetWinFontByParams([in] BSTR bsFontParams, [out] BSTR* pbsFontName, [out] BSTR* pbsFontPath, [out] BSTR* pbsFontStyle, [out] long *plIndex);
+	[id(10)]	HRESULT GetParamsByFontName([in] BSTR bsFontName, [out, satype("BYTE")] SAFEARRAY **ppsaPanose, [out] BSTR* pbsFontParams);
 
 	[id(1001)]	HRESULT SetAdditionalParam([in] BSTR ParamName, [in] VARIANT ParamValue);
 	[id(1002)]	HRESULT GetAdditionalParam([in] BSTR ParamName, [out, retval] VARIANT* ParamValue);
@@ -131,6 +132,29 @@ public:
 		if (plIndex != NULL)
 			*plIndex     = pFontInfo->m_lIndex;
 
+		return S_OK;
+	}
+
+	STDMETHOD(GetParamsByFontName)(BSTR bsFontName, SAFEARRAY **ppsaPanose, BSTR* pbsFontParams)
+	{
+		CString props = _T("<FontProperties>");
+		props += _T("<Name value='");
+		props += ((CString)bsFontName);
+		props += _T("' /></FontProperties>");
+
+		CWinFontInfo *pFontInfo = m_pList->GetByParams( props );
+		if ( NULL == pFontInfo )
+			return S_FALSE;
+
+		SAFEARRAYBOUND saBound;
+		saBound.lLbound	  = 0;
+		saBound.cElements = 10;
+
+		SAFEARRAY *psaArray = SafeArrayCreate( VT_I1, 1, &saBound );
+		memcpy( psaArray->pvData, pFontInfo->m_aPanose, 10 * sizeof(BYTE) );
+
+		*ppsaPanose = psaArray;
+		
 		return S_OK;
 	}
 

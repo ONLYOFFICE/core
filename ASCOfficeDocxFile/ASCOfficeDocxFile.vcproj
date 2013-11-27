@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
-	Name="AVSOfficeDocxFile"
-	ProjectGUID="{475B0C01-940F-4A7D-994A-969E5F9F412D}"
-	RootNamespace="AVSOfficeDocxFile"
+	Version="9,00"
+	Name="ASCOfficeDocxFile"
+	ProjectGUID="{C8FDF8E6-D8CB-4A9F-B2BF-9890D0E42A17}"
+	RootNamespace="ASCOfficeDocxFile"
 	Keyword="AtlProj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -42,17 +43,17 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeDocxFile.tlb"
-				HeaderFileName="AVSOfficeDocxFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeDocxFile.tlb"
+				HeaderFileName="ASCOfficeDocxFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeDocxFile_i.c"
-				ProxyFileName="AVSOfficeDocxFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeDocxFile_i.c"
+				ProxyFileName="ASCOfficeDocxFile_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\..\Common\AvsDocxFormat\Source\Utility;.\..\Common\AvsDocxFormat\Source\XML;.\..\Common\AvsDocxFormat\Source\Common;.\..\Common\AvsDocxFormat\Source\DocxFormat"
+				AdditionalIncludeDirectories=".\..\Common\ASCDocxFormat\Source\Utility;.\..\Common\ASCDocxFormat\Source\XML;.\..\Common\ASCDocxFormat\Source\Common;.\..\Common\ASCDocxFormat\Source\DocxFormat"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -80,11 +81,13 @@
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="Msimg32.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\AVSOfficeUtils\ZLIB\zlib123dll\static32"
+				AdditionalLibraryDirectories="..\ASCOfficeUtils\ZLIB\zlib123dll\static32"
 				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSOfficeDocxFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeDocxFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -104,9 +107,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -142,17 +142,17 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeDocxFile.tlb"
-				HeaderFileName="AVSOfficeDocxFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeDocxFile.tlb"
+				HeaderFileName="ASCOfficeDocxFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeDocxFile_i.c"
-				ProxyFileName="AVSOfficeDocxFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeDocxFile_i.c"
+				ProxyFileName="ASCOfficeDocxFile_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories=".\..\Common\AvsDocxFormat\Source\Utility;.\..\Common\AvsDocxFormat\Source\XML;.\..\Common\AvsDocxFormat\Source\Common;.\..\Common\AvsDocxFormat\Source\DocxFormat"
+				AdditionalIncludeDirectories=".\..\Common\ASCDocxFormat\Source\Utility;.\..\Common\ASCDocxFormat\Source\XML;.\..\Common\ASCDocxFormat\Source\Common;.\..\Common\ASCDocxFormat\Source\DocxFormat"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -177,17 +177,18 @@
 				RegisterOutput="true"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="Msimg32.lib"
-				OutputFile=".\..\..\..\Redist\AVSOfficeStudio\$(ProjectName).dll"
+				OutputFile=".\..\Redist\$(ProjectName).dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\AVSOfficeUtils\ZLIB\zlib123dll\static32"
+				AdditionalLibraryDirectories="..\ASCOfficeUtils\ZLIB\zlib123dll\static32"
 				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSOfficeDocxFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeDocxFile.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSTSFile3.lib"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -207,113 +208,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;"
-			/>
-		</Configuration>
-		<Configuration
-			Name="ReleaseASC|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="2"
-			UseOfATL="2"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\Redist\VersionControl.exe $(ProjectDir)version.h"
-				ExcludedFromBuild="true"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeDocxFile.tlb"
-				HeaderFileName="AVSOfficeDocxFile.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeDocxFile_i.c"
-				ProxyFileName="AVSOfficeDocxFile_p.c"
-				ValidateParameters="false"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				AdditionalIncludeDirectories=".\..\Common\AvsDocxFormat\Source\Utility;.\..\Common\AvsDocxFormat\Source\XML;.\..\Common\AvsDocxFormat\Source\Common;.\..\Common\AvsDocxFormat\Source\DocxFormat"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
-				RuntimeLibrary="2"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;ASCBUILD"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				RegisterOutput="true"
-				IgnoreImportLibrary="true"
-				AdditionalDependencies="Msimg32.lib"
-				OutputFile=".\..\..\..\..\ASC\Redist\ASCOfficeStudio\ASCOfficeDocxFile.dll"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\AVSOfficeUtils\ZLIB\zlib123dll\static32"
-				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSOfficeDocxFile.idl"
-				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
-				SubSystem="2"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSTSFile3.lib"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -331,7 +225,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSOfficeDocxFile.cpp"
+				RelativePath=".\ASCOfficeDocxFile.cpp"
 				>
 			</File>
 			<File
@@ -351,14 +245,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="ReleaseASC|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -389,6 +275,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RelsReader.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Resource.h"
 				>
 			</File>
@@ -411,11 +301,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficeDocxFile.rc"
+				RelativePath=".\ASCOfficeDocxFile.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeDocxFile.rgs"
+				RelativePath=".\ASCOfficeDocxFile.rgs"
 				>
 			</File>
 		</Filter>

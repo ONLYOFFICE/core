@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MemoryUtils.h>
+#include "MemoryUtils.h"
 
 namespace Streams
 {

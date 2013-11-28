@@ -2,13 +2,13 @@
 #pragma once
 
 #include <atlcoll.h>
-#include <xmlutils.h>
-#include <streamutils.h>
 #include <math.h>
-#include <atldefine.h>
 
-using namespace Gdiplus;
+#include "streamutils.h"
+#include "xmlutils.h"
+#include "atldefine.h"
 
+#include "GdiplusEx.h"
 namespace Painter
 {
 	// old constants for brush type

@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSOfficeOdfFile"
+	Name="ASCOfficeOdfFile"
 	ProjectGUID="{64B09C98-22DC-494E-A882-9E2D7D18557C}"
-	RootNamespace="AVSOfficeOdfFile"
+	RootNamespace="ASCOfficeOdfFile"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -42,11 +42,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeOdfFile.tlb"
-				HeaderFileName="AVSOfficeOdfFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeOdfFile.tlb"
+				HeaderFileName="ASCOfficeOdfFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeOdfFile_i.c"
-				ProxyFileName="AVSOfficeOdfFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeOdfFile_i.c"
+				ProxyFileName="ASCOfficeOdfFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -77,14 +77,14 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="XmlLite.lib Msimg32.lib"
-				OutputFile="$(OutDir)/AVSOfficeOdfFile.dll"
+				OutputFile="$(OutDir)/ASCOfficeOdfFile.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)bin&quot;;..\..\AVSOfficeUtils\ZLIB\zlib123dll\static32"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)bin&quot;;..\..\ASCOfficeUtils\ZLIB\zlib123dll\static32"
 				IgnoreDefaultLibraryNames="libcmt.lib"
-				MergedIDLBaseFileName="_AVSOfficeOdfFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeOdfFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSOfficeOdfFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeOdfFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -111,7 +111,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;../../Redist&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -144,11 +144,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeOdfFile.tlb"
-				HeaderFileName="AVSOfficeOdfFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeOdfFile.tlb"
+				HeaderFileName="ASCOfficeOdfFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeOdfFile_i.c"
-				ProxyFileName="AVSOfficeOdfFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeOdfFile_i.c"
+				ProxyFileName="ASCOfficeOdfFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -173,22 +173,22 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-				CommandLine="D:\WORK\VersionControl.exe $(ProjectDir)\version.h"
+				CommandLine="../../Redist/VersionControl.exe $(ProjectDir)\version.h"
 			/>
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="XmlLite.lib Msimg32.lib"
-				OutputFile="$(OutDir)/AVSOfficeOdfFile.dll"
+				OutputFile="$(OutDir)/ASCOfficeOdfFile.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(SolutionDir)bin"
 				IgnoreDefaultLibraryNames="libcmt.lib"
-				MergedIDLBaseFileName="_AVSOfficeOdfFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeOdfFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficeOdfFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeOdfFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -230,7 +230,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="x:\AVS\Redist\VersionControl.exe $(ProjectDir)\version.h"
+				CommandLine="../../Redist/VersionControl.exe $(ProjectDir)\version.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -247,11 +247,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeOdfFile.tlb"
-				HeaderFileName="AVSOfficeOdfFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeOdfFile.tlb"
+				HeaderFileName="ASCOfficeOdfFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeOdfFile_i.c"
-				ProxyFileName="AVSOfficeOdfFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeOdfFile_i.c"
+				ProxyFileName="ASCOfficeOdfFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -284,12 +284,12 @@
 				OutputFile="$(OutDir)/ASCOfficeOdfFile.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(SolutionDir)bin"
-				MergedIDLBaseFileName="_AVSOfficeOdfFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeOdfFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficeOdfFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeOdfFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -329,7 +329,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSOfficeOdfFile.cpp"
+				RelativePath=".\ASCOfficeOdfFile.cpp"
 				>
 			</File>
 			<File
@@ -369,11 +369,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficeOdfFile.rc"
+				RelativePath=".\ASCOfficeOdfFile.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeOdfFile.rgs"
+				RelativePath=".\ASCOfficeOdfFile.rgs"
 				>
 			</File>
 		</Filter>

@@ -8,39 +8,37 @@ namespace OfficeArt
 	class OfficeArtSpContainer: public IOfficeArtAbstractContainer<IOfficeArtRecord>
 	{
 	public:
-		OfficeArtSpContainer() : rh( 0xF, 0x000, 0xF004, 0 ), bytes(NULL), size(sizeof(OfficeArtRecordHeader))
+		OfficeArtSpContainer() : rh(0xF, 0x000, 0xF004, 0), bytes(NULL), size(sizeof(OfficeArtRecordHeader))
 		{
 			Initialize();
 		}
 
-		OfficeArtSpContainer( const OfficeArtSpContainer& _officeArtSpContainer ) : rh( _officeArtSpContainer.rh ),officeArtRecords(_officeArtSpContainer.officeArtRecords), size(_officeArtSpContainer.size), bytes(NULL)
+		OfficeArtSpContainer(const OfficeArtSpContainer& _officeArtSpContainer) : rh(_officeArtSpContainer.rh),officeArtRecords(_officeArtSpContainer.officeArtRecords), size(_officeArtSpContainer.size), bytes(NULL)
 		{
-			if ( this->size != 0 )
+			if (0 != size)
 			{
-				this->bytes = new byte[this->size];
-
-				if ( this->bytes != NULL )
+				bytes = new byte[size];
+				if (bytes)
 				{
-					memset( this->bytes, 0, this->size );
-
-					memcpy( this->bytes, _officeArtSpContainer.bytes, this->size );
+					memset(bytes, 0, size);
+					memcpy(bytes, _officeArtSpContainer.bytes, size);
 				}
 			}
 		}
 
 		virtual operator const byte* () const
 		{
-			return (const byte*)(this->bytes);
+			return (const byte*)(bytes);
 		}
 
 		virtual operator byte* () const
 		{
-			return (byte*)(this->bytes);
+			return (byte*)(bytes);
 		}
 
 		virtual unsigned int Size() const
 		{
-			return this->size;
+			return size;
 		}
 
 		virtual IOfficeArtRecord* New() const
@@ -50,19 +48,18 @@ namespace OfficeArt
 
 		virtual IOfficeArtRecord* Clone() const
 		{
-			return new OfficeArtSpContainer( *this );
+			return new OfficeArtSpContainer(*this);
 		}
 
-		virtual void PushBack( const IOfficeArtRecord& _officeArtRecord )
+		virtual void PushBack(const IOfficeArtRecord& _officeArtRecord)
 		{
-			this->officeArtRecords.push_back( OfficeArtRecordPtr( _officeArtRecord.Clone() ) );
-
-			this->Initialize();
+			officeArtRecords.push_back(OfficeArtRecordPtr(_officeArtRecord.Clone()));
+			Initialize();
 		}
 
 		virtual unsigned int Count() const
 		{
-			return (unsigned int)this->officeArtRecords.size();
+			return (unsigned int)officeArtRecords.size();
 		}
 
 		virtual void Clear()
@@ -78,39 +75,37 @@ namespace OfficeArt
 
 	private:
 
-		void Initialize()
+		inline void Initialize()
 		{
-			this->size = 0;
+			size = 0;
 
-			for ( list<OfficeArtRecordPtr>::const_iterator iter = this->officeArtRecords.begin(); iter != this->officeArtRecords.end(); iter++ )
-				this->size += (*iter)->Size();
+			for (list<OfficeArtRecordPtr>::const_iterator iter = officeArtRecords.begin(); iter != officeArtRecords.end(); ++iter)
+				size += (*iter)->Size();
 
-			this->rh = OfficeArtRecordHeader( 0xF, 0x000, 0xF004, this->size );
+			rh = OfficeArtRecordHeader( 0xF, 0x000, 0xF004, size );
 
-			this->size += sizeof(this->rh);
+			size += sizeof(rh);
 
 			RELEASEARRAYOBJECTS (bytes);
 
-			if ( this->size != 0 )
+			if (0 != size)
 			{
-				this->bytes = new byte[this->size];
-
-				if ( this->bytes != NULL )
+				bytes = new byte[size];
+				if (bytes)
 				{
-					memset( this->bytes, 0, this->size );
+					memset(bytes, 0, size);
 
 					unsigned int offset = 0;
 
-					memcpy( ( this->bytes + offset ), (byte*)(this->rh), sizeof(this->rh) );
-					offset += sizeof(this->rh);
+					memcpy((bytes + offset), (byte*)(rh), sizeof(rh));
+					offset += sizeof(rh);
 
-					for ( list<OfficeArtRecordPtr>::const_iterator iter = this->officeArtRecords.begin(); iter != this->officeArtRecords.end(); iter++ )
+					for (std::list<OfficeArtRecordPtr>::const_iterator iter = officeArtRecords.begin(); iter != officeArtRecords.end(); ++iter)
 					{
-						IOfficeArtRecord* officeArtRecord = iter->get();
-
-						if ( officeArtRecord != NULL )
+						const IOfficeArtRecord* officeArtRecord = iter->operator->();
+						if (officeArtRecord)
 						{
-							memcpy( ( this->bytes + offset ), (byte*)(*officeArtRecord), officeArtRecord->Size() );
+							memcpy((bytes + offset), (byte*)(*officeArtRecord), officeArtRecord->Size());
 							offset += officeArtRecord->Size();
 						}
 					}
@@ -118,11 +113,11 @@ namespace OfficeArt
 			}
 		}
 	protected:
-		OfficeArtRecordHeader rh;
-		list<OfficeArtRecordPtr> officeArtRecords;
+		OfficeArtRecordHeader		rh;
+		list<OfficeArtRecordPtr>	officeArtRecords;
 
-		byte* bytes;
-		unsigned int size;
+		byte*						bytes;
+		unsigned int				size;
 	};
 
 	typedef OfficeArtSpContainer SpContainer;

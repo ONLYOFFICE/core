@@ -35,6 +35,6 @@ namespace AVSDocFileFormat
 	protected:
 		
 		std::wstring text;
-		list<Prl> properties;
+		std::list<Prl> properties;
 	};
 }

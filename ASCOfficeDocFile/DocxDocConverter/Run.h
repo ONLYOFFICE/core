@@ -15,8 +15,8 @@ namespace AVSDocFileFormat
 	class Run : public IParagraphItem
 	{
 	protected:
-		list<RunItem> items;
-		list<Prl> properties;
+		std::list<RunItem> items;
+		std::list<Prl> properties;
 
 	public:
 		typedef list<RunItem>::const_iterator const_iterator;

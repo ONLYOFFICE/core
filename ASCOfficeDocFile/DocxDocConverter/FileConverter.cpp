@@ -307,9 +307,12 @@ namespace DOCXTODOC
 
 				SHORT index = 0;
 
-				BOOST_FOREACH( const OOX::FontTable::Font& font, *inputFolder.find<OOX::Document>().find<OOX::FontTable>().Fonts )
+				size_t count = (*inputFolder.find<OOX::Document>().find<OOX::FontTable>().Fonts).size();
+				std::vector<OOX::FontTable::Font>& items = (*inputFolder.find<OOX::Document>().find<OOX::FontTable>().Fonts);
+
+				for (size_t j = 0; j < count; ++j)	
 				{
-					m_mapFontTableMap.insert( pair<string, short>( font.Name, index++ ) );
+					m_mapFontTableMap.insert(pair<string, short>(items[j].Name, index++));
 				}
 
 				if (UpdateProgress (ffCallBack,625000))
@@ -426,10 +429,9 @@ namespace DOCXTODOC
 		styleRunPr			=	GetRunPropertiesFromStyleHierarchy (style);
 		styleParPr			=	GetParagraphPropertiesFromStyleHierarchy (style, &styleRunPr);
 
-		// для каждого параграфа нужно запрашивать свойства для run
-
+		// retrieve run properties
 		m_bIsHaveRunPr			=	FALSE;
-	
+
 		PrlList defaultRunPr;
 		if (oXmlParagraph.Property.is_init() && oXmlParagraph.Property->RunProperty.is_init())
 		{
@@ -440,7 +442,7 @@ namespace DOCXTODOC
 
 		m_bHaveSeparateFldChar	=	false;
 
-		BOOL haveGoBack			=	FALSE;	//	TODO : если между закладкми есть какой то контент, посмотреть что с ним делает Office 2010
+		BOOL haveGoBack			=	FALSE;	//TODO : some content
 
 		for (size_t i = 0; i < oXmlParagraph.Items->size(); ++i)
 		{
@@ -497,7 +499,8 @@ namespace DOCXTODOC
 			}
 			else if (oParagraphItem.is<OOX::Logic::FldSimple>())
 			{
-				//!!!TODO!!!
+				// TODO: 
+
 				ConvertFldSimple<T>(oParagraphItem.as<OOX::Logic::FldSimple>(), styleRunPr, oParagraph, strRunType);
 			}
 			else if (oParagraphItem.is<OOX::Logic::Insert>())
@@ -506,9 +509,12 @@ namespace DOCXTODOC
 
 				if (!insertElement.Runs->empty())
 				{
-					BOOST_FOREACH(const OOX::Logic::Run& insertElementRun, *insertElement.Runs)
+					size_t count = (*insertElement.Runs).size();
+					const std::vector<OOX::Logic::Run>& items = (*insertElement.Runs);
+
+					for (size_t j = 0; j < count; ++j)	
 					{
-						oParagraph.AddParagraphItem ( ConvertRun<T>( insertElementRun, styleRunPr, strRunType));
+						oParagraph.AddParagraphItem(ConvertRun<T>(items[j], styleRunPr, strRunType));
 					}
 				}
 			}
@@ -516,30 +522,33 @@ namespace DOCXTODOC
 			{
 				const OOX::Logic::Delete& deleteElement = oParagraphItem.as<OOX::Logic::Delete>();
 
-				if ( !deleteElement.Runs->empty() )
+				if (!deleteElement.Runs->empty())
 				{
-					BOOST_FOREACH(const OOX::Logic::Run& deleteElementRun, *deleteElement.Runs)
-					{
-						oParagraph.AddParagraphItem(ConvertRun<T>( deleteElementRun, styleRunPr, strRunType));
+					size_t count = (*deleteElement.Runs).size();
+					const std::vector<OOX::Logic::Run>& items = (*deleteElement.Runs);
+
+					for (size_t j = 0; j < count; ++j)	
+					{			
+						oParagraph.AddParagraphItem(ConvertRun<T>(items[j], styleRunPr, strRunType));
 					}
 				}
 			}
 
 			UpdateItemByCondition<AVSDocFileFormat::Paragraph> (&oParagraph, strRunType);
 		}
-		
+
 		if (oXmlParagraph.Items->empty())
 		{
-			// возможно у пустого параграфа есть какие то настройки
+			// Have some other properties
 
 			AVSDocFileFormat::Run run;
 			run.AddProperties(styleRunPr);
-			
+
 			if (oXmlParagraph.Property.is_init() && oXmlParagraph.Property->RunProperty.is_init())
 			{
 				run.AddOrReplaceProperties(styleRunPr);
 			}
-			
+
 			oParagraph.AddParagraphItem(run);
 		}
 
@@ -551,36 +560,6 @@ namespace DOCXTODOC
 			oParagraph.AddOrReplaceProperties(ConvertParagraphProperties (*oXmlParagraph.Property));
 		}
 
-		/*
-
-		/////arRun				=	GetRunPropertiesFromStyleHierarchy (ID);
-		/////arParagraph		=	GetParagraphPropertiesFromStyleHierarchy (ID, &arRun);
-
-		CInternalStyle oStyle (style,styleRunPr,styleParPr);
-
-		if (oXmlParagraph.Property.is_init())
-		{
-		if (oXmlParagraph.Property->RunProperty.is_init())
-		{
-		PrlList oList	=	ConvertRunProperties(*oXmlParagraph.Property->RunProperty);
-		if (oStyle.UpdateRunPrls(oList))
-		{
-		//styleRunPr	=	oStyle.GetRun();
-		//oParagraph.AddOrReplaceProperties (oStyle.GetRun());
-		}
-		}
-		}
-
-		*/
-
-
-#ifdef _DEBUG		
-		//DOCXDOCUTILS::DebugStrPrint (_T("XML Paragraph   : "), oXmlParagraph.toXML().ToWString());
-		//DOCXDOCUTILS::DebugStrPrint (_T("Paragraph Style : "), style); 
-		//DOCXDOCUTILS::DebugStrPrint (_T("Paragraph Text  : "), oParagraph.GetAllText());
-		//DOCXDOCUTILS::DebugStrPrint (_T("=========================================================================="), _T(""));	 
-#endif
-
 		return oParagraph;
 	}
 }
@@ -589,22 +568,7 @@ namespace DOCXTODOC
 {
 	BOOL CFileTransformer::ValidParagraph (const OOX::Logic::Paragraph& oXmlParagraph)
 	{
-		/*
-
-		// TODO : office 2010 создает закладки которые не нужно превращать к параграфы
-		if (2 == oXmlParagraph.Items->size())
-		{
-		const OOX::Logic::ParagraphItem& oItem	= oXmlParagraph.Items->operator[](0);
-		if (oItem.is<OOX::Logic::BookmarkStart>())
-		{
-		//const OOX::Logic::BookmarkStart& oBookMark = oItem.as<OOX::Logic::BookmarkStart>();
-
-		//if (std::wstring(_T("_GoBack")) == FormatUtils::UTF8Decode(oItem.as<OOX::Logic::BookmarkStart>().Name))
-		//	return FALSE;
-		}			
-		}
-
-		*/
+		// NOT IMPEMENT
 
 		return TRUE;
 	}
@@ -613,25 +577,27 @@ namespace DOCXTODOC
 	{
 		PrlList allParagraphProperties;
 
-		const OOX::Styles::Style styleById = this->inputFolder.find<OOX::Document>().find<OOX::Styles>().GetStyleById( styleID );
+		const OOX::Styles::Style styleById = this->inputFolder.find<OOX::Document>().find<OOX::Styles>().GetStyleById(styleID);
 
-		if ( styleById.BasedOn.is_init() )
+		if (styleById.BasedOn.is_init())
 		{
-			allParagraphProperties = this->GetParagraphPropertiesFromStyleHierarchy( *styleById.BasedOn, styleDocRunLinkProperties );
+			allParagraphProperties = this->GetParagraphPropertiesFromStyleHierarchy(*styleById.BasedOn, styleDocRunLinkProperties);
 		}
 
 		if ( styleById.ParagraphProperty.is_init() )
 		{
-			PrlList styleParagraphProperties = ConvertParagraphProperties( *styleById.ParagraphProperty );
+			PrlList styleParagraphProperties = ConvertParagraphProperties(*styleById.ParagraphProperty);
 
-			for_each( styleParagraphProperties.begin(), styleParagraphProperties.end(), boost::bind( &PrlList::push_back, boost::ref(allParagraphProperties), _1 ) );
+			for (size_t i = 0; i < styleParagraphProperties.size(); ++i)
+				allParagraphProperties.push_back(styleParagraphProperties[i]);
 		}
 
-		if ( ( styleById.Link.is_init() ) && ( styleDocRunLinkProperties != NULL ) )
+		if ((styleById.Link.is_init()) && (styleDocRunLinkProperties != NULL))
 		{
-			PrlList styleDocRunLinkPropertiesHierarchy = this->GetRunPropertiesFromStyleHierarchy( *styleById.Link );
+			PrlList styleDocRunLinkPropertiesHierarchy = GetRunPropertiesFromStyleHierarchy( *styleById.Link );
 
-			for_each( styleDocRunLinkPropertiesHierarchy.begin(), styleDocRunLinkPropertiesHierarchy.end(), boost::bind( &PrlList::push_back, boost::ref(*styleDocRunLinkProperties), _1 ) );
+			for (size_t i = 0; i < styleDocRunLinkPropertiesHierarchy.size(); ++i)
+				styleDocRunLinkProperties->push_back(styleDocRunLinkPropertiesHierarchy[i]);
 		}
 
 		return allParagraphProperties;
@@ -652,7 +618,8 @@ namespace DOCXTODOC
 		{
 			PrlList styleRunProperties = this->ConvertRunProperties( *styleById.RunProperty );
 
-			for_each( styleRunProperties.begin(), styleRunProperties.end(), boost::bind( &PrlList::push_back, boost::ref(allRunProperties), _1 ) );
+			for (size_t i = 0; i < styleRunProperties.size(); ++i)
+				allRunProperties.push_back(styleRunProperties[i]);
 		}
 
 		return allRunProperties;
@@ -673,7 +640,8 @@ namespace DOCXTODOC
 		{
 			PrlList styleTableProperties = ConvertTableProperties(*styleById.tblPr);
 
-			for_each( styleTableProperties.begin(), styleTableProperties.end(), boost::bind( &PrlList::push_back, boost::ref(allTableProperties), _1 ) );
+			for (size_t i = 0; i < styleTableProperties.size(); ++i)
+				allTableProperties.push_back(styleTableProperties[i]);
 		}
 
 		return allTableProperties;
@@ -771,23 +739,23 @@ namespace DOCXTODOC
 	{
 		AVSDocFileFormat::Hyperlink docHyperlink;
 
-		if ( docxHyperlink.rId.is_init() )
+		if (docxHyperlink.rId.is_init())
 		{
 			OOX::HyperLink* hyperlink = NULL;
 			const OOX::RId& rid = *docxHyperlink.rId;
 
-			if ( typeid(T) != typeid(OOX::Document) )
+			if (typeid(T) != typeid(OOX::Document))
 			{
-				if ( this->inputFolder.find<OOX::Document>().find<T>().exist( rid ) )
+				if (inputFolder.find<OOX::Document>().find<T>().exist(rid))
 				{
-					hyperlink = dynamic_cast<OOX::HyperLink*>( this->inputFolder.find<OOX::Document>().find<T>()[rid].get() );
+					hyperlink = dynamic_cast<OOX::HyperLink*>(inputFolder.find<OOX::Document>().find<T>()[rid].get());
 				}
 			}
 			else
 			{
-				if ( this->inputFolder.find<OOX::Document>().exist( rid ) )
+				if (inputFolder.find<OOX::Document>().exist(rid))
 				{
-					hyperlink = dynamic_cast<OOX::HyperLink*>( this->inputFolder.find<OOX::Document>()[rid].get() );
+					hyperlink = dynamic_cast<OOX::HyperLink*>(inputFolder.find<OOX::Document>()[rid].get());
 				}
 			}
 
@@ -799,15 +767,18 @@ namespace DOCXTODOC
 			}
 		}
 
-		if ( docxHyperlink.Anchor.is_init() )
+		if (docxHyperlink.Anchor.is_init())
 		{
-			docHyperlink.SetLocationInTheFile( FormatUtils::UTF8Decode( *docxHyperlink.Anchor ).c_str() );
+			docHyperlink.SetLocationInTheFile(FormatUtils::UTF8Decode( *docxHyperlink.Anchor ).c_str());
 		}
 
-		BOOST_FOREACH(const OOX::Logic::Run& hyperlinkRun, *docxHyperlink.Runs)
-		{
+		size_t count = (*docxHyperlink.Runs).size();
+		const std::vector<OOX::Logic::Run>& items = (*docxHyperlink.Runs);
+
+		for (size_t i = 0; i < count; ++i)	
+		{			
 			std::wstring strRunType;
-			docHyperlink.AddRun(ConvertRun<T>(hyperlinkRun, styleDocRunProperties, strRunType));
+			docHyperlink.AddRun(ConvertRun<T>(items[i], styleDocRunProperties, strRunType));
 			UpdateItemByCondition<AVSDocFileFormat::Hyperlink>(&docHyperlink, strRunType);
 		}
 
@@ -1603,19 +1574,23 @@ namespace DOCXTODOC
 			vector<AVSDocFileFormat::TBD> tbds;
 			vector<AVSDocFileFormat::XAS> xass;
 
-			BOOST_FOREACH( const OOX::Logic::TabProperty& tabProperty, *docxParagraphProperties.Tabs->Tabs )
-			{
-				AVSDocFileFormat::Constants::TabJC TabStopAlign = this->customTabStopAlignment[*tabProperty.Val];
-				//0x05 означает clear, т.е. No Tab Stop
-				if( 0x05 == (int)TabStopAlign )
-					continue;
-				AVSDocFileFormat::TBD tbd( TabStopAlign, this->customTabStopLeader[tabProperty.Leader.get_value_or_default()] );
-				tbds.push_back( tbd );
+			size_t count = (*docxParagraphProperties.Tabs->Tabs).size();
+			const std::vector<OOX::Logic::TabProperty>& items = (*docxParagraphProperties.Tabs->Tabs);
 
-				AVSDocFileFormat::XAS xas( (short)(*tabProperty.Pos) );
-				xass.push_back( xas );
+			for (size_t i = 0; i < count; ++i)	
+			{			
+				AVSDocFileFormat::Constants::TabJC TabStopAlign = customTabStopAlignment[*(items[i]).Val];								
+				if (0x05 == (int)TabStopAlign)	// 0x05 означает clear, т.е. No Tab Stop
+					continue;
+
+				AVSDocFileFormat::TBD tbd(TabStopAlign, customTabStopLeader[items[i].Leader.get_value_or_default()]);
+				tbds.push_back(tbd);
+
+				AVSDocFileFormat::XAS xas((short)(*(items[i]).Pos));
+				xass.push_back(xas);
 			}
-			if( xass.size() > 0 && tbds.size() > 0 )
+
+			if (xass.size() > 0 && tbds.size() > 0)
 			{
 				AVSDocFileFormat::PChgTabsAdd pChgTabsAdd( xass, tbds );
 				AVSDocFileFormat::PChgTabsPapxOperand pChgTabsPapxOperand( AVSDocFileFormat::PChgTabsDel(), pChgTabsAdd );
@@ -1626,7 +1601,6 @@ namespace DOCXTODOC
 
 		return docParagraphProperties;
 	}
-
 }
 
 namespace DOCXTODOC	//	LEVELS
@@ -1673,7 +1647,7 @@ namespace DOCXTODOC	//	LEVELS
 
 			idLsidMap.insert(make_pair(number.Id, nId));
 
-			boost::scoped_ptr<AVSDocFileFormat::Tplc> tplc(AVSDocFileFormat::TplcFactory::CreateTplc (HexString2Int(number.Tmpl.get_value_or_default())));
+			AVSDocFileFormat::Tplc* tplc = AVSDocFileFormat::TplcFactory::CreateTplc (HexString2Int(number.Tmpl.get_value_or_default()));
 
 			bool fSimpleList	=	false;
 			bool fAutoNum		=	false;
@@ -1684,7 +1658,9 @@ namespace DOCXTODOC	//	LEVELS
 			if ((*number.MultiLevelType) == string("singleLevel"))
 				fSimpleList		=	true;  
 
-			arrLSTF.push_back (AVSDocFileFormat::LSTF (nId, tplc.get(), fSimpleList, fAutoNum, fHybrid, AVSDocFileFormat::grfhic(), NULL /*!!!TODO!!!*/));
+			arrLSTF.push_back (AVSDocFileFormat::LSTF (nId, tplc, fSimpleList, fAutoNum, fHybrid, AVSDocFileFormat::grfhic(), NULL /*!!!TODO!!!*/));
+
+			RELEASEOBJECT(tplc);
 		}
 
 		return arrLSTF;
@@ -2021,31 +1997,35 @@ namespace DOCXTODOC	//	STYLES
 
 		/*bool fLocked = ( latentStyles.DefLockedState == 0 ) ? ( false ) : ( true );
 
-		BOOST_FOREACH( const OOX::Styles::LsdException &lsdException, *latentStyles.LsdExceptions )
-		{
+		std::vector<OOX::Styles::LsdException>::const_iterator iter = (*latentStyles.LsdExceptions).begin();
+		std::vector<OOX::Styles::LsdException>::const_iterator end = (*latentStyles.LsdExceptions).end();
+
+		for (;iter != end; ++iter)	//	(*iter)
+		{			
+
 		bool fSemiHidden = false;
 		bool fUnhideWhenUsed = false;
 		bool fQFormat = false;
 		unsigned short iPriority = 0;
 
-		if ( lsdException.SemiHidden.is_init() )
+		if ( (*iter).SemiHidden.is_init() )
 		{
-		fSemiHidden = ( lsdException.SemiHidden == 0 ) ? ( false ) : ( true );
+		fSemiHidden = ( (*iter).SemiHidden == 0 ) ? ( false ) : ( true );
 		}
 
-		if ( lsdException.UnhideWhenUsed.is_init() )
+		if ( (*iter).UnhideWhenUsed.is_init() )
 		{
-		fUnhideWhenUsed = ( lsdException.UnhideWhenUsed == 0 ) ? ( false ) : ( true );
+		fUnhideWhenUsed = ( (*iter).UnhideWhenUsed == 0 ) ? ( false ) : ( true );
 		}
 
-		if ( lsdException.QFormat.is_init() )
+		if ( (*iter).QFormat.is_init() )
 		{
-		fQFormat = ( lsdException.QFormat == 0 ) ? ( false ) : ( true );
+		fQFormat = ( (*iter).QFormat == 0 ) ? ( false ) : ( true );
 		}
 
-		if ( lsdException.UiPriority.is_init() )
+		if ( (*iter).UiPriority.is_init() )
 		{
-		iPriority = (unsigned short)lsdException.UiPriority;
+		iPriority = (unsigned short)(*iter).UiPriority;
 		}
 
 		latentStylesDatas.push_back( AVSDocFileFormat::LSD( fLocked, fSemiHidden, fUnhideWhenUsed, fQFormat, iPriority ) );
@@ -2167,21 +2147,25 @@ namespace DOCXTODOC
 
 			byte index = 0;
 
-			BOOST_FOREACH( const OOX::Logic::Column& column, *docxSectionProperties.Columns->Items )
-			{
-				AVSDocFileFormat::SDxaColWidthOperand SDxaColWidth( index, AVSDocFileFormat::XAS_nonNeg( (unsigned short)(*column.Width) ) );
+			size_t count = (*docxSectionProperties.Columns->Items).size();
+			const std::vector<OOX::Logic::Column>& items = (*docxSectionProperties.Columns->Items);
 
-				docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSDxaColWidth, (byte*)SDxaColWidth ) );
+			for (size_t i = 0; i < count; ++i)	
+			{			
+				AVSDocFileFormat::SDxaColWidthOperand SDxaColWidth(index, AVSDocFileFormat::XAS_nonNeg( (unsigned short)(*(items[i]).Width)));
 
-				if ( column.Space.is_init() )
+				docSectionProperties.push_back( AVSDocFileFormat::Prl((short)DocFileFormat::sprmSDxaColWidth, (byte*)SDxaColWidth));
+
+				if (items[i].Space.is_init())
 				{
-					//!!!TODO!!!
-					AVSDocFileFormat::SDxaColSpacingOperand SDxaColSpacing( index, AVSDocFileFormat::XAS_nonNeg( (unsigned short)(*column.Space) ) );
+					//TODO: 
+
+					AVSDocFileFormat::SDxaColSpacingOperand SDxaColSpacing( index, AVSDocFileFormat::XAS_nonNeg( (unsigned short)(*items[i].Space) ) );
 
 					docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSDxaColSpacing, (byte*)SDxaColSpacing ) );
 				}
 
-				index++;
+				++index;
 			}
 		}
 
@@ -2521,21 +2505,24 @@ namespace DOCXTODOC	//	TABLE
 					oTblBorders.GetTopNillBorder(), oTblBorders.GetLeftNillBorder(), oTblBorders.GetBottomNillBorder(),
 					oTblBorders.GetRightNillBorder()); 				
 
-				BOOST_FOREACH( const OOX::Logic::TextItem& oXmlItem, *oXmlCell.Items )
-				{
-					if (oXmlItem.is<OOX::Logic::Paragraph>())
+				size_t count = (*oXmlCell.Items).size();
+				const std::vector<OOX::Logic::TextItem>& items = (*oXmlCell.Items);
+
+				for (size_t i = 0; i < count; ++i)	
+				{		
+					if (items[i].is<OOX::Logic::Paragraph>())
 					{
-						const OOX::Logic::Paragraph& oDocxParagraph		=	oXmlItem.as<OOX::Logic::Paragraph>();
+						const OOX::Logic::Paragraph& oDocxParagraph		=	items[i].as<OOX::Logic::Paragraph>();
 						AVSDocFileFormat::Paragraph oDocParagraph		=	ConvertParagraph<T>(oDocxParagraph);
 						tableCell.AddTextItem (oDocParagraph);
 
 						//AVSDocFileFormat::Paragraph oDocParagraph;	//	 ONLY FOR TEST
 						//tableCell.AddTextItem (oDocParagraph);		//	 ONLY FOR TEST
 					}
-					else if (oXmlItem.is<OOX::Logic::Table>())
+					else if (items[i].is<OOX::Logic::Table>())
 					{
 						tableDepth++;
-						AVSDocFileFormat::Table docTable = CreateTable<T>(oXmlItem.as<OOX::Logic::Table>());
+						AVSDocFileFormat::Table docTable = CreateTable<T>(items[i].as<OOX::Logic::Table>());
 						tableDepth--;
 						tableCell.AddTextItem(docTable);
 					}
@@ -3400,20 +3387,21 @@ namespace DOCXTODOC // run rule transform
 			AVSDocFileFormat::FootnoteReference docFootnoteReference( footnoteIndex );
 			AVSDocFileFormat::Footnote docFootnote( footnoteIndex++ );
 
-			BOOST_FOREACH(const OOX::Logic::TextItem& oXmlItem, *footNote.Items)
-			{
-				if (oXmlItem.is<OOX::Logic::Paragraph>())
+			size_t count = (*footNote.Items).size();
+			const std::vector<OOX::Logic::TextItem>& items = (*footNote.Items);
+
+			for (size_t i = 0; i < count; ++i)	
+			{			
+				if (items[i].is<OOX::Logic::Paragraph>())
 				{
-					const OOX::Logic::Paragraph& docxParagraph	=	oXmlItem.as<OOX::Logic::Paragraph>();
-					if (ValidParagraph(docxParagraph))
-					{
-						AVSDocFileFormat::Paragraph oParagraph	=	ConvertParagraph<OOX::FootNote>(docxParagraph);
-						docFootnote.AddTextItem (oParagraph);
-					}
+					const OOX::Logic::Paragraph& docxParagraph	=	items[i].as<OOX::Logic::Paragraph>();
+
+					AVSDocFileFormat::Paragraph oParagraph		=	ConvertParagraph<OOX::FootNote>(docxParagraph);
+					docFootnote.AddTextItem (oParagraph);
 				}
-				else if (oXmlItem.is<OOX::Logic::Table>())
+				else if (items[i].is<OOX::Logic::Table>())
 				{
-					AVSDocFileFormat::Table oTable				=	CreateTable<OOX::FootNote>(oXmlItem.as<OOX::Logic::Table>());
+					AVSDocFileFormat::Table oTable				=	CreateTable<OOX::FootNote>(items[i].as<OOX::Logic::Table>());
 					docFootnote.AddTextItem (oTable);
 				}
 			}
@@ -3452,20 +3440,21 @@ namespace DOCXTODOC // run rule transform
 			AVSDocFileFormat::EndnoteReference docEndnoteReference(endnoteIndex);
 			AVSDocFileFormat::Endnote docEndnote(endnoteIndex++);
 
-			BOOST_FOREACH(const OOX::Logic::TextItem& oXmlItem, *endNote.Items)
+			size_t count = (*endNote.Items).size();
+			const std::vector<OOX::Logic::TextItem>& items = (*endNote.Items);
+
+			for (size_t j = 0; j < count; ++j)	
 			{
-				if (oXmlItem.is<OOX::Logic::Paragraph>())
+				if (items[j].is<OOX::Logic::Paragraph>())
 				{							
-					const OOX::Logic::Paragraph& docxParagraph	=	oXmlItem.as<OOX::Logic::Paragraph>();
-					if (ValidParagraph(docxParagraph))
-					{
-						AVSDocFileFormat::Paragraph oParagraph	=	ConvertParagraph<OOX::EndNote>(docxParagraph);
-						docEndnote.AddTextItem(oParagraph);
-					}
+					const OOX::Logic::Paragraph& docxParagraph	=	items[j].as<OOX::Logic::Paragraph>();
+
+					AVSDocFileFormat::Paragraph oParagraph		=	ConvertParagraph<OOX::EndNote>(docxParagraph);
+					docEndnote.AddTextItem(oParagraph);
 				}
-				else if (oXmlItem.is<OOX::Logic::Table>())
+				else if (items[j].is<OOX::Logic::Table>())
 				{
-					AVSDocFileFormat::Table oTable				=	CreateTable<OOX::EndNote>(oXmlItem.as<OOX::Logic::Table>() );
+					AVSDocFileFormat::Table oTable				=	CreateTable<OOX::EndNote>(items[j].as<OOX::Logic::Table>());
 					docEndnote.AddTextItem(oTable);
 				}
 			}
@@ -3644,7 +3633,7 @@ namespace DOCXTODOC
 			if (oXmlItem.is<OOX::Logic::Oval>())
 			{
 				const OOX::Logic::Oval& shape = oXmlItem.as<OOX::Logic::Oval>();
-				
+
 				if (shape.fillstyle->Id.is_init())
 				{
 					OOX::Image* image = GetImageWithId <T>(OOX::RId(shape.fillstyle->Id));
@@ -3676,7 +3665,7 @@ namespace DOCXTODOC
 			if (oXmlItem.is<OOX::Logic::Rect>())
 			{
 				const OOX::Logic::Rect& shape = oXmlItem.as<OOX::Logic::Rect>();
-		
+
 				if (shape.fillstyle->Id.is_init())
 				{
 					OOX::Image* image = GetImageWithId <T>(OOX::RId(shape.fillstyle->Id));
@@ -3685,7 +3674,7 @@ namespace DOCXTODOC
 						m_oOArtBuilder.SetTextureFill(image->filename().string());
 					}
 				}
-	
+
 				pBinGroup->Append (m_oOArtBuilder.BuildOArtGroupShape<OOX::Logic::Rect>(oXmlItem.as<OOX::Logic::Rect>(), OfficeArt::Enumerations::msosptRectangle));
 			}
 

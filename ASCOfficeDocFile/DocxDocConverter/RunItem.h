@@ -4,30 +4,31 @@
 
 namespace AVSDocFileFormat
 {
-	class RunItem: public Aggregat<IRunItem, RunItem>
+	class RunItem : public Aggregat<IRunItem, RunItem>
 	{
 	public:
 		RunItem() : Aggregat()
 		{
 		}
 
-		explicit RunItem( const IRunItem& _runItem ) : Aggregat(static_cast<IRunItem*>(_runItem.Clone()))
+		explicit RunItem(const IRunItem& oRunItem) : Aggregat(static_cast<IRunItem*>(oRunItem.Clone()))
 		{
+
 		}
 
-		RunItem( const RunItem& _runItem )
+		RunItem(const RunItem& oRunItem)
 		{
-			if ( _runItem.m_item.get() != NULL )
+			if (NULL != oRunItem.m_item.operator->())
 			{
-				this->m_item.reset( static_cast<IRunItem*>(_runItem.m_item->Clone()) );
+				m_item.reset( static_cast<IRunItem*>(oRunItem.m_item->Clone()));
 			}
 		}
 
-		RunItem& operator = ( const RunItem& _runItem )
+		RunItem& operator = (const RunItem& oRunItem)
 		{
-			if ( this->m_item != _runItem.m_item )
+			if (m_item.operator->() != oRunItem.m_item.operator->())
 			{
-				this->m_item.reset( static_cast<IRunItem*>(_runItem.m_item->Clone()) );
+				m_item.reset(static_cast<IRunItem*>(oRunItem.m_item->Clone()));
 			}
 
 			return *this;

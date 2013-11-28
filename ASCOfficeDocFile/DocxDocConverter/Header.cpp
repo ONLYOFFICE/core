@@ -113,7 +113,8 @@ namespace AVSDocFileFormat
 
 		for ( list<HeaderItemWithOffset>::const_iterator iter = this->textItems.begin(); iter != this->textItems.end(); iter++ )
 		{
-			vector<ITextItem*> textItemParagraphs = iter->headerItem->GetAllParagraphs();
+			ITextItem* item = (ITextItem*)iter->headerItem.operator->();
+			vector<ITextItem*> textItemParagraphs = item->GetAllParagraphs();
 
 			for ( vector<ITextItem*>::iterator textItemParagraphsIter = textItemParagraphs.begin(); textItemParagraphsIter != textItemParagraphs.end(); textItemParagraphsIter++ )
 			{

@@ -9,7 +9,7 @@ namespace AVSDocFileFormat
 
 		for ( list<TableCellItemWithOffset>::iterator iter = this->textItems.begin(); iter != this->textItems.end(); iter++ )
 		{
-			Paragraph* paragraph = dynamic_cast<Paragraph*>( iter->tableCellItem.get() );
+			Paragraph* paragraph = dynamic_cast<Paragraph*>(iter->tableCellItem.operator->());
 
 			if ( paragraph != NULL )
 			{
@@ -18,7 +18,7 @@ namespace AVSDocFileFormat
 		}
 		if ( this->depth > 1 )
 		{
-			Paragraph* paragraph = dynamic_cast<Paragraph*>( this->textItems.back().tableCellItem.get() );
+			Paragraph* paragraph = dynamic_cast<Paragraph*>(this->textItems.back().tableCellItem.operator->());
 
 			if ( paragraph != NULL )
 			{
@@ -78,15 +78,15 @@ namespace AVSDocFileFormat
 
 		if ( !textItems.empty() )
 		{
-			Paragraph* paragraph = dynamic_cast<Paragraph*>( this->textItems.back().tableCellItem.get() );
+			Paragraph* paragraph = dynamic_cast<Paragraph*>(textItems.back().tableCellItem.operator->());
 
 			if ( paragraph != NULL )
 			{
-				paragraph->RemoveProperty( (short)DocFileFormat::sprmPFInnerTableCell, (void*)(&PFInnerTableCell) );
+				paragraph->RemoveProperty((short)DocFileFormat::sprmPFInnerTableCell, (void*)(&PFInnerTableCell));
 			}
 		}
 
-		Paragraph* paragraph = dynamic_cast<Paragraph*>( newTextItem.get() );
+		Paragraph* paragraph = dynamic_cast<Paragraph*>(newTextItem.operator->());
 
 		if ( paragraph != NULL )
 		{
@@ -109,7 +109,7 @@ namespace AVSDocFileFormat
 		}
 
 		this->textItems.push_back( TableCellItemWithOffset( newTextItem, this->tableCellItemsOffset ) );
-		this->tableCellItemsOffset += ( sizeof(WCHAR) * newTextItem.get()->GetAllText().size() );
+		this->tableCellItemsOffset += ( sizeof(WCHAR) * newTextItem.operator->()->GetAllText().size() );
 
 		//!!!TODO: Add empty run, if this is a paragraph.
 		//(There is issue with table content, when last item in table cell is a picture)!!!

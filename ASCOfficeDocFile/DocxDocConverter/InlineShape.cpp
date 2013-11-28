@@ -157,7 +157,7 @@ namespace AVSDocFileFormat
 			for ( list<ParagraphItem>::const_iterator iter = m_oTextRuns.begin(); iter != m_oTextRuns.end(); iter++ )
 			{
 				vector<unsigned int> runOffset;
-				vector<Chpx> runProperties = (*iter)->GetRunProperties( &runOffset );
+				vector<Chpx> runProperties = ((IParagraphItem*)iter.operator->())->GetRunProperties( &runOffset );
 
 				for ( unsigned int i = 0; i < runProperties.size(); i++ )
 				{
@@ -165,7 +165,7 @@ namespace AVSDocFileFormat
 					runOffsets->push_back( allRunsOffset + runOffset[i] );
 				}
 
-				allRunsOffset += ( sizeof(WCHAR) * (*iter)->GetTextSize() );
+				allRunsOffset += ( sizeof(WCHAR) * ((IParagraphItem*)iter.operator->())->GetTextSize() );
 			}
 
 			vector<unsigned int> runOffset;
@@ -210,9 +210,9 @@ namespace AVSDocFileFormat
 
 			for (list<ParagraphItem>::const_iterator iter = m_oTextRuns.begin(); iter != m_oTextRuns.end(); ++iter)
 			{
-				allRunsCopy.push_back( IParagraphItemPtr( static_cast<IParagraphItem*>((*iter)->Clone()) ) );
+				allRunsCopy.push_back( IParagraphItemPtr( static_cast<IParagraphItem*>(((IParagraphItem*)iter.operator->())->Clone()) ) );
 				runOffsets->push_back( runOffset );
-				runOffset += ( sizeof(WCHAR) * (*iter)->GetTextSize() );
+				runOffset += ( sizeof(WCHAR) * ((IParagraphItem*)iter.operator->())->GetTextSize() );
 			}
 
 			allRunsCopy.push_back( IParagraphItemPtr( static_cast<IParagraphItem*>(m_oSpecialRuns.back()->Clone()) ) );
@@ -256,7 +256,7 @@ namespace AVSDocFileFormat
 
 		for (list<ParagraphItem>::const_iterator iter = m_oTextRuns.begin(); iter != m_oTextRuns.end(); ++iter)
 		{
-			strText += (*iter)->GetAllText();
+			strText += ((IParagraphItem*)iter.operator->())->GetAllText();
 		}
 
 		return strText;

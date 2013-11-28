@@ -10,7 +10,6 @@ namespace AVSDocFileFormat
 	static const WCHAR* FldCharTypeSeparate =	_T("separate");
 	static const WCHAR* FldCharTypeEnd		=	_T("end");
 
-
 	class FldChar : public IRunItem
 	{
 	public:

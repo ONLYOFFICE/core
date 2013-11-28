@@ -20,10 +20,9 @@ namespace OfficeArt
 
 		OfficeArtInlineSpContainer (const OfficeArtInlineSpContainer& _officeArtInlineSpContainer) : shape(_officeArtInlineSpContainer.shape), rgfb(_officeArtInlineSpContainer.rgfb), bytes(NULL), size(_officeArtInlineSpContainer.size)
 		{
-			if (size != 0)
+			if (0 != size)
 			{
 				bytes = new byte[size];
-
 				if (bytes)
 				{
 					memset(bytes, 0, size);
@@ -54,12 +53,12 @@ namespace OfficeArt
 
 		virtual IOfficeArtRecord* Clone() const
 		{
-			return new OfficeArtInlineSpContainer( *this );
+			return new OfficeArtInlineSpContainer(*this);
 		}
 
 		virtual void PushBack (const OfficeArtBStoreContainerFileBlock& _officeArtBStoreContainerFileBlock )
 		{
-			rgfb.push_back( OfficeArtBStoreContainerFileBlockPtr( static_cast<OfficeArtBStoreContainerFileBlock*>( _officeArtBStoreContainerFileBlock.Clone() ) ) );
+			rgfb.push_back(OfficeArtBStoreContainerFileBlockPtr(static_cast<OfficeArtBStoreContainerFileBlock*>(_officeArtBStoreContainerFileBlock.Clone())));
 			Initialize();
 		}
 
@@ -81,37 +80,35 @@ namespace OfficeArt
 
 	private:
 
-		void Initialize()
+		inline void Initialize()
 		{
 			size = shape.Size();
 
-			for ( list<OfficeArtBStoreContainerFileBlockPtr>::const_iterator iter = this->rgfb.begin(); iter != this->rgfb.end(); iter++ )
+			for (std::list<OfficeArtBStoreContainerFileBlockPtr>::const_iterator iter = rgfb.begin(); iter != rgfb.end(); ++iter)
 			{
-				this->size += (*iter)->Size();
+				size += (*iter)->Size();
 			}
 
-			RELEASEARRAYOBJECTS (bytes);
+			RELEASEARRAYOBJECTS(bytes);
 
-			if ( this->size != 0 )
+			if (0 != size)
 			{
-				this->bytes = new byte[this->size];
-
-				if ( this->bytes != NULL )
+				bytes = new byte[size];
+				if (bytes)
 				{
-					memset( this->bytes, 0, this->size );
+					memset(bytes, 0, size);
 
 					unsigned int offset = 0;
 
-					memcpy( this->bytes, (byte*)(this->shape), this->shape.Size() );
-					offset += this->shape.Size();
+					memcpy(bytes, (byte*)(shape), shape.Size());
+					offset += shape.Size();
 
-					for ( list<OfficeArtBStoreContainerFileBlockPtr>::const_iterator iter = this->rgfb.begin(); iter != this->rgfb.end(); iter++ )
+					for (std::list<OfficeArtBStoreContainerFileBlockPtr>::const_iterator iter = rgfb.begin(); iter != rgfb.end(); ++iter)
 					{
-						OfficeArtBStoreContainerFileBlock* officeArtBStoreContainerFileBlock = iter->get();
-
+						const OfficeArtBStoreContainerFileBlock* officeArtBStoreContainerFileBlock = iter->operator->();
 						if ( officeArtBStoreContainerFileBlock != NULL )
 						{
-							memcpy( ( this->bytes + offset ), (byte*)(*officeArtBStoreContainerFileBlock), officeArtBStoreContainerFileBlock->Size() );
+							memcpy((bytes + offset), (byte*)(*officeArtBStoreContainerFileBlock), officeArtBStoreContainerFileBlock->Size());
 							offset += officeArtBStoreContainerFileBlock->Size();
 						}
 					}
@@ -121,10 +118,10 @@ namespace OfficeArt
 
 	private:
 
-		OfficeArtSpContainer shape;
-		list<OfficeArtBStoreContainerFileBlockPtr> rgfb;
+		OfficeArtSpContainer							shape;
+		std::list<OfficeArtBStoreContainerFileBlockPtr> rgfb;
 
-		byte* bytes;
-		unsigned int size;
+		byte*											bytes;
+		unsigned int									size;
 	};
 }

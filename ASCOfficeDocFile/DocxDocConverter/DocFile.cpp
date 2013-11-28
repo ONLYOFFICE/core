@@ -1651,7 +1651,7 @@ namespace AVSDocFileFormat
 
 				for (size_t i = 0; i < paragraphsItems.size(); ++i)
 				{
-					Run* run		=	dynamic_cast<Run*>(paragraphsItems[i].get());
+					Run* run		=	dynamic_cast<Run*>(paragraphsItems[i].operator->());
 					if (run)
 					{
 						for (list<RunItem>::const_iterator runiter = run->begin(); runiter != run->end(); ++runiter)
@@ -1704,7 +1704,7 @@ namespace AVSDocFileFormat
 
 					for (size_t i = 0; i < paragraphsItems.size(); ++i)
 					{
-						Run* run		=	dynamic_cast<Run*>(paragraphsItems[i].get());
+						Run* run		=	dynamic_cast<Run*>(paragraphsItems[i].operator->());
 						if (run)
 						{
 							for (list<RunItem>::const_iterator runiter = run->begin(); runiter != run->end(); ++runiter)

@@ -1,11 +1,10 @@
 #include "stdafx.h"
+#include "../Common/RSA/XmlDecoder.h"
 
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <shlobj.h>
-
-#include "RSA/XmlDecoder.h"
 
 #include "Resource.h"
 

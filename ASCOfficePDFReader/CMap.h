@@ -3,8 +3,8 @@
 
 #include "CharTypes.h"
 #include "GlobalParams.h"
-#include "..\..\AVSImageStudio3\AVSGraphics\Interfaces\XmlUtils.h"
-#include "TemporaryCS.h"
+#include "../Common/XmlUtils.h"
+#include "../Common/TemporaryCS.h"
 
 class StringExt;
 struct CMapVectorEntry;

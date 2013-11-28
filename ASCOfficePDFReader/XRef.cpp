@@ -12,7 +12,7 @@
 #include "Dict.h"
 #include "ErrorConstants.h"
 #include "XRef.h"
-#include "TemporaryCS.h"
+#include "../Common/TemporaryCS.h"
 
 //---------------------------------------------------------------------------------------------------------------------------
 

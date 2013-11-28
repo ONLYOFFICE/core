@@ -93,7 +93,7 @@ private:
 
 	PDFDoc                    *m_pPDFDocument;
 	GlobalParams              *m_pGlobalParams;
-	AVSGraphics::IAVSRenderer *m_piDocumentRenderer;
+	AVSGraphics::IASCRenderer *m_piDocumentRenderer;
 	CStringW                   m_sTempFolder;
 	CFontList                  m_oFontList;
 
@@ -330,8 +330,8 @@ public:
 			//#ifdef _DEBUG
 			if ( m_piDocumentRenderer )
 			{
-				IAVSRenderer *pRenderer = NULL;
-				m_piDocumentRenderer->QueryInterface( __uuidof(AVSGraphics::IAVSRenderer), (void**)&pRenderer  );
+				IASCRenderer *pRenderer = NULL;
+				m_piDocumentRenderer->QueryInterface( __uuidof(AVSGraphics::IASCRenderer), (void**)&pRenderer  );
 
 				RendererOutputDev oRendererOut( m_pGlobalParams, pRenderer, &m_oFontList );
 				oRendererOut.NewPDF( m_pPDFDocument->GetXRef() );
@@ -427,8 +427,8 @@ public:
 			//#ifdef _DEBUG
 			if ( punkRenderer )
 			{
-				IAVSRenderer *pRenderer = NULL;
-				punkRenderer->QueryInterface( __uuidof(AVSGraphics::IAVSRenderer), (void**)&pRenderer  );
+				IASCRenderer *pRenderer = NULL;
+				punkRenderer->QueryInterface( __uuidof(AVSGraphics::IASCRenderer), (void**)&pRenderer  );
 
 				RendererOutputDev oRendererOut( m_pGlobalParams, pRenderer, &m_oFontList );
 				oRendererOut.NewPDF( m_pPDFDocument->GetXRef() );
@@ -463,13 +463,13 @@ public:
 		(*ppRenderer) = NULL;
 		if( NULL == m_piDocumentRenderer )
 			return S_OK;
-		return m_piDocumentRenderer->QueryInterface(__uuidof(AVSGraphics::IAVSRenderer), (void**)&ppRenderer);
+		return m_piDocumentRenderer->QueryInterface(__uuidof(AVSGraphics::IASCRenderer), (void**)&ppRenderer);
 	}
 	STDMETHOD(SetCommandRenderer)(IUnknown* pRenderer)
 	{
 		RELEASEINTERFACE( m_piDocumentRenderer );
 		if( NULL != pRenderer )
-			pRenderer->QueryInterface(__uuidof( AVSGraphics::IAVSRenderer), (void**)&m_piDocumentRenderer);
+			pRenderer->QueryInterface(__uuidof( AVSGraphics::IASCRenderer), (void**)&m_piDocumentRenderer);
 		return S_OK;
 	}
 

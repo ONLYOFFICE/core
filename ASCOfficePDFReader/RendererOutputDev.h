@@ -1,14 +1,14 @@
 #ifndef _RENDERER_OUTPUTDEV_H
 #define _RENDERER_OUTPUTDEV_H
 
-#include "..\..\AVSImageStudio3\AVSGraphics\Interfaces\AVSRenderer.h"
-#include "..\..\AVSImageStudio3\AVSGraphics\Objects\Structures.h"
+#include "../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
+#include "../ASCImageStudio3/ASCGraphics/Objects/Structures.h"
 
 #define _ONLY_PDF_WRITER_INTERFACE
-#include "..\AVSOfficePdfWriter\PDFWriter.h"
+#include "../ASCOfficePdfWriter/PDFWriter.h"
 
 #include "OutputDevice.h"
-#include "TemporaryCS.h"
+#include "../Common/TemporaryCS.h"
 
 class Gr8BitFont;
 class OutputDev;
@@ -69,7 +69,7 @@ class RendererOutputDev: public OutputDev
 {
 public:
 
-	RendererOutputDev(GlobalParams *pGlobalParams, IAVSRenderer *pRenderer, CFontList *pFontList = NULL);
+	RendererOutputDev(GlobalParams *pGlobalParams, IASCRenderer *pRenderer, CFontList *pFontList = NULL);
 	virtual ~RendererOutputDev();
 	virtual BOOL UpSideDown() 
 	{ 
@@ -238,7 +238,7 @@ public:
 	virtual void ClearSoftMask(GrState *pGState);
 	//----- Дополнительные функции для данного устройства
 	void NewPDF(XRef *pXref);
-	void SetAVSRenderer(IAVSRenderer *pRenderer)
+	void SetAVSRenderer(IASCRenderer *pRenderer)
 	{
 		m_bUseAxialShaded  = FALSE;
 		m_bUseRadialShaded = FALSE;
@@ -288,7 +288,7 @@ private:
 	void DoTransform(double *pMatrix, double *pdShiftX, double *pdShiftY, BOOL bText = FALSE);
 private:
 	
-	IAVSRenderer                 *m_pRenderer;
+	IASCRenderer                 *m_pRenderer;
 	int                           m_nRendererType;
 
 	double                        m_arrMatrix[6];
@@ -299,7 +299,7 @@ private:
 
 	XRef                         *m_pXref;           // Таблица Xref для данного PDF-документа
 	CFontList                    *m_pFontList;
-	AVSGraphics::IAVSFontManager *m_pFontManager;
+	AVSGraphics::IASCFontManager *m_pFontManager;
 
 	BOOL                         *m_pbBreak;         // Внешняя остановка рендерера
 

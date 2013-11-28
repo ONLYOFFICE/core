@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
-	Name="AVSOfficePDFReader"
+	Version="8,00"
+	Name="ASCOfficePDFReader"
 	ProjectGUID="{BCE14148-A4AB-4472-B690-E2B31926000F}"
-	RootNamespace="AVSOfficePDFReader"
 	Keyword="AtlProj"
-	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
 		<Platform
@@ -19,7 +17,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="Debug"
-			IntermediateDirectory="Debug"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfATL="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -43,17 +41,17 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficePDFReader.tlb"
-				HeaderFileName="AVSOfficePDFReader.h"
+				TypeLibraryName="$(IntDir)/ASCOfficePDFReader.tlb"
+				HeaderFileName="ASCOfficePDFReader.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficePDFReader_i.c"
-				ProxyFileName="AVSOfficePDFReader_p.c"
+				InterfaceIdentifierFileName="ASCOfficePDFReader_i.c"
+				ProxyFileName="ASCOfficePDFReader_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="FreeType;x:\Common\\"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;_VS_2008"
+				AdditionalIncludeDirectories="../ASCOfficePDFReader/FreeType;../ASCImageStudio3/ASCGraphics/Interfaces"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;_VS_2005;_CRTDBG_MAP_ALLOC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -77,12 +75,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="$(OutDir)/AVSOfficePDFReader.dll"
-				LinkIncremental="2"
-				MergedIDLBaseFileName="_AVSOfficePDFReader.idl"
+				OutputFile="$(OutDir)/ASCOfficePDFReader.dll"
+				LinkIncremental="1"
+				IgnoreDefaultLibraryNames="msvcrt.lib, libcmt.lib"
+				MergedIDLBaseFileName="_ASCOfficePDFReader.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSOfficePDFReader.lib"
+				ImportLibrary="$(OutDir)/ASCOfficePDFReader.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -90,6 +89,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				EmbedManifest="true"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -102,6 +102,9 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -120,7 +123,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="X:\AVS\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
+				CommandLine="..\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -137,16 +140,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficePDFReader.tlb"
-				HeaderFileName="AVSOfficePDFReader.h"
+				TypeLibraryName="$(IntDir)/ASCOfficePDFReader.tlb"
+				HeaderFileName="ASCOfficePDFReader.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficePDFReader_i.c"
-				ProxyFileName="AVSOfficePDFReader_p.c"
+				InterfaceIdentifierFileName="ASCOfficePDFReader_i.c"
+				ProxyFileName="ASCOfficePDFReader_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="X:\AVS\Sources\AVSOfficeStudio\AVSOfficePDFReader\FreeType"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_VS_2008"
+				AdditionalIncludeDirectories="../ASCOfficePDFReader/FreeType;../ASCImageStudio3/ASCGraphics/Interfaces"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_VS_2005"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -168,15 +171,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="../Redist/AVSOfficePDFReader.dll"
+				OutputFile="../Redist/ASCOfficePDFReader.dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSOfficePDFReader.idl"
+				MergedIDLBaseFileName="_ASCOfficePDFReader.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficePDFReader.lib"
+				ImportLibrary="$(OutDir)/ASCOfficePDFReader.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -198,11 +201,14 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
 				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;"
 			/>
-		</Configuration>
+		</Configuration>		
 	</Configurations>
 	<References>
 	</References>
@@ -213,7 +219,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSOfficePDFReader.cpp"
+				RelativePath=".\ASCOfficePDFReader.cpp"
 				>
 			</File>
 			<File
@@ -233,6 +239,14 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseASC|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -403,6 +417,22 @@
 				</File>
 				<File
 					RelativePath=".\Hash.h"
+					>
+				</File>
+				<File
+					RelativePath=".\JArithmeticDecoder.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\JArithmeticDecoder.h"
+					>
+				</File>
+				<File
+					RelativePath=".\JBIG2Stream.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\JBIG2Stream.h"
 					>
 				</File>
 				<File
@@ -621,6 +651,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\RendererOutputDev.cpp"
+						>
+					</File>
+					<File
 						RelativePath=".\RendererOutputDev.h"
 						>
 					</File>
@@ -781,11 +815,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficePDFReader.rc"
+				RelativePath=".\ASCOfficePDFReader.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficePDFReader.rgs"
+				RelativePath=".\ASCOfficePDFReader.rgs"
 				>
 			</File>
 			<Filter
@@ -853,7 +887,7 @@
 			Name="Common"
 			>
 			<File
-				RelativePath="..\Common\OfficeDefines.h"
+				RelativePath="..\ASCImageStudio3\ASCGraphics\Interfaces\ASCRenderer.h"
 				>
 			</File>
 			<File
@@ -862,10 +896,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\Common\OfficeRendererTemplate.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\Common\PaintStruct.h"
 				>
 			</File>
 		</Filter>

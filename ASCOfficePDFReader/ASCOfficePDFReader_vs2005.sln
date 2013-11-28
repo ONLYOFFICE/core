@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual C++ Express 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSOfficePDFReader", "AVSOfficePDFReader_vs2005.vcproj", "{BCE14148-A4AB-4472-B690-E2B31926000F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficePDFReader", "ASCOfficePDFReader_vs2005.vcproj", "{BCE14148-A4AB-4472-B690-E2B31926000F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

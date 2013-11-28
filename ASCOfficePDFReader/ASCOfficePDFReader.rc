@@ -2,7 +2,7 @@
 //
 #include "resource.h"
 #define COMPONENT_NAME "OfficePDFReader"
-#include "../../../../Common/FileInfo.h"
+#include "../Common/FileInfo.h"
 #include "version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -172,7 +172,7 @@ END
 // REGISTRY
 //
 
-IDR_AVSOFFICEPDFREADER  REGISTRY                "AVSOfficePDFReader.rgs"
+IDR_ASCOFFICEPDFREADER  REGISTRY                "ASCOfficePDFReader.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -181,7 +181,7 @@ IDR_AVSOFFICEPDFREADER  REGISTRY                "AVSOfficePDFReader.rgs"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSOfficePDFReader"
+    IDS_PROJNAME            "ASCOfficePDFReader"
 END
 
 #endif    // English (U.S.) resources

@@ -37,21 +37,20 @@
 #pragma warning(disable: 4005 4996 4244)
 
 #include <atlbase.h>
-#include <atldefine.h>
 #include <atlcom.h>
 #include <atlwin.h>
 #include <atltypes.h>
 #include <atlctl.h>
 #include <atlhost.h>
 
+#include "../Common/atldefine.h"
+
 
 using namespace ATL;
 
-#include "AVSUtils.h"
+#include "../Common/ASCUtils.h"
 
-#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficeEditor.dll"	   rename_namespace("AVSOfficeEditor")
-#import "..\..\..\Redist\AVSMediaCore3.dll"                        named_guids rename_namespace("MediaCore"), exclude("tagRECT")
-#import "..\..\..\Redist\AVSMediaFormatSettings3.dll"              named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
-#import "..\..\..\Redist\AVSImageStudio3.dll"                      named_guids rename_namespace("AVSImageStudio")  
-#import "..\..\..\Redist\AVSImageJpeg2000.dll"                     named_guids rename_namespace("AVSImageJpeg2000")
-#import "..\..\..\Redist\AVSGraphics.dll"                          named_guids rename_namespace("AVSGraphics")
+#import "../Redist/ASCMediaCore3.dll"                        named_guids rename_namespace("MediaCore"), exclude("tagRECT")
+#import "../Redist/ASCImageStudio3.dll"                      named_guids rename_namespace("AVSImageStudio")  
+#import "../Redist/ASCImageJpeg2000.dll"                     named_guids rename_namespace("AVSImageJpeg2000")
+#import "../Redist/ASCGraphics.dll"                          named_guids rename_namespace("AVSGraphics")

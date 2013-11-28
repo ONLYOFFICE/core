@@ -3,11 +3,6 @@
 #include "stdafx.h"
 #include "resource.h"       // main symbols
 
-//#include "AVSUtils.h"
-#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficeUtils.dll" raw_interfaces_only
-//using namespace AVSOfficeUtils;
-
-
 #include "..\Common\OfficeFileTemplate.h"
 
 #include "Odp.h"
@@ -67,7 +62,7 @@ public:
 	{	
 		Folder = NULL;
 		m_pOfficeUtils = NULL;
-		return CoCreateInstance( __uuidof(AVSOfficeUtils::COfficeUtils), NULL, CLSCTX_INPROC_SERVER, __uuidof(AVSOfficeUtils::IOfficeUtils), (void **)&(this->m_pOfficeUtils) );
+		return CoCreateInstance( __uuidof(OfficeUtils::COfficeUtils), NULL, CLSCTX_INPROC_SERVER, __uuidof(OfficeUtils::IOfficeUtils), (void **)&(this->m_pOfficeUtils) );
 	}
 
 	void FinalRelease()
@@ -87,7 +82,7 @@ public:
 private:
 	Odp::Folder* Folder;
 	CStringW m_strTempDirectory;
-	AVSOfficeUtils::IOfficeUtils* m_pOfficeUtils;
+	OfficeUtils::IOfficeUtils* m_pOfficeUtils;
 	CXMLEncoder m_oEncoder;
 
 	NSPresentationEditor::CDocument m_oDocument;
@@ -96,30 +91,6 @@ public:
 	{
 		if(Folder == NULL)
 			return S_FALSE;
-
-		
-		CString xml = m_oDocument.ToXmlVideoSource2();
-
-		BSTR bs = xml.AllocSysString();
-		CString str = (CString)bs;
-		SysFreeString(bs);
-
-		str = m_oEncoder.EncryptXML(str);
-		*pbstrXml = str.AllocSysString();
-
-#ifdef _DEBUG
-		CFile oFile;
-		oFile.CreateFile(_T("C:\\VideoSourceODP.xml"));
-		oFile.WriteStringUTF8(xml);
-		oFile.CloseFile();
-
-		oFile.CreateFile(_T("C:\\odp_editor.xml"));
-		xml = m_oDocument.ToXmlEditor2();
-		oFile.WriteStringUTF8(xml);
-		oFile.CloseFile();
-
-		m_oDocument.SaveThemeThumbnail(m_strTempDirectory, 180, 135, true);
-#endif
 
 		return S_OK;
 	}
@@ -271,16 +242,6 @@ public:
 		{
 			CString xml = m_oDocument.ToXmlEditor2();
 			ParamValue->bstrVal = xml.AllocSysString();
-
-			if (TRUE)
-				m_oDocument.SaveThemeThumbnail(m_strTempDirectory, 180, 135, true);
-
-			#ifdef _DEBUG
-			CFile oFile;
-			oFile.CreateFile(_T("C:\\odp_editor.xml"));
-			oFile.WriteStringUTF8(xml);
-			oFile.CloseFile();
-			#endif
 		}
 		return S_OK;
 	}

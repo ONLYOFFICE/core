@@ -4,7 +4,7 @@
 
 #include "stdafx.h"
 #include "Odp.h"
-#include "..\..\AVSPresentationEditor\OfficeDrawing\Document.h"
+#include "../../ASCPresentationEditor/OfficeDrawing/Document.h"
 #include "nullable_property.h"
 #include "property.h"
 #include <vector>

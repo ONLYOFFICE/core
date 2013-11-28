@@ -49,5 +49,6 @@
 #include <math.h>
 
 using namespace ATL;
-#import "../../../../AVS/Redist/AVSGraphics.dll"		named_guids rename_namespace("AVSGraphics")
-//#include "../Common/AVSATLError.h"
+
+#import "../Redist/ASCOfficeUtils.dll"			named_guids raw_interfaces_only rename_namespace("OfficeUtils")
+#import "../../Redist/ASCGraphics.dll"			named_guids rename_namespace("ASCGraphics")

@@ -46,7 +46,7 @@
 // TODO: reference additional headers your program requires here
 using namespace ATL;
 #define ODP_DEF
+#define _USE_NULLABLE_PROPERTY_
 
-#import "../../../../AVS/Redist/AVSMediaCore3.dll"		named_guids rename_namespace("MediaCore"), exclude("tagRECT")
-#import "../../../../AVS/Redist/AVSGraphics.dll"		named_guids rename_namespace("AVSGraphics")
-#import "../../../../AVS/Redist/AVSVideoFile3.dll"		named_guids rename_namespace("VideoFile")
+#import "../../Redist/ASCMediaCore3.dll"		named_guids rename_namespace("MediaCore"), exclude("tagRECT")
+#import "../../Redist/ASCGraphics.dll"			named_guids rename_namespace("ASCGraphics")

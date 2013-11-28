@@ -1,9 +1,9 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by AVSOfficeOdpFile.rc
+// Used by ASCOfficeOdpFile.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_AVSOFFICEODPFILE            101
+#define IDR_ASCOFFICEODPFILE            101
 #define IDB_COFFICEODPFILE              102
 #define IDB_OFFICEODPFILE               103
 

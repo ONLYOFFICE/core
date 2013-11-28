@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../Odp2DrawingXML;../../Common;../OdpFormat/Source;../../Common/AvsDocxFormat/Source/Utility;../../Common/AvsDocxFormat/Source/XML;../../Common/AvsDocxFormat/Source/Common;../../AVSOfficeOdtFile/Source"
+				AdditionalIncludeDirectories="../Odp2DrawingXML;../../Common;../OdpFormat/Source;../../Common/ASCDocxFormat/Source/Utility;../../Common/ASCDocxFormat/Source/XML;../../Common/ASCDocxFormat/Source/Common;../../ASCOfficeOdtFile/Source"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -105,7 +105,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../Odp2DrawingXML;../../Common;../OdpFormat/Source;../../Common/AvsDocxFormat/Source/Utility;../../Common/AvsDocxFormat/Source/XML;../../Common/AvsDocxFormat/Source/Common;../../AVSOfficeOdtFile/Source"
+				AdditionalIncludeDirectories="../Odp2DrawingXML;../../Common;../OdpFormat/Source;../../Common/ASCDocxFormat/Source/Utility;../../Common/ASCDocxFormat/Source/XML;../../Common/ASCDocxFormat/Source/Common;../../ASCOfficeOdtFile/Source"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -142,70 +142,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 			/>
-		</Configuration>
-		<Configuration
-			Name="ReleaseASC|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
-			CharacterSet="1"
-			WholeProgramOptimization="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../Odp2DrawingXML;../../Common;../OdpFormat/Source;../../Common/AvsDocxFormat/Source/Utility;../../Common/AvsDocxFormat/Source/XML;../../Common/AvsDocxFormat/Source/Common;../../AVSOfficeOdtFile/Source"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_ATL_ATTRIBUTES"
-				RuntimeLibrary="2"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLibrarianTool"
-				AdditionalDependencies="OdpFormat.lib"
-				AdditionalLibraryDirectories="../ReleaseASC"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
+		</Configuration>		
 	</Configurations>
 	<References>
 	</References>
@@ -272,35 +209,35 @@
 			Name="Common"
 			>
 			<File
-				RelativePath="..\..\AVSPresentationEditor\OfficeDrawing\Shapes\BaseShape\BaseShape.cpp"
+				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\BaseShape.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSPresentationEditor\OfficeDrawing\Elements.cpp"
+				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Elements.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSPresentationEditor\OfficeDrawing\Layout.cpp"
+				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Layout.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSPresentationEditor\OfficeDrawing\Shapes\BaseShape\OdpShape\OdpShape.cpp"
+				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\OdpShape\OdpShape.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSPresentationEditor\OfficeDrawing\Shapes\BaseShape\OdpShape\parser.cpp"
+				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\OdpShape\parser.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSPresentationEditor\OfficeDrawing\SVGConverter.cpp"
+				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\SVGConverter.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSPresentationEditor\OfficeDrawing\TextAttributesEx.cpp"
+				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\TextAttributesEx.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSPresentationEditor\OfficeDrawing\Theme.cpp"
+				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Theme.cpp"
 				>
 			</File>
 		</Filter>

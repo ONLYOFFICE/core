@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "PaintStruct.h"
+#include "../Common/PaintStruct.h"
 
 #include <stdlib.h>
 #include <string.h>

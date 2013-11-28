@@ -2,7 +2,7 @@
 #define _UNICODE_MAP_H
 
 #include "CharTypes.h"
-#include "TemporaryCS.h"
+#include "../Common/TemporaryCS.h"
 
 class StringExt;
 

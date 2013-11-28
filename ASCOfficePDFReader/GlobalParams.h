@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include "CharTypes.h"
-#include "TemporaryCS.h"
+#include "../Common/TemporaryCS.h"
 
 class StringExt;
 class CList;

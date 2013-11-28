@@ -7,8 +7,8 @@
 #include "File.h"
 #include "CMap.h"
 
-#include "..\AVSOfficeHTMLFile\AVSOfficeHTMLFile\prj\Base64.h"
-#include "..\..\AVSImageStudio3\AVSGraphics\Interfaces\XmlUtils.h"
+#include "../ASCOfficeHtmlFile_SaxHtmlParser/AVSOfficeHtmlFile/prj/Base64.h"
+#include "../Common/XmlUtils.h"
 
 #include "FontFileTrueType.h"
 #include "FontFileType1C.h"
@@ -265,7 +265,7 @@ BOOL CFontList::GetFont(Ref *pRef, TFontEntry *pEntry)
 	return TRUE;
 }
 
-RendererOutputDev::RendererOutputDev(GlobalParams *pGlobalParams, IAVSRenderer *pRenderer, CFontList *pFontList)
+RendererOutputDev::RendererOutputDev(GlobalParams *pGlobalParams, IASCRenderer *pRenderer, CFontList *pFontList)
 {
 	m_pGlobalParams = pGlobalParams;
 	m_pFontList     = pFontList;
@@ -310,7 +310,7 @@ RendererOutputDev::RendererOutputDev(GlobalParams *pGlobalParams, IAVSRenderer *
 	}
 
 	m_pFontManager = NULL;
-	::CoCreateInstance( __uuidof(AVSGraphics::CAVSFontManager), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::IAVSFontManager), (void **)&m_pFontManager );
+	::CoCreateInstance( __uuidof(AVSGraphics::CASCFontManager), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::IASCFontManager), (void **)&m_pFontManager );
 	if ( NULL != m_pFontManager )
 		m_pFontManager->Initialize( _T("<FontManagerOptions><WinList load='0' /></FontManagerOptions>") );
 

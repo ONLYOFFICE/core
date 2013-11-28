@@ -3,7 +3,7 @@
 // Used by AVSOfficePDFReader.rc
 //
 #define IDS_PROJNAME                    100
-#define IDR_AVSOFFICEPDFREADER          101
+#define IDR_ASCOFFICEPDFREADER          101
 #define IDR_Symbol                      204
 #define IDR_ZapfDingbats                205
 #define IDR_Helvetica                   206

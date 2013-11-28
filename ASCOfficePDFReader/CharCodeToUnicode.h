@@ -3,7 +3,7 @@
 
 #include "CharTypes.h"
 #include "GlobalParams.h"
-#include "TemporaryCS.h"
+#include "../Common/TemporaryCS.h"
 
 struct CharCodeToUnicodeString;
 

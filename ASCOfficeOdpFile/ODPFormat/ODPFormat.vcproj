@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\AVSOfficeOdtFile\Source;..\..\Common\AvsDocxFormat\Source\Common;..\..\Common\AvsDocxFormat\Source\Utility;..\..\Common\AvsDocxFormat\Source\XML"
+				AdditionalIncludeDirectories="..\..\Common;..\..\ASCOfficeOdtFile\Source\OdtFormat;..\..\ASCOfficeOdtFile\Source;..\..\Common\ASCDocxFormat\Source\Common;..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\XML"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,7 +62,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalDependencies="Common.lib Utility.lib XML.lib OfficeSvmFile.lib"
-				AdditionalLibraryDirectories="..\..\Common\AvsDocxFormat\Lib\Debug"
+				AdditionalLibraryDirectories="..\..\Common\ASCDocxFormat\Lib\Debug"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -105,7 +105,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\AVSOfficeOdtFile\Source;..\..\Common\AvsDocxFormat\Source\Common;..\..\Common\AvsDocxFormat\Source\Utility;..\..\Common\AvsDocxFormat\Source\XML"
+				AdditionalIncludeDirectories="..\..\Common;..\..\ASCOfficeOdtFile\Source\OdtFormat;..\..\ASCOfficeOdtFile\Source;..\..\Common\ASCsDocxFormat\Source\Common;..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\XML"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -125,70 +125,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalDependencies="Common.lib Utility.lib XML.lib OfficeSvmFile.lib"
-				AdditionalLibraryDirectories="..\..\Common\AvsDocxFormat\Lib\Release"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="ReleaseASC|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
-			CharacterSet="1"
-			WholeProgramOptimization="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\AVSOfficeOdtFile\Source;..\..\Common\AvsDocxFormat\Source\Common;..\..\Common\AvsDocxFormat\Source\Utility;..\..\Common\AvsDocxFormat\Source\XML"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
-				RuntimeLibrary="2"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLibrarianTool"
-				AdditionalDependencies="Common.lib Utility.lib XML.lib OfficeSvmFile.lib"
-				AdditionalLibraryDirectories="..\..\Common\AvsDocxFormat\Lib\Release"
+				AdditionalLibraryDirectories="..\..\Common\ASCDocxFormat\Lib\Release"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -232,19 +169,19 @@
 			Name="Source"
 			>
 			<File
-				RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\DateTime.cpp"
+				RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\DateTime.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\DateTime.h"
+				RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\DateTime.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\File.cpp"
+				RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\File.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\File.h"
+				RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\File.h"
 				>
 			</File>
 			<File
@@ -256,27 +193,27 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\FormatError.cpp"
+				RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\FormatError.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\FormatError.h"
+				RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\FormatError.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\NamespaceOwn.cpp"
+				RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\NamespaceOwn.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\NamespaceOwn.h"
+				RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\NamespaceOwn.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Namespaces.cpp"
+				RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Namespaces.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Namespaces.h"
+				RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Namespaces.h"
 				>
 			</File>
 			<File
@@ -284,15 +221,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Unit.h"
+				RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Unit.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\WritingElement.h"
+				RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\WritingElement.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\WritingVector.h"
+				RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\WritingVector.h"
 				>
 			</File>
 			<Filter
@@ -376,47 +313,47 @@
 					Name="Odt"
 					>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Manifest\BaseTable.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Manifest\BaseTable.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Manifest\PictureItem.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Manifest\PictureItem.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Manifest\PictureItem.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Manifest\PictureItem.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Manifest\PictureTable.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Manifest\PictureTable.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Manifest\PictureTable.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Manifest\PictureTable.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Manifest\TypeTable.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Manifest\TypeTable.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Manifest\TypeTable.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Manifest\TypeTable.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Manifest\XmlItem.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Manifest\XmlItem.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Manifest\XmlItem.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Manifest\XmlItem.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Manifest\XmlTable.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Manifest\XmlTable.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Manifest\XmlTable.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Manifest\XmlTable.h"
 						>
 					</File>
 				</Filter>
@@ -613,23 +550,23 @@
 					Name="Odt"
 					>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Ahref.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Ahref.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Ahref.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Ahref.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\AutomaticStyles.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\AutomaticStyles.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\AutomaticStyles.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\AutomaticStyles.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Body.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Body.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -660,107 +597,107 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Body.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Body.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\BookmarkEnd.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\BookmarkEnd.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\BookmarkEnd.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\BookmarkEnd.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\BookmarkStart.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\BookmarkStart.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\BookmarkStart.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\BookmarkStart.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\ContourPolygon.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\ContourPolygon.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\ContourPolygon.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\ContourPolygon.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\CoveredTableCell.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\CoveredTableCell.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\CoveredTableCell.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\CoveredTableCell.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\CustomShape.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\CustomShape.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\CustomShape.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\CustomShape.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\DateDay.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\DateDay.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\DateDay.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\DateDay.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\DateMonth.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\DateMonth.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\DateMonth.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\DateMonth.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\DateStyle.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\DateStyle.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\DateStyle.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\DateStyle.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\DateText.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\DateText.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\DateText.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\DateText.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\DateYear.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\DateYear.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\DateYear.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\DateYear.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\EnhancedGeometry.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\EnhancedGeometry.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\EnhancedGeometry.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\EnhancedGeometry.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Equation.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Equation.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Equation.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Equation.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\File.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\File.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -791,62 +728,19 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\File.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\File.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Forms.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Forms.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Forms.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Forms.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Frame.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="ReleaseASC|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Frame.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Handle.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Handle.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Image.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Frame.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -877,43 +771,19 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Image.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Frame.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\IndexBody.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Handle.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\IndexBody.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Handle.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\IndexEntryTabStop.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\IndexEntryTabStop.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\IndexTitle.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\IndexTitle.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\IndexTitleTemplate.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\IndexTitleTemplate.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\LineBreak.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Image.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -944,75 +814,43 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\LineBreak.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Image.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\List.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\IndexBody.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\List.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\IndexBody.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\ListItem.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\IndexEntryTabStop.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\ListItem.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\IndexEntryTabStop.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Note.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\IndexTitle.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Note.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\IndexTitle.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\NoteCitation.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\IndexTitleTemplate.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\NoteCitation.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\IndexTitleTemplate.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\NullRun.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\NullRun.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Number.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Number.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\NumberStyle.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\NumberStyle.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\ObjectOle.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\ObjectOle.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\OleObject.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\LineBreak.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -1043,97 +881,75 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\OleObject.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\LineBreak.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\PageNumber.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="ReleaseASC|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\PageNumber.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\List.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Paragraph.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="ReleaseASC|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Paragraph.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\List.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\ParagraphItem.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\ListItem.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\ParagraphItem.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\ListItem.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\ParagraphItemBase.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Note.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\ParagraphItemBase.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Note.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Section.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\NoteCitation.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\NoteCitation.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\NullRun.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\NullRun.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Number.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Number.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\NumberStyle.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\NumberStyle.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\ObjectOle.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\ObjectOle.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\OleObject.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -1164,67 +980,11 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Section.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\OleObject.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\SequenceDecl.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\SequenceDecl.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\SequenceDecls.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\SequenceDecls.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\SimpleText.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\SimpleText.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\SoftPageBreak.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\SoftPageBreak.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Space.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Space.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Span.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Span.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Tab.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Tab.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Table.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\PageNumber.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -1255,58 +1015,11 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Table.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\PageNumber.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TableCell.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="ReleaseASC|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TableCell.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TableCellItem.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TableCellItem.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TableCellItemBase.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TableColumn.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Paragraph.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -1337,43 +1050,27 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TableColumn.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Paragraph.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TableHeader.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\ParagraphItem.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TableHeader.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\ParagraphItem.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TableOfContent.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\ParagraphItemBase.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TableOfContent.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\ParagraphItemBase.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TableOfContentEntryTemplate.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TableOfContentEntryTemplate.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TableOfContentSource.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TableOfContentSource.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TableRow.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Section.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -1404,43 +1101,283 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TableRow.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Section.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Text.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\SequenceDecl.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\Text.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\SequenceDecl.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\TextItem.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\SequenceDecls.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\VariableDecl.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\SequenceDecls.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\VariableDecl.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\SimpleText.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\VariableDecls.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\SimpleText.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\VariableDecls.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\SoftPageBreak.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\VariableInput.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\SoftPageBreak.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Content\VariableInput.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Space.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Space.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Span.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Span.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Tab.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Tab.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Table.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="ReleaseASC|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Table.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TableCell.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="ReleaseASC|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TableCell.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TableCellItem.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TableCellItem.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TableCellItemBase.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TableColumn.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="ReleaseASC|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TableColumn.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TableHeader.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TableHeader.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TableOfContent.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TableOfContent.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TableOfContentEntryTemplate.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TableOfContentEntryTemplate.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TableOfContentSource.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TableOfContentSource.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TableRow.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="ReleaseASC|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TableRow.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Text.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\Text.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\TextItem.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\VariableDecl.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\VariableDecl.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\VariableDecls.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\VariableDecls.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\VariableInput.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Content\VariableInput.h"
 						>
 					</File>
 				</Filter>
@@ -1576,483 +1513,483 @@
 					Name="Odt"
 					>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Actuate.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Actuate.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Actuate.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Actuate.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Align.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Align.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Align.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Align.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Anchortype.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Anchortype.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Anchortype.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Anchortype.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Background.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Background.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Background.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Background.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\BorderModel.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\BorderModel.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\BorderModel.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\BorderModel.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\BorderType.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\BorderType.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\BorderType.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\BorderType.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\BreakBefore.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\BreakBefore.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\BreakBefore.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\BreakBefore.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Class.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Class.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Class.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Class.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Clip.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Clip.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Clip.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Clip.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\ColorMode.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\ColorMode.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\ColorMode.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\ColorMode.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Display.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Display.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Display.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Display.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Fill.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Fill.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Fill.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Fill.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\FontFamilyGeneric.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\FontFamilyGeneric.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\FontFamilyGeneric.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\FontFamilyGeneric.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\FontName.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\FontName.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\FontName.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\FontName.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\FontPitch.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\FontPitch.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\FontPitch.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\FontPitch.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\FontVariant.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\FontVariant.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\FontVariant.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\FontVariant.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\FootnotesPosition.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\FootnotesPosition.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\FootnotesPosition.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\FootnotesPosition.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\GradientStyle.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\GradientStyle.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\GradientStyle.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\GradientStyle.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\HrefType.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\HrefType.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\HrefType.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\HrefType.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\HyphenationLadderCount.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\HyphenationLadderCount.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\HyphenationLadderCount.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\HyphenationLadderCount.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\ImageType.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\ImageType.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\ImageType.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\ImageType.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\KeepTogether.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\KeepTogether.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\KeepTogether.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\KeepTogether.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\KeepWithNext.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\KeepWithNext.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\KeepWithNext.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\KeepWithNext.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\LeaderStyle.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\LeaderStyle.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\LeaderStyle.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\LeaderStyle.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\LeaderText.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\LeaderText.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\LeaderText.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\LeaderText.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\LineBreak.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\LineBreak.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\LineBreak.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\LineBreak.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\LineStyle.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\LineStyle.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\LineStyle.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\LineStyle.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\LineType.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\LineType.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\LineType.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\LineType.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Mirror.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Mirror.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Mirror.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Mirror.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\NoteClass.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\NoteClass.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\NoteClass.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\NoteClass.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\NumberWrappedParagraphs.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\NumberWrappedParagraphs.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\NumberWrappedParagraphs.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\NumberWrappedParagraphs.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Orientation.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Orientation.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Orientation.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Orientation.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\PageNumber.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\PageNumber.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\PageNumber.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\PageNumber.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Position.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Position.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Position.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Position.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Protect.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Protect.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Protect.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Protect.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\PunctuationWrap.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\PunctuationWrap.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\PunctuationWrap.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\PunctuationWrap.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Rel.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Rel.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Rel.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Rel.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Relief.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Relief.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Relief.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Relief.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Repeat.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Repeat.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Repeat.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Repeat.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\RunThrough.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\RunThrough.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\RunThrough.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\RunThrough.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\SelectPage.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\SelectPage.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\SelectPage.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\SelectPage.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\SettingsType.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\SettingsType.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\SettingsType.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\SettingsType.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\ShapeType.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\ShapeType.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\ShapeType.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\ShapeType.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Show.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Show.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Show.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Show.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\SmilType.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\SmilType.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\SmilType.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\SmilType.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\StartNumberingAt.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\StartNumberingAt.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\StartNumberingAt.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\StartNumberingAt.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Stroke.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Stroke.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\Stroke.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\Stroke.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\StrokeLineJoin.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\StrokeLineJoin.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\StrokeLineJoin.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\StrokeLineJoin.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\StyleClass.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\StyleClass.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\StyleClass.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\StyleClass.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\StyleFamily.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\StyleFamily.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\StyleFamily.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\StyleFamily.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\TableCellType.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\TableCellType.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\TableCellType.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\TableCellType.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\TabStopType.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\TabStopType.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\TabStopType.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\TabStopType.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\TextAlign.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\TextAlign.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\TextAlign.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\TextAlign.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\TextareaAlign.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\TextareaAlign.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\TextareaAlign.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\TextareaAlign.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\TextAutospace.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\TextAutospace.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\TextAutospace.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\TextAutospace.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\TextPathMode.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\TextPathMode.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\TextPathMode.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\TextPathMode.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\TextPathScale.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\TextPathScale.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\TextPathScale.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\TextPathScale.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\TextTransform.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\TextTransform.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\TextTransform.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\TextTransform.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\WrapStyle.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\WrapStyle.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\WrapStyle.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\WrapStyle.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\WritingMode.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\WritingMode.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Limit\WritingMode.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Limit\WritingMode.h"
 						>
 					</File>
 				</Filter>
@@ -2064,7 +2001,7 @@
 					Name="Odt"
 					>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Align.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Align.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -2095,226 +2032,43 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Align.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Align.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\BackgroundColor.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\BackgroundColor.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\BackgroundColor.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\BackgroundColor.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\BackgroundImage.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\BackgroundImage.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\BackgroundImage.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\BackgroundImage.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Border.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Border.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Border.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Border.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\BorderLine.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\BorderLine.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\BorderLine.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\BorderLine.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Clip.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="ReleaseASC|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Clip.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Color.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Color.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Columns.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Columns.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\DefaultStyle.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\DefaultStyle.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\DefaultStyles.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\DefaultStyles.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\DropCap.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\DropCap.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\FontFace.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\FontFace.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\FontFaceDecls.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\FontFaceDecls.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Hyphenate.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Hyphenate.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Index.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Index.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyle.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyle.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyleBullet.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyleBullet.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyleImage.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyleImage.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyleItem.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyleNumber.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyleNumber.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\ListStyle.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\ListStyle.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\ListStyles.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\ListStyles.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\NamedStyle.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\NamedStyle.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\NamedStyles.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\NamedStyles.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\NumFormat.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\NumFormat.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Position.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Clip.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -2345,126 +2099,309 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Position.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Clip.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Properties.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Color.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Properties.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Color.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\TabStop.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Columns.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\TabStop.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Columns.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\TabStops.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\DefaultStyle.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\TabStops.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\DefaultStyle.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Wrap.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\DefaultStyles.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Wrap.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\DefaultStyles.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\ZIndex.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\DropCap.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\ZIndex.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\DropCap.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\FontFace.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\FontFace.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\FontFaceDecls.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\FontFaceDecls.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Hyphenate.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Hyphenate.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Index.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Index.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyle.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyle.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyleBullet.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyleBullet.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyleImage.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyleImage.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyleItem.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyleNumber.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\ListLevelStyleNumber.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\ListStyle.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\ListStyle.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\ListStyles.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\ListStyles.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\NamedStyle.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\NamedStyle.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\NamedStyles.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\NamedStyles.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\NumFormat.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\NumFormat.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Position.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="ReleaseASC|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Position.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Properties.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Properties.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\TabStop.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\TabStop.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\TabStops.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\TabStops.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Wrap.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Wrap.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\ZIndex.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\ZIndex.h"
 						>
 					</File>
 					<Filter
 						Name="Property"
 						>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\DrawingPage.cpp"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\DrawingPage.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\DrawingPage.h"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\DrawingPage.h"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\Graphic.cpp"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\Graphic.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\Graphic.h"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\Graphic.h"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\ListLevel.cpp"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\ListLevel.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\ListLevel.h"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\ListLevel.h"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\Paragraph.cpp"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\Paragraph.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\Paragraph.h"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\Paragraph.h"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\Section.cpp"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\Section.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\Section.h"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\Section.h"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\Table.cpp"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\Table.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\Table.h"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\Table.h"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\TableCell.cpp"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\TableCell.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\TableCell.h"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\TableCell.h"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\TableColumn.cpp"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\TableColumn.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\TableColumn.h"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\TableColumn.h"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\TableRow.cpp"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\TableRow.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\TableRow.h"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\TableRow.h"
 							>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\Text.cpp"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\Text.cpp"
 							>
 							<FileConfiguration
 								Name="Debug|Win32"
@@ -2495,7 +2432,7 @@
 							</FileConfiguration>
 						</File>
 						<File
-							RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Logic\Property\Text.h"
+							RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Logic\Property\Text.h"
 							>
 						</File>
 					</Filter>
@@ -2655,15 +2592,15 @@
 					Name="Odt"
 					>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Styles\Column.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Styles\Column.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Styles\Column.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Styles\Column.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Styles\Columns.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Styles\Columns.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -2694,15 +2631,15 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Styles\Columns.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Styles\Columns.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Styles\ColumnSeparator.cpp"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Styles\ColumnSeparator.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\AVSOfficeOdtFile\Source\OdtFormat\Styles\ColumnSeparator.h"
+						RelativePath="..\..\ASCOfficeOdtFile\Source\OdtFormat\Styles\ColumnSeparator.h"
 						>
 					</File>
 				</Filter>

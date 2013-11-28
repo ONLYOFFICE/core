@@ -42,15 +42,12 @@
 #include <atltypes.h>
 #include <atlctl.h>
 #include <atlhost.h>
-#include <atldefine.h>
 
+#include "../Common/atldefine.h"
 
 using namespace ATL;
 
-#import "..\..\..\Redist\AVSMediaCore3.dll"			                         			named_guids rename_namespace("MediaCore"), exclude("tagRECT")
-
-#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficePDFWriter.dll"						rename_namespace("AVSOfficePDFWriter") raw_interfaces_only
-#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficePDFReader.dll"						rename_namespace("AVSOfficePDFReader") raw_interfaces_only
-#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficeEditor.dll"							rename_namespace("AVSOfficeEditor")    raw_interfaces_only
-#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficeFOFile.dll"							rename_namespace("AVSOfficeFOFile")    raw_interfaces_only
-#import "..\..\..\Redist\AVSGraphics.dll"                                               rename_namespace("AVSGraphics")
+#import "../Redist/ASCMediaCore3.dll"					named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
+#import "../Redist/ASCOfficePDFWriter.dll"				rename_namespace("AVSOfficePDFWriter") raw_interfaces_only
+#import "../Redist/ASCOfficePDFReader.dll"				rename_namespace("AVSOfficePDFReader") raw_interfaces_only
+#import "../Redist/ASCGraphics.dll"                     rename_namespace("AVSGraphics")

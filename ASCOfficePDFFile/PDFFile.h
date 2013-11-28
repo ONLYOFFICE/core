@@ -5,9 +5,8 @@
 #include "..\Common\OfficeFileTemplate.h"
 #include "..\Common\OfficeFileErrorDescription.h"
 #include "..\Common\RSA\XMLEncoder.h"
-#include "OfficeRendererTemplate.h"
-#include "XmlUtils.h"
-#include "TemporaryCS.h"
+#include "..\Common\XmlUtils.h"
+#include "..\Common\TemporaryCS.h"
 
 
 #define MAX_PERCENT 1000000
@@ -20,8 +19,8 @@
 //#define   AVSGraphics                 AVSOfficeEditor
 //#define _IAVSDocumentPainterEvents  _IAVSOfficeViewerEvents 
 //#define  IAVSDocumentPainter         IAVSOfficeViewer
-//#define  IAVSDocumentRenderer        IAVSCommandsRenderer
-//#define _IAVSDocumentRendererEvents _IAVSCommandsRendererEvents
+//#define  IASCDocumentRenderer        IAVSCommandsRenderer
+//#define _IASCDocumentRendererEvents _IAVSCommandsRendererEvents
 //#define  CAVSDocumentPainter         CAVSOfficeViewer
 
 
@@ -68,182 +67,10 @@ public:
 
 protected:
 
-	class COfficeViewerEvents : public AVSGraphics::_IAVSDocumentPainterEvents
-	{
-	public:
-		COfficeViewerEvents(CPDFFile *pOwner)
-		{
-			m_pOwner   = pOwner;
-			m_cnt      = 0;
-			m_dwAdvise = 0;
-		};
-		virtual ~COfficeViewerEvents(void)
-			{ }
-		STDMETHOD(GetTypeInfoCount)(UINT*) 
-			{ return E_NOTIMPL; }
-		STDMETHOD(GetTypeInfo)(UINT, LCID, ITypeInfo**) 
-			{ return E_NOTIMPL; }
-		STDMETHOD(GetIDsOfNames)(REFIID, LPOLESTR*, UINT, LCID, DISPID*) 
-			{ return E_NOTIMPL; }
-
-		STDMETHOD(Invoke)(DISPID dispIdMember, REFIID riid, LCID lcid, WORD	wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
-		{ 
-			HRESULT hr = S_OK;
-
-			VARIANTARG varg0;
-			VARIANTARG varg1;
-
-			switch(dispIdMember) 
-			{
-			case 0:
-				VariantInit(&varg0);
-				hr = DispGetParam(pDispParams,0,VT_I4,&varg0,puArgErr);
-				OnError( varg0.lVal );
-				break;
-			case 1:
-				OnStop();
-				break;
-			case 5: 
-				VariantInit(&varg0);
-				hr = DispGetParam(pDispParams,0,VT_I4,&varg0,puArgErr);
-				OnProgress( varg0.lVal );
-				break;
-			case 10: 
-				VariantInit(&varg0);
-				VariantInit(&varg1);
-				hr = DispGetParam(pDispParams,0,VT_R8,&varg0,puArgErr);
-				hr = DispGetParam(pDispParams,1,VT_R8,&varg1,puArgErr);
-				OnNewPage( varg0.dblVal, varg1.dblVal );
-				break;
-			case 11: 
-				OnCompletePage();
-				break;
-			default:
-				return E_NOTIMPL; 
-			}
-
-			return S_OK;
-		}
-
-		STDMETHOD(QueryInterface)(REFIID iid, LPVOID* ppv)
-		{ 
-			if ((iid == __uuidof(AVSGraphics::_IAVSDocumentRendererEvents)) || (iid == __uuidof(IDispatch)) || (iid == __uuidof(IUnknown)))
-				*ppv = this;
-			else
-			{
-				*ppv = 0;
-				return E_NOINTERFACE;
-			}
-
-			AddRef();
-
-			return S_OK;
-		}
-		STDMETHOD_(ULONG, AddRef)()
-		{ 
-			return InterlockedIncrement(&m_cnt); 
-		}
-		STDMETHOD_(ULONG, Release)()
-		{ 
-			InterlockedDecrement(&m_cnt);
-			if (m_cnt != 0)
-				return m_cnt;
-
-			delete this;
-
-			return 0;
-		}
-		BOOL Advise(IUnknown *pVirtualPrinter)
-		{
-			if (NULL == pVirtualPrinter)
-				return FALSE;
-
-			IConnectionPointContainer *pContainer; pContainer = NULL;
-			IConnectionPoint *pCP; pCP = NULL;
-
-			HRESULT hr = pVirtualPrinter->QueryInterface(IID_IConnectionPointContainer, (void**)&pContainer);
-			if (NULL != pContainer)
-			{
-				hr = pContainer->FindConnectionPoint(__uuidof(AVSGraphics::_IAVSDocumentPainterEvents), &pCP);
-				if (NULL != pCP)
-				{
-					pCP->Advise(this, &m_dwAdvise);
-					RELEASEINTERFACE(pCP);
-				}
-				RELEASEINTERFACE(pContainer);
-			}
-
-			return TRUE;
-		}
-		BOOL UnAdvise(IUnknown *pVirtualPrinter)
-		{
-			if ( ( NULL == pVirtualPrinter ) || ( 0 == m_dwAdvise ) )
-				return FALSE;
-
-			IConnectionPointContainer *pContainer; pContainer = NULL;
-			IConnectionPoint *pCP; pCP = NULL;
-
-			HRESULT hr = pVirtualPrinter->QueryInterface(IID_IConnectionPointContainer, (void**)&pContainer);
-			if (NULL != pContainer)
-			{
-				hr = pContainer->FindConnectionPoint(__uuidof(AVSGraphics::_IAVSDocumentPainterEvents), &pCP);
-				if (NULL != pCP)
-				{
-					hr = pCP->Unadvise(m_dwAdvise);
-					RELEASEINTERFACE(pCP);
-				}
-				RELEASEINTERFACE(pContainer);
-			}
-
-			m_dwAdvise = 0;
-
-			return TRUE;
-		}
-
-	protected:
-		HRESULT OnError(LONG lError)//[id(0)] 
-		{
-			m_pOwner->OnErrorViewer( lError );
-			return S_OK;
-		}
-		HRESULT OnStop()//[id(1)] 
-		{
-			m_pOwner->OnStopViewer();
-			return S_OK;
-		}
-		HRESULT OnProgress(LONG lProgressPage)//[id(5)] 
-		{
-			m_pOwner->OnProgressViewer(  lProgressPage );
-			return S_OK;
-		}
-		HRESULT OnProgressParce(LONG lType, LONG lProgress)//[id(6)] 
-		{
-			return S_OK;
-		}
-		HRESULT OnNewPage(double dWidthMm, double dHeightMm)//[id(10)] 
-		{
-			m_pOwner->OnNewPageViewer(dWidthMm, dHeightMm);
-			return S_OK;
-		}
-		HRESULT OnCompletePage() //[id(11)] 
-		{
-			m_pOwner->OnCompletePageViewer();
-			return S_OK;
-		}
-	protected:
-		CPDFFile *m_pOwner;
-		LONG      m_cnt;
-		DWORD     m_dwAdvise;
-	};
-
-
 private:
 
-	AVSGraphics::IAVSEffectPainter        *m_piEffectPainter;
-	AVSGraphics::IAVSDocumentPainter      *m_piOfficeViewer;
 	AVSOfficePDFWriter::IPDFRenderer      *m_piPdfRenderer;
-
-	AVSGraphics::IAVSDocumentRenderer     *m_piDocumentRenderer;
+	AVSGraphics::IASCDocumentRenderer     *m_piDocumentRenderer;
 
 	AVSOfficePDFReader::IPDFReader        *m_piReader;
 
@@ -346,23 +173,18 @@ private:
 	}
 	void OnNewPageViewer(double dWidthMm, double dHeightMm)
 	{
-		m_piOfficeViewer->Resume();
 	}
 	void OnCompletePageViewer()
 	{
-		m_piOfficeViewer->Resume();
 	}
 
 
 public:
-	CPDFFile():m_piOfficeViewer(NULL), m_piPdfRenderer(NULL), m_piDocumentRenderer(NULL), m_piReader(NULL)
+	CPDFFile(): m_piPdfRenderer(NULL), m_piDocumentRenderer(NULL), m_piReader(NULL)
 	{
-		CoCreateInstance( __uuidof( AVSGraphics::CAVSDocumentPainter ), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IAVSDocumentPainter), (void **)(&m_piOfficeViewer)  );
 		CoCreateInstance( __uuidof( AVSOfficePDFWriter::CPDFWriter ), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSOfficePDFWriter::IPDFRenderer), (void **)(&m_piPdfRenderer)  );
 
 		m_hViewerStop = CreateEvent( NULL, FALSE, FALSE, NULL);
-
-		m_piEffectPainter = NULL;
 	}
 
 
@@ -386,10 +208,8 @@ public:
 		SysFreeString( m_bsEmpty );
 		RELEASEHANDLE( m_hViewerStop );
 		RELEASEINTERFACE( m_piPdfRenderer );
-		RELEASEINTERFACE( m_piOfficeViewer );
 		RELEASEINTERFACE( m_piDocumentRenderer );
 		RELEASEINTERFACE( m_piReader );
-		RELEASEINTERFACE( m_piEffectPainter );
 	}
 
 protected:
@@ -730,16 +550,6 @@ public:
 				return hRes;
 			}
 
-			// Рисуем эффекты (в частности watermark)
-			if ( m_piEffectPainter )
-			{
-				if ( FAILED( hRes = m_piEffectPainter->Draw( m_piPdfRenderer ) ) )
-				{
-					RELEASEINTERFACE( piPdfWriter );
-					return hRes;
-				}
-			}
-
 			// Прогресс
 			SHORT shCancel = 0;
 			OnProgressEx( 0 , ( float( nIndex + 1 ) / ( nPagesCount + 1 ) ) * MAX_PERCENT, &shCancel );
@@ -942,24 +752,18 @@ public:
 		(*ppRenderer) = NULL;
 		if( NULL == m_piDocumentRenderer )
 			return S_OK;
-		return m_piDocumentRenderer->QueryInterface(__uuidof(AVSGraphics::IAVSDocumentRenderer), (void**)&ppRenderer);
+		return m_piDocumentRenderer->QueryInterface(__uuidof(AVSGraphics::IASCDocumentRenderer), (void**)&ppRenderer);
 	}
 	STDMETHOD(put_CommandRenderer)(IUnknown* pRenderer)
 	{
 		RELEASEINTERFACE( m_piDocumentRenderer );
 		if( NULL != pRenderer )
-			pRenderer->QueryInterface(__uuidof( AVSGraphics::IAVSDocumentRenderer), (void**)&m_piDocumentRenderer);
+			pRenderer->QueryInterface(__uuidof( AVSGraphics::IASCDocumentRenderer), (void**)&m_piDocumentRenderer);
 		return S_OK;
 	}
 
 	STDMETHOD(SetAdditionalParam)(BSTR ParamName, VARIANT   ParamValue)
 	{
-		CString sParamName = ParamName;
-		if ( _T("EffectPainter") == sParamName && VT_UNKNOWN == ParamValue.vt )
-		{
-			RELEASEINTERFACE( m_piEffectPainter );
-			ParamValue.punkVal->QueryInterface( __uuidof( AVSGraphics::IAVSEffectPainter ), (void**)&m_piEffectPainter );
-		}
 		return S_OK;
 	}
 	STDMETHOD(GetAdditionalParam)(BSTR ParamName, VARIANT *	ParamValue)

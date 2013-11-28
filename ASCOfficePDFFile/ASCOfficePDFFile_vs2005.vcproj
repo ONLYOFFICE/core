@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSOfficePDFFile"
+	Name="ASCOfficePDFFile"
 	ProjectGUID="{2F190D18-4F2B-4F10-BE6E-8AC355726483}"
 	Keyword="AtlProj"
 	>
@@ -41,11 +41,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficePDFFile.tlb"
-				HeaderFileName="AVSOfficePDFFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficePDFFile.tlb"
+				HeaderFileName="ASCOfficePDFFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficePDFFile_i.c"
-				ProxyFileName="AVSOfficePDFFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficePDFFile_i.c"
+				ProxyFileName="ASCOfficePDFFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -75,12 +75,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="$(OutDir)/AVSOfficePDFFile.dll"
+				OutputFile="$(OutDir)/ASCOfficePDFFile.dll"
 				LinkIncremental="2"
-				MergedIDLBaseFileName="_AVSOfficePDFFile.idl"
+				MergedIDLBaseFileName="_ASCOfficePDFFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSOfficePDFFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficePDFFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -121,7 +121,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
+				CommandLine="..\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -138,11 +138,11 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficePDFFile.tlb"
-				HeaderFileName="AVSOfficePDFFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficePDFFile.tlb"
+				HeaderFileName="ASCOfficePDFFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficePDFFile_i.c"
-				ProxyFileName="AVSOfficePDFFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficePDFFile_i.c"
+				ProxyFileName="ASCOfficePDFFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -168,112 +168,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				OutputFile="../../../Redist/AVSOfficeStudio/AVSOfficePDFFile.dll"
+				OutputFile="../Redist/ASCOfficePDFFile.dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSOfficePDFFile.idl"
+				MergedIDLBaseFileName="_ASCOfficePDFFile.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficePDFFile.lib"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;"
-			/>
-		</Configuration>
-		<Configuration
-			Name="ReleaseASC|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
-			ConfigurationType="2"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="X:\AVS\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
-				ExcludedFromBuild="true"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficePDFFile.tlb"
-				HeaderFileName="AVSOfficePDFFile.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficePDFFile_i.c"
-				ProxyFileName="AVSOfficePDFFile_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
-				RuntimeLibrary="2"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;ASCBUILD"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
-				OutputFile="../../../..\ASC\Redist/ASCOfficeStudio/ASCOfficePDFFile.dll"
-				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSOfficePDFFile.idl"
-				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
-				SubSystem="2"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficePDFFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficePDFFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -313,7 +216,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSOfficePDFFile.cpp"
+				RelativePath=".\ASCOfficePDFFile.cpp"
 				>
 			</File>
 			<File
@@ -377,11 +280,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficePDFFile.rc"
+				RelativePath=".\ASCOfficePDFFile.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficePDFFile.rgs"
+				RelativePath=".\ASCOfficePDFFile.rgs"
 				>
 			</File>
 		</Filter>
@@ -394,10 +297,6 @@
 			</File>
 			<File
 				RelativePath="..\Common\OfficeFileTemplate.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\Common\xmlutils.h"
 				>
 			</File>
 		</Filter>

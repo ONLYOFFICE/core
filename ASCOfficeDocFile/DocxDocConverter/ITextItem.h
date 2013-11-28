@@ -7,7 +7,7 @@ namespace AVSDocFileFormat
 {
 	struct ITextItem;  
 
-	typedef boost::shared_ptr<ITextItem> TextItemPtr;
+	typedef NSCommon::smart_ptr<ITextItem> TextItemPtr;
 
 	struct ITextItem : public IVirtualConstructor
 	{

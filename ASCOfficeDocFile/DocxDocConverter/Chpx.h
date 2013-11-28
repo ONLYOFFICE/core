@@ -14,7 +14,7 @@ namespace AVSDocFileFormat
 
 		Chpx(const vector<Prl>& _grpprl) : cb(0)
 		{
-			for ( unsigned int i = 0; i < _grpprl.size(); i++ )
+			for (unsigned int i = 0; i < _grpprl.size(); ++i)
 			{
 				byte grpprlSize = (byte)_grpprl[i].Size();
 				if( this->cb + grpprlSize >= 256 )

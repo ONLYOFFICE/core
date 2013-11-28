@@ -6,9 +6,6 @@
 #include "Parse.h"
 #include "Unit.h"
 
-#include <boost/foreach.hpp>
-#include <boost/scoped_ptr.hpp>
-
 #include "InternalElements.h"
 #include "TableUtils.h"
 

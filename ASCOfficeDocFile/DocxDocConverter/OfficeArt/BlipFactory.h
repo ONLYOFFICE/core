@@ -175,7 +175,8 @@ namespace OfficeArt
 						{
 							MD4 md4Code( (byte*)wmfData.data(), wmfData.size() );
 
-							//!!!TODO!!!
+							// TODO : need fix
+							
 							officeArtBlip = new OfficeArtBlipWMF( OfficeArtMetafileHeader( wmfData.size(), RECT( 0, 0, 0, 0 ), POINT( 0, 0 ), comprLen, COMPRESSION_METHOD_DEFLATE ), buffer, md4Code.GetMD4Bytes() );
 							RELEASEARRAYOBJECTS (buffer);
 						}

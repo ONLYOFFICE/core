@@ -29,7 +29,6 @@
 
 #include "OfficeArt/BlipFactory.h"
 #include "OfficeArt/OfficeArtFOPT.h"
-#include <boost/scoped_ptr.hpp>
 
 #include "Logic/Pict.h"
 #include "Logic/DrawingWrap.h"
@@ -378,11 +377,13 @@ namespace AVSDocFileFormat
 		virtual OfficeArtFBSE GetFBSE()
 		{
 			OfficeArt::BlipFactory oBlipFactory (m_strTextureFile);
-			boost::scoped_ptr<OfficeArt::OfficeArtBlip> oImage(oBlipFactory.GetOfficeArtBlip());
-			if (oImage.get())
+			OfficeArt::OfficeArtBlip* blip = oBlipFactory.GetOfficeArtBlip();
+			if (blip)
 			{
-				OfficeArt::OfficeArtFBSE oBlipStoreEntry (FALSE, oBlipFactory.GetBlipType(), oBlipFactory.GetBlipType(), oImage->Size(), oBlipFactory.Get_rgbUid1());
+				OfficeArt::OfficeArtFBSE oBlipStoreEntry (FALSE, oBlipFactory.GetBlipType(), oBlipFactory.GetBlipType(), blip->Size(), oBlipFactory.Get_rgbUid1());
 				oBlipStoreEntry.SetFoDelay(m_BlipPos);
+				
+				RELEASEOBJECT(blip);
 				return oBlipStoreEntry;
 			}
 

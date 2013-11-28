@@ -17,5 +17,5 @@ namespace OfficeArt
 		OfficeArtRecordHeader rh;
 	};
 
-	typedef boost::shared_ptr<OfficeArtBStoreContainerFileBlock> OfficeArtBStoreContainerFileBlockPtr;
+	typedef NSCommon::smart_ptr<OfficeArtBStoreContainerFileBlock> OfficeArtBStoreContainerFileBlockPtr;
 }

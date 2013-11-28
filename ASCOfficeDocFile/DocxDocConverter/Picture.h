@@ -7,10 +7,10 @@
 #include "BinaryStorage.h"
 #include "OfficeArt/BlipFactory.h"
 #include "OfficeArt/OfficeArtFOPT.h"
-#include <boost/scoped_ptr.hpp>
 #include "OfficeArt/OfficeArtClientAnchor.h"
 
-#define RATIO	1000	// TODO : пересчет
+#define RATIO	1000	// TODO : recalculate
+
 
 namespace AVSDocFileFormat
 {
@@ -33,81 +33,10 @@ namespace AVSDocFileFormat
 			Brc80 brcBottom80		=	Brc80(2, 0x00, 0x00, 0, false, false),
 			Brc80 brcRight80		=	Brc80(2, 0x00, 0x00, 0, false, false)) : m_oBinPictureInfo(), m_sTextType (std::wstring (&TextMark::Picture)), m_bOK(FALSE)
 		{
-			/*
-			// ONLY FOR TEST
-
-			if (0 == strFileName.length())
-			{
-			AVSDocFormatUtils::BitSet oShapeSettings (4);
-
-			oShapeSettings.SetBit (0,		0);		//	Group		-	A bit that specifies whether this shape is a group shape. 
-			oShapeSettings.SetBit (0,		1);		//	Child		-	A bit that specifies whether this shape is a child shape.
-			oShapeSettings.SetBit (0,		2);		//	Patriarch	-	A bit that specifies whether this shape is the topmost group shape. Each drawing contains one topmost group shape
-			oShapeSettings.SetBit (0,		3);		//	Deleted		-	A bit that specifies whether this shape has been deleted. 
-			oShapeSettings.SetBit (0,		4);		//	OleShape	-	A bit that specifies whether this shape is an OLE object.
-			oShapeSettings.SetBit (0,		5);		//	HaveMaster	-	A bit that specifies whether this shape has a valid master in the hspMaster property, as defined in section
-			oShapeSettings.SetBit (0,		6);		//	FlipH		-	A bit that specifies whether this shape is horizontally flipped. 
-			oShapeSettings.SetBit (0,		7);		//	FlipV		-	A bit that specifies whether this shape is vertically flipped. 
-			oShapeSettings.SetBit (0,		8);		//	Connector	-	A bit that specifies whether this shape is a connector shape.
-			oShapeSettings.SetBit (true,	9);		//	HaveAnchor	-	A bit that specifies whether this shape has an anchor. 
-			oShapeSettings.SetBit (0,		10);	//	Background	-	A bit that specifies whether this shape is a background shape. 
-			oShapeSettings.SetBit (true,	11);	//	HaveSpt		-	A bit that specifies whether this shape has a shape type property.
-
-			OfficeArt::OfficeArtFSP ShapeProp (OfficeArt::Enumerations::msosptUpArrow, 1024, FormatUtils::BytesToUInt32 (oShapeSettings.GetBytes(), 0, sizeof(unsigned int)));
-
-			OfficeArt::OfficeArtSpContainer shape;
-			shape.PushBack (ShapeProp);
-
-			OfficeArt::OfficeArtRGFOPTE oTable;
-
-			OfficeArt::OfficeArtFOPTE oEntry (OfficeArt::OfficeArtFOPTEOPID (OfficeArt::Enumerations::protectionBooleans, false, false), 0x01400140);
-			oTable.PushComplexProperty (OfficeArt::ComplexOfficeArtProperty (oEntry, NULL));
-
-			OfficeArt::OfficeArtFOPTE oCropFromTop (OfficeArt::OfficeArtFOPTEOPID (OfficeArt::Enumerations::cropFromTop, false, false), 0xffff0010);
-			oTable.PushComplexProperty (OfficeArt::ComplexOfficeArtProperty (oCropFromTop, NULL));
-
-			OfficeArt::OfficeArtFOPTE oCropFromBottom (OfficeArt::OfficeArtFOPTEOPID (OfficeArt::Enumerations::cropFromBottom, false, false), 0x0000fff0);
-			oTable.PushComplexProperty (OfficeArt::ComplexOfficeArtProperty (oCropFromBottom, NULL));
-
-			OfficeArt::OfficeArtRGFOPTE oTable2;
-			OfficeArt::OfficeArtFOPTE oDiagramBooleans (OfficeArt::OfficeArtFOPTEOPID (OfficeArt::Enumerations::diagramBooleans, false, false), 0x00010001);
-			oTable2.PushComplexProperty (OfficeArt::ComplexOfficeArtProperty (oDiagramBooleans, NULL));
-
-			OfficeArt::OfficeArtFOPT fopt (oTable);
-			shape.PushBack (fopt);
-
-			OfficeArt::OfficeArtFOPT fopt2 (oTable2);
-			shape.PushBack (fopt2);
-
-			OfficeArt::OfficeArtClientAnchor anchor (0x80000000);
-			shape.PushBack (anchor);
-
-			OfficeArt::OfficeArtInlineSpContainer oPicture (shape);
-			OfficeArt::OfficeArtFBSE oBlipStoreEntry (FALSE, OfficeArt::Enumerations::msoblipJPEG, OfficeArt::Enumerations::msoblipJPEG, 0);
-			oPicture.PushBack(oBlipStoreEntry);
-
-			PICMID oBorders (iWidth, iHeight, iRatioX, iRatioY, brcTop80, brcLeft80, brcBottom80, brcRight80);
-			//PICMID oBorders (2925, 3045, iRatioX, iRatioY, brcTop80, brcLeft80, brcBottom80, brcRight80);
-			PICF oPictureInfo (oPicture.Size(), oBorders);
-
-			m_oBinPictureInfo			=	PICFAndOfficeArtData (oPictureInfo, oPicture);
-
-			if (BinaryStorageSingleton::Instance())
-			{
-			int dataStreamOffset	=	BinaryStorageSingleton::Instance()->PushData( (const byte*)m_oBinPictureInfo, m_oBinPictureInfo.Size());
-
-			m_arProperties.push_back (Prl((short)DocFileFormat::sprmCPicLocation,	(byte*)(&dataStreamOffset)));
-			m_arProperties.push_back (Prl((short)DocFileFormat::sprmCFSpec,			(byte*)(&CFSpec)));
-			}
-
-			return;
-			}
-			*/
-
 			OfficeArt::BlipFactory oBlipFactory (strFileName);
-			boost::scoped_ptr<OfficeArt::OfficeArtBlip> oImage(oBlipFactory.GetOfficeArtBlip());
 
-			if (oImage.get())
+			OfficeArt::OfficeArtBlip* blip = oBlipFactory.GetOfficeArtBlip();
+			if (blip)
 			{
 				OfficeArt::OfficeArtSpContainer shape;
 				OfficeArt::OfficeArtFSP shapeProp (OfficeArt::Enumerations::msosptPictureFrame);
@@ -121,14 +50,14 @@ namespace AVSDocFileFormat
 				shape.PushBack (fopt);
 
 				OfficeArt::OfficeArtInlineSpContainer oPicture (shape);
-				OfficeArt::OfficeArtFBSE oBlipStoreEntry (TRUE, oBlipFactory.GetBlipType(), oBlipFactory.GetBlipType(), oImage->Size() );
+				OfficeArt::OfficeArtFBSE oBlipStoreEntry (TRUE, oBlipFactory.GetBlipType(), oBlipFactory.GetBlipType(), blip->Size() );
 				oPicture.PushBack(oBlipStoreEntry);
-				oPicture.PushBack(*oImage);
+				oPicture.PushBack(*blip);
 
 				PICMID oBorders (iWidth, iHeight, iRatioX, iRatioY, brcTop80, brcLeft80, brcBottom80, brcRight80);
 				PICF oPictureInfo (oPicture.Size(), oBorders);
 
-				m_oBinPictureInfo			=	PICFAndOfficeArtData (oPictureInfo, oPicture);
+				m_oBinPictureInfo = PICFAndOfficeArtData (oPictureInfo, oPicture);
 
 				if (BinaryStorageSingleton::Instance())
 				{
@@ -139,6 +68,8 @@ namespace AVSDocFileFormat
 
 					m_bOK					=	TRUE;
 				}
+
+				RELEASEOBJECT(blip);
 			}
 		}
 
@@ -201,19 +132,17 @@ namespace AVSDocFileFormat
 			return (unsigned int)m_arProperties.size();
 		}
 
-
-		//
 		inline BOOL IsValid()
 		{
 			return m_bOK;
 		}
 
 	private:
-
-		BOOL					m_bOK;
-
+		
 		static const byte CFSpec = 1;
 
+		BOOL					m_bOK;
+	
 		PICFAndOfficeArtData	m_oBinPictureInfo;
 
 		std::wstring			m_sTextType;

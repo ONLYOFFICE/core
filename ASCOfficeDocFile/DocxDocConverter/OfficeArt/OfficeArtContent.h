@@ -16,7 +16,6 @@ namespace OfficeArt
 			if (size)
 			{
 				bytes = new byte[size];
-
 				if (bytes)
 				{
 					memset(bytes, 0, size);
@@ -37,7 +36,7 @@ namespace OfficeArt
 
 		virtual unsigned int Size() const
 		{
-			return this->size;
+			return size;
 		}
 
 		virtual IOfficeArtRecord* New() const
@@ -74,7 +73,7 @@ namespace OfficeArt
 
 	private:
 
-		void Initialize()
+		inline void Initialize()
 		{
 			size = 0;
 
@@ -86,20 +85,18 @@ namespace OfficeArt
 			if (size)
 			{
 				bytes = new byte[size];
-
-				if ( bytes != NULL )
+				if (bytes)
 				{
-					memset( bytes, 0, size );
+					memset(bytes, 0, size);
 
 					unsigned int offset = 0;
 
 					for (list<OfficeArtRecordPtr>::const_iterator iter = officeArtRecords.begin(); iter != officeArtRecords.end(); ++iter)
 					{
-						IOfficeArtRecord* officeArtRecord = iter->get();
-
-						if ( officeArtRecord != NULL )
+						const IOfficeArtRecord* officeArtRecord =  iter->operator->();
+						if (officeArtRecord)
 						{
-							memcpy( ( bytes + offset ), (byte*)(*officeArtRecord), officeArtRecord->Size() );
+							memcpy((bytes + offset), (byte*)(*officeArtRecord), officeArtRecord->Size());
 							offset += officeArtRecord->Size();
 						}
 					}
@@ -108,9 +105,10 @@ namespace OfficeArt
 		}
 
 	protected:
-		list<OfficeArtRecordPtr> officeArtRecords;
 
-		byte* bytes;
-		unsigned int size;
+		list<OfficeArtRecordPtr>	officeArtRecords;
+
+		byte*						bytes;
+		unsigned int				size;
 	};
 }

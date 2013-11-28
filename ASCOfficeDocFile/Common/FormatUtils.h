@@ -5,6 +5,8 @@
 #include <io.h>
 #include <sys/stat.h>
 #include <share.h>
+#include <iosfwd>
+#include <sstream>
 
 #include <math.h>
 #include <list>
@@ -18,91 +20,9 @@
 
 #include "utf8.h"
 
-#include <boost/shared_ptr.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string/replace.hpp>
-#include <boost/bind.hpp>
+#include "AVSUtils.h"
 
 using namespace std;
-
-#define ADDREFINTERFACE(pinterface)\
-{\
-	if (pinterface!=NULL)\
-{\
-	pinterface->AddRef();\
-}\
-}
-#define RELEASEINTERFACE(pinterface)\
-{\
-	if (pinterface!=NULL)\
-{\
-	pinterface->Release();\
-	pinterface=NULL;\
-}\
-}
-#define QUERYINTERFACE(pinterface, pinterface_res, iid)\
-{\
-	if (pinterface!=NULL)\
-	pinterface->QueryInterface(iid, (void**)&pinterface_res);\
-	else\
-	pinterface_res=NULL;\
-}
-#define RELEASEMEM(pobject)\
-{\
-	if (pobject!=NULL)\
-{\
-	free(pobject);\
-	pobject=NULL;\
-}\
-}
-#define RELEASEOBJECT(pobject)\
-{\
-	if (pobject!=NULL)\
-{\
-	delete pobject;\
-	pobject=NULL;\
-}\
-}
-#define RELEASEARRAYOBJECTS(pobject)\
-{\
-	if (pobject!=NULL)\
-{\
-	delete []pobject;\
-	pobject=NULL;\
-}\
-}
-#define RELEASEHEAP(pmem)\
-{\
-	if (pmem!=NULL)\
-{\
-	HeapFree(GetProcessHeap(), 0, pmem);\
-	pmem=NULL;\
-}\
-}
-#define RELEASEARRAY(parray)\
-{\
-	if (parray!=NULL)\
-{\
-	SafeArrayDestroy(parray);\
-	parray=NULL;\
-}\
-}
-#define RELEASESYSSTRING(pstring)\
-{\
-	if (pstring!=NULL)\
-{\
-	SysFreeString(pstring);\
-	pstring=NULL;\
-}\
-}
-#define RELEASEHANDLE(phandle)\
-{\
-	if (phandle!=NULL)\
-{\
-	CloseHandle(phandle);\
-	phandle=NULL;\
-}\
-}
 
 namespace AVSDocFormatUtils
 {
@@ -140,12 +60,12 @@ namespace AVSDocFormatUtils
 			{
 				switch(data[pos])
 				{
-				case '&':  buffer.append(_T("&amp;"));       break;
-				case '\"': buffer.append(_T("&quot;"));      break;
-				case '\'': buffer.append(_T("&apos;"));      break;
-				case '<':  buffer.append(_T("&lt;"));        break;
-				case '>':  buffer.append(_T("&gt;"));        break;
-				default:   buffer.append(&data[pos], 1); break;
+				case '&':  buffer.append(_T("&amp;"));      break;
+				case '\"': buffer.append(_T("&quot;"));     break;
+				case '\'': buffer.append(_T("&apos;"));     break;
+				case '<':  buffer.append(_T("&lt;"));       break;
+				case '>':  buffer.append(_T("&gt;"));       break;
+				default:   buffer.append(&data[pos], 1);	break;
 				}
 			}
 			return buffer;
@@ -654,47 +574,45 @@ namespace AVSDocFormatUtils
 			return bytes;
 		}
 
-		/*========================================================================================================*/
-
-		static inline wstring IntToWideString( int value, int radix = 10 )
+		static inline wstring IntToWideString(int value, int radix = 10)
 		{
 			const int size = 33;
 
 			WCHAR strValue[size];
 
-			_itow_s( value, strValue, size, radix );
+			_itow_s(value, strValue, size, radix);
 
-			return wstring( strValue );
+			return wstring(strValue);
 		}
 
-		/*========================================================================================================*/
-
-		static inline wstring DoubleToWideString( double value )
+		static inline std::wstring DoubleToWideString(double value)
 		{
-			return boost::lexical_cast<wstring>(value);
+			std::wstringstream src;
+			
+			src << value;
+			
+			return std::wstring(src.str());
 		}
 
-		/*========================================================================================================*/
-
-		static inline string IntToString( int value, int radix = 10 )
+		static inline string IntToString(int value, int radix = 10)
 		{
 			const int size = 33;
 
 			char strValue[size];
 
-			_itoa_s( value, strValue, size, radix );
+			_itoa_s(value, strValue, size, radix);
 
-			return string( strValue );
+			return string(strValue);
 		}
 
-		/*========================================================================================================*/
-
-		static inline string DoubleToString( double value )
+		static inline string DoubleToString(double value)
 		{
-			return boost::lexical_cast<string>(value);
+			std::stringstream src;
+			
+			src << value;
+			
+			return std::string(src.str());
 		}
-
-		/*========================================================================================================*/
 
 		static inline wstring MapValueToWideString( unsigned int value, const WCHAR* mapArray, unsigned int size1, unsigned int size2 )
 		{

@@ -21,7 +21,7 @@ namespace AVSDocFileFormat
 
 		ParagraphItem (const ParagraphItem& oItem) : m_nItemOffset(oItem.m_nItemOffset)
 		{
-			if (oItem.m_item.get())
+			if (oItem.m_item.operator->())
 			{
 				m_item.reset(static_cast<IParagraphItem*>(oItem.m_item->Clone()));  
 			}
@@ -29,9 +29,9 @@ namespace AVSDocFileFormat
 
 		ParagraphItem& operator = (const ParagraphItem& oItem)
 		{
-			if (m_item != oItem.m_item)
+			if (m_item.operator->() != oItem.m_item.operator->())
 			{
-				m_item.reset (static_cast<IParagraphItem*>(oItem.m_item->Clone()));
+				m_item.reset(static_cast<IParagraphItem*>(oItem.m_item->Clone()));
 				m_nItemOffset	=	oItem.m_nItemOffset;
 			}
 

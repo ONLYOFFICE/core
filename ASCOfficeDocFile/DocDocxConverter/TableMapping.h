@@ -11,7 +11,7 @@ namespace DocFileFormat
 		virtual ~ITableCellElement() {}
 	};
 
-	typedef boost::shared_ptr<ITableCellElement> ITableCellElementPtr;
+	typedef NSCommon::smart_ptr<ITableCellElement> ITableCellElementPtr;
 
 	class TableCell
 	{

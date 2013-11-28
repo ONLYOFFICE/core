@@ -6,126 +6,102 @@
 
 namespace AVSDocFileFormat
 {
-  class SectionProperties
-  {
-    private:
-	  Sepx sepx;
-	  TextItem evenPageHeader;
-	  TextItem oddPageHeader;
-	  TextItem evenPageFooter;
-	  TextItem oddPageFooter;
-	  TextItem firstPageHeader;
-	  TextItem firstPageFooter;
-
-    public:
-	  explicit SectionProperties( const Sepx& _sepx ):
-	  sepx(_sepx)
-	  {
-	    this->SetEvenPageHeader( Header() );
-		this->SetOddPageHeader( Header() );
-		this->SetEvenPageFooter( Footer() );
-		this->SetOddPageFooter( Footer() );
-		this->SetFirstPageHeader( Header() );
-		this->SetFirstPageFooter( Footer() );
-	  }
-
-	  SectionProperties( const SectionProperties& _sectionProperties ):
-	  sepx(_sectionProperties.sepx)
-	  {
-	    if ( _sectionProperties.evenPageHeader.get() != NULL )
+	class SectionProperties
+	{
+	public:
+		explicit SectionProperties(const Sepx& _sepx) : sepx(_sepx)
 		{
-		  this->SetEvenPageHeader( _sectionProperties.evenPageHeader.as<Header>() );
+			SetEvenPageHeader(Header());
+			SetOddPageHeader(Header());
+			SetEvenPageFooter(Footer());
+			SetOddPageFooter(Footer());
+			SetFirstPageHeader(Header());
+			SetFirstPageFooter(Footer());
 		}
 
-		if ( _sectionProperties.oddPageHeader.get() != NULL )
+		SectionProperties(const SectionProperties& sp) : sepx(sp.sepx)
 		{
-		  this->SetOddPageHeader( _sectionProperties.oddPageHeader.as<Header>() );
+			if (sp.evenPageHeader.IsInit())		SetEvenPageHeader(sp.evenPageHeader.as<Header>());
+			if (sp.oddPageHeader.IsInit())		SetOddPageHeader(sp.oddPageHeader.as<Header>());
+			if (sp.evenPageFooter.IsInit())		SetEvenPageFooter(sp.evenPageFooter.as<Footer>());
+			if (sp.oddPageFooter.IsInit())		SetOddPageFooter(sp.oddPageFooter.as<Footer>());
+			if (sp.firstPageHeader.IsInit())	SetFirstPageHeader(sp.firstPageHeader.as<Header>());
+			if (sp.firstPageFooter.IsInit())	SetFirstPageFooter(sp.firstPageFooter.as<Footer>());
 		}
 
-	    if ( _sectionProperties.evenPageFooter.get() != NULL )
+		inline const Sepx& GetSepx() const
 		{
-		  this->SetEvenPageFooter( _sectionProperties.evenPageFooter.as<Footer>() );
+			return sepx;
 		}
 
-		if ( _sectionProperties.oddPageFooter.get() != NULL )
+		inline void SetEvenPageHeader(const Header& _header)
 		{
-		  this->SetOddPageFooter( _sectionProperties.oddPageFooter.as<Footer>() );
+			evenPageHeader = _header;
 		}
 
-		if ( _sectionProperties.firstPageHeader.get() != NULL )
+		inline void SetOddPageHeader(const Header& _header)
 		{
-		  this->SetFirstPageHeader( _sectionProperties.firstPageHeader.as<Header>() );
+			oddPageHeader = _header;
 		}
 
-		if ( _sectionProperties.firstPageFooter.get() != NULL )
+		inline void SetEvenPageFooter(const Footer& _footer)
 		{
-		  this->SetFirstPageFooter( _sectionProperties.firstPageFooter.as<Footer>() );
+			evenPageFooter = _footer;
 		}
-	  }
 
-	  const Sepx& GetSepx() const
-	  {
-	    return this->sepx;
-	  }
+		inline void SetOddPageFooter(const Footer& _footer)
+		{
+			oddPageFooter = _footer;
+		}
 
-	  void SetEvenPageHeader( const Header& _header )
-	  {
-	    this->evenPageHeader = _header;
-	  }
+		inline void SetFirstPageHeader(const Header& _header)
+		{
+			firstPageHeader = _header;
+		}
 
-	  void SetOddPageHeader( const Header& _header )
-	  {
-	    this->oddPageHeader = _header;
-	  }
+		inline void SetFirstPageFooter(const Footer& _footer)
+		{
+			firstPageFooter = _footer;
+		}
 
-	  void SetEvenPageFooter( const Footer& _footer )
-	  {
-	    this->evenPageFooter = _footer;
-	  }
+		inline const Header* GetEvenPageHeader() const
+		{
+			return static_cast<const Header*>(evenPageHeader.Get());
+		}
 
-	  void SetOddPageFooter( const Footer& _footer )
-	  {
-	    this->oddPageFooter = _footer;
-	  }
+		inline const Header* GetOddPageHeader() const
+		{
+			return static_cast<const Header*>(oddPageHeader.Get());
+		}
 
-	  void SetFirstPageHeader( const Header& _header )
-	  {
-	    this->firstPageHeader = _header;
-	  }
+		inline const Footer* GetEvenPageFooter() const
+		{
+			return static_cast<const Footer*>(evenPageFooter.Get());
+		}
 
-	  void SetFirstPageFooter( const Footer& _footer )
-	  {
-	    this->firstPageFooter = _footer;
-	  }
+		inline const Footer* GetOddPageFooter() const
+		{
+			return static_cast<const Footer*>(oddPageFooter.Get());
+		}
 
-	  const Header* GetEvenPageHeader() const
-	  {
-	    return static_cast<const Header*>(this->evenPageHeader.get());
-	  }
+		inline const Header* GetFirstPageHeader() const
+		{
+			return static_cast<const Header*>(firstPageHeader.Get());
+		}
 
-	  const Header* GetOddPageHeader() const
-	  {
-	    return static_cast<const Header*>(this->oddPageHeader.get());
-	  }
+		inline const Footer* GetFirstPageFooter() const
+		{
+			return static_cast<const Footer*>(firstPageFooter.Get());
+		}
 
-	  const Footer* GetEvenPageFooter() const
-	  {
-	    return static_cast<const Footer*>(this->evenPageFooter.get());
-	  }
-
-	  const Footer* GetOddPageFooter() const
-	  {
-	    return static_cast<const Footer*>(this->oddPageFooter.get());
-	  }
-
-	  const Header* GetFirstPageHeader() const
-	  {
-	    return static_cast<const Header*>(this->firstPageHeader.get());
-	  }
-
-	  const Footer* GetFirstPageFooter() const
-	  {
-	    return static_cast<const Footer*>(this->firstPageFooter.get());
-	  }
-  };
+	private:
+		
+		Sepx		sepx;
+		TextItem	evenPageHeader;
+		TextItem	oddPageHeader;
+		TextItem	evenPageFooter;
+		TextItem	oddPageFooter;
+		TextItem	firstPageHeader;
+		TextItem	firstPageFooter;
+	};
 }

@@ -18,17 +18,17 @@ namespace AVSDocFileFormat
 
 		TextItem (const TextItem& oItem)
 		{
-			if (oItem.m_item.get())
+			if (oItem.m_item.operator->())
 			{
-				m_item.reset( static_cast<ITextItem*>(oItem.m_item->Clone()));  
+				m_item.reset(static_cast<ITextItem*>(oItem.m_item->Clone()));  
 			}
 		}
 
 		TextItem& operator = (const TextItem& oItem)
 		{
-			if (m_item != oItem.m_item)
+			if (m_item.operator->() != oItem.m_item.operator->())
 			{
-				m_item.reset (static_cast<ITextItem*>(oItem.m_item->Clone()));
+				m_item.reset(static_cast<ITextItem*>(oItem.m_item->Clone()));
 			}
 
 			return *this;
@@ -36,9 +36,9 @@ namespace AVSDocFileFormat
 
 		TextItem& operator = (const ITextItem& oItem)
 		{
-			if (m_item.get() != &oItem)
+			if (m_item.operator->() != &oItem)
 			{
-				m_item.reset( static_cast<ITextItem*>(oItem.Clone()));
+				m_item.reset(static_cast<ITextItem*>(oItem.Clone()));
 			}
 
 			return *this;
@@ -46,21 +46,21 @@ namespace AVSDocFileFormat
 
 		template<class T> vector<ParagraphItem> GetAllRunItemsByType() const
 		{
-			vector<ParagraphItem> allParagraphItems;
+			std::vector<ParagraphItem> allParagraphItems;
 
-			vector<unsigned int> paragraphsItemsOffsets;
-			vector<IParagraphItemPtr> paragraphsItems = m_item->GetAllRunsCopy( &paragraphsItemsOffsets );
+			std::vector<unsigned int> paragraphsItemsOffsets;
+			std::vector<IParagraphItemPtr> paragraphsItems = m_item->GetAllRunsCopy(&paragraphsItemsOffsets);
 
 			for (size_t i = 0; i < paragraphsItems.size(); ++i)
 			{
-				Run* run	=	dynamic_cast<Run*>(paragraphsItems[i].get());
+				Run* run = dynamic_cast<Run*>(paragraphsItems[i].operator->());
 				if (run)
 				{
-					for (list<RunItem>::const_iterator iter = run->begin(); iter != run->end(); ++iter)
+					for (std::list<RunItem>::const_iterator iter = run->begin(); iter != run->end(); ++iter)
 					{
-						if ( iter->is<T>() )
+						if (iter->is<T>())
 						{
-							allParagraphItems.push_back( ParagraphItem( *run, paragraphsItemsOffsets[i] ) );
+							allParagraphItems.push_back(ParagraphItem(*run, paragraphsItemsOffsets[i]));
 						}
 					}
 				}
@@ -71,14 +71,14 @@ namespace AVSDocFileFormat
 
 		template<class T> vector<ParagraphItem> GetAllParagraphItemsByType() const
 		{
-			vector<ParagraphItem> allParagraphItems;
+			std::vector<ParagraphItem> allParagraphItems;
 
-			vector<unsigned int> paragraphsItemsOffsets;
-			vector<IParagraphItemPtr> paragraphsItems = m_item->GetAllParagraphItemsCopy( &paragraphsItemsOffsets );
+			std::vector<unsigned int> paragraphsItemsOffsets;
+			std::vector<IParagraphItemPtr> paragraphsItems = m_item->GetAllParagraphItemsCopy(&paragraphsItemsOffsets);
 
 			for (size_t i = 0; i < paragraphsItems.size(); ++i)
 			{
-				T* paragraphItem	=	dynamic_cast<T*>( paragraphsItems[i].get() );
+				T* paragraphItem = dynamic_cast<T*>(paragraphsItems[i].operator->());
 				if (paragraphItem)
 				{
 					allParagraphItems.push_back( ParagraphItem( *paragraphItem, paragraphsItemsOffsets[i] ) );  

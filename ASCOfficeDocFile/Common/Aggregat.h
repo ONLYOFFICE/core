@@ -1,41 +1,46 @@
 #pragma once
 
-#include <boost/shared_ptr.hpp>
-#include <boost/utility.hpp>
+#include "..\..\Common\DocxFormat\Source\Base\SmartPtr.h"
 
-template <class T, class I> class Aggregat: private boost::noncopyable
+template <class T, class I> class Aggregat
 {
-protected:
-	boost::shared_ptr<T> m_item;
-
 public:
 	Aggregat()
 	{
 	}
 
-	Aggregat( T* _item ):
-	m_item(_item)
+	Aggregat(T* _item) : m_item(_item)
 	{
 	}
 
-	T& operator * () const
+	T& operator* ()
 	{
-		*return this->m_item;  
+		*return m_item;  
 	}
 
-	T* get() const
+	T* get()
 	{
-		return this->m_item.get();
+		return m_item.operator->();
+	}
+	
+	const T* get() const
+	{
+		return m_item.operator->();
 	}
 
-	T* operator -> () const
+	T* operator ->()
 	{
-		return this->m_item.operator -> ();
+		return m_item.operator->();
+	}
+
+	const T* operator ->() const 
+	{
+		return m_item.operator->();
 	}
 
 	template <class A> const bool is() const
 	{ 
-		return ( typeid(*this->m_item) == typeid(A) );
+		return (typeid(*this->m_item) == typeid(A));
 	}
 
 	template <class A> A& as()
@@ -62,4 +67,23 @@ public:
 	{ 
 		return static_cast<const I&>(*this);
 	}
+
+	inline bool IsInit() const
+	{ 
+		return m_item.IsInit();
+	}
+
+	inline T* Get()
+	{
+		return m_item.operator->();
+	}
+
+	inline const T* Get() const
+	{
+		return m_item.operator->();
+	}
+
+protected:
+
+	NSCommon::smart_ptr<T> m_item;
 };

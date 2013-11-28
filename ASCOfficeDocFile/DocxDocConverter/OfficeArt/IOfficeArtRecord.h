@@ -1,5 +1,7 @@
 #pragma once
 
+#include "..\..\..\Common\DocxFormat\Source\Base\SmartPtr.h"
+
 namespace OfficeArt
 {
 	struct IOfficeArtRecord
@@ -12,5 +14,5 @@ namespace OfficeArt
 		virtual ~IOfficeArtRecord() {}
 	};
 
-	typedef boost::shared_ptr<IOfficeArtRecord> OfficeArtRecordPtr;
+	typedef NSCommon::smart_ptr<IOfficeArtRecord> OfficeArtRecordPtr;
 }

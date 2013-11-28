@@ -1,8 +1,9 @@
 #pragma once
 
-#include "md4c.h"
 #include <vector>
-using namespace std;
+
+#include "md4c.h"
+#include "AVSUtils.h"
 
 class MD4
 {
@@ -10,9 +11,9 @@ public:
 
 	MD4(const void* _message = NULL, unsigned int _messageSize = 0) : message(NULL), messageSize(_messageSize)
 	{
-		this->SetMessage( _message, _messageSize );
+		SetMessage(_message, _messageSize);
 
-		memset( this->md4, 0, sizeof(this->md4) );
+		memset(md4, 0, sizeof(md4));
 	}
 
 	MD4(const MD4& _md4) : message(NULL), messageSize(_md4.messageSize)
@@ -28,7 +29,6 @@ public:
 			if ( this->message != NULL )
 			{
 				memset( this->message, 0, this->messageSize );
-
 				memcpy( this->message, _md4.message, this->messageSize );  
 			}
 		}
@@ -58,9 +58,9 @@ public:
 		}  
 	}
 
-	inline vector<unsigned char> GetMD4Bytes() const
+	inline std::vector<unsigned char> GetMD4Bytes() const
 	{
-		vector<unsigned char> md4Bytes;
+		std::vector<unsigned char> md4Bytes;
 
 		MD4_CTX context;
 

@@ -59,9 +59,9 @@ namespace OfficeArt
 			return new OfficeArtBStoreContainer( *this );
 		}
 
-		virtual void PushBack (const OfficeArtBStoreContainerFileBlock& fileBlock )
+		virtual void PushBack(const OfficeArtBStoreContainerFileBlock& fileBlock)
 		{
-			rgfb.push_back( OfficeArtBStoreContainerFileBlockPtr( static_cast<OfficeArtBStoreContainerFileBlock*>( fileBlock.Clone() ) ) );
+			rgfb.push_back( OfficeArtBStoreContainerFileBlockPtr(static_cast<OfficeArtBStoreContainerFileBlock*>(fileBlock.Clone())));
 			Initialize();
 		}
 
@@ -83,16 +83,16 @@ namespace OfficeArt
 
 	private:
 
-		void Initialize()
+		inline void Initialize()
 		{
 			size = 0;
 
-			for (list<OfficeArtBStoreContainerFileBlockPtr>::const_iterator iter = rgfb.begin(); iter != rgfb.end(); ++iter)
+			for (std::list<OfficeArtBStoreContainerFileBlockPtr>::const_iterator iter = rgfb.begin(); iter != rgfb.end(); ++iter)
 			{
 				size += (*iter)->Size();
 			}
 
-			rh		=	OfficeArtRecordHeader ( 0xF, rgfb.size(), 0xF001, size );
+			rh		=	OfficeArtRecordHeader (0xF, rgfb.size(), 0xF001, size);
 			size	+=	sizeof(rh);
 
 			RELEASEARRAYOBJECTS (bytes);
@@ -100,23 +100,21 @@ namespace OfficeArt
 			if (size)
 			{
 				bytes = new byte[size];
-
-				if ( this->bytes != NULL )
+				if (bytes)
 				{
-					memset( bytes, 0, size );
+					memset(bytes, 0, size);
 
 					unsigned int offset = 0;
 
-					memcpy( ( bytes + offset ), (byte*)(rh), sizeof(rh) );
+					memcpy((bytes + offset), (byte*)(rh), sizeof(rh));
 					offset += sizeof(rh);
 
-					for (list<OfficeArtBStoreContainerFileBlockPtr>::const_iterator iter = rgfb.begin(); iter != rgfb.end(); ++iter)
+					for (std::list<OfficeArtBStoreContainerFileBlockPtr>::const_iterator iter = rgfb.begin(); iter != rgfb.end(); ++iter)
 					{
-						OfficeArtBStoreContainerFileBlock* officeArtBStoreContainerFileBlock = iter->get();
-
-						if ( officeArtBStoreContainerFileBlock != NULL )
+						const OfficeArtBStoreContainerFileBlock* officeArtBStoreContainerFileBlock = iter->operator->();
+						if (officeArtBStoreContainerFileBlock)
 						{
-							memcpy( ( bytes + offset ), (byte*)(*officeArtBStoreContainerFileBlock), officeArtBStoreContainerFileBlock->Size() );
+							memcpy((bytes + offset), (byte*)(*officeArtBStoreContainerFileBlock), officeArtBStoreContainerFileBlock->Size());
 							offset += officeArtBStoreContainerFileBlock->Size();
 						}
 					}
@@ -126,10 +124,10 @@ namespace OfficeArt
 
 	private:
 
-		OfficeArtRecordHeader rh;
-		list<OfficeArtBStoreContainerFileBlockPtr> rgfb;
+		OfficeArtRecordHeader						rh;
+		list<OfficeArtBStoreContainerFileBlockPtr>	rgfb;
 
-		byte* bytes;
-		unsigned int size;
+		byte*										bytes;
+		unsigned int								size;
 	};
 }

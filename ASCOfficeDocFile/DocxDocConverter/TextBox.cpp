@@ -89,7 +89,8 @@ namespace AVSDocFileFormat
 
 		for ( list<TextBoxItemWithOffset>::const_iterator iter = this->textItems.begin(); iter != this->textItems.end(); iter++ )
 		{
-			vector<ITextItem*> textItemParagraphs = iter->textBoxItem->GetAllParagraphs();
+			ITextItem* item = (ITextItem*)iter->textBoxItem.operator->();
+			vector<ITextItem*> textItemParagraphs = item->GetAllParagraphs();
 
 			for ( vector<ITextItem*>::iterator textItemParagraphsIter = textItemParagraphs.begin(); textItemParagraphsIter != textItemParagraphs.end(); textItemParagraphsIter++ )
 			{

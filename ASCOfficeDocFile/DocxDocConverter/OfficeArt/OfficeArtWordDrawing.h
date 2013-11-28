@@ -5,13 +5,13 @@ namespace OfficeArt
 	class OfficeArtWordDrawing : public IOfficeArtAbstractContainer<IOfficeArtRecord>
 	{
 	public:
-		
-		OfficeArtWordDrawing (unsigned char type = 0) : dgglbl(type), bytes(NULL), size(sizeof(dgglbl))
+
+		OfficeArtWordDrawing(unsigned char type = 0) : dgglbl(type), bytes(NULL), size(sizeof(dgglbl))
 		{
 			Initialize();
 		}
 
-		OfficeArtWordDrawing (const OfficeArtWordDrawing& _container) : dgglbl(_container.dgglbl), officeArtRecords(_container.officeArtRecords), size(_container.size), bytes(NULL)
+		OfficeArtWordDrawing(const OfficeArtWordDrawing& _container) : dgglbl(_container.dgglbl), officeArtRecords(_container.officeArtRecords), size(_container.size), bytes(NULL)
 		{
 			if ( size != 0 )
 			{
@@ -50,9 +50,9 @@ namespace OfficeArt
 			return new OfficeArtWordDrawing (*this);
 		}
 
-		virtual void PushBack( const IOfficeArtRecord& _officeArtRecord )
+		virtual void PushBack(const IOfficeArtRecord& _officeArtRecord)
 		{
-			officeArtRecords.push_back( OfficeArtRecordPtr( _officeArtRecord.Clone() ) );
+			officeArtRecords.push_back(OfficeArtRecordPtr(_officeArtRecord.Clone()));
 
 			Initialize();
 		}
@@ -74,14 +74,13 @@ namespace OfficeArt
 			RELEASEARRAYOBJECTS (bytes);
 		}
 
-
 	private:
 
-		void Initialize()
+		inline void Initialize()
 		{
 			size = 0;
 
-			for (list<OfficeArtRecordPtr>::const_iterator iter = officeArtRecords.begin(); iter != officeArtRecords.end(); ++iter)
+			for (std::list<OfficeArtRecordPtr>::const_iterator iter = officeArtRecords.begin(); iter != officeArtRecords.end(); ++iter)
 			{
 				size += (*iter)->Size();
 			}
@@ -90,10 +89,9 @@ namespace OfficeArt
 
 			RELEASEARRAYOBJECTS (bytes);
 
-			if ( size != 0 )
+			if (0 != size)
 			{
 				bytes = new byte[size];
-
 				if (bytes)
 				{
 					memset (bytes, 0, size);
@@ -105,11 +103,10 @@ namespace OfficeArt
 
 					for (list<OfficeArtRecordPtr>::const_iterator iter = officeArtRecords.begin(); iter != officeArtRecords.end(); ++iter)
 					{
-						IOfficeArtRecord* officeArtRecord = iter->get();
-
+						const IOfficeArtRecord* officeArtRecord = iter->operator->();
 						if (officeArtRecord)
 						{
-							memcpy( (bytes + offset), (byte*)(*officeArtRecord), officeArtRecord->Size() );
+							memcpy( (bytes + offset), (byte*)(*officeArtRecord), officeArtRecord->Size());
 							offset += officeArtRecord->Size();
 						}
 					}

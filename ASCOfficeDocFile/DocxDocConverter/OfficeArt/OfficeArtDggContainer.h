@@ -86,37 +86,34 @@ namespace OfficeArt
 
 		void Initialize()
 		{
-			this->size = 0;
+			size = 0;
 
-			for ( list<OfficeArtRecordPtr>::const_iterator iter = this->officeArtRecords.begin(); iter != this->officeArtRecords.end(); iter++ )
+			for (std::list<OfficeArtRecordPtr>::const_iterator iter = officeArtRecords.begin(); iter != officeArtRecords.end(); ++iter)
 			{
-				this->size += (*iter)->Size();
+				size += (*iter)->Size();
 			}
 
-			this->rh = OfficeArtRecordHeader( 0xF, 0x000, 0xF000, this->size );
+			rh		=	OfficeArtRecordHeader( 0xF, 0x000, 0xF000, size);
+			size	+=	sizeof(rh);
 
-			this->size += sizeof(this->rh);
+			RELEASEARRAYOBJECTS(bytes);
 
-			RELEASEARRAYOBJECTS (bytes);
-
-			if ( this->size != 0 )
+			if (0 != size)
 			{
-				this->bytes = new byte[this->size];
-
-				if ( this->bytes != NULL )
+				bytes = new byte[size];
+				if (bytes)
 				{
-					memset( this->bytes, 0, this->size );
+					memset(bytes, 0, size);
 
 					unsigned int offset = 0;
 
-					memcpy( ( this->bytes + offset ), (byte*)(this->rh), sizeof(this->rh) );
-					offset += sizeof(this->rh);
+					memcpy((bytes + offset), (byte*)(rh), sizeof(rh));
+					offset += sizeof(rh);
 
-					for ( list<OfficeArtRecordPtr>::const_iterator iter = this->officeArtRecords.begin(); iter != this->officeArtRecords.end(); iter++ )
+					for (std::list<OfficeArtRecordPtr>::const_iterator iter = officeArtRecords.begin(); iter != officeArtRecords.end(); ++iter)
 					{
-						IOfficeArtRecord* officeArtRecord = iter->get();
-
-						if ( officeArtRecord != NULL )
+						const IOfficeArtRecord* officeArtRecord =  iter->operator->();
+						if (officeArtRecord)
 						{
 							memcpy( ( this->bytes + offset ), (byte*)(*officeArtRecord), officeArtRecord->Size() );
 							offset += officeArtRecord->Size();

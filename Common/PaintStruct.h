@@ -3,6 +3,7 @@
 
 #include <atlcoll.h>
 #include <math.h>
+#include <Gdiplus.h>
 
 #include "streamutils.h"
 #include "xmlutils.h"

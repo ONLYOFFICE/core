@@ -1,5 +1,5 @@
 #pragma once
-#include "..\AVSOfficeFile\OfficeEventsTemplate.h"
+#include "..\ASCOfficeFile\OfficeEventsTemplate.h"
 
 template <class T, class Reciever>
 class COfficeHtmlEvent : public COfficeEventTemplate<T,Reciever>

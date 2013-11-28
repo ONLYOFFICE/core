@@ -8,12 +8,12 @@
 #include "../Common/OfficeFileErrorDescription.h"
 #include "../Common/OfficeFileFormats.h"
 #include "../Common/OfficeDefines.h"
-#include "../AVSOfficeUniversalConverter/Utils.h"
-#include "../../AVSVideoStudio3/Common/MediaFormatDefine.h"
+#include "ASCUniversalConverterUtils.h"
+#include "../Common/MediaFormatDefine.h"
 
 #define ZLIB_WINAPI
 #define CODEPAGE_ISSUE_FIX
-#include "..\AVSOfficeUtils\ZLIB\zlib-1.2.3\contrib\minizip\zip.h"
+#include "..\ASCOfficeUtils\ZLIB\zlib-1.2.3\contrib\minizip\zip.h"
 
 #define ONE_INCH 2.54
 
@@ -937,8 +937,8 @@ void COfficeEpubFile::UpdateGdiPlusRenderer(double dWidthMm, double dHeightMm, A
 	(*piImage) = NULL;
 	(*piRend) = NULL;
 	CoCreateInstance(__uuidof( AVSMediaCore3::CAVSUncompressedVideoFrame), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSMediaCore3::IAVSUncompressedVideoFrame), (void **)piImage);
-	AVSGraphics::IAVSFontManagerPtr piFontManager;
-	piFontManager.CreateInstance( __uuidof(AVSGraphics::CAVSFontManager) );
+	AVSGraphics::IASCFontManagerPtr piFontManager;
+	piFontManager.CreateInstance( __uuidof(AVSGraphics::CASCFontManager) );
 	piFontManager->Initialize( L"" );
 
 	//задаем dpi без привязки к монитору
@@ -963,7 +963,7 @@ void COfficeEpubFile::UpdateGdiPlusRenderer(double dWidthMm, double dHeightMm, A
 
 	memset((*piImage)->Buffer, 255, (*piImage)->BufferSize);
 
-	CoCreateInstance(__uuidof( AVSGraphics::CAVSGraphicsRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IASCGraphicsRenderer), (void **)piRend);
+	CoCreateInstance(__uuidof( AVSGraphics::CASCGraphicsRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IASCGraphicsRenderer), (void **)piRend);
 	//ставим FontManager
 	VARIANT vtVariant;
 	vtVariant.vt = VT_UNKNOWN;

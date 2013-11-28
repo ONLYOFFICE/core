@@ -1,6 +1,6 @@
 #pragma once
 #include "SHA1/sha1.h"
-#include "../AVSOfficeUniversalConverter/Utils.h"
+#include "ASCUniversalConverterUtils.h"
 
 #define ZLIB_WINAPI
 #define CODEPAGE_ISSUE_FIX

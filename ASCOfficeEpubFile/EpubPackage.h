@@ -6,7 +6,7 @@
 #include "XmlUtils.h"
 #include "../ASCOfficePDFWriter/Consts.h"
 #include "../ASCOfficePDFWriter/Utils.h"
-#include "../ASCOfficeUniversalConverter/Utils.h"
+#include "ASCUniversalConverterUtils.h"
 #include "EpubCrypt.h"
 #include "OfficeDrawing/File.h"
 
@@ -598,7 +598,7 @@ private: void AddFonts( CString sSourceHtml , CString sFolder, CString sFilename
 						CStringA sFullHtml =  Utils::UnicodeToCodepage( sStdFullHtml.c_str(), CP_UTF8 );
 						//формируем добавок к html css
 						CString sCSSEmbedFont;
-						Painter::CFont oCurFont;
+						NSStructures::CFont oCurFont;
 						wchar_t wsDisplayName[1000];
 						wchar_t wsFontName[1000];
 						//ищем файлы шрифтов
@@ -686,7 +686,7 @@ private: void FindFontInFile( CString sFilepath, CAtlArray<CString>& aResult )
 
 			//FindFontInString( sStdFullHtml, xRegEx, aResult );
 		 }
-private: void AddFont( Painter::CFont *pFont, CString sFontName, LPTSTR wsDisplayName, int nDisplayNameSize, LPTSTR wsFontName, int nFontFileSize, CString sFontPath, CString sTargetFontFolder, CString& sCSSEmbedFont )
+private: void AddFont( NSStructures::CFont *pFont, CString sFontName, LPTSTR wsDisplayName, int nDisplayNameSize, LPTSTR wsFontName, int nFontFileSize, CString sFontPath, CString sTargetFontFolder, CString& sCSSEmbedFont )
 		 {
  			BOOL bBold   = FALSE;
 			BOOL bItalic = FALSE;
@@ -960,6 +960,6 @@ public: CString m_sAuthor;
 public: CString m_sCover;
 public: long m_nCoverWidth;
 public: long m_nCoverHeight;
-public: AVSGraphics::IAVSFontManager* m_piFontManager;
+public: AVSGraphics::IASCFontManager* m_piFontManager;
 private: CAtlMap<CString, bool> m_mapFonts;
 };

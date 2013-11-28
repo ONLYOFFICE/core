@@ -6,7 +6,9 @@
 #include <atlcoll.h>
 #include <atlenc.h>
 
+#ifndef _USE_NULLABLE_PROPERTY_
 using namespace NSCommon;
+#endif
 namespace XmlUtils
 {
 	static CString strInvalidValue		= _T("x(-Jdl%^8sFGs@gkp14jJU(90dyjhjnb*EcfFf%#2124sf98hc");

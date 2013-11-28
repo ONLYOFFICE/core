@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSOfficeOdfFileTest"
+	Name="ASCOfficeOdfFileTest"
 	ProjectGUID="{C2882DDD-07E6-4314-AD4B-48F43F38D722}"
-	RootNamespace="AVSOfficeOdfFileTest"
+	RootNamespace="ASCOfficeOdfFileTest"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -177,7 +177,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSOfficeOdfFileTest.cpp"
+				RelativePath=".\ASCOfficeOdfFileTest.cpp"
 				>
 			</File>
 			<File

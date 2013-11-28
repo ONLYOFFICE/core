@@ -4,7 +4,8 @@
 #include "resource.h"       // main symbols
 #include <string>
 
-#import "libid:92F87FA9-D3C2-4820-82F6-DEAEC0A3539D" rename_namespace("AVSOfficeUtils"), raw_interfaces_only
+//#import "libid:92F87FA9-D3C2-4820-82F6-DEAEC0A3539D" rename_namespace("AVSOfficeUtils"), raw_interfaces_only
+#import "../../Redist/ASCOfficeUtils.dll" rename_namespace("AVSOfficeUtils"), raw_interfaces_only
 
 ////////////////////////////////////////////////////////////////
 // IAVSOfficeFileTemplate

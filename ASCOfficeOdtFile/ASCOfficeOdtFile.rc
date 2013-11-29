@@ -94,7 +94,7 @@ END
 // REGISTRY
 //
 
-IDR_AVSODTFILE          REGISTRY                "AVSOfficeOdtFile.rgs"
+IDR_ASCODTFILE          REGISTRY                "ASCOfficeOdtFile.rgs"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -111,7 +111,7 @@ IDR_DOCUMENT2			DOCUMENT				"Resource\\OdtTemplate.odt"
 
 STRINGTABLE 
 BEGIN
-    IDS_PROJNAME            "AVSOfficeOdtFile"
+    IDS_PROJNAME            "ASCOfficeOdtFile"
 END
 
 #endif    // Russian resources

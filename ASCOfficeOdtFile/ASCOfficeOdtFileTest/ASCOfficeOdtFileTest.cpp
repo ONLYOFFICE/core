@@ -1,4 +1,4 @@
-// AVSOfficeOdfFileTest.cpp : Defines the entry point for the console application.
+// ASCOfficeOdfFileTest.cpp : Defines the entry point for the console application.
 //
 
 #include "stdafx.h"

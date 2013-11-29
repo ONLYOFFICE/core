@@ -21,9 +21,9 @@
 #include "Resource.h"
 
 #ifdef _DEBUG
-	#pragma comment(lib, "..\\..\\AVSImageStudio3\\AVSGraphics\\OfficeSvmFile\\Debug\\OfficeSvmFile.lib")
+	#pragma comment(lib, "../ASCImageStudio3/ASCGraphics/OfficeSvmFile/Debug/OfficeSvmFile.lib")
 #else
-	#pragma comment(lib, "..\\..\\AVSImageStudio3\\AVSGraphics\\OfficeSvmFile\\Release\\OfficeSvmFile.lib")
+	#pragma comment(lib, "../ASCImageStudio3/ASCGraphics/OfficeSvmFile/Release/OfficeSvmFile.lib")
 #endif
 
 

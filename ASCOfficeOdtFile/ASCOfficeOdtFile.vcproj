@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="AVSOfficeOdtFile"
+	Name="ASCOfficeOdtFile"
 	ProjectGUID="{FDDA9AAE-7782-4231-8A25-1FBFC56E5E49}"
-	RootNamespace="AVSOfficeOdtFile"
+	RootNamespace="ASCOfficeOdtFile"
 	Keyword="AtlProj"
 	TargetFrameworkVersion="196613"
 	>
@@ -43,16 +43,16 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeOdtFile.tlb"
-				HeaderFileName="AVSOfficeOdtFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeOdtFile.tlb"
+				HeaderFileName="ASCOfficeOdtFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeOdtFile_i.c"
-				ProxyFileName="AVSOfficeOdtFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeOdtFile_i.c"
+				ProxyFileName="ASCOfficeOdtFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\..\Common\AvsDocxFormat\Source\Utility;.\..\Common\AvsDocxFormat\Source\XML;.\..\Common\AvsDocxFormat\Source\Common;.\..\Common\AvsDocxFormat\Source\DocxFormat;Source;Source\OdtFormat"
+				AdditionalIncludeDirectories=".\..\Common\ASCDocxFormat\Source\Utility;.\..\Common\ASCDocxFormat\Source\XML;.\..\Common\ASCDocxFormat\Source\Common;.\..\Common\ASCDocxFormat\Source\DocxFormat;Source;Source\OdtFormat"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -78,14 +78,14 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="comsvcs.lib comsuppw.lib Msimg32.lib"
-				OutputFile="$(OutDir)/AVSOfficeOdtFile.dll"
+				OutputFile="$(OutDir)/ASCOfficeOdtFile.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\AVSOfficeUtils\ZLIB\zlib123dll\static32"
+				AdditionalLibraryDirectories="..\ASCOfficeUtils\ZLIB\zlib123dll\static32"
 				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSOfficeOdtFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeOdtFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/AVSOfficeOdtFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeOdtFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -139,15 +139,15 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeOdtFile.tlb"
-				HeaderFileName="AVSOfficeOdtFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeOdtFile.tlb"
+				HeaderFileName="ASCOfficeOdtFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeOdtFile_i.c"
-				ProxyFileName="AVSOfficeOdtFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeOdtFile_i.c"
+				ProxyFileName="ASCOfficeOdtFile_p.c"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".\..\Common\AvsDocxFormat\Source\Utility;.\..\Common\AvsDocxFormat\Source\XML;.\..\Common\AvsDocxFormat\Source\Common;.\..\Common\AvsDocxFormat\Source\DocxFormat;Source;Source\OdtFormat"
+				AdditionalIncludeDirectories=".\..\Common\ASCDocxFormat\Source\Utility;.\..\Common\ASCDocxFormat\Source\XML;.\..\Common\ASCDocxFormat\Source\Common;.\..\Common\ASCDocxFormat\Source\DocxFormat;Source;Source\OdtFormat"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -171,17 +171,17 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalDependencies="comsvcs.lib comsuppw.lib Msimg32.lib"
-				OutputFile=".\..\..\..\Redist\AVSOfficeStudio\$(ProjectName).dll"
+				OutputFile=".\..\Redist\$(ProjectName).dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\AVSOfficeUtils\ZLIB\zlib123dll\static32"
+				AdditionalLibraryDirectories="..\ASCOfficeUtils\ZLIB\zlib123dll\static32"
 				IgnoreDefaultLibraryNames="LIBC.lib"
-				MergedIDLBaseFileName="_AVSOfficeOdtFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeOdtFile.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/AVSOfficeOdtFile.lib"
+				ImportLibrary="$(OutDir)/ASCOfficeOdtFile.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -218,7 +218,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSOfficeOdtFile.cpp"
+				RelativePath=".\ASCOfficeOdtFile.cpp"
 				>
 			</File>
 			<File
@@ -282,11 +282,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficeOdtFile.rc"
+				RelativePath=".\ASCOfficeOdtFile.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeOdtFile.rgs"
+				RelativePath=".\ASCOfficeOdtFile.rgs"
 				>
 			</File>
 			<File

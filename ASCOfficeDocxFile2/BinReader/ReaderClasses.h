@@ -1411,7 +1411,7 @@ public:
 	IdCounter m_oFormatIdCounter;
 	IdCounter m_oParaIdCounter;
 public:
-	CComments()
+	CComments():m_oParaIdCounter(1)
 	{
 	}
 	~CComments()

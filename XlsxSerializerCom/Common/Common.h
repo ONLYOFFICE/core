@@ -121,4 +121,45 @@ namespace SerializeCommon
 			aReplies.RemoveAll();
 		}
 	};
+	void ReadFileType(CString& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter)
+	{
+		result = BinXlsxRW::c_oFileTypes::XLSX;
+		nCodePage = CP_UTF8;
+		wcDelimiter = _T(',');
+		nullable<SimpleTypes::CUnsignedDecimalNumber<>> fileType;
+		nullable<SimpleTypes::CUnsignedDecimalNumber<>> codePage;
+		nullable<CString> delimiter;
+
+		// Read options
+		XmlUtils::CXmlLiteReader oReader;
+		if (TRUE != oReader.FromString(sXMLOptions) || TRUE != oReader.IsValid())
+			return;
+
+		oReader.ReadNextNode(); // XmlOptions
+		if (oReader.IsEmptyNode())
+			return;
+
+		int nCurDepth = oReader.GetDepth();
+		while(oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			CWCharWrapper sName = oReader.GetName();
+			if (_T("fileOptions") == sName)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if (oReader, _T("fileType"), fileType)
+				WritingElement_ReadAttributes_Read_else_if (oReader, _T("codePage"), codePage)
+				WritingElement_ReadAttributes_Read_else_if (oReader, _T("delimiter"), delimiter)
+				WritingElement_ReadAttributes_End(oReader)
+				result = (BYTE)fileType->GetValue();
+				nCodePage = (UINT)codePage->GetValue();
+				const CString& sDelimiter = delimiter.get();
+				if (0 < sDelimiter.GetLength())
+					wcDelimiter = sDelimiter.GetAt(0);
+				break;
+			}
+		}
+
+		return;
+	}
 }

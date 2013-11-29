@@ -84,7 +84,7 @@ public:
 		//Создаем temp тему, читаем ее и записываем в документ
 		CString sTempTheme = CreateTheme();
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;
-		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, sTempTheme, pOfficeDrawingConverter);
+		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, sTempTheme, pOfficeDrawingConverter, CString(sXMLOptions));
 		::DeleteFile(sTempTheme);
 		RELEASEINTERFACE(pOfficeDrawingConverter);
 		return S_OK;
@@ -138,7 +138,7 @@ public:
 		pOfficeDrawingConverter->SetAdditionalParam(_T("FontPicker"), vt);
 
 		BinXlsxRW::BinaryFileWriter oBinaryFileWriter(m_oFontProcessor);
-		oBinaryFileWriter.Open(CString(sSrcPath), CString(sDstFileName), pEmbeddedFontsManager, pOfficeDrawingConverter);
+		oBinaryFileWriter.Open(CString(sSrcPath), CString(sDstFileName), pEmbeddedFontsManager, pOfficeDrawingConverter, CString(sXMLOptions));
 
 		RELEASEINTERFACE(pFontPicker);
 		RELEASEINTERFACE(pOfficeDrawingConverter);

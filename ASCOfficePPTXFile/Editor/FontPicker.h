@@ -36,16 +36,6 @@ namespace NSFontCutter
 		{
 			m_strFontsDir = strDir;
 
-#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
-			if (_T("") != m_strFontsDir)
-				m_pFontManager->Init(L"", TRUE, TRUE);
-			else
-			{
-				BSTR bsFolder = m_strFontsDir.AllocSysString();
-				m_pFontManager->Init(bsFolder, FALSE, TRUE);
-				SysFreeString(bsFolder);
-			}
-#else
 			if (_T("") != m_strFontsDir)
 			{
 				VARIANT var;
@@ -56,9 +46,14 @@ namespace NSFontCutter
 			}
 			else
 			{
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+				m_pFontManager->Init(L"", VARIANT_TRUE, VARIANT_FALSE);
+#else
 				m_pFontManager->Initialize(L"");
+#endif
 			}
 
+#ifdef BUILD_CONFIG_FULL_VERSION
 			CString defaultFontName = _T("Arial");
 			BSTR defFontName = defaultFontName.AllocSysString();
 			m_pFontManager->SetDefaultFont(defFontName);

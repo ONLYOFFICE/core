@@ -680,6 +680,7 @@ public:
 		m_lDefIndex = -1;
 
 		m_pFonts = new CList();
+		m_wsWinFontDir[0] = '\0';
 
 		WIN32_FIND_DATA oFD; 
 		
@@ -861,6 +862,7 @@ public:
 		m_lDefIndex = -1;
 	
 		m_pFonts = new CList();
+		m_wsWinFontDir[0] = '\0';
 
 		XmlUtils::CXmlNode oMainNode;
 		oMainNode.FromXmlString( sWinFontsXml );
@@ -887,6 +889,7 @@ public:
 		m_lDefIndex = -1;
 
 		m_pFonts = new CList();
+		m_wsWinFontDir[0] = '\0';
 
 		LONG lCount = *((LONG*)pBuffer);
 		pBuffer += g_lSizeofLONG;

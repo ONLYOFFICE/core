@@ -98,6 +98,33 @@ public:
 		{
 			SaveAllFontsJS((CString)ParamValue.bstrVal);
 		}
+		if ( _T("InitializeFromFolder") == sParamName && VT_BSTR == ParamValue.vt )
+		{
+			if ((GetFileAttributes(ParamValue.bstrVal) & FILE_ATTRIBUTE_DIRECTORY) != 0)
+			{
+				// проверим font_selection.bin
+				CFile oFile;
+				if (S_OK == oFile.OpenFile(((CString)ParamValue.bstrVal) + _T("\\font_selection.bin")))
+				{
+					LONG lSize = (LONG)oFile.GetFileSize();
+					BYTE* pData = new BYTE[lSize];
+					oFile.ReadFile(pData, (DWORD)lSize);
+
+					m_pList = new CWinFontList(pData, (CString)ParamValue.bstrVal);
+					RELEASEARRAYOBJECTS(pData);
+				}
+				else
+				{			
+					Init(ParamValue.bstrVal, VARIANT_TRUE, VARIANT_FALSE);
+				}
+				
+			}
+			else
+			{
+				Init(L"", VARIANT_TRUE, VARIANT_FALSE);
+			}
+
+		}
 		return S_OK;
 	}
 	STDMETHOD(GetAdditionalParam)(BSTR ParamName, VARIANT* ParamValue)
@@ -205,8 +232,6 @@ public:
 						SaveBinaryData(pFontsData, (ULONG)lFontsDataLen);
 					}
 
-					RELEASEARRAYOBJECTS(pFontsData);
-
 					oInfo.m_lCount  = 1;
 					m_oSS.m_lLength = (LONG64)lFontsDataLen;
 
@@ -229,6 +254,8 @@ public:
 
 					WinFontsInfoStorage oInfo;
 					m_pInfoStorage->ReadStruct( &oInfo );
+
+					m_pList = new CWinFontList(oInfo.m_pBuffer, strFolder);
 				}
 			}
 			while ( STIF_CREATING == m_oSS.m_sStatus );

@@ -574,6 +574,11 @@ namespace XmlUtils
 
 			return FALSE;
 		}
+		void SetProperty(const CString& strName, const CString& strValue)
+		{
+			if (NULL != m_pXmlDocument)
+				m_pXmlDocument->setProperty( _bstr_t((LPCTSTR)strName), _variant_t((LPCTSTR)strValue));
+		}
 	
 		BOOL OpenFromXmlString(const CString& strXml)
 		{

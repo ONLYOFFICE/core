@@ -1,14 +1,19 @@
 #pragma once
 namespace BinXlsxRW
 {
+	const double g_dKoef_mm_to_pt = 72 / (2.54 * 10);
+	const double g_dKoef_mm_to_twips = 20 * g_dKoef_mm_to_pt;
+	const double g_dKoef_mm_to_emu = 36000;
+	const double g_dKoef_mm_to_eightpoint = 8 * g_dKoef_mm_to_pt;
 
-const double g_dKoef_mm_to_pt = 72 / (2.54 * 10);
-const double g_dKoef_mm_to_twips = 20 * g_dKoef_mm_to_pt;
-const double g_dKoef_mm_to_emu = 36000;
-const double g_dKoef_mm_to_eightpoint = 8 * g_dKoef_mm_to_pt;
+	const static TCHAR* g_sFormatSignature = _T("XLSY");
+	const int g_nFormatVersion = 2;
 
-const static TCHAR* g_sFormatSignature = _T("XLSY");
-const int g_nFormatVersion = 2;
+	namespace c_oFileTypes{enum c_oFileTypes
+	{
+		XLSX	= 1,
+		CSV		= 2
+	};}
 
 
 	namespace c_oSerConstants{enum c_oSerConstants

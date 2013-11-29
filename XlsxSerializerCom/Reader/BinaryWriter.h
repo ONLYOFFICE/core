@@ -13,6 +13,7 @@
 #include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
 #include "../../ASCOfficeDocxFile2/BinWriter/StreamUtils.h"
 #include "../Writer/BinaryReader.h"
+#include "../Reader/CSVReader.h"
 
 //#define DEFAULT_TABLE_STYLES
 
@@ -3744,7 +3745,8 @@ namespace BinXlsxRW {
 		{
 			RELEASEOBJECT(m_oBcw);
 		}
-		void Open(CString& sInputDir, CString& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter)
+		void Open(CString& sInputDir, CString& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager,
+			PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter, CString& sXMLOptions)
 		{
 			OOX::CPath path(sFileDst);
 			//создаем папку для media
@@ -3769,9 +3771,27 @@ namespace BinXlsxRW {
 			oBufferedStream.SetBuffer(&oBuffer);
 
 			m_oBcw = new BinaryCommonWriter(oBufferedStream);
-			OOX::Spreadsheet::CXlsx oXlsx = OOX::Spreadsheet::CXlsx(OOX::CPath(sInputDir));
-			oXlsx.PrepareWorkbook();
-			intoBindoc(oXlsx, oBufferedStream, pEmbeddedFontsManager, pOfficeDrawingConverter);
+
+			// File Type
+			BYTE fileType;
+			UINT nCodePage;
+			WCHAR wcDelimiter;
+			SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, wcDelimiter);
+
+			OOX::Spreadsheet::CXlsx *pXlsx = NULL;
+			switch(fileType)
+			{
+			case BinXlsxRW::c_oFileTypes::CSV:
+				pXlsx = new OOX::Spreadsheet::CXlsx();
+				CSVReader::ReadFromCsvToXlsx(sInputDir, *pXlsx, nCodePage, wcDelimiter);
+				break;
+			case BinXlsxRW::c_oFileTypes::XLSX:
+			default:
+				pXlsx = new OOX::Spreadsheet::CXlsx(OOX::CPath(sInputDir));
+				break;
+			}
+			pXlsx->PrepareWorkbook();
+			intoBindoc(*pXlsx, oBufferedStream, pEmbeddedFontsManager, pOfficeDrawingConverter);
 
 			BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
 			int nBinBufferLen = oBufferedStream.GetPosition();
@@ -3786,6 +3806,7 @@ namespace BinXlsxRW {
 				oFile.CloseFile();
 			}
 			RELEASEARRAYOBJECTS(pbBase64Buffer);
+			RELEASEOBJECT(pXlsx);
 		}
 	private:
 		void intoBindoc(OOX::Spreadsheet::CXlsx &oXlsx, Streams::CBufferedStream &oBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter)

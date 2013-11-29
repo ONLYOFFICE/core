@@ -9,6 +9,7 @@
 #include "../../ASCOfficeDocxFile2/BinWriter/StreamUtils.h"
 #include "../Common/BinReaderWriterDefines.h"
 #include "../Common/Common.h"
+#include "../Writer/CSVWriter.h"
 
 namespace BinXlsxRW {
 
@@ -3549,7 +3550,8 @@ namespace BinXlsxRW {
 	public: BinaryFileReader()
 			{
 			}
-			int ReadFile(CString sSrcFileName, CString sDstPath, CString& sTempTheme, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter)
+			int ReadFile(CString sSrcFileName, CString sDstPath, CString& sTempTheme,
+				PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter, CString& sXMLOptions)
 			{
 				bool bResultOk = false;
 				MemoryMapping::CMappingFile oMappingFile = MemoryMapping::CMappingFile();
@@ -3633,7 +3635,23 @@ namespace BinXlsxRW {
 									sAdditionalContentTypes = vt.bstrVal;
 							}
 							oXlsx.PrepareToWrite();
-							oXlsx.Write(sDstPath, sTempTheme, sAdditionalContentTypes);
+
+							// File Type
+							BYTE fileType;
+							UINT nCodePage;
+							WCHAR wcDelimiter;
+							SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, wcDelimiter);
+
+							switch(fileType)
+							{
+							case BinXlsxRW::c_oFileTypes::CSV:
+								CSVWriter::WriteFromXlsxToCsv(sDstPath, oXlsx, nCodePage, wcDelimiter);
+								break;
+							case BinXlsxRW::c_oFileTypes::XLSX:
+							default:
+								oXlsx.Write(sDstPath, sTempTheme, sAdditionalContentTypes);
+								break;
+							}
 
 							//удаляем временные файлы
 							for(int i = 0, length = aDeleteFiles.GetSize(); i < length; ++i)

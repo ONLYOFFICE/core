@@ -73,7 +73,7 @@ namespace DocWrapper {
 
 
 #ifdef BUILD_CONFIG_OPENSOURCE_VERSION
-			fontManager->Init(bsOptions, FALSE, TRUE);
+			fontManager->Init(bsOptions, VARIANT_TRUE, VARIANT_FALSE);
 #else
 			fontManager->Initialize(bsOptions);
 #endif

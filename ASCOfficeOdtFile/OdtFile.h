@@ -1,7 +1,7 @@
 #pragma once
 #include "resource.h"       // main symbols
 #include <string>
-#include <./../AVSOfficeODFFile/include/cpdoccore/common/boost_filesystem_version.h>
+#include <./../ASCOfficeODFFile/include/cpdoccore/common/boost_filesystem_version.h>
 #include "./../Common/OfficeFileTemplate.h"
 #include "./../Common/OfficeFileErrorDescription.h"
 #include "OdtEvent.h"
@@ -14,9 +14,9 @@
 
 
 #ifdef _DEBUG
-	#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficeUtils.dll" raw_interfaces_only
+	#import "..\Redist\ASCOfficeUtils.dll" raw_interfaces_only
 #else
-	#import "..\..\..\Redist\AVSOfficeStudio\AVSOfficeUtils.dll" raw_interfaces_only
+	#import "..\Redist\ASCOfficeUtils.dll" raw_interfaces_only
 #endif
 
 /*

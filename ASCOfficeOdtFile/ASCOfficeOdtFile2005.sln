@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSOfficeOdtFile", "AVSOfficeOdtFile2005.vcproj", "{62C5017E-8246-4FE6-9D5C-A4A95EAA8A09}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeOdtFile", "ASCOfficeOdtFile2005.vcproj", "{62C5017E-8246-4FE6-9D5C-A4A95EAA8A09}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -31,7 +31,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OdtFormat", "Projects\OdtFo
 		{399893AA-3617-4CD8-A980-7F15CDAFA3D2} = {399893AA-3617-4CD8-A980-7F15CDAFA3D2}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocxFormat", "..\Common\AvsDocxFormat\Projects\DocxFormat2005.vcproj", "{A100103A-353E-45E8-A9B8-90B87CC5C0B0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocxFormat", "..\Common\ASCDocxFormat\Projects\DocxFormat2005.vcproj", "{A100103A-353E-45E8-A9B8-90B87CC5C0B0}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -42,7 +42,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocxFormat", "..\Common\Avs
 		{399893AA-3617-4CD8-A980-7F15CDAFA3D2} = {399893AA-3617-4CD8-A980-7F15CDAFA3D2}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XML", "..\Common\AvsDocxFormat\Projects\XML2005.vcproj", "{C1587C15-6268-4451-9263-937E63A945F6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XML", "..\Common\ASCDocxFormat\Projects\XML2005.vcproj", "{C1587C15-6268-4451-9263-937E63A945F6}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -51,7 +51,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XML", "..\Common\AvsDocxFor
 		{7B9F3647-32D3-4F82-8CA5-A43E490E1457} = {7B9F3647-32D3-4F82-8CA5-A43E490E1457}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "..\Common\AvsDocxFormat\Projects\Common2005.vcproj", "{399893AA-3617-4CD8-A980-7F15CDAFA3D2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "..\Common\ASCDocxFormat\Projects\Common2005.vcproj", "{399893AA-3617-4CD8-A980-7F15CDAFA3D2}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -61,13 +61,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "..\Common\AvsDocx
 		{7B9F3647-32D3-4F82-8CA5-A43E490E1457} = {7B9F3647-32D3-4F82-8CA5-A43E490E1457}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utility", "..\Common\AvsDocxFormat\Projects\Utility2005.vcproj", "{7B9F3647-32D3-4F82-8CA5-A43E490E1457}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utility", "..\Common\ASCDocxFormat\Projects\Utility2005.vcproj", "{7B9F3647-32D3-4F82-8CA5-A43E490E1457}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSOfficeOdtFileTest", "AVSOfficeOdtFileTest\AVSOfficeOdfFileTest.vcproj", "{C2882DDD-07E6-4314-AD4B-48F43F38D722}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeOdtFileTest", "ASCOfficeOdtFileTest\ASCOfficeOdfFileTest.vcproj", "{C2882DDD-07E6-4314-AD4B-48F43F38D722}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"

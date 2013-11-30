@@ -67,10 +67,10 @@ HRESULT COdtFile::FinalConstruct()
 {
 	m_pOfficeUtils = NULL;
     HRESULT hr = odfFile_.CoCreateInstance(__uuidof(AVSOfficeOdfFile::COfficeOdfFile));
-	hr = CoCreateInstance(__uuidof(AVSOfficeUtils::COfficeUtils),
+	hr = CoCreateInstance(__uuidof(ASCOfficeUtils::COfficeUtils),
 													NULL, 
 													CLSCTX_INPROC_SERVER, 
-													__uuidof(AVSOfficeUtils::IOfficeUtils), 
+													__uuidof(ASCOfficeUtils::IOfficeUtils), 
 													(void **)&(m_pOfficeUtils));
     return hr;
 }

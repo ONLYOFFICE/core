@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\..\..\Common\AvsDocxFormat\Source\Utility;.\..\..\Common\AvsDocxFormat\Source\XML;.\..\..\Common\AvsDocxFormat\Source\Common"
+				AdditionalIncludeDirectories=".\..\..\Common\ASCDocxFormat\Source\Utility;.\..\..\Common\ASCDocxFormat\Source\XML;.\..\..\Common\ASCDocxFormat\Source\Common;./../../ASCOfficeODFFile/include/cpdoccore/common"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -104,7 +104,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories=".\..\..\Common\AvsDocxFormat\Source\Utility;.\..\..\Common\AvsDocxFormat\Source\XML;.\..\..\Common\AvsDocxFormat\Source\Common"
+				AdditionalIncludeDirectories=".\..\..\Common;.\..\..\Common\ASCDocxFormat\Source\Utility;.\..\..\Common\ASCDocxFormat\Source\XML;.\..\..\Common\ASCDocxFormat\Source\Common"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"

@@ -12,6 +12,7 @@
 
 #include <boost/utility.hpp>
 
+//#include "property.h"
 #include "property.h"
 #include "IEnumerable.h"
 #include "IItemable.h"

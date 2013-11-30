@@ -6,6 +6,7 @@
 #include <boost_filesystem_version.h>
 
 
+
 namespace Odt
 {
 	namespace Manifest

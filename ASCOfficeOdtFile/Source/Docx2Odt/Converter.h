@@ -2,7 +2,7 @@
 #ifndef DOCX_2_ODT_CONVERTER_INCLUDE_H_
 #define DOCX_2_ODT_CONVERTER_INCLUDE_H_
 
-#include <boost_filesystem_version.h>
+#include "./../../../ASCOfficeODFFile/include/cpdoccore/common/boost_filesystem_version.h"
 
 
 namespace Odt {

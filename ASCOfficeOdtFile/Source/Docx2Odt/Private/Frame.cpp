@@ -5,7 +5,7 @@
 
 #include "Frame.h"
 #include "NamedStyle.h"
-#include <./../AVSOfficeODFFile/include/cpdoccore/common/boost_filesystem_version.h>
+#include <boost_filesystem_version.h>
 
 
 namespace Docx2Odt

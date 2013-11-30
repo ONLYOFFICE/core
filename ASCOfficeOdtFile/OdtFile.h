@@ -1,7 +1,7 @@
 #pragma once
 #include "resource.h"       // main symbols
 #include <string>
-#include <./../ASCOfficeODFFile/include/cpdoccore/common/boost_filesystem_version.h>
+#include <boost_filesystem_version.h>
 #include "./../Common/OfficeFileTemplate.h"
 #include "./../Common/OfficeFileErrorDescription.h"
 #include "OdtEvent.h"
@@ -14,10 +14,11 @@
 
 
 #ifdef _DEBUG
-	#import "..\Redist\ASCOfficeUtils.dll" raw_interfaces_only
+	#import "..\Redist\ASCOfficeUtils.dll" rename_namespace("ASCOfficeUtils") raw_interfaces_only
 #else
-	#import "..\Redist\ASCOfficeUtils.dll" raw_interfaces_only
+	#import "..\Redist\ASCOfficeUtils.dll" rename_namespace("ASCOfficeUtils") raw_interfaces_only
 #endif
+
 
 /*
 Compression levels:
@@ -86,6 +87,6 @@ private:
 											 const std::wstring & dstFileName);
 
 private:
-	AVSOfficeUtils::IOfficeUtils*		m_pOfficeUtils;
+	ASCOfficeUtils::IOfficeUtils*		m_pOfficeUtils;
     ATL::CComPtr<IAVSOfficeFileTemplate> odfFile_;
 };

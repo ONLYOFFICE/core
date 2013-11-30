@@ -5,7 +5,7 @@
 #include <vector>
 
 #include <boost/foreach.hpp>
-#include <boost_filesystem_version.h>
+#include "./../../../ASCOfficeODFFile/include/cpdoccore/common/boost_filesystem_version.h"
 
 #include "Odt.h"
 #include "Docx.h"

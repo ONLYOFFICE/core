@@ -3,7 +3,7 @@
 #define ODT_FOLDER_INCLUDE_H_
 
 #include <string>
-#include "property.h"
+#include "../../../Common/ASCDocxFormat/Source/Utility/property.h"
 #include "Manifest/File.h"
 #include "Settings/File.h"
 #include "Meta/File.h"

@@ -310,6 +310,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\odf\style_presentation.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\odf\style_presentation.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\odf\style_ref.h"
 				>
 			</File>
@@ -683,6 +691,14 @@
 			</File>
 			<File
 				RelativePath=".\src\odf\percentorscale.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\odf\presentationclass.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\odf\presentationclass.h"
 				>
 			</File>
 			<File
@@ -1515,11 +1531,47 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\docx\pptx_default_serializes.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\docx\pptx_drawing.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\docx\pptx_drawing.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\docx\pptx_drawings.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\docx\pptx_drawings.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\docx\pptx_output_xml.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\docx\pptx_output_xml.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\docx\pptx_package.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\src\docx\pptx_package.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\docx\pptx_slide_context.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\docx\pptx_slide_context.h"
 					>
 				</File>
 			</Filter>
@@ -1573,7 +1625,23 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\odf\draw_frame_pptx.cpp"
+			>
+		</File>
+		<File
 			RelativePath=".\src\odf\draw_frame_xlsx.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\odf\draw_page.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\odf\draw_page.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\odf\draw_page_pptx.cpp"
 			>
 		</File>
 		<File
@@ -1586,6 +1654,10 @@
 		</File>
 		<File
 			RelativePath=".\src\odf\draw_shapes_docx.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\odf\draw_shapes_pptx.cpp"
 			>
 		</File>
 		<File
@@ -1721,11 +1793,27 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\odf\office_presentation.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\odf\office_presentation.h"
+			>
+		</File>
+		<File
 			RelativePath=".\src\odf\office_scripts.cpp"
 			>
 		</File>
 		<File
 			RelativePath=".\src\odf\office_scripts.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\odf\office_settings.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\odf\office_settings.h"
 			>
 		</File>
 		<File

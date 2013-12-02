@@ -8,8 +8,9 @@
 namespace cpdoccore { 
 
 namespace oox {
-class docx_conversion_context;
-class xlsx_conversion_context;
+	class docx_conversion_context;
+	class xlsx_conversion_context;
+	class pptx_conversion_context;
 }
 
 namespace odf {
@@ -24,9 +25,12 @@ public:
 
 public:
     odf_read_context & odf_context();
-    void docx_convert(oox::docx_conversion_context & Context);
+    
+	void docx_convert(oox::docx_conversion_context & Context);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
-    const std::wstring & get_folder() const;
+	void pptx_convert(oox::pptx_conversion_context & Context);
+	
+	const std::wstring & get_folder() const;
 	
 	long get_office_mime_type();
 

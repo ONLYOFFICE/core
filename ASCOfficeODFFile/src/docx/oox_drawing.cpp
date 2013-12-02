@@ -264,7 +264,7 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val)
 
 			odf::GetProperty(val.additional,L"fill-color",strVal);
 
-			if (strVal.length()>0 && fillType.length()<1)fillType = L"a:solidFill";
+			if ((strVal) && (strVal->length()>0 && fillType.length()<1))fillType = L"a:solidFill";
 			CP_XML_NODE(fillType)
 			{ 
 				if (strVal && fillType != L"a:noFill")

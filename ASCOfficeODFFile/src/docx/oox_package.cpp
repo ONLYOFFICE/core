@@ -9,7 +9,7 @@
 
 #include "mediaitems.h"
 
-#include "..\..\..\..\AVSImageStudio3\AVSGraphics\OfficeSvmFile\SvmConverter.h"
+#include "..\..\..\ASCImageStudio3\ASCGraphics\OfficeSvmFile\SvmConverter.h"
 
 namespace cpdoccore { 
 namespace oox {

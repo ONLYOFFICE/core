@@ -6,15 +6,15 @@
 #include <iostream>
 #include <string>
 
-#import "libid:9AEF1F19-91CE-46C0-A380-06A7F56CE4AE" rename_namespace("AVSOfficeOdfFile"), raw_interfaces_only
+#import "../../../Redist/ASCOfficeOdfFile.dll" rename_namespace("ASCOfficeOdfFile"), raw_interfaces_only
 
 #define HR_RET(HR) if FAILED(hr = (HR)) { _ASSERTE(false); return -1; }
 
 int ConvertSingle(int argc, _TCHAR* argv[])
 {
-    ATL::CComPtr<AVSOfficeOdfFile::IAVSOfficeFileTemplate> officeOdfFile;
+    ATL::CComPtr<ASCOfficeOdfFile::IASCOfficeFileTemplate> officeOdfFile;
     HRESULT hr;
-    HR_RET(officeOdfFile.CoCreateInstance(__uuidof(AVSOfficeOdfFile::COfficeOdfFile)));
+    HR_RET(officeOdfFile.CoCreateInstance(__uuidof(ASCOfficeOdfFile::COfficeOdfFile)));
 
     boost::timer t1;
     officeOdfFile->LoadFromFile(ATL::CComBSTR(argv[1]), ATL::CComBSTR(argv[2]), NULL);
@@ -24,9 +24,9 @@ int ConvertSingle(int argc, _TCHAR* argv[])
 
 int ConvertMulti(int argc, _TCHAR* argv[])
 {
-    ATL::CComPtr<AVSOfficeOdfFile::IAVSOfficeFileTemplate> officeOdfFile;
+    ATL::CComPtr<ASCOfficeOdfFile::IASCOfficeFileTemplate> officeOdfFile;
     HRESULT hr;
-    HR_RET(officeOdfFile.CoCreateInstance(__uuidof(AVSOfficeOdfFile::COfficeOdfFile)));
+    HR_RET(officeOdfFile.CoCreateInstance(__uuidof(ASCOfficeOdfFile::COfficeOdfFile)));
 
     boost::timer t1;
 

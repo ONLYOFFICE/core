@@ -1,4 +1,3 @@
-/// \author pogorskiy@gmail.com (@avsmedia.net)
 
 #include "precompiled_cpxml.h"
 

@@ -4,14 +4,14 @@
 #include "resource.h"       // main symbols
 
 ////////////////////////////////////////////////////////////////
-// IAVSOfficeFileTemplate
+// IASCOfficeFileTemplate
 [
 	object,
 	uuid("3FC4EC15-9467-4D66-AD6A-A0C0BAEDD3CD"),
-	dual,	helpstring("IAVSOfficeFileTemplate Interface"),
+	dual,	helpstring("IASCOfficeFileTemplate Interface"),
 	pointer_default(unique)
 ]
-__interface IAVSOfficeFileTemplate : IDispatch
+__interface IASCOfficeFileTemplate : IDispatch
 {
 	[id(1), helpstring("method LoadFromFile")] HRESULT LoadFromFile([in] BSTR sSrcFileName, [in] BSTR sDstPath, [in] BSTR sXMLOptions);
 	[id(2), helpstring("method SaveToFile")] HRESULT SaveToFile([in] BSTR sDstFileName, [in] BSTR sSrcPath, [in] BSTR sXMLOptions);
@@ -19,14 +19,14 @@ __interface IAVSOfficeFileTemplate : IDispatch
 ////////////////////////////////////////////////////////////////
 
 
-// _IAVSOfficeFileTemplateEvents2
+// _IASCOfficeFileTemplateEvents2
 [
 	dispinterface,
 	uuid("9764153E-DAEB-40dd-94D4-A2C39218AF64"),
-	helpstring("_IAVSOfficeFileTemplateEvents2 Interface")
+	helpstring("_IASCOfficeFileTemplateEvents2 Interface")
 ]
 
-__interface _IAVSOfficeFileTemplateEvents2
+__interface _IASCOfficeFileTemplateEvents2
 {
 	//Max Value nPercent == 1000000
 	//Example 23,56 % == 235600
@@ -46,7 +46,7 @@ __interface _IAVSOfficeFileTemplateEvents2
 	dual,	helpstring("IOdtFile Interface"),
 	pointer_default(unique)
 ]
-__interface IOdtFile : IAVSOfficeFileTemplate
+__interface IOdtFile : IASCOfficeFileTemplate
 {
 };
 
@@ -66,12 +66,12 @@ __interface _IOdtFileEvents
 
 [
 	coclass,
-	default(IOdtFile, _IAVSOfficeFileTemplateEvents2),
+	default(IOdtFile, _IASCOfficeFileTemplateEvents2),
 	threading(apartment),
 	support_error_info("IOdtFile"),
 	event_source(com),
-	vi_progid("AVSOdtFile.OdtFile"),
-	progid("AVSOdtFile.OdtFile.1"),
+	vi_progid("ASCOdtFile.OdtFile"),
+	progid("ASCOdtFile.OdtFile.1"),
 	version(1.0),
 	uuid("04596A11-01C4-48D9-B020-B08E3F443F0F"),
 	helpstring("OdtFile Class")
@@ -83,7 +83,7 @@ public:
 	COdtFile();
     ~COdtFile();
 
-	__event __interface _IAVSOfficeFileTemplateEvents2;
+	__event __interface _IASCOfficeFileTemplateEvents2;
 
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
 
@@ -96,7 +96,7 @@ public:
 	STDMETHOD(SaveToFile)(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions);
 
 private:
-    ATL::CComPtr<IAVSOfficeFileTemplate> odfFile_;
+    ATL::CComPtr<IASCOfficeFileTemplate> odfFile_;
 
 };
 

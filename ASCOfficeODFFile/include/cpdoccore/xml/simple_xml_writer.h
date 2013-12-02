@@ -1,6 +1,5 @@
 /*
 Copyright (C) 2010, Ferruccio Barletta (ferruccio.barletta@gmail.com)
-modified nikolay.pogorskiy@avsmedia.net (@gmail.com)
 */
 
 

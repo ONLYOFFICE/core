@@ -1,5 +1,4 @@
 /// \file   OfficeOdfFile.cpp
-/// \author pogorskiy@gmail.com (@avsmedia.net)
 
 #include "stdafx.h"
 #include "OfficeOdfFile.h"
@@ -41,7 +40,7 @@
 
 COfficeOdfFile::COfficeOdfFile()
 {
-    office_utils_.CoCreateInstance(__uuidof(AVSOfficeUtils::COfficeUtils));    
+    office_utils_.CoCreateInstance(__uuidof(ASCOfficeUtils::COfficeUtils));    
 }
 
 namespace {

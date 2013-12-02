@@ -1,6 +1,5 @@
 /// \file   sax_win32_xmllite.cpp
 /// \brief  Реализация интерфейса SAX через библиотеку XmlLite
-/// \author pogorskiy@gmail.com (@avsmedia.net)
 
 #include "precompiled_cpxml.h"
 

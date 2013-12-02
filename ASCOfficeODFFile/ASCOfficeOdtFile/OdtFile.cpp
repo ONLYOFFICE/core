@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "OdtFile.h"
 
-#import "libid:9AEF1F19-91CE-46C0-A380-06A7F56CE4AE" rename_namespace("AVSOfficeOdfFile"), raw_interfaces_only
+#import "../../Redist/ASCOfficeOdfFile.dll" rename_namespace("ASCOfficeOdfFile"), raw_interfaces_only
 
 COdtFile::COdtFile()
 {   
@@ -15,7 +15,7 @@ COdtFile::~COdtFile()
 
 HRESULT COdtFile::FinalConstruct()
 {
-    HRESULT hr = odfFile_.CoCreateInstance(__uuidof(AVSOfficeOdfFile::COfficeOdfFile));
+    HRESULT hr = odfFile_.CoCreateInstance(__uuidof(ASCOfficeOdfFile::COfficeOdfFile));
     return hr;
 }
 

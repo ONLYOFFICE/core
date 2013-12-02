@@ -7,7 +7,7 @@ using AVSOfficeEWSEditor.XMLDataSpecific;
 
 namespace AVSOfficeEWSEditor.Editor.FileFormats
 {
-    internal class XlsxSaver : AVSOfficeUtils.IRequestFileEvent
+    internal class XlsxSaver : ASCOfficeUtils.IRequestFileEvent
     {
         internal XlsxSaver(XmlDocument xml_source_document, List<byte[]> binary_data_storage)
         {

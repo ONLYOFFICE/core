@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVSOfficeEWSEditor", "AVSOfficeEWSEditor\AVSOfficeEWSEditor.csproj", "{D4C6EAD0-5A97-439C-AC74-E1B89E07CCBE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASCOfficeEWSEditor", "ASCOfficeEWSEditor\ASCOfficeEWSEditor.csproj", "{D4C6EAD0-5A97-439C-AC74-E1B89E07CCBE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

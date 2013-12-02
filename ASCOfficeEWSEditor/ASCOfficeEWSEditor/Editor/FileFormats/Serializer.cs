@@ -35,7 +35,7 @@ namespace AVSOfficeEWSEditor.Editor.FileFormats
                 case Format.XLSX:
                 {
                     XlsxSaver saver = new XlsxSaver(wb.GetXmlDocument(), wb.BinaryDataStorage);
-                    AVSOfficeUtils.COfficeUtilsClass ooxArchiver = new AVSOfficeUtils.COfficeUtilsClass();
+                    ASCOfficeUtils.COfficeUtilsClass ooxArchiver = new ASCOfficeUtils.COfficeUtilsClass();
                     if (!ooxArchiver.CompressFilesFromMemory(path, saver, -1))
                     {
                         throw new Events.ReportableException(new Events.InternalError("Compression to \"" + path + "\" failed for unknown reason"));
@@ -45,7 +45,7 @@ namespace AVSOfficeEWSEditor.Editor.FileFormats
                 case Format.XLS:
                 {
                     XlsxSaver.Save(wb.GetXmlDocument(), temp_dir_path, wb.BinaryDataStorage);
-                    AVSOfficeXlsFile.CXlsFileClass converter = new AVSOfficeXlsFile.CXlsFileClass();
+                    ASCOfficeXlsFile.CXlsFileClass converter = new ASCOfficeXlsFile.CXlsFileClass();
                     converter.SaveToFile(path, temp_dir_path, "");
                     break;
                 }
@@ -53,14 +53,14 @@ namespace AVSOfficeEWSEditor.Editor.FileFormats
                 {
                     XlsxSaver.Save(wb.GetXmlDocument(), temp_dir_path, wb.BinaryDataStorage);
 
-                    AVSOfficeWSHtmlFile.CWSHtmlFileClass converter = new AVSOfficeWSHtmlFile.CWSHtmlFileClass();
+                    ASCOfficeWSHtmlFile.CWSHtmlFileClass converter = new ASCOfficeWSHtmlFile.CWSHtmlFileClass();
                     converter.SaveToFile(path, temp_dir_path, "");
                     break;
                 }
                 case Format.ODS:
                 {
                     XlsxSaver saver = new XlsxSaver(wb.GetXmlDocument(), wb.BinaryDataStorage);
-                    AVSOfficeUtils.COfficeUtilsClass ooxArchiver = new AVSOfficeUtils.COfficeUtilsClass();
+                    ASCOfficeUtils.COfficeUtilsClass ooxArchiver = new ASCOfficeUtils.COfficeUtilsClass();
                     if (!ooxArchiver.CompressFilesFromMemory(temp_dir_path + ".xlsx", saver, -1))
                     {
                         throw new Events.ReportableException(new Events.InternalError("Compression to \"" + path + "\" failed for unknown reason"));
@@ -88,7 +88,7 @@ namespace AVSOfficeEWSEditor.Editor.FileFormats
             string sIndex = index.ToString();//формируем трехзначную индексную строку
             string temp_dir_path = Path.GetDirectoryName(path) + '/' + Path.GetFileNameWithoutExtension(path);
             XlsxSaver.Save(wb.GetXmlDocument(), temp_dir_path, wb.BinaryDataStorage);
-            AVSOfficeWSHtmlFile.CWSHtmlFileClass converter = new AVSOfficeWSHtmlFile.CWSHtmlFileClass();
+            ASCOfficeWSHtmlFile.CWSHtmlFileClass converter = new ASCOfficeWSHtmlFile.CWSHtmlFileClass();
             converter.SaveToFile(path, temp_dir_path, "<Options><HTML><Print val = \"true\" ind=\"" + index.ToString() + "\"/></HTML></Options>");
             Trace.TraceInformation("Saving to Print file successfully finished");
         }
@@ -97,7 +97,7 @@ namespace AVSOfficeEWSEditor.Editor.FileFormats
         {
             if (format == Format.AUTO)
             {
-                AVSOfficeFile.CAVSOfficeFormatCheckerClass oFormatChecker = new AVSOfficeFile.CAVSOfficeFormatCheckerClass();
+                ASCOfficeFile.CAVSOfficeFormatCheckerClass oFormatChecker = new ASCOfficeFile.CAVSOfficeFormatCheckerClass();
                 int nCheckerFormat = oFormatChecker.GetFileFormat(path);
                 switch (nCheckerFormat)
                 {
@@ -123,7 +123,7 @@ namespace AVSOfficeEWSEditor.Editor.FileFormats
                     XmlDocument xml_doc = new XmlDocument();
                     xml_doc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\" ?> <root/>");
 
-                    AVSOfficeUtils.COfficeUtilsClass ooxArchiver = new AVSOfficeUtils.COfficeUtilsClass();
+                    ASCOfficeUtils.COfficeUtilsClass ooxArchiver = new ASCOfficeUtils.COfficeUtilsClass();
                     List<byte[]> binary_data_storage = new List<byte[]>();
                     XlsxLoader data_receiver = new XlsxLoader(xml_doc, binary_data_storage);
                     if (!ooxArchiver.ExtractFilesToMemory(path, data_receiver))
@@ -143,7 +143,7 @@ namespace AVSOfficeEWSEditor.Editor.FileFormats
                     XmlDocument xml_doc = new XmlDocument();
                     xml_doc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\" ?> <root/>");
 
-                    AVSOfficeXlsFile.CXlsFileClass converter = new AVSOfficeXlsFile.CXlsFileClass();
+                    ASCOfficeXlsFile.CXlsFileClass converter = new ASCOfficeXlsFile.CXlsFileClass();
                     converter.LoadFromFile(path, temp_dir_path, "");
                     List<byte[]> binary_data_storage = new List<byte[]>();
                     XlsxLoader.LoadXML(xml_doc, temp_dir_path, binary_data_storage);

@@ -8,7 +8,7 @@
 #include "OfficeRendererTemplate.h"
 #include "GdiPlusEx.h"
 
-//#define AVS_REMOVE_REG
+#define AVS_REMOVE_REG
 #ifdef AVS_REMOVE_REG
 #include "Registration.h"
 #endif

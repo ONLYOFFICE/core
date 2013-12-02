@@ -46,6 +46,7 @@ public:
 public:
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -85,6 +86,7 @@ public:
 public:
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -121,6 +123,7 @@ public:
 public:
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
     
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -156,6 +159,7 @@ public:
 public:
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -367,6 +371,7 @@ public:
 public:
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -400,6 +405,7 @@ public:
 public:
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -541,7 +547,8 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextPlaceholder;
     CPDOCCORE_DEFINE_VISITABLE();
-    void docx_convert(oox::docx_conversion_context & Context);
+   
+	void docx_convert(oox::docx_conversion_context & Context);
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -566,7 +573,8 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextPageNumber;
     CPDOCCORE_DEFINE_VISITABLE();
-    void docx_convert(oox::docx_conversion_context & Context);
+  
+	void docx_convert(oox::docx_conversion_context & Context);
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -594,7 +602,8 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextPageCount;
     CPDOCCORE_DEFINE_VISITABLE();
-    void docx_convert(oox::docx_conversion_context & Context);
+   
+	void docx_convert(oox::docx_conversion_context & Context);
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -622,7 +631,8 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextDate;
     CPDOCCORE_DEFINE_VISITABLE();
-    void docx_convert(oox::docx_conversion_context & Context);
+    
+	void docx_convert(oox::docx_conversion_context & Context);
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -650,7 +660,8 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextTime;
     CPDOCCORE_DEFINE_VISITABLE();
-    void docx_convert(oox::docx_conversion_context & Context);
+   
+	void docx_convert(oox::docx_conversion_context & Context);
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -677,7 +688,8 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextFileName;
     CPDOCCORE_DEFINE_VISITABLE();
-    void docx_convert(oox::docx_conversion_context & Context);
+   
+	void docx_convert(oox::docx_conversion_context & Context);
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -705,7 +717,8 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextSequence;
     CPDOCCORE_DEFINE_VISITABLE();
-    void docx_convert(oox::docx_conversion_context & Context);
+ 
+	void docx_convert(oox::docx_conversion_context & Context);
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;

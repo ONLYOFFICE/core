@@ -1574,6 +1574,14 @@
 					RelativePath=".\src\docx\pptx_slide_context.h"
 					>
 				</File>
+				<File
+					RelativePath=".\src\docx\pptx_text_context.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\docx\pptx_text_context.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<File

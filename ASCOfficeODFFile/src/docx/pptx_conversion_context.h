@@ -4,7 +4,7 @@
 #include <boost/shared_ptr.hpp>
 #include "ooxconversioncontext.h"
 
-//#include "xlsx_textcontext.h"
+#include "pptx_text_context.h"
 #include "pptx_slide_context.h"
 
 //#include "xlsx_sharedstrings.h"
@@ -88,7 +88,7 @@ public:
     pptx_xml_theme & current_theme();
   
 	oox_chart_context & current_chart();
-	//xlsx_text_context & get_text_context() { return xlsx_text_context_; }
+	pptx_text_context & get_text_context() { return pptx_text_context_; }
 
  //   num_format_context & get_num_format_context() { return num_format_context_; }
 
@@ -121,8 +121,9 @@ private:
   
     odf::odf_document * odf_document_;    
     
-    pptx_slide_context pptx_slide_context_;//сюда перманентно будем закидывать элементы и сериалайзить их - для слайдов, шаблонов, тем
- 
+    pptx_slide_context pptx_slide_context_;
+	pptx_text_context pptx_text_context_;
+
 	std::vector<pptx_xml_slide_ptr> slides_;
 	std::vector<pptx_xml_slideMaster_ptr> slideMasters_;
 	std::vector<pptx_xml_slideLayout_ptr> slideLayouts_;

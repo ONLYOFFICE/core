@@ -265,18 +265,21 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val)
 			odf::GetProperty(val.additional,L"fill-color",strVal);
 
 			if ((strVal) && (strVal->length()>0 && fillType.length()<1))fillType = L"a:solidFill";
-			CP_XML_NODE(fillType)
-			{ 
-				if (strVal && fillType != L"a:noFill")
-				{
-					CP_XML_NODE(L"a:srgbClr")
+			if (fillType.length()>0)
+			{
+				CP_XML_NODE(fillType)
+				{ 
+					if (strVal && fillType != L"a:noFill")
 					{
-						CP_XML_ATTR(L"val",strVal.get());
-						if (odf::GetProperty(val.additional,L"opacity",dVal))
+						CP_XML_NODE(L"a:srgbClr")
 						{
-							CP_XML_NODE(L"a:alpha")
+							CP_XML_ATTR(L"val",strVal.get());
+							if (odf::GetProperty(val.additional,L"opacity",dVal))
 							{
-								CP_XML_ATTR(L"val",boost::lexical_cast<std::wstring>((int)(dVal.get())) + L"%");
+								CP_XML_NODE(L"a:alpha")
+								{
+									CP_XML_ATTR(L"val",boost::lexical_cast<std::wstring>((int)(dVal.get())) + L"%");
+								}
 							}
 						}
 					}

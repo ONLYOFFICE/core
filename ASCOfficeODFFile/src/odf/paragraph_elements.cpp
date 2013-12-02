@@ -66,6 +66,12 @@ void text::xlsx_convert(oox::xlsx_conversion_context & Context)
     //Context.get_text_context().add_text(xml::utils::replace_text_to_xml(text_));
     Context.get_text_context().add_text(text_);
 }
+void text::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    //Context.get_text_context().add_text(xml::utils::replace_text_to_xml(text_));
+    Context.get_text_context().add_text(text_);
+}
+
 
 office_element_ptr text::create(const std::wstring & Text)
 {
@@ -109,6 +115,12 @@ void s::xlsx_convert(oox::xlsx_conversion_context & Context)
     this->text_to_stream(val);
     Context.get_text_context().add_text(val.str());
 }
+void s::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    std::wstringstream val;
+    this->text_to_stream(val);
+    Context.get_text_context().add_text(val.str());
+}
 
 // text:tab
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -138,7 +150,10 @@ void tab::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     Context.get_text_context().add_text(L"\t");
 }
-
+void tab::pptx_convert(oox::pptx_conversion_context & Context) 
+{
+    Context.get_text_context().add_text(L"\t");
+}
 // text:line-break
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * line_break::ns = L"text";
@@ -157,6 +172,10 @@ void line_break::docx_convert(oox::docx_conversion_context & Context)
 }
 
 void line_break::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+    Context.get_text_context().add_text(L"\n");
+}
+void line_break::pptx_convert(oox::pptx_conversion_context & Context)
 {
     Context.get_text_context().add_text(L"\n");
 }
@@ -358,7 +377,15 @@ void span::xlsx_convert(oox::xlsx_conversion_context & Context)
     }
     Context.end_span();
 }
-
+void span::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    Context.get_text_context().start_span(text_style_name_.style_name());
+    BOOST_FOREACH(const office_element_ptr & elm, paragraph_content_)
+    {
+        elm->pptx_convert(Context);
+    }
+    Context.get_text_context().end_span();
+}
 // text:a
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * a::ns = L"text";
@@ -470,7 +497,15 @@ void a::xlsx_convert(oox::xlsx_conversion_context & Context)
     }
     Context.end_hyperlink(xlink_href_);
 }
-
+void a::pptx_convert(oox::pptx_conversion_context & Context)
+{
+   // Context.start_hyperlink(text_style_name_.style_name());
+    BOOST_FOREACH(const office_element_ptr & elm, paragraph_content_)
+    {
+        elm->pptx_convert(Context);
+    }
+ //   Context.end_hyperlink(xlink_href_);
+}
 // text:note
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * note::ns = L"text";

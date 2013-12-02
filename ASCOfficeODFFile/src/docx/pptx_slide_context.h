@@ -15,7 +15,7 @@ class pptx_drawings;
 class pptx_slide_context
 {
 public:
-    pptx_slide_context(pptx_conversion_context & Context/*, xlsx_text_context & textCotnext*/);
+    pptx_slide_context(pptx_conversion_context & Context/*, pptx_text_context & textCotnext*/);
 	
     void start_slide();
 	void end_slide(){}

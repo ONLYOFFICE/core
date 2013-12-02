@@ -32,7 +32,8 @@ namespace package
 pptx_conversion_context::
 pptx_conversion_context(::cpdoccore::oox::package::pptx_document * outputDocument,
                         ::cpdoccore::odf::odf_document * odfDocument): output_document_(outputDocument),
-	odf_document_(odfDocument)
+	odf_document_(odfDocument),
+	pptx_text_context_(odf_document_->odf_context().styleContainer())
 	,pptx_slide_context_(*this/*, pptx_text_context_*/)
 {
 }

@@ -27,7 +27,7 @@ void pptx_serialize_text(std::wostream & strm, const std::vector<odf::_property>
     {
 		_CP_OPT(std::wstring) strTextContent;
 		odf::GetProperty(properties,L"text-content",strTextContent);
-		if (strTextContent)//???
+		//if (strTextContent)//???
 		{
 			CP_XML_NODE(L"p:txBody")
 			{  
@@ -47,8 +47,11 @@ void pptx_serialize_text(std::wostream & strm, const std::vector<odf::_property>
 					{
 						CP_XML_ATTR(L"algn",L"ctr");
 					}
-					CP_XML_NODE(L"a:endParaRPr");					
-					if (strTextContent){CP_XML_STREAM() << strTextContent.get();}
+					if (strTextContent)
+					{
+						std::wstring strTest = strTextContent.get();
+						CP_XML_STREAM() << strTextContent.get();
+					}
 				}
 			}
 		}
@@ -129,6 +132,10 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing const & val)
 	if (shapeType.length()<1)
 		shapeType =L"rect";//подмена неизвестного на прямоугольник (сделать невидимым ???)
 	
+///временно ... непонятно как разделять шаблон и собственно текст
+
+	_CP_OPT(std::wstring) strTextContent;
+	odf::GetProperty(val.additional,L"text-content",strTextContent);
 	CP_XML_WRITER(strm)    
     {
         CP_XML_NODE(L"p:sp")
@@ -155,12 +162,12 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing const & val)
             {
 				oox_serialize_xfrm(CP_XML_STREAM(),val);
 
-				if (val.sub_type>0)//если в презенташке тока текст то нефиг ее зарамливать
+				if (!strTextContent)//если в презенташке тока текст то нефиг ее зарамливать
 				{
 					oox_serialize_shape(CP_XML_STREAM(),val);
+					oox_serialize_ln(CP_XML_STREAM(),val.additional);
 				}
 
-				oox_serialize_ln(CP_XML_STREAM(),val.additional);
             } // p:spPr
 			
 			pptx_serialize_text(CP_XML_STREAM(),val.additional);

@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="AVSOfficeFile"
+	Name="ASCOfficeFile"
 	ProjectGUID="{CF852DB8-5A50-4C30-B683-5503D8DAF7B3}"
-	RootNamespace="AVSOfficeFile"
+	RootNamespace="ASCOfficeFile"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -43,17 +43,17 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeFile.tlb"
-				HeaderFileName="AVSOfficeFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeFile.tlb"
+				HeaderFileName="ASCOfficeFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeFile_i.c"
-				ProxyFileName="AVSOfficeFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeFile_i.c"
+				ProxyFileName="ASCOfficeFile_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\Common;..\..\Common;..\..\AVSImageStudio3\Common"
+				AdditionalIncludeDirectories="..\..\..\..\Common;..\..\Common;..\..\ASCImageStudio3\Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -80,7 +80,7 @@
 				RegisterOutput="true"
 				IgnoreImportLibrary="true"
 				LinkIncremental="2"
-				MergedIDLBaseFileName="_AVSOfficeFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -139,17 +139,17 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeFile.tlb"
-				HeaderFileName="AVSOfficeFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeFile.tlb"
+				HeaderFileName="ASCOfficeFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeFile_i.c"
-				ProxyFileName="AVSOfficeFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeFile_i.c"
+				ProxyFileName="ASCOfficeFile_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\..\..\..\Common;..\..\Common;..\..\AVSImageStudio3\Common"
+				AdditionalIncludeDirectories="..\..\..\..\Common;..\..\Common;..\..\ASCImageStudio3\Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -174,7 +174,7 @@
 				RegisterOutput="true"
 				IgnoreImportLibrary="true"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSOfficeFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -205,7 +205,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy to redist"
-				CommandLine="copy $(TargetPath) ..\..\..\..\AVS\Redist\AVSOfficeStudio\AVSOfficeFile.dll"
+				CommandLine="copy $(TargetPath) ..\Redist\ASCOfficeFile.dll"
 			/>
 		</Configuration>
 		<Configuration
@@ -219,8 +219,6 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\..\AVS\Redist\VersionControl.exe &quot;$(SolutionDir)\version.h&quot;"
-				ExcludedFromBuild="true"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -237,17 +235,17 @@
 				MkTypLibCompatible="false"
 				TargetEnvironment="1"
 				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/AVSOfficeFile.tlb"
-				HeaderFileName="AVSOfficeFile.h"
+				TypeLibraryName="$(IntDir)/ASCOfficeFile.tlb"
+				HeaderFileName="ASCOfficeFile.h"
 				DLLDataFileName=""
-				InterfaceIdentifierFileName="AVSOfficeFile_i.c"
-				ProxyFileName="AVSOfficeFile_p.c"
+				InterfaceIdentifierFileName="ASCOfficeFile_i.c"
+				ProxyFileName="ASCOfficeFile_p.c"
 				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\..\..\..\Common;..\..\Common;..\..\AVSImageStudio3\Common"
+				AdditionalIncludeDirectories="..\..\..\..\Common;..\..\Common;..\..\ASCImageStudio3\Common"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;AVS_REMOVE_REG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -273,7 +271,7 @@
 				IgnoreImportLibrary="true"
 				OutputFile="$(OutDir)\ASCOfficeFile.dll"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_AVSOfficeFile.idl"
+				MergedIDLBaseFileName="_ASCOfficeFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -317,7 +315,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AVSOfficeFile.cpp"
+				RelativePath=".\ASCOfficeFile.cpp"
 				>
 			</File>
 			<File
@@ -355,7 +353,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\AVSOfficeFormatChecker.h"
+				RelativePath=".\ASCOfficeFormatChecker.h"
 				>
 			</File>
 			<File
@@ -391,7 +389,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\AVSOfficeUniversalConverter\Utils.h"
+				RelativePath="..\ASCOfficeUniversalConverter\Utils.h"
 				>
 			</File>
 			<File
@@ -405,11 +403,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\AVSOfficeFile.rc"
+				RelativePath=".\ASCOfficeFile.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\AVSOfficeFile.rgs"
+				RelativePath=".\ASCOfficeFile.rgs"
 				>
 			</File>
 		</Filter>

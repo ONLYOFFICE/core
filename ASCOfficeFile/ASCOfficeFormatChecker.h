@@ -1,7 +1,7 @@
 #pragma once
 #include "resource.h" 
 #include "..\Common\OfficeFileFormats.h"
-#include "TemporaryCS.h"
+#include "..\Common\TemporaryCS.h"
 
 [
 	object,

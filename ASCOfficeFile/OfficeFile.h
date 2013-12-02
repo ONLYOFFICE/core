@@ -8,7 +8,7 @@
 #include "XmlUtils.h"
 #include "FormatChecker.h"
 #include "OfficeFileEvents.h"
-#include "TemporaryCS.h"
+#include "..\Common\TemporaryCS.h"
 #include "OfficeFileConverter.h"
 // шифрование XML
 #include "../Common/RSA/XMLDecoder.h"

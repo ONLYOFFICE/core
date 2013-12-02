@@ -90,7 +90,7 @@ BEGIN
 	IDS_PROJNAME					"AVSOfficeFile"
 END
 
-IDR_AVSOFFICEFILE REGISTRY "AVSOfficeFile.rgs"
+IDR_AVSOFFICEFILE REGISTRY "ASCOfficeFile.rgs"
 ////////////////////////////////////////////////////////////////////////////
 
 

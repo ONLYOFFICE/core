@@ -1,8 +1,4 @@
-#ifndef _CPDOCCORE_XLSX_OUTPUT_XML_fe64931a
-#define _CPDOCCORE_XLSX_OUTPUT_XML_fe64931a
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <cpdoccore/CPSharedPtr.h>
@@ -52,29 +48,26 @@ private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;
 };
-
-class xlsx_xml_workbook;
-typedef _CP_PTR(xlsx_xml_workbook) xlsx_xml_workbook_ptr;
-
-/// \class  xlsx_xml_workbook
-class xlsx_xml_workbook : noncopyable
-{
-public:
-    xlsx_xml_workbook();
-    ~xlsx_xml_workbook();
-public:
-    std::wostream & sheets();
-
-public:
-    void write_to(std::wostream & strm);
-
-private:
-    class Impl;
-    _CP_SCOPED_PTR(Impl) impl_;
-};
+//
+//class xlsx_xml_workbook;
+//typedef _CP_PTR(xlsx_xml_workbook) xlsx_xml_workbook_ptr;
+//
+///// \class  xlsx_xml_workbook
+//class xlsx_xml_workbook : noncopyable
+//{
+//public:
+//    xlsx_xml_workbook();
+//    ~xlsx_xml_workbook();
+//public:
+//    std::wostream & sheets();
+//
+//public:
+//    void write_to(std::wostream & strm);
+//
+//private:
+//    class Impl;
+//    _CP_SCOPED_PTR(Impl) impl_;
+//};
 
 }
 }
-
-#endif
-

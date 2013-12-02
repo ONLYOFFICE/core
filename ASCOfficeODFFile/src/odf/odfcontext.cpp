@@ -180,6 +180,77 @@ void styles_container::add_master_page_name(const std::wstring & StyleName, cons
     master_page_name_[StyleName] = MasterPageName;
 }
 
+std::pair<int,std::wstring> presentation_layouts_instance::add_or_find(const std::wstring & layout_name,const std::wstring & master_name)
+{
+	bool find = false;
+	int index =0;
+	for (index=0;index<content.size();index++)
+	{
+		if (content[index].layout_name == layout_name && content[index].master_name == master_name)
+		{
+			find = true;
+			break;
+		}
+	}
+	if (!find)
+	{
+		presentation_layouts_instance::_layout item;
+		item.layout_name = layout_name;
+		item.master_name = master_name;
+		item.Id = content.size() +1;
+		item.rId = std::wstring(L"lrId") + boost::lexical_cast<std::wstring>(item.Id);
+	
+		content.push_back(item);
+		index = content.size()-1;
+
+	}
+	return std::pair<int,std::wstring>(content[index].Id,content[index].rId);
+}
+
+std::pair<int,std::wstring> presentation_masters_instance::add_or_find(const std::wstring & master_name)
+{
+	bool find = false;
+	int index =0;
+	for (index=0;index<content.size();index++)
+	{
+		if (content[index].master_name == master_name)
+		{
+			find = true;
+			break;
+		}
+	}
+	if (!find)
+	{
+		presentation_masters_instance::_master item;
+		item.master_name = master_name;
+		item.Id = content.size() +1;
+		item.rId = std::wstring(L"smId") + boost::lexical_cast<std::wstring>(item.Id);
+	
+		content.push_back(item);
+		index = content.size()-1;
+
+	}
+	return std::pair<int,std::wstring>(content[index].Id,content[index].rId);
+}
+
+void presentation_masters_instance::add_layout_to(const std::wstring & master_name, presentation_layouts_instance::_layout & layout)
+{
+	bool find = false;
+	int index =0;
+	for (index=0;index<content.size();index++)
+	{
+		if (content[index].master_name == master_name)
+		{
+			find = true;
+			break;
+		}
+	}
+	if (find)
+	{
+		content[index].layouts.push_back(layout);
+	}
+}
+
 const std::wstring styles_container::master_page_name_by_name(const std::wstring & StyleName) const
 {
     map_wstring_wstring::const_iterator res = master_page_name_.find(StyleName);
@@ -248,7 +319,7 @@ void page_layout_container::add_page_layout(const style_page_layout * StylePageL
 
 }
 
-void page_layout_container::add_master_page(const std::wstring & StyleName, const std::wstring & PageLayoutName, const style_master_page * MasterPage)
+void page_layout_container::add_master_page(const std::wstring & StyleName, const std::wstring & PageLayoutName, style_master_page* MasterPage)
 {
     master_page_names_array_.push_back(StyleName);
     master_page_names_[StyleName] = PageLayoutName;
@@ -257,6 +328,16 @@ void page_layout_container::add_master_page(const std::wstring & StyleName, cons
     const int pos = static_cast<int>(master_pages_.size() - 1);
     master_page_names_2_[StyleName] = pos;
 }
+
+void page_layout_container::add_presentation_page_layout(const std::wstring & StyleName, style_presentation_page_layout* StylePageLayout)
+{
+	presentation_page_layouts_.push_back(StylePageLayout);
+	
+    const int pos = static_cast<int>(presentation_page_layouts_.size() - 1);
+	presentation_page_layout_names_[ StyleName ] = pos;
+
+}
+
 
 const std::wstring page_layout_container::page_layout_name_by_style(const std::wstring & StyleName) const
 {
@@ -286,6 +367,28 @@ const page_layout_instance * page_layout_container::page_layout_first() const
         return NULL;
 
     return page_layout_by_style(master_page_names_array_[0]);
+}
+
+style_presentation_page_layout * page_layout_container::presentation_page_layout_by_name(const std::wstring & Name)
+{
+	style_presentation_page_layout * res = NULL;
+
+    if (presentation_page_layout_names_.count(Name))
+	{
+		int ind = presentation_page_layout_names_.at( Name ) ;
+        res = presentation_page_layouts_[ind];
+	}
+    
+	return res;
+}
+style_master_page * page_layout_container::master_page_by_name(const std::wstring & Name)
+{
+	style_master_page * res = NULL;
+   
+	if (master_page_names_2_.count(Name))
+        res = master_pages_[ master_page_names_2_.at( Name ) ];
+
+	return res;
 }
 
 font_instance::font_instance( const std::wstring & StyleName,

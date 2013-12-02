@@ -142,6 +142,15 @@ void chart_build::docx_convert(oox::docx_conversion_context & Context)
 
 	Context.end_chart();
 }
+void chart_build::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	Context.start_chart(L"");
+	oox::oox_chart_context & chart = Context.current_chart();
+	
+	oox_convert(chart);
+
+	Context.end_chart();
+}
 void chart_build::calc_cash_series(std::wstring adress, std::vector<std::wstring> & cash)
 {
     formulasconvert::odf2oox_converter converter;

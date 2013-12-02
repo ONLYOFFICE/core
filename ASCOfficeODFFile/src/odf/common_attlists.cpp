@@ -426,5 +426,15 @@ void common_data_style_attlist::add_attributes( const xml::attributes_wc_ptr & A
     
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void common_presentation_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"presentation:class", presentation_class_);
+    CP_APPLY_ATTR(L"presentation:style-name", style_name_);
+	CP_APPLY_ATTR(L"presentation:placeholder", presentation_placeholder_);
+}
+
+
 }
 }

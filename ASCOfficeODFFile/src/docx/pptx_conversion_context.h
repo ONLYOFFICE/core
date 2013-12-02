@@ -5,17 +5,17 @@
 #include "ooxconversioncontext.h"
 
 //#include "xlsx_textcontext.h"
-//#include "xlsx_tablecontext.h"
+#include "pptx_slide_context.h"
 
 //#include "xlsx_sharedstrings.h"
 //#include "xlsx_styles.h"
-//#include "xlsx_output_xml.h"
+#include "pptx_output_xml.h"
 //#include "xlsx_num_format_context.h"
 //#include "xlsx_drawing_context.h"
 //#include "xlsx_comments_context.h"
 //#include "xlsx_defined_names.h"
 //#include "xlsx_table_metrics.h"
-//#include "oox_chart_context.h"
+#include "oox_chart_context.h"
 
 #include "mediaitems.h"
 
@@ -44,16 +44,14 @@ public:
     void start_document();
     void end_document();
 
-    //void start_chart(std::wstring const & name);
-    //void end_chart();
+    void start_chart(std::wstring const & name);
+    void end_chart();
 	
 	void start_body();
     void end_body();
 
-    void start_slide(const odf::office_element * elm);
-    void end_slide();
-
-    const odf::office_element * get_slide();
+    void start_office_presentation();
+    void end_office_presentation();
 
     //void start_paragraph(const std::wstring & styleName);
     //void end_paragraph();
@@ -61,56 +59,38 @@ public:
     //void start_span(const std::wstring & styleName);
     //void end_span();
 
-    //bool start_table(const std::wstring & tableName, const std::wstring & tableStyleName);
-    //void end_table();
+    bool start_page(const std::wstring & pageName, 
+							const std::wstring & pageStyleName,
+							const std::wstring & pageLayoutName,
+							const std::wstring & pageMasterName);
+	void end_page();
+	
+	bool start_layout(	int layout_index);
+	void end_layout();
 
+	bool start_master(int master_index);
+ 	void end_master();
+   
+	void start_theme(std::wstring & name);
+	void end_theme();
 
-    //void start_table_column(unsigned int repeated, const std::wstring & defaultCellStyleName, int & cMin, int & cMax);
-    //void table_column_last_width(double w);
-    //double table_column_last_width() const;
-    //void end_table_column();
-
-    //void start_table_row(const std::wstring & styleName, const std::wstring & defaultCellStyleName);
-    //void non_empty_row();
-    //void end_table_row();
-    //bool is_empty_row() const;
-    //void set_current_row_height(size_t height_pt);    
-
-    //void start_table_cell(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned);
-    //void end_table_cell();
-    //
-    //void set_current_cell_style_id(unsigned int xfId);
-    //int get_current_cell_style_id();
-
-    //void start_table_covered_cell();
-    //void end_table_covered_cell();
-
-    //xlsx_text_context & get_text_context() { return xlsx_text_context_; }
-    //xlsx_table_context & get_table_context() { return xlsx_table_context_; }
-    //const xlsx_table_context & get_table_context() const { return xlsx_table_context_; }
-    //
-    //int current_table_column() const;
-    //int current_table_row() const;
-
-    //std::wstring current_cell_address() const;
+	pptx_slide_context & get_slide_context() { return pptx_slide_context_; }
 
     odf::odf_document * root()
     {
         return odf_document_;
     }
 
- //   std::pair<float,float> getMaxDigitSize();
 
- //   void process_styles();
-
- //   xlsx_style_manager & get_style_manager() { return xlsx_style_; }
- //   xlsx_xml_worksheet & current_sheet();
- //  
-	//oox_chart_context & current_chart();
+    pptx_xml_slide & current_slide();
+	pptx_xml_slideLayout & current_layout();
+	pptx_xml_slideMaster & current_master();
+    pptx_xml_theme & current_theme();
+  
+	oox_chart_context & current_chart();
+	//xlsx_text_context & get_text_context() { return xlsx_text_context_; }
 
  //   num_format_context & get_num_format_context() { return num_format_context_; }
-
- //   size_t get_default_cell_style() const { return default_style_; };
 
  //   xlsx_defined_names & get_xlsx_defined_names() { return xlsx_defined_names_; }
 
@@ -122,43 +102,38 @@ public:
 	//xlsx_comments_context_handle & get_comments_context_handle();
 
 
- //   mediaitems & get_mediaitems() { return mediaitems_; }
+    mediaitems & get_mediaitems() { return pptx_slide_context_.get_mediaitems(); }
 
  //   void start_hyperlink(const std::wstring & styleName);
  //   void end_hyperlink(std::wstring const & href);
+	void process_master_pages();
+	void process_layouts();
+	void process_styles();
+	void process_theme();
 
 private:
-    //void create_new_sheet(std::wstring const & name);
-    //void dump_sheet();   
 
-private:
+    void create_new_slide(std::wstring const & name);
+	void create_new_slideLayout(int id);
+	void create_new_slideMaster(int id);
 
 	package::pptx_document * output_document_;
   
-	//const odf::office_element * spreadsheet_;
     odf::odf_document * odf_document_;    
     
- //   xlsx_table_context xlsx_table_context_;
-	//xlsx_text_context xlsx_text_context_;
- //  
-	//std::wstringstream defaultOutput_;
- //   std::vector<xlsx_xml_worksheet_ptr> sheets_;
+    pptx_slide_context pptx_slide_context_;//сюда перманентно будем закидывать элементы и сериалайзить их - для слайдов, шаблонов, тем
+ 
+	std::vector<pptx_xml_slide_ptr> slides_;
+	std::vector<pptx_xml_slideMaster_ptr> slideMasters_;
+	std::vector<pptx_xml_slideLayout_ptr> slideLayouts_;
 
-	//std::vector<oox_chart_context_ptr> charts_;
- // 
-	//xlsx_xml_workbook_ptr workbook_;
+	std::vector<oox_chart_context_ptr> charts_;
+	
+	pptx_xml_theme_ptr theme_;
+	pptx_xml_presentation presentation_;
 
-	//std::pair<float,float> maxDigitSize_;
- //   
-	//xlsx_style_manager xlsx_style_;
- //   num_format_context num_format_context_;
- //   size_t default_style_;
- //   xlsx_defined_names xlsx_defined_names_;    
- // 
-	//xlsx_drawing_context_handle xlsx_drawing_context_handle_;
- //   xlsx_comments_context_handle xlsx_comments_context_handle_;
- //  
-	mediaitems mediaitems_;
+	std::wstring current_master_page_name_;
+	std::wstring current_layout_page_name_;
     
 };
 

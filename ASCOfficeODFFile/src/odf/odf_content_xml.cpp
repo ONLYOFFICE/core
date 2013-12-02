@@ -17,6 +17,13 @@ void content_xml_t::xlsx_convert(oox::xlsx_conversion_context & Context)
 	  return xml_content_->xlsx_convert(Context);
 	}
 }
+void content_xml_t::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	if (xml_content_)
+	{
+	  return xml_content_->pptx_convert(Context);
+	}
+}
 
 void content_xml_t::add_attributes( const xml::attributes_wc_ptr & Attributes ) 
 {}

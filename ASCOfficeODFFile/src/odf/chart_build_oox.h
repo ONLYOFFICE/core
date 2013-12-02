@@ -110,6 +110,7 @@ public:
 	void xlsx_convert(oox::xlsx_conversion_context & Context);
 	void docx_convert(oox::docx_conversion_context & Context);
 	void oox_convert(oox::oox_chart_context & chart);
+	void pptx_convert(oox::pptx_conversion_context & Context);
 
     double width_pt_;
     double height_pt_;

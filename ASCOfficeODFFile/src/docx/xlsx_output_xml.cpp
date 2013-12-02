@@ -166,42 +166,42 @@ std::pair<std::wstring, std::wstring> xlsx_xml_worksheet::get_vml_drawing_link()
     return std::pair<std::wstring, std::wstring>(impl_->vml_drawingName_, impl_->vml_drawingId_);
 }
 
-class xlsx_xml_workbook::Impl: noncopyable
-{
-public:
-    std::wstringstream sheets_;
-};
-
-xlsx_xml_workbook::xlsx_xml_workbook() : impl_(new xlsx_xml_workbook::Impl)
-{
-}
-
-xlsx_xml_workbook::~xlsx_xml_workbook()
-{
-}
-
-std::wostream & xlsx_xml_workbook::sheets()
-{
-    return impl_->sheets_;
-}
-
-void xlsx_xml_workbook::write_to(std::wostream & strm)
-{
-    CP_XML_WRITER(strm)
-    {
-        CP_XML_NODE(L"workbook")
-        {
-            CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
-            CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-
-            CP_XML_NODE(L"sheets")
-            {
-                CP_XML_STREAM() << impl_->sheets_.str();            
-            }
-        }    
-    }
-}
-
+//class xlsx_xml_workbook::Impl: noncopyable
+//{
+//public:
+//    std::wstringstream sheets_;
+//};
+//
+//xlsx_xml_workbook::xlsx_xml_workbook() : impl_(new xlsx_xml_workbook::Impl)
+//{
+//}
+//
+//xlsx_xml_workbook::~xlsx_xml_workbook()
+//{
+//}
+//
+//std::wostream & xlsx_xml_workbook::sheets()
+//{
+//    return impl_->sheets_;
+//}
+//
+//void xlsx_xml_workbook::write_to(std::wostream & strm)
+//{
+//    CP_XML_WRITER(strm)
+//    {
+//        CP_XML_NODE(L"workbook")
+//        {
+//            CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+//            CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+//
+//            CP_XML_NODE(L"sheets")
+//            {
+//                CP_XML_STREAM() << impl_->sheets_.str();            
+//            }
+//        }    
+//    }
+//}
+//
 
 
 }

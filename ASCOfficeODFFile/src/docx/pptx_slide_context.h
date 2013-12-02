@@ -1,0 +1,83 @@
+#pragma once
+
+#include "pptx_drawings.h"
+#include <string>
+
+namespace cpdoccore {
+namespace oox {
+
+class pptx_conversion_context;
+struct simple_drawing_desc;
+class mediaitems;
+class pptx_drawings;
+
+
+class pptx_slide_context
+{
+public:
+    pptx_slide_context(pptx_conversion_context & Context/*, xlsx_text_context & textCotnext*/);
+	
+    void start_slide();
+	void end_slide(){}
+
+	void set_rect(double width_pt, double height_pt, double x_pt, double y_pt);
+
+	void set_translate(double x_pt, double y_pt);
+	void set_scale(double cx_pt, double cy_pt);
+	void set_name(std::wstring const & name);
+	void set_anchor(std::wstring anchor, double x_pt, double y_pt);
+	void set_property(odf::_property p);
+	std::vector<odf::_property> & get_properties();
+	void set_clipping(std::wstring & str );
+
+	void set_placeHolder_type(std::wstring typeHolder);
+
+	std::wstring add_hyperlink(std::wstring const & ref, bool object);
+
+	//...   
+    void start_image(std::wstring const & path);
+    void end_image();
+   
+	void start_chart(std::wstring const & path);
+    void end_chart();
+
+    void start_shape(int type);
+    void end_shape();
+	
+	bool empty() const;
+
+	//std::wstring dump_path(std::vector<svg_path::_polyline> & path, double w,double h);
+	void serialize(std::wostream & strm);
+	void dump_rels(rels & Rels);
+
+	void process_drawings();
+
+	mediaitems & get_mediaitems();
+
+private:
+	void process_common_properties(simple_drawing_desc& pic,_pptx_drawing & drawing);
+	void default_set();
+    void process_shapes();
+    void process_images();
+	void process_charts();
+
+	int hlinks_size_;
+	
+    class Impl;
+    _CP_PTR(Impl) impl_;
+
+
+//contentPart (Content Part) §19.3.1.14
+//cxnSp (Connection Shape) §19.3.1.19
+//extLst (Extension List with Modification Flag) §19.3.1.20
+//graphicFrame (Graphic Frame) §19.3.1.2
+//grpSp (Group Shape) §19.3.1.22
+//grpSpPr (Group Shape Properties) §19.3.1.23
+//nvGrpSpPr (Non-Visual Properties for a Group Shape) §19.3.1.31
+//pic (Picture) §19.3.1.37
+//sp (Shape) §19.3.1.43
+};
+
+
+}
+}

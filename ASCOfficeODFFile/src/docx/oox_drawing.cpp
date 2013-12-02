@@ -89,7 +89,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf::_property> & 
 			{ 			
 				if (fill != L"a:noFill")
 				{
-					if (color.length()<1)color = L"99ccff";
+					if (color.length()<1)color = L"ffffff";
 					CP_XML_NODE(L"a:srgbClr")
 					{
 						CP_XML_ATTR(L"val",color);
@@ -251,7 +251,7 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val)
 		//}
 		//else
 		{
-			std::wstring fillType = L"a:solidFill";
+			std::wstring fillType;
 
 			if (odf::GetProperty(val.additional,L"fill",strVal))
 			{
@@ -263,6 +263,8 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val)
 			if (val.sub_type ==6)fillType = L"a:noFill";//в ods заливки нет ...а задать ее можно там !!
 
 			odf::GetProperty(val.additional,L"fill-color",strVal);
+
+			if (strVal.length()>0 && fillType.length()<1)fillType = L"a:solidFill";
 			CP_XML_NODE(fillType)
 			{ 
 				if (strVal && fillType != L"a:noFill")
@@ -279,7 +281,6 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val)
 						}
 					}
 				}
-				else if (fillType == L"a:solidFill") {CP_XML_NODE(L"a:srgbClr"){CP_XML_ATTR(L"val",L"99ccff");}}//хоть какой то 
 			}
 		}
 	}

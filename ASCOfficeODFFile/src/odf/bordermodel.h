@@ -1,9 +1,4 @@
-#ifndef _CPDOCCORE_ODF_BORDERMODEL_H_
-#define _CPDOCCORE_ODF_BORDERMODEL_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <string>
@@ -45,5 +40,3 @@ std::wostream & operator << (std::wostream & _Wostream, const border_model & _Va
 APPLY_PARSE_XML_ATTRIBUTES(odf::border_model);
 
 }
-
-#endif

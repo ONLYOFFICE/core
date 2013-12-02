@@ -941,6 +941,7 @@ void style_page_layout_properties::docx_convert(oox::docx_conversion_context & C
 
 }
 
+
 // style-page-layout-properties-elements
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1014,13 +1015,20 @@ void style_master_page::add_child_element( xml::sax * Reader, const ::std::wstri
         CP_CREATE_ELEMENT(presentation_notes_); 
     else
     {
-        CP_NOT_APPLICABLE_ELM();    
+        CP_CREATE_ELEMENT(content_);   
     }
 }
 
 void style_master_page::add_text(const std::wstring & Text)
 {}
 
+void style_master_page::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    BOOST_FOREACH(office_element_ptr elm, content_)
+    {
+		elm->pptx_convert(Context);
+	}
+}
 ////////////////
 
 const wchar_t * hdrHeader = L"<w:hdr \
@@ -1153,6 +1161,41 @@ void text_notes_configuration::add_child_element( xml::sax * Reader, const ::std
 
 void text_notes_configuration::add_text(const std::wstring & Text)
 {
+}
+
+/// style:presentation-page-layout
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * style_presentation_page_layout::ns = L"style";
+const wchar_t * style_presentation_page_layout::name = L"presentation-page-layout";
+
+::std::wostream & style_presentation_page_layout::text_to_stream(::std::wostream & _Wostream) const
+{
+    return _Wostream;    
+} 
+
+void style_presentation_page_layout::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"style:name", style_name_);
+	//style:display-name
+}
+
+void style_presentation_page_layout::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+{
+    if (L"presentation" == Ns && L"placeholder" == Name)
+    {
+        CP_CREATE_ELEMENT(content_);        
+    } 
+    else
+    {
+        CP_NOT_APPLICABLE_ELM();
+    }
+}
+void style_presentation_page_layout::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    BOOST_FOREACH(office_element_ptr elm, content_)
+    {
+		elm->pptx_convert(Context);
+	}
 }
 
 }

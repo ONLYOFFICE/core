@@ -87,7 +87,8 @@ public:
     void end_table_covered_cell();
 
     xlsx_text_context & get_text_context() { return xlsx_text_context_; }
-    xlsx_table_context & get_table_context() { return xlsx_table_context_; }
+    
+	xlsx_table_context & get_table_context() { return xlsx_table_context_; }
     const xlsx_table_context & get_table_context() const { return xlsx_table_context_; }
     
     int current_table_column() const;
@@ -146,7 +147,7 @@ private:
 
 	std::vector<oox_chart_context_ptr> charts_;
   
-	xlsx_xml_workbook_ptr workbook_;
+	//xlsx_xml_workbook_ptr workbook_;
 
 	std::pair<float,float> maxDigitSize_;
     

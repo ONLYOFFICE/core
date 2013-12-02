@@ -80,7 +80,7 @@ void xlsx_conversion_context::start_document()
 
 void xlsx_conversion_context::end_document()
 {
-    std::wstringstream workbook_content;
+	std::wstringstream workbook_content;
 
     unsigned int count = 0;
     // добавляем таблицы
@@ -124,7 +124,7 @@ void xlsx_conversion_context::end_document()
 		sheet->write_to(content->content());
         output_document_->get_xl_files().add_sheet(content);
 
-
+	/////////////////////////////////////////////
         CP_XML_WRITER(workbook_content)
         {
             CP_XML_NODE(L"sheet")
@@ -165,9 +165,9 @@ void xlsx_conversion_context::end_document()
     }
 
     {
-        std::wstringstream strm;
+        std::wstringstream strm_workbook;
 
-        CP_XML_WRITER(strm)
+        CP_XML_WRITER(strm_workbook)
         {
             CP_XML_NODE(L"workbook")
             {
@@ -183,7 +183,7 @@ void xlsx_conversion_context::end_document()
             }
         }
 
-        output_document_->get_xl_files().set_workbook( package::simple_element::create(L"workbook.xml", strm.str()) );
+        output_document_->get_xl_files().set_workbook( package::simple_element::create(L"workbook.xml", strm_workbook.str()) );
         output_document_->get_xl_files().set_media(get_mediaitems());
 
         package::xl_drawings_ptr drawings = package::xl_drawings::create(xlsx_drawing_context_handle_.content());

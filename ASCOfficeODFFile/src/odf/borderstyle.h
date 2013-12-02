@@ -1,9 +1,4 @@
-#ifndef _CPDOCCORE_ODF_BORDERSTYLE_H_
-#define _CPDOCCORE_ODF_BORDERSTYLE_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <string>
 #include "length.h"
@@ -32,5 +27,3 @@ private:
 };
 
 } }
-
-#endif

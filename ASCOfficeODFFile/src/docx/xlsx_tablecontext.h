@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_XLSX_TABLE_CONTEXT_
-#define _CPDOCCORE_XLSX_TABLE_CONTEXT_
+#pragma once
 
 #include <string>
 #include "ooxtablerowspanned.h"
@@ -86,5 +85,3 @@ private:
 
 }
 }
-
-#endif

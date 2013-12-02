@@ -1,5 +1,5 @@
-#ifndef _CPDOCCORE_PARAGRAPH_PROP_H_
-#define _CPDOCCORE_PARAGRAPH_PROP_H_
+#pragma once
+
 #include <iosfwd>
 #include <cpdoccore/xml/attributes.h>
 
@@ -384,5 +384,3 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(style_paragraph_properties);
 
 } }
-
-#endif

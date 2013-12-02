@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_OFFICE_ANNOTATION_H_
-#define _CPDOCCORE_ODF_OFFICE_ANNOTATION_H_
+#pragma once
 
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/xml/xmlelement.h>
@@ -109,5 +108,3 @@ CP_REGISTER_OFFICE_ELEMENT2(office_annotation);
 
 }
 }
-
-#endif

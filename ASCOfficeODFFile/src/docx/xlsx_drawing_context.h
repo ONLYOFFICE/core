@@ -1,5 +1,4 @@
-#ifndef CPDOCCORE_XLSX_DRAWING_CONTEXT_H_
-#define CPDOCCORE_XLSX_DRAWING_CONTEXT_H_
+#pragma once
 
 #include <string>
 #include <boost/noncopyable.hpp>
@@ -49,7 +48,7 @@ public:
     xlsx_drawing_context(xlsx_drawing_context_handle & h);
     ~xlsx_drawing_context();
 
-	void set_odf_packet_path(std::wstring path){odf_packet_path_ = path;}
+	void set_odf_packet_path(std::wstring path){odf_packet_path_ = path;}//для анализа картинок
 
     void start_shapes();
     void end_shapes();
@@ -106,5 +105,3 @@ private:
 
 }
 }
-
-#endif

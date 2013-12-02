@@ -33,6 +33,7 @@ public:
    
 	void docx_convert(oox::docx_conversion_context & Context);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context);
 
     const std::wstring & get_folder() const { return base_folder_; }
     const office_element * get_content() const;

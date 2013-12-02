@@ -38,11 +38,17 @@ public:
 	virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 	virtual void docx_convert(oox::docx_conversion_context & Context) ;
-	virtual void xlsx_convert(oox::xlsx_conversion_context & Context)  {}
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context) {}
+	virtual void pptx_convert(oox::pptx_conversion_context & Context) {}
+	
+	
 	void common_xlsx_convert(oox::xlsx_conversion_context & Context); 
 	void common_docx_convert(oox::docx_conversion_context & Context) ;
+	void common_pptx_convert(oox::pptx_conversion_context & Context) ;
 
-	common_draw_data_attlist common_draw_data_attlist_;
+	common_draw_data_attlist	common_draw_data_attlist_;
+	common_presentation_attlist common_presentation_attlist_;
+	union_common_draw_attlists  common_draw_attlists_;
 	
 	draw_shape_attlist draw_shape_attlist_;
   
@@ -54,7 +60,6 @@ public:
 	int sub_type_;
 	std::vector<odf::_property> additional_;
 
-	union_common_draw_attlists  common_draw_attlists_;
 
 };
 
@@ -79,8 +84,10 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	virtual void docx_convert(oox::docx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
 private:
     draw_rect_attlist draw_rect_attlist_;    
@@ -110,8 +117,10 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	virtual void docx_convert(oox::docx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
     draw_ellipse_attlist draw_ellipse_attlist_;
 };
@@ -135,8 +144,10 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
 
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
     draw_circle_attlist draw_circle_attlist_;
 };
@@ -166,8 +177,10 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
 
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
     draw_line_attlist draw_line_attlist_;
 private:
@@ -195,8 +208,10 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
 
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	virtual void docx_convert(oox::docx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
     draw_path_attlist draw_path_attlist_;
 
@@ -224,8 +239,10 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
 
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	virtual void docx_convert(oox::docx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
     draw_polygon_attlist draw_polygon_attlist_;
 
@@ -251,8 +268,10 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
 
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	virtual void docx_convert(oox::docx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
     draw_custom_shape_attlist draw_custom_shape_attlist_;
 };
@@ -352,8 +371,10 @@ public:
 	
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+	
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	virtual void docx_convert(oox::docx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
 	void find_draw_type_oox();
 
@@ -399,8 +420,10 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
 
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	virtual void docx_convert(oox::docx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
 	draw_caption_attlist draw_caption_attlist_;
 

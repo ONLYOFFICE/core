@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_STYLE_REF_H_
-#define _CPDOCCORE_ODF_STYLE_REF_H_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -55,6 +54,3 @@ inline std::wistream & operator >> (std::wistream & _Istream, style_ref & _style
 
 }
 }
-
-
-#endif

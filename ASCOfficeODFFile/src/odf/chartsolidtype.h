@@ -1,9 +1,4 @@
-#ifndef _CPDOCCORE_ODF_CHARTSOLIDTYPE_H_
-#define _CPDOCCORE_ODF_CHARTSOLIDTYPE_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <string>
@@ -45,5 +40,3 @@ private:
 APPLY_PARSE_XML_ATTRIBUTES(odf::chart_solid_type);
 
 }
-
-#endif

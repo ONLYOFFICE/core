@@ -67,6 +67,11 @@ void office_document_base::xlsx_convert(oox::xlsx_conversion_context & Context)
     if (office_body_)
         office_body_->xlsx_convert(Context);
 }
+void office_document_base::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    if (office_body_)
+        office_body_->pptx_convert(Context);
+}
 
 // office:document
 //////////////////////////////////////////////////////////////////////////////////////////////////

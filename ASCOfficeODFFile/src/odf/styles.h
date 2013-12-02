@@ -32,6 +32,7 @@
 #include "common_attlists.h"
 #include "noteclass.h"
 
+
 #include "styles_list.h"
 #include "style_map.h"
 
@@ -260,7 +261,7 @@ private:
 
 private:
     styles styles_; ///< styles
-    office_element_ptr_array style_page_layout_; //< TODO
+    office_element_ptr_array style_page_layout_; 
     friend class odf_document;
 };
 
@@ -312,6 +313,9 @@ public:
 
 /// \class  style_master_page
 /// \brief  style:master-page
+class style_master_page;
+typedef boost::shared_ptr<style_master_page> style_master_page_ptr;
+
 class style_master_page: public office_element_impl<style_master_page>
 {
 public:
@@ -322,6 +326,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 public:
+	virtual void pptx_convert(oox::pptx_conversion_context & Context);
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 
 private:
@@ -342,8 +347,9 @@ public:
 
 	office_element_ptr office_forms_;       // TODO
     office_element_ptr_array style_style_;
-    office_element_ptr_array shape_;        // TODO
     office_element_ptr presentation_notes_; // TODO           
+    
+	office_element_ptr_array content_;        // shapes, frames, text ...
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_master_page);
@@ -385,7 +391,7 @@ private:
     office_element_ptr_array draw_stroke_dash_; // < TODO
     office_element_ptr_array draw_opacity_; // < TODO
     
-	office_element_ptr_array style_presentation_page_layout_; // TODO
+	office_element_ptr_array style_presentation_page_layout_;
 
     friend class odf_document;
     
@@ -985,6 +991,36 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(text_notes_configuration);
 
+/// \class style_page_layout
+/// style:presentation-page-layout
+
+class style_presentation_page_layout;
+typedef boost::shared_ptr<style_presentation_page_layout> style_presentation_page_layout_ptr;
+
+class style_presentation_page_layout : public office_element_impl<style_presentation_page_layout>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStylePresentationPageLayout;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
+
+    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+   
+    _CP_OPT(std::wstring) style_name_;
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+
+	office_element_ptr_array content_;
+    
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(style_presentation_page_layout);
 } // namespace odf
 } // namespace cpdoccore
 

@@ -1,4 +1,4 @@
-// AVSOfficeFile.cpp : Implementation of DLL Exports.
+// ASCOfficeFile.cpp : Implementation of DLL Exports.
 
 
 #include "stdafx.h"
@@ -9,10 +9,10 @@
 
 // The module attribute causes DllMain, DllRegisterServer and DllUnregisterServer to be automatically implemented for you
 [ module(dll, uuid = "{74cbf220-bf08-11de-8a39-0800200c9a66}", 
-		 name = "AVSOfficeFile", 
-		 helpstring = "AVSOfficeFile 1.0 Type Library",
-		 resource_name = "IDR_AVSOFFICEFILE") ]
-class CAVSOfficeFileModule
+		 name = "ASCOfficeFile", 
+		 helpstring = "ASCOfficeFile 1.0 Type Library",
+		 resource_name = "IDR_ASCOFFICEFILE") ]
+class CASCOfficeFileModule
 {
 public:
 // Override CAtlDllModuleT members

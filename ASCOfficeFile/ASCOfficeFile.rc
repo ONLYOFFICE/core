@@ -87,10 +87,10 @@ END
 
 STRINGTABLE  
 BEGIN
-	IDS_PROJNAME					"AVSOfficeFile"
+	IDS_PROJNAME					"ASCOfficeFile"
 END
 
-IDR_AVSOFFICEFILE REGISTRY "ASCOfficeFile.rgs"
+IDR_ASCOFFICEFILE REGISTRY "ASCOfficeFile.rgs"
 ////////////////////////////////////////////////////////////////////////////
 
 

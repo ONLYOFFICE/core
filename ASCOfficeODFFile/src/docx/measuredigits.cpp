@@ -6,7 +6,7 @@
 #include <atlbase.h>
 #include <boost/lexical_cast.hpp>
 #include <logging.h>
-#import "libid:AB5F2678-2773-44c4-A637-33DFBC51233B" rename_namespace("AVSGraphics")
+#import "../../../Redist/ASCGraphics.dll" rename_namespace("ASCGraphics")
 
 namespace cpdoccore {
 namespace utils {
@@ -20,12 +20,12 @@ namespace
 
 std::pair<float,float> GetMaxDigitSizePixelsImpl(const wchar_t * fontName, float fontSize, float dpi, long fontStyle)
 {
-    ATL::CComPtr<AVSGraphics::IAVSFontManager> fontMan;
+    ATL::CComPtr<ASCGraphics::IASCFontManager> fontMan;
     HRESULT hr;
 	
 	try
 	{
-		if (FAILED(hr = fontMan.CoCreateInstance(__uuidof(AVSGraphics::CAVSFontManager))))
+		if (FAILED(hr = fontMan.CoCreateInstance(__uuidof(ASCGraphics::CASCFontManager))))
 			throw;
 
 		if (S_OK != (hr = fontMan->Initialize(L"")))

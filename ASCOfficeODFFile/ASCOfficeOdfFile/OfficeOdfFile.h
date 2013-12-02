@@ -4,18 +4,17 @@
 #include "resource.h"       // main symbols
 #include <string>
 
-//#import "libid:92F87FA9-D3C2-4820-82F6-DEAEC0A3539D" rename_namespace("AVSOfficeUtils"), raw_interfaces_only
-#import "../../Redist/ASCOfficeUtils.dll" rename_namespace("AVSOfficeUtils"), raw_interfaces_only
+#import "../../Redist/ASCOfficeUtils.dll" rename_namespace("ASCOfficeUtils"), raw_interfaces_only
 
 ////////////////////////////////////////////////////////////////
-// IAVSOfficeFileTemplate
+// IASCOfficeFileTemplate
 [
 	object,
 	uuid("3FC4EC15-9467-4D66-AD6A-A0C0BAEDD3CD"),
-	dual,	helpstring("IAVSOfficeFileTemplate Interface"),
+	dual,	helpstring("IASCOfficeFileTemplate Interface"),
 	pointer_default(unique)
 ]
-__interface IAVSOfficeFileTemplate : IDispatch
+__interface IASCOfficeFileTemplate : IDispatch
 {
 	[id(1), helpstring("method LoadFromFile")] HRESULT LoadFromFile([in] BSTR sSrcFileName, [in] BSTR sDstPath, [in] BSTR sXMLOptions);
 	[id(2), helpstring("method SaveToFile")] HRESULT SaveToFile([in] BSTR sDstFileName, [in] BSTR sSrcPath, [in] BSTR sXMLOptions);
@@ -35,7 +34,7 @@ __interface IAVSOfficeFileTemplate : IDispatch
 	dual,	helpstring("IOfficeOdfFile Interface"),
 	pointer_default(unique)
 ]
-__interface IOfficeOdfFile : IAVSOfficeFileTemplate
+__interface IOfficeOdfFile : IASCOfficeFileTemplate
 {
 };
 
@@ -59,8 +58,8 @@ __interface _IOfficeOdfFileEvents
 	threading(apartment),
 	support_error_info("IOfficeOdfFile"),
 	event_source(com),
-	vi_progid("AVSOfficeOdfFile.OfficeOdfFile"),
-	progid("AVSOfficeOdfFile.OfficeOdfFile.1"),
+	vi_progid("ASCOfficeOdfFile.OfficeOdfFile"),
+	progid("ASCOfficeOdfFile.OfficeOdfFile.1"),
 	version(1.0),
 	uuid("99901ECB-3527-494D-A9EC-5A7CA98AD18B"),
 	helpstring("OfficeOdfFile Class")
@@ -90,7 +89,7 @@ public:
 	STDMETHOD(SaveToFile)(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions);
 
 private:
-    ATL::CComPtr< AVSOfficeUtils::IOfficeUtils > office_utils_;
+    ATL::CComPtr< ASCOfficeUtils::IOfficeUtils > office_utils_;
     
 private:
     bool initialized();

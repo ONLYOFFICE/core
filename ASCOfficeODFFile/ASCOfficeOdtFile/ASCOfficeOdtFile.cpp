@@ -10,7 +10,7 @@
 		 name = "ASCOfficeOdtFile", 
 		 helpstring = "ASCOfficeOdtFile 1.0 Type Library",
 		 resource_name = "IDR_ASCOFFICEODTFILE") ]
-class CAVSOfficeOdtFileModule
+class CASCOfficeOdtFileModule
 {
 public:
 // Override CAtlDllModuleT members

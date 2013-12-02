@@ -1,6 +1,5 @@
 /// \file   sax_win32_xmllite.h
 /// \brief  Реализация интерфейса SAX через библиотеку XmlLite
-/// \author pogorskiy@gmail.com (@avsmedia.net)
 
 #ifndef _CPDOCCORE_XML_SAX_WIN32_XMLLITE_H_
 #define _CPDOCCORE_XML_SAX_WIN32_XMLLITE_H_

@@ -1,5 +1,4 @@
 /// \brief  Абстрактный интерфейс Simple API XML
-/// \author pogorskiy@gmail.com (@avsmedia.net)
 
 #ifndef _CPDOCCORE_XML_SAX_H_
 #define _CPDOCCORE_XML_SAX_H_

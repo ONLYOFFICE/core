@@ -8,8 +8,8 @@
     <ProjectGuid>{D4C6EAD0-5A97-439C-AC74-E1B89E07CCBE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AVSOfficeEWSEditor</RootNamespace>
-    <AssemblyName>AVSOfficeEWSEditor</AssemblyName>
+    <RootNamespace>ASCOfficeEWSEditor</RootNamespace>
+    <AssemblyName>ASCOfficeEWSEditor</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkSubset>
@@ -26,7 +26,7 @@
     <WarningLevel>4</WarningLevel>
     <RegisterForComInterop>false</RegisterForComInterop>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\AVSOfficeEWSEditor.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\ASCOfficeEWSEditor.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,7 +35,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\AVSOfficeEWSEditor.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\ASCOfficeEWSEditor.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FileConverterUtils2, Version=1.0.0.39, Culture=neutral, processorArchitecture=MSIL">

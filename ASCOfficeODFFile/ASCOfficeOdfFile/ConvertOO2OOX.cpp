@@ -34,7 +34,7 @@ HRESULT ConvertOdp2Pptx(cpdoccore::odf::odf_document & inputDoc, const std::wstr
 {
     cpdoccore::oox::package::pptx_document pptx;
     cpdoccore::oox::pptx_conversion_context conversionContext(&pptx, &inputDoc);
-    //inputDoc.pptx_convert(conversionContext);
+    inputDoc.pptx_convert(conversionContext);
     pptx.write(dstPath);
 
     return S_OK;

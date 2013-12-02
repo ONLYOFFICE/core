@@ -16,15 +16,14 @@ namespace odf
 };
 namespace oox {
 	
-class xlsx_conversion_context;
+class pptx_conversion_context;
 
-class xlsx_text_context: boost::noncopyable
+class pptx_text_context: boost::noncopyable
 {
 public:
-    //xlsx_text_context();
-	xlsx_text_context(odf::styles_container & styles_);
-    ~xlsx_text_context();
-public:
+	pptx_text_context(odf::styles_container & styles_);
+    ~pptx_text_context();
+
 	void set_local_styles_container(odf::styles_container*  local_styles_);
     
 	void add_text(const std::wstring & text);
@@ -36,9 +35,6 @@ public:
     void end_span();
     std::wstring end_span2();
 
-    void start_cell_content();
-    int end_cell_content();
-
 	void start_comment_content();
 	std::wstring end_comment_content();
 	
@@ -47,8 +43,6 @@ public:
 
 	void start_hyperlink();
 	void end_hyperlink(std::wstring hId);
-
-    void write_shared_strings(std::wostream & strm);
 
 	bool is_drawing_context();
 

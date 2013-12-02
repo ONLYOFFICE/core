@@ -106,5 +106,12 @@ void office_text::xlsx_convert(oox::xlsx_conversion_context & Context)
     }
     //Context.end_office_text();
 }
+void office_text::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    BOOST_FOREACH(const office_element_ptr & elm, text_content_)
+    {
+        elm->pptx_convert(Context);
+    }
+}
 }
 }

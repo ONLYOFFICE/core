@@ -6,7 +6,7 @@ using System.IO;
 
 namespace AVSOfficeEWSEditor.Editor.FileFormats
 {
-    internal class XlsxLoader : AVSOfficeUtils.IExtractedFileEvent
+    internal class XlsxLoader : ASCOfficeUtils.IExtractedFileEvent
     {
         internal XlsxLoader(XmlDocument xml_recv_document, List<byte[]> binary_data_storage)
         {

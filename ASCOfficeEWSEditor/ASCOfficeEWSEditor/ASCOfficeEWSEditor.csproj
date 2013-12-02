@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D4C6EAD0-5A97-439C-AC74-E1B89E07CCBE}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -38,9 +38,9 @@
     <DocumentationFile>bin\Release\AVSOfficeEWSEditor.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FileConverterUtils2, Version=1.0.0.29, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="FileConverterUtils2, Version=1.0.0.39, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\TeamlabOffice\trunk\wwwroot\Bin\FileConverterUtils2.dll</HintPath>
+      <HintPath>..\..\..\wwwroot\Bin\FileConverterUtils2.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
@@ -628,7 +628,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="AVSImageFile3">
+    <COMReference Include="ASCImageFile3">
       <Guid>{E3305D24-A207-4431-BC43-2C09A53CB9B6}</Guid>
       <VersionMajor>1</VersionMajor>
       <VersionMinor>0</VersionMinor>
@@ -636,7 +636,7 @@
       <WrapperTool>tlbimp</WrapperTool>
       <Isolated>False</Isolated>
     </COMReference>
-    <COMReference Include="AVSImageStudio3">
+    <COMReference Include="ASCImageStudio3">
       <Guid>{69DBBABC-8D59-40B8-9906-DAFD4F3EC346}</Guid>
       <VersionMajor>1</VersionMajor>
       <VersionMinor>0</VersionMinor>
@@ -644,7 +644,7 @@
       <WrapperTool>tlbimp</WrapperTool>
       <Isolated>False</Isolated>
     </COMReference>
-    <COMReference Include="AVSMediaCore3">
+    <COMReference Include="ASCMediaCore3">
       <Guid>{F0A0AAE5-06FE-4ABC-A9F1-26BFFEE2A11F}</Guid>
       <VersionMajor>1</VersionMajor>
       <VersionMinor>0</VersionMinor>
@@ -652,7 +652,7 @@
       <WrapperTool>tlbimp</WrapperTool>
       <Isolated>False</Isolated>
     </COMReference>
-    <COMReference Include="AVSOfficeFile">
+    <COMReference Include="ASCOfficeFile">
       <Guid>{74CBF220-BF08-11DE-8A39-0800200C9A66}</Guid>
       <VersionMajor>1</VersionMajor>
       <VersionMinor>0</VersionMinor>
@@ -660,7 +660,7 @@
       <WrapperTool>tlbimp</WrapperTool>
       <Isolated>False</Isolated>
     </COMReference>
-    <COMReference Include="AVSOfficeUtils">
+    <COMReference Include="ASCOfficeUtils">
       <Guid>{92F87FA9-D3C2-4820-82F6-DEAEC0A3539D}</Guid>
       <VersionMajor>1</VersionMajor>
       <VersionMinor>0</VersionMinor>
@@ -668,7 +668,7 @@
       <WrapperTool>tlbimp</WrapperTool>
       <Isolated>False</Isolated>
     </COMReference>
-    <COMReference Include="AVSOfficeWSHtmlFile">
+    <COMReference Include="ASCOfficeWSHtmlFile">
       <Guid>{25B7D44B-94A1-4C94-9718-102CFA8F00D5}</Guid>
       <VersionMajor>1</VersionMajor>
       <VersionMinor>0</VersionMinor>
@@ -676,7 +676,7 @@
       <WrapperTool>tlbimp</WrapperTool>
       <Isolated>False</Isolated>
     </COMReference>
-    <COMReference Include="AVSOfficeXlsFile">
+    <COMReference Include="ASCOfficeXlsFile">
       <Guid>{D9F21C35-D46C-42F3-996D-D4912435F7E7}</Guid>
       <VersionMajor>1</VersionMajor>
       <VersionMinor>0</VersionMinor>
@@ -694,9 +694,8 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>copy $(ProjectDir)bin\$(ConfigurationName)\$(TargetFileName) $(ProjectDir)..\..\..\..\Redist\AVSOfficeStudio\
-copy $(ProjectDir)bin\$(ConfigurationName)\$(TargetName).xml $(ProjectDir)..\..\..\..\Redist\AVSOfficeStudio\
-copy $(ProjectDir)bin\$(ConfigurationName)\$(TargetFileName) $(ProjectDir)..\..\..\TeamlabOffice\trunk\wwwroot\Bin\</PostBuildEvent>
+    <PostBuildEvent>copy $(ProjectDir)bin\$(ConfigurationName)\$(TargetFileName) $(ProjectDir)..\..\Redist\
+copy $(ProjectDir)bin\$(ConfigurationName)\$(TargetName).xml $(ProjectDir)..\..\Redist\</PostBuildEvent>
     <PreBuildEvent>
     </PreBuildEvent>
   </PropertyGroup>

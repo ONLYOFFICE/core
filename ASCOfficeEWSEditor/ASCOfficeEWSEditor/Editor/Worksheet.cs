@@ -7,14 +7,14 @@ using System.IO;
 using AVSOfficeEWSEditor.Editor.Charts;
 using AVSOfficeEWSEditor.Editor.Images;
 using FileConverterUtils2;
-using AVSOfficeFile;
-using AVSImageFile3;
-using AVSMediaCore3;
+using ASCOfficeFile;
+using ASCImageFile3;
+using ASCMediaCore3;
 using System.Net;
 using System.Text.RegularExpressions;
 using AVSOfficeEWSEditor.Editor.Cells;
 using AVSOfficeEWSEditor.Editor.Walkers;
-using AVSImageStudio3;
+using ASCImageStudio3;
 
 namespace AVSOfficeEWSEditor.Editor
 {
@@ -614,8 +614,8 @@ namespace AVSOfficeEWSEditor.Editor
                         {
                             string toFile = imageUrl.Replace(imageExt, ".jpg");
 
-                            AVSOfficeFile.CAVSOfficeFileConverterClass converter = new AVSOfficeFile.CAVSOfficeFileConverterClass();
-                            AVSImageStudio3.ImageTransformsClass imageConverter = new AVSImageStudio3.ImageTransformsClass();
+                            ASCOfficeFile.CAVSOfficeFileConverterClass converter = new ASCOfficeFile.CAVSOfficeFileConverterClass();
+                            ASCImageStudio3.ImageTransformsClass imageConverter = new ASCImageStudio3.ImageTransformsClass();
 
                             string strLoadXml = "<transforms>" +
                                                     "<ImageFile-LoadImage sourcepath=\"" + imageUrl + "\"/>" +
@@ -655,7 +655,7 @@ namespace AVSOfficeEWSEditor.Editor
         {
             if (!string.IsNullOrEmpty(what))
             {
-                FileStream log = new FileStream(@"d:\Work\AVSDocuments\AVSOfficeWeb\wwwroot\process\log.txt", newFile ? FileMode.Create : FileMode.Open);
+                FileStream log = new FileStream(@"d:\Work\AVSDocuments\ASCOfficeWeb\wwwroot\process\log.txt", newFile ? FileMode.Create : FileMode.Open);
                 log.Seek(log.Length, SeekOrigin.Begin);
                 System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
                 string str = what + "\n";
@@ -1182,7 +1182,7 @@ namespace AVSOfficeEWSEditor.Editor
             }
 
             // init registration
-            AVSOfficeFile.CAVSOfficeFormatChecker imageChecker = new CAVSOfficeFormatChecker();
+            ASCOfficeFile.CAVSOfficeFormatChecker imageChecker = new CAVSOfficeFormatChecker();
             AVSOfficeEWSEditor.Editor.OOX.ContentTypes.FileType contentType;
             int type = imageChecker.GetFileFormat(fileName);
             int reff = System.Runtime.InteropServices.Marshal.ReleaseComObject(imageChecker);
@@ -1216,8 +1216,8 @@ namespace AVSOfficeEWSEditor.Editor
                             ext = ".jpeg";
                             string toFile = fileName + "_jpeg";
 
-                            AVSOfficeFile.CAVSOfficeFileConverterClass converter = new AVSOfficeFile.CAVSOfficeFileConverterClass();
-                            AVSImageStudio3.ImageTransformsClass imageConverter = new AVSImageStudio3.ImageTransformsClass();
+                            ASCOfficeFile.CAVSOfficeFileConverterClass converter = new ASCOfficeFile.CAVSOfficeFileConverterClass();
+                            ASCImageStudio3.ImageTransformsClass imageConverter = new ASCImageStudio3.ImageTransformsClass();
 
                             string strLoadXml = "<transforms>" +
                                                     "<ImageFile-LoadImage sourcepath=\"" + fileName + "\"/>" +
@@ -1246,15 +1246,15 @@ namespace AVSOfficeEWSEditor.Editor
 
             try
             {
-                AVSOfficeFile.CAVSOfficeFileConverterClass converter = new AVSOfficeFile.CAVSOfficeFileConverterClass();
-                AVSImageFile3.ImageFile3Class imageFileObj = new AVSImageFile3.ImageFile3Class();
+                ASCOfficeFile.CAVSOfficeFileConverterClass converter = new ASCOfficeFile.CAVSOfficeFileConverterClass();
+                ASCImageFile3.ImageFile3Class imageFileObj = new ASCImageFile3.ImageFile3Class();
 
                 Object itf = new Object();
                 bool bRes = imageFileObj.LoadImage2(fileName, out itf);
 
                 if (itf != null)
                 {
-                    AVSMediaCore3.IAVSUncompressedVideoFrame metrics = (AVSMediaCore3.IAVSUncompressedVideoFrame)itf;
+                    ASCMediaCore3.IAVSUncompressedVideoFrame metrics = (ASCMediaCore3.IAVSUncompressedVideoFrame)itf;
                     newObject.object_width = metrics.Width;
                     newObject.object_height = metrics.Height;
 

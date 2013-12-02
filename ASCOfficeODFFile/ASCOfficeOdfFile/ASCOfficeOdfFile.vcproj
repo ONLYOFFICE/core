@@ -173,7 +173,7 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-				CommandLine="../../Redist/VersionControl.exe $(ProjectDir)\version.h"
+				CommandLine=""
 			/>
 			<Tool
 				Name="VCLinkerTool"

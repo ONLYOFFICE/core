@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_OFFICE_SPREADSHEET_H_
-#define _CPDOCCORE_ODF_OFFICE_SPREADSHEET_H_
+#pragma once
 
 #include <iosfwd>
 #include <cpdoccore/CPOptional.h>
@@ -48,5 +47,3 @@ CP_REGISTER_OFFICE_ELEMENT2(office_spreadsheet);
 
 }
 }
-
-#endif

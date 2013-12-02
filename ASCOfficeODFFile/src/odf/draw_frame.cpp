@@ -140,6 +140,7 @@ const wchar_t * draw_frame::name = L"frame";
 
 void draw_frame::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	common_presentation_attlist_.add_attributes(Attributes);
     common_draw_attlists_.shape_with_text_and_styles_.add_attributes(Attributes);
     common_draw_attlists_.position_.add_attributes(Attributes);
     common_draw_attlists_.rel_size_.add_attributes(Attributes);

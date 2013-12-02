@@ -64,6 +64,37 @@ private:
     std::wstring data_style_name_;
 };
 
+class presentation_layouts_instance
+{
+public:
+	struct _layout
+	{
+		int Id;
+		std::wstring rId;
+		std::wstring layout_name;
+		std::wstring master_name;
+	};
+	std::vector<_layout> content;
+
+	std::pair<int,std::wstring> add_or_find(const std::wstring & layout_name,const std::wstring & master_name);
+};
+class presentation_masters_instance
+{
+public:
+	struct _master
+	{
+		int Id;
+		std::wstring rId;
+		std::wstring master_name;
+		
+		std::vector<presentation_layouts_instance::_layout> layouts;
+	};
+	std::vector<_master> content;
+
+	void add_layout_to(const std::wstring & master_name,presentation_layouts_instance::_layout & layout);
+	
+	std::pair<int,std::wstring> add_or_find(const std::wstring & master_name);
+};
 class styles_container
 {
 public:
@@ -85,7 +116,8 @@ public:
     style_instance * hyperlink_style();
     style_instance * style_by_name(const std::wstring & Name, style_family::type Type,bool object_in_styles) const;
     style_instance * style_default_by_type(style_family::type Type) const;
-    const std::wstring master_page_name_by_name(const std::wstring & StyleName) const;
+    
+	const std::wstring master_page_name_by_name(const std::wstring & StyleName) const;
 
     void add_number_style(const std::wstring & Name, office_element_ptr style_content);
 
@@ -93,8 +125,14 @@ public:
 
     std::wostream & dbg_dump(std::wostream & _Wostream);
 
+   presentation_layouts_instance & presentation_layouts() { return presentation_layouts_; } 
+   presentation_masters_instance & presentation_masters() { return presentation_masters_; } 
+
 private:
-    instances_array instances_;
+	presentation_layouts_instance presentation_layouts_;
+	presentation_masters_instance presentation_masters_;
+   
+	instances_array instances_;
     
     typedef boost::unordered_map<std::wstring, int> map_wstring_int_t;
     map_wstring_int_t map_;
@@ -131,28 +169,40 @@ public:
 class page_layout_container
 {
 public:
-    typedef std::vector<page_layout_instance_ptr> instances_array;
-    typedef std::vector<const style_master_page *> master_pages_array;
+    typedef std::vector<page_layout_instance_ptr>	instances_array;
 
     void add_page_layout(const style_page_layout * StylePageLayout);
-    void add_master_page(const std::wstring & StyleName, const std::wstring & PageLayoutName, const style_master_page * MasterPage);
-    const std::wstring page_layout_name_by_style(const std::wstring & StyleName) const;
-    instances_array & instances() { return instances_; };
-    master_pages_array & master_pages() { return master_pages_; }
+    void add_master_page(const std::wstring & StyleName, const std::wstring & PageLayoutName,style_master_page* MasterPage);
+	void add_presentation_page_layout(const std::wstring & StyleName, style_presentation_page_layout* StylePageLayout);
+	
+	const std::wstring page_layout_name_by_style(const std::wstring & StyleName) const;
+  
+	instances_array & instances() { return instances_; };
+   
+	std::vector<style_master_page*> & master_pages() { return master_pages_; }
 
     const page_layout_instance * page_layout_by_style(const std::wstring & StyleName) const; 
     page_layout_instance * page_layout_by_name(const std::wstring & Name) const; 
-    const page_layout_instance * page_layout_first() const;
-    const style_master_page * master_page_by_name(const std::wstring & Name) const;
+  
+	const page_layout_instance * page_layout_first() const;
+
+    style_master_page * master_page_by_name(const std::wstring & Name);
+	style_presentation_page_layout * presentation_page_layout_by_name(const std::wstring & Name); 
+   
 
 private:
+	std::vector<style_presentation_page_layout*> presentation_page_layouts_;
     instances_array instances_;
-    boost::unordered_map<std::wstring, int> page_layout_names_;
+    std::vector<style_master_page*> master_pages_;
+   
+	boost::unordered_map<std::wstring, int> page_layout_names_;
     std::vector<std::wstring> master_page_names_array_;
     boost::unordered_map<std::wstring, std::wstring> master_page_names_;
     
-    master_pages_array master_pages_;
     boost::unordered_map<std::wstring, int> master_page_names_2_;    
+
+	boost::unordered_map<std::wstring, int> presentation_page_layout_names_;
+
 };
 
 

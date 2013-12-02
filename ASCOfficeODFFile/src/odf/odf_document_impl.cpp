@@ -12,29 +12,38 @@
 
 #include "abstract_xml.h"
 #include "odfcontext.h"
+
 #include "office_body.h"
 #include "office_document.h"
 #include "office_elements.h"
 #include "office_text.h"
 #include "office_spreadsheet.h"
+#include "office_presentation.h"
 #include "office_chart.h"
 #include "office_annotation.h"
+#include "office_settings.h"
+#include "office_scripts.h"
+
+#include "styles.h"
 #include "style_regions.h"
+#include "style_presentation.h"
+
 #include "paragraph_elements.h"
 #include "text_elements.h"
-#include "office_scripts.h"
+
 #include "table_calculation_settings.h"
 #include "number_style.h"
 #include "list.h"
 #include "font_face.h"
 #include "table.h"
-#include "styles.h"
 #include "draw_common.h"
+
+#include "draw_page.h"
 
 #include <cpdoccore/common/readdocelement.h>
 #include <iostream>
-#include "documentcontext.h"
 
+#include "documentcontext.h"
 
 namespace cpdoccore { 
 namespace odf {
@@ -67,14 +76,17 @@ odf_document::Impl::Impl(const std::wstring & Folder) : context_(new odf_read_co
 
     fs::wpath folderPath(Folder);
 
-    fs::wpath content_xml = folderPath / L"content.xml";
-    fs::wpath styles_xml = folderPath / L"styles.xml";
-    fs::wpath meta_xml = folderPath / L"meta.xml";
-    fs::wpath settings_xml = folderPath / L"settings.xml";
-	fs::wpath manifest_xml = folderPath / L"META-INF" / L"manifest.xml";
+    fs::wpath content_xml	= folderPath / L"content.xml";
+    fs::wpath styles_xml	= folderPath / L"styles.xml";
+    fs::wpath meta_xml		= folderPath / L"meta.xml";
+    fs::wpath settings_xml	= folderPath / L"settings.xml";
+	fs::wpath manifest_xml	= folderPath / L"META-INF" / L"manifest.xml";
 
-    _CP_LOG(info) << L"[info] read content.xml" << std::endl;
+    _CP_LOG(info) << L"[info] read manifest.xml" << std::endl;
     manifest_xml_ = read_file_content(manifest_xml);
+
+	  _CP_LOG(info) << L"[info] read settings.xml" << std::endl;
+    settings_xml_ = read_file_content(settings_xml);
 
 	_CP_LOG(info) << L"[info] read content.xml" << std::endl;
     content_xml_ = read_file_content(content_xml);
@@ -330,7 +342,16 @@ void odf_document::Impl::parse_styles()
                     L"",
                     L"");                                            
             }
+            BOOST_FOREACH(office_element_ptr & elm, docStyles->style_presentation_page_layout_)
+            {
+                style_presentation_page_layout * pageLayout = dynamic_cast<style_presentation_page_layout *>(elm.get());
 
+                if (!pageLayout)
+                    continue;
+
+				context_->pageLayoutContainer().add_presentation_page_layout(pageLayout->style_name_.get_value_or(L""),pageLayout);
+            }
+        
             // common styles
             BOOST_FOREACH(office_element_ptr & elm, docStyles->styles_.style_style_)
             {
@@ -388,7 +409,7 @@ void odf_document::Impl::parse_styles()
 
                 context_->numberStyles().add(style->get_style_name(), elm);
             }
-        }
+		}
         while(0); // end parse styles
     }
     while (0);
@@ -487,7 +508,6 @@ void odf_document::Impl::docx_convert(oox::docx_conversion_context & Context)
     // в случае если используется text:start-value (начинаем нумерацию заново)
     Context.process_list_styles();
 }
-
 void odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context) 
 {
     try
@@ -502,6 +522,41 @@ void odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context)
         Context.process_styles();
        
     }
+    catch(boost::exception & ex)
+    {
+        _CP_LOG(info) << L"\n[error]:\n";
+        _CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(boost::diagnostic_information(ex))) << std::endl;
+        throw;
+    }
+    catch(std::exception & ex)
+    {
+        _CP_LOG(info) << L"\n[error]:\n";
+        _CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(ex.what())) << std::endl;
+        throw;
+    }
+    catch(...)
+    {
+        _CP_LOG(info) << L"\n[error]: undefined\n";
+        throw;
+    }
+}
+
+void odf_document::Impl::pptx_convert(oox::pptx_conversion_context & Context) 
+{
+    try
+    {
+        _CP_LOG(info) << L"[info] convert content" << std::endl;
+	
+		Context.start_document();
+        if (content_xml_)
+            content_xml_->pptx_convert(Context);
+		
+		Context.process_layouts();
+		Context.process_master_pages();
+		Context.process_theme();
+
+        Context.end_document();
+	}
     catch(boost::exception & ex)
     {
         _CP_LOG(info) << L"\n[error]:\n";

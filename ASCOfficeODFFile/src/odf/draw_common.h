@@ -51,6 +51,7 @@ public:
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
 	//common_draw_data_attlist common_draw_data_attlist_;
   
@@ -73,6 +74,7 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(draw_a);
 
 void xlsx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_context & Context);
+void pptx_convert_transforms(std::wstring transformStr, oox::pptx_conversion_context & Context);
 void oox_convert_transforms(std::wstring transformStr,std::vector<odf::_property> & additional);
 //void docx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_context & Context);
 

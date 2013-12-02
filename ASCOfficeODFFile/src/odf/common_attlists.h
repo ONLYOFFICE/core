@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_COMMON_ATTLIST_H_
-#define _CPDOCCORE_ODF_COMMON_ATTLIST_H_
+#pragma once
 
 #include <iosfwd>
 #include <cpdoccore/xml/attributes.h>
@@ -21,6 +20,7 @@
 #include "anchortype.h"
 #include "style_ref.h"
 #include "linewidth.h"
+#include "presentationclass.h"
 
 #define _CP_APPLY_PROP(A, B) \
     if (B) \
@@ -723,7 +723,25 @@ struct union_common_draw_attlists
     common_draw_position_attlist					position_;
     common_draw_rel_size_attlist					rel_size_;
 };
-}
-}
 
-#endif
+
+// common-presentation-attlist
+class common_presentation_attlist
+{
+public:
+    void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    void apply_from(const common_presentation_attlist & Other)
+    {
+        _CP_APPLY_PROP(presentation_class_, Other.presentation_class_);
+        _CP_APPLY_PROP(style_name_, Other.style_name_);
+        _CP_APPLY_PROP(presentation_placeholder_, Other.presentation_placeholder_);
+    }
+
+public:
+    _CP_OPT(presentation_class) presentation_class_;
+	_CP_OPT(std::wstring) style_name_;
+	_CP_OPT(bool) presentation_placeholder_;
+
+};
+}
+}

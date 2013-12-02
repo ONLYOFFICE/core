@@ -61,7 +61,7 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 {
     Context.start_body();
 
-    page_layout_container::master_pages_array & masterPages = Context.root()->odf_context().pageLayoutContainer().master_pages();
+    std::vector<style_master_page*> & masterPages = Context.root()->odf_context().pageLayoutContainer().master_pages();
     if (!masterPages.empty())
     {
         Context.set_master_page_name(masterPages[0]->style_master_page_attlist_.style_name_.get_value_or(style_ref(L"Standard")).style_name() );
@@ -78,6 +78,14 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 
     Context.end_body();    
 }
+void office_body::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    Context.start_body();
 
+    if (content_)
+        content_->pptx_convert(Context);
+
+    Context.end_body();
+}
 }
 }

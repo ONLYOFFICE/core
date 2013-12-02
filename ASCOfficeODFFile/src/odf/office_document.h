@@ -22,6 +22,7 @@ public:
 public:
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
     office_document_base();

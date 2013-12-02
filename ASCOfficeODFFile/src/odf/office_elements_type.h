@@ -105,6 +105,9 @@ enum ElementType
     typeStyleFooterStyle,
 	typeStyleHeaderFooterProperties,
 
+	typeStylePresentationPageLayout,
+	typeStylePresentationPlaceholder,
+
     typeStyleColumns,
     typeStyleColumn,
     typeStyleColumnSep,
@@ -150,7 +153,14 @@ enum ElementType
 
 	typeManifest,
 	typeManifestEntry,
-  
+
+	typeOfficeSettings,
+	typeOfficeSettingsConfigItemSet,
+	typeOfficeSettingsConfigItem,
+	typeOfficeSettingsConfigItemMapIndexed,
+	typeOfficeSettingsConfigItemMapNamed,
+  	typeOfficeSettingsConfigItemMapEntry,
+
  	typeDrawG,
 	typeDrawFrame,
     typeDrawImage,
@@ -191,6 +201,9 @@ enum ElementType
     typeOfficeScript,
     typeTableCalculationSettings,
     typeTableNullDate,
+
+	typeOfficePresentation,
+	typeDrawPage,
 
     typeNumberNumberStyle,
     typeNumberDataStyle,

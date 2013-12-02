@@ -31,6 +31,10 @@ void odf_document::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     return impl_->xlsx_convert(Context);
 }
+void odf_document::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    return impl_->pptx_convert(Context);
+}
 
 const std::wstring & odf_document::get_folder() const
 {

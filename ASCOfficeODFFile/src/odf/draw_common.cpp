@@ -34,7 +34,7 @@ namespace _image_file_
 		Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
 		Gdiplus::Bitmap *file = new Gdiplus::Bitmap(fileName,false);
-		if (file)
+		if ((file) && (file->GetLastStatus()==Gdiplus::Status::Ok))
 		{
 			Height = file->GetHeight();
 			Width  = file->GetWidth();
@@ -217,7 +217,15 @@ void draw_a::xlsx_convert(oox::xlsx_conversion_context & Context)
         elm->xlsx_convert(Context);
     }
 }
-
+void draw_a::pptx_convert(oox::pptx_conversion_context & Context)
+{
+   ////// Context.get_slide_context().add_hyperlink(xlink_href_,true);//стиль на текст не нужен ..текста то нет - ссылка с объекта
+   
+	BOOST_FOREACH(const office_element_ptr & elm, content_)
+    {
+        elm->pptx_convert(Context);
+    }
+}
 void draw_a::docx_convert(oox::docx_conversion_context & Context) 
 {
 	std::wstring rId = Context.add_hyperlink(xlink_href_, true);
@@ -355,6 +363,67 @@ void xlsx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_con
 			{
 				double angle =  boost::lexical_cast<double>(transform[1]);
 				Context.get_drawing_context().set_property(_property(L"svg:skewY",angle));
+			}
+		}
+	}
+}
+
+void pptx_convert_transforms(std::wstring transformStr, oox::pptx_conversion_context & Context)
+{
+	std::vector<std::wstring> transforms;
+	
+	boost::algorithm::split(transforms,transformStr, boost::algorithm::is_any_of(L")"), boost::algorithm::token_compress_on);
+	
+	BOOST_FOREACH(std::wstring const & t, transforms)
+	{			
+		//_CP_LOG(info) << "[info] : transform = " << t << L"\n";
+		std::vector<std::wstring> transform;
+		boost::algorithm::split(transform,t, boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
+
+		if (transform.size()>1)//тока с аргументами
+		{
+			int res=0;
+			if ((res = transform[0].find(L"translate"))>=0)//перемещение
+			{
+				std::vector<length> Points ;
+				parse_string_to_points(transform[1], Points);
+
+				if (Points.size()>0)
+				{
+					double x_pt = Points[0].get_value_unit(length::pt);
+					double y_pt = 0;
+					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//ее может не быть
+
+					Context.get_slide_context().set_translate(x_pt,y_pt);
+				}
+			}
+			else if ((res = transform[0].find(L"scale"))>=0)//масштабирование
+			{
+				std::vector<length> Points ;
+				parse_string_to_points(transform[1], Points);
+				if (Points.size()>0)
+				{
+					double x_pt = Points[0].get_value_unit(length::pt);
+					double y_pt = x_pt; 
+					if (Points.size()>1)y_pt = Points[1].get_value_unit(length::pt);//ее может не быть
+
+					Context.get_slide_context().set_scale(x_pt,y_pt);
+				}
+			}
+			else if ((res = transform[0].find(L"rotate"))>=0)//вращение
+			{
+				double angle =  boost::lexical_cast<double>(transform[1]);
+				Context.get_slide_context().set_property(_property(L"svg:rotate",angle));
+			}
+			else if ((res = transform[0].find(L"skewX"))>=0)//вращение
+			{
+				double angle =  boost::lexical_cast<double>(transform[1]);
+				Context.get_slide_context().set_property(_property(L"svg:skewX",angle));
+			}
+			else if ((res = transform[0].find(L"skewY"))>=0)//вращение
+			{
+				double angle =  boost::lexical_cast<double>(transform[1]);
+				Context.get_slide_context().set_property(_property(L"svg:skewY",angle));
 			}
 		}
 	}

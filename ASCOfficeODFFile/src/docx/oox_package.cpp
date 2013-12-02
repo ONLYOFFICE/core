@@ -9,7 +9,7 @@
 
 #include "mediaitems.h"
 
-#include "..\..\..\ASCImageStudio3\ASCGraphics\OfficeSvmFile\SvmConverter.h"
+#include "..\..\..\..\AVSImageStudio3\AVSGraphics\OfficeSvmFile\SvmConverter.h"
 
 namespace cpdoccore { 
 namespace oox {
@@ -117,7 +117,9 @@ void core_file::write(const std::wstring & RootPath)
     L"xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" "
     L"xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >";
 
-    resStream << L"<cp:revision>1</cp:revision>";
+	resStream << L"<dc:creator>Teamlab Office</dc:creator>";
+	resStream << L"<cp:lastModifiedBy>Teamlab Office</cp:lastModifiedBy>";
+	resStream << L"<cp:revision>1</cp:revision>";
     resStream << L"</cp:coreProperties>";
 
     simple_element elm(L"core.xml", resStream.str());
@@ -130,7 +132,8 @@ void app_file::write(const std::wstring & RootPath)
 
     resStream << L"<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" "
         L"xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\" >";
-    resStream << L"<Application>Teamlab Document Editor</Application>"; 
+   
+	resStream << L"<Application>Teamlab Office</Application>"; 
     resStream << L"</Properties>";
     
     simple_element elm(L"app.xml", resStream.str());

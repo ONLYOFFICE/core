@@ -1,5 +1,4 @@
-#ifndef CPDOCCORE_STYLE_CHART_PROPERTIES_H_
-#define CPDOCCORE_STYLE_CHART_PROPERTIES_H_
+#pragma once
 
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/CPOptional.h>
@@ -49,6 +48,3 @@ CP_REGISTER_OFFICE_ELEMENT2(style_chart_properties);
 
 }
 }
-
-#endif
-

@@ -855,7 +855,7 @@ void docx_conversion_context::process_headers_footers()
     odf::page_layout_container & pageLayouts = context.pageLayoutContainer();
 
     // проходим по всем page layout
-    BOOST_FOREACH(const odf::style_master_page * page, pageLayouts.master_pages())
+    BOOST_FOREACH(const odf::style_master_page* page, pageLayouts.master_pages())
     {
         const std::wstring & styleName = page->style_master_page_attlist_.style_name_.get_value_or( odf::style_ref(L"") ).style_name();
         const std::wstring masterPageNameLayout =context.pageLayoutContainer().page_layout_name_by_style(styleName);

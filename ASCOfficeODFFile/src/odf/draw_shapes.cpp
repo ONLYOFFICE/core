@@ -34,7 +34,6 @@ const wchar_t * draw_shape::name = L"shape";
 /// draw-shape-attlist
 void draw_shape_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-
 }
 
 void draw_shape::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
@@ -46,7 +45,8 @@ void draw_shape::add_attributes( const xml::attributes_wc_ptr & Attributes )
     common_draw_attlists_.shape_with_text_and_styles_.add_attributes(Attributes);
     common_draw_attlists_.position_.add_attributes(Attributes);
     common_draw_attlists_.rel_size_.add_attributes(Attributes);
-    
+ 	common_presentation_attlist_.add_attributes(Attributes);
+   
 	draw_shape_attlist_.add_attributes(Attributes);
 
 }

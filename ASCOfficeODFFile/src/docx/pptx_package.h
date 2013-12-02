@@ -2,11 +2,14 @@
 
 #include "oox_package.h"
 #include <cpdoccore/CPNoncopyable.h>
-//#include "pptx_drawings.h"
-//#include "pptx_comments.h"
 
 namespace cpdoccore { 
 namespace oox {
+
+class pptx_xml_presentation;
+class pptx_xml_theme;
+typedef _CP_PTR(pptx_xml_theme) pptx_xml_theme_ptr;
+
 namespace package {
 
 class pptx_content_types_file : public content_types_file
@@ -15,6 +18,8 @@ public:
     pptx_content_types_file();
 };
 
+
+///////////////////////////////////////////////////////////////////////////////////
 class slide_content;
 typedef _CP_PTR(slide_content) slide_content_ptr;
 
@@ -48,73 +53,60 @@ public:
     }
 
     virtual void write(const std::wstring & RootPath);
+	void set_slide_ref(const std::wstring & ref_file_path,const std::wstring & ref_file_name);
 
 public:    
     std::vector<slide_content_ptr> slides_;
     rels_files * rels_;
 
 };
+/// \class  slideLayouts_files
+class slideLayouts_files  : public element
+{
+public:
+    slideLayouts_files();
 
-///// \class  xl_charts_files
-//class xl_charts_files  : public element
-//{
-//public:
-//	xl_charts_files(){}
-//
-//    void add_chart(chart_content_ptr chart);
-//	virtual void write(const std::wstring & RootPath);
-//    
-//    std::vector<chart_content_ptr> charts_;
-//
-//};
-/////////////////////////////////////////////////////////////
-//
-//class xlsx_comments;
-//typedef _CP_PTR(xlsx_comments) xl_comments_ptr;
-//
-///// \class xlsx_comments
-//class xlsx_comments: public element
-//{
-//public:
-//    virtual void write(const std::wstring & RootPath);
-//
-//    xlsx_comments(const std::vector<comment_elm> & elms) : comments_ ( elms )
-//    {
-//    }
-//
-//    static xl_comments_ptr create(const std::vector<comment_elm> & elms);
-//
-//private:
-//    const std::vector<comment_elm> & comments_;
-//
-//};
-//
-//class xlsx_drawings;
-//typedef _CP_PTR(xlsx_drawings) xl_drawings_ptr;
-//
-///// \class xlsx_drawings
-//class xlsx_drawings: public element
-//{
-//public:
-//    virtual void write(const std::wstring & RootPath);
-//    void set_rels(rels_files * rels)
-//    {
-//        rels_ = rels;
-//    }
-//
-//    xlsx_drawings(const std::vector<drawing_elm> & elms) : drawings_ ( elms )
-//    {
-//    }
-//
-//    static xl_drawings_ptr create(const std::vector<drawing_elm> & elms);
-//
-//private:
-//    const std::vector<drawing_elm> & drawings_;
-//    rels_files * rels_;
-//
-//};
+    void add_slide(slide_content_ptr sheet);
 
-/// \class  ppt_files
+    virtual void write(const std::wstring & RootPath);
+
+public:    
+    std::vector<slide_content_ptr> slides_;
+};
+///////////////////////////////////////////////////////////////////////////////
+
+
+class theme_elements : public element
+{
+public:
+    theme_elements(pptx_xml_theme_ptr & theme);//потом до вектора
+    virtual void write(const std::wstring & RootPath);
+
+private:
+    pptx_xml_theme_ptr & theme_;
+
+};
+/////////////////////////////////////////////////////////////////////////////////////////
+
+/// \class  slideMasters_files
+class slideMasters_files  : public element
+{
+public:
+    slideMasters_files();
+
+    void add_slide(slide_content_ptr sheet);
+
+    void set_rels(rels_files * rels)
+    {
+        rels_ = rels;
+    }
+
+    virtual void write(const std::wstring & RootPath);
+
+public:    
+    std::vector<slide_content_ptr> slides_;
+    rels_files * rels_;
+};
 class ppt_files : public element
 {
 public:
@@ -123,30 +115,35 @@ public:
 public:
     virtual void write(const std::wstring & RootPath);
 
-    void set_presentation(element_ptr Element);
-    void set_styles(element_ptr Element);
-    //void set_sharedStrings(element_ptr Element);
-    void add_slide(slide_content_ptr sheet);
-    void set_media(mediaitems & _Mediaitems);    
- //   void set_drawings(element_ptr Element);
-	//void set_vml_drawings(element_ptr Element);
-	//void set_comments(element_ptr Element);
- //   void add_charts(chart_content_ptr chart);
+    void set_presentation(pptx_xml_presentation & presentation);
+    void set_themes(pptx_xml_theme_ptr & theme);
+    
+	void set_styles(element_ptr Element);
+
+	void add_slide(slide_content_ptr sheet);
+	void add_slideLayout(slide_content_ptr sheet);
+	void add_slideMaster(slide_content_ptr sheet);
+	
+	void set_media(mediaitems & _Mediaitems);    
+
 
 private:
     rels_files rels_files_;
-    slides_files slides_files_;
-    
+   
+	slides_files slides_files_;    
+	slideLayouts_files slideLayouts_files_;    
+	slideMasters_files slideMasters_files_;
+	
+	//slides_files notesSlides_files_;
+	//slides_files notesMasters_files_;
+	//slides_files handoutMasters_files_;
+ 
 	element_ptr theme_;
 	element_ptr presentation_;
 
-    element_ptr styles_;
- //   xl_charts_files charts_files_;
- //   element_ptr sharedStrings_;
+    element_ptr tableStyles_;
+
     element_ptr media_;
- //   element_ptr drawings_;
-	//element_ptr vml_drawings_;
-	//element_ptr comments_;
 };
 
 /// \class  xlsx_document

@@ -308,6 +308,10 @@ void page_layout_instance::docx_convert(oox::docx_conversion_context & Context)
 
     properties()->docx_convert(Context);   
 }
+void page_layout_instance::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    properties()->pptx_convert(Context);   
+}
 
 void page_layout_container::add_page_layout(const style_page_layout * StylePageLayout)
 {

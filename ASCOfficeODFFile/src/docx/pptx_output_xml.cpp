@@ -306,17 +306,10 @@ void pptx_xml_presentation::write_to(std::wostream & strm)
             {
                 CP_XML_STREAM() << slidesData_.str();
             }
-			CP_XML_NODE(L"p:sldSz")
-			{
-				CP_XML_ATTR(L"cx",9144000);
-				CP_XML_ATTR(L"cy",6858000);
-				CP_XML_ATTR(L"type",L"screen4x3");
-			}
-			CP_XML_NODE(L"p:notesSz")
-			{
-				CP_XML_ATTR(L"cx",6858000);
-				CP_XML_ATTR(L"cy",9144000);
-			}
+			CP_XML_STREAM() << slidesProperties_.str();
+
+			CP_XML_STREAM() << notesSlidesSize_.str();
+
 			CP_XML_NODE(L"p:defaultTextStyle")
 			{
 				CP_XML_NODE(L"a:defPPr");

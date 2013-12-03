@@ -33,7 +33,7 @@ pptx_conversion_context::
 pptx_conversion_context(::cpdoccore::oox::package::pptx_document * outputDocument,
                         ::cpdoccore::odf::odf_document * odfDocument): output_document_(outputDocument),
 	odf_document_(odfDocument),
-	pptx_text_context_(odf_document_->odf_context().styleContainer())
+	pptx_text_context_(odf_document_->odf_context())
 	,pptx_slide_context_(*this/*, pptx_text_context_*/)
 {
 }
@@ -118,6 +118,7 @@ void pptx_conversion_context::start_document()
     odf::text_format_properties_content			textFormatProperties	= calc_text_properties_content(instances);
     odf::paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content(instances);
 
+
 }
 
 void pptx_conversion_context::end_document()
@@ -174,7 +175,22 @@ void pptx_conversion_context::end_document()
 
         output_document_->get_ppt_files().add_slideLayout(content);//slideMaster.xml
 	}
-	
+/////////////////////////////////////////////////////////////////////////////////
+    odf::odf_read_context & context =  root()->odf_context();
+    odf::page_layout_container & pageLayouts = context.pageLayoutContainer();
+	if ((pageLayouts.master_pages().size()>0) && (pageLayouts.master_pages()[0]->style_master_page_attlist_.style_name_))//default
+	{
+		const std::wstring masterStyleName = pageLayouts.master_pages()[0]->style_master_page_attlist_.style_name_->style_name();
+		const std::wstring pageProperties = root()->odf_context().pageLayoutContainer().page_layout_name_by_style(masterStyleName);
+
+		odf::page_layout_instance *pages_layouts = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);
+		
+		if (pages_layouts)pages_layouts->pptx_convert(*this);
+	}
+
+	pptx_serialize_size(current_presentation().notesSlidesSize(),6858000,9144000,L"p:notesSz");
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	output_document_->get_ppt_files().set_presentation(presentation_);
        
 	output_document_->get_ppt_files().set_themes(theme_);
@@ -224,6 +240,11 @@ pptx_xml_theme & pptx_conversion_context::current_theme()
         throw std::runtime_error("internal error");
     }
 }
+pptx_xml_presentation & pptx_conversion_context::current_presentation()
+{
+	return presentation_;
+}
+
 oox_chart_context & pptx_conversion_context::current_chart()
 {
     if (!charts_.empty())

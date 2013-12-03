@@ -57,6 +57,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     void docx_convert(oox::docx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -94,6 +95,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     void docx_convert(oox::docx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;

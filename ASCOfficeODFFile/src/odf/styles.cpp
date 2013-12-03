@@ -1,8 +1,10 @@
 #include "precompiled_cpodf.h"
+
 #include "styles.h"
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/serialize.h>
 #include <cpdoccore/xml/attributes.h>
+#include <cpdoccore/xml/simple_xml_writer.h>
 #include <iostream>
 #include <boost/foreach.hpp>
 
@@ -18,6 +20,8 @@
 #include "serialize_elements.h"
 #include <cpdoccore/odf/odf_document.h>
 #include "odfcontext.h"
+
+
 
 namespace cpdoccore { 
 namespace odf {
@@ -835,6 +839,51 @@ void style_page_layout_properties_attlist::docx_convert(oox::docx_conversion_con
     }
 }
 
+void style_page_layout_properties_attlist::pptx_convert(oox::pptx_conversion_context & Context) 
+{
+    std::wostream & strm = Context.current_presentation().slidesProperties();
+
+    if (fo_page_width_ || fo_page_height_ || style_print_orientation_)
+    {
+        std::wstring w_w = L"",w_h = L"";
+
+		int h=0,w=0;
+		
+		if (fo_page_width_)
+		{
+			w =  fo_page_width_->get_value_unit(length::emu);
+
+			w_w = boost::lexical_cast<std::wstring>(w);
+		}
+        if (fo_page_height_)
+		{
+			h = fo_page_height_->get_value_unit(length::emu);
+			w_h = boost::lexical_cast<std::wstring>(h);
+		}
+                
+        std::wstring w_orient = L"custom";
+
+		//if (w && h)
+		//{
+		//	double ratio = (double)w/(double)h;
+		//	if (abs(ratio - 16./9.)<0.01)	w_orient = L"screen16x9";
+		//	if (abs(ratio - 4./3.)<0.01)	w_orient = L"screen4x3";
+		//}
+        
+        strm << L"<p:sldSz ";
+        if (!w_h.empty())
+            strm << L"cy=\"" << w_h << L"\" ";
+
+        if (!w_w.empty())
+            strm << L"cx=\"" << w_w << L"\" ";
+	
+		strm << L"type=\"" << w_orient << L"\" ";
+
+        strm << L"/>";
+    }
+
+}
+
 // style-footnote-sep-attlist
 void style_footnote_sep_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -876,7 +925,6 @@ void style_page_layout_properties::add_child_element( xml::sax * Reader, const :
 {
     style_page_layout_properties_elements_.add_child_element(Reader, Ns, Name, getContext());
 }
-
 void style_page_layout_properties::docx_convert(oox::docx_conversion_context & Context)
 {
 	if (Context.get_drawing_context().get_current_level()>0) return;
@@ -939,6 +987,10 @@ void style_page_layout_properties::docx_convert(oox::docx_conversion_context & C
     strm << L"</w:sectPr>";
 
 
+}
+void style_page_layout_properties::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    style_page_layout_properties_attlist_.pptx_convert(Context);        
 }
 
 

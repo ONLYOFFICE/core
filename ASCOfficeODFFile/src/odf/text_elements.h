@@ -157,6 +157,7 @@ public:
 
 public:
     void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -223,6 +224,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     void docx_convert(oox::docx_conversion_context & Context);
+	//void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -290,8 +292,11 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextTableOfContent;
-    CPDOCCORE_DEFINE_VISITABLE();
-    void docx_convert(oox::docx_conversion_context & Context);
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    
+	void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -319,7 +324,9 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextIndexBody;
     CPDOCCORE_DEFINE_VISITABLE();
-    void docx_convert(oox::docx_conversion_context & Context);
+    
+	void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -346,7 +353,9 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextIndexTitle;
     CPDOCCORE_DEFINE_VISITABLE();
-    void docx_convert(oox::docx_conversion_context & Context);
+  	
+	void pptx_convert(oox::pptx_conversion_context & Context) ;
+	void docx_convert(oox::docx_conversion_context & Context);
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;

@@ -86,6 +86,7 @@ public:
 	pptx_xml_slideLayout & current_layout();
 	pptx_xml_slideMaster & current_master();
     pptx_xml_theme & current_theme();
+    pptx_xml_presentation & current_presentation();//собственно она одна
   
 	oox_chart_context & current_chart();
 	pptx_text_context & get_text_context() { return pptx_text_context_; }
@@ -135,7 +136,7 @@ private:
 
 	std::wstring current_master_page_name_;
 	std::wstring current_layout_page_name_;
-    
+
 };
 
 }

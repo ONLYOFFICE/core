@@ -49,9 +49,16 @@ public:
     std::wstringstream  & slideMastersData(){return slideMastersData_;}
     std::wstringstream  & notesSlidesData(){return notesSlidesData_;}
 
+    std::wstringstream  & slidesProperties(){return slidesProperties_;}
+    std::wstringstream  & notesSlidesSize(){return notesSlidesSize_;}
+
 	void write_to(std::wostream & strm);
 
 private:
+    std::wstringstream  slidesProperties_;
+	std::wstringstream  notesSlidesSize_;
+
+
     std::wstringstream  slidesData_;
     std::wstringstream  slideMastersData_;
     std::wstringstream  notesSlidesData_;

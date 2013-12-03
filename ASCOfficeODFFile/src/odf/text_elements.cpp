@@ -105,7 +105,6 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
     std::wostream & _Wostream = Context.output_stream();
     if (!Attr.text_style_name_.empty())
     {
-
         if (style_instance * styleInst 
             = Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_.style_name(), style_family::Paragraph,Context.process_headers_footers_)
             )
@@ -119,8 +118,10 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
                     if (const style_instance * parentStyleContent = styleInst->parent())
                         id = Context.get_style_map().get( parentStyleContent->name(), parentStyleContent->type() );
                     Context.start_automatic_style(id);
-                    styleContent->docx_convert(Context);                
-                    Context.end_automatic_style();
+                    
+					styleContent->docx_convert(Context);                
+                   
+					Context.end_automatic_style();
                     Context.push_text_properties(styleContent->get_style_text_properties());
                     return 1;
                 }            
@@ -129,9 +130,9 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
             {
                 const std::wstring id = Context.get_style_map().get( styleInst->name(), styleInst->type() );
                 _Wostream << L"<w:pPr>";
-                Context.process_page_properties();
-                _Wostream << L"<w:pStyle w:val=\"" << id << L"\" />";
-                Context.write_list_properties();
+					Context.process_page_properties();
+					_Wostream << L"<w:pStyle w:val=\"" << id << L"\" />";
+					Context.write_list_properties();
                 _Wostream << L"</w:pPr>";
 				return 2;
 			}
@@ -517,7 +518,21 @@ void list::docx_convert(oox::docx_conversion_context & Context)
 
     Context.end_list();
 }
+void list::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    bool continue_ = text_continue_numbering_.get_value_or(false);
+    Context.get_text_context().start_list(text_style_name_.style_name(), continue_);
 
+    if (text_list_header_)
+        text_list_header_->pptx_convert(Context);
+
+    BOOST_FOREACH(const office_element_ptr & elm, text_list_items_)
+    {
+        elm->pptx_convert(Context);
+    }
+
+    Context.get_text_context().end_list();
+}
 // text:soft-page-break
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * soft_page_break::ns = L"text";
@@ -668,7 +683,13 @@ void text_index_body::docx_convert(oox::docx_conversion_context & Context)
         elm->docx_convert(Context);
     }
 }
-
+void text_index_body::pptx_convert(oox::pptx_conversion_context & Context) 
+{
+    BOOST_FOREACH(const office_element_ptr & elm, index_content_main_)
+    {
+        elm->pptx_convert(Context);
+    }
+}
 // text:index-title
 // text-index-title
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -682,7 +703,13 @@ void text_index_title::docx_convert(oox::docx_conversion_context & Context)
         elm->docx_convert(Context);
     }
 }
-
+void text_index_title::pptx_convert(oox::pptx_conversion_context & Context) 
+{
+    BOOST_FOREACH(office_element_ptr & elm, index_content_main_)
+    {
+        elm->pptx_convert(Context);
+    }
+}
 ::std::wostream & text_index_title::text_to_stream(::std::wostream & _Wostream) const
 {
     CP_SERIALIZE_TEXT(index_content_main_);
@@ -710,6 +737,13 @@ void text_table_of_content::docx_convert(oox::docx_conversion_context & Context)
     if (text_index_body_)
         text_index_body_->docx_convert(Context);
 }
+
+void text_table_of_content::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    if (text_index_body_)
+        text_index_body_->pptx_convert(Context);
+}
+
 
 ::std::wostream & text_table_of_content::text_to_stream(::std::wostream & _Wostream) const
 {

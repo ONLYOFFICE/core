@@ -23,36 +23,22 @@ static const std::wstring _docxShapeType[]=
 
 void pptx_serialize_text(std::wostream & strm, const std::vector<odf::_property> & properties)
 {
-    CP_XML_WRITER(strm)
+	_CP_OPT(std::wstring) strTextContent;
+	odf::GetProperty(properties,L"text-content",strTextContent);
+
+	if (!strTextContent)return;
+
+	CP_XML_WRITER(strm)
     {
-		_CP_OPT(std::wstring) strTextContent;
-		odf::GetProperty(properties,L"text-content",strTextContent);
-		//if (strTextContent)//???
-		{
-			CP_XML_NODE(L"p:txBody")
-			{  
-				CP_XML_NODE(L"a:bodyPr");//???
-				//{
-				//	CP_XML_ATTR(L"wrap", L"none");
-				//	CP_XML_ATTR(L"tIns", 0); 
-				//	CP_XML_ATTR(L"rIns", 0);
-				//	CP_XML_ATTR(L"lIns", 0);
-				//	CP_XML_ATTR(L"bIns", 0);
-				//	CP_XML_ATTR(L"anchor", L"ctr");
-				//}
-				CP_XML_NODE(L"a:lstStyle");
-				CP_XML_NODE(L"a:p")
-				{
-					CP_XML_NODE(L"a:pPr")
-					{
-						CP_XML_ATTR(L"algn",L"ctr");
-					}
-					if (strTextContent)
-					{
-						std::wstring strTest = strTextContent.get();
-						CP_XML_STREAM() << strTextContent.get();
-					}
-				}
+		CP_XML_NODE(L"p:txBody")
+		{  
+			CP_XML_NODE(L"a:bodyPr");
+			CP_XML_NODE(L"a:lstStyle");
+			
+							
+			if (strTextContent)
+			{	
+				CP_XML_STREAM() << strTextContent.get();
 			}
 		}
     }
@@ -152,6 +138,10 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing const & val)
 				CP_XML_NODE(L"p:cNvSpPr")//non visual properies (собственно тока 1 там)
 				{
 					if (val.sub_type==1 || val.sub_type==2)CP_XML_ATTR(L"txBox", 1);
+					CP_XML_NODE(L"a:spLocks")
+					{
+						CP_XML_ATTR(L"noGrp", 1);
+					}
 				}
 				CP_XML_NODE(L"p:nvPr")
 				{

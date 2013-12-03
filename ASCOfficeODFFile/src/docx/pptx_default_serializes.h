@@ -5,7 +5,17 @@
 namespace cpdoccore { 
 
 namespace oox {
-
+	static void pptx_serialize_size(std::wostream & strm, int cx, int cy,std::wstring node)
+	{
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(node)
+			{
+				CP_XML_ATTR(L"cx", cx); 
+				CP_XML_ATTR(L"cy", cy); 
+			}
+		}
+	}
 	static void pptx_serialize_clrScheme(std::wstringstream & strm)
 	{
 		CP_XML_WRITER(strm)

@@ -81,7 +81,25 @@ void list_item::docx_convert(oox::docx_conversion_context & Context)
     Context.end_list_item();
 
 }
+void list_item::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    bool restart = false;
+    // TODO - надо сделать так чтобы не только с 1
+    if (text_start_value_)
+    {
+        restart = true;                    
+    }
 
+    Context.get_text_context().start_list_item(restart);
+
+    BOOST_FOREACH(const office_element_ptr & elm, content_)
+    {
+        elm->pptx_convert(Context);
+    }
+
+    Context.get_text_context().end_list_item();
+
+}
 // text:list-header
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * list_header::ns = L"text";
@@ -101,6 +119,21 @@ void list_header::docx_convert(oox::docx_conversion_context & Context)
 
     //Context.end_list_item();
 }
+void list_header::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    bool restart = false;
+    //Context.start_list_item(restart);
+
+	//заголовок это не элемент списка
+
+    BOOST_FOREACH(const office_element_ptr & elm, content_)
+    {
+        elm->pptx_convert(Context);
+    }
+
+    //Context.end_list_item();
+}
+
 
 ::std::wostream & list_header::text_to_stream(::std::wostream & _Wostream) const
 {

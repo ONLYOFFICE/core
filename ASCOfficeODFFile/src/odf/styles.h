@@ -793,6 +793,7 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
     void docx_convert(oox::docx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
     _CP_OPT(length) fo_page_width_;         // +
@@ -934,6 +935,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     void docx_convert(oox::docx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context);
 
     const style_page_layout_properties_attlist & get_style_page_layout_properties_attlist() const
     {

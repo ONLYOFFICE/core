@@ -112,6 +112,8 @@ public:
 
 					m_pList = new CWinFontList(pData, (CString)ParamValue.bstrVal);
 					RELEASEARRAYOBJECTS(pData);
+
+					m_bIsInit = TRUE;
 				}
 				else
 				{			

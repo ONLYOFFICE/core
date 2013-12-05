@@ -245,7 +245,6 @@ public:
 				return S_OK;
 			}
 			*/
-			return S_OK;
 		}
 
 		// инициализируем gdiplus

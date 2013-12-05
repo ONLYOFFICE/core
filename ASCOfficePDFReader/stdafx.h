@@ -50,7 +50,7 @@ using namespace ATL;
 
 #include "../Common/ASCUtils.h"
 
-#import "../Redist/ASCMediaCore3.dll"                        named_guids rename_namespace("MediaCore"), exclude("tagRECT")
-#import "../Redist/ASCImageStudio3.dll"                      named_guids rename_namespace("AVSImageStudio")  
-#import "../Redist/ASCImageJpeg2000.dll"                     named_guids rename_namespace("AVSImageJpeg2000")
-#import "../Redist/ASCGraphics.dll"                          named_guids rename_namespace("AVSGraphics")
+#import "../Redist/ASCMediaCore3.dll"                        named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
+#import "../Redist/ASCImageStudio3.dll"                      named_guids raw_interfaces_only rename_namespace("AVSImageStudio")  
+#import "../Redist/ASCImageJpeg2000.dll"                     named_guids raw_interfaces_only rename_namespace("AVSImageJpeg2000")
+#import "../Redist/ASCGraphics.dll"                          named_guids raw_interfaces_only rename_namespace("AVSGraphics")

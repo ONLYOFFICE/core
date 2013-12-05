@@ -400,10 +400,6 @@ public:
 
     void start_process_style_content();
     void end_process_style_content();
-    const odf::style_instance * get_current_processed_style() const { return current_processed_style_; }
-
-    void start_process_style(const odf::style_instance * Instance);
-    void end_process_style();
 
     void start_automatic_style(const std::wstring & ParentId);
     void end_automatic_style();
@@ -515,7 +511,6 @@ private:
     styles_context styles_context_;
 
     std::wstring automatic_parent_style_; 
-    const odf::style_instance * current_processed_style_;
 
     std::list< const odf::style_text_properties * > text_properties_stack_;
     

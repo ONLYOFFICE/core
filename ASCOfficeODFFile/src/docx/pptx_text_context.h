@@ -54,7 +54,7 @@ public:
 	void start_list_item(bool restart = false);
 	void end_list_item();
 
-	styles_context & get_styles_context();
+	styles_context & get_styles_context();   
 
 private:
 

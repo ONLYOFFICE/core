@@ -59,6 +59,7 @@ private:
 	
 	bool in_span;
 	bool in_paragraph;
+	bool in_list;
 
 	odf::styles_container * local_styles_ptr_;
 
@@ -100,6 +101,7 @@ pptx_text_context::Impl::Impl(odf::odf_read_context & odf_contxt_, pptx_conversi
 		paragraphs_cout_(0),in_paragraph(false),in_span(false)
 {
 	new_list_style_number_=0;
+	local_styles_ptr_ = NULL;
 }
 
 void pptx_text_context::Impl::add_text(const std::wstring & text)
@@ -129,6 +131,8 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 	}
 	styles_paragraph_ = styleName;
 	in_paragraph = true;
+	
+	get_styles_context().start();
 }
 
 void pptx_text_context::Impl::end_paragraph()
@@ -201,16 +205,42 @@ void pptx_text_context::Impl::write_pPr(std::wostream & strm)
 	{			
 		CP_XML_NODE(L"a:pPr")
 		{
-			//...
-			if (styles_paragraph_.length()>0)
-			{
-				if (odf::style_instance * styleInst= odf_context_.styleContainer().style_by_name(styles_paragraph_, odf::style_family::Paragraph,false) )
+			if (!list_style_stack_.empty())
+			{		
+				int level = list_style_stack_.size()-1;
+				CP_XML_ATTR(L"lvl",level);
+				//if (styles_paragraph_.length()>0)
+				//{
+				//	if (odf::style_instance * styleInst= odf_context_.styleContainer().style_by_name(styles_paragraph_, odf::style_family::Paragraph,false) )
+				//	{
+				//	}
+				//}
+				//write_list_properties(strm);
+				odf::list_style_container & list_styles = odf_context_.listStyleContainer();
+
+				if (!list_styles.empty())
 				{
-
-
+					odf::text_list_style * s = list_styles.list_style_by_name(list_style_stack_.back());
+					 if (s)
+					 {
+						odf::office_element_ptr  elm = s->get_content()[level];
+						if (elm)
+						{
+							elm->pptx_convert(pptx_context_);
+						}
+						CP_XML_STREAM() << get_styles_context().list_style().str();
+					}
 				}
 			}
-			write_list_properties(strm);
+			//else
+			//{
+			//	if (style_text_properties * textProperties = dynamic_cast<style_text_properties *>(style_text_properties_.get()))
+			//	{
+			//		textProperties->content().pptx_convert(Context);
+			//		CP_XML_STREAM() << get_styles_context().text_style().str();
+			//	}
+			//}
+
 		}
 	}  
 }
@@ -230,51 +260,55 @@ void pptx_text_context::Impl::write_rPr(std::wostream & strm)
 	text_properties_.apply_from(text_properties_paragraph_);
 	text_properties_.apply_from(text_properties_span_);
 
-	_CP_OPT(double)	dValFontSize;
-	if (text_properties_.fo_font_size_)
-		dValFontSize=text_properties_.fo_font_size_->get_length().get_value();
-	
-	_CP_OPT(std::wstring) sValFontFamily;	
-	if (text_properties_.fo_font_family_)	
-		sValFontFamily=text_properties_.fo_font_family_.get();
-	//else if (text_properties_.style_font_name_) - тут может быть отсылка к font_face)decl !!!!
-	//	sValFontFamily=text_properties_.style_font_name_.get();
+	text_properties_.pptx_convert(pptx_context_);
 
-	_CP_OPT(std::wstring) sValFontColor;
-	if (text_properties_.fo_color_)		
-		sValFontColor=text_properties_.fo_color_->get_hex_value();
+	strm << get_styles_context().text_style().str();
 
-	_CP_OPT(int)	iValFontWeight;
-	if (text_properties_.fo_font_weight_)
-		iValFontWeight=text_properties_.fo_font_weight_->get_type();
+	//_CP_OPT(double)	dValFontSize;
+	//if (text_properties_.fo_font_size_)
+	//	dValFontSize=text_properties_.fo_font_size_->get_length().get_value();
+	//
+	//_CP_OPT(std::wstring) sValFontFamily;	
+	//if (text_properties_.fo_font_family_)	
+	//	sValFontFamily=text_properties_.fo_font_family_.get();
+	////else if (text_properties_.style_font_name_) - тут может быть отсылка к font_face)decl !!!!
+	////	sValFontFamily=text_properties_.style_font_name_.get();
 
-	_CP_OPT(int)	iValFontStyle;
-	if(text_properties_.fo_font_style_)
-		iValFontStyle=text_properties_.fo_font_style_->get_type();
+	//_CP_OPT(std::wstring) sValFontColor;
+	//if (text_properties_.fo_color_)		
+	//	sValFontColor=text_properties_.fo_color_->get_hex_value();
 
-	CP_XML_WRITER(strm)
-    {
-		//oox_serialize_style_text(strm,text_properties_);
-		//oox_serialize_style_text(strm,odf::text_format_properties_content & properties);
-		CP_XML_NODE(L"a:rPr")
-		{
-			//стр 3197
-			if (dValFontSize)									{CP_XML_ATTR(L"sz", (int)(dValFontSize.get()*100));}
-			if ((iValFontStyle) && (iValFontStyle.get() >0))	{CP_XML_ATTR(L"i", "true");}
-			if ((iValFontWeight) && (iValFontWeight.get() >0))	{CP_XML_ATTR(L"b", "true");}				
-			if (sValFontFamily)									{CP_XML_ATTR(L"typeface", sValFontFamily.get());}
-			
-			if (sValFontColor){CP_XML_NODE(L"a:solidFill")	{CP_XML_NODE(L"a:srgbClr"){CP_XML_ATTR(L"val", sValFontColor.get());}}}
+	//_CP_OPT(int)	iValFontWeight;
+	//if (text_properties_.fo_font_weight_)
+	//	iValFontWeight=text_properties_.fo_font_weight_->get_type();
 
-			if (hyperlink_hId.length()>0)
-			{
-				CP_XML_NODE(L"a:hlinkClick ")
-				{
-					CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-					CP_XML_ATTR(L"r:id", hyperlink_hId);
-				}
-			}
-		}
+	//_CP_OPT(int)	iValFontStyle;
+	//if(text_properties_.fo_font_style_)
+	//	iValFontStyle=text_properties_.fo_font_style_->get_type();
+
+	//CP_XML_WRITER(strm)
+ //   {
+	//	//oox_serialize_style_text(strm,text_properties_);
+	//	//oox_serialize_style_text(strm,odf::text_format_properties_content & properties);
+	//	CP_XML_NODE(L"a:rPr")
+	//	{
+	//		//стр 3197
+	//		if (dValFontSize)									{CP_XML_ATTR(L"sz", (int)(dValFontSize.get()*100));}
+	//		if ((iValFontStyle) && (iValFontStyle.get() >0))	{CP_XML_ATTR(L"i", "true");}
+	//		if ((iValFontWeight) && (iValFontWeight.get() >0))	{CP_XML_ATTR(L"b", "true");}				
+	//		if (sValFontFamily)									{CP_XML_ATTR(L"typeface", sValFontFamily.get());}
+	//		
+	//		if (sValFontColor){CP_XML_NODE(L"a:solidFill")	{CP_XML_NODE(L"a:srgbClr"){CP_XML_ATTR(L"val", sValFontColor.get());}}}
+
+	//		if (hyperlink_hId.length()>0)
+	//		{
+	//			CP_XML_NODE(L"a:hlinkClick ")
+	//			{
+	//				CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+	//				CP_XML_ATTR(L"r:id", hyperlink_hId);
+	//			}
+	//		}
+	//	}
 
 		//CP_XML_NODE(L"charset")
 		//{
@@ -284,24 +318,27 @@ void pptx_text_context::Impl::write_rPr(std::wostream & strm)
 		//{
 		//	CP_XML_ATTR(L"val",2);
 		//}
-    }
+    //}
 }
 std::wstring pptx_text_context::Impl::dump_paragraph()
 {				
-	if (text_.str().length()<1) return L"";
-			
 	dump_run();//last
 
-	CP_XML_WRITER(paragraph_)
-    {
-		CP_XML_NODE(L"a:p")
-		{
-			write_pPr(CP_XML_STREAM());//write_pPr(CP_XML_STREAM());
+	std::wstring & str_run = run_.str();
 
-			CP_XML_STREAM() << run_.str();
+	if (str_run.length() > 0)
+	{
+		CP_XML_WRITER(paragraph_)
+		{
+			CP_XML_NODE(L"a:p")
+			{
+				write_pPr(CP_XML_STREAM());
+
+				CP_XML_STREAM() << run_.str();
+			}
 		}
+		run_.str(std::wstring());
 	}
-    run_.str(std::wstring());
 	return paragraph_.str();
 }
 
@@ -366,7 +403,9 @@ std::wstring pptx_text_context::Impl::end_drawing_content()
 }
 void pptx_text_context::Impl::start_list_item(bool restart)
 {
+	in_list = true;
     first_element_list_item_ = true;
+
     if (restart && !list_style_stack_.empty())
     {
         const std::wstring curStyleName = current_list_style();
@@ -399,7 +438,9 @@ void pptx_text_context::Impl::start_list(const std::wstring & StyleName, bool Co
 
 void pptx_text_context::Impl::end_list()
 {
-    ///list_style_stack_.pop_back(); пока не стираем .. как сохраним в lstStyles - очистим
+	in_list = false;
+  
+	list_style_stack_.pop_back();// пока не стираем .. как сохраним в lstStyles - очистим
 }
 
 std::wstring pptx_text_context::Impl::current_list_style()
@@ -420,6 +461,11 @@ std::wstring pptx_text_context::Impl::find_list_rename(const std::wstring & List
 
 void pptx_text_context::Impl::end_list_item()
 {
+	dump_paragraph();
+	paragraphs_cout_--;
+	styles_paragraph_ = L"";
+
+	in_list = false;
 }
 
 void pptx_text_context::Impl::write_list_properties(std::wostream & strm)
@@ -450,27 +496,28 @@ void pptx_text_context::Impl::write_list_styles(std::wostream & strm)//defaults 
         return;
    
 	get_styles_context().start();
+	get_styles_context().extern_node() = L"a:defRPr";
 
 	CP_XML_WRITER(strm)
 	{ 	
-		CP_XML_NODE(L"a:lstStyle")
-		{
-			//defPPr
-			//...
+		CP_XML_NODE(L"a:lstStyle");
+		//{
+		//	//defPPr
+		//	//...
 
-			//list levels 0 - 8
-			BOOST_FOREACH(std::wstring & st_name, list_style_stack_ )
-			{
-				odf::text_list_style * s = list_styles.list_style_by_name(st_name);
-		        
-				BOOST_FOREACH(odf::office_element_ptr & elm, s->get_content())
-				{
-					elm->pptx_convert(pptx_context_);
-				}
-			}
+		//	//list levels 0 - 8
+		//	BOOST_FOREACH(std::wstring & st_name, list_style_stack_ )
+		//	{
+		//		odf::text_list_style * s = list_styles.list_style_by_name(st_name);
+		//        
+		//		BOOST_FOREACH(odf::office_element_ptr & elm, s->get_content())
+		//		{
+		//			elm->pptx_convert(pptx_context_);
+		//		}
+		//	}
 
-			CP_XML_STREAM() << get_styles_context().list_style();
-		}
+		//	CP_XML_STREAM() << get_styles_context().list_style().str();
+		//}
 	}
 
 	list_style_stack_.clear();
@@ -561,6 +608,5 @@ styles_context & pptx_text_context::get_styles_context()
 { 
 	return  impl_->get_styles_context() ; 
 }
-
 }
 }

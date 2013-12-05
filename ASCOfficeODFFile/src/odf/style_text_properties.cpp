@@ -6,6 +6,7 @@
 #include "fontvariant.h"
 #include "logging.h"
 #include <cpdoccore/odf/odf_document.h>
+#include <cpdoccore/xml/simple_xml_writer.h>
 
 namespace cpdoccore { 
 namespace odf {
@@ -303,8 +304,198 @@ int text_format_properties_content::process_font_style(const optional<font_style
 }
 void text_format_properties_content::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    std::wostream & _rPr = Context.get_text_context().get_styles_context().text_style();
-    std::wstringstream & _pPr = Context.get_text_context().get_styles_context().paragraph_style();
+	styles_context & styles_context_ = Context.get_text_context().get_styles_context();
+	CP_XML_WRITER(styles_context_.text_style())//a:rPr & a:defRPr
+	{  
+		CP_XML_NODE(styles_context_.extern_node())
+		{
+			const int W = process_font_weight(fo_font_weight_);
+			if (W>0)CP_XML_ATTR(L"b",true);
+			
+			const int fontStyle = process_font_style(fo_font_style_);
+			if (fontStyle>0)CP_XML_ATTR(L"i",true);
+			
+			double fontSizeVal = (fo_font_size_) ? process_font_size_impl(fo_font_size_, styles_context_.get_current_processed_style()) : 
+				process_font_size_impl(font_size(percent(100.0)), styles_context_.get_current_processed_style());		
+			double mul = 1;
+			if ((style_text_position_) && (style_text_position_->has_font_size()))
+			{
+				mul = style_text_position_->font_size().get_value() / 100.0;
+			}
+			if (fontSizeVal > 0)
+			{
+				CP_XML_ATTR(L"sz", (int)(fontSizeVal * mul + 0.5));
+			}
+			if (fo_font_variant_)
+			{
+				if (fo_font_variant_->get_type() == font_variant::SmallCaps)
+				{
+					CP_XML_ATTR(L"cap", "small");
+				}
+			}			
+			//if (fo_text_transform_)
+			//{
+			//	if (fo_text_transform_->get_type() ==  text_transform::Uppercase)
+			//		CP_XML_ATTR(L"cap", "all");
+			//	else if (fo_text_transform_->get_type() == text_transform::Lowercase)
+			//		CP_XML_ATTR(L"cap", "small");
+			//	else if (fo_text_transform_->get_type() == text_transform::None)
+			//		CP_XML_ATTR(L"cap", "none");
+			//}
+			{// underline
+				line_width under = style_text_underline_width_.get_value_or(line_width::Auto);
+				bool underlineBold = under.get_type() == line_width::Bold || 
+					under.get_type() == line_width::Thick;
+				std::wstring underline = L"";
+
+				if ( style_text_underline_type_ && style_text_underline_type_->get_type() == line_type::None ||
+					style_text_underline_style_ && style_text_underline_style_->get_type() == line_style::None        
+					)
+				{
+					underline = L"none";
+				}
+				else if (style_text_underline_type_ && 
+					(!style_text_underline_style_ || style_text_underline_style_ && style_text_underline_style_->get_type() == line_style::Solid) )
+				{
+					if (underlineBold)		underline = L"thick"; 
+
+					switch (style_text_underline_type_->get_type())
+					{
+					case line_type::Single:	underline = L"sng";
+						break;
+					case line_type::Double:	underline = L"double";
+						break;
+					}
+				}
+				else if (style_text_underline_style_)
+				{
+					switch (style_text_underline_style_->get_type())
+					{
+					case line_style::Solid:
+						if (underlineBold)	underline = L"thick"; 
+						else				underline = L"sng";
+						break;
+					case line_style::Dotted:
+						if (underlineBold)	underline = L"dottedHeavy"; 
+						else				underline = L"dotted";
+						break;
+					case line_style::Dash:
+						if (underlineBold)	underline = L"dashedHeavy"; 
+						else				underline = L"dash";
+						break;
+					case line_style::LongDash:
+						if (underlineBold)	underline = L"dashLongHeavy"; 
+						else				underline = L"dashLong";
+						break;
+					case line_style::DotDash:
+						if (underlineBold)	underline = L"dashDotHeavy"; 
+						else				underline = L"dotDash";
+						break;
+					case line_style::DotDotDash:
+						if (underlineBold)	underline = L"dashDotDotHeavy"; 
+						else				underline = L"dotDotDash";
+						break;
+					case line_style::Wave:
+						if (underlineBold)	underline = L"wavyHeavy"; 
+						else if (style_text_underline_type_.get_value_or( line_type(line_type::Single) ).get_type() == line_type::Double)
+											underline = L"wavyDouble"; 
+						else				underline = L"wave"; 
+						break;
+					}
+				}
+				if (!underline.empty())CP_XML_ATTR(L"u", underline);
+			}
+			if (style_text_line_through_type_)
+			{
+				if (style_text_line_through_type_->get_type() == line_type::Single)
+					CP_XML_ATTR(L"strike", L"sngStrike");           
+				else if (style_text_line_through_type_->get_type() == line_type::Double)
+					CP_XML_ATTR(L"strike", L"dblStrike");           
+			}
+			else if (style_text_line_through_style_ && style_text_line_through_style_->get_type() != line_style::None)
+			{
+				CP_XML_ATTR(L"strike", L"sngStrike");           
+			}
+			else CP_XML_ATTR(L"strike",L"none");
+			
+			if ((fo_letter_spacing_) && (fo_letter_spacing_->get_type() != letter_spacing::Normal))
+			{
+				CP_XML_ATTR(L"spc",(int)(20.0 * fo_letter_spacing_->get_length().get_value_unit(length::pt)));
+			}
+		
+			if (fo_language_ || style_language_asian_ || style_language_complex_)
+			{
+				std::wstring w_val;
+				if (fo_language_)		w_val = *fo_language_;
+				else if (fo_country_)	w_val = *fo_country_;
+				else if (style_country_asian_)w_val = *style_country_asian_;
+				else if (style_language_asian_)w_val = *style_language_asian_;
+				else if (style_language_complex_)w_val = *style_language_complex_;
+				else if (style_country_complex_)w_val = *style_country_complex_;
+
+				CP_XML_ATTR(L"lang",  w_val);
+			}
+		}
+		if (style_font_name_ || style_font_name_asian_ || style_font_name_complex_)
+		{
+			std::wstring w_eastAsia;
+			std::wstring w_hAnsi;
+			std::wstring w_cs;
+			std::wstring w_ascii = w_hAnsi = (style_font_name_ ? *style_font_name_: L"");
+
+			if (style_font_name_asian_)
+				w_eastAsia = *style_font_name_asian_;                     
+
+			if (style_font_name_complex_)
+				w_cs = *style_font_name_complex_;
+
+			fonts_container & fonts = Context.root()->odf_context().fontContainer();
+	        
+			font_instance * font = fonts.font_by_style_name(w_ascii);
+			if (font == NULL)font = fonts.font_by_style_name(w_hAnsi);
+			if (font)CP_XML_NODE(L"a:latin"){CP_XML_ATTR(L"typeface",font->name());}
+
+			font = fonts.font_by_style_name(w_eastAsia);
+			if (font)	CP_XML_NODE(L"a:ea"){CP_XML_ATTR(L"typeface",font->name());}
+
+			font = fonts.font_by_style_name(w_cs);
+			if (font)	CP_XML_NODE(L"a:cs"){CP_XML_ATTR(L"typeface",font->name());}
+
+		}
+
+		if (fo_color_)
+		{
+			CP_XML_NODE(L"solidFill")
+			{
+				CP_XML_NODE(L"srgbClr"){CP_XML_ATTR(L"val",fo_color_->get_hex_value());}
+			}
+		}
+		//else if (style_use_window_font_color_ && *style_use_window_font_color_)
+		//{
+		//	_rPr << L"<w:color w:val=\"auto\" />";
+		//}
+
+		//if (fo_background_color_)
+		//{
+		//	std::wstring w_fill;
+		//	if (fo_background_color_->get_type() == background_color::Transparent)
+		//		w_fill = L"auto";        
+		//	else
+		//		w_fill = fo_background_color_->get_color().get_hex_value();
+
+		//	_rPr << L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" << w_fill << "\" />";
+		//}
+		
+		//if (hyperlink_hId.length()>0)
+		//{
+		//	CP_XML_NODE(L"a:hlinkClick ")
+		//	{
+		//		CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+		//		CP_XML_ATTR(L"r:id", hyperlink_hId);
+		//	}
+		//}
+
+	}
 }
 
 void text_format_properties_content::docx_convert(oox::docx_conversion_context & Context)
@@ -564,8 +755,8 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
             noNeedSize = true;
         }
 
-        double fontSizeVal = (fo_font_size_) ? process_font_size_impl(fo_font_size_, Context.get_current_processed_style()) :
-            process_font_size_impl(font_size(percent(100.0)), Context.get_current_processed_style());
+        double fontSizeVal = (fo_font_size_) ? process_font_size_impl(fo_font_size_, Context.get_styles_context().get_current_processed_style()) :
+            process_font_size_impl(font_size(percent(100.0)), Context.get_styles_context().get_current_processed_style());
 
         if (style_text_position_->get_type() == text_position::Percent)
         {
@@ -613,10 +804,10 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
     {
          int fontSize=0;
 		 if (Context.get_drop_cap_context().state()==2)
-			 fontSize = process_font_size(fo_font_size_, Context.get_current_processed_style(),false,
+			 fontSize = process_font_size(fo_font_size_, Context.get_styles_context().get_current_processed_style(),false,
 				 Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7);//вместо 1 ДОЛЖНОБЫТЬ коэфф. межстрочного интервала!!!
 		 else
-			 fontSize = process_font_size(fo_font_size_, Context.get_current_processed_style());
+			 fontSize = process_font_size(fo_font_size_, Context.get_styles_context().get_current_processed_style());
        
 		 if (fontSize>0)
 		{
@@ -626,10 +817,10 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
 
     int fontSizeComplex=0;
 	if (Context.get_drop_cap_context().state()==2)
-		fontSizeComplex = process_font_size(style_font_size_complex_, Context.get_current_processed_style(), true,
+		fontSizeComplex = process_font_size(style_font_size_complex_, Context.get_styles_context().get_current_processed_style(), true,
 			Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7);
 	else
-		fontSizeComplex = process_font_size(style_font_size_complex_, Context.get_current_processed_style(), true);
+		fontSizeComplex = process_font_size(style_font_size_complex_, Context.get_styles_context().get_current_processed_style(), true);
 
     if (fontSizeComplex>0)
         _rPr << L"<w:szCs w:val=\"" << fontSizeComplex << "\" />";

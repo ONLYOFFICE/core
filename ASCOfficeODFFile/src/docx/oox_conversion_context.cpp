@@ -7,8 +7,19 @@
 #include <cpdoccore/odf/odf_document.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
+#include "../odf/odfcontext.h"
+
 namespace cpdoccore { 
-namespace oox {
+
+void styles_context::start_process_style(const odf::style_instance * Instance)
+{
+   current_processed_style_ = Instance;
+}
+
+void styles_context::end_process_style()
+{
+    current_processed_style_ = NULL;
+}
 
 void styles_context::start()
 {
@@ -23,9 +34,12 @@ void styles_context::start()
 
     list_style_.str( std::wstring() );
     list_style_.clear();
+
+	extern_node_ = L"a:rPr";
+
 }
 
-std::wostream & styles_context::text_style()
+std::wstringstream & styles_context::text_style()
 {
     return text_style_;
 }
@@ -35,12 +49,12 @@ std::wstringstream & styles_context::paragraph_style()
     return paragraph_style_;
 }
 
-std::wostream & styles_context::table_style()
+std::wstringstream & styles_context::table_style()
 {
     return table_style_;
 }
 
-std::wostream & styles_context::list_style()
+std::wstringstream & styles_context::list_style()
 {
     return list_style_;
 }
@@ -73,5 +87,5 @@ void styles_context::docx_serialize_table_style(std::wostream & strm)
 		}
     }
 }
-}
+
 }

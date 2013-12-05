@@ -528,13 +528,13 @@ void text_list_level_style_bullet::pptx_convert(oox::pptx_conversion_context & C
         dynamic_cast<style_list_level_label_alignment *>(listLevelProperties->style_list_level_label_alignment_.get()) : NULL;
 
 	int level = text_list_level_style_attr_.get_text_level();
-	std::wstring nodeLevel = L"a:lvl" + boost::lexical_cast<std::wstring>(level) + L"pPr";
+	//std::wstring nodeLevel = L"a:lvl" + boost::lexical_cast<std::wstring>(level) + L"pPr";
 	
 	CP_XML_WRITER(strm)
 	{ 	
-		CP_XML_NODE(nodeLevel)
+		//CP_XML_NODE(nodeLevel)
 		{
-			CP_XML_ATTR(L"lvl",level - 1);
+			//CP_XML_ATTR(L"lvl",level - 1);
 			//attr ident
 			//attr marL
 		
@@ -547,7 +547,7 @@ void text_list_level_style_bullet::pptx_convert(oox::pptx_conversion_context & C
 		    if (style_text_properties * textProperties = dynamic_cast<style_text_properties *>(style_text_properties_.get()))
 		    {
 		        textProperties->content().pptx_convert(Context);
-//		        Context.get_text_context().get_styles_context().pptx_serialize_text_style(CP_XML_STREAM());
+				strm << Context.get_text_context().get_styles_context().text_style().str();
 		    }
 		}
 	}

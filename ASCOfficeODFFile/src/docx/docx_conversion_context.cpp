@@ -24,7 +24,6 @@ docx_conversion_context::docx_conversion_context(package::docx_document * Output
 	output_document_(OutputDocument), 
 	odf_document_(OdfDocument),
 	current_run_(false),
-	current_processed_style_( NULL ),
 	page_break_after_(false),
 	page_break_before_(false),
 	in_automatic_style_(false),
@@ -428,9 +427,9 @@ void docx_conversion_context::process_styles()
             _Wostream << L"<w:pPrDefault>";
             if ( odf::style_content * content = defaultParStyle->content())
             {
-                start_process_style(defaultParStyle);
+                get_styles_context().start_process_style(defaultParStyle);
                 content->docx_convert(*this);
-                end_process_style();
+				get_styles_context().end_process_style();
 			}
             _Wostream << L"</w:pPrDefault>";
         }
@@ -477,9 +476,9 @@ void docx_conversion_context::process_styles()
 
                 if (odf::style_content * content = inst->content())
                 {
-                    start_process_style(inst.get());
+                    get_styles_context().start_process_style(inst.get());
                     content->docx_convert(*this);
-                    end_process_style();
+                    get_styles_context().end_process_style();
                 }
 
                 _Wostream << L"</w:style>\n";                
@@ -491,15 +490,6 @@ void docx_conversion_context::process_styles()
     output_document_->get_word_files().set_styles( package::simple_element::create(L"styles.xml", styles_xml_.str()) );
 }
 
-void docx_conversion_context::start_process_style(const odf::style_instance * Instance)
-{
-    current_processed_style_ = Instance;
-}
-
-void docx_conversion_context::end_process_style()
-{
-    current_processed_style_ = NULL;
-}
 
 void docx_conversion_context::start_process_style_content()
 {

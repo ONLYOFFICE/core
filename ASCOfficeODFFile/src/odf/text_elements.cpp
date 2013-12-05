@@ -94,7 +94,7 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
 	if ((text_properties) && (text_properties->content().fo_font_size_))
 	{
 		Context.get_drop_cap_context().FontSize = styleContent->get_style_text_properties()->content().process_font_size(
-				text_properties->content().fo_font_size_, Context.get_current_processed_style(),false,
+				text_properties->content().fo_font_size_, Context.get_styles_context().get_current_processed_style(),false,
 					 7.25 * (Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7));//формула ачуметь !! - подбор вручную
 	}
 	return;
@@ -225,7 +225,7 @@ void paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 					if ((text_properties) && (text_properties->content().fo_font_size_))
 					{
 						Context.get_drop_cap_context().FontSize = styleContent->get_style_text_properties()->content().process_font_size(
-							text_properties->content().fo_font_size_, Context.get_current_processed_style(),false,
+							text_properties->content().fo_font_size_, Context.get_styles_context().get_current_processed_style(),false,
 									 7.25 * (Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7));
 					}
 				}

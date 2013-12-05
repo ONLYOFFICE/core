@@ -80,7 +80,6 @@ public:
         return odf_document_;
     }
 
-
     pptx_xml_slide & current_slide();
 	pptx_xml_slideLayout & current_layout();
 	pptx_xml_slideMaster & current_master();

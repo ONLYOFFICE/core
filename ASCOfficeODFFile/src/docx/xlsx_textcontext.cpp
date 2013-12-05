@@ -275,14 +275,6 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 				if ((iValFontWeight) && (iValFontWeight.get() >0)){CP_XML_NODE(L"b")		{CP_XML_ATTR(L"val", "true");}}
 			}
 		}
-		//CP_XML_NODE(L"charset")
-		//{
-		//	CP_XML_ATTR(L"val",204);
-		//}	
-		//CP_XML_NODE(L"family")
-		//{
-		//	CP_XML_ATTR(L"val",2);
-		//}
     }
 }
 

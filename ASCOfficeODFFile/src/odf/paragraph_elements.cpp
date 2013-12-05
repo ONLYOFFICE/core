@@ -334,9 +334,9 @@ void span::docx_convert(oox::docx_conversion_context & Context)
                 {
                     Context.push_text_properties(styleContent->get_style_text_properties());
                     pushed = true;
-                    Context.start_process_style(styleInst);
+                    Context.get_styles_context().start_process_style(styleInst);
 					Context.add_new_run();
-                    Context.end_process_style();
+                    Context.get_styles_context().end_process_style();
                     addNewRun = true;
                 }                            
             }
@@ -379,12 +379,16 @@ void span::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void span::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    Context.get_text_context().start_span(text_style_name_.style_name());
+    if (style_instance * styleInst = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_.style_name(), style_family::Text,false))
+		Context.get_text_context().get_styles_context().start_process_style(styleInst);
+   
+	Context.get_text_context().start_span(text_style_name_.style_name());
     BOOST_FOREACH(const office_element_ptr & elm, paragraph_content_)
     {
         elm->pptx_convert(Context);
     }
     Context.get_text_context().end_span();
+	Context.get_text_context().get_styles_context().end_process_style();
 }
 // text:a
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -454,9 +458,9 @@ void a::docx_convert(oox::docx_conversion_context & Context)
             {
                 Context.push_text_properties(styleContent->get_style_text_properties());
                 pushed = true;
-                Context.start_process_style(styleInst);
+                Context.get_styles_context().start_process_style(styleInst);
 				Context.add_new_run();
-                Context.end_process_style();
+                Context.get_styles_context().end_process_style();
                 addNewRun = true;
             }                            
         }
@@ -499,12 +503,17 @@ void a::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void a::pptx_convert(oox::pptx_conversion_context & Context)
 {
-   // Context.start_hyperlink(text_style_name_.style_name());
+    if (style_instance * styleInst = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_.style_name(), style_family::Text,false))
+		Context.get_text_context().get_styles_context().start_process_style(styleInst);
+	
+	// Context.start_hyperlink(text_style_name_.style_name());
     BOOST_FOREACH(const office_element_ptr & elm, paragraph_content_)
     {
         elm->pptx_convert(Context);
     }
  //   Context.end_hyperlink(xlink_href_);
+
+	Context.get_text_context().get_styles_context().end_process_style();
 }
 // text:note
 //////////////////////////////////////////////////////////////////////////////////////////////////

@@ -70,7 +70,7 @@ int check_j2000_type(HANDLE hFile)
 						 && 0x6a == pBuffer[4] && 0x50 == pBuffer[5]  && 0x20 == pBuffer[6] && 0x20 == pBuffer[7]
 						 
 						 && 0x0d == pBuffer[8] && 0x0a == pBuffer[9]  && 0x87 == pBuffer[10] && 0x0a == pBuffer[11]
-						&& 0x00 == pBuffer[12] && 0x00 == pBuffer[13]  && 0x00 == pBuffer[14] &&  (0x14 == pBuffer[15] || 0x18 == pBuffer[15] )
+						&& 0x00 == pBuffer[12] && 0x00 == pBuffer[13]  && 0x00 == pBuffer[14] /*&&  (0x14 == pBuffer[15] || 0x18 == pBuffer[15] )*/
 						 
 						 && 0x66 == pBuffer[16] && 0x74 == pBuffer[17]  && 0x79 == pBuffer[18] && 0x70 == pBuffer[19]
 						 && 0x6a == pBuffer[20] && 0x70 == pBuffer[21]  && 0x32 == pBuffer[22] && 0x20 == pBuffer[23]
@@ -145,7 +145,7 @@ STDMETHODIMP CJ2kFile::J2kToInterface(BSTR bsSrcPath, IUnknown **ppImage, BSTR b
 		if (NULL == hMapFile)
 		{
 			CloseHandle( hFile );
-			return S_FALSE; // Невозможно создать отображение файла
+			return Error(MEMORY); // Невозможно создать отображение файла
 		}
 
 		// создаем view of file
@@ -411,11 +411,10 @@ STDMETHODIMP CJ2kFile::J2kToInterface(BSTR bsSrcPath, IUnknown **ppImage, BSTR b
 
 STDMETHODIMP CJ2kFile::InterfaceToJ2k(IUnknown **ppImage, BSTR bsDstPath, BSTR bsXmlOptions)
 {
-
 	CStringA sFilePath( bsDstPath );
 
 	if (!ppImage || !*ppImage)
-		return S_FALSE;
+		return Error(MEMORY);
 
 	int nWidth = 0;
 	int nHeight = 0;
@@ -423,12 +422,12 @@ STDMETHODIMP CJ2kFile::InterfaceToJ2k(IUnknown **ppImage, BSTR bsDstPath, BSTR b
 
 	MediaCore::IAVSUncompressedVideoFrame* pMediaData = NULL;
 	if ( NULL == ppImage || NULL == (*ppImage) )
-		return S_FALSE;
+		return Error(MEMORY);
 
 	MediaCore::IAVSUncompressedVideoFrame* pMediaDataIn = NULL;
 	(*ppImage)->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)(&pMediaDataIn));
 	if ( NULL == pMediaDataIn )
-		return S_FALSE;
+		return Error(MEMORY);
 
 	LONG lWidth = 0;   pMediaDataIn->get_Width(&lWidth);
 	LONG lHeight = 0;  pMediaDataIn->get_Height(&lHeight);
@@ -443,7 +442,7 @@ STDMETHODIMP CJ2kFile::InterfaceToJ2k(IUnknown **ppImage, BSTR bsDstPath, BSTR b
 		if (NULL == pMediaFormat)
 		{
 			pMediaDataIn->Release();
-			return S_FALSE;
+			return Error(MEMORY);
 		}
 
 		MediaCore::IAVSVideoFrameTransform* pMediaTransform = NULL;
@@ -452,7 +451,7 @@ STDMETHODIMP CJ2kFile::InterfaceToJ2k(IUnknown **ppImage, BSTR bsDstPath, BSTR b
 		{
 			pMediaDataIn->Release();
 			pMediaFormat->Release();
-			return S_FALSE;
+			return Error(MEMORY);
 		}
 
 		pMediaFormat->SetDefaultProperties();
@@ -498,7 +497,7 @@ STDMETHODIMP CJ2kFile::InterfaceToJ2k(IUnknown **ppImage, BSTR bsDstPath, BSTR b
 	pMediaDataIn->Release();
 
 	if (NULL == pMediaData)
-		return S_FALSE;
+		return Error(MEMORY);
 
 	// 
 	lWidth = 0;              pMediaData->get_Width(&lWidth);
@@ -533,7 +532,7 @@ STDMETHODIMP CJ2kFile::InterfaceToJ2k(IUnknown **ppImage, BSTR bsDstPath, BSTR b
 	// Создаем структуру Image
 	pImage = Image_Create( nComponentsCount, &aComponentParams[0], csRGB );
 	if ( !pImage )
-		return S_FALSE;
+		return Error(MEMORY);
 
 	pImage->nXOsiz = oParameters.nImageOffsetX0;
 	pImage->nYOsiz = oParameters.nImageOffsetY0;
@@ -576,7 +575,7 @@ STDMETHODIMP CJ2kFile::InterfaceToJ2k(IUnknown **ppImage, BSTR bsDstPath, BSTR b
 	{
 		pMediaData->Release();
 		Image_Destroy( pImage );
-		return S_FALSE;
+		return Error(MEMORY);
 	}
 
 	bool bRes = false;
@@ -590,5 +589,5 @@ STDMETHODIMP CJ2kFile::InterfaceToJ2k(IUnknown **ppImage, BSTR bsDstPath, BSTR b
 	Image_Destroy( pImage );
 
 
-	return bRes? S_OK : S_FALSE;
+	return bRes? S_OK : Error(FILEFORMAT);
 }

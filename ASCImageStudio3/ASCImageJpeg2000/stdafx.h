@@ -46,8 +46,8 @@
 
 using namespace ATL;
 
-#import "..\..\Redist\ASCMediaCore3.dll"           named_guids rename_namespace("MediaCore"), exclude("tagRECT")
-#import "..\..\Redist\ASCMediaFormatSettings3.dll" named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
+#import "..\..\Redist\ASCMediaCore3.dll"			named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
+#import "..\..\Redist\ASCMediaFormatSettings3.dll"	named_guids raw_interfaces_only rename_namespace("MediaFormat"), exclude("tagRECT")
 
 #include "..\..\Common\ASCUtils.h"
 #include "..\..\Common\VideoFileErrorDescription.h"

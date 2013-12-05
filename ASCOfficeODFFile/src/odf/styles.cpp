@@ -772,10 +772,8 @@ std::wstring process_page_margin(const _CP_OPT(length_or_percent) & Val, const _
 
 }
 
-void style_page_layout_properties_attlist::docx_convert(oox::docx_conversion_context & Context) 
+void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context) 
 {
-    std::wostream & strm = Context.output_stream();
-
     if (fo_page_width_ || fo_page_height_ || style_print_orientation_)
     {
         std::wstring w_w = L"";
@@ -863,12 +861,12 @@ void style_page_layout_properties_attlist::pptx_convert(oox::pptx_conversion_con
                 
         std::wstring w_orient = L"custom";
 
-		//if (w && h)
-		//{
-		//	double ratio = (double)w/(double)h;
-		//	if (abs(ratio - 16./9.)<0.01)	w_orient = L"screen16x9";
-		//	if (abs(ratio - 4./3.)<0.01)	w_orient = L"screen4x3";
-		//}
+		if (w && h)
+		{
+			double ratio = (double)w/(double)h;
+			if (abs(ratio - 16./9.)<0.01)	w_orient = L"screen16x9";
+			if (abs(ratio - 4./3.)<0.01)	w_orient = L"screen4x3";
+		}
         
         strm << L"<p:sldSz ";
         if (!w_h.empty())
@@ -925,7 +923,8 @@ void style_page_layout_properties::add_child_element( xml::sax * Reader, const :
 {
     style_page_layout_properties_elements_.add_child_element(Reader, Ns, Name, getContext());
 }
-void style_page_layout_properties::docx_convert(oox::docx_conversion_context & Context)
+
+void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
 {
 	if (Context.get_drawing_context().get_current_level()>0) return;
     
@@ -936,57 +935,67 @@ void style_page_layout_properties::docx_convert(oox::docx_conversion_context & C
         return;
     }
 
-    std::wostream & strm = Context.output_stream();
-
-    strm << L"<w:sectPr>";
-    if (!Context.get_section_context().empty())
-    {
-        strm << L"<w:type w:val=\"continuous\" />";
-        const std::wstring & secStyleName = Context.get_section_context().get().Style;
-        if (const style_instance * secStyle = 
-			Context.root()->odf_context().styleContainer().style_by_name(secStyleName, style_family::Section,Context.process_headers_footers_))
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"w:sectPr")
 		{
-            if (const style_content * content = secStyle->content())
+			if (!Context.get_section_context().empty())
 			{
-                if (style_section_properties * sectPr = content->get_style_section_properties())
+				CP_XML_NODE(L"w:type")
 				{
-                    if (const style_columns * columns = dynamic_cast<const style_columns *>( sectPr->style_columns_.get() ))
+					CP_XML_ATTR(L"w:val","continuous");
+				}
+				const std::wstring & secStyleName = Context.get_section_context().get().Style;
+				if (const style_instance * secStyle = 
+					Context.root()->odf_context().styleContainer().style_by_name(secStyleName, style_family::Section,Context.process_headers_footers_))
+				{
+					if (const style_content * content = secStyle->content())
 					{
-                        if (columns->fo_column_count_ && *columns->fo_column_count_ > 1)
-                        {
-                            strm << L"<w:cols w:equalWidth=\"true\" w:num=\"" << *columns->fo_column_count_ << L"\" w:sep=\"true\" w:space=\"0\" />";
-                        }
+						if (style_section_properties * sectPr = content->get_style_section_properties())
+						{
+							if (const style_columns * columns = dynamic_cast<const style_columns *>( sectPr->style_columns_.get() ))
+							{
+								if (columns->fo_column_count_ && *columns->fo_column_count_ > 1)
+								{
+									CP_XML_NODE(L"w:cols")
+									{
+										CP_XML_ATTR(L"w:equalWidth", L"true");
+										CP_XML_ATTR(L"w:num", *columns->fo_column_count_);
+										CP_XML_ATTR(L"w:sep",true);
+										CP_XML_ATTR(L"w:space",0);
+									}
+								}
+							}
+						}
 					}
 				}
 			}
-		}
-    }
-    else
-    {
-        if (!Context.get_section_context().get_after_section())
-        {
-            strm << L"<w:type w:val=\"nextPage\" />";
-        }
-        else
-            strm << L"<w:type w:val=\"continuous\" />";
-    }
+			else
+			{
+				CP_XML_NODE(L"w:type")
+				{				
+					if (!Context.get_section_context().get_after_section())
+						CP_XML_ATTR(L"w:val", L"nextPage");
+					else
+						CP_XML_ATTR(L"w:val", L"continuous");
+				}
+			}
 
-	{
-		std::wstring masterPageName = Context.get_master_page_name();//выдавался последний по document.xml!!!
-		bool res = Context.get_headers_footers().write_sectPr(masterPageName, strm);
-		if (res == false)
-		{
-			// default???
-			masterPageName = L"Standard";
-			const std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(masterPageName);
-			Context.set_page_properties(masterPageNameLayout);
-			bool res = Context.get_headers_footers().write_sectPr(masterPageName, strm);
+			{
+				std::wstring masterPageName = Context.get_master_page_name();//выдавался последний по document.xml!!!
+				bool res = Context.get_headers_footers().write_sectPr(masterPageName, strm);
+				if (res == false)
+				{
+					// default???
+					masterPageName = L"Standard";
+					const std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(masterPageName);
+					Context.set_page_properties(masterPageNameLayout);
+					bool res = Context.get_headers_footers().write_sectPr(masterPageName, strm);
+				}
+			}
+			style_page_layout_properties_attlist_.docx_convert_serialize(strm, Context);        
 		}
 	}
-    style_page_layout_properties_attlist_.docx_convert(Context);        
-    strm << L"</w:sectPr>";
-
-
 }
 void style_page_layout_properties::pptx_convert(oox::pptx_conversion_context & Context)
 {

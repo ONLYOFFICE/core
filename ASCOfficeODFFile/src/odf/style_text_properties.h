@@ -46,6 +46,7 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
     void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context);
 
     void apply_from(const text_format_properties_content & Other);
 	void apply_to(std::vector<_property> & properties);
@@ -283,6 +284,8 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context);
+
     const text_format_properties_content & content() const { return text_format_properties_content_; } ;
     text_format_properties_content & content() { return text_format_properties_content_; } ;
 

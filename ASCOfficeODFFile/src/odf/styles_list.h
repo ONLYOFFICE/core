@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_OFFCIE_STYLES_LIST_H_
-#define _CPDOCCORE_ODF_OFFCIE_STYLES_LIST_H_
+#pragma once
 
 #include <iosfwd>
 #include <string>
@@ -170,6 +169,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     void docx_convert(oox::docx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context);
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -216,6 +216,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     void docx_convert(oox::docx_conversion_context & Context) ;
+    void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -233,5 +234,3 @@ CP_REGISTER_OFFICE_ELEMENT2(text_list_level_style_bullet);
 
 
 } }
-
-#endif

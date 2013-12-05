@@ -1407,6 +1407,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\docx\oox_conversion_context.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\docx\oox_conversion_context.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\docx\oox_drawing.cpp"
 					>
 				</File>
@@ -1428,10 +1436,6 @@
 				</File>
 				<File
 					RelativePath=".\src\docx\oox_package.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\docx\ooxconversioncontext.h"
 					>
 				</File>
 				<File

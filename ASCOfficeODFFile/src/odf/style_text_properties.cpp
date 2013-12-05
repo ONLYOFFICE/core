@@ -301,10 +301,14 @@ int text_format_properties_content::process_font_style(const optional<font_style
     }
     return 0;   
 }
+void text_format_properties_content::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    std::wostream & _rPr = Context.get_text_context().get_styles_context().text_style();
+    std::wstringstream & _pPr = Context.get_text_context().get_styles_context().paragraph_style();
+}
 
 void text_format_properties_content::docx_convert(oox::docx_conversion_context & Context)
 {
-    std::wostream & _rPr = Context.get_styles_context().text_style();
     std::wostream & _pPr = Context.get_styles_context().paragraph_style();
 
     // to paragraph properties
@@ -316,6 +320,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
             _pPr << L"<w:suppressAutoHyphens w:val=\"true\" />";
     }
 
+    std::wostream & _rPr = Context.get_styles_context().text_style();
     if (Context.rtl())
     {
         _rPr << L"<w:rtl w:val=\"true\" />";
@@ -925,6 +930,11 @@ void style_text_properties::add_child_element( xml::sax * Reader, const ::std::w
 void style_text_properties::docx_convert(oox::docx_conversion_context & Context)
 {
     text_format_properties_content_.docx_convert(Context);
+}
+
+void style_text_properties::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    text_format_properties_content_.pptx_convert(Context);
 }
 
 }

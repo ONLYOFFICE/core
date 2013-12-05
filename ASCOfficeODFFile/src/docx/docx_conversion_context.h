@@ -12,7 +12,7 @@
 #include "docx_table_context.h"
 #include "../odf/noteclass.h"
 
-#include "ooxconversioncontext.h"
+#include "oox_conversion_context.h"
 #include "oox_chart_context.h"
 
 namespace cpdoccore { 
@@ -82,24 +82,6 @@ private:
 };
 
 
-
-class styles_context : boost::noncopyable
-{
-public:
-    void start();
-    std::wostream & text_style();
-    std::wostream & paragraph_style();
-    std::wostream & table_style();
-
-    void write_text_style(docx_conversion_context & Context);
-    void write_paragraph_style(docx_conversion_context & Context, const std::wstring & ParentId);
-    void write_table_style(docx_conversion_context & Context);
-
-private:
-    std::wstringstream text_style_;
-    std::wstringstream paragraph_style_;
-    std::wstringstream table_style_;
-};
 
 class drawing_context : boost::noncopyable
 {
@@ -409,7 +391,7 @@ public:
     void process_fonts();
     
     void process_list_styles();
-    void process_page_properties();
+    void process_page_properties(std::wostream & strm);
     void process_headers_footers();
     void process_comments();
 
@@ -456,8 +438,11 @@ public:
     const std::wstring current_list_style() const;
     void start_list_item(bool restart = false);
     void end_list_item();
-    void write_list_properties();
-    std::wstring find_list_rename(const std::wstring & ListStyleName) const;
+    
+	void docx_serialize_list_properties(std::wostream & strm);
+	void docx_serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId);
+   
+	std::wstring find_list_rename(const std::wstring & ListStyleName) const;
 
     drawing_context & get_drawing_context() { return drawing_context_; } 
 	

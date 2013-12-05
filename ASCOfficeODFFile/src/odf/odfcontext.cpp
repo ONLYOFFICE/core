@@ -282,7 +282,7 @@ style_page_layout_properties * page_layout_instance::properties() const
     return dynamic_cast<style_page_layout_properties *>(style_page_layout_->style_page_layout_properties_.get());
 }
 
-void page_layout_instance::docx_convert(oox::docx_conversion_context & Context)
+void page_layout_instance::docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
 {
     const style_header_style * headerStyle = dynamic_cast<style_header_style *>(style_page_layout_->style_header_style_.get());
     const style_footer_style * footerStyle = dynamic_cast<style_footer_style *>(style_page_layout_->style_footer_style_.get());
@@ -306,7 +306,7 @@ void page_layout_instance::docx_convert(oox::docx_conversion_context & Context)
         Context.get_header_footer_context().set_footer(bottom);
     }
 
-    properties()->docx_convert(Context);   
+    properties()->docx_convert_serialize(strm, Context);   
 }
 void page_layout_instance::pptx_convert(oox::pptx_conversion_context & Context)
 {

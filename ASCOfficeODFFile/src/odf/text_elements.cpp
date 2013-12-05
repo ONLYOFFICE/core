@@ -102,7 +102,6 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
 
 int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_context & Context)
 {
-    std::wostream & _Wostream = Context.output_stream();
     if (!Attr.text_style_name_.empty())
     {
         if (style_instance * styleInst 
@@ -129,10 +128,11 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
             else
             {
                 const std::wstring id = Context.get_style_map().get( styleInst->name(), styleInst->type() );
+				std::wostream & _Wostream = Context.output_stream();
                 _Wostream << L"<w:pPr>";
-					Context.process_page_properties();
+					Context.process_page_properties(_Wostream);
 					_Wostream << L"<w:pStyle w:val=\"" << id << L"\" />";
-					Context.write_list_properties();
+					Context.docx_serialize_list_properties(_Wostream);
                 _Wostream << L"</w:pPr>";
 				return 2;
 			}

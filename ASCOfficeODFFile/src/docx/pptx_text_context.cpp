@@ -22,8 +22,10 @@ namespace oox {
 class pptx_text_context::Impl: boost::noncopyable
 {
 public:
-	Impl(odf::odf_read_context & odf_context_);
+	Impl(odf::odf_read_context & odf_context_,	pptx_conversion_context & pptx_context_);
 public:
+	styles_context & get_styles_context() { return styles_context_; }
+
 	void add_text(const std::wstring & text);
     
     void start_paragraph(const std::wstring & styleName);
@@ -32,9 +34,6 @@ public:
     void start_span(const std::wstring & styleName);
     void end_span();
     std::wstring end_span2();
-
-	void start_comment_content();
-	std::wstring end_comment_content();
 
 	void start_drawing_content();
 	std::wstring end_drawing_content();
@@ -51,14 +50,15 @@ public:
     void start_list_item(bool restart = false);
 	void end_list_item();
 
+
 private:
+    styles_context styles_context_;
+
 	odf::odf_read_context & odf_context_ ;
 	std::wstring hyperlink_hId;
 	
-	bool in_comment;
 	bool in_span;
 	bool in_paragraph;
-
 
 	odf::styles_container * local_styles_ptr_;
 
@@ -85,15 +85,19 @@ private:
     // цепочки переименований нумераций
     boost::unordered_map<std::wstring, std::wstring> list_style_renames_;
    
+	void write_list_styles(std::wostream & strm);
 	void write_list_properties(std::wostream & strm);
 	std::wstring find_list_rename(const std::wstring & ListStyleName);
 	std::wstring current_list_style();
 ///////////////////////////
 
+	pptx_conversion_context & pptx_context_;
+
 };
 
-pptx_text_context::Impl::Impl(odf::odf_read_context & odf_contxt_): paragraphs_cout_(0),odf_context_(odf_contxt_),
-				in_comment(false),in_paragraph(false),in_span(false)
+pptx_text_context::Impl::Impl(odf::odf_read_context & odf_contxt_, pptx_conversion_context & pptx_contxt_): 
+		odf_context_(odf_contxt_),	pptx_context_(pptx_contxt_),
+		paragraphs_cout_(0),in_paragraph(false),in_span(false)
 {
 	new_list_style_number_=0;
 }
@@ -193,21 +197,22 @@ void pptx_text_context::Impl::ApplyTextProperties(std::wstring style,odf::text_f
 
 void pptx_text_context::Impl::write_pPr(std::wostream & strm)
 {
-    if (styles_paragraph_.length()>0)
-    {
-		if (odf::style_instance * styleInst= odf_context_.styleContainer().style_by_name(styles_paragraph_, odf::style_family::Paragraph,false) )
-        {
-
-			CP_XML_WRITER(strm)
-			{			
-				CP_XML_NODE(L"w:pPr")
+	CP_XML_WRITER(strm)
+	{			
+		CP_XML_NODE(L"a:pPr")
+		{
+			//...
+			if (styles_paragraph_.length()>0)
+			{
+				if (odf::style_instance * styleInst= odf_context_.styleContainer().style_by_name(styles_paragraph_, odf::style_family::Paragraph,false) )
 				{
-					//...
-					write_list_properties(strm);
+
+
 				}
 			}
-        }
-    }
+			write_list_properties(strm);
+		}
+	}  
 }
 
 void pptx_text_context::Impl::write_rPr(std::wostream & strm)
@@ -325,19 +330,7 @@ void pptx_text_context::Impl::dump_run()
 	hyperlink_hId =L"";
 }
 
-void pptx_text_context::Impl::start_comment_content()
-{
-    paragraphs_cout_ = 0;
-   
-	run_.str(std::wstring());
-    text_.str(std::wstring());
-	paragraph_.str(std::wstring());
-    
-	styles_paragraph_ = L"";
-    styles_span_ = L"";
 
-	in_comment = true;
-}
 void pptx_text_context::Impl::start_drawing_content()
 {
     paragraphs_cout_ = 0;
@@ -348,26 +341,17 @@ void pptx_text_context::Impl::start_drawing_content()
     
 	styles_paragraph_ = L"";
     styles_span_ = L"";
-}
-std::wstring pptx_text_context::Impl::end_comment_content()
-{
-	std::wstring comment = dump_paragraph();
-  
-	paragraphs_cout_ = 0;
-    
-	run_.str(std::wstring());
-	paragraph_.str(std::wstring());
-    text_.str(std::wstring());
-	
-	styles_paragraph_ = L"";
-    styles_span_=L"";
 
-	in_comment = false;
-	return comment;
+	get_styles_context().start();
+
 }
+
 std::wstring pptx_text_context::Impl::end_drawing_content()
 {
-	std::wstring draw_text= dump_paragraph();
+	std::wstringstream str_styles;
+
+	write_list_styles(str_styles);
+	str_styles << dump_paragraph();
   
 	paragraphs_cout_ = 0;
     
@@ -378,7 +362,7 @@ std::wstring pptx_text_context::Impl::end_drawing_content()
 	styles_paragraph_ = L"";
     styles_span_=L"";
 
-	return draw_text;
+	return str_styles.str();
 }
 void pptx_text_context::Impl::start_list_item(bool restart)
 {
@@ -415,7 +399,7 @@ void pptx_text_context::Impl::start_list(const std::wstring & StyleName, bool Co
 
 void pptx_text_context::Impl::end_list()
 {
-    list_style_stack_.pop_back();
+    ///list_style_stack_.pop_back(); пока не стираем .. как сохраним в lstStyles - очистим
 }
 
 std::wstring pptx_text_context::Impl::current_list_style()
@@ -458,11 +442,47 @@ void pptx_text_context::Impl::write_list_properties(std::wostream & strm)
 		}
     }
 }
+void pptx_text_context::Impl::write_list_styles(std::wostream & strm)//defaults style paragraph & lists
+{
+    odf::list_style_container & list_styles = odf_context_.listStyleContainer();
+
+    if (list_styles.empty())
+        return;
+   
+	get_styles_context().start();
+
+	CP_XML_WRITER(strm)
+	{ 	
+		CP_XML_NODE(L"a:lstStyle")
+		{
+			//defPPr
+			//...
+
+			//list levels 0 - 8
+			BOOST_FOREACH(std::wstring & st_name, list_style_stack_ )
+			{
+				odf::text_list_style * s = list_styles.list_style_by_name(st_name);
+		        
+				BOOST_FOREACH(odf::office_element_ptr & elm, s->get_content())
+				{
+					elm->pptx_convert(pptx_context_);
+				}
+			}
+
+			CP_XML_STREAM() << get_styles_context().list_style();
+		}
+	}
+
+	list_style_stack_.clear();
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-pptx_text_context::pptx_text_context(odf::odf_read_context & odf_context_): impl_(new pptx_text_context::Impl(odf_context_))
+pptx_text_context::pptx_text_context(odf::odf_read_context & odf_context_, pptx_conversion_context & pptx_context_):
+	impl_(new pptx_text_context::Impl(odf_context_,pptx_context_))
 {}
 
 
@@ -520,18 +540,6 @@ void pptx_text_context::end_list()
 {
 	return impl_->end_list();
 }
-
-
-std::wstring pptx_text_context::end_comment_content()
-{
-	return impl_->end_comment_content();
-}
-
-void pptx_text_context::start_comment_content()
-{
-	return impl_->start_comment_content();
-}
-
 void pptx_text_context::start_drawing_content()
 {
 	return impl_->start_drawing_content();
@@ -549,7 +557,10 @@ std::wstring pptx_text_context::end_drawing_content()
 	return impl_->end_drawing_content();
 }
 
+styles_context & pptx_text_context::get_styles_context() 
+{ 
+	return  impl_->get_styles_context() ; 
+}
 
-    
 }
 }

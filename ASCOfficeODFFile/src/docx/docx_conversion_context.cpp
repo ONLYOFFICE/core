@@ -52,7 +52,8 @@ void docx_conversion_context::add_element_to_run()
         odf::style_text_properties_ptr textProp = this->current_text_properties();
         get_styles_context().start();
         textProp->content().docx_convert(*this);
-        get_styles_context().write_text_style( *this );
+        
+		get_styles_context().docx_serialize_text_style( output_stream());
     }
 
 }
@@ -505,21 +506,45 @@ void docx_conversion_context::start_process_style_content()
     styles_context_.start();
 }
 
-void docx_conversion_context::process_page_properties()
+void docx_conversion_context::process_page_properties(std::wostream & strm)
 {
     if (is_next_dump_page_properties())
     {
         const std::wstring pageProperties = get_page_properties();
-        root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties)->docx_convert(*this);
+        root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties)->docx_convert_serialize(strm,*this);
     }
 }
 
 void docx_conversion_context::end_process_style_content()
 {
-    styles_context_.write_paragraph_style(*this, automatic_parent_style_);
+   docx_serialize_paragraph_style(output_stream(), automatic_parent_style_);
     
     if (automatic_parent_style_.empty())
-        styles_context_.write_text_style(*this);
+        styles_context_.docx_serialize_text_style( output_stream());
+}
+
+void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId)
+{
+	std::wstringstream & paragraph_style = get_styles_context().paragraph_style();
+    if (!paragraph_style.str().empty() || !ParentId.empty())
+    {
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(L"w:pPr")
+			{
+				process_page_properties(CP_XML_STREAM());//????????
+				if (!ParentId.empty())
+				{
+					CP_XML_NODE(L"w:pStyle")
+					{
+						CP_XML_ATTR(L"w:val", ParentId);
+					}
+				}
+				CP_XML_STREAM() << paragraph_style.str();
+				docx_serialize_list_properties(CP_XML_STREAM());
+			}
+		}
+    }
 }
 
 void docx_conversion_context::start_automatic_style(const std::wstring & ParentId)
@@ -609,65 +634,6 @@ bool docx_conversion_context::is_next_dump_page_properties()
 }
 
 
-void styles_context::start()
-{
-    text_style_.str( std::wstring() );
-    text_style_.clear();
-
-    paragraph_style_.str( std::wstring() );
-    paragraph_style_.clear();
-
-    table_style_.str( std::wstring() );
-    table_style_.clear();
-}
-
-std::wostream & styles_context::text_style()
-{
-    return text_style_;
-}
-
-std::wostream & styles_context::paragraph_style()
-{
-    return paragraph_style_;
-}
-
-std::wostream & styles_context::table_style()
-{
-    return table_style_;
-}
-
-void styles_context::write_text_style(docx_conversion_context & Context)
-{
-    std::wostream & _Wostream = Context.output_stream();
-    if (!text_style_.str().empty())
-        _Wostream << L"<w:rPr>" << text_style_.str() << L"</w:rPr>";
-}
-
-void styles_context::write_paragraph_style(docx_conversion_context & Context, const std::wstring & ParentId)
-{
-    std::wostream & _Wostream = Context.output_stream();
-    if (!paragraph_style_.str().empty() || !ParentId.empty())
-    {
-        _Wostream << L"<w:pPr>";
-        Context.process_page_properties();
-        if (!ParentId.empty())
-            _Wostream << L"<w:pStyle w:val=\"" << ParentId << "\" />";            
-        _Wostream << paragraph_style_.str();
-        Context.write_list_properties();
-        _Wostream << L"</w:pPr>";
-    }
-}
-
-void styles_context::write_table_style(docx_conversion_context & Context)
-{
-    std::wostream & _Wostream = Context.output_stream();
-    if (!table_style_.str().empty())
-    {
-        _Wostream << L"<w:tblPr>";
-        _Wostream << table_style_.str();
-        _Wostream << L"</w:tblPr>";        
-    }
-}
 
 void docx_conversion_context::start_text_list_style(const std::wstring & StyleName)
 {
@@ -743,18 +709,28 @@ void docx_conversion_context::end_list_item()
 {
 }
 
-void docx_conversion_context::write_list_properties()
+void docx_conversion_context::docx_serialize_list_properties(std::wostream & strm)
 {
     if (!list_style_stack_.empty())
     {
         if (first_element_list_item_)
         {
             const int id = root()->odf_context().listStyleContainer().id_by_name( current_list_style() );
-            //const int id = list_context_.id_by_name( current_list_style() );
-            output_stream() << L"<w:numPr>";
-            output_stream() << L"<w:ilvl w:val=\"" << (list_style_stack_.size() - 1) << "\" />";
-            output_stream() << L"<w:numId w:val=\"" << id << "\" />";
-            output_stream() << L"</w:numPr>";
+
+			CP_XML_WRITER(strm)
+			{
+				CP_XML_NODE(L"w:numPr")
+				{
+					CP_XML_NODE(L"w:ilvl")
+					{
+						CP_XML_ATTR(L"w:val", (list_style_stack_.size() - 1));
+					}
+					CP_XML_NODE(L"w:numId")
+					{
+						CP_XML_ATTR(L"w:val", id );
+					}
+				}
+			}
             first_element_list_item_ = false;
         }
     }

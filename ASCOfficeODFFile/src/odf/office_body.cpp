@@ -74,7 +74,9 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 
 	Context.get_headers_footers().set_enable_write(true);
     if (page_layout_instance * lastPageLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_by_name(Context.get_page_properties()))
-        lastPageLayout->docx_convert(Context);
+	{
+        lastPageLayout->docx_convert_serialize(Context.output_stream(), Context);
+	}
 
     Context.end_body();    
 }

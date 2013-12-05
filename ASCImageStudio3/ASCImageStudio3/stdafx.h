@@ -71,19 +71,19 @@ using namespace Gdiplus;
 #define DISABLE_SWF
 #define NO_RAW_CHECKER
 
-#import "../../Redist/ASCImageFile3.dll"				named_guids rename_namespace("ImageFile")
-//#import "../../../../AVS/Redist/AVSImageTransform3.dll"			named_guids rename_namespace("ImageTransform")
+#import "../../Redist/ASCImageFile3.dll"						named_guids raw_interfaces_only rename_namespace("ImageFile")
+//#import "../../../../AVS/Redist/AVSImageTransform3.dll"		named_guids raw_interfaces_only rename_namespace("ImageTransform")
 //#import "../../../../AVS/Redist/AVSImageCompose3.dll"			named_guids rename_namespace("ImageCompose")
-#import "../../Redist/ASCMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")
-#import "../../Redist/ASCMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
+#import "../../Redist/ASCMediaCore3.dll"						named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
+#import "../../Redist/ASCMediaFormatSettings3.dll"				named_guids raw_interfaces_only rename_namespace("MediaFormat"), exclude("tagRECT")
 
-#import "../../Redist/ASCImageJpeg2000.dll"           named_guids rename_namespace("Jpeg2000")
-#import "../../Redist/ASCGraphics.dll"				named_guids rename_namespace("AVSGraphics")
+#import "../../Redist/ASCImageJpeg2000.dll"						named_guids raw_interfaces_only rename_namespace("Jpeg2000")
+#import "../../Redist/ASCGraphics.dll"							named_guids raw_interfaces_only rename_namespace("AVSGraphics")
 
-#import "../../Redist/ASCImagePaint3.dll"				named_guids rename_namespace("ImagePaint")
+#import "../../Redist/ASCImagePaint3.dll"						named_guids raw_interfaces_only rename_namespace("ImagePaint")
 
 #ifndef DISABLE_SWF
-#import "../../Redist/ASCSWFFile3.dll"				named_guids rename_namespace("SWF")
+#import "../../Redist/ASCSWFFile3.dll"							named_guids rename_namespace("SWF")
 #endif
 
 namespace FileCache

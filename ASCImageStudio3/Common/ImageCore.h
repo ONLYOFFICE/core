@@ -19,8 +19,8 @@ namespace ImageStudio
 		pFrame->put_Width( nWidth );
 		pFrame->put_Height( nHeight );
 		pFrame->put_ColorSpace( nColorSpace );
-		pFrame->raw_SetDefaultStrides();
-		pFrame->raw_AllocateBuffer( -1 );
+		pFrame->SetDefaultStrides();
+		pFrame->AllocateBuffer( -1 );
 		
 		BYTE* pBuffer = NULL;
 		pFrame->get_Buffer( &pBuffer );

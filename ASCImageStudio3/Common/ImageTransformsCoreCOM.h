@@ -125,7 +125,7 @@ namespace ImageStudio
 					}
 					else
 					{
-						if (S_OK != ((MediaCore::IAVSUncompressedVideoFrame*)pSource)->raw_CreateDuplicate(DUBLICATE_TYPE_COPY, (MediaCore::IAVSMediaData**)(&pResult)))
+						if (S_OK != ((MediaCore::IAVSUncompressedVideoFrame*)pSource)->CreateDuplicate(DUBLICATE_TYPE_COPY, (MediaCore::IAVSMediaData**)(&pResult)))
 							return c_nErrorInvalidInterface;
 					}
 
@@ -2809,8 +2809,8 @@ namespace ImageStudio
 					pFrame->put_ColorSpace( CSP_BGRA );
 					pFrame->put_AspectRatioX( lAspectX );
 					pFrame->put_AspectRatioY( lAspectY );
-					pFrame->raw_SetDefaultStrides();
-					pFrame->raw_AllocateBuffer( -1 );
+					pFrame->SetDefaultStrides();
+					pFrame->AllocateBuffer( -1 );
 
 					BYTE* pDstBGRA = NULL;
 					int nDstWidth = 0;

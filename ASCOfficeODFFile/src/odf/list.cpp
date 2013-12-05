@@ -122,7 +122,6 @@ void list_header::docx_convert(oox::docx_conversion_context & Context)
 void list_header::pptx_convert(oox::pptx_conversion_context & Context)
 {
     bool restart = false;
-    //Context.start_list_item(restart);
 
 	//заголовок это не элемент списка
 
@@ -131,7 +130,6 @@ void list_header::pptx_convert(oox::pptx_conversion_context & Context)
         elm->pptx_convert(Context);
     }
 
-    //Context.end_list_item();
 }
 
 

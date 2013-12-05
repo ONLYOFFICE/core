@@ -3,7 +3,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
-#include "ooxconversioncontext.h"
+#include "oox_conversion_context.h"
 
 #include "xlsx_textcontext.h"
 #include "xlsx_tablecontext.h"

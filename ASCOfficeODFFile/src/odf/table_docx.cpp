@@ -127,7 +127,7 @@ void table_table::docx_convert(oox::docx_conversion_context & Context)
     if (inst && inst->content())
         inst->content()->docx_convert(Context);
     
-    Context.get_styles_context().write_table_style(Context);
+    Context.get_styles_context().docx_serialize_table_style(_Wostream);
 
     _Wostream << L"<w:tblGrid>";
     table_columns_and_groups_.docx_convert(Context);

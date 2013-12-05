@@ -140,7 +140,7 @@ std::wstring process_margin(const _CP_OPT(length_or_percent) & margin, double Mu
 
 void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Context)
 {
-    std::wostream & _pPr = Context.get_styles_context().paragraph_style();
+   std::wstringstream & _pPr = Context.get_styles_context().paragraph_style();
 
     if (style_writing_mode_)
     {
@@ -450,7 +450,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 
 void style_tab_stops::docx_convert(oox::docx_conversion_context & Context)
 {
-    std::wostream & _pPr = Context.get_styles_context().paragraph_style();
+    std::wstringstream & _pPr = Context.get_styles_context().paragraph_style();
     
     if (style_tab_stops_.size())
     {
@@ -463,7 +463,8 @@ void style_tab_stops::docx_convert(oox::docx_conversion_context & Context)
 
 void style_tab_stop::docx_convert(oox::docx_conversion_context & Context)
 {
-    std::wostream & _pPr = Context.get_styles_context().paragraph_style();
+    std::wstringstream & _pPr = Context.get_styles_context().paragraph_style();
+
     _pPr << L"<w:tab ";
     
     _pPr << L"w:pos=\"" << (int)( 20.0 * style_position_.get_value_unit(length::pt) ) << "\" ";

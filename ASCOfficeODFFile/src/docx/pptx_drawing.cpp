@@ -33,8 +33,6 @@ void pptx_serialize_text(std::wostream & strm, const std::vector<odf::_property>
 		CP_XML_NODE(L"p:txBody")
 		{  
 			CP_XML_NODE(L"a:bodyPr");
-			CP_XML_NODE(L"a:lstStyle");
-			
 							
 			if (strTextContent)
 			{	

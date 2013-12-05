@@ -7,6 +7,7 @@
 
 #include <cpdoccore/xml/attributes.h>
 
+#include "oox_conversion_context.h"
 
 namespace cpdoccore {
 namespace odf
@@ -22,7 +23,7 @@ class pptx_conversion_context;
 class pptx_text_context: boost::noncopyable
 {
 public:
-	pptx_text_context(odf::odf_read_context & odf_context_);
+	pptx_text_context(odf::odf_read_context & odf_context_, pptx_conversion_context & pptx_contxt_);
     ~pptx_text_context();
 
 	void set_local_styles_container(odf::styles_container*  local_styles_);
@@ -53,8 +54,11 @@ public:
 	void start_list_item(bool restart = false);
 	void end_list_item();
 
+	styles_context & get_styles_context();
+
 private:
-    class Impl;
+
+	class Impl;
     _CP_SCOPED_PTR(Impl) impl_;
 
    

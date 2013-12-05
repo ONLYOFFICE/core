@@ -2,7 +2,6 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
-#include "ooxconversioncontext.h"
 
 #include "pptx_text_context.h"
 #include "pptx_slide_context.h"

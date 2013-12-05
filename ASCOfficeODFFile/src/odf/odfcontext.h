@@ -155,7 +155,7 @@ public:
     const std::wstring & name() const;
     style_page_layout_properties * properties() const; 
     
-	void docx_convert(oox::docx_conversion_context & Context);
+	void docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context);
  	void pptx_convert(oox::pptx_conversion_context & Context);
    
     const style_page_layout * style_page_layout_;

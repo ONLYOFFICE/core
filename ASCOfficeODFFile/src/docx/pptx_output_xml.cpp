@@ -310,18 +310,9 @@ void pptx_xml_presentation::write_to(std::wostream & strm)
 
 			CP_XML_STREAM() << notesSlidesSize_.str();
 
-			CP_XML_NODE(L"p:defaultTextStyle")
+			CP_XML_NODE(L"p:defaultTextStyle")//??
 			{
 				CP_XML_NODE(L"a:defPPr");
-				//CP_XML_NODE(L"a:lvl1pPr");
-				//CP_XML_NODE(L"a:lvl2pPr");
-				//CP_XML_NODE(L"a:lvl3pPr");
-				//CP_XML_NODE(L"a:lvl4pPr");
-				//CP_XML_NODE(L"a:lvl5pPr");
-				//CP_XML_NODE(L"a:lvl6pPr");
-				//CP_XML_NODE(L"a:lvl7pPr");
-				//CP_XML_NODE(L"a:lvl8pPr");
-				//CP_XML_NODE(L"a:lvl9pPr");
 			}
         }
 	}

@@ -792,7 +792,7 @@ class style_page_layout_properties_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-    void docx_convert(oox::docx_conversion_context & Context);
+    void docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
@@ -934,7 +934,7 @@ public:
     static const ElementType type = typeStylePageLayout;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    void docx_convert(oox::docx_conversion_context & Context);
+    void docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
 
     const style_page_layout_properties_attlist & get_style_page_layout_properties_attlist() const

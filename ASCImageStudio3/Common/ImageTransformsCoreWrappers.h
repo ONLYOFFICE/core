@@ -53,7 +53,7 @@ namespace ImageStudio
 
 						// преобразуем к BGRA32 формату и создаем дубликат (всегда!)
 						m_pTransform->SetVideoFormat(m_pFormat);
-						m_pTransform->raw_TransformFrame(pSourceFrame, &pResult);
+						m_pTransform->TransformFrame(pSourceFrame, &pResult);
 
 						// если трансформ не сделал дупликата - делаем его руками
 						if (pSourceFrame == pResult) // здесь (pResult != NULL)
@@ -61,7 +61,7 @@ namespace ImageStudio
 							pResult->Release();
 							pResult = NULL;
 							
-							pSourceFrame->raw_CreateDuplicate(DUBLICATE_TYPE_COPY, (MediaCore::IAVSMediaData**)(&pResult));
+							pSourceFrame->CreateDuplicate(DUBLICATE_TYPE_COPY, (MediaCore::IAVSMediaData**)(&pResult));
 						}
 
 						// если исходный формат был не BGRA (т.е. не содержал alpha канал), то его надо заполнить руками значением 255

@@ -967,8 +967,8 @@ namespace ImageStudio
 				frame->put_Width( nWidth );
 				frame->put_Height( nHeight );
 				frame->put_ColorSpace( CSP_BGRA );
-				frame->raw_SetDefaultStrides();
-				frame->raw_AllocateBuffer( -1 );
+				frame->SetDefaultStrides();
+				frame->AllocateBuffer( -1 );
 
 				BYTE* pBuffer = 0;
 				frame->get_Buffer( &pBuffer );
@@ -1075,8 +1075,8 @@ namespace ImageStudio
 				pResult->put_Width( nWidth );
 				pResult->put_Height( nHeight );
 
-				pResult->raw_SetDefaultStrides();
-				pResult->raw_AllocateBuffer( -1 );
+				pResult->SetDefaultStrides();
+				pResult->AllocateBuffer( -1 );
 
 				long lAspectX = 0; pResult->get_AspectRatioX( &lAspectX );
 				if( lAspectX <= 0 )
@@ -1120,7 +1120,7 @@ namespace ImageStudio
 					if( pSource )
 					{
 						MediaCore::IAVSMediaData* pClone = NULL;
-						pSource->raw_CreateDuplicate( DUBLICATE_TYPE_COPY, &pClone );
+						pSource->CreateDuplicate( DUBLICATE_TYPE_COPY, &pClone );
 						if( pClone )
 						{
 							pClone->QueryInterface( MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pResult );
@@ -1143,8 +1143,8 @@ namespace ImageStudio
 							pSource->get_Width( &lValue ); pResult->put_Width( lValue );
 							pSource->get_Height( &lValue ); pResult->put_Height( lValue );
 
-							pResult->raw_SetDefaultStrides();
-							pResult->raw_AllocateBuffer( -1 );
+							pResult->SetDefaultStrides();
+							pResult->AllocateBuffer( -1 );
 						}
 
 						double dValue;
@@ -1743,8 +1743,8 @@ namespace ImageStudio
 
 				IUnknown* pResultInterface = NULL;
 
-				m_pTransform->raw_SetVideoFormat( m_pFormat );
-				m_pTransform->raw_TransformFrame( pSource, &pResultInterface );
+				m_pTransform->SetVideoFormat( m_pFormat );
+				m_pTransform->TransformFrame( pSource, &pResultInterface );
 
 				// если трансформ не сделал дупликата - делаем его руками
 				if (pSource == pResultInterface) // здесь (pResult != NULL)
@@ -1752,7 +1752,7 @@ namespace ImageStudio
 					pResultInterface->Release();
 					pResultInterface = NULL;
 					
-					pSource->raw_CreateDuplicate(DUBLICATE_TYPE_COPY, (MediaCore::IAVSMediaData**)(&pResultInterface));
+					pSource->CreateDuplicate(DUBLICATE_TYPE_COPY, (MediaCore::IAVSMediaData**)(&pResultInterface));
 				}
 
 				if( !pResultInterface )
@@ -3514,8 +3514,13 @@ namespace ImageStudio
 				double dMetricX = 1, dMetricY = 1;
 				GetMetricMultiplier ( m_oSources.Get( 0 ), pAction->Metric, dMetricX, dMetricY );
 				
-				float Width		=	(float) m_oSources.Get(0)->Width;
-				float Height	=	(float) m_oSources.Get(0)->Height;
+				LONG _lwidth = 0;
+				LONG _lheight = 0;
+				m_oSources.Get(0)->get_Width(&_lwidth);
+				m_oSources.Get(0)->get_Height(&_lheight);
+
+				float Width		=	(float) _lwidth;
+				float Height	=	(float) _lheight;
 
 				float dLeft		=	0.0;
 				float dRight	=	0.0;
@@ -4961,7 +4966,7 @@ namespace ImageStudio
 				if( !pResultFrame )
 					return FALSE;
 
-				pResultFrame->raw_AllocateBuffer( lResultWidth * lResultHeight * 4 );
+				pResultFrame->AllocateBuffer( lResultWidth * lResultHeight * 4 );
 				
 				BYTE* pResult = NULL;
 				pResultFrame->get_Buffer( &pResult );
@@ -6426,8 +6431,8 @@ namespace ImageStudio
 
 				if ((0 != pAction->dWidthMetric) && (0 != pAction->dHeightMetric) && (NULL != m_oSources.Get(0)))
 				{
-					long lSrcWidth = m_oSources.Get(0)->Width;
-					long lSrcHeight = m_oSources.Get(0)->Height;
+					long lSrcWidth = 0;m_oSources.Get(0)->get_Width(&lSrcWidth);
+					long lSrcHeight = 0;m_oSources.Get(0)->get_Height(&lSrcHeight);
 
 					dLeft	= (dLeft	/ pAction->dWidthMetric)  * lSrcWidth;
 					dRight	= (dRight	/ pAction->dWidthMetric)  * lSrcWidth;

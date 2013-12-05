@@ -8620,8 +8620,8 @@ namespace ImageStudio
 						pFrame->put_Width( nNewWidth );
 						pFrame->put_Height( nNewHeight );
 						pFrame->put_ColorSpace( CSP_BGRA );
-						pFrame->raw_SetDefaultStrides();
-						pFrame->raw_AllocateBuffer( -1 );
+						pFrame->SetDefaultStrides();
+						pFrame->AllocateBuffer( -1 );
 						
 						BYTE* pDst = NULL;
 						pFrame->get_Buffer( &pDst );
@@ -8706,8 +8706,8 @@ namespace ImageStudio
 						pFrame->put_Width( nNewWidth );
 						pFrame->put_Height( nNewHeight );
 						pFrame->put_ColorSpace( CSP_BGRA | (nStride < 0 ? CSP_VFLIP : 0) );
-						pFrame->raw_SetDefaultStrides();
-						pFrame->raw_AllocateBuffer( -1 );
+						pFrame->SetDefaultStrides();
+						pFrame->AllocateBuffer( -1 );
 						
 						BYTE* pDst = NULL;
 						pFrame->get_Buffer( &pDst );

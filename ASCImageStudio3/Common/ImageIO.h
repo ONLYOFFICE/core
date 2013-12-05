@@ -155,7 +155,7 @@ namespace ImageStudio
 					m_pAVSMetafile->put_Width( m_lWidth );
 					m_pAVSMetafile->put_Height( m_lHeight );
 					
-					HRESULT hr = pImage->raw_DrawOnRenderer( (AVSGraphics::IASCRenderer *)m_pAVSMetafile, 0, 0, m_lWidth, m_lHeight );
+					HRESULT hr = pImage->DrawOnRenderer( (AVSGraphics::IASCRenderer *)m_pAVSMetafile, 0, 0, m_lWidth, m_lHeight );
 					if( FAILED(hr) )
 						bSuccess = false;
 				}
@@ -191,7 +191,7 @@ namespace ImageStudio
 					m_pAVSMetafile->put_Width( m_lWidth );
 					m_pAVSMetafile->put_Height( m_lHeight );
 					
-					HRESULT hr = pImage->raw_DrawOnRenderer( (AVSGraphics::IASCRenderer *)m_pAVSMetafile, 0, 0, m_lWidth, m_lHeight );
+					HRESULT hr = pImage->DrawOnRenderer( (AVSGraphics::IASCRenderer *)m_pAVSMetafile, 0, 0, m_lWidth, m_lHeight );
 					if( FAILED(hr) )
 						bSuccess = false;
 				}
@@ -350,14 +350,14 @@ namespace ImageStudio
 				vParam.vt = VT_BOOL; 
 				vParam.boolVal = VARIANT_TRUE;
 				
-				pImage->raw_SetAdditionalParam( bsParam, vParam );
+				pImage->SetAdditionalParam( bsParam, vParam );
 
 				::SysFreeString( bsParam );
 
 
 				pImage->put_FontManager(NULL);
 				
-				HRESULT hr = pImage->raw_LoadFromFile( bsFilePath );
+				HRESULT hr = pImage->LoadFromFile( bsFilePath );
 				//pImage->raw
 				if( FAILED(hr) )
 					return false;
@@ -379,7 +379,7 @@ namespace ImageStudio
 				vParam.vt = VT_BOOL; 
 				vParam.boolVal = VARIANT_TRUE;
 				
-				pImage->raw_SetAdditionalParam( bsParam, vParam );
+				pImage->SetAdditionalParam( bsParam, vParam );
 
 				::SysFreeString( bsParam );
 
@@ -396,7 +396,7 @@ namespace ImageStudio
 				vParam.vt = VT_BSTR; 
 				vParam.bstrVal = sXML;
 
-				HRESULT hr = pImage->raw_SetAdditionalParam( bsParam, vParam );
+				HRESULT hr = pImage->SetAdditionalParam( bsParam, vParam );
 
 				::SysFreeString( bsParam );
 
@@ -422,7 +422,7 @@ namespace ImageStudio
 					vtVariant.vt      = VT_UNKNOWN;
 					vtVariant.punkVal = NULL;
 
-					pGrRenderer->raw_SetAdditionalParam( bsParam, vtVariant );
+					pGrRenderer->SetAdditionalParam( bsParam, vtVariant );
 
 					::SysFreeString( bsParam );
 				}
@@ -450,7 +450,7 @@ namespace ImageStudio
 				pGrRenderer->put_Width ( dWidthMm  );
 				pGrRenderer->put_Height( dHeightMm );
 				
-				hr = pGrRenderer->raw_CreateFromMediaData( pImage, 0, 0, lWidth, lHeight );
+				hr = pGrRenderer->CreateFromMediaData( pImage, 0, 0, lWidth, lHeight );
 				if( FAILED(hr) )
 				{
 					pImage->Release();
@@ -480,7 +480,7 @@ namespace ImageStudio
 							BSTR bsParam = ::SysAllocString( L"BaseTransform" );
 							if( bsParam )
 							{
-								pGrRenderer->raw_SetAdditionalParam( bsParam, vtParam );
+								pGrRenderer->SetAdditionalParam( bsParam, vtParam );
 								
 								::SysFreeString( bsParam );
 							}
@@ -492,7 +492,7 @@ namespace ImageStudio
 					}
 				}
 
-				hr = m_pAVSMetafile->raw_Draw( pGrRenderer, NULL );
+				hr = m_pAVSMetafile->Draw( pGrRenderer, NULL );
 				if( FAILED(hr) )
 				{
 					pImage->Release();
@@ -5716,7 +5716,7 @@ namespace ImageStudio
 					return FALSE;
 
 				IUnknown *pResImage = NULL;
-				HRESULT hRes = pJpeg->raw_J2kToInterface( bsFilePath, &pResImage, L"" );
+				HRESULT hRes = pJpeg->J2kToInterface( bsFilePath, &pResImage, L"" );
 				::SysFreeString( bsFilePath );
 				RELEASEINTERFACE( pJpeg );
 
@@ -5817,7 +5817,7 @@ namespace ImageStudio
 				oXmlWriter.WriteNodeEnd( _T("SaveOptions") );
 				oXmlWriter.WriteNodeEnd( _T("Jpeg2000-Options") );
 				BSTR bsXml = oXmlWriter.GetXmlString().AllocSysString();
-				HRESULT hRes = pJpeg->raw_InterfaceToJ2k( &pSrcImage, bsFilePath, bsXml );
+				HRESULT hRes = pJpeg->InterfaceToJ2k( &pSrcImage, bsFilePath, bsXml );
 				::SysFreeString( bsXml );
 				::SysFreeString( bsFilePath );
 				RELEASEINTERFACE( pJpeg );

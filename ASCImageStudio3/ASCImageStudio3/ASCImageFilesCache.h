@@ -416,7 +416,7 @@ protected:
 			if (NULL==pSrcFrame)
 				return NULL;
 			MediaCore::IAVSMediaData *pMediaData = NULL;
-			pSrcFrame->raw_CreateDuplicate(DUBLICATE_TYPE_COPY, &pMediaData);
+			pSrcFrame->CreateDuplicate(DUBLICATE_TYPE_COPY, &pMediaData);
 			if (NULL==pMediaData)
 				return NULL;
 			IUnknown *punkResult = NULL;
@@ -449,10 +449,10 @@ protected:
 
 			pFramesTransform->put_ResizeMode(lResizeMode);
 			pFramesTransform->put_DstBorderGrayScale(dwBackColor);
-			pFramesTransform->raw_SetVideoFormat(pDstFormat);
+			pFramesTransform->SetVideoFormat(pDstFormat);
 
 			IUnknown *punkDstFrame = NULL;
-			pFramesTransform->raw_TransformFrame(pSrcFrame, &punkDstFrame);
+			pFramesTransform->TransformFrame(pSrcFrame, &punkDstFrame);
 			if (NULL==punkDstFrame)
 				return NULL;
 

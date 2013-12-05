@@ -107,7 +107,7 @@ int check_j2000_type(HANDLE hFile)
 
 STDMETHODIMP CJ2kFile::J2kToInterface(BSTR bsSrcPath, IUnknown **ppImage, BSTR bsXmlOptions)
 {
-	
+
 	Image *pImage = NULL;
 	bool bOpenResult = FALSE;
 
@@ -456,16 +456,16 @@ STDMETHODIMP CJ2kFile::InterfaceToJ2k(IUnknown **ppImage, BSTR bsDstPath, BSTR b
 		}
 
 		pMediaFormat->SetDefaultProperties();
-		pMediaFormat->Width = lWidth;
-		pMediaFormat->Height = lHeight;
-		pMediaFormat->AspectRatioX = lAspectX;
-		pMediaFormat->AspectRatioY = lAspectY;
-		pMediaFormat->ColorSpace = (1<< 6);//CSP_BGRA
+		pMediaFormat->put_Width(lWidth);
+		pMediaFormat->put_Height(lHeight);
+		pMediaFormat->put_AspectRatioX(lAspectX);
+		pMediaFormat->put_AspectRatioY(lAspectY);
+		pMediaFormat->put_ColorSpace(1 << 6);//CSP_BGRA
 
 		pMediaTransform->SetVideoFormat(pMediaFormat);
 		
 		IUnknown *pTransformResult = NULL;
-		pMediaTransform->raw_TransformFrame(pMediaDataIn, &pTransformResult);
+		pMediaTransform->TransformFrame(pMediaDataIn, &pTransformResult);
 		if (NULL != pTransformResult)
 		{
 			if ( (*ppImage)==pTransformResult )
@@ -475,7 +475,7 @@ STDMETHODIMP CJ2kFile::InterfaceToJ2k(IUnknown **ppImage, BSTR bsDstPath, BSTR b
 				if (NULL!=pData)
 				{
 					MediaCore::IAVSMediaData *pmdOutFrame = NULL;
-					pData->raw_CreateDuplicate(2, &pmdOutFrame);
+					pData->CreateDuplicate(2, &pmdOutFrame);
 					pData->Release();
 					if (NULL!=pmdOutFrame)
 					{

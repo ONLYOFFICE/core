@@ -427,14 +427,19 @@ int SBitmap::WriteJPGFile(wchar_t *wsFileName, wchar_t *wsTempFolder)
 	sXml += wsFileName;
 	sXml += "\" format=\"888\" quality=\"90\"></ImageFile-SaveAsJpeg></transforms>";
 	BSTR bsXML = sXml.AllocSysString();
-	if ( !pTransform->SetXml( bsXML ) )
+
+	VARIANT_BOOL vbRes = VARIANT_FALSE;
+	pTransform->SetXml(bsXML, &vbRes);
+	if ( vbRes == VARIANT_FALSE )
 	{
 		::SysFreeString( bsXML );
 		RELEASEINTERFACE( pTransform );
 		_wunlink( wsTempFileName.GetBuffer() );
 		return SErrorAVSImageStudio;
 	}
-	if ( !pTransform->Transform() )
+	vbRes = VARIANT_FALSE;
+	pTransform->Transform(&vbRes);
+	if ( vbRes == VARIANT_FALSE )
 	{
 		::SysFreeString( bsXML );
 		RELEASEINTERFACE( pTransform );

@@ -7,7 +7,7 @@
 #include "File.h"
 #include "CMap.h"
 
-#include "../ASCOfficeHtmlFile_SaxHtmlParser/AVSOfficeHtmlFile/prj/Base64.h"
+#include "../ASCOfficeHtmlFile/ASCOfficeHtmlFile/prj/Base64.h"
 #include "../Common/XmlUtils.h"
 
 #include "FontFileTrueType.h"
@@ -875,7 +875,7 @@ void RendererOutputDev::UpdateFont(GrState *pGState)
 			}
 			::SysFreeString( bsFilePath );
 			BSTR bsFontType = NULL;
-			m_pFontManager->raw_GetFontType( &bsFontType );
+			m_pFontManager->GetFontType( &bsFontType );
 			CString sFontType = bsFontType;
 			::SysFreeString( bsFontType );
 
@@ -1411,7 +1411,7 @@ void RendererOutputDev::UpdateFont(GrState *pGState)
 					if ( ( sName = ppEncoding[nIndex] ) ) 
 					{
 						unsigned short ushGID = 0;
-						m_pFontManager->raw_GetNameIndex( A2W(sName), &ushGID );
+						m_pFontManager->GetNameIndex( A2W(sName), &ushGID );
 						pCodeToGID[nIndex] = ushGID;
 					}
 				}

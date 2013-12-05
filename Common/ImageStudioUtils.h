@@ -343,18 +343,18 @@ namespace ImageStudioUtils
 			}
 
 			pMediaFormat->SetDefaultProperties();
-			pMediaFormat->Width = lWidth;
-			pMediaFormat->Height = lHeight;
-			pMediaFormat->AspectRatioX = lAspectX;
-			pMediaFormat->AspectRatioY = lAspectY;
-			pMediaFormat->ColorSpace = CSP_BGRA | CSP_VFLIP;
+			pMediaFormat->put_Width(lWidth);
+			pMediaFormat->put_Height(lHeight);
+			pMediaFormat->put_AspectRatioX(lAspectX);
+			pMediaFormat->put_AspectRatioY(lAspectY);
+			pMediaFormat->put_ColorSpace(CSP_BGRA | CSP_VFLIP);
 
 			// TODO: control aspect and deinterlace
 
 			pMediaTransform->SetVideoFormat(pMediaFormat);
 			
 			IUnknown *pTransformResult = NULL;
-			pMediaTransform->raw_TransformFrame(pMediaDataIn, &pTransformResult);
+			pMediaTransform->TransformFrame(pMediaDataIn, &pTransformResult);
 			if (NULL != pTransformResult)
 			{
 				if (((*pInterface)==pTransformResult)&&(bCreateDublicate))
@@ -364,7 +364,7 @@ namespace ImageStudioUtils
 					if (NULL!=pData)
 					{
 						MediaCore::IAVSMediaData *pmdOutFrame = NULL;
-						pData->raw_CreateDuplicate(DUBLICATE_TYPE_COPY, &pmdOutFrame);
+						pData->CreateDuplicate(DUBLICATE_TYPE_COPY, &pmdOutFrame);
 						pData->Release();
 						if (NULL!=pmdOutFrame)
 						{

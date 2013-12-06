@@ -2,7 +2,6 @@
 #ifndef XML_XNAME_INCLUDE_H_
 #define XML_XNAME_INCLUDE_H_
 
-#include <boost/operators.hpp>
 #include <string>
 #include "property.h"
 #include "nullable_property.h"

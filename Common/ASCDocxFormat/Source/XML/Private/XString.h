@@ -2,7 +2,6 @@
 #ifndef XML_PRIVATE_XSTRING_INCLUDE_H_
 #define XML_PRIVATE_XSTRING_INCLUDE_H_
 
-#include <boost/operators.hpp>
 #include <string>
 #include "nullable.h"
 #include "property.h"

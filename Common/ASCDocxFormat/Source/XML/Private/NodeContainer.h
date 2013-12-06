@@ -2,8 +2,10 @@
 #ifndef XML_PRIVATE_NODE_CONTAINER_INCLUDE_H_
 #define XML_PRIVATE_NODE_CONTAINER_INCLUDE_H_
 
-#include "Node.h"
 #include <string>
+#include <list>
+
+#include "Node.h"
 #include "XNodeContainer.h"
 #include "XElementContainer.h"
 #include "XTextContainer.h"
@@ -11,7 +13,8 @@
 #include "XSpace.h"
 #include "XSingleSource.h"
 #include "XWideSource.h"
-#include <list>
+
+#include "../../../../../Common/DocxFormat/Source/Base/SmartPtr.h"
 
 namespace XML
 {
@@ -43,8 +46,8 @@ namespace XML
 			virtual const bool isComment() const;
 
 		public:
-			void fromSource(boost::shared_ptr<XSingleSource> source, const XNamespaceContainer& ns, const XSpace& space);
-			void fromSource(boost::shared_ptr<XWideSource> source, const XNamespaceContainer& ns, const XSpace& space);
+			void fromSource(NSCommon::smart_ptr<XSingleSource> source, const XNamespaceContainer& ns, const XSpace& space);
+			void fromSource(NSCommon::smart_ptr<XWideSource> source, const XNamespaceContainer& ns, const XSpace& space);
 			virtual const std::string ToString() const;
 			virtual const std::wstring ToWString() const;
 			virtual void SaveToStringList(std::list<std::string>& strList)const;
@@ -52,10 +55,7 @@ namespace XML
 
 		public:
 			template<template<typename T, typename A> class C, typename T, typename A>
-			explicit NodeContainer(const C<T, A>& container)
-				: Nodes(),
-					Elements(Nodes),
-					Texts(Nodes)
+			explicit NodeContainer(const C<T, A>& container) : Nodes(),	Elements(Nodes), Texts(Nodes)
 			{
 				for (C<T, A>::const_iterator i = container.begin(); i != container.end(); ++i)
 					Nodes.push_back(Write(*i));
@@ -69,10 +69,10 @@ namespace XML
 			void Add(const XList& list);
 
 		private:
-			const bool isComment(boost::shared_ptr<XSingleSource> source);
-			void insertComment(boost::shared_ptr<XSingleSource> source);
-			const bool isComment(boost::shared_ptr<XWideSource> source);
-			void insertComment(boost::shared_ptr<XWideSource> source);
+			const bool isComment(NSCommon::smart_ptr<XSingleSource> source);
+			void insertComment(NSCommon::smart_ptr<XSingleSource> source);
+			const bool isComment(NSCommon::smart_ptr<XWideSource> source);
+			void insertComment(NSCommon::smart_ptr<XWideSource> source);
 
 		public:
 			XNodeContainer		Nodes;

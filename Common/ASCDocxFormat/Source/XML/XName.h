@@ -4,7 +4,6 @@
 
 #include <boost/operators.hpp>
 #include <string>
-#include <boost/shared_ptr.hpp>
 #include "property.h"
 #include "nullable_property.h"
 #include "XNamespace.h"

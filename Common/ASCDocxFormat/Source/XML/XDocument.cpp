@@ -27,17 +27,17 @@ namespace XML
 		TxtFile text(path);
 		if(text.isUnicode())
 		{
-			boost::shared_ptr<Private::XWideSource> xsource(new Private::XWFileSource(path, Private::XWideSource::estLittleEndian));
+			NSCommon::smart_ptr<Private::XWideSource> xsource(new Private::XWFileSource(path, Private::XWideSource::estLittleEndian));
 			Load(xsource, space);
 		}
 		else if((text.isBigEndian()) || (text.isUnicodeWithOutBOM()))
 		{
-			boost::shared_ptr<Private::XWideSource> xsource(new Private::XWFileSource(path, Private::XWideSource::estBigEndian));
+			NSCommon::smart_ptr<Private::XWideSource> xsource(new Private::XWFileSource(path, Private::XWideSource::estBigEndian));
 			Load(xsource, space);
 		}
 		else
 		{
-			boost::shared_ptr<Private::XSingleSource> xsource(new Private::XFileSource(path));
+			NSCommon::smart_ptr<Private::XSingleSource> xsource(new Private::XFileSource(path));
 			Load(xsource, space);
 		}
 	}
@@ -45,14 +45,14 @@ namespace XML
 
 	XDocument::XDocument(const std::string& source, const bool space)
 	{
-		boost::shared_ptr<Private::XSingleSource> xsource(new Private::XStringSource(source));
+		NSCommon::smart_ptr<Private::XSingleSource> xsource(new Private::XStringSource(source));
 		Load(xsource, space);
 	}
 
 
 	XDocument::XDocument(const std::wstring& source, const bool space)
 	{
-		boost::shared_ptr<Private::XWideSource> xsource(new Private::XWStringSource(source));
+		NSCommon::smart_ptr<Private::XWideSource> xsource(new Private::XWStringSource(source));
 		Load(xsource, space);
 	}
 
@@ -61,17 +61,17 @@ namespace XML
 		TxtFile text(source);
 		if(text.isUnicode())
 		{
-			boost::shared_ptr<Private::XWideSource> xsource(new Private::XWFileSource(source, Private::XWideSource::estLittleEndian));
+			NSCommon::smart_ptr<Private::XWideSource> xsource(new Private::XWFileSource(source, Private::XWideSource::estLittleEndian));
 			Load(xsource, space);
 		}
 		else if((text.isBigEndian()) || (text.isUnicodeWithOutBOM()))
 		{
-			boost::shared_ptr<Private::XWideSource> xsource(new Private::XWFileSource(source, Private::XWideSource::estBigEndian));
+			NSCommon::smart_ptr<Private::XWideSource> xsource(new Private::XWFileSource(source, Private::XWideSource::estBigEndian));
 			Load(xsource, space);
 		}
 		else
 		{
-			boost::shared_ptr<Private::XSingleSource> xsource(new Private::XFileSource(source));
+			NSCommon::smart_ptr<Private::XSingleSource> xsource(new Private::XFileSource(source));
 			Load(xsource, space);
 		}
 	}
@@ -127,7 +127,7 @@ namespace XML
 	}
 
 
-	void XDocument::Load(boost::shared_ptr<Private::XSingleSource> source, const bool space)
+	void XDocument::Load(NSCommon::smart_ptr<Private::XSingleSource> source, const bool space)
 	{
 		source->findAndSkip('<');
 		if (source->get() == '?')
@@ -140,7 +140,7 @@ namespace XML
 	}
 
 
-	void XDocument::Load(boost::shared_ptr<Private::XWideSource> source, const bool space)
+	void XDocument::Load(NSCommon::smart_ptr<Private::XWideSource> source, const bool space)
 	{
 		source->findAndSkip(L'<');
 		if (source->get() == L'?')

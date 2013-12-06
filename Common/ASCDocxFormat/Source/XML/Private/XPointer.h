@@ -2,7 +2,7 @@
 #ifndef XML_PRIVATE_XPOINTER_INCLUDE_H_
 #define XML_PRIVATE_XPOINTER_INCLUDE_H_
 
-#include <boost/shared_ptr.hpp>
+#include "../../../../../Common/DocxFormat/Source/Base/SmartPtr.h"
 
 namespace XML
 {
@@ -14,24 +14,27 @@ namespace XML
 		public:
 			XPointer() {}
 			XPointer(T* ptr) : m_ptr(ptr) {}
-			XPointer(const boost::shared_ptr<T>& ptr) : m_ptr(ptr) {}
+			XPointer(const NSCommon::smart_ptr<T>& ptr) : m_ptr(ptr) {}
 
 			template<class E>
-			XPointer(const XPointer<E>& rhs) : m_ptr(boost::dynamic_pointer_cast<T>(rhs.get_ptr())) {}
+			XPointer(const XPointer<E>& rhs)
+			{
+				m_ptr = rhs.get_ptr().smart_dynamic_cast<T>();
+			}
 
-			boost::shared_ptr<T> get_ptr() const {return m_ptr;}
+			NSCommon::smart_ptr<T> get_ptr() const {return m_ptr;}
 
 		public:
-			T const* const	operator->() const	{return m_ptr.get();}
-			T*							operator->()				{return m_ptr.get();}
+			T const* const	operator->() const	{return m_ptr.operator->();}	
+			T*				operator->()		{return m_ptr.operator->();}		
 
-			const T&	operator*() const {return *m_ptr;}
-			T&				operator*()				{return *m_ptr;}
+			const T&	operator*() const	{return (m_ptr.operator*());}
+			T&			operator*()			{return (m_ptr.operator*());}
 
-			const bool is_init() const {return m_ptr != 0;}
+			const bool is_init() const {return m_ptr.is_init();}
 
 		protected:
-			boost::shared_ptr<T> m_ptr;
+			NSCommon::smart_ptr<T> m_ptr;
 
 		protected:
 			typedef XPointer<T> base;

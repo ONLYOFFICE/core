@@ -77,7 +77,7 @@ namespace XML
 			}
 		}
 
-		const boost::shared_ptr<std::list<XNode> >	XNodeContainer::container() const
+		const NSCommon::smart_ptr<std::list<XNode> >	XNodeContainer::container() const
 		{
 			return m_container;
 		}

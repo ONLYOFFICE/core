@@ -3,19 +3,20 @@
 #define XML_XELEMENT_INCLUDE_H_
 
 #include <string>
+#include <list>
+
 #include "Private/XPointer.h"
 #include "Private/Element.h"
 #include "property.h"
 #include "setter.h"
 #include "getter.h"
-#include <boost/shared_ptr.hpp>
 #include "Private/XString.h"
 #include "Private/XNamespaceContainer.h"
 #include "Private/XSpace.h"
 #include "Private/XSingleSource.h"
 #include "Private/XWideSource.h"
-#include <list>
 
+#include "../../../../Common/DocxFormat/Source/Base/SmartPtr.h"
 
 namespace XML
 {
@@ -44,8 +45,8 @@ namespace XML
 		XElement(const Private::NullXElement&);
 		explicit XElement(const XName& xname);
 		XElement(const XName& xname, const Private::XList& list);
-		XElement(boost::shared_ptr<Private::XSingleSource> source, const Private::XNamespaceContainer& ns, const Private::XSpace& space);
-		XElement(boost::shared_ptr<Private::XWideSource> source, const Private::XNamespaceContainer& ns, const Private::XSpace& space);
+		XElement(NSCommon::smart_ptr<Private::XSingleSource> source, const Private::XNamespaceContainer& ns, const Private::XSpace& space);
+		XElement(NSCommon::smart_ptr<Private::XWideSource> source, const Private::XNamespaceContainer& ns, const Private::XSpace& space);
 		const XElement& operator= (const XElement& rhs);
 		XElement(const XNode& xnode);
 
@@ -80,8 +81,8 @@ namespace XML
 		void Save(const OOX::CPath& path) const;
 
 	public:
-		void fromSource(boost::shared_ptr<Private::XSingleSource> source, const Private::XNamespaceContainer& ns, const Private::XSpace& space);
-		void fromSource(boost::shared_ptr<Private::XWideSource> source, const Private::XNamespaceContainer& ns, const Private::XSpace& space);
+		void fromSource(NSCommon::smart_ptr<Private::XSingleSource> source, const Private::XNamespaceContainer& ns, const Private::XSpace& space);
+		void fromSource(NSCommon::smart_ptr<Private::XWideSource> source, const Private::XNamespaceContainer& ns, const Private::XSpace& space);
 		const std::string ToString() const;
 		const std::wstring ToWString() const;
 		virtual void SaveToStringList(std::list<std::string>& strList)const;

@@ -2,16 +2,14 @@
 #ifndef XML_PRIVATE_XSINGLE_SOURCE_INCLUDE_H_
 #define XML_PRIVATE_XSINGLE_SOURCE_INCLUDE_H_
 
-//#include "XSource.h"
 #include <iterator>
 #include <string>
-
 
 namespace XML
 {
 	namespace Private
 	{
-		class XSingleSource// : public XSource
+		class XSingleSource
 		{
 		public:
 			virtual ~XSingleSource();

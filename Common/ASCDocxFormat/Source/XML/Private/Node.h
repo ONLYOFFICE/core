@@ -5,7 +5,6 @@
 #include <string>
 #include <list>
 
-
 namespace XML
 {
 	namespace Private

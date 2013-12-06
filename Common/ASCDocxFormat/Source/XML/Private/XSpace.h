@@ -2,7 +2,6 @@
 #ifndef XML_PRIVATE_XSPACE_INCLUDE_H_
 #define XML_PRIVATE_XSPACE_INCLUDE_H_
 
-
 namespace XML
 {
 	namespace Private

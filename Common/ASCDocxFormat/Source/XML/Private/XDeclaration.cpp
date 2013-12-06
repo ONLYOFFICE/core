@@ -6,21 +6,15 @@
 #include "XDeclaration.h"
 #include "Encoding.h"
 
-
 namespace XML
 {
 	namespace Private
 	{
-
-		XDeclaration::XDeclaration()
-			: Version("1.0"),
-			  Encoding("UTF-8"),
-			  Standalone("yes")
+		XDeclaration::XDeclaration() : Version("1.0"), Encoding("UTF-8"), Standalone("yes")
 		{
 		}
 
-
-		void XDeclaration::fromSource(boost::shared_ptr<XSingleSource> source)
+		void XDeclaration::fromSource(NSCommon::smart_ptr<XSingleSource> source)
 		{
 			source->find('?');
 			source->next();
@@ -36,8 +30,7 @@ namespace XML
 			source->next();
 		}
 
-
-		void XDeclaration::fromSource(boost::shared_ptr<XWideSource> source)
+		void XDeclaration::fromSource(NSCommon::smart_ptr<XWideSource> source)
 		{
 			source->find(L'?');
 			source->next();
@@ -53,20 +46,17 @@ namespace XML
 			source->next();
 		}
 
-
 		const std::string XDeclaration::ToString() const
 		{
 			return "<?xml version=\"" + Version.ToString() + "\" encoding=\"" + Encoding.ToString() + 
 				(Standalone.is_init() ? ("\" standalone=\"" + Standalone.ToString()) : "") + "\" ?>"; 
 		}
 
-
 		const std::wstring XDeclaration::ToWString() const
 		{
 			return L"<?xml version=\"" + Encoding::utf82unicode(Version.ToString()) + L"\" encoding=\"" + L"Unicode" + 
 				(Standalone.is_init() ? (L"\" standalone=\"" + Encoding::utf82unicode(Standalone.ToString())) : L"") + L"\" ?>"; 
 		}
-
 
 		void XDeclaration::setValue(const std::string& name, const std::string& value)
 		{

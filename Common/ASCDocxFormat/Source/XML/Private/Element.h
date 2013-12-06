@@ -2,19 +2,18 @@
 #ifndef XML_PRIVATE_ELEMENT_INCLUDE_H_
 #define XML_PRIVATE_XELEMENT_INCLUDE_H_
 
+#include <list>
+#include <string>
+
 #include "NodeContainer.h"
 #include "property.h"
 #include "XAttributeContainer.h"
 #include "XNamespaceContainer.h"
 #include "./../XName.h"
-#include <string>
 #include "XString.h"
 #include "XSpace.h"
-//#include "XSource.h"
 #include "XSingleSource.h"
 #include "XWideSource.h"
-#include <list>
-
 
 namespace XML
 {
@@ -34,8 +33,8 @@ namespace XML
 			Element();
 			Element(const XML::XName& xname);
 			Element(const XML::XName& xname, const XList& list);
-			Element(boost::shared_ptr<XSingleSource> source, const XNamespaceContainer& ns, const XSpace& space);
-			Element(boost::shared_ptr<XWideSource> source, const XNamespaceContainer& ns, const XSpace& space);
+			Element(NSCommon::smart_ptr<XSingleSource> source, const XNamespaceContainer& ns, const XSpace& space);
+			Element(NSCommon::smart_ptr<XWideSource> source, const XNamespaceContainer& ns, const XSpace& space);
 
 			virtual ~Element();
 
@@ -45,8 +44,8 @@ namespace XML
 			virtual const bool isComment() const;
 
 		public:
-			void fromSource(boost::shared_ptr<XSingleSource> source, const XNamespaceContainer& defineNamespaces, const XSpace& space);
-			void fromSource(boost::shared_ptr<XWideSource> source, const XNamespaceContainer& defineNamespaces, const XSpace& space);
+			void fromSource(NSCommon::smart_ptr<XSingleSource> source, const XNamespaceContainer& defineNamespaces, const XSpace& space);
+			void fromSource(NSCommon::smart_ptr<XWideSource> source, const XNamespaceContainer& defineNamespaces, const XSpace& space);
 			virtual const std::string ToString() const;
 			virtual const std::wstring ToWString() const;
 			virtual void SaveToStringList(std::list<std::string>& strList)const;

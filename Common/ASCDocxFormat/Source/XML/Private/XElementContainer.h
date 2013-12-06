@@ -2,12 +2,13 @@
 #ifndef XML_PRIVATE_XELEMENT_CONTAINER_INCLUDE_H_
 #define XML_PRIVATE_XELEMENT_CONTAINER_INCLUDE_H_
 
-#include <boost/shared_ptr.hpp>
 #include <list>
 #include <boost/iterator/filter_iterator.hpp>
+
 #include "Filter/Element.h"
 #include "XNamespaceContainer.h"
 
+#include "../../../../../Common/DocxFormat/Source/Base/SmartPtr.h"
 
 namespace XML
 {
@@ -36,7 +37,7 @@ namespace XML
 
 		public:
 			XElementContainer const* const	operator->() const	{return this;}
-			XElementContainer*							operator->()				{return this;}
+			XElementContainer*				operator->()		{return this;}
 
 			const bool exist(const XName& xname) const;
 			XElement operator[] (const XName& xname);
@@ -54,7 +55,7 @@ namespace XML
 			const_iterator end() const;
 
 		private:
-			boost::shared_ptr<std::list<XNode> >	m_container;
+			NSCommon::smart_ptr<std::list<XNode> >	m_container;
 		};
 
 	} // namespace Private

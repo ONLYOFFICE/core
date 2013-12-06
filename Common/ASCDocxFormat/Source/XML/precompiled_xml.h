@@ -8,10 +8,10 @@
 #include <sstream>
 #include <iterator>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/operators.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/call_traits.hpp>
+
+#include "../../../../Common/DocxFormat/Source/Base/SmartPtr.h"
 
 #include "setter.h"
 #include "getter.h"

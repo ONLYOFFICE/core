@@ -2,16 +2,14 @@
 #ifndef XML_PRIVATE_XWIDE_SOURCE_INCLUDE_H_
 #define XML_PRIVATE_XWIDE_SOURCE_INCLUDE_H_
 
-//#include "XSource.h"
 #include <iterator>
 #include <string>
-
 
 namespace XML
 {
 	namespace Private
 	{
-		class XWideSource //: public XSource
+		class XWideSource
 		{
 		public:
 			enum eSourceType {estLittleEndian, estBigEndian, estStringSource};
@@ -48,7 +46,6 @@ namespace XML
 		protected:
 			std::istreambuf_iterator<wchar_t>		m_iterator;
 			wchar_t									m_current;
-			//bool									m_littleEndian;
 			eSourceType								m_SourceType;
 		};
 	} // namespace Private

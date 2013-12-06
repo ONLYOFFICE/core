@@ -7,9 +7,9 @@
 #include "Private/XDeclaration.h"
 #include "Private/XSingleSource.h"
 #include "Private/XWideSource.h"
-#include <boost/shared_ptr.hpp>
 
 #include "../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
+#include "../../../../Common/DocxFormat/Source/Base/SmartPtr.h"
 
 namespace XML
 {
@@ -40,8 +40,8 @@ namespace XML
 		XElement	Root;
 
 	private:
-		void Load(boost::shared_ptr<Private::XSingleSource> source, const bool space = false);
-		void Load(boost::shared_ptr<Private::XWideSource> source, const bool space = false);
+		void Load(NSCommon::smart_ptr<Private::XSingleSource> source, const bool space = false);
+		void Load(NSCommon::smart_ptr<Private::XWideSource> source, const bool space = false);
 	};
 } // namespace XML
 

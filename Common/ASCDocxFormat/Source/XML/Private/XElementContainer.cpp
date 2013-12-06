@@ -48,14 +48,16 @@ namespace XML
 
 		const bool XElementContainer::exist(const XName& xname) const
 		{
-			//for (const_iterator i = begin(); i != end(); ++i)
-			//{
-			for (std::list<XNode>::iterator i = m_container->begin(); i != m_container->end(); ++i)
+			if (m_container.IsInit())
 			{
-				if(i->isElement())
+				const std::list<XNode>& container = m_container.operator*();
+				for (std::list<XNode>::const_iterator i = container.begin(); i != container.end(); ++i)
 				{
-					if (XElement(*i)->XName == xname)
-						return true;
+					if(i->isElement())
+					{
+						if (XElement(*i)->XName == xname)
+							return true;
+					}
 				}
 			}
 			return false;
@@ -63,8 +65,8 @@ namespace XML
 
 		XElement XElementContainer::operator[] (const XName& xname)
 		{
-			//for (iterator i = begin(); i != end(); ++i)
-			for (std::list<XNode>::iterator i = m_container->begin(); i != m_container->end(); ++i)
+			const std::list<XNode>& container = m_container.operator*();
+			for (std::list<XNode>::const_iterator i = container.begin(); i != container.end(); ++i)
 			{
 				if(i->isElement())
 				{
@@ -72,8 +74,7 @@ namespace XML
 						return *i;
 				}
 			}
-			//for (iterator i = begin(); i != end(); ++i)
-			for (std::list<XNode>::iterator i = m_container->begin(); i != m_container->end(); ++i)
+			for (std::list<XNode>::const_iterator i = container.begin(); i != container.end(); ++i)
 			{
 				if(i->isElement())
 				{
@@ -86,9 +87,8 @@ namespace XML
 
 		const XElement XElementContainer::operator[] (const XName& xname) const
 		{
-			//for (const_iterator i = begin(); i != end(); ++i)
-			//{
-			for (std::list<XNode>::iterator i = m_container->begin(); i != m_container->end(); ++i)
+			const std::list<XNode>& container = m_container.operator*();
+			for (std::list<XNode>::const_iterator i = container.begin(); i != container.end(); ++i)
 			{
 				if(i->isElement())
 				{
@@ -96,9 +96,8 @@ namespace XML
 						return *i;
 				}
 			}
-			//for (const_iterator i = begin(); i != end(); ++i)
-			//{
-			for (std::list<XNode>::iterator i = m_container->begin(); i != m_container->end(); ++i)
+		
+			for (std::list<XNode>::const_iterator i = container.begin(); i != container.end(); ++i)
 			{
 				if(i->isElement())
 				{
@@ -106,6 +105,7 @@ namespace XML
 						return *i;
 				}
 			}
+			
 			return nullXElement;
 		}
 

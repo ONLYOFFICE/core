@@ -9,57 +9,47 @@
 #include "XText.h"
 #include "Private/XList.h"
 
-
 namespace XML
 {
-
 	XContainer::XContainer()
 		: base(new Private::NodeContainer())
 	{
 	}
 
-
 	XContainer::XContainer(const XNode& xnode)
-		: base(boost::dynamic_pointer_cast<Private::NodeContainer>(xnode.get_ptr()))
+		: base(xnode.get_ptr().smart_dynamic_cast<Private::NodeContainer>())
 	{
 	}
-
 
 	XContainer::XContainer(const XElement& element)
 		: base(new Private::NodeContainer(element))
 	{
 	}
 
-
 	XContainer::XContainer(const XText& text)
 		: base(new Private::NodeContainer(text))
 	{
 	}
-
 
 	XContainer::XContainer(const Private::XList& list)
 		: base(new Private::NodeContainer(list))
 	{
 	}
 
-
 	void XContainer::Add(const XNode& node)
 	{
 		m_ptr->Add(node);
 	}
-
 
 	void XContainer::Add(const XElement& element)
 	{
 		m_ptr->Add(element);
 	}
 
-
 	void XContainer::Add(const XText& text)
 	{
 		m_ptr->Add(text);
 	}
-
 
 	void XContainer::Add(const Private::XList& list)
 	{

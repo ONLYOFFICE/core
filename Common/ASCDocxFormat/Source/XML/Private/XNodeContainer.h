@@ -3,9 +3,9 @@
 
 #include <vector>
 #include <string>
-#include <boost/shared_ptr.hpp>
 #include <list>
 
+#include "../../../../../Common/DocxFormat/Source/Base/SmartPtr.h"
 
 namespace XML
 {
@@ -26,11 +26,8 @@ namespace XML
 			void merge(const XNodeContainer& other);
 
 		public:
-			//typedef std::vector<XNode>::iterator iterator;
-			//typedef std::vector<XNode>::const_iterator const_iterator;
 			typedef std::list<XNode>::iterator iterator;
 			typedef std::list<XNode>::const_iterator const_iterator;
-
 
 		public:
 			XNodeContainer const* const	operator->() const	{return this;}
@@ -49,10 +46,10 @@ namespace XML
 			const_iterator end()		const	{return m_container->end();}
 
 		public:
-			const boost::shared_ptr<std::list<XNode> >	container() const;
+			const NSCommon::smart_ptr<std::list<XNode> >	container() const;
 
 		private:
-			boost::shared_ptr<std::list<XNode> >	m_container;
+			NSCommon::smart_ptr<std::list<XNode> >	m_container;
 		};
 	} // namespace Private
 } // namespace XML

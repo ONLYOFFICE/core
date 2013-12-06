@@ -2,10 +2,10 @@
 #ifndef XML_PRIVATE_XNAMESPACE_CONTAINER_INCLUDE_H_
 #define XML_PRIVATE_XNAMESPACE_CONTAINER_INCLUDE_H_
 
-#include "XContainer.h"
-#include "./../XNamespace.h"
 #include <string>
 
+#include "XContainer.h"
+#include "./../XNamespace.h"
 
 namespace XML
 {
@@ -17,7 +17,7 @@ namespace XML
 			const bool exist(const std::string& name) const;
 
 			XNamespaceContainer const* const	operator->() const	{return this;}
-			XNamespaceContainer*							operator->()				{return this;}
+			XNamespaceContainer*				operator->()		{return this;}
 
 			XNamespace& operator[] (const std::string& name);
 			const XNamespace& operator[] (const std::string& name) const;

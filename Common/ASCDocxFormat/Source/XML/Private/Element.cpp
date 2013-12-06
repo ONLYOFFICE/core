@@ -47,14 +47,14 @@ namespace XML
 		}
 
 
-		Element::Element(boost::shared_ptr<XSingleSource> source, const XNamespaceContainer& ns, const XSpace& space)
+		Element::Element(NSCommon::smart_ptr<XSingleSource> source, const XNamespaceContainer& ns, const XSpace& space)
 			: Space(space)
 		{
 			fromSource(source, ns, Space);
 		}
 
 
-		Element::Element(boost::shared_ptr<XWideSource> source, const XNamespaceContainer& ns, const XSpace& space)
+		Element::Element(NSCommon::smart_ptr<XWideSource> source, const XNamespaceContainer& ns, const XSpace& space)
 			: Space(space)
 		{
 			fromSource(source, ns, Space);
@@ -84,7 +84,7 @@ namespace XML
 		}
 
 
-		void Element::fromSource(boost::shared_ptr<XSingleSource> source, const XNamespaceContainer& defineNamespaces, const XSpace& space)
+		void Element::fromSource(NSCommon::smart_ptr<XSingleSource> source, const XNamespaceContainer& defineNamespaces, const XSpace& space)
 		{
 			Space = space;
 			source->skipSpace();
@@ -179,7 +179,7 @@ namespace XML
 		}
 
 
-		void Element::fromSource(boost::shared_ptr<XWideSource> source, const XNamespaceContainer& defineNamespaces, const XSpace& space)
+		void Element::fromSource(NSCommon::smart_ptr<XWideSource> source, const XNamespaceContainer& defineNamespaces, const XSpace& space)
 		{
 			Space = space;
 			source->skipSpace();

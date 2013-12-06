@@ -93,7 +93,7 @@ namespace XML
 		}
 
 
-		void NodeContainer::fromSource(boost::shared_ptr<XSingleSource> source, const XNamespaceContainer& ns, const XSpace& space)
+		void NodeContainer::fromSource(NSCommon::smart_ptr<XSingleSource> source, const XNamespaceContainer& ns, const XSpace& space)
 		{
 			if (space.isDefault())
 				source->skipSpace();
@@ -121,7 +121,7 @@ namespace XML
 		}
 
 
-		void NodeContainer::fromSource(boost::shared_ptr<XWideSource> source, const XNamespaceContainer& ns, const XSpace& space)
+		void NodeContainer::fromSource(NSCommon::smart_ptr<XWideSource> source, const XNamespaceContainer& ns, const XSpace& space)
 		{
 			if (space.isDefault())
 				source->skipSpace();
@@ -204,7 +204,7 @@ namespace XML
 		}
 
 
-		const bool NodeContainer::isComment(boost::shared_ptr<XSingleSource> source)
+		const bool NodeContainer::isComment(NSCommon::smart_ptr<XSingleSource> source)
 		{
 			if (source->get() == '!')
 			{
@@ -223,7 +223,7 @@ namespace XML
 		}
 
 
-		void NodeContainer::insertComment(boost::shared_ptr<XSingleSource> source)
+		void NodeContainer::insertComment(NSCommon::smart_ptr<XSingleSource> source)
 		{
 			std::string comment;
 			while(true)
@@ -252,7 +252,7 @@ namespace XML
 		}
 
 
-		const bool NodeContainer::isComment(boost::shared_ptr<XWideSource> source)
+		const bool NodeContainer::isComment(NSCommon::smart_ptr<XWideSource> source)
 		{
 			if (source->get() == L'!')
 			{
@@ -271,7 +271,7 @@ namespace XML
 		}
 
 
-		void NodeContainer::insertComment(boost::shared_ptr<XWideSource> source)
+		void NodeContainer::insertComment(NSCommon::smart_ptr<XWideSource> source)
 		{
 			std::wstring comment;
 			while(true)

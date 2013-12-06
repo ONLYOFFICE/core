@@ -4,7 +4,7 @@
 
 #include "..\..\Common\DocxFormat\Source\Base\SmartPtr.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	struct IParagraphItem;
 

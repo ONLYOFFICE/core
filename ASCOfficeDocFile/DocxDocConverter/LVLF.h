@@ -3,7 +3,7 @@
 #include "Constants.h"
 #include "grfhic.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
   static const char NumberFormatCodes[60][29] =
   {

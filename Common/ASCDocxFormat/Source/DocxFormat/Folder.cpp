@@ -7,91 +7,78 @@
 #include "Rels/File.h"
 #include "Document.h"
 
-
 namespace Docx
 {
-
 	Folder::Folder()
 	{		
 	}
 
-
-	Folder::Folder(const boost::filesystem::wpath& path)
+	Folder::Folder(const OOX::CPath& path)
 	{
 		read(path);
 	}
 
-
-	void Folder::read(const boost::filesystem::wpath& path)
+	void Folder::read(const OOX::CPath& path)
 	{
 		OOX::Rels::File rels(path / L"/");
 		IFileContainer::read(rels, path);
 	}
 
-
-	void Folder::write(const boost::filesystem::wpath& path) const
+	void Folder::write(const OOX::CPath& path) const
 	{
-		boost::filesystem::create_directories(path);
+		OOX::CSystemUtility::CreateDirectories(path);
 
 		OOX::Rels::File rels;
 		OOX::ContentTypes::File content;
 
-		IFileContainer::write(rels, path, L"", content);
+		IFileContainer::write(rels, path, OOX::CPath(L""), content);
 
 		rels.write(path / L"/");
 		content.write(path);
 	}
 
-
-	void Folder::createFromTemplate(const boost::filesystem::wpath& path)
+	void Folder::createFromTemplate(const OOX::CPath& path)
 	{
 		read(path);
 	}
 
-
-	void Folder::Commit(const boost::filesystem::wpath& path)
+	void Folder::Commit(const OOX::CPath& path)
 	{
-	    boost::filesystem::create_directories(path);
-
+		OOX::CSystemUtility::CreateDirectories(path);
 		IFileContainer::Commit(path);
 	}
 
-
-	void Folder::Finalize(const boost::filesystem::wpath& path)
+	void Folder::Finalize(const OOX::CPath& path)
 	{
-		boost::filesystem::create_directories(path);
+		OOX::CSystemUtility::CreateDirectories(path);
 
 		OOX::Rels::File rels;
 		OOX::ContentTypes::File content;
 
-		IFileContainer::Finalize(rels, path, L"", content);
+		IFileContainer::Finalize(rels, path, OOX::CPath(L""), content);
 
 		rels.write(path / L"/");
 		content.write(path);
 	}
 
-
-	const bool Folder::isValid(const boost::filesystem::wpath& path) const
+	const bool Folder::isValid(const OOX::CPath& path) const
 	{
 		return true;
 	}
 
-
-	void Folder::extractPictures(const boost::filesystem::wpath& path)
+	void Folder::extractPictures(const OOX::CPath& path)
 	{
-		boost::filesystem::create_directories(path);
+		OOX::CSystemUtility::CreateDirectories(path);
 		OOX::IFileContainer::extractPictures(path);
 	}
 
-
-	void Folder::extractPictures(const boost::filesystem::wpath& source, const boost::filesystem::wpath& path)
+	void Folder::extractPictures(const OOX::CPath& source, const OOX::CPath& path)
 	{
 		read(source);
 		extractPictures(path);
 	}
 
-
-	void Folder::addImage(const boost::filesystem::wpath& imagePath, const long width, const long height)
+	void Folder::addImage(const OOX::CPath& imagePath, const long width, const long height)
 	{
 		if (exist<OOX::Document>())
 		{
@@ -100,8 +87,7 @@ namespace Docx
 		}
 	}
 
-
-	void Folder::addImageInBegin(const boost::filesystem::wpath& imagePath, const long width, const long height)
+	void Folder::addImageInBegin(const OOX::CPath& imagePath, const long width, const long height)
 	{
 		if (exist<OOX::Document>())
 		{
@@ -109,7 +95,6 @@ namespace Docx
 			document.addImageInBegin(imagePath, width, height);
 		}
 	}
-
 
 	void Folder::addSpaceToLast(const int count)
 	{
@@ -120,7 +105,6 @@ namespace Docx
 		}
 	}
 
-
 	void Folder::addPageBreak()
 	{
 		if (exist<OOX::Document>())
@@ -129,8 +113,6 @@ namespace Docx
 			document.addPageBreak();
 		}
 	}
-
-
 
 	void Folder::addText(const std::wstring& text)
 	{
@@ -141,7 +123,6 @@ namespace Docx
 		}
 	}
 
-
 	void Folder::addText(const std::string& text)
 	{
 		if (exist<OOX::Document>())
@@ -150,7 +131,6 @@ namespace Docx
 			document.addText(text);
 		}
 	}
-
 
 	void Folder::addTextToLast(const std::wstring& text)
 	{
@@ -161,7 +141,6 @@ namespace Docx
 		}
 	}
 
-
 	void Folder::addTextToLast(const std::string& text)
 	{
 		if (exist<OOX::Document>())
@@ -170,7 +149,6 @@ namespace Docx
 			document.addTextToLast(text);
 		}
 	}
-
 
 	void Folder::addHyperlink(const std::wstring& nameHref, const std::wstring& text)
 	{
@@ -181,7 +159,6 @@ namespace Docx
 		}
 	}
 
-
 	void Folder::addHyperlink(const std::string& nameHref, const std::string& text)
 	{
 		if (exist<OOX::Document>())
@@ -191,7 +168,6 @@ namespace Docx
 		}
 	}
 
-
 	void Folder::addHyperlinkToLast(const std::wstring& nameHref, const std::wstring& text)
 	{
 		if (exist<OOX::Document>())
@@ -200,7 +176,6 @@ namespace Docx
 			document.addHyperlinkToLast(nameHref, text);
 		}
 	}
-
 
 	void Folder::addHyperlinkToLast(const std::string& nameHref, const std::string& text)
 	{

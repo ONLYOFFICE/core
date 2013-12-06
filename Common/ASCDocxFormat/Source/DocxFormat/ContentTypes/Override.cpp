@@ -11,7 +11,7 @@ namespace OOX
 	namespace ContentTypes
 	{
 
-		Override::Override(const std::string& type, const boost::filesystem::wpath& path)
+		Override::Override(const std::string& type, const OOX::CPath& path)
 			: m_part(path),
 				m_type(type)
 		{
@@ -39,18 +39,19 @@ namespace OOX
 		void Override::fromXML(const XML::XNode& node)
 		{
 			const XML::XElement element(node);
-			m_part	= element.attribute("PartName").value();
+			//////m_part	= element.attribute("PartName").value();
+			m_part	= OOX::CPath(element.attribute("PartName").value().ToWString().c_str());
 			m_type	= element.attribute("ContentType").value();
 		}
 
 		
 		const XML::XNode Override::toXML() const
 		{
-			return
-				XML::XElement("Override",
-					XML::XAttribute("PartName", L"/" + m_part.string()) + 
-					XML::XAttribute("ContentType", m_type)
-				);
+			return XML::XElement();
+				//////////XML::XElement("Override",
+				//////////	XML::XAttribute("PartName", L"/" + m_part.string()) + 
+				//////////	XML::XAttribute("ContentType", m_type)
+				//////////);
 		}
 
 
@@ -60,7 +61,7 @@ namespace OOX
 		}
 
 
-		const boost::filesystem::wpath Override::filename() const
+		const OOX::CPath Override::filename() const
 		{
 			return m_part;
 		}

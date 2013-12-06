@@ -2,7 +2,7 @@
 
 #include "Chpx.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class ChpxFkp : public IStreamWriter
 	{

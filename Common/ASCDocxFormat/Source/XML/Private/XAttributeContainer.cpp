@@ -20,13 +20,12 @@ namespace XML
 
 		const bool XAttributeContainer::exist(const XName& xname) const
 		{
-			//BOOST_FOREACH(const XAttribute& current, m_container)
 			for(const_iterator current = begin(); current != end(); current++)
 			{
 				if ((*current)->XName->Equal(xname))
 					return true;
 			}
-			//BOOST_FOREACH(const XAttribute& current, m_container)
+
 			for(const_iterator current = begin(); current != end(); current++)
 			{
 				if ((*current)->XName == xname)
@@ -38,13 +37,11 @@ namespace XML
 
 		XAttribute& XAttributeContainer::operator[] (const XName& xname)
 		{
-			//BOOST_FOREACH(XAttribute& current, m_container)
 			for(iterator current = begin(); current != end(); current++)
 			{
 				if ((*current)->XName->Equal(xname))
 					return *current;
 			}
-			//BOOST_FOREACH(XAttribute& current, m_container)
 			for(iterator current = begin(); current != end(); current++)
 			{
 				if ((*current)->XName == xname)
@@ -56,13 +53,11 @@ namespace XML
 
 		const XAttribute& XAttributeContainer::operator[] (const XName& xname) const
 		{
-			//BOOST_FOREACH(const XAttribute& current, m_container)
 			for(const_iterator current = begin(); current != end(); current++)
 			{
 				if ((*current)->XName->Equal(xname))
 					return *current;
 			}
-			//BOOST_FOREACH(const XAttribute& current, m_container)
 			for(const_iterator current = begin(); current != end(); current++)
 			{
 				if ((*current)->XName == xname)
@@ -76,13 +71,6 @@ namespace XML
 		{
 			XNamespaceContainer container;
 
-			//BOOST_FOREACH(const XAttribute& current, m_container)
-			//{
-			//	if (current->XName->Ns.is_init())
-			//		container.Add(current->XName->Ns);
-			//}
-			//for(std::set<XAttribute>::const_iterator current = m_container.begin(); current != m_container.end(); current++)
-			//for(std::list<XAttribute>::const_iterator current = m_container.begin(); current != m_container.end(); current++)
 			for(const_iterator current = begin(); current != end(); current++)
 			{
 				if ((*current)->XName->Ns.is_init())

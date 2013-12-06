@@ -27,8 +27,8 @@ namespace OOX
 
 		private:
 			OuterShdw					m_outerShdw;
-			nullable<Scene3d> m_scene3d;
-			nullable<Sp3d>		m_sp3d;
+			nullable__<Scene3d> m_scene3d;
+			nullable__<Sp3d>		m_sp3d;
 		};
 	} // namespace Theme
 } // namespace OOX

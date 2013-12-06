@@ -4,7 +4,7 @@
 #include "CSymbolOperand.h"
 #include "Constants.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class FootnoteRef: public IRunItem
 	{

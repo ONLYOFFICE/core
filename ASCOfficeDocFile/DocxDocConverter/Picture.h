@@ -12,7 +12,7 @@
 #define RATIO	1000	// TODO : recalculate
 
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class Picture : public IRunItem, public IOperand
 	{

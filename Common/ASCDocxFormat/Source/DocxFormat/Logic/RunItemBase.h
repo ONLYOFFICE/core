@@ -5,7 +5,6 @@
 #include "./../WritingElement.h"
 #include <string>
 
-
 namespace OOX
 {
 	namespace Logic

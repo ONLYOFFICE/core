@@ -5,50 +5,42 @@
 
 #include "./../Numbering.h"
 
-
 namespace OOX
 {
-
 	Numbering::LevelOverride::LevelOverride()
 	{
+		Ilvl			=	0;
+		StartOverride	=	0;
 	}
-
 
 	Numbering::LevelOverride::~LevelOverride()
 	{
 	}
 
-
-	Numbering::LevelOverride::LevelOverride(const XML::XNode& node)
+	Numbering::LevelOverride::LevelOverride(XmlUtils::CXmlNode& oNode)
 	{
-		fromXML(node);
+		fromXML(oNode);
 	}
 
-
-	const Numbering::LevelOverride& Numbering::LevelOverride::operator =(const XML::XNode& node)
+	const Numbering::LevelOverride& Numbering::LevelOverride::operator =(XmlUtils::CXmlNode& oNode)
 	{
-		fromXML(node);
+		fromXML(oNode);
 		return *this;
 	}
 
-
-	void Numbering::LevelOverride::fromXML(const XML::XNode& node)
+	void Numbering::LevelOverride::fromXML(XmlUtils::CXmlNode& oNode)
 	{
-		const XML::XElement element(node);
-		Ilvl = element.attribute("ilvl").value();
-	    StartOverride = element.element("startOverride").attribute("val").value();
-        Level = element.element("lvl");
+		Ilvl = _wtoi(static_cast<const wchar_t*>(oNode.GetAttributeBase( _T("w:ilvl"))));
+
+		XmlUtils::CXmlNode oChild;
+		if ( oNode.GetNode( _T("w:startOverride"), oChild ) )
+			StartOverride = _wtoi(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:val"))));
+		
+		if ( oNode.GetNode( _T("w:lvl"), oChild ) )
+		{
+			OOX::Numbering::Level lvl;
+			lvl.fromXML(oChild);
+			Level = lvl;
+		}
 	}
-
-
-	const XML::XNode Numbering::LevelOverride::toXML() const
-	{
-		return
-			XML::XElement(ns.w + "lvlOverride",
-				XML::XAttribute(ns.w + "ilvl", Ilvl) +
-				XML::Write(ns.w + "startOverride", ns.w + "val", StartOverride) +
-				XML::Write(Level)
-			);
-	}
-
 } // namespace OOX

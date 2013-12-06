@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../Common/XmlUtils.h"
 
 #include "Logic/ShapeStyle.h"
 #include "Logic/Wrap.h"
@@ -18,9 +17,11 @@
 #include "ShapePath.h"
 #include "StyleBooleans.h"
 
+#include "..\..\Common\DocxFormat\Source\XML\XmlUtils.h"
+
 using namespace OfficeArt;
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class CStyle
 	{
@@ -251,7 +252,7 @@ namespace AVSDocFileFormat
 	};
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class CShapeSettings
 	{

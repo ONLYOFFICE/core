@@ -61,7 +61,7 @@ namespace OOX
 				);
 		}
 
-		void RFonts::setFontName(const nullable<std::string>& fontName)
+		void RFonts::setFontName(const nullable__<std::string>& fontName)
 		{
 			ascii		=	fontName;
 			hAnsi		=	fontName;
@@ -181,14 +181,14 @@ namespace OOX
             return "";
 		}
 
-		const nullable<std::string> RFonts::fontName() const
+		const nullable__<std::string> RFonts::fontName() const
 		{
 			if (ascii.is_init())	return ascii;
 			if (hAnsi.is_init())	return hAnsi;
 			if (EastAsia.is_init())	return EastAsia;
 			if (Cs.is_init())		return Cs;
 
-			return nullable<std::string>();
+			return nullable__<std::string>();
 		}
 
 	} // namespace Logic

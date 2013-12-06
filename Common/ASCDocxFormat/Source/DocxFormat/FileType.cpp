@@ -5,26 +5,22 @@
 
 #include "FileType.h"
 
-
 namespace OOX
 {
-
-	FileType::FileType(	const boost::filesystem::wpath& defaultDirectory, 
-											const boost::filesystem::wpath& defaultFileName,
-											const std::string& overrideType, 
-											const std::string& relationType)
+	FileType::FileType(	const OOX::CPath& defaultDirectory, 
+		const OOX::CPath& defaultFileName,
+		const std::wstring& overrideType, 
+		const std::wstring& relationType)
 		: m_defaultDirectory(defaultDirectory),
-			m_defaultFileName(defaultFileName),
-			m_overrideType(overrideType),
-			m_relationType(relationType)
+		m_defaultFileName(defaultFileName),
+		m_overrideType(overrideType),
+		m_relationType(relationType)
 	{
 	}
-
 
 	FileType::~FileType()
 	{
 	}
-
 
 	const bool FileType::operator ==(const FileType& rhs) const
 	{
@@ -32,38 +28,32 @@ namespace OOX
 
 	}
 
-
-	const std::string FileType::OverrideType() const
+	const std::wstring FileType::OverrideType() const
 	{
 		return m_overrideType;
 	}
 
-
-	const std::string FileType::RelationType() const
+	const std::wstring FileType::RelationType() const
 	{
 		return m_relationType;
 	}
 
-
-	const boost::filesystem::wpath FileType::DefaultDirectory() const
+	const OOX::CPath FileType::DefaultDirectory() const
 	{
 		return m_defaultDirectory;
 	}
 
-
-	const boost::filesystem::wpath FileType::DefaultFileName() const
+	const OOX::CPath FileType::DefaultFileName() const
 	{
 		return m_defaultFileName;
 	}
 
-
-	const bool operator ==(const std::string& type, const FileType& file)
+	const bool operator ==(const std::wstring& type, const FileType& file)
 	{
 		return type == file.RelationType();
 	}
 
-
-	const bool operator ==(const FileType& file, const std::string& type)
+	const bool operator ==(const FileType& file, const std::wstring& type)
 	{
 		return file.RelationType() == type;
 	}

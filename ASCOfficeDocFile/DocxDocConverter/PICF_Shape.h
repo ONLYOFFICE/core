@@ -1,6 +1,6 @@
 #pragma once
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
   class PICF_Shape: public IOperand
   {

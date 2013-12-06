@@ -25,7 +25,7 @@ public:
 	template<typename U, class S, class G> 
 	nullable_property(nullable_property<U, S, G> const& rhs, const Setter& setter = Setter(), const Getter& getter = Getter())
 		: _value(rhs, setter, getter) {}
-	nullable_property(const nullable<Type>& value) : _value(value) {}
+	nullable_property(const nullable__<Type>& value) : _value(value) {}
 
 
 	template<typename U>
@@ -55,7 +55,7 @@ public:
 		_value = value;
 		return *this;
 	}
-	const nullable_property& nullable_property_setter(const nullable<Type>& value)
+	const nullable_property& nullable_property_setter(const nullable__<Type>& value)
 	{
 		_value = value;
 		return *this;
@@ -63,7 +63,7 @@ public:
 
 
 	operator const Type() const {return get();}
-	operator const nullable<Type>() const {return _value.get_nullable();}
+	operator const nullable__<Type>() const {return _value.get_nullable();}
 	const Type get() const {return _value.get();}
 	const Type operator*() const {return get();}
 	const Type get_value_or(Parameter value) const {return _value.is_init() ? get() : value;}
@@ -113,7 +113,7 @@ private:
 		_nullable_property() {}
 		_nullable_property(Parameter value, const Setter&, const Getter&) 
 			: _value(value) {Setter()(*_value, value);}
-		_nullable_property(const nullable<Type>& value)
+		_nullable_property(const nullable__<Type>& value)
 		{
 			if (value.is_init())
 			{
@@ -138,10 +138,10 @@ private:
 			}
 			else
 			{
-				_value = nullable<Type>();
+				_value = nullable__<Type>();
 			}
 		}
-		void operator =(const nullable<Type>& value) 
+		void operator =(const nullable__<Type>& value) 
 		{
 			if (value.is_init())
 			{
@@ -150,13 +150,13 @@ private:
 			}
 			else
 			{
-				_value = nullable<Type>();
+				_value = nullable__<Type>();
 			}
 		}
 
 
 		const Type get() const {return Getter()(*_value);}
-		const nullable<Type> get_nullable() const {return is_init() ? nullable<Type>(get()) : nullable<Type>();}
+		const nullable__<Type> get_nullable() const {return is_init() ? nullable__<Type>(get()) : nullable__<Type>();}
 		Type const* const get_ptr() const {return _value.get_ptr();}
 		Type*							get_ptr()				{return _value.get_ptr();}
 
@@ -167,7 +167,7 @@ private:
 		void init() {_value.init();}
 
 	private:
-		nullable<Type> _value;
+		nullable__<Type> _value;
 	};
 
 	template<typename Type, class Setter, class Getter>
@@ -204,7 +204,7 @@ private:
 				_setter(*_value, rhs.get());
 			}
 		}
-		_nullable_property(const nullable<Type>& value)
+		_nullable_property(const nullable__<Type>& value)
 		{
 			if (value.is_init())
 			{
@@ -229,10 +229,10 @@ private:
 			}
 			else
 			{
-				_value = nullable<Type>();
+				_value = nullable__<Type>();
 			}
 		}
-		void operator =(const nullable<Type>& value) 
+		void operator =(const nullable__<Type>& value) 
 		{
 			if (value.is_init())
 			{
@@ -241,13 +241,13 @@ private:
 			}
 			else
 			{
-				_value = nullable<Type>();
+				_value = nullable__<Type>();
 			}
 		}
 
 
 		const Type get() const {return _getter(*_value);}
-		const nullable<Type> get_nullable() const {return is_init() ? nullable<Type>(get()) : nullable<Type>();}
+		const nullable__<Type> get_nullable() const {return is_init() ? nullable__<Type>(get()) : nullable__<Type>();}
 		Type const* const get_ptr() const {return _value.get_ptr();}
 		Type*							get_ptr()				{return _value.get_ptr();}
 
@@ -258,7 +258,7 @@ private:
 		void init() {_value.init();}
 
 	private:
-		nullable<Type>	_value;
+		nullable__<Type>	_value;
 		Setter					_setter;
 		Getter					_getter;
 	};
@@ -293,7 +293,7 @@ const nullable_property<T, S, G>& nullable_property_setter(nullable_property<T, 
 
 
 template<typename T, typename U, class S, class G>
-const nullable<T>& nullable_setter(nullable<T>& lhs, const nullable_property<U, S, G>& rhs)
+const nullable__<T>& nullable_setter(nullable__<T>& lhs, const nullable_property<U, S, G>& rhs)
 {
 	if (rhs.is_init())
 		return lhs.nullable_setter(rhs);

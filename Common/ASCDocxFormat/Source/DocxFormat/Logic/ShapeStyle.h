@@ -51,11 +51,11 @@ namespace OOX
 			nullable_property<std::string, Limit::MsoRelative>		WidthRelative;
 			nullable_property<std::string, Limit::MsoRelative>		HeightRelative;
 			
-			nullable<Common::Point< Unit<double, Pt> >>				distanceLeftTop;
-			nullable<Common::Point< Unit<double, Pt> >>				distanceRightBottom;
+			nullable__<Common::Point< Unit<double, Pt> >>			distanceLeftTop;
+			nullable__<Common::Point< Unit<double, Pt> >>			distanceRightBottom;
 			
 			// group
-			nullable<Common::Point< Unit<double, Pt> >>				leftTop;
+			nullable__<Common::Point< Unit<double, Pt> >>			leftTop;
 			bool													isLocalUnit;
 		};
 	} // namespace Logic

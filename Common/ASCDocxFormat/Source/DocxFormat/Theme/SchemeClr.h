@@ -25,9 +25,9 @@ namespace OOX
 
 		private:
 			std::string				m_value;
-			nullable<int>			m_tint;
-			nullable<int>			m_shade;
-			nullable<int>			m_satMod;
+			nullable__<int>			m_tint;
+			nullable__<int>			m_shade;
+			nullable__<int>			m_satMod;
 		};
 	} // namespace Theme
 } // namespace OOX

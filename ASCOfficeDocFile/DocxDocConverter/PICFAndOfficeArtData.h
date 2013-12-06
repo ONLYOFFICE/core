@@ -3,7 +3,7 @@
 #include "PICF.h"
 #include "OfficeArt\OfficeArtInlineSpContainer.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class PICFAndOfficeArtData : public IOperand
 	{

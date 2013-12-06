@@ -11,13 +11,13 @@ namespace OOX
 	{
 	public:
 		Video();
-		Video(const boost::filesystem::wpath& filename);
+		Video(const OOX::CPath& filename);
 		virtual ~Video();
 
 	public:
 		virtual const FileType type() const;
-		virtual const boost::filesystem::wpath DefaultDirectory() const;
-		virtual const boost::filesystem::wpath DefaultFileName() const;
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
 	};
 } // namespace OOX
 

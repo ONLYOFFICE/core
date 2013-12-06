@@ -3,10 +3,9 @@
 #define OOX_CORE_INCLUDE_H_
 
 #include "File.h"
-#include "DateTime.h"
-#include "nullable.h"
-#include "property.h"
 
+#include "../.././../../Common/DocxFormat/Source/Base/Nullable.h"
+#include "../.././../../Common/DocxFormat/Source/Xml/XmlUtils.h"
 
 namespace OOX
 {
@@ -14,28 +13,36 @@ namespace OOX
 	{
 	public:
 		Core();
-		Core(const boost::filesystem::wpath& filename);
+		Core(const OOX::CPath& filename);
 		virtual ~Core();
 
 	public:
-		virtual void read(const boost::filesystem::wpath& filename);
-		virtual void write(const boost::filesystem::wpath& filename, const boost::filesystem::wpath& directory, ContentTypes::File& content) const;
+		virtual void read(const OOX::CPath& oPath);
+		virtual void write(const OOX::CPath& oPath, const OOX::CPath& directory, ContentTypes::File& content) const;
 
 	public:
 		virtual const FileType type() const;
-		virtual const boost::filesystem::wpath DefaultDirectory() const;
-		virtual const boost::filesystem::wpath DefaultFileName() const;
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
 
 	private:
-		nullable<std::string>		m_title;
-		nullable<std::string>		m_subject;
-		nullable<std::string>		m_creator;
-		nullable<std::string>		m_keywords;
-		nullable<std::string>		m_description;
-		nullable<std::string>		m_lastModifiedBy;
-		nullable<int>				m_revision;
-		nullable<OOX::DateTime>				m_created;
-		nullable<OOX::DateTime>				m_modified;
+
+		NSCommon::nullable<std::wstring> m_sCategory;
+		NSCommon::nullable<std::wstring> m_sContentStatus;
+		NSCommon::nullable<std::wstring> m_sCreated;
+		NSCommon::nullable<std::wstring> m_sCreator;
+		NSCommon::nullable<std::wstring> m_sDescription;
+		NSCommon::nullable<std::wstring> m_sIdentifier;
+		NSCommon::nullable<std::wstring> m_sKeywords;
+		NSCommon::nullable<std::wstring> m_sLanguage;
+		NSCommon::nullable<std::wstring> m_sLastModifiedBy;
+		NSCommon::nullable<std::wstring> m_sLastPrinted;
+		NSCommon::nullable<std::wstring> m_sModified;
+		NSCommon::nullable<std::wstring> m_sRevision;
+		NSCommon::nullable<std::wstring> m_sSubject;
+		NSCommon::nullable<std::wstring> m_sTitle;
+		NSCommon::nullable<std::wstring> m_sVersion;
+
 	};
 } // namespace OOX
 

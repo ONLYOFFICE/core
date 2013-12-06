@@ -2,10 +2,11 @@
 #ifndef OOX_LOGIC_PARAGRAPH_ITEM_INCLUDE_H_
 #define OOX_LOGIC_PARAGRAPH_ITEM_INCLUDE_H_
 
+#include <string>
+
 #include "./../WritingElement.h"
 #include "IItemable.h"
 #include "ParagraphItemBase.h"
-#include <string>
 #include "Run.h"
 #include "Hyperlink.h"
 #include "BookmarkStart.h"
@@ -13,7 +14,6 @@
 #include "FldSimple.h"
 #include "Insert.h"
 #include "Delete.h"
-
 
 namespace OOX
 {

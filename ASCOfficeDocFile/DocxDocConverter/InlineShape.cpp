@@ -2,7 +2,7 @@
 
 #include "InlineShape.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	InlineShape::InlineShape ()
 	{
@@ -33,7 +33,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	void InlineShape::BuildRuns()  const
 	{
@@ -42,18 +42,18 @@ namespace AVSDocFileFormat
 		//static const byte CFLoc		=	0;
 		static const byte CFSpec	=	1;
 
-		AVSDocFileFormat::Run oBegin(AVSDocFileFormat::Text((WCHAR)TextMark::FieldBeginMark));
+		ASCDocFileFormat::Run oBegin(ASCDocFileFormat::Text((WCHAR)TextMark::FieldBeginMark));
 
 		//oBegin.AddProperty( (short)DocFileFormat::sprmCPicLocation, (void*)&CFLoc );
 		oBegin.AddProperty( (short)DocFileFormat::sprmCFSpec, (void*)&CFSpec );
 
-		AVSDocFileFormat::Run oSpecial (AVSDocFileFormat::Text(L" SHAPE  \\* MERGEFORMAT "));
+		ASCDocFileFormat::Run oSpecial (ASCDocFileFormat::Text(L" SHAPE  \\* MERGEFORMAT "));
 
-		AVSDocFileFormat::Run oSeperator(AVSDocFileFormat::Text((WCHAR)TextMark::FieldSeparator));
+		ASCDocFileFormat::Run oSeperator(ASCDocFileFormat::Text((WCHAR)TextMark::FieldSeparator));
 		//oSeperator.AddProperty( (short)DocFileFormat::sprmCPicLocation, (void*)&CFLoc );
 		oSeperator.AddProperty( (short)DocFileFormat::sprmCFSpec, (void*)&CFSpec );
 
-		AVSDocFileFormat::Run oEnd(AVSDocFileFormat::Text((WCHAR)TextMark::FieldEndMark));
+		ASCDocFileFormat::Run oEnd(ASCDocFileFormat::Text((WCHAR)TextMark::FieldEndMark));
 		//oEnd.AddProperty( (short)DocFileFormat::sprmCPicLocation, (void*)&CFLoc );
 		oEnd.AddProperty( (short)DocFileFormat::sprmCFSpec, (void*)&CFSpec );
 
@@ -64,22 +64,22 @@ namespace AVSDocFileFormat
 
 		/*
 
-		AVSDocFileFormat::Run oBegin(AVSDocFileFormat::Text((WCHAR)TextMark::FieldBeginMark));
+		ASCDocFileFormat::Run oBegin(ASCDocFileFormat::Text((WCHAR)TextMark::FieldBeginMark));
 
 		oBegin.AddProperty( (short)DocFileFormat::sprmCPicLocation, (void*)&CFLoc );
 		oBegin.AddProperty( (short)DocFileFormat::sprmCFSpec, (void*)&CFSpec );
 
-		AVSDocFileFormat::Run oSpecial (AVSDocFileFormat::Text(L" SHAPE  \\* MERGEFORMAT "));
+		ASCDocFileFormat::Run oSpecial (ASCDocFileFormat::Text(L" SHAPE  \\* MERGEFORMAT "));
 
-		AVSDocFileFormat::Run oSeperator( AVSDocFileFormat::Text((WCHAR)TextMark::FieldSeparator));
+		ASCDocFileFormat::Run oSeperator( ASCDocFileFormat::Text((WCHAR)TextMark::FieldSeparator));
 		oSeperator.AddProperty( (short)DocFileFormat::sprmCPicLocation, (void*)&CFLoc );
 		oSeperator.AddProperty( (short)DocFileFormat::sprmCFSpec, (void*)&CFSpec );
 
-		AVSDocFileFormat::Run oEnd;
+		ASCDocFileFormat::Run oEnd;
 		
 		//oEnd.AddRunItem (m_oShape);
 		oEnd.AddRunItem (m_oPicture);
-		oEnd.AddRunItem (AVSDocFileFormat::Text(TextMark::FieldEndMark));
+		oEnd.AddRunItem (ASCDocFileFormat::Text(TextMark::FieldEndMark));
 		
 		m_oSpecialRuns.push_back(ParagraphItem(oBegin));
 		m_oSpecialRuns.push_back(ParagraphItem(oSpecial));
@@ -93,12 +93,12 @@ namespace AVSDocFileFormat
 		m_oTextRuns.push_back(ParagraphItem(oRun));
 	}
 
-	void InlineShape::SetShape(const AVSDocFileFormat::CShapeRun& oShape)
+	void InlineShape::SetShape(const ASCDocFileFormat::CShapeRun& oShape)
 	{
 		m_oShape	=	oShape;
 	}
 
-	void InlineShape::SetPicture(const AVSDocFileFormat::Picture& oPicture)
+	void InlineShape::SetPicture(const ASCDocFileFormat::Picture& oPicture)
 	{
 		m_oPicture	=	oPicture;
 	}
@@ -263,7 +263,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	InlineShape::const_iterator InlineShape::begin() const
 	{

@@ -5,7 +5,6 @@
 #include <stdexcept>
 #include <string>
 
-
 namespace OOX
 {
 	class FormatError : public std::runtime_error

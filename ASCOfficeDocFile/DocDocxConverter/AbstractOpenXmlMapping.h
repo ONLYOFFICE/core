@@ -1,7 +1,8 @@
 #pragma once
 
 #include <atlstr.h>
-#include "..\..\..\..\..\Common\xmlutils.h"
+
+#include "..\..\Common\DocxFormat\Source\XML\XmlUtils.h"
 
 namespace DocFileFormat
 {

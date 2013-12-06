@@ -9,18 +9,19 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <string>
+#include <iosfwd>
+#include <sstream>
+#include <streambuf>
+#include <locale>
 
-#include <boost/lexical_cast.hpp>
-#include <boost/foreach.hpp>
-#include <boost/format.hpp>
-#include <boost/algorithm/string/erase.hpp>
-#include <boost/algorithm/string/replace.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/call_traits.hpp>
-#include <boost/type_traits.hpp>
-#include <boost/optional.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/scoped_array.hpp>
-
+#include <stdarg.h>
+#include <stdio.h>
 #include <wchar.h>
+#include <time.h>
+#include <assert.h>
 
+#include "ASCStlUtils.h"
+#include "Unit.h"
+
+#pragma warning( disable : 4554 )

@@ -29,7 +29,7 @@ namespace DocFileFormat
 			_size.cx	=	Right - Left;
 			_size.cy	=	Bottom - Top;
 
-			rcgBounds	=	AVSDocFormatUtils::Rectangle (_point, _size);
+			rcgBounds	=	ASCDocFormatUtils::Rectangle (_point, _size);
 		}
 
 		virtual ~ChildAnchor()
@@ -44,7 +44,7 @@ namespace DocFileFormat
 	public:
 
 		/// Rectangle that describes the bounds of the anchor
-		AVSDocFormatUtils::Rectangle rcgBounds;
+		ASCDocFormatUtils::Rectangle rcgBounds;
 		int Left;
 		int Top;
 		int Right;

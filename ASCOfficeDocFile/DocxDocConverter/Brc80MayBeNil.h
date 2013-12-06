@@ -1,6 +1,6 @@
 #pragma once
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	union Brc80
 	{

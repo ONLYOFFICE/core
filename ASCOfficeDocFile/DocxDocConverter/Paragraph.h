@@ -3,7 +3,7 @@
 #include "ParagraphItem.h"
 #include "TextItem.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class Paragraph : public ITextItem
 	{

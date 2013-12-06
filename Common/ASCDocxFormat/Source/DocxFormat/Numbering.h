@@ -2,134 +2,131 @@
 #ifndef OOX_NUMBERING_FILE_INCLUDE_H_
 #define OOX_NUMBERING_FILE_INCLUDE_H_
 
-#include "File.h"
-#include "property.h"
-#include "nullable_property.h"
 #include <vector>
 #include <string>
+
+#include "File.h"
 #include "Logic/Align.h"
 #include "Logic/ParagraphProperty.h"
 #include "Logic/RunProperty.h"
 #include "Logic/NumFormat.h"
-#include "Limit/Suffix.h"
 
+#include "../.././../../Common/DocxFormat/Source/Base/Nullable.h"
+#include "../.././../../Common/DocxFormat/Source/Xml/XmlUtils.h"
 
 namespace OOX
 {
 	class Numbering : public OOX::File
 	{
 	public:
-		class Level : public WritingElement
+		class Level
 		{
 		public:
 			Level();
 			virtual ~Level();
-			explicit Level(const XML::XNode& node);
-			const Level& operator =(const XML::XNode& node);
+			
+			Level(XmlUtils::CXmlNode& oNode);
+			const Level& operator =(XmlUtils::CXmlNode& oNode);
 
 		public:
-			virtual void fromXML(const XML::XNode& node);
-			virtual const XML::XNode toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 
 		public:
-			property<int>									Ilvl;
-			nullable_property<std::string>					Tplc;
-			property<int>									Start;
-			property<Logic::NumFormat>						NumFmt;
-			nullable_property<std::string, Limit::Suffix>	Suffix;
-			property<std::string>							Text;
-			nullable_property<Logic::Align>					Align;
-			nullable_property<Logic::ParagraphProperty>		ParagraphProperty;
-			nullable_property<Logic::RunProperty>			RunProperty;
-			nullable_property<int>							Tentative;
+			NSCommon::nullable<int>							Ilvl;
+			NSCommon::nullable<std::wstring>				Tplc;
+			NSCommon::nullable<int>							Start;
+			NSCommon::nullable<Logic::NumFormat>			NumFmt;
+			NSCommon::nullable<std::wstring>				Suffix;
+			NSCommon::nullable<std::wstring>				Text;
+			NSCommon::nullable<Logic::Align>				Align;
+			NSCommon::nullable<Logic::ParagraphProperty>	ParagraphProperty;
+			NSCommon::nullable<Logic::RunProperty>			RunProperty;
+			NSCommon::nullable<int>							Tentative;
 		};
 
-		class AbstractNum : public WritingElement
+		class LevelOverride 
+		{
+		public:
+			LevelOverride();
+			virtual ~LevelOverride();
+			
+			LevelOverride(XmlUtils::CXmlNode& oNode);
+			const LevelOverride& operator =(XmlUtils::CXmlNode& oNode);
+
+		public:
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+
+		public:
+		    NSCommon::nullable<int>				Ilvl;
+			NSCommon::nullable<int>				StartOverride;
+			NSCommon::nullable<Level>			Level;
+		};
+
+		class AbstractNum
 		{
 		public:
 			AbstractNum();
 			virtual ~AbstractNum();
-			explicit AbstractNum(const XML::XNode& node);
-			const AbstractNum& operator =(const XML::XNode& node);
+			
+			AbstractNum(XmlUtils::CXmlNode& oNode);
+			const AbstractNum& operator =(XmlUtils::CXmlNode& oNode);
 
 		public:
-			virtual void fromXML(const XML::XNode& node);
-			virtual const XML::XNode toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 
 		public:
 			const Level getLevel(const int numLevel) const;
 
 		public:
-			property<std::vector<Level> >	Levels;
-			property<int>					Id;
-			nullable_property<std::string>	Nsid;
-			property<std::string>			MultiLevelType;
-			nullable_property<std::string>	Tmpl;		
-			nullable_property<std::string>	numStyleLink;
+			std::vector<Level>					Levels;
+			
+			NSCommon::nullable<int>				Id;
+			NSCommon::nullable<std::wstring>	Nsid;
+			NSCommon::nullable<std::wstring>	MultiLevelType;
+			NSCommon::nullable<std::wstring>	Tmpl;		
+			NSCommon::nullable<std::wstring>	numStyleLink;
 		};
 
-		class LevelOverride : public WritingElement
-		{
-		public:
-			LevelOverride();
-			virtual ~LevelOverride();
-			explicit LevelOverride(const XML::XNode& node);
-			const LevelOverride& operator =(const XML::XNode& node);
-
-		public:
-			virtual void fromXML(const XML::XNode& node);
-			virtual const XML::XNode toXML() const;
-
-		public:
-		    property<int> Ilvl;
-			nullable_property<int> StartOverride;
-			nullable_property<Level> Level;
-		};
-
-
-		class Num : public WritingElement
+		class Num 
 		{
 		public:
 			Num();
 			virtual ~Num();
-			explicit Num(const XML::XNode& node);
-			const Num& operator =(const XML::XNode& node);
+			
+			Num(XmlUtils::CXmlNode& oNode);
+			const Num& operator =(XmlUtils::CXmlNode& oNode);
 
 		public:
-			virtual void fromXML(const XML::XNode& node);
-			virtual const XML::XNode toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 
 		public:
-			property<int> NumId;
-			property<int> AbstractNumId;
-			property<std::vector<LevelOverride> > LevelOverrides;
+			NSCommon::nullable<int>		NumId;
+			NSCommon::nullable<int>		AbstractNumId;
+
+			std::vector<LevelOverride>	LevelOverrides;
 		};
-
 
 	public:
 		Numbering();
-		Numbering(const boost::filesystem::wpath& filename);
+		Numbering(const OOX::CPath& filename);
 		virtual ~Numbering();
 
 	public:
-		virtual void read(const boost::filesystem::wpath& filename);
-		virtual void write(const boost::filesystem::wpath& filename, const boost::filesystem::wpath& directory, ContentTypes::File& content) const;
+		virtual void read(const OOX::CPath& filename);
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const;
 
 	public:
 		virtual const FileType type() const;
-		virtual const boost::filesystem::wpath DefaultDirectory() const;
-		virtual const boost::filesystem::wpath DefaultFileName() const;
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
 
 	public:
 		void clear();
 
 	public:
-		const int getAbstractNumId(const int numId) const;
-		const AbstractNum getAbstractNum(const int abstractNumId) const;
 
-	public:
-		property<std::vector<AbstractNum> >	AbstractNums;
-		property<std::vector<Num> >					Nums;
+		std::vector<AbstractNum>	AbstractNums;
+		std::vector<Num>			Nums;
 	};
 } // namespace OOX
 

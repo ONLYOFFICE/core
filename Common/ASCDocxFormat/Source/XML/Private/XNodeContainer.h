@@ -49,11 +49,9 @@ namespace XML
 			const_iterator end()		const	{return m_container->end();}
 
 		public:
-			//const boost::shared_ptr<std::vector<XNode> >	container() const;
 			const boost::shared_ptr<std::list<XNode> >	container() const;
 
 		private:
-			//boost::shared_ptr<std::vector<XNode> >	m_container;
 			boost::shared_ptr<std::list<XNode> >	m_container;
 		};
 	} // namespace Private

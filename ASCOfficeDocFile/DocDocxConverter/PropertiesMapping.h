@@ -8,7 +8,8 @@
 #include "SinglePropertyModifier.h"
 
 #include <atlstr.h>
-#include "..\..\..\..\..\Common\xmlutils.h"
+
+#include "..\..\Common\DocxFormat\Source\XML\XmlUtils.h"
 
 namespace DocFileFormat
 {
@@ -41,6 +42,6 @@ namespace DocFileFormat
 
 		XmlUtils::CXmlWriter* m_pXmlWriter;
 		static map<byte, wstring> brcTypeMap;
-		static AVSOfficeCriticalSection brcTypeMapLock;
+		static ASCOfficeCriticalSection brcTypeMapLock;
 	};
 }

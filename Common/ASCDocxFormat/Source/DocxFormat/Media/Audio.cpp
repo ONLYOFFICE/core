@@ -15,7 +15,7 @@ namespace OOX
 	}
 
 
-	Audio::Audio(const boost::filesystem::wpath& filename)
+	Audio::Audio(const OOX::CPath& filename)
 	{
 		read(filename);
 	}
@@ -32,15 +32,15 @@ namespace OOX
 	}
 
 
-	const boost::filesystem::wpath Audio::DefaultDirectory() const
+	const OOX::CPath Audio::DefaultDirectory() const
 	{
 		return type().DefaultDirectory();
 	}
 
 
-	const boost::filesystem::wpath Audio::DefaultFileName() const
+	const OOX::CPath Audio::DefaultFileName() const
 	{
-		return m_filename.filename();
+		return m_filename.GetPath();
 	}
 
 } // namespace OOX

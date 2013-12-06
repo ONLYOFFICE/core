@@ -17,7 +17,7 @@ namespace XML
 	}
 
 
-	const XML::XNode WriteIf(const XName& xname, const nullable<bool> write)
+	const XML::XNode WriteIf(const XName& xname, const nullable__<bool> write)
 	{
 		if (write.get_value_or(false))
 			return XML::XElement(xname);
@@ -49,7 +49,7 @@ namespace XML
 	}
 
 
-	const XML::XNode WriteIf(const XML::XElement& element, const nullable<bool> write)
+	const XML::XNode WriteIf(const XML::XElement& element, const nullable__<bool> write)
 	{
 		if (write.get_value_or(false))
 			return element;
@@ -81,7 +81,7 @@ namespace XML
 	}
 
 
-	const XML::XNode WriteIf(const XML::XNode& node, const nullable<bool> write)
+	const XML::XNode WriteIf(const XML::XNode& node, const nullable__<bool> write)
 	{
 		if (write.get_value_or(write))
 			return node;
@@ -113,7 +113,7 @@ namespace XML
 	}
 
 
-	const XML::XAttribute WriteIf(const XML::XAttribute& attribute, const nullable<bool> write)
+	const XML::XAttribute WriteIf(const XML::XAttribute& attribute, const nullable__<bool> write)
 	{
 		if (write.get_value_or(false))
 			return attribute;

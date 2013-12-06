@@ -28,7 +28,7 @@ namespace XML
 		}
 
 		template<typename T>
-		explicit XText(const nullable<T>& value)
+		explicit XText(const nullable__<T>& value)
 			: base(value.is_init() ? new Private::Text(ToString(value))	: 0),
 				Value(value.is_init() ? m_ptr->Value : Private::Null::Text().Value)
 		{

@@ -15,7 +15,7 @@ namespace OOX
 	}
 
 
-	Video::Video(const boost::filesystem::wpath& filename)
+	Video::Video(const OOX::CPath& filename)
 	{
 		read(filename);
 	}
@@ -32,15 +32,15 @@ namespace OOX
 	}
 
 
-	const boost::filesystem::wpath Video::DefaultDirectory() const
+	const OOX::CPath Video::DefaultDirectory() const
 	{
 		return type().DefaultDirectory();
 	}
 
 
-	const boost::filesystem::wpath Video::DefaultFileName() const
+	const OOX::CPath Video::DefaultFileName() const
 	{
-		return m_filename.filename();
+		return m_filename;
 	}
 
 } // namespace OOX

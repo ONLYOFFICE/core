@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Text.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	Text::Text()
 	{

@@ -1311,7 +1311,7 @@ namespace DocFileFormat
 	{
 		if ((style != NULL) && (anchor != NULL))
 		{
-			AVSDocFormatUtils::Rectangle bounds = anchor->rcgBounds;
+			ASCDocFormatUtils::Rectangle bounds = anchor->rcgBounds;
 
 			if (twistDimensions)
 			{

@@ -4,7 +4,6 @@
 
 #include <boost/shared_ptr.hpp>
 
-
 namespace XML
 {
 	namespace Private

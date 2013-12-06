@@ -6,7 +6,6 @@
 #include "property.h"
 #include "nullable_property.h"
 
-
 namespace OOX
 {
 	namespace Logic
@@ -25,7 +24,7 @@ namespace OOX
 
 		public:
 			nullable_property<std::string>	Gallery;
-			property<bool>									Unique;
+			property<bool>					Unique;
 		};
 	} // namespace Logic
 } // namespace OOX

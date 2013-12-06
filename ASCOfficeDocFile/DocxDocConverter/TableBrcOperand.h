@@ -4,7 +4,7 @@
 #include "ItcFirstLim.h"
 #include "Constants.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class TableBrcOperand: public IOperand
 	{

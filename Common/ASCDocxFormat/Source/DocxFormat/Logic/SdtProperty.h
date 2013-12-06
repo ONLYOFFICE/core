@@ -6,7 +6,6 @@
 #include "property.h"
 #include "DocPartObj.h"
 
-
 namespace OOX
 {
 	namespace Logic

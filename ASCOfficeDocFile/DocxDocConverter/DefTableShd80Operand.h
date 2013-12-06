@@ -2,7 +2,7 @@
 
 #include "Shd80.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class DefTableShd80Operand: public IOperand
 	{

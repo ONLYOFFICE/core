@@ -9,7 +9,6 @@
 #include "SdtEndProperty.h"
 #include "SdtContent.h"
 
-
 namespace OOX
 {
 	namespace Logic
@@ -28,8 +27,8 @@ namespace OOX
 
 		public:
 			nullable_property<SdtProperty>		Property;
-			nullable_property<SdtEndProperty> EndProperty;
-			property<SdtContent>							Content;		
+			nullable_property<SdtEndProperty>	EndProperty;
+			property<SdtContent>				Content;		
 		};
 	} // namespace Logic
 } // namespace OOX

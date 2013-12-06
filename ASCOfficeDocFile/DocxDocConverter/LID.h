@@ -2,7 +2,7 @@
 
 #include "..\Common\LanguageCodes.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
   class LID: public IOperand
   {

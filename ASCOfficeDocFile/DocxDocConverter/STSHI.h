@@ -5,7 +5,7 @@
 //!!!A structure that has no effect and MUST be ignored.!!!
 #include "STSHIB.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class STSHI : public IOperand
 	{

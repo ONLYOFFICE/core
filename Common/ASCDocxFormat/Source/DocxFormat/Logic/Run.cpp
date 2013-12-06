@@ -7,10 +7,8 @@
 #include "./../FormatError.h"
 #include "Utility.h"
 #include <utility>
-#include <boost/foreach.hpp>
 #include "Text.h"
 #include "Symbol.h"
-
 
 namespace OOX
 {
@@ -124,10 +122,14 @@ namespace OOX
 		const std::string Run::toTxt() const
 		{
 			std::string text;
-			BOOST_FOREACH(const RunItem& item, *Items)
+
+			const std::vector<RunItem>& runs = Items.get();
+
+			for (std::vector<RunItem>::const_iterator iter = runs.begin(); iter != runs.end(); ++iter)
 			{
-				text += item.toTxt();
+				text += (*iter).toTxt();
 			}
+
 			return text;
 		}
 

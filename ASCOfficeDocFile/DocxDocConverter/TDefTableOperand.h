@@ -4,7 +4,7 @@
 #include "Brc80MayBeNil.h"
 #include "XAS.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	union TCGRF
 	{

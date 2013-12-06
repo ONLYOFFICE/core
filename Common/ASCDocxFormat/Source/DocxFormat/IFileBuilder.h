@@ -2,9 +2,7 @@
 #ifndef OOX_FILE_BUILDER_INCLUDE_H_
 #define OOX_FILE_BUILDER_INCLUDE_H_
 
-#include <boost/filesystem.hpp>
 #include "ContentTypes/File.h"
-
 
 namespace OOX
 {
@@ -15,8 +13,8 @@ namespace OOX
 		virtual ~IFileBuilder();
 
 	public:
-	    virtual void Commit(const boost::filesystem::wpath& path) = 0;
-		virtual void Finalize(const boost::filesystem::wpath& path, const boost::filesystem::wpath& directory, ContentTypes::File& content) = 0;
+	    virtual void Commit(const OOX::CPath& path) = 0;
+		virtual void Finalize(const OOX::CPath& path, const OOX::CPath& directory, ContentTypes::File& content) = 0;
 	};
 } // namespace OOX
 

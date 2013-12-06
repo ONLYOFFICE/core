@@ -9,29 +9,28 @@
 #include "ToString.h"
 #include "Exception/not_init_nullable.h"
 
-
 template<typename T>
-class nullable
+class nullable__
 {
 private:
 	typedef typename boost::call_traits<T>::param_type Parameter;
 
 public:
-	nullable() {}
-	nullable(Parameter value) : _value(value) {}
+	nullable__() {}
+	nullable__(Parameter value) : _value(value) {}
 
 	template<typename U>
-	const nullable<T>& operator =(const U& value)
+	const nullable__<T>& operator =(const U& value)
 	{
 		return ::nullable_setter(*this, value);
 	}
 	template<typename U>
-	const nullable<T>& nullable_setter(const U& value)
+	const nullable__<T>& nullable_setter(const U& value)
 	{
 		_value = static_cast<T>(value);
 		return *this;
 	}
-	const nullable<T>& nullable_setter(const nullable<T>& value)
+	const nullable__<T>& nullable_setter(const nullable__<T>& value)
 	{
 		_value = value;
 		return *this;
@@ -119,12 +118,12 @@ public:
 		return ::ToString(get());
 	}
 
-	const bool operator ==(nullable<T> const& rhs) const {return _value.get() == rhs._value.get();}
-	const bool operator !=(nullable<T> const& rhs) const {return _value.get() != rhs._value.get();}
-	const bool operator < (nullable<T> const& rhs) const {return _value.get() <  rhs._value.get();}
-	const bool operator > (nullable<T> const& rhs) const {return _value.get() >  rhs._value.get();}
-	const bool operator <=(nullable<T> const& rhs) const {return _value.get() <= rhs._value.get();}
-	const bool operator >=(nullable<T> const& rhs) const {return _value.get() >= rhs._value.get();}
+	const bool operator ==(nullable__<T> const& rhs) const {return _value.get() == rhs._value.get();}
+	const bool operator !=(nullable__<T> const& rhs) const {return _value.get() != rhs._value.get();}
+	const bool operator < (nullable__<T> const& rhs) const {return _value.get() <  rhs._value.get();}
+	const bool operator > (nullable__<T> const& rhs) const {return _value.get() >  rhs._value.get();}
+	const bool operator <=(nullable__<T> const& rhs) const {return _value.get() <= rhs._value.get();}
+	const bool operator >=(nullable__<T> const& rhs) const {return _value.get() >= rhs._value.get();}
 
 	const bool operator ==(Parameter rhs) const {return _value.get() == rhs;}
 	const bool operator !=(Parameter rhs) const {return _value.get() != rhs;}
@@ -152,7 +151,7 @@ private:
 		_nullable(Parameter value) : _value(new T(value)) {}
 
 		void operator =(Parameter value) { _value.reset(new T(value));}
-		void operator =(const nullable<T>& value)
+		void operator =(const nullable__<T>& value)
 		{
 			if (value.is_init())
 				_value.reset(new T(value));
@@ -188,7 +187,7 @@ private:
 		_nullable(Parameter value) : _value(value) {}
 
 		void operator =(Parameter value) {_value = value;}
-		void operator =(const nullable<T>& value) 
+		void operator =(const nullable__<T>& value) 
 		{ 
 			if (value.is_init())
 				_value = value; 
@@ -219,29 +218,29 @@ private:
 };
 
 
-template<class T> const bool operator== (const T x, nullable<T> const& y) {return y == x;} 
-template<class T> const bool operator!= (const T x, nullable<T> const& y) {return y != x;}
-template<class T> const bool operator<  (const T x, nullable<T> const& y) {return y >= x;}
-template<class T> const bool operator>  (const T x, nullable<T> const& y) {return y <= x;}
-template<class T> const bool operator<= (const T x, nullable<T> const& y) {return y >  x;}
-template<class T> const bool operator>= (const T x, nullable<T> const& y) {return y <  x;}
+template<class T> const bool operator== (const T x, nullable__<T> const& y) {return y == x;} 
+template<class T> const bool operator!= (const T x, nullable__<T> const& y) {return y != x;}
+template<class T> const bool operator<  (const T x, nullable__<T> const& y) {return y >= x;}
+template<class T> const bool operator>  (const T x, nullable__<T> const& y) {return y <= x;}
+template<class T> const bool operator<= (const T x, nullable__<T> const& y) {return y >  x;}
+template<class T> const bool operator>= (const T x, nullable__<T> const& y) {return y <  x;}
 
-template<typename V, class T> const bool operator ==(const V x, nullable<T> const& y) {return y == x;}
-template<typename V, class T> const bool operator !=(const V x, nullable<T> const& y) {return y != x;}
-template<typename V, class T> const bool operator < (const V x, nullable<T> const& y) {return y < x;}
-template<typename V, class T> const bool operator > (const V x, nullable<T> const& y) {return y > x;}
-template<typename V, class T> const bool operator <=(const V x, nullable<T> const& y) {return y <= x;}
-template<typename V, class T> const bool operator >=(const V x, nullable<T> const& y) {return y >= x;}
+template<typename V, class T> const bool operator ==(const V x, nullable__<T> const& y) {return y == x;}
+template<typename V, class T> const bool operator !=(const V x, nullable__<T> const& y) {return y != x;}
+template<typename V, class T> const bool operator < (const V x, nullable__<T> const& y) {return y < x;}
+template<typename V, class T> const bool operator > (const V x, nullable__<T> const& y) {return y > x;}
+template<typename V, class T> const bool operator <=(const V x, nullable__<T> const& y) {return y <= x;}
+template<typename V, class T> const bool operator >=(const V x, nullable__<T> const& y) {return y >= x;}
 
 
 template<typename T, typename U>
-const nullable<T>& nullable_setter(nullable<T>& lhs, const U& rhs)
+const nullable__<T>& nullable_setter(nullable__<T>& lhs, const U& rhs)
 {
 	return lhs.nullable_setter(rhs);
 }
 
 
-template<typename T> const std::string ToString(const nullable<T>& value)
+template<typename T> const std::string ToString(const nullable__<T>& value)
 {
 	return value.ToString();
 }

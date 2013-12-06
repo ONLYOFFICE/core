@@ -10,29 +10,44 @@ namespace OOX
 {
 	FontTable::FontTable()
 	{
-
 	}
 
-	FontTable::FontTable(const boost::filesystem::wpath& filename)
+	FontTable::FontTable(const OOX::CPath& filename)
 	{
 		read(filename);
 	}
 
 	FontTable::~FontTable()
 	{
-
 	}
 
-	void FontTable::read(const boost::filesystem::wpath& filename)
+	void FontTable::read(const OOX::CPath& oPath)
 	{
-		const XML::XDocument document(filename);
-		XML::Fill(Fonts, document.Root);
+		m_fonts.clear();
+
+		XmlUtils::CXmlNode oFonts;
+		oFonts.FromXmlFile( oPath.GetPath(), true );
+
+		if ( _T("w:fonts") == oFonts.GetName() )
+		{
+			XmlUtils::CXmlNodes oFontList;
+			oFonts.GetNodes( _T("w:font"), oFontList );
+
+			for ( int nFontIndex = 0; nFontIndex < oFontList.GetCount(); ++nFontIndex )
+			{
+				XmlUtils::CXmlNode oFontNode;
+				if ( oFontList.GetAt( nFontIndex, oFontNode ) )
+				{
+					Font oFont;
+					oFont.fromXML( oFontNode );
+					m_fonts.push_back( oFont );
+				}
+			}
+		}
 	}
 
-	void FontTable::write(const boost::filesystem::wpath& filename, const boost::filesystem::wpath& directory, ContentTypes::File& content) const
+	void FontTable::write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const
 	{
-		XML::XElement(ns.w + "fonts", XML::Write(Fonts)).Save(filename);
-		content.registration(type().OverrideType(), directory, filename);
 	}
 
 	const FileType FontTable::type() const
@@ -40,12 +55,12 @@ namespace OOX
 		return FileTypes::FontTable;
 	}
 
-	const boost::filesystem::wpath FontTable::DefaultDirectory() const
+	const OOX::CPath FontTable::DefaultDirectory() const
 	{
 		return type().DefaultDirectory();
 	}
 
-	const boost::filesystem::wpath FontTable::DefaultFileName() const
+	const OOX::CPath FontTable::DefaultFileName() const
 	{
 		return type().DefaultFileName();
 	}

@@ -2,7 +2,7 @@
 
 #include "ShapeBuilder.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	BOOL COArtBuilder::BuildShapeRun (const OOX::Logic::Pict& oPicture, CShapeRun& oOdbflRun) 
 	{
@@ -73,7 +73,8 @@ namespace AVSDocFileFormat
 		COArtStorage* pStorage		=	COArtStorage::Instance();
 		if (pStorage)
 		{
-			COArtImage* pImage	=	new COArtImage(oXml.filename().string(), pStorage->GenID (m_nLocation));
+			//COArtImage* pImage	=	new COArtImage(std::wstring(oXml.filename().GetPath()), pStorage->GenID (m_nLocation));
+			COArtImage* pImage	=	new COArtImage(oXml.GetPath(), pStorage->GenID (m_nLocation));
 			if (pImage)
 			{
 				CShapeRun oShapeRun (pImage, pImage->GetID(), pStorage->GetOffSetSpa(m_nLocation));	//	смещение берем от предыдущего элемента
@@ -120,7 +121,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {	
 	COArtShape* COArtBuilder::BuildOArtShape (const OOX::Logic::Shape& oXml, const OOX::Logic::Group& oXmlGroup)
 	{
@@ -198,7 +199,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	template<class T> CShapeRun	COArtBuilder::BuildOdbflRun (const T& oXmlShape, CMapShape& oInnerRef)
 	{		

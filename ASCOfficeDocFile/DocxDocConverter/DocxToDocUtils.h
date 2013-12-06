@@ -505,16 +505,16 @@ namespace DOCXDOCUTILS
 		return colorsMap[colorName];
 	}
 
-	inline unsigned char AlignFromString (const std::string& align)
+	inline unsigned char AlignFromString (const std::wstring& align)
 	{
 		//!!!TODO!!!
-		if (align == std::string("left"))
+		if (align == std::wstring(L"left"))
 			return 0;
-		else if (align == std::string("center"))
+		else if (align == std::wstring(L"center"))
 			return 1;
-		else if (align == std::string("right"))
+		else if (align == std::wstring(L"right"))
 			return 2;
-		else if (align == std::string("both"))
+		else if (align == std::wstring(L"both"))
 			return 3;
 
 		return 0;
@@ -731,57 +731,57 @@ namespace DOCXDOCUTILS
 
 namespace DOCXDOCUTILS	//	fonts
 {	
-	inline AVSDocFileFormat::Constants::FontFamilyType FontFamilyFromString (const std::string& sFontFamily)
+	inline ASCDocFileFormat::Constants::FontFamilyType FontFamilyFromString (const std::wstring& sFontFamily)
 	{
-		if (sFontFamily == std::string("auto"))
+		if (sFontFamily == std::wstring(L"auto"))
 		{
-			return AVSDocFileFormat::Constants::fontFamilyTypeUnspecified;
+			return ASCDocFileFormat::Constants::fontFamilyTypeUnspecified;
 		}
-		else if (sFontFamily == std::string("roman"))
+		else if (sFontFamily == std::wstring(L"roman"))
 		{
-			return AVSDocFileFormat::Constants::fontFamilyTypeRomanSerif;
+			return ASCDocFileFormat::Constants::fontFamilyTypeRomanSerif;
 		}
-		else if (sFontFamily == std::string("swiss"))
+		else if (sFontFamily == std::wstring(L"swiss"))
 		{
-			return AVSDocFileFormat::Constants::fontFamilyTypeSwissSansSerif;
+			return ASCDocFileFormat::Constants::fontFamilyTypeSwissSansSerif;
 		}
-		else if (sFontFamily == std::string("modern"))
+		else if (sFontFamily == std::wstring(L"modern"))
 		{
-			return AVSDocFileFormat::Constants::fontFamilyTypeModernMonospace;
+			return ASCDocFileFormat::Constants::fontFamilyTypeModernMonospace;
 		}
-		else if (sFontFamily == std::string("script"))
+		else if (sFontFamily == std::wstring(L"script"))
 		{
-			return AVSDocFileFormat::Constants::fontFamilyTypeScriptCursive;
+			return ASCDocFileFormat::Constants::fontFamilyTypeScriptCursive;
 		}
-		else if (sFontFamily == std::string("decorative"))
+		else if (sFontFamily == std::wstring(L"decorative"))
 		{
-			return AVSDocFileFormat::Constants::fontFamilyTypeDecorativeFantasy;
+			return ASCDocFileFormat::Constants::fontFamilyTypeDecorativeFantasy;
 		}
 
-		return AVSDocFileFormat::Constants::fontFamilyTypeUnspecified;
+		return ASCDocFileFormat::Constants::fontFamilyTypeUnspecified;
 	}
 
-	inline AVSDocFileFormat::Constants::CharacterPitch FontPitchFromString (const std::string& sPitch)
+	inline ASCDocFileFormat::Constants::CharacterPitch FontPitchFromString (const std::wstring& sPitch)
 	{
-		if (sPitch == std::string("variable"))
-			return AVSDocFileFormat::Constants::characterPitchVariable;
-		else if (sPitch == std::string("fixed"))
-			return AVSDocFileFormat::Constants::characterPitchFixed;
+		if (sPitch == std::wstring(L"variable"))
+			return ASCDocFileFormat::Constants::characterPitchVariable;
+		else if (sPitch == std::wstring(L"fixed"))
+			return ASCDocFileFormat::Constants::characterPitchFixed;
 
-		return AVSDocFileFormat::Constants::characterPitchDefault;
+		return ASCDocFileFormat::Constants::characterPitchDefault;
 	}
 
-	inline unsigned char FontCharsetFromString (const std::string& Charset)
+	inline unsigned char FontCharsetFromString (const std::wstring& Charset)
 	{
-		if (Charset == std::string("CC"))
+		if (Charset == std::wstring(L"CC"))
 			return RUSSIAN_CHARSET;
-		else if (Charset == std::string("00"))
+		else if (Charset == std::wstring(L"00"))
 			return ANSI_CHARSET;
-		else if (Charset == std::string("02"))
+		else if (Charset == std::wstring(L"02"))
 			return SYMBOL_CHARSET;
-		else if (Charset == std::string("80"))
+		else if (Charset == std::wstring(L"80"))
 			return SHIFTJIS_CHARSET;
-		else if (Charset == std::string("86"))
+		else if (Charset == std::wstring(L"86"))
 			return GB2312_CHARSET;
 
 		return DEFAULT_CHARSET;  

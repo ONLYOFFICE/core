@@ -3,7 +3,7 @@
 #include "StyleBooleans.h"
 #include "..\Common\FormatUtils.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	LineStyleBooleans::LineStyleBooleans ()
 	{
@@ -28,7 +28,7 @@ namespace AVSDocFileFormat
 
 	unsigned int LineStyleBooleans::Get() const
 	{
-		AVSDocFormatUtils::BitSet oBits(4);
+		ASCDocFormatUtils::BitSet oBits(4);
 
 		oBits.SetBit(fNoLineDrawDash,			0);		//	A		
 		oBits.SetBit(fLineFillShape,			1);		//	B		
@@ -94,7 +94,7 @@ namespace AVSDocFileFormat
 
 	unsigned int FillStyleBooleans::Get() const
 	{
-		AVSDocFormatUtils::BitSet oBits(4);
+		ASCDocFormatUtils::BitSet oBits(4);
 
 		oBits.SetBit(false,						0);		//	unused (9 bits)	
 		oBits.SetBit(false,						1);		//	
@@ -154,7 +154,7 @@ namespace AVSDocFileFormat
 
 	unsigned int GeometryBooleans::Get() const
 	{
-		AVSDocFormatUtils::BitSet oBits(4);
+		ASCDocFormatUtils::BitSet oBits(4);
 
 		oBits.SetBit(fFillOK,					0);		//	A		
 		oBits.SetBit(fFillShadeShapeOK,			1);		//	B		
@@ -240,7 +240,7 @@ namespace AVSDocFileFormat
 
 	unsigned int GroupShapeBooleans::Get() const
 	{
-		AVSDocFormatUtils::BitSet oBits(4);
+		ASCDocFormatUtils::BitSet oBits(4);
 
 		oBits.SetBit(fPrint,					0);		//	A		
 		oBits.SetBit(fHidden,					1);		//	B	
@@ -306,7 +306,7 @@ namespace AVSDocFileFormat
 
 	unsigned int BlipBooleans::Get() const
 	{
-		AVSDocFormatUtils::BitSet oBits(4);
+		ASCDocFormatUtils::BitSet oBits(4);
 
 		oBits.SetBit(fPictureActive,			0);		//	A		
 		oBits.SetBit(fPictureBiLevel,			1);		//	B	
@@ -364,7 +364,7 @@ namespace AVSDocFileFormat
 
 	unsigned int TextBooleans::Get() const
 	{
-		AVSDocFormatUtils::BitSet oBits(4);
+		ASCDocFormatUtils::BitSet oBits(4);
 
 		oBits.SetBit(false,						0);		//	A		
 		oBits.SetBit(fFitShapeToText,			1);		//	B	
@@ -428,7 +428,7 @@ namespace AVSDocFileFormat
 		// 11 00000 00000 000 0 10	-	obscured
 		// 11 00000 00000 000 0 11	-	fill
 
-		AVSDocFormatUtils::BitSet oBits(4);
+		ASCDocFormatUtils::BitSet oBits(4);
 
 		oBits.SetBit(fShadowObscured,			0);				
 		oBits.SetBit(fShadow,					1);					

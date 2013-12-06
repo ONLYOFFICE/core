@@ -5,64 +5,63 @@
 
 #include "./../Numbering.h"
 
-
 namespace OOX
 {
-
 	Numbering::Level::Level()
 	{
+		Tentative	=	0;
+		Align		=	Logic::Align();
+		NumFmt		=	OOX::Logic::NumFormat();
 	}
-
 
 	Numbering::Level::~Level()
 	{
 	}
 
-
-	Numbering::Level::Level(const XML::XNode& node)
+	Numbering::Level::Level(XmlUtils::CXmlNode& oNode)
 	{
-		fromXML(node);
+		fromXML(oNode);
 	}
 
-
-	const Numbering::Level& Numbering::Level::operator =(const XML::XNode& node)
+	const Numbering::Level& Numbering::Level::operator =(XmlUtils::CXmlNode& oNode)
 	{
-		fromXML(node);
+		fromXML(oNode);
 		return *this;
 	}
 
-
-	void Numbering::Level::fromXML(const XML::XNode& node)
+	void Numbering::Level::fromXML(XmlUtils::CXmlNode& oNode)
 	{
-		const XML::XElement element(node);
-		Ilvl		= element.attribute("ilvl").value();
-		Tplc		= element.attribute("tplc").value();
-		Start		= element.element("start").attribute("val").value();	
-		NumFmt	= element.element("numFmt");
-		Suffix	= element.element("suff").attribute("val").value();
-		Text		=	element.element("lvlText").attribute("val").value();
-		Align		=	element.element("lvlJc").attribute("val").value();
-		ParagraphProperty	= element.element("pPr");
-		RunProperty				=	element.element("rPr");
-		Tentative					= element.attribute("tentative").value();
+		if ( _T("w:lvl") == oNode.GetName() )
+		{
+			Ilvl = _wtoi(static_cast<const wchar_t*>(oNode.GetAttributeBase( _T("w:ilvl"))));
+			Tentative = _wtoi(static_cast<const wchar_t*>(oNode.GetAttributeBase( _T("w:tentative"))));
+			Tplc = std::wstring(static_cast<const wchar_t*>(oNode.GetAttributeBase( _T("w:tentative"))));
+
+			XmlUtils::CXmlNode oChild;
+			
+			if ( oNode.GetNode( _T("w:suff"), oChild ) )
+				Suffix = std::wstring(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:val"))));
+			
+			if ( oNode.GetNode( _T("w:lvlText"), oChild ) )
+				Text = std::wstring(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:val"))));
+			
+			if ( oNode.GetNode( _T("w:lvlJc"), oChild ) )
+				Align = Logic::Align(std::wstring(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:val")))));
+			
+			if ( oNode.GetNode( _T("w:start"), oChild ) )
+				Start = _wtoi(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:val"))));
+
+			if ( oNode.GetNode( _T("w:numFmt"), oChild ) )
+			{
+				OOX::Logic::NumFormat fmt;
+				fmt.fromXML(oChild);
+				NumFmt = fmt;
+			}
+		}
+
+		///NOTE:
+
+		////ParagraphProperty	=	element.element("pPr");
+		////RunProperty			=	element.element("rPr");
 	}
-
-
-	const XML::XNode Numbering::Level::toXML() const
-	{
-		return
-			XML::XElement(ns.w + "lvl",
-				XML::XAttribute(ns.w + "ilvl", Ilvl) +
-				XML::XAttribute(ns.w + "tplc", Tplc) + 
-				XML::XAttribute(ns.w + "tentative", Tentative) +
-				XML::Write(ns.w + "start", ns.w + "val", Start) +
-				XML::Write(NumFmt) +
-				XML::Write(ns.w + "suff", ns.w + "val", Suffix) +
-				XML::Write(ns.w + "lvlText", ns.w + "val", Text)+					
-				XML::Write(ParagraphProperty) +
-				XML::Write(RunProperty) + 
-				XML::Write(ns.w + "lvlJc", ns.w + "val", Align)
-			);
-	}
-
 } // namespace OOX

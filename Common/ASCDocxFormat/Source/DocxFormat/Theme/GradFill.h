@@ -28,8 +28,8 @@ namespace OOX
 		private:
 			int		m_rotWithShape;
 			GsLst	m_gsLst;
-			nullable<Lin>		m_lin;
-			nullable<Path>	m_path;
+			nullable__<Lin>		m_lin;
+			nullable__<Path>	m_path;
 		};
 	} // namespace Theme
 } // OOX

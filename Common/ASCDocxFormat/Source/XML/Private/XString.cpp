@@ -78,7 +78,6 @@ namespace XML
 
 		const int XString::ToInt() const
 		{
-			//return boost::lexical_cast<int>(m_value.get_value_or("0"));
 			try
 			{
 				std::string str = m_value.get_value_or("0");
@@ -93,7 +92,6 @@ namespace XML
 
 		const size_t XString::ToSizet() const
 		{
-			//return boost::lexical_cast<size_t>(m_value.get_value_or("0"));
 			try
 			{
 				std::string str = m_value.get_value_or("0");
@@ -108,7 +106,6 @@ namespace XML
 
 		const double XString::ToDouble() const
 		{
-			//return boost::lexical_cast<double>(m_value.get_value_or("0"));
 			std::string str = m_value.get_value_or("0");
 			double d = 0;
 			try

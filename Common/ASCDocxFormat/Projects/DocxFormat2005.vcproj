@@ -19,7 +19,7 @@
 			OutputDirectory="..\Lib\Debug"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
-			CharacterSet="2"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\Redist;..\..\..\ASCImageStudio3\ASCGraphics\OfficeSvmFile\"
+				AdditionalIncludeDirectories=".\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\..\..\AVSImageStudio3\AVSGraphics\OfficeSvmFile\"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -83,7 +83,7 @@
 			OutputDirectory="..\Lib\Release"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
-			CharacterSet="2"
+			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -105,7 +105,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\Common;.\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\Redist;..\..\ASCImageStudio3\ASCGraphics\OfficeSvmFile\"
+				AdditionalIncludeDirectories=".\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\..\..\AVSImageStudio3\AVSGraphics\OfficeSvmFile\"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
@@ -1523,78 +1523,6 @@
 			Name="ContentTypes"
 			>
 			<File
-				RelativePath="..\Source\DocxFormat\ContentTypes\Default.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Docx\ContentTypes\"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Docx\ContentTypes\"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\ContentTypes\Default.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\ContentTypes\DefaultTable.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Docx\ContentTypes\"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Docx\ContentTypes\"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\ContentTypes\DefaultTable.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\ContentTypes\ExtensionTable.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Docx\ContentTypes\"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Docx\ContentTypes\"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\ContentTypes\ExtensionTable.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Source\DocxFormat\ContentTypes\File.cpp"
 				>
 				<FileConfiguration
@@ -1616,54 +1544,6 @@
 			</File>
 			<File
 				RelativePath="..\Source\DocxFormat\ContentTypes\File.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\ContentTypes\Override.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Docx\ContentTypes\"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Docx\ContentTypes\"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\ContentTypes\Override.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\ContentTypes\OverrideTable.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Docx\ContentTypes\"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Docx\ContentTypes\"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\ContentTypes\OverrideTable.h"
 				>
 			</File>
 		</Filter>
@@ -4983,70 +4863,6 @@
 			Name="Numbering"
 			>
 			<File
-				RelativePath="..\Source\DocxFormat\Numbering\AbstractNum.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Docx\Numbering\"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Docx\Numbering\"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Numbering\Level.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Docx\Numbering\"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Docx\Numbering\"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Numbering\LevelOverride.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Numbering\Num.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Docx\Numbering\"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\Docx\Numbering\"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\Source\DocxFormat\Numbering.cpp"
 				>
 				<FileConfiguration
@@ -5303,43 +5119,11 @@
 			Name="Media"
 			>
 			<File
-				RelativePath="..\Source\DocxFormat\Media\Audio.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Media\Audio.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Media\Image.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Media\Image.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Source\DocxFormat\Media\Media.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\Source\DocxFormat\Media\Media.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Media\OleObject.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Media\OleObject.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Media\Video.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Media\Video.h"
 				>
 			</File>
 		</Filter>
@@ -5386,6 +5170,86 @@
 				RelativePath="..\Source\DocxFormat\External\HyperLink.h"
 				>
 			</File>
+		</Filter>
+		<Filter
+			Name="Base"
+			>
+			<Filter
+				Name="FileSys"
+				>
+				<File
+					RelativePath="..\..\DocxFormat\Source\SystemUtility\FileSystem\Directory.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\DocxFormat\Source\SystemUtility\FileSystem\Directory.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocxFormat\Source\SystemUtility\FileSystem\File.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\DocxFormat\Source\SystemUtility\FileSystem\File.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocxFormat\Source\SystemUtility\SystemUtility.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\DocxFormat\Source\SystemUtility\SystemUtility.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath="..\Source\DocxFormat\DateTime.cpp"

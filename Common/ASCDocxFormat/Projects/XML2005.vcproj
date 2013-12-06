@@ -19,7 +19,7 @@
 			OutputDirectory="..\Lib\Debug"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
-			CharacterSet="2"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -85,7 +85,7 @@
 			OutputDirectory="..\Lib\Release"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
-			CharacterSet="2"
+			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -1026,6 +1026,34 @@
 					>
 				</File>
 			</Filter>
+		</Filter>
+		<Filter
+			Name="Base"
+			>
+			<File
+				RelativePath="..\..\DocxFormat\Source\SystemUtility\SystemUtility.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\DocxFormat\Source\SystemUtility\SystemUtility.h"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath="..\Source\XML\precompiled_xml.cpp"

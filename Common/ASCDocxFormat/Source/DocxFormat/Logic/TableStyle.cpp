@@ -5,7 +5,6 @@
 
 #include "TableStyle.h"
 #include <algorithm>
-#include <boost/bind.hpp>
 
 namespace OOX
 {
@@ -13,12 +12,10 @@ namespace OOX
 	{
 		TableStyle::TableStyle()
 		{
-
 		}
 
 		TableStyle::~TableStyle()
 		{
-
 		}
 
 		TableStyle::TableStyle(const XML::XNode& node)
@@ -32,7 +29,6 @@ namespace OOX
 			return *this;
 		}
 
-
 		void TableStyle::fromXML(const XML::XNode& node)
 		{
 			const XML::XElement element(node);
@@ -41,7 +37,15 @@ namespace OOX
 
 		const bool TableStyle::exist(const std::string& type) const
 		{
-			return std::find_if(begin(), end(), boost::bind(&TableStyleProperties::Type, _1) == type) != end();
+			for (IEnumerable<OOX::Logic::TableStyleProperties>::const_iterator iter = begin(); iter != end(); ++iter)
+			{
+				if ((*iter).Type == type)
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		const TableStyleProperties& TableStyle::operator[](const std::string& type) const
@@ -56,14 +60,30 @@ namespace OOX
 
 		const TableStyleProperties& TableStyle::find(const std::string& type) const
 		{
-			return *Odt::find_if(begin(), end(), boost::bind(&TableStyleProperties::Type, _1) == type);
-			//return *std::find_if(begin(), end(), boost::bind(&TableStyleProperties::Type, _1) == type);
+			IEnumerable<OOX::Logic::TableStyleProperties>::const_iterator iter = begin();
+			for (; iter != end(); ++iter)
+			{
+				if ((*iter).Type == type)
+				{
+					return (*iter);
+				}
+			}
+
+			return (*iter);
 		}
 
 		TableStyleProperties& TableStyle::find(const std::string& type)
 		{
-			return *Odt::find_if(begin(), end(), boost::bind(&TableStyleProperties::Type, _1) == type);
-			//return *std::find_if(begin(), end(), boost::bind(&TableStyleProperties::Type, _1) == type);
+			IEnumerable<OOX::Logic::TableStyleProperties>::iterator iter = begin();
+			for (; iter != end(); ++iter)
+			{
+				if ((*iter).Type == type)
+				{
+					return (*iter);
+				}
+			}
+
+			return (*iter);
 		}
 	}//namespace Logic
 } // namespace OOX

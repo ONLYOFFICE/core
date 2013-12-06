@@ -4,23 +4,22 @@
 
 #include "Media.h"
 
-
 namespace OOX
 {
 	class OleObject : public Media
 	{
 	public:
 		OleObject();
-		OleObject(const boost::filesystem::wpath& filename);
+		OleObject(const OOX::CPath& filename);
 		virtual ~OleObject();
 
 	public:
-		virtual void write(const boost::filesystem::wpath& filename, const boost::filesystem::wpath& directory, ContentTypes::File& content) const;
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const;
 
 	public:
 		virtual const FileType type() const;
-		virtual const boost::filesystem::wpath DefaultDirectory() const;
-		virtual const boost::filesystem::wpath DefaultFileName() const;
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
 	};
 } // namespace OOX
 

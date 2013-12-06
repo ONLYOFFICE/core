@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "TableRow.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	void TableRow::SetDepth( unsigned int _depth )
 	{

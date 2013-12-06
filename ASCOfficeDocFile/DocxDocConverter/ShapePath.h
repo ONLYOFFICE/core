@@ -1,11 +1,15 @@
 #pragma once
 
-#include "../../Common/XmlUtils.h"
+
 #include <math.h>
 
 #include "OfficeArt\Common.h"
 #include "OfficeArt\MSOArray.h"
 #include "OfficeArt\Enumerations.h"
+
+//x:\AVS\Sources\AVSOfficeStudio\AVSOfficeDocFile\DocxDocConverter\ShapePath.h
+
+#include "..\..\Common\DocxFormat\Source\XML\XmlUtils.h"
 
 #define M_PI				3.14159265358979323846
 
@@ -15,7 +19,7 @@ const double RadKoef		=	M_PI/10800000.0;
 
 #define	pow2_16	65536
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	enum FormulaType
 	{
@@ -292,7 +296,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class CFormulasManager;
 	class CFormula
@@ -470,7 +474,7 @@ namespace AVSDocFileFormat
 	};
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	// TODO : add escape segments
 
@@ -564,7 +568,7 @@ namespace AVSDocFileFormat
 
 	private:
 
-		AVSDocFormatUtils::BitSet m_oBits;
+		ASCDocFormatUtils::BitSet m_oBits;
 	};
 
 	class CShapePath

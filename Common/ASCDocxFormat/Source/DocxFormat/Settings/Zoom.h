@@ -23,7 +23,7 @@ namespace OOX
 			virtual const XML::XNode toXML() const;
 
 		private:
-			nullable<std::string>	m_value;
+			nullable__<std::string>	m_value;
 			int										m_percent;
 		};
 	} // namespace Settings

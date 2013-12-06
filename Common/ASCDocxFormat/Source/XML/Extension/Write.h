@@ -26,7 +26,7 @@ namespace XML
 
 
 	template<class T>
-	const XNode Write(const nullable<T>& object)
+	const XNode Write(const nullable__<T>& object)
 	{
 		if (object.is_init())
 		{
@@ -171,7 +171,7 @@ namespace XML
 
 
 	template<typename T>
-	const XML::XNode Write(const XML::XName& element, const XML::XName& attribute, const nullable<T>& value)
+	const XML::XNode Write(const XML::XName& element, const XML::XName& attribute, const nullable__<T>& value)
 	{
 		if (value.is_init())
 			return XML::XElement(element, XML::XAttribute(attribute, *value));

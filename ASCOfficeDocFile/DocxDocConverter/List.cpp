@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "List.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	List::List(short _numID): numID(_numID), level(0) 
 	{

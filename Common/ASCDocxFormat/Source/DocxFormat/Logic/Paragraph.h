@@ -15,8 +15,6 @@
 #include "OLEObject.h"
 #include "./../RId.h"
 #include "Drawing.h"
-#include <boost/filesystem.hpp>
-
 
 namespace OOX
 {
@@ -28,8 +26,8 @@ namespace OOX
 			Paragraph();
 			virtual ~Paragraph();
 			explicit Paragraph(const XML::XNode& node);
-			explicit Paragraph(const RId& rId, const boost::filesystem::wpath& imagePath, const long width, const long height);
-			explicit Paragraph(const RId& rId, const boost::filesystem::wpath& filename, const long xEmu, const std::string& hRelativeFrom, const long yEmu, const std::string& vRelativeFrom, const long widthEmu, const long heightEmu);
+			explicit Paragraph(const RId& rId, const OOX::CPath& imagePath, const long width, const long height);
+			explicit Paragraph(const RId& rId, const OOX::CPath& filename, const long xEmu, const std::string& hRelativeFrom, const long yEmu, const std::string& vRelativeFrom, const long widthEmu, const long heightEmu);
 			const Paragraph& operator =(const XML::XNode& node);
 
 		public:
@@ -41,13 +39,13 @@ namespace OOX
 			void Add(const Run& run);
 			void AddRun(const Run& run);
 			void AddText(const std::string& text);
-			void AddText(const std::string& text, const nullable<Logic::RunProperty>& property);
+			void AddText(const std::string& text, const nullable__<Logic::RunProperty>& property);
 			void AddTab();
-			void AddTab(const nullable<Logic::RunProperty>& property);
+			void AddTab(const nullable__<Logic::RunProperty>& property);
 			void AddLineBreak();
 			void AddBreak(const std::string& type);			
 			void AddSpace(const size_t count);
-			void AddSpace(const size_t count, const nullable<Logic::RunProperty>& property);
+			void AddSpace(const size_t count, const nullable__<Logic::RunProperty>& property);
 			void AddHyperlink(const RId& rId, const std::string& text);
 			void AddHyperlink(const std::string& nameHref, const std::string& text);
 			void AddDrawing(const Drawing& drawing);

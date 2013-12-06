@@ -2,7 +2,7 @@
 
 #include "IParagraphItem.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class ParagraphItem : public Aggregat<IParagraphItem, ParagraphItem>
 	{

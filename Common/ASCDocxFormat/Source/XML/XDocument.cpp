@@ -13,7 +13,6 @@
 #include <list>
 #include "Utility.h"
 
-
 namespace XML
 {
 
@@ -25,9 +24,8 @@ namespace XML
 
 	XDocument::XDocument(const char* source, const bool space)
 	{
-		//boost::filesystem::path path(source);
 		boost::filesystem::wpath path(Encoding::utf82unicode(std::string(source)));
-		TxtFile text(path);
+		TxtFile text(CString(path.string().c_str()));
 		if(text.isUnicode())
 		{
 			boost::shared_ptr<Private::XWideSource> xsource(new Private::XWFileSource(path, Private::XWideSource::estLittleEndian));
@@ -49,7 +47,7 @@ namespace XML
 	XDocument::XDocument(const wchar_t* source, const bool space)
 	{
 		boost::filesystem::wpath path(source);
-		TxtFile text(path);
+		TxtFile text(CString(path.string().c_str()));
 		if(text.isUnicode())
 		{
 			boost::shared_ptr<Private::XWideSource> xsource(new Private::XWFileSource(path, Private::XWideSource::estLittleEndian));
@@ -65,8 +63,6 @@ namespace XML
 			boost::shared_ptr<Private::XSingleSource> xsource(new Private::XFileSource(path));
 			Load(xsource, space);
 		}
-//		boost::shared_ptr<Private::XSource> xsource(new Private::XFileSource(path));
-//		Load(xsource, space);
 	}
 
 
@@ -87,7 +83,7 @@ namespace XML
 	XDocument::XDocument(const boost::filesystem::path& source, const bool space)
 	{
 		boost::filesystem::wpath path(Encoding::utf82unicode(source.string()));
-		TxtFile text(path);
+		TxtFile text(CString(path.string().c_str()));
 		if(text.isUnicode())
 		{
 			boost::shared_ptr<Private::XWideSource> xsource(new Private::XWFileSource(source, Private::XWideSource::estLittleEndian));
@@ -103,14 +99,12 @@ namespace XML
 			boost::shared_ptr<Private::XSingleSource> xsource(new Private::XFileSource(path));
 			Load(xsource, space);
 		}
-		//boost::shared_ptr<Private::XSource> xsource(new Private::XFileSource(source));
-		//Load(xsource, space);
 	}
 
 
 	XDocument::XDocument(const boost::filesystem::wpath& source, const bool space)
 	{
-		TxtFile text(source);
+		TxtFile text(CString(source.string().c_str()));
 		if(text.isUnicode())
 		{
 			boost::shared_ptr<Private::XWideSource> xsource(new Private::XWFileSource(source, Private::XWideSource::estLittleEndian));
@@ -126,8 +120,6 @@ namespace XML
 			boost::shared_ptr<Private::XSingleSource> xsource(new Private::XFileSource(source));
 			Load(xsource, space);
 		}
-		//boost::shared_ptr<Private::XSource> xsource(new Private::XFileSource(source));
-		//Load(xsource, space);
 	}
 
 

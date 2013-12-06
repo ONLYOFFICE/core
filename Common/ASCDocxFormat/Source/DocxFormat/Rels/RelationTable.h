@@ -2,10 +2,7 @@
 #ifndef OOX_RELS_RELATION_TABLE_INCLUDE_H_
 #define OOX_RELS_RELATION_TABLE_INCLUDE_H_
 
-#include "./../WritingVector.h"
 #include "RelationShip.h"
-#include <boost/filesystem.hpp>
-#include <boost/shared_ptr.hpp>
 #include "./../RId.h"
 
 namespace OOX {class External;}
@@ -14,17 +11,23 @@ namespace OOX
 {
 	namespace Rels
 	{
-		class RelationTable : public WritingVector<RelationShip>
+		class RelationTable
 		{
 		public:
 			RelationTable();
 			virtual ~RelationTable();
-			explicit RelationTable(const XML::XNode& node);
-			const RelationTable& operator =(const XML::XNode& node);
+			RelationTable(XmlUtils::CXmlNode& oNode);
+			const RelationTable& operator =(XmlUtils::CXmlNode& oNode);
+		
+		public:
+			void fromXML(XmlUtils::CXmlNode& oNode);
 
 		public:
-			void registration(const RId& rId, const std::string& type, const boost::filesystem::wpath& filename);
-			void registration(const RId& rId, const boost::shared_ptr<OOX::External> external);
+			void registration(const RId& rId, const std::string& type, const OOX::CPath& filename);
+			void registration(const RId& rId, const NSCommon::smart_ptr<OOX::External> external);
+
+		public:
+			std::vector<RelationShip> m_items;
 		};
 	} // namespace Rels
 } // namespace OOX

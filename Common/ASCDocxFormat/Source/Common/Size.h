@@ -55,9 +55,9 @@ namespace XML
 	}
 
 	template<class Unit>
-	const nullable<Common::Size<Unit> > XElement2NullableSize(const XML::XElement& element, const std::string& height, const std::string& width)
+	const nullable__<Common::Size<Unit> > XElement2NullableSize(const XML::XElement& element, const std::string& height, const std::string& width)
 	{
-		nullable<Common::Size<Unit> > size;
+		nullable__<Common::Size<Unit> > size;
 		if (element.attribute(height).exist() || element.attribute(width).exist())
 			size.init();
 		if (element.attribute(height).exist())

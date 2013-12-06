@@ -4,25 +4,26 @@
 
 #include "..\File.h"
 
-
 namespace OOX
 {
 	class External : public File
 	{
 	public:
 		External();
-		External(const boost::filesystem::wpath& uri);
+		External(const OOX::CPath& uri);
 		~External();
 
 	public:
-		virtual void read(const boost::filesystem::wpath& uri);
-		virtual void write(const boost::filesystem::wpath& filename, const boost::filesystem::wpath& directory, ContentTypes::File& content) const;
+		virtual void read(const OOX::CPath& uri);
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const;
 
 	public:
-		const boost::filesystem::wpath Uri() const;
+		const OOX::CPath Uri() const;
+
+		inline std::wstring GetPath() {	return std::wstring(m_uri.GetPath()); }
 
 	protected:
-		boost::filesystem::wpath m_uri;
+		OOX::CPath m_uri;
 	};
 } // namespace OOX
 

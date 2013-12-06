@@ -2,9 +2,9 @@
 #ifndef OOX_CONTENT_TYPES_DEFAULT_INCLUDE_H_
 #define OOX_CONTENT_TYPES_DEFAULT_INCLUDE_H_
 
-#include "./../WritingElement.h"
 #include <string>
 
+#include "./../WritingElement.h"
 
 namespace OOX
 {

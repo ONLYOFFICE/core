@@ -3,7 +3,7 @@
 #include "ItcFirstLim.h"
 #include "Constants.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class CSSA: public IOperand
 	{

@@ -1,9 +1,8 @@
 #pragma once
 
 #include <vector>
-
 #include "md4c.h"
-#include "AVSUtils.h"
+#include "../../Common/ASCUtils.h"
 
 class MD4
 {

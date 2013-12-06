@@ -3,7 +3,7 @@
 #include "Brc80MayBeNil.h"
 #include "Prl.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class TableBordersOperand80: public IOperand
 	{

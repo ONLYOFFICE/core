@@ -5,7 +5,7 @@
 
 #include "..\docxdocconverter\prl.h"
 
-typedef std::vector<AVSDocFileFormat::Prl>	PrlList;
+typedef std::vector<ASCDocFileFormat::Prl>	PrlList;
 
 namespace DOCXTODOC
 {

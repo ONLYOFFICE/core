@@ -4,7 +4,7 @@
 #include "ParagraphItem.h"
 #include "CP.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class Hyperlink : public IParagraphItem
 	{

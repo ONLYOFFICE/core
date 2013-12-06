@@ -2,7 +2,7 @@
 
 #include "PLC.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
   union BKC
   {

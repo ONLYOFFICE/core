@@ -4,6 +4,9 @@
 
 #include "./../WritingElement.h"
 
+#include "../.././../../Common/DocxFormat/Source/Base/Nullable.h"
+#include "../.././../../Common/DocxFormat/Source/Xml/XmlUtils.h"
+
 namespace OOX
 {
 	namespace Logic

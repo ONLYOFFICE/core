@@ -2,7 +2,7 @@
 
 #include "STSHI.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class LPStshi : public IOperand
 	{

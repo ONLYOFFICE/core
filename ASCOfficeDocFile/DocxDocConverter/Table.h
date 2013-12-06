@@ -2,7 +2,7 @@
 
 #include "TableRow.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
   class Table: public ITextItem
   {

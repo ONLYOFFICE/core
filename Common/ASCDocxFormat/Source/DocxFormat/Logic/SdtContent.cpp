@@ -5,27 +5,22 @@
 
 #include "SdtContent.h"
 
-
 namespace OOX
 {
 	namespace Logic
 	{
-
 		SdtContent::SdtContent()
 		{
 		}
 
-
 		SdtContent::~SdtContent()
 		{
-		}
-	
+		}	
 
 		SdtContent::SdtContent(const XML::XNode& node)
 		{
 			fromXML(node);
 		}
-
 
 		const SdtContent& SdtContent::operator =(const XML::XNode& node)
 		{
@@ -33,17 +28,15 @@ namespace OOX
 			return *this;
 		}
 
-
 		void SdtContent::fromXML(const XML::XNode& node)
 		{
 			const XML::XElement element(node);
-			XML::Fill(Items, element, "p", "tbl");
+			XML::Fill(m_items, element, "p", "tbl");
 		}
-
 
 		const XML::XNode SdtContent::toXML() const
 		{
-			return XML::XElement(ns.w + "sdtContent", XML::Write(Items));
+			return XML::XElement();//ns.w + "sdtContent", XML::Write(Items));
 		}
 
 	} // namespace Logic

@@ -2,16 +2,14 @@
 #ifndef OOX_CONTENT_TYPES_EXTENSION_TABLE_INCLUDE_H_
 #define OOX_CONTENT_TYPES_EXTENSION_TABLE_INCLUDE_H_
 
-#include <boost/utility.hpp>
 #include <string>
 #include <map>
-
 
 namespace OOX
 {
 	namespace ContentTypes
 	{
-		class ExtensionTable : private boost::noncopyable
+		class ExtensionTable
 		{
 		public:
 			ExtensionTable();

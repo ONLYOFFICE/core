@@ -10,7 +10,7 @@ namespace OOX
 {
 	Numbering::AbstractNum::AbstractNum()
 	{
-
+		Id	=	0;
 	}
 
 	Numbering::AbstractNum::~AbstractNum()
@@ -18,53 +18,58 @@ namespace OOX
 
 	}
 
-	Numbering::AbstractNum::AbstractNum(const XML::XNode& node)
+	Numbering::AbstractNum::AbstractNum(XmlUtils::CXmlNode& oNode)
 	{
-		fromXML(node);
+		fromXML(oNode);
 	}
 
-	const Numbering::AbstractNum& Numbering::AbstractNum::operator =(const XML::XNode& node)
+	const Numbering::AbstractNum& Numbering::AbstractNum::operator =(XmlUtils::CXmlNode& oNode)
 	{
-		fromXML(node);
+		fromXML(oNode);
 		return *this;
 	}
 
-	void Numbering::AbstractNum::fromXML(const XML::XNode& node)
+	void Numbering::AbstractNum::fromXML(XmlUtils::CXmlNode& oNode)
 	{
-		const XML::XElement element(node);
-
-		Id						=	element.attribute("abstractNumId").value();
-		Nsid					=	element.element("nsid").attribute("val").value();
-		MultiLevelType			=	element.element("multiLevelType").attribute("val").value();
-		Tmpl					=	element.element("tmpl").attribute("val").value();
-
-		if (element.element("numStyleLink").exist())
+		if ( _T("w:abstractNum") == oNode.GetName() )
 		{
-			if (element.element("numStyleLink").attribute("val").exist())
-				numStyleLink	=	element.element("numStyleLink").attribute("val").value();
+			Id = _wtoi(static_cast<const wchar_t*>(oNode.GetAttributeBase( _T("w:abstractNumId"))));
+
+			XmlUtils::CXmlNode oChild;
+			if ( oNode.GetNode( _T("w:nsid"), oChild ) )
+				Nsid = std::wstring(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:val"))));
+			if ( oNode.GetNode( _T("w:multiLevelType"), oChild ) )
+				MultiLevelType = std::wstring(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:val"))));
+			if ( oNode.GetNode( _T("w:tmpl"), oChild ) )
+				Tmpl = std::wstring(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:val"))));
+			if ( oNode.GetNode( _T("w:numStyleLink"), oChild ) )
+				numStyleLink = std::wstring(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:val"))));
+
+			XmlUtils::CXmlNodes oLvlList;
+			if ( oNode.GetNodes( _T("w:lvl"), oLvlList ) )
+			{
+				XmlUtils::CXmlNode oLvlNode;
+				for ( int nIndex = 0; nIndex < oLvlList.GetCount(); ++nIndex )
+				{
+					if ( oLvlList.GetAt( nIndex, oLvlNode ) )
+					{
+						OOX::Numbering::Level oLvl;
+						oLvl.fromXML(oLvlNode);
+						Levels.push_back(oLvl);
+					}
+				}
+			}
 		}
-
-		XML::Fill(Levels, element, "lvl");
-	}
-
-	const XML::XNode Numbering::AbstractNum::toXML() const
-	{
-		return 
-			XML::XElement(ns.w + "abstractNum", 
-			XML::XAttribute(ns.w + "abstractNumId", Id) +
-			XML::Write(ns.w + "multiLevelType", ns.w + "val", MultiLevelType) +
-			XML::Write(Levels) + 
-			XML::Write(ns.w + "tmpl", ns.w + "val", Tmpl) +
-			XML::Write(ns.w + "nsid", ns.w + "val", Nsid));
 	}
 
 	const Numbering::Level Numbering::AbstractNum::getLevel(const int numLevel) const
 	{
-		BOOST_FOREACH(const Level& level, *Levels)
+		for (std::vector<Level>::const_iterator iter = Levels.begin(); iter != Levels.end(); ++iter)
 		{
-			if (level.Ilvl == numLevel)
-				return level;
+			if ((*iter).Ilvl == numLevel)
+				return (*iter);
 		}
+
 		throw log_runtime_error("bad abstractNum");
 	}
 

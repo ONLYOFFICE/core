@@ -54,8 +54,6 @@ namespace XML
 
 		void XNodeContainer::merge(const XNodeContainer& other)
 		{
-			//std::for_each(other.m_container->begin(), other.m_container->end(), 
-			//	boost::bind(&XNodeContainer::push_back, this, _1));
 			for(std::list<XNode>::const_iterator current = other.m_container->begin(); current != other.m_container->end(); current++)
 				push_back(*current);
 		}

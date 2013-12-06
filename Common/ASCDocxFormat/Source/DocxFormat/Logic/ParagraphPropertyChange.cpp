@@ -5,34 +5,28 @@
 
 #include "ParagraphPropertyChange.h"
 
-
 namespace OOX
 {
 	namespace Logic
 	{
-
 		ParagraphPropertyChange::ParagraphPropertyChange()
 		{
 		}
 
-
 		ParagraphPropertyChange::~ParagraphPropertyChange()
 		{
-		}
-	
+		}	
 
 		ParagraphPropertyChange::ParagraphPropertyChange(const XML::XNode& node)
 		{
 			fromXML(node);
 		}
 
-
 		const ParagraphPropertyChange& ParagraphPropertyChange::operator =(const XML::XNode& node)
 		{
 			fromXML(node);
 			return *this;
 		}
-
 
 		void ParagraphPropertyChange::fromXML(const XML::XNode& node)
 		{
@@ -43,15 +37,14 @@ namespace OOX
 			Date        = element.attribute("date").value();
 		}
 
-
 		const XML::XNode ParagraphPropertyChange::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "pPrChange",
-				    XML::XAttribute(ns.w + "id", Id) +
-					XML::XAttribute(ns.w + "author", Author) +
-					XML::XAttribute(ns.w + "date", Date)
-				);
+			return XML::XElement();
+				//XML::XElement(ns.w + "pPrChange",
+				//    XML::XAttribute(ns.w + "id", Id) +
+				//	XML::XAttribute(ns.w + "author", Author) +
+				//	XML::XAttribute(ns.w + "date", Date)
+				//);
 		}
 
 	} // namespace Logic

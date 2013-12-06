@@ -7,8 +7,8 @@
 #include "./../FileType.h"
 #include "./../RId.h"
 #include "./../External/External.h"
-#include <boost/shared_ptr.hpp>
 
+#include "../../../../../Common/DocxFormat/Source/Base/SmartPtr.h"
 
 namespace OOX
 {
@@ -18,23 +18,23 @@ namespace OOX
 		{
 		public:
 			File();
-			File(const boost::filesystem::wpath& filename);
+			File(const OOX::CPath& filename);
 			~File();
 
 		public:
-			void read(const boost::filesystem::wpath& filename);
-			void write(const boost::filesystem::wpath& filename) const;
+			void read(const OOX::CPath& filename);
+			void write(const OOX::CPath& filename) const;
 			const bool isValid() const;
 
 		public:
-			void registration(const RId& rId, const FileType& type, const boost::filesystem::wpath& filename);
-			void registration(const RId& rId, const boost::shared_ptr<External> external);
+			void registration(const RId& rId, const FileType& type, const OOX::CPath& filename);
+			void registration(const RId& rId, const NSCommon::smart_ptr<External> external);
 
 		private:
-			const boost::filesystem::wpath createFileName(const boost::filesystem::wpath& filename) const;
+			const OOX::CPath createFileName(const OOX::CPath& filename) const;
 
 		public:
-			property<RelationTable>	Relations;
+			NSCommon::nullable<RelationTable> Relations;
 		};
 	} // namespace Rels
 } // namespace OOX

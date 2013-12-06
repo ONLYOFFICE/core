@@ -11,13 +11,13 @@ namespace OOX
 	{
 	public:
 		Audio();
-		Audio(const boost::filesystem::wpath& filename);
+		Audio(const OOX::CPath& filename);
 		virtual ~Audio();
 
 	public:
 		virtual const FileType type() const;
-		virtual const boost::filesystem::wpath DefaultDirectory() const;
-		virtual const boost::filesystem::wpath DefaultFileName() const;
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
 	};
 } // namespace OOX
 

@@ -2,7 +2,7 @@
 
 #include "Hyperlink.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	Hyperlink::Hyperlink ()
 	{
@@ -22,7 +22,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	void Hyperlink::BuildUrlRuns() const
 	{
@@ -32,7 +32,7 @@ namespace AVSDocFileFormat
 
 		text.push_back( TextMark::FieldBeginMark );
 
-		AVSDocFileFormat::Run fieldBeginRun( AVSDocFileFormat::Text( text.c_str() ) );
+		ASCDocFileFormat::Run fieldBeginRun( ASCDocFileFormat::Text( text.c_str() ) );
 		fieldBeginRun.AddProperty( (short)DocFileFormat::sprmCFSpec, (void*)&CFSpec );
 
 		text		=	wstring( _T( " HYPERLINK" ) );
@@ -52,18 +52,18 @@ namespace AVSDocFileFormat
 			text.push_back( _T( '"' ) );
 		}
 
-		AVSDocFileFormat::Run specialRun (AVSDocFileFormat::Text(text.c_str()));
+		ASCDocFileFormat::Run specialRun (ASCDocFileFormat::Text(text.c_str()));
 
 		text.clear();
 		text.push_back( TextMark::FieldSeparator );
 
-		AVSDocFileFormat::Run fieldSeperatorRun( AVSDocFileFormat::Text( text.c_str() ) );
+		ASCDocFileFormat::Run fieldSeperatorRun( ASCDocFileFormat::Text( text.c_str() ) );
 		fieldSeperatorRun.AddProperty( (short)DocFileFormat::sprmCFSpec, (void*)&CFSpec );
 
 		text.clear();
 		text.push_back( TextMark::FieldEndMark );
 
-		AVSDocFileFormat::Run fieldEndRun( AVSDocFileFormat::Text( text.c_str() ) );
+		ASCDocFileFormat::Run fieldEndRun( ASCDocFileFormat::Text( text.c_str() ) );
 		fieldEndRun.AddProperty( (short)DocFileFormat::sprmCFSpec, (void*)&CFSpec );
 
 		specialRuns.push_back( ParagraphItem( fieldBeginRun ) );
@@ -307,7 +307,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	Hyperlink::const_iterator Hyperlink::begin() const
 	{

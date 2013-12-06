@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Endnote.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	Endnote::Endnote( short _aFtnIdx ) : endnoteItemsOffset(0), aFtnIdx(_aFtnIdx)
 	{

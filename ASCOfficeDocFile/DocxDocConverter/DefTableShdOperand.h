@@ -2,7 +2,7 @@
 
 #include "SHDOperand.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class DefTableShdOperand: public IOperand
 	{

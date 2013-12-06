@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Header.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	Header::Header()
 	{

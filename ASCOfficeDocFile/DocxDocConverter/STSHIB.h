@@ -4,7 +4,7 @@
 
 //!!!A structure that has no effect and MUST be ignored.!!!
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class STSHIB: public IOperand
 	{

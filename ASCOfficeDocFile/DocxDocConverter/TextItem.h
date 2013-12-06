@@ -3,7 +3,7 @@
 #include "ITextItem.h"
 #include "ParagraphItem.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class TextItem : public Aggregat<ITextItem, TextItem>
 	{

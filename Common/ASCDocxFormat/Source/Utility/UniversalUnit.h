@@ -6,7 +6,6 @@
 #include "property.h"
 #include "setter.h"
 
-
 class UniversalUnit
 {
 public:
@@ -87,11 +86,11 @@ public:
 	const std::string ToString() const;
 
 public:
-	property<int, setter::between<int, 0, 10> >	Precesion;
-	property<UnitType>													Type;
+	property<int>			Precesion;
+	property<UnitType>		Type;
 
 private:
-	long	m_value;
+	long					m_value;
 	
 private:
 	static const long toEmu(const double value, const UnitType type);

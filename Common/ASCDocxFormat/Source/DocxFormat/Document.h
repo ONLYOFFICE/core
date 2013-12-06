@@ -10,33 +10,32 @@
 #include "Logic/Background.h"
 #include "IFileBuilder.h"
 
-
 namespace OOX
 {
 	class Document : public OOX::File, public IFileContainer, public IFileBuilder
 	{
 	public:
 		Document();
-		Document(const boost::filesystem::wpath& filename);
+		Document(const OOX::CPath& filename);
 		virtual ~Document();
 
 	public:
-		virtual void read(const boost::filesystem::wpath& filename);
-		virtual void write(const boost::filesystem::wpath& filename, const boost::filesystem::wpath& directory, ContentTypes::File& content) const;
+		virtual void read(const OOX::CPath& filename);
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const;
 
 	public:
 		virtual const FileType type() const;
-		virtual const boost::filesystem::wpath DefaultDirectory() const;
-		virtual const boost::filesystem::wpath DefaultFileName() const;
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
 
 	public:
-		virtual void Commit(const boost::filesystem::wpath& path);
-		virtual void Finalize(const boost::filesystem::wpath& path, const boost::filesystem::wpath& directory, ContentTypes::File& content);
+		virtual void Commit(const OOX::CPath& path);
+		virtual void Finalize(const OOX::CPath& path, const OOX::CPath& directory, ContentTypes::File& content);
 
 	public:
-		void addImage(const boost::filesystem::wpath& imagePath, const long width, const long height);
-        void addImage(const boost::filesystem::wpath& imagePath, const long xEmu, const std::string& hRelativeFrom, const long yEmu , const std::string& vRelativeFrom, const long widthEmu, const long heightEmu);
-		void addImageInBegin(const boost::filesystem::wpath& imagePath, const long width, const long height);
+		void addImage(const OOX::CPath& imagePath, const long width, const long height);
+        void addImage(const OOX::CPath& imagePath, const long xEmu, const std::string& hRelativeFrom, const long yEmu , const std::string& vRelativeFrom, const long widthEmu, const long heightEmu);
+		void addImageInBegin(const OOX::CPath& imagePath, const long width, const long height);
 		void addSpaceToLast(const int count);
 		void addPageBreak();
 		void addText(const std::wstring& text);
@@ -52,8 +51,6 @@ namespace OOX
 		property<Logic::SectorProperty>				SectorProperty;
 		property<std::vector<Logic::TextItem> >		Items;
 		nullable_property<Logic::Background>		Background;
-	//private:
-	//	std::map<int, int> ListsAndCounts;
 	};
 } // namespace OOX
 

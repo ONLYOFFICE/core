@@ -34,17 +34,43 @@
 // turns off ATL's hiding of some common and often safely ignored warning messages
 #define _ATL_ALL_WARNINGS
 
+// ATL
+
 #include <atlbase.h>
 #include <atlcom.h>
 #include <atlwin.h>
 #include <atltypes.h>
 #include <atlctl.h>
 #include <atlhost.h>
+#include <atlstr.h>
+#include <atlconv.h>
+#include <ole2.h>
 
+// C
+
+#include <io.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <math.h>
+#include <limits.h>
+#include <io.h>
+#include <share.h>
+#include <iosfwd>
+#include <sstream>
+
+// STL
+
+#include <string>
+#include <vector>
+#include <map>
+#include <list>
+#include <algorithm>
+#include <bitset>
+#include <set>
 
 using namespace ATL;
 
-#include <ole2.h>
 #include "..\Common\TargetOptions.h"
 #include "..\Common\FormatUtils.h"
 #include "..\Common\TextMark.h"
@@ -57,7 +83,7 @@ using namespace ATL;
 
 #include "ASCOfficeCriticalSection.h"
 
-using namespace AVSDocFormatUtils;
+using namespace ASCDocFormatUtils;
 
 static const long DOC_ONPROGRESSEVENT_ID = 0;
 

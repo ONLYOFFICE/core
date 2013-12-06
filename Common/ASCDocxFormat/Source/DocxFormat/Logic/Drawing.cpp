@@ -22,7 +22,7 @@ namespace OOX
 		}
 
 
-		Drawing::Drawing(const RId& rId, const boost::filesystem::wpath& filename, const long width, const long height)
+		Drawing::Drawing(const RId& rId, const OOX::CPath& filename, const long width, const long height)
 		{
 			haveAnchor	=	false;
 
@@ -38,7 +38,7 @@ namespace OOX
 			int dpi = 96;
 			double heightPage	=	25.7;//in cm
 			double widthPage	=	16.5;//in cm			
-			double maximum		=	std::max(width / (widthPage / 2.54 * dpi), height / (heightPage / 2.54 * dpi));
+			double maximum		=	__max(width / (widthPage / 2.54 * dpi), height / (heightPage / 2.54 * dpi));
 
 			if (maximum < 1)
 			{				
@@ -62,13 +62,13 @@ namespace OOX
 			Inline->DocPr						=	DocPr();
 			Inline->DocPr->Id					=	1;
 			Inline->DocPr->Name					=	"Image 0";
-			Inline->DocPr->Descr				=	Encoding::unicode2utf8(filename.filename());
+			Inline->DocPr->Descr				=	Encoding::unicode2utf8(std::wstring(filename.GetPath()));
 
 			Inline->NoChangeAspect				=	1;
 			Inline->Graphic->Uri				=	"http://schemas.openxmlformats.org/drawingml/2006/picture";
 
 			Inline->Graphic->Pic->Id			=	0;
-			Inline->Graphic->Pic->Name			=	Encoding::unicode2utf8(filename.filename());
+			Inline->Graphic->Pic->Name			=	Encoding::unicode2utf8(std::wstring(filename.GetPath()));
 			Inline->Graphic->Pic->rId			=	rId;
 
 			Inline->Graphic->Pic->Off.init();
@@ -81,7 +81,7 @@ namespace OOX
 			Inline->Graphic->Pic->Prst			=	"rect";
 		}
 
-		Drawing::Drawing(const RId& rId, const boost::filesystem::wpath& filename, const long xEmu, const std::string& hRelativeFrom, const long yEmu, const std::string& vRelativeFrom, const long widthEmu, const long heightEmu)
+		Drawing::Drawing(const RId& rId, const OOX::CPath& filename, const long xEmu, const std::string& hRelativeFrom, const long yEmu, const std::string& vRelativeFrom, const long widthEmu, const long heightEmu)
 		{
 			Inline->Name = "anchor";
 
@@ -127,13 +127,13 @@ namespace OOX
 			Inline->DocPr = DocPr();
 			Inline->DocPr->Id = 1;
 			Inline->DocPr->Name = "Image 0";
-			Inline->DocPr->Descr = Encoding::unicode2utf8(filename.filename());
+			Inline->DocPr->Descr = Encoding::unicode2utf8(std::wstring(filename.GetPath()));
 
 			Inline->NoChangeAspect = 1;
 			Inline->Graphic->Uri = "http://schemas.openxmlformats.org/drawingml/2006/picture";
 
 			Inline->Graphic->Pic->Id = 0;
-			Inline->Graphic->Pic->Name = Encoding::unicode2utf8(filename.filename());
+			Inline->Graphic->Pic->Name = Encoding::unicode2utf8(std::wstring(filename.GetPath()));
 			Inline->Graphic->Pic->rId = rId;
 
 			Inline->Graphic->Pic->Off.init();

@@ -5,7 +5,6 @@
 #include <string>
 #include "Utility.h"
 
-
 namespace OOX
 {
 	class DateTime

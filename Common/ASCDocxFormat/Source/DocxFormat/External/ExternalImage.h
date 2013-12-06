@@ -4,20 +4,19 @@
 
 #include "External.h"
 
-
 namespace OOX
 {
 	class ExternalImage : public External
 	{
 	public:
 		ExternalImage();
-		ExternalImage(const boost::filesystem::wpath& uri);
+		ExternalImage(const OOX::CPath& uri);
 		~ExternalImage();
 
 	public:
 		virtual const FileType type() const;
-		virtual const boost::filesystem::wpath DefaultDirectory() const;
-		virtual const boost::filesystem::wpath DefaultFileName() const;
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
 	};
 } // namespace OOX
 

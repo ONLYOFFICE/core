@@ -5,7 +5,7 @@
 #include "Clx.h"
 #include "BinaryStorage.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class PapxFkp: public IStreamWriter
 	{

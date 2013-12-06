@@ -5,7 +5,7 @@
 #include "LPUpxTapx.h"
 #include "Constants.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	//!!!TODO: The revision-marking information and formatting for the style.!!!
 	class StkParaGRLPUPX: public IOperand
@@ -454,31 +454,31 @@ namespace AVSDocFileFormat
 			}
 		}
 
-		explicit GrLPUpxSw( const Constants::StyleType _styleType, const AVSDocFileFormat::LPUpxPapx& _lPUpxPapx, const AVSDocFileFormat::LPUpxChpx& _lPUpxChpx, const AVSDocFileFormat::LPUpxTapx& _lPUpxTapx ) : bytes(NULL), sizeInBytes(0), sizeInBytesWithoutPadding(0)
+		explicit GrLPUpxSw( const Constants::StyleType _styleType, const ASCDocFileFormat::LPUpxPapx& _lPUpxPapx, const ASCDocFileFormat::LPUpxChpx& _lPUpxChpx, const ASCDocFileFormat::LPUpxTapx& _lPUpxTapx ) : bytes(NULL), sizeInBytes(0), sizeInBytesWithoutPadding(0)
 		{
 			switch ( _styleType )
 			{
 			case Constants::styleTypeParagraph:
 				{
-					*this = GrLPUpxSw( AVSDocFileFormat::StkParaGRLPUPX( _lPUpxPapx, _lPUpxChpx ) );
+					*this = GrLPUpxSw( ASCDocFileFormat::StkParaGRLPUPX( _lPUpxPapx, _lPUpxChpx ) );
 				}
 				break;
 
 			case Constants::styleTypeCharacter:
 				{
-					*this = GrLPUpxSw( AVSDocFileFormat::StkCharGRLPUPX( _lPUpxChpx ) );
+					*this = GrLPUpxSw( ASCDocFileFormat::StkCharGRLPUPX( _lPUpxChpx ) );
 				}
 				break;
 
 			case Constants::styleTypeTable:
 				{
-					*this = GrLPUpxSw( AVSDocFileFormat::StkTableGRLPUPX( _lPUpxTapx, _lPUpxPapx, _lPUpxChpx ) );
+					*this = GrLPUpxSw( ASCDocFileFormat::StkTableGRLPUPX( _lPUpxTapx, _lPUpxPapx, _lPUpxChpx ) );
 				}
 				break;
 
 			case Constants::styleTypeNumbering:
 				{
-					*this = GrLPUpxSw( AVSDocFileFormat::StkListGRLPUPX( _lPUpxPapx ) );
+					*this = GrLPUpxSw( ASCDocFileFormat::StkListGRLPUPX( _lPUpxPapx ) );
 				}
 				break;
 			}

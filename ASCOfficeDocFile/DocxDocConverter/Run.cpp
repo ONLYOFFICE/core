@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Run.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	Run::Run()
 	{

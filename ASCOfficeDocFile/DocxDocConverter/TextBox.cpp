@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "TextBox.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	TextBox::TextBox (short _aFtnIdx) : textBoxItemsOffset(0), aFtnIdx(_aFtnIdx)
 	{
@@ -17,7 +17,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	void TextBox::AddTextItem(const ITextItem& oTextItem)
 	{

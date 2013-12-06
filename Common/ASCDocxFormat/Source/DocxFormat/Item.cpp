@@ -15,7 +15,7 @@ namespace OOX
 	}
 
 
-	Item::Item(const boost::filesystem::wpath& filename)
+	Item::Item(const OOX::CPath& filename)
 	{
 		read(filename);
 	}
@@ -26,22 +26,22 @@ namespace OOX
 	}
 
 
-	void Item::read(const boost::filesystem::wpath& filename)
+	void Item::read(const OOX::CPath& filename)
 	{
-		const XML::XDocument document(filename);
+		const XML::XDocument document(filename.GetPath());
 		SelectedStyle = document.Root.attribute("SelectedStyle").value();
 		StyleName			= document.Root.attribute("StyleName").value();
 	}
 
 
-	void Item::write(const boost::filesystem::wpath& filename, const boost::filesystem::wpath& directory, ContentTypes::File& content) const
+	void Item::write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const
 	{
-		XML::XElement(ns.b + "Sources",
-			XML::XAttribute("SelectedStyle", SelectedStyle) +
-			XML::XAttribute("StyleName", StyleName)
-		).Save(filename);
+		////////XML::XElement(ns.b + "Sources",
+		////////	XML::XAttribute("SelectedStyle", SelectedStyle) +
+		////////	XML::XAttribute("StyleName", StyleName)
+		////////).Save(filename);
 
-		content.registration(type().OverrideType(), directory, filename);
+		////////content.registration(type().OverrideType(), directory, filename);
 	}
 
 
@@ -51,13 +51,13 @@ namespace OOX
 	}
 
 
-	const boost::filesystem::wpath Item::DefaultDirectory() const
+	const OOX::CPath Item::DefaultDirectory() const
 	{
 		return type().DefaultDirectory();
 	}
 
 
-	const boost::filesystem::wpath Item::DefaultFileName() const
+	const OOX::CPath Item::DefaultFileName() const
 	{
 		return type().DefaultFileName();
 	}

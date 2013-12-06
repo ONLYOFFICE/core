@@ -5,55 +5,39 @@
 
 #include "OleObject.h"
 #include "..\FileTypes.h"
-#include <boost/algorithm/string/replace.hpp>
-
 
 namespace OOX
 {
-
 	OleObject::OleObject()
 	{
 	}
 
-
-	OleObject::OleObject(const boost::filesystem::wpath& filename)
+	OleObject::OleObject(const OOX::CPath& filename)
 	{
 		read(filename);
 	}
-
 
 	OleObject::~OleObject()
 	{
 	}
 
-	void OleObject::write(const boost::filesystem::wpath& filename, const boost::filesystem::wpath& directory, ContentTypes::File& content) const
+	void OleObject::write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const
 	{
-		std::wstring newFilename = filename.filename();
-		boost::filesystem::wpath newFilePath = filename.parent_path();
-		boost::replace_all(newFilename, L" ", L"_");
-		if (m_filename.extension() != L".bin")
-			newFilename += L".bin" ;
-		
-		boost::filesystem::copy_file(m_filename, newFilePath/newFilename);
-		content.Default->add(newFilePath/newFilename);
 	}
-
 
 	const FileType OleObject::type() const
 	{
 		return FileTypes::OleObject;
 	}
 
-
-	const boost::filesystem::wpath OleObject::DefaultDirectory() const
+	const OOX::CPath OleObject::DefaultDirectory() const
 	{
 		return type().DefaultDirectory();
 	}
 
-
-	const boost::filesystem::wpath OleObject::DefaultFileName() const
+	const OOX::CPath OleObject::DefaultFileName() const
 	{
-		return m_filename.filename();
+		return m_filename;
 	}
 
 } // namespace OOX

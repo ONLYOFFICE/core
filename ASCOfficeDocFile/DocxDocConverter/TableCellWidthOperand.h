@@ -3,7 +3,7 @@
 #include "ItcFirstLim.h"
 #include "FtsWWidth.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
   class TableCellWidthOperand: public IOperand
   {

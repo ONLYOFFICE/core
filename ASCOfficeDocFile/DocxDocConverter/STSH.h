@@ -3,7 +3,7 @@
 #include "LPStshi.h"
 #include "LPStd.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	static const char StyleIDs[159][20] =
 	{

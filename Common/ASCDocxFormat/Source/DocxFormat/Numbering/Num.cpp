@@ -5,50 +5,51 @@
 
 #include "./../Numbering.h"
 
-
 namespace OOX
 {
-
 	Numbering::Num::Num()
 	{
+		NumId			=	0;
+		AbstractNumId	=	0;
 	}
-
 
 	Numbering::Num::~Num()
 	{
 	}
 
-
-	Numbering::Num::Num(const XML::XNode& node)
+	Numbering::Num::Num(XmlUtils::CXmlNode& oNode)
 	{
-		fromXML(node);
+		fromXML(oNode);
 	}
 
-
-	const Numbering::Num& Numbering::Num::operator =(const XML::XNode& node)
+	const Numbering::Num& Numbering::Num::operator =(XmlUtils::CXmlNode& oNode)
 	{
-		fromXML(node);
+		fromXML(oNode);
 		return *this;
 	}
 
-
-	void Numbering::Num::fromXML(const XML::XNode& node)
+	void Numbering::Num::fromXML(XmlUtils::CXmlNode& oNode)
 	{
-		const XML::XElement element(node);
-		NumId					= element.attribute("numId").value();
-		AbstractNumId = element.element("abstractNumId").attribute("val").value();
-		XML::Fill(LevelOverrides, element, "lvlOverride");
-	}
+		NumId = _wtoi(static_cast<const wchar_t*>(oNode.GetAttributeBase( _T("w:numId"))));
 
+		XmlUtils::CXmlNode oChild;
+		if ( oNode.GetNode( _T("w:startOverride"), oChild ) )
+			AbstractNumId = _wtoi(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:val"))));
 
-	const XML::XNode Numbering::Num::toXML() const
-	{
-		return
-			XML::XElement(ns.w + "num",
-				XML::XAttribute(ns.w + "numId", NumId) +
-				XML::XElement(ns.w + "abstractNumId", XML::XAttribute(ns.w + "val", AbstractNumId)) +
-				XML::Write(LevelOverrides)
-			);
+		XmlUtils::CXmlNodes oLvlList;
+		if ( oNode.GetNodes( _T("w:lvlOverride"), oLvlList ) )
+		{
+			XmlUtils::CXmlNode oLvlNode;
+			for ( int nIndex = 0; nIndex < oLvlList.GetCount(); ++nIndex )
+			{
+				if ( oLvlList.GetAt( nIndex, oLvlNode ) )
+				{
+					OOX::Numbering::LevelOverride oLvl;
+					oLvl.fromXML(oLvlNode);
+					LevelOverrides.push_back(oLvl);
+				}
+			}
+		}
 	}
 
 } // namespace OOX

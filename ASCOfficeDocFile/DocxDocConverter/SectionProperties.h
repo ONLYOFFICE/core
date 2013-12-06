@@ -4,7 +4,7 @@
 #include "Header.h"
 #include "Footer.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class SectionProperties
 	{

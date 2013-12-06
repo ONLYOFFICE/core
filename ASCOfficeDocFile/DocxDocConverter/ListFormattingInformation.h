@@ -3,7 +3,7 @@
 #include "PlfLst.h"
 #include "LVL.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class ListFormattingInformation: public IOperand
 	{

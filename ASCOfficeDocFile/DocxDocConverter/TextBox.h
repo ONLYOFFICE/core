@@ -6,7 +6,7 @@
 
 #include "..\Common\IOperand.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	// BreaK Descriptor (BKD)
 	class Tbkd : public IOperand
@@ -68,7 +68,7 @@ namespace AVSDocFileFormat
 			FormatUtils::SetBytes((bytes + offset), itxbxs);				offset += sizeof(short);
 			FormatUtils::SetBytes((bytes + offset), dcpDepend);				offset += sizeof(short);
 
-			AVSDocFormatUtils::BitSet oBits(2);
+			ASCDocFormatUtils::BitSet oBits(2);
 			oBits.SetBit(false,			0);	
 			oBits.SetBit(false,			1);
 			oBits.SetBit(false,			2);
@@ -669,7 +669,7 @@ namespace AVSDocFileFormat
 			return (m_nIndex >= 0);
 		}
 
-		inline void AppendTbItems (std::vector<AVSDocFileFormat::TextItem>& oTextItems)
+		inline void AppendTbItems (std::vector<ASCDocFileFormat::TextItem>& oTextItems)
 		{
 			m_oTextItems	=	oTextItems;
 			

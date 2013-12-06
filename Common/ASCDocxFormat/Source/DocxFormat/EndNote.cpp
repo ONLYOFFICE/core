@@ -6,49 +6,35 @@
 #include "EndNote.h"
 #include "Log.h"
 #include <algorithm>
-#include <boost/bind.hpp>
 #include "Exception/log_range_error.h"
 #include "FileTypes.h"
 
-
 namespace OOX
 {
-
 	EndNote::EndNote()
 	{
 	}
 
-
-	EndNote::EndNote(const boost::filesystem::wpath& filename)
+	EndNote::EndNote(const OOX::CPath& filename)
 	{
 		read(filename);
 	}
-
 
 	EndNote::~EndNote()
 	{
 	}
 
-
-	void EndNote::read(const boost::filesystem::wpath& filename)
+	void EndNote::read(const OOX::CPath& filename)
 	{
 		IFileContainer::read(filename);
 
-		const XML::XDocument document(filename);
+		const XML::XDocument document(filename.GetPath());
 		XML::Fill(Notes, document.Root, "endnote");
 	}
 
-
-	void EndNote::write(const boost::filesystem::wpath& filename, const boost::filesystem::wpath& directory, ContentTypes::File& content) const
+	void EndNote::write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const
 	{
-		XML::XElement(ns.w + "endnotes",
-			XML::Write(Notes)
-		).Save(filename);
-
-		content.registration(type().OverrideType(), directory, filename);
-		IFileContainer::write(filename, directory, content);
 	}
-
 
 	const FileType EndNote::type() const
 	{
@@ -56,27 +42,30 @@ namespace OOX
 	}
 
 
-	const boost::filesystem::wpath EndNote::DefaultDirectory() const
+	const OOX::CPath EndNote::DefaultDirectory() const
 	{
 		return type().DefaultDirectory();
 	}
 
-
-	const boost::filesystem::wpath EndNote::DefaultFileName() const
+	const OOX::CPath EndNote::DefaultFileName() const
 	{
 		return type().DefaultFileName();
 	}
 
-
 	const EndNote::Note EndNote::find(const Logic::EndnoteReference& reference) const
 	{
-		std::vector<EndNote::Note>::const_iterator it = std::find_if(Notes->begin(), Notes->end(), 
-																										boost::bind(&Note::Id, _1) == *reference.Id);
-		if (it == Notes->end())
-			throw log_range_error("endnote");
-		return *it;
+		const std::vector<EndNote::Note>& notes = Notes.get();
+	
+		for (std::vector<EndNote::Note>::const_iterator iter = notes.begin(); iter != notes.end(); ++iter)
+		{
+			if (*(*iter).Id == (*reference.Id))
+			{
+				return (*iter);
+			}
+		}
+		
+		throw log_range_error("endnote");
 	}
-
 
 	void EndNote::add(const EndNote::Note& endnote)
 	{

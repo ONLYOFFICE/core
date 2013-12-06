@@ -2,7 +2,7 @@
 
 #include "GrpPrlAndIstd.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class PapxInFkp : public IStreamWriter
 	{

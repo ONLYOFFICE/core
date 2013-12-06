@@ -33,7 +33,6 @@ namespace OOX
 			return *this;
 		}
 
-
 		void EndNoteProperty::fromXML(const XML::XNode& node)
 		{
 			const XML::XElement element(node);
@@ -52,11 +51,11 @@ namespace OOX
 
 		const XML::XNode EndNoteProperty::toXML() const
 		{
-			return
-				XML::XElement(ns.w + "endnotePr",
-					XML::Write(NumFormat) +
-					XML::Write(ns.w + "numStart", ns.w + "val", NumStart)
-				);
+			return XML::XNode();
+			//	XML::XElement(ns.w + "endnotePr",
+			//		XML::Write(NumFormat) +
+			//		XML::Write(ns.w + "numStart", ns.w + "val", NumStart)
+			//	);
 		}
 
 	} // namespace Logic

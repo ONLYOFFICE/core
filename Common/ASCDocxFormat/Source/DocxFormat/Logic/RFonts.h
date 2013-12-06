@@ -2,10 +2,13 @@
 #ifndef OOX_LOGIC_RFONTS_INCLUDE_H_
 #define OOX_LOGIC_RFONTS_INCLUDE_H_
 
-#include "./../WritingElement.h"
 #include <string>
+
+#include "./../WritingElement.h"
 #include "nullable_property.h"
 
+#include "../.././../../Common/DocxFormat/Source/Base/Nullable.h"
+#include "../.././../../Common/DocxFormat/Source/Xml/XmlUtils.h"
 
 namespace OOX
 {
@@ -24,13 +27,13 @@ namespace OOX
 			virtual const XML::XNode toXML() const;
 
 		public:
-			void setFontName(const nullable<std::string>& fontName);
+			void setFontName(const nullable__<std::string>& fontName);
 			const std::string fontType() const;
 			const std::string fontTypeAscii() const;
 			const std::string fontTypeHAnsi() const;
 			const std::string fontTypeEA() const;
 			const std::string fontTypeCS() const;
-			const nullable<std::string> fontName() const;
+			const nullable__<std::string> fontName() const;
 
 		public:
 			nullable_property<std::string>		AsciiTheme;

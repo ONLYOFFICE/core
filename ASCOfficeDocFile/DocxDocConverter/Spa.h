@@ -2,7 +2,7 @@
 
 #include "..\Common\FormatUtils.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	// File Shape Address (FSPA)
 	class Spa : public IOperand
@@ -119,7 +119,7 @@ namespace AVSDocFileFormat
 				FormatUtils::SetBytes((bytes + offset), m_rca.bottom);	offset += sizeof(m_rca.bottom);
 			}
 
-			AVSDocFormatUtils::BitSet oBits(2);
+			ASCDocFormatUtils::BitSet oBits(2);
 
 			oBits.SetBit(false,				0);	//	A			ignored
 

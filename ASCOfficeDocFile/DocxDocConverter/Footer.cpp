@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Footer.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	Footer::Footer() : footerItemsOffset(0)
 	{

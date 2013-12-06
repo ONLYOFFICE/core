@@ -2,7 +2,7 @@
 
 #include "ShapePath.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	LONG CFormula::Calculate(CFormulasManager* pManager)
 	{

@@ -23,12 +23,6 @@ namespace XML
 	public:
 		virtual const bool exist() const;
 
-	//public:
-	//	property<std::string>&	Prefix;
-	//	property<std::string>&	Name;
-	//private:
-	//	boost::shared_ptr<std::string> Prefix;
-	//	boost::shared_ptr<std::string> Name;
 	public:
 		const std::string GetPrefix()const;
 		const std::string GetName()const;

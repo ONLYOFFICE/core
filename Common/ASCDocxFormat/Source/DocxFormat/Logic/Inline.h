@@ -32,8 +32,8 @@ namespace OOX
 		public:
 			property<std::string, Limit::InlineName>	Name;
 
-			nullable<Common::Point<UnitDx>>				distanceLeftTop;
-			nullable<Common::Point<UnitDx>>				distanceRightBottom;
+			nullable__<Common::Point<UnitDx>>				distanceLeftTop;
+			nullable__<Common::Point<UnitDx>>				distanceRightBottom;
 
 			nullable_property<double>					DistT;	
 			nullable_property<double>					DistB;	
@@ -47,7 +47,7 @@ namespace OOX
 			
 			// anchor only
 
-			nullable<Common::Point<UnitSx>>				anchorXY;
+			nullable__<Common::Point<UnitSx>>				anchorXY;
 
 			nullable_property<int>						positionV;
 			nullable_property<std::string>				positionVRelativeFrom;

@@ -53,7 +53,8 @@ namespace OOX
 
 		const XML::XNode ClrSchemeItem::toXML() const
 		{
-			return XML::XElement(ns.a + *name, XML::Write(*item));
+			return XML::XElement();
+			//return XML::XElement(ns.a + *name, XML::Write(*item));
 		}
 
 	} // namespace Theme

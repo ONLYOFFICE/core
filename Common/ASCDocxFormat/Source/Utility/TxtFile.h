@@ -2,15 +2,15 @@
 #ifndef UTILITY_TXT_FILE_INCLUDE_H_
 #define UTILITY_TXT_FILE_INCLUDE_H_
 
-#include <boost/filesystem.hpp>
 #include <string>
 #include <list>
 
+#include "..\..\..\..\Common\DocxFormat\Source\SystemUtility\SystemUtility.h"
 
 class TxtFile
 {
 public:
-	TxtFile(const boost::filesystem::wpath& path);
+	TxtFile(const OOX::CPath& path);
 
 public:
 	const std::list<std::string> readAnsi() const;
@@ -41,7 +41,7 @@ private:
 	void setUtf8Stamp() const;
 
 private:
-	boost::filesystem::wpath m_path;
+	OOX::CPath m_path;
 };
 
 #endif // UTILITY_TXT_FILE_INCLUDE_H_

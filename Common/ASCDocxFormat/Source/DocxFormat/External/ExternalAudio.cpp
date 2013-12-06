@@ -15,7 +15,7 @@ namespace OOX
 	}
 
 	
-	ExternalAudio::ExternalAudio(const boost::filesystem::wpath& uri)
+	ExternalAudio::ExternalAudio(const OOX::CPath& uri)
 	{
 		read(uri);
 	}
@@ -32,13 +32,13 @@ namespace OOX
 	}
 
 
-	const boost::filesystem::wpath ExternalAudio::DefaultDirectory() const
+	const OOX::CPath ExternalAudio::DefaultDirectory() const
 	{
 		return type().DefaultDirectory();
 	}
 
 
-	const boost::filesystem::wpath ExternalAudio::DefaultFileName() const
+	const OOX::CPath ExternalAudio::DefaultFileName() const
 	{
 		return type().DefaultFileName();
 	}

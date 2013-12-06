@@ -2,8 +2,7 @@
 #ifndef IITEMABLE_INCLUDE_H_
 #define IITEMABLE_INCLUDE_H_
 
-#include <boost/shared_ptr.hpp>
-
+#include "../../../../Common/DocxFormat/Source/Base/SmartPtr.h"
 
 template<class Item>
 class IItemable
@@ -13,13 +12,10 @@ public:
 	IItemable(Item* item) : m_item(item) {};
 	~IItemable() {}
 
-
 public:
 	template<class T> const bool is() const
 	{
-		if (m_item == 0)
-			return false;
-		return typeid(*m_item) == typeid(T);
+		return m_item.is<T>();
 	}
 
 	template<class T> T& as()
@@ -32,8 +28,8 @@ public:
 		return static_cast<const T&>(*m_item);
 	}
 
-
 public:
+
 	template<class T> void create()
 	{
 		m_item.reset(new T());
@@ -45,7 +41,8 @@ public:
 	}
 
 protected: 
-	boost::shared_ptr<Item> m_item;
+
+	NSCommon::smart_ptr<Item> m_item;
 };
 
 #endif // IITEMABLE_INCLUDE_H_

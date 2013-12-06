@@ -2,7 +2,7 @@
 
 #include "IRunItem.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class RunItem : public Aggregat<IRunItem, RunItem>
 	{

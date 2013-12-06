@@ -3,7 +3,8 @@
 #define UTILITY_DATE_TIME_INCLUDE_H_
 
 #include <string>
-
+#include <time.h>
+#include <algorithm>
 
 class DateTime
 {

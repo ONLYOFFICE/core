@@ -1322,10 +1322,6 @@
 				RelativePath="..\Common\XmlTools.h"
 				>
 			</File>
-			<File
-				RelativePath="..\..\..\..\..\Common\xmlutils.h"
-				>
-			</File>
 			<Filter
 				Name="MD4"
 				>

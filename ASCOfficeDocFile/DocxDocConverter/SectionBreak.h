@@ -3,7 +3,7 @@
 #include "ITextItem.h"
 #include "..\Common\TextMark.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class SectionBreak: public ITextItem
 	{

@@ -2,7 +2,7 @@
 
 #include "LSTF.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class PlfLst : public IOperand
 	{

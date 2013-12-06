@@ -81,19 +81,24 @@ namespace OOX
 
 		const TableCell TableRow::getCellByNumCol(const int num) const
 		{
-			BOOST_FOREACH(const TableCell& cell, *Cells)
+			const std::vector<TableCell>& runs = Cells.get();
+
+			for (std::vector<TableCell>::const_iterator iter = runs.begin(); iter != runs.end(); ++iter)
 			{
-				if (cell.NumCol == num)
-					return cell;
+				if ((*iter).NumCol == num)
+					return (*iter);
 			}
+
 			throw log_runtime_error("bad num column");
 		}
 
 		const bool TableRow::isCellByNumCol(const int num) const
 		{
-			BOOST_FOREACH(const TableCell& cell, *Cells)
+			const std::vector<TableCell>& runs = Cells.get();
+
+			for (std::vector<TableCell>::const_iterator iter = runs.begin(); iter != runs.end(); ++iter)
 			{
-				if (cell.NumCol == num)
+				if ((*iter).NumCol == num)
 					return true;
 			}
 			

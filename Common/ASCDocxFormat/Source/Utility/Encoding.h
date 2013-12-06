@@ -4,7 +4,6 @@
 
 #include <string>
 
-
 class Encoding
 {
 public:
@@ -20,7 +19,5 @@ public:
 private:
 	static const std::string wstring2string(const std::wstring& line, const unsigned int codePage);
 	static const std::wstring string2wstring(const std::string& line, const unsigned int codePage);
-	static const std::wstring string2wstring2(const std::string& line, const unsigned int codePage);
 };	
-
 #endif // UTILITY_ENCODING_INCLUDE_H_

@@ -9,7 +9,7 @@ namespace OfficeArt
 	public:
 		OfficeArtCOLORREF()
 		{
-			AVSDocFormatUtils::BitSet oShapeSettings (4);
+			ASCDocFormatUtils::BitSet oShapeSettings (4);
 			
 			oShapeSettings.SetBit (0,0);	 
 			oShapeSettings.SetBit (0,1);	

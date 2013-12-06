@@ -12,10 +12,7 @@ namespace OOX
 	{
 		void    CMathArgNodes::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-			sNodeName = oReader.GetName();
-			if ( oReader.IsEmptyNode() && (sNodeName != _T("m:e")))
-				return;
-			
+			sNodeName = oReader.GetName();				
 			if(sNodeName == _T("m:deg"))
 					eType = et_m_deg;
 				else if (sNodeName == _T("m:den"))
@@ -36,6 +33,9 @@ namespace OOX
 					eType = et_m_sup;
 				else
 					eType = et_Unknown;
+
+			if ( oReader.IsEmptyNode())
+				return;
 
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )

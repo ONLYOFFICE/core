@@ -1,6 +1,6 @@
 #pragma once
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	static const unsigned int LatentStylesTemplate [267] =
 	{

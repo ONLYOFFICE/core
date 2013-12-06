@@ -4,10 +4,8 @@
 // auto inserted precompiled end
 
 #include "Encoding.h"
-#include "windows.h"
+#include <windows.h>
 #include "Utility.h"
-#include <boost/scoped_array.hpp>
-
 
 const std::string Encoding::ansi2utf8(const std::string& line)
 {
@@ -34,43 +32,48 @@ const std::string Encoding::utf82ansi(const std::string& line)
 	return wstring2string(string2wstring(line, CP_UTF8), CP_ACP);
 }
 
-
 const std::wstring Encoding::utf82unicode(const std::string& line)
 {
 	return string2wstring(line, CP_UTF8);
 }
-
 
 const std::string Encoding::unicode2ansi(const std::wstring& line)
 {
 	return wstring2string(line, CP_ACP);
 }
 
-
 const std::string Encoding::unicode2utf8(const std::wstring& line)
 {
 	return wstring2string(line, CP_UTF8);
 }
 
-
-const std::string Encoding::wstring2string(const std::wstring& wline, const unsigned int codePage)
+const std::string Encoding::wstring2string(const std::wstring& sLine, const unsigned int codePage)
 {
-	boost::scoped_array<char> sline(new char[wline.size() * 4]);
-	const int size = WideCharToMultiByte(codePage, 0, wline.c_str(), wline.size(), sline.get(), wline.size() * 4, NULL, NULL);
-	return std::string(sline.get(), size);
-}
+	const int nSize = WideCharToMultiByte(codePage, 0, sLine.c_str(), sLine.length(), NULL, 0, NULL, NULL);
+	char *sTemp = new char[nSize];
+	if (!sTemp)
+		return std::string();
 
+	int size = WideCharToMultiByte(codePage, 0, sLine.c_str(), sLine.length(), sTemp, nSize, NULL, NULL);
+
+	std::string sResult(sTemp, size);
+	delete []sTemp;
+
+	return sResult;
+}
 
 const std::wstring Encoding::string2wstring(const std::string& sline, const unsigned int codePage)
 {
-	boost::scoped_array<wchar_t> wline(new wchar_t[sline.size()]);
-	const int size = MultiByteToWideChar(codePage, 0, sline.c_str(), sline.size(), wline.get(), sline.size());
-	return std::wstring(wline.get(), size);
-}
-const std::wstring Encoding::string2wstring2(const std::string& sline, const unsigned int codePage)
-{
-	int nBufSize = MultiByteToWideChar(codePage, 0, sline.c_str(), -1, NULL, NULL);
-	boost::scoped_array<wchar_t> wline(new wchar_t[nBufSize]);
-	MultiByteToWideChar(codePage, 0, sline.c_str(), -1, wline.get(), nBufSize);
-	return std::wstring(wline.get(), nBufSize-1);
+	const int nSize = MultiByteToWideChar(codePage, 0, sline.c_str(), sline.size(), NULL, 0);
+
+	wchar_t *sTemp = new wchar_t[nSize];
+	if (!sTemp)
+		return std::wstring();
+
+	int size = MultiByteToWideChar(codePage, 0, sline.c_str(), sline.size(), sTemp, nSize);
+
+	std::wstring sResult(sTemp, size);
+	delete []sTemp;
+
+	return sResult;
 }

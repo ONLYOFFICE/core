@@ -14,7 +14,7 @@
 #include "TableBrc80Operand.h"
 #include "TLP.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
   class TableCell
   {

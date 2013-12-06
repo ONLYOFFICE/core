@@ -4,8 +4,8 @@
 
 #include "./../WritingElement.h"
 #include <string>
-#include <boost/shared_ptr.hpp>
 
+#include "../../../../../Common/DocxFormat/Source/Base/SmartPtr.h"
 
 namespace OOX
 {
@@ -25,7 +25,7 @@ namespace OOX
 
 		public:
 			property<std::string> name;
-			property<boost::shared_ptr<WritingElement>> item;
+			property<NSCommon::smart_ptr<WritingElement>> item;
 		};
 	} // namespace Theme
 } // namespace OOX

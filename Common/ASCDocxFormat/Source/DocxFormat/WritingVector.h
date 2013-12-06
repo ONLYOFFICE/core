@@ -5,7 +5,6 @@
 #include "WritingElement.h"
 #include "IEnumerable.h"
 
-
 namespace OOX
 {
 	template<class T>

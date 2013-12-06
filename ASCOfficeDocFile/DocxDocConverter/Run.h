@@ -10,7 +10,7 @@
 #include "FootnoteReference.h"
 #include "FldChar.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class Run : public IParagraphItem
 	{

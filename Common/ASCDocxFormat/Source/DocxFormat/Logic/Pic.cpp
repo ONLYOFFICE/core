@@ -37,7 +37,7 @@ namespace OOX
 			Name	=	element.element("nvPicPr").element("cNvPr").attribute("name").value();
 
 			if (element.element("blipFill").element("blip").attribute("embed").exist())
-				rId	=	element.element("blipFill").element("blip").attribute("embed").value().ToString();
+				rId	=	element.element("blipFill").element("blip").attribute("embed").value().ToWString();
 
 			Off		=	XML::XElement2NullablePoint<UnitSx>(element.element("spPr").element("xfrm").element("off"), "x", "y");
 			Ext		=	XML::XElement2NullableSize<UnitSx>(element.element("spPr").element("xfrm").element("ext"), "cy", "cx");
@@ -55,42 +55,42 @@ namespace OOX
 
 		const XML::XNode Pic::toXML() const
 		{
-			return
-				XML::XElement(ns.pic + "pic",
-					XML::XElement(ns.pic + "nvPicPr",
-						XML::XElement(ns.pic + "cNvPr",
-							XML::XAttribute("id", Id) +
-							XML::XAttribute("name", Name)
-						) +
-						XML::XElement(ns.pic + "cNvPicPr")
-					) +
-					XML::XElement(ns.pic + "blipFill",
-						XML::XElement(ns.a + "blip", XML::XAttribute(ns.r + "embed", rId)) +
-						XML::XElement(ns.a + "stretch",
-							XML::XElement(ns.a + "fillRect")
-						)
-					) +
-					XML::XElement(ns.pic + "spPr",
-						XML::XElement(ns.a + "xfrm",
-							XML::WriteIf(	// TODO исправить, после создания нормальных Size и Point
-								XML::XElement(ns.a + "off",
-									XML::XAttribute("x", Off.get_value_or_default().X) +
-									XML::XAttribute("y", Off.get_value_or_default().Y)
-								), Off.is_init()
-							) +
-							XML::WriteIf( // TODO исправить, после создания нормальных Size и Point
-								XML::XElement(ns.a + "ext",
-									XML::XAttribute("cx", Ext.get_value_or_default().Width) +
-									XML::XAttribute("cy", Ext.get_value_or_default().Height)
-								), Ext.is_init()
-							)
-						) +
-						XML::XElement(ns.a + "prstGeom",
-							XML::XAttribute("prst", Prst) +
-							XML::XElement(ns.a + "avLst")
-						)
-					)
-				);
+			return XML::XElement();
+				//XML::XElement(ns.pic + "pic",
+				//	XML::XElement(ns.pic + "nvPicPr",
+				//		XML::XElement(ns.pic + "cNvPr",
+				//			XML::XAttribute("id", Id) +
+				//			XML::XAttribute("name", Name)
+				//		) +
+				//		XML::XElement(ns.pic + "cNvPicPr")
+				//	) +
+				//	XML::XElement(ns.pic + "blipFill",
+				//		XML::XElement(ns.a + "blip", XML::XAttribute(ns.r + "embed", rId)) +
+				//		XML::XElement(ns.a + "stretch",
+				//			XML::XElement(ns.a + "fillRect")
+				//		)
+				//	) +
+				//	XML::XElement(ns.pic + "spPr",
+				//		XML::XElement(ns.a + "xfrm",
+				//			XML::WriteIf(	// TODO исправить, после создания нормальных Size и Point
+				//				XML::XElement(ns.a + "off",
+				//					XML::XAttribute("x", Off.get_value_or_default().X) +
+				//					XML::XAttribute("y", Off.get_value_or_default().Y)
+				//				), Off.is_init()
+				//			) +
+				//			XML::WriteIf( // TODO исправить, после создания нормальных Size и Point
+				//				XML::XElement(ns.a + "ext",
+				//					XML::XAttribute("cx", Ext.get_value_or_default().Width) +
+				//					XML::XAttribute("cy", Ext.get_value_or_default().Height)
+				//				), Ext.is_init()
+				//			)
+				//		) +
+				//		XML::XElement(ns.a + "prstGeom",
+				//			XML::XAttribute("prst", Prst) +
+				//			XML::XElement(ns.a + "avLst")
+				//		)
+				//	)
+				//);
 		}
 
 	} // namespace Logic

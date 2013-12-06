@@ -4,10 +4,10 @@
 //	#define _DBG_CS
 #endif
 
-class AVSOfficeCriticalSection
+class ASCOfficeCriticalSection
 {
 public:
-	AVSOfficeCriticalSection()
+	ASCOfficeCriticalSection()
 	{
 #ifdef _DBG_CS	
 		m_dbgCount	=	0L;
@@ -15,7 +15,7 @@ public:
 		InitializeCriticalSection (&m_CS);
 	}
 
-	~AVSOfficeCriticalSection()
+	~ASCOfficeCriticalSection()
 	{
 		DeleteCriticalSection (&m_CS);		
 #ifdef _DBG_CS	

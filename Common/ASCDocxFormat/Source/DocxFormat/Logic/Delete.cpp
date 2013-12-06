@@ -61,8 +61,12 @@ namespace OOX
 		const std::string Delete::toTxt() const
 		{
 			std::string text;
-			BOOST_FOREACH(const Run& run, *Runs)
-				text += run.toTxt();
+
+			const std::vector<Run>& runs = Runs.get();
+
+			for (std::vector<Run>::const_iterator iter = runs.begin(); iter != runs.end(); ++iter)
+				text += (*iter).toTxt();
+	
 			return text;
 		}
 

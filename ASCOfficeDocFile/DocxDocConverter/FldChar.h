@@ -4,7 +4,7 @@
 #include "Constants.h"
 #include "Plcfld.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	static const WCHAR* FldCharTypeBegin	=	_T("begin");
 	static const WCHAR* FldCharTypeSeparate =	_T("separate");

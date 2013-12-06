@@ -3,7 +3,7 @@
 #include "StdfBase.h"
 #include "StdfPost2000.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class Stdf: public IOperand
 	{

@@ -4,8 +4,6 @@
 // auto inserted precompiled end
 
 #include "RunProperty.h"
-#include <boost/lexical_cast.hpp>
-
 
 namespace OOX
 {
@@ -296,6 +294,7 @@ namespace OOX
 			properties.FontColor	  = ::merge(prev.FontColor, current.FontColor);
 			//properties.Background	  = ::merge(prev.Background, current.Background);
 			properties.Shading		  = ::merge(prev.Shading, current.Shading);
+	
 			properties.rFonts		  = ::merge(prev.rFonts, current.rFonts);
 			properties.Spacing		  = ::merge(prev.Spacing, current.Spacing);
 			properties.Kern			  = ::merge(prev.Kern, current.Kern);

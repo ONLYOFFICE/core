@@ -3,7 +3,6 @@
 #define XML_PRIVATE_XELEMENT_CONTAINER_INCLUDE_H_
 
 #include <boost/shared_ptr.hpp>
-//#include <vector>
 #include <list>
 #include <boost/iterator/filter_iterator.hpp>
 #include "Filter/Element.h"
@@ -32,8 +31,6 @@ namespace XML
 			void Add(const XElement& element);
 
 		public:
-			//typedef boost::filter_iterator<Filter::Element, std::vector<XNode>::iterator> iterator;
-			//typedef boost::filter_iterator<Filter::Element, std::vector<XNode>::const_iterator> const_iterator;
 			typedef boost::filter_iterator<Filter::Element, std::list<XNode>::iterator> iterator;
 			typedef boost::filter_iterator<Filter::Element, std::list<XNode>::const_iterator> const_iterator;
 
@@ -57,7 +54,6 @@ namespace XML
 			const_iterator end() const;
 
 		private:
-			//boost::shared_ptr<std::vector<XNode> >	m_container;
 			boost::shared_ptr<std::list<XNode> >	m_container;
 		};
 

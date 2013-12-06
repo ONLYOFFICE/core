@@ -55,9 +55,9 @@ namespace XML
 	}
 
 	template<class Unit>
-	const nullable<Common::Point<Unit> > XElement2NullablePoint(const XML::XElement& element, const std::string& x, const std::string& y)
+	const nullable__<Common::Point<Unit> > XElement2NullablePoint(const XML::XElement& element, const std::string& x, const std::string& y)
 	{
-		nullable<Common::Point<Unit> > point;
+		nullable__<Common::Point<Unit> > point;
 		if (element.attribute(x).exist() || element.attribute(y).exist())
 			point.init();
 		if (element.attribute(x).exist())

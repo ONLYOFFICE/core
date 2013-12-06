@@ -5,32 +5,26 @@
 
 #include "./../FootNote.h"
 
-
 namespace OOX
 {
-
 	FootNote::Note::Note()
 	{
 	}
-
 
 	FootNote::Note::~Note()
 	{
 	}
 	
-
 	FootNote::Note::Note(const XML::XNode& node)
 	{
 		fromXML(node);
 	}
-
 
 	const FootNote::Note& FootNote::Note::operator =(const XML::XNode& node)
 	{
 		fromXML(node);
 		return *this;
 	}
-
 
 	void FootNote::Note::fromXML(const XML::XNode& node)
 	{
@@ -39,7 +33,6 @@ namespace OOX
 		Id		= element.attribute("id").value();
 		XML::Fill(Items, element , "p", "tbl");	
 	}
-
 
 	const XML::XNode FootNote::Note::toXML() const
 	{
@@ -50,7 +43,6 @@ namespace OOX
 				XML::Write(Items)
 			);
 	}
-
 
 	void FootNote::Note::push_back(const OOX::Logic::Paragraph& paragraph)
 	{

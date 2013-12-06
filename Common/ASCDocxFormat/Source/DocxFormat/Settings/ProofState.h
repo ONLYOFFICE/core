@@ -24,7 +24,7 @@ namespace OOX
 			virtual const XML::XNode toXML() const;
 
 		private:
-			nullable<std::string>	m_spelling;
+			nullable__<std::string>	m_spelling;
 			std::string						m_grammar;
 		};
 	} // namespace Settings

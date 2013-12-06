@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Footnote.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	Footnote::Footnote( short _aFtnIdx ) : footnoteItemsOffset(0), aFtnIdx(_aFtnIdx)
 	{

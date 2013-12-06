@@ -2,9 +2,9 @@
 #ifndef OOX_LOGIC_INDEX_INCLUDE_H_
 #define OOX_LOGIC_INDEX_INCLUDE_H_
 
-#include "Common.h"
 #include <string>
 
+#include "Common.h"
 
 namespace OOX
 {

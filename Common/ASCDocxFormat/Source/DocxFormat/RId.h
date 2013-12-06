@@ -4,7 +4,6 @@
 
 #include <string>
 
-
 namespace OOX
 {
 	class RId
@@ -12,11 +11,11 @@ namespace OOX
 	public:
 		RId();
 		RId(const size_t id);
-		RId(const std::string& rid);
+		RId(const std::wstring& rid);
 
 	public:
 		const RId& operator= (const size_t id);
-		const RId& operator= (const std::string& rid);
+		const RId& operator= (const std::wstring& rid);
 
 	public:
 		const bool operator ==(const RId& lhs) const;
@@ -27,13 +26,13 @@ namespace OOX
 		const bool operator >=(const RId& lhs) const;
 
 	public:
-		const RId	next() const;
+		const RId next() const;
 		
 	public:
-		const std::string ToString() const;
+		const std::wstring ToString() const;
 
 	private:
-        std::string m_id;
+        std::wstring m_id;
 	};
 } // namespace OOX
 

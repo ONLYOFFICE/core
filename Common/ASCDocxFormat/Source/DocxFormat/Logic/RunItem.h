@@ -4,9 +4,7 @@
 
 #include "./../WritingElement.h"
 #include "IItemable.h"
-#include <boost/shared_ptr.hpp>
 #include "RunItemBase.h"
-
 
 namespace OOX
 {

@@ -4,233 +4,65 @@
 
 #include "FileType.h"
 
-
 namespace OOX
 {
 	namespace FileTypes
 	{
-		const FileType App(L"docProps", L"app.xml",
-												"application/vnd.openxmlformats-officedocument.extended-properties+xml",
-												"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties");
-
-		const FileType Core(L"docProps", L"core.xml",
-												"application/vnd.openxmlformats-package.core-properties+xml",
-												"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties");
-
-		const FileType Document(L"word", L"document.xml",
-														"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",
-														"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
-
-		const FileType Theme(L"theme", L"theme.xml",
-													"application/vnd.openxmlformats-officedocument.theme+xml",
-													"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme");
-
-		const FileType Setting(L"", L"settings.xml",
-														"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml",
-														"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings");
-
-		const FileType FontTable(L"", L"fontTable.xml",
-															"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable");
-
-		const FileType Style(L"", L"styles.xml",
-													"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml",
-													"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles");
-
-		const FileType Item(L"customXml", L"item.xml",
-													"WARNING not implement",
-													"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml");
-
-		const FileType FootNote(L"", L"footnotes.xml",
-														"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml",
-														"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes");
-
-		const FileType EndNote(L"", L"endnotes.xml",
-														"application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml",
-														"http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes");
-
-		const FileType WebSetting(L"", L"webSettings.xml",
-															"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings");
-
-		const FileType Header(L"", L"header.xml",
-															"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/header");
-
-		const FileType Footer(L"", L"footer.xml", 
-															"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer");
-
-		const FileType Numbering(L"", L"numbering.xml", 
-															"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering");
-
-		const FileType ItemProp(L"customXml", L"itemProps.xml",
-															"application/vnd.openxmlformats-officedocument.customXmlProperties+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps");
-
-		const FileType HyperLink(L"", L"", 
-															"", 
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink");
-
-		const FileType ExternalImage(L"", L"", 
-															"", 
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
-
-		const FileType ExternalAudio(L"", L"", 
-															"", 
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
-
-		const FileType ExternalVideo(L"", L"", 
-															"", 
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video");
-
-		const FileType Image(L"media", L"image", 
-												"", 
-												"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
-
-		const FileType Audio(L"media", L"audio", 
-												"", 
-												"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
-
-		const FileType Video(L"media", L"video", 
-												"", 
-												"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video");
-
-		const FileType Data(L"diagrams", L"data.xml",
-															"application/vnd.openxmlformats-officedocument.drawingml.diagramData+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramData");
-
-		const FileType Layout(L"diagrams", L"layout.xml",
-															"application/vnd.openxmlformats-officedocument.drawingml.diagramLayout+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramLayout");
-
-		const FileType Colors(L"diagrams", L"colors.xml",
-															"application/vnd.openxmlformats-officedocument.drawingml.diagramColors+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramColors");
-
-		const FileType QuickStyle(L"diagrams", L"quickStyle.xml",
-															"application/vnd.openxmlformats-officedocument.drawingml.diagramStyle+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramQuickStyle");
-
-		const FileType Chart(L"charts", L"chart.xml",
-															"application/vnd.openxmlformats-officedocument.drawingml.chart+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart");
-		
-
-		const FileType MicrosoftOfficeExcelWorksheet(L"embeddings", L"Microsoft_Office_Excel_Worksheet.xlsx",
-															"",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
-
-		const FileType MicrosoftOfficeExcel_97_2003_Worksheet(L"embeddings", L"Microsoft_Office_Excel_97-2003_Worksheet.xls",
-															"",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject");
-
-		const FileType MicrosoftOfficeExcelBinaryWorksheet(L"embeddings", L"Microsoft_Office_Excel_Binary_Worksheet.xlsb",
-															"",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
-
-		const FileType MicrosoftOfficeExcelMacro_EnabledWorksheet(L"embeddings", L"Microsoft_Office_Excel_Macro-Enabled_Worksheet.xlsm",
-															"",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
-
-		const FileType MicrosoftOfficeExcelChart(L"embeddings", L"Microsoft_Office_Excel_Chart.xlsx",
-															"",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject");
-
-
-		const FileType MicrosoftOfficeWordDocument(L"embeddings", L"Microsoft_Office_Word_Document.docx",
-															"",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
-
-		const FileType MicrosoftOfficeWord_97_2003_Document(L"embeddings", L"Microsoft_Office_Word_97_-_2003_Document.doc",
-															"",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject");
-
-		const FileType MicrosoftOfficeWordMacro_EnabledDocument(L"embeddings", L"Microsoft_Office_Word_Macro-Enabled_Document.docm",
-															"",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
-
-
-		const FileType MicrosoftOfficePowerPointPresentation(L"embeddings", L"Microsoft_Office_PowerPoint_Presentation.pptx",
-															"",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
-
-		const FileType MicrosoftOfficePowerPoint_97_2003_Presentation(L"embeddings", L"Microsoft_Office_PowerPoint_97-2003_Presentation.xlsx",
-															"",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject");
-
-		const FileType MicrosoftOfficePowerPointMacro_EnabledPresentation(L"embeddings", L"Microsoft_Office_PowerPoint_Macro-Enabled_Presentation.pptm",
-															"",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
-		
-
-		const FileType MicrosoftOfficePowerPointSlide(L"embeddings", L"Microsoft_Office_PowerPoint_Slide.sldx",
-															"",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
-
-		const FileType MicrosoftOfficePowerPointMacro_EnabledSlide(L"embeddings", L"Microsoft_Office_PowerPoint_Macro-Enabled_Slide.sldm",
-															"",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
-				
-		
-		const FileType OleObject(L"embeddings", L"oleObject.bin",
-															"",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject");
-		
-		const FileType Glossary(L"glossary", L"document.xml",
-															"application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/glossaryDocument");
-
-		const FileType Slide(L"", L"slide.xml",
-															"application/vnd.openxmlformats-officedocument.presentationml.slide+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide");
-
-		const FileType SlideLayout(L"", L"slideLayout.xml",
-															"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout");
-
-		const FileType SlideMaster(L"", L"slideMaster.xml",
-															"application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster");
-
-		const FileType NotesSlide(L"", L"notesSlide.xml",
-															"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide");
-
-		const FileType NotesMaster(L"", L"notesMaster.xml",
-															"application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster");
-
-		const FileType HandoutMaster(L"", L"handoutMaster.xml",
-															"application/vnd.openxmlformats-officedocument.presentationml.handoutMaster+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/handoutMaster");
-
-		const FileType Presentation(L"ppt", L"presentation.xml",
-															"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
-
-		const FileType PresProps(L"", L"presProps.xml",
-															"application/vnd.openxmlformats-officedocument.presentationml.presProps+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/presProps");
-
-		const FileType TableStyles(L"", L"tableStyles.xml",
-															"application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/tableStyles");
-
-		const FileType ViewProps(L"", L"viewProps.xml",
-															"application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml",
-															"http://schemas.openxmlformats.org/officeDocument/2006/relationships/viewProps");
-
-		const FileType ThemePPTX(L"", L"theme.xml",
-													"application/vnd.openxmlformats-officedocument.theme+xml",
-													"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme");
-
-		const FileType VmlDrawing(L"", L"vmlDrawing.vml",
-													"",
-													"http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing");
-
-		const FileType Unknow(L"", L"", "", "");
+		const FileType App(OOX::CPath(L"docProps"),			OOX::CPath(L"app.xml"),				L"application/vnd.openxmlformats-officedocument.extended-properties+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties");
+		const FileType Core(OOX::CPath(L"docProps"),		OOX::CPath(L"core.xml"),			L"application/vnd.openxmlformats-package.core-properties+xml", L"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties");
+		const FileType Document(OOX::CPath(L"word"),		OOX::CPath(L"document.xml"),		L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
+		const FileType Theme(OOX::CPath(L"theme"),			OOX::CPath(L"theme.xml"),			L"application/vnd.openxmlformats-officedocument.theme+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme");
+		const FileType Setting(OOX::CPath(L""),				OOX::CPath(L"settings.xml"),		L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings");
+		const FileType FontTable(OOX::CPath(L""),			OOX::CPath(L"fontTable.xml"),		L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable");
+		const FileType Style(OOX::CPath(L""),				OOX::CPath(L"styles.xml"),			L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles");
+		const FileType Item(OOX::CPath(L"customXml"),		OOX::CPath(L"item.xml"),			L"WARNING not implement", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml");
+		const FileType FootNote(OOX::CPath(L""),			OOX::CPath(L"footnotes.xml"),		L"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes");
+		const FileType EndNote(OOX::CPath(L""),				OOX::CPath(L"endnotes.xml"),		L"application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes");
+		const FileType WebSetting(OOX::CPath(L""),			OOX::CPath(L"webSettings.xml"),		L"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings");
+		const FileType Header(OOX::CPath(L""),				OOX::CPath(L"header.xml"),			L"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/header");
+		const FileType Footer(OOX::CPath(L""),				OOX::CPath(L"footer.xml"), 			L"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer");	
+		const FileType Numbering(OOX::CPath(L""),			OOX::CPath(L"numbering.xml"), 		L"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering");
+		const FileType ItemProp(OOX::CPath(L"customXml"),	OOX::CPath(L"itemProps.xml"),		L"application/vnd.openxmlformats-officedocument.customXmlProperties+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps");
+		const FileType HyperLink(OOX::CPath(L""),			OOX::CPath(L""),					L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink");
+		const FileType ExternalImage(OOX::CPath(L""),		OOX::CPath(L""),					L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
+		const FileType ExternalAudio(OOX::CPath(L""),		OOX::CPath(L""),					L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
+		const FileType ExternalVideo(OOX::CPath(L""),		OOX::CPath(L""),					L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video");
+		const FileType Image(OOX::CPath(L"media"),			OOX::CPath(L"image"),				L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
+		const FileType Audio(OOX::CPath(L"media"),			OOX::CPath(L"audio"),				L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
+		const FileType Video(OOX::CPath(L"media"),			OOX::CPath(L"video"),				L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video");
+		const FileType Data(OOX::CPath(L"diagrams"),		OOX::CPath(L"data.xml"),			L"application/vnd.openxmlformats-officedocument.drawingml.diagramData+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramData");
+		const FileType Layout(OOX::CPath(L"diagrams"),		OOX::CPath(L"layout.xml"),			L"application/vnd.openxmlformats-officedocument.drawingml.diagramLayout+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramLayout");
+		const FileType Colors(OOX::CPath(L"diagrams"),		OOX::CPath(L"colors.xml"),			L"application/vnd.openxmlformats-officedocument.drawingml.diagramColors+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramColors");
+		const FileType QuickStyle(OOX::CPath(L"diagrams"),	OOX::CPath(L"quickStyle.xml"),		L"application/vnd.openxmlformats-officedocument.drawingml.diagramStyle+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramQuickStyle");
+		const FileType Chart(OOX::CPath(L"charts"),			OOX::CPath(L"chart.xml"),			L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart");		
+		const FileType MicrosoftOfficeExcelWorksheet(						OOX::CPath(L"embeddings"),	OOX::CPath(L"Microsoft_Office_Excel_Worksheet.xlsx"), L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
+		const FileType MicrosoftOfficeExcel_97_2003_Worksheet(				OOX::CPath(L"embeddings"),	OOX::CPath(L"Microsoft_Office_Excel_97-2003_Worksheet.xls"), L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject");
+		const FileType MicrosoftOfficeExcelBinaryWorksheet(					OOX::CPath(L"embeddings"),	OOX::CPath(L"Microsoft_Office_Excel_Binary_Worksheet.xlsb"), L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
+		const FileType MicrosoftOfficeExcelMacro_EnabledWorksheet(			OOX::CPath(L"embeddings"),	OOX::CPath(L"Microsoft_Office_Excel_Macro-Enabled_Worksheet.xlsm"), L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
+		const FileType MicrosoftOfficeExcelChart(							OOX::CPath(L"embeddings"),	OOX::CPath(L"Microsoft_Office_Excel_Chart.xlsx"), L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject");
+		const FileType MicrosoftOfficeWordDocument(							OOX::CPath(L"embeddings"),	OOX::CPath(L"Microsoft_Office_Word_Document.docx"), L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
+		const FileType MicrosoftOfficeWord_97_2003_Document(				OOX::CPath(L"embeddings"),	OOX::CPath(L"Microsoft_Office_Word_97_-_2003_Document.doc"), L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject");
+		const FileType MicrosoftOfficeWordMacro_EnabledDocument(			OOX::CPath(L"embeddings"),	OOX::CPath(L"Microsoft_Office_Word_Macro-Enabled_Document.docm"), L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
+		const FileType MicrosoftOfficePowerPointPresentation(				OOX::CPath(L"embeddings"),	OOX::CPath(L"Microsoft_Office_PowerPoint_Presentation.pptx"), L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
+		const FileType MicrosoftOfficePowerPoint_97_2003_Presentation(		OOX::CPath(L"embeddings"),	OOX::CPath(L"Microsoft_Office_PowerPoint_97-2003_Presentation.xlsx"), L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject");
+		const FileType MicrosoftOfficePowerPointMacro_EnabledPresentation(	OOX::CPath(L"embeddings"),	OOX::CPath(L"Microsoft_Office_PowerPoint_Macro-Enabled_Presentation.pptm"), L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");		
+		const FileType MicrosoftOfficePowerPointSlide(						OOX::CPath(L"embeddings"),	OOX::CPath(L"Microsoft_Office_PowerPoint_Slide.sldx"), L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
+		const FileType MicrosoftOfficePowerPointMacro_EnabledSlide(			OOX::CPath(L"embeddings"),	OOX::CPath(L"Microsoft_Office_PowerPoint_Macro-Enabled_Slide.sldm"), L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");						
+		const FileType OleObject(OOX::CPath(L"embeddings"), OOX::CPath(L"oleObject.bin"),		L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject");		
+		const FileType Glossary(OOX::CPath(L"glossary"),	OOX::CPath(L"document.xml"),		L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/glossaryDocument");
+		const FileType Slide(OOX::CPath(L""),				OOX::CPath(L"slide.xml"),			L"application/vnd.openxmlformats-officedocument.presentationml.slide+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide");
+		const FileType SlideLayout(OOX::CPath(L""),			OOX::CPath(L"slideLayout.xml"),		L"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout");
+		const FileType SlideMaster(OOX::CPath(L""),			OOX::CPath(L"slideMaster.xml"),		L"application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster");
+		const FileType NotesSlide(OOX::CPath(L""),			OOX::CPath(L"notesSlide.xml"),		L"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide");
+		const FileType NotesMaster(OOX::CPath(L""),			OOX::CPath(L"notesMaster.xml"),		L"application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster");
+		const FileType HandoutMaster(OOX::CPath(L""),		OOX::CPath(L"handoutMaster.xml"),	L"application/vnd.openxmlformats-officedocument.presentationml.handoutMaster+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/handoutMaster");
+		const FileType Presentation(OOX::CPath(L"ppt"),		OOX::CPath(L"presentation.xml"),	L"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
+		const FileType PresProps(OOX::CPath(L""),			OOX::CPath(L"presProps.xml"),		L"application/vnd.openxmlformats-officedocument.presentationml.presProps+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/presProps");
+		const FileType TableStyles(OOX::CPath(L""),			OOX::CPath(L"tableStyles.xml"),		L"application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/tableStyles");
+		const FileType ViewProps(OOX::CPath(L""),			OOX::CPath(L"viewProps.xml"),		L"application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/viewProps");
+		const FileType ThemePPTX(OOX::CPath(L""),			OOX::CPath(L"theme.xml"),			L"application/vnd.openxmlformats-officedocument.theme+xml", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme");
+		const FileType VmlDrawing(OOX::CPath(L""),			OOX::CPath(L"vmlDrawing.vml"),		L"", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing");
+		const FileType Unknow(OOX::CPath(L""),				OOX::CPath(L""),					L"", L"");
 
 	} // namespace FileTypes
 } // namespace OOX

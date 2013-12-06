@@ -19,12 +19,11 @@
 #include <limits.h>
 
 #include "utf8.h"
-
-#include "AVSUtils.h"
+#include "../../Common/ASCUtils.h"
 
 using namespace std;
 
-namespace AVSDocFormatUtils
+namespace ASCDocFormatUtils
 {
 	typedef byte Bool8;
 	typedef unsigned short Bool16;

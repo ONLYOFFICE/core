@@ -15,7 +15,7 @@ namespace OOX
 	}
 
 	
-	ExternalVideo::ExternalVideo(const boost::filesystem::wpath& uri)
+	ExternalVideo::ExternalVideo(const OOX::CPath& uri)
 	{
 		read(uri);
 	}
@@ -32,13 +32,13 @@ namespace OOX
 	}
 
 
-	const boost::filesystem::wpath ExternalVideo::DefaultDirectory() const
+	const OOX::CPath ExternalVideo::DefaultDirectory() const
 	{
 		return type().DefaultDirectory();
 	}
 
 
-	const boost::filesystem::wpath ExternalVideo::DefaultFileName() const
+	const OOX::CPath ExternalVideo::DefaultFileName() const
 	{
 		return type().DefaultFileName();
 	}

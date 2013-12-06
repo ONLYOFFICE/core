@@ -5,7 +5,7 @@
 #include "EndnoteReference.h"
 #include "PLC.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
   typedef PLC<EmptyPLCData> PlcfendTxt;
   typedef PLC<short> PlcfendRef;

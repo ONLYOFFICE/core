@@ -36,7 +36,7 @@ namespace OOX
 		}
 
 
-		Paragraph::Paragraph(const RId& rId, const boost::filesystem::wpath& filename, const long width, const long height)
+		Paragraph::Paragraph(const RId& rId, const OOX::CPath& filename, const long width, const long height)
 //			: m_inList(false)
 		{
 			RunItemBase* drawing = new Drawing(rId, filename, width, height);
@@ -45,7 +45,7 @@ namespace OOX
 			Items->push_back(run);
 		}
 
-		Paragraph::Paragraph(const RId& rId, const boost::filesystem::wpath& filename, const long xEmu, const std::string& hRelativeFrom, const long yEmu, const std::string& vRelativeFrom, const long widthEmu, const long heightEmu)
+		Paragraph::Paragraph(const RId& rId, const OOX::CPath& filename, const long xEmu, const std::string& hRelativeFrom, const long yEmu, const std::string& vRelativeFrom, const long widthEmu, const long heightEmu)
 //			: m_inList(false)
 		{
 			RunItemBase* drawing = new Drawing(rId, filename, xEmu, hRelativeFrom, yEmu, vRelativeFrom, widthEmu, heightEmu);
@@ -112,7 +112,7 @@ namespace OOX
 		}
 
 
-		void Paragraph::AddText(const std::string& text, const nullable<Logic::RunProperty>& property)
+		void Paragraph::AddText(const std::string& text, const nullable__<Logic::RunProperty>& property)
 		{
 			Run run(text);
 			run.Property = property;
@@ -128,7 +128,7 @@ namespace OOX
 		}
 
 
-		void Paragraph::AddTab(const nullable<Logic::RunProperty>& property)
+		void Paragraph::AddTab(const nullable__<Logic::RunProperty>& property)
 		{
 			Run run;
 			run.add<Tab>();
@@ -167,7 +167,7 @@ namespace OOX
 		}
 
 
-		void Paragraph::AddSpace(const size_t count, const nullable<Logic::RunProperty>& property)
+		void Paragraph::AddSpace(const size_t count, const nullable__<Logic::RunProperty>& property)
 		{
 			Run run;
 			RunItemBase* text = new Text(std::string(count, ' '));

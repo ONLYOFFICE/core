@@ -1,9 +1,9 @@
 #pragma once
 
-#include <../../../Common/XmlUtils.h>
-
 #include "ProtectionBooleanProperties.h"
 #include "..\IVisitable.h"
+
+#include "..\..\..\Common\DocxFormat\Source\XML\XmlUtils.h"
 
 namespace DocFileFormat
 {

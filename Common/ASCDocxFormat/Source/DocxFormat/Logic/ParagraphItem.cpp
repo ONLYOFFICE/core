@@ -6,17 +6,14 @@
 #include "ParagraphItem.h"
 #include "./../FormatError.h"
 
-
 namespace OOX
 {
 	namespace Logic
 	{
-
 		ParagraphItem::ParagraphItem()
 		{
 		}
 		
-
 		ParagraphItem::ParagraphItem(const Run& run)
 			: IItemable<ParagraphItemBase>(new Run(run))
 		{
@@ -84,7 +81,7 @@ namespace OOX
 		
 		const XML::XNode ParagraphItem::toXML() const
 		{
-			return XML::Write(m_item);
+			return XML::XNode();	//		return XML::Write(m_item);
 		}
 
 

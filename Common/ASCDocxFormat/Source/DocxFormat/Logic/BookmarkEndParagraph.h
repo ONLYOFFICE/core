@@ -3,8 +3,6 @@
 #define OOX_LOGIC_BOOKMARK_END_PARAGRAPH_INCLUDE_H_
 
 #include "TextItemBase.h"
-#include "property.h"
-
 
 namespace OOX
 {
@@ -15,18 +13,22 @@ namespace OOX
 		public:
 			BookmarkEndParagraph();
 			virtual ~BookmarkEndParagraph();
-			explicit BookmarkEndParagraph(const XML::XNode& node);
+			BookmarkEndParagraph(const XML::XNode& node);
 			const BookmarkEndParagraph& operator =(const XML::XNode& node);
+			BookmarkEndParagraph(XmlUtils::CXmlNode& node);
+			const BookmarkEndParagraph& operator =(XmlUtils::CXmlNode& node);
 
 		public:
 			virtual void fromXML(const XML::XNode& node);
 			virtual const XML::XNode toXML() const;
 
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+
 		public:
 			virtual const std::string toTxt() const;	
 
 		public:
-			property<std::string>	Id;
+			std::wstring	m_Id;
 		};
 	} // namespace Logic
 } // namespace OOX

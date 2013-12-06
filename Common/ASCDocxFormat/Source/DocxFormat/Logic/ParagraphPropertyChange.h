@@ -6,7 +6,6 @@
 #include <string>
 #include "nullable_property.h"
 
-
 namespace OOX
 {
 	namespace Logic

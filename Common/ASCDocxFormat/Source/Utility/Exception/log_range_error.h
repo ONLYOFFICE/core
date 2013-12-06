@@ -5,7 +5,6 @@
 #include <stdexcept>
 #include <string>
 
-
 class log_range_error : public std::range_error
 {
 public:

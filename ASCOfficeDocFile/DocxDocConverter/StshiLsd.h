@@ -2,7 +2,7 @@
 
 #include "LSD.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class StshiLsd: public IOperand
 	{

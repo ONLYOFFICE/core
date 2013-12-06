@@ -2,7 +2,7 @@
 
 #include "STTB.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class BookmarkName: public IOperand
 	{

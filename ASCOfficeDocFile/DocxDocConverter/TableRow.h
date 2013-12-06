@@ -2,7 +2,7 @@
 
 #include "TableCell.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
   class TableRow
   {

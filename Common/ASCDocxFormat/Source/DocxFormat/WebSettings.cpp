@@ -6,54 +6,40 @@
 #include "WebSettings.h"
 #include "FileTypes.h"
 
-
 namespace OOX
 {
-
 	WebSettings::WebSettings()
 	{
 	}
 
-
-	WebSettings::WebSettings(const boost::filesystem::wpath& filename)
+	WebSettings::WebSettings(const OOX::CPath& filename)
 	{
 		read(filename);
 	}
-
 
 	WebSettings::~WebSettings()
 	{
 	}
 
-
-	void WebSettings::read(const boost::filesystem::wpath& filename)
+	void WebSettings::read(const OOX::CPath& filename)
 	{
 	}
 
-
-	void WebSettings::write(const boost::filesystem::wpath& filename, const boost::filesystem::wpath& directory, ContentTypes::File& content) const
+	void WebSettings::write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const
 	{
-		XML::XElement(ns.w + "webSettings",
-			XML::XElement(ns.w + "optimizeForBrowser")
-		).Save(filename);
-
-		content.registration(type().OverrideType(), directory, filename);
 	}
-
 
 	const FileType WebSettings::type() const
 	{
 		return FileTypes::WebSetting;
 	}
 
-
-	const boost::filesystem::wpath WebSettings::DefaultDirectory() const
+	const OOX::CPath WebSettings::DefaultDirectory() const
 	{
 		return type().DefaultDirectory();
 	}
 
-
-	const boost::filesystem::wpath WebSettings::DefaultFileName() const
+	const OOX::CPath WebSettings::DefaultFileName() const
 	{
 		return type().DefaultFileName();
 	}

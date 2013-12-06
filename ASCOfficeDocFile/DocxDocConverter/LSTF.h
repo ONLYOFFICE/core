@@ -3,7 +3,7 @@
 #include "Tplc.h"
 #include "grfhic.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
   class LSTF: public IOperand
   {

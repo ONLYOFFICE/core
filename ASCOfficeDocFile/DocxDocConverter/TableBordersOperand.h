@@ -3,7 +3,7 @@
 #include "Brc.h"
 #include "Prl.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class TableBordersOperand: public IOperand
 	{

@@ -3,7 +3,7 @@
 #include "Constants.h"
 #include "grfhic.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
   class LFO: public IOperand
   {

@@ -3,7 +3,7 @@
 #include "TBD.h"
 #include "XAS.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class PChgTabsAdd : public IOperand
 	{

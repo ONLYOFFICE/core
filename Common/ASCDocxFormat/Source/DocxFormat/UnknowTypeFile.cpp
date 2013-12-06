@@ -6,43 +6,35 @@
 #include "UnknowTypeFile.h"
 #include "FileTypes.h"
 
-
 namespace OOX
 {
-
 	UnknowTypeFile::UnknowTypeFile()
 	{
 	}
-
 
 	UnknowTypeFile::~UnknowTypeFile()
 	{
 	}
 
-
-	void UnknowTypeFile::read(const boost::filesystem::wpath& filename)
+	void UnknowTypeFile::read(const OOX::CPath& filename)
 	{
 	}
 
-
-	void UnknowTypeFile::write(const boost::filesystem::wpath& filename, const boost::filesystem::wpath& directory, ContentTypes::File& content) const
+	void UnknowTypeFile::write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const
 	{
 	}
-
 
 	const FileType UnknowTypeFile::type() const
 	{
 		return FileTypes::Unknow;
 	}
 
-
-	const boost::filesystem::wpath UnknowTypeFile::DefaultDirectory() const
+	const OOX::CPath UnknowTypeFile::DefaultDirectory() const
 	{
 		return type().DefaultDirectory();
 	}
 
-
-	const boost::filesystem::wpath UnknowTypeFile::DefaultFileName() const
+	const OOX::CPath UnknowTypeFile::DefaultFileName() const
 	{
 		return type().DefaultFileName();
 	}

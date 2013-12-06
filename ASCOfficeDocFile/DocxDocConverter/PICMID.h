@@ -2,7 +2,7 @@
 
 #include "Brc80MayBeNil.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class PICMID: public IOperand
 	{

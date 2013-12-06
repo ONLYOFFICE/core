@@ -53,11 +53,11 @@ namespace XML
 
 	public:
 		template<class T>
-		operator const nullable<T>() const
+		operator const nullable__<T>() const
 		{
 			if (exist())
 				return T(*this);
-			return nullable<T>();
+			return nullable__<T>();
 		}
 
 		template<class T, class S, class G>
@@ -127,9 +127,9 @@ namespace XML
 
 
 template<typename T>
-const nullable<T>& nullable_setter(nullable<T>& lhs, const XML::XElement& rhs)
+const nullable__<T>& nullable_setter(nullable__<T>& lhs, const XML::XElement& rhs)
 {
-	return ::nullable_setter(lhs, nullable<T>(rhs));
+	return ::nullable_setter(lhs, nullable__<T>(rhs));
 }
 
 

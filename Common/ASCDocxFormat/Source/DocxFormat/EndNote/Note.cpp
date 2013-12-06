@@ -8,29 +8,24 @@
 
 namespace OOX
 {
-
 	EndNote::Note::Note()
 	{
 	}
 
-
 	EndNote::Note::~Note()
 	{
-	}
-	
+	}	
 
 	EndNote::Note::Note(const XML::XNode& node)
 	{
 		fromXML(node);
 	}
 
-
 	const EndNote::Note& EndNote::Note::operator =(const XML::XNode& node)
 	{
 		fromXML(node);
 		return *this;
 	}
-
 
 	void EndNote::Note::fromXML(const XML::XNode& node)
 	{

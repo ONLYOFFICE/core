@@ -2,7 +2,7 @@
 
 #include "Constants.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
   union Fatl
   {

@@ -41,7 +41,7 @@
 #include "ShapeBuilder.h"
 #include "WordStreamWriter.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	typedef PLC<EmptyPLCData> Plcfhdd;
 

@@ -94,7 +94,7 @@ namespace OOX
 
 		const XML::XNode GroupItem::toXML() const
 		{
-			return XML::Write(m_item);
+			return XML::XNode(); //XML::Write(m_item);
 		}
 	}
 

@@ -1,14 +1,33 @@
 #pragma once
 
 #include <string>
+#include <list>
 #include <stdexcept>
-#include <utility>
-#include <map>
+#include <algorithm>
+#include <set>
+#include <fstream>
+#include <iostream>
 #include <vector>
+#include <map>
+#include <string>
+#include <stdarg.h>
+#include <stdio.h>
+#include <iosfwd>
+#include <sstream>
+#include <streambuf>
+#include <wchar.h>
+#include <time.h>
+#include <locale>
+#include <utility>
 
-#include <boost/filesystem.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/foreach.hpp>
+#include "Media/Media.h"
+
+#include "../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
+#include "../../../../Common/DocxFormat/Source/Base/SmartPtr.h"
+#include "../../../../Common/DocxFormat/Source/Base/Nullable.h"
+#include "../../../../Common/DocxFormat/Source/Xml/XmlUtils.h"
+
+///////////////////////////////////////////////
 
 #include "Utility.h"
 #include "Log.h"

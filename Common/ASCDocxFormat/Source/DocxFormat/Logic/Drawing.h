@@ -7,8 +7,6 @@
 #include "Inline.h"
 #include "property.h"
 #include "./../RId.h"
-#include <boost/filesystem.hpp>
-
 
 namespace OOX
 {
@@ -19,8 +17,8 @@ namespace OOX
 		public:
 			Drawing();
 			virtual ~Drawing();
-			Drawing(const RId& rId, const boost::filesystem::wpath& filename, const long width, const long height);
-			Drawing(const RId& rId, const boost::filesystem::wpath& filename, const long xEmu, const std::string& hRelativeFrom, const long yEmu, const std::string& vRelativeFrom, const long widthEmu, const long heightEmu);
+			Drawing(const RId& rId, const OOX::CPath& filename, const long width, const long height);
+			Drawing(const RId& rId, const OOX::CPath& filename, const long xEmu, const std::string& hRelativeFrom, const long yEmu, const std::string& vRelativeFrom, const long widthEmu, const long heightEmu);
 			explicit Drawing(const XML::XNode& node);
 			const Drawing& operator =(const XML::XNode& node);
 

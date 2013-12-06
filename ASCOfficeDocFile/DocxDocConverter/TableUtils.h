@@ -29,7 +29,7 @@
 #include "Logic\TableStyleProperties.h"
 #include "Logic\TableCellBorders.h"
 
-typedef vector<AVSDocFileFormat::Shd> ShdList;
+typedef vector<ASCDocFileFormat::Shd> ShdList;
 
 namespace DOCXDOCUTILS
 {
@@ -116,61 +116,61 @@ namespace DOCXDOCUTILS
 
 		return ipat;
 	}
-	inline AVSDocFileFormat::Constants::Fts TableWidthUnitsFromString (const std::string& type)
+	inline ASCDocFileFormat::Constants::Fts TableWidthUnitsFromString (const std::string& type)
 	{
 		if (type == std::string("nil"))
-			return AVSDocFileFormat::Constants::ftsNil;
+			return ASCDocFileFormat::Constants::ftsNil;
 		else if (type == std::string("auto"))
-			return AVSDocFileFormat::Constants::ftsAuto;
+			return ASCDocFileFormat::Constants::ftsAuto;
 		else if (type == std::string("pct"))
-			return AVSDocFileFormat::Constants::ftsPercent;
+			return ASCDocFileFormat::Constants::ftsPercent;
 		else if (type == std::string("dxa"))
-			return AVSDocFileFormat::Constants::ftsDxa;
+			return ASCDocFileFormat::Constants::ftsDxa;
 
-		return AVSDocFileFormat::Constants::ftsNil;	
+		return ASCDocFileFormat::Constants::ftsNil;	
 	}
 
-	inline AVSDocFileFormat::Prl GetOpTop  (const OOX::Logic::TCMar& oTCMar, int nCells)
+	inline ASCDocFileFormat::Prl GetOpTop  (const OOX::Logic::TCMar& oTCMar, int nCells)
 	{
-		AVSDocFileFormat::CSSAOperand opCSSA (AVSDocFileFormat::CSSA(AVSDocFileFormat::ItcFirstLim(0, nCells), 
-			AVSDocFileFormat::Constants::fbrcTop,
+		ASCDocFileFormat::CSSAOperand opCSSA (ASCDocFileFormat::CSSA(ASCDocFileFormat::ItcFirstLim(0, nCells), 
+			ASCDocFileFormat::Constants::fbrcTop,
 			TableWidthUnitsFromString (oTCMar.Top->Margin->Type),
 			oTCMar.Top->Margin->W));
 
-		return AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTCellPadding, (byte*)opCSSA );
+		return ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTCellPadding, (byte*)opCSSA );
 	}
 
-	inline AVSDocFileFormat::Prl GetOpLeft (const OOX::Logic::TCMar& oTCMar, int nCells)
+	inline ASCDocFileFormat::Prl GetOpLeft (const OOX::Logic::TCMar& oTCMar, int nCells)
 	{
-		AVSDocFileFormat::CSSAOperand opCSSA(AVSDocFileFormat::CSSA( AVSDocFileFormat::ItcFirstLim(0, nCells), 
-			AVSDocFileFormat::Constants::fbrcLeft,
+		ASCDocFileFormat::CSSAOperand opCSSA(ASCDocFileFormat::CSSA( ASCDocFileFormat::ItcFirstLim(0, nCells), 
+			ASCDocFileFormat::Constants::fbrcLeft,
 			TableWidthUnitsFromString (oTCMar.Left->Margin->Type),
 			oTCMar.Left->Margin->W));
 
-		return AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTCellPadding, (byte*)opCSSA );
+		return ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTCellPadding, (byte*)opCSSA );
 	}
 
-	inline AVSDocFileFormat::Prl GetOpRight (const OOX::Logic::TCMar& oTCMar, int nCells)
+	inline ASCDocFileFormat::Prl GetOpRight (const OOX::Logic::TCMar& oTCMar, int nCells)
 	{
-		AVSDocFileFormat::CSSAOperand opCSSA( AVSDocFileFormat::CSSA( AVSDocFileFormat::ItcFirstLim(0, nCells), 
-			AVSDocFileFormat::Constants::fbrcRight,
+		ASCDocFileFormat::CSSAOperand opCSSA( ASCDocFileFormat::CSSA( ASCDocFileFormat::ItcFirstLim(0, nCells), 
+			ASCDocFileFormat::Constants::fbrcRight,
 			DOCXDOCUTILS::TableWidthUnitsFromString (oTCMar.Right->Margin->Type),
 			oTCMar.Right->Margin->W ) );
 
-		return AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTCellPadding, (byte*)opCSSA );
+		return ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTCellPadding, (byte*)opCSSA );
 	}
 
-	inline AVSDocFileFormat::Prl GetOpBottom (const OOX::Logic::TCMar& oTCMar, int nCells)
+	inline ASCDocFileFormat::Prl GetOpBottom (const OOX::Logic::TCMar& oTCMar, int nCells)
 	{
-		AVSDocFileFormat::CSSAOperand opCSSA( AVSDocFileFormat::CSSA( AVSDocFileFormat::ItcFirstLim(0, nCells), 
-			AVSDocFileFormat::Constants::fbrcBottom,
+		ASCDocFileFormat::CSSAOperand opCSSA( ASCDocFileFormat::CSSA( ASCDocFileFormat::ItcFirstLim(0, nCells), 
+			ASCDocFileFormat::Constants::fbrcBottom,
 			DOCXDOCUTILS::TableWidthUnitsFromString (oTCMar.Bottom->Margin->Type),
 			oTCMar.Bottom->Margin->W ) );
 
-		return AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTCellPadding, (byte*)opCSSA );
+		return ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTCellPadding, (byte*)opCSSA );
 	}
 
-	inline AVSDocFileFormat::Shd GetBackGroundShading (const nullable_property<OOX::Logic::Shading>& oShading)
+	inline ASCDocFileFormat::Shd GetBackGroundShading (const nullable_property<OOX::Logic::Shading>& oShading)
 	{
 		// <w:shd w:val="clear" w:color="auto" w:fill="4F81BD" w:themeFill="accent1"/>
 
@@ -185,7 +185,7 @@ namespace DOCXDOCUTILS
 			if (oShading->fill.is_init())
 			{
 				if (std::string("auto") == (*oShading->fill))
-					nFillAuto	=	AVSDocFileFormat::COLORREF::cvAuto;
+					nFillAuto	=	ASCDocFileFormat::COLORREF::cvAuto;
 				else
 					nFillValue	=	HexString2Int(*oShading->fill);
 			}
@@ -193,7 +193,7 @@ namespace DOCXDOCUTILS
 			if (oShading->color.is_init())
 			{
 				if (std::string("auto") == (*oShading->color))
-					nColorAuto	=	AVSDocFileFormat::COLORREF::cvAuto;
+					nColorAuto	=	ASCDocFileFormat::COLORREF::cvAuto;
 				else
 					nColorValue	=	HexString2Int(*oShading->color );
 			}
@@ -201,10 +201,10 @@ namespace DOCXDOCUTILS
 			if (oShading->value.is_init())
 				nIpat			=	ShadingPattern (*oShading->value);
 
-			return AVSDocFileFormat::Shd(AVSDocFileFormat::COLORREF((int)(nColorValue | nColorAuto)), AVSDocFileFormat::COLORREF(nFillValue | nFillAuto), nIpat);		
+			return ASCDocFileFormat::Shd(ASCDocFileFormat::COLORREF((int)(nColorValue | nColorAuto)), ASCDocFileFormat::COLORREF(nFillValue | nFillAuto), nIpat);		
 		}
 
-		return AVSDocFileFormat::Shd();
+		return ASCDocFileFormat::Shd();
 	}
 }
 
@@ -394,33 +394,33 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 
 			/*
 
-			m_oBrc80MayBeNilTop		=	AVSDocFileFormat::Brc80MayBeNil(2, 1, 1, 0, false, false);
-			m_oBrc80MayBeNilBottom	=	AVSDocFileFormat::Brc80MayBeNil(2, 1, 1, 0, false, false);
-			m_oBrc80MayBeNilLeft	=	AVSDocFileFormat::Brc80MayBeNil(2, 1, 1, 0, false, false);
-			m_oBrc80MayBeNilRight	=	AVSDocFileFormat::Brc80MayBeNil(2, 1, 1, 0, false, false);
+			m_oBrc80MayBeNilTop		=	ASCDocFileFormat::Brc80MayBeNil(2, 1, 1, 0, false, false);
+			m_oBrc80MayBeNilBottom	=	ASCDocFileFormat::Brc80MayBeNil(2, 1, 1, 0, false, false);
+			m_oBrc80MayBeNilLeft	=	ASCDocFileFormat::Brc80MayBeNil(2, 1, 1, 0, false, false);
+			m_oBrc80MayBeNilRight	=	ASCDocFileFormat::Brc80MayBeNil(2, 1, 1, 0, false, false);
 
-			m_oBrcTop				=	AVSDocFileFormat::Brc(AVSDocFileFormat::COLORREF(HexString2Int(std::string ("000000"))), 1, 0, 0, false, false);
-			m_oBrc80Top				=	AVSDocFileFormat::Brc80MayBeNil(0, 0, 0, 0, false, false);
+			m_oBrcTop				=	ASCDocFileFormat::Brc(ASCDocFileFormat::COLORREF(HexString2Int(std::string ("000000"))), 1, 0, 0, false, false);
+			m_oBrc80Top				=	ASCDocFileFormat::Brc80MayBeNil(0, 0, 0, 0, false, false);
 
-			m_oBrcBottom			=	AVSDocFileFormat::Brc(AVSDocFileFormat::COLORREF(HexString2Int(std::string ("000000"))), 1, 0, 0, false, false);
-			m_oBrc80Bottom			=	AVSDocFileFormat::Brc80MayBeNil(0, 0, 0, 0, false, false);
+			m_oBrcBottom			=	ASCDocFileFormat::Brc(ASCDocFileFormat::COLORREF(HexString2Int(std::string ("000000"))), 1, 0, 0, false, false);
+			m_oBrc80Bottom			=	ASCDocFileFormat::Brc80MayBeNil(0, 0, 0, 0, false, false);
 
-			m_oBrcLeft				=	AVSDocFileFormat::Brc(AVSDocFileFormat::COLORREF(HexString2Int(std::string ("000000"))), 1, 0, 0, false, false);
-			m_oBrc80Left			=	AVSDocFileFormat::Brc80MayBeNil(0, 0, 0, 0, false, false);
+			m_oBrcLeft				=	ASCDocFileFormat::Brc(ASCDocFileFormat::COLORREF(HexString2Int(std::string ("000000"))), 1, 0, 0, false, false);
+			m_oBrc80Left			=	ASCDocFileFormat::Brc80MayBeNil(0, 0, 0, 0, false, false);
 
-			m_oBrcRight				=	AVSDocFileFormat::Brc(AVSDocFileFormat::COLORREF(HexString2Int(std::string ("000000"))), 1, 0, 0, false, false);
-			m_oBrc80Right			=	AVSDocFileFormat::Brc80MayBeNil(0, 0, 0, 0, false, false);
+			m_oBrcRight				=	ASCDocFileFormat::Brc(ASCDocFileFormat::COLORREF(HexString2Int(std::string ("000000"))), 1, 0, 0, false, false);
+			m_oBrc80Right			=	ASCDocFileFormat::Brc80MayBeNil(0, 0, 0, 0, false, false);
 
 			// for test
 
-			m_oBrcTop				=	AVSDocFileFormat::Brc(AVSDocFileFormat::COLORREF(0xFF0000), 50, 1, 0, false, false);
-			m_oBrc80Top				=	AVSDocFileFormat::Brc80MayBeNil(50, 1, 0, 0, false, false);
-			m_oBrcBottom			=	AVSDocFileFormat::Brc(AVSDocFileFormat::COLORREF(0xFF), 50, 1, 0, false, false);
-			m_oBrc80Bottom			=	AVSDocFileFormat::Brc80MayBeNil(50, 1, 0, 0, false, false);
-			m_oBrcLeft				=	AVSDocFileFormat::Brc(AVSDocFileFormat::COLORREF(0xFFFF00), 50, 1, 0, false, false);
-			m_oBrc80Left			=	AVSDocFileFormat::Brc80MayBeNil(50, 1, 0, 0, false, false);
-			m_oBrcRight				=	AVSDocFileFormat::Brc(AVSDocFileFormat::COLORREF(0xF0F0FF), 50, 1, 0, false, false);
-			m_oBrc80Right			=	AVSDocFileFormat::Brc80MayBeNil(50, 1, 0, 0, false, false);
+			m_oBrcTop				=	ASCDocFileFormat::Brc(ASCDocFileFormat::COLORREF(0xFF0000), 50, 1, 0, false, false);
+			m_oBrc80Top				=	ASCDocFileFormat::Brc80MayBeNil(50, 1, 0, 0, false, false);
+			m_oBrcBottom			=	ASCDocFileFormat::Brc(ASCDocFileFormat::COLORREF(0xFF), 50, 1, 0, false, false);
+			m_oBrc80Bottom			=	ASCDocFileFormat::Brc80MayBeNil(50, 1, 0, 0, false, false);
+			m_oBrcLeft				=	ASCDocFileFormat::Brc(ASCDocFileFormat::COLORREF(0xFFFF00), 50, 1, 0, false, false);
+			m_oBrc80Left			=	ASCDocFileFormat::Brc80MayBeNil(50, 1, 0, 0, false, false);
+			m_oBrcRight				=	ASCDocFileFormat::Brc(ASCDocFileFormat::COLORREF(0xF0F0FF), 50, 1, 0, false, false);
+			m_oBrc80Right			=	ASCDocFileFormat::Brc80MayBeNil(50, 1, 0, 0, false, false);
 
 			*/
 
@@ -448,7 +448,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 			{				
 				if (oBorders->top.is_init())
 				{
-					m_oBrc80MayBeNilTop	= AVSDocFileFormat::Brc80MayBeNil(oBorders->top.get_value_or_default().Bdr->Sz.get_value_or_default(), 
+					m_oBrc80MayBeNilTop	= ASCDocFileFormat::Brc80MayBeNil(oBorders->top.get_value_or_default().Bdr->Sz.get_value_or_default(), 
 						m_oBrcTypeMap[oBorders->top.get_value_or_default().Bdr->Value], 
 						ColorToIco (oBorders->top.get_value_or_default().Bdr->Color.get_value_or_default()), 
 						oBorders->top.get_value_or_default().Bdr->Space.get_value_or_default(), 
@@ -468,7 +468,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 			{				
 				if (oBorders->bottom.is_init())
 				{
-					m_oBrc80MayBeNilBottom	= AVSDocFileFormat::Brc80MayBeNil(oBorders->bottom.get_value_or_default().Bdr->Sz.get_value_or_default(), 
+					m_oBrc80MayBeNilBottom	= ASCDocFileFormat::Brc80MayBeNil(oBorders->bottom.get_value_or_default().Bdr->Sz.get_value_or_default(), 
 						m_oBrcTypeMap[oBorders->bottom.get_value_or_default().Bdr->Value], 
 						ColorToIco (oBorders->bottom.get_value_or_default().Bdr->Color.get_value_or_default()), 
 						oBorders->bottom.get_value_or_default().Bdr->Space.get_value_or_default(), 
@@ -488,7 +488,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 			{				
 				if (oBorders->left.is_init())
 				{
-					m_oBrc80MayBeNilLeft = AVSDocFileFormat::Brc80MayBeNil(oBorders->left.get_value_or_default().Bdr->Sz.get_value_or_default(), 
+					m_oBrc80MayBeNilLeft = ASCDocFileFormat::Brc80MayBeNil(oBorders->left.get_value_or_default().Bdr->Sz.get_value_or_default(), 
 						m_oBrcTypeMap[oBorders->left.get_value_or_default().Bdr->Value], 
 						ColorToIco (oBorders->left.get_value_or_default().Bdr->Color.get_value_or_default()), 
 						oBorders->left.get_value_or_default().Bdr->Space.get_value_or_default(), 
@@ -508,7 +508,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 			{				
 				if (oBorders->right.is_init())
 				{
-					m_oBrc80MayBeNilRight = AVSDocFileFormat::Brc80MayBeNil(oBorders->right.get_value_or_default().Bdr->Sz.get_value_or_default(), 
+					m_oBrc80MayBeNilRight = ASCDocFileFormat::Brc80MayBeNil(oBorders->right.get_value_or_default().Bdr->Sz.get_value_or_default(), 
 						m_oBrcTypeMap[oBorders->right.get_value_or_default().Bdr->Value], 
 						ColorToIco (oBorders->right.get_value_or_default().Bdr->Color.get_value_or_default()), 
 						oBorders->right.get_value_or_default().Bdr->Space.get_value_or_default(), 
@@ -523,32 +523,32 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 		}
 
 		//
-		inline const vector<AVSDocFileFormat::TableBrcOperand>& GetSpecificationBorders () const 
+		inline const vector<ASCDocFileFormat::TableBrcOperand>& GetSpecificationBorders () const 
 		{
 			return m_oBrcs;
 		}
 
-		inline const vector<AVSDocFileFormat::TableBrc80Operand>& GetDescriptBorders () const 
+		inline const vector<ASCDocFileFormat::TableBrc80Operand>& GetDescriptBorders () const 
 		{
 			return m_oBrc80s;
 		}
 
-		inline const AVSDocFileFormat::Brc80MayBeNil& GetTopNillBorder () const
+		inline const ASCDocFileFormat::Brc80MayBeNil& GetTopNillBorder () const
 		{
 			return m_oBrc80MayBeNilTop;
 		}
 
-		inline const AVSDocFileFormat::Brc80MayBeNil& GetBottomNillBorder () const
+		inline const ASCDocFileFormat::Brc80MayBeNil& GetBottomNillBorder () const
 		{
 			return m_oBrc80MayBeNilBottom;
 		}
 
-		inline const AVSDocFileFormat::Brc80MayBeNil& GetLeftNillBorder () const
+		inline const ASCDocFileFormat::Brc80MayBeNil& GetLeftNillBorder () const
 		{
 			return m_oBrc80MayBeNilLeft;
 		}
 
-		inline const AVSDocFileFormat::Brc80MayBeNil& GetRightNillBorder () const
+		inline const ASCDocFileFormat::Brc80MayBeNil& GetRightNillBorder () const
 		{
 			return m_oBrc80MayBeNilRight;
 		}
@@ -1117,19 +1117,19 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 		}
 
 		//
-		inline AVSDocFileFormat::Brc80MayBeNil CreateNilBorder (const OOX::Logic::Border& oBorder)
+		inline ASCDocFileFormat::Brc80MayBeNil CreateNilBorder (const OOX::Logic::Border& oBorder)
 		{
-			return AVSDocFileFormat::Brc80MayBeNil(oBorder.Bdr->Sz.get_value_or_default(), 
+			return ASCDocFileFormat::Brc80MayBeNil(oBorder.Bdr->Sz.get_value_or_default(), 
 				m_oBrcTypeMap[oBorder.Bdr->Value], ColorToIco (oBorder.Bdr->Color.get_value_or_default()), oBorder.Bdr->Space.get_value_or_default(), false, false);
 		}
 
-		inline AVSDocFileFormat::Brc CreateBorder (const OOX::Logic::Border& oBorder)
+		inline ASCDocFileFormat::Brc CreateBorder (const OOX::Logic::Border& oBorder)
 		{
 			std::string strColor	=	oBorder.Bdr->Color.get_value_or_default().ToString();
 			if (std::string("auto") == strColor)
 				strColor			=	std::string ("000000");
 
-			return AVSDocFileFormat::Brc(AVSDocFileFormat::COLORREF(HexString2Int(strColor)),
+			return ASCDocFileFormat::Brc(ASCDocFileFormat::COLORREF(HexString2Int(strColor)),
 				oBorder.Bdr->Sz.get_value_or_default(), m_oBrcTypeMap[oBorder.Bdr->Value], oBorder.Bdr->Space.get_value_or_default(), false, false);
 		}
 
@@ -1174,30 +1174,30 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 		{
 			if (TOP_BORDER == nBorder)
 			{
-				m_oBrc80MayBeNilTop			=	AVSDocFileFormat::Brc80MayBeNil(0xFFFFFFFF);							
-				m_oBrc80Top					=	AVSDocFileFormat::Brc80MayBeNil(0xFFFFFFFF);
-				m_oBrcTop					=	AVSDocFileFormat::Brc(AVSDocFileFormat::COLORREF(0xFF000000), 0, 0, 0, false, false);			
+				m_oBrc80MayBeNilTop			=	ASCDocFileFormat::Brc80MayBeNil(0xFFFFFFFF);							
+				m_oBrc80Top					=	ASCDocFileFormat::Brc80MayBeNil(0xFFFFFFFF);
+				m_oBrcTop					=	ASCDocFileFormat::Brc(ASCDocFileFormat::COLORREF(0xFF000000), 0, 0, 0, false, false);			
 			}
 
 			if (BOTTOM_BORDER == nBorder)
 			{
-				m_oBrc80MayBeNilBottom		=	AVSDocFileFormat::Brc80MayBeNil(0xFFFFFFFF);							
-				m_oBrc80Bottom				=	AVSDocFileFormat::Brc80MayBeNil(0xFFFFFFFF);
-				m_oBrcBottom				=	AVSDocFileFormat::Brc(AVSDocFileFormat::COLORREF(0xFF000000), 0, 0, 0, false, false);
+				m_oBrc80MayBeNilBottom		=	ASCDocFileFormat::Brc80MayBeNil(0xFFFFFFFF);							
+				m_oBrc80Bottom				=	ASCDocFileFormat::Brc80MayBeNil(0xFFFFFFFF);
+				m_oBrcBottom				=	ASCDocFileFormat::Brc(ASCDocFileFormat::COLORREF(0xFF000000), 0, 0, 0, false, false);
 			}
 
 			if (LEFT_BORDER == nBorder)
 			{
-				m_oBrc80MayBeNilLeft		=	AVSDocFileFormat::Brc80MayBeNil(0xFFFFFFFF);							
-				m_oBrc80Left				=	AVSDocFileFormat::Brc80MayBeNil(0xFFFFFFFF);
-				m_oBrcLeft					=	AVSDocFileFormat::Brc(AVSDocFileFormat::COLORREF(0xFF000000), 0, 0, 0, false, false);
+				m_oBrc80MayBeNilLeft		=	ASCDocFileFormat::Brc80MayBeNil(0xFFFFFFFF);							
+				m_oBrc80Left				=	ASCDocFileFormat::Brc80MayBeNil(0xFFFFFFFF);
+				m_oBrcLeft					=	ASCDocFileFormat::Brc(ASCDocFileFormat::COLORREF(0xFF000000), 0, 0, 0, false, false);
 			}
 
 			if (RIGHT_BORDER == nBorder)
 			{
-				m_oBrc80MayBeNilRight		=	AVSDocFileFormat::Brc80MayBeNil(0xFFFFFFFF);							
-				m_oBrc80Right				=	AVSDocFileFormat::Brc80MayBeNil(0xFFFFFFFF);
-				m_oBrcRight					=	AVSDocFileFormat::Brc(AVSDocFileFormat::COLORREF(0xFF000000), 0, 0, 0, false, false);
+				m_oBrc80MayBeNilRight		=	ASCDocFileFormat::Brc80MayBeNil(0xFFFFFFFF);							
+				m_oBrc80Right				=	ASCDocFileFormat::Brc80MayBeNil(0xFFFFFFFF);
+				m_oBrcRight					=	ASCDocFileFormat::Brc(ASCDocFileFormat::COLORREF(0xFF000000), 0, 0, 0, false, false);
 			}
 		}
 
@@ -1357,37 +1357,37 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 		{
 			if (TOP_BORDER == nBorder)
 			{
-				AVSDocFileFormat::TableBrc80Operand brc80Operand(AVSDocFileFormat::ItcFirstLim(m_nIndCellX, (m_nIndCellX + 1)), AVSDocFileFormat::Constants::bordersToApplyTopBorder, m_oBrc80Top);
+				ASCDocFileFormat::TableBrc80Operand brc80Operand(ASCDocFileFormat::ItcFirstLim(m_nIndCellX, (m_nIndCellX + 1)), ASCDocFileFormat::Constants::bordersToApplyTopBorder, m_oBrc80Top);
 				m_oBrc80s.push_back(brc80Operand);
 
-				AVSDocFileFormat::TableBrcOperand brcOperand(AVSDocFileFormat::ItcFirstLim(m_nIndCellX, (m_nIndCellX + 1)), AVSDocFileFormat::Constants::bordersToApplyTopBorder, m_oBrcTop);
+				ASCDocFileFormat::TableBrcOperand brcOperand(ASCDocFileFormat::ItcFirstLim(m_nIndCellX, (m_nIndCellX + 1)), ASCDocFileFormat::Constants::bordersToApplyTopBorder, m_oBrcTop);
 				m_oBrcs.push_back(brcOperand);
 			}
 
 			if (BOTTOM_BORDER == nBorder)
 			{
-				AVSDocFileFormat::TableBrc80Operand brc80Operand( AVSDocFileFormat::ItcFirstLim(m_nIndCellX, (m_nIndCellX + 1)), AVSDocFileFormat::Constants::bordersToApplyBottomBorder, m_oBrc80Bottom);
+				ASCDocFileFormat::TableBrc80Operand brc80Operand( ASCDocFileFormat::ItcFirstLim(m_nIndCellX, (m_nIndCellX + 1)), ASCDocFileFormat::Constants::bordersToApplyBottomBorder, m_oBrc80Bottom);
 				m_oBrc80s.push_back(brc80Operand);
 
-				AVSDocFileFormat::TableBrcOperand brcOperand( AVSDocFileFormat::ItcFirstLim(m_nIndCellX, (m_nIndCellX + 1)), AVSDocFileFormat::Constants::bordersToApplyBottomBorder, m_oBrcBottom);
+				ASCDocFileFormat::TableBrcOperand brcOperand( ASCDocFileFormat::ItcFirstLim(m_nIndCellX, (m_nIndCellX + 1)), ASCDocFileFormat::Constants::bordersToApplyBottomBorder, m_oBrcBottom);
 				m_oBrcs.push_back(brcOperand);
 			}
 
 			if (LEFT_BORDER == nBorder)
 			{
-				AVSDocFileFormat::TableBrc80Operand brc80Operand( AVSDocFileFormat::ItcFirstLim(m_nIndCellX, (m_nIndCellX + 1)), AVSDocFileFormat::Constants::bordersToApplyLogicalLeftBorder, m_oBrc80Left);
+				ASCDocFileFormat::TableBrc80Operand brc80Operand( ASCDocFileFormat::ItcFirstLim(m_nIndCellX, (m_nIndCellX + 1)), ASCDocFileFormat::Constants::bordersToApplyLogicalLeftBorder, m_oBrc80Left);
 				m_oBrc80s.push_back(brc80Operand);
 
-				AVSDocFileFormat::TableBrcOperand brcOperand( AVSDocFileFormat::ItcFirstLim(m_nIndCellX, (m_nIndCellX + 1)), AVSDocFileFormat::Constants::bordersToApplyLogicalLeftBorder, m_oBrcLeft);
+				ASCDocFileFormat::TableBrcOperand brcOperand( ASCDocFileFormat::ItcFirstLim(m_nIndCellX, (m_nIndCellX + 1)), ASCDocFileFormat::Constants::bordersToApplyLogicalLeftBorder, m_oBrcLeft);
 				m_oBrcs.push_back(brcOperand);
 			}
 
 			if (RIGHT_BORDER == nBorder)
 			{
-				AVSDocFileFormat::TableBrc80Operand brc80Operand(AVSDocFileFormat::ItcFirstLim(m_nIndCellX, (m_nIndCellX + 1)), AVSDocFileFormat::Constants::bordersToApplyLogicalRightBorder, m_oBrc80Right);
+				ASCDocFileFormat::TableBrc80Operand brc80Operand(ASCDocFileFormat::ItcFirstLim(m_nIndCellX, (m_nIndCellX + 1)), ASCDocFileFormat::Constants::bordersToApplyLogicalRightBorder, m_oBrc80Right);
 				m_oBrc80s.push_back(brc80Operand);
 
-				AVSDocFileFormat::TableBrcOperand brcOperand(AVSDocFileFormat::ItcFirstLim(m_nIndCellX, (m_nIndCellX + 1)), AVSDocFileFormat::Constants::bordersToApplyLogicalRightBorder, m_oBrcRight);
+				ASCDocFileFormat::TableBrcOperand brcOperand(ASCDocFileFormat::ItcFirstLim(m_nIndCellX, (m_nIndCellX + 1)), ASCDocFileFormat::Constants::bordersToApplyLogicalRightBorder, m_oBrcRight);
 				m_oBrcs.push_back(brcOperand);
 			}
 		}
@@ -1447,22 +1447,22 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 		int											m_nRowBand;
 		int											m_nBandCol;
 
-		vector<AVSDocFileFormat::TableBrcOperand>	m_oBrcs;
-		vector<AVSDocFileFormat::TableBrc80Operand>	m_oBrc80s;
+		vector<ASCDocFileFormat::TableBrcOperand>	m_oBrcs;
+		vector<ASCDocFileFormat::TableBrc80Operand>	m_oBrc80s;
 
-		AVSDocFileFormat::Brc						m_oBrcTop;
-		AVSDocFileFormat::Brc80MayBeNil				m_oBrc80Top;	
-		AVSDocFileFormat::Brc						m_oBrcBottom;
-		AVSDocFileFormat::Brc80MayBeNil				m_oBrc80Bottom;	
-		AVSDocFileFormat::Brc						m_oBrcLeft;
-		AVSDocFileFormat::Brc80MayBeNil				m_oBrc80Left;	
-		AVSDocFileFormat::Brc						m_oBrcRight;
-		AVSDocFileFormat::Brc80MayBeNil				m_oBrc80Right;	
+		ASCDocFileFormat::Brc						m_oBrcTop;
+		ASCDocFileFormat::Brc80MayBeNil				m_oBrc80Top;	
+		ASCDocFileFormat::Brc						m_oBrcBottom;
+		ASCDocFileFormat::Brc80MayBeNil				m_oBrc80Bottom;	
+		ASCDocFileFormat::Brc						m_oBrcLeft;
+		ASCDocFileFormat::Brc80MayBeNil				m_oBrc80Left;	
+		ASCDocFileFormat::Brc						m_oBrcRight;
+		ASCDocFileFormat::Brc80MayBeNil				m_oBrc80Right;	
 
-		AVSDocFileFormat::Brc80MayBeNil				m_oBrc80MayBeNilTop;
-		AVSDocFileFormat::Brc80MayBeNil				m_oBrc80MayBeNilBottom;
-		AVSDocFileFormat::Brc80MayBeNil				m_oBrc80MayBeNilLeft;
-		AVSDocFileFormat::Brc80MayBeNil				m_oBrc80MayBeNilRight;
+		ASCDocFileFormat::Brc80MayBeNil				m_oBrc80MayBeNilTop;
+		ASCDocFileFormat::Brc80MayBeNil				m_oBrc80MayBeNilBottom;
+		ASCDocFileFormat::Brc80MayBeNil				m_oBrc80MayBeNilLeft;
+		ASCDocFileFormat::Brc80MayBeNil				m_oBrc80MayBeNilRight;
 
 		BOOL										m_bStyleBorders;
 		OOX::Logic::TableBorders					m_oStyleBorders;
@@ -1553,7 +1553,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 
 			*/
 
-			AVSDocFileFormat::Shd	oShd;
+			ASCDocFileFormat::Shd	oShd;
 
 			int nRowBand	=	1;
 			if(m_oStyle.tblPr.is_init())
@@ -1688,18 +1688,18 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 			else
 			{
 				if (nX < 22)
-					m_arShd22.push_back(AVSDocFileFormat::Shd());
+					m_arShd22.push_back(ASCDocFileFormat::Shd());
 				else if (nX < 44)
-					m_arShd44.push_back(AVSDocFileFormat::Shd());
+					m_arShd44.push_back(ASCDocFileFormat::Shd());
 				else if (nX < 63)
-					m_arShd63.push_back(AVSDocFileFormat::Shd());   
+					m_arShd63.push_back(ASCDocFileFormat::Shd());   
 			}
 
 
 			return TRUE;
 		}
 
-		inline BOOL UpdateShading (const std::string& strStyle, AVSDocFileFormat::Shd& oShd)
+		inline BOOL UpdateShading (const std::string& strStyle, ASCDocFileFormat::Shd& oShd)
 		{
 			if (m_oStyle.tableStyles->exist(strStyle))
 			{
@@ -1734,7 +1734,7 @@ namespace DOCXDOCUTILS	//	Help Borders and Fill
 
 	private:
 
-		inline BOOL UpdateOneCellFormat (int nX, int nY, int nCX, int nCY, AVSDocFileFormat::Shd& oShd)
+		inline BOOL UpdateOneCellFormat (int nX, int nY, int nCX, int nCY, ASCDocFileFormat::Shd& oShd)
 		{
 			if ((0 == nX) && (0 == nY))
 			{

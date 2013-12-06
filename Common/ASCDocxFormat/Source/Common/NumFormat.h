@@ -2,7 +2,6 @@
 #ifndef COMMON_NUM_FORMAT_INCLUDE_H_
 #define COMMON_NUM_FORMAT_INCLUDE_H_
 
-
 namespace Common
 {
 	class NumFormat

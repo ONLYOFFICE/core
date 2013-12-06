@@ -2,7 +2,7 @@
 
 #include "IRunItem.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class Text: public IRunItem
 	{

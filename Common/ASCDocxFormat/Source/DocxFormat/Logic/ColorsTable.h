@@ -2,7 +2,6 @@
 #ifndef OOX_LOGIC_COLORS_TABLE_INCLUDE_H_
 #define OOX_LOGIC_COLORS_TABLE_INCLUDE_H_
 
-#include <boost/utility.hpp>
 #include "Common.h"
 #include <vector>
 #include <utility>
@@ -11,7 +10,7 @@ namespace OOX
 {
 	namespace Logic
 	{
-		class ColorsTable : private boost::noncopyable
+		class ColorsTable
 		{
 		public:
 			ColorsTable();

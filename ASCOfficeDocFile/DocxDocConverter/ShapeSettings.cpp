@@ -9,7 +9,7 @@
 
 #include "ShapeSettings.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	CStyle::CStyle()
 	{
@@ -43,7 +43,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	CGroupShapeStyle::CGroupShapeStyle()
 	{
@@ -237,7 +237,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	CGeometryStyle::CGeometryStyle()
 	{
@@ -386,7 +386,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	CFillStyle::CFillStyle ()
 	{
@@ -514,7 +514,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	CLineStyle::CLineStyle ()
 	{
@@ -801,7 +801,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	CShadowStyle::CShadowStyle ()
 	{
@@ -907,7 +907,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	CTransformStyle::CTransformStyle ()
 	{
@@ -967,7 +967,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	CTextStyle::CTextStyle ()
 	{
@@ -1035,7 +1035,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	CBlipStyle::CBlipStyle ()
 	{
@@ -1061,7 +1061,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	CShapeSettings::CShapeSettings		()
 	{
@@ -1166,7 +1166,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	CImageSettings::CImageSettings () : CShapeSettings()
 	{

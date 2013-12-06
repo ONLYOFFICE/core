@@ -5,69 +5,62 @@
 
 #include "./../FontTable.h"
 
-
 namespace OOX
 {
-
 	FontTable::Font::Font()
 	{
+		m_name		=	std::wstring(_T("Arial"));
+		m_usb0		=	std::wstring(_T("00000000"));
+		m_usb1		=	std::wstring(_T("00000000"));
+		m_usb2		=	std::wstring(_T("00000000"));	
+		m_usb3		=	std::wstring(_T("00000000"));
+		m_csb0		=	std::wstring(_T("00000000"));	
+		m_csb1		=	std::wstring(_T("00000000"));
+		m_family	=	std::wstring(L"");
+		m_charset	=	std::wstring(L"");
+		m_pitch		=	std::wstring(L"");
+		m_panose1	=	std::wstring(L"");
 	}
-
 
 	FontTable::Font::~Font()
 	{
 	}
 
-
-	FontTable::Font::Font(const XML::XNode& node)
+	FontTable::Font::Font(XmlUtils::CXmlNode& node)
 	{
 		fromXML(node);
 	}
 
-
-	const FontTable::Font& FontTable::Font::operator =(const XML::XNode& node)
+	const FontTable::Font& FontTable::Font::operator =(XmlUtils::CXmlNode& node)
 	{
 		fromXML(node);
 		return *this;
 	}
 
-
-	void FontTable::Font::fromXML(const XML::XNode& node)
+	void FontTable::Font::fromXML(XmlUtils::CXmlNode& oNode)
 	{
-		const XML::XElement element(node);
-		Name	=	element.attribute("name").value();
-		Panose1 =	element.element("panose1").attribute("val").value();
-		Charset =	element.element("charset").attribute("val").value();
-		Family	=	element.element("family").attribute("val").value();
-		Pitch	=	element.element("pitch").attribute("val").value();
-		Usb0	=	element.element("sig").attribute("usb0").value();
-		Usb1	=	element.element("sig").attribute("usb1").value();
-		Usb2	=	element.element("sig").attribute("usb2").value();
-		Usb3	=	element.element("sig").attribute("usb3").value();
-		Csb0	=	element.element("sig").attribute("csb0").value();
-		Csb1	=	element.element("sig").attribute("csb1").value();
-	}
+		if ( _T("w:font") == oNode.GetName() )
+		{
+			m_name = std::wstring(static_cast<const wchar_t*>(oNode.GetAttributeBase( _T("w:name"))));
 
-
-	const XML::XNode FontTable::Font::toXML() const
-	{
-		return
-			XML::XElement(ns.w + "font",
-				XML::XAttribute(ns.w + "name", Name) +
-				XML::XElement(ns.w + "panose1", XML::XAttribute(ns.w + "val", Panose1)) + 
-				XML::XElement(ns.w + "charset", XML::XAttribute(ns.w + "val", Charset)) +
-				XML::XElement(ns.w + "family", XML::XAttribute(ns.w + "val", Family)) +
-				XML::XElement(ns.w + "pitch", XML::XAttribute(ns.w + "val", Pitch)) + 
-				WriteIf(XML::XElement(ns.w + "sig", 
-					XML::XAttribute(ns.w + "usb0", Usb0)+ 
-					XML::XAttribute(ns.w + "usb1", Usb1) + 
-					XML::XAttribute(ns.w + "usb2", Usb2) +
-					XML::XAttribute(ns.w + "usb3", Usb3) + 
-					XML::XAttribute(ns.w + "csb0", Csb0) + 
-					XML::XAttribute(ns.w + "csb1", Csb1)),
-					((Usb0.is_init()) || (Usb1.is_init()) || (Usb2.is_init()) || (Usb3.is_init()) || (Csb0.is_init()) || (Csb1.is_init()))
-				)
-			);
+			XmlUtils::CXmlNode oChild;
+			if ( oNode.GetNode( _T("w:panose1"), oChild ) )
+				m_panose1 = std::wstring(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:val"))));
+			if ( oNode.GetNode( _T("w:charset"), oChild ) )
+				m_charset = std::wstring(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:val"))));
+			if ( oNode.GetNode( _T("w:family"), oChild ) )
+				m_family = std::wstring(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:val"))));	
+			if ( oNode.GetNode( _T("w:pitch"), oChild ) )
+				m_pitch = std::wstring(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:val"))));	
+			if ( oNode.GetNode( _T("w:sig"), oChild ) )
+			{
+				m_usb0	= std::wstring(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:usb0"))));		
+				m_usb1	= std::wstring(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:usb1"))));		
+				m_usb2	= std::wstring(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:usb2"))));		
+				m_usb3	= std::wstring(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:usb3"))));	
+				m_csb0	= std::wstring(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:csb0"))));	
+				m_csb1	= std::wstring(static_cast<const wchar_t*>(oChild.GetAttributeBase( _T("w:csb1"))));	
+			}
+		}
 	}
-	
 } // namespace OOX

@@ -4,9 +4,7 @@
 // auto inserted precompiled end
 
 #include "ColorsTable.h"
-#include <boost/foreach.hpp>
 #include "math.h"
-
 
 namespace OOX
 {
@@ -33,49 +31,46 @@ namespace OOX
 			m_storage.push_back(std::make_pair("auto", Common::Color(0x00, 0x00, 0x00)));
 		}
 
-
 		const Common::Color ColorsTable::fromName(const std::string& name) const
 		{
-			typedef std::pair<std::string, Common::Color> pair;
-			BOOST_FOREACH(const pair& value, m_storage)
+			for (std::vector<std::pair<std::string, Common::Color> >::const_iterator iter = m_storage.begin(); iter != m_storage.end(); ++iter)
 			{
-				if (value.first == name)
-					return value.second;
+				if ((*iter).first == name)
+					return (*iter).second;
 			}
+
 			return Common::Color(0xFF, 0xFF, 0xFF);
 		}
 
-
 		const bool ColorsTable::isFromName(const std::string& name) const
 		{
-			typedef std::pair<std::string, Common::Color> pair;
-			BOOST_FOREACH(const pair& value, m_storage)
+			for (std::vector<std::pair<std::string, Common::Color> >::const_iterator iter = m_storage.begin(); iter != m_storage.end(); ++iter)
 			{
-				if (value.first == name)
+				if ((*iter).first == name)
 					return true;
 			}
+
 			return false;
 		}
-
 
 		const std::string ColorsTable::fromColor(const Common::Color& color) const
 		{
 			std::string name;
 			int diff = 255 * 255 * 3;
 
-			typedef std::pair<std::string, Common::Color> pair;
-			BOOST_FOREACH(const pair& value, m_storage)
+			for (std::vector<std::pair<std::string, Common::Color> >::const_iterator iter = m_storage.begin(); iter != m_storage.end(); ++iter)
 			{
-				int new_diff =	(color.Red - value.second.Red) * (color.Red - value.second.Red) +
-												(color.Green - value.second.Green) * (color.Green - value.second.Green) + 
-												(color.Blue - value.second.Blue) * (color.Blue - value.second.Blue);
+				int new_diff =	(color.Red - (*iter).second.Red) * (color.Red - (*iter).second.Red) +
+												(color.Green - (*iter).second.Green) * (color.Green - (*iter).second.Green) + 
+												(color.Blue - (*iter).second.Blue) * (color.Blue - (*iter).second.Blue);
 
 				if (new_diff < diff)
 				{
 					diff = new_diff;
-					name = value.first;
+					name = (*iter).first;
 				}
 			}
+
 			return name;
 		}
 

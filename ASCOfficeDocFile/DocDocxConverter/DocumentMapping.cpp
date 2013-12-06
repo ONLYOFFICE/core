@@ -191,7 +191,7 @@ namespace DocFileFormat
 				std::vector<WCHAR>* chpxChars	=	m_document->m_PieceTable->GetChars(fcChpxStart, fcChpxEnd, cp, m_document->WordDocumentStream);
 
 #ifdef _DEBUG
-				if (1)
+				if (0)
 				{
 					ATLTRACE(L"fcBegin : %d, fcEnd : %d\n", fcChpxStart, fcChpxEnd);
 					for (size_t j = 0; j < chpxChars->size(); ++j) ATLTRACE (L"%c", chpxChars->operator [](j));

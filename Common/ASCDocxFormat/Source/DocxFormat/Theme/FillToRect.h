@@ -23,10 +23,10 @@ namespace OOX
 			virtual const XML::XNode toXML() const;
 
 		private:
-			nullable<int>		m_l;
-			nullable<int>		m_t;
-			nullable<int>		m_r;
-			nullable<int>		m_b;
+			nullable__<int>		m_l;
+			nullable__<int>		m_t;
+			nullable__<int>		m_r;
+			nullable__<int>		m_b;
 		};
 	} // namespace Theme
 } // namespace OOX

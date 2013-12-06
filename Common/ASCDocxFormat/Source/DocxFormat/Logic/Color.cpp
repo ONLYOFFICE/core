@@ -4,10 +4,8 @@
 // auto inserted precompiled end
 
 #include "Color.h"
-#include <boost/format.hpp>
 #include "Parse.h"
 #include "ColorsTable.h"
-
 
 namespace OOX
 {
@@ -52,17 +50,16 @@ namespace OOX
 			return *this;
 		}
 
-
 		const std::string Color::ToString() const
 		{
             if (m_Auto)
-            {
                 return "auto";
-            }
-            else
-			    return (boost::format("%02x%02x%02x") % Red % Green % Blue).str();	
-		}
 
+			char str[8];
+			sprintf(str, "%02x%02x%02x", Red.get(), Green.get(), Blue.get());
+            
+			return std::string(str);
+		}
 
 		void Color::fromString(const std::string& value)
 		{
@@ -77,7 +74,7 @@ namespace OOX
 			else
 			{
 				Red		=	HexString2Int(value.substr(0, 2));
-				Green =	HexString2Int(value.substr(2, 2));
+				Green	=	HexString2Int(value.substr(2, 2));
 				Blue	=	HexString2Int(value.substr(4, 2));
 			}
 		}

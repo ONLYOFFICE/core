@@ -2,12 +2,11 @@
 #ifndef OOX_HEADER_INCLUDE_H_
 #define OOX_HEADER_INCLUDE_H_
 
+#include <vector>
+
 #include "File.h"
 #include "IFileContainer.h"
 #include "Logic/TextItem.h"
-#include <vector>
-#include "property.h"
-
 
 namespace OOX
 {
@@ -15,20 +14,20 @@ namespace OOX
 	{
 	public:
 		Header();
-		Header(const boost::filesystem::wpath& filename);
+		Header(const OOX::CPath& filename);
 		virtual ~Header();
 
 	public:
-		virtual void read(const boost::filesystem::wpath& filename);
-		virtual void write(const boost::filesystem::wpath& filename, const boost::filesystem::wpath& directory, ContentTypes::File& content) const;
+		virtual void read(const OOX::CPath& filename);
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const;
 
 	public:
 		virtual const FileType type() const;
-		virtual const boost::filesystem::wpath DefaultDirectory() const;
-		virtual const boost::filesystem::wpath DefaultFileName() const;
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
 
 	public:
-		property<std::vector<Logic::TextItem> >	Items;
+		std::vector<Logic::TextItem>	m_items;
 	};
 } // namespace OOX
 

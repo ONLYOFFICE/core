@@ -26,7 +26,7 @@ namespace OOX
 
 		private:
 			std::string m_path;
-			nullable<FillToRect>	m_fillToRect;
+			nullable__<FillToRect>	m_fillToRect;
 		};
 	} // namespace Theme
 } // namespace OOX

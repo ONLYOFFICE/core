@@ -2,7 +2,7 @@
 
 #include "..\Common\Singleton.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class BinaryStorage
 	{

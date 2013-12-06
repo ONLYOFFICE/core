@@ -117,7 +117,7 @@ namespace OOX
 
 		const XML::XNode RunItem::toXML() const
 		{
-			return XML::Write(m_item);
+			return XML::XNode(); //	return XML::Write(m_item);
 		}
 
 		void RunItem::fromTxt(const std::string& text)

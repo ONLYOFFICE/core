@@ -2,7 +2,7 @@
 
 #include "Spa.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class PlcfSpa : public IOperand
 	{

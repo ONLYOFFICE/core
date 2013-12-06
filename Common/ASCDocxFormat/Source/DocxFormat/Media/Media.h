@@ -4,26 +4,84 @@
 
 #include "..\File.h"
 
-
 namespace OOX
 {
 	class Media : public File
 	{
 	public:
 		Media();
-		Media(const boost::filesystem::wpath& filename);
+		Media(const OOX::CPath& filename);
 		virtual ~Media();
 
 	public:
-		virtual void read(const boost::filesystem::wpath& filename);
-		virtual void write(const boost::filesystem::wpath& filename, const boost::filesystem::wpath& directory, ContentTypes::File& content) const;
+		virtual void read(const OOX::CPath& filename);
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const;
 
 	public:
-		const boost::filesystem::wpath filename() const;
-		void copy_to(const boost::filesystem::wpath& path) const;
+		const OOX::CPath filename() const;
+		void copy_to(const OOX::CPath& path) const;
+
+		inline std::wstring GetPath() const { return std::wstring(m_filename.GetPath()); }
 
 	protected:
-		boost::filesystem::wpath	m_filename;
+		OOX::CPath	m_filename;
+	};
+
+	class Image : public Media
+	{
+	public:
+		Image();
+		Image(const OOX::CPath& filename);
+		virtual ~Image();
+
+	public:
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const;
+
+	public:
+		virtual const FileType type() const;
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
+	};
+
+	class Video : public Media
+	{
+	public:
+		Video();
+		Video(const OOX::CPath& filename);
+		virtual ~Video();
+
+	public:
+		virtual const FileType type() const;
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
+	};
+	class Audio : public Media
+	{
+	public:
+		Audio();
+		Audio(const OOX::CPath& filename);
+		virtual ~Audio();
+
+	public:
+		virtual const FileType type() const;
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
+	};
+
+	class OleObject : public Media
+	{
+	public:
+		OleObject();
+		OleObject(const OOX::CPath& filename);
+		virtual ~OleObject();
+
+	public:
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const;
+
+	public:
+		virtual const FileType type() const;
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
 	};
 } // namespace OOX
 

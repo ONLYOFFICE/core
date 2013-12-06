@@ -2,7 +2,7 @@
 
 #include "LFOLVL.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class LFOData: public IOperand
 	{

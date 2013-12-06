@@ -4,8 +4,6 @@
 // auto inserted precompiled end
 
 #include "TableCell.h" 
-#include <boost/foreach.hpp>
-
 
 namespace OOX
 {
@@ -78,11 +76,14 @@ namespace OOX
 
 		const bool TableCell::hasParagraph() const
 		{
-			BOOST_FOREACH(const TextItem& item, *Items)
+			const std::vector<TextItem>& runs = Items.get();
+
+			for (std::vector<TextItem>::const_iterator iter = runs.begin(); iter != runs.end(); ++iter)
 			{
-				if (item.is<Paragraph>())
+				if ((*iter).is<Paragraph>())
 					return true;
 			}
+
 			return false;
 		}
 

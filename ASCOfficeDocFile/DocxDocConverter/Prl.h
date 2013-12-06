@@ -3,7 +3,7 @@
 #include "IStreamWriter.h"
 #include "..\Common\SPRMCodes.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class Prl: public IStreamWriter
 	{

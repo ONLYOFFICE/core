@@ -4,9 +4,6 @@
 // auto inserted precompiled end
 
 #include "Lexigraph.h"
-//#include <cctype>
-//#include <boost/algorithm/string/replace.hpp>
-
 
 namespace XML
 {
@@ -52,11 +49,6 @@ namespace XML
 				pos = output.find("&amp;", pos + 1);
 			}
 
-			//boost::replace_all(output, "&amp;", "&");
-			//boost::replace_all(output, "&lt;", "<");
-			//boost::replace_all(output, "&gt;", ">");
-			//boost::replace_all(output, "&apos;", "'");
-			//boost::replace_all(output, "&quot;", "\"");
 			return output;
 		}
 
@@ -99,11 +91,6 @@ namespace XML
 				pos = output.find('\"', pos + 1);
 			}
 
-			//boost::replace_all(output, "&", "&amp;");
-			//boost::replace_all(output, "<", "&lt;");
-			//boost::replace_all(output, ">", "&gt;");
-			//boost::replace_all(output, "'", "&apos;");
-			//boost::replace_all(output, "\"", "&quot;");
 			return output;
 		}
 
@@ -147,11 +134,6 @@ namespace XML
 				pos = output.find(L"&amp;", pos + 1);
 			}
 
-			//boost::replace_all(output, "&amp;", "&");
-			//boost::replace_all(output, "&lt;", "<");
-			//boost::replace_all(output, "&gt;", ">");
-			//boost::replace_all(output, "&apos;", "'");
-			//boost::replace_all(output, "&quot;", "\"");
 			return output;
 		}
 
@@ -194,11 +176,6 @@ namespace XML
 				pos = output.find(L'\"', pos + 1);
 			}
 
-			//boost::replace_all(output, "&", "&amp;");
-			//boost::replace_all(output, "<", "&lt;");
-			//boost::replace_all(output, ">", "&gt;");
-			//boost::replace_all(output, "'", "&apos;");
-			//boost::replace_all(output, "\"", "&quot;");
 			return output;
 		}
 

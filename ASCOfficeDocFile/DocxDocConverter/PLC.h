@@ -2,7 +2,7 @@
 
 #include "CP.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class EmptyPLCData {};
 

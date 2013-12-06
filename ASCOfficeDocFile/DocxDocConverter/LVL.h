@@ -4,7 +4,7 @@
 #include "Prl.h"
 #include "Xstz.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class LVL : public IOperand
 	{

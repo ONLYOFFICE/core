@@ -6,7 +6,7 @@
 #include <crtdbg.h>
 #endif
 
-AVSOfficeCriticalSection  g_oCriticalSection;
+ASCOfficeCriticalSection  g_oCriticalSection;
 
 STDMETHODIMP COfficeDocFile::LoadFromFile (BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions)
 {

@@ -25,7 +25,7 @@ namespace XML
 		}
 
 		template<typename Type>
-		XAttribute(const XName& name, const nullable<Type>& value)
+		XAttribute(const XName& name, const nullable__<Type>& value)
 			: base(value.is_init() ? new Private::Attribute(name, ToString(value)) : 0)
 		{
 		}

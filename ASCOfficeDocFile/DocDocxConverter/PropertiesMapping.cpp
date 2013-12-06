@@ -4,7 +4,7 @@
 namespace DocFileFormat
 {
 	map<byte, wstring> PropertiesMapping::brcTypeMap;
-	AVSOfficeCriticalSection PropertiesMapping::brcTypeMapLock;
+	ASCOfficeCriticalSection PropertiesMapping::brcTypeMapLock;
 	void PropertiesMapping::init()
 	{
 		brcTypeMapLock.Enter();

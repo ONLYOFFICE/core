@@ -25,7 +25,7 @@ namespace OOX
 
 		private:
 			std::string			m_value;
-			nullable<int>		m_alpha;
+			nullable__<int>		m_alpha;
 		};
 	} // namespace Theme
 } // namespace OOX

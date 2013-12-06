@@ -6,42 +6,51 @@
 #include "RelationTable.h"
 #include <algorithm>
 
-
 namespace OOX
 {
 	namespace Rels
-	{
-		
+	{		
 		RelationTable::RelationTable()
 		{
-		}
-		
+		}		
 
 		RelationTable::~RelationTable()
 		{
 		}
 		
-
-		RelationTable::RelationTable(const XML::XNode& node)
+		RelationTable::RelationTable(XmlUtils::CXmlNode& oNode)
 		{
-			fromXML(node);
-		}
+			fromXML(oNode);
+		}		
 		
-		
-		const RelationTable& RelationTable::operator =(const XML::XNode& node)
+		const RelationTable& RelationTable::operator =(XmlUtils::CXmlNode& oNode)
 		{
-			fromXML(node);
+			fromXML(oNode);
 			return *this;
 		}
 
+		void RelationTable::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlUtils::CXmlNodes oList;
+			oNode.GetNodes( _T("Relationship"), oList );
 
-		void RelationTable::registration(const RId& rId, const std::string& type, const boost::filesystem::wpath& filename)
+			for ( int nIndex = 0; nIndex < oList.GetCount(); ++nIndex )
+			{
+				XmlUtils::CXmlNode oRelNode;
+				if ( oList.GetAt( nIndex, oRelNode ) )
+				{
+					RelationShip oRelationShip (oRelNode);
+					m_items.push_back( oRelationShip );
+				}
+			}
+		}
+
+		void RelationTable::registration(const RId& rId, const std::string& type, const OOX::CPath& filename)
 		{
 			m_items.push_back(RelationShip(rId, type, filename));
 		}
 
-
-		void RelationTable::registration(const RId& rId, const boost::shared_ptr<OOX::External> external)
+		void RelationTable::registration(const RId& rId, const NSCommon::smart_ptr<OOX::External> external)
 		{
 			m_items.push_back(RelationShip(rId, external));
 		}

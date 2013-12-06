@@ -4,8 +4,6 @@
 // auto inserted precompiled end
 
 #include "DefaultTable.h"
-#include <boost/foreach.hpp>
-
 
 namespace OOX
 {
@@ -43,12 +41,16 @@ namespace OOX
 			XML::Fill(m_items, element, "Default");
 		}
 
-
-		void DefaultTable::add(const boost::filesystem::wpath& path)
+		void DefaultTable::add(const OOX::CPath& path)
 		{
-			const std::wstring extension = path.extension().substr(1);
+			const std::wstring extension = std::wstring(OOX::CSystemUtility::GetFileExtention(path.GetPath()));
+			//const std::wstring extension = path.extension().substr(1);
 			if (std::find(begin(), end(), extension) == end())
 				m_items.push_back(extension);
+
+			////////const std::wstring extension = path.extension().substr(1);
+			////////if (std::find(begin(), end(), extension) == end())
+			////////	m_items.push_back(extension);
 		}
 
 	} // namespace ContentTypes

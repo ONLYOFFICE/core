@@ -3,28 +3,22 @@
 #define UTILITY_UNIT_INCLUDE_H_
 
 #include <string>
-#include <boost/lexical_cast.hpp>
 #include "Exception/UnitError.h"
-#include <boost/format.hpp>
+#include "ASCStlUtils.h"
 
-
-template<typename Unit1, typename Unit2> class UnitConverter;
-template<typename V, typename U, int P> class UnitFactory;
-
+template<typename Unit1, typename Unit2>	class UnitConverter;
+template<typename V, typename U, int P>		class UnitFactory;
 
 template<typename V, typename U, int P = 2>
 class Unit
 {
 public:
-	Unit()
-		: m_value() 
+	Unit() : m_value() 
 	{
 		U::it_not_unit_type();
 	}
 
-
-	Unit(const V& value)
-		: m_value(value)
+	Unit(const V& value) : m_value(value)
 	{
 		U::it_not_unit_type();
 	}
@@ -34,7 +28,6 @@ public:
 		m_value = value;
 		return *this;
 	}
-
 
 	Unit(const std::string& value)
 	{
@@ -47,7 +40,6 @@ public:
 		fromString(value);
 		return *this;
 	}
-
 
 	template<typename V2, typename U2, int P2>
 	Unit(const Unit<V2, U2, P2>& unit)
@@ -62,12 +54,10 @@ public:
 		return *this;
 	}
 
-
 	operator const V() const
 	{
 		return m_value;
 	}
-
 
 	const Unit& operator -=(const Unit& rhs)
 	{
@@ -174,48 +164,54 @@ public:
 	}
 
 public:
-	const std::string ToString() const
+	inline const std::string ToString() const
 	{
 		return ToString(m_value) + U::ToString();
 	}
 
-	const V value() const
+	inline const V value() const
 	{
 		return m_value;
 	}
 
 private:
-	void fromString(const std::string& value)
+	inline void fromString(const std::string& value)
 	{
 		if (value.empty())
+		{
 			m_value = V();
+		}
 		else
 		{
 			*this = UnitFactory<V, U, P>::create(value);
 		}
 	}
 
-
-	template<class T>
-	const std::string ToString(const T value) const
+	inline const std::string ToString(const int value) const
 	{
-		return boost::lexical_cast<std::string>(m_value);
+		return StlUtils::IntToString(value);
 	}
 
-	const std::string ToString(const double value) const
+	inline const std::string ToString(const double value) const
 	{
-		return (boost::format("%0." + boost::lexical_cast<std::string>(P) + "f") % value).str();
+		std::string format = std::string("%0.") + StlUtils::IntToString(P) + std::string("f");
+
+		char strValue[256];
+		sprintf_s(strValue, 256, format.c_str(), value);
+
+		return std::string(strValue);
 	}
 
+	//
 	template<typename V2, typename U2, int P2>
 	void fromUnit(const Unit<V2, U2, P2>& unit)
 	{
 		m_value = UnitConverter<U2, U>::convert<V>(unit.value());
 	}
 
-
 private:
-	V		m_value;
+
+	V m_value;
 };
 
 
@@ -918,18 +914,23 @@ public:
 	}
 };
 
-
 template<typename V, typename U, int P>
 class UnitFactory
 {
 public:
-	static const Unit<V, U, P> create(const std::string& str)
+	inline static const Unit<V, U, P> create(const std::string& str)
 	{
 		try
 		{
 			const size_t pos = str.find_first_not_of("-.0123456789");
+
 			if (pos == std::string::npos)
-				return Unit<V, U, P>(boost::lexical_cast<V>(str));
+			{
+				if (std::string::npos != str.find('.'))
+					return Unit<V, U, P>((V)StlUtils::ToDouble(str));
+
+				return Unit<V, U, P>((V)StlUtils::ToInteger(str));
+			}
 
 			const std::string unit = str.substr(pos, str.size() - pos);
 
@@ -937,8 +938,14 @@ public:
 			{
 				return Unit<V, Cm, P>(0);
 			}
-			const V value = boost::lexical_cast<V>(str.substr(0, pos));
-		
+
+			V value;
+
+			if (std::string::npos != str.find('.'))
+				value = (V)StlUtils::ToDouble(str.substr(0, pos));
+			else			
+				value = (V)StlUtils::ToInteger(str.substr(0, pos));
+
 			if (unit == Cm::ToString())
 				return Unit<V, Cm, P>(value);
 			else if (unit == Mm::ToString())
@@ -956,7 +963,7 @@ public:
 			else
 				throw UnitError("Bad unit");
 		}
-		catch (/*boost::bad_lexical_cast*/...)
+		catch (...)
 		{
 			return Unit<V, Cm, P>(0);
 		}

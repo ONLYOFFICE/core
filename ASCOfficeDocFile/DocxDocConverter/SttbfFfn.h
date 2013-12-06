@@ -3,7 +3,7 @@
 #include "Constants.h"
 #include "STTB.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	union FFID
 	{

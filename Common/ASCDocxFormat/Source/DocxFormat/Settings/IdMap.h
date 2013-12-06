@@ -24,7 +24,7 @@ namespace OOX
 
 		private:
 			std::string m_ext;
-			int					m_data; 
+			int			m_data; 
 		};
 	} // namespace Settings
 } // namespace OOX

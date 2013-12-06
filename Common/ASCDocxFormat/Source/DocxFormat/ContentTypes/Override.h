@@ -2,11 +2,10 @@
 #ifndef OOX_CONTENT_TYPES_OVERRIDE_INCLUDE_H_
 #define OOX_CONTENT_TYPES_OVERRIDE_INCLUDE_H_
 
+#include <string>
+
 #include "./../WritingElement.h"
 #include "property.h"
-#include <string>
-#include <boost/filesystem.hpp>
-
 
 namespace OOX
 {
@@ -15,7 +14,7 @@ namespace OOX
 		class Override : public WritingElement
 		{
 		public:
-			Override(const std::string& type, const boost::filesystem::wpath& path);
+			Override(const std::string& type, const OOX::CPath& path);
 			virtual ~Override();
 			explicit Override(const XML::XNode& node);
 			const Override& operator =(const XML::XNode& node);
@@ -26,11 +25,11 @@ namespace OOX
 
 		public:
 			const std::string type() const;
-			const boost::filesystem::wpath filename() const;
+			const OOX::CPath filename() const;
 
 		private:
-			std::string								m_type;
-			boost::filesystem::wpath	m_part;
+			std::string	m_type;
+			OOX::CPath	m_part;
 		};
 	} // namespace ContentTypes
 } // namespace OOX

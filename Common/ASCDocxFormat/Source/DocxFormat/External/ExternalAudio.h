@@ -4,20 +4,19 @@
 
 #include "External.h"
 
-
 namespace OOX
 {
 	class ExternalAudio : public External
 	{
 	public:
 		ExternalAudio();
-		ExternalAudio(const boost::filesystem::wpath& uri);
+		ExternalAudio(const OOX::CPath& uri);
 		~ExternalAudio();
 
 	public:
 		virtual const FileType type() const;
-		virtual const boost::filesystem::wpath DefaultDirectory() const;
-		virtual const boost::filesystem::wpath DefaultFileName() const;
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
 	};
 } // namespace OOX
 

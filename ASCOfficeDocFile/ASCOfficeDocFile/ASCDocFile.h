@@ -58,7 +58,7 @@ public:
 	{
 	}
 
-	// IAVSOfficeFileTemplate Methods
+	// OfficeFileTemplate Methods
 public:
 
 	STDMETHOD(LoadFromFile)(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions);

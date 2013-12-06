@@ -6,38 +6,31 @@
 #include "External.h"
 #include "../FileTypes.h"
 
-
 namespace OOX
 {
-
 	External::External()
 	{
 	}
-
 	
-	External::External(const boost::filesystem::wpath& uri)
+	External::External(const OOX::CPath& uri)
 	{
 		read(uri);
 	}
-
 
 	External::~External()
 	{
 	}
 
-
-	void External::read(const boost::filesystem::wpath& uri)
+	void External::read(const OOX::CPath& uri)
 	{
 		m_uri = uri;
 	}
 
-
-	void External::write(const boost::filesystem::wpath& filename, const boost::filesystem::wpath& directory, ContentTypes::File& content) const
+	void External::write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const
 	{
 	}
 
-
-	const boost::filesystem::wpath External::Uri() const
+	const OOX::CPath External::Uri() const
 	{
 		return m_uri;
 	}

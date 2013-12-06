@@ -4,7 +4,8 @@
 
 #include <string>
 #include <fstream>
-
+#include <iostream>
+#include <assert.h>
 
 namespace Details
 {

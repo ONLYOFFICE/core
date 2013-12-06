@@ -10,7 +10,7 @@
 #include "Logic\TableProperty.h"
 #include "..\Common\SPRMCodes.h"
 
-typedef std::vector<AVSDocFileFormat::Prl>	PrlList;
+typedef std::vector<ASCDocFileFormat::Prl>	PrlList;
 
 class CXmlPropertyReader
 {
@@ -35,108 +35,108 @@ public:
 		{
 		byte bold = ( ( *oXmlRunProperties.Bold ) ? ( 1 ) : ( 0 ) );
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFBold, &bold ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFBold, &bold ) );
 		}
 
 		if ( oXmlRunProperties.Italic.is_init() )
 		{
 		byte italic = ( ( *oXmlRunProperties.Italic ) ? ( 1 ) : ( 0 ) );
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFItalic, &italic ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFItalic, &italic ) );
 		}
 
 		if ( oXmlRunProperties.Under.is_init() && *oXmlRunProperties.Under && oXmlRunProperties.UnderType.is_init() )
 		{
 		byte under = this->kulMap[*oXmlRunProperties.UnderType];
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCKul, &under ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCKul, &under ) );
 		}
 
 		if ( oXmlRunProperties.Strike.is_init() )
 		{
 		byte strike = ( ( *oXmlRunProperties.Strike ) ? ( 1 ) : ( 0 ) );
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFStrike, &strike ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFStrike, &strike ) );
 		}
 
 		if ( oXmlRunProperties.DStrike.is_init() )
 		{
 		byte dStrike = ( ( *oXmlRunProperties.DStrike ) ? ( 1 ) : ( 0 ) );
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFDStrike, &dStrike ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFDStrike, &dStrike ) );
 		}
 
 		if ( oXmlRunProperties.SmallCaps.is_init() )
 		{
 		byte smallCaps = ( ( *oXmlRunProperties.SmallCaps ) ? ( 1 ) : ( 0 ) );
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFSmallCaps, &smallCaps ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFSmallCaps, &smallCaps ) );
 		}
 
 		if ( oXmlRunProperties.Caps.is_init() )
 		{
 		byte caps = ( ( *oXmlRunProperties.Caps ) ? ( 1 ) : ( 0 ) );
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFCaps, &caps ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFCaps, &caps ) );
 		}
 
 		if ( oXmlRunProperties.Emboss.is_init() )
 		{
 		byte emboss = ( ( *oXmlRunProperties.Emboss ) ? ( 1 ) : ( 0 ) );
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFEmboss, &emboss ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFEmboss, &emboss ) );
 		}
 
 		if ( oXmlRunProperties.Imprint.is_init() )
 		{
 		byte imprint = ( ( *oXmlRunProperties.Imprint ) ? ( 1 ) : ( 0 ) );
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFImprint, &imprint ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFImprint, &imprint ) );
 		}
 
 		if ( oXmlRunProperties.Outline.is_init() )
 		{
 		byte outline = ( ( *oXmlRunProperties.Outline ) ? ( 1 ) : ( 0 ) );
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFOutline, &outline ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFOutline, &outline ) );
 		}
 
 		if ( oXmlRunProperties.Shadow.is_init() )
 		{
 		byte shadow = ( ( *oXmlRunProperties.Shadow ) ? ( 1 ) : ( 0 ) );
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFShadow, &shadow ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFShadow, &shadow ) );
 		}
 
 		if ( oXmlRunProperties.Vanish.is_init() )
 		{
 		byte vanish = ( ( *oXmlRunProperties.Vanish ) ? ( 1 ) : ( 0 ) );
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFVanish, &vanish ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFVanish, &vanish ) );
 		}
 
 		if ( oXmlRunProperties.FontSize.is_init() )
 		{
 		unsigned short fontSize = (unsigned short)oXmlRunProperties.FontSize;
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCHps, (byte*)&fontSize ) );
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCHpsBi, (byte*)&fontSize ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCHps, (byte*)&fontSize ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCHpsBi, (byte*)&fontSize ) );
 		}
 
 		if (oXmlRunProperties.FontColor.is_init())
 		{
-		int colorIntValue	=	AVSDocFileFormat::COLORREF::cvAuto;
+		int colorIntValue	=	ASCDocFileFormat::COLORREF::cvAuto;
 		if (false == oXmlRunProperties.FontColor->isAuto())
 		colorIntValue	=	HexString2Int( oXmlRunProperties.FontColor->ToString() );
 
-		AVSDocFileFormat::COLORREF color (colorIntValue);
+		ASCDocFileFormat::COLORREF color (colorIntValue);
 
-		docRunProperties.push_back (AVSDocFileFormat::Prl((short)DocFileFormat::sprmCCv, color));
+		docRunProperties.push_back (ASCDocFileFormat::Prl((short)DocFileFormat::sprmCCv, color));
 		}
 
 		if ( oXmlRunProperties.Highlight.is_init() )
 		{
 		byte ico = DOCXDOCUTILS::ColorToIco (*oXmlRunProperties.Highlight);
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCHighlight, &ico ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCHighlight, &ico ) );
 		}
 
 		if ( oXmlRunProperties.Shading.is_init() && oXmlRunProperties.Shading->Fill.is_init() )
@@ -146,19 +146,19 @@ public:
 
 		if (oXmlRunProperties.Shading->Fill == "auto")
 		{
-		fillAuto = AVSDocFileFormat::COLORREF::cvAuto;
+		fillAuto = ASCDocFileFormat::COLORREF::cvAuto;
 		}
 		else
 		{
 		colorIntValue = HexString2Int( *oXmlRunProperties.Shading->Fill );
 		}
 
-		AVSDocFileFormat::SHDOperand shdOperand ( 
-		AVSDocFileFormat::Shd( AVSDocFileFormat::COLORREF( (int)( 0 | fillAuto ) ), 
-		AVSDocFileFormat::COLORREF( colorIntValue | fillAuto ),
+		ASCDocFileFormat::SHDOperand shdOperand ( 
+		ASCDocFileFormat::Shd( ASCDocFileFormat::COLORREF( (int)( 0 | fillAuto ) ), 
+		ASCDocFileFormat::COLORREF( colorIntValue | fillAuto ),
 		0 ) );
 
-		docRunProperties.push_back (AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCShd, shdOperand ));
+		docRunProperties.push_back (ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCShd, shdOperand ));
 		}
 
 		if ( oXmlRunProperties.rFonts.is_init() )
@@ -168,7 +168,7 @@ public:
 		if ( oXmlRunProperties.rFonts->Ascii.is_init() && !oXmlRunProperties.rFonts->AsciiTheme.is_init() )
 		{
 		fontIndex = this->fontTableMap[oXmlRunProperties.rFonts->Ascii];
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc0, (byte*)&fontIndex ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc0, (byte*)&fontIndex ) );
 		}
 		else if ( oXmlRunProperties.rFonts->AsciiTheme.is_init() )
 		{
@@ -183,14 +183,14 @@ public:
 		fontIndex = findResult->second;
 		}
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc0, (byte*)&fontIndex ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc0, (byte*)&fontIndex ) );
 		}
 		}
 
 		if ( oXmlRunProperties.rFonts->Cs.is_init() && !oXmlRunProperties.rFonts->Cstheme.is_init() )
 		{
 		fontIndex = fontTableMap[oXmlRunProperties.rFonts->Cs];
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc1, (byte*)&fontIndex ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc1, (byte*)&fontIndex ) );
 		}
 		else if ( oXmlRunProperties.rFonts->Cstheme.is_init() )
 		{
@@ -205,14 +205,14 @@ public:
 		fontIndex = findResult->second;
 		}
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc1, (byte*)&fontIndex ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc1, (byte*)&fontIndex ) );
 		}
 		}
 
 		if ( oXmlRunProperties.rFonts->HAnsi.is_init() && !oXmlRunProperties.rFonts->HAnsiTheme.is_init() )
 		{
 		fontIndex = this->fontTableMap[oXmlRunProperties.rFonts->HAnsi];
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc2, (byte*)&fontIndex ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc2, (byte*)&fontIndex ) );
 		}
 		else if ( oXmlRunProperties.rFonts->HAnsiTheme.is_init() )
 		{
@@ -227,7 +227,7 @@ public:
 		fontIndex = findResult->second;
 		}
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc2, (byte*)&fontIndex ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc2, (byte*)&fontIndex ) );
 		}
 		}
 		}
@@ -236,73 +236,73 @@ public:
 		{
 		if ( oXmlRunProperties.Lang->Value.is_init() )
 		{
-		AVSDocFileFormat::LID lid = lidMap[oXmlRunProperties.Lang->Value];
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgLid0_80, (byte*)lid ) );
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgLid0, (byte*)lid ) );
+		ASCDocFileFormat::LID lid = lidMap[oXmlRunProperties.Lang->Value];
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgLid0_80, (byte*)lid ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgLid0, (byte*)lid ) );
 		}
 
 		if ( oXmlRunProperties.Lang->EastAsia.is_init() )
 		{
-		AVSDocFileFormat::LID lid = lidMap[oXmlRunProperties.Lang->EastAsia];
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgLid1_80, (byte*)lid ) );
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgLid1, (byte*)lid ) );
+		ASCDocFileFormat::LID lid = lidMap[oXmlRunProperties.Lang->EastAsia];
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgLid1_80, (byte*)lid ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgLid1, (byte*)lid ) );
 		}
 
 		if ( oXmlRunProperties.Lang->Bidi.is_init() )
 		{
-		AVSDocFileFormat::LID lid = lidMap[oXmlRunProperties.Lang->Bidi];
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCLidBi, (byte*)lid ) );
+		ASCDocFileFormat::LID lid = lidMap[oXmlRunProperties.Lang->Bidi];
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCLidBi, (byte*)lid ) );
 		}
 		}
 
 		if ( oXmlRunProperties.Spacing.is_init() )
 		{
-		short CDxaSpace = AVSDocFileFormat::XAS( *oXmlRunProperties.Spacing );
+		short CDxaSpace = ASCDocFileFormat::XAS( *oXmlRunProperties.Spacing );
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCDxaSpace, (byte*)&CDxaSpace ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCDxaSpace, (byte*)&CDxaSpace ) );
 		}
 
 		if ( oXmlRunProperties.Index.is_init() )
 		{
 		string index = oXmlRunProperties.Index->ToString();
-		byte CIss = (byte)AVSDocFileFormat::Constants::superSubScriptNormalText;
+		byte CIss = (byte)ASCDocFileFormat::Constants::superSubScriptNormalText;
 
 		if ( index == string( "superscript" ) )
 		{
-		CIss = (byte)AVSDocFileFormat::Constants::superSubScriptSuperscript;  
+		CIss = (byte)ASCDocFileFormat::Constants::superSubScriptSuperscript;  
 		}
 		else if ( index == string( "subscript" ) )
 		{
-		CIss = (byte)AVSDocFileFormat::Constants::superSubScriptSubscript;  
+		CIss = (byte)ASCDocFileFormat::Constants::superSubScriptSubscript;  
 		}
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCIss, (byte*)&CIss ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCIss, (byte*)&CIss ) );
 		}
 
 		if ( oXmlRunProperties.Kern.is_init() )
 		{
 		int kern = *oXmlRunProperties.Kern;
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCHpsKern, (byte*)&kern ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCHpsKern, (byte*)&kern ) );
 		}
 
 		if ( oXmlRunProperties.Position.is_init() )
 		{
 		int position = *oXmlRunProperties.Position;
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCHpsPos, (byte*)&position ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCHpsPos, (byte*)&position ) );
 		}
 
 		if ( oXmlRunProperties.Scale.is_init() )
 		{
 		unsigned short scale = *oXmlRunProperties.Scale;
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCCharScale, (byte*)&scale ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCCharScale, (byte*)&scale ) );
 		}
 
 		if ( oXmlRunProperties.Border.is_init() )
 		{
-		unsigned int brc80 =  (unsigned int)AVSDocFileFormat::Brc80(
+		unsigned int brc80 =  (unsigned int)ASCDocFileFormat::Brc80(
 		oXmlRunProperties.Border->Bdr->Sz.get_value_or_default(), 
 		m_brcTypeMap[*oXmlRunProperties.Border->Bdr->Value], 
 		DOCXDOCUTILS::ColorToIco (oXmlRunProperties.Border->Bdr->Color.get_value_or_default()), 
@@ -310,17 +310,17 @@ public:
 		false, 
 		false );
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCBrc80, (byte*)(&brc80) ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCBrc80, (byte*)(&brc80) ) );
 
-		AVSDocFileFormat::BrcOperand brcOperand( AVSDocFileFormat::Brc(
-		AVSDocFileFormat::COLORREF( HexString2Int( oXmlRunProperties.Border->Bdr->Color.get_value_or_default().ToString() ) ),
+		ASCDocFileFormat::BrcOperand brcOperand( ASCDocFileFormat::Brc(
+		ASCDocFileFormat::COLORREF( HexString2Int( oXmlRunProperties.Border->Bdr->Color.get_value_or_default().ToString() ) ),
 		oXmlRunProperties.Border->Bdr->Sz.get_value_or_default(), 
 		m_brcTypeMap[*oXmlRunProperties.Border->Bdr->Value],
 		oXmlRunProperties.Border->Bdr->Space.get_value_or_default(), 
 		false, 
 		false ) );
 
-		docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCBrc, (byte*)brcOperand ) );
+		docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCBrc, (byte*)brcOperand ) );
 		}		
 
 		return docRunProperties;

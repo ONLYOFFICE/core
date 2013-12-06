@@ -34,7 +34,7 @@
 #include "Logic/DrawingWrap.h"
 #include "Logic/Drawing.h"
 #include "Logic/LineStyle.h"
-#include "Media/Image.h"
+#include "Media/Media.h"
 
 #include "ShapeSettings.h"
 #include "WordStreamWriter.h"
@@ -66,7 +66,7 @@ using namespace std;
 #define MAIN_DOCUMENT		0
 #define HEADER_DOCUMENT		1
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class COArtShape		
 	{
@@ -189,7 +189,7 @@ namespace AVSDocFileFormat
 		//
 		virtual OfficeArtSpContainer GetShape()		//	create top-level shape
 		{
-			AVSDocFormatUtils::BitSet oShapeSettings (4);
+			ASCDocFormatUtils::BitSet oShapeSettings (4);
 
 			oShapeSettings.SetBit (m_bGroup,	0);		//	Group		-	A bit that specifies whether this shape is a group shape. 
 			oShapeSettings.SetBit (m_bChild,	1);		//	Child		-	A bit that specifies whether this shape is a child shape.
@@ -246,7 +246,7 @@ namespace AVSDocFileFormat
 
 		inline OfficeArtSpContainer GetSimplyShape()
 		{
-			AVSDocFormatUtils::BitSet oShapeSettings (4);
+			ASCDocFormatUtils::BitSet oShapeSettings (4);
 
 			oShapeSettings.SetBit (0,			0);		//	Group		-	A bit that specifies whether this shape is a group shape. 
 			oShapeSettings.SetBit (0,			1);		//	Child		-	A bit that specifies whether this shape is a child shape.
@@ -470,7 +470,7 @@ namespace AVSDocFileFormat
 		//
 		virtual OfficeArtSpContainer GetShape ()		//	create top-level shape
 		{
-			AVSDocFormatUtils::BitSet oShapeSettings (4);
+			ASCDocFormatUtils::BitSet oShapeSettings (4);
 
 			oShapeSettings.SetBit (m_bGroup,	0);		//	Group		-	A bit that specifies whether this shape is a group shape. 
 			oShapeSettings.SetBit (m_bChild,	1);		//	Child		-	A bit that specifies whether this shape is a child shape.
@@ -641,7 +641,7 @@ namespace AVSDocFileFormat
 
 		inline OfficeArtSpContainer CreateTopShape (int nID)		//	create top-level shape
 		{
-			AVSDocFormatUtils::BitSet oShapeSettings (4);
+			ASCDocFormatUtils::BitSet oShapeSettings (4);
 
 			oShapeSettings.SetBit (m_bGroup,0);		//	Group		-	A bit that specifies whether this shape is a group shape. 
 			oShapeSettings.SetBit (m_bChild,1);		//	Child		-	A bit that specifies whether this shape is a child shape.
@@ -689,7 +689,7 @@ namespace AVSDocFileFormat
 	};
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class CShapeRun : public IRunItem
 	{
@@ -973,7 +973,7 @@ namespace AVSDocFileFormat
 
 			#ifdef _DEBUG
 
-			AVSDocFormatUtils::BitSet oShapeSettings (4);
+			ASCDocFormatUtils::BitSet oShapeSettings (4);
 
 			oShapeSettings.SetBit (0,		0);		//	Group		-	A bit that specifies whether this shape is a group shape. 
 			oShapeSettings.SetBit (0,		1);		//	Child		-	A bit that specifies whether this shape is a child shape.
@@ -1118,7 +1118,7 @@ namespace AVSDocFileFormat
 	};
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {	
 	class COfficeArtStorage		//	формирует буфер данных из всех объектов OfficeArt
 	{
@@ -1461,7 +1461,7 @@ namespace AVSDocFileFormat
 		{
 			FSPGR Coordinates (0,0,0,0);
 
-			AVSDocFormatUtils::BitSet oShapeSettings (4);
+			ASCDocFormatUtils::BitSet oShapeSettings (4);
 
 			oShapeSettings.SetBit (true,	0);		//	Group		-	A bit that specifies whether this shape is a group shape. 
 			oShapeSettings.SetBit (0,		1);		//	Child		-	A bit that specifies whether this shape is a child shape.
@@ -1552,7 +1552,7 @@ namespace AVSDocFileFormat
 	};
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class COArtBuilder
 	{

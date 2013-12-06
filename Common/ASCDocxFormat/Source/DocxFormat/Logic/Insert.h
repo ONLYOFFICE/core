@@ -2,12 +2,12 @@
 #ifndef OOX_LOGIC_INSERT_INCLUDE_H_
 #define OOX_LOGIC_INSERT_INCLUDE_H_
 
+#include <vector>
+
 #include "ParagraphItemBase.h"
 #include "Run.h"
 #include "property.h"
 #include "nullable_property.h"
-#include <vector>
-
 
 namespace OOX
 {

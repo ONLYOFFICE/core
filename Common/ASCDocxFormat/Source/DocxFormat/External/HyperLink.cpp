@@ -15,7 +15,7 @@ namespace OOX
 	}
 
 	
-	HyperLink::HyperLink(const boost::filesystem::wpath& uri)
+	HyperLink::HyperLink(const OOX::CPath& uri)
 	{
 		read(uri);
 	}
@@ -32,13 +32,13 @@ namespace OOX
 	}
 
 
-	const boost::filesystem::wpath HyperLink::DefaultDirectory() const
+	const OOX::CPath HyperLink::DefaultDirectory() const
 	{
 		return type().DefaultDirectory();
 	}
 
 
-	const boost::filesystem::wpath HyperLink::DefaultFileName() const
+	const OOX::CPath HyperLink::DefaultFileName() const
 	{
 		return type().DefaultFileName();
 	}

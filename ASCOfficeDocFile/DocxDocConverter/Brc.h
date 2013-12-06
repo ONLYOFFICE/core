@@ -2,7 +2,7 @@
 
 #include "COLORREF.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
   class Brc: public IOperand
   {

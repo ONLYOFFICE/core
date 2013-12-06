@@ -1,7 +1,5 @@
 ﻿#include "stdafx.h"
 
-#include <AtlConv.h>
-
 #include "ParagraphItem.h"
 #include "DocxToDocUtils.h"
 #include "ShapeBuilder.h"
@@ -9,208 +7,241 @@
 
 #include "FileConverter.h"
 
-using namespace AVSDocFileFormat;
+using namespace ASCDocFileFormat;
+
+// NOTE: delete after remove bost
+const std::wstring string2wstring__(const std::string& sline, const unsigned int codePage = CP_ACP)
+{
+	const int nSize = MultiByteToWideChar(codePage, 0, sline.c_str(), sline.size(), NULL, 0);
+
+	wchar_t *sTemp = new wchar_t[nSize];
+	if (!sTemp)
+		return std::wstring();
+
+	int size = MultiByteToWideChar(codePage, 0, sline.c_str(), sline.size(), sTemp, nSize);
+
+	std::wstring sResult(sTemp, size);
+	delete []sTemp;
+
+	return sResult;
+}
+
+// NOTE: delete after remove bost
+const std::string wstring2string__(const std::wstring& sLine, const unsigned int codePage = CP_ACP)
+{
+	const int nSize = WideCharToMultiByte(codePage, 0, sLine.c_str(), sLine.length(), NULL, 0, NULL, NULL);
+	char *sTemp = new char[nSize];
+	if (!sTemp)
+		return std::string();
+
+	int size = WideCharToMultiByte(codePage, 0, sLine.c_str(), sLine.length(), sTemp, nSize, NULL, NULL);
+
+	std::string sResult(sTemp, size);
+	delete []sTemp;
+
+	return sResult;
+}
 
 namespace DOCXTODOC
 {
-	CFileTransformer::CFileTransformer ()
+	CFileTransformer::CFileTransformer()
 	{
-		m_pDOCFile				=	NULL;
+		m_pDocFile				=	NULL;
 
 		m_bHaveSeparateFldChar	=	false;
 		m_bIsInlineShape		=	FALSE;
 
 		m_bIsHaveRunPr			=	FALSE;
 
-		m_pDOCFile				=	new AVSDocFileFormat::CDocFile();
+		m_pDocFile				=	new ASCDocFileFormat::CDocFile();
 
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "af-ZA" ), AVSDocFileFormat::LID( DocFileFormat::Afrikaans ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "sq-AL" ), AVSDocFileFormat::LID( DocFileFormat::Albanian ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "am-ET" ), AVSDocFileFormat::LID( DocFileFormat::Amharic ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ar-DZ" ), AVSDocFileFormat::LID( DocFileFormat::ArabicAlgeria ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ar-BH" ), AVSDocFileFormat::LID( DocFileFormat::ArabicBahrain ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ar-EG" ), AVSDocFileFormat::LID( DocFileFormat::ArabicEgypt ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ar-IQ" ), AVSDocFileFormat::LID( DocFileFormat::ArabicIraq ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ar-JO" ), AVSDocFileFormat::LID( DocFileFormat::ArabicJordan ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ar-KW" ), AVSDocFileFormat::LID( DocFileFormat::ArabicKuwait ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ar-LB" ), AVSDocFileFormat::LID( DocFileFormat::ArabicLebanon ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ar-LY" ), AVSDocFileFormat::LID( DocFileFormat::ArabicLibya ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ar-MA" ), AVSDocFileFormat::LID( DocFileFormat::ArabicMorocco ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ar-OM" ), AVSDocFileFormat::LID( DocFileFormat::ArabicOman ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ar-QA" ), AVSDocFileFormat::LID( DocFileFormat::ArabicQatar ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ar-SA" ), AVSDocFileFormat::LID( DocFileFormat::ArabicSaudiArabia ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ar-SY" ), AVSDocFileFormat::LID( DocFileFormat::ArabicSyria ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ar-TN" ), AVSDocFileFormat::LID( DocFileFormat::ArabicTunisia ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ar-AE" ), AVSDocFileFormat::LID( DocFileFormat::ArabicUAE ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ar-YE" ), AVSDocFileFormat::LID( DocFileFormat::ArabicYemen ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "hy-AM" ), AVSDocFileFormat::LID( DocFileFormat::Armenian ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "as-IN" ), AVSDocFileFormat::LID( DocFileFormat::Assamese ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "az-AZ-cyrl" ), AVSDocFileFormat::LID( DocFileFormat::AzeriCyrillic ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "az-AZ-latn" ), AVSDocFileFormat::LID( DocFileFormat::AzeriLatin ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "eu-ES" ), AVSDocFileFormat::LID( DocFileFormat::Basque ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "be-BY" ), AVSDocFileFormat::LID( DocFileFormat::Belarusian ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "bn-IN" ), AVSDocFileFormat::LID( DocFileFormat::Bengali ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "bn-BD" ), AVSDocFileFormat::LID( DocFileFormat::BengaliBangladesh ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "bg-BG" ), AVSDocFileFormat::LID( DocFileFormat::Bulgarian ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "my-MM" ), AVSDocFileFormat::LID( DocFileFormat::Burmese ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ca-ES" ), AVSDocFileFormat::LID( DocFileFormat::Catalan ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "zh-HK" ), AVSDocFileFormat::LID( DocFileFormat::ChineseHongKong ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "zh-MO" ), AVSDocFileFormat::LID( DocFileFormat::ChineseMacao ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "zh-CN" ), AVSDocFileFormat::LID( DocFileFormat::ChinesePRC ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "zh-SG" ), AVSDocFileFormat::LID( DocFileFormat::ChineseSingapore ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "zh-TW" ), AVSDocFileFormat::LID( DocFileFormat::ChineseTaiwan ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "hr-HR" ), AVSDocFileFormat::LID( DocFileFormat::Croatian ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "cs-CZ" ), AVSDocFileFormat::LID( DocFileFormat::Czech ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "da-DK" ), AVSDocFileFormat::LID( DocFileFormat::Danish ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "dv-MV" ), AVSDocFileFormat::LID( DocFileFormat::Divehi ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "nl-BE" ), AVSDocFileFormat::LID( DocFileFormat::DutchBelgium ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "nl-NL" ), AVSDocFileFormat::LID( DocFileFormat::DutchNetherlands ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-AU" ), AVSDocFileFormat::LID( DocFileFormat::EnglishAustralia ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-BZ" ), AVSDocFileFormat::LID( DocFileFormat::EnglishBelize ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-CA" ), AVSDocFileFormat::LID( DocFileFormat::EnglishCanada ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-DO" ), AVSDocFileFormat::LID( DocFileFormat::EnglishCaribbean ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-HK" ), AVSDocFileFormat::LID( DocFileFormat::EnglishHongKong ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-IN" ), AVSDocFileFormat::LID( DocFileFormat::EnglishIndia ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-ID" ), AVSDocFileFormat::LID( DocFileFormat::EnglishIndonesia ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-IE" ), AVSDocFileFormat::LID( DocFileFormat::EnglishIreland ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-JM" ), AVSDocFileFormat::LID( DocFileFormat::EnglishJamaica ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-MY" ), AVSDocFileFormat::LID( DocFileFormat::EnglishMalaysia ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-NZ" ), AVSDocFileFormat::LID( DocFileFormat::EnglishNewZealand ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-PH" ), AVSDocFileFormat::LID( DocFileFormat::EnglishPhilippines ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-SG" ), AVSDocFileFormat::LID( DocFileFormat::EnglishSingapore ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-ZA" ), AVSDocFileFormat::LID( DocFileFormat::EnglishSouthAfrica ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-TT" ), AVSDocFileFormat::LID( DocFileFormat::EnglishTrinidadAndTobago ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-UK" ), AVSDocFileFormat::LID( DocFileFormat::EnglishUK ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-US" ), AVSDocFileFormat::LID( DocFileFormat::EnglishUS ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "en-ZW" ), AVSDocFileFormat::LID( DocFileFormat::EnglishZimbabwe ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "et-EE" ), AVSDocFileFormat::LID( DocFileFormat::Estonian ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fo-FO" ), AVSDocFileFormat::LID( DocFileFormat::Faeroese ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fi-FI" ), AVSDocFileFormat::LID( DocFileFormat::Finnish ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fr-BE" ), AVSDocFileFormat::LID( DocFileFormat::FrenchBelgium ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fr-CM" ), AVSDocFileFormat::LID( DocFileFormat::FrenchCameroon ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fr-CA" ), AVSDocFileFormat::LID( DocFileFormat::FrenchCanada ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fr-CD" ), AVSDocFileFormat::LID( DocFileFormat::FrenchCongoDRC ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fr-CI" ), AVSDocFileFormat::LID( DocFileFormat::FrenchCotedIvoire ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fr-FR" ), AVSDocFileFormat::LID( DocFileFormat::FrenchFrance ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fr-HT" ), AVSDocFileFormat::LID( DocFileFormat::FrenchHaiti ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fr-LU" ), AVSDocFileFormat::LID( DocFileFormat::FrenchLuxembourg ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fr-ML" ), AVSDocFileFormat::LID( DocFileFormat::FrenchMali ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fr-MC" ), AVSDocFileFormat::LID( DocFileFormat::FrenchMonaco ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fr-MA" ), AVSDocFileFormat::LID( DocFileFormat::FrenchMorocco ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fr-RE" ), AVSDocFileFormat::LID( DocFileFormat::FrenchReunion ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fr-SN" ), AVSDocFileFormat::LID( DocFileFormat::FrenchSenegal ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fr-CH" ), AVSDocFileFormat::LID( DocFileFormat::FrenchSwitzerland ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fr-DO" ), AVSDocFileFormat::LID( DocFileFormat::FrenchWestIndies ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "fy-NL" ), AVSDocFileFormat::LID( DocFileFormat::FrisianNetherlands ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "mk-MK" ), AVSDocFileFormat::LID( DocFileFormat::FYROMacedonian ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ga-IE" ), AVSDocFileFormat::LID( DocFileFormat::GaelicIreland ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "gd-UK" ), AVSDocFileFormat::LID( DocFileFormat::GaelicScotland ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "gl-ES" ), AVSDocFileFormat::LID( DocFileFormat::Galician ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ka-GE" ), AVSDocFileFormat::LID( DocFileFormat::Georgian ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "de-AT" ), AVSDocFileFormat::LID( DocFileFormat::GermanAustria ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "de-DE" ), AVSDocFileFormat::LID( DocFileFormat::GermanGermany ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "de-LI" ), AVSDocFileFormat::LID( DocFileFormat::GermanLiechtenstein ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "de-LU" ), AVSDocFileFormat::LID( DocFileFormat::GermanLuxembourg ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "de-CH" ), AVSDocFileFormat::LID( DocFileFormat::GermanSwitzerland ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "el-GR" ), AVSDocFileFormat::LID( DocFileFormat::Greek ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "gn-BR" ), AVSDocFileFormat::LID( DocFileFormat::Guarani ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "gu-IN" ), AVSDocFileFormat::LID( DocFileFormat::Gujarati ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ha-NG" ), AVSDocFileFormat::LID( DocFileFormat::Hausa ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "he-IL" ), AVSDocFileFormat::LID( DocFileFormat::Hebrew ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "hi-IN" ), AVSDocFileFormat::LID( DocFileFormat::Hindi ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "hu-HU" ), AVSDocFileFormat::LID( DocFileFormat::Hungarian ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "is-IS" ), AVSDocFileFormat::LID( DocFileFormat::Icelandic ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "id-ID" ), AVSDocFileFormat::LID( DocFileFormat::Indonesian ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "iu-CA" ), AVSDocFileFormat::LID( DocFileFormat::Inuktitut ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "it-IT" ), AVSDocFileFormat::LID( DocFileFormat::ItalianItaly ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "it-CH" ), AVSDocFileFormat::LID( DocFileFormat::ItalianSwitzerland ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ja-JP" ), AVSDocFileFormat::LID( DocFileFormat::Japanese ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "kn-ID" ), AVSDocFileFormat::LID( DocFileFormat::Kannada ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ks-ID" ), AVSDocFileFormat::LID( DocFileFormat::Kashmiri ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ks-PK" ), AVSDocFileFormat::LID( DocFileFormat::KashmiriArabic ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "kk-KZ" ), AVSDocFileFormat::LID( DocFileFormat::Kazakh ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ko-KR" ), AVSDocFileFormat::LID( DocFileFormat::Korean ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ky-KG" ), AVSDocFileFormat::LID( DocFileFormat::Kyrgyz ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "lo-LA" ), AVSDocFileFormat::LID( DocFileFormat::Lao ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "la" ), AVSDocFileFormat::LID( DocFileFormat::Latin ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "lv-LV" ), AVSDocFileFormat::LID( DocFileFormat::Latvian ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "lt-LT" ), AVSDocFileFormat::LID( DocFileFormat::Lithuanian ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ms-MY" ), AVSDocFileFormat::LID( DocFileFormat::Malay ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ms-BN" ), AVSDocFileFormat::LID( DocFileFormat::MalayBruneiDarussalam ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ml-ID" ), AVSDocFileFormat::LID( DocFileFormat::Malayalam ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "mt-MT" ), AVSDocFileFormat::LID( DocFileFormat::Maltese ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "mi-NZ" ), AVSDocFileFormat::LID( DocFileFormat::Maori ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "mr-ID" ), AVSDocFileFormat::LID( DocFileFormat::Marathi ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "mn-MN" ), AVSDocFileFormat::LID( DocFileFormat::Mongolian ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ne-NP" ), AVSDocFileFormat::LID( DocFileFormat::Nepali ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ne-ID" ), AVSDocFileFormat::LID( DocFileFormat::NepaliIndia ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "nb-NO" ), AVSDocFileFormat::LID( DocFileFormat::NorwegianBokmal ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "nn-NO" ), AVSDocFileFormat::LID( DocFileFormat::NorwegianNynorsk ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "or-ID" ), AVSDocFileFormat::LID( DocFileFormat::Oriya ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ps-PK" ), AVSDocFileFormat::LID( DocFileFormat::Pashto ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "pl-PL" ), AVSDocFileFormat::LID( DocFileFormat::Polish ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "pt-BR" ), AVSDocFileFormat::LID( DocFileFormat::PortugueseBrazil ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "pt-PT" ), AVSDocFileFormat::LID( DocFileFormat::PortuguesePortugal ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "pa-ID" ), AVSDocFileFormat::LID( DocFileFormat::Punjabi ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "pa-PK" ), AVSDocFileFormat::LID( DocFileFormat::PunjabiPakistan ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "qu-BO" ), AVSDocFileFormat::LID( DocFileFormat::QuechuaBolivia ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "qu-EC" ), AVSDocFileFormat::LID( DocFileFormat::QuechuaEcuador ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "qu-PE" ), AVSDocFileFormat::LID( DocFileFormat::QuechuaPeru ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "rm-CH" ), AVSDocFileFormat::LID( DocFileFormat::RhaetoRomanic ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ro-MD" ), AVSDocFileFormat::LID( DocFileFormat::RomanianMoldova ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ro-RO" ), AVSDocFileFormat::LID( DocFileFormat::RomanianRomania ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ru-MD" ), AVSDocFileFormat::LID( DocFileFormat::RussianMoldova ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ru-RU" ), AVSDocFileFormat::LID( DocFileFormat::RussianRussia ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "se-FI" ), AVSDocFileFormat::LID( DocFileFormat::SamiLappish ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "sa-ID" ), AVSDocFileFormat::LID( DocFileFormat::Sanskrit ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "sr-YU-cyrl" ), AVSDocFileFormat::LID( DocFileFormat::SerbianCyrillic ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "sr-YU-latn" ), AVSDocFileFormat::LID( DocFileFormat::SerbianLatin ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "sd-PK" ), AVSDocFileFormat::LID( DocFileFormat::SindhiArabic ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "sd-ID" ), AVSDocFileFormat::LID( DocFileFormat::SindhiDevanagari ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "si-ID" ), AVSDocFileFormat::LID( DocFileFormat::Sinhalese ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "sk-SK" ), AVSDocFileFormat::LID( DocFileFormat::Slovak ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "sl-SI" ), AVSDocFileFormat::LID( DocFileFormat::Slovenian ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "so-SO" ), AVSDocFileFormat::LID( DocFileFormat::Somali ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-AR" ), AVSDocFileFormat::LID( DocFileFormat::SpanishArgentina ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-BO" ), AVSDocFileFormat::LID( DocFileFormat::SpanishBolivia ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-CL" ), AVSDocFileFormat::LID( DocFileFormat::SpanishChile ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-CO" ), AVSDocFileFormat::LID( DocFileFormat::SpanishColombia ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-CR" ), AVSDocFileFormat::LID( DocFileFormat::SpanishCostaRica ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-DO" ), AVSDocFileFormat::LID( DocFileFormat::SpanishDominicanRepublic ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-EC" ), AVSDocFileFormat::LID( DocFileFormat::SpanishEcuador ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-SV" ), AVSDocFileFormat::LID( DocFileFormat::SpanishElSalvador ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-GT" ), AVSDocFileFormat::LID( DocFileFormat::SpanishGuatemala ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-HN" ), AVSDocFileFormat::LID( DocFileFormat::SpanishHonduras ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-MX" ), AVSDocFileFormat::LID( DocFileFormat::SpanishMexico ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-NI" ), AVSDocFileFormat::LID( DocFileFormat::SpanishNicaragua ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-PA" ), AVSDocFileFormat::LID( DocFileFormat::SpanishPanama ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-PY" ), AVSDocFileFormat::LID( DocFileFormat::SpanishParaguay ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-PE" ), AVSDocFileFormat::LID( DocFileFormat::SpanishPeru ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-PR" ), AVSDocFileFormat::LID( DocFileFormat::SpanishPuertoRico ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-ES" ), AVSDocFileFormat::LID( DocFileFormat::SpanishSpainTraditionalSort ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-UY" ), AVSDocFileFormat::LID( DocFileFormat::SpanishUruguay ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "es-VE" ), AVSDocFileFormat::LID( DocFileFormat::SpanishVenezuela ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "sw-TZ" ), AVSDocFileFormat::LID( DocFileFormat::Swahili ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "sv-FI" ), AVSDocFileFormat::LID( DocFileFormat::SwedishFinland ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "sv-SE" ), AVSDocFileFormat::LID( DocFileFormat::SwedishSweden ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "tg-TJ" ), AVSDocFileFormat::LID( DocFileFormat::Tajik ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "ta-ID" ), AVSDocFileFormat::LID( DocFileFormat::Tamil ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "tt-RU" ), AVSDocFileFormat::LID( DocFileFormat::Tatar ) ) );
-		lidMap.insert( pair<string, AVSDocFileFormat::LID>( string( "te-ID" ), AVSDocFileFormat::LID( DocFileFormat::Telugu ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "af-ZA" ), ASCDocFileFormat::LID( DocFileFormat::Afrikaans ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "sq-AL" ), ASCDocFileFormat::LID( DocFileFormat::Albanian ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "am-ET" ), ASCDocFileFormat::LID( DocFileFormat::Amharic ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ar-DZ" ), ASCDocFileFormat::LID( DocFileFormat::ArabicAlgeria ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ar-BH" ), ASCDocFileFormat::LID( DocFileFormat::ArabicBahrain ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ar-EG" ), ASCDocFileFormat::LID( DocFileFormat::ArabicEgypt ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ar-IQ" ), ASCDocFileFormat::LID( DocFileFormat::ArabicIraq ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ar-JO" ), ASCDocFileFormat::LID( DocFileFormat::ArabicJordan ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ar-KW" ), ASCDocFileFormat::LID( DocFileFormat::ArabicKuwait ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ar-LB" ), ASCDocFileFormat::LID( DocFileFormat::ArabicLebanon ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ar-LY" ), ASCDocFileFormat::LID( DocFileFormat::ArabicLibya ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ar-MA" ), ASCDocFileFormat::LID( DocFileFormat::ArabicMorocco ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ar-OM" ), ASCDocFileFormat::LID( DocFileFormat::ArabicOman ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ar-QA" ), ASCDocFileFormat::LID( DocFileFormat::ArabicQatar ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ar-SA" ), ASCDocFileFormat::LID( DocFileFormat::ArabicSaudiArabia ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ar-SY" ), ASCDocFileFormat::LID( DocFileFormat::ArabicSyria ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ar-TN" ), ASCDocFileFormat::LID( DocFileFormat::ArabicTunisia ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ar-AE" ), ASCDocFileFormat::LID( DocFileFormat::ArabicUAE ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ar-YE" ), ASCDocFileFormat::LID( DocFileFormat::ArabicYemen ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "hy-AM" ), ASCDocFileFormat::LID( DocFileFormat::Armenian ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "as-IN" ), ASCDocFileFormat::LID( DocFileFormat::Assamese ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "az-AZ-cyrl" ), ASCDocFileFormat::LID( DocFileFormat::AzeriCyrillic ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "az-AZ-latn" ), ASCDocFileFormat::LID( DocFileFormat::AzeriLatin ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "eu-ES" ), ASCDocFileFormat::LID( DocFileFormat::Basque ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "be-BY" ), ASCDocFileFormat::LID( DocFileFormat::Belarusian ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "bn-IN" ), ASCDocFileFormat::LID( DocFileFormat::Bengali ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "bn-BD" ), ASCDocFileFormat::LID( DocFileFormat::BengaliBangladesh ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "bg-BG" ), ASCDocFileFormat::LID( DocFileFormat::Bulgarian ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "my-MM" ), ASCDocFileFormat::LID( DocFileFormat::Burmese ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ca-ES" ), ASCDocFileFormat::LID( DocFileFormat::Catalan ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "zh-HK" ), ASCDocFileFormat::LID( DocFileFormat::ChineseHongKong ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "zh-MO" ), ASCDocFileFormat::LID( DocFileFormat::ChineseMacao ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "zh-CN" ), ASCDocFileFormat::LID( DocFileFormat::ChinesePRC ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "zh-SG" ), ASCDocFileFormat::LID( DocFileFormat::ChineseSingapore ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "zh-TW" ), ASCDocFileFormat::LID( DocFileFormat::ChineseTaiwan ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "hr-HR" ), ASCDocFileFormat::LID( DocFileFormat::Croatian ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "cs-CZ" ), ASCDocFileFormat::LID( DocFileFormat::Czech ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "da-DK" ), ASCDocFileFormat::LID( DocFileFormat::Danish ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "dv-MV" ), ASCDocFileFormat::LID( DocFileFormat::Divehi ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "nl-BE" ), ASCDocFileFormat::LID( DocFileFormat::DutchBelgium ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "nl-NL" ), ASCDocFileFormat::LID( DocFileFormat::DutchNetherlands ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-AU" ), ASCDocFileFormat::LID( DocFileFormat::EnglishAustralia ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-BZ" ), ASCDocFileFormat::LID( DocFileFormat::EnglishBelize ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-CA" ), ASCDocFileFormat::LID( DocFileFormat::EnglishCanada ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-DO" ), ASCDocFileFormat::LID( DocFileFormat::EnglishCaribbean ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-HK" ), ASCDocFileFormat::LID( DocFileFormat::EnglishHongKong ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-IN" ), ASCDocFileFormat::LID( DocFileFormat::EnglishIndia ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-ID" ), ASCDocFileFormat::LID( DocFileFormat::EnglishIndonesia ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-IE" ), ASCDocFileFormat::LID( DocFileFormat::EnglishIreland ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-JM" ), ASCDocFileFormat::LID( DocFileFormat::EnglishJamaica ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-MY" ), ASCDocFileFormat::LID( DocFileFormat::EnglishMalaysia ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-NZ" ), ASCDocFileFormat::LID( DocFileFormat::EnglishNewZealand ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-PH" ), ASCDocFileFormat::LID( DocFileFormat::EnglishPhilippines ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-SG" ), ASCDocFileFormat::LID( DocFileFormat::EnglishSingapore ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-ZA" ), ASCDocFileFormat::LID( DocFileFormat::EnglishSouthAfrica ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-TT" ), ASCDocFileFormat::LID( DocFileFormat::EnglishTrinidadAndTobago ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-UK" ), ASCDocFileFormat::LID( DocFileFormat::EnglishUK ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-US" ), ASCDocFileFormat::LID( DocFileFormat::EnglishUS ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "en-ZW" ), ASCDocFileFormat::LID( DocFileFormat::EnglishZimbabwe ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "et-EE" ), ASCDocFileFormat::LID( DocFileFormat::Estonian ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fo-FO" ), ASCDocFileFormat::LID( DocFileFormat::Faeroese ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fi-FI" ), ASCDocFileFormat::LID( DocFileFormat::Finnish ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fr-BE" ), ASCDocFileFormat::LID( DocFileFormat::FrenchBelgium ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fr-CM" ), ASCDocFileFormat::LID( DocFileFormat::FrenchCameroon ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fr-CA" ), ASCDocFileFormat::LID( DocFileFormat::FrenchCanada ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fr-CD" ), ASCDocFileFormat::LID( DocFileFormat::FrenchCongoDRC ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fr-CI" ), ASCDocFileFormat::LID( DocFileFormat::FrenchCotedIvoire ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fr-FR" ), ASCDocFileFormat::LID( DocFileFormat::FrenchFrance ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fr-HT" ), ASCDocFileFormat::LID( DocFileFormat::FrenchHaiti ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fr-LU" ), ASCDocFileFormat::LID( DocFileFormat::FrenchLuxembourg ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fr-ML" ), ASCDocFileFormat::LID( DocFileFormat::FrenchMali ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fr-MC" ), ASCDocFileFormat::LID( DocFileFormat::FrenchMonaco ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fr-MA" ), ASCDocFileFormat::LID( DocFileFormat::FrenchMorocco ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fr-RE" ), ASCDocFileFormat::LID( DocFileFormat::FrenchReunion ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fr-SN" ), ASCDocFileFormat::LID( DocFileFormat::FrenchSenegal ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fr-CH" ), ASCDocFileFormat::LID( DocFileFormat::FrenchSwitzerland ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fr-DO" ), ASCDocFileFormat::LID( DocFileFormat::FrenchWestIndies ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "fy-NL" ), ASCDocFileFormat::LID( DocFileFormat::FrisianNetherlands ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "mk-MK" ), ASCDocFileFormat::LID( DocFileFormat::FYROMacedonian ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ga-IE" ), ASCDocFileFormat::LID( DocFileFormat::GaelicIreland ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "gd-UK" ), ASCDocFileFormat::LID( DocFileFormat::GaelicScotland ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "gl-ES" ), ASCDocFileFormat::LID( DocFileFormat::Galician ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ka-GE" ), ASCDocFileFormat::LID( DocFileFormat::Georgian ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "de-AT" ), ASCDocFileFormat::LID( DocFileFormat::GermanAustria ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "de-DE" ), ASCDocFileFormat::LID( DocFileFormat::GermanGermany ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "de-LI" ), ASCDocFileFormat::LID( DocFileFormat::GermanLiechtenstein ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "de-LU" ), ASCDocFileFormat::LID( DocFileFormat::GermanLuxembourg ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "de-CH" ), ASCDocFileFormat::LID( DocFileFormat::GermanSwitzerland ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "el-GR" ), ASCDocFileFormat::LID( DocFileFormat::Greek ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "gn-BR" ), ASCDocFileFormat::LID( DocFileFormat::Guarani ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "gu-IN" ), ASCDocFileFormat::LID( DocFileFormat::Gujarati ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ha-NG" ), ASCDocFileFormat::LID( DocFileFormat::Hausa ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "he-IL" ), ASCDocFileFormat::LID( DocFileFormat::Hebrew ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "hi-IN" ), ASCDocFileFormat::LID( DocFileFormat::Hindi ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "hu-HU" ), ASCDocFileFormat::LID( DocFileFormat::Hungarian ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "is-IS" ), ASCDocFileFormat::LID( DocFileFormat::Icelandic ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "id-ID" ), ASCDocFileFormat::LID( DocFileFormat::Indonesian ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "iu-CA" ), ASCDocFileFormat::LID( DocFileFormat::Inuktitut ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "it-IT" ), ASCDocFileFormat::LID( DocFileFormat::ItalianItaly ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "it-CH" ), ASCDocFileFormat::LID( DocFileFormat::ItalianSwitzerland ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ja-JP" ), ASCDocFileFormat::LID( DocFileFormat::Japanese ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "kn-ID" ), ASCDocFileFormat::LID( DocFileFormat::Kannada ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ks-ID" ), ASCDocFileFormat::LID( DocFileFormat::Kashmiri ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ks-PK" ), ASCDocFileFormat::LID( DocFileFormat::KashmiriArabic ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "kk-KZ" ), ASCDocFileFormat::LID( DocFileFormat::Kazakh ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ko-KR" ), ASCDocFileFormat::LID( DocFileFormat::Korean ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ky-KG" ), ASCDocFileFormat::LID( DocFileFormat::Kyrgyz ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "lo-LA" ), ASCDocFileFormat::LID( DocFileFormat::Lao ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "la" ), ASCDocFileFormat::LID( DocFileFormat::Latin ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "lv-LV" ), ASCDocFileFormat::LID( DocFileFormat::Latvian ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "lt-LT" ), ASCDocFileFormat::LID( DocFileFormat::Lithuanian ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ms-MY" ), ASCDocFileFormat::LID( DocFileFormat::Malay ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ms-BN" ), ASCDocFileFormat::LID( DocFileFormat::MalayBruneiDarussalam ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ml-ID" ), ASCDocFileFormat::LID( DocFileFormat::Malayalam ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "mt-MT" ), ASCDocFileFormat::LID( DocFileFormat::Maltese ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "mi-NZ" ), ASCDocFileFormat::LID( DocFileFormat::Maori ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "mr-ID" ), ASCDocFileFormat::LID( DocFileFormat::Marathi ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "mn-MN" ), ASCDocFileFormat::LID( DocFileFormat::Mongolian ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ne-NP" ), ASCDocFileFormat::LID( DocFileFormat::Nepali ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ne-ID" ), ASCDocFileFormat::LID( DocFileFormat::NepaliIndia ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "nb-NO" ), ASCDocFileFormat::LID( DocFileFormat::NorwegianBokmal ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "nn-NO" ), ASCDocFileFormat::LID( DocFileFormat::NorwegianNynorsk ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "or-ID" ), ASCDocFileFormat::LID( DocFileFormat::Oriya ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ps-PK" ), ASCDocFileFormat::LID( DocFileFormat::Pashto ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "pl-PL" ), ASCDocFileFormat::LID( DocFileFormat::Polish ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "pt-BR" ), ASCDocFileFormat::LID( DocFileFormat::PortugueseBrazil ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "pt-PT" ), ASCDocFileFormat::LID( DocFileFormat::PortuguesePortugal ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "pa-ID" ), ASCDocFileFormat::LID( DocFileFormat::Punjabi ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "pa-PK" ), ASCDocFileFormat::LID( DocFileFormat::PunjabiPakistan ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "qu-BO" ), ASCDocFileFormat::LID( DocFileFormat::QuechuaBolivia ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "qu-EC" ), ASCDocFileFormat::LID( DocFileFormat::QuechuaEcuador ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "qu-PE" ), ASCDocFileFormat::LID( DocFileFormat::QuechuaPeru ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "rm-CH" ), ASCDocFileFormat::LID( DocFileFormat::RhaetoRomanic ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ro-MD" ), ASCDocFileFormat::LID( DocFileFormat::RomanianMoldova ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ro-RO" ), ASCDocFileFormat::LID( DocFileFormat::RomanianRomania ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ru-MD" ), ASCDocFileFormat::LID( DocFileFormat::RussianMoldova ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ru-RU" ), ASCDocFileFormat::LID( DocFileFormat::RussianRussia ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "se-FI" ), ASCDocFileFormat::LID( DocFileFormat::SamiLappish ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "sa-ID" ), ASCDocFileFormat::LID( DocFileFormat::Sanskrit ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "sr-YU-cyrl" ), ASCDocFileFormat::LID( DocFileFormat::SerbianCyrillic ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "sr-YU-latn" ), ASCDocFileFormat::LID( DocFileFormat::SerbianLatin ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "sd-PK" ), ASCDocFileFormat::LID( DocFileFormat::SindhiArabic ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "sd-ID" ), ASCDocFileFormat::LID( DocFileFormat::SindhiDevanagari ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "si-ID" ), ASCDocFileFormat::LID( DocFileFormat::Sinhalese ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "sk-SK" ), ASCDocFileFormat::LID( DocFileFormat::Slovak ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "sl-SI" ), ASCDocFileFormat::LID( DocFileFormat::Slovenian ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "so-SO" ), ASCDocFileFormat::LID( DocFileFormat::Somali ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-AR" ), ASCDocFileFormat::LID( DocFileFormat::SpanishArgentina ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-BO" ), ASCDocFileFormat::LID( DocFileFormat::SpanishBolivia ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-CL" ), ASCDocFileFormat::LID( DocFileFormat::SpanishChile ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-CO" ), ASCDocFileFormat::LID( DocFileFormat::SpanishColombia ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-CR" ), ASCDocFileFormat::LID( DocFileFormat::SpanishCostaRica ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-DO" ), ASCDocFileFormat::LID( DocFileFormat::SpanishDominicanRepublic ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-EC" ), ASCDocFileFormat::LID( DocFileFormat::SpanishEcuador ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-SV" ), ASCDocFileFormat::LID( DocFileFormat::SpanishElSalvador ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-GT" ), ASCDocFileFormat::LID( DocFileFormat::SpanishGuatemala ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-HN" ), ASCDocFileFormat::LID( DocFileFormat::SpanishHonduras ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-MX" ), ASCDocFileFormat::LID( DocFileFormat::SpanishMexico ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-NI" ), ASCDocFileFormat::LID( DocFileFormat::SpanishNicaragua ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-PA" ), ASCDocFileFormat::LID( DocFileFormat::SpanishPanama ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-PY" ), ASCDocFileFormat::LID( DocFileFormat::SpanishParaguay ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-PE" ), ASCDocFileFormat::LID( DocFileFormat::SpanishPeru ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-PR" ), ASCDocFileFormat::LID( DocFileFormat::SpanishPuertoRico ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-ES" ), ASCDocFileFormat::LID( DocFileFormat::SpanishSpainTraditionalSort ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-UY" ), ASCDocFileFormat::LID( DocFileFormat::SpanishUruguay ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "es-VE" ), ASCDocFileFormat::LID( DocFileFormat::SpanishVenezuela ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "sw-TZ" ), ASCDocFileFormat::LID( DocFileFormat::Swahili ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "sv-FI" ), ASCDocFileFormat::LID( DocFileFormat::SwedishFinland ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "sv-SE" ), ASCDocFileFormat::LID( DocFileFormat::SwedishSweden ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "tg-TJ" ), ASCDocFileFormat::LID( DocFileFormat::Tajik ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "ta-ID" ), ASCDocFileFormat::LID( DocFileFormat::Tamil ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "tt-RU" ), ASCDocFileFormat::LID( DocFileFormat::Tatar ) ) );
+		lidMap.insert( pair<string, ASCDocFileFormat::LID>( string( "te-ID" ), ASCDocFileFormat::LID( DocFileFormat::Telugu ) ) );
 
-		for (unsigned short i = 0; i < ( sizeof(AVSDocFileFormat::StyleIDs) / sizeof(AVSDocFileFormat::StyleIDs[0]) ); i++ )
+		for (unsigned short i = 0; i < ( sizeof(ASCDocFileFormat::StyleIDs) / sizeof(ASCDocFileFormat::StyleIDs[0]) ); i++ )
 		{
-			predefinedStyleIDMap.insert( pair<string, unsigned short>( AVSDocFileFormat::StyleIDs[i], i ) );
+			predefinedStyleIDMap.insert( pair<string, unsigned short>( ASCDocFileFormat::StyleIDs[i], i ) );
 		}
 
-		styleTypeMap.insert( pair<string, AVSDocFileFormat::Constants::StyleType>( string( "paragraph" ), AVSDocFileFormat::Constants::styleTypeParagraph ) );
-		styleTypeMap.insert( pair<string, AVSDocFileFormat::Constants::StyleType>( string( "character" ), AVSDocFileFormat::Constants::styleTypeCharacter ) );
-		styleTypeMap.insert( pair<string, AVSDocFileFormat::Constants::StyleType>( string( "table" ), AVSDocFileFormat::Constants::styleTypeTable ) );
-		styleTypeMap.insert( pair<string, AVSDocFileFormat::Constants::StyleType>( string( "numbering" ), AVSDocFileFormat::Constants::styleTypeNumbering ) );
+		styleTypeMap.insert( pair<string, ASCDocFileFormat::Constants::StyleType>( string( "paragraph" ), ASCDocFileFormat::Constants::styleTypeParagraph ) );
+		styleTypeMap.insert( pair<string, ASCDocFileFormat::Constants::StyleType>( string( "character" ), ASCDocFileFormat::Constants::styleTypeCharacter ) );
+		styleTypeMap.insert( pair<string, ASCDocFileFormat::Constants::StyleType>( string( "table" ), ASCDocFileFormat::Constants::styleTypeTable ) );
+		styleTypeMap.insert( pair<string, ASCDocFileFormat::Constants::StyleType>( string( "numbering" ), ASCDocFileFormat::Constants::styleTypeNumbering ) );
 
-		for ( unsigned short i = 0; i < ( sizeof(AVSDocFileFormat::NumberFormatCodes) / sizeof(AVSDocFileFormat::NumberFormatCodes[0]) ); i++ )
+		for ( unsigned short i = 0; i < ( sizeof(ASCDocFileFormat::NumberFormatCodes) / sizeof(ASCDocFileFormat::NumberFormatCodes[0]) ); i++ )
 		{
-			numFmtMap.insert( pair<string, AVSDocFileFormat::Constants::MSONFC>( AVSDocFileFormat::NumberFormatCodes[i], (AVSDocFileFormat::Constants::MSONFC)i ) );
+			numFmtMap.insert( pair<string, ASCDocFileFormat::Constants::MSONFC>( ASCDocFileFormat::NumberFormatCodes[i], (ASCDocFileFormat::Constants::MSONFC)i ) );
 		}
 
 		kulMap.insert( pair<string, byte>( string( "none" ), 0x00 ) );
@@ -232,11 +263,11 @@ namespace DOCXTODOC
 		kulMap.insert( pair<string, byte>( string( "wavyDouble" ), 0x2B ) );
 		kulMap.insert( pair<string, byte>( string( "dashLongHeavy" ), 0x37 ) );
 
-		sectionBreakTypeMap.insert( pair<string, AVSDocFileFormat::Constants::SBkcOperand>( string( "continuous" ), AVSDocFileFormat::Constants::bkcContinuous ) );
-		sectionBreakTypeMap.insert( pair<string, AVSDocFileFormat::Constants::SBkcOperand>( string( "nextColumn" ), AVSDocFileFormat::Constants::bkcNewColumn ) );
-		sectionBreakTypeMap.insert( pair<string, AVSDocFileFormat::Constants::SBkcOperand>( string( "nextPage" ), AVSDocFileFormat::Constants::bkcNewPage ) );
-		sectionBreakTypeMap.insert( pair<string, AVSDocFileFormat::Constants::SBkcOperand>( string( "evenPage" ), AVSDocFileFormat::Constants::bkcEvenPage ) );
-		sectionBreakTypeMap.insert( pair<string, AVSDocFileFormat::Constants::SBkcOperand>( string( "oddPage" ), AVSDocFileFormat::Constants::bkcOddPage ) );
+		sectionBreakTypeMap.insert( pair<string, ASCDocFileFormat::Constants::SBkcOperand>( string( "continuous" ), ASCDocFileFormat::Constants::bkcContinuous ) );
+		sectionBreakTypeMap.insert( pair<string, ASCDocFileFormat::Constants::SBkcOperand>( string( "nextColumn" ), ASCDocFileFormat::Constants::bkcNewColumn ) );
+		sectionBreakTypeMap.insert( pair<string, ASCDocFileFormat::Constants::SBkcOperand>( string( "nextPage" ), ASCDocFileFormat::Constants::bkcNewPage ) );
+		sectionBreakTypeMap.insert( pair<string, ASCDocFileFormat::Constants::SBkcOperand>( string( "evenPage" ), ASCDocFileFormat::Constants::bkcEvenPage ) );
+		sectionBreakTypeMap.insert( pair<string, ASCDocFileFormat::Constants::SBkcOperand>( string( "oddPage" ), ASCDocFileFormat::Constants::bkcOddPage ) );
 
 		verticalPositionCodeMap.insert( make_pair( "margin", 0x00 ) );
 		verticalPositionCodeMap.insert( make_pair( "page", 0x01 ) );
@@ -255,98 +286,102 @@ namespace DOCXTODOC
 		textFrameWrappingMap.insert( make_pair( "tight", 0x04 ) );
 		textFrameWrappingMap.insert( make_pair( "through", 0x05 ) );
 
-		tableCellWidthMap.insert( make_pair( "nil", AVSDocFileFormat::Constants::ftsNil ) );
-		tableCellWidthMap.insert( make_pair( "auto", AVSDocFileFormat::Constants::ftsAuto ) );
-		tableCellWidthMap.insert( make_pair( "pct", AVSDocFileFormat::Constants::ftsPercent ) );
-		tableCellWidthMap.insert( make_pair( "dxa", AVSDocFileFormat::Constants::ftsDxa ) );
+		tableCellWidthMap.insert( make_pair( "nil", ASCDocFileFormat::Constants::ftsNil ) );
+		tableCellWidthMap.insert( make_pair( "auto", ASCDocFileFormat::Constants::ftsAuto ) );
+		tableCellWidthMap.insert( make_pair( "pct", ASCDocFileFormat::Constants::ftsPercent ) );
+		tableCellWidthMap.insert( make_pair( "dxa", ASCDocFileFormat::Constants::ftsDxa ) );
 
-		customTabStopAlignment.insert( make_pair( "left", AVSDocFileFormat::Constants::jcLeft ) );
-		customTabStopAlignment.insert( make_pair( "center", AVSDocFileFormat::Constants::jcCenter ) );
-		customTabStopAlignment.insert( make_pair( "right", AVSDocFileFormat::Constants::jcRight ) );
-		customTabStopAlignment.insert( make_pair( "decimal", AVSDocFileFormat::Constants::jcDecimal ) );
-		customTabStopAlignment.insert( make_pair( "bar", AVSDocFileFormat::Constants::jcBar ) );
-		customTabStopAlignment.insert( make_pair( "clear", (AVSDocFileFormat::Constants::TabJC)0x05 ) );
-		customTabStopAlignment.insert( make_pair( "num", AVSDocFileFormat::Constants::jcList ) );
+		customTabStopAlignment.insert( make_pair( "left", ASCDocFileFormat::Constants::jcLeft ) );
+		customTabStopAlignment.insert( make_pair( "center", ASCDocFileFormat::Constants::jcCenter ) );
+		customTabStopAlignment.insert( make_pair( "right", ASCDocFileFormat::Constants::jcRight ) );
+		customTabStopAlignment.insert( make_pair( "decimal", ASCDocFileFormat::Constants::jcDecimal ) );
+		customTabStopAlignment.insert( make_pair( "bar", ASCDocFileFormat::Constants::jcBar ) );
+		customTabStopAlignment.insert( make_pair( "clear", (ASCDocFileFormat::Constants::TabJC)0x05 ) );
+		customTabStopAlignment.insert( make_pair( "num", ASCDocFileFormat::Constants::jcList ) );
 
-		customTabStopLeader.insert( make_pair( "none", AVSDocFileFormat::Constants::tlcNone ) );
-		customTabStopLeader.insert( make_pair( "dot", AVSDocFileFormat::Constants::tlcDot ) );
-		customTabStopLeader.insert( make_pair( "hyphen", AVSDocFileFormat::Constants::tlcHyphen ) );
-		customTabStopLeader.insert( make_pair( "underscore", AVSDocFileFormat::Constants::tlcUnderscore ) );
-		customTabStopLeader.insert( make_pair( "heavy", AVSDocFileFormat::Constants::tlcHeavy ) );
-		customTabStopLeader.insert( make_pair( "middleDot", AVSDocFileFormat::Constants::tlcMiddleDot ) );
+		customTabStopLeader.insert( make_pair( "none", ASCDocFileFormat::Constants::tlcNone ) );
+		customTabStopLeader.insert( make_pair( "dot", ASCDocFileFormat::Constants::tlcDot ) );
+		customTabStopLeader.insert( make_pair( "hyphen", ASCDocFileFormat::Constants::tlcHyphen ) );
+		customTabStopLeader.insert( make_pair( "underscore", ASCDocFileFormat::Constants::tlcUnderscore ) );
+		customTabStopLeader.insert( make_pair( "heavy", ASCDocFileFormat::Constants::tlcHeavy ) );
+		customTabStopLeader.insert( make_pair( "middleDot", ASCDocFileFormat::Constants::tlcMiddleDot ) );
 	}
 
-	CFileTransformer::~CFileTransformer ()
+	CFileTransformer::~CFileTransformer()
 	{
-		AVSDocFileFormat::BinaryStorageSingleton* pBin	=	AVSDocFileFormat::BinaryStorageSingleton::Instance();
+		ASCDocFileFormat::BinaryStorageSingleton* pBin	=	ASCDocFileFormat::BinaryStorageSingleton::Instance();
 		if (pBin)
 			pBin->FreeInstance();
 
-		AVSDocFileFormat::COArtStorage* pStorage = AVSDocFileFormat::COArtStorage::Instance();
+		ASCDocFileFormat::COArtStorage* pStorage = ASCDocFileFormat::COArtStorage::Instance();
 		if (pStorage)
 			pStorage->FreeInstance();
 
-		RELEASEOBJECT (m_pDOCFile);
+		RELEASEOBJECT (m_pDocFile);
 	}
 }
 
 namespace DOCXTODOC
 {
-	long CFileTransformer::Convert (const WCHAR* ooxFolder, const WCHAR* docFile, const ProgressCallback* ffCallBack)
+	long CFileTransformer::Convert(const WCHAR* ooxFolder, const WCHAR* docFile, const ProgressCallback* ffCallBack)
 	{
 		LONG hrStatus = AVS_ERROR_UNEXPECTED;
 
-		if ( (NULL != ooxFolder) && (NULL != docFile) && m_pDOCFile )
-		{
+		if ((NULL != ooxFolder) && (NULL != docFile) && (NULL != m_pDocFile))
+		{		
+#ifndef _DEBUG
 			try
 			{
-				inputFolder.read (ooxFolder);
+#endif
+				m_docxInputFile.read(ooxFolder);
 
 				if (UpdateProgress (ffCallBack,500000))
 					return S_FALSE;
 
 				SHORT index = 0;
 
-				size_t count = (*inputFolder.find<OOX::Document>().find<OOX::FontTable>().Fonts).size();
-				std::vector<OOX::FontTable::Font>& items = (*inputFolder.find<OOX::Document>().find<OOX::FontTable>().Fonts);
+				size_t count = (m_docxInputFile.find<OOX::Document>().find<OOX::FontTable>().m_fonts).size();
+				std::vector<OOX::FontTable::Font>& items = (m_docxInputFile.find<OOX::Document>().find<OOX::FontTable>().m_fonts);
 
 				for (size_t j = 0; j < count; ++j)	
 				{
-					m_mapFontTableMap.insert(pair<string, short>(items[j].Name, index++));
+					m_mapFontTableMap.insert(pair<wstring, short>(items[j].m_name.get(), index++));
 				}
 
 				if (UpdateProgress (ffCallBack,625000))
 					return S_FALSE;
 
-				if (inputFolder.find<OOX::Document>().exist<OOX::Numbering>())
-					ConvertNumbering( inputFolder.find<OOX::Document>().find<OOX::Numbering>() );
+				if (m_docxInputFile.find<OOX::Document>().exist<OOX::Numbering>())
+					ConvertNumbering( m_docxInputFile.find<OOX::Document>().find<OOX::Numbering>() );
 
-				ConvertStyleSheet (inputFolder.find<OOX::Document>().find<OOX::Styles>());
+				ConvertStyleSheet (m_docxInputFile.find<OOX::Document>().find<OOX::Styles>());
 
 				if (UpdateProgress (ffCallBack,750000))
 					return S_FALSE;
 
-				ConvertDocument (inputFolder.find<OOX::Document>());
-				ConvertFontTable(inputFolder.find<OOX::Document>().find<OOX::FontTable>());
+				ConvertDocument (m_docxInputFile.find<OOX::Document>());
+				ConvertFontTable(m_docxInputFile.find<OOX::Document>().find<OOX::FontTable>());
 
 				if (UpdateProgress (ffCallBack,875000))
 					return S_FALSE;
 
-				hrStatus = m_pDOCFile->SaveToFile (docFile);
+				hrStatus = m_pDocFile->SaveToFile (docFile);
 
 				if (UpdateProgress (ffCallBack,1000000))
 					return S_FALSE;
+#ifndef _DEBUG
 			}
 			catch (...)
 			{
 				hrStatus = AVS_ERROR_UNEXPECTED;
 			}
+#endif
 		}
 
 		return hrStatus;
 	}
 
-	BOOL CFileTransformer::UpdateProgress (const ProgressCallback* ffCallBack, long nComplete)
+	BOOL CFileTransformer::UpdateProgress(const ProgressCallback* ffCallBack, long nComplete)
 	{
 		if (ffCallBack)
 		{
@@ -365,20 +400,20 @@ namespace DOCXTODOC
 
 namespace DOCXTODOC
 {
-	void CFileTransformer::ConvertDocument (const OOX::Document& oXmlDoc)
+	void CFileTransformer::ConvertDocument(const OOX::Document& oXmlDoc)
 	{
 		ConvertContent (*oXmlDoc.Items);
 
 		// TODO : если список в конце документа, то добавляется брэйк (бага)
 
-		AVSDocFileFormat::Paragraph paragraph;
-		paragraph.AddParagraphItem (AVSDocFileFormat::Run());
-		m_pDOCFile->AddTextItem (paragraph);
+		ASCDocFileFormat::Paragraph paragraph;
+		paragraph.AddParagraphItem (ASCDocFileFormat::Run());
+		m_pDocFile->AddTextItem (paragraph);
 
-		m_pDOCFile->AddSectionProperties (ConvertSectionProperties(oXmlDoc.SectorProperty));
+		m_pDocFile->AddSectionProperties (ConvertSectionProperties(oXmlDoc.SectorProperty));
 	}
 
-	void CFileTransformer::ConvertContent (const vector<OOX::Logic::TextItem>& oXmlItems)
+	void CFileTransformer::ConvertContent(const vector<OOX::Logic::TextItem>& oXmlItems)
 	{
 		m_oOArtBuilder.SetLocation (MAIN_DOCUMENT);
 
@@ -391,39 +426,39 @@ namespace DOCXTODOC
 				const OOX::Logic::Paragraph& docxParagraph	=	oXmlItem.as<OOX::Logic::Paragraph>();
 				if (ValidParagraph(docxParagraph))
 				{
-					AVSDocFileFormat::Paragraph docParagraph	=	ConvertParagraph<OOX::Document>(docxParagraph);
+					ASCDocFileFormat::Paragraph docParagraph	=	ConvertParagraph<OOX::Document>(docxParagraph);
 
-					m_pDOCFile->AddTextItem (docParagraph);
+					m_pDocFile->AddTextItem (docParagraph);
 
 					if (docxParagraph.Property.is_init() && docxParagraph.Property->SectorProperty.is_init())
 					{
-						m_pDOCFile->AddTextItem (AVSDocFileFormat::SectionBreak());
-						m_pDOCFile->AddSectionProperties(ConvertSectionProperties( docxParagraph.Property->SectorProperty));
+						m_pDocFile->AddTextItem (ASCDocFileFormat::SectionBreak());
+						m_pDocFile->AddSectionProperties(ConvertSectionProperties( docxParagraph.Property->SectorProperty));
 					}
 				}
 			}
 
 			if (oXmlItem.is<OOX::Logic::Table>())
 			{
-				AVSDocFileFormat::Table oDocTable = CreateTable<OOX::Document>(oXmlItem.as<OOX::Logic::Table>());
-				m_pDOCFile->AddTextItem (oDocTable);
+				ASCDocFileFormat::Table oDocTable = CreateTable<OOX::Document>(oXmlItem.as<OOX::Logic::Table>());
+				m_pDocFile->AddTextItem (oDocTable);
 			}
 
 			if (oXmlItem.is<OOX::Logic::Sdt>())
 			{
-				ConvertContent(*oXmlItem.as<OOX::Logic::Sdt>().Content->Items);  
+				ConvertContent((*oXmlItem.as<OOX::Logic::Sdt>().Content).m_items);  
 			}
 		}  
 	}
 
-	template<class T> AVSDocFileFormat::Paragraph CFileTransformer::ConvertParagraph (const OOX::Logic::Paragraph& oXmlParagraph)
+	template<class T> ASCDocFileFormat::Paragraph CFileTransformer::ConvertParagraph (const OOX::Logic::Paragraph& oXmlParagraph)
 	{
 		PrlList styleRunPr;
 		PrlList styleParPr;
 
 		std::string style	=	GetStyleID (oXmlParagraph);
 
-		AVSDocFileFormat::Paragraph oParagraph;
+		ASCDocFileFormat::Paragraph oParagraph;
 		oParagraph.SetStyle (m_mapStyleSheetMap [style]);
 
 		styleRunPr			=	GetRunPropertiesFromStyleHierarchy (style);
@@ -452,12 +487,12 @@ namespace DOCXTODOC
 
 			if (oParagraphItem.is<OOX::Logic::Run>())
 			{
-				AVSDocFileFormat::Run oAddRun = ConvertRun<T>(oParagraphItem.as<OOX::Logic::Run>(), styleRunPr, strRunType);
+				ASCDocFileFormat::Run oAddRun = ConvertRun<T>(oParagraphItem.as<OOX::Logic::Run>(), styleRunPr, strRunType);
 
 				if (m_bIsInlineShape)
 				{
-					//AVSDocFileFormat::Picture oPicture (std::wstring(L"c:\\man.png"), 0, 0, 1000, 1000);
-					//oParagraph.AddParagraphItem(AVSDocFileFormat::Run(oPicture));
+					//ASCDocFileFormat::Picture oPicture (std::wstring(L"c:\\man.png"), 0, 0, 1000, 1000);
+					//oParagraph.AddParagraphItem(ASCDocFileFormat::Run(oPicture));
 
 					oParagraph.AddParagraphItem(m_oInlineShape);
 				}
@@ -466,8 +501,8 @@ namespace DOCXTODOC
 					oParagraph.AddParagraphItem(oAddRun);
 				}
 
-				//AVSDocFileFormat::Picture oPicture (std::wstring(L"c:\\man.png"), 0, 0, 5000, 5000);
-				//oParagraph.AddParagraphItem(AVSDocFileFormat::Run(oPicture));
+				//ASCDocFileFormat::Picture oPicture (std::wstring(L"c:\\man.png"), 0, 0, 5000, 5000);
+				//oParagraph.AddParagraphItem(ASCDocFileFormat::Run(oPicture));
 
 				m_bIsInlineShape	=	FALSE;
 			}
@@ -484,7 +519,7 @@ namespace DOCXTODOC
 					continue;
 				}
 
-				oParagraph.AddParagraphItem (AVSDocFileFormat::BookmarkStart(FormatUtils::UTF8Decode(oBookMark.Id), FormatUtils::UTF8Decode(oBookMark.Name)));
+				oParagraph.AddParagraphItem (ASCDocFileFormat::BookmarkStart(FormatUtils::UTF8Decode(oBookMark.Id), FormatUtils::UTF8Decode(oBookMark.Name)));
 			}
 			else if (oParagraphItem.is<OOX::Logic::BookmarkEnd>())
 			{
@@ -495,7 +530,7 @@ namespace DOCXTODOC
 				}
 
 				const OOX::Logic::BookmarkEnd& oBookMark = oParagraphItem.as<OOX::Logic::BookmarkEnd>();
-				oParagraph.AddParagraphItem (AVSDocFileFormat::BookmarkEnd(FormatUtils::UTF8Decode(oBookMark.Id)));
+				oParagraph.AddParagraphItem (ASCDocFileFormat::BookmarkEnd(FormatUtils::UTF8Decode(oBookMark.Id)));
 			}
 			else if (oParagraphItem.is<OOX::Logic::FldSimple>())
 			{
@@ -534,14 +569,14 @@ namespace DOCXTODOC
 				}
 			}
 
-			UpdateItemByCondition<AVSDocFileFormat::Paragraph> (&oParagraph, strRunType);
+			UpdateItemByCondition<ASCDocFileFormat::Paragraph> (&oParagraph, strRunType);
 		}
 
 		if (oXmlParagraph.Items->empty())
 		{
 			// Have some other properties
 
-			AVSDocFileFormat::Run run;
+			ASCDocFileFormat::Run run;
 			run.AddProperties(styleRunPr);
 
 			if (oXmlParagraph.Property.is_init() && oXmlParagraph.Property->RunProperty.is_init())
@@ -552,7 +587,7 @@ namespace DOCXTODOC
 			oParagraph.AddParagraphItem(run);
 		}
 
-		oParagraph.AddProperties (ConvertParagraphProperties (inputFolder.find<OOX::Document>().find<OOX::Styles>().Default->ParagraphProperty));
+		oParagraph.AddProperties (ConvertParagraphProperties (m_docxInputFile.find<OOX::Document>().find<OOX::Styles>().Default->ParagraphProperty));
 		oParagraph.AddOrReplaceProperties (styleParPr);
 
 		if (oXmlParagraph.Property.is_init())
@@ -577,7 +612,7 @@ namespace DOCXTODOC
 	{
 		PrlList allParagraphProperties;
 
-		const OOX::Styles::Style styleById = this->inputFolder.find<OOX::Document>().find<OOX::Styles>().GetStyleById(styleID);
+		const OOX::Styles::Style styleById = this->m_docxInputFile.find<OOX::Document>().find<OOX::Styles>().GetStyleById(styleID);
 
 		if (styleById.BasedOn.is_init())
 		{
@@ -607,7 +642,7 @@ namespace DOCXTODOC
 	{
 		PrlList allRunProperties;
 
-		const OOX::Styles::Style styleById = inputFolder.find<OOX::Document>().find<OOX::Styles>().GetStyleById( styleID );
+		const OOX::Styles::Style styleById = m_docxInputFile.find<OOX::Document>().find<OOX::Styles>().GetStyleById( styleID );
 
 		if ( styleById.BasedOn.is_init() )
 		{
@@ -625,11 +660,11 @@ namespace DOCXTODOC
 		return allRunProperties;
 	}
 
-	PrlList CFileTransformer::GetTablePropertiesFromStyleHierarchy (const string& styleID) 
+	PrlList CFileTransformer::GetTablePropertiesFromStyleHierarchy(const string& styleID) 
 	{
 		PrlList allTableProperties;
 
-		const OOX::Styles::Style styleById = inputFolder.find<OOX::Document>().find<OOX::Styles>().GetStyleById( styleID );
+		const OOX::Styles::Style styleById = m_docxInputFile.find<OOX::Document>().find<OOX::Styles>().GetStyleById( styleID );
 
 		if ( styleById.BasedOn.is_init() )
 		{
@@ -647,22 +682,22 @@ namespace DOCXTODOC
 		return allTableProperties;
 	}
 
-	string CFileTransformer::GetFontNameByThemeName (const string& themeName) 
+	std::wstring CFileTransformer::GetFontNameByThemeName(const std::wstring& themeName) 
 	{
 		string fontName;
 
-		const OOX::Theme::File& themeFile = this->inputFolder.find<OOX::Document>().find<OOX::Theme::File>();
+		const OOX::Theme::File& themeFile = this->m_docxInputFile.find<OOX::Document>().find<OOX::Theme::File>();
 
-		if ( themeFile.themeElements.is_init() && themeFile.themeElements->fontScheme.is_init() )
+		if (themeFile.themeElements.is_init() && themeFile.themeElements->fontScheme.is_init())
 		{
 			const OOX::Theme::FontScheme& fontScheme = *themeFile.themeElements->fontScheme;
 
-			string major = "major";
-			string minor = "minor";
+			std::wstring major		=	std::wstring(L"major");
+			std::wstring minor		=	std::wstring(L"minor");
 
-			string hAnsi = "HAnsi";
-			string eastAsia = "EastAsia";
-			string bidi = "Bidi";
+			std::wstring hAnsi		=	std::wstring(L"HAnsi");
+			std::wstring eastAsia	=	std::wstring(L"EastAsia");
+			std::wstring bidi		=	std::wstring(L"Bidi");
 
 			if ( fontScheme.majorFont.is_init() && ( search( themeName.begin(), themeName.end(), major.begin(), major.end() ) != themeName.end() ) )
 			{
@@ -700,10 +735,10 @@ namespace DOCXTODOC
 			}
 		}
 
-		return fontName;
+		return  string2wstring__(fontName);
 	}
 
-	template<class T> void CFileTransformer::ConvertFldSimple(const OOX::Logic::FldSimple& fldSimpleDocx, const PrlList& styleDocRunProperties, AVSDocFileFormat::Paragraph& docParagraph, std::wstring& strRunType) 
+	template<class T> void CFileTransformer::ConvertFldSimple(const OOX::Logic::FldSimple& fldSimpleDocx, const PrlList& styleDocRunProperties, ASCDocFileFormat::Paragraph& docParagraph, std::wstring& strRunType) 
 	{
 		string::size_type findIndex = string::npos;
 
@@ -711,33 +746,33 @@ namespace DOCXTODOC
 
 		if ( findIndex != string::npos )
 		{
-			docParagraph.AddParagraphItem( AVSDocFileFormat::Run( AVSDocFileFormat::FldChar( AVSDocFileFormat::FldCharTypeBegin, AVSDocFileFormat::Constants::fltPAGE ) ) );
-			docParagraph.AddParagraphItem( AVSDocFileFormat::Run( AVSDocFileFormat::FldChar( AVSDocFileFormat::FldCharTypeSeparate ) ) );
+			docParagraph.AddParagraphItem( ASCDocFileFormat::Run( ASCDocFileFormat::FldChar( ASCDocFileFormat::FldCharTypeBegin, ASCDocFileFormat::Constants::fltPAGE ) ) );
+			docParagraph.AddParagraphItem( ASCDocFileFormat::Run( ASCDocFileFormat::FldChar( ASCDocFileFormat::FldCharTypeSeparate ) ) );
 			docParagraph.AddParagraphItem( ConvertRun<T>( *fldSimpleDocx.Run, styleDocRunProperties, strRunType ) );
-			docParagraph.AddParagraphItem( AVSDocFileFormat::Run( AVSDocFileFormat::FldChar( AVSDocFileFormat::FldCharTypeEnd ) ) );
+			docParagraph.AddParagraphItem( ASCDocFileFormat::Run( ASCDocFileFormat::FldChar( ASCDocFileFormat::FldCharTypeEnd ) ) );
 		}
 
 		findIndex = fldSimpleDocx.Instr->find( "SYMBOL" );
 
 		if ( findIndex != string::npos )
 		{
-			AVSDocFileFormat::Run fldSymbolRun;
+			ASCDocFileFormat::Run fldSymbolRun;
 
-			fldSymbolRun.AddRunItem( AVSDocFileFormat::Text( FormatUtils::UTF8Decode( *fldSimpleDocx.Instr ) ) );
+			fldSymbolRun.AddRunItem( ASCDocFileFormat::Text( FormatUtils::UTF8Decode( *fldSimpleDocx.Instr ) ) );
 			fldSymbolRun.AddProperties( styleDocRunProperties );
 
 			strRunType = _T( "SYMBOL" );
 
-			docParagraph.AddParagraphItem( AVSDocFileFormat::Run( AVSDocFileFormat::FldChar( AVSDocFileFormat::FldCharTypeBegin, AVSDocFileFormat::Constants::fltSYMBOL ) ) );
+			docParagraph.AddParagraphItem( ASCDocFileFormat::Run( ASCDocFileFormat::FldChar( ASCDocFileFormat::FldCharTypeBegin, ASCDocFileFormat::Constants::fltSYMBOL ) ) );
 			docParagraph.AddParagraphItem( fldSymbolRun );
-			docParagraph.AddParagraphItem( AVSDocFileFormat::Run( AVSDocFileFormat::FldChar( AVSDocFileFormat::FldCharTypeSeparate ) ) );
-			docParagraph.AddParagraphItem( AVSDocFileFormat::Run( AVSDocFileFormat::FldChar( AVSDocFileFormat::FldCharTypeEnd ) ) );
+			docParagraph.AddParagraphItem( ASCDocFileFormat::Run( ASCDocFileFormat::FldChar( ASCDocFileFormat::FldCharTypeSeparate ) ) );
+			docParagraph.AddParagraphItem( ASCDocFileFormat::Run( ASCDocFileFormat::FldChar( ASCDocFileFormat::FldCharTypeEnd ) ) );
 		}  
 	}
 
-	template<class T> AVSDocFileFormat::Hyperlink CFileTransformer::ConvertHyperlink (const OOX::Logic::Hyperlink& docxHyperlink, const PrlList& styleDocRunProperties ) 
+	template<class T> ASCDocFileFormat::Hyperlink CFileTransformer::ConvertHyperlink(const OOX::Logic::Hyperlink& docxHyperlink, const PrlList& styleDocRunProperties ) 
 	{
-		AVSDocFileFormat::Hyperlink docHyperlink;
+		ASCDocFileFormat::Hyperlink docHyperlink;
 
 		if (docxHyperlink.rId.is_init())
 		{
@@ -746,24 +781,22 @@ namespace DOCXTODOC
 
 			if (typeid(T) != typeid(OOX::Document))
 			{
-				if (inputFolder.find<OOX::Document>().find<T>().exist(rid))
+				if (m_docxInputFile.find<OOX::Document>().find<T>().exist(rid))
 				{
-					hyperlink = dynamic_cast<OOX::HyperLink*>(inputFolder.find<OOX::Document>().find<T>()[rid].get());
+					hyperlink = dynamic_cast<OOX::HyperLink*>(m_docxInputFile.find<OOX::Document>().find<T>()[rid].operator->());
 				}
 			}
 			else
 			{
-				if (inputFolder.find<OOX::Document>().exist(rid))
+				if (m_docxInputFile.find<OOX::Document>().exist(rid))
 				{
-					hyperlink = dynamic_cast<OOX::HyperLink*>(inputFolder.find<OOX::Document>()[rid].get());
+					hyperlink = dynamic_cast<OOX::HyperLink*>(m_docxInputFile.find<OOX::Document>()[rid].operator->());
 				}
 			}
 
-			if ( hyperlink != NULL )
+			if (hyperlink)
 			{
-				wstring hyperlinkURL = hyperlink->Uri().string();
-
-				docHyperlink.SetURL( hyperlinkURL.c_str() );
+				docHyperlink.SetURL(hyperlink->GetPath().c_str());
 			}
 		}
 
@@ -779,33 +812,33 @@ namespace DOCXTODOC
 		{			
 			std::wstring strRunType;
 			docHyperlink.AddRun(ConvertRun<T>(items[i], styleDocRunProperties, strRunType));
-			UpdateItemByCondition<AVSDocFileFormat::Hyperlink>(&docHyperlink, strRunType);
+			UpdateItemByCondition<ASCDocFileFormat::Hyperlink>(&docHyperlink, strRunType);
 		}
 
 		return docHyperlink;
 	}
 
-	template<class T> void CFileTransformer::UpdateItemByCondition (T* docItem, const wstring& condition) 
+	template<class T> void CFileTransformer::UpdateItemByCondition(T* docItem, const wstring& condition) 
 	{
 		if ( ( docItem != NULL ) && ( !condition.empty() ) )
 		{
 			static bool haveSeparator = false;
 
-			AVSDocFileFormat::FldChar* fldChar = NULL;
+			ASCDocFileFormat::FldChar* fldChar = NULL;
 
 			BOOL findComplete	=	FALSE;
 
 			for (T::reverse_iterator riter = docItem->rbegin(); riter != docItem->rend(); ++riter)
 			{
-				if (riter->is<AVSDocFileFormat::Run>())
+				if (riter->is<ASCDocFileFormat::Run>())
 				{
-					AVSDocFileFormat::Run& run = riter->as<AVSDocFileFormat::Run>();
+					ASCDocFileFormat::Run& run = riter->as<ASCDocFileFormat::Run>();
 
-					for (AVSDocFileFormat::Run::reverse_iterator runRIter = run.rbegin(); runRIter != run.rend(); ++runRIter)
+					for (ASCDocFileFormat::Run::reverse_iterator runRIter = run.rbegin(); runRIter != run.rend(); ++runRIter)
 					{
-						if ( runRIter->is<AVSDocFileFormat::FldChar>() )
+						if ( runRIter->is<ASCDocFileFormat::FldChar>() )
 						{
-							fldChar = &runRIter->as<AVSDocFileFormat::FldChar>();
+							fldChar = &runRIter->as<ASCDocFileFormat::FldChar>();
 
 							findComplete	=	TRUE;
 							break;
@@ -824,63 +857,63 @@ namespace DOCXTODOC
 
 			if (condition == std::wstring(_T("HYPERLINK")))
 			{
-				if (charType == AVSDocFileFormat::FldChar::FldCharBegin )
+				if (charType == ASCDocFileFormat::FldChar::FldCharBegin )
 				{
-					fldChar->SetFieldCharacterProperties(AVSDocFileFormat::Constants::fltHYPERLINK);
+					fldChar->SetFieldCharacterProperties(ASCDocFileFormat::Constants::fltHYPERLINK);
 				}
 			}
 			else if ( condition == std::wstring( _T( "PAGEREF" ) ) )
 			{
-				if (charType == AVSDocFileFormat::FldChar::FldCharBegin )
+				if (charType == ASCDocFileFormat::FldChar::FldCharBegin )
 				{
-					fldChar->SetFieldCharacterProperties( AVSDocFileFormat::Constants::fltPAGEREF );
+					fldChar->SetFieldCharacterProperties( ASCDocFileFormat::Constants::fltPAGEREF );
 				}
 			}
 			else if ( condition == std::wstring( _T( "TOC" ) ) )
 			{
-				if (charType == AVSDocFileFormat::FldChar::FldCharBegin )
+				if (charType == ASCDocFileFormat::FldChar::FldCharBegin )
 				{
-					fldChar->SetFieldCharacterProperties( AVSDocFileFormat::Constants::fltTOC );
+					fldChar->SetFieldCharacterProperties( ASCDocFileFormat::Constants::fltTOC );
 				}
 			}
 			else if ( condition == std::wstring( _T( "PAGE" ) ) )
 			{
-				if (charType == AVSDocFileFormat::FldChar::FldCharBegin )
+				if (charType == ASCDocFileFormat::FldChar::FldCharBegin )
 				{
-					fldChar->SetFieldCharacterProperties( AVSDocFileFormat::Constants::fltPAGE );
+					fldChar->SetFieldCharacterProperties( ASCDocFileFormat::Constants::fltPAGE );
 				}  
 			}
 			else if ( condition == std::wstring( _T( "SYMBOL" ) ) )
 			{
-				if (charType == AVSDocFileFormat::FldChar::FldCharBegin )
+				if (charType == ASCDocFileFormat::FldChar::FldCharBegin )
 				{
-					fldChar->SetFieldCharacterProperties( AVSDocFileFormat::Constants::fltSYMBOL );
+					fldChar->SetFieldCharacterProperties( ASCDocFileFormat::Constants::fltSYMBOL );
 				}  
 			}
 			else if ( condition == std::wstring( _T( "ADDRESSBLOCK" ) ) )
 			{
-				if (charType == AVSDocFileFormat::FldChar::FldCharBegin )
+				if (charType == ASCDocFileFormat::FldChar::FldCharBegin )
 				{
-					fldChar->SetFieldCharacterProperties( AVSDocFileFormat::Constants::fltADDRESSBLOCK );
+					fldChar->SetFieldCharacterProperties( ASCDocFileFormat::Constants::fltADDRESSBLOCK );
 				}  
 			}
 			else if ( condition == std::wstring( _T( "GREETINGLINE" ) ) )
 			{
-				if (charType == AVSDocFileFormat::FldChar::FldCharBegin )
+				if (charType == ASCDocFileFormat::FldChar::FldCharBegin )
 				{
-					fldChar->SetFieldCharacterProperties( AVSDocFileFormat::Constants::fltGREETINGLINE );
+					fldChar->SetFieldCharacterProperties( ASCDocFileFormat::Constants::fltGREETINGLINE );
 				}  
 			}
 			else if ( condition == std::wstring( _T( "MERGEFIELD" ) ) )
 			{
-				if (charType == AVSDocFileFormat::FldChar::FldCharBegin )
+				if (charType == ASCDocFileFormat::FldChar::FldCharBegin )
 				{
-					fldChar->SetFieldCharacterProperties( AVSDocFileFormat::Constants::fltMERGEFIELD );
+					fldChar->SetFieldCharacterProperties( ASCDocFileFormat::Constants::fltMERGEFIELD );
 				}  
 			}
 			else if ( condition == std::wstring( _T( "separate" ) ) )
 			{
-				if (charType == AVSDocFileFormat::FldChar::FldCharSeparate )
+				if (charType == ASCDocFileFormat::FldChar::FldCharSeparate )
 				{
 					//fldChar->SetFieldCharacterProperties(0);
 					haveSeparator = true;
@@ -888,9 +921,9 @@ namespace DOCXTODOC
 			}
 			else if ( condition == std::wstring( _T( "end" ) ) )
 			{
-				if (charType == AVSDocFileFormat::FldChar::FldCharEnd )
+				if (charType == ASCDocFileFormat::FldChar::FldCharEnd )
 				{
-					fldChar->SetFieldCharacterProperties( (byte)AVSDocFileFormat::grffldEnd( false, false, false, false, false, false, false, haveSeparator ) );
+					fldChar->SetFieldCharacterProperties( (byte)ASCDocFileFormat::grffldEnd( false, false, false, false, false, false, false, haveSeparator ) );
 
 					haveSeparator = false;
 				}
@@ -899,9 +932,9 @@ namespace DOCXTODOC
 	}
 
 	//
-	AVSDocFileFormat::Constants::VerticalMergeFlag CFileTransformer::ConvertTableVerticalMergeFlag (const nullable_property<OOX::Logic::VMerge>& vMerge) 
+	ASCDocFileFormat::Constants::VerticalMergeFlag CFileTransformer::ConvertTableVerticalMergeFlag(const nullable_property<OOX::Logic::VMerge>& vMerge) 
 	{
-		AVSDocFileFormat::Constants::VerticalMergeFlag vmf = AVSDocFileFormat::Constants::fvmClear;
+		ASCDocFileFormat::Constants::VerticalMergeFlag vmf = ASCDocFileFormat::Constants::fvmClear;
 
 		if ( vMerge.is_init() )
 		{
@@ -909,23 +942,23 @@ namespace DOCXTODOC
 			{
 				if ( *vMerge->Value == string( "restart" ) )
 				{
-					vmf = AVSDocFileFormat::Constants::fvmRestart;
+					vmf = ASCDocFileFormat::Constants::fvmRestart;
 				}
 				else if ( *vMerge->Value == string( "continue" ) )
 				{
-					vmf = AVSDocFileFormat::Constants::fvmMerge;
+					vmf = ASCDocFileFormat::Constants::fvmMerge;
 				}
 			}
 			else
 			{
-				vmf = AVSDocFileFormat::Constants::fvmMerge;
+				vmf = ASCDocFileFormat::Constants::fvmMerge;
 			}
 		}
 
 		return vmf;
 	}
 
-	const PrlList CFileTransformer::ConvertRunProperties (const OOX::Logic::RunProperty& docxRunProperties) 
+	const PrlList CFileTransformer::ConvertRunProperties(const OOX::Logic::RunProperty& docxRunProperties) 
 	{
 		m_bIsHaveRunPr	=	TRUE;
 
@@ -935,108 +968,108 @@ namespace DOCXTODOC
 		{
 			byte bold = ( ( *docxRunProperties.Bold ) ? ( 1 ) : ( 0 ) );
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFBold, &bold ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFBold, &bold ) );
 		}
 
 		if ( docxRunProperties.Italic.is_init() )
 		{
 			byte italic = ( ( *docxRunProperties.Italic ) ? ( 1 ) : ( 0 ) );
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFItalic, &italic ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFItalic, &italic ) );
 		}
 
 		if ( docxRunProperties.Under.is_init() && *docxRunProperties.Under && docxRunProperties.UnderType.is_init() )
 		{
 			byte under = this->kulMap[*docxRunProperties.UnderType];
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCKul, &under ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCKul, &under ) );
 		}
 
 		if ( docxRunProperties.Strike.is_init() )
 		{
 			byte strike = ( ( *docxRunProperties.Strike ) ? ( 1 ) : ( 0 ) );
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFStrike, &strike ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFStrike, &strike ) );
 		}
 
 		if ( docxRunProperties.DStrike.is_init() )
 		{
 			byte dStrike = ( ( *docxRunProperties.DStrike ) ? ( 1 ) : ( 0 ) );
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFDStrike, &dStrike ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFDStrike, &dStrike ) );
 		}
 
 		if ( docxRunProperties.SmallCaps.is_init() )
 		{
 			byte smallCaps = ( ( *docxRunProperties.SmallCaps ) ? ( 1 ) : ( 0 ) );
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFSmallCaps, &smallCaps ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFSmallCaps, &smallCaps ) );
 		}
 
 		if ( docxRunProperties.Caps.is_init() )
 		{
 			byte caps = ( ( *docxRunProperties.Caps ) ? ( 1 ) : ( 0 ) );
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFCaps, &caps ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFCaps, &caps ) );
 		}
 
 		if ( docxRunProperties.Emboss.is_init() )
 		{
 			byte emboss = ( ( *docxRunProperties.Emboss ) ? ( 1 ) : ( 0 ) );
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFEmboss, &emboss ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFEmboss, &emboss ) );
 		}
 
 		if ( docxRunProperties.Imprint.is_init() )
 		{
 			byte imprint = ( ( *docxRunProperties.Imprint ) ? ( 1 ) : ( 0 ) );
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFImprint, &imprint ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFImprint, &imprint ) );
 		}
 
 		if ( docxRunProperties.Outline.is_init() )
 		{
 			byte outline = ( ( *docxRunProperties.Outline ) ? ( 1 ) : ( 0 ) );
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFOutline, &outline ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFOutline, &outline ) );
 		}
 
 		if ( docxRunProperties.Shadow.is_init() )
 		{
 			byte shadow = ( ( *docxRunProperties.Shadow ) ? ( 1 ) : ( 0 ) );
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFShadow, &shadow ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFShadow, &shadow ) );
 		}
 
 		if ( docxRunProperties.Vanish.is_init() )
 		{
 			byte vanish = ( ( *docxRunProperties.Vanish ) ? ( 1 ) : ( 0 ) );
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCFVanish, &vanish ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCFVanish, &vanish ) );
 		}
 
 		if ( docxRunProperties.FontSize.is_init() )
 		{
 			unsigned short fontSize = (unsigned short)docxRunProperties.FontSize;
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCHps, (byte*)&fontSize ) );
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCHpsBi, (byte*)&fontSize ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCHps, (byte*)&fontSize ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCHpsBi, (byte*)&fontSize ) );
 		}
 
 		if (docxRunProperties.FontColor.is_init())
 		{
-			int colorIntValue	=	AVSDocFileFormat::COLORREF::cvAuto;
+			int colorIntValue	=	ASCDocFileFormat::COLORREF::cvAuto;
 			if (false == docxRunProperties.FontColor->isAuto())
 				colorIntValue	=	HexString2Int( docxRunProperties.FontColor->ToString() );
 
-			AVSDocFileFormat::COLORREF color (colorIntValue);
+			ASCDocFileFormat::COLORREF color (colorIntValue);
 
-			docRunProperties.push_back (AVSDocFileFormat::Prl((short)DocFileFormat::sprmCCv, color));
+			docRunProperties.push_back (ASCDocFileFormat::Prl((short)DocFileFormat::sprmCCv, color));
 		}
 
 		if ( docxRunProperties.Highlight.is_init() )
 		{
 			byte ico = DOCXDOCUTILS::ColorToIco (*docxRunProperties.Highlight);
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCHighlight, &ico ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCHighlight, &ico ) );
 		}
 
 		if ( docxRunProperties.Shading.is_init() && docxRunProperties.Shading->fill.is_init() )
@@ -1046,19 +1079,19 @@ namespace DOCXTODOC
 
 			if (docxRunProperties.Shading->fill == "auto")
 			{
-				fillAuto = AVSDocFileFormat::COLORREF::cvAuto;
+				fillAuto = ASCDocFileFormat::COLORREF::cvAuto;
 			}
 			else
 			{
 				colorIntValue = HexString2Int( *docxRunProperties.Shading->fill );
 			}
 
-			AVSDocFileFormat::SHDOperand shdOperand ( 
-				AVSDocFileFormat::Shd( AVSDocFileFormat::COLORREF( (int)( 0 | fillAuto ) ), 
-				AVSDocFileFormat::COLORREF( colorIntValue | fillAuto ),
+			ASCDocFileFormat::SHDOperand shdOperand ( 
+				ASCDocFileFormat::Shd( ASCDocFileFormat::COLORREF( (int)( 0 | fillAuto ) ), 
+				ASCDocFileFormat::COLORREF( colorIntValue | fillAuto ),
 				0 ) );
 
-			docRunProperties.push_back (AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCShd, shdOperand ));
+			docRunProperties.push_back (ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCShd, shdOperand ));
 		}
 
 		if ( docxRunProperties.rFonts.is_init() )
@@ -1067,88 +1100,88 @@ namespace DOCXTODOC
 
 			if ( docxRunProperties.rFonts->ascii.is_init() && !docxRunProperties.rFonts->AsciiTheme.is_init() )
 			{
-				std::string strFontName	= docxRunProperties.rFonts->ascii;
+				std::wstring strFontName = string2wstring__(docxRunProperties.rFonts->ascii);
 				if (strFontName.length())
 				{			
 					AddInternalFont (strFontName);
 
 					fontIndex	=	m_mapFontTableMap[strFontName];
 
-					docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc0, (byte*)&fontIndex ) );
+					docRunProperties.push_back(ASCDocFileFormat::Prl((short)DocFileFormat::sprmCRgFtc0, (byte*)&fontIndex));
 				}
 			}
-			else if ( docxRunProperties.rFonts->AsciiTheme.is_init() )
+			else if ( docxRunProperties.rFonts->AsciiTheme.is_init())
 			{
-				std::string fontNameByThemeName = GetFontNameByThemeName(docxRunProperties.rFonts->AsciiTheme);
+				std::wstring fontNameByThemeName = GetFontNameByThemeName(string2wstring__(docxRunProperties.rFonts->AsciiTheme) );
 
-				if ( !fontNameByThemeName.empty() )
+				if (!fontNameByThemeName.empty())
 				{
-					map<string, short>::const_iterator findResult = m_mapFontTableMap.find( fontNameByThemeName );  
-
-					if ( findResult != m_mapFontTableMap.end() )
-					{
-						fontIndex = findResult->second;
-					}
-
-					docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc0, (byte*)&fontIndex ) );
-				}
-			}
-
-			if (docxRunProperties.rFonts->Cs.is_init() && !docxRunProperties.rFonts->Cstheme.is_init())
-			{
-				std::string strFontName	= docxRunProperties.rFonts->Cs;
-				if (strFontName.length())
-				{			
-					AddInternalFont (strFontName);
-
-					fontIndex	=	m_mapFontTableMap[strFontName];
-
-					docRunProperties.push_back (AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc1, (byte*)&fontIndex));
-				}
-			}
-			else if ( docxRunProperties.rFonts->Cstheme.is_init() )
-			{
-				string fontNameByThemeName = this->GetFontNameByThemeName( docxRunProperties.rFonts->Cstheme );
-
-				if ( !fontNameByThemeName.empty() )
-				{
-					std::map<string, short>::const_iterator findResult = m_mapFontTableMap.find( fontNameByThemeName );  
-
-					if ( findResult != m_mapFontTableMap.end() )
-					{
-						fontIndex = findResult->second;
-					}
-
-					docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc1, (byte*)&fontIndex ) );
-				}
-			}
-
-			if ( docxRunProperties.rFonts->hAnsi.is_init() && !docxRunProperties.rFonts->HAnsiTheme.is_init() )
-			{
-				std::string strFontName	= docxRunProperties.rFonts->hAnsi;
-				if (strFontName.length())
-				{			
-					AddInternalFont (strFontName);
-
-					fontIndex	=	m_mapFontTableMap[docxRunProperties.rFonts->hAnsi];
-
-					docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc2, (byte*)&fontIndex ) );
-				}
-			}
-			else if ( docxRunProperties.rFonts->HAnsiTheme.is_init() )
-			{
-				string fontNameByThemeName = GetFontNameByThemeName( docxRunProperties.rFonts->HAnsiTheme );
-
-				if ( !fontNameByThemeName.empty() )
-				{
-					map<string, short>::const_iterator findResult = m_mapFontTableMap.find( fontNameByThemeName );  
+					std::map<std::wstring, short>::const_iterator findResult = m_mapFontTableMap.find(fontNameByThemeName);  
 
 					if (findResult != m_mapFontTableMap.end())
 					{
 						fontIndex = findResult->second;
 					}
 
-					docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc2, (byte*)&fontIndex ) );
+					docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc0, (byte*)&fontIndex ) );
+				}
+			}
+
+			if (docxRunProperties.rFonts->Cs.is_init() && !docxRunProperties.rFonts->Cstheme.is_init())
+			{
+				std::wstring strFontName	= string2wstring__(docxRunProperties.rFonts->Cs);
+				if (strFontName.length())
+				{			
+					AddInternalFont (strFontName);
+
+					fontIndex	=	m_mapFontTableMap[strFontName];
+
+					docRunProperties.push_back (ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc1, (byte*)&fontIndex));
+				}
+			}
+			else if ( docxRunProperties.rFonts->Cstheme.is_init() )
+			{
+				std::wstring fontNameByThemeName = GetFontNameByThemeName(string2wstring__(docxRunProperties.rFonts->Cstheme));
+
+				if ( !fontNameByThemeName.empty() )
+				{
+					std::map<std::wstring, short>::const_iterator findResult = m_mapFontTableMap.find(fontNameByThemeName);  
+
+					if ( findResult != m_mapFontTableMap.end() )
+					{
+						fontIndex = findResult->second;
+					}
+
+					docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc1, (byte*)&fontIndex ) );
+				}
+			}
+
+			if ( docxRunProperties.rFonts->hAnsi.is_init() && !docxRunProperties.rFonts->HAnsiTheme.is_init() )
+			{
+				std::wstring strFontName = string2wstring__(docxRunProperties.rFonts->hAnsi);
+				if (strFontName.length())
+				{			
+					AddInternalFont (strFontName);
+
+					fontIndex	=	m_mapFontTableMap[string2wstring__(docxRunProperties.rFonts->hAnsi)];
+
+					docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc2, (byte*)&fontIndex ) );
+				}
+			}
+			else if ( docxRunProperties.rFonts->HAnsiTheme.is_init() )
+			{
+				std::wstring fontNameByThemeName = GetFontNameByThemeName(string2wstring__(docxRunProperties.rFonts->HAnsiTheme));
+
+				if ( !fontNameByThemeName.empty() )
+				{
+					map<std::wstring, short>::const_iterator findResult = m_mapFontTableMap.find(fontNameByThemeName);  
+
+					if (findResult != m_mapFontTableMap.end())
+					{
+						fontIndex = findResult->second;
+					}
+
+					docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgFtc2, (byte*)&fontIndex ) );
 				}
 			}
 		}
@@ -1157,68 +1190,68 @@ namespace DOCXTODOC
 		{
 			if ( docxRunProperties.Lang->Value.is_init() )
 			{
-				AVSDocFileFormat::LID lid = lidMap[docxRunProperties.Lang->Value];
-				docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgLid0_80, (byte*)lid ) );
-				docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgLid0, (byte*)lid ) );
+				ASCDocFileFormat::LID lid = lidMap[docxRunProperties.Lang->Value];
+				docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgLid0_80, (byte*)lid ) );
+				docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgLid0, (byte*)lid ) );
 			}
 
 			if ( docxRunProperties.Lang->EastAsia.is_init() )
 			{
-				AVSDocFileFormat::LID lid = lidMap[docxRunProperties.Lang->EastAsia];
-				docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgLid1_80, (byte*)lid ) );
-				docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCRgLid1, (byte*)lid ) );
+				ASCDocFileFormat::LID lid = lidMap[docxRunProperties.Lang->EastAsia];
+				docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgLid1_80, (byte*)lid ) );
+				docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCRgLid1, (byte*)lid ) );
 			}
 
 			if ( docxRunProperties.Lang->Bidi.is_init() )
 			{
-				AVSDocFileFormat::LID lid = lidMap[docxRunProperties.Lang->Bidi];
-				docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCLidBi, (byte*)lid ) );
+				ASCDocFileFormat::LID lid = lidMap[docxRunProperties.Lang->Bidi];
+				docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCLidBi, (byte*)lid ) );
 			}
 		}
 
 		if ( docxRunProperties.Spacing.is_init() )
 		{
-			short CDxaSpace = AVSDocFileFormat::XAS( *docxRunProperties.Spacing );
+			short CDxaSpace = ASCDocFileFormat::XAS( *docxRunProperties.Spacing );
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCDxaSpace, (byte*)&CDxaSpace ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCDxaSpace, (byte*)&CDxaSpace ) );
 		}
 
 		if ( docxRunProperties.Index.is_init() )
 		{
 			string index = docxRunProperties.Index->ToString();
-			byte CIss = (byte)AVSDocFileFormat::Constants::superSubScriptNormalText;
+			byte CIss = (byte)ASCDocFileFormat::Constants::superSubScriptNormalText;
 
 			if ( index == string( "superscript" ) )
 			{
-				CIss = (byte)AVSDocFileFormat::Constants::superSubScriptSuperscript;  
+				CIss = (byte)ASCDocFileFormat::Constants::superSubScriptSuperscript;  
 			}
 			else if ( index == string( "subscript" ) )
 			{
-				CIss = (byte)AVSDocFileFormat::Constants::superSubScriptSubscript;  
+				CIss = (byte)ASCDocFileFormat::Constants::superSubScriptSubscript;  
 			}
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCIss, (byte*)&CIss ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCIss, (byte*)&CIss ) );
 		}
 
 		if ( docxRunProperties.Kern.is_init() )
 		{
 			int kern = *docxRunProperties.Kern;
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCHpsKern, (byte*)&kern ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCHpsKern, (byte*)&kern ) );
 		}
 
 		if ( docxRunProperties.Position.is_init() )
 		{
 			int position = *docxRunProperties.Position;
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCHpsPos, (byte*)&position ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCHpsPos, (byte*)&position ) );
 		}
 
 		if ( docxRunProperties.Scale.is_init() )
 		{
 			unsigned short scale = *docxRunProperties.Scale;
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCCharScale, (byte*)&scale ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCCharScale, (byte*)&scale ) );
 		}
 
 		if ( docxRunProperties.Border.is_init() )
@@ -1226,7 +1259,7 @@ namespace DOCXTODOC
 			DOCXDOCUTILS::CTblBorders oBorder;
 			map<std::string, byte>& oBrcMap	=	oBorder.GetBrcMap ();
 
-			unsigned int brc80 =  (unsigned int)AVSDocFileFormat::Brc80(
+			unsigned int brc80 =  (unsigned int)ASCDocFileFormat::Brc80(
 				docxRunProperties.Border->Bdr->Sz.get_value_or_default(), 
 				oBrcMap[*docxRunProperties.Border->Bdr->Value], 
 				DOCXDOCUTILS::ColorToIco (docxRunProperties.Border->Bdr->Color.get_value_or_default()), 
@@ -1234,32 +1267,32 @@ namespace DOCXTODOC
 				false, 
 				false );
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCBrc80, (byte*)(&brc80) ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCBrc80, (byte*)(&brc80) ) );
 
-			AVSDocFileFormat::BrcOperand brcOperand( AVSDocFileFormat::Brc(
-				AVSDocFileFormat::COLORREF( HexString2Int( docxRunProperties.Border->Bdr->Color.get_value_or_default().ToString() ) ),
+			ASCDocFileFormat::BrcOperand brcOperand( ASCDocFileFormat::Brc(
+				ASCDocFileFormat::COLORREF( HexString2Int( docxRunProperties.Border->Bdr->Color.get_value_or_default().ToString() ) ),
 				docxRunProperties.Border->Bdr->Sz.get_value_or_default(), 
 				oBrcMap[*docxRunProperties.Border->Bdr->Value],
 				docxRunProperties.Border->Bdr->Space.get_value_or_default(), 
 				false, 
 				false ) );
 
-			docRunProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCBrc, (byte*)brcOperand ) );
+			docRunProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCBrc, (byte*)brcOperand ) );
 		}
 
 		return docRunProperties;
 	}
 
-	const PrlList CFileTransformer::ConvertParagraphProperties (const OOX::Logic::ParagraphProperty& docxParagraphProperties) 
+	const PrlList CFileTransformer::ConvertParagraphProperties(const OOX::Logic::ParagraphProperty& docxParagraphProperties) 
 	{
 		PrlList docParagraphProperties;
 
 		if ( docxParagraphProperties.Align.is_init() )
 		{
-			byte justification	=	DOCXDOCUTILS::AlignFromString (docxParagraphProperties.Align->ToString());
+			byte justification	=	DOCXDOCUTILS::AlignFromString (docxParagraphProperties.Align->ToStringW());
 
-			docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPJc, &justification ) );
-			docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPJc80, &justification ) );
+			docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPJc, &justification ) );
+			docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPJc80, &justification ) );
 		}
 
 		if ( docxParagraphProperties.Shading.is_init() && docxParagraphProperties.Shading->fill.is_init() )
@@ -1269,18 +1302,18 @@ namespace DOCXTODOC
 
 			if ( *docxParagraphProperties.Shading->fill == "auto" )
 			{
-				fillAuto = AVSDocFileFormat::COLORREF::cvAuto;
+				fillAuto = ASCDocFileFormat::COLORREF::cvAuto;
 			}
 			else
 			{
 				colorIntValue = HexString2Int( *docxParagraphProperties.Shading->fill );
 			}  
 
-			AVSDocFileFormat::SHDOperand shdOperand( AVSDocFileFormat::Shd( AVSDocFileFormat::COLORREF( (int)( 0 | fillAuto ) ), 
-				AVSDocFileFormat::COLORREF( colorIntValue | fillAuto ),
+			ASCDocFileFormat::SHDOperand shdOperand( ASCDocFileFormat::Shd( ASCDocFileFormat::COLORREF( (int)( 0 | fillAuto ) ), 
+				ASCDocFileFormat::COLORREF( colorIntValue | fillAuto ),
 				0 ) );
 
-			docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPShd, shdOperand ) );
+			docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPShd, shdOperand ) );
 		}
 
 		if ( docxParagraphProperties.Spacing.is_init() )
@@ -1289,14 +1322,14 @@ namespace DOCXTODOC
 			{
 				unsigned short pDyaAfter = (unsigned short)(*docxParagraphProperties.Spacing->After);
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPDyaAfter, (byte*)(&pDyaAfter) ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPDyaAfter, (byte*)(&pDyaAfter) ) );
 			}
 
 			if ( docxParagraphProperties.Spacing->Before.is_init() )
 			{
 				unsigned short pDyaBefore = (unsigned short)(*docxParagraphProperties.Spacing->Before);
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPDyaBefore, (byte*)(&pDyaBefore) ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPDyaBefore, (byte*)(&pDyaBefore) ) );
 			}
 
 			if ( ( docxParagraphProperties.Spacing->Line.is_init() ) && ( docxParagraphProperties.Spacing->LineRule.is_init() ) )
@@ -1315,7 +1348,7 @@ namespace DOCXTODOC
 					lineRule = true;
 				}
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPDyaLine, (byte*)AVSDocFileFormat::LSPD( line, lineRule ) ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPDyaLine, (byte*)ASCDocFileFormat::LSPD( line, lineRule ) ) );
 			}
 
 			if ( docxParagraphProperties.Spacing->BeforeAutospacing.is_init() )
@@ -1327,7 +1360,7 @@ namespace DOCXTODOC
 					beforeAutospacing = 0x01;
 				}
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPFDyaBeforeAuto, &beforeAutospacing ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPFDyaBeforeAuto, &beforeAutospacing ) );
 			}
 
 			if ( docxParagraphProperties.Spacing->AfterAutospacing.is_init() )
@@ -1339,7 +1372,7 @@ namespace DOCXTODOC
 					afterAutospacing = 0x01;
 				}
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPFDyaAfterAuto, &afterAutospacing ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPFDyaAfterAuto, &afterAutospacing ) );
 			}
 		}
 
@@ -1347,34 +1380,34 @@ namespace DOCXTODOC
 		{
 			if ( docxParagraphProperties.Ind->Left.is_init() )
 			{
-				short pDxaLeft = AVSDocFileFormat::XAS( (short)(*docxParagraphProperties.Ind->Left) );
+				short pDxaLeft = ASCDocFileFormat::XAS( (short)(*docxParagraphProperties.Ind->Left) );
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPDxaLeft, (byte*)(&pDxaLeft) ) );
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPDxaLeft80, (byte*)(&pDxaLeft) ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPDxaLeft, (byte*)(&pDxaLeft) ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPDxaLeft80, (byte*)(&pDxaLeft) ) );
 			}
 
 			if ( docxParagraphProperties.Ind->Right.is_init() )
 			{
-				short pDxaRight = AVSDocFileFormat::XAS( (short)(*docxParagraphProperties.Ind->Right) );
+				short pDxaRight = ASCDocFileFormat::XAS( (short)(*docxParagraphProperties.Ind->Right) );
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPDxaRight, (byte*)(&pDxaRight) ) );
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPDxaRight80, (byte*)(&pDxaRight) ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPDxaRight, (byte*)(&pDxaRight) ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPDxaRight80, (byte*)(&pDxaRight) ) );
 			}
 
 			if ( docxParagraphProperties.Ind->Hanging.is_init() )
 			{
-				short pDxaLeft1 = ( ( AVSDocFileFormat::XAS( (short)(*docxParagraphProperties.Ind->Hanging) ) ) * ( -1 ) );
+				short pDxaLeft1 = ( ( ASCDocFileFormat::XAS( (short)(*docxParagraphProperties.Ind->Hanging) ) ) * ( -1 ) );
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPDxaLeft1, (byte*)(&pDxaLeft1) ) );
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPDxaLeft180, (byte*)(&pDxaLeft1) ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPDxaLeft1, (byte*)(&pDxaLeft1) ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPDxaLeft180, (byte*)(&pDxaLeft1) ) );
 			}
 
 			if ( docxParagraphProperties.Ind->FirstLine.is_init() )
 			{
-				short pDxaLeft1 = AVSDocFileFormat::XAS( (short)(*docxParagraphProperties.Ind->FirstLine) );
+				short pDxaLeft1 = ASCDocFileFormat::XAS( (short)(*docxParagraphProperties.Ind->FirstLine) );
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPDxaLeft1, (byte*)(&pDxaLeft1) ) );
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPDxaLeft180, (byte*)(&pDxaLeft1) ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPDxaLeft1, (byte*)(&pDxaLeft1) ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPDxaLeft180, (byte*)(&pDxaLeft1) ) );
 			}
 		}
 
@@ -1383,7 +1416,7 @@ namespace DOCXTODOC
 			if (docxParagraphProperties.NumPr->Ilvl.is_init())
 			{
 				BYTE pIlvl	=	(BYTE)(*docxParagraphProperties.NumPr->Ilvl);
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPIlvl, (byte*)(&pIlvl) ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPIlvl, (byte*)(&pIlvl) ) );
 			}
 
 			if ( docxParagraphProperties.NumPr->NumId.is_init() )
@@ -1391,7 +1424,7 @@ namespace DOCXTODOC
 				int nNumID	=	(*docxParagraphProperties.NumPr->NumId);
 				SHORT pIlfo	=	idIndexMap [nNumID];
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPIlfo, (byte*)(&pIlfo) ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPIlfo, (byte*)(&pIlfo) ) );
 			}
 		}
 
@@ -1399,33 +1432,33 @@ namespace DOCXTODOC
 		{
 			byte POutLvl = *docxParagraphProperties.OutlineLvl;
 
-			docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPOutLvl, &POutLvl ) );
+			docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPOutLvl, &POutLvl ) );
 		}
 
 		if ( *docxParagraphProperties.KeepLines )
 		{
 			Bool8 PFKeep = 0x01;
 
-			docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPFKeep, &PFKeep ) );
+			docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPFKeep, &PFKeep ) );
 		}
 
 		if ( *docxParagraphProperties.KeepNext )
 		{
 			Bool8 PFKeepFollow = 0x01;
 
-			docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPFKeepFollow, &PFKeepFollow ) );
+			docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPFKeepFollow, &PFKeepFollow ) );
 		}
 
 		if (*docxParagraphProperties.pageBreakBefore)
 		{
 			Bool8 PFPageBreakBefore = 0x01;
-			docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPFPageBreakBefore, &PFPageBreakBefore ) );
+			docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPFPageBreakBefore, &PFPageBreakBefore ) );
 		}
 
 		if ( *docxParagraphProperties.ContextualSpacing )
 		{
 			Bool8 PFContextualSpacing = 0x01;
-			docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPFContextualSpacing, &PFContextualSpacing ) );
+			docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPFContextualSpacing, &PFContextualSpacing ) );
 		}
 
 		if ( docxParagraphProperties.ParagraphBorder.is_init() )
@@ -1435,86 +1468,86 @@ namespace DOCXTODOC
 
 			if ( docxParagraphProperties.ParagraphBorder->Top.is_init() )
 			{
-				unsigned int brc80Top =  (unsigned int)AVSDocFileFormat::Brc80( docxParagraphProperties.ParagraphBorder->Top->Bdr->Sz.get_value_or_default(), 
+				unsigned int brc80Top =  (unsigned int)ASCDocFileFormat::Brc80( docxParagraphProperties.ParagraphBorder->Top->Bdr->Sz.get_value_or_default(), 
 					oBrcMap[*docxParagraphProperties.ParagraphBorder->Top->Bdr->Value], 
 					DOCXDOCUTILS::ColorToIco (docxParagraphProperties.ParagraphBorder->Top->Bdr->Color.get_value_or_default()), 
 					docxParagraphProperties.ParagraphBorder->Top->Bdr->Space.get_value_or_default(), 
 					false, 
 					false );
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPBrcTop80, (byte*)(&brc80Top) ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPBrcTop80, (byte*)(&brc80Top) ) );
 
-				AVSDocFileFormat::BrcOperand brcOperandTop( AVSDocFileFormat::Brc( AVSDocFileFormat::COLORREF( HexString2Int( docxParagraphProperties.ParagraphBorder->Top->Bdr->Color.get_value_or_default().ToString() ) ),
+				ASCDocFileFormat::BrcOperand brcOperandTop( ASCDocFileFormat::Brc( ASCDocFileFormat::COLORREF( HexString2Int( docxParagraphProperties.ParagraphBorder->Top->Bdr->Color.get_value_or_default().ToString() ) ),
 					docxParagraphProperties.ParagraphBorder->Top->Bdr->Sz.get_value_or_default(), 
 					oBrcMap[*docxParagraphProperties.ParagraphBorder->Top->Bdr->Value],
 					docxParagraphProperties.ParagraphBorder->Top->Bdr->Space.get_value_or_default(), 
 					false, 
 					false ) );
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPBrcTop, (byte*)brcOperandTop ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPBrcTop, (byte*)brcOperandTop ) );
 			}
 
 			if ( docxParagraphProperties.ParagraphBorder->Bottom.is_init() )
 			{
-				unsigned int brc80Bottom =  (unsigned int)AVSDocFileFormat::Brc80( docxParagraphProperties.ParagraphBorder->Bottom->Bdr->Sz.get_value_or_default(), 
+				unsigned int brc80Bottom =  (unsigned int)ASCDocFileFormat::Brc80( docxParagraphProperties.ParagraphBorder->Bottom->Bdr->Sz.get_value_or_default(), 
 					oBrcMap[*docxParagraphProperties.ParagraphBorder->Bottom->Bdr->Value], 
 					DOCXDOCUTILS::ColorToIco (docxParagraphProperties.ParagraphBorder->Bottom->Bdr->Color.get_value_or_default()), 
 					docxParagraphProperties.ParagraphBorder->Bottom->Bdr->Space.get_value_or_default(), 
 					false, 
 					false );
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPBrcBottom80, (byte*)(&brc80Bottom) ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPBrcBottom80, (byte*)(&brc80Bottom) ) );
 
-				AVSDocFileFormat::BrcOperand brcOperandBottom( AVSDocFileFormat::Brc( AVSDocFileFormat::COLORREF( HexString2Int( docxParagraphProperties.ParagraphBorder->Bottom->Bdr->Color.get_value_or_default().ToString() ) ),
+				ASCDocFileFormat::BrcOperand brcOperandBottom( ASCDocFileFormat::Brc( ASCDocFileFormat::COLORREF( HexString2Int( docxParagraphProperties.ParagraphBorder->Bottom->Bdr->Color.get_value_or_default().ToString() ) ),
 					docxParagraphProperties.ParagraphBorder->Bottom->Bdr->Sz.get_value_or_default(), 
 					oBrcMap[*docxParagraphProperties.ParagraphBorder->Bottom->Bdr->Value],
 					docxParagraphProperties.ParagraphBorder->Bottom->Bdr->Space.get_value_or_default(),
 					false, 
 					false ) );
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPBrcBottom, (byte*)brcOperandBottom ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPBrcBottom, (byte*)brcOperandBottom ) );
 			}
 
 			if ( docxParagraphProperties.ParagraphBorder->Left.is_init() )
 			{
-				unsigned int brc80Left =  (unsigned int)AVSDocFileFormat::Brc80( docxParagraphProperties.ParagraphBorder->Left->Bdr->Sz.get_value_or_default(), 
+				unsigned int brc80Left =  (unsigned int)ASCDocFileFormat::Brc80( docxParagraphProperties.ParagraphBorder->Left->Bdr->Sz.get_value_or_default(), 
 					oBrcMap[*docxParagraphProperties.ParagraphBorder->Left->Bdr->Value], 
 					DOCXDOCUTILS::ColorToIco (docxParagraphProperties.ParagraphBorder->Left->Bdr->Color.get_value_or_default()), 
 					docxParagraphProperties.ParagraphBorder->Left->Bdr->Space.get_value_or_default(), 
 					false, 
 					false );
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPBrcLeft80, (byte*)(&brc80Left) ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPBrcLeft80, (byte*)(&brc80Left) ) );
 
-				AVSDocFileFormat::BrcOperand brcOperandLeft( AVSDocFileFormat::Brc( AVSDocFileFormat::COLORREF( HexString2Int( docxParagraphProperties.ParagraphBorder->Left->Bdr->Color.get_value_or_default().ToString() ) ),
+				ASCDocFileFormat::BrcOperand brcOperandLeft( ASCDocFileFormat::Brc( ASCDocFileFormat::COLORREF( HexString2Int( docxParagraphProperties.ParagraphBorder->Left->Bdr->Color.get_value_or_default().ToString() ) ),
 					docxParagraphProperties.ParagraphBorder->Left->Bdr->Sz.get_value_or_default(), 
 					oBrcMap[*docxParagraphProperties.ParagraphBorder->Left->Bdr->Value],
 					docxParagraphProperties.ParagraphBorder->Left->Bdr->Space.get_value_or_default(),
 					false, 
 					false ) );
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPBrcLeft, (byte*)brcOperandLeft ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPBrcLeft, (byte*)brcOperandLeft ) );
 			}
 
 			if ( docxParagraphProperties.ParagraphBorder->Right.is_init() )
 			{
-				unsigned int brc80Right =  (unsigned int)AVSDocFileFormat::Brc80( docxParagraphProperties.ParagraphBorder->Right->Bdr->Sz.get_value_or_default(), 
+				unsigned int brc80Right =  (unsigned int)ASCDocFileFormat::Brc80( docxParagraphProperties.ParagraphBorder->Right->Bdr->Sz.get_value_or_default(), 
 					oBrcMap[*docxParagraphProperties.ParagraphBorder->Right->Bdr->Value], 
 					DOCXDOCUTILS::ColorToIco (docxParagraphProperties.ParagraphBorder->Right->Bdr->Color.get_value_or_default()), 
 					docxParagraphProperties.ParagraphBorder->Right->Bdr->Space.get_value_or_default(), 
 					false, 
 					false );
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPBrcRight80, (byte*)(&brc80Right) ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPBrcRight80, (byte*)(&brc80Right) ) );
 
-				AVSDocFileFormat::BrcOperand brcOperandRight( AVSDocFileFormat::Brc( AVSDocFileFormat::COLORREF( HexString2Int( docxParagraphProperties.ParagraphBorder->Right->Bdr->Color.get_value_or_default().ToString() ) ),
+				ASCDocFileFormat::BrcOperand brcOperandRight( ASCDocFileFormat::Brc( ASCDocFileFormat::COLORREF( HexString2Int( docxParagraphProperties.ParagraphBorder->Right->Bdr->Color.get_value_or_default().ToString() ) ),
 					docxParagraphProperties.ParagraphBorder->Right->Bdr->Sz.get_value_or_default(), 
 					oBrcMap[*docxParagraphProperties.ParagraphBorder->Right->Bdr->Value],
 					docxParagraphProperties.ParagraphBorder->Right->Bdr->Space.get_value_or_default(),
 					false, 
 					false ) );
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPBrcRight, (byte*)brcOperandRight ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPBrcRight, (byte*)brcOperandRight ) );
 			}
 		}
 
@@ -1522,80 +1555,80 @@ namespace DOCXTODOC
 		{
 			if ( docxParagraphProperties.TextFrameProperties->HAnchor.is_init() && docxParagraphProperties.TextFrameProperties->VAnchor.is_init() )
 			{
-				byte positionCodeOperand = AVSDocFileFormat::PositionCodeOperand( this->verticalPositionCodeMap[*docxParagraphProperties.TextFrameProperties->VAnchor], this->horizontalPositionCodeMap[*docxParagraphProperties.TextFrameProperties->HAnchor] );
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPPc, &positionCodeOperand ) );
+				byte positionCodeOperand = ASCDocFileFormat::PositionCodeOperand( this->verticalPositionCodeMap[*docxParagraphProperties.TextFrameProperties->VAnchor], this->horizontalPositionCodeMap[*docxParagraphProperties.TextFrameProperties->HAnchor] );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPPc, &positionCodeOperand ) );
 			}
 
 			if ( docxParagraphProperties.TextFrameProperties->Wrap.is_init() )
 			{
 				byte PWr = this->textFrameWrappingMap[*docxParagraphProperties.TextFrameProperties->Wrap];
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPWr, &PWr ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPWr, &PWr ) );
 			}
 
 			if ( docxParagraphProperties.TextFrameProperties->X.is_init() )
 			{
-				short PDxaAbs = AVSDocFileFormat::XAS_plusOne ((short)(*docxParagraphProperties.TextFrameProperties->X));
-				docParagraphProperties.push_back (AVSDocFileFormat::Prl((short)DocFileFormat::sprmPDxaAbs, (byte*)(&PDxaAbs)));
+				short PDxaAbs = ASCDocFileFormat::XAS_plusOne ((short)(*docxParagraphProperties.TextFrameProperties->X));
+				docParagraphProperties.push_back (ASCDocFileFormat::Prl((short)DocFileFormat::sprmPDxaAbs, (byte*)(&PDxaAbs)));
 			}
 
 			if ( docxParagraphProperties.TextFrameProperties->Y.is_init() )
 			{
-				short PDyaAbs = AVSDocFileFormat::YAS_plusOne ((short)*docxParagraphProperties.TextFrameProperties->Y);
-				docParagraphProperties.push_back (AVSDocFileFormat::Prl((short)DocFileFormat::sprmPDyaAbs, (byte*)(&PDyaAbs)));
+				short PDyaAbs = ASCDocFileFormat::YAS_plusOne ((short)*docxParagraphProperties.TextFrameProperties->Y);
+				docParagraphProperties.push_back (ASCDocFileFormat::Prl((short)DocFileFormat::sprmPDyaAbs, (byte*)(&PDyaAbs)));
 			}
 
 			if ( docxParagraphProperties.TextFrameProperties->H.is_init() )
 			{
-				unsigned short PWHeightAbs = AVSDocFileFormat::YAS_nonNeg ((unsigned short)*docxParagraphProperties.TextFrameProperties->H);
-				docParagraphProperties.push_back (AVSDocFileFormat::Prl ((short)DocFileFormat::sprmPWHeightAbs, (byte*)(&PWHeightAbs)));
+				unsigned short PWHeightAbs = ASCDocFileFormat::YAS_nonNeg ((unsigned short)*docxParagraphProperties.TextFrameProperties->H);
+				docParagraphProperties.push_back (ASCDocFileFormat::Prl ((short)DocFileFormat::sprmPWHeightAbs, (byte*)(&PWHeightAbs)));
 			}
 
 			if ( docxParagraphProperties.TextFrameProperties->W.is_init() )
 			{
-				unsigned short PDxaWidth = AVSDocFileFormat::XAS_nonNeg ((unsigned short)*docxParagraphProperties.TextFrameProperties->W);
-				docParagraphProperties.push_back (AVSDocFileFormat::Prl((short)DocFileFormat::sprmPDxaWidth, (byte*)(&PDxaWidth)));
+				unsigned short PDxaWidth = ASCDocFileFormat::XAS_nonNeg ((unsigned short)*docxParagraphProperties.TextFrameProperties->W);
+				docParagraphProperties.push_back (ASCDocFileFormat::Prl((short)DocFileFormat::sprmPDxaWidth, (byte*)(&PDxaWidth)));
 			}
 
 			if ( docxParagraphProperties.TextFrameProperties->HSpace.is_init() )
 			{
-				unsigned short PDxaFromText = AVSDocFileFormat::XAS_nonNeg((unsigned short)*docxParagraphProperties.TextFrameProperties->HSpace);
-				docParagraphProperties.push_back(AVSDocFileFormat::Prl((short)DocFileFormat::sprmPDxaFromText, (byte*)(&PDxaFromText)));
+				unsigned short PDxaFromText = ASCDocFileFormat::XAS_nonNeg((unsigned short)*docxParagraphProperties.TextFrameProperties->HSpace);
+				docParagraphProperties.push_back(ASCDocFileFormat::Prl((short)DocFileFormat::sprmPDxaFromText, (byte*)(&PDxaFromText)));
 			}
 
 			if ( docxParagraphProperties.TextFrameProperties->VSpace.is_init() )
 			{
-				unsigned short PDyaFromText = AVSDocFileFormat::YAS_nonNeg((unsigned short)*docxParagraphProperties.TextFrameProperties->VSpace);
-				docParagraphProperties.push_back (AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPDyaFromText, (byte*)(&PDyaFromText)));
+				unsigned short PDyaFromText = ASCDocFileFormat::YAS_nonNeg((unsigned short)*docxParagraphProperties.TextFrameProperties->VSpace);
+				docParagraphProperties.push_back (ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPDyaFromText, (byte*)(&PDyaFromText)));
 			}
 		}
 
 		if ( docxParagraphProperties.Tabs.is_init() )
 		{
-			vector<AVSDocFileFormat::TBD> tbds;
-			vector<AVSDocFileFormat::XAS> xass;
+			vector<ASCDocFileFormat::TBD> tbds;
+			vector<ASCDocFileFormat::XAS> xass;
 
 			size_t count = (*docxParagraphProperties.Tabs->Tabs).size();
 			const std::vector<OOX::Logic::TabProperty>& items = (*docxParagraphProperties.Tabs->Tabs);
 
 			for (size_t i = 0; i < count; ++i)	
 			{			
-				AVSDocFileFormat::Constants::TabJC TabStopAlign = customTabStopAlignment[*(items[i]).Val];								
+				ASCDocFileFormat::Constants::TabJC TabStopAlign = customTabStopAlignment[*(items[i]).Val];								
 				if (0x05 == (int)TabStopAlign)	// 0x05 означает clear, т.е. No Tab Stop
 					continue;
 
-				AVSDocFileFormat::TBD tbd(TabStopAlign, customTabStopLeader[items[i].Leader.get_value_or_default()]);
+				ASCDocFileFormat::TBD tbd(TabStopAlign, customTabStopLeader[items[i].Leader.get_value_or_default()]);
 				tbds.push_back(tbd);
 
-				AVSDocFileFormat::XAS xas((short)(*(items[i]).Pos));
+				ASCDocFileFormat::XAS xas((short)(*(items[i]).Pos));
 				xass.push_back(xas);
 			}
 
 			if (xass.size() > 0 && tbds.size() > 0)
 			{
-				AVSDocFileFormat::PChgTabsAdd pChgTabsAdd( xass, tbds );
-				AVSDocFileFormat::PChgTabsPapxOperand pChgTabsPapxOperand( AVSDocFileFormat::PChgTabsDel(), pChgTabsAdd );
+				ASCDocFileFormat::PChgTabsAdd pChgTabsAdd( xass, tbds );
+				ASCDocFileFormat::PChgTabsPapxOperand pChgTabsPapxOperand( ASCDocFileFormat::PChgTabsDel(), pChgTabsAdd );
 
-				docParagraphProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmPChgTabsPapx, (byte*)pChgTabsPapxOperand ) );
+				docParagraphProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmPChgTabsPapx, (byte*)pChgTabsPapxOperand ) );
 			}
 		}
 
@@ -1605,24 +1638,24 @@ namespace DOCXTODOC
 
 namespace DOCXTODOC	//	LEVELS
 {
-	void CFileTransformer::ConvertNumbering (const OOX::Numbering& oXmlNumbering)
+	void CFileTransformer::ConvertNumbering(const OOX::Numbering& numbering)
 	{
-		if (oXmlNumbering.AbstractNums->size() == 0 || oXmlNumbering.Nums->size() == 0)
+		if ((0 == numbering.AbstractNums.size()) || (0 == numbering.Nums.size()))
 			return;
 
-		AVSDocFileFormat::PlfLst plfLst	(ConvertAbstractNums(*oXmlNumbering.AbstractNums));
-		vector<AVSDocFileFormat::LVL> lvls = ConvertLVLs (oXmlNumbering, *oXmlNumbering.AbstractNums);
-		AVSDocFileFormat::ListFormattingInformation lfi (plfLst, lvls); 
+		ASCDocFileFormat::PlfLst plfLst(ConvertAbstractNums(numbering.AbstractNums));
+		vector<ASCDocFileFormat::LVL> lvls = ConvertLVLs(numbering, numbering.AbstractNums);
+		ASCDocFileFormat::ListFormattingInformation lfi(plfLst, lvls); 
 
-		m_pDOCFile->SetListFormattingInformation (lfi);
-		m_pDOCFile->SetListFormattingOverrideInformation (ConvertNums(*oXmlNumbering.Nums));
+		m_pDocFile->SetListFormattingInformation(lfi);
+		m_pDocFile->SetListFormattingOverrideInformation(ConvertNums(numbering.Nums));
 	}
 
-	const vector<AVSDocFileFormat::LSTF> CFileTransformer::ConvertAbstractNums (const vector<OOX::Numbering::AbstractNum>& arrNums) 
+	const vector<ASCDocFileFormat::LSTF> CFileTransformer::ConvertAbstractNums (const vector<OOX::Numbering::AbstractNum>& arrNums) 
 	{
 		// Fill LSTF ( The LSTF structure contains formatting properties that apply to an entire list. )
 
-		vector<AVSDocFileFormat::LSTF> arrLSTF;
+		vector<ASCDocFileFormat::LSTF> arrLSTF;
 
 		int nId	=	1;	//	уникальный индентификатор для списка, любое число от 1 ~ 0xFFFFFFFF
 
@@ -1633,7 +1666,7 @@ namespace DOCXTODOC	//	LEVELS
 
 			if (number.Nsid.is_init())
 			{
-				nId			=	HexString2Int (number.Nsid.get_value_or_default());
+				nId			=	HexString2IntW(number.Nsid.get());
 			}
 			else
 			{
@@ -1645,20 +1678,27 @@ namespace DOCXTODOC	//	LEVELS
 				++nId;
 			}
 
-			idLsidMap.insert(make_pair(number.Id, nId));
+			idLsidMap.insert(make_pair(number.Id.get(), nId));
 
-			AVSDocFileFormat::Tplc* tplc = AVSDocFileFormat::TplcFactory::CreateTplc (HexString2Int(number.Tmpl.get_value_or_default()));
+			ASCDocFileFormat::Tplc* tplc = ASCDocFileFormat::TplcFactory::CreateTplc(HexString2IntW(number.Tmpl.get()));
 
 			bool fSimpleList	=	false;
 			bool fAutoNum		=	false;
 			bool fHybrid		=	false;
 
-			if ((*number.MultiLevelType) == string("hybridMultilevel"))
-				fHybrid			=	true; 
-			if ((*number.MultiLevelType) == string("singleLevel"))
-				fSimpleList		=	true;  
+			if (number.MultiLevelType.IsInit())
+			{
+				if ((number.MultiLevelType.get()) == std::wstring(L"hybridMultilevel"))
+					fHybrid			=	true; 
+			}
 
-			arrLSTF.push_back (AVSDocFileFormat::LSTF (nId, tplc, fSimpleList, fAutoNum, fHybrid, AVSDocFileFormat::grfhic(), NULL /*!!!TODO!!!*/));
+			if (number.MultiLevelType.IsInit())
+			{
+				if ((number.MultiLevelType.get()) ==  std::wstring(L"singleLevel"))
+					fSimpleList		=	true;  
+			}
+
+			arrLSTF.push_back (ASCDocFileFormat::LSTF (nId, tplc, fSimpleList, fAutoNum, fHybrid, ASCDocFileFormat::grfhic(), NULL /*!!!TODO!!!*/));
 
 			RELEASEOBJECT(tplc);
 		}
@@ -1666,18 +1706,18 @@ namespace DOCXTODOC	//	LEVELS
 		return arrLSTF;
 	}
 
-	const vector<AVSDocFileFormat::LVL> CFileTransformer::ConvertLVLs(const OOX::Numbering& oXmlNumbering, const vector<OOX::Numbering::AbstractNum>& arAbstractNums) 
+	const vector<ASCDocFileFormat::LVL> CFileTransformer::ConvertLVLs(const OOX::Numbering& numbering, const vector<OOX::Numbering::AbstractNum>& arAbstractNums) 
 	{
-		vector<AVSDocFileFormat::LVL> oLevels;
+		vector<ASCDocFileFormat::LVL> oLevels;
 
 		size_t numsCount = arAbstractNums.size();
 		for (size_t j = 0; j < numsCount; ++j)
 		{
 			const OOX::Numbering::AbstractNum& oAbstractNum = arAbstractNums[j];
-			size_t levCount = oAbstractNum.Levels->size();
+			size_t levCount = oAbstractNum.Levels.size();
 			for (size_t i = 0; i < levCount; ++i)
 			{
-				const OOX::Numbering::Level& oLevel = oAbstractNum.Levels->operator [](i);
+				const OOX::Numbering::Level& oLevel = oAbstractNum.Levels[i];
 				oLevels.push_back (ConvertLVL(oLevel));
 			}
 
@@ -1686,22 +1726,25 @@ namespace DOCXTODOC	//	LEVELS
 			{
 				if (oAbstractNum.numStyleLink.is_init())
 				{
-					int nInd = FindAbstractNumIdWithStyleRef (oXmlNumbering, oAbstractNum.numStyleLink);
+					int nInd = FindAbstractNumIdWithStyleRef(numbering, oAbstractNum.numStyleLink.get());
 					if ((nInd >= 0) && (nInd < (int)numsCount))
 					{
 						for (size_t i = 0; i < numsCount; ++i)
 						{
 							const OOX::Numbering::AbstractNum& oFindNum = arAbstractNums[i];
-							if (nInd == oFindNum.Id)
+							if (oFindNum.Id.is_init())
 							{
-								size_t levCount = oFindNum.Levels->size();
-								for (size_t m = 0; m < levCount; ++m)
+								if (nInd == oFindNum.Id.get())
 								{
-									const OOX::Numbering::Level& oLevel = oFindNum.Levels->operator [](m);
-									oLevels.push_back (ConvertLVL(oLevel));
-								}
+									size_t levCount = oFindNum.Levels.size();
+									for (size_t m = 0; m < levCount; ++m)
+									{
+										const OOX::Numbering::Level& oLevel = oFindNum.Levels[m];
+										oLevels.push_back (ConvertLVL(oLevel));
+									}
 
-								break;
+									break;
+								}
 							}
 						}
 					}
@@ -1712,31 +1755,35 @@ namespace DOCXTODOC	//	LEVELS
 		return oLevels;
 	}
 
-	const AVSDocFileFormat::LVL CFileTransformer::ConvertLVL (const OOX::Numbering::Level& _level) 
+	const ASCDocFileFormat::LVL CFileTransformer::ConvertLVL(const OOX::Numbering::Level& _level) 
 	{
-		AVSDocFileFormat::Constants::MSONFC nfc = this->numFmtMap[_level.NumFmt->ToString()];
-		AVSDocFileFormat::Constants::LevelJustification jc = 
-			(AVSDocFileFormat::Constants::LevelJustification)DOCXDOCUTILS::AlignFromString (_level.Align.get_value_or(OOX::Logic::Align( string( "left" ) ) ).ToString());
-		bool fTentative = ( ( _level.Tentative.get_value_or( 0 ) == 1 ) ? ( true ) : ( false ) );
-		AVSDocFileFormat::Constants::CharacterFollows ixchFollow = AVSDocFileFormat::Constants::characterFollowsTab;
+		ASCDocFileFormat::Constants::MSONFC nfc = this->numFmtMap[_level.NumFmt->ToString()];
+		ASCDocFileFormat::Constants::LevelJustification jc = 
+			(ASCDocFileFormat::Constants::LevelJustification)
+			DOCXDOCUTILS::AlignFromString (_level.Align.get().ToStringW());
+		//DOCXDOCUTILS::AlignFromString (_level.Align.get_value_or(OOX::Logic::Align(std::wstring(L"left"))).ToStringW());
 
-		if ( _level.Suffix.is_init() )
+		//	bool fTentative = ( ( _level.Tentative.get_value_or( 0 ) == 1 ) ? ( true ) : ( false ) );
+		bool fTentative = ( ( _level.Tentative.get() == 1 ) ? ( true ) : ( false ) );
+		ASCDocFileFormat::Constants::CharacterFollows ixchFollow = ASCDocFileFormat::Constants::characterFollowsTab;
+
+		if (_level.Suffix.is_init())
 		{
-			if ( *_level.Suffix == string( "tab" ) )
+			if (_level.Suffix.get() == std::wstring(L"tab"))
 			{
-				ixchFollow = AVSDocFileFormat::Constants::characterFollowsTab;
+				ixchFollow = ASCDocFileFormat::Constants::characterFollowsTab;
 			}
-			else if ( *_level.Suffix == string( "space" ) )
+			else if (_level.Suffix == std::wstring(L"space"))
 			{
-				ixchFollow = AVSDocFileFormat::Constants::characterFollowsSpace;  
+				ixchFollow = ASCDocFileFormat::Constants::characterFollowsSpace;  
 			}
 			else
 			{
-				ixchFollow = AVSDocFileFormat::Constants::characterFollowsNothing;
+				ixchFollow = ASCDocFileFormat::Constants::characterFollowsNothing;
 			}
 		}
 
-		AVSDocFileFormat::LVLF lvlf( *_level.Start, nfc, jc, false, false, false, false, fTentative, ixchFollow, 0, 0, AVSDocFileFormat::grfhic() /*!!!TODO!!!*/ );
+		ASCDocFileFormat::LVLF lvlf(_level.Start.get(), nfc, jc, false, false, false, false, fTentative, ixchFollow, 0, 0, ASCDocFileFormat::grfhic() /*!!!TODO!!!*/ );
 
 		PrlList grpprlPapx;
 		PrlList grpprlChpx;
@@ -1751,13 +1798,13 @@ namespace DOCXTODOC	//	LEVELS
 			grpprlChpx = ConvertRunProperties( *_level.RunProperty );  
 		}
 
-		return AVSDocFileFormat::LVL( lvlf, grpprlPapx, grpprlChpx, this->ConvertLvlText( *_level.Text, nfc  ) );
+		return ASCDocFileFormat::LVL( lvlf, grpprlPapx, grpprlChpx, ConvertLvlText(_level.Text.get(), nfc  ) );
 	}
 
-	const AVSDocFileFormat::PlfLfo CFileTransformer::ConvertNums (const vector<OOX::Numbering::Num>& oXmlNums) 
+	const ASCDocFileFormat::PlfLfo CFileTransformer::ConvertNums(const vector<OOX::Numbering::Num>& oXmlNums) 
 	{
-		vector<AVSDocFileFormat::LFO> lfos;
-		vector<AVSDocFileFormat::LFOData> lfoDatas;
+		vector<ASCDocFileFormat::LFO> lfos;
+		vector<ASCDocFileFormat::LFOData> lfoDatas;
 
 		short listIndex = 1;
 
@@ -1766,12 +1813,12 @@ namespace DOCXTODOC	//	LEVELS
 			const OOX::Numbering::Num& oXmlNum = oXmlNums[i];
 			idIndexMap.insert( make_pair( *oXmlNum.NumId, listIndex++ ) );
 
-			vector<AVSDocFileFormat::LFOLVL> rgLfoLvl;
+			vector<ASCDocFileFormat::LFOLVL> rgLfoLvl;
 
-			for (size_t j = 0; j < oXmlNum.LevelOverrides->size(); ++j)
+			for (size_t j = 0; j < oXmlNum.LevelOverrides.size(); ++j)
 			{
-				const OOX::Numbering::LevelOverride& levelOverride = oXmlNum.LevelOverrides->operator[](j);
-				AVSDocFileFormat::LVL lvl;
+				const OOX::Numbering::LevelOverride& levelOverride = oXmlNum.LevelOverrides[j];
+				ASCDocFileFormat::LVL lvl;
 
 				bool bHaveLVL = false;
 				if (levelOverride.Level.is_init())
@@ -1785,29 +1832,29 @@ namespace DOCXTODOC	//	LEVELS
 
 				if (levelOverride.StartOverride.is_init())
 				{
-					iStartAt	=	*levelOverride.StartOverride;
+					iStartAt	=	levelOverride.StartOverride.get();
 					fStartAt	=	true;
 				}
 
-				rgLfoLvl.push_back( AVSDocFileFormat::LFOLVL(iStartAt, *levelOverride.Ilvl, fStartAt, AVSDocFileFormat::grfhic(), bHaveLVL ? &lvl : NULL));
+				rgLfoLvl.push_back(ASCDocFileFormat::LFOLVL(iStartAt, *levelOverride.Ilvl, fStartAt, ASCDocFileFormat::grfhic(), bHaveLVL ? &lvl : NULL));
 			}
 
-			int NumId = idLsidMap[oXmlNum.AbstractNumId];
+			int NumId = idLsidMap[oXmlNum.AbstractNumId.get()];
 
-			lfos.push_back(AVSDocFileFormat::LFO(NumId, rgLfoLvl.size(), AVSDocFileFormat::Constants::lfoFieldNotUsed00, AVSDocFileFormat::grfhic()));
-			lfoDatas.push_back(AVSDocFileFormat::LFOData(0xFFFFFFFF, rgLfoLvl));
+			lfos.push_back(ASCDocFileFormat::LFO(NumId, rgLfoLvl.size(), ASCDocFileFormat::Constants::lfoFieldNotUsed00, ASCDocFileFormat::grfhic()));
+			lfoDatas.push_back(ASCDocFileFormat::LFOData(0xFFFFFFFF, rgLfoLvl));
 		}
 
-		return AVSDocFileFormat::PlfLfo(lfos, lfoDatas);
+		return ASCDocFileFormat::PlfLfo(lfos, lfoDatas);
 	}
 
-	const AVSDocFileFormat::Xst CFileTransformer::ConvertLvlText (const string& strLvlText, AVSDocFileFormat::Constants::MSONFC oMsoNfc) 
+	const ASCDocFileFormat::Xst CFileTransformer::ConvertLvlText(const std::wstring& strLvlText, ASCDocFileFormat::Constants::MSONFC oMsoNfc) 
 	{
 		std::wstring wstr(strLvlText.size(), 0);
 		utf8_decode(strLvlText.begin(), strLvlText.end(), wstr.begin());
 
 		if (wstr == std::wstring(L"%1"))
-			return AVSDocFileFormat::Xst(true);
+			return ASCDocFileFormat::Xst(true);
 
 		std::wstring::iterator result = wstr.begin();
 		std::wstring::iterator newResult = wstr.begin();
@@ -1831,15 +1878,15 @@ namespace DOCXTODOC	//	LEVELS
 		}
 
 		unsigned short cch = docPlaceHolderValue.size();
-		if (AVSDocFileFormat::Constants::msonfcBullet == oMsoNfc)
+		if (ASCDocFileFormat::Constants::msonfcBullet == oMsoNfc)
 			cch = 0x0001;
 
-		return AVSDocFileFormat::Xst(docPlaceHolderValue.c_str(), cch);
+		return ASCDocFileFormat::Xst(docPlaceHolderValue.c_str(), cch);
 	}
 
-	int CFileTransformer::FindAbstractNumIdWithStyleRef (const OOX::Numbering& oXmlNumbering, const std::string& refLink)	
+	int CFileTransformer::FindAbstractNumIdWithStyleRef(const OOX::Numbering& numbering, const std::wstring& refLink)	
 	{
-		const OOX::Styles::Style& oStyle = inputFolder.find<OOX::Document>().find<OOX::Styles>().GetStyleById(refLink);
+		const OOX::Styles::Style& oStyle = m_docxInputFile.find<OOX::Document>().find<OOX::Styles>().GetStyleById(wstring2string__(refLink));
 		if (oStyle.ParagraphProperty.is_init())
 		{
 			if (oStyle.ParagraphProperty->NumPr.is_init())
@@ -1847,12 +1894,12 @@ namespace DOCXTODOC	//	LEVELS
 				if (oStyle.ParagraphProperty->NumPr->NumId.is_init())
 				{
 					int nInd = oStyle.ParagraphProperty->NumPr->NumId;
-					size_t length = oXmlNumbering.Nums->size();
+					size_t length = numbering.Nums.size();
 					for (size_t i = 0; i < length; ++i)
 					{
-						if (nInd == oXmlNumbering.Nums->operator [](i).NumId)
+						if (nInd == numbering.Nums[i].NumId.get())
 						{
-							return oXmlNumbering.Nums->operator [](i).AbstractNumId;
+							return numbering.Nums[i].AbstractNumId.get();
 						}
 					}
 				}
@@ -1865,14 +1912,14 @@ namespace DOCXTODOC	//	LEVELS
 
 namespace DOCXTODOC	//	STYLES
 {
-	void CFileTransformer::ConvertStyleSheet (const OOX::Styles& oStyleSheet)
+	void CFileTransformer::ConvertStyleSheet(const OOX::Styles& oStyleSheet)
 	{
-		vector<AVSDocFileFormat::LSD> mpstiilsd;
+		vector<ASCDocFileFormat::LSD> mpstiilsd;
 
 		//if ( _styleSheet.LattentStyles.is_init() )
 		mpstiilsd = ConvertLatentStyles( /**_styleSheet.LattentStyles*/ );
 
-		vector<AVSDocFileFormat::LPStd> rglpstd = ConvertStyleDefinitions (*oStyleSheet.Named);
+		vector<ASCDocFileFormat::LPStd> rglpstd = ConvertStyleDefinitions (*oStyleSheet.Named);
 
 		short ftcAsci	= 0;
 		short ftcFE		= 0;
@@ -1881,31 +1928,31 @@ namespace DOCXTODOC	//	STYLES
 		if (oStyleSheet.Default->RunProperty->rFonts.is_init() )
 		{
 			if (oStyleSheet.Default->RunProperty->rFonts->ascii.is_init() )
-				ftcAsci		=	m_mapFontTableMap [oStyleSheet.Default->RunProperty->rFonts->ascii];
+				ftcAsci		=	m_mapFontTableMap [string2wstring__(oStyleSheet.Default->RunProperty->rFonts->ascii)];
 
 			if (oStyleSheet.Default->RunProperty->rFonts->Cs.is_init() )
-				ftcFE		=	m_mapFontTableMap [oStyleSheet.Default->RunProperty->rFonts->Cs];
+				ftcFE		=	m_mapFontTableMap [string2wstring__(oStyleSheet.Default->RunProperty->rFonts->Cs)];
 
 			if (oStyleSheet.Default->RunProperty->rFonts->hAnsi.is_init() )
-				ftcOther	=	m_mapFontTableMap [oStyleSheet.Default->RunProperty->rFonts->hAnsi];
+				ftcOther	=	m_mapFontTableMap [string2wstring__(oStyleSheet.Default->RunProperty->rFonts->hAnsi)];
 		}
 
-		AVSDocFileFormat::Stshif stshif (rglpstd.size(), true, mpstiilsd.size(), ftcAsci, ftcFE, ftcOther);
-		AVSDocFileFormat::StshiLsd stshiLsd (mpstiilsd);
+		ASCDocFileFormat::Stshif stshif (rglpstd.size(), true, mpstiilsd.size(), ftcAsci, ftcFE, ftcOther);
+		ASCDocFileFormat::StshiLsd stshiLsd (mpstiilsd);
 
 		// MUST be ignored.  
-		AVSDocFileFormat::LPStshiGrpPrl grpprlChpStandard (ConvertRunProperties(*oStyleSheet.Default->RunProperty));
-		AVSDocFileFormat::LPStshiGrpPrl grpprlPapStandard (ConvertParagraphProperties(*oStyleSheet.Default->ParagraphProperty));
-		AVSDocFileFormat::STSHIB stshib (grpprlChpStandard, grpprlPapStandard);
+		ASCDocFileFormat::LPStshiGrpPrl grpprlChpStandard (ConvertRunProperties(*oStyleSheet.Default->RunProperty));
+		ASCDocFileFormat::LPStshiGrpPrl grpprlPapStandard (ConvertParagraphProperties(*oStyleSheet.Default->ParagraphProperty));
+		ASCDocFileFormat::STSHIB stshib (grpprlChpStandard, grpprlPapStandard);
 
-		AVSDocFileFormat::LPStshi lpStshi (AVSDocFileFormat::STSHI(stshif, 0, stshiLsd, stshib));
+		ASCDocFileFormat::LPStshi lpStshi (ASCDocFileFormat::STSHI(stshif, 0, stshiLsd, stshib));
 
-		m_pDOCFile->SetStyleSheet (AVSDocFileFormat::STSH(lpStshi, rglpstd));
+		m_pDocFile->SetStyleSheet (ASCDocFileFormat::STSH(lpStshi, rglpstd));
 	}
 
-	vector<AVSDocFileFormat::LPStd> CFileTransformer::ConvertStyleDefinitions (const vector<OOX::Styles::Style>& arrStyles)
+	std::vector<ASCDocFileFormat::LPStd> CFileTransformer::ConvertStyleDefinitions (const vector<OOX::Styles::Style>& arrStyles)
 	{
-		vector<AVSDocFileFormat::LPStd> styleDefinitions(15);
+		vector<ASCDocFileFormat::LPStd> styleDefinitions(15);
 		short styleIndex = 15;
 
 		for (size_t i = 0; i < arrStyles.size(); ++i)
@@ -1927,16 +1974,16 @@ namespace DOCXTODOC	//	STYLES
 			unsigned short sti	=	predefinedStyleIDMap[*oXmlStyle.StyleId];
 			short istd			=	DOCXDOCUTILS::StiToIstd ((short)sti);
 
-			AVSDocFileFormat::Constants::StyleType styleType;
-			map<string, AVSDocFileFormat::Constants::StyleType>::const_iterator findResult = styleTypeMap.find( *oXmlStyle.Type );  
+			ASCDocFileFormat::Constants::StyleType styleType;
+			map<string, ASCDocFileFormat::Constants::StyleType>::const_iterator findResult = styleTypeMap.find( *oXmlStyle.Type );  
 			if ( findResult != styleTypeMap.end() )
 				styleType = findResult->second;
 			else
-				styleType = AVSDocFileFormat::Constants::styleTypeCharacter;
+				styleType = ASCDocFileFormat::Constants::styleTypeCharacter;
 
 			unsigned short istdBase = 0x0FFF;
 			unsigned short istdNext = 0x0000;
-			AVSDocFileFormat::StdfPost2000 StdfPost2000OrNone;
+			ASCDocFileFormat::StdfPost2000 StdfPost2000OrNone;
 
 			if ( oXmlStyle.BasedOn.is_init() )
 			{
@@ -1951,33 +1998,33 @@ namespace DOCXTODOC	//	STYLES
 			if ( ( oXmlStyle.Link.is_init() ) && ( oXmlStyle.UiPriority.is_init() ) )
 			{
 				//!!!TODO: Revision!!!
-				StdfPost2000OrNone = AVSDocFileFormat::StdfPost2000( (unsigned short)m_mapStyleSheetMap[*oXmlStyle.Link], false, 0, (unsigned short)(*oXmlStyle.UiPriority) );
+				StdfPost2000OrNone = ASCDocFileFormat::StdfPost2000( (unsigned short)m_mapStyleSheetMap[*oXmlStyle.Link], false, 0, (unsigned short)(*oXmlStyle.UiPriority) );
 			}
 
-			AVSDocFileFormat::GRFSTD grfstd( false, false, false, false, false, *oXmlStyle.SemiHidden, false, *oXmlStyle.UnhideWhenUsed, *oXmlStyle.QFormat ); 
-			AVSDocFileFormat::StdfBase stdfBase( sti, styleType, istdBase, istdNext, grfstd );
+			ASCDocFileFormat::GRFSTD grfstd( false, false, false, false, false, *oXmlStyle.SemiHidden, false, *oXmlStyle.UnhideWhenUsed, *oXmlStyle.QFormat ); 
+			ASCDocFileFormat::StdfBase stdfBase( sti, styleType, istdBase, istdNext, grfstd );
 
 			std::wstring styleName( ( oXmlStyle.name->size() ), 0 );
 			utf8_decode( oXmlStyle.name->begin(), oXmlStyle.name->end(), styleName.begin() );
 
-			AVSDocFileFormat::LPUpxPapx lPUpxPapx;
-			AVSDocFileFormat::LPUpxChpx lPUpxChpx;
-			AVSDocFileFormat::LPUpxTapx lPUpxTapx;
+			ASCDocFileFormat::LPUpxPapx lPUpxPapx;
+			ASCDocFileFormat::LPUpxChpx lPUpxChpx;
+			ASCDocFileFormat::LPUpxTapx lPUpxTapx;
 
 			CXmlPropertyReader oXmlReader;
 
 			if (oXmlStyle.ParagraphProperty.is_init())
-				lPUpxPapx	=	AVSDocFileFormat::LPUpxPapx (AVSDocFileFormat::UpxPapx(istd, oXmlReader.GetParagraphStyleProperties (ConvertParagraphProperties(*oXmlStyle.ParagraphProperty)) ));
+				lPUpxPapx	=	ASCDocFileFormat::LPUpxPapx (ASCDocFileFormat::UpxPapx(istd, oXmlReader.GetParagraphStyleProperties (ConvertParagraphProperties(*oXmlStyle.ParagraphProperty)) ));
 
 			if (oXmlStyle.RunProperty.is_init())
-				lPUpxChpx	=	AVSDocFileFormat::LPUpxChpx( AVSDocFileFormat::UpxChpx (oXmlReader.GetRunStyleProperties( ConvertRunProperties(*oXmlStyle.RunProperty)) ));    
+				lPUpxChpx	=	ASCDocFileFormat::LPUpxChpx( ASCDocFileFormat::UpxChpx (oXmlReader.GetRunStyleProperties( ConvertRunProperties(*oXmlStyle.RunProperty)) ));    
 
 			if (oXmlStyle.tblPr.is_init())
-				lPUpxTapx	=	AVSDocFileFormat::LPUpxTapx(AVSDocFileFormat::UpxTapx(oXmlReader.GetTableStyleProperties( ConvertTableProperties(*oXmlStyle.tblPr)) ));
+				lPUpxTapx	=	ASCDocFileFormat::LPUpxTapx(ASCDocFileFormat::UpxTapx(oXmlReader.GetTableStyleProperties( ConvertTableProperties(*oXmlStyle.tblPr)) ));
 
-			AVSDocFileFormat::GrLPUpxSw grLPUpxSw (styleType, lPUpxPapx, lPUpxChpx, lPUpxTapx);
-			AVSDocFileFormat::LPStd lPStd (AVSDocFileFormat::STD(AVSDocFileFormat::Stdf(stdfBase, &StdfPost2000OrNone), 
-				AVSDocFileFormat::Xstz(AVSDocFileFormat::Xst(styleName.c_str())), grLPUpxSw));
+			ASCDocFileFormat::GrLPUpxSw grLPUpxSw (styleType, lPUpxPapx, lPUpxChpx, lPUpxTapx);
+			ASCDocFileFormat::LPStd lPStd (ASCDocFileFormat::STD(ASCDocFileFormat::Stdf(stdfBase, &StdfPost2000OrNone), 
+				ASCDocFileFormat::Xstz(ASCDocFileFormat::Xst(styleName.c_str())), grLPUpxSw));
 			if (-1 != istd)
 			{
 				styleDefinitions[istd]	=	lPStd; 
@@ -1991,56 +2038,17 @@ namespace DOCXTODOC	//	STYLES
 		return styleDefinitions;
 	}
 
-	vector<AVSDocFileFormat::LSD> CFileTransformer::ConvertLatentStyles(/*const OOX::Styles::LattentStyles &latentStyles*/)
+	std::vector<ASCDocFileFormat::LSD> CFileTransformer::ConvertLatentStyles()
 	{
-		vector<AVSDocFileFormat::LSD> latentStylesDatas;
+		vector<ASCDocFileFormat::LSD> latentStylesDatas;
 
-		/*bool fLocked = ( latentStyles.DefLockedState == 0 ) ? ( false ) : ( true );
-
-		std::vector<OOX::Styles::LsdException>::const_iterator iter = (*latentStyles.LsdExceptions).begin();
-		std::vector<OOX::Styles::LsdException>::const_iterator end = (*latentStyles.LsdExceptions).end();
-
-		for (;iter != end; ++iter)	//	(*iter)
-		{			
-
-		bool fSemiHidden = false;
-		bool fUnhideWhenUsed = false;
-		bool fQFormat = false;
-		unsigned short iPriority = 0;
-
-		if ( (*iter).SemiHidden.is_init() )
-		{
-		fSemiHidden = ( (*iter).SemiHidden == 0 ) ? ( false ) : ( true );
-		}
-
-		if ( (*iter).UnhideWhenUsed.is_init() )
-		{
-		fUnhideWhenUsed = ( (*iter).UnhideWhenUsed == 0 ) ? ( false ) : ( true );
-		}
-
-		if ( (*iter).QFormat.is_init() )
-		{
-		fQFormat = ( (*iter).QFormat == 0 ) ? ( false ) : ( true );
-		}
-
-		if ( (*iter).UiPriority.is_init() )
-		{
-		iPriority = (unsigned short)(*iter).UiPriority;
-		}
-
-		latentStylesDatas.push_back( AVSDocFileFormat::LSD( fLocked, fSemiHidden, fUnhideWhenUsed, fQFormat, iPriority ) );
-		}*/
-
-		for ( unsigned int i = 0; i < ( sizeof(AVSDocFileFormat::LatentStylesTemplate) / sizeof(AVSDocFileFormat::LatentStylesTemplate[0]) ); i++ )
-		{
-			latentStylesDatas.push_back( AVSDocFileFormat::LSD( AVSDocFileFormat::LatentStylesTemplate[i] ) );
-		}
+		for ( unsigned int i = 0; i < ( sizeof(ASCDocFileFormat::LatentStylesTemplate) / sizeof(ASCDocFileFormat::LatentStylesTemplate[0]) ); i++ )
+			latentStylesDatas.push_back( ASCDocFileFormat::LSD( ASCDocFileFormat::LatentStylesTemplate[i] ) );
 
 		return latentStylesDatas;
 	}
 
-
-	std::string CFileTransformer::GetStyleID (const OOX::Logic::Paragraph& oXmlParagraph) 
+	std::string CFileTransformer::GetStyleID(const OOX::Logic::Paragraph& oXmlParagraph) 
 	{
 		std::string strStyleID;
 
@@ -2050,12 +2058,12 @@ namespace DOCXTODOC	//	STYLES
 		}
 		else
 		{
-			const OOX::Styles::Style defaultStyle	=	inputFolder.find<OOX::Document>().find<OOX::Styles>().GetDefaultStyle ("paragraph");
+			const OOX::Styles::Style defaultStyle	=	m_docxInputFile.find<OOX::Document>().find<OOX::Styles>().GetDefaultStyle ("paragraph");
 			strStyleID								=	(*defaultStyle.StyleId);
 
 			if (0 == strStyleID.length())
 			{
-				const OOX::Styles::Style oStyle		=	inputFolder.find<OOX::Document>().find<OOX::Styles>().GetStyleWithTypeAndName ("paragraph", "Normal");
+				const OOX::Styles::Style oStyle		=	m_docxInputFile.find<OOX::Document>().find<OOX::Styles>().GetStyleWithTypeAndName ("paragraph", "Normal");
 				strStyleID							=	(*oStyle.StyleId);
 			}
 		}
@@ -2067,66 +2075,66 @@ namespace DOCXTODOC	//	STYLES
 namespace DOCXTODOC
 {
 	// настройки страниц документа
-	AVSDocFileFormat::SectionProperties CFileTransformer::ConvertSectionProperties (const OOX::Logic::SectorProperty& docxSectionProperties)
+	ASCDocFileFormat::SectionProperties CFileTransformer::ConvertSectionProperties(const OOX::Logic::SectorProperty& docxSectionProperties)
 	{
 		PrlList docSectionProperties;
 
 		unsigned short SXaPage = *docxSectionProperties.PageSize->Width;
 		unsigned short SYaPage = *docxSectionProperties.PageSize->Height;
 
-		docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSXaPage, (byte*)&SXaPage ) );
-		docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSYaPage, (byte*)&SYaPage ) );
+		docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSXaPage, (byte*)&SXaPage ) );
+		docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSYaPage, (byte*)&SYaPage ) );
 
 		if ( docxSectionProperties.Type.is_init() )
 		{
-			docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSBkc, (byte*)&(sectionBreakTypeMap[*docxSectionProperties.Type]) ) );
+			docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSBkc, (byte*)&(sectionBreakTypeMap[*docxSectionProperties.Type]) ) );
 		}
 
 		if ( docxSectionProperties.PageSize->Orient.is_init() )
 		{
-			byte SBOrientation = (byte)AVSDocFileFormat::Constants::dmOrientPortrait;
+			byte SBOrientation = (byte)ASCDocFileFormat::Constants::dmOrientPortrait;
 
 			if ( *docxSectionProperties.PageSize->Orient == string( "portrait" ) )
 			{
-				SBOrientation = (byte)AVSDocFileFormat::Constants::dmOrientPortrait;  
+				SBOrientation = (byte)ASCDocFileFormat::Constants::dmOrientPortrait;  
 			}
 			else if ( *docxSectionProperties.PageSize->Orient == string( "landscape" ) )
 			{
-				SBOrientation = (byte)AVSDocFileFormat::Constants::dmOrientLandscape;
+				SBOrientation = (byte)ASCDocFileFormat::Constants::dmOrientLandscape;
 			}
 
-			docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSBOrientation, (byte*)&SBOrientation ) );
+			docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSBOrientation, (byte*)&SBOrientation ) );
 		}
 
-		unsigned short SDxaLeft = AVSDocFileFormat::XAS_nonNeg( *docxSectionProperties.PageMargin->Left );
-		unsigned short SDxaRight = AVSDocFileFormat::XAS_nonNeg( *docxSectionProperties.PageMargin->Right );
-		short SDyaTop = AVSDocFileFormat::YAS( *docxSectionProperties.PageMargin->Top );
-		short SDyaBottom = AVSDocFileFormat::YAS( *docxSectionProperties.PageMargin->Bottom );
+		unsigned short SDxaLeft = ASCDocFileFormat::XAS_nonNeg( *docxSectionProperties.PageMargin->Left );
+		unsigned short SDxaRight = ASCDocFileFormat::XAS_nonNeg( *docxSectionProperties.PageMargin->Right );
+		short SDyaTop = ASCDocFileFormat::YAS( *docxSectionProperties.PageMargin->Top );
+		short SDyaBottom = ASCDocFileFormat::YAS( *docxSectionProperties.PageMargin->Bottom );
 
-		docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSDxaLeft, (byte*)&SDxaLeft ) );
-		docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSDxaRight, (byte*)&SDxaRight ) );
-		docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSDyaTop, (byte*)&SDyaTop ) );
-		docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSDyaBottom, (byte*)&SDyaBottom ) );
+		docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSDxaLeft, (byte*)&SDxaLeft ) );
+		docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSDxaRight, (byte*)&SDxaRight ) );
+		docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSDyaTop, (byte*)&SDyaTop ) );
+		docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSDyaBottom, (byte*)&SDyaBottom ) );
 
 		if ( docxSectionProperties.PageMargin->Gutter.is_init() )
 		{
 			unsigned short SDzaGutter = (unsigned short)(*docxSectionProperties.PageMargin->Gutter);
 
-			docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSDzaGutter, (byte*)&SDzaGutter ) );
+			docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSDzaGutter, (byte*)&SDzaGutter ) );
 		}
 
 		if ( docxSectionProperties.PageMargin->Header.is_init() )
 		{ 
-			unsigned short SDyaHdrTop = AVSDocFileFormat::YAS_nonNeg(*docxSectionProperties.PageMargin->Header);
+			unsigned short SDyaHdrTop = ASCDocFileFormat::YAS_nonNeg(*docxSectionProperties.PageMargin->Header);
 
-			docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSDyaHdrTop, (byte*)&SDyaHdrTop ) );
+			docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSDyaHdrTop, (byte*)&SDyaHdrTop ) );
 		}
 
 		if ( docxSectionProperties.PageMargin->Footer.is_init() )
 		{ 
-			unsigned short SDyaHdrBottom = AVSDocFileFormat::YAS_nonNeg(*docxSectionProperties.PageMargin->Footer);
+			unsigned short SDyaHdrBottom = ASCDocFileFormat::YAS_nonNeg(*docxSectionProperties.PageMargin->Footer);
 
-			docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSDyaHdrBottom, (byte*)&SDyaHdrBottom ) );
+			docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSDyaHdrBottom, (byte*)&SDyaHdrBottom ) );
 		}
 
 		if ( docxSectionProperties.Columns.is_init() )
@@ -2135,14 +2143,14 @@ namespace DOCXTODOC
 			{
 				unsigned short SCcolumns = ( *docxSectionProperties.Columns->Num - 1 );
 
-				docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSCcolumns, (byte*)&SCcolumns ) );
+				docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSCcolumns, (byte*)&SCcolumns ) );
 			}
 
 			if ( docxSectionProperties.Columns->Space.is_init() )
 			{
-				unsigned short SDxaColumns = (unsigned short)AVSDocFileFormat::XAS_nonNeg( (unsigned short)(*docxSectionProperties.Columns->Space) );
+				unsigned short SDxaColumns = (unsigned short)ASCDocFileFormat::XAS_nonNeg( (unsigned short)(*docxSectionProperties.Columns->Space) );
 
-				docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSDxaColumns, (byte*)&SDxaColumns ) );
+				docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSDxaColumns, (byte*)&SDxaColumns ) );
 			}
 
 			byte index = 0;
@@ -2152,17 +2160,17 @@ namespace DOCXTODOC
 
 			for (size_t i = 0; i < count; ++i)	
 			{			
-				AVSDocFileFormat::SDxaColWidthOperand SDxaColWidth(index, AVSDocFileFormat::XAS_nonNeg( (unsigned short)(*(items[i]).Width)));
+				ASCDocFileFormat::SDxaColWidthOperand SDxaColWidth(index, ASCDocFileFormat::XAS_nonNeg( (unsigned short)(*(items[i]).Width)));
 
-				docSectionProperties.push_back( AVSDocFileFormat::Prl((short)DocFileFormat::sprmSDxaColWidth, (byte*)SDxaColWidth));
+				docSectionProperties.push_back( ASCDocFileFormat::Prl((short)DocFileFormat::sprmSDxaColWidth, (byte*)SDxaColWidth));
 
 				if (items[i].Space.is_init())
 				{
 					//TODO: 
 
-					AVSDocFileFormat::SDxaColSpacingOperand SDxaColSpacing( index, AVSDocFileFormat::XAS_nonNeg( (unsigned short)(*items[i].Space) ) );
+					ASCDocFileFormat::SDxaColSpacingOperand SDxaColSpacing( index, ASCDocFileFormat::XAS_nonNeg( (unsigned short)(*items[i].Space) ) );
 
-					docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSDxaColSpacing, (byte*)SDxaColSpacing ) );
+					docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSDxaColSpacing, (byte*)SDxaColSpacing ) );
 				}
 
 				++index;
@@ -2173,59 +2181,59 @@ namespace DOCXTODOC
 		{
 			if ( docxSectionProperties.DocumentGrid->LinePitch.is_init() )
 			{
-				short SDyaLinePitch = AVSDocFileFormat::YAS( *docxSectionProperties.DocumentGrid->LinePitch );
+				short SDyaLinePitch = ASCDocFileFormat::YAS( *docxSectionProperties.DocumentGrid->LinePitch );
 
-				docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSDyaLinePitch, (byte*)(&SDyaLinePitch) ) );
+				docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSDyaLinePitch, (byte*)(&SDyaLinePitch) ) );
 			}
 
 			if ( docxSectionProperties.DocumentGrid->CharSpace.is_init() )
 			{
 				int SDxtCharSpace = *docxSectionProperties.DocumentGrid->CharSpace;
 
-				docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSDxtCharSpace, (byte*)(&SDxtCharSpace) ) );
+				docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSDxtCharSpace, (byte*)(&SDxtCharSpace) ) );
 			}
 
 			if ( docxSectionProperties.DocumentGrid->Type.is_init() )
 			{
-				unsigned short SClm = (unsigned short)AVSDocFileFormat::Constants::clmUseDefault;
+				unsigned short SClm = (unsigned short)ASCDocFileFormat::Constants::clmUseDefault;
 
 				if ( *docxSectionProperties.DocumentGrid->Type == string( "Default" ) )
 				{
-					SClm = (unsigned short)AVSDocFileFormat::Constants::clmUseDefault;
+					SClm = (unsigned short)ASCDocFileFormat::Constants::clmUseDefault;
 				}
 				else if ( *docxSectionProperties.DocumentGrid->Type == string( "linesAndChars" ) )
 				{
-					SClm = (unsigned short)AVSDocFileFormat::Constants::clmCharsAndLines;
+					SClm = (unsigned short)ASCDocFileFormat::Constants::clmCharsAndLines;
 				}
 				else if ( *docxSectionProperties.DocumentGrid->Type == string( "lines" ) )
 				{
-					SClm = (unsigned short)AVSDocFileFormat::Constants::clmLinesOnly;
+					SClm = (unsigned short)ASCDocFileFormat::Constants::clmLinesOnly;
 				}
 				else if ( *docxSectionProperties.DocumentGrid->Type == string( "snapToChars" ) )
 				{
-					SClm = (unsigned short)AVSDocFileFormat::Constants::clmEnforceGrid;
+					SClm = (unsigned short)ASCDocFileFormat::Constants::clmEnforceGrid;
 				}
 
-				docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSClm, (byte*)(&SClm) ) );
+				docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSClm, (byte*)(&SClm) ) );
 			}
 		}
 
 		if ( docxSectionProperties.FootNoteProperty.is_init() )
 		{
 			unsigned short sNfcFtnRef = (unsigned short)(this->numFmtMap[docxSectionProperties.FootNoteProperty->NumFormat->ToString()]);
-			docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSNfcFtnRef, (byte*)(&sNfcFtnRef) ) );
+			docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSNfcFtnRef, (byte*)(&sNfcFtnRef) ) );
 
 			unsigned short sNFtn = (unsigned short)(docxSectionProperties.FootNoteProperty->NumStart);
-			docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSNFtn, (byte*)(&sNFtn) ) );
+			docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSNFtn, (byte*)(&sNFtn) ) );
 		}
 
 		if ( docxSectionProperties.EndNoteProperty.is_init() )
 		{
 			unsigned short sNfcEdnRef = (unsigned short)(this->numFmtMap[docxSectionProperties.EndNoteProperty->NumFormat->ToString()]);
-			docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSNfcEdnRef, (byte*)(&sNfcEdnRef) ) );
+			docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSNfcEdnRef, (byte*)(&sNfcEdnRef) ) );
 
 			unsigned short sNEdn = (unsigned short)(docxSectionProperties.EndNoteProperty->NumStart);
-			docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSNEdn, (byte*)(&sNEdn) ) );
+			docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSNEdn, (byte*)(&sNEdn) ) );
 		}
 
 		AddLineNumberingSettings (docxSectionProperties, docSectionProperties);		//	<w:lnNumType>
@@ -2233,17 +2241,17 @@ namespace DOCXTODOC
 		if (*docxSectionProperties.TitlePage)
 		{
 			Bool8 SFTitlePage = ( ( *docxSectionProperties.TitlePage ) ? ( 1 ) : ( 0 ) );
-			docSectionProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmSFTitlePage, &SFTitlePage ) );
+			docSectionProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmSFTitlePage, &SFTitlePage ) );
 		}
 
-		AVSDocFileFormat::Sepx sepx (docSectionProperties);
-		AVSDocFileFormat::SectionProperties oSectionProperties (sepx);
+		ASCDocFileFormat::Sepx sepx (docSectionProperties);
+		ASCDocFileFormat::SectionProperties oSectionProperties (sepx);
 
 		for ( vector<OOX::Logic::HeaderReference>::const_iterator headerReferencesIter = docxSectionProperties.Headers->begin(); 
 			headerReferencesIter != docxSectionProperties.Headers->end();
 			++headerReferencesIter )
 		{
-			OOX::Header* pHeader = dynamic_cast<OOX::Header*>(inputFolder.find<OOX::Document>()[headerReferencesIter->rId].get()); 
+			OOX::Header* pHeader = dynamic_cast<OOX::Header*>(m_docxInputFile.find<OOX::Document>()[headerReferencesIter->rId].operator->()); 
 
 			if (pHeader)
 			{
@@ -2266,7 +2274,7 @@ namespace DOCXTODOC
 			footerReferencesIter != docxSectionProperties.Footers->end(); 
 			++footerReferencesIter )
 		{
-			OOX::Footer* pFooter = dynamic_cast<OOX::Footer*>(inputFolder.find<OOX::Document>()[footerReferencesIter->rId].get());  
+			OOX::Footer* pFooter = dynamic_cast<OOX::Footer*>(m_docxInputFile.find<OOX::Document>()[footerReferencesIter->rId].operator->());  
 			if (pFooter)
 			{
 				if ( footerReferencesIter->Type == "even" )
@@ -2287,7 +2295,7 @@ namespace DOCXTODOC
 		return oSectionProperties;
 	}
 
-	bool CFileTransformer::AddLineNumberingSettings (const OOX::Logic::SectorProperty& oSection, PrlList& arrSettings)
+	bool CFileTransformer::AddLineNumberingSettings(const OOX::Logic::SectorProperty& oSection, PrlList& arrSettings)
 	{
 		//	Line Numbering Restart Setting
 
@@ -2296,7 +2304,7 @@ namespace DOCXTODOC
 			//	Line Number Increments to Display
 
 			short countBy			=	(unsigned short)(oSection.LnNumType->countBy);
-			arrSettings.push_back (AVSDocFileFormat::Prl ((short)DocFileFormat::sprmSNLnnMod, (byte*)(&countBy) ) );		
+			arrSettings.push_back (ASCDocFileFormat::Prl ((short)DocFileFormat::sprmSNLnnMod, (byte*)(&countBy) ) );		
 
 			unsigned short mode		=	1;	//
 			if (oSection.LnNumType->restart.is_init())
@@ -2311,7 +2319,7 @@ namespace DOCXTODOC
 					mode			=	0x02;	//	DocFileFormat::lncContinue;
 			}
 
-			arrSettings.push_back (AVSDocFileFormat::Prl ((short)DocFileFormat::sprmSLnc, (byte*)(&mode) ) );
+			arrSettings.push_back (ASCDocFileFormat::Prl ((short)DocFileFormat::sprmSLnc, (byte*)(&mode) ) );
 
 			//	Line Numbering Starting Value
 
@@ -2319,7 +2327,7 @@ namespace DOCXTODOC
 			if (oSection.LnNumType->start.is_init())
 				start				=	(unsigned short)(oSection.LnNumType->start);
 
-			arrSettings.push_back (AVSDocFileFormat::Prl ((short)DocFileFormat::sprmSLnnMin, (byte*)(&start) ) );
+			arrSettings.push_back (ASCDocFileFormat::Prl ((short)DocFileFormat::sprmSLnnMin, (byte*)(&start) ) );
 
 			return true;
 		}
@@ -2328,110 +2336,111 @@ namespace DOCXTODOC
 	}
 
 	// верхний колонтитул
-	AVSDocFileFormat::Header CFileTransformer::ConvertHeader (const OOX::Header& oXmlDOCXHeader) 
+	ASCDocFileFormat::Header CFileTransformer::ConvertHeader(const OOX::Header& oHeader) 
 	{
-		m_oOArtBuilder.SetLocation (HEADER_DOCUMENT);
+		m_oOArtBuilder.SetLocation(HEADER_DOCUMENT);
 
-		AVSDocFileFormat::Header oMSDocHeader;
+		ASCDocFileFormat::Header docHeader;
 
-		for (size_t i = 0; i < oXmlDOCXHeader.Items->size(); ++i)
+		size_t count = oHeader.m_items.size();
+		for (size_t i = 0; i < count; ++i)
 		{
-			const OOX::Logic::TextItem& oItem					=	oXmlDOCXHeader.Items->operator [](i);
-
+			const OOX::Logic::TextItem& oItem = oHeader.m_items[i];
 			if (oItem.is<OOX::Logic::Paragraph>())
 			{
-				const OOX::Logic::Paragraph& oMSDocXParagraph	=	oItem.as<OOX::Logic::Paragraph>();
+				const OOX::Logic::Paragraph& oMSDocXParagraph = oItem.as<OOX::Logic::Paragraph>();
 				if (ValidParagraph(oMSDocXParagraph))
 				{
-					AVSDocFileFormat::Paragraph oMSDocParagraph	=	ConvertParagraph<OOX::Header>(oMSDocXParagraph);
-					oMSDocHeader.AddTextItem (oMSDocParagraph);
+					ASCDocFileFormat::Paragraph oMSDocParagraph = ConvertParagraph<OOX::Header>(oMSDocXParagraph);
+					docHeader.AddTextItem (oMSDocParagraph);
 				}
 			}
 			else if (oItem.is<OOX::Logic::Table>())
 			{
-				AVSDocFileFormat::Table oMSDocTable				=	CreateTable<OOX::Header> (oItem.as<OOX::Logic::Table>());
-				oMSDocHeader.AddTextItem (oMSDocTable);
+				ASCDocFileFormat::Table oMSDocTable = CreateTable<OOX::Header>(oItem.as<OOX::Logic::Table>());
+				docHeader.AddTextItem (oMSDocTable);
 			}
 			else if (oItem.is<OOX::Logic::Sdt>())
 			{
-				const OOX::Logic::SdtContent& oStdC				=	oItem.as<OOX::Logic::Sdt>().Content;
+				const OOX::Logic::SdtContent& oStdC = oItem.as<OOX::Logic::Sdt>().Content;
 
-				for (size_t j = 0; j < oStdC.Items->size(); ++j)
+				size_t stdCount = oStdC.m_items.size();
+				for (size_t j = 0; j < stdCount; ++j)
 				{
-					const OOX::Logic::TextItem& oStdItem		=	oStdC.Items->operator [](j);
-
+					const OOX::Logic::TextItem& oStdItem = oStdC.m_items[j];
 					if (oStdItem.is<OOX::Logic::Paragraph>())
 					{
-						const OOX::Logic::Paragraph& oMSDocXParagraph	=	oStdItem.as<OOX::Logic::Paragraph>();
+						const OOX::Logic::Paragraph& oMSDocXParagraph = oStdItem.as<OOX::Logic::Paragraph>();
 						if (ValidParagraph(oMSDocXParagraph))
 						{
-							AVSDocFileFormat::Paragraph oMSDocParagraph	=	ConvertParagraph<OOX::Header>(oMSDocXParagraph);
-							oMSDocHeader.AddTextItem (oMSDocParagraph);
+							ASCDocFileFormat::Paragraph oMSDocParagraph = ConvertParagraph<OOX::Header>(oMSDocXParagraph);
+							docHeader.AddTextItem (oMSDocParagraph);
 						}
 					}
 					else if (oStdItem.is<OOX::Logic::Table>())
 					{
-						AVSDocFileFormat::Table oMSDocTable		=	CreateTable<OOX::Header> (oStdItem.as<OOX::Logic::Table>());
-						oMSDocHeader.AddTextItem (oMSDocTable);
+						ASCDocFileFormat::Table oMSDocTable = CreateTable<OOX::Header>(oStdItem.as<OOX::Logic::Table>());
+						docHeader.AddTextItem (oMSDocTable);
 					}
 				}
 			}
 		}
 
-		m_oOArtBuilder.SetLocation (MAIN_DOCUMENT);
+		m_oOArtBuilder.SetLocation(MAIN_DOCUMENT);
 
 #ifdef _DEBUG		
-		// DOCXDOCUTILS::DebugStrPrint (_T("Header : "), oMSDocHeader.GetAllText());
+		// DOCXDOCUTILS::DebugStrPrint (_T("Header : "), docHeader.GetAllText());
 #endif
-		return oMSDocHeader;
+		return docHeader;
 	}
 
 	// нижний колонтитул
-	AVSDocFileFormat::Footer CFileTransformer::ConvertFooter (const OOX::Footer& oXmlDOCXFooter) 
+	ASCDocFileFormat::Footer CFileTransformer::ConvertFooter(const OOX::Footer& oFooter) 
 	{
 		m_oOArtBuilder.SetLocation (HEADER_DOCUMENT);
 
-		AVSDocFileFormat::Footer oMSDocFooter;
+		ASCDocFileFormat::Footer docFooter;
 
-		for (size_t i = 0; i < oXmlDOCXFooter.Items->size(); ++i)
+		size_t count = oFooter.m_items.size();
+		for (size_t i = 0; i < count; ++i)
 		{
-			const OOX::Logic::TextItem& oItem					=	oXmlDOCXFooter.Items->operator [](i);
-
+			const OOX::Logic::TextItem& oItem = oFooter.m_items[i];
 			if (oItem.is<OOX::Logic::Paragraph>())
 			{
-				const OOX::Logic::Paragraph& oMSDocXParagraph	=	oItem.as<OOX::Logic::Paragraph>();
+				const OOX::Logic::Paragraph& oMSDocXParagraph = oItem.as<OOX::Logic::Paragraph>();
 				if (ValidParagraph(oMSDocXParagraph))
 				{
-					AVSDocFileFormat::Paragraph oMSDocParagraph	=	ConvertParagraph<OOX::Footer>(oMSDocXParagraph);
-					oMSDocFooter.AddTextItem (oMSDocParagraph);
+					ASCDocFileFormat::Paragraph oMSDocParagraph	= ConvertParagraph<OOX::Footer>(oMSDocXParagraph);
+					docFooter.AddTextItem (oMSDocParagraph);
 				}
 			}
 			else if (oItem.is<OOX::Logic::Table>())
 			{
-				AVSDocFileFormat::Table oMSDocTable				=	CreateTable<OOX::Footer> (oItem.as<OOX::Logic::Table>());
-				oMSDocFooter.AddTextItem (oMSDocTable);
+				ASCDocFileFormat::Table oMSDocTable = CreateTable<OOX::Footer> (oItem.as<OOX::Logic::Table>());
+				docFooter.AddTextItem (oMSDocTable);
 			}
 			else if (oItem.is<OOX::Logic::Sdt>())
 			{
-				const OOX::Logic::SdtContent& oStdC				=	oItem.as<OOX::Logic::Sdt>().Content;
+				const OOX::Logic::SdtContent& oStdC = oItem.as<OOX::Logic::Sdt>().Content;
 
-				for (size_t j = 0; j < oStdC.Items->size(); ++j)
+				size_t stdCount = oStdC.m_items.size();
+				for (size_t j = 0; j < stdCount; ++j)
 				{
-					const OOX::Logic::TextItem& oStdItem		=	oStdC.Items->operator [](j);
+					const OOX::Logic::TextItem& oStdItem = oStdC.m_items[j];
 
 					if (oStdItem.is<OOX::Logic::Paragraph>())
 					{
-						const OOX::Logic::Paragraph& oMSDocXParagraph	=	oStdItem.as<OOX::Logic::Paragraph>();
+						const OOX::Logic::Paragraph& oMSDocXParagraph = oStdItem.as<OOX::Logic::Paragraph>();
 						if (ValidParagraph(oMSDocXParagraph))
 						{
-							AVSDocFileFormat::Paragraph oMSDocParagraph	=	ConvertParagraph<OOX::Footer>(oMSDocXParagraph);
-							oMSDocFooter.AddTextItem (oMSDocParagraph);
+							ASCDocFileFormat::Paragraph oMSDocParagraph = ConvertParagraph<OOX::Footer>(oMSDocXParagraph);
+							docFooter.AddTextItem (oMSDocParagraph);
 						}
 					}
 					else if (oStdItem.is<OOX::Logic::Table>())
 					{
-						AVSDocFileFormat::Table oMSDocTable		=	CreateTable<OOX::Footer> (oStdItem.as<OOX::Logic::Table>());
-						oMSDocFooter.AddTextItem (oMSDocTable);
+						ASCDocFileFormat::Table oMSDocTable = CreateTable<OOX::Footer> (oStdItem.as<OOX::Logic::Table>());
+						docFooter.AddTextItem (oMSDocTable);
 					}
 				}
 			}
@@ -2440,25 +2449,24 @@ namespace DOCXTODOC
 		m_oOArtBuilder.SetLocation (MAIN_DOCUMENT);
 
 #ifdef _DEBUG		
-		// DOCXDOCUTILS::DebugStrPrint (_T("Footer : "), oMSDocFooter.GetAllText());
+		// DOCXDOCUTILS::DebugStrPrint (_T("Footer : "), docFooter.GetAllText());
 #endif
-
-		return oMSDocFooter;
+		return docFooter;
 	}
 }
 
 namespace DOCXTODOC	//	TABLE
 {
-	template<class T> AVSDocFileFormat::Table CFileTransformer::CreateTable (const OOX::Logic::Table& oXmlTable) 
+	template<class T> ASCDocFileFormat::Table CFileTransformer::CreateTable(const OOX::Logic::Table& oXmlTable) 
 	{
 		static unsigned int tableDepth = 1;
 
-		AVSDocFileFormat::Table table;
+		ASCDocFileFormat::Table table;
 
 		OOX::Styles::Style oTableStyle;
 		if (oXmlTable.tblPr->Style.is_init())
 		{			
-			oTableStyle	= inputFolder.find<OOX::Document>().find<OOX::Styles>().GetStyleById(*oXmlTable.tblPr->Style);
+			oTableStyle	= m_docxInputFile.find<OOX::Document>().find<OOX::Styles>().GetStyleById(*oXmlTable.tblPr->Style);
 		}
 
 		DOCXDOCUTILS::CTblBorders oTblBorders (oXmlTable, oTableStyle);
@@ -2468,10 +2476,10 @@ namespace DOCXTODOC	//	TABLE
 		{
 			const OOX::Logic::TableRow& oXmlTableRow = oXmlTable.Rows->operator [](nY);
 
-			AVSDocFileFormat::TableRow tableRow (tableDepth);
+			ASCDocFileFormat::TableRow tableRow (tableDepth);
 
-			vector<AVSDocFileFormat::XAS> xass;
-			vector<AVSDocFileFormat::TC80> tc80s;
+			vector<ASCDocFileFormat::XAS> xass;
+			vector<ASCDocFileFormat::TC80> tc80s;
 
 			unsigned int cellIndex = 0;
 
@@ -2480,9 +2488,9 @@ namespace DOCXTODOC	//	TABLE
 			{
 				const OOX::Logic::TableCell& oXmlCell	=	oXmlTableRow.Cells->operator[](nX);
 
-				AVSDocFileFormat::TableCell tableCell(tableDepth);
+				ASCDocFileFormat::TableCell tableCell(tableDepth);
 
-				AVSDocFileFormat::Constants::VerticalMergeFlag vmf = ConvertTableVerticalMergeFlag( oXmlCell.Properties->VMerge );
+				ASCDocFileFormat::Constants::VerticalMergeFlag vmf = ConvertTableVerticalMergeFlag( oXmlCell.Properties->VMerge );
 
 				oTblBorders.Append (nX, nY, nXC, nYC, oXmlTable.tblPr->tblBorders, oXmlCell.Properties->tblBorders);
 
@@ -2496,11 +2504,11 @@ namespace DOCXTODOC	//	TABLE
 					}
 				}
 
-				AVSDocFileFormat::TC80 tc80( AVSDocFileFormat::TCGRF( 
-					AVSDocFileFormat::Constants::horzMergeNotMerged, 
-					AVSDocFileFormat::Constants::grpfTFlrtb, vmf, 
-					AVSDocFileFormat::Constants::vaTop, 
-					AVSDocFileFormat::Constants::ftsDxa, false, false, false ),
+				ASCDocFileFormat::TC80 tc80( ASCDocFileFormat::TCGRF( 
+					ASCDocFileFormat::Constants::horzMergeNotMerged, 
+					ASCDocFileFormat::Constants::grpfTFlrtb, vmf, 
+					ASCDocFileFormat::Constants::vaTop, 
+					ASCDocFileFormat::Constants::ftsDxa, false, false, false ),
 					nCellWidth, 
 					oTblBorders.GetTopNillBorder(), oTblBorders.GetLeftNillBorder(), oTblBorders.GetBottomNillBorder(),
 					oTblBorders.GetRightNillBorder()); 				
@@ -2513,16 +2521,16 @@ namespace DOCXTODOC	//	TABLE
 					if (items[i].is<OOX::Logic::Paragraph>())
 					{
 						const OOX::Logic::Paragraph& oDocxParagraph		=	items[i].as<OOX::Logic::Paragraph>();
-						AVSDocFileFormat::Paragraph oDocParagraph		=	ConvertParagraph<T>(oDocxParagraph);
+						ASCDocFileFormat::Paragraph oDocParagraph		=	ConvertParagraph<T>(oDocxParagraph);
 						tableCell.AddTextItem (oDocParagraph);
 
-						//AVSDocFileFormat::Paragraph oDocParagraph;	//	 ONLY FOR TEST
+						//ASCDocFileFormat::Paragraph oDocParagraph;	//	 ONLY FOR TEST
 						//tableCell.AddTextItem (oDocParagraph);		//	 ONLY FOR TEST
 					}
 					else if (items[i].is<OOX::Logic::Table>())
 					{
 						tableDepth++;
-						AVSDocFileFormat::Table docTable = CreateTable<T>(items[i].as<OOX::Logic::Table>());
+						ASCDocFileFormat::Table docTable = CreateTable<T>(items[i].as<OOX::Logic::Table>());
 						tableDepth--;
 						tableCell.AddTextItem(docTable);
 					}
@@ -2536,7 +2544,7 @@ namespace DOCXTODOC	//	TABLE
 
 			xass = BuildXASs( oXmlTable, *oXmlTableRow.Cells );
 
-			AVSDocFileFormat::TDefTableOperand tdto( oXmlTableRow.Cells->size(), xass, tc80s );
+			ASCDocFileFormat::TDefTableOperand tdto( oXmlTableRow.Cells->size(), xass, tc80s );
 
 			tableRow.AddProperty( (short)DocFileFormat::sprmTDefTable, tdto );
 
@@ -2547,8 +2555,8 @@ namespace DOCXTODOC	//	TABLE
 				tableRow.AddProperties(ConvertTableRowProperties(nY,*oXmlTableRow.Properties ) );
 			}
 
-			const vector<AVSDocFileFormat::TableBrcOperand>& oBrcs		=	oTblBorders.GetSpecificationBorders ();
-			const vector<AVSDocFileFormat::TableBrc80Operand>& oBrc80s	=	oTblBorders.GetDescriptBorders ();
+			const vector<ASCDocFileFormat::TableBrcOperand>& oBrcs		=	oTblBorders.GetSpecificationBorders ();
+			const vector<ASCDocFileFormat::TableBrc80Operand>& oBrc80s	=	oTblBorders.GetDescriptBorders ();
 			for (size_t i = 0; i < oBrc80s.size(); ++i)
 			{
 				tableRow.AddProperty( (short)DocFileFormat::sprmTSetBrc80, oBrc80s[i] );
@@ -2565,25 +2573,25 @@ namespace DOCXTODOC	//	TABLE
 		return table;
 	}
 
-	PrlList CFileTransformer::ConvertTableProperties (const OOX::Logic::TableProperty& docxTableProperties, unsigned int cellsCount) 
+	PrlList CFileTransformer::ConvertTableProperties(const OOX::Logic::TableProperty& docxTableProperties, unsigned int cellsCount) 
 	{
 		PrlList docTableProperties;
 
 		DOCXDOCUTILS::CTblBorders oBorder;
 
-		AVSDocFileFormat::TableBordersOperand80 tableBordersOperand80;
-		AVSDocFileFormat::TableBordersOperand tableBordersOperand;
+		ASCDocFileFormat::TableBordersOperand80 tableBordersOperand80;
+		ASCDocFileFormat::TableBordersOperand tableBordersOperand;
 
 		if ( docxTableProperties.Style.is_init() )
 		{
 			docTableProperties = GetTablePropertiesFromStyleHierarchy( docxTableProperties.Style );
 
 			short istd = m_mapStyleSheetMap[*docxTableProperties.Style];
-			docTableProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTIstd, (byte*)(&istd) ) );
+			docTableProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTIstd, (byte*)(&istd) ) );
 
-			if ( istd < (short)m_pDOCFile->GetStyleSheet().Count() )
+			if ( istd < (short)m_pDocFile->GetStyleSheet().Count() )
 			{
-				PrlList styleTableProperties = m_pDOCFile->GetStyleSheet()[istd].GetProperties();
+				PrlList styleTableProperties = m_pDocFile->GetStyleSheet()[istd].GetProperties();
 
 				for (PrlList::const_iterator iter = styleTableProperties.begin(); iter != styleTableProperties.end(); ++iter)
 				{
@@ -2593,13 +2601,13 @@ namespace DOCXTODOC	//	TABLE
 					{
 					case ( (unsigned short)DocFileFormat::sprmTTableBorders80 ):
 						{
-							tableBordersOperand80 = AVSDocFileFormat::TableBordersOperand80( *iter );
+							tableBordersOperand80 = ASCDocFileFormat::TableBordersOperand80( *iter );
 						}
 						break;
 
 					case ( (unsigned short)DocFileFormat::sprmTTableBorders ):
 						{
-							tableBordersOperand = AVSDocFileFormat::TableBordersOperand( *iter );
+							tableBordersOperand = ASCDocFileFormat::TableBordersOperand( *iter );
 						}
 						break;
 					}
@@ -2609,26 +2617,26 @@ namespace DOCXTODOC	//	TABLE
 
 		if ( docxTableProperties.Look.is_init() )
 		{
-			AVSDocFileFormat::TLP tlp( AVSDocFileFormat::Constants::itlNone, AVSDocFileFormat::Fatl( HexString2Int( *docxTableProperties.Look ) ) );
+			ASCDocFileFormat::TLP tlp( ASCDocFileFormat::Constants::itlNone, ASCDocFileFormat::Fatl( HexString2Int( *docxTableProperties.Look ) ) );
 
-			docTableProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTTlp, tlp ) );
+			docTableProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTTlp, tlp ) );
 		}
 
 		if ( docxTableProperties.Width.is_init() )
 		{
-			AVSDocFileFormat::FtsWWidth_Table ftsWWidth_Table (DOCXDOCUTILS::TableWidthUnitsFromString (*docxTableProperties.Width->Type),*docxTableProperties.Width->Width );
-			docTableProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTTableWidth, ftsWWidth_Table ) );
+			ASCDocFileFormat::FtsWWidth_Table ftsWWidth_Table (DOCXDOCUTILS::TableWidthUnitsFromString (*docxTableProperties.Width->Type),*docxTableProperties.Width->Width );
+			docTableProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTTableWidth, ftsWWidth_Table ) );
 		}
 
 		byte bAutoFit = 0x01;
 		if ( docxTableProperties.Layout.is_init() && docxTableProperties.Layout == "fixed")
 			bAutoFit = 0x00;
-		docTableProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTFAutofit, (byte*)&bAutoFit ) );
+		docTableProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTFAutofit, (byte*)&bAutoFit ) );
 
 		if ( docxTableProperties.Ind.is_init() )
 		{
-			AVSDocFileFormat::FtsWWidth_Indent tWidthIndent (DOCXDOCUTILS::TableWidthUnitsFromString (docxTableProperties.Ind->Type), (short)docxTableProperties.Ind->Width);
-			docTableProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTWidthIndent, (byte*)tWidthIndent ) );
+			ASCDocFileFormat::FtsWWidth_Indent tWidthIndent (DOCXDOCUTILS::TableWidthUnitsFromString (docxTableProperties.Ind->Type), (short)docxTableProperties.Ind->Width);
+			docTableProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTWidthIndent, (byte*)tWidthIndent ) );
 		}
 
 		map<std::string, byte>& oBrcMap	=	oBorder.GetBrcMap ();
@@ -2637,7 +2645,7 @@ namespace DOCXTODOC	//	TABLE
 		{
 			if (docxTableProperties.tblBorders->top.is_init())
 			{
-				AVSDocFileFormat::Brc80MayBeNil Brc80MayBeNilTop =  AVSDocFileFormat::Brc80MayBeNil( docxTableProperties.tblBorders->top.get_value_or_default().Bdr->Sz.get_value_or_default(), 
+				ASCDocFileFormat::Brc80MayBeNil Brc80MayBeNilTop =  ASCDocFileFormat::Brc80MayBeNil( docxTableProperties.tblBorders->top.get_value_or_default().Bdr->Sz.get_value_or_default(), 
 					oBrcMap[docxTableProperties.tblBorders->top.get_value_or_default().Bdr->Value],
 					DOCXDOCUTILS::ColorToIco (docxTableProperties.tblBorders->top.get_value_or_default().Bdr->Color.get_value_or_default()), 
 					docxTableProperties.tblBorders->top.get_value_or_default().Bdr->Space.get_value_or_default(), 
@@ -2650,7 +2658,7 @@ namespace DOCXTODOC	//	TABLE
 				if (std::string("auto") == strColor)
 					strColor			=	std::string ("000000");
 
-				AVSDocFileFormat::Brc brcTop = AVSDocFileFormat::Brc(AVSDocFileFormat::COLORREF(HexString2Int(strColor)),
+				ASCDocFileFormat::Brc brcTop = ASCDocFileFormat::Brc(ASCDocFileFormat::COLORREF(HexString2Int(strColor)),
 					docxTableProperties.tblBorders->top.get_value_or_default().Bdr->Sz.get_value_or_default(), 
 					oBrcMap[docxTableProperties.tblBorders->top.get_value_or_default().Bdr->Value], 
 					docxTableProperties.tblBorders->top.get_value_or_default().Bdr->Space.get_value_or_default(), 
@@ -2662,7 +2670,7 @@ namespace DOCXTODOC	//	TABLE
 
 			if ( docxTableProperties.tblBorders->bottom.is_init() )
 			{
-				AVSDocFileFormat::Brc80MayBeNil Brc80MayBeNilBottom = AVSDocFileFormat::Brc80MayBeNil( docxTableProperties.tblBorders->bottom.get_value_or_default().Bdr->Sz.get_value_or_default(), 
+				ASCDocFileFormat::Brc80MayBeNil Brc80MayBeNilBottom = ASCDocFileFormat::Brc80MayBeNil( docxTableProperties.tblBorders->bottom.get_value_or_default().Bdr->Sz.get_value_or_default(), 
 					oBrcMap[docxTableProperties.tblBorders->bottom.get_value_or_default().Bdr->Value], 
 					DOCXDOCUTILS::ColorToIco (docxTableProperties.tblBorders->bottom.get_value_or_default().Bdr->Color.get_value_or_default()), 
 					docxTableProperties.tblBorders->bottom.get_value_or_default().Bdr->Space.get_value_or_default(), 
@@ -2675,7 +2683,7 @@ namespace DOCXTODOC	//	TABLE
 				if (std::string("auto") == strColor)
 					strColor			=	std::string ("000000");
 
-				AVSDocFileFormat::Brc brcBottom = AVSDocFileFormat::Brc(AVSDocFileFormat::COLORREF(HexString2Int(strColor)),
+				ASCDocFileFormat::Brc brcBottom = ASCDocFileFormat::Brc(ASCDocFileFormat::COLORREF(HexString2Int(strColor)),
 					docxTableProperties.tblBorders->bottom.get_value_or_default().Bdr->Sz.get_value_or_default(), 
 					oBrcMap[docxTableProperties.tblBorders->bottom.get_value_or_default().Bdr->Value], 
 					docxTableProperties.tblBorders->bottom.get_value_or_default().Bdr->Space.get_value_or_default(), 
@@ -2687,7 +2695,7 @@ namespace DOCXTODOC	//	TABLE
 
 			if ( docxTableProperties.tblBorders->left.is_init() )
 			{
-				AVSDocFileFormat::Brc80MayBeNil Brc80MayBeNilLeft = AVSDocFileFormat::Brc80MayBeNil( docxTableProperties.tblBorders->left.get_value_or_default().Bdr->Sz.get_value_or_default(), 
+				ASCDocFileFormat::Brc80MayBeNil Brc80MayBeNilLeft = ASCDocFileFormat::Brc80MayBeNil( docxTableProperties.tblBorders->left.get_value_or_default().Bdr->Sz.get_value_or_default(), 
 					oBrcMap[docxTableProperties.tblBorders->left.get_value_or_default().Bdr->Value], 
 					DOCXDOCUTILS::ColorToIco (docxTableProperties.tblBorders->left.get_value_or_default().Bdr->Color.get_value_or_default()), 
 					docxTableProperties.tblBorders->left.get_value_or_default().Bdr->Space.get_value_or_default(), 
@@ -2700,7 +2708,7 @@ namespace DOCXTODOC	//	TABLE
 				if (std::string("auto") == strColor)
 					strColor			=	std::string ("000000");
 
-				AVSDocFileFormat::Brc brcLeft = AVSDocFileFormat::Brc( AVSDocFileFormat::COLORREF(HexString2Int(strColor)),
+				ASCDocFileFormat::Brc brcLeft = ASCDocFileFormat::Brc( ASCDocFileFormat::COLORREF(HexString2Int(strColor)),
 					docxTableProperties.tblBorders->left.get_value_or_default().Bdr->Sz.get_value_or_default(), 
 					oBrcMap[docxTableProperties.tblBorders->left.get_value_or_default().Bdr->Value], 
 					docxTableProperties.tblBorders->left.get_value_or_default().Bdr->Space.get_value_or_default(), 
@@ -2712,7 +2720,7 @@ namespace DOCXTODOC	//	TABLE
 
 			if ( docxTableProperties.tblBorders->right.is_init() )
 			{
-				AVSDocFileFormat::Brc80MayBeNil Brc80MayBeNilRight = AVSDocFileFormat::Brc80MayBeNil( docxTableProperties.tblBorders->right.get_value_or_default().Bdr->Sz.get_value_or_default(), 
+				ASCDocFileFormat::Brc80MayBeNil Brc80MayBeNilRight = ASCDocFileFormat::Brc80MayBeNil( docxTableProperties.tblBorders->right.get_value_or_default().Bdr->Sz.get_value_or_default(), 
 					oBrcMap[docxTableProperties.tblBorders->right.get_value_or_default().Bdr->Value], 
 					DOCXDOCUTILS::ColorToIco (docxTableProperties.tblBorders->right.get_value_or_default().Bdr->Color.get_value_or_default()), 
 					docxTableProperties.tblBorders->right.get_value_or_default().Bdr->Space.get_value_or_default(), 
@@ -2725,7 +2733,7 @@ namespace DOCXTODOC	//	TABLE
 				if (std::string("auto") == strColor)
 					strColor			=	std::string ("000000");
 
-				AVSDocFileFormat::Brc brcRight = AVSDocFileFormat::Brc( AVSDocFileFormat::COLORREF(HexString2Int(strColor)),
+				ASCDocFileFormat::Brc brcRight = ASCDocFileFormat::Brc( ASCDocFileFormat::COLORREF(HexString2Int(strColor)),
 					docxTableProperties.tblBorders->right.get_value_or_default().Bdr->Sz.get_value_or_default(), 
 					oBrcMap[docxTableProperties.tblBorders->right.get_value_or_default().Bdr->Value], 
 					docxTableProperties.tblBorders->right.get_value_or_default().Bdr->Space.get_value_or_default(), 
@@ -2737,7 +2745,7 @@ namespace DOCXTODOC	//	TABLE
 
 			if ( docxTableProperties.tblBorders->insideH.is_init() )
 			{
-				AVSDocFileFormat::Brc80MayBeNil Brc80MayBeNilInsideH = AVSDocFileFormat::Brc80MayBeNil( docxTableProperties.tblBorders->insideH.get_value_or_default().Bdr->Sz.get_value_or_default(), 
+				ASCDocFileFormat::Brc80MayBeNil Brc80MayBeNilInsideH = ASCDocFileFormat::Brc80MayBeNil( docxTableProperties.tblBorders->insideH.get_value_or_default().Bdr->Sz.get_value_or_default(), 
 					oBrcMap[docxTableProperties.tblBorders->insideH.get_value_or_default().Bdr->Value], 
 					DOCXDOCUTILS::ColorToIco (docxTableProperties.tblBorders->insideH.get_value_or_default().Bdr->Color.get_value_or_default()), 
 					docxTableProperties.tblBorders->insideH.get_value_or_default().Bdr->Space.get_value_or_default(), 
@@ -2750,7 +2758,7 @@ namespace DOCXTODOC	//	TABLE
 				if (std::string("auto") == strColor)
 					strColor			=	std::string ("000000");
 
-				AVSDocFileFormat::Brc brcInsideH = AVSDocFileFormat::Brc( AVSDocFileFormat::COLORREF(HexString2Int(strColor)),
+				ASCDocFileFormat::Brc brcInsideH = ASCDocFileFormat::Brc( ASCDocFileFormat::COLORREF(HexString2Int(strColor)),
 					docxTableProperties.tblBorders->insideH.get_value_or_default().Bdr->Sz.get_value_or_default(), 
 					oBrcMap[docxTableProperties.tblBorders->insideH.get_value_or_default().Bdr->Value], 
 					docxTableProperties.tblBorders->insideH.get_value_or_default().Bdr->Space.get_value_or_default(), 
@@ -2762,7 +2770,7 @@ namespace DOCXTODOC	//	TABLE
 
 			if ( docxTableProperties.tblBorders->insideV.is_init() )
 			{
-				AVSDocFileFormat::Brc80MayBeNil Brc80MayBeNilInsideV = AVSDocFileFormat::Brc80MayBeNil( docxTableProperties.tblBorders->insideV.get_value_or_default().Bdr->Sz.get_value_or_default(), 
+				ASCDocFileFormat::Brc80MayBeNil Brc80MayBeNilInsideV = ASCDocFileFormat::Brc80MayBeNil( docxTableProperties.tblBorders->insideV.get_value_or_default().Bdr->Sz.get_value_or_default(), 
 					oBrcMap[docxTableProperties.tblBorders->insideV.get_value_or_default().Bdr->Value], 
 					DOCXDOCUTILS::ColorToIco (docxTableProperties.tblBorders->insideV.get_value_or_default().Bdr->Color.get_value_or_default()), 
 					docxTableProperties.tblBorders->insideV.get_value_or_default().Bdr->Space.get_value_or_default(), 
@@ -2775,7 +2783,7 @@ namespace DOCXTODOC	//	TABLE
 				if (std::string("auto") == strColor)
 					strColor			=	std::string ("000000");
 
-				AVSDocFileFormat::Brc brcInsideV = AVSDocFileFormat::Brc( AVSDocFileFormat::COLORREF( HexString2Int(strColor) ),
+				ASCDocFileFormat::Brc brcInsideV = ASCDocFileFormat::Brc( ASCDocFileFormat::COLORREF( HexString2Int(strColor) ),
 					docxTableProperties.tblBorders->insideV.get_value_or_default().Bdr->Sz.get_value_or_default(), 
 					oBrcMap[docxTableProperties.tblBorders->insideV.get_value_or_default().Bdr->Value], 
 					docxTableProperties.tblBorders->insideV.get_value_or_default().Bdr->Space.get_value_or_default(), 
@@ -2785,61 +2793,61 @@ namespace DOCXTODOC	//	TABLE
 				tableBordersOperand.SetVerticalInsideBorder( brcInsideV );
 			}
 
-			docTableProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTTableBorders80, (byte*)tableBordersOperand80 ) );
-			docTableProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTTableBorders, (byte*)tableBordersOperand ) );
+			docTableProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTTableBorders80, (byte*)tableBordersOperand80 ) );
+			docTableProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTTableBorders, (byte*)tableBordersOperand ) );
 		}
 
 		if ( docxTableProperties.CellMar.is_init() )
 		{
 			if ( docxTableProperties.CellMar->Top.is_init() )
 			{
-				AVSDocFileFormat::CSSAOperand cssaOperandTop( AVSDocFileFormat::CSSA( AVSDocFileFormat::ItcFirstLim( 0, cellsCount ), 
-					AVSDocFileFormat::Constants::fbrcTop,
+				ASCDocFileFormat::CSSAOperand cssaOperandTop( ASCDocFileFormat::CSSA( ASCDocFileFormat::ItcFirstLim( 0, cellsCount ), 
+					ASCDocFileFormat::Constants::fbrcTop,
 					DOCXDOCUTILS::TableWidthUnitsFromString (docxTableProperties.CellMar->Top->Margin->Type),
 					docxTableProperties.CellMar->Top->Margin->W ) );
 
-				docTableProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTCellPadding, (byte*)cssaOperandTop ) );
+				docTableProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTCellPadding, (byte*)cssaOperandTop ) );
 			}
 
 			if ( docxTableProperties.CellMar->Left.is_init() )
 			{
-				AVSDocFileFormat::CSSAOperand cssaOperandLeft( AVSDocFileFormat::CSSA( AVSDocFileFormat::ItcFirstLim( 0, cellsCount ), 
-					AVSDocFileFormat::Constants::fbrcLeft,
+				ASCDocFileFormat::CSSAOperand cssaOperandLeft( ASCDocFileFormat::CSSA( ASCDocFileFormat::ItcFirstLim( 0, cellsCount ), 
+					ASCDocFileFormat::Constants::fbrcLeft,
 					DOCXDOCUTILS::TableWidthUnitsFromString (docxTableProperties.CellMar->Left->Margin->Type),
 					docxTableProperties.CellMar->Left->Margin->W ) );
 
-				docTableProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTCellPadding, (byte*)cssaOperandLeft ) );
+				docTableProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTCellPadding, (byte*)cssaOperandLeft ) );
 			}
 
 			if ( docxTableProperties.CellMar->Bottom.is_init() )
 			{
-				AVSDocFileFormat::CSSAOperand cssaOperandBottom( AVSDocFileFormat::CSSA( AVSDocFileFormat::ItcFirstLim( 0, cellsCount ), 
-					AVSDocFileFormat::Constants::fbrcBottom,
+				ASCDocFileFormat::CSSAOperand cssaOperandBottom( ASCDocFileFormat::CSSA( ASCDocFileFormat::ItcFirstLim( 0, cellsCount ), 
+					ASCDocFileFormat::Constants::fbrcBottom,
 					DOCXDOCUTILS::TableWidthUnitsFromString (docxTableProperties.CellMar->Bottom->Margin->Type),
 					docxTableProperties.CellMar->Bottom->Margin->W ) );
 
-				docTableProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTCellPadding, (byte*)cssaOperandBottom ) );
+				docTableProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTCellPadding, (byte*)cssaOperandBottom ) );
 			}
 
 			if ( docxTableProperties.CellMar->Right.is_init() )
 			{
-				AVSDocFileFormat::CSSAOperand cssaOperandRight( AVSDocFileFormat::CSSA( AVSDocFileFormat::ItcFirstLim( 0, cellsCount ), 
-					AVSDocFileFormat::Constants::fbrcRight,
+				ASCDocFileFormat::CSSAOperand cssaOperandRight( ASCDocFileFormat::CSSA( ASCDocFileFormat::ItcFirstLim( 0, cellsCount ), 
+					ASCDocFileFormat::Constants::fbrcRight,
 					DOCXDOCUTILS::TableWidthUnitsFromString (docxTableProperties.CellMar->Right->Margin->Type),
 					docxTableProperties.CellMar->Right->Margin->W ) );
 
-				docTableProperties.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTCellPadding, (byte*)cssaOperandRight ) );
+				docTableProperties.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTCellPadding, (byte*)cssaOperandRight ) );
 			}
 		}
 
 		return docTableProperties;
 	}
 
-	vector<AVSDocFileFormat::XAS> CFileTransformer::BuildXASs(const OOX::Logic::Table& oXmlTable, const vector<OOX::Logic::TableCell>& tableCells) 
+	vector<ASCDocFileFormat::XAS> CFileTransformer::BuildXASs(const OOX::Logic::Table& oXmlTable, const vector<OOX::Logic::TableCell>& tableCells) 
 	{
-		std::vector<AVSDocFileFormat::XAS> resultXASs;
+		std::vector<ASCDocFileFormat::XAS> resultXASs;
 
-		resultXASs.push_back( AVSDocFileFormat::XAS( 0 ) ); //!!!TODO!!!
+		resultXASs.push_back( ASCDocFileFormat::XAS( 0 ) ); //!!!TODO!!!
 
 		int nSpanLineOff	=	0;
 
@@ -2859,7 +2867,7 @@ namespace DOCXTODOC	//	TABLE
 				}
 				else
 				{
-					nCellWidth	=	AVSDocFormatUtils::gc_nZeroWidth;
+					nCellWidth	=	ASCDocFormatUtils::gc_nZeroWidth;
 				}
 			}
 
@@ -2879,7 +2887,7 @@ namespace DOCXTODOC	//	TABLE
 				}
 
 				if (nCellWidth <= 0)
-					nCellWidth	=	AVSDocFormatUtils::gc_nZeroWidth;
+					nCellWidth	=	ASCDocFormatUtils::gc_nZeroWidth;
 
 				//if (0 == nSpanLineOff)
 				--nXmlSpan;
@@ -2887,14 +2895,14 @@ namespace DOCXTODOC	//	TABLE
 				nSpanLineOff	+=	nXmlSpan;
 			}
 
-			resultXASs.push_back(AVSDocFileFormat::XAS(nCellWidth + resultXASs.back()));
+			resultXASs.push_back(ASCDocFileFormat::XAS(nCellWidth + resultXASs.back()));
 		}
 
 		return resultXASs;
 	}
 
 	//
-	const PrlList CFileTransformer::ConvertTableRowProperties (int nY, const OOX::Logic::TableRowProperties& oXmlRow) 
+	const PrlList CFileTransformer::ConvertTableRowProperties(int nY, const OOX::Logic::TableRowProperties& oXmlRow) 
 	{
 		PrlList oPrls;
 
@@ -2902,19 +2910,19 @@ namespace DOCXTODOC	//	TABLE
 
 		if ( oXmlRow.Height->Type.is_init() && ( *oXmlRow.Height->Type ==  "exact" ) )
 		{
-			tableRowHeight = AVSDocFileFormat::YAS( *oXmlRow.Height->Height * ( -1 ) );    
+			tableRowHeight = ASCDocFileFormat::YAS( *oXmlRow.Height->Height * ( -1 ) );    
 		}
 		else
 		{
-			tableRowHeight = AVSDocFileFormat::YAS( *oXmlRow.Height->Height );
+			tableRowHeight = ASCDocFileFormat::YAS( *oXmlRow.Height->Height );
 		}
 
-		oPrls.push_back(AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTDyaRowHeight, (byte*)(&tableRowHeight)));
+		oPrls.push_back(ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTDyaRowHeight, (byte*)(&tableRowHeight)));
 
 		return oPrls;
 	}
 
-	const PrlList CFileTransformer::ConvertTableRowCellsProperties (const OOX::Logic::Table& oXmlTable, int nY, int nCY, const vector<OOX::Logic::TableCell>& arrXmlCells, const OOX::Styles::Style& oStyle) 
+	const PrlList CFileTransformer::ConvertTableRowCellsProperties(const OOX::Logic::Table& oXmlTable, int nY, int nCY, const vector<OOX::Logic::TableCell>& arrXmlCells, const OOX::Styles::Style& oStyle) 
 	{
 		PrlList arCellsPrls;
 
@@ -2928,8 +2936,8 @@ namespace DOCXTODOC	//	TABLE
 
 			oTblFill.AddCell (nX, nY, nCX-1, nCY-1, oXmlCell.Properties->Shading);
 
-			AVSDocFileFormat::TableCellWidthOperand tableCellWidthOperand( AVSDocFileFormat::ItcFirstLim( nX, ( nX + 1 ) ), AVSDocFileFormat::FtsWWidth_TablePart( tableCellWidthMap[*oXmlCell.Properties->Width->Type], (unsigned short)(*oXmlCell.Properties->Width->Width) ) );
-			arCellsPrls.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTCellWidth, tableCellWidthOperand ) );
+			ASCDocFileFormat::TableCellWidthOperand tableCellWidthOperand( ASCDocFileFormat::ItcFirstLim( nX, ( nX + 1 ) ), ASCDocFileFormat::FtsWWidth_TablePart( tableCellWidthMap[*oXmlCell.Properties->Width->Type], (unsigned short)(*oXmlCell.Properties->Width->Width) ) );
+			arCellsPrls.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTCellWidth, tableCellWidthOperand ) );
 
 			if(oXmlCell.Properties->CellMar.is_init())
 			{
@@ -2949,49 +2957,49 @@ namespace DOCXTODOC	//	TABLE
 
 			if ( oXmlCell.Properties->VAlign.is_init() )
 			{
-				AVSDocFileFormat::Constants::VerticalAlign verticalAlign = AVSDocFileFormat::Constants::vaTop;
+				ASCDocFileFormat::Constants::VerticalAlign verticalAlign = ASCDocFileFormat::Constants::vaTop;
 
 				if ( *oXmlCell.Properties->VAlign == "top" )
 				{
-					verticalAlign = AVSDocFileFormat::Constants::vaTop;
+					verticalAlign = ASCDocFileFormat::Constants::vaTop;
 				}
 				else if ( *oXmlCell.Properties->VAlign == "center" )
 				{
-					verticalAlign = AVSDocFileFormat::Constants::vaCenter;
+					verticalAlign = ASCDocFileFormat::Constants::vaCenter;
 				}
 				else if ( *oXmlCell.Properties->VAlign == "bottom" )
 				{
-					verticalAlign = AVSDocFileFormat::Constants::vaBottom;
+					verticalAlign = ASCDocFileFormat::Constants::vaBottom;
 				}
 
-				AVSDocFileFormat::CellRangeVertAlign cellRangeVertAlign( AVSDocFileFormat::ItcFirstLim( nX, ( nX + 1 ) ), verticalAlign );
+				ASCDocFileFormat::CellRangeVertAlign cellRangeVertAlign( ASCDocFileFormat::ItcFirstLim( nX, ( nX + 1 ) ), verticalAlign );
 
-				arCellsPrls.push_back( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmTVertAlign, cellRangeVertAlign ) );
+				arCellsPrls.push_back( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmTVertAlign, cellRangeVertAlign ) );
 			}
 		}
 
 		if (oTblFill.GetShd22().size())
 		{
-			AVSDocFileFormat::DefTableShdOperand defOperand(oTblFill.GetShd22());
+			ASCDocFileFormat::DefTableShdOperand defOperand(oTblFill.GetShd22());
 
-			arCellsPrls.push_back(AVSDocFileFormat::Prl((short)DocFileFormat::sprmTDefTableShd,	defOperand));
-			arCellsPrls.push_back(AVSDocFileFormat::Prl((short)DocFileFormat::sprmTDefTableShdRaw, defOperand));
+			arCellsPrls.push_back(ASCDocFileFormat::Prl((short)DocFileFormat::sprmTDefTableShd,	defOperand));
+			arCellsPrls.push_back(ASCDocFileFormat::Prl((short)DocFileFormat::sprmTDefTableShdRaw, defOperand));
 		}
 
 		if (oTblFill.GetShd44().size())
 		{
-			AVSDocFileFormat::DefTableShdOperand defOperand(oTblFill.GetShd44());
+			ASCDocFileFormat::DefTableShdOperand defOperand(oTblFill.GetShd44());
 
-			arCellsPrls.push_back(AVSDocFileFormat::Prl((short)DocFileFormat::sprmTDefTableShd,	defOperand));
-			arCellsPrls.push_back(AVSDocFileFormat::Prl((short)DocFileFormat::sprmTDefTableShdRaw, defOperand));
+			arCellsPrls.push_back(ASCDocFileFormat::Prl((short)DocFileFormat::sprmTDefTableShd,	defOperand));
+			arCellsPrls.push_back(ASCDocFileFormat::Prl((short)DocFileFormat::sprmTDefTableShdRaw, defOperand));
 		}
 
 		if (oTblFill.GetShd63().size())
 		{
-			AVSDocFileFormat::DefTableShdOperand defOperand(oTblFill.GetShd63());
+			ASCDocFileFormat::DefTableShdOperand defOperand(oTblFill.GetShd63());
 
-			arCellsPrls.push_back(AVSDocFileFormat::Prl((short)DocFileFormat::sprmTDefTableShd,	defOperand));
-			arCellsPrls.push_back(AVSDocFileFormat::Prl((short)DocFileFormat::sprmTDefTableShdRaw, defOperand));
+			arCellsPrls.push_back(ASCDocFileFormat::Prl((short)DocFileFormat::sprmTDefTableShd,	defOperand));
+			arCellsPrls.push_back(ASCDocFileFormat::Prl((short)DocFileFormat::sprmTDefTableShdRaw, defOperand));
 		}
 
 		return arCellsPrls;
@@ -3000,55 +3008,51 @@ namespace DOCXTODOC	//	TABLE
 
 namespace DOCXTODOC	//	FONTS
 {
-	void CFileTransformer::AddInternalFont (const std::string& strFontName)
+	void CFileTransformer::AddInternalFont(const std::wstring& strFontName)
 	{	
 		// шрифт может не содержаться в таблице шрифтов, а определен прямо по ходу текста
 
-		map<string, short>::const_iterator findResult = m_mapFontTableMap.find(strFontName);  
+		std::map<std::wstring, short>::const_iterator findResult = m_mapFontTableMap.find(strFontName);  
 		if (findResult == m_mapFontTableMap.end())
 		{
-			m_mapFontTableMap.insert(pair<string, short>(strFontName, m_mapFontTableMap.size()));
+			m_mapFontTableMap.insert(pair<wstring, short>(strFontName, m_mapFontTableMap.size()));
 
-			m_arrInternalFonts.push_back (strFontName);
+			m_arrInternalFonts.push_back(strFontName);
 		}
 	}
 
-	void CFileTransformer::ConvertFontTable (const OOX::FontTable& oXmlFontTable)
+	void CFileTransformer::ConvertFontTable(const OOX::FontTable& oFontTable)
 	{
-		vector<AVSDocFileFormat::FFN> ffns;
+		vector<ASCDocFileFormat::FFN> ffns;
 
-		for (size_t i = 0; i < oXmlFontTable.Fonts->size(); ++i)
+		for (size_t i = 0; i < oFontTable.m_fonts.size(); ++i)
 		{
-			const OOX::FontTable::Font& oXmlFont = oXmlFontTable.Fonts->operator [](i);
+			const OOX::FontTable::Font& oFont = oFontTable.m_fonts[i];
 
-			AVSDocFileFormat::FFID ffid (DOCXDOCUTILS::FontPitchFromString (*oXmlFont.Pitch), true,	DOCXDOCUTILS::FontFamilyFromString (*oXmlFont.Family));
+			ASCDocFileFormat::FFID ffid(DOCXDOCUTILS::FontPitchFromString(oFont.m_pitch.get()), true, DOCXDOCUTILS::FontFamilyFromString(oFont.m_family.get()));
 
 			//!!!TODO!!!
 			short wWeight = 400;
 
 			FONTSIGNATURE fs;
 
-			fs.fsCsb[0] = HexString2Int( oXmlFont.Csb0.get_value_or_default() );
-			fs.fsCsb[1] = HexString2Int( oXmlFont.Csb1.get_value_or_default() );
-			fs.fsUsb[0] = HexString2Int( oXmlFont.Usb0.get_value_or_default() );
-			fs.fsUsb[1] = HexString2Int( oXmlFont.Usb1.get_value_or_default() );
-			fs.fsUsb[2] = HexString2Int( oXmlFont.Usb2.get_value_or_default() );
-			fs.fsUsb[3] = HexString2Int( oXmlFont.Usb3.get_value_or_default() );
+			fs.fsCsb[0] = HexString2IntW(oFont.m_csb0.get());
+			fs.fsCsb[1] = HexString2IntW(oFont.m_csb1.get());
+			fs.fsUsb[0] = HexString2IntW(oFont.m_usb0.get());
+			fs.fsUsb[1] = HexString2IntW(oFont.m_usb1.get());
+			fs.fsUsb[2] = HexString2IntW(oFont.m_usb2.get());
+			fs.fsUsb[3] = HexString2IntW(oFont.m_usb3.get());
 
-			std::wstring strFontName;
-
-			FormatUtils::GetSTLCollectionFromBytes<wstring>(&strFontName, (byte*)((*oXmlFont.Name).c_str()), (*oXmlFont.Name).size(), ENCODING_WINDOWS_1251); 
-
-			AVSDocFileFormat::FFN ffn (ffid, wWeight, 
-				DOCXDOCUTILS::FontCharsetFromString (oXmlFont.Charset.get_value_or_default()),
-				ConvertPanose(oXmlFont.Panose1.get_value_or_default()), fs, strFontName);
+			ASCDocFileFormat::FFN ffn (ffid, wWeight, 
+				DOCXDOCUTILS::FontCharsetFromString(oFont.m_charset.get()),
+				ConvertPanose(oFont.m_panose1.get()), fs, oFont.m_name.get());
 
 			ffns.push_back(ffn);
 		}
 
 		for (size_t i = 0; i < m_arrInternalFonts.size(); ++i)
 		{
-			AVSDocFileFormat::FFID ffid (DOCXDOCUTILS::FontPitchFromString (std::string("")), true,	DOCXDOCUTILS::FontFamilyFromString (std::string("auto")));
+			ASCDocFileFormat::FFID ffid (DOCXDOCUTILS::FontPitchFromString(std::wstring(L"")), true,	DOCXDOCUTILS::FontFamilyFromString(std::wstring(L"auto")));
 
 			//!!!TODO!!!
 			short wWeight = 400;
@@ -3062,47 +3066,43 @@ namespace DOCXTODOC	//	FONTS
 			fs.fsUsb[2] = 0;
 			fs.fsUsb[3] = 0;
 
-			std::wstring strFontName;
-
-			FormatUtils::GetSTLCollectionFromBytes<wstring>(&strFontName, (byte*)(m_arrInternalFonts[i].c_str()), m_arrInternalFonts[i].size(), ENCODING_WINDOWS_1251); 
-
-			AVSDocFileFormat::FFN ffn (ffid, wWeight, 
-				DOCXDOCUTILS::FontCharsetFromString (std::string("")),
-				ConvertPanose(std::string("")), fs, strFontName);
+			ASCDocFileFormat::FFN ffn (ffid, wWeight, 
+				DOCXDOCUTILS::FontCharsetFromString (std::wstring(L"")),
+				ConvertPanose(std::wstring(L"")), fs, m_arrInternalFonts[i]);
 
 			ffns.push_back(ffn);
 		}
 
-		m_pDOCFile->SetFontTable(AVSDocFileFormat::STTB<AVSDocFileFormat::FFN>(false, &ffns));
+		m_pDocFile->SetFontTable(ASCDocFileFormat::STTB<ASCDocFileFormat::FFN>(false, &ffns));
 	}
 
-	AVSDocFileFormat::PANOSE CFileTransformer::ConvertPanose (const std::string& strPanose)
+	ASCDocFileFormat::PANOSE CFileTransformer::ConvertPanose(const std::wstring& strPanose)
 	{
 		if (20 == strPanose.size())
 		{
-			byte bFamilyType		=	HexString2Int ( std::string( ( strPanose.begin() ),			( strPanose.begin() + 2 ) ) );
-			byte bSerifStyle		=	HexString2Int ( std::string( ( strPanose.begin() + 2 ),		( strPanose.begin() + 4 ) ) );
-			byte bWeight			=	HexString2Int ( std::string( ( strPanose.begin() + 4 ),		( strPanose.begin() + 6 ) ) );
-			byte bProportion		=	HexString2Int ( std::string( ( strPanose.begin() + 6 ),		( strPanose.begin() + 8 ) ) );
-			byte bContrast			=	HexString2Int ( std::string( ( strPanose.begin() + 8 ),		( strPanose.begin() + 10 ) ) );
-			byte bStrokeVariation	=	HexString2Int ( std::string( ( strPanose.begin() + 10 ),	( strPanose.begin() + 12 ) ) );
-			byte bArmStyle			=	HexString2Int ( std::string( ( strPanose.begin() + 12 ),	( strPanose.begin() + 14 ) ) );
-			byte bLetterform		=	HexString2Int ( std::string( ( strPanose.begin() + 14 ),	( strPanose.begin() + 16 ) ) );
-			byte bMidline			=	HexString2Int ( std::string( ( strPanose.begin() + 16 ),	( strPanose.begin() + 18 ) ) );
-			byte bHeight			=	HexString2Int ( std::string( ( strPanose.begin() + 18 ),	( strPanose.end() ) ) );
+			byte bFamilyType		=	HexString2IntW(std::wstring((strPanose.begin() ),		( strPanose.begin() + 2 ) ) );
+			byte bSerifStyle		=	HexString2IntW(std::wstring((strPanose.begin() + 2 ),	( strPanose.begin() + 4 ) ) );
+			byte bWeight			=	HexString2IntW(std::wstring((strPanose.begin() + 4 ),	( strPanose.begin() + 6 ) ) );
+			byte bProportion		=	HexString2IntW(std::wstring((strPanose.begin() + 6 ),	( strPanose.begin() + 8 ) ) );
+			byte bContrast			=	HexString2IntW(std::wstring((strPanose.begin() + 8 ),	( strPanose.begin() + 10 ) ) );
+			byte bStrokeVariation	=	HexString2IntW(std::wstring((strPanose.begin() + 10 ),	( strPanose.begin() + 12 ) ) );
+			byte bArmStyle			=	HexString2IntW(std::wstring((strPanose.begin() + 12 ),	( strPanose.begin() + 14 ) ) );
+			byte bLetterform		=	HexString2IntW(std::wstring((strPanose.begin() + 14 ),	( strPanose.begin() + 16 ) ) );
+			byte bMidline			=	HexString2IntW(std::wstring((strPanose.begin() + 16 ),	( strPanose.begin() + 18 ) ) );
+			byte bHeight			=	HexString2IntW(std::wstring((strPanose.begin() + 18 ),	( strPanose.end() ) ) );
 
-			return AVSDocFileFormat::PANOSE (bFamilyType, bSerifStyle, bWeight, bProportion, bContrast,	bStrokeVariation, bArmStyle, bLetterform, bMidline, bHeight);
+			return ASCDocFileFormat::PANOSE (bFamilyType, bSerifStyle, bWeight, bProportion, bContrast,	bStrokeVariation, bArmStyle, bLetterform, bMidline, bHeight);
 		}
 
-		return AVSDocFileFormat::PANOSE();
+		return ASCDocFileFormat::PANOSE();
 	}
 }
 
 namespace DOCXTODOC // run rule transform
 {
-	template<class T> AVSDocFileFormat::Run CFileTransformer::ConvertRun (const OOX::Logic::Run& oXml, const PrlList& styleDocRunProperties, std::wstring& strRunType) 
+	template<class T> ASCDocFileFormat::Run CFileTransformer::ConvertRun(const OOX::Logic::Run& oXml, const PrlList& styleDocRunProperties, std::wstring& strRunType) 
 	{
-		AVSDocFileFormat::Run oBinRun;
+		ASCDocFileFormat::Run oBinRun;
 		for (vector<OOX::Logic::RunItem>::const_iterator iter = oXml.Items->begin(); iter != oXml.Items->end(); ++iter)
 		{
 			if (iter->is<OOX::Logic::Break>())
@@ -3137,7 +3137,7 @@ namespace DOCXTODOC // run rule transform
 			}
 		}
 
-		oBinRun.AddProperties(ConvertRunProperties(inputFolder.find<OOX::Document>().find<OOX::Styles>().Default->RunProperty));
+		oBinRun.AddProperties(ConvertRunProperties(m_docxInputFile.find<OOX::Document>().find<OOX::Styles>().Default->RunProperty));
 
 		if (oXml.Property.is_init())
 		{
@@ -3145,14 +3145,14 @@ namespace DOCXTODOC // run rule transform
 			{
 				//!!!TODO!!!  
 				//short istd = m_mapStyleSheetMap[*oXml.Property->RStyle];
-				//oBinRun.AddProperty( AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCIstd, (byte*)&istd ) );
+				//oBinRun.AddProperty( ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCIstd, (byte*)&istd ) );
 
 				PrlList styleDocRunProperties = GetRunPropertiesFromStyleHierarchy(*oXml.Property->RStyle);
 				oBinRun.AddOrReplaceProperties( styleDocRunProperties );
 			}
 			else
 			{
-				const OOX::Styles::Style defaultStyle = inputFolder.find<OOX::Document>().find<OOX::Styles>().GetDefaultStyle("character");
+				const OOX::Styles::Style defaultStyle = m_docxInputFile.find<OOX::Document>().find<OOX::Styles>().GetDefaultStyle("character");
 				oBinRun.AddOrReplaceProperties (GetRunPropertiesFromStyleHierarchy(*defaultStyle.StyleId));
 			}
 		}
@@ -3168,25 +3168,25 @@ namespace DOCXTODOC // run rule transform
 	}
 
 	//
-	template<class T> BOOL CFileTransformer::FldCharXmlRunTransform (const OOX::Logic::FldChar& oXml, AVSDocFileFormat::Run& oBinRun, std::wstring& strRunType)
+	template<class T> BOOL CFileTransformer::FldCharXmlRunTransform(const OOX::Logic::FldChar& oXml, ASCDocFileFormat::Run& oBinRun, std::wstring& strRunType)
 	{
 		std::wstring fldCharType	=	FormatUtils::UTF8Decode (*oXml.FldCharType);		
 		if (fldCharType.empty())
 			return FALSE;
 
-		AVSDocFileFormat::FldChar oFldChar(fldCharType);
+		ASCDocFileFormat::FldChar oFldChar(fldCharType);
 
 		strRunType					=	fldCharType;
 
-		if (oFldChar.CharType() == AVSDocFileFormat::FldChar::FldCharSeparate)
+		if (oFldChar.CharType() == ASCDocFileFormat::FldChar::FldCharSeparate)
 		{
-			oFldChar.SetFieldCharacterProperties((byte)AVSDocFileFormat::grffldEnd(true, true, true, true, true, true, true, true));
+			oFldChar.SetFieldCharacterProperties((byte)ASCDocFileFormat::grffldEnd(true, true, true, true, true, true, true, true));
 			m_bHaveSeparateFldChar	=	true;
 		}
 
-		if (oFldChar.CharType() == AVSDocFileFormat::FldChar::FldCharEnd)
+		if (oFldChar.CharType() == ASCDocFileFormat::FldChar::FldCharEnd)
 		{
-			oFldChar.SetFieldCharacterProperties((byte)AVSDocFileFormat::grffldEnd(false, false, true, true, false, false, false, m_bHaveSeparateFldChar));
+			oFldChar.SetFieldCharacterProperties((byte)ASCDocFileFormat::grffldEnd(false, false, true, true, false, false, false, m_bHaveSeparateFldChar));
 			m_bHaveSeparateFldChar	=	false;
 		}
 
@@ -3195,15 +3195,15 @@ namespace DOCXTODOC // run rule transform
 		return TRUE;
 	}
 
-	template<class T> BOOL CFileTransformer::TextXmlRunTransform (const OOX::Logic::Text& oXml, AVSDocFileFormat::Run& oBinRun)
+	template<class T> BOOL CFileTransformer::TextXmlRunTransform(const OOX::Logic::Text& oXml, ASCDocFileFormat::Run& oBinRun)
 	{
-		AVSDocFileFormat::Text oText(FormatUtils::UTF8Decode(oXml.toTxt()).c_str());
+		ASCDocFileFormat::Text oText(FormatUtils::UTF8Decode(oXml.toTxt()).c_str());
 		oBinRun.AddRunItem (oText);
 
 		return TRUE;
 	}
 
-	template<class T> BOOL CFileTransformer::InstrTextXmlRunTransform (const OOX::Logic::InstrText& oXml, AVSDocFileFormat::Run& oBinRun, std::wstring& strRunType)
+	template<class T> BOOL CFileTransformer::InstrTextXmlRunTransform(const OOX::Logic::InstrText& oXml, ASCDocFileFormat::Run& oBinRun, std::wstring& strRunType)
 	{
 		std::wstring strText	=	FormatUtils::UTF8Decode(oXml.Text.get_value_or_default());
 
@@ -3214,12 +3214,12 @@ namespace DOCXTODOC // run rule transform
 
 		strRunType				=	FieldCode;
 
-		oBinRun.AddRunItem(AVSDocFileFormat::Text(strText));
+		oBinRun.AddRunItem(ASCDocFileFormat::Text(strText));
 
 		return TRUE;
 	}
 
-	template<class T> BOOL CFileTransformer::DrawingXmlRunTransform (const OOX::Logic::Drawing& oXml, AVSDocFileFormat::Run& oBinRun) 
+	template<class T> BOOL CFileTransformer::DrawingXmlRunTransform(const OOX::Logic::Drawing& oXml, ASCDocFileFormat::Run& oBinRun) 
 	{
 		OOX::Image* pImage				=	GetImageDOCX <T, OOX::Logic::Drawing>(&oXml);
 		if (pImage)
@@ -3229,13 +3229,13 @@ namespace DOCXTODOC // run rule transform
 				return	m_oOArtBuilder.BuildImageRun (*pImage, oXml, oBinRun);
 			}
 
-			std::wstring sFileName		=	pImage->filename().string();
+			std::wstring sFileName		=	pImage->GetPath();
 			if (sFileName.length())
 			{
 				Unit<int, Dx> twWidth	=	*oXml.Inline->Extent->Size->Width;
 				Unit<int, Dx> twHeight	=	*oXml.Inline->Extent->Size->Height;
 
-				AVSDocFileFormat::Picture oPicture (sFileName, twWidth, twHeight);
+				ASCDocFileFormat::Picture oPicture (sFileName, twWidth, twHeight);
 				if (oPicture.IsValid())
 				{
 					oBinRun.AddRunItem (oPicture);
@@ -3247,7 +3247,7 @@ namespace DOCXTODOC // run rule transform
 		return FALSE;
 	}
 
-	template<class T> BOOL CFileTransformer::PictXmlRunTransform (const OOX::Logic::Pict& oXml, AVSDocFileFormat::Run& oBinRun) 
+	template<class T> BOOL CFileTransformer::PictXmlRunTransform(const OOX::Logic::Pict& oXml, ASCDocFileFormat::Run& oBinRun) 
 	{		
 		if (oXml.group.is_init())
 			return PictGroupXmlTransform<T>(oXml, oBinRun);
@@ -3269,20 +3269,20 @@ namespace DOCXTODOC // run rule transform
 				// TODO : сделать нормальное сорхранение Inline фигур (разобраться с недокументированым форматом сохранения объекта)
 
 				//m_oInlineShape.SetShape (oShapeRun);
-				//AVSDocFileFormat::Picture oPicture (std::wstring(L""), 0, 0, 0, 0);		//	 fake image
+				//ASCDocFileFormat::Picture oPicture (std::wstring(L""), 0, 0, 0, 0);		//	 fake image
 				//m_oInlineShape.SetPicture (oPicture);
-				//m_oInlineShape.AddRun (AVSDocFileFormat::Run(AVSDocFileFormat::Picture (std::wstring(L""), 0, 0, 0, 0)));//	 fake image
-				//m_oInlineShape.AddRun (AVSDocFileFormat::Run(oShapeRun));//	 fake image
+				//m_oInlineShape.AddRun (ASCDocFileFormat::Run(ASCDocFileFormat::Picture (std::wstring(L""), 0, 0, 0, 0)));//	 fake image
+				//m_oInlineShape.AddRun (ASCDocFileFormat::Run(oShapeRun));//	 fake image
 
-				//m_oInlineShape.AddRun (AVSDocFileFormat::Run(AVSDocFileFormat::CInlineShape (oShapeRun) ));	//	 fake image
-				//m_oInlineShape.AddRun (AVSDocFileFormat::Run(oShapeRun));
-				//m_oInlineShape.AddRun (AVSDocFileFormat::Run(AVSDocFileFormat::CShapeRun()));
+				//m_oInlineShape.AddRun (ASCDocFileFormat::Run(ASCDocFileFormat::CInlineShape (oShapeRun) ));	//	 fake image
+				//m_oInlineShape.AddRun (ASCDocFileFormat::Run(oShapeRun));
+				//m_oInlineShape.AddRun (ASCDocFileFormat::Run(ASCDocFileFormat::CShapeRun()));
 
 				//m_bIsInlineShape	=	TRUE;
 
 				// TODO : временное решение для Inline Shape - объектов (бинарный парсер доделать)
 
-				oBinRun.AddRunItem (AVSDocFileFormat::CInlineShape (oShapeRun) );						
+				oBinRun.AddRunItem (ASCDocFileFormat::CInlineShape (oShapeRun) );						
 				m_bIsInlineShape	=	FALSE;
 
 				return TRUE;
@@ -3310,22 +3310,22 @@ namespace DOCXTODOC // run rule transform
 
 		return TRUE;
 	}
-	template<class T> BOOL CFileTransformer::DelTextXmlRunTransform (const OOX::Logic::DelText& oXml, AVSDocFileFormat::Run& oBinRun)
+	template<class T> BOOL CFileTransformer::DelTextXmlRunTransform(const OOX::Logic::DelText& oXml, ASCDocFileFormat::Run& oBinRun)
 	{
-		AVSDocFileFormat::Text oText( FormatUtils::UTF8Decode( oXml.toTxt() ).c_str() );
+		ASCDocFileFormat::Text oText( FormatUtils::UTF8Decode( oXml.toTxt() ).c_str() );
 		oBinRun.AddRunItem(oText);
 
 		return TRUE;
 	}
-	template<class T> BOOL CFileTransformer::SymbolXmlRunTransform (const OOX::Logic::Symbol& oXml, AVSDocFileFormat::Run& oBinRun)
+	template<class T> BOOL CFileTransformer::SymbolXmlRunTransform(const OOX::Logic::Symbol& oXml, ASCDocFileFormat::Run& oBinRun)
 	{
 		if (oXml.Font.is_init() && oXml.Char.is_init())
 		{
-			AVSDocFileFormat::Text oSymbol ((WCHAR)TextMark::Symbol);
+			ASCDocFileFormat::Text oSymbol ((WCHAR)TextMark::Symbol);
 			oBinRun.AddRunItem(oSymbol);
 
-			AVSDocFileFormat::CSymbolOperand oSymbolOp (m_mapFontTableMap[*oXml.Font], HexString2Int(*oXml.Char));
-			oBinRun.AddProperty(AVSDocFileFormat::Prl( (short)DocFileFormat::sprmCSymbol, oSymbolOp));
+			ASCDocFileFormat::CSymbolOperand oSymbolOp (m_mapFontTableMap[string2wstring__(*oXml.Font)], HexString2Int(*oXml.Char));
+			oBinRun.AddProperty(ASCDocFileFormat::Prl( (short)DocFileFormat::sprmCSymbol, oSymbolOp));
 
 			return TRUE;
 		}
@@ -3333,11 +3333,11 @@ namespace DOCXTODOC // run rule transform
 		return FALSE;
 	}
 
-	template<class T> BOOL CFileTransformer::BreakXmlRunTransform (const OOX::Logic::Break& oXml, AVSDocFileFormat::Run& oBinRun)
+	template<class T> BOOL CFileTransformer::BreakXmlRunTransform(const OOX::Logic::Break& oXml, ASCDocFileFormat::Run& oBinRun)
 	{
 		/// TODO
 
-		AVSDocFileFormat::Text oText;
+		ASCDocFileFormat::Text oText;
 
 		if ( oXml.Type.is_init() )
 		{
@@ -3364,11 +3364,11 @@ namespace DOCXTODOC // run rule transform
 		return TRUE;
 	}
 
-	template<class T> BOOL CFileTransformer::TabXmlRunTransform (const OOX::Logic::Tab& oXml, AVSDocFileFormat::Run& oBinRun)
+	template<class T> BOOL CFileTransformer::TabXmlRunTransform(const OOX::Logic::Tab& oXml, ASCDocFileFormat::Run& oBinRun)
 	{
 		/// TODO
 
-		AVSDocFileFormat::Text oText;
+		ASCDocFileFormat::Text oText;
 		oText.SetText(&TextMark::Tab);
 
 		oBinRun.AddRunItem(oText);
@@ -3376,16 +3376,16 @@ namespace DOCXTODOC // run rule transform
 		return TRUE;		
 	}
 
-	template<class T> BOOL CFileTransformer::FootnoteReferenceXmlRunTransform (const OOX::Logic::FootnoteReference& oXml, AVSDocFileFormat::Run& oBinRun)
+	template<class T> BOOL CFileTransformer::FootnoteReferenceXmlRunTransform(const OOX::Logic::FootnoteReference& oXml, ASCDocFileFormat::Run& oBinRun)
 	{
-		if (inputFolder.find<OOX::Document>().exist<OOX::FootNote>())
+		if (m_docxInputFile.find<OOX::Document>().exist<OOX::FootNote>())
 		{
 			static short footnoteIndex = 1;
 
-			const OOX::FootNote::Note& footNote = inputFolder.find<OOX::Document>().find<OOX::FootNote>().find(oXml);
+			const OOX::FootNote::Note& footNote = m_docxInputFile.find<OOX::Document>().find<OOX::FootNote>().find(oXml);
 
-			AVSDocFileFormat::FootnoteReference docFootnoteReference( footnoteIndex );
-			AVSDocFileFormat::Footnote docFootnote( footnoteIndex++ );
+			ASCDocFileFormat::FootnoteReference docFootnoteReference( footnoteIndex );
+			ASCDocFileFormat::Footnote docFootnote( footnoteIndex++ );
 
 			size_t count = (*footNote.Items).size();
 			const std::vector<OOX::Logic::TextItem>& items = (*footNote.Items);
@@ -3396,18 +3396,18 @@ namespace DOCXTODOC // run rule transform
 				{
 					const OOX::Logic::Paragraph& docxParagraph	=	items[i].as<OOX::Logic::Paragraph>();
 
-					AVSDocFileFormat::Paragraph oParagraph		=	ConvertParagraph<OOX::FootNote>(docxParagraph);
+					ASCDocFileFormat::Paragraph oParagraph		=	ConvertParagraph<OOX::FootNote>(docxParagraph);
 					docFootnote.AddTextItem (oParagraph);
 				}
 				else if (items[i].is<OOX::Logic::Table>())
 				{
-					AVSDocFileFormat::Table oTable				=	CreateTable<OOX::FootNote>(items[i].as<OOX::Logic::Table>());
+					ASCDocFileFormat::Table oTable				=	CreateTable<OOX::FootNote>(items[i].as<OOX::Logic::Table>());
 					docFootnote.AddTextItem (oTable);
 				}
 			}
 
 			oBinRun.AddRunItem (docFootnoteReference);
-			m_pDOCFile->AddFootnote(docFootnote);
+			m_pDocFile->AddFootnote(docFootnote);
 
 			return TRUE;		
 		}
@@ -3415,13 +3415,13 @@ namespace DOCXTODOC // run rule transform
 		return FALSE;
 	}
 
-	template<class T> BOOL CFileTransformer::FootnoteRefXmlRunTransform (const OOX::Logic::FootnoteRef& oXml, AVSDocFileFormat::Run& oBinRun)
+	template<class T> BOOL CFileTransformer::FootnoteRefXmlRunTransform(const OOX::Logic::FootnoteRef& oXml, ASCDocFileFormat::Run& oBinRun)
 	{
-		if (inputFolder.find<OOX::Document>().exist<OOX::FootNote>())
+		if (m_docxInputFile.find<OOX::Document>().exist<OOX::FootNote>())
 		{
 			static short footnoteIndex = 1;
 
-			oBinRun.AddRunItem(AVSDocFileFormat::FootnoteRef(footnoteIndex++));
+			oBinRun.AddRunItem(ASCDocFileFormat::FootnoteRef(footnoteIndex++));
 
 			return TRUE;		
 		}
@@ -3429,16 +3429,16 @@ namespace DOCXTODOC // run rule transform
 		return FALSE;
 	}
 
-	template<class T> BOOL CFileTransformer::EndnoteReferenceXmlRunTransform (const OOX::Logic::EndnoteReference& oXml, AVSDocFileFormat::Run& oBinRun)
+	template<class T> BOOL CFileTransformer::EndnoteReferenceXmlRunTransform(const OOX::Logic::EndnoteReference& oXml, ASCDocFileFormat::Run& oBinRun)
 	{
-		if (inputFolder.find<OOX::Document>().exist<OOX::EndNote>())
+		if (m_docxInputFile.find<OOX::Document>().exist<OOX::EndNote>())
 		{
 			static short endnoteIndex = 1;
 
-			const OOX::EndNote::Note& endNote = inputFolder.find<OOX::Document>().find<OOX::EndNote>().find(oXml);
+			const OOX::EndNote::Note& endNote = m_docxInputFile.find<OOX::Document>().find<OOX::EndNote>().find(oXml);
 
-			AVSDocFileFormat::EndnoteReference docEndnoteReference(endnoteIndex);
-			AVSDocFileFormat::Endnote docEndnote(endnoteIndex++);
+			ASCDocFileFormat::EndnoteReference docEndnoteReference(endnoteIndex);
+			ASCDocFileFormat::Endnote docEndnote(endnoteIndex++);
 
 			size_t count = (*endNote.Items).size();
 			const std::vector<OOX::Logic::TextItem>& items = (*endNote.Items);
@@ -3449,18 +3449,18 @@ namespace DOCXTODOC // run rule transform
 				{							
 					const OOX::Logic::Paragraph& docxParagraph	=	items[j].as<OOX::Logic::Paragraph>();
 
-					AVSDocFileFormat::Paragraph oParagraph		=	ConvertParagraph<OOX::EndNote>(docxParagraph);
+					ASCDocFileFormat::Paragraph oParagraph		=	ConvertParagraph<OOX::EndNote>(docxParagraph);
 					docEndnote.AddTextItem(oParagraph);
 				}
 				else if (items[j].is<OOX::Logic::Table>())
 				{
-					AVSDocFileFormat::Table oTable				=	CreateTable<OOX::EndNote>(items[j].as<OOX::Logic::Table>());
+					ASCDocFileFormat::Table oTable				=	CreateTable<OOX::EndNote>(items[j].as<OOX::Logic::Table>());
 					docEndnote.AddTextItem(oTable);
 				}
 			}
 
 			oBinRun.AddRunItem( docEndnoteReference );
-			m_pDOCFile->AddEndnote( docEndnote );
+			m_pDocFile->AddEndnote( docEndnote );
 
 			return TRUE;		
 		}
@@ -3468,26 +3468,26 @@ namespace DOCXTODOC // run rule transform
 		return FALSE;
 	}
 
-	template<class T> BOOL CFileTransformer::EndnoteRefXmlRunTransform (const OOX::Logic::EndnoteRef& oXml, AVSDocFileFormat::Run& oBinRun)
+	template<class T> BOOL CFileTransformer::EndnoteRefXmlRunTransform(const OOX::Logic::EndnoteRef& oXml, ASCDocFileFormat::Run& oBinRun)
 	{
-		if (inputFolder.find<OOX::Document>().exist<OOX::EndNote>())
+		if (m_docxInputFile.find<OOX::Document>().exist<OOX::EndNote>())
 		{
 			static short endnoteIndex = 1;
 
-			oBinRun.AddRunItem(AVSDocFileFormat::EndnoteRef(endnoteIndex++));
+			oBinRun.AddRunItem(ASCDocFileFormat::EndnoteRef(endnoteIndex++));
 
 			return TRUE;		
 		}
 
 		return FALSE;
 	}
-	template<class T> BOOL CFileTransformer::PictGroupXmlTransform (const OOX::Logic::Pict& oXml, AVSDocFileFormat::Run& oBinRun)
+	template<class T> BOOL CFileTransformer::PictGroupXmlTransform(const OOX::Logic::Pict& oXml, ASCDocFileFormat::Run& oBinRun)
 	{
-		AVSDocFileFormat::COArtStorage* pStorage	=	AVSDocFileFormat::COArtStorage::Instance();
+		ASCDocFileFormat::COArtStorage* pStorage	=	ASCDocFileFormat::COArtStorage::Instance();
 		if (NULL == pStorage)
 			return FALSE;
 
-		AVSDocFileFormat::COArtGroup* pShapes	=	CreateGroup<T>(oXml.group);
+		ASCDocFileFormat::COArtGroup* pShapes	=	CreateGroup<T>(oXml.group);
 		if (NULL == pShapes)
 			return FALSE;
 
@@ -3498,7 +3498,7 @@ namespace DOCXTODOC // run rule transform
 
 namespace DOCXTODOC
 {
-	template <class T, class TXmlImage> OOX::Image* CFileTransformer::GetImageDOCX (const TXmlImage* pXmlImage)
+	template<class T, class TXmlImage> OOX::Image* CFileTransformer::GetImageDOCX(const TXmlImage* pXmlImage)
 	{	
 		if (pXmlImage)
 		{
@@ -3551,13 +3551,13 @@ namespace DOCXTODOC
 			{
 				if (typeid(T) != typeid(OOX::Document))
 				{
-					if (inputFolder.find<OOX::Document>().find<T>().exist(nID))
-						return dynamic_cast<OOX::Image*>(inputFolder.find<OOX::Document>().find<T>()[nID].get());
+					if (m_docxInputFile.find<OOX::Document>().find<T>().exist(nID))
+						return dynamic_cast<OOX::Image*>(m_docxInputFile.find<OOX::Document>().find<T>()[nID].operator->());
 				}
 				else
 				{
-					if (inputFolder.find<OOX::Document>().exist(nID))
-						return dynamic_cast<OOX::Image*>(inputFolder.find<OOX::Document>()[nID].get());
+					if (m_docxInputFile.find<OOX::Document>().exist(nID))
+						return dynamic_cast<OOX::Image*>(m_docxInputFile.find<OOX::Document>()[nID].operator->());
 				}
 			}
 		}
@@ -3565,44 +3565,44 @@ namespace DOCXTODOC
 		return NULL;
 	}
 
-	template <class T> OOX::Image* CFileTransformer::GetImageWithId(const OOX::RId& nID)
+	template<class T> OOX::Image* CFileTransformer::GetImageWithId(const OOX::RId& nID)
 	{
 		if (typeid(T) != typeid(OOX::Document))
 		{
-			if (inputFolder.find<OOX::Document>().find<T>().exist(nID))
-				return dynamic_cast<OOX::Image*>(inputFolder.find<OOX::Document>().find<T>()[nID].get());
+			if (m_docxInputFile.find<OOX::Document>().find<T>().exist(nID))
+				return dynamic_cast<OOX::Image*>(m_docxInputFile.find<OOX::Document>().find<T>()[nID].operator->());
 		}
 
-		if (inputFolder.find<OOX::Document>().exist(nID))
-			return dynamic_cast<OOX::Image*>(inputFolder.find<OOX::Document>()[nID].get());
+		if (m_docxInputFile.find<OOX::Document>().exist(nID))
+			return dynamic_cast<OOX::Image*>(m_docxInputFile.find<OOX::Document>()[nID].operator->());
 
 		return NULL;
 	}
 
-	template<class T> BOOL CFileTransformer::CreateImage (const OOX::Logic::Pict& oXml, AVSDocFileFormat::Run& oBinRun) 
+	template<class T> BOOL CFileTransformer::CreateImage(const OOX::Logic::Pict& oXml, ASCDocFileFormat::Run& oBinRun) 
 	{
 		OOX::Image* pImage				=	GetImageDOCX <T, OOX::Logic::Pict>(&oXml);
 
 		if (pImage)
 		{
-			std::wstring sFileName		=	pImage->filename().string();
+			std::wstring sFileName		=	pImage->GetPath();
 			if (sFileName.length())
 			{
 				if (oXml.shape.is_init())
 				{
 					if (oXml.shape->imageData.is_init())
 					{
-						return m_oOArtBuilder.BuildImageRun(oXml.shape, pImage->filename().string(), oBinRun);
+						return m_oOArtBuilder.BuildImageRun(oXml.shape, std::wstring(pImage->GetPath()), oBinRun);
 					}
 				}
 
 				Unit<int, Dx> twWidth	=	*oXml.shape->style->Size->Width;
 				Unit<int, Dx> twHeight	=	*oXml.shape->style->Size->Height;
 
-				AVSDocFileFormat::Picture oPicture (sFileName, twWidth, twHeight);
+				ASCDocFileFormat::Picture oPicture (sFileName, twWidth, twHeight);
 				if (oPicture.IsValid())
 				{
-					oBinRun.AddRunItem (AVSDocFileFormat::Picture());
+					oBinRun.AddRunItem (ASCDocFileFormat::Picture());
 
 					return TRUE;
 				}
@@ -3612,13 +3612,13 @@ namespace DOCXTODOC
 		return FALSE;
 	}
 
-	template<class T> AVSDocFileFormat::COArtGroup* CFileTransformer::CreateGroup(const OOX::Logic::Group& oXmlGroup)
+	template<class T> ASCDocFileFormat::COArtGroup* CFileTransformer::CreateGroup(const OOX::Logic::Group& oXmlGroup)
 	{
-		AVSDocFileFormat::COArtStorage* pStorage	=	AVSDocFileFormat::COArtStorage::Instance();
+		ASCDocFileFormat::COArtStorage* pStorage	=	ASCDocFileFormat::COArtStorage::Instance();
 		if (NULL == pStorage)
 			return FALSE;
 
-		AVSDocFileFormat::COArtGroup* pBinGroup		=	new AVSDocFileFormat::COArtGroup(pStorage->GenID(m_oOArtBuilder.Location()));
+		ASCDocFileFormat::COArtGroup* pBinGroup		=	new ASCDocFileFormat::COArtGroup(pStorage->GenID(m_oOArtBuilder.Location()));
 		if (NULL == pBinGroup)
 			return FALSE;
 
@@ -3636,10 +3636,10 @@ namespace DOCXTODOC
 
 				if (shape.fillstyle->Id.is_init())
 				{
-					OOX::Image* image = GetImageWithId <T>(OOX::RId(shape.fillstyle->Id));
+					OOX::Image* image = GetImageWithId <T>(OOX::RId(string2wstring__(shape.fillstyle->Id)));
 					if (image)
 					{
-						m_oOArtBuilder.SetTextureFill(image->filename().string());
+						m_oOArtBuilder.SetTextureFill(image->GetPath());
 					}
 				}
 
@@ -3652,10 +3652,10 @@ namespace DOCXTODOC
 
 				if (shape.fillstyle->Id.is_init())
 				{
-					OOX::Image* image = GetImageWithId <T>(OOX::RId(shape.fillstyle->Id));
+					OOX::Image* image = GetImageWithId <T>(OOX::RId(string2wstring__(shape.fillstyle->Id)));
 					if (image)
 					{
-						m_oOArtBuilder.SetTextureFill(image->filename().string());
+						m_oOArtBuilder.SetTextureFill(image->GetPath());
 					}
 				}
 
@@ -3668,10 +3668,10 @@ namespace DOCXTODOC
 
 				if (shape.fillstyle->Id.is_init())
 				{
-					OOX::Image* image = GetImageWithId <T>(OOX::RId(shape.fillstyle->Id));
+					OOX::Image* image = GetImageWithId <T>(OOX::RId(string2wstring__(shape.fillstyle->Id)));
 					if (image)
 					{
-						m_oOArtBuilder.SetTextureFill(image->filename().string());
+						m_oOArtBuilder.SetTextureFill(image->GetPath());
 					}
 				}
 
@@ -3691,17 +3691,18 @@ namespace DOCXTODOC
 					OOX::Image* image = GetImageDOCX <T, OOX::Logic::Shape>(&shape);
 					if (image)
 					{
-						pBinGroup->Append (m_oOArtBuilder.BuildOArtImage(shape, image->filename().string()));
+						//pBinGroup->Append (m_oOArtBuilder.BuildOArtImage(shape, std::wstring(image->filename().GetPath())));
+						pBinGroup->Append (m_oOArtBuilder.BuildOArtImage(shape, std::wstring(image->GetPath())));
 					}
 				}
 				else
 				{
 					if (shape.fillstyle->Id.is_init())
 					{
-						OOX::Image* image = GetImageWithId <T>(OOX::RId(shape.fillstyle->Id));
+						OOX::Image* image = GetImageWithId <T>(OOX::RId(string2wstring__(shape.fillstyle->Id)));
 						if (image)
 						{
-							m_oOArtBuilder.SetTextureFill(image->filename().string());
+							m_oOArtBuilder.SetTextureFill(std::wstring(image->GetPath()));
 						}
 					}
 
@@ -3723,7 +3724,7 @@ namespace DOCXTODOC
 		return NULL;
 	}
 
-	template<class T> BOOL CFileTransformer::CreateTextureFillShape (const OOX::Logic::Pict& oXml, AVSDocFileFormat::Run& oBinRun)
+	template<class T> BOOL CFileTransformer::CreateTextureFillShape(const OOX::Logic::Pict& oXml, ASCDocFileFormat::Run& oBinRun)
 	{
 		// фигура имеет заливку текстурой
 
@@ -3733,10 +3734,10 @@ namespace DOCXTODOC
 		{
 			if (oXml.rect->fillstyle->Id.is_init())
 			{
-				OOX::Image* pImage = GetImageWithId <T>(OOX::RId(oXml.rect->fillstyle->Id));
+				OOX::Image* pImage = GetImageWithId <T>(OOX::RId(string2wstring__(oXml.rect->fillstyle->Id)));
 				if (pImage)
 				{
-					return m_oOArtBuilder.BuildShapeWithTextureFill<OOX::Logic::Rect>(oXml.rect, pImage->filename().string(), OfficeArt::Enumerations::msosptRectangle, oXml, oBinRun);
+					return m_oOArtBuilder.BuildShapeWithTextureFill<OOX::Logic::Rect>(oXml.rect, std::wstring(pImage->GetPath()), OfficeArt::Enumerations::msosptRectangle, oXml, oBinRun);
 				}
 
 				return FALSE;
@@ -3749,10 +3750,10 @@ namespace DOCXTODOC
 		{
 			if (oXml.oval->fillstyle->Id.is_init())
 			{
-				OOX::Image* pImage = GetImageWithId <T>(OOX::RId(oXml.oval->fillstyle->Id));
+				OOX::Image* pImage = GetImageWithId <T>(OOX::RId(string2wstring__(oXml.oval->fillstyle->Id)));
 				if (pImage)
 				{
-					return m_oOArtBuilder.BuildShapeWithTextureFill<OOX::Logic::Oval>(oXml.oval, pImage->filename().string(), OfficeArt::Enumerations::msosptEllipse, oXml, oBinRun);
+					return m_oOArtBuilder.BuildShapeWithTextureFill<OOX::Logic::Oval>(oXml.oval, std::wstring(pImage->GetPath()), OfficeArt::Enumerations::msosptEllipse, oXml, oBinRun);
 				}
 
 				return FALSE;
@@ -3765,10 +3766,10 @@ namespace DOCXTODOC
 		{
 			if (oXml.roundrect->fillstyle->Id.is_init())
 			{
-				OOX::Image* pImage = GetImageWithId <T>(OOX::RId(oXml.roundrect->fillstyle->Id));
+				OOX::Image* pImage = GetImageWithId <T>(OOX::RId(string2wstring__(oXml.roundrect->fillstyle->Id)));
 				if (pImage)
 				{
-					return m_oOArtBuilder.BuildShapeWithTextureFill<OOX::Logic::Roundrect>(oXml.roundrect, pImage->filename().string(), OfficeArt::Enumerations::msosptRoundRectangle, oXml, oBinRun);
+					return m_oOArtBuilder.BuildShapeWithTextureFill<OOX::Logic::Roundrect>(oXml.roundrect, std::wstring(pImage->GetPath()), OfficeArt::Enumerations::msosptRoundRectangle, oXml, oBinRun);
 				}
 
 				return FALSE;
@@ -3781,10 +3782,10 @@ namespace DOCXTODOC
 		{
 			if (oXml.shape->fillstyle->Id.is_init())
 			{
-				OOX::Image* pImage = GetImageWithId <T>(OOX::RId(oXml.shape->fillstyle->Id));
+				OOX::Image* pImage = GetImageWithId <T>(OOX::RId(string2wstring__(oXml.shape->fillstyle->Id)));
 				if (pImage)
 				{
-					return m_oOArtBuilder.BuildShapeWithTextureFill<OOX::Logic::Shape>(oXml.shape, pImage->filename().string(), 0, oXml, oBinRun);
+					return m_oOArtBuilder.BuildShapeWithTextureFill<OOX::Logic::Shape>(oXml.shape, std::wstring(pImage->GetPath()), 0, oXml, oBinRun);
 				}
 
 				return FALSE;
@@ -3798,12 +3799,12 @@ namespace DOCXTODOC
 
 namespace DOCXTODOC
 {
-	BOOL CFileTransformer::BuildContentTbRef (const OOX::Logic::Pict& oXml)
+	BOOL CFileTransformer::BuildContentTbRef(const OOX::Logic::Pict& oXml)
 	{
 		CTextBoxRef* pTbRef = m_oOArtBuilder.LastTbRef ();
 		if (pTbRef)
 		{
-			std::vector<AVSDocFileFormat::TextItem> oTextItems;
+			std::vector<ASCDocFileFormat::TextItem> oTextItems;
 
 			if (oXml.rect.is_init())
 			{
@@ -3845,7 +3846,7 @@ namespace DOCXTODOC
 		return FALSE;
 	}
 
-	BOOL CFileTransformer::TransformTb (const std::vector<OOX::Logic::TextItem>& oXmlItems, std::vector<AVSDocFileFormat::TextItem>& oTextItems)
+	BOOL CFileTransformer::TransformTb(const std::vector<OOX::Logic::TextItem>& oXmlItems, std::vector<ASCDocFileFormat::TextItem>& oTextItems)
 	{
 		for (size_t i = 0; i < oXmlItems.size(); ++i)
 		{
@@ -3853,13 +3854,13 @@ namespace DOCXTODOC
 
 			if (oXmlItem.is<OOX::Logic::Paragraph>())
 			{
-				AVSDocFileFormat::Paragraph oBinPr	=	ConvertParagraph<OOX::Document>(oXmlItem.as<OOX::Logic::Paragraph>());
+				ASCDocFileFormat::Paragraph oBinPr	=	ConvertParagraph<OOX::Document>(oXmlItem.as<OOX::Logic::Paragraph>());
 				oTextItems.push_back(TextItem(oBinPr));
 			}
 
 			if (oXmlItem.is<OOX::Logic::Table>())
 			{
-				AVSDocFileFormat::Table oBinTable	=	CreateTable<OOX::Document>(oXmlItem.as<OOX::Logic::Table>());
+				ASCDocFileFormat::Table oBinTable	=	CreateTable<OOX::Document>(oXmlItem.as<OOX::Logic::Table>());
 				oTextItems.push_back(TextItem(oBinTable));
 			}
 

@@ -15,7 +15,7 @@ namespace OOX
 	}
 
 
-	ItemProps::ItemProps(const boost::filesystem::wpath& filename)
+	ItemProps::ItemProps(const OOX::CPath& filename)
 	{
 		read(filename);
 	}
@@ -26,22 +26,22 @@ namespace OOX
 	}
 
 
-	void ItemProps::read(const boost::filesystem::wpath& filename)
+	void ItemProps::read(const OOX::CPath& filename)
 	{
-		const	XML::XDocument document(filename);
-		Refs		= document.Root.element("schemaRefs");
+		const	XML::XDocument document(filename.GetPath());
+		//Refs		= document.Root.element("schemaRefs");
 		ItemID	= document.Root.attribute("itemID").value();
 	}
 
 
-	void ItemProps::write(const boost::filesystem::wpath& filename, const boost::filesystem::wpath& directory, ContentTypes::File& content) const
+	void ItemProps::write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const
 	{
-		XML::XElement(ns.ds + "datastoreItem",
-			XML::XAttribute(ns.ds + "itemID", ItemID) + 
-			XML::Write(Refs)
-		).Save(filename);
+		//XML::XElement(ns.ds + "datastoreItem",
+		//	XML::XAttribute(ns.ds + "itemID", ItemID) + 
+		//	XML::Write(Refs)
+		//).Save(filename);
 
-		content.registration(type().OverrideType(), directory, filename);
+		//content.registration(type().OverrideType(), directory, filename);
 	}
 
 
@@ -51,13 +51,13 @@ namespace OOX
 	}
 
 
-	const boost::filesystem::wpath ItemProps::DefaultDirectory() const
+	const OOX::CPath ItemProps::DefaultDirectory() const
 	{
 		return type().DefaultDirectory();
 	}
 
 
-	const boost::filesystem::wpath ItemProps::DefaultFileName() const
+	const OOX::CPath ItemProps::DefaultFileName() const
 	{
 		return type().DefaultFileName();
 	}

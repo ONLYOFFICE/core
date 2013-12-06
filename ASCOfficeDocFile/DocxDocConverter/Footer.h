@@ -2,7 +2,7 @@
 
 #include "Paragraph.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class Footer: public ITextItem
 	{

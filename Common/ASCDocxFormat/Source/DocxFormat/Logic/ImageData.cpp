@@ -37,18 +37,18 @@ namespace OOX
 		void ImageData::fromXML(const XML::XNode& node)
 		{
 			const XML::XElement element(node);
-			rId		= element.attribute("id").value().ToString();
+			rId		= element.attribute("id").value().ToWString();
 			Title = element.attribute("title").value();
 		}
 
 
 		const XML::XNode ImageData::toXML() const
 		{
-			return
-				XML::XElement(ns.v + "imagedata", 
-					XML::XAttribute(ns.r + "id", rId) +
-					XML::XAttribute(ns.o + "title", Title) 
-				);
+			return XML::XElement();
+				//XML::XElement(ns.v + "imagedata", 
+				//	XML::XAttribute(ns.r + "id", rId) +
+				//	XML::XAttribute(ns.o + "title", Title) 
+				//);
 		}
 
 	} // namespace Logic

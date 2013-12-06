@@ -4,7 +4,7 @@
 #include "Xstz.h"
 #include "GrLPUpxSw.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class STD: public IOperand
 	{

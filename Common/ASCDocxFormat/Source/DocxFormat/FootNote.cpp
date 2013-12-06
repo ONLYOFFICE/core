@@ -6,89 +6,76 @@
 #include "FootNote.h"
 #include "Log.h"
 #include <algorithm>
-#include <boost/bind.hpp>
 #include "Exception/log_range_error.h"
 #include "FileTypes.h"
 
-
 namespace OOX
 {
-
 	FootNote::FootNote()
 	{
 	}
 
-
-	FootNote::FootNote(const boost::filesystem::wpath& filename)
+	FootNote::FootNote(const OOX::CPath& filename)
 	{
 		read(filename);
 	}
-
 
 	FootNote::~FootNote()
 	{
 	}
 
-
-	void FootNote::read(const boost::filesystem::wpath& filename)
+	void FootNote::read(const OOX::CPath& filename)
 	{
 		IFileContainer::read(filename);
 
-		const XML::XDocument document(filename);
+		const XML::XDocument document(filename.GetPath());
 		XML::Fill(Notes, document.Root, "footnote");	
 	}
 
-
-	void FootNote::write(const boost::filesystem::wpath& filename, const boost::filesystem::wpath& directory, ContentTypes::File& content) const
+	void FootNote::write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const
 	{
-		XML::XElement(ns.w + "footnotes",
-			XML::Write(Notes)
-		).Save(filename);
-
-		content.registration(type().OverrideType(), directory, filename);
-		IFileContainer::write(filename, directory, content);
 	}
-
 
 	const FileType FootNote::type() const
 	{
 		return FileTypes::FootNote;
 	}
 
-
-	const boost::filesystem::wpath FootNote::DefaultDirectory() const
+	const OOX::CPath FootNote::DefaultDirectory() const
 	{
 		return type().DefaultDirectory();
 	}
 
 
-	const boost::filesystem::wpath FootNote::DefaultFileName() const
+	const OOX::CPath FootNote::DefaultFileName() const
 	{
 		return type().DefaultFileName();
 	}
 
-
 	const FootNote::Note FootNote::find(const Logic::FootnoteReference& reference) const
 	{
-		std::vector<FootNote::Note>::const_iterator it = std::find_if(Notes->begin(), Notes->end(), 
-																								boost::bind(&Note::Id, _1) == *reference.Id);
-		if (it == Notes->end())
-			throw log_range_error("footnote");
-		return *it;
+		const std::vector<FootNote::Note>& notes = Notes.get();
+	
+		for (std::vector<FootNote::Note>::const_iterator iter = notes.begin(); iter != notes.end(); ++iter)
+		{
+			if (*(*iter).Id == (*reference.Id))
+			{
+				return (*iter);
+			}
+		}
+		
+		throw log_range_error("footnote");
 	}
-
 
 	void FootNote::add(const FootNote::Note& footnote)
 	{
 		push_back(footnote);
 	}
-
 		
 	void FootNote::push_back(const FootNote::Note& footnote)
 	{
 		Notes->push_back(footnote);
 	}
-
 
 	const size_t FootNote::size() const
 	{

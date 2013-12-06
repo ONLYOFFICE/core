@@ -4,7 +4,7 @@
 #include "PICF_Shape.h"
 #include "PICMID.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
   class PICF: public IOperand
   {

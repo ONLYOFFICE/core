@@ -3,7 +3,7 @@
 #include "LFO.h"
 #include "LFOData.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class PlfLfo: public IOperand
 	{

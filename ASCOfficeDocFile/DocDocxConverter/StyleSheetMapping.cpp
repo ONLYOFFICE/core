@@ -5,7 +5,7 @@
 namespace DocFileFormat
 {
 	map<std::wstring, std::wstring> StyleSheetMapping::m_mapStyleId;
-	AVSOfficeCriticalSection StyleSheetMapping::m_mapStyleIdLock;
+	ASCOfficeCriticalSection StyleSheetMapping::m_mapStyleIdLock;
 
 	StyleSheetMapping::StyleSheetMapping( ConversionContext* ctx ) : AbstractOpenXmlMapping( new XmlUtils::CXmlWriter() )
 	{

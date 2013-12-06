@@ -4,10 +4,7 @@
 // auto inserted precompiled end
 
 #include "ShapeStyle.h"
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
+#include "ASCStlUtils.h"
 
 namespace OOX
 {
@@ -37,7 +34,7 @@ namespace OOX
 		void ShapeStyle::FromString(const std::string& value)
 		{			
 			std::vector<std::string> container;
-			boost::split(container, value, boost::is_any_of(";"));
+			StlUtils::SplitStrings(container, value, ';');
 
 			distanceLeftTop.init();
 			distanceLeftTop->X = 0;
@@ -60,11 +57,12 @@ namespace OOX
 			textAnchor						=	std::string("");
 
 			isLocalUnit = false;
-
-			BOOST_FOREACH(const std::string& item, container)
+		
+			for (std::vector<std::string>::const_iterator iter = container.begin(); iter != container.end(); ++iter)
 			{
 				std::vector<std::string> pair;
-				boost::split(pair, item, boost::is_any_of(":"));
+				StlUtils::SplitStrings(pair, (*iter), ':');
+
 				std::string name = pair.front();
 
 				std::string::size_type start = name.find_first_not_of(" ");

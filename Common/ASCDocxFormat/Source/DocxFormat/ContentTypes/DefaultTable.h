@@ -4,8 +4,6 @@
 
 #include "./../WritingVector.h"
 #include "Default.h"
-#include <boost/filesystem.hpp>
-
 
 namespace OOX
 {
@@ -23,7 +21,7 @@ namespace OOX
 			virtual void fromXML(const XML::XNode& node);
 
 		public:
-			void add(const boost::filesystem::wpath& path);
+			void add(const OOX::CPath& path);
 		};
 	} // namespace ContentTypes
 } // namespace OOX

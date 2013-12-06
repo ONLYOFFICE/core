@@ -29,7 +29,7 @@ namespace OOX
 			std::string		m_brkBin; 
 			std::string		m_brkBinSub; 
 			std::string		m_smallFrac; 
-			nullable<std::string>	m_dispDef; 
+			nullable__<std::string>	m_dispDef; 
 			int						m_lMargin;
 			int						m_rMargin; 
 			std::string		m_defJc; 

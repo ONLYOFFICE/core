@@ -4,10 +4,7 @@
 // auto inserted precompiled end
 
 #include "LogDetails.h"
-#include <iostream>
 #include "DateTime.h"
-#include "assert.h"
-
 
 namespace Details
 {

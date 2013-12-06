@@ -8,7 +8,7 @@
 
 #define TEXT_OFFSET_POSITION	2048
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	CDocFile::CDocFile() : m_oFontTable(), listFormatInfo(), listFormatOverrideInfo()
 	{
@@ -36,7 +36,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	void CDocFile::AddTextItem (const ITextItem& oItem)
 	{
@@ -64,7 +64,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {	
 	long CDocFile::WriteInformationBlock ()
 	{
@@ -87,7 +87,7 @@ namespace AVSDocFileFormat
 		Bool16 lid		=	0x419;							WRITE_FIELD(FIB_OFFSET::lid,			lid,		sizeof(Bool16));	
 		Bool16 pnNext	=	0;								WRITE_FIELD(FIB_OFFSET::pnNext,			pnNext,		sizeof(Bool16));
 
-		AVSDocFormatUtils::BitSet oBits(1);
+		ASCDocFormatUtils::BitSet oBits(1);
 
 		oBits.SetBit(false,0);								//	fDot
 		oBits.SetBit(false,1);								//	fGlsy
@@ -95,7 +95,7 @@ namespace AVSDocFileFormat
 		oBits.SetBit(false,3);								//	fHasPic
 		oBits.SetBits<Bool16>(0xF,4,4);						//	cQuickSaves
 
-		AVSDocFormatUtils::BitSet oBits2(1);
+		ASCDocFormatUtils::BitSet oBits2(1);
 
 		oBits2.SetBit(false,0);								//	fEncrypted
 		oBits2.SetBit(true, 1);								//+	fWhichTblStm
@@ -113,7 +113,7 @@ namespace AVSDocFileFormat
 		Bool32 lKey		=	0;								WRITE_FIELD(FIB_OFFSET::lKey,			lKey,		sizeof(Bool32));	
 		Bool16 envr		=	0;								WRITE_FIELD(FIB_OFFSET::envr,			envr,		sizeof(Bool16));	
 
-		AVSDocFormatUtils::BitSet oBits3(1);
+		ASCDocFormatUtils::BitSet oBits3(1);
 
 		oBits3.SetBit(false,0);								//	fMac
 		oBits3.SetBit(false,1);								//	fEmptySpecial
@@ -160,7 +160,7 @@ namespace AVSDocFileFormat
 
 		//	Bool16 cswNew		=	0;						WRITE_FIELD(FIB_OFFSET::cbRgFcLcb + 2 + 186*4,	cswNew,	sizeof(Bool16));	
 
-		// TODO : заполнить значением по умолчанию всю структуру ( что бы можно было выкинуть из ресурсов файл со слепком DOC файла )
+		// TODO : fill default values 
 
 		return S_OK;
 	}
@@ -411,7 +411,9 @@ namespace AVSDocFileFormat
 				AddHyperlinksData	(*_textPosition, (*iter), &cpFldMap);
 				AddInlineShapesData	(*_textPosition, (*iter), &cpFldMap);
 
-				hr = Write(STREAMS::CSWordWriter::Instance()->Get(), *_textPosition, (*iter)->GetAllText().c_str(), ( sizeof(WCHAR) * (*iter)->GetAllText().size() ), &writtenSize );
+				std::wstring strText = (*iter)->GetAllText();
+
+				hr = Write(STREAMS::CSWordWriter::Instance()->Get(), *_textPosition, strText.c_str(), (sizeof(WCHAR) * strText.size()), &writtenSize);
 				*_textPosition += writtenSize;
 			}
 
@@ -1286,7 +1288,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {	
 	int CDocFile::WriteFibRgLw97()
 	{
@@ -1632,7 +1634,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	void CDocFile::CalculateMainSpa ()
 	{
@@ -1656,7 +1658,7 @@ namespace AVSDocFileFormat
 					{
 						for (list<RunItem>::const_iterator runiter = run->begin(); runiter != run->end(); ++runiter)
 						{		
-							if (runiter->is<AVSDocFileFormat::CShapeRun>())
+							if (runiter->is<ASCDocFileFormat::CShapeRun>())
 								m_aSpaCP.push_back (CP(rCP + cp));
 
 							rCP		+=	(*runiter)->GetAllText().size();
@@ -1709,7 +1711,7 @@ namespace AVSDocFileFormat
 						{
 							for (list<RunItem>::const_iterator runiter = run->begin(); runiter != run->end(); ++runiter)
 							{		
-								if (runiter->is<AVSDocFileFormat::CShapeRun>())
+								if (runiter->is<ASCDocFileFormat::CShapeRun>())
 									m_aHeadSpaCP.push_back (CP(rCP + cp));
 
 								rCP		+=	(*runiter)->GetAllText().size();
@@ -1834,7 +1836,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	long CDocFile::SaveToFile (const CString& sFileName)
 	{

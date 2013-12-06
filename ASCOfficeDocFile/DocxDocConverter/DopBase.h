@@ -4,7 +4,7 @@
 #include "Copts60.h"
 #include "DTTM.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
   class DopBase: public IOperand
   {

@@ -3,7 +3,7 @@
 //For the font character set and a Panose.
 #include <WinGDI.h>
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	namespace Constants
 	{

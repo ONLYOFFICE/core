@@ -6,7 +6,8 @@
 #include "IMapping.h"
 
 #include <atlstr.h>
-#include "..\..\..\..\..\Common\xmlutils.h"
+
+#include "..\..\Common\DocxFormat\Source\XML\XmlUtils.h"
 
 #include <io.h>
 #include <fcntl.h>

@@ -2,12 +2,14 @@
 #ifndef OOX_FILE_INCLUDE_H_
 #define OOX_FILE_INCLUDE_H_
 
-#include "NamespaceOwn.h"
 #include <string>
-#include <boost/filesystem.hpp>
+
+#include "NamespaceOwn.h"
 #include "ContentTypes/File.h"
 #include "FileType.h"
 
+#include "../.././../../Common/DocxFormat/Source/Base/Nullable.h"
+#include "../.././../../Common/DocxFormat/Source/Xml/XmlUtils.h"
 
 namespace OOX
 {
@@ -18,13 +20,13 @@ namespace OOX
 		virtual ~File();
 
 	public:
-		virtual void read(const boost::filesystem::wpath& filename) = 0;
-		virtual void write(const boost::filesystem::wpath& filename, const boost::filesystem::wpath& directory, ContentTypes::File& content) const = 0;
+		virtual void read(const OOX::CPath& filename) = 0;
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const = 0;
 
 	public:
 		virtual const OOX::FileType type() const = 0;
-		virtual const boost::filesystem::wpath DefaultDirectory() const = 0;
-		virtual const boost::filesystem::wpath DefaultFileName() const = 0;
+		virtual const OOX::CPath DefaultDirectory() const = 0;
+		virtual const OOX::CPath DefaultFileName() const = 0;
 	};
 } // namespace OOX
 

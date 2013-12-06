@@ -5,7 +5,7 @@
 #include "FootnoteReference.h"
 #include "PLC.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	typedef PLC<EmptyPLCData> PlcffndTxt;
 	typedef PLC<short> PlcffndRef;

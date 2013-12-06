@@ -4,20 +4,19 @@
 
 #include "External.h"
 
-
 namespace OOX
 {
 	class HyperLink : public External
 	{
 	public:
 		HyperLink();
-		HyperLink(const boost::filesystem::wpath& uri);
+		HyperLink(const OOX::CPath& uri);
 		~HyperLink();
 
 	public:
 		virtual const FileType type() const;
-		virtual const boost::filesystem::wpath DefaultDirectory() const;
-		virtual const boost::filesystem::wpath DefaultFileName() const;
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
 	};
 } // namespace OOX
 

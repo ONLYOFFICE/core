@@ -8,8 +8,6 @@
 #include <vector>
 #include "RunItem.h"
 #include "./../RId.h"
-#include <boost/filesystem.hpp>
-
 
 namespace OOX
 {

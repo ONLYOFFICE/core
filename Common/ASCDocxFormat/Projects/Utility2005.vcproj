@@ -19,7 +19,7 @@
 			OutputDirectory="..\Lib\Debug"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
-			CharacterSet="2"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -80,7 +80,7 @@
 			OutputDirectory="..\Lib\Release"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
-			CharacterSet="2"
+			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -346,6 +346,10 @@
 			</File>
 		</Filter>
 		<File
+			RelativePath="..\Source\Utility\ASCStlUtils.h"
+			>
+		</File>
+		<File
 			RelativePath="..\Source\Utility\codecvt.cpp"
 			>
 			<FileConfiguration
@@ -415,14 +419,6 @@
 		</File>
 		<File
 			RelativePath="..\Source\Utility\Encoding.h"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\Utility\FileNameUtility.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\Utility\FileNameUtility.h"
 			>
 		</File>
 		<File

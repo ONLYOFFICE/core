@@ -20,7 +20,7 @@ namespace OOX
 		public:
 			OleObject();
 			virtual ~OleObject();			
-			explicit OleObject(const XML::XNode& node);
+			OleObject(const XML::XNode& node);
 			const OleObject& operator =(const XML::XNode& node);
 
 		public:

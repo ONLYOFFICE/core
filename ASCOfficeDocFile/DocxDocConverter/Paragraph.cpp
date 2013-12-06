@@ -3,7 +3,7 @@
 
 #include "..\Common\TextMark.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	Paragraph::Paragraph (short _style)
 	{
@@ -27,7 +27,7 @@ namespace AVSDocFileFormat
 	}
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	void Paragraph::AddParagraphItem(const IParagraphItem& oItem)
 	{
@@ -277,7 +277,7 @@ namespace AVSDocFileFormat
 
 }
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	Paragraph::const_iterator Paragraph::begin() const
 	{

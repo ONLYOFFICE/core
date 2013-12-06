@@ -48,11 +48,11 @@ namespace XML
 			operator const std::wstring() const;
 
 			template<typename T> 
-			operator const nullable<T>() const 
+			operator const nullable__<T>() const 
 			{
 				if (m_value.is_init())
 					return Parse<T>(m_value);
-				return nullable<T>();
+				return nullable__<T>();
 			}	
 			
 			template<typename T, class S, class G> 
@@ -124,32 +124,32 @@ namespace XML
 				return static_cast<T>(*this) <= *value;
 			}
 
-			template<typename T> const bool operator ==(const nullable<T> value) const
+			template<typename T> const bool operator ==(const nullable__<T> value) const
 			{
 				return static_cast<T>(*this) == *value;
 			}
 
-			template<typename T> const bool operator !=(const nullable<T> value) const
+			template<typename T> const bool operator !=(const nullable__<T> value) const
 			{
 				return static_cast<T>(*this) != *value;
 			}
 
-			template<typename T> const bool operator > (const nullable<T> value) const
+			template<typename T> const bool operator > (const nullable__<T> value) const
 			{
 				return static_cast<T>(*this) > *value;
 			}
 
-			template<typename T> const bool operator < (const nullable<T> value) const
+			template<typename T> const bool operator < (const nullable__<T> value) const
 			{
 				return static_cast<T>(*this) < *value;
 			}
 
-			template<typename T> const bool operator >=(const nullable<T> value) const
+			template<typename T> const bool operator >=(const nullable__<T> value) const
 			{
 				return static_cast<T>(*this) >= *value;
 			}
 
-			template<typename T> const bool operator <=(const nullable<T> value) const
+			template<typename T> const bool operator <=(const nullable__<T> value) const
 			{
 				return static_cast<T>(*this) <= *value;
 			}
@@ -185,16 +185,16 @@ namespace XML
 			}
 
 		private:
-			nullable<std::string> m_value;
+			nullable__<std::string> m_value;
 		};
 	} // namespace Private
 } // namespace XML
 
 
 template<typename T>
-const nullable<T>& nullable_setter(nullable<T>& lhs, const XML::Private::XString& rhs)
+const nullable__<T>& nullable_setter(nullable__<T>& lhs, const XML::Private::XString& rhs)
 {
-	return ::nullable_setter(lhs, nullable<T>(rhs));
+	return ::nullable_setter(lhs, nullable__<T>(rhs));
 }
 
 template<typename T, class S, class G>

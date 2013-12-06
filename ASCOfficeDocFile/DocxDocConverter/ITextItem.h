@@ -3,7 +3,7 @@
 #include "PapxInFkp.h"
 #include "Run.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	struct ITextItem;  
 

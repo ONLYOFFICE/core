@@ -12,7 +12,7 @@
 #include "WordprocessingDocument.h"
 #include "ConversionContext.h"
 
-extern AVSOfficeCriticalSection g_oCriticalSection;
+extern ASCOfficeCriticalSection g_oCriticalSection;
 
 namespace DocFileFormat
 {

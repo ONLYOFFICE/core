@@ -4,12 +4,7 @@
 // auto inserted precompiled end
 
 #include "DateTime.h"
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string/replace.hpp>
-#include "time.h"
-#include <algorithm>
-#include <boost/format.hpp>
-
+#include "ASCStlUtils.h"
 
 DateTime::DateTime()
 {
@@ -27,7 +22,6 @@ DateTime::DateTime()
 	m_millisecond = 0;
 }
 
-
 DateTime::DateTime(const std::string& value, const std::string& pattern)	
 	:
 	m_year				(ParseValue(value, pattern, "%YYYY")),
@@ -44,22 +38,37 @@ DateTime::DateTime(const std::string& value, const std::string& pattern)
 const std::string DateTime::ToString(const std::string& pattern) const
 {
 	std::string result = pattern;
-	boost::replace_all(result, "%YYYY", (boost::format("%04d") % m_year).str());
-	boost::replace_all(result, "%MM", (boost::format("%02d") % m_month).str());
-	boost::replace_all(result, "%DD", (boost::format("%02d") % m_day).str());
-	boost::replace_all(result, "%hh", (boost::format("%02d") % m_hour).str());
-	boost::replace_all(result, "%mm", (boost::format("%02d") % m_minute).str());
-	boost::replace_all(result, "%ss", (boost::format("%02d") % m_second).str());
-	boost::replace_all(result, "%ms", (boost::format("%02d") % m_millisecond).str());
+
+	char buffer[12];
+
+	sprintf_s(buffer, 12, "%04d", m_year);
+	StlUtils::ReplaceString(result, "%YYYY",	std::string(buffer));	
+
+	sprintf_s(buffer, 12, "%02d", m_month);	
+	StlUtils::ReplaceString(result, "%MM",	std::string(buffer));	
+
+	sprintf_s(buffer, 12, "%02d", m_day);	
+	StlUtils::ReplaceString(result, "%DD",	std::string(buffer));		
+
+	sprintf_s(buffer, 12, "%02d", m_hour);	
+	StlUtils::ReplaceString(result, "%hh",	std::string(buffer));	
+
+	sprintf_s(buffer, 12, "%02d", m_minute);	
+	StlUtils::ReplaceString(result, "%mm",	std::string(buffer));		
+
+	sprintf_s(buffer, 12, "%02d", m_second);	
+	StlUtils::ReplaceString(result, "%ss",	std::string(buffer));		
+
+	sprintf_s(buffer, 12, "%02d", m_millisecond);	
+	StlUtils::ReplaceString(result, "%ms",	std::string(buffer));	
+
 	return result;
 }
-
 
 const DateTime DateTime::Parse(const std::string& value, const std::string& pattern)
 {
 	return DateTime(value, pattern);
 }
-
 
 const int DateTime::ParseValue(const std::string& value, const std::string& pattern, const std::string& element)
 {
@@ -68,7 +77,9 @@ const int DateTime::ParseValue(const std::string& value, const std::string& patt
 	{
 		const int sepCount = std::count(pattern.begin(), pattern.begin() + pos, '%');
 		const std::string numeric = value.substr(pos - sepCount , element.size() - 1);
-		return boost::lexical_cast<int>(numeric);
+
+		return StlUtils::ToInteger(numeric);
 	}
+
 	return 0;
 }

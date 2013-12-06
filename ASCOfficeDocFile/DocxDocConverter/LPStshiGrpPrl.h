@@ -2,7 +2,7 @@
 
 #include "Prl.h"
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class LPStshiGrpPrl: public IOperand
 	{

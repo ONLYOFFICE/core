@@ -287,7 +287,7 @@ namespace DocFileFormat
 
 	int OpenXmlPackage::RegisterDocument()
 	{
-		return this->AddPart( _T( "word" ), _T( "document.xml" ), WordprocessingMLContentTypes::MainDocument, _T( "" ) );
+		return AddPart( _T( "word" ), _T( "document.xml" ), WordprocessingMLContentTypes::MainDocument, _T( "" ) );
 	}
 
 	int OpenXmlPackage::RegisterFontTable()

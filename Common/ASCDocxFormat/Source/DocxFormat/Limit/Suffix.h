@@ -5,7 +5,6 @@
 #include "setter.h"
 #include <string>
 
-
 namespace OOX
 {
 	namespace Limit

@@ -30,8 +30,6 @@ namespace XML
 			const XString text() const;
 
 		public:
-			//typedef boost::filter_iterator<Filter::Text, std::vector<XNode>::iterator> iterator;
-			//typedef boost::filter_iterator<Filter::Text, std::vector<XNode>::const_iterator> const_iterator;
 			typedef boost::filter_iterator<Filter::Text, std::list<XNode>::iterator> iterator;
 			typedef boost::filter_iterator<Filter::Text, std::list<XNode>::const_iterator> const_iterator;
 
@@ -46,7 +44,6 @@ namespace XML
 			const_iterator end() const;
 
 		private:
-			//boost::shared_ptr<std::vector<XNode> >	m_container;
 			boost::shared_ptr<std::list<XNode> >	m_container;
 		};
 	} // namespace Private

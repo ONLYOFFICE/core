@@ -3,8 +3,11 @@
 #define OOX_LOGIC_TEXT_ITEM_INCLUDE_H_
 
 #include "./../WritingElement.h"
-#include <boost/shared_ptr.hpp>
 #include "TextItemBase.h"
+
+#include "../../../../../Common/DocxFormat/Source/Base/SmartPtr.h"
+#include "../.././../../Common/DocxFormat/Source/Base/Nullable.h"
+#include "../.././../../Common/DocxFormat/Source/Xml/XmlUtils.h"
 
 namespace OOX
 {
@@ -26,23 +29,24 @@ namespace OOX
 			TextItem(const Sdt& sdt);
 			TextItem(const BookmarkStartParagraph& bookmark);
 			TextItem(const BookmarkEndParagraph& bookmark);
-			explicit TextItem(const XML::XNode& node);
+			TextItem(const XML::XNode& node);
 			const TextItem& operator =(const XML::XNode& node);
+			TextItem(XmlUtils::CXmlNode& node);
+			const TextItem& operator =(XmlUtils::CXmlNode& node);
 
 		public:
 			virtual void fromXML(const XML::XNode& node);
 			virtual const XML::XNode toXML() const;
 
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+
 		public:
-			template<class T>	const bool is() const {	return typeid(*m_item) == typeid(T);}
+			template<class T> const bool is() const {return typeid(*m_item) == typeid(T);}
 			template<class T> T& as() {return static_cast<T&>(*m_item);}
 			template<class T> const T& as() const {return static_cast<const T&>(*m_item);}
 
-			//public:			
-			//	void inList();
-
 		private:
-			boost::shared_ptr<TextItemBase>		m_item;
+			NSCommon::smart_ptr<TextItemBase> m_item;
 		};
 	} // namespace Logic
 } // namespace OOX

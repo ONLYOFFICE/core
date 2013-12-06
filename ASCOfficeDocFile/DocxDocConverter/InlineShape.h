@@ -13,7 +13,7 @@ TODO : надо разобраться каким образом идет запись инлайн объектов
 
 */
 
-namespace AVSDocFileFormat
+namespace ASCDocFileFormat
 {
 	class InlineShape : public IParagraphItem
 	{
@@ -34,8 +34,8 @@ namespace AVSDocFileFormat
 	public:
 
 		void AddRun(const Run& oRun);
-		void SetShape(const AVSDocFileFormat::CShapeRun& oShape);
-		void SetPicture(const AVSDocFileFormat::Picture& oPicture);
+		void SetShape(const ASCDocFileFormat::CShapeRun& oShape);
+		void SetPicture(const ASCDocFileFormat::Picture& oPicture);
 
 		void RemoveAllRuns ();
 		void BuildRuns() const;
@@ -69,8 +69,8 @@ namespace AVSDocFileFormat
 	private:
 	
 		std::list<ParagraphItem>			m_oTextRuns;
-		AVSDocFileFormat::CShapeRun			m_oShape;
-		AVSDocFileFormat::Picture			m_oPicture;
+		ASCDocFileFormat::CShapeRun			m_oShape;
+		ASCDocFileFormat::Picture			m_oPicture;
 		mutable std::vector<ParagraphItem>	m_oSpecialRuns;
 	};
 }

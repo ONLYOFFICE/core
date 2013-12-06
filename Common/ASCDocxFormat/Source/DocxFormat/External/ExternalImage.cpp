@@ -15,7 +15,7 @@ namespace OOX
 	}
 
 	
-	ExternalImage::ExternalImage(const boost::filesystem::wpath& uri)
+	ExternalImage::ExternalImage(const OOX::CPath& uri)
 	{
 		read(uri);
 	}
@@ -32,13 +32,13 @@ namespace OOX
 	}
 
 
-	const boost::filesystem::wpath ExternalImage::DefaultDirectory() const
+	const OOX::CPath ExternalImage::DefaultDirectory() const
 	{
 		return type().DefaultDirectory();
 	}
 
 
-	const boost::filesystem::wpath ExternalImage::DefaultFileName() const
+	const OOX::CPath ExternalImage::DefaultFileName() const
 	{
 		return type().DefaultFileName();
 	}

@@ -301,7 +301,7 @@ bool CImageFileFormatChecker::isJp2File(BYTE* pBuffer,DWORD dwBytes)
 						 && 0x6a == pBuffer[4] && 0x50 == pBuffer[5]  && 0x20 == pBuffer[6] && 0x20 == pBuffer[7]
 						 
 						 && 0x0d == pBuffer[8] && 0x0a == pBuffer[9]  && 0x87 == pBuffer[10] && 0x0a == pBuffer[11]
-						&& 0x00 == pBuffer[12] && 0x00 == pBuffer[13]  && 0x00 == pBuffer[14] &&  (0x14 == pBuffer[15] || 0x18 == pBuffer[15] )
+						&& 0x00 == pBuffer[12] && 0x00 == pBuffer[13]  && 0x00 == pBuffer[14]/* &&  (0x14 == pBuffer[15] || 0x18 == pBuffer[15] )*/
 						 
 						 && 0x66 == pBuffer[16] && 0x74 == pBuffer[17]  && 0x79 == pBuffer[18] && 0x70 == pBuffer[19]
 						 && 0x6a == pBuffer[20] && 0x70 == pBuffer[21]  && 0x32 == pBuffer[22] && 0x20 == pBuffer[23]

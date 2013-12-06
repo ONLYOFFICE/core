@@ -77,18 +77,7 @@ namespace OOX
 
 		const XML::XNode TextFrameProperties::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "framePr",
-					XML::XAttribute(ns.w + "hAnchor", HAnchor) +
-					XML::XAttribute(ns.w + "vAnchor", VAnchor) +
-					XML::XAttribute(ns.w + "wrap", Wrap) +
-				    XML::XAttribute(ns.w + "x", X) +
-					XML::XAttribute(ns.w + "y", Y) +
-					XML::XAttribute(ns.w + "h", H) +
-					XML::XAttribute(ns.w + "w", W) +
-					XML::XAttribute(ns.w + "hSpace", HSpace) +
-					XML::XAttribute(ns.w + "vSpace", VSpace)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

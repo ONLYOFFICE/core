@@ -51,14 +51,7 @@ namespace OOX
 
 		const XML::XNode Columns::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "cols", 
-					XML::XAttribute(ns.w + "num", Num) +
-					XML::XAttribute(ns.w + "sep", Sep) +
-					XML::XAttribute(ns.w + "space", Space) +
-					XML::XAttribute(ns.w + "equalWidth", EqualWidth) +					
-					XML::Write(Items)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

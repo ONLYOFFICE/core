@@ -46,10 +46,7 @@ namespace OOX
 
 		const XML::XNode Point2D::toXML() const
 		{
-			return XML::XElement(ns.wp + *name,
-				XML::XAttribute("x", x) +
-				XML::XAttribute("y", y)
-				);
+		return XML::XElement();
 		}
 	} // namespace Logic
 } // namespace OOX

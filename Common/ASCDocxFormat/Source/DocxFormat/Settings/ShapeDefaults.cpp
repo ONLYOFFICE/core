@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode ShapeDefaults::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "shapeDefaults",
-					XML::Write(m_shapeDefault) +					
-					XML::Write(m_shapeLayout)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Settings

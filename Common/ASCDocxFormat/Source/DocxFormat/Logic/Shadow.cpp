@@ -51,18 +51,7 @@ namespace OOX
 		
 		const XML::XNode Shadow::toXML() const
 		{			
-			return
-				XML::XElement(ns.v + "shadow",
-					XML::XAttribute("on", On) +
-					XML::XAttribute("type", Type) +
-					XML::XAttribute("color", Color) +
-					XML::XAttribute("color2", Color2) +
-					XML::XAttribute("offset", Offset) +
-					XML::XAttribute("offset2", Offset2) +
-					XML::XAttribute("opacity", Opacity) +
-					XML::XAttribute("origin", Origin) +
-					XML::XAttribute("matrix", Matrix)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

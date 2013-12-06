@@ -48,15 +48,7 @@ namespace OOX
 		
 		const XML::XNode TextPath::toXML() const
 		{			
-			return
-				XML::XElement(ns.v + "textpath",
-					XML::XAttribute("style", Style) +
-					XML::XAttribute("on", On) +
-					XML::XAttribute("fitshape", FitShape) +
-					XML::XAttribute("trim", Trim) +
-					XML::XAttribute("fitpath", FitPath) +
-					XML::XAttribute("string", String)					
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

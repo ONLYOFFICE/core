@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode NumPr::toXML() const
 		{
-			return
-				XML::XElement(ns.w + "numPr",
-					XML::Write(ns.w + "ilvl", ns.w + "val", Ilvl) +
-					XML::XElement(ns.w + "numId", XML::XAttribute(ns.w + "val", NumId))
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

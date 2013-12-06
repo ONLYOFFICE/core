@@ -59,7 +59,7 @@ namespace OOX
 
 		const XML::XNode Tab::toXML() const
 		{
-			return XML::XElement(ns.w + "tab");
+		return XML::XElement();
 		}
 
 

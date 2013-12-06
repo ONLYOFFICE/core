@@ -46,13 +46,8 @@ namespace OOX
 
 		const XML::XNode FillToRect::toXML() const
 		{
-			return
-				XML::XElement(ns.a + "fillToRect",
-					XML::XAttribute("l", m_l) + 
-					XML::XAttribute("t", m_t) + 
-					XML::XAttribute("r", m_r) + 
-					XML::XAttribute("b", m_b)
-				);
+		return XML::XElement();
+
 		}
 
 	} // namespace Theme

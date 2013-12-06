@@ -174,7 +174,7 @@ namespace OOX
 
 		const XML::XNode Drawing::toXML() const
 		{
-			return XML::XElement(ns.w + "drawing", XML::Write(Inline));
+			return XML::XElement();
 		}
 
 		const std::string Drawing::toTxt() const

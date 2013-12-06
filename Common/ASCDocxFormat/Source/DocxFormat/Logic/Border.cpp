@@ -58,14 +58,7 @@ namespace OOX
 
 		const XML::XNode Border::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + Name.ToString(),
-					XML::XAttribute(ns.w + "val", Bdr->Value) +	
-					XML::XAttribute(ns.w + "sz", Bdr->Sz) +	
-					XML::XAttribute(ns.w + "space", Bdr->Space) +	
-					XML::XAttribute(ns.w + "color", Bdr->Color) +	
-					XML::XAttribute(ns.w + "themeColor", Bdr->ThemeColor)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

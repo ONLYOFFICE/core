@@ -52,18 +52,7 @@ namespace OOX
 		
 		const XML::XNode Path::toXML() const
 		{			
-			return
-				XML::XElement(ns.v + "shape",
-					XML::XAttribute("arrowok", ArrowOk) +
-					XML::XAttribute(ns.o + "extrusionok", ExtrusionOk) +
-					XML::XAttribute("gradientshapeok", GradientShapeOk) +
-					XML::XAttribute("textpathok", TextPathOk) +
-					XML::XAttribute(ns.o + "connecttype", ConnectType) +
-					XML::XAttribute(ns.o + "connectlocs", ConnectLocs) +
-					XML::XAttribute("textboxrect", TextBoxRect) +
-					XML::XAttribute("limo", Limo) +
-					XML::XAttribute(ns.o + "connectangles", ConnectAngles)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

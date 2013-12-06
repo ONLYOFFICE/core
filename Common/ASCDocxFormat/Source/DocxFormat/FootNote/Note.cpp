@@ -36,12 +36,14 @@ namespace OOX
 
 	const XML::XNode FootNote::Note::toXML() const
 	{
-		return
-			XML::XElement(ns.w + "footnote",
-				XML::XAttribute(ns.w + "type", Type) +
-				XML::XAttribute(ns.w + "id", Id) +
-				XML::Write(Items)
-			);
+		return XML::XElement();
+
+		//return
+		//	XML::XElement(ns.w + "footnote",
+		//		XML::XAttribute(ns.w + "type", Type) +
+		//		XML::XAttribute(ns.w + "id", Id) +
+		//		XML::Write(Items)
+		//	);
 	}
 
 	void FootNote::Note::push_back(const OOX::Logic::Paragraph& paragraph)

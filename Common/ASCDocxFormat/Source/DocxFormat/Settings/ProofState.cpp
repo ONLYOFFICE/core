@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode ProofState::toXML() const
 		{
-			return
-				XML::XElement(ns.w + "proofState", 
-					XML::XAttribute(ns.w + "spelling", m_spelling) + 
-					XML::XAttribute(ns.w + "grammar", m_grammar)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Settings

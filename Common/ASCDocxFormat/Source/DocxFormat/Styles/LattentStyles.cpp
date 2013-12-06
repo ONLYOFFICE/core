@@ -47,16 +47,7 @@ namespace OOX
 
 	const XML::XNode Styles::LattentStyles::toXML() const
 	{
-		return 
-			XML::XElement(ns.w + "latentStyles",
-				XML::XAttribute(ns.w + "defLockedState", DefLockedState) +
-				XML::XAttribute(ns.w + "defUIPriority", DefUIPriority) +
-				XML::XAttribute(ns.w + "defSemiHidden", DefSemiHidden) +
-				XML::XAttribute(ns.w + "defUnhideWhenUsed", DefUnhideWhenUsed) +
-				XML::XAttribute(ns.w + "defQFormat", DefQFormat) + 
-				XML::XAttribute(ns.w + "count", Count) +
-				XML::Write(LsdExceptions)
-			);
+		return XML::XElement();
 	}
 
 } // namespace OOX

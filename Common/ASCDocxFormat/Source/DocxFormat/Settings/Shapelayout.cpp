@@ -45,12 +45,7 @@ namespace OOX
 
 		const XML::XNode ShapeLayout::toXML() const
 		{
-			return 
-				XML::XElement(ns.o + "shapelayout",
-					XML::XAttribute(ns.v + "ext", m_ext) +
-					XML::Write(m_idMap) +
-					XML::Write(m_rules)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Settings

@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode Zoom::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "zoom", 
-					XML::XAttribute(ns.w + "val", m_value) +
-					XML::XAttribute(ns.w + "percent", m_percent)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Settings

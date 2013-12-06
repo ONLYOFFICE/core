@@ -41,7 +41,7 @@ namespace OOX
 
 		const XML::XNode Stroke::toXML() const
 		{			
-			return XML::XElement(ns.v + "stroke", XML::XAttribute("joinstyle", Join) + XML::XAttribute("dashstyle", DashStyle) + XML::XAttribute("endcap", EndCap));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

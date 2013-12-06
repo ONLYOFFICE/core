@@ -48,15 +48,7 @@ namespace OOX
 
 		const XML::XNode Bottom::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "bottom",
-					XML::XAttribute(ns.w + "val", Value) + 
-					XML::XAttribute(ns.w + "space", Space) +
-					XML::XAttribute(ns.w + "sz", Size) +
-					XML::XAttribute(ns.w + "color", Color) +
-					XML::XAttribute(ns.w + "themeColor", ThemeColor) +
-					XML::XAttribute(ns.w + "themeShade", ThemeShade)
-				);
+		return XML::XElement();
 		}
 	} // namespace Logic
 } // namespace OOX

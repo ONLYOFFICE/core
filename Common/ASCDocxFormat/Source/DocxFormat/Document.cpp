@@ -29,7 +29,7 @@ namespace OOX
 	{
 		IFileContainer::read(filename);
 
-		const XML::XDocument document(filename.GetPath());
+		const XML::XDocument document(filename);
 		const XML::XElement element = document.Root.element("body");
 		SectorProperty = element.element("sectPr");
 		Background	   = document.Root.element("background");

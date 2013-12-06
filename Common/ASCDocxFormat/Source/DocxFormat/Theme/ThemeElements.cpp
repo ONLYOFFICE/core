@@ -45,12 +45,7 @@ namespace OOX
 
 		const XML::XNode ThemeElements::toXML() const
 		{
-			return
-				XML::XElement(ns.a + "themeElements",
-					XML::Write(clrScheme) +
-					XML::Write(fontScheme) +
-					XML::Write(fmtScheme)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

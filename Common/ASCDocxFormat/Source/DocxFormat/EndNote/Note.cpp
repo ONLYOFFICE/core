@@ -37,13 +37,15 @@ namespace OOX
 
 
 	const XML::XNode EndNote::Note::toXML() const
-	{			
-		return
-			XML::XElement(ns.w + "endnote",
-			  XML::XAttribute(ns.w + "type", Type) +
-				XML::XAttribute(ns.w + "id", Id) +
-				XML::Write(Items)
-			);
+	{	
+		return XML::XElement();
+
+		//return
+		//	XML::XElement(ns.w + "endnote",
+		//	  XML::XAttribute(ns.w + "type", Type) +
+		//		XML::XAttribute(ns.w + "id", Id) +
+		//		XML::Write(Items)
+		//	);
 	}
 
 

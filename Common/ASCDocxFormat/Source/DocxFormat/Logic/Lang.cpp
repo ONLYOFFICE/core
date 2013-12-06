@@ -45,12 +45,7 @@ namespace OOX
 
 		const XML::XNode Lang::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "lang",
-					XML::XAttribute(ns.w + "val", Value) +
-					XML::XAttribute(ns.w + "eastAsia", EastAsia) +
-					XML::XAttribute(ns.w + "bidi", Bidi)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

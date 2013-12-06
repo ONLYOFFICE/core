@@ -41,10 +41,7 @@ namespace OOX
 
 		const XML::XNode PageSize::toXML() const
 		{
-			return XML::XElement(ns.w + "pgSz",
-				XML::XAttribute(ns.w + "w", Width) +
-				XML::XAttribute(ns.w + "h", Height) +
-				XML::XAttribute(ns.w + "orient", Orient));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

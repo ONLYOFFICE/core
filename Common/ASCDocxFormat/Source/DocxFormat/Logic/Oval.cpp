@@ -47,8 +47,8 @@ namespace OOX
 		}
 
 		const XML::XNode Oval::toXML() const
-		{			
-			return XML::XElement(ns.v + "oval", XML::XAttribute("id", Id) +	XML::XAttribute("style", style.ToString()) + XML::Write(Wrap));
+		{	
+		return XML::XElement();
 		}
 
 	} // namespace Logic

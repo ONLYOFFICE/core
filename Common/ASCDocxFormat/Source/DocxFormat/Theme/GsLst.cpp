@@ -43,10 +43,7 @@ namespace OOX
 
 		const XML::XNode GsLst::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "gsLst", 
-					XML::Write(m_gss)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode DocPartObj::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "docPartObj",
-					XML::Write(ns.w + "docPartGallery", ns.w + "val", Gallery) +
-					XML::WriteIf(XML::XElement(ns.w + "docPartUnique"), Unique)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

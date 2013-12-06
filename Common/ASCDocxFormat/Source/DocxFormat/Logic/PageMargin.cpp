@@ -49,16 +49,7 @@ namespace OOX
 
 		const XML::XNode PageMargin::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "pgMar",
-					XML::XAttribute(ns.w + "top", Top) +
-					XML::XAttribute(ns.w + "right", Right) +
-					XML::XAttribute(ns.w + "bottom", Bottom) +
-					XML::XAttribute(ns.w + "left", Left) +
-					XML::XAttribute(ns.w + "header", Header) +
-					XML::XAttribute(ns.w + "footer", Footer) +
-					XML::XAttribute(ns.w + "gutter", Gutter)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

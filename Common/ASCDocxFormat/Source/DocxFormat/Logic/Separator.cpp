@@ -41,7 +41,7 @@ namespace OOX
 
 		const XML::XNode Separator::toXML() const
 		{
-			return XML::XElement(ns.w + "separator");
+		return XML::XElement();
 		}
 
 

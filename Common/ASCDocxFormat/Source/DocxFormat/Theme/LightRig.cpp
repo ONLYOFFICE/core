@@ -45,12 +45,7 @@ namespace OOX
 
 		const XML::XNode LightRig::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "lightRig",
-					XML::XAttribute("rig", m_rig) +
-					XML::XAttribute("dir", m_dir) +
-					XML::Write(m_rot)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

@@ -42,13 +42,7 @@ namespace OOX
 
 		const XML::XNode Hyperlink::toXML() const
 		{
-			return XML::XElement();
-				//XML::XElement(ns.w + "hyperlink",
-				//	XML::XAttribute(ns.r + "id", rId) +
-				//	XML::XAttribute(ns.w + "anchor", Anchor) +
-				//	XML::XAttribute(ns.w + "history", History) +
-				//	XML::Write(Runs)
-				//);
+		return XML::XElement();
 		}
 
 		const std::string Hyperlink::toTxt() const

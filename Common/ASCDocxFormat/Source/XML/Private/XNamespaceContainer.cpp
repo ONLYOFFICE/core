@@ -13,44 +13,40 @@ namespace XML
 	{
 		static NullXNamespace nullXNamespace;
 
-
 		const bool XNamespaceContainer::exist(const std::string& name) const
 		{
-			BOOST_FOREACH(const XNamespace& current, m_container)
+			for (std::list<XNamespace>::const_iterator current = m_container.begin(); current != m_container.end(); ++current)
 			{
-				if (current->GetPrefix() == name)
+				if ((*current)->GetPrefix() == name)
 					return true;
 			}
+		
 			return false;
 		}
 
-
-
 		XNamespace& XNamespaceContainer::operator[] (const std::string& name)
 		{
-			BOOST_FOREACH(XNamespace& current, m_container)
+			for (std::list<XNamespace>::iterator current = m_container.begin(); current != m_container.end(); ++current)
 			{
-				if (current->GetPrefix() == name)
-					return current;
+				if ((*current)->GetPrefix() == name)
+					return (*current);
 			}
 			return nullXNamespace;
 		}
-
 
 		const XNamespace& XNamespaceContainer::operator[] (const std::string& name) const
 		{
-			BOOST_FOREACH(const XNamespace& current, m_container)
+			for (std::list<XNamespace>::const_iterator current = m_container.begin(); current != m_container.end(); ++current)
 			{
-				if (current->GetPrefix() == name)
-					return current;
+				if ((*current)->GetPrefix() == name)
+					return (*current);
 			}
+		
 			return nullXNamespace;
 		}
 
-
 		void XNamespaceContainer::erase(const std::string& name)
 		{
-			//for (std::set<XNamespace>::iterator i = m_container.begin(); i != m_container.end(); ++i)
 			for (std::list<XNamespace>::iterator i = m_container.begin(); i != m_container.end(); ++i)
 			{
 				if ((*i)->GetPrefix() == name)
@@ -61,33 +57,28 @@ namespace XML
 			}
 		}
 
-
 		void XNamespaceContainer::erase(const XNamespaceContainer& rhs)
 		{
-			BOOST_FOREACH(const XNamespace& current, rhs.m_container)
+			for (std::list<XNamespace>::iterator current = m_container.begin(); current != m_container.end(); ++current)
 			{
-				erase(current->GetPrefix());
+				erase((*current)->GetPrefix());
 			}
 		}
-
 
 		XNamespaceContainer::iterator XNamespaceContainer:: begin()
 		{
 			return m_container.begin();
 		}
 
-
 		XNamespaceContainer::iterator XNamespaceContainer::end()
 		{
 			return m_container.end();
 		}
 
-
 		XNamespaceContainer::const_iterator XNamespaceContainer::begin() const
 		{
 			return m_container.begin();
 		}
-
 
 		XNamespaceContainer::const_iterator XNamespaceContainer::end() const
 		{

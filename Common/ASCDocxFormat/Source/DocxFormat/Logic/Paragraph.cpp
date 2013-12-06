@@ -85,11 +85,7 @@ namespace OOX
 
 		const XML::XNode Paragraph::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "p",
-					XML::Write(Property) + 
-					XML::Write(Items)
-			);
+		return XML::XElement();
 		}
 
 

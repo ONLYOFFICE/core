@@ -11,17 +11,8 @@ namespace XML
 {
 	namespace Private
 	{
-
-		XWFileSource::XWFileSource(const boost::filesystem::path& path, XWideSource::eSourceType type)
-			: m_stream(path.string().c_str())
-			, XWideSource(type)
-		{
-			setBegin();
-		}
-
-
-		XWFileSource::XWFileSource(const boost::filesystem::wpath& path, XWideSource::eSourceType type)
-			: m_stream(path.string().c_str())
+		XWFileSource::XWFileSource(const OOX::CPath& path, XWideSource::eSourceType type)
+			: m_stream(path.GetPath())
 			, XWideSource(type)
 		{
 			setBegin();

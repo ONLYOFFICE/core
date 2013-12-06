@@ -45,12 +45,7 @@ namespace OOX
 
 		const XML::XNode EffectStyle::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "effectStyle", 
-					XML::Write(m_effestLst) +
-					XML::Write(m_scene3d) +
-					XML::Write(m_sp3d)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

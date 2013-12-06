@@ -45,13 +45,7 @@ namespace OOX
 
 		const XML::XNode H::toXML() const
 		{
-			return
-				XML::XElement(ns.v + "h",
-					XML::XAttribute("position", Position) +
-					XML::XAttribute("xrange", XRange) +
-					XML::XAttribute("yrange", YRange)
-					
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

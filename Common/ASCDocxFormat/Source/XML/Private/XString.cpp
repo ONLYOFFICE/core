@@ -4,9 +4,7 @@
 // auto inserted precompiled end
 
 #include "XString.h"
-#include <boost/lexical_cast.hpp>
 #include "Encoding.h"
-
 
 namespace XML
 {
@@ -130,19 +128,6 @@ namespace XML
 		{
 			return Encoding::utf82unicode(m_value.get_value_or_default());
 		}
-
-
-		const boost::filesystem::path XString::ToPath() const
-		{
-			return m_value.get_value_or_default();
-		}
-
-
-		const boost::filesystem::wpath XString::ToWPath() const
-		{
-			return Encoding::utf82unicode(m_value.get_value_or_default());
-		}
-
 
 		XString::operator const bool() const
 		{

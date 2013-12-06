@@ -43,7 +43,7 @@ namespace OOX
 
 		const XML::XNode DelText::toXML() const
 		{
-			return XML::XElement(ns.w + "delText", XML::XText(Text));
+		return XML::XElement();
 		}
 
 

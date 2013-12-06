@@ -95,52 +95,52 @@ namespace OOX
 
 		const XML::XNode Inline::toXML() const
 		{
-			return
-				XML::XElement(ns.wp + Name.ToString(), 
-					XML::XAttribute("distT", DistT) +
-					XML::XAttribute("distB", DistB) +
-					XML::XAttribute("distL", DistL) +
-					XML::XAttribute("distR", DistR) +
+			return XML::XElement();
+				//XML::XElement(ns.wp + Name.ToString(), 
+				//	XML::XAttribute("distT", DistT) +
+				//	XML::XAttribute("distB", DistB) +
+				//	XML::XAttribute("distL", DistL) +
+				//	XML::XAttribute("distR", DistR) +
 
-					XML::XAttribute("simplePos", SimplePos) +
-					XML::XAttribute("relativeHeight", RelativeHeight) +
-					XML::XAttribute("behindDoc", BehindDoc) +
-					XML::XAttribute("locked", Locked) +
-					XML::XAttribute("layoutInCell", LayoutInCell) +
-					XML::XAttribute("allowOverlap", AllowOverlap) +
+				//	XML::XAttribute("simplePos", SimplePos) +
+				//	XML::XAttribute("relativeHeight", RelativeHeight) +
+				//	XML::XAttribute("behindDoc", BehindDoc) +
+				//	XML::XAttribute("locked", Locked) +
+				//	XML::XAttribute("layoutInCell", LayoutInCell) +
+				//	XML::XAttribute("allowOverlap", AllowOverlap) +
 
-					XML::Write(SimplePosPoint) +
-					WriteIf(
-						XML::XElement(ns.wp + "positionH",
-							XML::XAttribute("relativeFrom", positionHRelativeFrom.get_value_or("column")) +
-							WriteIf( XML::XElement(ns.wp + "posOffset",
-								XML::XText(positionH)
-							), positionH.is_init()) +
-							WriteIf( XML::XElement(ns.wp + "align",
-								XML::XText(positionHAlign)
-							), positionHAlign.is_init())
-						), positionH.is_init() || positionHAlign.is_init()) +
-					WriteIf(
-						XML::XElement(ns.wp + "positionV",
-							XML::XAttribute("relativeFrom", positionVRelativeFrom.get_value_or("paragraph")) +
-							WriteIf( XML::XElement(ns.wp + "posOffset",
-								XML::XText(positionV)
-							), positionV.is_init()) +
-							WriteIf( XML::XElement(ns.wp + "align",
-								XML::XText(positionVAlign)
-							), positionVAlign.is_init())
-						), positionV.is_init() || positionVAlign.is_init()) +
-					XML::Write(Extent) +
-					XML::Write(EffectExtent) +
-					XML::Write(Wrap) +
-					XML::Write(DocPr) +
-						XML::XElement(ns.wp + "cNvGraphicFramePr",
-							XML::XElement(ns.a + "graphicFrameLocks",
-								XML::XAttribute("noChangeAspect", NoChangeAspect)
-							)
-						) +
-					XML::Write(Graphic)
-				);
+				//	XML::Write(SimplePosPoint) +
+				//	WriteIf(
+				//		XML::XElement(ns.wp + "positionH",
+				//			XML::XAttribute("relativeFrom", positionHRelativeFrom.get_value_or("column")) +
+				//			WriteIf( XML::XElement(ns.wp + "posOffset",
+				//				XML::XText(positionH)
+				//			), positionH.is_init()) +
+				//			WriteIf( XML::XElement(ns.wp + "align",
+				//				XML::XText(positionHAlign)
+				//			), positionHAlign.is_init())
+				//		), positionH.is_init() || positionHAlign.is_init()) +
+				//	WriteIf(
+				//		XML::XElement(ns.wp + "positionV",
+				//			XML::XAttribute("relativeFrom", positionVRelativeFrom.get_value_or("paragraph")) +
+				//			WriteIf( XML::XElement(ns.wp + "posOffset",
+				//				XML::XText(positionV)
+				//			), positionV.is_init()) +
+				//			WriteIf( XML::XElement(ns.wp + "align",
+				//				XML::XText(positionVAlign)
+				//			), positionVAlign.is_init())
+				//		), positionV.is_init() || positionVAlign.is_init()) +
+				//	XML::Write(Extent) +
+				//	XML::Write(EffectExtent) +
+				//	XML::Write(Wrap) +
+				//	XML::Write(DocPr) +
+				//		XML::XElement(ns.wp + "cNvGraphicFramePr",
+				//			XML::XElement(ns.a + "graphicFrameLocks",
+				//				XML::XAttribute("noChangeAspect", NoChangeAspect)
+				//			)
+				//		) +
+				//	XML::Write(Graphic)
+				//);
 		}
 
 	} // namespace Logic

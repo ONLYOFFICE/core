@@ -63,22 +63,7 @@ namespace OOX
 
 		const XML::XNode Shape::toXML() const
 		{			
-			return
-				XML::XElement(ns.v + "shape", 
-				XML::XAttribute("id", Id) +
-				XML::XAttribute("type", Type) +
-				XML::XAttribute("style", style.ToString()) +	
-				XML::XAttribute("adj", adj) +
-				XML::XAttribute("allowincell", AllowInCell) +
-				XML::XAttribute(ns.o + "ole", Ole) +
-				XML::XAttribute("coordsize", coordsize) +
-				XML::XAttribute("path", path) +
-				XML::Write(shadow) +
-				XML::Write(textbox) +
-				XML::Write(imageData) +
-				XML::Write(TextPath) +
-				XML::Write(Wrap) +
-				XML::Write(Extrusion));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

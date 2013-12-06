@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode ImageData::toXML() const
 		{
-			return XML::XElement();
-				//XML::XElement(ns.v + "imagedata", 
-				//	XML::XAttribute(ns.r + "id", rId) +
-				//	XML::XAttribute(ns.o + "title", Title) 
-				//);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

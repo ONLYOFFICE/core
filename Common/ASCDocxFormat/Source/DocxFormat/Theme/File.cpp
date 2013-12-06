@@ -30,7 +30,8 @@ namespace OOX
 
 		void File::read(const OOX::CPath& filename)
 		{
-			const XML::XDocument document(filename.GetPath());
+			const XML::XDocument document(filename);
+		
 			name = document.Root.attribute("name").value();
 			themeElements			= document.Root.element("themeElements");
 			objectDefaults		= document.Root.element("objectDefaults");

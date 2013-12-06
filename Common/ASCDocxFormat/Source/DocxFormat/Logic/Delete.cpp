@@ -48,13 +48,7 @@ namespace OOX
 
 		const XML::XNode Delete::toXML() const
 		{
-			return
-				XML::XElement(ns.w + "del",
-				    XML::XAttribute(ns.w + "id", Id) +
-					XML::XAttribute(ns.w + "author", Author) +
-					XML::XAttribute(ns.w + "date", Date) +
-					XML::Write(Runs)
-				);
+		return XML::XElement();
 		}
 
 

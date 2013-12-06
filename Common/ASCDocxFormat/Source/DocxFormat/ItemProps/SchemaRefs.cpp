@@ -41,7 +41,7 @@ namespace OOX
 
 	const XML::XNode ItemProps::SchemaRefs::toXML() const
 	{
-		return XML::XElement(ns.ds + "schemaRefs",	XML::Write(SchemaRef));
+		return XML::XElement();
 	}
 
 } // namespace OOX

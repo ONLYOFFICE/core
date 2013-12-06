@@ -51,12 +51,7 @@ namespace OOX
 
 		const XML::XNode TabProperty::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "tab",
-					XML::XAttribute(ns.w + "val", Val) +
-					XML::XAttribute(ns.w + "leader", Leader) +
-					XML::XAttribute(ns.w + "pos", Pos)
-				);
+		return XML::XElement();
 		}
 	} // namespace Logic
 } // namespace OOX

@@ -52,11 +52,7 @@ namespace OOX
 
 		const XML::XNode Column::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "col", 
-					XML::XAttribute(ns.w + "w", Width) +
-					XML::XAttribute(ns.w + "space", Space)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

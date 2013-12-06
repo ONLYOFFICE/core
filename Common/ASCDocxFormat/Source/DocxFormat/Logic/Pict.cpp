@@ -53,18 +53,7 @@ namespace OOX
 
 		const XML::XNode Pict::toXML() const
 		{
-			return
-				XML::XElement(ns.w + name.ToString(), 
-					XML::XAttribute(ns.w + "dxaOrig", DxaOrig)	+
-					XML::XAttribute(ns.w + "dyaOrig", DyaOrig)	+					
-					XML::Write(shapetype)						+
-					XML::Write(shape)							+
-					XML::Write(rect)							+
-					XML::Write(oval)							+
-					XML::Write(line)							+
-					XML::Write(roundrect)						+
-					XML::Write(OleObject)
-				);
+		return XML::XElement();
 		}
 
 		const std::string Pict::toTxt() const

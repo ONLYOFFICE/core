@@ -50,10 +50,7 @@ namespace OOX
 
 		const XML::XNode FootnoteReference::toXML() const
 		{
-			return XML::XElement(ns.w + "footnoteReference", 
-							XML::XAttribute(ns.w + "customMarkFollows", CustomMarkFollows) +
-							XML::XAttribute(ns.w + "id", Id)							
-						);
+		return XML::XElement();
 		}
 
 

@@ -5,12 +5,11 @@
 #include "property.h"
 #include "XElement.h"
 #include "Private/XDeclaration.h"
-#include <boost/filesystem.hpp>
-//#include "Private/XSource.h"
 #include "Private/XSingleSource.h"
 #include "Private/XWideSource.h"
 #include <boost/shared_ptr.hpp>
 
+#include "../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 
 namespace XML
 {
@@ -18,12 +17,10 @@ namespace XML
 	{
 	public:
 		explicit XDocument(const XElement& element);
-		explicit XDocument(const char* source, const bool space = false);
 		explicit XDocument(const wchar_t* source, const bool space = false);
 		explicit XDocument(const std::string& source, const bool space = false);
 		explicit XDocument(const std::wstring& source, const bool space = false);
-		explicit XDocument(const boost::filesystem::path& source, const bool space = false);
-		explicit XDocument(const boost::filesystem::wpath& source, const bool space = false);
+		explicit XDocument(const OOX::CPath& source, const bool space = false);
 
 	public:
 		XDocument const* const	operator->() const	{return this;}
@@ -34,8 +31,7 @@ namespace XML
 		const std::wstring ToWString();
 	
 	public:
-		void Save(const boost::filesystem::path& path);
-		void Save(const boost::filesystem::wpath& path);
+		void Save(const OOX::CPath& path);
 		void Save(std::string& source);
 		void Save(std::wstring& source);
 

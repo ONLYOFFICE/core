@@ -58,11 +58,7 @@ namespace OOX
 
 		const XML::XNode BookmarkStart::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "bookmarkStart",
-					XML::XAttribute(ns.w + "id", Id) + 
-					XML::XAttribute(ns.w + "name", Name)
-				);
+		return XML::XElement();
 		}
 
 

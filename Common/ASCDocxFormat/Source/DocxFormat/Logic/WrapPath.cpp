@@ -46,11 +46,13 @@ namespace OOX
 
 		const XML::XNode WrapPath::toXML() const
 		{
-			return XML::XElement(ns.wp + "wrapPolygon",
-				XML::XAttribute("edited", edited) +
-				XML::Write(start) +
-				XML::Write(points)
-				);
+			return XML::XElement();
+
+			//return XML::XElement(ns.wp + "wrapPolygon",
+			//	XML::XAttribute("edited", edited) +
+			//	XML::Write(start) +
+			//	XML::Write(points)
+			//	);
 		}
 
 	} // namespace Logic

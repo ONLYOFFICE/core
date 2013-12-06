@@ -127,14 +127,7 @@ namespace XML
 	{
 	}
 
-
-	void XElement::Save(const boost::filesystem::path& path) const
-	{
-		XDocument(*this).Save(path);
-	}
-
-
-	void XElement::Save(const boost::filesystem::wpath& path) const
+	void XElement::Save(const OOX::CPath& path) const
 	{
 		XDocument(*this).Save(path);
 	}

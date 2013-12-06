@@ -76,7 +76,7 @@ namespace OOX
 
 		const XML::XNode TableRow::toXML() const
 		{
-			return XML::XElement(ns.w + "tr", XML::Write(Properties) + XML::Write(Cells));
+		return XML::XElement();
 		}
 
 		const TableCell TableRow::getCellByNumCol(const int num) const

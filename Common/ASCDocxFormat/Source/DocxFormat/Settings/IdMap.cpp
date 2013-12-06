@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode IdMap::toXML() const
 		{
-			return
-				XML::XElement(ns.o + "idmap", 
-					XML::XAttribute(ns.v + "ext", m_ext) + 
-					XML::XAttribute("data", m_data)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Settings

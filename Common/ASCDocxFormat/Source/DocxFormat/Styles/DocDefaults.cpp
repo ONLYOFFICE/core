@@ -43,13 +43,7 @@ namespace OOX
 
 	const XML::XNode Styles::DocDefaults::toXML() const
 	{
-		return
-			XML::XElement(ns.w + "docDefaults",
-				XML::XElement(ns.w + "rPrDefault",
-					XML::Write(RunProperty)) +
-				XML::XElement(ns.w + "pPrDefault", 
-					XML::Write(ParagraphProperty))
-			);
+		return XML::XElement();
 	}
 
 } // namespace OOX

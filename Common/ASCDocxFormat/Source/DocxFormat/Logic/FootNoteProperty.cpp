@@ -52,11 +52,7 @@ namespace OOX
 
 		const XML::XNode FootNoteProperty::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "footnotePr",
-					XML::Write(NumFormat) +
-					XML::Write(ns.w + "numStart", ns.w + "val", NumStart)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

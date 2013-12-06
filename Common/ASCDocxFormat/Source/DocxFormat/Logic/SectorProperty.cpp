@@ -67,19 +67,7 @@ namespace OOX
 
 		const XML::XNode SectorProperty::toXML() const
 		{
-			return XML::XElement(ns.w + "sectPr",
-				XML::Write(FootNoteProperty) +
-				XML::Write(EndNoteProperty) +
-				XML::Write(PageSize) +
-				XML::Write(PageMargin) +
-				XML::Write(LnNumType) +
-				XML::Write(Columns) +
-				XML::Write(DocumentGrid)	+
-				XML::Write(Footers) +
-				XML::Write(Headers) +
-				XML::Write(PageBorders) +
-				XML::Write(ns.w + "type", ns.w + "val", Type) +
-				XML::WriteIf(XML::XElement(ns.w + "titlePg"), TitlePage));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

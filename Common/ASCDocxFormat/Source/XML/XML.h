@@ -10,10 +10,7 @@
 #include "XNode.h"
 #include "XDocument.h"
 #include "Private/XList.h"
-#include "Extension/Write.h"
-#include "Extension/WriteIf.h"
 #include "Extension/Fill.h"
-#include "Extension/FillFromAttribute.h"
 #include "XObject.h"
 #include "XComment.h"
 

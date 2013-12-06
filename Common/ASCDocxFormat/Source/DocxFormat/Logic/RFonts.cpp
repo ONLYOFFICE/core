@@ -47,18 +47,7 @@ namespace OOX
 
 		const XML::XNode RFonts::toXML() const
 		{
-			return
-				XML::XElement(ns.w + "rFonts",
-					XML::XAttribute(ns.w + "asciiTheme", AsciiTheme) +
-					XML::XAttribute(ns.w + "eastAsiaTheme", EastAsiaTheme) +
-					XML::XAttribute(ns.w + "hAnsiTheme", HAnsiTheme) +
-					XML::XAttribute(ns.w + "cstheme", Cstheme) +
-					XML::XAttribute(ns.w + "hint", Hint) +
-					XML::XAttribute(ns.w + "ascii", ascii) +
-					XML::XAttribute(ns.w + "eastAsia", EastAsia) +
-					XML::XAttribute(ns.w + "hAnsi", hAnsi) +
-					XML::XAttribute(ns.w + "cs", Cs)
-				);
+		return XML::XElement();
 		}
 
 		void RFonts::setFontName(const nullable__<std::string>& fontName)

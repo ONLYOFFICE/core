@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode Lin::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "lin",
-					XML::XAttribute("ang", m_ang) +
-					XML::XAttribute("scaled", m_scaled)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

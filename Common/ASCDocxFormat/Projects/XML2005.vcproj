@@ -258,42 +258,6 @@
 				RelativePath="..\Source\XML\Extension\Fill.h"
 				>
 			</File>
-			<File
-				RelativePath="..\Source\XML\Extension\FillFromAttribute.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\XML\Extension\Write.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\XML\Extension\"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\XML\Extension\"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\Source\XML\Extension\Write.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\XML\Extension\WriteIf.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\XML\Extension\WriteIf.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Limit"

@@ -40,9 +40,8 @@ namespace OOX
 		}
 		
 		const XML::XNode Formulas::toXML() const
-		{			
-			//return XML::XElement(ns.v + "formulas", XML::Write(Fs));
-			return XML::XElement("formulas", XML::Write(Fs));
+		{	
+		return XML::XElement();
 		}
 
 	} // namespace Logic

@@ -43,7 +43,7 @@ namespace OOX
 
 		const XML::XNode Footnote::toXML() const
 		{
-			return XML::XElement(ns.w + "footnote", XML::XAttribute(ns.w + "id", m_id));
+		return XML::XElement();
 		}
 
 	} // namespace Settings

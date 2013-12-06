@@ -45,12 +45,7 @@ namespace OOX
 
 		const XML::XNode DocPr::toXML() const
 		{
-			return
-				XML::XElement(ns.wp + "docPr", 
-					XML::XAttribute("id", Id) +
-					XML::XAttribute("name", Name) +
-					XML::XAttribute("descr", Descr)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

@@ -40,8 +40,8 @@ namespace OOX
 		}
 
 		const XML::XNode TextBox::toXML() const
-		{			
-			return XML::XElement(ns.v + "textbox", XML::XAttribute("style", style) + XML::XAttribute("inset", inset) + XML::Write(content));
+		{	
+		return XML::XElement();
 		}
 	} // namespace Logic
 } // namespace OOX

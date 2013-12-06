@@ -67,17 +67,7 @@ namespace OOX
 
 		const XML::XNode Spacing::toXML() const
 		{
-			return
-				XML::XElement(ns.w + "spacing", 
-					XML::XAttribute(ns.w + "after", After) +									
-					XML::XAttribute(ns.w + "afterAutospacing", AfterAutospacing) +
-					XML::XAttribute(ns.w + "afterLines", AfterLines) +
-					XML::XAttribute(ns.w + "before", Before) +
-					XML::XAttribute(ns.w + "beforeAutospacing", BeforeAutospacing) +	
-					XML::XAttribute(ns.w + "beforeLines", BeforeLines) +
-					XML::XAttribute(ns.w + "line", Line) +
-					XML::XAttribute(ns.w + "lineRule", LineRule) 
-				);
+		return XML::XElement();
 		}
 
 

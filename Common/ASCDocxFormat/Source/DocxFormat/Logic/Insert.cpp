@@ -48,13 +48,7 @@ namespace OOX
 
 		const XML::XNode Insert::toXML() const
 		{
-			return
-				XML::XElement(ns.w + "ins",
-				    XML::XAttribute(ns.w + "id", Id) +
-					XML::XAttribute(ns.w + "author", Author) +
-					XML::XAttribute(ns.w + "date", Date) +
-					XML::Write(Runs)
-				);
+		return XML::XElement();
 		}
 
 

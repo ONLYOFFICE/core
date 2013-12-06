@@ -3,10 +3,10 @@
 #define XML_PRIVATE_XFILE_SOURCE_INCLUDE_H_
 
 #include "XSingleSource.h"
-#include <boost/filesystem.hpp>
 #include <fstream>
 #include <iterator>
 
+#include "../../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 
 namespace XML
 {
@@ -15,8 +15,7 @@ namespace XML
 		class XFileSource : public XSingleSource
 		{
 		public:
-			XFileSource(const boost::filesystem::path& path);
-			XFileSource(const boost::filesystem::wpath& path);
+			XFileSource(const OOX::CPath& path);
 			virtual ~XFileSource();
 
 		private:

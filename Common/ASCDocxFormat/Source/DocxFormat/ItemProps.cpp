@@ -28,7 +28,7 @@ namespace OOX
 
 	void ItemProps::read(const OOX::CPath& filename)
 	{
-		const	XML::XDocument document(filename.GetPath());
+		const	XML::XDocument document(filename);
 		//Refs		= document.Root.element("schemaRefs");
 		ItemID	= document.Root.attribute("itemID").value();
 	}

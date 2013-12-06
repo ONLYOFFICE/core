@@ -42,12 +42,7 @@ namespace OOX
 
 		const XML::XNode TCMar::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "tcMar",
-				XML::Write(Top) +
-				XML::Write(Left) +
-				XML::Write(Bottom) +
-				XML::Write(Right));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

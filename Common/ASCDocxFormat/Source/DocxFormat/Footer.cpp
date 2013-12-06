@@ -53,7 +53,7 @@ namespace OOX
 		//	}
 		//}
 
-		const XML::XDocument document(filename.GetPath());
+		const XML::XDocument document(filename);
 		XML::Fill(m_items, document.Root, "p", "tbl", "sdt");
 	}
 

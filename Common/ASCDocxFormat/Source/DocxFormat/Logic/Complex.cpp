@@ -43,7 +43,7 @@ namespace OOX
 		
 		const XML::XNode Complex::toXML() const
 		{			
-			return XML::XElement(ns.o + "complex", XML::XAttribute(ns.v + "ext", Ext));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

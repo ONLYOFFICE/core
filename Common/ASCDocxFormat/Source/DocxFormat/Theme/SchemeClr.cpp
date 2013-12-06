@@ -46,13 +46,7 @@ namespace OOX
 
 		const XML::XNode SchemeClr::toXML() const
 		{
-			return
-				XML::XElement(ns.a + "schemeClr",
-					XML::XAttribute("val", m_value) +
-					XML::Write(ns.a + "tint", "val", m_tint) +
-					XML::Write(ns.a + "shade", "val", m_shade) +
-					XML::Write(ns.a + "satMod", "val", m_satMod)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

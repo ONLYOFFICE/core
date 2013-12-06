@@ -48,15 +48,7 @@ namespace OOX
 
 		const XML::XNode Ln::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "ln", 
-					XML::XAttribute("w", m_w) +
-					XML::XAttribute("cap", m_cap) +
-					XML::XAttribute("cmpd", m_cmpd) +
-					XML::XAttribute("algn", m_algn) +
-					XML::Write(m_solidFill) +
-					XML::Write(ns.a + "prstDash", "val", m_prstDash)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

@@ -46,13 +46,7 @@ namespace OOX
 
 		const XML::XNode EffectExtent::toXML() const
 		{
-			return
-				XML::XElement(ns.wp + "effectExtent", 
-					XML::XAttribute("l", Left) +
-					XML::XAttribute("t", Top) +
-					XML::XAttribute("r", Right) +
-					XML::XAttribute("b", Bottom)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

@@ -48,8 +48,8 @@ namespace OOX
 		}
 		
 		const XML::XNode Roundrect::toXML() const
-		{			
-			return XML::XElement(ns.v + "rect", XML::XAttribute("id", Id) +	XML::XAttribute("style", style.ToString()) + XML::XAttribute("arcsize", arcsize) + XML::Write(Wrap));
+		{	
+		return XML::XElement();
 		}
 
 	} // namespace Logic

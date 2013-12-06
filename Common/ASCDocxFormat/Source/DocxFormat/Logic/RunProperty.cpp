@@ -153,54 +153,8 @@ namespace OOX
 
 		const XML::XNode RunProperty::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "rPr",
-					//XML::WriteIf(XML::XElement(ns.w + "b"), Bold) +
-					//XML::WriteIf(XML::XElement(ns.w + "i"), Italic) +
-					XML::WriteIf(XML::XElement(ns.w + "b", XML::XAttribute(ns.w + "val", Bold)), Bold.is_init()) +
-					XML::WriteIf(XML::XElement(ns.w + "i", XML::XAttribute(ns.w + "val", Italic)), Italic.is_init()) +
-					//XML::WriteIf(XML::XElement(ns.w + "strike"), Strike) +
-					//XML::WriteIf(XML::XElement(ns.w + "dstrike"), DStrike) +
-					XML::WriteIf(XML::XElement(ns.w + "strike", XML::XAttribute(ns.w + "val", Strike)), Strike.is_init()) +
-					XML::WriteIf(XML::XElement(ns.w + "dstrike", XML::XAttribute(ns.w + "val", DStrike)), DStrike.is_init()) +
-
-					XML::WriteIf(XML::XElement(ns.w + "u", XML::XAttribute(ns.w + "val", UnderType.get_value_or("single"))), Under) +
-					//XML::WriteIf(XML::XElement(ns.w + "smallCaps"), SmallCaps) +
-					//XML::WriteIf(XML::XElement(ns.w + "caps"), Caps) +
-					//XML::WriteIf(XML::XElement(ns.w + "emboss"), Emboss) +
-					//XML::WriteIf(XML::XElement(ns.w + "imprint"), Imprint) +
-					//XML::WriteIf(XML::XElement(ns.w + "outline"), Outline) +
-					//XML::WriteIf(XML::XElement(ns.w + "shadow"), Shadow) +
-					//XML::WriteIf(XML::XElement(ns.w + "vanish"), Vanish) +
-					//XML::WriteIf(XML::XElement(ns.w + "webHidden"), WebHidden) +
-					XML::WriteIf(XML::XElement(ns.w + "smallCaps", XML::XAttribute(ns.w + "val", SmallCaps)), SmallCaps.is_init()) +
-					XML::WriteIf(XML::XElement(ns.w + "caps", XML::XAttribute(ns.w + "val", Caps)), Caps.is_init()) +
-					XML::WriteIf(XML::XElement(ns.w + "emboss", XML::XAttribute(ns.w + "val", Emboss)), Emboss.is_init()) +
-					XML::WriteIf(XML::XElement(ns.w + "imprint", XML::XAttribute(ns.w + "val", Imprint)), Imprint.is_init()) +
-					XML::WriteIf(XML::XElement(ns.w + "outline", XML::XAttribute(ns.w + "val", Outline)), Outline.is_init()) +
-					XML::WriteIf(XML::XElement(ns.w + "shadow", XML::XAttribute(ns.w + "val", Shadow)), Shadow.is_init()) +
-					XML::WriteIf(XML::XElement(ns.w + "vanish", XML::XAttribute(ns.w + "val", Vanish)), Vanish.is_init()) +
-					XML::WriteIf(XML::XElement(ns.w + "webHidden", XML::XAttribute(ns.w + "val", WebHidden)), WebHidden.is_init()) +
-
-					XML::Write(ns.w + "sz", ns.w + "val", FontSize) +
-					XML::Write(ns.w + "szCs", ns.w + "val", FontSize) +
-					XML::Write(ns.w + "rStyle", ns.w + "val", RStyle) +
-					XML::Write(Lang) + 
-					XML::Write(rFonts) +
-					XML::WriteIf(XML::XElement(ns.w + "vertAlign", XML::XAttribute(ns.w + "val", Index)), Index.is_init() && (Index->isSub() || Index->isSuper())) +
-					XML::Write(ns.w + "color", ns.w + "val", FontColor) +
-					XML::Write(ns.w + "highlight", ns.w + "val", Highlight) +
-					//XML::Write(ns.w + "shd", ns.w + "fill", Background) +
-					XML::Write(Shading) +
-					XML::Write(ns.w + "spacing", ns.w + "val", Spacing) +
-					XML::Write(ns.w + "kern", ns.w + "val", Kern) +
-					XML::Write(ns.w + "position", ns.w + "val", Position) +
-					XML::Write(ns.w + "w", ns.w + "val", Scale) +
-					XML::Write(Border) +
-					XML::Write(PropertyChange)
-				);
+		return XML::XElement();
 		}
-
 
 		const bool RunProperty::isSimple() const
 		{

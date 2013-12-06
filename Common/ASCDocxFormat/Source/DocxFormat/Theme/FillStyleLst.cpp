@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode FillStyleLst::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "fillStyleLst",
-					XML::Write(m_solidFill) +
-					XML::Write(m_gradFills)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

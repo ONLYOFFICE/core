@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode TableRowHeight::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "trHeight",
-					XML::XAttribute(ns.w + "val", Height) + 
-					XML::XAttribute(ns.w + "hRule", Type)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

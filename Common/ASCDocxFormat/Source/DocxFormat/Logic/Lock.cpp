@@ -46,13 +46,7 @@ namespace OOX
 		
 		const XML::XNode Lock::toXML() const
 		{			
-			return
-				XML::XElement(ns.o + "lock",
-					XML::XAttribute("aspectratio", Aspectratio) +
-					XML::XAttribute(ns.v + "ext", Ext) +
-					XML::XAttribute("text", Text) +
-					XML::XAttribute("shapetype", ShapeType)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

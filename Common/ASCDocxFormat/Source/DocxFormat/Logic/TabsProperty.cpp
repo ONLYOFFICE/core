@@ -43,10 +43,7 @@ namespace OOX
 
 		const XML::XNode TabsProperty::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "tabs",
-					XML::Write(Tabs)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

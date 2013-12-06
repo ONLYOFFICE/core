@@ -33,7 +33,8 @@ namespace OOX
 
 		virtual const XML::XNode toXML() const 
 		{
-			return XML::Write(m_items);
+			return XML::XElement();//
+			//return XML::Write(m_items);
 		}
 	};
 } // namespace OOX

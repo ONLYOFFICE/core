@@ -2,10 +2,10 @@
 #ifndef XML_PRIVATE_INCLUDE_H_
 #define XML_PRIVATE_INCLUDE_H_
 
-#include <boost/operators.hpp>
 #include <string>
-#include "property.h"
 #include <list>
+
+#include "property.h"
 
 namespace XML
 {

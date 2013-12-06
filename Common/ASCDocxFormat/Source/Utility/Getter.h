@@ -5,7 +5,6 @@
 #include <stdexcept>
 #include <boost/call_traits.hpp>
 
-
 namespace getter
 {
 	template<typename Type>

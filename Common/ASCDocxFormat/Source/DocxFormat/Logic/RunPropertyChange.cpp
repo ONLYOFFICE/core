@@ -46,12 +46,7 @@ namespace OOX
 
 		const XML::XNode RunPropertyChange::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "rPrChange",
-				    XML::XAttribute(ns.w + "id", Id) +
-					XML::XAttribute(ns.w + "author", Author) +
-					XML::XAttribute(ns.w + "date", Date) 
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

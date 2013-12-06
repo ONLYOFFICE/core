@@ -55,21 +55,7 @@ namespace OOX
 
 		const XML::XNode ClrSchemeMapping::toXML() const
 		{
-			return
-				XML::XElement(ns.w + "clrSchemeMapping",
-					XML::XAttribute(ns.w + "bg1", m_bg1) +
-					XML::XAttribute(ns.w + "t1", m_t1) +
-					XML::XAttribute(ns.w + "bg2", m_bg2) +
-					XML::XAttribute(ns.w + "t2", m_t2) +
-					XML::XAttribute(ns.w + "accent1", m_accent1) +
-					XML::XAttribute(ns.w + "accent2", m_accent2) +
-					XML::XAttribute(ns.w + "accent3", m_accent3) +
-					XML::XAttribute(ns.w + "accent4", m_accent4) +
-					XML::XAttribute(ns.w + "accent5", m_accent5) +
-					XML::XAttribute(ns.w + "accent6", m_accent6) +
-					XML::XAttribute(ns.w + "hyperlink", m_hyperlink) +
-					XML::XAttribute(ns.w + "followedHyperlink", m_followedHyperlink)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Settings

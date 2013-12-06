@@ -41,10 +41,7 @@ namespace OOX
 
 		const XML::XNode Shading::toXML() const
 		{
-			return XML::XElement(ns.w + "shd",
-				XML::XAttribute(ns.w + "val", value)	+
-				XML::XAttribute(ns.w + "color", color)	+
-				XML::XAttribute(ns.w + "fill", fill));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

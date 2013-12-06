@@ -44,13 +44,7 @@ namespace OOX
 
 		const XML::XNode TableStyleProperties::toXML() const
 		{
-			return XML::XElement(ns.w + "tblStylePr",
-				XML::XAttribute(ns.w + "type", Type) +
-				XML::Write(ParagraphProperty) +
-				XML::Write(RunProperty) +
-				XML::Write(TableProperty) +
-				XML::Write(TableRowProperties) +
-				XML::Write(tcPr));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

@@ -41,8 +41,7 @@ namespace OOX
 
 		const XML::XNode ExtraClrSchemeLst::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "extraClrSchemeLst");
+		return XML::XElement();
 		}
 
 	} // namespace Theme

@@ -9,10 +9,9 @@
 #include "nullable_property.h"
 #include "XNamespace.h"
 
-
 namespace XML
 {
-	class XName : private boost::equality_comparable<XName>
+	class XName
 	{
 	public:
 		XName();

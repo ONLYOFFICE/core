@@ -43,7 +43,7 @@ namespace OOX
 
 		const XML::XNode FieldCodes::toXML() const
 		{
-			return XML::XElement(ns.o + "FieldCodes", XML::XText(Text));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

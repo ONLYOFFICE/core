@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode SrgbClr::toXML() const
 		{
-			return
-				XML::XElement(ns.a + "srgbClr", 
-					XML::XAttribute("val", m_value) +
-					XML::Write(ns.a + "alpha", "val", m_alpha)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

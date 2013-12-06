@@ -55,7 +55,7 @@ namespace OOX
 
 		const XML::XNode BookmarkEndParagraph::toXML() const
 		{
-			return 	XML::XElement();	//ns.w + "bookmarkEnd",			//		XML::XAttribute(ns.w + "id", Id)			//	);
+		return XML::XElement();
 		}
 
 		const std::string BookmarkEndParagraph::toTxt() const

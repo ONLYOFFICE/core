@@ -4,10 +4,14 @@
 // auto inserted precompiled end
 
 #include "Element.h"
+
+#include <utility>
+#include <vector>
+
 #include "XList.h"
+
 #include "./../Exception/Parse.h"
 #include "./../Exception/Namespace.h"
-#include <utility>
 #include "Namespace.h"
 #include "./../XAttribute.h"
 #include "./../XAttribute.h"
@@ -15,11 +19,8 @@
 #include "./../XElement.h"
 #include "./../XText.h"
 #include "./../XContainer.h"
-#include <boost/foreach.hpp>
-#include <vector>
 #include "Exception/not_implement.h"
 #include "Utility.h"
-
 
 namespace XML
 {
@@ -120,24 +121,25 @@ namespace XML
 			}
 
 			typedef std::pair<std::pair<std::string, std::string>, std::string> attribute_type;
-			BOOST_FOREACH(const attribute_type& attribute, attributes)
+
+			for (std::list<attribute_type>::iterator iter = attributes.begin();	iter != attributes.end();++iter)
 			{
-				if (attribute.first.first.empty())
+				if ((*iter).first.first.empty())
 				{
-					Attributes.push_back(XAttribute(attribute.first.second, attribute.second));
+					Attributes.push_back(XAttribute((*iter).first.second, (*iter).second));
 				}
 				else
 				{
-					XNamespace thisNs = Namespaces[attribute.first.first];
-					XNamespace defineNs = defineNamespaces[attribute.first.first];
+					XNamespace thisNs = Namespaces[(*iter).first.first];
+					XNamespace defineNs = defineNamespaces[(*iter).first.first];
 
 					if (thisNs.exist())
-						Attributes.push_back(XAttribute(thisNs + attribute.first.second, attribute.second));
+						Attributes.push_back(XAttribute(thisNs + (*iter).first.second, (*iter).second));
 					else if (defineNs.exist())
-						Attributes.push_back(XAttribute(defineNs + attribute.first.second, attribute.second));
+						Attributes.push_back(XAttribute(defineNs + (*iter).first.second, (*iter).second));
 					else
 					{
-						//Attributes.push_back(XAttribute(attribute.first.second, attribute.second));
+						//Attributes.push_back(XAttribute((*iter).first.second, (*iter).second));
 						//throw Exception::Namespace("not define namespace");
 					}
 				}
@@ -214,21 +216,22 @@ namespace XML
 			}
 
 			typedef std::pair<std::pair<std::wstring, std::wstring>, std::wstring> attribute_type;
-			BOOST_FOREACH(const attribute_type& attribute, attributes)
+		
+			for (std::list<attribute_type >::iterator iter = attributes.begin(); iter != attributes.end(); ++iter)
 			{
-				if (attribute.first.first.empty())
+				if ((*iter).first.first.empty())
 				{
-					Attributes.push_back(XAttribute(Encoding::unicode2utf8(attribute.first.second), Encoding::unicode2utf8(attribute.second)));
+					Attributes.push_back(XAttribute(Encoding::unicode2utf8((*iter).first.second), Encoding::unicode2utf8((*iter).second)));
 				}
 				else
 				{
-					XNamespace thisNs = Namespaces[Encoding::unicode2utf8(attribute.first.first)];
-					XNamespace defineNs = defineNamespaces[Encoding::unicode2utf8(attribute.first.first)];
+					XNamespace thisNs = Namespaces[Encoding::unicode2utf8((*iter).first.first)];
+					XNamespace defineNs = defineNamespaces[Encoding::unicode2utf8((*iter).first.first)];
 
 					if (thisNs.exist())
-						Attributes.push_back(XAttribute(thisNs + Encoding::unicode2utf8(attribute.first.second), Encoding::unicode2utf8(attribute.second)));
+						Attributes.push_back(XAttribute(thisNs + Encoding::unicode2utf8((*iter).first.second), Encoding::unicode2utf8((*iter).second)));
 					else if (defineNs.exist())
-						Attributes.push_back(XAttribute(defineNs + Encoding::unicode2utf8(attribute.first.second), Encoding::unicode2utf8(attribute.second)));
+						Attributes.push_back(XAttribute(defineNs + Encoding::unicode2utf8((*iter).first.second), Encoding::unicode2utf8((*iter).second)));
 					else
 						throw Exception::Namespace("not define namespace");
 				}

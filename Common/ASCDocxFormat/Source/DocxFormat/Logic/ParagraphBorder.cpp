@@ -46,12 +46,7 @@ namespace OOX
 
 		const XML::XNode ParagraphBorder::toXML() const
 		{
-			return XML::XElement(ns.w + "pBdr",
-						XML::Write(Top) +
-						XML::Write(Bottom) +
-						XML::Write(Left) +
-						XML::Write(Right)
-					);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

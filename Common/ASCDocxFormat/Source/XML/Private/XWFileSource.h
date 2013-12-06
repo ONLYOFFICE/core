@@ -3,10 +3,10 @@
 #define XML_PRIVATE_XWFILE_SOURCE_INCLUDE_H_
 
 #include "XWideSource.h"
-#include <boost/filesystem.hpp>
 #include <fstream>
 #include <iterator>
 
+#include "../../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 
 namespace XML
 {
@@ -15,8 +15,7 @@ namespace XML
 		class XWFileSource : public XWideSource
 		{
 		public:
-			XWFileSource(const boost::filesystem::path& path, XWideSource::eSourceType type);
-			XWFileSource(const boost::filesystem::wpath& path, XWideSource::eSourceType type);
+			XWFileSource(const OOX::CPath& path, XWideSource::eSourceType type);
 			virtual ~XWFileSource();
 
 		private:

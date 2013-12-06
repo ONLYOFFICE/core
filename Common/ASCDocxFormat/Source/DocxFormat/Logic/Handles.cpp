@@ -43,7 +43,7 @@ namespace OOX
 
 		const XML::XNode Handles::toXML() const
 		{
-			return XML::XElement(ns.v + "handles", XML::Write(Hs));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

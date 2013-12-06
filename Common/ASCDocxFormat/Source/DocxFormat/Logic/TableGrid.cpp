@@ -38,7 +38,7 @@ namespace OOX
 
 		const XML::XNode TableGrid::toXML() const
 		{
-			return XML::XElement(ns.w + "tblGrid", XML::Write(Columns));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

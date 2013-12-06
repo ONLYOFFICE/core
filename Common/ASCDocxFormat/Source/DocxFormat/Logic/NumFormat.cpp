@@ -72,10 +72,7 @@ namespace OOX
 
 		const XML::XNode NumFormat::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "numFmt",
-				XML::XAttribute(ns.w + "val", ToString())
-				);
+		return XML::XElement();
 		}
 
 

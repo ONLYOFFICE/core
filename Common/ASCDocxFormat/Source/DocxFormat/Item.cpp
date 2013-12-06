@@ -28,7 +28,7 @@ namespace OOX
 
 	void Item::read(const OOX::CPath& filename)
 	{
-		const XML::XDocument document(filename.GetPath());
+		const XML::XDocument document(filename);
 		SelectedStyle = document.Root.attribute("SelectedStyle").value();
 		StyleName			= document.Root.attribute("StyleName").value();
 	}

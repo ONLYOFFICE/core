@@ -46,7 +46,9 @@ namespace OOX
 
 		const XML::XNode TextBoxContent::toXML() const
 		{			
-			return XML::XElement(ns.w + "txbxContent", XML::Write(items));
+			return XML::XElement();
+
+			//return XML::XElement(ns.w + "txbxContent", XML::Write(items));
 		}
 
 	} // namespace Logic

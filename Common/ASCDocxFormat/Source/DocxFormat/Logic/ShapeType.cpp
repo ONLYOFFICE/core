@@ -52,25 +52,8 @@ namespace OOX
 		}
 
 		const XML::XNode ShapeType::toXML() const
-		{			
-			return
-				XML::XElement(ns.v + "shapetype",
-				XML::XAttribute("id", Id) +
-				XML::XAttribute("coordsize", coordsize) +
-				XML::XAttribute(ns.o + "spt", Spt) +
-				XML::XAttribute(ns.o + "preferrelative", Preferrelative) +
-				XML::XAttribute("adj", adj) +
-				XML::XAttribute("path", path) +
-				XML::XAttribute("filled", Filled) +
-				XML::XAttribute("stroked", Stroked) +
-				XML::Write(Stroke) +
-				XML::Write(formulas) +
-				XML::Write(PathElement) +
-				XML::Write(TextPath) +
-				XML::Write(Handles) +
-				XML::Write(Lock) +										
-				XML::Write(Complex)
-				);
+		{		
+		return XML::XElement();
 		}
 
 	} // namespace Logic

@@ -62,9 +62,7 @@ namespace OOX
 
 		const XML::XNode Text::toXML() const
 		{
-			XML::XElement element = XML::XElement(ns.w + "t", XML::XText(m_text));
-			element.Space = true;
-			return element;
+		return XML::XElement();
 		}
 
 

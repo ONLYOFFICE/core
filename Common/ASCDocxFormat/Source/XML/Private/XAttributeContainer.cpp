@@ -5,18 +5,14 @@
 
 #include "XAttributeContainer.h"
 #include "./../XName.h"
-#include <boost/foreach.hpp>
 #include <algorithm>
-#include <boost/bind.hpp>
 #include "NullXAttribute.h"
-
 
 namespace XML
 {
 	namespace Private
 	{
 		static NullXAttribute nullXAttribute;
-
 
 		const bool XAttributeContainer::exist(const XName& xname) const
 		{
@@ -34,7 +30,6 @@ namespace XML
 			return false;
 		}
 
-
 		XAttribute& XAttributeContainer::operator[] (const XName& xname)
 		{
 			for(iterator current = begin(); current != end(); current++)
@@ -49,7 +44,6 @@ namespace XML
 			}
 			return nullXAttribute;
 		}
-
 
 		const XAttribute& XAttributeContainer::operator[] (const XName& xname) const
 		{
@@ -66,7 +60,6 @@ namespace XML
 			return nullXAttribute;
 		}
 
-
 		const XNamespaceContainer XAttributeContainer::usedNamespace() const
 		{
 			XNamespaceContainer container;
@@ -80,24 +73,20 @@ namespace XML
 			return container;
 		}
 
-
 		XAttributeContainer::iterator XAttributeContainer:: begin()
 		{
 			return m_container.begin();
 		}
-
 
 		XAttributeContainer::iterator XAttributeContainer::end()
 		{
 			return m_container.end();
 		}
 
-
 		XAttributeContainer::const_iterator XAttributeContainer::begin() const
 		{
 			return m_container.begin();
 		}
-
 
 		XAttributeContainer::const_iterator XAttributeContainer::end() const
 		{

@@ -48,14 +48,7 @@ namespace OOX
 
 		const XML::XNode OuterShdw::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "outerShdw",
-					XML::XAttribute("blurRad", m_blurRad) +
-					XML::XAttribute("dist", m_dist) + 
-					XML::XAttribute("dir", m_dir) +
-					XML::XAttribute("rotWithShape", m_rotWithShare) +
-					XML::Write(m_srgbClr)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

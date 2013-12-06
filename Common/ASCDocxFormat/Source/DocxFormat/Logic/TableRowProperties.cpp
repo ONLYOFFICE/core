@@ -44,10 +44,7 @@ namespace OOX
 
 		const XML::XNode TableRowProperties::toXML() const
 		{
-			return
-				XML::XElement(ns.w + "trPr", 
-					XML::Write(Height)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

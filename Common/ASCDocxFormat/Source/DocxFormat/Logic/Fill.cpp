@@ -48,15 +48,7 @@ namespace OOX
 		
 		const XML::XNode Fill::toXML() const
 		{			
-			return
-				XML::XElement(ns.v + "fill",
-					XML::XAttribute("color2", Color) +
-					XML::XAttribute("rotate", Rotate) +
-					XML::XAttribute("colors", Colors) +
-					XML::XAttribute("method", Method) +
-					XML::XAttribute("focus", Focus) +
-					XML::XAttribute("type", Type)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

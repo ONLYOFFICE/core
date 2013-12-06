@@ -43,10 +43,7 @@ namespace OOX
 
 		const XML::XNode LnStyleLst::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "lnStyleLst", 
-					XML::Write(m_lns)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

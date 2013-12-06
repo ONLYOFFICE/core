@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode Camera::toXML() const
 		{
-			return
-				XML::XElement(ns.a + "camera ",
-					XML::XAttribute("prst", m_prst) +
-					XML::Write(m_rot)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

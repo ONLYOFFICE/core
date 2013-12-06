@@ -41,7 +41,7 @@ namespace OOX
 
 		const XML::XNode ContinuationSeparator::toXML() const
 		{
-			return XML::XElement(ns.w + "continuationSeparator");
+		return XML::XElement();
 		}
 
 

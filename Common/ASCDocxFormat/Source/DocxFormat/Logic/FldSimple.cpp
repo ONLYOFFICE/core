@@ -44,11 +44,13 @@ namespace OOX
 
 		const XML::XNode FldSimple::toXML() const
 		{
-			return
-				XML::XElement(ns.w + "fldSimple", 
-					XML::XAttribute(ns.w + "instr", Instr) +
-					XML::Write(Run)
-				);
+			return XML::XElement();
+
+			//return
+			//	XML::XElement(ns.w + "fldSimple", 
+			//		XML::XAttribute(ns.w + "instr", Instr) +
+			//		XML::Write(Run)
+			//	);
 		}
 
 

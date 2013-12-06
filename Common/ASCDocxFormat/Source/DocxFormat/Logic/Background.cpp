@@ -45,12 +45,7 @@ namespace OOX
 
 		const XML::XNode Background::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "background", 
-					XML::XAttribute(ns.w + "color", Color) + 
-					XML::XAttribute(ns.w + "themeColor", ThemeColor) + 
-					XML::XAttribute(ns.w + "themeShade", ThemeShade)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

@@ -36,7 +36,7 @@ namespace OOX
 
 		const XML::XNode SdtContent::toXML() const
 		{
-			return XML::XElement();//ns.w + "sdtContent", XML::Write(Items));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

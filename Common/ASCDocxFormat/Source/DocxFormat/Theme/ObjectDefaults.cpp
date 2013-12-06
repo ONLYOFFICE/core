@@ -41,8 +41,7 @@ namespace OOX
 
 		const XML::XNode ObjectDefaults::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "objectDefaults");
+		return XML::XElement();
 		}
 
 	} // namespace Theme

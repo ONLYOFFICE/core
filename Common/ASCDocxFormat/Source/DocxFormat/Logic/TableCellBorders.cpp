@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode TableCellBorders::toXML() const
 		{
-			return XML::XElement(ns.w + "tcBorders",
-				XML::Write(top) +
-				XML::Write(bottom) +
-				XML::Write(left) +
-				XML::Write(right));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

@@ -43,10 +43,7 @@ namespace OOX
 
 		const XML::XNode FootnotePr::toXML() const
 		{
-			return 
-				XML::XElement(ns.m + "footnotePr",
-					XML::Write(m_footnotes)					
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Settings

@@ -43,7 +43,7 @@ namespace OOX
 
 		const XML::XNode VMerge::toXML() const
 		{
-			return XML::XElement(ns.w + "vMerge", XML::XAttribute(ns.w + "val", Value));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

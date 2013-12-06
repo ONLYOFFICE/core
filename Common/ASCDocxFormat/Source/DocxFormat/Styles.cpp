@@ -25,7 +25,7 @@ namespace OOX
 
 	void Styles::read(const OOX::CPath& filename)
 	{
-		const XML::XDocument document(filename.GetPath());
+		const XML::XDocument document(filename);
 		
 		Default	=	document.Root.element("docDefaults");
 		Lattent	=	document.Root.element("latentStyles");

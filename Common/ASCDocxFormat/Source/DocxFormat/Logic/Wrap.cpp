@@ -41,10 +41,7 @@ namespace OOX
 
 		const XML::XNode Wrap::toXML() const
 		{
-		    return XML::XElement(ns.w10 + "wrap", 
-			            XML::XAttribute("type", Type) +
-						XML::XAttribute("anchorx", AnchorX) +
-						XML::XAttribute("anchory", AnchorY));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode ShapeDefault::toXML() const
 		{
-			return 
-				XML::XElement(ns.o + "shapedefaults",
-					XML::XAttribute(ns.v + "ext", m_ext) +
-					XML::XAttribute("spidmax", m_spidmax)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Settings

@@ -63,11 +63,7 @@ namespace OOX
 
 		const XML::XNode Break::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "br", 
-					XML::XAttribute(ns.w + "type", Type) + 
-					XML::XAttribute(ns.w + "clear", Clear)
-				);
+		return XML::XElement();
 		}
 
 

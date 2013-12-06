@@ -43,10 +43,7 @@ namespace OOX
 
 		const XML::XNode FldChar::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "fldChar",
-					XML::XAttribute(ns.w + "fldCharType", FldCharType)
-				);
+		return XML::XElement();
 		}
 
 

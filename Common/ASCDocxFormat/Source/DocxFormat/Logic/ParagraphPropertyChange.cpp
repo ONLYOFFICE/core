@@ -39,12 +39,7 @@ namespace OOX
 
 		const XML::XNode ParagraphPropertyChange::toXML() const
 		{
-			return XML::XElement();
-				//XML::XElement(ns.w + "pPrChange",
-				//    XML::XAttribute(ns.w + "id", Id) +
-				//	XML::XAttribute(ns.w + "author", Author) +
-				//	XML::XAttribute(ns.w + "date", Date)
-				//);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

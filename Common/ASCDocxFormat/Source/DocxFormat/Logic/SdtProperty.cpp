@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode SdtProperty::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "sdtPr",
-					XML::Write(ns.w + "id", ns.w + "val", Id) + 
-					XML::Write(DocPartObj)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

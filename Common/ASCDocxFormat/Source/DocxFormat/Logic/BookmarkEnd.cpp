@@ -43,10 +43,7 @@ namespace OOX
 
 		const XML::XNode BookmarkEnd::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "bookmarkEnd",
-					XML::XAttribute(ns.w + "id", Id)
-				);
+		return XML::XElement();
 		}
 
 

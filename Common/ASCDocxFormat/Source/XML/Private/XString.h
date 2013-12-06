@@ -4,12 +4,12 @@
 
 #include <boost/operators.hpp>
 #include <string>
-#include <boost/filesystem.hpp>
 #include "nullable.h"
 #include "property.h"
 #include "nullable_property.h"
 #include "Parse.h"
 
+#include "../../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 
 namespace XML
 {
@@ -37,8 +37,6 @@ namespace XML
 			const double ToDouble() const;
 			const std::string ToString() const;
 			const std::wstring ToWString() const;
-			const boost::filesystem::path ToPath() const;
-			const boost::filesystem::wpath ToWPath() const;
 
 			operator const bool() const;
 			operator const int() const;

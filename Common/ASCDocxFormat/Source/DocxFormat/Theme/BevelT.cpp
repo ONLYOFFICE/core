@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode BevelT::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "bevelT", 
-					XML::XAttribute("w", m_w) + 
-					XML::XAttribute("h", m_h)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

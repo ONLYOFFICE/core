@@ -54,20 +54,7 @@ namespace OOX
 
 		const XML::XNode MathPr::toXML() const
 		{
-			return 
-				XML::XElement(ns.m + "mathPr",
-					XML::XElement(ns.m + "mathFont", XML::XAttribute(ns.m + "val", m_mathFont)) +
-					XML::XElement(ns.m + "brkBin", XML::XAttribute(ns.m + "val", m_brkBin)) +
-					XML::XElement(ns.m + "brkBinSub", XML::XAttribute(ns.m + "val", m_brkBinSub)) +
-					XML::XElement(ns.m + "smallFrac", XML::XAttribute(ns.m + "val", m_smallFrac)) + 
-					XML::XElement(ns.m + "dispDef", XML::XAttribute(ns.m + "val", m_dispDef)) +
-					XML::XElement(ns.m + "lMargin", XML::XAttribute(ns.m + "val", m_lMargin)) +
-					XML::XElement(ns.m + "rMargin", XML::XAttribute(ns.m + "val", m_rMargin)) +
-					XML::XElement(ns.m + "defJc", XML::XAttribute(ns.m + "val", m_defJc)) +
-					XML::XElement(ns.m + "wrapIndent", XML::XAttribute(ns.m + "val", m_wrapIndent)) + 
-					XML::XElement(ns.m + "intLim", XML::XAttribute(ns.m + "val", m_intLim)) +
-					XML::XElement(ns.m + "naryLim", XML::XAttribute(ns.m + "val", m_naryLim))
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Settings

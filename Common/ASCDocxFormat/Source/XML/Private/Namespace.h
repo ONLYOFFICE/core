@@ -7,12 +7,11 @@
 #include "property.h"
 #include <list>
 
-
 namespace XML
 {
 	namespace Private
 	{
-		class Namespace : private boost::totally_ordered<Namespace>
+		class Namespace 
 		{
 		public:
 			Namespace(const std::string& prefix, const std::string& name);
@@ -25,10 +24,6 @@ namespace XML
 			const std::wstring ToWString() const;
 			virtual void SaveToStringList(std::list<std::string>& strList)const;
 			virtual void SaveToWStringList(std::list<std::wstring>& strList)const;
-
-		//public:
-			//property<std::string>	Prefix;
-			//property<std::string>	Name;
 		private:
 			std::string	Prefix;
 			std::string	Name;

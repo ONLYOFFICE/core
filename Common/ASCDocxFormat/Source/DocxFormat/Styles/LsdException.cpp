@@ -45,14 +45,7 @@ namespace OOX
 
 	const XML::XNode Styles::LsdException::toXML() const
 	{
-		return 
-			XML::XElement(ns.w + "lsdException",
-				XML::XAttribute(ns.w + "name", Name) + 
-				XML::XAttribute(ns.w + "semiHidden", SemiHidden) +
-				XML::XAttribute(ns.w + "uiPriority", UiPriority) +
-				XML::XAttribute(ns.w + "unhideWhenUsed", UnhideWhenUsed) + 
-				XML::XAttribute(ns.w + "qFormat", QFormat)
-			);
+		return XML::XElement();
 	}
 
 } // namespace OOX

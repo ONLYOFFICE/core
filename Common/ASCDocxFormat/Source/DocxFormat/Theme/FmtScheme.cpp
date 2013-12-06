@@ -47,14 +47,7 @@ namespace OOX
 
 		const XML::XNode FmtScheme::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "fmtScheme",
-					XML::XAttribute("name", name) +
-					XML::Write(fillStyleLst) +
-					XML::Write(lnStyleLst) +
-					XML::Write(effectStyleLst) +
-					XML::Write(bgFillStyleLst)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

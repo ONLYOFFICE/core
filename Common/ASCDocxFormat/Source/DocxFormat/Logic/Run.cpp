@@ -111,11 +111,7 @@ namespace OOX
 
 		const XML::XNode Run::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "r", 
-					XML::Write(Property) +
-					XML::Write(Items)
-				);
+		return XML::XElement();
 		}
 
 

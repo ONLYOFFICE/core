@@ -50,10 +50,7 @@ namespace OOX
 
 		const XML::XNode EndnoteReference::toXML() const
 		{
-			return XML::XElement(ns.w + "endnoteReference", 
-							XML::XAttribute(ns.w + "customMarkFollows", CustomMarkFollows) +
-							XML::XAttribute(ns.w + "id", Id)
-						);
+		return XML::XElement();
 		}
 
 		const std::string EndnoteReference::toTxt() const

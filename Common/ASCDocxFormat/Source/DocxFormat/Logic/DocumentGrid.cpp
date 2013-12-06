@@ -45,12 +45,7 @@ namespace OOX
 
 		const XML::XNode DocumentGrid::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "docGrid", 
-					XML::XAttribute(ns.w + "linePitch", LinePitch) +
-					XML::XAttribute(ns.w + "charSpace", CharSpace) +
-					XML::XAttribute(ns.w + "type", Type)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

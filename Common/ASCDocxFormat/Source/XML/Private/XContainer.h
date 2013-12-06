@@ -2,7 +2,6 @@
 #ifndef XML_PRIVATE_XCONTAINER_INCLUDE_H_
 #define XML_PRIVATE_XCONTAINER_INCLUDE_H_
 
-#include <boost/foreach.hpp>
 #include <algorithm>
 #include <string>
 #include <list>
@@ -92,27 +91,25 @@ namespace XML
 		const std::string XContainer<T>::ToString() const
 		{
 			std::string result;
-			BOOST_FOREACH(const T& current, m_container)
+			for(std::list<T>::const_iterator current = m_container.begin(); current != m_container.end(); current++)
 			{
 				result += " ";
-				result += current->ToString();
+				result += (*current)->ToString();
 			}
 			return result;
 		}
-
 
 		template<class T>
 		const std::wstring XContainer<T>::ToWString() const
 		{
 			std::wstring result;
-			BOOST_FOREACH(const T& current, m_container)
+			for(std::list<T>::const_iterator current = m_container.begin(); current != m_container.end(); current++)
 			{
 				result += L" ";
-				result += current->ToWString();
+				result += (*current)->ToWString();
 			}
 			return result;
 		}
-
 
 		template<class T>
 		void XContainer<T>::SaveToStringList(std::list<std::string>& strList)const

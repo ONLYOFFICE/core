@@ -43,7 +43,7 @@ namespace OOX
 
 		const XML::XNode Table::toXML() const
 		{
-			return XML::XElement(ns.w + "tbl",	XML::Write(tblPr) +	XML::Write(tblGrid) + XML::Write(Rows));
+		return XML::XElement();
 		}
 
 		void Table::SetCountsVMerged()

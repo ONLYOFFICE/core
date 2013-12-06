@@ -21,33 +21,10 @@ namespace XML
 	{
 	}
 
-
-	XDocument::XDocument(const char* source, const bool space)
-	{
-		boost::filesystem::wpath path(Encoding::utf82unicode(std::string(source)));
-		TxtFile text(CString(path.string().c_str()));
-		if(text.isUnicode())
-		{
-			boost::shared_ptr<Private::XWideSource> xsource(new Private::XWFileSource(path, Private::XWideSource::estLittleEndian));
-			Load(xsource, space);
-		}
-		else if((text.isBigEndian()) || (text.isUnicodeWithOutBOM()))
-		{
-			boost::shared_ptr<Private::XWideSource> xsource(new Private::XWFileSource(path, Private::XWideSource::estBigEndian));
-			Load(xsource, space);
-		}
-		else
-		{
-			boost::shared_ptr<Private::XSingleSource> xsource(new Private::XFileSource(path));
-			Load(xsource, space);
-		}
-	}
-
-
 	XDocument::XDocument(const wchar_t* source, const bool space)
 	{
-		boost::filesystem::wpath path(source);
-		TxtFile text(CString(path.string().c_str()));
+		OOX::CPath path(source);
+		TxtFile text(path);
 		if(text.isUnicode())
 		{
 			boost::shared_ptr<Private::XWideSource> xsource(new Private::XWFileSource(path, Private::XWideSource::estLittleEndian));
@@ -79,32 +56,9 @@ namespace XML
 		Load(xsource, space);
 	}
 
-
-	XDocument::XDocument(const boost::filesystem::path& source, const bool space)
+	XDocument::XDocument(const OOX::CPath& source, const bool space)
 	{
-		boost::filesystem::wpath path(Encoding::utf82unicode(source.string()));
-		TxtFile text(CString(path.string().c_str()));
-		if(text.isUnicode())
-		{
-			boost::shared_ptr<Private::XWideSource> xsource(new Private::XWFileSource(source, Private::XWideSource::estLittleEndian));
-			Load(xsource, space);
-		}
-		else if((text.isBigEndian()) || (text.isUnicodeWithOutBOM()))
-		{
-			boost::shared_ptr<Private::XWideSource> xsource(new Private::XWFileSource(source, Private::XWideSource::estBigEndian));
-			Load(xsource, space);
-		}
-		else
-		{
-			boost::shared_ptr<Private::XSingleSource> xsource(new Private::XFileSource(path));
-			Load(xsource, space);
-		}
-	}
-
-
-	XDocument::XDocument(const boost::filesystem::wpath& source, const bool space)
-	{
-		TxtFile text(CString(source.string().c_str()));
+		TxtFile text(source);
 		if(text.isUnicode())
 		{
 			boost::shared_ptr<Private::XWideSource> xsource(new Private::XWFileSource(source, Private::XWideSource::estLittleEndian));
@@ -198,21 +152,9 @@ namespace XML
 		Root->fromSource(source, Root->Namespaces, space);
 	}
 
-
-	void XDocument::Save(const boost::filesystem::path& path)
+	void XDocument::Save(const OOX::CPath& path)
 	{
-		std::ofstream file(path.string().c_str());
-		if (!file.bad())
-		{
-			file << ToString();
-			file.close();
-		}
-	}
-
-
-	void XDocument::Save(const boost::filesystem::wpath& path)
-	{
-		std::ofstream file(path.string().c_str());
+		std::ofstream file(path.GetPath());
 		if (!file.bad())
 		{
 			file << ToString();

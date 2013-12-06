@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode SysClr::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "sysClr", 
-					XML::XAttribute("val", m_value) + 
-					XML::XAttribute("lastClr", m_lastClr)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

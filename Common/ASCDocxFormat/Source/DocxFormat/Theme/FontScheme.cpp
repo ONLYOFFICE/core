@@ -45,12 +45,7 @@ namespace OOX
 
 		const XML::XNode FontScheme::toXML() const
 		{	
-			return 
-				XML::XElement(ns.a + "fontScheme", 
-					XML::XAttribute("name", name) +
-					XML::Write(majorFont) + 
-					XML::Write(minorFont)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

@@ -43,8 +43,7 @@ namespace OOX
 		
 		const XML::XNode F::toXML() const
 		{			
-			return XML::XElement("f",XML::XAttribute("eqn", Eqn));
-			//return XML::XElement(ns.v + "f",XML::XAttribute("eqn", Eqn));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

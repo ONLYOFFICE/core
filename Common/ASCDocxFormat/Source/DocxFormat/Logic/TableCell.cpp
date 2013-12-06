@@ -43,12 +43,7 @@ namespace OOX
 
 		const XML::XNode TableCell::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "tc",
-					XML::Write(Properties) + 
-					XML::Write(Items) +
-					XML::WriteIf(XML::XElement(ns.w + "p"), !hasParagraph())
-				);
+		return XML::XElement();
 		}
 
 

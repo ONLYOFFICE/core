@@ -51,18 +51,7 @@ namespace OOX
 		
 		const XML::XNode Extrusion::toXML() const
 		{			
-			return
-				XML::XElement(ns.o + "extrusion",					
-					XML::XAttribute("on", On) +
-					XML::XAttribute(ns.v + "ext", Ext) +
-					XML::XAttribute("backdepth", BackDepth) +
-					XML::XAttribute("viewpoint", ViewPoint) +
-					XML::XAttribute("viewpointorigin", ViewPointOrigin) +
-					XML::XAttribute("skewangle", SkewAngle) +
-					XML::XAttribute("lightposition", LightPosition) +
-					XML::XAttribute("lightposition2", LightPosition2) +
-					XML::XAttribute("type", Type)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

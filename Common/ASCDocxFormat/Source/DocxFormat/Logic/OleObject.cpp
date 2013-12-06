@@ -50,16 +50,7 @@ namespace OOX
 
 		const XML::XNode OleObject::toXML() const
 		{			
-			return XML::XElement();
-				//XML::XElement(ns.o + "OLEObject",
-				//	XML::XAttribute("Type", Type) +
-				//	XML::XAttribute("ProgID", ProgId) +
-				//	XML::XAttribute("ShapeID", ShapeId) +
-				//	XML::XAttribute("DrawAspect", DrawAspect) +
-				//	XML::XAttribute("ObjectID", ObjectId) +
-				//	XML::XAttribute(ns.r + "id", rId) +
-				//	XML::Write(FieldCodes)
-				//);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

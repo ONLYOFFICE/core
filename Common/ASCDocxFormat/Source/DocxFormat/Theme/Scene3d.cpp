@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode Scene3d::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "scene3d", 
-					XML::Write(m_camera) + 
-					XML::Write(m_lightRig)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

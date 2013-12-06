@@ -8,9 +8,7 @@
 #include "./../XNode.h"
 #include "./../XElement.h"
 #include "./../XName.h"
-#include <boost/foreach.hpp>
 #include "NullXElement.h"
-
 
 namespace XML
 {
@@ -18,18 +16,14 @@ namespace XML
 	{
 		static NullXElement nullXElement;
 
-
-		XElementContainer::XElementContainer(const XNodeContainer& nodes)
-			: m_container(nodes.container())
+		XElementContainer::XElementContainer(const XNodeContainer& nodes) : m_container(nodes.container())
 		{
 		}
-
 
 		const bool XElementContainer::empty() const
 		{
 			return size() == 0;
 		}
-
 
 		const size_t XElementContainer::size() const
 		{
@@ -39,7 +33,6 @@ namespace XML
 			return size;
 		}
 
-
 		void XElementContainer::push_back(const XElement& element)
 		{
 			if (element.is_init() && element.exist())
@@ -48,12 +41,10 @@ namespace XML
 			}
 		}
 
-
 		void XElementContainer::Add(const XElement& element)
 		{
 			push_back(element);
 		}
-
 
 		const bool XElementContainer::exist(const XName& xname) const
 		{
@@ -69,7 +60,6 @@ namespace XML
 			}
 			return false;
 		}
-
 
 		XElement XElementContainer::operator[] (const XName& xname)
 		{
@@ -93,7 +83,6 @@ namespace XML
 			}
 			return nullXElement;
 		}
-
 
 		const XElement XElementContainer::operator[] (const XName& xname) const
 		{
@@ -120,7 +109,6 @@ namespace XML
 			return nullXElement;
 		}
 
-
 		XElement XElementContainer::get(const XName& xname, const std::string& value)
 		{
 			for (iterator i = begin(); i != end(); ++i)
@@ -131,7 +119,6 @@ namespace XML
 			}
 			return nullXElement;
 		}
-
 
 		const XElement XElementContainer::get(const XName& xname, const std::string& value) const
 		{
@@ -144,30 +131,25 @@ namespace XML
 			return nullXElement;
 		}
 
-		
 		XElementContainer::iterator XElementContainer:: begin()
 		{
 			return iterator(m_container->begin(), m_container->end());
 		}
-
 
 		XElementContainer::iterator XElementContainer::end()
 		{
 			return iterator(m_container->end(), m_container->end());
 		}
 
-
 		XElementContainer::const_iterator XElementContainer::begin() const
 		{
 			return const_iterator(m_container->begin(), m_container->end());
 		}
 
-
 		XElementContainer::const_iterator XElementContainer::end() const
 		{
 			return const_iterator(m_container->end(), m_container->end());
 		}
-
 
 		const XNamespaceContainer XElementContainer::usedNamespace() const
 		{

@@ -8,13 +8,10 @@
 #include "XElementContainer.h"
 #include "XTextContainer.h"
 #include "property.h"
-#include "./../Extension/Write.h"
 #include "XSpace.h"
-//#include "XSource.h"
 #include "XSingleSource.h"
 #include "XWideSource.h"
 #include <list>
-
 
 namespace XML
 {

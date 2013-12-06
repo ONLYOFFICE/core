@@ -54,26 +54,7 @@ namespace OOX
 
 	const XML::XNode Styles::Style::toXML() const
 	{
-		return 
-			XML::XElement(ns.w + "style",
-				XML::XAttribute(ns.w + "type", Type) +
-				XML::XAttribute(ns.w + "default", Default) +
-				XML::XAttribute(ns.w + "customStyle", CustomStyle) +
-				XML::XAttribute(ns.w + "styleId", StyleId) +			
-				XML::Write(ns.w + "name", ns.w + "val", name) +
-				XML::WriteIf(XML::XElement(ns.w + "semiHidden"), SemiHidden) +
-				XML::WriteIf(XML::XElement(ns.w + "unhideWhenUsed"), UnhideWhenUsed) +					
-				XML::WriteIf(XML::XElement(ns.w + "qFormat"), QFormat) +
-				XML::WriteIf(XML::XElement(ns.w + "autoRedefine"), AutoRedefine) +
-				XML::Write(ns.w + "basedOn", ns.w + "val", BasedOn) +
-				XML::Write(ns.w + "next", ns.w + "val", Next) +
-				XML::Write(ns.w + "link", ns.w + "val", Link) +
-				XML::Write(ns.w + "uiPriority", ns.w + "val", UiPriority) +
-				XML::Write(ParagraphProperty) +
-				XML::Write(RunProperty) +
-				XML::Write(tblPr) +
-				XML::Write(tcPr) +
-				XML::Write(tableStyles));
+		return XML::XElement();
 	}
 
 } // namespace OOX

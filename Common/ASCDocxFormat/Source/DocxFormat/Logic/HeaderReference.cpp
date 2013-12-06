@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode HeaderReference::toXML() const
 		{
-			return XML::XElement();
-			//	XML::XElement(ns.w + "headerReference", 
-			//		XML::XAttribute(ns.r + "id", rId) +
-			//		XML::XAttribute(ns.w + "type", Type)
-			//	);
+		return XML::XElement();
 		}
 
 

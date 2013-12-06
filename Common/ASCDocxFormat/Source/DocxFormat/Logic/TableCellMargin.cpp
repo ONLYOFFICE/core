@@ -52,11 +52,7 @@ namespace OOX
 
 		const XML::XNode TableCellMargin::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + Name.ToString(),
-					XML::XAttribute(ns.w + "w", Margin->W) +
-					XML::XAttribute(ns.w + "type", Margin->Type)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

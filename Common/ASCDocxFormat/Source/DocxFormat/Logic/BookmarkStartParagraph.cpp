@@ -60,11 +60,7 @@ namespace OOX
 
 		const XML::XNode BookmarkStartParagraph::toXML() const
 		{
-			return XML::XElement();
-				//XML::XElement(ns.w + "bookmarkStart",
-				//	XML::XAttribute(ns.w + "id", Id) + 
-				//	XML::XAttribute(ns.w + "name", Name)
-				//);
+		return XML::XElement();
 		}
 
 		const std::string BookmarkStartParagraph::toTxt() const

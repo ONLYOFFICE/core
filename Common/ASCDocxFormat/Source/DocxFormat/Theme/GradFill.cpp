@@ -46,13 +46,7 @@ namespace OOX
 
 		const XML::XNode GradFill::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "gradFill", 
-					XML::XAttribute("rotWithShape", m_rotWithShape) + 
-					XML::Write(m_gsLst) +
-					XML::Write(m_lin) +
-					XML::Write(m_path)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

@@ -42,11 +42,7 @@ namespace OOX
 
 		const XML::XNode LnNumType::toXML() const
 		{
-			return XML::XElement(ns.w + "lnNumType",
-				XML::XAttribute(ns.w + "countBy", countBy) +
-				XML::XAttribute(ns.w + "start", start) +
-				//XML::XAttribute(ns.w + "distance", distance) +
-				XML::XAttribute(ns.w + "restart", restart) );
+		return XML::XElement();
 		}
 	}
 }

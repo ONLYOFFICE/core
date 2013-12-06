@@ -28,7 +28,7 @@ namespace OOX
 	{
 		IFileContainer::read(filename);
 
-		const XML::XDocument document(filename.GetPath());
+		const XML::XDocument document(filename);
 		XML::Fill(Notes, document.Root, "footnote");	
 	}
 

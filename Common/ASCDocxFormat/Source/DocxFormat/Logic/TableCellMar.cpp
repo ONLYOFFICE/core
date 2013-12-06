@@ -46,13 +46,7 @@ namespace OOX
 	
 		const XML::XNode TableCellMar::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "tblCellMar",
-					XML::Write(Top) +
-					XML::Write(Left) +
-					XML::Write(Bottom) +
-					XML::Write(Right)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

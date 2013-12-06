@@ -47,15 +47,7 @@ namespace OOX
 
 		const XML::XNode TableCellProperties::toXML() const
 		{
-			return	XML::XElement(ns.w + "tcPr", 
-				XML::Write(Width) +
-				XML::Write(tblBorders) +
-				XML::Write(CellMar) +
-				XML::Write(VMerge) +
-				//XML::Write(ns.w + "shd", ns.w + "fill", Background) +
-				XML::Write(Shading) +
-				XML::Write(ns.w + "gridSpan", ns.w + "val", GridSpan) + 
-				XML::Write(ns.w + "vAlign", ns.w + "val", VAlign));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

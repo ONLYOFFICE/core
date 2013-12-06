@@ -43,10 +43,7 @@ namespace OOX
 
 		const XML::XNode EndnotePr::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "endnotePr",
-					XML::Write(m_endnotes)					
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Settings

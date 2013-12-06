@@ -46,13 +46,7 @@ namespace OOX
 
 		const XML::XNode MajorFont::toXML() const
 		{
-			return
-				XML::XElement(ns.a + "majorFont",
-					XML::XElement(ns.a + "latin", XML::XAttribute("typeface", latin)) +
-					XML::XElement(ns.a + "ea", XML::XAttribute("typeface", ea)) +
-					XML::XElement(ns.a + "cs", XML::XAttribute("typeface", cs)) +
-					XML::Write(fonts)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

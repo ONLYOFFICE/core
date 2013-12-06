@@ -6,12 +6,9 @@
 #include "./../XElement.h"
 #include "./../Private/XElementContainer.h"
 
-
 namespace XML
 {
-
-	template<class T>
-	void Fill(T& container, const XML::XElement& element)
+	template<class T> void Fill(T& container, const XML::XElement& element)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -21,8 +18,7 @@ namespace XML
 	}
 
 
-	template<class T>
-	void Fill(property<T>& container, const XML::XElement& element)
+	template<class T> void Fill(property<T>& container, const XML::XElement& element)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -32,8 +28,7 @@ namespace XML
 	}
 
 
-	template<class T>
-	void Fill(T& container, const XML::XElement& element, const std::string& name)
+	template<class T> void Fill(T& container, const XML::XElement& element, const std::string& name)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -46,8 +41,7 @@ namespace XML
 	}
 
 
-	template<class T>
-	void Fill(property<T>& container, const XML::XElement& element, const std::string& name)
+	template<class T> void Fill(property<T>& container, const XML::XElement& element, const std::string& name)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -60,8 +54,7 @@ namespace XML
 	}
 
 
-	template<class T>
-	void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2)
+	template<class T> void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -75,8 +68,7 @@ namespace XML
 	}
 
 
-	template<class T>
-	void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2)
+	template<class T> void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -90,8 +82,7 @@ namespace XML
 	}
 
 
-	template<class T>
-	void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3)
+	template<class T> void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -105,8 +96,7 @@ namespace XML
 	}
 
 
-	template<class T>
-	void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3)
+	template<class T> void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -119,9 +109,7 @@ namespace XML
 		}
 	}
 
-
-	template<class T>
-	void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4)
+	template<class T> void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -134,9 +122,7 @@ namespace XML
 		}
 	}
 
-
-	template<class T>
-	void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4)
+	template<class T> void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -149,9 +135,7 @@ namespace XML
 		}
 	}
 
-
-	template<class T>
-	void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5)
+	template<class T> void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -164,9 +148,7 @@ namespace XML
 		}
 	}
 
-
-	template<class T>
-	void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5)
+	template<class T> void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -179,9 +161,7 @@ namespace XML
 		}
 	}
 
-
-	template<class T>
-	void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6)
+	template<class T> void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -194,9 +174,7 @@ namespace XML
 		}
 	}
 
-
-	template<class T>
-	void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6)
+	template<class T> void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -209,9 +187,7 @@ namespace XML
 		}
 	}
 
-
-	template<class T>
-	void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6, const std::string& name7)
+	template<class T> void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6, const std::string& name7)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -224,9 +200,7 @@ namespace XML
 		}
 	}
 
-
-	template<class T>
-	void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6, const std::string& name7)
+	template<class T> void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6, const std::string& name7)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -239,9 +213,7 @@ namespace XML
 		}
 	}
 
-
-	template<class T>
-	void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6, const std::string& name7, const std::string& name8)
+	template<class T> void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6, const std::string& name7, const std::string& name8)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -254,9 +226,7 @@ namespace XML
 		}
 	}
 
-
-	template<class T>
-	void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6, const std::string& name7, const std::string& name8)
+	template<class T> void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6, const std::string& name7, const std::string& name8)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -269,9 +239,7 @@ namespace XML
 		}
 	}
 
-
-	template<class T>
-	void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6, const std::string& name7, const std::string& name8, const std::string& name9)
+	template<class T> void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6, const std::string& name7, const std::string& name8, const std::string& name9)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -284,9 +252,7 @@ namespace XML
 		}
 	}
 
-
-	template<class T>
-	void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6, const std::string& name7, const std::string& name8, const std::string& name9)
+	template<class T> void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6, const std::string& name7, const std::string& name8, const std::string& name9)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -299,9 +265,7 @@ namespace XML
 		}
 	}
 
-
-	template<class T>
-	void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6, const std::string& name7, const std::string& name8, const std::string& name9, const std::string& name10)
+	template<class T> void Fill(T& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6, const std::string& name7, const std::string& name8, const std::string& name9, const std::string& name10)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{
@@ -314,9 +278,7 @@ namespace XML
 		}
 	}
 
-
-	template<class T>
-	void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6, const std::string& name7, const std::string& name8, const std::string& name9, const std::string& name10)
+	template<class T> void Fill(property<T>& container, const XML::XElement& element, const std::string& name1, const std::string& name2, const std::string& name3, const std::string& name4, const std::string& name5, const std::string& name6, const std::string& name7, const std::string& name8, const std::string& name9, const std::string& name10)
 	{
 		for (Private::XElementContainer::const_iterator i = element.Elements.begin(); i != element.Elements.end(); ++i)
 		{

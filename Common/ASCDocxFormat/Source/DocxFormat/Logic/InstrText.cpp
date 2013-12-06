@@ -43,7 +43,7 @@ namespace OOX
 
 		const XML::XNode InstrText::toXML() const
 		{
-			return XML::XElement(ns.w + "instrText", XML::XText(Text));
+		return XML::XElement();
 		}
 
 

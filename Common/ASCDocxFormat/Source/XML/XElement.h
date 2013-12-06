@@ -12,8 +12,6 @@
 #include "Private/XString.h"
 #include "Private/XNamespaceContainer.h"
 #include "Private/XSpace.h"
-#include <boost/filesystem.hpp>
-//#include "Private/XSource.h"
 #include "Private/XSingleSource.h"
 #include "Private/XWideSource.h"
 #include <list>
@@ -79,8 +77,7 @@ namespace XML
 		XElement*							operator->()				{return this;}
 
 	public:
-		void Save(const boost::filesystem::path& path) const;
-		void Save(const boost::filesystem::wpath& path) const;
+		void Save(const OOX::CPath& path) const;
 
 	public:
 		void fromSource(boost::shared_ptr<Private::XSingleSource> source, const Private::XNamespaceContainer& ns, const Private::XSpace& space);

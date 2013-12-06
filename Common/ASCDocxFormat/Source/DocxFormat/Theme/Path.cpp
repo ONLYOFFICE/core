@@ -46,11 +46,7 @@ namespace OOX
 
 		const XML::XNode Path::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "path", 
-					XML::XAttribute("path", m_path) +
-					XML::Write(m_fillToRect)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

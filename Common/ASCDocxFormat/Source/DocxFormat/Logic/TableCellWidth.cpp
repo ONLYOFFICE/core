@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode TableCellWidth::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "tcW",
-					XML::XAttribute(ns.w + "w", Width) + 
-					XML::XAttribute(ns.w + "type", Type)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

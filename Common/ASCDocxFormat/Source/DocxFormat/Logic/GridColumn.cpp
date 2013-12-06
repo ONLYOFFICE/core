@@ -38,7 +38,7 @@ namespace OOX
 
 		const XML::XNode GridColumn::toXML() const
 		{
-			return XML::XElement(ns.w + "gridCol", XML::XAttribute(ns.w + "w", Width));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

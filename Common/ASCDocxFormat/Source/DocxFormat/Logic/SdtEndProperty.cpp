@@ -46,13 +46,7 @@ namespace OOX
 
 		const XML::XNode SdtEndProperty::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "sdtEndPr",
-					XML::Write(RunProperty) +
-					XML::Write(ns.w + "id", ns.w + "val", Id) +
-					XML::WriteIf(XML::XElement(ns.w + "temporary"), Temporary) +
-					XML::WriteIf(XML::XElement(ns.w + "showingPlcHdr"), ShowingPlcHdr)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

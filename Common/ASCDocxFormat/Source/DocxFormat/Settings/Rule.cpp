@@ -45,12 +45,7 @@ namespace OOX
 
 		const XML::XNode Rule::toXML() const
 		{
-			return 
-				XML::XElement(ns.o + "r",
-					XML::XAttribute("id", m_id) +
-					XML::XAttribute("type", m_type) +
-					XML::XAttribute("idref", m_idref)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Settings

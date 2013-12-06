@@ -44,9 +44,7 @@ namespace OOX
 
 		const XML::XNode PageBorders::toXML() const
 		{
-			return XML::XElement(ns.w + "pgBorders",
-				XML::XAttribute(ns.w + "offsetFrom", OffsetFrom) +
-				XML::Write(Top) + XML::Write(Bottom) + XML::Write(Left) + XML::Write(Right));
+		return XML::XElement();
 		}
 
 	} // namespace Logic

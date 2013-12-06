@@ -44,11 +44,7 @@ namespace OOX
 
 		const XML::XNode Font::toXML() const
 		{
-			return
-				XML::XElement(ns.a + "font", 
-					XML::XAttribute("script", m_script) + 
-					XML::XAttribute("typeface", m_typeface)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

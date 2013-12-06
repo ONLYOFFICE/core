@@ -44,13 +44,7 @@ namespace OOX
 
 		const XML::XNode FooterReference::toXML() const
 		{
-			return XML::XElement();
-
-			//return
-			//	XML::XElement(ns.w + "footerReference", 
-			//		XML::XAttribute(ns.r + "id", rId) +
-			//		XML::XAttribute(ns.w + "type", Type)
-			//	);
+		return XML::XElement();
 		}
 
 

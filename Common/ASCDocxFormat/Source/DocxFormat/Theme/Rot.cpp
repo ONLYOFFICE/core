@@ -45,12 +45,7 @@ namespace OOX
 
 		const XML::XNode Rot::toXML() const
 		{
-			return
-				XML::XElement(ns.a + "rot", 
-					XML::XAttribute("lat", m_lat) +
-					XML::XAttribute("lon", m_lon) + 
-					XML::XAttribute("rev", m_rev)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

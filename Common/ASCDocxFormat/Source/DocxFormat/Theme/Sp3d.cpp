@@ -43,10 +43,7 @@ namespace OOX
 
 		const XML::XNode Sp3d::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "sp3d", 
-					XML::Write(m_bevelT)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

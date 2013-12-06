@@ -44,13 +44,7 @@ namespace OOX
 
 		const XML::XNode Graphic::toXML() const
 		{
-			return
-				XML::XElement(ns.a + "graphic", 
-					XML::XElement(ns.a + "graphicData", 
-						XML::XAttribute("uri", Uri) + 
-						XML::Write(Pic)
-					)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Logic

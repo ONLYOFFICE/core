@@ -43,10 +43,7 @@ namespace OOX
 
 		const XML::XNode SolidFill::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "solidFill", 
-					XML::Write(m_schemeClr)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

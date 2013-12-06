@@ -63,11 +63,7 @@ namespace OOX
 
 		const XML::XNode Symbol::toXML() const
 		{
-		  return
-		    XML::XElement(ns.w + "sym",
-			   	          XML::XAttribute(ns.w + "font", Font) +
-				          XML::XAttribute(ns.w + "char", Char)
-			);
+		return XML::XElement();
 		}
 
 

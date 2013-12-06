@@ -44,11 +44,7 @@ namespace OOX
 	
 		const XML::XNode Gs::toXML() const
 		{
-			return 
-				XML::XElement(ns.a + "gs",
-					XML::XAttribute("pos", m_pos) + 
-					XML::Write(m_schemeClr)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Theme

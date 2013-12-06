@@ -69,28 +69,7 @@ namespace OOX
 
 		const XML::XNode ParagraphProperty::toXML() const
 		{
-			return	XML::XElement(ns.w + "pPr", 
-				XML::Write(RunProperty) +
-				XML::Write(SectorProperty) +
-				XML::Write(ns.w + "pStyle", ns.w + "val", PStyle) +
-				XML::WriteIf(XML::XElement(ns.w + "keepNext"), KeepNext) +
-				XML::WriteIf(XML::XElement(ns.w + "keepLines"), KeepLines) +
-				XML::WriteIf(XML::XElement(ns.w + "pageBreakBefore"), pageBreakBefore) +
-				XML::Write(TextFrameProperties) +
-				XML::Write(ns.w + "widowControl", ns.w + "val", WidowControl) +
-				XML::Write(NumPr) +
-				XML::Write(Spacing) +
-				XML::WriteIf(XML::XElement(ns.w + "suppressLineNumbers"), SuppressLineNumbers) +
-				XML::Write(ParagraphBorder) +
-				//XML::Write(ns.w + "shd", ns.w + "fill", Background) +
-				XML::Write(Shading) +
-				XML::Write(Tabs) +
-				XML::Write(Ind) +
-				XML::WriteIf(XML::XElement(ns.w + "contextualSpacing"), ContextualSpacing) +
-				XML::Write(ns.w + "jc", ns.w + "val", Align) +
-				XML::Write(ns.w + "textAlignment", ns.w + "val", TextAlignment) +
-				XML::Write(ns.w + "outlineLvl", ns.w + "val", OutlineLvl) +
-				XML::Write(PropertyChange));
+		return XML::XElement();
 		}
 
 		const bool ParagraphProperty::isSimple() const

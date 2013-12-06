@@ -41,10 +41,7 @@ namespace OOX
 
 	const XML::XNode ItemProps::SchemaRef::toXML() const
 	{
-		return 
-			XML::XElement(ns.ds + "schemaRef",
-				XML::XAttribute(ns.ds + "uri", Uri)
-			);
+		return XML::XElement();
 	}
 
 } // namespace OOX

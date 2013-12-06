@@ -45,12 +45,7 @@ namespace OOX
 
 		const XML::XNode Sdt::toXML() const
 		{
-			return 
-				XML::XElement(ns.w + "sdt",
-					XML::Write(Property) + 
-					XML::Write(EndProperty) + 
-					XML::Write(Content)
-				);
+		return XML::XElement();
 		}		
 	} // namespace Logic
 } // namespace OOX

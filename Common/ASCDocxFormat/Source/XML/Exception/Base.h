@@ -5,15 +5,14 @@
 #include "Exception/log_invalid_argument.h"
 #include <string>
 
-
 namespace XML
 {
 	namespace Exception
 	{
 		class Base : public log_invalid_argument
 		{
-			public:
-				Base(const std::string& message);
+		public:
+			Base(const std::string& message);
 		};
 	} // namespace Exception
 } // namespace XML

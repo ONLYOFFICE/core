@@ -43,10 +43,7 @@ namespace OOX
 
 		const XML::XNode HdrShapeDefaults::toXML() const
 		{
-			return 
-				XML::XElement(ns.m + "hdrShapeDefaults",
-					XML::Write(m_shapeDefault)
-				);
+		return XML::XElement();
 		}
 
 	} // namespace Settings

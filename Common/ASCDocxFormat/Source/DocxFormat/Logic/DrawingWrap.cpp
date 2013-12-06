@@ -70,45 +70,46 @@ namespace OOX
 
 		const XML::XNode DrawingWrap::toXML() const
 		{
-			if (*Type == "wrapSquare")
-			{
-				return XML::XElement(ns.wp + "wrapSquare",
-					XML::XAttribute("wrapText", TextWrap) +
-					XML::XAttribute("distT", DistT) +
-					XML::XAttribute("distB", DistB) +
-					XML::XAttribute("distL", DistL) +
-					XML::XAttribute("distR", DistR) +
-					XML::Write(EffectExtent)
-					);
-			}
-			else if (*Type == "wrapTopAndBottom")
-			{
-				return XML::XElement(ns.wp + "wrapTopAndBottom",
-					XML::XAttribute("distT", DistT) +
-					XML::XAttribute("distB", DistB) +
-					XML::Write(EffectExtent)
-					);
-			}
-			else if (*Type == "wrapTight")
-			{
-				return XML::XElement(ns.wp + "wrapTight",
-					XML::XAttribute("wrapText", TextWrap) +
-					XML::XAttribute("distL", DistL) +
-					XML::XAttribute("distR", DistR) +
-					XML::Write(WrapPath)
-					);
-			}
-			else if (*Type == "wrapThrough")
-			{
-				return XML::XElement(ns.wp + "wrapThrough",
-					XML::XAttribute("wrapText", TextWrap) +
-					XML::XAttribute("distL", DistL) +
-					XML::XAttribute("distR", DistR) +
-					XML::Write(WrapPath)
-					);
-			}
+			return XML::XElement();//
+			//if (*Type == "wrapSquare")
+			//{
+			//	return XML::XElement(ns.wp + "wrapSquare",
+			//		XML::XAttribute("wrapText", TextWrap) +
+			//		XML::XAttribute("distT", DistT) +
+			//		XML::XAttribute("distB", DistB) +
+			//		XML::XAttribute("distL", DistL) +
+			//		XML::XAttribute("distR", DistR) +
+			//		XML::Write(EffectExtent)
+			//		);
+			//}
+			//else if (*Type == "wrapTopAndBottom")
+			//{
+			//	return XML::XElement(ns.wp + "wrapTopAndBottom",
+			//		XML::XAttribute("distT", DistT) +
+			//		XML::XAttribute("distB", DistB) +
+			//		XML::Write(EffectExtent)
+			//		);
+			//}
+			//else if (*Type == "wrapTight")
+			//{
+			//	return XML::XElement(ns.wp + "wrapTight",
+			//		XML::XAttribute("wrapText", TextWrap) +
+			//		XML::XAttribute("distL", DistL) +
+			//		XML::XAttribute("distR", DistR) +
+			//		XML::Write(WrapPath)
+			//		);
+			//}
+			//else if (*Type == "wrapThrough")
+			//{
+			//	return XML::XElement(ns.wp + "wrapThrough",
+			//		XML::XAttribute("wrapText", TextWrap) +
+			//		XML::XAttribute("distL", DistL) +
+			//		XML::XAttribute("distR", DistR) +
+			//		XML::Write(WrapPath)
+			//		);
+			//}
 
-			return XML::XElement(ns.wp + "wrapNone");
+			//return XML::XElement(ns.wp + "wrapNone");
 		}
 	} // namespace Logic
 } // namespace OOX

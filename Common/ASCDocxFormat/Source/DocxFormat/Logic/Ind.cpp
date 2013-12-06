@@ -69,13 +69,7 @@ namespace OOX
 
 		const XML::XNode Ind::toXML() const
 		{
-			return
-				XML::XElement(ns.w + "ind",
-					XML::XAttribute(ns.w + "left", Left) +
-					XML::XAttribute(ns.w + "right", Right) +
-					XML::XAttribute(ns.w + "hanging", Hanging) +
-					XML::XAttribute(ns.w + "firstLine", FirstLine)
-				);
+		return XML::XElement();
 		}
 
 

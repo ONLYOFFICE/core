@@ -46,7 +46,7 @@ public:
 	void start_hyperlink();
 	void end_hyperlink(std::wstring hId);
 
-	bool is_drawing_context();
+	bool in_list();
 
     void start_list(const std::wstring & StyleName, bool Continue = false);
     void end_list();

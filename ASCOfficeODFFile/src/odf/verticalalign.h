@@ -1,9 +1,5 @@
-#ifndef _CPDOCCORE_ODF_VERTICALALIGN_H_
-#define _CPDOCCORE_ODF_VERTICALALIGN_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
+
 
 #include <iosfwd>
 #include <string>
@@ -34,7 +30,6 @@ public:
     {
         return type_;
     };
-    
     static vertical_align parse(const std::wstring & Str);
 
 private:
@@ -50,4 +45,3 @@ APPLY_PARSE_XML_ATTRIBUTES(odf::vertical_align);
 
 }
 
-#endif

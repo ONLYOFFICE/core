@@ -47,6 +47,7 @@ public:
 
     void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
+	void pptx_convert_as_list(oox::pptx_conversion_context & Context);
 
     void apply_from(const text_format_properties_content & Other);
 	void apply_to(std::vector<_property> & properties);
@@ -57,7 +58,6 @@ private:
     static double process_font_size_impl(const _CP_OPT(font_size) & FontSize, const style_instance * currnetStyle, bool Complex = false, double Mul = 1.0);
     static int process_font_weight(const optional<font_weight>::Type & FontWeight);
     static int process_font_style(const optional<font_style>::Type & FontStyle);
-
 public:
 
     _CP_OPT(std::wstring)    r_style_;

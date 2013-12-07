@@ -169,7 +169,8 @@ style_instance * styles_container::style_by_name(const std::wstring & Name, styl
     
     if (res != map_.end())
     {
-        return instances_[res->second].get();
+		int index = res->second;
+        return instances_[index].get();
     }
     else
         return NULL;

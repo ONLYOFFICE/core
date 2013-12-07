@@ -184,13 +184,6 @@ public:
                 }
             }
         }
-
-        //_Wostream << L"<borders count=\"" << inst_array.size() << "\" >";
-        //BOOST_FOREACH(const xlsx_border & border, inst_array)
-        //{
-        //    ::cpdoccore::oox::xlsx_serialize(_Wostream, border);
-        //}
-        //_Wostream << L"</borders>";
     }
 
 private:

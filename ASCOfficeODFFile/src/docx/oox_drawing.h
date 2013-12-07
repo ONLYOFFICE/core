@@ -65,7 +65,7 @@ struct _oox_drawing
 	friend void oox_serialize_ln	(std::wostream & _Wostream, const std::vector<odf::_property> & val);
 	friend void oox_serialize_hlink	(std::wostream & _Wostream, const std::vector<_hlink_desc> & val);
 	friend void oox_serialize_clipping(std::wostream & strm, _oox_drawing const & val);
-
+	friend void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf::_property> & val);
 
 };
 }

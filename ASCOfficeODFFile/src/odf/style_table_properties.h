@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_STYLE_TABLE_PROPERTIES_H_
-#define _CPDOCCORE_ODF_STYLE_TABLE_PROPERTIES_H_
+#pragma once
 
 #include <iosfwd>
 #include <cpdoccore/xml/attributes.h>
@@ -322,5 +321,3 @@ CP_REGISTER_OFFICE_ELEMENT2(style_table_cell_properties);
 
 }
 }
-
-#endif

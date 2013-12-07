@@ -515,7 +515,7 @@ void docx_conversion_context::end_process_style_content()
 
 void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId)
 {
-	std::wstringstream & paragraph_style = get_styles_context().paragraph_style();
+	std::wstringstream & paragraph_style = get_styles_context().paragraph_nodes();
     if (!paragraph_style.str().empty() || !ParentId.empty())
     {
 		CP_XML_WRITER(strm)

@@ -2,6 +2,10 @@
 
 #include <iosfwd>
 #include <cpdoccore/xml/attributes.h>
+#include <cpdoccore/CPOptional.h>
+
+#include "office_elements.h"
+#include "office_elements_create.h"
 
 #include "linewidth.h"
 #include "length.h"
@@ -33,11 +37,19 @@
 #include "office_binary_data.h"
 #include "common_attlists.h"
 
-#include "office_elements.h"
-#include "office_elements_create.h"
-#include "../docx/docx_conversion_context.h"
+//#include "office_elements.h"
+//#include "office_elements_create.h"
 
-namespace cpdoccore { namespace odf {
+
+namespace cpdoccore{
+
+namespace oox{
+
+	class docx_conversion_context;
+	class pptx_conversion_context;
+};
+
+namespace odf {
 
 /// \class  style_tab_stop
 class style_tab_stop : public office_element_impl<style_tab_stop>
@@ -50,10 +62,9 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
     void docx_convert(oox::docx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context);
 
-public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -90,10 +101,9 @@ public:
     
     size_t size() const { return style_tab_stops_.size(); }
 
-public:
     void docx_convert(oox::docx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context);
 
-public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 
 private:
@@ -129,8 +139,6 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
-
-
 
     _CP_OPT(common_draw_data_attlist) common_draw_data_attlist_;
         
@@ -181,6 +189,7 @@ public:
     void apply_from(const paragraph_format_properties & Other);
 
     void docx_convert(oox::docx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
     // 15.5.1 fo:line-height
@@ -362,8 +371,8 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
     void docx_convert(oox::docx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context);
 
     const paragraph_format_properties & content() const { return style_paragraph_properties_content_; }
 

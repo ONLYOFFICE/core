@@ -55,14 +55,14 @@ static const std::wstring _ooxDashStyle[]=
 	L"sysDashDotDot"
 };
 
-void oox_serialize_ln(std::wostream & strm, const std::vector<odf::_property> & properties)
+void oox_serialize_ln(std::wostream & strm, const std::vector<odf::_property> & prop)
 {
 	_CP_OPT(std::wstring) strVal; 
 	_CP_OPT(int) iVal;
 	_CP_OPT(double) dVal;
-	odf::GetProperty(properties,L"stroke-color",strVal);	
-	odf::GetProperty(properties,L"stroke",iVal);	
-	odf::GetProperty(properties,L"stroke-width",dVal);
+	odf::GetProperty(prop,L"stroke-color",strVal);	
+	odf::GetProperty(prop,L"stroke",iVal);	
+	odf::GetProperty(prop,L"stroke-width",dVal);
 
 	if (!strVal && !iVal && !dVal)return;
 	CP_XML_WRITER(strm)
@@ -93,7 +93,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf::_property> & 
 					CP_XML_NODE(L"a:srgbClr")
 					{
 						CP_XML_ATTR(L"val",color);
-						odf::GetProperty(properties,L"stroke-opacity",strVal);
+						odf::GetProperty(prop,L"stroke-opacity",strVal);
 						if (strVal)CP_XML_NODE(L"a:alpha"){CP_XML_ATTR(L"val",strVal.get());}
 
 					}
@@ -103,12 +103,12 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf::_property> & 
 			{
 				CP_XML_NODE(L"a:prstDash"){CP_XML_ATTR(L"val",dash_style);}	
 			}
-			odf::GetProperty(properties,L"marker-start",strVal);	
+			odf::GetProperty(prop,L"marker-start",strVal);	
 			if (strVal)
 			{
 				CP_XML_NODE(L"a:headEnd"){CP_XML_ATTR(L"type",strVal.get());}
 			}
-			odf::GetProperty(properties,L"marker-end",strVal);	
+			odf::GetProperty(prop,L"marker-end",strVal);	
 			if (strVal)
 			{
 				CP_XML_NODE(L"a:tailEnd"){CP_XML_ATTR(L"type",strVal.get());}
@@ -116,10 +116,10 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf::_property> & 
 		}
     }
 }
-void oox_serialize_aLst(std::wostream & strm, const std::vector<odf::_property> & properties)
+void oox_serialize_aLst(std::wostream & strm, const std::vector<odf::_property> & prop)
 {
 	_CP_OPT(int) iShapeIndex;
-	odf::GetProperty(properties,L"draw-type-index",iShapeIndex);
+	odf::GetProperty(prop,L"draw-type-index",iShapeIndex);
 
 	if (!iShapeIndex)return;
 
@@ -128,7 +128,7 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf::_property> 
 		CP_XML_NODE(L"a:avLst")
 		{
 			_CP_OPT(std::wstring) strVal;
-			if (odf::GetProperty(properties,L"draw-modifiers",strVal))
+			if (odf::GetProperty(prop,L"draw-modifiers",strVal))
 			{
 				std::vector< std::wstring > values;
 				boost::algorithm::split(values, strVal.get(), boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
@@ -139,8 +139,8 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf::_property> 
 					int i=1;
 
 					_CP_OPT(int) iMax,iMin;
-					odf::GetProperty(properties,L"draw-modifiers-min",iMin);
-					odf::GetProperty(properties,L"draw-modifiers-max",iMax);
+					odf::GetProperty(prop,L"draw-modifiers-min",iMin);
+					odf::GetProperty(prop,L"draw-modifiers-max",iMax);
 					values.resize(_OO_OOX_custom_shapes[*iShapeIndex].count_values);
 
 					BOOST_FOREACH(std::wstring  & v, values)
@@ -169,6 +169,37 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf::_property> 
 							CP_XML_ATTR(L"fmla",L"val " + boost::lexical_cast<std::wstring>(static_cast<int>(val)));
 						}
 					}
+				}
+			}
+		}
+	}
+}
+void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf::_property> & prop)
+{
+	CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE(L"a:bodyPr")
+		{
+			_CP_OPT(int) iAlign;
+			odf::GetProperty(prop,L"textalign-horizontal",iAlign);
+			//if (iAlign) CP_XML_ATTR(L"name", val.name);
+
+			odf::GetProperty(prop,L"textalign-vertiacal",iAlign);
+			if (iAlign)
+			{
+				switch (iAlign.get())
+				{
+				case 0://Baseline,
+					CP_XML_ATTR(L"anchor", L"dist");break;
+				case 1://Top,
+				case 4://Auto,
+					CP_XML_ATTR(L"anchor", L"t");break;
+				case 2://Middle,
+					CP_XML_ATTR(L"anchor", L"ctr");break;
+				case 3://Bottom,
+					CP_XML_ATTR(L"anchor", L"b");break;
+				case 5://Justify
+					CP_XML_ATTR(L"anchor", L"just");break;
 				}
 			}
 		}

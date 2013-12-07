@@ -310,6 +310,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\odf\style_paragraph_properties_pptx.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\odf\style_presentation.cpp"
 				>
 			</File>

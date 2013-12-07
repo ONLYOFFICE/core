@@ -31,7 +31,7 @@ void xlsx_serialize_text(std::wostream & strm, const std::vector<odf::_property>
 		{
 			CP_XML_NODE(L"xdr:txBody")
 			{  
-				CP_XML_NODE(L"a:bodyPr");
+				oox_serialize_bodyPr(CP_XML_STREAM(),properties);
 				CP_XML_NODE(L"a:lstStyle");
 				CP_XML_NODE(L"a:p")
 				{

@@ -1,5 +1,5 @@
-#ifndef _CPDOCCORE_DOCX_CONVERSIONCONTEXT_H_
-#define _CPDOCCORE_DOCX_CONVERSIONCONTEXT_H_
+#pragma once
+
 #include "../odf/stylefamily.h"
 #include "../odf/length.h"
 #include <boost/unordered_map.hpp>
@@ -565,5 +565,3 @@ private:
 
 }
 }
-
-#endif

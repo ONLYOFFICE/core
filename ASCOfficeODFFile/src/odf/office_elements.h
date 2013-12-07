@@ -1,9 +1,4 @@
-#ifndef _CPDOCCORE_ODF_OFFCIE_ELEMENTS_H_
-#define _CPDOCCORE_ODF_OFFCIE_ELEMENTS_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <vector>
 
@@ -131,4 +126,3 @@ public:
 }
 }
 
-#endif // #ifndef _CPDOCCORE_ODF_OFFCIE_ELEMENTS_H_

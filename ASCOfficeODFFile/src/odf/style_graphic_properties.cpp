@@ -22,6 +22,8 @@ void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & A
 	CP_APPLY_ATTR(L"draw:marker-end",	draw_marker_end_); 
 	CP_APPLY_ATTR(L"draw:opacity",		draw_opacity_); 
     CP_APPLY_ATTR(L"draw:wrap-influence-on-position", draw_wrap_influence_on_position_);
+	CP_APPLY_ATTR(L"draw:textarea-horizontal-align", draw_textarea_horizontal_align_);
+	CP_APPLY_ATTR(L"draw:textarea-vertical-align", draw_textarea_vertical_align_);
 	
 	CP_APPLY_ATTR(L"svg:stroke-color",	svg_stroke_color_); 
 	CP_APPLY_ATTR(L"svg:stroke-width",	svg_stroke_width_);	
@@ -65,22 +67,20 @@ void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & A
 
 void graphic_format_properties::apply_to(std::vector<_property> & properties)
 {
-	if (draw_fill_color_)	properties.push_back(_property(L"fill-color",	draw_fill_color_.get().get_hex_value() ));
-	if (svg_stroke_color_)	properties.push_back(_property(L"stroke-color",	svg_stroke_color_.get().get_hex_value() ));
+	if (draw_fill_color_)	properties.push_back(_property(L"fill-color",	draw_fill_color_->get_hex_value() ));
+	if (svg_stroke_color_)	properties.push_back(_property(L"stroke-color",	svg_stroke_color_->get_hex_value() ));
 	if (draw_fill_)			properties.push_back(_property(L"fill",			draw_fill_.get()));
-	if (draw_stroke_)		properties.push_back(_property(L"stroke",		draw_stroke_.get().get_type() ));
+	if (draw_stroke_)		properties.push_back(_property(L"stroke",		draw_stroke_->get_type() ));
 	if (draw_stroke_dash_)	properties.push_back(_property(L"stroke-dash",	draw_stroke_dash_.get()));
-	if (svg_stroke_width_)	properties.push_back(_property(L"stroke-width",	svg_stroke_width_.get().get_length().get_value_unit(odf::length::pt) ));
-	if (draw_opacity_)		properties.push_back(_property(L"opacity",		draw_opacity_.get().get_percent().get_value()));
-	if (svg_stroke_opacity_)properties.push_back(_property(L"stroke-opacity",svg_stroke_opacity_.get().get_percent().get_value()));	
-	if (draw_marker_start_)	properties.push_back(_property(L"marker-start",	draw_marker_start_.get().get() ));
-	if (draw_marker_end_)	properties.push_back(_property(L"marker-end",	draw_marker_end_.get().get() ));
+	if (svg_stroke_width_)	properties.push_back(_property(L"stroke-width",	svg_stroke_width_->get_length().get_value_unit(odf::length::pt) ));
+	if (draw_opacity_)		properties.push_back(_property(L"opacity",		draw_opacity_->get_percent().get_value()));
+	if (svg_stroke_opacity_)properties.push_back(_property(L"stroke-opacity",svg_stroke_opacity_->get_percent().get_value()));	
+	if (draw_marker_start_)	properties.push_back(_property(L"marker-start",	draw_marker_start_->get() ));
+	if (draw_marker_end_)	properties.push_back(_property(L"marker-end",	draw_marker_end_->get() ));
+	
+	if (draw_textarea_horizontal_align_)properties.push_back(_property(L"textalign-horizontal",	draw_textarea_horizontal_align_->get_type() ));
+	if (draw_textarea_vertical_align_)properties.push_back(_property(L"textalign-vertical",	draw_textarea_vertical_align_->get_type() ));
 
-
-	//if (draw_fill_gradient_name_)
-	//{
-	//	//parsing
-	//}
 }
 void graphic_format_properties::apply_from(const graphic_format_properties & Other)
 {
@@ -91,6 +91,8 @@ void graphic_format_properties::apply_from(const graphic_format_properties & Oth
 	_CP_APPLY_PROP2(draw_marker_start_); 
 	_CP_APPLY_PROP2(draw_marker_end_); 
 	_CP_APPLY_PROP2(draw_opacity_); 
+	_CP_APPLY_PROP2(draw_textarea_horizontal_align_); 
+	_CP_APPLY_PROP2(draw_textarea_vertical_align_); 
 	
 	_CP_APPLY_PROP2(svg_stroke_color_); 
 	_CP_APPLY_PROP2(svg_stroke_width_);	
@@ -146,10 +148,6 @@ void style_graphic_properties::add_attributes( const xml::attributes_wc_ptr & At
 void style_graphic_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
-}
-
-void style_graphic_properties::docx_convert(oox::docx_conversion_context & Context)
-{
 }
 
 }

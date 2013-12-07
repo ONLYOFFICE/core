@@ -180,8 +180,7 @@ private:
     text_list_level_style_number_attr text_list_level_style_number_attr_;
 
     office_element_ptr style_list_level_properties_;
-    office_element_ptr style_text_properties_;
-	office_element_ptr text_properties_;
+	office_element_ptr style_text_properties_;
 
 };
 

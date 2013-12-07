@@ -26,10 +26,13 @@ void styles_context::start()
     text_style_.str( std::wstring() );
     text_style_.clear();
 
-    paragraph_style_.str( std::wstring() );
-    paragraph_style_.clear();
+    paragraph_nodes_.str( std::wstring() );
+    paragraph_nodes_.clear();
 
-    table_style_.str( std::wstring() );
+    paragraph_attr_.str( std::wstring() );
+    paragraph_attr_.clear();
+
+	table_style_.str( std::wstring() );
     table_style_.clear();
 
     list_style_.str( std::wstring() );
@@ -44,9 +47,14 @@ std::wstringstream & styles_context::text_style()
     return text_style_;
 }
 
-std::wstringstream & styles_context::paragraph_style()
+std::wstringstream & styles_context::paragraph_nodes()
 {
-    return paragraph_style_;
+    return paragraph_nodes_;
+}
+
+std::wstringstream & styles_context::paragraph_attr()
+{
+    return paragraph_attr_;
 }
 
 std::wstringstream & styles_context::table_style()

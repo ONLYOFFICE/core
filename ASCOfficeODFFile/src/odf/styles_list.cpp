@@ -90,10 +90,8 @@ void text_list_level_style_number::add_child_element( xml::sax * Reader, const :
 {
     if		(L"style" == Ns && L"list-level-properties" == Name)
         CP_CREATE_ELEMENT(style_list_level_properties_);    
-    else if (L"style" == Ns && L"style-text-properties" == Name)
-        CP_CREATE_ELEMENT(style_text_properties_);    
-     else if (L"style" == Ns && L"text-properties"	== Name)
-        CP_CREATE_ELEMENT(text_properties_); 
+	else if (L"style" == Ns && L"text-properties" == Name)
+        CP_CREATE_ELEMENT(style_text_properties_); 
 	else
     {
          CP_NOT_APPLICABLE_ELM();
@@ -388,7 +386,29 @@ void text_list_level_style_number::pptx_convert(oox::pptx_conversion_context & C
 	if (text_list_level_style_attr_.get_text_level() - 1 >= 9)
         return;
 
- 
+	std::wostream & strm = Context.get_text_context().get_styles_context().list_style();
+
+   style_list_level_properties * listLevelProperties = dynamic_cast<style_list_level_properties *>( style_list_level_properties_.get() );
+    
+	style_list_level_label_alignment * labelAlignment = listLevelProperties ?
+        dynamic_cast<style_list_level_label_alignment *>(listLevelProperties->style_list_level_label_alignment_.get()) : NULL;
+
+	//int level = text_list_level_style_attr_.get_text_level();
+	
+	CP_XML_WRITER(strm)
+	{ 	
+		if (style_text_properties * textProperties = dynamic_cast<style_text_properties *>(style_text_properties_.get()))///эти свойства относятся 
+			// к отрисовки значков !!! а не самого текста
+	    {
+	        textProperties->content().pptx_convert_as_list(Context);
+			strm << Context.get_text_context().get_styles_context().text_style().str();
+	    }
+		CP_XML_NODE(L"a:buAutoNum")//ms козлы !! для них оказыается ВАЖЕН порядок .. если записать это поле первым, а потом свойства - нихера в мс2010 не отображается верно !!!
+		{
+			CP_XML_ATTR(L"startAt",text_list_level_style_number_attr_.text_start_value_);
+			CP_XML_ATTR(L"type",L"arabicParenBoth");
+		}
+	} 
 }
 
 namespace 
@@ -508,8 +528,7 @@ void text_list_level_style_bullet::docx_convert(oox::docx_conversion_context & C
 				Context.get_styles_context().start();
 				textProperties->content().docx_convert(Context);
 				Context.get_styles_context().docx_serialize_text_style(CP_XML_STREAM());
-			}
-    
+			}    
 		}
 	}
 }
@@ -522,33 +541,32 @@ void text_list_level_style_bullet::pptx_convert(oox::pptx_conversion_context & C
 
 	std::wostream & strm = Context.get_text_context().get_styles_context().list_style();
 
-    style_list_level_properties * listLevelProperties = dynamic_cast<style_list_level_properties *>( style_list_level_properties_.get() );
-    
-	style_list_level_label_alignment * labelAlignment = listLevelProperties ?
-        dynamic_cast<style_list_level_label_alignment *>(listLevelProperties->style_list_level_label_alignment_.get()) : NULL;
+ //   style_list_level_properties * listLevelProperties = dynamic_cast<style_list_level_properties *>( style_list_level_properties_.get() );
+ //   
+	//style_list_level_label_alignment * labelAlignment = listLevelProperties ?
+ //       dynamic_cast<style_list_level_label_alignment *>(listLevelProperties->style_list_level_label_alignment_.get()) : NULL;
 
-	int level = text_list_level_style_attr_.get_text_level();
-	//std::wstring nodeLevel = L"a:lvl" + boost::lexical_cast<std::wstring>(level) + L"pPr";
+	//int level = text_list_level_style_attr_.get_text_level();
 	
 	CP_XML_WRITER(strm)
 	{ 	
-		//CP_XML_NODE(nodeLevel)
-		{
-			//CP_XML_ATTR(L"lvl",level - 1);
-			//attr ident
-			//attr marL
+		style_text_properties * textProperties = dynamic_cast<style_text_properties *>(style_text_properties_.get());
+		wchar_t bullet = text_list_level_style_bullet_attr_.text_bullet_char_.get_value_or(L'\x2022');
+	    
+		if (textProperties)///эти свойства относятся 
+			// к отрисовки значков !!! а не самого текста
+	    {
+	        textProperties->content().pptx_convert_as_list(Context);
+			strm << Context.get_text_context().get_styles_context().text_style().str();
+	    }
 		
-			const wchar_t bullet = text_list_level_style_bullet_attr_.text_bullet_char_.get_value_or(L'\x2022');
-			CP_XML_NODE(L"a:buChar")
-			{
-				CP_XML_ATTR(L"char",convert_bullet_char(bullet));
-			}
-	
-		    if (style_text_properties * textProperties = dynamic_cast<style_text_properties *>(style_text_properties_.get()))
-		    {
-		        textProperties->content().pptx_convert(Context);
-				strm << Context.get_text_context().get_styles_context().text_style().str();
-		    }
+		CP_XML_NODE(L"a:buChar")
+		{
+			//if ((textProperties) && (textProperties->content().style_font_charset_))
+			//{
+			//	if (textProperties->content().style_font_charset_.get() == L"x-xsymbol")bullet = bullet + 0xf000;
+			//}
+			CP_XML_ATTR(L"char",bullet/*convert_bullet_char(bullet)*/);
 		}
 	}
 }

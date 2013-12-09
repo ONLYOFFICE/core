@@ -53,22 +53,22 @@ namespace XML
 
 		XTextContainer::iterator XTextContainer:: begin()
 		{
-			return iterator(m_container->begin(), m_container->end());
+			return m_container->begin();
 		}
 
 		XTextContainer::iterator XTextContainer::end()
 		{
-			return iterator(m_container->end(), m_container->end());
+			return m_container->end();
 		}
 
 		XTextContainer::const_iterator XTextContainer::begin() const
 		{
-			return const_iterator(m_container->begin(), m_container->end());
+			return m_container->begin();
 		}
 
 		XTextContainer::const_iterator XTextContainer::end() const
 		{
-			return const_iterator(m_container->end(), m_container->end());
+			return m_container->end();
 		}
 
 	} // namespace Private

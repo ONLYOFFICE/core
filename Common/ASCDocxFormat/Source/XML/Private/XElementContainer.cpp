@@ -133,22 +133,22 @@ namespace XML
 
 		XElementContainer::iterator XElementContainer:: begin()
 		{
-			return iterator(m_container->begin(), m_container->end());
+			return m_container->begin();
 		}
 
 		XElementContainer::iterator XElementContainer::end()
 		{
-			return iterator(m_container->end(), m_container->end());
+			return m_container->end();
 		}
 
 		XElementContainer::const_iterator XElementContainer::begin() const
 		{
-			return const_iterator(m_container->begin(), m_container->end());
+			return m_container->begin();
 		}
 
 		XElementContainer::const_iterator XElementContainer::end() const
 		{
-			return const_iterator(m_container->end(), m_container->end());
+			return m_container->end();
 		}
 
 		const XNamespaceContainer XElementContainer::usedNamespace() const

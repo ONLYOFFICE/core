@@ -4,7 +4,7 @@
 
 #include <vector>
 #include <list>
-#include <boost/iterator/filter_iterator.hpp>
+
 #include "Filter/Text.h"
 #include "XString.h"
 
@@ -30,12 +30,13 @@ namespace XML
 			const XString text() const;
 
 		public:
-			typedef boost::filter_iterator<Filter::Text, std::list<XNode>::iterator> iterator;
-			typedef boost::filter_iterator<Filter::Text, std::list<XNode>::const_iterator> const_iterator;
+		
+			typedef std::list<XNode>::iterator iterator;
+			typedef std::list<XNode>::const_iterator const_iterator;
 
 		public:
 			XTextContainer const* const	operator->() const	{return this;}
-			XTextContainer*							operator->()				{return this;}
+			XTextContainer*				operator->()		{return this;}
 
 		public:
 			iterator begin();

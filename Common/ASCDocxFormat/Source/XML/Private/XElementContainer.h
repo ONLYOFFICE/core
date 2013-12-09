@@ -3,7 +3,6 @@
 #define XML_PRIVATE_XELEMENT_CONTAINER_INCLUDE_H_
 
 #include <list>
-#include <boost/iterator/filter_iterator.hpp>
 
 #include "Filter/Element.h"
 #include "XNamespaceContainer.h"
@@ -32,8 +31,9 @@ namespace XML
 			void Add(const XElement& element);
 
 		public:
-			typedef boost::filter_iterator<Filter::Element, std::list<XNode>::iterator> iterator;
-			typedef boost::filter_iterator<Filter::Element, std::list<XNode>::const_iterator> const_iterator;
+		
+			typedef std::list<XNode>::iterator iterator;
+			typedef std::list<XNode>::const_iterator const_iterator;
 
 		public:
 			XElementContainer const* const	operator->() const	{return this;}

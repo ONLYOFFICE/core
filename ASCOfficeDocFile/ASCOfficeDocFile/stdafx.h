@@ -36,6 +36,7 @@
 
 // ATL
 
+
 #include <atlbase.h>
 #include <atlcom.h>
 #include <atlwin.h>
@@ -45,6 +46,8 @@
 #include <atlstr.h>
 #include <atlconv.h>
 #include <ole2.h>
+
+using namespace ATL;
 
 // C
 
@@ -58,6 +61,9 @@
 #include <share.h>
 #include <iosfwd>
 #include <sstream>
+#include <stdarg.h>
+#include <wchar.h>
+#include <time.h>
 
 // STL
 
@@ -68,8 +74,7 @@
 #include <algorithm>
 #include <bitset>
 #include <set>
-
-using namespace ATL;
+#include <stdexcept>
 
 #include "..\Common\TargetOptions.h"
 #include "..\Common\FormatUtils.h"
@@ -96,5 +101,10 @@ struct ProgressCallback
   OnProgressExCallback OnProgressEx;
   LPVOID caller;
 };
+
+#pragma comment(lib, "Utility.lib")
+#pragma comment(lib, "Common.lib")
+#pragma comment(lib, "DocxFormat.lib")
+#pragma comment(lib, "XML.lib")
 
 #include "Resource.h"

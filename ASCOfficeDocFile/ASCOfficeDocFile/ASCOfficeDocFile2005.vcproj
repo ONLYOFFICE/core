@@ -150,7 +150,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\DocxFormat;..\..\Common\ASCDocxFormat\Source\Common;..\..\Common\ASCDocxFormat\Source\XML;&quot;..\ZLIB\zlib-1.2.3\contrib\minizip&quot;;&quot;..\ZLIB\zlib-1.2.3&quot;;..\..\ASCImageStudio3\ASCGraphics\OfficeSvmFile"
+				AdditionalIncludeDirectories="..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\DocxFormat;..\..\Common\ASCDocxFormat\Source\Common;..\..\Common\ASCDocxFormat\Source\XML;&quot;..\ZLIB\zlib-1.2.3\contrib\minizip&quot;;&quot;..\ZLIB\zlib-1.2.3&quot;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"

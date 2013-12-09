@@ -3,7 +3,8 @@
 #define UTILITY_GETTER_INCLUDE_H_
 
 #include <stdexcept>
-#include <boost/call_traits.hpp>
+
+#include "CallTraits.h"
 
 namespace getter
 {
@@ -11,14 +12,13 @@ namespace getter
 	class base_getter
 	{
 	protected:
-		typedef typename boost::call_traits<Type>::param_type Parameter;
+		typedef typename NSCallTraits<Type>::param_type Parameter;
 	public:
 		const Type operator()(Parameter _value) const
 		{
-			must_release();
+			//must_release();
 		}
 	};
-
 
 	template<typename Type>
 	class simple : private base_getter<Type>
@@ -29,18 +29,6 @@ namespace getter
 			return _value;
 		}
 	};
-
-
-	template<typename Type>
-	class write_only : private base_getter<Type>
-	{
-	public:
-		const Type operator()(Parameter _value) const
-		{
-			it_is_write_only();
-		}
-	};
-
-} // namespace getter
+}
 
 #endif // UTILITY_GETTER_INCLUDE_H_

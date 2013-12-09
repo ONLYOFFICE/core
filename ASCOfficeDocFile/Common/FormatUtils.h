@@ -33,7 +33,7 @@ namespace ASCDocFormatUtils
 	{
 		template <typename T> void operator()( const T* ptr ) const
 		{
-			RELEASEOBJECT( ptr );
+			RELEASEOBJECT(ptr);
 		}
 	};
 
@@ -75,8 +75,6 @@ namespace ASCDocFormatUtils
 			return ( ( value & mask ) == mask );
 		}
 
-		/*========================================================================================================*/
-
 		static inline int BytesToInt32( const unsigned char *b, unsigned int start, unsigned int length )
 		{
 			if ( ( b == NULL ) || ( ( start + 3 ) >= length ) )
@@ -90,7 +88,6 @@ namespace ASCDocFormatUtils
 				BYTE b2 = b[start+2];
 				BYTE b3 = b[start+3];
 
-
 				long intValue = ((b3 << 24) | (b2 << 16) | (b1 << 8) | b0);
 
 				//int b0 = (int)b[start];
@@ -103,8 +100,6 @@ namespace ASCDocFormatUtils
 				return intValue;
 			}
 		}
-
-		/*========================================================================================================*/
 
 		static inline unsigned int BytesToUInt32( const unsigned char *b, unsigned int start, unsigned int length )
 		{
@@ -125,8 +120,6 @@ namespace ASCDocFormatUtils
 			}
 		}
 
-		/*========================================================================================================*/
-
 		static inline short BytesToInt16( const unsigned char *b, unsigned int start, unsigned int length )
 		{
 			if ( ( b == NULL ) || ( ( start + 1 ) >= length ) )
@@ -143,8 +136,6 @@ namespace ASCDocFormatUtils
 				return shortValue;
 			}
 		}
-
-		/*========================================================================================================*/
 
 		static inline unsigned short BytesToUInt16( const unsigned char *b, unsigned int start, unsigned int length )
 		{
@@ -176,34 +167,10 @@ namespace ASCDocFormatUtils
 			return pBuffer [start];
 		}
 
-		/*========================================================================================================*/
-
-		/*static list<wchar_t>* ToUnicodeChars( const list<byte> *chars )
-		{
-		list<byte>::const_iterator iter = chars->begin();
-		list<wchar_t> *unicodeChars = new list<wchar_t>();
-
-		byte bytes[2] = { 0, 0 };
-
-		while( iter != chars->end() )
-		{
-		bytes[0] = *iter++;
-		bytes[1] = *iter++;
-
-		unicodeChars->push_back( FormatUtils::BytesToUInt16( bytes, 0, 2 ) );
-		}
-
-		return unicodeChars;
-		}*/
-
-		/*========================================================================================================*/
-
 		static inline bool IsControlSymbol( unsigned short c )
 		{
 			return ( c <= 31 ) ? ( true ) : ( false );  
 		}
-
-		/*========================================================================================================*/
 
 		static inline wstring GetXMLSymbol( const WCHAR c )
 		{
@@ -251,8 +218,6 @@ namespace ASCDocFormatUtils
 
 			return result;
 		}
-
-		/*========================================================================================================*/
 
 		static inline WCHAR MapByteToWChar( byte byteSymbol )
 		{
@@ -414,8 +379,6 @@ namespace ASCDocFormatUtils
 			return wcharSymbol;
 		}
 
-		/*========================================================================================================*/
-
 		template<class T> static bool GetSTLCollectionFromBytes( T *STLCollection, byte *bytes, int size, Encoding encoding )
 		{
 			if ( ( STLCollection == NULL ) || ( bytes == NULL ) )
@@ -453,8 +416,6 @@ namespace ASCDocFormatUtils
 			return false;
 		}
 
-		/*========================================================================================================*/
-
 		static int BitmaskToInt( int value, int mask )
 		{
 			int ret = value & mask;
@@ -477,8 +438,6 @@ namespace ASCDocFormatUtils
 			return ret;
 		}
 
-		/*========================================================================================================*/
-
 		static inline int GetIntFromBits( int value, unsigned int startBit, unsigned int bitsCount  )
 		{
 			int retval = value >> startBit; // Move to start bit.
@@ -487,8 +446,6 @@ namespace ASCDocFormatUtils
 
 			return ( retval & bitmask ); // Get value.
 		}
-
-		/*========================================================================================================*/
 
 		static inline bool GetBitFromInt( int value, unsigned int bit )
 		{
@@ -499,8 +456,6 @@ namespace ASCDocFormatUtils
 
 			return ( ( value >> bit ) & 0x00000001 );
 		}
-
-		/*========================================================================================================*/
 
 		static inline unsigned int GetUIntFromBytesBits( byte* bytes, unsigned int size, unsigned int startBit, unsigned int bitsCount )
 		{
@@ -530,8 +485,6 @@ namespace ASCDocFormatUtils
 			return result;
 		}
 
-		/*========================================================================================================*/
-
 		static inline bool GetBitFromBytes( byte* bytes, unsigned int size, unsigned int bit )
 		{
 			if ( ( bytes == NULL ) || ( bit >= ( size * 8 ) ) )
@@ -541,8 +494,6 @@ namespace ASCDocFormatUtils
 
 			return (bool)GetBitFromInt( bytes[bit/8], bit%8 );
 		}
-
-		/*========================================================================================================*/
 
 		static int ArraySum( byte* values, int size )
 		{
@@ -558,8 +509,6 @@ namespace ASCDocFormatUtils
 
 			return ret;
 		}
-
-		/*========================================================================================================*/
 
 		static inline byte* GetBytes( int value )
 		{
@@ -630,8 +579,6 @@ namespace ASCDocFormatUtils
 			}
 		}
 
-		/*========================================================================================================*/
-
 		static inline wstring IntToFormattedWideString( int value, const WCHAR* format )
 		{
 			const int size = 33;
@@ -645,8 +592,6 @@ namespace ASCDocFormatUtils
 
 			return wstring( strValue );
 		}
-
-		/*========================================================================================================*/
 
 		static inline wstring DoubleToFormattedWideString( double value, WCHAR* format )
 		{
@@ -671,8 +616,6 @@ namespace ASCDocFormatUtils
 			return wstr;
 		}
 
-		/*========================================================================================================*/
-
 		static inline void SetBytes( byte *bytes, int value )
 		{
 			if ( bytes != NULL )
@@ -684,8 +627,6 @@ namespace ASCDocFormatUtils
 			}
 		}
 
-		/*========================================================================================================*/
-
 		static inline void SetBytes( byte *bytes, short value )
 		{
 			if ( bytes != NULL )
@@ -694,8 +635,6 @@ namespace ASCDocFormatUtils
 				bytes[1] = ( value >> 8 ) & 0x000000FF;
 			}
 		}
-
-		/*========================================================================================================*/
 
 		static inline void SetBytes( byte *bytes, unsigned int value )
 		{
@@ -708,8 +647,6 @@ namespace ASCDocFormatUtils
 			}
 		}
 
-		/*========================================================================================================*/
-
 		static inline void SetBytes( byte *bytes, unsigned short value )
 		{
 			if ( bytes != NULL )
@@ -718,8 +655,6 @@ namespace ASCDocFormatUtils
 				bytes[1] = ( value >> 8 ) & 0x000000FF;
 			}
 		}
-
-		/*========================================================================================================*/
 
 		static wstring UTF8Decode( const string& text )
 		{
@@ -733,6 +668,7 @@ namespace ASCDocFormatUtils
 
 	struct Rectangle
 	{
+	public:
 		Rectangle()
 		{
 			topLeftAngle.x	=	0;
@@ -741,7 +677,6 @@ namespace ASCDocFormatUtils
 			size.cx			=	0;
 			size.cy			=	0;
 		}
-
 		Rectangle(const POINT& oTopLeftAngle, const SIZE& oSize)
 		{
 			topLeftAngle.x	=	oTopLeftAngle.x;
@@ -751,8 +686,9 @@ namespace ASCDocFormatUtils
 			size.cy			=	oSize.cy;
 		}
 
-		POINT topLeftAngle;
-		SIZE size;
+	public:
+		POINT	topLeftAngle;
+		SIZE	size;
 	};
 
 	class BitSet
@@ -782,7 +718,7 @@ namespace ASCDocFormatUtils
 			}
 		}
 
-		template<class T> inline void SetBits(T bits, unsigned int startBit, unsigned int countOfBits = ( 8 * sizeof(T) ))
+		template<class T> inline void SetBits(T bits, unsigned int startBit, unsigned int countOfBits = (8 * sizeof(T)))
 		{
 			if ( ( this->bytes != NULL ) && ( startBit < ( 8 * this->size ) ) )
 			{
@@ -814,8 +750,7 @@ namespace ASCDocFormatUtils
 		}
 
 	private:
-
-		unsigned int size;
-		byte* bytes;
+		unsigned int	size;
+		byte*			bytes;
 	};
 }

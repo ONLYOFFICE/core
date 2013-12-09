@@ -3,26 +3,24 @@
 #define UTILITY_SETTER_INCLUDE_H_
 
 #include <stdexcept>
-#include <boost/call_traits.hpp>
 #include <algorithm>
 #include <set>
 
+#include "CallTraits.h"
 
 namespace setter
 {
-
-	template<typename Type>
-	class base_setter
+	template<typename Type>	class base_setter
 	{
 	protected:
-		typedef typename boost::call_traits<Type>::param_type Parameter;
+		typedef typename NSCallTraits<Type>::param_type Parameter;
+
 	public:
 		void operator()(Type& _value, Parameter value)
 		{
-			must_release();
+			// must_release();
 		}
 	};
-
 
 	class none
 	{
@@ -32,7 +30,6 @@ namespace setter
 		{
 		}
 	};
-
 
 	template<typename Type>
 	class simple : private base_setter<Type>
@@ -44,17 +41,15 @@ namespace setter
 		}
 	};
 
-
 	class read_only
 	{
 	public:
 		template<typename T, typename E>
 		void operator()(T, E)
 		{
-			it_is_read_only();
+			//it_is_read_only();
 		}
 	};
-
 
 	template<typename Type>
 	class only_positive : private base_setter<Type>

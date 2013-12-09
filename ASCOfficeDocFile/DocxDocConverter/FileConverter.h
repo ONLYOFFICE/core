@@ -9,11 +9,6 @@
 #include "InternalElements.h"
 #include "TableUtils.h"
 
-#pragma comment(lib, "Utility.lib")
-#pragma comment(lib, "Common.lib")
-#pragma comment(lib, "DocxFormat.lib")
-#pragma comment(lib, "XML.lib")
-
 namespace DOCXTODOC
 {
 	class CPrCopier

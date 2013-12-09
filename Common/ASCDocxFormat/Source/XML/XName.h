@@ -32,7 +32,7 @@ namespace XML
 
 	public:
 		nullable_property<XNamespace>		Ns;
-		property<std::string>						Name;
+		property<std::string>				Name;
 	};
 
 	const XName operator +(const XNamespace& ns, const std::string& name);

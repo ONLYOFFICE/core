@@ -164,13 +164,15 @@ void office_annotation::xlsx_convert(oox::xlsx_conversion_context & Context)
 //////////////////////////////////////////////////////////////////
     /// Обрабатываем стиль draw
 	std::vector<const odf::style_instance *> instances;
-
-	style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
-    if (defaultStyle)instances.push_back(defaultStyle);
-
 	style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(
 				office_annotation_attr_.draw_style_name_.get_value_or(style_ref(L"")).style_name(), odf::style_family::Graphic,false/*Context.process_headers_footers_*/);
-	if (styleInst)instances.push_back(styleInst);
+	if (styleInst)
+	{
+		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
+		if (defaultStyle)instances.push_back(defaultStyle);
+
+		instances.push_back(styleInst);
+	}
 	graphic_format_properties graphicProperties = calc_graphic_properties_content(instances);	
 
 	graphicProperties.apply_to(Context.get_comments_context().get_draw_properties());

@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_TEXT_CONTENT_H_
-#define _CPDOCCORE_ODF_TEXT_CONTENT_H_
+#pragma once
 
 #include <iosfwd>
 #include <cpdoccore/CPOptional.h>
@@ -50,5 +49,3 @@ class text_content_impl : public office_element_impl<ElementT>
 }
 }
 }
-
-#endif // #ifndef _CPDOCCORE_ODF_TEXT_CONTENT_H_

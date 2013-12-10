@@ -99,12 +99,15 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 //////////////////////////////////////////////
 	std::vector<const odf::style_instance *> instances;
 
-	style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
-    if (defaultStyle)instances.push_back(defaultStyle);
-
 	odf::style_instance* styleInst = 
 		Context.root()->odf_context().styleContainer().style_by_name(styleName, odf::style_family::Graphic,false/*process_headers_footers_*/);
-	if (styleInst)instances.push_back(styleInst);
+	if (styleInst)
+	{
+		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
+		if (defaultStyle)instances.push_back(defaultStyle);
+
+		instances.push_back(styleInst);
+	}
 	graphic_format_properties properties = calc_graphic_properties_content(instances);
 	
 ////////////////////////////////////////////////////////////////////
@@ -139,7 +142,7 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    const std::wstring href = common_draw_data_attlist_.xlink_href_.get_value_or(L"");
+    const std::wstring href = common_xlink_attlist_.xlink_href_.get_value_or(L"");
     Context.get_drawing_context().start_image(href);
 ////////////////////////////////////в принципе достаточно обща€ часть ...	
 	Context.get_text_context().start_drawing_content();//...  если в объекте есть текст он прив€жетс€ к объекту - иначе к €чейке
@@ -163,7 +166,7 @@ void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void draw_chart::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    const std::wstring href = common_draw_data_attlist_.xlink_href_.get_value_or(L"");
+    const std::wstring href = common_xlink_attlist_.xlink_href_.get_value_or(L"");
     Context.get_drawing_context().start_chart(href);
 
     //BOOST_FOREACH(office_element_ptr const & elm, content_)
@@ -208,8 +211,7 @@ void draw_text_box::xlsx_convert(oox::xlsx_conversion_context & Context)
 void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     try {
-        const std::wstring href		= common_draw_data_attlist_.xlink_href_.get_value_or(L"");
-        const std::wstring hrefType = common_draw_data_attlist_.xlink_type_.get_value_or(L"");
+        const std::wstring href		= common_xlink_attlist_.xlink_href_.get_value_or(L"");
 
         odf::odf_document::Impl * odfImpl = Context.root()->get_impl();
         const std::wstring folder = odfImpl->get_folder();
@@ -241,7 +243,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 		if (chartBuild.object_type_ == 1)//диаграмма
 		{		
-			const std::wstring href_draw = common_draw_data_attlist_.xlink_href_.get_value_or(L"");
+			const std::wstring href_draw = common_xlink_attlist_.xlink_href_.get_value_or(L"");
 			chartBuild.xlsx_convert(Context);
 			
 			Context.get_drawing_context().start_chart(href_draw); // в рисовательной части только место объекта, рамочки ... и релсы 

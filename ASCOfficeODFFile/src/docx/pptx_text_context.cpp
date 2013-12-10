@@ -169,12 +169,14 @@ std::wstring pptx_text_context::Impl::end_span2()
 }
 void pptx_text_context::Impl::start_hyperlink()
 {
-	dump_paragraph();//проверить
+	dump_run();//проверить
 }
 
 void pptx_text_context::Impl::end_hyperlink(std::wstring hId)
 {
 	hyperlink_hId = hId;
+	dump_run();
+	hyperlink_hId = L"";
 }
 void pptx_text_context::Impl::ApplyTextProperties(std::wstring style,odf::text_format_properties_content & propertiesOut, odf::style_family::type Type)
 {
@@ -286,6 +288,8 @@ void pptx_text_context::Impl::write_rPr(std::wostream & strm)
 	text_properties_.apply_from(text_properties_span_);
 
 	get_styles_context().start();
+
+	get_styles_context().hlinkClick() = hyperlink_hId;
 	text_properties_.pptx_convert(pptx_context_);
 
 	strm << get_styles_context().text_style().str();
@@ -306,6 +310,11 @@ std::wstring pptx_text_context::Impl::dump_paragraph()
 				write_pPr(CP_XML_STREAM());
 
 				CP_XML_STREAM() << run_.str();
+
+				//CP_XML_NODE(L"a:endParaRPr") //- сохранение/не сохранение стиля на последующие параграфы
+				//{
+				//	CP_XML_ATTR(L"dirty", 0);
+				//}
 			}
 		}
 		run_.str(std::wstring());
@@ -354,10 +363,17 @@ void pptx_text_context::Impl::start_drawing_content()
 
 std::wstring pptx_text_context::Impl::end_drawing_content()
 {
+	dump_paragraph();
+
+	std::wstring & str_paragraph = paragraph_.str();
+
 	std::wstringstream str_styles;
 
-	write_list_styles(str_styles);
-	str_styles << dump_paragraph();
+	if (str_paragraph.length() > 0)
+	{
+		write_list_styles(str_styles);
+		str_styles << str_paragraph;
+	}
   
 	paragraphs_cout_ = 0;
     

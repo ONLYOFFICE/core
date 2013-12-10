@@ -241,7 +241,7 @@ void pptx_slide_context::process_drawings()
 {
 	process_shapes();
 	process_images();
-	//process_charts();
+	process_charts();
 }
 void pptx_slide_context::process_images()
 {

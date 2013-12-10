@@ -234,7 +234,7 @@ void draw_polygon_attlist::add_attributes( const xml::attributes_wc_ptr & Attrib
     CP_APPLY_ATTR(L"svg:viewBox", svg_viewbox_);
 
 }
-// draw:path
+// draw:polygon
 const wchar_t * draw_polygon::ns = L"draw";
 const wchar_t * draw_polygon::name = L"polygon";
 
@@ -426,6 +426,61 @@ void draw_caption::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	
 	sub_type_ = 1;	
 }
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// draw-connector-attlist
+void draw_connector_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"svg:d", svg_d_);
+    CP_APPLY_ATTR(L"svg:viewBox", svg_viewbox_);
+    CP_APPLY_ATTR(L"draw:type",draw_type_);
+
+}
+// draw:connector
+const wchar_t * draw_connector::ns = L"draw";
+const wchar_t * draw_connector::name = L"connector";
+
+void draw_connector::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    draw_connector_attlist_.add_attributes(Attributes);
+	draw_shape::add_attributes(Attributes);
+
+	sub_type_ = 6;
+	
+}
+void draw_connector::reset_svg_path()
+{
+	if (draw_connector_attlist_.svg_d_)
+	{
+		std::vector<svg_path::_polyline> o_Polyline_pt;
+		std::vector<svg_path::_polyline> o_Polyline_cm;
+	
+		bool res = svg_path::parseSvgD(o_Polyline_cm,draw_connector_attlist_.svg_d_.get(),false);
+		
+		BOOST_FOREACH(svg_path::_polyline  & poly, o_Polyline_cm)
+		{
+			for (long i=0;i<poly.points.size();i++)
+			{
+				if (poly.points[i].x)
+				{
+					poly.points[i].x =  length(poly.points[i].x.get()/1000.,length::pt).get_value_unit(length::emu); 
+				}
+				if (poly.points[i].y)
+				{
+					poly.points[i].y = length(poly.points[i].y.get()/1000.,length::pt).get_value_unit(length::emu); 
+				}
+			}
+			o_Polyline_pt.push_back(poly);
+		}
+		if (o_Polyline_pt.size()>0)
+		{
+			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
+			std::wstringstream output_;   
+			svg_path::oox_serialize(output_, o_Polyline_pt);
+			additional_.push_back(odf::_property(L"custom_path",output_.str()));
+		}
+	}
+}
+///////////////////////////////////////
 
 }
 }

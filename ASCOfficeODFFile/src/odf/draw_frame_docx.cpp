@@ -696,12 +696,13 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
     const std::wstring styleName = styleRef ? styleRef->style_name() : L"";
 
 	std::vector<const odf::style_instance *> instances;
-
-	style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
-    if (defaultStyle)instances.push_back(defaultStyle);
-
 	odf::style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(styleName, odf::style_family::Graphic,Context.process_headers_footers_);
-	if (styleInst)instances.push_back(styleInst);
+	if (styleInst)
+	{
+		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
+		if (defaultStyle)instances.push_back(defaultStyle);
+		instances.push_back(styleInst);
+	}
 	graphic_format_properties graphicProperties = calc_graphic_properties_content(instances);	
 
     const std::wstring pagePropertiesName = Context.get_page_properties();
@@ -911,10 +912,10 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 
 void draw_image::docx_convert(oox::docx_conversion_context & Context)
 {
-	if (!common_draw_data_attlist_.xlink_href_)
+	if (!common_xlink_attlist_.xlink_href_)
 		return;
  
-	std::wstring href		= common_draw_data_attlist_.xlink_href_.get_value_or(L"");
+	std::wstring href		= common_xlink_attlist_.xlink_href_.get_value_or(L"");
 	int pos_replaicement= href.find(L"ObjectReplacements"); 
 	if (pos_replaicement >=0)
 		return;//заменяемый объект
@@ -947,8 +948,6 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	Context.set_stream_man(prev);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-    const std::wstring hrefType = common_draw_data_attlist_.xlink_type_.get_value_or(L"");
-
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 
 	drawing.type = oox::mediaitems::typeImage;
@@ -1137,8 +1136,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 {
     try 
 	{
-        std::wstring href		= common_draw_data_attlist_.xlink_href_.get_value_or(L"");
-        const std::wstring hrefType = common_draw_data_attlist_.xlink_type_.get_value_or(L"");
+        std::wstring href		= common_xlink_attlist_.xlink_href_.get_value_or(L"");
 
         odf::odf_document * odf = Context.root();
         const std::wstring folder = odf->get_folder();

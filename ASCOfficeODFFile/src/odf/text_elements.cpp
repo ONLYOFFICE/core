@@ -634,7 +634,8 @@ void text_section::docx_convert(oox::docx_conversion_context & Context)
 
 void text_section_source_attr::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"xlink:href", xlink_href_);
+    common_xlink_attlist_.add_attributes(Attributes);
+
     CP_APPLY_ATTR(L"text:section-name", text_section_name_);
     CP_APPLY_ATTR(L"text:filter-name", text_filter_name_);
 }

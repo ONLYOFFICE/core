@@ -140,7 +140,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-    _CP_OPT(common_draw_data_attlist) common_draw_data_attlist_;
+    _CP_OPT(common_xlink_attlist) common_xlink_attlist_;
         
 };
 
@@ -172,7 +172,7 @@ private:
     _CP_OPT(std::wstring) filter_name_;
     _CP_OPT(percent) draw_opacity_;
 
-    _CP_OPT(common_draw_data_attlist) common_draw_data_attlist_;
+    _CP_OPT(common_xlink_attlist) common_xlink_attlist_;
     office_element_ptr office_binary_data_;
 
 };

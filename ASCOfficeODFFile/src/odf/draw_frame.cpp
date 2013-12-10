@@ -60,7 +60,7 @@ const wchar_t * draw_image::name = L"image";
 void draw_image::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     draw_image_attlist_.add_attributes(Attributes);
-    common_draw_data_attlist_.add_attributes(Attributes);
+    common_xlink_attlist_.add_attributes(Attributes);
 }
 
 void draw_image::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
@@ -93,7 +93,7 @@ const wchar_t * draw_chart::name = L"chart";
 void draw_chart::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     draw_chart_attlist_.add_attributes(Attributes);
-    common_draw_data_attlist_.add_attributes(Attributes);
+    common_xlink_attlist_.add_attributes(Attributes);
 }
 
 void draw_chart::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
@@ -237,7 +237,7 @@ const wchar_t * draw_object::name = L"object";
 void draw_object::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     draw_object_attlist_.add_attributes(Attributes);
-    common_draw_data_attlist_.add_attributes(Attributes);
+    common_xlink_attlist_.add_attributes(Attributes);
 }
 
 void draw_object::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)

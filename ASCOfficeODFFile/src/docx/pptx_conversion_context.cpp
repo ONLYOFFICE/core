@@ -121,6 +121,21 @@ void pptx_conversion_context::start_document()
 
 
 }
+//void pptx_conversion_context::start_hyperlink(const std::wstring & styleName)
+//{	
+//	pptx_text_context_.start_hyperlink();
+//	pptx_text_context_.start_span(styleName);//???
+//}
+//
+//void pptx_conversion_context::end_hyperlink(std::wstring const & href)
+//{
+//	//std::wstring content = pptx_text_context_.end_span2();//????
+//
+//	//hId from href
+//
+//	std::wstring hId = get_slide_context().hyperlinks_.add(href);
+//	pptx_text_context_.end_hyperlink(get_table_context().end_hyperlink(current_cell_address(), href, L""));
+//}
 
 void pptx_conversion_context::end_document()
 {

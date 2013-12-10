@@ -41,7 +41,6 @@ enum ElementType
 	typeDcCreator,
 	typeDcDate,
 
-
     typeTextH,
     typeTextP,
 
@@ -55,8 +54,7 @@ enum ElementType
     typeTextIndexTitle,
     typeTextIndexBody,
 
-    typeTextNumberedParagraph,
-    
+    typeTextNumberedParagraph,    
    
     typeDrawA,
 
@@ -171,7 +169,7 @@ enum ElementType
 	typeDrawShape,
 
 	typeDrawRect,
-    typeDrawEllipse,
+	typeDrawEllipse,
 	typeDrawLine,
 	typeDrawPolygon,
 	typeDrawPolyline,
@@ -189,21 +187,25 @@ enum ElementType
 	typeDrawHandle,
 	typeDrawEquation,
 
+	typeDrawPage,    
+
 	typeStyleGraphicPropertis,
 	typeStyleDrawGradientPropertis,
 
-    typeOfficeSpreadsheet,
-    typeOfficeAnnotation,
-    typeStyleRegionLeft,
-    typeStyleRegionCenter,
-    typeStyleRegionRight,
-    typeOfficeScripts,
-    typeOfficeScript,
-    typeTableCalculationSettings,
-    typeTableNullDate,
-
+	typeOfficeSpreadsheet,
+	typeOfficeAnnotation,
+	typeStyleRegionLeft,
+	typeOfficeScripts,
+	typeOfficeScript,
 	typeOfficePresentation,
-	typeDrawPage,
+	typeOfficeChart,
+	typeOfficeEventListeners,
+  
+	typePresentationEventListener,
+	typeScriptEventListener,
+
+	typeTableCalculationSettings,
+    typeTableNullDate,
 
     typeNumberNumberStyle,
     typeNumberDataStyle,
@@ -229,7 +231,6 @@ enum ElementType
     typeNumberAmPm,
     typeTableShapes,
 
-    typeOfficeChart,
     typeChartChart,
     typeChartTitle,
     typeChartSubtitle,
@@ -252,6 +253,8 @@ enum ElementType
 	typeChartRegressionCurve,
 	typeChartEquation,
 
+	typeStyleRegionCenter,
+    typeStyleRegionRight,
 	typeStyleChartProperties
 
 };

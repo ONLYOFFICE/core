@@ -46,7 +46,7 @@ public:
 	void common_docx_convert(oox::docx_conversion_context & Context) ;
 	void common_pptx_convert(oox::pptx_conversion_context & Context) ;
 
-	common_draw_data_attlist	common_draw_data_attlist_;
+	common_xlink_attlist	common_xlink_attlist_;
 	common_presentation_attlist common_presentation_attlist_;
 	union_common_draw_attlists  common_draw_attlists_;
 	
@@ -430,5 +430,38 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_caption);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+class draw_connector_attlist
+{
+public:
+ 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	_CP_OPT(std::wstring) svg_d_;
+	_CP_OPT(std::wstring) svg_viewbox_;
+	_CP_OPT(std::wstring) draw_type_;
+
+};
+/////////////////////////////////////////////////////////////////////////
+class draw_connector : public draw_shape
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+	
+	static const ElementType type = typeDrawConnector;
+	static const xml::NodeType xml_type = xml::typeElement;
+
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
+
+    draw_connector_attlist draw_connector_attlist_;
+
+	void reset_svg_path();
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(draw_connector);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 }

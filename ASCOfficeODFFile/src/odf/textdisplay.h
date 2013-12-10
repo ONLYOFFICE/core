@@ -1,9 +1,4 @@
-#ifndef _CPDOCCORE_ODF_TEXTDISPLAY_H_
-#define _CPDOCCORE_ODF_TEXTDISPLAY_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <string>
@@ -46,5 +41,3 @@ std::wostream & operator << (std::wostream & _Wostream, const text_display & _Va
 APPLY_PARSE_XML_ATTRIBUTES(odf::text_display);
 
 }
-
-#endif

@@ -1,0 +1,76 @@
+#include "precompiled_cpodf.h"
+#include "office_event_listeners.h"
+
+#include <boost/foreach.hpp>
+
+#include <cpdoccore/xml/xmlchar.h>
+#include <cpdoccore/xml/serialize.h>
+#include <cpdoccore/xml/attributes.h>
+
+#include "serialize_elements.h"
+
+namespace cpdoccore { 
+namespace odf {
+
+// office:event_listeners
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * office_event_listeners::ns = L"office";
+const wchar_t * office_event_listeners::name = L"event-listeners";
+
+void office_event_listeners::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+}
+
+void office_event_listeners::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+{
+	if CP_CHECK_NAME(L"presentation", L"event-listener")
+        CP_CREATE_ELEMENT(presentation_event_listeners_);
+    else
+        CP_NOT_APPLICABLE_ELM();
+}
+// presentation:event-listener-attlist
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void presentation_event_listener_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	common_xlink_attlist_.add_attributes(Attributes);
+
+	CP_APPLY_ATTR(L"script:event_name", script_event_name_);
+	CP_APPLY_ATTR(L"presentation:action", presentation_action_);
+	
+	//...
+}
+// presentation:event-listener
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * presentation_event_listener::ns = L"presentation";
+const wchar_t * presentation_event_listener::name = L"event-listener";
+
+void presentation_event_listener::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	presentation_event_listener_attlist_.add_attributes(Attributes);
+}
+
+void presentation_event_listener::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+{
+	if CP_CHECK_NAME(L"presentation", L"sound")
+        CP_CREATE_ELEMENT(presentation_sound_);
+    else
+        CP_NOT_APPLICABLE_ELM();
+}
+
+// script:event-listener
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * script_event_listener::ns = L"script";
+const wchar_t * script_event_listener::name = L"event-listener";
+
+void script_event_listener::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+}
+
+void script_event_listener::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
+
+}
+}

@@ -46,7 +46,7 @@ private:
 
 private:
     draw_image_attlist draw_image_attlist_;
-    common_draw_data_attlist common_draw_data_attlist_;
+    common_xlink_attlist common_xlink_attlist_;
     office_element_ptr office_binary_data_;
     office_element_ptr_array content_;
 
@@ -89,7 +89,7 @@ private:
 
 private:
     draw_chart_attlist draw_chart_attlist_;
-    common_draw_data_attlist common_draw_data_attlist_;
+    common_xlink_attlist common_xlink_attlist_;
    
 	//office_element_ptr title_;
     office_element_ptr_array content_;
@@ -276,7 +276,7 @@ private:
 
 public:
     draw_object_attlist draw_object_attlist_;
-    common_draw_data_attlist common_draw_data_attlist_;
+    common_xlink_attlist common_xlink_attlist_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_object);

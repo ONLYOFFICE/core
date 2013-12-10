@@ -53,19 +53,16 @@ public:
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-	//common_draw_data_attlist common_draw_data_attlist_;
   
 	office_element_ptr_array content_;
 
 	friend class odf_document;
 
 private:
+	common_xlink_attlist common_xlink_attlist_;
+
     ::std::wstring office_name_;
-    ::std::wstring xlink_href_;
-    _CP_OPT(xlink_type) xlink_type_;
-    _CP_OPT(xlink_actuate) xlink_actuate_;
     _CP_OPT(target_frame_name) office_target_frame_name_;
-    _CP_OPT(xlink_show) xlink_show_;
 
     style_ref text_style_name_;
     style_ref text_visited_style_name_;

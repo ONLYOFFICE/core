@@ -77,13 +77,15 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	}
 /////////////////////////////////////////////////////////////////////////////////
 	std::vector<const odf::style_instance *> instances;
-
-	style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
-    if (defaultStyle)instances.push_back(defaultStyle);
-
 	odf::style_instance* styleInst = 
 		Context.root()->odf_context().styleContainer().style_by_name(styleName, odf::style_family::Graphic,false/*Context.process_headers_footers_*/);
-	if (styleInst)instances.push_back(styleInst);
+	if (styleInst)
+	{
+		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
+		if (defaultStyle)instances.push_back(defaultStyle);
+
+		instances.push_back(styleInst);
+	}
 	graphic_format_properties properties = calc_graphic_properties_content(instances);
 	
 ////////////////////////////////////////////////////////////////////////////////////
@@ -109,7 +111,7 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_rect::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	Context.get_slide_context().start_shape(2);
+	Context.get_slide_context().start_shape(sub_type_);
 
 	common_pptx_convert(Context);
 
@@ -117,7 +119,7 @@ void draw_rect::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_ellipse::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	Context.get_slide_context().start_shape(3);
+	Context.get_slide_context().start_shape(sub_type_);
 
 	common_pptx_convert(Context);
 
@@ -125,7 +127,7 @@ void draw_ellipse::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_circle::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	Context.get_slide_context().start_shape(4);
+	Context.get_slide_context().start_shape(sub_type_);
 
 	common_pptx_convert(Context);
 
@@ -133,7 +135,7 @@ void draw_circle::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_line::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	Context.get_slide_context().start_shape(5);
+	Context.get_slide_context().start_shape(sub_type_);
 	
 	reset_svg_attributes();
 	
@@ -147,7 +149,7 @@ void draw_path::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	reset_svg_path();
 ///////////////////////////////////////////////////////////////////////
-	Context.get_slide_context().start_shape(6);
+	Context.get_slide_context().start_shape(sub_type_);
 
 	common_pptx_convert(Context);
 
@@ -157,7 +159,7 @@ void draw_polygon::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	reset_polygon_path();
 ///////////////////////////////////////////////////////////////////////
-	Context.get_slide_context().start_shape(8);
+	Context.get_slide_context().start_shape(sub_type_);
 
 	common_pptx_convert(Context);
 
@@ -165,7 +167,7 @@ void draw_polygon::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_custom_shape::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	Context.get_slide_context().start_shape(7);
+	Context.get_slide_context().start_shape(sub_type_);
 
 	common_pptx_convert(Context);
 
@@ -175,12 +177,28 @@ void draw_caption::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	//const std::wstring style = common_draw_text_style_name_attlist_.draw_text_style_name_.get_value_or(style_ref(L"")).style_name();
 
-	Context.get_slide_context().start_shape(1);//rect с наваротами-атрибутами .. а-ля TextBox
+	Context.get_slide_context().start_shape(sub_type_);//rect с наваротами-атрибутами .. а-ля TextBox
 	
 	common_pptx_convert(Context);
 
 	Context.get_slide_context().end_shape();
 
+}
+void draw_connector::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	reset_svg_path();
+///////////////////////////////////////////////////////////////////////
+	int type=sub_type_;
+	//if (draw_connector_attlist_.draw_type_)
+	//{
+	//	if (*draw_connector_attlist_.draw_type_ == L"curve") type = 6;
+	//	if (*draw_connector_attlist_.draw_type_ == L"line")		type = 5;
+	//}
+	Context.get_slide_context().start_shape(type);
+
+	common_pptx_convert(Context);
+
+	Context.get_slide_context().end_shape();
 }
 void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context) 
 {

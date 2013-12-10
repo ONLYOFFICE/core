@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_TEXT_ELEMENTS_H_
-#define _CPDOCCORE_ODF_TEXT_ELEMENTS_H_
+#pragma once
 
 #include <iosfwd>
 #include <cpdoccore/CPOptional.h>
@@ -9,6 +8,7 @@
 #include "style_ref.h"
 #include "office_elements_create.h"
 #include "textdisplay.h"
+#include "common_attlists.h"
 
 namespace cpdoccore { 
 namespace odf {
@@ -251,11 +251,10 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 private:
-    _CP_OPT(std::wstring) xlink_href_;
-    // xlink:type
-    // xlink:show
-    _CP_OPT(std::wstring) text_section_name_;
-    _CP_OPT(std::wstring) text_filter_name_;
+    common_xlink_attlist	common_xlink_attlist_;
+
+    _CP_OPT(std::wstring)	text_section_name_;
+    _CP_OPT(std::wstring)	text_filter_name_;
     
 };
 
@@ -374,5 +373,3 @@ CP_REGISTER_OFFICE_ELEMENT2(text_index_title);
 }
 }
 }
-
-#endif // #ifndef _CPDOCCORE_ODF_TEXT_ELEMENTS_H_

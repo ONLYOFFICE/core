@@ -23,6 +23,7 @@
 #include "office_annotation.h"
 #include "office_settings.h"
 #include "office_scripts.h"
+#include "office_event_listeners.h"
 
 #include "styles.h"
 #include "style_regions.h"

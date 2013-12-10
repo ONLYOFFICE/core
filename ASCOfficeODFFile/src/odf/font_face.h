@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_FONT_FACE_H_
-#define _CPDOCCORE_ODF_FONT_FACE_H_
+#pragma once
 
 #include <iosfwd>
 #include <cpdoccore/CPOptional.h>
@@ -16,6 +15,9 @@
 #include "fontfamilygeneric.h"
 #include "fontpitch.h"
 
+#include "common_attlists.h"
+
+
 namespace cpdoccore { 
 namespace odf {
 
@@ -25,9 +27,7 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     
 private:
-    optional<std::wstring>::Type xlink_href_;
-    // xlink:type
-    // xlink:actuate
+    common_xlink_attlist common_xlink_attlist_;
 };
 
 /// \class  svg_font_face_uri
@@ -239,5 +239,4 @@ CP_REGISTER_OFFICE_ELEMENT2(office_font_face_decls);
 }
 }
 
-#endif
 

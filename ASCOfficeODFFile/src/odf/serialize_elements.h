@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_SERIALIZE_ELEMENTS_H_
-#define _CPDOCCORE_ODF_SERIALIZE_ELEMENTS_H_
+#pragma once
 
 #include "office_elements.h"
 #include <boost/foreach.hpp>
@@ -45,5 +44,3 @@ inline ::std::wostream & serialize_elements_text(::std::wostream & _Wostream, co
 
 }
 }
-
-#endif

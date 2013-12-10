@@ -1809,6 +1809,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\src\odf\office_event_listeners.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\src\odf\office_event_listeners.h"
+			>
+		</File>
+		<File
 			RelativePath=".\src\odf\office_presentation.cpp"
 			>
 		</File>

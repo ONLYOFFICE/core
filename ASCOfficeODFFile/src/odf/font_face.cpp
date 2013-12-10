@@ -91,7 +91,7 @@ void svg_font_face_name::add_text(const std::wstring & Text)
 
 void common_svg_font_face_xlink_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"xlink:href", xlink_href_);
+    common_xlink_attlist_.add_attributes(Attributes);
 }
 
 // svg:definition-src

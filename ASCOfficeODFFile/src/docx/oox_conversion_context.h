@@ -25,6 +25,7 @@ public:
     void docx_serialize_table_style(std::wostream & strm);
 
 	std::wstring & extern_node(){return extern_node_;}
+	std::wstring & hlinkClick(){return hlinkClick_;}
 
 	const odf::style_instance * get_current_processed_style() const { return current_processed_style_; }
     void start_process_style(const odf::style_instance * Instance);
@@ -33,6 +34,7 @@ public:
 private:
 	const odf::style_instance *current_processed_style_;
 	std::wstring extern_node_;
+	std::wstring hlinkClick_;
 
     std::wstringstream list_style_;
     std::wstringstream text_style_;

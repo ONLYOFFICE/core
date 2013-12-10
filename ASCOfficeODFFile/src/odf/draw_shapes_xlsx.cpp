@@ -78,12 +78,15 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 /////////////////////////////////////////////////////////////////////////////////
 	std::vector<const odf::style_instance *> instances;
 
-	style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
-    if (defaultStyle)instances.push_back(defaultStyle);
-
 	odf::style_instance* styleInst = 
 		Context.root()->odf_context().styleContainer().style_by_name(styleName, odf::style_family::Graphic,false/*Context.process_headers_footers_*/);
-	if (styleInst)instances.push_back(styleInst);
+	if (styleInst)
+	{
+		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
+		if (defaultStyle)instances.push_back(defaultStyle);
+
+		instances.push_back(styleInst);
+	}
 	graphic_format_properties properties = calc_graphic_properties_content(instances);
 	
 ////////////////////////////////////////////////////////////////////////////////////
@@ -144,6 +147,17 @@ void draw_line::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 
 void draw_path::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	reset_svg_path();
+///////////////////////////////////////////////////////////////////////
+	Context.get_drawing_context().start_shape(6);
+
+	common_xlsx_convert(Context);
+
+	Context.get_drawing_context().end_shape();
+}
+
+void draw_connector::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	reset_svg_path();
 ///////////////////////////////////////////////////////////////////////

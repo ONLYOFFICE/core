@@ -116,10 +116,10 @@ void style_background_image::add_attributes( const xml::attributes_wc_ptr & Attr
     CP_APPLY_ATTR(L"filter:name", filter_name_);
     CP_APPLY_ATTR(L"draw:opacity", draw_opacity_);
 
-    common_draw_data_attlist tmp;
+    common_xlink_attlist tmp;
     if (tmp.add_attributes(Attributes))
     {
-        common_draw_data_attlist_ = _CP_OPT(common_draw_data_attlist)(tmp);
+        common_xlink_attlist_ = _CP_OPT(common_xlink_attlist)(tmp);
     }
 }
 

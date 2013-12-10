@@ -103,8 +103,9 @@ public:
 
     mediaitems & get_mediaitems() { return pptx_slide_context_.get_mediaitems(); }
 
- //   void start_hyperlink(const std::wstring & styleName);
- //   void end_hyperlink(std::wstring const & href);
+    //void start_hyperlink(const std::wstring & styleName);//сюда сваливаются гиперлинки с текста
+    //void end_hyperlink(std::wstring const & href);
+	
 	void process_master_pages();
 	void process_layouts();
 	void process_styles();

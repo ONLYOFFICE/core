@@ -139,12 +139,12 @@ void common_writing_mode_attlist::add_attributes( const xml::attributes_wc_ptr &
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool common_draw_data_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
+bool common_xlink_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     bool b = CP_APPLY_ATTR(L"xlink:href", xlink_href_);
-    CP_APPLY_ATTR(L"xlink:type", xlink_type_);
-    CP_APPLY_ATTR(L"xlink:show", xlink_show_);    
-    CP_APPLY_ATTR(L"xlink:actuate", xlink_actuate_);    
+    CP_APPLY_ATTR(L"xlink:type",		xlink_type_);
+    CP_APPLY_ATTR(L"xlink:show",		xlink_show_);    
+    CP_APPLY_ATTR(L"xlink:actuate",		xlink_actuate_);    
     return b;
 }
 

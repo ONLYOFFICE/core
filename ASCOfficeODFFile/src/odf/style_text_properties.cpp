@@ -511,19 +511,19 @@ void text_format_properties_content::pptx_convert(oox::pptx_conversion_context &
 			//	_rPr << L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" << w_fill << "\" />";
 			//}
 			
-			//if (hyperlink_hId.length()>0)
-			//{
-			//	CP_XML_NODE(L"a:hlinkClick ")
-			//	{
-			//		CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-			//		CP_XML_ATTR(L"r:id", hyperlink_hId);
-			//	}
-			//}
 			if (fo_color_)
 			{
 				CP_XML_NODE(L"a:solidFill")
 				{
 					CP_XML_NODE(L"a:srgbClr"){CP_XML_ATTR(L"val",fo_color_->get_hex_value());}
+				}
+			}
+			if (styles_context_.hlinkClick().length()>0)
+			{
+				CP_XML_NODE(L"a:hlinkClick")
+				{
+					CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+					CP_XML_ATTR(L"r:id",styles_context_.hlinkClick());
 				}
 			}
 		}

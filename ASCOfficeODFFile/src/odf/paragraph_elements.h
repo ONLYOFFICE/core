@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_PARAGRAPH_ELEMENTS_H_
-#define _CPDOCCORE_ODF_PARAGRAPH_ELEMENTS_H_
+#pragma once
 
 #include <iosfwd>
 #include <vector>
@@ -9,10 +8,11 @@
 #include "paragraph_content.h"
 #include "office_elements_create.h"
 #include "style_ref.h"
-#include "xlink.h"
 #include "targetframename.h"
 #include "noteclass.h"
 #include "../docx/docx_conversion_context.h"
+
+#include "common_attlists.h"
 
 namespace cpdoccore { 
 namespace odf {
@@ -418,17 +418,13 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
+    common_xlink_attlist common_xlink_attlist_;
+
     ::std::wstring office_name_;
-    ::std::wstring xlink_href_;
-    _CP_OPT(xlink_type) xlink_type_;
-    _CP_OPT(xlink_actuate) xlink_actuate_;
     _CP_OPT(target_frame_name) office_target_frame_name_;
-    _CP_OPT(xlink_show) xlink_show_;
 
     style_ref text_style_name_;
     style_ref text_visited_style_name_;
-
-    // office-event-listeners ?
 
     office_element_ptr_array paragraph_content_;
 };
@@ -763,5 +759,3 @@ CP_REGISTER_OFFICE_ELEMENT2(sheet_name);
 } // namespace text
 } // namespace odf
 } // namespace cpdoccore
-
-#endif // #ifndef _CPDOCCORE_ODF_PARAGRAPH_ELEMENTS_H_

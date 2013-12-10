@@ -21,6 +21,7 @@
 #include "style_ref.h"
 #include "linewidth.h"
 #include "presentationclass.h"
+#include "xlink.h"
 
 #define _CP_APPLY_PROP(A, B) \
     if (B) \
@@ -170,11 +171,11 @@ private:
 };
 
 /// common-draw-data-attlist
-class common_draw_data_attlist
+class common_xlink_attlist
 {
 public:
     bool add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_draw_data_attlist & Other)
+    void apply_from(const common_xlink_attlist & Other)
     {
         _CP_APPLY_PROP(xlink_href_, Other.xlink_href_);
         _CP_APPLY_PROP(xlink_type_, Other.xlink_type_);
@@ -183,10 +184,10 @@ public:
     }
 
 public:
-    _CP_OPT(std::wstring) xlink_href_;
-    _CP_OPT(std::wstring) xlink_type_;
-    _CP_OPT(std::wstring) xlink_show_;    
-    _CP_OPT(std::wstring) xlink_actuate_;    
+    _CP_OPT(std::wstring)	xlink_href_;
+    _CP_OPT(xlink_type)		xlink_type_;
+    _CP_OPT(xlink_show)		xlink_show_;    
+    _CP_OPT(xlink_actuate)	xlink_actuate_;    
 
 };
 

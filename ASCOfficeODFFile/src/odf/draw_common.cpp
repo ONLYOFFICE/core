@@ -197,12 +197,10 @@ void draw_a::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, co
 }
 void draw_a::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	common_xlink_attlist_.add_attributes(Attributes);
+
     CP_APPLY_ATTR(L"office:name", office_name_, std::wstring(L""));
-    CP_APPLY_ATTR(L"xlink:href", xlink_href_, std::wstring(L""));
-    CP_APPLY_ATTR(L"xlink:type", xlink_type_);
-    CP_APPLY_ATTR(L"xlink:actuate", xlink_actuate_);
     CP_APPLY_ATTR(L"office:target-frame-name", office_target_frame_name_);
-    CP_APPLY_ATTR(L"xlink:show", xlink_show_);
     CP_APPLY_ATTR(L"text:style-name", text_style_name_, style_ref(L""));
     CP_APPLY_ATTR(L"text:visited-style-name", text_visited_style_name_, style_ref(L""));
 
@@ -210,7 +208,8 @@ void draw_a::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void draw_a::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    Context.get_drawing_context().add_hyperlink(xlink_href_,true);//стиль на текст не нужен ..текста то нет - ссылка с объекта
+    Context.get_drawing_context().add_hyperlink(common_xlink_attlist_.xlink_href_.get_value_or(L""),true);
+				//стиль на текст не нужен ..текста то нет - ссылка с объекта
    
 	BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
@@ -219,7 +218,7 @@ void draw_a::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void draw_a::pptx_convert(oox::pptx_conversion_context & Context)
 {
-   ////// Context.get_slide_context().add_hyperlink(xlink_href_,true);//стиль на текст не нужен ..текста то нет - ссылка с объекта
+   Context.get_slide_context().add_hyperlink(common_xlink_attlist_.xlink_href_.get_value_or(L""),true);//стиль на текст не нужен ..текста то нет - ссылка с объекта
    
 	BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
@@ -228,7 +227,7 @@ void draw_a::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_a::docx_convert(oox::docx_conversion_context & Context) 
 {
-	std::wstring rId = Context.add_hyperlink(xlink_href_, true);
+	std::wstring rId = Context.add_hyperlink(common_xlink_attlist_.xlink_href_.get_value_or(L""), true);//гиперлинк с объекта, а не с текста .. 
 	
 	BOOST_FOREACH(const office_element_ptr & elm, content_)
     {

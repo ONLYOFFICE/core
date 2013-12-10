@@ -406,12 +406,10 @@ const wchar_t * a::name = L"a";
 
 void a::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	common_xlink_attlist_.add_attributes(Attributes);
+
     CP_APPLY_ATTR(L"office:name", office_name_, std::wstring(L""));
-    CP_APPLY_ATTR(L"xlink:href", xlink_href_, std::wstring(L""));
-    CP_APPLY_ATTR(L"xlink:type", xlink_type_);
-    CP_APPLY_ATTR(L"xlink:actuate", xlink_actuate_);
     CP_APPLY_ATTR(L"office:target-frame-name", office_target_frame_name_);
-    CP_APPLY_ATTR(L"xlink:show", xlink_show_);
     CP_APPLY_ATTR(L"text:style-name", text_style_name_, style_ref(L""));
     CP_APPLY_ATTR(L"text:visited-style-name", text_visited_style_name_, style_ref(L""));
 }
@@ -438,7 +436,7 @@ void a::docx_convert(oox::docx_conversion_context & Context)
     std::wostream & _Wostream = Context.output_stream();
 
     std::wstring rId;
-    rId = Context.add_hyperlink(xlink_href_, false);
+    rId = Context.add_hyperlink(common_xlink_attlist_.xlink_href_.get_value_or(L""), false);
 
     _Wostream << L"<w:hyperlink r:id=\"" << rId << L"\">";
 
@@ -499,21 +497,19 @@ void a::xlsx_convert(oox::xlsx_conversion_context & Context)
     {
         elm->xlsx_convert(Context);
     }
-    Context.end_hyperlink(xlink_href_);
+    Context.end_hyperlink(common_xlink_attlist_.xlink_href_.get_value_or(L""));
 }
 void a::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    if (style_instance * styleInst = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_.style_name(), style_family::Text,false))
-		Context.get_text_context().get_styles_context().start_process_style(styleInst);
-	
-	// Context.start_hyperlink(text_style_name_.style_name());
+	Context.get_text_context().start_hyperlink();
     BOOST_FOREACH(const office_element_ptr & elm, paragraph_content_)
     {
         elm->pptx_convert(Context);
     }
- //   Context.end_hyperlink(xlink_href_);
+	
+	std::wstring hId = Context.get_slide_context().add_hyperlink(common_xlink_attlist_.xlink_href_.get_value_or(L""),false);
+	Context.get_text_context().end_hyperlink(hId);
 
-	Context.get_text_context().get_styles_context().end_process_style();
 }
 // text:note
 //////////////////////////////////////////////////////////////////////////////////////////////////

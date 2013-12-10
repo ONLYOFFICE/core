@@ -1,9 +1,5 @@
-#ifndef CPDOCCORE_OFFICE_CHART_H_
-#define CPDOCCORE_OFFICE_CHART_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
+
 
 #include <iosfwd>
 #include <cpdoccore/CPOptional.h>
@@ -658,5 +654,3 @@ CP_REGISTER_OFFICE_ELEMENT2(chart_stock_range_line);
 
 }
 }
-
-#endif

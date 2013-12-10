@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_TABLE_H_
-#define _CPDOCCORE_ODF_TABLE_H_
+#pragma once
 
 #include <iosfwd>
 #include <cpdoccore/CPOptional.h>
@@ -98,9 +97,8 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     
 public:
-    // xlink:type
-    // xlink:actuate
-    _CP_OPT(std::wstring) xlink_href_;
+    common_xlink_attlist common_xlink_attlist_;
+
     _CP_OPT(std::wstring) table_filter_name_;
     _CP_OPT(std::wstring) table_filter_options_;
     _CP_OPT(std::wstring) table_refresh_delay_;        
@@ -695,5 +693,3 @@ CP_REGISTER_OFFICE_ELEMENT2(table_shapes);
 
 }
 }
-
-#endif

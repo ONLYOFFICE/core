@@ -1840,27 +1840,16 @@ namespace NSHtmlRenderer
 				CFile oFileFontFileJS;
 				oFileFontFileJS.CreateFile(sFilePathDst);
 
-				LONG lFontIndex = lIndex;
-
-				CString strNum = _T("");
-				strNum.Format(_T("%d"), lFontIndex);
-				strNum = _T("__font_data") + strNum;
-
-				CStringA strA;
-
-				CString t1 = _T("var ") + strNum + _T("=\"");
-				strA = (CStringA)t1;
-				oFileFontFileJS.WriteFile((void*)strA.GetBuffer(), (DWORD)strA.GetLength());
+				CString strWriteJS = _T("window[\"") + strFileD + _T("\"] = \"");
+				CStringA t1 = (CStringA)strWriteJS;
+				oFileFontFileJS.WriteFile((void*)t1.GetBuffer(), (DWORD)t1.GetLength());
+				t1 = "";
+				t1.Format("%d;", nInputLen);
+				oFileFontFileJS.WriteFile((void*)t1.GetBuffer(), (DWORD)t1.GetLength());
 				oFileFontFileJS.WriteFile((void*)pOutput, (DWORD)(nOutputLen));
-
-				CString strRes = _T("");
-				strRes.Format(_T("\";\nvar __font_data%d_idx = g_fonts_streams.length;\n\
-g_fonts_streams[__font_data%d_idx] = CreateFontData2(__font_data%d,%d);\n\
-__font_data%d = null;\n\
-window.g_font_loader.SetStreamIndexEmb(%d, __font_data%d_idx);"), lFontIndex, lFontIndex, lFontIndex, nInputLen, lFontIndex, lFontIndex, lFontIndex);
-				strA = (CStringA)strRes;
-				oFileFontFileJS.WriteFile((void*)strA.GetBuffer(), (DWORD)strA.GetLength());
-					
+				t1 = "\";";
+				oFileFontFileJS.WriteFile((void*)t1.GetBuffer(), (DWORD)t1.GetLength());				
+			
 				oFileFontFileJS.CloseFile();
 
 				RELEASEARRAYOBJECTS(pOutput);

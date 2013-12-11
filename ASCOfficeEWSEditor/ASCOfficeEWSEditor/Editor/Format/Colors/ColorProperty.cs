@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using AVSOfficeEWSEditor.XMLDataSpecific;
-using AVSOfficeEWSEditor.Editor.Walkers;
+using ASCOfficeEWSEditor.XMLDataSpecific;
+using ASCOfficeEWSEditor.Editor.Walkers;
 
-namespace AVSOfficeEWSEditor.Editor.Format.Colors
+namespace ASCOfficeEWSEditor.Editor.Format.Colors
 {
     internal class ColorProperty : PropertyColor
     {

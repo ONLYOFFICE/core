@@ -5,10 +5,10 @@ using System.Xml;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Globalization;
-using AVSOfficeEWSEditor.Editor.Cells;
-using AVSOfficeEWSEditor.XMLDataSpecific;
+using ASCOfficeEWSEditor.Editor.Cells;
+using ASCOfficeEWSEditor.XMLDataSpecific;
 
-namespace AVSOfficeEWSEditor.Editor.FileFormats
+namespace ASCOfficeEWSEditor.Editor.FileFormats
 {
     internal class CsvLoader
     {

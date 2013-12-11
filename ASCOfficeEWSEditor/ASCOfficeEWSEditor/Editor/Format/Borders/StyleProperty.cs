@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using AVSOfficeEWSEditor.XMLDataSpecific;
+using ASCOfficeEWSEditor.XMLDataSpecific;
 
-namespace AVSOfficeEWSEditor.Editor.Format.Borders
+namespace ASCOfficeEWSEditor.Editor.Format.Borders
 {
     internal class StyleProperty : Property<BorderStyle>
     {

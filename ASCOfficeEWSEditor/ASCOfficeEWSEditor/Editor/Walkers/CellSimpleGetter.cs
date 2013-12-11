@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using AVSOfficeEWSEditor.XMLDataSpecific;
+using ASCOfficeEWSEditor.XMLDataSpecific;
 
-namespace AVSOfficeEWSEditor.Editor.Walkers
+namespace ASCOfficeEWSEditor.Editor.Walkers
 {
     internal class CellSimpleGetter : IStatCollector
     {
@@ -21,7 +21,7 @@ namespace AVSOfficeEWSEditor.Editor.Walkers
         public bool Collect(int row, int col, XmlElement cell_tag)
         {
             CellSimple oNewCellSimple = new CellSimple();
-            oNewCellSimple.ID = (new AVSOfficeEWSEditor.Editor.Cells.Cell(row, col)).ToString();
+            oNewCellSimple.ID = (new ASCOfficeEWSEditor.Editor.Cells.Cell(row, col)).ToString();
 
             //Style
             int xf_index = XMLInt.ParseOrDefault(cell_tag.GetAttribute("s"), -1);

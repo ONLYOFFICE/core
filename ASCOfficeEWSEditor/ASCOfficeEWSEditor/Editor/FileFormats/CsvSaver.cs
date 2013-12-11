@@ -4,7 +4,7 @@ using System.Text;
 using System.Xml;
 using System.IO;
 
-namespace AVSOfficeEWSEditor.Editor.FileFormats
+namespace ASCOfficeEWSEditor.Editor.FileFormats
 {
     internal class CsvSaver
     {
@@ -31,12 +31,12 @@ namespace AVSOfficeEWSEditor.Editor.FileFormats
                     }
 
 
-                    AVSOfficeEWSEditor.Editor.Walkers.StyleCollectorCache oCache = new AVSOfficeEWSEditor.Editor.Walkers.StyleCollectorCache(wb);
+                    ASCOfficeEWSEditor.Editor.Walkers.StyleCollectorCache oCache = new ASCOfficeEWSEditor.Editor.Walkers.StyleCollectorCache(wb);
 
                     Range oRange = active_sheet.Range("A1:" + Helpers.ReferencesFormat.column2str(nColumnCount, true) + nRowCount.ToString());
 
-                    Dictionary<int, AVSOfficeEWSEditor.Editor.Format.FormatSimple> arrRowsDefaultStyle;
-                    List<AVSOfficeEWSEditor.Editor.Format.CCollFormat> arrCollsDefaultStyle;
+                    Dictionary<int, ASCOfficeEWSEditor.Editor.Format.FormatSimple> arrRowsDefaultStyle;
+                    List<ASCOfficeEWSEditor.Editor.Format.CCollFormat> arrCollsDefaultStyle;
                     List<CellSimple> arrCells = oRange.GetCellSimple(oCache, out arrRowsDefaultStyle, out arrCollsDefaultStyle);
 
                     int nColumnCurrent = 1;

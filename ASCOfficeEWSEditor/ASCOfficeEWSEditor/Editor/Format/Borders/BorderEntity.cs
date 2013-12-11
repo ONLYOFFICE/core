@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace AVSOfficeEWSEditor.Editor.Format.Borders
+namespace ASCOfficeEWSEditor.Editor.Format.Borders
 {
     internal class BorderEntity : SeparateEntity
     {

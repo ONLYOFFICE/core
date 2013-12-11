@@ -14,7 +14,7 @@ using System.Diagnostics;
  */
 
 
-namespace AVSOfficeEWSEditor.Editor
+namespace ASCOfficeEWSEditor.Editor
 {
     /// <summary>
     /// Represents the entire application

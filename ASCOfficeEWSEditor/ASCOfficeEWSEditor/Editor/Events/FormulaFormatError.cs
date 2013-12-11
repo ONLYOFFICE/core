@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AVSOfficeEWSEditor.Editor.Events
+namespace ASCOfficeEWSEditor.Editor.Events
 {
     /// <summary>
     /// Issued when a user entered a wrong formula or a wrong formula is contained in the loading document

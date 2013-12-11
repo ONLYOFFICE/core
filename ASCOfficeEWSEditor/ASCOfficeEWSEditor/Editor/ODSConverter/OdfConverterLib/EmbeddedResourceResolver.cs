@@ -50,8 +50,8 @@ namespace CleverAge.OdfConverter.OdfConverterLib
             this.appAssembly = appAssembly;
             //this.appNamespace = appNamespace;
             //this.defaultNamespace = this.GetType().Namespace;
-            this.appNamespace = "AVSOfficeEWSEditor.Editor.ODSConverter.SpreadsheetConverter";
-            this.defaultNamespace = "AVSOfficeEWSEditor.Editor.ODSConverter.OdfConverterLib";
+            this.appNamespace = "ASCOfficeEWSEditor.Editor.ODSConverter.SpreadsheetConverter";
+            this.defaultNamespace = "ASCOfficeEWSEditor.Editor.ODSConverter.OdfConverterLib";
             this.defaultAssembly = Assembly.GetExecutingAssembly();
         }
 

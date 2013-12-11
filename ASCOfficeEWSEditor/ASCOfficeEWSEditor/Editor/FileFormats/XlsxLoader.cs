@@ -4,7 +4,7 @@ using System.Text;
 using System.Xml;
 using System.IO;
 
-namespace AVSOfficeEWSEditor.Editor.FileFormats
+namespace ASCOfficeEWSEditor.Editor.FileFormats
 {
     internal class XlsxLoader : ASCOfficeUtils.IExtractedFileEvent
     {

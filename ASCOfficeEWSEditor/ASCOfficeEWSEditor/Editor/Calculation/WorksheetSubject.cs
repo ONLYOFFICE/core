@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AVSOfficeEWSEditor.Editor.Calculation
+namespace ASCOfficeEWSEditor.Editor.Calculation
 {
     internal class WorksheetSubject : Calculation.ISubject
     {
@@ -14,7 +14,7 @@ namespace AVSOfficeEWSEditor.Editor.Calculation
 
         #region IComparable<ISubject> Members
 
-        public int CompareTo(AVSOfficeEWSEditor.Editor.Calculation.ISubject other)
+        public int CompareTo(ASCOfficeEWSEditor.Editor.Calculation.ISubject other)
         {
             WorksheetSubject other_subj = other as WorksheetSubject;
             if (other_subj == null)

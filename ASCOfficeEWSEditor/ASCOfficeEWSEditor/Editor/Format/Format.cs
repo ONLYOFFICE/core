@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using AVSOfficeEWSEditor.Editor.Walkers;
-using AVSOfficeEWSEditor.Editor.NumberFormat;
+using ASCOfficeEWSEditor.Editor.Walkers;
+using ASCOfficeEWSEditor.Editor.NumberFormat;
 
-namespace AVSOfficeEWSEditor.Editor.Format
+namespace ASCOfficeEWSEditor.Editor.Format
 {
     /// <summary>
     /// Represents a set of cells formatting properties.
@@ -200,10 +200,10 @@ namespace AVSOfficeEWSEditor.Editor.Format
     }
     public class FormatSimple
     { //здесь не все свойства, а только те которые использет сайт
-        public Font.FontSimple Font = new AVSOfficeEWSEditor.Editor.Format.Font.FontSimple();
-        public Alignment.AlignmentSimple Alignment = new AVSOfficeEWSEditor.Editor.Format.Alignment.AlignmentSimple();
-        public Fills.FillsSimple Fills = new AVSOfficeEWSEditor.Editor.Format.Fills.FillsSimple();
-        public Borders.BordersSimple Brds = new AVSOfficeEWSEditor.Editor.Format.Borders.BordersSimple();
+        public Font.FontSimple Font = new ASCOfficeEWSEditor.Editor.Format.Font.FontSimple();
+        public Alignment.AlignmentSimple Alignment = new ASCOfficeEWSEditor.Editor.Format.Alignment.AlignmentSimple();
+        public Fills.FillsSimple Fills = new ASCOfficeEWSEditor.Editor.Format.Fills.FillsSimple();
+        public Borders.BordersSimple Brds = new ASCOfficeEWSEditor.Editor.Format.Borders.BordersSimple();
         public int? NumberFormatId = 0;
         public FormatSimple(Workbook workbook, System.Xml.XmlElement oCurNode)
         {
@@ -321,22 +321,22 @@ namespace AVSOfficeEWSEditor.Editor.Format
             SetColor(ref Fills.GradientFill.Color, oGraColProp);
             //Border
             if (oBrdrLeftTypeProp.Value == null)
-                Brds.Left.Style = AVSOfficeEWSEditor.Editor.Format.Borders.BorderStyle.none;
+                Brds.Left.Style = ASCOfficeEWSEditor.Editor.Format.Borders.BorderStyle.none;
             else
                 Brds.Left.Style = oBrdrLeftTypeProp.Value;
 
             if (oBrdrTopTypeProp.Value == null)
-                Brds.Top.Style = AVSOfficeEWSEditor.Editor.Format.Borders.BorderStyle.none;
+                Brds.Top.Style = ASCOfficeEWSEditor.Editor.Format.Borders.BorderStyle.none;
             else
                 Brds.Top.Style = oBrdrTopTypeProp.Value;
 
             if(oBrdrRightTypeProp.Value == null)
-                Brds.Right.Style = AVSOfficeEWSEditor.Editor.Format.Borders.BorderStyle.none;
+                Brds.Right.Style = ASCOfficeEWSEditor.Editor.Format.Borders.BorderStyle.none;
             else
                 Brds.Right.Style = oBrdrRightTypeProp.Value;
 
             if(oBrdrBottomTypeProp.Value == null)
-                Brds.Bottom.Style = AVSOfficeEWSEditor.Editor.Format.Borders.BorderStyle.none;
+                Brds.Bottom.Style = ASCOfficeEWSEditor.Editor.Format.Borders.BorderStyle.none;
             else
                 Brds.Bottom.Style = oBrdrBottomTypeProp.Value;
             SetColor(ref Brds.Left.Color, oBrdrLeftColorProp);

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using AVSOfficeEWSEditor.Editor.Walkers;
+using ASCOfficeEWSEditor.Editor.Walkers;
 
-namespace AVSOfficeEWSEditor.Editor.Format.Protection
+namespace ASCOfficeEWSEditor.Editor.Format.Protection
 {
     /// <summary>
     /// Represents a set of cells protection properties.

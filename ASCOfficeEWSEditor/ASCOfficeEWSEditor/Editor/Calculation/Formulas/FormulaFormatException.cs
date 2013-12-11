@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AVSOfficeEWSEditor.Editor.Calculation.Formulas
+namespace ASCOfficeEWSEditor.Editor.Calculation.Formulas
 {
     /// <summary>
     /// Formula format exception

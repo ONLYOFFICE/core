@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using AVSOfficeEWSEditor.XMLDataSpecific;
+using ASCOfficeEWSEditor.XMLDataSpecific;
 
-namespace AVSOfficeEWSEditor.Editor.Format.Font
+namespace ASCOfficeEWSEditor.Editor.Format.Font
 {
     internal class OutlineProperty : PropertyBooleanTag
     {

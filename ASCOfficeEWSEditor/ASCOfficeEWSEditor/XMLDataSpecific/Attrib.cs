@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
 
-namespace AVSOfficeEWSEditor.XMLDataSpecific
+namespace ASCOfficeEWSEditor.XMLDataSpecific
 {
     internal class XMLInt
     {

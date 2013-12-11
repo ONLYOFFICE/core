@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace AVSOfficeEWSEditor.Editor.Format.Fills
+namespace ASCOfficeEWSEditor.Editor.Format.Fills
 {
     internal class GradientFillProperty : PropertyBridgeTag 
     {

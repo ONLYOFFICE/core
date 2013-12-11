@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AVSOfficeEWSEditor.Editor.Format.Fills
+namespace ASCOfficeEWSEditor.Editor.Format.Fills
 {
     internal class RightProperty : PropertyDoubleAttrib
     {

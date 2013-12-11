@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AVSOfficeEWSEditor.Editor.NumberFormat
+namespace ASCOfficeEWSEditor.Editor.NumberFormat
 {
     /// <summary>
     /// Internal number formats storage

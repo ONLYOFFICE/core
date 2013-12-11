@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AVSOfficeEWSEditor.Editor.Calculation.Formulas.Ptgs
+namespace ASCOfficeEWSEditor.Editor.Calculation.Formulas.Ptgs
 {
     internal abstract class OperatorPtg : Ptg
     {

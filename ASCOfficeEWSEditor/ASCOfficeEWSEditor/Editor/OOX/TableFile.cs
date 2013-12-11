@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using AVSOfficeEWSEditor.Helpers;
+using ASCOfficeEWSEditor.Helpers;
 
-namespace AVSOfficeEWSEditor.Editor.OOX
+namespace ASCOfficeEWSEditor.Editor.OOX
 {
     internal class TableFile : XmlFile
     {

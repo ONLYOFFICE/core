@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AVSOfficeEWSEditor.Helpers
+namespace ASCOfficeEWSEditor.Helpers
 {
     internal class Iterator<T> 
     {

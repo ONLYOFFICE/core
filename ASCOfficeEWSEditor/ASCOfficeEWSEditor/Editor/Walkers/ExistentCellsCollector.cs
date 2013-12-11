@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace AVSOfficeEWSEditor.Editor.Walkers
+namespace ASCOfficeEWSEditor.Editor.Walkers
 {
     internal class ExistentCellsCollector : IStatCollector
     {

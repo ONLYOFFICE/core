@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using AVSOfficeEWSEditor.Editor.Calculation.Formulas.Ptgs;
+using ASCOfficeEWSEditor.Editor.Calculation.Formulas.Ptgs;
 
-namespace AVSOfficeEWSEditor.Editor.Calculation.Formulas
+namespace ASCOfficeEWSEditor.Editor.Calculation.Formulas
 {
     internal abstract class ParsedFormula
     {

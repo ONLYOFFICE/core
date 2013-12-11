@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace AVSOfficeEWSEditor.Editor.Format.NumberFormat
+namespace ASCOfficeEWSEditor.Editor.Format.NumberFormat
 {
     internal class NumberFormatEntity : IdStyleEntity
     {

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using System.IO;
-using AVSOfficeEWSEditor.XMLDataSpecific;
+using ASCOfficeEWSEditor.XMLDataSpecific;
 
-namespace AVSOfficeEWSEditor.Editor.FileFormats
+namespace ASCOfficeEWSEditor.Editor.FileFormats
 {
     internal class XlsxSaver : ASCOfficeUtils.IRequestFileEvent
     {

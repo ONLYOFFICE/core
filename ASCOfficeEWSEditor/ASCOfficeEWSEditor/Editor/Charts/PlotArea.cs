@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using AVSOfficeEWSEditor.Editor.Charts;
+using ASCOfficeEWSEditor.Editor.Charts;
 
-namespace AVSOfficeEWSEditor.Editor.Charts
+namespace ASCOfficeEWSEditor.Editor.Charts
 {
     /// <summary>
     /// Plotting area

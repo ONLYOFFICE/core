@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AVSOfficeEWSEditor.Editor.Cells
+namespace ASCOfficeEWSEditor.Editor.Cells
 {
     public struct CellRange : IEnumerable<Cell>, IComparable<CellRange>
     {

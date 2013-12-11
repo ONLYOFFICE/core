@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace AVSOfficeEWSEditor.Editor.Cells
+namespace ASCOfficeEWSEditor.Editor.Cells
 {
     internal class CellRange3D
     {

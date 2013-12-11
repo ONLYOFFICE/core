@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace AVSOfficeEWSEditor.Editor.Hyperlinks
+namespace ASCOfficeEWSEditor.Editor.Hyperlinks
 {
     /// <summary>
     /// Collection of hyperlinks contained in a worksheet

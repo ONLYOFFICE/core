@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using System.IO;
-using AVSOfficeEWSEditor.Editor;
+using ASCOfficeEWSEditor.Editor;
 using System.Diagnostics;
 
 
-namespace AVSOfficeEWSEditor.Editor.FileFormats
+namespace ASCOfficeEWSEditor.Editor.FileFormats
 {
     internal class Serializer
     {

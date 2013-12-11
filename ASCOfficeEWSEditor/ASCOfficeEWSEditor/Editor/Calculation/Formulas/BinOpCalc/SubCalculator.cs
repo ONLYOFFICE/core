@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AVSOfficeEWSEditor.Editor.Calculation.Formulas.BinOpCalc
+namespace ASCOfficeEWSEditor.Editor.Calculation.Formulas.BinOpCalc
 {
     internal class SubCalculator : IFullBinaryOpDispatcher
     {

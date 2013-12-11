@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AVSOfficeEWSEditor.Editor.Charts
+namespace ASCOfficeEWSEditor.Editor.Charts
 {
     public class Misc
     {

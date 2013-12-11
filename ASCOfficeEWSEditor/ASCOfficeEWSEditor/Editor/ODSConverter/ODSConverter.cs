@@ -4,7 +4,7 @@ using System.IO;
 using OdfConverter.OdfConverterLib;
 using CleverAge.OdfConverter.OdfConverterLib;
 
-namespace AVSOfficeEWSEditor.Editor.ODSConverter
+namespace ASCOfficeEWSEditor.Editor.ODSConverter
 {
     public class ConverterFactory
     {

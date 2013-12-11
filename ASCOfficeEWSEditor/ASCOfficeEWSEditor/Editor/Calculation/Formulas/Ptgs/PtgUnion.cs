@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace AVSOfficeEWSEditor.Editor.Calculation.Formulas.Ptgs
+namespace ASCOfficeEWSEditor.Editor.Calculation.Formulas.Ptgs
 {
     internal class PtgUnion : BinOperatorPtg
     {

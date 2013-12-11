@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AVSOfficeEWSEditor.Editor.Sorting
+namespace ASCOfficeEWSEditor.Editor.Sorting
 {
     /// <summary>
     /// Sort orientation

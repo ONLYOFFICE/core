@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace AVSOfficeEWSEditor.Editor.Format.Alignment
+namespace ASCOfficeEWSEditor.Editor.Format.Alignment
 {
     internal class AlignmentEntity : InlineEntity
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 //using System.Text.RegularExpressions;
 
-namespace AVSOfficeEWSEditor.Helpers
+namespace ASCOfficeEWSEditor.Helpers
 {
     internal class ReferencesFormat
     {

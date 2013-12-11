@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AVSOfficeEWSEditor.Editor.CalculationTables
+namespace ASCOfficeEWSEditor.Editor.CalculationTables
 {
     internal class Power
     {

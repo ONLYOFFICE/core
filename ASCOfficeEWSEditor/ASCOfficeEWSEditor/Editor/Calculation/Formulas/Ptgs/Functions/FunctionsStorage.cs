@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AVSOfficeEWSEditor.Editor.Calculation.Formulas.Ptgs.Functions
+namespace ASCOfficeEWSEditor.Editor.Calculation.Formulas.Ptgs.Functions
 {
     /// <summary>
     /// Functions information storage
@@ -442,7 +442,7 @@ namespace AVSOfficeEWSEditor.Editor.Calculation.Formulas.Ptgs.Functions
 
 }
 
-namespace AVSOfficeEWSEditor.Editor
+namespace ASCOfficeEWSEditor.Editor
 {
     /// <summary>
     /// Function description

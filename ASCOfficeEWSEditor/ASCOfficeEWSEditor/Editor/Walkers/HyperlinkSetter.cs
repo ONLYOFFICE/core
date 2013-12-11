@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using AVSOfficeEWSEditor.XMLDataSpecific;
+using ASCOfficeEWSEditor.XMLDataSpecific;
 using System.Globalization;
 
-namespace AVSOfficeEWSEditor.Editor.Walkers
+namespace ASCOfficeEWSEditor.Editor.Walkers
 {
     internal class HyperlinkSetter : ICellSetter
     {

@@ -5,7 +5,7 @@ using System.Xml;
 using System.Globalization;
 using System.Diagnostics;
 
-namespace AVSOfficeEWSEditor.Editor.Format.Colors
+namespace ASCOfficeEWSEditor.Editor.Format.Colors
 {
     /// <summary>
     /// This class is responsible for indexed colors table.

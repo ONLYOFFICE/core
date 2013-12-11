@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using AVSOfficeEWSEditor.XMLDataSpecific;
+using ASCOfficeEWSEditor.XMLDataSpecific;
 
-namespace AVSOfficeEWSEditor.Editor
+namespace ASCOfficeEWSEditor.Editor
 {
     internal class Theme
     {

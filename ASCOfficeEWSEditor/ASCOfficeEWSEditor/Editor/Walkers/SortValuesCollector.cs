@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using AVSOfficeEWSEditor.XMLDataSpecific;
-using AVSOfficeEWSEditor.Editor.Calculation.Formulas.Ptgs;
+using ASCOfficeEWSEditor.XMLDataSpecific;
+using ASCOfficeEWSEditor.Editor.Calculation.Formulas.Ptgs;
 
-namespace AVSOfficeEWSEditor.Editor.Walkers
+namespace ASCOfficeEWSEditor.Editor.Walkers
 {
     internal class SortValuesCollector : IStatCollector
     {

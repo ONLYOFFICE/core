@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace AVSOfficeEWSEditor.Helpers
+namespace ASCOfficeEWSEditor.Helpers
 {
     internal static class XmlUtils
     {
@@ -24,7 +24,7 @@ namespace AVSOfficeEWSEditor.Helpers
             }
             else
             {
-                throw new AVSOfficeEWSEditor.Editor.Events.ReportableException(new AVSOfficeEWSEditor.Editor.Events.InternalError("Wrong OOX format. Required '" + node_name + "' tag is absent inside '" + xml_parent.LocalName + "' or has incorrect format."));
+                throw new ASCOfficeEWSEditor.Editor.Events.ReportableException(new ASCOfficeEWSEditor.Editor.Events.InternalError("Wrong OOX format. Required '" + node_name + "' tag is absent inside '" + xml_parent.LocalName + "' or has incorrect format."));
             }
         }
 

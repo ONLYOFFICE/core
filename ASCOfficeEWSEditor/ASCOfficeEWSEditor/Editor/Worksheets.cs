@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using AVSOfficeEWSEditor.XMLDataSpecific;
+using ASCOfficeEWSEditor.XMLDataSpecific;
 
-namespace AVSOfficeEWSEditor.Editor
+namespace ASCOfficeEWSEditor.Editor
 {
     /// <summary>
     /// A collection of all the Worksheet objects in the specified or active workbook

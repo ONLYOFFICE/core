@@ -5,10 +5,10 @@ using System.Xml;
 using System.Xml.XPath;
 using System.Xml.Xsl;
 using System.IO;
-using AVSOfficeEWSEditor.XMLDataSpecific;
-using AVSOfficeEWSEditor.Editor.Walkers;
+using ASCOfficeEWSEditor.XMLDataSpecific;
+using ASCOfficeEWSEditor.Editor.Walkers;
 
-namespace AVSOfficeEWSEditor.Editor
+namespace ASCOfficeEWSEditor.Editor
 {
     /// <summary>
     /// Represents a range of cells
@@ -632,7 +632,7 @@ namespace AVSOfficeEWSEditor.Editor
                             while (null != oCurColNode)
                             {
                                 string sCellId = ((XmlElement)oCurColNode).GetAttribute("r");
-                                Cells.Cell oCurCell = new AVSOfficeEWSEditor.Editor.Cells.Cell(sCellId);
+                                Cells.Cell oCurCell = new ASCOfficeEWSEditor.Editor.Cells.Cell(sCellId);
                                 if (oCurCell.Column > nMaxCol)
                                     nMaxCol = oCurCell.Column;
 
@@ -646,7 +646,7 @@ namespace AVSOfficeEWSEditor.Editor
                 }
             }
             catch { }
-            //Cells.Cell oLastCell = new AVSOfficeEWSEditor.Editor.Cells.Cell(nMaxRow, nMaxCol);
+            //Cells.Cell oLastCell = new ASCOfficeEWSEditor.Editor.Cells.Cell(nMaxRow, nMaxCol);
             //List<string> aResult = new List<string>();
             //aResult.Add("A1:" + oLastCell.ToString());
             //return aResult;

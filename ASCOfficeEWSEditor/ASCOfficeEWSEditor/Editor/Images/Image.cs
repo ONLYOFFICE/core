@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace AVSOfficeEWSEditor.Editor.Images
+namespace ASCOfficeEWSEditor.Editor.Images
 {
     public class Image
     {

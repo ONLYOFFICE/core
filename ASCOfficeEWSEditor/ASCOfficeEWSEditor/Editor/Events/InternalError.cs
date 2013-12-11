@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AVSOfficeEWSEditor.Editor.Events
+namespace ASCOfficeEWSEditor.Editor.Events
 {
     /// <summary>
     /// This happens when a problem with unknown reason is detected

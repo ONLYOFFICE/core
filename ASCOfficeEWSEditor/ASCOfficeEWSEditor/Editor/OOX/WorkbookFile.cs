@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace AVSOfficeEWSEditor.Editor.OOX
+namespace ASCOfficeEWSEditor.Editor.OOX
 {
     internal class WorkbookFile : XmlFile, IOrderedSections
     {

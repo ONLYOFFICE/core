@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AVSOfficeEWSEditor.Editor.Calculation.Formulas.DataObjects
+namespace ASCOfficeEWSEditor.Editor.Calculation.Formulas.DataObjects
 {
     internal interface IDataObject : IComparable<IDataObject>
     {

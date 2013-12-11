@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using AVSOfficeEWSEditor.Editor.Walkers;
+using ASCOfficeEWSEditor.Editor.Walkers;
 
-namespace AVSOfficeEWSEditor.Editor.Format.Alignment
+namespace ASCOfficeEWSEditor.Editor.Format.Alignment
 {
     /// <summary>
     /// Represents a set of cells alignment properties.

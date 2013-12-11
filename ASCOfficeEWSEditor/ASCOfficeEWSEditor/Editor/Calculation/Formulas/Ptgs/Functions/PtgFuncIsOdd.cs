@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AVSOfficeEWSEditor.Editor.Calculation.Formulas.Ptgs.Functions
+namespace ASCOfficeEWSEditor.Editor.Calculation.Formulas.Ptgs.Functions
 {
     internal class PtgFuncIsOdd : PtgFuncFixed
     {

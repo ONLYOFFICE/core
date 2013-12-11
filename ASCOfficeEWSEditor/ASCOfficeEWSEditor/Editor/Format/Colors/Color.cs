@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using AVSOfficeEWSEditor.Editor.Walkers;
+using ASCOfficeEWSEditor.Editor.Walkers;
 
-namespace AVSOfficeEWSEditor.Editor.Format.Colors
+namespace ASCOfficeEWSEditor.Editor.Format.Colors
 {
     /// <summary>
     /// Object of this class encapsulates color properties

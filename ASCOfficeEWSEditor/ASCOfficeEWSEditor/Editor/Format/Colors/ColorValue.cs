@@ -4,7 +4,7 @@ using System.Text;
 using System.Globalization;
 using System.Xml;
 
-namespace AVSOfficeEWSEditor.Editor.Format.Colors
+namespace ASCOfficeEWSEditor.Editor.Format.Colors
 {
     /// <summary>
     /// Object of this class stores color information

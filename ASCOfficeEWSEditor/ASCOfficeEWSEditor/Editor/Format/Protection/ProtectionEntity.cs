@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace AVSOfficeEWSEditor.Editor.Format.Protection
+namespace ASCOfficeEWSEditor.Editor.Format.Protection
 {
     internal class ProtectionEntity : InlineEntity
     {

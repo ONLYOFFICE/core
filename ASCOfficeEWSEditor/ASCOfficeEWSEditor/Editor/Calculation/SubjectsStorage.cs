@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AVSOfficeEWSEditor.Editor.Calculation
+namespace ASCOfficeEWSEditor.Editor.Calculation
 {
     internal class SubjectsStorage
     {

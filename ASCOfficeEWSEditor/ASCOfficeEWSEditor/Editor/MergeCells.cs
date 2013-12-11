@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace AVSOfficeEWSEditor.Editor
+namespace ASCOfficeEWSEditor.Editor
 {
     internal class MergeCells
     {
@@ -56,7 +56,7 @@ namespace AVSOfficeEWSEditor.Editor
         {
             CalculateMerge();
 
-            return new List<AVSOfficeEWSEditor.Editor.Cells.CellRange>(m_arrMergedCells);
+            return new List<ASCOfficeEWSEditor.Editor.Cells.CellRange>(m_arrMergedCells);
         }
 
         internal Cells.CellRange MergedArea(Cells.Cell cell)
@@ -241,7 +241,7 @@ namespace AVSOfficeEWSEditor.Editor
         private Worksheet worksheet;
         private XmlNamespaceManager ns_manager;
 
-        private List<Cells.CellRange> m_arrMergedCells = new List<AVSOfficeEWSEditor.Editor.Cells.CellRange>();
+        private List<Cells.CellRange> m_arrMergedCells = new List<ASCOfficeEWSEditor.Editor.Cells.CellRange>();
         private bool m_bIsCalculateMerge = false;
     }
 }

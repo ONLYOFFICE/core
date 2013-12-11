@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using AVSOfficeEWSEditor.XMLDataSpecific;
+using ASCOfficeEWSEditor.XMLDataSpecific;
 
-namespace AVSOfficeEWSEditor.Editor.Walkers
+namespace ASCOfficeEWSEditor.Editor.Walkers
 {
     /// <summary>
     /// Designed to be called with RangeWalker.UpdateCells or CellWalker.UpdateCells

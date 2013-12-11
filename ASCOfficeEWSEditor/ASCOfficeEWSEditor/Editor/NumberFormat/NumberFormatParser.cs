@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Globalization;
 
-namespace AVSOfficeEWSEditor.Editor.NumberFormat
+namespace ASCOfficeEWSEditor.Editor.NumberFormat
 {
     internal class NumberFormatParser
     {

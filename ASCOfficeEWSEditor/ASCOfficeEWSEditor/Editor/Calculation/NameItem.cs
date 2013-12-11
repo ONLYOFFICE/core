@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using AVSOfficeEWSEditor.Editor.Calculation.Formulas;
+using ASCOfficeEWSEditor.Editor.Calculation.Formulas;
 
-namespace AVSOfficeEWSEditor.Editor.Calculation
+namespace ASCOfficeEWSEditor.Editor.Calculation
 {
     internal class NameItem : IObserver, ISubject
     {

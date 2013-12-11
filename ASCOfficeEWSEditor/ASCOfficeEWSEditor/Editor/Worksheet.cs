@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using AVSOfficeEWSEditor.XMLDataSpecific;
+using ASCOfficeEWSEditor.XMLDataSpecific;
 using System.IO;
-using AVSOfficeEWSEditor.Editor.Charts;
-using AVSOfficeEWSEditor.Editor.Images;
+using ASCOfficeEWSEditor.Editor.Charts;
+using ASCOfficeEWSEditor.Editor.Images;
 using FileConverterUtils2;
 using ASCOfficeFile;
 using ASCImageFile3;
 using ASCMediaCore3;
 using System.Net;
 using System.Text.RegularExpressions;
-using AVSOfficeEWSEditor.Editor.Cells;
-using AVSOfficeEWSEditor.Editor.Walkers;
+using ASCOfficeEWSEditor.Editor.Cells;
+using ASCOfficeEWSEditor.Editor.Walkers;
 using ASCImageStudio3;
 
-namespace AVSOfficeEWSEditor.Editor
+namespace ASCOfficeEWSEditor.Editor
 {
     /// <summary>
     /// Represents a worksheet.
@@ -315,9 +315,9 @@ namespace AVSOfficeEWSEditor.Editor
 
         public string AddNewTable(string strFilterRange)
         {
-            OOX.TableFile oTableFile = new AVSOfficeEWSEditor.Editor.OOX.TableFile(Workbook.ContentTypes, Relationships, Workbook);
+            OOX.TableFile oTableFile = new ASCOfficeEWSEditor.Editor.OOX.TableFile(Workbook.ContentTypes, Relationships, Workbook);
 
-            Cells.CellRange oFilterRange = new AVSOfficeEWSEditor.Editor.Cells.CellRange(strFilterRange, Workbook);
+            Cells.CellRange oFilterRange = new ASCOfficeEWSEditor.Editor.Cells.CellRange(strFilterRange, Workbook);
             Table oNewTable = Table.CreateNew(this, oTableFile, xml_worksheet, oFilterRange);
 
             Tables.Add(oNewTable);
@@ -441,9 +441,9 @@ namespace AVSOfficeEWSEditor.Editor
             }
             foreach (Table oTable in worksheet.Tables)
             {
-                if (AVSOfficeEWSEditor.Editor.Cells.CellRange.Empty != oTable.TableAutoFilter.m_oRefRange)
+                if (ASCOfficeEWSEditor.Editor.Cells.CellRange.Empty != oTable.TableAutoFilter.m_oRefRange)
                 {
-                    OOX.TableFile oTableFile = new AVSOfficeEWSEditor.Editor.OOX.TableFile(Workbook.ContentTypes, Relationships, Workbook);
+                    OOX.TableFile oTableFile = new ASCOfficeEWSEditor.Editor.OOX.TableFile(Workbook.ContentTypes, Relationships, Workbook);
                     Table oNewTable = new Table(this, oTableFile, xml_worksheet, oTable);
                     Tables.Add(oNewTable);
                 }
@@ -901,13 +901,13 @@ namespace AVSOfficeEWSEditor.Editor
 
                 // rels для worksheets                
                 string sheet_rels_file_name = "sheet" + (workbook.ActiveSheet.Index + 1).ToString() + ".xml.rels";
-                workbook.ContentTypes.RegisterFile("/xl/worksheets/_rels/" + sheet_rels_file_name, AVSOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.rels);
+                workbook.ContentTypes.RegisterFile("/xl/worksheets/_rels/" + sheet_rels_file_name, ASCOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.rels);
 
                 string drawingName = "drawing" + (workbook.ActiveSheet.Index + 1).ToString() + ".xml";
                 XmlNode draw_file_xml = Helpers.OOXNavigate.AddFile("xl/drawings/" + drawingName, xml_worksheet.OwnerDocument.DocumentElement, false);
 
                 // register                
-                workbook.ContentTypes.RegisterFile(draw_file_xml, AVSOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.drawing);
+                workbook.ContentTypes.RegisterFile(draw_file_xml, ASCOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.drawing);
 
                 // targets
                 Relationships = new OOX.Relationships(xml_worksheet.ParentNode);                
@@ -915,16 +915,16 @@ namespace AVSOfficeEWSEditor.Editor
                 
                 draw_file_xml.InnerXml = Resource1.empty_chartDrawing;
                 OOX.Relationships drawing_rel = new OOX.Relationships(draw_file_xml);
-                drawing_rel.AddTarget("../charts/" + chartName, AVSOfficeEWSEditor.Editor.OOX.Relationships.FileType.chart, false);
+                drawing_rel.AddTarget("../charts/" + chartName, ASCOfficeEWSEditor.Editor.OOX.Relationships.FileType.chart, false);
 
-                sheet_rel.AddTarget("../drawings/" + drawingName, AVSOfficeEWSEditor.Editor.OOX.Relationships.FileType.drawing, false);
-                workbook.ContentTypes.RegisterFile("/xl/drawings/_rels/" + drawingName + ".rels", AVSOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.rels);
+                sheet_rel.AddTarget("../drawings/" + drawingName, ASCOfficeEWSEditor.Editor.OOX.Relationships.FileType.drawing, false);
+                workbook.ContentTypes.RegisterFile("/xl/drawings/_rels/" + drawingName + ".rels", ASCOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.rels);
 
                 // заполняем объект
                 XmlNode drawing_chart_file_xml = Helpers.OOXNavigate.getReferenceByPath("../charts/" + chartName, xml_worksheet.ParentNode.ParentNode);
 
                 XmlNode chart_file_xml = Helpers.OOXNavigate.AddFile("xl/charts/" + chartName, xml_worksheet.OwnerDocument.DocumentElement, false);
-                workbook.ContentTypes.RegisterFile(chart_file_xml, AVSOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.chartsheet);
+                workbook.ContentTypes.RegisterFile(chart_file_xml, ASCOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.chartsheet);
 
                 switch (newObject.chart.chartType)
                 {
@@ -987,8 +987,8 @@ namespace AVSOfficeEWSEditor.Editor
                     string chartName = "chart" + (GetWorkbookLastRid(workbook) + 1).ToString() + ".xml";
 
                     XmlNode chart_file_xml = Helpers.OOXNavigate.AddFile("xl/charts/" + chartName, xml_worksheet.OwnerDocument.DocumentElement, false);
-                    drawing_relationships.AddTarget("../charts/" + chartName, AVSOfficeEWSEditor.Editor.OOX.Relationships.FileType.chart, false);
-                    workbook.ContentTypes.RegisterFile(chart_file_xml, AVSOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.chartsheet);
+                    drawing_relationships.AddTarget("../charts/" + chartName, ASCOfficeEWSEditor.Editor.OOX.Relationships.FileType.chart, false);
+                    workbook.ContentTypes.RegisterFile(chart_file_xml, ASCOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.chartsheet);
 
                     // пишем в drawing
                     XmlElement resourceDrawing = xml_worksheet.OwnerDocument.CreateElement("tmp");
@@ -1183,7 +1183,7 @@ namespace AVSOfficeEWSEditor.Editor
 
             // init registration
             ASCOfficeFile.CAVSOfficeFormatChecker imageChecker = new CAVSOfficeFormatChecker();
-            AVSOfficeEWSEditor.Editor.OOX.ContentTypes.FileType contentType;
+            ASCOfficeEWSEditor.Editor.OOX.ContentTypes.FileType contentType;
             int type = imageChecker.GetFileFormat(fileName);
             int reff = System.Runtime.InteropServices.Marshal.ReleaseComObject(imageChecker);
             string ext = "";
@@ -1191,15 +1191,15 @@ namespace AVSOfficeEWSEditor.Editor
             switch (type)
             {
                 case FileConverterUtils2.FileFormats.AVS_OFFICESTUDIO_FILE_IMAGE_JPG:
-                    contentType = AVSOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.jpeg;
+                    contentType = ASCOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.jpeg;
                     ext = ".jpeg";
                     break;
                 case FileConverterUtils2.FileFormats.AVS_OFFICESTUDIO_FILE_IMAGE_PNG:
-                    contentType = AVSOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.png;
+                    contentType = ASCOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.png;
                     ext = ".png";
                     break;
                 case FileConverterUtils2.FileFormats.AVS_OFFICESTUDIO_FILE_IMAGE_GIF:
-                    contentType = AVSOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.gif;
+                    contentType = ASCOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.gif;
                     ext = ".gif";
                     break;
                 
@@ -1212,7 +1212,7 @@ namespace AVSOfficeEWSEditor.Editor
                     {
                         try
                         {
-                            contentType = AVSOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.jpeg;
+                            contentType = ASCOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.jpeg;
                             ext = ".jpeg";
                             string toFile = fileName + "_jpeg";
 
@@ -1293,23 +1293,23 @@ namespace AVSOfficeEWSEditor.Editor
 
                 // rels для worksheets                
                 string sheet_rels_file_name = "sheet" + (workbook.ActiveSheet.Index + 1).ToString() + ".xml.rels";
-                workbook.ContentTypes.RegisterFile("/xl/worksheets/_rels/" + sheet_rels_file_name, AVSOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.rels);
+                workbook.ContentTypes.RegisterFile("/xl/worksheets/_rels/" + sheet_rels_file_name, ASCOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.rels);
 
                 string drawingName = "drawing" + (workbook.ActiveSheet.Index + 1).ToString() + ".xml";
                 XmlNode draw_file_xml = Helpers.OOXNavigate.AddFile("xl/drawings/" + drawingName, xml_worksheet.OwnerDocument.DocumentElement, false);
 
                 // register                
-                workbook.ContentTypes.RegisterFile(draw_file_xml, AVSOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.drawing);
+                workbook.ContentTypes.RegisterFile(draw_file_xml, ASCOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.drawing);
 
                 // targets
                 draw_file_xml.InnerXml = Resource1.empty_imageDrawing;
                 OOX.Relationships drawing_rel = new OOX.Relationships(draw_file_xml);
-                drawing_rel.AddTarget("../media/" + binName, AVSOfficeEWSEditor.Editor.OOX.Relationships.FileType.image, false);
+                drawing_rel.AddTarget("../media/" + binName, ASCOfficeEWSEditor.Editor.OOX.Relationships.FileType.image, false);
 
                 OOX.Relationships sheet_rel = new OOX.Relationships(Helpers.OOXNavigate.getReferenceByPath("xl/worksheets/sheet" + (workbook.ActiveSheet.Index + 1).ToString() + ".xml",
                                                                     xml_worksheet.OwnerDocument.DocumentElement));
-                sheet_rel.AddTarget("../drawings/" + drawingName, AVSOfficeEWSEditor.Editor.OOX.Relationships.FileType.drawing, false);
-                workbook.ContentTypes.RegisterFile("/xl/drawings/_rels/" + drawingName + ".rels", AVSOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.rels);
+                sheet_rel.AddTarget("../drawings/" + drawingName, ASCOfficeEWSEditor.Editor.OOX.Relationships.FileType.drawing, false);
+                workbook.ContentTypes.RegisterFile("/xl/drawings/_rels/" + drawingName + ".rels", ASCOfficeEWSEditor.Editor.OOX.ContentTypes.FileType.rels);
 
                 // заполняем объект
                 FileStream stream = new FileStream(fileName, FileMode.Open);
@@ -1385,7 +1385,7 @@ namespace AVSOfficeEWSEditor.Editor
 
                     XmlNode image_file_xml = Helpers.OOXNavigate.AddBinFile("xl/media/" + binName, xml_worksheet.OwnerDocument.DocumentElement, false, workbook.BinaryDataStorage.Count - 1);
                     OOX.Relationships drawing_relationships = new OOX.Relationships(drawing_file_xml);
-                    drawing_relationships.AddTarget("../media/" + binName, AVSOfficeEWSEditor.Editor.OOX.Relationships.FileType.image, false);
+                    drawing_relationships.AddTarget("../media/" + binName, ASCOfficeEWSEditor.Editor.OOX.Relationships.FileType.image, false);
                     workbook.ContentTypes.RegisterFile(image_file_xml, contentType);
 
                     XmlElement resourceDrawing = xml_worksheet.OwnerDocument.CreateElement("tmp");

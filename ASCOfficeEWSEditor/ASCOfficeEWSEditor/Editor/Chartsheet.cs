@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using AVSOfficeEWSEditor.XMLDataSpecific;
+using ASCOfficeEWSEditor.XMLDataSpecific;
 using System.IO;
-using AVSOfficeEWSEditor.Editor.Charts;
-using AVSOfficeEWSEditor.Editor.Events;
+using ASCOfficeEWSEditor.Editor.Charts;
+using ASCOfficeEWSEditor.Editor.Events;
 
-namespace AVSOfficeEWSEditor.Editor
+namespace ASCOfficeEWSEditor.Editor
 {
     /// <summary>
     /// Represents a chartsheet.

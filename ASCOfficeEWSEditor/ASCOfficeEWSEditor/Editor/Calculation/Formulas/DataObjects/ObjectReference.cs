@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using AVSOfficeEWSEditor.XMLDataSpecific;
+using ASCOfficeEWSEditor.XMLDataSpecific;
 
-namespace AVSOfficeEWSEditor.Editor.Calculation.Formulas.DataObjects
+namespace ASCOfficeEWSEditor.Editor.Calculation.Formulas.DataObjects
 {
     internal class ObjectReference : IDataObject, IEnumerable<DataObjects.IDataObject>
     {

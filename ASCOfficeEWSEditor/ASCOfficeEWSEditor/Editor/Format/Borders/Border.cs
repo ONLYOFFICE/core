@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using AVSOfficeEWSEditor.Editor.Walkers;
+using ASCOfficeEWSEditor.Editor.Walkers;
 
-namespace AVSOfficeEWSEditor.Editor.Format.Borders
+namespace ASCOfficeEWSEditor.Editor.Format.Borders
 {
     /// <summary>
     /// Represents a set of cells border properties.

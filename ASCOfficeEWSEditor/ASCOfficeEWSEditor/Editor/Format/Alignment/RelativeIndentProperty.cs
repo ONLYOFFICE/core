@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using AVSOfficeEWSEditor.XMLDataSpecific;
+using ASCOfficeEWSEditor.XMLDataSpecific;
 
-namespace AVSOfficeEWSEditor.Editor.Format.Alignment
+namespace ASCOfficeEWSEditor.Editor.Format.Alignment
 {
     internal class RelativeIndentProperty : Property<int>
     {

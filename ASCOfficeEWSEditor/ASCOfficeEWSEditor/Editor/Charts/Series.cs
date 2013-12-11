@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using AVSOfficeEWSEditor.Editor.Calculation.Formulas.Ptgs;
-using AVSOfficeEWSEditor.Editor.Cells;
+using ASCOfficeEWSEditor.Editor.Calculation.Formulas.Ptgs;
+using ASCOfficeEWSEditor.Editor.Cells;
 using System.Text.RegularExpressions;
 using System.Globalization;
 
-namespace AVSOfficeEWSEditor.Editor.Charts
+namespace ASCOfficeEWSEditor.Editor.Charts
 {
     public class Series
     {

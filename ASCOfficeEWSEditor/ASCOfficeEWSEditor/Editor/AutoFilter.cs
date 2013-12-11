@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace AVSOfficeEWSEditor.Editor
+namespace ASCOfficeEWSEditor.Editor
 {
     public struct AutoFilterElementSendData
     {
@@ -72,7 +72,7 @@ namespace AVSOfficeEWSEditor.Editor
             this.autofilter_xml = xml_table_file.SelectSingleNode("main:autoFilter", ns_manager);
             if (null != this.autofilter_xml)
             {
-                m_oRefRange = new AVSOfficeEWSEditor.Editor.Cells.CellRange(autofilter_xml.Attributes["ref"].Value, this.worksheet.Workbook);
+                m_oRefRange = new ASCOfficeEWSEditor.Editor.Cells.CellRange(autofilter_xml.Attributes["ref"].Value, this.worksheet.Workbook);
 
                 foreach (XmlNode oXmlNodeFilterColumn in autofilter_xml.ChildNodes)
                 {

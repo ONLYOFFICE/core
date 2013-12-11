@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace AVSOfficeEWSEditor.Editor.DefinedNames
+namespace ASCOfficeEWSEditor.Editor.DefinedNames
 {
     /// <summary>
     /// DefinedName object

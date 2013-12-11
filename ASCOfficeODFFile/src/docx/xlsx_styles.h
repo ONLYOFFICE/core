@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_XSLSSTYLES_H_INCLUDED_
-#define _CPDOCCORE_XSLSSTYLES_H_INCLUDED_
+#pragma once
 
 #include <iosfwd>
 #include <string>
@@ -49,5 +48,3 @@ private:
 
 }
 }
-
-#endif

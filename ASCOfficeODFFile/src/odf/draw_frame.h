@@ -143,7 +143,7 @@ public:
     // draw-text-box, draw-image, draw-object, draw-object-ole, draw-applet, draw-floating-frame, draw-plugin
     office_element_ptr_array content_;
 
-    office_element_ptr office_event_listeners_;
+    office_element_ptr office_event_listeners_; // в content перенести нельзя - иначе событи будет добавляться не к этому объекту а следующему
     office_element_ptr draw_glue_point_;
     office_element_ptr draw_image_map_;
     //office_element_ptr draw_chart_map_;

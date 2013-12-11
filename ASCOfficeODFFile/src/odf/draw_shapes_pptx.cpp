@@ -37,8 +37,6 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 
     const std::wstring name = common_draw_attlist_.common_draw_name_attlist_.draw_name_.get_value_or(L"");
 
-    const std::wstring styleName = common_draw_attlist_.common_draw_style_name_attlist_.draw_style_name_.get_value_or(style_ref(L"")).style_name();
-    
     const std::wstring textStyleName = common_draw_attlists_.shape_with_text_and_styles_.
         common_draw_text_style_name_attlist_.draw_text_style_name_.get_value_or(style_ref(L"")).style_name();
 
@@ -77,14 +75,29 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	}
 /////////////////////////////////////////////////////////////////////////////////
 	std::vector<const odf::style_instance *> instances;
-	odf::style_instance* styleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(styleName, odf::style_family::Graphic,false/*Context.process_headers_footers_*/);
-	if (styleInst)
+
+	const std::wstring grStyleName = common_draw_attlist_.common_draw_style_name_attlist_.draw_style_name_.get_value_or(style_ref(L"")).style_name();
+	const std::wstring baseStyleName = common_draw_attlist_.common_draw_style_name_attlist_.presentation_style_name_.get_value_or(style_ref(L"")).style_name();
+
+	odf::style_instance* grStyleInst = 
+		Context.root()->odf_context().styleContainer().style_by_name(grStyleName, odf::style_family::Graphic,false/*process_headers_footers_*/);
+	
+	odf::style_instance* baseStyleInst = 
+		Context.root()->odf_context().styleContainer().style_by_name(baseStyleName, odf::style_family::Presentation,false/*process_headers_footers_*/);
+
+	if (baseStyleInst)//векторная фигура презентаций
 	{
+		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Presentation);
+		if (defaultStyle)instances.push_back(defaultStyle);
+
+		instances.push_back(baseStyleInst);
+	}
+	else if (grStyleInst)//обычная векторная фигура
+	{		
 		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
 		if (defaultStyle)instances.push_back(defaultStyle);
 
-		instances.push_back(styleInst);
+		instances.push_back(grStyleInst);
 	}
 	graphic_format_properties properties = calc_graphic_properties_content(instances);
 	

@@ -1,6 +1,8 @@
 #include "precompiled_cpodf.h"
+
 #include "xlsx_fill.h"
 #include "xlsx_fills.h"
+
 #include "../odf/style_table_properties.h"
 #include <cpdoccore/xml/simple_xml_writer.h>
 #include <boost/foreach.hpp>

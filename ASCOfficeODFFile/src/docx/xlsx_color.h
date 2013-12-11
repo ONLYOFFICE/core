@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_XLSX_COLOR_H_INCLUDED_
-#define _CPDOCCORE_XLSX_COLOR_H_INCLUDED_
+
 #pragma once
 
 #include <iosfwd>
@@ -30,5 +29,3 @@ struct xlsx_color
 
 }
 }
-
-#endif

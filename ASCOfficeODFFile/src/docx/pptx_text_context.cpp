@@ -301,7 +301,7 @@ std::wstring pptx_text_context::Impl::dump_paragraph()
 
 	std::wstring & str_run = run_.str();
 
-	if (str_run.length() > 0)
+	if (str_run.length() > 0 || styles_paragraph_.length() > 0)
 	{
 		CP_XML_WRITER(paragraph_)
 		{
@@ -325,7 +325,8 @@ std::wstring pptx_text_context::Impl::dump_paragraph()
 void pptx_text_context::Impl::dump_run()
 {
 	const std::wstring content = xml::utils::replace_text_to_xml(text_.str());
- 	if (content.length()<1) return ;     
+ 	
+	if (content.length()<1 &&  styles_span_.length()<1) return ;     
 
 	CP_XML_WRITER(run_)
     {

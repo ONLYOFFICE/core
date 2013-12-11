@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cpdoccore/xml/simple_xml_writer.h>
+#include <cpdoccore/xml/attributes.h>
 
 namespace cpdoccore { 
 namespace odf {
@@ -32,7 +33,6 @@ void presentation_placeholder::add_child_element( xml::sax * Reader, const ::std
 
 void presentation_placeholder::pptx_convert(oox::pptx_conversion_context & Context)
 {
-
 	double cx = svg_width_.get_value_or(length(0)).get_value_unit(length::pt);
 	double cy = svg_height_.get_value_or(length(0)).get_value_unit(length::pt);
 
@@ -53,6 +53,30 @@ void presentation_placeholder::pptx_convert(oox::pptx_conversion_context & Conte
 	}
 
 	Context.get_slide_context().end_shape();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * style_drawing_page_properties::ns = L"style";
+const wchar_t * style_drawing_page_properties::name = L"drawing-page-properties";
+
+void style_drawing_page_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	drawing_page_properties_.add_attributes(Attributes);
+}
+void style_drawing_page_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+{
+    CP_NOT_APPLICABLE_ELM();
+}
+
+void drawing_page_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"draw:fill", draw_fill_);
+	CP_APPLY_ATTR(L"draw:fill-image-name", draw_fill_image_name_);
+}
+void drawing_page_properties::apply_from(const drawing_page_properties & Other)
+{
+	_CP_APPLY_PROP2(draw_fill_); 
+	_CP_APPLY_PROP2(draw_fill_image_name_); 
 }
 }
 }

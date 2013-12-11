@@ -482,6 +482,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\odf\drawfill.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\odf\drawfill.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\odf\dropcaplength.cpp"
 				>
 			</File>
@@ -1053,6 +1061,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\docx\hyperlinks.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\docx\hyperlinks.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\docx\namespaces.cpp"
 					>
 					<FileConfiguration
@@ -1379,14 +1395,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\hyperlinks.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\docx\hyperlinks.h"
-					>
-				</File>
-				<File
 					RelativePath=".\src\docx\measuredigits.cpp"
 					>
 				</File>
@@ -1427,11 +1435,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\oox_layout.cpp"
+					RelativePath=".\src\docx\oox_drawing_fills.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\oox_layout.h"
+					RelativePath=".\src\docx\oox_drawing_fills.h"
 					>
 				</File>
 				<File
@@ -1499,6 +1507,14 @@
 					</File>
 					<File
 						RelativePath=".\src\docx\oox_data_labels.h"
+						>
+					</File>
+					<File
+						RelativePath=".\src\docx\oox_layout.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\src\docx\oox_layout.h"
 						>
 					</File>
 					<File

@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_XLSX_FILLS_H_INCLUDED_
-#define _CPDOCCORE_XLSX_FILLS_H_INCLUDED_
+#pragma once
 
 #include <string>
 #include <cpdoccore/CPOptional.h>
@@ -46,5 +45,3 @@ private:
 
 }
 }
-
-#endif

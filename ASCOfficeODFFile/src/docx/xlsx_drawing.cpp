@@ -106,7 +106,7 @@ void xlsx_serialize_image(std::wostream & strm, _xlsx_drawing const & val)
                 }
 				oox_serialize_clipping(CP_XML_STREAM(),val);
 
-			} // xdr:blipFill
+			}
 
             CP_XML_NODE(L"xdr:spPr")
             {

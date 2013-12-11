@@ -24,13 +24,7 @@ void oox_chart_shape::oox_serialize(std::wostream & _Wostream)
         {
 			std::wstring fillType = L"a:solidFill";
 
-			if (odf::GetProperty(content_,L"fill",strVal))
-			{
-				if ((strVal) && (strVal.get() == L"none"))		fillType = L"a:noFill";
-				if ((strVal) && (strVal.get() == L"hatch"))		fillType = L"a:pattFill";
-				if ((strVal) && (strVal.get() == L"gradient"))	fillType = L"a:gradFill";
-				if ((strVal) && (strVal.get() == L"bitmap"))	fillType = L"a:imageFill";
-			}
+			if (odf::GetProperty(content_,L"fill",strVal))fillType = *strVal;
 
 			odf::GetProperty(content_,L"fill-color",strVal);
 			if (strVal && fillType != L"a:noFill")

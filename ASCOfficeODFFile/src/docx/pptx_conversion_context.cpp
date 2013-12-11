@@ -85,7 +85,10 @@ void pptx_conversion_context::process_master_pages()
 		odf::style_master_page * master = 
 			root()->odf_context().pageLayoutContainer().master_page_by_name(masters.content[master_index].master_name);
 
-		master->pptx_convert(*this);
+		if (master)
+		{
+			master->pptx_convert(*this);
+		}
 		
 		end_master();	
 	}
@@ -421,8 +424,8 @@ void pptx_conversion_context::end_layout()
 
 void pptx_conversion_context::end_master()
 {
-	//get_slide_context().pptx_serializ(current_master().slideMasterData());
-//	get_slide_context().dump_rels(current_master().slideMasterRels());//hyperlinks, mediaitems, ...
+	get_slide_context().serialize(current_master().slideMasterData());
+	get_slide_context().dump_rels(current_master().slideMasterRels());//hyperlinks, mediaitems, ...
 
 	get_slide_context().end_slide();
 }

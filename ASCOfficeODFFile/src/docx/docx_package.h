@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_DOCX_PACKAGE_H_
-#define _CPDOCCORE_DOCX_PACKAGE_H_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -143,5 +142,3 @@ private:
 }
 }
 }
-
-#endif

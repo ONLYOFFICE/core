@@ -1,6 +1,4 @@
-#ifndef _CPDOCCORE_XLSX_FILL_H_INCLUDED_
-#define _CPDOCCORE_XLSX_FILL_H_INCLUDED_
-
+#pragma once
 
 #include <string>
 #include <cpdoccore/CPOptional.h>
@@ -32,8 +30,8 @@ struct xlsx_gradientFill
 
 struct xlsx_fill
 {
-    _CP_OPT(xlsx_patternFill) patternFill;
-    _CP_OPT(xlsx_gradientFill) gradientFill;
+    _CP_OPT(xlsx_patternFill)	patternFill;
+    _CP_OPT(xlsx_gradientFill)	gradientFill;
 
     std::size_t index;
 	bool bDefault;
@@ -46,5 +44,3 @@ struct xlsx_fill
 
 }
 }
-
-#endif

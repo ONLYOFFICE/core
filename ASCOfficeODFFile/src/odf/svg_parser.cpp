@@ -157,9 +157,14 @@ namespace svg_path
         const int nLen(rSvgDStatement.length());
         int nPos(0);
         bool bIsClosed(false);
-        double nLastX( 0.0 );
+        
+		double nLastX( 0.0 );
         double nLastY( 0.0 );
-        _polyline aCurrPoly;
+		
+		double nLastControlX( 0.0 );
+ 		double nLastControlY( 0.0 );
+		
+		_polyline aCurrPoly;
 
         // skip initial whitespace
         skipSpaces(nPos, rSvgDStatement, nLen);
@@ -260,7 +265,7 @@ namespace svg_path
                 }
                 case 'H' :
                 {
-					aCurrPoly.command=L"lnTo";
+					aCurrPoly.command=L"a:lnTo";
                     nPos++;
                     skipSpaces(nPos, rSvgDStatement, nLen);
 
@@ -293,7 +298,7 @@ namespace svg_path
                 }
                 case 'V' :
                 {
-					aCurrPoly.command =L"v";
+					aCurrPoly.command =L"a:v";
                     nPos++;
                     skipSpaces(nPos, rSvgDStatement, nLen);
 
@@ -326,7 +331,7 @@ namespace svg_path
                 }
                 case 'S' :
                 {
-					aCurrPoly.command=L"cubicBezTo";
+					aCurrPoly.command=L"a:cubicBezTo";
                     nPos++;
                     skipSpaces(nPos, rSvgDStatement, nLen);
 
@@ -334,6 +339,7 @@ namespace svg_path
                     {
                         double nX, nY;
                         double nX2, nY2;
+                        double nX1, nY1;
 
                         if(!importDoubleAndSpaces(nX2, nPos, rSvgDStatement, nLen)) return false;
                         if(!importDoubleAndSpaces(nY2, nPos, rSvgDStatement, nLen)) return false;
@@ -348,30 +354,12 @@ namespace svg_path
                             nY += nLastY;
                         }
 
-                        //// ensure existance of start point
-                        //if(aCurrPoly.points.size()<1)
-                        //{
-                        //    aCurrPoly.points.push_back(_point(nLastX, nLastY));
-                        //}
-
-                        // get first control point. It's the reflection of the PrevControlPoint
-                        // of the last point. If not existent, use current point (see SVG)
-						//_point aPrevControl=_point(nLastX, nLastY);
-      //                  const int nIndex(aCurrPoly.points.size() - 1);
-
-                        //if(aCurrPoly.areControlPointsUsed() && aCurrPoly.isPrevControlPointUsed(nIndex))
-                        //{
-                        //    const _point aPrevPoint(aCurrPoly.points[nIndex]);
-                        //    const _point aPrevControlPoint(aCurrPoly.points[nIndex]);//getPrevControlPoint(nIndex));
-
-                        //    // use mirrored previous control point
-                        //    aPrevControl.x=((2.0 * aPrevPoint.x) - aPrevControlPoint.x);
-                        //    aPrevControl.y=((2.0 * aPrevPoint.y) - aPrevControlPoint.y);
-                        //}
-
-                        // append curved edge
-                        //aCurrPoly.appendBezierSegment();
-						//aCurrPoly.points.push_back(aPrevControl);
+                        // use mirrored previous control point
+                        nX1 =((2.0 * nLastX) - nLastControlX);
+                        nY1 =((2.0 * nLastY) - nLastControlY);
+						
+						// append curved edge
+						aCurrPoly.points.push_back(_point(nX1, nY1));
 						aCurrPoly.points.push_back(_point(nX2, nY2));
 						aCurrPoly.points.push_back(_point(nX, nY));
 
@@ -381,7 +369,11 @@ namespace svg_path
                         // set last position
                         nLastX = nX;
                         nLastY = nY;
-                    }
+ 						
+						//keep control point
+						nLastControlX = nX2;
+						nLastControlY = nY2;            
+					}
                     break;
                 }
 
@@ -419,12 +411,6 @@ namespace svg_path
                             nY += nLastY;
                         }
 
-                        //// ensure existance of start point
-                        //if(aCurrPoly.points.size()<1)
-                        //{
-                        //    aCurrPoly.points.push_back(_point(nLastX, nLastY));
-                        //}
-
                         // append curved edge
 						aCurrPoly.points.push_back(_point(nX1, nY1));
 						aCurrPoly.points.push_back(_point(nX2, nY2));
@@ -436,6 +422,10 @@ namespace svg_path
                         // set last position
                         nLastX = nX;
                         nLastY = nY;
+
+						//keep control point
+						nLastControlX = nX2;
+						nLastControlY = nY2;
                     }
                     break;
                 }

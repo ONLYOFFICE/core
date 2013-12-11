@@ -69,7 +69,7 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 {
 	if (draw_fill_color_)	properties.push_back(_property(L"fill-color",	draw_fill_color_->get_hex_value() ));
 	if (svg_stroke_color_)	properties.push_back(_property(L"stroke-color",	svg_stroke_color_->get_hex_value() ));
-	if (draw_fill_)			properties.push_back(_property(L"fill",			draw_fill_.get()));
+	if (draw_fill_)			properties.push_back(_property(L"fill",			draw_fill_->get_type_ms()));
 	if (draw_stroke_)		properties.push_back(_property(L"stroke",		draw_stroke_->get_type() ));
 	if (draw_stroke_dash_)	properties.push_back(_property(L"stroke-dash",	draw_stroke_dash_.get()));
 	if (svg_stroke_width_)	properties.push_back(_property(L"stroke-width",	svg_stroke_width_->get_length().get_value_unit(odf::length::pt) ));

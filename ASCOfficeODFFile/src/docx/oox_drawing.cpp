@@ -284,13 +284,8 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val)
 		{
 			std::wstring fillType;
 
-			if (odf::GetProperty(val.additional,L"fill",strVal))
-			{
-				if ((strVal) && (strVal.get() == L"none"))		fillType = L"a:noFill";
-				if ((strVal) && (strVal.get() == L"hatch"))		fillType = L"a:pattFill";
-				if ((strVal) && (strVal.get() == L"gradient"))	fillType = L"a:gradFill";
-				if ((strVal) && (strVal.get() == L"bitmap"))	fillType = L"a:imageFill";
-			}
+			if (odf::GetProperty(val.additional,L"fill",strVal))fillType = *strVal;
+
 			if (val.sub_type ==6)fillType = L"a:noFill";//в ods заливки нет ...а задать ее можно там !!
 
 			odf::GetProperty(val.additional,L"fill-color",strVal);

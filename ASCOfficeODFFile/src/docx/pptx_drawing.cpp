@@ -54,7 +54,7 @@ void pptx_serialize_image(std::wostream & strm, _pptx_drawing const & val)
                     CP_XML_ATTR(L"id", val.id);
                     CP_XML_ATTR(L"name", val.name);
 
-					//oox_serialize_hlink(CP_XML_STREAM(),val.hlinks);
+					oox_serialize_hlink(CP_XML_STREAM(),val.hlinks);
 
 				}
                 CP_XML_NODE(L"p:cNvPicPr")
@@ -96,30 +96,27 @@ void pptx_serialize_image(std::wostream & strm, _pptx_drawing const & val)
 
 void pptx_serialize_shape(std::wostream & strm, _pptx_drawing const & val)
 {
-	std::wstring shapeType;
-	
-	if (val.sub_type<9 && val.sub_type>=0)
-	{
-		shapeType =	_ooxShapeType[val.sub_type];
-	}
-	if (val.sub_type == 7)//custom 
-	{
-		_CP_OPT(int) iVal;
-		odf::GetProperty(val.additional,L"draw-type-index",iVal);
-		if (iVal)shapeType = _OO_OOX_custom_shapes[*iVal].oox;	
-	}
-	else if (val.sub_type<9 && val.sub_type>=0)
-	{
-		shapeType =	_ooxShapeType[val.sub_type];
-	} 
+	//std::wstring shapeType;
+	//
+	//if (val.sub_type<9 && val.sub_type>=0)
+	//{
+	//	shapeType =	_ooxShapeType[val.sub_type];
+	//}
+	//if (val.sub_type == 7)//custom 
+	//{
+	//	_CP_OPT(int) iVal;
+	//	odf::GetProperty(val.additional,L"draw-type-index",iVal);
+	//	if (iVal)shapeType = _OO_OOX_custom_shapes[*iVal].oox;	
+	//}
+	//else if (val.sub_type<9 && val.sub_type>=0)
+	//{
+	//	shapeType =	_ooxShapeType[val.sub_type];
+	//} 
 
-	if (shapeType.length()<1)
-		shapeType =L"rect";//подмена неизвестного на прямоугольник (сделать невидимым ???)
-	
-///временно ... непонятно как разделять шаблон и собственно текст
+	//if ((val.place_holder_type_.length()>0) &&
+	//	!(val.place_holder_type_== L"body" || val.place_holder_type_== L"title"  || val.place_holder_type_== L"subTitle"))return;
+		
 
-	_CP_OPT(std::wstring) strTextContent;
-	odf::GetProperty(val.additional,L"text-content",strTextContent);
 	CP_XML_WRITER(strm)    
     {
         CP_XML_NODE(L"p:sp")
@@ -145,18 +142,14 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing const & val)
 				{
 					if (val.place_holder_type_.length()>0)CP_XML_NODE(L"p:ph"){ CP_XML_ATTR(L"type",val.place_holder_type_);}
 				}
-            } // p:nv_Pr
+            }
 			CP_XML_NODE(L"p:spPr")
             {
 				oox_serialize_xfrm(CP_XML_STREAM(),val);
 
-				if (!strTextContent)//если в презенташке тока текст то нефиг ее зарамливать
-				{
-					oox_serialize_shape(CP_XML_STREAM(),val);
-					oox_serialize_ln(CP_XML_STREAM(),val.additional);
-				}
-
-            } // p:spPr
+				oox_serialize_shape(CP_XML_STREAM(),val);
+				oox_serialize_ln(CP_XML_STREAM(),val.additional);
+            }
 			
 			pptx_serialize_text(CP_XML_STREAM(),val.additional);
         } 

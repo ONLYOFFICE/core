@@ -105,6 +105,7 @@ enum ElementType
 
 	typeStylePresentationPageLayout,
 	typeStylePresentationPlaceholder,
+	typeStyleDrawingPageProperties,
 
     typeStyleColumns,
     typeStyleColumn,

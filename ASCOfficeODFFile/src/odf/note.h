@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_NOTE_H_
-#define _CPDOCCORE_ODF_NOTE_H_
+#pragma once
 
 #include <cpdoccore/CPOptional.h>
 #include "office_elements.h"
@@ -75,4 +74,3 @@ CP_REGISTER_OFFICE_ELEMENT2(note_body);
 }
 }
 
-#endif

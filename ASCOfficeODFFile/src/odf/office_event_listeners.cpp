@@ -23,10 +23,19 @@ void office_event_listeners::add_attributes( const xml::attributes_wc_ptr & Attr
 
 void office_event_listeners::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-	if CP_CHECK_NAME(L"presentation", L"event-listener")
+	if	CP_CHECK_NAME(L"presentation", L"event-listener")
         CP_CREATE_ELEMENT(presentation_event_listeners_);
+	else if CP_CHECK_NAME(L"script", L"event-listener")
+        CP_CREATE_ELEMENT(script_event_listeners_);
     else
         CP_NOT_APPLICABLE_ELM();
+}
+void office_event_listeners::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    BOOST_FOREACH(const office_element_ptr & elm, presentation_event_listeners_)
+    {
+		elm->pptx_convert(Context);
+	}
 }
 // presentation:event-listener-attlist
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,6 +65,15 @@ void presentation_event_listener::add_child_element( xml::sax * Reader, const ::
         CP_CREATE_ELEMENT(presentation_sound_);
     else
         CP_NOT_APPLICABLE_ELM();
+}
+void presentation_event_listener::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	common_xlink_attlist & xlink = presentation_event_listener_attlist_.common_xlink_attlist_;
+
+	if (xlink.xlink_href_)
+	{
+		Context.get_slide_context().add_hyperlink(*xlink.xlink_href_,true);
+	}
 }
 
 // script:event-listener

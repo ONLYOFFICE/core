@@ -180,9 +180,6 @@ void pptx_xml_slideMaster::add_layout(int id, const std::wstring & rId)
 			std::wstring(L"../slideLayouts/slideLayout")  + boost::lexical_cast<std::wstring>(id) + L".xml"));
 }
 
-static std::wstring strSlideMasterEmpty = L"<p:spTree><p:nvGrpSpPr><p:cNvPr name=\"\" id=\"1\"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr>\
-<a:xfrm><a:off y=\"0\" x=\"0\"/><a:ext cy=\"0\" cx=\"0\"/><a:chOff y=\"0\" x=\"0\"/><a:chExt cy=\"0\" cx=\"0\"/></a:xfrm></p:grpSpPr></p:spTree>";
-
 void pptx_xml_slideMaster::write_to(std::wostream & strm)
 {
     CP_XML_WRITER(strm)
@@ -203,13 +200,9 @@ void pptx_xml_slideMaster::write_to(std::wostream & strm)
 						CP_XML_NODE(L"a:effectLst");
 					}
 				}
-				if (slideMasterData_.str().length()>0)
+				CP_XML_NODE(L"p:spTree")
 				{
 					CP_XML_STREAM() << slideMasterData_.str();
-				}
-				else
-				{
-					CP_XML_STREAM() << strSlideMasterEmpty;
 				}
             }
 			CP_XML_NODE(L"p:clrMap")

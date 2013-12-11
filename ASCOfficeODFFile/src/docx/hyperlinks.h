@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_DOCS_HYPERLINKS_H_
-#define _CPDOCCORE_DOCS_HYPERLINKS_H_
+#pragma once
 
 #include <vector>
 #include <string>
@@ -34,5 +33,3 @@ private:
 
 }
 }
-
-#endif

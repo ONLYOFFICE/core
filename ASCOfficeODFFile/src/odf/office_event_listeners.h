@@ -21,6 +21,8 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeOfficeEventListeners;
     CPDOCCORE_DEFINE_VISITABLE();
+   
+	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -63,6 +65,8 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typePresentationEventListener;
     CPDOCCORE_DEFINE_VISITABLE();
+    
+	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );

@@ -23,6 +23,7 @@
 #include "linestyle.h"
 #include "markerstyle.h"
 #include "verticalalign.h"
+#include "drawfill.h"
 
 
 namespace cpdoccore { 
@@ -49,7 +50,7 @@ public:
 	_CP_OPT(length_or_percent)	svg_stroke_width_;
 	_CP_OPT(length_or_percent)	draw_opacity_;		
 	_CP_OPT(std::wstring)		draw_stroke_dash_;
-	_CP_OPT(std::wstring)		draw_fill_;
+	_CP_OPT(draw_fill)			draw_fill_;
 	_CP_OPT(length_or_percent)	svg_stroke_opacity_;
 
 	_CP_OPT(color)				svg_stroke_color_;

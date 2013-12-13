@@ -2773,6 +2773,13 @@ __forceinline const bool operator!=(const wchar_t* cwsStr1, const CWCharWrapper&
 	return false;
 }
 
+//#define _USE_LIBXML2_READER_
+
+#ifdef _USE_LIBXML2_READER_
+
+#include "libxml2/libxml2.h"
+
+#else
 
 #ifdef _USE_XMLLITE_READER_
 namespace XmlUtils
@@ -3524,4 +3531,6 @@ namespace XmlUtils
 		}
 	};
 }
+#endif
+
 #endif

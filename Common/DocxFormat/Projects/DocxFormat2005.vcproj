@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\..\..\..\..\ASCOfficeOdtFile\Source\OfficeSvmFile;.\..\Source\Base;.\..\Source\SystemUtility"
+				AdditionalIncludeDirectories=".\..\Source\XML\libxml2\XML\include;.\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\..\..\..\..\ASCOfficeOdtFile\Source\OfficeSvmFile;.\..\Source\Base;.\..\Source\SystemUtility"
 				PreprocessorDefinitions="USE_LITE_READER;_USE_XMLLITE_READER_;_DOCWRAPPER_"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalLibraryDirectories=""
+				AdditionalLibraryDirectories=".\..\Source\XML\libxml2\win_build\Release"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -105,7 +105,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories=".\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\ASCOfficeOdtFile\Source\OfficeSvmFile"
+				AdditionalIncludeDirectories=".\..\Source\XML\libxml2\XML\include;.\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\ASCOfficeOdtFile\Source\OfficeSvmFile"
 				PreprocessorDefinitions="USE_LITE_READER;_USE_XMLLITE_READER_;_DOCWRAPPER_"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -124,7 +124,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalLibraryDirectories=""
+				AdditionalLibraryDirectories=".\..\Source\XML\libxml2\win_build\Release"
 			/>
 			<Tool
 				Name="VCALinkTool"

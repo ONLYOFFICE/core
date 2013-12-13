@@ -70,9 +70,9 @@ void presentation_event_listener::pptx_convert(oox::pptx_conversion_context & Co
 {
 	common_xlink_attlist & xlink = presentation_event_listener_attlist_.common_xlink_attlist_;
 
-	if (xlink.xlink_href_)
+	if (xlink.href_)
 	{
-		Context.get_slide_context().add_hyperlink(*xlink.xlink_href_,true);
+		Context.get_slide_context().add_hyperlink(*xlink.href_,true);
 	}
 }
 

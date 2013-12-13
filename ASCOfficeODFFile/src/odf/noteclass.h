@@ -1,9 +1,4 @@
-#ifndef _CPDOCCORE_ODF_NOTECLASS_H_
-#define _CPDOCCORE_ODF_NOTECLASS_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <string>
@@ -44,5 +39,3 @@ std::wostream & operator << (std::wostream & _Wostream, const noteclass & _Val);
 APPLY_PARSE_XML_ATTRIBUTES(odf::noteclass);
 
 }
-
-#endif

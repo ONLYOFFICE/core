@@ -410,6 +410,33 @@ void odf_document::Impl::parse_styles()
 
                 context_->numberStyles().add(style->get_style_name(), elm);
             }
+           BOOST_FOREACH(const office_element_ptr & elm, docStyles->draw_styles_.draw_gradient_)
+            {
+                draw_gradient * style = dynamic_cast<draw_gradient *>(elm.get());
+
+                if (!style)
+                    continue;
+
+				context_->drawStyles().add(L"gradient:" + style->get_style_name(), elm);
+            }
+            BOOST_FOREACH(const office_element_ptr & elm, docStyles->draw_styles_.draw_fill_image_)
+            {
+                draw_fill_image * style = dynamic_cast<draw_fill_image *>(elm.get());
+
+                if (!style)
+                    continue;
+
+				context_->drawStyles().add(L"bitmap:" + style->get_style_name(), elm);
+            }
+    //        BOOST_FOREACH(const office_element_ptr & elm, docStyles->draw_styles_.draw_hatch_)
+    //        {
+    //            const draw_hatch_image * style = dynamic_cast<const draw_hatch_image *>(elm.get());
+
+    //            if (!style)
+    //                continue;
+
+				//context_->drawStyles().add(L"hatch:" + style->get_style_name(), elm);
+    //        }
 		}
         while(0); // end parse styles
     }

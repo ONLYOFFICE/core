@@ -115,14 +115,18 @@ CP_REGISTER_OFFICE_ELEMENT2(default_style);
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-class draw_gradient_properties
+/// \class  style_draw_gradient
+class draw_gradient : public office_element_impl<draw_gradient>
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStyleDrawGradient;
 
-public:
-	_CP_OPT(std::wstring)		draw_name_;
-	_CP_OPT(std::wstring)		draw_display_name_;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
 
 	_CP_OPT(color)				draw_start_color_;
 	_CP_OPT(color)				draw_end_color_;
@@ -136,34 +140,45 @@ public:
 	_CP_OPT(percent)			draw_border_;
 	_CP_OPT(int)				draw_angle_;
 	_CP_OPT(std::wstring)		draw_style_;//"square" 
-     
-};
 
-/// \class  style_draw_gradient_properties
-///         style_draw_gradient_properties
-class draw_gradient : public office_element_impl<draw_gradient>
+
+private:
+ 	_CP_OPT(std::wstring)		draw_name_;
+	_CP_OPT(std::wstring)		draw_display_name_;
+	
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+ 
+    friend class odf_document;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(draw_gradient);
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/// \class  style_draw_fill_image
+class draw_fill_image : public office_element_impl<draw_fill_image>
 {
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeStyleDrawGradientPropertis;
+    static const ElementType type = typeStyleDrawFillImage;
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-    const draw_gradient_properties & content() const { return draw_gradient_properties_; }
-
+	std::wstring get_style_name(){return draw_name_.get_value_or(L"");}
+	
+	common_xlink_attlist		xlink_attlist_;
 
 private:
+ 	_CP_OPT(std::wstring)		draw_name_;
+
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
- 
-    draw_gradient_properties draw_gradient_properties_;
 
     friend class odf_document;
 
 };
-CP_REGISTER_OFFICE_ELEMENT2(draw_gradient);
+CP_REGISTER_OFFICE_ELEMENT2(draw_fill_image);
 /////////////////////////////////////////////////////////////////////////////////////////////////
 class style;
 typedef shared_ptr<style>::Type style_ptr;
@@ -239,6 +254,26 @@ private:
     friend class odf_document;
 };
 
+class draw_styles
+{
+public:
+    void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
+
+private:
+	office_element_ptr_array draw_gradient_; 
+   
+	office_element_ptr_array draw_fill_image_; 
+    
+	office_element_ptr_array draw_hatch_;    
+    
+	office_element_ptr_array draw_marker_; // < TODO
+    office_element_ptr_array draw_stroke_dash_; // < TODO
+    office_element_ptr_array draw_opacity_; // < TODO
+	office_element_ptr_array svg_linearGradient_; // < TODO
+    office_element_ptr_array svg_radialGradient_; // < TODO
+
+    friend class odf_document;
+};
 
 /// \class  office_automatic_styles
 /// \brief  office:automatic-styles
@@ -371,27 +406,14 @@ private:
 
 private:
     styles styles_;
-    office_element_ptr_array style_default_style_;
+	draw_styles draw_styles_;	
+	office_element_ptr_array style_default_style_;
+	office_element_ptr_array style_presentation_page_layout_;
     
 	office_element_ptr text_outline_style_; // < TODO
     office_element_ptr_array text_notes_configuration_; // < TODO
     office_element_ptr text_bibliography_configuration_; // < TODO
     office_element_ptr text_linenumbering_configuration_; // < TODO
-   
-	office_element_ptr_array draw_gradient_; 
-   
-	office_element_ptr_array svg_linearGradient_; // < TODO
-    office_element_ptr_array svg_radialGradient_; // < TODO
-    
-	office_element_ptr_array draw_hatch_; // < TODO
-   
-	office_element_ptr_array draw_fill_image_; // < TODO
-    
-	office_element_ptr_array draw_marker_; // < TODO
-    office_element_ptr_array draw_stroke_dash_; // < TODO
-    office_element_ptr_array draw_opacity_; // < TODO
-    
-	office_element_ptr_array style_presentation_page_layout_;
 
     friend class odf_document;
     

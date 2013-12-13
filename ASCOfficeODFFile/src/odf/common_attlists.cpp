@@ -141,11 +141,11 @@ void common_writing_mode_attlist::add_attributes( const xml::attributes_wc_ptr &
 
 bool common_xlink_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    bool b = CP_APPLY_ATTR(L"xlink:href", xlink_href_);
-    CP_APPLY_ATTR(L"xlink:type",		xlink_type_);
-    CP_APPLY_ATTR(L"xlink:show",		xlink_show_);    
-    CP_APPLY_ATTR(L"xlink:actuate",		xlink_actuate_);    
-    return b;
+    CP_APPLY_ATTR(L"xlink:href",		href_);
+    CP_APPLY_ATTR(L"xlink:type",		type_);
+    CP_APPLY_ATTR(L"xlink:show",		show_);    
+    CP_APPLY_ATTR(L"xlink:actuate",		actuate_);    
+    return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -248,8 +248,15 @@ void common_draw_rel_size_attlist::apply_from(const common_draw_rel_size_attlist
 
 void common_text_anchor_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"text:anchor-type", text_anchor_type_);
-    CP_APPLY_ATTR(L"text:anchor-page-number", text_anchor_page_number_);
+    CP_APPLY_ATTR(L"text:anchor-type", type_);
+    CP_APPLY_ATTR(L"text:anchor-page-number", page_number_);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void common_text_animation_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+//    CP_APPLY_ATTR(L"text:animation", type_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

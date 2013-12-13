@@ -64,9 +64,11 @@ xlink_actuate xlink_actuate::parse(const std::wstring & Str)
     std::wstring tmp = Str;
     boost::algorithm::to_lower(tmp);
 
-    if (tmp == L"onrequest")
+	if (tmp == L"onrequest")
         return xlink_actuate( OnRequest );
-    else
+    else if (tmp == L"onload")
+        return xlink_actuate( OnLoad );   
+	else
     {
         BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return xlink_actuate( OnRequest );
@@ -82,7 +84,9 @@ xlink_show xlink_show::parse(const std::wstring & Str)
         return xlink_show( New );
     else if (tmp == L"replace")
         return xlink_show( Replace );
-    else
+     else if (tmp == L"embed")
+        return xlink_show( Embed );
+	else
     {
         BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return xlink_show( New );

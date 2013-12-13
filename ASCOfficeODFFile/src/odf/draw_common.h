@@ -23,6 +23,8 @@ namespace _image_file_
 namespace cpdoccore { 
 namespace odf {
 
+class styles_lite_container;
+
 
 enum BorderSide { sideTop, sideBottom, sideLeft, sideRight, sideMiddle };
 
@@ -32,6 +34,8 @@ int get_value_emu(double pt);
 int Compute_BorderWidth(const graphic_format_properties & graphicProperties, BorderSide borderSide);//emu
 
 int GetMargin(const graphic_format_properties & graphicProperties, BorderSide borderSide);//emu
+
+void Compute_GraphicFill(graphic_format_properties & props, styles_lite_container &styles, oox::_oox_fill & fill);
 
 typedef double double_4[4];
 bool parse_clipping(std::wstring strClipping,std::wstring fileName,double_4 & clip_rect);

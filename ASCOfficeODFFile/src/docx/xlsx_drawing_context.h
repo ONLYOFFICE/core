@@ -16,11 +16,12 @@ namespace cpdoccore {
 	
 namespace oox {
 
-struct simple_drawing_desc;
+struct drawing_object_description;
 struct xlsx_table_position;
 class xlsx_table_metrics;
 class mediaitems;
 class xlsx_drawings;
+struct _oox_fill;
 
 typedef _CP_PTR(xlsx_drawings) xlsx_drawings_ptr;
 
@@ -51,21 +52,22 @@ public:
 	void set_odf_packet_path(std::wstring path){odf_packet_path_ = path;}//для анализа картинок
 
     void start_shapes();
-    void end_shapes();
-
     void start_drawing(std::wstring const & name);
 	
 	void set_rect(double width_pt, double height_pt, double x_pt, double y_pt);
 
 	void set_translate(double x_pt, double y_pt);
 	void set_scale(double cx_pt, double cy_pt);
+	void set_rotate(double angle);
 
 	void set_anchor(std::wstring anchor, double x_pt, double y_pt);
 	void set_property(odf::_property p);
 	std::vector<odf::_property> & get_properties();
 	void set_clipping(std::wstring & str );
-	//...   
+	void set_fill(_oox_fill & fill);
+
 	void end_drawing();
+    void end_shapes();
 
 	std::wstring add_hyperlink(std::wstring const & ref, bool object);
 
@@ -90,8 +92,8 @@ public:
     void process_charts(xlsx_table_metrics & table_metrics);
     void process_shapes(xlsx_table_metrics & table_metrics);
 
-	void process_position_properties(simple_drawing_desc & pic,xlsx_table_metrics & table_metrics,xlsx_table_position & from,xlsx_table_position & to);
-	void process_common_properties(simple_drawing_desc& pic,_xlsx_drawing & drawing,xlsx_table_metrics & table_metrics);
+	void process_position_properties(drawing_object_description & pic,xlsx_table_metrics & table_metrics,xlsx_table_position & from,xlsx_table_position & to);
+	void process_common_properties(drawing_object_description& pic,_xlsx_drawing & drawing,xlsx_table_metrics & table_metrics);
 
 private:
 	void default_set();

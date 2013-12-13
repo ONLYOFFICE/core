@@ -1,5 +1,4 @@
 #include "precompiled_cpodf.h"
-#include "draw_common.h"
 
 #include <ostream>
 #include <sstream>
@@ -16,6 +15,7 @@
 #include "serialize_elements.h"
 #include <cpdoccore/odf/odf_document.h>
 
+#include "draw_common.h"
 #include "length.h"
 #include "borderstyle.h"
 #include "odfcontext.h"
@@ -34,7 +34,7 @@ namespace _image_file_
 		Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
 		Gdiplus::Bitmap *file = new Gdiplus::Bitmap(fileName,false);
-		if ((file) && (file->GetLastStatus()==Gdiplus::Status::Ok))
+		if ((file) && (file->GetLastStatus()==Gdiplus::Ok))
 		{
 			Height = file->GetHeight();
 			Width  = file->GetWidth();
@@ -183,6 +183,45 @@ int Compute_BorderWidth(const graphic_format_properties & graphicProperties, Bor
 
     return get_value_emu(lengthValue);
 }
+void Compute_GraphicFill(graphic_format_properties & props, styles_lite_container &styles, oox::_oox_fill & fill)
+{
+	fill.type = 0; 
+
+	if (props.draw_fill_)fill.type = props.draw_fill_->get_type();
+
+	if (props.draw_opacity_) fill.opacity = props.draw_opacity_->get_percent().get_value();
+	if (props.draw_opacity_name_)
+	{
+		fill.opacity = 1;
+		//поиск по имени - градиентная прозрачность
+	}
+
+////////////////////////////////////////////////////////////
+	if (props.draw_fill_color_)
+	{
+		fill.solid = oox::oox_solid_fill::create();
+		fill.solid->color = props.draw_fill_color_->get_hex_value();
+		if (fill.type==0)fill.type = 1;	//в этом случае тип может и не быть задан явно
+	}
+	if (props.draw_fill_image_name_)
+	{
+		const std::wstring style_name = L"bitmap:" + *props.draw_fill_image_name_;
+		if (office_element_ptr style = styles.find_by_style_name(style_name))
+		{
+			if (draw_fill_image * image_style = dynamic_cast<draw_fill_image *>(style.get()))
+			{			
+				fill.bitmap = oox::oox_bitmap_fill::create();
+				fill.bitmap->xlink_href_ = image_style->xlink_attlist_.href_.get_value_or(L"");
+			}
+		}
+	}
+	if (props.style_repeat_ && fill.bitmap)
+	{
+		if (*props.style_repeat_== L"repeat")	fill.bitmap->bTile = true;
+		if (*props.style_repeat_== L"stretch")	fill.bitmap->bStretch = true;
+	}
+
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 using xml::xml_char_wc;
@@ -208,7 +247,7 @@ void draw_a::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void draw_a::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    Context.get_drawing_context().add_hyperlink(common_xlink_attlist_.xlink_href_.get_value_or(L""),true);
+    Context.get_drawing_context().add_hyperlink(common_xlink_attlist_.href_.get_value_or(L""),true);
 				//стиль на текст не нужен ..текста то нет - ссылка с объекта
    
 	BOOST_FOREACH(const office_element_ptr & elm, content_)
@@ -218,7 +257,7 @@ void draw_a::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void draw_a::pptx_convert(oox::pptx_conversion_context & Context)
 {
-   Context.get_slide_context().add_hyperlink(common_xlink_attlist_.xlink_href_.get_value_or(L""),true);//стиль на текст не нужен ..текста то нет - ссылка с объекта
+   Context.get_slide_context().add_hyperlink(common_xlink_attlist_.href_.get_value_or(L""),true);//стиль на текст не нужен ..текста то нет - ссылка с объекта
    
 	BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
@@ -227,7 +266,7 @@ void draw_a::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_a::docx_convert(oox::docx_conversion_context & Context) 
 {
-	std::wstring rId = Context.add_hyperlink(common_xlink_attlist_.xlink_href_.get_value_or(L""), true);//гиперлинк с объекта, а не с текста .. 
+	std::wstring rId = Context.add_hyperlink(common_xlink_attlist_.href_.get_value_or(L""), true);//гиперлинк с объекта, а не с текста .. 
 	
 	BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
@@ -350,15 +389,14 @@ void xlsx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_con
 			}
 			else if ((res = transform[0].find(L"rotate"))>=0)//вращение
 			{
-				double angle =  boost::lexical_cast<double>(transform[1]);
-				Context.get_drawing_context().set_property(_property(L"svg:rotate",angle));
+				Context.get_drawing_context().set_rotate(boost::lexical_cast<double>(transform[1]));
 			}
-			else if ((res = transform[0].find(L"skewX"))>=0)//вращение
+			else if ((res = transform[0].find(L"skewX"))>=0)//сдвиг
 			{
 				double angle =  boost::lexical_cast<double>(transform[1]);
 				Context.get_drawing_context().set_property(_property(L"svg:skewX",angle));
 			}
-			else if ((res = transform[0].find(L"skewY"))>=0)//вращение
+			else if ((res = transform[0].find(L"skewY"))>=0)//сдвиг
 			{
 				double angle =  boost::lexical_cast<double>(transform[1]);
 				Context.get_drawing_context().set_property(_property(L"svg:skewY",angle));
@@ -411,8 +449,7 @@ void pptx_convert_transforms(std::wstring transformStr, oox::pptx_conversion_con
 			}
 			else if ((res = transform[0].find(L"rotate"))>=0)//вращение
 			{
-				double angle =  boost::lexical_cast<double>(transform[1]);
-				Context.get_slide_context().set_property(_property(L"svg:rotate",angle));
+				Context.get_slide_context().set_rotate( boost::lexical_cast<double>(transform[1]));
 			}
 			else if ((res = transform[0].find(L"skewX"))>=0)//вращение
 			{

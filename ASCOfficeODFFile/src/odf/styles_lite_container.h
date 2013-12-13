@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_NUMBER_STYLES_H_
-#define _CPDOCCORE_ODF_NUMBER_STYLES_H_
+#pragma once
 
 #include <cpdoccore/CPSharedPtr.h>
 #include <cpdoccore/CPScopedPtr.h>
@@ -10,11 +9,11 @@ namespace odf {
 class office_element;
 typedef shared_ptr<office_element>::Type office_element_ptr;
 
-class number_styles
+class styles_lite_container
 {
 public:
-    number_styles();
-    ~number_styles();
+    styles_lite_container();
+    ~styles_lite_container();
 public:
     void add(const std::wstring & style_name, office_element_ptr content);
     office_element_ptr find_by_style_name(const std::wstring & style_name);
@@ -27,5 +26,3 @@ private:
 
 }
 }
-
-#endif

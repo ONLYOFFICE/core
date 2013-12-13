@@ -137,7 +137,7 @@ int ComputeMarginX(const style_page_layout_properties * pagePropertiesNode,
         common_draw_shape_with_styles_attlist_.
         common_text_spreadsheet_shape_attlist_.
         common_text_anchor_attlist_.
-        text_anchor_type_;
+        type_;
 
     _CP_OPT(horizontal_rel) styleHorizontalRel = graphicProperties.common_horizontal_rel_attlist_.style_horizontal_rel_;
     _CP_OPT(horizontal_pos) styleHorizontalPos = graphicProperties.common_horizontal_pos_attlist_.style_horizontal_pos_;
@@ -531,7 +531,7 @@ int ComputeMarginY(const style_page_layout_properties_attlist & pageProperties,
         common_draw_shape_with_styles_attlist_.
         common_text_spreadsheet_shape_attlist_.
         common_text_anchor_attlist_.
-        text_anchor_type_;
+        type_;
 
     _CP_OPT(vertical_rel) styleVerticalRel  = graphicProperties.common_vertical_rel_attlist_.style_vertical_rel_;
     _CP_OPT(vertical_pos) styleVerticallPos = graphicProperties.common_vertical_pos_attlist_.style_vertical_pos_;
@@ -738,7 +738,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
         common_draw_shape_with_styles_attlist_.
         common_text_spreadsheet_shape_attlist_.
         common_text_anchor_attlist_.
-        text_anchor_type_;
+        type_;
 
 	int level_drawing = Context.get_drawing_context().get_current_level();
 
@@ -880,9 +880,6 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 
 	drawing.type = oox::mediaitems::typeShape;
 
-	drawing.isInternal = true;
-    drawing.rId = L"";//это ай-ди внешнего элемента
-
 	drawing.id = Context.get_drawing_context().get_current_shape_id();
 	drawing.name = Context.get_drawing_context().get_current_object_name();
 
@@ -912,10 +909,10 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 
 void draw_image::docx_convert(oox::docx_conversion_context & Context)
 {
-	if (!common_xlink_attlist_.xlink_href_)
+	if (!common_xlink_attlist_.href_)
 		return;
  
-	std::wstring href		= common_xlink_attlist_.xlink_href_.get_value_or(L"");
+	std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
 	int pos_replaicement= href.find(L"ObjectReplacements"); 
 	if (pos_replaicement >=0)
 		return;//заменяемый объект
@@ -949,11 +946,11 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 	oox::_docx_drawing drawing = oox::_docx_drawing();
-
+	drawing.fill.bitmap = oox::oox_bitmap_fill::create();
 	drawing.type = oox::mediaitems::typeImage;
 
-	drawing.isInternal = false;
-    drawing.rId = Context.add_mediaitem(href, oox::mediaitems::typeImage, drawing.isInternal,href);
+	drawing.fill.bitmap->isInternal = false;
+    drawing.fill.bitmap->rId = Context.add_mediaitem(href, oox::mediaitems::typeImage,drawing.fill.bitmap->isInternal,href);
 
 	drawing.id = Context.get_drawing_context().get_current_frame_id();
 	drawing.name = Context.get_drawing_context().get_current_object_name();
@@ -989,14 +986,14 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	if (properties)
 	{
 		using boost::filesystem::wpath;
-		if (properties->content().fo_clip_)
+		if (properties->content().fo_clip_ && drawing.fill.bitmap)
 		{
 			std::wstring strRectClip = properties->content().fo_clip_.get();
 			strRectClip = strRectClip.substr(5,strRectClip.length()-6);
 			
 			std::wstring fileName = BOOST_STRING_PATH(wpath(Context.root()->get_folder()) / href);
 			
-			drawing.clipping_enabled = parse_clipping(strRectClip,fileName,drawing.clipping_rect);
+			drawing.fill.bitmap->bCrop = parse_clipping(strRectClip,fileName,drawing.fill.bitmap->cropRect);
 		}        
 	}
  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1049,9 +1046,6 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 
 	drawing.type = oox::mediaitems::typeShape;
-
-	drawing.isInternal = true;
-    drawing.rId = L"";//это ай-ди внешнего элемента
 
 	drawing.id = Context.get_drawing_context().get_current_frame_id();
 	drawing.name = Context.get_drawing_context().get_current_object_name();
@@ -1136,7 +1130,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 {
     try 
 	{
-        std::wstring href		= common_xlink_attlist_.xlink_href_.get_value_or(L"");
+        std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
 
         odf::odf_document * odf = Context.root();
         const std::wstring folder = odf->get_folder();
@@ -1175,9 +1169,8 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		drawing.id = Context.get_drawing_context().get_current_frame_id();
 		drawing.name = Context.get_drawing_context().get_current_object_name();
 		
-        bool isMediaInternal = true;
-        
-		drawing.rId = Context.add_mediaitem(href, oox::mediaitems::typeChart, drawing.isInternal, href);
+        bool isMediaInternal = true;        
+		drawing.chartId = Context.add_mediaitem(href, oox::mediaitems::typeChart, isMediaInternal, href);
 
 		common_draw_docx_convert(Context, frame->common_draw_attlists_, drawing);
 		

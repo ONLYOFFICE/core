@@ -1,5 +1,4 @@
-#ifndef CPDOCCORE_XLSX_DRAWINGS_H_
-#define CPDOCCORE_XLSX_DRAWINGS_H_
+#pragma once
 
 #include <iosfwd>
 #include <cpdoccore/CPScopedPtr.h>
@@ -9,10 +8,6 @@
 
 namespace cpdoccore {
 namespace oox {
-
-struct _xlsx_drawing;
-
-class rels;
 
 class xlsx_drawings;
 typedef _CP_PTR(xlsx_drawings) xlsx_drawings_ptr;
@@ -28,6 +23,9 @@ struct drawing_elm
     xlsx_drawings_ptr drawings;
 };
 
+struct _xlsx_drawing;
+class rels;
+
 class xlsx_drawings
 {
 public:
@@ -42,7 +40,12 @@ public:
         std::wstring const & ref,
 		mediaitems::Type type
         );
-
+    void add(/**/
+        bool isInternal,
+        std::wstring const & rid,
+        std::wstring const & ref,
+		mediaitems::Type type
+        );
     bool empty() const;
 
     void dump_rels(rels & Rels);
@@ -56,5 +59,3 @@ private:
 
 }
 }
-
-#endif

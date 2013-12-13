@@ -54,7 +54,24 @@ public:
 		}
     }
 
-
+    void add(/**/
+        bool isInternal,
+        std::wstring const & rid,
+        std::wstring const & ref,
+		mediaitems::Type type)
+    {
+	
+		bool present = false;
+        BOOST_FOREACH(rel_ const & r, pptx_drawing_rels_)
+        {		
+			if (r.rid_ == rid && r.ref_ == ref)
+				present = true;
+		}
+		if (!present)
+		{
+			pptx_drawing_rels_.push_back(rel_(isInternal, rid, ref, type));
+		}
+    }
 	void serialize(std::wostream & strm)
 	{
 		BOOST_FOREACH(_pptx_drawing const & d, pptx_drawings_)
@@ -130,7 +147,14 @@ void pptx_drawings::add(_pptx_drawing const & d,
 {
     impl_->add(d, isInternal, rid, ref, type);
 }
-
+void pptx_drawings::add(/**/
+        bool isInternal,
+        std::wstring const & rid,
+        std::wstring const & ref,
+        mediaitems::Type type)
+{
+    impl_->add(isInternal, rid, ref, type);
+}
 void pptx_drawings::serialize(std::wostream & _Wostream)
 {
 	impl_->serialize(_Wostream);

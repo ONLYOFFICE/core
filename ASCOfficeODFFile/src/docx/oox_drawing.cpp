@@ -264,56 +264,11 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val)
 				oox_serialize_aLst(CP_XML_STREAM(),val.additional);
 			}					
 		}
+		oox_serialize_fill(strm,val.fill);
 
-	//////////////////////////////////////////////
-		//if (val.drawing.fill_Id.length()>0)
-		//{
-  //          CP_XML_NODE(L"a:blipFill")
-  //          {             
-		//		CP_XML_ATTR(L"rotWithShape", L"1");
-  //              CP_XML_NODE(L"a:blip")
-  //              {                            
-  //                 CP_XML_ATTR(L"r:embed", val.fill_Id);
-		//		   CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-  //              }
-		//		oox_serialize_clipping(CP_XML_STREAM(),val);
-
-		//	} // xdr:blipFill
-		//}
-		//else
-		{
-			std::wstring fillType;
-
-			if (odf::GetProperty(val.additional,L"fill",strVal))fillType = *strVal;
-
-			if (val.sub_type ==6)fillType = L"a:noFill";//в ods заливки нет ...а задать ее можно там !!
-
-			odf::GetProperty(val.additional,L"fill-color",strVal);
-
-			if ((strVal) && (strVal->length()>0 && fillType.length()<1))fillType = L"a:solidFill";
-			if (fillType.length()>0)
-			{
-				CP_XML_NODE(fillType)
-				{ 
-					if (strVal && fillType != L"a:noFill")
-					{
-						CP_XML_NODE(L"a:srgbClr")
-						{
-							CP_XML_ATTR(L"val",strVal.get());
-							if (odf::GetProperty(val.additional,L"opacity",dVal))
-							{
-								CP_XML_NODE(L"a:alpha")
-								{
-									CP_XML_ATTR(L"val",boost::lexical_cast<std::wstring>((int)(dVal.get())) + L"%");
-								}
-							}
-						}
-					}
-				}
-			}
-		}
 	}
 }
+
 void oox_serialize_xfrm(std::wostream & strm, _oox_drawing const & val)
 {
     CP_XML_WRITER(strm)
@@ -389,26 +344,6 @@ void oox_serialize_hlink(std::wostream & strm, std::vector<_hlink_desc> const & 
 				break;
 			}
 		}
-	}
-}
-void oox_serialize_clipping(std::wostream & strm, _oox_drawing const & val)
-{
-    CP_XML_WRITER(strm)
-    {
-		if (val.clipping_enabled)
-		{
-			CP_XML_NODE(L"a:srcRect")//в процентах от исходного размера :(
-			{
-				CP_XML_ATTR(L"l", static_cast<size_t>(val.clipping_rect[0]*1000));
-				CP_XML_ATTR(L"t", static_cast<size_t>(val.clipping_rect[1]*1000));
-				CP_XML_ATTR(L"r", static_cast<size_t>(val.clipping_rect[2]*1000));
-				CP_XML_ATTR(L"b", static_cast<size_t>(val.clipping_rect[3]*1000));
-			}
-		}
-        CP_XML_NODE(L"a:stretch")
-        {
-		   if (!val.clipping_enabled)CP_XML_NODE(L"a:fillRect");
-        }
 	}
 }
 

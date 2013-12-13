@@ -57,7 +57,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, Type type, bool 
 	int number=0;
 	
 	if ( type == typeChart)
-		number= count_charts+1;//см xlsx_package
+		number= count_charts+1;
 	else if ( type == typeImage)
 		number= count_image+1;
 	else if ( type == typeShape)

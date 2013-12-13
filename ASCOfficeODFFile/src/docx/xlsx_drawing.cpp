@@ -89,24 +89,15 @@ void xlsx_serialize_image(std::wostream & strm, _xlsx_drawing const & val)
 				}
                 CP_XML_NODE(L"xdr:cNvPicPr")
 				{
-					if (val.clipping_enabled)
+					if (val.fill.bitmap->bCrop)
 					{
 						CP_XML_ATTR(L"preferRelativeResize", L"0");
 						CP_XML_NODE(L"a:picLocks"){}
 					}	
 				}
             } 
-            CP_XML_NODE(L"xdr:blipFill")
-            {             
-				CP_XML_ATTR(L"rotWithShape", L"1");
-                CP_XML_NODE(L"a:blip")
-                {                            
-                   CP_XML_ATTR(L"r:embed", val.rId);
-				   CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-                }
-				oox_serialize_clipping(CP_XML_STREAM(),val);
-
-			}
+			val.fill.bitmap->name_space = L"xdr";
+			oox_serialize_fill(CP_XML_STREAM(), val.fill);
 
             CP_XML_NODE(L"xdr:spPr")
             {
@@ -206,7 +197,7 @@ void xlsx_serialize_chart(std::wostream & strm, _xlsx_drawing const & val)
 					CP_XML_NODE(L"c:chart")
 					{
 						CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-						CP_XML_ATTR(L"r:id", val.rId);
+						CP_XML_ATTR(L"r:id", val.chartId);
 						CP_XML_ATTR(L"xmlns:c", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
 					}
 				}

@@ -16,15 +16,22 @@ void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & A
 {
 	CP_APPLY_ATTR(L"draw:fill-color",	draw_fill_color_); 
 	CP_APPLY_ATTR(L"draw:fill",			draw_fill_); 
+	
+	CP_APPLY_ATTR(L"draw:opacity",		draw_opacity_); 
+	
+ 	CP_APPLY_ATTR(L"draw:fill-image-name",		draw_fill_image_name_);
+	CP_APPLY_ATTR(L"draw:fill-gradient-name",	draw_fill_gradient_name_);
+	CP_APPLY_ATTR(L"draw:fill-hatch-name",		draw_fill_hatch_name_);
+	CP_APPLY_ATTR(L"draw:opacity-name",			draw_opacity_name_);
+
+	CP_APPLY_ATTR(L"draw:wrap-influence-on-position", draw_wrap_influence_on_position_);
+	CP_APPLY_ATTR(L"draw:textarea-horizontal-align", draw_textarea_horizontal_align_);
+	CP_APPLY_ATTR(L"draw:textarea-vertical-align", draw_textarea_vertical_align_);
+	
 	CP_APPLY_ATTR(L"draw:stroke",		draw_stroke_); 
 	CP_APPLY_ATTR(L"draw:stroke-dash",	draw_stroke_dash_); 
 	CP_APPLY_ATTR(L"draw:marker-start",	draw_marker_start_); 
 	CP_APPLY_ATTR(L"draw:marker-end",	draw_marker_end_); 
-	CP_APPLY_ATTR(L"draw:opacity",		draw_opacity_); 
-    CP_APPLY_ATTR(L"draw:wrap-influence-on-position", draw_wrap_influence_on_position_);
-	CP_APPLY_ATTR(L"draw:textarea-horizontal-align", draw_textarea_horizontal_align_);
-	CP_APPLY_ATTR(L"draw:textarea-vertical-align", draw_textarea_vertical_align_);
-	
 	CP_APPLY_ATTR(L"svg:stroke-color",	svg_stroke_color_); 
 	CP_APPLY_ATTR(L"svg:stroke-width",	svg_stroke_width_);	
 	CP_APPLY_ATTR(L"svg:stroke-opacity",svg_stroke_opacity_); 
@@ -47,8 +54,9 @@ void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & A
     CP_APPLY_ATTR(L"style:flow-with-text", style_flow_with_text_);
     CP_APPLY_ATTR(L"style:overflow-behavior", style_overflow_behavior_);
     CP_APPLY_ATTR(L"style:mirror", style_mirror_);
- 
-    common_draw_rel_size_attlist_.add_attributes(Attributes);
+    CP_APPLY_ATTR(L"style:repeat", style_repeat_);
+	
+	common_draw_rel_size_attlist_.add_attributes(Attributes);
 	common_horizontal_margin_attlist_.add_attributes(Attributes);
     common_vertical_margin_attlist_.add_attributes(Attributes);
     common_margin_attlist_.add_attributes(Attributes);
@@ -68,12 +76,11 @@ void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & A
 void graphic_format_properties::apply_to(std::vector<_property> & properties)
 {
 	if (draw_fill_color_)	properties.push_back(_property(L"fill-color",	draw_fill_color_->get_hex_value() ));
-	if (svg_stroke_color_)	properties.push_back(_property(L"stroke-color",	svg_stroke_color_->get_hex_value() ));
-	if (draw_fill_)			properties.push_back(_property(L"fill",			draw_fill_->get_type_ms()));
+
 	if (draw_stroke_)		properties.push_back(_property(L"stroke",		draw_stroke_->get_type() ));
+	if (svg_stroke_color_)	properties.push_back(_property(L"stroke-color",	svg_stroke_color_->get_hex_value() ));
 	if (draw_stroke_dash_)	properties.push_back(_property(L"stroke-dash",	draw_stroke_dash_.get()));
 	if (svg_stroke_width_)	properties.push_back(_property(L"stroke-width",	svg_stroke_width_->get_length().get_value_unit(odf::length::pt) ));
-	if (draw_opacity_)		properties.push_back(_property(L"opacity",		draw_opacity_->get_percent().get_value()));
 	if (svg_stroke_opacity_)properties.push_back(_property(L"stroke-opacity",svg_stroke_opacity_->get_percent().get_value()));	
 	if (draw_marker_start_)	properties.push_back(_property(L"marker-start",	draw_marker_start_->get() ));
 	if (draw_marker_end_)	properties.push_back(_property(L"marker-end",	draw_marker_end_->get() ));
@@ -84,8 +91,14 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 }
 void graphic_format_properties::apply_from(const graphic_format_properties & Other)
 {
-	_CP_APPLY_PROP2(draw_fill_color_); 
 	_CP_APPLY_PROP2(draw_fill_); 
+	
+ 	_CP_APPLY_PROP2(draw_fill_image_name_);
+	_CP_APPLY_PROP2(draw_fill_gradient_name_);
+	_CP_APPLY_PROP2(draw_fill_hatch_name_);
+	_CP_APPLY_PROP2(draw_opacity_name_);
+
+	_CP_APPLY_PROP2(draw_fill_color_); 
 	_CP_APPLY_PROP2(draw_stroke_); 
 	_CP_APPLY_PROP2(draw_stroke_dash_); 
 	_CP_APPLY_PROP2(draw_marker_start_); 
@@ -102,6 +115,7 @@ void graphic_format_properties::apply_from(const graphic_format_properties & Oth
     _CP_APPLY_PROP2(fo_min_height_);
     _CP_APPLY_PROP2(fo_max_width_);
     _CP_APPLY_PROP2(fo_max_height_);
+
     _CP_APPLY_PROP2(style_print_content_);
     _CP_APPLY_PROP2(style_protect_);
 	_CP_APPLY_PROP2(style_editable_);
@@ -114,6 +128,7 @@ void graphic_format_properties::apply_from(const graphic_format_properties & Oth
     _CP_APPLY_PROP2(style_flow_with_text_);
     _CP_APPLY_PROP2(style_overflow_behavior_);
     _CP_APPLY_PROP2(style_mirror_);
+	_CP_APPLY_PROP2(style_repeat_);
     _CP_APPLY_PROP2(fo_clip_);
     _CP_APPLY_PROP2(draw_wrap_influence_on_position_);
 

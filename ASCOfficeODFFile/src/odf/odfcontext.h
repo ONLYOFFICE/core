@@ -1,12 +1,13 @@
-#ifndef _CPDOCCORE_ODF_CONTEXT_H_
-#define _CPDOCCORE_ODF_CONTEXT_H_
+#pragma once
 
 #include "styles.h"
 #include <vector>
 #include <boost/unordered_map.hpp>
 #include "stylefamily.h"
 #include "noteclass.h"
-#include "odf_number_styles.h"
+
+#include "styles_lite_container.h"
+
 #include <iosfwd>
 
 namespace cpdoccore { 
@@ -95,6 +96,7 @@ public:
 	
 	std::pair<int,std::wstring> add_or_find(const std::wstring & master_name);
 };
+///////////////////////////////////////////////////////////////
 class styles_container
 {
 public:
@@ -102,7 +104,8 @@ public:
     {}
 
     typedef std::vector<style_instance_ptr> instances_array;
-    void add_style(const std::wstring & Name,
+    
+	void add_style(const std::wstring & Name,
         style_family::type Type,
         style_content * Content,
         bool IsAutomatic,
@@ -119,14 +122,12 @@ public:
     
 	const std::wstring master_page_name_by_name(const std::wstring & StyleName) const;
 
-    void add_number_style(const std::wstring & Name, office_element_ptr style_content);
-
     instances_array & instances() { return instances_; } 
 
     std::wostream & dbg_dump(std::wostream & _Wostream);
 
-   presentation_layouts_instance & presentation_layouts() { return presentation_layouts_; } 
-   presentation_masters_instance & presentation_masters() { return presentation_masters_; } 
+	presentation_layouts_instance & presentation_layouts() { return presentation_layouts_; } 
+	presentation_masters_instance & presentation_masters() { return presentation_masters_; } 
 
 private:
 	presentation_layouts_instance presentation_layouts_;
@@ -324,24 +325,27 @@ private:
 class odf_read_context
 {
 public:
-    styles_container & styleContainer() { return style_container_; }
+    styles_container &		styleContainer() { return major_style_container_; }
     page_layout_container & pageLayoutContainer() { return page_layout_container_; }
-    fonts_container & fontContainer() { return fonts_container_; }
-    list_style_container & listStyleContainer() { return list_style_container_; }
-    notes_configuration & noteConfiguration() { return notes_configuration_; }
-    number_styles & numberStyles() { return number_styles_; }
+    fonts_container &		fontContainer() { return fonts_container_; }
+    list_style_container &	listStyleContainer() { return list_style_container_; }
+    
+	notes_configuration &	noteConfiguration() { return notes_configuration_; }
+   
+	styles_lite_container &	numberStyles() { return number_style_container_; }
+    styles_lite_container &	drawStyles() { return draw_style_container_; }
 
 private:
-    styles_container style_container_;
-    page_layout_container page_layout_container_;
-    fonts_container fonts_container_;
-    list_style_container list_style_container_;
-    notes_configuration notes_configuration_;
-    number_styles number_styles_;
+    styles_container		major_style_container_;
+    page_layout_container	page_layout_container_;
+    fonts_container			fonts_container_;
+    list_style_container	list_style_container_;
+    notes_configuration		notes_configuration_;
+   
+	styles_lite_container	number_style_container_;
+    styles_lite_container	draw_style_container_;
 
 };
 
 }
 }
-
-#endif

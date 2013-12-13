@@ -149,7 +149,7 @@ void pptx_conversion_context::end_document()
         package::slide_content_ptr content = package::slide_content::create();
 
 		slideM->write_to(content->content());
-        content->add_rels(slideM->slideMasterRels());//media & links rels
+        content->add_rels(slideM->Rels());//media & links rels
 
         output_document_->get_ppt_files().add_slideMaster(content);//slideMaster.xml
 
@@ -170,7 +170,7 @@ void pptx_conversion_context::end_document()
         package::slide_content_ptr content = package::slide_content::create();
 
 		slide->write_to(content->content());
-        content->add_rels(slide->slideRels());//media & links rels
+        content->add_rels(slide->Rels());//media & links rels
 
         output_document_->get_ppt_files().add_slide(content);//slide.xml
 
@@ -190,7 +190,7 @@ void pptx_conversion_context::end_document()
         package::slide_content_ptr content = package::slide_content::create();
 
 		slideL->write_to(content->content());
-        content->add_rels(slideL->slideLayoutRels());//media & links rels
+        content->add_rels(slideL->Rels());//media & links rels
 
         output_document_->get_ppt_files().add_slideLayout(content);//slideMaster.xml
 	}
@@ -319,7 +319,7 @@ bool pptx_conversion_context::start_page(const std::wstring & pageName,	const st
 	std::pair<int,std::wstring> layout_id =
 					root()->odf_context().styleContainer().presentation_layouts().add_or_find(pageLayoutName,pageMasterName);
 
-	current_slide().slideRels().add(relationship(layout_id.second, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout",
+	current_slide().Rels().add(relationship(layout_id.second, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout",
 		std::wstring(L"../slideLayouts/slideLayout")  + boost::lexical_cast<std::wstring>(layout_id.first) + L".xml"));
 
     return true;
@@ -341,7 +341,7 @@ bool pptx_conversion_context::start_layout(int layout_index)
 
 	root()->odf_context().styleContainer().presentation_masters().add_layout_to(layouts.content[layout_index].master_name,layouts.content[layout_index]);
 
-	current_layout().slideLayoutRels().add(relationship(master_id.second, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster",
+	current_layout().Rels().add(relationship(master_id.second, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster",
 		std::wstring(L"../slideMasters/slideMaster")  + boost::lexical_cast<std::wstring>(master_id.first) + L".xml"));
 
 //layout type
@@ -409,23 +409,25 @@ bool pptx_conversion_context::start_master(int master_index)
 }
 void pptx_conversion_context::end_page()
 {
-	get_slide_context().serialize(current_slide().slideData());
-	get_slide_context().dump_rels(current_slide().slideRels());//hyperlinks, mediaitems, ...
+	get_slide_context().serialize_background(current_slide().Background());
+	get_slide_context().serialize(current_slide().Data());
+	get_slide_context().dump_rels(current_slide().Rels());//hyperlinks, mediaitems, ...
 
 	get_slide_context().end_slide();
 }
 void pptx_conversion_context::end_layout()
 {
-	get_slide_context().serialize(current_layout().slideLayoutData());
-	get_slide_context().dump_rels(current_layout().slideLayoutRels());//hyperlinks, mediaitems, ...
+	get_slide_context().serialize(current_layout().Data());
+	get_slide_context().dump_rels(current_layout().Rels());//hyperlinks, mediaitems, ...
 
 	get_slide_context().end_slide();
 }
 
 void pptx_conversion_context::end_master()
 {
-	get_slide_context().serialize(current_master().slideMasterData());
-	get_slide_context().dump_rels(current_master().slideMasterRels());//hyperlinks, mediaitems, ...
+	get_slide_context().serialize_background(current_master().Background());
+	get_slide_context().serialize(current_master().Data());
+	get_slide_context().dump_rels(current_master().Rels());//hyperlinks, mediaitems, ...
 
 	get_slide_context().end_slide();
 }

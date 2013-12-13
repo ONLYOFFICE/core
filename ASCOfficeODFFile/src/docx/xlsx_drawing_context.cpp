@@ -12,48 +12,12 @@
 #include "xlsx_drawing_context.h"
 #include "xlsx_table_metrics.h"
 
-#include "../odf/length.h"
-
 #include "../odf/draw_common.h"
 
+#include "drawing_object_description.h"
 
 namespace cpdoccore {
 namespace oox {
-
-class xlsx_drawings;
-typedef _CP_PTR(xlsx_drawings) xlsx_drawings_ptr;
-
-struct _rect
-{
-    double width_;
-    double height_;
-    double x_;
-    double y_;
-};
-
-//+ 3-х мерный объект
-
-struct simple_drawing_desc
-{
-	std::wstring draw_name_;
-	
-	_CP_OPT(_rect) svg_rect_;
-
-	std::wstring anchor_;
-    double anchor_x_;
-    double anchor_y_;
-
-    std::wstring xlink_href_;  //ссылка на объект (external)
-   
-	std::vector<_hlink_desc> hlinks_;
-
-	std::vector<odf::_property> additional_;//for shapes
-	
-	std::wstring clipping_string_;
-
-	int type_;	//default - frame
-};
-
 
 class xlsx_drawing_context_handle::Impl
 {
@@ -112,6 +76,9 @@ const std::vector<drawing_elm> & xlsx_drawing_context_handle::content() const
     return impl_->content();
 }
 
+
+
+
 class xlsx_drawing_context::Impl
 {
 public:    
@@ -120,11 +87,11 @@ public:
     {} 
 
     xlsx_drawing_context_handle & handle_;
-    simple_drawing_desc simple_drawing_desc_;    
+    drawing_object_description simple_drawing_desc_;    
 
-	std::vector<simple_drawing_desc> images_;
-	std::vector<simple_drawing_desc> charts_;
-	std::vector<simple_drawing_desc> shapes_;
+	std::vector<drawing_object_description> images_;
+	std::vector<drawing_object_description> charts_;
+	std::vector<drawing_object_description> shapes_;
 
     void add_drawing(_xlsx_drawing const & d,
         bool isInternal,
@@ -134,7 +101,14 @@ public:
     {
         xlsx_drawings_->add(d, isInternal, rid, ref, type);
     }
-   
+      void add_drawing(/**/
+        bool isInternal,
+        std::wstring const & rid,
+        std::wstring const & ref,
+        mediaitems::Type type)
+    {
+        xlsx_drawings_->add(isInternal, rid, ref, type);
+    } 
 
 	mediaitems & get_mediaitems() { return handle_.impl_->get_mediaitems(); }
 
@@ -214,6 +188,18 @@ void xlsx_drawing_context::set_translate(double x_pt, double y_pt)
 		impl_->simple_drawing_desc_.svg_rect_= r;
 	}
 }
+void xlsx_drawing_context::set_rotate(double angle)
+{
+	set_property(odf::_property(L"svg:rotate",angle));
+	if (impl_->simple_drawing_desc_.svg_rect_)
+	{
+		_rect r = impl_->simple_drawing_desc_.svg_rect_.get();
+		//r.x_-=r.width_/2;
+		//r.y_-=r.height_/2;
+
+		impl_->simple_drawing_desc_.svg_rect_= r;
+	}
+}
 void xlsx_drawing_context::set_scale(double cx_pt, double cy_pt)
 {
 	if (impl_->simple_drawing_desc_.svg_rect_)
@@ -242,6 +228,10 @@ std::vector<odf::_property> & xlsx_drawing_context::get_properties()
 void xlsx_drawing_context::set_clipping(std::wstring & str)
 {
 	impl_->simple_drawing_desc_.clipping_string_= str;
+}
+void xlsx_drawing_context::set_fill(_oox_fill & fill)
+{
+	impl_->simple_drawing_desc_.fill_= fill;
 }
 std::wstring xlsx_drawing_context::add_hyperlink(std::wstring const & ref,bool object)
 {
@@ -297,24 +287,30 @@ void xlsx_drawing_context::process_images(xlsx_table_metrics & table_metrics)
 	using boost::filesystem::wpath;
 	int pos_replaicement=0;
 	
-    BOOST_FOREACH(simple_drawing_desc & pic, impl_->images_)
+    BOOST_FOREACH(drawing_object_description & pic, impl_->images_)
     {
 		pos_replaicement= pic.xlink_href_.find(L"ObjectReplacements"); 
 		if (pos_replaicement <0)//оригинал, а не заменяемый объект
 		{
-			_xlsx_drawing drawing=_xlsx_drawing();
+			_xlsx_drawing drawing=_xlsx_drawing();			
+			drawing.fill = pic.fill_;
+			
+			process_common_properties(pic,drawing,table_metrics);
+
+			drawing.fill.bitmap = oox_bitmap_fill::create();
+			drawing.fill.type = 2;
 			
 			_CP_OPT(std::wstring) sTextContent;
 			GetProperty(pic.additional_,L"text-content",sTextContent);
-			//if (sTextContent)//в ms office на картинке нельзя сделать надпись - меняем тип на рект с заливкой картинкой
-			//{
-			//	drawing.type = mediaitems::typeShape;
-			//	drawing.sub_type = 2;//rect
-			//	drawing.fillRef_inp = pic.xlink_href_; //заливка картинкой == самой картинке 
-			//}
-			//else
+
+			if (sTextContent)//в ms office на картинке нельзя сделать надпись - меняем тип на рект с заливкой картинкой
+			{
+				drawing.type = mediaitems::typeShape;
+				drawing.sub_type = 2;//rect
+			}
+			else
 				drawing.type = mediaitems::typeImage;
-			
+
 			drawing.id = impl_->next_rId();
 			
 			drawing.name = pic.draw_name_;
@@ -322,15 +318,12 @@ void xlsx_drawing_context::process_images(xlsx_table_metrics & table_metrics)
 			std::wstring ref;/// это ссылка на выходной внешний объект
 			bool isMediaInternal = false;
 			
-			drawing.rId = impl_->get_mediaitems().add_or_find(pic.xlink_href_, drawing.type, isMediaInternal, ref);		
-			//drawing.fillId  = impl_->get_mediaitems().add_or_find(drawing.fillRef_inp, mediaitems::typeImage, isMediaInternal, fillRef_out);
-
-			process_common_properties(pic,drawing,table_metrics);
 
 			std::wstring fileName = BOOST_STRING_PATH(wpath(odf_packet_path_) / pic.xlink_href_);			
-			drawing.clipping_enabled  = odf::parse_clipping(pic.clipping_string_,fileName,drawing.clipping_rect);
+			drawing.fill.bitmap->bCrop  = odf::parse_clipping(pic.clipping_string_,fileName,drawing.fill.bitmap->cropRect);
 
-			impl_->add_drawing(drawing, isMediaInternal, drawing.rId , ref, drawing.type);
+			drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(pic.xlink_href_, drawing.type, isMediaInternal, ref);		
+			impl_->add_drawing(drawing, isMediaInternal, drawing.fill.bitmap->rId , ref, drawing.type);
 			
 		}
     }
@@ -340,26 +333,25 @@ void xlsx_drawing_context::process_charts(xlsx_table_metrics & table_metrics)
 {
     using boost::filesystem::wpath;
 
-    BOOST_FOREACH(simple_drawing_desc & pic, impl_->charts_)
+    BOOST_FOREACH(drawing_object_description & pic, impl_->charts_)
     {	
 		_xlsx_drawing drawing=_xlsx_drawing();
+		
 		drawing.type = mediaitems::typeChart;
         drawing.name = pic.draw_name_;
-
-		const size_t id = impl_->next_rId();
+		drawing.id = impl_->next_rId();
 
         std::wstring ref;
         bool isMediaInternal = true;
-        drawing.rId = impl_->get_mediaitems().add_or_find(pic.xlink_href_, mediaitems::typeChart, isMediaInternal, ref);
-		drawing.id = id;
+        drawing.chartId = impl_->get_mediaitems().add_or_find(pic.xlink_href_, mediaitems::typeChart, isMediaInternal, ref);
         
 		process_common_properties(pic,drawing,table_metrics);
 
-        impl_->add_drawing(drawing, isMediaInternal, drawing.rId, ref, mediaitems::typeChart);
+        impl_->add_drawing(drawing, isMediaInternal, drawing.chartId, ref, mediaitems::typeChart);
     }
 }
 
-void xlsx_drawing_context::process_common_properties(simple_drawing_desc & pic,_xlsx_drawing & drawing,xlsx_table_metrics & table_metrics)
+void xlsx_drawing_context::process_common_properties(drawing_object_description & pic,_xlsx_drawing & drawing,xlsx_table_metrics & table_metrics)
 {
 	xlsx_table_position from, to;
 	
@@ -389,7 +381,7 @@ void xlsx_drawing_context::process_common_properties(simple_drawing_desc & pic,_
 
 	drawing.hlinks=pic.hlinks_;
 }
-void xlsx_drawing_context::process_position_properties(simple_drawing_desc & pic,xlsx_table_metrics & table_metrics,xlsx_table_position & from,xlsx_table_position & to)
+void xlsx_drawing_context::process_position_properties(drawing_object_description & pic,xlsx_table_metrics & table_metrics,xlsx_table_position & from,xlsx_table_position & to)
 {
 	size_t last_col=0, last_row=0;
 
@@ -436,9 +428,10 @@ void xlsx_drawing_context::process_position_properties(simple_drawing_desc & pic
 
 void xlsx_drawing_context::process_shapes(xlsx_table_metrics & table_metrics)
 {
-    BOOST_FOREACH(simple_drawing_desc & pic, impl_->shapes_)
+    BOOST_FOREACH(drawing_object_description & pic, impl_->shapes_)
     {
 		_xlsx_drawing drawing=_xlsx_drawing();
+		drawing.fill = pic.fill_;
 
          std::wstring ref;
         bool isMediaInternal = true;
@@ -448,14 +441,19 @@ void xlsx_drawing_context::process_shapes(xlsx_table_metrics & table_metrics)
 
  		const size_t id = impl_->next_rId();
 		
-		drawing.rId = impl_->get_mediaitems().add_or_find(pic.xlink_href_, mediaitems::typeShape, isMediaInternal, ref);
+		if (drawing.fill.bitmap)
+		{
+			drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, mediaitems::typeImage, isMediaInternal, ref);
+			impl_->add_drawing(isMediaInternal, drawing.fill.bitmap->rId, ref, mediaitems::typeImage);//собственно это не объект, а доп рел и ref объекта
+		}
+		std::wstring rId = impl_->get_mediaitems().add_or_find(L"", mediaitems::typeShape, isMediaInternal, ref);
 		drawing.id = id;
        
 		process_common_properties(pic,drawing,table_metrics);
 
 		drawing.sub_type = pic.type_;
 
-		impl_->add_drawing(drawing, isMediaInternal, drawing.rId, ref, mediaitems::typeShape);
+		impl_->add_drawing(drawing, isMediaInternal, rId, ref, mediaitems::typeShape);
     }
 }
 

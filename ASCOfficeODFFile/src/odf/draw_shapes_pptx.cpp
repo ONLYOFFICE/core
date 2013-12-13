@@ -108,6 +108,11 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	{
 		Context.get_slide_context().set_property(p);
 	}
+///////////////////////////////////////////////////////////////////////////////////////	
+	oox::_oox_fill fill;
+	Compute_GraphicFill(properties, Context.root()->odf_context().drawStyles() ,fill);	
+	Context.get_slide_context().set_fill(fill);
+////////////////////////////////////////////////////////////////////////////////////
 	//////Context.get_text_context().start_drawing_content();
 	BOOST_FOREACH(office_element_ptr const & elm, content_)
     {

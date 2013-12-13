@@ -36,7 +36,8 @@ class xlink_actuate
 public:
     enum type
     {
-        OnRequest
+        OnRequest,
+		OnLoad
     };
 
     xlink_actuate() {}
@@ -60,7 +61,8 @@ public:
     enum type
     {
         New,
-        Replace
+        Replace,
+		Embed
     };
     xlink_show() {}
     xlink_show(type _Type) : type_(_Type) {}

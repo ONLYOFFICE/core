@@ -8,6 +8,8 @@
 #include <cpdoccore/odf/odf_document.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
+#include "../docx/oox_drawing_fills.h"
+
 namespace cpdoccore { 
 namespace odf {
 
@@ -269,7 +271,7 @@ void text_format_properties_content::pptx_convert_as_list(oox::pptx_conversion_c
 		{
 			CP_XML_NODE(L"a:buClr")
 			{
-				CP_XML_NODE(L"a:srgbClr"){CP_XML_ATTR(L"val",fo_color_->get_hex_value());}
+				oox::oox_serialize_srgb(CP_XML_STREAM(),fo_color_->get_hex_value(),NULL);
 			}
 		}
 		if (fo_font_size_)

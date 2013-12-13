@@ -37,19 +37,6 @@ void xlsx_serialize(std::wostream & _Wostream, const xlsx_patternFill & patternF
 
         }
     }
-
-    //_Wostream << L"<patternFill ";
-    //if (patternFill.patternType)
-    //    _Wostream << L"patternType=\"" << patternFill.patternType.get() << L"\" ";
-    //_Wostream << L">";
-
-    //if (patternFill.fgColor)
-    //    xlsx_serialize(_Wostream, patternFill.fgColor.get(), L"fgColor");
-
-    //if (patternFill.bgColor)
-    //    xlsx_serialize(_Wostream, patternFill.bgColor.get(), L"bgColor");
-
-    //_Wostream << L"</patternFill>";
 }
 
 std::size_t hash_value(xlsx_patternFill const & val)

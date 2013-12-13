@@ -18,6 +18,7 @@ void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & A
 	CP_APPLY_ATTR(L"draw:fill",			draw_fill_); 
 	
 	CP_APPLY_ATTR(L"draw:opacity",		draw_opacity_); 
+	CP_APPLY_ATTR(L"draw:image-opacity",draw_image_opacity_); 
 	
  	CP_APPLY_ATTR(L"draw:fill-image-name",		draw_fill_image_name_);
 	CP_APPLY_ATTR(L"draw:fill-gradient-name",	draw_fill_gradient_name_);
@@ -104,6 +105,7 @@ void graphic_format_properties::apply_from(const graphic_format_properties & Oth
 	_CP_APPLY_PROP2(draw_marker_start_); 
 	_CP_APPLY_PROP2(draw_marker_end_); 
 	_CP_APPLY_PROP2(draw_opacity_); 
+	_CP_APPLY_PROP2(draw_image_opacity_); 
 	_CP_APPLY_PROP2(draw_textarea_horizontal_align_); 
 	_CP_APPLY_PROP2(draw_textarea_vertical_align_); 
 	

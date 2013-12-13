@@ -40,13 +40,13 @@ void oox_serialize_srgb(std::wostream & strm,std::wstring color,_CP_OPT(double) 
 			{
 				CP_XML_NODE(L"a:alpha")
 				{
-					CP_XML_ATTR(L"val",boost::lexical_cast<std::wstring>(*opacity) + L"%");
+					CP_XML_ATTR(L"val",boost::lexical_cast<std::wstring>((int)(*opacity)*1000));// + L"%");
 				}
 			}
 		}
 	}
 }
-void oox_serialize_srgb(std::wostream & strm,std::wstring color,_CP_OPT(odf::length_or_percent)  opacity)
+void oox_serialize_srgb(std::wostream & strm,std::wstring color,_CP_OPT(odf::percent)  opacity)
 {
 	CP_XML_WRITER(strm)
 	{
@@ -57,7 +57,7 @@ void oox_serialize_srgb(std::wostream & strm,std::wstring color,_CP_OPT(odf::len
 			{
 				CP_XML_NODE(L"a:alpha")
 				{
-					CP_XML_ATTR(L"val",boost::lexical_cast<std::wstring>(opacity->get_percent().get_value()) + L"%");
+					CP_XML_ATTR(L"val",boost::lexical_cast<std::wstring>((int)opacity->get_value()*1000));// + L"%");
 				}
 			}
 		}
@@ -99,9 +99,9 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val)
 
 				if (val.opacity)
 				{
-					CP_XML_NODE(L"a:alpha")
+					CP_XML_NODE(L"a:alphaModFix")
 					{
-						CP_XML_ATTR(L"val",boost::lexical_cast<std::wstring>(*val.opacity) + L"%");
+						CP_XML_ATTR(L"amt",(int)(*val.opacity * 1000));
 					}
 				}		
 			}
@@ -130,9 +130,80 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val)
 			{
 				CP_XML_NODE(L"a:tile")
 				{
+					//tx="0" ty="0" sx="100000" sy="100000"
+					CP_XML_ATTR(L"flip","none");
+					CP_XML_ATTR(L"algn",L"ctr");
 				}
 			}		
 
+		}
+
+	}
+}
+void oox_serialize_gradient_fill(std::wostream & strm, const _oox_fill & val)
+{
+	if (!val.gradient)return;
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"a:gradFill")
+		{
+			if (val.gradient->colors.size()>0)
+			{
+				CP_XML_NODE(L"a:gsLst")
+				{
+					BOOST_FOREACH(oox_gradient_fill::_color_position & col, val.gradient->colors)
+					{
+						CP_XML_NODE(L"a:gs")
+						{
+							CP_XML_ATTR(L"pos",(int)(col.pos *1000));//%
+							oox_serialize_srgb(CP_XML_STREAM(),col.color_ref,col.opacity);
+						}
+					}
+				}
+			}
+			double angle =/*360 - */val.gradient->angle/* * 180./3.14159265358979323846*/;
+			angle *= 60000; //60 000 per 1 gr - 19.5.5 oox 
+			
+			switch(val.gradient->style)
+			{
+			case 0:
+				CP_XML_NODE(L"a:lin")
+				{		
+					CP_XML_ATTR(L"ang",(int)angle);//gr in rad
+				}break;
+			case 1:
+			case 2:
+			case 3:
+				CP_XML_NODE(L"a:path")
+				{
+					if (val.gradient->style == 1) CP_XML_ATTR(L"path", L"rect");
+					if (val.gradient->style == 2) CP_XML_ATTR(L"path", L"circle");
+					if (val.gradient->style == 3) CP_XML_ATTR(L"path", L"shape");
+					
+					CP_XML_NODE(L"a:fillToRect")
+					{
+						CP_XML_ATTR(L"l", (int)(val.gradient->rect[0] * 1000));
+						CP_XML_ATTR(L"t", (int)(val.gradient->rect[1] * 1000));
+						CP_XML_ATTR(L"r", (int)(val.gradient->rect[2] * 1000));
+						CP_XML_ATTR(L"b", (int)(val.gradient->rect[3] * 1000));
+					}
+				}break;
+			}
+		}
+
+	}
+//gsLst (Gradient Stop List) §20.1.8.37
+//lin (Linear Gradient Fill) §20.1.8.41
+//path (Path Gradient) §20.1.8.46
+//tileRect (Tile Rectangle) §20.1.8.59
+}
+void oox_serialize_hatch_fill(std::wostream & strm, const _oox_fill & val)
+{
+	if (!val.hatch)return;
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"a:pattFill")
+		{
 		}
 
 	}
@@ -150,8 +221,11 @@ void oox_serialize_fill(std::wostream & strm, const _oox_fill & val)
 		case 2:	
 			oox_serialize_bitmap_fill(strm, val);
 			break;
-		//case 3:	oox_serialize_gradient_fill(strm, val);break;
-		//case 4:	oox_serialize_hatch_fill(strm, val);break;
+		case 3:	
+			oox_serialize_gradient_fill(strm, val);
+			break;
+		case 4:	oox_serialize_hatch_fill(strm, val);
+			break;
 	}
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -171,7 +171,7 @@ std::wostream & pptx_xml_slideMaster::Data()
 }
 std::wostream & pptx_xml_slideMaster::Background()
 {
-    return slideMasterData_;
+    return slideMasterBackground_;
 }
 rels & pptx_xml_slideMaster::Rels()
 {

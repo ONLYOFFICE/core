@@ -578,6 +578,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\odf\gradientstyle.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\odf\gradientstyle.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\odf\hyphenationkeep.cpp"
 				>
 			</File>

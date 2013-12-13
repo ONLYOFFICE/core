@@ -428,7 +428,16 @@ void odf_document::Impl::parse_styles()
 
 				context_->drawStyles().add(L"bitmap:" + style->get_style_name(), elm);
             }
-    //        BOOST_FOREACH(const office_element_ptr & elm, docStyles->draw_styles_.draw_hatch_)
+             BOOST_FOREACH(const office_element_ptr & elm, docStyles->draw_styles_.draw_opacity_)
+            {
+                draw_opacity * style = dynamic_cast<draw_opacity *>(elm.get());
+
+                if (!style)
+                    continue;
+
+				context_->drawStyles().add(L"opacity:" + style->get_style_name(), elm);
+            }
+			 //        BOOST_FOREACH(const office_element_ptr & elm, docStyles->draw_styles_.draw_hatch_)
     //        {
     //            const draw_hatch_image * style = dynamic_cast<const draw_hatch_image *>(elm.get());
 

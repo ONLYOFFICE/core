@@ -177,17 +177,17 @@ public:
     bool add_attributes( const xml::attributes_wc_ptr & Attributes );
     void apply_from(const common_xlink_attlist & Other)
     {
-        _CP_APPLY_PROP(xlink_href_, Other.xlink_href_);
-        _CP_APPLY_PROP(xlink_type_, Other.xlink_type_);
-        _CP_APPLY_PROP(xlink_show_, Other.xlink_show_);
-        _CP_APPLY_PROP(xlink_actuate_, Other.xlink_actuate_);
+        _CP_APPLY_PROP(href_, Other.href_);
+        _CP_APPLY_PROP(type_, Other.type_);
+        _CP_APPLY_PROP(show_, Other.show_);
+        _CP_APPLY_PROP(actuate_, Other.actuate_);
     }
 
 public:
-    _CP_OPT(std::wstring)	xlink_href_;
-    _CP_OPT(xlink_type)		xlink_type_;
-    _CP_OPT(xlink_show)		xlink_show_;    
-    _CP_OPT(xlink_actuate)	xlink_actuate_;    
+    _CP_OPT(std::wstring)	href_;
+    _CP_OPT(xlink_type)		type_;
+    _CP_OPT(xlink_show)		show_;    
+    _CP_OPT(xlink_actuate)	actuate_;    
 
 };
 
@@ -397,14 +397,36 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     void apply_from(const common_text_anchor_attlist & Other)
     {
-        _CP_APPLY_PROP2(text_anchor_type_);
-        _CP_APPLY_PROP2(text_anchor_page_number_);
+        _CP_APPLY_PROP2(type_);
+        _CP_APPLY_PROP2(page_number_);
     }
 
 public:
-    _CP_OPT(anchor_type) text_anchor_type_;
-    _CP_OPT(unsigned int) text_anchor_page_number_;
+    _CP_OPT(anchor_type)	type_;
+    _CP_OPT(unsigned int)	page_number_;
 };
+
+/// common-text-animation-attlist
+class common_text_animation_attlist
+{
+public:
+    void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    void apply_from(const common_text_anchor_attlist & Other)
+    {
+        //_CP_APPLY_PROP2(type_);
+        //_CP_APPLY_PROP2(direction_);
+    }
+
+public:
+ //   _CP_OPT(animation_type)			type_;
+	//_CP_OPT(animation_direction)	direction_;
+	//text:animation
+	//text:animation-direction
+	//text:animation-start-inside
+	//text:animation-stop-inside
+	//text:animation-repeat
+};
+
 
 /// \class  common_draw_rel_size_attlist
 ///         common-draw-rel-size-attlist

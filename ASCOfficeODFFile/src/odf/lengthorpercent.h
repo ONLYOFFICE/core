@@ -1,9 +1,4 @@
-#ifndef _CPDOCCORE_ODF_LENGTHORPERCENT_H_
-#define _CPDOCCORE_ODF_LENGTHORPERCENT_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <string>
@@ -61,5 +56,3 @@ std::wostream & operator << (std::wostream & _Wostream, const length_or_percent 
 APPLY_PARSE_XML_ATTRIBUTES(odf::length_or_percent);
 
 }
-
-#endif

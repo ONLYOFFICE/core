@@ -54,10 +54,10 @@ public:
 
 	_CP_OPT(draw_fill)		draw_fill_;
 	_CP_OPT(std::wstring)	draw_fill_image_name_;
+	_CP_OPT(color)			draw_fill_color_;
 
 	//draw:fill-hatch-name
 	//draw:fill-gradient-name
-	//draw:fill-color
 	
 	//_CP_OPT(std::wstring) presentation_transition_type_;
 	//presentation:transition-style

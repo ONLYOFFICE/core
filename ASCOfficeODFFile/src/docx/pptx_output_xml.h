@@ -22,8 +22,9 @@ public:
     std::wstring name() const;
     std::wstring rId() const;
    
-    std::wostream & slideData();
-	rels & slideRels();
+    std::wostream & Data();
+    std::wostream & Background();
+	rels & Rels();
 
 	//slideTiming
     
@@ -34,6 +35,7 @@ public:
 private:
 	std::wstring name_;
     std::wstringstream  slideData_;
+    std::wstringstream  slideBackground_;
 	std::wstring rId_;
 
 	rels rels_;
@@ -77,8 +79,8 @@ public:
 public:
     std::wstring rId() const;
    
-    std::wostream & slideLayoutData();
-	rels & slideLayoutRels();
+    std::wostream & Data();
+	rels & Rels();
 
 	//slideTiming
     
@@ -104,8 +106,9 @@ public:
 public:
     std::wstring rId() const;
    
-    std::wostream & slideMasterData();
-	rels & slideMasterRels();
+    std::wostream & Data();
+    std::wostream & Background();
+	rels & Rels();
 
 	void add_layout(int id, const std::wstring & rId);
  	void add_theme(int id, const std::wstring & tId);
@@ -116,6 +119,7 @@ public:
 
 private:
     std::wstringstream  slideMasterData_;
+    std::wstringstream  slideMasterBackground_;
 	
 	std::vector<std::wstring> layoutsId_;
 	std::wstring rId_;

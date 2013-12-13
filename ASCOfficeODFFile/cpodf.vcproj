@@ -357,6 +357,14 @@
 				RelativePath=".\src\odf\styles_list.h"
 				>
 			</File>
+			<File
+				RelativePath=".\src\odf\styles_lite_container.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\odf\styles_lite_container.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="datatypes odf"
@@ -1395,6 +1403,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\docx\drawing_object_description.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\docx\measuredigits.cpp"
 					>
 				</File>
@@ -1758,14 +1770,6 @@
 		</File>
 		<File
 			RelativePath=".\src\odf\odf_document_impl.h"
-			>
-		</File>
-		<File
-			RelativePath=".\src\odf\odf_number_styles.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\src\odf\odf_number_styles.h"
 			>
 		</File>
 		<File

@@ -436,7 +436,7 @@ void a::docx_convert(oox::docx_conversion_context & Context)
     std::wostream & _Wostream = Context.output_stream();
 
     std::wstring rId;
-    rId = Context.add_hyperlink(common_xlink_attlist_.xlink_href_.get_value_or(L""), false);
+    rId = Context.add_hyperlink(common_xlink_attlist_.href_.get_value_or(L""), false);
 
     _Wostream << L"<w:hyperlink r:id=\"" << rId << L"\">";
 
@@ -497,7 +497,7 @@ void a::xlsx_convert(oox::xlsx_conversion_context & Context)
     {
         elm->xlsx_convert(Context);
     }
-    Context.end_hyperlink(common_xlink_attlist_.xlink_href_.get_value_or(L""));
+    Context.end_hyperlink(common_xlink_attlist_.href_.get_value_or(L""));
 }
 void a::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -507,7 +507,7 @@ void a::pptx_convert(oox::pptx_conversion_context & Context)
         elm->pptx_convert(Context);
     }
 	
-	std::wstring hId = Context.get_slide_context().add_hyperlink(common_xlink_attlist_.xlink_href_.get_value_or(L""),false);
+	std::wstring hId = Context.get_slide_context().add_hyperlink(common_xlink_attlist_.href_.get_value_or(L""),false);
 	Context.get_text_context().end_hyperlink(hId);
 
 }

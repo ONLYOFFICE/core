@@ -191,7 +191,10 @@ enum ElementType
 	typeDrawPage,    
 
 	typeStyleGraphicPropertis,
-	typeStyleDrawGradientPropertis,
+	typeStyleDrawGradient,
+	typeStyleDrawFillImage,
+	typeStyleDrawHatch,
+	typeStyleDrawMarker,
 
 	typeOfficeSpreadsheet,
 	typeOfficeAnnotation,
@@ -202,7 +205,8 @@ enum ElementType
 	typeOfficeChart,
 	typeOfficeEventListeners,
   
-	typePresentationEventListener,
+	typePresentationEventListener,	
+
 	typeScriptEventListener,
 
 	typeTableCalculationSettings,

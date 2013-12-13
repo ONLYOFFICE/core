@@ -22,30 +22,8 @@ void oox_chart_shape::oox_serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE(L"c:spPr")
         {
-			std::wstring fillType = L"a:solidFill";
-
-			if (odf::GetProperty(content_,L"fill",strVal))fillType = *strVal;
-
-			odf::GetProperty(content_,L"fill-color",strVal);
-			if (strVal && fillType != L"a:noFill")
-			{		
-				CP_XML_NODE(fillType)
-				{ 
-					CP_XML_NODE(L"a:srgbClr")
-					{
-						CP_XML_ATTR(L"val",strVal.get());
-						if (odf::GetProperty(content_,L"opacity",dVal))
-						{
-							CP_XML_NODE(L"a:alpha")
-							{
-								CP_XML_ATTR(L"val",boost::lexical_cast<std::wstring>((int)(dVal.get())) + L"%");
-							}
-						}
-					}
-				}
-			}
-
-		
+			oox_serialize_fill(CP_XML_STREAM(),fill);
+	
 			oox_serialize_ln(CP_XML_STREAM(),content_);
 		}
     }

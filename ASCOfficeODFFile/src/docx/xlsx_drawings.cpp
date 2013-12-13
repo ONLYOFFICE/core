@@ -51,7 +51,23 @@ public:
 			xlsx_drawing_rels_.push_back(rel_(false, h.hId, h.hRef, mediaitems::typeHyperlink));
 		}
     }
-
+    void add(/**/
+        bool isInternal,
+        std::wstring const & rid,
+        std::wstring const & ref,
+		mediaitems::Type type)
+    {
+		bool present = false;
+        BOOST_FOREACH(rel_ const & r, xlsx_drawing_rels_)
+        {		
+			if (r.rid_ == rid && r.ref_ == ref)
+				present = true;
+		}
+		if (!present)
+		{
+			xlsx_drawing_rels_.push_back(rel_(isInternal, rid, ref, type));
+		}
+    }
 
 
 	void serialize(std::wostream & strm) const
@@ -139,7 +155,14 @@ void xlsx_drawings::add(_xlsx_drawing const & d,
 {
     impl_->add(d, isInternal, rid, ref, type);
 }
-
+void xlsx_drawings::add(/**/
+        bool isInternal,
+        std::wstring const & rid,
+        std::wstring const & ref,
+        mediaitems::Type type)
+{
+    impl_->add(isInternal, rid, ref, type);
+}
 void xlsx_serialize(std::wostream & _Wostream, xlsx_drawings const & val)
 {
     val.impl_->serialize(_Wostream);

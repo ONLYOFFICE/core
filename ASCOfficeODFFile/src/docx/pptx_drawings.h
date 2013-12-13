@@ -28,7 +28,12 @@ public:
         std::wstring const & ref,
 		mediaitems::Type type
         );
-
+    void add(/**/
+        bool isInternal,
+        std::wstring const & rid,
+        std::wstring const & ref,
+		mediaitems::Type type
+        );
     bool empty() const;
 
     void dump_rels(rels & Rels);

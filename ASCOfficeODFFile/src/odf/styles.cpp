@@ -198,7 +198,25 @@ void default_style::add_text(const std::wstring & Text)
 {    
 }
 
-void draw_gradient_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * draw_fill_image::ns = L"draw";
+const wchar_t * draw_fill_image::name = L"fill-image";
+
+void draw_fill_image::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"draw:name",	draw_name_);
+	xlink_attlist_.add_attributes(Attributes);
+}
+
+void draw_fill_image::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+{
+    CP_NOT_APPLICABLE_ELM();
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * draw_gradient::ns = L"draw";
+const wchar_t * draw_gradient::name = L"gradient";
+
+void draw_gradient::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	CP_APPLY_ATTR(L"draw:name",	draw_name_);
 	CP_APPLY_ATTR(L"draw:display-name",	draw_display_name_);
@@ -215,15 +233,7 @@ void draw_gradient_properties::add_attributes( const xml::attributes_wc_ptr & At
 	CP_APPLY_ATTR(L"draw:border",	draw_border_);
 	CP_APPLY_ATTR(L"draw:angle",	draw_angle_);
 	CP_APPLY_ATTR(L"draw:style",	draw_style_);//"square" 
-}
-// style:graphic-properties
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * draw_gradient::ns = L"draw";
-const wchar_t * draw_gradient::name = L"gradient";
 
-void draw_gradient::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-	draw_gradient_properties_.add_attributes(Attributes);
 }
 
 void draw_gradient::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
@@ -269,7 +279,7 @@ void style::add_text(const std::wstring & Text)
 {
 }
 
-// styles
+// styles & draw_styles
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
@@ -299,6 +309,37 @@ void styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, co
         CP_NOT_APPLICABLE_ELM_SIMPLE(L"styles");
     }
 }
+
+void draw_styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+{
+    if CP_CHECK_NAME(L"draw", L"gradient")
+    {
+        CP_CREATE_ELEMENT_SIMPLE(draw_gradient_);
+    } 
+    else if CP_CHECK_NAME(L"draw", L"hatch")
+    {
+        CP_CREATE_ELEMENT_SIMPLE(draw_hatch_);
+    }
+    else if CP_CHECK_NAME(L"draw", L"fill-image")
+    {
+        CP_CREATE_ELEMENT_SIMPLE(draw_fill_image_);
+    }
+ //   else if (L"draw" == Ns && L"marker" == Name)
+ //       CP_CREATE_ELEMENT(draw_marker_);
+ //   else if (L"draw" == Ns && L"stroke-dash" == Name)
+ //       CP_CREATE_ELEMENT(draw_stroke_dash_);
+ //   else if (L"draw" == Ns && L"opacity" == Name)
+ //       CP_CREATE_ELEMENT(draw_opacity_);
+    //else if (L"svg" == Ns && L"linearGradient" == Name)
+    //    CP_CREATE_ELEMENT(svg_linearGradient_);
+    //else if (L"svg" == Ns && L"radialGradient" == Name)
+    //    CP_CREATE_ELEMENT(svg_radialGradient_);
+    else
+    {
+        CP_NOT_APPLICABLE_ELM_SIMPLE(L"draw_styles");
+    }
+}
+
 
 // office:automatic-styles
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -372,20 +413,37 @@ void office_styles::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void office_styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-    if (CP_CHECK_NAME(L"style", L"style") ||
-        CP_CHECK_NAME(L"text", L"list-style") ||
-        CP_CHECK_NAME(L"number", L"number-style") ||
-        CP_CHECK_NAME(L"number", L"currency-style") || 
-        CP_CHECK_NAME(L"number", L"text-style") ||
-        CP_CHECK_NAME(L"number", L"percentage-style") ||
-        CP_CHECK_NAME(L"number", L"date-style") ||
-        CP_CHECK_NAME(L"number", L"boolean-style")
+    if (CP_CHECK_NAME(L"style",		L"style") ||
+        CP_CHECK_NAME(L"text",		L"list-style") ||
+        
+		CP_CHECK_NAME(L"number",	L"number-style") ||
+        CP_CHECK_NAME(L"number",	L"currency-style") || 
+        CP_CHECK_NAME(L"number",	L"text-style") ||
+        CP_CHECK_NAME(L"number",	L"percentage-style") ||
+        CP_CHECK_NAME(L"number",	L"date-style") ||
+        CP_CHECK_NAME(L"number",	L"boolean-style")
         )
     {
         styles_.add_child_element(Reader, Ns, Name, getContext());
     }
     else if (L"style" == Ns && L"default-style" == Name)
         CP_CREATE_ELEMENT(style_default_style_);
+
+    else if (L"style" == Ns && L"presentation-page-layout" == Name)
+        CP_CREATE_ELEMENT(style_presentation_page_layout_);
+
+    else if(CP_CHECK_NAME(L"draw",		L"gradient") ||
+			CP_CHECK_NAME(L"draw",		L"fill-image") ||
+			CP_CHECK_NAME(L"draw",		L"hatch") ||
+			CP_CHECK_NAME(L"draw",		L"marker") ||
+			CP_CHECK_NAME(L"draw",		L"opacity") ||
+			CP_CHECK_NAME(L"draw",		L"stroke-dash") ||
+			CP_CHECK_NAME(L"svg",		L"linearGradient") ||
+			CP_CHECK_NAME(L"svg",		L"radialGradient") 
+			)
+	{
+        draw_styles_.add_child_element(Reader, Ns, Name, getContext());
+	}
     else if (L"text" == Ns && L"outline-style" == Name)
         CP_CREATE_ELEMENT(text_outline_style_);
     else if (L"text" == Ns && L"notes-configuration" == Name)
@@ -394,24 +452,6 @@ void office_styles::add_child_element( xml::sax * Reader, const ::std::wstring &
         CP_CREATE_ELEMENT(text_bibliography_configuration_);
     else if (L"text" == Ns && L"linenumbering-configuration" == Name)
         CP_CREATE_ELEMENT(text_linenumbering_configuration_);
-    else if (L"draw" == Ns && L"gradient" == Name)
-        CP_CREATE_ELEMENT(draw_gradient_);
-    else if (L"svg" == Ns && L"linearGradient" == Name)
-        CP_CREATE_ELEMENT(svg_linearGradient_);
-    else if (L"svg" == Ns && L"radialGradient" == Name)
-        CP_CREATE_ELEMENT(svg_radialGradient_);
-    else if (L"draw" == Ns && L"hatch" == Name)
-        CP_CREATE_ELEMENT(draw_hatch_);
-    else if (L"draw" == Ns && L"fill-image" == Name)
-        CP_CREATE_ELEMENT(draw_fill_image_);
-    else if (L"draw" == Ns && L"marker" == Name)
-        CP_CREATE_ELEMENT(draw_marker_);
-    else if (L"draw" == Ns && L"stroke-dash" == Name)
-        CP_CREATE_ELEMENT(draw_stroke_dash_);
-    else if (L"draw" == Ns && L"opacity" == Name)
-        CP_CREATE_ELEMENT(draw_opacity_);
-    else if (L"style" == Ns && L"presentation-page-layout" == Name)
-        CP_CREATE_ELEMENT(style_presentation_page_layout_);
     else
     {
         CP_NOT_APPLICABLE_ELM();

@@ -15,10 +15,9 @@ namespace oox {
 
 struct _docx_drawing : _oox_drawing
 {
-	_docx_drawing():_oox_drawing(),isInternal(false),parallel(0),isInline(false),number_wrapped_paragraphs(0),posOffsetV(0),posOffsetH(0)
+	_docx_drawing():_oox_drawing(),parallel(0),isInline(false),number_wrapped_paragraphs(0),posOffsetV(0),posOffsetH(0)
 	{
 	}
-	bool isInternal;
     unsigned int parallel;
 	
 	//_CP_OPT(run_through)	styleRunThrough	;

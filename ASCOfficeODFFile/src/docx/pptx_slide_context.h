@@ -7,9 +7,10 @@ namespace cpdoccore {
 namespace oox {
 
 class pptx_conversion_context;
-struct simple_drawing_desc;
+struct drawing_object_description;
 class mediaitems;
 class pptx_drawings;
+struct _oox_fill;
 
 
 class pptx_slide_context
@@ -24,12 +25,14 @@ public:
 
 	void set_translate(double x_pt, double y_pt);
 	void set_scale(double cx_pt, double cy_pt);
+	void set_rotate(double angle);
+
 	void set_name(std::wstring const & name);
 	void set_anchor(std::wstring anchor, double x_pt, double y_pt);
 	void set_property(odf::_property p);
 	std::vector<odf::_property> & get_properties();
 	void set_clipping(std::wstring & str );
-
+	void set_fill(_oox_fill & fill);
 	void set_placeHolder_type(std::wstring typeHolder);
 
 	std::wstring add_hyperlink(std::wstring const & ref, bool object);
@@ -48,6 +51,8 @@ public:
 
 	//std::wstring dump_path(std::vector<svg_path::_polyline> & path, double w,double h);
 	void serialize(std::wostream & strm);
+	void serialize_background(std::wostream & strm);
+	
 	void dump_rels(rels & Rels);
 
 	void process_drawings();
@@ -55,7 +60,7 @@ public:
 	mediaitems & get_mediaitems();
 
 private:
-	void process_common_properties(simple_drawing_desc& pic,_pptx_drawing & drawing);
+	void process_common_properties(drawing_object_description& pic,_pptx_drawing & drawing);
 	void default_set();
     void process_shapes();
     void process_images();

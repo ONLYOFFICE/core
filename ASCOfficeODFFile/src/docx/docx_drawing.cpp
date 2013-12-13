@@ -218,18 +218,9 @@ void docx_serialize_image(std::wostream & strm, _docx_drawing const & val)
 							}
 						}    
 					}
+					val.fill.bitmap->name_space = L"pic";
+					oox_serialize_fill(CP_XML_STREAM(), val.fill);
  
-					CP_XML_NODE(L"pic:blipFill")
-					{		
-						CP_XML_NODE(L"a:blip")
-						{
-							if (val.isInternal)
-								CP_XML_ATTR(L"r:embed",val.rId );
-							else
-								CP_XML_ATTR(L"r:link",val.rId );
-						}
-						oox_serialize_clipping(CP_XML_STREAM(),val);
-					}
 					CP_XML_NODE(L"pic:spPr")
 					{
 						oox_serialize_xfrm(CP_XML_STREAM(),val);
@@ -269,7 +260,7 @@ void docx_serialize_chart(std::wostream & strm, _docx_drawing const & val)
 				CP_XML_ATTR(L"uri", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
 				CP_XML_NODE(L"c:chart")
 				{
-					CP_XML_ATTR(L"r:id", val.rId);
+					CP_XML_ATTR(L"r:id", val.chartId);
 					CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 					CP_XML_ATTR(L"xmlns:c", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
 				}

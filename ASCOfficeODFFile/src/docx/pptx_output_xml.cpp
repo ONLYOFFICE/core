@@ -34,11 +34,15 @@ pptx_xml_slide::pptx_xml_slide(std::wstring const & name,std::wstring const & id
 pptx_xml_slide::~pptx_xml_slide()
 {
 }
-std::wostream & pptx_xml_slide::slideData()
+std::wostream & pptx_xml_slide::Data()
 {
     return slideData_;
 }
-rels & pptx_xml_slide::slideRels()
+std::wostream & pptx_xml_slide::Background()
+{
+    return slideBackground_;
+}
+rels & pptx_xml_slide::Rels()
 {
     return rels_;
 }
@@ -56,6 +60,9 @@ void pptx_xml_slide::write_to(std::wostream & strm)
             CP_XML_NODE(L"p:cSld")
             {
    				CP_XML_ATTR(L"name", name());   
+				
+				CP_XML_STREAM() << slideBackground_.str();
+
 				CP_XML_NODE(L"p:spTree")
 				{
 					CP_XML_STREAM() << slideData_.str();
@@ -88,11 +95,11 @@ pptx_xml_slideLayout::pptx_xml_slideLayout(std::wstring const & id)
 pptx_xml_slideLayout::~pptx_xml_slideLayout()
 {
 }
-std::wostream & pptx_xml_slideLayout::slideLayoutData()
+std::wostream & pptx_xml_slideLayout::Data()
 {
     return slideLayoutData_;
 }
-rels & pptx_xml_slideLayout::slideLayoutRels()
+rels & pptx_xml_slideLayout::Rels()
 {
     return rels_;
 }
@@ -158,11 +165,15 @@ pptx_xml_slideMaster::pptx_xml_slideMaster(std::wstring const & id)
 pptx_xml_slideMaster::~pptx_xml_slideMaster()
 {
 }
-std::wostream & pptx_xml_slideMaster::slideMasterData()
+std::wostream & pptx_xml_slideMaster::Data()
 {
     return slideMasterData_;
 }
-rels & pptx_xml_slideMaster::slideMasterRels()
+std::wostream & pptx_xml_slideMaster::Background()
+{
+    return slideMasterData_;
+}
+rels & pptx_xml_slideMaster::Rels()
 {
     return rels_;
 }
@@ -192,14 +203,8 @@ void pptx_xml_slideMaster::write_to(std::wostream & strm)
 
             CP_XML_NODE(L"p:cSld")
             {
-				CP_XML_NODE(L"p:bg")
-				{
-					CP_XML_NODE(L"p:bgPr")
-					{
-						CP_XML_NODE(L"a:noFill");
-						CP_XML_NODE(L"a:effectLst");
-					}
-				}
+				CP_XML_STREAM() << slideMasterBackground_.str();
+
 				CP_XML_NODE(L"p:spTree")
 				{
 					CP_XML_STREAM() << slideMasterData_.str();

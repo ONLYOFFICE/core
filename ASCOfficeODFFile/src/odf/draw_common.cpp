@@ -183,18 +183,128 @@ int Compute_BorderWidth(const graphic_format_properties & graphicProperties, Bor
 
     return get_value_emu(lengthValue);
 }
+
+void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr fill)
+{
+	int style =0;
+	if (image_style->draw_style_)style = image_style->draw_style_->get_type();
+
+	if (image_style->draw_angle_)fill->angle = 90 - *image_style->draw_angle_/10.;
+	if (fill->angle < 0) fill->angle +=360;
+
+	oox::oox_gradient_fill::_color_position point={};
+	switch(style)
+	{
+	case gradient_style::linear:
+		{	
+			fill->style = 0;
+		
+			point.pos = 0;
+			if (image_style->draw_start_color_)point.color_ref = image_style->draw_start_color_->get_hex_value();
+			if (image_style->draw_start_intensity_)point.opacity = image_style->draw_start_intensity_->get_value();
+
+			fill->colors.push_back(point);
+
+			point.pos = 100;
+			if (image_style->draw_end_color_)point.color_ref = image_style->draw_end_color_->get_hex_value();
+			if (image_style->draw_end_intensity_)point.opacity = image_style->draw_end_intensity_->get_value();
+	
+			fill->colors.push_back(point);
+		}break;
+	case gradient_style::axial:
+		{
+			fill->style = 0;
+			
+			point.pos = 0;
+			if (image_style->draw_end_color_)point.color_ref = image_style->draw_end_color_->get_hex_value();
+			if (image_style->draw_end_intensity_)point.opacity = image_style->draw_end_intensity_->get_value();
+	
+			fill->colors.push_back(point);
+
+			point.pos = 50;
+			if (image_style->draw_start_color_)point.color_ref = image_style->draw_start_color_->get_hex_value();
+			if (image_style->draw_start_intensity_)point.opacity = image_style->draw_start_intensity_->get_value();
+
+			fill->colors.push_back(point);
+
+			point.pos = 100;
+			if (image_style->draw_end_color_)point.color_ref = image_style->draw_end_color_->get_hex_value();
+			if (image_style->draw_end_intensity_)point.opacity = image_style->draw_end_intensity_->get_value();
+	
+			fill->colors.push_back(point);
+		}break;
+	case gradient_style::radial:
+	case gradient_style::ellipsoid:
+	case gradient_style::square:
+	case gradient_style::rectangular:
+		{
+			if (style == gradient_style::radial || style == gradient_style::ellipsoid)	fill->style = 2;
+			if (style == gradient_style::square )		fill->style = 1;
+			if (style == gradient_style::rectangular)	fill->style = 3;
+			
+			point.pos = 0;
+			if (image_style->draw_end_color_)point.color_ref = image_style->draw_end_color_->get_hex_value();
+			if (image_style->draw_end_intensity_)point.opacity = image_style->draw_end_intensity_->get_value();
+
+			fill->colors.push_back(point);
+
+			point.pos = 100;
+			if (image_style->draw_start_color_)point.color_ref = image_style->draw_start_color_->get_hex_value();
+			if (image_style->draw_start_intensity_)point.opacity = image_style->draw_start_intensity_->get_value();
+	
+			fill->colors.push_back(point);
+
+			if (image_style->draw_cx_)//хохма - у мс в конвертилке из open-office перепутаны l & r !!!
+			{
+				fill->rect[0]=image_style->draw_cx_->get_value();
+				fill->rect[2]=100-image_style->draw_cx_->get_value();
+			}
+			else
+			{
+				fill->rect[0]=0;
+				fill->rect[2]=100;
+			}
+			if (image_style->draw_cy_)
+			{
+				fill->rect[1]=image_style->draw_cy_->get_value();
+				fill->rect[3]=100-image_style->draw_cy_->get_value();
+			}
+			else
+			{
+				fill->rect[1]=0;
+				fill->rect[3]=100;
+			}
+		}break;
+	}
+
+}
+
 void Compute_GraphicFill(graphic_format_properties & props, styles_lite_container &styles, oox::_oox_fill & fill)
 {
 	fill.type = 0; 
 
 	if (props.draw_fill_)fill.type = props.draw_fill_->get_type();
 
-	if (props.draw_opacity_) fill.opacity = props.draw_opacity_->get_percent().get_value();
+	if (props.draw_opacity_) fill.opacity = props.draw_opacity_->get_value();
 	if (props.draw_opacity_name_)
 	{
-		fill.opacity = 1;
-		//поиск по имени - градиентная прозрачность
+		const std::wstring style_name = L"opacity:" + *props.draw_opacity_name_;
+		if (office_element_ptr style = styles.find_by_style_name(style_name))
+		{
+			if (draw_opacity * image_style = dynamic_cast<draw_opacity *>(style.get()))
+			{	
+				//увы и ах но ms  не поддерживает градиентную прозрачность - сделаем средненькую
+				if (image_style->draw_start_ && image_style->draw_end_)
+				{
+					fill.opacity = (image_style->draw_start_->get_value() + image_style->draw_end_->get_value())/2.;
+				}
+				else if (image_style->draw_start_)fill.opacity = image_style->draw_start_->get_value();
+				else if (image_style->draw_end_)fill.opacity = image_style->draw_end_->get_value();
+			}
+		}
 	}
+	if (props.draw_image_opacity_) 
+		fill.opacity = props.draw_image_opacity_->get_value();
 
 ////////////////////////////////////////////////////////////
 	if (props.draw_fill_color_)
@@ -220,7 +330,20 @@ void Compute_GraphicFill(graphic_format_properties & props, styles_lite_containe
 		if (*props.style_repeat_== L"repeat")	fill.bitmap->bTile = true;
 		if (*props.style_repeat_== L"stretch")	fill.bitmap->bStretch = true;
 	}
+	if (props.draw_fill_gradient_name_)
+	{
+		const std::wstring style_name = L"gradient:" + *props.draw_fill_gradient_name_;
+		if (office_element_ptr style = styles.find_by_style_name(style_name))
+		{
+			if (draw_gradient * image_style = dynamic_cast<draw_gradient *>(style.get()))
+			{			
+				fill.gradient = oox::oox_gradient_fill::create();
 
+				Compute_GradientFill(image_style, fill.gradient);
+
+			}
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -240,6 +240,29 @@ void draw_gradient::add_child_element( xml::sax * Reader, const ::std::wstring &
 {
     CP_NOT_APPLICABLE_ELM();
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * draw_opacity::ns = L"draw";
+const wchar_t * draw_opacity::name = L"opacity";
+
+void draw_opacity::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"draw:name",	draw_name_);
+	CP_APPLY_ATTR(L"draw:display-name",	draw_display_name_);
+
+	CP_APPLY_ATTR(L"draw:start",	draw_start_);
+	CP_APPLY_ATTR(L"draw:end",		draw_end_);
+
+	
+	CP_APPLY_ATTR(L"draw:border",	draw_border_);
+	CP_APPLY_ATTR(L"draw:angle",	draw_angle_);
+	CP_APPLY_ATTR(L"draw:style",	draw_style_); 
+
+}
+
+void draw_opacity::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+{
+    CP_NOT_APPLICABLE_ELM();
+}
 // style:style
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style::ns = L"style";
@@ -324,16 +347,18 @@ void draw_styles::add_child_element( xml::sax * Reader, const ::std::wstring & N
     {
         CP_CREATE_ELEMENT_SIMPLE(draw_fill_image_);
     }
- //   else if (L"draw" == Ns && L"marker" == Name)
- //       CP_CREATE_ELEMENT(draw_marker_);
- //   else if (L"draw" == Ns && L"stroke-dash" == Name)
- //       CP_CREATE_ELEMENT(draw_stroke_dash_);
- //   else if (L"draw" == Ns && L"opacity" == Name)
- //       CP_CREATE_ELEMENT(draw_opacity_);
-    //else if (L"svg" == Ns && L"linearGradient" == Name)
-    //    CP_CREATE_ELEMENT(svg_linearGradient_);
-    //else if (L"svg" == Ns && L"radialGradient" == Name)
-    //    CP_CREATE_ELEMENT(svg_radialGradient_);
+    else if CP_CHECK_NAME(L"draw", L"opacity")
+	{
+         CP_CREATE_ELEMENT_SIMPLE(draw_opacity_);  
+	}
+	else if CP_CHECK_NAME(L"draw", L"marker")
+	{
+         CP_CREATE_ELEMENT_SIMPLE(draw_marker_);
+	}
+    else if CP_CHECK_NAME(L"draw", L"stroke-dash")
+	{
+         CP_CREATE_ELEMENT_SIMPLE(draw_stroke_dash_);
+	}
     else
     {
         CP_NOT_APPLICABLE_ELM_SIMPLE(L"draw_styles");

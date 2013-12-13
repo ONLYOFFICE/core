@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_STYLE_GRAPHIC_PROPERTIES_H_
-#define _CPDOCCORE_ODF_STYLE_GRAPHIC_PROPERTIES_H_
+#pragma once
 
 #include <iosfwd>
 #include <cpdoccore/xml/attributes.h>
@@ -24,6 +23,7 @@
 #include "markerstyle.h"
 #include "verticalalign.h"
 #include "drawfill.h"
+#include "gradientstyle.h"
 
 
 namespace cpdoccore { 
@@ -49,7 +49,8 @@ public:
     _CP_OPT(length_or_percent) fo_max_height_;
 
 ////////////////////////////////	
-	_CP_OPT(length_or_percent)	draw_opacity_;		
+	_CP_OPT(percent)			draw_opacity_;	
+	_CP_OPT(percent)			draw_image_opacity_;
 
 	_CP_OPT(draw_fill)			draw_fill_;
 
@@ -165,4 +166,3 @@ CP_REGISTER_OFFICE_ELEMENT2(style_graphic_properties);
 }
 }
 
-#endif

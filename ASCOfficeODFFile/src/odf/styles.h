@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_OFFCIE_STYLES_H_
-#define _CPDOCCORE_ODF_OFFCIE_STYLES_H_
+#pragma once
 
 #include <string>
 #include <vector>
@@ -31,6 +30,7 @@
 #include "styletype.h"
 #include "common_attlists.h"
 #include "noteclass.h"
+#include "gradientstyle.h"
 
 
 #include "styles_list.h"
@@ -128,18 +128,18 @@ public:
 
 	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
 
-	_CP_OPT(color)				draw_start_color_;
-	_CP_OPT(color)				draw_end_color_;
+	_CP_OPT(color)		draw_start_color_;
+	_CP_OPT(color)		draw_end_color_;
 
-	_CP_OPT(percent)			draw_end_intensity_; 
-	_CP_OPT(percent)			draw_start_intensity_;
+	_CP_OPT(percent)	draw_end_intensity_; 
+	_CP_OPT(percent)	draw_start_intensity_;
 
-	_CP_OPT(length_or_percent)	draw_cy_;//%
-	_CP_OPT(length_or_percent)	draw_cx_;
+	_CP_OPT(percent)	draw_cy_;//%
+	_CP_OPT(percent)	draw_cx_;
 	
-	_CP_OPT(percent)			draw_border_;
-	_CP_OPT(int)				draw_angle_;
-	_CP_OPT(std::wstring)		draw_style_;//"square" 
+	_CP_OPT(percent)	draw_border_;
+	_CP_OPT(int)		draw_angle_;
+	_CP_OPT(gradient_style)		draw_style_;
 
 
 private:
@@ -150,10 +150,40 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
  
     friend class odf_document;
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_gradient);
 /////////////////////////////////////////////////////////////////////////////////////////////////
+/// \class  style_draw_gradient
+class draw_opacity : public office_element_impl<draw_opacity>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStyleDrawGradient;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
+
+	_CP_OPT(gradient_style)	draw_style_;//linear, radial, ..
+	_CP_OPT(int)			draw_angle_;
+
+	_CP_OPT(percent)		draw_start_;
+	_CP_OPT(percent)		draw_end_;
+	
+	_CP_OPT(percent)		draw_border_;
+
+private:
+ 	_CP_OPT(std::wstring)	draw_name_;
+	_CP_OPT(std::wstring)	draw_display_name_;
+	
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+ 
+    friend class odf_document;
+};
+CP_REGISTER_OFFICE_ELEMENT2(draw_opacity);
 /// \class  style_draw_fill_image
 class draw_fill_image : public office_element_impl<draw_fill_image>
 {
@@ -260,15 +290,14 @@ public:
     void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
 
 private:
-	office_element_ptr_array draw_gradient_; 
-   
+	office_element_ptr_array draw_gradient_;    
 	office_element_ptr_array draw_fill_image_; 
-    
+    office_element_ptr_array draw_opacity_;     
 	office_element_ptr_array draw_hatch_;    
     
 	office_element_ptr_array draw_marker_; // < TODO
     office_element_ptr_array draw_stroke_dash_; // < TODO
-    office_element_ptr_array draw_opacity_; // < TODO
+	
 	office_element_ptr_array svg_linearGradient_; // < TODO
     office_element_ptr_array svg_radialGradient_; // < TODO
 
@@ -1047,5 +1076,3 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(style_presentation_page_layout);
 } // namespace odf
 } // namespace cpdoccore
-
-#endif

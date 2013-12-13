@@ -87,7 +87,7 @@ public:
     {} 
 
     xlsx_drawing_context_handle & handle_;
-    drawing_object_description simple_drawing_desc_;    
+    drawing_object_description object_description_;    
 
 	std::vector<drawing_object_description> images_;
 	std::vector<drawing_object_description> charts_;
@@ -143,18 +143,18 @@ xlsx_drawing_context::xlsx_drawing_context(xlsx_drawing_context_handle & h)
 }
 void xlsx_drawing_context::default_set()
 {
-    impl_->simple_drawing_desc_.xlink_href_ = L"";
+    impl_->object_description_.xlink_href_ = L"";
 
-    impl_->simple_drawing_desc_.draw_name_ = L"";
+    impl_->object_description_.draw_name_ = L"";
   
-	impl_->simple_drawing_desc_.additional_.clear();
-	impl_->simple_drawing_desc_.anchor_ =L"";
+	impl_->object_description_.additional_.clear();
+	impl_->object_description_.anchor_ =L"";
 	
-	impl_->simple_drawing_desc_.clipping_string_= L"";
-	impl_->simple_drawing_desc_.svg_rect_	= boost::none;
+	impl_->object_description_.clipping_string_= L"";
+	impl_->object_description_.svg_rect_	= boost::none;
 
-	impl_->simple_drawing_desc_.hlinks_.clear();
-	impl_->simple_drawing_desc_.additional_.clear();
+	impl_->object_description_.hlinks_.clear();
+	impl_->object_description_.additional_.clear();
 }
 xlsx_drawing_context::~xlsx_drawing_context()
 {
@@ -170,68 +170,68 @@ void xlsx_drawing_context::end_shapes()
 
 void xlsx_drawing_context::start_drawing(std::wstring const & name)
 {
-    impl_->simple_drawing_desc_.draw_name_ = name;
+    impl_->object_description_.draw_name_ = name;
 }
 void xlsx_drawing_context::set_rect(double width_pt, double height_pt, double x_pt, double y_pt)
 {
 	_rect r = {width_pt,height_pt,x_pt,y_pt};
-	impl_->simple_drawing_desc_.svg_rect_= r;
+	impl_->object_description_.svg_rect_= r;
 }
 void xlsx_drawing_context::set_translate(double x_pt, double y_pt)
 {
-	if (impl_->simple_drawing_desc_.svg_rect_)
+	if (impl_->object_description_.svg_rect_)
 	{
-		_rect r = impl_->simple_drawing_desc_.svg_rect_.get();
+		_rect r = impl_->object_description_.svg_rect_.get();
 		r.x_+=x_pt;
 		r.y_+=y_pt;
 
-		impl_->simple_drawing_desc_.svg_rect_= r;
+		impl_->object_description_.svg_rect_= r;
 	}
 }
 void xlsx_drawing_context::set_rotate(double angle)
 {
 	set_property(odf::_property(L"svg:rotate",angle));
-	if (impl_->simple_drawing_desc_.svg_rect_)
+	if (impl_->object_description_.svg_rect_)
 	{
-		_rect r = impl_->simple_drawing_desc_.svg_rect_.get();
+		_rect r = impl_->object_description_.svg_rect_.get();
 		//r.x_-=r.width_/2;
 		//r.y_-=r.height_/2;
 
-		impl_->simple_drawing_desc_.svg_rect_= r;
+		impl_->object_description_.svg_rect_= r;
 	}
 }
 void xlsx_drawing_context::set_scale(double cx_pt, double cy_pt)
 {
-	if (impl_->simple_drawing_desc_.svg_rect_)
+	if (impl_->object_description_.svg_rect_)
 	{
-		_rect r = impl_->simple_drawing_desc_.svg_rect_.get();
+		_rect r = impl_->object_description_.svg_rect_.get();
 		r.x_*=cx_pt;
 		r.y_*=cy_pt;
 
-		impl_->simple_drawing_desc_.svg_rect_= r;
+		impl_->object_description_.svg_rect_= r;
 	}
 }
 void xlsx_drawing_context::set_anchor(std::wstring anchor, double x_pt, double y_pt)
 {
-	impl_->simple_drawing_desc_.anchor_		= anchor;
-	impl_->simple_drawing_desc_.anchor_x_	= x_pt;
-    impl_->simple_drawing_desc_.anchor_y_	= y_pt;
+	impl_->object_description_.anchor_		= anchor;
+	impl_->object_description_.anchor_x_	= x_pt;
+    impl_->object_description_.anchor_y_	= y_pt;
 }
 void xlsx_drawing_context::set_property(odf::_property p)
 {
-	impl_->simple_drawing_desc_.additional_.push_back(p);
+	impl_->object_description_.additional_.push_back(p);
 }
 std::vector<odf::_property> & xlsx_drawing_context::get_properties()
 {
-	return impl_->simple_drawing_desc_.additional_;
+	return impl_->object_description_.additional_;
 }
 void xlsx_drawing_context::set_clipping(std::wstring & str)
 {
-	impl_->simple_drawing_desc_.clipping_string_= str;
+	impl_->object_description_.clipping_string_= str;
 }
 void xlsx_drawing_context::set_fill(_oox_fill & fill)
 {
-	impl_->simple_drawing_desc_.fill_= fill;
+	impl_->object_description_.fill_= fill;
 }
 std::wstring xlsx_drawing_context::add_hyperlink(std::wstring const & ref,bool object)
 {
@@ -239,7 +239,7 @@ std::wstring xlsx_drawing_context::add_hyperlink(std::wstring const & ref,bool o
 	std::wstring hId=std::wstring(L"hId") + boost::lexical_cast<std::wstring>(hlinks_size_);
 	
 	_hlink_desc desc={hId, ref, object};
-	impl_->simple_drawing_desc_.hlinks_.push_back(desc);
+	impl_->object_description_.hlinks_.push_back(desc);
 
 	return hId;
 }
@@ -250,32 +250,32 @@ void xlsx_drawing_context::end_drawing()
 
 void xlsx_drawing_context::start_shape(int type)
 {
-	impl_->simple_drawing_desc_.type_ = type; //2,3... 
+	impl_->object_description_.type_ = type; //2,3... 
 }
 void xlsx_drawing_context::end_shape()
 {
-	impl_->shapes_.push_back(impl_->simple_drawing_desc_);
+	impl_->shapes_.push_back(impl_->object_description_);
 	default_set();
 }
 void xlsx_drawing_context::start_image(std::wstring const & path)
 {
-	impl_->simple_drawing_desc_.type_ = 0; //frame 
-	impl_->simple_drawing_desc_.xlink_href_ = path; 
+	impl_->object_description_.type_ = 0; //frame 
+	impl_->object_description_.xlink_href_ = path; 
 }
 void xlsx_drawing_context::start_chart(std::wstring const & path)
 {
-	impl_->simple_drawing_desc_.type_ = 0; //frame 
-	impl_->simple_drawing_desc_.xlink_href_ = path; 
+	impl_->object_description_.type_ = 0; //frame 
+	impl_->object_description_.xlink_href_ = path; 
 }
 
 void xlsx_drawing_context::end_image()
 {
-    impl_->images_.push_back(impl_->simple_drawing_desc_);
+    impl_->images_.push_back(impl_->object_description_);
 	default_set();
 }
 void xlsx_drawing_context::end_chart()
 {
-    impl_->charts_.push_back(impl_->simple_drawing_desc_);
+    impl_->charts_.push_back(impl_->object_description_);
 	default_set();
 }
 bool xlsx_drawing_context::empty() const

@@ -59,6 +59,22 @@ namespace OOX
 			{
 				return et_c_NumPoint;
 			}
+			bool isNumCache()
+			{
+				bool bRes = true;
+				if(m_oValue.IsInit())
+				{
+					int nVal = _wtoi(m_oValue->m_sText);
+					if(0 == nVal && !(m_oValue->m_sText.GetLength() > 0 && '0' == m_oValue->m_sText[0]))
+						bRes = false;
+				}
+				return bRes;
+			}
+			void setForceCache(bool bStr)
+			{
+				m_oValue.Init();
+				m_oValue->m_sText.Append(_T("0"));
+			}
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -157,6 +173,24 @@ namespace OOX
 			{
 				return et_c_NumCache;
 			}
+			bool isNumCache()
+			{
+				bool bRes = true;
+				for(int i = 0, length = m_arrItems.GetSize(); i < length; i++)
+				{
+					if(!m_arrItems[i]->isNumCache())
+					{
+						bRes = false;
+						break;
+					}
+				}
+				return bRes;
+			}
+			void setForceCache(bool bStr)
+			{
+				for(int i = 0, length = m_arrItems.GetSize(); i < length; i++)
+					m_arrItems[i]->setForceCache(bStr);
+			}
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -183,8 +217,23 @@ namespace OOX
 			virtual void toXML(CStringWriter& writer) const
 			{
 			}
-			virtual void toXML2(CStringWriter& writer, bool bStr) const
+			virtual void toXML2(CStringWriter& writer, bool bStr, bool bCheckData, bool bReplaceIfNeed) const
 			{
+				if(bCheckData)
+				{
+					bool bStrNew = true;
+					if(m_oNumCache->isNumCache())
+						bStrNew = false;
+					else
+						bStrNew = true;
+					if(bReplaceIfNeed)
+					{
+						if(bStr != bStrNew)
+							m_oNumCache->setForceCache(bStr);
+					}
+					else
+						bStr = bStrNew;
+				}
 				if(bStr)
 					writer.WriteStringC(CString(_T("<c:strRef>")));
 				else
@@ -227,6 +276,13 @@ namespace OOX
 			{
 				return et_c_NumCacheRef;
 			}
+			bool isNumCache() const
+			{
+				bool bRes = true;
+				if(m_oNumCache.IsInit())
+					bRes = m_oNumCache->isNumCache();
+				return bRes;
+			}
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -252,23 +308,30 @@ namespace OOX
 			virtual void toXML(CStringWriter& writer) const
 			{
 			}
-			virtual void toXML2(CStringWriter& writer, bool bStr) const
-			{
-				if(m_oNumCacheRef.IsInit())
-				{
-					if(bStr)
-						writer.WriteStringC(CString(_T("<c:strRef>")));
-					else
-						writer.WriteStringC(CString(_T("<c:numRef>")));
+			//void toXML2(CStringWriter& writer, bool bStr, bool bCheckData) const
+			//{
+			//	if(m_oNumCacheRef.IsInit())
+			//	{
+			//		if(bCheckData)
+			//		{
+			//			if(m_oNumCacheRef->isNumCache())
+			//				bStr = false;
+			//			else
+			//				bStr = true;
+			//		}
+			//		if(bStr)
+			//			writer.WriteStringC(CString(_T("<c:strRef>")));
+			//		else
+			//			writer.WriteStringC(CString(_T("<c:numRef>")));
 
-					m_oNumCacheRef->toXML(writer);
+			//		m_oNumCacheRef->toXML(writer);
 
-					if(bStr)
-						writer.WriteStringC(CString(_T("</c:strRef>")));
-					else
-						writer.WriteStringC(CString(_T("</c:numRef>")));
-				}
-			}
+			//		if(bStr)
+			//			writer.WriteStringC(CString(_T("</c:strRef>")));
+			//		else
+			//			writer.WriteStringC(CString(_T("</c:numRef>")));
+			//	}
+			//}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
@@ -408,7 +471,7 @@ namespace OOX
 			virtual void toXML(CStringWriter& writer) const
 			{
 				if(m_oStrRef.IsInit())
-					m_oStrRef->toXML2(writer, true);
+					m_oStrRef->toXML2(writer, true, false, false);
 				else if(m_oValue.IsInit())
 				{
 					writer.WriteStringC(CString(_T("<c:v>")));
@@ -790,7 +853,7 @@ namespace OOX
 					if(m_oCat.IsInit())
 					{
 						CStringWriter sw;
-						m_oCat->m_oStrRef->toXML2(sw, true);
+						m_oCat->m_oStrRef->toXML2(sw, true, true, false);
 						sRes.AppendFormat(_T("<c:cat>%s</c:cat>"), sw.GetCString());
 					}
 					if(bLine && m_oMarker.IsInit())
@@ -808,12 +871,12 @@ namespace OOX
 					if(bScatter && m_oXVal.IsInit() && m_oXVal->m_oNumCacheRef.IsInit() && m_oXVal->m_oNumCacheRef->m_oFormula.IsInit())
 					{
 						CStringWriter sw;
-						m_oXVal->m_oNumCacheRef->toXML2(sw, false);
+						m_oXVal->m_oNumCacheRef->toXML2(sw, false, true, false);
 						sRes.AppendFormat(_T("<c:xVal>%s</c:xVal>"), sw.GetCString());
 					}
 					
 					CStringWriter sw;
-					m_oVal->m_oNumCacheRef->toXML2(sw, false);
+					m_oVal->m_oNumCacheRef->toXML2(sw, false, true, true);
 					if(bScatter)
 						sRes.AppendFormat(_T("<c:yVal>%s</c:yVal>"), sw.GetCString());
 					else

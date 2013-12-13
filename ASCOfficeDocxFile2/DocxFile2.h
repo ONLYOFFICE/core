@@ -53,6 +53,8 @@ private:
 	CString m_sFontDir;
 	bool m_bSaveChartAsImg;
 	Writers::FileWriter* m_pCurFileWriter;
+
+	bool m_bIsNoBase64Save;
 public:
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
 	
@@ -60,6 +62,7 @@ public:
 	{
 		m_oBinaryFileWriter = NULL;
 		m_bSaveChartAsImg = false;
+		m_bIsNoBase64Save = false;
 	}
 	~CAVSOfficeDocxFile2()
 	{
@@ -129,15 +132,26 @@ public:
 
 		BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
 		int nBinBufferLen = oBufferedStream.GetPosition();
-		int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
-		BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
-		if(TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
+
+		if (m_bIsNoBase64Save)
 		{
 			CFile oFile;
 			oFile.CreateFileW(bsFileDst);
-			oFile.WriteStringUTF8(m_oBinaryFileWriter->WriteFileHeader(nBinBufferLen));
-			oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
+			oFile.WriteFile(pbBinBuffer, nBinBufferLen);
 			oFile.CloseFile();
+		}
+		else
+		{
+			int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
+			BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
+			if(TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
+			{
+				CFile oFile;
+				oFile.CreateFileW(bsFileDst);
+				oFile.WriteStringUTF8(m_oBinaryFileWriter->WriteFileHeader(nBinBufferLen));
+				oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
+				oFile.CloseFile();
+			}
 		}
 		RELEASEOBJECT(m_oBinaryFileWriter);
 		RELEASEINTERFACE(pFontPicker);
@@ -180,6 +194,10 @@ public:
 		else if (_T("SaveChartAsImg") == sParamName && ParamValue.vt == VT_BOOL)
 		{
 			m_bSaveChartAsImg = VARIANT_TRUE == ParamValue.boolVal;
+		}
+		else if (_T("NoBase64Save") == sParamName && ParamValue.vt == VT_BOOL)
+		{
+			m_bIsNoBase64Save = (VARIANT_TRUE == ParamValue.boolVal);
 		}
 		return S_OK;
 	}

@@ -75,4 +75,4 @@ namespace ASCGraphics
 
 #endif
 
-#import "../Redist/ASCOfficePPTXFile.dll"	named_guids raw_interfaces_only rename_namespace("PPTXFile"), exclude("_IAVSOfficeFileTemplateEvents"), exclude("_IAVSOfficeFileTemplateEvents2")
+#import "../Redist/ASCOfficePPTXFile.dll"	named_guids raw_interfaces_only rename_namespace("PPTXFile"), exclude("_IAVSOfficeFileTemplateEvents"), exclude("_IAVSOfficeFileTemplateEvents2"), exclude("IASCRenderer")

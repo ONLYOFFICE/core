@@ -247,7 +247,8 @@ namespace BinXlsxRW {
 			if(c_oSer_ChartLegendType::Layout == type)
 			{
 				pLegend->m_oLayout.Init();
-				res = Read2(length, &BinaryChartReader::ReadLegendLayout, this, pLegend->m_oLayout.GetPointer());
+				pLegend->m_oLayout->m_oManualLayout.Init();
+				res = Read2(length, &BinaryChartReader::ReadLegendLayout, this, pLegend->m_oLayout->m_oManualLayout.GetPointer());
 			}
 			else if(c_oSer_ChartLegendType::LegendPos == type)
 			{

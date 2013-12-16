@@ -2526,7 +2526,7 @@ HRESULT CAVSOfficeDrawingConverter::GetThemeBinary(BSTR bsThemeFilePath, SAFEARR
 	*ppBinary = pArray;
 
 	m_oBinaryWriter.ThemeDoc = pTheme.smart_dynamic_cast<PPTX::FileContainer>();
-	m_oBinaryWriter.ThemeDoc.reset();
+	//m_oBinaryWriter.ThemeDoc.reset();
 
 	return S_OK;
 }

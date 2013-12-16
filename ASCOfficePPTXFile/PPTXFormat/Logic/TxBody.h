@@ -6,6 +6,7 @@
 #include "BodyPr.h"
 #include "TextListStyle.h"
 #include "Paragraph.h"
+#include "ShapeStyle.h"
 
 namespace PPTX
 {
@@ -196,7 +197,7 @@ namespace PPTX
 				return (bodyPr.wrap->get() == _T("none"));
 			}
 
-			CString GetDocxTxBoxContent(NSBinPptxRW::CBinaryFileWriter* pWriter);
+			CString GetDocxTxBoxContent(NSBinPptxRW::CBinaryFileWriter* pWriter, const nullable<PPTX::Logic::ShapeStyle>& shape_style);
 		};
 	} // namespace Logic
 } // namespace PPTX

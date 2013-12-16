@@ -182,7 +182,7 @@ void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf::_property
 		{
 			_CP_OPT(int) iAlign;
 
-			odf::GetProperty(prop,L"textalign-vertiacal",iAlign);
+			odf::GetProperty(prop,L"textalign-vertical",iAlign);
 			if (iAlign)
 			{
 				switch (iAlign.get())
@@ -200,7 +200,7 @@ void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf::_property
 					CP_XML_ATTR(L"anchor", L"just");break;
 				}
 			}
-			else CP_XML_ATTR(L"anchor", L"dist");break;
+			//else CP_XML_ATTR(L"anchor", L"dist");break;
 
 		}
 	}

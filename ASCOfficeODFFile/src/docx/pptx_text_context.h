@@ -8,6 +8,7 @@
 #include <cpdoccore/xml/attributes.h>
 
 #include "oox_conversion_context.h"
+#include "../odf/stylefamily.h"
 
 namespace cpdoccore {
 namespace odf
@@ -40,8 +41,11 @@ public:
 	void start_comment_content();
 	std::wstring end_comment_content();
 	
-	void start_drawing_content();
-	std::wstring end_drawing_content();
+	void start_base_style(const std::wstring baseStyleName, const odf::style_family::type baseStyleType);
+	void end_base_style();
+
+	void start_object();
+	std::wstring end_object();
 
 	void start_hyperlink();
 	void end_hyperlink(std::wstring hId);

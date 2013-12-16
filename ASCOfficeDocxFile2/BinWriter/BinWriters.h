@@ -6215,6 +6215,14 @@ namespace BinDocxRW
 
 				int nCurPos = 0;
 
+				LPSAFEARRAY pThemeData = NULL;
+				if(NULL != m_pTheme)
+				{
+					BSTR bstrThemePath = m_pTheme->m_oReadPath.GetPath().AllocSysString();
+					m_pOfficeDrawingConverter->GetThemeBinary(bstrThemePath, &pThemeData);
+					SysFreeString(bstrThemePath);
+				}
+
 				//Write Settings
 				OOX::CSettings* pSettings = oDocx.GetSettings();
 				if(NULL != pSettings)
@@ -6299,13 +6307,6 @@ namespace BinDocxRW
 				oBinaryDocumentTableWriter.Write(poDocument->m_arrItems);
 				this->WriteTableEnd(nCurPos);
 
-				LPSAFEARRAY pThemeData = NULL;
-				if(NULL != m_pTheme)
-				{
-					BSTR bstrThemePath = m_pTheme->m_oReadPath.GetPath().AllocSysString();
-					m_pOfficeDrawingConverter->GetThemeBinary(bstrThemePath, &pThemeData);
-					SysFreeString(bstrThemePath);
-				}
 				this->WriteMainTableEnd(pThemeData);
 			}
 			void ParagraphAddBreak(OOX::Logic::CParagraph* pParagraph)

@@ -1,9 +1,4 @@
-#ifndef _CPDOCCORE_ODF_STYLEFAMILY_H_
-#define _CPDOCCORE_ODF_STYLEFAMILY_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <string>
@@ -58,5 +53,3 @@ std::wostream & operator << (std::wostream & _Wostream, const style_family & _Va
 APPLY_PARSE_XML_ATTRIBUTES(odf::style_family);
 
 }
-
-#endif

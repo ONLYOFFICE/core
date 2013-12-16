@@ -470,31 +470,30 @@ void text_format_properties_content::pptx_convert(oox::pptx_conversion_context &
 				CP_XML_ATTR(L"lang",  w_val);
 			}
 
-			if (style_font_name_ || style_font_name_asian_ || style_font_name_complex_)
+			if (fo_color_)
 			{
-				std::wstring w_eastAsia;
-				std::wstring w_hAnsi;
-				std::wstring w_cs;
-				std::wstring w_ascii = w_hAnsi = (style_font_name_ ? *style_font_name_: L"");
+				CP_XML_NODE(L"a:solidFill")
+				{
+					CP_XML_NODE(L"a:srgbClr"){CP_XML_ATTR(L"val",fo_color_->get_hex_value());}
+				}
+			}
+			if (style_font_name_ || style_font_name_asian_ || style_font_name_complex_ || fo_font_family_)
+			{
+				std::wstring w_font	= (fo_font_family_ ? *fo_font_family_: L""); 
+				std::wstring w_ascii = (style_font_name_ ? *style_font_name_: w_font);
+				if (w_ascii.length()>0)	CP_XML_NODE(L"a:latin"){CP_XML_ATTR(L"typeface",w_ascii);}
 
 				if (style_font_name_asian_)
-					w_eastAsia = *style_font_name_asian_;                     
+				{
+					std::wstring w_eastAsia = *style_font_name_asian_;   
+					CP_XML_NODE(L"a:ea"){CP_XML_ATTR(L"typeface",w_eastAsia);}
+				}
 
 				if (style_font_name_complex_)
-					w_cs = *style_font_name_complex_;
-
-				fonts_container & fonts = Context.root()->odf_context().fontContainer();
-		        
-				font_instance * font = fonts.font_by_style_name(w_ascii);
-				if (font == NULL)font = fonts.font_by_style_name(w_hAnsi);
-				if (font)CP_XML_NODE(L"a:latin"){CP_XML_ATTR(L"typeface",font->name());}
-
-				font = fonts.font_by_style_name(w_eastAsia);
-				if (font)	CP_XML_NODE(L"a:ea"){CP_XML_ATTR(L"typeface",font->name());}
-
-				font = fonts.font_by_style_name(w_cs);
-				if (font)	CP_XML_NODE(L"a:cs"){CP_XML_ATTR(L"typeface",font->name());}
-
+				{
+					std::wstring w_cs = *style_font_name_complex_;
+					CP_XML_NODE(L"a:cs"){CP_XML_ATTR(L"typeface",w_cs);}
+				}
 			}
 
 			//else if (style_use_window_font_color_ && *style_use_window_font_color_)
@@ -513,13 +512,7 @@ void text_format_properties_content::pptx_convert(oox::pptx_conversion_context &
 			//	_rPr << L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" << w_fill << "\" />";
 			//}
 			
-			if (fo_color_)
-			{
-				CP_XML_NODE(L"a:solidFill")
-				{
-					CP_XML_NODE(L"a:srgbClr"){CP_XML_ATTR(L"val",fo_color_->get_hex_value());}
-				}
-			}
+
 			if (styles_context_.hlinkClick().length()>0)
 			{
 				CP_XML_NODE(L"a:hlinkClick")

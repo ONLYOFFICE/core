@@ -28,6 +28,8 @@ void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & A
 	CP_APPLY_ATTR(L"draw:wrap-influence-on-position", draw_wrap_influence_on_position_);
 	CP_APPLY_ATTR(L"draw:textarea-horizontal-align", draw_textarea_horizontal_align_);
 	CP_APPLY_ATTR(L"draw:textarea-vertical-align", draw_textarea_vertical_align_);
+
+	CP_APPLY_ATTR(L"draw:fill-hatch-solid",		draw_fill_hatch_solid_);
 	
 	CP_APPLY_ATTR(L"draw:stroke",		draw_stroke_); 
 	CP_APPLY_ATTR(L"draw:stroke-dash",	draw_stroke_dash_); 
@@ -106,6 +108,7 @@ void graphic_format_properties::apply_from(const graphic_format_properties & Oth
 	_CP_APPLY_PROP2(draw_marker_end_); 
 	_CP_APPLY_PROP2(draw_opacity_); 
 	_CP_APPLY_PROP2(draw_image_opacity_); 
+	_CP_APPLY_PROP2(draw_fill_hatch_solid_);
 	_CP_APPLY_PROP2(draw_textarea_horizontal_align_); 
 	_CP_APPLY_PROP2(draw_textarea_vertical_align_); 
 	

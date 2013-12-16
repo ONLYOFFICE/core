@@ -52,6 +52,11 @@ namespace oox {
 	public:
 		oox_hatch_fill(){}
 		static oox_hatch_fill_ptr create();
+
+		std::wstring color_ref;
+		_CP_OPT(std::wstring) color_back_ref;
+
+		std::wstring preset;
 	};
 ////////////////////////////////////////////////////////////
 	class oox_gradient_fill;
@@ -75,6 +80,7 @@ namespace oox {
 		int style;
 		double rect[4];
 		double angle;
+
 
 		std::vector<_color_position> colors;
 	};

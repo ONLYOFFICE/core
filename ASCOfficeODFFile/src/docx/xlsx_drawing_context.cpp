@@ -321,6 +321,7 @@ void xlsx_drawing_context::process_images(xlsx_table_metrics & table_metrics)
 
 			std::wstring fileName = BOOST_STRING_PATH(wpath(odf_packet_path_) / pic.xlink_href_);			
 			drawing.fill.bitmap->bCrop  = odf::parse_clipping(pic.clipping_string_,fileName,drawing.fill.bitmap->cropRect);
+			drawing.fill.bitmap->bStretch = true;
 
 			drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(pic.xlink_href_, drawing.type, isMediaInternal, ref);		
 			impl_->add_drawing(drawing, isMediaInternal, drawing.fill.bitmap->rId , ref, drawing.type);

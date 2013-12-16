@@ -241,6 +241,24 @@ void draw_gradient::add_child_element( xml::sax * Reader, const ::std::wstring &
     CP_NOT_APPLICABLE_ELM();
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * draw_hatch::ns = L"draw";
+const wchar_t * draw_hatch::name = L"hatch";
+
+void draw_hatch::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"draw:name",			draw_name_);
+	CP_APPLY_ATTR(L"draw:display-name",	draw_display_name_);
+	CP_APPLY_ATTR(L"draw:style",		draw_style_);
+	CP_APPLY_ATTR(L"draw:color",		draw_color_);
+	CP_APPLY_ATTR(L"draw:distance",		draw_distance_);
+	CP_APPLY_ATTR(L"draw:rotation",		draw_rotation_);
+}
+
+void draw_hatch::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+{
+    CP_NOT_APPLICABLE_ELM();
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * draw_opacity::ns = L"draw";
 const wchar_t * draw_opacity::name = L"opacity";
 

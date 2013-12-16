@@ -586,6 +586,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\odf\hatchstyle.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\odf\hatchstyle.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\odf\hyphenationkeep.cpp"
 				>
 			</File>

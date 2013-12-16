@@ -184,6 +184,40 @@ int Compute_BorderWidth(const graphic_format_properties & graphicProperties, Bor
     return get_value_emu(lengthValue);
 }
 
+void Compute_HatchFill(draw_hatch * image_style,oox::oox_hatch_fill_ptr fill)
+{
+	int style =0;
+	if (image_style->draw_style_)style = image_style->draw_style_->get_type();
+
+	int angle = *image_style->draw_rotation_/10.;
+	
+	if (image_style->draw_color_)fill->color_ref = image_style->draw_color_->get_hex_value();
+
+	double size =0;
+	if (image_style->draw_distance_)size = (image_style->draw_distance_->get_value_unit(length::cm));
+	
+	switch(style)
+	{
+	case hatch_style::single:
+		if		(angle == 0		|| angle == 180)	fill->preset = L"dkHorz";	
+		else if (angle == 90	|| angle == 270)	fill->preset = L"dkVert";
+		else if ((angle>180 && angle <270)
+					|| (angle>0 && angle <90)) 		fill->preset = L"dkUpDiag";
+		else										fill->preset = L"dkDnDiag";
+		break;
+	case hatch_style::doublee:
+		if (angle ==0 || angle == 90  || angle== 180 || angle == 270)
+		{
+			if (size > 0.2)	fill->preset = L"lgGrid";
+			else			fill->preset = L"smGrid";
+		}
+		else fill->preset = L"openDmnd";
+		break;
+	case hatch_style::triple:
+		fill->preset = L"pkt5";
+		break;
+	}
+}
 void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr fill)
 {
 	int style =0;
@@ -276,8 +310,8 @@ void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr
 			}
 		}break;
 	}
-
 }
+
 
 void Compute_GraphicFill(graphic_format_properties & props, styles_lite_container &styles, oox::_oox_fill & fill)
 {
@@ -340,10 +374,27 @@ void Compute_GraphicFill(graphic_format_properties & props, styles_lite_containe
 				fill.gradient = oox::oox_gradient_fill::create();
 
 				Compute_GradientFill(image_style, fill.gradient);
-
 			}
 		}
 	}
+	if (props.draw_fill_hatch_name_)
+	{
+		const std::wstring style_name = L"hatch:" + *props.draw_fill_hatch_name_;
+		if (office_element_ptr style = styles.find_by_style_name(style_name))
+		{
+			if (draw_hatch * image_style = dynamic_cast<draw_hatch *>(style.get()))
+			{			
+				fill.hatch = oox::oox_hatch_fill::create();
+
+				Compute_HatchFill(image_style, fill.hatch);
+			}
+		}
+		if ((fill.hatch) && (props.draw_fill_color_))
+		{
+			fill.hatch->color_back_ref = props.draw_fill_color_->get_hex_value();
+		}	
+	}
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

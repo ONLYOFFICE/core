@@ -92,6 +92,8 @@ private:
     ATL::CComPtr< ASCOfficeUtils::IOfficeUtils > office_utils_;
     
 private:
+	bool bOnlyPresentation;
+	bool loadOptionFromXML(CString parametr,BSTR sXMLOptions);
     bool initialized();
     HRESULT LoadFromFileImpl(const std::wstring & srcFileName,
         const std::wstring & srcTempPath,

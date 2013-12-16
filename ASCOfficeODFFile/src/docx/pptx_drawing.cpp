@@ -26,17 +26,21 @@ void pptx_serialize_text(std::wostream & strm, const std::vector<odf::_property>
 	_CP_OPT(std::wstring) strTextContent;
 	odf::GetProperty(properties,L"text-content",strTextContent);
 
-	if (!strTextContent)return;
-
 	CP_XML_WRITER(strm)
     {
 		CP_XML_NODE(L"p:txBody")
 		{  
 			oox_serialize_bodyPr(CP_XML_STREAM(),properties);
-							
 			if (strTextContent)
 			{	
 				CP_XML_STREAM() << strTextContent.get();
+			}
+			else
+			{				
+				CP_XML_NODE(L"a:p")//empty a:p
+				{
+					CP_XML_NODE(L"a:endParaRPr");
+				}
 			}
 		}
     }
@@ -87,27 +91,6 @@ void pptx_serialize_image(std::wostream & strm, _pptx_drawing const & val)
 
 void pptx_serialize_shape(std::wostream & strm, _pptx_drawing const & val)
 {
-	//std::wstring shapeType;
-	//
-	//if (val.sub_type<9 && val.sub_type>=0)
-	//{
-	//	shapeType =	_ooxShapeType[val.sub_type];
-	//}
-	//if (val.sub_type == 7)//custom 
-	//{
-	//	_CP_OPT(int) iVal;
-	//	odf::GetProperty(val.additional,L"draw-type-index",iVal);
-	//	if (iVal)shapeType = _OO_OOX_custom_shapes[*iVal].oox;	
-	//}
-	//else if (val.sub_type<9 && val.sub_type>=0)
-	//{
-	//	shapeType =	_ooxShapeType[val.sub_type];
-	//} 
-
-	//if ((val.place_holder_type_.length()>0) &&
-	//	!(val.place_holder_type_== L"body" || val.place_holder_type_== L"title"  || val.place_holder_type_== L"subTitle"))return;
-		
-
 	CP_XML_WRITER(strm)    
     {
         CP_XML_NODE(L"p:sp")

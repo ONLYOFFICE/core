@@ -39,7 +39,7 @@ HRESULT ConvertOdp2Pptx(cpdoccore::odf::odf_document & inputDoc, const std::wstr
 
     return S_OK;
 }
-HRESULT ConvertOO2OOX(const std::wstring &ext, const std::wstring & srcPath, const std::wstring & dstPath)
+HRESULT ConvertOO2OOX(const std::wstring &ext, const std::wstring & srcPath, const std::wstring & dstPath, bool bOnlyPresentation)
 {
 	HRESULT hr = S_OK;
 
@@ -56,6 +56,9 @@ HRESULT ConvertOO2OOX(const std::wstring &ext, const std::wstring & srcPath, con
 			if (ext == L".odp")type = 3;
 
 		}
+
+		if (bOnlyPresentation && type != 3)return E_FAIL;
+
 		switch (type)
 		{
 		case 1:

@@ -31,6 +31,7 @@
 #include "common_attlists.h"
 #include "noteclass.h"
 #include "gradientstyle.h"
+#include "hatchstyle.h"
 
 
 #include "styles_list.h"
@@ -152,6 +153,35 @@ private:
     friend class odf_document;
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_gradient);
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/// \class  style_draw_hatch
+class draw_hatch : public office_element_impl<draw_hatch>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStyleDrawHatch;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
+	
+	_CP_OPT(hatch_style)	draw_style_;
+	_CP_OPT(int)			draw_rotation_;
+	_CP_OPT(length)			draw_distance_;	
+	_CP_OPT(color)			draw_color_;
+
+private:
+ 	_CP_OPT(std::wstring)	draw_name_;
+	_CP_OPT(std::wstring)	draw_display_name_;
+	
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+ 
+    friend class odf_document;
+};
+CP_REGISTER_OFFICE_ELEMENT2(draw_hatch);
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /// \class  style_draw_gradient
 class draw_opacity : public office_element_impl<draw_opacity>

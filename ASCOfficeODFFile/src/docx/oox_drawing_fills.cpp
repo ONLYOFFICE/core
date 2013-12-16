@@ -190,12 +190,8 @@ void oox_serialize_gradient_fill(std::wostream & strm, const _oox_fill & val)
 				}break;
 			}
 		}
-
-	}
-//gsLst (Gradient Stop List) §20.1.8.37
-//lin (Linear Gradient Fill) §20.1.8.41
-//path (Path Gradient) §20.1.8.46
 //tileRect (Tile Rectangle) §20.1.8.59
+	}
 }
 void oox_serialize_hatch_fill(std::wostream & strm, const _oox_fill & val)
 {
@@ -204,8 +200,19 @@ void oox_serialize_hatch_fill(std::wostream & strm, const _oox_fill & val)
 	{
 		CP_XML_NODE(L"a:pattFill")
 		{
+			CP_XML_ATTR(L"prst",val.hatch->preset);
+			if (val.hatch->color_back_ref)
+			{
+				CP_XML_NODE(L"a:bgClr")
+				{
+					oox_serialize_srgb(CP_XML_STREAM(),*val.hatch->color_back_ref,val.opacity);
+				}
+			}
+			CP_XML_NODE(L"a:fgClr")
+			{
+				oox_serialize_srgb(CP_XML_STREAM(),val.hatch->color_ref,val.opacity);
+			}
 		}
-
 	}
 }
 void oox_serialize_fill(std::wostream & strm, const _oox_fill & val)

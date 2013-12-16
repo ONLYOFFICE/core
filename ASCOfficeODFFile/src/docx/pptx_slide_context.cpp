@@ -269,6 +269,7 @@ void pptx_slide_context::process_images()
 
 			std::wstring fileName = BOOST_STRING_PATH(wpath(impl_->odfPacket_) / pic.xlink_href_);			
 			drawing.fill.bitmap->bCrop  = odf::parse_clipping(pic.clipping_string_,fileName,drawing.fill.bitmap->cropRect);
+			drawing.fill.bitmap->bStretch = true;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////			
 			std::wstring ref;/// это ссылка на выходной внешний объект

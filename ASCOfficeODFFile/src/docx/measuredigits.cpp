@@ -49,11 +49,17 @@ std::pair<float,float> GetMaxDigitSizePixelsImpl(const wchar_t * fontName, float
     for (int i = 0; i <= 9; ++i)
     {
         if (S_OK != (hr = fontMan->LoadString2( boost::lexical_cast<std::wstring>(i).c_str(), 0, 0)))
-            throw MeasureError();
+            return std::pair<float,float>(7,8);
 
         float x, y, width, height;
-        if (S_OK != (hr = fontMan->MeasureString(&x, &y, &width, &height)))
-            throw MeasureError();
+		try
+		{
+			hr = fontMan->MeasureString(&x, &y, &width, &height);
+		}catch(...)
+		{
+			return std::pair<float,float>(7,8);
+		}
+          
 
         if (width> maxWidth)
             maxWidth = width;

@@ -27,12 +27,13 @@ void xlsx_serialize_text(std::wostream & strm, const std::vector<odf::_property>
     {
 		_CP_OPT(std::wstring) strTextContent;
 		odf::GetProperty(properties,L"text-content",strTextContent);
-		if (strTextContent)
-		{
-			CP_XML_NODE(L"xdr:txBody")
-			{  
-				oox_serialize_bodyPr(CP_XML_STREAM(),properties);
-				CP_XML_NODE(L"a:lstStyle");
+
+		CP_XML_NODE(L"xdr:txBody")
+		{  
+			oox_serialize_bodyPr(CP_XML_STREAM(),properties);
+			CP_XML_NODE(L"a:lstStyle");
+			if (strTextContent)
+			{				
 				CP_XML_NODE(L"a:p")
 				{
 					CP_XML_STREAM() << strTextContent.get();

@@ -19,6 +19,8 @@
 
 #include "ConvertOO2OOX.h"
 
+#include "..\..\..\..\Common\XmlUtils.h"
+
 
 #pragma comment(lib, "cpformulasconvert-static.lib")
 #pragma comment(lib, "cpxml-static.lib")
@@ -40,6 +42,7 @@
 
 COfficeOdfFile::COfficeOdfFile()
 {
+	bOnlyPresentation = false;
     office_utils_.CoCreateInstance(__uuidof(ASCOfficeUtils::COfficeUtils));    
 }
 
@@ -65,6 +68,26 @@ boost::filesystem::wpath MakeTempDirectoryName(BSTR Dst)
 }
 
 }
+
+bool COfficeOdfFile::loadOptionFromXML(CString parametr,BSTR sXMLOptions)
+{
+	bool result = false;
+	XmlUtils::CXmlReader oXmlReader;
+	if( TRUE == oXmlReader.OpenFromXmlString( sXMLOptions ) )
+	{
+		if( TRUE == oXmlReader.ReadRootNode( _T("Options") ) )
+		{
+			if( TRUE == oXmlReader.ReadNode( parametr ) )
+			{
+				result = true;
+			}
+		}		
+	}
+
+	return result;
+
+}
+
 
 HRESULT COfficeOdfFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions)
 {
@@ -97,6 +120,8 @@ HRESULT COfficeOdfFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXML
 #else
     boost::filesystem::wpath dstTempPath = outputDir.string();
 #endif
+
+	bOnlyPresentation = loadOptionFromXML(L"onlyPresentation", sXMLOptions);
 
     try
     {
@@ -161,7 +186,7 @@ HRESULT COfficeOdfFile::LoadFromFileImpl(const std::wstring & srcFileName,
         return hr;
 
 
-	hr = ConvertOO2OOX(ext,srcTempPath, dstTempPath);
+	hr = ConvertOO2OOX(ext,srcTempPath, dstTempPath,bOnlyPresentation);
 
 
     if FAILED(hr)

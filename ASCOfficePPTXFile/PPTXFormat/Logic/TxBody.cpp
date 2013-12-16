@@ -8,7 +8,7 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		CString TxBody::GetDocxTxBoxContent(NSBinPptxRW::CBinaryFileWriter* pWriter)
+		CString TxBody::GetDocxTxBoxContent(NSBinPptxRW::CBinaryFileWriter* pWriter, const nullable<ShapeStyle>& shape_style)
 		{
 			CString strXml = _T("<w:txbxContent ");
 
@@ -36,8 +36,19 @@ namespace PPTX
 
 			strXml += _T(">");
 			
-			smart_ptr<PPTX::Theme> pTheme			= pWriter->ThemeDoc.smart_dynamic_cast<PPTX::Theme>();
-			smart_ptr<PPTX::Logic::ClrMap> pClrMap	= pWriter->ClrMapDoc.smart_dynamic_cast<PPTX::Logic::ClrMap>();
+			smart_ptr<PPTX::WrapperFile> pTheme				= pWriter->ThemeDoc.smart_dynamic_cast<PPTX::WrapperFile>();
+			smart_ptr<PPTX::WrapperWritingElement> pClrMap	= pWriter->ClrMapDoc.smart_dynamic_cast<PPTX::WrapperWritingElement>();
+
+			CString sThemeFont = _T("");
+			
+			DWORD dwColor = 0;
+			if (shape_style.is_init() && shape_style->fontRef.idx.is_init())
+			{
+				if (shape_style->fontRef.idx->get() == _T("major"))
+					sThemeFont = _T("+mj-lt");
+				else
+					sThemeFont = _T("+mn-lt");
+			}
 
 			NSBinPptxRW::CXmlWriter oWriter;
 
@@ -90,6 +101,11 @@ namespace PPTX
 							oWriter.WriteAttribute(_T("w:firstLine"), (int)((double)(*pPr->indent) / 635));
 						oWriter.EndAttributes();
 						oWriter.EndNode(_T("w:ind"));
+					}
+
+					if (TRUE)
+					{
+						oWriter.WriteString(_T("<w:spacing w:before=\"0\" w:after=\"0\" />"));
 					}
 
 					if (pPr->algn.is_init())
@@ -162,10 +178,45 @@ namespace PPTX
 
 						nullable<PPTX::Logic::RunProperties> pRPr;
 						pRPr = new PPTX::Logic::RunProperties();
+						
+						if (_T("") != sThemeFont)
+						{
+							pRPr->latin = new PPTX::Logic::TextFont();
+							pRPr->latin->typeface = sThemeFont;
+
+							pRPr->ea = new PPTX::Logic::TextFont();
+							pRPr->ea->typeface = sThemeFont;
+
+							pRPr->cs = new PPTX::Logic::TextFont();
+							pRPr->cs->typeface = sThemeFont;
+
+							pRPr->sym = new PPTX::Logic::TextFont();
+							pRPr->sym->typeface = sThemeFont;
+						}
+
 						pRunProps->Merge(pRPr);
 
 						if (oRun.rPr.is_init())
 							oRun.rPr->Merge(pRPr);
+
+						bool bIsWriteColor = false;
+						DWORD dwColor = 0;
+
+						if (pRPr->Fill.is_init() && pRPr->Fill.is<PPTX::Logic::SolidFill>())
+						{
+							PPTX::Logic::SolidFill& oFill = pRPr->Fill.as<PPTX::Logic::SolidFill>();
+
+							if (oFill.Color.is_init())
+							{
+								bIsWriteColor = true;
+								dwColor = oFill.Color.GetRGBColor(pTheme, pClrMap, 0);
+							}
+						}
+						else if (shape_style.is_init() && shape_style->fontRef.Color.is_init())
+						{
+							bIsWriteColor = true;
+							dwColor = shape_style->fontRef.Color.GetRGBColor(pTheme, pClrMap, 0);
+						}
 
 						oWriter.StartNode(_T("w:r"));
 						oWriter.EndAttributes();
@@ -173,6 +224,78 @@ namespace PPTX
 						// run props
 						oWriter.StartNode(_T("w:rPr"));
 						oWriter.EndAttributes();
+
+						if (pRPr->latin.is_init() || pRPr->ea.is_init() || pRPr->cs.is_init())
+						{
+							oWriter.StartNode(_T("w:rFonts"));
+
+							if (pRPr->latin.is_init())
+							{
+								CString sPick = pWriter->m_oCommon.m_pNativePicker->GetTypefacePick(pRPr->latin.get2());
+
+								if (sPick == _T("minor") || sPick == _T("+mn-lt"))
+								{
+									oWriter.WriteAttribute(_T("w:asciiTheme"), (CString)_T("minorHAnsi"));
+									oWriter.WriteAttribute(_T("w:hAnsiTheme"), (CString)_T("minorHAnsi"));
+								}
+								else if (sPick == _T("major") || sPick == _T("+mj-lt"))
+								{
+									oWriter.WriteAttribute(_T("w:asciiTheme"), (CString)_T("majorHAnsi"));
+									oWriter.WriteAttribute(_T("w:hAnsiTheme"), (CString)_T("majorHAnsi"));
+								}
+								else
+								{
+									oWriter.WriteAttribute(_T("w:ascii"), sPick);
+									oWriter.WriteAttribute(_T("w:hAnsi"), sPick);
+								}
+							}
+							if (pRPr->ea.is_init())
+							{
+								CString sPick = pWriter->m_oCommon.m_pNativePicker->GetTypefacePick(pRPr->ea.get2());
+
+								if (sPick == _T("minor") || sPick == _T("+mn-lt"))
+								{
+									oWriter.WriteAttribute(_T("w:eastAsiaTheme"), (CString)_T("minorEastAsia"));
+								}
+								else if (sPick == _T("major") || sPick == _T("+mj-lt"))
+								{
+									oWriter.WriteAttribute(_T("w:eastAsiaTheme"), (CString)_T("majorEastAsia"));
+								}
+								else
+								{
+									oWriter.WriteAttribute(_T("w:eastAsia"), sPick);
+								}
+							}
+							if (pRPr->cs.is_init())
+							{
+								CString sPick = pWriter->m_oCommon.m_pNativePicker->GetTypefacePick(pRPr->cs.get2());
+
+								if (sPick == _T("minor") || sPick == _T("+mn-lt"))
+								{
+									oWriter.WriteAttribute(_T("w:cstheme"), (CString)_T("minorBidi"));
+								}
+								else if (sPick == _T("major") || sPick == _T("+mj-lt"))
+								{
+									oWriter.WriteAttribute(_T("w:cstheme"), (CString)_T("majorBidi"));
+								}
+								else
+								{
+									oWriter.WriteAttribute(_T("w:cs"), sPick);
+								}
+							}
+							
+							oWriter.WriteNodeEnd(_T("w:rFonts"), TRUE, TRUE);
+						}
+
+						if (bIsWriteColor)
+						{
+							BYTE _r = (BYTE)((dwColor >> 16) & 0xFF);
+							BYTE _g = (BYTE)((dwColor >> 8) & 0xFF);
+							BYTE _b = (BYTE)((dwColor) & 0xFF);
+							CString sHex = _T("");
+							sHex.Format(_T("<w:color w:val=\"%02X%02X%02X\" />"), _r, _g, _b);
+							oWriter.WriteString(sHex);
+						}
 
 						if (pRPr->b.get_value_or(false))
 							oWriter.WriteString(_T("<w:b/>"));
@@ -189,7 +312,6 @@ namespace PPTX
 								oWriter.WriteString(_T("<w:strike/>"));
 						}
 
-						/*
 						if (pRPr->sz.is_init())
 						{
 							double dSize = (double)pRPr->sz.get();
@@ -200,8 +322,7 @@ namespace PPTX
 							strFS.Format(_T("<w:sz w:val=\"%d\"/><w:szCs w:val=\"%d\"/>"), nSize, nSize);
 							oWriter.WriteString(strFS);
 						}
-						*/
-
+						
 						if (pRPr->u.is_init())
 						{
 							BYTE lType = pRPr->u->GetBYTECode();

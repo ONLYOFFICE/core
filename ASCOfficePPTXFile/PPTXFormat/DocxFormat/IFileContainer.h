@@ -24,6 +24,9 @@ namespace OOX
 		{
 			m_lMaxRid = 0;
 		}
+		virtual ~IFileContainer()
+		{
+		}
 	protected:
 		CAtlMap<CString, smart_ptr<OOX::File>>	m_container;
 		size_t m_lMaxRid;

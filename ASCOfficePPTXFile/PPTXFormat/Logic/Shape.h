@@ -91,7 +91,7 @@ namespace PPTX
 					}
 					else if (txBody.is_init())
 					{
-						CString strContent = txBody->GetDocxTxBoxContent(pWriter);
+						CString strContent = txBody->GetDocxTxBoxContent(pWriter, style);
 
 						LPSAFEARRAY psaData = NULL;
 						BSTR bsTxContent = strContent.AllocSysString();

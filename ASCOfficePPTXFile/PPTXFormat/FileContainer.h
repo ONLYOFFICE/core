@@ -15,7 +15,9 @@ namespace PPTX
 		{
 			m_lPercent = 0;
 			m_bCancelled = false;
-
+		}
+		virtual ~FileContainer()
+		{
 		}
 	protected:
 		void read(const OOX::CPath& filename);

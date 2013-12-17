@@ -725,34 +725,13 @@ public:
 			CString strOptions = _T("<Options><onlyPresentation></onlyPresentation></Options>");
 			BSTR bsOptions = strOptions.AllocSysString();
 
-			CString strTemp2 = m_strTempDirectoryFile + "\\OpenFolder\\";
-			AVSOfficeUtils::IOfficeUtilsPtr pOfficeUtils;
-			pOfficeUtils.CreateInstance(AVSOfficeUtils::CLSID_COfficeUtils);
-			BSTR bsTemp2 = strTemp2.AllocSysString();
-
-			CreateDirectoryW(strTemp2, NULL);
-			HRESULT hr = pOfficeUtils->ExtractToDirectory(bsSrc, bsTemp2, NULL, 0);
-			
-			CString strTemp1 = m_strTempDirectoryFile + "\\WritePPTX\\";
+			CString strTemp1 = m_strTempDirectoryFile + "\\";
 			CreateDirectory(strTemp1, NULL);
 			BSTR bsTemp1 = strTemp1.AllocSysString();
-			HRESULT hRes = pODPFile->LoadFromFile(bsTemp2, bsTemp1, bsOptions);
+			HRESULT hRes = pODPFile->LoadFromFile(bsSrc, bsTemp1, bsOptions);
 			SysFreeString(bsOptions);
-			SysFreeString(bsTemp2);
 
 			RELEASEINTERFACE(pODPFile);
-
-			SHFILEOPSTRUCTW shfos;
-			ZeroMemory(&shfos, sizeof(shfos));
-			shfos.wFunc = FO_DELETE;
-			CStringW _local = strTemp2 + L"*.*";
-			_local.AppendChar(0);
-			_local.AppendChar(0);
-			shfos.pFrom = _local.GetString();
-			shfos.fFlags = FOF_SILENT + FOF_NOCONFIRMATION;
-
-			SHFileOperationW(&shfos);
-			RemoveDirectoryW(strTemp2);
 
 			PPTXFile::IAVSOfficePPTXFile2* pPPTX2 = NULL;
 			CoCreateInstance(PPTXFile::CLSID_CAVSOfficePPTXFile, NULL, CLSCTX_ALL, PPTXFile::IID_IAVSOfficePPTXFile2, (void**)&pPPTX2);

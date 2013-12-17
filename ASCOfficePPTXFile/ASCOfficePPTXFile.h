@@ -149,7 +149,10 @@ public:
 
 		if(m_pOfficeUtils == NULL)
 			return S_FALSE;
-		HRESULT hr = m_pOfficeUtils->ExtractToDirectory( sSrcFileName, localTempDir.AllocSysString(), NULL, 0);
+
+		BSTR bsParam = localTempDir.AllocSysString();
+		HRESULT hr = m_pOfficeUtils->ExtractToDirectory( sSrcFileName, bsParam, NULL, 0);
+		SysFreeString(bsParam);
 		if(hr != S_OK)
 			return hr;
 
@@ -170,6 +173,7 @@ public:
 		smart_ptr<PPTX::Presentation> presentation = m_pFolder->get(OOX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 		if (!presentation.is_init())
 		{
+			RemoveDirOrFile(m_strTempDir, false);
 			return S_FALSE;
 		}
 
@@ -310,6 +314,7 @@ public:
 		smart_ptr<PPTX::Presentation> presentation = m_pFolder->get(OOX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 		if (!presentation.is_init())
 		{
+			RemoveDirOrFile(m_strTempDir, false);
 			return S_FALSE;
 		}
 
@@ -370,6 +375,7 @@ public:
 		smart_ptr<PPTX::Presentation> presentation = m_pFolder->get(OOX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 		if (!presentation.is_init())
 		{
+			RemoveDirOrFile(m_strTempDir, false);
 			return S_FALSE;
 		}
 
@@ -437,7 +443,7 @@ public:
 
 private:
 
-	INT32 RemoveDirOrFile(CString sPath)
+	INT32 RemoveDirOrFile(CString sPath, bool bIsRemoveHead = true)
 	{
 		DWORD dwFileAttrib = ::GetFileAttributes( sPath );
 		if(  dwFileAttrib != INVALID_FILE_ATTRIBUTES )
@@ -465,9 +471,13 @@ private:
 				}
 				while( FindNextFile( Handle, &FindData ) != 0 );
 				FindClose( Handle );
-				BOOL bRes = RemoveDirectory( sPath );
-				if( FALSE == bRes )
-					dwResult += 1;
+
+				if (bIsRemoveHead)
+				{
+					BOOL bRes = RemoveDirectory( sPath );
+					if( FALSE == bRes )
+						dwResult += 1;
+				}
 			}
 			else
 			{

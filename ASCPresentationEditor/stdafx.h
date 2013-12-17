@@ -66,3 +66,9 @@ using namespace Gdiplus;
 #import "../Redist/ASCOfficeOdpFile.dll"	named_guids rename_namespace("ODPFile"),  raw_interfaces_only, exclude("IAVSOfficeFileTemplate", "_IAVSOfficeFileTemplateEvents", "_IAVSOfficeFileTemplateEvents2", "IAVSOfficeFile") 
 #import "../Redist/ASCOfficePDFWriter.dll"	named_guids rename_namespace("PDFFile"),  raw_interfaces_only, exclude("IASCRenderer")
 
+#define USE_ODF_FILE
+
+#ifdef USE_ODF_FILE
+#import "../Redist/ASCOfficeOdfFile.dll"	named_guids raw_interfaces_only rename_namespace("ODFFile")
+#endif
+

@@ -104,6 +104,10 @@ protected:
 	BOOL				m_bIsUseSystemFonts;
 	CString				m_strEmbeddedFontsDirectory;
 
+#ifdef USE_ODF_FILE
+	ODFFile::IOfficeOdfFile* m_pODFFile;
+#endif
+
 public:
 	__event __interface _IAVSPresentationEditorEvents;
 
@@ -133,12 +137,15 @@ public:
 		m_strMediaDirectory = _T("");
 		m_bIsUseSystemFonts = FALSE;
 		m_strEmbeddedFontsDirectory = _T("");
+
+		m_pODFFile = NULL;
 	}
 
 	~CAVSPresentationEditor()
 	{
 		CloseFile(VARIANT_TRUE);
 		RELEASEINTERFACE(m_pWinFonts);
+		RELEASEINTERFACE(m_pODFFile);
 	}
 
 public:
@@ -232,6 +239,7 @@ public:
 				}
 				if (S_OK != hRes)
 				{
+#ifndef USE_ODF_FILE
 					if (SUCCEEDED(CoCreateInstance(ODPFile::CLSID_CAVSOfficeODPFile, NULL, CLSCTX_ALL, ODPFile::IID_IAVSOfficeODPFile, (void**)&m_pODPFile)))
 					{
 						m_pODPFile->put_TempDirectory(bstrTemp);
@@ -255,6 +263,17 @@ public:
 
 						RELEASEINTERFACE(m_pODPFile);
 					}
+#else
+					CoCreateInstance(ODFFile::CLSID_COfficeOdfFile, NULL, CLSCTX_ALL, ODFFile::IID_IOfficeOdfFile, (void**)&m_pODFFile);
+					
+					CString strOptions = _T("<Options><onlyPresentation></onlyPresentation></Options>");
+					BSTR bsOptions = strOptions.AllocSysString();
+					HRESULT hRes = m_pODFFile->LoadFromFile(fileName, bstrTemp, bsOptions);
+					SysFreeString(bsOptions);
+
+					if (hRes != S_OK)
+						m_pODFFile = NULL;
+#endif
 				}
 
 				SysFreeString(bstrTemp);
@@ -356,6 +375,8 @@ public:
 		m_strFileName	= _T("");
 		m_strEditorXml	= _T("");
 
+		m_pODFFile = NULL;
+
 		RELEASEOBJECT(m_pInfoStorage);
 		RELEASEOBJECT(m_pStatusStorage);
 
@@ -448,6 +469,23 @@ public:
 			}
 		case 1:
 			{
+#ifdef USE_ODF_FILE
+				if (NULL != m_pODFFile)
+				{
+					// здесь только архивация и удаление temp
+					AVSOfficeUtils::IOfficeUtils* pOfficeUtils = NULL;
+					if (S_OK != CoCreateInstance(__uuidof(AVSOfficeUtils::COfficeUtils), NULL, CLSCTX_INPROC_SERVER, __uuidof(AVSOfficeUtils::IOfficeUtils),(void**)&pOfficeUtils))
+						return S_FALSE;
+
+					// архивируем
+					BSTR bstrSrcPath = m_strTempDirectory.AllocSysString();
+					pOfficeUtils->CompressFileOrDirectory( bstrSrcPath, bsFilePath, -1 );
+					SysFreeString(bstrSrcPath);
+					RELEASEINTERFACE(pOfficeUtils);
+					return S_OK;
+				}
+#endif
+
 				// пптх
 				CPPTXWriter oWriter;
 
@@ -606,6 +644,7 @@ public:
 		}
 		if (S_OK != hRes)
 		{
+#ifndef USE_ODF_FILE
 			if (SUCCEEDED(CoCreateInstance(ODPFile::CLSID_CAVSOfficeODPFile, NULL, CLSCTX_ALL, ODPFile::IID_IAVSOfficeODPFile, (void**)&m_pODPFile)))
 			{
 				m_pODPFile->put_TempDirectory(bstrTemp);
@@ -679,6 +718,78 @@ public:
 
 				RELEASEINTERFACE(m_pODPFile);
 			}
+#else
+			ODFFile::IOfficeOdfFile* pODPFile = NULL;
+			CoCreateInstance(ODFFile::CLSID_COfficeOdfFile, NULL, CLSCTX_ALL, ODFFile::IID_IOfficeOdfFile, (void**)&pODPFile);
+
+			CString strOptions = _T("<Options><onlyPresentation></onlyPresentation></Options>");
+			BSTR bsOptions = strOptions.AllocSysString();
+
+			CString strTemp2 = m_strTempDirectoryFile + "\\OpenFolder\\";
+			AVSOfficeUtils::IOfficeUtilsPtr pOfficeUtils;
+			pOfficeUtils.CreateInstance(AVSOfficeUtils::CLSID_COfficeUtils);
+			BSTR bsTemp2 = strTemp2.AllocSysString();
+
+			CreateDirectoryW(strTemp2, NULL);
+			HRESULT hr = pOfficeUtils->ExtractToDirectory(bsSrc, bsTemp2, NULL, 0);
+			
+			CString strTemp1 = m_strTempDirectoryFile + "\\WritePPTX\\";
+			CreateDirectory(strTemp1, NULL);
+			BSTR bsTemp1 = strTemp1.AllocSysString();
+			HRESULT hRes = pODPFile->LoadFromFile(bsTemp2, bsTemp1, bsOptions);
+			SysFreeString(bsOptions);
+			SysFreeString(bsTemp2);
+
+			RELEASEINTERFACE(pODPFile);
+
+			SHFILEOPSTRUCTW shfos;
+			ZeroMemory(&shfos, sizeof(shfos));
+			shfos.wFunc = FO_DELETE;
+			CStringW _local = strTemp2 + L"*.*";
+			_local.AppendChar(0);
+			_local.AppendChar(0);
+			shfos.pFrom = _local.GetString();
+			shfos.fFlags = FOF_SILENT + FOF_NOCONFIRMATION;
+
+			SHFileOperationW(&shfos);
+			RemoveDirectoryW(strTemp2);
+
+			PPTXFile::IAVSOfficePPTXFile2* pPPTX2 = NULL;
+			CoCreateInstance(PPTXFile::CLSID_CAVSOfficePPTXFile, NULL, CLSCTX_ALL, PPTXFile::IID_IAVSOfficePPTXFile2, (void**)&pPPTX2);
+
+			BSTR bsMediaDir = m_strMediaDirectory.AllocSysString();
+			BSTR bsFontDir = m_strFontDirectory.AllocSysString();
+			VARIANT_BOOL vbSystem = (m_bIsUseSystemFonts == TRUE) ? VARIANT_TRUE : VARIANT_FALSE;
+
+			pPPTX2->SetMediaDir(bsMediaDir);
+			pPPTX2->SetFontDir(bsFontDir);
+			pPPTX2->SetUseSystemFonts(vbSystem);
+
+			SysFreeString(bsMediaDir);
+			SysFreeString(bsFontDir);
+
+			if (_T("") != m_strEmbeddedFontsDirectory)
+			{	
+				PPTXFile::IAVSOfficePPTXFile* pPPTX1 = NULL;
+				pPPTX2->QueryInterface(PPTXFile::IID_IAVSOfficePPTXFile, (void**)&pPPTX1);
+
+				if (NULL != pPPTX1)
+				{
+					VARIANT var;
+					var.vt = VT_BSTR;
+					var.bstrVal = m_strEmbeddedFontsDirectory.AllocSysString();
+
+					pPPTX1->SetAdditionalParam(L"EmbeddedFontsDirectory", var);
+
+					SysFreeString(var.bstrVal);
+					RELEASEINTERFACE(pPPTX1);
+				}
+			}
+
+			pPPTX2->OpenDirectoryToPPTY(bsTemp1, bsDst);
+			SysFreeString(bsTemp1);
+			RELEASEINTERFACE(pPPTX2);
+#endif
 		}
 
 		SysFreeString(bstrTemp);

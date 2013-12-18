@@ -107,6 +107,19 @@ public:
     std::vector<slide_content_ptr> slides_;
     rels_files * rels_;
 };
+/// \class  xl_charts_files
+class ppt_charts_files  : public element
+{
+public:
+	ppt_charts_files(){}
+
+    void add_chart(chart_content_ptr chart);
+	virtual void write(const std::wstring & RootPath);
+    
+    std::vector<chart_content_ptr> charts_;
+
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 class ppt_files : public element
 {
 public:
@@ -125,6 +138,7 @@ public:
 	void add_slideMaster(slide_content_ptr sheet);
 	
 	void set_media(mediaitems & _Mediaitems);    
+    void add_charts(chart_content_ptr chart);
 
 
 private:
@@ -134,6 +148,7 @@ private:
 	slideLayouts_files slideLayouts_files_;    
 	slideMasters_files slideMasters_files_;
 	
+    ppt_charts_files charts_files_;
 	//slides_files notesSlides_files_;
 	//slides_files notesMasters_files_;
 	//slides_files handoutMasters_files_;

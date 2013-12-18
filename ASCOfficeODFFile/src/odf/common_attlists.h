@@ -727,11 +727,11 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    _CP_OPT(style_ref) style_name_;
+    _CP_OPT(style_ref)		style_name_;
     _CP_OPT(std::wstring) number_language_;
     _CP_OPT(std::wstring) number_country_;
     _CP_OPT(std::wstring) number_title_;
-    _CP_OPT(bool) number_volatile_;
+    _CP_OPT(bool)			number_volatile_;
     _CP_OPT(std::wstring) number_transliteration_format_;
     _CP_OPT(std::wstring) number_transliteration_language_;
     _CP_OPT(std::wstring) number_transliteration_country_;

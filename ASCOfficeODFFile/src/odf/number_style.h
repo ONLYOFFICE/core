@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_NUMBER_STYLE_H_
-#define _CPDOCCORE_ODF_NUMBER_STYLE_H_
+#pragma once
 
 #include <iosfwd>
 #include <cpdoccore/CPOptional.h>
@@ -16,12 +15,14 @@ class number_style_base : public office_element
 {
 public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
-    void xlsx_convert_impl(oox::xlsx_conversion_context & Context);
-    CPDOCCORE_DEFINE_VISITABLE();
+	void xlsx_convert_impl(oox::xlsx_conversion_context & Context);
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 private:
     virtual void add_text(const std::wstring &) {}
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 public:
@@ -29,7 +30,8 @@ public:
 
 private:
     common_data_style_attlist common_data_style_attlist_;
-    office_element_ptr style_text_properties_;
+   
+	office_element_ptr style_text_properties_;
     office_element_ptr_array content_;
     office_element_ptr_array style_map_;
 };
@@ -97,6 +99,9 @@ public:
     static const ElementType type = typeNumberDataStyle;
     CPDOCCORE_DEFINE_VISITABLE();
     CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_;
+
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	_CP_OPT(bool) number_automatic_order_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(number_date_style);
@@ -129,7 +134,11 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeNumberTimeStyle;
     CPDOCCORE_DEFINE_VISITABLE();
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_;                    
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
+
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	_CP_OPT(bool) number_automatic_order_;
+
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(number_time_style);
@@ -591,5 +600,3 @@ CP_REGISTER_OFFICE_ELEMENT2(number_fraction);
 
 }
 }
-
-#endif

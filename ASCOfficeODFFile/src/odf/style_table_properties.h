@@ -30,7 +30,9 @@ class table_format_properties
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     bool add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
-    void docx_convert(oox::docx_conversion_context & Context);
+   
+	void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context);
 
 private:
     // 15.8.1 style:width
@@ -108,6 +110,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -146,8 +149,10 @@ public:
     static const ElementType type = typeStyleTableColumnProperties;
 
     CPDOCCORE_DEFINE_VISITABLE();
-    virtual void docx_convert(oox::docx_conversion_context & Context);
+  
+	virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -165,7 +170,9 @@ class style_table_row_properties_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void docx_convert(oox::docx_conversion_context & Context);
+   
+	void docx_convert(oox::docx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
     _CP_OPT(length) style_row_height_;
@@ -191,6 +198,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -209,7 +217,9 @@ class style_table_cell_properties_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void docx_convert(oox::docx_conversion_context & Context);
+   
+	void docx_convert(oox::docx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context);
 
     void apply_from(const style_table_cell_properties_attlist & Other);
 
@@ -306,6 +316,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );

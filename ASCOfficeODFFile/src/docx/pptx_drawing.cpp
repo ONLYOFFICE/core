@@ -145,8 +145,9 @@ void pptx_serialize_chart(std::wostream & strm, _pptx_drawing const & val)
                 }
 
                 CP_XML_NODE(L"p:cNvGraphicFramePr");
+				CP_XML_NODE(L"p:nvPr");
             } 
-			oox_serialize_xfrm(CP_XML_STREAM(),val);
+			oox_serialize_xfrm(CP_XML_STREAM(),val,L"p");
 
 			//oox_serialize_ln(CP_XML_STREAM(),val.additional);
 
@@ -157,9 +158,49 @@ void pptx_serialize_chart(std::wostream & strm, _pptx_drawing const & val)
 					CP_XML_ATTR(L"uri", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
 					CP_XML_NODE(L"c:chart")
 					{
+						CP_XML_ATTR(L"xmlns:c", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
 						CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 						CP_XML_ATTR(L"r:id", val.chartId);
-						CP_XML_ATTR(L"xmlns:c", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
+					}
+				}
+			}               
+		} // p:graphicFrame
+    }  // CP_XML_WRITER  
+}
+
+void pptx_serialize_table(std::wostream & strm, _pptx_drawing const & val)
+{
+    CP_XML_WRITER(strm)    
+    {
+		CP_XML_NODE(L"p:graphicFrame")
+        {                  
+            CP_XML_NODE(L"p:nvGraphicFramePr")
+            {
+                CP_XML_NODE(L"p:cNvPr")
+                {
+                    CP_XML_ATTR(L"id", val.id);
+                    CP_XML_ATTR(L"name", val.name);
+                }
+
+                CP_XML_NODE(L"p:cNvGraphicFramePr");
+				CP_XML_NODE(L"p:nvPr");
+            } 
+			oox_serialize_xfrm(CP_XML_STREAM(),val,L"p");
+
+			//oox_serialize_ln(CP_XML_STREAM(),val.additional);
+
+            CP_XML_NODE(L"a:graphic")
+            {                   
+                CP_XML_NODE(L"a:graphicData")
+				{
+					CP_XML_ATTR(L"uri", L"http://schemas.openxmlformats.org/drawingml/2006/table");
+					
+					_CP_OPT(std::wstring) strTableContent;
+					odf::GetProperty(val.additional,L"table-content",strTableContent);
+
+					if (strTableContent)
+					{
+						CP_XML_STREAM() << strTableContent.get();
 					}
 				}
 			}               
@@ -180,6 +221,10 @@ void pptx_serialize(std::wostream & strm, _pptx_drawing const & val)
 	else if (val.type == mediaitems::typeChart)
 	{
 		pptx_serialize_chart(strm,val);
+	}
+	else if (val.type == mediaitems::typeTable)
+	{
+		pptx_serialize_table(strm,val);
 	}
 }
 

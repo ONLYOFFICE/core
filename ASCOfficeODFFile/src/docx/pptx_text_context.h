@@ -50,6 +50,9 @@ public:
 	void start_hyperlink();
 	void end_hyperlink(std::wstring hId);
 
+    void start_field(int type, const std::wstring & styleName);//1 - datetime, 2 -pagecount, 3 - pagenumber - <a:fld><a:t></a:fld>
+    void end_field();
+
 	bool in_list();
 
     void start_list(const std::wstring & StyleName, bool Continue = false);

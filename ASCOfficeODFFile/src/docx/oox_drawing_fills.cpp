@@ -201,6 +201,10 @@ void oox_serialize_hatch_fill(std::wostream & strm, const _oox_fill & val)
 		CP_XML_NODE(L"a:pattFill")
 		{
 			CP_XML_ATTR(L"prst",val.hatch->preset);
+			CP_XML_NODE(L"a:fgClr")//опять для ms важно что этот цвет перед back
+			{
+				oox_serialize_srgb(CP_XML_STREAM(),val.hatch->color_ref,val.opacity);
+			}	
 			if (val.hatch->color_back_ref)
 			{
 				CP_XML_NODE(L"a:bgClr")
@@ -208,10 +212,7 @@ void oox_serialize_hatch_fill(std::wostream & strm, const _oox_fill & val)
 					oox_serialize_srgb(CP_XML_STREAM(),*val.hatch->color_back_ref,val.opacity);
 				}
 			}
-			CP_XML_NODE(L"a:fgClr")
-			{
-				oox_serialize_srgb(CP_XML_STREAM(),val.hatch->color_ref,val.opacity);
-			}
+
 		}
 	}
 }

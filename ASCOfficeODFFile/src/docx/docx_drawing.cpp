@@ -260,9 +260,9 @@ void docx_serialize_chart(std::wostream & strm, _docx_drawing const & val)
 				CP_XML_ATTR(L"uri", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
 				CP_XML_NODE(L"c:chart")
 				{
-					CP_XML_ATTR(L"r:id", val.chartId);
-					CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 					CP_XML_ATTR(L"xmlns:c", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
+					CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+					CP_XML_ATTR(L"r:id", val.chartId);
 				}
 			}
 		}               

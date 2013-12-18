@@ -16,11 +16,14 @@ namespace odf {
 
 void draw_page_attr::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"draw:name", draw_name_);
-    CP_APPLY_ATTR(L"draw:style-name", draw_style_name_);
-    CP_APPLY_ATTR(L"presentation:presentation-page-layout-name", page_layout_name_);
-    CP_APPLY_ATTR(L"draw:master-page-name", master_page_name_);
-
+    CP_APPLY_ATTR(L"draw:name",			draw_name_);
+    CP_APPLY_ATTR(L"draw:style-name",	draw_style_name_);
+    
+	CP_APPLY_ATTR(L"presentation:presentation-page-layout-name", page_layout_name_);
+    CP_APPLY_ATTR(L"draw:master-page-name",				master_page_name_);
+    
+	CP_APPLY_ATTR(L"presentation:use-date-time-name",	use_date_time_name_);
+    CP_APPLY_ATTR(L"presentation:use-footer-name",		use_footer_name_);
 
 }
 

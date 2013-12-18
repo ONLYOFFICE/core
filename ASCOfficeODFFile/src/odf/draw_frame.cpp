@@ -158,7 +158,8 @@ void draw_frame::add_child_element( xml::sax * Reader, const ::std::wstring & Ns
         CP_CHECK_NAME(L"draw", L"object-ole") ||
         CP_CHECK_NAME(L"draw", L"applet") ||
         CP_CHECK_NAME(L"draw", L"floating-frame") ||
-        CP_CHECK_NAME(L"draw", L"plugin") 
+        CP_CHECK_NAME(L"draw", L"plugin") ||
+        CP_CHECK_NAME(L"table", L"table") 
         )
     {
         CP_CREATE_ELEMENT(content_);

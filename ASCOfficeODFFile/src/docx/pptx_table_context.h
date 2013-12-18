@@ -8,12 +8,12 @@
 namespace cpdoccore { 
 namespace oox {
 
-class docx_conversion_context;
+class pptx_conversion_context;
 
-class docx_table_state
+class pptx_table_state
 {
 public:
-    docx_table_state(docx_conversion_context & Context, const std::wstring & StyleName);
+    pptx_table_state(pptx_conversion_context & Context, const std::wstring & StyleName);
 
     std::wstring current_style() const { return table_style_; }
     void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName);
@@ -25,7 +25,7 @@ public:
     void start_cell();
     void end_cell();
 
-    bool start_covered_cell(docx_conversion_context & Context);
+    bool start_covered_cell(pptx_conversion_context & Context);
     void end_covered_cell();
 
     int current_column() const;
@@ -37,7 +37,7 @@ public:
     unsigned int current_rows_spanned(unsigned int Column) const;
 
 private:
-    docx_conversion_context & context_;    
+    pptx_conversion_context & context_;    
     std::wstring table_style_;
     std::list<std::wstring> table_row_style_stack_;
     std::wstring default_row_cell_style_name_;
@@ -51,15 +51,18 @@ private:
     
 };
 
-class docx_table_context : boost::noncopyable
+class pptx_table_context : boost::noncopyable
 {
 public:
-    docx_table_context(docx_conversion_context & Context) : context_(Context)
+    pptx_table_context(pptx_conversion_context & Context) : context_(Context)
     {}
+
+	std::wstringstream & tableData(){return output_stream_;}
 
     void start_table(const std::wstring & StyleName)
     {
-        table_state_stack_.push_back(docx_table_state(context_, StyleName));     
+		output_stream_.str(std::wstring(L""));
+        table_state_stack_.push_back(pptx_table_state(context_, StyleName));     
     }
 
     void end_table()
@@ -107,7 +110,7 @@ public:
         return table_state_stack_.back().end_cell();
     }
 
-    bool start_covered_cell(docx_conversion_context & Context)
+    bool start_covered_cell(pptx_conversion_context & Context)
     {
         return table_state_stack_.back().start_covered_cell(Context);
     }
@@ -153,8 +156,9 @@ public:
     }
 
 private:
-    docx_conversion_context & context_;
-    std::list<docx_table_state> table_state_stack_;
+	std::wstringstream output_stream_;
+    pptx_conversion_context & context_;
+    std::list<pptx_table_state> table_state_stack_;
 };
 
 

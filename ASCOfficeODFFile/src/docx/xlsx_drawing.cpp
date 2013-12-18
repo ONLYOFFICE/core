@@ -186,7 +186,7 @@ void xlsx_serialize_chart(std::wostream & strm, _xlsx_drawing const & val)
 
                 CP_XML_NODE(L"xdr:cNvGraphicFramePr");
             } 
-			oox_serialize_xfrm(CP_XML_STREAM(),val);
+			oox_serialize_xfrm(CP_XML_STREAM(),val,L"xdr");
 
 			//oox_serialize_ln(CP_XML_STREAM(),val.additional);
 
@@ -197,9 +197,9 @@ void xlsx_serialize_chart(std::wostream & strm, _xlsx_drawing const & val)
 					CP_XML_ATTR(L"uri", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
 					CP_XML_NODE(L"c:chart")
 					{
+						CP_XML_ATTR(L"xmlns:c", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
 						CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 						CP_XML_ATTR(L"r:id", val.chartId);
-						CP_XML_ATTR(L"xmlns:c", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
 					}
 				}
 			}               

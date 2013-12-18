@@ -94,7 +94,18 @@ void number_style_base::add_attributes( const xml::attributes_wc_ptr & Attribute
 {
     common_data_style_attlist_.add_attributes(Attributes);
 }
-
+void number_date_style::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"number:automatic-order", number_automatic_order_);
+	
+	number_style_base::add_attributes(Attributes);
+}
+void number_time_style::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"number:automatic-order", number_automatic_order_);
+	
+	number_style_base::add_attributes(Attributes);
+}
 void number_style_base::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     if CP_CHECK_NAME(L"style", L"text-properties")

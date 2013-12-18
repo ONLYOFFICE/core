@@ -111,7 +111,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 
 		instances.push_back(baseStyleInst);
 	}
-	else if (grStyleInst)//обычная векторная фигура
+	if (grStyleInst)//обычная векторная фигура
 	{		
 		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
 		if (defaultStyle)instances.push_back(defaultStyle);
@@ -157,7 +157,6 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
     }
 
 	Context.get_text_context().end_base_style();
-    //Context.get_slide_context().end_drawing();    
 }
 
 void draw_image::pptx_convert(oox::pptx_conversion_context & Context)
@@ -190,10 +189,6 @@ void draw_chart::pptx_convert(oox::pptx_conversion_context & Context)
     const std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
     Context.get_slide_context().start_chart(href);
 
-    //BOOST_FOREACH(office_element_ptr const & elm, content_)
-    //{
-    //     elm->pptx_convert(Context);
-    //}
 	int i=0;
 	int size = content_.size();
 	while(true)

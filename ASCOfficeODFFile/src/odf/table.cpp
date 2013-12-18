@@ -591,16 +591,23 @@ const wchar_t * table_shapes::name = L"shapes";
 
 void table_shapes::docx_convert(oox::docx_conversion_context & Context)
 {
-    //BOOST_FOREACH(office_element_ptr const & elm, content_)
-    //{
-    //    elm->docx_convert(Context);
-    //}
 	int i=0;
 	int size = content_.size();
 	while(true)
     {
 		if (i>=size)break;
         content_[i]->docx_convert(Context);
+		i++;
+    }
+}
+void table_shapes::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	int i=0;
+	int size = content_.size();
+	while(true)
+    {
+		if (i>=size)break;
+        content_[i]->pptx_convert(Context);
 		i++;
     }
 }

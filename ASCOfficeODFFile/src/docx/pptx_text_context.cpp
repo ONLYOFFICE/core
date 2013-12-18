@@ -328,7 +328,7 @@ std::wstring pptx_text_context::Impl::dump_paragraph()
 
 				CP_XML_STREAM() << run_.str();
 
-				CP_XML_NODE(L"a:endParaRPr");
+				//CP_XML_NODE(L"a:endParaRPr");
 				//- сохранение/не сохранение стиля на последующие параграфы
 				//{
 				//	CP_XML_ATTR(L"dirty", 0);
@@ -356,7 +356,7 @@ void pptx_text_context::Impl::dump_run()
 				
 				CP_XML_NODE(L"a:t")
 				{
-					CP_XML_ATTR(L"xml:space", L"preserve"); 
+				//	CP_XML_ATTR(L"xml:space", L"preserve"); 
 					CP_XML_STREAM() << content;
                 }
 	         }
@@ -624,10 +624,19 @@ std::wstring pptx_text_context::end_object()
 {
 	return impl_->end_object();
 }
-
 styles_context & pptx_text_context::get_styles_context() 
 { 
 	return  impl_->get_styles_context() ; 
 }
+void pptx_text_context::start_field(int type, const std::wstring & styleName)
+{
+	//todooo
+	//1 - datetime, 2 -pagecount, 3 - pagenumber - <a:fld><a:t></a:fld>
+}
+void pptx_text_context::end_field()
+{
+
+}
+
 }
 }

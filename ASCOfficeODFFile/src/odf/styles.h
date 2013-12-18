@@ -53,9 +53,11 @@ class style_content : noncopyable
 {
 public:
     void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
-    void docx_convert(oox::docx_conversion_context & Context);
-    void xlsx_convert(oox::xlsx_conversion_context & Context);
     
+	void docx_convert(oox::docx_conversion_context & Context);
+    void xlsx_convert(oox::xlsx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context);
+   
     style_text_properties * get_style_text_properties() const;
     style_paragraph_properties * get_style_paragraph_properties() const;
     style_graphic_properties * get_style_graphic_properties() const;

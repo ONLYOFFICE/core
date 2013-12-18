@@ -70,9 +70,7 @@ HRESULT ConvertOO2OOX(const std::wstring &ext, const std::wstring & srcPath, con
 		case 3:
 			hr = ConvertOdp2Pptx(inputDoc,dstPath);
 			break;
-
 		}
-
 	}
 	catch(...)
 	{

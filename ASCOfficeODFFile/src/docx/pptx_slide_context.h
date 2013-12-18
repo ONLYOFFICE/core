@@ -44,7 +44,11 @@ public:
 	void start_chart(std::wstring const & path);
     void end_chart();
 
-    void start_shape(int type);
+ 	void start_table();
+	//void set_table_content(std::wstring & str);
+    void end_table();
+
+	void start_shape(int type);
     void end_shape();
 	
 	bool empty() const;
@@ -62,9 +66,11 @@ public:
 private:
 	void process_common_properties(drawing_object_description& pic,_pptx_drawing & drawing);
 	void default_set();
-    void process_shapes();
+    
+	void process_shapes();
     void process_images();
 	void process_charts();
+	void process_tables();
 
 	int hlinks_size_;
 	

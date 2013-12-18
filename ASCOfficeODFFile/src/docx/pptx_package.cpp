@@ -231,6 +231,33 @@ void theme_elements::write(const std::wstring & RootPath)
 
 
 }
+////////////////////////////
+void ppt_charts_files::add_chart(chart_content_ptr chart)
+{
+    charts_.push_back(chart);
+}
+void ppt_charts_files::write(const std::wstring & RootPath)
+{
+    fs::wpath path = fs::wpath(RootPath) / L"charts";
+    fs::create_directory(path);
+
+    size_t count = 0;
+
+    BOOST_FOREACH(const chart_content_ptr & item, charts_)
+    {
+        if (item)
+        {
+            count++;
+            const std::wstring fileName = std::wstring(L"chart") + boost::lexical_cast<std::wstring>(count) + L".xml";
+            content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+           
+			static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
+            contentTypes.add_override(std::wstring(L"/ppt/charts/") + fileName, kWSConType);
+
+            package::simple_element(fileName, item->str()).write(BOOST_STRING_PATH(path));
+        }
+    }
+}
 ////////////////////////////////////////////
 ppt_files::ppt_files()
 {
@@ -278,7 +305,10 @@ void ppt_files::write(const std::wstring & RootPath)
         media_->set_main_document(get_main_document());
         media_->write(BOOST_STRING_PATH(path));
     }
-
+    {
+        charts_files_.set_main_document(get_main_document());
+        charts_files_.write(BOOST_STRING_PATH(path));
+    }
 
     rels_files_.write(BOOST_STRING_PATH(path));
 }
@@ -321,7 +351,10 @@ void ppt_files::set_media(mediaitems & _Mediaitems)
 {
     media_ = element_ptr( new media(_Mediaitems) );
 }
-
+void ppt_files::add_charts(chart_content_ptr chart)
+{
+    charts_files_.add_chart(chart);
+}
 
 }
 }

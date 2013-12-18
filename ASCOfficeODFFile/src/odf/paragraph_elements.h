@@ -545,6 +545,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
    
 	void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -571,6 +572,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
   
 	void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -600,6 +602,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
    
 	void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -629,6 +632,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
     
 	void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -639,7 +643,11 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
-    // TODO: attributes
+	_CP_OPT(std::wstring)		style_data_style_name_;
+
+	_CP_OPT(bool)				text_fixed_;
+	_CP_OPT(std::wstring)		text_date_value_;//with format
+
     office_element_ptr_array text_;
     
 };
@@ -658,6 +666,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
    
 	void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -667,8 +676,11 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
-    // TODO: attributes
-    office_element_ptr_array text_;
+	_CP_OPT(std::wstring)		style_data_style_name_;
+	_CP_OPT(bool)				text_fixed_;
+	_CP_OPT(std::wstring)		text_time_value_;//with format
+
+    office_element_ptr_array	text_;
     
 };
 

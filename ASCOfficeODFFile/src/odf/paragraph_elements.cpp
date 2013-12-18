@@ -718,6 +718,14 @@ void text_placeholder::docx_convert(oox::docx_conversion_context & Context)
     }
 }
 
+void text_placeholder::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    BOOST_FOREACH(const office_element_ptr & elm, content_)
+    {
+        elm->pptx_convert(Context);
+    }
+}
+
 // text:page-number
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * text_page_number::ns = L"text";
@@ -758,6 +766,15 @@ void text_page_number::docx_convert(oox::docx_conversion_context & Context)
     }
     Context.finish_run();
     strm << L"<w:r><w:fldChar w:fldCharType=\"end\" /></w:r>";
+}
+void text_page_number::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    Context.get_text_context().start_field(3, L"");
+    BOOST_FOREACH(const office_element_ptr & elm, text_)
+    {
+        elm->pptx_convert(Context);
+    }
+    Context.get_text_context().end_field();
 }
 
 // text:page-count
@@ -801,6 +818,16 @@ void text_page_count::docx_convert(oox::docx_conversion_context & Context)
     Context.finish_run();
     strm << L"<w:r><w:fldChar w:fldCharType=\"end\" /></w:r>";
 }
+void text_page_count::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    Context.get_text_context().start_field(2, L"");
+    BOOST_FOREACH(const office_element_ptr & elm, text_)
+    {
+        elm->pptx_convert(Context);
+    }
+    Context.get_text_context().end_field();
+
+}
 
 // text:date
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -815,7 +842,9 @@ const wchar_t * text_date::name = L"date";
 
 void text_date::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    // TODO
+	CP_APPLY_ATTR(L"style:data-style-name", style_data_style_name_);
+    CP_APPLY_ATTR(L"text:fixed", text_fixed_);
+    CP_APPLY_ATTR(L"text:date-value", text_date_value_);
 }
 
 void text_date::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
@@ -838,7 +867,15 @@ void text_date::docx_convert(oox::docx_conversion_context & Context)
     }
     Context.finish_run();
 }
-
+void text_date::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    Context.get_text_context().start_field(1,style_data_style_name_.get_value_or(L""));
+    BOOST_FOREACH(const office_element_ptr & elm, text_)
+    {
+        elm->pptx_convert(Context);
+    }
+    Context.get_text_context().end_field();
+}
 // text:time
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * text_time::ns = L"text";
@@ -852,7 +889,10 @@ const wchar_t * text_time::name = L"time";
 
 void text_time::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    // TODO
+	CP_APPLY_ATTR(L"style:data-style-name", style_data_style_name_);
+
+    CP_APPLY_ATTR(L"text:fixed", text_fixed_);
+    CP_APPLY_ATTR(L"text:time-value", text_time_value_);
 }
 
 void text_time::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
@@ -874,6 +914,15 @@ void text_time::docx_convert(oox::docx_conversion_context & Context)
         elm->docx_convert(Context);
     }
     Context.finish_run();
+}
+void text_time::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    Context.get_text_context().start_field(1, style_data_style_name_.get_value_or(L""));
+    BOOST_FOREACH(const office_element_ptr & elm, text_)
+    {
+        elm->pptx_convert(Context);
+    }
+    Context.get_text_context().end_field();
 }
 
 // text:time

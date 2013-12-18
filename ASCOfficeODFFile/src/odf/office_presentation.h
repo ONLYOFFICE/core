@@ -31,16 +31,11 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 public:
-    //  TODO: office-text-content-prelude:
-    //  TODO: office-forms
-    //  TODO: text-tracked-changes
-    //  TODO: text-decls
-    //  TODO: table-decls
 
-    office_element_ptr_array content_;
-    // TODO: text-page-sequence
-    // TODO: office-text-content-epilogue:
-    //  TODO: table-functions
+    office_element_ptr_array date_time_decl_;
+    office_element_ptr_array footer_decl_;
+  
+	office_element_ptr_array pages_;
 
 };
 

@@ -35,6 +35,7 @@ pptx_conversion_context(::cpdoccore::oox::package::pptx_document * outputDocumen
 	output_document_(outputDocument)
 	,odf_document_(odfDocument)
 	,pptx_text_context_(odf_document_->odf_context(),*this)
+	,pptx_table_context_(*this)
 	,pptx_slide_context_(*this/*, pptx_text_context_*/)
 {
 }
@@ -194,7 +195,8 @@ void pptx_conversion_context::end_document()
 
         output_document_->get_ppt_files().add_slideLayout(content);//slideMaster.xml
 	}
-/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+	//размеры страниц в презентации
     odf::odf_read_context & context =  root()->odf_context();
     odf::page_layout_container & pageLayouts = context.pageLayoutContainer();
 	if ((pageLayouts.master_pages().size()>0) && (pageLayouts.master_pages()[0]->style_master_page_attlist_.style_name_))//default
@@ -206,10 +208,23 @@ void pptx_conversion_context::end_document()
 		
 		if (pages_layouts)pages_layouts->pptx_convert(*this);
 	}
-
+		/////////////////////////////////////////////////////////////////////////////////////////////
 	pptx_serialize_size(current_presentation().notesSlidesSize(),6858000,9144000,L"p:notesSz");
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//добавляем диаграммы
+
+	count = 0;
+    BOOST_FOREACH(const oox_chart_context_ptr& chart, charts_)
+    {
+		count++;
+		package::chart_content_ptr content = package::chart_content::create();
+
+		chart->write_to(content->content());
+
+		output_document_->get_ppt_files().add_charts(content);
+	
+	}
 	output_document_->get_ppt_files().set_presentation(presentation_);
        
 	output_document_->get_ppt_files().set_themes(theme_);

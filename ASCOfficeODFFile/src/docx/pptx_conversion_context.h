@@ -15,6 +15,7 @@
 //#include "xlsx_defined_names.h"
 //#include "xlsx_table_metrics.h"
 #include "oox_chart_context.h"
+#include "pptx_table_context.h"
 
 #include "mediaitems.h"
 
@@ -89,6 +90,8 @@ public:
 	oox_chart_context & current_chart();
 	pptx_text_context & get_text_context() { return pptx_text_context_; }
 
+	pptx_table_context & get_table_context(){return pptx_table_context_;}
+
  //   num_format_context & get_num_format_context() { return num_format_context_; }
 
  //   xlsx_defined_names & get_xlsx_defined_names() { return xlsx_defined_names_; }
@@ -121,14 +124,15 @@ private:
   
     odf::odf_document * odf_document_;    
     
-    pptx_slide_context pptx_slide_context_;
-	pptx_text_context pptx_text_context_;
-
-	std::vector<pptx_xml_slide_ptr> slides_;
-	std::vector<pptx_xml_slideMaster_ptr> slideMasters_;
-	std::vector<pptx_xml_slideLayout_ptr> slideLayouts_;
-
+    pptx_slide_context	pptx_slide_context_;
+	pptx_text_context	pptx_text_context_;
+	pptx_table_context	pptx_table_context_;
+	
 	std::vector<oox_chart_context_ptr> charts_;
+
+	std::vector<pptx_xml_slide_ptr>			slides_;
+	std::vector<pptx_xml_slideMaster_ptr>	slideMasters_;
+	std::vector<pptx_xml_slideLayout_ptr>	slideLayouts_;
 	
 	pptx_xml_theme_ptr theme_;
 	pptx_xml_presentation presentation_;

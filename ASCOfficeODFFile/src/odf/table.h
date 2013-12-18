@@ -135,8 +135,10 @@ class table_columns
 {
 public:
     void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
-    void docx_convert(oox::docx_conversion_context & Context);
+   
+	void docx_convert(oox::docx_conversion_context & Context);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
     office_element_ptr table_table_columns_;
@@ -166,6 +168,7 @@ public:
 
     void docx_convert(oox::docx_conversion_context & Context);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context);
 
     static _CP_PTR(table_columns_no_group) create();
     
@@ -188,6 +191,7 @@ public:
 
     void docx_convert(oox::docx_conversion_context & Context);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
 
@@ -223,8 +227,10 @@ public:
     static const ElementType type = typeTableTableColumn;
 
     CPDOCCORE_DEFINE_VISITABLE();
-    virtual void docx_convert(oox::docx_conversion_context & Context) ;
+ 
+	virtual void docx_convert(oox::docx_conversion_context & Context) ;
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -251,6 +257,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -278,6 +285,7 @@ public:
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -316,6 +324,7 @@ public:
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
     table_table_column_group() 
     {
@@ -348,6 +357,7 @@ public:
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -372,10 +382,9 @@ public:
     ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
     void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
     
-    bool docx_convert(oox::docx_conversion_context & Context) ;
-    
-    /// \return shared string id
-    int xlsx_convert(oox::xlsx_conversion_context & Context) ;
+    bool	docx_convert(oox::docx_conversion_context & Context) ;
+    int		xlsx_convert(oox::xlsx_conversion_context & Context) ;
+    bool	pptx_convert(oox::pptx_conversion_context & Context) ;
 
 private:
     // TODO table-cell-range-source
@@ -401,6 +410,7 @@ public:
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -435,6 +445,7 @@ public:
     table_covered_table_cell() {empty_ = true; }
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
 
 public:
@@ -466,8 +477,10 @@ public:
     static const ElementType type = typeTableTableRows;
 
     CPDOCCORE_DEFINE_VISITABLE();
-    virtual void docx_convert(oox::docx_conversion_context & Context) ;
+  
+	virtual void docx_convert(oox::docx_conversion_context & Context) ;
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
   
 	table_table_rows() 
 	{
@@ -498,8 +511,10 @@ public:
     static const ElementType type = typeTableTableHeaderRows;
 
     CPDOCCORE_DEFINE_VISITABLE();
-    virtual void docx_convert(oox::docx_conversion_context & Context) ;
+   
+	virtual void docx_convert(oox::docx_conversion_context & Context) ;
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -523,8 +538,10 @@ class table_rows
 public:
     ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
     void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
-    void docx_convert(oox::docx_conversion_context & Context);
+  
+	void docx_convert(oox::docx_conversion_context & Context);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
     office_element_ptr			table_table_rows_;
@@ -557,7 +574,8 @@ public:
   
 	void docx_convert(oox::docx_conversion_context & Context);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
-    
+    void pptx_convert(oox::pptx_conversion_context & Context) ;
+   
 public:
     table_rows table_rows_1_;
     
@@ -575,8 +593,10 @@ public:
     table_rows_and_groups();
     ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
     void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
-    void docx_convert(oox::docx_conversion_context & Context);
+  
+	void docx_convert(oox::docx_conversion_context & Context);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
     office_element_ptr_array content_;
@@ -645,6 +665,7 @@ public:
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -679,6 +700,7 @@ public:
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );

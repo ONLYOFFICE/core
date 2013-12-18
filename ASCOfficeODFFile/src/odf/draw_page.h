@@ -19,10 +19,14 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-	_CP_OPT(std::wstring)	draw_name_;
+	_CP_OPT(std::wstring)		draw_name_;
 	_CP_OPT(std::wstring)		draw_style_name_;
+
 	_CP_OPT(std::wstring)		page_layout_name_;
 	_CP_OPT(std::wstring)		master_page_name_;
+
+	_CP_OPT(std::wstring)		use_footer_name_;
+	_CP_OPT(std::wstring)		use_date_time_name_;
 };
 /// \class  draw_page
 /// \brief  draw:page

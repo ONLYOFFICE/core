@@ -42,7 +42,8 @@ struct _oox_drawing
 	mediaitems::Type type;
 
 	size_t id;
-    std::wstring name;
+    
+	std::wstring name;
 
     size_t x, y;
     size_t cx, cy;
@@ -56,7 +57,7 @@ struct _oox_drawing
   
 	std::vector<odf::_property> additional;
 
-	friend void oox_serialize_xfrm(	std::wostream & _Wostream, _oox_drawing const & val); 
+	friend void oox_serialize_xfrm(	std::wostream & _Wostream, _oox_drawing const & val,std::wstring name_space = L"a"); 
 	friend void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val);
 	friend void oox_serialize_ln	(std::wostream & _Wostream, const std::vector<odf::_property> & val);
 	friend void oox_serialize_hlink	(std::wostream & _Wostream, const std::vector<_hlink_desc> & val);

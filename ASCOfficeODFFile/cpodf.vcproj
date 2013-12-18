@@ -1627,6 +1627,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\docx\pptx_table_context.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\docx\pptx_table_context.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\docx\pptx_text_context.cpp"
 					>
 				</File>
@@ -1962,6 +1970,10 @@
 		</File>
 		<File
 			RelativePath=".\src\odf\table_named_expressions.h"
+			>
+		</File>
+		<File
+			RelativePath=".\src\odf\table_pptx.cpp"
 			>
 		</File>
 		<File

@@ -32,6 +32,7 @@ public:
 	std::vector<drawing_object_description> images_;
 	std::vector<drawing_object_description> charts_;
 	std::vector<drawing_object_description> shapes_;
+	std::vector<drawing_object_description> tables_;
 
     void add_drawing(_pptx_drawing const & d,
         bool isInternal,
@@ -61,6 +62,7 @@ public:
 		images_.clear();
 		charts_.clear();
 		shapes_.clear();
+		tables_.clear();
 		rId_ = 1;
 
 		pptx_drawings_ = pptx_drawings::create();
@@ -207,6 +209,10 @@ void pptx_slide_context::start_image(std::wstring const & path)
 	impl_->object_description_.xlink_href_ = path; 
 	impl_->object_description_.type_ = 0; //frame 
 }
+void pptx_slide_context::start_table()
+{
+	impl_->object_description_.type_ = 0; //frame 
+}
 void pptx_slide_context::start_chart(std::wstring const & path)
 {
 	impl_->object_description_.xlink_href_ = path; 
@@ -227,6 +233,11 @@ void pptx_slide_context::end_chart()
     impl_->charts_.push_back(impl_->object_description_);
 	default_set();
 }
+void pptx_slide_context::end_table()
+{
+	impl_->tables_.push_back(impl_->object_description_);
+	default_set();
+}
 bool pptx_slide_context::empty() const
 {
     return impl_->empty();
@@ -235,17 +246,20 @@ void pptx_slide_context::process_drawings()
 {
 	process_shapes();
 	process_images();
+	process_tables();
 	process_charts();
 }
 void pptx_slide_context::process_images()
 {
 	using boost::filesystem::wpath;
-	int pos_replaicement=0;
+	int pos_replaicement=0, pos_preview=0;
 	
     BOOST_FOREACH(drawing_object_description & pic, impl_->images_)
     {
-		pos_replaicement= pic.xlink_href_.find(L"ObjectReplacements"); 
-		if (pos_replaicement <0)//оригинал, а не заменяемый объект
+		pos_replaicement = pic.xlink_href_.find(L"ObjectReplacements");
+		pos_preview = pic.xlink_href_.find(L"TablePreview");
+		
+		if (pos_replaicement <0 && pos_preview <0)//оригинал, а не заменяемый объект
 		{
 			_pptx_drawing drawing=_pptx_drawing();
 		
@@ -300,6 +314,27 @@ void pptx_slide_context::process_charts()
         bool isMediaInternal = true;
         drawing.chartId = impl_->get_mediaitems().add_or_find(pic.xlink_href_, mediaitems::typeChart, isMediaInternal, ref);        
         impl_->add_drawing(drawing, isMediaInternal, drawing.chartId, ref, mediaitems::typeChart);
+    }
+}
+void pptx_slide_context::process_tables()
+{
+    using boost::filesystem::wpath;
+
+    BOOST_FOREACH(drawing_object_description & pic, impl_->tables_)
+    {	
+		_pptx_drawing drawing=_pptx_drawing();
+		
+		process_common_properties(pic,drawing);
+
+		drawing.type = mediaitems::typeTable;
+        drawing.name = pic.draw_name_;
+		drawing.id = impl_->next_rId();
+
+////////////////////////////////////////////////////////////////
+        std::wstring ref;
+        bool isMediaInternal = true;
+        drawing.chartId = impl_->get_mediaitems().add_or_find(pic.xlink_href_, mediaitems::typeTable, isMediaInternal, ref);        
+        impl_->add_drawing(drawing, isMediaInternal, drawing.chartId, ref, mediaitems::typeTable);
     }
 }
 

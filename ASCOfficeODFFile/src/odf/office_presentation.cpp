@@ -20,7 +20,13 @@ const wchar_t * office_presentation::name = L"presentation";
 
 void office_presentation::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-    CP_CREATE_ELEMENT(content_);
+	if CP_CHECK_NAME(L"draw", L"page") 
+		CP_CREATE_ELEMENT(pages_);
+	else if CP_CHECK_NAME(L"presentation", L"footer-decl") 
+		CP_CREATE_ELEMENT(footer_decl_);
+	else if CP_CHECK_NAME(L"presentation", L"date-time-decl") 
+		CP_CREATE_ELEMENT(date_time_decl_);
+
 }
 
 void office_presentation::add_text(const std::wstring & Text)
@@ -35,8 +41,8 @@ void office_presentation::add_attributes( const xml::attributes_wc_ptr & Attribu
 void office_presentation::docx_convert(oox::docx_conversion_context & Context)
 {
     Context.start_office_text();
-	_CP_LOG(info) << L"[info][docx] process spreadsheet (" << content_.size() << L" elmements)" << std::endl;
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
+	_CP_LOG(info) << L"[info][docx] process pages (" << pages_.size() << L" elmements)" << std::endl;
+	BOOST_FOREACH(const office_element_ptr & elm, pages_)
     {
         elm->docx_convert(Context);
     }
@@ -46,18 +52,20 @@ void office_presentation::docx_convert(oox::docx_conversion_context & Context)
 void office_presentation::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     Context.start_office_spreadsheet(this);
-    _CP_LOG(info) << L"[info][xlsx] process spreadsheet (" << content_.size() << L" elmements)" << std::endl;
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+    _CP_LOG(info) << L"[info][xlsx] process pages (" << pages_.size() << L" elmements)" << std::endl;
+    BOOST_FOREACH(const office_element_ptr & elm, pages_)
     {
         elm->xlsx_convert(Context);
     }
     Context.end_office_spreadsheet();
 }
+
 void office_presentation::pptx_convert(oox::pptx_conversion_context & Context)
 {
     Context.start_office_presentation();
-    _CP_LOG(info) << L"[info][pptx] process presentationt (" << content_.size() << L" elmements)" << std::endl;
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+
+    _CP_LOG(info) << L"[info][pptx] process pages(" << pages_.size() << L" elmements)" << std::endl;
+    BOOST_FOREACH(const office_element_ptr & elm, pages_)
     {
         elm->pptx_convert(Context);
     }

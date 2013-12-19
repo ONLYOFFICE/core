@@ -4,13 +4,15 @@
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/serialize.h>
 #include <cpdoccore/xml/attributes.h>
+#include <cpdoccore/xml/simple_xml_writer.h>
 
 #include "serialize_elements.h"
 #include "odfcontext.h"
 #include <cpdoccore/odf/odf_document.h>
 
 #include "style_table_properties.h"
-
+#include "style_graphic_properties.h"
+#include "draw_common.h"
 namespace cpdoccore { 
 namespace odf {
 
@@ -38,15 +40,26 @@ void table_table_row::pptx_convert(oox::pptx_conversion_context & Context)
 
     for (unsigned int i = 0; i < table_table_row_attlist_.table_number_rows_repeated_; ++i)
     {
-        _Wostream << L"<a:tr h=\"822264\">";
-        const style_instance * inst = 
-            Context.root()->odf_context().styleContainer().style_by_name( styleName , style_family::TableRow,false);
-        
-        //_Wostream << L"<a:trPr>";        
-		//	_Wostream << L"<a:cantSplit a:val=\"false\" />"; 
-		//todoooo	if (inst && inst->content())inst->content()->pptx_convert(Context);
-        //_Wostream << L"</a:trPr>";
-
+		int height = 0;
+       
+		const style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name( styleName , style_family::TableRow,false);
+	
+		if ((inst) && (inst->content()) && (inst->content()->get_style_table_row_properties()))
+		{
+			style_table_row_properties_attlist & row_attlist = inst->content()->get_style_table_row_properties()->style_table_row_properties_attlist_;
+			if (row_attlist.style_row_height_)
+			{
+				height = (int)( 0.5 +row_attlist.style_row_height_->get_value_unit(length::emu) );
+			}
+			else if (row_attlist.style_min_row_height_)
+			{
+				height = (int)( 0.5 + row_attlist.style_min_row_height_->get_value_unit(length::emu));
+			}
+		}
+		if (height<1) height = 100000;
+    
+		_Wostream << L"<a:tr h=\"" << height << L"\">";
+  
         Context.get_table_context().start_row(styleName, defaultCellStyle);
         
         BOOST_FOREACH(const office_element_ptr & elm, content_)
@@ -111,9 +124,8 @@ void table_table::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	Context.get_slide_context().start_table();
 //////////////////////////////////////////////////////////////////
-	
 
-    std::wstring tableStyleName = L"";
+	std::wstring tableStyleName = L"";
     if (table_table_attlist_.table_style_name_)
         tableStyleName = table_table_attlist_.table_style_name_->style_name() ;
 
@@ -122,18 +134,36 @@ void table_table::pptx_convert(oox::pptx_conversion_context & Context)
     std::wostream & _Wostream = Context.get_table_context().tableData();  
 	_Wostream << L"<a:tbl>";
 
-    style_instance * inst = 
-        Context.root()->odf_context().styleContainer().style_by_name( tableStyleName , style_family::Table,false);
-    
-    Context.get_text_context().get_styles_context().start();
+ 	_Wostream << L"<a:tblPr";
+		if (table_table_attlist_.table_use_banding_rows_styles_)
+			_Wostream << L"	bandRow=\"1\"";
+		if (table_table_attlist_.table_use_first_row_styles_)
+			_Wostream << L"	firstRow=\"1\"";
+		if (table_table_attlist_.table_use_banding_columns_styles_)
+			_Wostream << L"	bandCol=\"1\"";
+		if (table_table_attlist_.table_use_first_column_styles_)
+			_Wostream << L"	firstCol=\"1\"";		
+	_Wostream << ">";
+	
+	style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name( tableStyleName , style_family::Table,false);
 
-    if (inst && inst->content())
-        inst->content()->pptx_convert(Context);
+    if ((inst) && (inst->content()))
+	{
+		//table_properties
+		if (inst->content()->get_style_graphic_properties())
+		{
+			const graphic_format_properties & style_graphic = inst->content()->get_style_graphic_properties()->content();
+			oox::_oox_fill fill;
+			Compute_GraphicFill((graphic_format_properties &)style_graphic, Context.root()->odf_context().drawStyles() ,fill);	
+
+			oox::oox_serialize_fill(_Wostream, fill);
+		}
+	}
+ 	_Wostream << L"</a:tblPr>";
     
-    Context.get_text_context().get_styles_context().pptx_serialize_table_style(_Wostream);
 
     _Wostream << L"<a:tblGrid>";
-    table_columns_and_groups_.pptx_convert(Context);
+		table_columns_and_groups_.pptx_convert(Context);
     _Wostream << L"</a:tblGrid>";
 
     table_rows_and_groups_.pptx_convert(Context);
@@ -207,136 +237,148 @@ void table_table_column::pptx_convert(oox::pptx_conversion_context & Context)
 
     const unsigned int columnsRepeated = table_table_column_attlist_.table_number_columns_repeated_;
     const std::wstring defaultCellStyle = table_table_column_attlist_.table_default_cell_style_name_.get_value_or(style_ref(L"")).style_name();
-    Context.get_table_context().start_column(columnsRepeated, defaultCellStyle);
+   
+	Context.get_table_context().start_column(columnsRepeated, defaultCellStyle);
 
     for (unsigned int i = 0; i < columnsRepeated; ++i)
     {
         if (table_table_column_attlist_.table_style_name_)
         {
             const std::wstring colStyleName = table_table_column_attlist_.table_style_name_->style_name();
-            if (style_instance * inst = 
-                Context.root()->odf_context().styleContainer().style_by_name( colStyleName , style_family::TableColumn,false ))
+          
+			style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name( colStyleName , style_family::TableColumn,false );
+			if ((inst) && (inst->content()))
             {
-                if (inst->content())
-                    inst->content()->pptx_convert(Context);
+				//column properies
+				if (inst->content()->get_style_table_column_properties())
+				   inst->content()->get_style_table_column_properties()->pptx_convert(Context);				
             }
         }
     }
 }
 
-const wchar_t * emptyParTable = L"<a:p><a:pPr></a:pPr><a:r><a:rPr></a:rPr></a:r></a:p>";
+const wchar_t * emptyParTable = L"<a:txBody><a:bodyPr/><a:p><a:endParaRPr/></a:p></a:txBody>";
 
 void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 {
     std::wostream & _Wostream = Context.get_table_context().tableData();
 
-    for (unsigned int r = 0; r < table_table_cell_attlist_.table_number_columns_repeated_; ++r)
+	CP_XML_WRITER(_Wostream)
     {
-        int pushTextPropCount = 0;
+		for (unsigned int r = 0; r < table_table_cell_attlist_.table_number_columns_repeated_; ++r)
+		{
+			int pushTextPropCount = 0;
 
-        Context.get_table_context().start_cell();
-        _Wostream << L"<a:tc>";
+			Context.get_table_context().start_cell();
+			CP_XML_NODE(L"a:tc")
+			{
+				const std::wstring cellStyleName = table_table_cell_attlist_.table_style_name_ ?
+					table_table_cell_attlist_.table_style_name_->style_name() : L""; 
+				
+				const std::wstring & defaultColumnStyleName = Context.get_table_context().get_default_cell_style_col(Context.get_table_context().current_column());
+				const std::wstring & defaultRowStyleName	= Context.get_table_context().get_default_cell_style_row();
 
-		const std::wstring styleName = table_table_cell_attlist_.table_style_name_ ?
-            table_table_cell_attlist_.table_style_name_->style_name() : L""; 
+				if (table_table_cell_attlist_extra_.table_number_rows_spanned_ > 1)
+				{
+					CP_XML_ATTR(L"rowSpan" , table_table_cell_attlist_extra_.table_number_rows_spanned_);
+				//	CP_XML_ATTR(L"vMerge", true);
+					
+					Context.get_table_context().set_rows_spanned(Context.get_table_context().current_column(), 
+						table_table_cell_attlist_extra_.table_number_rows_spanned_ - 1,
+						table_table_cell_attlist_extra_.table_number_columns_spanned_ - 1,
+						cellStyleName);
+				}        		
+			
+				if (table_table_cell_attlist_extra_.table_number_columns_spanned_ > 1)
+				{
+					//CP_XML_ATTR(L"hMerge", true);
+					CP_XML_ATTR(L"gridSpan" , table_table_cell_attlist_extra_.table_number_columns_spanned_);
 
-		//_Wostream << L"<a:tcW a:w=\"0\" a:type=\"auto\" />";
-		
-        if (table_table_cell_attlist_extra_.table_number_rows_spanned_ > 1)
-        {
-            _Wostream << L"<a:vMerge a:val=\"restart\" />"; 
-            Context.get_table_context().set_rows_spanned(Context.get_table_context().current_column(), 
-                table_table_cell_attlist_extra_.table_number_rows_spanned_ - 1,
-                table_table_cell_attlist_extra_.table_number_columns_spanned_ - 1,
-                styleName
-                );
-        }        		
-		
-		if (table_table_cell_attlist_extra_.table_number_columns_spanned_ > 1)
-        {
-            _Wostream << L"<a:gridSpan a:val=\"" << table_table_cell_attlist_extra_.table_number_columns_spanned_ << "\" />";
-            Context.get_table_context().set_columns_spanned(table_table_cell_attlist_extra_.table_number_columns_spanned_ - 1);
-        }
+					Context.get_table_context().set_columns_spanned(table_table_cell_attlist_extra_.table_number_columns_spanned_ - 1);
+				}		
 
-		const style_instance * inst = 
-            Context.root()->odf_context().styleContainer().style_by_name( styleName , style_family::TableCell,false);
-        
-        if (inst && inst->content())
-        {
-            if (inst->content()->get_style_table_cell_properties())
-            {
-                inst->content()->get_style_table_cell_properties()->pptx_convert(Context);            
-            }
+				Context.get_text_context().start_object();
 
-            if (inst->content()->get_style_text_properties())
-            {
-//todooo        Context.push_text_properties(inst->content()->get_style_text_properties());
-                pushTextPropCount++;
-            }
-        }
-        //_Wostream << L"</a:tcPr>";
+				bool presentText = table_table_cell_content_.pptx_convert(Context);
+				
+				std::wstring cellContent = Context.get_text_context().end_object();
 
-        /// Обрабатываем стиль по умолчанию для данного столбца
-        const std::wstring & defaultColumnStyle =
-            Context.get_table_context().get_default_cell_style_col(Context.get_table_context().current_column());
+				if (cellContent.length()>0)
+				{
+					CP_XML_NODE(L"a:txBody")
+					{
+						CP_XML_NODE(L"a:bodyPr");
+						CP_XML_STREAM() << cellContent;
+					}
+				}else
+					CP_XML_STREAM() << emptyParTable;
+			
+				CP_XML_NODE(L"a:tcPr")
+				{				
+					const style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name(cellStyleName, style_family::TableCell,false);
+			        
+					if (inst && inst->content())
+					{
+						if (inst->content()->get_style_table_cell_properties())
+						{
+							style_table_cell_properties_attlist & style_cell_attlist = inst->content()->get_style_table_cell_properties()->style_table_cell_properties_attlist_;
 
-        if (const style_instance * inst = 
-            Context.root()->odf_context().styleContainer().style_by_name(defaultColumnStyle, style_family::TableCell,false))
-        {
-            if (const style_content * content = inst->content())
-            {
-                if (content->get_style_text_properties())
-                {
-//todooo                Context.push_text_properties(content->get_style_text_properties());
-                    pushTextPropCount++;
-                }
-            }
-        }
-        /// Стиль по умолчанию для данной строки
-        const std::wstring & defaultRowStyle =
-            Context.get_table_context().get_default_cell_style_row();
+							if (style_cell_attlist.style_vertical_align_)
+							{
+								std::wstring vAlign;
+								switch(style_cell_attlist.style_vertical_align_->get_type())
+								{
+								case vertical_align::Baseline: 
+								case vertical_align::Top:      vAlign = L"t"; break;
+								case vertical_align::Middle:   vAlign = L"ctr"; break;
+								case vertical_align::Bottom:   vAlign = L"b"; break;
+								case vertical_align::Auto:  break;
+								}
+								if (!vAlign.empty())
+									CP_XML_ATTR(L"anchor",  vAlign );      
+							}
+							if (style_cell_attlist.common_padding_attlist_.fo_padding_)
+							{
+								CP_XML_ATTR(L"marT", *style_cell_attlist.common_padding_attlist_.fo_padding_);
+								CP_XML_ATTR(L"marB", *style_cell_attlist.common_padding_attlist_.fo_padding_);
+								CP_XML_ATTR(L"marL", *style_cell_attlist.common_padding_attlist_.fo_padding_);
+								CP_XML_ATTR(L"marR", *style_cell_attlist.common_padding_attlist_.fo_padding_);
+							}
+							else
+							{
+								if (style_cell_attlist.common_padding_attlist_.fo_padding_top_)
+									CP_XML_ATTR(L"marT", *style_cell_attlist.common_padding_attlist_.fo_padding_top_);            
+								if (style_cell_attlist.common_padding_attlist_.fo_padding_bottom_)
+									CP_XML_ATTR(L"marB", *style_cell_attlist.common_padding_attlist_.fo_padding_bottom_);                        
+								if (style_cell_attlist.common_padding_attlist_.fo_padding_left_)
+									CP_XML_ATTR(L"marL", *style_cell_attlist.common_padding_attlist_.fo_padding_left_);
+								if (style_cell_attlist.common_padding_attlist_.fo_padding_right_)
+									CP_XML_ATTR(L"marR", *style_cell_attlist.common_padding_attlist_.fo_padding_right_);            
+							}			
+							//vert //
+							//style_cell_attlist.pptx_serialize(Context, CP_XML_STREAM());    //nodes        
+						}
+						if (inst->content()->get_style_graphic_properties())
+						{
+							const graphic_format_properties & style_graphic = inst->content()->get_style_graphic_properties()->content();
+							oox::_oox_fill fill;
+							Compute_GraphicFill((graphic_format_properties &)style_graphic, Context.root()->odf_context().drawStyles() ,fill);	
 
-        if (const style_instance * inst = 
-            Context.root()->odf_context().styleContainer().style_by_name(defaultRowStyle, style_family::TableCell,false))
-        {
-            if (const style_content * content = inst->content())
-            {
-                if (content->get_style_text_properties())
-                {
-//todooo				Context.push_text_properties(content->get_style_text_properties());
-                    pushTextPropCount++;
-                }
-            }
-        }
-		
-		_Wostream << L"<a:txBody>";
-		_Wostream << L"<a:bodyPr/>";
-		Context.get_text_context().start_object();
+							oox::oox_serialize_fill(CP_XML_STREAM(), fill);
+						}
+					}
+				}
+			}
 
-		bool presentText = table_table_cell_content_.pptx_convert(Context);
-		
-		std::wstring cellContent = Context.get_text_context().end_object();
-
-		if (cellContent.length()>0)
-			_Wostream << cellContent;
-		else
-            _Wostream << emptyParTable;
-
-		_Wostream << L"</a:txBody>";
-
-		//todooo
-        //for (int i = 0; i < pushTextPropCount; ++i)
-        //    Context.pop_text_properties();
-
-        _Wostream << L"<a:tcPr/>";
-        _Wostream << L"</a:tc>";
-        Context.get_table_context().end_cell();
-    }
+			Context.get_table_context().end_cell();
+		}
+	}
 }
 
 void table_covered_table_cell::pptx_convert(oox::pptx_conversion_context & Context) 
 {
-    std::wostream & _Wostream = Context.get_table_context().tableData();
+   
+	std::wostream & _Wostream = Context.get_table_context().tableData();
 
     for (unsigned int i = 0; i < table_table_cell_attlist_.table_number_columns_repeated_; ++i)
     {

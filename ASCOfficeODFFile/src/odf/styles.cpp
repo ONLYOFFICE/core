@@ -42,6 +42,10 @@ style_graphic_properties * style_content::get_style_graphic_properties() const
 {
     return dynamic_cast<style_graphic_properties *>(style_graphic_properties_.get());    
 }
+style_table_properties * style_content::get_style_table_properties() const
+{
+    return dynamic_cast<style_table_properties *>(style_table_properties_.get());    
+}
 
 style_section_properties * style_content::get_style_section_properties() const
 {
@@ -129,30 +133,30 @@ void style_content::docx_convert(oox::docx_conversion_context & Context)
 
     Context.end_process_style_content();
 }
-void style_content::pptx_convert(oox::pptx_conversion_context & Context) 
-{
-	Context.get_text_context().get_styles_context().start();
-
-    if (style_text_properties_)
-        style_text_properties_->pptx_convert(Context);
-
-    if (style_paragraph_properties_)
-        style_paragraph_properties_->pptx_convert(Context);
-
-    if (style_table_properties_)
-        style_table_properties_->pptx_convert(Context);
-
-    if (style_table_column_properties_)
-        style_table_column_properties_->pptx_convert(Context);
-
-    if (style_table_row_properties_)
-        style_table_row_properties_->pptx_convert(Context);
-
-    if (style_table_cell_properties_)
-        style_table_cell_properties_->pptx_convert(Context);        
-
-    //Context.get_text_context().get_styles_context().end();
-}
+//void style_content::pptx_convert(oox::pptx_conversion_context & Context) 
+//{
+//	Context.get_text_context().get_styles_context().start();
+//
+//    if (style_text_properties_)
+//        style_text_properties_->pptx_convert(Context);
+//
+//    if (style_paragraph_properties_)
+//        style_paragraph_properties_->pptx_convert(Context);
+//
+//    if (style_table_properties_)
+//        style_table_properties_->pptx_convert(Context);
+//
+//    if (style_table_column_properties_)
+//        style_table_column_properties_->pptx_convert(Context);
+//
+//    if (style_table_row_properties_)
+//        style_table_row_properties_->pptx_convert(Context);
+//
+//    if (style_table_cell_properties_)
+//        style_table_cell_properties_->pptx_convert(Context);        
+//
+//    //Context.get_text_context().get_styles_context().end();
+//}
 
 void style_content::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
 {   

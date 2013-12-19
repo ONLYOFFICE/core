@@ -86,22 +86,16 @@ bool pptx_table_state::start_covered_cell(pptx_conversion_context & Context)
     if (columns_spanned_num_ == 0 && rows_spanned_[current_table_column_].num() > 0)
     {
         closeTag = true;
-        _Wostream << L"<w:tc>";
-        _Wostream << L"<w:tcPr>";
-        _Wostream << L"<w:vMerge w:val=\"continue\" />";
-		//_Wostream << L"<w:tcW w:w=\"0\" w:type=\"auto\" />";
+        _Wostream << L"<a:tc vMerge=\"1\"";
 
-        if (rows_spanned_[current_table_column_].column_spanned() > 0)
-            _Wostream << L"<w:gridSpan w:val=\"" << rows_spanned_[current_table_column_].column_spanned() + 1 << "\" />";
+		if (rows_spanned_[current_table_column_].column_spanned() > 0)
+            _Wostream << L" gridSpan=\"" << rows_spanned_[current_table_column_].column_spanned() + 1 << "\"";
 
+		_Wostream << L">";
         odf::style_instance * inst = 
             context_.root()->odf_context().styleContainer().style_by_name( 
 					rows_spanned_[current_table_column_].style() , odf::style_family::TableCell,false);
 
-        if (inst && inst->content())
-            inst->content()->pptx_convert(context_);
-
-        _Wostream << L"</w:tcPr>";
     }
 
     // использовали текущую €чейку, уменьшаем счетчики оставшихс€ объединенных €чеек
@@ -123,8 +117,9 @@ void pptx_table_state::end_covered_cell()
     std::wostream & _Wostream = context_.get_table_context().tableData();
     if (close_table_covered_cell_)
     {
+		_Wostream << L"<a:tcPr/>";
         // закрываем открытую €чейку
-        _Wostream << L"</w:tc>";
+        _Wostream << L"</a:tc>";
         close_table_covered_cell_ = false;
     }
 }
@@ -138,9 +133,7 @@ void pptx_table_state::set_columns_spanned(unsigned int Val)
 {
     if ( current_columns_spaned() > 0 )
     {
- #ifdef _DEBUG
-		_CP_LOG(info) << L"[warning] set_columns_spanned warning\n";
- #endif
+
     }
 
     columns_spanned_num_ = Val;
@@ -159,10 +152,6 @@ void pptx_table_state::set_rows_spanned(unsigned int Column, unsigned int Val, u
     }
     else
     {
-        if (rows_spanned_[Column].num() > 0)
-        {
-            _CP_LOG(info) << L"[warning] set_rows_spanned warning\n";        
-        }
         rows_spanned_[Column].num(Val);
         rows_spanned_[Column].set_style(Style);
         rows_spanned_[Column].column_spanned(ColumnsSpanned);
@@ -182,7 +171,6 @@ unsigned int pptx_table_state::current_rows_spanned(unsigned int Column) const
     }
 }
 
-/**/
 
 }
 }

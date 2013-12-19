@@ -148,7 +148,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-    const graphic_format_properties & content() const { return graphic_format_properties_; }
+   const graphic_format_properties & content() const { return graphic_format_properties_; }
 
 
 private:

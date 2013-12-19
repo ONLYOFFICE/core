@@ -80,19 +80,6 @@ void styles_context::docx_serialize_text_style(std::wostream & strm)
 		}
 	}
 }
-void styles_context::pptx_serialize_table_style(std::wostream & strm)
-{
-    if (!table_style_.str().empty())
-    {
-		CP_XML_WRITER(strm)
-		{
-			CP_XML_NODE(L"a:tblPr")
-			{
-				CP_XML_STREAM() << table_style_.str();
-			}
-		}
-    }
-}
 
 void styles_context::docx_serialize_table_style(std::wostream & strm)
 {

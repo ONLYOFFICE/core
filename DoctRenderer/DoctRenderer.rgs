@@ -1,0 +1,11 @@
+HKCR
+{
+	NoRemove AppID
+	{
+		'%APPID%' = s 'DoctRenderer'
+		'DoctRenderer.DLL'
+		{
+			val AppID = s '%APPID%'
+		}
+	}
+}

@@ -22,6 +22,8 @@ void table_table_attlist::add_attributes( const xml::attributes_wc_ptr & Attribu
 {
     CP_APPLY_ATTR(L"table:name", table_name_);
     CP_APPLY_ATTR(L"table:style-name", table_style_name_);
+    CP_APPLY_ATTR(L"table:table-template-name", table_template_name_);
+
     CP_APPLY_ATTR(L"table:protected", table_protected_, false);
     CP_APPLY_ATTR(L"table:protection-key", table_protection_key_); 
     CP_APPLY_ATTR(L"table:print", table_print_, true);

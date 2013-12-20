@@ -337,6 +337,16 @@ private:
 
     friend class odf_document;
 };
+class templates
+{
+public:
+    void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
+
+private:
+	office_element_ptr_array table_templates_;    
+
+    friend class odf_document;
+};
 
 /// \class  office_automatic_styles
 /// \brief  office:automatic-styles
@@ -470,6 +480,8 @@ private:
 private:
     styles styles_;
 	draw_styles draw_styles_;	
+	templates templates_;	
+	
 	office_element_ptr_array style_default_style_;
 	office_element_ptr_array style_presentation_page_layout_;
     

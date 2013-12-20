@@ -29,6 +29,8 @@
 #include "style_regions.h"
 #include "style_presentation.h"
 
+#include "templates.h"
+
 #include "paragraph_elements.h"
 #include "text_elements.h"
 
@@ -445,6 +447,15 @@ void odf_document::Impl::parse_styles()
                     continue;
 
 				context_->drawStyles().add(L"hatch:" + style->get_style_name(), elm);
+            }
+            BOOST_FOREACH(const office_element_ptr & elm, docStyles->templates_.table_templates_)
+            {
+				table_table_template * style = dynamic_cast<table_table_template *>(elm.get());
+
+                if (!style)
+                    continue;
+
+				context_->Templates().add(L"table:" + style->get_text_style_name(), elm);
             }
 		}
         while(0); // end parse styles

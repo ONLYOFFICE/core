@@ -1,10 +1,17 @@
 #include "precompiled_cpodf.h"
-#include "pptx_conversion_context.h"
-#include "logging.h"
 #include <boost/foreach.hpp>
 #include <iostream>
+
+#include <cpdoccore/xml/simple_xml_writer.h>
 #include <cpdoccore/odf/odf_document.h>
+
 #include "../odf/odfcontext.h"
+#include "../odf/draw_common.h"
+#include "../odf/calcs_styles.h"
+
+#include "logging.h"
+
+#include "pptx_conversion_context.h"
 
 namespace cpdoccore { 
 namespace oox {
@@ -117,7 +124,12 @@ void pptx_table_state::end_covered_cell()
     std::wostream & _Wostream = context_.get_table_context().tableData();
     if (close_table_covered_cell_)
     {
-		_Wostream << L"<a:tcPr/>";
+		const std::wstring cellStyleName = default_row_cell_style_name_.length()>0 ? default_row_cell_style_name_ : default_cell_style_name_; 
+		
+		const odf::style_instance * style_inst = context_.root()->odf_context().styleContainer().style_by_name(cellStyleName, odf::style_family::TableCell,false);
+
+		oox::oox_serialize_tcPr(_Wostream, style_inst, context_);
+
         // закрываем открытую €чейку
         _Wostream << L"</a:tc>";
         close_table_covered_cell_ = false;
@@ -170,7 +182,75 @@ unsigned int pptx_table_state::current_rows_spanned(unsigned int Column) const
         return rows_spanned_[Column].num();
     }
 }
+void oox_serialize_tcPr(std::wostream & strm, const odf::style_instance* style_inst, oox::pptx_conversion_context & Context)
+{
+	const odf::style_instance * default_style_inst = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::TableCell);
 
+	std::vector<const odf::style_instance *> instances;
 
+	if (default_style_inst)	instances.push_back(default_style_inst);
+	if (style_inst)			instances.push_back(style_inst);
+	
+	CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE(L"a:tcPr")
+		{				
+			if (style_inst || default_style_inst)
+			{
+				odf::style_table_cell_properties_attlist style_cell_attlist = odf::calc_table_cell_properties(instances);
+
+				if (style_cell_attlist.style_vertical_align_)
+				{
+					std::wstring vAlign;
+					switch(style_cell_attlist.style_vertical_align_->get_type())
+					{
+					case odf::vertical_align::Baseline: 
+					case odf::vertical_align::Top:      vAlign = L"t"; break;
+					case odf::vertical_align::Middle:   vAlign = L"ctr"; break;
+					case odf::vertical_align::Bottom:   vAlign = L"b"; break;
+					case odf::vertical_align::Auto:  break;
+					}
+					if (!vAlign.empty())
+						CP_XML_ATTR(L"anchor",  vAlign );      
+				}
+				if (style_cell_attlist.common_padding_attlist_.fo_padding_)
+				{
+					CP_XML_ATTR(L"marT", *style_cell_attlist.common_padding_attlist_.fo_padding_);
+					CP_XML_ATTR(L"marB", *style_cell_attlist.common_padding_attlist_.fo_padding_);
+					CP_XML_ATTR(L"marL", *style_cell_attlist.common_padding_attlist_.fo_padding_);
+					CP_XML_ATTR(L"marR", *style_cell_attlist.common_padding_attlist_.fo_padding_);
+				}
+				else
+				{
+					if (style_cell_attlist.common_padding_attlist_.fo_padding_top_)
+						CP_XML_ATTR(L"marT", *style_cell_attlist.common_padding_attlist_.fo_padding_top_);            
+					if (style_cell_attlist.common_padding_attlist_.fo_padding_bottom_)
+						CP_XML_ATTR(L"marB", *style_cell_attlist.common_padding_attlist_.fo_padding_bottom_);                        
+					if (style_cell_attlist.common_padding_attlist_.fo_padding_left_)
+						CP_XML_ATTR(L"marL", *style_cell_attlist.common_padding_attlist_.fo_padding_left_);
+					if (style_cell_attlist.common_padding_attlist_.fo_padding_right_)
+						CP_XML_ATTR(L"marR", *style_cell_attlist.common_padding_attlist_.fo_padding_right_);            
+				}			
+				//vert //
+				//style_cell_attlist.pptx_serialize(Context, CP_XML_STREAM());    //nodes        
+
+				oox::_oox_fill fill;
+
+				odf::graphic_format_properties style_graphic = odf::calc_graphic_properties_content(instances);
+				
+				odf::Compute_GraphicFill(style_graphic, Context.root()->odf_context().drawStyles() ,fill);	
+				
+				if (fill.bitmap)
+				{
+					bool isMediaInternal = false;
+					std::wstring ref;
+					fill.bitmap->rId = Context.get_slide_context().get_mediaitems().add_or_find(fill.bitmap->xlink_href_, oox::mediaitems::typeImage, isMediaInternal, ref);
+					Context.get_slide_context().add_rels(isMediaInternal,fill.bitmap->rId, ref, oox::mediaitems::typeImage);
+				}
+				oox::oox_serialize_fill(CP_XML_STREAM(), fill);
+			}
+		}
+	}
+}
 }
 }

@@ -333,8 +333,8 @@ void pptx_slide_context::process_tables()
 ////////////////////////////////////////////////////////////////
         std::wstring ref;
         bool isMediaInternal = true;
-        drawing.chartId = impl_->get_mediaitems().add_or_find(pic.xlink_href_, mediaitems::typeTable, isMediaInternal, ref);        
-        impl_->add_drawing(drawing, isMediaInternal, drawing.chartId, ref, mediaitems::typeTable);
+		std::wstring rId = impl_->get_mediaitems().add_or_find(L"", mediaitems::typeTable, isMediaInternal, ref);        
+        impl_->add_drawing(drawing, isMediaInternal, rId, ref, mediaitems::typeTable);
     }
 }
 
@@ -394,6 +394,11 @@ void pptx_slide_context::dump_rels(rels & Rels)
 mediaitems & pptx_slide_context::get_mediaitems()
 {
 	return impl_->get_mediaitems(); 
+}
+
+void pptx_slide_context::add_rels( bool isInternal, std::wstring const & rid, std::wstring const & ref, mediaitems::Type type)
+{
+	impl_->add_drawing(isInternal, rid, ref, type);
 }
 
 void pptx_slide_context::serialize_background(std::wostream & strm)

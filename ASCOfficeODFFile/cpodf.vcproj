@@ -365,6 +365,14 @@
 				RelativePath=".\src\odf\styles_lite_container.h"
 				>
 			</File>
+			<File
+				RelativePath=".\src\odf\templates.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\odf\templates.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="datatypes odf"

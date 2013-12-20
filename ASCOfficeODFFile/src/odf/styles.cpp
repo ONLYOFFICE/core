@@ -77,35 +77,11 @@ void style_content::xlsx_convert(oox::xlsx_conversion_context & Context)
     if (style_table_column_properties_)
         style_table_column_properties_->xlsx_convert(Context);
 
-    // office_element_ptr style_text_properties_;
-    //office_element_ptr style_paragraph_properties_;
-    //office_element_ptr style_section_properties_;
-    //office_element_ptr style_ruby_properties_;
-    //office_element_ptr style_table_properties_;
-    //office_element_ptr style_table_column_properties_;
-    //office_element_ptr style_table_row_properties_;
-    //office_element_ptr style_chart_properties_;
-    //office_element_ptr style_graphic_properties_;
-   //office_element_ptr style_table_cell_properties_;
-	
-	
 	if (style_table_cell_properties_)
 		style_table_cell_properties_->xlsx_convert(Context);
 
     if (style_chart_properties_)
         style_chart_properties_->xlsx_convert(Context);
-
-/*    if (style_paragraph_properties_)
-        style_paragraph_properties_->docx_convert(Context);
-
-    if (style_table_properties_)
-        style_table_properties_->docx_convert(Context);
-
-    if (style_table_row_properties_)
-        style_table_row_properties_->docx_convert(Context);
-
-    if (style_table_cell_properties_)
-        style_table_cell_properties_->docx_convert(Context);   */     
 
 }
 
@@ -133,30 +109,6 @@ void style_content::docx_convert(oox::docx_conversion_context & Context)
 
     Context.end_process_style_content();
 }
-//void style_content::pptx_convert(oox::pptx_conversion_context & Context) 
-//{
-//	Context.get_text_context().get_styles_context().start();
-//
-//    if (style_text_properties_)
-//        style_text_properties_->pptx_convert(Context);
-//
-//    if (style_paragraph_properties_)
-//        style_paragraph_properties_->pptx_convert(Context);
-//
-//    if (style_table_properties_)
-//        style_table_properties_->pptx_convert(Context);
-//
-//    if (style_table_column_properties_)
-//        style_table_column_properties_->pptx_convert(Context);
-//
-//    if (style_table_row_properties_)
-//        style_table_row_properties_->pptx_convert(Context);
-//
-//    if (style_table_cell_properties_)
-//        style_table_cell_properties_->pptx_convert(Context);        
-//
-//    //Context.get_text_context().get_styles_context().end();
-//}
 
 void style_content::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
 {   
@@ -379,6 +331,14 @@ void styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, co
     }
 }
 
+void templates::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+{
+    if CP_CHECK_NAME(L"table", L"table-template")
+    {
+        CP_CREATE_ELEMENT_SIMPLE(table_templates_);
+    } 
+}
+
 void draw_styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
 {
     if CP_CHECK_NAME(L"draw", L"gradient")
@@ -515,7 +475,11 @@ void office_styles::add_child_element( xml::sax * Reader, const ::std::wstring &
 	{
         draw_styles_.add_child_element(Reader, Ns, Name, getContext());
 	}
-    else if (L"text" == Ns && L"outline-style" == Name)
+     else if(CP_CHECK_NAME(L"table",	L"table-template"))
+	{
+        templates_.add_child_element(Reader, Ns, Name, getContext());
+	}
+	 else if (L"text" == Ns && L"outline-style" == Name)
         CP_CREATE_ELEMENT(text_outline_style_);
     else if (L"text" == Ns && L"notes-configuration" == Name)
         CP_CREATE_ELEMENT(text_notes_configuration_);

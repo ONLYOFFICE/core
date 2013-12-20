@@ -5,7 +5,13 @@
 #include <vector>
 #include "ooxtablerowspanned.h"
 
-namespace cpdoccore { 
+namespace cpdoccore 
+{ 
+	namespace odf
+	{
+		class style_instance;
+	};
+
 namespace oox {
 
 class pptx_conversion_context;
@@ -35,18 +41,27 @@ public:
 
     void set_rows_spanned(unsigned int Column, unsigned int Val, unsigned int ColumnsSpanned, const std::wstring & Style);
     unsigned int current_rows_spanned(unsigned int Column) const;
+    
+	std::wstring default_cell_style_name_;
 
 private:
-    pptx_conversion_context & context_;    
-    std::wstring table_style_;
+	pptx_conversion_context & context_;    
+   
+	std::wstring table_style_;
+
     std::list<std::wstring> table_row_style_stack_;
-    std::wstring default_row_cell_style_name_;
+    
+	std::wstring default_row_cell_style_name_;
     int current_table_column_;
-    unsigned int columns_spanned_num_;
+   
+	unsigned int columns_spanned_num_;
     std::wstring columns_spanned_style_;
-    std::vector<table_row_spanned> rows_spanned_;
+    
+	std::vector<table_row_spanned> rows_spanned_;
+	
 	bool close_table_covered_cell_;
-    std::vector<unsigned int> columns_;
+   
+	std::vector<unsigned int> columns_;
     std::vector<std::wstring> columnsDefaultCellStyleName_;
     
 };
@@ -155,12 +170,21 @@ public:
         return table_state_stack_.back().get_default_cell_style_row();
     }
 
+	void set_default_cell_style(std::wstring style_name)
+	{
+		table_state_stack_.back().default_cell_style_name_ = style_name;
+	}
+	std::wstring get_default_cell_style()
+	{
+		return table_state_stack_.back().default_cell_style_name_;
+	}
 private:
 	std::wstringstream output_stream_;
     pptx_conversion_context & context_;
     std::list<pptx_table_state> table_state_stack_;
 };
 
+void oox_serialize_tcPr(std::wostream & strm, const odf::style_instance* style_inst, oox::pptx_conversion_context & Context);
 
 }
 }

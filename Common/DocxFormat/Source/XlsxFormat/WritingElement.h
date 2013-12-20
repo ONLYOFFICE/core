@@ -714,7 +714,8 @@ namespace Spreadsheet
 		et_FormulaCF,
 		et_IconSet,
 		et_ConditionalFormatValueObject,
-		et_SheetPr
+		et_SheetPr,
+		et_Pane
 	};
 	class WritingElement
 	{

@@ -410,6 +410,65 @@ namespace OOX
 				nullable<SimpleTypes::COnOff<>>					m_oZeroHeight;
 		};
 
+		class CPane : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CPane)
+			CPane()
+			{
+			}
+			virtual ~CPane()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(CStringWriter& writer) const
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_Pane;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("activePane")	, m_oActivePane)
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("state")		, m_oState)
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("topLeftCell")	, m_oTopLeftCell)
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("xSplit")		, m_oXSplit)
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("ySplit")		, m_oYSplit)	
+
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+			nullable<CString>				m_oActivePane;
+			nullable<CString>				m_oState;	// frozen - закреплены; split - разделены на 2 одинаковые части; frozenSplit - сначала разделены, а потом закреплены (после снятия закрепления, будут снова разделены)
+			nullable<CString>				m_oTopLeftCell;
+			nullable<SimpleTypes::CDouble>	m_oXSplit;
+			nullable<SimpleTypes::CDouble>	m_oYSplit;
+		};
+
+		//необработано:
+		//<extLst>
+		//<pivotSelection>
+		//<selection>
 		class CSheetView : public WritingElement
 		{
 		public:
@@ -530,8 +589,17 @@ namespace OOX
 			{
 				ReadAttributes( oReader );
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
+				if (oReader.IsEmptyNode())
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while (oReader.ReadNextSiblingNode(nCurDepth))
+				{
+					CWCharWrapper sName = oReader.GetName();
+
+					if (_T("pane") == sName)
+						m_oPane = oReader;
+				}
 			}
 
 			virtual EElementType getType () const
@@ -570,6 +638,8 @@ namespace OOX
 			}
 
 		public:
+				nullable<CPane>										m_oPane;
+
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oColorId;
 				nullable<SimpleTypes::COnOff<>>						m_oDefaultGridColor;
 				nullable<SimpleTypes::COnOff<>>						m_oRightToLeft;

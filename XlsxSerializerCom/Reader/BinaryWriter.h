@@ -2438,6 +2438,27 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBool(oSheetView.m_oShowRowColHeaders->ToBool());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
+			if (oSheetView.m_oPane.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_SheetView::Pane);
+				WritePane(oSheetView.m_oPane.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
+
+		void WritePane(const OOX::Spreadsheet::CPane& oPane)
+		{
+			int nCurPos = 0;
+			if (oPane.m_oState.IsInit())
+			{
+				m_oBcw.m_oStream.WriteByte(c_oSer_Pane::State);
+				m_oBcw.m_oStream.WriteString2(oPane.m_oState.get2());
+			}
+			if (oPane.m_oTopLeftCell.IsInit())
+			{
+				m_oBcw.m_oStream.WriteByte(c_oSer_Pane::TopLeftCell);
+				m_oBcw.m_oStream.WriteString2(oPane.m_oTopLeftCell.get2());
+			}
 		}
 
 		void WriteSheetFormatPr(const OOX::Spreadsheet::CSheetFormatPr& oSheetFormatPr)

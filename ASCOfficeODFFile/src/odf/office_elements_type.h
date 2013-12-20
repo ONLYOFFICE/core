@@ -114,9 +114,13 @@ enum ElementType
     typeStylePageLayout,
     typeStyleMap,
 
+	typeTableBodyTemplate,
+	typeTableTemplate,
+
     typeTextNotesConfiguration,
 
     typeStyleFontFace,
+
     typeSvgFontFaceUri,
     typeSvgFontFaceFormat,
     typeSvgFontFaceName,

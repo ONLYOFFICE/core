@@ -22,8 +22,10 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    _CP_OPT(std::wstring) table_name_;
-    _CP_OPT(style_ref) table_style_name_;
+    _CP_OPT(std::wstring)	table_name_;
+    _CP_OPT(style_ref)		table_style_name_;
+	_CP_OPT(std::wstring)	table_template_name_;
+
     bool table_protected_; // default false
     _CP_OPT(std::wstring) table_protection_key_; 
     bool table_print_; // default true

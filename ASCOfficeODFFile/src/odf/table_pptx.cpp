@@ -13,10 +13,14 @@
 #include "style_table_properties.h"
 #include "style_graphic_properties.h"
 #include "draw_common.h"
+
+
 namespace cpdoccore { 
 namespace odf {
 
 using xml::xml_char_wc;
+
+
 
 bool table_table_cell_content::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -128,8 +132,25 @@ void table_table::pptx_convert(oox::pptx_conversion_context & Context)
 	std::wstring tableStyleName = L"";
     if (table_table_attlist_.table_style_name_)
         tableStyleName = table_table_attlist_.table_style_name_->style_name() ;
-
-    Context.get_table_context().start_table(tableStyleName);
+    
+	Context.get_table_context().start_table(tableStyleName);	
+	
+	if (table_table_attlist_.table_template_name_)
+	{
+		std::wstring name = L"table:" + table_table_attlist_.table_template_name_.get() ;
+		if (office_element_ptr style = Context.root()->odf_context().Templates().find_by_style_name(name))
+		{
+			if (table_table_template* template_ = dynamic_cast<table_table_template *>(style.get()))
+			{	
+				//first row, columns, last row, columns, odd row, columns
+				if (template_->table_body_)
+				{
+					table_body* body_ = dynamic_cast<table_body* >(template_->table_body_.get());
+					Context.get_table_context().set_default_cell_style(body_->table_style_name_);
+				}
+			}
+		}
+	}
 	
     std::wostream & _Wostream = Context.get_table_context().tableData();  
 	_Wostream << L"<a:tbl>";
@@ -156,11 +177,17 @@ void table_table::pptx_convert(oox::pptx_conversion_context & Context)
 			oox::_oox_fill fill;
 			Compute_GraphicFill((graphic_format_properties &)style_graphic, Context.root()->odf_context().drawStyles() ,fill);	
 
+			if (fill.bitmap)
+			{
+				bool isMediaInternal = false;
+				std::wstring ref;
+				fill.bitmap->rId = Context.get_slide_context().get_mediaitems().add_or_find(fill.bitmap->xlink_href_, oox::mediaitems::typeImage, isMediaInternal, ref);
+				Context.get_slide_context().add_rels(isMediaInternal, fill.bitmap->rId, ref, oox::mediaitems::typeImage);
+			}
 			oox::oox_serialize_fill(_Wostream, fill);
 		}
 	}
  	_Wostream << L"</a:tblPr>";
-    
 
     _Wostream << L"<a:tblGrid>";
 		table_columns_and_groups_.pptx_convert(Context);
@@ -267,16 +294,12 @@ void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
     {
 		for (unsigned int r = 0; r < table_table_cell_attlist_.table_number_columns_repeated_; ++r)
 		{
-			int pushTextPropCount = 0;
-
 			Context.get_table_context().start_cell();
 			CP_XML_NODE(L"a:tc")
 			{
-				const std::wstring cellStyleName = table_table_cell_attlist_.table_style_name_ ?
-					table_table_cell_attlist_.table_style_name_->style_name() : L""; 
-				
-				const std::wstring & defaultColumnStyleName = Context.get_table_context().get_default_cell_style_col(Context.get_table_context().current_column());
-				const std::wstring & defaultRowStyleName	= Context.get_table_context().get_default_cell_style_row();
+				const std::wstring cellStyleName =	table_table_cell_attlist_.table_style_name_ ?
+													table_table_cell_attlist_.table_style_name_->style_name() :
+													Context.get_table_context().get_default_cell_style(); 
 
 				if (table_table_cell_attlist_extra_.table_number_rows_spanned_ > 1)
 				{
@@ -311,63 +334,12 @@ void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 						CP_XML_STREAM() << cellContent;
 					}
 				}else
+				
 					CP_XML_STREAM() << emptyParTable;
 			
-				CP_XML_NODE(L"a:tcPr")
-				{				
-					const style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name(cellStyleName, style_family::TableCell,false);
-			        
-					if (inst && inst->content())
-					{
-						if (inst->content()->get_style_table_cell_properties())
-						{
-							style_table_cell_properties_attlist & style_cell_attlist = inst->content()->get_style_table_cell_properties()->style_table_cell_properties_attlist_;
+				const style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(cellStyleName, style_family::TableCell,false);
+				oox_serialize_tcPr(CP_XML_STREAM(), style_inst,Context);
 
-							if (style_cell_attlist.style_vertical_align_)
-							{
-								std::wstring vAlign;
-								switch(style_cell_attlist.style_vertical_align_->get_type())
-								{
-								case vertical_align::Baseline: 
-								case vertical_align::Top:      vAlign = L"t"; break;
-								case vertical_align::Middle:   vAlign = L"ctr"; break;
-								case vertical_align::Bottom:   vAlign = L"b"; break;
-								case vertical_align::Auto:  break;
-								}
-								if (!vAlign.empty())
-									CP_XML_ATTR(L"anchor",  vAlign );      
-							}
-							if (style_cell_attlist.common_padding_attlist_.fo_padding_)
-							{
-								CP_XML_ATTR(L"marT", *style_cell_attlist.common_padding_attlist_.fo_padding_);
-								CP_XML_ATTR(L"marB", *style_cell_attlist.common_padding_attlist_.fo_padding_);
-								CP_XML_ATTR(L"marL", *style_cell_attlist.common_padding_attlist_.fo_padding_);
-								CP_XML_ATTR(L"marR", *style_cell_attlist.common_padding_attlist_.fo_padding_);
-							}
-							else
-							{
-								if (style_cell_attlist.common_padding_attlist_.fo_padding_top_)
-									CP_XML_ATTR(L"marT", *style_cell_attlist.common_padding_attlist_.fo_padding_top_);            
-								if (style_cell_attlist.common_padding_attlist_.fo_padding_bottom_)
-									CP_XML_ATTR(L"marB", *style_cell_attlist.common_padding_attlist_.fo_padding_bottom_);                        
-								if (style_cell_attlist.common_padding_attlist_.fo_padding_left_)
-									CP_XML_ATTR(L"marL", *style_cell_attlist.common_padding_attlist_.fo_padding_left_);
-								if (style_cell_attlist.common_padding_attlist_.fo_padding_right_)
-									CP_XML_ATTR(L"marR", *style_cell_attlist.common_padding_attlist_.fo_padding_right_);            
-							}			
-							//vert //
-							//style_cell_attlist.pptx_serialize(Context, CP_XML_STREAM());    //nodes        
-						}
-						if (inst->content()->get_style_graphic_properties())
-						{
-							const graphic_format_properties & style_graphic = inst->content()->get_style_graphic_properties()->content();
-							oox::_oox_fill fill;
-							Compute_GraphicFill((graphic_format_properties &)style_graphic, Context.root()->odf_context().drawStyles() ,fill);	
-
-							oox::oox_serialize_fill(CP_XML_STREAM(), fill);
-						}
-					}
-				}
 			}
 
 			Context.get_table_context().end_cell();

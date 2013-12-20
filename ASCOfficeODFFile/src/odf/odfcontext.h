@@ -1,6 +1,8 @@
 #pragma once
 
 #include "styles.h"
+#include "templates.h"
+
 #include <vector>
 #include <boost/unordered_map.hpp>
 #include "stylefamily.h"
@@ -334,6 +336,7 @@ public:
    
 	styles_lite_container &	numberStyles() { return number_style_container_; }
     styles_lite_container &	drawStyles() { return draw_style_container_; }
+	styles_lite_container &	Templates() { return template_container_; }
 
 private:
     styles_container		major_style_container_;
@@ -344,8 +347,10 @@ private:
    
 	styles_lite_container	number_style_container_;
     styles_lite_container	draw_style_container_;
+    styles_lite_container	template_container_;
 
 };
+
 
 }
 }

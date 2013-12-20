@@ -37,7 +37,6 @@ public:
 
 	std::wstring add_hyperlink(std::wstring const & ref, bool object);
 
-	//...   
     void start_image(std::wstring const & path);
     void end_image();
    
@@ -45,7 +44,6 @@ public:
     void end_chart();
 
  	void start_table();
-	//void set_table_content(std::wstring & str);
     void end_table();
 
 	void start_shape(int type);
@@ -53,7 +51,6 @@ public:
 	
 	bool empty() const;
 
-	//std::wstring dump_path(std::vector<svg_path::_polyline> & path, double w,double h);
 	void serialize(std::wostream & strm);
 	void serialize_background(std::wostream & strm);
 	
@@ -62,6 +59,11 @@ public:
 	void process_drawings();
 
 	mediaitems & get_mediaitems();
+
+	void add_rels( bool isInternal,
+        std::wstring const & rid,
+        std::wstring const & ref,
+        mediaitems::Type type);
 
 private:
 	void process_common_properties(drawing_object_description& pic,_pptx_drawing & drawing);

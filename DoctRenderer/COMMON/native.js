@@ -165,12 +165,6 @@ function NativeCalculateFile()
     window.editor.ShowParaMarks = false;
 }
 
-function NativeRecalculate2()
-{
-	window.editor.WordControl.m_oLogicDocument.Add_NewParagraph();
-	//window.editor.WordControl.m_oLogicDocument.Recalculate();
-}
-
 function NativeApplyChanges()
 {
     var _count_main = window.native.GetCountChanges();
@@ -197,6 +191,8 @@ function NativeGetFileString()
 
 function GetNativeCountPages()
 {
+    if (undefined !== window.editor.WordControl.m_oDrawingDocument.SlidesCount)
+        return window.editor.WordControl.m_oDrawingDocument.SlidesCount;
     return window.editor.WordControl.m_oDrawingDocument.m_lPagesCount;
 }
 
@@ -216,11 +212,21 @@ function GetNativePageBase64(pageIndex)
         native_renderer.Memory.ClearNoAttack();
         native_renderer.VectorMemoryForPrint.ClearNoAttack();
     }
-
-    var page = window.editor.WordControl.m_oDrawingDocument.m_arrPages[pageIndex];
-    native_renderer.BeginPage(page.width_mm, page.height_mm);
-    window.editor.WordControl.m_oLogicDocument.DrawPage(pageIndex, native_renderer);
-    native_renderer.EndPage();
+    
+    if (window.editor.DOCUMENT_TYPE == "presentation")
+    {
+        var _logic_doc = window.editor.WordControl.m_oLogicDocument;
+        native_renderer.BeginPage(_logic_doc.Width, _logic_doc.Height);
+        window.editor.WordControl.m_oLogicDocument.DrawPage(pageIndex, native_renderer);
+        native_renderer.EndPage();    
+    }
+    else
+    {
+        var page = window.editor.WordControl.m_oDrawingDocument.m_arrPages[pageIndex];
+        native_renderer.BeginPage(page.width_mm, page.height_mm);
+        window.editor.WordControl.m_oLogicDocument.DrawPage(pageIndex, native_renderer);
+        native_renderer.EndPage();
+    }
 
     //return native_renderer.Memory.GetBase64Memory();    
     return native_renderer.Memory;
@@ -231,37 +237,9 @@ function GetNativeId()
     return window.native.GetFileId();
 }
 
-function CColor (r,g,b,a)
+function clearTimeout()
 {
-	this.r = (undefined == r) ? 0 : r;
-	this.g = (undefined == g) ? 0 : g;
-	this.b = (undefined == b) ? 0 : b;
-	this.a = (undefined == a) ? 1 : a;
 }
-		
-CColor.prototype = {
-	constructor: CColor,
-	getR: function(){return this.r},
-	get_r: function(){return this.r},
-	put_r: function(v){this.r = v; this.hex = undefined;},
-	getG: function(){return this.g},
-	get_g: function(){return this.g;},
-	put_g: function(v){this.g = v; this.hex = undefined;},
-	getB: function(){return this.b},
-	get_b: function(){return this.b;},
-	put_b: function(v){this.b = v; this.hex = undefined;},
-	getA: function(){return this.a},
-	get_hex: function()
-	{
-		if(!this.hex)
-		{
-			var r = this.r.toString(16);
-			var g = this.g.toString(16);
-			var b = this.b.toString(16);
-			this.hex = ( r.length == 1? "0" + r: r) +
-				( g.length == 1? "0" + g: g) +
-				( b.length == 1? "0" + b: b);
-		}
-		return this.hex;
-	}
-};
+function setTimeout()
+{
+}

@@ -49,11 +49,6 @@ public:
 public:	
 	void getFileData(CString& strFile, BYTE*& pData, DWORD& dwLen)
 	{
-		FILE* f = fopen("C:\\log.txt", "a+");
-		fprintf(f, (CStringA)strFile);
-		fprintf(f, "\n");
-		fclose(f);
-
 		CFile oFile;
 		oFile.OpenFile(strFile);
 		dwLen = (DWORD)oFile.GetFileSize();
@@ -77,6 +72,14 @@ public:
 	CString GetFileId()
 	{
 		return m_strFileId;
+	}
+
+	void ConsoleLog(CString& strVal)
+	{
+		FILE* f = fopen("C:\\log.txt", "a+");
+		fprintf(f, (CStringA)strVal);
+		fprintf(f, "\n");
+		fclose(f);
 	}
 };
 
@@ -210,6 +213,16 @@ void _GetFileString(const v8::FunctionCallbackInfo<v8::Value>& args)
 	args.GetReturnValue().Set(v8::String::NewSymbol((char*)pData, len));
 }
 
+void _ConsoleLog(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+	args.GetReturnValue().Set(v8::Undefined());
+	if (args.Length() < 1) 
+		return;
+	
+	CNativeControl* pNative = unwrap_nativeobject(args.This());
+	pNative->ConsoleLog(to_cstring(args[0]));
+}
+
 v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate)
 {
 	v8::HandleScope handle_scope(isolate); 
@@ -229,6 +242,8 @@ v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate)
 
 	result->Set(v8::String::NewSymbol("GetCountChanges"), v8::FunctionTemplate::New(_GetChangesCount));
 	result->Set(v8::String::NewSymbol("GetChangesFile"), v8::FunctionTemplate::New(_GetChangesFile));
+
+	result->Set(v8::String::NewSymbol("ConsoleLog"), v8::FunctionTemplate::New(_ConsoleLog));
 
 	// возвращаем временный хэндл хитрым образом, который переносит наш хэндл в предыдущий HandleScope и не дает ему 
 	// уничтожиться при уничтожении "нашего" HandleScope - handle_scope

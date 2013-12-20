@@ -34,3 +34,5 @@ CChartAsGroup.prototype.draw = function(graphics, pageIndex)
 function CCacheManager()
 {
 }
+
+var NATIVE_DOCUMENT_TYPE = "presentation";

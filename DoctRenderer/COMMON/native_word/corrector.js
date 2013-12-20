@@ -30,3 +30,5 @@ CChartAsGroup.prototype.draw = function(graphics, pageIndex)
 {
     return;
 };
+
+var NATIVE_DOCUMENT_TYPE = "document";

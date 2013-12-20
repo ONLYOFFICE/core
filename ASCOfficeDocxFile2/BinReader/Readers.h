@@ -3668,10 +3668,9 @@ public:
 		{
 			bool bVal = m_oBufferedStream.ReadBool();
 			CString sVal = _T("<m:grow");
-			if (bVal)
-				sVal += _T(" m:val=\"true\" />");
-			else
-				sVal += _T(" />");
+			if (!bVal)
+				sVal += _T(" m:val=\"false\" />");
+
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -3835,6 +3834,12 @@ public:
 			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
 			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+		}
+		else if ( c_oSer_OMathContentType::Lim == type )
+		{
+			GetRunStringWriter().WriteString(CString(_T("<m:lim>")));
+			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
+			GetRunStringWriter().WriteString(CString(_T("</m:lim>")));
 		}
 		else if ( c_oSer_OMathContentType::LimUppPr == type )
 		{

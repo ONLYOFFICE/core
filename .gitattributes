@@ -379,6 +379,7 @@ DoctRenderer/COMMON/Dlls/AVSGraphics.dll svn_mime_002dtype=application%2Foctet-s
 DoctRenderer/COMMON/Dlls/AVSOfficeFOFile.dll svn_mime_002dtype=application%2Foctet-stream
 DoctRenderer/COMMON/Joiner/bin/Debug/Joiner.exe svn_mime_002dtype=application%2Foctet-stream
 DoctRenderer/COMMON/JoinerPPT/bin/Debug/Joiner.exe svn_mime_002dtype=application%2Foctet-stream
+DoctRenderer/COMMON/JoinerXLS/bin/Debug/Joiner.exe svn_mime_002dtype=application%2Foctet-stream
 DoctRenderer/COMMON/TestConsole/Ionic.Zip.Reduced.dll svn_mime_002dtype=application%2Foctet-stream
 OfficeCore/Fonts/FreeType/freetype242_vs2005.lib svn_mime_002dtype=application%2Foctet-stream
 OfficeCore/Test/TestConsole/bin/Debug/Interop.OfficeCore.dll svn_mime_002dtype=application%2Foctet-stream

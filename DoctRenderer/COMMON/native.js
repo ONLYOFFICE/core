@@ -11,6 +11,7 @@ window.__fonts_files = __fonts_files;
 window.__fonts_infos = __fonts_infos;
 
 var document = new Object();
+window.document = document;
 
 function Image()
 {
@@ -120,8 +121,22 @@ native_canvas.prototype =
     toDataUrl : function(type)
     {
         return "";
+    },
+    
+    addEventListener : function()
+    {
     }
 };
+
+window["Asc"] = new Object();
+
+var _null_object = new Object();
+_null_object.addEventListener = function(){};
+_null_object.setAttribute = function(){};
+_null_object.getElementsByTagName = function() { return []; };
+_null_object.appendChild = function() {};
+_null_object.removeChild = function() {};
+_null_object.insertBefore = function() {};
 
 document.createElement = function(type)
 {
@@ -130,8 +145,20 @@ document.createElement = function(type)
         if (type.toLowerCase() == "canvas")
             return new native_canvas();
     }
-    return null;
+    
+    return _null_object;
 }
+
+function _return_empty_html_element() { return _null_object; };
+
+document.createDocumentFragment = _return_empty_html_element;
+document.getElementsByTagName = function() { return []; };
+document.insertBefore = function() {};
+document.getElementById = function() { return undefined; };
+document.createComment = function() { return undefined; };
+
+document.documentElement = _null_object;
+document.body = _null_object;
 
 var native = CreateNativeEngine();
 window.native = native;

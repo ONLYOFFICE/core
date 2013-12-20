@@ -1,0 +1,1 @@
+var CColor = window.CColor;

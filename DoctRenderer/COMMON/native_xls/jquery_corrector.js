@@ -1,0 +1,1 @@
+var jQuery = window.jQuery;var $ = window.$;

@@ -499,6 +499,7 @@ function asc_docs_api(name)
 
 	/************ private!!! **************/
     this.HtmlElementName = name;
+    this.DOCUMENT_TYPE = "document";
 
     this.LoadedObject = null;
     this.DocumentType = 0; // 0 - empty, 1 - test, 2 - document (from json)

@@ -30,8 +30,7 @@ function asc_docs_api(name)
 {
 	/************ private!!! **************/
     this.HtmlElementName = name;
-    this.DOCUMENT_TYPE = "presentation";
-
+    
     this.ThemeLoader = new CThemeLoader();
     this.ThemeLoader.Api = this;
 

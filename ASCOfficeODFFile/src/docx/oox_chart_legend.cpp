@@ -13,20 +13,6 @@ namespace cpdoccore {
 namespace oox {
 
 
-//<c:txPr>
-//	<a:bodyPr/>
-//	<a:lstStyle/>
-//	<a:p>
-//		<a:pPr>
-//			<a:defRPr sz="1340" b="1" i="1" baseline="0">
-//			<a:solidFill><a:schemeClr val="tx2">
-//			<a:lumMod val="75000"/></a:schemeClr>
-//			</a:solidFill></a:defRPr>
-//		</a:pPr>
-//		<a:endParaRPr lang="ru-RU"/>
-//	</a:p>
-//</c:txPr>
-
 void oox_chart_legend::oox_serialize_default_text(std::wostream & _Wostream)
 {
 	if (content_.text_properties_.size()<1)return;

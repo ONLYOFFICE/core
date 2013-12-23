@@ -192,8 +192,8 @@ void table_table::pptx_convert(oox::pptx_conversion_context & Context)
     _Wostream << L"<a:tblGrid>";
 		table_columns_and_groups_.pptx_convert(Context);
     _Wostream << L"</a:tblGrid>";
-
-    table_rows_and_groups_.pptx_convert(Context);
+		
+	table_rows_and_groups_.pptx_convert(Context);
 
     Context.get_table_context().end_table();
     _Wostream << L"</a:tbl>";
@@ -284,7 +284,7 @@ void table_table_column::pptx_convert(oox::pptx_conversion_context & Context)
     }
 }
 
-const wchar_t * emptyParTable = L"<a:txBody><a:bodyPr/><a:p><a:endParaRPr/></a:p></a:txBody>";
+const wchar_t * emptyParTable = L"<a:txBody><a:bodyPr/><a:p></a:p></a:txBody>";//<a:endParaRPr/>
 
 void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -297,14 +297,16 @@ void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 			Context.get_table_context().start_cell();
 			CP_XML_NODE(L"a:tc")
 			{
-				const std::wstring cellStyleName =	table_table_cell_attlist_.table_style_name_ ?
-													table_table_cell_attlist_.table_style_name_->style_name() :
-													Context.get_table_context().get_default_cell_style(); 
+				std::wstring cellStyleName = table_table_cell_attlist_.table_style_name_ ?
+													table_table_cell_attlist_.table_style_name_->style_name() :		//from cell attlist											
+													Context.get_table_context().get_default_cell_style_row();// from row attlist
+
+				if (cellStyleName.length() < 1)cellStyleName = Context.get_table_context().get_default_cell_style(); //from template
 
 				if (table_table_cell_attlist_extra_.table_number_rows_spanned_ > 1)
 				{
 					CP_XML_ATTR(L"rowSpan" , table_table_cell_attlist_extra_.table_number_rows_spanned_);
-				//	CP_XML_ATTR(L"vMerge", true);
+					CP_XML_ATTR(L"vMerge", 1);
 					
 					Context.get_table_context().set_rows_spanned(Context.get_table_context().current_column(), 
 						table_table_cell_attlist_extra_.table_number_rows_spanned_ - 1,
@@ -348,8 +350,7 @@ void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 }
 
 void table_covered_table_cell::pptx_convert(oox::pptx_conversion_context & Context) 
-{
-   
+{   
 	std::wostream & _Wostream = Context.get_table_context().tableData();
 
     for (unsigned int i = 0; i < table_table_cell_attlist_.table_number_columns_repeated_; ++i)

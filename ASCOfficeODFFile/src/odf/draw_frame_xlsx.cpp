@@ -124,7 +124,7 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 		Context.get_drawing_context().set_clipping(strRectClip.substr(5,strRectClip.length()-6));
 	}
 	oox::_oox_fill fill;
-	Compute_GraphicFill(properties, Context.root()->odf_context().drawStyles() ,fill);	
+	Compute_GraphicFill(properties.common_draw_fill_attlist_, Context.root()->odf_context().drawStyles() ,fill);	
 	Context.get_drawing_context().set_fill(fill);
 ////////////////////////////////////////////////
     //BOOST_FOREACH(office_element_ptr const & elm, content_)

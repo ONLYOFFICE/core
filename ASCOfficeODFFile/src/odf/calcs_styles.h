@@ -1,10 +1,10 @@
-#ifndef _CPDOCCORE_CALC_STYLES_H_INCLUDED_
-#define _CPDOCCORE_CALC_STYLES_H_INCLUDED_
+#pragma once
 
 #include "style_graphic_properties.h"
 #include "style_text_properties.h"
 #include "style_paragraph_properties.h"
 #include "style_table_properties.h"
+#include "style_presentation.h"
 
 #include "odfcontext.h"
 #include <vector>
@@ -26,5 +26,3 @@ style_table_cell_properties_attlist calc_table_cell_properties(const std::vector
 
 }
 }
-
-#endif

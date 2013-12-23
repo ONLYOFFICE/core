@@ -353,7 +353,7 @@ void oox_serialize_tcPr(std::wostream & strm, const odf::style_instance* style_i
 
 				odf::graphic_format_properties style_graphic = odf::calc_graphic_properties_content(instances);
 				
-				odf::Compute_GraphicFill(style_graphic, Context.root()->odf_context().drawStyles() ,fill);	
+				odf::Compute_GraphicFill(style_graphic.common_draw_fill_attlist_, Context.root()->odf_context().drawStyles() ,fill);	
 				
 				if (fill.bitmap)
 				{

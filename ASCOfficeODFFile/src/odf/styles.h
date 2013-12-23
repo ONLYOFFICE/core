@@ -49,6 +49,7 @@ class style_table_row_properties;
 class style_table_column_properties;
 class style_chart_properties;
 class style_table_properties;
+class style_drawing_page_properties;
 
 class style_content : noncopyable
 {
@@ -57,17 +58,17 @@ public:
     
 	void docx_convert(oox::docx_conversion_context & Context);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
-	//void pptx_convert(oox::pptx_conversion_context & Context);
    
-    style_text_properties * get_style_text_properties() const;
-    style_paragraph_properties * get_style_paragraph_properties() const;
-    style_graphic_properties * get_style_graphic_properties() const;
-    style_table_properties * get_style_table_properties() const;
-    style_section_properties * get_style_section_properties() const;
-    style_table_cell_properties * get_style_table_cell_properties() const;
-    style_table_row_properties * get_style_table_row_properties() const;
+    style_text_properties *			get_style_text_properties() const;
+    style_paragraph_properties *	get_style_paragraph_properties() const;
+    style_graphic_properties *		get_style_graphic_properties() const;
+    style_table_properties *		get_style_table_properties() const;
+    style_section_properties *		get_style_section_properties() const;
+    style_table_cell_properties *	get_style_table_cell_properties() const;
+    style_table_row_properties *	get_style_table_row_properties() const;
     style_table_column_properties * get_style_table_column_properties() const;
-    style_chart_properties * get_style_chart_properties() const;
+    style_chart_properties *		get_style_chart_properties() const;
+	style_drawing_page_properties*	get_style_drawing_page_properties() const;
 
 private:
     style_family style_family_;
@@ -82,6 +83,7 @@ private:
     office_element_ptr style_chart_properties_;
     office_element_ptr style_graphic_properties_;
     office_element_ptr style_table_cell_properties_;
+	office_element_ptr style_drawing_page_properties_;
 
 };
 
@@ -395,9 +397,11 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
-    office_element_ptr_array style_master_page_;
-    office_element_ptr style_handout_master_; // TODO
-    office_element_ptr draw_layer_set_; // TODO
+    office_element_ptr_array style_master_page_;	// разметки тем
+    office_element_ptr style_handout_master_;		// разметки для принтера - .. второстепенно
+    office_element_ptr draw_layer_set_;				// необязательно .. так как слои все равно не поддерживаются в мс.
+													// то есть не будут объекты объеденены по признаку слоя
+													// зы. не путать с обычной группировкой
 
     friend class odf_document;
 };
@@ -412,11 +416,12 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     
 public:
-    _CP_OPT(style_ref) style_name_;
-    _CP_OPT(std::wstring) style_display_name_;
-    _CP_OPT(style_ref) style_page_layout_name_;
-    _CP_OPT(style_ref) draw_style_name_;
-    _CP_OPT(style_ref) style_next_style_name_;
+    _CP_OPT(style_ref)		style_name_;
+    _CP_OPT(std::wstring)	style_display_name_;
+    _CP_OPT(style_ref)		style_page_layout_name_;
+    
+	_CP_OPT(std::wstring)	draw_style_name_;
+    _CP_OPT(style_ref)		style_next_style_name_;
 };
 
 /// \class  style_master_page
@@ -478,17 +483,17 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 private:
-    styles styles_;
+    styles		styles_;
 	draw_styles draw_styles_;	
-	templates templates_;	
+	templates	templates_;	
 	
 	office_element_ptr_array style_default_style_;
 	office_element_ptr_array style_presentation_page_layout_;
     
-	office_element_ptr text_outline_style_; // < TODO
-    office_element_ptr_array text_notes_configuration_; // < TODO
-    office_element_ptr text_bibliography_configuration_; // < TODO
-    office_element_ptr text_linenumbering_configuration_; // < TODO
+	office_element_ptr			text_outline_style_; // < TODO
+    office_element_ptr_array	text_notes_configuration_; // < TODO
+    office_element_ptr			text_bibliography_configuration_; // < TODO
+    office_element_ptr			text_linenumbering_configuration_; // < TODO
 
     friend class odf_document;
     

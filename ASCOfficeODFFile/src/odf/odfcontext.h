@@ -327,16 +327,16 @@ private:
 class odf_read_context
 {
 public:
-    styles_container &		styleContainer() { return major_style_container_; }
-    page_layout_container & pageLayoutContainer() { return page_layout_container_; }
-    fonts_container &		fontContainer() { return fonts_container_; }
-    list_style_container &	listStyleContainer() { return list_style_container_; }
+    styles_container &		styleContainer()		{ return major_style_container_; }
+    page_layout_container & pageLayoutContainer()	{ return page_layout_container_; }
+    fonts_container &		fontContainer()			{ return fonts_container_; }
+    list_style_container &	listStyleContainer()	{ return list_style_container_; }
     
-	notes_configuration &	noteConfiguration() { return notes_configuration_; }
+	notes_configuration &	noteConfiguration()		{ return notes_configuration_; }
    
-	styles_lite_container &	numberStyles() { return number_style_container_; }
-    styles_lite_container &	drawStyles() { return draw_style_container_; }
-	styles_lite_container &	Templates() { return template_container_; }
+	styles_lite_container &	numberStyles()			{ return number_style_container_; }
+    styles_lite_container &	drawStyles()			{ return draw_style_container_; }
+	styles_lite_container &	Templates()				{ return template_container_; }
 
 private:
     styles_container		major_style_container_;

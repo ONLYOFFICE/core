@@ -21,6 +21,7 @@ public:
     void start_slide();
 	void end_slide(){}
 
+///////////////////////////////////////////////////////////////////////////////////////////
 	void set_rect(double width_pt, double height_pt, double x_pt, double y_pt);
 
 	void set_translate(double x_pt, double y_pt);
@@ -50,15 +51,18 @@ public:
     void end_shape();
 	
 	bool empty() const;
-
+//////////////////////////////////////////////////////////////////////////////////////////////
 	void serialize(std::wostream & strm);
-	void serialize_background(std::wostream & strm);
+	void serialize_background(std::wostream & strm, bool always=false);
 	
 	void dump_rels(rels & Rels);
 
 	void process_drawings();
 
 	mediaitems & get_mediaitems();
+
+	void add_background(_oox_fill & fill);
+
 
 	void add_rels( bool isInternal,
         std::wstring const & rid,

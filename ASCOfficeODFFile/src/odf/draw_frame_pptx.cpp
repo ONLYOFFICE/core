@@ -124,7 +124,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	properties.apply_to(Context.get_slide_context().get_properties());
 	
 	oox::_oox_fill fill;
-	Compute_GraphicFill(properties, Context.root()->odf_context().drawStyles() ,fill);	
+	Compute_GraphicFill(properties.common_draw_fill_attlist_, Context.root()->odf_context().drawStyles() ,fill);	
 	Context.get_slide_context().set_fill(fill);
 
 	Context.get_slide_context().set_property(odf::_property(L"border_width_left",	Compute_BorderWidth(properties, sideLeft)));

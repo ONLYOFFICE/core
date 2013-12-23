@@ -57,6 +57,40 @@ void apply_length_or_percent(_CP_OPT(length_or_percent) & Value, const _CP_OPT(l
         }
     }
 }
+void common_draw_fill_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"draw:fill-color",	draw_fill_color_); 
+	CP_APPLY_ATTR(L"draw:fill",			draw_fill_); 
+	
+	CP_APPLY_ATTR(L"draw:opacity",		draw_opacity_); 
+	CP_APPLY_ATTR(L"draw:image-opacity",draw_image_opacity_); 
+	
+ 	CP_APPLY_ATTR(L"draw:fill-image-name",		draw_fill_image_name_);
+	CP_APPLY_ATTR(L"draw:fill-gradient-name",	draw_fill_gradient_name_);
+	CP_APPLY_ATTR(L"draw:fill-hatch-name",		draw_fill_hatch_name_);
+	CP_APPLY_ATTR(L"draw:opacity-name",			draw_opacity_name_);
+
+	CP_APPLY_ATTR(L"draw:fill-hatch-solid",		draw_fill_hatch_solid_);
+    CP_APPLY_ATTR(L"style:repeat",				style_repeat_);
+
+}
+
+void common_draw_fill_attlist::apply_from(const common_draw_fill_attlist & Other)
+{
+	_CP_APPLY_PROP2(draw_fill_); 
+	
+ 	_CP_APPLY_PROP2(draw_fill_image_name_);
+	_CP_APPLY_PROP2(draw_fill_gradient_name_);
+	_CP_APPLY_PROP2(draw_fill_hatch_name_);
+	_CP_APPLY_PROP2(draw_opacity_name_);
+
+	_CP_APPLY_PROP2(draw_opacity_); 
+	_CP_APPLY_PROP2(draw_image_opacity_); 
+	_CP_APPLY_PROP2(draw_fill_hatch_solid_);
+
+	_CP_APPLY_PROP2(style_repeat_);
+	_CP_APPLY_PROP2(draw_fill_color_); 
+}
 
 void common_horizontal_margin_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {

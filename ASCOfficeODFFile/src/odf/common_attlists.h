@@ -22,6 +22,7 @@
 #include "linewidth.h"
 #include "presentationclass.h"
 #include "xlink.h"
+#include "drawfill.h"
 
 #define _CP_APPLY_PROP(A, B) \
     if (B) \
@@ -36,6 +37,29 @@ namespace odf {
 
 void apply_line_width(_CP_OPT(line_width) & A, const _CP_OPT(line_width) & B);
 void apply_length_or_percent(_CP_OPT(length_or_percent) & Value, const _CP_OPT(length_or_percent) & Other);
+
+// common_draw_fill_attlist
+class common_draw_fill_attlist	
+{
+public:
+    void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    void apply_from(const common_draw_fill_attlist & Other);
+
+	_CP_OPT(percent)			draw_opacity_;	
+	_CP_OPT(percent)			draw_image_opacity_;
+
+	_CP_OPT(draw_fill)			draw_fill_;
+
+	_CP_OPT(color)				draw_fill_color_;
+	
+	_CP_OPT(std::wstring)		draw_fill_image_name_;
+	_CP_OPT(std::wstring)		draw_fill_gradient_name_;
+	_CP_OPT(std::wstring)		draw_fill_hatch_name_;
+	_CP_OPT(std::wstring)		draw_opacity_name_;
+	
+	_CP_OPT(bool)				draw_fill_hatch_solid_;
+	_CP_OPT(std::wstring)		style_repeat_;//no-repeat,repeat,stretch
+};
 
 // common-horizontal-margin-attlist
 class common_horizontal_margin_attlist

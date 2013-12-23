@@ -3,6 +3,11 @@ var window = new Object();
 var navigator = new Object();
 navigator.userAgent = "chrome";
 window.navigator = navigator;
+window.location = new Object();
+
+window.location.protocol = "";
+window.location.host = "";
+window.location.href = "";
 
 window.NATIVE_EDITOR_ENJINE = true;
 window.NATIVE_EDITOR_ENJINE_SYNC_RECALC = true;
@@ -234,6 +239,17 @@ function NativeOpenFile()
         var oBinaryFileReader = new BinaryFileReader(_api.DocumentUrl);   
         var doc_bin = window.native.GetFileString(g_file_path);
         oBinaryFileReader.Read(doc_bin, window.asc_wb);
+        
+        _api.wb = new Asc["WorkbookView"](
+					_api.wbModel,
+					_api.controller,
+					_api.handlers,
+					_null_object,
+					_null_object,
+					_api,
+					_api.collaborativeEditing,
+					_api.fontRenderingMode,
+					_api.options);
     }
 }
 
@@ -245,18 +261,7 @@ function NativeCalculateFile()
         window.editor.ShowParaMarks = false;
     }
     else
-    {
-        _api.wb = new Asc["WorkbookView"](
-					_api.wbModel,
-					_api.controller,
-					_api.handlers,
-					_null_object,
-					_null_object,
-					_api,
-					_api.collaborativeEditing,
-					_api.fontRenderingMode,
-					_api.options);
-					
+    {				
 		window.adjustPrint = new asc_CAdjustPrint();
         window.printPagesData = _api.wb.calcPagesPrint(window.adjustPrint);
     }
@@ -264,26 +269,63 @@ function NativeCalculateFile()
 
 function NativeApplyChanges()
 {
-    var _count_main = window.native.GetCountChanges();
-    for (var i = 0; i < _count_main; i++)
+    if (NATIVE_DOCUMENT_TYPE == "presentation" || NATIVE_DOCUMENT_TYPE == "document")
     {
-        var _changes_file = window.native.GetChangesFile(i);
-        var _changes = JSON.parse(window.native.GetFileString(_changes_file));
+        var _count_main = window.native.GetCountChanges();
+        for (var i = 0; i < _count_main; i++)
+        {
+            var _changes_file = window.native.GetChangesFile(i);
+            var _changes = JSON.parse(window.native.GetFileString(_changes_file));
 
-        for (var j = 0; j < _changes.length; j++)
-        {     
-            var Changes = new CCollaborativeChanges();
-            Changes.Set_Id( _changes[j]["id"] );
-            Changes.Set_Data( _changes[j]["data"] );
-            CollaborativeEditing.Add_Changes( Changes );   
+            for (var j = 0; j < _changes.length; j++)
+            {     
+                var Changes = new CCollaborativeChanges();
+                Changes.Set_Id( _changes[j]["id"] );
+                Changes.Set_Data( _changes[j]["data"] );
+                CollaborativeEditing.Add_Changes( Changes );   
+            }
         }
+        CollaborativeEditing.Apply_OtherChanges();
     }
-    CollaborativeEditing.Apply_OtherChanges();    
+    else
+    {
+        var __changes = [];
+        var _count_main = window.native.GetCountChanges();
+        for (var i = 0; i < _count_main; i++)
+        {
+            var _changes_file = window.native.GetChangesFile(i);
+            var _changes = JSON.parse(window.native.GetFileString(_changes_file));
+
+            for (var j = 0; j < _changes.length; j++)
+            {     
+                __changes.push(_changes[j]);   
+            }
+        }
+        
+        _api._coAuthoringInit();
+        _api.CoAuthoringApi.onSaveChanges(__changes, false);
+        _api.collaborativeEditing.applyChanges();
+    }    
 }
 function NativeGetFileString()
 {
-    var oBinaryFileWriter = new BinaryFileWriter(window.editor.WordControl.m_oLogicDocument);
-    return oBinaryFileWriter.Write();
+    if (NATIVE_DOCUMENT_TYPE == "presentation")
+    {
+        var writer = new CBinaryFileWriter();
+        window.editor.WordControl.m_oLogicDocument.CalculateComments();
+        return writer.WriteDocument(window.editor.WordControl.m_oLogicDocument);
+    }
+    else if (NATIVE_DOCUMENT_TYPE == "document")
+    {
+        var oBinaryFileWriter = new BinaryFileWriter(window.editor.WordControl.m_oLogicDocument);
+        return oBinaryFileWriter.Write();
+    }
+    else
+    {
+        _api.wb._initCommentsToSave();
+		var oBinaryFileWriter = new BinaryFileWriter(_api.wbModel);
+		return oBinaryFileWriter.Write();
+    }
 }
 
 function GetNativeCountPages()

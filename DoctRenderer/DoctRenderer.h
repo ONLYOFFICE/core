@@ -407,19 +407,6 @@ private:
 		CString strDocumentId	= _T("");
 		LONG lPagesCount		= 0;
 
-		if (js_func_open->IsFunction()) 
-		{
-			v8::Handle<v8::Function> func_open = v8::Handle<v8::Function>::Cast(js_func_open);
-
-			func_open->Call(global_js, 1, args);
-			
-			if (try_catch.HasCaught()) 
-			{
-				strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
-				return FALSE;
-			}
-		}
-
 		if (js_func_id->IsFunction()) 
 		{
 			v8::Handle<v8::Function> func_id = v8::Handle<v8::Function>::Cast(js_func_id);
@@ -438,6 +425,19 @@ private:
 		pNative->m_pChanges				= &m_oParams.m_arChanges;
 		pNative->m_strFontsDirectory	= m_oParams.m_strFontsDirectory;
 		pNative->m_strImagesDirectory	= m_oParams.m_strImagesDirectory;
+
+		if (js_func_open->IsFunction()) 
+		{
+			v8::Handle<v8::Function> func_open = v8::Handle<v8::Function>::Cast(js_func_open);
+
+			func_open->Call(global_js, 1, args);
+			
+			if (try_catch.HasCaught()) 
+			{
+				strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+				return FALSE;
+			}
+		}
 
 		if (m_oParams.m_arChanges.GetCount() != 0)
 		{

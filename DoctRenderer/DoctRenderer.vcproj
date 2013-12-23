@@ -200,7 +200,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy $(TargetPath) ..\Redist\DoctRenderer.dll"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy $(TargetPath) ..\Redist\DoctRenderer.dll&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

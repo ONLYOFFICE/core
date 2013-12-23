@@ -121,3 +121,8 @@ Asc["WorkbookView"].prototype.init = function (fontRenderingMode) {
 	this.clipboard.init();
 	return this;
 };
+
+Asc["spreadsheet_api"].prototype._loadFonts = function(_fonts, callback)
+{
+    return callback();
+};

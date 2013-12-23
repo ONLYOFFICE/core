@@ -8,6 +8,7 @@
 #include "../odf/odfcontext.h"
 #include "../odf/draw_common.h"
 #include "../odf/calcs_styles.h"
+#include "../odf/borderstyle.h"
 
 #include "logging.h"
 
@@ -93,7 +94,8 @@ bool pptx_table_state::start_covered_cell(pptx_conversion_context & Context)
     if (columns_spanned_num_ == 0 && rows_spanned_[current_table_column_].num() > 0)
     {
         closeTag = true;
-        _Wostream << L"<a:tc vMerge=\"1\"";
+        _Wostream << L"<a:tc";
+		_Wostream << L" vMerge=\"1\"";
 
 		if (rows_spanned_[current_table_column_].column_spanned() > 0)
             _Wostream << L" gridSpan=\"" << rows_spanned_[current_table_column_].column_spanned() + 1 << "\"";
@@ -182,6 +184,102 @@ unsigned int pptx_table_state::current_rows_spanned(unsigned int Column) const
         return rows_spanned_[Column].num();
     }
 }
+
+struct pptx_border_edge
+{
+	bool present;
+	std::wstring color;
+	int width;
+	std::wstring cmpd;
+	std::wstring prstDash;
+};
+
+void convert_border_style(const std::wstring& odfBorderStyle,pptx_border_edge & border)
+{
+    odf::border_style borderStyle(odfBorderStyle);
+	
+	border.cmpd = L"sng";
+	border.prstDash = L"solid";
+    
+	if (borderStyle.initialized())
+    {
+        if (borderStyle.get_style() == L"none" || borderStyle.get_style().empty())
+		{
+			border.present = false;
+		}
+        else if (borderStyle.get_style() == L"double")
+		{
+            border.cmpd = L"dbl";
+		}
+        else if (borderStyle.get_style() == L"dotted")
+		{
+            border.prstDash = L"dot";
+		}
+        else if (borderStyle.get_style() == L"dashed")
+		{
+             border.prstDash = L"dash";
+		}
+        else if (borderStyle.get_style() == L"long-dash")
+		{
+             border.prstDash = L"lgDash";
+		}
+         else if (borderStyle.get_style() == L"dot-dash")
+		{
+             border.prstDash = L"dashDot";
+		}
+         else if (borderStyle.get_style() == L"dot-dot-dash")
+		{
+             border.prstDash = L"lgDashDotDot";
+		}
+	}
+}
+//dbl (Double Lines) Double lines of equal width
+//sng (Single Line) Single line: one normal width
+//thickThin (Thick Thin Double Lines) Double lines: one thick, one thin
+//thinThick (Thin Thick Double Lines) Double lines: one thin, one thick
+//tri (Thin Thick Thin Triple Lines) Three lines: thin, thick, thin
+void process_border(pptx_border_edge & borderEdge, const _CP_OPT(std::wstring) & odfBorderStyle)
+{
+	borderEdge.present = false;
+    if (odfBorderStyle)
+    {
+ 		borderEdge.present = true;
+
+        odf::border_style borderStyle(*odfBorderStyle);
+
+        borderEdge.color = borderStyle.get_color().get_hex_value();
+		borderEdge.width = boost::lexical_cast<int>(borderStyle.get_length().get_value_unit(odf::length::emu));
+        
+		convert_border_style(*odfBorderStyle,borderEdge);
+   }
+}
+void oox_serialize_border(std::wostream & strm, std::wstring Node, pptx_border_edge & content)
+{
+	if (content.present == false) return;
+
+	CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE(Node)
+		{	
+			CP_XML_ATTR(L"w", content.width);
+			//CP_XML_ATTR(L"cap", L"flat");
+			CP_XML_ATTR(L"cmpd", content.cmpd);
+			//CP_XML_ATTR(L"algn", L"ctr");
+			
+			CP_XML_NODE(L"a:solidFill")
+			{
+				_CP_OPT(double) opacity;
+				oox_serialize_srgb(CP_XML_STREAM(),content.color,opacity);
+			}
+			
+			CP_XML_NODE(L"a:prstDash")
+			{
+				CP_XML_ATTR(L"val", content.prstDash);
+			}
+		}
+	}
+}
+
 void oox_serialize_tcPr(std::wostream & strm, const odf::style_instance* style_inst, oox::pptx_conversion_context & Context)
 {
 	const odf::style_instance * default_style_inst = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::TableCell);
@@ -234,6 +332,23 @@ void oox_serialize_tcPr(std::wostream & strm, const odf::style_instance* style_i
 				//vert //
 				//style_cell_attlist.pptx_serialize(Context, CP_XML_STREAM());    //nodes        
 
+
+
+				odf::paragraph_format_properties style_paragraph = odf::calc_paragraph_properties_content(style_inst);//instances);
+
+				pptx_border_edge left,top,bottom,right;
+				
+				process_border(left,style_paragraph.fo_border_left_);
+				process_border(top,style_paragraph.fo_border_top_);
+				process_border(right,style_paragraph.fo_border_right_);
+				process_border(bottom,style_paragraph.fo_border_bottom_);
+
+				oox_serialize_border(CP_XML_STREAM(), L"a:lnL",left);
+				oox_serialize_border(CP_XML_STREAM(), L"a:lnR",right);
+				oox_serialize_border(CP_XML_STREAM(), L"a:lnT",top);
+				oox_serialize_border(CP_XML_STREAM(), L"a:lnB",bottom);
+				//диагональных в оо нет.
+	////////////////////////////////////////////////////////////////////////////////////////////////			
 				oox::_oox_fill fill;
 
 				odf::graphic_format_properties style_graphic = odf::calc_graphic_properties_content(instances);
@@ -247,7 +362,11 @@ void oox_serialize_tcPr(std::wostream & strm, const odf::style_instance* style_i
 					fill.bitmap->rId = Context.get_slide_context().get_mediaitems().add_or_find(fill.bitmap->xlink_href_, oox::mediaitems::typeImage, isMediaInternal, ref);
 					Context.get_slide_context().add_rels(isMediaInternal,fill.bitmap->rId, ref, oox::mediaitems::typeImage);
 				}
-				oox::oox_serialize_fill(CP_XML_STREAM(), fill);
+				oox::oox_serialize_fill(CP_XML_STREAM(), fill);				
+/////////////////////////////////////////////////////////////////////////////////
+//headers (Header Cells Associated With Table Cell) §21.1.3.4
+//lnBlToTr (Bottom-Left to Top-Right Border Line Properties) §21.1.3.6
+//lnTlToBr (Top-Left to Bottom-Right Border Line Properties)
 			}
 		}
 	}

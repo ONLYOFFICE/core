@@ -1,5 +1,3 @@
-#ifndef _CPDOCCORE_XLSX_BORDER_H_INCLUDED_
-#define _CPDOCCORE_XLSX_BORDER_H_INCLUDED_
 #pragma once
 
 #include <iosfwd>
@@ -69,6 +67,3 @@ struct xlsx_border
 
 }
 }
-
-#endif
-

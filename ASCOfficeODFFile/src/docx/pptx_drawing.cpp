@@ -39,7 +39,7 @@ void pptx_serialize_text(std::wostream & strm, const std::vector<odf::_property>
 			{				
 				CP_XML_NODE(L"a:p")//empty a:p
 				{
-					CP_XML_NODE(L"a:endParaRPr");
+					//CP_XML_NODE(L"a:endParaRPr");
 				}
 			}
 		}

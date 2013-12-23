@@ -20,19 +20,19 @@ using xml::xml_char_wc;
 //////////////////////////////////////////////////////////////////////////////////////////////////
 void table_table_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"table:name", table_name_);
-    CP_APPLY_ATTR(L"table:style-name", table_style_name_);
-    CP_APPLY_ATTR(L"table:table-template-name", table_template_name_);
+    CP_APPLY_ATTR(L"table:name",			table_name_);
+    CP_APPLY_ATTR(L"table:style-name",		table_style_name_);
+    CP_APPLY_ATTR(L"table:template-name",	table_template_name_);
 
-    CP_APPLY_ATTR(L"table:protected", table_protected_, false);
-    CP_APPLY_ATTR(L"table:protection-key", table_protection_key_); 
-    CP_APPLY_ATTR(L"table:print", table_print_, true);
-    CP_APPLY_ATTR(L"table:print-ranges", table_print_ranges_);
+    CP_APPLY_ATTR(L"table:protected",		table_protected_, false);
+    CP_APPLY_ATTR(L"table:protection-key",	table_protection_key_); 
+    CP_APPLY_ATTR(L"table:print",			table_print_, true);
+    CP_APPLY_ATTR(L"table:print-ranges",	table_print_ranges_);
 	
-	CP_APPLY_ATTR(L"table:use-first-row-styles", table_use_first_row_styles_,false);
-	CP_APPLY_ATTR(L"table:use-banding-rows-styles", table_use_banding_rows_styles_,false);
-	CP_APPLY_ATTR(L"table:use-banding-columns-styles", table_use_banding_columns_styles_,false);
-	CP_APPLY_ATTR(L"table:use-first-column-styles", table_use_first_column_styles_,false);
+	CP_APPLY_ATTR(L"table:use-first-row-styles",		table_use_first_row_styles_,false);
+	CP_APPLY_ATTR(L"table:use-banding-rows-styles",		table_use_banding_rows_styles_,false);
+	CP_APPLY_ATTR(L"table:use-banding-columns-styles",	table_use_banding_columns_styles_,false);
+	CP_APPLY_ATTR(L"table:use-first-column-styles",		table_use_first_column_styles_,false);
 
 }
 

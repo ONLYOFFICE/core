@@ -125,18 +125,43 @@ native_canvas.prototype =
     
     addEventListener : function()
     {
-    }
+    },
+    
+    attr : function()
+    {
+    } 
 };
 
 window["Asc"] = new Object();
 
 var _null_object = new Object();
+_null_object.length = 0;
+_null_object.nodeType = 1;
+_null_object.offsetWidth = 1;
+_null_object.offsetHeight = 1;
+_null_object.clientWidth = 1;
+_null_object.clientHeight = 1;
+_null_object.scrollWidth = 1;
+_null_object.scrollHeight = 1;
+_null_object.style = new Object();
+_null_object.documentElement = _null_object;
+_null_object.body = _null_object;
 _null_object.addEventListener = function(){};
 _null_object.setAttribute = function(){};
 _null_object.getElementsByTagName = function() { return []; };
 _null_object.appendChild = function() {};
 _null_object.removeChild = function() {};
 _null_object.insertBefore = function() {};
+_null_object.childNodes = [];
+_null_object.parent = _null_object;
+_null_object.parentNode = _null_object;
+_null_object.find = function() { return this; };
+_null_object.appendTo = function() { return this; };
+_null_object.css = function() { return this; };
+_null_object.width = function() { return 0; };
+_null_object.height = function() { return 0; };
+_null_object.attr = function() { return this; };
+_null_object.remove = function() {};
 
 document.createElement = function(type)
 {
@@ -152,8 +177,15 @@ document.createElement = function(type)
 function _return_empty_html_element() { return _null_object; };
 
 document.createDocumentFragment = _return_empty_html_element;
-document.getElementsByTagName = function() { return []; };
+document.getElementsByTagName = function(tag) { 
+    var ret = [];
+    if ("head" == tag)
+        ret.push(_null_object);
+    return ret;
+};
 document.insertBefore = function() {};
+document.appendChild = function() {};
+document.removeChild = function() {};
 document.getElementById = function() { return undefined; };
 document.createComment = function() { return undefined; };
 
@@ -190,11 +222,16 @@ function NativeOpenFile()
         _api = new spreadsheet_api("", "");
         _api.DocumentUrl = "TeamlabNative";
         
-        window.asc_wb = new Workbook(_api.DocumentUrl, _api.handlers, _api);
+        Asc["editor"] = _api;
+        
+        _api.User = new Asc["asc_CUser"];
+		_api.User.asc_setId("TM");
+		_api.User.asc_setUserName("native");
+        
+        window.asc_wb = new Workbook(_api.DocumentUrl, _api.handlers, _api);   
         _api.initGlobalObjects(window.asc_wb);
         _api.wbModel = window.asc_wb;
-        var oBinaryFileReader = new BinaryFileReader(_api.DocumentUrl);
-        
+        var oBinaryFileReader = new BinaryFileReader(_api.DocumentUrl);   
         var doc_bin = window.native.GetFileString(g_file_path);
         oBinaryFileReader.Read(doc_bin, window.asc_wb);
     }
@@ -209,8 +246,19 @@ function NativeCalculateFile()
     }
     else
     {
-        window.adjustPrint = new asc_CAdjustPrint();
-        window.printPagesData = window.asc_wb.calcPagesPrint(window.adjustPrint);
+        _api.wb = new Asc["WorkbookView"](
+					_api.wbModel,
+					_api.controller,
+					_api.handlers,
+					_null_object,
+					_null_object,
+					_api,
+					_api.collaborativeEditing,
+					_api.fontRenderingMode,
+					_api.options);
+					
+		window.adjustPrint = new asc_CAdjustPrint();
+        window.printPagesData = _api.wb.calcPagesPrint(window.adjustPrint);
     }
 }
 
@@ -285,10 +333,21 @@ function GetNativePageBase64(pageIndex)
     else
     {
         // TODO: заменить на нормальную память
-        var pdf_writer = new CPdfPrinter(_api.wbModel.sUrlPath);
-        var isEndPrint = window.asc_wb.printSheet(pdf_writer, window.printPagesData);
-
-        return pdf_writer.DocumentRenderer.Memory.GetBase64Memory();
+        if (native_renderer == null)
+        {
+            native_renderer = new CPdfPrinter(_api.wbModel.sUrlPath);
+            
+            native_renderer.DocumentRenderer.Memory					= CreateNativeMemoryStream();
+            native_renderer.DocumentRenderer.VectorMemoryForPrint	= CreateNativeMemoryStream();
+        }
+        else
+        {
+            native_renderer.DocumentRenderer.Memory.ClearNoAttack();
+            native_renderer.DocumentRenderer.VectorMemoryForPrint.ClearNoAttack();
+        }
+        
+        var isEndPrint = _api.wb.printSheet(native_renderer, window.printPagesData);
+        return native_renderer.DocumentRenderer.Memory;
     }
 
     //return native_renderer.Memory.GetBase64Memory();    
@@ -300,9 +359,12 @@ function GetNativeId()
     return window.native.GetFileId();
 }
 
-function clearTimeout()
-{
-}
-function setTimeout()
-{
-}
+function clearTimeout() {};
+function setTimeout() {};
+function clearInterval() {};
+function setInterval() {};
+
+window.clearTimeout = clearTimeout;
+window.setTimeout = setTimeout;
+window.clearInterval = clearInterval;
+window.setInterval = setInterval;

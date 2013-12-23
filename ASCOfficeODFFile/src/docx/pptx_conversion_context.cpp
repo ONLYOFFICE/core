@@ -425,7 +425,7 @@ void pptx_conversion_context::end_layout()
 
 void pptx_conversion_context::end_master()
 {
-	get_slide_context().serialize_background(current_master().Background());
+	get_slide_context().serialize_background(current_master().Background(),true);
 	get_slide_context().serialize(current_master().Data());
 	get_slide_context().dump_rels(current_master().Rels());//hyperlinks, mediaitems, ...
 

@@ -313,7 +313,7 @@ void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr
 }
 
 
-void Compute_GraphicFill(graphic_format_properties & props, styles_lite_container &styles, oox::_oox_fill & fill)
+void Compute_GraphicFill(const common_draw_fill_attlist & props, styles_lite_container &styles, oox::_oox_fill & fill)
 {
 	fill.type = 0; 
 

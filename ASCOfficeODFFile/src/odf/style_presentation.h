@@ -50,18 +50,16 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     void apply_from(const drawing_page_properties & Other);
 
-////////////
+	common_draw_fill_attlist common_draw_fill_attlist_;
 
-	_CP_OPT(draw_fill)		draw_fill_;
-	_CP_OPT(std::wstring)	draw_fill_image_name_;
-	_CP_OPT(color)			draw_fill_color_;
-
-	//draw:fill-hatch-name
-	//draw:fill-gradient-name
+	_CP_OPT(length)			draw_fill_image_height_;
+	_CP_OPT(length)			draw_fill_image_width_;
 	
+	_CP_OPT(std::wstring)	draw_background_size_;//"border" or "full"
 	//_CP_OPT(std::wstring) presentation_transition_type_;
 	//presentation:transition-style
 	//presentation:transition-speed
+	
 	//presentation:display-footer
 	//presentation:display-page-number
 	//presentation:display-date-time
@@ -86,16 +84,14 @@ public:
     static const ElementType type = typeStyleDrawingPageProperties;
 
     CPDOCCORE_DEFINE_VISITABLE();
+	
+	const drawing_page_properties & content() const { return drawing_page_properties_; }
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     //virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-	const drawing_page_properties & content() const { return drawing_page_properties_; }
-
- 
-public:
 	drawing_page_properties drawing_page_properties_;
 };
 

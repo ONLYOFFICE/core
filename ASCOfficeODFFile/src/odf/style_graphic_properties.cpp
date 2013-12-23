@@ -14,22 +14,11 @@ using xml::xml_char_wc;
 
 void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"draw:fill-color",	draw_fill_color_); 
-	CP_APPLY_ATTR(L"draw:fill",			draw_fill_); 
-	
-	CP_APPLY_ATTR(L"draw:opacity",		draw_opacity_); 
-	CP_APPLY_ATTR(L"draw:image-opacity",draw_image_opacity_); 
-	
- 	CP_APPLY_ATTR(L"draw:fill-image-name",		draw_fill_image_name_);
-	CP_APPLY_ATTR(L"draw:fill-gradient-name",	draw_fill_gradient_name_);
-	CP_APPLY_ATTR(L"draw:fill-hatch-name",		draw_fill_hatch_name_);
-	CP_APPLY_ATTR(L"draw:opacity-name",			draw_opacity_name_);
+	common_draw_fill_attlist_.add_attributes(Attributes);
 
 	CP_APPLY_ATTR(L"draw:wrap-influence-on-position", draw_wrap_influence_on_position_);
 	CP_APPLY_ATTR(L"draw:textarea-horizontal-align", draw_textarea_horizontal_align_);
 	CP_APPLY_ATTR(L"draw:textarea-vertical-align", draw_textarea_vertical_align_);
-
-	CP_APPLY_ATTR(L"draw:fill-hatch-solid",		draw_fill_hatch_solid_);
 	
 	CP_APPLY_ATTR(L"draw:stroke",		draw_stroke_); 
 	CP_APPLY_ATTR(L"draw:stroke-dash",	draw_stroke_dash_); 
@@ -57,7 +46,6 @@ void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & A
     CP_APPLY_ATTR(L"style:flow-with-text", style_flow_with_text_);
     CP_APPLY_ATTR(L"style:overflow-behavior", style_overflow_behavior_);
     CP_APPLY_ATTR(L"style:mirror", style_mirror_);
-    CP_APPLY_ATTR(L"style:repeat", style_repeat_);
 	
 	common_draw_rel_size_attlist_.add_attributes(Attributes);
 	common_horizontal_margin_attlist_.add_attributes(Attributes);
@@ -78,7 +66,7 @@ void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & A
 
 void graphic_format_properties::apply_to(std::vector<_property> & properties)
 {
-	if (draw_fill_color_)	properties.push_back(_property(L"fill-color",	draw_fill_color_->get_hex_value() ));
+	if (common_draw_fill_attlist_.draw_fill_color_)	properties.push_back(_property(L"fill-color",	common_draw_fill_attlist_.draw_fill_color_->get_hex_value() ));
 
 	if (draw_stroke_)		properties.push_back(_property(L"stroke",		draw_stroke_->get_type() ));
 	if (svg_stroke_color_)	properties.push_back(_property(L"stroke-color",	svg_stroke_color_->get_hex_value() ));
@@ -94,21 +82,10 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 }
 void graphic_format_properties::apply_from(const graphic_format_properties & Other)
 {
-	_CP_APPLY_PROP2(draw_fill_); 
-	
- 	_CP_APPLY_PROP2(draw_fill_image_name_);
-	_CP_APPLY_PROP2(draw_fill_gradient_name_);
-	_CP_APPLY_PROP2(draw_fill_hatch_name_);
-	_CP_APPLY_PROP2(draw_opacity_name_);
-
-	_CP_APPLY_PROP2(draw_fill_color_); 
 	_CP_APPLY_PROP2(draw_stroke_); 
 	_CP_APPLY_PROP2(draw_stroke_dash_); 
 	_CP_APPLY_PROP2(draw_marker_start_); 
 	_CP_APPLY_PROP2(draw_marker_end_); 
-	_CP_APPLY_PROP2(draw_opacity_); 
-	_CP_APPLY_PROP2(draw_image_opacity_); 
-	_CP_APPLY_PROP2(draw_fill_hatch_solid_);
 	_CP_APPLY_PROP2(draw_textarea_horizontal_align_); 
 	_CP_APPLY_PROP2(draw_textarea_vertical_align_); 
 	
@@ -133,10 +110,10 @@ void graphic_format_properties::apply_from(const graphic_format_properties & Oth
     _CP_APPLY_PROP2(style_flow_with_text_);
     _CP_APPLY_PROP2(style_overflow_behavior_);
     _CP_APPLY_PROP2(style_mirror_);
-	_CP_APPLY_PROP2(style_repeat_);
     _CP_APPLY_PROP2(fo_clip_);
     _CP_APPLY_PROP2(draw_wrap_influence_on_position_);
 
+    common_draw_fill_attlist_.apply_from(Other.common_draw_fill_attlist_);
     common_draw_rel_size_attlist_.apply_from(Other.common_draw_rel_size_attlist_);
     common_horizontal_margin_attlist_.apply_from(Other.common_horizontal_margin_attlist_);
     common_vertical_margin_attlist_.apply_from(Other.common_vertical_margin_attlist_);
@@ -167,7 +144,10 @@ void style_graphic_properties::add_attributes( const xml::attributes_wc_ptr & At
 
 void style_graphic_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-    CP_NOT_APPLICABLE_ELM();
+   // CP_NOT_APPLICABLE_ELM();
+
+	//if (CP_CHECK_NAME(L"text", L"list-style") 	
+	//	styles_.add_child_element(Reader, Ns, Name, getContext()); он тут и не нужен по сути... описание есть и в другом сместе
 }
 
 }

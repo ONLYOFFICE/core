@@ -70,13 +70,21 @@ void style_drawing_page_properties::add_child_element( xml::sax * Reader, const 
 
 void drawing_page_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"draw:fill", draw_fill_);
-	CP_APPLY_ATTR(L"draw:fill-image-name", draw_fill_image_name_);
+	common_draw_fill_attlist_.add_attributes(Attributes);
+
+	CP_APPLY_ATTR(L"draw:fill-image-height",	draw_fill_image_height_);
+	CP_APPLY_ATTR(L"draw:fill-image-width",		draw_fill_image_width_);
+	CP_APPLY_ATTR(L"draw:background-size",		draw_background_size_);
+
 }
 void drawing_page_properties::apply_from(const drawing_page_properties & Other)
 {
-	_CP_APPLY_PROP2(draw_fill_); 
-	_CP_APPLY_PROP2(draw_fill_image_name_); 
+	common_draw_fill_attlist_.apply_from(Other.common_draw_fill_attlist_);
+
+	_CP_APPLY_PROP2(draw_fill_image_height_); 
+	_CP_APPLY_PROP2(draw_fill_image_width_); 
+	
+	_CP_APPLY_PROP2(draw_background_size_); 
 }
 }
 }

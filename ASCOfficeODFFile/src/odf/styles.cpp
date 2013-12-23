@@ -16,10 +16,13 @@
 #include "style_table_properties.h"
 #include "style_graphic_properties.h"
 #include "style_chart_properties.h"
+#include "style_presentation.h"
 
 #include "serialize_elements.h"
 #include <cpdoccore/odf/odf_document.h>
 #include "odfcontext.h"
+
+#include "draw_common.h"
 
 
 
@@ -70,6 +73,10 @@ style_table_column_properties * style_content::get_style_table_column_properties
 style_chart_properties * style_content::get_style_chart_properties() const
 {
     return dynamic_cast<style_chart_properties *>(style_chart_properties_.get());    
+}
+style_drawing_page_properties * style_content::get_style_drawing_page_properties() const
+{
+    return dynamic_cast<style_drawing_page_properties *>(style_drawing_page_properties_.get());
 }
 
 void style_content::xlsx_convert(oox::xlsx_conversion_context & Context)
@@ -148,6 +155,10 @@ void style_content::add_child_element( xml::sax * Reader, const ::std::wstring &
     {
         CP_CREATE_ELEMENT_SIMPLE(style_chart_properties_);    
     }
+	else if CP_CHECK_NAME(L"style", L"drawing-page-properties")
+	{
+		CP_CREATE_ELEMENT_SIMPLE(style_drawing_page_properties_);
+	}
     else
     {
         not_applicable_element(L"style-content", Reader, Ns, Name);
@@ -1160,7 +1171,25 @@ void style_master_page::add_text(const std::wstring & Text)
 
 void style_master_page::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(office_element_ptr elm, content_)
+	if (style_master_page_attlist_.draw_style_name_)
+	{
+		std::wstring style_name = style_master_page_attlist_.draw_style_name_.get();
+		style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name,style_family::DrawingPage,true);
+		
+		if ((style_inst) && (style_inst->content()))
+		{
+			const style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
+
+			if (properties)
+			{				
+				oox::_oox_fill fill;
+				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, Context.root()->odf_context().drawStyles() ,fill);
+				Context.get_slide_context().add_background(fill);
+			}
+		}
+	}
+	
+	BOOST_FOREACH(office_element_ptr elm, content_)
     {
 		elm->pptx_convert(Context);
 	}

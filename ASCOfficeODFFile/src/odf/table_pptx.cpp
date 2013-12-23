@@ -175,7 +175,7 @@ void table_table::pptx_convert(oox::pptx_conversion_context & Context)
 		{
 			const graphic_format_properties & style_graphic = inst->content()->get_style_graphic_properties()->content();
 			oox::_oox_fill fill;
-			Compute_GraphicFill((graphic_format_properties &)style_graphic, Context.root()->odf_context().drawStyles() ,fill);	
+			Compute_GraphicFill(style_graphic.common_draw_fill_attlist_, Context.root()->odf_context().drawStyles() ,fill);	
 
 			if (fill.bitmap)
 			{

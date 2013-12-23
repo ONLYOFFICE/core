@@ -22,7 +22,6 @@
 #include "linestyle.h"
 #include "markerstyle.h"
 #include "verticalalign.h"
-#include "drawfill.h"
 #include "gradientstyle.h"
 
 
@@ -48,21 +47,6 @@ public:
     _CP_OPT(length_or_percent) fo_max_width_;
     _CP_OPT(length_or_percent) fo_max_height_;
 
-////////////////////////////////	
-	_CP_OPT(percent)			draw_opacity_;	
-	_CP_OPT(percent)			draw_image_opacity_;
-
-	_CP_OPT(draw_fill)			draw_fill_;
-
-	_CP_OPT(color)				draw_fill_color_;
-	
-	_CP_OPT(std::wstring)		draw_fill_image_name_;
-	_CP_OPT(std::wstring)		draw_fill_gradient_name_;
-	_CP_OPT(std::wstring)		draw_fill_hatch_name_;
-	_CP_OPT(std::wstring)		draw_opacity_name_;
-	
-	_CP_OPT(bool)				draw_fill_hatch_solid_;
-	_CP_OPT(std::wstring)		style_repeat_;//no-repeat,repeat,stretch
 ///////////////////////////////
 	_CP_OPT(color)				svg_stroke_color_;
 	_CP_OPT(length_or_percent)	svg_stroke_opacity_;
@@ -76,11 +60,13 @@ public:
 	_CP_OPT(text_align)			draw_textarea_horizontal_align_;
 	_CP_OPT(vertical_align)		draw_textarea_vertical_align_;
 	
-    common_horizontal_margin_attlist common_horizontal_margin_attlist_;
+	common_draw_fill_attlist			common_draw_fill_attlist_;
+  
+	common_horizontal_margin_attlist	common_horizontal_margin_attlist_;
 
-    common_vertical_margin_attlist common_vertical_margin_attlist_;
+    common_vertical_margin_attlist		common_vertical_margin_attlist_;
 
-    common_margin_attlist common_margin_attlist_;
+    common_margin_attlist				common_margin_attlist_;
 
     _CP_OPT(bool) style_print_content_;
 

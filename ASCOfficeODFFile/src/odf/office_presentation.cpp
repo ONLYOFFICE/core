@@ -20,7 +20,7 @@ const wchar_t * office_presentation::name = L"presentation";
 
 void office_presentation::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-	if CP_CHECK_NAME(L"draw", L"page") 
+	if	CP_CHECK_NAME(L"draw", L"page") 
 		CP_CREATE_ELEMENT(pages_);
 	else if CP_CHECK_NAME(L"presentation", L"footer-decl") 
 		CP_CREATE_ELEMENT(footer_decl_);

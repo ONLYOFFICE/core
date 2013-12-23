@@ -34,6 +34,8 @@ public:
 	std::vector<drawing_object_description> shapes_;
 	std::vector<drawing_object_description> tables_;
 
+	_CP_OPT(_oox_fill)	background_fill_;
+
     void add_drawing(_pptx_drawing const & d,
         bool isInternal,
         std::wstring const & rid,
@@ -63,6 +65,9 @@ public:
 		charts_.clear();
 		shapes_.clear();
 		tables_.clear();
+		
+		background_fill_ = boost::none;
+		
 		rId_ = 1;
 
 		pptx_drawings_ = pptx_drawings::create();
@@ -95,6 +100,7 @@ void pptx_slide_context::start_slide()
 {    
 	impl_->clear();
 	hlinks_size_ = 0;
+	
 	default_set();
 }
 void pptx_slide_context::default_set()
@@ -194,6 +200,19 @@ std::wstring pptx_slide_context::add_hyperlink(std::wstring const & ref,bool obj
 	impl_->object_description_.hlinks_.push_back(desc);
 
 	return hId;
+}
+void pptx_slide_context::add_background(_oox_fill & fill)
+{
+	if (fill.bitmap)
+	{
+		bool isMediaInternal = false;
+		std::wstring ref;
+		
+		fill.bitmap->rId = get_mediaitems().add_or_find(fill.bitmap->xlink_href_, oox::mediaitems::typeImage, isMediaInternal, ref);
+		add_rels(isMediaInternal, fill.bitmap->rId, ref, oox::mediaitems::typeImage);
+	}	
+	
+	impl_->background_fill_ = fill;
 }
 void pptx_slide_context::set_name(std::wstring const & name)
 {
@@ -401,15 +420,24 @@ void pptx_slide_context::add_rels( bool isInternal, std::wstring const & rid, st
 	impl_->add_drawing(isInternal, rid, ref, type);
 }
 
-void pptx_slide_context::serialize_background(std::wostream & strm)
+void pptx_slide_context::serialize_background(std::wostream & strm, bool always)
 {
-    CP_XML_WRITER(strm)
+	if (!always && ( (!impl_->background_fill_) || (impl_->background_fill_->type==0))) return;
+  
+	CP_XML_WRITER(strm)
     {
 		CP_XML_NODE(L"p:bg")
 		{
 			CP_XML_NODE(L"p:bgPr")
 			{
-				CP_XML_NODE(L"a:noFill");
+				if (impl_->background_fill_)
+				{
+					oox_serialize_fill(CP_XML_STREAM(),impl_->background_fill_.get());
+				}
+				else
+				{
+					CP_XML_NODE(L"a:noFill");
+				}
 				CP_XML_NODE(L"a:effectLst");
 			}
 		}

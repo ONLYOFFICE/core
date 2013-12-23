@@ -14,7 +14,7 @@
 #include <cpdoccore/odf/odf_document.h>
 
 #include "calcs_styles.h"
-#include "search_table_cell.h"
+#include "draw_common.h"
 
 #include <cpdoccore/xml/simple_xml_writer.h>
 
@@ -32,6 +32,22 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 
     Context.start_page(pageName, pageStyleName, layoutName,masterName);
 
+	if (draw_page_attr_.draw_style_name_)
+	{
+		style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(pageStyleName,style_family::DrawingPage,false);
+
+		if ((style_inst) && (style_inst->content()))
+		{
+			const style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
+
+			if (properties)
+			{				
+				oox::_oox_fill fill;
+				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, Context.root()->odf_context().drawStyles() ,fill);
+				Context.get_slide_context().add_background(fill);
+			}
+		}
+	}
 	BOOST_FOREACH(const office_element_ptr& elm, content_)
     {
 		elm->pptx_convert(Context);

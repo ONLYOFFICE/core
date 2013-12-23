@@ -98,7 +98,7 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 	}
 	
 	oox::_oox_fill fill;
-	Compute_GraphicFill(properties, Context.root()->odf_context().drawStyles() ,fill);	
+	Compute_GraphicFill(properties.common_draw_fill_attlist_, Context.root()->odf_context().drawStyles() ,fill);	
 	Context.get_drawing_context().set_fill(fill);
 //////////////////////////////////////////////////////////////////////////////////////	
 	Context.get_text_context().start_drawing_content();

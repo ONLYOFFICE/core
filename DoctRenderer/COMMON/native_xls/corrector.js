@@ -126,3 +126,5 @@ Asc["spreadsheet_api"].prototype._loadFonts = function(_fonts, callback)
 {
     return callback();
 };
+
+Asc["asc_CEventsController"].prototype.reinitializeScroll = function() {};

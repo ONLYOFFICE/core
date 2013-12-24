@@ -145,7 +145,10 @@ class ATL_NO_VTABLE CDoctRenderer : public IDoctRenderer
 private:
 	// конвертация и применение изменений
 	CExecuteParams m_oParams;
-	IASCRenderer* m_pRenderer;	
+	IASCRenderer* m_pRenderer;
+
+	CString m_strConfigPath;
+	CAtlArray<CString> m_arrFiles;
 	
 public:
 	CDoctRenderer()
@@ -157,6 +160,35 @@ public:
 
 	HRESULT FinalConstruct()
 	{
+		m_strConfigPath = _T("");
+
+        HINSTANCE hModule  = _AtlBaseModule.GetModuleInstance();
+        TCHAR szPathDLL[MAX_PATH] = {0}; ::GetModuleFileName(hModule, szPathDLL, MAX_PATH);
+
+		m_strConfigPath = CString(szPathDLL);
+
+		int nFind = m_strConfigPath.ReverseFind(TCHAR('\\'));
+		if (-1 != nFind)
+			m_strConfigPath.Delete(nFind, m_strConfigPath.GetLength() - nFind);
+
+		m_strConfigPath += _T("\\DoctRenderer.config");
+
+		XmlUtils::CXmlNode oNode;
+		if (oNode.FromXmlFile(m_strConfigPath))
+		{
+			XmlUtils::CXmlNodes oNodes;
+			if (oNode.GetNodes(_T("file"), oNodes))
+			{
+				int nCount = oNodes.GetCount();
+				XmlUtils::CXmlNode _node;
+				for (int i = 0; i < nCount; ++i)
+				{
+					oNodes.GetAt(i, _node);
+					m_arrFiles.Add(_node.GetText());
+				}
+			}
+		}
+
 		return S_OK;
 	}
 
@@ -185,6 +217,15 @@ public:
 	STDMETHOD(Execute)(BSTR bsXml)
 	{
 		m_oParams.FromXml(bsXml);
+
+		CString strMainPart = _T("");
+		for (size_t i = 0; i < m_arrFiles.GetCount(); ++i)
+		{
+			strMainPart += ReadFileCStringA(m_arrFiles[i]);
+			strMainPart += _T("\n\n");
+		}
+
+		CString strCorrector = _T("");
 
 		LPCTSTR sResource = NULL;
 		switch (m_oParams.m_eSrcFormat)
@@ -227,6 +268,7 @@ public:
 				case DoctRendererFormat::PDF:
 					{
 						sResource = MAKEINTRESOURCE(IDB_SCRIPT_XSLX);
+						strCorrector = _T("var NATIVE_DOCUMENT_TYPE = \"spreadsheet\";$.ready();");
 						break;
 					}
 				default:
@@ -278,7 +320,10 @@ public:
 		strScript += _T("\";\n\n");
 
 		strScript += strAllFonts;
+		strScript += strMainPart;
 		strScript += strResource;
+
+		strScript += strCorrector;
 				
 		BOOL bResult = ExecuteScript(strScript);
 
@@ -350,6 +395,18 @@ private:
 		return pUnicodeString;
 	}
 
+	CString ReadFileCStringA(const CString& strFile)
+	{
+		CFile oFile;
+		HRESULT hr = oFile.OpenFile(strFile);
+		int nSize = (int)oFile.GetFileSize();
+		BYTE* pData = new BYTE[nSize];
+		oFile.ReadFile(pData, (DWORD)nSize);
+		CString sRes((char*)pData, nSize);
+		delete [] pData;
+		return sRes;
+	}
+
 	BOOL ExecuteScript(CString& strScript)
 	{
 		CString strException = _T("");
@@ -372,6 +429,7 @@ private:
 
 		if (try_catch.HasCaught()) 
 		{
+			CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 			strException = to_cstring(try_catch.Message()->Get());
 			return FALSE;
 		}
@@ -380,7 +438,7 @@ private:
 		
 		if (try_catch.HasCaught()) 
 		{
-			int nLineError = try_catch.Message()->GetLineNumber();
+			CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 			strException = to_cstring(try_catch.Message()->Get());
 			return FALSE;
 		}
@@ -436,7 +494,7 @@ private:
 			
 			if (try_catch.HasCaught()) 
 			{
-				int nLineError = try_catch.Message()->GetLineNumber();
+				CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 				strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 				return FALSE;
 			}

@@ -21,13 +21,14 @@ namespace Joiner
             string strRoot = strApplication + "\\OfficeWeb\\";
             List<string> files = new List<string>();
 
-            files.Add("../ServerComponents/DoctRenderer/COMMON/native.js");
-            
-            files.Add("Common/browser.js");
-            files.Add("Common/3rdparty/XRegExp/xregexp-all.js");
-            files.Add("Excel/jquery/jquery-1.7.1.js");
-            files.Add("../ServerComponents/DoctRenderer/COMMON/native_xls/jquery_corrector.js");
+            //files.Add("../ServerComponents/DoctRenderer/COMMON/native.js");
+            //files.Add("Common/3rdparty/XRegExp/xregexp-all.js");
+            //files.Add("../ServerComponents/DoctRenderer/COMMON/jquery_native.js");
 
+            files.Add("Common/browser.js");
+            //files.Add("Excel/jquery/jquery-1.7.1.js");
+            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_xls/jquery_corrector.js");
+            
 	        files.Add("Common/editorscommon.js");
 	        files.Add("Common/downloaderfiles.js");
 	        files.Add("Common/docscoapicommon.js");
@@ -37,7 +38,7 @@ namespace Joiner
 	        files.Add("Common/commonDefines.js");
 	        files.Add("Common/apiCommon.js");
 
-            files.Add("../ServerComponents/DoctRenderer/COMMON/native_xls/corrector2.js");
+            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_xls/corrector2.js");
 
 	        files.Add("Common/FontsFreeType/font_engine.js");
 	        files.Add("Common/FontsFreeType/FontFile.js");
@@ -159,7 +160,7 @@ namespace Joiner
             files.Add("Excel/model/DrawingObjects/Format/ChartTitle.js");
             files.Add("Excel/model/DrawingObjects/Format/ChartLegend.js");
 
-            files.Add("../ServerComponents/DoctRenderer/COMMON/native_xls/corrector.js");
+            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_xls/corrector.js");
 
             StringBuilder oBuilder = new StringBuilder();
 

@@ -79,20 +79,17 @@ std::wstring process_border(const border_style & borderStyle,
     return res;
 }
 
-std::wstring process_margin(const _CP_OPT(length_or_percent) & margin, double Mul)
+std::wstring process_margin(const _CP_OPT(length_or_percent) & margin, length::unit unit, double Mul)
 {
     if (margin)
     {
         if (margin->get_type() == length_or_percent::Length)
         {
-            int val = (int)(0.5 + Mul * margin->get_length().get_value_unit(length::pt));
+            int val = (int)(0.5 + Mul * margin->get_length().get_value_unit(unit));
             return boost::lexical_cast<std::wstring>( val );
         }
         else
         {
-#ifdef _DEBUG
-			_CP_LOG(info) << L"[pptx_convert] convert margin warning: invalid type (percent)\n";
-#endif
         }       
     }
     return L"";
@@ -126,25 +123,22 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 	if (fo_margin_left_ || fo_margin_right_ || fo_text_indent_ )
 	{
 		// TODO auto indent
-		std::wstring w_left, w_right, w_hanging, w_firstLine;
+		std::wstring w_left, w_right, w_firstLine;
 
-		w_left = process_margin(fo_margin_left_, 20.0);
-		w_right = process_margin(fo_margin_right_, 20.0);
-		w_firstLine = process_margin(fo_text_indent_, 20.0);
+		w_left = process_margin(fo_margin_left_, length::emu, 1.);
+		w_right = process_margin(fo_margin_right_, length::emu, 1.);
+		w_firstLine = process_margin(fo_text_indent_,length::emu, 1.);
 
-		if (w_left.empty())			w_left = L"0";
-		if (w_right.empty())		w_right = L"0";
-		
-		if (w_firstLine.empty())	w_hanging = L"0";
+		//if (w_left.empty())			w_left = L"0";
+		//if (w_right.empty())		w_right = L"0";
+		//if (w_firstLine.empty())	w_hanging = L"0";
                 
-		_pPr << L"marL=\"" << w_left << "\" ";
-		_pPr << L"marR=\"" << w_right << "\" ";
-        
+		if (!w_left.empty())
+			_pPr << L"marL=\"" << w_left << "\" ";
+		if (!w_right.empty())
+			_pPr << L"marR=\"" << w_right << "\" ";        
 		if (!w_firstLine.empty())
 			_pPr << L"indent=\"" << w_firstLine << "\" ";
-
-		if (!w_hanging.empty())
-			_pPr << L"hangingPunct=\""  << w_hanging << "\" ";
 	}
 	if (style_vertical_align_)
 	{
@@ -285,7 +279,7 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 		}
 		if (fo_margin_top_ || fo_margin_)
 		{
-			std::wstring w_before = process_margin(fo_margin_top_, 1000.0);
+			std::wstring w_before = process_margin(fo_margin_top_, length::pt, 1000.0);
 			CP_XML_NODE(L"a:spcBef")
 			{
 				CP_XML_NODE(L"a:spcPct")
@@ -296,7 +290,7 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 		}
 		if (fo_margin_bottom_ || fo_margin_)
 		{
-			std::wstring w_after = process_margin(fo_margin_bottom_, 1000.0);
+			std::wstring w_after = process_margin(fo_margin_bottom_, length::pt, 1000.0);
 			CP_XML_NODE(L"a:spcAft")
 			{
 				CP_XML_NODE(L"a:spcPct")

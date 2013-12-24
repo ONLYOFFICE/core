@@ -111,9 +111,6 @@ void xlsx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 		{
 			dump_text();
 		}
-		// конец предыдущего абзаца и начало следующего
-		//text_ << L"&#10;";
-        text_ << L"\n"; 
 	}else
 	{
 		text_.str(std::wstring());

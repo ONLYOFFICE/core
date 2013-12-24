@@ -166,6 +166,8 @@ _null_object.css = function() { return this; };
 _null_object.width = function() { return 0; };
 _null_object.height = function() { return 0; };
 _null_object.attr = function() { return this; };
+_null_object.prop = function() { return this; };
+_null_object.val = function() { return this; };
 _null_object.remove = function() {};
 
 document.createElement = function(type)
@@ -240,6 +242,7 @@ function NativeOpenFile()
         var doc_bin = window.native.GetFileString(g_file_path);
         oBinaryFileReader.Read(doc_bin, window.asc_wb);
         
+        _api._coAuthoringInit();
         _api.wb = new Asc["WorkbookView"](
 					_api.wbModel,
 					_api.controller,
@@ -302,7 +305,6 @@ function NativeApplyChanges()
             }
         }
         
-        _api._coAuthoringInit();
         _api.CoAuthoringApi.onSaveChanges(__changes, false);
         _api.collaborativeEditing.applyChanges();
     }    

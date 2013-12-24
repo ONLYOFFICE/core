@@ -65,9 +65,11 @@ public:
 
 private:
     optional<style_ref>::Type text_style_name_;
-    common_num_format_attlist common_num_format_attlist_;
+    
+	common_num_format_attlist common_num_format_attlist_;
     common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
-    unsigned int text_display_levels_;
+    
+	unsigned int text_display_levels_;
     unsigned int text_start_value_;
 
     friend class text_list_level_style_number;
@@ -104,9 +106,11 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    const common_text_align & get_common_text_align() const { return common_text_align_; }
+    friend class text_list_level_style_number;
+    friend class text_list_level_style_bullet;
+    
+	const common_text_align & get_common_text_align() const { return common_text_align_; }
 
-private:
     common_text_align common_text_align_;
     optional<length>::Type text_space_before_;
     optional<length>::Type text_min_label_width_;
@@ -114,13 +118,12 @@ private:
     optional<std::wstring>::Type style_font_name_;
     optional<length>::Type fo_width_;
     optional<length>::Type fo_height_;
-    common_vertical_rel_attlist common_vertical_rel_attlist_;
+  
+	common_vertical_rel_attlist common_vertical_rel_attlist_;
     common_vertical_pos_attlist common_vertical_pos_attlist_;
 
     office_element_ptr style_list_level_label_alignment_;
 
-    friend class text_list_level_style_number;
-    friend class text_list_level_style_bullet;
 
 };
 
@@ -170,6 +173,8 @@ public:
 
     void docx_convert(oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
+  
+	office_element_ptr style_list_level_properties_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -179,7 +184,6 @@ private:
     text_list_level_style_attr text_list_level_style_attr_;
     text_list_level_style_number_attr text_list_level_style_number_attr_;
 
-    office_element_ptr style_list_level_properties_;
 	office_element_ptr style_text_properties_;
 
 };
@@ -211,11 +215,13 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeTextListLevelStyleNumber;
+    static const ElementType type = typeTextListLevelStyleBullet;
     CPDOCCORE_DEFINE_VISITABLE();
 
     void docx_convert(oox::docx_conversion_context & Context) ;
     void pptx_convert(oox::pptx_conversion_context & Context) ;
+    
+	office_element_ptr style_list_level_properties_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -225,7 +231,6 @@ private:
     text_list_level_style_attr text_list_level_style_attr_;
     text_list_level_style_bullet_attr text_list_level_style_bullet_attr_;
     
-    office_element_ptr style_list_level_properties_;
     office_element_ptr style_text_properties_;
 };
 

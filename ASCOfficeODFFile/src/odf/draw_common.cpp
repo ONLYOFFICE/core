@@ -317,8 +317,6 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, styles_lite_con
 {
 	fill.type = 0; 
 
-	if (props.draw_fill_)fill.type = props.draw_fill_->get_type();
-
 	if (props.draw_opacity_) fill.opacity = props.draw_opacity_->get_value();
 	if (props.draw_opacity_name_)
 	{
@@ -394,7 +392,7 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, styles_lite_con
 			fill.hatch->color_back_ref = props.draw_fill_color_->get_hex_value();
 		}	
 	}
-
+	if (props.draw_fill_)fill.type = props.draw_fill_->get_type();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

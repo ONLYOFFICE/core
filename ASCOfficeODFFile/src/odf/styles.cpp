@@ -947,12 +947,12 @@ void style_page_layout_properties_attlist::pptx_convert(oox::pptx_conversion_con
                 
         std::wstring w_orient = L"custom";
 
-		if (w && h)
-		{
-			double ratio = (double)w/(double)h;
-			if (abs(ratio - 16./9.)<0.01)	w_orient = L"screen16x9";
-			if (abs(ratio - 4./3.)<0.01)	w_orient = L"screen4x3";
-		}
+		//if (w && h)
+		//{
+		//	double ratio = (double)w/(double)h;
+		//	if (abs(ratio - 16./9.)<0.01)	w_orient = L"screen16x9";
+		//	if (abs(ratio - 4./3.)<0.01)	w_orient = L"screen4x3";
+		//}
         
         strm << L"<p:sldSz ";
         if (!w_h.empty())

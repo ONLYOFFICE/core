@@ -395,6 +395,39 @@ void text_list_level_style_number::pptx_convert(oox::pptx_conversion_context & C
 
 	//int level = text_list_level_style_attr_.get_text_level();
 	
+	std::wstring num_format;
+
+	if (text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"1")
+	num_format= L"arabic";
+	else if (text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"I")
+		num_format= L"romanUc";
+	else if (text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"i")
+		num_format= L"romanLc";
+	else if (text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"A")
+		num_format= L"alphaUc";
+	else if (text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"a")
+		num_format= L"alphaLc";
+	else 
+		num_format= L"arabic";
+
+	if (text_list_level_style_number_attr_.common_num_format_prefix_suffix_attlist_.style_num_prefix_)
+	{
+		num_format += L"ParenBoth";
+	}
+	else 
+	{
+		if (text_list_level_style_number_attr_.common_num_format_prefix_suffix_attlist_.style_num_suffix_)
+		{
+			if (*text_list_level_style_number_attr_.common_num_format_prefix_suffix_attlist_.style_num_suffix_ == L".")
+				num_format += L"Period";
+			else
+				num_format += L"ParenR";
+		}
+		else
+			num_format += L"Period";
+	}
+		
+	
 	CP_XML_WRITER(strm)
 	{ 	
 		if (style_text_properties * textProperties = dynamic_cast<style_text_properties *>(style_text_properties_.get()))///эти свойства относятся 
@@ -406,7 +439,7 @@ void text_list_level_style_number::pptx_convert(oox::pptx_conversion_context & C
 		CP_XML_NODE(L"a:buAutoNum")//ms козлы !! для них оказыается ВАЖЕН порядок .. если записать это поле первым, а потом свойства - нихера в мс2010 не отображается верно !!!
 		{
 			CP_XML_ATTR(L"startAt",text_list_level_style_number_attr_.text_start_value_);
-			CP_XML_ATTR(L"type",L"arabicParenBoth");
+			CP_XML_ATTR(L"type", num_format);
 		}
 	} 
 }

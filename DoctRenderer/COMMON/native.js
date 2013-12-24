@@ -113,6 +113,8 @@ function native_canvas()
     this.id = "";
     this.width = 300;
     this.height = 150;
+    
+    this.nodeType = 1;
 }
 native_canvas.prototype =
 {
@@ -170,6 +172,8 @@ _null_object.prop = function() { return this; };
 _null_object.val = function() { return this; };
 _null_object.remove = function() {};
 
+window._null_object = _null_object;
+
 document.createElement = function(type)
 {
     if (type && type.toLowerCase)
@@ -201,9 +205,13 @@ document.body = _null_object;
 
 var native = CreateNativeEngine();
 window.native = native;
+window["native"] = native;
+window.native.v6a = window.native.GetFontBinary;
 
 var native_renderer = null;
 var _api = null;
+var Asc = null;
+var h = null;
 
 function NativeOpenFile()
 {
@@ -226,33 +234,12 @@ function NativeOpenFile()
     }
     else
     {
-        _api = new spreadsheet_api("", "");
-        _api.DocumentUrl = "TeamlabNative";
-        
-        Asc["editor"] = _api;
-        
-        _api.User = new Asc["asc_CUser"];
-		_api.User.asc_setId("TM");
-		_api.User.asc_setUserName("native");
-        
-        window.asc_wb = new Workbook(_api.DocumentUrl, _api.handlers, _api);   
-        _api.initGlobalObjects(window.asc_wb);
-        _api.wbModel = window.asc_wb;
-        var oBinaryFileReader = new BinaryFileReader(_api.DocumentUrl);   
+        Asc = window["Asc"];
+        h = Asc;
+    
+        _api = new window["Asc"]["spreadsheet_api"];
         var doc_bin = window.native.GetFileString(g_file_path);
-        oBinaryFileReader.Read(doc_bin, window.asc_wb);
-        
-        _api._coAuthoringInit();
-        _api.wb = new Asc["WorkbookView"](
-					_api.wbModel,
-					_api.controller,
-					_api.handlers,
-					_null_object,
-					_null_object,
-					_api,
-					_api.collaborativeEditing,
-					_api.fontRenderingMode,
-					_api.options);
+        _api.asc_nativeOpenFile(doc_bin);
     }
 }
 
@@ -265,8 +252,7 @@ function NativeCalculateFile()
     }
     else
     {				
-		window.adjustPrint = new asc_CAdjustPrint();
-        window.printPagesData = _api.wb.calcPagesPrint(window.adjustPrint);
+		_api.asc_nativeCalculateFile();
     }
 }
 
@@ -305,8 +291,7 @@ function NativeApplyChanges()
             }
         }
         
-        _api.CoAuthoringApi.onSaveChanges(__changes, false);
-        _api.collaborativeEditing.applyChanges();
+        _api.asc_nativeApplyChanges(__changes);
     }    
 }
 function NativeGetFileString()
@@ -324,9 +309,7 @@ function NativeGetFileString()
     }
     else
     {
-        _api.wb._initCommentsToSave();
-		var oBinaryFileWriter = new BinaryFileWriter(_api.wbModel);
-		return oBinaryFileWriter.Write();
+        return _api.asc_nativeGetFile();
     }
 }
 
@@ -337,8 +320,11 @@ function GetNativeCountPages()
     else if (NATIVE_DOCUMENT_TYPE == "presentation")
         return window.editor.WordControl.m_oDrawingDocument.SlidesCount;
     else
-        return 1;
+        return _api.asc_nativePrintPagesCount();
 }
+
+window.memory1 = null;
+window.memory2 = null;
 
 function GetNativePageBase64(pageIndex)
 {
@@ -376,22 +362,29 @@ function GetNativePageBase64(pageIndex)
     }
     else
     {
+        if (null == window.memory1)
+            window.memory1 = CreateNativeMemoryStream();
+        else
+            window.memory1.ClearNoAttack();
+            
+        if (null == window.memory2)
+            window.memory2 = CreateNativeMemoryStream();
+        else
+            window.memory2.ClearNoAttack();
+    
         // TODO: заменить на нормальную память
         if (native_renderer == null)
         {
-            native_renderer = new CPdfPrinter(_api.wbModel.sUrlPath);
-            
-            native_renderer.DocumentRenderer.Memory					= CreateNativeMemoryStream();
-            native_renderer.DocumentRenderer.VectorMemoryForPrint	= CreateNativeMemoryStream();
+            native_renderer = _api.asc_nativeCheckPdfRenderer(window.memory1, window.memory2);
         }
         else
         {
-            native_renderer.DocumentRenderer.Memory.ClearNoAttack();
-            native_renderer.DocumentRenderer.VectorMemoryForPrint.ClearNoAttack();
+            window.memory1.ClearNoAttack();
+            window.memory2.ClearNoAttack();
         }
         
-        var isEndPrint = _api.wb.printSheet(native_renderer, window.printPagesData);
-        return native_renderer.DocumentRenderer.Memory;
+        _api.asc_nativePrint(native_renderer, 0);
+        return window.memory1;
     }
 
     //return native_renderer.Memory.GetBase64Memory();    

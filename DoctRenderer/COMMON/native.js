@@ -282,19 +282,11 @@ function NativeApplyChanges()
 function NativeGetFileString()
 {
     return _api.asc_nativeGetFile();
-    if (NATIVE_DOCUMENT_TYPE == "presentation")
-    {
-        var writer = new CBinaryFileWriter();
-        window.editor.WordControl.m_oLogicDocument.CalculateComments();
-        return writer.WriteDocument(window.editor.WordControl.m_oLogicDocument);
-    }
 }
 
 function GetNativeCountPages()
 {
     return _api.asc_nativePrintPagesCount();
-    if (NATIVE_DOCUMENT_TYPE == "presentation")
-        return window.editor.WordControl.m_oDrawingDocument.SlidesCount;
 }
 
 window.memory1 = null;
@@ -324,16 +316,6 @@ function GetNativePageBase64(pageIndex)
     
     _api.asc_nativePrint(native_renderer, pageIndex);
     return window.memory1;
-    
-    /*
-    if (NATIVE_DOCUMENT_TYPE == "presentation")
-    {
-        var _logic_doc = window.editor.WordControl.m_oLogicDocument;
-        native_renderer.BeginPage(_logic_doc.Width, _logic_doc.Height);
-        window.editor.WordControl.m_oLogicDocument.DrawPage(pageIndex, native_renderer);
-        native_renderer.EndPage();    
-    }
-    */
 }
 
 function GetNativeId()

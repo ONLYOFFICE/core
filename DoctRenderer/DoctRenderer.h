@@ -238,6 +238,7 @@ public:
 				case DoctRendererFormat::PDF:
 					{
 						sResource = MAKEINTRESOURCE(IDB_SCRIPT_EDITOR);
+						strCorrector = _T("var NATIVE_DOCUMENT_TYPE = \"document\";");
 						break;
 					}
 				default:
@@ -253,6 +254,7 @@ public:
 				case DoctRendererFormat::PDF:
 					{
 						sResource = MAKEINTRESOURCE(IDB_SCRIPT_PPTX);
+						strCorrector = _T("var NATIVE_DOCUMENT_TYPE = \"presentation\";");
 						break;
 					}
 				default:
@@ -531,6 +533,7 @@ private:
 					if (try_catch.HasCaught()) 
 					{
 						int nLineError = try_catch.Message()->GetLineNumber();
+						CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 						return FALSE;
 					}
@@ -556,6 +559,7 @@ private:
 					if (try_catch.HasCaught()) 
 					{
 						int nLineError = try_catch.Message()->GetLineNumber();
+						CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 						return FALSE;
 					}
@@ -569,6 +573,7 @@ private:
 					
 					if (try_catch.HasCaught()) 
 					{
+						CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 						return FALSE;
 					}

@@ -21,10 +21,17 @@ namespace Joiner
             string strRoot = strApplication + "\\OfficeWeb\\";
             List<string> files = new List<string>();
 
-            files.Add("../ServerComponents/DoctRenderer/COMMON/native.js");
+            //files.Add("../ServerComponents/DoctRenderer/COMMON/native.js");
+            //files.Add("Common/3rdparty/XRegExp/xregexp-all.js");
+            
             files.Add("Common/browser.js");
-            files.Add("Common/3rdparty/XRegExp/xregexp-all.js");
             files.Add("Common/editorscommon.js");
+
+            files.Add("Common/downloaderfiles.js");
+            files.Add("Common/docscoapicommon.js");
+            files.Add("Common/docscoapi.js");
+            files.Add("Common/spellcheckapi.js");
+
             files.Add("Common/wordcopypaste.js");
     		
             files.Add("Common/apiCommon.js");
@@ -49,6 +56,10 @@ namespace Joiner
             files.Add("Common/FontsFreeType/FontManager.js");
             files.Add("Word/Drawing/Externals.js");
             files.Add("Word/Drawing/GlobalLoaders.js");
+            
+            files.Add("Word/Drawing/Rulers.js");
+            files.Add("Word/Drawing/WorkEvents.js");
+            files.Add("Word/Drawing/Controls.js");
 
             files.Add("Word/Drawing/translations.js");            
             files.Add("Word/Drawing/Metafile.js");
@@ -142,10 +153,14 @@ namespace Joiner
             files.Add("PowerPoint/Editor/GraphicObjects.js");
             files.Add("PowerPoint/Editor/States.js");
 
-            files.Add("../ServerComponents/DoctRenderer/COMMON/native_ppt/DrawingDocument.js");
-            files.Add("../ServerComponents/DoctRenderer/COMMON/native_ppt/HtmlPage.js");
-            files.Add("../ServerComponents/DoctRenderer/COMMON/native_ppt/api.js");
-            files.Add("../ServerComponents/DoctRenderer/COMMON/native_ppt/corrector.js");
+            files.Add("PowerPoint/Drawing/DrawingDocument.js");
+            files.Add("PowerPoint/Drawing/HtmlPage.js");
+            files.Add("PowerPoint/api.js");
+
+            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_ppt/DrawingDocument.js");
+            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_ppt/HtmlPage.js");
+            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_ppt/api.js");
+            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_ppt/corrector.js");
 
             StringBuilder oBuilder = new StringBuilder();
 

@@ -602,6 +602,7 @@ private:
 						if (try_catch.HasCaught()) 
 						{
 							int nLineError = try_catch.Message()->GetLineNumber();
+							CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 							strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 							return FALSE;
 						}

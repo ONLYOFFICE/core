@@ -153,6 +153,9 @@ _null_object.scrollHeight = 1;
 _null_object.style = new Object();
 _null_object.documentElement = _null_object;
 _null_object.body = _null_object;
+_null_object.ownerDocument = _null_object;
+_null_object.defaultView = _null_object;
+
 _null_object.addEventListener = function(){};
 _null_object.setAttribute = function(){};
 _null_object.getElementsByTagName = function() { return []; };
@@ -171,6 +174,12 @@ _null_object.attr = function() { return this; };
 _null_object.prop = function() { return this; };
 _null_object.val = function() { return this; };
 _null_object.remove = function() {};
+_null_object.getComputedStyle = function() { return null; };
+_null_object.getContext = function(type) {
+    if (type == "2d")
+        return new native_context2d(this);
+    return null;
+};
 
 window._null_object = _null_object;
 
@@ -197,7 +206,7 @@ document.getElementsByTagName = function(tag) {
 document.insertBefore = function() {};
 document.appendChild = function() {};
 document.removeChild = function() {};
-document.getElementById = function() { return undefined; };
+document.getElementById = function() { return _null_object; };
 document.createComment = function() { return undefined; };
 
 document.documentElement = _null_object;
@@ -211,32 +220,18 @@ window.native.v6a = window.native.GetFontBinary;
 var native_renderer = null;
 var _api = null;
 var Asc = null;
-var h = null;
 
 function NativeOpenFile()
 {
+    var doc_bin = window.native.GetFileString(g_file_path);
     if (NATIVE_DOCUMENT_TYPE == "presentation" || NATIVE_DOCUMENT_TYPE == "document")
     {
-        _api = new asc_docs_api("");
-        _api.DocumentUrl = "TeamlabNative";
-        
-        window.editor.ImageLoader = new Object();
-        window.editor.ImageLoader.map_image_index = {};
-        
-        window.editor.CoAuthoringApi = new Object();
-        window.editor.CoAuthoringApi.saveChanges = function(){};
-
-        var doc_bin = window.native.GetFileString(g_file_path);
-        _api.OpenDocument2("", doc_bin);
-        
-        //var doc_bin = window.native.GetFileBinary(g_file_path);
-        //_api.OpenDocument("", doc_bin);
+        _api = new window["asc_docs_api"]("");       
+        _api.asc_nativeOpenFile(doc_bin);
     }
     else
     {
-        Asc = window["Asc"];
-        h = Asc;
-    
+        Asc = window["Asc"];    
         _api = new window["Asc"]["spreadsheet_api"];
         var doc_bin = window.native.GetFileString(g_file_path);
         _api.asc_nativeOpenFile(doc_bin);
@@ -245,21 +240,14 @@ function NativeOpenFile()
 
 function NativeCalculateFile()
 {
-    if (NATIVE_DOCUMENT_TYPE == "presentation" || NATIVE_DOCUMENT_TYPE == "document")
-    {
-        _api.OpenDocumentEndCallback();
-        window.editor.ShowParaMarks = false;
-    }
-    else
-    {				
-		_api.asc_nativeCalculateFile();
-    }
+	_api.asc_nativeCalculateFile();
 }
 
 function NativeApplyChanges()
 {
     if (NATIVE_DOCUMENT_TYPE == "presentation" || NATIVE_DOCUMENT_TYPE == "document")
     {
+        var __changes = [];
         var _count_main = window.native.GetCountChanges();
         for (var i = 0; i < _count_main; i++)
         {
@@ -268,13 +256,10 @@ function NativeApplyChanges()
 
             for (var j = 0; j < _changes.length; j++)
             {     
-                var Changes = new CCollaborativeChanges();
-                Changes.Set_Id( _changes[j]["id"] );
-                Changes.Set_Data( _changes[j]["data"] );
-                CollaborativeEditing.Add_Changes( Changes );   
+                __changes.push(_changes[j]);
             }
         }
-        CollaborativeEditing.Apply_OtherChanges();
+        _api.asc_nativeApplyChanges(__changes);
     }
     else
     {
@@ -296,31 +281,20 @@ function NativeApplyChanges()
 }
 function NativeGetFileString()
 {
+    return _api.asc_nativeGetFile();
     if (NATIVE_DOCUMENT_TYPE == "presentation")
     {
         var writer = new CBinaryFileWriter();
         window.editor.WordControl.m_oLogicDocument.CalculateComments();
         return writer.WriteDocument(window.editor.WordControl.m_oLogicDocument);
     }
-    else if (NATIVE_DOCUMENT_TYPE == "document")
-    {
-        var oBinaryFileWriter = new BinaryFileWriter(window.editor.WordControl.m_oLogicDocument);
-        return oBinaryFileWriter.Write();
-    }
-    else
-    {
-        return _api.asc_nativeGetFile();
-    }
 }
 
 function GetNativeCountPages()
 {
-    if (NATIVE_DOCUMENT_TYPE == "document")
-        return window.editor.WordControl.m_oDrawingDocument.m_lPagesCount;
-    else if (NATIVE_DOCUMENT_TYPE == "presentation")
+    return _api.asc_nativePrintPagesCount();
+    if (NATIVE_DOCUMENT_TYPE == "presentation")
         return window.editor.WordControl.m_oDrawingDocument.SlidesCount;
-    else
-        return _api.asc_nativePrintPagesCount();
 }
 
 window.memory1 = null;
@@ -328,67 +302,38 @@ window.memory2 = null;
 
 function GetNativePageBase64(pageIndex)
 {
-    if (NATIVE_DOCUMENT_TYPE == "presentation" || NATIVE_DOCUMENT_TYPE == "document")
-    {
-        if (native_renderer == null)
-        {
-            native_renderer = new CDocumentRenderer();
-            //native_renderer.Memory				= new CMemory();
-            //native_renderer.VectorMemoryForPrint	= new CMemory();
-            
-            native_renderer.Memory					= CreateNativeMemoryStream();
-            native_renderer.VectorMemoryForPrint	= CreateNativeMemoryStream();
-        }
-        else
-        {
-            native_renderer.Memory.ClearNoAttack();
-            native_renderer.VectorMemoryForPrint.ClearNoAttack();
-        }
+    if (null == window.memory1)
+        window.memory1 = CreateNativeMemoryStream();
+    else
+        window.memory1.ClearNoAttack();
         
-        if (NATIVE_DOCUMENT_TYPE == "presentation")
-        {
-            var _logic_doc = window.editor.WordControl.m_oLogicDocument;
-            native_renderer.BeginPage(_logic_doc.Width, _logic_doc.Height);
-            window.editor.WordControl.m_oLogicDocument.DrawPage(pageIndex, native_renderer);
-            native_renderer.EndPage();    
-        }
-        else if (NATIVE_DOCUMENT_TYPE == "document")
-        {
-            var page = window.editor.WordControl.m_oDrawingDocument.m_arrPages[pageIndex];
-            native_renderer.BeginPage(page.width_mm, page.height_mm);
-            window.editor.WordControl.m_oLogicDocument.DrawPage(pageIndex, native_renderer);
-            native_renderer.EndPage();
-        }
+    if (null == window.memory2)
+        window.memory2 = CreateNativeMemoryStream();
+    else
+        window.memory2.ClearNoAttack();
+
+    if (native_renderer == null)
+    {
+        native_renderer = _api.asc_nativeCheckPdfRenderer(window.memory1, window.memory2);
     }
     else
     {
-        if (null == window.memory1)
-            window.memory1 = CreateNativeMemoryStream();
-        else
-            window.memory1.ClearNoAttack();
-            
-        if (null == window.memory2)
-            window.memory2 = CreateNativeMemoryStream();
-        else
-            window.memory2.ClearNoAttack();
-    
-        // TODO: заменить на нормальную память
-        if (native_renderer == null)
-        {
-            native_renderer = _api.asc_nativeCheckPdfRenderer(window.memory1, window.memory2);
-        }
-        else
-        {
-            window.memory1.ClearNoAttack();
-            window.memory2.ClearNoAttack();
-        }
-        
-        _api.asc_nativePrint(native_renderer, 0);
-        return window.memory1;
+        window.memory1.ClearNoAttack();
+        window.memory2.ClearNoAttack();
     }
-
-    //return native_renderer.Memory.GetBase64Memory();    
-    return native_renderer.Memory;
+    
+    _api.asc_nativePrint(native_renderer, pageIndex);
+    return window.memory1;
+    
+    /*
+    if (NATIVE_DOCUMENT_TYPE == "presentation")
+    {
+        var _logic_doc = window.editor.WordControl.m_oLogicDocument;
+        native_renderer.BeginPage(_logic_doc.Width, _logic_doc.Height);
+        window.editor.WordControl.m_oLogicDocument.DrawPage(pageIndex, native_renderer);
+        native_renderer.EndPage();    
+    }
+    */
 }
 
 function GetNativeId()

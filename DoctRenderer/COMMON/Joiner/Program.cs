@@ -21,10 +21,17 @@ namespace Joiner
             string strRoot = strApplication + "\\OfficeWeb\\";
             List<string> files = new List<string>();
 
-            files.Add("../ServerComponents/DoctRenderer/COMMON/native.js");
+            //files.Add("../ServerComponents/DoctRenderer/COMMON/native.js");
+            //files.Add("Common/3rdparty/XRegExp/xregexp-all.js");
+
             files.Add("Common/browser.js");
-            files.Add("Common/3rdparty/XRegExp/xregexp-all.js");
             files.Add("Common/editorscommon.js");
+            
+            files.Add("Common/downloaderfiles.js");
+            files.Add("Common/docscoapicommon.js");
+            files.Add("Common/docscoapi.js");
+            files.Add("Common/spellcheckapi.js");
+
             files.Add("Common/wordcopypaste.js");
     		
             files.Add("Common/apiCommon.js");
@@ -51,6 +58,9 @@ namespace Joiner
             files.Add("Word/Drawing/GlobalLoaders.js");
 
             files.Add("Word/Drawing/translations.js");
+
+            files.Add("Word/Drawing/Controls.js");
+            files.Add("Word/Drawing/WorkEvents.js");
 
             files.Add("Word/Editor/GraphicObjects/GraphicObjects.js");
             files.Add("Word/Editor/GraphicObjects/GraphicPage.js");
@@ -110,6 +120,7 @@ namespace Joiner
             files.Add("Word/Drawing/DrawingDocument.js");
             files.Add("Word/Drawing/GraphicsEvents.js");
             files.Add("Word/Drawing/HtmlPage.js");
+            files.Add("Word/Drawing/Rulers.js");
             files.Add("Word/apiDefines.js");
             files.Add("Word/apiCommon.js");
             files.Add("Word/api.js");
@@ -121,10 +132,10 @@ namespace Joiner
 
             files.Add("Excel/graphics/DrawingContextWord.js");
 
-            files.Add("../ServerComponents/DoctRenderer/COMMON/native_word/DrawingDocument.js");
-            files.Add("../ServerComponents/DoctRenderer/COMMON/native_word/HtmlPage.js");
-            files.Add("../ServerComponents/DoctRenderer/COMMON/native_word/api.js");
-            files.Add("../ServerComponents/DoctRenderer/COMMON/native_word/corrector.js");
+            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_word/DrawingDocument.js");
+            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_word/HtmlPage.js");
+            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_word/api.js");
+            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_word/corrector.js");
 
             StringBuilder oBuilder = new StringBuilder();
 

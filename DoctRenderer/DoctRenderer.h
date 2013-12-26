@@ -147,8 +147,13 @@ private:
 	CExecuteParams m_oParams;
 	IASCRenderer* m_pRenderer;
 
+	CString m_strConfigDir;
 	CString m_strConfigPath;
 	CAtlArray<CString> m_arrFiles;
+
+	CString m_strDoctSDK;
+	CString m_strPpttSDK;
+	CString m_strXlstSDK;
 	
 public:
 	CDoctRenderer()
@@ -160,18 +165,19 @@ public:
 
 	HRESULT FinalConstruct()
 	{
+		m_strConfigDir = _T("");
 		m_strConfigPath = _T("");
 
         HINSTANCE hModule  = _AtlBaseModule.GetModuleInstance();
         TCHAR szPathDLL[MAX_PATH] = {0}; ::GetModuleFileName(hModule, szPathDLL, MAX_PATH);
 
-		m_strConfigPath = CString(szPathDLL);
+		m_strConfigDir = CString(szPathDLL);
 
-		int nFind = m_strConfigPath.ReverseFind(TCHAR('\\'));
+		int nFind = m_strConfigDir.ReverseFind(TCHAR('\\'));
 		if (-1 != nFind)
-			m_strConfigPath.Delete(nFind, m_strConfigPath.GetLength() - nFind);
+			m_strConfigDir.Delete(nFind + 1, m_strConfigDir.GetLength() - nFind - 1);
 
-		m_strConfigPath += _T("\\DoctRenderer.config");
+		m_strConfigPath = m_strConfigDir + _T("DoctRenderer.config");
 
 		XmlUtils::CXmlNode oNode;
 		if (oNode.FromXmlFile(m_strConfigPath))
@@ -184,11 +190,41 @@ public:
 				for (int i = 0; i < nCount; ++i)
 				{
 					oNodes.GetAt(i, _node);
-					m_arrFiles.Add(_node.GetText());
+					CString strFilePath = _node.GetText();
+
+					if (IsFileExists(strFilePath))
+						m_arrFiles.Add(_node.GetText());
+					else
+						m_arrFiles.Add(m_strConfigDir + strFilePath);
 				}
 			}
 		}
 
+		m_strDoctSDK = _T("");
+		m_strPpttSDK = _T("");
+		m_strXlstSDK = _T("");
+
+		XmlUtils::CXmlNode oNodeSdk = oNode.ReadNode(_T("DoctSdk"));
+		if (oNodeSdk.IsValid())
+			m_strDoctSDK = oNodeSdk.GetText();
+
+		oNodeSdk = oNode.ReadNode(_T("PpttSdk"));
+		if (oNodeSdk.IsValid())
+			m_strPpttSDK = oNodeSdk.GetText();
+
+		oNodeSdk = oNode.ReadNode(_T("XlstSdk"));
+		if (oNodeSdk.IsValid())
+			m_strXlstSDK = oNodeSdk.GetText();
+
+		if (!IsFileExists(m_strDoctSDK))
+			m_strDoctSDK = m_strConfigDir + m_strDoctSDK;
+
+		if (!IsFileExists(m_strPpttSDK))
+			m_strPpttSDK = m_strConfigDir + m_strPpttSDK;
+
+		if (!IsFileExists(m_strXlstSDK))
+			m_strXlstSDK = m_strConfigDir + m_strXlstSDK;
+		
 		return S_OK;
 	}
 
@@ -218,16 +254,23 @@ public:
 	{
 		m_oParams.FromXml(bsXml);
 
+		BOOL bIsInnerFonts = FALSE;
+		if (m_oParams.m_strFontsDirectory == _T(""))
+			bIsInnerFonts = TRUE;
+
 		CString strMainPart = _T("");
 		for (size_t i = 0; i < m_arrFiles.GetCount(); ++i)
 		{
-			strMainPart += ReadFileCStringA(m_arrFiles[i]);
+			if (bIsInnerFonts && (m_arrFiles[i].Find(_T("AllFonts.js")) != -1))
+				continue;
+
+			strMainPart += ReadScriptFile(m_arrFiles[i]);
 			strMainPart += _T("\n\n");
 		}
 
 		CString strCorrector = _T("");
 
-		LPCTSTR sResource = NULL;
+		CString sResourceFile;
 		switch (m_oParams.m_eSrcFormat)
 		{
 		case DoctRendererFormat::DOCT:
@@ -237,7 +280,7 @@ public:
 				case DoctRendererFormat::DOCT:
 				case DoctRendererFormat::PDF:
 					{
-						sResource = MAKEINTRESOURCE(IDB_SCRIPT_EDITOR);
+						sResourceFile = m_strDoctSDK;
 						strCorrector = _T("var NATIVE_DOCUMENT_TYPE = \"document\";");
 						break;
 					}
@@ -253,7 +296,7 @@ public:
 				case DoctRendererFormat::PPTT:
 				case DoctRendererFormat::PDF:
 					{
-						sResource = MAKEINTRESOURCE(IDB_SCRIPT_PPTX);
+						sResourceFile = m_strPpttSDK;
 						strCorrector = _T("var NATIVE_DOCUMENT_TYPE = \"presentation\";");
 						break;
 					}
@@ -269,7 +312,7 @@ public:
 				case DoctRendererFormat::XLST:
 				case DoctRendererFormat::PDF:
 					{
-						sResource = MAKEINTRESOURCE(IDB_SCRIPT_XSLX);
+						sResourceFile = m_strXlstSDK;
 						strCorrector = _T("var NATIVE_DOCUMENT_TYPE = \"spreadsheet\";$.ready();");
 						break;
 					}
@@ -282,15 +325,6 @@ public:
 			return S_FALSE;
 		}
 
-		HINSTANCE hInst = _AtlBaseModule.GetModuleInstance();
-		WCHAR* pResourceFile = LoadResourceFile(hInst, sResource, _T("HTML_JS"));
-		if (NULL == pResourceFile)
-			return S_FALSE;
-
-		CString strResource(pResourceFile);
-		RELEASEARRAYOBJECTS(pResourceFile);
-
-		CString strAllFonts = _T("");
 		if (m_oParams.m_strFontsDirectory == _T(""))
 		{
 			ASCGraphics::IASCFontManager* pFontManager = NULL;
@@ -298,14 +332,10 @@ public:
 			pFontManager->Initialize(L"");
 			VARIANT var;
 			pFontManager->GetAdditionalParam(L"AllFonts.js", &var);
-			strAllFonts = (CString)var.bstrVal;
+			CString strAllFonts = (CString)var.bstrVal;
 			SysFreeString(var.bstrVal);
-		}
-		else
-		{
-			WCHAR* pResourceFileAllFontsJS = LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_SCRIPT_FONTS), _T("HTML_JS"));
-			strAllFonts = CString(pResourceFileAllFontsJS);
-			RELEASEARRAYOBJECTS(pResourceFileAllFontsJS);
+
+			strMainPart += strAllFonts;
 		}
 
 		CString strFileName = m_oParams.m_strSrcFilePath;
@@ -321,9 +351,8 @@ public:
 		strScript += strFileName;
 		strScript += _T("\";\n\n");
 
-		strScript += strAllFonts;
 		strScript += strMainPart;
-		strScript += strResource;
+		strScript += ReadScriptFile(sResourceFile);
 
 		strScript += strCorrector;
 				
@@ -397,18 +426,55 @@ private:
 		return pUnicodeString;
 	}
 
-	CString ReadFileCStringA(const CString& strFile)
+
+	CString ReadScriptFile(const CString& strFile)
 	{
 		CFile oFile;
+
 		HRESULT hr = oFile.OpenFile(strFile);
+		if (S_OK != hr)
+			return _T("");
+
 		int nSize = (int)oFile.GetFileSize();
+		if (nSize < 3)
+			return _T("");
+
 		BYTE* pData = new BYTE[nSize];
 		oFile.ReadFile(pData, (DWORD)nSize);
-		CString sRes((char*)pData, nSize);
-		delete [] pData;
-		return sRes;
+		CString strResult = _T("");
+
+		if (pData[0] == 0xEF && pData[1] == 0xBB && pData[2] == 0xBF)
+		{
+			WCHAR* pUnicode = GetCStringFromUTF8(pData + 3, nSize - 3);
+			strResult = CString(pUnicode);
+			RELEASEARRAYOBJECTS(pUnicode);
+		}
+		else
+		{
+			strResult = CString((char*)pData, nSize);
+		}
+
+		RELEASEARRAYOBJECTS(pData);
+		return strResult;
 	}
 
+	bool IsFileExists(LPCTSTR path)
+	{
+		WIN32_FIND_DATA findData;
+		ZeroMemory(&findData, sizeof(findData));
+
+		HANDLE handle = ::FindFirstFile(path, &findData);
+
+		bool fileExists = true;
+		if (handle == INVALID_HANDLE_VALUE)
+			fileExists = false;
+		
+		FindClose(handle);
+
+		return fileExists;
+	}
+
+private:
 	BOOL ExecuteScript(CString& strScript)
 	{
 		CString strException = _T("");
@@ -1281,4 +1347,5 @@ private:
 		}
 		*/
 	}
+
 };

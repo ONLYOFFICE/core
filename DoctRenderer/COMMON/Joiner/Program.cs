@@ -147,24 +147,11 @@ namespace Joiner
                 oBuilder.Append("\n\n");
             }
 
-            string strDestPath = strApplication + "\\ServerComponents\\DoctRenderer\\Resources\\doc_editor.js";
+            string strDestPath = strApplication + "\\OfficeWeb\\Word\\sdk-all.js";
             StreamWriter oWriter = new StreamWriter(strDestPath, false, Encoding.UTF8);
             
             oWriter.Write(oBuilder.ToString());
             oWriter.Close();
-
-            StreamReader oReader2 = new StreamReader(strRoot + "Common/AllFonts.js");
-            string sALL = oReader2.ReadToEnd();
-
-            int n1 = sALL.IndexOf("window[\"g_standart_fonts_thumbnail\"]");
-            sALL = sALL.Substring(0, n1);
-
-            sALL = sALL.Replace("window[\"__fonts_files\"]", "var __fonts_files");
-            sALL = sALL.Replace("window[\"__fonts_infos\"]", "var __fonts_infos");
-
-            StreamWriter oWriter2 = new StreamWriter(strApplication + "\\ServerComponents\\DoctRenderer\\Resources\\allfonts.js", false, Encoding.UTF8);
-            oWriter2.Write(sALL);
-            oWriter2.Close();
         }
     }
 }

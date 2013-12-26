@@ -172,7 +172,7 @@ namespace Joiner
                 oBuilder.Append("\n\n");
             }
 
-            string strDestPath = strApplication + "\\ServerComponents\\DoctRenderer\\Resources\\xls_editor.js";
+            string strDestPath = strApplication + "\\OfficeWeb\\Excel\\sdk-all.js";
             StreamWriter oWriter = new StreamWriter(strDestPath, false, Encoding.UTF8);
             
             oWriter.Write(oBuilder.ToString());

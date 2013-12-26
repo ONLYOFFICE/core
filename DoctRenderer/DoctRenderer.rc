@@ -19,11 +19,6 @@
 LANGUAGE 25, 1
 #pragma code_page(1251)
 
-IDB_SCRIPT_EDITOR		HTML_JS                     "Resources\\doc_editor.js"
-IDB_SCRIPT_PPTX			HTML_JS                     "Resources\\ppt_editor.js"
-IDB_SCRIPT_XSLX			HTML_JS                     "Resources\\xls_editor.js"
-IDB_SCRIPT_FONTS		HTML_JS                     "Resources\\allfonts.js"
-
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //

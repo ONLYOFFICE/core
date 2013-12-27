@@ -1316,6 +1316,15 @@ public:
 	STDMETHOD(GetAdditionalParam)(BSTR ParamName, VARIANT* ParamValue)
 	{
 		CString sParamName = ParamName;
+
+		if ( _T("AllFonts.js") == sParamName )
+		{
+			ParamValue->vt = VT_BSTR;
+			CString strRet = GetAllFontsJS();
+			ParamValue->bstrVal = strRet.AllocSysString();
+			return S_OK;
+		}
+
 		if ( (NULL == m_pFont) && (_T("GetAllStylesByFontName") != sParamName) )
 			return S_FALSE;
 
@@ -1883,5 +1892,6 @@ protected:
 	}
 
 	void DumpToJSEditor(CString strDirectory, bool bIsUnionFamily);
+	CString GetAllFontsJS();
 };
 

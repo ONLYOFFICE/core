@@ -475,3 +475,199 @@ void CASCFontManager::DumpToJSEditor(CString strDirectory, bool bIsUnionFamily)
 		oFileFontsJS.CloseFile();	
 	}
 }
+
+CString CASCFontManager::GetAllFontsJS()
+{
+	int nCount = m_pFontEngine->GetInstalledFontsCount();
+
+	// сначала строим массив всех файлов шрифтов
+	CAtlMap<CString, LONG> mapFontFiles;
+	CAtlMap<LONG, CString> mapFontFiles2;
+	LONG lFontFiles = 0;
+	for (int i = 0; i < nCount; ++i)
+	{
+		CWinFontInfo* pInfo = (CWinFontInfo*)m_pFontEngine->GetInstalledFont(i);
+
+		CString strPath = (CString)pInfo->m_wsFontPath;
+		CAtlMap<CString, LONG>::CPair* pPair = mapFontFiles.Lookup(strPath);
+
+		if (NULL == pPair)
+		{
+			mapFontFiles.SetAt(strPath, lFontFiles);
+			mapFontFiles2.SetAt(lFontFiles, strPath);
+			++lFontFiles;
+		}
+	}
+	// -----------------------------------------
+
+	// теперь строим массив всех шрифтов по имени
+	CAtlMap<CString, CFontInfoJS> mapFonts;
+	CAtlArray<CString> arrFonts;
+
+	for (int i = 0; i < nCount; ++i)
+	{
+		CWinFontInfo* pInfo = (CWinFontInfo*)m_pFontEngine->GetInstalledFont(i);
+		CString strPath = (CString)pInfo->m_wsFontPath;
+		CString strName = (CString)pInfo->m_wsFontName;
+
+		LONG lFontIndex = 0;
+		LONG lFaceIndex = 0;
+
+		CAtlMap<CString, LONG>::CPair* pPairFontFiles = mapFontFiles.Lookup(strPath);
+		lFontIndex = pPairFontFiles->m_value;
+
+		if (pInfo->m_lIndex >= 0)
+			lFaceIndex = pInfo->m_lIndex;
+
+		CAtlMap<CString, CFontInfoJS>::CPair* pPair = mapFonts.Lookup(pInfo->m_wsFontName);
+		if (NULL != pPair)
+		{
+			pPair->m_value.m_sName = pInfo->m_wsFontName;
+
+			if (pInfo->m_bBold && pInfo->m_bItalic)
+			{
+				pPair->m_value.m_lIndexBI = lFontIndex;
+				pPair->m_value.m_lFaceIndexBI = lFaceIndex;
+			}
+			else if (pInfo->m_bBold)
+			{
+				pPair->m_value.m_lIndexB = lFontIndex;
+				pPair->m_value.m_lFaceIndexB = lFaceIndex;
+			}
+			else if (pInfo->m_bItalic)
+			{
+				pPair->m_value.m_lIndexI = lFontIndex;
+				pPair->m_value.m_lFaceIndexI = lFaceIndex;
+			}
+			else
+			{
+				pPair->m_value.m_lIndexR = lFontIndex;
+				pPair->m_value.m_lFaceIndexR = lFaceIndex;
+			}
+		}
+		else
+		{
+			CFontInfoJS fontInfo;
+
+			fontInfo.m_sName = pInfo->m_wsFontName;
+
+			if (pInfo->m_bBold && pInfo->m_bItalic)
+			{
+				fontInfo.m_lIndexBI = lFontIndex;
+				fontInfo.m_lFaceIndexBI = lFaceIndex;
+			}
+			else if (pInfo->m_bBold)
+			{
+				fontInfo.m_lIndexB = lFontIndex;
+				fontInfo.m_lFaceIndexB = lFaceIndex;
+			}
+			else if (pInfo->m_bItalic)
+			{
+				fontInfo.m_lIndexI = lFontIndex;
+				fontInfo.m_lFaceIndexI = lFaceIndex;
+			}
+			else
+			{
+				fontInfo.m_lIndexR = lFontIndex;
+				fontInfo.m_lFaceIndexR = lFaceIndex;
+			}
+
+			mapFonts.SetAt(fontInfo.m_sName, fontInfo);
+			arrFonts.Add(fontInfo.m_sName);
+		}
+	}
+	// -------------------------------------------
+
+	// теперь сортируем шрифты по имени ----------
+	size_t nCountFonts = arrFonts.GetCount();
+	for (size_t i = 0; i < nCountFonts; ++i)
+	{
+		for (size_t j = i + 1; j < nCountFonts; ++j)
+		{
+			if (arrFonts[i] > arrFonts[j])
+			{
+				CString temp = arrFonts[i];
+				arrFonts[i] = arrFonts[j];
+				arrFonts[j] = temp;
+			}
+		}
+	}
+	// -------------------------------------------
+
+	// и самое главное. Здесь должен скидываться скрипт для работы со всеми шрифтами.
+	// все объекты, которые позволят не знать о существующих фонтах
+	if (TRUE)
+	{
+		CStringWriter oWriterJS;
+
+		// сначала все файлы
+		size_t nCountFiles = mapFontFiles.GetCount();
+		if (nCountFiles == 0)
+			oWriterJS.WriteStringC(_T("window[\"__fonts_files\"] = []; \n\n"));
+		else
+		{
+			POSITION pos = mapFontFiles.GetStartPosition();
+			CString* pMassFiles = new CString[nCountFiles];
+			while (NULL != pos)
+			{
+				const CAtlMap<CString, LONG>::CPair* pPair = mapFontFiles.GetNext(pos);
+				
+				CString strFontId = pPair->m_key;
+				strFontId.Replace(_T("/"), _T("\\"));
+				strFontId.Replace(_T("\\\\"), _T("\\"));
+				strFontId.Replace(_T("\\\\"), _T("\\"));
+
+				strFontId.Replace(_T("\\"), _T("\\\\"));
+				
+				//int nStart = strFontId.ReverseFind('\\');
+				//strFontId = strFontId.Mid(nStart + 1);
+
+				pMassFiles[pPair->m_value] = strFontId;
+			}
+
+			oWriterJS.WriteStringC(_T("window[\"__fonts_files\"] = [\n"));
+			for (size_t nIndex = 0; nIndex < nCountFiles; ++nIndex)
+			{
+				oWriterJS.WriteStringC(_T("\""));
+				oWriterJS.WriteString(pMassFiles[nIndex]);
+				if (nIndex != (nCountFiles - 1))
+					oWriterJS.WriteStringC(_T("\",\n"));
+				else
+					oWriterJS.WriteStringC(_T("\""));
+			}
+			oWriterJS.WriteStringC(_T("\n];\n\n"));
+
+			RELEASEARRAYOBJECTS(pMassFiles);
+		}
+		
+		CString strArrayInit = _T("");
+		strArrayInit.Format(_T("window[\"__fonts_infos\"] = [\n"), nCountFonts);
+		oWriterJS.WriteString(strArrayInit);
+
+		for (int index = 0; index < (int)nCountFonts; ++index)
+		{
+			const CAtlMap<CString, CFontInfoJS>::CPair* pPair = mapFonts.Lookup(arrFonts[index]);
+
+			CString str1 = _T("");
+			str1.Format(_T("[\""), index);
+			str1 += pPair->m_value.m_sName;
+			
+			CString strParams = _T("");
+			strParams.Format(_T("\",%d,%d,%d,%d,%d,%d,%d,%d]"), pPair->m_value.m_lIndexR, pPair->m_value.m_lFaceIndexR,
+									pPair->m_value.m_lIndexI, pPair->m_value.m_lFaceIndexI,
+									pPair->m_value.m_lIndexB, pPair->m_value.m_lFaceIndexB,
+									pPair->m_value.m_lIndexBI, pPair->m_value.m_lFaceIndexBI);
+
+			oWriterJS.WriteString(str1);
+			oWriterJS.WriteString(strParams);
+
+			if (index != (nCountFonts - 1))
+				oWriterJS.WriteStringC(_T(",\n"));
+			else
+				oWriterJS.WriteStringC(_T("\n"));
+		}
+		oWriterJS.WriteStringC(_T("];\n\n"));
+
+		return oWriterJS.GetCString();
+	}
+}

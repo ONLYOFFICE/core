@@ -325,7 +325,7 @@ public:
 			return S_FALSE;
 		}
 
-		if (m_oParams.m_strFontsDirectory == _T(""))
+		if (bIsInnerFonts)
 		{
 			ASCGraphics::IASCFontManager* pFontManager = NULL;
 			CoCreateInstance(ASCGraphics::CLSID_CASCFontManager, NULL, CLSCTX_ALL, ASCGraphics::IID_IASCFontManager, (void**)&pFontManager);

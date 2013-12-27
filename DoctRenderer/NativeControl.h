@@ -186,7 +186,11 @@ void _GetFontArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args)
 
 	BYTE* pData = NULL;
 	DWORD len = 0;
-	CString strDir = pNative->m_strFontsDirectory + _T("\\");
+	CString strDir = pNative->m_strFontsDirectory;
+
+	if (strDir != _T(""))
+		strDir += _T("\\");
+
 	strDir += to_cstring(args[0]);
 	pNative->getFileData(strDir, pData, len);
 

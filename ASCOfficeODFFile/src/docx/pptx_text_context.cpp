@@ -55,6 +55,9 @@ public:
     void start_list_item(bool restart = false);
 	void end_list_item();
 
+	void start_field(field_type type, const std::wstring & styleName);
+    void end_field();
+
 	bool in_list_;
 
 private:
@@ -70,9 +73,11 @@ private:
 
     void write_rPr(std::wostream & strm);
 	void write_pPr(std::wostream & strm);
+	void write_t(std::wostream & strm);
    
     std::wstring dump_paragraph();
 	void dump_run();
+	void dump_field();
   
 	size_t paragraphs_cout_; //???? тока из за начала отсчета?
    
@@ -99,13 +104,16 @@ private:
 	std::wstring current_list_style();
 ///////////////////////////
 
+	field_type field_type_;
+	std::wstringstream field_value_;
+
 	pptx_conversion_context & pptx_context_;
 
 };
 
 pptx_text_context::Impl::Impl(odf::odf_read_context & odf_contxt_, pptx_conversion_context & pptx_contxt_): 
 		odf_context_(odf_contxt_),	pptx_context_(pptx_contxt_),
-		paragraphs_cout_(0),in_paragraph(false),in_span(false)
+		paragraphs_cout_(0),in_paragraph(false),in_span(false),field_type_(none)
 {
 	new_list_style_number_=0;
 	local_styles_ptr_ = NULL;
@@ -113,7 +121,10 @@ pptx_text_context::Impl::Impl(odf::odf_read_context & odf_contxt_, pptx_conversi
 
 void pptx_text_context::Impl::add_text(const std::wstring & text)
 {
-    text_ << text;
+	if (field_type_)
+		field_value_ << text;
+	else
+		text_ << text;
 }
 
 void pptx_text_context::Impl::set_local_styles_container(odf::styles_container * local_styles_)
@@ -135,6 +146,7 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 	}else
 	{
 		text_.str(std::wstring());
+		field_value_.str(std::wstring());
 	}
 	paragraph_style_name_ = styleName;
 	in_paragraph = true;
@@ -333,6 +345,10 @@ void pptx_text_context::Impl::write_pPr(std::wostream & strm)
 	strm << L"</a:pPr>";
 }
 
+void pptx_text_context::Impl::write_t(std::wostream & strm)
+{
+}
+
 void pptx_text_context::Impl::write_rPr(std::wostream & strm)
 {
 	if (paragraph_style_name_.length()<1 && span_style_name_.length()<1 && !(hyperlink_hId.length()>0)  && base_style_name_.length()<1)return;
@@ -382,28 +398,75 @@ std::wstring pptx_text_context::Impl::dump_paragraph(/*bool last*/)
 	}
 	return paragraph_.str();
 }
-
-void pptx_text_context::Impl::dump_run()
+void pptx_text_context::Impl::dump_field()
 {
-	const std::wstring content = xml::utils::replace_text_to_xml(text_.str());
- 	
-	if (content.length()<1 &&  span_style_name_.length()<1) return ;     
-
+	if (field_type_ == none) return;
+	
 	CP_XML_WRITER(run_)
     {
-        if (!content.empty())
-        {
-			CP_XML_NODE(L"a:r")
+		CP_XML_NODE(L"a:fld")
+		{
+			switch (field_type_)
 			{
-				write_rPr(CP_XML_STREAM());                
-				
+			case page_number: 
+				{
+					CP_XML_ATTR(L"type", L"slidenum");
+					CP_XML_ATTR(L"id", L"{5CC2A059-B141-45A7-B910-B096D6D06820}");
+				}
+				break;
+			case date:
+				{
+					CP_XML_ATTR(L"type", L"datetime1");
+					CP_XML_ATTR(L"id", L"{1D1B89AE-8D35-4BB5-B492-6D9BE4F23A39}");
+				}							
+				break;
+			case time:	
+				{
+					CP_XML_ATTR(L"type", L"datetime11");
+					CP_XML_ATTR(L"id", L"{03DA74A9-E3F2-4F30-AAF9-CC1A83980D5E}");
+				}
+				break;
+			}
+			//CP_XML_NODE(L"a:r")
+			{
+				const std::wstring content = xml::utils::replace_text_to_xml(field_value_.str());
+
+				//write_rPr(CP_XML_STREAM());   
+
 				CP_XML_NODE(L"a:t")
 				{
 				//	CP_XML_ATTR(L"xml:space", L"preserve"); 
 					CP_XML_STREAM() << content;
-                }
+				}
+			}
+		}
+	}
+	field_value_.str(std::wstring());
+	field_type_ = none;
+}
+void pptx_text_context::Impl::dump_run()
+{
+	dump_field();
+	
+	const std::wstring content = xml::utils::replace_text_to_xml(text_.str());
+	if (content.length() <1 &&  span_style_name_.length()<1) return ;     
+
+	CP_XML_WRITER(run_)
+    {
+
+        if (content.length()>0)
+        {			
+			CP_XML_NODE(L"a:r")
+			{
+				write_rPr(CP_XML_STREAM());   
+
+				CP_XML_NODE(L"a:t")
+				{
+				//	CP_XML_ATTR(L"xml:space", L"preserve"); 
+					CP_XML_STREAM() << content;
+				}
 	         }
-            text_.str(std::wstring());
+            text_.str(std::wstring());			
         }
     }
 	hyperlink_hId =L"";
@@ -428,6 +491,7 @@ void pptx_text_context::Impl::start_object()
 	run_.str(std::wstring());
 	paragraph_.str(std::wstring());
     text_.str(std::wstring());
+	field_value_.str(std::wstring());
     
 	paragraph_style_name_ = L"";
 	span_style_name_ = L"";
@@ -453,6 +517,7 @@ std::wstring pptx_text_context::Impl::end_object()
 	run_.str(std::wstring());
 	paragraph_.str(std::wstring());
     text_.str(std::wstring());
+	field_value_.str(std::wstring());
 	
 	paragraph_style_name_ = L"";
     span_style_name_=L"";
@@ -536,22 +601,17 @@ void pptx_text_context::Impl::end_list_item()
 	in_list_ = false;
 }
 
-//void pptx_text_context::Impl::write_list_properties(std::wostream & strm)
-//{
-//    if (!list_style_stack_.empty())
-//    {
-//        const int id = odf_context_.listStyleContainer().id_by_name( current_list_style() );
-//		CP_XML_WRITER(strm)
-//		{
-//			CP_XML_NODE(L"a:buAutoNum")
-//			{
-//				CP_XML_ATTR(L"type",L"arabicPeriod");
-//				CP_XML_ATTR(L"startAt",id);//
-//			}
-//		}
-//		first_element_list_item_ = false;
-//    }
-//}
+void pptx_text_context::Impl::start_field(field_type type, const std::wstring & styleName)
+{
+	field_type_ = type;
+}
+
+void pptx_text_context::Impl::end_field()
+{
+	dump_run();
+	field_type_ = none;
+}
+
 void pptx_text_context::Impl::write_list_styles(std::wostream & strm)//defaults style paragraph & lists
 {
     odf::list_style_container & list_styles = odf_context_.listStyleContainer();
@@ -681,14 +741,13 @@ styles_context & pptx_text_context::get_styles_context()
 { 
 	return  impl_->get_styles_context() ; 
 }
-void pptx_text_context::start_field(int type, const std::wstring & styleName)
+void pptx_text_context::start_field(field_type type, const std::wstring & styleName)
 {
-	//todooo
-	//1 - datetime, 2 -pagecount, 3 - pagenumber - <a:fld><a:t></a:fld>
+	impl_->start_field(type, styleName);
 }
 void pptx_text_context::end_field()
 {
-
+	impl_->end_field();
 }
 
 }

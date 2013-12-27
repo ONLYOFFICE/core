@@ -372,10 +372,10 @@ void xlsx_drawing_context::process_common_properties(drawing_object_description 
     
 	if (pic.svg_rect_)
 	{
-		drawing.x = odf::length(pic.svg_rect_.get().x_, odf::length::pt).get_value_unit(odf::length::emu);
-		drawing.y = odf::length(pic.svg_rect_.get().y_, odf::length::pt).get_value_unit(odf::length::emu);
-		drawing.cx = odf::length(pic.svg_rect_.get().width_, odf::length::pt).get_value_unit(odf::length::emu);
-		drawing.cy = odf::length(pic.svg_rect_.get().height_, odf::length::pt).get_value_unit(odf::length::emu);
+		drawing.x = (int)(0.5 + odf::length(pic.svg_rect_.get().x_, odf::length::pt).get_value_unit(odf::length::emu));
+		drawing.y = (int)(0.5 + odf::length(pic.svg_rect_.get().y_, odf::length::pt).get_value_unit(odf::length::emu));
+		drawing.cx = (int)(0.5 + odf::length(pic.svg_rect_.get().width_, odf::length::pt).get_value_unit(odf::length::emu));
+		drawing.cy = (int)(0.5 + odf::length(pic.svg_rect_.get().height_, odf::length::pt).get_value_unit(odf::length::emu));
 	}
 	
 	drawing.additional=pic.additional_;

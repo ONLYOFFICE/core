@@ -32,8 +32,8 @@ private:
 
 public:
 
-    office_element_ptr_array date_time_decl_;
-    office_element_ptr_array footer_decl_;
+    office_element_ptr_array date_time_decls_;
+    office_element_ptr_array footer_decls_;
   
 	office_element_ptr_array pages_;
 

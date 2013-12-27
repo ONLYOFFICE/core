@@ -35,7 +35,7 @@ void draw_image_attlist::add_attributes( const xml::attributes_wc_ptr & Attribut
 /// draw-frame-attlist
 void draw_frame_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"draw:copy-of", draw_copy_of_);
+	CP_APPLY_ATTR(L"draw:copy-of", draw_copy_of_);
 }
 /// draw-gframe-attlist
 void draw_g_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -76,10 +76,6 @@ void draw_image::add_child_element( xml::sax * Reader, const ::std::wstring & Ns
     }
 }
 
-void draw_image::add_text(const std::wstring & Text)
-{
-}
-
 // draw:chart
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * draw_chart::ns = L"draw";
@@ -108,9 +104,7 @@ void draw_chart::add_child_element( xml::sax * Reader, const ::std::wstring & Ns
     //}
 }
 
-void draw_chart::add_text(const std::wstring & Text)
-{
-}
+
 // draw:g
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * draw_g::ns = L"draw";
@@ -140,6 +134,8 @@ const wchar_t * draw_frame::name = L"frame";
 
 void draw_frame::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+ 	idx_in_owner = -1;
+
 	common_presentation_attlist_.add_attributes(Attributes);
     common_draw_attlists_.shape_with_text_and_styles_.add_attributes(Attributes);
     common_draw_attlists_.position_.add_attributes(Attributes);
@@ -185,10 +181,6 @@ void draw_frame::add_child_element( xml::sax * Reader, const ::std::wstring & Ns
     {
         CP_NOT_APPLICABLE_ELM();
     }
-}
-
-void draw_frame::add_text(const std::wstring & Text)
-{
 }
 
 

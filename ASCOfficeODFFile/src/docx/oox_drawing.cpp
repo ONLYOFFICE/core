@@ -271,7 +271,7 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val)
 
 void oox_serialize_xfrm(std::wostream & strm, _oox_drawing const & val, std::wstring name_space)
 {
-    CP_XML_WRITER(strm)
+	CP_XML_WRITER(strm)
     {
 		std::wstring xfrm = name_space + L":xfrm";
 

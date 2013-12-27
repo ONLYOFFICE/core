@@ -45,7 +45,6 @@ private:
 
 public:
     office_element_ptr content_;
-
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(office_body);

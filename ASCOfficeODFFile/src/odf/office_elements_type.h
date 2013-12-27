@@ -38,6 +38,9 @@ enum ElementType
     typeTextSequence,
     typeTextSheetName,
 
+	typePresentationFooter,
+	typePresentationDateTime,
+
 	typeDcCreator,
 	typeDcDate,
 
@@ -193,6 +196,8 @@ enum ElementType
 	typeDrawEquation,
 
 	typeDrawPage,    
+	typePresentationFooterDecl,
+	typePresentationDateTimeDecl,
 
 	typeStyleGraphicPropertis,
 	typeStyleDrawGradient,

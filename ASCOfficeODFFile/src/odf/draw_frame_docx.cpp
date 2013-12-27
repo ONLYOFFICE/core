@@ -860,10 +860,10 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 	_CP_OPT(double) dVal;
 	
 	GetProperty(drawing.additional,L"svg:scale_x",dVal);
-	if (dVal)drawing.cx*=dVal.get();
+	if (dVal)drawing.cx = (int)(0.5 + drawing.cx * dVal.get());
 	
 	GetProperty(drawing.additional,L"svg:scale_y",dVal);
-	if (dVal)drawing.cy*=dVal.get();
+	if (dVal)drawing.cy = (int)(0.5 + drawing.cy * dVal.get());
 
 	GetProperty(drawing.additional,L"svg:translate_x",dVal);
 	if (dVal)drawing.x+=get_value_emu(dVal.get());

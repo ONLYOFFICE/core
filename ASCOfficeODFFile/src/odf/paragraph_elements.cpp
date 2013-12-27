@@ -553,7 +553,10 @@ void note::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, cons
 void note::add_text(const std::wstring & Text)
 {
 }
-
+void note::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	//см presentation:notes
+}
 void note::docx_convert(oox::docx_conversion_context & Context)
 {
     bool addNewRun = false;
@@ -739,7 +742,11 @@ const wchar_t * text_page_number::name = L"page-number";
 
 void text_page_number::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    // TODO
+    //text:select-page
+	//common-field-num-format-attlist"/> ----	//style:num-format="1"/>
+	//common-field-fixed-attlist"/>
+	//text:page-adjust="1"
+
 }
 
 void text_page_number::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
@@ -769,7 +776,7 @@ void text_page_number::docx_convert(oox::docx_conversion_context & Context)
 }
 void text_page_number::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    Context.get_text_context().start_field(3, L"");
+	Context.get_text_context().start_field(oox::page_number, L"");
     BOOST_FOREACH(const office_element_ptr & elm, text_)
     {
         elm->pptx_convert(Context);
@@ -820,13 +827,11 @@ void text_page_count::docx_convert(oox::docx_conversion_context & Context)
 }
 void text_page_count::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    Context.get_text_context().start_field(2, L"");
+	//поскольку такого поля в ms нет - конвертим как обычный текст
     BOOST_FOREACH(const office_element_ptr & elm, text_)
     {
         elm->pptx_convert(Context);
     }
-    Context.get_text_context().end_field();
-
 }
 
 // text:date
@@ -869,7 +874,7 @@ void text_date::docx_convert(oox::docx_conversion_context & Context)
 }
 void text_date::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    Context.get_text_context().start_field(1,style_data_style_name_.get_value_or(L""));
+    Context.get_text_context().start_field(oox::date,style_data_style_name_.get_value_or(L""));
     BOOST_FOREACH(const office_element_ptr & elm, text_)
     {
         elm->pptx_convert(Context);
@@ -917,7 +922,7 @@ void text_time::docx_convert(oox::docx_conversion_context & Context)
 }
 void text_time::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    Context.get_text_context().start_field(1, style_data_style_name_.get_value_or(L""));
+    Context.get_text_context().start_field(oox::time, style_data_style_name_.get_value_or(L""));
     BOOST_FOREACH(const office_element_ptr & elm, text_)
     {
         elm->pptx_convert(Context);
@@ -961,7 +966,15 @@ void text_file_name::docx_convert(oox::docx_conversion_context & Context)
     }
     Context.finish_run();
 }
-
+void text_file_name::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	//Context.get_text_context().start_field(oox::file_name, style_data_style_name_.get_value_or(L""));
+	BOOST_FOREACH(const office_element_ptr & elm, text_)
+    {
+        elm->pptx_convert(Context);
+    }
+    Context.get_text_context().end_field();
+}
 // text:sequence
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * sequence::ns = L"text";
@@ -995,6 +1008,13 @@ void sequence::docx_convert(oox::docx_conversion_context & Context)
         elm->docx_convert(Context);
     }
 }
+void sequence::pptx_convert(oox::pptx_conversion_context & Context) 
+{
+    BOOST_FOREACH(const office_element_ptr & elm, text_)
+    {
+        elm->pptx_convert(Context);
+    }
+}
 
 // text:sequesheet-namence
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1015,8 +1035,23 @@ void sheet_name::add_text(const std::wstring & Text)
     office_element_ptr elm = text::create(Text) ;
     text_.push_back( elm );
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// presentation:footer
+const wchar_t * presentation_footer::ns = L"presentation";
+const wchar_t * presentation_footer::name = L"footer";
 
+void presentation_footer::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	//Context.get_slide_context.set_footer_enabled();
+}
 
+const wchar_t * presentation_date_time::ns = L"presentation";
+const wchar_t * presentation_date_time::name = L"date-time";
+
+void presentation_date_time::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    Context.get_text_context().start_field(oox::date, L"");
+}
 }
 }
 }

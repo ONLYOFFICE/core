@@ -42,7 +42,6 @@ public:
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
 
 private:
     draw_image_attlist draw_image_attlist_;
@@ -85,7 +84,6 @@ public:
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
 
 private:
     draw_chart_attlist draw_chart_attlist_;
@@ -130,9 +128,9 @@ public:
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
 
 public:
+	int idx_in_owner ;
 	common_presentation_attlist common_presentation_attlist_;
 	union_common_draw_attlists  common_draw_attlists_;
 

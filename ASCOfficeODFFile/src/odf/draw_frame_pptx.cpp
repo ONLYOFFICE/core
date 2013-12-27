@@ -140,6 +140,8 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	if (common_presentation_attlist_.presentation_class_)
 	{
 		Context.get_slide_context().set_placeHolder_type(common_presentation_attlist_.presentation_class_->get_type_ms());
+		if (idx_in_owner >=0)
+		Context.get_slide_context().set_placeHolder_idx(idx_in_owner);
 	}
 
 	if (office_event_listeners_)office_event_listeners_->pptx_convert(Context);

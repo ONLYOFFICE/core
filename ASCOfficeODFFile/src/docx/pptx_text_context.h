@@ -21,8 +21,18 @@ namespace oox {
 	
 class pptx_conversion_context;
 
+enum field_type
+{
+	none,
+	page_number,
+	date,
+	time
+};
+
 class pptx_text_context: boost::noncopyable
 {
+
+
 public:
 	pptx_text_context(odf::odf_read_context & odf_context_, pptx_conversion_context & pptx_contxt_);
     ~pptx_text_context();
@@ -50,7 +60,7 @@ public:
 	void start_hyperlink();
 	void end_hyperlink(std::wstring hId);
 
-    void start_field(int type, const std::wstring & styleName);//1 - datetime, 2 -pagecount, 3 - pagenumber - <a:fld><a:t></a:fld>
+    void start_field(field_type type, const std::wstring & styleName);//1 - datetime, 2 -pagecount, 3 - pagenumber - <a:fld><a:t></a:fld>
     void end_field();
 
 	bool in_list();

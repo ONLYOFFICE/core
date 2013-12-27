@@ -379,7 +379,8 @@ public:
     span() {}
    
 	office_element_ptr_array paragraph_content_;
-    style_ref text_style_name_;
+    
+	style_ref text_style_name_;
     style_ref_array text_class_names_;
 
 private:
@@ -446,6 +447,7 @@ public:
 
 public:
     void docx_convert(oox::docx_conversion_context & Context);
+    void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -698,6 +700,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
    
 	void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -727,6 +730,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
  
 	void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
@@ -767,7 +771,47 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(sheet_name);
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//presentation:footer
+class presentation_footer : public paragraph_content_element<presentation_footer>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typePresentationFooter;
+    CPDOCCORE_DEFINE_VISITABLE();
+    
+	//void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context);
 
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
+	virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name){}
+    
+};
+CP_REGISTER_OFFICE_ELEMENT2(presentation_footer);
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//presentation:date-time
+class presentation_date_time: public paragraph_content_element<presentation_date_time>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typePresentationDateTime;
+    CPDOCCORE_DEFINE_VISITABLE();
+    
+	//void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context);
+
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
+	virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name){}
+    
+};
+CP_REGISTER_OFFICE_ELEMENT2(presentation_date_time);
 } // namespace text
 } // namespace odf
 } // namespace cpdoccore

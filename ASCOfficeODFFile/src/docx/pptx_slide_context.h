@@ -34,7 +34,9 @@ public:
 	std::vector<odf::_property> & get_properties();
 	void set_clipping(std::wstring & str );
 	void set_fill(_oox_fill & fill);
+	
 	void set_placeHolder_type(std::wstring typeHolder);
+	void set_placeHolder_idx(int idx);
 
 	std::wstring add_hyperlink(std::wstring const & ref, bool object);
 
@@ -53,6 +55,7 @@ public:
 	bool empty() const;
 //////////////////////////////////////////////////////////////////////////////////////////////
 	void serialize(std::wostream & strm);
+	void serialize_HeaderFooter(std::wostream & strm);
 	void serialize_background(std::wostream & strm, bool always=false);
 	
 	void dump_rels(rels & Rels);

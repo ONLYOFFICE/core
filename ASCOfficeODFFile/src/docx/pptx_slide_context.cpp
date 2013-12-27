@@ -24,8 +24,10 @@ typedef _CP_PTR(pptx_drawings) pptx_drawings_ptr;
 class pptx_slide_context::Impl
 {
 public:    
-	Impl(const std::wstring & odfPacket) : pptx_drawings_(pptx_drawings::create()), mediaitems_(odfPacket),rId_(1),odfPacket_(odfPacket)
-    {} 
+	Impl(const std::wstring & odfPacket) : mediaitems_(odfPacket),odfPacket_(odfPacket)
+    {
+		clear();
+	}
 
     drawing_object_description object_description_;    
 
@@ -35,6 +37,8 @@ public:
 	std::vector<drawing_object_description> tables_;
 
 	_CP_OPT(_oox_fill)	background_fill_;
+
+	bool header, footer, date_time, slideNum;
 
     void add_drawing(_pptx_drawing const & d,
         bool isInternal,
@@ -67,6 +71,11 @@ public:
 		tables_.clear();
 		
 		background_fill_ = boost::none;
+
+		header=false;
+		footer=false;
+		date_time=false;
+		slideNum=false;
 		
 		rId_ = 1;
 
@@ -83,6 +92,7 @@ public:
         return pptx_drawings_;
     }
 	std::wstring  odfPacket_;
+
 private:
 	size_t rId_;
 	mediaitems mediaitems_;
@@ -124,9 +134,17 @@ void pptx_slide_context::default_set()
 
 void pptx_slide_context::set_placeHolder_type(std::wstring typeHolder)
 {
+	if (typeHolder == L"ftr")	impl_->footer= true;
+	if (typeHolder == L"hdr")	impl_->header= true;
+	if (typeHolder == L"dt")	impl_->date_time= true;
+	if (typeHolder == L"sldNum")impl_->slideNum= true;
+
 	impl_->object_description_.additional_.push_back(odf::_property(L"PlaceHolderType",typeHolder));
 }
-
+void pptx_slide_context::set_placeHolder_idx(int idx)
+{
+	impl_->object_description_.additional_.push_back(odf::_property(L"PlaceHolderIdx",idx));
+}
 void pptx_slide_context::set_rect(double width_pt, double height_pt, double x_pt, double y_pt)
 {
 	_rect r = {width_pt,height_pt,x_pt,y_pt};
@@ -232,6 +250,7 @@ void pptx_slide_context::start_table()
 {
 	impl_->object_description_.type_ = 0; //frame 
 }
+
 void pptx_slide_context::start_chart(std::wstring const & path)
 {
 	impl_->object_description_.xlink_href_ = path; 
@@ -242,6 +261,7 @@ void pptx_slide_context::end_shape()
 	impl_->shapes_.push_back(impl_->object_description_);
 	default_set();
 }
+
 void pptx_slide_context::end_image()
 {
     impl_->images_.push_back(impl_->object_description_);
@@ -361,10 +381,10 @@ void pptx_slide_context::process_common_properties(drawing_object_description & 
 {
 	if (pic.svg_rect_)
 	{
-		drawing.x = odf::length(pic.svg_rect_.get().x_, odf::length::pt).get_value_unit(odf::length::emu);
-		drawing.y = odf::length(pic.svg_rect_.get().y_, odf::length::pt).get_value_unit(odf::length::emu);
-		drawing.cx = odf::length(pic.svg_rect_.get().width_, odf::length::pt).get_value_unit(odf::length::emu);
-		drawing.cy = odf::length(pic.svg_rect_.get().height_, odf::length::pt).get_value_unit(odf::length::emu);
+		drawing.x = (int)(0.5 + odf::length(pic.svg_rect_.get().x_, odf::length::pt).get_value_unit(odf::length::emu));
+		drawing.y = (int)(0.5 + odf::length(pic.svg_rect_.get().y_, odf::length::pt).get_value_unit(odf::length::emu));
+		drawing.cx = (int)(0.5 + odf::length(pic.svg_rect_.get().width_, odf::length::pt).get_value_unit(odf::length::emu));
+		drawing.cy = (int)(0.5 + odf::length(pic.svg_rect_.get().height_, odf::length::pt).get_value_unit(odf::length::emu));
 	}
 	
 	drawing.additional = pic.additional_;
@@ -375,6 +395,7 @@ void pptx_slide_context::process_common_properties(drawing_object_description & 
 }
 void pptx_slide_context::process_shapes()
 {
+	int PlaceHolderIndex = 1;
     BOOST_FOREACH(drawing_object_description & pic, impl_->shapes_)
     {
 		_pptx_drawing drawing=_pptx_drawing();
@@ -399,7 +420,14 @@ void pptx_slide_context::process_shapes()
 ////////////////////////////////////////////////////////////////
 		_CP_OPT(std::wstring) sPlaceHolderType;
 		GetProperty(pic.additional_,L"PlaceHolderType",sPlaceHolderType);
-		if (sPlaceHolderType)drawing.place_holder_type_ = *sPlaceHolderType;
+		if (sPlaceHolderType)
+		{
+			drawing.place_holder_type_ = *sPlaceHolderType;
+
+			_CP_OPT(int) iPlaceHolderIdx;
+			GetProperty(pic.additional_,L"PlaceHolderIdx",iPlaceHolderIdx);
+			if (iPlaceHolderIdx) drawing.place_holder_idx_ = *iPlaceHolderIdx;
+		}
 
 		drawing.sub_type = pic.type_;
 
@@ -440,6 +468,21 @@ void pptx_slide_context::serialize_background(std::wostream & strm, bool always)
 				}
 				CP_XML_NODE(L"a:effectLst");
 			}
+		}
+	}
+}
+void pptx_slide_context::serialize_HeaderFooter(std::wostream & strm)
+{
+	if (!impl_->header && !impl_->footer && !impl_->date_time && !impl_->slideNum)return;
+
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE(L"p:hf")
+		{
+			if(impl_->footer)		CP_XML_ATTR(L"ftr",0);
+			if(impl_->header)		CP_XML_ATTR(L"hdr",0);
+			if(impl_->date_time)	CP_XML_ATTR(L"dt",0);
+			if(impl_->slideNum)	CP_XML_ATTR(L"sldNum",0);
 		}
 	}
 }

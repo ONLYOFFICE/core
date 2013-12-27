@@ -107,7 +107,8 @@ public:
     std::wstring rId() const;
    
     std::wostream & Data();
-    std::wostream & Background();
+	std::wostream & DataExtra();
+	std::wostream & Background();
 	rels & Rels();
 
 	void add_layout(int id, const std::wstring & rId);
@@ -119,6 +120,7 @@ public:
 
 private:
     std::wstringstream  slideMasterData_;
+	std::wstringstream  slideMasterDataExtra_;
     std::wstringstream  slideMasterBackground_;
 	
 	std::vector<std::wstring> layoutsId_;

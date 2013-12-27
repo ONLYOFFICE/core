@@ -1,7 +1,6 @@
 #include "precompiled_cpodf.h"
 #include "pptx_conversion_context.h"
 
-#include "measuredigits.h"
 #include "pptx_package.h"
 
 #include <cpdoccore/odf/odf_document.h>
@@ -12,6 +11,7 @@
 
 #include "../odf/calcs_styles.h"
 #include "../odf/odfcontext.h"
+#include "../odf/draw_frame.h"
 
 #include "pptx_default_serializes.h"
 
@@ -70,7 +70,28 @@ void pptx_conversion_context::process_layouts()
 		{
 			layout->pptx_convert(*this);
 		}
+		//нужно вытащить footers 
+		odf::style_master_page * master = 
+			root()->odf_context().pageLayoutContainer().master_page_by_name(layouts.content[layout_index].master_name);
 
+		if (master)
+		{
+			BOOST_FOREACH(odf::office_element_ptr elm, master->content_)
+			{
+				if (elm->get_type() == odf::typeDrawFrame)
+				{
+					odf::draw_frame* frame = dynamic_cast<odf::draw_frame *>(elm.get());
+					if ((frame) && (frame->common_presentation_attlist_.presentation_class_) && 
+								   (frame->common_presentation_attlist_.presentation_class_->get_type()==odf::presentation_class::footer ||
+									frame->common_presentation_attlist_.presentation_class_->get_type()==odf::presentation_class::date_time ||
+									frame->common_presentation_attlist_.presentation_class_->get_type()==odf::presentation_class::header ||
+									frame->common_presentation_attlist_.presentation_class_->get_type()==odf::presentation_class::page_number))
+					{
+						elm->pptx_convert(*this);
+					}
+				}
+			}
+		}
 		end_layout();	
 	}
 }
@@ -426,7 +447,10 @@ void pptx_conversion_context::end_layout()
 void pptx_conversion_context::end_master()
 {
 	get_slide_context().serialize_background(current_master().Background(),true);
+	
 	get_slide_context().serialize(current_master().Data());
+	get_slide_context().serialize_HeaderFooter(current_master().DataExtra());
+	
 	get_slide_context().dump_rels(current_master().Rels());//hyperlinks, mediaitems, ...
 
 	get_slide_context().end_slide();

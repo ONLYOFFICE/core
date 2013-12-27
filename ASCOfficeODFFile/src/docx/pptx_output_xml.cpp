@@ -169,6 +169,10 @@ std::wostream & pptx_xml_slideMaster::Data()
 {
     return slideMasterData_;
 }
+std::wostream & pptx_xml_slideMaster::DataExtra()
+{
+    return slideMasterDataExtra_;
+}
 std::wostream & pptx_xml_slideMaster::Background()
 {
     return slideMasterBackground_;
@@ -238,6 +242,7 @@ void pptx_xml_slideMaster::write_to(std::wostream & strm)
 				}
 				count++;
 			}
+			CP_XML_STREAM() << slideMasterDataExtra_.str();
 			CP_XML_NODE(L"p:txStyles")
 			{
 				CP_XML_NODE(L"p:titleStyle");

@@ -1717,10 +1717,6 @@
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\draw_page_pptx.cpp"
-			>
-		</File>
-		<File
 			RelativePath=".\src\odf\draw_shapes.cpp"
 			>
 		</File>

@@ -189,7 +189,7 @@ void Compute_HatchFill(draw_hatch * image_style,oox::oox_hatch_fill_ptr fill)
 	int style =0;
 	if (image_style->draw_style_)style = image_style->draw_style_->get_type();
 
-	int angle = *image_style->draw_rotation_/10.;
+	int angle = (int)(0.5 + *image_style->draw_rotation_/10.);
 	
 	if (image_style->draw_color_)fill->color_ref = image_style->draw_color_->get_hex_value();
 

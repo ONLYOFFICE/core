@@ -458,9 +458,9 @@ std::pair<float,float> xlsx_conversion_context::getMaxDigitSize()
 			font_name = L"Arial";
 
 		if ((textFormatProperties.fo_font_size_) && (textFormatProperties.fo_font_size_->get_type() == odf::font_size::Length))
-			font_size = textFormatProperties.fo_font_size_->get_length().get_value_unit(odf::length::pt);
+			font_size = (int)(0.5 + textFormatProperties.fo_font_size_->get_length().get_value_unit(odf::length::pt));
 		else
-			font_size =10.;
+			font_size =10;
 		
         maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, getDefaultDpi());        
     }    

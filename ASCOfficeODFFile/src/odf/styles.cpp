@@ -1166,8 +1166,33 @@ void style_master_page::add_child_element( xml::sax * Reader, const ::std::wstri
     }
 }
 
-void style_master_page::add_text(const std::wstring & Text)
-{}
+int style_master_page::find_placeHolderIndex(presentation_class::type placeHolder)
+{
+	int idx = -1;
+
+	int i=0;
+	int size = content_.size();
+	
+	while(true)
+    {
+		if (i>=size)break;
+		if (content_[i]->get_type() == odf::typeDrawFrame)
+		{
+			draw_frame* frame = dynamic_cast<draw_frame *>(content_[i].get());
+
+			if (frame->idx_in_owner<0)	frame->idx_in_owner = i+1;
+
+			if ((frame) && (frame->common_presentation_attlist_.presentation_class_) && 
+						   (frame->common_presentation_attlist_.presentation_class_->get_type()== placeHolder))
+			{
+				idx = frame->idx_in_owner;
+				break;
+			}
+		}
+		i++;
+    }
+	return idx;
+}
 
 void style_master_page::pptx_convert(oox::pptx_conversion_context & Context)
 {

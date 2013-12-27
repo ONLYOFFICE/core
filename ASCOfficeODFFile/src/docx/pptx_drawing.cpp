@@ -91,6 +91,7 @@ void pptx_serialize_image(std::wostream & strm, _pptx_drawing const & val)
 
 void pptx_serialize_shape(std::wostream & strm, _pptx_drawing const & val)
 {
+
 	CP_XML_WRITER(strm)    
     {
         CP_XML_NODE(L"p:sp")
@@ -100,7 +101,7 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing const & val)
                 CP_XML_NODE(L"p:cNvPr")
                 {
                     CP_XML_ATTR(L"id", val.id);//числовое значение val.rId
-                    CP_XML_ATTR(L"name", val.name);
+                    CP_XML_ATTR(L"name", val.name); 
 
 					oox_serialize_hlink(CP_XML_STREAM(),val.hlinks);
                 }
@@ -114,19 +115,35 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing const & val)
 				}
 				CP_XML_NODE(L"p:nvPr")
 				{
-					if (val.place_holder_type_.length()>0)CP_XML_NODE(L"p:ph"){ CP_XML_ATTR(L"type",val.place_holder_type_);}
+					if (val.place_holder_type_.length()>0)
+					{
+						CP_XML_NODE(L"p:ph")
+						{
+							CP_XML_ATTR(L"type",val.place_holder_type_);
+							if (val.place_holder_idx_ > 0)	CP_XML_ATTR(L"idx", val.place_holder_idx_);
+							
+							if (val.place_holder_type_ == L"dt")		CP_XML_ATTR(L"sz", L"half");
+							if (val.place_holder_type_ == L"ftr")		CP_XML_ATTR(L"sz", L"quarter");
+							if (val.place_holder_type_ == L"sldNum")	CP_XML_ATTR(L"sz", L"quarter");
+						}
+					}
 				}
             }
 			CP_XML_NODE(L"p:spPr")
-            {
-				oox_serialize_xfrm(CP_XML_STREAM(),val);
+			{			
+				_CP_OPT(bool) bNoRect;
+				odf::GetProperty(val.additional,L"no_rect",bNoRect);
 
-				oox_serialize_shape(CP_XML_STREAM(),val);
-				oox_serialize_ln(CP_XML_STREAM(),val.additional);
-            }
-			
+				if (!bNoRect)
+				{					
+					oox_serialize_xfrm(CP_XML_STREAM(),val);
+
+					oox_serialize_shape(CP_XML_STREAM(),val);
+					oox_serialize_ln(CP_XML_STREAM(),val.additional);
+				}
+			}
 			pptx_serialize_text(CP_XML_STREAM(),val.additional);
-        } 
+		}
     }  // CP_XML_WRITER  
 }
 

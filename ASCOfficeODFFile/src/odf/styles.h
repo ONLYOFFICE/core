@@ -445,10 +445,11 @@ public:
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
 
 public:
-    style_master_page_attlist style_master_page_attlist_;
+	int find_placeHolderIndex(presentation_class::type placeHolder);
+   
+	style_master_page_attlist style_master_page_attlist_;
 
     office_element_ptr style_header_;  
     office_element_ptr style_header_left_; 

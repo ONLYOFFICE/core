@@ -39,7 +39,7 @@ void office_body::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void office_body::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-    CP_CREATE_ELEMENT(content_);
+	CP_CREATE_ELEMENT(content_);
 }
 
 void office_body::add_text(const std::wstring & Text)

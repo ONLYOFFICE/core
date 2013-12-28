@@ -2,6 +2,7 @@
 
 #include "oox_package.h"
 #include <cpdoccore/CPNoncopyable.h>
+#include "pptx_comments.h"
 
 namespace cpdoccore { 
 namespace oox {
@@ -107,7 +108,28 @@ public:
     std::vector<slide_content_ptr> slides_;
     rels_files * rels_;
 };
-/// \class  xl_charts_files
+///////////////////////////////////////////////////////////
+
+class ppt_comments_files;
+typedef _CP_PTR(ppt_comments_files) ppt_comments_files_ptr;
+
+/// \class ppt_comments
+class ppt_comments_files: public element
+{
+public:
+    virtual void write(const std::wstring & RootPath);
+
+    ppt_comments_files(const std::vector<pptx_comment_elm> & elms) : comments_ ( elms )
+    {
+    }
+
+    static ppt_comments_files_ptr create(const std::vector<pptx_comment_elm> & elms);
+
+private:
+    const std::vector<pptx_comment_elm> & comments_;
+
+};
+/// \class  ppt_charts_files
 class ppt_charts_files  : public element
 {
 public:
@@ -132,6 +154,7 @@ public:
     void set_themes(pptx_xml_theme_ptr & theme);
     
 	void set_styles(element_ptr Element);
+	void set_comments(element_ptr Element);
 
 	void add_slide(slide_content_ptr sheet);
 	void add_slideLayout(slide_content_ptr sheet);
@@ -158,6 +181,7 @@ private:
 
     element_ptr tableStyles_;
 
+	element_ptr comments_;
     element_ptr media_;
 };
 

@@ -48,7 +48,7 @@ public:
     {
         pptx_drawings_->add(d, isInternal, rid, ref, type);
     }
-      void add_drawing(/**/
+      void add_additional_rels(
         bool isInternal,
         std::wstring const & rid,
         std::wstring const & ref,
@@ -412,7 +412,7 @@ void pptx_slide_context::process_shapes()
 		if (drawing.fill.bitmap)
 		{
 			drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, mediaitems::typeImage, isMediaInternal, ref);
-			impl_->add_drawing(isMediaInternal, drawing.fill.bitmap->rId, ref, mediaitems::typeImage);//собственно это не объект, а доп рел и ref объекта
+			impl_->add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, mediaitems::typeImage);
 		}
 			
 		std::wstring rId = impl_->get_mediaitems().add_or_find(L"", mediaitems::typeShape, isMediaInternal, ref);
@@ -445,7 +445,7 @@ mediaitems & pptx_slide_context::get_mediaitems()
 
 void pptx_slide_context::add_rels( bool isInternal, std::wstring const & rid, std::wstring const & ref, mediaitems::Type type)
 {
-	impl_->add_drawing(isInternal, rid, ref, type);
+	impl_->add_additional_rels(isInternal, rid, ref, type);
 }
 
 void pptx_slide_context::serialize_background(std::wostream & strm, bool always)

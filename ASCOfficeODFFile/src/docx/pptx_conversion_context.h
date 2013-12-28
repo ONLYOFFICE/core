@@ -6,14 +6,8 @@
 #include "pptx_text_context.h"
 #include "pptx_slide_context.h"
 
-//#include "xlsx_sharedstrings.h"
-//#include "xlsx_styles.h"
 #include "pptx_output_xml.h"
-//#include "xlsx_num_format_context.h"
-//#include "xlsx_drawing_context.h"
-//#include "xlsx_comments_context.h"
-//#include "xlsx_defined_names.h"
-//#include "xlsx_table_metrics.h"
+#include "pptx_comments_context.h"
 #include "oox_chart_context.h"
 #include "pptx_table_context.h"
 
@@ -75,6 +69,7 @@ public:
 	void end_theme();
 
 	pptx_slide_context & get_slide_context() { return pptx_slide_context_; }
+	pptx_comments_context & get_comments_context() { return pptx_comments_context_; }
 
     odf::odf_document * root()
     {
@@ -127,6 +122,7 @@ private:
     pptx_slide_context	pptx_slide_context_;
 	pptx_text_context	pptx_text_context_;
 	pptx_table_context	pptx_table_context_;
+	pptx_comments_context pptx_comments_context_;
 	
 	std::vector<oox_chart_context_ptr> charts_;
 
@@ -139,6 +135,9 @@ private:
 
 	std::wstring current_master_page_name_;
 	std::wstring current_layout_page_name_;
+
+    pptx_comments_context_handle comments_context_handle_;
+
 
 };
 

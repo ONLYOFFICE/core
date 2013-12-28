@@ -68,6 +68,7 @@ private:
 	
 	bool in_span;
 	bool in_paragraph;
+	bool in_comment;
 
 	odf::styles_container * local_styles_ptr_;
 
@@ -113,7 +114,7 @@ private:
 
 pptx_text_context::Impl::Impl(odf::odf_read_context & odf_contxt_, pptx_conversion_context & pptx_contxt_): 
 		odf_context_(odf_contxt_),	pptx_context_(pptx_contxt_),
-		paragraphs_cout_(0),in_paragraph(false),in_span(false),field_type_(none)
+		paragraphs_cout_(0),in_paragraph(false),in_span(false),in_comment(false),field_type_(none)
 {
 	new_list_style_number_=0;
 	local_styles_ptr_ = NULL;
@@ -140,9 +141,12 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 		{
 			dump_paragraph();
 		}
+		else if (in_list_ == false)
+		{
 		// конец предыдущего абзаца и начало следующего
 		//text_ << L"&#10;";
-        //text_ << L"\n"; 
+			text_ << L"\n"; 
+		}
 	}else
 	{
 		text_.str(std::wstring());
@@ -406,38 +410,45 @@ void pptx_text_context::Impl::dump_field()
     {
 		CP_XML_NODE(L"a:fld")
 		{
+			std::wstring content = xml::utils::replace_text_to_xml(field_value_.str());
+			
 			switch (field_type_)
 			{
 			case page_number: 
 				{
 					CP_XML_ATTR(L"type", L"slidenum");
 					CP_XML_ATTR(L"id", L"{5CC2A059-B141-45A7-B910-B096D6D06820}");
+					
+					if (content.length()<1)content = xml::utils::replace_text_to_xml(L"<#>");
 				}
 				break;
 			case date:
 				{
 					CP_XML_ATTR(L"type", L"datetime1");
 					CP_XML_ATTR(L"id", L"{1D1B89AE-8D35-4BB5-B492-6D9BE4F23A39}");
+					
+					if (content.length()<1)content = xml::utils::replace_text_to_xml(L"01.01.2000");
 				}							
 				break;
 			case time:	
 				{
 					CP_XML_ATTR(L"type", L"datetime11");
 					CP_XML_ATTR(L"id", L"{03DA74A9-E3F2-4F30-AAF9-CC1A83980D5E}");
+
+					if (content.length()<1)content = xml::utils::replace_text_to_xml(L"00:00:00");
 				}
 				break;
-			}
-			//CP_XML_NODE(L"a:r")
-			{
-				const std::wstring content = xml::utils::replace_text_to_xml(field_value_.str());
-
-				//write_rPr(CP_XML_STREAM());   
-
-				CP_XML_NODE(L"a:t")
+			case datetime:
 				{
-				//	CP_XML_ATTR(L"xml:space", L"preserve"); 
-					CP_XML_STREAM() << content;
+					CP_XML_ATTR(L"type", L"datetime1");
+					CP_XML_ATTR(L"id", L"{A9EA0FE8-FEF9-4B2F-BC9D-19DDCDB4AB9B}");
 				}
+			}  
+
+			CP_XML_NODE(L"a:t")
+			{
+			//	CP_XML_ATTR(L"xml:space", L"preserve"); 
+				CP_XML_STREAM() << content;
 			}
 		}
 	}
@@ -453,21 +464,17 @@ void pptx_text_context::Impl::dump_run()
 
 	CP_XML_WRITER(run_)
     {
+		CP_XML_NODE(L"a:r")
+		{
+			write_rPr(CP_XML_STREAM());   
 
-        if (content.length()>0)
-        {			
-			CP_XML_NODE(L"a:r")
+			CP_XML_NODE(L"a:t")
 			{
-				write_rPr(CP_XML_STREAM());   
-
-				CP_XML_NODE(L"a:t")
-				{
-				//	CP_XML_ATTR(L"xml:space", L"preserve"); 
-					CP_XML_STREAM() << content;
-				}
-	         }
-            text_.str(std::wstring());			
-        }
+			//	CP_XML_ATTR(L"xml:space", L"preserve"); 
+				CP_XML_STREAM() << content;
+			}
+         }
+        text_.str(std::wstring());			
     }
 	hyperlink_hId =L"";
 }
@@ -748,6 +755,14 @@ void pptx_text_context::start_field(field_type type, const std::wstring & styleN
 void pptx_text_context::end_field()
 {
 	impl_->end_field();
+}
+void pptx_text_context::start_comment_content()
+{
+	impl_->start_object();
+}
+std::wstring pptx_text_context::end_comment_content()
+{
+	return impl_->end_object();
 }
 
 }

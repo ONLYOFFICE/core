@@ -1583,6 +1583,22 @@
 				Name="pptx"
 				>
 				<File
+					RelativePath=".\src\docx\pptx_comments.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\docx\pptx_comments.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\docx\pptx_comments_context.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\docx\pptx_comments_context.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\docx\pptx_conversion_context.cpp"
 					>
 				</File>

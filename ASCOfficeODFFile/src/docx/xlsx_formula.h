@@ -1,6 +1,3 @@
-#ifndef _CPDOCCORE_XLSX_FORMULA_H_
-#define _CPDOCCORE_XLSX_FORMULA_H_
-#ifdef _MSC_VER
 #pragma once
 #endif
 
@@ -16,4 +13,3 @@ namespace oox {
 }
 }
 
-#endif

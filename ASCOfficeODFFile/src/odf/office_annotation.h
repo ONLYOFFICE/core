@@ -76,7 +76,6 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(dc_creator);
 
-/// \class  office_annotation 
 /// \brief  office:annotation 
 class office_annotation : public office_element_impl<office_annotation>
 {
@@ -103,8 +102,33 @@ private:
 
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(office_annotation);
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//officeooo:annotation
+class officeooo_annotation : public office_element_impl<officeooo_annotation>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeOfficeAnnotation;
+    CPDOCCORE_DEFINE_VISITABLE();
 
+	virtual void pptx_convert(oox::pptx_conversion_context & Context);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+
+private:
+    office_element_ptr_array content_;
+	office_annotation_attr office_annotation_attr_;
+
+    office_element_ptr dc_date_;
+    office_element_ptr dc_creator_;
+
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(officeooo_annotation);
 }
 }

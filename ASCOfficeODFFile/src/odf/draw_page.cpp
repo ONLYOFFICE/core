@@ -51,10 +51,11 @@ void draw_page::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void draw_page::pptx_convert_placeHolder(oox::pptx_conversion_context & Context, std::wstring styleName, presentation_class::type PresentationClass)
 {
 	office_element_ptr elm = Context.root()->odf_context().drawStyles().find_by_style_name(styleName);
+	//todooo если это элемент datatime -нужно вытащить формат поля
 
 	if (!elm)return;
 
-	int index=0;
+	int index=-1;
 
     const std::wstring masterName = draw_page_attr_.master_page_name_.get_value_or(L"");
 	style_master_page * master = Context.root()->odf_context().pageLayoutContainer().master_page_by_name(masterName);
@@ -68,6 +69,11 @@ void draw_page::pptx_convert_placeHolder(oox::pptx_conversion_context & Context,
 	Context.get_slide_context().set_placeHolder_idx(index);
 	
 	Context.get_text_context().start_object();
+	
+	if (PresentationClass == presentation_class::date_time)
+	{
+		Context.get_text_context().start_field(oox::datetime, L"");
+	}
 	
 	elm->pptx_convert(Context);
 	

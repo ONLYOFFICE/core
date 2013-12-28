@@ -111,12 +111,20 @@ public:
 							) 
 					);
 			}
-			//typeShape внутренний рисованый объект - релсов нет
- 			else if (r.type_ == mediaitems::typeHyperlink)//заместо гипрелинка пользуем неизвестный ... поменять ... временно .. сделать красиво
+ 			else if (r.type_ == mediaitems::typeHyperlink)
 			{
 				Rels.add(relationship(
 							r.rid_,
 							L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+							r.ref_,
+							L"External")
+				);
+			}
+			else if (r.type_ == mediaitems::typeComment)
+			{
+				Rels.add(relationship(
+							r.rid_,
+							L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments",
 							r.ref_,
 							L"External")
 				);

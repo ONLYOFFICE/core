@@ -26,7 +26,8 @@ enum field_type
 	none,
 	page_number,
 	date,
-	time
+	time,
+	datetime
 };
 
 class pptx_text_context: boost::noncopyable

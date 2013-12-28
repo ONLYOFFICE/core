@@ -258,6 +258,29 @@ void ppt_charts_files::write(const std::wstring & RootPath)
         }
     }
 }
+//////////////////////////////
+ppt_comments_files_ptr ppt_comments_files::create(const std::vector<pptx_comment_elm> & elms)
+{
+    return boost::make_shared<ppt_comments_files>(boost::ref(elms));
+}
+
+void ppt_comments_files::write(const std::wstring & RootPath)
+{
+    fs::wpath path = fs::wpath(RootPath);
+  
+	fs::wpath comm_path = fs::wpath(RootPath) / L"comments";
+    fs::create_directory(comm_path);
+   
+	BOOST_FOREACH(pptx_comment_elm const & e, comments_)
+    {
+		content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+
+		static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.presentationml.comments+xml";
+        contentTypes.add_override(std::wstring(L"/ppt/comments/") + e.filename, kWSConType);
+			
+		package::simple_element(e.filename, e.content).write(BOOST_STRING_PATH(comm_path));        
+	}
+}
 ////////////////////////////////////////////
 ppt_files::ppt_files()
 {
@@ -309,7 +332,10 @@ void ppt_files::write(const std::wstring & RootPath)
         charts_files_.set_main_document(get_main_document());
         charts_files_.write(BOOST_STRING_PATH(path));
     }
-
+    {
+        comments_->set_main_document(get_main_document());
+        comments_->write(BOOST_STRING_PATH(path));
+    }
     rels_files_.write(BOOST_STRING_PATH(path));
 }
 
@@ -323,7 +349,10 @@ void ppt_files::set_presentation(pptx_xml_presentation & presentation)
     elm->set_main_document( this->get_main_document() );
     presentation_ = elm;
 }
-
+void ppt_files::set_comments(element_ptr Element)
+{
+    comments_ = Element;
+}
 void ppt_files::set_styles(element_ptr Element)
 {
     tableStyles_ = Element;

@@ -36,6 +36,7 @@ pptx_conversion_context(::cpdoccore::oox::package::pptx_document * outputDocumen
 	,odf_document_(odfDocument)
 	,pptx_text_context_(odf_document_->odf_context(),*this)
 	,pptx_table_context_(*this)
+	,pptx_comments_context_(comments_context_handle_)
 	,pptx_slide_context_(*this/*, pptx_text_context_*/)
 {
 }
@@ -214,7 +215,7 @@ void pptx_conversion_context::end_document()
 		
 		if (pages_layouts)pages_layouts->pptx_convert(*this);
 	}
-		/////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////
 	pptx_serialize_size(current_presentation().notesSlidesSize(),6858000,9144000,L"p:notesSz");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -231,6 +232,9 @@ void pptx_conversion_context::end_document()
 		output_document_->get_ppt_files().add_charts(content);
 	
 	}
+    package::ppt_comments_files_ptr comments = package::ppt_comments_files::create(comments_context_handle_.content());
+    output_document_->get_ppt_files().set_comments(comments);
+
 	output_document_->get_ppt_files().set_presentation(presentation_);
        
 	output_document_->get_ppt_files().set_themes(theme_);
@@ -430,6 +434,17 @@ bool pptx_conversion_context::start_master(int master_index)
 }
 void pptx_conversion_context::end_page()
 {
+	if (!get_comments_context().empty())
+    {
+        std::wstringstream strm;
+        get_comments_context().write_comments(strm);        
+		
+		const std::pair<std::wstring, std::wstring> commentsName =
+            comments_context_handle_.add_comments_xml(strm.str(), get_comments_context().get_comments() );
+
+		get_slide_context().add_rels(false, commentsName.second, L"../comments/" + commentsName.first,mediaitems::typeComment);
+    } 
+
 	get_slide_context().serialize_background(current_slide().Background());
 	get_slide_context().serialize(current_slide().Data());
 	get_slide_context().dump_rels(current_slide().Rels());//hyperlinks, mediaitems, ...

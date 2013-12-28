@@ -11,6 +11,7 @@
 #include "..\Interfaces\ASCRenderer.h"
 
 #include "GdiplusEx.h"
+#include "MediaFormatDefine.h"
 
 #include "Image\EmfFile.h"
 #include "Image\SVG\SVGTransformer.h"
@@ -22,6 +23,103 @@ const long c_lImageTypeBitmap   = 0x2000;
 const long c_lMetaWmf = 0x01;
 const long c_lMetaEmf = 0x02;
 const long c_lMetaSVG = 0x04;
+
+namespace NSGdiMeta
+{
+	static BOOL ByteArrayToMediaData(BYTE* pArray, int nWidth, int nHeight, MediaCore::IAVSUncompressedVideoFrame** pInterface, BOOL bFlipVertical = TRUE)
+	{
+		if (!pInterface || nWidth < 1 || nHeight < 1)
+			return FALSE;
+
+		*pInterface = NULL;
+
+		MediaCore::IAVSUncompressedVideoFrame* pMediaData = NULL;
+		CoCreateInstance(MediaCore::CLSID_CAVSUncompressedVideoFrame, NULL, CLSCTX_ALL, MediaCore::IID_IAVSUncompressedVideoFrame, (void**)(&pMediaData));
+		if (NULL == pMediaData)
+			return FALSE;
+
+		if (bFlipVertical)
+			pMediaData->put_ColorSpace(CSP_BGRA | CSP_VFLIP);
+		else
+			pMediaData->put_ColorSpace(CSP_BGRA);
+
+		// specify settings
+		pMediaData->put_Width(nWidth);
+		pMediaData->put_Height(nHeight);
+		pMediaData->put_AspectRatioX(nWidth);
+		pMediaData->put_AspectRatioY(nHeight);
+		pMediaData->put_Interlaced(VARIANT_FALSE);
+		pMediaData->put_Stride(0, 4*nWidth);
+		pMediaData->AllocateBuffer(4*nWidth*nHeight);
+		
+		// allocate necesasry buffer
+		BYTE* pBufferPtr = 0;
+		long nCreatedBufferSize = 0;
+		pMediaData->get_Buffer(&pBufferPtr);
+		pMediaData->get_BufferSize(&nCreatedBufferSize);
+		pMediaData->put_Plane(0, pBufferPtr);
+
+		// check for valid created buffer
+		if (!pBufferPtr || nCreatedBufferSize != 4*nWidth*nHeight)
+		{
+			RELEASEINTERFACE(pMediaData);
+			return FALSE;
+		}
+		
+		// copy safearray's data to the buffer
+		if (pArray != NULL)
+			memcpy(pBufferPtr, pArray, nCreatedBufferSize);
+
+		// save interface
+		*pInterface = pMediaData;
+		return TRUE;
+	}
+		
+	static BOOL GdiPlusBitmapToMediaData(Gdiplus::Bitmap* pBitmap, MediaCore::IAVSUncompressedVideoFrame** pInterface, BOOL bFlipVertical = TRUE)
+	{
+		if (!pBitmap)
+			return FALSE;
+
+		int nWidth = pBitmap->GetWidth();
+		int nHeight = pBitmap->GetHeight();
+
+		double dHorDpi = (double)pBitmap->GetHorizontalResolution();
+		double dVerDpi = (double)pBitmap->GetVerticalResolution();
+
+		int nWidthDest	= (int)(96.0 * nWidth / dHorDpi);
+		int nHeightDest = (int)(96.0 * nHeight / dVerDpi);
+
+		if (nWidth == nWidthDest && nHeight == nHeightDest)
+		{
+			Gdiplus::Rect oRect(0, 0, nWidth, nHeight);
+			Gdiplus::BitmapData oBitmapData;
+
+			if (pBitmap->LockBits(&oRect, ImageLockModeRead, PixelFormat32bppARGB, &oBitmapData) != Ok)
+				return FALSE;
+
+			BOOL bSuccess = ByteArrayToMediaData((BYTE*)oBitmapData.Scan0, nWidth, nHeight, pInterface, bFlipVertical);
+			
+			pBitmap->UnlockBits(&oBitmapData);
+
+			return bSuccess;
+		}
+
+		BYTE* pData = new BYTE[4 * nWidthDest * nHeightDest];
+		Gdiplus::Bitmap oBitmap(nWidthDest, nHeightDest, 4 * nWidthDest, PixelFormat32bppARGB, pData);
+
+		Graphics* pGraphics = Graphics::FromImage(&oBitmap);
+
+		pGraphics->SetInterpolationMode(Gdiplus::InterpolationModeBilinear);
+		pGraphics->DrawImage(pBitmap, 0, 0, nWidthDest, nHeightDest);
+
+		RELEASEOBJECT(pGraphics);
+
+		BOOL bSuccess = ByteArrayToMediaData(pData, nWidthDest, nHeightDest, pInterface, bFlipVertical);
+		RELEASEARRAYOBJECTS(pData);
+
+		return bSuccess;
+	}
+}
 
 // CAVSImage
 [coclass, uuid("196FFB80-B601-453d-B757-00EFDC60676C"), threading(apartment), vi_progid("AVSGraphics.Pen"), progid("AVSGraphics.Pen"), version(1.0), support_error_info(IAVSImage), registration_script("control.rgs")]
@@ -48,6 +146,8 @@ private:
 	IUnknown* m_pMediaData;
 
 	BOOL      m_bLoadOnlyMeta; // Загружаем только метафайл
+
+	CGdiPlusInit			m_oGdiPlusInit;	
 
 public:
 
@@ -86,6 +186,11 @@ private:
 
 	void Open(BSTR bsFilePath)
 	{
+		if (!m_oGdiPlusInit.IsValid())
+		{
+			m_oGdiPlusInit.Init();				
+		}
+
 		// Закроем раннее открытый файл (если он был открыт)
 		Close();
 
@@ -110,64 +215,89 @@ private:
 			HENHMETAFILE hEmf = pMetaFile->GetHENHMETAFILE();
 			if ( NULL != hEmf )
 			{
-				UINT unSize = Gdiplus::Metafile::EmfToWmfBits( hEmf, 0, NULL, MM_ANISOTROPIC, Gdiplus::EmfToWmfBitsFlagsEmbedEmf);
+				UINT unSize = Gdiplus::Metafile::EmfToWmfBits( hEmf, 0, NULL, MM_ANISOTROPIC, Gdiplus::EmfToWmfBitsFlagsIncludePlaceable);
 
-				BYTE *pBuffer = new BYTE[unSize];
-				INT nConvertedSize = Gdiplus::Metafile::EmfToWmfBits( hEmf, unSize, pBuffer, MM_ANISOTROPIC, Gdiplus::EmfToWmfBitsFlagsEmbedEmf );
-
-				HMETAFILE hWmf = SetMetaFileBitsEx( unSize, pBuffer );
-
-				FILE *pFile = NULL;
-				WmfOpenTempFile( &m_wsTempFilePath, &pFile, _T("wb+"), _T(".wmf"), NULL );
-				if ( !pFile )
+				if (0 != unSize)
 				{
+					BYTE *pBuffer = new BYTE[unSize];
+					INT nConvertedSize = Gdiplus::Metafile::EmfToWmfBits( hEmf, unSize, pBuffer, MM_ANISOTROPIC, Gdiplus::EmfToWmfBitsFlagsEmbedEmf );
+
+					HMETAFILE hWmf = SetMetaFileBitsEx( unSize, pBuffer );
+
+					FILE *pFile = NULL;
+					WmfOpenTempFile( &m_wsTempFilePath, &pFile, _T("wb+"), _T(".wmf"), NULL );
+					if ( !pFile )
+					{
+						DeleteMetaFile( hWmf );
+						DeleteEnhMetaFile( hEmf );
+						delete[] pBuffer;
+						delete pMetaFile;
+
+						m_lImageType = c_lImageTypeUnknown;
+						return;
+					}
+
+					::fclose( pFile );
+
+					// Сохраняем Wmf
+					HMETAFILE hTempWmf = CopyMetaFile( hWmf, m_wsTempFilePath.GetBuffer() );
+					DeleteMetaFile( hTempWmf );
+
+					// Открываем Wmf
+					m_oWmfFile.OpenFromFile( m_wsTempFilePath.GetBuffer() );
+					m_oWmfFile.Scan( &m_oRect );
+
+					if ( !m_oWmfFile.CheckError() )
+					{
+						// Wmf нормально открылся
+						m_lImageType = c_lImageTypeMetafile | c_lMetaEmf;
+
+						DeleteMetaFile( hWmf );
+						DeleteEnhMetaFile( hEmf );
+						delete[] pBuffer;
+						delete pMetaFile;
+
+						return;			
+					}
+					else if ( m_oWmfFile.UnSupportedWmf() )
+					{
+						// Исходный файл Emf, но после конвертации в Wmf он не открылся
+						m_lImageType = c_lImageTypeMetafile | c_lMetaEmf;
+					}
+					else
+					{
+						// Сконвертированный файл не прочитался
+						m_oWmfFile.Close();
+						m_lImageType = c_lImageTypeUnknown;
+					}
+
 					DeleteMetaFile( hWmf );
 					DeleteEnhMetaFile( hEmf );
 					delete[] pBuffer;
 					delete pMetaFile;
-
-					m_lImageType = c_lImageTypeUnknown;
-					return;
-				}
-
-				::fclose( pFile );
-
-				// Сохраняем Wmf
-				HMETAFILE hTempWmf = CopyMetaFile( hWmf, m_wsTempFilePath.GetBuffer() );
-				DeleteMetaFile( hTempWmf );
-
-				// Открываем Wmf
-				m_oWmfFile.OpenFromFile( m_wsTempFilePath.GetBuffer() );
-				m_oWmfFile.Scan( &m_oRect );
-
-				if ( !m_oWmfFile.CheckError() )
-				{
-					// Wmf нормально открылся
-					m_lImageType = c_lImageTypeMetafile | c_lMetaEmf;
-
-					DeleteMetaFile( hWmf );
-					DeleteEnhMetaFile( hEmf );
-					delete[] pBuffer;
-					delete pMetaFile;
-
-					return;			
-				}
-				else if ( m_oWmfFile.UnSupportedWmf() )
-				{
-					// Исходный файл Emf, но после конвертации в Wmf он не открылся
-					m_lImageType = c_lImageTypeMetafile | c_lMetaEmf;
 				}
 				else
 				{
-					// Сконвертированный файл не прочитался
-					m_oWmfFile.Close();
-					m_lImageType = c_lImageTypeUnknown;
-				}
+					DeleteEnhMetaFile( hEmf );
+					delete pMetaFile;
 
-				DeleteMetaFile( hWmf );
-				DeleteEnhMetaFile( hEmf );
-				delete[] pBuffer;
-				delete pMetaFile;
+					Gdiplus::Bitmap* pBitmap = new Gdiplus::Bitmap(bsFilePath);
+
+					MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
+					BOOL bIsSuccess = NSGdiMeta::GdiPlusBitmapToMediaData(pBitmap, &pFrame, FALSE);
+
+					RELEASEOBJECT(pBitmap);
+
+					if (bIsSuccess)
+					{
+						m_lImageType = c_lImageTypeMetafile | c_lMetaWmf;
+						pFrame->QueryInterface(IID_IUnknown, (void**)&m_pMediaData);
+
+						RELEASEINTERFACE(pFrame);
+						return;
+					}
+					RELEASEINTERFACE(pFrame);
+				}
 			}
 		}
 
@@ -242,7 +372,17 @@ public:
 	{
 		if ( NULL != lWidth )
 		{
-			if ( (c_lImageTypeMetafile | c_lMetaWmf) == m_lImageType || (c_lImageTypeMetafile | c_lMetaEmf) == m_lImageType )
+			if (NULL != m_pMediaData)
+			{
+				*lWidth = 0;
+				MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
+				m_pMediaData->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
+				if (NULL != pFrame)
+					pFrame->get_Width(lWidth);
+
+				RELEASEINTERFACE(pFrame);
+			}
+			else if ( (c_lImageTypeMetafile | c_lMetaWmf) == m_lImageType || (c_lImageTypeMetafile | c_lMetaEmf) == m_lImageType )
 			{
 				float fWidth, fHeight;
 				m_oWmfFile.GetSize( &fWidth, &fHeight );
@@ -268,7 +408,17 @@ public:
 	{
 		if ( NULL != lHeight )
 		{
-			if ( (c_lImageTypeMetafile | c_lMetaWmf) == m_lImageType || (c_lImageTypeMetafile | c_lMetaEmf) == m_lImageType )
+			if (NULL != m_pMediaData)
+			{
+				*lHeight = 0;
+				MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
+				m_pMediaData->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
+				if (NULL != pFrame)
+					pFrame->get_Height(lHeight);
+
+				RELEASEINTERFACE(pFrame);
+			}
+			else if ( (c_lImageTypeMetafile | c_lMetaWmf) == m_lImageType || (c_lImageTypeMetafile | c_lMetaEmf) == m_lImageType )
 			{
 				float fWidth, fHeight;
 				m_oWmfFile.GetSize( &fWidth, &fHeight );
@@ -329,7 +479,11 @@ public:
 
 		pRenderer->BeginCommand(c_nImageType);
 
-		if ( (c_lImageTypeMetafile | c_lMetaWmf) == m_lImageType || (c_lImageTypeMetafile | c_lMetaEmf) == m_lImageType )
+		if ( NULL != m_pMediaData )
+		{
+			pRenderer->DrawImage(m_pMediaData, dX, dY, dWidth, dHeight);
+		}
+		else if ( (c_lImageTypeMetafile | c_lMetaWmf) == m_lImageType || (c_lImageTypeMetafile | c_lMetaEmf) == m_lImageType )
 		{
 			pRenderer->get_DpiX(&m_dDpiX);
 			pRenderer->get_DpiY(&m_dDpiY);
@@ -382,10 +536,6 @@ public:
 			{
 				m_pSVGFile->Draw(pRenderer, dX, dY, dWidth, dHeight);
 			}
-		}
-		else if ( m_lImageType & c_lImageTypeBitmap )
-		{
-			pRenderer->DrawImage(m_pMediaData, dX, dY, dWidth, dHeight);
 		}
 
 		pRenderer->EndCommand(c_nImageType);

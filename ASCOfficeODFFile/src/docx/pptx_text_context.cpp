@@ -58,6 +58,9 @@ public:
 	void start_field(field_type type, const std::wstring & styleName);
     void end_field();
 
+	void start_comment();
+    std::wstring end_comment();
+
 	bool in_list_;
 
 private:
@@ -141,7 +144,7 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 		{
 			dump_paragraph();
 		}
-		else if (in_list_ == false)
+		else if (in_list_ == false || in_comment == true)
 		{
 		// конец предыдущего абзаца и начало следующего
 		//text_ << L"&#10;";
@@ -378,6 +381,8 @@ void pptx_text_context::Impl::write_rPr(std::wostream & strm)
 }
 std::wstring pptx_text_context::Impl::dump_paragraph(/*bool last*/)
 {				
+	if (in_comment) return L""; 
+
 	dump_run();//last
 
 	std::wstring & str_run = run_.str();
@@ -457,6 +462,8 @@ void pptx_text_context::Impl::dump_field()
 }
 void pptx_text_context::Impl::dump_run()
 {
+	if (in_comment) return;
+
 	dump_field();
 	
 	const std::wstring content = xml::utils::replace_text_to_xml(text_.str());
@@ -511,12 +518,12 @@ std::wstring pptx_text_context::Impl::end_object()
 
 	std::wstring & str_paragraph = paragraph_.str();
 
-	std::wstringstream str_styles;
+	std::wstringstream str_output;
 
 	if (str_paragraph.length() > 0)
 	{
-		write_list_styles(str_styles);
-		str_styles << str_paragraph;
+		write_list_styles(str_output);
+		str_output << str_paragraph;
 	}
   
 	paragraphs_cout_ = 0;
@@ -529,7 +536,7 @@ std::wstring pptx_text_context::Impl::end_object()
 	paragraph_style_name_ = L"";
     span_style_name_=L"";
 
-	return str_styles.str();
+	return str_output.str();
 }
 void pptx_text_context::Impl::start_list_item(bool restart)
 {
@@ -612,7 +619,23 @@ void pptx_text_context::Impl::start_field(field_type type, const std::wstring & 
 {
 	field_type_ = type;
 }
+void pptx_text_context::Impl::start_comment()
+{
+	in_comment = true;//отдельная ветка - так как без форматирования
+}
+std::wstring pptx_text_context::Impl::end_comment()
+{
+	std::wstring  str_comment = text_.str();
+    text_.str(std::wstring());
+	in_comment = false;
 
+	paragraphs_cout_ = 0;    
+	
+	paragraph_style_name_ = L"";
+    span_style_name_=L"";
+
+	return str_comment;
+}
 void pptx_text_context::Impl::end_field()
 {
 	dump_run();
@@ -758,11 +781,11 @@ void pptx_text_context::end_field()
 }
 void pptx_text_context::start_comment_content()
 {
-	impl_->start_object();
+	impl_->start_comment();
 }
 std::wstring pptx_text_context::end_comment_content()
 {
-	return impl_->end_object();
+	return impl_->end_comment();
 }
 
 }

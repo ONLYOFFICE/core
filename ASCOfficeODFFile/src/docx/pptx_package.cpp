@@ -211,7 +211,7 @@ void slideLayouts_files::write(const std::wstring & RootPath)
         }
     }
 }
-
+///////////////////////////////////////////////////////////////////////////////////////
 theme_elements::theme_elements(pptx_xml_theme_ptr & theme) : theme_(theme)
 {
 }
@@ -229,6 +229,28 @@ void theme_elements::write(const std::wstring & RootPath)
     if (get_main_document())
         get_main_document()->content_type().get_content_type().add_override(std::wstring(L"/ppt/theme/") + file_name, L"application/vnd.openxmlformats-officedocument.theme+xml");
 
+}
+///////////////////////////////////////////////////////////////////////////////////////
+authors_comments_element::authors_comments_element(pptx_xml_authors_comments_ptr & authors_comments) : authors_comments_(authors_comments)
+{
+}
+void authors_comments_element::write(const std::wstring & RootPath)
+{
+	if (authors_comments_ == NULL) return;
+
+    fs::wpath path = fs::wpath(RootPath);
+	const std::wstring file_name = std::wstring(L"commentAuthors.xml");
+
+	std::wstringstream content_authors_comments;
+	authors_comments_->write_to(content_authors_comments);
+
+    simple_element(file_name, content_authors_comments.str()).write(BOOST_STRING_PATH(path));
+    
+    if (get_main_document())
+	{
+        get_main_document()->content_type().get_content_type().add_override(std::wstring(L"/ppt/commentAuthors.xml"),
+			L"application/vnd.openxmlformats-officedocument.presentationml.commentAuthors+xml");
+	}
 
 }
 ////////////////////////////
@@ -336,7 +358,12 @@ void ppt_files::write(const std::wstring & RootPath)
         comments_->set_main_document(get_main_document());
         comments_->write(BOOST_STRING_PATH(path));
     }
-    rels_files_.write(BOOST_STRING_PATH(path));
+    if (authors_comments_)
+    {
+		rels_files_.add( relationship( L"auId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/commentAuthors", L"commentAuthors.xml" ) );
+        authors_comments_->write(BOOST_STRING_PATH(path));
+    }
+	rels_files_.write(BOOST_STRING_PATH(path));
 }
 
 void ppt_files::set_presentation(pptx_xml_presentation & presentation)
@@ -379,6 +406,15 @@ void ppt_files::add_slideMaster(slide_content_ptr slide)
 void ppt_files::set_media(mediaitems & _Mediaitems)
 {
     media_ = element_ptr( new media(_Mediaitems) );
+}
+void ppt_files::set_authors_comments(pptx_xml_authors_comments_ptr & authors_comments)
+{
+	if (authors_comments)
+	{
+		authors_comments_element * elm = new authors_comments_element(authors_comments); 
+		elm->set_main_document( this->get_main_document() );
+		authors_comments_ = element_ptr( elm );
+	}
 }
 void ppt_files::add_charts(chart_content_ptr chart)
 {

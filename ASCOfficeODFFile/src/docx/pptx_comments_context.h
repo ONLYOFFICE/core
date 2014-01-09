@@ -41,14 +41,12 @@ public:
     pptx_comments_context(pptx_comments_context_handle & h);
     ~pptx_comments_context();
 
-    void start_comment(double width_pt, double height_pt, double x_pt, double y_pt);
+    void start_comment(double x_emu, double y_emu,int id_author, int idx_comment);
 
-	void add_content(std::wstring  content);
-	void add_author(std::wstring  author);
+	void add_content	(std::wstring  content);
+	void add_date		(std::wstring date);
 	
 	std::vector<odf::_property> & get_draw_properties();
-
-	void set_visibly(bool Val);
     
 	void end_comment();
 

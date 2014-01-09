@@ -68,6 +68,8 @@ public:
 	void start_theme(std::wstring & name);
 	void end_theme();
 
+	std::pair<int,int> add_author_comments(std::wstring author);
+
 	pptx_slide_context & get_slide_context() { return pptx_slide_context_; }
 	pptx_comments_context & get_comments_context() { return pptx_comments_context_; }
 
@@ -118,18 +120,19 @@ private:
 	package::pptx_document * output_document_;
   
     odf::odf_document * odf_document_;    
-    
-    pptx_slide_context	pptx_slide_context_;
-	pptx_text_context	pptx_text_context_;
-	pptx_table_context	pptx_table_context_;
-	pptx_comments_context pptx_comments_context_;
+
+    pptx_slide_context		pptx_slide_context_;
+	pptx_text_context		pptx_text_context_;
+	pptx_table_context		pptx_table_context_;
+	pptx_comments_context	pptx_comments_context_;
 	
 	std::vector<oox_chart_context_ptr> charts_;
-
+	
 	std::vector<pptx_xml_slide_ptr>			slides_;
 	std::vector<pptx_xml_slideMaster_ptr>	slideMasters_;
 	std::vector<pptx_xml_slideLayout_ptr>	slideLayouts_;
 	
+	pptx_xml_authors_comments_ptr authors_comments_;
 	pptx_xml_theme_ptr theme_;
 	pptx_xml_presentation presentation_;
 

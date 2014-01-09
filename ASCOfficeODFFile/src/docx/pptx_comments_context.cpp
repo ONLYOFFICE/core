@@ -25,7 +25,7 @@ public:
     {
  		const std::wstring file_id = boost::lexical_cast<std::wstring>(next_file_id_++);
       
-		const std::wstring fileName = std::wstring(L"comments") + file_id + L".xml";
+		const std::wstring fileName = std::wstring(L"comment") + file_id + L".xml";
         
 		comments_.push_back(pptx_comment_elm(fileName, content, comments));
         
@@ -94,6 +94,11 @@ public:
     {
         return pptx_comments_;
     }
+
+	void clear()
+	{
+		pptx_comments_ = pptx_comments::create();
+	}
 private:
     pptx_comments_ptr pptx_comments_;
 };
@@ -108,26 +113,22 @@ pptx_comments_context::~pptx_comments_context()
 {
 }
 
-void pptx_comments_context::start_comment (double width_pt, double height_pt, double x_pt, double y_pt)
+void pptx_comments_context::start_comment (double x_emu, double y_emu,int id_author, int idx_comment)
 {
-	impl_->current_.width_ = width_pt;
-    impl_->current_.height_ = height_pt;
-    impl_->current_.left_ = x_pt;
-    impl_->current_.top_ = y_pt; 
-
-	impl_->current_.visibly_ = false;
+    impl_->current_.x_ = (int)(x_emu + 0.5);
+    impl_->current_.y_ = (int)(y_emu + 0.5); 
+	
+	impl_->current_.author_id_ = id_author;
+	impl_->current_.idx_ = idx_comment;
 }
 void pptx_comments_context::add_content(std::wstring  content)
 {
 	impl_->current_.content_ = content;
 }
-void pptx_comments_context::add_author(std::wstring  author)
+
+void pptx_comments_context::add_date(std::wstring  Val)
 {
-	impl_->current_.author_ = author;
-}
-void pptx_comments_context::set_visibly(bool Val)
-{
-	impl_->current_.visibly_ = Val;
+	impl_->current_.date_ = Val;
 }
 
 std::vector<odf::_property> & pptx_comments_context::get_draw_properties()
@@ -148,6 +149,7 @@ bool pptx_comments_context::empty() const
 void pptx_comments_context::write_comments(std::wostream & strm)
 {
     impl_->write_comments(strm);    
+	impl_->clear();
 }
 pptx_comments_ptr pptx_comments_context::get_comments()
 {

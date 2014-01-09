@@ -10,6 +10,8 @@ namespace oox {
 class pptx_xml_presentation;
 class pptx_xml_theme;
 typedef _CP_PTR(pptx_xml_theme) pptx_xml_theme_ptr;
+class pptx_xml_authors_comments;
+typedef _CP_PTR(pptx_xml_authors_comments) pptx_xml_authors_comments_ptr;
 
 namespace package {
 
@@ -76,7 +78,6 @@ public:
 };
 ///////////////////////////////////////////////////////////////////////////////
 
-
 class theme_elements : public element
 {
 public:
@@ -85,6 +86,18 @@ public:
 
 private:
     pptx_xml_theme_ptr & theme_;
+
+};
+///////////////////////////////////////////////////////////////////////////////
+
+class authors_comments_element : public element
+{
+public:
+	authors_comments_element(pptx_xml_authors_comments_ptr & theme);
+    virtual void write(const std::wstring & RootPath);
+
+private:
+    pptx_xml_authors_comments_ptr & authors_comments_;
 
 };
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -129,6 +142,8 @@ private:
     const std::vector<pptx_comment_elm> & comments_;
 
 };
+
+//////////////////////////////////////////////////////////////////////////////
 /// \class  ppt_charts_files
 class ppt_charts_files  : public element
 {
@@ -163,6 +178,7 @@ public:
 	void set_media(mediaitems & _Mediaitems);    
     void add_charts(chart_content_ptr chart);
 
+	void set_authors_comments(pptx_xml_authors_comments_ptr & authors_comments);    
 
 private:
     rels_files rels_files_;
@@ -175,7 +191,9 @@ private:
 	//slides_files notesSlides_files_;
 	//slides_files notesMasters_files_;
 	//slides_files handoutMasters_files_;
- 
+ 	
+	element_ptr authors_comments_;
+
 	element_ptr theme_;
 	element_ptr presentation_;
 

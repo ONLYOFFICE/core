@@ -11,15 +11,16 @@ namespace oox {
 
 	struct _pptx_comment
 	{
-		size_t left_, top_;
-		size_t width_, height_;
+		size_t x_, y_;
 
-		bool visibly_;
+		int author_id_;
+		int idx_;
+		
+		std::wstring  date_;
+
+		std::wstring  content_;
 
 		std::vector<odf::_property> graphicProperties_;
-
-		std::wstring  author_;
-		std::wstring  content_;
 	};
 //class rels;
 
@@ -49,7 +50,6 @@ public:
     bool empty() const;
 
 	friend void pptx_serialize(std::wostream & _Wostream, pptx_comments const & val);    
-	friend void pptx_serialize_authors(std::wostream & _Wostream, pptx_comments const & val);
 
 private:
     class Impl;

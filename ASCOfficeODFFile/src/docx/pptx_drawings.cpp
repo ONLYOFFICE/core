@@ -125,8 +125,7 @@ public:
 				Rels.add(relationship(
 							r.rid_,
 							L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments",
-							r.ref_,
-							L"External")
+							r.ref_)
 				);
 			}
 		}

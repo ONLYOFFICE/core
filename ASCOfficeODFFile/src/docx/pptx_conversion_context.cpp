@@ -240,6 +240,8 @@ void pptx_conversion_context::end_document()
 	output_document_->get_ppt_files().set_themes(theme_);
 
 	output_document_->get_ppt_files().set_media(get_mediaitems());
+
+	output_document_->get_ppt_files().set_authors_comments(authors_comments_);
 }
 
 void pptx_conversion_context::start_body()
@@ -457,6 +459,17 @@ void pptx_conversion_context::end_layout()
 	get_slide_context().dump_rels(current_layout().Rels());//hyperlinks, mediaitems, ...
 
 	get_slide_context().end_slide();
+}
+
+std::pair<int,int> pptx_conversion_context::add_author_comments(std::wstring author)
+{
+	if (!authors_comments_)
+	{
+		authors_comments_ = pptx_xml_authors_comments::create();
+		if (!authors_comments_)return std::pair<int,int>(-1,-1);
+	}
+
+	return authors_comments_->add_or_find(author);
 }
 
 void pptx_conversion_context::end_master()

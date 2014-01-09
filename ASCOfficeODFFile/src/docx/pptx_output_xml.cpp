@@ -68,10 +68,10 @@ void pptx_xml_slide::write_to(std::wostream & strm)
 					CP_XML_STREAM() << slideData_.str();
 				}
             }
-			CP_XML_NODE(L"p:clrMapOvr")
-			{
-				CP_XML_NODE(L"a:masterClrMapping");
-			}
+			//CP_XML_NODE(L"p:clrMapOvr")
+			//{
+			//	CP_XML_NODE(L"a:masterClrMapping");
+			//}
 		}
 	}
 }
@@ -286,6 +286,68 @@ void pptx_xml_theme::write_to(std::wostream & strm)
 					CP_XML_ATTR(L"name", name_);
 					CP_XML_STREAM() << fmtSchemeData_.str();
 				}
+			}
+		}
+	}
+}
+pptx_xml_authors_comments_ptr pptx_xml_authors_comments::create()
+{
+    return boost::make_shared<pptx_xml_authors_comments>();
+}
+
+std::pair<int,int> pptx_xml_authors_comments::add_or_find(std::wstring author)
+{
+	int id_author=0;
+	int last_id=0;
+
+	bool find = false;
+	for (long i=0;i<list_.size();i++)
+	{		
+		if (author == list_[i].name)
+		{
+			id_author = i;
+			last_id = list_[i].last_idx+1;
+			list_[i].last_idx++;
+			find=true;
+			break;
+		}
+	}
+	if (!find)
+	{
+		_author_elm elm = {author,0};
+		list_.push_back(elm);
+		id_author = list_.size()-1;
+	}
+
+   return std::pair<int,int>(id_author,last_id);
+}
+
+void pptx_xml_authors_comments::write_to(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE(L"p:cmAuthorLst")
+        {
+			CP_XML_ATTR(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");   
+			CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+			CP_XML_ATTR(L"xmlns:p", L"http://schemas.openxmlformats.org/presentationml/2006/main");
+		
+			int i=0;
+			int size = list_.size();
+			while(true)
+			{
+				if (i>=size)break;
+				
+				CP_XML_NODE(L"p:cmAuthor")
+				{
+					CP_XML_ATTR(L"id", i);
+					CP_XML_ATTR(L"name", list_[i].name);
+					CP_XML_ATTR(L"initials", L"");
+					CP_XML_ATTR(L"lastIdx", list_[i].last_idx+1);
+					CP_XML_ATTR(L"clrIdx", i);
+				}
+				
+				i++;
 			}
 		}
 	}

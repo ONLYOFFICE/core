@@ -159,5 +159,30 @@ private:
 	std::wstring name_;
 	int id_;
 };
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+class pptx_xml_authors_comments;
+typedef _CP_PTR(pptx_xml_authors_comments) pptx_xml_authors_comments_ptr;
+
+class pptx_xml_authors_comments: noncopyable
+{
+public:
+	pptx_xml_authors_comments(){}
+	~pptx_xml_authors_comments(){}
+public:
+
+	struct _author_elm
+	{
+		std::wstring name;
+		int last_idx;
+	};
+    void write_to(std::wostream & strm);
+
+	std::pair<int,int> add_or_find(std::wstring name);//возвращает 2 индекса - автора - и последний idx от автора
+	//так как учет индексов идет по всем слайдам, замечаниям, ....
+	
+	static pptx_xml_authors_comments_ptr create();
+
+	std::vector<_author_elm> list_;
+};
 }
 }

@@ -23,7 +23,17 @@ typedef _CP_PTR(pptx_drawings) pptx_drawings_ptr;
 
 class pptx_slide_context::Impl
 {
-public:    
+public:  
+	
+	struct _transition
+	{
+		bool			Enabled;
+		std::wstring	Speed;
+		int				Time;
+		std::wstring	Type;
+		std::wstring	Direction;
+	};
+
 	Impl(const std::wstring & odfPacket) : mediaitems_(odfPacket),odfPacket_(odfPacket)
     {
 		clear();
@@ -37,6 +47,8 @@ public:
 	std::vector<drawing_object_description> tables_;
 
 	_CP_OPT(_oox_fill)	background_fill_;
+
+	_transition transition_;
 
 	bool header, footer, date_time, slideNum;
 
@@ -80,6 +92,8 @@ public:
 		rId_ = 1;
 
 		pptx_drawings_ = pptx_drawings::create();
+
+		memset(&transition_,0,sizeof(_transition));
 	}
 
     size_t next_rId()
@@ -108,11 +122,36 @@ pptx_slide_context::pptx_slide_context(pptx_conversion_context & Context)
 }
 void pptx_slide_context::start_slide()
 {    
-	impl_->clear();
+	impl_->clear(); // objects
 	hlinks_size_ = 0;
 	
-	default_set();
+	default_set(); //for current object
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////
+void pptx_slide_context::start_slide_animation()
+{    
+	impl_->transition_.Enabled = true;
+
+//default
+	impl_->transition_.Speed = L"med";
+	impl_->transition_.Type = L"wipe";
+}
+//временно !!!!
+void pptx_slide_context::set_animation_duration(int dur)
+{
+	impl_->transition_.Time = dur;
+}
+//smil_direction_,smil_type_,smil_subtype_,smil_mode_,color);
+void pptx_slide_context::set_transitionFilter(	_CP_OPT(std::wstring) direction,
+												_CP_OPT(std::wstring) type,
+												_CP_OPT(std::wstring) subtype,
+												_CP_OPT(std::wstring) mode,
+												_CP_OPT(std::wstring) fade_color)
+{
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
 void pptx_slide_context::default_set()
 {
     impl_->object_description_.xlink_href_ = L"";
@@ -131,7 +170,6 @@ void pptx_slide_context::default_set()
 	impl_->object_description_.fill_.clear();
 }
 
-
 void pptx_slide_context::set_placeHolder_type(std::wstring typeHolder)
 {
 	if (typeHolder == L"ftr")	impl_->footer= true;
@@ -145,11 +183,13 @@ void pptx_slide_context::set_placeHolder_idx(int idx)
 {
 	impl_->object_description_.additional_.push_back(odf::_property(L"PlaceHolderIdx",idx));
 }
+
 void pptx_slide_context::set_rect(double width_pt, double height_pt, double x_pt, double y_pt)
 {
 	_rect r = {width_pt,height_pt,x_pt,y_pt};
 	impl_->object_description_.svg_rect_= r;
 }
+
 void pptx_slide_context::set_rotate(double angle)
 {
 	set_property(odf::_property(L"svg:rotate",angle));
@@ -176,6 +216,7 @@ void pptx_slide_context::set_translate(double x_pt, double y_pt)
 		impl_->object_description_.svg_rect_= r;
 	}
 }
+
 void pptx_slide_context::set_scale(double cx_pt, double cy_pt)
 {
 	if (impl_->object_description_.svg_rect_)
@@ -187,28 +228,34 @@ void pptx_slide_context::set_scale(double cx_pt, double cy_pt)
 		impl_->object_description_.svg_rect_= r;
 	}
 }
+
 void pptx_slide_context::set_anchor(std::wstring anchor, double x_pt, double y_pt)
 {
 	impl_->object_description_.anchor_		= anchor;
 	impl_->object_description_.anchor_x_	= x_pt;
     impl_->object_description_.anchor_y_	= y_pt;
 }
+
 void pptx_slide_context::set_property(odf::_property p)
 {
 	impl_->object_description_.additional_.push_back(p);
 }
+
 std::vector<odf::_property> & pptx_slide_context::get_properties()
 {
 	return impl_->object_description_.additional_;
 }
+
 void pptx_slide_context::set_clipping(std::wstring & str)
 {
 	impl_->object_description_.clipping_string_= str;
 }
+
 void pptx_slide_context::set_fill(_oox_fill & fill)
 {
 	impl_->object_description_.fill_= fill;
 }
+
 std::wstring pptx_slide_context::add_hyperlink(std::wstring const & ref,bool object)
 {
 	++hlinks_size_;
@@ -219,6 +266,7 @@ std::wstring pptx_slide_context::add_hyperlink(std::wstring const & ref,bool obj
 
 	return hId;
 }
+
 void pptx_slide_context::add_background(_oox_fill & fill)
 {
 	if (fill.bitmap)
@@ -232,20 +280,24 @@ void pptx_slide_context::add_background(_oox_fill & fill)
 	
 	impl_->background_fill_ = fill;
 }
+
 void pptx_slide_context::set_name(std::wstring const & name)
 {
 	impl_->object_description_.draw_name_ = name;
 
 }
+
 void pptx_slide_context::start_shape(int type)
 {
 	impl_->object_description_.type_ = type; //2,3... 
 }
+
 void pptx_slide_context::start_image(std::wstring const & path)
 {
 	impl_->object_description_.xlink_href_ = path; 
 	impl_->object_description_.type_ = 0; //frame 
 }
+
 void pptx_slide_context::start_table()
 {
 	impl_->object_description_.type_ = 0; //frame 
@@ -256,6 +308,7 @@ void pptx_slide_context::start_chart(std::wstring const & path)
 	impl_->object_description_.xlink_href_ = path; 
 	impl_->object_description_.type_ = 0; //frame 
 }
+
 void pptx_slide_context::end_shape()
 {
 	impl_->shapes_.push_back(impl_->object_description_);
@@ -272,15 +325,18 @@ void pptx_slide_context::end_chart()
     impl_->charts_.push_back(impl_->object_description_);
 	default_set();
 }
+
 void pptx_slide_context::end_table()
 {
 	impl_->tables_.push_back(impl_->object_description_);
 	default_set();
 }
+
 bool pptx_slide_context::empty() const
 {
     return impl_->empty();
 }
+
 void pptx_slide_context::process_drawings()
 {
 	process_shapes();
@@ -288,6 +344,7 @@ void pptx_slide_context::process_drawings()
 	process_tables();
 	process_charts();
 }
+
 void pptx_slide_context::process_images()
 {
 	using boost::filesystem::wpath;
@@ -355,6 +412,7 @@ void pptx_slide_context::process_charts()
         impl_->add_drawing(drawing, isMediaInternal, drawing.chartId, ref, mediaitems::typeChart);
     }
 }
+
 void pptx_slide_context::process_tables()
 {
     using boost::filesystem::wpath;
@@ -393,6 +451,7 @@ void pptx_slide_context::process_common_properties(drawing_object_description & 
 
 	drawing.fill = pic.fill_;
 }
+
 void pptx_slide_context::process_shapes()
 {
 	int PlaceHolderIndex = 1;
@@ -434,10 +493,12 @@ void pptx_slide_context::process_shapes()
 		impl_->add_drawing(drawing, isMediaInternal, rId, ref, mediaitems::typeShape);
     }
 }
+
 void pptx_slide_context::dump_rels(rels & Rels)
 {
 	impl_->get_drawings()->dump_rels(Rels);
 }
+
 mediaitems & pptx_slide_context::get_mediaitems()
 {
 	return impl_->get_mediaitems(); 
@@ -471,6 +532,40 @@ void pptx_slide_context::serialize_background(std::wostream & strm, bool always)
 		}
 	}
 }
+
+void pptx_slide_context::serialize_animations(std::wostream & strm)
+{
+  
+	CP_XML_WRITER(strm)
+    {
+		if (impl_->transition_.Enabled)
+		{
+			CP_XML_NODE(L"p:transition")
+			{
+				if (impl_->transition_.Time>0)
+				{
+					CP_XML_ATTR(L"spd",impl_->transition_.Speed);
+				}
+				if (impl_->transition_.Time >0)
+				{
+					CP_XML_ATTR(L"advTm",impl_->transition_.Time);
+				}
+				
+				CP_XML_NODE(std::wstring(L"p:" + impl_->transition_.Type))
+				{
+					if (!impl_->transition_.Direction.empty())
+					{
+						CP_XML_ATTR(L"dir",impl_->transition_.Direction);
+					}
+				}
+			}
+		}
+		//CP_XML_NODE(L"p:timing")- последовательности p:par
+		//{
+		//}
+	}
+}
+
 void pptx_slide_context::serialize_HeaderFooter(std::wostream & strm)
 {
 	if (!impl_->header && !impl_->footer && !impl_->date_time && !impl_->slideNum)return;
@@ -482,11 +577,12 @@ void pptx_slide_context::serialize_HeaderFooter(std::wostream & strm)
 			if(impl_->footer)		CP_XML_ATTR(L"ftr",0);
 			if(impl_->header)		CP_XML_ATTR(L"hdr",0);
 			if(impl_->date_time)	CP_XML_ATTR(L"dt",0);
-			if(impl_->slideNum)	CP_XML_ATTR(L"sldNum",0);
+			if(impl_->slideNum)		CP_XML_ATTR(L"sldNum",0);
 		}
 	}
 }
-void pptx_slide_context::serialize(std::wostream & strm)
+
+void pptx_slide_context::serialize_objects(std::wostream & strm)
 {
 	int next_id = impl_->next_rId();
 

@@ -24,9 +24,9 @@ public:
    
     std::wostream & Data();
     std::wostream & Background();
+    std::wostream & Timing();
+	
 	rels & Rels();
-
-	//slideTiming
     
     void write_to(std::wostream & strm);
 
@@ -36,6 +36,7 @@ private:
 	std::wstring name_;
     std::wstringstream  slideData_;
     std::wstringstream  slideBackground_;
+    std::wstringstream  slideTiming_;
 	std::wstring rId_;
 
 	rels rels_;

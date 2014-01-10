@@ -23,6 +23,8 @@ namespace odf {
 
 void draw_page_attr::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+    CP_APPLY_ATTR(L"draw:id",			draw_id_);
+
     CP_APPLY_ATTR(L"draw:name",			draw_name_);
     CP_APPLY_ATTR(L"draw:style-name",	draw_style_name_);
     
@@ -40,7 +42,10 @@ const wchar_t * draw_page::name = L"page";
 
 void draw_page::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-	CP_CREATE_ELEMENT(content_);
+	if	CP_CHECK_NAME(L"anim", L"par") 
+		CP_CREATE_ELEMENT(animation_);
+	else
+		CP_CREATE_ELEMENT(content_);
 }
 
 void draw_page::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -115,11 +120,17 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 			}
 		}
 	}
+	//сначала анимашки .. потому что объекты используют анимацию не нанапрямую (как бы ) а с общей кучи
+	//animation_context на slide_context завести
+	if (animation_)
+	{
+		animation_->pptx_convert(Context);
+	}
+/////////////////////////
 	BOOST_FOREACH(const office_element_ptr& elm, content_)
     {
 		elm->pptx_convert(Context);
 	}
-
 
 	if (draw_page_attr_.use_footer_name_)//from master_page
 	{
@@ -168,7 +179,6 @@ void presentation_date_time_decl::pptx_convert(oox::pptx_conversion_context & Co
 {
 	Context.get_text_context().add_text(text_);
 }
-///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 }
 }

@@ -198,7 +198,7 @@ static const _shape_converter _OO_OOX_custom_shapes[]=
 {L"circle"	,L"ellipse"	,0	,0	,0	},
 {L"circle-pie"	,L"pie"	,0	,0	,0	},
 {L"frame"	,L"frame"	,0	,0	,0	},
-{L"cloud"	,L"cload"	,0	,0	,0	},
+{L"cloud"	,L"cloud"	,0	,0	,0	},
 {L"up-right-arrow"	,L"rightUpArrow"	,0	,0	,0	},
 {L"col-502ad400"	,L"bevel"	,0	,0	,0	},
 {L"col-60da8460"	,L"bevel"	,0	,0	,0	},

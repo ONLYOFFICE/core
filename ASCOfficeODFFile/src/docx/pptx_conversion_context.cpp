@@ -448,14 +448,17 @@ void pptx_conversion_context::end_page()
     } 
 
 	get_slide_context().serialize_background(current_slide().Background());
-	get_slide_context().serialize(current_slide().Data());
+	get_slide_context().serialize_objects(current_slide().Data());
+	get_slide_context().serialize_animations(current_slide().Timing());
+	
 	get_slide_context().dump_rels(current_slide().Rels());//hyperlinks, mediaitems, ...
 
 	get_slide_context().end_slide();
 }
 void pptx_conversion_context::end_layout()
 {
-	get_slide_context().serialize(current_layout().Data());
+	get_slide_context().serialize_objects(current_layout().Data());
+	
 	get_slide_context().dump_rels(current_layout().Rels());//hyperlinks, mediaitems, ...
 
 	get_slide_context().end_slide();
@@ -474,9 +477,8 @@ std::pair<int,int> pptx_conversion_context::add_author_comments(std::wstring aut
 
 void pptx_conversion_context::end_master()
 {
-	get_slide_context().serialize_background(current_master().Background(),true);
-	
-	get_slide_context().serialize(current_master().Data());
+	get_slide_context().serialize_background(current_master().Background(),true);	
+	get_slide_context().serialize_objects(current_master().Data());
 	get_slide_context().serialize_HeaderFooter(current_master().DataExtra());
 	
 	get_slide_context().dump_rels(current_master().Rels());//hyperlinks, mediaitems, ...

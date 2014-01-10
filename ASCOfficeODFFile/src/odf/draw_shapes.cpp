@@ -42,7 +42,9 @@ void draw_shape::add_child_element( xml::sax * Reader, const ::std::wstring & Ns
 }
 void draw_shape::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    common_draw_attlists_.shape_with_text_and_styles_.add_attributes(Attributes);
+	CP_APPLY_ATTR(L"draw:id",			draw_id_);//или сюда draw_shape_attlist_???
+	
+	common_draw_attlists_.shape_with_text_and_styles_.add_attributes(Attributes);
     common_draw_attlists_.position_.add_attributes(Attributes);
     common_draw_attlists_.rel_size_.add_attributes(Attributes);
  	common_presentation_attlist_.add_attributes(Attributes);

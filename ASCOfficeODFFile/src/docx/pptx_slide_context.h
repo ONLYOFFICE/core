@@ -20,6 +20,12 @@ public:
 	
     void start_slide();
 	void end_slide(){}
+////////////////////////////////////////////////////////////////////////////////////////
+	void start_slide_animation();
+	void end_slide_animation(){}
+	
+	void set_animation_duration(int dur);
+	void set_transitionFilter(_CP_OPT(std::wstring),_CP_OPT(std::wstring),_CP_OPT(std::wstring),_CP_OPT(std::wstring),_CP_OPT(std::wstring));
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 	void set_rect(double width_pt, double height_pt, double x_pt, double y_pt);
@@ -54,10 +60,11 @@ public:
 	
 	bool empty() const;
 //////////////////////////////////////////////////////////////////////////////////////////////
-	void serialize(std::wostream & strm);
+	void serialize_objects(std::wostream & strm);
 	void serialize_HeaderFooter(std::wostream & strm);
 	void serialize_background(std::wostream & strm, bool always=false);
-	
+	void serialize_animations(std::wostream & strm);
+
 	void dump_rels(rels & Rels);
 
 	void process_drawings();

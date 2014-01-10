@@ -199,6 +199,10 @@ enum ElementType
 	typePresentationFooterDecl,
 	typePresentationDateTimeDecl,
 
+	typeAnimPar,
+	typeAnimSeq,
+	typeAnimTransitionFilter,
+
 	typeStyleGraphicPropertis,
 	typeStyleDrawGradient,
 	typeStyleDrawFillImage,

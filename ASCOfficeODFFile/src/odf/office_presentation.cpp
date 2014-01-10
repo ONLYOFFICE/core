@@ -35,7 +35,6 @@ void office_presentation::add_child_element( xml::sax * Reader, const ::std::wst
 
 void office_presentation::add_text(const std::wstring & Text)
 {
-    // TODO : error
 }
 
 void office_presentation::add_attributes( const xml::attributes_wc_ptr & Attributes )

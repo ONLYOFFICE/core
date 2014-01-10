@@ -51,6 +51,8 @@ public:
 	union_common_draw_attlists  common_draw_attlists_;
 	
 	draw_shape_attlist draw_shape_attlist_;
+
+	_CP_OPT(std::wstring)		draw_id_;//используется для анимашек
   
 	office_element_ptr_array content_;
 

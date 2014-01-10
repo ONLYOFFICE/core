@@ -20,6 +20,7 @@ public:
 
 public:
 	_CP_OPT(std::wstring)		draw_name_;
+	_CP_OPT(std::wstring)		draw_id_;
 	_CP_OPT(std::wstring)		draw_style_name_;
 
 	_CP_OPT(std::wstring)		page_layout_name_;
@@ -48,6 +49,8 @@ private:
 
 private:
     office_element_ptr_array content_;
+	office_element_ptr animation_;
+
 	draw_page_attr draw_page_attr_;
 };
 
@@ -103,5 +106,6 @@ private:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(presentation_date_time_decl);
+
 }
 }

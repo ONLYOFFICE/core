@@ -10,7 +10,6 @@
 namespace cpdoccore { 
 namespace odf {
 
-/// \class  office_presentation
 /// \brief  office:presentation
 class office_presentation : public office_element_impl<office_presentation>
 {

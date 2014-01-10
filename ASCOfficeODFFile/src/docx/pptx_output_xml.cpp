@@ -42,6 +42,10 @@ std::wostream & pptx_xml_slide::Background()
 {
     return slideBackground_;
 }
+std::wostream & pptx_xml_slide::Timing()
+{
+    return slideTiming_;
+}
 rels & pptx_xml_slide::Rels()
 {
     return rels_;
@@ -68,6 +72,7 @@ void pptx_xml_slide::write_to(std::wostream & strm)
 					CP_XML_STREAM() << slideData_.str();
 				}
             }
+			CP_XML_STREAM() << slideTiming_.str();
 			//CP_XML_NODE(L"p:clrMapOvr")
 			//{
 			//	CP_XML_NODE(L"a:masterClrMapping");

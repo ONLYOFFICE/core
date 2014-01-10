@@ -475,7 +475,17 @@ void common_presentation_attlist::add_attributes( const xml::attributes_wc_ptr &
     CP_APPLY_ATTR(L"presentation:style-name", style_name_);
 	CP_APPLY_ATTR(L"presentation:placeholder", presentation_placeholder_);
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
+void common_anim_smil_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	//CP_APPLY_ATTR(L"smil:direction", smil_direction_);
+ //   CP_APPLY_ATTR(L"smil:subtype", smil_subtype_);
+ //   CP_APPLY_ATTR(L"smil:type", smil_type_);
+	CP_APPLY_ATTR(L"smil:dur", smil_dur_);
+
+}
+//
 
 }
 }

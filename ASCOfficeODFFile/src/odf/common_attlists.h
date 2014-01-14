@@ -23,6 +23,7 @@
 #include "presentationclass.h"
 #include "xlink.h"
 #include "drawfill.h"
+#include "clockvalue.h"
 
 #define _CP_APPLY_PROP(A, B) \
     if (B) \
@@ -802,14 +803,14 @@ public:
         //_CP_APPLY_PROP(smil_direction_, Other.smil_direction_);
         //_CP_APPLY_PROP(smil_subtype_, Other.smil_subtype_);
         //_CP_APPLY_PROP(smil_type_, Other.smil_type_);
-        _CP_APPLY_PROP(smil_dur_, Other.smil_dur_);
+       // _CP_APPLY_PROP(smil_dur_, Other.smil_dur_);
     }
 
 public:
 	//_CP_OPT(std::wstring) smil_direction_;
 	//_CP_OPT(std::wstring) smil_subtype_; 
 	//_CP_OPT(std::wstring) smil_type_;
-	_CP_OPT(std::wstring) smil_dur_;
+	//_CP_OPT(std::wstring) smil_dur_;
 
 	//_CP_OPT(color)	smil_fadeColor;
 

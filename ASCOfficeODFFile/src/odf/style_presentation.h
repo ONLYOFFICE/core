@@ -9,6 +9,8 @@
 #include "office_elements_create.h"
 
 #include "presentationclass.h"
+#include "anim_elements.h"
+
 #include "drawfill.h"
 
 namespace cpdoccore { 
@@ -50,15 +52,17 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     void apply_from(const drawing_page_properties & Other);
 
-	common_draw_fill_attlist common_draw_fill_attlist_;
+	common_draw_fill_attlist		common_draw_fill_attlist_;
+	anim_transition_filter_attlist	anim_transition_filter_attlist_;
 
 	_CP_OPT(length)			draw_fill_image_height_;
 	_CP_OPT(length)			draw_fill_image_width_;
 	
 	_CP_OPT(std::wstring)	draw_background_size_;//"border" or "full"
-	//_CP_OPT(std::wstring) presentation_transition_type_;
-	//presentation:transition-style
-	//presentation:transition-speed
+
+	_CP_OPT(std::wstring)presentation_transition_type_;//manual, automatic, semi-automatic (переход отделен от эффектов кликом)
+	_CP_OPT(std::wstring)presentation_transition_style_;//none, fade, move, uncover,clockwise, .... игнор если smil
+	_CP_OPT(std::wstring)presentation_transition_speed_;//slow, medium, fast
 	
 	//presentation:display-footer
 	//presentation:display-page-number

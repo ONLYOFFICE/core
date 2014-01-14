@@ -1,9 +1,4 @@
-#ifndef _CPDOCCORE_LENGTH_H_
-#define _CPDOCCORE_LENGTH_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <string>
@@ -60,4 +55,3 @@ APPLY_PARSE_XML_ATTRIBUTES(odf::length);
 
 }
 
-#endif

@@ -47,12 +47,6 @@ public:
     void start_office_presentation();
     void end_office_presentation();
 
-    //void start_paragraph(const std::wstring & styleName);
-    //void end_paragraph();
-
-    //void start_span(const std::wstring & styleName);
-    //void end_span();
-
     bool start_page(const std::wstring & pageName, 
 							const std::wstring & pageStyleName,
 							const std::wstring & pageLayoutName,
@@ -89,21 +83,9 @@ public:
 
 	pptx_table_context & get_table_context(){return pptx_table_context_;}
 
- //   num_format_context & get_num_format_context() { return num_format_context_; }
-
- //   xlsx_defined_names & get_xlsx_defined_names() { return xlsx_defined_names_; }
-
- //   xlsx_table_metrics & get_table_metrics();
- //   xlsx_drawing_context & get_drawing_context();
- //   xlsx_drawing_context_handle & get_drawing_context_handle();
-	//
- //   xlsx_comments_context & get_comments_context();
-	//xlsx_comments_context_handle & get_comments_context_handle();
-
-
     mediaitems & get_mediaitems() { return pptx_slide_context_.get_mediaitems(); }
 
-    //void start_hyperlink(const std::wstring & styleName);//сюда сваливаются гиперлинки с текста
+    //void start_hyperlink(const std::wstring & styleName);
     //void end_hyperlink(std::wstring const & href);
 	
 	void process_master_pages();

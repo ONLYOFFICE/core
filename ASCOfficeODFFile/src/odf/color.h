@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_COLOR_H_
-#define _CPDOCCORE_ODF_COLOR_H_
+#pragma once
 
 #include <iosfwd>
 #include <string>
@@ -35,5 +34,3 @@ std::wostream & operator << (std::wostream & _Wostream, const color & _Color);
 APPLY_PARSE_XML_ATTRIBUTES(odf::color);
 
 }
-
-#endif

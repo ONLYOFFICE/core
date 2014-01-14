@@ -16,7 +16,7 @@ struct _oox_fill;
 class pptx_slide_context
 {
 public:
-    pptx_slide_context(pptx_conversion_context & Context/*, pptx_text_context & textCotnext*/);
+    pptx_slide_context(pptx_conversion_context & Context);
 	
     void start_slide();
 	void end_slide(){}
@@ -24,9 +24,9 @@ public:
 	void start_slide_animation();
 	void end_slide_animation(){}
 	
-	void set_animation_duration(int dur);
-	void set_transitionFilter(_CP_OPT(std::wstring),_CP_OPT(std::wstring),_CP_OPT(std::wstring),_CP_OPT(std::wstring),_CP_OPT(std::wstring));
-
+	void set_transitionFilter(std::wstring & type,_CP_OPT(std::wstring) & dir, _CP_OPT(std::wstring) & dop, _CP_OPT(int) & time);
+	void set_transitionAction(bool val);
+	void set_transitionSpeed(std::wstring val);
 ///////////////////////////////////////////////////////////////////////////////////////////
 	void set_rect(double width_pt, double height_pt, double x_pt, double y_pt);
 

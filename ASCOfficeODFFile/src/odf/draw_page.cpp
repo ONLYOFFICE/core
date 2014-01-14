@@ -117,6 +117,22 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 				oox::_oox_fill fill;
 				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, Context.root()->odf_context().drawStyles() ,fill);
 				Context.get_slide_context().add_background(fill);
+			
+				//часть свойств переходов между слайдами тута
+				
+				if (properties->content().presentation_transition_type_)
+				{
+					if (properties->content().presentation_transition_type_.get() == L"automatic" || 
+						properties->content().presentation_transition_type_.get() == L"semi-automatic")
+					{
+						Context.get_slide_context().set_transitionAction(false);
+					}else
+						Context.get_slide_context().set_transitionAction(true);//manual (default)
+				}
+				if (properties->content().presentation_transition_speed_)
+				{
+					Context.get_slide_context().set_transitionSpeed(properties->content().presentation_transition_speed_.get());
+				}
 			}
 		}
 	}

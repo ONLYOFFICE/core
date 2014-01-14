@@ -71,10 +71,15 @@ void style_drawing_page_properties::add_child_element( xml::sax * Reader, const 
 void drawing_page_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	common_draw_fill_attlist_.add_attributes(Attributes);
+	anim_transition_filter_attlist_.add_attributes(Attributes);
 
 	CP_APPLY_ATTR(L"draw:fill-image-height",	draw_fill_image_height_);
 	CP_APPLY_ATTR(L"draw:fill-image-width",		draw_fill_image_width_);
 	CP_APPLY_ATTR(L"draw:background-size",		draw_background_size_);
+
+	CP_APPLY_ATTR(L"presentation:transition-type",		presentation_transition_type_);
+	CP_APPLY_ATTR(L"presentation:transition-style",		presentation_transition_style_);
+	CP_APPLY_ATTR(L"presentation:transition-speed",		presentation_transition_speed_);
 
 }
 void drawing_page_properties::apply_from(const drawing_page_properties & Other)

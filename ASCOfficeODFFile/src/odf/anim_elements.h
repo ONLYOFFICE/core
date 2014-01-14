@@ -7,6 +7,8 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 
+#include "common_attlists.h"
+#include "smil_transitiontype.h"
 
 namespace cpdoccore { 
 namespace odf {
@@ -72,11 +74,11 @@ public:
 	
 	_CP_OPT(std::wstring)	smil_direction_;
 	_CP_OPT(std::wstring)	smil_subtype_; 
-	_CP_OPT(std::wstring)	smil_type_;
-	_CP_OPT(std::wstring)	smil_dur_;
+	_CP_OPT(smil_transition_type)	smil_type_;
 	_CP_OPT(std::wstring)	smil_mode_;
-	_CP_OPT(color)			smil_fadeColor;
-}
+	_CP_OPT(color)			smil_fadeColor_;
+	_CP_OPT(clockvalue)		smil_dur_;
+};
 
 //anim:transitionFilter
 class anim_transitionFilter : public office_element_impl<anim_transitionFilter>
@@ -95,7 +97,8 @@ public:
 
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name){}
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 
 };

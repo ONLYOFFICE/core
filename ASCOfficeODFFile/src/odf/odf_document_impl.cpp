@@ -33,7 +33,6 @@
 
 #include "paragraph_elements.h"
 #include "text_elements.h"
-#include "anim_elements.h"
 
 #include "table_calculation_settings.h"
 #include "number_style.h"

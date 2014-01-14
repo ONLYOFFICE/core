@@ -27,11 +27,14 @@ public:
 	
 	struct _transition
 	{
-		bool			Enabled;
-		std::wstring	Speed;
-		int				Time;
-		std::wstring	Type;
-		std::wstring	Direction;
+		bool					Enabled;
+		std::wstring			Type;
+
+		_CP_OPT(std::wstring)	Speed;
+		_CP_OPT(int)			Time;
+		_CP_OPT(std::wstring)	Dir;
+		_CP_OPT(std::wstring)	Param;
+		bool					onClick;
 	};
 
 	Impl(const std::wstring & odfPacket) : mediaitems_(odfPacket),odfPacket_(odfPacket)
@@ -93,7 +96,9 @@ public:
 
 		pptx_drawings_ = pptx_drawings::create();
 
-		memset(&transition_,0,sizeof(_transition));
+		transition_.Enabled = false;
+		transition_.Speed	= boost::none;
+		transition_.onClick	= true;	
 	}
 
     size_t next_rId()
@@ -133,21 +138,31 @@ void pptx_slide_context::start_slide_animation()
 	impl_->transition_.Enabled = true;
 
 //default
-	impl_->transition_.Speed = L"med";
-	impl_->transition_.Type = L"wipe";
+	impl_->transition_.Type			= L"wipe";	
+	impl_->transition_.Time			= boost::none;
+
+	impl_->transition_.Dir			= boost::none;
+	impl_->transition_.Param		= boost::none;
+	//speed & onClick выставляются ранее
 }
-//временно !!!!
-void pptx_slide_context::set_animation_duration(int dur)
+
+void pptx_slide_context::set_transitionFilter(std::wstring & type,_CP_OPT(std::wstring) & dir,_CP_OPT(std::wstring) & dop,_CP_OPT(int) & time)
 {
-	impl_->transition_.Time = dur;
+	impl_->transition_.Type	= type;
+	impl_->transition_.Time = time; // не путать длительность перехода с длительностью эффекта перехода (в oo его нет)
+	impl_->transition_.Dir = dir;
+	impl_->transition_.Param =	dop;
 }
-//smil_direction_,smil_type_,smil_subtype_,smil_mode_,color);
-void pptx_slide_context::set_transitionFilter(	_CP_OPT(std::wstring) direction,
-												_CP_OPT(std::wstring) type,
-												_CP_OPT(std::wstring) subtype,
-												_CP_OPT(std::wstring) mode,
-												_CP_OPT(std::wstring) fade_color)
+
+void pptx_slide_context::set_transitionAction(bool val)
 {
+	impl_->transition_.onClick = val;
+}
+
+void pptx_slide_context::set_transitionSpeed(std::wstring val)
+{
+	if (val == L"medium")impl_->transition_.Speed=L"med";
+	else impl_->transition_.Speed= val;//fast / slow
 }
 
 
@@ -542,22 +557,34 @@ void pptx_slide_context::serialize_animations(std::wostream & strm)
 		{
 			CP_XML_NODE(L"p:transition")
 			{
-				if (impl_->transition_.Time>0)
+				if (impl_->transition_.Speed)
 				{
-					CP_XML_ATTR(L"spd",impl_->transition_.Speed);
+					CP_XML_ATTR(L"spd",impl_->transition_.Speed.get());
 				}
-				if (impl_->transition_.Time >0)
+				if (impl_->transition_.Time)
 				{
-					CP_XML_ATTR(L"advTm",impl_->transition_.Time);
-				}
+					CP_XML_ATTR(L"advTm",impl_->transition_.Time.get());
+				}				
+				CP_XML_ATTR(L"advClick", impl_->transition_.onClick);
 				
 				CP_XML_NODE(std::wstring(L"p:" + impl_->transition_.Type))
 				{
-					if (!impl_->transition_.Direction.empty())
+					if (impl_->transition_.Dir)
 					{
-						CP_XML_ATTR(L"dir",impl_->transition_.Direction);
+						CP_XML_ATTR(L"dir",impl_->transition_.Dir.get());
 					}
-				}
+
+					if (impl_->transition_.Param)
+					{
+						if (impl_->transition_.Type == L"wheel")
+							CP_XML_ATTR(L"spokes",impl_->transition_.Param.get());
+						if (impl_->transition_.Type == L"fade")
+							CP_XML_ATTR(L"thruBlk",impl_->transition_.Param.get());
+						if (impl_->transition_.Type == L"split")
+							CP_XML_ATTR(L"orient",impl_->transition_.Param.get());
+					}
+				}				
+				//p:sndAc
 			}
 		}
 		//CP_XML_NODE(L"p:timing")- последовательности p:par

@@ -482,6 +482,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\odf\clockvalue.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\odf\clockvalue.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\odf\color.cpp"
 				>
 			</File>
@@ -783,6 +791,14 @@
 			</File>
 			<File
 				RelativePath=".\src\odf\shadowtype.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\odf\smil_transitiontype.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\odf\smil_transitiontype.h"
 				>
 			</File>
 			<File

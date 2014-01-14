@@ -482,7 +482,7 @@ void common_anim_smil_attlist::add_attributes( const xml::attributes_wc_ptr & At
 	//CP_APPLY_ATTR(L"smil:direction", smil_direction_);
  //   CP_APPLY_ATTR(L"smil:subtype", smil_subtype_);
  //   CP_APPLY_ATTR(L"smil:type", smil_type_);
-	CP_APPLY_ATTR(L"smil:dur", smil_dur_);
+	//CP_APPLY_ATTR(L"smil:dur", smil_dur_);
 
 }
 //

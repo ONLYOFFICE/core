@@ -6,18 +6,18 @@
 #include <iostream>
 #include <string>
 
-#import "libid:E2A541D8-4CC7-40C6-AA18-A033006D8E5A" rename_namespace("AVSOfficeOdtFile"), raw_interfaces_only
+#import "..\..\Redist\ASCOfficeOdtFile.dll" rename_namespace("ASCOfficeOdtFile") raw_interfaces_only
 
 #define HR_RET(HR) if FAILED(hr = (HR)) { _ASSERTE(false); return -1; }
 
 int ConvertSingle(int argc, _TCHAR* argv[])
 {
-    ATL::CComPtr<AVSOfficeOdtFile::IAVSOfficeFileTemplate> officeOdtFile;
+    ATL::CComPtr<ASCOfficeOdtFile::IAVSOfficeFileTemplate> officeOdtFile;
     HRESULT hr;
-    HR_RET(officeOdtFile.CoCreateInstance(__uuidof(AVSOfficeOdtFile::COdtFile)));
+    HR_RET(officeOdtFile.CoCreateInstance(__uuidof(ASCOfficeOdtFile::COdtFile)));
 
     boost::timer t1;
-	officeOdtFile->SaveToFile(ATL::CComBSTR(argv[1]), ATL::CComBSTR(argv[2]), NULL);
+	officeOdtFile->SaveToFile(ATL::CComBSTR(argv[2]), ATL::CComBSTR(argv[1]), NULL);
 
     std::cout << "\n\nTime : " << t1.elapsed() << "\n";    
     return 0;

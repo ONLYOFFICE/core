@@ -27,7 +27,7 @@
 #endif
 
 
-#import "libid:9AEF1F19-91CE-46C0-A380-06A7F56CE4AE" rename_namespace("AVSOfficeOdfFile"), raw_interfaces_only
+#import "../Redist/ASCOfficeOdfFile.dll" rename_namespace("ASCOfficeOdfFile"), raw_interfaces_only
 
 // ВНИМАНИЕ:    значение 1 используется для тестирования, на выходе получаем заархивированный файл xlsx или docx
 //              значение 0 используется для релиза, так как на выходе по спецификации нам требуется распакованный package
@@ -66,7 +66,8 @@ COdtFile::COdtFile()
 HRESULT COdtFile::FinalConstruct()
 {
 	m_pOfficeUtils = NULL;
-    HRESULT hr = odfFile_.CoCreateInstance(__uuidof(AVSOfficeOdfFile::COfficeOdfFile));
+    HRESULT hr = odfFile_.CoCreateInstance(__uuidof(ASCOfficeOdfFile::COfficeOdfFile));
+	
 	hr = CoCreateInstance(__uuidof(ASCOfficeUtils::COfficeUtils),
 													NULL, 
 													CLSCTX_INPROC_SERVER, 
@@ -108,7 +109,7 @@ STDMETHODIMP COdtFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLO
 }
 HRESULT COdtFile::convert(const std::wstring & srcPath, const std::wstring & dstPath)
 {
-	const boost::filesystem::wpath origin = boost::filesystem::wpath(srcPath) / L"Origin";//щаблон odt
+	const boost::filesystem::wpath origin = boost::filesystem::wpath(dstPath) / L"Origin";//щаблон odt
 	createOriginOdt(origin);
 
 	try
@@ -137,11 +138,6 @@ HRESULT COdtFile::SaveToFileImpl(const std::wstring & srcPath,
 {
     HRESULT hr = E_FAIL;
   
-//#ifdef BOOST_FILESYSTEM_LEGACY
-//    const std::wstring ext = boost::algorithm::to_lower_copy(boost::filesystem::wpath(dstFileName).extension());
-//#else
-//    const std::wstring ext = boost::algorithm::to_lower_copy(boost::filesystem::wpath(dstFileName).extension().string<std::wstring>());
-//#endif
 
     // распаковываем исходник (если он файл) во временную директорию
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
@@ -248,7 +244,7 @@ void COdtFile::createOriginOdt(const boost::filesystem::wpath& path) const
 	const boost::filesystem::wpath odtFile = path / L"origin.odt";
 	boost::filesystem::create_directories(path);
 
-	LoadFromResource(MAKEINTRESOURCE(IDR_DOCUMENT2), L"Document", _bstr_t(odtFile.string().c_str()));
+	DWORD err = LoadFromResource(MAKEINTRESOURCE(IDR_DOCUMENT2), L"Document", _bstr_t(odtFile.string().c_str()));
 	m_pOfficeUtils->ExtractToDirectory(_bstr_t(odtFile.string().c_str()), _bstr_t(path.string().c_str()), NULL, 0);
 
 	boost::filesystem::remove(odtFile);
@@ -257,7 +253,7 @@ void COdtFile::createOriginOdt(const boost::filesystem::wpath& path) const
 
 const unsigned long COdtFile::LoadFromResource(LPCWSTR lpResName, LPCWSTR lpResType, LPCWSTR fileName) const
 {
-	HMODULE hMod = GetModuleHandle(_T("AVSOfficeOdtFile.dll"));
+	HMODULE hMod = GetModuleHandle(_T("ASCOfficeOdtFile.dll"));
 	if (hMod)
 	{
 		HRSRC hRes = FindResource(hMod, lpResName, lpResType);

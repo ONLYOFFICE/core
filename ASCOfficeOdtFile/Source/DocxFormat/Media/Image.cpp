@@ -51,9 +51,9 @@ namespace OOX
 				boost::filesystem::copy_file(m_filename, newFilePath/newFilename);
 			}
 		}
-		if (m_filename.extension() == L".svm")
-			content.Default->add(replace_extension(newFilePath/newFilename, L"png"));
-		else
+		//if (m_filename.extension() == L".svm")
+		//	content.Default->add(replace_extension(newFilePath/newFilename, L"png"));
+		//else
 			content.Default->add(newFilePath/newFilename);
 	}
 

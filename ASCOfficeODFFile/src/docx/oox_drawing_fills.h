@@ -87,6 +87,7 @@ namespace oox {
 //////////////////////////////////////////////////////////////////////////////
 	struct _oox_fill
 	{
+		_oox_fill() : type(-1){}
 		oox_gradient_fill_ptr	gradient;
 		oox_hatch_fill_ptr		hatch;
 		oox_bitmap_fill_ptr		bitmap;
@@ -101,7 +102,7 @@ namespace oox {
 
 		void clear()
 		{
-			type=0;
+			type=-1;
 			opacity = boost::none;
 
 			gradient.reset();

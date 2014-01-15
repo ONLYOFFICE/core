@@ -788,6 +788,8 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 //////////////////////////////////////////////
 	graphicProperties.apply_to(drawing.additional);
 //////////////////////////////////////////
+	Compute_GraphicFill(graphicProperties.common_draw_fill_attlist_, Context.root()->odf_context().drawStyles() ,drawing.fill);	
+////////////////////////////////////////////////////
 	drawing.additional.push_back(odf::_property(L"border_width_left",	Compute_BorderWidth(graphicProperties, sideLeft)));
 	drawing.additional.push_back(odf::_property(L"border_width_top",	Compute_BorderWidth(graphicProperties, sideTop)));
 	drawing.additional.push_back(odf::_property(L"border_width_right",	Compute_BorderWidth(graphicProperties, sideRight)));
@@ -947,6 +949,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 	drawing.fill.bitmap = oox::oox_bitmap_fill::create();
+	drawing.fill.type = 2;
 	drawing.type = oox::mediaitems::typeImage;
 
 	drawing.fill.bitmap->isInternal = false;

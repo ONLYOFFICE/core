@@ -315,7 +315,7 @@ void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr
 
 void Compute_GraphicFill(const common_draw_fill_attlist & props, styles_lite_container &styles, oox::_oox_fill & fill)
 {
-	fill.type = 0; 
+	if (fill.type<1)fill.type = 0; 
 
 	if (props.draw_opacity_) fill.opacity = props.draw_opacity_->get_value();
 	if (props.draw_opacity_name_)

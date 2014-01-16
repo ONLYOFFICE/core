@@ -1009,7 +1009,20 @@ void style_page_layout_properties::add_child_element( xml::sax * Reader, const :
 {
     style_page_layout_properties_elements_.add_child_element(Reader, Ns, Name, getContext());
 }
+bool style_page_layout_properties::docx_back_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
+{
+	if (!get_style_page_layout_properties_attlist().common_background_color_attlist_.fo_background_color_)return false;
 
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"w:background")
+		{
+			std::wstring color = get_style_page_layout_properties_attlist().common_background_color_attlist_.fo_background_color_->get_color().get_hex_value();
+			CP_XML_ATTR(L"w:color",color);
+		}
+	}
+	return true;
+}
 void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
 {
 	if (Context.get_drawing_context().get_current_level()>0) return;

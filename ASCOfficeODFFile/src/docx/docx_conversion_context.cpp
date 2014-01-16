@@ -251,8 +251,18 @@ std::wstring  docx_conversion_context::dump_settings_document()
 			{
 				CP_XML_NODE(L"w:evenAndOddHeaders");
 			}
+			if (odf::GetProperty(settings_properties_,L"displayBackgroundShape",boolVal))
+			{
+				CP_XML_NODE(L"w:displayBackgroundShape");
+			}
+			if (odf::GetProperty(settings_properties_,L"zoom",intVal))
+			{
+				CP_XML_NODE(L"w:zoom")
+				{
+					CP_XML_ATTR(L"w:percent",intVal.get());
+				}
+			}
 		}
-	//output << L"<w:zoom w:percent=\"57\"/> ";
 	}
 	return output.str();
 }

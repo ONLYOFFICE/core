@@ -94,6 +94,8 @@ bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & c
 		clip_rect[1] = clip_rect[1]*100/fileHeight;
 		clip_rect[3] = clip_rect[3]*100/fileHeight;
 
+		if (clip_rect[0]<0.01  && clip_rect[1]<0.01  && clip_rect[2]<0.01   && clip_rect[3]<0.01)
+			return false;
 		return true;
 	}
 	return false;

@@ -1,0 +1,11 @@
+HKCR
+{
+	NoRemove AppID
+	{
+		'%APPID%' = s 'EditorEngine'
+		'EditorEngine.DLL'
+		{
+			val AppID = s '%APPID%'
+		}
+	}
+}

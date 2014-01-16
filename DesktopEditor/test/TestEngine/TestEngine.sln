@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestEngine", "TestEngine.csproj", "{42DB9D4F-5FB4-4788-A64F-E055EB8AC11A}"
+EndProject
+Global
+	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
+		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{42DB9D4F-5FB4-4788-A64F-E055EB8AC11A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42DB9D4F-5FB4-4788-A64F-E055EB8AC11A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42DB9D4F-5FB4-4788-A64F-E055EB8AC11A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42DB9D4F-5FB4-4788-A64F-E055EB8AC11A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

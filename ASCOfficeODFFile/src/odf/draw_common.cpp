@@ -67,7 +67,7 @@ bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & c
 		
 	int fileWidth=0,fileHeight=0;
 
-	if (! _image_file_::GetResolution(fileName.data(),fileWidth,fileHeight) && fileWidth>0 && fileHeight>0)return false;
+	if (!_image_file_::GetResolution(fileName.data(),fileWidth,fileHeight) || fileWidth<1 || fileHeight<1)return false;
 
 
 	std::vector<std::wstring> Points;
@@ -75,7 +75,7 @@ bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & c
 	
 	boost::algorithm::split(Points,strClipping, boost::algorithm::is_any_of(L" ,"), boost::algorithm::token_compress_on);
 
-	//<top>, <right>, <bottom>, <left> - нестандартный порядок !!! ох.е.ь - http://www.w3.org/TR/2001/REC-xsl-20011015/xslspec.html#clip
+	//<top>, <right>, <bottom>, <left> - http://www.w3.org/TR/2001/REC-xsl-20011015/xslspec.html#clip
 	BOOST_FOREACH(std::wstring const & p, Points)
 	{
 		Points_pt.push_back(length::parse(p) );

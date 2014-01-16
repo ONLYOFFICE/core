@@ -62,7 +62,7 @@
 // -------------------------------------------------------------------
 
 #include "../../common/File.h"
-#include "../../graphics/BaseThread.h"
+#include "../../graphics/Timer.h"
 
 enum CommandType
 {

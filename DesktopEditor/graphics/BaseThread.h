@@ -40,7 +40,7 @@ namespace NSThreads
 
 	class CBaseThread
 	{
-	private:
+	protected:
 		CThreadDescriptor*	m_hThread;
 		BOOL				m_bRunThread;
 		BOOL				m_bSuspend;

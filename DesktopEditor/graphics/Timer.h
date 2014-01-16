@@ -5,7 +5,7 @@
 
 namespace NSTimers
 {
-	static DWORD GetTickCount(int nMilliseconds)
+	static DWORD GetTickCount()
 	{
 #if defined(WIN32) || defined(_WIN32_WCE)
 		return ::GetTickCount();

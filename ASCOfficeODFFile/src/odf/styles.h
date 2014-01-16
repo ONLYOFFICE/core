@@ -1039,6 +1039,8 @@ public:
 
     void docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
+    
+	bool docx_back_serialize(std::wostream & strm, oox::docx_conversion_context & Context);
 
     const style_page_layout_properties_attlist & get_style_page_layout_properties_attlist() const
     {

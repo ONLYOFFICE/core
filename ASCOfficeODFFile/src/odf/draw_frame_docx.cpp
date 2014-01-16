@@ -31,6 +31,18 @@ namespace odf {
 namespace fs = ::boost::filesystem;
 
 namespace {
+bool IsExistProperty(std::vector<_property> Heap,const std::wstring Name)
+{
+	BOOST_FOREACH(_property const & p, Heap)
+	{
+		int res = p.name_.find(Name);
+		if (res>=0)
+		{
+			return true;
+		}
+	}
+	return false;			
+}
 
 _CP_OPT(length) CalcResultLength(const _CP_OPT(length_or_percent) & Value, const _CP_OPT(length) & Base)
 {
@@ -895,6 +907,13 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 	common_draw_docx_convert(Context, common_draw_attlists_, drawing);
 /////////
 
+	if (drawing.fill.type < 1 && !IsExistProperty(drawing.additional,L"stroke"))//бывает что и не определено ничего 
+	{
+		drawing.fill.solid = oox::oox_solid_fill::create();
+		drawing.fill.solid->color = L"729FCF";
+		drawing.fill.type = 1;
+	}
+
     std::wostream & strm = Context.output_stream();
 
 	bool pState = Context.get_paragraph_state();
@@ -954,6 +973,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 
 	drawing.fill.bitmap->isInternal = false;
     drawing.fill.bitmap->rId = Context.add_mediaitem(href, oox::mediaitems::typeImage,drawing.fill.bitmap->isInternal,href);
+	drawing.fill.bitmap->bStretch = true;
 
 	drawing.id = Context.get_drawing_context().get_current_frame_id();
 	drawing.name = Context.get_drawing_context().get_current_object_name();

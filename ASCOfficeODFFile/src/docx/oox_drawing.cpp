@@ -81,7 +81,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf::_property> & 
 			
 			if (dVal)
 			{
-				CP_XML_ATTR(L"w",static_cast<size_t>(dVal.get()*12700));//in emu (1 pt = 12700)
+				CP_XML_ATTR(L"w",static_cast<size_t>(dVal.get() * 12700));//in emu (1 pt = 12700)
 				if (color.length()<1)color = L"729FCF";
 			}
 		

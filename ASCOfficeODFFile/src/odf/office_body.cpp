@@ -59,7 +59,6 @@ void office_body::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void office_body::docx_convert(oox::docx_conversion_context & Context)
 {
-    Context.start_body();
 
     std::vector<style_master_page*> & masterPages = Context.root()->odf_context().pageLayoutContainer().master_pages();
     if (!masterPages.empty())
@@ -68,8 +67,21 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
     }
 
     Context.set_page_properties(Context.root()->odf_context().pageLayoutContainer().page_layout_first()->name());
-
-    if (content_)
+//backcolor (for all pages) 
+    if (page_layout_instance * firtsPageLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_by_name(Context.get_page_properties()))
+	{
+        if (style_page_layout_properties * prop = firtsPageLayout->properties())
+		{
+			if (prop->docx_back_serialize(Context.output_stream(), Context))
+			{
+				Context.set_settings_property(odf::_property(L"displayBackgroundShape",true));
+			}
+		}
+	}
+//content
+	Context.start_body();
+    
+	if (content_)
         content_->docx_convert(Context);
 
 	Context.get_headers_footers().set_enable_write(true);

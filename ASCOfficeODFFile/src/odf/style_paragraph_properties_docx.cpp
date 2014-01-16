@@ -177,11 +177,11 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			CP_XML_NODE(L"w:spacing")
 			{
 				CP_XML_ATTR(L"w:after", 0); 
-				CP_XML_ATTR(L"w:lineRule", L"exact");
 				if (Context.get_drop_cap_context().FontSize>0)
 					CP_XML_ATTR(L"w:line", Context.get_drop_cap_context().FontSize);
 				else
 					CP_XML_ATTR(L"w:line", 240);
+				CP_XML_ATTR(L"w:lineRule", L"exact");
 			}
 			CP_XML_NODE(L"w:textAlignment"){CP_XML_ATTR(L"w:val", L"baseline");}
 		}
@@ -286,14 +286,15 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			}
 			CP_XML_NODE(L"w:spacing")
 			{
-				if (!w_after.empty())
-					CP_XML_STREAM() << "w:after=\"" << w_after << "\" ";
-				if (!w_before.empty())
-					CP_XML_STREAM() << "w:before=\"" << w_before << "\" ";
-				if (!w_lineRule.empty())
-					CP_XML_STREAM() << "w:lineRule=\"" << w_lineRule << "\" ";
 				if (!w_line.empty())
-					CP_XML_STREAM() << "w:line=\"" << w_line << "\" ";   
+					CP_XML_ATTR(L"w:line", w_line);   				
+				if (!w_after.empty())
+					CP_XML_ATTR(L"w:after", w_after);
+				if (!w_before.empty())
+					CP_XML_ATTR(L"w:before",w_before);
+				if (!w_lineRule.empty())
+					CP_XML_ATTR(L"w:lineRule", w_lineRule);
+
 			}
 		}
 		if (fo_margin_left_ || //? + буквица

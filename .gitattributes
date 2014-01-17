@@ -438,6 +438,7 @@ Redist/OfficeCore.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/Repairing.exe svn_mime_002dtype=application%2Foctet-stream
 Redist/VersionControl.exe svn_mime_002dtype=application%2Foctet-stream
 Redist/XlsxSerializerCom.dll svn_mime_002dtype=application%2Foctet-stream
+Redist/zlibwapi.dll svn_mime_002dtype=application%2Foctet-stream
 RedistOpenSource/ASCOfficeDocxFile2.dll svn_mime_002dtype=application%2Foctet-stream
 RedistOpenSource/ASCOfficePDFWriter.dll svn_mime_002dtype=application%2Foctet-stream
 RedistOpenSource/ASCOfficePPTXFile.dll svn_mime_002dtype=application%2Foctet-stream

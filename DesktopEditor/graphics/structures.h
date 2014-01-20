@@ -244,14 +244,14 @@ namespace NSStructures
 			
 			for(;;)
 			{
-				int pos = str.find( (wchar_t)',', start );
+				int pos = (int)str.find( (wchar_t)',', start );
 				if( pos < 0 )
 					break;
 
 				subcolor.color = ::atoi( str.substr( start, pos - start ).c_str() );
 				start = pos + 1;
 
-				pos = str.find( (wchar_t)';',  start );
+				pos = (int)str.find( (wchar_t)';',  start );
 				if( pos < 0 )
 					break;
 

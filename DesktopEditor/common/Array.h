@@ -104,7 +104,7 @@ public:
 			return FALSE;
 		m_aT[nIndex].~T();
 		if (nIndex != (m_nSize - 1))
-			memmove((void*)(m_aT + nIndex), (m_nSize - nIndex) * sizeof(T), (void*)(m_aT + nIndex + 1), (m_nSize - (nIndex + 1)) * sizeof(T));
+			memmove_s((void*)(m_aT + nIndex), (m_nSize - nIndex) * sizeof(T), (void*)(m_aT + nIndex + 1), (m_nSize - (nIndex + 1)) * sizeof(T));
 		m_nSize--;
 		return TRUE;
 	}

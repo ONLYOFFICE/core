@@ -94,7 +94,7 @@ public:
 			return pImage;
 		}
 
-		int nCount = m_mapImages.size();
+		int nCount = (int)m_mapImages.size();
 		if (nCount >= m_lMaxCount)
 		{
 			int nNeedDelete = nCount - m_lMaxCount;

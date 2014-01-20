@@ -8,11 +8,11 @@
 #include "version.h"
 
 
-#define MHT_FROM         "From: <Saved by AVSDocumentConverter>\n"
+#define MHT_FROM         "From: <Saved by ASCDocumentConverter>\n"
 #define MHT_MIME_VERSION "MIME-Version: 1.0\n"
 #define MHT_CONTENT_TYPE "Content-Type: multipart/related;\n	type=\"text/html\";\n	boundary=\"----=_NextPart_000_00\"\n"
 #define MHT_BOUNDARY     "------=_NextPart_000_00\n"
-#define MHT_XMILE_OLE    "X-MileOLE: Produced by AVSHTMLFile.dll " STRVER
+#define MHT_XMILE_OLE    "X-MileOLE: Produced by ASCHTMLFile.dll " STRVER
 #define MHT_MESSAGE      "\n\nThis is a multi-part message in MIME format.\n\n"
 
 class CHtmlExport

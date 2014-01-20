@@ -52,5 +52,5 @@ using namespace ATL;
 
 #import <msxml6.dll>
 
-#import "../../../../../../AVS/Redist/AVSMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")
+#import "../../../Redist/ASCMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")
 

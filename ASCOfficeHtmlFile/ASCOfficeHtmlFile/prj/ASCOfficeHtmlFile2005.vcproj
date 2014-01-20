@@ -128,7 +128,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\..\Redist\VersionControl.exe $(ProjectDir)\..\res\version.h"
+				CommandLine="encrypt.bat&#x0D;&#x0A;..\..\..\Redist\VersionControl.exe $(ProjectDir)\..\res\version.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -154,7 +154,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\res;..\include;..\..\..\Common;..\prj;..\HTMLReaderLib"
+				AdditionalIncludeDirectories=".\..\res;..\include;..\..\..\Common;..\prj;..\HTMLReaderLib;.\res"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -594,6 +594,33 @@
 			<File
 				RelativePath="..\res\ASCOfficeHtmlFile.rc"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCResourceCompilerTool"
+						Culture="1033"
+						AdditionalIncludeDirectories="&quot;$(IntDir)&quot;;D:\WORK\AVS\Sources\TeamlabOffice\trunk\ServerComponents\ASCOfficeHtmlFile\ASCOfficeHtmlFile\res"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCResourceCompilerTool"
+						Culture="1033"
+						AdditionalIncludeDirectories="&quot;$(IntDir)&quot;;.\..\res;D:\WORK\AVS\Sources\TeamlabOffice\trunk\ServerComponents\ASCOfficeHtmlFile\ASCOfficeHtmlFile\res"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseASC|Win32"
+					>
+					<Tool
+						Name="VCResourceCompilerTool"
+						Culture="1033"
+						AdditionalIncludeDirectories="&quot;$(IntDir)&quot;;D:\WORK\AVS\Sources\TeamlabOffice\trunk\ServerComponents\ASCOfficeHtmlFile\ASCOfficeHtmlFile\res"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\res\ASCOfficeHtmlFile.rgs"

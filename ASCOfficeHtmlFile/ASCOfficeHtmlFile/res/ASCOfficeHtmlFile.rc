@@ -18,19 +18,23 @@
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
-/////////////////////////////////////////////////////////////////////////////
-// Russian resources
+////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
-LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
-#pragma code_page(1251)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
 #endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// CRPT
+// REGISTRY
 //
+
+IDR_ASCHTMLFILE         REGISTRY                "ASCOfficeHtmlFile.rgs"
+
+///////////////////////////////////////////////////////////////////////////////
 IDR_CRPT1					CRPT                     "xsl\\2htm-comments.crpt"
 IDR_CRPT2					CRPT                     "xsl\\2htm-common.crpt"
 IDR_CRPT3					CRPT                     "xsl\\2htm-content.crpt"
@@ -70,25 +74,8 @@ IDR_CRPT36					CRPT                     "xsl\\2oox-measures.crpt"
 IDR_CRPT37					CRPT                     "xsl\\2oox-styles-common.crpt"
 IDR_CRPT38					CRPT                     "xsl\\2oox-numbering.crpt"
 IDR_CRPT39					CRPT                     "xsl\\html2xhtml.crpt"
-#endif    // Russian resources
-/////////////////////////////////////////////////////////////////////////////
 
-
-/////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
-#endif //_WIN32
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// REGISTRY
-//
-
-IDR_ASCHTMLFILE         REGISTRY                "ASCOfficeHtmlFile.rgs"
+/////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////

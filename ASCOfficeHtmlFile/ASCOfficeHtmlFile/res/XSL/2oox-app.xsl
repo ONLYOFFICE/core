@@ -16,12 +16,12 @@
 			<Pages>1</Pages>
 			<Words>10</Words>
 			<Characters>62</Characters>
-			<Application>AVS Office Studio</Application>
+			<Application>ASC Office Studio</Application>
 			<DocSecurity>0</DocSecurity>
 			<Lines>1</Lines>
 			<Paragraphs>1</Paragraphs>
 			<ScaleCrop>false</ScaleCrop>
-			<Company>AVS Media</Company>
+			<Company>ASC Media</Company>
 			<LinksUpToDate>false</LinksUpToDate>
 			<CharactersWithSpaces>71</CharactersWithSpaces>
 			<SharedDoc>false</SharedDoc>

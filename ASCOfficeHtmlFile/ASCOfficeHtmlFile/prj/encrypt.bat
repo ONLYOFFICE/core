@@ -1,3 +1,3 @@
-for %%a in (.\..\res\XSL\*.xsl) do .\..\..\..\..\..\Redist\AVSOfficeStudio\EncryptRes.exe -e %%a
+for %%a in (.\..\res\XSL\*.xsl) do .\..\..\..\Redist\EncryptRes.exe -e %%a
 pause
 

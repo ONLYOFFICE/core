@@ -21,7 +21,7 @@
 #include "DateTime.h"
 
 
-const wchar_t CHtmlFile::m_sLibPath[] = L"AVSOfficeHtmlFile.dll";
+const wchar_t CHtmlFile::m_sLibPath[] = L"ASCOfficeHtmlFile.dll";
 
 HRESULT CHtmlFile::FinalConstruct()
 {	

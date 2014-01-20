@@ -441,6 +441,7 @@ Redist/ASCOfficeXlsFile.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCPresentationEditor.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCVectorImage.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/DoctRenderer.dll svn_mime_002dtype=application%2Foctet-stream
+Redist/EncryptRes.exe svn_mime_002dtype=application%2Foctet-stream
 Redist/OfficeCore.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/Repairing.exe svn_mime_002dtype=application%2Foctet-stream
 Redist/VersionControl.exe svn_mime_002dtype=application%2Foctet-stream

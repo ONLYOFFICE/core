@@ -23,6 +23,7 @@ namespace BinXlsxRW {
 	static TCHAR* gc_sMimeName = _T("mimetype");
 
 #ifdef DEFAULT_TABLE_STYLES
+	CString WriteDefaultFileHeader(int nDataSize);
 	void getDefaultCellStyles(CString& sFileInput, CString& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor);
 	void getDefaultTableStyles(CString& sFileInput, CString& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor);
 	void writeTheme(LPSAFEARRAY pThemeData, CString& sFileOutput);
@@ -1212,49 +1213,49 @@ namespace BinXlsxRW {
 		{
 			int nCurPos = 0;
 			//Bottom
-			if(false != border.m_oBottom.IsInit())
+			if(false != border.m_oBottom.IsInit() && false != border.m_oBottom->m_oStyle.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Bottom);
 				WriteBorderProp(border.m_oBottom.get(), pIndexedColors, pTheme);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			//Diagonal
-			if(false != border.m_oDiagonal.IsInit())
+			if(false != border.m_oDiagonal.IsInit() && false != border.m_oDiagonal->m_oStyle.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Diagonal);
 				WriteBorderProp(border.m_oDiagonal.get(), pIndexedColors, pTheme);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			//End
-			if(false != border.m_oEnd.IsInit())
+			if(false != border.m_oEnd.IsInit() && false != border.m_oEnd->m_oStyle.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::End);
 				WriteBorderProp(border.m_oEnd.get(), pIndexedColors, pTheme);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			//Horizontal
-			if(false != border.m_oHorizontal.IsInit())
+			if(false != border.m_oHorizontal.IsInit() && false != border.m_oHorizontal->m_oStyle.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Horizontal);
 				WriteBorderProp(border.m_oHorizontal.get(), pIndexedColors, pTheme);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			//Start
-			if(false != border.m_oStart.IsInit())
+			if(false != border.m_oStart.IsInit() && false != border.m_oStart->m_oStyle.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Start);
 				WriteBorderProp(border.m_oStart.get(), pIndexedColors, pTheme);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			//Top
-			if(false != border.m_oTop.IsInit())
+			if(false != border.m_oTop.IsInit() && false != border.m_oTop->m_oStyle.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Top);
 				WriteBorderProp(border.m_oTop.get(), pIndexedColors, pTheme);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			//Vertical
-			if(false != border.m_oVertical.IsInit())
+			if(false != border.m_oVertical.IsInit() && false != border.m_oVertical->m_oStyle.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Vertical);
 				WriteBorderProp(border.m_oVertical.get(), pIndexedColors, pTheme);
@@ -3841,8 +3842,8 @@ namespace BinXlsxRW {
 			if(NULL != pStyle && pStyle->m_oColors.IsInit() && pStyle->m_oColors->m_oIndexedColors.IsInit())
 				pIndexedColors = pStyle->m_oColors->m_oIndexedColors.operator ->();
 #ifdef DEFAULT_TABLE_STYLES
-			getDefaultCellStyles(CString(_T("D:\\Subversion\\AVS\\Sources\\TeamlabOffice\\trunk\\XlsxSerializerCom\\XlsxDefaults\\presetCellStylesNew.xml")), CString(_T("C:\\presetCellStyles_output.bin")), pEmbeddedFontsManager, pIndexedColors, oXlsx.GetTheme(), m_oFontProcessor);
-			getDefaultTableStyles(CString(_T("D:\\Subversion\\AVS\\Sources\\TeamlabOffice\\trunk\\XlsxSerializerCom\\XlsxDefaults\\presetTableStyles.xml")), CString(_T("C:\\presetTableStyles_output.bin")), pEmbeddedFontsManager, pIndexedColors, oXlsx.GetTheme(), m_oFontProcessor);
+			getDefaultCellStyles(CString(_T("D:\\Projects\\AVS\\Sources\\TeamlabOffice\\trunk\\ServerComponents\\XlsxSerializerCom\\XlsxDefaults\\presetCellStylesNew.xml")), CString(_T("C:\\presetCellStyles_output.bin")), pEmbeddedFontsManager, pIndexedColors, oXlsx.GetTheme(), m_oFontProcessor);
+			getDefaultTableStyles(CString(_T("D:\\Projects\\AVS\\Sources\\TeamlabOffice\\trunk\\ServerComponents\\XlsxSerializerCom\\XlsxDefaults\\presetTableStyles.xml")), CString(_T("C:\\presetTableStyles_output.bin")), pEmbeddedFontsManager, pIndexedColors, oXlsx.GetTheme(), m_oFontProcessor);
 #endif
 			if(NULL != pSharedStrings)
 			{
@@ -3960,6 +3961,12 @@ namespace BinXlsxRW {
 		}
 	};
 #ifdef DEFAULT_TABLE_STYLES
+	CString WriteDefaultFileHeader(int nDataSize)
+	{
+		CString sHeader;
+		sHeader.Format(_T("%s;;%d;"), g_sFormatSignature, nDataSize);
+		return sHeader;
+	}
 	void getDefaultCellStyles(CString& sFileInput, CString& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
 	{
 		enum Types
@@ -4143,6 +4150,7 @@ namespace BinXlsxRW {
 		{
 			CFile oFile;
 			oFile.CreateFileW(sFileOutput);
+			oFile.WriteStringUTF8(WriteDefaultFileHeader(nBinBufferLen));
 			oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
 			oFile.CloseFile();
 		}
@@ -4203,6 +4211,7 @@ namespace BinXlsxRW {
 		{
 			CFile oFile;
 			oFile.CreateFileW(sFileOutput);
+			oFile.WriteStringUTF8(WriteDefaultFileHeader(nBinBufferLen));
 			oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
 			oFile.CloseFile();
 		}
@@ -4218,6 +4227,7 @@ namespace BinXlsxRW {
 		{
 			CFile oFile;
 			oFile.CreateFileW(sFileOutput);
+			oFile.WriteStringUTF8(WriteDefaultFileHeader(nBinBufferLen));
 			oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
 			oFile.CloseFile();
 		}

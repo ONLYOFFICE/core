@@ -2,6 +2,6 @@
 //1
 //0
 //1
-//106
-#define INTVER 1,0,1,106
-#define STRVER "1,0,1,106\0"
+//107
+#define INTVER 1,0,1,107
+#define STRVER "1,0,1,107\0"

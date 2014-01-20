@@ -109,7 +109,7 @@ STDMETHODIMP COdtFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLO
 }
 HRESULT COdtFile::convert(const std::wstring & srcPath, const std::wstring & dstPath)
 {
-	const boost::filesystem::wpath origin = boost::filesystem::wpath(dstPath) / L"Origin";//щаблон odt
+	const boost::filesystem::wpath origin = boost::filesystem::wpath(srcPath) / L"Origin";//щаблон odt
 	createOriginOdt(origin);
 
 	try

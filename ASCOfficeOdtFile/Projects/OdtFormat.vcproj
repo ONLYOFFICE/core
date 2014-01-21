@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\..\..\Common\AvsDocxFormat\Source\Utility;.\..\..\Common\AvsDocxFormat\Source\XML;.\..\..\Common\AvsDocxFormat\Source\Common"
+				AdditionalIncludeDirectories=".\Source\Utility;.\Source\XML;.\Source\Common"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -103,7 +103,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories=".\..\..\Common\AvsDocxFormat\Source\Utility;.\..\..\Common\AvsDocxFormat\Source\XML;.\..\..\Common\AvsDocxFormat\Source\Common"
+				AdditionalIncludeDirectories=".\Source\Utility;.\Source\XML;.\Source\Common"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"

@@ -51,7 +51,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\..\Common\ASCDocxFormat\Source\Utility;.\..\Common\ASCDocxFormat\Source\XML;.\..\Common\ASCDocxFormat\Source\Common;.\..\Common\ASCDocxFormat\Source\DocxFormat;Source;Source\OdtFormat"
+				AdditionalIncludeDirectories=".\Source\Utility;.\Source\XML;.\Source\Common;.\Source\DocxFormat;Source;Source\OdtFormat"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;STANDALONE_USE=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -80,7 +80,7 @@
 				OutputFile="$(OutDir)/$(ProjectName).dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\ASCOfficeUtils\ZLIB\zlib123dll\static32"
-				IgnoreDefaultLibraryNames="libcmt.lib"
+				IgnoreDefaultLibraryNames="LIBC.lib"
 				MergedIDLBaseFileName="_ASCOfficeOdtFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -152,7 +152,7 @@
 				Name="VCCLCompilerTool"
 				EnableIntrinsicFunctions="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories=".\..\Common;.\..\Common\ASCDocxFormat\Source\Utility;.\..\Common\ASCDocxFormat\Source\XML;.\..\Common\ASCDocxFormat\Source\Common;.\..\Common\ASCDocxFormat\Source\DocxFormat;Source;Source\OdtFormat"
+				AdditionalIncludeDirectories=".\Source\Utility;.\Source\XML;.\Source\Common;.\Source\DocxFormat;Source;Source\OdtFormat"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;STANDALONE_USE=0"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -179,7 +179,7 @@
 				OutputFile="$(OutDir)/$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\ASCOfficeUtils\ZLIB\zlib123dll\static32"
-				IgnoreDefaultLibraryNames="libcmt.lib"
+				IgnoreDefaultLibraryNames="LIBC.lib"
 				MergedIDLBaseFileName="_ASCOfficeOdtFile.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)$(TargetName).pdb"
@@ -213,7 +213,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;../Redist&quot;"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;../Redist&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration

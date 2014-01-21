@@ -37,11 +37,12 @@ namespace OOX
 		boost::replace_all(newFilename, L" ", L"_");
 		if (boost::filesystem::exists(m_filename) && !boost::filesystem::exists(newFilePath/newFilename))	
 		{
-/*			if (m_filename.extension() == L".svm")
-			{
-				ConvertSvmToImage(m_filename, replace_extension(newFilePath/newFilename, L"png"));
-			}
-			else */if (m_filename.extension() != L"")
+			//if (m_filename.extension() == L".svm")
+			//{
+			//	ConvertSvmToImage(m_filename, replace_extension(newFilePath/newFilename, L"png"));
+			//}
+			//else 
+			if (m_filename.extension() != L"")
 			{
 				boost::filesystem::copy_file(m_filename, newFilePath/newFilename);
 			}
@@ -53,7 +54,7 @@ namespace OOX
 		}
 		//if (m_filename.extension() == L".svm")
 		//	content.Default->add(replace_extension(newFilePath/newFilename, L"png"));
-		//else
+		//else	
 			content.Default->add(newFilePath/newFilename);
 	}
 

@@ -20,11 +20,11 @@
 
 #include "Resource.h"
 
-#ifdef _DEBUG
-	#pragma comment(lib, "../ASCImageStudio3/ASCGraphics/OfficeSvmFile/Debug/OfficeSvmFile.lib")
-#else
-	#pragma comment(lib, "../ASCImageStudio3/ASCGraphics/OfficeSvmFile/Release/OfficeSvmFile.lib")
-#endif
+//#ifdef _DEBUG
+//	#pragma comment(lib, "../ASCImageStudio3/ASCGraphics/OfficeSvmFile/Debug/OfficeSvmFile.lib")
+//#else
+//	#pragma comment(lib, "../ASCImageStudio3/ASCGraphics/OfficeSvmFile/Release/OfficeSvmFile.lib")
+//#endif
 
 
 #import "../Redist/ASCOfficeOdfFile.dll" rename_namespace("ASCOfficeOdfFile"), raw_interfaces_only
@@ -32,7 +32,10 @@
 // ВНИМАНИЕ:    значение 1 используется для тестирования, на выходе получаем заархивированный файл xlsx или docx
 //              значение 0 используется для релиза, так как на выходе по спецификации нам требуется распакованный package
 #ifndef STANDALONE_USE
-	#define STANDALONE_USE 1// что получаем на выходе: файл (1) или папку (0)
+	#define STANDALONE_USE 0// что получаем на входе: файл (1) или папку (0)
+#else
+	#undef STANDALONE_USE
+	#define STANDALONE_USE 0
 #endif
 
 namespace {

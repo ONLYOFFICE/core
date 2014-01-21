@@ -5,6 +5,66 @@
                 xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing"
                 xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
 
+  <xsl:template match="WorksheetSubstream" mode="legacyDrawing">
+    <xsl:variable name="position" select="position()"/>
+
+    <xsl:if test="count(OBJECTS/MsoDrawing/OfficeArtDgContainer//OfficeArtSpContainer/OfficeArtFSP[@shape_id = 202]) &gt; 0">
+      <xlsx:file name="vmlDrawing{$position}.vml">
+
+        <xml xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">
+          <o:shapelayout v:ext="edit">
+            <o:idmap v:ext="edit" data="1" />
+          </o:shapelayout>
+          <v:shapetype id="_x0000_t202" coordsize="21600,21600" o:spt="202" path="m,l,21600r21600,l21600,xe">
+            <v:stroke joinstyle="miter" />
+            <v:path gradientshapeok="t" o:connecttype="rect" />
+          </v:shapetype>
+        
+
+        <xsl:for-each select="OBJECTS/MsoDrawing/OfficeArtDgContainer//OfficeArtSpContainer/OfficeArtFSP[@shape_id = 202]">
+
+          <xsl:variable name="note_index" select="position()"></xsl:variable>
+          
+          <v:shape id="{concat('_x0000_s', @spid)}" type="#_x0000_t202" style="position:absolute; z-index:1; visibility:hidden" fillcolor="{concat('#', ../OfficeArtFOPT/OfficeArtRGFOPTE/fillColor/OfficeArtCOLORREF/@rgb)}" o:insetmode="auto">
+            <v:fill color2="{concat('#', ../OfficeArtFOPT/OfficeArtRGFOPTE/fillBackColor/OfficeArtCOLORREF/@rgb)}" />
+            <v:shadow on="t" color="black" obscured="t" />
+            <v:path o:connecttype="none" />
+            <v:textbox style="mso-direction-alt:auto">
+              <div style="text-align:left" />
+            </v:textbox>
+             <x:ClientData ObjectType="Note">
+              <x:MoveWithCells />
+              <x:SizeWithCells />
+              <!--<x:Anchor>1, 15, 0, 2, 3, 31, 4, 1</x:Anchor>-->
+               
+              <x:Anchor>
+                <xsl:value-of select="../OfficeArtClientAnchorSheet/@colL"></xsl:value-of>
+                <xsl:text>,0,</xsl:text>
+                <xsl:value-of select="../OfficeArtClientAnchorSheet/@rwT"></xsl:value-of>
+                <xsl:text>,0,</xsl:text>
+                <xsl:value-of select="../OfficeArtClientAnchorSheet/@colR"></xsl:value-of>
+                <xsl:text>,0,</xsl:text>
+                <xsl:value-of select="../OfficeArtClientAnchorSheet/@rwB"></xsl:value-of>
+                <xsl:text>,0</xsl:text>
+            </x:Anchor>
+               
+              <x:AutoFill>False</x:AutoFill>
+              <x:Row>
+                <xsl:value-of select="../../../../../../Note[$note_index]/NoteSh/@row"></xsl:value-of>
+              </x:Row>
+              <x:Column>
+                <xsl:value-of select="../../../../../../Note[$note_index]/NoteSh/@col"></xsl:value-of>
+              </x:Column>
+            </x:ClientData>
+          </v:shape>
+        </xsl:for-each>
+
+        </xml>
+
+      </xlsx:file>
+    </xsl:if>
+  </xsl:template>
+
   <xsl:template match="WorksheetSubstream" mode="drawing">
     <xsl:variable name="position" select="position()"/>
     <!--<xsl:variable name="position" select="count(preceding-sibling::WorksheetSubstream[OBJECTS]) + count(preceding-sibling::ChartSheetSubstream) + 1"/>-->
@@ -119,13 +179,13 @@
           <!-- picture -->
           <!--<xsl:when test="(OfficeArtFOPT/OfficeArtRGFOPTE/fillType/@type = 'msofillPicture') or OfficeArtFOPT/OfficeArtRGFOPTE/pib">-->
           <xsl:when test="$ftcmo_ot = 8">
+            <xsl:variable name="object_local_id" select="count($object/preceding-sibling::OBJ/Obj/FtCmo[@ot = 8 or @ot = 5]) + 1"/>
             <xdr:pic>
               <xdr:nvPicPr>
-                <xdr:cNvPr descr="" id="{OfficeArtFSP/@spid}" name="{concat('Picture ', $sp_position)}" />
+                <xdr:cNvPr descr="" id="{OfficeArtFSP/@spid}" name="{concat('Picture ', $object_local_id)}" />
                 <xdr:cNvPicPr />
               </xdr:nvPicPr>
               <xdr:blipFill>
-                <xsl:variable name="object_local_id" select="count($object/preceding-sibling::OBJ) + 1"/>
                 <a:blip r:embed="rId{$object_local_id}" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/>
                 <a:stretch>
                   <a:fillRect />
@@ -172,7 +232,7 @@
                 <a:graphicData uri="{$uri}">
                   <xsl:choose>
                     <xsl:when test="$object/self::OBJ">
-                      <xsl:variable name="object_local_id" select="count($object/preceding-sibling::OBJ) + 1"/>
+                      <xsl:variable name="object_local_id" select="count($object/preceding-sibling::OBJ/Obj/FtCmo[@ot = 5 or @ot = 8]) + 1"/>
                       <c:chart r:id="rId{$object_local_id}" xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/>
                     </xsl:when>
                     <xsl:when test="$object/self::TEXTOBJECT">
@@ -187,6 +247,7 @@
         </xsl:choose>
       </xdr:twoCellAnchor>
     </xsl:if>
+    
   </xsl:template>
 
   <xsl:template name="drawings_rels">
@@ -204,45 +265,42 @@
 
               <xsl:for-each select="OBJ">
 
-                <xsl:variable name="object_local_id" select="count(preceding-sibling::OBJ) + 1"/>
+                <xsl:variable name="object_id" select="count(preceding-sibling::OBJ) + 1"/>
+                <xsl:variable name="object_local_id" select="count(preceding-sibling::OBJ/Obj/FtCmo[@ot = 5 or @ot = 8]) + 1"/>
                 <xsl:variable name="object_id_chart" select="count(preceding-sibling::OBJ/Obj/FtCmo[@ot = 5]) + count(../../preceding-sibling::WorksheetSubstream/OBJECTS/OBJ/Obj/FtCmo[@ot = 5]) + count(../../preceding-sibling::ChartSheetSubstream) + 1"/>
                 <xsl:variable name="object_id_image" select="count(preceding-sibling::OBJ/Obj/FtCmo[@ot = 8]) + 1"/>
-                <xsl:variable name="pib_op" select="../MsoDrawing/OfficeArtDgContainer//OfficeArtSpContainer[OfficeArtClientAnchorSheet][position() = $object_local_id]/OfficeArtFOPT//OfficeArtRGFOPTE/pib/@op"/>
+                <xsl:variable name="pib_op" select="../MsoDrawing/OfficeArtDgContainer//OfficeArtSpContainer[OfficeArtClientAnchorSheet][position() = $object_id]/OfficeArtFOPT//OfficeArtRGFOPTE/pib/@op"/>
 
-                <!--
-                <test>
-                  <xsl:value-of select="$pib_op" />
-                </test>
-                -->
+                <xsl:if test="Obj/FtCmo[@ot = 5 or @ot = 8]">
+                  <Relationship Id="rId{$object_local_id}">
 
-                <Relationship Id="rId{$object_local_id}">
+                    <xsl:if test="Obj/FtCmo/@ot = 5">
+                      <xsl:attribute name="Type">
+                        <xsl:value-of select="'http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart'" />
+                      </xsl:attribute>
+                      <xsl:attribute name="Target">
+                        <xsl:text>../charts/chart</xsl:text>
+                        <xsl:value-of select="$object_id_chart"/>
+                        <xsl:text>.xml</xsl:text>
+                      </xsl:attribute>
+                    </xsl:if>
 
-                  <xsl:if test="Obj/FtCmo/@ot = 5">
-                    <xsl:attribute name="Type">
-                      <xsl:value-of select="'http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart'" />
-                    </xsl:attribute>
-                    <xsl:attribute name="Target">
-                      <xsl:text>../charts/chart</xsl:text>
-                      <xsl:value-of select="$object_id_chart"/>
-                      <xsl:text>.xml</xsl:text>
-                    </xsl:attribute>
-                  </xsl:if>
+                    <xsl:variable name="image_ext" select="../../../GlobalsSubstream/MSODRAWINGGROUP/MsoDrawingGroup/OfficeArtDggContainer/OfficeArtBStoreContainer/OfficeArtBStoreContainerFileBlock[(@bin_data_id + 1) = $pib_op]/@type"/>
+                    <xsl:if test="Obj/FtCmo/@ot = 8 and $image_ext">
+                      <xsl:attribute name="Type">
+                        <xsl:value-of select="'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image'" />
+                      </xsl:attribute>
+                      <xsl:attribute name="Target">
+                        <xsl:text>../media/image</xsl:text>
+                        <!-- <xsl:value-of select="$object_id_image"/> -->
+                        <xsl:value-of select="$pib_op"/>
+                        <xsl:text>.</xsl:text>
+                        <xsl:value-of select="$image_ext"/>
+                      </xsl:attribute>
+                    </xsl:if>
 
-                  <xsl:variable name="image_ext" select="../../../GlobalsSubstream/MSODRAWINGGROUP/MsoDrawingGroup/OfficeArtDggContainer/OfficeArtBStoreContainer/OfficeArtBStoreContainerFileBlock[(@bin_data_id + 1) = $pib_op]/@type"/>
-                  <xsl:if test="Obj/FtCmo/@ot = 8 and $image_ext">
-                    <xsl:attribute name="Type">
-                      <xsl:value-of select="'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image'" />
-                    </xsl:attribute>
-                    <xsl:attribute name="Target">
-                      <xsl:text>../media/image</xsl:text>
-                      <!-- <xsl:value-of select="$object_id_image"/> -->
-                      <xsl:value-of select="$pib_op"/>
-                      <xsl:text>.</xsl:text>
-                      <xsl:value-of select="$image_ext"/>
-                    </xsl:attribute>
-                  </xsl:if>
-
-                </Relationship>
+                  </Relationship>
+                </xsl:if>
 
               </xsl:for-each>
 

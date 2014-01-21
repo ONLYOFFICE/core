@@ -62,9 +62,6 @@ public:
 			return false;
 		}
 
-		// fix
-		//proc.mandatory<IVAXIS>();
-
 		proc.mandatory<DVAXIS>();
 		proc.optional<SERIESAXIS>();
 		return true;

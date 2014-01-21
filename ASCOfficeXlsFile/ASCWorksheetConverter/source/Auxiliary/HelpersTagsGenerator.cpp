@@ -47,8 +47,7 @@ void HelpersTagsGenerator::GenIndexedColors(MSXML2::IXMLDOMElementPtr helpers_ta
 		L"3366FF", L"33CCCC", L"99CC00", L"FFCC00", L"FF9900", L"FF6600", L"666699", L"969696",
 		L"003366", L"339966", L"003300", L"333300", L"993300", L"993366", L"333399", L"333333"
 	};
-
-
+	
 	MSXML2::IXMLDOMDocumentPtr doc = document_root_->GetownerDocument();
 	MSXML2::IXMLDOMElementPtr indexed_colors_tag = XMLSTUFF::makeXMLNode(L"indexedColors", helpers_tag);
 	for (int i = 0; i < 64; i++)
@@ -57,7 +56,6 @@ void HelpersTagsGenerator::GenIndexedColors(MSXML2::IXMLDOMElementPtr helpers_ta
 		indexed_colors_tag->appendChild(rgb_color_tag);
 		rgb_color_tag->setAttribute(L"rgb", color_strings[i].c_str());
 	}
-
 }
 
 

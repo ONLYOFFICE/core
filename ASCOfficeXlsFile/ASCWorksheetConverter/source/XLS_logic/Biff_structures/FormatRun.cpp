@@ -34,6 +34,7 @@ void FormatRun::store(CFRecord& record)
 void FormatRun::load(CFRecord& record)
 {
 	record >> ich >> ifnt;
+	WORD _ich = ich;
 }
 
 

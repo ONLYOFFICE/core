@@ -8,12 +8,13 @@
       <xsl:call-template name="xl_rels"/>
       <xsl:apply-templates select="GlobalsSubstream/FORMATTING"/>
       <xsl:apply-templates select="GlobalsSubstream/SHAREDSTRINGS/SST[@cstTotal != 0]"/>
-      <!--<xsl:apply-templates select="WorksheetSubstream" mode="comments"/>-->
+      <xsl:apply-templates select="WorksheetSubstream" mode="comments"/>
 
       <xsl:if test="WorksheetSubstream[OBJECTS] | ChartSheetSubstream">
         <xlsx:dir name="drawings">
           <xsl:call-template name="drawings_rels"/>
           <xsl:apply-templates select="WorksheetSubstream[OBJECTS] | ChartSheetSubstream" mode="drawing"/>
+          <xsl:apply-templates select="WorksheetSubstream[OBJECTS]" mode="legacyDrawing"/>
         </xlsx:dir>
         <xlsx:dir name="charts">
           <xsl:apply-templates select="WorksheetSubstream/OBJECTS/CHART | ChartSheetSubstream" mode="charts"/>

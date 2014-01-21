@@ -49,6 +49,7 @@ void FtNts::load(CFRecord& record)
 	GUID guid_num;
 	record >> guid_num >> fSharedNote;
 	guid = STR::guid2bstr(guid_num);
+	record.skipNBytes(4);
 }
 
 

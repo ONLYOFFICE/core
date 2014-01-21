@@ -23,6 +23,7 @@
         <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
         <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
         <Default Extension="xml" ContentType="application/xml"/>
+        <Default Extension="vml" ContentType="application/vnd.openxmlformats-officedocument.vmlDrawing" />
         <xsl:for-each select="WorkbookStreamObject">
           <xsl:if test="WorksheetSubstream/CUSTOMVIEW/Pls or WorksheetSubstream/PAGESETUP/Pls or ChartSheetSubstream/CUSTOMVIEW/Pls or ChartSheetSubstream/PAGESETUP/Pls">
             <Default Extension="bin" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.printerSettings"/>
@@ -90,7 +91,7 @@
         <xsl:if test="CUSTOMVIEW/Pls or PAGESETUP/Pls or HLINK or Note or OBJECTS or FEAT11">
           <xlsx:file name="sheet{position()}.xml.rels">
             <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-              <xsl:for-each select="OBJECTS[1]">   <!-- Must not run more than once -->
+              <xsl:for-each select="OBJECTS[1]">  <!-- Must not run more than once -->
                 <Relationship>
                   <xsl:attribute name="Id">
                     <xsl:text>rId</xsl:text>
@@ -109,6 +110,15 @@
                   </xsl:attribute>
                   <xsl:attribute name="Type">http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments</xsl:attribute>
                   <xsl:attribute name="Target">../comments<xsl:value-of select="count(../preceding-sibling::WorksheetSubstream[Note]) + 1"/>.xml</xsl:attribute>
+                </Relationship>
+
+                <Relationship>
+                  <xsl:attribute name="Id">
+                    <xsl:text>rId</xsl:text>
+                    <xsl:value-of select="1 + $ws_index + count(../PAGESETUP/Pls) + count(../CUSTOMVIEW/Pls) + count(../OBJECTS/OBJ/Obj/FtCmo[@ot = 25]) + count(../preceding-sibling::HLINK/HLink/HyperlinkObject[@hlstmfHasMoniker = 'true'])"/>
+                  </xsl:attribute>
+                  <xsl:attribute name="Type">http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing</xsl:attribute>
+                  <xsl:attribute name="Target">../drawings/vmlDrawing<xsl:value-of select="$ws_index"/>.vml</xsl:attribute>
                 </Relationship>
               </xsl:for-each>
               

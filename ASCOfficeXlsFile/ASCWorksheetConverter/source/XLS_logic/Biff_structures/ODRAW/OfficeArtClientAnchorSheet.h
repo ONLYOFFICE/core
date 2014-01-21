@@ -36,6 +36,11 @@ private:
 	short dxR;
 	XLS::RwU rwB;
 	short dyB;
+
+	DWORD _dxL;
+	DWORD _dyT;
+	DWORD _dxR;
+	DWORD _dyB;
 };
 
 typedef boost::shared_ptr<OfficeArtClientAnchorSheet> OfficeArtClientAnchorSheetPtr;

@@ -416,7 +416,9 @@ const std::wstring toStdWString(const std::string& ansi_string, const UINT code_
 {
 	unsigned int bufferSize = (unsigned int)ansi_string.length() + 1;
 	boost::scoped_array<wchar_t> pBuffer(new wchar_t[bufferSize]);
-	MultiByteToWideChar(code_page, 0, ansi_string.c_str(), (int)ansi_string.length(), pBuffer.get(), bufferSize);
+	UINT code = code_page == 1251 ? 1252 : code_page ;
+
+	MultiByteToWideChar(/*code_page*/code, 0, ansi_string.c_str(), (int)ansi_string.length(), pBuffer.get(), bufferSize);
 	pBuffer[bufferSize - 1] = L'\0';
 	return pBuffer.get();
 }

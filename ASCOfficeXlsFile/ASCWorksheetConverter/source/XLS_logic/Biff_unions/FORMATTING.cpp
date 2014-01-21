@@ -38,7 +38,8 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 	proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally Font follows by Format)
 	proc.mandatory<XFS>();
 	proc.repeated<DXF>(0, 0);
-	proc.mandatory<STYLES>();
+	//proc.mandatory<STYLES>();
+	proc.optional<STYLES>();
 	proc.optional<TABLESTYLES>();
 	proc.optional<Palette>();
 	proc.optional<ClrtClient>();

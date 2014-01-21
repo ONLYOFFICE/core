@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "GLOBALS.h"
+#include <XLS_logic/Biff_records/Protect.h>
 #include <XLS_logic/Biff_records/CalcMode.h>
 #include <XLS_logic/Biff_records/CalcCount.h>
 #include <XLS_logic/Biff_records/CalcRefMode.h>
@@ -48,7 +49,8 @@ const bool GLOBALS::loadContent(BinProcessor& proc)
 // 	{
 // 		return false;
 // 	}
-	proc.optional<CalcMode>(); // OpenOffice Calc stored files workaround (CalcMode is mandatory according to [MS-XLS])
+	proc.optional<Protect>();
+	proc.optional<CalcMode>(); // OpenOffice Calc stored files workaround (CalcMode is mandatory according to [MS-XLS])	
 	proc.mandatory<CalcCount>();
 	proc.mandatory<CalcRefMode>();
 	proc.mandatory<CalcIter>();

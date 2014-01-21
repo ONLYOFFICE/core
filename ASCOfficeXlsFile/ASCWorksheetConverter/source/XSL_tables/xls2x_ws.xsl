@@ -65,6 +65,7 @@
         <xsl:call-template name="cellWatches"/>
 
         <xsl:call-template name="drawing"/>
+        <xsl:call-template name="legacyDrawing"/>
         <xsl:call-template name="tableParts"/>
 
         <!-- TODO: Implement the rest -->
@@ -397,23 +398,19 @@
         <xsl:value-of select="count(preceding-sibling::CUSTOMVIEW/Pls) + 1 + count(../HLINK/HLink/HyperlinkObject[@hlstmfHasMoniker = 'true'])"/>
       </xsl:when>
       <xsl:when test="self::PAGESETUP">
-        <xsl:value-of select="count(preceding-sibling::PAGESETUP/Pls) + 1 + count(../CUSTOMVIEW/Pls) + 
-                              count(../HLINK/HLink/HyperlinkObject[@hlstmfHasMoniker = 'true'])"/>
+        <xsl:value-of select="count(preceding-sibling::PAGESETUP/Pls) + 1 + count(../CUSTOMVIEW/Pls) + count(../HLINK/HLink/HyperlinkObject[@hlstmfHasMoniker = 'true'])"/>
       </xsl:when>
       <!-- Note should occur only once-->
       <xsl:when test="self::Note">
-        <xsl:value-of select="1 + 0 + count(../PAGESETUP/Pls) + count(../CUSTOMVIEW/Pls) + 
-                              count(../HLINK/HLink/HyperlinkObject[@hlstmfHasMoniker = 'true'])"/>
+        <xsl:value-of select="1 + 0 + count(../PAGESETUP/Pls) + count(../CUSTOMVIEW/Pls) + count(../HLINK/HLink/HyperlinkObject[@hlstmfHasMoniker = 'true'])"/>
       </xsl:when>
       <!-- OBJECTS should occur only once -->
       <xsl:when test="self::OBJECTS">
-        <xsl:value-of select="1 + $Note_present + count(../PAGESETUP/Pls) + count(../CUSTOMVIEW/Pls) + 
-                              count(../HLINK/HLink/HyperlinkObject[@hlstmfHasMoniker = 'true'])"/>
+        <xsl:value-of select="1 + $Note_present + count(../PAGESETUP/Pls) + count(../CUSTOMVIEW/Pls) + count(../HLINK/HLink/HyperlinkObject[@hlstmfHasMoniker = 'true'])"/>
       </xsl:when>
       <xsl:when test="self::ChartSheetSubstream">
         <xsl:value-of select="1 + count(PAGESETUP/Pls) + count(CUSTOMVIEW/Pls)"/>
-      </xsl:when>      
-
+      </xsl:when>
       <xsl:otherwise>0</xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -1341,7 +1338,7 @@
   </xsl:template>
 
   <xsl:template name="mergeCells">
-    <xsl:if test="MergeCells">
+    <xsl:if test="MergeCells and (MergeCells/@cmcs &gt; 0)">
       <mergeCells count="{MergeCells/@cmcs}" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
         <xsl:for-each select="MergeCells/Ref8">
           <mergeCell ref="{@name}"/>
@@ -1871,11 +1868,26 @@
     </xsl:for-each>
   </xsl:template>
 
+  <xsl:template name="legacyDrawing">
+    <!-- Only one <legacyDrawing> tag is necessary per sheet -->
+    
+    <xsl:variable name="commentObjects" select="OBJECTS/OBJ/Obj/FtCmo[@ot = 25]"></xsl:variable>
+    <xsl:if test="$commentObjects">      
+      <legacyDrawing xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+        <xsl:attribute name="r:id">
+          <xsl:text>rId</xsl:text>
+          <xsl:value-of select="1 + position() + count(PAGESETUP/Pls) + count(CUSTOMVIEW/Pls) + count(OBJECTS/OBJ/Obj/FtCmo[@ot = 25]) + count(preceding-sibling::HLINK/HLink/HyperlinkObject[@hlstmfHasMoniker = 'true'])"/>
+        </xsl:attribute>
+      </legacyDrawing>
+    </xsl:if>    
+    
+  </xsl:template>
+
   <xsl:template name="tableParts">
     
       <xsl:variable name="countTables" select="count(FEAT11/Feature11)" />      
 
-      <xsl:if test="$countTables > 0">
+      <xsl:if test="$countTables &gt; 0">
         <tableParts xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
           <xsl:attribute name="count">
             <xsl:value-of select="$countTables"/>

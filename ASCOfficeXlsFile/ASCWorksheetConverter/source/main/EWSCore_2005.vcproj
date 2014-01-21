@@ -5332,6 +5332,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\XLS_logic\Biff_structures\ControlInfo.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\ControlInfo.h"
+					>
+				</File>
+				<File
 					RelativePath="..\XLS_logic\Biff_structures\DropDownObjId.cpp"
 					>
 				</File>
@@ -6164,6 +6172,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\XLS_logic\Biff_structures\Run.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\Run.h"
+					>
+				</File>
+				<File
 					RelativePath="..\XLS_logic\Biff_structures\SDContainer.cpp"
 					>
 				</File>
@@ -6313,6 +6329,22 @@
 				</File>
 				<File
 					RelativePath="..\XLS_logic\Biff_structures\TableFeatureType.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\TxOLastRun.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\TxOLastRun.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\TxORuns.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XLS_logic\Biff_structures\TxORuns.h"
 					>
 				</File>
 				<File

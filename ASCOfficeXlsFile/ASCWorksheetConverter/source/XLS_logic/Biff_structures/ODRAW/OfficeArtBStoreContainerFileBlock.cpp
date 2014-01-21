@@ -58,7 +58,7 @@ void OfficeArtBStoreContainerFileBlock::readCompressedData(XLS::CFRecord& record
 
 void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 {
-OfficeArtRecordHeader rh_child;
+	OfficeArtRecordHeader rh_child;
 	record >> rh_child;	
 	record.RollRdPtrBack(rh_child.size());
 

@@ -24,13 +24,13 @@ void OfficeArtClientAnchorSheet::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_
 	xml_tag->setAttribute(L"fSize", fSize);
 
 	xml_tag->setAttribute(L"colL", colL);
-	xml_tag->setAttribute(L"dxL", dxL);
+	xml_tag->setAttribute(L"dxL", _dxL);
 	xml_tag->setAttribute(L"rwT", rwT);
-	xml_tag->setAttribute(L"dyT", dyT);
+	xml_tag->setAttribute(L"dyT", _dyT);
 	xml_tag->setAttribute(L"colR", colR);
-	xml_tag->setAttribute(L"dxR", dxR);
+	xml_tag->setAttribute(L"dxR", _dxR);
 	xml_tag->setAttribute(L"rwB", rwB);
-	xml_tag->setAttribute(L"dyB", dyB);
+	xml_tag->setAttribute(L"dyB", _dyB);
 }
 
 
@@ -66,6 +66,10 @@ void OfficeArtClientAnchorSheet::loadFields(XLS::CFRecord& record)
 	fMove = GETBIT(flags, 0);
 	fSize = GETBIT(flags, 1);
 
+	_dxL = dxL * 595;
+	_dyT = dyT * 744;
+	_dxR = dxR * 595;
+	_dyB = dyB * 744;
 }
 
 

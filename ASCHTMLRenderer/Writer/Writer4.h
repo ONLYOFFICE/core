@@ -978,6 +978,8 @@ namespace NSHtmlRenderer
 			*/
 
 			CheckVectorGraphics();
+			m_oSmartText.DumpLine();
+			SetTransformToDocument(true);
 
 			bool bIsClip = (m_oSVGWriter.m_oClipMetafile.GetPosition() > 0) ? true : false;
 			if (bIsClip)
@@ -994,8 +996,11 @@ namespace NSHtmlRenderer
 		AVSINLINE void WritePattern(IUnknown* pPattern, CTileInfo& oTile)
 		{
 			CheckVectorGraphics();
-			NSHtmlRenderer::CImageInfo oInfo = GenerateImageID(pPattern);
+			m_oSmartText.DumpLine();
+			SetTransformToDocument(true);
 
+			NSHtmlRenderer::CImageInfo oInfo = GenerateImageID(pPattern);
+			
 			bool bIsClip = (m_oSVGWriter.m_oClipMetafile.GetPosition() > 0) ? true : false;
 			if (bIsClip)
 				m_oPage.Write(m_oSVGWriter.m_oClipMetafile);
@@ -1016,6 +1021,8 @@ namespace NSHtmlRenderer
 			}
 
 			CheckVectorGraphics();
+			m_oSmartText.DumpLine();
+			SetTransformToDocument(true);
 
 			bool bIsClip = (m_oSVGWriter.m_oClipMetafile.GetPosition() > 0) ? true : false;
 			if (bIsClip)

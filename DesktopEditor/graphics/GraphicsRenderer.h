@@ -192,6 +192,23 @@ public:
 	void CreateFromBgraFrame(CBgraFrame* pFrame);
 	void Create(BYTE* pPixels, const Aggplus::CDoubleRect& oRect, LONG lWidthControl, LONG lHeightControl, Aggplus::CDIB* pDib = NULL);
 	void CreateFlip(BYTE* pPixels, const Aggplus::CDoubleRect& oRect, LONG lWidthControl, LONG lHeightControl, Aggplus::CDIB* pDib = NULL);
+
+	inline Aggplus::CMatrix* GetFullTransform()
+	{
+		return m_pRenderer->GetFullTransform();
+	}
+	inline void SetCoordTransformOffset(double dOffsetX, double dOffsetY)
+	{
+		Aggplus::CMatrix* pCoord = m_pRenderer->GetCoordTransform();
+		pCoord->m_agg_mtx.tx = dOffsetX;
+		pCoord->m_agg_mtx.ty = dOffsetY;
+
+		m_pRenderer->CalculateFullTransform();
+	}
+	inline void CalculateFullTransform()
+	{
+		m_pRenderer->CalculateFullTransform();
+	}
 };
 
 #endif // _BUILD_GRAPHICS_RENDERER_H_

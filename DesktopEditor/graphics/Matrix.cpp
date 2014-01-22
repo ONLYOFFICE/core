@@ -203,4 +203,16 @@ namespace Aggplus
 			dst[i].Y = (float)y;
 		}
 	}
+
+	bool CMatrix::IsIdentity() const
+	{
+		return m_agg_mtx.is_identity();
+	}
+	bool CMatrix::IsIdentity2() const
+	{
+		return agg::is_equal_eps(m_agg_mtx.sx,  1.0, agg::affine_epsilon) &&
+               agg::is_equal_eps(m_agg_mtx.shy, 0.0, agg::affine_epsilon) &&
+               agg::is_equal_eps(m_agg_mtx.shx, 0.0, agg::affine_epsilon) && 
+               agg::is_equal_eps(m_agg_mtx.sy,  1.0, agg::affine_epsilon);
+	}
 }

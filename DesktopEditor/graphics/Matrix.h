@@ -39,6 +39,8 @@ public:
 	Status GetElements(double* m) const;
 
 	void Reset();
+	bool IsIdentity() const;
+	bool IsIdentity2() const;
 
 	const CMatrix& operator=(const CMatrix& Src);
 

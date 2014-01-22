@@ -251,6 +251,7 @@ class CGraphics
 	friend class CBrushLinearGradient;
 	friend class CBrushTexture;
 	friend class CImage;
+	friend class CGraphicsRenderer;
 
 protected:
 	BYTE* m_pPixels;
@@ -378,6 +379,9 @@ public:
 
 	void CalculateFullTransform();
 	bool IsClip();
+
+	inline Aggplus::CMatrix* GetFullTransform() { return &m_oFullTransform; }
+	inline Aggplus::CMatrix* GetCoordTransform() { return &m_oCoordTransform; }
 
 protected:
 

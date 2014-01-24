@@ -40,7 +40,7 @@
 #include <atlctl.h>
 #include <atlhost.h>
 
-#include "atldefine.h"
+#include "../Common/atldefine.h"
 
 using namespace ATL;
 
@@ -53,34 +53,30 @@ using namespace ATL;
 #define new DEBUG_NEW
 #endif
 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeDocFile.dll"						rename_namespace("AVSOfficeDocFile"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeDocxFile.dll"						rename_namespace("AVSOfficeDocxFile"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeHtmlFile.dll"						rename_namespace("AVSOfficeHtmlFile"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeOdtFile.dll"						rename_namespace("AVSOfficeOdtFile"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeRtfFile.dll"						rename_namespace("AVSOfficeRtfFile"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeTxtFile.dll"						rename_namespace("AVSOfficeTxtFile"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeImageFile.dll"					rename_namespace("AVSOfficeImageFile"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficePDFFile.dll"						rename_namespace("AVSOfficePDFFile"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeXlsFile.dll"						rename_namespace("AVSOfficeXlsFile"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeEpubFile.dll"						rename_namespace("OfficeEpub"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeDjVuFile.dll"						rename_namespace("OfficeDjVu"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeFB2File.dll"						rename_namespace("OfficeFB2"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSSWFRenderer.dll"						rename_namespace("FlashStudio"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeWSHtmlFile.dll"					rename_namespace("WSHtmlFile"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeDocxRenderer.dll"					rename_namespace("DocxRenderer"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSHTMLRenderer.dll"						rename_namespace("HTMLRenderer"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeXPSFile.dll"						rename_namespace("OfficeXPS"), raw_interfaces_only 
+#import "../Redist/ASCOfficeDocFile.dll"						rename_namespace("AVSOfficeDocFile"), raw_interfaces_only 
+#import "../Redist/ASCOfficeDocxFile.dll"						rename_namespace("AVSOfficeDocxFile"), raw_interfaces_only 
+#import "../Redist/ASCOfficeHtmlFile.dll"						rename_namespace("AVSOfficeHtmlFile"), raw_interfaces_only 
+#import "../Redist/ASCOfficeOdtFile.dll"						rename_namespace("AVSOfficeOdtFile"), raw_interfaces_only 
+#import "../Redist/ASCOfficeRtfFile.dll"						rename_namespace("AVSOfficeRtfFile"), raw_interfaces_only 
+#import "../Redist/ASCOfficeTxtFile.dll"						rename_namespace("AVSOfficeTxtFile"), raw_interfaces_only 
+#import "../Redist/ASCOfficePDFFile.dll"						rename_namespace("AVSOfficePDFFile"), raw_interfaces_only 
+#import "../Redist/ASCOfficeXlsFile.dll"						rename_namespace("AVSOfficeXlsFile"), raw_interfaces_only 
+#import "../Redist/ASCOfficeEpubFile.dll"						rename_namespace("OfficeEpub"), raw_interfaces_only 
+#import "../Redist/ASCOfficeDjVuFile.dll"						rename_namespace("OfficeDjVu"), raw_interfaces_only 
+#import "../Redist/ASCOfficeFB2File.dll"						rename_namespace("OfficeFB2"), raw_interfaces_only 
+#import "../Redist/ASCOfficeWSHtmlFile.dll"						rename_namespace("WSHtmlFile"), raw_interfaces_only 
+#import "../Redist/ASCOfficeDocxRenderer.dll"					rename_namespace("DocxRenderer"), raw_interfaces_only 
+#import "../Redist/ASCHTMLRenderer.dll"							rename_namespace("HTMLRenderer"), raw_interfaces_only 
+#import "../Redist/ASCOfficeXPSFile.dll"						rename_namespace("OfficeXPS"), raw_interfaces_only 
 
-#import "../../../Redist/AVSGraphics.dll"											rename_namespace("AVSGraphics"), raw_interfaces_only 
-//#import "../../../Redist/AVSOfficeStudio/AVSOfficeEditor.dll"						rename_namespace("AVSOfficeEditor"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficePPTXFile.dll"						rename_namespace("AVSOfficePPTXFile"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficePDFWriter.dll"					rename_namespace("AVSOfficePDFWriter"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeFOFile.dll"						rename_namespace("AVSOfficeFOFile"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficePPTFile.dll"						rename_namespace("AVSOfficePPTFile"), raw_interfaces_only 
-#import "../../../Redist/AVSOfficeStudio/AVSOfficeOdpFile.dll"						rename_namespace("AVSOfficeOdpFile"), raw_interfaces_only 
-#import "../../../Redist/AVSMediaCore3.dll"											named_guids rename_namespace("MediaCore"), exclude("tagRECT")
-#import "../../../Redist/AVSMediaFormatSettings3.dll"								named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
-#import "../../../Redist/AVSImageStudio3.dll"										rename_namespace("ImageStudio")
-#import "../../../Redist/AVSOfficeStudio/AVSEBOOKWriter.dll"						rename_namespace("EBOOKWriter"), raw_interfaces_only 
+#import "../Redist/ASCGraphics.dll"								rename_namespace("AVSGraphics"), raw_interfaces_only 
+#import "../Redist/ASCOfficePPTXFile.dll"						rename_namespace("AVSOfficePPTXFile"), raw_interfaces_only 
+#import "../Redist/ASCOfficePDFWriter.dll"						rename_namespace("AVSOfficePDFWriter"), raw_interfaces_only 
+#import "../Redist/ASCOfficePPTFile.dll"						rename_namespace("AVSOfficePPTFile"), raw_interfaces_only 
+#import "../Redist/ASCOfficeOdfFile.dll"						rename_namespace("AVSOfficeOdfFile"), raw_interfaces_only 
+#import "../Redist/ASCMediaCore3.dll"							named_guids rename_namespace("MediaCore"), exclude("tagRECT")
+#import "../Redist/ASCMediaFormatSettings3.dll"					named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
+#import "../Redist/ASCImageStudio3.dll"							rename_namespace("ImageStudio")
+#import "../Redist/ASCEBOOKWriter.dll"							rename_namespace("EBOOKWriter"), raw_interfaces_only 
 
 #define _USE_MATH_DEFINES

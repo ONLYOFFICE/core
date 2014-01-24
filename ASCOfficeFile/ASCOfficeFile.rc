@@ -9,7 +9,7 @@
 //
 #include "winres.h"
 #define COMPONENT_NAME "OfficeFile"
-#include "../../../../Common/FileInfo.h"
+#include "../Common/FileInfo.h"
 #include "version.h"
 
 /////////////////////////////////////////////////////////////////////////////

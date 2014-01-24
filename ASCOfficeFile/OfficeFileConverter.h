@@ -1,14 +1,13 @@
 #pragma once
 #include "OfficeFileEvents.h"
-#include "..\Common\OfficeFileTemplate.h"
-#include "StringUtils.h"
-#include "MediaFormatDefine.h"
+#include "../Common/OfficeFileTemplate.h"
+#include "../Common/StringUtils.h"
+#include "../Common/MediaFormatDefine.h"
 #include "StorageConverters.h"
 #include "../Common/RSA/XMLDecoder.h"
-#include "OfficeRendererTemplate.h"
-#include "GdiPlusEx.h"
+#include "../Common/GdiPlusEx.h"
 
-#define AVS_REMOVE_REG
+//#define AVS_REMOVE_REG
 #ifdef AVS_REMOVE_REG
 #include "Registration.h"
 #endif
@@ -89,8 +88,7 @@ private: int m_nFileType;
 private: int m_nOpenFileType;
 private: CString m_sDrawingXML;
 private: CString m_sMetadata;
-private: AVSGraphics::IAVSDocumentPainter* m_piOfficeViewer;
-private: AVSGraphics::IAVSDocumentRenderer* m_piCommandsRenderer;
+private: AVSGraphics::IASCDocumentRenderer* m_piCommandsRenderer;
 private: CString m_sWatermark;
 
 private: bool m_bIsInternalTemDir;
@@ -99,7 +97,7 @@ private: CString m_sRootTempDirectory; //директория в которой размещена темповая
 
 private: CRITICAL_SECTION m_csThread;
 private: StorageConverters m_oStorageConverters;
-private: CCommandRendererEvents< AVSGraphics::_IAVSDocumentRendererEvents, CAVSOfficeFileConverter >* m_oCommandRendererEvent;
+private: CCommandRendererEvents< AVSGraphics::_IASCDocumentRendererEvents, CAVSOfficeFileConverter >* m_oCommandRendererEvent;
 private: LPSTREAM m_pStream;
 private: long m_nStatus; //CONVERTER_IDLE - свободен; CONVERTER_WORK - занят
 #ifdef AVS_REMOVE_REG
@@ -120,9 +118,8 @@ public:
 	CAVSOfficeFileConverter():m_piCommandsRenderer(NULL),m_oCommandRendererEvent(NULL),m_piDecoderKey(NULL)
 	{
 		m_sWatermark = "";
-		m_piOfficeViewer = NULL;
 		m_piSaveRenderer = NULL;
-		CoCreateInstance( __uuidof(AVSGraphics::CAVSDocumentRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IAVSDocumentRenderer), (void **)(&m_piCommandsRenderer)  );
+		CoCreateInstance( __uuidof(AVSGraphics::CASCDocumentRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IASCDocumentRenderer), (void **)(&m_piCommandsRenderer)  );
 
 		m_hViewerStop = CreateEvent( NULL, FALSE, FALSE, NULL);
 #ifdef AVS_REMOVE_REG
@@ -130,7 +127,7 @@ public:
 #endif
 		Clear();
 		m_nFileType = AVS_OFFICESTUDIO_FILE_UNKNOWN;
-		m_oCommandRendererEvent = new CCommandRendererEvents< AVSGraphics::_IAVSDocumentRendererEvents, CAVSOfficeFileConverter >(this);
+		m_oCommandRendererEvent = new CCommandRendererEvents< AVSGraphics::_IASCDocumentRendererEvents, CAVSOfficeFileConverter >(this);
 		m_oCommandRendererEvent->AddRef();
 	}
 	__event __interface _IAVSOfficeFileConverterEvents;
@@ -318,7 +315,7 @@ public:
 		if( AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nOpenFileType && true == bDisplay )
 		{
 			RELEASEINTERFACE( m_piCommandsRenderer );
-			CoCreateInstance( __uuidof(AVSGraphics::CAVSDocumentRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IAVSDocumentRenderer), (void **)(&m_piCommandsRenderer)  );
+			CoCreateInstance( __uuidof(AVSGraphics::CASCDocumentRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IASCDocumentRenderer), (void **)(&m_piCommandsRenderer)  );
 			AVSOfficePDFFile::IPDFFile* piPdfFile = NULL;	
 			piConverter->QueryInterface( __uuidof(AVSOfficePDFFile::IPDFFile), (void**)&piPdfFile );
 			if( NULL != piPdfFile )
@@ -339,7 +336,7 @@ public:
 		{
 			if( NULL != m_piCommandsRenderer )
 				RELEASEINTERFACE( m_piCommandsRenderer );
-			CoCreateInstance( __uuidof(AVSGraphics::CAVSDocumentRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IAVSDocumentRenderer), (void **)(&m_piCommandsRenderer)  );
+			CoCreateInstance( __uuidof(AVSGraphics::CASCDocumentRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IASCDocumentRenderer), (void **)(&m_piCommandsRenderer)  );
 			OfficeDjVu::IDjVuFile* piDjVuFile = NULL;	
 			piConverter->QueryInterface( __uuidof(OfficeDjVu::IDjVuFile), (void**)&piDjVuFile );
 			if( NULL != piDjVuFile )
@@ -362,7 +359,7 @@ public:
 		{
 			if( NULL != m_piCommandsRenderer )
 				RELEASEINTERFACE( m_piCommandsRenderer );
-			CoCreateInstance( __uuidof(AVSGraphics::CAVSDocumentRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IAVSDocumentRenderer), (void **)(&m_piCommandsRenderer)  );
+			CoCreateInstance( __uuidof(AVSGraphics::CASCDocumentRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IASCDocumentRenderer), (void **)(&m_piCommandsRenderer)  );
 			OfficeXPS::IXPSFile* piXpsFile = NULL;	
 			piConverter->QueryInterface( __uuidof(OfficeXPS::IXPSFile), (void**)&piXpsFile );
 			if( NULL != piXpsFile )
@@ -685,38 +682,6 @@ public:
 			}
 			RELEASEINTERFACE(piPptxFile);
 		}
-		else if( AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP == nOpenFileType )
-		{
-			AVSOfficeOdpFile::IAVSOfficeODPFile* piOdpFile = NULL;	
-			piConverter->QueryInterface( __uuidof(AVSOfficeOdpFile::IAVSOfficeODPFile), (void**)&piOdpFile );
-			if( NULL != piOdpFile )
-			{
-				BSTR bstrDrawingXml;
-				hRes = piOdpFile->get_DrawingXml(&bstrDrawingXml);
-				if( FAILED( hRes ) )
-				{
-					m_nStatus = CONVERTER_IDLE;
-					RELEASEINTERFACE(piConverter);
-					RELEASEINTERFACE(piOdpFile);
-					return hRes;
-				}
-				m_sDrawingXML = CString (bstrDrawingXml);
-				VARIANT vDecoder;
-				BSTR bstrAdditionalParamName = g_csBlowfishKeyParamName.AllocSysString();
-				hRes = piOdpFile->GetAdditionalParam( bstrAdditionalParamName, &vDecoder );
-				if( FAILED( hRes ) )
-				{
-					m_nStatus = CONVERTER_IDLE;
-					RELEASEINTERFACE(piConverter);
-					RELEASEINTERFACE(piOdpFile);
-					return hRes;
-				}
-				RELEASEINTERFACE( m_piDecoderKey );
-				vDecoder.punkVal->QueryInterface( __uuidof( IUnknown ), (void**)&m_piDecoderKey );
-				RELEASEINTERFACE( vDecoder.punkVal );
-			}
-			RELEASEINTERFACE(piOdpFile);
-		}
 		RELEASEINTERFACE(piConverter);
 		if( FAILED( hRes ) )
 		{
@@ -861,61 +826,13 @@ public:
 		{
 			long nPageCount = 0;
 			m_piCommandsRenderer->get_PageCount( &nPageCount );
-			AVSGraphics::IAVSDocumentRendererPtr piCommandsRenderer = NULL;
+			AVSGraphics::IASCDocumentRendererPtr piCommandsRenderer = NULL;
 			bool bRenderDoc = false;
 			if( nPageCount > 0 )
-				m_piCommandsRenderer->QueryInterface( __uuidof(AVSGraphics::IAVSDocumentRenderer), (void**)&piCommandsRenderer);
+				m_piCommandsRenderer->QueryInterface( __uuidof(AVSGraphics::IASCDocumentRenderer), (void**)&piCommandsRenderer);
 			else
 			{
-				bRenderDoc = true;
-				m_dMinProgress = 0;
-				m_dMaxProgress = 0.500;
-
-				CString sTemp = m_sTempDirectory;
-				m_sTempDirectory = sSourceDirectory;
-				//получаем Xml для рендеринга
-				BSTR bstrDrawingXML = NULL;
-				get_DrawingXml( &bstrDrawingXML );
-				if( NULL == bstrDrawingXML )
-					return AVS_OFFICEFILE_ERROR_SAVE_EMPTY;
-
-				//создаем Painter
-				RELEASEINTERFACE( m_piOfficeViewer );
-				CoCreateInstance( __uuidof(AVSGraphics::CAVSDocumentPainter), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IAVSDocumentPainter), (void **)(&m_piOfficeViewer)  );
-
-				//ставим ключ
-				VARIANT vDecoder;
-				vDecoder.vt = VT_UNKNOWN;
-				vDecoder.punkVal = m_piDecoderKey;
-				BSTR bstrAdditionalParamName = g_csBlowfishKeyParamName.AllocSysString();
-				m_piOfficeViewer->SetAdditionalParam( bstrAdditionalParamName, vDecoder);
-				SysFreeString(bstrAdditionalParamName);
-
-				//задаем Xml viewer
-				m_piOfficeViewer->SetXml( bstrDrawingXML );
-				SysFreeString( bstrDrawingXML );
-
-				m_piCommandsRenderer->QueryInterface( __uuidof(AVSGraphics::IAVSDocumentRenderer), (void**)&piCommandsRenderer);
-
-				//стравим рендрер в команды
-				m_piOfficeViewer->AddRenderer( piCommandsRenderer );
-
-				//цепляем события
-				COfficeEventViewer< AVSGraphics::_IAVSDocumentPainterEvents, CAVSOfficeFileConverter >* poEventViewer = new COfficeEventViewer< AVSGraphics::_IAVSDocumentPainterEvents, CAVSOfficeFileConverter >(this);
-				poEventViewer->AddRef();
-				poEventViewer->Advise( m_piOfficeViewer );
-				//m_poEventViewer->Advise( m_piOfficeViewer );
-				m_piOfficeViewer->Start();
-				//ждем окончания
-				WaitForSingleObject( m_hViewerStop, INFINITE );
-				//отцепляем события
-				poEventViewer->UnAdvise( m_piOfficeViewer );
-				RELEASEINTERFACE(poEventViewer);
-				m_piOfficeViewer->RemoveRenderer( piCommandsRenderer );
-				RELEASEINTERFACE( m_piOfficeViewer );
-				//проверяем не произошло ли ошибки
-				if( 0 != m_nRendererError)
-					return m_nRendererError;
+				// TODO: DoctRenderer
 			}
 
 			//берем номера нужных страниц из Options
@@ -951,21 +868,21 @@ public:
 			//выбираем нужный конвертер
 			IAVSOfficeFileTemplate* piConverter = NULL;
 			EBOOKWriter::IAVSEBOOKWriterPtr piEbookConverter = NULL;
-			HTMLRenderer::IAVSHTMLRendererPtr piHtmlRenderer = NULL;
-			HTMLRenderer::IAVSHTMLRenderer2Ptr piHtmlRenderer2 = NULL;
+			HTMLRenderer::IASCHTMLRendererPtr piHtmlRenderer = NULL;
+			HTMLRenderer::IASCHTMLRenderer2Ptr piHtmlRenderer2 = NULL;
 			AVSOfficePDFWriter::IPDFRendererPtr piPDFRenderer = NULL;
 			if(c_nSaveModeNone == m_nSaveMode || 0 != (c_nSaveModeStart & m_nSaveMode))
 			{
 				if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_HTMLR == nDestFormat || AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_HTMLRMenu == nDestFormat)
 				{
-					if(FAILED(piHtmlRenderer.CreateInstance( __uuidof(HTMLRenderer::CAVSHTMLRenderer))) || NULL == piHtmlRenderer)
+					if(FAILED(piHtmlRenderer.CreateInstance( __uuidof(HTMLRenderer::CASCHTMLRenderer))) || NULL == piHtmlRenderer)
 						return AVS_ERROR_FILEFORMAT;
 					if(c_nSaveModeNone != m_nSaveMode)
 						m_piSaveRenderer = piHtmlRenderer;
 				}
 				else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_HTMLRCanvas == nDestFormat)
 				{
-					if(FAILED(piHtmlRenderer2.CreateInstance( __uuidof(HTMLRenderer::CAVSHTMLRenderer3))) || NULL == piHtmlRenderer2)
+					if(FAILED(piHtmlRenderer2.CreateInstance( __uuidof(HTMLRenderer::CASCHTMLRenderer3))) || NULL == piHtmlRenderer2)
 						return AVS_ERROR_FILEFORMAT;
 					if(c_nSaveModeNone != m_nSaveMode)
 						m_piSaveRenderer = piHtmlRenderer2;
@@ -997,14 +914,14 @@ public:
 				if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_HTMLR == nDestFormat || AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_HTMLRMenu == nDestFormat)
 				{
 					if(NULL != m_piSaveRenderer)
-						m_piSaveRenderer->QueryInterface(__uuidof(HTMLRenderer::IAVSHTMLRenderer), (void**)&piHtmlRenderer);
+						m_piSaveRenderer->QueryInterface(__uuidof(HTMLRenderer::IASCHTMLRenderer), (void**)&piHtmlRenderer);
 					if(NULL == piHtmlRenderer)
 						return AVS_ERROR_FILEFORMAT;
 				}
 				else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_HTMLRCanvas == nDestFormat)
 				{
 					if(NULL != m_piSaveRenderer)
-						m_piSaveRenderer->QueryInterface(__uuidof(HTMLRenderer::IAVSHTMLRenderer2), (void**)&piHtmlRenderer2);
+						m_piSaveRenderer->QueryInterface(__uuidof(HTMLRenderer::IASCHTMLRenderer2), (void**)&piHtmlRenderer2);
 					if(NULL == piHtmlRenderer2)
 						return AVS_ERROR_FILEFORMAT;
 				}
@@ -1031,13 +948,6 @@ public:
 				}
 			}
 
-			AVSGraphics::IAVSEffectPainterPtr piEffectPainter = NULL;
-			if(_T("") != sWatermark && SUCCEEDED(piEffectPainter.CreateInstance(__uuidof(AVSGraphics::CAVSEffectPainter))) && NULL != piEffectPainter)
-			{
-				BSTR bstrWatermark = sWatermark.AllocSysString();
-				piEffectPainter->SetXml( bstrWatermark );
-				SysFreeString( bstrWatermark );
-			}
 			//ставим CommandRenderer
 			if( AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nDestFormat )
 			{
@@ -1050,69 +960,11 @@ public:
 				vtDPI.dblVal = 72;
 				piCommandsRenderer->SetAdditionalParam( _T("DPIY"), vtDPI );
 			}
-			else if( AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_SWF == nDestFormat )
-			{
-				FlashStudio::ISWFOfficeFile* piSwfFile = NULL;
-				piConverter->QueryInterface( __uuidof(FlashStudio::ISWFOfficeFile), (void**)&piSwfFile );
-				if( NULL != piSwfFile )
-				{
-					piSwfFile->put_CommandRenderer( piCommandsRenderer );
-					if( NULL != piEffectPainter )
-					{
-						VARIANT vtEffectPainter;
-						vtEffectPainter.vt = VT_UNKNOWN;
-						vtEffectPainter.punkVal = piEffectPainter;
-						piSwfFile->SetAdditionalParam( L"EffectPainter", vtEffectPainter );
-					}
-				}
-				//выставляем dpi
-				VARIANT vtDPI;
-				vtDPI.vt = VT_R8;
-				vtDPI.dblVal = 96;
-				piCommandsRenderer->SetAdditionalParam( _T("DPIX"), vtDPI );
-				vtDPI.dblVal = 96;
-				piCommandsRenderer->SetAdditionalParam( _T("DPIY"), vtDPI );
-				RELEASEINTERFACE( piSwfFile );
-			}
-			else if( AVS_OFFICESTUDIO_FILE_IMAGE & nDestFormat )
-			{
-				AVSOfficeImageFile::IOfficeImageFilePtr piImageFile = NULL;
-				piConverter->QueryInterface( __uuidof(AVSOfficeImageFile::IOfficeImageFile), (void**)&piImageFile );
-				if( NULL != piImageFile )
-				{
-					piImageFile->put_CommandRenderer( piCommandsRenderer );
-					if( NULL != piEffectPainter )
-					{
-						VARIANT vtEffectPainter;
-						vtEffectPainter.vt = VT_UNKNOWN;
-						vtEffectPainter.punkVal = piEffectPainter;
-						piImageFile->SetAdditionalParam( L"EffectPainter", vtEffectPainter );
-					}
-					VARIANT vtParam;
-					vtParam.vt = VT_I4;
-					vtParam.lVal = m_nSaveMode;
-					piImageFile->SetAdditionalParam(_T("SaveMode"), vtParam);
-				}
-				//выставляем dpi
-				VARIANT vtDPI;
-				vtDPI.vt = VT_R8;
-				vtDPI.dblVal = 96;
-				piCommandsRenderer->SetAdditionalParam( _T("DPIX"), vtDPI );
-				vtDPI.dblVal = 96;
-				piCommandsRenderer->SetAdditionalParam( _T("DPIY"), vtDPI );
-			}
 			else if( AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nDestFormat || AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2 == nDestFormat || AVS_OFFICESTUDIO_FILE_DOCUMENT_MOBI == nDestFormat )
 			{
 				if( NULL != piEbookConverter )
 				{
 					piEbookConverter->put_CommandRenderer( piCommandsRenderer );
-					if( NULL != piEffectPainter )
-					{
-						VARIANT vtEffectPainter;
-						vtEffectPainter.vt = VT_UNKNOWN;
-						vtEffectPainter.punkVal = piEffectPainter;
-						piEbookConverter->SetAdditionalParam( L"EffectPainter", vtEffectPainter );
-					}
 				}
 				//выставляем dpi
 				VARIANT vtDPI;
@@ -1124,16 +976,6 @@ public:
 			}
 			else if( AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_HTMLR == nDestFormat || AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_HTMLRMenu == nDestFormat )
 			{
-				if( NULL != piHtmlRenderer )
-				{
-					if( NULL != piEffectPainter )
-					{
-						VARIANT vtEffectPainter;
-						vtEffectPainter.vt = VT_UNKNOWN;
-						vtEffectPainter.punkVal = piEffectPainter;
-						piHtmlRenderer->SetAdditionalParam( L"EffectPainter", vtEffectPainter );
-					}
-				}
 				//выставляем dpi
 				VARIANT vtDPI;
 				vtDPI.vt = VT_R8;
@@ -1144,16 +986,6 @@ public:
 			}
 			else if( AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_HTMLRCanvas == nDestFormat )
 			{
-				if( NULL != piHtmlRenderer2 )
-				{
-					if( NULL != piEffectPainter )
-					{
-						VARIANT vtEffectPainter;
-						vtEffectPainter.vt = VT_UNKNOWN;
-						vtEffectPainter.punkVal = piEffectPainter;
-						piHtmlRenderer2->SetAdditionalParam( L"EffectPainter", vtEffectPainter );
-					}
-				}
 				//выставляем dpi
 				VARIANT vtDPI;
 				vtDPI.vt = VT_R8;
@@ -1210,9 +1042,9 @@ public:
 						if( true == m_bCanceled )
 							break;
 						piHtmlRenderer->NewPage();
-						piHtmlRenderer->BeginCommand(c_nPageType);
+						piHtmlRenderer->BeginCommand(1);
 						hRes = piCommandsRenderer->DrawPage( i, piHtmlRenderer );
-						piHtmlRenderer->EndCommand(c_nPageType);
+						piHtmlRenderer->EndCommand(1);
 						SHORT shCancel = c_shProgressContinue;
 						OnProgressDocumentEx( 0, long(c_nMaxProgressPercent * ( 1.0 * ( i + 1 ) / m_nPageCount )), &shCancel );
 						if( FAILED( hRes ) )
@@ -1273,9 +1105,9 @@ public:
 						if( true == m_bCanceled )
 							break;
 						piHtmlRenderer2->NewPage();
-						piHtmlRenderer2->BeginCommand(c_nPageType);
+						piHtmlRenderer2->BeginCommand(1);
 						hRes = piCommandsRenderer->DrawPage( i, piHtmlRenderer2 );
-						piHtmlRenderer2->EndCommand(c_nPageType);
+						piHtmlRenderer2->EndCommand(1);
 						SHORT shCancel = c_shProgressContinue;
 						OnProgressDocumentEx( 0, long(c_nMaxProgressPercent * ( 1.0 * ( i + 1 ) / m_nPageCount )), &shCancel );
 						if( FAILED( hRes ) )
@@ -1349,7 +1181,7 @@ public:
 						if( true == m_bCanceled )
 							break;
 						piEbookConverter->NewPage();
-						piEbookConverter->BeginCommand(c_nPageType);
+						piEbookConverter->BeginCommand(1);
 						//В случае презентаций сохраняем картинки,а их записываем в ebook
 						if(0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & m_nOpenFileType))
 						{
@@ -1358,13 +1190,11 @@ public:
 							piCommandsRenderer->GetPageSize( i, &dPageWidthMm, &dPageHeightMm);
 							//Создаем новую картинку для рисования
 							MediaCore::IAVSUncompressedVideoFrame* piImage = NULL;
-							AVSGraphics::IAVSGraphicsRenderer* piGdiplusRenderer = NULL;
+							AVSGraphics::IASCGraphicsRenderer* piGdiplusRenderer = NULL;
 							UpdateGdiPlusRenderer(dPageWidthMm, dPageHeightMm, &piImage, &piGdiplusRenderer);
 
 							//рисуем страницу
 							hRes = m_piCommandsRenderer->DrawPage(i, piGdiplusRenderer);
-							if (NULL != piEffectPainter)
-								piEffectPainter->Draw((IUnknown*)piGdiplusRenderer);
 
 							RELEASEINTERFACE(piGdiplusRenderer);
 							hRes = piEbookConverter->DrawImage(piImage, 0, 0, dPageWidthMm, dPageHeightMm);
@@ -1372,7 +1202,7 @@ public:
 						}
 						else
 							hRes = piCommandsRenderer->DrawPage( i, piEbookConverter );
-						piEbookConverter->EndCommand(c_nPageType);
+						piEbookConverter->EndCommand(1);
 						SHORT shCancel = c_shProgressContinue;
 						OnProgressDocumentEx( 0, long(c_nMaxProgressPercent * ( 1.0 * ( i + 1 ) / m_nPageCount )), &shCancel );
 						if( FAILED( hRes ) )
@@ -1421,12 +1251,10 @@ public:
 						if( true == m_bCanceled )
 							break;
 						piPDFRenderer->NewPage();
-						piPDFRenderer->BeginCommand(c_nPageType);
+						piPDFRenderer->BeginCommand(1);
 						//рисуем страницу
 						hRes = m_piCommandsRenderer->DrawPage(i, piPDFRenderer);
-						if (NULL != piEffectPainter)
-							piEffectPainter->Draw((IUnknown*)piPDFRenderer);
-						piPDFRenderer->EndCommand(c_nPageType);
+						piPDFRenderer->EndCommand(1);
 						SHORT shCancel = c_shProgressContinue;
 						OnProgressDocumentEx( 0, long(c_nMaxProgressPercent * ( 1.0 * ( i + 1 ) / m_nPageCount )), &shCancel );
 						if( FAILED( hRes ) )
@@ -1554,9 +1382,9 @@ public:
 							if( true == m_bCanceled )
 								break;
 							piDocxRenderer->NewPage();
-							piDocxRenderer->BeginCommand(c_nPageType);
+							piDocxRenderer->BeginCommand(1);
 							hRes = piCommandsRenderer->DrawPage( i, piDocxRenderer );
-							piDocxRenderer->EndCommand(c_nPageType);
+							piDocxRenderer->EndCommand(1);
 							SHORT shCancel = c_shProgressContinue;
 							OnProgressDocumentEx( 0, long(c_nMaxProgressPercent * ( 1.0 * ( i + 1 ) / m_nPageCount )), &shCancel );
 							if( FAILED( hRes ) )
@@ -1635,6 +1463,7 @@ public:
 				//проверяем завершен ли документ
 				if(c_nSaveModeNone != m_nSaveMode)
 				{
+					/*
 					AVSOfficeImageFile::IOfficeImageFilePtr piImageFile = NULL;
 					piConverter->QueryInterface( __uuidof(AVSOfficeImageFile::IOfficeImageFile), (void**)&piImageFile );
 					if( NULL != piImageFile )
@@ -1647,6 +1476,7 @@ public:
 								m_bSaveRendererStopped = true;
 						}
 					}
+					*/
 				}
 
 				//отцепляем события
@@ -1728,42 +1558,8 @@ public:
 		return S_OK;
 	}
 	STDMETHOD(get_DrawingXml)( BSTR* pbstrXml )
-	{
-		HRESULT hRes = S_OK;
-		//CTemporaryCS oCS(&m_csThread);
-		if( NULL == pbstrXml )
-			return S_FALSE;
-		if( "" !=  m_sDrawingXML)
-			(*pbstrXml) = m_sDrawingXML.AllocSysString();
-		else
-		{
-			//создаем IOfficeFOFile
-			AVSOfficeFOFile::IOfficeFOFilePtr piFOFile = NULL;
-			piFOFile.CreateInstance( __uuidof( AVSOfficeFOFile::COfficeFOFile ) );
-			if( NULL == piFOFile )
-				return AVS_ERROR_UNEXPECTED;
-
-			BSTR bstrFoXml;
-			BSTR bstrTempDir = m_sTempDirectory.AllocSysString();
-			hRes = piFOFile->GetFOXml( bstrTempDir, pbstrXml );
-			SysFreeString( bstrTempDir );
-			if( SUCCEEDED( hRes ) )
-			{
-				//получаем ключ декодера
-				VARIANT vDecoder;
-				BSTR bstrAdditionalParamName = g_csBlowfishKeyParamName.AllocSysString();
-				hRes = piFOFile->GetAdditionalParam( bstrAdditionalParamName, &vDecoder );
-				SysFreeString( bstrAdditionalParamName );
-				if( SUCCEEDED( hRes ) )
-				{
-					RELEASEINTERFACE( m_piDecoderKey );
-					vDecoder.punkVal->QueryInterface( __uuidof( IUnknown ), (void**)&m_piDecoderKey );
-					RELEASEINTERFACE( vDecoder.punkVal );
-				}
-			}
-		}
-		m_sDrawingXML = _T("");
-		return hRes;
+	{		
+		return S_OK;
 	}
 
 	STDMETHOD(get_CommandRenderer)( IUnknown** ppunkRend )
@@ -1774,7 +1570,7 @@ public:
 		(*ppunkRend) = NULL;
 		if( NULL == m_piCommandsRenderer )
 			return S_OK;
-		HRESULT hRes = m_piCommandsRenderer->QueryInterface( __uuidof( AVSGraphics::IAVSDocumentRenderer ), (void**)ppunkRend );
+		HRESULT hRes = m_piCommandsRenderer->QueryInterface( __uuidof( AVSGraphics::IASCDocumentRenderer ), (void**)ppunkRend );
 		return hRes;
 	}
 	STDMETHOD(put_CommandRenderer)( IUnknown* ppunkRend )
@@ -1782,9 +1578,9 @@ public:
 		//CTemporaryCS oCS(&m_csThread);
 		RELEASEINTERFACE(m_piCommandsRenderer);
 		if( NULL != ppunkRend )
-			ppunkRend->QueryInterface(__uuidof( AVSGraphics::IAVSDocumentRenderer ), (void**)&m_piCommandsRenderer );
+			ppunkRend->QueryInterface(__uuidof( AVSGraphics::IASCDocumentRenderer ), (void**)&m_piCommandsRenderer );
 		else
-			CoCreateInstance( __uuidof(AVSGraphics::CAVSDocumentRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IAVSDocumentRenderer), (void **)(&m_piCommandsRenderer)  );
+			CoCreateInstance( __uuidof(AVSGraphics::CASCDocumentRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IASCDocumentRenderer), (void **)(&m_piCommandsRenderer)  );
 		return S_OK;
 	}
 	STDMETHOD(get_Watermark)( BSTR* pbstrVal )
@@ -2083,7 +1879,7 @@ private: long PdfReadWriterOptions(BSTR bsXMLOptions, AVSOfficePDFWriter::IPDFWr
 		}
 		return S_OK;
 	}
-private: void UpdateGdiPlusRenderer(double dWidthMm, double dHeightMm, MediaCore::IAVSUncompressedVideoFrame** piImage, AVSGraphics::IAVSGraphicsRenderer** piRend)
+private: void UpdateGdiPlusRenderer(double dWidthMm, double dHeightMm, MediaCore::IAVSUncompressedVideoFrame** piImage, AVSGraphics::IASCGraphicsRenderer** piRend)
 		 {
 			 (*piImage) = NULL;
 			 (*piRend) = NULL;
@@ -2111,7 +1907,7 @@ private: void UpdateGdiPlusRenderer(double dWidthMm, double dHeightMm, MediaCore
 
 			 memset((*piImage)->Buffer, 255, (*piImage)->BufferSize);
 
-			 CoCreateInstance(__uuidof( AVSGraphics::CAVSGraphicsRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IAVSGraphicsRenderer), (void **)piRend);
+			 CoCreateInstance(__uuidof( AVSGraphics::CASCGraphicsRenderer), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IASCGraphicsRenderer), (void **)piRend);
 			 //ставим FontManager
 			 VARIANT vtVariant;
 			 vtVariant.vt = VT_UNKNOWN;

@@ -4,8 +4,8 @@
 #include "resource.h"       // main symbols
 #include "..\Common\OfficeFileErrorDescription.h"
 #include "..\Common\OfficeDefines.h"
-#include "..\AVSOfficeUniversalConverter\Utils.h"
-#include "XmlUtils.h"
+#include "..\ASCOfficeUniversalConverter\Utils.h"
+#include "../Common/XmlUtils.h"
 #include "FormatChecker.h"
 #include "OfficeFileEvents.h"
 #include "..\Common\TemporaryCS.h"
@@ -72,10 +72,8 @@ class ATL_NO_VTABLE CAVSOfficeFile : public IAVSOfficeFile
 private: long m_nRendererError; //ошибка при рендринге
 private: HANDLE m_hViewerStop; //окончание рендеринга в CommandRenderer
 
-private: AVSGraphics::IAVSDocumentPainter* m_piOfficeViewer;
-//private: AVSGraphics::IAVSDocumentRenderer* m_piWatermarkRenderer;
+//private: AVSGraphics::IASCDocumentRenderer* m_piWatermarkRenderer;
 private: IAVSOfficeFileConverter* m_piFileConverter;
-private: COfficeEventViewer< AVSGraphics::_IAVSDocumentPainterEvents, CAVSOfficeFile >* m_oEventViewer ;
 
 private: CString m_sFileInfo;
 private: bool m_bIsEdited;
@@ -121,7 +119,7 @@ private: int m_nLastError;
 private: CAtlArray<CString> m_aRelsWalked;
 private: CAtlArray<CString> m_aImagesToExtract;
 public:
-	CAVSOfficeFile():m_piFileConverter(NULL),m_piOfficeViewer(NULL)
+	CAVSOfficeFile():m_piFileConverter(NULL)
 	{
 		m_nMaxFilesCount = 0;
 		m_nResizeMode = 1;
@@ -131,8 +129,6 @@ public:
 		m_sPassword = _T("");
 		m_nStatus = c_shOfficeFileIdle;
 		CoCreateInstance( __uuidof(CAVSOfficeFileConverter), NULL ,CLSCTX_INPROC_SERVER, __uuidof(IAVSOfficeFileConverter), (void **)(&m_piFileConverter)  );
-		m_oEventViewer = new COfficeEventViewer< AVSGraphics::_IAVSDocumentPainterEvents, CAVSOfficeFile >(this);
-		m_oEventViewer->AddRef();
 
 		m_hViewerStop = CreateEvent( NULL, FALSE, FALSE, NULL);
 		Clear();
@@ -160,9 +156,7 @@ public:
 	void FinalRelease()
 	{
 		CloseFile();
-		RELEASEINTERFACE( m_piOfficeViewer );
 		RELEASEINTERFACE( m_piFileConverter );
-		RELEASEINTERFACE( m_oEventViewer );
 		RELEASEHANDLE( m_hViewerStop );
 		DeleteCriticalSection(&m_csThread);
 	}
@@ -212,47 +206,19 @@ public:
 	}
 	void OnStopViewer()
 	{
-		//отцепляем события
-		m_oEventViewer->UnAdvise( m_piOfficeViewer );
-		//передаем конвертеру
-		AVSGraphics::IAVSDocumentRendererPtr punkRenderer = NULL;
-		m_piFileConverter->get_CommandRenderer( (IUnknown**)&punkRenderer );
-		if( NULL != m_piOfficeViewer )
-			m_piOfficeViewer->RemoveRenderer( punkRenderer );
-
-		m_bParseFileComplete = true;
-		m_nStatus = c_shOfficeFileParsingComplete;
-		if( true != m_bStopParse )
-			OnCompleteParseFile();
-		SetEvent( m_hViewerStop );
 	}
 
 	void OnProgressViewer(LONG lProgressPage)
 	{
-		if( true == m_bStopParse )
-			return;
-		SHORT nCancel = 0;
-		long nCurProgress = c_nMaxProgressPercent * (PROGRESS_LOAD + PROGRESS_COMMAND * lProgressPage  / 100 );
-		if( nCurProgress > m_nLastProgress )
-		{
-			m_nLastProgress = nCurProgress;
-			OnProgressParseFile( 0, nCurProgress, &nCancel );
-		}
-		if( 0 != nCancel && NULL != m_piOfficeViewer)
-			m_piOfficeViewer->Stop();
 	}
 	void OnProgressParse(  LONG lType, LONG lProgress )
 	{
-		if( true != m_bStopParse )
-			OnProgressParsePage( lProgress );
 	}
 	void OnNewPageViewer(double dWidthMm, double dHeightMm)
 	{
 	}
 	void OnCompletePageViewer()
 	{
-		if( true != m_bStopParse )
-			OnCompleteParsePage();
 	}
 public:
 	STDMETHOD(OpenFile)( BSTR bstrFilename, BSTR bstrOptions )
@@ -350,79 +316,23 @@ public:
 	}
 	STDMETHOD(CloseFile)()
 	{
-		CTemporaryCS oCS(&m_csThread);
-		long nLastStatus = m_nStatus;
-		StopParse();
-		if( nLastStatus >= c_shOfficeFileParsing )
-		{
-			RELEASEINTERFACE( m_piFileConverter );
-			CoCreateInstance( __uuidof(CAVSOfficeFileConverter), NULL ,CLSCTX_INPROC_SERVER, __uuidof(IAVSOfficeFileConverter), (void **)(&m_piFileConverter)  );
-			RELEASEINTERFACE( m_piOfficeViewer );
-			if( NULL != m_piFileConverter )
-			{
-				CComBSTR bstrTemp( m_sTempPath );
-				m_piFileConverter->put_TempDirectory( bstrTemp.m_str );
-			}
-		}
-		Clear();
-		m_nStatus = c_shOfficeFileIdle;
 		return S_OK;
 	}
 	STDMETHOD(StartParse)()
 	{
-		CTemporaryCS oCS(&m_csThread);
-		if( m_nStatus >= c_shOfficeFileParsing )
-			return S_OK;
-		if( "" == m_sFilename )
-			return S_FALSE;
-		m_nStatus = c_shOfficeFileParsing;
-		m_bStopParse = false;
-		DWORD dwTemp;
-		HANDLE hParseThread = CreateThread(NULL, 0, &_ThreadProc, (void*)this, 0, &dwTemp);
-		if( NULL == hParseThread )
-		{
-			m_nStatus = c_shOfficeFileIdle;
-			return S_FALSE;
-		}
-		else
-		{
-			RELEASEHANDLE( hParseThread );
-			return S_OK;
-		}
+		return S_OK;
 	}
 	STDMETHOD(StopParse)()
 	{
-		CTemporaryCS oCS(&m_csThread);
-		m_bStopParse = true;
-		LONG nCurFileType;
-		m_piFileConverter->get_FileType( &nCurFileType );
-		HRESULT hRes = S_OK;
-		if( AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF != nCurFileType && AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU != nCurFileType && AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS != nCurFileType && c_shOfficeFileParsing == m_nStatus && NULL != m_piOfficeViewer )
-			hRes = m_piOfficeViewer->Stop();
-		while( c_shOfficeFileParsing == m_nStatus )
-			Sleep( 200 );
-		return hRes;
+		return S_OK;
 	}
 	STDMETHOD(SuspendParse)()
 	{
-		CTemporaryCS oCS(&m_csThread);
-		LONG nCurFileType;
-		m_piFileConverter->get_FileType( &nCurFileType );
-		if( AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF != nCurFileType && AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU != nCurFileType && AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS != nCurFileType && c_shOfficeFileParsing == m_nStatus && NULL != m_piOfficeViewer )
-			return m_piOfficeViewer->Suspend();
-		else 
-			return S_OK;
+		return S_OK;
 	}
 	STDMETHOD(ResumeParse)()
 	{
-		CTemporaryCS oCS(&m_csThread);
-		LONG nCurFileType;
-		m_piFileConverter->get_FileType( &nCurFileType );
-		if( AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF != nCurFileType && AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU != nCurFileType && AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS != nCurFileType && c_shOfficeFileParsing == m_nStatus && NULL != m_piOfficeViewer )
-			return m_piOfficeViewer->Resume();
-		else
-			return S_OK;
-
+		return S_OK;
 	}
 	STDMETHOD(ReadPage)( LONG nPageNumber, IUnknown** ppunkMediaData )
 	{
@@ -430,7 +340,7 @@ public:
 		if( NULL == ppunkMediaData )
 			return S_FALSE;
 		(*ppunkMediaData) = NULL;
-		AVSGraphics::IAVSDocumentRendererPtr piCommandRenderer = NULL;
+		AVSGraphics::IASCDocumentRendererPtr piCommandRenderer = NULL;
 		m_piFileConverter->get_CommandRenderer( (IUnknown**)&piCommandRenderer );
 		if( NULL == piCommandRenderer )
 			return S_FALSE;
@@ -438,7 +348,7 @@ public:
 		double fPageHeightMm = 0;
 		if( SUCCEEDED( piCommandRenderer->GetPageSize(nPageNumber, &fPageWidthMm, &fPageHeightMm) ) )
 		{
-			AVSGraphics::IAVSGraphicsRenderer* piGdiplusRenderer = NULL;
+			AVSGraphics::IASCGraphicsRenderer* piGdiplusRenderer = NULL;
 			//AVSOfficeEditor::IAVSGdiplusRenderer* piGdiplusRenderer = NULL;
 			MediaCore::IAVSUncompressedVideoFrame* piImage = NULL;
 			UpdateGdiPlusRenderer( fPageWidthMm, fPageHeightMm, &piImage ,&piGdiplusRenderer);
@@ -470,7 +380,7 @@ public:
 	STDMETHOD(DrawPage)( LONG nPageNumber, IUnknown* punkMediaData )
 	{
 		CTemporaryCS oCS(&m_csThread);
-		AVSGraphics::IAVSDocumentRendererPtr piCommandRenderer = NULL;
+		AVSGraphics::IASCDocumentRendererPtr piCommandRenderer = NULL;
 		m_piFileConverter->get_CommandRenderer( (IUnknown**)&piCommandRenderer );
 		if( NULL != piCommandRenderer )
 		{
@@ -504,8 +414,8 @@ public:
 			}
 			if( false == bLoadFromCache )
 			{//создаем новый
-				AVSGraphics::IAVSGraphicsRenderer* piGdiplusRenderer = NULL;
-				CoCreateInstance( __uuidof( AVSGraphics::CAVSGraphicsRenderer ), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IAVSGraphicsRenderer), (void **)(&piGdiplusRenderer)  );
+				AVSGraphics::IASCGraphicsRenderer* piGdiplusRenderer = NULL;
+				CoCreateInstance( __uuidof( AVSGraphics::CASCGraphicsRenderer ), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IASCGraphicsRenderer), (void **)(&piGdiplusRenderer)  );
 				//AVSOfficeEditor::IAVSGdiplusRenderer* piGdiplusRenderer = NULL;
 				//CoCreateInstance( __uuidof( AVSOfficeEditor::CAVSGdiplusRenderer ), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSOfficeEditor::IAVSGdiplusRenderer), (void **)(&piGdiplusRenderer)  );
 				if( NULL != piGdiplusRenderer )
@@ -584,121 +494,14 @@ public:
 	}
 	STDMETHOD(PrintPage)( LONG nPageNumber, LONG* pHDC, BSTR bstrXMLMode )
 	{
-		AVSGraphics::IAVSDocumentRendererPtr piCommandRenderer = NULL;
-		m_piFileConverter->get_CommandRenderer( (IUnknown**)&piCommandRenderer );
-		AVSGraphics::IAVSEffectPainterPtr piEffectPainter = NULL;
-		piEffectPainter.CreateInstance( __uuidof(AVSGraphics::CAVSEffectPainter) );
-		if( NULL == piCommandRenderer || NULL == piEffectPainter )
-			return S_FALSE;
-
-		long nPageCount = 0;
-		piCommandRenderer->get_PageCount( &nPageCount );
-		if( -1 != nPageNumber && ( nPageNumber < 0 || nPageNumber >= nPageCount || NULL == pHDC ) )
-			return S_FALSE;
-
-		HDC hPrintDC = *((HDC*)pHDC);
-
-		AVSGraphics::IAVSGraphicsRendererPtr piHDCRenderer;
-		piHDCRenderer.CreateInstance( __uuidof(AVSGraphics::CAVSGraphicsRenderer) );
-		//AVSOfficeEditor::IAVSHDCRendererPtr piHDCRenderer;
-		//piHDCRenderer.CreateInstance( __uuidof(AVSOfficeEditor::CAVSHDCRenderer) );
-		if( NULL == piHDCRenderer )
-			return AVS_ERROR_UNEXPECTED;
-
-		int nMode = -1;
-		int nWidthPix = -1;
-		int nHeightPix = -1;
-		bool bZoomEnable = false;
-		bool bRotateEnable = false;
-		bool bPrintableArea = false;
-
-		//душифруем xml
-		CString strXml = m_oDecoder.DecryptXML( bstrXMLMode );
-		CString sWaterMarks;
-		XmlUtils::CXmlReader oXmlReader;
-		if( TRUE == oXmlReader.OpenFromXmlString( strXml ) )
-			if( TRUE == oXmlReader.ReadRootNode( _T("PrintSettings") ) )
-			{
-				CString sWidth = oXmlReader.ReadNodeValue( _T("Width") );
-				if( _T("") != sWidth )
-					nWidthPix = Strings::ToInteger( sWidth );
-				CString sHeight = oXmlReader.ReadNodeValue( _T("Height") );
-				if( _T("") != sHeight )
-					nHeightPix = Strings::ToInteger( sHeight );
-
-				CString sMode = oXmlReader.ReadNodeValue( _T("Mode") );
-				if( _T("") != sMode )
-					nMode = Strings::ToInteger( sMode );
-				XML::IXMLDOMNodePtr oNode;
-				oXmlReader.GetNode( oNode );
-				oXmlReader.ReadNode( _T("Mode") );
-
-				CString sZoomEnable = oXmlReader.ReadNodeAttribute( _T("ZoomEnable") );
-				STRING_TO_BOOL( sZoomEnable, bZoomEnable );
-				CString sRotateEnable = oXmlReader.ReadNodeAttribute( _T("RotateEnable") );
-				STRING_TO_BOOL( sRotateEnable, bRotateEnable );
-				CString sPrintableArea = oXmlReader.ReadNodeAttribute( _T("PrintableAreaEnable") );
-				STRING_TO_BOOL( sPrintableArea, bPrintableArea );
-
-				oXmlReader.OpenFromXmlNode( oNode );
-				oXmlReader.ReadNode( _T("Watermarks") );
-				sWaterMarks = oXmlReader.ReadNodeXml();
-			}
-
-		if( -1 == nPageNumber )
-		{//виртуальная печать
-			long nPrintDpiX = GetDeviceCaps( hPrintDC, LOGPIXELSX);
-			long nPrintDpiY = GetDeviceCaps( hPrintDC, LOGPIXELSY);
-			long nPrintOffsetX = GetDeviceCaps( hPrintDC, PHYSICALOFFSETX);
-			long nPrintOffsetY = GetDeviceCaps( hPrintDC, PHYSICALOFFSETY);
-			//for( int i = 0; i < nPageCount; i++ )
-			//{
-			//	//проверяем не выходит ли каждая страница за границы печати
-			//	double dLeftPix = 0;
-			//	double dTopPix = 0;
-			//	double dWidthPix = 0;
-			//	double dHeightPix = 0;
-			//	double dAngel = 0;
-
-			//	PrepareForPrint( i, pHDC,
-			//					nWidthPix, nHeightPix, nMode, bZoomEnable, bRotateEnable, bPrintableArea,
-			//					dLeftPix, dTopPix, dWidthPix, dHeightPix, dAngel );
-			//	//piHDCRenderer->
-
-			//}
-		}
-		else
-		{//реальная печать
-			double dLeftPix = 0;
-			double dTopPix = 0;
-			double dWidthPix = 0;
-			double dHeightPix = 0;
-			double dAngel = 0;
-			double dPrintWidthMM;
-			double dPrintHeightMM;
-
-			PrepareForPrint( nPageNumber, pHDC,
-							nWidthPix, nHeightPix, nMode, bZoomEnable, bRotateEnable, bPrintableArea,
-							dLeftPix, dTopPix, dWidthPix, dHeightPix, dAngel, dPrintWidthMM, dPrintHeightMM );
-
-			//распечатываем документ
-			piHDCRenderer->CreateFromHDC( pHDC, NULL, dPrintWidthMM, dPrintHeightMM ,dLeftPix, dTopPix , dWidthPix, dHeightPix, dAngel );
-			piCommandRenderer->DrawPage( nPageNumber ,piHDCRenderer );
-			BSTR bstrWaterMarks = sWaterMarks.AllocSysString();
-			if( SUCCEEDED( piEffectPainter->SetXml( bstrWaterMarks ) ) )
-				piEffectPainter->Draw( piHDCRenderer );
-			SysFreeString( bstrWaterMarks );
-
-			piHDCRenderer->BitBlt( pHDC );
-		}
-
+		// TODO:
 		return S_OK;
 	}
 bool PrepareForPrint( LONG nPageNumber, LONG* pHDC,
 					 long nWidthPix, long nHeightPix, int nMode, bool bZoomEnable, bool bRotateEnable, bool bPrintableArea,
 					 double& dLeftPix, double& dTopPix, double& dWidthPix, double& dHeightPix, double& dAngel, double& fPrintWidthMM, double& fPrintHeightMM )
 {
-		AVSGraphics::IAVSDocumentRendererPtr piCommandRenderer = NULL;
+		AVSGraphics::IASCDocumentRendererPtr piCommandRenderer = NULL;
 		m_piFileConverter->get_CommandRenderer( (IUnknown**)&piCommandRenderer );
 		if( NULL == piCommandRenderer )
 			return S_FALSE;
@@ -939,7 +742,7 @@ bool PrepareForPrint( LONG nPageNumber, LONG* pHDC,
 	STDMETHOD(GetPageCount)( LONG* pnPageCount )
 	{
 		CTemporaryCS oCS(&m_csThread);
-		AVSGraphics::IAVSDocumentRendererPtr piCommandRenderer = NULL;
+		AVSGraphics::IASCDocumentRendererPtr piCommandRenderer = NULL;
 		m_piFileConverter->get_CommandRenderer( (IUnknown**)&piCommandRenderer );
 		if( NULL == pnPageCount || NULL == piCommandRenderer )
 			return S_FALSE;
@@ -949,7 +752,7 @@ bool PrepareForPrint( LONG nPageNumber, LONG* pHDC,
 	STDMETHOD(GetPageSize)( LONG lPageNumber, DOUBLE* pfWidth, DOUBLE* pfHeight )
 	{
 		CTemporaryCS oCS(&m_csThread);
-		AVSGraphics::IAVSDocumentRendererPtr piCommandRenderer = NULL;
+		AVSGraphics::IASCDocumentRendererPtr piCommandRenderer = NULL;
 		m_piFileConverter->get_CommandRenderer( (IUnknown**)&piCommandRenderer );
 		if( NULL == pfWidth || NULL == pfHeight || NULL == piCommandRenderer )
 			return S_FALSE;
@@ -981,19 +784,11 @@ bool PrepareForPrint( LONG nPageNumber, LONG* pHDC,
 	}
 	STDMETHOD(get_OfficeViewer)( IUnknown** ppunkVal )
 	{
-		CTemporaryCS oCS(&m_csThread);
-		if( NULL == ppunkVal )
-			return S_FALSE;
-		return m_piOfficeViewer->QueryInterface( __uuidof( IUnknown ), (void**)ppunkVal );
+		return S_FALSE;
 	}
 	STDMETHOD(put_OfficeViewer)( IUnknown* punkVal )
 	{
-		CTemporaryCS oCS(&m_csThread);
-		if( NULL == punkVal )
-			return S_FALSE;
-		RELEASEINTERFACE(m_piOfficeViewer);
-		AVSGraphics::IAVSDocumentPainter* piOfficeView = NULL;
-		return punkVal->QueryInterface( __uuidof( AVSGraphics::IAVSDocumentPainter ) , (void**)&m_piOfficeViewer );
+		return S_FALSE;
 	}
 	STDMETHOD(get_FileInfo)( BSTR* pbstrInfo )
 	{
@@ -1256,7 +1051,7 @@ bool PrepareForPrint( LONG nPageNumber, LONG* pHDC,
 	{
 		return m_piFileConverter->get_CommandRenderer( ppunkRend );
 	}
-	private: void UpdateGdiPlusRenderer(float dWidthMm, float dHeightMm,MediaCore::IAVSUncompressedVideoFrame** piImage,AVSGraphics::IAVSGraphicsRenderer** piRend )
+	private: void UpdateGdiPlusRenderer(float dWidthMm, float dHeightMm,MediaCore::IAVSUncompressedVideoFrame** piImage,AVSGraphics::IASCGraphicsRenderer** piRend )
 	{
 		(*piImage) = NULL;
 		(*piRend) = NULL;
@@ -1308,7 +1103,7 @@ bool PrepareForPrint( LONG nPageNumber, LONG* pHDC,
 
 		memset((*piImage)->Buffer, 255, (*piImage)->BufferSize);
 
-		CoCreateInstance( __uuidof( AVSGraphics::CAVSGraphicsRenderer ), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IAVSGraphicsRenderer), (void **)piRend  );
+		CoCreateInstance( __uuidof( AVSGraphics::CASCGraphicsRenderer ), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IASCGraphicsRenderer), (void **)piRend  );
 		//ставим FontManager
 		VARIANT vtVariant;
 		vtVariant.vt = VT_UNKNOWN;
@@ -1555,245 +1350,7 @@ bool PrepareForPrint( LONG nPageNumber, LONG* pHDC,
 	}
 	private: DWORD ThreadProc()
 	{
-		if( NULL == m_piFileConverter )
-		{
-			m_nLastError = AVS_ERROR_UNEXPECTED;
-			OnError( AVS_ERROR_UNEXPECTED );
-			return 0;
-		}
-		CoInitialize( NULL );
-		RELEASEINTERFACE( m_piOfficeViewer );
-		CoCreateInstance( __uuidof(AVSGraphics::CAVSDocumentPainter), NULL ,CLSCTX_INPROC_SERVER, __uuidof(AVSGraphics::IAVSDocumentPainter), (void **)(&m_piOfficeViewer)  );
-		m_bStopParse = false;
-		m_bParseFileComplete = false;
-		HRESULT hRes = S_OK;
-		long nFileType;
-		long nConverterStatus = 0;
-
-		//ждем пока не перейдет в свободное состояние
-		m_piFileConverter->get_Status( &nConverterStatus );
-		while( CONVERTER_LOAD_PROG == nConverterStatus )
-		{
-			Sleep( 200 );
-			m_piFileConverter->get_Status( &nConverterStatus );
-		}
-		m_piFileConverter->get_FileType( &nFileType );
-		VARIANT_BOOL vbIsLoadComplete = VARIANT_FALSE;
-		m_piFileConverter->get_IsLoadComplete( &vbIsLoadComplete );
-
-		//в конвертере CommandsRenderer всегда прогонен во Viewer до конца. 
-		AVSGraphics::IAVSDocumentRendererPtr piConverterComRen = NULL;
-		m_piFileConverter->get_CommandRenderer( (IUnknown**)&piConverterComRen );
-		long nPageCount = 0;
-		piConverterComRen->get_PageCount( &nPageCount );
-		if( nPageCount > 0 )
-		{
-			for( int i = 0; i < nPageCount; i++ )
-			{
-				if( true == m_bStopParse )
-					break;
-				SHORT nCancel;
-				OnCompleteParsePage();
-				OnProgressParseFile( 0, (long)( c_nMaxProgressPercent * ( 1.0 * (i + 1) / nPageCount ) ), &nCancel );
-			}
-			//для pdf и форматов, которые конвертятся в docx считаем количество картинок
-			BSTR bstrTempDir = NULL;
-			m_piFileConverter->get_TempDirectory( &bstrTempDir );
-			UpdateImagesCount( (CString)bstrTempDir, nFileType );
-			SysFreeString( bstrTempDir );
-
-			m_bParseFileComplete = true;
-			m_nStatus = c_shOfficeFileParsingComplete;
-			OnCompleteParseFile();
-			CoUninitialize();
-			return 0;
-		}
-
-		//pdf не делает DrawingXml, для него всегда делаем load
-		if( AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFileType || AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU == nFileType || AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS == nFileType )
-		{
-			//цепляем события
-			COfficeFileConvEvents< _IAVSOfficeFileConverterEvents, CAVSOfficeFile >* oFileConvEvents = new COfficeFileConvEvents< _IAVSOfficeFileConverterEvents, CAVSOfficeFile >(this);
-			oFileConvEvents->AddRef();
-			oFileConvEvents->Advise( m_piFileConverter );
-			m_bPdfLoad = true;
-			//Pdf опции
-			CString sPdfOptions = _T("<Options>");
-			sPdfOptions.AppendFormat( _T("<FileType>%d</FileType>"), nFileType );
-			if( false == m_sPassword.IsEmpty() )
-				sPdfOptions.AppendFormat( _T("<Password>%s</Password>"), Utils::PrepareToXML( m_sPassword ) );
-			sPdfOptions.Append( m_sOpenOptions );
-			sPdfOptions.Append( _T("<Display/>") );
-			sPdfOptions.Append( _T("</Options>") );
-			//конвертируем
-			BSTR bstrFilename = m_sFilename.AllocSysString();
-			BSTR bstrOptions = sPdfOptions.AllocSysString();
-			hRes = m_piFileConverter->LoadFromFile( bstrFilename, L"", bstrOptions );
-			SysFreeString(bstrFilename);
-			SysFreeString(bstrOptions);
-			if( FAILED( hRes ) )
-			{
-				m_bParseFileComplete = true;
-				//отцепляем события
-				oFileConvEvents->UnAdvise( m_piFileConverter );
-				RELEASEINTERFACE( oFileConvEvents );
-				m_nStatus = c_shOfficeFileOpen;
-				m_nLastError = hRes;
-				OnError( hRes );
-				CoUninitialize();
-				return 1;
-			}
-			VARIANT_BOOL bComplete = VARIANT_FALSE;
-			while( VARIANT_FALSE == bComplete)
-			{
-				m_piFileConverter->get_IsLoadComplete( &bComplete );
-				Sleep(200);
-			}
-			//отцепляем события
-			oFileConvEvents->UnAdvise( m_piFileConverter );
-			RELEASEINTERFACE( oFileConvEvents );
-			m_bPdfLoad = false;
-			m_bParseFileComplete = true;
-			m_nStatus = c_shOfficeFileParsingComplete;
-			//все OnCompleteParsePage должны были быть отправлены в ивентах COfficeFileConvEvents
-			OnCompleteParseFile();
-			CoUninitialize();
-			return 0;
-		}
-		else
-		{
-			//проверяем не сделан ли load
-			if( VARIANT_FALSE == vbIsLoadComplete )
-			{
-				//цепляем события
-				COfficeFileConvEvents< _IAVSOfficeFileConverterEvents, CAVSOfficeFile >* oFileConvEvents = new COfficeFileConvEvents< _IAVSOfficeFileConverterEvents, CAVSOfficeFile >(this);
-				oFileConvEvents->AddRef();
-				oFileConvEvents->Advise( m_piFileConverter );
-
-				BSTR bstrFilename = m_sFilename.AllocSysString();
-				CString sOptions = _T("<Options>");
-				sOptions.AppendFormat( _T("<FileType>%d</FileType>"), nFileType );
-				if( false == m_sPassword.IsEmpty() )
-					sOptions.AppendFormat( _T("<Password>%s</Password>"), Utils::PrepareToXML( m_sPassword ) );
-				sOptions.Append( m_sOpenOptions );
-				sOptions.Append( _T("</Options>") );
-				BSTR bstrOptions = sOptions.AllocSysString();
-				hRes = m_piFileConverter->LoadFromFile( bstrFilename, L"", bstrOptions );
-				SysFreeString(bstrFilename);
-				SysFreeString(bstrOptions);
-
-				//отцепляем события
-				oFileConvEvents->UnAdvise( m_piFileConverter );
-				RELEASEINTERFACE( oFileConvEvents );
-
-				if( FAILED( hRes ) )
-				{
-					m_bParseFileComplete = true;
-					m_nStatus = c_shOfficeFileOpen;
-					m_nLastError = hRes;
-					OnError( hRes );
-					CoUninitialize();
-					return 1;
-				}
-			}
-			if( true == m_bStopParse )
-			{
-				m_bParseFileComplete = true;
-				m_nStatus = c_shOfficeFileOpen;
-				CoUninitialize();
-				return 0;
-			}
-			//для pdf и форматов, которые конвертятся в docx считаем количество картинок
-			BSTR bstrTempDir = NULL;
-			m_piFileConverter->get_TempDirectory( &bstrTempDir );
-			UpdateImagesCount( (CString)bstrTempDir, nFileType );
-			SysFreeString( bstrTempDir );
-
-			////load то сделан а CommandRenderer не создан, а то бы выше вышли бы из функции
-			//RELEASEINTERFACE(m_piCommandsRenderer);
-			//m_piFileConverter->put_CommandRenderer( NULL );
-			//m_piFileConverter->put_Watermark( NULL );
-
-			BSTR bstrDrawingXml;
-			hRes = m_piFileConverter->get_DrawingXml(&bstrDrawingXml);
-			if( FAILED( hRes ) )
-			{
-				m_bParseFileComplete = true;
-				m_nStatus = c_shOfficeFileOpen;
-				m_nLastError = hRes;
-				OnError( hRes );
-				CoUninitialize();
-				return 1;
-			}
-			if( true == m_bStopParse )
-			{
-				m_bParseFileComplete = true;
-				m_nStatus = c_shOfficeFileOpen;
-				CoUninitialize();
-				return 0;
-			}
-			CString sEncodedXml = CString(bstrDrawingXml);
-			SysFreeString(bstrDrawingXml);
-			//получаем ключ для полученной xml
-			VARIANT vEncoder;
-			vEncoder.vt = VT_UNKNOWN;
-			hRes = m_piFileConverter->GetAdditionalParam( L"decoderkey", &vEncoder);
-			//посылаем код для расшифровки
-			BSTR bstrAdditionalParamName = g_csBlowfishKeyParamName.AllocSysString();
-			hRes = m_piOfficeViewer->SetAdditionalParam( bstrAdditionalParamName, vEncoder);
-			SysFreeString(bstrAdditionalParamName);
-			RELEASEINTERFACE( vEncoder.punkVal );
-			if( FAILED( hRes ) )
-			{
-				m_bParseFileComplete = true;
-				m_nStatus = c_shOfficeFileOpen;
-				m_nLastError = hRes;
-				OnError( hRes );
-				CoUninitialize();
-				return 1;
-			}
-			//ставим защифрованную xml
-			BSTR bstrEncodedXml = sEncodedXml.AllocSysString();
-			hRes = m_piOfficeViewer->SetXml(bstrEncodedXml);
-			SysFreeString(bstrEncodedXml);
-			if( FAILED( hRes ) )
-			{
-				m_bParseFileComplete = true;
-				m_nStatus = c_shOfficeFileOpen;
-				m_nLastError = hRes;
-				OnError( hRes );
-				CoUninitialize();
-				return 1;
-			}
-			m_piOfficeViewer->AddRenderer( piConverterComRen );
-
-			if( true == m_bStopParse )
-			{
-				m_bParseFileComplete = true;
-				m_nStatus = c_shOfficeFileOpen;
-				CoUninitialize();
-				return 0;
-			}
-			//цепляем события
-			m_oEventViewer->Advise( m_piOfficeViewer );
-
-			hRes = m_piOfficeViewer->Start();
-
-			if( FAILED( hRes ) )
-			{
-				m_bParseFileComplete = true;
-				m_nStatus = c_shOfficeFileOpen;
-				m_nLastError = hRes;
-				OnError( hRes );
-				CoUninitialize();
-				return 1;
-			}
-			//ждем окончания
-			WaitForSingleObject( m_hViewerStop, INFINITE );
-			RELEASEINTERFACE( m_piOfficeViewer );
-			CoUninitialize();
-			return 0;
-		}
+		return 0;
 	}
 private: void FitToPage( float fSourceWidth, float  fSourceHeight, float  fTargetWidth, float fTargetHeight, float& fResX, float& fResY, float& fResWidth, float& fResHeight )
 		 {

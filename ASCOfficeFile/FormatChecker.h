@@ -2,10 +2,10 @@
 #include "../Common/OfficeFileFormats.h"
 #include "../Common/OfficeFileErrorDescription.h"
 #include <string>
-#include "XmlUtils.h"
+#include "../Common/XmlUtils.h"
 
 
-#import "./../../Redist/AVSOfficeStudio/AVSOfficeUtils.dll"		 raw_interfaces_only
+#import "./../Redist/ASCOfficeUtils.dll"		 rename_namespace("AVSOfficeUtils"), raw_interfaces_only
 
 class AVSOfficeFormatChecker{
 

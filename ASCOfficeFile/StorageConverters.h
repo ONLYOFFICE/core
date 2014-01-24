@@ -21,8 +21,6 @@ public:	BOOL GetConverter( int nFormat  , IAVSOfficeFileTemplate** ppiOutConvert
 				return GetInterface(	__uuidof(AVSOfficeRtfFile::CRtfFile),			ppiOutConverter );
 			else if( AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormat )
 				return GetInterface(	__uuidof(AVSOfficeTxtFile::CTxtFile),			ppiOutConverter );
-			else if( AVS_OFFICESTUDIO_FILE_IMAGE & nFormat )
-				return GetInterface(	__uuidof(AVSOfficeImageFile::COfficeImageFile),	ppiOutConverter );
 			else if( AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormat )
 				return GetInterface(	__uuidof(AVSOfficePDFFile::CPDFFile),			ppiOutConverter );
 			else if( AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS == nFormat )
@@ -34,11 +32,9 @@ public:	BOOL GetConverter( int nFormat  , IAVSOfficeFileTemplate** ppiOutConvert
 			else if( AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormat )
 				return GetInterface(	__uuidof(AVSOfficePPTXFile::CAVSOfficePPTXFile),ppiOutConverter );
 			else if( AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP == nFormat )
-				return GetInterface(	__uuidof(AVSOfficeOdpFile::CAVSOfficeODPFile ),	ppiOutConverter );
+				return GetInterface(	__uuidof(AVSOfficeOdfFile::COfficeOdfFile ),	ppiOutConverter );
 			else if( AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nFormat )
 				return GetInterface(	__uuidof(OfficeEpub::COfficeEpubFile),			ppiOutConverter );
-			else if( AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_SWF == nFormat )
-				return GetInterface(	__uuidof(FlashStudio::CSWFOfficeFile),			ppiOutConverter );
 			else if( AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2 == nFormat )
 				return GetInterface(	__uuidof(OfficeFB2::CFB2File),			ppiOutConverter );
 			else if( AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU == nFormat )

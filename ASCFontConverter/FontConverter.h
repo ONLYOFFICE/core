@@ -240,6 +240,12 @@ public:
 					pTTF->WriteTTF( &FileWrite, pFile, sName, NULL, pUseGlyfs, lGlyfsCount );
 					::fclose( pFile );
 				}
+				else
+				{
+					// error parse font
+					// Просто копируем файл
+					CopyFile( bsFontIn, bsFontOut, FALSE );
+				}
 			}
 		}
 		else

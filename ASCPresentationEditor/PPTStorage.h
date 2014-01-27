@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ShareMemArray.h"
+#include "../Common/ShareMemArray.h"
 
 namespace NSPresentationEditor
 {

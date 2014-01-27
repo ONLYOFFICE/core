@@ -272,7 +272,7 @@ public:
 					SysFreeString(bsOptions);
 
 					if (hRes != S_OK)
-						m_pODFFile = NULL;
+						RELEASEINTERFACE(m_pODFFile);
 #endif
 				}
 

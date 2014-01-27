@@ -963,6 +963,9 @@ namespace NSHtmlRenderer
 
 			if (NULL != bsGid)
 				m_bIsGids = true;
+
+			if (!bsText)
+				bsText = bsGid;
 			m_oSmartText.CommandText(bsText, bsGid, x, y, width, height, bIsDumpFont, this);
 			return;
 		}
@@ -1461,19 +1464,19 @@ namespace NSHtmlRenderer
 			_file.CreateFile(m_strDstDirectoryFiles + _T("\\document.js"));
 
 			CStringA sDstLen = "";
-			#ifdef _DEBUG
-			sDstLen.Format("window[\"document_base64\"] = \"%d;", lSizeAll);
-			#else
+			//#ifdef _DEBUG
+			//sDstLen.Format("window[\"document_base64\"] = \"%d;", lSizeAll);
+			//#else
 			sDstLen.Format("%d;", lSizeAll);
-			#endif
+			//#endif
 			_file.WriteFile((void*)sDstLen.GetBuffer(), sDstLen.GetLength());
 			
 			_file.WriteFile((void*)pOutput, nOutputLen);
 
-			#ifdef _DEBUG
-			sDstLen = "\";";
-			_file.WriteFile((void*)sDstLen.GetBuffer(), sDstLen.GetLength());
-			#endif
+			//#ifdef _DEBUG
+			//sDstLen = "\";";
+			//_file.WriteFile((void*)sDstLen.GetBuffer(), sDstLen.GetLength());
+			//#endif
 
 			_file.CloseFile();
 			

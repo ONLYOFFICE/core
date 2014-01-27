@@ -79,7 +79,7 @@ protected:
 	LONG m_lFileType;
 	PPTFile::IAVSOfficePPTFile*		m_pPPTFile;
 	PPTXFile::IAVSOfficePPTXFile*	m_pPPTXFile;
-	ODPFile::IAVSOfficeODPFile*		m_pODPFile;
+	//ODPFile::IAVSOfficeODPFile*		m_pODPFile;
 
 	SPPTStatusStorage   m_oSS;
 	
@@ -120,7 +120,7 @@ public:
 		
 		m_pPPTFile	= NULL;
 		m_pPPTXFile = NULL;
-		m_pODPFile	= NULL;
+		//m_pODPFile	= NULL;
 		m_lFileType = AVS_OFFICESTUDIO_FILE_UNKNOWN;
 
 		m_lStatus = NULLMODE;
@@ -268,7 +268,7 @@ public:
 					
 					CString strOptions = _T("<Options><onlyPresentation></onlyPresentation></Options>");
 					BSTR bsOptions = strOptions.AllocSysString();
-					HRESULT hRes = m_pODFFile->LoadFromFile(fileName, bstrTemp, bsOptions);
+					hRes = m_pODFFile->LoadFromFile(fileName, bstrTemp, bsOptions);
 					SysFreeString(bsOptions);
 
 					if (hRes != S_OK)
@@ -382,7 +382,7 @@ public:
 
 		RELEASEINTERFACE(m_pPPTFile);
 		RELEASEINTERFACE(m_pPPTXFile);
-		RELEASEINTERFACE(m_pODPFile);
+		//RELEASEINTERFACE(m_pODPFile);
 
 		m_lFileType = AVS_OFFICESTUDIO_FILE_UNKNOWN;
 		m_lStatus = NULLMODE;

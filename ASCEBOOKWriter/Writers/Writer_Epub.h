@@ -333,6 +333,7 @@ p {text-indent: 1.5em; }\n\
 			oOpf.WriteStringC(_T("</dc:publisher>"));
 
 			oOpf.WriteStringC(_T("<dc:language>"));
+			oOpf.WriteStringC(_T("en"));
 			//oOpf.WriteStringC(CorrectString2(pFormat->m_oMeta.m_strLanguage));
 			oOpf.WriteStringC(_T("</dc:language>"));
 

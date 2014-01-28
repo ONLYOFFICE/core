@@ -3306,6 +3306,13 @@ namespace BinXlsxRW {
 				pCell->m_oRef.Init();
 				pCell->m_oRef->Append(sRef);
 			}
+			else if(c_oSerCellTypes::RefRowCol == type)
+			{
+				int nRow = m_oBufferedStream.ReadLong();
+				int nCol = m_oBufferedStream.ReadLong();
+				pCell->m_oRef.Init();
+				pCell->m_oRef = OOX::Spreadsheet::CWorksheet::combineRef(nRow, nCol);
+			}
 			else if(c_oSerCellTypes::Style == type)
 			{
 				pCell->m_oStyle.Init();

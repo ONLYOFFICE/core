@@ -2710,10 +2710,20 @@ namespace BinXlsxRW {
 			//Ref
 			if(oCell.m_oRef.IsInit())
 			{
-				m_oBcw.m_oStream.WriteByte(c_oSerCellTypes::Ref);
-				m_oBcw.m_oStream.WriteString2(oCell.m_oRef.get2());
+				int nRow = 0;
+				int nCol = 0;
+				OOX::Spreadsheet::CWorksheet::parseRef(oCell.m_oRef.get2(), nRow, nCol);
+
+				// Пишем теперь не строку, а 2 числа (чтобы не парсить на JavaScript, т.к. на C++ быстрее парсинг). Ускорение открытия файла.
+				nCurPos = m_oBcw.WriteItemStart(c_oSerCellTypes::RefRowCol);
+				m_oBcw.m_oStream.WriteLong(nRow);
+				m_oBcw.m_oStream.WriteLong(nCol);
+				m_oBcw.WriteItemEnd(nCurPos);
+
+				//m_oBcw.m_oStream.WriteByte(c_oSerCellTypes::Ref);
+				//m_oBcw.m_oStream.WriteString2(oCell.m_oRef.get2());
 			}
-			//Ref
+			//Style
 			if(oCell.m_oStyle.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerCellTypes::Style);

@@ -30,8 +30,9 @@ int PresentationEditor(int argc, _TCHAR* argv[])
 	HR_RET(officeEditor.CoCreateInstance(__uuidof(Editor::CAVSPresentationEditor)));
 
     boost::timer t1;
-	hr = officeEditor->ConvertToPPTY(ATL::CComBSTR(argv[1]),ATL::CComBSTR(argv[2]));
-   //hr = officeEditor->OpenFile(ATL::CComBSTR(argv[1]));
+	//hr = officeEditor->ConvertToPPTY(ATL::CComBSTR(argv[1]),ATL::CComBSTR(argv[2]));
+    hr = officeEditor->OpenFile(ATL::CComBSTR(argv[1]));
+	officeEditor->Save(1,ATL::CComBSTR(argv[2]));
     std::cout << "\n\nTime : " << t1.elapsed() << "\n";    
     return 0;
 }

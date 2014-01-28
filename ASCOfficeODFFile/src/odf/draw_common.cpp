@@ -216,7 +216,7 @@ void Compute_HatchFill(draw_hatch * image_style,oox::oox_hatch_fill_ptr fill)
 		else fill->preset = L"openDmnd";
 		break;
 	case hatch_style::triple:
-		fill->preset = L"pkt5";
+		fill->preset = L"pct5";
 		break;
 	}
 }
@@ -359,10 +359,19 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, styles_lite_con
 			}
 		}
 	}
-	if (props.style_repeat_ && fill.bitmap)
+	if (fill.bitmap)
 	{
-		if (*props.style_repeat_== L"repeat")	fill.bitmap->bTile = true;
-		if (*props.style_repeat_== L"stretch")	fill.bitmap->bStretch = true;
+		if (props.style_repeat_)
+		{
+			switch(props.style_repeat_->get_type())
+			{
+			case style_repeat::Repeat :	fill.bitmap->bTile = true;
+				break;
+			case style_repeat::Stretch :fill.bitmap->bStretch = true;
+				break;
+			}
+		}else
+			fill.bitmap->bTile = true;
 	}
 	if (props.draw_fill_gradient_name_)
 	{

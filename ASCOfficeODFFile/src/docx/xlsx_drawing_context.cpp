@@ -323,9 +323,20 @@ void xlsx_drawing_context::process_images(xlsx_table_metrics & table_metrics)
 			drawing.fill.bitmap->bCrop  = odf::parse_clipping(pic.clipping_string_,fileName,drawing.fill.bitmap->cropRect);
 			drawing.fill.bitmap->bStretch = true;
 
-			drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(pic.xlink_href_, drawing.type, isMediaInternal, ref);		
-			impl_->add_drawing(drawing, isMediaInternal, drawing.fill.bitmap->rId , ref, drawing.type);
+			drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(pic.xlink_href_, mediaitems::typeImage, isMediaInternal, ref);		
+
+			if (drawing.type == mediaitems::typeShape)
+			{
+				impl_->add_drawing(isMediaInternal, drawing.fill.bitmap->rId, ref, mediaitems::typeImage);//собственно это не объект, а доп рел и ref объекта
 			
+				isMediaInternal=true;
+				std::wstring rId = impl_->get_mediaitems().add_or_find(L"", mediaitems::typeShape, isMediaInternal, ref);
+				impl_->add_drawing(drawing, isMediaInternal, rId, ref, mediaitems::typeShape);//объект
+
+			}else
+			{
+				impl_->add_drawing(drawing, isMediaInternal, drawing.fill.bitmap->rId , ref, mediaitems::typeImage);//объект
+			}
 		}
     }
 }

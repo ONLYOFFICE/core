@@ -24,6 +24,7 @@
 #include "xlink.h"
 #include "drawfill.h"
 #include "clockvalue.h"
+#include "stylerepeat.h"
 
 #define _CP_APPLY_PROP(A, B) \
     if (B) \
@@ -59,7 +60,7 @@ public:
 	_CP_OPT(std::wstring)		draw_opacity_name_;
 	
 	_CP_OPT(bool)				draw_fill_hatch_solid_;
-	_CP_OPT(std::wstring)		style_repeat_;//no-repeat,repeat,stretch
+	_CP_OPT(style_repeat)		style_repeat_;
 };
 
 // common-horizontal-margin-attlist

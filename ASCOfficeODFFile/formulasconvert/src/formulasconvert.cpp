@@ -332,6 +332,14 @@ std::wstring odf2oox_converter::Impl::convert_chart_distance(const std::wstring&
 			cells_out.append(c);
 			cells_out.append(L":");
 		}
+		int res1 = sheet.find(L"-");
+		int res2 = sheet.find(L"'");
+		
+		if (res1>=0 && !(res2==0))
+		{
+			sheet = L"'" + sheet + L"'";
+		}
+
 		distance_out.push_back(sheet+L"!"+cells_out.substr(0, cells_out.size()-1));
 	}
 	std::wstring result;

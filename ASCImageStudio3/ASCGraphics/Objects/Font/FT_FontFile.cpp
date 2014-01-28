@@ -44,6 +44,10 @@ CFontFile *CFreeTypeFontFile::LoadFont(CFreeTypeFontEngine *pEngine, wchar_t *ws
 	if ( FT_Open_Face( pEngine->m_pLibrary, &oOpenArgs, lIndex, &pFace ) )
 	//if ( FT_New_Face( pEngine->m_pLibrary, W2A( wsFileName ), lIndex, &pFace ) ) 
 	{
+		if ( pBaseAddress )
+			UnmapViewOfFile( pBaseAddress );
+		CloseHandle( hMapFile );
+		CloseHandle( hFile );
 		return NULL;
 	}
 

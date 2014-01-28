@@ -477,7 +477,7 @@ void pptx_text_context::Impl::dump_run()
 
 			CP_XML_NODE(L"a:t")
 			{
-			//	CP_XML_ATTR(L"xml:space", L"preserve"); 
+				CP_XML_ATTR(L"xml:space", L"preserve"); 
 				CP_XML_STREAM() << content;
 			}
          }

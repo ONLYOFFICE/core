@@ -384,6 +384,7 @@ public:
 
 	_CP_OPT(int) sub_type_;
 	_CP_OPT(int) draw_type_oox_index_;
+	_CP_OPT(std::wstring) svg_viewbox_;
 
 	typedef std::pair<std::wstring,std::wstring> pair_string_value;
 

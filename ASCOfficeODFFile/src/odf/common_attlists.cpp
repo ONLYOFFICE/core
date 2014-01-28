@@ -19,7 +19,7 @@ void apply_line_width(_CP_OPT(line_width) & A, const _CP_OPT(line_width) & B)
         )
         )
     {
-        const double mul = B->get_percent().get_value();
+        const double mul = B->get_percent().get_value()/100.;
         // TODO
         switch(A->get_type())
         {

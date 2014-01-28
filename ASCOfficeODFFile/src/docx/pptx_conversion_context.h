@@ -87,7 +87,8 @@ public:
 
     //void start_hyperlink(const std::wstring & styleName);
     //void end_hyperlink(std::wstring const & href);
-	
+	bool process_masters_;
+
 	void process_master_pages();
 	void process_layouts();
 	void process_styles();

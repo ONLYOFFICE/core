@@ -478,8 +478,9 @@ public:
 						return S_FALSE;
 
 					// архивируем
-					BSTR bstrSrcPath = m_strTempDirectory.AllocSysString();
-					pOfficeUtils->CompressFileOrDirectory( bstrSrcPath, bsFilePath, -1 );
+					BSTR bstrSrcPath = m_strTempDirectoryFile.AllocSysString();
+
+					HRESULT hr = pOfficeUtils->CompressFileOrDirectory( bstrSrcPath, bsFilePath, -1 );
 					SysFreeString(bstrSrcPath);
 					RELEASEINTERFACE(pOfficeUtils);
 					return S_OK;

@@ -347,6 +347,7 @@ const wchar_t * draw_enhanced_geometry::name = L"enhanced-geometry";
 void draw_enhanced_geometry::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     draw_enhanced_geometry_attlist_.add_attributes(Attributes);
+    CP_APPLY_ATTR(L"svg:viewBox", svg_viewbox_);
 }
 
 typedef shared_ptr<draw_handle> draw_handle_ptr;

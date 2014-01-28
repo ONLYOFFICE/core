@@ -100,6 +100,8 @@ void pptx_conversion_context::process_master_pages()
 {
 	odf::presentation_masters_instance & masters = root()->odf_context().styleContainer().presentation_masters();
 
+	process_masters_ = true;
+
 	//берем только актуальные
 	for (int master_index =0; master_index < masters.content.size();master_index++)
 	{
@@ -115,6 +117,7 @@ void pptx_conversion_context::process_master_pages()
 		
 		end_master();	
 	}
+	process_masters_ = false;
 }
 
 void pptx_conversion_context::process_styles()
@@ -145,7 +148,7 @@ void pptx_conversion_context::start_document()
     odf::text_format_properties_content			textFormatProperties	= calc_text_properties_content(instances);
     odf::paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content(instances);
 
-
+	process_masters_ = false;
 }
 
 void pptx_conversion_context::end_document()

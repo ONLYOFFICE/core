@@ -246,7 +246,8 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 			{
 				if (fo_line_height_->get_type() == line_width::Percent)
 				{
-					w_line = boost::lexical_cast<std::wstring>( (int)( 0.5 + fo_line_height_->get_percent().get_value() *1000. ) );
+					double percent = fo_line_height_->get_percent().get_value();
+					w_line = boost::lexical_cast<std::wstring>( (int)( 0.5 + percent *1000. ) );
 					w_lineRule = L"a:spcPct";
 				}
 				//else if(fo_line_height_->get_type() == line_width::Normal) 

@@ -103,10 +103,10 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	const std::wstring baseStyleName = common_draw_attlist_.common_draw_style_name_attlist_.presentation_style_name_.get_value_or(style_ref(L"")).style_name();
 
 	odf::style_instance* grStyleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(grStyleName, odf::style_family::Graphic,false/*process_headers_footers_*/);
+		Context.root()->odf_context().styleContainer().style_by_name(grStyleName, odf::style_family::Graphic,Context.process_masters_);
 	
 	odf::style_instance* baseStyleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(baseStyleName, odf::style_family::Presentation,false/*process_headers_footers_*/);
+		Context.root()->odf_context().styleContainer().style_by_name(baseStyleName, odf::style_family::Presentation,Context.process_masters_);
 
 	if (baseStyleInst)//векторная фигура презентаций
 	{

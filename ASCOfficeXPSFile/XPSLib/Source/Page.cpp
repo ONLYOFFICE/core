@@ -1046,7 +1046,7 @@ namespace XPS
 				EnterCriticalSection(m_pFontCS);
 				
 				fname.MakeLower();
-				if (NULL != m_fontMap->Lookup(fname))
+				if (NULL == m_fontMap->Lookup(fname))
 				{
 					if (m_fontMap->SetAt(fname, true))
 					{

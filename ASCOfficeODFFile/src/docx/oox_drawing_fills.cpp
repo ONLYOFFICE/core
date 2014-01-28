@@ -84,12 +84,12 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val)
 		{
 			if (val.bitmap->rotate)	CP_XML_ATTR(L"a:rotWithShape",*(val.bitmap->rotate));
 			else CP_XML_ATTR(L"a:rotWithShape",1);
-			
+
 			if (val.bitmap->dpi)	CP_XML_ATTR(L"a:dpi",*val.bitmap->dpi);
 			
 			CP_XML_NODE(L"a:blip")
 			{
-				if (val.bitmap->isInternal)
+				if (val.bitmap->isInternal) 
 				{
 					CP_XML_ATTR(L"r:embed",val.bitmap->rId );
 					CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");

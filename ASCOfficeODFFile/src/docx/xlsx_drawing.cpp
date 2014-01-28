@@ -23,11 +23,14 @@ std::wostream & operator << (std::wostream & strm, xlsx_drawing_position::type_t
 }
 void xlsx_serialize_text(std::wostream & strm, const std::vector<odf::_property> & properties)
 {
-    CP_XML_WRITER(strm)
-    {
-		_CP_OPT(std::wstring) strTextContent;
-		odf::GetProperty(properties,L"text-content",strTextContent);
+	_CP_OPT(std::wstring) strTextContent;
+	odf::GetProperty(properties,L"text-content",strTextContent);
 
+	if (!strTextContent)return;
+	if (strTextContent.get().length()<1)return;
+   
+	CP_XML_WRITER(strm)
+    {
 		CP_XML_NODE(L"xdr:txBody")
 		{  
 			oox_serialize_bodyPr(CP_XML_STREAM(),properties);

@@ -60,7 +60,7 @@ std::pair<float,float> GetMaxDigitSizePixelsImpl(const wchar_t * fontName, float
 			return std::pair<float,float>(7,8);
 		}
           
-
+ 
         if (width> maxWidth)
             maxWidth = width;
 		if (height>maxHeight)

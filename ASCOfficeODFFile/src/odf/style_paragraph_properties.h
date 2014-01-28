@@ -29,7 +29,6 @@
 #include "style_ref.h"
 #include "dropcaplength.h"
 #include "fobreak.h"
-#include "stylerepeat.h"
 #include "styleposition.h"
 #include "borderwidths.h"
 

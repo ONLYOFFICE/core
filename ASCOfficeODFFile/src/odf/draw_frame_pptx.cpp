@@ -66,13 +66,17 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	const _CP_OPT(length) svg_widthVal =  common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_;    
     const _CP_OPT(length) svg_heightVal = common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_;
 
+	double width_pt=0, height_pt =0; 
 	if (svg_widthVal && svg_heightVal)
 	{
 		const double width_pt = svg_widthVal.get_value_or(length(0)).get_value_unit(length::pt);
 		const double height_pt = svg_heightVal.get_value_or(length(0)).get_value_unit(length::pt);
 
-		const double x_pt = common_draw_attlists_.position_.svg_x_.get_value_or(length(0)).get_value_unit(length::pt);
-		const double y_pt = common_draw_attlists_.position_.svg_y_.get_value_or(length(0)).get_value_unit(length::pt);
+		double x_pt = common_draw_attlists_.position_.svg_x_.get_value_or(length(0)).get_value_unit(length::pt);
+		double y_pt = common_draw_attlists_.position_.svg_y_.get_value_or(length(0)).get_value_unit(length::pt);
+
+		if (x_pt <0) x_pt =0;
+		if (y_pt <0) y_pt =0;
 
 		Context.get_slide_context().set_rect(width_pt, height_pt, x_pt, y_pt);
 	}

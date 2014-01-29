@@ -79,7 +79,7 @@ template <typename T>
 class PointF_T
 {
 public:
-		PointF_T() : X(0.0f), Y(0.0f) { }
+		PointF_T() : X(0), Y(0) { }
 		PointF_T(const PointF_T &point) : X(point.X), Y(point.Y)  { }
 		PointF_T(const SizeF_T<T> &size) : X(size.Width), Y(size.Height)  { }
 		PointF_T(T x, T y) : X(x), Y(y) { }

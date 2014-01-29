@@ -113,12 +113,12 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	Compute_GraphicFill(properties.common_draw_fill_attlist_, Context.root()->odf_context().drawStyles() ,fill);	
 	Context.get_slide_context().set_fill(fill);
 ////////////////////////////////////////////////////////////////////////////////////
-	//////Context.get_text_context().start_drawing_content();
+	Context.get_text_context().start_object();
 	BOOST_FOREACH(office_element_ptr const & elm, content_)
     {
         elm->pptx_convert(Context);
     }
-	std::wstring text_content_;////// = Context.get_text_context().end_drawing_content();
+	std::wstring text_content_ = Context.get_text_context().end_object();
 
 	if (text_content_.length()>0)
 	{

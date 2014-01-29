@@ -219,18 +219,20 @@ public: int Load( CString sPackageFilename )
 			m_sPackegePath.Append( tDir );
 
 			XmlUtils::CXmlReader oXmlReader;
+			oXmlReader.SetProperty(CString(_T("SelectionNamespaces")), CString(_T("xmlns:main=\"http://www.idpf.org/2007/opf\" xmlns:tei=\"http://www.tei-c.org/ns/1.0\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"")));
 			if( TRUE == oXmlReader.OpenFromFile( sPackageFilename ) )
-				if( TRUE == oXmlReader.ReadRootNode( _T("package") ) )
+				if( TRUE == oXmlReader.ReadRootNode( _T("main:package") ) )
 				{
 					XML::IXMLDOMNodePtr oNode;
 					oXmlReader.GetNode( oNode );
 					XmlUtils::CXmlReader oXmlSubReader;
+					oXmlSubReader.SetProperty(CString(_T("SelectionNamespaces")), CString(_T("xmlns:main=\"http://www.idpf.org/2007/opf\" xmlns:tei=\"http://www.tei-c.org/ns/1.0\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"")));
 					//Читаем metadata
 					m_sMetadata = _T("");
 					try
 					{
 					if( TRUE == oXmlSubReader.OpenFromXmlNode( oNode ) )
-						if( TRUE == oXmlSubReader.ReadNode( _T("metadata") ) )
+						if( TRUE == oXmlSubReader.ReadNode( _T("main:metadata") ) )
 						{
 							CString sTitle = oXmlSubReader.ReadNodeValue(_T("dc:title"));
 							CString sCreator = oXmlSubReader.ReadNodeValue(_T("dc:creator"));
@@ -239,7 +241,7 @@ public: int Load( CString sPackageFilename )
 							CString sContributor = oXmlSubReader.ReadNodeValue(_T("dc:contributor"));
 							CString sDescription = oXmlSubReader.ReadNodeValue(_T("dc:description"));
 							CString sCoverage = oXmlSubReader.ReadNodeValue(_T("dc:coverage"));
-							oXmlSubReader.ReadNodeList(_T("meta"));
+							oXmlSubReader.ReadNodeList(_T("main:meta"));
 							for(int i = 0; i < oXmlSubReader.GetLengthList(); i++)
 							{
 								XML::IXMLDOMNodePtr pMeta;
@@ -279,8 +281,8 @@ public: int Load( CString sPackageFilename )
 
 					CAtlArray<CString> aSequence;
 					if( TRUE == oXmlSubReader.OpenFromXmlNode( oNode ) )
-						if( TRUE == oXmlSubReader.ReadNode( _T("spine") ) )
-							if( TRUE == oXmlSubReader.ReadNodeList( _T("itemref") ) )
+						if( TRUE == oXmlSubReader.ReadNode( _T("main:spine") ) )
+							if( TRUE == oXmlSubReader.ReadNodeList( _T("main:itemref") ) )
 							{ 
 								for( int i = 0; i < oXmlSubReader.GetLengthList(); i++ )
 								{
@@ -292,8 +294,8 @@ public: int Load( CString sPackageFilename )
 					if( aSequence.GetCount() > 0 )
 					{
 						if( TRUE == oXmlSubReader.OpenFromXmlNode( oNode ) )
-							if( TRUE == oXmlSubReader.ReadNode( _T("manifest") ) )
-								if( TRUE == oXmlSubReader.ReadNodeList( _T("item") ) )
+							if( TRUE == oXmlSubReader.ReadNode( _T("main:manifest") ) )
+								if( TRUE == oXmlSubReader.ReadNodeList( _T("main:item") ) )
 								{ 
 									for( int i = 0; i < (int)aSequence.GetCount(); i++ )
 									{

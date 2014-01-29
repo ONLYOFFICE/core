@@ -56,10 +56,11 @@ void MergeRels( CString sDest, CString sSource, CString sDestDir, CString sSourc
 	int nStartRelsIndex = 0;
 	//пробегаемся по document.xml.rels чтобы вычислить nStartRelsIndex
 	XmlUtils::CXmlReader oXmlReader;
+	oXmlReader.SetProperty(CString(_T("SelectionNamespaces")), CString(_T("xmlns:main=\"http://schemas.openxmlformats.org/package/2006/relationships\"")));
 	if( ::GetFileAttributes( sDest ) != INVALID_FILE_ATTRIBUTES )
 		if( TRUE == oXmlReader.OpenFromFile( sDest ) )
-			if( TRUE == oXmlReader.ReadRootNode( _T("Relationships") ) )
-				if( TRUE == oXmlReader.ReadNodeList( _T("Relationship") ) )
+			if( TRUE == oXmlReader.ReadRootNode( _T("main:Relationships") ) )
+				if( TRUE == oXmlReader.ReadNodeList( _T("main:Relationship") ) )
 				{
 					for( int i = 0; i < oXmlReader.GetLengthList(); i++ )
 					{
@@ -86,8 +87,8 @@ void MergeRels( CString sDest, CString sSource, CString sDestDir, CString sSourc
 				}
 	if( ::GetFileAttributes( sSource ) != INVALID_FILE_ATTRIBUTES )
 		if( TRUE == oXmlReader.OpenFromFile( sSource ) )
-			if( TRUE == oXmlReader.ReadRootNode( _T("Relationships") ) )
-				if( TRUE == oXmlReader.ReadNodeList( _T("Relationship") ) )
+			if( TRUE == oXmlReader.ReadRootNode( _T("main:Relationships") ) )
+				if( TRUE == oXmlReader.ReadNodeList( _T("main:Relationship") ) )
 				{
 					for( int i = 0; i < oXmlReader.GetLengthList(); i++ )
 					{
@@ -117,8 +118,8 @@ void MergeRels( CString sDest, CString sSource, CString sDestDir, CString sSourc
 	CString sAdditionalRels = _T("");
 	if( ::GetFileAttributes( sSource ) != INVALID_FILE_ATTRIBUTES )
 		if( TRUE == oXmlReader.OpenFromFile( sSource ) )
-			if( TRUE == oXmlReader.ReadRootNode( _T("Relationships") ) )
-				if( TRUE == oXmlReader.ReadNodeList( _T("Relationship") ) )
+			if( TRUE == oXmlReader.ReadRootNode( _T("main:Relationships") ) )
+				if( TRUE == oXmlReader.ReadNodeList( _T("main:Relationship") ) )
 				{
 					for( int i = 0; i < oXmlReader.GetLengthList(); i++ )
 					{
@@ -170,19 +171,14 @@ void MergeRels( CString sDest, CString sSource, CString sDestDir, CString sSourc
 	if( _T("") != sAdditionalRels )
 	{
 		CString sAddition = _T("<root xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + sAdditionalRels +_T("</root>");
-		XML::IXMLDOMDocumentPtr	m_pXmlDocument;
-		m_pXmlDocument.CreateInstance(CLSID_DOMDocument);
-		if( NULL != m_pXmlDocument )
-		{
-			VARIANT vtLoad;
-			vtLoad.vt = VT_BSTR;
-			vtLoad.bstrVal = sDest.AllocSysString();
-
-			try{
-				if( VARIANT_TRUE == m_pXmlDocument->load( vtLoad ) )
+		XmlUtils::CXmlReader oRelationReaderDest;
+		oRelationReaderDest.SetProperty(CString(_T("SelectionNamespaces")), CString(_T("xmlns:main=\"http://schemas.openxmlformats.org/package/2006/relationships\"")));
+		if( ::GetFileAttributes( sDest ) != INVALID_FILE_ATTRIBUTES )
+			if( TRUE == oRelationReaderDest.OpenFromFile( sDest ) )
+				if( TRUE == oRelationReaderDest.ReadRootNode( _T("main:Relationships") ) )
 				{
-					XML::IXMLDOMNodePtr oRootNode = m_pXmlDocument->selectSingleNode( _T("Relationships") );
-					if( NULL != oRootNode )
+					XML::IXMLDOMNodePtr oRootNode;
+					if(TRUE == oRelationReaderDest.GetNode(oRootNode))
 					{
 						XmlUtils::CXmlReader oRelationReader;
 						if( TRUE == oRelationReader.OpenFromXmlString( sAddition ) )
@@ -197,19 +193,18 @@ void MergeRels( CString sDest, CString sSource, CString sDestDir, CString sSourc
 										XML::IXMLDOMNodePtr pBuf = oRootNode->appendChild( oCurNode );
 								}
 							}
-							VARIANT vtSave;
-							vtSave.vt = VT_BSTR;
-							vtSave.bstrVal = sDest.AllocSysString();
-							m_pXmlDocument->save( vtSave );
-							SysFreeString( vtSave.bstrVal );
+							XML::IXMLDOMDocument* pXMLOwnerDoc = NULL;
+							oRootNode->get_ownerDocument(&pXMLOwnerDoc);
+							if(NULL != pXMLOwnerDoc)
+							{
+								VARIANT vtSave;
+								vtSave.vt = VT_BSTR;
+								vtSave.bstrVal = sDest.AllocSysString();
+								pXMLOwnerDoc->save(vtSave);
+								SysFreeString( vtSave.bstrVal );
+							}
 					}
 				}
-			}
-			catch( ... )
-			{
-			}
-			SysFreeString( vtLoad.bstrVal );
-		}
 	}
 }
 //мерж основан на тех docx что приходят из html:
@@ -224,9 +219,10 @@ void MergeDocx( CString sDest, CString sSource )
 	CString sDestDocument;
 	CString sSourceDocument;
 	XmlUtils::CXmlReader oXmlReader;
+	oXmlReader.SetProperty(CString(_T("SelectionNamespaces")), CString(_T("xmlns:main=\"http://schemas.openxmlformats.org/package/2006/content-types\"")));
 	if( TRUE == oXmlReader.OpenFromFile( sDest + _T("[Content_Types].xml") ) )
-		if( TRUE == oXmlReader.ReadRootNode( _T("Types") ) )
-			if( TRUE == oXmlReader.ReadNodeList( _T("Override") ) )
+		if( TRUE == oXmlReader.ReadRootNode( _T("main:Types") ) )
+			if( TRUE == oXmlReader.ReadNodeList( _T("main:Override") ) )
 				for( int i = 0; i < oXmlReader.GetLengthList(); i++ )
 				{
 					CString sXml = oXmlReader.ReadNodeAttribute( i, _T("ContentType") );
@@ -237,8 +233,8 @@ void MergeDocx( CString sDest, CString sSource )
 					}
 				}
 	if( TRUE == oXmlReader.OpenFromFile( sSource + _T("[Content_Types].xml") ) )
-		if( TRUE == oXmlReader.ReadRootNode( _T("Types") ) )
-			if( TRUE == oXmlReader.ReadNodeList( _T("Override") ) )
+		if( TRUE == oXmlReader.ReadRootNode( _T("main:Types") ) )
+			if( TRUE == oXmlReader.ReadNodeList( _T("main:Override") ) )
 				for( int i = 0; i < oXmlReader.GetLengthList(); i++ )
 				{
 					if( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml") == oXmlReader.ReadNodeAttribute( i, _T("ContentType") ) )
@@ -255,9 +251,11 @@ void MergeDocx( CString sDest, CString sSource )
 	//соединяем документы
 	//читаем документ для вставки в строку
 	CString sSourceContent;
-	if( TRUE == oXmlReader.OpenFromFile( sSourceDocument ) )
-		if( TRUE == oXmlReader.ReadRootNode( _T("w:document") ) )
-			sSourceContent = oXmlReader.ReadNodeXml();
+	XmlUtils::CXmlReader oXmlReaderSource;
+	oXmlReaderSource.SetProperty(CString(_T("SelectionNamespaces")), CString(_T("xmlns:main=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"")));
+	if( TRUE == oXmlReaderSource.OpenFromFile( sSourceDocument ) )
+		if( TRUE == oXmlReaderSource.ReadRootNode( _T("main:document") ) )
+			sSourceContent = oXmlReaderSource.ReadNodeXml();
 	if( _T("") == sSourceContent )
 		return;
 
@@ -282,19 +280,14 @@ void MergeDocx( CString sDest, CString sSource )
 	boost::wregex xRegEx(_T("<w\\:numPr[ >].*?</w\\:numPr>") );
 	sStdSource = boost::regex_replace( sStdSource, xRegEx, _T("") );
 
-	XML::IXMLDOMDocumentPtr	pXmlDocument;
-	pXmlDocument.CreateInstance(CLSID_DOMDocument);
-	if( NULL != pXmlDocument )
-	{
-		VARIANT vtLoad;
-		vtLoad.vt = VT_BSTR;
-		vtLoad.bstrVal = sDestDocument.AllocSysString();
-
-		try{
-			if( VARIANT_TRUE == pXmlDocument->load( vtLoad ) )
+	XmlUtils::CXmlReader oDocumentReaderDest;
+	oDocumentReaderDest.SetProperty(CString(_T("SelectionNamespaces")), CString(_T("xmlns:main=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"")));
+	if( TRUE == oDocumentReaderDest.OpenFromFile( sDestDocument ) )
+		if( TRUE == oDocumentReaderDest.ReadRootNode( _T("main:document") ) )
+			if( TRUE == oDocumentReaderDest.ReadNode( _T("main:body") ) )
 			{
-				XML::IXMLDOMNodePtr oBodyNode = pXmlDocument->selectSingleNode( _T("w:document/w:body") );
-				if( NULL != oBodyNode )
+				XML::IXMLDOMNodePtr oBodyNode;
+				if(TRUE == oDocumentReaderDest.GetNode(oBodyNode))
 				{
 					//Ищем w:sectPr, чтобы вставлять дополнительные ноды перед ним
 					CComVariant varSectNode(&(*oBodyNode->GetlastChild()));
@@ -304,6 +297,7 @@ void MergeDocx( CString sDest, CString sSource )
 					{
 						CString sPageBreak = L"<root xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:p><w:r><w:br w:type=\"page\"/></w:r></w:p></root>";
 						XmlUtils::CXmlReader oPageBreakReader;
+						oPageBreakReader.SetProperty(CString(_T("SelectionNamespaces")), CString(_T("xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"")));
 						if( TRUE == oPageBreakReader.OpenFromXmlString( sPageBreak ) )
 							if( TRUE == oPageBreakReader.ReadNode( _T("w:p") ) )
 							{
@@ -315,9 +309,10 @@ void MergeDocx( CString sDest, CString sSource )
 					}
 
 					XmlUtils::CXmlReader oRelationReader;
+					oRelationReader.SetProperty(CString(_T("SelectionNamespaces")), CString(_T("xmlns:main=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"")));
 					if( TRUE == oRelationReader.OpenFromXmlString( sStdSource.c_str() ) )
-						if( TRUE == oRelationReader.ReadRootNode( _T("w:document") ) )
-							if( TRUE == oRelationReader.ReadNode( _T("w:body") ) )
+						if( TRUE == oRelationReader.ReadRootNode( _T("main:document") ) )
+							if( TRUE == oRelationReader.ReadNode( _T("main:body") ) )
 								if( TRUE == oRelationReader.ReadNodeList( _T("*") ) )
 								{
 									int nLengthList = oRelationReader.GetLengthList();
@@ -331,22 +326,18 @@ void MergeDocx( CString sDest, CString sSource )
 									}
 								}
 					varSectNode.Clear();
-
-					VARIANT vtSave;
-					vtSave.vt = VT_BSTR;
-					vtSave.bstrVal = sDestDocument.AllocSysString();
-					pXmlDocument->save( vtSave );
-					SysFreeString( vtSave.bstrVal );
+					XML::IXMLDOMDocument* pXMLOwnerDoc = NULL;
+					oBodyNode->get_ownerDocument(&pXMLOwnerDoc);
+					if(NULL != pXMLOwnerDoc)
+					{
+						VARIANT vtSave;
+						vtSave.vt = VT_BSTR;
+						vtSave.bstrVal = sDestDocument.AllocSysString();
+						pXMLOwnerDoc->save(vtSave);
+						SysFreeString( vtSave.bstrVal );
+					}
 				}
 			}
-		}
-		catch( ... )
-		{
-		}
-		::SysFreeString( vtLoad.bstrVal );
-	}
-
-
 }
 
 int _WriteFileToZip( CString sSource, CString sSourceRel, zipFile zf, int nCompressionLevel )

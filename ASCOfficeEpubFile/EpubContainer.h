@@ -8,10 +8,11 @@ public: int Load( CString sFolderPath )
 		{
 			CString sContainer = sFolderPath + _T("\\META-INF\\container.xml");
 			XmlUtils::CXmlReader oXmlReader;
+			oXmlReader.SetProperty(CString(_T("SelectionNamespaces")), CString(_T("xmlns:main=\"urn:oasis:names:tc:opendocument:xmlns:container\"")));
 			if( TRUE == oXmlReader.OpenFromFile( sContainer ) )
-				if( TRUE == oXmlReader.ReadRootNode( _T("container") ) )
-					if( TRUE == oXmlReader.ReadNode( _T("rootfiles") ) )
-						if( TRUE == oXmlReader.ReadNodeList( _T("rootfile") ) )
+				if( TRUE == oXmlReader.ReadRootNode( _T("main:container") ) )
+					if( TRUE == oXmlReader.ReadNode( _T("main:rootfiles") ) )
+						if( TRUE == oXmlReader.ReadNodeList( _T("main:rootfile") ) )
 						{
 							for( int i = 0; i < oXmlReader.GetLengthList(); i++ )
 							{

@@ -1,14 +1,11 @@
 #pragma once
-#include "XmlUtils.h"
-#include "AtlDefine.h"
 #include <boost/regex.hpp>
-#include "PaintStruct.h"
-#include "XmlUtils.h"
+#include "../Common/AtlDefine.h"
 #include "../ASCOfficePDFWriter/Consts.h"
 #include "../ASCOfficePDFWriter/Utils.h"
 #include "ASCUniversalConverterUtils.h"
 #include "EpubCrypt.h"
-#include "OfficeDrawing/File.h"
+#include "../Common/DocxFormat/Source/SystemUtility/File.h"
 
 using namespace boost::regex_constants;
 

@@ -4,7 +4,7 @@
 #include "COfficeEpubFile.h"
 #include "EpubContainer.h"
 #include "EventHandler.h"
-#include "StringUtils.h"
+#include "../Common/StringUtils.h"
 #include "../Common/OfficeFileErrorDescription.h"
 #include "../Common/OfficeFileFormats.h"
 #include "../Common/OfficeDefines.h"

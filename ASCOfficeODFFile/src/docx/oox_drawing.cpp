@@ -79,7 +79,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf::_property> & 
 				else dash_style =  _ooxDashStyle[iVal.get()];	
 			}
 			
-			if (dVal)
+			if ((dVal) && (dVal.get()> 0))
 			{
 				CP_XML_ATTR(L"w",static_cast<size_t>(dVal.get() * 12700));//in emu (1 pt = 12700)
 				if (color.length()<1)color = L"729FCF";
@@ -317,10 +317,16 @@ void oox_serialize_xfrm(std::wostream & strm, _oox_drawing const & val, std::wst
 				CP_XML_ATTR(L"y", static_cast<size_t>(val.y));
 			}
 
-			CP_XML_NODE(L"a:ext")
+			if (val.cx >0 && val.cy >0)
 			{
-				CP_XML_ATTR(L"cx", static_cast<size_t>(val.cx));
-				CP_XML_ATTR(L"cy", static_cast<size_t>(val.cy));
+				CP_XML_NODE(L"a:ext")
+				{
+					CP_XML_ATTR(L"cx", static_cast<size_t>(val.cx));
+					CP_XML_ATTR(L"cy", static_cast<size_t>(val.cy));
+				}
+			}else
+			{
+				_CP_LOG(info) << L"[error!!!] not set size object\n";
 			}
 		}
     }

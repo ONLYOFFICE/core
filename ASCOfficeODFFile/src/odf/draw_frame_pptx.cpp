@@ -50,6 +50,11 @@ void draw_g::pptx_convert(oox::pptx_conversion_context & Context)
 		i++;
     }
 }
+void draw_frame::pptx_convert_placeHolder(oox::pptx_conversion_context & Context)
+{
+	Context.get_slide_context().set_property(_property(L"no_rect",true));
+	pptx_convert(Context);
+}
 void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	common_draw_shape_with_styles_attlist common_draw_attlist_ = common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_;
@@ -144,8 +149,9 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	if (common_presentation_attlist_.presentation_class_)
 	{
 		Context.get_slide_context().set_placeHolder_type(common_presentation_attlist_.presentation_class_->get_type_ms());
+		
 		if (idx_in_owner >=0)
-		Context.get_slide_context().set_placeHolder_idx(idx_in_owner);
+			Context.get_slide_context().set_placeHolder_idx(idx_in_owner);
 	}
 
 	if (office_event_listeners_)office_event_listeners_->pptx_convert(Context);

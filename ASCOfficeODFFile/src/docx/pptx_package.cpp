@@ -211,25 +211,7 @@ void slideLayouts_files::write(const std::wstring & RootPath)
         }
     }
 }
-///////////////////////////////////////////////////////////////////////////////////////
-theme_elements::theme_elements(pptx_xml_theme_ptr & theme) : theme_(theme)
-{
-}
-void theme_elements::write(const std::wstring & RootPath)
-{
-    fs::wpath path = fs::wpath(RootPath) / L"theme" ;
-    fs::create_directory(path);
-	const std::wstring file_name = std::wstring(L"theme") + boost::lexical_cast<std::wstring>(theme_->id()) + L".xml";
 
-	std::wstringstream content_theme;
-	theme_->write_to(content_theme);
-
-    simple_element(file_name, content_theme.str()).write(BOOST_STRING_PATH(path));
-    
-    if (get_main_document())
-        get_main_document()->content_type().get_content_type().add_override(std::wstring(L"/ppt/theme/") + file_name, L"application/vnd.openxmlformats-officedocument.theme+xml");
-
-}
 ///////////////////////////////////////////////////////////////////////////////////////
 authors_comments_element::authors_comments_element(pptx_xml_authors_comments_ptr & authors_comments) : authors_comments_(authors_comments)
 {
@@ -277,6 +259,35 @@ void ppt_charts_files::write(const std::wstring & RootPath)
             contentTypes.add_override(std::wstring(L"/ppt/charts/") + fileName, kWSConType);
 
             package::simple_element(fileName, item->str()).write(BOOST_STRING_PATH(path));
+        }
+    }
+}
+///////////////////////////////////
+void ppt_themes_files::add_theme(pptx_xml_theme_ptr theme)
+{
+    themes_.push_back(theme);
+}
+void ppt_themes_files::write(const std::wstring & RootPath)
+{
+    fs::wpath path = fs::wpath(RootPath) / L"theme" ;
+    fs::create_directory(path);
+
+    size_t count = 0;
+
+    BOOST_FOREACH(const pptx_xml_theme_ptr & item, themes_)
+    {
+        if (item)
+        {
+            count++;
+            const std::wstring fileName = std::wstring(L"theme") + boost::lexical_cast<std::wstring>(count) + L".xml";
+            content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+           
+			static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.theme+xml";
+            contentTypes.add_override(std::wstring(L"/ppt/theme/") + fileName, kWSConType);
+
+			std::wstringstream content;
+			item->write_to(content);
+            package::simple_element(fileName, content.str()).write(BOOST_STRING_PATH(path));
         }
     }
 }
@@ -339,12 +350,6 @@ void ppt_files::write(const std::wstring & RootPath)
         presentation_->write(BOOST_STRING_PATH(path));
     }
 
-    if (theme_)
-    {
-		rels_files_.add( relationship( L"tId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme", L"theme/theme1.xml" ) );
-        theme_->write(BOOST_STRING_PATH(path));
-    }
-
     if (media_)
     {
         media_->set_main_document(get_main_document());
@@ -355,6 +360,10 @@ void ppt_files::write(const std::wstring & RootPath)
         charts_files_.write(BOOST_STRING_PATH(path));
     }
     {
+        themes_files_.set_main_document(get_main_document());
+        themes_files_.write(BOOST_STRING_PATH(path));
+    }
+	{
         comments_->set_main_document(get_main_document());
         comments_->write(BOOST_STRING_PATH(path));
     }
@@ -384,12 +393,7 @@ void ppt_files::set_styles(element_ptr Element)
 {
     tableStyles_ = Element;
 }
-void ppt_files::set_themes(pptx_xml_theme_ptr & theme) // потом до вектора
-{
-    theme_elements * elm = new theme_elements(theme); 
-    elm->set_main_document( this->get_main_document() );
-    theme_ = element_ptr( elm );
-}
+
 void ppt_files::add_slide(slide_content_ptr slide)
 {
     slides_files_.add_slide(slide);
@@ -420,7 +424,10 @@ void ppt_files::add_charts(chart_content_ptr chart)
 {
     charts_files_.add_chart(chart);
 }
-
+void ppt_files::add_theme(pptx_xml_theme_ptr theme)
+{
+    themes_files_.add_theme(theme);
+}
 }
 }
 }

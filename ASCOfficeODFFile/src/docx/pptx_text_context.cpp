@@ -62,12 +62,14 @@ public:
     std::wstring end_comment();
 
 	bool in_list_;
+	bool process_layouts_;
 
 private:
     styles_context styles_context_;
 
 	odf::odf_read_context & odf_context_ ;
 	std::wstring hyperlink_hId;
+
 	
 	bool in_span;
 	bool in_paragraph;
@@ -121,6 +123,7 @@ pptx_text_context::Impl::Impl(odf::odf_read_context & odf_contxt_, pptx_conversi
 {
 	new_list_style_number_=0;
 	local_styles_ptr_ = NULL;
+	process_layouts_ = false;
 }
 
 void pptx_text_context::Impl::add_text(const std::wstring & text)
@@ -395,18 +398,22 @@ std::wstring pptx_text_context::Impl::dump_paragraph(/*bool last*/)
 			{
 				write_pPr(CP_XML_STREAM());
 
-				CP_XML_STREAM() << run_.str();
-
-				//if (last)
-				//{
-				//	CP_XML_NODE(L"a:endParaRPr");//- сохранение/не сохранение стил€ на последующие вводы текста
-				//}
+				if (str_run.length() > 0)
+				{
+					CP_XML_STREAM() << run_.str();
+				}
+				else
+				{
+					CP_XML_NODE(L"a:endParaRPr");
+				}
 			}
 		}
 		run_.str(std::wstring());
 	}
 	return paragraph_.str();
 }
+
+#include <Objbase.h>
 void pptx_text_context::Impl::dump_field()
 {
 	if (field_type_ == none) return;
@@ -416,44 +423,57 @@ void pptx_text_context::Impl::dump_field()
 		CP_XML_NODE(L"a:fld")
 		{
 			std::wstring content = xml::utils::replace_text_to_xml(field_value_.str());
+			std::wstring string_id;
+			std::wstring string_type;
+
+			GUID new_id;
+			CoCreateGuid(&new_id);
+			wchar_t str[100]={};
+			StringFromGUID2(new_id,str,100);
+			string_id = str;
 			
 			switch (field_type_)
 			{
 			case page_number: 
 				{
-					CP_XML_ATTR(L"type", L"slidenum");
-					CP_XML_ATTR(L"id", L"{5CC2A059-B141-45A7-B910-B096D6D06820}");
-					
-					if (content.length()<1)content = xml::utils::replace_text_to_xml(L"<#>");
+					string_type = L"slidenum";
+				//	string_id =  L"{5CC2A059-B141-45A7-B910-B096D6D06820}";
+				//	content = L"Л#Ы";
 				}
 				break;
 			case date:
 				{
-					CP_XML_ATTR(L"type", L"datetime1");
-					CP_XML_ATTR(L"id", L"{1D1B89AE-8D35-4BB5-B492-6D9BE4F23A39}");
-					
+					string_type = L"datetime1";
+				//	string_id = L"{1D1B89AE-8D35-4BB5-B492-6D9BE4F23A39}";
 					if (content.length()<1)content = xml::utils::replace_text_to_xml(L"01.01.2000");
 				}							
 				break;
 			case time:	
 				{
-					CP_XML_ATTR(L"type", L"datetime11");
-					CP_XML_ATTR(L"id", L"{03DA74A9-E3F2-4F30-AAF9-CC1A83980D5E}");
-
+					string_type = L"datetime11";
+				//	string_id = L"{03DA74A9-E3F2-4F30-AAF9-CC1A83980D5E}";
 					if (content.length()<1)content = xml::utils::replace_text_to_xml(L"00:00:00");
 				}
 				break;
 			case datetime:
 				{
-					CP_XML_ATTR(L"type", L"datetime1");
-					CP_XML_ATTR(L"id", L"{A9EA0FE8-FEF9-4B2F-BC9D-19DDCDB4AB9B}");
+					string_type =  L"datetime1";
+				//	string_id = L"{A9EA0FE8-FEF9-4B2F-BC9D-19DDCDB4AB9B}";
 				}
 			}  
-
-			CP_XML_NODE(L"a:t")
+			if (string_type.length()>0)
 			{
-			//	CP_XML_ATTR(L"xml:space", L"preserve"); 
-				CP_XML_STREAM() << content;
+				CP_XML_ATTR(L"id", string_id);
+				CP_XML_ATTR(L"type", string_type);
+				CP_XML_NODE(L"a:t")
+				{
+					CP_XML_STREAM() << content;
+				}			
+			}
+			else
+			{
+				//запишем как обычный текст
+				text_ << content;
 			}
 		}
 	}
@@ -466,6 +486,8 @@ void pptx_text_context::Impl::dump_run()
 
 	dump_field();
 	
+	if (process_layouts_) return; 
+	
 	const std::wstring content = xml::utils::replace_text_to_xml(text_.str());
 	if (content.length() <1 &&  span_style_name_.length()<1) return ;     
 
@@ -477,7 +499,7 @@ void pptx_text_context::Impl::dump_run()
 
 			CP_XML_NODE(L"a:t")
 			{
-				CP_XML_ATTR(L"xml:space", L"preserve"); 
+				//CP_XML_ATTR(L"xml:space", L"preserve"); 
 				CP_XML_STREAM() << content;
 			}
          }
@@ -786,6 +808,11 @@ void pptx_text_context::start_comment_content()
 std::wstring pptx_text_context::end_comment_content()
 {
 	return impl_->end_comment();
+}
+
+void pptx_text_context::set_process_layouts(bool val)
+{
+	impl_->process_layouts_ = val;
 }
 
 }

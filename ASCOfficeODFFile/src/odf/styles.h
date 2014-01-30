@@ -447,7 +447,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 public:
-	int find_placeHolderIndex(presentation_class::type placeHolder);
+	int find_placeHolderIndex(presentation_class::type placeHolder,int & last_idx);
    
 	style_master_page_attlist style_master_page_attlist_;
 

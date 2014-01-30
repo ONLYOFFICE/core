@@ -73,10 +73,10 @@ void pptx_xml_slide::write_to(std::wostream & strm)
 				}
             }
 			CP_XML_STREAM() << slideTiming_.str();
-			//CP_XML_NODE(L"p:clrMapOvr")
-			//{
-			//	CP_XML_NODE(L"a:masterClrMapping");
-			//}
+			CP_XML_NODE(L"p:clrMapOvr")
+			{
+				CP_XML_NODE(L"a:masterClrMapping");
+			}
 		}
 	}
 }
@@ -115,10 +115,10 @@ void pptx_xml_slideLayout::write_to(std::wostream & strm)
     {
 		CP_XML_NODE(L"p:sldLayout")
         {
-			if (slideLayoutData_.str().length()<0)
-				CP_XML_ATTR(L"type",L"cust");//---------------------------!!!!!!!!!!!!
-			else
-				CP_XML_ATTR(L"type",L"cust");
+			//if (slideLayoutData_.str().length()<0)
+			//	CP_XML_ATTR(L"type",L"cust");//---------------------------!!!!!!!!!!!!
+			//else
+			//	CP_XML_ATTR(L"type",L"cust");
 			CP_XML_ATTR(L"xmlns:p", L"http://schemas.openxmlformats.org/presentationml/2006/main");        
             CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 			CP_XML_ATTR(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");        
@@ -159,12 +159,13 @@ std::wstring pptx_xml_slideMaster::rId() const
 pptx_xml_slideMaster_ptr pptx_xml_slideMaster::create(int id)
 {
 	const std::wstring rId = std::wstring(L"smId") + boost::lexical_cast<std::wstring>(id);
-    return boost::make_shared<pptx_xml_slideMaster>(rId);
+    return boost::make_shared<pptx_xml_slideMaster>(rId,id);
 }
 
-pptx_xml_slideMaster::pptx_xml_slideMaster(std::wstring const & id)
+pptx_xml_slideMaster::pptx_xml_slideMaster(std::wstring const & rId, int id)
 {
-	rId_ = id;
+	rId_ = rId;
+	id_ = id;
 }
 
 pptx_xml_slideMaster::~pptx_xml_slideMaster()
@@ -242,7 +243,7 @@ void pptx_xml_slideMaster::write_to(std::wostream & strm)
 					CP_XML_NODE(L"p:sldLayoutId")
 					{
 						CP_XML_ATTR(L"r:id",q);
-						CP_XML_ATTR(L"id",0x80000000 + (++count));
+						CP_XML_ATTR(L"id",0x80000000 + (++count) + (id_-1)*20); // ваще уникальные номера .. для всех мастер слайдов
 					}
 				}
 				count++;

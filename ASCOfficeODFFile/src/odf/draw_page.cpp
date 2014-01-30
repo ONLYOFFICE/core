@@ -66,7 +66,7 @@ void draw_page::pptx_convert_placeHolder(oox::pptx_conversion_context & Context,
 	style_master_page * master = Context.root()->odf_context().pageLayoutContainer().master_page_by_name(masterName);
 
 	if (master)
-		index = master->find_placeHolderIndex(PresentationClass);
+		index = master->find_placeHolderIndex(PresentationClass, Context.last_idx_placeHolder);
 
 
 	Context.get_slide_context().start_shape(1);

@@ -202,19 +202,48 @@ void draw_caption::pptx_convert(oox::pptx_conversion_context & Context)
 	Context.get_slide_context().end_shape();
 
 }
+void draw_connector::reset_svg_attributes()
+{
+	double x1=draw_line_attlist_.svg_x1_.get_value_or(length(0)).get_value_unit(length::pt);
+	double y1=draw_line_attlist_.svg_y1_.get_value_or(length(0)).get_value_unit(length::pt);
+	double x2=draw_line_attlist_.svg_x2_.get_value_or(length(0)).get_value_unit(length::pt);
+	double y2=draw_line_attlist_.svg_y2_.get_value_or(length(0)).get_value_unit(length::pt);
+	
+	if (x1 > x2)
+	{
+		common_draw_attlists_.position_.svg_x_	 = draw_line_attlist_.svg_x2_;
+		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(x1-x2, length::pt);
+		
+	}else
+	{
+		common_draw_attlists_.position_.svg_x_	 = draw_line_attlist_.svg_x1_;
+		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(x2-x1, length::pt);
+	}
+	if (y1 > y2)
+	{
+		common_draw_attlists_.position_.svg_y_	 = draw_line_attlist_.svg_y2_;
+		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(y1-y2, length::pt);
+
+	}else
+	{
+		common_draw_attlists_.position_.svg_y_	 = draw_line_attlist_.svg_y1_;
+		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(y2-y1, length::pt);
+	}
+}
 void draw_connector::pptx_convert(oox::pptx_conversion_context & Context)
 {
+	reset_svg_attributes();
 	reset_svg_path();
 ///////////////////////////////////////////////////////////////////////
-	int type=sub_type_;
-	//if (draw_connector_attlist_.draw_type_)
-	//{
-	//	if (*draw_connector_attlist_.draw_type_ == L"curve") type = 6;
-	//	if (*draw_connector_attlist_.draw_type_ == L"line")		type = 5;
-	//}
-	Context.get_slide_context().start_shape(type);
+
+	Context.get_slide_context().start_shape(sub_type_);
 
 	common_pptx_convert(Context);
+	
+//перебъем заливку .. 
+	oox::_oox_fill fill;
+	fill.type = 0;
+	Context.get_slide_context().set_fill(fill);
 
 	Context.get_slide_context().end_shape();
 }

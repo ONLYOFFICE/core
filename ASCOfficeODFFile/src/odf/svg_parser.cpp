@@ -263,7 +263,7 @@ namespace svg_path
                     bRelative = true;
                     // FALLTHROUGH intended
                 }
-                case 'H' :
+                case 'H' ://горизонт линия
                 {
 					aCurrPoly.command=L"a:lnTo";
                     nPos++;
@@ -296,9 +296,9 @@ namespace svg_path
                     bRelative = true;
                     // FALLTHROUGH intended
                 }
-                case 'V' :
+                case 'V' ://вертикальная линия
                 {
-					aCurrPoly.command =L"a:v";
+					aCurrPoly.command =L"a:lnTo";
                     nPos++;
                     skipSpaces(nPos, rSvgDStatement, nLen);
 

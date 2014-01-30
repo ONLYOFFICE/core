@@ -38,6 +38,7 @@ pptx_conversion_context(::cpdoccore::oox::package::pptx_document * outputDocumen
 	,pptx_table_context_(*this)
 	,pptx_comments_context_(comments_context_handle_)
 	,pptx_slide_context_(*this/*, pptx_text_context_*/)
+	,last_idx_placeHolder(1)
 {
 }
 //
@@ -59,6 +60,9 @@ pptx_conversion_context(::cpdoccore::oox::package::pptx_document * outputDocumen
 void pptx_conversion_context::process_layouts()
 {
 	odf::presentation_layouts_instance & layouts = root()->odf_context().styleContainer().presentation_layouts();
+
+	get_text_context().set_process_layouts(true);
+
 	//берем только актуальные
 	for (int layout_index =0; layout_index < layouts.content.size(); layout_index++)
 	{
@@ -82,25 +86,34 @@ void pptx_conversion_context::process_layouts()
 				if (elm->get_type() == odf::typeDrawFrame)
 				{
 					odf::draw_frame* frame = dynamic_cast<odf::draw_frame *>(elm.get());
-					if ((frame) && (frame->common_presentation_attlist_.presentation_class_) && 
-								   (frame->common_presentation_attlist_.presentation_class_->get_type()==odf::presentation_class::footer ||
-									frame->common_presentation_attlist_.presentation_class_->get_type()==odf::presentation_class::date_time ||
-									frame->common_presentation_attlist_.presentation_class_->get_type()==odf::presentation_class::header ||
-									frame->common_presentation_attlist_.presentation_class_->get_type()==odf::presentation_class::page_number))
+
+					if ((frame) && (frame->common_presentation_attlist_.presentation_class_))
 					{
-						elm->pptx_convert(*this);
+						odf::presentation_class::type type = frame->common_presentation_attlist_.presentation_class_->get_type();
+
+						if (type==odf::presentation_class::footer ||
+							type==odf::presentation_class::date_time ||
+							type==odf::presentation_class::header ||
+							type==odf::presentation_class::page_number)
+						{
+							if (frame->idx_in_owner <0)frame->idx_in_owner = last_idx_placeHolder++;
+
+							frame->pptx_convert_placeHolder(*this);
+						}
 					}
 				}
 			}
 		}
 		end_layout();	
 	}
+	get_text_context().set_process_layouts(false);
 }
 void pptx_conversion_context::process_master_pages()
 {
 	odf::presentation_masters_instance & masters = root()->odf_context().styleContainer().presentation_masters();
 
 	process_masters_ = true;
+	get_text_context().set_process_layouts(true);
 
 	//берем только актуальные
 	for (int master_index =0; master_index < masters.content.size();master_index++)
@@ -118,22 +131,28 @@ void pptx_conversion_context::process_master_pages()
 		end_master();	
 	}
 	process_masters_ = false;
+	get_text_context().set_process_layouts(false);
+
 }
 
 void pptx_conversion_context::process_styles()
 {
  
 }
-void pptx_conversion_context::process_theme()
+void pptx_conversion_context::process_theme(std::wstring  name)
 {
-	std::wstring name = L"Users Theme";
+	int current = themes_.size() + 1;
+
+	if (name.length()<1)
+	{
+		name = L"User Theme: " + boost::lexical_cast<std::wstring>(current);
+	}
  	start_theme(name);
 	//
 		pptx_serialize_clrScheme(current_theme().clrSchemeData());
 		pptx_serialize_fmtScheme(current_theme().fmtSchemeData());
 		pptx_serialize_fontScheme(current_theme().fontSchemeData());
 	//
-	current_theme();
 	end_theme();
 
 }
@@ -235,13 +254,18 @@ void pptx_conversion_context::end_document()
 		output_document_->get_ppt_files().add_charts(content);
 	
 	}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//добавляем темы
+	for (int i=0; i < themes_.size();i++)
+    {
+		output_document_->get_ppt_files().add_theme(themes_[i]);
+	
+	}
     package::ppt_comments_files_ptr comments = package::ppt_comments_files::create(comments_context_handle_.content());
     output_document_->get_ppt_files().set_comments(comments);
 
 	output_document_->get_ppt_files().set_presentation(presentation_);
        
-	output_document_->get_ppt_files().set_themes(theme_);
-
 	output_document_->get_ppt_files().set_media(get_mediaitems());
 
 	output_document_->get_ppt_files().set_authors_comments(authors_comments_);
@@ -279,9 +303,9 @@ pptx_xml_slideLayout & pptx_conversion_context::current_layout()
 }
 pptx_xml_theme & pptx_conversion_context::current_theme()
 {
-    if (theme_)
+    if (!themes_.empty())
     {
-        return *theme_;
+        return *themes_.back().get();
     }
     else
     {
@@ -371,7 +395,7 @@ bool pptx_conversion_context::start_layout(int layout_index)
 
 	root()->odf_context().styleContainer().presentation_masters().add_layout_to(layouts.content[layout_index].master_name,layouts.content[layout_index]);
 
-	current_layout().Rels().add(relationship(master_id.second, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster",
+	current_layout().Rels().add(relationship(L"smId1"/*master_id.second*/, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster",
 		std::wstring(L"../slideMasters/slideMaster")  + boost::lexical_cast<std::wstring>(master_id.first) + L".xml"));
 
 //layout type
@@ -426,8 +450,8 @@ bool pptx_conversion_context::start_master(int master_index)
 	current_master_page_name_ = L"";
 	current_layout_page_name_ = L"";
 	
-	//add default theme (временно !!!!)
-	current_master().add_theme(1, L"tId1");	//std::pair<int,std::wstring> thema_id = std::pair<int,std::wstring>(1,L"tmId1");//thema
+	process_theme(masters.content[master_index].master_name);//add default theme - одинаковые но под разными именами
+	current_master().add_theme(current_theme().id(), L"tId1");	
 
 	for (long i=0;i<masters.content[master_index].layouts.size();i++)
 	{
@@ -490,7 +514,7 @@ void pptx_conversion_context::end_master()
 }
 void pptx_conversion_context::start_theme(std::wstring & name)
 {
-	theme_ = pptx_xml_theme::create(name,1);
+	themes_.push_back(pptx_xml_theme::create(name,themes_.size()+1));
 }
 void pptx_conversion_context::end_theme()
 {

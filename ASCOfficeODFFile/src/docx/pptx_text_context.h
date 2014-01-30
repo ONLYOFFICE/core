@@ -74,6 +74,8 @@ public:
 
 	styles_context & get_styles_context();   
 
+	void set_process_layouts(bool val);
+
 private:
 
 	class Impl;

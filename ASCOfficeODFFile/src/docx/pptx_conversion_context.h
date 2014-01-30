@@ -89,11 +89,13 @@ public:
     //void end_hyperlink(std::wstring const & href);
 	bool process_masters_;
 
-	void process_master_pages();
 	void process_layouts();
 	void process_styles();
-	void process_theme();
+	
+	void process_master_pages();
+	void process_theme(std::wstring name);
 
+	int last_idx_placeHolder;
 private:
 
     void create_new_slide(std::wstring const & name);
@@ -114,9 +116,9 @@ private:
 	std::vector<pptx_xml_slide_ptr>			slides_;
 	std::vector<pptx_xml_slideMaster_ptr>	slideMasters_;
 	std::vector<pptx_xml_slideLayout_ptr>	slideLayouts_;
+	std::vector<pptx_xml_theme_ptr>			themes_;
 	
 	pptx_xml_authors_comments_ptr authors_comments_;
-	pptx_xml_theme_ptr theme_;
 	pptx_xml_presentation presentation_;
 
 	std::wstring current_master_page_name_;

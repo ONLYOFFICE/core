@@ -15,6 +15,17 @@ namespace odf {
 
 using xml::xml_char_wc;
 
+std::wstring delete_apostroph_in_name(std::wstring value)
+{
+	if (value.length()<1)return value;
+
+	if (value[0] == 0x27 && value[value.length()-1] == 0x27)
+	{
+		return value.substr(1,value.length()-2);
+	}
+	return value;
+}
+
 void text_format_properties_content::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 // 15.4.1
@@ -481,18 +492,21 @@ void text_format_properties_content::pptx_convert(oox::pptx_conversion_context &
 			{
 				std::wstring w_font	= (fo_font_family_ ? *fo_font_family_: L""); 
 				std::wstring w_ascii = (style_font_name_ ? *style_font_name_: w_font);
-				if (w_ascii.length()>0)	CP_XML_NODE(L"a:latin"){CP_XML_ATTR(L"typeface",w_ascii);}
+				if (w_ascii.length()>0)	
+				{
+					CP_XML_NODE(L"a:latin"){CP_XML_ATTR(L"typeface",delete_apostroph_in_name(w_ascii));}
+				}
 
 				if (style_font_name_asian_)
 				{
 					std::wstring w_eastAsia = *style_font_name_asian_;   
-					CP_XML_NODE(L"a:ea"){CP_XML_ATTR(L"typeface",w_eastAsia);}
+					CP_XML_NODE(L"a:ea"){CP_XML_ATTR(L"typeface",delete_apostroph_in_name(w_eastAsia));}
 				}
 
 				if (style_font_name_complex_)
 				{
 					std::wstring w_cs = *style_font_name_complex_;
-					CP_XML_NODE(L"a:cs"){CP_XML_ATTR(L"typeface",w_cs);}
+					CP_XML_NODE(L"a:cs"){CP_XML_ATTR(L"typeface",delete_apostroph_in_name(w_cs));}
 				}
 			}
 

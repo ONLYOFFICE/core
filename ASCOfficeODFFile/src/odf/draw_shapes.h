@@ -460,8 +460,10 @@ public:
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
     draw_connector_attlist draw_connector_attlist_;
+    draw_line_attlist draw_line_attlist_;
 
 	void reset_svg_path();
+	void reset_svg_attributes();
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_connector);

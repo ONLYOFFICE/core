@@ -102,7 +102,7 @@ typedef _CP_PTR(pptx_xml_slideMaster) pptx_xml_slideMaster_ptr;
 class pptx_xml_slideMaster: noncopyable
 {
 public:
-    pptx_xml_slideMaster(std::wstring const & id);
+    pptx_xml_slideMaster(std::wstring const & rId, int id);
     ~pptx_xml_slideMaster();
 public:
     std::wstring rId() const;
@@ -126,6 +126,7 @@ private:
 	
 	std::vector<std::wstring> layoutsId_;
 	std::wstring rId_;
+	int id_;
 
 	std::wstring themeId_;
 

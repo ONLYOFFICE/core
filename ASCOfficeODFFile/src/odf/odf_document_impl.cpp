@@ -601,7 +601,6 @@ void odf_document::Impl::pptx_convert(oox::pptx_conversion_context & Context)
 		
 		Context.process_layouts();
 		Context.process_master_pages();
-		Context.process_theme();
 
         Context.end_document();
 	}

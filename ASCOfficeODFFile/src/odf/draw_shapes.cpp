@@ -445,9 +445,10 @@ const wchar_t * draw_connector::name = L"connector";
 void draw_connector::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     draw_connector_attlist_.add_attributes(Attributes);
+    draw_line_attlist_.add_attributes(Attributes);
 	draw_shape::add_attributes(Attributes);
 
-	sub_type_ = 6;
+	sub_type_ = 5; //коннектор - линия, если ломаная (ниже определяется) - то путь
 	
 }
 void draw_connector::reset_svg_path()
@@ -458,6 +459,9 @@ void draw_connector::reset_svg_path()
 		std::vector<svg_path::_polyline> o_Polyline_cm;
 	
 		bool res = svg_path::parseSvgD(o_Polyline_cm,draw_connector_attlist_.svg_d_.get(),false);
+	
+		double x1=common_draw_attlists_.position_.svg_x_.get_value_or(length(0)).get_value_unit(length::emu);
+		double y1=common_draw_attlists_.position_.svg_y_.get_value_or(length(0)).get_value_unit(length::emu);
 		
 		BOOST_FOREACH(svg_path::_polyline  & poly, o_Polyline_cm)
 		{
@@ -465,17 +469,18 @@ void draw_connector::reset_svg_path()
 			{
 				if (poly.points[i].x)
 				{
-					poly.points[i].x =  length(poly.points[i].x.get()/1000.,length::pt).get_value_unit(length::emu); 
+					poly.points[i].x =  length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu)-x1; 
 				}
 				if (poly.points[i].y)
 				{
-					poly.points[i].y = length(poly.points[i].y.get()/1000.,length::pt).get_value_unit(length::emu); 
+					poly.points[i].y = length(poly.points[i].y.get()/1000.,length::cm).get_value_unit(length::emu)-y1; 
 				}
 			}
 			o_Polyline_pt.push_back(poly);
 		}
 		if (o_Polyline_pt.size()>0)
 		{
+			sub_type_ = 6;
 			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
 			std::wstringstream output_;   
 			svg_path::oox_serialize(output_, o_Polyline_pt);

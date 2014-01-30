@@ -76,18 +76,7 @@ public:
 public:    
     std::vector<slide_content_ptr> slides_;
 };
-///////////////////////////////////////////////////////////////////////////////
 
-class theme_elements : public element
-{
-public:
-    theme_elements(pptx_xml_theme_ptr & theme);//потом до вектора
-    virtual void write(const std::wstring & RootPath);
-
-private:
-    pptx_xml_theme_ptr & theme_;
-
-};
 ///////////////////////////////////////////////////////////////////////////////
 
 class authors_comments_element : public element
@@ -156,6 +145,19 @@ public:
     std::vector<chart_content_ptr> charts_;
 
 };
+//////////////////////////////////////////////////////////////////////////////
+/// \class  ppt_theme_files
+class ppt_themes_files  : public element
+{
+public:
+	ppt_themes_files(){}
+
+    void add_theme(pptx_xml_theme_ptr chart);
+	virtual void write(const std::wstring & RootPath);
+    
+    std::vector<pptx_xml_theme_ptr> themes_;
+
+};
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 class ppt_files : public element
 {
@@ -166,7 +168,6 @@ public:
     virtual void write(const std::wstring & RootPath);
 
     void set_presentation(pptx_xml_presentation & presentation);
-    void set_themes(pptx_xml_theme_ptr & theme);
     
 	void set_styles(element_ptr Element);
 	void set_comments(element_ptr Element);
@@ -177,6 +178,7 @@ public:
 	
 	void set_media(mediaitems & _Mediaitems);    
     void add_charts(chart_content_ptr chart);
+    void add_theme (pptx_xml_theme_ptr theme);
 
 	void set_authors_comments(pptx_xml_authors_comments_ptr & authors_comments);    
 
@@ -187,14 +189,15 @@ private:
 	slideLayouts_files slideLayouts_files_;    
 	slideMasters_files slideMasters_files_;
 	
+	ppt_themes_files themes_files_;
+
     ppt_charts_files charts_files_;
 	//slides_files notesSlides_files_;
 	//slides_files notesMasters_files_;
 	//slides_files handoutMasters_files_;
  	
 	element_ptr authors_comments_;
-
-	element_ptr theme_;
+	
 	element_ptr presentation_;
 
     element_ptr tableStyles_;

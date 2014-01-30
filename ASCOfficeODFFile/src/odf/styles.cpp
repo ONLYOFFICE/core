@@ -1179,7 +1179,7 @@ void style_master_page::add_child_element( xml::sax * Reader, const ::std::wstri
     }
 }
 
-int style_master_page::find_placeHolderIndex(presentation_class::type placeHolder)
+int style_master_page::find_placeHolderIndex(presentation_class::type placeHolder,int & last_idx)
 {
 	int idx = -1;
 
@@ -1193,7 +1193,7 @@ int style_master_page::find_placeHolderIndex(presentation_class::type placeHolde
 		{
 			draw_frame* frame = dynamic_cast<draw_frame *>(content_[i].get());
 
-			if (frame->idx_in_owner<0)	frame->idx_in_owner = i+1;
+			if (frame->idx_in_owner<0)frame->idx_in_owner = last_idx++;
 
 			if ((frame) && (frame->common_presentation_attlist_.presentation_class_) && 
 						   (frame->common_presentation_attlist_.presentation_class_->get_type()== placeHolder))

@@ -84,7 +84,10 @@ void pptx_serialize_image(std::wostream & strm, _pptx_drawing const & val)
                 }
 				oox_serialize_ln(CP_XML_STREAM(),val.additional);
             } 			
-			pptx_serialize_text(CP_XML_STREAM(),val.additional);
+			//_CP_OPT(std::wstring) strTextContent;
+			//odf::GetProperty(properties,L"text-content",strTextContent);
+			//pptx_serialize_text(CP_XML_STREAM(),val.additional);
+			//на картинке тект нельзя... - выше сменили тип на рект с заливкой
         } 
     }  
 }
@@ -122,9 +125,9 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing const & val)
 							CP_XML_ATTR(L"type",val.place_holder_type_);
 							if (val.place_holder_idx_ > 0)	CP_XML_ATTR(L"idx", val.place_holder_idx_);
 							
-							if (val.place_holder_type_ == L"dt")		CP_XML_ATTR(L"sz", L"half");
-							if (val.place_holder_type_ == L"ftr")		CP_XML_ATTR(L"sz", L"quarter");
-							if (val.place_holder_type_ == L"sldNum")	CP_XML_ATTR(L"sz", L"quarter");
+							if (val.place_holder_type_ == L"dt")	{	CP_XML_ATTR(L"sz", L"half");	}
+							if (val.place_holder_type_ == L"ftr")	{	CP_XML_ATTR(L"sz", L"quarter");	}
+							if (val.place_holder_type_ == L"sldNum"){	CP_XML_ATTR(L"sz", L"quarter");	}
 						}
 					}
 				}

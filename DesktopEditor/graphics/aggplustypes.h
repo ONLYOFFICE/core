@@ -93,6 +93,7 @@ public:
 
 typedef PointF_T<REAL> PointF;
 typedef PointF_T<int> Point;
+typedef PointF_T<double> PointD;
 
 template <typename T>
 class RectF_T
@@ -106,10 +107,10 @@ public:
 		void GetLocation(PointF_T<T>* point) const { point->X = X; point->Y = Y; }
 		void GetSize(SizeF_T<T>* size) const { size->Width = Width; size->Height = Height; }
 		void GetBounds(RectF_T* rect) const { rect->X = X; rect->Y = Y; rect->Width = Width; rect->Height = Height; }
-		T GetLeft() const { return X; }
-		T GetTop() const { return Y; }
-		T GetRight() const { return X+Width; }
-		T GetBottom() const { return Y+Height; }
+		inline T GetLeft() const { return X; }
+		inline T GetTop() const { return Y; }
+		inline T GetRight() const { return X+Width; }
+		inline T GetBottom() const { return Y+Height; }
 		BOOL IsEmptyArea() const { return (Width <= (T)REAL_EPSILON) || (Height <= (T)REAL_EPSILON); }
 		BOOL Equals(const RectF_T & rect) const
 		{

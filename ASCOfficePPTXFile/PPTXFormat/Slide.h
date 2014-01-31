@@ -263,7 +263,12 @@ namespace PPTX
 			pWriter->EndAttributes();
 
 			pWriter->Write(cSld);
-			pWriter->Write(clrMapOvr);
+
+			if (clrMapOvr.is_init())
+				pWriter->Write(clrMapOvr);
+			else
+				pWriter->WriteString(_T("<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>"));
+
 			pWriter->Write(transition);
 			pWriter->Write(timing);
 

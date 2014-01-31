@@ -72,6 +72,32 @@ public:
 		return TRUE;
 	}
 
+	BOOL Add()
+	{
+		if (m_nSize == m_nAllocSize)
+		{
+			int nNewAllocSize = (m_nAllocSize == 0) ? 1 : (m_nSize * 2);
+	  
+			T* newT = new T[nNewAllocSize];
+
+			if (NULL == newT)
+				return FALSE;
+
+			m_nAllocSize = nNewAllocSize;
+
+			if (m_nSize != 0)
+			{
+				for (int i = 0; i < m_nSize; ++i)
+					newT[i] = m_aT[i];
+			}
+			
+			RELEASEARRAYOBJECTS(m_aT);
+			m_aT = newT;						
+		}
+
+		return TRUE;
+	}
+
 	BOOL Add(const T& t)
 	{
 		if (m_nSize == m_nAllocSize)
@@ -108,6 +134,24 @@ public:
 		m_nSize--;
 		return TRUE;
 	}
+
+	BOOL RemoveAt(int nIndex, int nCount)
+	{
+		if (nIndex < 0 || nIndex >= m_nSize || nCount < 1)
+			return FALSE;
+
+		if ((nIndex + nCount) > m_nSize)
+			nCount = m_nSize - nIndex;
+
+		for (int i = 0; i < nCount; ++i)
+			m_aT[nIndex + i].~T();
+
+		if ((nIndex + nCount) != m_nSize)
+			memmove_s((void*)(m_aT + nIndex), (m_nSize - nIndex - nCount + 1) * sizeof(T), (void*)(m_aT + nIndex + nCount), (m_nSize - (nIndex + nCount)) * sizeof(T));
+		m_nSize--;
+		return TRUE;
+	}
+
 	void RemoveAll()
 	{
 		if (m_aT != NULL)

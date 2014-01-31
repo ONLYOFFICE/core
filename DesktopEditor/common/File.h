@@ -289,7 +289,7 @@ namespace NSFile
 				}
 			}
 
-			lOutputCount = pCodesCur - pData;
+			lOutputCount = (LONG)(pCodesCur - pData);
 		}
 
 		static void GetUtf8StringFromUnicode_2bytes(const wchar_t* pUnicodes, LONG lCount, BYTE*& pData, LONG& lOutputCount, bool bIsBOM = false)
@@ -360,7 +360,7 @@ namespace NSFile
 				}
 			}
 
-			lOutputCount = pCodesCur - pData;
+			lOutputCount = (LONG)(pCodesCur - pData);
 		}
 
 		static void GetUtf8StringFromUnicode(const wchar_t* pUnicodes, LONG lCount, BYTE*& pData, LONG& lOutputCount, bool bIsBOM = false)

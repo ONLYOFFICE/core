@@ -39,6 +39,19 @@ typedef int				INT;
 typedef unsigned int	UINT, *PUINT;
 typedef wchar_t			WCHAR;
 
+#if (!defined (_MAC) && (!defined(MIDL_PASS) || defined(__midl)) && (!defined(_M_IX86) || (defined(_INTEGRAL_MAX_BITS) && _INTEGRAL_MAX_BITS >= 64)))
+typedef __int64				T_LONG64;
+typedef unsigned __int64	T_ULONG64;
+#else
+#if defined(_MAC) && defined(_MAC_INT_64)
+typedef __int64				T_LONG64;
+typedef unsigned __int64	T_ULONG64;
+#else
+typedef double T_LONG64;
+typedef double T_ULONG64;
+#endif //_MAC and int64
+#endif
+
 #ifndef VOID
 typedef void			VOID, *LPVOID;
 #endif

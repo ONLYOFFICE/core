@@ -3870,15 +3870,15 @@ namespace BinXlsxRW {
 				oBinaryStyleTableWriter.Write(*pStyle, oXlsx.GetTheme(), m_oFontProcessor);
 				WriteTableEnd(nCurPos);
 			}
-			//CalcChain
-			OOX::Spreadsheet::CCalcChain* pCalcChain = oXlsx.GetCalcChain();
-			if(NULL != pCalcChain)
-			{
-				nCurPos = WriteTableStart(c_oSerTableTypes::CalcChain);
-				BinaryCalcChainTableWriter oBinaryCalcChainTableWriter(oBufferedStream);
-				oBinaryCalcChainTableWriter.Write(*pCalcChain);
-				WriteTableEnd(nCurPos);
-			}
+			////CalcChain
+			//OOX::Spreadsheet::CCalcChain* pCalcChain = oXlsx.GetCalcChain();
+			//if(NULL != pCalcChain)
+			//{
+			//	nCurPos = WriteTableStart(c_oSerTableTypes::CalcChain);
+			//	BinaryCalcChainTableWriter oBinaryCalcChainTableWriter(oBufferedStream);
+			//	oBinaryCalcChainTableWriter.Write(*pCalcChain);
+			//	WriteTableEnd(nCurPos);
+			//}
 
 			//Workbook
 			OOX::Spreadsheet::CWorkbook* pWorkbook = oXlsx.GetWorkbook();

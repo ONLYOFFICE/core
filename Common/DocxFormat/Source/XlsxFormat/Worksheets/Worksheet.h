@@ -377,7 +377,7 @@ namespace OOX
 						CString sDig = sRef.Right(nLegnth - nIndex);
 						for(int i = 0, length = sAdd.GetLength(); i < length; ++i)
 						{
-							nCol = nRow * 26 + sAdd[i] - 'A' + 1;
+							nCol = nCol * 26 + sAdd[i] - 'A' + 1;
 						}
 						nRow = _wtoi(sDig);
 						bRes = true;

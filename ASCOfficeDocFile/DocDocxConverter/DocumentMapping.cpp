@@ -534,7 +534,7 @@ namespace DocFileFormat
 							m_pXmlWriter->WriteNodeEnd( _T( "w:object" ) );	
 						}
 
-						this->_skipRuns = 4;
+						this->_skipRuns = 5;
 					}
 					else
 					{

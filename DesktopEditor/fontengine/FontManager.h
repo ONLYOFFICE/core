@@ -49,6 +49,7 @@ private:
 	CApplicationFontStreams*			m_pApplicationFontStreams;
 
 public:
+	inline void SetStreams(CApplicationFontStreams* pStreams) { m_pApplicationFontStreams = pStreams; }
 	CFontFile* LockFont(FT_Library library, const std::wstring& strFileName, const LONG& lFaceIndex, const double& dSize);	
 };
 
@@ -115,6 +116,7 @@ public:
 
 	BOOL LoadFontByName(const std::wstring& sName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY);
 	BOOL LoadFontFromFile(const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
+	BOOL LoadFontFromFile2(CFontsCache* pCache, const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
 	
 public:
 	static CFontFile* LoadFontFile(FT_Library library, CFontStream* pStream, LONG lFaceIndex);

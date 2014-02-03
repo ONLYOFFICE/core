@@ -483,3 +483,15 @@ BOOL CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceI
 
 	return TRUE;
 }
+
+BOOL CFontManager::LoadFontFromFile2(CFontsCache* pCache, const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY)
+{
+	if (NULL == pCache)
+		return FALSE;
+
+	m_pFont = pCache->LockFont(m_pLibrary, sPath, lFaceIndex, dSize);
+	m_pFont->m_pFontManager = this;
+	m_pFont->SetSizeAndDpi(dSize, (UINT)dDpiX, (UINT)dDpiY);
+
+	return TRUE;
+}

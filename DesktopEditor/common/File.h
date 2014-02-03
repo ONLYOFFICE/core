@@ -209,11 +209,11 @@ namespace NSFile
 				}
 			}
 
-			pUnicodeString[pUnicodeString - pStart] = 0;
+			*pUnicodeString++ = 0;
 			
-			std::wstring strRes(pUnicodeString);
+			std::wstring strRes(pStart);
 			
-			delete [] pUnicodeString;
+			delete [] pStart;
 			
 			return strRes;
 		}

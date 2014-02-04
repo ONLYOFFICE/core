@@ -145,7 +145,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(office_document_settings);
 
-/// \class manifest
+
 /// \brief manifest:manifest
 class manifest_manifest : public office_document_base
 {
@@ -161,13 +161,13 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(manifest_manifest);
-/// \class manifest-entry
+
 /// \brief manifest:file-entry
 class manifest_entry  : public office_element
 {
 public:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-	virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name){}
+	virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_text(const std::wstring & Text){}
 
 	static const wchar_t * ns;
@@ -181,9 +181,39 @@ public:
 
 	std::wstring media_type_;
 	std::wstring full_path_;
+
+	office_element_ptr encryption_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(manifest_entry);
+
+
+/// \brief manifest:encryption-data
+class manifest_encryption_data  : public office_element
+{
+public:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name){}
+	virtual void add_text(const std::wstring & Text){}
+
+	static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeManifestEncryptionData;
+
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	std::wstring manifest_checksum_;
+	std::wstring manifest_checksum_type_;
+
+	//childs
+	//manifest:algorithm
+	//manifest:key-derivation 
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(manifest_encryption_data);
 
 }
 }

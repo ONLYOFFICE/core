@@ -113,7 +113,22 @@ void manifest_entry::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"manifest:media-type", media_type_, std::wstring(L""));
     CP_APPLY_ATTR(L"manifest:full-path", full_path_, std::wstring(L""));
 }
+void manifest_entry::add_child_element(cpdoccore::xml::sax *Reader, const std::wstring &Ns, const std::wstring &Name)
+{
+	if CP_CHECK_NAME(L"manifest", L"encryption-data")
+        CP_CREATE_ELEMENT(encryption_);
+}
+// manifest:file-entry
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * manifest_encryption_data::ns = L"manifest";
+const wchar_t * manifest_encryption_data::name = L"encryption-data";
 
+void manifest_encryption_data::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"manifest:checksum", manifest_checksum_, std::wstring(L""));
+    CP_APPLY_ATTR(L"manifest:checksum-type", manifest_checksum_type_, std::wstring(L""));
+
+}
 }
 }
 

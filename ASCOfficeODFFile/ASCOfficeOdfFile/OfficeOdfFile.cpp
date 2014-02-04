@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include "OfficeOdfFile.h"
+
 #include <string>
 #include <boost/uuid/uuid.hpp>
 #include <cpdoccore/common/boost_filesystem_version.h>
@@ -19,8 +20,9 @@
 
 #include "ConvertOO2OOX.h"
 
-#include "..\..\..\..\Common\XmlUtils.h"
+#include "..\..\Common\XmlUtils.h"
 
+#include "..\..\Common\ASCATLError.h"
 
 #pragma comment(lib, "cpformulasconvert-static.lib")
 #pragma comment(lib, "cpxml-static.lib")
@@ -167,10 +169,7 @@ HRESULT COfficeOdfFile::LoadFromFileImpl(const std::wstring & srcFileName,
                                          const std::wstring & dstTempPath,
                                          const std::wstring & dstPath)
 {
-    HRESULT hr = E_FAIL;
-
-    
-//    
+    HRESULT hr = AVS_ERROR_UNEXPECTED;    
         
 #ifdef BOOST_FILESYSTEM_LEGACY
     const std::wstring ext = boost::algorithm::to_lower_copy(boost::filesystem::wpath(srcFileName).extension());
@@ -188,9 +187,7 @@ HRESULT COfficeOdfFile::LoadFromFileImpl(const std::wstring & srcFileName,
 
 	hr = ConvertOO2OOX(ext,srcTempPath, dstTempPath,bOnlyPresentation);
 
-
-    if FAILED(hr)
-        return hr;
+	if (hr != S_OK)  hr;
    
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
     if FAILED(hr = office_utils_->CompressFileOrDirectory(ATL::CComBSTR(dstTempPath.c_str()), ATL::CComBSTR(dstPath.c_str()), (-1)))

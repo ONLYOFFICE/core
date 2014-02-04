@@ -2,6 +2,8 @@
 
 #include "ConvertOO2OOX.h"
 
+#include "..\..\Common\OfficeFileErrorDescription.h"
+
 #include <cpdoccore/../../src/docx/docx_package.h>
 #include <cpdoccore/../../src/docx/xlsx_package.h>
 #include <cpdoccore/../../src/docx/pptx_package.h>
@@ -48,6 +50,9 @@ HRESULT ConvertOO2OOX(const std::wstring &ext, const std::wstring & srcPath, con
 		cpdoccore::odf::odf_document inputDoc(srcPath);
 
 		int type = inputDoc.get_office_mime_type();
+		bool encrypted = inputDoc.get_encrypted();
+
+		if (encrypted) return AVS_ERROR_DRM;
 
 		if (type<1)
 		{
@@ -57,7 +62,7 @@ HRESULT ConvertOO2OOX(const std::wstring &ext, const std::wstring & srcPath, con
 
 		}
 
-		if (bOnlyPresentation && type != 3)return E_FAIL;
+		if (bOnlyPresentation && type != 3)return AVS_ERROR_UNEXPECTED;
 
 		switch (type)
 		{
@@ -74,7 +79,7 @@ HRESULT ConvertOO2OOX(const std::wstring &ext, const std::wstring & srcPath, con
 	}
 	catch(...)
 	{
-		return E_FAIL;
+		return AVS_ERROR_UNEXPECTED;
 	}
 	return hr;
 

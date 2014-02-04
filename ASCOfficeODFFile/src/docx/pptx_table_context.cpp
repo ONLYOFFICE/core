@@ -46,6 +46,7 @@ std::wstring pptx_table_state::get_default_cell_style_row()
     return default_row_cell_style_name_;
 }
 
+
 void pptx_table_state::start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName)
 {
     current_table_column_ = -1;

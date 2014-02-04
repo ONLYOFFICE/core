@@ -605,6 +605,8 @@ public:
     void xlsx_convert(oox::xlsx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
 
+	int get_count(){return content_.size();}//временно .. для группировок
+
 public:
     office_element_ptr_array content_;
     //int type_;
@@ -619,7 +621,6 @@ class table_table_row_group_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-private:
     bool table_display_; // default true
     
 };

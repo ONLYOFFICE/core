@@ -126,7 +126,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="D:\WORK\VersionControl.exe $(ProjectDir)\version.h"
+				CommandLine=""
 				ExcludedFromBuild="false"
 			/>
 			<Tool

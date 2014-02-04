@@ -22,6 +22,7 @@ xlsx_table_state::xlsx_table_state(xlsx_conversion_context & Context,
     xlsx_comments_context_(Context.get_comments_context_handle()),
     table_column_last_width_(0.0)
 {        
+	memset(&group_row_,0,sizeof(_group_row));
 }
     
 void xlsx_table_state::start_column(unsigned int repeated, const std::wstring & defaultCellStyleName)
@@ -36,6 +37,14 @@ void xlsx_table_state::start_column(unsigned int repeated, const std::wstring & 
 unsigned int xlsx_table_state::columns_count() const
 {
     return columns_count_;
+}
+
+void xlsx_table_state::set_table_row_group(int count, bool collapsed, int level)
+{
+	group_row_.enabled = true;
+	group_row_.count = count;
+	group_row_.collapsed = collapsed;
+	group_row_.level = level;
 }
 
 void xlsx_table_state::start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName)

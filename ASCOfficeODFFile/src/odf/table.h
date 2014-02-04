@@ -641,6 +641,7 @@ public:
     table_table_row_group() 
 	{
     }
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
 
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;

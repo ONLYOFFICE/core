@@ -317,7 +317,7 @@ void oox_serialize_xfrm(std::wostream & strm, _oox_drawing const & val, std::wst
 				CP_XML_ATTR(L"y", static_cast<size_t>(val.y));
 			}
 
-			if (val.cx >0 && val.cy >0)
+			if (val.cx >0 || val.cy >0)
 			{
 				CP_XML_NODE(L"a:ext")
 				{

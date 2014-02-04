@@ -63,14 +63,14 @@ void pptx_conversion_context::process_layouts()
 
 	get_text_context().set_process_layouts(true);
 
-	//берем только актуальные
+	//актуальные
 	for (int layout_index =0; layout_index < layouts.content.size(); layout_index++)
 	{
 		start_layout(layout_index);
 
 		odf::style_presentation_page_layout * layout = 
 			root()->odf_context().pageLayoutContainer().presentation_page_layout_by_name(layouts.content[layout_index].layout_name);
-		
+
 		if (layout)
 		{
 			layout->pptx_convert(*this);
@@ -381,22 +381,30 @@ bool pptx_conversion_context::start_page(const std::wstring & pageName,	const st
 
 bool pptx_conversion_context::start_layout(int layout_index)
 {
-	odf::presentation_layouts_instance & layouts = root()->odf_context().styleContainer().presentation_layouts();
+	if  (layout_index >=0)
+	{
+		odf::presentation_layouts_instance & layouts = root()->odf_context().styleContainer().presentation_layouts();
 
-	create_new_slideLayout(layouts.content[layout_index].Id);
-	
-	get_slide_context().start_slide();//layouts.content[layout_index].layout_name, L"");//?????
+		create_new_slideLayout(layouts.content[layout_index].Id);
+		
+		get_slide_context().start_slide();//layouts.content[layout_index].layout_name, L"");//?????
 
-	current_master_page_name_ = layouts.content[layout_index].master_name;
-	current_layout_page_name_ = L"";
-	
-	std::pair<int,std::wstring> master_id = //std::pair<int,std::wstring>(1,L"smId1");
-			root()->odf_context().styleContainer().presentation_masters().add_or_find(layouts.content[layout_index].master_name);
+		current_master_page_name_ = layouts.content[layout_index].master_name;
+		current_layout_page_name_ = L"";
+		
+		std::pair<int,std::wstring> master_id = //std::pair<int,std::wstring>(1,L"smId1");
+				root()->odf_context().styleContainer().presentation_masters().add_or_find(layouts.content[layout_index].master_name);
 
-	root()->odf_context().styleContainer().presentation_masters().add_layout_to(layouts.content[layout_index].master_name,layouts.content[layout_index]);
+		root()->odf_context().styleContainer().presentation_masters().add_layout_to(layouts.content[layout_index].master_name,layouts.content[layout_index]);
 
-	current_layout().Rels().add(relationship(L"smId1"/*master_id.second*/, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster",
-		std::wstring(L"../slideMasters/slideMaster")  + boost::lexical_cast<std::wstring>(master_id.first) + L".xml"));
+		current_layout().Rels().add(relationship(L"smId1"/*master_id.second*/, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster",
+			std::wstring(L"../slideMasters/slideMaster")  + boost::lexical_cast<std::wstring>(master_id.first) + L".xml"));
+
+		//
+	}
+	else//общий шаблон (насильно пропишем к темам несоответствующие шалоны)
+	{
+	}
 
 //layout type
 

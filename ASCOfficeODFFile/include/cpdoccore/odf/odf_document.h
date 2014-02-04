@@ -33,6 +33,7 @@ public:
 	const std::wstring & get_folder() const;
 	
 	long get_office_mime_type();
+	bool get_encrypted();
 
     class Impl;   
     Impl * get_impl() { return impl_.get(); }

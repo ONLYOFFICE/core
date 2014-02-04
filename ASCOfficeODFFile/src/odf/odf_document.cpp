@@ -45,6 +45,10 @@ long odf_document::get_office_mime_type()
 {
 	return impl_->get_office_mime_type();
 }
+bool odf_document::get_encrypted() 
+{
+	return impl_->get_encrypted();
+}
 
 }
 }

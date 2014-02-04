@@ -76,6 +76,7 @@ content_xml_t_ptr read_file_content(const fs::wpath & Path)
 odf_document::Impl::Impl(const std::wstring & Folder) : context_(new odf_read_context()), base_folder_(Folder)
 {
 	office_mime_type_ = 0;
+	encrypted = false;
 
     fs::wpath folderPath(Folder);
 
@@ -193,23 +194,25 @@ void odf_document::Impl::parse_manifests()
 		manifest_entry * entry = dynamic_cast<manifest_entry *>(elm.get());
 		if (!entry)continue;
 
-		res = entry->media_type_.find(L"application/vnd.oasis.opendocument.text");
-		if (res>=0)
+		if (entry->full_path_==L"content.xml" && entry->encryption_) encrypted = true;
+
+		if (entry->full_path_==L"/")
 		{
-			office_mime_type_ = 1;
-			break;
-		}
-		res = entry->media_type_.find(L"application/vnd.oasis.opendocument.spreadsheet");
-		if (res>=0)
-		{
-			office_mime_type_ = 2;
-			break;
-		}
-		res = entry->media_type_.find(L"application/vnd.oasis.opendocument.presentation");
-		if (res>=0)
-		{
-			office_mime_type_ = 3;
-			break;
+			res = entry->media_type_.find(L"application/vnd.oasis.opendocument.text");
+			if (res>=0)
+			{
+				office_mime_type_ = 1;
+			}
+			res = entry->media_type_.find(L"application/vnd.oasis.opendocument.spreadsheet");
+			if (res>=0)
+			{
+				office_mime_type_ = 2;
+			}
+			res = entry->media_type_.find(L"application/vnd.oasis.opendocument.presentation");
+			if (res>=0)
+			{
+				office_mime_type_ = 3;
+			}
 		}
 	}
 }

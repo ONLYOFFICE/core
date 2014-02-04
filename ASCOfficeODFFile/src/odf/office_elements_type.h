@@ -159,6 +159,7 @@ enum ElementType
 
 	typeManifest,
 	typeManifestEntry,
+	typeManifestEncryptionData,
 
 	typeOfficeSettings,
 	typeOfficeSettingsConfigItemSet,

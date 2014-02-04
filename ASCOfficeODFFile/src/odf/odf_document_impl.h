@@ -39,6 +39,8 @@ public:
     const office_element * get_content() const;
 
 	long get_office_mime_type() {return office_mime_type_;}
+
+	bool get_encrypted(){return encrypted;}
     
 private:
     odf_read_context_ptr context_;
@@ -56,6 +58,7 @@ private:
 private:
     std::wstring base_folder_;
 	long office_mime_type_;
+	bool encrypted;
             
 };
 

@@ -71,6 +71,7 @@ public:
     double table_column_last_width() const;
     void end_table_column();
 
+	void set_table_row_group(int count, bool collapsed, int level);
     void start_table_row(const std::wstring & styleName, const std::wstring & defaultCellStyleName);
     void non_empty_row();
     void end_table_row();

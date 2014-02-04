@@ -334,6 +334,11 @@ void xlsx_conversion_context::end_table_column()
 {
 }
 
+void xlsx_conversion_context::set_table_row_group(int count, bool collapsed, int level)
+{
+	get_table_context().set_table_row_group(count, collapsed, level);
+}
+
 void xlsx_conversion_context::start_table_row(const std::wstring & styleName, const std::wstring & defaultCellStyleName)
 {
     get_table_context().start_row(styleName, defaultCellStyleName);

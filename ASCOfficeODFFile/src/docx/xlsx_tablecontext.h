@@ -43,6 +43,7 @@ public:
     int current_column() const;
     int current_row() const;
 
+	void set_table_row_group(int count, bool collapsed, int level);
     void start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
     void non_empty_row();
     bool is_empty_row() const;

@@ -144,6 +144,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="D:\WORK\VersionControl.exe $(ProjectDir)\ASCOfficeOdfFile\version.h"
 			/>
 		</Configuration>
 	</Configurations>

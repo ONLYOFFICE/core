@@ -88,7 +88,10 @@ void xlsx_table_context::end_covered_cell()
 {
     return state().end_covered_cell();
 }
-
+void xlsx_table_context::set_table_row_group(int count, bool collapsed, int level)
+{
+	return state().set_table_row_group(count, collapsed, level);
+}
 void xlsx_table_context::start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName)
 {
     return state().start_row(StyleName, defaultCellStyleName);

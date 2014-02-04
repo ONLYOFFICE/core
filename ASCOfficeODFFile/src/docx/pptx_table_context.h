@@ -25,9 +25,11 @@ public:
     void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName);
     std::wstring get_default_cell_style_col(unsigned int column);
     std::wstring get_default_cell_style_row();
-    void start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
+    
+	void start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
     void end_row();
-    std::wstring current_row_style() const;
+    
+	std::wstring current_row_style() const;
     void start_cell();
     void end_cell();
 
@@ -63,7 +65,7 @@ private:
    
 	std::vector<unsigned int> columns_;
     std::vector<std::wstring> columnsDefaultCellStyleName_;
-    
+   
 };
 
 class pptx_table_context : boost::noncopyable

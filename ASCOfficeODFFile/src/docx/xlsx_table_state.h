@@ -33,6 +33,7 @@ public:
     std::wstring default_row_cell_style() const;
     std::wstring default_column_cell_style() const;
 
+	void set_table_row_group(int count, bool collapsed, int level);
     void start_cell(size_t columnsSpanned, size_t rowsSpanned);
     void end_cell();
 
@@ -66,6 +67,13 @@ public:
 
     std::wstring get_current_table_name() const { return tableName_; }
 
+	struct _group_row
+	{
+		bool enabled;
+		int count;
+		int level;
+		bool collapsed;
+	}group_row_;
 private:
     xlsx_conversion_context & context_;    
     std::wstring table_style_;
@@ -90,6 +98,7 @@ private:
 	bool empty_row_;
     double table_column_last_width_;
     xlsx_hyperlinks xlsx_hyperlinks_;
+
 };
 
 

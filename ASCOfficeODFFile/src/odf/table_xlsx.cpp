@@ -104,7 +104,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
     }
     while (0); 
 
-    const bool collapsed = table_table_row_attlist_.table_visibility_.get_type() == table_visibility::Collapse;
+    bool hidden = table_table_row_attlist_.table_visibility_.get_type() == table_visibility::Collapse;
 
     for (unsigned int i = 0; i < table_table_row_attlist_.table_number_rows_repeated_; ++i)
     {
@@ -118,7 +118,25 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
                 {
                     CP_XML_ATTR(L"r", Context.current_table_row() + 1);
 
-                    if (collapsed)
+					if (Context.get_table_context().state().group_row_.enabled)
+					{
+						//std::wstring str_spans = boost::lexical_cast<std::wstring>(Context.get_table_context().state().group_row_.count);
+						//str_spans = str_spans + L":";
+						std::wstring str_spans = L"1:" + boost::lexical_cast<std::wstring>(Context.get_table_context().columns_count());
+						ht = L"";
+
+						CP_XML_ATTR(L"collapsed",	Context.get_table_context().state().group_row_.collapsed);
+						CP_XML_ATTR(L"outlineLevel", Context.get_table_context().state().group_row_.level); 
+						CP_XML_ATTR(L"spans", str_spans);						
+						
+						if (Context.get_table_context().state().group_row_.collapsed)hidden = false;
+						Context.get_table_context().state().group_row_.count--;
+
+						if (Context.get_table_context().state().group_row_.count<1)
+							Context.get_table_context().state().group_row_.enabled = false;
+					}					
+
+                    if (hidden)
                     {
                         CP_XML_ATTR(L"hidden", L"true");                        
                     }
@@ -149,7 +167,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
             skip_next_row = true;  
     }
 
-    Context.get_table_metrics().add_rows(table_table_row_attlist_.table_number_rows_repeated_, !collapsed ? row_height : 0.0);
+    Context.get_table_metrics().add_rows(table_table_row_attlist_.table_number_rows_repeated_, !hidden ? row_height : 0.0);
 
 }
 
@@ -207,6 +225,11 @@ void table_rows_and_groups::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void table_table_row_group::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
+	int count = table_rows_and_groups_.get_count();
+
+	int level = 1;
+	
+	Context.set_table_row_group(count,table_table_row_group_attlist_.table_display_,level);
 	table_rows_and_groups_.xlsx_convert(Context);
 }
 

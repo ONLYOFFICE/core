@@ -967,13 +967,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 	oox::_docx_drawing drawing = oox::_docx_drawing();
-	drawing.fill.bitmap = oox::oox_bitmap_fill::create();
-	drawing.fill.type = 2;
 	drawing.type = oox::mediaitems::typeImage;
-
-	drawing.fill.bitmap->isInternal = false;
-    drawing.fill.bitmap->rId = Context.add_mediaitem(href, oox::mediaitems::typeImage,drawing.fill.bitmap->isInternal,href);
-	drawing.fill.bitmap->bStretch = true;
 
 	drawing.id = Context.get_drawing_context().get_current_frame_id();
 	drawing.name = Context.get_drawing_context().get_current_object_name();
@@ -993,6 +987,11 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 /////////
 	common_draw_docx_convert(Context, frame->common_draw_attlists_, drawing);
 /////////
+	drawing.fill.bitmap = oox::oox_bitmap_fill::create();
+	drawing.fill.type = 2;
+	drawing.fill.bitmap->isInternal = false;
+    drawing.fill.bitmap->rId = Context.add_mediaitem(href, oox::mediaitems::typeImage,drawing.fill.bitmap->isInternal,href);
+	drawing.fill.bitmap->bStretch = true;
 
     const _CP_OPT(style_ref) & styleRef = frame->common_draw_attlists_.shape_with_text_and_styles_.
         common_draw_shape_with_styles_attlist_.

@@ -205,6 +205,11 @@ void table_rows_and_groups::xlsx_convert(oox::xlsx_conversion_context & Context)
     }
 }
 
+void table_table_row_group::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	table_rows_and_groups_.xlsx_convert(Context);
+}
+
 void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     const std::wstring tableStyleName = table_table_attlist_.table_style_name_ ? table_table_attlist_.table_style_name_->style_name() : L"";

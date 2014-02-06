@@ -14,26 +14,6 @@ namespace media {
 
 using boost::filesystem::wpath;
 
-bool check_file_type(const std::wstring & Name)
-{
-#ifdef BOOST_FILESYSTEM_LEGACY
-    std::wstring ext = wpath(Name).extension();
-#else
-    std::wstring ext = wpath(Name).extension().string<std::wstring>();
-#endif
-    boost::algorithm::to_lower(ext);
-    if (ext == L".jpg" ||
-        ext == L".jpeg" ||
-        ext == L".gif" ||
-        ext == L".png" ||
-        ext == L".svm" ||
-        ext == L".wmf"
-        )
-        return true;
-    else
-        return false;
-}
-
 
 bool is_internal(const std::wstring & uri, const std::wstring & packetRoot)
 {

@@ -221,7 +221,6 @@ void draw_text_box::add_text(const std::wstring & Text)
 {
 }
 
-
 // draw:object
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * draw_object::ns = L"draw";
@@ -236,6 +235,23 @@ void draw_object::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void draw_object::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM(); // TODO
+}
+
+// draw:object
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * draw_object_ole::ns = L"draw";
+const wchar_t * draw_object_ole::name = L"object-ole";
+
+void draw_object_ole::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"draw:class-id", draw_class_id_);
+
+    common_xlink_attlist_.add_attributes(Attributes);
+}
+
+void draw_object_ole::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+{
+    CP_NOT_APPLICABLE_ELM(); 
 }
 
 }

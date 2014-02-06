@@ -183,6 +183,8 @@ void pptx_slide_context::default_set()
 	impl_->object_description_.additional_.clear();
 
 	impl_->object_description_.fill_.clear();
+
+	impl_->object_description_.use_image_replace_ = false;
 }
 
 void pptx_slide_context::set_placeHolder_type(std::wstring typeHolder)
@@ -318,12 +320,19 @@ void pptx_slide_context::start_table()
 	impl_->object_description_.type_ = 0; //frame 
 }
 
+void pptx_slide_context::start_object_ole()
+{
+	impl_->object_description_.use_image_replace_ = true;
+}
+
 void pptx_slide_context::start_chart(std::wstring const & path)
 {
 	impl_->object_description_.xlink_href_ = path; 
 	impl_->object_description_.type_ = 0; //frame 
 }
-
+void pptx_slide_context::end_object_ole()
+{
+}
 void pptx_slide_context::end_shape()
 {
 	impl_->shapes_.push_back(impl_->object_description_);
@@ -370,7 +379,7 @@ void pptx_slide_context::process_images()
 		pos_replaicement = pic.xlink_href_.find(L"ObjectReplacements");
 		pos_preview = pic.xlink_href_.find(L"TablePreview");
 		
-		if (pos_replaicement <0 && pos_preview <0)//оригинал, а не заменяемый объект
+		if ((pos_replaicement <0 && pos_preview <0) || pic.use_image_replace_)//оригинал, а не заменяемый объект (при наличии объекта)
 		{
 			_pptx_drawing drawing=_pptx_drawing();
 		

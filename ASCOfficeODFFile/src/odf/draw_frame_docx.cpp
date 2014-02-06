@@ -935,12 +935,13 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
  
 	std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
 	int pos_replaicement= href.find(L"ObjectReplacements"); 
-	if (pos_replaicement >=0)
-		return;//заменяемый объект
 
     const draw_frame * frame = Context.get_drawing_context().get_current_frame();//owner
 	if (!frame)
 		return;
+
+	if (pos_replaicement >=0 && !Context.get_drawing_context().get_use_image_replace())
+		return;//заменяемый объект
 
 	//тут может быть не только текст , но и таблицы, другие объекты ...
  	oox::docx_conversion_context::StreamsManPtr prev = Context.get_stream_man();
@@ -1217,6 +1218,14 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
     }
 }
 
+void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
+{
+	//временно - замещающая картинка(если она конечно присутствует)
+
+	bool & use_image_replace = Context.get_drawing_context().get_use_image_replace();
+	use_image_replace = true;
+
+}
 
 }
 }

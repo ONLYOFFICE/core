@@ -244,18 +244,13 @@ class draw_object_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes )
     {
-        // TODO
     }
 
 public:
     
-
 };
 
-
-/// \class  draw_object
-///         draw:object
-///         draw-object
+// draw:object
 class draw_object : public office_element_impl<draw_object>
 {
 public:
@@ -280,6 +275,30 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_object);
 
+// draw:object-ole
+class draw_object_ole : public office_element_impl<draw_object>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeDrawObjectOle;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    virtual void docx_convert(oox::docx_conversion_context & Context);
+    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+
+public:
+    common_xlink_attlist	common_xlink_attlist_;
+	_CP_OPT(std::wstring)	draw_class_id_;
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(draw_object_ole);
 
 }
 }

@@ -89,8 +89,6 @@ public:
     {
         BOOST_FOREACH(rel_ const & r, pptx_drawing_rels_)
         {
-            const bool valid = utils::media::check_file_type(r.ref_);
-			
 			if (r.type_ == mediaitems::typeChart)//временно - нужно потом все загнать в релс
 			{
 				Rels.add(relationship(
@@ -106,7 +104,7 @@ public:
 				Rels.add(relationship(
 							r.rid_,
 							utils::media::get_rel_type(r.type_),
-							/*valid ? (*/r.is_internal_ ? std::wstring(L"../") + r.ref_ : r.ref_/*) : L"NULL"*/,
+							r.is_internal_ ? std::wstring(L"../") + r.ref_ : r.ref_,
 							(r.is_internal_ ? L"" : L"External")
 							) 
 					);

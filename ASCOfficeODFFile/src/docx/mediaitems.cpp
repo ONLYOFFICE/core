@@ -91,7 +91,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, Type type, bool 
 		else if ( type == typeImage)
 		{
 			fs::wpath file_name  = fs::wpath(inputPath);
-			if (file_name.extension() == L".svm")
+			if (file_name.extension() == L".svm" || file_name.extension().empty())
 			{
 				outputPath = outputPath + L".png"; 
 			}

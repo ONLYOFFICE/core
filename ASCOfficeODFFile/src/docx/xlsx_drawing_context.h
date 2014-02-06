@@ -80,6 +80,9 @@ public:
     void start_shape(int type);
 	//...пока тока общие свойства ... частные для каждого объекта пооозже
     void end_shape();
+
+	void start_object_ole();
+	void end_object_ole();
 	
 	bool empty() const;
 

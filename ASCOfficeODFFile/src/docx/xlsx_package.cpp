@@ -24,7 +24,6 @@ xlsx_content_types_file::xlsx_content_types_file()
     content_type_.add_default(L"jpeg",    L"image/jpeg");
     content_type_.add_default(L"png",     L"image/png");
     content_type_.add_default(L"wmf",     L"image/x-wmf");
-	//content_type_.add_default(L"svm",     L"application/octet-stream");
 
     content_type_.add_default(L"vml",    L"application/vnd.openxmlformats-officedocument.vmlDrawing");
  

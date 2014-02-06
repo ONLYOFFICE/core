@@ -278,7 +278,11 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
         _CP_LOG(error) << "convert draw::object error" << std::endl;        
     }
 }
-
+void draw_object_ole::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	//временно - замещающая картинка(если она конечно присутствует)
+	Context.get_drawing_context().start_object_ole();
+}
 }
 }
 

@@ -300,6 +300,16 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
     }
 }
 
+void draw_object_ole::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	//объект бин в embeddings
+	//распознать тип по guid???
+
+
+	//временно - замещающая картинка(если она конечно присутствует)
+	Context.get_slide_context().start_object_ole();
+}
+
 }
 }
 

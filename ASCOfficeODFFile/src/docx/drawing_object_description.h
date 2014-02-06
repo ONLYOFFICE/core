@@ -34,6 +34,8 @@ struct drawing_object_description
 
 	_oox_fill fill_;
 
+	bool use_image_replace_;
+
 	int type_;	//default - frame
 };
 

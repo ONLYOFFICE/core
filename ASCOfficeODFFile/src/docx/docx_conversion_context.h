@@ -107,6 +107,7 @@ public:
 		odf::draw_frame *ptr;
 		std::wstring text_content;
 		size_t id;
+		bool use_image_replace;
 	};
 
     drawing_context() : objects_count_(0),  current_shape_(NULL),shape_text_content_(L""),zero_string_(L""),current_level_(0),current_shape_id_ (0){}
@@ -117,10 +118,10 @@ public:
  		current_level_++;
         objects_count_++; 
 
-		_frame_ fr = {drawFrame,L"",objects_count_};
+		_frame_ fr = {drawFrame,L"",objects_count_,false};
    
 		frames_.push_back(fr);
-   }
+	}
     void start_shape(odf::draw_shape * drawShape) 
     { 
 		current_level_++;
@@ -148,6 +149,15 @@ public:
 		else
 			return zero_string_;
 	}
+	bool & get_use_image_replace()
+	{
+		bool res = false;
+		if (frames_.size()>0)
+			return frames_.back().use_image_replace;
+		else
+			return res;
+	}
+
 	std::wstring & get_text_stream_shape()
 	{
 		return shape_text_content_;
@@ -189,7 +199,6 @@ public:
 	}
 	odf::draw_shape * get_current_shape() const { return current_shape_; }
 	
-
 private:
 	std::wstring shape_text_content_;
 

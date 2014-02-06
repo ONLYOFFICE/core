@@ -155,6 +155,8 @@ void xlsx_drawing_context::default_set()
 
 	impl_->object_description_.hlinks_.clear();
 	impl_->object_description_.additional_.clear();
+
+	impl_->object_description_.use_image_replace_ = false;
 }
 xlsx_drawing_context::~xlsx_drawing_context()
 {
@@ -252,6 +254,15 @@ void xlsx_drawing_context::start_shape(int type)
 {
 	impl_->object_description_.type_ = type; //2,3... 
 }
+
+void xlsx_drawing_context::start_object_ole()
+{
+	impl_->object_description_.use_image_replace_ = true;
+}
+
+void xlsx_drawing_context::end_object_ole()
+{
+}
 void xlsx_drawing_context::end_shape()
 {
 	impl_->shapes_.push_back(impl_->object_description_);
@@ -282,6 +293,7 @@ bool xlsx_drawing_context::empty() const
 {
     return impl_->empty();
 }
+
 void xlsx_drawing_context::process_images(xlsx_table_metrics & table_metrics)
 {
 	using boost::filesystem::wpath;
@@ -290,7 +302,7 @@ void xlsx_drawing_context::process_images(xlsx_table_metrics & table_metrics)
     BOOST_FOREACH(drawing_object_description & pic, impl_->images_)
     {
 		pos_replaicement= pic.xlink_href_.find(L"ObjectReplacements"); 
-		if (pos_replaicement <0)//оригинал, а не заменяемый объект
+		if (pos_replaicement <0 || pic.use_image_replace_)//оригинал, а не заменяемый объект
 		{
 			_xlsx_drawing drawing=_xlsx_drawing();			
 			drawing.fill = pic.fill_;

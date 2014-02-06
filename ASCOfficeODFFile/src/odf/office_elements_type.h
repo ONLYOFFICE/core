@@ -173,6 +173,7 @@ enum ElementType
     typeDrawImage,
     typeDrawTextBox,
     typeDrawObject,
+    typeDrawObjectOle,
  	typeDrawChart,
 
 	typeDrawShape,

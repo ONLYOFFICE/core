@@ -11,6 +11,9 @@
 
 #include "..\..\..\ASCImageStudio3\ASCGraphics\OfficeSvmFile\SvmConverter.h"
 
+#import "../../../Redist/ASCImageFile3.dll"		named_guids rename_namespace("ImageFile") raw_interfaces_only
+
+
 namespace cpdoccore { 
 namespace oox {
 namespace package {
@@ -173,14 +176,38 @@ void media::write(const std::wstring & RootPath)
         if (item.mediaInternal && item.valid && item.type == mediaitems::typeImage )
         {
 			fs::wpath file_name  = fs::wpath(item.href);
+			fs::wpath file_name_out = fs::wpath(RootPath) / item.outputName;
 			if (file_name.extension() == L".svm")
 			{
-				ConvertSvmToImage(file_name, fs::wpath(RootPath) / item.outputName);
+				ConvertSvmToImage(file_name, file_name_out);
+			}
+			else if(file_name.extension().empty())
+			{
+				//непонятный тип .. может быть svm, emf, wmf 
+				//отдетектить???
+				ImageFile::IImageFile3Ptr piImageFile = NULL;
+				piImageFile.CreateInstance( __uuidof(ImageFile::ImageFile3) );
+				if( NULL != piImageFile )
+				{
+					VARIANT_BOOL vbSuccess = VARIANT_TRUE;
+					IUnknown* pImage = NULL;
+				
+					BSTR bstrFilename = SysAllocString(item.href.data());
+					piImageFile->LoadImage2(bstrFilename, &pImage, &vbSuccess);
+					SysFreeString( bstrFilename );
+					if (vbSuccess && pImage)
+					{
+						bstrFilename = SysAllocString(file_name_out.string().data());
+						piImageFile->SaveImage2( &pImage, 4, bstrFilename, &vbSuccess );//to png
+						SysFreeString( bstrFilename );
+						pImage->Release();
+					}
+				}
+
 			}
 			else
-				boost::filesystem::copy_file(item.href, fs::wpath(RootPath) / item.outputName);
+				boost::filesystem::copy_file(item.href, file_name_out);
         }
-		//а если не внешнаяя картинка???
     }
 
 }

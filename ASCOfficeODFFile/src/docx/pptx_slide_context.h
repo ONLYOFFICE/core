@@ -58,6 +58,9 @@ public:
 	void start_shape(int type);
     void end_shape();
 	
+ 	void start_object_ole();
+    void end_object_ole();
+
 	bool empty() const;
 //////////////////////////////////////////////////////////////////////////////////////////////
 	void serialize_objects(std::wostream & strm);

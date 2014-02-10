@@ -209,6 +209,24 @@ public:
 	{
 		m_pRenderer->CalculateFullTransform();
 	}
+
+public:
+	inline void PathCommandRect(double x, double y, double w, double h)
+	{
+		PathCommandMoveTo(x, y);
+		PathCommandLineTo(x + w, y);
+		PathCommandLineTo(x + w, y + h);
+		PathCommandLineTo(x, y + h);
+		PathCommandClose();
+	}
+	inline void Fill()
+	{
+		DrawPath(c_nWindingFillMode);
+	}
+	inline void Stroke()
+	{
+		DrawPath(1);
+	}
 };
 
 #endif // _BUILD_GRAPHICS_RENDERER_H_

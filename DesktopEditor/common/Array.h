@@ -92,9 +92,10 @@ public:
 			}
 			
 			RELEASEARRAYOBJECTS(m_aT);
-			m_aT = newT;						
+			m_aT = newT;
 		}
 
+		m_nSize++;
 		return TRUE;
 	}
 

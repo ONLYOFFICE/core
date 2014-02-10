@@ -2831,6 +2831,16 @@ namespace BinXlsxRW {
 				pSheetFormatPr->m_oBaseColWidth.Init();
 				pSheetFormatPr->m_oBaseColWidth->SetValue(m_oBufferedStream.ReadLong());
 			}
+			else if (c_oSerSheetFormatPrTypes::CustomHeight == type)
+			{
+				pSheetFormatPr->m_oCustomHeight.Init();
+				pSheetFormatPr->m_oCustomHeight->FromBool(m_oBufferedStream.ReadBool());
+			}
+			else if (c_oSerSheetFormatPrTypes::ZeroHeight == type)
+			{
+				pSheetFormatPr->m_oZeroHeight.Init();
+				pSheetFormatPr->m_oZeroHeight->FromBool(m_oBufferedStream.ReadBool());
+			}
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;

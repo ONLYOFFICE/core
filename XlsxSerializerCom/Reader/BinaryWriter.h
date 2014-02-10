@@ -2485,6 +2485,20 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Long);
 				m_oBcw.m_oStream.WriteLong(oSheetFormatPr.m_oBaseColWidth->GetValue());
 			}
+			//CustomHeight
+			if(oSheetFormatPr.m_oCustomHeight.IsInit())
+			{
+				m_oBcw.m_oStream.WriteByte(c_oSerSheetFormatPrTypes::CustomHeight);
+				m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Byte);
+				m_oBcw.m_oStream.WriteByte(oSheetFormatPr.m_oCustomHeight->ToBool());
+			}
+			//ZeroHeight
+			if(oSheetFormatPr.m_oZeroHeight.IsInit())
+			{
+				m_oBcw.m_oStream.WriteByte(c_oSerSheetFormatPrTypes::ZeroHeight);
+				m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Byte);
+				m_oBcw.m_oStream.WriteByte(oSheetFormatPr.m_oZeroHeight->ToBool());
+			}
 		}
 		void WritePageMargins(const OOX::Spreadsheet::CPageMargins& oPageMargins)
 		{

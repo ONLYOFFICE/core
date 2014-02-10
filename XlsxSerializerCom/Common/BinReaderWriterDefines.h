@@ -218,7 +218,9 @@ namespace BinXlsxRW
 	{
 		DefaultColWidth = 0,
 		DefaultRowHeight = 1,
-		BaseColWidth = 2
+		BaseColWidth = 2,
+		CustomHeight = 3,
+		ZeroHeight = 4
 	};}
 	namespace c_oSerRowTypes{enum c_oSerRowTypes
 	{

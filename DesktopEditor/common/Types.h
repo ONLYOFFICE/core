@@ -64,9 +64,13 @@ typedef unsigned long		ULONG, ARGB;
 
 typedef long HRESULT;
 
+#ifdef WIN32
+#include "winerror.h"
+#else
 #ifndef S_OK
 #define S_OK                                   ((HRESULT)0x00000000L)
 #define S_FALSE                                ((HRESULT)0x00000001L)
+#endif
 #endif
 
 #define ADDREFINTERFACE(pinterface)\

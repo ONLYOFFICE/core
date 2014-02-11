@@ -24,7 +24,7 @@ const bool XLSXSerializer::read(Document& doc, const _bstr_t& from)
 	bool res =  loadDir(doc, cur_dir, static_cast<wchar_t*>(from));
 	if(res)
 	{
-		Log::event("\"" + std::string(static_cast<char*>(from)) + "\" loaded successfully");
+		Log::event("\"" + std::string(static_cast<char*>(from)) + "\" loaded successfully\n");
 		return true;
 	}
 	return false;

@@ -44,9 +44,11 @@ const std::string hres2str(const HRESULT hres);
 namespace XMLSTUFF
 {;
 
+static bool extractXLS(const int id, LPSTREAM* stream);
 MSXML2::IXMLDOMElementPtr findElementAmongParents(MSXML2::IXMLDOMElementPtr own_tag, const _bstr_t& tag_name, const bool checkSelf = false);
 const bool isChildOf(MSXML2::IXMLDOMElementPtr own_tag, const _bstr_t& tag_name, const bool checkSelf = false);
 const bool loadXSLTFromResources(MSXML2::IXMLDOMDocumentPtr xslt_doc, const std::vector<std::wstring>& resources);
+bool loadXSLTFromResources2(MSXML2::IXMLDOMDocumentPtr xslt_doc, const std::vector<int>& resources);
 // Makes a new XML tag and append it to parent (no attributes set)
 MSXML2::IXMLDOMElementPtr makeXMLNode(const std::string& tag_name, MSXML2::IXMLDOMElementPtr parent);
 const std::wstring make3dRef(const WORD ixti, const std::wstring cell_ref, MSXML2::IXMLDOMDocumentPtr doc);

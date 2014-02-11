@@ -22,26 +22,38 @@ HTMLConverter::HTMLConverter()
 
 MSXML2::IXMLDOMDocument3Ptr HTMLConverter::PrepareX2H_XSLT()
 {
-	MSXML2::IXMLDOMDocument3Ptr xslt_from_X(_T("Msxml2.FreeThreadedDOMDocument.6.0"));
+	MSXML2::IXMLDOMDocument3Ptr xslt_from_X(_T("Msxml2.FreeThreadedDOMDocument.6.0"));//DOMDocument
 	xslt_from_X->Putasync(VARIANT_FALSE);
 	xslt_from_X->setProperty(L"SelectionNamespaces", L"xmlns:xsl='http://www.w3.org/1999/XSL/Transform'");
-	std::vector<std::wstring> resources;
 
 	wchar_t file_path[MAX_PATH];
 	GetModuleFileNameW(ATL::_AtlBaseModule.GetModuleInstance(), file_path, MAX_PATH);
-	std::wstring dll_file_name = boost::filesystem::wpath(file_path).filename();
 
-	resources.push_back(L"res://" + dll_file_name + L"/XSL/#2016"); // x2htm.xml
-	resources.push_back(L"res://" + dll_file_name + L"/XSL/#2017"); // x2htm_index.xml
-	resources.push_back(L"res://" + dll_file_name + L"/XSL/#2018"); // x2htm_sheet.xml
-	resources.push_back(L"res://" + dll_file_name + L"/XSL/#2019"); // x2htm_tabs.xml
-	resources.push_back(L"res://" + dll_file_name + L"/XSL/#2020"); // x2htm_css.xml
-	resources.push_back(L"res://" + dll_file_name + L"/XSL/#2021"); // x2htm_tools.xml
+	std::wstring dll_file_name =  boost::filesystem::wpath(file_path).filename();
 	
-	if(!XMLSTUFF::loadXSLTFromResources(xslt_from_X, resources))
+	//std::vector<std::wstring> resources;
+	//resources.push_back(L"res://" + dll_file_name + L"/XSL/#2016"); // x2htm.xml
+	//resources.push_back(L"res://" + dll_file_name + L"/XSL/#2017"); // x2htm_index.xml
+	//resources.push_back(L"res://" + dll_file_name + L"/XSL/#2018"); // x2htm_sheet.xml
+	//resources.push_back(L"res://" + dll_file_name + L"/XSL/#2019"); // x2htm_tabs.xml
+	//resources.push_back(L"res://" + dll_file_name + L"/XSL/#2020"); // x2htm_css.xml
+	//resources.push_back(L"res://" + dll_file_name + L"/XSL/#2021"); // x2htm_tools.xml
+	//if(!XMLSTUFF::loadXSLTFromResources(xslt_from_X, resources))
+	//{
+	//	return MSXML2::IXMLDOMDocument3Ptr(NULL);
+	//}	
+	std::vector<int> resources;
+	resources.push_back(2016); // x2htm.xml
+	resources.push_back(2017); // x2htm_index.xml
+	resources.push_back(2018); // x2htm_sheet.xml
+	resources.push_back(2019); // x2htm_tabs.xml
+	resources.push_back(2020); // x2htm_css.xml
+	resources.push_back(2021); // x2htm_tools.xml
+
+	if(!XMLSTUFF::loadXSLTFromResources2(xslt_from_X, resources))
 	{
 		return MSXML2::IXMLDOMDocument3Ptr(NULL);
-	}
+	}	
 	Log::event("XLSX to HTML XSLT table loaded from resources successfully");
 #ifdef _DEBUG
 	// DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG

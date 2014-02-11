@@ -3,6 +3,18 @@
 #include "stdafx.h"
 #include "HtmlFile.h"
 
+#include <vector>
+#include <map>
+#include <deque>
+#include <list>
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <iosfwd>
+#include <memory>
+#include <functional>
+#include "..\HtmlConverter\source\Logging\log.h"
+
 #include <EWSDocument.h>
 
 // CWSHtmlFile

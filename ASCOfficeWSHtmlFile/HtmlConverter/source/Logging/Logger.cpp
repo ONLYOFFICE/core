@@ -29,7 +29,7 @@ void Logger::writeLine(const std::string& type, const std::string& str)
 
 Logger& Logger::getLogger()
 {
-	static Logger logger("AVSOfficeXlsFile.log");
+	static Logger logger("c:\\ASCOfficeHtmlFile.log");
 	return logger;
 }
 

@@ -320,34 +320,134 @@ const bool isChildOf(MSXML2::IXMLDOMElementPtr own_tag, const _bstr_t& tag_name,
 	return findElementAmongParents(own_tag, tag_name, checkSelf);
 }
 
-
-/*
-const std::wstring moduleFileName()
+static bool extractXLS(const int id, LPSTREAM* streamOut)
 {
-static wchar_t buffer[255];
-::GetModuleFileName(AfxGetInstanceHandle(), buffer, 254);
-std::wstring module = buffer;
-size_t fnpos = module.find_last_of('\\') + 1;
-module = module.substr(fnpos, module.length() - fnpos);
-return module;
+	HRSRC hRes = 0;
+	HGLOBAL hData = NULL;
+	HRESULT hr	= S_FALSE;
+
+	HMODULE hModule = _AtlBaseModule.GetModuleInstance();
+		
+	hRes = FindResource(hModule, MAKEINTRESOURCE(id), L"XSL");
+	
+	if(hRes == NULL)return false;
+	//Log::event("1");
+	
+	DWORD dwSize = SizeofResource(hModule, hRes);
+	
+	if(dwSize == NULL)return false;
+	//Log::event("2");
+	
+	hData = LoadResource(hModule, hRes);
+	
+	if(hData == NULL)return false;
+	//Log::event("3");
+	
+	const void *pData = LockResource(hData);
+	
+	if(pData == NULL) return false;
+	//Log::event("4");
+
+	HGLOBAL file = GlobalAlloc(GMEM_MOVEABLE, dwSize);
+
+	if (file)
+	{
+		void* fileBuffer = GlobalLock(file);
+		CopyMemory(fileBuffer, pData, dwSize);
+		GlobalUnlock(file);
+
+		ULONG written=0;
+		hr = CreateStreamOnHGlobal(file, TRUE, streamOut);
+	 }
+
+	UnlockResource( hData );
+	FreeResource( hData );
+
+	if (hr)return false;
+	//Log::event("5");
+	return true;
 }
 
-*/
-const bool loadXSLTFromResources(MSXML2::IXMLDOMDocumentPtr xslt_doc, const std::vector<std::wstring>& resources)
+
+bool loadXSLTFromResources2(MSXML2::IXMLDOMDocumentPtr xslt_doc, const std::vector<int>& resources)
 {
 	if(resources.empty())
-	{
+	{ 
 		return true;
 	}
-	//std::wstring prefix = std::wstring(L"res://") + moduleFileName() + L"/XSL/";
 
-	if(VARIANT_TRUE != xslt_doc->load(resources.begin()->c_str()))
+	LPSTREAM stream_xls= NULL;
+	
+	if (false == extractXLS(*resources.begin(),&stream_xls))
 	{
+		return false;
+	}
+
+	if(VARIANT_TRUE != xslt_doc->load(stream_xls))
+	{
+		//Log::event("error (1) !!");
+		if (stream_xls)stream_xls->Release();
 		return false;
 	}
 	MSXML2::IXMLDOMNodePtr dst_node = xslt_doc->GetdocumentElement(); // assuming xsl:stylesheet
 	if(!dst_node)
 	{
+		//Log::event("error (2) !!");
+		if (stream_xls)stream_xls->Release();
+		return false;
+	}
+	if (stream_xls)stream_xls->Release();
+	for (std::vector<int>::const_iterator it = ++resources.begin(), itEnd = resources.end(); it != itEnd; ++it)
+	{
+		MSXML2::IXMLDOMDocument3Ptr another_xslt(_T("Msxml2.FreeThreadedDOMDocument.6.0"));
+		another_xslt->Putasync(VARIANT_FALSE);
+		
+		if (false == extractXLS(*it,&stream_xls))
+		{
+			if (stream_xls)stream_xls->Release();
+			return false;
+		}
+		if(VARIANT_TRUE != another_xslt->load(stream_xls))
+		{
+			//Log::event("error (3) !!");
+			if (stream_xls)stream_xls->Release();
+			return false;
+		}
+		MSXML2::IXMLDOMDocumentFragmentPtr fragment = another_xslt->createDocumentFragment();
+		//MSXML2::IXMLDOMNodeListPtr ins_elems = another_xslt->selectNodes(L"xsl:stylesheet/* | xsl:stylesheet/@*" );
+		MSXML2::IXMLDOMNodePtr root_node = another_xslt->GetdocumentElement(); // assuming xsl:stylesheet
+		MSXML2::IXMLDOMNodeListPtr ins_elems  = root_node->GetchildNodes();
+		MSXML2::IXMLDOMNodePtr child;
+		while(child = ins_elems->nextNode())
+		{
+			fragment->appendChild(child->cloneNode(VARIANT_TRUE));
+		}
+
+		dst_node->appendChild(fragment);
+		if (stream_xls)stream_xls->Release();
+	}
+
+	return true;
+}
+const bool loadXSLTFromResources(MSXML2::IXMLDOMDocumentPtr xslt_doc, const std::vector<std::wstring>& resources)
+{
+	if(resources.empty())
+	{ 
+		return true;
+	}
+	//std::wstring prefix = std::wstring(L"res://") + moduleFileName() + L"/XSL/";
+
+	std::string test = CW2A(resources.begin()->c_str());
+	Log::event(test);
+	if(VARIANT_TRUE != xslt_doc->load(resources.begin()->c_str()))
+	{
+		Log::event("error (1) !!");
+		return false;
+	}
+	MSXML2::IXMLDOMNodePtr dst_node = xslt_doc->GetdocumentElement(); // assuming xsl:stylesheet
+	if(!dst_node)
+	{
+		//Log::event("error (2) !!");
 		return false;
 	}
 	for (std::vector<std::wstring>::const_iterator it = ++resources.begin(), itEnd = resources.end(); it != itEnd; ++it)
@@ -356,6 +456,7 @@ const bool loadXSLTFromResources(MSXML2::IXMLDOMDocumentPtr xslt_doc, const std:
 		another_xslt->Putasync(VARIANT_FALSE);
 		if(VARIANT_TRUE != another_xslt->load(it->c_str()))
 		{
+			//Log::event("error (3) !!");
 			return false;
 		}
 		MSXML2::IXMLDOMDocumentFragmentPtr fragment = another_xslt->createDocumentFragment();

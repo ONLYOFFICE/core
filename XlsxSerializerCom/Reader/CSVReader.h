@@ -11,6 +11,9 @@ namespace CSVReader
 			sText.Delete(nIndex);
 			oDeleteChars.pop();
 		}
+		// Пустую не пишем
+		if (0 == sText.GetLength())
+			return;
 
 		OOX::Spreadsheet::CCell *pCell = new OOX::Spreadsheet::CCell();
 		pCell->m_oType.Init();
@@ -29,7 +32,6 @@ namespace CSVReader
 		else
 		{
 			// Число
-			pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
 			pCell->m_oValue.Init();
 			pCell->m_oValue->m_sText = sText;
 		}

@@ -91,6 +91,9 @@ CGraphicsRenderer::CGraphicsRenderer()
 	m_pDIB		= NULL;
 
 	m_pCache	= NULL;
+
+	m_dGlobalAlpha			= 1.0;
+	m_bGlobalAlphaEnabled	= FALSE;
 }
 CGraphicsRenderer::~CGraphicsRenderer()
 {
@@ -1128,4 +1131,13 @@ void CGraphicsRenderer::CreateFlip(BYTE* pPixels, const Aggplus::CDoubleRect& oR
 	m_pRenderer->SetPageWidth(m_dWidth, Aggplus::UnitMillimeter);
 	m_pRenderer->SetPageHeight(m_dHeight, Aggplus::UnitMillimeter);
 	m_pRenderer->SetPageUnit(Aggplus::UnitMillimeter);
+}
+
+void CGraphicsRenderer::put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal)
+{
+	m_bGlobalAlphaEnabled = bEnabled;
+	if (m_bGlobalAlphaEnabled)
+		m_dGlobalAlpha = dVal;
+	else
+		m_dGlobalAlpha = 1.0;
 }

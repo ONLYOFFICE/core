@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="ASCOfficeDocxFile2"
 	ProjectGUID="{D02A88E6-5B2B-4A15-A4F6-C057F698FC53}"
 	RootNamespace="ASCOfficeDocxFile2"
@@ -127,7 +127,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\Redist\VersionControl.exe &quot;$(ProjectDir)\version.h&quot;"
+				CommandLine=""
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -228,7 +228,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="$(SolutionDir)/../../../Redist/VersionControl.exe $(ProjectDir)version.h"
+				CommandLine=""
 				ExcludedFromBuild="true"
 			/>
 			<Tool
@@ -479,10 +479,6 @@
 				Name="Writer"
 				>
 				<File
-					RelativePath=".\BinReader\AbstractWriter.h"
-					>
-				</File>
-				<File
 					RelativePath=".\BinReader\ChartWriter.h"
 					>
 				</File>
@@ -532,10 +528,6 @@
 				</File>
 			</Filter>
 		</Filter>
-		<File
-			RelativePath=".\DocIncluder.h"
-			>
-		</File>
 		<File
 			RelativePath=".\DocxFile2.h"
 			>

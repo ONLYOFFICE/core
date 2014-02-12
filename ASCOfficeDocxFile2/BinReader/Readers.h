@@ -5108,28 +5108,54 @@ public:
 		else if(c_oSerRunType::fldstart == type)
 		{
 			CommitFirstRun();
-			CString sHyperlink((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
-			RELEASEOBJECT(m_pCurHyperlink);
-			m_pCurHyperlink = WriteHyperlink::Parse(sHyperlink);
-			if(NULL != m_pCurHyperlink)
+			CString sField((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+			if(-1 != sField.Find(_T("HYPERLINK")))
 			{
-				long rId;
-				CString sHref = m_pCurHyperlink->href;
-				CorrectString(sHref);
-				BSTR bstrHref = sHref.AllocSysString();
-				m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"), bstrHref, _T("External"), &rId);
-				SysFreeString(bstrHref);
-				CString srId;srId.Format(_T("rId%d"), rId);
-				m_pCurHyperlink->rId = srId;
+				RELEASEOBJECT(m_pCurHyperlink);
+				m_pCurHyperlink = WriteHyperlink::Parse(sField);
+				if(NULL != m_pCurHyperlink)
+				{
+					long rId;
+					CString sHref = m_pCurHyperlink->href;
+					CorrectString(sHref);
+					BSTR bstrHref = sHref.AllocSysString();
+					m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"), bstrHref, _T("External"), &rId);
+					SysFreeString(bstrHref);
+					CString srId;srId.Format(_T("rId%d"), rId);
+					m_pCurHyperlink->rId = srId;
+				}
+			}
+			else
+			{
+				CorrectString(sField);
+				GetRunStringWriter().WriteString(CString(_T("<w:r>")));
+				if(m_oCur_rPr.IsNoEmpty())
+					m_oCur_rPr.Write(&GetRunStringWriter());
+				GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));
+				if(m_oCur_rPr.IsNoEmpty())
+					m_oCur_rPr.Write(&GetRunStringWriter());
+				GetRunStringWriter().WriteString(CString(_T("<w:instrText xml:space=\"preserve\">")));
+				GetRunStringWriter().WriteString(sField);
+				GetRunStringWriter().WriteString(CString(_T("</w:instrText></w:r><w:r>")));
+				if(m_oCur_rPr.IsNoEmpty())
+					m_oCur_rPr.Write(&GetRunStringWriter());
+				GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"separate\"/></w:r>")));
 			}
 		}
 		else if(c_oSerRunType::fldend == type)
 		{
+			CommitFirstRun();
 			if(NULL != m_pCurHyperlink)
 			{
-				CommitFirstRun();
 				m_pCurHyperlink->Write(m_oDocumentWriter.m_oContent);
 				RELEASEOBJECT(m_pCurHyperlink);
+			}
+			else
+			{
+				GetRunStringWriter().WriteString(CString(_T("<w:r>")));
+				if(m_oCur_rPr.IsNoEmpty())
+					m_oCur_rPr.Write(&GetRunStringWriter());
+				GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"end\"/></w:r>")));
 			}
 		}
 		else if ( c_oSerRunType::CommentReference == type )

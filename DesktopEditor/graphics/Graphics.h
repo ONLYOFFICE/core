@@ -281,7 +281,7 @@ protected:
 
 	agg::svg::frame_buffer_rgba       m_frame_buffer;
 	agg::svg::rasterizer              m_rasterizer;
-
+	
 #ifdef _WINDOW_GRAPHIS_USE_
 	// для отрисовки картинок - используем Gdiplus
 	Gdiplus::Graphics*		m_pGraphics;
@@ -295,6 +295,8 @@ protected:
 public:
 	agg::svg::frame_buffer_rgba&   get_frame_buffer();
 	agg::svg::rasterizer&          get_rasterizer();
+
+	bool m_bIntegerGrid;
 
 public:
 
@@ -382,6 +384,9 @@ public:
 
 	inline Aggplus::CMatrix* GetFullTransform() { return &m_oFullTransform; }
 	inline Aggplus::CMatrix* GetCoordTransform() { return &m_oCoordTransform; }
+
+	inline double GetPixW() { return m_dWidthPix; }
+	inline double GetPixH() { return m_dHeightPix; }
 
 protected:
 

@@ -896,7 +896,7 @@ HRESULT CGraphicsRenderer::DrawImage(IGrObject* pImage, const double& x, const d
 	m_pRenderer->DrawImage((Aggplus::CImage*)pImage, x, y, w, h);
 	return S_OK;	
 }
-HRESULT CGraphicsRenderer::DrawImageFromFile(const std::wstring& bstrVal, const double& x, const double& y, const double& w, const double& h)
+HRESULT CGraphicsRenderer::DrawImageFromFile(const std::wstring& bstrVal, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha)
 {
 	CCacheImage* pCacheImage = NULL;
 	if (NULL != m_pCache)
@@ -1140,4 +1140,16 @@ void CGraphicsRenderer::put_GlobalAlphaEnabled(const bool& bEnabled, const doubl
 		m_dGlobalAlpha = dVal;
 	else
 		m_dGlobalAlpha = 1.0;
+}
+
+void CGraphicsRenderer::AddRect(const double& x, const double& y, const double& w, const double& h)
+{
+	if (!CheckValidate())
+		return;
+
+	m_pPath->MoveTo(x, y);
+	m_pPath->LineTo(x + w, y);
+	m_pPath->LineTo(x + w, y + h);
+	m_pPath->LineTo(x, y + h);
+	m_pPath->CloseFigure();
 }

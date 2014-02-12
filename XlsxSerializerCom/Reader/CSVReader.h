@@ -164,6 +164,12 @@ namespace CSVReader
 						bIsWrap = FALSE;
 					}
 
+					if (wcNewLineR == wcCurrent && nIndex + 1 != nSize && wcNewLineN == pTemp[nIndex + 1])
+					{
+						// На комбинацию \r\n должен быть только 1 перенос
+						++nIndex;
+					}
+					
 					nStartCell = nIndex + 1;
 
 					pWorksheet->m_oSheetData->m_arrItems.Add(pRow);

@@ -169,7 +169,7 @@ public:
 
 //-------- Функции для вывода изображений ---------------------------------------------------
 	virtual HRESULT DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h);
-	virtual HRESULT DrawImageFromFile(const std::wstring& sFile, const double& x, const double& y, const double& w, const double& h);
+	virtual HRESULT DrawImageFromFile(const std::wstring& sFile, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha = 255);
 
 // transform --------------------------------------------------------------------------------
 	virtual HRESULT SetTransform(const double& m1, const double& m2, const double& m3, const double& m4, const double& m5, const double& m6);
@@ -186,6 +186,19 @@ public:
 	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
 
 	void put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal);
+	inline void put_IntegerGrid(const bool& bEnabled) 
+	{ 
+		if (!m_pRenderer) 
+			return; 
+		m_pRenderer->m_bIntegerGrid = bEnabled; 
+	}
+	inline bool get_IntegerGrid()
+	{
+		if (!m_pRenderer) 
+			return false; 
+		return m_pRenderer->m_bIntegerGrid;
+	}
+	void AddRect(const double& x, const double& y, const double& w, const double& h);
 
 protected:
 	void _SetFont();
@@ -231,6 +244,316 @@ public:
 	inline void Stroke()
 	{
 		DrawPath(1);
+	}
+
+	inline double GetPixW() { return m_pRenderer->GetPixW(); }
+	inline double GetPixH() { return m_pRenderer->GetPixH(); }
+
+	// smart methods
+	void drawHorLine(BYTE align, double y, double x, double r, double penW)
+    {
+		int pen_w = (int)((m_pRenderer->GetDpiX() * penW / 25.4) + 0.5);
+        if (0 == pen_w)
+            pen_w = 1;
+
+		double __x	= x;
+		double __y1 = y;
+		double __r	= r;
+		double __y2	= y;
+		Aggplus::CMatrix* pMatrix = GetFullTransform();
+		pMatrix->TransformPoint(__x, __y1);
+		pMatrix->TransformPoint(__r, __y2);
+
+        double _x = (int)__x;
+		double _r = (int)__r + 1;
+
+		m_oPen.Size = pen_w;
+
+        switch (align)
+        {
+            case 0:
+            {
+				double _top = (int)__y1 + 0.5;
+				_top = _top + pen_w / 2.0 - 0.5;
+				m_pPath->Reset();
+				m_pPath->MoveTo(_x, _top);
+				m_pPath->LineTo(_r, _top);
+				Stroke();
+                break;
+            }
+            case 1:
+            {
+                // center
+                double _center = (int)__y1 + 0.5;
+
+                m_pPath->Reset();
+                if (0 == (pen_w % 2))
+                {
+					m_pPath->MoveTo(_x, _center - 0.5);
+					m_pPath->LineTo(_r, _center - 0.5);
+                }
+                else
+                {
+                    m_pPath->MoveTo(_x, _center);
+					m_pPath->LineTo(_r, _center);
+                }
+                Stroke();
+
+                break;
+            }
+            case 2:
+            {
+				double _bottom = (int)__y1 + 0.5;
+				_bottom = _bottom - pen_w / 2.0 + 0.5;
+				m_pPath->Reset();
+				m_pPath->MoveTo(_x, _bottom);
+				m_pPath->LineTo(_r, _bottom);
+				Stroke();
+                break;
+            }
+        }
+    }
+
+	void drawHorLine2(BYTE align, double y, double x, double r, double penW)
+	{
+		int pen_w = (int)((m_pRenderer->GetDpiX() * penW / 25.4) + 0.5);
+        if (0 == pen_w)
+            pen_w = 1;
+
+		double __x	= x;
+		double __y1 = y;
+		double __r	= r;
+		double __y2	= y;
+		Aggplus::CMatrix* pMatrix = GetFullTransform();
+		pMatrix->TransformPoint(__x, __y1);
+		pMatrix->TransformPoint(__r, __y2);
+
+        double _x = (int)__x;
+        double _r = (int)__r + 1;
+
+        switch (align)
+        {
+            case 0:
+            {
+                // top
+                double _top = (int)__y1 + 0.5;
+
+                double _pos1 = _top + pen_w / 2.0 - 0.5 - pen_w;
+                double _pos2 = _pos1 + pen_w * 2.0;
+
+				m_pPath->Reset();
+				m_pPath->MoveTo(_x, _pos1);
+				m_pPath->LineTo(_r, _pos1);
+				Stroke();
+
+				m_pPath->Reset();
+				m_pPath->MoveTo(_x, _pos2);
+				m_pPath->LineTo(_r, _pos2);
+				Stroke();
+                break;
+            }
+            case 1:
+            {
+                // center
+                // TODO:
+
+                break;
+            }
+            case 2:
+            {
+                // bottom
+                // TODO:
+
+                break;
+            }
+        }
+	}
+
+	void drawVerLine(BYTE align, double x, double y, double b, double penW)
+	{
+		int pen_w = (int)((m_pRenderer->GetDpiX() * penW / 25.4) + 0.5);
+        if (0 == pen_w)
+            pen_w = 1;
+
+		double __x1 = x;
+		double __y	= y;
+		double __x2	= x;
+		double __b	= b;
+
+		Aggplus::CMatrix* pMatrix = GetFullTransform();
+		pMatrix->TransformPoint(__x1, __y);
+		pMatrix->TransformPoint(__x2, __b);
+
+		double _y = (int)__y;
+		double _b = (int)__b + 1;
+
+		m_oPen.Size = pen_w;
+		switch (align)
+        {
+            case 0:
+            {
+                // left
+                double _left = __x1 + 0.5;
+				_left = _left + pen_w / 2.0 - 0.5;
+
+				m_pPath->Reset();
+				m_pPath->MoveTo(_left, _y);
+				m_pPath->LineTo(_left, _b);
+				Stroke();
+                break;
+            }
+            case 1:
+            {
+                // center
+				double _center = __x1 + 0.5;
+                
+				m_pPath->Reset();
+                if (0 == (pen_w % 2))
+                {
+					m_pPath->MoveTo(_center - 0.5, _y);
+					m_pPath->LineTo(_center - 0.5, _b);                    
+                }
+                else
+                {
+					m_pPath->MoveTo(_center, _y);
+					m_pPath->LineTo(_center, _b);                    
+                }
+				Stroke();
+
+                break;
+            }
+            case 2:
+            {
+				// right
+				double _right = __x1 + 0.5;
+				_right = _right - pen_w / 2.0 + 0.5;
+
+				m_pPath->Reset();
+				m_pPath->MoveTo(_right, _y);
+				m_pPath->LineTo(_right, _b);
+				Stroke();
+                break;
+            }
+        }
+	}
+
+	void drawHorLineExt(BYTE align, double y, double x, double r, double penW, double leftMW, double rightMW)
+	{
+		int pen_w = (int)((m_pRenderer->GetDpiX() * penW / 25.4) + 0.5);
+        if (0 == pen_w)
+            pen_w = 1;
+
+		double __x	= x;
+		double __y1 = y;
+		double __r	= r;
+		double __y2	= y;
+		Aggplus::CMatrix* pMatrix = GetFullTransform();
+		pMatrix->TransformPoint(__x, __y1);
+		pMatrix->TransformPoint(__r, __y2);
+
+        double _x = (int)__x + 0.5;
+        double _r = (int)__r + 0.5;
+
+        if (leftMW != 0)
+        {
+            double _center = _x;
+
+			int pen_mw = (int)((m_pRenderer->GetDpiX() * abs(leftMW) * 2 / 25.4) + 0.5);
+			if (0 == pen_mw)
+				pen_mw = 1;
+
+            if (leftMW < 0)
+            {
+				_x = _center - (pen_mw >> 1);                
+            }
+            else
+            {
+                if ((pen_mw % 2) == 0)
+                {
+                    _x = _center + ((pen_mw >> 1) - 1.0);
+                }
+                else
+                {
+                    _x = _center + (pen_mw >> 1);
+                }
+            }
+        }
+        if (rightMW != 0)
+        {
+            double _center = _r;
+
+			int pen_mw = (int)((m_pRenderer->GetDpiX() * abs(rightMW) * 2 / 25.4) + 0.5);
+			if (0 == pen_mw)
+				pen_mw = 1;
+
+            if (rightMW < 0)
+            {
+				_r = _center - (pen_mw >> 1);
+            }
+            else
+            {
+                if ((pen_mw % 2) == 0)
+                {
+                    _r = _center + (pen_mw >> 1) - 1.0;
+                }
+                else
+                {
+                    _r = _center + (pen_mw >> 1);
+                }
+            }
+        }
+
+		m_oPen.Size = pen_w;
+
+        _x -= 0.5;
+        _r += 0.5;
+
+        switch (align)
+        {
+            case 0:
+            {
+                // top
+				double _top = (int)__y1 + 0.5;
+                _top = _top + pen_w / 2.0 - 0.5;
+
+				m_pPath->Reset();
+				m_pPath->MoveTo(_x, _top);
+				m_pPath->LineTo(_r, _top);
+				Stroke();
+                break;
+            }
+            case 1:
+            {
+                // center
+				double _center = (int)__y1 + 0.5;
+                
+				m_pPath->Reset();
+                if (0 == (pen_w % 2))
+                {
+					m_pPath->MoveTo(_x, _center - 0.5);
+					m_pPath->LineTo(_r, _center - 0.5);
+                }
+                else
+                {
+					m_pPath->MoveTo(_x, _center);
+					m_pPath->LineTo(_r, _center);
+                }
+                Stroke();
+                break;
+            }
+            case 2:
+            {
+				// bottom
+				double _bottom = (int)__y1 + 0.5;
+                _bottom = _bottom - pen_w / 2.0 + 0.5;
+
+				m_pPath->Reset();
+				m_pPath->MoveTo(_x, _bottom);
+				m_pPath->LineTo(_r, _bottom);
+				Stroke();
+                break;
+            }
+        }
 	}
 };
 

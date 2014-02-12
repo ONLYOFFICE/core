@@ -15,6 +15,8 @@ namespace Aggplus
 
 		m_ePageUnits		= UnitPixel;
 
+		m_bIntegerGrid		= false;
+
 #ifdef _WINDOWS_GDIPLUS_USE_
 		m_pBitmap = NULL;
 		m_pGraphics = NULL;
@@ -34,6 +36,8 @@ namespace Aggplus
 		m_ePageUnits		= UnitPixel;
 
 		m_pPixels	= NULL;
+
+		m_bIntegerGrid		= false;
 
 		Create(pBuffer, dwWidth, dwHeight, stride, 0);
 
@@ -59,6 +63,8 @@ namespace Aggplus
 		m_ePageUnits		= UnitPixel;
 
 		m_pPixels	= NULL;
+
+		m_bIntegerGrid		= false;
 		
 		Create(pImage->m_pImgData, pImage->GetWidth(), pImage->GetHeight(), pImage->m_nStride, 0);
 

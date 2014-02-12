@@ -41,6 +41,9 @@ private:
 
 	CImageFilesCache* m_pCache;
 
+	double m_dGlobalAlpha;
+	BOOL m_bGlobalAlphaEnabled;
+
 public:
 	CGraphicsRenderer();
 	~CGraphicsRenderer();
@@ -181,6 +184,8 @@ public:
 	virtual HRESULT CommandLong(const LONG& lType, const LONG& lCommand);
 	virtual HRESULT CommandDouble(const LONG& lType, const double& dCommand);
 	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
+
+	void put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal);
 
 protected:
 	void _SetFont();

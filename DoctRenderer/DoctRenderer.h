@@ -680,6 +680,15 @@ private:
 
 						CMemoryStream* pPageStream = unwrap_memorystream(js_result3->ToObject());
 						ParsePageBinary(i, pPageStream->GetData(), pPageStream->GetSize(), true);
+
+#if 0
+						CFile oFile;
+						CString sPageSave = _T("");
+						sPageSave.Format(_T("C:\\test\\DOCTRENDERER\\page%d.pagebin"), i + 1);
+						oFile.CreateFile(sPageSave);
+						oFile.WriteFile(pPageStream->GetData(), pPageStream->GetSize());
+						oFile.CloseFile();
+#endif
 					}
 
 					RELEASEINTERFACE(m_pRenderer);

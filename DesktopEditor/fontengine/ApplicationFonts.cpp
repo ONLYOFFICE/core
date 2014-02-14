@@ -1117,6 +1117,8 @@ void CApplicationFonts::InitializeFromFolder(std::wstring strFolder)
 {
 	if (!m_oList.CheckLoadFromFolderBin(strFolder))
 		m_oList.LoadFromFolder(strFolder);
+
+	m_oCache.m_pApplicationFontStreams = &m_oStreams;
 }
 void CApplicationFonts::Initialize()
 {

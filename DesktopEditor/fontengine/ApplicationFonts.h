@@ -88,6 +88,7 @@ public:
 
 	~CFontInfo();
 	BOOL Equals(const CFontInfo *pFontInfo);
+	static CFontInfo* CFontInfo::FromBuffer(BYTE*& pBuffer, std::wstring strDir);
 
 public:
 	std::wstring m_wsFontName;   // ָלÿ רנטפעא
@@ -160,6 +161,7 @@ public:
 
 public:
 	void LoadFromFolder(const std::wstring& strDirectory);
+	bool CheckLoadFromFolderBin(const std::wstring& strDirectory);
 	void Add(CFontInfo* pInfo);
 	CFontInfo* GetByParams(const CFontSelectFormat& oSelect);
 };

@@ -1095,6 +1095,7 @@ void CFontList::Add(CFontInfo* pInfo)
 // ApplicationFonts
 CApplicationFonts::CApplicationFonts()
 {
+	m_oCache.m_pApplicationFontStreams = &m_oStreams;
 }
 CApplicationFonts::~CApplicationFonts()
 {

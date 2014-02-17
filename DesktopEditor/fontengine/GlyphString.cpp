@@ -50,6 +50,8 @@ CGlyphString::CGlyphString()
 
 	m_fTransX = 0;
 	m_fTransY = 0;
+
+	m_dIDet	= 1.0;
 }
 
 CGlyphString::CGlyphString(const std::wstring& wsString, float fX, float fY)

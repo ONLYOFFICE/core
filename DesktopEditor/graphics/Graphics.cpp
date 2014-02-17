@@ -520,7 +520,7 @@ namespace Aggplus
 		}
 
 		double dWidth		 = pPen->Size;
-		if (0 == dWidth)
+		if (0 == dWidth && !m_bIntegerGrid)
 		{
 			dWidth = 1.0 / sqrt(m_oCoordTransform.m_agg_mtx.determinant());
 		}
@@ -534,6 +534,10 @@ namespace Aggplus
 		c_c_path.approximation_scale(25.0);
 		c_c_path.approximation_method(agg::curve_inc);
 		DashStyle eStyle = (DashStyle)pPen->DashStyle;
+
+		agg::trans_affine* pAffine = &m_oFullTransform.m_agg_mtx;
+		if (m_bIntegerGrid)
+			pAffine = new agg::trans_affine();
 		 
 		if (DashStyleSolid == eStyle)
 		{
@@ -554,7 +558,7 @@ namespace Aggplus
 
 			typedef agg::conv_transform<Path_Conv_StrokeN> transStroke;
 
-			transStroke trans(pgN, m_oFullTransform.m_agg_mtx);
+			transStroke trans(pgN, *pAffine);
 			m_rasterizer.get_rasterizer().add_path(trans);
 		}
 		else
@@ -618,7 +622,7 @@ namespace Aggplus
 			pgD.miter_limit(dblMiterLimit);
 			pgD.width(dWidth);
 
-			agg::conv_transform<Path_Conv_StrokeD> trans(pgD, m_oFullTransform.m_agg_mtx);
+			agg::conv_transform<Path_Conv_StrokeD> trans(pgD, *pAffine);
 			m_rasterizer.get_rasterizer().add_path(trans);
 		}
 
@@ -628,6 +632,10 @@ namespace Aggplus
 		m_rasterizer.get_rasterizer().filling_rule(agg::fill_non_zero);
 		
 		DoFillPath(&oBrush);
+
+		if (m_bIntegerGrid)
+			RELEASEOBJECT(pAffine);
+
 		return Ok;
 	}
 
@@ -757,10 +765,19 @@ namespace Aggplus
 
 		agg::path_storage p2(pPath->m_agg_ps);
 		typedef agg::conv_transform<agg::path_storage> trans_type;
-		trans_type trans(p2, m_oFullTransform.m_agg_mtx);
+
+		trans_type* ptrans			= NULL;
+		agg::trans_affine* paffine	= NULL;
+		if (!m_bIntegerGrid)
+			ptrans = new trans_type(p2, m_oFullTransform.m_agg_mtx);
+		else
+		{
+			paffine = new agg::trans_affine();
+			ptrans = new trans_type(p2, *paffine);
+		}
 		
 		typedef agg::conv_curve<trans_type> conv_crv_type;
-		conv_crv_type c_c_path(trans);
+		conv_crv_type c_c_path(*ptrans);
 		 
 		m_rasterizer.get_rasterizer().add_path(c_c_path);
 
@@ -803,6 +820,9 @@ namespace Aggplus
 		}
 
 		DoFillPath(pBrush);
+
+		RELEASEOBJECT(ptrans);
+		RELEASEOBJECT(paffine);
 		return Ok;
 	}
 

@@ -302,7 +302,7 @@ public:
 
 	CGraphics();
 	CGraphics(int dwWidth, int dwHeight, int stride, BYTE* pBuffer);
-	CGraphics(CImage* pImage);;
+	CGraphics(CImage* pImage);
 	~CGraphics();
 
 	BOOL IsDib();

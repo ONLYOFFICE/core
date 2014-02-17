@@ -78,7 +78,8 @@ public:
 
     int m_nLOAD_MODE;
 
-	CApplicationFonts* m_pApplication;
+	CApplicationFonts*	m_pApplication;
+	CFontsCache*		m_pOwnerCache;
 
 public:
 	CFontManager();
@@ -87,6 +88,8 @@ public:
 public:
 	void AfterLoad();
 	void Initialize();
+
+	void SetOwnerCache(CFontsCache* pCache);
 
 	double UpdateSize(const double& dOldSize, const double& dDpi, const double& dNewDpi);
 	

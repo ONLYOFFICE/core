@@ -150,6 +150,7 @@ CFontManager::CFontManager()
 
 	m_pFont = NULL;
 	m_pApplication = NULL;
+	m_pOwnerCache = NULL;
 
 	m_bStringGID = FALSE;
 	m_nLOAD_MODE = 40968;
@@ -170,6 +171,11 @@ CFontManager::~CFontManager()
 	{
 		FT_Done_FreeType(m_pLibrary);
 	}
+	RELEASEOBJECT(m_pOwnerCache);
+}
+void CFontManager::SetOwnerCache(CFontsCache* pCache)
+{
+	m_pOwnerCache = pCache;
 }
 
 void CFontManager::AfterLoad()
@@ -475,7 +481,7 @@ BOOL CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceI
 	if (NULL == m_pApplication)
 		return FALSE;
 
-	CFontsCache* pCache		= m_pApplication->GetCache();
+	CFontsCache* pCache		= (m_pOwnerCache != NULL) ? m_pOwnerCache : m_pApplication->GetCache();
 	
 	m_pFont = pCache->LockFont(m_pLibrary, sPath, lFaceIndex, dSize);
 	m_pFont->m_pFontManager = this;

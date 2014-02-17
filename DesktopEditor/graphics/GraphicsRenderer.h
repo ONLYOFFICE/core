@@ -66,6 +66,13 @@ protected:
 	void UpdateSize();
 
 public:
+	void SavePen(NSStructures::CPen& oPen) { oPen = m_oPen; }
+	void RestorePen(const NSStructures::CPen& oPen) { m_oPen = oPen; }
+
+	void SaveBrush(NSStructures::CBrush& oBrush) { oBrush = m_oBrush; }
+	void RestoreBrush(const NSStructures::CBrush& oBrush) { m_oBrush = oBrush; }
+
+public:
 // тип рендерера-----------------------------------------------------------------------------
 	virtual HRESULT get_Type(LONG* lType);
 //-------- Функции для работы со страницей --------------------------------------------------
@@ -186,7 +193,7 @@ public:
 	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
 
 	void put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal);
-	inline void put_IntegerGrid(const bool& bEnabled) 
+	inline void put_IntegerGrid(const bool& bEnabled)
 	{ 
 		if (!m_pRenderer) 
 			return; 
@@ -214,6 +221,10 @@ public:
 	inline Aggplus::CMatrix* GetFullTransform()
 	{
 		return m_pRenderer->GetFullTransform();
+	}
+	inline Aggplus::CMatrix* GetTransformMatrix()
+	{
+		return m_pRenderer->GetTransform();
 	}
 	inline void SetCoordTransformOffset(double dOffsetX, double dOffsetY)
 	{

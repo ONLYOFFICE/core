@@ -1174,7 +1174,7 @@ BOOL CFontFile::GetString2C(CGlyphString& oString)
 		AddToSizesCache( oSizes );
 		charSymbolObj = m_arrCacheSizesIndexs[oSizes.ushUnicode];
     }
-    else
+    if (0xFFFF != charSymbolObj)
     {
 		TFontCacheSizes& oSizes = m_oCacheSizes[charSymbolObj];
 		int nCMapIndex = oSizes.nCMapIndex;

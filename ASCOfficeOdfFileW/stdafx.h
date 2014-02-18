@@ -37,3 +37,6 @@
 #include <atlcom.h>
 
 using namespace ATL;
+[
+	importidl(ASCOfficeOdfFileW.idl)
+];

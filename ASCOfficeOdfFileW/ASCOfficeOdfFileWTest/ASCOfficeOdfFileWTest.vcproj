@@ -2,9 +2,10 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="ASCOfficeOdfFileW"
-	ProjectGUID="{6258296E-ABCE-4BC6-9F4A-8522CD615603}"
-	Keyword="AtlProj"
+	Name="ASCOfficeOdfFileWTest"
+	ProjectGUID="{FBA8446A-150F-4A10-B4DA-1022048D6473}"
+	RootNamespace="ASCOfficeOdfFileWTest"
+	Keyword="Win32Proj"
 	>
 	<Platforms>
 		<Platform
@@ -16,11 +17,9 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="2"
-			UseOfATL="2"
-			ATLMinimizesCRunTimeLibraryUsage="false"
+			ConfigurationType="1"
 			CharacterSet="1"
 			>
 			<Tool
@@ -37,22 +36,11 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/ASCOfficeOdfFileW.tlb"
-				HeaderFileName="ASCOfficeOdfFileW.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="ASCOfficeOdfFileW_i.c"
-				ProxyFileName="ASCOfficeOdfFileW_p.c"
-				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="source\Oox2OdfConverter"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;STANDALONE_USE=1"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -66,22 +54,15 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				RegisterOutput="true"
-				IgnoreImportLibrary="true"
 				LinkIncremental="2"
-				ModuleDefinitionFile=""
-				MergedIDLBaseFileName="_ASCOfficeOdfFileW.idl"
 				GenerateDebugInformation="true"
-				SubSystem="2"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -111,16 +92,14 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="2"
-			UseOfATL="2"
-			ATLMinimizesCRunTimeLibraryUsage="false"
+			ConfigurationType="1"
 			CharacterSet="1"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\Redist\VersionControl.exe $(ProjectDir)\version.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -133,22 +112,10 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/ASCOfficeOdfFileW.tlb"
-				HeaderFileName="ASCOfficeOdfFileW.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="ASCOfficeOdfFileW_i.c"
-				ProxyFileName="ASCOfficeOdfFileW_p.c"
-				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
-				AdditionalIncludeDirectories="source\Oox2OdfConverter"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;STANDALONE_USE=0"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -160,22 +127,15 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				RegisterOutput="true"
-				IgnoreImportLibrary="true"
 				LinkIncremental="1"
-				ModuleDefinitionFile=""
-				MergedIDLBaseFileName="_ASCOfficeOdfFileW.idl"
 				GenerateDebugInformation="true"
-				SubSystem="2"
+				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				TargetMachine="1"
@@ -203,7 +163,6 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;../Redist&quot;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -216,15 +175,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\ASCOfficeOdfFileW.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ASCOfficeOdfFileW.idl"
-				>
-			</File>
-			<File
-				RelativePath=".\OfficeOdfFileW.cpp"
+				RelativePath=".\ASCOfficeOdfFileWTest.cpp"
 				>
 			</File>
 			<File
@@ -254,14 +205,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\OfficeOdfFileW.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Resource.h"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.h"
 				>
 			</File>
@@ -271,14 +214,6 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
-			<File
-				RelativePath=".\ASCOfficeOdfFileW.rc"
-				>
-			</File>
-			<File
-				RelativePath=".\ASCOfficeOdfFileW.rgs"
-				>
-			</File>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"

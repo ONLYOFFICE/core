@@ -1,0 +1,9 @@
+; ASCOfficeOdfFileW.def : Declares the module parameters.
+
+LIBRARY      "ASCOfficeOdfFileW.DLL"
+
+EXPORTS
+	DllCanUnloadNow		PRIVATE
+	DllGetClassObject	PRIVATE
+	DllRegisterServer	PRIVATE
+	DllUnregisterServer	PRIVATE

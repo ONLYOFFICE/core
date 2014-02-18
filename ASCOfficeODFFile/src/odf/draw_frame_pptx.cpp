@@ -251,11 +251,19 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 
         cpdoccore::odf::odf_document objectSubDoc(dbgObjectPathStr);    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//в отдельных embd объектах чаще всего диаграммы... но МОГУТ быть и обычные объекты подтипа frame!!! пример RemanejamentoOrcamentario.ods
+//в отдельных embd объектах чаще всего диаграммы, уравнения... но МОГУТ быть и обычные объекты подтипа frame!!! 
+		//пример RemanejamentoOrcamentario.ods
 ///////////////////////////////////////////////////////////////////////////
 //функциональная часть
 		const office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();
-		if (!contentSubDoc)return;
+		if (!contentSubDoc)
+		{
+			//здесь другой формат xml (не Open Office)
+			//временно - замещающая картинка(если она конечно присутствует)
+			Context.get_slide_context().start_object_ole();
+			return;
+		}
+
 
 		chart_build chartBuild;
 
@@ -291,6 +299,11 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 				Context.get_slide_context().set_property(_property(L"text-content",text_content_));
 			}
 			Context.get_slide_context().end_shape();		
+		}
+		else
+		{
+			//временно - замещающая картинка(если она конечно присутствует)
+			Context.get_slide_context().start_object_ole();
 		}
 	
 	}

@@ -146,7 +146,7 @@ HRESULT COfficeOdfFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXML
     {
         boost::filesystem::remove_all(srcTempPath);
     }
-    catch(...)
+    catch(...) 
     {
     }
 
@@ -160,7 +160,7 @@ HRESULT COfficeOdfFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXML
     {
     }
 #endif
-    
+     
     return hr;
 }
 

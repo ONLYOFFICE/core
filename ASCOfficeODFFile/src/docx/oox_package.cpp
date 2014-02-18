@@ -183,7 +183,7 @@ void media::write(const std::wstring & RootPath)
 			}
 			else if(file_name.extension().empty())
 			{
-				//непон€тный тип .. может быть svm, emf, wmf 
+				//непон€тный тип .. может быть svm, emf, wmf, vclmtf (это копи€ уравнений)
 				//отдетектить???
 				ImageFile::IImageFile3Ptr piImageFile = NULL;
 				piImageFile.CreateInstance( __uuidof(ImageFile::ImageFile3) );
@@ -201,6 +201,10 @@ void media::write(const std::wstring & RootPath)
 						piImageFile->SaveImage2( &pImage, 4, bstrFilename, &vbSuccess );//to png
 						SysFreeString( bstrFilename );
 						pImage->Release();
+					}
+					if (vbSuccess == FALSE)
+					{
+						boost::filesystem::copy_file(item.href, file_name_out);//ну не png это будет ... и чЄ? :-)
 					}
 				}
 

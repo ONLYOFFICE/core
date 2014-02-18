@@ -397,17 +397,27 @@ void draw_enhanced_geometry::find_draw_type_oox()
         
 		int min = -1;
 		int max = -1;
-
-
-		min = parsing(handle->draw_handle_attlist_.draw_handle_range_y_minimum_);//пока статик .. и выдается только цыфровое значение
-		if (min<0)min =parsing(handle->draw_handle_attlist_.draw_handle_range_x_minimum_);
-		if (min<0)min = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_minimum_);
+		
+		try
+		{
+			min = parsing(handle->draw_handle_attlist_.draw_handle_range_y_minimum_);//пока статик .. и выдается только цыфровое значение
+			if (min<0)min =parsing(handle->draw_handle_attlist_.draw_handle_range_x_minimum_);
+			if (min<0)min = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_minimum_);
+		}
+		catch(...)
+		{
+		}
 		if (min<0)min=0;
 
-		max = parsing(handle->draw_handle_attlist_.draw_handle_range_y_maximum_);
-		if (max<0)max = parsing(handle->draw_handle_attlist_.draw_handle_range_x_maximum_);
-		if (max<0)max = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_maximum_);
-		
+		try
+		{	
+			max = parsing(handle->draw_handle_attlist_.draw_handle_range_y_maximum_);
+			if (max<0)max = parsing(handle->draw_handle_attlist_.draw_handle_range_x_maximum_);
+			if (max<0)max = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_maximum_);
+		}
+		catch(...)
+		{
+		}		
 		draw_handle_geometry elm={min, max};
 		draw_handle_geometry_.push_back(elm);
     }

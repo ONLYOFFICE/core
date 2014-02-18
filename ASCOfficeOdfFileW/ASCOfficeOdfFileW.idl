@@ -1,0 +1,18 @@
+// ASCOfficeOdfFileW.idl : IDL source for ASCOfficeOdfFileW
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (ASCOfficeOdfFileW.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	uuid(EDB084E5-EC38-47EF-B421-D5E1A71F98A6),
+	version(1.0),
+	helpstring("ASCOfficeOdfFileW 1.0 Type Library")
+]
+library ASCOfficeOdfFileWLib
+{
+	importlib("stdole2.tlb");
+};

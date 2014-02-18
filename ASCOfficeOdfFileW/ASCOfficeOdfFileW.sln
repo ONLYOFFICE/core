@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeOdfFileW", "ASCOfficeOdfFileW.vcproj", "{6258296E-ABCE-4BC6-9F4A-8522CD615603}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocxFormat", "..\Common\DocxFormat\Projects\DocxFormat2005.vcproj", "{A100103A-353E-45E8-A9B8-90B87CC5C0B0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OdfFormat", "source\OdfFormat.vcproj", "{E5A67556-44DA-4481-8F87-0A3AEDBD20DD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6258296E-ABCE-4BC6-9F4A-8522CD615603}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6258296E-ABCE-4BC6-9F4A-8522CD615603}.Debug|Win32.Build.0 = Debug|Win32
+		{6258296E-ABCE-4BC6-9F4A-8522CD615603}.Release|Win32.ActiveCfg = Release|Win32
+		{6258296E-ABCE-4BC6-9F4A-8522CD615603}.Release|Win32.Build.0 = Release|Win32
+		{A100103A-353E-45E8-A9B8-90B87CC5C0B0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A100103A-353E-45E8-A9B8-90B87CC5C0B0}.Debug|Win32.Build.0 = Debug|Win32
+		{A100103A-353E-45E8-A9B8-90B87CC5C0B0}.Release|Win32.ActiveCfg = Release|Win32
+		{A100103A-353E-45E8-A9B8-90B87CC5C0B0}.Release|Win32.Build.0 = Release|Win32
+		{E5A67556-44DA-4481-8F87-0A3AEDBD20DD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E5A67556-44DA-4481-8F87-0A3AEDBD20DD}.Debug|Win32.Build.0 = Debug|Win32
+		{E5A67556-44DA-4481-8F87-0A3AEDBD20DD}.Release|Win32.ActiveCfg = Release|Win32
+		{E5A67556-44DA-4481-8F87-0A3AEDBD20DD}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

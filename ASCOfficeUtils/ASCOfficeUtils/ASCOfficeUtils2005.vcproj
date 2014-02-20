@@ -313,6 +313,107 @@
 				CommandLine="copy $(TargetPath) ..\..\..\..\..\ASC\Redist\ASCOfficeStudio\ASCOfficeUtils.dll"
 			/>
 		</Configuration>
+		<Configuration
+			Name="ReleaseOpenSource|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="..\..\Redist\VersionControl.exe $(ProjectDir)version.h"
+				ExcludedFromBuild="true"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+				GenerateStublessProxies="true"
+				TypeLibraryName="$(IntDir)/ASCOfficeUtils.tlb"
+				HeaderFileName="ASCOfficeUtils.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="ASCOfficeUtils_i.c"
+				ProxyFileName="ASCOfficeUtils_p.c"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="&quot;..\ZLIB\zlib-1.2.3\contrib\minizip&quot;;&quot;..\ZLIB\zlib-1.2.3&quot;;&quot;..\GOCR\headers&quot;;&quot;..\GOCR\include&quot;;&quot;..\PNM\headers&quot;"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;ZLIB_WINAPI;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE;BUILD_CONFIG_OPENSOURCE_VERSION"
+				RuntimeLibrary="2"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="true"
+				OutputFile="..\$(ProjectName).dll"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="..\ZLIB\zlib123dll\static32"
+				IgnoreDefaultLibraryNames="LIBC.LIB"
+				MergedIDLBaseFileName="_ASCOfficeUtils.idl"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
+				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="$(OutDir)/ASCOfficeUtils.lib"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="copy to redist"
+				CommandLine="copy $(TargetPath) ..\..\Redist\ASCOfficeUtils.dll"
+			/>
+		</Configuration>
 	</Configurations>
 	<References>
 	</References>
@@ -365,6 +466,14 @@
 						UsePrecompiledHeader="1"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseOpenSource|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\UniversalString.cpp"
@@ -404,6 +513,14 @@
 							UsePrecompiledHeader="0"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\ZLIB\zlib-1.2.3\compress.c"
@@ -426,6 +543,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="ReleaseASC|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -460,6 +585,14 @@
 							UsePrecompiledHeader="0"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\ZLIB\zlib-1.2.3\deflate.c"
@@ -482,6 +615,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="ReleaseASC|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -516,6 +657,14 @@
 							UsePrecompiledHeader="0"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\ZLIB\zlib-1.2.3\gzio.c"
@@ -538,6 +687,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="ReleaseASC|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -572,6 +729,14 @@
 							UsePrecompiledHeader="0"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\ZLIB\zlib-1.2.3\contrib\masmx64\inffas8664.c"
@@ -594,6 +759,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="ReleaseASC|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -628,6 +801,14 @@
 							UsePrecompiledHeader="0"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\ZLIB\zlib-1.2.3\inflate.c"
@@ -650,6 +831,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="ReleaseASC|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -684,6 +873,14 @@
 							UsePrecompiledHeader="0"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\ZLIB\zlib-1.2.3\contrib\minizip\ioapi.c"
@@ -706,6 +903,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="ReleaseASC|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -740,6 +945,14 @@
 							UsePrecompiledHeader="0"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\ZLIB\zlib-1.2.3\uncompr.c"
@@ -762,6 +975,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="ReleaseASC|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -796,6 +1017,14 @@
 							UsePrecompiledHeader="0"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\ZLIB\zlib-1.2.3\contrib\minizip\zip.c"
@@ -824,6 +1053,14 @@
 							UsePrecompiledHeader="0"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\ZLIB\zlib-1.2.3\zutil.c"
@@ -846,6 +1083,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="ReleaseASC|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"

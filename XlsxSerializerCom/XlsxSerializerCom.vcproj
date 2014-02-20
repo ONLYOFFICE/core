@@ -124,6 +124,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				CommandLine="..\Redist\VersionControl.exe &quot;$(ProjectDir)\version.h&quot;"
+				ExcludedFromBuild="true"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -207,6 +208,106 @@
 				Name="VCPostBuildEventTool"
 				Description="Copy to redist"
 				CommandLine="copy $(TargetPath) ..\Redist\XlsxSerializerCom.dll"
+				ExcludedFromBuild="true"
+			/>
+		</Configuration>
+		<Configuration
+			Name="ReleaseOpenSource|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="..\Redist\VersionControl.exe &quot;$(ProjectDir)\version.h&quot;"
+				ExcludedFromBuild="true"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+				GenerateStublessProxies="true"
+				TypeLibraryName="$(IntDir)/XlsxSerializerCom.tlb"
+				HeaderFileName="XlsxSerializerCom.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="XlsxSerializerCom_i.c"
+				ProxyFileName="XlsxSerializerCom_p.c"
+				ValidateParameters="false"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				AdditionalIncludeDirectories="..\..\..\..\Common;..\..\Common;..\..\AVSImageStudio3\Common"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;_ATL_ATTRIBUTES;_USE_XMLLITE_READER_;USE_LITE_READER;USE_ATL_CSTRING;USE_AVSOFFICESTUDIO_XMLUTILS;BUILD_CONFIG_OPENSOURCE_VERSION"
+				RuntimeLibrary="2"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="true"
+				LinkIncremental="1"
+				MergedIDLBaseFileName="_XlsxSerializerCom.idl"
+				GenerateDebugInformation="true"
+				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Copy to redist"
+				CommandLine="copy $(TargetPath) ..\Redist\XlsxSerializerCom.dll"
+				ExcludedFromBuild="true"
 			/>
 		</Configuration>
 	</Configurations>
@@ -231,6 +332,14 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseOpenSource|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"

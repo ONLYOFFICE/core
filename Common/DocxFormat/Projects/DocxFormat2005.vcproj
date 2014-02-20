@@ -142,6 +142,70 @@
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
+		<Configuration
+			Name="ReleaseOpenSource|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="4"
+			CharacterSet="1"
+			WholeProgramOptimization="0"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories=".\..\Source\XML\libxml2\XML\include;.\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\ASCOfficeOdtFile\Source\OfficeSvmFile"
+				PreprocessorDefinitions="USE_LITE_READER;_USE_XMLLITE_READER_;_DOCWRAPPER_;BUILD_CONFIG_OPENSOURCE_VERSION"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
+				ProgramDataBaseFileName="$(IntDir)\DocxFormat.pdb"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalLibraryDirectories=".\..\Source\XML\libxml2\win_build\Release"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
 	</Configurations>
 	<References>
 	</References>
@@ -255,6 +319,14 @@
 							ObjectFile="$(IntDir)\Docx\Logic\"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\Docx\Logic\"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\Source\DocxFormat\Logic\Table.h"
@@ -273,6 +345,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\Docx\Logic\"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -323,6 +403,14 @@
 							AssemblerListingLocation="$(IntDir)\Docx\Logic\"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AssemblerListingLocation="$(IntDir)\Docx\Logic\"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\Source\DocxFormat\Logic\FldSimple.h"
@@ -341,6 +429,14 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\Docx\Logic\"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -394,6 +490,14 @@
 								ObjectFile="$(IntDir)\Docx\Logic\"
 							/>
 						</FileConfiguration>
+						<FileConfiguration
+							Name="ReleaseOpenSource|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\Docx\Logic\"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\Source\DocxFormat\Logic\Sdt.h"
@@ -426,6 +530,14 @@
 								ObjectFile="$(IntDir)\Docx\Logic\"
 							/>
 						</FileConfiguration>
+						<FileConfiguration
+							Name="ReleaseOpenSource|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\Docx\Logic\"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\Source\DocxFormat\Logic\Paragraph.h"
@@ -444,6 +556,14 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\Docx\Logic\"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="ReleaseOpenSource|Win32"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -497,6 +617,15 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="ReleaseOpenSource|Win32"
 							>
 							<Tool
 								Name="VCCLCompilerTool"

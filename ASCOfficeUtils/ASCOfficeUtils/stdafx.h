@@ -57,8 +57,13 @@ using namespace ATL;
 	#pragma comment(lib, "..\\GOCR\\Debug\\GOCR.lib")
 	#pragma comment(lib, "..\\PNM\\Debug\\PNM.lib")
 #else
-	#pragma comment(lib, "..\\GOCR\\Release\\GOCR.lib")
-	#pragma comment(lib, "..\\PNM\\Release\\PNM.lib")
+	#ifdef BUILD_CONFIG_FULL_VERSION
+		#pragma comment(lib, "..\\GOCR\\Release\\GOCR.lib")
+		#pragma comment(lib, "..\\PNM\\Release\\PNM.lib")
+	#else
+		#pragma comment(lib, "..\\GOCR\\ReleaseOpenSource\\GOCR.lib")
+		#pragma comment(lib, "..\\PNM\\ReleaseOpenSource\\PNM.lib")
+	#endif
 #endif
 
 static const long UTILS_ONPROGRESSEVENT_ID = 0;

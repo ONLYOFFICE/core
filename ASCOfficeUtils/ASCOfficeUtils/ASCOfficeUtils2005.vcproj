@@ -410,8 +410,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="copy to redist"
-				CommandLine="copy $(TargetPath) ..\..\Redist\ASCOfficeUtils.dll"
+				Description="copy to RedistOpenSource"
+				CommandLine="copy $(TargetPath) ..\..\RedistOpenSource\ASCOfficeUtils.dll"
 			/>
 		</Configuration>
 	</Configurations>

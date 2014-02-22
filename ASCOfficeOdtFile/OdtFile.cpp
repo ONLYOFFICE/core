@@ -256,7 +256,7 @@ void COdtFile::createOriginOdt(const boost::filesystem::wpath& path) const
 
 const unsigned long COdtFile::LoadFromResource(LPCWSTR lpResName, LPCWSTR lpResType, LPCWSTR fileName) const
 {
-	HMODULE hMod = GetModuleHandle(_T("ASCOfficeOdtFile.dll"));
+	HMODULE hMod = _AtlBaseModule.GetModuleInstance();
 	if (hMod)
 	{
 		HRSRC hRes = FindResource(hMod, lpResName, lpResType);

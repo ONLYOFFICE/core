@@ -313,7 +313,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="copy to RedistOpenSource"
-				CommandLine="&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\RedistOpenSource&quot;&#x0D;&#x0A;"
+				CommandLine="&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\Redist&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

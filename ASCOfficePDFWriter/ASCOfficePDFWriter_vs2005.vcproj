@@ -303,7 +303,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="copy to RedistOpenSource"
-				CommandLine="copy $(TargetPath) ..\RedistOpenSource\ASCOfficePDFWriter.dll&#x0D;&#x0A;"
+				CommandLine="copy $(TargetPath) ..\Redist\ASCOfficePDFWriter.dll&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

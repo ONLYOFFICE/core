@@ -421,7 +421,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="copy to RedistOpenSource"
-				CommandLine="copy $(TargetPath) ..\RedistOpenSource\ASCOfficePPTXFile.dll"
+				CommandLine="copy $(TargetPath) ..\Redist\ASCOfficePPTXFile.dll"
 			/>
 		</Configuration>
 	</Configurations>

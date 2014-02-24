@@ -227,7 +227,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				CommandLine="..\..\..\..\..\Redist\VersionControl.exe $(ProjectDir)version.h"
-				ExcludedFromBuild="true"
+				ExcludedFromBuild="false"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"

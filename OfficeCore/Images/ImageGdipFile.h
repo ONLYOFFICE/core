@@ -283,6 +283,37 @@ public:
 			{
 				ImageUtils::GdiPlusBitmapToMediaData(&oBitmap, &m_pFrame);
 			}
+			else
+			{
+				Metafile oMeta(bsFileName);
+				UINT lSrcW = oMeta.GetWidth();
+				UINT lSrcH = oMeta.GetHeight();
+
+				if (oMeta.GetLastStatus() == Gdiplus::Ok && lSrcW > 0 && lSrcH > 0)
+				{
+					UINT lMaxSize = 1000;
+					LONG lDstW = lSrcW;
+					LONG lDstH = lSrcH;
+					if (lSrcW > lMaxSize || lSrcH > lMaxSize)
+					{
+						double dKoef1 = (double)lMaxSize / lSrcW;
+						double dKoef2 = (double)lMaxSize / lSrcH;
+						double dKoef = min(dKoef1, dKoef2);
+
+						lDstW = (LONG)(dKoef * lSrcW);
+						lDstH = (LONG)(dKoef * lSrcH);
+
+						Bitmap oBitmapMeta(lDstW, lDstH, PixelFormat32bppARGB);
+						Graphics oGraphics(&oBitmapMeta);
+						oGraphics.DrawImage(&oMeta, 0, 0, lDstW, lDstH);
+
+						if (oBitmapMeta.GetLastStatus() == Gdiplus::Ok)
+						{
+							ImageUtils::GdiPlusBitmapToMediaData(&oBitmapMeta, &m_pFrame);
+						}
+					}
+				}
+			}
 		}
 		catch(...)
 		{

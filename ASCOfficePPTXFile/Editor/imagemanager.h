@@ -12,6 +12,7 @@ using namespace NSFontCutter;
 
 #include "../../ASCPresentationEditor/PPTXWriter/FileDownloader.h"
 #include "WMFToImageConverter.h"
+#include "../../Common/MediaFormatDefine.h"
 
 namespace NSShapeImageGen
 {
@@ -280,7 +281,56 @@ namespace NSShapeImageGen
 			_CopyFile(strFileSrc, strFileDst, NULL, NULL);
 		}
 
-#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
+#ifdef BUILD_CONFIG_OPENSOURCE_VERSION		
+		static IUnknown* CreateEmptyImage(int nWidth, int nHeight, BOOL bFlipVertical = TRUE)
+		{
+			if (nWidth < 1 || nHeight < 1)
+				return NULL;
+
+			MediaCore::IAVSUncompressedVideoFrame* pMediaData = NULL;
+			CoCreateInstance(MediaCore::CLSID_CAVSUncompressedVideoFrame, NULL, CLSCTX_ALL, MediaCore::IID_IAVSUncompressedVideoFrame, (void**)(&pMediaData));
+			if (NULL == pMediaData)
+				return NULL;
+
+			if (bFlipVertical)
+				pMediaData->put_ColorSpace(CSP_BGRA | CSP_VFLIP);
+			else
+				pMediaData->put_ColorSpace(CSP_BGRA);
+
+			// specify settings
+			pMediaData->put_Width(nWidth);
+			pMediaData->put_Height(nHeight);
+			pMediaData->put_AspectRatioX(nWidth);
+			pMediaData->put_AspectRatioY(nHeight);
+			pMediaData->put_Interlaced(VARIANT_FALSE);
+			pMediaData->put_Stride(0, 4*nWidth);
+			pMediaData->AllocateBuffer(4*nWidth*nHeight);
+			
+			// allocate necesasry buffer
+			BYTE* pBufferPtr = 0;
+			long nCreatedBufferSize = 0;
+			pMediaData->get_Buffer(&pBufferPtr);
+			pMediaData->get_BufferSize(&nCreatedBufferSize);
+			pMediaData->put_Plane(0, pBufferPtr);
+
+			// check for valid created buffer
+			if (!pBufferPtr || nCreatedBufferSize != 4*nWidth*nHeight)
+			{
+				RELEASEINTERFACE(pMediaData);
+				return NULL;
+			}
+			
+			// copy safearray's data to the buffer
+			memset(pBufferPtr, 0xFF, nCreatedBufferSize);
+
+			// save interface
+			IUnknown* punkInterface = NULL;
+			pMediaData->QueryInterface(IID_IUnknown, (void**)&punkInterface);
+			
+			RELEASEINTERFACE(pMediaData);
+			return punkInterface;
+		}
+
 		void SaveImage(CString& strFileSrc, CImageInfo& oInfo, LONG __width, LONG __height)
 		{
 			OfficeCore::IImageGdipFilePtr pImageFile;
@@ -292,6 +342,9 @@ namespace NSShapeImageGen
 
 			IUnknown* punkFrame = NULL;
 			pImageFile->get_Frame(&punkFrame);
+
+			if (NULL == punkFrame)
+				punkFrame = CreateEmptyImage(10, 10);
 
 			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
 			punkFrame->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);

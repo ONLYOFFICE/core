@@ -26,7 +26,7 @@ namespace odf
 		class content_content : noncopyable
 		{
 		public:
-			content_content();
+			content_content(){}
 			std::wostream & content() { return content_; }
 			std::wstring str() { return content_.str(); }
 			static _CP_PTR(content_content) create();
@@ -35,8 +35,6 @@ namespace odf
 			std::wstringstream content_;
 		};
 		
-		//class element;
-
 		class element
 		{
 		public:

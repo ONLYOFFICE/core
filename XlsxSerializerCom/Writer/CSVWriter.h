@@ -1,4 +1,6 @@
 #pragma once
+#define CP_UTF16		1200
+#define CP_unicodeFFFE	1201
 
 namespace CSVWriter
 {
@@ -22,13 +24,19 @@ namespace CSVWriter
 		if (nCountChars + nCurrentIndex > c_nSize || bIsEnd)
 		{
 			// Буффер заполнился, пишем
-			INT nSize = WideCharToMultiByte(nCodePage, 0, *pWriteBuffer, nCurrentIndex, NULL, NULL, NULL, NULL);
-			CHAR *pString = new CHAR [nSize];
-			::ZeroMemory (pString, sizeof (CHAR) * nSize);
-			WideCharToMultiByte (CP_UTF8, 0, *pWriteBuffer, -1, pString, nSize, NULL, NULL);
-
-			pFile->WriteFile(pString, sizeof (CHAR) * nSize);
-			RELEASEARRAYOBJECTS(pString);
+			if (nCodePage == CP_UTF16)
+			{
+				pFile->WriteFile(*pWriteBuffer, sizeof (WCHAR) * nCurrentIndex);
+			}
+			else
+			{
+				INT nSize = WideCharToMultiByte(nCodePage, 0, *pWriteBuffer, nCurrentIndex, NULL, NULL, NULL, NULL);
+				CHAR *pString = new CHAR [nSize];
+				::ZeroMemory (pString, sizeof (CHAR) * nSize);
+				WideCharToMultiByte (CP_UTF8, 0, *pWriteBuffer, -1, pString, nSize, NULL, NULL);
+				pFile->WriteFile(pString, sizeof (CHAR) * nSize);
+				RELEASEARRAYOBJECTS(pString);
+			}	
 			
 			::ZeroMemory(*pWriteBuffer, nSizeWchar * c_nSize);
 			nCurrentIndex = 0;
@@ -44,6 +52,23 @@ namespace CSVWriter
 	{
 		CFile oFile;
 		oFile.CreateFileW(sFileDst);
+
+		// Нужно записать шапку
+		if (CP_UTF8 == nCodePage)
+		{
+			UCHAR arUTF8[3] = {0xEF, 0xBB, 0xBF};
+			oFile.WriteFile(arUTF8, 3);
+		}
+		else if (CP_UTF16 == nCodePage)
+		{
+			UCHAR arUTF16[2] = {0xFF, 0xFE};
+			oFile.WriteFile(arUTF16, 2);
+		}
+		else if (CP_unicodeFFFE == nCodePage)
+		{
+			UCHAR arBigEndian[2] = {0xFE, 0xFF};
+			oFile.WriteFile(arBigEndian, 2);
+		}
 
 		LONG lActiveSheet = 0;
 		CString sSheetRId = _T("Sheet1"); // Читаем не по rId, а по имени листа

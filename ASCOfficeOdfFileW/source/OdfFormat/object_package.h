@@ -1,0 +1,181 @@
+#include <vector>
+
+#include <cpdoccore/CPSharedPtr.h>
+#include <cpdoccore/CPNoncopyable.h>
+
+#include "odf_rels.h"
+
+namespace cpdoccore 
+{
+
+namespace odf 
+{
+	class mediaitems;//picture & media
+
+	class rels;
+	
+	namespace package 
+	{
+		class element;
+		typedef shared_ptr<element>::Type element_ptr;
+		typedef std::vector<element_ptr> element_ptr_array;
+
+		class content_content;
+		typedef _CP_PTR(content_content) content_content_ptr;
+		
+		class content_content : noncopyable
+		{
+		public:
+			content_content();
+			std::wostream & content() { return content_; }
+			std::wstring str() { return content_.str(); }
+			static _CP_PTR(content_content) create();
+
+		private:
+			std::wstringstream content_;
+		};
+		
+		//class element;
+
+		class element
+		{
+		public:
+			virtual ~element() = 0;
+			//void set_main_document(element * _element) { element_ = _element; }
+			//document * get_main_document() { return element_; }
+
+			virtual void write(const std::wstring & RootPath) = 0;
+
+		private:
+			element * element_;
+		};
+
+		inline element::~element()
+		{}
+
+	
+		class simple_element : public element
+		{
+		public:
+			simple_element(const std::wstring & FileName, const std::wstring & Content);
+			static element_ptr create(const std::wstring & FileName, const std::wstring & Content);
+
+			virtual void write(const std::wstring & RootPath);
+
+		private:
+			std::wstring file_name_;
+			std::string content_utf8_;
+
+		};
+
+		class meta_file : public element
+		{
+		public:
+			virtual void write(const std::wstring & RootPath);
+		};
+
+		class content_file : public element
+		{
+		public:
+			void set_content(content_content_ptr & c) {content_ = c;}
+			virtual void write(const std::wstring & RootPath);
+			content_content_ptr content_;
+		};
+
+		class styles_file : public element
+		{
+		public:
+			virtual void write(const std::wstring & RootPath);
+		};
+
+		class manifect_file : public element
+		{
+		public:
+			manifect_file(std::wstring type);
+			
+			virtual void write(const std::wstring & RootPath);       
+			void add_rels(rels & r); 
+
+		private:
+			rels rels_;
+			std::wstring type_;
+
+		};
+		class mimetype_file : public element
+		{
+		public:
+			mimetype_file(std::wstring type);
+			
+			virtual void write(const std::wstring & RootPath);       
+
+		private:
+			std::wstring type_;
+
+		};
+		class media : public element
+		{
+		public:
+			media(mediaitems & _Mediaitems);
+			virtual void write(const std::wstring & RootPath);
+
+		private:
+			mediaitems & mediaitems_;
+		        
+		};
+		class pictures : public element
+		{
+		public:
+			pictures(mediaitems & _Mediaitems);
+			virtual void write(const std::wstring & RootPath);
+
+		private:
+			mediaitems & mediaitems_;
+		        
+		};
+		class object_files : public element
+		{
+		public:
+			object_files(){}
+			
+			void set_content(content_content_ptr & _Content);
+			
+			void set_media(mediaitems & _Mediaitems);    
+			void set_pictures(mediaitems & _Mediaitems);    
+			void set_styles(element_ptr Element);
+
+			virtual void write(const std::wstring & RootPath);
+
+		private:
+			content_file	content_;
+			
+			element_ptr		styles_;
+			element_ptr		meta_;
+
+			element_ptr		media_;
+			element_ptr		pictures_;
+		};
+		
+		class odf_document : public element
+		{
+		public:
+			odf_document(std::wstring type);
+			
+			void add_object(element_ptr _object,bool root=false);
+			
+			void set_rels(rels & r);
+			
+			virtual void write(const std::wstring & RootPath);
+
+		private:
+			element_ptr					base_;
+			std::vector<element_ptr>	objects_;
+
+			element_ptr					mimetype_;
+			element_ptr					settings_;
+			element_ptr					manifest_;
+
+		};
+	};
+}
+
+}

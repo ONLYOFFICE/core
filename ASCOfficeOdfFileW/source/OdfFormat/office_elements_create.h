@@ -12,10 +12,6 @@ namespace boost {
     class shared_mutex;
 }
 
-namespace xml
-{
-    class sax;
-}
 
 namespace cpdoccore { 
 namespace odf {
@@ -91,26 +87,18 @@ private:
 
 template<class T> int RegisterElement<T>::class_registered_ = 0;
 
-/// \brief  Создать элемент и в случае успеха прочитать его содержимое из SAX, поместить в shared_ptr
-bool create_element_and_read(xml::sax * Reader,
-                             const ::std::wstring & Ns,
+/// \brief  Создать элемент
+bool create_element(const ::std::wstring & Ns,
                              const ::std::wstring & Name,
                              office_element_ptr & _Element,
                              document_context * Context,
                              bool isRoot = false);
 
-/// \brief  Создать элемент и в случае успеха прочитать его содержимое из SAX, поместить в array
-bool create_element_and_read(xml::sax * Reader,
-                             const ::std::wstring & Ns,
+bool create_element(const ::std::wstring & Ns,
                              const ::std::wstring & Name,
                              office_element_ptr_array & _Elements,
                              document_context * Context,
-                             bool isRoot = false);
-
-
-#define CP_CREATE_ELEMENT_SIMPLE(ELEMENT) create_element_and_read(Reader, Ns, Name, (ELEMENT), Context)
-#define CP_CREATE_ELEMENT(ELEMENT) create_element_and_read(Reader, Ns, Name, (ELEMENT), getContext())
-#define _CPDOCCORE_CREATE_ELEMENT_ROOT(ELEMENT) create_element_and_read(Reader, Ns, Name, (ELEMENT), getContext(), true)
+                             bool isRoot);
 
 #define CP_CHECK_NAME(NS, NAME) ((NS) == Ns && (NAME) == Name)
 

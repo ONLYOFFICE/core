@@ -105,7 +105,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\ASCOfficeOdfFile\include"
+				AdditionalIncludeDirectories="..\..\ASCOfficeOdfFile\include;..\..\ASCOfficeOdfFile\3dparty\utf8cpp\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -823,6 +823,50 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="package"
+			>
+			<File
+				RelativePath=".\OdfFormat\mediaitems.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\mediaitems.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\mediaitems_utils.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\mediaitems_utils.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\object_package.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\object_package.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odf_rels.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odf_rels.h"
+				>
+			</File>
+		</Filter>
+		<File
+			RelativePath=".\OdfFormat\odf_conversion_context.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\OdfFormat\odf_conversion_context.h"
+			>
+		</File>
 		<File
 			RelativePath=".\OdfFormat\office_elements.h"
 			>
@@ -837,14 +881,6 @@
 		</File>
 		<File
 			RelativePath=".\ReadMe.txt"
-			>
-		</File>
-		<File
-			RelativePath=".\OdfFormat\skipelement.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\OdfFormat\skipelement.h"
 			>
 		</File>
 	</Files>

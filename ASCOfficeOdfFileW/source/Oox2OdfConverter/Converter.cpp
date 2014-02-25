@@ -10,26 +10,26 @@
 
 #include "odf_conversion_context.h"
 
+using namespace cpdoccore;
+
 namespace Oox2Odf
 {
 	class Impl
 	{
         friend class Converter;
 	public:
-		Impl(const CString & path)
+		Impl(const std::wstring & path,const std::wstring & type) : output_document(type)
 		{
-			const OOX::CPath oox_path(path);
-			m_input_docx =0;
-			m_input_xlsx =0;
-
-
-			int type = 1;	//get type oox ????
+			const OOX::CPath oox_path(CString(path.c_str()));
+			
+			docx_document =0;
+			xlsx_document =0;
 		
-			if (type == 1)
+			if (type == L"text")
 			{
 				docx_document = new OOX::CDocx(oox_path);	
 			}
-			if (type == 2)
+			if (type == L"spreadsheet")
 			{
 				xlsx_document = new OOX::Spreadsheet::CXlsx(oox_path);	
 			}
@@ -38,28 +38,24 @@ namespace Oox2Odf
 
 	public:
 		void convert(/*Odt::IOdtEvent& Event*/);
-		void write(const CString & path);
+		void write(const std::wstring & path);
 
     private:
 		OOX::CDocx					*docx_document;
 		OOX::Spreadsheet::CXlsx		*xlsx_document;
 
-		package::odf_document		outputDocument;
-
-		
-		
-		//Odf::Folder m_output; //odf_document 
+		odf::package::odf_document		output_document;
 	};
 
-	void Impl::write(const CString & path)
+	void Impl::write(const std::wstring & path)
 	{
-		outputDocument.write(path);
+		output_document.write(path);
 
 	}
 
 	void Impl::convert()
 	{
-		odf_conversion_context		odf_conversion_context_(&outputDocument);
+		odf::odf_conversion_context		odf_conversion_context_(&output_document);
 
 		if (docx_document)
 		{
@@ -79,13 +75,13 @@ namespace Oox2Odf
 
 			if (document)
 			{
-				odf_conversion_context_.start_documet();
+				odf_conversion_context_.start_document();
 				document->m_oSheets;
 				//odf_context.convert(document); - формирование объектов в odf
 				
 				
 				//...
-				odf_conversion_context_.end_documet();
+				odf_conversion_context_.end_document();
 			}
 		}
 	}
@@ -93,9 +89,9 @@ namespace Oox2Odf
 
     ///////////////
 
-    Converter::Converter(const CString & path) 
+	Converter::Converter(const std::wstring & path, const std::wstring & type) 
     {
-		impl_ = new Impl(path);
+		impl_ = new Impl(path,type);
 	}
 	Converter::~Converter() 
     {
@@ -106,7 +102,7 @@ namespace Oox2Odf
 		if (!impl_)return;
         impl_->convert(/*Event*/);
     }
-    void Converter::write(const CString & path) const
+    void Converter::write(const std::wstring & path) const
     {
         return impl_->write(path);
     }

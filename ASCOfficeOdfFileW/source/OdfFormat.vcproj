@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\ASCOfficeOdfFile\include"
+				AdditionalIncludeDirectories="..\..\ASCOfficeOdfFile\include;..\..\ASCOfficeOdfFile\3dparty\utf8cpp\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

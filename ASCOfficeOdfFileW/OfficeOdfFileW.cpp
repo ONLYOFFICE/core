@@ -21,15 +21,18 @@
 #endif 
 
 
-	// имя директории - uuid
-	boost::filesystem::wpath MakeTempDirectoryName(const std::wstring& Dst)
-	{
-		boost::uuids::random_generator gen;
-		boost::uuids::uuid u = gen();
-		boost::filesystem::wpath path = boost::filesystem::wpath(Dst) / boost::lexical_cast<std::wstring>(u);
-		return path;
-	}
-
+// имя директории - uuid
+boost::filesystem::wpath MakeTempDirectoryName(const std::wstring& Dst)
+{
+	boost::uuids::random_generator gen;
+	boost::uuids::uuid u = gen();
+	boost::filesystem::wpath path = boost::filesystem::wpath(Dst) / boost::lexical_cast<std::wstring>(u);
+	return path;
+}
+std::wstring bstr2wstring(BSTR str)
+{
+    return str ? std::wstring(&str[0], &str[::SysStringLen(str)]) : L"";
+}
 
 STDMETHODIMP COfficeOdfFileW::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions)
 {
@@ -90,7 +93,7 @@ STDMETHODIMP COfficeOdfFileW::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR 
         
         boost::filesystem::create_directory(srcTempPath); // создаем временную директорию для результирующих файлов
 #endif
-        hr = SaveToFileImpl(CString(sSrcPath), CString(srcTempPath.string().c_str()), CString(dstTempPath.string().c_str()), CString(sDstFileName));
+        hr = SaveToFileImpl(bstr2wstring(sSrcPath),srcTempPath.string(), dstTempPath.string(), bstr2wstring(sDstFileName));
         
     }
     catch(...)
@@ -121,23 +124,24 @@ STDMETHODIMP COfficeOdfFileW::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR 
     return hr;
 }
 
-HRESULT COfficeOdfFileW::SaveToFileImpl(const CString & srcPath,
-                                        const CString & srcTempPath,
-                                        const CString & dstTempPath,
-                                        const CString & dstFileName)
+HRESULT COfficeOdfFileW::SaveToFileImpl(const std::wstring & srcPath,
+                                        const std::wstring & srcTempPath,
+                                        const std::wstring & dstTempPath,
+                                        const std::wstring & dstFileName)
 {
     HRESULT hr = E_FAIL;
   
 
     // распаковываем исходник (если он файл) во временную директорию
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
-    if FAILED(hr = office_utils_->ExtractToDirectory(CComBSTR(srcPath), CComBSTR(srcTempPath), NULL, 0))
+    if FAILED(hr = office_utils_->ExtractToDirectory(CComBSTR(srcPath.c_str()), CComBSTR(srcTempPath.c_str()), NULL, 0))
         return hr;
 #endif
 
 	try
 	{
-		Oox2Odf::Converter converter(srcTempPath);
+		std::wstring type = L"spreadsheet";
+		Oox2Odf::Converter converter(srcTempPath,type);
 		
 		converter.convert();
 		converter.write(dstTempPath);
@@ -149,7 +153,7 @@ HRESULT COfficeOdfFileW::SaveToFileImpl(const CString & srcPath,
     if FAILED(hr)
         return hr;
    
-    if FAILED(hr = office_utils_->CompressFileOrDirectory(CComBSTR(dstTempPath), CComBSTR(dstFileName), (-1)))
+    if FAILED(hr = office_utils_->CompressFileOrDirectory(CComBSTR(dstTempPath.c_str()), CComBSTR(dstFileName.c_str()), (-1)))
         return hr;
 
     return S_OK;

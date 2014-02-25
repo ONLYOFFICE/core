@@ -9,13 +9,13 @@ namespace Oox2Odf
 	{
 
 	public:
-		Converter(const CString & path);
+		Converter(const std::wstring & path, const std::wstring & type);
         virtual ~Converter();
 
 	public:
 		void convert();
      
-        void write(const CString & path) const;
+        void write(const std::wstring & path) const;
 
 		Impl * get_impl() { return impl_; }
 

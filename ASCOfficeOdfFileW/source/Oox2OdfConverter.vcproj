@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\OdfFormat;.\Oox2OdfConverter;..\..\Common\DocxFormat\Source;..\..\Common\DocxFormat\Source\XML"
+				AdditionalIncludeDirectories=".\OdfFormat;.\Oox2OdfConverter;..\..\Common\DocxFormat\Source;..\..\Common\DocxFormat\Source\XML;..\..\ASCOfficeOdfFile\include;..\..\ASCOfficeOdfFile\3dparty\utf8cpp\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_USE_XMLLITE_READER_"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -103,7 +103,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".\OdfFormat;.\Oox2OdfConverter;..\..\Common\DocxFormat\Source;..\..\Common\DocxFormat\Source\XML"
+				AdditionalIncludeDirectories=".\OdfFormat;.\Oox2OdfConverter;..\..\Common\DocxFormat\Source;..\..\Common\DocxFormat\Source\XML;..\..\ASCOfficeOdfFile\include;..\..\ASCOfficeOdfFile\3dparty\utf8cpp\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_USE_XMLLITE_READER_"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"

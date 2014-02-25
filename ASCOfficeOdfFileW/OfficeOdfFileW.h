@@ -85,8 +85,8 @@ private:
 
     bool initialized();
 
-	HRESULT SaveToFileImpl(const CString & srcPath, const CString & srcTempPath,
-						   const CString & dstTempPath,	 const CString & dstFileName);
+	HRESULT SaveToFileImpl(const std::wstring & srcPath, const std::wstring & srcTempPath,
+						   const std::wstring & dstTempPath,	 const std::wstring & dstFileName);
 
 };
 

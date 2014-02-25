@@ -6,7 +6,6 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/shared_mutex.hpp>
 #include "logging.h"
-#include "skipelement.h"
 
 namespace cpdoccore { 
 namespace odf {
@@ -109,6 +108,50 @@ void not_applicable_element(const office_element * CurrentElm, const std::wstrin
     not_applicable_element(ss.str(), Ns, Name);
 }
 
+bool create_element(const ::std::wstring & Ns,
+                             const ::std::wstring & Name,
+                             office_element_ptr & _Element,
+                             document_context * Context,
+                             bool isRoot)
+{
+    if (office_element_ptr elm = office_element_creator::get()->create(Ns, Name, Context, isRoot))
+    {
+        if (_Element) // элемент создается повторно
+        {
+            std::wstringstream ss;
+            ss << L"[warning] : duplicate element (" << Ns << L":" << Name << L")\n";
+            _CP_LOG(error) << ss.str();
+        }
+
+        _Element = elm;
+        return true;
+    }
+    else
+    {
+#ifdef _DEBUG
+		std::wstringstream ss;
+        ss << L"[warning] : create element failed (" << Ns << L":" << Name << L")\n";
+        _CP_LOG(error) << ss.str();
+#endif
+        not_applicable_element(L"[!!!]", 0, Ns, Name);
+    }
+    return false;
+}
+
+bool create_element(const ::std::wstring & Ns,
+                             const ::std::wstring & Name,
+                             office_element_ptr_array & _Elements,
+                             document_context * Context,
+                             bool isRoot)
+{
+    office_element_ptr elm;
+    if (create_element(Ns, Name, elm, Context, isRoot))
+    {
+        _Elements.push_back(elm);
+        return true;
+    }
+    return false;
+}
 
 
 }

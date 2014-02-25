@@ -8,6 +8,8 @@
 
 #include <boost/foreach.hpp>
 
+#include "odf_conversion_context.h"
+
 namespace Oox2Odf
 {
 	class Impl
@@ -25,12 +27,13 @@ namespace Oox2Odf
 		
 			if (type == 1)
 			{
-				m_input_docx = new OOX::CDocx(oox_path);	
+				docx_document = new OOX::CDocx(oox_path);	
 			}
 			if (type == 2)
 			{
-				m_input_xlsx = new OOX::Spreadsheet::CXlsx(oox_path);	
+				xlsx_document = new OOX::Spreadsheet::CXlsx(oox_path);	
 			}
+
 		}
 
 	public:
@@ -38,8 +41,11 @@ namespace Oox2Odf
 		void write(const CString & path);
 
     private:
-		OOX::CDocx					*m_input_docx;
-		OOX::Spreadsheet::CXlsx		*m_input_xlsx;
+		OOX::CDocx					*docx_document;
+		OOX::Spreadsheet::CXlsx		*xlsx_document;
+
+		package::odf_document		outputDocument;
+
 		
 		
 		//Odf::Folder m_output; //odf_document 
@@ -47,44 +53,40 @@ namespace Oox2Odf
 
 	void Impl::write(const CString & path)
 	{
-		//m_output.write(path);
+		outputDocument.write(path);
+
 	}
 
 	void Impl::convert()
 	{
-		bool cancelled = false;
-		int percent = 150000;
+		odf_conversion_context		odf_conversion_context_(&outputDocument);
 
-		if (m_input_docx)
+		if (docx_document)
 		{
-			const OOX::CApp *app = m_input_docx->GetApp();
-			if (app)
-			{
-				percent += 250000;
-				if(cancelled)
-					return;
-			}
-			
-			const OOX::CCore *core = m_input_docx->GetCore();
-			if (core)
-			{
-				percent += 250000;
-				if(cancelled)
-					return;
-			}				
-			const OOX::CDocument* document = m_input_docx->GetDocument();
+			//нужно само содержимое документа, окружение не важно (Core, App) 
+			//стили тоже сами по себе не нужны - нужны только те которые используются в документе  
+			const OOX::CDocument* document = docx_document->GetDocument();
 
 			if (document)
 			{
-				//odf_context.convert(document);
+				//odf_context.convert(document); - формирование объектов в odf
 
-				percent += 250000;
-				if(cancelled)
-					return;
 			}
 		}
-		else if (m_input_xlsx)
+		else if (xlsx_document)
 		{
+			const OOX::Spreadsheet::CWorkbook *document = xlsx_document->GetWorkbook();
+
+			if (document)
+			{
+				odf_conversion_context_.start_documet();
+				document->m_oSheets;
+				//odf_context.convert(document); - формирование объектов в odf
+				
+				
+				//...
+				odf_conversion_context_.end_documet();
+			}
 		}
 	}
 

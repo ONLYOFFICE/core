@@ -595,6 +595,8 @@ namespace Aggplus
 					LONG lCount2	= lCount / 2;
 
 					double dKoef	= 0.352777778;
+					if (m_dDpiX > 1)
+						dKoef = 25.4 / m_dDpiX;
 
 					for (LONG i = 0; i < lCount2; ++i)
 					{

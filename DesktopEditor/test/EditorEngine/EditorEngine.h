@@ -223,6 +223,26 @@ public:
 		CBgraFrame oFrame;
 		oFrame.OpenFile(sFile);
 
+		if (FALSE)
+		{
+			CBgraFrame oFrame2;
+			oFrame2.OpenFile(L"\\\\korshul\\Exchange\\1234\\загруженное.png");
+
+			BYTE* pData = oFrame2.get_Data();
+			int nCount = oFrame2.get_Width() * oFrame2.get_Height() * 4;
+			CStringA strImage = "";
+			for (int i = 0; i < nCount; ++i)
+			{
+				CStringA s = "";
+				s.Format("%d;", pData[i]);
+				strImage += s;
+			}
+
+			FILE* ff = fopen("c:\\image_dump", "a+");
+			fprintf(ff, strImage.GetBuffer());
+			fclose(ff);
+		}
+
 		oFrame.SaveFile(L"D:\\Exchange\\1234\\RENDERER\\1.png", _CXIMAGE_FORMAT_PNG);
 
 		return S_OK;

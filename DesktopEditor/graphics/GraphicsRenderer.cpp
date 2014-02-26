@@ -353,6 +353,7 @@ HRESULT CGraphicsRenderer::PenDashPattern(double* pPattern, LONG lCount)
 	RELEASEARRAYOBJECTS((m_oPen.DashPattern));
 	m_oPen.DashPattern = new double[lCount];
 	memcpy(m_oPen.DashPattern, pPattern, lCount * sizeof(double));
+	m_oPen.Count = lCount;
 	return S_OK;
 }
 

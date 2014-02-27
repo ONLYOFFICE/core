@@ -1,8 +1,6 @@
 #include "oMathPara.h"
 
 // TO DO: Нехватающие классы:
-//        <w:del>
-//        <w:ins>
 //        <w:moveFrom>
 //        <w:moveTo>
 
@@ -81,8 +79,8 @@ namespace OOX
 					pItem = new OOX::Logic::CCustomXmlMoveToRangeStart( oReader );
 				else if ( _T("m:d") == sName )
 					pItem = new OOX::Logic::CDelimiter( oReader );
-				//else if ( _T("w:del") == sName )
-				//	pItem = new CDel( oReader );
+				else if ( _T("w:del") == sName )
+					pItem = new CDel( oReader );
 				else if ( _T("m:eqArr") == sName )
 					pItem = new OOX::Logic::CEqArr( oReader );
 				else if ( _T("m:f") == sName )
@@ -91,8 +89,8 @@ namespace OOX
 					pItem = new OOX::Logic::CFunc( oReader );
 				else if ( _T("m:groupChr") == sName )
 					pItem = new CGroupChr( oReader );
-				//else if ( _T("w:ins") == sName )
-				//	pItem = new CIns( oReader );
+				else if ( _T("w:ins") == sName )
+					pItem = new CIns( oReader );
 				else if ( _T("m:limLow") == sName )
 					pItem = new OOX::Logic::CLimLow( oReader );
 				else if ( _T("m:limUpp") == sName )

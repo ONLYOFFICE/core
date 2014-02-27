@@ -69,6 +69,8 @@ public:
 
 	HRESULT FinalConstruct()
 	{
+		office_utils_.CoCreateInstance(__uuidof(ASCOfficeUtils::COfficeUtils));    
+
 		return S_OK;
 	}
 

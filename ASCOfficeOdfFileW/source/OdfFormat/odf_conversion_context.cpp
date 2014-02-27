@@ -1,11 +1,15 @@
 #include "precompiled_cpodf.h"
 
+#include <boost/foreach.hpp>
+
+#include "office_elements_create.h"
+
 #include "odf_conversion_context.h"
 #include "odf_rels.h"
 
+
 namespace cpdoccore { 
 namespace odf {
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -19,14 +23,28 @@ odf_conversion_context::~odf_conversion_context()
 
 }
 
-void odf_conversion_context::start_document()
+office_element_ptr &  odf_conversion_context::getCurrentElement()
 {
+	if (content_.size()>0)
+	{
+		return content_.back();
+	}
+	else
+	{ 
+        CP_ASSERT(false);
+        throw std::runtime_error("internal error");
+	}
 }
 
 void odf_conversion_context::end_document()
 {
 	package::content_content_ptr content_root_ = package::content_content::create();
+	
 
+	BOOST_FOREACH(const office_element_ptr & elm, content_)
+	{
+		elm->serialize(content_root_->content());
+	}
 
     std::wstringstream styles_root_strm;
     //odf_styles_.serialize(styles_root_strm);// мастер-пейджы, заданные заливки (градиенты, битмапы), дефолтные стили, колонтитулы, разметки, заметки,...
@@ -45,6 +63,7 @@ void odf_conversion_context::end_document()
 
 	{
 		//...
+
 	}
 	output_document_->set_rels(rels_);
 }

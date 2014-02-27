@@ -20,7 +20,7 @@ office_element_creator::office_element_creator() : rw_lock_( new boost::shared_m
 {
 }
 
-office_element_ptr office_element_creator::create(const ::std::wstring & ns, const ::std::wstring & name, document_context * Context, bool isRoot) const
+office_element_ptr office_element_creator::create(const ::std::wstring & ns, const ::std::wstring & name, odf_conversion_context * Context, bool isRoot) const
 {
     const std::wstring fullName = ns + (ns.size() > 0 ? L":" : L"") + name;
 
@@ -38,9 +38,6 @@ office_element_ptr office_element_creator::create(const ::std::wstring & ns, con
         
         if (element && isRoot)
             element->set_root(true);
-
-        if (element)
-            element->afterCreate();        
 
         return element;
     }
@@ -111,7 +108,7 @@ void not_applicable_element(const office_element * CurrentElm, const std::wstrin
 bool create_element(const ::std::wstring & Ns,
                              const ::std::wstring & Name,
                              office_element_ptr & _Element,
-                             document_context * Context,
+                             odf_conversion_context * Context,
                              bool isRoot)
 {
     if (office_element_ptr elm = office_element_creator::get()->create(Ns, Name, Context, isRoot))
@@ -133,7 +130,7 @@ bool create_element(const ::std::wstring & Ns,
         ss << L"[warning] : create element failed (" << Ns << L":" << Name << L")\n";
         _CP_LOG(error) << ss.str();
 #endif
-        not_applicable_element(L"[!!!]", 0, Ns, Name);
+        not_applicable_element(L"[!!!]", Ns, Name);
     }
     return false;
 }
@@ -141,7 +138,7 @@ bool create_element(const ::std::wstring & Ns,
 bool create_element(const ::std::wstring & Ns,
                              const ::std::wstring & Name,
                              office_element_ptr_array & _Elements,
-                             document_context * Context,
+                             odf_conversion_context * Context,
                              bool isRoot)
 {
     office_element_ptr elm;

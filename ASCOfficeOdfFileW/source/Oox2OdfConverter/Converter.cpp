@@ -8,7 +8,8 @@
 
 #include <boost/foreach.hpp>
 
-#include "odf_conversion_context.h"
+#include "ods_conversion_context.h"
+//#include "odt_conversion_context.h"
 
 using namespace cpdoccore;
 
@@ -55,7 +56,7 @@ namespace Oox2Odf
 
 	void Impl::convert()
 	{
-		odf::odf_conversion_context		odf_conversion_context_(&output_document);
+		odf::ods_conversion_context		ods_conversion_context_(&output_document);
 
 		if (docx_document)
 		{
@@ -71,17 +72,49 @@ namespace Oox2Odf
 		}
 		else if (xlsx_document)
 		{
-			const OOX::Spreadsheet::CWorkbook *document = xlsx_document->GetWorkbook();
+			const OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->GetWorkbook();
+			CAtlMap<CString, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = xlsx_document->GetWorksheets();
 
-			if (document)
+			//convert(xlsx_document->GetWorkbook(),odf_conversion_context_);
+			
+			if (Workbook)
 			{
-				odf_conversion_context_.start_document();
-				document->m_oSheets;
-				//odf_context.convert(document); - формирование объектов в odf
-				
-				
-				//...
-				odf_conversion_context_.end_document();
+				ods_conversion_context_.start_document();
+
+				if(Workbook->m_oSheets.IsInit())
+				{
+					CSimpleArray<OOX::Spreadsheet::CSheet*>& aWs = Workbook->m_oSheets->m_arrItems;
+					
+					for(int i = 0, length = aWs.GetSize(); i < length; ++i)
+					{
+						OOX::Spreadsheet::CSheet* pSheet = aWs[i];
+							
+						if(pSheet->m_oRid.IsInit())
+						{
+							CString sSheetRId = pSheet->m_oName.get2();
+							CAtlMap<CString, OOX::Spreadsheet::CWorksheet*>::CPair* pPair = arrWorksheets.Lookup(sSheetRId);
+							if (NULL != pPair)
+							{
+								OOX::Spreadsheet::CWorksheet *pWorksheet = pPair->m_value;
+								if (NULL != pWorksheet && pWorksheet->m_oSheetData.IsInit())
+								{
+									std::wstring name = L"";/*pSheet->m_oName.get2()*/
+									ods_conversion_context_.start_sheet(name);
+									//CAtlMap<CString, OOX::Spreadsheet::CWorksheet*>::CPair* pair = aWorksheets.Lookup(pSheet->m_oRid->GetValue());
+									//if(NULL != pair)
+									//{
+									//	nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Worksheet);
+									//	WriteWorksheet(*pSheet, *pair->m_value);
+									//	m_oBcw.WriteItemWithLengthEnd(nCurPos);
+									//}
+									ods_conversion_context_.end_sheet();						
+								}
+							}
+
+						}
+					}
+				}
+				ods_conversion_context_.end_document();
 			}
 		}
 	}
@@ -106,10 +139,5 @@ namespace Oox2Odf
     {
         return impl_->write(path);
     }
-
-    //void Converter::app2meta(const OOX::App& app, Odt::Meta::File& meta) const
-    //{
-    //    return impl_->app2meta(app, meta);
-    //}
 
 } // namespace Docx2Odt

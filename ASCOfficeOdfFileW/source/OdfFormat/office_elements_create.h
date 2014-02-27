@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_OFFCIE_ELEMENTS_CREATE_H_
-#define _CPDOCCORE_ODF_OFFCIE_ELEMENTS_CREATE_H_
+#pragma once
 
 #include <string>
 #include <map>
@@ -16,7 +15,7 @@ namespace boost {
 namespace cpdoccore { 
 namespace odf {
 
-class document_context;
+class odf_conversion_context;
 
 class office_element;
 typedef shared_ptr<office_element>::Type office_element_ptr;
@@ -36,7 +35,7 @@ public:
     bool register_element(const std::wstring &ns, const std::wstring & name, CreateFuncImpl f);
 
     // Создать элемент по имени
-    office_element_ptr create(const ::std::wstring & ns, const ::std::wstring & name, document_context * Context = NULL, bool isRoot = false) const;
+    office_element_ptr create(const ::std::wstring & ns, const ::std::wstring & name, odf_conversion_context * Context = NULL, bool isRoot = false) const;
 
 private:
     typedef std::map<::std::wstring, CreateFuncImpl> MapType;
@@ -88,34 +87,27 @@ private:
 template<class T> int RegisterElement<T>::class_registered_ = 0;
 
 /// \brief  Создать элемент
-bool create_element(const ::std::wstring & Ns,
-                             const ::std::wstring & Name,
-                             office_element_ptr & _Element,
-                             document_context * Context,
-                             bool isRoot = false);
+bool create_element(const std::wstring & Ns,
+                    const std::wstring & Name,
+                    office_element_ptr & _Element,
+                    odf_conversion_context * Context,
+                    bool isRoot = false);
 
 bool create_element(const ::std::wstring & Ns,
                              const ::std::wstring & Name,
                              office_element_ptr_array & _Elements,
-                             document_context * Context,
-                             bool isRoot);
+                             odf_conversion_context * Context,
+                             bool isRoot = false);
+
+#define CP_CREATE_ELEMENT_SIMPLE(ELEMENT) create_element(Ns, Name, (ELEMENT), Context)
+#define CP_CREATE_ELEMENT		(ELEMENT) create_element(Ns, Name, (ELEMENT), getContext())
+
+#define _CPDOCCORE_CREATE_ELEMENT_ROOT(ELEMENT) create_element(Ns, Name, (ELEMENT), getContext(), true)
 
 #define CP_CHECK_NAME(NS, NAME) ((NS) == Ns && (NAME) == Name)
-
-void not_applicable_element(const office_element * CurrentElm, xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-void not_applicable_element(const std::wstring & Current, xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 void not_applicable_element(const office_element * CurrentElm, const std::wstring & Ns, const std::wstring & Name);
 void not_applicable_element(const std::wstring & Current, const std::wstring & Ns, const std::wstring & Name);
 
-#define CP_NOT_APPLICABLE_ELM() \
-    not_applicable_element(this, Reader, Ns, Name)
-
-#define CP_NOT_APPLICABLE_ELM_SIMPLE(A) \
-    not_applicable_element(A, Reader, Ns, Name)
-
-
 }
 }
-
-#endif // #ifndef _CPDOCCORE_ODF_OFFCIE_ELEMENTS_CREATE_H_

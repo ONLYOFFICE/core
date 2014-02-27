@@ -5,9 +5,8 @@
 namespace cpdoccore { 
 namespace odf {
 
-//class office_element;
-//class relationship;
-//class rels;
+class office_element;
+typedef shared_ptr<office_element>::Type office_element_ptr;
 
 class odf_style_manager;
 
@@ -17,9 +16,12 @@ public:
     odf_conversion_context(package::odf_document * outputDocument);
     virtual ~odf_conversion_context();
 
-	void start_document();
+	virtual void start_document() = 0 ;
 	void end_document();
 
+	office_element_ptr & getCurrentElement();
+
+	std::vector<office_element_ptr>  content_;
 
     void add_rel(relationship const & r);
 
@@ -29,6 +31,8 @@ public:
 private:
 	//odf_style_manager odf_styles_;
 	rels	rels_;
+
+	//office_spreadsheet* current_spreadsheet_;
 };
 
 }

@@ -281,7 +281,7 @@ namespace odf
 					CP_XML_ATTR(L"xmlns:dr3d",	L"urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" );
 					CP_XML_ATTR(L"xmlns:math",	L"http://www.w3.org/1998/Math/MathML" );
 					CP_XML_ATTR(L"xmlns:form",	L"urn:oasis:names:tc:opendocument:xmlns:form:1.0" );
-					CP_XML_ATTR(L"xmlns:script",	L"urn:oasis:names:tc:opendocument:xmlns:script:1.0" );
+					CP_XML_ATTR(L"xmlns:script",L"urn:oasis:names:tc:opendocument:xmlns:script:1.0" );
 					CP_XML_ATTR(L"xmlns:ooo",	L"http://openoffice.org/2004/office" );
 					CP_XML_ATTR(L"xmlns:ooow",	L"http://openoffice.org/2004/writer" );
 					CP_XML_ATTR(L"xmlns:oooc",	L"http://openoffice.org/2004/calc" );
@@ -304,7 +304,7 @@ namespace odf
 					CP_XML_NODE(L"office:scripts");
  					CP_XML_NODE(L"office:font-face-decls");
 					CP_XML_NODE(L"office:automatic-styles");
-					CP_XML_NODE(L"office:boby")
+					CP_XML_NODE(L"office:body")
 					{
 						if (content_)
 						{

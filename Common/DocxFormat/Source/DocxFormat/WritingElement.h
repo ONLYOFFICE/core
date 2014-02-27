@@ -490,6 +490,7 @@ namespace OOX
 		et_w_clrSchemeMapping, // <w:clrSchemeMapping>
 		et_w_cols, // <w:cols>
 		et_w_comboBox, // <w:comboBox>
+		et_w_comment, // <w:comment>
 		et_w_commentRangeEnd, // <w:commentRangeEnd>
 		et_w_commentRangeStart, // <w:commentRangeStart>
 		et_w_commentReference, // <w:commentReference>
@@ -511,6 +512,7 @@ namespace OOX
 		et_w_dayLong, // <w:dayLong>
 		et_w_dayShort, // <w:dayShort>
 		et_w_ddList, // <w:ddList>
+		et_w_del, // <w:del>
 		et_w_delInstrText, // <w:delInstrText>
 		et_w_delText, // <w:delText>
 		et_w_drawing, // <w:drawing>
@@ -538,6 +540,7 @@ namespace OOX
 		et_w_hdrShapeDefaults, // <w:hdrShapeDefaults>
 		et_w_headers, // <w:headers>
 		et_w_hyperlink, // <w:hyperlink>
+		et_w_ins, // <w:ins>
 		et_w_instrText, // <w:instrText>
 		et_w_latentStyles, // <w:latentStyles>
 		et_w_lastRenderedPageBreak, // <w:lastRenderedPageBreak>
@@ -620,7 +623,6 @@ namespace OOX
 		et_w_yearLong, // <w:yearLong>
 		et_w_yearShort, // <w:yearShort>
 		et_w_zoom, // <w:zoom>
-		et_w_comment, // <w:comment>
 
 		et_wd_anchorLock, // <wd:anchorLock>
 		et_wd_borderbottom, // <wd:borderbottom>

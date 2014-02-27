@@ -218,8 +218,6 @@ namespace OOX
 
 // TO DO: Нехватающие классы:
 //        <w:customXml>
-//        <w:del>
-//        <w:ins>
 //        <w:moveFrom>
 //        <w:moveTo>
 
@@ -342,10 +340,10 @@ namespace OOX
 					pItem = new CCustomXmlMoveToRangeEnd( oReader );
 				else if ( _T("w:customXmlMoveToRangeStart") == sName )
 					pItem = new CCustomXmlMoveToRangeStart( oReader );
-				//else if ( _T("w:del") == sName )
-				//	pItem = new CDel( oReader );
-				//else if ( _T("w:ins") == sName )
-				//	pItem = new CIns( oReader );
+				else if ( _T("w:del") == sName )
+					pItem = new CDel( oReader );
+				else if ( _T("w:ins") == sName )
+					pItem = new CIns( oReader );
 				//else if ( _T("w:moveFrom") == sName )
 				//	pItem = new CMoveFrom( oReader );
 				else if ( _T("w:moveFromRangeEnd") == sName )
@@ -411,8 +409,6 @@ namespace OOX
 
 // TO DO: Нехватающие классы:
 //        <w:customXml>
-//        <w:del>
-//        <w:ins>
 //        <w:moveFrom>
 //        <w:moveTo>
 
@@ -562,10 +558,10 @@ namespace OOX
 					pItem = new CCustomXmlMoveToRangeEnd( oReader );
 				else if ( _T("w:customXmlMoveToRangeStart") == sName )
 					pItem = new CCustomXmlMoveToRangeStart( oReader );
-				//else if ( _T("w:del") == sName )
-				//	pItem = new CDel( oReader );
-				//else if ( _T("w:ins") == sName )
-				//	pItem = new CIns( oReader );
+				else if ( _T("w:del") == sName )
+					pItem = new CDel( oReader );
+				else if ( _T("w:ins") == sName )
+					pItem = new CIns( oReader );
 				//else if ( _T("w:moveFrom") == sName )
 				//	pItem = new CMoveFrom( oReader );
 				else if ( _T("w:moveFromRangeEnd") == sName )
@@ -661,8 +657,6 @@ namespace OOX
 // TO DO: Нехватающие классы:
 //        <w:altChunk>
 //        <w:customXml>
-//        <w:del>
-//        <w:ins>
 //        <w:moveFrom>
 //        <w:moveTo>
 
@@ -793,10 +787,10 @@ namespace OOX
 					pItem = new CCustomXmlMoveToRangeEnd( oReader );
 				else if ( _T("w:customXmlMoveToRangeStart") == sName )
 					pItem = new CCustomXmlMoveToRangeStart( oReader );
-				//else if ( _T("w:del") == sName )
-				//	pItem = new CDel( oReader );
-				//else if ( _T("w:ins") == sName )
-				//	pItem = new CIns( oReader );
+				else if ( _T("w:del") == sName )
+					pItem = new CDel( oReader );
+				else if ( _T("w:ins") == sName )
+					pItem = new CIns( oReader );
 				//else if ( _T("w:moveFrom") == sName )
 				//	pItem = new CMoveFrom( oReader );
 				else if ( _T("w:moveFromRangeEnd") == sName )

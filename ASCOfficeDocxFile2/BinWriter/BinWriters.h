@@ -2470,6 +2470,12 @@ namespace BinDocxRW
 						WriteParagraphContent(pBdo->m_arrItems, NULL);
 						break;
 					}
+				case OOX::et_w_ins:
+					{
+						OOX::Logic::CIns* pIns = static_cast<OOX::Logic::CIns*>(item);
+						WriteParagraphContent(pIns->m_arrItems, NULL);
+						break;
+					}
 				case OOX::et_w_commentRangeStart:
 					{
 						OOX::Logic::CCommentRangeStart* pCommentRangeStart = static_cast<OOX::Logic::CCommentRangeStart*>(item);

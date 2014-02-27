@@ -12,8 +12,6 @@
 
 // TO DO: Нехватающие классы:
 //        <w:customXml>
-//        <w:del>
-//        <w:ins>
 //        <w:moveFrom>
 //        <w:moveTo>
 //        <w:subDoc>
@@ -160,16 +158,16 @@ namespace OOX
 					pItem = new CCustomXmlMoveToRangeEnd( oReader );
 				else if ( _T("w:customXmlMoveToRangeStart") == sName )
 					pItem = new CCustomXmlMoveToRangeStart( oReader );
-				//else if ( _T("w:del") == sName )
-				//	pItem = new CDel( oReader );
+				else if ( _T("w:del") == sName )
+					pItem = new CDel( oReader );
 				else if ( _T("w:dir") == sName )
 					pItem = new CDir( oReader );
 				else if ( _T("w:fldSimple") == sName )
 					pItem = new CFldSimple( oReader );
 				else if ( _T("w:hyperlink") == sName )
 					pItem = new CHyperlink( oReader );
-				//else if ( _T("w:ins") == sName )
-				//	pItem = new CIns( oReader );
+				else if ( _T("w:ins") == sName )
+					pItem = new CIns( oReader );
 				//else if ( _T("w:moveFrom") == sName )
 				//	pItem = new CMoveFrom( oReader );
 				else if ( _T("w:moveFromRangeEnd") == sName )

@@ -1383,6 +1383,140 @@ namespace OOX
 			nullable<SimpleTypes::CProofErr<> > m_oType;
 		};
 	} // Logic
+	namespace Logic
+	{
+		class CIns : public WritingElement
+		{
+		public:
+			CIns()
+			{
+			}
+			CIns(XmlUtils::CXmlNode &oNode)
+			{
+				fromXML( oNode );
+			}
+			CIns(XmlUtils::CXmlLiteReader& oReader)
+			{
+				fromXML( oReader );
+			}
+			virtual ~CIns()
+			{
+				Clear();
+			}
+
+		public:
+			void Clear()
+			{		
+				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				{
+					if ( m_arrItems[nIndex] )
+						delete m_arrItems[nIndex];
+
+					m_arrItems[nIndex] = NULL;
+				}
+
+				m_arrItems.RemoveAll();
+			}
+
+		public:
+
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual CString      toXML() const;
+			virtual EElementType getType() const
+			{
+				return et_w_ins;
+			}
+
+		private: 
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:author"), m_oAuthor )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:date"), m_oDate )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:id"), m_oId )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+
+			// Attributes
+			nullable<CString > m_oAuthor;
+			nullable<SimpleTypes::CDateTime > m_oDate;
+			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+
+			// Childs
+			CSimpleArray<WritingElement *>                     m_arrItems;
+		};
+		class CDel : public WritingElement
+		{
+		public:
+			CDel()
+			{
+			}
+			CDel(XmlUtils::CXmlNode &oNode)
+			{
+				fromXML( oNode );
+			}
+			CDel(XmlUtils::CXmlLiteReader& oReader)
+			{
+				fromXML( oReader );
+			}
+			virtual ~CDel()
+			{
+				Clear();
+			}
+
+		public:
+			void Clear()
+			{		
+				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				{
+					if ( m_arrItems[nIndex] )
+						delete m_arrItems[nIndex];
+
+					m_arrItems[nIndex] = NULL;
+				}
+
+				m_arrItems.RemoveAll();
+			}
+
+		public:
+
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual CString      toXML() const;
+			virtual EElementType getType() const
+			{
+				return et_w_del;
+			}
+
+		private: 
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:author"), m_oAuthor )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:date"), m_oDate )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:id"), m_oId )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+
+			// Attributes
+			nullable<CString > m_oAuthor;
+			nullable<SimpleTypes::CDateTime > m_oDate;
+			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+
+			// Childs
+			CSimpleArray<WritingElement *>                     m_arrItems;
+		};
+	} // Logic
+	// Revisions 17.13.5
 } // OOX
 
 #endif /* OOX_LOGIC_RANGE_MURKUP_ELEMENTS_INCLUDE_H_ */

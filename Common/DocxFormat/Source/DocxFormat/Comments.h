@@ -81,10 +81,10 @@ namespace OOX
 					pItem = new Logic::CCustomXmlMoveToRangeEnd( oReader );
 				else if ( _T("w:customXmlMoveToRangeStart") == sName )
 					pItem = new Logic::CCustomXmlMoveToRangeStart( oReader );
-				//else if ( _T("w:del") == sName )
-				//	pItem = new Logic::CDel( oReader );
-				//else if ( _T("w:ins") == sName )
-				//	pItem = new Logic::CIns( oReader );
+				else if ( _T("w:del") == sName )
+					pItem = new Logic::CDel( oReader );
+				else if ( _T("w:ins") == sName )
+					pItem = new Logic::CIns( oReader );
 				//else if ( _T("w:moveFrom") == sName )
 				//	pItem = new Logic::CMoveFrom( oReader );
 				else if ( _T("w:moveFromRangeEnd") == sName )

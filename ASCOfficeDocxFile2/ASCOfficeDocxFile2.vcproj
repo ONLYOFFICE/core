@@ -550,7 +550,7 @@
 			Name="BinWiter"
 			>
 			<File
-				RelativePath="..\..\TeamlabOffice\trunk\XlsxSerializerCom\Reader\BinaryWriter.h"
+				RelativePath="..\XlsxSerializerCom\Reader\BinaryWriter.h"
 				>
 			</File>
 			<File

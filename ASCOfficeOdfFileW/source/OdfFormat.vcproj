@@ -859,6 +859,50 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="elements"
+			>
+			<File
+				RelativePath=".\OdfFormat\office_body.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\office_body.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\office_spreadsheet.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\office_spreadsheet.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="_spreadsheep"
+			>
+			<File
+				RelativePath=".\OdfFormat\ods_conversion_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\ods_conversion_context.h"
+				>
+			</File>
+		</Filter>
+		<File
+			RelativePath=".\OdfFormat\abstract_xml.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\OdfFormat\abstract_xml.h"
+			>
+		</File>
+		<File
+			RelativePath=".\OdfFormat\logging.cpp"
+			>
+		</File>
 		<File
 			RelativePath=".\OdfFormat\odf_conversion_context.cpp"
 			>

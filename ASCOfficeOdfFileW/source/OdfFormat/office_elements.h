@@ -27,8 +27,7 @@ typedef shared_ptr<office_element>::Type office_element_ptr;
 typedef weak_ptr<office_element>::Type office_element_weak_ptr;
 typedef std::vector<office_element_ptr> office_element_ptr_array;
 
-class office_element : public xml::element<wchar_t>,    public base_visitable
-
+class office_element : public xml::element<wchar_t>, public base_visitable, boost::noncopyable 
 {    
 public:
     office_element() : context_(NULL) {}
@@ -36,9 +35,9 @@ public:
     virtual ElementType get_type() const = 0;
     virtual ~office_element() = 0;
 
-	office_element_ptr & get_parent(){ return parent_;}
+	//office_element_ptr & get_parent(){ return parent_;}
 
-  	void set_parent(office_element_ptr & parent){ parent_ = parent;}
+ // 	void set_parent(office_element_ptr & parent){ parent_ = parent;}
 
 	void setContext(odf_conversion_context * Context) { context_ = Context; }
 
@@ -63,7 +62,7 @@ public:
     }
 private:
     bool is_root_;	
-	office_element_ptr  parent_;
+	//office_element_ptr  parent_;
 	odf_conversion_context * context_;
 };
 

@@ -109,5 +109,10 @@ bool create_element(const ::std::wstring & Ns,
 void not_applicable_element(const office_element * CurrentElm, const std::wstring & Ns, const std::wstring & Name);
 void not_applicable_element(const std::wstring & Current, const std::wstring & Ns, const std::wstring & Name);
 
+#define CP_NOT_APPLICABLE_ELM() \
+    not_applicable_element(this, Ns, Name)
+
+#define CP_NOT_APPLICABLE_ELM_SIMPLE(A) \
+    not_applicable_element(A, Ns, Name)
 }
 }

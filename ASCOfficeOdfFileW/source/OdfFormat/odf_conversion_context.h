@@ -22,7 +22,7 @@ public:
 	office_element_ptr & getCurrentElement();
 
 	std::vector<office_element_ptr>  content_;
-
+	
     void add_rel(relationship const & r);
 
 	package::odf_document * output_document_;
@@ -31,8 +31,6 @@ public:
 private:
 	//odf_style_manager odf_styles_;
 	rels	rels_;
-
-	//office_spreadsheet* current_spreadsheet_;
 };
 
 }

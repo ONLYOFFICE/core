@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\ASCOfficeOdfFile\include;..\..\ASCOfficeOdfFile\3dparty\utf8cpp\include"
+				AdditionalIncludeDirectories="..\..\ASCOfficeOdfFile\include;..\..\ASCOfficeOdfFile\3dparty\utf8cpp\include;..\..\ASCOfficeOdfFile\src\odf\datatypes;.\OdfFormat"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -105,7 +105,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\ASCOfficeOdfFile\include;..\..\ASCOfficeOdfFile\3dparty\utf8cpp\include"
+				AdditionalIncludeDirectories="..\..\ASCOfficeOdfFile\include;..\..\ASCOfficeOdfFile\3dparty\utf8cpp\include;..\..\ASCOfficeOdfFile\src\odf\datatypes;.\OdfFormat"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -151,675 +151,679 @@
 			Name="datatypes"
 			>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\anchortype.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\anchortype.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\anchortype.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\anchortype.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\backgroundcolor.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\backgroundcolor.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\backgroundcolor.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\backgroundcolor.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\bordermodel.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\bordermodel.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\bordermodel.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\bordermodel.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\borderstyle.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\borderstyle.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\borderstyle.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\borderstyle.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\borderwidths.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\borderwidths.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\borderwidths.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\borderwidths.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\charterrorcategory.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\chartdatalabelnumber.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\charterrorcategory.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\chartdatalabelnumber.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\chartinterpolation.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\charterrorcategory.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\chartinterpolation.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\charterrorcategory.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\chartlabelarrangement.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\chartinterpolation.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\chartlabelarrangement.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\chartinterpolation.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\chartregressiontype.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\chartlabelarrangement.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\chartregressiontype.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\chartlabelarrangement.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\chartseriessource.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\chartregressiontype.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\chartseriessource.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\chartregressiontype.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\chartsolidtype.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\chartseriessource.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\chartsolidtype.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\chartseriessource.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\chartsymbol.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\chartsolidtype.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\chartsymbol.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\chartsolidtype.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\clockvalue.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\chartsymbol.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\clockvalue.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\chartsymbol.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\color.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\clockvalue.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\color.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\clockvalue.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\direction.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\color.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\direction.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\color.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\drawfill.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\common_attlists.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\drawfill.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\common_attlists.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\dropcaplength.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\direction.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\dropcaplength.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\direction.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fobreak.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\drawfill.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fobreak.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\drawfill.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fontfamilygeneric.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\dropcaplength.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fontfamilygeneric.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\dropcaplength.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fontpitch.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fobreak.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fontpitch.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fobreak.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fontrelief.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fontfamilygeneric.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fontrelief.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fontfamilygeneric.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fontsize.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fontpitch.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fontsize.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fontpitch.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fontstretch.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fontrelief.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fontstretch.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fontrelief.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fontstyle.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fontsize.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fontstyle.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fontsize.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fontvariant.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fontstretch.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fontvariant.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fontstretch.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fontweight.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fontstyle.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\fontweight.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fontstyle.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\gradientstyle.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fontvariant.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\gradientstyle.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fontvariant.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\hatchstyle.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fontweight.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\hatchstyle.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fontweight.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\hyphenationkeep.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\gradientstyle.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\hyphenationkeep.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\gradientstyle.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\hyphenationladdercount.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\hatchstyle.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\hyphenationladdercount.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\hatchstyle.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\keeptogether.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\hyphenationkeep.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\keeptogether.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\hyphenationkeep.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\layoutgridmode.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\hyphenationladdercount.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\layoutgridmode.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\hyphenationladdercount.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\length.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\keeptogether.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\length.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\keeptogether.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\lengthorpercent.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\layoutgridmode.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\lengthorpercent.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\layoutgridmode.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\letterspacing.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\length.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\letterspacing.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\length.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\linebreak.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\lengthorpercent.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\linebreak.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\lengthorpercent.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\linemode.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\letterspacing.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\linemode.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\letterspacing.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\linestyle.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\linebreak.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\linestyle.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\linebreak.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\linetype.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\linemode.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\linetype.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\linemode.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\linewidth.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\linestyle.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\linewidth.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\linestyle.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\markerstyle.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\linetype.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\markerstyle.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\linetype.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\noteclass.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\linewidth.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\noteclass.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\linewidth.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\number_style.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\markerstyle.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\number_style.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\markerstyle.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\pageusage.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\noteclass.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\pageusage.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\noteclass.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\percent.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\pageusage.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\percent.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\pageusage.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\percentorscale.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\percent.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\percentorscale.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\percent.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\presentationclass.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\percentorscale.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\presentationclass.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\percentorscale.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\punctuationwrap.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\presentationclass.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\punctuationwrap.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\presentationclass.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\rotationalign.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\punctuationwrap.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\rotationalign.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\punctuationwrap.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\runthrough.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\rotationalign.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\runthrough.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\rotationalign.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\scripttype.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\runthrough.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\scripttype.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\runthrough.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\shadowtype.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\scripttype.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\shadowtype.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\scripttype.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\smil_transitiontype.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\shadowtype.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\smil_transitiontype.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\shadowtype.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\style_chart_properties.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\smil_transitiontype.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\style_chart_properties.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\smil_transitiontype.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\stylefamily.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\style_ref.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\stylefamily.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\stylefamily.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\stylehorizontalpos.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\stylefamily.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\stylehorizontalpos.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\stylehorizontalpos.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\stylehorizontalrel.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\stylehorizontalpos.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\stylehorizontalrel.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\stylehorizontalrel.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\styleleadercolor.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\stylehorizontalrel.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\styleleadercolor.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\styleleadercolor.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\styleposition.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\styleleadercolor.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\styleposition.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\styleposition.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\stylerepeat.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\styleposition.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\stylerepeat.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\stylerepeat.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\styletype.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\stylerepeat.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\styletype.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\styletype.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\styleverticalpos.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\styletype.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\styleverticalpos.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\styleverticalpos.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\styleverticalrel.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\styleverticalpos.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\styleverticalrel.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\styleverticalrel.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\stylewrap.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\styleverticalrel.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\stylewrap.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\stylewrap.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\stylewrapcontourmode.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\stylewrap.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\stylewrapcontourmode.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\stylewrapcontourmode.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\tablealign.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\stylewrapcontourmode.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\tablealign.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\tablealign.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\tablecentering.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\tablealign.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\tablecentering.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\tablecentering.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\tablemode.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\tablecentering.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\tablemode.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\tablemode.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\tablevisibility.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\tablemode.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\tablevisibility.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\tablevisibility.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\targetframename.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\tablevisibility.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\targetframename.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\targetframename.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\textalign.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\targetframename.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\textalign.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\textalign.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\textalignsource.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\textalign.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\textalignsource.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\textalignsource.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\textautospace.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\textalignsource.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\textautospace.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\textautospace.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\textcombine.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\textautospace.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\textcombine.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\textcombine.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\textdisplay.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\textcombine.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\textdisplay.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\textdisplay.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\textemphasize.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\textdisplay.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\textemphasize.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\textemphasize.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\textposition.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\textemphasize.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\textposition.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\textposition.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\textrotationscale.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\textposition.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\textrotationscale.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\textrotationscale.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\texttransform.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\textrotationscale.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\texttransform.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\texttransform.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\underlinecolor.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\texttransform.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\underlinecolor.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\underlinecolor.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\verticalalign.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\underlinecolor.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\verticalalign.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\verticalalign.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\wrapoption.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\verticalalign.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\wrapoption.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\wrapoption.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\writingmode.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\wrapoption.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\writingmode.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\writingmode.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\xlink.cpp"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\writingmode.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeODFFile\src\odf\xlink.h"
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\xlink.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\xlink.h"
 				>
 			</File>
 		</Filter>
@@ -878,9 +882,17 @@
 				RelativePath=".\OdfFormat\office_spreadsheet.h"
 				>
 			</File>
+			<File
+				RelativePath=".\OdfFormat\table.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\table.h"
+				>
+			</File>
 		</Filter>
 		<Filter
-			Name="_spreadsheep"
+			Name="_spreadsheet"
 			>
 			<File
 				RelativePath=".\OdfFormat\ods_conversion_context.cpp"
@@ -888,6 +900,38 @@
 			</File>
 			<File
 				RelativePath=".\OdfFormat\ods_conversion_context.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\ods_drawing_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\ods_drawing_context.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\ods_table_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\ods_table_context.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\ods_table_state.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\ods_table_state.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="xml_common"
+			>
+			<File
+				RelativePath="..\..\ASCOfficeOdfFile\src\xml\xmlchar.cpp"
 				>
 			</File>
 		</Filter>

@@ -24,17 +24,16 @@ public:
     static const ElementType type = typeOfficeSpreadsheet;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void serialize(std::wostream & _Wostream);
-
 	office_element_ptr_array & getContent(){return content_;}
 
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-  
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );  
+
 	virtual void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element);
-    
-public:
+
+    virtual void serialize(std::wostream & _Wostream);
+private:    
+
     //  TODO: office-text-content-prelude:
     //  TODO: office-forms
     //  TODO: text-tracked-changes

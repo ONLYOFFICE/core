@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../odf/stylefamily.h"
-#include "../odf/length.h"
+#include "../odf/datatypes/stylefamily.h"
+#include "../odf/datatypes/length.h"
 #include <boost/unordered_map.hpp>
 #include <boost/shared_ptr.hpp>
 #include <list>
@@ -10,7 +10,7 @@
 #include "mediaitems.h"
 #include "headers_footers.h"
 #include "docx_table_context.h"
-#include "../odf/noteclass.h"
+#include "../odf/datatypes/noteclass.h"
 
 #include "oox_conversion_context.h"
 #include "oox_chart_context.h"

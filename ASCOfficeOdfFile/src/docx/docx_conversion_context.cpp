@@ -9,7 +9,7 @@
 #include "../odf/odfcontext.h"
 #include "../odf/style_text_properties.h"
 #include "../odf/style_graphic_properties.h"
-#include "../odf/style_ref.h"
+#include "../odf/datatypes/style_ref.h"
 
 #include "docx_package.h"
 #include "docx_rels.h"

@@ -4,7 +4,7 @@
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/CPSharedPtr.h>
 
-#include "../odf/lengthorpercent.h"
+#include "../odf/datatypes/lengthorpercent.h"
 
 
 namespace cpdoccore {

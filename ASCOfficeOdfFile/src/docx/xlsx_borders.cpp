@@ -7,8 +7,8 @@
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 #include "xlsx_border.h"
-#include "../odf/length.h"
-#include "../odf/borderstyle.h"
+#include "../odf/datatypes/length.h"
+#include "../odf/datatypes/borderstyle.h"
 #include "../odf/style_table_properties.h"
 
 

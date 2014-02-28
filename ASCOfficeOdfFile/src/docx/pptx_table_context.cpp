@@ -8,7 +8,7 @@
 #include "../odf/odfcontext.h"
 #include "../odf/draw_common.h"
 #include "../odf/calcs_styles.h"
-#include "../odf/borderstyle.h"
+#include "../odf/datatypes/borderstyle.h"
 
 #include "logging.h"
 

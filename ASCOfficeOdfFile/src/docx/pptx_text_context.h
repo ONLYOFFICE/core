@@ -8,7 +8,7 @@
 #include <cpdoccore/xml/attributes.h>
 
 #include "oox_conversion_context.h"
-#include "../odf/stylefamily.h"
+#include "../odf/datatypes/stylefamily.h"
 
 namespace cpdoccore {
 namespace odf

@@ -829,6 +829,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\odf\datatypes\style_ref.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\odf\datatypes\style_ref.h"
 				>
 			</File>

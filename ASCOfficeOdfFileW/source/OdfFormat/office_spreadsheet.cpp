@@ -10,6 +10,8 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 
+#include <cpdoccore/xml/simple_xml_writer.h>
+
 namespace cpdoccore { 
 namespace odf {
 
@@ -34,7 +36,16 @@ void office_spreadsheet::add_child_element(office_element_ptr & child_element)
 }
 void office_spreadsheet::serialize(std::wostream & _Wostream)
 {
-
+    CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE(L"office:spreadsheet")
+        {
+			BOOST_FOREACH(office_element_ptr & elm, content_)
+			{
+				elm->serialize(CP_XML_STREAM());
+			}
+		}
+	}
 }
 
 }

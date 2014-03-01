@@ -91,14 +91,14 @@ namespace Oox2Odf
 							
 						if(pSheet->m_oRid.IsInit())
 						{
-							CString sSheetRId = pSheet->m_oName.get2();
+							CString sSheetRId = pSheet->m_oRid.get2().ToString();
 							CAtlMap<CString, OOX::Spreadsheet::CWorksheet*>::CPair* pPair = arrWorksheets.Lookup(sSheetRId);
 							if (NULL != pPair)
 							{
 								OOX::Spreadsheet::CWorksheet *pWorksheet = pPair->m_value;
 								if (NULL != pWorksheet && pWorksheet->m_oSheetData.IsInit())
 								{
-									std::wstring name = L"";/*pSheet->m_oName.get2()*/
+									std::wstring name = string2std_string(pSheet->m_oName.get2());
 									ods_conversion_context_.start_sheet(name);
 									//CAtlMap<CString, OOX::Spreadsheet::CWorksheet*>::CPair* pair = aWorksheets.Lookup(pSheet->m_oRid->GetValue());
 									//if(NULL != pair)

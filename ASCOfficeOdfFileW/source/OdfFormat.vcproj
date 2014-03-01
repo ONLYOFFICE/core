@@ -583,6 +583,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\style_ref.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\style_ref.h"
 				>
 			</File>
@@ -969,6 +973,10 @@
 		</File>
 		<File
 			RelativePath=".\ReadMe.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\OdfFormat\serialize_common_attlists.h"
 			>
 		</File>
 	</Files>

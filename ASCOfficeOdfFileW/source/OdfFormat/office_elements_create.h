@@ -100,7 +100,7 @@ bool create_element(const ::std::wstring & Ns,
                              bool isRoot = false);
 
 #define CP_CREATE_ELEMENT_SIMPLE(ELEMENT) create_element(Ns, Name, (ELEMENT), Context)
-#define CP_CREATE_ELEMENT		(ELEMENT) create_element(Ns, Name, (ELEMENT), getContext())
+#define CP_CREATE_ELEMENT(ELEMENT) create_element(Ns, Name, (ELEMENT), getContext())
 
 #define _CPDOCCORE_CREATE_ELEMENT_ROOT(ELEMENT) create_element(Ns, Name, (ELEMENT), getContext(), true)
 

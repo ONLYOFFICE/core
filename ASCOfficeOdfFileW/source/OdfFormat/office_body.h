@@ -31,8 +31,6 @@ public:
 public:
     office_body();
 
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-   
 	virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element( office_element_ptr & child_element);
 

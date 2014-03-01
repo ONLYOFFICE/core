@@ -35,16 +35,10 @@ public:
     virtual ElementType get_type() const = 0;
     virtual ~office_element() = 0;
 
-	//office_element_ptr & get_parent(){ return parent_;}
-
- // 	void set_parent(office_element_ptr & parent){ parent_ = parent;}
-
-	void setContext(odf_conversion_context * Context) { context_ = Context; }
-
 	virtual void serialize(std::wostream & _Wostream) = 0 ;
 
+	void setContext(odf_conversion_context * Context) { context_ = Context; }
     odf_conversion_context * getContext() { return context_; }
-
     const odf_conversion_context * getContext() const { return context_; }
 
 	void set_root(bool root){is_root_ = root;}
@@ -62,9 +56,10 @@ public:
     }
 private:
     bool is_root_;	
-	//office_element_ptr  parent_;
 	odf_conversion_context * context_;
 };
+
+
 
 #define CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_ public:\
     virtual const wchar_t * get_ns() const { return ns; }\

@@ -896,7 +896,7 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="_spreadsheet"
+			Name="odf spreadsheet"
 			>
 			<File
 				RelativePath=".\OdfFormat\ods_conversion_context.cpp"
@@ -939,6 +939,26 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="styles"
+			>
+			<File
+				RelativePath=".\OdfFormat\style_table_properties.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\style_table_properties.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="odf text"
+			>
+		</Filter>
+		<Filter
+			Name="odf presentation"
+			>
+		</Filter>
 		<File
 			RelativePath=".\OdfFormat\abstract_xml.cpp"
 			>
@@ -973,10 +993,6 @@
 		</File>
 		<File
 			RelativePath=".\ReadMe.txt"
-			>
-		</File>
-		<File
-			RelativePath=".\OdfFormat\serialize_common_attlists.h"
 			>
 		</File>
 	</Files>

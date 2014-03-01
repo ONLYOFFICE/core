@@ -3,14 +3,13 @@
 
 #include <boost/make_shared.hpp>
 #include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/serialize.h>
 #include <cpdoccore/xml/attributes.h>
 
 #include <cpdoccore/odf/odf_document.h>
 
 #include <cpdoccore/xml/simple_xml_writer.h>
 
-#include "serialize_common_attlists.h"
+#include "common_attlists.h"
 
 namespace cpdoccore { 
 namespace odf {
@@ -122,7 +121,7 @@ void table_table::add_child_element(const ::std::wstring & Ns, const ::std::wstr
 {
     if (L"table" == Ns && L"table-source" == Name)
     {
-	    create_element(Ns,Name,table_table_source_,getContext());
+		CP_CREATE_ELEMENT(table_table_source_);
     } 
     else if ( (L"table" == Ns && L"table-column-group" == Name) ||
               (L"table" == Ns && L"table-columns" == Name) ||
@@ -141,7 +140,7 @@ void table_table::add_child_element(const ::std::wstring & Ns, const ::std::wstr
     }
     else if CP_CHECK_NAME(L"table", L"shapes")
     {
-  	    create_element(Ns,Name,table_shapes_,getContext());
+  	    CP_CREATE_ELEMENT(table_shapes_);
     }
     else
         CP_NOT_APPLICABLE_ELM();
@@ -150,10 +149,9 @@ void table_table::add_child_element(const ::std::wstring & Ns, const ::std::wstr
 
 void table_table::serialize(std::wostream & _Wostream)
 {
-	std::wstring ns_name_ =std::wstring(ns) + std::wstring(L":") + std::wstring(name);
     CP_XML_WRITER(_Wostream)
     {
-		CP_XML_NODE(ns_name_)
+		CP_XML_NODE_SIMPLE()
         {
 			CP_XML_ATTR_OPT( L"table:name", table_table_attlist_.table_name_);
 			CP_XML_ATTR_OPT( L"table:style-name", table_table_attlist_.table_style_name_);
@@ -212,7 +210,7 @@ void table_table_columns::add_child_element(const ::std::wstring & Ns, const ::s
 {
     if CP_CHECK_NAME(L"table", L"table-column")
     {
-   	    create_element(Ns,Name,table_table_column_,getContext());
+   	    CP_CREATE_ELEMENT(table_table_column_);
     }
     else
         CP_NOT_APPLICABLE_ELM();
@@ -231,7 +229,7 @@ void table_table_header_columns::add_child_element( const ::std::wstring & Ns, c
 {
     if CP_CHECK_NAME(L"table", L"table-column")
     {
-		 create_element(Ns,Name,table_table_column_,getContext());
+		 CP_CREATE_ELEMENT(table_table_column_);
     }
     else
         CP_NOT_APPLICABLE_ELM();
@@ -243,7 +241,7 @@ void table_columns::add_child_element( const ::std::wstring & Ns, const ::std::w
 {
     if CP_CHECK_NAME(L"table", L"table-columns")
     {
-		create_element(Ns,Name,table_table_columns_, Context);
+		CP_CREATE_ELEMENT_SIMPLE(table_table_columns_);
     }
     else if CP_CHECK_NAME(L"table", L"table-column")
     {
@@ -272,7 +270,7 @@ void table_columns_no_group::add_child_element(  const ::std::wstring & Ns, cons
     else if CP_CHECK_NAME(L"table", L"table-header-columns")
     {
         was_header_ = true;
-		create_element(Ns,Name,table_table_header_columns_,getContext());
+		CP_CREATE_ELEMENT(table_table_header_columns_);
     }
     else
         not_applicable_element(L"table-columns-no-group", Ns, Name);
@@ -318,7 +316,7 @@ void table_columns_and_groups::add_child_element(const ::std::wstring & Ns, cons
 {
     if (CP_CHECK_NAME(L"table", L"table-column-group"))
     {
-		create_element(Ns,Name,content_, Context);
+		CP_CREATE_ELEMENT_SIMPLE(content_);
     }
     else if (CP_CHECK_NAME(L"table", L"table-columns") ||
         CP_CHECK_NAME(L"table", L"table-column") ||
@@ -338,7 +336,7 @@ void table_columns_and_groups::add_child_element(const ::std::wstring & Ns, cons
 
 void table_table_cell_content::add_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
 {
-	create_element(Ns,Name,text_content_, Context);
+	CP_CREATE_ELEMENT_SIMPLE(text_content_);
 }
 
 // table:table-cell
@@ -393,7 +391,7 @@ void table_table_row::add_child_element( const ::std::wstring & Ns, const ::std:
     if ( CP_CHECK_NAME(L"table", L"table-cell") || 
          CP_CHECK_NAME(L"table", L"covered-table-cell") )
     {
-		create_element(Ns,Name,content_,getContext());
+		CP_CREATE_ELEMENT(content_);
     }
     else
         CP_NOT_APPLICABLE_ELM();    
@@ -412,7 +410,7 @@ void table_table_rows::add_attributes( const xml::attributes_wc_ptr & Attributes
 
 void table_table_rows::add_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-	create_element(Ns,Name,table_table_row_,getContext());
+	CP_CREATE_ELEMENT(table_table_row_);
 }
 
 // table:table-header-rows
@@ -429,7 +427,7 @@ void table_table_header_rows::add_child_element( const ::std::wstring & Ns, cons
 {
     if CP_CHECK_NAME(L"table", L"table-row")
     {
-		create_element(Ns,Name,table_table_row_,getContext());
+		CP_CREATE_ELEMENT(table_table_row_);
     }
     else
         CP_NOT_APPLICABLE_ELM();    
@@ -442,11 +440,11 @@ void table_rows::add_child_element(const ::std::wstring & Ns, const ::std::wstri
 {
     if CP_CHECK_NAME(L"table", L"table-rows")
     {
-		create_element(Ns,Name,table_table_rows_, Context);
+		CP_CREATE_ELEMENT_SIMPLE(table_table_rows_);
     } 
     else if CP_CHECK_NAME(L"table", L"table-row")
     {
-		create_element(Ns,Name,table_table_row_, Context);
+		CP_CREATE_ELEMENT_SIMPLE(table_table_row_);
     }
     else
     {
@@ -480,7 +478,7 @@ void table_rows_no_group::add_child_element( const ::std::wstring & Ns, const ::
     else if CP_CHECK_NAME(L"table", L"table-header-rows")
     {
         was_header_ = true;
-		create_element(Ns,Name,table_table_header_rows_,getContext());
+		CP_CREATE_ELEMENT(table_table_header_rows_);
     }
     else
         not_applicable_element(L"table-rows-no-group",Ns, Name);
@@ -497,7 +495,7 @@ void table_rows_and_groups::add_child_element( const ::std::wstring & Ns, const 
 {
     if (L"table" == Ns && L"table-row-group" == Name)
     {
-		create_element(Ns,Name,content_,Context);
+		CP_CREATE_ELEMENT_SIMPLE(content_);
     } 
     else if (L"table" == Ns && (L"table-rows" == Name || L"table-row" == Name || L"table-header-rows" == Name) )
     {

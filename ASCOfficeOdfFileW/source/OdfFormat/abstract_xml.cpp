@@ -15,10 +15,6 @@ namespace odf {
 const wchar_t * abstract_xml::ns = L"";
 const wchar_t * abstract_xml::name = L"abstract-xml";
 
-
-void abstract_xml::add_attributes( const xml::attributes_wc_ptr & )
-{
-}
 void abstract_xml::serialize(std::wostream & strm)
 {
 }

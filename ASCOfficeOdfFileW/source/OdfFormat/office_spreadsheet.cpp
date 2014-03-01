@@ -4,7 +4,6 @@
 #include <boost/foreach.hpp>
 
 #include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/serialize.h>
 #include <cpdoccore/xml/attributes.h>
 
 #include "office_elements.h"
@@ -20,14 +19,9 @@ namespace odf {
 const wchar_t * office_spreadsheet::ns = L"office";
 const wchar_t * office_spreadsheet::name = L"spreadsheet";
 
-
-void office_spreadsheet::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-}
-
 void office_spreadsheet::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-    create_element(Ns,Name,content_,getContext());
+    CP_CREATE_ELEMENT(content_);
 }
 
 void office_spreadsheet::add_child_element(office_element_ptr & child_element)
@@ -38,7 +32,7 @@ void office_spreadsheet::serialize(std::wostream & _Wostream)
 {
     CP_XML_WRITER(_Wostream)
     {
-		CP_XML_NODE(L"office:spreadsheet")
+		CP_XML_NODE_SIMPLE()
         {
 			BOOST_FOREACH(office_element_ptr & elm, content_)
 			{

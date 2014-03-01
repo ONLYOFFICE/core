@@ -4,7 +4,6 @@
 #include <boost/foreach.hpp>
 
 #include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/serialize.h>
 #include <cpdoccore/xml/attributes.h>
 
 #include <cpdoccore/xml/simple_xml_writer.h>
@@ -22,14 +21,9 @@ const wchar_t * office_body::name = L"body";
 office_body::office_body()
 {}
 
-void office_body::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    
-}
-
 void office_body::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-	create_element(Ns,Name,content_,getContext());
+	CP_CREATE_ELEMENT(content_);
 }
 
 
@@ -43,9 +37,9 @@ void office_body::serialize(std::wostream & _Wostream)
 {
     CP_XML_WRITER(_Wostream)
     {
-		CP_XML_NODE(L"office::body")
+		CP_XML_NODE_SIMPLE()
         {
-			content_->serialize(CP_XML_STREAM());
+			if (content_)content_->serialize(CP_XML_STREAM());
 		}
 	}
 }

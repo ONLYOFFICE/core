@@ -11,11 +11,11 @@ class style_ref
 public:
     style_ref() 
     {
-    } ;
+    } 
 
     style_ref(const ::std::wstring & StyleName) : style_name_(StyleName) 
     {
-    } ;
+    }
 
     bool empty() const
     {
@@ -37,14 +37,9 @@ private:
     ::std::wstring style_name_;
 
 };
+std::wostream & operator << (std::wostream & _Wostream, const style_ref & _styleReft);
 
 typedef ::std::vector<style_ref> style_ref_array;
-
-template <class Ostream> Ostream & operator << (Ostream & _Ostream, const style_ref & _styleRef)
-{
-    _Ostream << _styleRef.style_name();
-    return _Ostream;
-}
 
 inline std::wistream & operator >> (std::wistream & _Istream, style_ref & _styleRef)
 {

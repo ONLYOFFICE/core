@@ -2,6 +2,11 @@
 
 #include <boost_filesystem_version.h>
 
+static std::wstring string2std_string(CString val)
+{
+	return std::wstring(val.GetBuffer());
+}
+
 namespace Oox2Odf
 {
 	class Impl;

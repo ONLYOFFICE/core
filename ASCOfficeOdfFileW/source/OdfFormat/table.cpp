@@ -6,10 +6,11 @@
 #include <cpdoccore/xml/serialize.h>
 #include <cpdoccore/xml/attributes.h>
 
-//#include "serialize_elements.h"
 #include <cpdoccore/odf/odf_document.h>
 
-//#include "odf_conversion_context.h"
+#include <cpdoccore/xml/simple_xml_writer.h>
+
+#include "serialize_common_attlists.h"
 
 namespace cpdoccore { 
 namespace odf {
@@ -117,17 +118,6 @@ void table_table::add_attributes( const xml::attributes_wc_ptr & Attributes )
     table_table_attlist_.add_attributes(Attributes);
 }
 
-
-//void table_table::add_child_element(office_element_ptr & child_element)
-//{
-//	//get_type -> 
-//    content_.push_back(child_element);
-//}
-//
-//void table_table::serialize(std::wostream & _Wostream)
-//{
-//
-//}
 void table_table::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     if (L"table" == Ns && L"table-source" == Name)
@@ -157,6 +147,33 @@ void table_table::add_child_element(const ::std::wstring & Ns, const ::std::wstr
         CP_NOT_APPLICABLE_ELM();
 }
 
+
+void table_table::serialize(std::wostream & _Wostream)
+{
+	std::wstring ns_name_ =std::wstring(ns) + std::wstring(L":") + std::wstring(name);
+    CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE(ns_name_)
+        {
+			CP_XML_ATTR_OPT( L"table:name", table_table_attlist_.table_name_);
+			CP_XML_ATTR_OPT( L"table:style-name", table_table_attlist_.table_style_name_);
+			CP_XML_ATTR_OPT( L"table:template-name", table_table_attlist_.table_template_name_);
+
+			if (table_table_attlist_.table_protected_)
+				CP_XML_ATTR_OPT( L"table:protection-key", table_table_attlist_.table_protection_key_); 
+			
+			if (table_table_attlist_.table_print_)
+				CP_XML_ATTR_OPT( L"table:print-ranges", table_table_attlist_.table_print_ranges_);
+
+		
+			if (table_shapes_)table_shapes_->serialize(CP_XML_STREAM());
+ 			if (table_shapes_)table_shapes_->serialize(CP_XML_STREAM());
+   
+			table_columns_and_groups_.serialize(CP_XML_STREAM());
+			table_rows_and_groups_.serialize(CP_XML_STREAM());
+		}
+	}
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 void table_table_column_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )

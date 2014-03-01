@@ -15,6 +15,19 @@ ods_table_state::ods_table_state(ods_conversion_context & Context, office_elemen
 
 }
 
+void ods_table_state::set_name(std::wstring name)
+{
+	tableName_ = name;
+	office_element_->table_table_attlist_.table_name_ = name;
+}
+
+void ods_table_state::convert()
+{
+	if (office_element_ == NULL)return;
+
+	//последние штрихи??? проверки .. согласования
+
+}
 
 }
 }

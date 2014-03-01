@@ -8,7 +8,6 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 
-#include "style_ref.h"
 #include "tablevisibility.h"
 
 #include "common_attlists.h"
@@ -652,7 +651,7 @@ public:
 	virtual void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element){}
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );

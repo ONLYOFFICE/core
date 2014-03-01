@@ -20,7 +20,7 @@ public:
     ods_table_context(ods_conversion_context & Context/*, ods_text_context & textCotnext*/);
 
 public:
-    void start_table(office_element_ptr & elm);
+    void start_table(office_element_ptr & elm,std::wstring & name);
     void end_table();
 
     //std::wstring get_current_table_name() const;

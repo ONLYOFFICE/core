@@ -25,13 +25,15 @@ const ods_table_state & ods_table_context::state() const
     return table_state_list_.back();
 }
 
-void ods_table_context::start_table(office_element_ptr & elm)
+void ods_table_context::start_table(office_element_ptr & elm, std::wstring & name)
 {
 	table_state_list_.push_back( ods_table_state(context_, elm) );
+	state().set_name(name);
 }
 
 void ods_table_context::end_table()
 {
+	state().convert();
 }
 }
 }

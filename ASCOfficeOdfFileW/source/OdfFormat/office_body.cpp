@@ -7,6 +7,8 @@
 #include <cpdoccore/xml/serialize.h>
 #include <cpdoccore/xml/attributes.h>
 
+#include <cpdoccore/xml/simple_xml_writer.h>
+
 namespace cpdoccore { 
 namespace odf {
 
@@ -39,7 +41,13 @@ void office_body::add_child_element( office_element_ptr & child_element)
 
 void office_body::serialize(std::wostream & _Wostream)
 {
-
+    CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE(L"office::body")
+        {
+			content_->serialize(CP_XML_STREAM());
+		}
+	}
 }
 
 

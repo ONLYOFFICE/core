@@ -26,7 +26,7 @@ void ods_conversion_context::start_sheet(std::wstring & name)
 {
 	create_element(L"table", L"table",current_spreadsheet_->getContent(),this);
 	
-	ods_table_context_.start_table(current_spreadsheet_->getContent().back());
+	ods_table_context_.start_table(current_spreadsheet_->getContent().back(),name);
 	
 }
 

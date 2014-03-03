@@ -819,7 +819,7 @@ BOOL CFontFile::GetString2(CGlyphString& oString)
 			oSizes.oMetrics.fVertBearingY = (float)(pFace->glyph->metrics.vertBearingY >> 6);
 			oSizes.oMetrics.fWidth        = (float)(pFace->glyph->metrics.width        >> 6);
 
-            oSizes.bBitmap  = true;
+            pCurGlyph->bBitmap  = true;
             if (FT_Render_Glyph(pCurentGliph, REND_MODE))
                 return FALSE;
 
@@ -1087,7 +1087,7 @@ BOOL CFontFile::GetString2C(CGlyphString& oString)
 		oSizes.oMetrics.fVertBearingY = (float)(pFace->glyph->metrics.vertBearingY >> 6);
 		oSizes.oMetrics.fWidth        = (float)(pFace->glyph->metrics.width        >> 6);
 
-        oSizes.bBitmap  = true;
+        pCurGlyph->bBitmap  = true;
         if (FT_Render_Glyph(pCurentGliph, REND_MODE))
             return FALSE;
 

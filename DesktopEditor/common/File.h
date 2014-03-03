@@ -448,7 +448,7 @@ namespace NSFile
 			return true;
 		}
 
-		bool CreateFile(const std::wstring& sFileName)
+		bool CreateFileW(const std::wstring& sFileName)
 		{
 			#if defined(WIN32) || defined(_WIN32_WCE)
 			m_pFile = _wfopen(sFileName.c_str(), L"wb");
@@ -472,6 +472,14 @@ namespace NSFile
 				return false;
 
 			dwSizeRead = (DWORD)fread((void*)pData, 1, nBytesToRead, m_pFile);
+			return true;
+		}
+		bool WriteFile(BYTE* pData, DWORD nBytesCount)
+		{
+			if (!m_pFile)
+				return false;
+
+			size_t nCountWrite = fwrite((void*)pData, 1, nBytesCount, m_pFile);
 			return true;
 		}
 	};

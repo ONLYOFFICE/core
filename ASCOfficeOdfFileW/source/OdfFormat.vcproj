@@ -943,11 +943,43 @@
 			Name="styles"
 			>
 			<File
+				RelativePath=".\OdfFormat\header_footer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\header_footer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\style_map.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\style_map.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\style_table_properties.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\OdfFormat\style_table_properties.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\styles.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\styles.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\styles_list.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\styles_list.h"
 				>
 			</File>
 		</Filter>

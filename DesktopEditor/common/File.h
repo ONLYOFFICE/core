@@ -450,7 +450,7 @@ namespace NSFile
 
 		bool CreateFileW(const std::wstring& sFileName)
 		{
-			#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(WIN32) || defined(_WIN32_WCE)
 			m_pFile = _wfopen(sFileName.c_str(), L"wb");
 #else
 			BYTE* pUtf8 = NULL;

@@ -63,6 +63,17 @@
 
 #include "../../common/File.h"
 #include "../../graphics/Timer.h"
+#include "../../editor/PageDrawer.h"
+
+// v8 libraries
+#pragma comment(lib, "../../../../../../../../../../v8/build/Release/lib/icui18n.lib")
+#pragma comment(lib, "../../../../../../../../../../v8/build/Release/lib/icuuc.lib")
+#pragma comment(lib, "../../../../../../../../../../v8/build/Release/lib/v8_base.ia32.lib")
+#pragma comment(lib, "../../../../../../../../../../v8/build/Release/lib/v8_nosnapshot.ia32.lib")
+#pragma comment(lib, "../../../../../../../../../../v8/build/Release/lib/v8_snapshot.lib")
+
+#pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "winmm.lib")
 
 enum CommandType
 {
@@ -219,6 +230,7 @@ public:
 	
 	STDMETHOD(ImageTest)(BSTR bsFileName)
 	{
+		/*
 		std::wstring sFile(bsFileName);
 		CBgraFrame oFrame;
 		oFrame.OpenFile(sFile);
@@ -244,11 +256,16 @@ public:
 		}
 
 		oFrame.SaveFile(L"D:\\Exchange\\1234\\RENDERER\\1.png", _CXIMAGE_FORMAT_PNG);
+		*/
 
 		return S_OK;
 	}
 	STDMETHOD(PageTest)(BSTR bsFileName, BSTR bsTestFile, double dWidth, double dHeight)
 	{
+		// !!!
+		DrawDumpPage();
+		return S_OK;
+
 		// system fonts
 		CApplicationFonts oApplicationFonts;
 		oApplicationFonts.Initialize();
@@ -294,6 +311,69 @@ public:
 	}
 
 private:
+
+	void DrawDumpPage()
+	{
+		CApplicationFonts oApplicationFonts;
+		oApplicationFonts.InitializeFromFolder(L"X:\\AVS\\Sources\\TeamlabOffice\\trunk\\OfficeWeb\\Fonts\\native");
+
+		// font manager
+		CFontManager* pManager = oApplicationFonts.GenerateFontManager();
+
+		// images cache
+		CImageFilesCache oImageCache;
+
+		LONG lWidth			= 815;
+		LONG lHeight		= 1055;
+		double dWidthMM		= 215.9;
+		double dHeightMM	= 279.4;
+
+		BYTE* pBits = new BYTE[4 * lWidth * lHeight];
+
+		CGraphicsRenderer oRenderer;
+		oRenderer.SetFontManager(pManager);
+		oRenderer.SetImageCache(&oImageCache);
+
+		CBgraFrame oFrame;
+		oFrame.put_Data(pBits);
+		oFrame.put_Width(lWidth);
+		oFrame.put_Height(lHeight);
+		oFrame.put_Stride(-4 * lWidth);
+
+		oRenderer.CreateFromBgraFrame(&oFrame);
+		oFrame.put_Data(NULL);
+			
+		oRenderer.put_Width(dWidthMM);
+		oRenderer.put_Height(dHeightMM);
+
+		// file
+		NSFile::CFileBinary oFileDump;
+		oFileDump.OpenFile(L"C:\\Page_dump.bin");
+		int nLen = oFileDump.GetFileSize();
+		BYTE* pData = new BYTE[nLen];
+		DWORD dwRead = 0;
+		oFileDump.ReadFile(pData, (DWORD)nLen, dwRead);
+		oFileDump.CloseFile();
+		NSMemoryStream::CMemoryStream oStream;
+		oStream.WriteBuffer(pData, nLen);
+		RELEASEARRAYOBJECTS(pData);
+		// ---
+
+		NSPageDrawer::CPageDrawer oDrawer;
+		oDrawer.m_pStream = &oStream;
+		oDrawer.m_sFontsDirectory	= L"X:\\AVS\\Sources\\TeamlabOffice\\trunk\\OfficeWeb\\Fonts\\native\\";
+		oDrawer.m_sImagesDirectory	= L"X:\\AVS\\Sources\\TeamlabOffice\\trunk\\test\\media\\";
+		BOOL bBreak = FALSE;
+		
+		for (int i = 0; i < 50; ++i)
+		{
+			memset(pBits, 0xFF, 4 * lWidth * lHeight);
+			oDrawer.DrawOnRenderer(&oRenderer, &bBreak);
+		}
+				
+		oDrawer.m_pStream = NULL;
+	}
+
 	void ParsePageBinary(IRenderer* pRenderer, BYTE* pOutput, int lOutputLen, std::wstring strImagesDirectory, bool bIsPDF = false)
 	{
 		int* m = NULL;
@@ -933,3 +1013,8 @@ private:
 	}
 
 };
+
+bool agg::svg::detail::isdigit(unsigned int)
+{
+	return false;
+}

@@ -140,8 +140,7 @@ HRESULT COfficeOdfFileW::SaveToFileImpl(const std::wstring & srcPath,
 
 	try
 	{
-		std::wstring type = L"spreadsheet";
-		Oox2Odf::Converter converter(srcTempPath,type);
+		Oox2Odf::Converter converter(srcTempPath);
 		
 		converter.convert();
 		converter.write(dstTempPath);

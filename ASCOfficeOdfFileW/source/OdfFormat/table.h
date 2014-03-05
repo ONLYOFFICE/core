@@ -21,9 +21,6 @@ namespace odf {
 class table_table_attlist
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-public:
     _CP_OPT(std::wstring)	table_name_;
     _CP_OPT(style_ref)		table_style_name_;
 	_CP_OPT(std::wstring)	table_template_name_;
@@ -45,9 +42,6 @@ public:
 class table_table_row_attlist
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-public:
     unsigned int table_number_rows_repeated_; // default 1
     _CP_OPT(style_ref) table_style_name_;
     _CP_OPT(style_ref) table_default_cell_style_name_;
@@ -58,9 +52,6 @@ public:
 // table-table-cell-attlist
 class table_table_cell_attlist
 {
-public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
 public:
     unsigned int table_number_columns_repeated_; // default 1
     _CP_OPT(style_ref) table_style_name_;
@@ -77,9 +68,6 @@ public:
 class table_table_cell_attlist_extra
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-public:
     unsigned int table_number_columns_spanned_; // default 1
     unsigned int table_number_rows_spanned_; // default 1
     _CP_OPT(unsigned int) table_number_matrix_columns_spanned_;
@@ -91,9 +79,6 @@ public:
 class table_table_source_attlist
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-public:
     table_mode table_mode_; // default CopyAll
     _CP_OPT(std::wstring) table_table_name_;
     
@@ -102,9 +87,6 @@ public:
 // table-linked-source-attlist
 class table_linked_source_attlist
 {
-public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    
 public:
     common_xlink_attlist common_xlink_attlist_;
 
@@ -135,10 +117,6 @@ public:
 
     virtual void serialize(std::wostream & _Wostream){}
 
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table_source);
@@ -168,9 +146,7 @@ public:
     xml::NodeType xml_type;
     ElementType type;
 
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ) {}
-
-	CPDOCCORE_DEFINE_VISITABLE();
+ 	CPDOCCORE_DEFINE_VISITABLE();
 
 public:
     table_columns_no_group();
@@ -214,9 +190,6 @@ public:
 class table_table_column_attlist
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-public:
     unsigned int table_number_columns_repeated_; // default 1
     _CP_OPT(style_ref) table_style_name_;
     table_visibility table_visibility_;  // default Visible
@@ -242,9 +215,6 @@ public:
 
     virtual void serialize(std::wostream & _Wostream){}
 
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
 public:
     table_table_column_attlist table_table_column_attlist_;
 
@@ -269,11 +239,8 @@ public:
     virtual void add_child_element( office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream){}
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-public:
-    office_element_ptr_array table_table_column_;
+	office_element_ptr_array table_table_column_;
 
 };
 
@@ -297,10 +264,6 @@ public:
 
     virtual void serialize(std::wostream & _Wostream){}
 
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-public:
     office_element_ptr_array table_table_column_;
 
 };
@@ -310,10 +273,6 @@ CP_REGISTER_OFFICE_ELEMENT2(table_table_header_columns);
 // table-table-column-group-attlist
 class table_table_column_group_attlist
 {
-public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-private:
     bool table_display_; // default true
 
 };
@@ -340,10 +299,6 @@ public:
     {
     }
 
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-public:
     table_table_column_group_attlist table_table_column_group_attlist_;
     table_columns_and_groups table_columns_and_groups_;
 
@@ -369,10 +324,6 @@ public:
 
     virtual void serialize(std::wostream & _Wostream){}
 
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-public:
     table_table_row_attlist table_table_row_attlist_;
     office_element_ptr_array content_; // table-table-cell, table-covered-table-cell
     
@@ -416,11 +367,6 @@ public:
 
     virtual void serialize(std::wostream & _Wostream){}
 
-
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-public:
     table_table_cell_attlist table_table_cell_attlist_;
     table_table_cell_attlist_extra table_table_cell_attlist_extra_;
     table_table_cell_content table_table_cell_content_;
@@ -449,10 +395,6 @@ public:
 
     virtual void serialize(std::wostream & _Wostream){}
 
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-public:
 	bool empty_;
     table_table_cell_attlist table_table_cell_attlist_;
     table_table_cell_content table_table_cell_content_;
@@ -483,10 +425,6 @@ public:
 	{
     }
 
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-public:
     office_element_ptr_array table_table_row_;
 
 };
@@ -511,10 +449,6 @@ public:
 
     virtual void serialize(std::wostream & _Wostream){}
 
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-public:
     office_element_ptr_array table_table_row_;
 
 };
@@ -531,7 +465,6 @@ public:
 
     virtual void serialize(std::wostream & _Wostream){}
 
-public:
     office_element_ptr			table_table_rows_;
     office_element_ptr_array	table_table_row_;
 
@@ -547,8 +480,6 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTableTableRowNoGroup;
 
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ) {}
-
     static _CP_PTR(table_rows_no_group) create();
 
     CPDOCCORE_DEFINE_VISITABLE();
@@ -561,7 +492,7 @@ public:
 
     virtual void serialize(std::wostream & _Wostream){}
    
-public:
+
     table_rows table_rows_1_;
     
     bool was_header_;
@@ -584,7 +515,6 @@ public:
 
 	int get_count(){return content_.size();}//временно .. для группировок
 
-public:
     office_element_ptr_array content_;
     //int type_;
     //office_element_ptr table_table_row_group_;
@@ -596,15 +526,11 @@ public:
 class table_table_row_group_attlist
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
     bool table_display_; // default true
     
 };
 
-// 
-//  \class  table_table_row_group
-//          table-table-row-group
 //          table:table-row-group
 class table_table_row_group : public office_element_impl<table_table_row_group>
 {
@@ -624,10 +550,6 @@ public:
 
     virtual void serialize(std::wostream & _Wostream){}
 
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-public:
     table_table_row_group_attlist table_table_row_group_attlist_;
     table_rows_and_groups table_rows_and_groups_;
 
@@ -653,10 +575,6 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-public:
     table_table_attlist table_table_attlist_;
     office_element_ptr table_table_source_;//table-table-source
     //office-dde-source
@@ -688,10 +606,6 @@ public:
 
     virtual void serialize(std::wostream & _Wostream){}
 
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-private:
     office_element_ptr_array content_;
 
 };

@@ -9,12 +9,19 @@ static std::wstring string2std_string(CString val)
 
 namespace Oox2Odf
 {
-	class Impl;
+	class OoxConverter
+	{
+public:
+		virtual void convert() = 0;
+		virtual void write(const std::wstring & path) = 0;
+		OoxConverter(){}
+	};
+
 	class Converter
 	{
 
 	public:
-		Converter(const std::wstring & path, const std::wstring & type);
+		Converter(const std::wstring & path);
         virtual ~Converter();
 
 	public:
@@ -22,9 +29,9 @@ namespace Oox2Odf
      
         void write(const std::wstring & path) const;
 
-		Impl * get_impl() { return impl_; }
+		OoxConverter * get_ooxConverter() { return impl_; }
 
 	private:
-		Impl* impl_;
+		OoxConverter* impl_;
 	};
 } // namespace Oox2Odf:Convert

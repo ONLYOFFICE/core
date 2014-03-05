@@ -67,8 +67,10 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
- 
+	virtual void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void add_child_element(office_element_ptr & child)
+	{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
+
     table_format_properties table_format_properties_;
 	
 	virtual void serialize(std::wostream & strm);
@@ -81,7 +83,6 @@ CP_REGISTER_OFFICE_ELEMENT2(style_table_properties);
 class style_table_column_properties_attlist
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
     
     _CP_OPT(length) style_column_width_;
     _CP_OPT(length) style_rel_column_width_;
@@ -104,6 +105,8 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
   
 	virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element(office_element_ptr & child)
+		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
 
     style_table_column_properties_attlist style_table_column_properties_attlist_;
@@ -116,7 +119,6 @@ CP_REGISTER_OFFICE_ELEMENT2(style_table_column_properties);
 class style_table_row_properties_attlist
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
    
     _CP_OPT(length) style_row_height_;
     _CP_OPT(length) style_min_row_height_;
@@ -139,6 +141,8 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element(office_element_ptr & child)
+		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	
 	virtual void serialize(std::wostream & strm){}
 
@@ -228,8 +232,6 @@ public:
 class style_table_cell_properties_elements
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
      // 15.11.6
     office_element_ptr style_background_image_;
     
@@ -249,6 +251,8 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element(office_element_ptr & child)
+		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	
 	virtual void serialize(std::wostream & strm){}
 

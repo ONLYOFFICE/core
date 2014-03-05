@@ -25,7 +25,7 @@ void ods_table_state::convert()
 {
 	if (office_element_ == NULL)return;
 
-	//последние штрихи??? проверки .. согласования
+	//последние штрихи??? 
 
 }
 

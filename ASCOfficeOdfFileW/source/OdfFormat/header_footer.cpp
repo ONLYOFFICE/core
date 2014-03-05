@@ -25,8 +25,6 @@ void style_header_footer_properties::add_child_element(  const ::std::wstring & 
     }    
 }
 
-
-
 void header_footer_content::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
 {
     CP_CREATE_ELEMENT_SIMPLE(content_);

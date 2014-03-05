@@ -41,6 +41,8 @@ public:
     odf_conversion_context * getContext() { return context_; }
     const odf_conversion_context * getContext() const { return context_; }
 
+	virtual void add_child_element(office_element_ptr & child) = 0;
+
 	void set_root(bool root){is_root_ = root;}
 ////////////////////////
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const

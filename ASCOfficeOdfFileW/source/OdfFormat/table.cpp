@@ -16,91 +16,8 @@ namespace odf {
 
 using xml::xml_char_wc;
 
-// table-table-attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
-void table_table_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    CP_APPLY_ATTR(L"table:name",			table_name_);
-    CP_APPLY_ATTR(L"table:style-name",		table_style_name_);
-    CP_APPLY_ATTR(L"table:template-name",	table_template_name_);
-
-    CP_APPLY_ATTR(L"table:protected",		table_protected_, false);
-    CP_APPLY_ATTR(L"table:protection-key",	table_protection_key_); 
-    CP_APPLY_ATTR(L"table:print",			table_print_, true);
-    CP_APPLY_ATTR(L"table:print-ranges",	table_print_ranges_);
-	
-	CP_APPLY_ATTR(L"table:use-first-row-styles",		table_use_first_row_styles_,false);
-	CP_APPLY_ATTR(L"table:use-banding-rows-styles",		table_use_banding_rows_styles_,false);
-	CP_APPLY_ATTR(L"table:use-banding-columns-styles",	table_use_banding_columns_styles_,false);
-	CP_APPLY_ATTR(L"table:use-first-column-styles",		table_use_first_column_styles_,false);
-
-}
-
-// table-table-row-attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
-void table_table_row_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    CP_APPLY_ATTR(L"table:number-rows-repeated", table_number_rows_repeated_, (unsigned int)1/*0*/); 
-    CP_APPLY_ATTR(L"table:style-name", table_style_name_);
-    CP_APPLY_ATTR(L"table:default-cell-style-name", table_default_cell_style_name_);
-    CP_APPLY_ATTR(L"table:visibility", table_visibility_, table_visibility(table_visibility::Visible));
-}
-
-// table-table-cell-attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
-void table_table_cell_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    CP_APPLY_ATTR(L"table:number-columns-repeated", table_number_columns_repeated_, (unsigned int)1/*0*/);
-    CP_APPLY_ATTR(L"table:style-name", table_style_name_);
-    CP_APPLY_ATTR(L"table:content-validation-name", table_content_validation_name_);
-    CP_APPLY_ATTR(L"table:formula", table_formula_);
-
-    common_value_and_type_attlist tmp;
-    if (tmp.add_attributes(Attributes))
-        common_value_and_type_attlist_ = tmp;
-
-    CP_APPLY_ATTR(L"table:protect", table_protect_, (bool)table_protect_);
-
-}
-
-// table-table-cell-attlist-extra
-//////////////////////////////////////////////////////////////////////////////////////////////////
-void table_table_cell_attlist_extra::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    CP_APPLY_ATTR(L"table:number-columns-spanned", table_number_columns_spanned_, (unsigned int)/*1*/1); 
-    CP_APPLY_ATTR(L"table:number-rows-spanned", table_number_rows_spanned_, (unsigned int)1); 
-    CP_APPLY_ATTR(L"table:number-matrix-columns-spanned", table_number_matrix_columns_spanned_);
-    CP_APPLY_ATTR(L"table:number-matrix-rows-spanned", table_number_matrix_rows_spanned_);    
-}
-
-// table-table-source-attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
-void table_table_source_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    CP_APPLY_ATTR(L"table:mode", table_mode_, table_mode( table_mode::CopyAll ) );
-    CP_APPLY_ATTR(L"table:table-name", table_table_name_);
-
-}
-
-void table_linked_source_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-	common_xlink_attlist_.add_attributes(Attributes);
-
-    CP_APPLY_ATTR(L"table:filter-name", table_filter_name_);
-    CP_APPLY_ATTR(L"table:filter-options", table_filter_options_);
-    CP_APPLY_ATTR(L"table:refresh-delay", table_refresh_delay_);  
-}
-
-// table:table-source
-//////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * table_table_source::ns = L"table";
 const wchar_t * table_table_source::name = L"table-source";
-
-void table_table_source::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    table_table_source_attlist_.add_attributes(Attributes);
-    table_linked_source_attlist_.add_attributes(Attributes);
-}
 
 void table_table_source::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
@@ -111,11 +28,6 @@ void table_table_source::add_child_element(const ::std::wstring & Ns, const ::st
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * table_table::ns = L"table";
 const wchar_t * table_table::name = L"table";
-
-void table_table::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    table_table_attlist_.add_attributes(Attributes);
-}
 
 void table_table::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
@@ -174,23 +86,10 @@ void table_table::serialize(std::wostream & _Wostream)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-void table_table_column_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    CP_APPLY_ATTR(L"table:number-columns-repeated", table_number_columns_repeated_, (unsigned int)1/*0*/);
-    CP_APPLY_ATTR(L"table:style-name", table_style_name_);
-    CP_APPLY_ATTR(L"table:visibility", table_visibility_, table_visibility(table_visibility::Visible));  
-    CP_APPLY_ATTR(L"table:default-cell-style-name", table_default_cell_style_name_);
-}
-
 // table:table-column
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * table_table_column::ns = L"table";
 const wchar_t * table_table_column::name = L"table-column";
-
-void table_table_column::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    table_table_column_attlist_.add_attributes(Attributes);
-}
 
 void table_table_column::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
 {
@@ -201,10 +100,6 @@ void table_table_column::add_child_element( const ::std::wstring & Ns, const ::s
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * table_table_columns::ns = L"table";
 const wchar_t * table_table_columns::name = L"table-columns";
-
-void table_table_columns::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-}
 
 void table_table_columns::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
@@ -220,10 +115,6 @@ void table_table_columns::add_child_element(const ::std::wstring & Ns, const ::s
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * table_table_header_columns::ns = L"table";
 const wchar_t * table_table_header_columns::name = L"table-header-columns";
-
-void table_table_header_columns::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-}
 
 void table_table_header_columns::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
@@ -281,23 +172,13 @@ _CP_PTR(table_columns_no_group) table_columns_no_group::create()
     return boost::make_shared<table_columns_no_group>();
 }
 
-// table-table-column-group-attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
-void table_table_column_group_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    CP_APPLY_ATTR(L"table:display", table_display_, true);
-}
+
 
 // table:table-column-group
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * table_table_column_group::ns = L"table";
 const wchar_t * table_table_column_group::name = L"table-column-group";
-
-void table_table_column_group::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    table_table_column_group_attlist_.add_attributes(Attributes);
-}
 
 void table_table_column_group::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
@@ -345,12 +226,6 @@ void table_table_cell_content::add_child_element(  const ::std::wstring & Ns, co
 const wchar_t * table_table_cell::ns = L"table";
 const wchar_t * table_table_cell::name = L"table-cell";
 
-void table_table_cell::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    table_table_cell_attlist_.add_attributes(Attributes);
-    table_table_cell_attlist_extra_.add_attributes(Attributes);
-}
-
 void table_table_cell::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     table_table_cell_content_.add_child_element(Ns, Name, getContext());
@@ -362,11 +237,6 @@ void table_table_cell::add_child_element( const ::std::wstring & Ns, const ::std
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * table_covered_table_cell::ns = L"table";
 const wchar_t * table_covered_table_cell::name = L"covered-table-cell";
-
-void table_covered_table_cell::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    table_table_cell_attlist_.add_attributes(Attributes);
-}
 
 void table_covered_table_cell::add_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
 {
@@ -380,11 +250,6 @@ void table_covered_table_cell::add_child_element(  const ::std::wstring & Ns, co
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * table_table_row::ns = L"table";
 const wchar_t * table_table_row::name = L"table-row";
-
-void table_table_row::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    table_table_row_attlist_.add_attributes( Attributes );
-}
 
 void table_table_row::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
@@ -403,11 +268,6 @@ void table_table_row::add_child_element( const ::std::wstring & Ns, const ::std:
 const wchar_t * table_table_rows::ns = L"table";
 const wchar_t * table_table_rows::name = L"table-rows";
 
-
-void table_table_rows::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-}
-
 void table_table_rows::add_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(table_table_row_);
@@ -418,10 +278,6 @@ void table_table_rows::add_child_element(  const ::std::wstring & Ns, const ::st
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * table_table_header_rows::ns = L"table";
 const wchar_t * table_table_header_rows::name = L"table-header-rows";
-
-void table_table_header_rows::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-}
 
 void table_table_header_rows::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
@@ -514,22 +370,11 @@ const wchar_t * table_table_row_group::ns = L"table";
 const wchar_t * table_table_row_group::name = L"table-row-group";
 
 
-void table_table_row_group::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    table_table_row_group_attlist_.add_attributes(Attributes);
-}
-
 void table_table_row_group::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     table_rows_and_groups_.add_child_element(Ns, Name, getContext());
 }
 
-// table-table-row-group-attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
-void table_table_row_group_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    CP_APPLY_ATTR(L"table:display", table_display_, true);
-}
 
 ///////////
 
@@ -539,11 +384,6 @@ void table_table_row_group_attlist::add_attributes( const xml::attributes_wc_ptr
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * table_shapes::ns = L"table";
 const wchar_t * table_shapes::name = L"shapes";
-
-
-void table_shapes::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-}
 
 void table_shapes::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {

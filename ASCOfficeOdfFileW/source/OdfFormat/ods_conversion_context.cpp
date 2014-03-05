@@ -17,10 +17,11 @@ ods_conversion_context::ods_conversion_context(package::odf_document * outputDoc
 
 void ods_conversion_context::start_document()
 {
-	create_element(L"office", L"spreadsheet",content_, this,true);
+	create_element(L"office", L"spreadsheet", content_, this,true);
 
 	current_spreadsheet_ = (office_spreadsheet*)dynamic_cast<office_spreadsheet*>(content_.back().get());
 }
+
 
 void ods_conversion_context::start_sheet(std::wstring & name)
 {

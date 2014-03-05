@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\OdfFormat;.\Oox2OdfConverter;..\..\Common\DocxFormat\Source;..\..\Common\DocxFormat\Source\XML;..\..\ASCOfficeOdfFile\include;..\..\ASCOfficeOdfFile\3dparty\utf8cpp\include"
+				AdditionalIncludeDirectories="..\..\ASCOfficeOdfFile\src\odf\datatypes;.\OdfFormat;.\Oox2OdfConverter;..\..\Common\DocxFormat\Source;..\..\Common\DocxFormat\Source\XML;..\..\ASCOfficeOdfFile\include;..\..\ASCOfficeOdfFile\3dparty\utf8cpp\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -103,7 +103,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".\OdfFormat;.\Oox2OdfConverter;..\..\Common\DocxFormat\Source;..\..\Common\DocxFormat\Source\XML;..\..\ASCOfficeOdfFile\include;..\..\ASCOfficeOdfFile\3dparty\utf8cpp\include"
+				AdditionalIncludeDirectories="..\..\ASCOfficeOdfFile\src\odf\datatypes;.\OdfFormat;.\Oox2OdfConverter;..\..\Common\DocxFormat\Source;..\..\Common\DocxFormat\Source\XML;..\..\ASCOfficeOdfFile\include;..\..\ASCOfficeOdfFile\3dparty\utf8cpp\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -153,6 +153,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Oox2OdfConverter\DocxConverter.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Oox2OdfConverter\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -172,6 +176,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\Oox2OdfConverter\XlsxConverter.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -183,7 +191,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Oox2OdfConverter\DocxConverter.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Oox2OdfConverter\stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Oox2OdfConverter\XlsxConverter.h"
 				>
 			</File>
 		</Filter>

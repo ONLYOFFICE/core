@@ -13,7 +13,7 @@ namespace odf {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-odf_conversion_context::odf_conversion_context(package::odf_document * outputDocument)
+odf_conversion_context::odf_conversion_context(package::odf_document * outputDocument) : style_context_(*this)
 { 
 	output_document_ = outputDocument;
 }
@@ -36,8 +36,20 @@ office_element_ptr &  odf_conversion_context::getCurrentElement()
 	}
 }
 
+//void odf_conversion_context::start_font_face()
+//{
+//	create_element(L"office", L"font-face-decls", styles_, this,true);
+//}
+
 void odf_conversion_context::end_document()
 {
+///////////////////завершающая обработка
+
+	process_styles();
+
+
+
+//////////////////////////////////////////////////////////////////////
 	package::content_content_ptr content_root_ = package::content_content::create();
 	
 
@@ -47,8 +59,13 @@ void odf_conversion_context::end_document()
 	}
 
     std::wstringstream styles_root_strm;
-    //odf_styles_.serialize(styles_root_strm);// мастер-пейджы, заданные заливки (градиенты, битмапы), дефолтные стили, колонтитулы, разметки, заметки,...
+ //////////////////////////////////////////////////////////////////////////////////////////   
+	BOOST_FOREACH(const office_element_ptr & elm, styles_)
+	{// мастер-пейджы, заданные заливки (градиенты, битмапы), дефолтные стили, колонтитулы, разметки, заметки,...
 
+		elm->serialize(styles_root_strm);
+	}
+////////////////////////////////////////////////////////////////////////////////////////////////////
 	package::object_files *object_files =  new package::object_files();
 	if (object_files)
 	{
@@ -61,10 +78,6 @@ void odf_conversion_context::end_document()
 	std::vector<package::content_content_ptr> objects_; //styles в объектах почти пустые .. - ссылки на картинки ... и только
 														//собственно стили записываются в сам контент
 
-	{
-		//...
-
-	}
 	output_document_->set_rels(rels_);
 }
 
@@ -73,6 +86,18 @@ void odf_conversion_context::add_rel(relationship const & r)
 	rels_.add(r);
 }
 
+void odf_conversion_context::process_styles()
+{
+	create_element(L"office", L"office-styles", styles_, this,true);
+	style_context_.process_office(styles_.back());
+	
+	create_element(L"office", L"automatic-styles", styles_, this,true);
+	style_context_.process_automatic(styles_.back());
+
+	create_element(L"office", L"master-styles", styles_, this,true);
+	style_context_.process_master(styles_.back());
+
+}
 
 
 }

@@ -951,6 +951,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OdfFormat\odf_style_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odf_style_context.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odf_style_state.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odf_style_state.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\style_map.cpp"
 				>
 			</File>
@@ -980,6 +996,14 @@
 			</File>
 			<File
 				RelativePath=".\OdfFormat\styles_list.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\styles_lite_container.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\styles_lite_container.h"
 				>
 			</File>
 		</Filter>

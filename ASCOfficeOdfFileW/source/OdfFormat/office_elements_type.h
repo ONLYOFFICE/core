@@ -74,6 +74,8 @@ enum ElementType
     typeOfficeAutomaticStyles,
     typeOfficeMasterStyles,
     typeStyleMasterPage,
+    typeStyleHandoutMasterPage,
+	typeStyleDrawLayerSet,
     typeOfficeStyles,
     typeStyleDefaultStyle,
     typeStyleStyle,
@@ -109,6 +111,8 @@ enum ElementType
 	typeStylePresentationPageLayout,
 	typeStylePresentationPlaceholder,
 	typeStyleDrawingPageProperties,
+	
+	typePresentationNotes,
 
     typeStyleColumns,
     typeStyleColumn,
@@ -131,6 +135,7 @@ enum ElementType
     typeOfficeFontFaceDecls,
 
     typeOfficeBinaryData,
+    typeOfficeForms,
 
     typeTableTableSource,
     typeTableNamedExpressions,
@@ -210,6 +215,8 @@ enum ElementType
 	typeStyleDrawFillImage,
 	typeStyleDrawHatch,
 	typeStyleDrawMarker,
+	typeStyleDrawOpacity,
+	typeStyleDrawStrokeDash,
 
 	typeOfficeSpreadsheet,
 	typeOfficeAnnotation,

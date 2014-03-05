@@ -44,6 +44,8 @@ public:
     office_element_ptr_array & get_content() { return text_list_style_content_; }
 
     virtual void add_child_element(  const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element(office_element_ptr & child)
+		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
 
     text_list_style_attr text_list_style_attr_;
@@ -96,6 +98,8 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void add_child_element(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element(office_element_ptr & child)
+		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
 
     friend class text_list_level_style_number;
@@ -133,6 +137,8 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void add_child_element(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element(office_element_ptr & child)
+		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
 
     const _CP_OPT(length) & get_fo_text_indent() const { return fo_text_indent_; }
@@ -164,6 +170,8 @@ public:
 	office_element_ptr style_list_level_properties_;
 
     virtual void add_child_element( const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element(office_element_ptr & child)
+		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
 
     text_list_level_style_attr text_list_level_style_attr_;
@@ -204,6 +212,8 @@ public:
 	office_element_ptr style_list_level_properties_;
 
     virtual void add_child_element( const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element(office_element_ptr & child)
+		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
 
     text_list_level_style_attr text_list_level_style_attr_;

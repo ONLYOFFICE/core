@@ -79,7 +79,29 @@ style_table_column_properties * style_content::get_style_table_column_properties
 //    return dynamic_cast<style_drawing_page_properties *>(style_drawing_page_properties_.get());
 //}
 
-void style_content::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void style_content::add_child_element(office_element_ptr & child, odf_conversion_context * Context)
+{
+	if (!child)return;
+
+	ElementType type = child->get_type();
+
+	switch(type)
+	{
+	case typeStyleTextProperties:		style_text_properties_ = child; break;
+	case typeStyleParagraphProperties:	style_paragraph_properties_ = child; break; 
+	case typeStyleTableProperties:		style_table_properties_ = child; break; 
+	case typeStyleTableColumnProperties:style_table_column_properties_ = child; break; 
+	case typeStyleTableCellProperties:	style_table_cell_properties_ = child; break; 
+	case typeStyleTableRowProperties:	style_table_row_properties_ = child; break; 
+	case typeStyleSectionProperties:	style_section_properties_ = child; break; 
+	case typeStyleGraphicPropertis:		style_graphic_properties_ = child; break; 
+	case typeStyleChartProperties:		style_chart_properties_ = child; break; 
+	case typeStyleDrawingPageProperties:style_drawing_page_properties_ = child; break;
+		//ruby
+	}	
+}
+
+void style_content::add_child_element( const std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
 {   
     if CP_CHECK_NAME(L"style", L"text-properties")
     {
@@ -137,6 +159,10 @@ void default_style::add_child_element( const ::std::wstring & Ns, const ::std::w
 {
     style_content_.add_child_element(Ns, Name, getContext());
 }
+void default_style::add_child_element(office_element_ptr & child)
+{
+	style_content_.add_child_element(child, getContext());
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * draw_fill_image::ns = L"draw";
@@ -187,7 +213,19 @@ void style::add_child_element(  const ::std::wstring & Ns, const ::std::wstring 
         style_content_.add_child_element(Ns, Name, getContext());
 }
 
+void style::add_child_element(office_element_ptr & child)
+{
+ 	if (!child)return;
 
+	ElementType type = child->get_type();
+	
+	if  (type == typeStyleMap)
+    {
+        style_map_.push_back(child);
+    } 
+    else
+        style_content_.add_child_element(child, getContext());
+}
 
 // styles & draw_styles
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -205,7 +243,6 @@ void styles::add_child_element(  const ::std::wstring & Ns, const ::std::wstring
     else if (
         CP_CHECK_NAME(L"number", L"number-style") ||
         CP_CHECK_NAME(L"number", L"currency-style") ||
-        CP_CHECK_NAME(L"number", L"currency-style") ||
         CP_CHECK_NAME(L"number", L"percentage-style") ||
         CP_CHECK_NAME(L"number", L"date-style") ||
         CP_CHECK_NAME(L"number", L"time-style") ||
@@ -219,7 +256,31 @@ void styles::add_child_element(  const ::std::wstring & Ns, const ::std::wstring
         CP_NOT_APPLICABLE_ELM_SIMPLE(L"styles");
     }
 }
+void styles::add_child_element(office_element_ptr & child, odf_conversion_context * Context)
+{
+	if (!child)return;
 
+	ElementType type = child->get_type();
+
+	switch(type)
+	{
+	case typeStyleStyle:	
+		style_style_.push_back(child);
+		break;
+	case typeTextListStyle:	
+		text_list_style_.push_back(child);
+		break;
+	case typeNumberTimeStyle:	
+	case typeNumberDataStyle:	
+	case typeNumberPercentageStyle:	
+	case typeNumberCurrencyStyle:	
+	case typeNumberNumberStyle:	
+		//boolean
+		number_styles_.push_back(child);
+		break; 
+	}
+
+}
 void templates::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
 {
     if CP_CHECK_NAME(L"table", L"table-template")
@@ -227,7 +288,17 @@ void templates::add_child_element( const ::std::wstring & Ns, const ::std::wstri
         CP_CREATE_ELEMENT_SIMPLE(table_templates_);
     } 
 }
+void templates::add_child_element(office_element_ptr & child)
+{
+ 	if (!child)return;
 
+	ElementType type = child->get_type();
+	
+	if (type == typeTableTemplate)
+    {
+        table_templates_.push_back(child);
+    } 
+}
 void draw_styles::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
 {
     if CP_CHECK_NAME(L"draw", L"gradient")
@@ -260,7 +331,22 @@ void draw_styles::add_child_element(const ::std::wstring & Ns, const ::std::wstr
     }
 }
 
+void draw_styles::add_child_element(office_element_ptr & child, odf_conversion_context * Context)
+{
+	if (!child)return;
 
+	ElementType type = child->get_type();
+
+	switch(type)
+	{
+	case typeStyleDrawGradient:		draw_gradient_.push_back(child); break;
+	case typeStyleDrawHatch:		draw_hatch_.push_back(child); break;
+	case typeStyleDrawFillImage:	draw_fill_image_.push_back(child); break;
+	case typeStyleDrawOpacity:		draw_opacity_.push_back(child); break;
+	case typeStyleDrawMarker:		draw_marker_.push_back(child); break;
+	case typeStyleDrawStrokeDash:	draw_stroke_dash_.push_back(child); break;
+	}	
+}
 // office:automatic-styles
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * office_automatic_styles::ns = L"office";
@@ -280,7 +366,22 @@ void office_automatic_styles::add_child_element( const ::std::wstring & Ns, cons
     }
 }
 
+void office_automatic_styles::add_child_element(office_element_ptr & child)
+{
+	if (!child)return;
 
+	ElementType type = child->get_type();
+
+	switch(type)
+	{
+	case typeStylePageLayout:		
+		style_page_layout_.push_back(child); 
+		break;
+	default:
+		styles_.add_child_element(child, getContext());    
+		break;
+	}
+}
 // office:master-styles
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * office_master_styles::ns = L"office";
@@ -301,6 +402,25 @@ void office_master_styles::add_child_element( const ::std::wstring & Ns, const :
     }
 }
 
+void office_master_styles::add_child_element(office_element_ptr & child)
+{
+	if (!child)return;
+
+	ElementType type = child->get_type();
+
+	switch(type)
+	{
+	case typeStyleMasterPage:		
+		style_master_page_.push_back(child); 
+		break;
+	case typeStyleHandoutMasterPage:		
+		style_handout_master_ = child; 
+		break;
+	case typeStyleDrawLayerSet:		
+		draw_layer_set_ = child; 
+		break;
+	}
+}
 
 
 // office:styles
@@ -312,8 +432,7 @@ const wchar_t * office_styles::name = L"styles";
 void office_styles::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     if (CP_CHECK_NAME(L"style",		L"style") ||
-        CP_CHECK_NAME(L"text",		L"list-style") ||
-        
+        CP_CHECK_NAME(L"text",		L"list-style") ||        
 		CP_CHECK_NAME(L"number",	L"number-style") ||
         CP_CHECK_NAME(L"number",	L"currency-style") || 
         CP_CHECK_NAME(L"number",	L"text-style") ||
@@ -359,7 +478,44 @@ void office_styles::add_child_element( const ::std::wstring & Ns, const ::std::w
         CP_NOT_APPLICABLE_ELM();
     }
 }
+void office_styles::add_child_element(office_element_ptr & child)
+{
+	if (!child)return;
 
+	ElementType type = child->get_type();
+
+	switch(type)
+	{
+	case typeStyleStyle:	
+	case typeTextListStyle:	
+
+	case typeNumberTimeStyle:	
+	case typeNumberDataStyle:	
+	case typeNumberPercentageStyle:	
+	case typeNumberCurrencyStyle:	
+	case typeNumberNumberStyle:	
+		styles_.add_child_element(child, getContext());
+		break;
+	case typeStyleDrawGradient:	
+	case typeStyleDrawHatch:	
+	case typeStyleDrawFillImage:
+	case typeStyleDrawOpacity:	
+	case typeStyleDrawMarker:	
+	case typeStyleDrawStrokeDash:
+		draw_styles_.add_child_element(child, getContext());
+		break;
+	case typeStyleDefaultStyle:		
+		style_default_style_.push_back(child); 
+		break;
+	case typeStylePresentationPageLayout:		
+		style_presentation_page_layout_.push_back(child); 
+		break;
+	case typeTableTemplate:		
+		templates_.add_child_element(child);
+		break;
+	//....
+	}
+}
 
 // style:header
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -371,7 +527,10 @@ void style_header::add_child_element(  const ::std::wstring & Ns, const ::std::w
 {
     content().header_footer_content_.add_child_element( Ns, Name, getContext());
 }
-
+void style_header::add_child_element(office_element_ptr & child)
+{
+	content().header_footer_content_.add_child_element( child, getContext());
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_footer::ns = L"style";
 const wchar_t * style_footer::name = L"footer";
@@ -381,7 +540,10 @@ void style_footer::add_child_element(  const ::std::wstring & Ns, const ::std::w
 {
     content().header_footer_content_.add_child_element(Ns, Name, getContext());
 }
-
+void style_footer::add_child_element(office_element_ptr & child)
+{
+    content().header_footer_content_.add_child_element( child, getContext());
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_header_first::ns = L"style";
 const wchar_t * style_header_first::name = L"header-first";
@@ -389,6 +551,10 @@ const wchar_t * style_header_first::name = L"header-first";
 void style_header_first::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     content().header_footer_content_.add_child_element(Ns, Name, getContext());
+}
+void style_header_first::add_child_element(office_element_ptr & child)
+{
+    content().header_footer_content_.add_child_element(child, getContext());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -400,7 +566,10 @@ void style_footer_first::add_child_element( const ::std::wstring & Ns, const ::s
 {
     content().header_footer_content_.add_child_element( Ns, Name, getContext());
 }
-
+void style_footer_first::add_child_element( office_element_ptr & child)
+{
+    content().header_footer_content_.add_child_element( child, getContext());
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_header_left::ns = L"style";
 const wchar_t * style_header_left::name = L"header-left";
@@ -410,7 +579,10 @@ void style_header_left::add_child_element(const ::std::wstring & Ns, const ::std
 {
     content().header_footer_content_.add_child_element( Ns, Name, getContext());
 }
-
+void style_header_left::add_child_element(office_element_ptr & child)
+{
+    content().header_footer_content_.add_child_element( child, getContext());
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_footer_left::ns = L"style";
 const wchar_t * style_footer_left::name = L"footer-left";
@@ -436,7 +608,22 @@ void style_columns::add_child_element( const ::std::wstring & Ns, const ::std::w
         CP_NOT_APPLICABLE_ELM();
     }
 }
+void style_columns::add_child_element(office_element_ptr & child)
+{
+	if (!child)return;
 
+	ElementType type = child->get_type();
+
+	switch(type)
+	{
+	case typeStyleColumn:	
+		style_column_.push_back(child);
+		break;
+	case typeStyleColumnSep:
+        style_column_sep_ = child;
+		break;
+	}
+}
 /// style:column
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_column::ns = L"style";
@@ -452,7 +639,6 @@ void style_column::add_child_element( const ::std::wstring & Ns, const ::std::ws
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_column_sep::ns = L"style";
 const wchar_t * style_column_sep::name = L"column-sep";
-
 
 
 void style_column_sep::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
@@ -476,7 +662,22 @@ void style_section_properties::add_child_element( const ::std::wstring & Ns, con
         CP_NOT_APPLICABLE_ELM();
     }
 }
+void style_section_properties::add_child_element(office_element_ptr & child)
+{
+ 	if (!child)return;
 
+	ElementType type = child->get_type();
+
+	switch(type)
+	{
+	case typeStyleBackgroundImage:	
+		style_background_image_ = child;
+		break;
+	case typeStyleColumns:
+        style_columns_ = child;
+		break;
+	}
+}
 /// style:header-style
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_header_style::ns = L"style";
@@ -493,7 +694,16 @@ void style_header_style::add_child_element(const ::std::wstring & Ns, const ::st
         CP_NOT_APPLICABLE_ELM();
     }
 }
+void style_header_style::add_child_element(office_element_ptr & child)
+{
+ 	if (!child)return;
 
+	ElementType type = child->get_type();
+
+	if (type == typeStyleHeaderFooterProperties)
+        style_header_footer_properties_  = child;
+
+}
 /// style:footer-style
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_footer_style::ns = L"style";
@@ -510,7 +720,16 @@ void style_footer_style::add_child_element( const ::std::wstring & Ns, const ::s
         CP_NOT_APPLICABLE_ELM();
     }
 }
+void style_footer_style::add_child_element(office_element_ptr & child)
+{
+ 	if (!child)return;
 
+	ElementType type = child->get_type();
+
+	if (type == typeStyleHeaderFooterProperties)
+        style_header_footer_properties_  = child;
+
+}
 /// style:page-layout
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_page_layout::ns = L"style";
@@ -535,7 +754,25 @@ void style_page_layout::add_child_element(  const ::std::wstring & Ns, const ::s
         CP_NOT_APPLICABLE_ELM();
     }
 }
+void style_page_layout::add_child_element( office_element_ptr & child)
+{
+	if (!child)return;
 
+	ElementType type = child->get_type();
+
+	switch(type)
+	{
+	case typeStyleHeaderStyle:	
+		style_header_style_ = child;
+		break;
+	case typeStyleFooterStyle:
+        style_footer_style_ = child;
+		break;
+	case typeStylePageLayout:
+		style_page_layout_properties_ = child;
+		break;
+	}
+}
 /// style:footnote-sep
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_footnote_sep::ns = L"style";
@@ -557,26 +794,28 @@ void style_page_layout_properties::add_child_element( const ::std::wstring & Ns,
     style_page_layout_properties_elements_.add_child_element( Ns, Name, getContext());
 }
 
+void style_page_layout_properties::add_child_element( office_element_ptr & child)
+{
+	style_page_layout_properties_elements_.add_child_element(child);
+}
 // style-page-layout-properties-elements
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void style_page_layout_properties_elements::add_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context )
+void style_page_layout_properties_elements::add_child_element( office_element_ptr & child )
 {
-    if (L"style" == Ns && L"background-image" == Name)
-    {
-        CP_CREATE_ELEMENT_SIMPLE(style_background_image_);            
-    }
-    else if (L"style" == Ns && L"columns" == Name)
-    {
-        CP_CREATE_ELEMENT_SIMPLE(style_columns_);            
-    }
-    else if (L"style" == Ns && L"footnote-sep" == Name)
-    {
-        CP_CREATE_ELEMENT_SIMPLE(style_footnote_sep_);            
-    }
-    else
-    {
-        not_applicable_element(L"style-page-layout-properties-elements", Ns, Name);
+	if (!child)return;
+
+	ElementType type = child->get_type();
+	switch(type)
+	{
+	case typeStyleBackgroundImage:
+        style_background_image_ = child; 
+		break;
+	case typeStyleColumns:
+		style_columns_ = child;      
+		break;
+	case typeStyleFootnoteSep:
+        style_footnote_sep_ = child;       
     }
 }
 
@@ -585,7 +824,6 @@ void style_page_layout_properties_elements::add_child_element(  const ::std::wst
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_master_page::ns = L"style";
 const wchar_t * style_master_page::name = L"master-page";
-
 
 void style_master_page::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
@@ -612,6 +850,45 @@ void style_master_page::add_child_element(const ::std::wstring & Ns, const ::std
     else
     {
         CP_CREATE_ELEMENT(content_);   
+    }
+}
+
+void style_master_page::add_child_element(office_element_ptr & child)
+{
+	if (!child)return;
+
+	ElementType type = child->get_type();
+	switch(type)
+	{
+	case typeStyleHeader:
+        style_header_ = child; 
+		break;
+	case typeStyleHeaderFirst:
+		style_header_first_ = child;      
+		break;
+	case typeStyleHeaderLeft:
+		style_header_left_ = child;      
+		break;
+	case typeStyleFooter:
+		style_footer_ = child;      
+		break;
+	case typeStyleFooterFirst:
+		style_footer_first_ = child;      
+		break;
+	case typeStyleFooterLeft:
+		style_footer_left_ = child;      
+		break;
+	case typeOfficeForms:
+		office_forms_ = child;      
+		break;
+	case typePresentationNotes:
+        presentation_notes_ = child;     
+	case typeStyleStyle:
+		style_style_.push_back(child);
+		break;
+	default:
+		content_.push_back(child);
+		break;
     }
 }
 
@@ -652,7 +929,6 @@ const wchar_t * text_notes_configuration::name = L"notes-configuration";
 
 void text_notes_configuration::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-    
     if CP_CHECK_NAME(L"text", L"note-continuation-notice-forward")
         CP_CREATE_ELEMENT(text_note_continuation_notice_forward_);
     else if CP_CHECK_NAME(L"text", L"note-continuation-notice-backward")

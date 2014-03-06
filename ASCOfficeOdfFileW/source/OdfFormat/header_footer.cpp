@@ -29,6 +29,9 @@ void header_footer_content::add_child_element(const ::std::wstring & Ns, const :
 {
     CP_CREATE_ELEMENT_SIMPLE(content_);
 }
-
+void header_footer_content::add_child_element(office_element_ptr & child)
+{
+    content_.push_back(child);
+}
 }
 }

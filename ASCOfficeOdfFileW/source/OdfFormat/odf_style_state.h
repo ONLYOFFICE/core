@@ -36,6 +36,10 @@ public:
 	void convert();
 
 	office_element_ptr & get_office_element();
+
+	void add_child(office_element_ptr & child);
+
+	void set_oox_id(int id){style_oox_id_ = id;}
 	
 private:
 	int style_oox_id_;

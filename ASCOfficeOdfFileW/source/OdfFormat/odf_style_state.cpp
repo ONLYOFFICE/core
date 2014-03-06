@@ -28,6 +28,11 @@ office_element_ptr & odf_style_state::get_office_element()
 	return odf_style_;
 }
 
+void odf_style_state::add_child(office_element_ptr & child)
+{
+	odf_style_->add_child_element(child);
+}
+
 void odf_style_state::set_name(std::wstring name)
 {
 	style* style_ = dynamic_cast<style*>(odf_style_.get());

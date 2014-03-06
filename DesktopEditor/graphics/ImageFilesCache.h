@@ -122,14 +122,17 @@ public:
 	}
 	LONG Release()
 	{
+		m_oCS.Enter();
 		--m_lRef;
 
 		if (0 == m_lRef)
 		{
+			m_oCS.Leave();
 			delete this;
 			return 0;
 		}
 
+		m_oCS.Leave();
 		return m_lRef;
 	}
 };

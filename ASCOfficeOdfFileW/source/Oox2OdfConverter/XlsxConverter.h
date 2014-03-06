@@ -2,7 +2,7 @@
 
 #include "Converter.h"
 #include <boost/foreach.hpp>
-
+#include <cpdoccore/CPSharedPtr.h>
 #include <XlsxFormat\Xlsx.h>
 
 namespace OOX 
@@ -13,6 +13,9 @@ namespace cpdoccore
 {
 	namespace odf 
 	{
+		class office_element;
+		typedef shared_ptr<office_element>::Type office_element_ptr;
+
 		namespace package 
 		{		
 			class odf_document;
@@ -42,5 +45,7 @@ namespace Oox2Odf
 		void convert_styles();
 		
 		void convert(OOX::Spreadsheet::CWorksheet *oox_sheet);
+		
+		cpdoccore::odf::office_element_ptr & convert(OOX::Spreadsheet::CFont * font);
 	};
 }

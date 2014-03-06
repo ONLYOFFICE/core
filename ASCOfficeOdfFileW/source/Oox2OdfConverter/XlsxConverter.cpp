@@ -100,6 +100,22 @@ void XlsxConverter::convert_styles()
 	{
 		ods_context->styles_context().start_style(L"" ,odf::style_family::TableCell,true); //имя для стиля генерится - поиск и доступ (соответствие) - по номеры oox
 
+		ods_context->styles_context().state().set_oox_id (xlsx_styles->m_oCellXfs->m_arrItems[i]->m_oXfId->GetValue() );
+
+		int fill_id = xlsx_styles->m_oCellXfs->m_arrItems[i]->m_oFillId->GetValue();
+		int numFmt_id = xlsx_styles->m_oCellXfs->m_arrItems[i]->m_oNumFmtId->GetValue();
+		int font_id = xlsx_styles->m_oCellXfs->m_arrItems[i]->m_oFontId->GetValue();
+		int border_id = xlsx_styles->m_oCellXfs->m_arrItems[i]->m_oBorderId->GetValue();
+		
+		odf::office_element_ptr element_font = convert(xlsx_styles->m_oFonts->m_arrItems[font_id]);	 //text_properties
+		ods_context->styles_context().state().add_child(element_font);
+		
+		//xlsx_styles->m_oFills->m_arrItems[fill_id];
+		//xlsx_styles->m_oNumFmts->m_arrItems[numFmt_id];
+		//xlsx_styles->m_oBorders->m_arrItems[border_id];
+
+
+
 		//запишем содержимое стиля
 	//	//find_fill_by_id			(xlsx_styles->m_oCellXfs->m_arrItems[i]->m_oFillId); // это ссылка на graphic_properies
 	//	//find_num_format_by_id	(xlsx_styles->m_oCellXfs->m_arrItems[i]->m_oNumFmtId); // это ссылка формат ячейки
@@ -134,6 +150,10 @@ void XlsxConverter::convert_styles()
 
 }
 
-
+odf::office_element_ptr & XlsxConverter::convert(OOX::Spreadsheet::CFont * font)
+{
+	odf::office_element_ptr element;
+	return element;
+}
 
 } // namespace Docx2Odt

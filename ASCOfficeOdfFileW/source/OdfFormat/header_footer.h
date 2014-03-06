@@ -70,8 +70,7 @@ class header_footer_content
 {
 public:
     void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
-    virtual void add_child_element(office_element_ptr & child, odf_conversion_context * Context)
-		{}
+    void add_child_element(office_element_ptr & child);
 
     office_element_ptr_array content_;
     

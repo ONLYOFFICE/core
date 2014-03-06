@@ -529,7 +529,7 @@ void style_header::add_child_element(  const ::std::wstring & Ns, const ::std::w
 }
 void style_header::add_child_element(office_element_ptr & child)
 {
-	content().header_footer_content_.add_child_element( child, getContext());
+	content().header_footer_content_.add_child_element( child);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_footer::ns = L"style";
@@ -542,7 +542,7 @@ void style_footer::add_child_element(  const ::std::wstring & Ns, const ::std::w
 }
 void style_footer::add_child_element(office_element_ptr & child)
 {
-    content().header_footer_content_.add_child_element( child, getContext());
+    content().header_footer_content_.add_child_element( child);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_header_first::ns = L"style";
@@ -554,7 +554,7 @@ void style_header_first::add_child_element(const ::std::wstring & Ns, const ::st
 }
 void style_header_first::add_child_element(office_element_ptr & child)
 {
-    content().header_footer_content_.add_child_element(child, getContext());
+    content().header_footer_content_.add_child_element(child);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -568,7 +568,7 @@ void style_footer_first::add_child_element( const ::std::wstring & Ns, const ::s
 }
 void style_footer_first::add_child_element( office_element_ptr & child)
 {
-    content().header_footer_content_.add_child_element( child, getContext());
+    content().header_footer_content_.add_child_element( child);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_header_left::ns = L"style";
@@ -581,7 +581,7 @@ void style_header_left::add_child_element(const ::std::wstring & Ns, const ::std
 }
 void style_header_left::add_child_element(office_element_ptr & child)
 {
-    content().header_footer_content_.add_child_element( child, getContext());
+    content().header_footer_content_.add_child_element( child);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_footer_left::ns = L"style";
@@ -590,6 +590,10 @@ const wchar_t * style_footer_left::name = L"footer-left";
 void style_footer_left::add_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     content().header_footer_content_.add_child_element( Ns, Name, getContext());
+}
+void style_footer_left::add_child_element(office_element_ptr & child)
+{
+    content().header_footer_content_.add_child_element(child);
 }
 
 /// style:columns
@@ -788,7 +792,6 @@ void style_footnote_sep::add_child_element( const ::std::wstring & Ns, const ::s
 const wchar_t * style_page_layout_properties::ns = L"style";
 const wchar_t * style_page_layout_properties::name = L"page-layout-properties";
 
-
 void style_page_layout_properties::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     style_page_layout_properties_elements_.add_child_element( Ns, Name, getContext());
@@ -800,7 +803,25 @@ void style_page_layout_properties::add_child_element( office_element_ptr & child
 }
 // style-page-layout-properties-elements
 //////////////////////////////////////////////////////////////////////////////////////////////////
-
+void style_page_layout_properties_elements::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context )
+{
+    if (L"style" == Ns && L"background-image" == Name)
+    {
+        CP_CREATE_ELEMENT_SIMPLE(style_background_image_);            
+    }
+    else if (L"style" == Ns && L"columns" == Name)
+    {
+        CP_CREATE_ELEMENT_SIMPLE(style_columns_);            
+    }
+    else if (L"style" == Ns && L"footnote-sep" == Name)
+    {
+        CP_CREATE_ELEMENT_SIMPLE(style_footnote_sep_);            
+    }
+    else
+    {
+        not_applicable_element(L"style-page-layout-properties-elements", Ns, Name);
+    }
+}
 void style_page_layout_properties_elements::add_child_element( office_element_ptr & child )
 {
 	if (!child)return;

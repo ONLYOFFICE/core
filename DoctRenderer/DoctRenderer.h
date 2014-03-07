@@ -653,6 +653,7 @@ private:
 					PDFWriter::IPDFWriter* pPDF = NULL;
 					CoCreateInstance(PDFWriter::CLSID_CPDFWriter, NULL, CLSCTX_ALL, PDFWriter::IID_IPDFWriter, (void**)&pPDF);
 					VARIANT var;
+					var.vt = VT_BSTR;
 					var.bstrVal = m_oParams.m_strFontsDirectory.AllocSysString();
 					pPDF->SetAdditionalParam(L"InitializeFromFolder", var);
 					SysFreeString(var.bstrVal);

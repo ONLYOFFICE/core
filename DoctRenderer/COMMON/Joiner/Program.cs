@@ -24,6 +24,114 @@ namespace Joiner
             //files.Add("../ServerComponents/DoctRenderer/COMMON/native.js");
             //files.Add("Common/3rdparty/XRegExp/xregexp-all.js");
 
+            string[] arrFilesConfig = {
+                "Common/browser.js",
+                "Common/docscoapisettings.js",
+                "Common/docscoapicommon.js",
+                "Common/docscoapi.js",
+                "Common/apiCommon.js",
+                "Common/spellcheckapisettings.js",
+                "Common/spellcheckapi.js",
+                "Common/wordcopypaste.js",
+                "Common/spellCheckLanguage.js",
+                "Common/spellCheckLanguagesAll.js",
+                "Common/downloaderfiles.js",
+                "Common/commonDefines.js",
+                "Common/editorscommon.js",
+                "Common/NumFormat.js",
+                "Common/Shapes/Serialize.js",
+                "Common/Shapes/SerializeWriter.js",
+                "Common/SerializeCommonWordExcel.js",
+                "Common/Drawings/Format/Constants.js",
+                "Common/Drawings/Format/Format.js",
+                "Common/trackFile.js",
+			    "Common/Charts/libraries/OfficeExcel.common.core.js",
+                "Common/Charts/libraries/OfficeExcel.common.key.js",
+                "Common/Charts/libraries/OfficeExcel.bar.js",
+                "Common/Charts/libraries/OfficeExcel.hbar.js",
+                "Common/Charts/libraries/OfficeExcel.line.js",
+                "Common/Charts/libraries/OfficeExcel.pie.js",
+                "Common/Charts/libraries/OfficeExcel.scatter.js",
+                "Common/Charts/libraries/OfficeExcel.chartProperties.js",
+                "Common/Charts/charts.js",
+                "Common/Charts/DrawingObjects.js",
+                "Common/FontsFreeType/font_engine.js",
+                "Common/FontsFreeType/FontFile.js",
+                "Common/FontsFreeType/FontManager.js",
+                "Word/Drawing/Externals.js",
+                "Word/Drawing/GlobalLoaders.js",
+                "Word/Drawing/translations.js",
+                "Word/Editor/GraphicObjects/GraphicObjects.js",
+                "Word/Editor/GraphicObjects/GraphicPage.js",
+                "Word/Editor/GraphicObjects/States.js",
+                "Word/Editor/GraphicObjects/Math.js",
+                "Word/Editor/GraphicObjects/TrackGraphicObjects.js",
+                "Word/Editor/GraphicObjects/WrapManager.js",
+                "Word/Editor/GraphicObjects/Spline.js",
+                "Word/Editor/GraphicObjects/PolyLine.js",
+                "Word/Editor/GraphicObjects/ObjectTypes/WordShape.js",
+                "Word/Editor/GraphicObjects/ObjectTypes/WordImage.js",
+                "Word/Editor/GraphicObjects/ObjectTypes/WordGroupShapes.js",
+                "Word/Editor/GraphicObjects/ObjectTypes/Geometry.js",
+                "Word/Editor/GraphicObjects/ObjectTypes/ShapeTracks.js",
+                "Word/Editor/GraphicObjects/ObjectTypes/GroupTracks.js",
+                "Word/Editor/GraphicObjects/ObjectTypes/CreateGeometry.js",
+                "Word/Editor/GraphicObjects/ObjectTypes/Path.js",
+                "Word/Editor/GraphicObjects/ObjectTypes/Chart.js",
+                "Word/Editor/GraphicObjects/ObjectTypes/ChartLayout.js",
+                "Word/Editor/GraphicObjects/ObjectTypes/ChartLegend.js",
+                "Word/Editor/GraphicObjects/ObjectTypes/ChartTitle.js",
+                "Word/Editor/GraphicObjects/ObjectTypes/TextBody.js",
+                "Word/Editor/CollaborativeEditing.js",
+                "Word/Editor/Comments.js",
+                "Word/Editor/History.js",
+                "Word/Editor/Styles.js",
+                "Word/Editor/DrawingObjects.js",
+                "Word/Editor/FlowObjects.js",
+                "Word/Editor/ParagraphContent.js",
+                "Word/Editor/Hyperlink.js",
+                "Word/Editor/Run.js",
+                "Word/Editor/Paragraph.js",
+                "Word/Editor/Sections.js",
+                "Word/Editor/Numbering.js",
+                "Word/Editor/HeaderFooter.js",
+                "Word/Editor/Document.js",
+                "Word/Editor/Common.js",
+                "Word/Editor/DocumentContent.js",
+                "Word/Editor/Table.js",
+                "Word/Editor/Serialize2.js",
+                "Word/Editor/Search.js",
+                "Word/Editor/FontClassification.js",
+                "Word/Editor/Spelling.js",
+                "Word/Drawing/Graphics.js",
+                "Word/Drawing/ArcTo.js",
+                "Word/Drawing/Hit.js",
+                "Word/Drawing/ColorArray.js",
+                "Word/Drawing/Overlay.js",
+                "Word/Drawing/HatchPattern.js",
+                "Word/Drawing/ShapeDrawer.js",
+                "Word/Drawing/Metafile.js",
+                "Word/Drawing/DrawingDocument.js",
+                "Word/Drawing/GraphicsEvents.js",
+                "Common/Scrolls/iscroll.js",
+                "Word/Drawing/WorkEvents.js",
+                "Word/Drawing/Controls.js",
+                "Word/Drawing/Rulers.js",
+                "Word/Drawing/HtmlPage.js",
+                "Word/Drawing/documentrenderer.js",
+                "Common/scroll.js",
+                "Word/Editor/SerializeCommon.js",
+                "Word/apiDefines.js",
+                "Word/apiCommon.js",
+                "Word/api.js",
+                "Word/document/empty.js",
+                "Excel/graphics/DrawingContextWord.js",
+
+                "Common/Shapes/EditorSettings.js",
+                "Common/commonDefines.js",
+            };
+
+
             files.Add("Common/browser.js");
             files.Add("Common/editorscommon.js");
             
@@ -136,6 +244,15 @@ namespace Joiner
             //files.Add("../ServerComponents/DoctRenderer/COMMON/native_word/HtmlPage.js");
             //files.Add("../ServerComponents/DoctRenderer/COMMON/native_word/api.js");
             //files.Add("../ServerComponents/DoctRenderer/COMMON/native_word/corrector.js");
+
+            if (true)
+            {
+                files.Clear();
+                for (int i = 0; i < arrFilesConfig.Length; ++i)
+                {
+                    files.Add(arrFilesConfig[i]);
+                }
+            }
 
             StringBuilder oBuilder = new StringBuilder();
 

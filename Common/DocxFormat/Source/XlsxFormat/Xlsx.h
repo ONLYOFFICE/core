@@ -316,13 +316,25 @@ namespace OOX
 
 					OOX::Spreadsheet::CXfs* pXfs = m_pStyles->m_oCellXfs->m_arrItems[0];
 					if(false == pXfs->m_oBorderId.IsInit())
+					{
+						pXfs->m_oBorderId.Init();
 						pXfs->m_oBorderId->SetValue(0);
+					}
 					if(false == pXfs->m_oFillId.IsInit())
+					{
+						pXfs->m_oFillId.Init();
 						pXfs->m_oFillId->SetValue(0);
+					}
 					if(false == pXfs->m_oFontId.IsInit())
+					{
+						pXfs->m_oFontId.Init();
 						pXfs->m_oFontId->SetValue(0);
+					}
 					if(false == pXfs->m_oNumFmtId.IsInit())
+					{
+						pXfs->m_oNumFmtId.Init();
 						pXfs->m_oNumFmtId->SetValue(0);
+					}
 				}
 				//переносим теги <is> и €чейки с типом str в sharedString
 				POSITION pos = m_aWorksheets.GetStartPosition();

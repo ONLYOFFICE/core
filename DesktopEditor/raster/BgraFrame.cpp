@@ -19,7 +19,7 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName)
 bool CBgraFrame::SaveFile(const std::wstring& strFileName, uint32_t nFileType)
 {
 	NSFile::CFileBinary oFile;
-	if (!oFile.CreateFile(strFileName))
+	if (!oFile.CreateFileW(strFileName))
 		return false;
 
 	CxImage img;

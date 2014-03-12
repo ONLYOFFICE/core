@@ -1137,8 +1137,10 @@ namespace Aggplus
 		typedef agg::my_span_gradient<agg::rgba8> gradient_span_gen;
 		gradient_span_gen span_gen;
 
+		double dLinearAngle = m_oTransform.z_Rotation() + pBrush->GetAngle();
+
 		if( pBrush->IsRectable() )
-			span_gen.SetDirection( rect, pBrush->GetAngle(), pBrush->IsAngleScalable() );
+			span_gen.SetDirection( rect, (float)dLinearAngle, pBrush->IsAngleScalable() );
 		else
 			span_gen.SetDirection( rect );
 

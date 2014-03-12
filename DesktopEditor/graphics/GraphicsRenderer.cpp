@@ -44,7 +44,13 @@ namespace Aggplus
 					{
 						for( int i = 0; i < nCountSubColors; i++ )
 						{
-							pColors[i] = Aggplus::CColor(255, pBrush->m_arrSubColors[i].color);
+							DWORD dwColor = (DWORD)pBrush->m_arrSubColors[i].color;
+							BYTE r = (dwColor >> 24) & 0xFF;
+							BYTE g = (dwColor >> 16) & 0xFF;
+							BYTE b = (dwColor >> 8) & 0xFF;
+							BYTE a = (dwColor) & 0xFF;
+
+							pColors[i] = Aggplus::CColor(a, b, g, r);
 							pBlends[i] = (float)(pBrush->m_arrSubColors[i].position / 65536.0);
 						}
 
@@ -457,6 +463,18 @@ HRESULT CGraphicsRenderer::BrushRect(const BOOL& val, const double& left, const 
 	m_oBrush.Rect.Height = (float)height;
 	return S_OK;
 }
+HRESULT CGraphicsRenderer::put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount)
+{
+	m_oBrush.m_arrSubColors.RemoveAll();
+	for (LONG i = 0; i < nCount; ++i)
+	{
+		NSStructures::CBrush::TSubColor color;
+		color.color		= lColors[i];
+		color.position	= (long)(pPositions[i] * 65536);
+		m_oBrush.m_arrSubColors.Add(color);		
+	}
+	return S_OK;
+}
 
 // font -------------------------------------------------------------------------------------
 HRESULT CGraphicsRenderer::get_FontName(std::wstring* bsName)
@@ -535,6 +553,7 @@ HRESULT CGraphicsRenderer::CommandDrawTextCHAR(const LONG& c, const double& x, c
 {
 	if (c_nHyperlinkType == m_lCurrentCommandType)
 		return S_OK;
+	put_BrushType(c_BrushTypeSolid);
 		
 	_SetFont();
 
@@ -549,6 +568,7 @@ HRESULT CGraphicsRenderer::CommandDrawText(const std::wstring& bsText, const dou
 {
 	if (c_nHyperlinkType == m_lCurrentCommandType)
 		return S_OK;
+	put_BrushType(c_BrushTypeSolid);
 		
 	_SetFont();
 

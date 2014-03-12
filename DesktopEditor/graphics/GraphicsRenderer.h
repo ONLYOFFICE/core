@@ -127,6 +127,7 @@ public:
 	virtual HRESULT get_BrushLinearAngle(double* dAngle);
 	virtual HRESULT put_BrushLinearAngle(const double& dAngle);
 	virtual HRESULT BrushRect(const BOOL& val, const double& left, const double& top, const double& width, const double& height);
+	virtual HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount);
 
 // font -------------------------------------------------------------------------------------
 	virtual HRESULT get_FontName(std::wstring* bsName);

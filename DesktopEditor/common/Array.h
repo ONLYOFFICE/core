@@ -67,6 +67,8 @@ public:
 
 			if (NULL == m_aT)
 				return FALSE;
+
+			m_nSize = nAllocSize;			
 		}
 
 		return TRUE;

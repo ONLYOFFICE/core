@@ -20,6 +20,7 @@
 #include <string.h>
 #include "agg_math.h"
 #include "agg_array.h"
+#include "agg_trans_affine.h"
 
 
 namespace agg
@@ -135,12 +136,6 @@ namespace agg
 	public:
 		typedef ColorT color_type;
 
-		enum WrapMode
-		{
-			WrapModeTile = 0,
-			WrapModeFlip = 1
-		};
-
 	private:
 		enum
 		{
@@ -152,35 +147,53 @@ namespace agg
 
 	private:
 		int m_state;
-		int m_wrap;  // 0 - tile, 1 - flip
 
-		agg::point_d m_factor;
-		double m_offset;
+		double m_cos;
+		double m_sin;
 
-		color_type m_color[2];
-		agg::point_f m_focus; // x - position [-1..1], y - factor [0..1];
+		agg::point_d	m_factor;
+		agg::point_d	m_offset;
+
+		agg::trans_affine m_trans;
 
 	private:	
-		const color_type* m_pSubColors;
-		const float* m_pPosSubColors;
-		int m_nCountSubColors;
+		const color_type*	m_pSubColors;
+		const float*		m_pPosSubColors;
+		int					m_nCountSubColors;
+
+		color_type	m_color_table[MaxColorIndex+1];
+		bool		m_valid_table[MaxColorIndex+1];
 
 	private:
-		int m_bFocusInvert;
-		int m_bFocusUsed;
-		double m_dFocusPosition;
-		double m_dFocusFactor[2];
-
-		color_type m_color_table[MaxColorIndex+1];
-		bool m_valid_table[MaxColorIndex+1];
-
+		inline agg::point_d project(const double& x, const double& y)
+		{
+			// проекци€ точки (x, y) на пр€мую, с направл€ющим вектором (cos, sin)
+			// перпендикул€рна€ пр€ма€ x*m_cos + y*m_sin + c = 0;
+			double c = -(x * m_cos + y * m_sin);
+			point_d ret;
+			ret.x = -c * m_cos;
+			ret.y = -c * m_sin;
+			return ret;
+		}
+		
+		inline double calculate_param(const double& x, const double& y)
+		{
+			double t1 = abs(m_factor.x * x + m_factor.y * y + m_offset.x);
+			double t2 = abs(m_factor.x * x + m_factor.y * y + m_offset.y);
+			if (t1 >= 1 || t2 >= 1)
+			{
+				if (t1 > t2)
+					return 0;
+				return 1;
+			}
+			return t1;
+		}
+		
 	public:
 		my_span_gradient()
-			: m_wrap( WrapModeTile ), 
-			m_state( StateInit ), 
-			m_focus( 1.0f, 1.0f ),
+			: m_state( StateInit ), 
 			m_factor( 0, 0 ),
-			m_offset( 0 ),
+			m_offset( 0, 0 ),
 			m_pSubColors( 0 ),
 			m_pPosSubColors( 0 ),
 			m_nCountSubColors( 0 )
@@ -194,163 +207,24 @@ namespace agg
 			m_nCountSubColors = count;
 		}
 		
-		void SetDirection( const agg::rect_d& rect )
-		{
-			m_state = StateInit;
-			
-			m_factor.x = 0;
-			m_factor.y = 0;
-			m_offset = 0;
-
-			double dx = rect.x2 - rect.x1;
-			double dy = rect.y2 - rect.y1;
-
-			if( abs(dx) < FLT_EPSILON && abs(dy) < FLT_EPSILON )
-				return;
-
-			double dot = dx * dx + dy * dy;
-			dot += dot;
-
-			if( dot < FLT_EPSILON )
-				return;
-
-			dx /= dot;
-			dy /= dot;
-
-			m_factor.x = dx;
-			m_factor.y = dy;
-			m_offset = -(rect.x1 * dx + rect.y1 * dy);
-		}
-
-		void SetDirection( const agg::rect_d& rect, float fRotationAngle, int bAngleScalable )
-		{
-			m_state = StateInit;
-			
-			m_factor.x = 0;
-			m_factor.y = 0;
-			m_offset = 0;
-
-			double x1 = rect.x1;
-			double x2 = rect.x2;
-			double y1 = rect.y1;
-			double y2 = rect.y2;
-
-			double abs_dx = abs(x1 - x2);
-			double abs_dy = abs(y1 - y2);
-
-			if( abs_dx < FLT_EPSILON && abs_dy < FLT_EPSILON )
-				return;
-
-			double angle = fRotationAngle / 360;
-			angle -= floor( angle );
-			
-			if( bAngleScalable && !(abs_dy < FLT_EPSILON) )
-			{
-				angle *= 4;
-				int n = int(angle);
-				switch( n )
-				{
-				case 1: angle = 2 - angle; break;
-				case 2: angle = angle - 2; break;
-				case 3: angle = 4 - angle; break;
-				}
-				
-				angle *= pi/2;
-				if( !(abs(angle - pi/2) < FLT_EPSILON) )
-					angle = atan( abs_dx / abs_dy * tan( angle ) );
-
-				switch( n )
-				{
-				case 1: angle = pi - angle; break;
-				case 2: angle = angle + pi; break;
-				case 3: angle = pi2 - angle; break;
-				}
-			}
-			else
-			{
-				angle *= pi2;
-			}
-
-			double a2 = cos( angle );
-			double b2 = sin( angle );
-
-			if( a2 < 0 )
-			{
-				double tmp = x2; x2 = x1; x1 = tmp;
-			}
-
-			if( b2 < 0 )
-			{
-				double tmp = y2; y2 = y1; y1 = tmp;
-			}
-
-			double dx = x2 - x1;
-			double dy = y2 - y1;
-			double dot = dx * dx + dy * dy;
-			dot += dot; // for wrap
-
-			double a1 = -dy;
-			double b1 = dx;
-			double c1 = x1 * y2 - x2 * y1;
-
-			double d = (a1 * b2 - a2 * b1) * dot;
-			if( abs( d ) < FLT_EPSILON )
-				return;
-
-			m_factor.x = a2 * (a1 * dy - b1 * dx) / d;
-			m_factor.y = b2 * (a1 * dy - b1 * dx) / d;
-			m_offset   = c1 * (a2 * dy - b2 * dx) / d - (x1 * dx + y1 * dy) / dot;
-		}
-		
-		void SetColors( const color_type& first, const color_type& last )
-		{
-			m_color[0] = first;
-			m_color[1] = last;
-			m_state = StateInit;
-		}
-
-		void SetWrapMode( int mode )
-		{
-			m_wrap = mode ? WrapModeFlip : WrapModeTile;
-			m_state = StateInit;
-		}
-
-		void SetFocus( float position, float factor )
-		{
-			m_focus.x = max(-1.0f, min(position, 1.0f));
-			m_focus.y = max( 0.0f, min(factor, 1.0f));
-
-			m_state = StateInit;
-		}
-
         void prepare()
 		{
 			if( m_state != StateReady )
 			{
 				m_state = StateReady;
-
 				memset( m_valid_table, 0, sizeof m_valid_table );
-				
-				m_bFocusInvert = m_focus.x < 0;
-				m_bFocusUsed = !(abs(m_focus.x) < FLT_EPSILON || (1 - abs(m_focus.x)) < FLT_EPSILON);
-				if( m_bFocusUsed )
-				{
-					m_dFocusPosition = m_bFocusInvert ? (m_focus.x + 1) : m_focus.x;
-					m_dFocusFactor[0] = m_focus.y / m_focus.x;
-					m_dFocusFactor[1] = m_focus.y / (1 - m_focus.x);
-				}
 			}
 		}
 
         void generate( color_type* span, int x, int y, unsigned len)
 		{
-			double dy = y * m_factor.y + m_offset;
-
 			for( unsigned count = 0; count < len; ++count, ++x )
 			{
-				double t = dy + x * m_factor.x;
-				t -= floor( t );
-				
+				double _x = x;
+				double _y = y;
+				m_trans.transform(&_x, &_y);
+				double t = calculate_param(_x, _y);
+								
 				int index = int( t * MaxColorIndex + 0.5 );
 				if( !m_valid_table[index] )
 					CalcColor( index );
@@ -359,58 +233,81 @@ namespace agg
 			}
 		}
 
+		void SetDirection(const agg::rect_d& bounds, const double& angleDegrees, const agg::trans_affine& trans)
+		{
+			m_trans = trans;
+
+			double angle = angleDegrees / 360;
+			angle -= floor( angle );
+			angle *= pi2;
+
+			m_cos = cos(angle);
+			m_sin = sin(angle);
+
+			agg::point_d projects[4];
+			projects[0] = project(bounds.x1, bounds.y1);
+			projects[1] = project(bounds.x2, bounds.y1);
+			projects[2] = project(bounds.x1, bounds.y2);
+			projects[3] = project(bounds.x2, bounds.y2);
+
+			double min = projects[0].x * projects[0].x + projects[0].y * projects[0].y;
+			if (projects[0].x * m_cos + projects[0].y * m_sin)
+				min = -min;
+
+			double max = min;
+			int iMin = 0;
+			int iMax = 0;
+
+			for (int i = 1; i < 4; ++i)
+			{
+				double tmp = projects[i].x * projects[i].x + projects[i].y * projects[i].y;
+				if (projects[i].x * m_cos + projects[i].y * m_sin < 0)
+					tmp = -tmp;
+
+				if (tmp < min)
+				{
+					min = tmp;
+					iMin = i;
+				}
+				if (tmp > max)
+				{
+					max = tmp;
+					iMax = i;
+				}
+			}
+
+			double dFactor = _hypot(projects[iMax].x - projects[iMin].x, projects[iMax].y - projects[iMin].y);
+			
+			double c1 = -(projects[iMin].x * m_cos + projects[iMin].y * m_sin);
+			double c2 = -(projects[iMax].x * m_cos + projects[iMax].y * m_sin);
+
+			m_factor.x = m_cos / dFactor;
+			m_factor.y = m_sin / dFactor;
+			m_offset.x = c1 / dFactor;
+			m_offset.y = c2 / dFactor;
+		}
+
 	private:
 		void CalcColor( int index )
 		{
 			double t = index * (1.0 / MaxColorIndex);
 
-			t += t;
+			bool bFindColor = false;
 
-			if( m_wrap )
+			for (int i = 1; i < m_nCountSubColors; ++i)
 			{
-				t = 1 - abs(t - 1);
-			}
-			else
-			{
-				if( t > 1 )
-					t -= 1;
-			}
-
-			if( m_bFocusInvert )
-			{
-				t = 1 - t;
-			}
-
-			if( m_bFocusUsed )
-			{
-				if( t < m_dFocusPosition )
-					t *= m_dFocusFactor[0];
-				else
-					t = (1 - t) * m_dFocusFactor[1];
-			}
-
-			if( m_nCountSubColors > 1 )
-			{
-				bool bFindColor = false;
-
-				for( int i = 1; i < m_nCountSubColors; i++ )
+				if ( t < m_pPosSubColors[i] )
 				{
-					if( t < m_pPosSubColors[i] )
-					{
-						t = (t - m_pPosSubColors[i - 1]) / (m_pPosSubColors[i] - m_pPosSubColors[i - 1]);
-						m_color_table[index] = m_pSubColors[i - 1].gradient( m_pSubColors[i], t );
-						
-						bFindColor = true;
-						break;
-					}
+					t = (t - m_pPosSubColors[i - 1]) / (m_pPosSubColors[i] - m_pPosSubColors[i - 1]);
+					m_color_table[index] = m_pSubColors[i - 1].gradient( m_pSubColors[i], t );
+					
+					bFindColor = true;
+					break;
 				}
-				
-				if( !bFindColor )
-					m_color_table[index] = m_color[1];
 			}
-			else
+			if (!bFindColor)
 			{
-				m_color_table[index] = m_color[0].gradient( m_color[1], t );
+				m_color_table[index] = m_pSubColors[m_nCountSubColors - 1];
 			}
 
 			m_valid_table[index] = true;
@@ -419,50 +316,70 @@ namespace agg
 
 	
 	template<class ColorT>
-	class my_span_path_gradient
+    class my_span_path_gradient
 	{
 	public:
 		typedef ColorT color_type;
 
 	private:
+		enum
+		{
+			StateInit = 0,
+			StateReady = 1,
+
+			MaxColorIndex = 512
+		};
+
+	private:
 		int m_state;
-		int m_wrap;  // 0 - tile, 1 - flip
 
-		color_type m_color[2];
-		agg::point_f m_center;
-		const agg::point_f* m_out_points;
-		int m_count_points;
+		agg::point_d		m_center;
+		double				m_factor;
 
+		agg::trans_affine	m_trans;
+
+	private:	
+		const color_type*	m_pSubColors;
+		const float*		m_pPosSubColors;
+		int					m_nCountSubColors;
+
+		color_type	m_color_table[MaxColorIndex+1];
+		bool		m_valid_table[MaxColorIndex+1];
+
+	private:
+		
+		inline double calculate_param(const double& x, const double& y)
+		{
+			double t = sqrt((x - m_center.x) * (x - m_center.x) + (y - m_center.y) * (y - m_center.y)) * m_factor;
+			if (t > 1)
+				return 1;
+			return t;
+		}
+		
 	public:
 		my_span_path_gradient()
-			: m_center( 0, 0 ),
-			m_out_points( 0 ),
-			m_count_points( 0 )
+			: m_state( StateInit ), 
+			m_factor(0),
+			m_center( 0, 0 ),
+			m_pSubColors( 0 ),
+			m_pPosSubColors( 0 ),
+			m_nCountSubColors( 0 )
 		{
 		}
 
-		void SetCenter( const agg::point_f& center )
+		void SetSubColors( const color_type* colors, const float* positions, int count )
 		{
-			m_center = center;
+			m_pSubColors = colors;
+			m_pPosSubColors = positions;
+			m_nCountSubColors = count;
 		}
-
-		void SetColors( const color_type& first, const color_type& last )
-		{
-			m_color[0] = first;
-			m_color[1] = last;
-		}
-
-		void SetPoints( const agg::point_f* points, int count )
-		{
-			m_out_points = points;
-			m_count_points = count;
-		}
- 
-		void prepare()
+		
+        void prepare()
 		{
 			if( m_state != StateReady )
 			{
 				m_state = StateReady;
+				memset( m_valid_table, 0, sizeof m_valid_table );
 			}
 		}
 
@@ -470,12 +387,60 @@ namespace agg
 		{
 			for( unsigned count = 0; count < len; ++count, ++x )
 			{
-				//*span++ = m_color_table[index];
+				double _x = x;
+				double _y = y;
+				m_trans.transform(&_x, &_y);
+				double t = calculate_param(_x, _y);
+								
+				int index = int( t * MaxColorIndex + 0.5 );
+				if( !m_valid_table[index] )
+					CalcColor( index );
+
+				*span++ = m_color_table[index];
 			}
 		}
 
-		
+		void SetDirection(const agg::rect_d& bounds, const agg::trans_affine& trans)
+		{
+			m_trans = trans;
+
+			m_center.x = (bounds.x1 + bounds.x2) / 2;
+			m_center.y = (bounds.y1 + bounds.y2) / 2;
+			
+			double dmax = max(abs(bounds.x1 - bounds.x2), abs(bounds.y1 - bounds.y2));
+			m_factor = 0;
+			
+			if (dmax > FLT_EPSILON)
+				m_factor = 2 / dmax;			
+		}
+
+	private:
+		void CalcColor( int index )
+		{
+			double t = index * (1.0 / MaxColorIndex);
+
+			bool bFindColor = false;
+
+			for (int i = 1; i < m_nCountSubColors; ++i)
+			{
+				if ( t < m_pPosSubColors[i] )
+				{
+					t = (t - m_pPosSubColors[i - 1]) / (m_pPosSubColors[i] - m_pPosSubColors[i - 1]);
+					m_color_table[index] = m_pSubColors[i - 1].gradient( m_pSubColors[i], t );
+					
+					bFindColor = true;
+					break;
+				}
+			}
+			if (!bFindColor)
+			{
+				m_color_table[index] = m_pSubColors[m_nCountSubColors - 1];
+			}
+
+			m_valid_table[index] = true;
+		}
 	};
+
 
     //=====================================================gradient_linear_color
     template<class ColorT> 

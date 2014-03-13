@@ -169,6 +169,7 @@ public:
 	virtual HRESULT get_BrushLinearAngle(double* dAngle)				= 0;
 	virtual HRESULT put_BrushLinearAngle(const double& dAngle)			= 0;
 	virtual HRESULT BrushRect(const BOOL& val, const double& left, const double& top, const double& width, const double& height) = 0;
+	virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height) = 0;
 
 	virtual HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount) = 0;
 

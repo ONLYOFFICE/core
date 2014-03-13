@@ -225,7 +225,8 @@ namespace NSStructures
 		long TextureMode;
 		
 		int Rectable;
-		Aggplus::RectF Rect;
+		Aggplus::RectF			Rect;
+		Aggplus::CDoubleRect	Bounds;
 
 		double LinearAngle;
 
@@ -350,6 +351,11 @@ namespace NSStructures
 			Rect.Width  = 0.0F;
 			Rect.Height = 0.0F;
 
+			Bounds.left		= 0;
+			Bounds.top		= 0;
+			Bounds.right	= 0;
+			Bounds.bottom	= 0;
+
 			m_arrSubColors.RemoveAll();
 		}
 		
@@ -375,6 +381,8 @@ namespace NSStructures
 			Rectable = other.Rectable;
 			Rect     = other.Rect;
 
+			Bounds	= other.Bounds;
+
 			LinearAngle = other.LinearAngle;
 			m_arrSubColors = other.m_arrSubColors;
 		}
@@ -393,6 +401,7 @@ namespace NSStructures
 
 			Rectable = other.Rectable;
 			Rect     = other.Rect;
+			Bounds	 = other.Bounds;
 
 			LinearAngle = other.LinearAngle;
 			m_arrSubColors = other.m_arrSubColors;

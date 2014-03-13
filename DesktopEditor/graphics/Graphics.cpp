@@ -1114,41 +1114,38 @@ namespace Aggplus
 
 	void CGraphics::DoFillPathGradient(CBrushLinearGradient *pBrush, const agg::trans_affine* pGlobalTransform)
 	{
-		Aggplus::CColor LinearColor[2];
-		pBrush->GetLinearColors( LinearColor );
+		CDoubleRect& oBounds = pBrush->GetBounds();
 
-		Aggplus::RectF BrushRect;
-		pBrush->GetRectangle( &BrushRect );
+		CMatrix oMatrix;
 
-		agg::rect_d rect( BrushRect.GetLeft(), BrushRect.GetTop(), BrushRect.GetRight(), BrushRect.GetBottom() );
-		if( pBrush->IsRelativeCoords() )
+		agg::rect_d	rect;
+		if (oBounds.GetWidth() > FLT_EPSILON || oBounds.GetHeight() > FLT_EPSILON)
+		{
+			rect.x1 = oBounds.left;
+			rect.y1 = oBounds.top;
+			rect.x2 = oBounds.right;
+			rect.y2 = oBounds.bottom;
+
+			oMatrix = m_oFullTransform;
+			oMatrix.Invert();
+		}
+		else
 		{
 			int x = m_rasterizer.get_rasterizer().min_x();
 			int y = m_rasterizer.get_rasterizer().min_y();
 			int width  = m_rasterizer.get_rasterizer().max_x() - m_rasterizer.get_rasterizer().min_x();
 			int height = m_rasterizer.get_rasterizer().max_y() - m_rasterizer.get_rasterizer().min_y();
 
-			rect.x1 = rect.x1 * width + x;
-			rect.x2 = rect.x2 * width + x;
-			rect.y1 = rect.y1 * height + y;
-			rect.y2 = rect.y2 * height + y;
+			rect.x1 = x;
+			rect.x2 = x + width;
+			rect.y1 = y;
+			rect.y2 = y + height;
 		}
 
 		typedef agg::my_span_gradient<agg::rgba8> gradient_span_gen;
 		gradient_span_gen span_gen;
 
-		double dLinearAngle = m_oTransform.z_Rotation() + pBrush->GetAngle();
-
-		if( pBrush->IsRectable() )
-			span_gen.SetDirection( rect, (float)dLinearAngle, pBrush->IsAngleScalable() );
-		else
-			span_gen.SetDirection( rect );
-
-		agg::rgba8 c1(LinearColor[0].GetB(), LinearColor[0].GetG(), LinearColor[0].GetR(), LinearColor[0].GetA());
-		agg::rgba8 c2(LinearColor[1].GetB(), LinearColor[1].GetG(), LinearColor[1].GetR(), LinearColor[1].GetA());
-		
-		span_gen.SetColors( c1, c2 );
-		span_gen.SetWrapMode( pBrush->GetWrapMode() & 1 );
+		span_gen.SetDirection(rect, (double)pBrush->GetAngle(), oMatrix.m_agg_mtx);
 
 		agg::rgba8* pSubColors = NULL;
 		float* pSubBlends = NULL;
@@ -1172,10 +1169,75 @@ namespace Aggplus
 			}
 		}
 		
-		//agg::rgba8 clrs[5] = {c1, agg::rgba8( 0, 255, 0, 255 ), agg::rgba8( 255, 255, 0, 255 ), agg::rgba8( 128, 0, 128, 255 ), c2};
-		//float pos[5] = {0.f, 0.25f, 0.5f, 0.75f, 1.f};
+		typedef agg::span_allocator<gradient_span_gen::color_type> gradient_span_alloc;
+		gradient_span_alloc span_alloc;
 
-		//span_gen.SetSubColors( clrs, pos, 5 );
+		typedef agg::renderer_scanline_aa<base_renderer_type, gradient_span_alloc, gradient_span_gen> renderer_gradient_type;
+		renderer_gradient_type ren_gradient( m_frame_buffer.ren_base(), span_alloc, span_gen );
+
+		render_scanlines(ren_gradient);
+
+		if( pSubColors ) delete [] pSubColors;
+		if( pSubBlends ) delete [] pSubBlends;
+	}
+
+	void CGraphics::DoFillPathGradient2(CBrushLinearGradient *pBrush, const agg::trans_affine* pGlobalTransform)
+	{
+		CDoubleRect& oBounds = pBrush->GetBounds();
+
+		CMatrix oMatrix;
+
+		agg::rect_d	rect;
+		if (oBounds.GetWidth() > FLT_EPSILON || oBounds.GetHeight() > FLT_EPSILON)
+		{
+			rect.x1 = oBounds.left;
+			rect.y1 = oBounds.top;
+			rect.x2 = oBounds.right;
+			rect.y2 = oBounds.bottom;
+
+			oMatrix = m_oFullTransform;
+			oMatrix.Invert();
+		}
+		else
+		{
+			int x = m_rasterizer.get_rasterizer().min_x();
+			int y = m_rasterizer.get_rasterizer().min_y();
+			int width  = m_rasterizer.get_rasterizer().max_x() - m_rasterizer.get_rasterizer().min_x();
+			int height = m_rasterizer.get_rasterizer().max_y() - m_rasterizer.get_rasterizer().min_y();
+
+			rect.x1 = x;
+			rect.x2 = x + width;
+			rect.y1 = y;
+			rect.y2 = y + height;
+		}
+
+		typedef agg::my_span_path_gradient<agg::rgba8> gradient_span_gen;
+		gradient_span_gen span_gen;
+
+		span_gen.SetDirection(rect, oMatrix.m_agg_mtx);
+
+		agg::rgba8* pSubColors = NULL;
+		float* pSubBlends = NULL;
+		
+		int nCountSubColors = pBrush->GetInterpolationColorsCount();
+		if( nCountSubColors > 0 )
+		{
+			pSubColors = new agg::rgba8[nCountSubColors];
+			pSubBlends = new float[nCountSubColors];
+
+			if( pSubColors && pSubBlends )
+			{
+				for( int i = 0; i < nCountSubColors; i++ )
+				{
+					CColor c;
+					pBrush->GetSubColor( i, &c, &pSubBlends[i] );
+					pSubColors[i] = agg::rgba8(c.GetB(), c.GetG(), c.GetR(), c.GetA());
+				}
+				
+				span_gen.SetSubColors( pSubColors, pSubBlends, nCountSubColors );
+			}
+		}
+		
 		typedef agg::span_allocator<gradient_span_gen::color_type> gradient_span_alloc;
 		gradient_span_alloc span_alloc;
 
@@ -1438,13 +1500,13 @@ namespace Aggplus
 				}
 			}
 		}
-		else if (Brush->GetType() == BrushTypePathGradient)
-		{
-			return;
-		}
 		else if (Brush->GetType() == BrushTypeLinearGradient)
 		{
 			DoFillPathGradient((CBrushLinearGradient*)Brush);
+		}
+		else if (Brush->GetType() == BrushTypePathGradient)
+		{
+			DoFillPathGradient2((CBrushLinearGradient*)Brush);
 		}
 	}
 

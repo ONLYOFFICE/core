@@ -144,102 +144,6 @@ public:
 	virtual BOOL Create(LONG lWidth, LONG lHeight, double dDPIX, double dDPIY) = 0;
 };
 
-class CDoublePoint
-{
-public:
-	double x;
-	double y;
-public:
-	CDoublePoint()
-	{
-		x = 0;
-		y = 0;
-	}
-	CDoublePoint(double dx, double dy)
-	{
-		x = dx;
-		y = dy;
-	}
-	CDoublePoint& operator=(const CDoublePoint& oSrc)
-	{
-		x = oSrc.x;
-		y = oSrc.y;
-
-		return *this;
-	}
-	CDoublePoint(const CDoublePoint& oSrc)
-	{
-		*this = oSrc;
-	}
-};
-
-class CDoubleRect
-{
-public:
-	double left;
-	double top;
-	double right;
-	double bottom;
-
-public:
-	CDoubleRect()
-	{
-		left	= 0;
-		top		= 0;
-		right	= 0;
-		bottom	= 0;
-	}
-	CDoubleRect& operator=(const CDoubleRect& oSrc)
-	{
-		left	= oSrc.left;
-		top		= oSrc.top;
-		right	= oSrc.right;
-		bottom	= oSrc.bottom;
-
-		return *this;
-	}
-	CDoubleRect(const CDoubleRect& oSrc)
-	{
-		*this = oSrc;
-	}
-
-	inline double GetWidth() const
-	{
-		return right - left;
-	}
-	inline double GetHeight() const
-	{
-		return bottom - top;
-	}
-
-	inline void Offset(double dX, double dY)
-	{
-		left	+= dX;
-		top		+= dY;
-		right	+= dX;
-		bottom	+= dY;
-	}
-
-	inline double GetCentreX() const
-	{
-		return (left + right) / 2.0;
-	}
-
-	inline double GetCentreY() const
-	{
-		return (top + bottom) / 2.0;
-	}
-
-	inline BOOL IsPointInside(const CDoublePoint& oPoint)
-	{
-		return IsPointInside(oPoint.x, oPoint.y);
-	}
-	BOOL IsPointInside(const double& pointX, const double& pointY)
-	{
-		return ((left <= pointX) && (right >= pointX) &&
-				(top <= pointY) && (bottom >= pointY));
-	}
-};
 
 class CGraphics
 {
@@ -397,6 +301,7 @@ protected:
 
 	void DoFillPathSolid(CColor dwColor);
 	void DoFillPathGradient(CBrushLinearGradient *pBrush, const agg::trans_affine* pGlobalTransform = NULL);
+	void DoFillPathGradient2(CBrushLinearGradient *pBrush, const agg::trans_affine* pGlobalTransform = NULL);
 	void DoFillPathTextureClampSz(const CMatrix &mImgMtx, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride);
 	void DoFillPathTextureClampSz2(const CMatrix &mImgMtx, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride);
 	void DoFillPath(const CBrush* Brush);

@@ -305,9 +305,9 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="copy to RedistOpenSource"
+				Description="copy to Redist"
 				CommandLine="copy $(TargetPath) ..\Redist\XlsxSerializerCom.dll"
-				ExcludedFromBuild="true"
+				ExcludedFromBuild="false"
 			/>
 		</Configuration>
 	</Configurations>

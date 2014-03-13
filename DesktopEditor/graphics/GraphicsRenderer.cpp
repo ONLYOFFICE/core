@@ -60,7 +60,12 @@ namespace Aggplus
 					delete [] pColors;
 					delete [] pBlends;
 				}
+
+				pNew->SetBounds(pBrush->Bounds);
 			}
+
+			if (pNew && c_BrushTypePathGradient2 == Type)
+				pNew->m_bType = BrushTypePathGradient;
 
 			return pNew;
 		}
@@ -461,6 +466,14 @@ HRESULT CGraphicsRenderer::BrushRect(const BOOL& val, const double& left, const 
 	m_oBrush.Rect.Y = (float)top;
 	m_oBrush.Rect.Width = (float)width;
 	m_oBrush.Rect.Height = (float)height;
+	return S_OK;
+}
+HRESULT CGraphicsRenderer::BrushBounds(const double& left, const double& top, const double& width, const double& height)
+{
+	m_oBrush.Bounds.left	= left;
+	m_oBrush.Bounds.top		= top;
+	m_oBrush.Bounds.right	= left + width;
+	m_oBrush.Bounds.bottom	= top + height;
 	return S_OK;
 }
 HRESULT CGraphicsRenderer::put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount)
@@ -1025,6 +1038,7 @@ void CGraphicsRenderer::_SetFont()
 	{
 		m_pFontManager->LoadFontFromFile(m_oFont.Path, m_oFont.FaceIndex, m_oFont.Size, m_pRenderer->GetDpiX(), m_pRenderer->GetDpiY());
 	}
+	m_pFontManager->m_oString.ResetCTM();
 
 	m_oInstalledFont = m_oFont;
 }

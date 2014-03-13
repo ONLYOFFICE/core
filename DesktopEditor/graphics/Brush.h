@@ -85,6 +85,8 @@ public:
 	BOOL IsAngleScalable() const;
 	BOOL IsRectable() const;
 	float GetAngle() const;
+	inline void SetBounds(const CDoubleRect& oRect) { Bounds = oRect; }
+	inline CDoubleRect& GetBounds() { return Bounds; }
 
 protected:
 	CColor m_colors[2];
@@ -101,10 +103,12 @@ protected:
 	CMatrix m_matrix;
 	float m_angle; // угол поворота в градусах базовой линии p1 -> p2
 
+	CDoubleRect Bounds;
+
 	Aggplus::WrapMode m_wrap;
 
-	BOOL m_bAngleScalable; // масштабировать угол поворота относительно заданных точек b = arctan( width / height * tan(angle) );
-	BOOL m_bRectable; // в качестве направляющей используется диагональ прямоугольника
+	BOOL m_bAngleScalable;	// масштабировать угол поворота относительно заданных точек b = arctan( width / height * tan(angle) );
+	BOOL m_bRectable;		// в качестве направляющей используется диагональ прямоугольника
 	BOOL m_bRelativeCoords; // координаты точек считаются относительно рисуемого примитива
 };
 

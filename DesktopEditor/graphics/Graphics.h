@@ -9,6 +9,7 @@
 #include "../agg-2.4/include/agg_conv_stroke.h"
 #include "../agg-2.4/include/agg_conv_dash.h"
 #include "../agg-2.4/include/agg_span_gradient.h"
+#include "../agg-2.4/include/agg_span_hatch.h"
 #include "../agg-2.4/include/agg_span_interpolator_linear.h"
 #include "../agg-2.4/include/agg_conv_transform.h"
 #include "../agg-2.4/include/agg_span_image_filter_rgba.h"

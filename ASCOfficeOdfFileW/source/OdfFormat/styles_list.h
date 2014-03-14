@@ -43,7 +43,7 @@ public:
     const std::wstring & get_style_name() { return text_list_style_attr_.get_style_name(); }
     office_element_ptr_array & get_content() { return text_list_style_content_; }
 
-    virtual void add_child_element(  const std::wstring & Ns, const std::wstring & Name);
+    virtual void create_child_element(  const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
@@ -97,7 +97,7 @@ public:
     static const ElementType type = typeStyleListLevelProperties;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element(const std::wstring & Ns, const std::wstring & Name);
+    virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
@@ -136,7 +136,7 @@ public:
     static const ElementType type = typeStyleListLevelLabelAlignment;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element(const std::wstring & Ns, const std::wstring & Name);
+    virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
@@ -169,7 +169,7 @@ public:
   
 	office_element_ptr style_list_level_properties_;
 
-    virtual void add_child_element( const std::wstring & Ns, const std::wstring & Name);
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
@@ -211,8 +211,9 @@ public:
    
 	office_element_ptr style_list_level_properties_;
 
-    virtual void add_child_element( const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child)
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
+   
+	virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
 

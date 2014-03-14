@@ -56,7 +56,7 @@ class style_drawing_page_properties;
 class style_content : noncopyable
 {
 public:
-    void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
+    void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
     void add_child_element(office_element_ptr & child, odf_conversion_context * Context);
   
     style_text_properties *			get_style_text_properties() const;
@@ -101,7 +101,7 @@ public:
 public:
     default_style() {};
 
-    virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm){}
@@ -145,7 +145,7 @@ public:
  	_CP_OPT(std::wstring)		draw_name_;
 	_CP_OPT(std::wstring)		draw_display_name_;
 	
-    virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
  	virtual void serialize(std::wostream & strm){}
@@ -174,7 +174,7 @@ public:
  	_CP_OPT(std::wstring)	draw_name_;
 	_CP_OPT(std::wstring)	draw_display_name_;
 
-    virtual void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
@@ -206,7 +206,7 @@ public:
  	_CP_OPT(std::wstring)	draw_name_;
 	_CP_OPT(std::wstring)	draw_display_name_;
 	
-    virtual void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
      virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
@@ -230,7 +230,7 @@ public:
 
  	_CP_OPT(std::wstring)		draw_name_;
 
-    virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
@@ -258,7 +258,7 @@ public:
  
     style() : style_auto_update_(false) { }
 
-    virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm){}
@@ -289,8 +289,10 @@ CP_REGISTER_OFFICE_ELEMENT2(style);
 class styles
 {
 public:
-    void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
+    void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
 	void add_child_element(office_element_ptr & child, odf_conversion_context * Context);
+
+	void serialize(std::wostream & strm);
 
     office_element_ptr_array style_style_;      ///< style-style
     office_element_ptr_array text_list_style_;  ///< text-list-style
@@ -308,26 +310,30 @@ public:
 class draw_styles
 {
 public:
-    void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
+    void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
 	void add_child_element(office_element_ptr & child, odf_conversion_context * Context);
+
+	void serialize(std::wostream & strm);
 
 	office_element_ptr_array draw_gradient_;    
 	office_element_ptr_array draw_fill_image_; 
     office_element_ptr_array draw_opacity_;     
 	office_element_ptr_array draw_hatch_;    
     
-	office_element_ptr_array draw_marker_; // < TODO
-    office_element_ptr_array draw_stroke_dash_; // < TODO
+	office_element_ptr_array draw_marker_; 
+    office_element_ptr_array draw_stroke_dash_; 
 	
-	office_element_ptr_array svg_linearGradient_; // < TODO
-    office_element_ptr_array svg_radialGradient_; // < TODO
+	office_element_ptr_array svg_linearGradient_; 
+    office_element_ptr_array svg_radialGradient_; 
 
 };
 class templates
 {
 public:
-    void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
+    void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
     void add_child_element(office_element_ptr & child);
+
+	void serialize(std::wostream & strm){}
 
 	office_element_ptr_array table_templates_;    
 
@@ -344,10 +350,10 @@ public:
     static const ElementType type = typeOfficeAutomaticStyles;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
     styles styles_; ///< styles
     office_element_ptr_array style_page_layout_; 
@@ -366,10 +372,10 @@ public:
     static const ElementType type = typeOfficeMasterStyles;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
     office_element_ptr_array style_master_page_;	// разметки тем
     office_element_ptr style_handout_master_;		// разметки для принтера - .. второстепенно
@@ -408,7 +414,7 @@ public:
     static const ElementType type = typeStyleMasterPage;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm){}
@@ -445,10 +451,10 @@ public:
     static const ElementType type = typeOfficeStyles;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
     styles		styles_;
 	draw_styles draw_styles_;	
@@ -497,7 +503,7 @@ public:
     static const ElementType type = typeStyleHeader;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm){}
@@ -523,7 +529,7 @@ public:
 
 	virtual void serialize(std::wostream & strm){}
 
-    virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
 public:
@@ -546,7 +552,7 @@ public:
 
 	virtual void serialize(std::wostream & strm){}
 
-    virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
     //header_footer_content_impl content_;
@@ -567,7 +573,7 @@ public:
     static const ElementType type = typeStyleFooterFirst;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm){}
@@ -588,7 +594,7 @@ public:
     static const ElementType type = typeStyleHeaderLeft;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm){}
@@ -608,7 +614,7 @@ public:
     static const ElementType type = typeStyleFooterLeft;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm){}
@@ -630,7 +636,7 @@ public:
     static const ElementType type = typeStyleColumns;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm){}
@@ -655,7 +661,7 @@ public:
     static const ElementType type = typeStyleColumn;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
@@ -680,7 +686,7 @@ public:
     static const ElementType type = typeStyleColumnSep;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
@@ -704,7 +710,7 @@ public:
     static const ElementType type = typeStyleSectionProperties;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm){}
@@ -750,8 +756,8 @@ public:
 
 	virtual void serialize(std::wostream & strm){}
 
+	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element(office_element_ptr & child);
-	virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
 
 	office_element_ptr style_header_footer_properties_;
 
@@ -770,7 +776,7 @@ public:
     static const ElementType type = typeStyleFooterStyle;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm){}
@@ -797,7 +803,7 @@ public:
     office_element_ptr style_header_style_;
     office_element_ptr style_footer_style_;
 
-    virtual void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm){}    
@@ -905,7 +911,7 @@ public:
     static const ElementType type = typeStyleFootnoteSep;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
@@ -920,7 +926,7 @@ CP_REGISTER_OFFICE_ELEMENT2(style_footnote_sep);
 class style_page_layout_properties_elements
 {
 public:
-    void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
+    void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
     void add_child_element(office_element_ptr & child);
 
     office_element_ptr style_background_image_;
@@ -949,7 +955,7 @@ public:
 
     style_page_layout_properties() { }
 
-    virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm){}
@@ -971,7 +977,7 @@ public:
     static const ElementType type = typeTextNotesConfiguration;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
@@ -1009,7 +1015,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void serialize(std::wostream & strm){}
-    virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 

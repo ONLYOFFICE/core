@@ -19,7 +19,7 @@ void abstract_xml::serialize(std::wostream & strm)
 {
 }
 
-//void abstract_xml::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+//void abstract_xml::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 //{
 //    CP_CREATE_ELEMENT(xml_content_);
 //}

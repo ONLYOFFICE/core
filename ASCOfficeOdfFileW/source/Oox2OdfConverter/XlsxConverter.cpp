@@ -150,7 +150,7 @@ void XlsxConverter::convert_styles()
 
 }
 
-odf::office_element_ptr & XlsxConverter::convert(OOX::Spreadsheet::CFont * font)
+odf::office_element_ptr XlsxConverter::convert(OOX::Spreadsheet::CFont * font)
 {
 	odf::office_element_ptr element;
 	return element;

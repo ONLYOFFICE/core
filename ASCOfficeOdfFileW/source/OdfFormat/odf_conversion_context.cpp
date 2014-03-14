@@ -88,7 +88,7 @@ void odf_conversion_context::add_rel(relationship const & r)
 
 void odf_conversion_context::process_styles()
 {
-	create_element(L"office", L"office-styles", styles_, this,true);
+	create_element(L"office", L"styles", styles_, this,true);
 	style_context_.process_office(styles_.back());
 	
 	create_element(L"office", L"automatic-styles", styles_, this,true);

@@ -46,6 +46,6 @@ namespace Oox2Odf
 		
 		void convert(OOX::Spreadsheet::CWorksheet *oox_sheet);
 		
-		cpdoccore::odf::office_element_ptr & convert(OOX::Spreadsheet::CFont * font);
+		cpdoccore::odf::office_element_ptr convert(OOX::Spreadsheet::CFont * font);
 	};
 }

@@ -8,6 +8,8 @@
 
 #include "ods_conversion_context.h"
 
+#include "styles.h"
+
 
 using namespace cpdoccore;
 
@@ -96,42 +98,25 @@ void XlsxConverter::convert_styles()
 
 	if (!xlsx_styles->m_oCellStyleXfs.IsInit())return;
 
+	for (long i=0;i< xlsx_styles->m_oCellStyleXfs->m_oCount->GetValue(); i++)
+	{
+		convert(xlsx_styles->m_oCellStyleXfs->m_arrItems[i] , i);
+	}
+	
 	for (long i=0;i< xlsx_styles->m_oCellXfs->m_oCount->GetValue(); i++)
 	{
-		ods_context->styles_context().start_style(L"" ,odf::style_family::TableCell,true); //имя для стиля генерится - поиск и доступ (соответствие) - по номеры oox
+		convert(xlsx_styles->m_oCellXfs->m_arrItems[i],i);
 
-		ods_context->styles_context().state().set_oox_id (xlsx_styles->m_oCellXfs->m_arrItems[i]->m_oXfId->GetValue() );
-
-		int fill_id = xlsx_styles->m_oCellXfs->m_arrItems[i]->m_oFillId->GetValue();
-		int numFmt_id = xlsx_styles->m_oCellXfs->m_arrItems[i]->m_oNumFmtId->GetValue();
-		int font_id = xlsx_styles->m_oCellXfs->m_arrItems[i]->m_oFontId->GetValue();
-		int border_id = xlsx_styles->m_oCellXfs->m_arrItems[i]->m_oBorderId->GetValue();
-		
-		odf::office_element_ptr element_font = convert(xlsx_styles->m_oFonts->m_arrItems[font_id]);	 //text_properties
-		ods_context->styles_context().state().add_child(element_font);
-		
-		//xlsx_styles->m_oFills->m_arrItems[fill_id];
-		//xlsx_styles->m_oNumFmts->m_arrItems[numFmt_id];
-		//xlsx_styles->m_oBorders->m_arrItems[border_id];
-
-
-
-		//запишем содержимое стиля
-	//	//find_fill_by_id			(xlsx_styles->m_oCellXfs->m_arrItems[i]->m_oFillId); // это ссылка на graphic_properies
-	//	//find_num_format_by_id	(xlsx_styles->m_oCellXfs->m_arrItems[i]->m_oNumFmtId); // это ссылка формат ячейки
-	//	//find_text_by_id			(xlsx_styles->m_oCellXfs->m_arrItems[i]->m_oFontId); // ссылка на text_properties
-	//	
-		ods_context->styles_context().end_style();
 	}
 	
 	for (long i=0;i< xlsx_styles->m_oCellStyles->m_oCount->GetValue(); i++)//styles.xml
 	{
-		std::wstring style_name = string2std_string(xlsx_styles->m_oCellStyles->m_arrItems[i]->m_oName.get2());
+		//std::wstring style_name = string2std_string(xlsx_styles->m_oCellStyles->m_arrItems[i]->m_oName.get2());
 
-		ods_context->styles_context().start_style(style_name ,odf::style_family::TableCell);
-		int id_xfd = xlsx_styles->m_oCellStyles->m_arrItems[i]->m_oXfId->GetValue();
+		//ods_context->styles_context().start_style(style_name ,odf::style_family::TableCell);
+		//int id_xfd = xlsx_styles->m_oCellStyles->m_arrItems[i]->m_oXfId->GetValue();
 
-		xlsx_styles->m_oCellXfs->m_arrItems[id_xfd];//содержимое стиля
+		//xlsx_styles->m_oCellXfs->m_arrItems[id_xfd];//содержимое стиля
 		//odf::office_element_ptr & elm = ods_context->styles_context().find_by_id(, odf::style_family::TableCell);
 		//ods_context->styles_.back()->add_child(elm);
 		
@@ -150,10 +135,62 @@ void XlsxConverter::convert_styles()
 
 }
 
-odf::office_element_ptr XlsxConverter::convert(OOX::Spreadsheet::CFont * font)
+void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf::office_element_ptr  & odf_style_)
 {
-	odf::office_element_ptr element;
-	return element;
+	odf::style* style_ = dynamic_cast<style*>(odf_style_.get());
+	if (!style_)return;
+	
+	odf::style_text_properties * text_properties = style->style_content_.get_style_text_properties();//если элемента нет - создасться
+
+ 	if (text_properties == NULL)
+	{
+		style->style_content_.add_child(L"style", L"text-properties", ods_context);
+		text_properties = style->style_content_.get_style_text_properties();
+		if (text_properties == NULL) return;
+	}
+
+
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CFill * fill, odf::office_element_ptr  & odf_style_)
+{
+	odf::style* style_ = dynamic_cast<odf::style*>(odf_style_.get());
+	if (!style_)return;
+
+	odf::style_table_cell_properties * cell_properties = style->style_content_.get_style_table_cell_properties();//если элемента нет - создасться
+
+ 	if (cell_properties == NULL)
+	{
+		style->style_content_.add_child(L"style", L"table-cell-properties", ods_context);
+		style->style_content_.get_style_table_cell_properties();
+		if (cell_properties == NULL) return;
+	}
+
+
 }
 
+odf::office_element_ptr XlsxConverter::convert(OOX::Spreadsheet::CXfs * cell_style, int oox_id)
+{
+	int id_parent	= cell_style->m_oXfId->GetValue(); //parent 
+	int fill_id		= cell_style->m_oFillId->GetValue();
+	int numFmt_id	= cell_style->m_oNumFmtId->GetValue();
+	int font_id		= cell_style->m_oFontId->GetValue();
+	int border_id	= cell_style->m_oBorderId->GetValue();
+		
+	odf::office_element_ptr elm_style = ods_context->styles_context().add_or_find(L"" ,odf::style_family::TableCell, true, oox_id); 
+				//имя для стиля cгенерится если его нет - поиск и доступ (соответствие) - по номеры oox
+
+	convert(xlsx_styles->m_oFonts->m_arrItems[font_id], elm_style);
+	
+	convert(xlsx_styles->m_oFills->m_arrItems[fill_id], elm_style); 
+
+
+	odf::style* style = dynamic_cast<odf::style*>(elm_style.get());
+	if (!style_)return;
+
+	odf::style_table_cell_properties * cell_properties = get_style_table_cell_properties();
+	
+		
+	return style;
+
+}
 } // namespace Docx2Odt

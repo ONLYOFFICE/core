@@ -11,15 +11,14 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 
-//#include "style_text_properties.h"
-//#include "style_paragraph_properties.h"
+#include "style_text_properties.h"
+#include "style_paragraph_properties.h"
 #include "style_table_properties.h"
+
 //#include "style_graphic_properties.h"
 //#include "style_chart_properties.h"
 //#include "style_presentation.h"
 
-//#include "serialize_elements.h"
-//#include <cpdoccore/odf/odf_document.h>
 //#include "odfcontext.h"
 
 //#include "draw_common.h"
@@ -31,16 +30,16 @@ namespace odf {
     
 using xml::xml_char_wc;
 //
-//style_text_properties * style_content::get_style_text_properties() const
-//{
-//    return dynamic_cast<style_text_properties *>(style_text_properties_.get());    
-//}
-//
-//style_paragraph_properties * style_content::get_style_paragraph_properties() const
-//{
-//    return dynamic_cast<style_paragraph_properties *>(style_paragraph_properties_.get());    
-//}
-//
+style_text_properties * style_content::get_style_text_properties() const
+{
+	return dynamic_cast<style_text_properties *>(style_text_properties_.get());    
+}
+
+style_paragraph_properties * style_content::get_style_paragraph_properties() const
+{
+    return dynamic_cast<style_paragraph_properties *>(style_paragraph_properties_.get());    
+}
+
 //style_graphic_properties * style_content::get_style_graphic_properties() const
 //{
 //    return dynamic_cast<style_graphic_properties *>(style_graphic_properties_.get());    
@@ -79,13 +78,13 @@ style_table_column_properties * style_content::get_style_table_column_properties
 //    return dynamic_cast<style_drawing_page_properties *>(style_drawing_page_properties_.get());
 //}
 
-void style_content::add_child_element(office_element_ptr & child, odf_conversion_context * Context)
+void style_content::add_child_element(office_element_ptr & child)
 {
 	if (!child)return;
 
 	ElementType type = child->get_type();
 
-	switch(type)
+	switch(type)//перезатирать???
 	{
 	case typeStyleTextProperties:		style_text_properties_ = child; break;
 	case typeStyleParagraphProperties:	style_paragraph_properties_ = child; break; 
@@ -161,7 +160,7 @@ void default_style::create_child_element( const ::std::wstring & Ns, const ::std
 }
 void default_style::add_child_element(office_element_ptr & child)
 {
-	style_content_.add_child_element(child, getContext());
+	style_content_.add_child_element(child);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -224,7 +223,7 @@ void style::add_child_element(office_element_ptr & child)
         style_map_.push_back(child);
     } 
     else
-        style_content_.add_child_element(child, getContext());
+        style_content_.add_child_element(child);
 }
 
 // styles & draw_styles

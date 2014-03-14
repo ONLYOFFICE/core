@@ -21,10 +21,10 @@ class odf_style_context
 public:
     odf_style_context(odf_conversion_context & Context/*, ods_text_context & textCotnext*/);
 
-    void start_style(std::wstring name, const style_family style_family, bool automatic = false);
-    void end_style();
+    void create_style(std::wstring name, const style_family style_family, bool automatic = false, int oox_id = -1);
 
-	//office_element_ptr & find_by_id(int id, const style_family family);
+	office_element_ptr & add_or_find(std::wstring name, const style_family family, bool automatic = false, int id = -1);
+
 	void process_automatic(office_element_ptr root );
 	void process_master(office_element_ptr root );
 	void process_office(office_element_ptr root );

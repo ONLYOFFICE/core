@@ -1410,7 +1410,17 @@ namespace Aggplus
 			span_gen_type sg(img_src, interpolator);
 			renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
 			//agg::render_scanlines(m_rasterizer.get_rasterizer(), m_rasterizer.get_scanline(), ri);
-			render_scanlines(ri);
+
+			if (fabs(m_dGlobalAlpha - 1.0) < FLT_EPSILON)
+			{
+				render_scanlines(ri);
+			}
+			else
+			{
+				m_rasterizer.gamma_multi(m_dGlobalAlpha);
+				render_scanlines(ri);
+				m_rasterizer.gamma(1.0);
+			}
 		}
 	}
 

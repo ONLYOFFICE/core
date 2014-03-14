@@ -48,5 +48,7 @@ namespace Oox2Odf
 		
 		void convert(OOX::Spreadsheet::CFill * fill, cpdoccore::odf::office_element_ptr  & odf_style_);
 		void convert(OOX::Spreadsheet::CFont * font, cpdoccore::odf::office_element_ptr  & odf_style_);
+
+		cpdoccore::odf::office_element_ptr  convert(OOX::Spreadsheet::CXfs * cell_style, int oox_id);
 	};
 }

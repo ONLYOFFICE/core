@@ -19,7 +19,7 @@ namespace odf {
 const wchar_t * office_spreadsheet::ns = L"office";
 const wchar_t * office_spreadsheet::name = L"spreadsheet";
 
-void office_spreadsheet::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_spreadsheet::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }

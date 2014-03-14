@@ -19,7 +19,7 @@ using xml::xml_char_wc;
 const wchar_t * table_table_source::ns = L"table";
 const wchar_t * table_table_source::name = L"table-source";
 
-void table_table_source::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_source::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -29,7 +29,7 @@ void table_table_source::add_child_element(const ::std::wstring & Ns, const ::st
 const wchar_t * table_table::ns = L"table";
 const wchar_t * table_table::name = L"table";
 
-void table_table::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     if (L"table" == Ns && L"table-source" == Name)
     {
@@ -41,14 +41,14 @@ void table_table::add_child_element(const ::std::wstring & Ns, const ::std::wstr
               (L"table" == Ns && L"table-header-columns" == Name)
             )
     {
-        table_columns_and_groups_.add_child_element(Ns, Name, getContext());
+        table_columns_and_groups_.create_child_element(Ns, Name, getContext());
     }
     else if ((L"table" == Ns && L"table-row-group" == Name) ||
               (L"table" == Ns && L"table-rows" == Name) ||
               (L"table" == Ns && L"table-row" == Name) ||
               (L"table" == Ns && L"table-header-rows" == Name))
     {
-        table_rows_and_groups_.add_child_element(Ns, Name, getContext());
+        table_rows_and_groups_.create_child_element(Ns, Name, getContext());
     }
     else if CP_CHECK_NAME(L"table", L"shapes")
     {
@@ -91,7 +91,7 @@ void table_table::serialize(std::wostream & _Wostream)
 const wchar_t * table_table_column::ns = L"table";
 const wchar_t * table_table_column::name = L"table-column";
 
-void table_table_column::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void table_table_column::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -101,7 +101,7 @@ void table_table_column::add_child_element( const ::std::wstring & Ns, const ::s
 const wchar_t * table_table_columns::ns = L"table";
 const wchar_t * table_table_columns::name = L"table-columns";
 
-void table_table_columns::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_columns::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     if CP_CHECK_NAME(L"table", L"table-column")
     {
@@ -116,7 +116,7 @@ void table_table_columns::add_child_element(const ::std::wstring & Ns, const ::s
 const wchar_t * table_table_header_columns::ns = L"table";
 const wchar_t * table_table_header_columns::name = L"table-header-columns";
 
-void table_table_header_columns::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_header_columns::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     if CP_CHECK_NAME(L"table", L"table-column")
     {
@@ -128,7 +128,7 @@ void table_table_header_columns::add_child_element( const ::std::wstring & Ns, c
 
 // table-columns
 //////////////////////////////////////////////////////////////////////////////////////////////////
-void table_columns::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void table_columns::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
 {
     if CP_CHECK_NAME(L"table", L"table-columns")
     {
@@ -148,14 +148,14 @@ table_columns_no_group::table_columns_no_group() : was_header_(false)
 {
 };
 
-void table_columns_no_group::add_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void table_columns_no_group::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
 {
     if (CP_CHECK_NAME(L"table", L"table-columns") || CP_CHECK_NAME(L"table", L"table-column"))
     {
         if (!was_header_)
-            table_columns_1_.add_child_element(Ns, Name, Context);
+            table_columns_1_.create_child_element(Ns, Name, Context);
         else
-            table_columns_2_.add_child_element( Ns, Name, Context);
+            table_columns_2_.create_child_element( Ns, Name, Context);
 
     } 
     else if CP_CHECK_NAME(L"table", L"table-header-columns")
@@ -180,9 +180,9 @@ _CP_PTR(table_columns_no_group) table_columns_no_group::create()
 const wchar_t * table_table_column_group::ns = L"table";
 const wchar_t * table_table_column_group::name = L"table-column-group";
 
-void table_table_column_group::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_column_group::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-    table_columns_and_groups_.add_child_element(Ns, Name, getContext());
+    table_columns_and_groups_.create_child_element(Ns, Name, getContext());
 }
 
 // table-columns-and-groups
@@ -193,7 +193,7 @@ table_columns_and_groups::table_columns_and_groups()
 }
 
 
-void table_columns_and_groups::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void table_columns_and_groups::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
 {
     if (CP_CHECK_NAME(L"table", L"table-column-group"))
     {
@@ -204,7 +204,7 @@ void table_columns_and_groups::add_child_element(const ::std::wstring & Ns, cons
         CP_CHECK_NAME(L"table", L"table-header-columns"))
     {
         _CP_PTR(table_columns_no_group) elm = table_columns_no_group::create();
-        elm->add_child_element(Ns, Name, Context);
+        elm->create_child_element(Ns, Name, Context);
         content_.push_back(elm);
     }
     else
@@ -215,7 +215,7 @@ void table_columns_and_groups::add_child_element(const ::std::wstring & Ns, cons
 // table-table-cell-content
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void table_table_cell_content::add_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void table_table_cell_content::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
 {
 	CP_CREATE_ELEMENT_SIMPLE(text_content_);
 }
@@ -226,9 +226,9 @@ void table_table_cell_content::add_child_element(  const ::std::wstring & Ns, co
 const wchar_t * table_table_cell::ns = L"table";
 const wchar_t * table_table_cell::name = L"table-cell";
 
-void table_table_cell::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_cell::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-    table_table_cell_content_.add_child_element(Ns, Name, getContext());
+    table_table_cell_content_.create_child_element(Ns, Name, getContext());
 }
 
 
@@ -238,10 +238,10 @@ void table_table_cell::add_child_element( const ::std::wstring & Ns, const ::std
 const wchar_t * table_covered_table_cell::ns = L"table";
 const wchar_t * table_covered_table_cell::name = L"covered-table-cell";
 
-void table_covered_table_cell::add_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_covered_table_cell::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
 {
 	empty_ = false;
-    table_table_cell_content_.add_child_element( Ns, Name, getContext());
+    table_table_cell_content_.create_child_element( Ns, Name, getContext());
 }
 
 
@@ -251,7 +251,7 @@ void table_covered_table_cell::add_child_element(  const ::std::wstring & Ns, co
 const wchar_t * table_table_row::ns = L"table";
 const wchar_t * table_table_row::name = L"table-row";
 
-void table_table_row::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_row::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     if ( CP_CHECK_NAME(L"table", L"table-cell") || 
          CP_CHECK_NAME(L"table", L"covered-table-cell") )
@@ -268,7 +268,7 @@ void table_table_row::add_child_element( const ::std::wstring & Ns, const ::std:
 const wchar_t * table_table_rows::ns = L"table";
 const wchar_t * table_table_rows::name = L"table-rows";
 
-void table_table_rows::add_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_rows::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(table_table_row_);
 }
@@ -279,7 +279,7 @@ void table_table_rows::add_child_element(  const ::std::wstring & Ns, const ::st
 const wchar_t * table_table_header_rows::ns = L"table";
 const wchar_t * table_table_header_rows::name = L"table-header-rows";
 
-void table_table_header_rows::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_header_rows::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     if CP_CHECK_NAME(L"table", L"table-row")
     {
@@ -292,7 +292,7 @@ void table_table_header_rows::add_child_element( const ::std::wstring & Ns, cons
 
 // table-rows
 //////////////////////////////////////////////////////////////////////////////////////////////////
-void table_rows::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void table_rows::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
 {
     if CP_CHECK_NAME(L"table", L"table-rows")
     {
@@ -322,14 +322,14 @@ table_rows_no_group::table_rows_no_group() : was_header_(false)
 {
 };
 
-void table_rows_no_group::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void table_rows_no_group::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
 {
     if (CP_CHECK_NAME(L"table", L"table-rows") || CP_CHECK_NAME(L"table", L"table-row"))
     {
         if (!was_header_)
-            table_rows_1_.add_child_element(Ns, Name, Context);
+            table_rows_1_.create_child_element(Ns, Name, Context);
         else
-            table_rows_2_.add_child_element(Ns, Name, Context);
+            table_rows_2_.create_child_element(Ns, Name, Context);
     } 
     else if CP_CHECK_NAME(L"table", L"table-header-rows")
     {
@@ -347,7 +347,7 @@ table_rows_and_groups::table_rows_and_groups()
 {
 }
 
-void table_rows_and_groups::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void table_rows_and_groups::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
 {
     if (L"table" == Ns && L"table-row-group" == Name)
     {
@@ -356,7 +356,7 @@ void table_rows_and_groups::add_child_element( const ::std::wstring & Ns, const 
     else if (L"table" == Ns && (L"table-rows" == Name || L"table-row" == Name || L"table-header-rows" == Name) )
     {
         _CP_PTR(table_rows_no_group) elm = table_rows_no_group::create();
-        elm->add_child_element(Ns, Name, Context);
+        elm->create_child_element(Ns, Name, Context);
         content_.push_back(elm);
    }
     else
@@ -370,9 +370,9 @@ const wchar_t * table_table_row_group::ns = L"table";
 const wchar_t * table_table_row_group::name = L"table-row-group";
 
 
-void table_table_row_group::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_row_group::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-    table_rows_and_groups_.add_child_element(Ns, Name, getContext());
+    table_rows_and_groups_.create_child_element(Ns, Name, getContext());
 }
 
 
@@ -385,7 +385,7 @@ void table_table_row_group::add_child_element(const ::std::wstring & Ns, const :
 const wchar_t * table_shapes::ns = L"table";
 const wchar_t * table_shapes::name = L"shapes";
 
-void table_shapes::add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_shapes::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
 	create_element(Ns,Name,content_,getContext());
 }

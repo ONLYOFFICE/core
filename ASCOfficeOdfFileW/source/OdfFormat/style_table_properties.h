@@ -28,7 +28,7 @@ namespace odf {
 class table_format_properties
 {
 public:
-    bool add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
+    bool create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
    
 	void serialize(std::wostream & strm);
 private:
@@ -67,7 +67,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element(office_element_ptr & child)
 	{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 
@@ -104,7 +104,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
   
-	virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
@@ -140,7 +140,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	
@@ -250,7 +250,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	

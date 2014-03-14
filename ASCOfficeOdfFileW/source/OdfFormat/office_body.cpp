@@ -21,7 +21,7 @@ const wchar_t * office_body::name = L"body";
 office_body::office_body()
 {}
 
-void office_body::add_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_body::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }

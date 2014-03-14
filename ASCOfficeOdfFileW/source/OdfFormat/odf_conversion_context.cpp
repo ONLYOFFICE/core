@@ -52,25 +52,23 @@ void odf_conversion_context::end_document()
 //////////////////////////////////////////////////////////////////////
 	package::content_content_ptr content_root_ = package::content_content::create();
 	
-
 	BOOST_FOREACH(const office_element_ptr & elm, content_)
 	{
 		elm->serialize(content_root_->content());
 	}
-
-    std::wstringstream styles_root_strm;
- //////////////////////////////////////////////////////////////////////////////////////////   
+ //////////////////////////////////////////////////////////////////////////////////////////
+	package::content_simple_ptr content_style_ = package::content_simple::create();
 	BOOST_FOREACH(const office_element_ptr & elm, styles_)
 	{// мастер-пейджы, заданные заливки (градиенты, битмапы), дефолтные стили, колонтитулы, разметки, заметки,...
 
-		elm->serialize(styles_root_strm);
+		elm->serialize(content_style_->content());
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 	package::object_files *object_files =  new package::object_files();
 	if (object_files)
 	{
 		object_files->set_content(content_root_);
-		object_files->set_styles(package::simple_element::create(L"styles.xml", styles_root_strm.str()));
+		object_files->set_styles(content_style_);
 
 
 		output_document_->add_object(package::element_ptr(object_files ),true);

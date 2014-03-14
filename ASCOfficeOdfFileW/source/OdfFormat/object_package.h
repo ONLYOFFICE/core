@@ -20,6 +20,21 @@ namespace odf
 		typedef shared_ptr<element>::Type element_ptr;
 		typedef std::vector<element_ptr> element_ptr_array;
 
+		class content_simple;
+		typedef _CP_PTR(content_simple) content_simple_ptr;
+		
+		class content_simple : noncopyable
+		{
+		public:
+			content_simple(){}
+			std::wostream & content() { return content_; }
+			std::wstring str() { return content_.str(); }
+			static _CP_PTR(content_simple) create();
+
+		private:
+			std::wstringstream content_;
+		};
+
 		class content_content;
 		typedef _CP_PTR(content_content) content_content_ptr;
 		
@@ -28,13 +43,16 @@ namespace odf
 		public:
 			content_content(){}
 			std::wostream & content() { return content_; }
-			std::wstring str() { return content_.str(); }
+			std::wostream & styles() { return styles_; }
+			std::wstring content_str() { return content_.str(); }
+			std::wstring styles_str() { return styles_.str(); }
 			static _CP_PTR(content_content) create();
 
 		private:
 			std::wstringstream content_;
+			std::wstringstream styles_;
 		};
-		
+
 		class element
 		{
 		public:
@@ -75,15 +93,18 @@ namespace odf
 		class content_file : public element
 		{
 		public:
-			void set_content(content_content_ptr & c) {content_ = c;}
+			void set_content(content_content_ptr & c){content_ = c;}
 			virtual void write(const std::wstring & RootPath);
+			
 			content_content_ptr content_;
 		};
 
 		class styles_file : public element
 		{
 		public:
+			void set_content(content_simple_ptr & c) {content_ = c;}
 			virtual void write(const std::wstring & RootPath);
+			content_simple_ptr content_;
 		};
 
 		class manifect_file : public element
@@ -137,18 +158,18 @@ namespace odf
 			
 			void set_content(content_content_ptr & _Content);
 			
+			void set_styles (content_simple_ptr & _Styles);
+			
 			void set_media(mediaitems & _Mediaitems);    
 			void set_pictures(mediaitems & _Mediaitems);    
-			void set_styles(element_ptr Element);
 
 			virtual void write(const std::wstring & RootPath);
 
 		private:
-			content_file	content_;
+			content_file	content_;			
+			styles_file		styles_;
 			
-			element_ptr		styles_;
 			element_ptr		meta_;
-
 			element_ptr		media_;
 			element_ptr		pictures_;
 		};

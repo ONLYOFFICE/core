@@ -35,6 +35,10 @@ namespace odf
 		}
 
 ////////////
+		content_simple_ptr content_simple::create()
+		{
+			return boost::make_shared<content_simple>();
+		}
 		content_content_ptr content_content::create()
 		{
 			return boost::make_shared<content_content>();
@@ -195,9 +199,9 @@ namespace odf
 		}
 
 
-		void object_files::set_content(content_content_ptr & _Content)
+		void object_files::set_content(content_content_ptr & _content)
 		{
-			content_.set_content(_Content);
+			content_.set_content(_content);
 			meta_ = element_ptr(new meta_file());
 		}
 		void object_files::set_media(mediaitems & _Mediaitems)
@@ -208,17 +212,17 @@ namespace odf
 		{
 			pictures_ = element_ptr( new pictures(_Mediaitems) );
 		}
-		void object_files::set_styles(element_ptr Element)
+		void object_files::set_styles(content_simple_ptr & _content)
 		{
-			styles_ = Element;
+			styles_.set_content(_content);
 		}
 		void object_files::write(const std::wstring & RootPath)
 		{
-			content_.write(RootPath);
-		
+			content_.write(RootPath);		
+			styles_.write(RootPath);
+			
 			if (meta_)		meta_->write(RootPath);
 
-			if (styles_)	styles_->write(RootPath);
 			if (media_)		media_->write(RootPath);
 			if (pictures_)	pictures_->write(RootPath);
 		}
@@ -299,22 +303,78 @@ namespace odf
 					CP_XML_ATTR(L"xmlns:field",	L"urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" );
 					CP_XML_ATTR(L"xmlns:formx",	L"urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" );
 					CP_XML_ATTR(L"xmlns:css3t",	L"http://www.w3.org/TR/css3-text/" );
-					CP_XML_ATTR(L"office:version",	L"1.2");		
-					
+					CP_XML_ATTR(L"office:version",	L"1.2");				
+	
 					CP_XML_NODE(L"office:scripts");
- 					CP_XML_NODE(L"office:font-face-decls");
-					CP_XML_NODE(L"office:automatic-styles");
+					if (content_)
+					{
+						CP_XML_STREAM() << content_->styles_str();
+					}
 					CP_XML_NODE(L"office:body")
 					{
 						if (content_)
 						{
-							CP_XML_STREAM() << content_->str();
+							CP_XML_STREAM() << content_->content_str();
 						}
 					}
 				}
 			}
 		    
 			simple_element elm(L"content.xml", resStream.str());
+			elm.write(RootPath);
+		}
+		void styles_file::write(const std::wstring & RootPath)
+		{
+			std::wstringstream resStream;
+			CP_XML_WRITER(resStream)
+			{
+				CP_XML_NODE(L"office:document-styles")
+				{  
+					CP_XML_ATTR(L"xmlns:office",L"urn:oasis:names:tc:opendocument:xmlns:office:1.0" );
+					CP_XML_ATTR(L"xmlns:style",	L"urn:oasis:names:tc:opendocument:xmlns:style:1.0" );
+					CP_XML_ATTR(L"xmlns:text",	L"urn:oasis:names:tc:opendocument:xmlns:text:1.0" );
+					CP_XML_ATTR(L"xmlns:table",	L"urn:oasis:names:tc:opendocument:xmlns:table:1.0" );
+					CP_XML_ATTR(L"xmlns:draw",	L"urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" );
+					CP_XML_ATTR(L"xmlns:fo",	L"urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" );
+					CP_XML_ATTR(L"xmlns:xlink",	L"http://www.w3.org/1999/xlink" );
+					CP_XML_ATTR(L"xmlns:dc",	L"http://purl.org/dc/elements/1.1/" );
+					CP_XML_ATTR(L"xmlns:meta",	L"urn:oasis:names:tc:opendocument:xmlns:meta:1.0" );
+					CP_XML_ATTR(L"xmlns:number",L"urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" );
+					CP_XML_ATTR(L"xmlns:presentation",	L"urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" );
+					CP_XML_ATTR(L"xmlns:svg",	L"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"); 
+					CP_XML_ATTR(L"xmlns:chart",	L"urn:oasis:names:tc:opendocument:xmlns:chart:1.0" );
+					CP_XML_ATTR(L"xmlns:dr3d",	L"urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" );
+					CP_XML_ATTR(L"xmlns:math",	L"http://www.w3.org/1998/Math/MathML" );
+					CP_XML_ATTR(L"xmlns:form",	L"urn:oasis:names:tc:opendocument:xmlns:form:1.0" );
+					CP_XML_ATTR(L"xmlns:script",L"urn:oasis:names:tc:opendocument:xmlns:script:1.0" );
+					CP_XML_ATTR(L"xmlns:ooo",	L"http://openoffice.org/2004/office" );
+					CP_XML_ATTR(L"xmlns:ooow",	L"http://openoffice.org/2004/writer" );
+					CP_XML_ATTR(L"xmlns:oooc",	L"http://openoffice.org/2004/calc" );
+					CP_XML_ATTR(L"xmlns:dom",	L"http://www.w3.org/2001/xml-events" );
+					CP_XML_ATTR(L"xmlns:xforms",L"http://www.w3.org/2002/xforms");
+					CP_XML_ATTR(L"xmlns:xsd",	L"http://www.w3.org/2001/XMLSchema" );
+					CP_XML_ATTR(L"xmlns:xsi",	L"http://www.w3.org/2001/XMLSchema-instance" );
+					CP_XML_ATTR(L"xmlns:rpt",	L"http://openoffice.org/2005/report" );
+					CP_XML_ATTR(L"xmlns:of",	L"urn:oasis:names:tc:opendocument:xmlns:of:1.2" );
+					CP_XML_ATTR(L"xmlns:xhtml",	L"http://www.w3.org/1999/xhtml" );
+					CP_XML_ATTR(L"xmlns:grddl",	L"http://www.w3.org/2003/g/data-view#" );
+					CP_XML_ATTR(L"xmlns:tableooo",	L"http://openoffice.org/2009/table" );
+					CP_XML_ATTR(L"xmlns:drawooo",	L"http://openoffice.org/2010/draw" );
+					CP_XML_ATTR(L"xmlns:calcext",	L"urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" );
+					CP_XML_ATTR(L"xmlns:field",	L"urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" );
+					CP_XML_ATTR(L"xmlns:formx",	L"urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" );
+					CP_XML_ATTR(L"xmlns:css3t",	L"http://www.w3.org/TR/css3-text/" );
+					CP_XML_ATTR(L"office:version",	L"1.2");		
+					
+					if (content_)
+					{
+						CP_XML_STREAM() << content_->str();
+					}
+					
+				}
+			}
+		    
+			simple_element elm(L"styles.xml", resStream.str());
 			elm.write(RootPath);
 		}
 	}

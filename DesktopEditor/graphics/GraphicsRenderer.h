@@ -214,6 +214,7 @@ protected:
 	void ApplyTransform(const double& d1, const double& d2, const double& d3, const double& d4, const double& d5, const double& d6);
 	void ApplyTransform(Aggplus::CMatrix* pMatrix);
 	void _ResetTransform();
+	Aggplus::CBrush* CreateBrush(NSStructures::CBrush* pBrush);
 
 public:
 	void CreateFromBgraFrame(CBgraFrame* pFrame);

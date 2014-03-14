@@ -201,7 +201,8 @@ public:
 	agg::svg::frame_buffer_rgba&   get_frame_buffer();
 	agg::svg::rasterizer&          get_rasterizer();
 
-	bool m_bIntegerGrid;
+	bool	m_bIntegerGrid;
+	double	m_dGlobalAlpha;
 
 public:
 

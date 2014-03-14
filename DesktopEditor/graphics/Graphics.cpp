@@ -23,6 +23,8 @@ namespace Aggplus
 
 		m_oInitGdiplus.Init();
 #endif
+
+		m_dGlobalAlpha		= 1.0;
 	}
 
 	CGraphics::CGraphics(int dwWidth, int dwHeight, int stride, BYTE* pBuffer) : m_dwConfigFlags(0)
@@ -40,6 +42,7 @@ namespace Aggplus
 		m_bIntegerGrid		= false;
 
 		Create(pBuffer, dwWidth, dwHeight, stride, 0);
+		m_dGlobalAlpha = 1.0;
 
 #ifdef _WINDOW_GDIPLUS_USE_
 		m_pBitmap = NULL;
@@ -49,6 +52,7 @@ namespace Aggplus
 
 	CGraphics::CGraphics(CImage* pImage) : m_dwConfigFlags(0)
 	{
+		m_dGlobalAlpha = 1.0;
 		if (!pImage) 
 		{ 
 			return;
@@ -634,7 +638,7 @@ namespace Aggplus
 			m_rasterizer.get_rasterizer().add_path(trans);
 		}
 
-		CColor oColor((BYTE)pPen->Alpha, pPen->Color);
+		CColor oColor((BYTE)(pPen->Alpha * m_dGlobalAlpha), pPen->Color);
 		CBrushSolid oBrush(oColor);
 		
 		m_rasterizer.get_rasterizer().filling_rule(agg::fill_non_zero);

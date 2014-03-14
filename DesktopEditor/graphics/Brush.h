@@ -169,8 +169,6 @@ public:
 	BOOL m_bUsePattern;
 	CColor m_colors[2];
 };
-
-static CBrush* CreateBrush(NSStructures::CBrush* pBrush);
 }
 
 #endif // _BUILD_BRUSH_H_

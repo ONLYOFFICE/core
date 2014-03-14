@@ -1,96 +1,93 @@
 #include "GraphicsRenderer.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-namespace Aggplus
+
+Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 {
-	static CBrush* CreateBrush(NSStructures::CBrush* pBrush)
+	if (NULL == pBrush)
+		return NULL;
+
+	LONG Type = pBrush->Type;
+	if ((0 == Type) || (c_BrushTypeSolid == Type))
 	{
-		if (NULL == pBrush)
-			return NULL;
+		Aggplus::CColor oColor((BYTE)(pBrush->Alpha1 * m_dGlobalAlpha), pBrush->Color1);
+		Aggplus::CBrushSolid* pNew = new Aggplus::CBrushSolid(oColor);
 
-		LONG Type = pBrush->Type;
-		if ((0 == Type) || (c_BrushTypeSolid == Type))
+		return pNew;
+	}
+	else if	   ((c_BrushTypeHorizontal		== Type) ||
+				(c_BrushTypeVertical		== Type) ||
+				(c_BrushTypeDiagonal1		== Type) ||
+				(c_BrushTypeDiagonal2		== Type) ||
+				(c_BrushTypeCenter			== Type) ||
+				(c_BrushTypePathGradient1	== Type) ||
+				(c_BrushTypePathGradient2	== Type) ||
+				(c_BrushTypeCylinderHor		== Type) ||
+				(c_BrushTypeCylinderVer		== Type))
+	{
+		Aggplus::CColor o1((BYTE)(pBrush->Alpha1 * m_dGlobalAlpha), pBrush->Color1);
+		Aggplus::CColor o2((BYTE)(pBrush->Alpha2 * m_dGlobalAlpha), pBrush->Color2);
+
+		Aggplus::CBrushLinearGradient* pNew = new Aggplus::CBrushLinearGradient( Aggplus::RectF(0.0f, 0.0f, 1.0f, 1.0f), o1, o2, (float)pBrush->LinearAngle, TRUE );
+		if( pNew )
 		{
-			Aggplus::CColor oColor((BYTE)pBrush->Alpha1, pBrush->Color1);
-			Aggplus::CBrushSolid* pNew = new Aggplus::CBrushSolid(oColor);
+			pNew->SetRelativeCoords( TRUE );
 
-			return pNew;
-		}
-		else if	   ((c_BrushTypeHorizontal		== Type) ||
-					(c_BrushTypeVertical		== Type) ||
-					(c_BrushTypeDiagonal1		== Type) ||
-					(c_BrushTypeDiagonal2		== Type) ||
-					(c_BrushTypeCenter			== Type) ||
-					(c_BrushTypePathGradient1	== Type) ||
-					(c_BrushTypePathGradient2	== Type) ||
-					(c_BrushTypeCylinderHor		== Type) ||
-					(c_BrushTypeCylinderVer		== Type))
-		{
-			Aggplus::CColor o1((BYTE)pBrush->Alpha1, pBrush->Color1);
-			Aggplus::CColor o2((BYTE)pBrush->Alpha2, pBrush->Color2);
-
-			Aggplus::CBrushLinearGradient* pNew = new Aggplus::CBrushLinearGradient( Aggplus::RectF(0.0f, 0.0f, 1.0f, 1.0f), o1, o2, (float)pBrush->LinearAngle, TRUE );
-			if( pNew )
+			int nCountSubColors = pBrush->m_arrSubColors.GetSize();
+			if( nCountSubColors > 0 )
 			{
-				pNew->SetRelativeCoords( TRUE );
+				Aggplus::CColor* pColors = new Aggplus::CColor[nCountSubColors];
+				float* pBlends = new float[nCountSubColors];
 
-				int nCountSubColors = pBrush->m_arrSubColors.GetSize();
-				if( nCountSubColors > 0 )
+				if( pColors && pBlends )
 				{
-					Aggplus::CColor* pColors = new Aggplus::CColor[nCountSubColors];
-					float* pBlends = new float[nCountSubColors];
-
-					if( pColors && pBlends )
+					for( int i = 0; i < nCountSubColors; i++ )
 					{
-						for( int i = 0; i < nCountSubColors; i++ )
-						{
-							DWORD dwColor = (DWORD)pBrush->m_arrSubColors[i].color;
-							BYTE r = (dwColor >> 24) & 0xFF;
-							BYTE g = (dwColor >> 16) & 0xFF;
-							BYTE b = (dwColor >> 8) & 0xFF;
-							BYTE a = (dwColor) & 0xFF;
+						DWORD dwColor = (DWORD)pBrush->m_arrSubColors[i].color;
+						BYTE r = (dwColor >> 24) & 0xFF;
+						BYTE g = (dwColor >> 16) & 0xFF;
+						BYTE b = (dwColor >> 8) & 0xFF;
+						BYTE a = (dwColor) & 0xFF;
 
-							pColors[i] = Aggplus::CColor(a, b, g, r);
-							pBlends[i] = (float)(pBrush->m_arrSubColors[i].position / 65536.0);
-						}
-
-						pNew->SetInterpolationColors( pColors, pBlends, nCountSubColors );
+						pColors[i] = Aggplus::CColor((BYTE)(a * m_dGlobalAlpha), b, g, r);
+						pBlends[i] = (float)(pBrush->m_arrSubColors[i].position / 65536.0);
 					}
 
-					delete [] pColors;
-					delete [] pBlends;
+					pNew->SetInterpolationColors( pColors, pBlends, nCountSubColors );
 				}
 
-				pNew->SetBounds(pBrush->Bounds);
+				delete [] pColors;
+				delete [] pBlends;
 			}
 
-			if (pNew && c_BrushTypePathGradient2 == Type)
-				pNew->m_bType = BrushTypePathGradient;
-
-			return pNew;
+			pNew->SetBounds(pBrush->Bounds);
 		}
-		else if (c_BrushTypeHatch1 == Type)
-		{
-			Aggplus::CColor o1((BYTE)pBrush->Alpha1, pBrush->Color1);
-			Aggplus::CColor o2((BYTE)pBrush->Alpha2, pBrush->Color2);
 
-			Aggplus::CBrushHatch* pNew = new Aggplus::CBrushHatch();
-			pNew->m_dwColor1	= o1;
-			pNew->m_dwColor2	= o2;
-			pNew->m_name		= pBrush->TexturePath;
+		if (pNew && c_BrushTypePathGradient2 == Type)
+			pNew->m_bType = Aggplus::BrushTypePathGradient;
 
-			pNew->Bounds		= pBrush->Bounds;
+		return pNew;
+	}
+	else if (c_BrushTypeHatch1 == Type)
+	{
+		Aggplus::CColor o1((BYTE)(pBrush->Alpha1 * m_dGlobalAlpha), pBrush->Color1);
+		Aggplus::CColor o2((BYTE)(pBrush->Alpha2 * m_dGlobalAlpha), pBrush->Color2);
 
-			return pNew;
-		}
-		else
-		{
-			Aggplus::CBrushTexture* pNew = new Aggplus::CBrushTexture(pBrush->TexturePath, /*(Aggplus::WrapMode)TextureMode*/Aggplus::WrapModeClamp);
-			return pNew;
-		}
+		Aggplus::CBrushHatch* pNew = new Aggplus::CBrushHatch();
+		pNew->m_dwColor1	= o1;
+		pNew->m_dwColor2	= o2;
+		pNew->m_name		= pBrush->TexturePath;
+
+		pNew->Bounds		= pBrush->Bounds;
+
+		return pNew;
+	}
+	else
+	{
+		Aggplus::CBrushTexture* pNew = new Aggplus::CBrushTexture(pBrush->TexturePath, /*(Aggplus::WrapMode)TextureMode*/Aggplus::WrapModeClamp);
+		return pNew;
 	}
 }
-
 
 CGraphicsRenderer::CGraphicsRenderer()
 {
@@ -584,7 +581,7 @@ HRESULT CGraphicsRenderer::CommandDrawTextCHAR(const LONG& c, const double& x, c
 		
 	_SetFont();
 
-	Aggplus::CBrush* pBrush = Aggplus::CreateBrush(&m_oBrush);				
+	Aggplus::CBrush* pBrush = CreateBrush(&m_oBrush);				
 	m_pRenderer->DrawStringC(c, m_pFontManager, pBrush, x, y + baselineOffset);
 	
 	RELEASEOBJECT(pBrush);
@@ -599,7 +596,7 @@ HRESULT CGraphicsRenderer::CommandDrawText(const std::wstring& bsText, const dou
 		
 	_SetFont();
 
-	Aggplus::CBrush* pBrush = Aggplus::CreateBrush(&m_oBrush);				
+	Aggplus::CBrush* pBrush = CreateBrush(&m_oBrush);				
 	m_pRenderer->DrawString(bsText, m_pFontManager, pBrush, x, y + baselineOffset);
 	
 	RELEASEOBJECT(pBrush);
@@ -803,7 +800,7 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 			}
 			else
 			{
-				pBrush = Aggplus::CreateBrush(&m_oBrush);
+				pBrush = CreateBrush(&m_oBrush);
 			}
 
 			m_pRenderer->FillPath(pBrush, m_pPath);
@@ -847,7 +844,7 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 			}
 			else
 			{
-				pBrush = Aggplus::CreateBrush(&m_oBrush);
+				pBrush = CreateBrush(&m_oBrush);
 			}
 
 			m_pRenderer->FillPath(pBrush, m_pPath);
@@ -1189,6 +1186,8 @@ void CGraphicsRenderer::put_GlobalAlphaEnabled(const bool& bEnabled, const doubl
 		m_dGlobalAlpha = dVal;
 	else
 		m_dGlobalAlpha = 1.0;
+
+	m_pRenderer->m_dGlobalAlpha = m_dGlobalAlpha;
 }
 
 void CGraphicsRenderer::AddRect(const double& x, const double& y, const double& w, const double& h)

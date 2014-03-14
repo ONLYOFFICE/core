@@ -412,7 +412,13 @@ namespace Aggplus
 		if (NULL == pPath)
 			return InvalidParameter;
 		
-		m_oClip.Combine(pPath, &m_oFullTransform, op);
+		if (!m_bIntegerGrid)
+			m_oClip.Combine(pPath, &m_oFullTransform, op);
+		else
+		{
+			CMatrix transform;
+			m_oClip.Combine(pPath, &transform, op);
+		}
 		return Ok;
 	}
 

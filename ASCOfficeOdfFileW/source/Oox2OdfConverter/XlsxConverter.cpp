@@ -130,21 +130,20 @@ void XlsxConverter::convert_styles()
 		//ods_context->styles_context().current_style().set_hidden(xlsx_styles->m_oCellStyles->m_arrItems[i]->m_oHidden->ToBool())
 		//ods_context->styles_context().current_style().set_level(xlsx_styles->m_oCellStyles->m_arrItems[i]->m_oILevel->GetValue())
 		//
-		ods_context->styles_context().end_style();
 	}
 
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf::office_element_ptr  & odf_style_)
 {
-	odf::style* style_ = dynamic_cast<style*>(odf_style_.get());
-	if (!style_)return;
+	odf::style* style = dynamic_cast<odf::style*>(odf_style_.get());
+	if (!style)return;
 	
 	odf::style_text_properties * text_properties = style->style_content_.get_style_text_properties();//если элемента нет - создасться
 
  	if (text_properties == NULL)
 	{
-		style->style_content_.add_child(L"style", L"text-properties", ods_context);
+		style->create_child_element(L"style", L"text-properties");
 		text_properties = style->style_content_.get_style_text_properties();
 		if (text_properties == NULL) return;
 	}
@@ -153,15 +152,15 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf::office_element_
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CFill * fill, odf::office_element_ptr  & odf_style_)
 {
-	odf::style* style_ = dynamic_cast<odf::style*>(odf_style_.get());
-	if (!style_)return;
+	odf::style* style = dynamic_cast<odf::style*>(odf_style_.get());
+	if (!style)return;
 
 	odf::style_table_cell_properties * cell_properties = style->style_content_.get_style_table_cell_properties();//если элемента нет - создасться
 
  	if (cell_properties == NULL)
 	{
-		style->style_content_.add_child(L"style", L"table-cell-properties", ods_context);
-		style->style_content_.get_style_table_cell_properties();
+		style->create_child_element(L"style", L"table-cell-properties");
+		cell_properties = style->style_content_.get_style_table_cell_properties();
 		if (cell_properties == NULL) return;
 	}
 
@@ -170,6 +169,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFill * fill, odf::office_element_
 
 odf::office_element_ptr XlsxConverter::convert(OOX::Spreadsheet::CXfs * cell_style, int oox_id)
 {
+	OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->GetStyles();
+
 	int id_parent	= cell_style->m_oXfId->GetValue(); //parent 
 	int fill_id		= cell_style->m_oFillId->GetValue();
 	int numFmt_id	= cell_style->m_oNumFmtId->GetValue();
@@ -185,12 +186,12 @@ odf::office_element_ptr XlsxConverter::convert(OOX::Spreadsheet::CXfs * cell_sty
 
 
 	odf::style* style = dynamic_cast<odf::style*>(elm_style.get());
-	if (!style_)return;
+	if (!style)return elm_style;
 
-	odf::style_table_cell_properties * cell_properties = get_style_table_cell_properties();
+	odf::style_table_cell_properties * cell_properties = style->style_content_.get_style_table_cell_properties();
 	
 		
-	return style;
+	return elm_style;
 
 }
 } // namespace Docx2Odt

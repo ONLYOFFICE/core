@@ -484,12 +484,16 @@ void office_master_styles::serialize(std::wostream & strm)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			draw_layer_set_->serialize(CP_XML_STREAM());
+			if (draw_layer_set_)
+				draw_layer_set_->serialize(CP_XML_STREAM());
+			
 			BOOST_FOREACH(office_element_ptr elm, style_master_page_)
 			{
 				elm->serialize(CP_XML_STREAM());
 			}
-			style_handout_master_->serialize(CP_XML_STREAM());
+			
+			if (style_handout_master_)
+				style_handout_master_->serialize(CP_XML_STREAM());
 
 		}
 	}

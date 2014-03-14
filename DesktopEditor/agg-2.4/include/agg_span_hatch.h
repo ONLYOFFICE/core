@@ -10,6 +10,7 @@
 namespace agg
 {
 	#define HATCH_TX_SIZE			8
+	#define HATCH_TX_SIZE_MASK		7
 	#define HATCH_TX_COUNT			54
 
 	// 8 * 8 * 54
@@ -614,6 +615,26 @@ namespace agg
 		L"zigZag"
 	};
 
+	template <class color_type>
+	static void GetHatchPattern(const std::wstring& name, color_type* data, const color_type& c1, const color_type& c2)
+	{
+		int offset = 0;
+		int size = HATCH_TX_SIZE * HATCH_TX_SIZE;
+
+		for (int i = 0; i < HATCH_TX_COUNT; ++i)
+		{
+			if (c_resource_hatches_names[i] == name)
+			{
+				offset = i * size;
+				break;
+			}
+		}
+		for (int i = 0; i < size; ++i)
+		{
+			*data++ = (c_resource_hatches[offset + i] == 1) ? c2 : c1;
+		}
+	}
+
 	template<class ColorT>
     class agg_span_hatch
 	{
@@ -635,16 +656,33 @@ namespace agg
 		color_type		m_color1;
 		color_type		m_color2;
 
+		double Ax;
+		double Bx;
+		double Cx;
+
+		double Ay;
+		double By;
+		double Cy;
+
 	public:
 		agg_span_hatch()
 			: m_state( StateInit ), 
-			m_offset( 0 ),
+			m_offset( 0 )
 		{
+			Ax = 0;
+			Bx = 0;
+			Cx = 0;
+
+			Ay = 0;
+			By = 0;
+			Cy = 0;
 		}
 
-		void SetDirection(const std::wstring& name, const agg::trans_affine& trans)
+		void SetDirection(const std::wstring& name, const rect_d& bounds, const agg::trans_affine& trans, const color_type& color1, const color_type& color2)
 		{
 			m_trans = trans;
+			m_color1 = color1;
+			m_color2 = color2;
 			
 			for (int i = 0; i < HATCH_TX_COUNT; ++i)
 			{
@@ -654,6 +692,47 @@ namespace agg
 					break;
 				}
 			}
+
+			double x0 = bounds.x1;
+			double y0 = bounds.y1;
+
+			double x1 = bounds.x2;
+			double y1 = y0;
+
+			double x2 = x0;
+			double y2 = bounds.y2;
+
+			trans.transform(&x0, &y0);
+			trans.transform(&x1, &y1);
+			trans.transform(&x2, &y2);
+
+			double dFactor1 = _hypot(x1 - x0, y1 - y0);
+			if (dFactor1 < FLT_EPSILON)
+			{
+				Ax = 0;
+				Bx = 0;
+				Cx = 0;
+			}
+			else
+			{
+				Ax = (y1 - y0) / dFactor1;
+				Bx = (x0 - x1) / dFactor1;
+				Cx = (y0 * (x1 - x0) - x0 * (y1 - y0)) / dFactor1;
+			}
+
+			double dFactor2 = _hypot(x2 - x0, y2 - y0);
+			if (dFactor2 < FLT_EPSILON)
+			{
+				Ay = 0;
+				By = 0;
+				Cy = 0;
+			}
+			else
+			{
+				Ay = (y2 - y0) / dFactor2;
+				By = (x0 - x2) / dFactor2;
+				Cy = (y0 * (x2 - x0) - x0 * (y2 - y0)) / dFactor2;
+			}			
 		}
 		
         void prepare()
@@ -661,19 +740,30 @@ namespace agg
 			if( m_state != StateReady )
 			{
 				m_state = StateReady;
-				memset( m_valid_table, 0, sizeof m_valid_table );
 			}
 		}
 
         void generate( color_type* span, int x, int y, unsigned len)
 		{
+			double plusX = Bx * y + Cx;
+			double plusY = By * y + Cy;
+
 			for( unsigned count = 0; count < len; ++count, ++x )
 			{
-				double _x = x;
-				double _y = y;
-				m_trans.transform(&_x, &_y);
+#if 1 // NN
+				int _x = (int)(Ax * x + plusX + 0.5);
+				int _y = (int)(Ay * x + plusY + 0.5);
+				_x = _x & HATCH_TX_SIZE_MASK;
+				_y = _y & HATCH_TX_SIZE_MASK;
 				
-				// TODO:
+				BYTE val = c_resource_hatches[m_offset + (_y << 3) + _x];
+
+				if (val)
+					*span++ = m_color2;
+				else
+					*span++ = m_color1;
+#endif
+
 			}
 		}
 	};

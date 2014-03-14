@@ -9,7 +9,7 @@ namespace Aggplus
 			return NULL;
 
 		LONG Type = pBrush->Type;
-		if ((0 == Type) || (c_BrushTypeSolid == Type) || (c_BrushTypeHatch1 <= Type && c_BrushTypeHatch53 >= Type))
+		if ((0 == Type) || (c_BrushTypeSolid == Type))
 		{
 			Aggplus::CColor oColor((BYTE)pBrush->Alpha1, pBrush->Color1);
 			Aggplus::CBrushSolid* pNew = new Aggplus::CBrushSolid(oColor);
@@ -66,6 +66,20 @@ namespace Aggplus
 
 			if (pNew && c_BrushTypePathGradient2 == Type)
 				pNew->m_bType = BrushTypePathGradient;
+
+			return pNew;
+		}
+		else if (c_BrushTypeHatch1 == Type)
+		{
+			Aggplus::CColor o1((BYTE)pBrush->Alpha1, pBrush->Color1);
+			Aggplus::CColor o2((BYTE)pBrush->Alpha2, pBrush->Color2);
+
+			Aggplus::CBrushHatch* pNew = new Aggplus::CBrushHatch();
+			pNew->m_dwColor1	= o1;
+			pNew->m_dwColor2	= o2;
+			pNew->m_name		= pBrush->TexturePath;
+
+			pNew->Bounds		= pBrush->Bounds;
 
 			return pNew;
 		}

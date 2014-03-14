@@ -32,6 +32,23 @@ namespace Aggplus
 
 	void CBrushSolid::GetColor(CColor* color) const { *color = m_dwColor; }
 	void CBrushSolid::SetColor(const CColor &color) { m_dwColor = color; }
+
+	////////////////////////////////////////////////////////////////////////////////
+
+	CBrushHatch::CBrushHatch() : CBrush(BrushTypeHatchFill)
+	{
+	}
+	CBrushHatch::~CBrushHatch()																
+	{
+	}
+	CBrush* CBrushHatch::Clone() const 
+	{ 
+		CBrushHatch* clone = new CBrushHatch();
+		clone->m_name		= m_name;
+		clone->m_dwColor1	= m_dwColor1;
+		clone->m_dwColor2	= m_dwColor2;
+		return clone;
+	}
 	
 	////////////////////////////////////////////////////////////////////////////////
 

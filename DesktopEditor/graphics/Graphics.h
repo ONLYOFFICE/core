@@ -301,8 +301,9 @@ protected:
 	void render_scanlines(Rasterizer& ras, Renderer& ren);
 
 	void DoFillPathSolid(CColor dwColor);
-	void DoFillPathGradient(CBrushLinearGradient *pBrush, const agg::trans_affine* pGlobalTransform = NULL);
-	void DoFillPathGradient2(CBrushLinearGradient *pBrush, const agg::trans_affine* pGlobalTransform = NULL);
+	void DoFillPathGradient(CBrushLinearGradient *pBrush);
+	void DoFillPathGradient2(CBrushLinearGradient *pBrush);
+	void DoFillPathHatch(CBrushHatch *pBrush);
 	void DoFillPathTextureClampSz(const CMatrix &mImgMtx, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride);
 	void DoFillPathTextureClampSz2(const CMatrix &mImgMtx, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride);
 	void DoFillPath(const CBrush* Brush);

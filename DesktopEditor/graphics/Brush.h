@@ -44,6 +44,24 @@ protected:
 	CColor m_dwColor;
 };
 
+class CBrushHatch : public CBrush
+{
+public:
+	CBrushHatch();
+	virtual ~CBrushHatch();
+	virtual CBrush *Clone() const;
+
+	inline CDoubleRect& GetBounds() { return Bounds; }
+
+		
+public:
+	std::wstring	m_name;
+	CColor			m_dwColor1;
+	CColor			m_dwColor2;
+
+	CDoubleRect		Bounds;
+};
+
 
 class CBrushLinearGradient : public CBrush
 {

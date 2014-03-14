@@ -816,10 +816,6 @@ namespace Aggplus
 			brushMatrix.Multiply(&m_oFullTransform, MatrixOrderAppend);
 			ptxBrush->SetTransform(&brushMatrix);
 		}
-		else if( pBrush->GetType() == Aggplus::BrushTypePathGradient )
-		{
-			
-		}
 
 		DoFillPath(pBrush);
 
@@ -1112,7 +1108,7 @@ namespace Aggplus
 		render_scanlines(ren_fine);
 	}
 
-	void CGraphics::DoFillPathGradient(CBrushLinearGradient *pBrush, const agg::trans_affine* pGlobalTransform)
+	void CGraphics::DoFillPathGradient(CBrushLinearGradient *pBrush)
 	{
 		CDoubleRect& oBounds = pBrush->GetBounds();
 
@@ -1181,7 +1177,7 @@ namespace Aggplus
 		if( pSubBlends ) delete [] pSubBlends;
 	}
 
-	void CGraphics::DoFillPathGradient2(CBrushLinearGradient *pBrush, const agg::trans_affine* pGlobalTransform)
+	void CGraphics::DoFillPathGradient2(CBrushLinearGradient *pBrush)
 	{
 		CDoubleRect& oBounds = pBrush->GetBounds();
 
@@ -1248,6 +1244,86 @@ namespace Aggplus
 
 		if( pSubColors ) delete [] pSubColors;
 		if( pSubBlends ) delete [] pSubBlends;
+	}
+
+	void CGraphics::DoFillPathHatch(CBrushHatch *pBrush)
+	{
+#if 0
+		CDoubleRect& oBounds = pBrush->GetBounds();
+
+		CMatrix oMatrix;
+
+		agg::rect_d	rect;
+		if (oBounds.GetWidth() > FLT_EPSILON || oBounds.GetHeight() > FLT_EPSILON)
+		{
+			rect.x1 = oBounds.left;
+			rect.y1 = oBounds.top;
+			rect.x2 = oBounds.right;
+			rect.y2 = oBounds.bottom;
+
+			oMatrix = m_oFullTransform;			
+		}
+		else
+		{
+			int x = m_rasterizer.get_rasterizer().min_x();
+			int y = m_rasterizer.get_rasterizer().min_y();
+			int width  = m_rasterizer.get_rasterizer().max_x() - m_rasterizer.get_rasterizer().min_x();
+			int height = m_rasterizer.get_rasterizer().max_y() - m_rasterizer.get_rasterizer().min_y();
+
+			rect.x1 = x;
+			rect.x2 = x + width;
+			rect.y1 = y;
+			rect.y2 = y + height;
+		}
+
+		typedef agg::agg_span_hatch<agg::rgba8> hatch_span_gen;
+		hatch_span_gen span_gen;
+
+		agg::rgba8 c1 = agg::rgba8(pBrush->m_dwColor1.GetB(), pBrush->m_dwColor1.GetG(), pBrush->m_dwColor1.GetR(), pBrush->m_dwColor1.GetA());
+		agg::rgba8 c2 = agg::rgba8(pBrush->m_dwColor2.GetB(), pBrush->m_dwColor2.GetG(), pBrush->m_dwColor2.GetR(), pBrush->m_dwColor2.GetA());
+
+		span_gen.SetDirection(pBrush->m_name, rect, oMatrix.m_agg_mtx, c1, c2);		
+		
+		typedef agg::span_allocator<hatch_span_gen::color_type> hatch_span_alloc;
+		hatch_span_alloc span_alloc;
+
+		typedef agg::renderer_scanline_aa<base_renderer_type, hatch_span_alloc, hatch_span_gen> renderer_hatch_type;
+		renderer_hatch_type ren_hatch( m_frame_buffer.ren_base(), span_alloc, span_gen );
+
+		render_scanlines(ren_hatch);
+#else
+		agg::rgba8 c1 = agg::rgba8(pBrush->m_dwColor1.GetB(), pBrush->m_dwColor1.GetG(), pBrush->m_dwColor1.GetR(), pBrush->m_dwColor1.GetA());
+		agg::rgba8 c2 = agg::rgba8(pBrush->m_dwColor2.GetB(), pBrush->m_dwColor2.GetG(), pBrush->m_dwColor2.GetR(), pBrush->m_dwColor2.GetA());
+
+		BYTE* pPattern = new BYTE[HATCH_TX_SIZE * HATCH_TX_SIZE * 4];
+		agg::GetHatchPattern(pBrush->m_name, (agg::rgba8*)pPattern, c1, c2);
+
+		agg::trans_affine mtx_Work(m_oTransform.m_agg_mtx);
+		mtx_Work.invert();
+
+		span_alloc_type				span_allocator; 
+		interpolator_type_linear	interpolator(mtx_Work);
+				  
+		agg::rendering_buffer PatRendBuff;
+		PatRendBuff.attach(pPattern, HATCH_TX_SIZE, HATCH_TX_SIZE, HATCH_TX_SIZE << 2);
+
+		typedef agg::pixfmt_bgra32     pixfmt;
+		//image_accessor_wrap
+		typedef agg::wrap_mode_repeat wrap_x_type;
+		typedef agg::wrap_mode_repeat wrap_y_type;
+		typedef agg::image_accessor_wrap<pixfmt, wrap_x_type, wrap_y_type> img_source_type;
+		typedef agg::span_image_filter_rgba_bilinear<img_source_type, interpolator_type_linear> span_gen_type;
+		typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+
+		pixfmt          img_pixf(PatRendBuff);
+		img_source_type img_src(img_pixf);
+		span_gen_type sg(img_src, interpolator);
+		renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+		
+		render_scanlines(ri);
+
+		RELEASEARRAYOBJECTS(pPattern);
+#endif
 	}
 
 	void CGraphics::DoFillPathTextureClampSz(const CMatrix &mImgMtx, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride)
@@ -1341,7 +1417,7 @@ namespace Aggplus
 		}
 		else if (Brush->GetType() == BrushTypeHatchFill)
 		{
-			return;
+			DoFillPathHatch((Aggplus::CBrushHatch*)Brush);
 		}
 		else if (Brush->GetType() == BrushTypeTextureFill)
 		{

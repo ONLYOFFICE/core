@@ -975,11 +975,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OdfFormat\style_paragraph_properties.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\style_paragraph_properties.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\style_table_properties.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\OdfFormat\style_table_properties.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\style_text_properties.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\style_text_properties.h"
 				>
 			</File>
 			<File

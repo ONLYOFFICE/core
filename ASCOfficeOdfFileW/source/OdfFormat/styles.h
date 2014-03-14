@@ -57,7 +57,7 @@ class style_content : noncopyable
 {
 public:
     void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
-    void add_child_element(office_element_ptr & child, odf_conversion_context * Context);
+    void add_child_element(office_element_ptr & child);
   
     style_text_properties *			get_style_text_properties() const;
     style_paragraph_properties *	get_style_paragraph_properties() const;

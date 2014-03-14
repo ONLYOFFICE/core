@@ -27,9 +27,9 @@ const odf_style_state & odf_style_context::state() const
     return style_state_list_.back();
 }
 
-void odf_style_context::start_style(std::wstring name,const style_family family, bool automatic )
+void odf_style_context::create_style(std::wstring name,const style_family family, bool automatic,int oox_id)
 {
-	int id = style_state_list_.size();
+	if (oox_id < 0) oox_id = style_state_list_.size();
 
 	office_element_ptr elm;
 	create_element(L"style", L"style", elm, &context_);
@@ -39,7 +39,7 @@ void odf_style_context::start_style(std::wstring name,const style_family family,
 	state().set_name(name);
 	state().set_automatic(automatic);
 
-	state().style_oox_id_ = id;
+	state().style_oox_id_ = oox_id;
 }
 
 void odf_style_context::process_automatic(office_element_ptr root )
@@ -67,22 +67,25 @@ void odf_style_context::process_master(office_element_ptr root )
 			root->add_child_element(it->odf_style_);
 	}
 }
-//office_element_ptr & odf_style_context::find_by_id()
-//{
-//	for (std::list<odf_style_state>::iterator it = style_state_list_.begin(); it != style_state_list_.end(); it++)
-//	{
-//		if (it->odf_style_)
-//		{
-//			if (it->odf_style_->style_family_ == family && it->style_oox_id_ == id)
-//				return it->get_office_element();
-//		}
-//	}
-//	return office_element_ptr();
-//}
-void odf_style_context::end_style()
+office_element_ptr & odf_style_context::add_or_find(std::wstring name, const style_family family, bool automatic , int oox_id)
 {
-	state().convert();
+	for (std::list<odf_style_state>::iterator it = style_state_list_.begin(); it != style_state_list_.end(); it++)
+	{
+		if (it->odf_style_)
+		{
+			if (it->style_family_ == family)
+			{
+				if (oox_id >=0 && it->style_oox_id_ == oox_id)						return it->get_office_element();
+				if (name.length() >=0 && it->odf_style_->get_name() == name)	return it->get_office_element();
+			}
+				
+		}
+	}
+	create_style(name,family, true,oox_id);
+	
+	return state().get_office_element();
 }
+
 
 }
 }

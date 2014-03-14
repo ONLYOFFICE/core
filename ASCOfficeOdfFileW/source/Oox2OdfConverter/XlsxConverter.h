@@ -39,13 +39,14 @@ namespace Oox2Odf
 		OOX::Spreadsheet::CXlsx					*xlsx_document;
 		cpdoccore::odf::package::odf_document	*output_document;
 
-		cpdoccore::odf::ods_conversion_context				*ods_context;
+		cpdoccore::odf::ods_conversion_context	*ods_context;
 
 		void convert_sheets();
 		void convert_styles();
 		
 		void convert(OOX::Spreadsheet::CWorksheet *oox_sheet);
 		
-		cpdoccore::odf::office_element_ptr convert(OOX::Spreadsheet::CFont * font);
+		void convert(OOX::Spreadsheet::CFill * fill, cpdoccore::odf::office_element_ptr  & odf_style_);
+		void convert(OOX::Spreadsheet::CFont * font, cpdoccore::odf::office_element_ptr  & odf_style_);
 	};
 }

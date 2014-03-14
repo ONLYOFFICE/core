@@ -17,7 +17,7 @@ odf_style_state::odf_style_state(odf_conversion_context & Context, office_elemen
 	style* style_ = dynamic_cast<style*>(elm.get());
 	if (!style_)return;
 
-	style_->style_family_ = family;
+	style_->style_family_ = style_family_ = family;
 
 //set default
 

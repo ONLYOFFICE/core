@@ -37,6 +37,10 @@ namespace svg
 		{
 			m_rasterizer.gamma(agg::gamma_power(g));
 		}
+		void gamma_multi(double g)
+		{
+			m_rasterizer.gamma(agg::gamma_multiply(g));
+		}
 
 		void clip_box(double x1, double y1, double x2, double y2)
 		{

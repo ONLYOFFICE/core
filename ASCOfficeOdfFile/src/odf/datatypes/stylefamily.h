@@ -38,7 +38,7 @@ public:
     {
         return type_;
     };
-    
+    bool operator == (const style_family & rVal) const;
     static style_family parse(const std::wstring & Str);
 
 private:
@@ -47,7 +47,6 @@ private:
 };
 
 std::wostream & operator << (std::wostream & _Wostream, const style_family & _Val);
-
 } 
 
 APPLY_PARSE_XML_ATTRIBUTES(odf::style_family);

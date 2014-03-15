@@ -282,8 +282,6 @@ private:
     std::wstring name_;
 };
 
-
-/// хранилище для стилей списков
 class list_style_container
 {
 public:

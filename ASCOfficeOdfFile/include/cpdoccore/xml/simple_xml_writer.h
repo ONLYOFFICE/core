@@ -287,6 +287,15 @@ typedef xml::writer::element<wchar_t> xml_element;
 #define CP_XML_CONTENT(VAL) _xml_node_.contents((VAL))
 #define CP_XML_STREAM() _xml_node_.stream()
 
+#define CP_GET_XML_NODE() _xml_node_
+
+#define CP_ATTR_NODE xml_element & _xml_node_
+
+
+
+#define CP_XML_ATTR_OPT(NAME, VAL) if (VAL)CP_XML_ATTR(NAME, (*VAL))
+
+#define CP_XML_NODE_SIMPLE() std::wstring NS_NAME = std::wstring(ns) + std::wstring(L":") + std::wstring(name); CP_XML_NODE(NS_NAME)
 
 }
 

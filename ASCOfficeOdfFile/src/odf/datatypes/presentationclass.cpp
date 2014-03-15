@@ -4,7 +4,30 @@
 #include <ostream>
 
 namespace cpdoccore { namespace odf { 
-
+std::wostream & operator << (std::wostream & _Wostream, const presentation_class & _Val)
+{
+	std::wstring res = L"";
+	switch(_Val.get_type())
+	{
+        case presentation_class::title:			_Wostream << L"title" ;	break;
+        case presentation_class::subtitle:		_Wostream << L"subtitle" ;	break;
+		case presentation_class::graphic:		_Wostream << L"graphic" ;	break;
+		case presentation_class::object:		_Wostream << L"object" ;	break;
+		case presentation_class::chart:			_Wostream << L"chart" ;	break;
+		case presentation_class::table:			_Wostream << L"table" ;	break;
+		case presentation_class::orgchart:		_Wostream << L"orgchart" ;	break;
+		case presentation_class::header:		_Wostream << L"header" ;	break;
+		case presentation_class::footer:		_Wostream << L"footer" ;	break;
+		case presentation_class::date_time:		_Wostream << L"date_time" ;	break;
+		case presentation_class::page_number:	_Wostream << L"page_number" ;	break;
+		case presentation_class::page:			_Wostream << L"page" ;	break;
+		case presentation_class::notes:			_Wostream << L"notes" ;	break;
+		case presentation_class::handout:		_Wostream << L"handout" ;	break;
+        case presentation_class::outline:		_Wostream << L"outline" ;	break;
+		case presentation_class::text:			_Wostream << L"text" ;	break;
+	}
+    return _Wostream;
+}
 presentation_class presentation_class::parse(const std::wstring & Str)
 {
     std::wstring tmp = Str;

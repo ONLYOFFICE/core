@@ -25,14 +25,32 @@ bool table_format_properties::create_child_element(const ::std::wstring & Ns, co
     }
 }
 
-void table_format_properties::serialize(std::wostream & _Wostream)
+void table_format_properties::serialize(std::wostream & _Wostream,const wchar_t * ns, const wchar_t * name)
 {
     CP_XML_WRITER(_Wostream)
     {
+		CP_XML_NODE_SIMPLE()
+        {
 
-//		content_->serialize(CP_XML_STREAM());
+			CP_XML_ATTR_OPT(L"style:width", style_width_);
+			CP_XML_ATTR_OPT(L"style:rel-width", style_rel_width_);
+			CP_XML_ATTR_OPT(L"table:align", table_align_);
+			CP_XML_ATTR_OPT(L"style:may-break-between-rows", style_may_break_between_rows_);
+			CP_XML_ATTR_OPT(L"table:border-model", table_border_model_);
+			CP_XML_ATTR_OPT(L"table:display", table_display_);
 
-		if (style_background_image_) style_background_image_->serialize(_Wostream);
+			common_writing_mode_attlist_.serialize(CP_GET_XML_NODE());
+			common_horizontal_margin_attlist_.serialize(CP_GET_XML_NODE());
+			common_vertical_margin_attlist_.serialize(CP_GET_XML_NODE());
+			common_margin_attlist_.serialize(CP_GET_XML_NODE());
+			common_page_number_attlist_.serialize(CP_GET_XML_NODE());
+			common_break_attlist_.serialize(CP_GET_XML_NODE());
+			common_background_color_attlist_.serialize(CP_GET_XML_NODE());
+			common_shadow_attlist_.serialize(CP_GET_XML_NODE());
+			common_keep_with_next_attlist_.serialize(CP_GET_XML_NODE());
+			
+			if (style_background_image_) style_background_image_->serialize(_Wostream);
+		}
 	}
 }
 
@@ -69,13 +87,8 @@ void style_table_properties::create_child_element(const ::std::wstring & Ns, con
 
 void style_table_properties::serialize(std::wostream & _Wostream)
 {
-    CP_XML_WRITER(_Wostream)
-    {
-		CP_XML_NODE_SIMPLE()
-        {
-			table_format_properties_.serialize(_Wostream);
-		}
-	}
+	table_format_properties_.serialize(_Wostream,ns,name);
+
 }
 
 // style-table-column-properties-attlist

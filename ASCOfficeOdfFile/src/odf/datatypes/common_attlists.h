@@ -3,6 +3,7 @@
 #include <iosfwd>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/CPOptional.h>
+#include <cpdoccore/xml/simple_xml_writer.h>
 
 #include "lengthorpercent.h"
 #include "fobreak.h"
@@ -46,6 +47,7 @@ class common_draw_fill_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     void apply_from(const common_draw_fill_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 	_CP_OPT(percent)			draw_opacity_;	
 	_CP_OPT(percent)			draw_image_opacity_;
@@ -69,6 +71,7 @@ class common_horizontal_margin_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     void apply_from(const common_horizontal_margin_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(length_or_percent) fo_margin_left_;
@@ -81,6 +84,7 @@ class common_vertical_margin_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );   
     void apply_from(const common_vertical_margin_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(length_or_percent) fo_margin_top_;
@@ -92,11 +96,9 @@ class common_margin_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_margin_attlist & Other)
-    {
-        // TODO
-        _CP_APPLY_PROP(fo_margin_, Other.fo_margin_);
-    }
+    void apply_from(const common_margin_attlist & Other);
+
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(length_or_percent) fo_margin_;
@@ -109,11 +111,8 @@ class common_break_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_break_attlist & Other)
-    {
-        _CP_APPLY_PROP(fo_break_before_, Other.fo_break_before_);
-        _CP_APPLY_PROP(fo_break_after_, Other.fo_break_after_);
-    }
+    void apply_from(const common_break_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(fo_break) fo_break_before_;
@@ -126,10 +125,8 @@ class common_page_number_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_page_number_attlist & Other)
-    {
-        _CP_APPLY_PROP(style_page_number_, Other.style_page_number_);
-    }
+    void apply_from(const common_page_number_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(unsigned int) style_page_number_;
@@ -141,10 +138,8 @@ class common_background_color_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_background_color_attlist & Other)
-    {
-        _CP_APPLY_PROP(fo_background_color_, Other.fo_background_color_);
-    }
+    void apply_from(const common_background_color_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(background_color) fo_background_color_;
@@ -156,10 +151,8 @@ class common_shadow_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_shadow_attlist & Other)
-    {
-        _CP_APPLY_PROP(style_shadow_, Other.style_shadow_);
-    }
+    void apply_from(const common_shadow_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(shadow_type) style_shadow_;
@@ -171,10 +164,8 @@ class common_keep_with_next_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_keep_with_next_attlist & Other)
-    {
-        _CP_APPLY_PROP(keep_together_, Other.keep_together_);
-    }
+    void apply_from(const common_keep_with_next_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(keep_together) keep_together_;
@@ -186,10 +177,8 @@ class common_writing_mode_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_writing_mode_attlist & Other)
-    {
-        _CP_APPLY_PROP(style_writing_mode_, Other.style_writing_mode_);
-    }
+    void apply_from(const common_writing_mode_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 private:
     _CP_OPT(writing_mode) style_writing_mode_;
@@ -201,13 +190,8 @@ class common_xlink_attlist
 {
 public:
     bool add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_xlink_attlist & Other)
-    {
-        _CP_APPLY_PROP(href_, Other.href_);
-        _CP_APPLY_PROP(type_, Other.type_);
-        _CP_APPLY_PROP(show_, Other.show_);
-        _CP_APPLY_PROP(actuate_, Other.actuate_);
-    }
+    void apply_from(const common_xlink_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(std::wstring)	href_;
@@ -222,16 +206,8 @@ class common_value_and_type_attlist
 {
 public:
     bool add_attributes( const xml::attributes_wc_ptr & Attributes );    
-    void apply_from(const common_value_and_type_attlist & Other)
-    {
-        office_value_type_ = Other.office_value_type_;
-        _CP_APPLY_PROP(office_value_, Other.office_value_);
-        _CP_APPLY_PROP(office_currency_, Other.office_currency_);
-        _CP_APPLY_PROP(office_date_value_, Other.office_date_value_);
-        _CP_APPLY_PROP(office_time_value_, Other.office_time_value_);
-        _CP_APPLY_PROP(office_boolean_value_, Other.office_boolean_value_);
-        _CP_APPLY_PROP(office_string_value_, Other.office_string_value_);
-    }
+    void apply_from(const common_value_and_type_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     std::wstring office_value_type_;
@@ -249,14 +225,8 @@ class common_border_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );    
-    void apply_from(const common_border_attlist & Other)
-    {
-        _CP_APPLY_PROP(fo_border_, Other.fo_border_);
-        _CP_APPLY_PROP(fo_border_top_, Other.fo_border_top_);
-        _CP_APPLY_PROP(fo_border_bottom_, Other.fo_border_bottom_);
-        _CP_APPLY_PROP(fo_border_left_, Other.fo_border_left_);
-        _CP_APPLY_PROP(fo_border_right_, Other.fo_border_right_);
-    }
+    void apply_from(const common_border_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     // fo:border
@@ -281,14 +251,8 @@ class common_border_line_width_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );    
-    void apply_from(const common_border_line_width_attlist & Other)
-    {
-        _CP_APPLY_PROP2(style_border_line_width_);
-        _CP_APPLY_PROP2(style_border_line_width_top_);
-        _CP_APPLY_PROP2(style_border_line_width_bottom_);
-        _CP_APPLY_PROP2(style_border_line_width_left_);
-        _CP_APPLY_PROP2(style_border_line_width_right_);
-    }
+    void apply_from(const common_border_line_width_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     // style:border-line-width
@@ -309,14 +273,8 @@ class common_padding_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );  
-    void apply_from(const common_padding_attlist & Other)
-    {
-        _CP_APPLY_PROP2(fo_padding_);
-        _CP_APPLY_PROP2(fo_padding_top_);
-        _CP_APPLY_PROP2(fo_padding_bottom_);
-        _CP_APPLY_PROP2(fo_padding_left_);
-        _CP_APPLY_PROP2(fo_padding_right_);
-    }
+    void apply_from(const common_padding_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     // fo:padding
@@ -340,10 +298,8 @@ class common_rotation_angle_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );  
-    void apply_from(const common_rotation_angle_attlist & Other)
-    {
-        _CP_APPLY_PROP2(style_rotation_angle_);
-    }
+    void apply_from(const common_rotation_angle_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(unsigned int) style_rotation_angle_;
@@ -356,12 +312,8 @@ class common_num_format_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_num_format_attlist & Other)
-    {
-        if (!Other.style_num_format_.empty())
-            style_num_format_ = Other.style_num_format_;
-        _CP_APPLY_PROP2(style_num_letter_sync_);
-    }
+    void apply_from(const common_num_format_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     std::wstring style_num_format_;
@@ -375,11 +327,8 @@ class common_num_format_prefix_suffix_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_num_format_prefix_suffix_attlist & Other)
-    {
-        _CP_APPLY_PROP2(style_num_prefix_);
-        _CP_APPLY_PROP2(style_num_suffix_);
-    }
+    void apply_from(const common_num_format_prefix_suffix_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(std::wstring) style_num_prefix_;
@@ -393,10 +342,8 @@ class common_text_align
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_text_align & Other)
-    {
-        _CP_APPLY_PROP2(fo_text_align_);
-    }
+    void apply_from(const common_text_align & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(text_align) fo_text_align_;
@@ -409,6 +356,7 @@ class common_draw_size_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     void apply_from(const common_draw_size_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(length) svg_width_;
@@ -421,11 +369,8 @@ class common_text_anchor_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_text_anchor_attlist & Other)
-    {
-        _CP_APPLY_PROP2(type_);
-        _CP_APPLY_PROP2(page_number_);
-    }
+    void apply_from(const common_text_anchor_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(anchor_type)	type_;
@@ -442,6 +387,7 @@ public:
         //_CP_APPLY_PROP2(type_);
         //_CP_APPLY_PROP2(direction_);
     }
+	void serialize(CP_ATTR_NODE){}
 
 public:
  //   _CP_OPT(animation_type)			type_;
@@ -461,6 +407,7 @@ class common_draw_rel_size_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     void apply_from(const common_draw_rel_size_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     common_draw_size_attlist common_draw_size_attlist_;
@@ -474,11 +421,9 @@ class common_vertical_rel_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_vertical_rel_attlist & Other)
-    {
-        _CP_APPLY_PROP2(style_vertical_rel_);
-    }
-
+    void apply_from(const common_vertical_rel_attlist & Other);
+	void serialize(CP_ATTR_NODE);
+	
 public:
     _CP_OPT(vertical_rel) style_vertical_rel_; 
 
@@ -490,10 +435,8 @@ class common_horizontal_rel_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_horizontal_rel_attlist & Other)
-    {
-        _CP_APPLY_PROP2(style_horizontal_rel_);
-    }
+    void apply_from(const common_horizontal_rel_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(horizontal_rel) style_horizontal_rel_;
@@ -506,11 +449,8 @@ class common_vertical_pos_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_vertical_pos_attlist & Other)
-    {
-        _CP_APPLY_PROP2(style_vertical_pos_);
-        _CP_APPLY_PROP2(svg_y_);
-    }
+    void apply_from(const common_vertical_pos_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(vertical_pos) style_vertical_pos_;
@@ -525,11 +465,8 @@ class common_horizontal_pos_attlist
 public:
 
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_horizontal_pos_attlist & Other)
-    {
-        _CP_APPLY_PROP2(style_horizontal_pos_);
-        _CP_APPLY_PROP2(svg_x_);
-    }
+    void apply_from(const common_horizontal_pos_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(horizontal_pos) style_horizontal_pos_;
@@ -543,13 +480,8 @@ class common_draw_style_name_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_draw_style_name_attlist & Other)
-    {
-        _CP_APPLY_PROP2(draw_style_name_);
-        _CP_APPLY_PROP2(draw_class_names_);
-        _CP_APPLY_PROP2(presentation_style_name_);
-        _CP_APPLY_PROP2(presentation_class_names_);
-    }
+    void apply_from(const common_draw_style_name_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(style_ref) draw_style_name_;
@@ -564,10 +496,8 @@ class common_draw_z_index_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_draw_z_index_attlist & Other)
-    {
-        _CP_APPLY_PROP2(draw_z_index_);
-    }
+    void apply_from(const common_draw_z_index_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(int) draw_z_index_;
@@ -578,10 +508,8 @@ class common_draw_id_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_draw_id_attlist & Other)
-    {
-        _CP_APPLY_PROP2(draw_id_);
-    }
+    void apply_from(const common_draw_id_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(std::wstring) draw_id_;
@@ -592,10 +520,8 @@ class common_draw_layer_name_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_draw_layer_name_attlist & Other)
-    {
-        _CP_APPLY_PROP2(draw_layer_);
-    }
+    void apply_from(const common_draw_layer_name_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(std::wstring) draw_layer_;
@@ -606,10 +532,8 @@ class common_draw_transform_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_draw_transform_attlist & Other)
-    {
-        _CP_APPLY_PROP2(draw_transform_);
-    }
+    void apply_from(const common_draw_transform_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(std::wstring) draw_transform_;
@@ -620,10 +544,8 @@ class common_draw_name_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_draw_name_attlist & Other)
-    {
-        _CP_APPLY_PROP2(draw_name_);
-    }
+    void apply_from(const common_draw_name_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(std::wstring) draw_name_;
@@ -634,14 +556,8 @@ class common_text_spreadsheet_shape_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_text_spreadsheet_shape_attlist & Other)
-    {
-        _CP_APPLY_PROP2(table_end_cell_address_);
-        _CP_APPLY_PROP2(table_end_x_);
-        _CP_APPLY_PROP2(table_end_y_);
-        _CP_APPLY_PROP2(table_table_background_);
-        common_text_anchor_attlist_.apply_from(Other.common_text_anchor_attlist_);
-    }
+    void apply_from(const common_text_spreadsheet_shape_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(std::wstring) table_end_cell_address_;
@@ -658,16 +574,8 @@ class common_draw_shape_with_styles_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_draw_shape_with_styles_attlist & Other)
-    {
-        common_draw_z_index_attlist_.apply_from(            Other.common_draw_z_index_attlist_);
-        common_draw_id_attlist_.apply_from(                 Other.common_draw_id_attlist_);
-        common_draw_layer_name_attlist_.apply_from(         Other.common_draw_layer_name_attlist_);
-        common_draw_style_name_attlist_.apply_from(         Other.common_draw_style_name_attlist_);
-        common_draw_transform_attlist_.apply_from(          Other.common_draw_transform_attlist_);
-        common_draw_name_attlist_.apply_from(               Other.common_draw_name_attlist_);
-        common_text_spreadsheet_shape_attlist_.apply_from(  Other.common_text_spreadsheet_shape_attlist_);
-    }
+    void apply_from(const common_draw_shape_with_styles_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     common_draw_z_index_attlist             common_draw_z_index_attlist_;
@@ -685,10 +593,8 @@ class common_draw_text_style_name_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_draw_text_style_name_attlist & Other)
-    {
-        _CP_APPLY_PROP2(draw_text_style_name_);
-    }
+    void apply_from(const common_draw_text_style_name_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(style_ref) draw_text_style_name_;
@@ -699,11 +605,8 @@ class common_draw_position_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_draw_position_attlist & Other)
-    {
-        _CP_APPLY_PROP2(svg_x_);
-        _CP_APPLY_PROP2(svg_y_);
-    }
+    void apply_from(const common_draw_position_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(length) svg_x_;
@@ -716,11 +619,8 @@ class common_draw_shape_with_text_and_styles_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_draw_shape_with_text_and_styles_attlist & Other)
-    {
-        common_draw_shape_with_styles_attlist_.apply_from(common_draw_shape_with_styles_attlist_);
-        common_draw_text_style_name_attlist_.apply_from(common_draw_text_style_name_attlist_);
-    }
+    void apply_from(const common_draw_shape_with_text_and_styles_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     common_draw_shape_with_styles_attlist common_draw_shape_with_styles_attlist_;
@@ -732,12 +632,8 @@ class presentation_shape_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const presentation_shape_attlist & Other)
-    {
-        _CP_APPLY_PROP2(presentation_class_);
-        _CP_APPLY_PROP2(presentation_placeholder_);
-        _CP_APPLY_PROP2(presentation_user_transformed_);
-    }
+    void apply_from(const presentation_shape_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(std::wstring) presentation_class_;
@@ -751,6 +647,7 @@ class common_data_style_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(style_ref)		style_name_;
@@ -779,12 +676,8 @@ class common_presentation_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_presentation_attlist & Other)
-    {
-        _CP_APPLY_PROP(presentation_class_, Other.presentation_class_);
-        _CP_APPLY_PROP(style_name_, Other.style_name_);
-        _CP_APPLY_PROP(presentation_placeholder_, Other.presentation_placeholder_);
-    }
+    void apply_from(const common_presentation_attlist & Other);
+	void serialize(CP_ATTR_NODE);
 
 public:
     _CP_OPT(presentation_class) presentation_class_;
@@ -799,13 +692,8 @@ class common_anim_smil_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_anim_smil_attlist & Other)
-    {
-        //_CP_APPLY_PROP(smil_direction_, Other.smil_direction_);
-        //_CP_APPLY_PROP(smil_subtype_, Other.smil_subtype_);
-        //_CP_APPLY_PROP(smil_type_, Other.smil_type_);
-       // _CP_APPLY_PROP(smil_dur_, Other.smil_dur_);
-    }
+    void apply_from(const common_anim_smil_attlist & Other);
+	void serialize(CP_ATTR_NODE){}
 
 public:
 	//_CP_OPT(std::wstring) smil_direction_;

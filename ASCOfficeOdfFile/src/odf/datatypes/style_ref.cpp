@@ -9,7 +9,6 @@
 namespace cpdoccore { 
 namespace odf { 
 
-
 std::wostream & operator << (std::wostream & _Wostream, const style_ref & _styleRef)
 {
     _Wostream << _styleRef.style_name();

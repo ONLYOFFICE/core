@@ -42,7 +42,7 @@ namespace odf {
 class text_format_properties_content 
 {
 public:
-	void serialize(std::wostream & strm){}
+	void serialize(std::wostream & strm,const wchar_t * ns, const wchar_t * name );
 
     void apply_from(const text_format_properties_content & Other);
     
@@ -280,7 +280,7 @@ public:
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element(office_element_ptr & child){}
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
     const text_format_properties_content & content() const { return text_format_properties_content_; } ;
     text_format_properties_content & content() { return text_format_properties_content_; } ;

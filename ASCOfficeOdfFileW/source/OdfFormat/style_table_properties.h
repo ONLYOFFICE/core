@@ -31,7 +31,7 @@ class table_format_properties
 public:
     bool create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
    
-	void serialize(std::wostream & strm);
+	void serialize(std::wostream & strm ,const wchar_t * ns, const wchar_t * name );
 private:
     optional<length>::Type style_width_;
     optional<percent>::Type style_rel_width_;

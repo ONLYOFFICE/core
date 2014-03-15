@@ -6,6 +6,20 @@
 namespace cpdoccore { 
 namespace odf { 
 
+std::wostream & operator << (std::wostream & _Wostream, const draw_fill & _Val)
+{
+	std::wstring fillType;
+	switch(_Val.get_type())
+	{
+		case draw_fill::none:		_Wostream << L"none" ;break;
+		case draw_fill::hatch:		_Wostream << L"hatch" ;break;
+		case draw_fill::solid:		_Wostream << L"solid" ;break;
+		case draw_fill::gradient:	_Wostream << L"gradient" ;break;
+		case draw_fill::bitmap:		_Wostream << L"bitmap" ;break;
+	}
+
+    return _Wostream;
+}
 //std::wstring draw_fill::get_type_ms()
 //{
 //	std::wstring fillType;

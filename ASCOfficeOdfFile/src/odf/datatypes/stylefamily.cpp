@@ -59,6 +59,14 @@ std::wostream & operator << (std::wostream & _Wostream, const style_family & _Va
     return _Wostream;    
 }
 
+bool style_family::operator == (const style_family & rVal) const
+{
+    const bool res = 
+        get_type() ==  rVal.get_type();   
+
+    return res;
+}
+
 style_family style_family::parse(const std::wstring & Str)
 {
     std::wstring tmp = Str;

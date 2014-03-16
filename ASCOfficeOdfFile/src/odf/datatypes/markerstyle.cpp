@@ -6,6 +6,26 @@
 namespace cpdoccore { 
 namespace odf {
 
+std::wostream & operator << (std::wostream & _Wostream, const marker_style & _Val)
+{
+    //switch(_Val.get_type())
+    //{
+    //case marker_style::
+    //    _Wostream << "none";
+    //    break;
+    //case marker_style::Single:
+    //    _Wostream << "single";
+    //    break;
+    //case marker_style::Double:
+    //    _Wostream << "double";
+    //    break;
+    //default:
+    //    break;
+    //}
+	_Wostream << _Val.get();
+    return _Wostream;
+}
+
 std::wstring marker_style::parse(const std::wstring & Str)
 {
     std::wstring tmp = Str;

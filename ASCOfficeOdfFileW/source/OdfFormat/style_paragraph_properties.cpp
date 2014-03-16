@@ -22,23 +22,83 @@ using xml::xml_char_wc;
 const wchar_t * style_tab_stop::ns = L"style";
 const wchar_t * style_tab_stop::name = L"tab-stop";
 
-
+void style_tab_stop::serialize(std::wostream & strm)
+{
+ 	CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {   
+			CP_XML_ATTR	(L"style:position", style_position_);
+			CP_XML_ATTR_OPT(L"style:type", style_type_);
+			CP_XML_ATTR_OPT(L"style:char", style_char_);
+		    
+			CP_XML_ATTR_OPT(L"style:leader-type", style_leader_style_);
+			CP_XML_ATTR_OPT(L"style:leader-style", style_leader_style_);
+			CP_XML_ATTR_OPT(L"style:leader-width", style_leader_width_);
+			CP_XML_ATTR_OPT(L"style:leader-color", style_leader_color_);
+			CP_XML_ATTR_OPT(L"style:leader-text", style_leader_text_);
+			CP_XML_ATTR_OPT(L"style:leader-text-style", style_leader_text_style_);  
+		}
+	}
+}
 // style:tab-stop
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_tab_stops::ns = L"style";
 const wchar_t * style_tab_stops::name = L"tab-stops";
 
+void style_tab_stops::serialize(std::wostream & strm)
+{
+ 	CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			BOOST_FOREACH(office_element_ptr & elm, style_tab_stops_)
+			{
+				elm->serialize(CP_XML_STREAM());
+			}	
+		}
+	}
+}
 // style:drop-cap
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_drop_cap::ns = L"style";
 const wchar_t * style_drop_cap::name = L"drop-cap";
 
+void style_drop_cap::serialize(std::wostream & strm)
+{
+  	CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR	(L"style:length", style_length_);
+			CP_XML_ATTR	(L"style:lines", style_lines_);
+			CP_XML_ATTR_OPT(L"style:distance", style_distance_);
+			CP_XML_ATTR_OPT(L"style:style-name", style_style_name_);
+		}
+	}
 
+}
 // style:background-image
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_background_image::ns = L"style";
 const wchar_t * style_background_image::name = L"background-image";
 
+void style_background_image::serialize(std::wostream & strm)
+{
+ 	CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"style:repeat", style_repeat_);
+			CP_XML_ATTR_OPT(L"style:position", style_position_);
+			CP_XML_ATTR_OPT(L"filter:name", filter_name_);
+			CP_XML_ATTR_OPT(L"draw:opacity", draw_opacity_);
+
+			if (common_xlink_attlist_)	common_xlink_attlist_->serialize(CP_GET_XML_NODE());
+			if (office_binary_data_)	office_binary_data_->serialize(CP_XML_STREAM());
+		}
+	}
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 void paragraph_format_properties::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name,odf_conversion_context * Context)
 {
@@ -65,17 +125,92 @@ void paragraph_format_properties::create_child_element(const ::std::wstring & Ns
 }
 
 
+void paragraph_format_properties::serialize(std::wostream & _Wostream ,const wchar_t * ns, const wchar_t * name )
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"fo:line-height", fo_line_height_);
+			CP_XML_ATTR_OPT(L"style:line-height-at-least", style_line_height_at_least_);
+			CP_XML_ATTR_OPT(L"style:line-spacing", style_line_spacing_);
+			CP_XML_ATTR_OPT(L"style:font-independent-line-spacing", style_font_independent_line_spacing_);
+			CP_XML_ATTR_OPT(L"fo:text-align", fo_text_align_);
+			CP_XML_ATTR_OPT(L"fo:text-align-last", fo_text_align_last_);
+			CP_XML_ATTR_OPT(L"style:justify-single-word", style_justify_single_word_);
+			CP_XML_ATTR_OPT(L"fo:keep-together", fo_keep_together_);
+			CP_XML_ATTR_OPT(L"fo:widows", fo_widows_);
+			CP_XML_ATTR_OPT(L"fo:orphans", fo_orphans_);
+			CP_XML_ATTR_OPT(L"style:tab-stop-distance", style_tab_stop_distance_);
+			CP_XML_ATTR_OPT(L"fo:hyphenation-keep", fo_hyphenation_keep_);
+			CP_XML_ATTR_OPT(L"fo:hyphenation-ladder-count", fo_hyphenation_ladder_count_);
+			CP_XML_ATTR_OPT(L"style:register-true", style_register_true_);
+			CP_XML_ATTR_OPT(L"fo:margin-left", fo_margin_left_);
+			CP_XML_ATTR_OPT(L"fo:margin-right", fo_margin_right_);
+			CP_XML_ATTR_OPT(L"fo:text-indent", fo_text_indent_);
+			CP_XML_ATTR_OPT(L"style:auto-text-indent", style_auto_text_indent_);
+			CP_XML_ATTR_OPT(L"fo:margin-top", fo_margin_top_);
+			CP_XML_ATTR_OPT(L"fo:margin-bottom", fo_margin_bottom_);
+			CP_XML_ATTR_OPT(L"fo:margin", fo_margin_);
+			CP_XML_ATTR_OPT(L"fo:break-before", fo_break_before_);
+			CP_XML_ATTR_OPT(L"fo:break-after", fo_break_after_);
+			CP_XML_ATTR_OPT(L"fo:background-color", fo_background_color_);
+			CP_XML_ATTR_OPT(L"fo:border", fo_border_);
+			CP_XML_ATTR_OPT(L"fo:border-top", fo_border_top_);
+			CP_XML_ATTR_OPT(L"fo:border-bottom", fo_border_bottom_);
+			CP_XML_ATTR_OPT(L"fo:border-left", fo_border_left_);
+			CP_XML_ATTR_OPT(L"fo:border-right", fo_border_right_);
+			CP_XML_ATTR_OPT(L"style:border-line-width", style_border_line_width_);
+			CP_XML_ATTR_OPT(L"style:border-line-width-top", style_border_line_width_top_);
+			CP_XML_ATTR_OPT(L"style:border-line-width-bottom", style_border_line_width_bottom_);
+			CP_XML_ATTR_OPT(L"style:border-line-width-left", style_border_line_width_left_);
+			CP_XML_ATTR_OPT(L"style:border-line-width-right", style_border_line_width_right_);
+			CP_XML_ATTR_OPT(L"fo:padding", fo_padding_);
+			CP_XML_ATTR_OPT(L"fo:padding-top", fo_padding_top_);
+			CP_XML_ATTR_OPT(L"fo:padding-bottom", fo_padding_bottom_);
+			CP_XML_ATTR_OPT(L"fo:padding-left", fo_padding_left_);
+			CP_XML_ATTR_OPT(L"fo:padding-right", fo_padding_right_);
+			CP_XML_ATTR_OPT(L"style:shadow", style_shadow_);
+			CP_XML_ATTR_OPT(L"fo:keep-with-next", fo_keep_with_next_);
+			CP_XML_ATTR_OPT(L"text:number-lines", text_number_lines_);
+			CP_XML_ATTR_OPT(L"text:line-number", text_line_number_);
+			CP_XML_ATTR_OPT(L"style:text-autospace", style_text_autospace_);
+			CP_XML_ATTR_OPT(L"style:punctuation-wrap", style_punctuation_wrap_);
+			CP_XML_ATTR_OPT(L"style:line-break", style_line_break_);
+			CP_XML_ATTR_OPT(L"style:vertical-align", style_vertical_align_);
+			CP_XML_ATTR_OPT(L"style:writing-mode", style_writing_mode_);
+			CP_XML_ATTR_OPT(L"style:writing-mode-automatic", style_writing_mode_automatic_);
+			CP_XML_ATTR_OPT(L"style:snap-to-layout-grid", style_snap_to_layout_grid_);
+		
+			//_CP_OPT(std::wstring) style_page_number_str_;
+			//CP_XML_ATTR_OPT(L"style:page-number", style_page_number_str_);
+
+			//if (style_page_number_str_)
+			//{
+			//	int res =0;
+			//	if ((res=style_page_number_str_.get().find(L"auto"))<0)
+			//		style_page_number_=  boost::lexical_cast<int>(style_page_number_str_.get());
+			//}
+
+			CP_XML_ATTR_OPT(L"style:background-transparency", style_background_transparency_);
+			CP_XML_ATTR_OPT(L"style:join_border", style_join_border_);
+		}
+	}
+}
+
 // style:paragraph-properties
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_paragraph_properties::ns = L"style";
 const wchar_t * style_paragraph_properties::name = L"paragraph-properties";
 
-
 void style_paragraph_properties::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     style_paragraph_properties_content_.create_child_element(Ns, Name, getContext());    
 }
-
+void style_paragraph_properties::serialize(std::wostream & strm)
+{
+	 style_paragraph_properties_content_.serialize(strm,ns,name);
+}
 void paragraph_format_properties::apply_from(const paragraph_format_properties & Other)
 {
     apply_line_width(fo_line_height_, Other.fo_line_height_);

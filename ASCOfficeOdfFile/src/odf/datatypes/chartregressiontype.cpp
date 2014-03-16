@@ -5,6 +5,19 @@
 
 namespace cpdoccore { namespace odf { 
 
+std::wostream & operator << (std::wostream & _Wostream, const chart_regression_type & _Val)
+{
+	switch(_Val.get_type())
+	{
+	case   chart_regression_type::none: _Wostream <<  L"none"; break;
+	case   chart_regression_type::linear: _Wostream <<  L"linear"; break;
+	case   chart_regression_type::logarithmic : _Wostream <<  L"logarithmic"; break;
+	case   chart_regression_type::exponential : _Wostream <<  L"exponential"; break;
+	case   chart_regression_type::power : _Wostream <<  L"power"; break;
+	}
+    return _Wostream;    
+}
+
 chart_regression_type chart_regression_type::parse(const std::wstring & Str)
 {
     std::wstring tmp = Str;

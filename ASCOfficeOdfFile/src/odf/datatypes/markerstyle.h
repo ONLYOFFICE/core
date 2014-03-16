@@ -26,6 +26,7 @@ private:
     std::wstring style_;
 
 };
+	std::wostream & operator << (std::wostream & _Wostream, const marker_style & _Val);
 
 } 
 

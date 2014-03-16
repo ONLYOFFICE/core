@@ -36,6 +36,7 @@ private:
     type type_;
 
 };
+	std::wostream & operator << (std::wostream & _Wostream, const chart_regression_type & _Val);
 
 } 
 

@@ -38,6 +38,7 @@ private:
     type type_;
 
 };
+	std::wostream & operator << (std::wostream & _Wostream, const chart_label_arrangement & _Val);
 
 } 
 

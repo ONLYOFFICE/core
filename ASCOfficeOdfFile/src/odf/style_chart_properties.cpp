@@ -114,6 +114,61 @@ void style_chart_properties::add_attributes( const xml::attributes_wc_ptr & Attr
 
 	common_rotation_angle_attlist_.add_attributes(Attributes);
 
+	//CP_APPLY_ATTR(L"chart:scale-text",			chart_scale_text_ );	
+ //   CP_APPLY_ATTR(L"chart:three-dimensional",	chart_three_dimensional_ );
+	//CP_APPLY_ATTR(L"chart:vertical",			chart_vertical_ );
+	//CP_APPLY_ATTR(L"chart:stacked",				chart_stacked_ );
+	//CP_APPLY_ATTR(L"chart:visible",				chart_visible_ );
+	//CP_APPLY_ATTR(L"chart:logarithmic",			chart_logarithmic_ );	
+	//CP_APPLY_ATTR(L"chart:percentage",			chart_percentage_ );		
+	//CP_APPLY_ATTR(L"chart:connect-bars",		chart_connect_bars_ );		
+	//CP_APPLY_ATTR(L"chart:deep",				chart_deep_ );		
+	//CP_APPLY_ATTR(L"chart:tick-marks-major-outer",chart_tick_marks_major_outer_ );	
+	//CP_APPLY_ATTR(L"chart:tick-marks-minor-inner",chart_tick_marks_minor_inner_ );	
+	//CP_APPLY_ATTR(L"chart:tick-marks-minor-outer",chart_marks_minor_outer_ );	
+	//CP_APPLY_ATTR(L"chart:lines",				chart_lines_ );		
+	//CP_APPLY_ATTR(L"chart:display-label",		chart_display_label_ );		
+	//CP_APPLY_ATTR(L"chart:reverse-direction",	chart_reverse_direction_ );		
+	//CP_APPLY_ATTR(L"text:line-break",			chart_line_break_ );		
+	//CP_APPLY_ATTR(L"chart:text-overlap",		chart_text_overlap_ );		
+	//CP_APPLY_ATTR(L"chart:link-data-style-to-source",chart_link-data-style-to-source_ );
+	//CP_APPLY_ATTR(L"chart:data-label-symbol",	chart_data-label-symbol_ );	
+	//CP_APPLY_ATTR(L"chart:data-label-text",		chart_data-label-text_ );	
+	//CP_APPLY_ATTR(L"chart:mean-value",			chart_mean-value_ );	
+	//CP_APPLY_ATTR(L"chart:error-upper-indicator",chart_error_upper_indicator_ );	
+	//CP_APPLY_ATTR(L"chart:error-lower-indicator",chart_error_lower_indicator_ );
+
+	//CP_APPLY_ATTR(L"chart:symbol-type",			chart_symbol_type_);	
+	//CP_APPLY_ATTR(L"chart:symbol-name",			chart_symbol_name_);	
+	//
+	//CP_APPLY_ATTR(L"chart:gap-width",			chart_gap_width_);
+	//CP_APPLY_ATTR(L"chart:overlap",				chart_overlap_);
+	//CP_APPLY_ATTR(L"chart:spline-order",		chart_spline_order_);
+	//CP_APPLY_ATTR(L"chart:spline-resolution",	chart_spline_resolution_); 
+	//CP_APPLY_ATTR(L"chart:pie-offset",			chart_pie_offset_);	
+	//CP_APPLY_ATTR(L"chart:interval-minor-divisor",chart_interval_minor_divisor_); 
+	//
+	//CP_APPLY_ATTR(L"chart:maximum",				chart_maximum_);
+	//CP_APPLY_ATTR(L"chart:minimum",				chart_minimum_); 
+	//CP_APPLY_ATTR(L"chart:origin",				chart_origin_); 
+	//CP_APPLY_ATTR(L"chart:interval-major",		chart_interval_major_); 
+	//CP_APPLY_ATTR(L"chart:error-percentage",	chart_error_percentage_); 
+	//CP_APPLY_ATTR(L"chart:error-margin",		chart_error_margin_); 
+	//CP_APPLY_ATTR(L"chart:error-upper-limit",	chart_error_upper_limit_);   
+
+	//CP_APPLY_ATTR(L"chart:symbol-width",		chart_symbol_width_);
+	//CP_APPLY_ATTR(L"chart:symbol-height",		chart_symbol_height_); 
+
+ //   CP_APPLY_ATTR(L"chart:interpolation",		chart_interpolation_);  
+	//CP_APPLY_ATTR(L"chart:solid-type",			chart_solid_type_);	    
+	//CP_APPLY_ATTR(L"chart:label-arrangement",	chart_label_arrangement_); 
+	//CP_APPLY_ATTR(L"style:direction",			style_direction_); 
+	//CP_APPLY_ATTR(L"chart:series-source",		chart_series_source_); 
+	//CP_APPLY_ATTR(L"chart:regression-type",		chart_regression_type_); 	
+	//CP_APPLY_ATTR(L"chart:data-label-number",	chart_data_label_number_); 
+	//CP_APPLY_ATTR(L"chart:error-category",		chart_error_category_); 
+
+	//common_rotation_angle_attlist_.add_attributes(Attributes);
 }
 
 void style_chart_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)

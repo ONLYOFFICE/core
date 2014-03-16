@@ -83,11 +83,14 @@ private:
 
 };
 
+	std::wostream & operator << (std::wostream & _Wostream, const chart_symbol_type & _Val);
+	std::wostream & operator << (std::wostream & _Wostream, const chart_symbol_name & _Val);
 
 } 
 
 APPLY_PARSE_XML_ATTRIBUTES(odf::chart_symbol_type);
 APPLY_PARSE_XML_ATTRIBUTES(odf::chart_symbol_name);
+
 
 }
 

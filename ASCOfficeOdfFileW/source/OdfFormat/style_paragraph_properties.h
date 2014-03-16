@@ -60,7 +60,7 @@ public:
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element(office_element_ptr & child){}
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
     length style_position_;
     _CP_OPT(style_type) style_type_;
@@ -94,7 +94,7 @@ public:
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element(office_element_ptr & child){}
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
     office_element_ptr_array style_tab_stops_;
 };
@@ -115,7 +115,7 @@ public:
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element(office_element_ptr & child){}
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
     
 	drop_cap_length style_length_;
@@ -143,7 +143,7 @@ public:
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element(office_element_ptr & child){}
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
     
     _CP_OPT(style_repeat) style_repeat_;
     _CP_OPT(style_position) style_position_;
@@ -164,7 +164,7 @@ public:
 	void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name,odf_conversion_context * Context);
 	void add_child_element(office_element_ptr & child){}
 
-	void serialize(std::wostream & strm){}
+	void serialize(std::wostream & strm, const wchar_t * ns, const wchar_t * name );
 
     void apply_from(const paragraph_format_properties & Other);
 
@@ -351,7 +351,7 @@ public:
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element(office_element_ptr & child){}
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
     const paragraph_format_properties & content() const { return style_paragraph_properties_content_; }
 

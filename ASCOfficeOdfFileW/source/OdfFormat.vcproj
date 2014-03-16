@@ -967,6 +967,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OdfFormat\style_chart_properties.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\style_chart_properties.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\style_graphic_properties.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\style_graphic_properties.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\style_map.cpp"
 				>
 			</File>

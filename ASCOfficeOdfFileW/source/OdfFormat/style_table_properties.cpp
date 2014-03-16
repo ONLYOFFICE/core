@@ -54,26 +54,6 @@ void table_format_properties::serialize(std::wostream & _Wostream,const wchar_t 
 	}
 }
 
-/*
-
-[ ] w:tblStyle              Referenced Table Style
-[ ] w:tblpPr                Floating Table Positioning
-[ ] w:tblOverlap            Floating Table Allows Other Tables to Overlap
-[ ] w:bidiVisual            Visually Right to Left Table
-[ ] w:tblStyleRowBandSize   Number of Rows in Row Band
-[ ] w:tblStyleColBandSize   Number of Columns in Column Band
-[x] w:tblW                  Preferred Table Width
-[x] w:jc                    Table Alignment
-[ ] w:tblCellSpacing        Table Cell Spacing Default
-[ ] w:tblInd                Table Indent from Leading Margin
-[ ] w:tblBorders            Table Borders
-[ ] w:shd                   Table Shading
-[ ] w:tblLayout             Table Layout
-[ ] w:tblCellMar            Table Cell Margin Defaults
-[ ] w:tblLook               Table Style Conditional Formatting Settings
-[ ] w:tblPrChange           Revision Information for Table Properties
-
-*/
 // style:table-properties
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_table_properties::ns = L"style";
@@ -93,7 +73,19 @@ void style_table_properties::serialize(std::wostream & _Wostream)
 
 // style-table-column-properties-attlist
 //////////////////////////////////////////////////////////////////////////////////////////////////
-
+void style_table_column_properties_attlist::serialize(std::wostream & _Wostream,const wchar_t * ns, const wchar_t * name )
+{
+    CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"style:column-width", style_column_width_);
+			CP_XML_ATTR_OPT(L"style:rel-column-width", style_rel_column_width_);
+			CP_XML_ATTR_OPT(L"style:use-optimal-column-width", style_use_optimal_column_width_);
+			common_break_attlist_.serialize(CP_GET_XML_NODE());
+		}
+	}
+}
 // style:table-column-properties
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_table_column_properties::ns = L"style";
@@ -103,7 +95,10 @@ void style_table_column_properties::create_child_element(  const ::std::wstring 
 {
     CP_NOT_APPLICABLE_ELM();
 }
-
+void style_table_column_properties::serialize(std::wostream & strm)
+{
+    style_table_column_properties_attlist_.serialize(strm,ns,name);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -111,8 +106,6 @@ void style_table_column_properties::create_child_element(  const ::std::wstring 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_table_cell_properties::ns = L"style";
 const wchar_t * style_table_cell_properties::name = L"table-cell-properties";
-
-
 
 void style_table_cell_properties::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
@@ -126,29 +119,45 @@ void style_table_cell_properties::create_child_element( const ::std::wstring & N
     }
 }
 
-// style-table-row-properties-attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-//  style:table-row-properties
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * style_table_row_properties::ns = L"style";
-const wchar_t * style_table_row_properties::name = L"table-row-properties";
-
-
-void style_table_row_properties::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_table_cell_properties::serialize(std::wostream & strm)
 {
-    if (L"style" == Ns && L"background-image" == Name)
-    {
-        CP_CREATE_ELEMENT(style_background_image_);        
-    }
-    else
-    {
-        CP_NOT_APPLICABLE_ELM();        
-    }
+	style_table_cell_properties_attlist_.serialize(strm,ns,name);
+	if (style_background_image_)style_background_image_->serialize(strm);
 }
 
-/////
-
+void style_table_cell_properties_attlist::serialize(std::wostream & _Wostream ,const wchar_t * ns, const wchar_t * name )
+{
+    CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"style:vertical-align", style_vertical_align_);
+			CP_XML_ATTR_OPT(L"style:text-align-source", style_text_align_source_);
+			CP_XML_ATTR_OPT(L"style:direction", style_direction_);
+			CP_XML_ATTR_OPT(L"style:glyph-orientation-vertical", style_glyph_orientation_vertical_);
+		    
+			common_shadow_attlist_.serialize(CP_GET_XML_NODE());
+			common_background_color_attlist_.serialize(CP_GET_XML_NODE());
+			common_border_attlist_.serialize(CP_GET_XML_NODE());
+			common_border_line_width_attlist_.serialize(CP_GET_XML_NODE());
+		    
+			CP_XML_ATTR_OPT(L"style:diagonal-tl-br", style_diagonal_tl_br_);
+			CP_XML_ATTR_OPT(L"style:diagonal-tl-br-widths", style_diagonal_tl_br_widths_);
+			CP_XML_ATTR_OPT(L"style:diagonal-bl-tr", style_diagonal_bl_tr_);
+			CP_XML_ATTR_OPT(L"style:diagonal-bl-tr-widths", style_diagonal_bl_tr_widths_);
+			common_padding_attlist_.serialize(CP_GET_XML_NODE());
+			common_rotation_angle_attlist_.serialize(CP_GET_XML_NODE());
+		   
+			CP_XML_ATTR_OPT(L"fo:wrap-option", fo_wrap_option_);
+			CP_XML_ATTR_OPT(L"style:rotation-align", style_rotation_align_);    
+			CP_XML_ATTR_OPT(L"style:cell-protect", style_cell_protect_);
+			CP_XML_ATTR_OPT(L"style:print-content", style_print_content_);
+			CP_XML_ATTR_OPT(L"style:decimal-places", style_decimal_places_);
+			CP_XML_ATTR_OPT(L"style:repeat-content", style_repeat_content_);
+			CP_XML_ATTR_OPT(L"style:shrink-to-fit", style_shrink_to_fit_);
+		}
+	}
+}
 void style_table_cell_properties_attlist::apply_from(const style_table_cell_properties_attlist & Other)
 {
      _CP_APPLY_PROP(style_vertical_align_, Other.style_vertical_align_);
@@ -177,6 +186,46 @@ void style_table_cell_properties_attlist::apply_from(const style_table_cell_prop
     _CP_APPLY_PROP(style_repeat_content_, Other.style_repeat_content_);
     _CP_APPLY_PROP(style_shrink_to_fit_, Other.style_shrink_to_fit_);    
 }
+// style-table-row-properties-attlist
+//////////////////////////////////////////////////////////////////////////////////////////////////
+void style_table_row_properties_attlist::serialize(std::wostream & _Wostream ,const wchar_t * ns, const wchar_t * name )
+{
+    CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"style:row-height", style_row_height_);
+			CP_XML_ATTR_OPT(L"style:min-row-height", style_min_row_height_);
+			CP_XML_ATTR_OPT(L"style:use-optimal-row-height", style_use_optimal_row_height_);
+			common_background_color_attlist_.serialize(CP_GET_XML_NODE());
+			common_break_attlist_.serialize(CP_GET_XML_NODE());
+			CP_XML_ATTR_OPT(L"fo:keep-together", fo_keep_together_);     
+		}
+	}
+}
+//  style:table-row-properties
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * style_table_row_properties::ns = L"style";
+const wchar_t * style_table_row_properties::name = L"table-row-properties";
+
+
+void style_table_row_properties::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+{
+    if (L"style" == Ns && L"background-image" == Name)
+    {
+        CP_CREATE_ELEMENT(style_background_image_);        
+    }
+    else
+    {
+        CP_NOT_APPLICABLE_ELM();        
+    }
+}
+void style_table_row_properties::serialize(std::wostream & strm)
+{
+	style_table_row_properties_attlist_.serialize(strm,ns,name);
+	if (style_background_image_)style_background_image_->serialize(strm);
+}
+/////
 
 }
 }

@@ -30,6 +30,7 @@ public:
 private:
     type type_;
 };
+	std::wostream & operator << (std::wostream & _Wostream, const chart_data_label_number & _Val);
 
 } 
 

@@ -279,7 +279,7 @@ void styles::add_child_element(office_element_ptr & child, odf_conversion_contex
 		break; 
 	}
 }
-void styles::serialize(std::wostream & strm)
+void styles::serialize(std::wostream & strm)//content from defferent element
 {
 	BOOST_FOREACH(office_element_ptr & elm, number_styles_)
     {

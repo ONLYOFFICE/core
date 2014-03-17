@@ -18,6 +18,7 @@ namespace odf {
 
 class ods_conversion_context;
 class table_table;
+class style;
 
 class ods_table_state
 {
@@ -25,6 +26,9 @@ public:
 	ods_table_state(ods_conversion_context & Context, office_element_ptr & elm);
 
 	void set_name(std::wstring);
+	void set_table_style(office_element_ptr & style);
+
+
  //   std::wstring current_style() const { return table_style_; }
  //   void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName);
  //   void start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
@@ -68,8 +72,6 @@ public:
  //   void serialize_hyperlinks(std::wostream & _Wostream);
  //   void dump_rels_hyperlinks(rels & Rels);
 
-    std::wstring get_current_table_name() const { return tableName_; }
-
 	//struct _group_row
 	//{
 	//	bool enabled;
@@ -81,7 +83,8 @@ public:
 private:
     ods_conversion_context & context_;   
 	
-	table_table*	office_element_;
+	table_table*	office_table_;
+	style*			office_table_style_;
 
 	//std::wstring table_style_;
 	std::wstring tableName_;

@@ -171,13 +171,14 @@ odf::office_element_ptr XlsxConverter::convert(OOX::Spreadsheet::CXfs * cell_sty
 {
 	OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->GetStyles();
 
-	int id_parent	= cell_style->m_oXfId->GetValue(); //parent 
-	int fill_id		= cell_style->m_oFillId->GetValue();
-	int numFmt_id	= cell_style->m_oNumFmtId->GetValue();
-	int font_id		= cell_style->m_oFontId->GetValue();
-	int border_id	= cell_style->m_oBorderId->GetValue();
+	int id_parent	= cell_style->m_oXfId.GetPointer()		? cell_style->m_oXfId->GetValue()		: -1; //parent 
+	int fill_id		= cell_style->m_oFillId.GetPointer()	? cell_style->m_oFillId->GetValue()		: -1;
+	int numFmt_id	= cell_style->m_oNumFmtId.GetPointer()	? cell_style->m_oNumFmtId->GetValue()	: -1;
+	int font_id		= cell_style->m_oFontId.GetPointer()	? cell_style->m_oFontId->GetValue()		: -1;
+	int border_id	= cell_style->m_oBorderId.GetPointer()	? cell_style->m_oBorderId->GetValue()	: -1;
 		
-	odf::office_element_ptr elm_style = ods_context->styles_context().add_or_find(L"" ,odf::style_family::TableCell, true, oox_id); 
+	std::wstring cell_style_name_new = L"ce" + boost::lexical_cast<std::wstring>(oox_id+1);//ваще то потом нужно искать свободнй номер
+	odf::office_element_ptr elm_style = ods_context->styles_context().add_or_find(cell_style_name_new ,odf::style_family::TableCell, true, oox_id); 
 				//им€ дл€ стил€ cгенеритс€ если его нет - поиск и доступ (соответствие) - по номеры oox
 
 	convert(xlsx_styles->m_oFonts->m_arrItems[font_id], elm_style);

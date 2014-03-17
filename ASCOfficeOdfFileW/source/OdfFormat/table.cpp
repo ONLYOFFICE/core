@@ -91,7 +91,7 @@ void table_table::serialize(std::wostream & _Wostream)
 const wchar_t * table_table_column::ns = L"table";
 const wchar_t * table_table_column::name = L"table-column";
 
-void table_table_column::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void table_table_column::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -144,11 +144,12 @@ void table_columns::create_child_element( const ::std::wstring & Ns, const ::std
 
 // table-columns-no-group
 //////////////////////////////////////////////////////////////////////////////////////////////////
-table_columns_no_group::table_columns_no_group() : was_header_(false) 
+table_columns_no_group::table_columns_no_group(odf_conversion_context * _Context) : was_header_(false) 
 {
+	Context = _Context;
 };
 
-void table_columns_no_group::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void table_columns_no_group::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     if (CP_CHECK_NAME(L"table", L"table-columns") || CP_CHECK_NAME(L"table", L"table-column"))
     {
@@ -167,9 +168,9 @@ void table_columns_no_group::create_child_element(  const ::std::wstring & Ns, c
         not_applicable_element(L"table-columns-no-group", Ns, Name);
 }
 
-_CP_PTR(table_columns_no_group) table_columns_no_group::create()
+_CP_PTR(table_columns_no_group) table_columns_no_group::create(odf_conversion_context * Context)
 {
-    return boost::make_shared<table_columns_no_group>();
+    return boost::make_shared<table_columns_no_group>(Context);
 }
 
 
@@ -203,8 +204,9 @@ void table_columns_and_groups::create_child_element(const ::std::wstring & Ns, c
         CP_CHECK_NAME(L"table", L"table-column") ||
         CP_CHECK_NAME(L"table", L"table-header-columns"))
     {
-        _CP_PTR(table_columns_no_group) elm = table_columns_no_group::create();
-        elm->create_child_element(Ns, Name, Context);
+        _CP_PTR(table_columns_no_group) elm = table_columns_no_group::create(Context);
+
+        elm->create_child_element(Ns, Name);
         content_.push_back(elm);
     }
     else
@@ -313,16 +315,17 @@ void table_rows::create_child_element(const ::std::wstring & Ns, const ::std::ws
 const wchar_t * table_rows_no_group::ns = L"table";
 const wchar_t * table_rows_no_group::name = L"table-rows-no-group";
 
-_CP_PTR(table_rows_no_group) table_rows_no_group::create()
+_CP_PTR(table_rows_no_group) table_rows_no_group::create(odf_conversion_context * Context)
 {
-    return boost::make_shared<table_rows_no_group>();
+    return boost::make_shared<table_rows_no_group>(Context);
 }
 
-table_rows_no_group::table_rows_no_group() : was_header_(false)
+table_rows_no_group::table_rows_no_group(odf_conversion_context * _Context) : was_header_(false)
 {
+	Context = _Context;
 };
 
-void table_rows_no_group::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void table_rows_no_group::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     if (CP_CHECK_NAME(L"table", L"table-rows") || CP_CHECK_NAME(L"table", L"table-row"))
     {
@@ -355,8 +358,8 @@ void table_rows_and_groups::create_child_element( const ::std::wstring & Ns, con
     } 
     else if (L"table" == Ns && (L"table-rows" == Name || L"table-row" == Name || L"table-header-rows" == Name) )
     {
-        _CP_PTR(table_rows_no_group) elm = table_rows_no_group::create();
-        elm->create_child_element(Ns, Name, Context);
+        _CP_PTR(table_rows_no_group) elm = table_rows_no_group::create(Context);
+        elm->create_child_element(Ns, Name);
         content_.push_back(elm);
    }
     else

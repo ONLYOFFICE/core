@@ -42,6 +42,8 @@ public:
     const odf_conversion_context * getContext() const { return context_; }
 
 	virtual void add_child_element(office_element_ptr & child) = 0;
+	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name)=0;
+
 
 	void set_root(bool root){is_root_ = root;}
 ////////////////////////

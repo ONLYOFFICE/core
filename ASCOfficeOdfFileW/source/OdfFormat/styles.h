@@ -58,6 +58,7 @@ class style_content : noncopyable
 public:
     void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
     void add_child_element(office_element_ptr & child);
+	void serialize(std::wostream & strm);
   
     style_text_properties *			get_style_text_properties() const;
     style_paragraph_properties *	get_style_paragraph_properties() const;
@@ -104,7 +105,7 @@ public:
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
     style_family style_family_;
 
@@ -261,7 +262,7 @@ public:
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
     // attr
     std::wstring style_name_;

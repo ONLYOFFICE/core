@@ -149,22 +149,24 @@ public:
  	CPDOCCORE_DEFINE_VISITABLE();
 
 public:
-    table_columns_no_group();
+    table_columns_no_group(odf_conversion_context * _Context);
 
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
+	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name/*, odf_conversion_context * Context*/);
 	virtual void add_child_element( office_element_ptr & child_element){}
 
 	virtual void serialize(std::wostream & _Wostream){}
 
-    static _CP_PTR(table_columns_no_group) create();
-    
-public:
+    static _CP_PTR(table_columns_no_group) create(odf_conversion_context * Context);
+
     table_columns table_columns_1_;
     
     bool was_header_;
     office_element_ptr table_table_header_columns_;
 
     table_columns table_columns_2_;
+
+private:
+	odf_conversion_context * Context;
     
 };
 
@@ -210,7 +212,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
  
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
+	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream){}
@@ -480,14 +482,14 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTableTableRowNoGroup;
 
-    static _CP_PTR(table_rows_no_group) create();
+    static _CP_PTR(table_rows_no_group) create(odf_conversion_context * Context);
 
     CPDOCCORE_DEFINE_VISITABLE();
 
 public:
-    table_rows_no_group();
+    table_rows_no_group(odf_conversion_context * Context);
 
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
+	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream){}
@@ -499,6 +501,8 @@ public:
     office_element_ptr table_table_header_rows_;
 
     table_rows table_rows_2_;
+private:
+	odf_conversion_context * Context;
     
 };
 

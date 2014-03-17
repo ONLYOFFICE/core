@@ -29,8 +29,7 @@ public:
 	void process_master(office_element_ptr root );
 	void process_office(office_element_ptr root );
 
-    //std::wstring get_current_table_name() const;
-    
+     
     //void start_cell(const std::wstring & formula,
     //                size_t columnsSpanned,
     //                size_t rowsSpanned);

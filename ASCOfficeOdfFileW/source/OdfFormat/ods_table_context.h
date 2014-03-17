@@ -23,8 +23,6 @@ public:
     void start_table(office_element_ptr & elm,std::wstring & name);
     void end_table();
 
-    //std::wstring get_current_table_name() const;
-    
     //void start_cell(const std::wstring & formula,
     //                size_t columnsSpanned,
     //                size_t rowsSpanned);

@@ -9,9 +9,9 @@ std::wostream & operator << (std::wostream & _Wostream, const chart_label_arrang
 {
 	switch(_Val.get_type())
 	{
-	case   chart_label_arrangement::side_by_side: _Wostream <<  L"side_by_side"; break;
-	case   chart_label_arrangement::stagger_even: _Wostream <<  L"stagger_even"; break;
-	case   chart_label_arrangement::stagger_odd : _Wostream <<  L"stagger_odd"; break;
+		case   chart_label_arrangement::side_by_side: _Wostream <<  L"side_by_side"; break;
+		case   chart_label_arrangement::stagger_even: _Wostream <<  L"stagger_even"; break;
+		case   chart_label_arrangement::stagger_odd : _Wostream <<  L"stagger_odd"; break;
 	}
     return _Wostream;    
 }

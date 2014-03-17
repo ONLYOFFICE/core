@@ -10,6 +10,11 @@
 
 #include "styles.h"
 
+#include "style_table_properties.h"
+#include "style_text_properties.h"
+#include "style_paragraph_properties.h"
+#include "style_graphic_properties.h"
+
 
 using namespace cpdoccore;
 
@@ -141,50 +146,113 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf::office_element_
 	
 	odf::style_text_properties * text_properties = style->style_content_.get_style_text_properties();//если элемента нет - создасться
 
- 	if (text_properties == NULL)
-	{
-		style->create_child_element(L"style", L"text-properties");
-		text_properties = style->style_content_.get_style_text_properties();
-		if (text_properties == NULL) return;
-	}
+ 	if (text_properties == NULL)return;
 
 
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CFill * fill, odf::office_element_ptr  & odf_style_)
 {
+	if (fill == NULL)return;
 	odf::style* style = dynamic_cast<odf::style*>(odf_style_.get());
 	if (!style)return;
 
 	odf::style_table_cell_properties * cell_properties = style->style_content_.get_style_table_cell_properties();//если элемента нет - создасться
 
- 	if (cell_properties == NULL)
+ 	if (cell_properties == NULL)return;
+
+	if (fill->m_oGradientFill.IsInit())
 	{
-		style->create_child_element(L"style", L"table-cell-properties");
-		cell_properties = style->style_content_.get_style_table_cell_properties();
-		if (cell_properties == NULL) return;
 	}
+	if (fill->m_oPatternFill.IsInit())
+	{//solid, gradient
+		if (fill->m_oPatternFill->m_oPatternType.IsInit())
+		{}
+		if (fill->m_oPatternFill->m_oBgColor.IsInit())
+		{
+			convert(fill->m_oPatternFill->m_oBgColor.GetPointer(), 
+				cell_properties->style_table_cell_properties_attlist_.common_background_color_attlist_.fo_background_color_);
+		}
+		if (fill->m_oPatternFill->m_oFgColor.IsInit())
+		{}
+
+	}
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::background_color) & odf_bckgrd_color)
+{
+	if (!color)return;
+
+	_CP_OPT(odf::color) odf_color;
+	convert(color, odf_color);
+
+	if (odf_color)odf_bckgrd_color = odf::background_color(odf_color.get());
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CNumFmt *numFmt, odf::office_element_ptr  & odf_style_)
+{
+	if (!numFmt)return;
 
 
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CBorder *border, odf::office_element_ptr  & odf_style_)
+{
+	if (!border)return;
+
+}
+
+void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color) & odf_color)
+{
+	if (!color)return;
+
+	if(color->m_oRgb.IsInit())
+	{
+		odf_color = odf::color(std::wstring(L"#") + string2std_string(color->m_oRgb->ToString()));
+	}
+	if(color->m_oThemeColor.IsInit())
+	{
+	}
+	if(color->m_oIndexed.IsInit())
+	{
+		OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->GetStyles();
+		
+		int ind = color->m_oIndexed->GetValue();
+
+		SimpleTypes::Spreadsheet::CHexColor *oRgbColor=NULL;
+		if(xlsx_styles->m_oColors.IsInit() && xlsx_styles->m_oColors->m_oIndexedColors.IsInit())
+		{
+			if (xlsx_styles->m_oColors->m_oIndexedColors->m_arrItems[ind])
+				oRgbColor = new SimpleTypes::Spreadsheet::CHexColor(xlsx_styles->m_oColors->m_oIndexedColors->m_arrItems[ind]->m_oRgb.get());
+		}
+		else
+		{
+			unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
+			if(OOX::Spreadsheet::CIndexedColors::GetDefaultRGBAByIndex(ind, ucR, ucG, ucB, ucA))
+				oRgbColor = new SimpleTypes::Spreadsheet::CHexColor(ucR,ucG,ucB,ucA);
+		}
+		if (oRgbColor)
+		{
+			odf_color = odf::color(std::wstring(L"#") + string2std_string(oRgbColor->ToString()));
+			delete oRgbColor;
+		}
+	}
 }
 
 odf::office_element_ptr XlsxConverter::convert(OOX::Spreadsheet::CXfs * cell_style, int oox_id)
 {
 	OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->GetStyles();
 
-	int id_parent	= cell_style->m_oXfId.GetPointer()		? cell_style->m_oXfId->GetValue()		: -1; //parent 
-	int fill_id		= cell_style->m_oFillId.GetPointer()	? cell_style->m_oFillId->GetValue()		: -1;
-	int numFmt_id	= cell_style->m_oNumFmtId.GetPointer()	? cell_style->m_oNumFmtId->GetValue()	: -1;
-	int font_id		= cell_style->m_oFontId.GetPointer()	? cell_style->m_oFontId->GetValue()		: -1;
-	int border_id	= cell_style->m_oBorderId.GetPointer()	? cell_style->m_oBorderId->GetValue()	: -1;
+	int id_parent	= cell_style->m_oXfId.IsInit()		? cell_style->m_oXfId->GetValue()		: -1; //parent 
+	int fill_id		= cell_style->m_oFillId.IsInit()	? cell_style->m_oFillId->GetValue()		: -1;
+	int numFmt_id	= cell_style->m_oNumFmtId.IsInit()	? cell_style->m_oNumFmtId->GetValue()	: -1;
+	int font_id		= cell_style->m_oFontId.IsInit()	? cell_style->m_oFontId->GetValue()		: -1;
+	int border_id	= cell_style->m_oBorderId.IsInit()	? cell_style->m_oBorderId->GetValue()	: -1;
 		
 	std::wstring cell_style_name_new = L"ce" + boost::lexical_cast<std::wstring>(oox_id+1);//ваще то потом нужно искать свободнй номер
 	odf::office_element_ptr elm_style = ods_context->styles_context().add_or_find(cell_style_name_new ,odf::style_family::TableCell, true, oox_id); 
 				//имя для стиля cгенерится если его нет - поиск и доступ (соответствие) - по номеры oox
 
-	convert(xlsx_styles->m_oFonts->m_arrItems[font_id], elm_style);
-	
-	convert(xlsx_styles->m_oFills->m_arrItems[fill_id], elm_style); 
-
+	if (xlsx_styles->m_oFonts.IsInit())		convert(xlsx_styles->m_oFonts->m_arrItems[font_id], elm_style); //проверять также applyFont
+	if (xlsx_styles->m_oFills.IsInit())		convert(xlsx_styles->m_oFills->m_arrItems[fill_id], elm_style); //проверять также applyFill
+	if (xlsx_styles->m_oNumFmts.IsInit())	convert(xlsx_styles->m_oNumFmts->m_arrItems[numFmt_id], elm_style); 
+	if (xlsx_styles->m_oBorders.IsInit())	convert(xlsx_styles->m_oBorders->m_arrItems[border_id], elm_style); 
 
 	odf::style* style = dynamic_cast<odf::style*>(elm_style.get());
 	if (!style)return elm_style;

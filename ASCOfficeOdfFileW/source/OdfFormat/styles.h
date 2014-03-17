@@ -56,22 +56,25 @@ class style_drawing_page_properties;
 class style_content : noncopyable
 {
 public:
-    void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
+	style_content(odf_conversion_context * _context){Context = _context;}
+
+	void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     void add_child_element(office_element_ptr & child);
 	void serialize(std::wostream & strm);
   
-    style_text_properties *			get_style_text_properties() const;
-    style_paragraph_properties *	get_style_paragraph_properties() const;
-    style_graphic_properties *		get_style_graphic_properties() const;
-    style_table_properties *		get_style_table_properties() const;
-    style_section_properties *		get_style_section_properties() const;
-    style_table_cell_properties *	get_style_table_cell_properties() const;
-    style_table_row_properties *	get_style_table_row_properties() const;
-    style_table_column_properties * get_style_table_column_properties() const;
-    style_chart_properties *		get_style_chart_properties() const;
-	style_drawing_page_properties*	get_style_drawing_page_properties() const;
+    style_text_properties *			get_style_text_properties();
+    style_paragraph_properties *	get_style_paragraph_properties() ;
+    style_graphic_properties *		get_style_graphic_properties() ;
+    style_table_properties *		get_style_table_properties();
+    style_section_properties *		get_style_section_properties();
+    style_table_cell_properties *	get_style_table_cell_properties();
+    style_table_row_properties *	get_style_table_row_properties() ;
+    style_table_column_properties * get_style_table_column_properties() ;
+    style_chart_properties *		get_style_chart_properties() ;
+	style_drawing_page_properties*	get_style_drawing_page_properties();
 
 private:
+	odf_conversion_context * Context;
     style_family style_family_;
 
     office_element_ptr style_text_properties_;
@@ -100,7 +103,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 public:
-    default_style() {};
+	default_style() : style_content_(getContext()) {}
 
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
@@ -255,11 +258,10 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleStyle;
     CPDOCCORE_DEFINE_VISITABLE();
-
  
-    style() : style_auto_update_(false) { }
-
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    style() : style_auto_update_(false), style_content_(getContext()) {} 
+    
+	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm);

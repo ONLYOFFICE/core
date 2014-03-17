@@ -30,48 +30,77 @@ namespace odf {
     
 using xml::xml_char_wc;
 //
-style_text_properties * style_content::get_style_text_properties() const
+style_text_properties * style_content::get_style_text_properties() 
 {
+	//если запросили .. значит надо - создаем
+	if (!style_text_properties_)
+		create_element(L"style", L"text-properties",style_text_properties_,Context);
+	
 	return dynamic_cast<style_text_properties *>(style_text_properties_.get());    
 }
 
-style_paragraph_properties * style_content::get_style_paragraph_properties() const
+style_paragraph_properties * style_content::get_style_paragraph_properties()
 {
-    return dynamic_cast<style_paragraph_properties *>(style_paragraph_properties_.get());    
+ 	if (!style_paragraph_properties_)
+		create_element(L"style", L"paragraph-properties",style_paragraph_properties_,Context);
+
+	return dynamic_cast<style_paragraph_properties *>(style_paragraph_properties_.get());    
 }
 
-style_graphic_properties * style_content::get_style_graphic_properties() const
+style_graphic_properties * style_content::get_style_graphic_properties() 
 {
-    return dynamic_cast<style_graphic_properties *>(style_graphic_properties_.get());    
+  	if (!style_graphic_properties_)
+		create_element(L"style", L"graphic-properties",style_graphic_properties_,Context);
+
+	return dynamic_cast<style_graphic_properties *>(style_graphic_properties_.get());    
 }
-style_table_properties * style_content::get_style_table_properties() const
+style_table_properties * style_content::get_style_table_properties()
 {
+  	if (!style_table_properties_)
+		create_element(L"style", L"table-properties",style_table_properties_,Context);
+
     return dynamic_cast<style_table_properties *>(style_table_properties_.get());    
 }
 
-style_section_properties * style_content::get_style_section_properties() const
+style_section_properties * style_content::get_style_section_properties()
 {
-    return dynamic_cast<style_section_properties *>(style_section_properties_.get());
+  	if (!style_section_properties_)
+		create_element(L"style", L"section-properties",style_section_properties_,Context);
+
+	return dynamic_cast<style_section_properties *>(style_section_properties_.get());
 }
 
-style_table_cell_properties * style_content::get_style_table_cell_properties() const
+style_table_cell_properties * style_content::get_style_table_cell_properties()
 {
-    return dynamic_cast<style_table_cell_properties *>(style_table_cell_properties_.get());
+	//если запросили .. значит надо - создаем
+	if (!style_table_cell_properties_)
+		create_element(L"style", L"table-cell-properties",style_table_cell_properties_,Context);
+    
+	return dynamic_cast<style_table_cell_properties *>(style_table_cell_properties_.get());
 }
 
-style_table_row_properties * style_content::get_style_table_row_properties() const
+style_table_row_properties * style_content::get_style_table_row_properties() 
 {
-    return dynamic_cast<style_table_row_properties *>(style_table_row_properties_.get());
+  	if (!style_table_row_properties_)
+		create_element(L"style", L"table-row-properties",style_table_row_properties_,Context);
+
+	return dynamic_cast<style_table_row_properties *>(style_table_row_properties_.get());
 }
 
-style_table_column_properties * style_content::get_style_table_column_properties() const
+style_table_column_properties * style_content::get_style_table_column_properties() 
 {
-    return dynamic_cast<style_table_column_properties *>(style_table_column_properties_.get());
+   	if (!style_table_column_properties_)
+		create_element(L"style", L"table-column-properties",style_table_column_properties_,Context);
+
+	return dynamic_cast<style_table_column_properties *>(style_table_column_properties_.get());
 }
 
-style_chart_properties * style_content::get_style_chart_properties() const
+style_chart_properties * style_content::get_style_chart_properties() 
 {
-    return dynamic_cast<style_chart_properties *>(style_chart_properties_.get());    
+   	if (!style_chart_properties_)
+		create_element(L"style", L"chart-properties",style_chart_properties_,Context);
+
+	return dynamic_cast<style_chart_properties *>(style_chart_properties_.get());    
 }
 //style_drawing_page_properties * style_content::get_style_drawing_page_properties() const
 //{
@@ -100,7 +129,7 @@ void style_content::add_child_element(office_element_ptr & child)
 	}	
 }
 
-void style_content::create_child_element( const std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
+void style_content::create_child_element( const std::wstring & Ns, const ::std::wstring & Name)
 {   
     if CP_CHECK_NAME(L"style", L"text-properties")
     {
@@ -170,7 +199,7 @@ const wchar_t * default_style::name = L"default-style";
 
 void default_style::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-    style_content_.create_child_element(Ns, Name, getContext());
+    style_content_.create_child_element(Ns, Name);
 }
 void default_style::add_child_element(office_element_ptr & child)
 {
@@ -233,7 +262,7 @@ void style::create_child_element(  const ::std::wstring & Ns, const ::std::wstri
         CP_CREATE_ELEMENT(style_map_);
     }
     else
-        style_content_.create_child_element(Ns, Name, getContext());
+        style_content_.create_child_element(Ns, Name);
 }
 
 void style::add_child_element(office_element_ptr & child)

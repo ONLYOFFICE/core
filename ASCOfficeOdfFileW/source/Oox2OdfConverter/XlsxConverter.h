@@ -3,15 +3,17 @@
 #include "Converter.h"
 #include <boost/foreach.hpp>
 #include <cpdoccore/CPSharedPtr.h>
+#include <cpdoccore/CPOptional.h>
 #include <XlsxFormat\Xlsx.h>
 
 namespace OOX 
 {
 	class CDocx;
 }
-namespace cpdoccore 
+
+namespace cpdoccore
 {
-	namespace odf 
+namespace odf 
 	{
 		class office_element;
 		typedef shared_ptr<office_element>::Type office_element_ptr;
@@ -21,8 +23,12 @@ namespace cpdoccore
 			class odf_document;
 		}
 		class ods_conversion_context;
+		class color;
+		class background_color;
 	}
 }
+
+using namespace cpdoccore;
 
 namespace Oox2Odf
 {
@@ -37,18 +43,23 @@ namespace Oox2Odf
 
     private:
 		OOX::Spreadsheet::CXlsx					*xlsx_document;
-		cpdoccore::odf::package::odf_document	*output_document;
+		odf::package::odf_document	*output_document;
 
-		cpdoccore::odf::ods_conversion_context	*ods_context;
+		odf::ods_conversion_context	*ods_context;
 
 		void convert_sheets();
 		void convert_styles();
 		
 		void convert(OOX::Spreadsheet::CWorksheet *oox_sheet);
 		
-		void convert(OOX::Spreadsheet::CFill * fill, cpdoccore::odf::office_element_ptr  & odf_style_);
-		void convert(OOX::Spreadsheet::CFont * font, cpdoccore::odf::office_element_ptr  & odf_style_);
+		void convert(OOX::Spreadsheet::CFill * fill, odf::office_element_ptr  & odf_style_);
+		void convert(OOX::Spreadsheet::CFont * font, odf::office_element_ptr  & odf_style_);
+		void convert(OOX::Spreadsheet::CNumFmt *numFmt, odf::office_element_ptr  & odf_style_);
+		void convert(OOX::Spreadsheet::CBorder *border, odf::office_element_ptr  & odf_style_);
+		
+		void convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color) & odf_color);
+		void convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::background_color) & odf_bckgrd_color);
 
-		cpdoccore::odf::office_element_ptr  convert(OOX::Spreadsheet::CXfs * cell_style, int oox_id);
+		odf::office_element_ptr  convert(OOX::Spreadsheet::CXfs * cell_style, int oox_id);
 	};
 }

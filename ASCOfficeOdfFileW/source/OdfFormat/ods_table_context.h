@@ -50,11 +50,11 @@ public:
  //   bool is_empty_row() const;
  //   void end_row();
 
- //   void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName);
+    void add_column(office_element_ptr & elm, int repeated, const std::wstring & StyleName);
 
  //   size_t depth() const { return table_state_stack_.size(); }
 
- //   unsigned int columns_count();
+    unsigned int columns_count();
 
  //   void serialize_merge_cells(std::wostream & _Wostream);
 

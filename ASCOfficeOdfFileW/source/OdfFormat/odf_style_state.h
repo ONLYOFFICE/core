@@ -29,7 +29,9 @@ public:
 	odf_style_state(odf_conversion_context & Context, office_element_ptr & elm, const style_family style_family );
 
 	void set_name(std::wstring);
+
 	void set_automatic(bool val);
+	void set_root(bool val);
 
 	std::wstring & get_name();
 
@@ -40,14 +42,15 @@ public:
 	void add_child(office_element_ptr & child);
 	
 private:
-	int style_oox_id_;
+	int				style_oox_id_;
+	std::wstring	style_oox_name_;
 	
 	bool automatic_;
-	bool master_;
+	bool root_;
 
 	style_family style_family_;
 	
-	office_element_ptr	odf_style_;//все стили в перемешку
+	office_element_ptr	odf_style_;
 
 	odf_conversion_context & context_;   
 	friend class odf_style_context;

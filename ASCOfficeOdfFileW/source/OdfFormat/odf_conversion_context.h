@@ -122,6 +122,7 @@ public:
 	office_element_ptr & getCurrentElement();
 
 	std::vector<office_element_ptr>  content_;
+	std::vector<office_element_ptr>  content_styles_;
 	std::vector<office_element_ptr>  styles_;
 	
     void add_rel(relationship const & r);

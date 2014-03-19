@@ -2385,21 +2385,6 @@ namespace BinDocxRW
 		void WriteParagraphContent(const CSimpleArray<OOX::WritingElement *>& Content, OOX::Logic::CRunProperty** pPr_rPr, bool bHyperlink = false)
 		{
 			int nCurPos = 0;
-			//Случай когда hyperlink на несколько параграфов
-			for(int i = 0, length = m_aFldChars.GetSize(); i < length; ++i)
-			{
-				FldStruct* pFldStruct= m_aFldChars[i];
-				if(fieldstruct_hyperlink == pFldStruct->GetType())
-				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Run);
-					int nCurPos2 = m_oBcw.WriteItemStart(c_oSerRunType::Content);
-					m_oBcw.m_oStream.WriteByte(c_oSerRunType::fldstart);
-					m_oBcw.m_oStream.WriteString2(pFldStruct->m_sFld);
-					m_oBcw.WriteItemEnd(nCurPos2);
-					m_oBcw.WriteItemEnd(nCurPos);
-					break;
-				}
-			}
 			for ( int i = 0, length = Content.GetSize(); i < length; ++i )
 			{
 				OOX::WritingElement* item = Content[i];
@@ -2510,21 +2495,6 @@ namespace BinDocxRW
 					}*/
 				}
 			}
-			//Случай когда hyperlink на несколько параграфов
-			for(int i = 0, length = m_aFldChars.GetSize(); i < length; ++i)
-			{
-				FldStruct* pFldStruct= m_aFldChars[i];
-				if(fieldstruct_hyperlink == pFldStruct->GetType())
-				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Run);
-					int nCurPos2 = m_oBcw.WriteItemStart(c_oSerRunType::Content);
-					m_oBcw.m_oStream.WriteByte(c_oSerRunType::fldend);
-					m_oBcw.m_oStream.WriteLong(c_oSerPropLenType::Null);
-					m_oBcw.WriteItemEnd(nCurPos2);
-					m_oBcw.WriteItemEnd(nCurPos);
-					break;
-				}
-			}
 		};
 		void WriteComment(OOX::EElementType eType, nullable<SimpleTypes::CDecimalNumber<>>& oId)
 		{
@@ -2550,7 +2520,6 @@ namespace BinDocxRW
 			int nCurPos = 0;
 			CString sField;
 			CString sLink;
-			CString sTooltip;
 			if(pHyperlink->m_oId.IsInit())
 			{
 				OOX::Rels::CRelationShip* oRels = NULL;
@@ -2561,48 +2530,67 @@ namespace BinDocxRW
 					{
 						OOX::HyperLink* pHyperlinkFile = static_cast<OOX::HyperLink*>(pFile.operator ->());
 						sLink = pHyperlinkFile->Uri().GetPath();
-						if(pHyperlink->m_sAnchor.IsInit())
-						{
-							sLink += _T("#") + pHyperlink->m_sAnchor.get();
-						}
 					}
 				}
-
-				if(pHyperlink->m_sTooltip.IsInit())
-					sTooltip = pHyperlink->m_sTooltip.get();
 			}
 			
 			if(!sLink.IsEmpty())
 			{
-				sLink.Replace(_T("\""), _T("\\\""));
-				sTooltip.Replace(_T("\""), _T("\\\""));
-				if(sTooltip.IsEmpty())
-					sField.Format(_T("HYPERLINK \"%s\""), sLink);
-				else
-					sField.Format(_T("HYPERLINK \"%s\" \\o \"%s\""), sLink, sTooltip);
-
-				int nCurPos2 = 0;
-				int nCurPos3 = 0;
-				nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Run);
-				nCurPos2 = m_oBcw.WriteItemStart(c_oSerRunType::Content);
-				m_oBcw.m_oStream.WriteByte(c_oSerRunType::fldstart);
-				m_oBcw.m_oStream.WriteString2(sField);
-				m_oBcw.WriteItemWithLengthEnd(nCurPos2);
-				m_oBcw.WriteItemWithLengthEnd(nCurPos);
-
-				WriteParagraphContent(pHyperlink->m_arrItems, NULL, true);
-
-				nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Run);
-				nCurPos2 = m_oBcw.WriteItemStart(c_oSerRunType::Content);
-				m_oBcw.m_oStream.WriteByte(c_oSerRunType::fldend);
-				m_oBcw.m_oStream.WriteLong(c_oSerPropLenType::Null);
-				m_oBcw.WriteItemWithLengthEnd(nCurPos2);
+				nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Hyperlink);
+				WriteHyperlinkContent(sLink, pHyperlink);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 			else
 			{
 				WriteParagraphContent(pHyperlink->m_arrItems, NULL, true);
 			}
+		}
+		void WriteHyperlinkContent(CString& sLink, OOX::Logic::CHyperlink* pHyperlink)
+		{
+			int nCurPos = 0;
+			//Link
+			nCurPos = m_oBcw.WriteItemStart(c_oSer_HyperlinkType::Link);
+			m_oBcw.m_oStream.WriteString3(sLink);
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			//Anchor
+			if(pHyperlink->m_sAnchor.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_HyperlinkType::Anchor);
+				m_oBcw.m_oStream.WriteString3(pHyperlink->m_sAnchor.get2());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			//Tooltip
+			if(pHyperlink->m_sTooltip.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_HyperlinkType::Tooltip);
+				m_oBcw.m_oStream.WriteString3(pHyperlink->m_sTooltip.get2());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			//History
+			if(pHyperlink->m_oHistory.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_HyperlinkType::History);
+				m_oBcw.m_oStream.WriteBool(pHyperlink->m_oHistory->ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			//DocLocation
+			if(pHyperlink->m_sDocLocation.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_HyperlinkType::DocLocation);
+				m_oBcw.m_oStream.WriteString3(pHyperlink->m_sDocLocation.get2());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			//TgtFrame
+			if(pHyperlink->m_sTgtFrame.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_HyperlinkType::TgtFrame);
+				m_oBcw.m_oStream.WriteString3(pHyperlink->m_sTgtFrame.get2());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			//Content
+			nCurPos = m_oBcw.WriteItemStart(c_oSer_HyperlinkType::Content);
+			WriteParagraphContent(pHyperlink->m_arrItems, NULL, true);
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 		}
 		OOX::Logic::CRunProperty* getRunStyle(CSimpleArray<OOX::WritingElement*>& m_arrItems)
 		{

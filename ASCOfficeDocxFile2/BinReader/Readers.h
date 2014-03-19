@@ -2606,11 +2606,10 @@ class Binary_DocumentTableReader : public Binary_CommonReader<Binary_DocumentTab
 	Binary_pPrReader oBinary_pPrReader;
 	Binary_rPrReader oBinary_rPrReader;
 	Binary_tblPrReader oBinary_tblPrReader;
-	WriteHyperlink* m_pCurHyperlink;//работа идет из предположения, что ссылки могут быть в одном параграфе(todo переделать.)
+	CHyperlink* m_pCurHyperlink;
 	rPr m_oCur_rPr;
 	rPr m_oMath_rPr;
 	CStringWriter m_oCur_pPr;
-	bool bFirstRun;
 	BYTE m_byteLastElemType;
 	CComments* m_pComments;
 public:
@@ -2624,7 +2623,6 @@ public:
 	}
 	~Binary_DocumentTableReader()
 	{
-		RELEASEOBJECT(m_pCurHyperlink);
 	}
 	int Read()
 	{
@@ -2644,12 +2642,9 @@ public:
 		{
 			m_byteLastElemType = c_oSerParType::Par;
 			m_oCur_pPr.ClearNoAttack();
-			bFirstRun = true;
 
-			//m_oDocumentWriter.m_oContent.WriteString(CString(_T("<w:p>")));
+			m_oDocumentWriter.m_oContent.WriteString(CString(_T("<w:p>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadParagraph, this, NULL);
-			//Если параграф был пустой
-			CommitFirstRun();
 			m_oDocumentWriter.m_oContent.WriteString(CString(_T("</w:p>")));
 		}
 		else if(c_oSerParType::Table == type)
@@ -2707,26 +2702,6 @@ public:
 		if ( c_oSerParType::pPr == type )
 		{
 			res = oBinary_pPrReader.Read(length, &m_oCur_pPr);
-		}
-		else if ( c_oSerParType::Content == type )
-		{
-			res = Read1(length, &Binary_DocumentTableReader::ReadParagraphContent, this, NULL);
-			if(NULL != m_pCurHyperlink)
-			{
-				m_pCurHyperlink->Write(m_oDocumentWriter.m_oContent);
-				RELEASEOBJECT(m_pCurHyperlink);
-			}
-		}
-		else
-			res = c_oSerConstants::ReadUnknown;
-		return res;
-	};
-	void CommitFirstRun()
-	{
-		if(true == bFirstRun)
-		{
-			bFirstRun = false;
-			m_oDocumentWriter.m_oContent.WriteString(CString(_T("<w:p>")));
 			if(m_oCur_pPr.GetCurSize() > 0)
 			{
 				m_oDocumentWriter.m_oContent.WriteString(CString(_T("<w:pPr>")));
@@ -2734,14 +2709,23 @@ public:
 				m_oDocumentWriter.m_oContent.WriteString(CString(_T("</w:pPr>")));
 			}
 		}
-	}
+		else if ( c_oSerParType::Content == type )
+		{
+			res = Read1(length, &Binary_DocumentTableReader::ReadParagraphContent, this, NULL);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	};
 	int ReadParagraphContent(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSerParType::Run == type )
 		{
 			m_oCur_rPr.Reset();
+			GetRunStringWriter().WriteString(CString(_T("<w:r>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadRun, this, NULL);
+			GetRunStringWriter().WriteString(CString(_T("</w:r>")));
 		}
 		else if ( c_oSerParType::CommentStart == type )
 		{
@@ -2752,7 +2736,6 @@ public:
 				CComment* pComment = m_pComments->get(nId);
 				if(NULL != pComment)
 				{
-					CommitFirstRun();
 					int nNewId = m_pComments->getNextId(pComment->getCount());
 					pComment->setFormatStart(nNewId);
 					GetRunStringWriter().WriteString(pComment->writeRef(CString(_T("")), CString(_T("w:commentRangeStart")), CString(_T(""))));
@@ -2767,25 +2750,73 @@ public:
 			{
 				CComment* pComment = m_pComments->get(nId);
 				if(NULL != pComment && pComment->bIdFormat)
-				{
-					CommitFirstRun();
 					GetRunStringWriter().WriteString(pComment->writeRef(CString(_T("")), CString(_T("w:commentRangeEnd")), CString(_T(""))));
-				}
 			}
 		}
 		else if ( c_oSerParType::OMathPara == type )
 		{
-			CommitFirstRun();
 			m_oDocumentWriter.m_oContent.WriteString(CString(_T("<m:oMathPara>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathOMathPara, this, poResult);
 			m_oDocumentWriter.m_oContent.WriteString(CString(_T("</m:oMathPara>")));
 		}
 		else if ( c_oSerParType::OMath == type )
 		{
-			CommitFirstRun();
 			m_oDocumentWriter.m_oContent.WriteString(CString(_T("<m:oMath>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
 			m_oDocumentWriter.m_oContent.WriteString(CString(_T("</m:oMath>")));
+		}
+		else if ( c_oSerParType::Hyperlink == type )
+		{
+			CHyperlink oHyperlink;
+			res = Read1(length, &Binary_DocumentTableReader::ReadHyperlink, this, &oHyperlink);
+			if(!oHyperlink.sLink.IsEmpty())
+			{
+				long rId;
+				BSTR bstrHref = oHyperlink.sLink.AllocSysString();
+				m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"), bstrHref, _T("External"), &rId);
+				SysFreeString(bstrHref);
+				CString srId;srId.Format(_T("rId%d"), rId);
+				oHyperlink.rId = srId;
+				oHyperlink.Write(GetRunStringWriter());
+			}
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadHyperlink(BYTE type, long length, void* poResult)
+	{		
+		int res = c_oSerConstants::ReadOk;
+		CHyperlink* pHyperlink = static_cast<CHyperlink*>(poResult);
+		if ( c_oSer_HyperlinkType::Link == type )
+			pHyperlink->sLink = m_oBufferedStream.ReadString2(length);
+		else if ( c_oSer_HyperlinkType::Anchor == type )
+			pHyperlink->sAnchor = m_oBufferedStream.ReadString2(length);
+		else if ( c_oSer_HyperlinkType::Tooltip == type )
+			pHyperlink->sTooltip = m_oBufferedStream.ReadString2(length);
+		else if ( c_oSer_HyperlinkType::History == type )
+		{
+			pHyperlink->bHistory = true;
+			pHyperlink->History = m_oBufferedStream.ReadBool();
+		}
+		else if ( c_oSer_HyperlinkType::DocLocation == type )
+			pHyperlink->sDocLocation = m_oBufferedStream.ReadString2(length);
+		else if ( c_oSer_HyperlinkType::TgtFrame == type )
+			pHyperlink->sTgtFrame = m_oBufferedStream.ReadString2(length);
+		else if ( c_oSer_HyperlinkType::Content == type )
+		{
+			CHyperlink* pPrevHyperlink = m_pCurHyperlink;
+			m_pCurHyperlink = pHyperlink;
+			res = Read1(length, &Binary_DocumentTableReader::ReadParagraphContent, this, NULL);
+			long rId;
+			CString sHref = pHyperlink->sLink;
+			CorrectString(sHref);
+			BSTR bstrHref = sHref.AllocSysString();
+			m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"), bstrHref, _T("External"), &rId);
+			SysFreeString(bstrHref);
+			CString srId;srId.Format(_T("rId%d"), rId);
+			pHyperlink->rId = srId;
+			m_pCurHyperlink = pPrevHyperlink;
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4941,6 +4972,8 @@ public:
 		if ( c_oSerRunType::rPr == type )
 		{
 			res = oBinary_rPrReader.Read(length, &m_oCur_rPr);
+			if(m_oCur_rPr.IsNoEmpty())
+				m_oCur_rPr.Write(&GetRunStringWriter());
 		}
 		else if ( c_oSerRunType::Content == type )
 		{
@@ -4955,32 +4988,18 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if (c_oSerRunType::run == type)
 		{
-			CommitFirstRun();
-			GetRunStringWriter().WriteString(CString(_T("<w:r>")));
-			if(m_oCur_rPr.IsNoEmpty())
-				m_oCur_rPr.Write(&GetRunStringWriter());
 			GetRunStringWriter().WriteString(CString(_T("<w:t xml:space=\"preserve\">")));
 			CString sText((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
 			CorrectString(sText);
 			GetRunStringWriter().WriteString(sText);
 			GetRunStringWriter().WriteString(CString(_T("</w:t>")));
-			GetRunStringWriter().WriteString(CString(_T("</w:r>")));
 		}
 		else if (c_oSerRunType::tab == type)
 		{
-			CommitFirstRun();
-			GetRunStringWriter().WriteString(CString(_T("<w:r>")));
-			if(m_oCur_rPr.IsNoEmpty())
-				m_oCur_rPr.Write(&GetRunStringWriter());
 			GetRunStringWriter().WriteString(CString(_T("<w:tab/>")));
-			GetRunStringWriter().WriteString(CString(_T("</w:r>")));
 		}
 		else if (c_oSerRunType::pagenum == type)
 		{
-			CommitFirstRun();
-			GetRunStringWriter().WriteString(CString(_T("<w:r>")));
-			if(m_oCur_rPr.IsNoEmpty())
-				m_oCur_rPr.Write(&GetRunStringWriter());
 			GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));
 			if(m_oCur_rPr.IsNoEmpty())
 				m_oCur_rPr.Write(&GetRunStringWriter());
@@ -4990,29 +5009,18 @@ public:
 			GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"separate\"/></w:r><w:r>")));
 			if(m_oCur_rPr.IsNoEmpty())
 				m_oCur_rPr.Write(&GetRunStringWriter());
-			GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"end\"/></w:r>")));
+			GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"end\"/>")));
 		}
 		else if (c_oSerRunType::pagebreak == type)
 		{
-			CommitFirstRun();
-			GetRunStringWriter().WriteString(CString(_T("<w:r>")));
-			if(m_oCur_rPr.IsNoEmpty())
-				m_oCur_rPr.Write(&GetRunStringWriter());
 			GetRunStringWriter().WriteString(CString(_T("<w:br w:type=\"page\"/>")));
-			GetRunStringWriter().WriteString(CString(_T("</w:r>")));
 		}
 		else if (c_oSerRunType::linebreak == type)
 		{
-			CommitFirstRun();
-			GetRunStringWriter().WriteString(CString(_T("<w:r>")));
-			if(m_oCur_rPr.IsNoEmpty())
-				m_oCur_rPr.Write(&GetRunStringWriter());
 			GetRunStringWriter().WriteString(CString(_T("<w:br />")));
-			GetRunStringWriter().WriteString(CString(_T("</w:r>")));
 		}
 		else if(c_oSerRunType::image == type)
 		{
-			CommitFirstRun();
 			docImg odocImg(m_oFileWriter.getNextDocPr());
 			res = Read2(length, &Binary_DocumentTableReader::ReadImage, this, &odocImg);
 			if(odocImg.MediaId >= 0 && odocImg.MediaId < m_oMediaWriter.nImageCount)
@@ -5029,11 +5037,7 @@ public:
 				//odocImg.srId = m_oMediaWriter.m_aImageRels[odocImg.MediaId];
 				if(!odocImg.srId.IsEmpty())
 				{
-					GetRunStringWriter().WriteString(CString(_T("<w:r>")));
-					if(m_oCur_rPr.IsNoEmpty())
-						m_oCur_rPr.Write(&GetRunStringWriter());
 					odocImg.Write(&GetRunStringWriter());
-					GetRunStringWriter().WriteString(CString(_T("</w:r>")));
 				}
 			}
 		}
@@ -5044,12 +5048,7 @@ public:
 
 			if(oCDrawingProperty.IsChart())
 			{
-				CommitFirstRun();
-				GetRunStringWriter().WriteString(CString(_T("<w:r>")));
-				if(m_oCur_rPr.IsNoEmpty())
-					m_oCur_rPr.Write(&GetRunStringWriter());
 				GetRunStringWriter().WriteString(oCDrawingProperty.Write());
-				GetRunStringWriter().WriteString(CString(_T("</w:r>")));
 			}
 			else if(oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
 			{
@@ -5074,12 +5073,7 @@ public:
 
 					if(false == sDrawingXml.IsEmpty())
 					{
-						CommitFirstRun();
-						GetRunStringWriter().WriteString(CString(_T("<w:r>")));
-						if(m_oCur_rPr.IsNoEmpty())
-							m_oCur_rPr.Write(&GetRunStringWriter());
 						GetRunStringWriter().WriteString(sDrawingXml);
-						GetRunStringWriter().WriteString(CString(_T("</w:r>")));
 						SysFreeString(bstrDrawingXml);
 					}
 				}
@@ -5089,74 +5083,38 @@ public:
 		{
 			//сбрасываем Shd
 			oBinary_tblPrReader.m_sCurTableShd.Empty();
-			if(false == bFirstRun)
-			{
-				if(NULL != m_pCurHyperlink)
-				{
-					m_pCurHyperlink->Write(m_oDocumentWriter.m_oContent);
-					RELEASEOBJECT(m_pCurHyperlink);
-				}
-				m_oDocumentWriter.m_oContent.WriteString(CString(_T("</w:p>")));
-			}
+			//todo
+			m_oDocumentWriter.m_oContent.WriteString(CString(_T("</w:p>")));
 			m_oDocumentWriter.m_oContent.WriteString(CString(_T("<w:tbl>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadDocTable, this, &m_oDocumentWriter.m_oContent);
 			m_oDocumentWriter.m_oContent.WriteString(CString(_T("</w:tbl>")));
-			bFirstRun = true;
+			m_oDocumentWriter.m_oContent.WriteString(CString(_T("<w:p>")));
+			if(m_oCur_pPr.GetCurSize() > 0)
+			{
+				m_oDocumentWriter.m_oContent.WriteString(CString(_T("<w:pPr>")));
+				m_oDocumentWriter.m_oContent.Write(m_oCur_pPr);
+				m_oDocumentWriter.m_oContent.WriteString(CString(_T("</w:pPr>")));
+			}
 			//сбрасываем Shd
 			oBinary_tblPrReader.m_sCurTableShd.Empty();
 		}
 		else if(c_oSerRunType::fldstart == type)
 		{
-			CommitFirstRun();
 			CString sField((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
-			if(-1 != sField.Find(_T("HYPERLINK")))
-			{
-				RELEASEOBJECT(m_pCurHyperlink);
-				m_pCurHyperlink = WriteHyperlink::Parse(sField);
-				if(NULL != m_pCurHyperlink)
-				{
-					long rId;
-					CString sHref = m_pCurHyperlink->href;
-					CorrectString(sHref);
-					BSTR bstrHref = sHref.AllocSysString();
-					m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"), bstrHref, _T("External"), &rId);
-					SysFreeString(bstrHref);
-					CString srId;srId.Format(_T("rId%d"), rId);
-					m_pCurHyperlink->rId = srId;
-				}
-			}
-			else
-			{
-				CorrectString(sField);
-				GetRunStringWriter().WriteString(CString(_T("<w:r>")));
-				if(m_oCur_rPr.IsNoEmpty())
-					m_oCur_rPr.Write(&GetRunStringWriter());
-				GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));
-				if(m_oCur_rPr.IsNoEmpty())
-					m_oCur_rPr.Write(&GetRunStringWriter());
-				GetRunStringWriter().WriteString(CString(_T("<w:instrText xml:space=\"preserve\">")));
-				GetRunStringWriter().WriteString(sField);
-				GetRunStringWriter().WriteString(CString(_T("</w:instrText></w:r><w:r>")));
-				if(m_oCur_rPr.IsNoEmpty())
-					m_oCur_rPr.Write(&GetRunStringWriter());
-				GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"separate\"/></w:r>")));
-			}
+			CorrectString(sField);
+			GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));
+			if(m_oCur_rPr.IsNoEmpty())
+				m_oCur_rPr.Write(&GetRunStringWriter());
+			GetRunStringWriter().WriteString(CString(_T("<w:instrText xml:space=\"preserve\">")));
+			GetRunStringWriter().WriteString(sField);
+			GetRunStringWriter().WriteString(CString(_T("</w:instrText></w:r><w:r>")));
+			if(m_oCur_rPr.IsNoEmpty())
+				m_oCur_rPr.Write(&GetRunStringWriter());
+			GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"separate\"/>")));
 		}
 		else if(c_oSerRunType::fldend == type)
 		{
-			CommitFirstRun();
-			if(NULL != m_pCurHyperlink)
-			{
-				m_pCurHyperlink->Write(m_oDocumentWriter.m_oContent);
-				RELEASEOBJECT(m_pCurHyperlink);
-			}
-			else
-			{
-				GetRunStringWriter().WriteString(CString(_T("<w:r>")));
-				if(m_oCur_rPr.IsNoEmpty())
-					m_oCur_rPr.Write(&GetRunStringWriter());
-				GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"end\"/></w:r>")));
-			}
+			GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"end\"/>")));
 		}
 		else if ( c_oSerRunType::CommentReference == type )
 		{
@@ -5167,8 +5125,7 @@ public:
 				CComment* pComment = m_pComments->get(nId);
 				if(NULL != pComment && pComment->bIdFormat)
 				{
-					CommitFirstRun();
-					GetRunStringWriter().WriteString(pComment->writeRef(CString(_T("<w:r>")), CString(_T("w:commentReference")), CString(_T("</w:r>"))));
+					GetRunStringWriter().WriteString(pComment->writeRef(CString(_T("")), CString(_T("w:commentReference")), CString(_T(""))));
 				}
 			}
 		}

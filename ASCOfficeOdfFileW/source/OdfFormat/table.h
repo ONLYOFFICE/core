@@ -21,67 +21,90 @@ namespace odf {
 class table_table_attlist
 {
 public:
+	table_table_attlist()
+	{
+		table_print_ = true;
+		table_use_first_row_styles_ = false;
+		table_use_banding_rows_styles_ = false;
+		table_use_first_column_styles_ = false;
+		table_use_banding_columns_styles_ = false;
+	}
+    unsigned int table_number_columns_repeated_; // default 1
+
     _CP_OPT(std::wstring)	table_name_;
     _CP_OPT(style_ref)		table_style_name_;
 	_CP_OPT(std::wstring)	table_template_name_;
 
-    bool table_protected_; // default false
     _CP_OPT(std::wstring) table_protection_key_; 
-    bool table_print_; // default true
     _CP_OPT(std::wstring) table_print_ranges_;
 
+   _CP_OPT(bool) table_protected_; // default false
+    bool table_print_; // default true
+	
 	bool table_use_first_row_styles_; // default false;
 	bool table_use_banding_rows_styles_; //defualt false;
 	bool table_use_first_column_styles_;//defualt false;
 	bool table_use_banding_columns_styles_; //defualt false;
 
-    friend class table_table;    
+ 	void serialize(CP_ATTR_NODE);    
+
+	friend class table_table;    
 };
 
 // table-table-row-attlist
 class table_table_row_attlist
 {
 public:
-    unsigned int table_number_rows_repeated_; // default 1
+	table_table_row_attlist() : table_number_rows_repeated_(1){}
+
+	unsigned int table_number_rows_repeated_; // default 1
     _CP_OPT(style_ref) table_style_name_;
     _CP_OPT(style_ref) table_default_cell_style_name_;
-    table_visibility table_visibility_; // default Visible
+    _CP_OPT(table_visibility) table_visibility_; // default Visible
 
+	void serialize(CP_ATTR_NODE);    
 };
 
 // table-table-cell-attlist
 class table_table_cell_attlist
 {
 public:
-    unsigned int table_number_columns_repeated_; // default 1
-    _CP_OPT(style_ref) table_style_name_;
-    _CP_OPT(std::wstring) table_content_validation_name_;
-    _CP_OPT(std::wstring) table_formula_;
+	table_table_cell_attlist() : table_number_columns_repeated_(1) {}
+
+	unsigned int			table_number_columns_repeated_; // default 1
+    _CP_OPT(style_ref)		table_style_name_;
+    _CP_OPT(std::wstring)	table_content_validation_name_;
+    _CP_OPT(std::wstring)	table_formula_;
 
     _CP_OPT(common_value_and_type_attlist) common_value_and_type_attlist_;
 
-    bool table_protect_; // default false
+    _CP_OPT(bool) table_protect_; // default false
         
+	void serialize(CP_ATTR_NODE);    
 };
 
 // table-table-cell-attlist-extra
 class table_table_cell_attlist_extra
 {
 public:
-    unsigned int table_number_columns_spanned_; // default 1
-    unsigned int table_number_rows_spanned_; // default 1
+    _CP_OPT(unsigned int) table_number_columns_spanned_; // default 1 
+    _CP_OPT(unsigned int) table_number_rows_spanned_; // default 1
     _CP_OPT(unsigned int) table_number_matrix_columns_spanned_;
     _CP_OPT(unsigned int) table_number_matrix_rows_spanned_;
-
+	
+	void serialize(CP_ATTR_NODE);   
 };
 
 // table-table-source-attlist
 class table_table_source_attlist
 {
 public:
-    table_mode table_mode_; // default CopyAll
+	table_table_source_attlist() : table_mode_(table_mode::CopyAll) {}
+   
+	table_mode table_mode_; // default CopyAll
     _CP_OPT(std::wstring) table_table_name_;
-    
+ 
+	void serialize(CP_ATTR_NODE);   
 };
 
 // table-linked-source-attlist
@@ -94,6 +117,7 @@ public:
     _CP_OPT(std::wstring) table_filter_options_;
     _CP_OPT(std::wstring) table_refresh_delay_;        
 
+	void serialize(CP_ATTR_NODE);    
 };
 
 /// \class  table_table_source
@@ -113,9 +137,9 @@ public:
     table_linked_source_attlist table_linked_source_attlist_;
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
 
 };
 
@@ -126,9 +150,9 @@ class table_columns
 {
 public:
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
 
 public:
     office_element_ptr table_table_columns_;
@@ -152,9 +176,9 @@ public:
     table_columns_no_group(odf_conversion_context * _Context);
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name/*, odf_conversion_context * Context*/);
-	virtual void add_child_element( office_element_ptr & child_element){}
+	virtual void add_child_element( office_element_ptr & child_element);
 
-	virtual void serialize(std::wostream & _Wostream){}
+	virtual void serialize(std::wostream & _Wostream);
 
     static _CP_PTR(table_columns_no_group) create(odf_conversion_context * Context);
 
@@ -177,9 +201,9 @@ public:
     table_columns_and_groups();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element, odf_conversion_context * Context);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
 public:
 
 //    office_element_ptr table_table_column_group_;
@@ -192,11 +216,14 @@ public:
 class table_table_column_attlist
 {
 public:
+	table_table_column_attlist() : table_number_columns_repeated_(1){}
     unsigned int table_number_columns_repeated_; // default 1
-    _CP_OPT(style_ref) table_style_name_;
-    table_visibility table_visibility_;  // default Visible
-    _CP_OPT(style_ref) table_default_cell_style_name_;
     
+	_CP_OPT(style_ref) table_style_name_;
+    _CP_OPT(table_visibility) table_visibility_;  // default Visible
+    _CP_OPT(style_ref) table_default_cell_style_name_;
+
+	void serialize(CP_ATTR_NODE);    
 };
 
 // \class   table_table_column
@@ -213,9 +240,9 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
  
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
 
 public:
     table_table_column_attlist table_table_column_attlist_;
@@ -238,9 +265,9 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
 
 	office_element_ptr_array table_table_column_;
 
@@ -262,9 +289,9 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
 
     office_element_ptr_array table_table_column_;
 
@@ -275,7 +302,9 @@ CP_REGISTER_OFFICE_ELEMENT2(table_table_header_columns);
 // table-table-column-group-attlist
 class table_table_column_group_attlist
 {
-    bool table_display_; // default true
+public:
+	table_table_column_group_attlist() : table_display_(true) {}
+	bool table_display_; // default true
 
 };
 
@@ -293,9 +322,9 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
 
     table_table_column_group() 
     {
@@ -322,9 +351,9 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
 
     table_table_row_attlist table_table_row_attlist_;
     office_element_ptr_array content_; // table-table-cell, table-covered-table-cell
@@ -339,9 +368,9 @@ class table_table_cell_content
 {
 public:
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
 private:
     // TODO table-cell-range-source
     // TODO office-annotation
@@ -365,9 +394,9 @@ public:
     table_table_cell() { }
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
 
     table_table_cell_attlist table_table_cell_attlist_;
     table_table_cell_attlist_extra table_table_cell_attlist_extra_;
@@ -393,9 +422,9 @@ public:
     table_covered_table_cell() {empty_ = true; }
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
 
 	bool empty_;
     table_table_cell_attlist table_table_cell_attlist_;
@@ -419,9 +448,9 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
   
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
   
 	table_table_rows() 
 	{
@@ -447,9 +476,9 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
 
     office_element_ptr_array table_table_row_;
 
@@ -463,9 +492,9 @@ class table_rows
 {
 public:
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
 
     office_element_ptr			table_table_rows_;
     office_element_ptr_array	table_table_row_;
@@ -490,9 +519,9 @@ public:
     table_rows_no_group(odf_conversion_context * Context);
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
    
 
     table_rows table_rows_1_;
@@ -513,9 +542,9 @@ public:
     table_rows_and_groups();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element, odf_conversion_context * Context);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
 
 	int get_count(){return content_.size();}//временно .. для группировок
 
@@ -530,9 +559,8 @@ public:
 class table_table_row_group_attlist
 {
 public:
-
+	table_table_row_group_attlist() : table_display_(true) {}
     bool table_display_; // default true
-    
 };
 
 //          table:table-row-group
@@ -550,9 +578,9 @@ public:
 	{
     }
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
 
     table_table_row_group_attlist table_table_row_group_attlist_;
     table_rows_and_groups table_rows_and_groups_;
@@ -575,7 +603,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -606,9 +634,9 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element);
 
-    virtual void serialize(std::wostream & _Wostream){}
+    virtual void serialize(std::wostream & _Wostream);
 
     office_element_ptr_array content_;
 

@@ -113,8 +113,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 				//nullable<SimpleTypes::COnOff<>>					m_oPhonetic;
 				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oStyle;
 				//nullable<SimpleTypes::CDouble>					m_oWidth;
+	int start_column = oox_column->m_oMin.IsInit() ? oox_column->m_oMin->GetValue() : 0 ;
 	int repeated = (oox_column->m_oMax.IsInit() ? oox_column->m_oMax->GetValue() : 0) - 
-					(oox_column->m_oMin.IsInit() ? oox_column->m_oMin->GetValue() : 0);
+					(oox_column->m_oMin.IsInit() ? oox_column->m_oMin->GetValue() : 0) + 1;
 
 	int oox_style_id = -1;
 
@@ -140,7 +141,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 		column_properties->style_table_column_properties_attlist_.style_column_width_ = odf::length(width,odf::length::cm); 
 		// пока не преобразовываем правельно размерность !!!
 	}
-	ods_context->add_column(repeated, style->style_name_);
+	ods_context->add_column(start_column, repeated, style->style_name_);
 }
 
 void XlsxConverter::convert_styles()

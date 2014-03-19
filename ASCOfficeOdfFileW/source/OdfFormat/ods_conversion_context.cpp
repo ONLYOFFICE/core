@@ -19,7 +19,7 @@ void ods_conversion_context::start_document()
 {
 	create_element(L"office", L"spreadsheet", content_, this,true);
 
-	current_spreadsheet_ = (office_spreadsheet*)dynamic_cast<office_spreadsheet*>(content_.back().get());
+	current_spreadsheet_ = dynamic_cast<office_spreadsheet*>(content_.back().get());
 }
 
 
@@ -36,8 +36,18 @@ void ods_conversion_context::end_sheet()
 	ods_table_context_.end_table();
 }
 
-void ods_conversion_context::add_column(int repeated, const std::wstring & style_name)
+void ods_conversion_context::add_column(int start_column, int repeated, const std::wstring & style_name)
 {
+	if (start_column > ods_table_context_.state().columns_count())
+	{
+		//default_columns 
+		int repeated_default = start_column - ods_table_context_.state().columns_count();
+		office_element_ptr element_column_default;
+		create_element(L"table", L"table-column",element_column_default,this);
+	
+		ods_table_context_.add_column(element_column_default,repeated_default,L"");
+	}
+
 	office_element_ptr element_column;
 
 	create_element(L"table", L"table-column",element_column,this);

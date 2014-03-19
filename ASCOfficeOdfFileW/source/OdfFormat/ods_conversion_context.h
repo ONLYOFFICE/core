@@ -18,6 +18,8 @@ public:
 	void start_sheet(std::wstring & name);
 	void end_sheet();
 
+	void add_column(int repeated, const std::wstring & StyleName);
+
 	ods_table_context ods_table_context_;
 
 	office_spreadsheet* current_spreadsheet_;

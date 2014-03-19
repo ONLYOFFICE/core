@@ -36,6 +36,13 @@ void ods_conversion_context::end_sheet()
 	ods_table_context_.end_table();
 }
 
+void ods_conversion_context::add_column(int repeated, const std::wstring & style_name)
+{
+	office_element_ptr element_column;
+
+	create_element(L"table", L"table-column",element_column,this);
+	ods_table_context_.add_column(element_column,repeated,style_name);
+}
 
 
 }

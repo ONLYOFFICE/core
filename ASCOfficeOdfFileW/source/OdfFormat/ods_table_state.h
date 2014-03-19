@@ -20,6 +20,13 @@ class ods_conversion_context;
 class table_table;
 class style;
 
+struct ods_column_state
+{
+	office_element_ptr elm;
+	int repeated;
+	std::wstring style_name;
+};
+
 class ods_table_state
 {
 public:
@@ -28,9 +35,8 @@ public:
 	void set_name(std::wstring);
 	void set_table_style(office_element_ptr & style);
 
-
  //   std::wstring current_style() const { return table_style_; }
- //   void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName);
+	void add_column(office_element_ptr & elm, int repeated, const std::wstring & style_name);
  //   void start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
  //   void non_empty_row();
  //   bool is_empty_row() const;
@@ -50,12 +56,12 @@ public:
  //   void set_current_cell_style_id(unsigned int xfId);
  //   int get_current_cell_style_id();
 
- //   int current_column() const;
- //   int current_row() const;
+	//int current_column() const;
+	//int current_row() const;
 
  //   unsigned int current_columns_spaned() const;
  //   unsigned int current_rows_spanned(unsigned int Column) const;
- //   unsigned int columns_count() const;
+	unsigned int columns_count() const;
  //   
  //   xlsx_table_metrics & get_table_metrics() { return xlsx_table_metrics_; }
  //   xlsx_drawing_context & get_drawing_context() { return xlsx_drawing_context_; }
@@ -83,7 +89,8 @@ public:
 private:
     ods_conversion_context & context_;   
 	
-	table_table*	office_table_;
+	office_element_ptr office_table_;
+	
 	style*			office_table_style_;
 
 	//std::wstring table_style_;
@@ -92,13 +99,13 @@ private:
  //   std::vector<std::wstring> column_default_cell_style_name_;
  //   std::wstring row_default_cell_style_name_;
  //   std::wstring cell_style_;
- //   int current_table_column_;
- //   int current_table_row_;
+	//int current_table_column_;
+	//int current_table_row_;
  //   unsigned int columns_spanned_num_;
  //   std::wstring columns_spanned_style_;
  //   std::vector<xlsx_row_spanned> rows_spanned_;
- //   std::vector<unsigned int> columns_;
- //   unsigned int columns_count_;
+	std::vector<ods_column_state> columns_;
+	unsigned int columns_count_;
  //   xlsx_merge_cells merge_cells_; 
  //   xlsx_table_metrics xlsx_table_metrics_;
  //   xlsx_drawing_context xlsx_drawing_context_;

@@ -21,13 +21,17 @@ class odf_style_context
 public:
     odf_style_context(odf_conversion_context & Context/*, ods_text_context & textCotnext*/);
 
-    void create_style(std::wstring name, const style_family style_family, bool automatic = false, int oox_id = -1);
+    void create_style(std::wstring name, const style_family style_family, bool automatic = false, bool root = false, int oox_id = -1);
 
-	office_element_ptr & add_or_find(std::wstring name, const style_family family, bool automatic = false, int id = -1);
+	office_element_ptr & add_or_find(std::wstring name, const style_family family, bool automatic = false, bool root = false, int id = -1);
 
+	void process_automatic_styles(office_element_ptr root );
 	void process_automatic(office_element_ptr root );
 	void process_master(office_element_ptr root );
 	void process_office(office_element_ptr root );
+
+
+	std::wstring & find_odf_style_name(int oox_id_style, const style_family family);
 
      
     //void start_cell(const std::wstring & formula,
@@ -76,8 +80,8 @@ public:
  //   void table_column_last_width(double w);
  //   double table_column_last_width() const;
 
-    odf_style_state & state();
-    const odf_style_state & state() const;
+    odf_style_state & last_state();
+    const odf_style_state & last_state() const;
 
  //   void start_hyperlink();
 	//std::wstring end_hyperlink(std::wstring const & ref, std::wstring const & href, std::wstring const & display);
@@ -88,7 +92,13 @@ public:
 private:
 
     odf_conversion_context & context_;
-    std::list<odf_style_state> style_state_list_;//тут описалово и доступ к элементам из content_
+    
+	std::list<odf_style_state> style_state_list_;
+    
+	std::list<odf_style_state> master_state_list_;
+
+	std::wstring get_name_family(const style_family & family);
+	std::wstring find_free_name(const style_family & family);
 
 };
 

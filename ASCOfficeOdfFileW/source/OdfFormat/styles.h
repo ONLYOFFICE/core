@@ -259,7 +259,7 @@ public:
     static const ElementType type = typeStyleStyle;
     CPDOCCORE_DEFINE_VISITABLE();
  
-    style() : style_auto_update_(false), style_content_(getContext()) {} 
+    style() : style_content_(getContext()) {} 
     
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
@@ -275,10 +275,10 @@ public:
     _CP_OPT( std::wstring ) style_next_style_name_; // optional 
     _CP_OPT( std::wstring ) style_list_style_name_; // optional, may be empty
     _CP_OPT( std::wstring ) style_master_page_name_; // optional
-    bool style_auto_update_; // optional, default = false
+   _CP_OPT( bool)			style_auto_update_; // optional, default = false
     _CP_OPT( std::wstring ) style_data_style_name_; // // optional
     _CP_OPT( std::wstring ) style_class_; // optional
-    _CP_OPT(std::wstring) style_default_outline_level_;  // optional
+    _CP_OPT(std::wstring)	style_default_outline_level_;  // optional
 
 
     style_content style_content_;

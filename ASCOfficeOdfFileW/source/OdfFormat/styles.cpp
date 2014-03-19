@@ -288,7 +288,7 @@ void style::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"style:parent-style-name", style_parent_style_name_);
 			CP_XML_ATTR_OPT(L"style:next-style-name", style_next_style_name_);
 			CP_XML_ATTR_OPT(L"style:list-style-name", style_list_style_name_);
-			CP_XML_ATTR(L"style:auto-update", style_auto_update_);
+			CP_XML_ATTR_OPT(L"style:auto-update", style_auto_update_);
 			CP_XML_ATTR_OPT(L"style:data-style-name", style_data_style_name_);
 			CP_XML_ATTR_OPT(L"style:class", style_class_);
 			CP_XML_ATTR_OPT(L"style:master-page-name", style_master_page_name_);

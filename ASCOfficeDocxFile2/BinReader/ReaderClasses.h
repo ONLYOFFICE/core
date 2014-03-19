@@ -2143,3 +2143,43 @@ public: CFramePr()
 		oStringWriter.WriteString(CString(_T("/>")));
 	}
 };
+class CHyperlink{
+public:
+	CString rId;
+	CString sLink;
+	CString sAnchor;
+	CString sTooltip;
+	bool History;
+	CString sDocLocation;
+	CString sTgtFrame;
+	CStringWriter writer;
+
+	bool bHistory;
+public:
+	CHyperlink()
+	{
+		bHistory = false;
+	}
+	void Write(CStringWriter& wr)
+	{
+		if(false == rId.IsEmpty())
+		{
+			CString sCorrect_rId = rId;
+			CString sCorrect_tooltip = sTooltip;
+			CString sCorrect_anchor = sAnchor;
+			CorrectString(sCorrect_rId);
+			CorrectString(sCorrect_tooltip);
+			CorrectString(sCorrect_anchor);
+			CString sStart;
+			sStart.Format(_T("<w:hyperlink r:id=\"%s\""), sCorrect_rId);
+			if(false == sTooltip.IsEmpty())
+				sStart.AppendFormat(_T(" w:tooltip=\"%s\""), sCorrect_tooltip);
+			if(false == sAnchor.IsEmpty())
+				sStart.AppendFormat(_T(" w:anchor=\"%s\""), sCorrect_anchor);
+			sStart.Append(_T(" w:history=\"1\">"));
+			wr.WriteString(sStart);
+			wr.Write(writer);
+			wr.WriteString(CString(_T("</w:hyperlink>")));
+		}
+	}
+};

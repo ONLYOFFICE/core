@@ -376,7 +376,8 @@ const int g_nFormatVersion = 4;
 		CommentStart = 6,
 		CommentEnd = 7,
 		OMathPara = 8,
-		OMath = 9
+		OMath = 9,
+		Hyperlink = 10
 	};}
 	namespace c_oSerDocTableType{enum c_oSerDocTableType
 	{
@@ -762,5 +763,15 @@ const int g_nFormatVersion = 4;
 		XAlign = 11,
 		Y = 12,
 		YAlign = 13
+	};}
+	namespace c_oSer_HyperlinkType{ enum c_oSer_HyperlinkType
+	{
+		Content = 0,
+		Link = 1,
+		Anchor = 2,
+		Tooltip = 3,
+		History = 4,
+		DocLocation = 5,
+		TgtFrame = 6
 	};}
 }

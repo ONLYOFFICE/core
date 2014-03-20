@@ -118,7 +118,13 @@ void style_table_cell_properties::create_child_element( const ::std::wstring & N
         CP_NOT_APPLICABLE_ELM();        
     }
 }
+void style_table_cell_properties::apply_from(const style_table_cell_properties * Other)
+{
+	if (Other == NULL)return;
 
+	style_table_cell_properties_attlist_.apply_from(Other->style_table_cell_properties_attlist_);
+
+}
 void style_table_cell_properties::serialize(std::wostream & strm)
 {
 	style_table_cell_properties_attlist_.serialize(strm,ns,name);

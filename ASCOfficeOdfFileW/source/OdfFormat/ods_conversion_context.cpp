@@ -38,10 +38,10 @@ void ods_conversion_context::end_sheet()
 
 void ods_conversion_context::add_column(int start_column, int repeated, const std::wstring & style_name)
 {
-	if (start_column > ods_table_context_.state().columns_count())
+	if (start_column > ods_table_context_.state().columns_count()+1)
 	{
 		//default_columns 
-		int repeated_default = start_column - ods_table_context_.state().columns_count();
+		int repeated_default = start_column - ods_table_context_.state().columns_count()-1;
 		office_element_ptr element_column_default;
 		create_element(L"table", L"table-column",element_column_default,this);
 	

@@ -254,6 +254,7 @@ public:
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	
+    void apply_from(const style_table_cell_properties * Other);
 	virtual void serialize(std::wostream & strm);
 
     style_table_cell_properties_attlist style_table_cell_properties_attlist_;

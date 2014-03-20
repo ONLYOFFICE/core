@@ -20,11 +20,6 @@ ods_table_state & ods_table_context::state()
     return table_state_list_.back();
 }
 
-const ods_table_state & ods_table_context::state() const
-{
-    return table_state_list_.back();
-}
-
 void ods_table_context::start_table(office_element_ptr & elm, std::wstring & name)
 {
 	table_state_list_.push_back( ods_table_state(context_, elm) );

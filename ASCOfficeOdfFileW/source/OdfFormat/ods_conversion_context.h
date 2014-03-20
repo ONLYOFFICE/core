@@ -24,6 +24,8 @@ public:
 
 	office_spreadsheet* current_spreadsheet_;
 
+	ods_table_state & current_table() { return ods_table_context_.state();}
+
 
 };
 

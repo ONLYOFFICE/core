@@ -54,6 +54,7 @@ namespace Oox2Odf
 		
 		void convert(OOX::Spreadsheet::CWorksheet *oox_sheet);
 		void convert(OOX::Spreadsheet::CCol *oox_column);
+		void convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format);
 		
 		void convert(OOX::Spreadsheet::CFill * fill, odf::office_element_ptr  & odf_style_);
 		void convert(OOX::Spreadsheet::CFont * font, odf::office_element_ptr  & odf_style_);

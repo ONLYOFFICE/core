@@ -44,7 +44,7 @@ public:
 
  //   std::wstring current_row_style() const;
  //   std::wstring default_row_cell_style() const;
- //   std::wstring default_column_cell_style() const;
+	void set_default_column_cell_style(std::wstring & style_name);
 
 	//void set_table_row_group(int count, bool collapsed, int level);
  //   void start_cell(size_t columnsSpanned, size_t rowsSpanned);

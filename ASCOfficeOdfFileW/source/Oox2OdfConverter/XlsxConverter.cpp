@@ -92,6 +92,10 @@ void XlsxConverter::convert_sheets()
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 {
+	//дефолтные свойства 
+	if (oox_sheet->m_oSheetFormatPr.IsInit())
+		convert(oox_sheet->m_oSheetFormatPr.GetPointer());
+
 	//колонки
 	if(oox_sheet->m_oCols.IsInit())
 	{
@@ -105,14 +109,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 {
 				//nullable<SimpleTypes::COnOff<>>					m_oBestFit;
 				//nullable<SimpleTypes::COnOff<>>					m_oCollapsed;
-				//nullable<SimpleTypes::COnOff<>>					m_oCustomWidth;
 				//nullable<SimpleTypes::COnOff<>>					m_oHidden;
-				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMax;
-				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMin;
 				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oOutlineLevel;
 				//nullable<SimpleTypes::COnOff<>>					m_oPhonetic;
-				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oStyle;
-				//nullable<SimpleTypes::CDouble>					m_oWidth;
 	int start_column = oox_column->m_oMin.IsInit() ? oox_column->m_oMin->GetValue() : 0 ;
 	int repeated = (oox_column->m_oMax.IsInit() ? oox_column->m_oMax->GetValue() : 0) - 
 					(oox_column->m_oMin.IsInit() ? oox_column->m_oMin->GetValue() : 0) + 1;
@@ -129,21 +128,26 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 
 	double width = oox_column->m_oWidth.IsInit() ? oox_column->m_oWidth->GetValue() : 0;
 
-	if (oox_column->m_oStyle.IsInit())
-	{	
-		//m_oCustomWidth 
-	}	
-	
 	if (width < 1 || (oox_column->m_oBestFit.IsInit()  && oox_column->m_oBestFit->GetValue()==true))
 		column_properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = true;
-	else
+	else if (oox_column->m_oCustomWidth.IsInit() == false || (oox_column->m_oCustomWidth.IsInit() && oox_column->m_oCustomWidth->GetValue()==true))
 	{
-		column_properties->style_table_column_properties_attlist_.style_column_width_ = odf::length(width,odf::length::cm); 
+		column_properties->style_table_column_properties_attlist_.style_column_width_ = odf::length(width/2.,odf::length::cm); //от_балды
 		// пока не преобразовываем правельно размерность !!!
 	}
 	ods_context->add_column(start_column, repeated, style->style_name_);
-}
+	if (oox_column->m_oStyle.IsInit())
+	{	
+		int xfd_id = oox_column->m_oStyle->GetValue();//это ваще то свойства cells - накатываем
 
+		std::wstring style_cell_name  = ods_context->styles_context().find_odf_style_name(xfd_id,odf::style_family::TableCell);
+
+		ods_context->current_table().set_default_column_cell_style(style_cell_name );
+	}
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format)
+{
+}
 void XlsxConverter::convert_styles()
 {
 	if (!ods_context) return;
@@ -249,14 +253,17 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFill * fill, odf::office_element_
 	{//solid, gradient
 		if (fill->m_oPatternFill->m_oPatternType.IsInit())
 		{}
-		if (fill->m_oPatternFill->m_oBgColor.IsInit())
+		
+		if (fill->m_oPatternFill->m_oFgColor.IsInit())
+		{
+			convert(fill->m_oPatternFill->m_oFgColor.GetPointer(), 
+				cell_properties->style_table_cell_properties_attlist_.common_background_color_attlist_.fo_background_color_);
+		}
+		else if (fill->m_oPatternFill->m_oBgColor.IsInit())
 		{
 			convert(fill->m_oPatternFill->m_oBgColor.GetPointer(), 
 				cell_properties->style_table_cell_properties_attlist_.common_background_color_attlist_.fo_background_color_);
-		}
-		if (fill->m_oPatternFill->m_oFgColor.IsInit())
-		{}
-
+		}	
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::background_color) & odf_bckgrd_color)
@@ -284,24 +291,59 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color)
 {
 	if (!color)return;
 
-	if(color->m_oRgb.IsInit())
+	if(color->m_oRgb.IsInit())//easy, faster,realy  !!
 	{
 		odf_color = odf::color(std::wstring(L"#") + string2std_string(color->m_oRgb->ToString()));
+		return;
 	}
+
+	SimpleTypes::Spreadsheet::CHexColor *oRgbColor=NULL;
 	if(color->m_oThemeColor.IsInit())
 	{
 		OOX::CTheme * xlsx_theme= xlsx_document->GetTheme();
 
 		int theme_ind = color->m_oThemeColor->GetValue();
+		//CString strColor = color->m_oThemeColor->ToString();
+		unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
+		bool res=false;
 
+		//а вот нет CColorMapping на чтение !!!
+		switch(theme_ind)
+		{
+			case SimpleTypes::themecolorLight1:
+				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oLt1.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorLight2:
+				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oLt2.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorDark1:
+				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oDk1.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorDark2:
+				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oDk2.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorAccent1:
+				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent1.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorAccent2:
+				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent2.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorAccent3:
+				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent3.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorAccent4:
+				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent4.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorAccent5:
+				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent5.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorAccent6:
+				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent6.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorFollowedHyperlink:
+				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oFolHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorHyperlink:
+				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
+		}
+		if (res)
+			oRgbColor = new SimpleTypes::Spreadsheet::CHexColor(ucR,ucG,ucB,ucA);
 	}
 	if(color->m_oIndexed.IsInit())
 	{
 		OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->GetStyles();
-		
+	
 		int ind = color->m_oIndexed->GetValue();
 
-		SimpleTypes::Spreadsheet::CHexColor *oRgbColor=NULL;
 		if(xlsx_styles->m_oColors.IsInit() && xlsx_styles->m_oColors->m_oIndexedColors.IsInit())
 		{
 			if (xlsx_styles->m_oColors->m_oIndexedColors->m_arrItems[ind])
@@ -313,11 +355,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color)
 			if(OOX::Spreadsheet::CIndexedColors::GetDefaultRGBAByIndex(ind, ucR, ucG, ucB, ucA))
 				oRgbColor = new SimpleTypes::Spreadsheet::CHexColor(ucR,ucG,ucB,ucA);
 		}
-		if (oRgbColor)
-		{
-			odf_color = odf::color(std::wstring(L"#") + string2std_string(oRgbColor->ToString()));
-			delete oRgbColor;
-		}
+	}
+	if (oRgbColor)
+	{
+		CString str=oRgbColor->ToString();
+		odf_color = odf::color(std::wstring(L"#") + string2std_string(str.Right(str.GetLength()-2)));
+		delete oRgbColor;
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CCellStyle * cell_style, int oox_id)

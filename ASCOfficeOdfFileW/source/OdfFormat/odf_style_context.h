@@ -31,9 +31,10 @@ public:
 	void process_office(office_element_ptr root );
 
 
-	std::wstring & find_odf_style_name(int oox_id_style, const style_family family);
+	std::wstring &			find_odf_style_name	(int oox_id_style, const style_family family);
+	office_element_ptr &	find_odf_style		(int oox_id_style, const style_family family);
 
-     
+    
     //void start_cell(const std::wstring & formula,
     //                size_t columnsSpanned,
     //                size_t rowsSpanned);

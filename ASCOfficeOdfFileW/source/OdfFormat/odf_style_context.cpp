@@ -94,6 +94,21 @@ std::wstring & odf_style_context::find_odf_style_name(int oox_id_style, const st
 	}
 	return std::wstring();
 }
+office_element_ptr & odf_style_context::find_odf_style(int oox_id_style, const style_family family)
+{
+	for (std::list<odf_style_state>::iterator it = style_state_list_.begin(); it != style_state_list_.end(); it++)
+	{
+		if (it->odf_style_)
+		{
+			if (it->style_family_ == family)
+			{
+				if (oox_id_style >=0 && it->style_oox_id_ == oox_id_style)	return it->get_office_element();
+			}
+				
+		}
+	}
+	return office_element_ptr();
+}
 std::wstring odf_style_context::get_name_family(const style_family & family)
 {
 	switch(family.get_type())

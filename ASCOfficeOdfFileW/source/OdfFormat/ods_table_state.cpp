@@ -13,6 +13,7 @@ namespace odf {
 ods_table_state::ods_table_state(ods_conversion_context & Context, office_element_ptr & elm): context_(Context)
 {     
 	office_table_ = elm; 
+	columns_count_=0;
 }
 
 void ods_table_state::set_name(std::wstring name)
@@ -61,7 +62,13 @@ void ods_table_state::add_column(office_element_ptr & elm, int repeated, const s
 	column->table_table_column_attlist_.table_style_name_ = style_ref(style_name);
 	column->table_table_column_attlist_.table_number_columns_repeated_ = repeated;
 	
-	
+}
+void ods_table_state::set_default_column_cell_style(std::wstring & style_name)
+{
+	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
+	if (column == NULL)return;
+
+	column->table_table_column_attlist_.table_default_cell_style_name_ = style_ref(style_name);
 }
 
 unsigned int ods_table_state::columns_count() const

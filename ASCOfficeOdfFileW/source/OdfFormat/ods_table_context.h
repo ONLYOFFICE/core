@@ -70,7 +70,6 @@ public:
  //   double table_column_last_width() const;
 
     ods_table_state & state();
-    const ods_table_state & state() const;
 
  //   void start_hyperlink();
 	//std::wstring end_hyperlink(std::wstring const & ref, std::wstring const & href, std::wstring const & display);

@@ -598,7 +598,7 @@ TFontCacheSizes CFontFile::GetChar(LONG lUnicode)
     {
         if (m_pDefaultFont)
             m_pDefaultFont->UpdateMatrix1();
-        m_pDefaultFont->UpdateMatrix1();
+        UpdateMatrix1();
     }
 
     LONG unGID = 0;

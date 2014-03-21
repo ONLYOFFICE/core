@@ -208,6 +208,10 @@ public:
 		return m_pRenderer->m_bIntegerGrid;
 	}
 	void AddRect(const double& x, const double& y, const double& w, const double& h);
+	inline void SetFontAttack()
+	{
+		_SetFont();
+	}
 
 protected:
 	void _SetFont();

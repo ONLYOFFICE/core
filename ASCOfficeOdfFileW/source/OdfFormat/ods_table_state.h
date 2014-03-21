@@ -20,11 +20,13 @@ class ods_conversion_context;
 class table_table;
 class style;
 
-struct ods_column_state
+struct ods_element_state
 {
 	office_element_ptr elm;
+	
 	int repeated;
 	std::wstring style_name;
+	office_element_ptr style_elm;
 };
 
 class ods_table_state
@@ -35,20 +37,26 @@ public:
 	void set_name(std::wstring);
 	void set_table_style(office_element_ptr & style);
 
- //   std::wstring current_style() const { return table_style_; }
-	void add_column(office_element_ptr & elm, int repeated, const std::wstring & style_name);
- //   void start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
- //   void non_empty_row();
- //   bool is_empty_row() const;
- //   void end_row();
+	void add_column(office_element_ptr & elm, int repeated ,office_element_ptr & style);
+		void set_column_width(int width);
+		void set_column_optimal_width(bool val);
+		void set_column_default_cell_style(std::wstring & style_name);
 
- //   std::wstring current_row_style() const;
- //   std::wstring default_row_cell_style() const;
-	void set_default_column_cell_style(std::wstring & style_name);
+	void add_row(office_element_ptr & elm, int repeated ,office_element_ptr & style);//const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
+		void set_row_hidden(bool Val);
+		//void set_row_collapsed(bool Val);
+		void set_row_optimal_height(bool val);
+		void set_row_height(double height);
+		void set_row_default_cell_style(std::wstring & style_name);
+
 
 	//void set_table_row_group(int count, bool collapsed, int level);
- //   void start_cell(size_t columnsSpanned, size_t rowsSpanned);
- //   void end_cell();
+	//void start_cell(/*size_t columnsSpanned, size_t rowsSpanned*/);
+	void end_cell();
+	void add_default_cell(office_element_ptr & cell, int repeated);
+	void start_cell(office_element_ptr & elm ,office_element_ptr & style);
+
+	office_element_ptr & current_row_element();
 
  //   void start_covered_cell();
  //   void end_covered_cell();
@@ -56,8 +64,8 @@ public:
  //   void set_current_cell_style_id(unsigned int xfId);
  //   int get_current_cell_style_id();
 
-	//int current_column() const;
-	//int current_row() const;
+	int current_column() const;
+	int current_row() const;
 
  //   unsigned int current_columns_spaned() const;
  //   unsigned int current_rows_spanned(unsigned int Column) const;
@@ -99,12 +107,13 @@ private:
  //   std::vector<std::wstring> column_default_cell_style_name_;
  //   std::wstring row_default_cell_style_name_;
  //   std::wstring cell_style_;
-	//int current_table_column_;
-	//int current_table_row_;
+	int current_table_column_;
+	int current_table_row_;
  //   unsigned int columns_spanned_num_;
  //   std::wstring columns_spanned_style_;
  //   std::vector<xlsx_row_spanned> rows_spanned_;
-	std::vector<ods_column_state> columns_;
+	std::vector<ods_element_state> columns_;
+	std::vector<ods_element_state> rows_;
 	unsigned int columns_count_;
  //   xlsx_merge_cells merge_cells_; 
  //   xlsx_table_metrics xlsx_table_metrics_;

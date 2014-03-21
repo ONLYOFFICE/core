@@ -18,7 +18,17 @@ public:
 	void start_sheet(std::wstring & name);
 	void end_sheet();
 
-	void add_column(int start_column, int repeated, const std::wstring & StyleName);
+	void start_columns();
+		void add_column(int start_column, int repeated, bool _default = false);
+	void end_columns();
+
+	void start_rows();
+		void start_row(int _start_row, int repeated, bool _default = false);
+		void end_row();
+
+		void start_cell(std::wstring & ref, int xfd_style);
+		void end_cell(){}
+	void end_rows();
 
 	ods_table_context ods_table_context_;
 

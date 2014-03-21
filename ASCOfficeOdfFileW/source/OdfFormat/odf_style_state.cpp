@@ -18,9 +18,6 @@ odf_style_state::odf_style_state(odf_conversion_context & Context, office_elemen
 	if (!style_)return;
 
 	style_->style_family_ = style_family_ = family;
-
-//set default
-
 }
 
 office_element_ptr & odf_style_state::get_office_element()
@@ -55,7 +52,6 @@ void odf_style_state::set_root(bool val)//метка того что в файле styles, а не co
 {
 	root_ = val;
 }
-
 void odf_style_state::convert()
 {
 	if (odf_style_== NULL)return;

@@ -15,7 +15,6 @@
 #include "style_paragraph_properties.h"
 #include "style_graphic_properties.h"
 
-
 using namespace cpdoccore;
 
 namespace Oox2Odf
@@ -80,7 +79,6 @@ void XlsxConverter::convert_sheets()
 					{
 						std::wstring name = string2std_string(pSheet->m_oName.get2());
 						ods_context->start_sheet(name);
-
 						convert(pWorksheet);
 						ods_context->end_sheet();						
 					}
@@ -92,61 +90,168 @@ void XlsxConverter::convert_sheets()
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 {
-	//дефолтные свойства 
+	//текущие дефолтные свойства 
 	if (oox_sheet->m_oSheetFormatPr.IsInit())
 		convert(oox_sheet->m_oSheetFormatPr.GetPointer());
+	//if (oox_sheet->m_oSheetPr.IsInit())
+	//	convert(oox_sheet->m_oSheetPr.GetPointer());
 
 	//колонки
-	if(oox_sheet->m_oCols.IsInit())
-	{
-		for (long col = 0 ; col < oox_sheet->m_oCols->m_arrItems.GetSize();col++)
+	ods_context->start_columns();
+		for (long col = 0 ; oox_sheet->m_oCols.IsInit() && col < oox_sheet->m_oCols->m_arrItems.GetSize(); col++)
 		{
 			convert(oox_sheet->m_oCols->m_arrItems[col]);
 		}
+	ods_context->end_columns();
+
+	//строки
+	ods_context->start_rows();
+		for (long row = 0 ; oox_sheet->m_oSheetData.IsInit() && row < oox_sheet->m_oSheetData->m_arrItems.GetSize(); row++)
+		{
+			convert(oox_sheet->m_oSheetData->m_arrItems[row]);
+		}
+	ods_context->end_rows();
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row)
+{
+	int row_number = oox_row->m_oR.IsInit() ? oox_row->m_oR->GetValue() : -1;
+
+	bool _default = true;
+	
+	if (oox_row->m_oHt.IsInit() || oox_row->m_oCustomFormat.IsInit()) _default = false;
+	
+	ods_context->start_row(row_number,1,_default);
+	
+	if (oox_row->m_oHidden.IsInit())		ods_context->current_table().set_row_hidden(true);
+	if (oox_row->m_oCollapsed.IsInit())		ods_context->current_table().set_row_hidden(true);
+	
+	if (oox_row->m_oS.IsInit() && ( oox_row->m_oCustomFormat.IsInit() && oox_row->m_oCustomFormat->GetValue()==1))
+	{
+		int xfd_id = oox_row->m_oS->GetValue();
+
+		std::wstring style_cell_name  = ods_context->styles_context().find_odf_style_name(xfd_id,odf::style_family::TableCell);
+		ods_context->current_table().set_row_default_cell_style(style_cell_name );
 	}
+	if (oox_row->m_oHt.IsInit() == true)
+	{
+		double height = oox_row->m_oHt->GetValue();
+		ods_context->current_table().set_row_height(height);
+		//нужно преобразование размерности !!!
+	}
+	if (oox_row->m_oCustomHeight.IsInit() && oox_row->m_oCustomHeight->GetValue() == 1)
+	{ 
+		ods_context->current_table().set_row_optimal_height(false);
+	}
+
+	for (long cell = 0 ; cell < oox_row->m_arrItems.GetSize();cell++)
+	{
+		convert(oox_row->m_arrItems[cell]);
+	}
+	ods_context->end_row();
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CCell *oox_cell)
+{
+				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCellMetadata;
+				//nullable<SimpleTypes::COnOff<>>						m_oShowPhonetic;
+				//nullable<SimpleTypes::Spreadsheet::CCellTypeType<>>	m_oType;
+				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oValueMetadata;
+
+	std::wstring ref = oox_cell->m_oRef.IsInit() ? string2std_string(oox_cell->m_oRef.get()) : L"";
+
+	int ifx_style = oox_cell->m_oStyle.IsInit() ? oox_cell->m_oStyle->GetValue() : -1;
+
+	ods_context->start_cell(ref,ifx_style);
+
+				//nullable<CFormula>	m_oFormula;
+				//nullable<CSi>		m_oRichText;
+				//nullable<CText>		m_oValue;
+
+	ods_context->end_cell();
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 {
-				//nullable<SimpleTypes::COnOff<>>					m_oBestFit;
-				//nullable<SimpleTypes::COnOff<>>					m_oCollapsed;
-				//nullable<SimpleTypes::COnOff<>>					m_oHidden;
-				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oOutlineLevel;
-				//nullable<SimpleTypes::COnOff<>>					m_oPhonetic;
+	if (oox_column == NULL)return;
+
 	int start_column = oox_column->m_oMin.IsInit() ? oox_column->m_oMin->GetValue() : 0 ;
-	int repeated = (oox_column->m_oMax.IsInit() ? oox_column->m_oMax->GetValue() : 0) - 
+	int repeated =	(oox_column->m_oMax.IsInit() ? oox_column->m_oMax->GetValue() : 0) - 
 					(oox_column->m_oMin.IsInit() ? oox_column->m_oMin->GetValue() : 0) + 1;
 
-	int oox_style_id = -1;
+	ods_context->add_column(start_column, repeated);
 
-	ods_context->styles_context().create_style(L"",odf::style_family::TableColumn, true, false, oox_style_id);
+	double width = oox_column->m_oWidth.IsInit() ? oox_column->m_oWidth->GetValue() : -1;
 
-	odf::style* style = dynamic_cast<odf::style*>(ods_context->styles_context().last_state().get_office_element().get());
-	if (!style)return;
-	
-	odf::style_table_column_properties * column_properties = style->style_content_.get_style_table_column_properties();
- 	if (column_properties == NULL)return; //error ????
-
-	double width = oox_column->m_oWidth.IsInit() ? oox_column->m_oWidth->GetValue() : 0;
-
-	if (width < 1 || (oox_column->m_oBestFit.IsInit()  && oox_column->m_oBestFit->GetValue()==true))
-		column_properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = true;
-	else if (oox_column->m_oCustomWidth.IsInit() == false || (oox_column->m_oCustomWidth.IsInit() && oox_column->m_oCustomWidth->GetValue()==true))
+	if (width < 0 || (oox_column->m_oBestFit.IsInit()  && oox_column->m_oBestFit->GetValue() == 1))
 	{
-		column_properties->style_table_column_properties_attlist_.style_column_width_ = odf::length(width/2.,odf::length::cm); //от_балды
-		// пока не преобразовываем правельно размерность !!!
+		ods_context->current_table().set_column_optimal_width(true);
 	}
-	ods_context->add_column(start_column, repeated, style->style_name_);
+	else if (oox_column->m_oCustomWidth.IsInit() == false || 
+			(oox_column->m_oCustomWidth.IsInit() == true && oox_column->m_oCustomWidth->GetValue() == 1))
+	{
+		ods_context->current_table().set_column_width(width);
+		ods_context->current_table().set_column_optimal_width(false);
+		// пока не преобразовываем правильно размерность !!!
+		//???
+	}
+
 	if (oox_column->m_oStyle.IsInit())
 	{	
-		int xfd_id = oox_column->m_oStyle->GetValue();//это ваще то свойства cells - накатываем
+		int xfd_id = oox_column->m_oStyle->GetValue();
 
 		std::wstring style_cell_name  = ods_context->styles_context().find_odf_style_name(xfd_id,odf::style_family::TableCell);
-
-		ods_context->current_table().set_default_column_cell_style(style_cell_name );
+		ods_context->current_table().set_column_default_cell_style(style_cell_name );
+	}
+	else
+	{
+		//нужно добавить дефолтный стиль дл€ €чеек ƒјЌЌќ√ќ листа
+		//???
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format)
 {
+				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oBaseColWidth;
+				//nullable<SimpleTypes::COnOff<>>					m_oCustomHeight;
+				//nullable<SimpleTypes::CDouble>					m_oDefaultColWidth;
+				//nullable<SimpleTypes::CDouble>					m_oDefaultRowHeight;
+				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oOutlineLevelCol;
+				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oOutlineLevelRow;
+				//nullable<SimpleTypes::COnOff<>>					m_oThickBottom;
+				//nullable<SimpleTypes::COnOff<>>					m_oThickTop;
+				//nullable<SimpleTypes::COnOff<>>					m_oZeroHeight;
+//пока не красиво :(
+	if (oox_sheet_format->m_oDefaultColWidth.IsInit())
+	{
+		ods_context->styles_context().create_style(L"",odf::style_family::TableColumn, true, false, -1);		
+		{	
+			double width =  oox_sheet_format->m_oDefaultColWidth->GetValue();
+
+			odf::style* style = dynamic_cast<odf::style*>(ods_context->styles_context().last_state().get_office_element().get());
+			if (style)
+			{
+				odf::style_table_column_properties * column_properties = style->style_content_.get_style_table_column_properties();
+ 				if (column_properties)
+					column_properties->style_table_column_properties_attlist_.style_column_width_ = odf::length(width/2.,odf::length::cm);
+			}
+		}		
+		ods_context->styles_context().add_default(ods_context->styles_context().last_state());
+	}
+	if (oox_sheet_format->m_oDefaultRowHeight.IsInit())
+	{
+		ods_context->styles_context().create_style(L"",odf::style_family::TableRow, true, false, -1);	
+		{
+			double height = oox_sheet_format->m_oDefaultRowHeight->GetValue();
+
+			odf::style* style = dynamic_cast<odf::style*>(ods_context->styles_context().last_state().get_office_element().get());
+			if (style)
+			{
+				odf::style_table_row_properties * row_properties = style->style_content_.get_style_table_row_properties();
+ 				if (row_properties)
+					row_properties->style_table_row_properties_attlist_.style_row_height_ = odf::length(height,odf::length::pt);
+				row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = true; //???? не знаю cтоит ли 
+			}
+		}
+		ods_context->styles_context().add_default(ods_context->styles_context().last_state());
+	}
+
 }
 void XlsxConverter::convert_styles()
 {
@@ -234,6 +339,8 @@ void XlsxConverter::convert(double oox_font_size,  _CP_OPT(odf::font_size) & odf
 }
 void XlsxConverter::convert(double oox_size,  _CP_OPT(odf::length) & odf_size)
 {
+	//нужно сделать преобразовани€ типов oox_size
+	//???
 	odf_size = odf::length(oox_size, odf::length::pt);
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CFill * fill, odf::office_element_ptr  & odf_style_)
@@ -307,8 +414,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color)
 		unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
 		bool res=false;
 
-		//а вот нет CColorMapping на чтение !!!
-		switch(theme_ind)
+		//???
+		switch(theme_ind)//а вот нет CColorMapping на чтение !!!
 		{
 			case SimpleTypes::themecolorLight1:
 				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oLt1.tryGetRgb(ucR, ucG, ucB, ucA); break;

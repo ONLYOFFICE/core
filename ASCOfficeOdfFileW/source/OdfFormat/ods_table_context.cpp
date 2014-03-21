@@ -45,14 +45,8 @@ void ods_table_context::start_table(office_element_ptr & elm, std::wstring & nam
 
 void ods_table_context::end_table()
 {
-	state().convert();
 }
 
-void ods_table_context::add_column(office_element_ptr & elm_column, int repeated, const std::wstring & style_name)
-{
-	state().add_column(elm_column, repeated,style_name);
-
-}
 
 }
 }

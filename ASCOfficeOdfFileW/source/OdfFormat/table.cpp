@@ -31,7 +31,7 @@ void table_table_attlist::serialize(CP_ATTR_NODE)
 void table_table_row_attlist::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR(L"table:number-rows-repeated", table_number_rows_repeated_); 
-    CP_XML_ATTR(L"table:style-name", table_style_name_);
+    CP_XML_ATTR_OPT(L"table:style-name", table_style_name_);
     CP_XML_ATTR_OPT(L"table:default-cell-style-name", table_default_cell_style_name_);
     CP_XML_ATTR_OPT(L"table:visibility", table_visibility_);
 }

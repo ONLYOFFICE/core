@@ -30,9 +30,12 @@ public:
 	void process_master(office_element_ptr root );
 	void process_office(office_element_ptr root );
 
+	void clear_defaults()	{default_styles_.clear();}
+	void add_default(odf_style_state & state)	{default_styles_.push_back(state);}
 
-	std::wstring &			find_odf_style_name	(int oox_id_style, const style_family family);
-	office_element_ptr &	find_odf_style		(int oox_id_style, const style_family family);
+	std::wstring 			find_odf_style_name		(int oox_id_style, const style_family family);
+	office_element_ptr		find_odf_style			(int oox_id_style, const style_family family);
+	office_element_ptr		find_odf_style_default	(const style_family family);
 
     
     //void start_cell(const std::wstring & formula,
@@ -95,7 +98,9 @@ private:
     odf_conversion_context & context_;
     
 	std::list<odf_style_state> style_state_list_;
-    
+ 	
+	std::list<odf_style_state> default_styles_;//для внутренней работы .. переодически очищаемый частично или полностью
+   
 	std::list<odf_style_state> master_state_list_;
 
 	std::wstring get_name_family(const style_family & family);

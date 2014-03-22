@@ -471,7 +471,7 @@ void table_table_cell_content::serialize(std::wostream & _Wostream)
 {
 	BOOST_FOREACH(const office_element_ptr & elm, text_content_)
 	{
-		elm->serialize(_Wostream);
+		if (elm) elm->serialize(_Wostream);
 	}
 }
 // table:table-cell

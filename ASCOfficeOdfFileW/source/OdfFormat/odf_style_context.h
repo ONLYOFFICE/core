@@ -36,6 +36,8 @@ public:
 	std::wstring 			find_odf_style_name		(int oox_id_style, const style_family family);
 	office_element_ptr		find_odf_style			(int oox_id_style, const style_family family);
 	office_element_ptr		find_odf_style_default	(const style_family family);
+	
+	bool find_odf_style_state(int oox_id_style, const style_family family, odf_style_state *& state);
 
     
     //void start_cell(const std::wstring & formula,
@@ -85,7 +87,6 @@ public:
  //   double table_column_last_width() const;
 
     odf_style_state & last_state();
-    const odf_style_state & last_state() const;
 
  //   void start_hyperlink();
 	//std::wstring end_hyperlink(std::wstring const & ref, std::wstring const & href, std::wstring const & display);
@@ -97,11 +98,11 @@ private:
 
     odf_conversion_context & context_;
     
-	std::list<odf_style_state> style_state_list_;
+	std::vector<odf_style_state> style_state_list_;
  	
-	std::list<odf_style_state> default_styles_;//для внутренней работы .. переодически очищаемый частично или полностью
+	std::vector<odf_style_state> default_styles_;//для внутренней работы .. переодически очищаемый частично или полностью
    
-	std::list<odf_style_state> master_state_list_;
+	std::vector<odf_style_state> master_state_list_;
 
 	std::wstring get_name_family(const style_family & family);
 	std::wstring find_free_name(const style_family & family);

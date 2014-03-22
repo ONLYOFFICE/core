@@ -274,15 +274,13 @@ void common_xlink_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"xlink:href",		href_);
     CP_XML_ATTR_OPT(L"xlink:type",		type_);
     CP_XML_ATTR_OPT(L"xlink:show",		show_);    
-    CP_XML_ATTR_OPT(L"xlink:actuate",		actuate_);    
+    CP_XML_ATTR_OPT(L"xlink:actuate",	actuate_);    
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool common_value_and_type_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    if (!CP_APPLY_ATTR(L"office:value-type", office_value_type_, std::wstring(L"") ))
-        return false;
-    
+    CP_APPLY_ATTR(L"office:value-type", office_value_type_);
     CP_APPLY_ATTR(L"office:value", office_value_);
     CP_APPLY_ATTR(L"office:currency", office_currency_);
     CP_APPLY_ATTR(L"office:date-value", office_date_value_);
@@ -293,7 +291,7 @@ bool common_value_and_type_attlist::add_attributes( const xml::attributes_wc_ptr
 }
 void common_value_and_type_attlist::apply_from(const common_value_and_type_attlist & Other)
 {
-    office_value_type_ = Other.office_value_type_;
+    _CP_APPLY_PROP(office_value_type_ , Other.office_value_type_);
     _CP_APPLY_PROP(office_value_, Other.office_value_);
     _CP_APPLY_PROP(office_currency_, Other.office_currency_);
     _CP_APPLY_PROP(office_date_value_, Other.office_date_value_);
@@ -303,8 +301,7 @@ void common_value_and_type_attlist::apply_from(const common_value_and_type_attli
 }
 void common_value_and_type_attlist::serialize(CP_ATTR_NODE)
 {
-	CP_XML_ATTR(L"office:value-type", office_value_type_);
-
+	CP_XML_ATTR_OPT(L"office:value-type", office_value_type_);
     CP_XML_ATTR_OPT(L"office:value", office_value_);
     CP_XML_ATTR_OPT(L"office:currency", office_currency_);
     CP_XML_ATTR_OPT(L"office:date-value", office_date_value_);

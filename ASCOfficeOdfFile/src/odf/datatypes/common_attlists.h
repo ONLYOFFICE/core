@@ -26,6 +26,7 @@
 #include "drawfill.h"
 #include "clockvalue.h"
 #include "stylerepeat.h"
+#include "officevaluetype.h"
 
 #define _CP_APPLY_PROP(A, B) \
     if (B) \
@@ -210,7 +211,7 @@ public:
 	void serialize(CP_ATTR_NODE);
 
 public:
-    std::wstring office_value_type_;
+    _CP_OPT(office_value_type) office_value_type_;
     _CP_OPT(std::wstring) office_value_;
     _CP_OPT(std::wstring) office_currency_;
     _CP_OPT(std::wstring) office_date_value_;

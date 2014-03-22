@@ -9,7 +9,7 @@ struct XlsxCellType
     enum type { null, b, n, e, s, str, inlineStr };    
 };
 
-int odf_string_to_build_in(const std::wstring & odf_string);
+int odf_string_to_build_in(const int value_type);
 
 class xlsx_cell_format
 {

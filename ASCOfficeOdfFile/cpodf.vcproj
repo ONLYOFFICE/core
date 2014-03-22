@@ -749,6 +749,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\odf\datatypes\officevaluetype.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\odf\datatypes\officevaluetype.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\odf\datatypes\pageusage.cpp"
 				>
 			</File>

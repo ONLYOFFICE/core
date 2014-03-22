@@ -31,34 +31,23 @@ void xlsx_cell_format::set_num_format(int numFmt)
 
 namespace {
 
-struct odf2buildin
-{
-    std::wstring odf_string;
-    int build_in;
-};
-
-odf2buildin odf2buildin_map[] = 
-{
-    {L"", 0},
-    {L"float", 0},
-    {L"percentage", 10},
-    {L"currency", 0},
-    {L"date", 15},
-    {L"time", 21},
-    {L"boolean", 0},
-    {L"string", 49}
-};
-    
+	int odf2buildin_map[] = {0,0,0,10,15,21,0,49};
+//{
+//    {L"", 0},
+//    {L"float", 0},
+//    {L"currency", 0},
+//    {L"percentage", 10},
+//    {L"date", 15},
+//    {L"time", 21},
+//    {L"boolean", 0},
+//    {L"string", 49}
+//};
+//    
 }
 
-int odf_string_to_build_in(const std::wstring & odf_string)
+int odf_string_to_build_in(const int odf_type_value)
 {
-    BOOST_FOREACH(const odf2buildin & elm, odf2buildin_map)
-    {
-        if (elm.odf_string == odf_string)
-            return elm.build_in;
-    }
-    return 0;    
+    return odf2buildin_map[odf_type_value];    
 }
 
 }

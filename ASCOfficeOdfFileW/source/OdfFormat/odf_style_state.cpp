@@ -9,10 +9,11 @@
 namespace cpdoccore {
 namespace odf {
 
-odf_style_state::odf_style_state(odf_conversion_context & Context, office_element_ptr & elm, const style_family family ): context_(Context)   
+odf_style_state::odf_style_state(/*odf_conversion_context & Context, */office_element_ptr & elm, const style_family family )/*: context_(Context)*/   
 {        
 	odf_style_ = elm;
 	automatic_= false;
+	num_fmt_id_ =0;
 
 	style* style_ = dynamic_cast<style*>(elm.get());
 	if (!style_)return;

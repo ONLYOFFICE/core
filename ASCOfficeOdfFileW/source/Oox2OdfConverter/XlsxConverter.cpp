@@ -162,10 +162,19 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCell *oox_cell)
 
 	ods_context->start_cell(ref,ifx_style);
 
-				//nullable<CFormula>	m_oFormula;
-				//nullable<CSi>		m_oRichText;
-				//nullable<CText>		m_oValue;
+	if (oox_cell->m_oType.IsInit())
+		ods_context->current_table().set_cell_type(oox_cell->m_oType->GetValue());
 
+	if (oox_cell->m_oValue.IsInit())
+	{
+		ods_context->current_table().set_cell_value (string2std_string(oox_cell->m_oValue->m_sText));
+	}
+	if (oox_cell->m_oFormula.IsInit())
+	{
+	}
+	if (oox_cell->m_oRichText.IsInit())
+	{
+	}
 	ods_context->end_cell();
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
@@ -371,6 +380,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFill * fill, odf::office_element_
 			convert(fill->m_oPatternFill->m_oBgColor.GetPointer(), 
 				cell_properties->style_table_cell_properties_attlist_.common_background_color_attlist_.fo_background_color_);
 		}	
+					
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::background_color) & odf_bckgrd_color)
@@ -405,6 +415,14 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color)
 	}
 
 	SimpleTypes::Spreadsheet::CHexColor *oRgbColor=NULL;
+	
+	double dTintKf =1;
+	
+	if (color->m_oTint.IsInit())
+	{
+		dTintKf = 1. - color->m_oTint->GetValue();
+	}
+	
 	if(color->m_oThemeColor.IsInit())
 	{
 		OOX::CTheme * xlsx_theme= xlsx_document->GetTheme();
@@ -413,37 +431,38 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color)
 		//CString strColor = color->m_oThemeColor->ToString();
 		unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
 		bool res=false;
+		CString test;
 
 		//???
 		switch(theme_ind)//а вот нет CColorMapping на чтение !!!
 		{
-			case SimpleTypes::themecolorLight1:
+			case SimpleTypes::Spreadsheet::themecolorLight1:
 				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oLt1.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorLight2:
+			case SimpleTypes::Spreadsheet::themecolorLight2:
 				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oLt2.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorDark1:
+			case SimpleTypes::Spreadsheet::themecolorDark1:
 				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oDk1.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorDark2:
+			case SimpleTypes::Spreadsheet::themecolorDark2:
 				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oDk2.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorAccent1:
+			case SimpleTypes::Spreadsheet::themecolorAccent1:
 				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent1.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorAccent2:
+			case SimpleTypes::Spreadsheet::themecolorAccent2:
 				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent2.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorAccent3:
+			case SimpleTypes::Spreadsheet::themecolorAccent3:
 				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent3.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorAccent4:
+			case SimpleTypes::Spreadsheet::themecolorAccent4:
 				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent4.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorAccent5:
+			case SimpleTypes::Spreadsheet::themecolorAccent5:
 				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent5.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorAccent6:
+			case SimpleTypes::Spreadsheet::themecolorAccent6:
 				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent6.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorFollowedHyperlink:
+			case SimpleTypes::Spreadsheet::themecolorFollowedHyperlink:
 				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oFolHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorHyperlink:
+			case SimpleTypes::Spreadsheet::themecolorHyperlink:
 				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
 		}
 		if (res)
-			oRgbColor = new SimpleTypes::Spreadsheet::CHexColor(ucR,ucG,ucB,ucA);
+			oRgbColor = new SimpleTypes::Spreadsheet::CHexColor(ucR*dTintKf,ucG*dTintKf,ucB*dTintKf,ucA);
 	}
 	if(color->m_oIndexed.IsInit())
 	{
@@ -466,7 +485,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color)
 	if (oRgbColor)
 	{
 		CString str=oRgbColor->ToString();
-		odf_color = odf::color(std::wstring(L"#") + string2std_string(str.Right(str.GetLength()-2)));
+		odf_color = odf::color(std::wstring(L"#") + string2std_string(str.Right(6)));
 		delete oRgbColor;
 	}
 }
@@ -498,7 +517,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 
 	int id_parent	= xfc_style->m_oXfId.IsInit()		? xfc_style->m_oXfId->GetValue()	: -1; //parent 
 	int fill_id		= xfc_style->m_oFillId.IsInit()	? xfc_style->m_oFillId->GetValue()		: -1;
-	int numFmt_id	= xfc_style->m_oNumFmtId.IsInit()	? xfc_style->m_oNumFmtId->GetValue(): -1;
+	int numFmt_id	= xfc_style->m_oNumFmtId.IsInit()	? xfc_style->m_oNumFmtId->GetValue(): 0; //general
 	int font_id		= xfc_style->m_oFontId.IsInit()	? xfc_style->m_oFontId->GetValue()		: -1;
 	int border_id	= xfc_style->m_oBorderId.IsInit()	? xfc_style->m_oBorderId->GetValue(): -1;
 		
@@ -508,9 +527,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 	
 	if (xlsx_styles->m_oFonts.IsInit())		convert(xlsx_styles->m_oFonts->m_arrItems[font_id], elm_style); //проверять также applyFont
 	if (xlsx_styles->m_oFills.IsInit())		convert(xlsx_styles->m_oFills->m_arrItems[fill_id], elm_style); //проверять также applyFill
-	if (xlsx_styles->m_oNumFmts.IsInit())	convert(xlsx_styles->m_oNumFmts->m_arrItems[numFmt_id], elm_style); 
+	if (xlsx_styles->m_oNumFmts.IsInit())	convert(xlsx_styles->m_oNumFmts->m_arrItems[numFmt_id], elm_style); //+ applyNumberFormat
 	if (xlsx_styles->m_oBorders.IsInit())	convert(xlsx_styles->m_oBorders->m_arrItems[border_id], elm_style); 
 
+	ods_context->styles_context().last_state().set_number_format(numFmt_id);
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	odf::style* style = dynamic_cast<odf::style*>(elm_style.get());
 	if (!style)return;
 

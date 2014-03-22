@@ -29,6 +29,13 @@ struct ods_element_state
 	office_element_ptr style_elm;
 };
 
+struct ods_cell_state : ods_element_state
+{
+	std::wstring ref;
+	int col;
+	int row;
+};
+
 class ods_table_state
 {
 public:
@@ -47,19 +54,24 @@ public:
 		//void set_row_collapsed(bool Val);
 		void set_row_optimal_height(bool val);
 		void set_row_height(double height);
+	//void set_table_row_group(int count, bool collapsed, int level);
 		void set_row_default_cell_style(std::wstring & style_name);
 
 
-	//void set_table_row_group(int count, bool collapsed, int level);
 	//void start_cell(/*size_t columnsSpanned, size_t rowsSpanned*/);
+	void start_cell(office_element_ptr & elm ,office_element_ptr & style);
 	void end_cell();
 	void add_default_cell(office_element_ptr & cell, int repeated);
-	void start_cell(office_element_ptr & elm ,office_element_ptr & style);
-
-	office_element_ptr & current_row_element();
+	void set_cell_ref (std::wstring & ref, int col, int row);
+	void set_cell_format_value(int format);
+	void set_cell_type(int type);
+	void set_cell_value(std::wstring & value);
 
  //   void start_covered_cell();
  //   void end_covered_cell();
+
+	office_element_ptr & current_row_element();
+	office_element_ptr & current_cell_element();
 
  //   void set_current_cell_style_id(unsigned int xfId);
  //   int get_current_cell_style_id();
@@ -114,6 +126,8 @@ private:
  //   std::vector<xlsx_row_spanned> rows_spanned_;
 	std::vector<ods_element_state> columns_;
 	std::vector<ods_element_state> rows_;
+	
+	std::vector<ods_cell_state> cells_;
 	unsigned int columns_count_;
  //   xlsx_merge_cells merge_cells_; 
  //   xlsx_table_metrics xlsx_table_metrics_;

@@ -150,9 +150,16 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 	}
 
 	office_element_ptr style_elm;
+	int number_format =0;
 	if ( xfd_style >=0)
 	{
-		style_elm = styles_context().find_odf_style(xfd_style, style_family::TableCell);
+		odf_style_state  *style_state=NULL;
+		styles_context().find_odf_style_state(xfd_style, style_family::TableCell,style_state);
+		if (style_state)
+		{
+			style_elm = style_state->get_office_element();
+			number_format = style_state->get_number_format();
+		}
 	}
 
 	office_element_ptr cell_elm;
@@ -160,6 +167,8 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 	
 	ods_table_context_.state().start_cell(cell_elm, style_elm);
 	
+	ods_table_context_.state().set_cell_ref(ref,col,row);	
+	ods_table_context_.state().set_cell_format_value(number_format);
 }
 
 void ods_conversion_context::start_columns()

@@ -71,7 +71,7 @@ void xlsx_conversion_context::start_document()
     oox::xlsx_cell_format cellFormat;
    
 	cellFormat.set_cell_type(XlsxCellType::s);
-    cellFormat.set_num_format(oox::odf_string_to_build_in(L""));
+    cellFormat.set_num_format(oox::odf_string_to_build_in(0));
 
     default_style_ = get_style_manager().xfId(&textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, L"",true);
 

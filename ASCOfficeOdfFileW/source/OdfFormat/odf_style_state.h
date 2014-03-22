@@ -26,7 +26,7 @@ class odf_style_context;
 class odf_style_state
 {
 public:
-	odf_style_state(odf_conversion_context & Context, office_element_ptr & elm, const style_family style_family );
+	odf_style_state(/*odf_conversion_context & Context, */office_element_ptr & elm, const style_family style_family );
 
 	void set_name(std::wstring);
 
@@ -40,11 +40,17 @@ public:
 	office_element_ptr & get_office_element();
 
 	void add_child(office_element_ptr & child);
+
+	void	set_number_format(int id)	{num_fmt_id_ = id;}
+	int		get_number_format()			{return num_fmt_id_;}
 	
 private:
-	int				style_oox_id_;
 	std::wstring	style_oox_name_;
-	
+
+//инфа дл€ описани€ €чеек
+	int				style_oox_id_;
+	int				num_fmt_id_; //default =0 (general)
+///////	
 	bool automatic_;
 	bool root_;
 
@@ -52,7 +58,7 @@ private:
 	
 	office_element_ptr	odf_style_;
 
-	odf_conversion_context & context_;   
+	//odf_conversion_context & context_;   
 	friend class odf_style_context;
 };
 

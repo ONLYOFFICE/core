@@ -503,6 +503,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\officevaluetype.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\officevaluetype.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\pageusage.cpp"
 				>
 			</File>

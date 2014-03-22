@@ -188,7 +188,40 @@ office_element_ptr  & ods_table_state::current_row_element()
 	{
 	}
 }
-
+office_element_ptr  & ods_table_state::current_cell_element()
+{
+	if (cells_.size()>0)
+		return cells_.back().elm;
+	else
+	{
+	}
+}
+office_value_type::type oox_valuetype_2_odf(int oox_fmt)
+{
+	switch (oox_fmt)
+	{
+	case 2:
+	case 3:
+	case 4:
+		return office_value_type::Float;
+	case 9:
+	case 10:
+		return office_value_type::Percentage;
+	case 14:
+	case 15:
+	case 16:
+	case 17:
+		return office_value_type::Date;
+	case 18:
+	case 19:
+		return office_value_type::Time;
+	case 49:
+		return office_value_type::String;
+	case 0://general
+	default:
+		return office_value_type::String;
+	}
+}
 void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & style_elm)
 {
 	current_row_element()->add_child_element(elm);
@@ -196,12 +229,128 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(elm.get());
 	if (cell == NULL)return;
 	
-	odf::style* style = dynamic_cast<odf::style*>(rows_.back().style_elm.get());
-	if (style)
-	{
-		cell->table_table_cell_attlist_.table_style_name_=	style->style_name_;
-	}
+	std::wstring style_name;
+	
+	odf::style* style = dynamic_cast<odf::style*>(style_elm.get());
+	if (style)style_name = style->style_name_;
 
+	if (style) cell->table_table_cell_attlist_.table_style_name_=	style_name;
+
+	ods_cell_state state;
+	state.elm = elm;  state.repeated = 1;  state.style_name = style_name; state.style_elm = style_elm;
+	state.row=0;  state.col =0;
+  
+    cells_.push_back(state);
+}
+
+void ods_table_state::set_cell_format_value(int format_value)
+{
+	if (cells_.size() < 1)return;
+	if (format_value == 0)return;	//general .. need detect
+
+	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
+	if (cell == NULL)return;
+
+	common_value_and_type_attlist cell_type;
+	cell_type.office_value_type_ = office_value_type(oox_valuetype_2_odf(format_value));
+	
+	cell->table_table_cell_attlist_.common_value_and_type_attlist_ = cell_type;
+
+}
+void ods_table_state::set_cell_type(int type)
+{
+	if (cells_.size() < 1)return;
+
+	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
+	if (cell == NULL)return;
+
+	_CP_OPT(office_value_type) cell_type;
+	switch (type)
+	{
+	case 0:		cell_type = office_value_type(office_value_type::Boolean);
+		break;
+	case 4:		cell_type = office_value_type(office_value_type::Float);
+		break;
+	case 3:
+	case 5:		
+	case 6:		
+		cell_type = office_value_type(office_value_type::String);
+		break;
+	}
+	if (cell_type)
+	{
+		if (!cell->table_table_cell_attlist_.common_value_and_type_attlist_)
+		{
+			cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
+		}
+		cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
+	}
+}
+
+void ods_table_state::set_cell_value(std::wstring & value)
+{
+	if (cells_.size() < 1)return;
+
+	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
+	if (cell == NULL)return;
+
+	if (!cell->table_table_cell_attlist_.common_value_and_type_attlist_)
+	{
+		cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
+		cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::Float);
+		//временно... пока нет определялки типов
+	}
+	
+	if (cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_)
+	{
+		switch(cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_->get_type())
+		{
+		case office_value_type::String:
+			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_string_value_ = value;
+			break;
+		case office_value_type::Boolean:
+			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_boolean_value_ = value;
+			break;
+		case office_value_type::Date:
+			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_date_value_ = value;
+			break;
+		case office_value_type::Time:
+			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_time_value_ = value;
+			break;
+		case office_value_type::Currency:
+			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_currency_ = value;//единицы измерений
+		default:
+			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_ = value;
+		}
+	}
+	else
+	{
+		//general !!
+	}
+//  кэшированное значение
+	//start_text()
+	//start_paragraph();
+
+	office_element_ptr text_elm;
+	create_element(L"text", L"p",text_elm, &context_);
+
+	cells_.back().elm->add_child_element(text_elm);
+
+	//table_table_cell* cell = dynamic_cast<text_p*>(text_elm.get());
+	//end_paragraph();
+	//end_text();
+
+	
+
+}
+
+void ods_table_state::set_cell_ref (std::wstring & ref, int col, int row)
+{
+	if (cells_.size() < 1)return;
+
+	cells_.back().ref = ref;
+	cells_.back().col = col;
+	cells_.back().row = row;
 }
 void ods_table_state::end_cell()
 {

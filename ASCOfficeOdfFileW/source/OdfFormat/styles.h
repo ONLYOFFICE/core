@@ -267,18 +267,18 @@ public:
 	virtual void serialize(std::wostream & strm);
 
     // attr
-    std::wstring style_name_;
-    _CP_OPT( std::wstring ) style_display_name_; // optional 
-    style_family style_family_;
+    std::wstring			style_name_;
+    _CP_OPT( std::wstring ) style_display_name_; 
+    style_family			style_family_;
 
-    _CP_OPT( std::wstring ) style_parent_style_name_; // optional 
-    _CP_OPT( std::wstring ) style_next_style_name_; // optional 
-    _CP_OPT( std::wstring ) style_list_style_name_; // optional, may be empty
-    _CP_OPT( std::wstring ) style_master_page_name_; // optional
-   _CP_OPT( bool)			style_auto_update_; // optional, default = false
-    _CP_OPT( std::wstring ) style_data_style_name_; // // optional
-    _CP_OPT( std::wstring ) style_class_; // optional
-    _CP_OPT(std::wstring)	style_default_outline_level_;  // optional
+    _CP_OPT( std::wstring ) style_parent_style_name_; 
+    _CP_OPT( std::wstring ) style_next_style_name_; 
+    _CP_OPT( std::wstring ) style_list_style_name_; //  may be empty
+    _CP_OPT( std::wstring ) style_master_page_name_;
+	_CP_OPT( bool)			style_auto_update_; // default = false
+    _CP_OPT( std::wstring ) style_data_style_name_; 
+    _CP_OPT( std::wstring ) style_class_;
+    _CP_OPT(std::wstring)	style_default_outline_level_; 
 
 
     style_content style_content_;
@@ -727,7 +727,7 @@ public:
 
     bool style_protect_; // default false
 
-    _CP_OPT(bool) text_dont_balance_text_columns_;
+    _CP_OPT(Bool) text_dont_balance_text_columns_;
 
     common_writing_mode_attlist common_writing_mode_attlist_;
     
@@ -879,13 +879,13 @@ public:
     _CP_OPT(color) style_layout_grid_color_;
 
     // 15.2.26
-    _CP_OPT(bool) style_layout_grid_ruby_below_;  
+    _CP_OPT(Bool) style_layout_grid_ruby_below_;  
 
     // 15.2.27
-    _CP_OPT(bool) style_layout_grid_print_;
+    _CP_OPT(Bool) style_layout_grid_print_;
 
     // 15.2.28
-    _CP_OPT(bool) style_layout_grid_display_;
+    _CP_OPT(Bool) style_layout_grid_display_;
 
 };
 

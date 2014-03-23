@@ -22,6 +22,7 @@
 #include "direction.h"
 #include "wrapoption.h"
 #include "rotationalign.h"
+#include "bool.h"
 
 namespace cpdoccore { 
 namespace odf {
@@ -32,13 +33,14 @@ public:
     bool create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
    
 	void serialize(std::wostream & strm ,const wchar_t * ns, const wchar_t * name );
-private:
-    _CP_OPT(length)		style_width_;
-    _CP_OPT(percent)	style_rel_width_;
-    _CP_OPT(bool)		style_may_break_between_rows_;
-    _CP_OPT(border_model) table_border_model_;
-    _CP_OPT(bool)		table_display_;
-    _CP_OPT(table_align) table_align_;
+
+    _CP_OPT(length)			style_width_;
+    _CP_OPT(percent)		style_rel_width_;
+    _CP_OPT(Bool)			style_may_break_between_rows_;
+    _CP_OPT(border_model)	table_border_model_;
+    _CP_OPT(Bool)			table_display_;
+    _CP_OPT(table_align)	table_align_;
+	_CP_OPT(color)			tableooo_tab_color_;
 	
 	common_horizontal_margin_attlist	common_horizontal_margin_attlist_;
     common_vertical_margin_attlist		common_vertical_margin_attlist_;
@@ -47,8 +49,8 @@ private:
     common_break_attlist				common_break_attlist_;
     common_background_color_attlist		common_background_color_attlist_;
     common_shadow_attlist				common_shadow_attlist_;
-    common_keep_with_next_attlist	common_keep_with_next_attlist_;
-    common_writing_mode_attlist common_writing_mode_attlist_;
+    common_keep_with_next_attlist		common_keep_with_next_attlist_;
+    common_writing_mode_attlist			common_writing_mode_attlist_;
  
 	office_element_ptr style_background_image_;
 
@@ -85,7 +87,7 @@ public:
    
     _CP_OPT(length) style_column_width_;
     _CP_OPT(length) style_rel_column_width_;
-    _CP_OPT(bool)	style_use_optimal_column_width_;
+    _CP_OPT(Bool)	style_use_optimal_column_width_;
   
 	common_break_attlist common_break_attlist_;
 
@@ -120,7 +122,7 @@ public:
   
     _CP_OPT(length) style_row_height_;
     _CP_OPT(length) style_min_row_height_;
-    _CP_OPT(bool)	style_use_optimal_row_height_;
+    _CP_OPT(Bool)	style_use_optimal_row_height_;
     _CP_OPT(keep_together) fo_keep_together_;        
 
     common_background_color_attlist common_background_color_attlist_;
@@ -182,10 +184,10 @@ public:
 	_CP_OPT(wrap_option)	fo_wrap_option_;
 	_CP_OPT(rotation_align) style_rotation_align_;    
 	_CP_OPT(std::wstring)	style_cell_protect_;
-	_CP_OPT(bool)			style_print_content_;
+	_CP_OPT(Bool)			style_print_content_;
     _CP_OPT(unsigned int)	style_decimal_places_;
-    _CP_OPT(bool)			style_repeat_content_;
-    _CP_OPT(bool)			style_shrink_to_fit_;
+    _CP_OPT(Bool)			style_repeat_content_;
+    _CP_OPT(Bool)			style_shrink_to_fit_;
 
 };
 

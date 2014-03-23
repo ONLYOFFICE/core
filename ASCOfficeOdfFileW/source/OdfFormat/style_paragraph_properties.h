@@ -179,7 +179,7 @@ public:
     _CP_OPT(length) style_line_spacing_;                 // +
 
     // 15.5.4 style:font-independent-line-spacing
-    _CP_OPT(bool) style_font_independent_line_spacing_; // ???
+    _CP_OPT(Bool) style_font_independent_line_spacing_; // ???
 
     // 15.5.5 fo:text-align
     _CP_OPT(text_align) fo_text_align_;                  // +
@@ -188,7 +188,7 @@ public:
     _CP_OPT(text_align) fo_text_align_last_;
 
     // 15.5.7 style:justify-single-word
-    _CP_OPT(bool) style_justify_single_word_;
+    _CP_OPT(Bool) style_justify_single_word_;
 
     // 15.5.8 fo:keep-together
     _CP_OPT(keep_together) fo_keep_together_;            // +
@@ -215,7 +215,7 @@ public:
     office_element_ptr style_drop_cap_;
     
     // 15.5.16 style:register-true
-    _CP_OPT(bool) style_register_true_;
+    _CP_OPT(Bool) style_register_true_;
 
     // 15.5.17 fo:margin-left
     _CP_OPT(length_or_percent) fo_margin_left_;      // +
@@ -227,7 +227,7 @@ public:
     _CP_OPT(length_or_percent) fo_text_indent_;      // +
 
     // 15.5.19 style:auto-text-indent
-    _CP_OPT(bool) style_auto_text_indent_;           // ???
+    _CP_OPT(Bool) style_auto_text_indent_;           // ???
 
     // 15.5.20 fo:margin-top
     _CP_OPT(length_or_percent) fo_margin_top_;       // +
@@ -301,7 +301,7 @@ public:
     _CP_OPT(keep_together) fo_keep_with_next_;   // +
 
     // 15.5.30 text:number-lines
-    _CP_OPT(bool) text_number_lines_;
+    _CP_OPT(Bool) text_number_lines_;
 
     // 15.5.31 text:line-number
     _CP_OPT(unsigned int) text_line_number_;
@@ -322,10 +322,10 @@ public:
     _CP_OPT(writing_mode) style_writing_mode_;
 
     // 15.5.37 style:writing-mode-automatic
-    _CP_OPT(bool) style_writing_mode_automatic_;
+    _CP_OPT(Bool) style_writing_mode_automatic_;
 
     // 15.5.38 style:snap-to-layout-grid
-    _CP_OPT(bool) style_snap_to_layout_grid_;
+    _CP_OPT(Bool) style_snap_to_layout_grid_;
     
     // 15.5.39 style:page-number
     _CP_OPT(unsigned int) style_page_number_;
@@ -334,7 +334,7 @@ public:
     _CP_OPT(percent) style_background_transparency_;
 
     // 
-    _CP_OPT(bool) style_join_border_;
+    _CP_OPT(Bool) style_join_border_;
 };
 
 /// \class  style_paragraph_properties

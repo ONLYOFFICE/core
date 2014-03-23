@@ -30,7 +30,7 @@ public:
     common_padding_attlist common_padding_attlist_;
     common_background_color_attlist common_background_color_attlist_;
     common_shadow_attlist common_shadow_attlist_;
-    _CP_OPT(bool) style_dynamic_spacing_;
+    _CP_OPT(Bool) style_dynamic_spacing_;
     
 };
 

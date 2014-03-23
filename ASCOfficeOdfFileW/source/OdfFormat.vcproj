@@ -167,6 +167,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\bool.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\bool.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\bordermodel.cpp"
 				>
 			</File>

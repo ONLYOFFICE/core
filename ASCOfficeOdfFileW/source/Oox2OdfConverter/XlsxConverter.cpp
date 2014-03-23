@@ -79,6 +79,9 @@ void XlsxConverter::convert_sheets()
 					{
 						std::wstring name = string2std_string(pSheet->m_oName.get2());
 						ods_context->start_sheet(name);
+						if (pSheet->m_oState.IsInit() && (	pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleHidden || 
+															pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleVeryHidden))
+							ods_context->current_table().set_table_hidden(true);
 						convert(pWorksheet);
 						ods_context->end_sheet();						
 					}
@@ -93,8 +96,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	//текущие дефолтные свойства 
 	if (oox_sheet->m_oSheetFormatPr.IsInit())
 		convert(oox_sheet->m_oSheetFormatPr.GetPointer());
-	//if (oox_sheet->m_oSheetPr.IsInit())
-	//	convert(oox_sheet->m_oSheetPr.GetPointer());
+	if (oox_sheet->m_oSheetPr.IsInit())
+		convert(oox_sheet->m_oSheetPr.GetPointer());
 
 	//колонки
 	ods_context->start_columns();
@@ -118,7 +121,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row)
 
 	bool _default = true;
 	
-	if (oox_row->m_oHt.IsInit() || oox_row->m_oCustomFormat.IsInit()) _default = false;
+	if (oox_row->m_oHt.IsInit() || oox_row->m_oCustomHeight.IsInit() || oox_row->m_oHidden.IsInit() || oox_row->m_oCollapsed.IsInit()) _default = false;
 	
 	ods_context->start_row(row_number,1,_default);
 	
@@ -202,65 +205,97 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 		//???
 	}
 
+	std::wstring style_cell_name;
 	if (oox_column->m_oStyle.IsInit())
 	{	
 		int xfd_id = oox_column->m_oStyle->GetValue();
 
-		std::wstring style_cell_name  = ods_context->styles_context().find_odf_style_name(xfd_id,odf::style_family::TableCell);
-		ods_context->current_table().set_column_default_cell_style(style_cell_name );
+		style_cell_name  = ods_context->styles_context().find_odf_style_name(xfd_id,odf::style_family::TableCell);
 	}
 	else
 	{
 		//нужно добавить дефолтный стиль дл€ €чеек ƒјЌЌќ√ќ листа
 		//???
+		style_cell_name= ods_context->styles_context().find_odf_style_name_default(odf::style_family::TableCell);
+	}
+	if (style_cell_name.length() > 0)
+		ods_context->current_table().set_column_default_cell_style(style_cell_name );
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CSheetPr *oox_sheet_pr)
+{
+	if (!oox_sheet_pr)return;
+			//nullable<CString>					m_oCodeName;
+			//nullable<SimpleTypes::COnOff<>>		m_oEnableFormatConditionsCalculation;
+			//nullable<SimpleTypes::COnOff<>>		m_oFilterMode;
+			//nullable<SimpleTypes::COnOff<>>		m_oPublished;
+			//nullable<SimpleTypes::COnOff<>>		m_oSyncHorizontal;
+			//nullable<CString>					m_oSyncRef;
+			//nullable<SimpleTypes::COnOff<>>		m_oSyncVertical;
+			//nullable<SimpleTypes::COnOff<>>		m_oTransitionEntry;
+			//nullable<SimpleTypes::COnOff<>>		m_oTransitionEvaluation;
+	if (oox_sheet_pr->m_oTabColor.IsInit())
+	{
+		_CP_OPT(odf::color) odf_color;
+		convert(oox_sheet_pr->m_oTabColor.GetPointer(), odf_color);
+		ods_context->current_table().set_table_tab_color(odf_color);
 	}
 }
-void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format)
+void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_pr)
 {
+	if (!oox_sheet_format_pr)return;
 				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oBaseColWidth;
 				//nullable<SimpleTypes::COnOff<>>					m_oCustomHeight;
-				//nullable<SimpleTypes::CDouble>					m_oDefaultColWidth;
-				//nullable<SimpleTypes::CDouble>					m_oDefaultRowHeight;
 				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oOutlineLevelCol;
 				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oOutlineLevelRow;
 				//nullable<SimpleTypes::COnOff<>>					m_oThickBottom;
 				//nullable<SimpleTypes::COnOff<>>					m_oThickTop;
 				//nullable<SimpleTypes::COnOff<>>					m_oZeroHeight;
 //пока не красиво :(
-	if (oox_sheet_format->m_oDefaultColWidth.IsInit())
-	{
-		ods_context->styles_context().create_style(L"",odf::style_family::TableColumn, true, false, -1);		
-		{	
-			double width =  oox_sheet_format->m_oDefaultColWidth->GetValue();
-
-			odf::style* style = dynamic_cast<odf::style*>(ods_context->styles_context().last_state().get_office_element().get());
-			if (style)
-			{
-				odf::style_table_column_properties * column_properties = style->style_content_.get_style_table_column_properties();
- 				if (column_properties)
-					column_properties->style_table_column_properties_attlist_.style_column_width_ = odf::length(width/2.,odf::length::cm);
+//Cell default////////////////////////////
+	odf::odf_style_state  *default_cell_style=NULL;
+	ods_context->styles_context().find_odf_style_state(0,odf::style_family::TableCell, default_cell_style, true);
+	if (default_cell_style)
+		ods_context->styles_context().add_default(*default_cell_style);
+///Column///////////////////////////////////////////////////////////////////////////////////////
+	ods_context->styles_context().create_style(L"",odf::style_family::TableColumn, true, false, -1);		
+	{	
+		odf::style* style = dynamic_cast<odf::style*>(ods_context->styles_context().last_state().get_office_element().get());
+		if (style)
+		{
+			odf::style_table_column_properties * column_properties = style->style_content_.get_style_table_column_properties();
+			if (column_properties)
+			{		
+				column_properties->style_table_column_properties_attlist_.common_break_attlist_.fo_break_before_ = odf::fo_break(odf::fo_break::Auto);
+				if (oox_sheet_format_pr->m_oDefaultColWidth.IsInit())
+				{			
+					double width =  oox_sheet_format_pr->m_oDefaultColWidth->GetValue();
+					column_properties->style_table_column_properties_attlist_.style_column_width_ = odf::length(width/4.35,odf::length::cm);
+				}
 			}
-		}		
+		}
 		ods_context->styles_context().add_default(ods_context->styles_context().last_state());
 	}
-	if (oox_sheet_format->m_oDefaultRowHeight.IsInit())
+//Row default //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	{
-		ods_context->styles_context().create_style(L"",odf::style_family::TableRow, true, false, -1);	
+		if (oox_sheet_format_pr->m_oDefaultRowHeight.IsInit())
 		{
-			double height = oox_sheet_format->m_oDefaultRowHeight->GetValue();
+			ods_context->styles_context().create_style(L"",odf::style_family::TableRow, true, false, -1);	
+			double height = oox_sheet_format_pr->m_oDefaultRowHeight->GetValue();
 
 			odf::style* style = dynamic_cast<odf::style*>(ods_context->styles_context().last_state().get_office_element().get());
 			if (style)
 			{
 				odf::style_table_row_properties * row_properties = style->style_content_.get_style_table_row_properties();
  				if (row_properties)
+				{
 					row_properties->style_table_row_properties_attlist_.style_row_height_ = odf::length(height,odf::length::pt);
-				row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = true; //???? не знаю cтоит ли 
+					row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = true; //???? не знаю cтоит ли 
+					row_properties->style_table_row_properties_attlist_.common_break_attlist_.fo_break_before_ = odf::fo_break(odf::fo_break::Auto);
+				}
 			}
+			ods_context->styles_context().add_default(ods_context->styles_context().last_state());
 		}
-		ods_context->styles_context().add_default(ods_context->styles_context().last_state());
 	}
-
 }
 void XlsxConverter::convert_styles()
 {
@@ -404,65 +439,52 @@ void XlsxConverter::convert(OOX::Spreadsheet::CBorder *border, odf::office_eleme
 
 }
 
-void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color) & odf_color)
+void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color) & odf_color)//стоит ли сюда тащить odf type???
 {
 	if (!color)return;
 
+	unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
+	bool result = false;
+	
 	if(color->m_oRgb.IsInit())//easy, faster,realy  !!
 	{
-		odf_color = odf::color(std::wstring(L"#") + string2std_string(color->m_oRgb->ToString()));
-		return;
+		ucR = color->m_oRgb->Get_R(); 
+		ucB = color->m_oRgb->Get_B(); 
+		ucG = color->m_oRgb->Get_G(); 
+		ucA = color->m_oRgb->Get_A(); 
+		result = true;
 	}
-
-	SimpleTypes::Spreadsheet::CHexColor *oRgbColor=NULL;
-	
-	double dTintKf =1;
-	
-	if (color->m_oTint.IsInit())
-	{
-		dTintKf = 1. - color->m_oTint->GetValue();
-	}
-	
 	if(color->m_oThemeColor.IsInit())
 	{
 		OOX::CTheme * xlsx_theme= xlsx_document->GetTheme();
-
 		int theme_ind = color->m_oThemeColor->GetValue();
-		//CString strColor = color->m_oThemeColor->ToString();
-		unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
-		bool res=false;
-		CString test;
-
-		//???
 		switch(theme_ind)//а вот нет CColorMapping на чтение !!!
 		{
 			case SimpleTypes::Spreadsheet::themecolorLight1:
-				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oLt1.tryGetRgb(ucR, ucG, ucB, ucA); break;
+				result = xlsx_theme->m_oThemeElements.m_oClrScheme.m_oLt1.tryGetRgb(ucR, ucG, ucB, ucA); break;
 			case SimpleTypes::Spreadsheet::themecolorLight2:
-				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oLt2.tryGetRgb(ucR, ucG, ucB, ucA); break;
+				result = xlsx_theme->m_oThemeElements.m_oClrScheme.m_oLt2.tryGetRgb(ucR, ucG, ucB, ucA); break;
 			case SimpleTypes::Spreadsheet::themecolorDark1:
-				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oDk1.tryGetRgb(ucR, ucG, ucB, ucA); break;
+				result = xlsx_theme->m_oThemeElements.m_oClrScheme.m_oDk1.tryGetRgb(ucR, ucG, ucB, ucA); break;
 			case SimpleTypes::Spreadsheet::themecolorDark2:
-				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oDk2.tryGetRgb(ucR, ucG, ucB, ucA); break;
+				result = xlsx_theme->m_oThemeElements.m_oClrScheme.m_oDk2.tryGetRgb(ucR, ucG, ucB, ucA); break;
 			case SimpleTypes::Spreadsheet::themecolorAccent1:
-				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent1.tryGetRgb(ucR, ucG, ucB, ucA); break;
+				result = xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent1.tryGetRgb(ucR, ucG, ucB, ucA); break;
 			case SimpleTypes::Spreadsheet::themecolorAccent2:
-				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent2.tryGetRgb(ucR, ucG, ucB, ucA); break;
+				result = xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent2.tryGetRgb(ucR, ucG, ucB, ucA); break;
 			case SimpleTypes::Spreadsheet::themecolorAccent3:
-				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent3.tryGetRgb(ucR, ucG, ucB, ucA); break;
+				result = xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent3.tryGetRgb(ucR, ucG, ucB, ucA); break;
 			case SimpleTypes::Spreadsheet::themecolorAccent4:
-				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent4.tryGetRgb(ucR, ucG, ucB, ucA); break;
+				result = xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent4.tryGetRgb(ucR, ucG, ucB, ucA); break;
 			case SimpleTypes::Spreadsheet::themecolorAccent5:
-				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent5.tryGetRgb(ucR, ucG, ucB, ucA); break;
+				result = xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent5.tryGetRgb(ucR, ucG, ucB, ucA); break;
 			case SimpleTypes::Spreadsheet::themecolorAccent6:
-				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent6.tryGetRgb(ucR, ucG, ucB, ucA); break;
+				result = xlsx_theme->m_oThemeElements.m_oClrScheme.m_oAccent6.tryGetRgb(ucR, ucG, ucB, ucA); break;
 			case SimpleTypes::Spreadsheet::themecolorFollowedHyperlink:
-				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oFolHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
+				result = xlsx_theme->m_oThemeElements.m_oClrScheme.m_oFolHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
 			case SimpleTypes::Spreadsheet::themecolorHyperlink:
-				res=xlsx_theme->m_oThemeElements.m_oClrScheme.m_oHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
+				result = xlsx_theme->m_oThemeElements.m_oClrScheme.m_oHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
 		}
-		if (res)
-			oRgbColor = new SimpleTypes::Spreadsheet::CHexColor(ucR*dTintKf,ucG*dTintKf,ucB*dTintKf,ucA);
 	}
 	if(color->m_oIndexed.IsInit())
 	{
@@ -472,21 +494,41 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color)
 
 		if(xlsx_styles->m_oColors.IsInit() && xlsx_styles->m_oColors->m_oIndexedColors.IsInit())
 		{
-			if (xlsx_styles->m_oColors->m_oIndexedColors->m_arrItems[ind])
-				oRgbColor = new SimpleTypes::Spreadsheet::CHexColor(xlsx_styles->m_oColors->m_oIndexedColors->m_arrItems[ind]->m_oRgb.get());
+			if ((xlsx_styles->m_oColors->m_oIndexedColors->m_arrItems[ind]) && 
+				(xlsx_styles->m_oColors->m_oIndexedColors->m_arrItems[ind]->m_oRgb.IsInit()))
+			{			
+				ucR = xlsx_styles->m_oColors->m_oIndexedColors->m_arrItems[ind]->m_oRgb->Get_R(); 
+				ucB = xlsx_styles->m_oColors->m_oIndexedColors->m_arrItems[ind]->m_oRgb->Get_B(); 
+				ucG = xlsx_styles->m_oColors->m_oIndexedColors->m_arrItems[ind]->m_oRgb->Get_G(); 
+				ucA = xlsx_styles->m_oColors->m_oIndexedColors->m_arrItems[ind]->m_oRgb->Get_A(); 
+				result = true;
+			}
 		}
 		else
 		{
-			unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
-			if(OOX::Spreadsheet::CIndexedColors::GetDefaultRGBAByIndex(ind, ucR, ucG, ucB, ucA))
-				oRgbColor = new SimpleTypes::Spreadsheet::CHexColor(ucR,ucG,ucB,ucA);
+			result = OOX::Spreadsheet::CIndexedColors::GetDefaultRGBAByIndex(ind, ucR, ucG, ucB, ucA);
 		}
 	}
-	if (oRgbColor)
+	if (result == true)
 	{
-		CString str=oRgbColor->ToString();
-		odf_color = odf::color(std::wstring(L"#") + string2std_string(str.Right(6)));
-		delete oRgbColor;
+		if ((color->m_oTint.IsInit()) && (color->m_oTint->GetValue() > 0))
+		{
+			ucR = color->m_oTint->GetValue() * 0xff + (1. - color->m_oTint->GetValue()) * ucR; 
+			ucG = color->m_oTint->GetValue() * 0xff + (1. - color->m_oTint->GetValue()) * ucG;
+			ucB = color->m_oTint->GetValue() * 0xff + (1. - color->m_oTint->GetValue()) * ucB; 
+		}
+		if ((color->m_oTint.IsInit()) && (color->m_oTint->GetValue() <  0))
+		{
+			ucR = -color->m_oTint->GetValue() * 0x00 + (1. + color->m_oTint->GetValue()) * ucR; 
+			ucG = -color->m_oTint->GetValue() * 0x00 + (1. + color->m_oTint->GetValue()) * ucG; 
+			ucB = -color->m_oTint->GetValue() * 0x00 + (1. + color->m_oTint->GetValue()) * ucB; 
+		}
+		SimpleTypes::Spreadsheet::CHexColor *oRgbColor = new SimpleTypes::Spreadsheet::CHexColor(ucR,ucG,ucB,ucA);
+		if (oRgbColor)
+		{		
+			odf_color = odf::color(std::wstring(L"#") + string2std_string(oRgbColor->ToString().Right(6)));
+			delete oRgbColor;
+		}
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CCellStyle * cell_style, int oox_id)
@@ -525,10 +567,14 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 
 	odf::office_element_ptr & elm_style = ods_context->styles_context().last_state().get_office_element();
 	
-	if (xlsx_styles->m_oFonts.IsInit())		convert(xlsx_styles->m_oFonts->m_arrItems[font_id], elm_style); //провер€ть также applyFont
-	if (xlsx_styles->m_oFills.IsInit())		convert(xlsx_styles->m_oFills->m_arrItems[fill_id], elm_style); //провер€ть также applyFill
-	if (xlsx_styles->m_oNumFmts.IsInit())	convert(xlsx_styles->m_oNumFmts->m_arrItems[numFmt_id], elm_style); //+ applyNumberFormat
-	if (xlsx_styles->m_oBorders.IsInit())	convert(xlsx_styles->m_oBorders->m_arrItems[border_id], elm_style); 
+	if (xlsx_styles->m_oFonts.IsInit() && (id_parent < 0 || xfc_style->m_oApplyFont.IsInit()))		
+				convert(xlsx_styles->m_oFonts->m_arrItems[font_id], elm_style); 
+	if (xlsx_styles->m_oFills.IsInit() && (id_parent < 0 || xfc_style->m_oApplyFill.IsInit()))
+				convert(xlsx_styles->m_oFills->m_arrItems[fill_id], elm_style); 
+	if (xlsx_styles->m_oNumFmts.IsInit() && (id_parent < 0 || xfc_style->m_oApplyNumberFormat.IsInit()))	
+				convert(xlsx_styles->m_oNumFmts->m_arrItems[numFmt_id], elm_style); 
+	if (xlsx_styles->m_oBorders.IsInit() && (id_parent < 0 || xfc_style->m_oApplyBorder.IsInit()))	
+				convert(xlsx_styles->m_oBorders->m_arrItems[border_id], elm_style); 
 
 	ods_context->styles_context().last_state().set_number_format(numFmt_id);
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////

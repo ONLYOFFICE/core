@@ -92,14 +92,15 @@ std::wstring odf_style_context::find_odf_style_name(int oox_id_style, const styl
 	}
 	return L"";
 }
-office_element_ptr odf_style_context::find_odf_style(int oox_id_style, const style_family family)
+office_element_ptr odf_style_context::find_odf_style(int oox_id_style, const style_family family, bool root)
 {
 	//for (std::list<odf_style_state>::iterator it = style_state_list_.begin(); it != style_state_list_.end(); it++)
 	for (int i=0;i<style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i].odf_style_)
 		{
-			if (style_state_list_[i].style_family_ == family)
+			if (style_state_list_[i].style_family_ == family && 
+				style_state_list_[i].root_ == root)
 			{
 				if (oox_id_style >=0 && style_state_list_[i].style_oox_id_ == oox_id_style)	return style_state_list_[i].get_office_element();
 			}
@@ -108,14 +109,15 @@ office_element_ptr odf_style_context::find_odf_style(int oox_id_style, const sty
 	}
 	return office_element_ptr();
 }
-bool odf_style_context::find_odf_style_state(int oox_id_style, const style_family family, odf_style_state *& state)
+bool odf_style_context::find_odf_style_state(int oox_id_style, const style_family family, odf_style_state *& state, bool root)
 {
 	//for (std::list<odf_style_state>::iterator it = style_state_list_.begin(); it != style_state_list_.end(); it++)
 	for (int i=0;i<style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i].odf_style_)
 		{
-			if (style_state_list_[i].style_family_ == family)
+			if (style_state_list_[i].style_family_ == family && 
+				style_state_list_[i].root_ == root)
 			{
 				if (oox_id_style >=0 && style_state_list_[i].style_oox_id_ == oox_id_style)
 				{
@@ -133,12 +135,24 @@ office_element_ptr odf_style_context::find_odf_style_default(const style_family 
 	//for (std::list<odf_style_state>::iterator it = default_styles_.begin(); it != default_styles_.end(); it++)
 	for (int i=0;i<default_styles_.size(); i++)
 	{
-		if (style_state_list_[i].odf_style_)
+		if (default_styles_[i].odf_style_)
 		{
-			if (style_state_list_[i].style_family_ == family)return default_styles_[i].get_office_element();
+			if (default_styles_[i].style_family_ == family)return default_styles_[i].get_office_element();
 		}
 	}
 	return office_element_ptr();
+}
+std::wstring odf_style_context::find_odf_style_name_default(const style_family family)
+{
+	//for (std::list<odf_style_state>::iterator it = default_styles_.begin(); it != default_styles_.end(); it++)
+	for (int i=0;i<default_styles_.size(); i++)
+	{
+		if (default_styles_[i].odf_style_)
+		{
+			if (default_styles_[i].style_family_ == family)return default_styles_[i].get_name();
+		}
+	}
+	return L"";
 }
 std::wstring odf_style_context::get_name_family(const style_family & family)
 {

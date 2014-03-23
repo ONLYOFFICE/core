@@ -25,21 +25,33 @@ ods_table_state::ods_table_state(ods_conversion_context & Context, office_elemen
 	current_table_column_ =0;
 }
 
-void ods_table_state::set_name(std::wstring name)
+void ods_table_state::set_table_name(std::wstring name)
 {
 	table_table* table = dynamic_cast<table_table*>(office_table_.get());
 	if (table == NULL)return;
 
-	tableName_ = name;
 	table->table_table_attlist_.table_name_ = name;
 }
 
-void ods_table_state::convert()
+void ods_table_state::set_table_hidden(bool Val)
 {
-	if (office_table_ == NULL)return;
+	if (!office_table_style_)return;
 
-	//??? 
+	style_table_properties *table_properties = office_table_style_->style_content_.get_style_table_properties();
+	if (table_properties == NULL)return;
 
+	table_properties->table_format_properties_.table_display_ = !Val;
+
+}
+
+void ods_table_state::set_table_tab_color(_CP_OPT(color) & _color)
+{
+	if (!office_table_style_)return;
+
+	style_table_properties *table_properties = office_table_style_->style_content_.get_style_table_properties();
+	if (table_properties == NULL)return;
+
+	table_properties->table_format_properties_.tableooo_tab_color_ = _color;
 }
 
 void ods_table_state::set_table_style(office_element_ptr & elm)
@@ -79,6 +91,8 @@ void ods_table_state::add_column(office_element_ptr & elm, int repeated,office_e
 }
 void ods_table_state::set_column_default_cell_style(std::wstring & style_name)
 {
+	if (style_name.length() < 1)return;
+
 	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
 	if (column == NULL)return;
 
@@ -93,7 +107,7 @@ void ods_table_state::set_column_width(int width)//cm, pt ???
 	style_table_column_properties * column_properties = style->style_content_.get_style_table_column_properties();
  	if (column_properties == NULL)return; //error ????
 
-	column_properties->style_table_column_properties_attlist_.style_column_width_ = length(width/2.,length::cm);
+	column_properties->style_table_column_properties_attlist_.style_column_width_ = length(width/4.35,length::cm);
 }
 void ods_table_state::set_column_optimal_width(bool val)
 {
@@ -106,6 +120,7 @@ void ods_table_state::set_column_optimal_width(bool val)
 	column_properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = val;
 
 }
+
 unsigned int ods_table_state::columns_count() const
 {
     return columns_count_;
@@ -132,6 +147,8 @@ void ods_table_state::add_row(office_element_ptr & elm, int repeated,office_elem
 	if (style_name.length()>0) row->table_table_row_attlist_.table_style_name_ = style_ref(style_name);
 	row->table_table_row_attlist_.table_number_rows_repeated_ = repeated;
 
+	row_default_cell_style_name_= L"";
+
 }
 void ods_table_state::set_row_hidden(bool Val)
 {
@@ -149,7 +166,6 @@ void ods_table_state::set_row_optimal_height(bool val)
  	if (row_properties == NULL)return; //error ????
 
 	row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = val;
-
 }
 
 void ods_table_state::set_row_height(double height)
@@ -160,7 +176,8 @@ void ods_table_state::set_row_height(double height)
 	style_table_row_properties * row_properties = style->style_content_.get_style_table_row_properties();
  	if (row_properties == NULL)return; //error ????
 
-	row_properties->style_table_row_properties_attlist_.style_row_height_ = length(height,length::pt);
+	row_properties->style_table_row_properties_attlist_.style_row_height_ = length(height/4.85,length::cm);
+
 }
 int ods_table_state::current_column() const
 {
@@ -178,6 +195,7 @@ void ods_table_state::set_row_default_cell_style(std::wstring & style_name)
 	if (row == NULL)return;
 
 	row->table_table_row_attlist_.table_default_cell_style_name_ = style_ref(style_name);
+	row_default_cell_style_name_= style_name;
 }
 
 office_element_ptr  & ods_table_state::current_row_element()
@@ -230,15 +248,19 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 	if (cell == NULL)return;
 	
 	std::wstring style_name;
-	
+
 	odf::style* style = dynamic_cast<odf::style*>(style_elm.get());
 	if (style)style_name = style->style_name_;
+	else style_name = row_default_cell_style_name_;
 
-	if (style) cell->table_table_cell_attlist_.table_style_name_=	style_name;
+	if (style_name.length() > 0) 
+		cell->table_table_cell_attlist_.table_style_name_=	style_name;
 
 	ods_cell_state state;
 	state.elm = elm;  state.repeated = 1;  state.style_name = style_name; state.style_elm = style_elm;
 	state.row=0;  state.col =0;
+
+	current_table_column_++;
   
     cells_.push_back(state);
 }
@@ -361,8 +383,13 @@ void ods_table_state::add_default_cell(office_element_ptr &  elm, int repeated)
 	
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(elm.get());
 	if (cell == NULL)return;
+	
+	current_table_column_+=repeated;
 
 	cell->table_table_cell_attlist_.table_number_columns_repeated_ = repeated;
+
+	if (row_default_cell_style_name_.length() > 0)
+		cell->table_table_cell_attlist_.table_style_name_ = row_default_cell_style_name_;
 }
 }
 }

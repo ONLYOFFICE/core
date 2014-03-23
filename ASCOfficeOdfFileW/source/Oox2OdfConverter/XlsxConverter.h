@@ -58,8 +58,8 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CRow *oox_row);
 		void convert(OOX::Spreadsheet::CCell *oox_cell);
 
-		void convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format);
-		//void convert(OOX::Spreadsheet::CSheetPr *oox_sheet_format);
+		void convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_pr);
+		void convert(OOX::Spreadsheet::CSheetPr *oox_sheet_pr);
 		
 		void convert(OOX::Spreadsheet::CFill * fill, odf::office_element_ptr  & odf_style_);
 		void convert(OOX::Spreadsheet::CFont * font, odf::office_element_ptr  & odf_style_);

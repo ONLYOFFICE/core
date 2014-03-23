@@ -30,14 +30,20 @@ void table_table_attlist::serialize(CP_ATTR_NODE)
 }
 void table_table_row_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR(L"table:number-rows-repeated", table_number_rows_repeated_); 
+	if (table_number_rows_repeated_ > 1)
+	{
+		CP_XML_ATTR(L"table:number-rows-repeated", table_number_rows_repeated_); 
+	}
     CP_XML_ATTR_OPT(L"table:style-name", table_style_name_);
     CP_XML_ATTR_OPT(L"table:default-cell-style-name", table_default_cell_style_name_);
     CP_XML_ATTR_OPT(L"table:visibility", table_visibility_);
 }
 void table_table_cell_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR(L"table:number-columns-repeated", table_number_columns_repeated_);
+	if (table_number_columns_repeated_ > 1)
+	{
+		CP_XML_ATTR(L"table:number-columns-repeated", table_number_columns_repeated_);
+	}
     CP_XML_ATTR_OPT(L"table:style-name", table_style_name_);
     CP_XML_ATTR_OPT(L"table:content-validation-name", table_content_validation_name_);
     CP_XML_ATTR_OPT(L"table:formula", table_formula_);
@@ -71,7 +77,10 @@ void table_linked_source_attlist::serialize(CP_ATTR_NODE)
 }
 void table_table_column_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR(L"table:number-columns-repeated", table_number_columns_repeated_);
+	if (table_number_columns_repeated_ > 1)
+	{
+		CP_XML_ATTR(L"table:number-columns-repeated", table_number_columns_repeated_);
+	}
     CP_XML_ATTR_OPT(L"table:style-name", table_style_name_);
     CP_XML_ATTR_OPT(L"table:visibility", table_visibility_);  
     CP_XML_ATTR_OPT(L"table:default-cell-style-name", table_default_cell_style_name_);

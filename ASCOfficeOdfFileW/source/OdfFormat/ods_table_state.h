@@ -19,6 +19,7 @@ namespace odf {
 class ods_conversion_context;
 class table_table;
 class style;
+class color;
 
 struct ods_element_state
 {
@@ -40,9 +41,10 @@ class ods_table_state
 {
 public:
 	ods_table_state(ods_conversion_context & Context, office_element_ptr & elm);
-
-	void set_name(std::wstring);
-	void set_table_style(office_element_ptr & style);
+		void set_table_name(std::wstring);
+		void set_table_style(office_element_ptr & _style);
+		void set_table_hidden(bool Val);
+		void set_table_tab_color(_CP_OPT(color) & _color);
 
 	void add_column(office_element_ptr & elm, int repeated ,office_element_ptr & style);
 		void set_column_width(int width);
@@ -105,19 +107,17 @@ public:
 	//	int level;
 	//	bool collapsed;
 	//}group_row_;
-	void convert();
 private:
     ods_conversion_context & context_;   
 	
-	office_element_ptr office_table_;
-	
-	style*			office_table_style_;
+	office_element_ptr	office_table_;	
+	style*				office_table_style_;//??? может хранить как office_element_ptr ???
 
 	//std::wstring table_style_;
-	std::wstring tableName_;
+	//std::wstring tableName_;
  //   std::wstring table_row_style_;
  //   std::vector<std::wstring> column_default_cell_style_name_;
- //   std::wstring row_default_cell_style_name_;
+	std::wstring row_default_cell_style_name_;
  //   std::wstring cell_style_;
 	int current_table_column_;
 	int current_table_row_;

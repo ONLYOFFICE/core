@@ -280,7 +280,7 @@ void paragraph_format_properties::apply_from(const paragraph_format_properties &
     _CP_APPLY_PROP(style_writing_mode_automatic_, Other.style_writing_mode_automatic_);
     _CP_APPLY_PROP(style_snap_to_layout_grid_, Other.style_snap_to_layout_grid_);
     _CP_APPLY_PROP(style_page_number_, Other.style_page_number_);
-    _CP_APPLY_PROP(style_background_transparency_, Other.style_join_border_);
+    _CP_APPLY_PROP(style_background_transparency_, Other.style_background_transparency_);
     _CP_APPLY_PROP(style_join_border_, Other.style_join_border_);
 }
 

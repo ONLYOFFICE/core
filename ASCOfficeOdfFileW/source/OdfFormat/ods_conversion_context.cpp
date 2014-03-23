@@ -5,6 +5,9 @@
 
 #include "office_spreadsheet.h"
 
+#include "styles.h"
+#include "style_table_properties.h"
+
 namespace cpdoccore { 
 namespace odf {
 
@@ -56,6 +59,14 @@ void ods_conversion_context::start_row(int _start_row, int repeated, bool _defau
 	{
 		styles_context().create_style(L"",style_family::TableRow, true, false, -1);
 		style_elm = styles_context().last_state().get_office_element();
+		
+		style* _style = dynamic_cast<style*>(style_elm.get());
+		if (!_style)return;		
+
+		style_table_row_properties * row_properties = _style->style_content_.get_style_table_row_properties();
+ 		if (row_properties == NULL)return; //error ????
+
+		row_properties->style_table_row_properties_attlist_.common_break_attlist_.fo_break_before_ = fo_break(fo_break::Auto);
 	}
 
 	office_element_ptr row_elm;
@@ -151,6 +162,8 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 
 	office_element_ptr style_elm;
 	int number_format =0;
+
+	std::wstring style_cell_name;
 	if ( xfd_style >=0)
 	{
 		odf_style_state  *style_state=NULL;
@@ -159,16 +172,20 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 		{
 			style_elm = style_state->get_office_element();
 			number_format = style_state->get_number_format();
+			style_cell_name = style_state->get_name();
+		}
+		else
+		{//error
 		}
 	}
 
 	office_element_ptr cell_elm;
 	create_element(L"table", L"table-cell",cell_elm,this);
 	
-	ods_table_context_.state().start_cell(cell_elm, style_elm);
+	current_table().start_cell(cell_elm, style_elm);
 	
-	ods_table_context_.state().set_cell_ref(ref,col,row);	
-	ods_table_context_.state().set_cell_format_value(number_format);
+	current_table().set_cell_ref(ref,col,row);	
+	current_table().set_cell_format_value(number_format);
 }
 
 void ods_conversion_context::start_columns()
@@ -176,8 +193,10 @@ void ods_conversion_context::start_columns()
 }
 void ods_conversion_context::end_columns()
 {
-	//add default last column
-	add_column(ods_table_context_.state().columns_count()+1,1024,true);
+	//add default last column  - ≈—Ћ» они не прописаны в исходном (1024 - от  балды)
+	//вопрос - если и добавл€ть то  с каким стилем???
+	if (ods_table_context_.state().columns_count() < 1024)
+		add_column(ods_table_context_.state().columns_count()+1,1024,true);
 }
 void ods_conversion_context::start_rows()
 {
@@ -203,14 +222,30 @@ void ods_conversion_context::add_column(int start_column, int repeated, bool _de
 	}
 	else
 	{
+		//по сути в этом стиле раличные опции ширины колонок тока .. а если свойства совпадают - можно сгенерить один, хот€ выше и указано что стили разные.
+		//то есть в оо раздел€ют оох стиль на 2 (дл€ колонки собственно, и описалово €чеек в колонки)
 		styles_context().create_style(L"",style_family::TableColumn, true, false, -1);
 		style_elm = styles_context().last_state().get_office_element();
+		
+		style* _style = dynamic_cast<style*>(style_elm.get());
+		if (!_style)return;		
+
+		style_table_column_properties * column_properties = _style->style_content_.get_style_table_column_properties();
+ 		if (column_properties == NULL)return; //error ????
+
+		column_properties->style_table_column_properties_attlist_.common_break_attlist_.fo_break_before_ = fo_break(fo_break::Auto);
 	}
 
 	office_element_ptr column_elm;
 	create_element(L"table", L"table-column",column_elm,this);
 	
-	ods_table_context_.state().add_column(column_elm, repeated, style_elm);
+	current_table().add_column(column_elm, repeated, style_elm);
+
+	if (_default)
+	{
+		std::wstring style_cell_name= styles_context().find_odf_style_name_default(odf::style_family::TableCell);
+		current_table().set_column_default_cell_style(style_cell_name);
+	}
 }
 
 

@@ -38,7 +38,7 @@ public:
     _CP_OPT(std::wstring) table_protection_key_; 
     _CP_OPT(std::wstring) table_print_ranges_;
 
-   _CP_OPT(bool) table_protected_; // default false
+   _CP_OPT(Bool) table_protected_; // default false
     bool table_print_; // default true
 	
 	bool table_use_first_row_styles_; // default false;
@@ -58,7 +58,8 @@ public:
 	table_table_row_attlist() : table_number_rows_repeated_(1){}
 
 	unsigned int table_number_rows_repeated_; // default 1
-    _CP_OPT(style_ref) table_style_name_;
+    
+	_CP_OPT(style_ref) table_style_name_;
     _CP_OPT(style_ref) table_default_cell_style_name_;
     _CP_OPT(table_visibility) table_visibility_; // default Visible
 
@@ -78,7 +79,7 @@ public:
 
     _CP_OPT(common_value_and_type_attlist) common_value_and_type_attlist_;
 
-    _CP_OPT(bool) table_protect_; // default false
+    _CP_OPT(Bool) table_protect_; // default false
         
 	void serialize(CP_ATTR_NODE);    
 };

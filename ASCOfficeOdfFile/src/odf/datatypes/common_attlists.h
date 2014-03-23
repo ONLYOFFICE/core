@@ -5,6 +5,7 @@
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
+#include "bool.h"
 #include "lengthorpercent.h"
 #include "fobreak.h"
 #include "backgroundcolor.h"
@@ -62,7 +63,7 @@ public:
 	_CP_OPT(std::wstring)		draw_fill_hatch_name_;
 	_CP_OPT(std::wstring)		draw_opacity_name_;
 	
-	_CP_OPT(bool)				draw_fill_hatch_solid_;
+	_CP_OPT(Bool)				draw_fill_hatch_solid_;
 	_CP_OPT(style_repeat)		style_repeat_;
 };
 
@@ -318,7 +319,7 @@ public:
 
 public:
     std::wstring style_num_format_;
-    _CP_OPT(bool) style_num_letter_sync_;
+    _CP_OPT(Bool) style_num_letter_sync_;
 
 };
 
@@ -564,7 +565,7 @@ public:
     _CP_OPT(std::wstring) table_end_cell_address_;
     _CP_OPT(length) table_end_x_;
     _CP_OPT(length) table_end_y_;
-    _CP_OPT(bool) table_table_background_;
+    _CP_OPT(Bool) table_table_background_;
     common_text_anchor_attlist common_text_anchor_attlist_;
 
 };
@@ -638,8 +639,8 @@ public:
 
 public:
     _CP_OPT(std::wstring) presentation_class_;
-    _CP_OPT(bool) presentation_placeholder_;
-    _CP_OPT(bool) presentation_user_transformed_;
+    _CP_OPT(Bool) presentation_placeholder_;
+    _CP_OPT(Bool) presentation_user_transformed_;
     
 };
 
@@ -655,7 +656,7 @@ public:
     _CP_OPT(std::wstring) number_language_;
     _CP_OPT(std::wstring) number_country_;
     _CP_OPT(std::wstring) number_title_;
-    _CP_OPT(bool)			number_volatile_;
+    _CP_OPT(Bool)			number_volatile_;
     _CP_OPT(std::wstring) number_transliteration_format_;
     _CP_OPT(std::wstring) number_transliteration_language_;
     _CP_OPT(std::wstring) number_transliteration_country_;
@@ -683,7 +684,7 @@ public:
 public:
     _CP_OPT(presentation_class) presentation_class_;
 	_CP_OPT(std::wstring) style_name_;
-	_CP_OPT(bool) presentation_placeholder_;
+	_CP_OPT(Bool) presentation_placeholder_;
 
 };
 

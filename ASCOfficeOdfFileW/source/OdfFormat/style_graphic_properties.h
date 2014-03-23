@@ -65,7 +65,7 @@ public:
 
     common_margin_attlist				common_margin_attlist_;
 
-    _CP_OPT(bool) style_print_content_;
+    _CP_OPT(Bool) style_print_content_;
 
     _CP_OPT(std::wstring) style_protect_;
 
@@ -91,7 +91,7 @@ public:
     
     common_background_color_attlist common_background_color_attlist_;
     
-    _CP_OPT(bool) style_editable_;
+    _CP_OPT(Bool) style_editable_;
 
     _CP_OPT(style_wrap) style_wrap_;
 
@@ -99,13 +99,13 @@ public:
 
     _CP_OPT(integer_or_nolimit) style_number_wrapped_paragraphs_;
 
-    _CP_OPT(bool) style_wrap_contour_;
+    _CP_OPT(Bool) style_wrap_contour_;
 
     _CP_OPT(wrap_contour_mode) style_wrap_contour_mode_;
 
     _CP_OPT(run_through) style_run_through_; 
 
-    _CP_OPT(bool) style_flow_with_text_;
+    _CP_OPT(Bool) style_flow_with_text_;
 
     _CP_OPT(std::wstring) style_overflow_behavior_;
 

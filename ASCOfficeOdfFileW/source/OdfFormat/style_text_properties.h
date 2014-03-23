@@ -9,6 +9,7 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 
+#include "bool.h"
 #include "style_ref.h"
 #include "fontvariant.h"
 #include "texttransform.h"
@@ -66,10 +67,10 @@ public:
     _CP_OPT(color)           fo_color_;                      // +
     
     // 15.4.4 style:use-window-font-color
-    _CP_OPT(bool)            style_use_window_font_color_;
+    _CP_OPT(Bool)            style_use_window_font_color_;
     
     // 15.4.5 style:text-outline
-    _CP_OPT(bool)            style_text_outline_;            // +
+    _CP_OPT(Bool)            style_text_outline_;            // +
     
     // 15.4.6 style:text-line-through-type
     _CP_OPT(line_type)       style_text_line_through_type_;  // +
@@ -207,10 +208,10 @@ public:
     _CP_OPT(line_mode) style_text_line_through_mode_;
     
     // 15.4.35 style:letter-kerning
-    _CP_OPT(bool) style_letter_kerning_;
+    _CP_OPT(Bool) style_letter_kerning_;
     
     // 15.4.36 style:text-blinking
-    _CP_OPT(bool) style_text_blinking_;
+    _CP_OPT(Bool) style_text_blinking_;
 
     // 15.4.37 fo:background-color
     _CP_OPT(background_color) fo_background_color_;
@@ -237,7 +238,7 @@ public:
     _CP_OPT(text_rotation_scale) style_text_rotation_scale_;
 
     // 15.4.44 fo:hyphenate
-    _CP_OPT(bool) fo_hyphenate_;
+    _CP_OPT(Bool) fo_hyphenate_;
 
     // 15.4.45 fo:hyphenation-remain-char-count
     _CP_OPT(unsigned int) fo_hyphenation_remain_char_count_;

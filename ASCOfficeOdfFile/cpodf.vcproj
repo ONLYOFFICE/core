@@ -387,6 +387,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\odf\datatypes\bool.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\odf\datatypes\bool.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\odf\datatypes\bordermodel.cpp"
 				>
 			</File>

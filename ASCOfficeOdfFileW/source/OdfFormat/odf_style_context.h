@@ -34,10 +34,12 @@ public:
 	void add_default(odf_style_state & state)	{default_styles_.push_back(state);}
 
 	std::wstring 			find_odf_style_name		(int oox_id_style, const style_family family);
-	office_element_ptr		find_odf_style			(int oox_id_style, const style_family family);
+	office_element_ptr		find_odf_style			(int oox_id_style, const style_family family, bool root = false);
+	
+	std::wstring			find_odf_style_name_default(const style_family family);
 	office_element_ptr		find_odf_style_default	(const style_family family);
 	
-	bool find_odf_style_state(int oox_id_style, const style_family family, odf_style_state *& state);
+	bool find_odf_style_state(int oox_id_style, const style_family family, odf_style_state *& state, bool root = false);
 
     
     //void start_cell(const std::wstring & formula,

@@ -19,7 +19,7 @@ public:
 	void end_sheet();
 
 	void start_columns();
-		void add_column(int start_column, int repeated, bool _default = false);
+		void add_column(int start_column, int repeated, int level = 0, bool _default = false);
 	void end_columns();
 
 	void start_rows();

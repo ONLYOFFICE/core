@@ -22,6 +22,7 @@ public:
     odf_style_context(odf_conversion_context & Context/*, ods_text_context & textCotnext*/);
 
     void create_style(std::wstring name, const style_family style_family, bool automatic = false, bool root = false, int oox_id = -1);
+    void create_default(const style_family style_family);
 
 	office_element_ptr & add_or_find(std::wstring name, const style_family family, bool automatic = false, bool root = false, int id = -1);
 
@@ -30,7 +31,7 @@ public:
 	void process_master(office_element_ptr root );
 	void process_office(office_element_ptr root );
 
-	void clear_defaults()	{default_styles_.clear();}
+	void reset_defaults();	
 	void add_default(odf_style_state & state)	{default_styles_.push_back(state);}
 
 	std::wstring 			find_odf_style_name		(int oox_id_style, const style_family family);

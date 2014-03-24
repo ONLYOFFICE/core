@@ -9,16 +9,27 @@
 namespace cpdoccore {
 namespace odf {
 
-odf_style_state::odf_style_state(/*odf_conversion_context & Context, */office_element_ptr & elm, const style_family family )/*: context_(Context)*/   
+odf_style_state::odf_style_state(office_element_ptr & elm, const style_family family )
 {        
 	odf_style_ = elm;
+	
 	automatic_= false;
+	default_ = false;
+
 	num_fmt_id_ =0;
+	style_family_ = family;
 
 	style* style_ = dynamic_cast<style*>(elm.get());
-	if (!style_)return;
+	if (style_)
+	{
+		style_->style_family_ = style_family_;
+	}
+	default_style* default_style_ = dynamic_cast<default_style*>(elm.get());
 
-	style_->style_family_ = style_family_ = family;
+	if (default_style_)
+	{
+		default_style_->style_family_ = style_family_;
+	}
 }
 
 office_element_ptr & odf_style_state::get_office_element()
@@ -52,6 +63,10 @@ void odf_style_state::set_automatic(bool val)
 void odf_style_state::set_root(bool val)//метка того что в файле styles, а не content
 {
 	root_ = val;
+}
+void odf_style_state::set_default(bool val)
+{
+	default_ = val;
 }
 void odf_style_state::convert()
 {

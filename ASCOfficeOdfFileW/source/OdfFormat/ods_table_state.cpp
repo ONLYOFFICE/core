@@ -20,7 +20,7 @@ namespace odf {
 ods_table_state::ods_table_state(ods_conversion_context & Context, office_element_ptr & elm): context_(Context)
 {     
 	office_table_ = elm; 
-	columns_count_=0;
+
 	current_table_row_ =0;
 	current_table_column_ =0;
 }
@@ -79,7 +79,9 @@ void ods_table_state::add_column(office_element_ptr & elm, int repeated,office_e
 
 	ods_element_state state = {elm, repeated,style_name, style_elm};
   
-	columns_count_ += repeated;
+	if (repeated > 10000)repeated = 1024;//????
+
+	current_table_column_ += repeated;
     columns_.push_back(state);
 
 	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
@@ -121,10 +123,10 @@ void ods_table_state::set_column_optimal_width(bool val)
 
 }
 
-unsigned int ods_table_state::columns_count() const
+void ods_table_state::set_table_dimension(std::wstring ref)
 {
-    return columns_count_;
 }
+
 void ods_table_state::add_row(office_element_ptr & elm, int repeated,office_element_ptr & style_elm)
 {
     current_table_column_ = 0; 
@@ -191,11 +193,14 @@ int ods_table_state::current_row() const
 
 void ods_table_state::set_row_default_cell_style(std::wstring & style_name)
 {
-	table_table_row* row = dynamic_cast<table_table_row*>(rows_.back().elm.get());
-	if (row == NULL)return;
+	row_default_cell_style_name_= style_name;	//обязательно нужно определить default-style (table_cell)!!!
+	
+	//if (style_name.length() < 1) return;
 
-	row->table_table_row_attlist_.table_default_cell_style_name_ = style_ref(style_name);
-	row_default_cell_style_name_= style_name;
+	//table_table_row* row = dynamic_cast<table_table_row*>(rows_.back().elm.get());
+	//if (row == NULL)return;
+
+	//row->table_table_row_attlist_.table_default_cell_style_name_ = style_ref(style_name);
 }
 
 office_element_ptr  & ods_table_state::current_row_element()

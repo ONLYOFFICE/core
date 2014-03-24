@@ -38,7 +38,7 @@ void ods_conversion_context::end_sheet()
 {
 	ods_table_context_.end_table();
 	
-	styles_context().clear_defaults();
+	styles_context().reset_defaults();
 }
 void ods_conversion_context::start_row(int _start_row, int repeated, bool _default)
 {
@@ -73,6 +73,12 @@ void ods_conversion_context::start_row(int _start_row, int repeated, bool _defau
 	create_element(L"table", L"table-row",row_elm,this);
 	
 	ods_table_context_.state().add_row(row_elm, repeated, style_elm);
+
+	if ( _default)
+	{
+		//std::wstring style_cell_name= styles_context().find_odf_style_name_default(odf::style_family::TableCell);
+		//current_table().set_row_default_cell_style(style_cell_name);
+	}
 }
 void ods_conversion_context::end_row()
 {
@@ -195,8 +201,8 @@ void ods_conversion_context::end_columns()
 {
 	//add default last column  - ЕСЛИ они не прописаны в исходном (1024 - от  балды)
 	//вопрос - если и добавлять то  с каким стилем???
-	if (ods_table_context_.state().columns_count() < 1024)
-		add_column(ods_table_context_.state().columns_count()+1,1024,true);
+	if (ods_table_context_.state().current_column() < 1 )
+		add_column(ods_table_context_.state().current_column()+1,1024,true);
 }
 void ods_conversion_context::start_rows()
 {
@@ -209,9 +215,9 @@ void ods_conversion_context::end_rows()
 }
 void ods_conversion_context::add_column(int start_column, int repeated, bool _default)
 {
-	if (start_column > ods_table_context_.state().columns_count()+1)
+	if (start_column > ods_table_context_.state().current_column()+1)
 	{
-		int repeated_default = start_column - ods_table_context_.state().columns_count()-1;
+		int repeated_default = start_column - ods_table_context_.state().current_column()-1;
 		add_column(start_column-repeated_default,repeated_default,true);
 	}
 /////////////////////////////////////////////////////////////////

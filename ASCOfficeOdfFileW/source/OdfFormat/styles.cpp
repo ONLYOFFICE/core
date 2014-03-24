@@ -211,7 +211,7 @@ void default_style::serialize(std::wostream & strm)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR(L"style-family", style_family_);
+			CP_XML_ATTR(L"style:family", style_family_);
 			style_content_.serialize(CP_XML_STREAM());
 		}
 	}

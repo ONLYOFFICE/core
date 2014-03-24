@@ -128,13 +128,18 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row)
 	if (oox_row->m_oHidden.IsInit())		ods_context->current_table().set_row_hidden(true);
 	if (oox_row->m_oCollapsed.IsInit())		ods_context->current_table().set_row_hidden(true);
 	
+	std::wstring style_cell_name;
 	if (oox_row->m_oS.IsInit() && ( oox_row->m_oCustomFormat.IsInit() && oox_row->m_oCustomFormat->GetValue()==1))
 	{
 		int xfd_id = oox_row->m_oS->GetValue();
 
-		std::wstring style_cell_name  = ods_context->styles_context().find_odf_style_name(xfd_id,odf::style_family::TableCell);
-		ods_context->current_table().set_row_default_cell_style(style_cell_name );
+		style_cell_name  = ods_context->styles_context().find_odf_style_name(xfd_id,odf::style_family::TableCell);
+	}else
+	{
+		//style_cell_name  = ods_context->styles_context().find_odf_style_name_default(odf::style_family::TableCell);
 	}
+	ods_context->current_table().set_row_default_cell_style(style_cell_name );
+	
 	if (oox_row->m_oHt.IsInit() == true)
 	{
 		double height = oox_row->m_oHt->GetValue();
@@ -259,6 +264,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 ///Column///////////////////////////////////////////////////////////////////////////////////////
 	ods_context->styles_context().create_style(L"",odf::style_family::TableColumn, true, false, -1);		
 	{	
+		double width = 8.1; // из приложния MS Office 2010
+		//в xlsx необязательно задавать ширину (колонок) - дефолтное по приложению. в oo - обязательно
 		odf::style* style = dynamic_cast<odf::style*>(ods_context->styles_context().last_state().get_office_element().get());
 		if (style)
 		{
@@ -268,38 +275,42 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 				column_properties->style_table_column_properties_attlist_.common_break_attlist_.fo_break_before_ = odf::fo_break(odf::fo_break::Auto);
 				if (oox_sheet_format_pr->m_oDefaultColWidth.IsInit())
 				{			
-					double width =  oox_sheet_format_pr->m_oDefaultColWidth->GetValue();
-					column_properties->style_table_column_properties_attlist_.style_column_width_ = odf::length(width/4.35,odf::length::cm);
+					width =  oox_sheet_format_pr->m_oDefaultColWidth->GetValue();
 				}
+		column_properties->style_table_column_properties_attlist_.style_column_width_ = odf::length(width/4.35,odf::length::cm);
 			}
 		}
 		ods_context->styles_context().add_default(ods_context->styles_context().last_state());
 	}
 //Row default //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	{
-		if (oox_sheet_format_pr->m_oDefaultRowHeight.IsInit())
-		{
-			ods_context->styles_context().create_style(L"",odf::style_family::TableRow, true, false, -1);	
-			double height = oox_sheet_format_pr->m_oDefaultRowHeight->GetValue();
-
-			odf::style* style = dynamic_cast<odf::style*>(ods_context->styles_context().last_state().get_office_element().get());
-			if (style)
+		ods_context->styles_context().create_style(L"",odf::style_family::TableRow, true, false, -1);	
+		odf::style* style = dynamic_cast<odf::style*>(ods_context->styles_context().last_state().get_office_element().get());
+		if (style)
+		{		
+			odf::style_table_row_properties * row_properties = style->style_content_.get_style_table_row_properties();
+			if (row_properties)
 			{
-				odf::style_table_row_properties * row_properties = style->style_content_.get_style_table_row_properties();
- 				if (row_properties)
+				if (oox_sheet_format_pr->m_oDefaultRowHeight.IsInit())
 				{
-					row_properties->style_table_row_properties_attlist_.style_row_height_ = odf::length(height,odf::length::pt);
-					row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = true; //???? не знаю cтоит ли 
-					row_properties->style_table_row_properties_attlist_.common_break_attlist_.fo_break_before_ = odf::fo_break(odf::fo_break::Auto);
+					double height = oox_sheet_format_pr->m_oDefaultRowHeight->GetValue();
+					row_properties->style_table_row_properties_attlist_.style_row_height_ = odf::length(height/32.,odf::length::cm);
 				}
+				row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = true; //???? не знаю cтоит ли 
+				row_properties->style_table_row_properties_attlist_.common_break_attlist_.fo_break_before_ = odf::fo_break(odf::fo_break::Auto);
 			}
-			ods_context->styles_context().add_default(ods_context->styles_context().last_state());
 		}
+		ods_context->styles_context().add_default(ods_context->styles_context().last_state());
 	}
 }
 void XlsxConverter::convert_styles()
 {
 	if (!ods_context) return;
+
+//	add default styles
+	ods_context->styles_context().create_default(odf::style_family::TableCell);
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 	OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->GetStyles();
 	
 	if (!xlsx_styles)return;
@@ -310,7 +321,7 @@ void XlsxConverter::convert_styles()
 	{
 		convert(xlsx_styles->m_oCellStyleXfs->m_arrItems[i] , i, false, true);
 	}
-	
+///////////////////////////////////	
 	for (long i=0;i< xlsx_styles->m_oCellXfs->m_oCount->GetValue(); i++)
 	{
 		convert(xlsx_styles->m_oCellXfs->m_arrItems[i],i, true,false);
@@ -588,7 +599,5 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 	}
 	odf::style_table_cell_properties * cell_properties = style->style_content_.get_style_table_cell_properties();
 	
-		
-
 }
 } // namespace Docx2Odt

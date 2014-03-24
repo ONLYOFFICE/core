@@ -26,12 +26,13 @@ class odf_style_context;
 class odf_style_state
 {
 public:
-	odf_style_state(/*odf_conversion_context & Context, */office_element_ptr & elm, const style_family style_family );
+	odf_style_state(office_element_ptr & elm, const style_family style_family );
 
 	void set_name(std::wstring);
 
 	void set_automatic(bool val);
 	void set_root(bool val);
+	void set_default(bool val);
 
 	std::wstring & get_name();
 
@@ -49,16 +50,16 @@ private:
 
 //инфа дл€ описани€ €чеек
 	int				style_oox_id_;
-	int				num_fmt_id_; //default =0 (general)
+	int				num_fmt_id_; //default =0 (general) 
 ///////	
 	bool automatic_;
 	bool root_;
+	bool default_; // это дл€ тех стилей что в root
 
 	style_family style_family_;
 	
 	office_element_ptr	odf_style_;
 
-	//odf_conversion_context & context_;   
 	friend class odf_style_context;
 };
 

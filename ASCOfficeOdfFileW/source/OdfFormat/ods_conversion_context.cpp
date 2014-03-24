@@ -202,7 +202,7 @@ void ods_conversion_context::end_columns()
 	//add default last column  - ЕСЛИ они не прописаны в исходном (1024 - от  балды)
 	//вопрос - если и добавлять то  с каким стилем???
 	if (ods_table_context_.state().current_column() < 1 )
-		add_column(ods_table_context_.state().current_column()+1,1024,true);
+		add_column(ods_table_context_.state().current_column()+1,1024,0,true);
 }
 void ods_conversion_context::start_rows()
 {
@@ -213,14 +213,25 @@ void ods_conversion_context::end_rows()
 	start_row(ods_table_context_.state().current_row()+1,1024,true);
 	end_row();
 }
-void ods_conversion_context::add_column(int start_column, int repeated, bool _default)
+void ods_conversion_context::add_column(int start_column, int repeated, int level, bool _default)
 {
 	if (start_column > ods_table_context_.state().current_column()+1)
 	{
 		int repeated_default = start_column - ods_table_context_.state().current_column()-1;
-		add_column(start_column-repeated_default,repeated_default,true);
+		add_column(start_column-repeated_default,repeated_default,0,true);
 	}
 /////////////////////////////////////////////////////////////////
+	while (level < current_table().current_level())
+	{
+		current_table().end_column_group();
+	}
+	while (level > current_table().current_level())
+	{
+		office_element_ptr column_group_elm;
+		create_element(L"table", L"table-column-group",column_group_elm,this);
+		current_table().start_column_group(column_group_elm);
+	}
+
 	office_element_ptr	style_elm;
 	if ( _default)
 	{

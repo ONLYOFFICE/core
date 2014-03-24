@@ -193,7 +193,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 	int repeated =	(oox_column->m_oMax.IsInit() ? oox_column->m_oMax->GetValue() : 0) - 
 					(oox_column->m_oMin.IsInit() ? oox_column->m_oMin->GetValue() : 0) + 1;
 
-	ods_context->add_column(start_column, repeated);
+	int level = 0;
+	if (oox_column->m_oOutlineLevel.IsInit())
+	{
+		level = oox_column->m_oOutlineLevel->GetValue();
+	}
+
+	ods_context->add_column(start_column, repeated, level);
 
 	double width = oox_column->m_oWidth.IsInit() ? oox_column->m_oWidth->GetValue() : -1;
 

@@ -28,6 +28,8 @@ struct ods_element_state
 	int repeated;
 	std::wstring style_name;
 	office_element_ptr style_elm;
+
+	int level;
 };
 
 struct ods_cell_state : ods_element_state
@@ -51,6 +53,11 @@ public:
 		void set_column_width(int width);
 		void set_column_optimal_width(bool val);
 		void set_column_default_cell_style(std::wstring & style_name);
+
+	void start_column_group(office_element_ptr & elm);
+	void end_column_group();
+		
+	int current_level() {return current_level_.size()-1;}
 
 	void add_row(office_element_ptr & elm, int repeated ,office_element_ptr & style);//const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
 		void set_row_hidden(bool Val);
@@ -82,8 +89,7 @@ public:
 	int current_column() const;
 	int current_row() const;
 
- //   unsigned int current_columns_spaned() const;
- //   unsigned int current_rows_spanned(unsigned int Column) const;
+   //unsigned int current_row_level(unsigned int Column) const;
  //   
  //   xlsx_table_metrics & get_table_metrics() { return xlsx_table_metrics_; }
  //   xlsx_drawing_context & get_drawing_context() { return xlsx_drawing_context_; }
@@ -111,6 +117,9 @@ private:
     ods_conversion_context & context_;   
 	
 	office_element_ptr	office_table_;	
+	
+	//office_element_ptr	current_level_;	
+
 	style*				office_table_style_;//??? может хранить как office_element_ptr ???
 
 	//std::wstring table_style_;
@@ -121,11 +130,15 @@ private:
  //   std::wstring cell_style_;
 	int current_table_column_;
 	int current_table_row_;
+
+	int current_column_level_;
  //   unsigned int columns_spanned_num_;
  //   std::wstring columns_spanned_style_;
  //   std::vector<xlsx_row_spanned> rows_spanned_;
 	std::vector<ods_element_state> columns_;
 	std::vector<ods_element_state> rows_;
+	
+	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней
 	
 	std::vector<ods_cell_state> cells_;
 	//unsigned int columns_count_;

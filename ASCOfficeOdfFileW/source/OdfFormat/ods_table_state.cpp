@@ -23,6 +23,11 @@ ods_table_state::ods_table_state(ods_conversion_context & Context, office_elemen
 
 	current_table_row_ =0;
 	current_table_column_ =0;
+
+	current_column_level_ = 1;
+
+	current_level_.push_back(office_table_);
+
 }
 
 void ods_table_state::set_table_name(std::wstring name)
@@ -68,16 +73,46 @@ void ods_table_state::set_table_style(office_element_ptr & elm)
 
 
 }
+void ods_table_state::start_column_group(office_element_ptr & elm)
+{
+	current_column_level_++;
+
+	current_level_.back()->add_child_element(elm);
+	current_level_.push_back(elm);
+}
+
+void ods_table_state::end_column_group()
+{
+	current_column_level_--;
+
+	//if (current_column_level_ == 1)
+	//{
+	//	current_level_ = office_table_;
+	//	return;
+	//}
+	current_level_.pop_back();
+
+	////find last add current_column_level_
+	//for (long i = columns_.size()-1; i >= 0; i--)
+	//{
+	//	if (columns_[i].level == current_column_level_)
+	//	{
+	//		current_level_ = columns_[i].elm;
+	//		break;
+	//	}
+	//}
+}
+
 void ods_table_state::add_column(office_element_ptr & elm, int repeated,office_element_ptr & style_elm)
 {
-	office_table_->add_child_element(elm);
+	current_level_.back()->add_child_element(elm);
 
 	std::wstring style_name;
 
 	odf::style* style = dynamic_cast<odf::style*>(style_elm.get());
 	if (style)style_name = style->style_name_;
 
-	ods_element_state state = {elm, repeated,style_name, style_elm};
+	ods_element_state state = {elm, repeated,style_name, style_elm, current_column_level_};
   
 	if (repeated > 10000)repeated = 1024;//????
 

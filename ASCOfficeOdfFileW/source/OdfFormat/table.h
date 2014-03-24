@@ -331,8 +331,8 @@ public:
     {
     }
 
-    table_table_column_group_attlist table_table_column_group_attlist_;
-    table_columns_and_groups table_columns_and_groups_;
+    table_table_column_group_attlist	table_table_column_group_attlist_;
+    table_columns_and_groups			table_columns_and_groups_;
 
 };
 
@@ -356,8 +356,8 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-    table_table_row_attlist table_table_row_attlist_;
-    office_element_ptr_array content_; // table-table-cell, table-covered-table-cell
+    table_table_row_attlist		table_table_row_attlist_;
+    office_element_ptr_array	content_; // table-table-cell, table-covered-table-cell
     
 };
 
@@ -608,14 +608,14 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-    table_table_attlist table_table_attlist_;
-    office_element_ptr table_table_source_;//table-table-source
+    table_table_attlist				table_table_attlist_;
+    office_element_ptr				table_table_source_;//table-table-source
     //office-dde-source
     //table-scenario
     //office-forms
-    office_element_ptr table_shapes_;
-    table_columns_and_groups table_columns_and_groups_;//table-columns-and-groups
-    table_rows_and_groups table_rows_and_groups_;
+    office_element_ptr				table_shapes_;
+    table_columns_and_groups		table_columns_and_groups_;//table-columns-and-groups
+    table_rows_and_groups			table_rows_and_groups_;
 
 };
 

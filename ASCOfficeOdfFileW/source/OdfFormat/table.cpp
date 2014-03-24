@@ -455,7 +455,10 @@ void table_columns_and_groups::add_child_element(office_element_ptr & child_elem
 
         elm->add_child_element(child_element);
         content_.push_back(elm);
-
+	}
+	else
+	{
+		not_applicable_element(L"table-columns-and-groups", L"", L"");
 	}
 }
 void table_columns_and_groups::serialize(std::wostream & _Wostream)

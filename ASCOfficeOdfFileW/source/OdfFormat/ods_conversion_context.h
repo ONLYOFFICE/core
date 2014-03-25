@@ -23,7 +23,7 @@ public:
 	void end_columns();
 
 	void start_rows();
-		void start_row(int _start_row, int repeated, bool _default = false);
+		void start_row(int _start_row, int repeated, int level = 0, bool _default = false);
 		void end_row();
 
 		void start_cell(std::wstring & ref, int xfd_style);

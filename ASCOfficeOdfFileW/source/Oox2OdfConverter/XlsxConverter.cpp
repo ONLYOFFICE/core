@@ -123,7 +123,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row)
 	
 	if (oox_row->m_oHt.IsInit() || oox_row->m_oCustomHeight.IsInit() || oox_row->m_oHidden.IsInit() || oox_row->m_oCollapsed.IsInit()) _default = false;
 	
-	ods_context->start_row(row_number,1,_default);
+	int level = 0;
+	if (oox_row->m_oOutlineLevel.IsInit())
+	{
+		level = oox_row->m_oOutlineLevel->GetValue();
+	}
+
+	ods_context->start_row(row_number,1,level,_default);
 	
 	if (oox_row->m_oHidden.IsInit())		ods_context->current_table().set_row_hidden(true);
 	if (oox_row->m_oCollapsed.IsInit())		ods_context->current_table().set_row_hidden(true);

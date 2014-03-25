@@ -45,6 +45,5 @@ void ods_table_context::end_table()
 {
 }
 
-
 }
 }

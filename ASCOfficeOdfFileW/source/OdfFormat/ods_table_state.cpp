@@ -73,34 +73,15 @@ void ods_table_state::set_table_style(office_element_ptr & elm)
 
 
 }
-void ods_table_state::start_column_group(office_element_ptr & elm)
+void ods_table_state::start_group(office_element_ptr & elm)
 {
-	current_column_level_++;
-
 	current_level_.back()->add_child_element(elm);
 	current_level_.push_back(elm);
 }
 
-void ods_table_state::end_column_group()
+void ods_table_state::end_group()
 {
-	current_column_level_--;
-
-	//if (current_column_level_ == 1)
-	//{
-	//	current_level_ = office_table_;
-	//	return;
-	//}
 	current_level_.pop_back();
-
-	////find last add current_column_level_
-	//for (long i = columns_.size()-1; i >= 0; i--)
-	//{
-	//	if (columns_[i].level == current_column_level_)
-	//	{
-	//		current_level_ = columns_[i].elm;
-	//		break;
-	//	}
-	//}
 }
 
 void ods_table_state::add_column(office_element_ptr & elm, int repeated,office_element_ptr & style_elm)
@@ -167,7 +148,7 @@ void ods_table_state::add_row(office_element_ptr & elm, int repeated,office_elem
     current_table_column_ = 0; 
     current_table_row_+=repeated;
 
-	office_table_->add_child_element(elm);
+	current_level_.back()->add_child_element(elm);
 
 	std::wstring style_name;
 

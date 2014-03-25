@@ -54,8 +54,8 @@ public:
 		void set_column_optimal_width(bool val);
 		void set_column_default_cell_style(std::wstring & style_name);
 
-	void start_column_group(office_element_ptr & elm);
-	void end_column_group();
+	void start_group(office_element_ptr & elm);
+	void end_group();
 		
 	int current_level() {return current_level_.size()-1;}
 

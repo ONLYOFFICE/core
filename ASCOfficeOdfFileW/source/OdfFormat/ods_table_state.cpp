@@ -329,6 +329,39 @@ void ods_table_state::set_cell_type(int type)
 		cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
 	}
 }
+void ods_table_state::set_merge_cells(int start_col, int start_row, int end_col, int end_row)
+{
+	//потом можно переделать (оптимизировать) - добавл€ть мержи при добавлении €чеек
+	//вс€ко выгоднее хранить данные о мержах, а не шерстить каждый раз ¬—≈ €чейки дл€ добавлени€ фенечки
+	//todooo
+	if (end_col - start_col < 0)return;
+	if (end_row - start_row < 0)return;
+
+	int spanned_cols = end_col - start_col + 1;
+	int spanned_rows = end_row - start_row + 1;
+
+	if (spanned_cols > 10000)spanned_cols = 1024;
+
+	for (int i = 0; i < cells_.size(); i++)
+	{
+		if (cells_[i].row > end_row) break;
+
+		if (/*cells_[i].row <= end_row && */cells_[i].row >= start_row)
+		{
+			if (/*(cells_[i].col <= end_col || cells_[i].col + cells_[i].repeated-1 <= end_col) 
+				&&*/ (cells_[i].col >= start_col/* || cells_[i].col + cells_[i].repeated-1 >= start_col*/))
+			{
+				table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_[i].elm.get());
+				if (cell == NULL)return;
+
+				cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = spanned_cols;
+				cell->table_table_cell_attlist_extra_.table_number_rows_spanned_ = spanned_rows;
+
+				break;
+			}
+		}
+	}
+}
 
 void ods_table_state::set_cell_value(std::wstring & value)
 {
@@ -382,9 +415,6 @@ void ods_table_state::set_cell_value(std::wstring & value)
 	//table_table_cell* cell = dynamic_cast<text_p*>(text_elm.get());
 	//end_paragraph();
 	//end_text();
-
-	
-
 }
 
 void ods_table_state::set_cell_ref (std::wstring & ref, int col, int row)
@@ -404,6 +434,12 @@ void ods_table_state::add_default_cell(office_element_ptr &  elm, int repeated)
 	
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(elm.get());
 	if (cell == NULL)return;
+	
+	ods_cell_state state;
+	state.elm = elm;  state.repeated = repeated;  /*state.style_name = style_name;*//* state.style_elm = style_elm;*/
+	state.row=current_table_row_;  state.col =current_table_column_;
+  
+    cells_.push_back(state);
 	
 	current_table_column_+=repeated;
 

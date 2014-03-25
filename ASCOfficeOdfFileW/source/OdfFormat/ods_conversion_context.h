@@ -30,6 +30,8 @@ public:
 		void end_cell(){}
 	void end_rows();
 
+	void add_merge_cells(std::wstring & ref);
+
 	ods_table_context ods_table_context_;
 
 	office_spreadsheet* current_spreadsheet_;

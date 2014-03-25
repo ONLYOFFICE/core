@@ -164,6 +164,23 @@ void parsing_ref (const std::wstring & ref, int & col,int & row)
 
 }
 
+void ods_conversion_context::add_merge_cells(std::wstring & ref)
+{
+ 	std::vector<std::wstring> ref_cells;
+	boost::algorithm::split(ref_cells,ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
+
+	if (ref_cells.size() !=2) return;//тута однозначно .. по правилам оох
+
+	int start_col = -1, start_row = -1;
+	int end_col = -1, end_row = -1;
+
+	parsing_ref (ref_cells[0], start_col, start_row);
+	parsing_ref (ref_cells[1], end_col,	  end_row);
+
+	current_table().set_merge_cells(start_col,start_row, end_col, end_row);
+
+}
+
 void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 {
 	int col=0, row=0;
@@ -226,6 +243,7 @@ void ods_conversion_context::end_rows()
 	start_row(current_table().current_row()+1,1024,0,true);
 	end_row();
 }
+
 void ods_conversion_context::add_column(int start_column, int repeated, int level, bool _default)
 {
 	if (start_column > current_table().current_column()+1)

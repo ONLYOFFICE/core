@@ -114,7 +114,15 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 			convert(oox_sheet->m_oSheetData->m_arrItems[row]);
 		}
 	ods_context->end_rows();
+
+	//мержи
+	for (long mrg = 0 ; oox_sheet->m_oMergeCells.IsInit() && mrg < oox_sheet->m_oMergeCells->m_arrItems.GetSize(); mrg++)
+	{
+		if (oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.IsInit())
+			ods_context->add_merge_cells(string2std_string(oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.get()));
+	}
 }
+
 void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row)
 {
 	int row_number = oox_row->m_oR.IsInit() ? oox_row->m_oR->GetValue() : -1;

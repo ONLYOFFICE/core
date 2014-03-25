@@ -64,7 +64,6 @@ public:
 		//void set_row_collapsed(bool Val);
 		void set_row_optimal_height(bool val);
 		void set_row_height(double height);
-	//void set_table_row_group(int count, bool collapsed, int level);
 		void set_row_default_cell_style(std::wstring & style_name);
 
 
@@ -76,6 +75,7 @@ public:
 	void set_cell_format_value(int format);
 	void set_cell_type(int type);
 	void set_cell_value(std::wstring & value);
+	void set_merge_cells(int start_col, int start_row, int end_col, int end_row);
 
  //   void start_covered_cell();
  //   void end_covered_cell();
@@ -83,13 +83,9 @@ public:
 	office_element_ptr & current_row_element();
 	office_element_ptr & current_cell_element();
 
- //   void set_current_cell_style_id(unsigned int xfId);
- //   int get_current_cell_style_id();
-
 	int current_column() const;
 	int current_row() const;
 
-   //unsigned int current_row_level(unsigned int Column) const;
  //   
  //   xlsx_table_metrics & get_table_metrics() { return xlsx_table_metrics_; }
  //   xlsx_drawing_context & get_drawing_context() { return xlsx_drawing_context_; }
@@ -104,54 +100,35 @@ public:
 	//void serialize_table_format(std::wostream & _Wostream);
 	//void serialize_merge_cells(std::wostream & _Wostream);
  //   void serialize_hyperlinks(std::wostream & _Wostream);
- //   void dump_rels_hyperlinks(rels & Rels);
 
-	//struct _group_row
-	//{
-	//	bool enabled;
-	//	int count;
-	//	int level;
-	//	bool collapsed;
-	//}group_row_;
 private:
     ods_conversion_context & context_;   
 	
 	office_element_ptr	office_table_;	
-	
-	//office_element_ptr	current_level_;	
 
 	style*				office_table_style_;//??? может хранить как office_element_ptr ???
 
-	//std::wstring table_style_;
-	//std::wstring tableName_;
- //   std::wstring table_row_style_;
- //   std::vector<std::wstring> column_default_cell_style_name_;
 	std::wstring row_default_cell_style_name_;
- //   std::wstring cell_style_;
+
 	int current_table_column_;
 	int current_table_row_;
 
 	int current_column_level_;
- //   unsigned int columns_spanned_num_;
- //   std::wstring columns_spanned_style_;
- //   std::vector<xlsx_row_spanned> rows_spanned_;
+
 	std::vector<ods_element_state> columns_;
 	std::vector<ods_element_state> rows_;
 	
 	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней
 	
 	std::vector<ods_cell_state> cells_;
-	//unsigned int columns_count_;
- //   xlsx_merge_cells merge_cells_; 
- //   xlsx_table_metrics xlsx_table_metrics_;
- //   xlsx_drawing_context xlsx_drawing_context_;
+
+ //   xlsx_merge_cells		merge_cells_; 
+ //   xlsx_table_metrics	xlsx_table_metrics_;
+ //   xlsx_drawing_context	xlsx_drawing_context_;
  //   xlsx_comments_context xlsx_comments_context_;
+ //   xlsx_hyperlinks		xlsx_hyperlinks_;
 
-
-	//bool empty_row_;
  //   double table_column_last_width_;
- //   xlsx_hyperlinks xlsx_hyperlinks_;
-
 };
 
 

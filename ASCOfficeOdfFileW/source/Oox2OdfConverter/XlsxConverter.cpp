@@ -234,19 +234,19 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSi  *oox_shared_string)
 {
 	if (oox_shared_string == NULL)return;
 
-	//ods_context->start_text();
+	//ods_context->start_paragraph();
 	for(int i = 0; i < oox_shared_string->m_arrItems.GetSize(); ++i)
 	{
 		convert(oox_shared_string->m_arrItems[i]);
 	}
-	//ods_context->end_text();
+	//ods_context->end_paragraph();
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CRun *oox_text_run)
 {
 	if (oox_text_run == NULL)return;
-	//ods_context->start_run();
+	//ods_context->text_context().start_span();
 
-	//ods_context->end_run();
+	//ods_context->end_span();
 
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CText *oox_text)

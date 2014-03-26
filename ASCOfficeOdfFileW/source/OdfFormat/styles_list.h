@@ -61,7 +61,7 @@ class text_list_level_style_number_attr
 public:
     text_list_level_style_number_attr() : text_display_levels_(1), text_start_value_(1) {}
 
-	optional<style_ref>::Type text_style_name_;
+	_CP_OPT(style_ref) text_style_name_;
     
 	common_num_format_attlist common_num_format_attlist_;
     common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;

@@ -887,6 +887,14 @@
 			Name="elements"
 			>
 			<File
+				RelativePath=".\OdfFormat\list.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\list.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\office_body.cpp"
 				>
 			</File>
@@ -903,6 +911,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OdfFormat\paragraph_elements.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\paragraph_elements.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\table.cpp"
 				>
 			</File>
@@ -910,10 +926,26 @@
 				RelativePath=".\OdfFormat\table.h"
 				>
 			</File>
+			<File
+				RelativePath=".\OdfFormat\text_elements.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\text_elements.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="odf spreadsheet"
 			>
+			<File
+				RelativePath=".\OdfFormat\odf_text_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odf_text_context.h"
+				>
+			</File>
 			<File
 				RelativePath=".\OdfFormat\ods_conversion_context.cpp"
 				>

@@ -19,7 +19,7 @@ typedef shared_ptr<office_element>::Type office_element_ptr;
 class odf_style_context
 {
 public:
-    odf_style_context(odf_conversion_context & Context/*, ods_text_context & textCotnext*/);
+    odf_style_context(odf_conversion_context & Context);
 
     void create_style(std::wstring name, const style_family style_family, bool automatic = false, bool root = false, int oox_id = -1);
     void create_default(const style_family style_family);

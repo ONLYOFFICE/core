@@ -13,7 +13,7 @@
 namespace cpdoccore {
 namespace odf {
 
-odf_style_context::odf_style_context(odf_conversion_context & Context/*, xlsx_text_context & textCotnext*/): context_(Context)
+odf_style_context::odf_style_context(odf_conversion_context & Context): context_(Context)
 {        
 }
 

@@ -47,7 +47,7 @@ public:
 
 	void set_root(bool root){is_root_ = root;}
 ////////////////////////
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const
+    virtual ::std::wostream & serialize(::std::wostream & _Wostream) const
     {
         _CP_LOG(info) << L"[warning] use base text_to_stream\n";
         return _Wostream;

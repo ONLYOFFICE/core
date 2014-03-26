@@ -184,20 +184,77 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCell *oox_cell)
 
 	ods_context->start_cell(ref,ifx_style);
 
+	int value_type = 0;//general
 	if (oox_cell->m_oType.IsInit())
-		ods_context->current_table().set_cell_type(oox_cell->m_oType->GetValue());
-
-	if (oox_cell->m_oValue.IsInit())
 	{
-		ods_context->current_table().set_cell_value (string2std_string(oox_cell->m_oValue->m_sText));
+		value_type = oox_cell->m_oType->GetValue();
+	}
+	ods_context->current_table().set_cell_type(value_type);
+
+	switch (value_type)
+	{
+	case SimpleTypes::Spreadsheet::celltypeSharedString:
+		break;
+	default :
+		if (oox_cell->m_oValue.IsInit())//тут может быть и значение формулы
+		{
+			ods_context->current_table().set_cell_value (string2std_string(oox_cell->m_oValue->m_sText));
+		}		
+		break;
 	}
 	if (oox_cell->m_oFormula.IsInit())
 	{
 	}
 	if (oox_cell->m_oRichText.IsInit())
 	{
+		convert(oox_cell->m_oRichText.GetPointer());
 	}
 	ods_context->end_cell();
+}
+
+void XlsxConverter::convert(OOX::Spreadsheet::WritingElement  *oox_unknown)
+{
+	if (oox_unknown == NULL)return;
+
+	switch(oox_unknown->getType())
+	{
+		case OOX::Spreadsheet::et_r:
+		{
+			OOX::Spreadsheet::CRun* pRun = static_cast<OOX::Spreadsheet::CRun*>(oox_unknown);
+			convert(pRun);
+		}break;
+		case OOX::Spreadsheet::et_t:
+		{
+			OOX::Spreadsheet::CText* pText = static_cast<OOX::Spreadsheet::CText*>(oox_unknown);
+			convert(pText);
+		}break;
+	}
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CSi  *oox_shared_string)
+{
+	if (oox_shared_string == NULL)return;
+
+	//ods_context->start_text();
+	for(int i = 0; i < oox_shared_string->m_arrItems.GetSize(); ++i)
+	{
+		convert(oox_shared_string->m_arrItems[i]);
+	}
+	//ods_context->end_text();
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CRun *oox_text_run)
+{
+	if (oox_text_run == NULL)return;
+	//ods_context->start_run();
+
+	//ods_context->end_run();
+
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CText *oox_text)
+{
+	if (oox_text == NULL)return;
+	//ods_context->start_text();
+
+	//ods_context->end_text();
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 {
@@ -598,13 +655,19 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 
 	odf::office_element_ptr & elm_style = ods_context->styles_context().last_state().get_office_element();
 	
-	if (xlsx_styles->m_oFonts.IsInit() && (id_parent < 0 || xfc_style->m_oApplyFont.IsInit()))		
+	if (xlsx_styles->m_oFonts.IsInit() && font_id >=0 && (id_parent < 0 || xfc_style->m_oApplyFont.IsInit()))		
 				convert(xlsx_styles->m_oFonts->m_arrItems[font_id], elm_style); 
-	if (xlsx_styles->m_oFills.IsInit() && (id_parent < 0 || xfc_style->m_oApplyFill.IsInit()))
+	if (xlsx_styles->m_oFills.IsInit() && fill_id >=0 && (id_parent < 0 || xfc_style->m_oApplyFill.IsInit()))
 				convert(xlsx_styles->m_oFills->m_arrItems[fill_id], elm_style); 
-	if (xlsx_styles->m_oNumFmts.IsInit() && (id_parent < 0 || xfc_style->m_oApplyNumberFormat.IsInit()))	
-				convert(xlsx_styles->m_oNumFmts->m_arrItems[numFmt_id], elm_style); 
-	if (xlsx_styles->m_oBorders.IsInit() && (id_parent < 0 || xfc_style->m_oApplyBorder.IsInit()))	
+	if (xlsx_styles->m_oNumFmts.IsInit() && numFmt_id>=0 && (id_parent < 0 || xfc_style->m_oApplyNumberFormat.IsInit()))	
+	{
+		//if (numFmt_id < xlsx_styles->m_oNumFmts.Count())
+		//{
+		//	convert(xlsx_styles->m_oNumFmts->m_arrItems[numFmt_id], elm_style); 
+		//}
+		//это не индекс .. а тип данных  .. а тута описание формата ..
+	}
+	if (xlsx_styles->m_oBorders.IsInit() && border_id >=0 && (id_parent < 0 || xfc_style->m_oApplyBorder.IsInit()))	
 				convert(xlsx_styles->m_oBorders->m_arrItems[border_id], elm_style); 
 
 	ods_context->styles_context().last_state().set_number_format(numFmt_id);

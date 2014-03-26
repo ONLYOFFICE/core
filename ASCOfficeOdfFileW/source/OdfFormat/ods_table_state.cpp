@@ -334,6 +334,7 @@ void ods_table_state::set_merge_cells(int start_col, int start_row, int end_col,
 	//потом можно переделать (оптимизировать) - добавл€ть мержи при добавлении €чеек
 	//вс€ко выгоднее хранить данные о мержах, а не шерстить каждый раз ¬—≈ €чейки дл€ добавлени€ фенечки
 	//todooo
+	//разобратьс€ когда нужно писать covered_cell 
 	if (end_col - start_col < 0)return;
 	if (end_row - start_row < 0)return;
 

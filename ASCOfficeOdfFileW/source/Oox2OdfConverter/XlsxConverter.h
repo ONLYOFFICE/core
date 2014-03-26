@@ -52,11 +52,17 @@ namespace Oox2Odf
 		void convert_sheets();
 		void convert_styles();
 		
+		void convert(OOX::Spreadsheet::WritingElement  *oox_unknown);
+		
 		void convert(OOX::Spreadsheet::CWorksheet *oox_sheet);
 
 		void convert(OOX::Spreadsheet::CCol *oox_column);
 		void convert(OOX::Spreadsheet::CRow *oox_row);
 		void convert(OOX::Spreadsheet::CCell *oox_cell);
+
+		void convert(OOX::Spreadsheet::CSi  *oox_shared_string);
+		void convert(OOX::Spreadsheet::CRun *oox_text_run);
+		void convert(OOX::Spreadsheet::CText *oox_text);
 
 		void convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_pr);
 		void convert(OOX::Spreadsheet::CSheetPr *oox_sheet_pr);

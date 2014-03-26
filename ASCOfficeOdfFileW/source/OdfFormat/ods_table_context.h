@@ -23,64 +23,16 @@ public:
     void start_table(office_element_ptr & elm,std::wstring & name);
     void end_table();
 
-    //void start_cell(const std::wstring & formula,
-    //                size_t columnsSpanned,
-    //                size_t rowsSpanned);
-
-    //void end_cell();
-
- //   std::wstring default_row_cell_style() const;
- //   std::wstring default_column_cell_style() const;
-
- //   void start_covered_cell();
- //   void end_covered_cell();
-
- //   void start_cell_content();    
- //   int end_cell_content();
-
- //   void set_current_cell_style_id(unsigned int xfId);
- //   int get_current_cell_style_id();
-
- //   int current_column() const;
- //   int current_row() const;
-
-	//void set_table_row_group(int count, bool collapsed, int level);
- //   void non_empty_row();
- //   bool is_empty_row() const;
-
- //   size_t depth() const { return table_state_stack_.size(); }
 
     unsigned int columns_count();
 
- //   void serialize_merge_cells(std::wostream & _Wostream);
-
-	//void serialize_table_format(std::wostream & _Wostream);
-
-	//xlsx_table_metrics & get_table_metrics();
- // 
-	//xlsx_drawing_context & get_drawing_context();
-
- //   xlsx_comments_context & get_comments_context();
-	//
- //   void table_column_last_width(double w);
- //   double table_column_last_width() const;
-
     ods_table_state & state();
 
- //   void start_hyperlink();
-	//std::wstring end_hyperlink(std::wstring const & ref, std::wstring const & href, std::wstring const & display);
-
- //  void dump_rels_hyperlinks(rels & Rels);
- //  void serialize_hyperlinks(std::wostream & _Wostream);
-
-private:
+ private:
 
     ods_conversion_context & context_;
     std::list<ods_table_state> table_state_list_;
-   
-	
-	
-	//ods_text_context & xlsx_text_context_;
+
 };
 
 

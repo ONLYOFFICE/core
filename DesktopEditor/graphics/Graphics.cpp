@@ -1,4 +1,12 @@
-#include "Graphics.h"
+п»ї#include "Graphics.h"
+
+#ifndef max
+#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
 
 namespace Aggplus
 {
@@ -155,7 +163,7 @@ namespace Aggplus
 		BYTE* pBuffer = pPixels;
 		if (0 > lStride)
 		{
-			// переворачиваем изображение для GDI+
+			// РїРµСЂРµРІРѕСЂР°С‡РёРІР°РµРј РёР·РѕР±СЂР°Р¶РµРЅРёРµ РґР»СЏ GDI+
 			pBuffer += 4 * lWidth * (lHeight - 1);
 		}
 
@@ -175,8 +183,8 @@ namespace Aggplus
 
 	Status CGraphics::CreatePart(LONG lLeft, LONG lTop, LONG lWidth, LONG lHeight, CGraphics** ppPart)
 	{
-		// здесь минимум кода. Просто сделать дубликат - и выставить ему правильные границы.
-		// а потом уже и dpi и все настройки.
+		// Р·РґРµСЃСЊ РјРёРЅРёРјСѓРј РєРѕРґР°. РџСЂРѕСЃС‚Рѕ СЃРґРµР»Р°С‚СЊ РґСѓР±Р»РёРєР°С‚ - Рё РІС‹СЃС‚Р°РІРёС‚СЊ РµРјСѓ РїСЂР°РІРёР»СЊРЅС‹Рµ РіСЂР°РЅРёС†С‹.
+		// Р° РїРѕС‚РѕРј СѓР¶Рµ Рё dpi Рё РІСЃРµ РЅР°СЃС‚СЂРѕР№РєРё.
 		return Ok;
 	}
 
@@ -207,7 +215,7 @@ namespace Aggplus
 	
 	Status CGraphics::SetPageWidth(double lWidth, LONG lUnit)
 	{
-		// вычисилить dpi и выставить его
+		// РІС‹С‡РёСЃРёР»РёС‚СЊ dpi Рё РІС‹СЃС‚Р°РІРёС‚СЊ РµРіРѕ
 		switch (lUnit)
 		{
 		case UnitPoint:
@@ -237,7 +245,7 @@ namespace Aggplus
 	}
 	Status CGraphics::SetPageHeight(double lHeight, LONG lUnit)
 	{
-		// вычисилить dpi и выставить его
+		// РІС‹С‡РёСЃРёР»РёС‚СЊ dpi Рё РІС‹СЃС‚Р°РІРёС‚СЊ РµРіРѕ
 		switch (lUnit)
 		{
 		case UnitPoint:
@@ -324,7 +332,7 @@ namespace Aggplus
 		return Ok;
 	}
 	
-	// функции отсечения
+	// С„СѓРЅРєС†РёРё РѕС‚СЃРµС‡РµРЅРёСЏ
 	Status CGraphics::SetClipRect(double dLeft, double dTop, double dWidth, double dHeight)
 	{
 		double dx1 = dLeft;
@@ -835,7 +843,7 @@ namespace Aggplus
 	}
 
 
-	// отрисовка картинки
+	// РѕС‚СЂРёСЃРѕРІРєР° РєР°СЂС‚РёРЅРєРё
 	Status CGraphics::DrawImage(CImage* pImage, double x, double y, double width, double height)
 	{
 		if (!pImage || pImage->GetLastStatus() != Ok) 
@@ -1688,7 +1696,7 @@ namespace Aggplus
 
 	void CGraphics::UpdateUnits()
 	{
-		// здесь - пересчет координат
+		// Р·РґРµСЃСЊ - РїРµСЂРµСЃС‡РµС‚ РєРѕРѕСЂРґРёРЅР°С‚
 		m_oCoordTransform.Reset();
 
 		double dScaleX = 1.0;

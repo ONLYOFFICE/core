@@ -1,4 +1,4 @@
-#include "GraphicsRenderer.h"
+п»ї#include "GraphicsRenderer.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -201,7 +201,7 @@ void CGraphicsRenderer::UpdateSize()
 	m_pRenderer->SetPageUnit(Aggplus::UnitMillimeter);
 }
 
-// тип рендерера-----------------------------------------------------------------------------
+// С‚РёРї СЂРµРЅРґРµСЂРµСЂР°-----------------------------------------------------------------------------
 HRESULT CGraphicsRenderer::get_Type(LONG* lType)
 {
 	if (NULL == lType)
@@ -210,10 +210,10 @@ HRESULT CGraphicsRenderer::get_Type(LONG* lType)
 	*lType = c_nGrRenderer;
 	return S_OK;
 }
-//-------- Функции для работы со страницей --------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂР°РЅРёС†РµР№ --------------------------------------------------
 HRESULT CGraphicsRenderer::NewPage()
 {
-	// ну не влезло так не влезло
+	// РЅСѓ РЅРµ РІР»РµР·Р»Рѕ С‚Р°Рє РЅРµ РІР»РµР·Р»Рѕ
 	return S_OK;
 }
 HRESULT CGraphicsRenderer::put_Height(const double& dHeight)
@@ -572,7 +572,7 @@ HRESULT CGraphicsRenderer::put_FontFaceIndex(const int& lFaceIndex)
 	return S_OK;
 }
 
-//-------- Функции для вывода текста --------------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСЃС‚Р° --------------------------------------------------------
 HRESULT CGraphicsRenderer::CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset)
 {
 	if (c_nHyperlinkType == m_lCurrentCommandType)
@@ -628,7 +628,7 @@ HRESULT CGraphicsRenderer::CommandDrawTextEx(const std::wstring& bsUnicodeText, 
 	return CommandDrawText(bsUnicodeText, x, y, w, h, baselineOffset);
 }
 
-//-------- Маркеры для команд ---------------------------------------------------------------
+//-------- РњР°СЂРєРµСЂС‹ РґР»СЏ РєРѕРјР°РЅРґ ---------------------------------------------------------------
 HRESULT CGraphicsRenderer::BeginCommand(const DWORD& lType)
 {
 	m_lCurrentCommandType = lType;
@@ -676,7 +676,7 @@ HRESULT CGraphicsRenderer::EndCommand(const DWORD& lType)
 	return S_OK;
 }
 
-//-------- Функции для работы с Graphics Path -----------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Graphics Path -----------------------------------------------
 HRESULT CGraphicsRenderer::PathCommandMoveTo(const double& x, const double& y)
 {
 	if (!CheckValidate())
@@ -889,7 +889,7 @@ HRESULT CGraphicsRenderer::PathCommandTextCHAR(const LONG& c, const double& x, c
 
 	_SetFont();
 
-	// так как пат рисуется в миллиметрах - надо перевести пункты в миллиметры
+	// С‚Р°Рє РєР°Рє РїР°С‚ СЂРёСЃСѓРµС‚СЃСЏ РІ РјРёР»Р»РёРјРµС‚СЂР°С… - РЅР°РґРѕ РїРµСЂРµРІРµСЃС‚Рё РїСѓРЅРєС‚С‹ РІ РјРёР»Р»РёРјРµС‚СЂС‹
 	float fSize = (float)(0.3528 * m_oFont.Size);
 	m_pPath->AddStringC(c, m_pFontManager, x, y + baselineOffset);
 
@@ -902,7 +902,7 @@ HRESULT CGraphicsRenderer::PathCommandText(const std::wstring& bsText, const dou
 
 	_SetFont();
 
-	// так как пат рисуется в миллиметрах - надо перевести пункты в миллиметры
+	// С‚Р°Рє РєР°Рє РїР°С‚ СЂРёСЃСѓРµС‚СЃСЏ РІ РјРёР»Р»РёРјРµС‚СЂР°С… - РЅР°РґРѕ РїРµСЂРµРІРµСЃС‚Рё РїСѓРЅРєС‚С‹ РІ РјРёР»Р»РёРјРµС‚СЂС‹
 	float fSize = (float)(0.3528 * m_oFont.Size);
 	m_pPath->AddString(bsText, m_pFontManager, x, y + baselineOffset);
 
@@ -932,7 +932,7 @@ HRESULT CGraphicsRenderer::PathCommandTextEx(const std::wstring& bsUnicodeText, 
 	return PathCommandText(bsUnicodeText, x, y, w, h, baselineOffset);
 }
 
-//-------- Функции для вывода изображений ---------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° РёР·РѕР±СЂР°Р¶РµРЅРёР№ ---------------------------------------------------
 HRESULT CGraphicsRenderer::DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h)
 {
 	if (!CheckValidate(TRUE) || NULL == pImage)

@@ -1,4 +1,4 @@
-#include "Clip.h"
+п»ї#include "Clip.h"
 
 namespace Aggplus
 {
@@ -193,7 +193,7 @@ namespace Aggplus
 
 		if (!m_bIsClip2)
 		{
-			// смешивать надо с растерайзером
+			// СЃРјРµС€РёРІР°С‚СЊ РЅР°РґРѕ СЃ СЂР°СЃС‚РµСЂР°Р№Р·РµСЂРѕРј
 			agg::rasterizer_scanline_aa<> rasterizer;
 
 			typedef agg::conv_transform<agg::path_storage> trans_type;
@@ -215,7 +215,7 @@ namespace Aggplus
 		}
 		else
 		{
-			// надо смешивать со стораджем
+			// РЅР°РґРѕ СЃРјРµС€РёРІР°С‚СЊ СЃРѕ СЃС‚РѕСЂР°РґР¶РµРј
 			agg::rasterizer_scanline_aa<> rasterizer;
 
 			typedef agg::conv_transform<agg::path_storage> trans_type;

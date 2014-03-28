@@ -367,7 +367,7 @@ bool CxImagePNG::Encode(CxFile *hFile)
 	info_ptr->valid = 0;
 
 	// set interlace type
-	DWORD codec_opt = GetCodecOption(CXIMAGE_FORMAT_PNG);
+    uint32_t codec_opt = GetCodecOption(CXIMAGE_FORMAT_PNG);
 	if (codec_opt & CxImagePNG::ENCODE_INTERLACE)
 		info_ptr->interlace_type = PNG_INTERLACE_ADAM7;
 	else

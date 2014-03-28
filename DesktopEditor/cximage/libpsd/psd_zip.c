@@ -27,7 +27,7 @@
 #include "psd_config.h"
 
 #ifdef PSD_INCLUDE_ZLIB
-#include "..\zlib\zlib.h"
+#include "../zlib/zlib.h"
 #include <memory.h>
 
 psd_status psd_unzip_without_prediction(psd_uchar *src_buf, psd_int src_len, 

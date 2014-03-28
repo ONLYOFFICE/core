@@ -20,12 +20,14 @@ public:
 //////////////////////////////////////////////////////////
 	bool Open(const TCHAR * filename, const TCHAR * mode)
 	{
+#ifdef WIN32
 		if (m_fp) return false;	// Can't re-open without closing first
 
 		m_fp = _tfopen(filename, mode);
 		if (!m_fp) return false;
 
 		m_bCloseFile = true;
+#endif
 
 		return true;
 	}

@@ -132,6 +132,9 @@ static dcr_stream_ops dcr_stream_fileops = {
 #error Do not link it with ljpeg_decode.
 #endif
 
+#ifndef max
+#define max(A,B) (((A)>(B))?(A):(B))
+#endif
 
 /*
    In order to inline this calculation, I make the risky
@@ -7429,7 +7432,7 @@ konica_400z:
 		}
 	} else if (!strcmp(p->make,"LEICA") || !strcmp(p->make,"Panasonic")) {
 		p->maximum = 0xfff0;
-		if ((fsize-p->data_offset) / (max(1,p->width*8/7)) == p->height)
+        if ((fsize-p->data_offset) / max(1, p->width*8/7) == p->height)
 			p->load_raw = &DCR_CLASS dcr_panasonic_load_raw;
 		if (!p->load_raw) p->load_raw = &DCR_CLASS dcr_unpacked_load_raw;
 		switch (p->width) {
@@ -7988,7 +7991,7 @@ void DCR_CLASS dcr_convert_to_rgb(DCRAW* p)
 			strcpy ((char *)p->oprof+pbody[5]+12, name[p->opt.output_color-1]);
 			for (i=0; i < 3; i++)
 				for (j=0; j < p->colors; j++)
-					for (out_cam[i][j] = (float)k=0; k < 3; k++)
+                    for (out_cam[i][j] = 0, k=0; k < 3; k++)
 						out_cam[i][j] += (float)out_rgb[p->opt.output_color-1][i][k] * p->rgb_cam[k][j];
 	}
 	if (p->opt.verbose)

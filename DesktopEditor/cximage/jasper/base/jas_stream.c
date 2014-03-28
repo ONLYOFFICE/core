@@ -81,6 +81,7 @@
 #include <ctype.h>
 #if defined(HAVE_UNISTD_H)
 #include <unistd.h>
+#define _lseek lseek
 #endif
 #if defined(WIN32) || defined(HAVE_IO_H) || defined(_WIN32_WCE)
 #include <io.h>

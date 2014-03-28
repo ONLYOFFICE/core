@@ -153,12 +153,14 @@ CxImageMNG::CxImageMNG(): CxImage(CXIMAGE_FORMAT_MNG)
 CxImageMNG::~CxImageMNG()
 {
 	// cleanup and return
+#ifdef WIN32
 	if (mnginfo.thread){ //close the animation thread
 		mnginfo.animation_enabled=0;
 		ResumeThread(mnginfo.thread);
 		WaitForSingleObject(mnginfo.thread,500);
 		CloseHandle(mnginfo.thread);
 	}
+#endif
 	// free objects
 	if (mnginfo.image) free(mnginfo.image);
 	if (mnginfo.alpha) free(mnginfo.alpha);
@@ -384,8 +386,8 @@ void CxImageMNG::WritePNG( mng_handle hMNG, int32_t Frame, int32_t FrameCount )
 	uint32_t dstbufferSize=(mymng->effwdt+1)*OffsetH;
 
 	// Compress data:
-	if(Z_OK != compress2((Bytef *)dstbuffer,(ULONG *)&dstbufferSize,(const Bytef*)tmpbuffer,
-						(ULONG) (mymng->effwdt+1)*OffsetH,9 )) return;
+    if(Z_OK != compress2((Bytef *)dstbuffer,(uLongf *)&dstbufferSize,(const Bytef*)tmpbuffer,
+                        (uLong) (mymng->effwdt+1)*OffsetH,9 )) return;
 
 	// Write Data into MNG File:
 	mng_putchunk_idat( hMNG, dstbufferSize, (mng_ptr*)dstbuffer);

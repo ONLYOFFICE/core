@@ -1,4 +1,4 @@
-#ifndef _BUILD_TIMER_H_
+﻿#ifndef _BUILD_TIMER_H_
 #define _BUILD_TIMER_H_
 
 #include "BaseThread.h"
@@ -13,8 +13,7 @@ namespace NSTimers
 		struct timespec ts;
 		clock_gettime(CLOCK_MONOTONIC, &ts);
 
-		return (ts.tv_sec * 1000 + (DWORD)(ts.tvnsec / 100000));
-}
+        return (ts.tv_sec * 1000 + (DWORD)(ts.tv_nsec / 100000));
 #endif
 	}
 

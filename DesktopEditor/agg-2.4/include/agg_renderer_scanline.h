@@ -142,7 +142,7 @@ namespace agg
 
 		inline void render(int lWidth, int lHeight, unsigned char* pData, int x, int y)
 		{
-			BYTE* pMemory = pData;
+            unsigned char* pMemory = pData;
 			for (int j = 0; j < lHeight; ++j)
 			{
 				m_ren->blend_solid_hspan(x, y + j, lWidth, m_color, pMemory);

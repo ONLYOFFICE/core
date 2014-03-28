@@ -1,4 +1,4 @@
-#ifndef _BUILD_GRAPHICS_H_
+п»ї#ifndef _BUILD_GRAPHICS_H_
 #define _BUILD_GRAPHICS_H_
 
 //#define _WINDOWS_GDIPLUS_USE_
@@ -29,11 +29,6 @@
 #include "../agg-2.4/include/agg_pixfmt_amask_adaptor.h"
 #include "../agg-2.4/include/agg_scanline_boolean_algebra.h"
 
-#include "../agg-2.4/svg/agg_svg_exception.h"
-#include "../agg-2.4/svg/agg_svg_parser.h"
-#include "../agg-2.4/svg/agg_svg_indexation_interpreter.h"
-#include "../agg-2.4/svg/agg_svg_rendering_interpreter.h"
-#include "../agg-2.4/svg/agg_svg_attributes_map.h"
 #include "../agg-2.4/svg/agg_svg_rasterizer.h"
 
 #include "Color.h"
@@ -111,11 +106,11 @@ typedef agg::span_allocator<agg::rgba8> span_alloc_type;
 #define def_flag_G_FromHDC   0x0002
 
 
-// Расстояние от центра до контрольных точек Безье для аппроксимации окружности = (4 * (sqrt(2) - 1) / 3) * r
+// Р Р°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚ С†РµРЅС‚СЂР° РґРѕ РєРѕРЅС‚СЂРѕР»СЊРЅС‹С… С‚РѕС‡РµРє Р‘РµР·СЊРµ РґР»СЏ Р°РїРїСЂРѕРєСЃРёРјР°С†РёРё РѕРєСЂСѓР¶РЅРѕСЃС‚Рё = (4 * (sqrt(2) - 1) / 3) * r
 static const double c_dKappa   = ((double)0.55228475);
 static const double c_dKappa_2 = ((double)(0.5 * 0.55228475));
 
-// Делим 16-битное значение [0, 255*255] на 255, возвращаем 8-битное значение.
+// Р”РµР»РёРј 16-Р±РёС‚РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ [0, 255*255] РЅР° 255, РІРѕР·РІСЂР°С‰Р°РµРј 8-Р±РёС‚РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ.
 static inline unsigned char Div255(int nValue)
 {
 	return (unsigned char)((nValue + (nValue >> 8) + 0x80) >> 8);
@@ -188,7 +183,7 @@ protected:
 	agg::svg::rasterizer              m_rasterizer;
 	
 #ifdef _WINDOW_GRAPHIS_USE_
-	// для отрисовки картинок - используем Gdiplus
+	// РґР»СЏ РѕС‚СЂРёСЃРѕРІРєРё РєР°СЂС‚РёРЅРѕРє - РёСЃРїРѕР»СЊР·СѓРµРј Gdiplus
 	Gdiplus::Graphics*		m_pGraphics;
 	Gdiplus::Bitmap*		m_pBitmap;
 
@@ -238,7 +233,7 @@ public:
 	Status ShearTransform(double shearX, double shearY, MatrixOrder order = MatrixOrderPrepend);
 	Status MultiplyTransform(CMatrix* pMatrix, MatrixOrder order = MatrixOrderPrepend);
 	
-	// функции отсечения
+	// С„СѓРЅРєС†РёРё РѕС‚СЃРµС‡РµРЅРёСЏ
 	Status SetClipRect(double dLeft, double dTop, double dWidth, double dHeight);
 	Status SetClipRect2(double dLeft, double dTop, double dWidth, double dHeight);
 	Status SetClipRect3(double dLeft, double dTop, double dWidth, double dHeight);
@@ -248,7 +243,7 @@ public:
 	Status ExclugeClip(CGraphicsPath* pPath);
 	Status CombineClip(CGraphicsPath* pPath, agg::sbool_op_e op);
 
-	// измерение текста
+	// РёР·РјРµСЂРµРЅРёРµ С‚РµРєСЃС‚Р°
 	BOOL MeasureString(const std::wstring& strText, CFontManager* pManager, double* lWidth, double* lHeight);
 	Status Clear(CColor oColor);
 
@@ -263,13 +258,13 @@ public:
 	Status DrawPath(NSStructures::CPen* pPen, CGraphicsPath* pPath);
 	Status DrawPathNoTransform(NSStructures::CPen* pPen, CGraphicsPath* pPath);
 
-	// заливка
+	// Р·Р°Р»РёРІРєР°
 	Status FillEllipse(CBrush* pBrush, double x, double y, double width, double height);
 	Status FillRectangle(CBrush* pBrush, double x, double y, double width, double height);
 	Status FillPolygon(CBrush* pBrush, double* pPoints, LONG lCount);
 	Status FillPath(CBrush* pBrush, CGraphicsPath* pPath);
 
-	// отрисовка картинки
+	// РѕС‚СЂРёСЃРѕРІРєР° РєР°СЂС‚РёРЅРєРё
 	Status DrawImage(CImage* pImage, double x, double y, double width, double height);
 	Status DrawMeta(const std::wstring& strFile, double x, double y, double width, double height);
 
@@ -279,7 +274,7 @@ public:
 
 	BOOL DrawImageUnscaled(CImage* pImage, double x, double y);
 
-	// отрисовка текста
+	// РѕС‚СЂРёСЃРѕРІРєР° С‚РµРєСЃС‚Р°
 	BOOL DrawString(const std::wstring& strText, CFontManager* pFont, CBrush* pBrush, double x, double y);
 	BOOL DrawStringC(const LONG& lText, CFontManager* pFont, CBrush* pBrush, double x, double y);
 	BOOL DrawStringPath(const std::wstring& strText, CFontManager* pFont, CBrush* pBrush, double x, double y);

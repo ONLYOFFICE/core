@@ -1,4 +1,4 @@
-#ifndef _AGGPLUSTYPES_H
+﻿#ifndef _AGGPLUSTYPES_H
 #define _AGGPLUSTYPES_H
 
 #include "../common/Types.h"

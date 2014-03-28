@@ -1,11 +1,11 @@
-// 
+﻿// 
 //
 //////////////////////////////////////////////////////////////////////
 
 #ifndef _AGGPLUSENUMS_H
 #define _AGGPLUSENUMS_H
 
-#include "AggPlusTypes.h"
+#include "aggplustypes.h"
 
 namespace Aggplus
 {

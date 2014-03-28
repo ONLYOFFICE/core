@@ -290,6 +290,7 @@ namespace NSFile
 			}
 
 			lOutputCount = (LONG)(pCodesCur - pData);
+            *pCodesCur++ = 0;
 		}
 
 		static void GetUtf8StringFromUnicode_2bytes(const wchar_t* pUnicodes, LONG lCount, BYTE*& pData, LONG& lOutputCount, bool bIsBOM = false)
@@ -433,7 +434,7 @@ namespace NSFile
 #else
 			BYTE* pUtf8 = NULL;
 			LONG lLen = 0;
-			CUtf8Converter::GetUtf8StringFromUnicode(sFileName, sFileName.length(), pUtf8, lLen, true);
+            CUtf8Converter::GetUtf8StringFromUnicode(sFileName.c_str(), sFileName.length(), pUtf8, lLen, false);
 			m_pFile = fopen((char*)pUtf8, "rb");
 			delete [] pUtf8;
 #endif		
@@ -455,7 +456,7 @@ namespace NSFile
 #else
 			BYTE* pUtf8 = NULL;
 			LONG lLen = 0;
-			CUtf8Converter::GetUtf8StringFromUnicode(sFileName, sFileName.length(), pUtf8, lLen, true);
+            CUtf8Converter::GetUtf8StringFromUnicode(sFileName.c_str(), sFileName.length(), pUtf8, lLen, false);
 			m_pFile = fopen((char*)pUtf8, "wb");
 			delete [] pUtf8;
 #endif		

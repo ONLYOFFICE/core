@@ -3,6 +3,10 @@
 
 #include "Types.h"
 
+#ifdef _LINUX
+#include "string.h"
+#endif
+
 template <class T>
 class CArray
 {
@@ -133,7 +137,13 @@ public:
 			return FALSE;
 		m_aT[nIndex].~T();
 		if (nIndex != (m_nSize - 1))
-			memmove_s((void*)(m_aT + nIndex), (m_nSize - nIndex) * sizeof(T), (void*)(m_aT + nIndex + 1), (m_nSize - (nIndex + 1)) * sizeof(T));
+        {
+#ifdef WIN32
+            memmove_s((void*)(m_aT + nIndex), (m_nSize - nIndex) * sizeof(T), (void*)(m_aT + nIndex + 1), (m_nSize - (nIndex + 1)) * sizeof(T));
+#else
+            memmove((void*)(m_aT + nIndex), (void*)(m_aT + nIndex + 1), (m_nSize - (nIndex + 1)) * sizeof(T));
+#endif
+        }
 		m_nSize--;
 		return TRUE;
 	}
@@ -150,7 +160,13 @@ public:
 			m_aT[nIndex + i].~T();
 
 		if ((nIndex + nCount) != m_nSize)
+        {
+#ifdef WIN32
 			memmove_s((void*)(m_aT + nIndex), (m_nSize - nIndex - nCount + 1) * sizeof(T), (void*)(m_aT + nIndex + nCount), (m_nSize - (nIndex + nCount)) * sizeof(T));
+#else
+            memmove((void*)(m_aT + nIndex), (void*)(m_aT + nIndex + nCount), (m_nSize - (nIndex + nCount)) * sizeof(T));
+#endif
+        }
 		m_nSize--;
 		return TRUE;
 	}

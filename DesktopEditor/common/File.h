@@ -1,4 +1,4 @@
-#ifndef _BUILD_FILE_CROSSPLATFORM_H_
+﻿#ifndef _BUILD_FILE_CROSSPLATFORM_H_
 #define _BUILD_FILE_CROSSPLATFORM_H_
 
 #include <stdio.h>

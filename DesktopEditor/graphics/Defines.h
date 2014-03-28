@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 typedef float				REAL;
 typedef int                 INT;

@@ -1,10 +1,14 @@
-#ifndef _BUILD_GRAPHICS_RENDERER_H_
+п»ї#ifndef _BUILD_GRAPHICS_RENDERER_H_
 #define _BUILD_GRAPHICS_RENDERER_H_
 
 #include "IRenderer.h"
 #include "Graphics.h"
 #include "ImageFilesCache.h"
 #include "../raster/BgraFrame.h"
+
+#ifdef BOOL
+#undef BOOL
+#endif
 
 class CGraphicsRenderer : public IRenderer
 {
@@ -29,13 +33,13 @@ private:
 	LONG  m_lCurrentClipMode;
 	BOOL  m_bIsSetupClip;
 
-	// область отсечения
+	// РѕР±Р»Р°СЃС‚СЊ РѕС‚СЃРµС‡РµРЅРёСЏ
 	LONG	m_lClipLeft;
 	LONG	m_lClipTop;
 	LONG	m_lClipWidth;
 	LONG	m_lClipHeight;
 
-	// пикселы
+	// РїРёРєСЃРµР»С‹
 	BYTE*			m_pPixels;
 	Aggplus::CDIB*	m_pDIB;
 
@@ -73,9 +77,9 @@ public:
 	void RestoreBrush(const NSStructures::CBrush& oBrush) { m_oBrush = oBrush; }
 
 public:
-// тип рендерера-----------------------------------------------------------------------------
+// С‚РёРї СЂРµРЅРґРµСЂРµСЂР°-----------------------------------------------------------------------------
 	virtual HRESULT get_Type(LONG* lType);
-//-------- Функции для работы со страницей --------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂР°РЅРёС†РµР№ --------------------------------------------------
 	virtual HRESULT NewPage();
 	virtual HRESULT get_Height(double* dHeight);
 	virtual HRESULT put_Height(const double& dHeight);
@@ -146,18 +150,18 @@ public:
 	virtual HRESULT get_FontFaceIndex(int* lFaceIndex);
 	virtual HRESULT put_FontFaceIndex(const int& lFaceIndex);
 
-//-------- Функции для вывода текста --------------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСЃС‚Р° --------------------------------------------------------
 	virtual HRESULT CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset);
 	virtual HRESULT CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset);
 	
 	virtual HRESULT CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags);
 	virtual HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags);
 
-//-------- Маркеры для команд ---------------------------------------------------------------
+//-------- РњР°СЂРєРµСЂС‹ РґР»СЏ РєРѕРјР°РЅРґ ---------------------------------------------------------------
 	virtual HRESULT BeginCommand(const DWORD& lType);
 	virtual HRESULT EndCommand(const DWORD& lType);
 
-//-------- Функции для работы с Graphics Path -----------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Graphics Path -----------------------------------------------
 	virtual HRESULT PathCommandMoveTo(const double& x, const double& y);
 	virtual HRESULT PathCommandLineTo(const double& x, const double& y);
 	virtual HRESULT PathCommandLinesTo(double* points, const int& count);
@@ -176,7 +180,7 @@ public:
 	virtual HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags);
 	virtual HRESULT PathCommandTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags);
 
-//-------- Функции для вывода изображений ---------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° РёР·РѕР±СЂР°Р¶РµРЅРёР№ ---------------------------------------------------
 	virtual HRESULT DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h);
 	virtual HRESULT DrawImageFromFile(const std::wstring& sFile, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha = 255);
 

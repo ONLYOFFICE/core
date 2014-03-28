@@ -9,14 +9,6 @@
 #endif
 #endif
 
-#ifndef max
-#define max(a,b)            (((a) > (b)) ? (a) : (b))
-#endif
-
-#ifndef min
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
-#endif
-
 #ifndef FALSE
 #define FALSE               0
 #endif
@@ -39,6 +31,12 @@ typedef int				INT;
 typedef unsigned int	UINT, *PUINT;
 typedef wchar_t			WCHAR;
 
+#ifdef _LINUX_QT
+#include <inttypes.h>
+typedef int64_t     T_LONG64;
+typedef uint64_t    T_ULONG64;
+#else
+
 #if (!defined (_MAC) && (!defined(MIDL_PASS) || defined(__midl)) && (!defined(_M_IX86) || (defined(_INTEGRAL_MAX_BITS) && _INTEGRAL_MAX_BITS >= 64)))
 typedef __int64				T_LONG64;
 typedef unsigned __int64	T_ULONG64;
@@ -50,6 +48,8 @@ typedef unsigned __int64	T_ULONG64;
 typedef double T_LONG64;
 typedef double T_ULONG64;
 #endif //_MAC and int64
+#endif
+
 #endif
 
 #ifndef VOID
@@ -71,6 +71,14 @@ typedef long HRESULT;
 #define S_OK                                   ((HRESULT)0x00000000L)
 #define S_FALSE                                ((HRESULT)0x00000001L)
 #endif
+#endif
+
+#ifndef max
+#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
 #define ADDREFINTERFACE(pinterface)\

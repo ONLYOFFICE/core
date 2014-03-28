@@ -1,4 +1,4 @@
-#ifndef _BUILD_IRENDERER_H_
+п»ї#ifndef _BUILD_IRENDERER_H_
 #define _BUILD_IRENDERER_H_
 
 #include "../common/Types.h"
@@ -33,12 +33,12 @@ public:
 	}
 };
 
-// тип в DrawPath
+// С‚РёРї РІ DrawPath
 const long c_nStroke			= 0x0001;
 const long c_nWindingFillMode   = 0x0100;
 const long c_nEvenOddFillMode   = 0x0200;
 
-// тип в BeginCommand, EndCommand
+// С‚РёРї РІ BeginCommand, EndCommand
 const long c_nNone              = 0x0000;
 const long c_nPageType			= 0x0001;
 const long c_nTextType			= 0x0002;
@@ -81,23 +81,23 @@ const long c_nBlockHorzAlign		= 0xa033;
 const long c_nLine				= 0xa040;
 const long c_nBaselineShift		= 0xa041;
 
-// типы клипа
+// С‚РёРїС‹ РєР»РёРїР°
 const long c_nClipRegionTypeWinding		= 0x0000;
 const long c_nClipRegionTypeEvenOdd		= 0x0001;
-// тип объединения клипов
+// С‚РёРї РѕР±СЉРµРґРёРЅРµРЅРёСЏ РєР»РёРїРѕРІ
 const long c_nClipRegionIntersect		= 0x0000;
 const long c_nClipRegionUnion			= 0x0100;
 
-// флаги в CommandDrawTextEx
+// С„Р»Р°РіРё РІ CommandDrawTextEx
 const long c_nFlagNone			= 0x0000;
 const long c_nFlagHyperlink		= 0x0001;
 
-// флаги в CommandParams
+// С„Р»Р°РіРё РІ CommandParams
 const long c_nParamFlipX		= 0x0001;
 const long c_nParamFlipY		= 0x0002;
 const long c_nFlipNextRotate	= 0x0004;
 
-// типы рендерера
+// С‚РёРїС‹ СЂРµРЅРґРµСЂРµСЂР°
 const long c_nUnknownRenderer   = 0x0000;
 const long c_nPDFWriter         = 0x0001;
 const long c_nHtmlRendrerer		= 0x0002;
@@ -115,9 +115,9 @@ const long c_nGrRenderer		= 0x0010;
 class IRenderer : public IGrObject
 {
 public:
-// тип рендерера-----------------------------------------------------------------------------
+// С‚РёРї СЂРµРЅРґРµСЂРµСЂР°-----------------------------------------------------------------------------
 	virtual HRESULT get_Type(LONG* lType)				= 0;
-//-------- Функции для работы со страницей --------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂР°РЅРёС†РµР№ --------------------------------------------------
 	virtual HRESULT NewPage()							= 0;
 	virtual HRESULT get_Height(double* dHeight)			= 0;
 	virtual HRESULT put_Height(const double& dHeight)	= 0;
@@ -189,18 +189,18 @@ public:
 	virtual HRESULT get_FontFaceIndex(int* lFaceIndex)			= 0;
 	virtual HRESULT put_FontFaceIndex(const int& lFaceIndex)	= 0;
 
-//-------- Функции для вывода текста --------------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСЃС‚Р° --------------------------------------------------------
 	virtual HRESULT CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset) = 0;
 	virtual HRESULT CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset) = 0;
 	
 	virtual HRESULT CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags) = 0;
 	virtual HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags) = 0;
 
-//-------- Маркеры для команд ---------------------------------------------------------------
+//-------- РњР°СЂРєРµСЂС‹ РґР»СЏ РєРѕРјР°РЅРґ ---------------------------------------------------------------
 	virtual HRESULT BeginCommand(const DWORD& lType)	= 0;
 	virtual HRESULT EndCommand(const DWORD& lType)		= 0;
 
-//-------- Функции для работы с Graphics Path -----------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Graphics Path -----------------------------------------------
 	virtual HRESULT PathCommandMoveTo(const double& x, const double& y)			= 0;
 	virtual HRESULT PathCommandLineTo(const double& x, const double& y)			= 0;
 	virtual HRESULT PathCommandLinesTo(double* points, const int& count)		= 0;
@@ -219,7 +219,7 @@ public:
 	virtual HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags) = 0;
 	virtual HRESULT PathCommandTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags) = 0;
 
-//-------- Функции для вывода изображений ---------------------------------------------------
+//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° РёР·РѕР±СЂР°Р¶РµРЅРёР№ ---------------------------------------------------
 	virtual HRESULT DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h)		= 0;
 	virtual HRESULT DrawImageFromFile(const std::wstring&, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha = 255)	= 0;	
 

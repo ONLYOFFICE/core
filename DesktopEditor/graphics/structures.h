@@ -1,7 +1,10 @@
-#pragma once
-#include "../Common/Array.h"
+﻿#ifndef _BUILD_GRAPHICS_STRUCTURES_H_
+#define _BUILD_GRAPHICS_STRUCTURES_H_
+
+#include "../common/Array.h"
 
 #include <string>
+#include <stdlib.h>
 
 // pen -----------------------------------------------------------
 const long c_ag_LineCapFlat				= 0;
@@ -522,3 +525,5 @@ namespace NSStructures
 		}
 	};
 }
+
+#endif // _BUILD_GRAPHICS_STRUCTURES_H_

@@ -1,4 +1,4 @@
-#ifndef _BUILD_TEMPORARY_CS_H_
+﻿#ifndef _BUILD_TEMPORARY_CS_H_
 #define _BUILD_TEMPORARY_CS_H_
 
 namespace NSCriticalSection

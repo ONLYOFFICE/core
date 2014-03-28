@@ -1,4 +1,12 @@
-#include "GraphicsPath.h"
+п»ї#include "GraphicsPath.h"
+
+#ifndef max
+#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
 
 namespace Aggplus
 {
@@ -170,7 +178,7 @@ namespace Aggplus
 	
 	Status CGraphicsPath::AddCurve(double* pPoints, int nCount)
 	{
-		// этим мы не пользуемся. Понадобится - реализую.
+		// СЌС‚РёРј РјС‹ РЅРµ РїРѕР»СЊР·СѓРµРјСЃСЏ. РџРѕРЅР°РґРѕР±РёС‚СЃСЏ - СЂРµР°Р»РёР·СѓСЋ.
 		return AddBeziers(pPoints, nCount);
 	}
 
@@ -513,26 +521,26 @@ namespace Aggplus
 
 	double CGraphicsPath::AngToEllPrm(double fAngle, double fXRad, double fYRad)
 	{
-		// Функция для перевода реального угла в параметрическое задание эллписа
-		// т.е. x= a cos(t) y = b sin(t) - параметрическое задание эллписа.
+		// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРµСЂРµРІРѕРґР° СЂРµР°Р»СЊРЅРѕРіРѕ СѓРіР»Р° РІ РїР°СЂР°РјРµС‚СЂРёС‡РµСЃРєРѕРµ Р·Р°РґР°РЅРёРµ СЌР»Р»РїРёСЃР°
+		// С‚.Рµ. x= a cos(t) y = b sin(t) - РїР°СЂР°РјРµС‚СЂРёС‡РµСЃРєРѕРµ Р·Р°РґР°РЅРёРµ СЌР»Р»РїРёСЃР°.
 		// x = r cos(p), y = r sin(p) => t = atan2( sin(p) / b, cos(p) / a );
 		return atan2( sin( fAngle ) / fYRad,  cos( fAngle ) / fXRad );
 	}
 
 	int CGraphicsPath::EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, BOOL bClockDirection)
 	{
-		// переведем углы в радианы
+		// РїРµСЂРµРІРµРґРµРј СѓРіР»С‹ РІ СЂР°РґРёР°РЅС‹
 		int nRet = 0;
 
 		double dAngle1 = fAngle1 * 3.141592 / 180;
 		double dAngle2 = fAngle2 * 3.141592 / 180;
 
-		// Выясним в каких четвертях находятся начальная и конечная точки
+		// Р’С‹СЏСЃРЅРёРј РІ РєР°РєРёС… С‡РµС‚РІРµСЂС‚СЏС… РЅР°С…РѕРґСЏС‚СЃСЏ РЅР°С‡Р°Р»СЊРЅР°СЏ Рё РєРѕРЅРµС‡РЅР°СЏ С‚РѕС‡РєРё
 		unsigned int nFirstPointQuard  = int(fAngle1) / 90 + 1; 
 		unsigned int nSecondPointQuard = int(fAngle2) / 90 + 1;
 		nSecondPointQuard = min( 4, max( 1, nSecondPointQuard ) );
 		nFirstPointQuard  = min( 4, max( 1, nFirstPointQuard ) );
-		// Проведем линию в начальную точку дуги
+		// РџСЂРѕРІРµРґРµРј Р»РёРЅРёСЋ РІ РЅР°С‡Р°Р»СЊРЅСѓСЋ С‚РѕС‡РєСѓ РґСѓРіРё
 		double fStartX = 0.0, fStartY = 0.0, fEndX = 0.0, fEndY = 0.0;
 
 		fStartX = fX + fXRad * cos( AngToEllPrm( dAngle1, fXRad, fYRad ) );
@@ -540,7 +548,7 @@ namespace Aggplus
 
 		LineTo(fStartX, fStartY);
 
-		// Дальше рисуем по четверям
+		// Р”Р°Р»СЊС€Рµ СЂРёСЃСѓРµРј РїРѕ С‡РµС‚РІРµСЂСЏРј
 
 		double fCurX = fStartX, fCurY = fStartY;
 		double dStartAngle = dAngle1;
@@ -582,7 +590,7 @@ namespace Aggplus
 
 	int CGraphicsPath::EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, BOOL bClockDirection)
 	{
-		// Рассчитаем начальную, конечную и контрольные точки
+		// Р Р°СЃСЃС‡РёС‚Р°РµРј РЅР°С‡Р°Р»СЊРЅСѓСЋ, РєРѕРЅРµС‡РЅСѓСЋ Рё РєРѕРЅС‚СЂРѕР»СЊРЅС‹Рµ С‚РѕС‡РєРё
 		double fX1  = 0.0, fX2  = 0.0, fY1  = 0.0, fY2  = 0.0;
 		double fCX1 = 0.0, fCX2 = 0.0, fCY1 = 0.0, fCY2 = 0.0;
 
@@ -643,7 +651,7 @@ namespace Aggplus
 			double fStartX = fX + fWidth / 2.0 + fWidth / 2 * cos( AngToEllPrm( dStartAngle, fWidth / 2, fHeight / 2 ) );
 			double fStartY = fY + fHeight / 2.0 - fHeight / 2 * sin( AngToEllPrm ( dStartAngle, fWidth / 2, fHeight / 2 ) );
 
-			// В случае, когда эллипс рисуется целиком используется команда AppendEllipse, в которой команда MoveTo уже есть
+			// Р’ СЃР»СѓС‡Р°Рµ, РєРѕРіРґР° СЌР»Р»РёРїСЃ СЂРёСЃСѓРµС‚СЃСЏ С†РµР»РёРєРѕРј РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РєРѕРјР°РЅРґР° AppendEllipse, РІ РєРѕС‚РѕСЂРѕР№ РєРѕРјР°РЅРґР° MoveTo СѓР¶Рµ РµСЃС‚СЊ
 			if ( fSweepAngle < 360 )
 				if ( Ok != MoveTo( fStartX, fStartY ) )
 					return GenericError;
@@ -655,11 +663,11 @@ namespace Aggplus
 		if( fSweepAngle > 0 )
 			bClockDirection = TRUE;
 
-		if( abs(fSweepAngle) >= 360 ) // Целый эллипс
+		if( abs(fSweepAngle) >= 360 ) // Р¦РµР»С‹Р№ СЌР»Р»РёРїСЃ
 		{
 			return (0 == Ellipse(fX + fWidth / 2, fY + fHeight / 2, fWidth / 2, fHeight / 2)) ? Ok : GenericError;
 		}
-		else // Дуга эллипса
+		else // Р”СѓРіР° СЌР»Р»РёРїСЃР°
 		{
 			return (0 == EllipseArc(fX + fWidth / 2, fY + fHeight / 2, fWidth / 2, fHeight / 2, fSrtAngle, fEndAngle, bClockDirection)) ? Ok : GenericError;
 		}
@@ -993,26 +1001,26 @@ namespace Aggplus
 
 	double CGraphicsPathSimpleConverter::AngToEllPrm(double fAngle, double fXRad, double fYRad)
 	{
-		// Функция для перевода реального угла в параметрическое задание эллписа
-		// т.е. x= a cos(t) y = b sin(t) - параметрическое задание эллписа.
+		// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРµСЂРµРІРѕРґР° СЂРµР°Р»СЊРЅРѕРіРѕ СѓРіР»Р° РІ РїР°СЂР°РјРµС‚СЂРёС‡РµСЃРєРѕРµ Р·Р°РґР°РЅРёРµ СЌР»Р»РїРёСЃР°
+		// С‚.Рµ. x= a cos(t) y = b sin(t) - РїР°СЂР°РјРµС‚СЂРёС‡РµСЃРєРѕРµ Р·Р°РґР°РЅРёРµ СЌР»Р»РїРёСЃР°.
 		// x = r cos(p), y = r sin(p) => t = atan2( sin(p) / b, cos(p) / a );
 		return atan2( sin( fAngle ) / fYRad,  cos( fAngle ) / fXRad );
 	}
 
 	int CGraphicsPathSimpleConverter::EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, BOOL bClockDirection)
 	{
-		// переведем углы в радианы
+		// РїРµСЂРµРІРµРґРµРј СѓРіР»С‹ РІ СЂР°РґРёР°РЅС‹
 		int nRet = 0;
 
 		double dAngle1 = fAngle1 * 3.141592 / 180;
 		double dAngle2 = fAngle2 * 3.141592 / 180;
 
-		// Выясним в каких четвертях находятся начальная и конечная точки
+		// Р’С‹СЏСЃРЅРёРј РІ РєР°РєРёС… С‡РµС‚РІРµСЂС‚СЏС… РЅР°С…РѕРґСЏС‚СЃСЏ РЅР°С‡Р°Р»СЊРЅР°СЏ Рё РєРѕРЅРµС‡РЅР°СЏ С‚РѕС‡РєРё
 		unsigned int nFirstPointQuard  = int(fAngle1) / 90 + 1; 
 		unsigned int nSecondPointQuard = int(fAngle2) / 90 + 1;
 		nSecondPointQuard = min( 4, max( 1, nSecondPointQuard ) );
 		nFirstPointQuard  = min( 4, max( 1, nFirstPointQuard ) );
-		// Проведем линию в начальную точку дуги
+		// РџСЂРѕРІРµРґРµРј Р»РёРЅРёСЋ РІ РЅР°С‡Р°Р»СЊРЅСѓСЋ С‚РѕС‡РєСѓ РґСѓРіРё
 		double fStartX = 0.0, fStartY = 0.0, fEndX = 0.0, fEndY = 0.0;
 
 		fStartX = fX + fXRad * cos( AngToEllPrm( dAngle1, fXRad, fYRad ) );
@@ -1020,7 +1028,7 @@ namespace Aggplus
 
 		_LineTo(fStartX, fStartY);
 
-		// Дальше рисуем по четверям
+		// Р”Р°Р»СЊС€Рµ СЂРёСЃСѓРµРј РїРѕ С‡РµС‚РІРµСЂСЏРј
 
 		double fCurX = fStartX, fCurY = fStartY;
 		double dStartAngle = dAngle1;
@@ -1062,7 +1070,7 @@ namespace Aggplus
 
 	int CGraphicsPathSimpleConverter::EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, BOOL bClockDirection)
 	{
-		// Рассчитаем начальную, конечную и контрольные точки
+		// Р Р°СЃСЃС‡РёС‚Р°РµРј РЅР°С‡Р°Р»СЊРЅСѓСЋ, РєРѕРЅРµС‡РЅСѓСЋ Рё РєРѕРЅС‚СЂРѕР»СЊРЅС‹Рµ С‚РѕС‡РєРё
 		double fX1  = 0.0, fX2  = 0.0, fY1  = 0.0, fY2  = 0.0;
 		double fCX1 = 0.0, fCX2 = 0.0, fCY1 = 0.0, fCY2 = 0.0;
 
@@ -1123,7 +1131,7 @@ namespace Aggplus
 			double fStartX = fX + fWidth / 2.0 + fWidth / 2 * cos( AngToEllPrm( dStartAngle, fWidth / 2, fHeight / 2 ) );
 			double fStartY = fY + fHeight / 2.0 - fHeight / 2 * sin( AngToEllPrm ( dStartAngle, fWidth / 2, fHeight / 2 ) );
 
-			// В случае, когда эллипс рисуется целиком используется команда AppendEllipse, в которой команда MoveTo уже есть
+			// Р’ СЃР»СѓС‡Р°Рµ, РєРѕРіРґР° СЌР»Р»РёРїСЃ СЂРёСЃСѓРµС‚СЃСЏ С†РµР»РёРєРѕРј РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РєРѕРјР°РЅРґР° AppendEllipse, РІ РєРѕС‚РѕСЂРѕР№ РєРѕРјР°РЅРґР° MoveTo СѓР¶Рµ РµСЃС‚СЊ
 			if ( fSweepAngle < 360 )
 				if ( false == _MoveTo( fStartX, fStartY ) )
 					return false;
@@ -1135,11 +1143,11 @@ namespace Aggplus
 		if( fSweepAngle > 0 )
 			bClockDirection = TRUE;
 
-		if( abs(fSweepAngle) >= 360 ) // Целый эллипс
+		if( abs(fSweepAngle) >= 360 ) // Р¦РµР»С‹Р№ СЌР»Р»РёРїСЃ
 		{
 			return (0 == Ellipse(fX + fWidth / 2, fY + fHeight / 2, fWidth / 2, fHeight / 2)) ? true : false;
 		}
-		else // Дуга эллипса
+		else // Р”СѓРіР° СЌР»Р»РёРїСЃР°
 		{
 			return (0 == EllipseArc(fX + fWidth / 2, fY + fHeight / 2, fWidth / 2, fHeight / 2, fSrtAngle, fEndAngle, bClockDirection)) ? true : false;
 		}

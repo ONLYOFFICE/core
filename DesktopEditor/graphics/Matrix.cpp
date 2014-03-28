@@ -1,4 +1,4 @@
-#include "Matrix.h"
+﻿#include "Matrix.h"
 
 namespace Aggplus
 {
@@ -178,7 +178,7 @@ namespace Aggplus
 	Status CMatrix::Invert()
 	{
 		double d = m_agg_mtx.determinant();
-		if (0.0001 >= abs(d))
+        if (0.0001 >= fabs(d))
 			return InvalidParameter;
 
 		m_agg_mtx.invert();

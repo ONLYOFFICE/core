@@ -1,8 +1,10 @@
-#ifndef _PATH_H
+п»ї#ifndef _PATH_H
 #define _PATH_H
 
 #include "../common/Types.h"
 #include <memory>
+#include <string.h>
+#include <stdlib.h>
 #include "ftimage.h"
 
 class ISimpleGraphicsPath
@@ -28,16 +30,16 @@ struct TPathPoint
 // CPath.nFlags
 //-------------------------------------------------------------------------------------------------------------------------------
 
-// Флаг для первой точки любого subpath
+// Р¤Р»Р°Рі РґР»СЏ РїРµСЂРІРѕР№ С‚РѕС‡РєРё Р»СЋР±РѕРіРѕ subpath
 #define PathFirst         0x01
 
-// Флаг для последней точки любого subpath
+// Р¤Р»Р°Рі РґР»СЏ РїРѕСЃР»РµРґРЅРµР№ С‚РѕС‡РєРё Р»СЋР±РѕРіРѕ subpath
 #define PathLast          0x02
 
-// Если subpath замкнутый, тогда его последняя и первая точка должны совпадать, их флаг в данном случае следующий 
+// Р•СЃР»Рё subpath Р·Р°РјРєРЅСѓС‚С‹Р№, С‚РѕРіРґР° РµРіРѕ РїРѕСЃР»РµРґРЅСЏСЏ Рё РїРµСЂРІР°СЏ С‚РѕС‡РєР° РґРѕР»Р¶РЅС‹ СЃРѕРІРїР°РґР°С‚СЊ, РёС… С„Р»Р°Рі РІ РґР°РЅРЅРѕРј СЃР»СѓС‡Р°Рµ СЃР»РµРґСѓСЋС‰РёР№ 
 #define PathClosed        0x04
 
-// Флаг, означающий, что данная точка является контрольной для кривой Безье
+// Р¤Р»Р°Рі, РѕР·РЅР°С‡Р°СЋС‰РёР№, С‡С‚Рѕ РґР°РЅРЅР°СЏ С‚РѕС‡РєР° СЏРІР»СЏРµС‚СЃСЏ РєРѕРЅС‚СЂРѕР»СЊРЅРѕР№ РґР»СЏ РєСЂРёРІРѕР№ Р‘РµР·СЊРµ
 #define PathCurve         0x08
 
 //-------------------------------------------------------------------------------------------------------------------------------
@@ -61,12 +63,6 @@ class CFontPath
 public:
 
 	CFontPath();
-
-	CFontPath *Сopy() 
-	{ 
-		return new CFontPath(this); 
-	}
-
 	~CFontPath();
 
 	void Append(CFontPath *pPath);
@@ -98,7 +94,7 @@ public:
 
 	BOOL GetCurPoint(double *pdX, double *pdY);
 
-	// Добавляем флаг StrokeAdjust.
+	// Р”РѕР±Р°РІР»СЏРµРј С„Р»Р°Рі StrokeAdjust.
 	void AddStrokeAdjustHint(int nFirstControl, int nSecondControl, int nFirstPoint, int nLastPoint);
 	
 	BOOL ToInterface(ISimpleGraphicsPath* pPath);
@@ -122,12 +118,12 @@ private:
 
 private:
 
-	TPathPoint    *m_pPoints;      // Массив точек
-	unsigned char *m_pFlags;       // Массив флагов, указыающих значение точки в SubPath
-	int            m_nPointsCount; // Количество точек 
-	int            m_nSize;        // Непосредственный размер массива
+	TPathPoint    *m_pPoints;      // РњР°СЃСЃРёРІ С‚РѕС‡РµРє
+	unsigned char *m_pFlags;       // РњР°СЃСЃРёРІ С„Р»Р°РіРѕРІ, СѓРєР°Р·С‹Р°СЋС‰РёС… Р·РЅР°С‡РµРЅРёРµ С‚РѕС‡РєРё РІ SubPath
+	int            m_nPointsCount; // РљРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє 
+	int            m_nSize;        // РќРµРїРѕСЃСЂРµРґСЃС‚РІРµРЅРЅС‹Р№ СЂР°Р·РјРµСЂ РјР°СЃСЃРёРІР°
 	
-	int            m_nCurSubpath;  // Номер первой точки последнего SubPath
+	int            m_nCurSubpath;  // РќРѕРјРµСЂ РїРµСЂРІРѕР№ С‚РѕС‡РєРё РїРѕСЃР»РµРґРЅРµРіРѕ SubPath
 
 	TPathHint     *m_pHints;       //
 	int            m_nHintsCount;

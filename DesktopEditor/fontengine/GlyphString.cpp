@@ -1,4 +1,12 @@
-#include "GlyphString.h"
+ï»¿#include "GlyphString.h"
+
+#ifndef max
+#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
 
 TGlyphBitmap::TGlyphBitmap()
 {
@@ -8,7 +16,7 @@ TGlyphBitmap::TGlyphBitmap()
 	nHeight		= 0;
 	bAA			= FALSE;
 	pData		= NULL;
-	bFreeData	= NULL;
+    bFreeData	= TRUE;
 }
 
 TGlyphBitmap::~TGlyphBitmap()
@@ -291,7 +299,7 @@ void CGlyphString::GetBBox(float *pfLeft, float *pfTop, float *pfRight, float *p
 
 	if ( 0 == nType && !( 1 == m_arrCTM[0] && 0 == m_arrCTM[1] && 0 == m_arrCTM[2] && 1 == m_arrCTM[3] && 0 == m_arrCTM[4] && 0 == m_arrCTM[5] ) )
 	{
-		// Ïğèìåíÿåì ãëîáàëüíóş ìàòğèöó ïğåîáğàçîâàíèÿ è ïåğåñ÷èòûâàåì BBox
+		// ĞŸÑ€Ğ¸Ğ¼ĞµĞ½ÑĞµĞ¼ Ğ³Ğ»Ğ¾Ğ±Ğ°Ğ»ÑŒĞ½ÑƒÑ Ğ¼Ğ°Ñ‚Ñ€Ğ¸Ñ†Ñƒ Ğ¿Ñ€ĞµĞ¾Ğ±Ñ€Ğ°Ğ·Ğ¾Ğ²Ğ°Ğ½Ğ¸Ñ Ğ¸ Ğ¿ĞµÑ€ĞµÑÑ‡Ğ¸Ñ‚Ñ‹Ğ²Ğ°ĞµĞ¼ BBox
 		float arrfX[4] = { fLeft, fLeft,   fRight,  fRight };
 		float arrfY[4] = { fTop,  fBottom, fBottom, fTop   };
 
@@ -349,7 +357,7 @@ void CGlyphString::GetBBox2(float *pfLeft, float *pfTop, float *pfRight, float *
 
 	if ( !( 1 == m_arrCTM[0] && 0 == m_arrCTM[1] && 0 == m_arrCTM[2] && 1 == m_arrCTM[3] && 0 == m_arrCTM[4] && 0 == m_arrCTM[5] ) )
 	{
-		// Ïğèìåíÿåì ãëîáàëüíóş ìàòğèöó ïğåîáğàçîâàíèÿ è ïåğåñ÷èòûâàåì BBox
+		// ĞŸÑ€Ğ¸Ğ¼ĞµĞ½ÑĞµĞ¼ Ğ³Ğ»Ğ¾Ğ±Ğ°Ğ»ÑŒĞ½ÑƒÑ Ğ¼Ğ°Ñ‚Ñ€Ğ¸Ñ†Ñƒ Ğ¿Ñ€ĞµĞ¾Ğ±Ñ€Ğ°Ğ·Ğ¾Ğ²Ğ°Ğ½Ğ¸Ñ Ğ¸ Ğ¿ĞµÑ€ĞµÑÑ‡Ğ¸Ñ‚Ñ‹Ğ²Ğ°ĞµĞ¼ BBox
 		float arrfX[4] = { fLeft, fLeft,   fRight,  fRight };
 		float arrfY[4] = { fTop,  fBottom, fBottom, fTop   };
 

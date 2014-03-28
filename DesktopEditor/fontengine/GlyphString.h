@@ -1,4 +1,4 @@
-#ifndef _BUILD_GLYPH_STRING_H
+п»ї#ifndef _BUILD_GLYPH_STRING_H
 #define _BUILD_GLYPH_STRING_H
 
 #include "../common/Types.h"
@@ -13,13 +13,13 @@
 class TGlyphBitmap 
 {
 public:
-	int     nX;        // Сдвиг по X начальной точки для рисования символа
-	int     nY;        // Сдвиг по Y начальной точки для рисования символа
-	int     nWidth;    // Ширина символа
-	int     nHeight;   // Высота символа
-	BOOL    bAA;       // Anti-aliased: True означает, что Bitmap 8-битный(т.е. с альфой); False - Bitmap 1-битный
-	BYTE*	pData;     // Bitmap data(картинка с символом)
-	BOOL    bFreeData; // True, если память в pData нужно освободить
+	int     nX;        // РЎРґРІРёРі РїРѕ X РЅР°С‡Р°Р»СЊРЅРѕР№ С‚РѕС‡РєРё РґР»СЏ СЂРёСЃРѕРІР°РЅРёСЏ СЃРёРјРІРѕР»Р°
+	int     nY;        // РЎРґРІРёРі РїРѕ Y РЅР°С‡Р°Р»СЊРЅРѕР№ С‚РѕС‡РєРё РґР»СЏ СЂРёСЃРѕРІР°РЅРёСЏ СЃРёРјРІРѕР»Р°
+	int     nWidth;    // РЁРёСЂРёРЅР° СЃРёРјРІРѕР»Р°
+	int     nHeight;   // Р’С‹СЃРѕС‚Р° СЃРёРјРІРѕР»Р°
+	BOOL    bAA;       // Anti-aliased: True РѕР·РЅР°С‡Р°РµС‚, С‡С‚Рѕ Bitmap 8-Р±РёС‚РЅС‹Р№(С‚.Рµ. СЃ Р°Р»СЊС„РѕР№); False - Bitmap 1-Р±РёС‚РЅС‹Р№
+	BYTE*	pData;     // Bitmap data(РєР°СЂС‚РёРЅРєР° СЃ СЃРёРјРІРѕР»РѕРј)
+	BOOL    bFreeData; // True, РµСЃР»Рё РїР°РјСЏС‚СЊ РІ pData РЅСѓР¶РЅРѕ РѕСЃРІРѕР±РѕРґРёС‚СЊ
 
 	TGlyphBitmap();
 	~TGlyphBitmap();
@@ -27,9 +27,9 @@ public:
 
 enum EGlyphState
 {
-	glyphstateNormal = 0,  // символ отрисовался в нужном шрифте
-	glyphstateDeafault,    // символ отрисовался в дефолтовом шрифте
-	glyphstateMiss         // символ не отрисовался
+	glyphstateNormal = 0,  // СЃРёРјРІРѕР» РѕС‚СЂРёСЃРѕРІР°Р»СЃСЏ РІ РЅСѓР¶РЅРѕРј С€СЂРёС„С‚Рµ
+	glyphstateDeafault,    // СЃРёРјРІРѕР» РѕС‚СЂРёСЃРѕРІР°Р»СЃСЏ РІ РґРµС„РѕР»С‚РѕРІРѕРј С€СЂРёС„С‚Рµ
+	glyphstateMiss         // СЃРёРјРІРѕР» РЅРµ РѕС‚СЂРёСЃРѕРІР°Р»СЃСЏ
 };
 
 struct TBBox
@@ -57,9 +57,9 @@ struct TMetrics
 class TGlyph
 {
 public:
-	long         lUnicode; // Юникод
-	float        fX;       // Позиция глифа
-	float        fY;       // на BaseLine
+	long         lUnicode; // Р®РЅРёРєРѕРґ
+	float        fX;       // РџРѕР·РёС†РёСЏ РіР»РёС„Р°
+	float        fY;       // РЅР° BaseLine
 
 	float        fLeft;    //
 	float        fTop;     // BBox
@@ -82,7 +82,7 @@ public:
 namespace FontConstants
 {
 	//---------------------------------------------------------------------------------------------------
-	// Константы связанные с CharMap: Platform, Encoding ID
+	// РљРѕРЅСЃС‚Р°РЅС‚С‹ СЃРІСЏР·Р°РЅРЅС‹Рµ СЃ CharMap: Platform, Encoding ID
 	//---------------------------------------------------------------------------------------------------
 
 	const long c_lUniPlatform = 0;
@@ -154,19 +154,19 @@ public:
 	float   m_fTransX;
 	float   m_fTransY;
 
-	float   m_fX; // Координаты начальной точки для рисования
+	float   m_fX; // РљРѕРѕСЂРґРёРЅР°С‚С‹ РЅР°С‡Р°Р»СЊРЅРѕР№ С‚РѕС‡РєРё РґР»СЏ СЂРёСЃРѕРІР°РЅРёСЏ
 	float   m_fY; //
 
-	float   m_fEndX; // Координаты конечной точки
+	float   m_fEndX; // РљРѕРѕСЂРґРёРЅР°С‚С‹ РєРѕРЅРµС‡РЅРѕР№ С‚РѕС‡РєРё
 	float   m_fEndY; //
 
-	double  m_arrCTM[6];     // Глобальная матрица преобразования
-	double  m_dIDet;         // (Детерминант матрицы преобразования)^(-1)
+	double  m_arrCTM[6];     // Р“Р»РѕР±Р°Р»СЊРЅР°СЏ РјР°С‚СЂРёС†Р° РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ
+	double  m_dIDet;         // (Р”РµС‚РµСЂРјРёРЅР°РЅС‚ РјР°С‚СЂРёС†С‹ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ)^(-1)
 	
 private:
-	TGlyph* m_pGlyphsBuffer; // Символы в данной строке
-	int     m_nGlyphsCount;  // Количество символов в строке
-	int     m_nGlyphIndex;   // Номер текущего символа
+	TGlyph* m_pGlyphsBuffer; // РЎРёРјРІРѕР»С‹ РІ РґР°РЅРЅРѕР№ СЃС‚СЂРѕРєРµ
+	int     m_nGlyphsCount;  // РљРѕР»РёС‡РµСЃС‚РІРѕ СЃРёРјРІРѕР»РѕРІ РІ СЃС‚СЂРѕРєРµ
+	int     m_nGlyphIndex;   // РќРѕРјРµСЂ С‚РµРєСѓС‰РµРіРѕ СЃРёРјРІРѕР»Р°
 };
 
 #endif /* _BUILD_GLYPH_STRING_H */

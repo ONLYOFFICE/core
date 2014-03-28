@@ -1,4 +1,4 @@
-#ifndef _BUILD_FONT_ENGINE_FONTMANAGER_H_
+п»ї#ifndef _BUILD_FONT_ENGINE_FONTMANAGER_H_
 #define _BUILD_FONT_ENGINE_FONTMANAGER_H_
 
 #include "FontFile.h"
@@ -28,7 +28,7 @@ public:
 class CApplicationFontStreams
 {
 private:
-	// этот мап нужно периодически опрашивать и удалять неиспользуемые стримы
+	// СЌС‚РѕС‚ РјР°Рї РЅСѓР¶РЅРѕ РїРµСЂРёРѕРґРёС‡РµСЃРєРё РѕРїСЂР°С€РёРІР°С‚СЊ Рё СѓРґР°Р»СЏС‚СЊ РЅРµРёСЃРїРѕР»СЊР·СѓРµРјС‹Рµ СЃС‚СЂРёРјС‹
 	std::map<std::wstring, CFontStream*> m_mapStreams;
 public:
 

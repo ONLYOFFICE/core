@@ -1,7 +1,11 @@
-#include "ApplicationFonts.h"
+п»ї#include "ApplicationFonts.h"
 #include "../common/File.h"
 #include "../common/Directory.h"
 #include FT_SFNT_NAMES_H
+
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////////
 CFontSelectFormat::CFontSelectFormat()
@@ -199,7 +203,7 @@ CFontInfo* CFontInfo::FromBuffer(BYTE*& pBuffer, std::wstring strDir)
 	pBuffer += sizeof(BOOL);
 
 	// Panose
-	lLen = *((LONG*)pBuffer); // должно быть равно 10
+	lLen = *((LONG*)pBuffer); // РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ СЂР°РІРЅРѕ 10
 	pBuffer += sizeof(LONG);
 
 	BYTE pPanose[10];
@@ -305,11 +309,11 @@ namespace NSCharsets
 {
 	static void GetCodePageByCharset(unsigned char unCharset, unsigned long *pulBit, unsigned int *punLongIndex)
 	{
-		// Данная функция возвращает параметры, которые нужно посылать на вход 
-		// функции AVSFontManager::IsUnicodeRangeAvailable
+		// Р”Р°РЅРЅР°СЏ С„СѓРЅРєС†РёСЏ РІРѕР·РІСЂР°С‰Р°РµС‚ РїР°СЂР°РјРµС‚СЂС‹, РєРѕС‚РѕСЂС‹Рµ РЅСѓР¶РЅРѕ РїРѕСЃС‹Р»Р°С‚СЊ РЅР° РІС…РѕРґ 
+		// С„СѓРЅРєС†РёРё AVSFontManager::IsUnicodeRangeAvailable
 
 
-		// Соответствие Charset -> Codepage: http://support.microsoft.com/kb/165478
+		// РЎРѕРѕС‚РІРµС‚СЃС‚РІРёРµ Charset -> Codepage: http://support.microsoft.com/kb/165478
 		// http://msdn.microsoft.com/en-us/library/cc194829.aspx
 
 		//  Charset Name       Charset Value(hex)  Codepage number
@@ -335,7 +339,7 @@ namespace NSCharsets
 		//  VIETNAMESE_CHARSET      163 (xA3)            1258
 		//  MAC_CHARSET              77 (x4D)            
 
-		// Соответсвие CodePage -> ulCodePageRange1 : http://www.microsoft.com/Typography/otspec/os2.htm#cpr
+		// РЎРѕРѕС‚РІРµС‚СЃРІРёРµ CodePage -> ulCodePageRange1 : http://www.microsoft.com/Typography/otspec/os2.htm#cpr
 
 		if ( punLongIndex )
 			*punLongIndex = 4;
@@ -422,7 +426,7 @@ namespace NSCharsets
 
 int CFontList::GetCharsetPenalty(ULONG ulCandRanges[6], unsigned char unReqCharset)
 {
-	// Penalty = 65000 (это самый весомый параметр)
+	// Penalty = 65000 (СЌС‚Рѕ СЃР°РјС‹Р№ РІРµСЃРѕРјС‹Р№ РїР°СЂР°РјРµС‚СЂ)
 
 	if ( UNKNOWN_CHARSET == unReqCharset )
 		return 0;
@@ -444,15 +448,15 @@ int CFontList::GetSigPenalty(ULONG ulCandRanges[6], ULONG ulReqRanges[6], double
 {
 	double dPenalty = 0;
 
-	// Для начала просматриваем сколько вообще различных пространств надо.
-	// Исходя из их общего количества, находим вес 1 пропущеного пространства.
+	// Р”Р»СЏ РЅР°С‡Р°Р»Р° РїСЂРѕСЃРјР°С‚СЂРёРІР°РµРј СЃРєРѕР»СЊРєРѕ РІРѕРѕР±С‰Рµ СЂР°Р·Р»РёС‡РЅС‹С… РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІ РЅР°РґРѕ.
+	// РСЃС…РѕРґСЏ РёР· РёС… РѕР±С‰РµРіРѕ РєРѕР»РёС‡РµСЃС‚РІР°, РЅР°С…РѕРґРёРј РІРµСЃ 1 РїСЂРѕРїСѓС‰РµРЅРѕРіРѕ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІР°.
 
 	unsigned char arrCandidate[192], arrRequest[192];
 	memset( arrCandidate, 0x00, 192 );
 	memset( arrRequest, 0x00, 192 );
 
-	int nRangesCount = 0; // Количество необходимых пространств
-	int nAddCount    = 0; // количество дополнительных(ненужных) пространств у кандидата
+	int nRangesCount = 0; // РљРѕР»РёС‡РµСЃС‚РІРѕ РЅРµРѕР±С…РѕРґРёРјС‹С… РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІ
+	int nAddCount    = 0; // РєРѕР»РёС‡РµСЃС‚РІРѕ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹С…(РЅРµРЅСѓР¶РЅС‹С…) РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІ Сѓ РєР°РЅРґРёРґР°С‚Р°
 
 	for ( int nIndex = 0; nIndex < 6; nIndex++ )
 	{
@@ -495,8 +499,8 @@ int CFontList::GetFixedPitchPenalty(BOOL bCandFixed, BOOL bReqFixed)
 {
 	int nPenalty = 0;
 
-	// Если запрашивается моноширинный, а кандидат не моноширинный, то вес 15000
-	// Если запрашивается не моноширинный, а кандидат моноширинный, то вес 350
+	// Р•СЃР»Рё Р·Р°РїСЂР°С€РёРІР°РµС‚СЃСЏ РјРѕРЅРѕС€РёСЂРёРЅРЅС‹Р№, Р° РєР°РЅРґРёРґР°С‚ РЅРµ РјРѕРЅРѕС€РёСЂРёРЅРЅС‹Р№, С‚Рѕ РІРµСЃ 15000
+	// Р•СЃР»Рё Р·Р°РїСЂР°С€РёРІР°РµС‚СЃСЏ РЅРµ РјРѕРЅРѕС€РёСЂРёРЅРЅС‹Р№, Р° РєР°РЅРґРёРґР°С‚ РјРѕРЅРѕС€РёСЂРёРЅРЅС‹Р№, С‚Рѕ РІРµСЃ 350
 	if ( bReqFixed && !bCandFixed )
 		nPenalty = 15000;
 	if ( !bReqFixed && bCandFixed )
@@ -506,10 +510,10 @@ int CFontList::GetFixedPitchPenalty(BOOL bCandFixed, BOOL bReqFixed)
 }
 int CFontList::GetFaceNamePenalty(std::wstring sCandName, std::wstring sReqName)
 {
-	// На MSDN написано, что если имена не совпадают, то вес 10000.
-	// Мы будем сравнивать сколько совпало символов у запрашиваемого
-	// имени и с именем кандидата, без учета решистра, пробелов, запятых
-	// и тире.
+	// РќР° MSDN РЅР°РїРёСЃР°РЅРѕ, С‡С‚Рѕ РµСЃР»Рё РёРјРµРЅР° РЅРµ СЃРѕРІРїР°РґР°СЋС‚, С‚Рѕ РІРµСЃ 10000.
+	// РњС‹ Р±СѓРґРµРј СЃСЂР°РІРЅРёРІР°С‚СЊ СЃРєРѕР»СЊРєРѕ СЃРѕРІРїР°Р»Рѕ СЃРёРјРІРѕР»РѕРІ Сѓ Р·Р°РїСЂР°С€РёРІР°РµРјРѕРіРѕ
+	// РёРјРµРЅРё Рё СЃ РёРјРµРЅРµРј РєР°РЅРґРёРґР°С‚Р°, Р±РµР· СѓС‡РµС‚Р° СЂРµС€РёСЃС‚СЂР°, РїСЂРѕР±РµР»РѕРІ, Р·Р°РїСЏС‚С‹С…
+	// Рё С‚РёСЂРµ.
 
 	/*
 	TODO:
@@ -611,13 +615,13 @@ int CFontList::GetBoldPenalty(BOOL bCandBold, BOOL bReqBold)
 
 int CFontList::GetFontFormatPenalty(EFontFormat eCandFormat, EFontFormat eReqFormat)
 {
-	// Вообще, на МSDN написано только про TrueType. Но мы будем сравнивать
-	// все типы форматов и при несовпадении даем вес = 4. Если формат не задан
-	// то по умолчанию считаем его TrueType.
+	// Р’РѕРѕР±С‰Рµ, РЅР° РњSDN РЅР°РїРёСЃР°РЅРѕ С‚РѕР»СЊРєРѕ РїСЂРѕ TrueType. РќРѕ РјС‹ Р±СѓРґРµРј СЃСЂР°РІРЅРёРІР°С‚СЊ
+	// РІСЃРµ С‚РёРїС‹ С„РѕСЂРјР°С‚РѕРІ Рё РїСЂРё РЅРµСЃРѕРІРїР°РґРµРЅРёРё РґР°РµРј РІРµСЃ = 4. Р•СЃР»Рё С„РѕСЂРјР°С‚ РЅРµ Р·Р°РґР°РЅ
+	// С‚Рѕ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ СЃС‡РёС‚Р°РµРј РµРіРѕ TrueType.
 
 	if ( eReqFormat == fontUnknown )
 	{
-		// Считаем, что когда формат не известен, значит это 100% не TrueType.
+		// РЎС‡РёС‚Р°РµРј, С‡С‚Рѕ РєРѕРіРґР° С„РѕСЂРјР°С‚ РЅРµ РёР·РІРµСЃС‚РµРЅ, Р·РЅР°С‡РёС‚ СЌС‚Рѕ 100% РЅРµ TrueType.
 		if ( eCandFormat == fontTrueType )
 			return 4;
 		else
@@ -719,8 +723,8 @@ CFontInfo* CFontList::GetByParams(const CFontSelectFormat& oSelect)
 	if (0 == nFontsCount)
 		return NULL;
 
-	int nMinIndex   = 0; // Номер шрифта в списке с минимальным весом
-	int nMinPenalty = 0; // Минимальный вес
+	int nMinIndex   = 0; // РќРѕРјРµСЂ С€СЂРёС„С‚Р° РІ СЃРїРёСЃРєРµ СЃ РјРёРЅРёРјР°Р»СЊРЅС‹Рј РІРµСЃРѕРј
+	int nMinPenalty = 0; // РњРёРЅРёРјР°Р»СЊРЅС‹Р№ РІРµСЃ
 
 	int nDefPenalty = 2147483647;
 
@@ -814,7 +818,7 @@ CFontInfo* CFontList::GetByParams(const CFontSelectFormat& oSelect)
 			nDefPenalty = nCurPenalty;
 		}
 
-		// Нашелся шрифт, удовлетворяющий всем параметрам, дальше искать нет смысла
+		// РќР°С€РµР»СЃСЏ С€СЂРёС„С‚, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёР№ РІСЃРµРј РїР°СЂР°РјРµС‚СЂР°Рј, РґР°Р»СЊС€Рµ РёСЃРєР°С‚СЊ РЅРµС‚ СЃРјС‹СЃР»Р°
 		if ( 0 == nCurPenalty )
 			break;
 	}
@@ -863,10 +867,10 @@ void CFontList::LoadFromFolder(const std::wstring& strDirectory)
 		if (FT_Open_Face( pLibrary, &oOpenArgs, 0, &pFace ))
 			continue;
 
-		// TO DO: Шрифты, которые нельзя скейлить (т.е. изменять размер 
-		// произвольно) мы не грузим. Возможно в будущем надо будет
-		// сделать, чтобы работал и такой вариант. (в Word такие шрифты
-		// не используются)
+		// TO DO: РЁСЂРёС„С‚С‹, РєРѕС‚РѕСЂС‹Рµ РЅРµР»СЊР·СЏ СЃРєРµР№Р»РёС‚СЊ (С‚.Рµ. РёР·РјРµРЅСЏС‚СЊ СЂР°Р·РјРµСЂ 
+		// РїСЂРѕРёР·РІРѕР»СЊРЅРѕ) РјС‹ РЅРµ РіСЂСѓР·РёРј. Р’РѕР·РјРѕР¶РЅРѕ РІ Р±СѓРґСѓС‰РµРј РЅР°РґРѕ Р±СѓРґРµС‚
+		// СЃРґРµР»Р°С‚СЊ, С‡С‚РѕР±С‹ СЂР°Р±РѕС‚Р°Р» Рё С‚Р°РєРѕР№ РІР°СЂРёР°РЅС‚. (РІ Word С‚Р°РєРёРµ С€СЂРёС„С‚С‹
+		// РЅРµ РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ)
 		if ( !( pFace->face_flags & FT_FACE_FLAG_SCALABLE ) )
 		{
 			FT_Done_Face( pFace );
@@ -958,8 +962,8 @@ void CFontList::LoadFromFolder(const std::wstring& strDirectory)
 
 			if ( true )
 			{
-				// Специальная ветка для случаев, когда charset может быть задан не через значения
-				// ulCodePageRange, а непосредственно через тип Cmap.
+				// РЎРїРµС†РёР°Р»СЊРЅР°СЏ РІРµС‚РєР° РґР»СЏ СЃР»СѓС‡Р°РµРІ, РєРѕРіРґР° charset РјРѕР¶РµС‚ Р±С‹С‚СЊ Р·Р°РґР°РЅ РЅРµ С‡РµСЂРµР· Р·РЅР°С‡РµРЅРёСЏ
+				// ulCodePageRange, Р° РЅРµРїРѕСЃСЂРµРґСЃС‚РІРµРЅРЅРѕ С‡РµСЂРµР· С‚РёРї Cmap.
 
 				//  Charset Name       Charset Value(hex)  Codepage number   Platform_ID   Encoding_ID   Description
 				//  -------------------------------------------------------------------------------------------------

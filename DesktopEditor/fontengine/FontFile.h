@@ -195,8 +195,8 @@ public:
 
 	void AddToSizesCache(const TFontCacheSizes& oSizes);
 	
-	int CFontFile::SetCMapForCharCode(long lUnicode, int *pnCMapIndex);
-	int CFontFile::SetCMapForCharCode2(long lUnicode);
+	int SetCMapForCharCode(long lUnicode, int *pnCMapIndex);
+	int SetCMapForCharCode2(long lUnicode);
 
     int GetKerning(FT_UInt unPrevGID, FT_UInt unGID);
     void SetStringGID(const BOOL& bGID);

@@ -2746,6 +2746,39 @@ namespace BinXlsxRW {
 				pSheetView->m_oShowRowColHeaders.Init();
 				pSheetView->m_oShowRowColHeaders->SetValue(false != m_oBufferedStream.ReadBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 			}
+			else if (c_oSer_SheetView::Pane == type)
+			{
+				pSheetView->m_oPane.Init();
+				res = Read1(length, &BinaryWorksheetsTableReader::ReadPane, this, pSheetView->m_oPane.GetPointer());
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		}
+		int ReadPane(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CPane* pPane = static_cast<OOX::Spreadsheet::CPane*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_Pane::State == type)
+			{
+				pPane->m_oState.Init();
+				pPane->m_oState->Append(m_oBufferedStream.ReadString2(length));
+			}
+			else if(c_oSer_Pane::TopLeftCell == type)
+			{
+				pPane->m_oTopLeftCell.Init();
+				pPane->m_oTopLeftCell->Append(m_oBufferedStream.ReadString2(length));
+			}
+			else if(c_oSer_Pane::XSplit == type)
+			{
+				pPane->m_oXSplit.Init();
+				pPane->m_oXSplit->SetValue(m_oBufferedStream.ReadDouble());
+			}
+			else if(c_oSer_Pane::YSplit == type)
+			{
+				pPane->m_oYSplit.Init();
+				pPane->m_oYSplit->SetValue(m_oBufferedStream.ReadDouble());
+			}
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;

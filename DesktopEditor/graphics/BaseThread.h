@@ -1,4 +1,4 @@
-#ifndef _BUILD_BASETHREAD_H_
+﻿#ifndef _BUILD_BASETHREAD_H_
 #define _BUILD_BASETHREAD_H_
 
 #include "../common/Types.h"
@@ -31,8 +31,8 @@ namespace NSThreads
 		::Sleep((DWORD)nMilliseconds);
 #else
 		struct timespec tim, tim2;
-		tim.tv_sec = 1;
-		tim.tv_nsec = nMilliseconds * 1000000;
+        tim.tv_sec = nMilliseconds / 1000;
+        tim.tv_nsec = (nMilliseconds % 1000) * 1000000;
 
 		::nanosleep(&tim , &tim2);
 #endif
@@ -72,13 +72,13 @@ namespace NSThreads
 
 			m_hThread = new __native_thread();
 
+            m_bRunThread = TRUE;
 #if defined(WIN32) || defined(_WIN32_WCE)
-			DWORD dwTemp;
-			m_bRunThread = TRUE;
+			DWORD dwTemp;			
 			((__native_thread*)m_hThread)->m_thread = CreateThread(NULL, 0, &__ThreadProc, (void*)this, 0, &dwTemp);
 			SetThreadPriority(((__native_thread*)m_hThread)->m_thread, lPriority);
 #else
-			pthread_create(&((__native_thread*)m_hThread)->m_thread, 0, &__ThreadProc), (void*)this);
+            pthread_create(&((__native_thread*)m_hThread)->m_thread, 0, &__ThreadProc, (void*)this);
 #endif
 			m_lThreadPriority = lPriority;
 		}
@@ -152,7 +152,7 @@ namespace NSThreads
 			}
 		};
 #else
-		static void __ThreadProc(void* pv)
+        static void* __ThreadProc(void* pv)
 		{
 			int old_thread_type;
 			pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &old_thread_type);

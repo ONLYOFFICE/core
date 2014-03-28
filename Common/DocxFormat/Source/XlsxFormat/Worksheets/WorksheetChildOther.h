@@ -428,6 +428,28 @@ namespace OOX
 			}
 			virtual void toXML(CStringWriter& writer) const
 			{
+				writer.WriteStringC(_T("<pane"));
+				if (m_oState.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" state=\"%s\""), m_oState.get());
+					writer.WriteStringC(sVal);
+				}
+				if (m_oTopLeftCell.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" topLeftCell=\"%s\""), m_oTopLeftCell.get());
+					writer.WriteStringC(sVal);
+				}
+				if (m_oXSplit.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" xSplit=\"%s\""), SpreadsheetCommon::WriteDouble(m_oXSplit->GetValue()));
+					writer.WriteStringC(sVal);
+				}
+				if (m_oYSplit.IsInit())
+				{
+					CString sVal; sVal.Format(_T(" ySplit=\"%s\""), SpreadsheetCommon::WriteDouble(m_oYSplit->GetValue()));
+					writer.WriteStringC(sVal);
+				}
+				writer.WriteStringC(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -583,7 +605,12 @@ namespace OOX
 					CString sVal; sVal.Format(_T(" zoomScaleSheetLayoutView=\"%d\""), m_oZoomScaleSheetLayoutView->GetValue());
 					writer.WriteStringC(sVal);
 				}
-				writer.WriteStringC(_T("/>"));
+				writer.WriteStringC(_T(">"));
+
+				if (m_oPane.IsInit())
+					m_oPane->toXML(writer);
+
+				writer.WriteStringC(_T("</sheetView>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

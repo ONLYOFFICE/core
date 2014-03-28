@@ -1,4 +1,4 @@
-#ifndef _BUILD_GRAPHICSPATH_H_
+п»ї#ifndef _BUILD_GRAPHICSPATH_H_
 #define _BUILD_GRAPHICSPATH_H_
 
 #include "AggPlusEnums.h"
@@ -20,7 +20,7 @@
 
 #include "Matrix.h"
 
-#include "Structures.h"
+#include "structures.h"
 #include "../fontengine/FontManager.h"
 
 namespace Aggplus
@@ -50,7 +50,7 @@ public:
 	Status AddLine(double x1, double y1, double x2, double y2);
 	Status AddLines(double* pPoints, int nCount);
 
-	// методы, которые просто будем сводить к трем основным
+	// РјРµС‚РѕРґС‹, РєРѕС‚РѕСЂС‹Рµ РїСЂРѕСЃС‚Рѕ Р±СѓРґРµРј СЃРІРѕРґРёС‚СЊ Рє С‚СЂРµРј РѕСЃРЅРѕРІРЅС‹Рј
 	Status AddBezier(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4);
 	Status AddBeziers(double* pPoints, int nCount);
 	Status AddCurve(double* pPoints, int nCount);

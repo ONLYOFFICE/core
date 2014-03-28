@@ -175,7 +175,7 @@ namespace svg
         }
 
         //-----------------------------------------------------------------------
-        const attr* attr_stack::attribute(unsigned idx) const
+        const attr* attribute(unsigned idx) const
         {
             return &m_attributes[m_sessions.last().start_attr_index + idx];
         }
@@ -307,7 +307,7 @@ namespace svg
             stroke_linecap_e     stroke_linecap;
             double               stroke_miterlimit;
 
-            transformer          transformer;
+            agg::svg::transformer          transformer;
             double               object_bbox[4];
 
             values() : 

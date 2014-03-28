@@ -9,7 +9,7 @@
 #define CXIMAGE_SUPPORT_DSP            1
 #ifdef WIN32
 #define CXIMAGE_SUPPORT_LAYERS		   1
-else
+#else
 #define CXIMAGE_SUPPORT_LAYERS		   0
 #endif
 #define CXIMAGE_SUPPORT_INTERPOLATION  1

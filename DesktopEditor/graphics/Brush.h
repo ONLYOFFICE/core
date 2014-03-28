@@ -1,4 +1,4 @@
-#ifndef _BUILD_BRUSH_H_
+п»ї#ifndef _BUILD_BRUSH_H_
 #define _BUILD_BRUSH_H_
 
 #include "AggPlusEnums.h"
@@ -7,7 +7,7 @@
 #include "Matrix.h"
 #include "Image.h"
 
-#include "Structures.h"
+#include "structures.h"
 #include "../common/Array.h"
 
 namespace Aggplus
@@ -119,15 +119,15 @@ protected:
 	CArray<TSubColor> m_subcolors;
 
 	CMatrix m_matrix;
-	float m_angle; // угол поворота в градусах базовой линии p1 -> p2
+	float m_angle; // СѓРіРѕР» РїРѕРІРѕСЂРѕС‚Р° РІ РіСЂР°РґСѓСЃР°С… Р±Р°Р·РѕРІРѕР№ Р»РёРЅРёРё p1 -> p2
 
 	CDoubleRect Bounds;
 
 	Aggplus::WrapMode m_wrap;
 
-	BOOL m_bAngleScalable;	// масштабировать угол поворота относительно заданных точек b = arctan( width / height * tan(angle) );
-	BOOL m_bRectable;		// в качестве направляющей используется диагональ прямоугольника
-	BOOL m_bRelativeCoords; // координаты точек считаются относительно рисуемого примитива
+	BOOL m_bAngleScalable; // РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°С‚СЊ СѓРіРѕР» РїРѕРІРѕСЂРѕС‚Р° РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ Р·Р°РґР°РЅРЅС‹С… С‚РѕС‡РµРє b = arctan( width / height * tan(angle) );
+	BOOL m_bRectable; // РІ РєР°С‡РµСЃС‚РІРµ РЅР°РїСЂР°РІР»СЏСЋС‰РµР№ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґРёР°РіРѕРЅР°Р»СЊ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°
+	BOOL m_bRelativeCoords; // РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РѕС‡РµРє СЃС‡РёС‚Р°СЋС‚СЃСЏ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ СЂРёСЃСѓРµРјРѕРіРѕ РїСЂРёРјРёС‚РёРІР°
 };
 
 class CBrushTexture : public CBrush

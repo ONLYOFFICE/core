@@ -1,4 +1,4 @@
-#include "TemporaryCS.h"
+﻿#include "TemporaryCS.h"
 #include "../common/Types.h"
 
 #if defined(WIN32) || defined(_WIN32_WCE)
@@ -59,16 +59,15 @@ public:
 		__critical_section* pCS = (__critical_section*)pNative;
 		
 		pthread_mutexattr_t _attr;
+        pthread_mutexattr_init(&_attr);
 		pthread_mutexattr_settype(&_attr, PTHREAD_MUTEX_RECURSIVE_NP);
-
-		pthread_mutex_init(&m_cs, &_attr);
-
+        pthread_mutex_init(&pCS->m_cs, &_attr);
 		pthread_mutexattr_destroy(&_attr);
 	}
 	static void DeleteCriticalSection(NSCriticalSection::CRITICAL_SECTION_NATIVE* pNative)
 	{
 		__critical_section* pCS = (__critical_section*)pNative;
-		pthread_mutex_destroy(&m_cs);
+        pthread_mutex_destroy(&pCS->m_cs);
 	}
 };
 

@@ -1,8 +1,8 @@
-#ifndef _BUILD_APPLICATIONFONTS_H_
+п»ї#ifndef _BUILD_APPLICATIONFONTS_H_
 #define _BUILD_APPLICATIONFONTS_H_
 
-#define UNKNOWN_CHARSET 3 // для случаев, когда задано значение DEFAULT_CHARSET, но 
-                          // на самом деле charset не учитывается
+#define UNKNOWN_CHARSET 3 // РґР»СЏ СЃР»СѓС‡Р°РµРІ, РєРѕРіРґР° Р·Р°РґР°РЅРѕ Р·РЅР°С‡РµРЅРёРµ DEFAULT_CHARSET, РЅРѕ 
+                          // РЅР° СЃР°РјРѕРј РґРµР»Рµ charset РЅРµ СѓС‡РёС‚С‹РІР°РµС‚СЃСЏ
 
 #include "FontManager.h"
 
@@ -54,7 +54,7 @@ enum EFontFormat
 {
 	fontWindowsFNT = 0, // *.fon
 	fontTrueType   = 1, // *.ttf
-	fontOpenType   = 2, // *.ttf, *.otf (CFF формат)
+	fontOpenType   = 2, // *.ttf, *.otf (CFF С„РѕСЂРјР°С‚)
 	fontUnknown    = 3
 };
 
@@ -88,17 +88,17 @@ public:
 
 	~CFontInfo();
 	BOOL Equals(const CFontInfo *pFontInfo);
-	static CFontInfo* CFontInfo::FromBuffer(BYTE*& pBuffer, std::wstring strDir);
+    static CFontInfo* FromBuffer(BYTE*& pBuffer, std::wstring strDir);
 
 public:
-	std::wstring m_wsFontName;   // Имя шрифта
-	std::wstring m_wsFontPath;   // Путь к файлу с шрифтом
-	long         m_lIndex;       // Номер шрифта в файле(если в файле больше 1 шрифта)
+	std::wstring m_wsFontName;   // РРјСЏ С€СЂРёС„С‚Р°
+	std::wstring m_wsFontPath;   // РџСѓС‚СЊ Рє С„Р°Р№Р»Сѓ СЃ С€СЂРёС„С‚РѕРј
+	long         m_lIndex;       // РќРѕРјРµСЂ С€СЂРёС„С‚Р° РІ С„Р°Р№Р»Рµ(РµСЃР»Рё РІ С„Р°Р№Р»Рµ Р±РѕР»СЊС€Рµ 1 С€СЂРёС„С‚Р°)
 	std::wstring m_wsStyle;
 
 	BOOL         m_bBold;            // Bold text
 	BOOL         m_bItalic;          // Italic text
-	BOOL         m_bIsFixed;         // Моноширинный шрифт?
+	BOOL         m_bIsFixed;         // РњРѕРЅРѕС€РёСЂРёРЅРЅС‹Р№ С€СЂРёС„С‚?
 
 	BYTE         m_aPanose[10];
 	ULONG	     m_ulUnicodeRange1;  // Bits 0-31
@@ -115,12 +115,12 @@ public:
 	SHORT        m_sFamilyClass;
 	EFontFormat  m_eFontFormat;
 
-	SHORT        m_shAvgCharWidth;   // Средняя ширина символов
+	SHORT        m_shAvgCharWidth;   // РЎСЂРµРґРЅСЏСЏ С€РёСЂРёРЅР° СЃРёРјРІРѕР»РѕРІ
 	SHORT        m_shAscent;         // Ascent
 	SHORT        m_shDescent;        // Descent
-	SHORT        m_shLineGap;        // Межсимвольный интервал
-	SHORT        m_shXHeight;        // Высота буквы 'x' (в нижнем регистре)
-	SHORT        m_shCapHeight;      // Высота буквы 'H' (в верхнем регистре)
+	SHORT        m_shLineGap;        // РњРµР¶СЃРёРјРІРѕР»СЊРЅС‹Р№ РёРЅС‚РµСЂРІР°Р»
+	SHORT        m_shXHeight;        // Р’С‹СЃРѕС‚Р° Р±СѓРєРІС‹ 'x' (РІ РЅРёР¶РЅРµРј СЂРµРіРёСЃС‚СЂРµ)
+	SHORT        m_shCapHeight;      // Р’С‹СЃРѕС‚Р° Р±СѓРєРІС‹ 'H' (РІ РІРµСЂС…РЅРµРј СЂРµРіРёСЃС‚СЂРµ)
 };
 
 namespace NSCharsets
@@ -134,7 +134,7 @@ class CFontList
 private:
 	CArray<CFontInfo*>	m_pList;
 	std::wstring		m_sDirectory;
-	LONG			    m_lDefIndex;	// Номер стандартного шрифта (-1, если не задан)
+	LONG			    m_lDefIndex;	// РќРѕРјРµСЂ СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ С€СЂРёС„С‚Р° (-1, РµСЃР»Рё РЅРµ Р·Р°РґР°РЅ)
 
 private:
 	int GetCharsetPenalty(ULONG ulCandRanges[6], unsigned char unReqCharset);

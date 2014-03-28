@@ -1,6 +1,15 @@
 ﻿#include "FontManager.h"
 #include "internal/internal.h"
 #include "internal/ftobjs.h"
+#include "../common/Types.h"
+
+#ifndef max
+#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
 
 CFontFile::CFontFile()
 {

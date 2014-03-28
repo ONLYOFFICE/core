@@ -1234,9 +1234,9 @@ void CxImage::Mix(CxImage & imgsrc2, ImageOpType op, int32_t lXOffset, int32_t l
 								// New transparency assume (a0 == 0 is the restriction s.o. (range 5-250) intercepted) 
 								if (bEditAlpha) rgbDest.rgbReserved = a0;
 								// each color channel to calculate
-								rgbDest.rgbBlue		= (BYTE)((rgb2.rgbBlue	* a2	+ a1 * rgb1.rgbBlue	)/a0);
-								rgbDest.rgbGreen	= (BYTE)((rgb2.rgbGreen * a2	+ a1 * rgb1.rgbGreen)/a0);
-								rgbDest.rgbRed		= (BYTE)((rgb2.rgbRed	* a2	+ a1 * rgb1.rgbRed	)/a0);
+                                rgbDest.rgbBlue		= (unsigned char)((rgb2.rgbBlue	* a2	+ a1 * rgb1.rgbBlue	)/a0);
+                                rgbDest.rgbGreen	= (unsigned char)((rgb2.rgbGreen * a2	+ a1 * rgb1.rgbGreen)/a0);
+                                rgbDest.rgbRed		= (unsigned char)((rgb2.rgbRed	* a2	+ a1 * rgb1.rgbRed	)/a0);
 							}
 						} else {
 							rgbDest = rgb1;
@@ -3579,6 +3579,12 @@ bool CxImage::Trace(RGBQUAD color_target, RGBQUAD color_trace)
 #ifndef __MINGW32__ 
 ////////////////////////////////////////////////////////////////////////////////
 #include <queue>
+#ifndef min
+#define min(a,b) (((a)<(b))?(a):(b))
+#endif
+#ifndef max
+#define max(a,b) (((a)>(b))?(a):(b))
+#endif
 ////////////////////////////////////////////////////////////////////////////////
 /**
  * Flood Fill

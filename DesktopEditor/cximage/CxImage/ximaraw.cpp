@@ -269,7 +269,7 @@ bool CxImageRAW::GetExifThumbnail(const TCHAR *filename, const TCHAR *outname, i
 	// THUMB.
 	if (dcr.thumb_offset != 0)
 	{
- 		FILE* file = _tfopen(outname, _T("wb"));
+        FILE* file = fopen(outname, _T("wb"));
 		DCRAW* p = &dcr;
 		dcr_fseek(dcr.obj_, dcr.thumb_offset, SEEK_SET);
 		dcr.write_thumb(&dcr, file);

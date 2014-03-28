@@ -189,8 +189,8 @@ static const TIFFFieldInfo ojpeg_field_info[] = {
 #include <setjmp.h>
 #endif
 
-#include "..\jpeg\jpeglib.h"
-#include "..\jpeg\jerror.h"
+#include "../jpeg/jpeglib.h"
+#include "../jpeg/jerror.h"
 
 typedef struct jpeg_error_mgr jpeg_error_mgr;
 typedef struct jpeg_common_struct jpeg_common_struct;

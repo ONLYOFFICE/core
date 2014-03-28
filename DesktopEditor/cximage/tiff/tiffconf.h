@@ -25,14 +25,26 @@
 /* Signed 64-bit type formatter */
 #define TIFF_INT64_FORMAT "%I64d"
 
+#ifndef _LINUX
 /* Signed 64-bit type */
 #define TIFF_INT64_T signed __int64
 
-/* Unsigned 64-bit type formatter */
-#define TIFF_UINT64_FORMAT "%I64u"
-
 /* Unsigned 64-bit type */
 #define TIFF_UINT64_T unsigned __int64
+#endif
+
+#ifdef _LINUX
+#include <inttypes.h>
+
+/* Signed 64-bit type */
+#define TIFF_INT64_T int64_t
+
+/* Unsigned 64-bit type */
+#define TIFF_UINT64_T uint64_t
+#endif
+
+/* Unsigned 64-bit type formatter */
+#define TIFF_UINT64_FORMAT "%I64u"
 
 /* Compatibility stuff. */
 

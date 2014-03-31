@@ -19,7 +19,15 @@ public:
 	CColor() { Argb = 0xFF000000; } //Black;
 	//Color values are not premultiplied.
 	CColor(BYTE r, BYTE g, BYTE b) { Argb = MakeARGB(255, r, g, b); }
-	CColor(BYTE a, LONG lColor) { Argb = ((a << AlphaShift) | lColor); }
+    CColor(BYTE a, LONG lColor, bool bSwapRGB = false)
+    {
+        if (!bSwapRGB)
+            Argb = ((a << AlphaShift) | lColor);
+        else
+        {
+            Argb = MakeARGB(a, (BYTE)(lColor >> BlueShift), (BYTE)(lColor >> GreenShift), (BYTE)(lColor >> RedShift));
+        }
+    }
 	CColor(BYTE a, BYTE r, BYTE g, BYTE b) { Argb = MakeARGB(a, r, g, b); }
 	CColor(ARGB argb) { Argb = argb; }
 

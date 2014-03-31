@@ -190,7 +190,7 @@ protected:
 	CGdiPlusInit			m_oInitGdiplus;	
 #endif
 
-	CDIB*					m_pDib;
+    CDIB*					m_pDib;
 
 public:
 	agg::svg::frame_buffer_rgba&   get_frame_buffer();
@@ -198,6 +198,9 @@ public:
 
 	bool	m_bIntegerGrid;
 	double	m_dGlobalAlpha;
+
+    // for RGBA painting
+    bool    m_bSwapRGB;
 
 public:
 

@@ -163,7 +163,16 @@ CFontInfo* CFontInfo::FromBuffer(BYTE*& pBuffer, std::wstring strDir)
 	LONG len2 = lLen >> 1;
 	wchar_t* sName = new wchar_t[len2 + 1];
 	for (LONG i = 0; i < len2; ++i)
-		sName[i] = (wchar_t)(pBuffer[2 * i] | (pBuffer[2 * i + 1] << 8));
+    {
+        sName[i] = (wchar_t)(pBuffer[2 * i] | (pBuffer[2 * i + 1] << 8));
+        if (sName[i] == wchar_t('\\'))
+            sName[i] = wchar_t('/');
+        if (0 == sName[i])
+        {
+            len2 = i;
+            break;
+        }
+    }
 	sName[len2] = 0;
 
 	std::wstring strName(sName, len2);
@@ -178,11 +187,20 @@ CFontInfo* CFontInfo::FromBuffer(BYTE*& pBuffer, std::wstring strDir)
 	len2 = lLen >> 1;
 	sName = new wchar_t[len2 + 1];
 	for (LONG i = 0; i < len2; ++i)
-		sName[i] = (wchar_t)(pBuffer[2 * i] | (pBuffer[2 * i + 1] << 8));
+    {
+        sName[i] = (wchar_t)(pBuffer[2 * i] | (pBuffer[2 * i + 1] << 8));
+        if (sName[i] == wchar_t('\\'))
+            sName[i] = wchar_t('/');
+        if (0 == sName[i])
+        {
+            len2 = i;
+            break;
+        }
+    }
 	sName[len2] = 0;
 
 	std::wstring strPath(sName, len2);
-	pBuffer += lLen;
+    pBuffer += lLen;
 
 	RELEASEARRAYOBJECTS(sName);
 

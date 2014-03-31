@@ -7,10 +7,14 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 	if (NULL == pBrush)
 		return NULL;
 
+    bool bIsSwappedRGB = false;
+    if (m_pRenderer && m_pRenderer->m_bSwapRGB)
+        bIsSwappedRGB = true;
+
 	LONG Type = pBrush->Type;
 	if ((0 == Type) || (c_BrushTypeSolid == Type))
 	{
-		Aggplus::CColor oColor((BYTE)(pBrush->Alpha1 * m_dGlobalAlpha), pBrush->Color1);
+        Aggplus::CColor oColor((BYTE)(pBrush->Alpha1 * m_dGlobalAlpha), pBrush->Color1, bIsSwappedRGB);
 		Aggplus::CBrushSolid* pNew = new Aggplus::CBrushSolid(oColor);
 
 		return pNew;
@@ -25,8 +29,8 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 				(c_BrushTypeCylinderHor		== Type) ||
 				(c_BrushTypeCylinderVer		== Type))
 	{
-		Aggplus::CColor o1((BYTE)(pBrush->Alpha1 * m_dGlobalAlpha), pBrush->Color1);
-		Aggplus::CColor o2((BYTE)(pBrush->Alpha2 * m_dGlobalAlpha), pBrush->Color2);
+        Aggplus::CColor o1((BYTE)(pBrush->Alpha1 * m_dGlobalAlpha), pBrush->Color1, bIsSwappedRGB);
+        Aggplus::CColor o2((BYTE)(pBrush->Alpha2 * m_dGlobalAlpha), pBrush->Color2, bIsSwappedRGB);
 
 		Aggplus::CBrushLinearGradient* pNew = new Aggplus::CBrushLinearGradient( Aggplus::RectF(0.0f, 0.0f, 1.0f, 1.0f), o1, o2, (float)pBrush->LinearAngle, TRUE );
 		if( pNew )
@@ -49,6 +53,13 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 						BYTE b = (dwColor >> 8) & 0xFF;
 						BYTE a = (dwColor) & 0xFF;
 
+                        if (bIsSwappedRGB)
+                        {
+                            BYTE tmp = r;
+                            r = b;
+                            b = tmp;
+                        }
+
 						pColors[i] = Aggplus::CColor((BYTE)(a * m_dGlobalAlpha), b, g, r);
 						pBlends[i] = (float)(pBrush->m_arrSubColors[i].position / 65536.0);
 					}
@@ -70,8 +81,8 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 	}
 	else if (c_BrushTypeHatch1 == Type)
 	{
-		Aggplus::CColor o1((BYTE)(pBrush->Alpha1 * m_dGlobalAlpha), pBrush->Color1);
-		Aggplus::CColor o2((BYTE)(pBrush->Alpha2 * m_dGlobalAlpha), pBrush->Color2);
+        Aggplus::CColor o1((BYTE)(pBrush->Alpha1 * m_dGlobalAlpha), pBrush->Color1, bIsSwappedRGB);
+        Aggplus::CColor o2((BYTE)(pBrush->Alpha2 * m_dGlobalAlpha), pBrush->Color2, bIsSwappedRGB);
 
 		Aggplus::CBrushHatch* pNew = new Aggplus::CBrushHatch();
 		pNew->m_dwColor1	= o1;

@@ -33,6 +33,11 @@ namespace Aggplus
 #endif
 
 		m_dGlobalAlpha		= 1.0;
+        m_bSwapRGB = false;
+
+#ifdef _LINUX
+        m_bSwapRGB = true;
+#endif
 	}
 
 	CGraphics::CGraphics(int dwWidth, int dwHeight, int stride, BYTE* pBuffer) : m_dwConfigFlags(0)
@@ -55,6 +60,12 @@ namespace Aggplus
 #ifdef _WINDOW_GDIPLUS_USE_
 		m_pBitmap = NULL;
 		m_pGraphics = NULL;
+#endif
+
+        m_bSwapRGB = false;
+
+#ifdef _LINUX
+        m_bSwapRGB = true;
 #endif
 	}
 
@@ -83,6 +94,12 @@ namespace Aggplus
 #ifdef _WINDOW_GDIPLUS_USE_
 		m_pBitmap = NULL;
 		m_pGraphics = NULL;
+#endif
+
+        m_bSwapRGB = false;
+
+#ifdef _LINUX
+        m_bSwapRGB = true;
 #endif
 	}
 
@@ -646,7 +663,7 @@ namespace Aggplus
 			m_rasterizer.get_rasterizer().add_path(trans);
 		}
 
-		CColor oColor((BYTE)(pPen->Alpha * m_dGlobalAlpha), pPen->Color);
+        CColor oColor((BYTE)(pPen->Alpha * m_dGlobalAlpha), pPen->Color, m_bSwapRGB);
 		CBrushSolid oBrush(oColor);
 		
 		m_rasterizer.get_rasterizer().filling_rule(agg::fill_non_zero);
@@ -744,7 +761,7 @@ namespace Aggplus
 			m_rasterizer.get_rasterizer().add_path(trans);
 		}
 
-		CColor oColor((BYTE)pPen->Alpha, pPen->Color);
+        CColor oColor((BYTE)pPen->Alpha, pPen->Color, m_bSwapRGB);
 		CBrushSolid oBrush(oColor);
 		
 		m_rasterizer.get_rasterizer().filling_rule(agg::fill_non_zero);
@@ -1382,54 +1399,108 @@ namespace Aggplus
 
 	void CGraphics::DoFillPathTextureClampSz2(const CMatrix &mImgMtx, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride)
 	{
-		span_alloc_type span_allocator;                  // Span Allocator
+        if (!m_bSwapRGB)
+        {
+            span_alloc_type span_allocator;                  // Span Allocator
 
-		typedef agg::pixfmt_bgra32     pixfmt;
-		typedef agg::image_accessor_clip<pixfmt> img_source_type;
-		typedef agg::span_image_filter_rgba_nn<img_source_type, interpolator_type_linear> span_gen_type;
-		typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
-		
-		//double dScaleX = 270.0 / dwImgWidth;
-		//double dScaleY = 190.0 / dwImgHeight;
+            typedef agg::pixfmt_bgra32     pixfmt;
+            typedef agg::image_accessor_clip<pixfmt> img_source_type;
+            typedef agg::span_image_filter_rgba_nn<img_source_type, interpolator_type_linear> span_gen_type;
+            typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
 
-		agg::trans_affine mtx_Work(mImgMtx.m_agg_mtx);
-		//mtx_Work.scale(dScaleX, dScaleY);
+            //double dScaleX = 270.0 / dwImgWidth;
+            //double dScaleY = 190.0 / dwImgHeight;
 
-		//mtx_Work.multiply(m_oFullTransform.m_agg_mtx);
-		mtx_Work.invert();
-		interpolator_type_linear interpolator(mtx_Work);
-		{
-			//agg::rendering_buffer PatRendBuff((BYTE *)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
+            agg::trans_affine mtx_Work(mImgMtx.m_agg_mtx);
+            //mtx_Work.scale(dScaleX, dScaleY);
 
-			agg::rendering_buffer PatRendBuff;
+            //mtx_Work.multiply(m_oFullTransform.m_agg_mtx);
+            mtx_Work.invert();
+            interpolator_type_linear interpolator(mtx_Work);
+            {
+                //agg::rendering_buffer PatRendBuff((BYTE *)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
 
-			if (nImgStride < 0)
-			{
-				BYTE* pBuffer = (BYTE*)pImgBuff + (dwImgHeight - 1) * nImgStride;
-				PatRendBuff.attach(pBuffer, dwImgWidth, dwImgHeight, nImgStride);
-			}
-			else
-			{
-				PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
-			}
+                agg::rendering_buffer PatRendBuff;
 
-			pixfmt          img_pixf(PatRendBuff);
-			img_source_type img_src(img_pixf, agg::rgba(0, 0, 0, 0));
-			span_gen_type sg(img_src, interpolator);
-			renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
-			//agg::render_scanlines(m_rasterizer.get_rasterizer(), m_rasterizer.get_scanline(), ri);
+                if (nImgStride < 0)
+                {
+                    BYTE* pBuffer = (BYTE*)pImgBuff + (dwImgHeight - 1) * nImgStride;
+                    PatRendBuff.attach(pBuffer, dwImgWidth, dwImgHeight, nImgStride);
+                }
+                else
+                {
+                    PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
+                }
 
-			if (fabs(m_dGlobalAlpha - 1.0) < FLT_EPSILON)
-			{
-				render_scanlines(ri);
-			}
-			else
-			{
-				m_rasterizer.gamma_multi(m_dGlobalAlpha);
-				render_scanlines(ri);
-				m_rasterizer.gamma(1.0);
-			}
-		}
+                pixfmt          img_pixf(PatRendBuff);
+                img_source_type img_src(img_pixf, agg::rgba(0, 0, 0, 0));
+                span_gen_type sg(img_src, interpolator);
+                renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                //agg::render_scanlines(m_rasterizer.get_rasterizer(), m_rasterizer.get_scanline(), ri);
+
+                if (fabs(m_dGlobalAlpha - 1.0) < FLT_EPSILON)
+                {
+                    render_scanlines(ri);
+                }
+                else
+                {
+                    m_rasterizer.gamma_multi(m_dGlobalAlpha);
+                    render_scanlines(ri);
+                    m_rasterizer.gamma(1.0);
+                }
+            }
+        }
+        else
+        {
+            span_alloc_type span_allocator;                  // Span Allocator
+
+            typedef agg::pixfmt_rgba32     pixfmt;
+            typedef agg::image_accessor_clip<pixfmt> img_source_type;
+            typedef agg::span_image_filter_rgba_nn<img_source_type, interpolator_type_linear> span_gen_type;
+            typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+
+            //double dScaleX = 270.0 / dwImgWidth;
+            //double dScaleY = 190.0 / dwImgHeight;
+
+            agg::trans_affine mtx_Work(mImgMtx.m_agg_mtx);
+            //mtx_Work.scale(dScaleX, dScaleY);
+
+            //mtx_Work.multiply(m_oFullTransform.m_agg_mtx);
+            mtx_Work.invert();
+            interpolator_type_linear interpolator(mtx_Work);
+            {
+                //agg::rendering_buffer PatRendBuff((BYTE *)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
+
+                agg::rendering_buffer PatRendBuff;
+
+                if (nImgStride < 0)
+                {
+                    BYTE* pBuffer = (BYTE*)pImgBuff + (dwImgHeight - 1) * nImgStride;
+                    PatRendBuff.attach(pBuffer, dwImgWidth, dwImgHeight, nImgStride);
+                }
+                else
+                {
+                    PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
+                }
+
+                pixfmt          img_pixf(PatRendBuff);
+                img_source_type img_src(img_pixf, agg::rgba(0, 0, 0, 0));
+                span_gen_type sg(img_src, interpolator);
+                renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                //agg::render_scanlines(m_rasterizer.get_rasterizer(), m_rasterizer.get_scanline(), ri);
+
+                if (fabs(m_dGlobalAlpha - 1.0) < FLT_EPSILON)
+                {
+                    render_scanlines(ri);
+                }
+                else
+                {
+                    m_rasterizer.gamma_multi(m_dGlobalAlpha);
+                    render_scanlines(ri);
+                    m_rasterizer.gamma(1.0);
+                }
+            }
+        }
 	}
 
 	void CGraphics::DoFillPath(const CBrush* Brush)

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string>
 #include "Array.h"
+#include "errno.h"
 
 namespace NSFile
 {
@@ -438,7 +439,7 @@ namespace NSFile
 			m_pFile = fopen((char*)pUtf8, "rb");
 			delete [] pUtf8;
 #endif		
-			if (NULL == m_pFile)
+            if (NULL == m_pFile)
 				return false;
 			
 			fseek(m_pFile, 0, SEEK_END);
@@ -446,6 +447,15 @@ namespace NSFile
 			fseek(m_pFile, 0, SEEK_SET);
 
 			m_lFilePosition = 0;
+
+            unsigned int err = 0x7FFFFFFF;
+            unsigned int cur = (unsigned int)m_lFileSize;
+            if (err == cur)
+            {
+                CloseFile();
+                return false;
+            }
+
 			return true;
 		}
 

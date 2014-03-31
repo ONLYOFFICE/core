@@ -13,7 +13,7 @@ namespace NSTimers
 		struct timespec ts;
 		clock_gettime(CLOCK_MONOTONIC, &ts);
 
-        return (ts.tv_sec * 1000 + (DWORD)(ts.tv_nsec / 100000));
+        return (ts.tv_sec * 1000 + (DWORD)(ts.tv_nsec / 1000000));
 #endif
 	}
 

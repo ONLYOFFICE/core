@@ -1,8 +1,8 @@
 #include "precompiled_cpodf.h"
 
 #include "odf_style_context.h"
-//#include "ods_textcontext.h"
 #include "ods_conversion_context.h"
+//#include "odf_text_context.h" ??????
 
 #include "logging.h"
 #include "styles.h"
@@ -52,6 +52,14 @@ void odf_style_context::create_default(const style_family family)
 	last_state().set_automatic(false);
 	last_state().set_root(true);
 	last_state().set_default(true);
+////////////////////////////////////////////
+	odf::default_style* style = dynamic_cast<odf::default_style*>(elm.get());
+
+	if (style == NULL)return;
+	
+	odf::style_table_cell_properties	* cell_properties		= style->style_content_.get_style_table_cell_properties();
+	odf::style_text_properties			* text_properties		= style->style_content_.get_style_text_properties();
+	odf::style_paragraph_properties		* paragraph_properties	= style->style_content_.get_style_paragraph_properties();
 }
 void odf_style_context::reset_defaults()
 {

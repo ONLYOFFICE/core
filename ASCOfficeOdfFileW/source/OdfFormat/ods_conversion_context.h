@@ -7,6 +7,7 @@ namespace cpdoccore {
 namespace odf {
 
 class office_spreadsheet;
+class odf_text_context;
 
 class ods_conversion_context : public odf_conversion_context
 {
@@ -32,12 +33,23 @@ public:
 
 	void add_merge_cells(std::wstring & ref);
 
+	ods_table_state & current_table() { return ods_table_context_.state();}
+	odf_text_context* current_text_context(){return current_text_context_;}
+
+	void start_text_context();
+	void end_text_context();
+
+	void start_text_paragraph();//в ооо иногда параграфы для теста не предусмотрены
+	void end_text_paragraph();
+	void add_text_content(std::wstring & text);
+
+
+private:
 	ods_table_context ods_table_context_;
+	
+	odf_text_context*	current_text_context_;
 
 	office_spreadsheet* current_spreadsheet_;
-
-	ods_table_state & current_table() { return ods_table_context_.state();}
-
 
 };
 

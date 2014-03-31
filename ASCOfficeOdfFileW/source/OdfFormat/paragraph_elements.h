@@ -29,8 +29,8 @@ public:
     static const ElementType type = typeTextText;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element);
+	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
+	virtual void add_child_element( office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
   
@@ -289,8 +289,8 @@ public:
    
 	office_element_ptr_array paragraph_content_;
     
-	style_ref text_style_name_;
-    style_ref_array text_class_names_;
+	_CP_OPT(style_ref)	text_style_name_;//ваще то это такой элемент где стиль должќн быть всегда
+    style_ref_array		text_class_names_;
 
     virtual void add_text(const std::wstring & Text);
 };

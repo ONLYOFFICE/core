@@ -71,7 +71,9 @@ void text_list_item::create_child_element(const ::std::wstring & Ns, const ::std
 }
 void text_list_item::add_child_element( office_element_ptr & child_element)
 {
-    if (false)//CP_CHECK_NAME(L"text", L"number")
+	ElementType type = child_element->get_type();
+
+    if (type == typeTextNumber)
     {
         text_number_ = child_element;
     }
@@ -115,7 +117,9 @@ void text_list_header::create_child_element(const ::std::wstring & Ns, const ::s
 }
 void text_list_header::add_child_element( office_element_ptr & child_element)
 {
-    if (false)//CP_CHECK_NAME(L"text", L"number")
+	ElementType type = child_element->get_type();
+
+    if (type == typeTextNumber)
     {
         text_number_ = child_element;
     }

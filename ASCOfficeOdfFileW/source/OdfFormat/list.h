@@ -22,8 +22,8 @@ public:
 public:
     text_number() {}
 
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element);
+	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
+	virtual void add_child_element( office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
 

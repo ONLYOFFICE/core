@@ -17,6 +17,8 @@ namespace cpdoccore {
 namespace odf {
 
 class ods_conversion_context;
+class odf_text_context;
+
 class table_table;
 class style;
 class color;
@@ -71,10 +73,14 @@ public:
 	void start_cell(office_element_ptr & elm ,office_element_ptr & style);
 	void end_cell();
 	void add_default_cell(office_element_ptr & cell, int repeated);
+
 	void set_cell_ref (std::wstring & ref, int col, int row);
 	void set_cell_format_value(int format);
 	void set_cell_type(int type);
 	void set_cell_value(std::wstring & value);
+	
+	void set_cell_text(odf_text_context *text_context);
+	
 	void set_merge_cells(int start_col, int start_row, int end_col, int end_row);
 
  //   void start_covered_cell();
@@ -118,7 +124,7 @@ private:
 	std::vector<ods_element_state> columns_;
 	std::vector<ods_element_state> rows_;
 	
-	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней
+	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней ("0-й элемент - сама таблица)
 	
 	std::vector<ods_cell_state> cells_;
 

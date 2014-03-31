@@ -2,6 +2,7 @@
 #include "logging.h"
 
 #include "ods_table_state.h"
+#include "odf_text_context.h"
 #include "ods_conversion_context.h"
 
 #include "table.h"
@@ -310,7 +311,7 @@ void ods_table_state::set_cell_type(int type)
 	_CP_OPT(office_value_type) cell_type;
 	switch (type)
 	{
-	case 0:		cell_type = office_value_type(office_value_type::Boolean);
+	case 0:		//cell_type = office_value_type(office_value_type::Boolean);
 		break;
 	case 4:		cell_type = office_value_type(office_value_type::Float);
 		break;
@@ -363,7 +364,22 @@ void ods_table_state::set_merge_cells(int start_col, int start_row, int end_col,
 		}
 	}
 }
+//void ods_table_state::add_cell_element(office_element_ptr & child)
+//{
+//	cells_.back().elm->add_child_element(child);
+//}
+void ods_table_state::set_cell_text(odf_text_context* text_context)
+{
+	if (text_context == NULL)return;
 
+	for (long i=0; i< text_context->text_elements_list_.size(); i++)
+	{
+		if (text_context->text_elements_list_[i].level ==0)
+		{
+			cells_.back().elm->add_child_element(text_context->text_elements_list_[i].elm);
+		}
+	}
+}
 void ods_table_state::set_cell_value(std::wstring & value)
 {
 	if (cells_.size() < 1)return;
@@ -404,18 +420,8 @@ void ods_table_state::set_cell_value(std::wstring & value)
 	{
 		//general !!
 	}
-//  кэшированное значение
-	//start_text()
-	//start_paragraph();
-
-	office_element_ptr text_elm;
-	create_element(L"text", L"p",text_elm, &context_);
-
-	cells_.back().elm->add_child_element(text_elm);
-
-	//table_table_cell* cell = dynamic_cast<text_p*>(text_elm.get());
-	//end_paragraph();
-	//end_text();
+	//нужно добавить кэшированные значения !!!!
+	//это тектовый элемент
 }
 
 void ods_table_state::set_cell_ref (std::wstring & ref, int col, int row)

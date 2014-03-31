@@ -2,18 +2,19 @@
 
 
 #include "ods_conversion_context.h"
-
 #include "office_spreadsheet.h"
 
 #include "styles.h"
 #include "style_table_properties.h"
+
+#include "odf_text_context.h"
 
 namespace cpdoccore { 
 namespace odf {
 
 
 ods_conversion_context::ods_conversion_context(package::odf_document * outputDocument) 
-		: odf_conversion_context(outputDocument), ods_table_context_(*this)
+		: odf_conversion_context(outputDocument), ods_table_context_(*this), current_text_context_(NULL)
 {
 }
 
@@ -295,7 +296,52 @@ void ods_conversion_context::add_column(int start_column, int repeated, int leve
 		current_table().set_column_default_cell_style(style_cell_name);
 	}
 }
+void ods_conversion_context::start_text_context()
+{
+	current_text_context_ = new odf_text_context(&styles_context(),this);
 
+}
+void ods_conversion_context::end_text_context()
+{
+	if (current_text_context_)
+		delete current_text_context_;
+	current_text_context_ = NULL;
+}
+void ods_conversion_context::add_text_content(std::wstring & text)
+{
+	if (current_text_context_)
+	{
+		current_text_context_->add_text_content(text);
+	}
+}
+void ods_conversion_context::start_text_paragraph()
+{
+	//if (current_text_context_)
+	//{
+	//	style_elm = styles_context().find_odf_style_default(style_family::TableRow);
+	//}
+	//else
+	{
+/*		styles_context().create_style(L"",style_family::TableRow, true, false, -1);
+		style_elm = styles_context().last_state().get_office_element();
+		
+		style* _style = dynamic_cast<style*>(style_elm.get());
+		if (!_style)return;	*/	
+
+		office_element_ptr paragr_elm;
+		create_element(L"text", L"p",paragr_elm,this);
+		
+		current_text_context_->start_paragraph(paragr_elm);
+	}
+}
+
+void ods_conversion_context::end_text_paragraph()
+{
+	if (current_text_context_)
+	{
+		current_text_context_->end_paragraph();
+	}
+}
 
 }
 }

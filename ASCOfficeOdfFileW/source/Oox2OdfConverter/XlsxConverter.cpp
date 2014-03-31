@@ -8,6 +8,8 @@
 
 #include "ods_conversion_context.h"
 
+#include "odf_text_context.h"
+
 #include "styles.h"
 
 #include "style_table_properties.h"
@@ -175,7 +177,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCell *oox_cell)
 {
 				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCellMetadata;
 				//nullable<SimpleTypes::COnOff<>>						m_oShowPhonetic;
-				//nullable<SimpleTypes::Spreadsheet::CCellTypeType<>>	m_oType;
 				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oValueMetadata;
 
 	std::wstring ref = oox_cell->m_oRef.IsInit() ? string2std_string(oox_cell->m_oRef.get()) : L"";
@@ -189,29 +190,54 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCell *oox_cell)
 	{
 		value_type = oox_cell->m_oType->GetValue();
 	}
-	ods_context->current_table().set_cell_type(value_type);
 
-	switch (value_type)
-	{
-	case SimpleTypes::Spreadsheet::celltypeSharedString:
-		break;
-	default :
-		if (oox_cell->m_oValue.IsInit())//тут может быть и значение формулы
-		{
-			ods_context->current_table().set_cell_value (string2std_string(oox_cell->m_oValue->m_sText));
-		}		
-		break;
-	}
 	if (oox_cell->m_oFormula.IsInit())
 	{
+		convert(oox_cell->m_oFormula.GetPointer());
+	}	
+	
+	if (oox_cell->m_oValue.IsInit())
+	{	
+		if (value_type == SimpleTypes::Spreadsheet::celltypeSharedString)
+		{
+			convert_sharing_string(_wtoi(oox_cell->m_oValue->m_sText));
+			ods_context->current_table().set_cell_type(5);
+		}
+		else
+		{
+			ods_context->current_table().set_cell_value (string2std_string(oox_cell->m_oValue->m_sText));
+			ods_context->current_table().set_cell_type	(value_type);
+		}
 	}
-	if (oox_cell->m_oRichText.IsInit())
-	{
-		convert(oox_cell->m_oRichText.GetPointer());
-	}
+
+	//m_oRichText - вспомогательное поле дл€ —ќ«ƒјЌ»я xlsx
 	ods_context->end_cell();
 }
+void XlsxConverter::convert_sharing_string(int number)
+{
+	if (!ods_context) return;
+	
+	const OOX::Spreadsheet::CSharedStrings *SharedStrings= xlsx_document->GetSharedStrings();
+	if (!SharedStrings) return;
 
+	if (number <0 || (SharedStrings->m_oCount.IsInit() && number > SharedStrings->m_oCount->GetValue()))return;//???? m_oUniqueCount;
+
+	OOX::Spreadsheet::CSi* pSi = static_cast<OOX::Spreadsheet::CSi*>(SharedStrings->m_arrItems[number]);
+
+	if (pSi == NULL)return;
+
+	ods_context->start_text_context();
+		ods_context->start_text_paragraph(); //в эл. таблицах ооо нет собственно параграфов( не счита€ рисованых элементов - там могут)
+
+		for(int i = 0; i < pSi->m_arrItems.GetSize(); ++i)
+		{
+			convert(pSi->m_arrItems[i]);
+		}
+
+		ods_context->end_text_paragraph();
+		ods_context->current_table().set_cell_text( ods_context->current_text_context());
+	ods_context->end_text_context(); 
+}
 void XlsxConverter::convert(OOX::Spreadsheet::WritingElement  *oox_unknown)
 {
 	if (oox_unknown == NULL)return;
@@ -228,25 +254,40 @@ void XlsxConverter::convert(OOX::Spreadsheet::WritingElement  *oox_unknown)
 			OOX::Spreadsheet::CText* pText = static_cast<OOX::Spreadsheet::CText*>(oox_unknown);
 			convert(pText);
 		}break;
+		default:
+		{
+			std::wstringstream ss;
+			ss << L"[warning] :  no convert element(" << oox_unknown->getType() << L")\n";
+			_CP_LOG(error) << ss.str();
+		}
 	}
 }
-void XlsxConverter::convert(OOX::Spreadsheet::CSi  *oox_shared_string)
-{
-	if (oox_shared_string == NULL)return;
 
-	//ods_context->start_paragraph();
-	for(int i = 0; i < oox_shared_string->m_arrItems.GetSize(); ++i)
-	{
-		convert(oox_shared_string->m_arrItems[i]);
-	}
-	//ods_context->end_paragraph();
-}
 void XlsxConverter::convert(OOX::Spreadsheet::CRun *oox_text_run)
 {
 	if (oox_text_run == NULL)return;
-	//ods_context->text_context().start_span();
+	
+	odf::office_element_ptr odf_style;
 
-	//ods_context->end_span();
+	convert(oox_text_run->m_oRPr.GetPointer());
+	ods_context->current_text_context()->start_span();	//пока принимает последний сгенереннй на контексте .. вопрос  - может по имени св€зать??
+	
+	for(int i = 0; i < oox_text_run->m_arrItems.GetSize(); ++i)
+	{
+		convert(oox_text_run->m_arrItems[i]);
+	}
+	ods_context->current_text_context()->end_span();
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_text_pr)
+{
+	if (oox_text_pr == NULL)return;
+
+	bool automatic = true;
+	bool root = false;
+
+	ods_context->styles_context().create_style(L"",odf::style_family::Text, automatic, root, -1);
+	
+	////
 
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CText *oox_text)
@@ -254,7 +295,14 @@ void XlsxConverter::convert(OOX::Spreadsheet::CText *oox_text)
 	if (oox_text == NULL)return;
 	//ods_context->start_text();
 
+	ods_context->add_text_content( string2std_string(oox_text->m_sText) );
+
 	//ods_context->end_text();
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CFormula *oox_formula)
+{
+	if (oox_formula == NULL)return;
+
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 {

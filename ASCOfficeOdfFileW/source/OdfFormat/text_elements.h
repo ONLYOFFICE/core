@@ -15,13 +15,14 @@
 namespace cpdoccore { 
 namespace odf {
 
+class odf_text_context;
 class paragraph_attrs
 {
 public:
 
-    style_ref text_style_name_;
+    _CP_OPT(style_ref)		text_style_name_;
+    _CP_OPT(style_ref)		text_cond_style_name_;
     style_ref_array text_class_names_;
-    style_ref text_cond_style_name_;
 
 	void serialize(CP_ATTR_NODE);   
 
@@ -33,10 +34,14 @@ public:
     paragraph() : next_par_(NULL), next_section_(false), next_end_section_(false) {}
 
 public:
-  
+	//void afterCreate(odf_text_context * ctx);
+
     paragraph * get_next() { return next_par_; }
-    void set_next(paragraph * next) {next_par_ = next;}
-    void set_next_section(bool Val) 
+  
+	void set_next(paragraph * next) {next_par_ = next;}
+	void set_prev(paragraph * prev) {prev_par_ = prev;}
+
+	void set_next_section(bool Val) 
     {
         next_section_ = Val;
     }
@@ -57,6 +62,7 @@ public:
 
     office_element_ptr_array paragraph_content_;
    
+	paragraph * prev_par_;
 	paragraph * next_par_;
     bool next_section_;
     bool next_end_section_;

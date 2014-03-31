@@ -40,7 +40,7 @@ const wchar_t * text_text::name = L"";
 
 void text_text::serialize(std::wostream & _Wostream)
 {
-    _Wostream << xml::utils::replace_xml_to_text( text_ );
+    _Wostream << xml::utils::replace_text_to_xml( text_ );
 }
 
 void text_text::add_text(const std::wstring & Text) 
@@ -212,11 +212,11 @@ void text_span::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-			CP_XML_ATTR(L"text:style-name", text_style_name_);
+			CP_XML_ATTR_OPT(L"text:style-name", text_style_name_);
 			
 			BOOST_FOREACH(const office_element_ptr & parElement, paragraph_content_)
 			{
-				parElement->serialize(_Wostream);
+				parElement->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -296,10 +296,10 @@ void text_note::serialize(std::wostream & _Wostream)
 		    CP_XML_ATTR(L"text:note-class", text_note_class_);
 			
 			if (text_note_citation_)
-				text_note_citation_->serialize(_Wostream);
+				text_note_citation_->serialize(CP_XML_STREAM());
 
 			if (text_note_body_)
-				text_note_body_->serialize(_Wostream);
+				text_note_body_->serialize(CP_XML_STREAM());
 		}
 	}    
 }
@@ -319,10 +319,15 @@ void text_note::create_child_element(  const ::std::wstring & Ns, const ::std::w
 }
 void text_note::add_child_element( office_element_ptr & child_element)
 {
-	if (false)
+	ElementType type = child_element->get_type();
+
+    if (type == typeTextNoteCitation)
 		text_note_citation_ = child_element;
-	else
+	else if (type == typeTextNoteBody)
 		text_note_body_ = child_element;
+	else
+	{
+	}
 }
 
 void text_note::add_text(const std::wstring & Text)
@@ -343,10 +348,10 @@ void text_ruby::serialize(std::wostream & _Wostream)
 		    CP_XML_ATTR(L"text:style-name", text_style_name_.style_name());
 
 			if (text_ruby_base_)
-				text_ruby_base_->serialize(_Wostream);
+				text_ruby_base_->serialize(CP_XML_STREAM());
 
 			if (text_ruby_text_)
-				text_ruby_text_->serialize(_Wostream);
+				text_ruby_text_->serialize(CP_XML_STREAM());
 		}
 	}
 }
@@ -366,9 +371,11 @@ void text_ruby::create_child_element( const ::std::wstring & Ns, const ::std::ws
 }
 void text_ruby::add_child_element( office_element_ptr & child_element)
 {
-	if (false)
+	ElementType type = child_element->get_type();
+
+    if (type == typeTextRubyBase)
 		text_ruby_base_ = child_element;
-	else
+	else if (type == typeTextRubyText)
 		text_ruby_text_ = child_element;
 }
 
@@ -423,7 +430,7 @@ void text_placeholder::serialize(std::wostream & _Wostream)
         { 	
 			BOOST_FOREACH(const office_element_ptr & elm, content_)
 			{
-				elm->serialize(_Wostream);
+				elm->serialize(CP_XML_STREAM());
 			}
 		}
 	}    
@@ -462,7 +469,7 @@ void text_page_number::serialize(std::wostream & _Wostream)
 			//	//text:page-adjust="1"    
 			BOOST_FOREACH(const office_element_ptr & elm, text_)
 			{
-				elm->serialize(_Wostream);
+				elm->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -497,7 +504,7 @@ void text_page_count::serialize(std::wostream & _Wostream)
         { 	
 			BOOST_FOREACH(const office_element_ptr & elm, text_)
 			{
-				elm->serialize(_Wostream);
+				elm->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -535,7 +542,7 @@ void text_date::serialize(std::wostream & _Wostream)
 			//    CP_XML_ATTR_OPT(L"text:date-value", text_date_value_);   
 			BOOST_FOREACH(const office_element_ptr & elm, text_)
 			{
-				elm->serialize(_Wostream);
+				elm->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -574,7 +581,7 @@ void text_time::serialize(std::wostream & _Wostream)
 			
 			BOOST_FOREACH(const office_element_ptr & elm, text_)
 			{
-				elm->serialize(_Wostream);
+				elm->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -611,7 +618,7 @@ void text_file_name::serialize(std::wostream & _Wostream)
         { 	
 			BOOST_FOREACH(const office_element_ptr & elm, text_)
 			{
-				elm->serialize(_Wostream);
+				elm->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -647,7 +654,7 @@ void text_sequence::serialize(std::wostream & _Wostream)
         { 	
 			BOOST_FOREACH(const office_element_ptr & elm, text_)
 			{
-				elm->serialize(_Wostream);
+				elm->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -686,17 +693,42 @@ void text_sheet_name::add_text(const std::wstring & Text)
     office_element_ptr elm = text_text::create(Text) ;
     text_.push_back( elm );
 }
+void text_sheet_name::serialize(std::wostream & _Wostream) 
+{
+ 	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        { 	
+			BOOST_FOREACH(const office_element_ptr & elm, text_)
+			{
+				elm->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // presentation:footer
 const wchar_t * presentation_footer::ns = L"presentation";
 const wchar_t * presentation_footer::name = L"footer";
 
-
+void presentation_footer::serialize(std::wostream & _Wostream) 
+{
+ 	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE();
+	}
+}
 
 const wchar_t * presentation_date_time::ns = L"presentation";
 const wchar_t * presentation_date_time::name = L"date-time";
 
-
+void presentation_date_time::serialize(std::wostream & _Wostream) 
+{
+ 	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE();
+	}
+}
 
 }
 }

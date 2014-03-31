@@ -44,7 +44,7 @@ namespace Oox2Odf
 		virtual void write(const std::wstring & path);
 
     private:
-		OOX::Spreadsheet::CXlsx					*xlsx_document;
+		OOX::Spreadsheet::CXlsx		*xlsx_document;
 		odf::package::odf_document	*output_document;
 
 		odf::ods_conversion_context	*ods_context;
@@ -60,9 +60,11 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CRow *oox_row);
 		void convert(OOX::Spreadsheet::CCell *oox_cell);
 
-		void convert(OOX::Spreadsheet::CSi  *oox_shared_string);
 		void convert(OOX::Spreadsheet::CRun *oox_text_run);
+		void convert(OOX::Spreadsheet::CRPr *oox_text_pr);
 		void convert(OOX::Spreadsheet::CText *oox_text);
+
+		void convert(OOX::Spreadsheet::CFormula *oox_formula);
 
 		void convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_pr);
 		void convert(OOX::Spreadsheet::CSheetPr *oox_sheet_pr);
@@ -80,5 +82,7 @@ namespace Oox2Odf
 
 		void convert(OOX::Spreadsheet::CXfs *		cell_style, int oox_id, bool automatic=true, bool root = false);
 		void convert(OOX::Spreadsheet::CCellStyle *	cell_style, int oox_id);
+
+		void convert_sharing_string(int number);
 	};
 }

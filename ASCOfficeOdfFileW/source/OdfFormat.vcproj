@@ -983,6 +983,10 @@
 			Name="xml_common"
 			>
 			<File
+				RelativePath="..\..\ASCOfficeOdfFile\src\xml\utils.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ASCOfficeOdfFile\src\xml\xmlchar.cpp"
 				>
 			</File>

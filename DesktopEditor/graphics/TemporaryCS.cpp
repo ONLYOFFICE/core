@@ -38,6 +38,10 @@ public:
 
 #include <pthread.h>
 
+#ifndef PTHREAD_MUTEX_RECURSIVE_NP
+#define PTHREAD_MUTEX_RECURSIVE_NP PTHREAD_MUTEX_RECURSIVE
+#endif
+
 class __critical_section : public NSCriticalSection::CRITICAL_SECTION_NATIVE
 {
 private:
@@ -60,7 +64,7 @@ public:
 		
 		pthread_mutexattr_t _attr;
         pthread_mutexattr_init(&_attr);
-		pthread_mutexattr_settype(&_attr, PTHREAD_MUTEX_RECURSIVE_NP);
+        pthread_mutexattr_settype(&_attr, PTHREAD_MUTEX_RECURSIVE_NP);
         pthread_mutex_init(&pCS->m_cs, &_attr);
 		pthread_mutexattr_destroy(&_attr);
 	}

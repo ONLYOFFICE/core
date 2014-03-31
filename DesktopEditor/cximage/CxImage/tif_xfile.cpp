@@ -95,7 +95,7 @@ _TIFFFdOpen(void* fd, const char* name, const char* mode)
 	    _tiffSizeProcEx, _tiffMapProcEx, _tiffUnmapProcEx);
 	if (tif)
 	{
-		tif->tif_fd = (int)fd;
+        //tif->tif_fd = (int)fd;
 	}
 	return (tif);
 }

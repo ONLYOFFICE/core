@@ -3,6 +3,11 @@
 
 #include "BaseThread.h"
 
+#ifdef QT_MAC
+#include "mach/mach.h"
+#include "mach/mach_time.h"
+#endif
+
 namespace NSTimers
 {
 	static DWORD GetTickCount()
@@ -10,10 +15,15 @@ namespace NSTimers
 #if defined(WIN32) || defined(_WIN32_WCE)
 		return ::GetTickCount();
 #else
+#ifdef CLOCK_MONOTONIC
 		struct timespec ts;
 		clock_gettime(CLOCK_MONOTONIC, &ts);
 
         return (ts.tv_sec * 1000 + (DWORD)(ts.tv_nsec / 1000000));
+#else
+        uint64_t nano = mach_absolute_time();
+        return nano / 1000000;
+#endif
 #endif
 	}
 

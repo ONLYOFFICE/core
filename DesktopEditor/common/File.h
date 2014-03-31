@@ -448,6 +448,12 @@ namespace NSFile
 
 			m_lFilePosition = 0;
 
+            if (0 < sFileName.length())
+            {
+                if (((wchar_t)'/') == sFileName.c_str()[sFileName.length() - 1])
+                    m_lFileSize = 0x7FFFFFFF;
+            }
+
             unsigned int err = 0x7FFFFFFF;
             unsigned int cur = (unsigned int)m_lFileSize;
             if (err == cur)

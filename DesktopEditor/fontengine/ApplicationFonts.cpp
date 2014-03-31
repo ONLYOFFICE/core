@@ -89,9 +89,9 @@ CFontInfo::CFontInfo(const std::wstring& wsFontName,
 	BOOL bItalic, 
 	BOOL bFixedWidth, 
 	BYTE* pPanose, 
-	ULONG ulRange1, 
-	ULONG ulRange2, 
-	ULONG ulRange3,
+    ULONG ulRange1,
+    ULONG ulRange2,
+    ULONG ulRange3,
 	ULONG ulRange4, 
 	ULONG ulCodeRange1, 
 	ULONG ulCodeRange2, 
@@ -157,12 +157,12 @@ BOOL CFontInfo::Equals(const CFontInfo *pFontInfo)
 CFontInfo* CFontInfo::FromBuffer(BYTE*& pBuffer, std::wstring strDir)
 {
 	// name		
-	LONG lLen = *((LONG*)pBuffer);
-	pBuffer += sizeof(LONG);
+    int lLen = *((int*)pBuffer);
+    pBuffer += sizeof(int);
 
-	LONG len2 = lLen >> 1;
+    int len2 = lLen >> 1;
 	wchar_t* sName = new wchar_t[len2 + 1];
-	for (LONG i = 0; i < len2; ++i)
+    for (int i = 0; i < len2; ++i)
     {
         sName[i] = (wchar_t)(pBuffer[2 * i] | (pBuffer[2 * i + 1] << 8));
         if (sName[i] == wchar_t('\\'))
@@ -181,12 +181,12 @@ CFontInfo* CFontInfo::FromBuffer(BYTE*& pBuffer, std::wstring strDir)
 	RELEASEARRAYOBJECTS(sName);
 
 	// path
-	lLen = *((LONG*)pBuffer);
-	pBuffer += sizeof(LONG);
+    lLen = *((int*)pBuffer);
+    pBuffer += sizeof(int);
 
 	len2 = lLen >> 1;
 	sName = new wchar_t[len2 + 1];
-	for (LONG i = 0; i < len2; ++i)
+    for (int i = 0; i < len2; ++i)
     {
         sName[i] = (wchar_t)(pBuffer[2 * i] | (pBuffer[2 * i + 1] << 8));
         if (sName[i] == wchar_t('\\'))
@@ -205,8 +205,8 @@ CFontInfo* CFontInfo::FromBuffer(BYTE*& pBuffer, std::wstring strDir)
 	RELEASEARRAYOBJECTS(sName);
 
 	// index
-	LONG lIndex = *((LONG*)pBuffer);
-	pBuffer += sizeof(LONG);
+    LONG lIndex = *((int*)pBuffer);
+    pBuffer += sizeof(int);
 
 	// italic
 	BOOL bItalic = *((BOOL*)pBuffer);
@@ -221,36 +221,36 @@ CFontInfo* CFontInfo::FromBuffer(BYTE*& pBuffer, std::wstring strDir)
 	pBuffer += sizeof(BOOL);
 
 	// Panose
-	lLen = *((LONG*)pBuffer); // должно быть равно 10
-	pBuffer += sizeof(LONG);
+    lLen = *((int*)pBuffer); // должно быть равно 10
+    pBuffer += sizeof(int);
 
 	BYTE pPanose[10];
 	memcpy( (void *)pPanose, (const void *)pBuffer, 10 );
 	pBuffer += lLen;
 
 	// ulUnicodeRange1
-	ULONG ulRange1 = *((ULONG*)pBuffer);
-	pBuffer += sizeof(ULONG);
+    UINT ulRange1 = *((UINT*)pBuffer);
+    pBuffer += sizeof(UINT);
 
 	// ulUnicodeRange2
-	ULONG ulRange2 = *((ULONG*)pBuffer);
-	pBuffer += sizeof(ULONG);
+    UINT ulRange2 = *((UINT*)pBuffer);
+    pBuffer += sizeof(UINT);
 
 	// ulUnicodeRange3
-	ULONG ulRange3 = *((ULONG*)pBuffer);
-	pBuffer += sizeof(ULONG);
+    UINT ulRange3 = *((UINT*)pBuffer);
+    pBuffer += sizeof(UINT);
 
 	// ulUnicodeRange4
-	ULONG ulRange4 = *((ULONG*)pBuffer);
-	pBuffer += sizeof(ULONG);
+    UINT ulRange4 = *((UINT*)pBuffer);
+    pBuffer += sizeof(UINT);
 
 	// ulCodePageRange1
-	ULONG ulCodeRange1 = *((ULONG*)pBuffer);
-	pBuffer += sizeof(ULONG);
+    UINT ulCodeRange1 = *((UINT*)pBuffer);
+    pBuffer += sizeof(UINT);
 
 	// ulCodePageRange2
-	ULONG ulCodeRange2 = *((ULONG*)pBuffer);
-	pBuffer += sizeof(ULONG);
+    ULONG ulCodeRange2 = *((UINT*)pBuffer);
+    pBuffer += sizeof(UINT);
 
 	// usWeightClass
 	USHORT usWeight = *((USHORT*)pBuffer);
@@ -1086,10 +1086,10 @@ bool CFontList::CheckLoadFromFolderBin(const std::wstring& strDirectory)
 
 	BYTE* _pBuffer = pBuffer;
 
-	LONG lCount = *((LONG*)_pBuffer);
-	_pBuffer += sizeof(LONG);
+    int lCount = *((int*)_pBuffer);
+    _pBuffer += sizeof(int);
 
-	for (LONG nIndex = 0; nIndex < lCount; ++nIndex)
+    for (int nIndex = 0; nIndex < lCount; ++nIndex)
 	{
 		CFontInfo *pFontInfo = CFontInfo::FromBuffer(_pBuffer, strDirectory);
 		Add(pFontInfo);

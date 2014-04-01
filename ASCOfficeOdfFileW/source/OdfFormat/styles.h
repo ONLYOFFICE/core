@@ -71,7 +71,7 @@ public:
     style_table_row_properties *	get_style_table_row_properties() ;
     style_table_column_properties * get_style_table_column_properties() ;
     style_chart_properties *		get_style_chart_properties() ;
-	style_drawing_page_properties*	get_style_drawing_page_properties();
+	//style_drawing_page_properties*	get_style_drawing_page_properties();
 
 private:
 	odf_conversion_context * Context;

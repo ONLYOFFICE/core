@@ -195,7 +195,7 @@ void ods_table_state::set_row_height(double height)
 	style_table_row_properties * row_properties = style->style_content_.get_style_table_row_properties();
  	if (row_properties == NULL)return; //error ????
 
-	row_properties->style_table_row_properties_attlist_.style_row_height_ = length(height/4.85,length::cm);
+	row_properties->style_table_row_properties_attlist_.style_row_height_ = length(height/22.85,length::cm);
 
 }
 int ods_table_state::current_column() const

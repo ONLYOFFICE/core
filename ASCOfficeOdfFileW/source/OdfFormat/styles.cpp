@@ -102,9 +102,12 @@ style_chart_properties * style_content::get_style_chart_properties()
 
 	return dynamic_cast<style_chart_properties *>(style_chart_properties_.get());    
 }
-//style_drawing_page_properties * style_content::get_style_drawing_page_properties() const
+//style_drawing_page_properties * style_content::get_style_drawing_page_properties()
 //{
-//    return dynamic_cast<style_drawing_page_properties *>(style_drawing_page_properties_.get());
+//    if (!style_drawing_page_properties_)
+//		create_element(L"style", L"drawing-page-properties",style_drawing_page_properties_,Context);
+//
+//   return dynamic_cast<style_drawing_page_properties *>(style_drawing_page_properties_.get());
 //}
 
 void style_content::add_child_element(office_element_ptr & child)

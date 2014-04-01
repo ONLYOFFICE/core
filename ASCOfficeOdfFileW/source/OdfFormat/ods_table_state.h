@@ -8,7 +8,6 @@
 //#include "ods_table_metrics.h"
 //#include "ods_drawing_context.h"
 //#include "ods_comments_context.h"
-//#include "ods_hyperlinks.h"
 
 #include "office_elements.h"
 #include "office_elements_create.h"
@@ -36,9 +35,18 @@ struct ods_element_state
 
 struct ods_cell_state : ods_element_state
 {
+	int col;
+	int row;
+
+	int hyperlink_idx;
+};
+
+struct ods_hyperlink_state
+{
 	std::wstring ref;
 	int col;
 	int row;
+	std::wstring link;
 };
 
 class ods_table_state
@@ -63,31 +71,31 @@ public:
 
 	void add_row(office_element_ptr & elm, int repeated ,office_element_ptr & style);//const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
 		void set_row_hidden(bool Val);
-		//void set_row_collapsed(bool Val);
 		void set_row_optimal_height(bool val);
 		void set_row_height(double height);
 		void set_row_default_cell_style(std::wstring & style_name);
 
-
-	//void start_cell(/*size_t columnsSpanned, size_t rowsSpanned*/);
 	void start_cell(office_element_ptr & elm ,office_element_ptr & style);
 	void end_cell();
 	void add_default_cell(office_element_ptr & cell, int repeated);
 
-	void set_cell_ref (std::wstring & ref, int col, int row);
 	void set_cell_format_value(int format);
 	void set_cell_type(int type);
 	void set_cell_value(std::wstring & value);
 	
 	void set_cell_text(odf_text_context *text_context);
+
+///////////////////////////////
+	void add_hyperlink(std::wstring & ref,int col, int row, std::wstring & link);
 	
 	void set_merge_cells(int start_col, int start_row, int end_col, int end_row);
 
- //   void start_covered_cell();
- //   void end_covered_cell();
-
 	office_element_ptr & current_row_element();
 	office_element_ptr & current_cell_element();
+
+	bool	is_cell_hyperlink();
+	int		is_cell_hyperlink(int col, int row);
+	ods_hyperlink_state & current_hyperlink();
 
 	int current_column() const;
 	int current_row() const;
@@ -100,18 +108,10 @@ public:
  //   void table_column_last_width(double w) { table_column_last_width_ = w; }
  //   double table_column_last_width() const { return table_column_last_width_; };
 
- //   void start_hyperlink();
-	//std::wstring end_hyperlink(std::wstring const & ref, std::wstring const & href, std::wstring const & display);
-
-	//void serialize_table_format(std::wostream & _Wostream);
-	//void serialize_merge_cells(std::wostream & _Wostream);
- //   void serialize_hyperlinks(std::wostream & _Wostream);
-
 private:
     ods_conversion_context & context_;   
 	
-	office_element_ptr	office_table_;	
-
+	office_element_ptr	office_table_;
 	style*				office_table_style_;//??? может хранить как office_element_ptr ???
 
 	std::wstring row_default_cell_style_name_;
@@ -127,6 +127,7 @@ private:
 	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней ("0-й элемент - сама таблица)
 	
 	std::vector<ods_cell_state> cells_;
+	std::vector<ods_hyperlink_state> hyperlinks_;
 
  //   xlsx_merge_cells		merge_cells_; 
  //   xlsx_table_metrics	xlsx_table_metrics_;

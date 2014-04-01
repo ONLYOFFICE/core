@@ -76,6 +76,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CText *oox_text);
 
 		void convert(OOX::Spreadsheet::CFormula *oox_formula);
+		void convert(OOX::Spreadsheet::CHyperlink *oox_hyperlink,OOX::Spreadsheet::CWorksheet *oox_sheet);
 
 		void convert(OOX::Spreadsheet::CSheetFormatPr	*oox_sheet_format_pr);
 		void convert(OOX::Spreadsheet::CSheetPr			*oox_sheet_pr);

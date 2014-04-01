@@ -23,7 +23,6 @@ public:
     void start_table(office_element_ptr & elm,std::wstring & name);
     void end_table();
 
-
     unsigned int columns_count();
 
     ods_table_state & state();

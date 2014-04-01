@@ -321,11 +321,11 @@ public:
 
     common_xlink_attlist common_xlink_attlist_;
 
-    ::std::wstring office_name_;
+    _CP_OPT(std::wstring) office_name_;
     _CP_OPT(target_frame_name) office_target_frame_name_;
 
-    style_ref text_style_name_;
-    style_ref text_visited_style_name_;
+    _CP_OPT(style_ref) text_style_name_;
+    _CP_OPT(style_ref) text_visited_style_name_;
 
     office_element_ptr_array paragraph_content_;
 };

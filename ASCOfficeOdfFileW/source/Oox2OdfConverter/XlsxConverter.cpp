@@ -101,6 +101,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	if (oox_sheet->m_oSheetPr.IsInit())
 		convert(oox_sheet->m_oSheetPr.GetPointer());
 
+	//гиперлинки ..заранее . 
+	for (long hyp = 0; oox_sheet->m_oHyperlinks.IsInit() && hyp < oox_sheet->m_oHyperlinks->m_arrItems.GetSize(); hyp++)
+	{
+		convert(oox_sheet->m_oHyperlinks->m_arrItems[hyp],oox_sheet);
+	}	
+	
 	//колонки
 	ods_context->start_columns();
 		for (long col = 0 ; oox_sheet->m_oCols.IsInit() && col < oox_sheet->m_oCols->m_arrItems.GetSize(); col++)
@@ -123,10 +129,42 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		if (oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.IsInit())
 			ods_context->add_merge_cells(string2std_string(oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.get()));
 	}
+
+	//рисование
+	//m_oDrawing
+
+	//комментарии
+	//m_mapComments
+
+	//m_oAutofilter
+}
+
+void XlsxConverter::convert(OOX::Spreadsheet::CHyperlink *oox_hyperlink,OOX::Spreadsheet::CWorksheet *oox_sheet)
+{
+	if (oox_hyperlink == NULL)return;
+	if (oox_sheet == NULL)return;
+
+	std::wstring ref = oox_hyperlink->m_oRef.IsInit() ? string2std_string(oox_hyperlink->m_oRef.get()) : L"";
+	std::wstring link;
+	if (oox_hyperlink->m_oRid.IsInit() && oox_sheet->GetCurRls())
+	{
+		OOX::Rels::CRelationShip* oRels = NULL;
+		oox_sheet->GetCurRls()->GetRel( OOX::RId(oox_hyperlink->m_oRid->GetValue()), &oRels);
+		if(NULL != oRels && _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink") == oRels->Type() )
+		{
+			if(oRels->IsExternal())
+				link= oRels->Target().GetPath();
+		}
+	}
+	std::wstring display = oox_hyperlink->m_oDisplay.IsInit() ? string2std_string(oox_hyperlink->m_oDisplay.get()) : L"";
+	ods_context->add_hyperlink(ref, link, display);
+
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row)
 {
+	if (oox_row == NULL)return;
+
 	int row_number = oox_row->m_oR.IsInit() ? oox_row->m_oR->GetValue() : -1;
 
 	bool _default = true;
@@ -227,17 +265,15 @@ void XlsxConverter::convert_sharing_string(int number)
 
 	if (pSi == NULL)return;
 
-	ods_context->start_text_context();
-		ods_context->start_text_paragraph(); //в эл. таблицах ооо нет собственно параграфов( не считая рисованых элементов - там могут)
+	ods_context->start_cell_text();
 
-		for(int i = 0; i < pSi->m_arrItems.GetSize(); ++i)
-		{
-			convert(pSi->m_arrItems[i]);
-		}
+	for(int i = 0; i < pSi->m_arrItems.GetSize(); ++i)
+	{
+		convert(pSi->m_arrItems[i]);
+	}
 
-		ods_context->end_text_paragraph();
-		ods_context->current_table().set_cell_text( ods_context->current_text_context());
-	ods_context->end_text_context(); 
+	ods_context->end_cell_text();
+	ods_context->current_table().set_cell_text( ods_context->current_text_context());
 }
 void XlsxConverter::convert(OOX::Spreadsheet::WritingElement  *oox_unknown)
 {

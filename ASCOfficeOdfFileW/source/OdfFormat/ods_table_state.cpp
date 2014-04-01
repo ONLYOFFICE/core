@@ -198,10 +198,30 @@ void ods_table_state::set_row_height(double height)
 	row_properties->style_table_row_properties_attlist_.style_row_height_ = length(height/22.85,length::cm);
 
 }
+
+bool ods_table_state::is_cell_hyperlink()
+{
+	if (cells_.size()<1)return false;
+	return cells_.back().hyperlink_idx >=0 ? true : false;
+}
+
+int ods_table_state::is_cell_hyperlink(int col, int row)
+{
+	for (long i=0; i< hyperlinks_.size();i++)
+	{
+		if (hyperlinks_[i].col == col && hyperlinks_[i].row == row)
+		{
+			return  i;
+		}
+	}
+	return -1;
+}
+
 int ods_table_state::current_column() const
 {
     return current_table_column_;
 }
+
 
 int ods_table_state::current_row() const
 {
@@ -232,6 +252,16 @@ office_element_ptr  & ods_table_state::current_cell_element()
 {
 	if (cells_.size()>0)
 		return cells_.back().elm;
+	else
+	{
+	}
+}
+ods_hyperlink_state & ods_table_state::current_hyperlink()
+{
+	if ((cells_.size()>0 && hyperlinks_.size()>0) && (cells_.back().hyperlink_idx>=0) )
+	{
+		return hyperlinks_[cells_.back().hyperlink_idx];
+	}
 	else
 	{
 	}
@@ -279,11 +309,13 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 		cell->table_table_cell_attlist_.table_style_name_=	style_name;
 
 	ods_cell_state state;
+	
 	state.elm = elm;  state.repeated = 1;  state.style_name = style_name; state.style_elm = style_elm;
-	state.row=0;  state.col =0;
+	state.row=current_table_row_;  state.col =current_table_column_+1; 
 
-	current_table_column_++;
-  
+	state.hyperlink_idx = is_cell_hyperlink(state.col, state.row);
+
+	current_table_column_ +=  state.repeated;  
     cells_.push_back(state);
 }
 
@@ -330,6 +362,16 @@ void ods_table_state::set_cell_type(int type)
 		cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
 	}
 }
+void ods_table_state::add_hyperlink(std::wstring & ref,int col, int row, std::wstring & link)
+{
+	ods_hyperlink_state state;
+	
+
+	/*state.elm = text_a_elm;  */state.row=row;  state.col =col; state.ref = ref, state.link = link;
+
+	hyperlinks_.push_back(state);
+}
+
 void ods_table_state::set_merge_cells(int start_col, int start_row, int end_col, int end_row)
 {
 	//потом можно переделать (оптимизировать) - добавлять мержи при добавлении ячеек
@@ -364,10 +406,7 @@ void ods_table_state::set_merge_cells(int start_col, int start_row, int end_col,
 		}
 	}
 }
-//void ods_table_state::add_cell_element(office_element_ptr & child)
-//{
-//	cells_.back().elm->add_child_element(child);
-//}
+
 void ods_table_state::set_cell_text(odf_text_context* text_context)
 {
 	if (text_context == NULL)return;
@@ -424,17 +463,10 @@ void ods_table_state::set_cell_value(std::wstring & value)
 	//это тектовый элемент
 }
 
-void ods_table_state::set_cell_ref (std::wstring & ref, int col, int row)
-{
-	if (cells_.size() < 1)return;
-
-	cells_.back().ref = ref;
-	cells_.back().col = col;
-	cells_.back().row = row;
-}
 void ods_table_state::end_cell()
 {
 }
+
 void ods_table_state::add_default_cell(office_element_ptr &  elm, int repeated)
 {
 	current_row_element()->add_child_element(elm);
@@ -443,12 +475,15 @@ void ods_table_state::add_default_cell(office_element_ptr &  elm, int repeated)
 	if (cell == NULL)return;
 	
 	ods_cell_state state;
-	state.elm = elm;  state.repeated = repeated;  /*state.style_name = style_name;*//* state.style_elm = style_elm;*/
-	state.row=current_table_row_;  state.col =current_table_column_;
-  
+	
+	state.elm = elm;  state.repeated = repeated; 
+	state.row=current_table_row_;  state.col =current_table_column_+1; 
+
+	state.hyperlink_idx = is_cell_hyperlink(state.col, state.row);
+
     cells_.push_back(state);
 	
-	current_table_column_+=repeated;
+	current_table_column_+= state.repeated;
 
 	cell->table_table_cell_attlist_.table_number_columns_repeated_ = repeated;
 

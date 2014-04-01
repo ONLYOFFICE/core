@@ -248,14 +248,14 @@ void text_a::serialize(std::wostream & _Wostream)
         { 	
 			common_xlink_attlist_.serialize(CP_GET_XML_NODE());
 		
-		    CP_XML_ATTR(L"office:name", office_name_);
+		    CP_XML_ATTR_OPT(L"office:name", office_name_);
 		    CP_XML_ATTR_OPT(L"office:target-frame-name", office_target_frame_name_);
-		    CP_XML_ATTR(L"text:style-name", text_style_name_);
-		    CP_XML_ATTR(L"text:visited-style-name", text_visited_style_name_);   
+		    CP_XML_ATTR_OPT(L"text:style-name", text_style_name_);
+		    CP_XML_ATTR_OPT(L"text:visited-style-name", text_visited_style_name_);   
 			
 			BOOST_FOREACH(const office_element_ptr & element, paragraph_content_)
 			{
-				element->serialize(_Wostream);
+				element->serialize(CP_XML_STREAM());
 			}
 		}
 	}

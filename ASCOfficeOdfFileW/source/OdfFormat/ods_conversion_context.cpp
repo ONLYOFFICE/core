@@ -8,6 +8,7 @@
 #include "style_table_properties.h"
 
 #include "odf_text_context.h"
+#include "paragraph_elements.h"
 
 namespace cpdoccore { 
 namespace odf {
@@ -165,6 +166,37 @@ void parsing_ref (const std::wstring & ref, int & col,int & row)
 
 }
 
+void ods_conversion_context::add_hyperlink(std::wstring & ref, std::wstring & link, std::wstring & display)
+{
+//////////////////////////////////////////////////////////////////
+ 	std::vector<std::wstring> ref_cells;
+	boost::algorithm::split(ref_cells,ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
+	if (ref_cells.size()>1)
+	{
+	//в ооx можно воткнуть на диапазон одну ссылку, в оо нельзя - ссылку вствляем, текст не меням
+		int start_col = -1, start_row = -1;
+		int end_col = -1, end_row = -1;
+		
+		parsing_ref (ref_cells[0], start_col, start_row);
+		parsing_ref (ref_cells[1], end_col,	  end_row);
+		
+		for (long col = start_col; col <= end_col; col++)
+		{ 
+			for (long row = start_row; row <= end_row; row++)
+			{
+				current_table().add_hyperlink(ref,col,row,link);
+				//ссылка одна, а вот отображаемый текст - разный
+			}
+		}
+	}
+	else
+	{
+		int col = -1, row = -1;
+		parsing_ref (ref_cells[0], col, row);
+		current_table().add_hyperlink(ref,col,row,link);
+	}
+}
+
 void ods_conversion_context::add_merge_cells(std::wstring & ref)
 {
  	std::vector<std::wstring> ref_cells;
@@ -221,7 +253,6 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 	
 	current_table().start_cell(cell_elm, style_elm);
 	
-	current_table().set_cell_ref(ref,col,row);	
 	current_table().set_cell_format_value(number_format);
 }
 
@@ -314,31 +345,39 @@ void ods_conversion_context::add_text_content(std::wstring & text)
 		current_text_context_->add_text_content(text);
 	}
 }
-void ods_conversion_context::start_text_paragraph()
+void ods_conversion_context::start_cell_text()
 {
-	//if (current_text_context_)
-	//{
-	//	style_elm = styles_context().find_odf_style_default(style_family::TableRow);
-	//}
-	//else
-	{
-/*		styles_context().create_style(L"",style_family::TableRow, true, false, -1);
-		style_elm = styles_context().last_state().get_office_element();
-		
-		style* _style = dynamic_cast<style*>(style_elm.get());
-		if (!_style)return;	*/	
+	end_text_context();
+	start_text_context();
+////////////
+	office_element_ptr paragr_elm;
+	create_element(L"text", L"p",paragr_elm,this);
+	
+	current_text_context_->start_paragraph(paragr_elm);
 
-		office_element_ptr paragr_elm;
-		create_element(L"text", L"p",paragr_elm,this);
+	if (current_table().is_cell_hyperlink())
+	{
+		ods_hyperlink_state & state = current_table().current_hyperlink();
 		
-		current_text_context_->start_paragraph(paragr_elm);
+		office_element_ptr text_a_elm;
+		create_element(L"text", L"a", text_a_elm, this);
+
+		text_a* text_a_ = dynamic_cast<text_a*>(text_a_elm.get());
+		if (text_a_ == NULL)return;
+
+		text_a_->common_xlink_attlist_.type_ = xlink_type(xlink_type::Simple);
+		text_a_->common_xlink_attlist_.href_ = state.link;
+		
+		current_text_context_->start_element(text_a_elm); // может быть стоит сделать собственый???
 	}
 }
 
-void ods_conversion_context::end_text_paragraph()
+void ods_conversion_context::end_cell_text()
 {
 	if (current_text_context_)
 	{
+		if (current_table().is_cell_hyperlink())	current_text_context_->end_element();
+		
 		current_text_context_->end_paragraph();
 	}
 }

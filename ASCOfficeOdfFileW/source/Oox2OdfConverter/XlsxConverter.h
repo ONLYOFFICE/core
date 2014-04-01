@@ -18,6 +18,17 @@ namespace odf
 		class office_element;
 		typedef shared_ptr<office_element>::Type office_element_ptr;
 
+		class style_text_properties;
+		class style_paragraph_properties;
+		class style_graphic_properties;
+		class style_table_properties;
+		class style_section_properties;
+		class style_table_cell_properties;
+		class style_table_row_properties;
+		class style_table_column_properties;
+		class style_chart_properties;
+		class style_drawing_page_properties;
+
 		namespace package 
 		{		
 			class odf_document;
@@ -66,13 +77,14 @@ namespace Oox2Odf
 
 		void convert(OOX::Spreadsheet::CFormula *oox_formula);
 
-		void convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_pr);
-		void convert(OOX::Spreadsheet::CSheetPr *oox_sheet_pr);
+		void convert(OOX::Spreadsheet::CSheetFormatPr	*oox_sheet_format_pr);
+		void convert(OOX::Spreadsheet::CSheetPr			*oox_sheet_pr);
 		
-		void convert(OOX::Spreadsheet::CFill * fill, odf::office_element_ptr  & odf_style_);
-		void convert(OOX::Spreadsheet::CFont * font, odf::office_element_ptr  & odf_style_);
-		void convert(OOX::Spreadsheet::CNumFmt *numFmt, odf::office_element_ptr  & odf_style_);
-		void convert(OOX::Spreadsheet::CBorder *border, odf::office_element_ptr  & odf_style_);
+		void convert(OOX::Spreadsheet::CFont * font, odf::style_text_properties * text_properties);
+		
+		void convert(OOX::Spreadsheet::CNumFmt	*numFmt,	odf::style_table_cell_properties * cell_properties);
+		void convert(OOX::Spreadsheet::CBorder	*border,	odf::style_table_cell_properties * cell_properties);
+		void convert(OOX::Spreadsheet::CFill	*fill,		odf::style_table_cell_properties * cell_properties);
 		
 		void convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color) & odf_color);
 		void convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::background_color) & odf_bckgrd_color);

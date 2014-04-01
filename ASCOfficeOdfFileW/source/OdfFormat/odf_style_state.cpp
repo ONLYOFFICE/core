@@ -42,7 +42,7 @@ void odf_style_state::add_child(office_element_ptr & child)
 	odf_style_->add_child_element(child);
 }
 
-void odf_style_state::set_name(std::wstring name)
+void odf_style_state::set_name(std::wstring & name)
 {
 	style* style_ = dynamic_cast<style*>(odf_style_.get());
 	if (!style_)return;
@@ -56,6 +56,14 @@ std::wstring & odf_style_state::get_name()
 
 	return style_->style_name_;
 }
+void odf_style_state::set_parent_style_name(std::wstring & name)
+{
+	style* style_ = dynamic_cast<style*>(odf_style_.get());
+	if (!style_)return;
+	
+	style_->style_parent_style_name_ = name;
+}
+//////////////////////////////////////////////////////////////////////
 void odf_style_state::set_automatic(bool val)
 {
 	automatic_ = val;
@@ -68,12 +76,86 @@ void odf_style_state::set_default(bool val)
 {
 	default_ = val;
 }
-void odf_style_state::convert()
+//////////////////////////////////////////////////////////////////
+style_text_properties * odf_style_state::get_text_properties() 
 {
-	if (odf_style_== NULL)return;
+	style* style_ = dynamic_cast<style*>(odf_style_.get());
+	if (!style_)return NULL;
 
-
+	return style_->style_content_.get_style_text_properties();   
 }
+
+style_paragraph_properties * odf_style_state::get_paragraph_properties()
+{
+	style* style_ = dynamic_cast<style*>(odf_style_.get());
+	if (!style_)return NULL;
+
+	return style_->style_content_.get_style_paragraph_properties(); 
+}
+
+style_graphic_properties * odf_style_state::get_graphic_properties() 
+{
+	style* style_ = dynamic_cast<style*>(odf_style_.get());
+	if (!style_)return NULL;
+
+	return style_->style_content_.get_style_graphic_properties();  
+}
+style_table_properties * odf_style_state::get_table_properties()
+{
+	style* style_ = dynamic_cast<style*>(odf_style_.get());
+	if (!style_)return NULL;
+
+	return style_->style_content_.get_style_table_properties(); 
+}
+
+style_section_properties * odf_style_state::get_section_properties()
+{
+	style* style_ = dynamic_cast<style*>(odf_style_.get());
+	if (!style_)return NULL;
+
+	return style_->style_content_.get_style_section_properties();   
+}
+
+style_table_cell_properties * odf_style_state::get_table_cell_properties()
+{
+	style* style_ = dynamic_cast<style*>(odf_style_.get());
+	if (!style_)return NULL;
+
+	return style_->style_content_.get_style_table_cell_properties();
+}
+
+style_table_row_properties * odf_style_state::get_table_row_properties() 
+{
+	style* style_ = dynamic_cast<style*>(odf_style_.get());
+	if (!style_)return NULL;
+
+	return style_->style_content_.get_style_table_row_properties(); 
+}
+
+style_table_column_properties * odf_style_state::get_table_column_properties() 
+{
+	style* style_ = dynamic_cast<style*>(odf_style_.get());
+	if (!style_)return NULL;
+
+	return style_->style_content_.get_style_table_column_properties();
+}
+
+style_chart_properties * odf_style_state::get_chart_properties() 
+{
+	style* style_ = dynamic_cast<style*>(odf_style_.get());
+	if (!style_)return NULL;
+
+	return style_->style_content_.get_style_chart_properties(); 
+}
+//style_drawing_page_properties * odf_style_state::get_drawing_page_properties()
+//{
+//	style* style_ = dynamic_cast<style*>(odf_style_.get());
+//	if (!style_)return NULL;
+//
+//	return style_->style_content_.get_style_drawing_page_properties();
+//}
+
+///////////////////////
 
 }
 }

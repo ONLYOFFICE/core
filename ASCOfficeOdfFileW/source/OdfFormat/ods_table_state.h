@@ -12,6 +12,8 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 
+#include "officevaluetype.h"
+
 namespace cpdoccore {
 namespace odf {
 
@@ -79,7 +81,7 @@ public:
 	void end_cell();
 	void add_default_cell(office_element_ptr & cell, int repeated);
 
-	void set_cell_format_value(int format);
+	void set_cell_format_value(office_value_type::type value_type);
 	void set_cell_type(int type);
 	void set_cell_value(std::wstring & value);
 	

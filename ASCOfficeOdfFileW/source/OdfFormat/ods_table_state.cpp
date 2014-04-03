@@ -266,32 +266,7 @@ ods_hyperlink_state & ods_table_state::current_hyperlink()
 	{
 	}
 }
-office_value_type::type oox_valuetype_2_odf(int oox_fmt)
-{
-	switch (oox_fmt)
-	{
-	case 2:
-	case 3:
-	case 4:
-		return office_value_type::Float;
-	case 9:
-	case 10:
-		return office_value_type::Percentage;
-	case 14:
-	case 15:
-	case 16:
-	case 17:
-		return office_value_type::Date;
-	case 18:
-	case 19:
-		return office_value_type::Time;
-	case 49:
-		return office_value_type::String;
-	case 0://general
-	default:
-		return office_value_type::String;
-	}
-}
+
 void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & style_elm)
 {
 	current_row_element()->add_child_element(elm);
@@ -319,16 +294,16 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
     cells_.push_back(state);
 }
 
-void ods_table_state::set_cell_format_value(int format_value)
+void ods_table_state::set_cell_format_value(office_value_type::type value_type)
 {
 	if (cells_.size() < 1)return;
-	if (format_value == 0)return;	//general .. need detect
+	if (value_type == office_value_type::Custom)return;	//general .. need detect
 
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 	if (cell == NULL)return;
 
 	common_value_and_type_attlist cell_type;
-	cell_type.office_value_type_ = office_value_type(oox_valuetype_2_odf(format_value));
+	cell_type.office_value_type_ = office_value_type(value_type);
 	
 	cell->table_table_cell_attlist_.common_value_and_type_attlist_ = cell_type;
 
@@ -343,13 +318,16 @@ void ods_table_state::set_cell_type(int type)
 	_CP_OPT(office_value_type) cell_type;
 	switch (type)
 	{
-	case 0:		//cell_type = office_value_type(office_value_type::Boolean);
+	case 0:		cell_type = office_value_type(office_value_type::Boolean);
+		break;
+	case 1:		cell_type = office_value_type(office_value_type::Date);
 		break;
 	case 4:		cell_type = office_value_type(office_value_type::Float);
 		break;
-	case 3:
-	case 5:		
-	case 6:		
+	case 2:// error-type
+	case 3:// inline
+	case 5:// shared
+	case 6:// обычна€
 		cell_type = office_value_type(office_value_type::String);
 		break;
 	}
@@ -360,6 +338,10 @@ void ods_table_state::set_cell_type(int type)
 			cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
 		}
 		cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
+	}
+	else
+	{
+		//сходить по стилю €чейки - проверить тип €чейки и формат - numFmt
 	}
 }
 void ods_table_state::add_hyperlink(std::wstring & ref,int col, int row, std::wstring & link)
@@ -450,7 +432,6 @@ void ods_table_state::set_cell_value(std::wstring & value)
 			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_time_value_ = value;
 			break;
 		case office_value_type::Currency:
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_currency_ = value;//единицы измерений
 		default:
 			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_ = value;
 		}

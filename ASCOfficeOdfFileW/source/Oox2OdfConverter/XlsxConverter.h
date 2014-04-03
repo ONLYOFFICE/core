@@ -75,17 +75,15 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CRPr *oox_text_pr);
 		void convert(OOX::Spreadsheet::CText *oox_text);
 
-		void convert(OOX::Spreadsheet::CFormula *oox_formula);
-		void convert(OOX::Spreadsheet::CHyperlink *oox_hyperlink,OOX::Spreadsheet::CWorksheet *oox_sheet);
+		void convert(OOX::Spreadsheet::CFormula		*oox_formula);
+		void convert(OOX::Spreadsheet::CHyperlink	*oox_hyperlink,	OOX::Spreadsheet::CWorksheet *oox_sheet);
 
 		void convert(OOX::Spreadsheet::CSheetFormatPr	*oox_sheet_format_pr);
 		void convert(OOX::Spreadsheet::CSheetPr			*oox_sheet_pr);
 		
-		void convert(OOX::Spreadsheet::CFont * font, odf::style_text_properties * text_properties);
-		
-		void convert(OOX::Spreadsheet::CNumFmt	*numFmt,	odf::style_table_cell_properties * cell_properties);
-		void convert(OOX::Spreadsheet::CBorder	*border,	odf::style_table_cell_properties * cell_properties);
-		void convert(OOX::Spreadsheet::CFill	*fill,		odf::style_table_cell_properties * cell_properties);
+		void convert(OOX::Spreadsheet::CFont	*font,		odf::style_text_properties		*text_properties);		
+		void convert(OOX::Spreadsheet::CBorder	*border,	odf::style_table_cell_properties *cell_properties);
+		void convert(OOX::Spreadsheet::CFill	*fill,		odf::style_table_cell_properties *cell_properties);
 		
 		void convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color) & odf_color);
 		void convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::background_color) & odf_bckgrd_color);
@@ -93,8 +91,9 @@ namespace Oox2Odf
 		void convert(double oox_font_size,  _CP_OPT(odf::font_size) & odf_font_size);
 		void convert(double oox_size,  _CP_OPT(odf::length) & odf_size);
 
-		void convert(OOX::Spreadsheet::CXfs *		cell_style, int oox_id, bool automatic=true, bool root = false);
-		void convert(OOX::Spreadsheet::CCellStyle *	cell_style, int oox_id);
+		void convert(OOX::Spreadsheet::CXfs			*cell_style, int oox_id, bool automatic=true, bool root = false);
+		void convert(OOX::Spreadsheet::CCellStyle	*cell_style, int oox_id);
+		void convert(OOX::Spreadsheet::CNumFmt		*numFmt);
 
 		void convert_sharing_string(int number);
 	};

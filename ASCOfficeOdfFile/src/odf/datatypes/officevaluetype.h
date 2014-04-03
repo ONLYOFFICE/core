@@ -5,7 +5,8 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { 
+namespace odf { 
 
 class office_value_type
 {

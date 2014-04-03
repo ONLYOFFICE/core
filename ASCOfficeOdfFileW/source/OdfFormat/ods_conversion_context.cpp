@@ -15,7 +15,7 @@ namespace odf {
 
 
 ods_conversion_context::ods_conversion_context(package::odf_document * outputDocument) 
-		: odf_conversion_context(outputDocument), ods_table_context_(*this), current_text_context_(NULL)
+		: odf_conversion_context(outputDocument), table_context_(*this), current_text_context_(NULL)
 {
 }
 
@@ -32,13 +32,13 @@ void ods_conversion_context::start_sheet(std::wstring & name)
 {
 	create_element(L"table", L"table",current_spreadsheet_->getContent(),this);
 	
-	ods_table_context_.start_table(current_spreadsheet_->getContent().back(),name);
+	table_context_.start_table(current_spreadsheet_->getContent().back(),name);
 	
 }
 
 void ods_conversion_context::end_sheet()
 {
-	ods_table_context_.end_table();
+	table_context_.end_table();
 	
 	styles_context().reset_defaults();
 }
@@ -230,9 +230,10 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 	}
 
 	office_element_ptr style_elm;
-	int number_format =0;
 
 	std::wstring style_cell_name;
+	office_value_type::type format_value_type = office_value_type::Custom;
+	
 	if ( xfd_style >=0)
 	{
 		odf_style_state  *style_state=NULL;
@@ -240,8 +241,11 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 		if (style_state)
 		{
 			style_elm = style_state->get_office_element();
-			number_format = style_state->get_number_format();
 			style_cell_name = style_state->get_name();
+			
+			int number_format = style_state->get_number_format();//oox
+			if (number_format >0)
+				format_value_type = numbers_styles_context().add_or_find(number_format).ods_type;
 		}
 		else
 		{//error
@@ -253,7 +257,7 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 	
 	current_table().start_cell(cell_elm, style_elm);
 	
-	current_table().set_cell_format_value(number_format);
+	current_table().set_cell_format_value(format_value_type);
 }
 
 void ods_conversion_context::start_columns()

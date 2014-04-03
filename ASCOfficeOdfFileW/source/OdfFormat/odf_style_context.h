@@ -2,6 +2,7 @@
 
 #include <string>
 #include "odf_style_state.h"
+#include "odf_number_styles_context.h"
 
 
 namespace cpdoccore {
@@ -24,6 +25,8 @@ public:
     void create_style(std::wstring name, const style_family style_family, bool automatic = false, bool root = false, int oox_id = -1);
     void create_default(const style_family style_family);
 
+	void add_style(office_element_ptr elm, bool automatic = false, bool root = false, style_family style_family=style_family::None);
+
 	office_element_ptr & add_or_find(std::wstring name, const style_family family, bool automatic = false, bool root = false, int id = -1);
 
 	void process_automatic_styles(office_element_ptr root );
@@ -42,62 +45,12 @@ public:
 	
 	bool find_odf_style_state(int oox_id_style, const style_family family, odf_style_state *& state, bool root = false);
 
-    
-    //void start_cell(const std::wstring & formula,
-    //                size_t columnsSpanned,
-    //                size_t rowsSpanned);
-
-    //void end_cell();
-
- //   std::wstring default_row_cell_style() const;
- //   std::wstring default_column_cell_style() const;
-
- //   void start_covered_cell();
- //   void end_covered_cell();
-
- //   void start_cell_content();    
- //   int end_cell_content();
-
- //   void set_current_cell_style_id(unsigned int xfId);
- //   int get_current_cell_style_id();
-
- //   int current_column() const;
- //   int current_row() const;
-
-	//void set_table_row_group(int count, bool collapsed, int level);
- //   void start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
- //   void non_empty_row();
- //   bool is_empty_row() const;
- //   void end_row();
-
- //   void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName);
-
- //   size_t depth() const { return table_state_stack_.size(); }
-
- //   unsigned int columns_count();
-
- //   void serialize_merge_cells(std::wostream & _Wostream);
-
-	//void serialize_table_format(std::wostream & _Wostream);
-
-	//xlsx_table_metrics & get_table_metrics();
- // 
-	//xlsx_drawing_context & get_drawing_context();
-
- //   xlsx_comments_context & get_comments_context();
-	//
- //   void table_column_last_width(double w);
- //   double table_column_last_width() const;
-
     odf_style_state & last_state();
 
- //   void start_hyperlink();
-	//std::wstring end_hyperlink(std::wstring const & ref, std::wstring const & href, std::wstring const & display);
-
- //  void dump_rels_hyperlinks(rels & Rels);
- //  void serialize_hyperlinks(std::wostream & _Wostream);
+	odf_number_styles_context & numbers_styles() {return number_styles_context_;}
 
 private:
+	odf_number_styles_context	number_styles_context_;
 
     odf_conversion_context & context_;
     

@@ -13,7 +13,7 @@
 namespace cpdoccore {
 namespace odf {
 
-odf_style_context::odf_style_context(odf_conversion_context & Context): context_(Context)
+odf_style_context::odf_style_context(odf_conversion_context & Context): context_(Context), number_styles_context_(Context)
 {        
 }
 
@@ -39,6 +39,14 @@ void odf_style_context::create_style(std::wstring oox_name,const style_family fa
 
 	last_state().style_oox_id_ = oox_id;
 	last_state().style_oox_name_ = oox_name;
+}
+
+void odf_style_context::add_style(office_element_ptr elm, bool automatic, bool root, style_family family)
+{
+	style_state_list_.push_back( odf_style_state(elm, family) ); 
+	
+	last_state().set_automatic(automatic);
+	last_state().set_root(root);
 }
 
 void odf_style_context::create_default(const style_family family)
@@ -91,6 +99,8 @@ void odf_style_context::process_master(office_element_ptr root )
 }
 void odf_style_context::process_office(office_element_ptr root )
 {
+	number_styles_context_.process_styles(root );
+	
 	for (long i =0; i < style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i].automatic_== false && style_state_list_[i].root_ == true && style_state_list_[i].odf_style_)

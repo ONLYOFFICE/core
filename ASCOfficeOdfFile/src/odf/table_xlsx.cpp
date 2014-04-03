@@ -590,29 +590,33 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
             std::wstring number_val = L"";
             _CP_OPT(bool) bool_val;
 
-			int odf_value_type=0;
+			int odf_value_type = office_value_type::Custom;
 
             if (table_table_cell_attlist_.common_value_and_type_attlist_)
             {
                 const common_value_and_type_attlist & attr = *table_table_cell_attlist_.common_value_and_type_attlist_;
-				odf_value_type = attr.office_value_type_->get_type();
-				if (attr.office_value_type_->get_type() == office_value_type::Float)
+				if (attr.office_value_type_)
+					odf_value_type = attr.office_value_type_->get_type();
+				
+				if ((odf_value_type == office_value_type::Float) || 
+					(odf_value_type == office_value_type::Custom && attr.office_value_))
                 {
                     t_val = XlsxCellType::n;
                     number_val = attr.office_value_.get_value_or(L"");
                 }
-                else if (attr.office_value_type_->get_type() == office_value_type::Percentage)
+                else if (odf_value_type == office_value_type::Percentage)
                 {
                     t_val = XlsxCellType::n;
                     number_val = attr.office_value_.get_value_or(L"");
                 }
-                else if (attr.office_value_type_->get_type() == office_value_type::Currency)
+                else if (odf_value_type == office_value_type::Currency)
                 {
                     t_val = XlsxCellType::n;
                     number_val = attr.office_value_.get_value_or(L"");
                 }
-                else if (attr.office_value_type_->get_type() == office_value_type::Date)
-                {
+                else if ((odf_value_type == office_value_type::Date) || 
+						 (odf_value_type == office_value_type::Custom && attr.office_date_value_))
+                { 
                     t_val = XlsxCellType::n;              
                     if (attr.office_date_value_)
                     {
@@ -623,7 +627,8 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
                         }
                     }
                 }
-                else if (attr.office_value_type_->get_type() == office_value_type::Time)
+                else if ((odf_value_type == office_value_type::Time) ||
+						 (odf_value_type == office_value_type::Custom && attr.office_time_value_))
                 {
                     t_val = XlsxCellType::n;
                     if (attr.office_time_value_)
@@ -637,15 +642,17 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
                         }                
                     }
                 }
-                else if (attr.office_value_type_->get_type() == office_value_type::Boolean)
+                else if ((odf_value_type == office_value_type::Boolean) ||
+						 (odf_value_type == office_value_type::Custom && attr.office_boolean_value_))
                 {
                     t_val = XlsxCellType::b;
                     if (attr.office_boolean_value_)
                         bool_val = oox::parseBoolVal(attr.office_boolean_value_.get());
                 }
-                else if (attr.office_value_type_->get_type() == office_value_type::String)
+                else if ((odf_value_type == office_value_type::String) ||
+						 (odf_value_type == office_value_type::Custom && attr.office_date_value_))
                 {
-                    t_val = XlsxCellType::s;
+                    t_val = XlsxCellType::s;//берем не значение а текстовые элементы
                 }
             }
 

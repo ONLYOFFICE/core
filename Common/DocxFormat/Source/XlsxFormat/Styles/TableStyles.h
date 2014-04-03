@@ -26,7 +26,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oType.IsInit() && m_oDxfId.IsInit())
 				{
@@ -35,7 +35,7 @@ namespace OOX
 						sXml.Format(_T("<tableStyleElement type=\"%s\" size=\"%d\" dxfId=\"%d\"/>"), m_oType->ToString(), m_oSize->GetValue(), m_oDxfId->GetValue());
 					else
 						sXml.Format(_T("<tableStyleElement type=\"%s\" dxfId=\"%d\"/>"), m_oType->ToString(), m_oDxfId->GetValue());
-					writer.WriteStringC(sXml);
+					writer.WriteString(sXml);
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -84,31 +84,31 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oName.IsInit() && m_arrItems.GetSize() > 0)
 				{
-					writer.WriteStringC(_T("<tableStyle"));
+					writer.WriteString(_T("<tableStyle"));
 					if(m_oName.IsInit())
 					{
 						CString sName;
 						sName.Format(_T(" name=\"%s\""), XmlUtils::EncodeXmlString(m_oName.get2()));
-						writer.WriteStringC(sName);
+						writer.WriteString(sName);
 					}
 					if(m_oPivot.IsInit() && true == m_oPivot->ToBool())
-						writer.WriteStringC(_T(" table=\"0\""));
+						writer.WriteString(_T(" table=\"0\""));
 					else
-						writer.WriteStringC(_T(" pivot=\"0\""));
+						writer.WriteString(_T(" pivot=\"0\""));
 					if(m_oCount.IsInit())
 					{
 						CString sCount;
 						sCount.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-						writer.WriteStringC(sCount);
+						writer.WriteString(sCount);
 					}
-					writer.WriteStringC(_T(">"));
+					writer.WriteString(_T(">"));
 					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
-					writer.WriteStringC(_T("</tableStyle>"));
+					writer.WriteString(_T("</tableStyle>"));
 				}
 
 			}
@@ -171,33 +171,33 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<tableStyles"));
+				writer.WriteString(_T("<tableStyles"));
 				if(m_oCount.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oDefaultTableStyle.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" defaultTableStyle=\"%s\""), XmlUtils::EncodeXmlString(m_oDefaultTableStyle.get()));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oDefaultPivotStyle.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" defaultPivotStyle=\"%s\""), XmlUtils::EncodeXmlString(m_oDefaultPivotStyle.get()));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_arrItems.GetSize() >  0)
 				{
-					writer.WriteStringC(_T(">"));
+					writer.WriteString(_T(">"));
 					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
-					writer.WriteStringC(_T("</tableStyles>"));
+					writer.WriteString(_T("</tableStyles>"));
 				}
 				else
-					writer.WriteStringC(_T("/>"));
+					writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

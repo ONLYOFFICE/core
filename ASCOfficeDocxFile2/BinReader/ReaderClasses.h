@@ -1,6 +1,6 @@
 #pragma once
 
-using namespace BinDocxRW;
+namespace BinDocxRW {
 
 class SectPr
 {
@@ -221,7 +221,7 @@ public:
 		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || bHighLight ||
 				bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA;
 	}
-	void Write(CStringWriter*  pCStringWriter)
+	void Write(XmlUtils::CStringWriter*  pCStringWriter)
 	{
 		pCStringWriter->WriteString(CString(_T("<w:rPr>")));
 		if(bRStyle)
@@ -488,7 +488,7 @@ public:
 		bsemiHidden = false;
 		bunhideWhenUsed = false;
 	}
-	void Write(CStringWriter*  pCStringWriter)
+	void Write(XmlUtils::CStringWriter*  pCStringWriter)
 	{
 		CString sType;
 		switch(byteType)
@@ -589,7 +589,7 @@ public:
 class tblStylePr
 {
 public:
-	CStringWriter Writer;
+	XmlUtils::CStringWriter Writer;
 	BYTE Type;
 	bool bType;
 public:
@@ -649,7 +649,7 @@ public:
 		bHeight = false;
 		bPaddings = false;
 	}
-	void Write(CStringWriter*  pCStringWriter)
+	void Write(XmlUtils::CStringWriter*  pCStringWriter)
 	{
 		if(bType)
 		{
@@ -721,7 +721,7 @@ public:
 		bW = false;
 		bWDocx = false;
 	}
-	void Write(CStringWriter& pCStringWriter ,CString& sName)
+	void Write(XmlUtils::CStringWriter& pCStringWriter ,CString& sName)
 	{
 		pCStringWriter.WriteString(Write(sName));
 	}
@@ -772,7 +772,7 @@ public:
 		bSize = false;
 		bValue = false;
 	}
-	void Write(CString sName, CStringWriter*  pCStringWriter, bool bCell)
+	void Write(CString sName, XmlUtils::CStringWriter*  pCStringWriter, bool bCell)
 	{
 		if(bValue && border_Single == Value)
 		{
@@ -843,7 +843,7 @@ public:
 	{
 		return !(bLeft || bTop || bRight || bBottom || bInsideV || bInsideH || bBetween);
 	}
-	void Write(CStringWriter*  pCStringWriter, bool bCell)
+	void Write(XmlUtils::CStringWriter*  pCStringWriter, bool bCell)
 	{
 		if(bLeft)
 			oLeft.Write(_T("w:left"), pCStringWriter, bCell);
@@ -884,8 +884,8 @@ public:
 	long Restart;
 	long Start;
 	BYTE Suff;
-	CStringWriter ParaPr;
-	CStringWriter TextPr;
+	XmlUtils::CStringWriter ParaPr;
+	XmlUtils::CStringWriter TextPr;
 	CString PStyle;
 
 	bool bFormat;
@@ -916,7 +916,7 @@ public:
 			delete Text[i];
 		}
 	}
-	void Write(CStringWriter& oWriter, int index)
+	void Write(XmlUtils::CStringWriter& oWriter, int index)
 	{
 		CString sILvl;sILvl.Format(_T("<w:lvl w:ilvl=\"%d\">"), index);
 		oWriter.WriteString(sILvl);
@@ -1024,7 +1024,7 @@ public:
 			delete Lvls[i];
 		}
 	}
-	void Write(CStringWriter& oWriterANum)
+	void Write(XmlUtils::CStringWriter& oWriterANum)
 	{
 		if(bId)
 		{
@@ -1065,7 +1065,7 @@ public:
 		bAId = false;
 		bId = false;
 	}
-	void Write(CStringWriter& oWriterNumList)
+	void Write(XmlUtils::CStringWriter& oWriterNumList)
 	{
 		if(bAId && bId)
 		{
@@ -1086,7 +1086,7 @@ public:
 		sName = name;
 		bGridAfter = false;
 	}
-	void Write(CStringWriter& writer)
+	void Write(XmlUtils::CStringWriter& writer)
 	{
 		if(bGridAfter && nGridAfter > 0)
 		{
@@ -1104,7 +1104,7 @@ public:
 	CString href;
 	CString anchor;
 	CString tooltip;
-	CStringWriter writer;
+	XmlUtils::CStringWriter writer;
 	static WriteHyperlink* Parse(CString fld)
 	{
 		WriteHyperlink* res = NULL;
@@ -1178,7 +1178,7 @@ public:
         }
 		return res;
 	}
-	void Write(CStringWriter& wr)
+	void Write(XmlUtils::CStringWriter& wr)
 	{
 		if(false == rId.IsEmpty())
 		{
@@ -2010,7 +2010,7 @@ public: CFramePr()
 	{
 		return !(bDropCap || bH || bHAnchor || bHRule || bHSpace || bLines || bVAnchor || bVSpace || bW || bWrap || bX || bXAlign || bY || bYAlign);
 	}
-	void Write(CStringWriter& oStringWriter)
+	void Write(XmlUtils::CStringWriter& oStringWriter)
 	{
 		oStringWriter.WriteString(CString(_T("<w:framePr")));
 		if(bDropCap)
@@ -2152,7 +2152,7 @@ public:
 	bool History;
 	CString sDocLocation;
 	CString sTgtFrame;
-	CStringWriter writer;
+	XmlUtils::CStringWriter writer;
 
 	bool bHistory;
 public:
@@ -2160,7 +2160,7 @@ public:
 	{
 		bHistory = false;
 	}
-	void Write(CStringWriter& wr)
+	void Write(XmlUtils::CStringWriter& wr)
 	{
 		if(false == rId.IsEmpty())
 		{
@@ -2183,3 +2183,4 @@ public:
 		}
 	}
 };
+}

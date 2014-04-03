@@ -27,35 +27,35 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<hyperlink"));
+				writer.WriteString(_T("<hyperlink"));
 				if(m_oDisplay.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" display=\"%s\""), XmlUtils::EncodeXmlString(m_oDisplay.get()));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oRid.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" r:id=\"%s\""), m_oRid->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oLocation.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" location=\"%s\""), XmlUtils::EncodeXmlString(m_oLocation.get()));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oRef.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" ref=\"%s\""), XmlUtils::EncodeXmlString(m_oRef.get()));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oTooltip.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" tooltip=\"%s\""), XmlUtils::EncodeXmlString(m_oTooltip.get()));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T("/>"));
+				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -110,14 +110,14 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_arrItems.GetSize() > 0)
 				{
-					writer.WriteStringC(_T("<hyperlinks>"));
+					writer.WriteString(_T("<hyperlinks>"));
 					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
-					writer.WriteStringC(_T("</hyperlinks>"));
+					writer.WriteString(_T("</hyperlinks>"));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)

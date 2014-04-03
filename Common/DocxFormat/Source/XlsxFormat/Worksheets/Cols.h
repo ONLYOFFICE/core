@@ -27,60 +27,60 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<col"));
+				writer.WriteString(_T("<col"));
 				if(m_oBestFit.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" bestFit=\"%s\""), m_oBestFit->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oCollapsed.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" collapsed=\"%s\""), m_oCollapsed->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oCustomWidth.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" customWidth=\"%s\""), m_oCustomWidth->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oHidden.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" hidden=\"%s\""), m_oHidden->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oMin.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" min=\"%d\""), m_oMin->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oMax.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" max=\"%d\""), m_oMax->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oOutlineLevel.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" outlineLevel=\"%d\""), m_oOutlineLevel->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oPhonetic.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" phonetic=\"%s\""), m_oPhonetic->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oStyle.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" style=\"%d\""), m_oStyle->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oWidth.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" width=\"%s\""), SpreadsheetCommon::WriteDouble(m_oWidth->GetValue()));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T("/>"));
+				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -145,14 +145,14 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_arrItems.GetSize() > 0)
 				{
-					writer.WriteStringC(_T("<cols>"));
+					writer.WriteString(_T("<cols>"));
 					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
-					writer.WriteStringC(_T("</cols>"));
+					writer.WriteString(_T("</cols>"));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)

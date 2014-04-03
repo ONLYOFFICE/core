@@ -1088,6 +1088,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Source\XlsxFormat\Chart\ChartSerialize.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Chart\ChartSerialize.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\XlsxFormat\Chart\Layout.h"
 					>
 				</File>

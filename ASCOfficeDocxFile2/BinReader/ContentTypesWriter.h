@@ -10,9 +10,9 @@ namespace Writers
 
 	class ContentTypesWriter
 	{
-		CStringWriter	m_oWriter;
+		XmlUtils::CStringWriter	m_oWriter;
 		CString	m_sDir;
-		CStringWriter	m_oAdditional;
+		XmlUtils::CStringWriter	m_oAdditional;
 	public:
 		ContentTypesWriter(CString sDir):m_sDir(sDir)
 		{

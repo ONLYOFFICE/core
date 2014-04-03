@@ -22,566 +22,146 @@ namespace Spreadsheet
 	const double c_ag_Inch_to_MM	= 25.4;
 	const double c_ag_1pxWidth		= 25.4 / 96;
 
-	static wchar_t g_wc_amp		= wchar_t('&');
-	static wchar_t g_wc_apos	= wchar_t('\'');
-	static wchar_t g_wc_lt		= wchar_t('<');
-	static wchar_t g_wc_qt		= wchar_t('>');
-	static wchar_t g_wc_quot	= wchar_t('\"');
-
-	static _bstr_t g_bstr_amp	= L"&amp;";
-	static _bstr_t g_bstr_apos	= L"&apos;";
-	static _bstr_t g_bstr_lt	= L"&lt;";
-	static _bstr_t g_bstr_qt	= L"&gt;";
-	static _bstr_t g_bstr_quot	= L"\"";
-	static _bstr_t g_bstr_mdash	= L"&mdash;";
-
-	class CTextItem
-	{
-	protected:
-		wchar_t*	m_pData;
-		size_t		m_lSize;
-
-		wchar_t*	m_pDataCur;
-		size_t		m_lSizeCur;
-
-	public:
-		CTextItem()
-		{
-			m_pData = NULL;
-			m_lSize = 0;
-
-			m_pDataCur	= m_pData;
-			m_lSizeCur	= m_lSize;
-		}
-		CTextItem(const CTextItem& oSrc)
-		{
-			m_pData = NULL;
-			*this = oSrc;
-		}
-		CTextItem& operator=(const CTextItem& oSrc)
-		{
-			RELEASEMEM(m_pData);
-
-			m_lSize		= oSrc.m_lSize;
-			m_lSizeCur	= oSrc.m_lSizeCur;
-			m_pData		= (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-			memcpy(m_pData, oSrc.m_pData, m_lSizeCur * sizeof(wchar_t));
-
-			m_pDataCur = m_pData + m_lSizeCur;
-
-			return *this;
-		}
-
-		CTextItem(const size_t& nLen)
-		{
-			m_lSize = nLen;
-			m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-			m_lSizeCur = 0;
-			m_pDataCur = m_pData;
-		}
-		CTextItem(wchar_t* pData, const size_t& nLen)
-		{
-			m_lSize = nLen;
-			m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-			memcpy(m_pData, pData, m_lSize * sizeof(wchar_t));
-
-			m_lSizeCur = m_lSize;
-			m_pDataCur = m_pData + m_lSize;
-		}
-		CTextItem(wchar_t* pData, BYTE* pUnicodeChecker = NULL)
-		{
-			size_t nLen = GetStringLen(pData);
-
-			m_lSize = nLen;
-			m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-			memcpy(m_pData, pData, m_lSize * sizeof(wchar_t));
-
-			m_lSizeCur = m_lSize;
-			m_pDataCur = m_pData + m_lSize;
-
-			if (NULL != pUnicodeChecker)
-			{
-				wchar_t* pMemory = m_pData;
-				while (pMemory < m_pDataCur)
-				{
-					if (!pUnicodeChecker[*pMemory])
-						*pMemory = wchar_t(' ');
-					++pMemory;
-				}
-			}
-		}
-		virtual ~CTextItem()
-		{
-			RELEASEMEM(m_pData);
-		}
-
-		AVSINLINE void AddSize(const size_t& nSize)
-		{
-			if (NULL == m_pData)
-			{
-				m_lSize = max(nSize, 1000);				
-				m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-				m_lSizeCur = 0;
-				m_pDataCur = m_pData;
-				return;
-			}
-
-			if ((m_lSizeCur + nSize) > m_lSize)
-			{
-				while ((m_lSizeCur + nSize) > m_lSize)
-				{
-					m_lSize *= 2;
-				}
-
-				wchar_t* pRealloc = (wchar_t*)realloc(m_pData, m_lSize * sizeof(wchar_t));
-				if (NULL != pRealloc)
-				{
-					// реаллок сработал
-					m_pData		= pRealloc;
-					m_pDataCur	= m_pData + m_lSizeCur;
-				}
-				else
-				{
-					wchar_t* pMalloc = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-					memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(wchar_t));
-
-					free(m_pData);
-					m_pData		= pMalloc;
-					m_pDataCur	= m_pData + m_lSizeCur;
-				}
-			}
-		}
-
-		AVSINLINE wchar_t* GetData()
-		{
-			return m_pData;
-		}
-		AVSINLINE size_t GetCurSize()
-		{
-			return m_lSizeCur;
-		}
-
-	public:
-
-		AVSINLINE void operator+=(const CTextItem& oTemp)
-		{
-			WriteString(oTemp.m_pData, oTemp.m_lSizeCur);
-		}
-		AVSINLINE void operator+=(_bstr_t& oTemp)
-		{
-			size_t nLen = oTemp.length();
-			WriteString(oTemp.GetBSTR(), nLen);
-		}
-		AVSINLINE void operator+=(CString& oTemp)
-		{
-			size_t nLen = (size_t)oTemp.GetLength();
-
-#ifdef _UNICODE
-			WriteString(oTemp.GetBuffer(), nLen);
-#else
-			CStringW str = (CStringW)oTemp;
-			WriteString(str.GetBuffer(), nLen);
-#endif
-		}
-		AVSINLINE wchar_t& operator[](const size_t& nIndex)
-		{
-			return m_pData[nIndex];
-		}
-
-		AVSINLINE void SetText(BSTR& bsText)
-		{
-			ClearNoAttack();
-			size_t nLen = GetStringLen(bsText);
-
-			WriteString(bsText, nLen);
-		}
-		AVSINLINE void AddSpace()
-		{
-			AddSize(1);
-			*m_pDataCur = wchar_t(' ');
-
-			++m_lSizeCur;
-			++m_pDataCur;
-		}
-		AVSINLINE void AddSpaceFirst()
-		{
-			AddSize(1);
-
-			wchar_t* pMemory = new wchar_t[m_lSizeCur];
-			memcpy(pMemory, m_pData, m_lSizeCur * sizeof(wchar_t));
-			memcpy(m_pData + 1, pMemory, m_lSizeCur * sizeof(wchar_t));
-			RELEASEARRAYOBJECTS(pMemory);
-
-			*m_pData = wchar_t(' ');
-
-			++m_lSizeCur;
-			++m_pDataCur;
-		}
-		AVSINLINE BOOL IsEqual(const CTextItem& oItem)const
-		{
-			const wchar_t* pNew = oItem.m_pData;
-			for (size_t i = 0; i < m_lSizeCur; ++i)
-			{
-				if (m_pData[i] != pNew[i])
-					return FALSE;
-			}
-			return TRUE;
-		}
-		AVSINLINE BOOL IsEqualLast(CTextItem& oItem, BOOL bIsAddSpace)const
-		{
-			if (bIsAddSpace != TRUE)
-				return FALSE;
-
-			size_t size_cur = m_lSizeCur;
-			size_t size_item = oItem.m_lSizeCur;
-			wchar_t* p1 = m_pData;
-			wchar_t* p2 = oItem.m_pData;
-			for (size_t i = m_lSizeCur - 1; i >= 0; --i)
-			{
-				if (WCHAR(' ') != p1[i])
-					break;
-				--size_cur;
-			}
-			for (size_t i = oItem.m_lSizeCur - 1; i >= 0; --i)
-			{
-				if (WCHAR(' ') != p2[i])
-					break;
-				--size_item;
-			}
-			size_t len = min(size_cur, size_item);
-			p1 = m_pData + size_cur - len;
-			p2 = oItem.m_pData + size_item - len;
-			for (size_t i = 0; i < len; ++i, ++p1, ++p2)
-				if (*p1 != *p2)
-					return FALSE;
-
-			if (bIsAddSpace && (size_cur != m_lSizeCur) && (size_item == oItem.m_lSizeCur))
-				oItem.AddSpace();
-			return TRUE;
-		}
-		AVSINLINE void CorrectUnicode(const BYTE* pUnicodeChecker)
-		{
-			if (NULL != pUnicodeChecker)
-			{
-				wchar_t* pMemory = m_pData;
-				while (pMemory < m_pDataCur)
-				{
-					if (!pUnicodeChecker[*pMemory])
-						*pMemory = wchar_t(' ');
-					++pMemory;
-				}
-			}
-		}
-		AVSINLINE void RemoveLastSpaces()
-		{
-			wchar_t* pMemory = m_pDataCur - 1;
-			while ((pMemory > m_pData) && (wchar_t(' ') == *pMemory))
-			{
-				--pMemory;
-				--m_lSizeCur;
-				--m_pDataCur;
-			}
-
-		}
-		AVSINLINE bool IsSpace()
-		{
-			if (1 != m_lSizeCur)
-				return false;
-			return (wchar_t(' ') == *m_pData);
-		}
-		AVSINLINE void CheckLastSpanLine()
-		{
-			if (0 == m_lSizeCur)
-				return;
-
-			if ((wchar_t(' ') == m_pData[m_lSizeCur - 1]) || (wchar_t('-') == m_pData[m_lSizeCur - 1]))
-				return;
-
-			AddSpace();			
-		}
-
-	public:
-		AVSINLINE void WriteString(wchar_t* pString, const size_t& nLen)
-		{
-			AddSize(nLen);
-			//memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
-			memcpy(m_pDataCur, pString, nLen << 1);
-			m_pDataCur += nLen;
-			m_lSizeCur += nLen;
-		}
-		AVSINLINE size_t GetSize()
-		{
-			return m_lSize;
-		}
-		AVSINLINE void Clear()
-		{
-			RELEASEMEM(m_pData);
-
-			m_pData = NULL;
-			m_lSize = 0;
-
-			m_pDataCur	= m_pData;
-			m_lSizeCur	= 0;
-		}
-		AVSINLINE void ClearNoAttack()
-		{
-			m_pDataCur	= m_pData;
-			m_lSizeCur	= 0;
-		}
-
-		AVSINLINE size_t GetStringLen(wchar_t* pData)
-		{
-			wchar_t* s = pData;
-			for (; *s != 0; ++s);
-			return (size_t)(s - pData);
-		}
-
-		AVSINLINE CString GetCString()
-		{
-			CString str(m_pData, (int)m_lSizeCur);
-			return str;
-		}
-		AVSINLINE wchar_t* GetBuffer()
-		{
-			return m_pData;
-		}
-	};
-
-	class CStringWriter : public CTextItem
-	{
-	public:
-		CStringWriter() : CTextItem()
-		{
-		}
-		virtual ~CStringWriter()
-		{
-		}
-
-	public:
-
-		AVSINLINE void WriteStringB(_bstr_t& bsString)
-		{
-			size_t nLen = bsString.length();
-			CTextItem::WriteString(bsString.GetBSTR(), nLen);
-		}
-		AVSINLINE void WriteString(CString sString)
-		{
-			size_t nLen = (size_t)sString.GetLength();
-
-#ifdef _UNICODE
-			CTextItem::WriteString(sString.GetBuffer(), nLen);
-#else
-			CStringW str = (CStringW)sString;
-			WriteString(str.GetBuffer(), nLen);
-#endif
-		}
-		AVSINLINE void WriteStringC(const CString& sString)
-		{
-			size_t nLen = (size_t)sString.GetLength();
-
-			CString* pStr = const_cast<CString*>(&sString);
-
-#ifdef _UNICODE
-			CTextItem::WriteString(pStr->GetBuffer(), nLen);
-#else
-			CStringW str = (CStringW)sString;
-			WriteString(str.GetBuffer(), nLen);
-#endif
-		}
-		AVSINLINE void Write(CStringWriter& oWriter)
-		{
-			CTextItem::WriteString(oWriter.m_pData, oWriter.m_lSizeCur);
-		}
-		AVSINLINE void WriteI(CTextItem& oItem)
-		{
-			CTextItem::WriteString(oItem.GetData(), oItem.GetCurSize());
-		}
-
-		AVSINLINE void WriteString(wchar_t* pString, const size_t& nLen)
-		{
-			CTextItem::AddSize(nLen);
-			//memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
-			memcpy(m_pDataCur, pString, nLen << 1);
-			m_pDataCur += nLen;
-			m_lSizeCur += nLen;
-		}
-
-		void WriteTextHTML(CTextItem& oItem)
-		{
-			size_t nCurrent = 0;
-			size_t nCount	= oItem.GetCurSize();
-
-			size_t nCurrentOld = nCurrent;
-			wchar_t* pData = oItem.GetData();
-			wchar_t* pStartData = pData;
-
-			while (nCurrent < nCount)
-			{
-				wchar_t c = *pData++;
-
-				if (g_wc_amp == c)
-				{
-					if (nCurrentOld != nCurrent)
-						WriteString(pStartData, nCurrent - nCurrentOld);
-
-					WriteStringB(g_bstr_amp);
-
-					++nCurrent;
-					nCurrentOld = nCurrent;
-					pStartData = pData;
-				}
-				/*else if (g_wc_apos == c)
-				{
-				if (nCurrentOld != nCurrent)
-				WriteString(pStartData, nCurrent - nCurrentOld);
-
-				WriteStringB(g_bstr_apos);
-
-				++nCurrent;
-				nCurrentOld = nCurrent;
-				pStartData = pData;
-				}*/
-				else if (g_wc_lt == c)
-				{
-					if (nCurrentOld != nCurrent)
-						WriteString(pStartData, nCurrent - nCurrentOld);
-
-					WriteStringB(g_bstr_lt);
-
-					++nCurrent;
-					nCurrentOld = nCurrent;
-					pStartData = pData;
-				}
-				else if (g_wc_qt == c)
-				{
-					if (nCurrentOld != nCurrent)
-						WriteString(pStartData, nCurrent - nCurrentOld);
-
-					WriteStringB(g_bstr_qt);
-
-					++nCurrent;
-					nCurrentOld = nCurrent;
-					pStartData = pData;
-				}
-				else if (g_wc_quot == c)
-				{
-					if (nCurrentOld != nCurrent)
-						WriteString(pStartData, nCurrent - nCurrentOld);
-
-					WriteStringB(g_bstr_quot);
-
-					++nCurrent;
-					nCurrentOld = nCurrent;
-					pStartData = pData;
-				}
-				else if (8212 == (USHORT)c)
-				{
-					if (nCurrentOld != nCurrent)
-						WriteString(pStartData, nCurrent - nCurrentOld);
-
-					WriteStringB(g_bstr_mdash);
-
-					++nCurrent;
-					nCurrentOld = nCurrent;
-					pStartData = pData;
-				}
-				else
-				{
-					++nCurrent;
-				}
-			}
-
-			if (nCurrentOld != nCurrent)
-				WriteString(pStartData, nCurrent - nCurrentOld);			
-		}
-
-		void WriteTextXML(CTextItem& oItem)
-		{
-			size_t nCurrent = 0;
-			size_t nCount	= oItem.GetCurSize();
-
-			size_t nCurrentOld = nCurrent;
-			wchar_t* pData = oItem.GetData();
-			wchar_t* pStartData = pData;
-
-			while (nCurrent < nCount)
-			{
-				wchar_t c = *pData++;
-
-				if (g_wc_amp == c)
-				{
-					if (nCurrentOld != nCurrent)
-						WriteString(pStartData, nCurrent - nCurrentOld);
-
-					WriteStringB(g_bstr_amp);
-
-					++nCurrent;
-					nCurrentOld = nCurrent;
-					pStartData = pData;
-				}
-				/*else if (g_wc_apos == c)
-				{
-				if (nCurrentOld != nCurrent)
-				WriteString(pStartData, nCurrent - nCurrentOld);
-
-				WriteStringB(g_bstr_apos);
-
-				++nCurrent;
-				nCurrentOld = nCurrent;
-				pStartData = pData;
-				}*/
-				else if (g_wc_lt == c)
-				{
-					if (nCurrentOld != nCurrent)
-						WriteString(pStartData, nCurrent - nCurrentOld);
-
-					WriteStringB(g_bstr_lt);
-
-					++nCurrent;
-					nCurrentOld = nCurrent;
-					pStartData = pData;
-				}
-				else if (g_wc_qt == c)
-				{
-					if (nCurrentOld != nCurrent)
-						WriteString(pStartData, nCurrent - nCurrentOld);
-
-					WriteStringB(g_bstr_qt);
-
-					++nCurrent;
-					nCurrentOld = nCurrent;
-					pStartData = pData;
-				}
-				else if (g_wc_quot == c)
-				{
-					if (nCurrentOld != nCurrent)
-						WriteString(pStartData, nCurrent - nCurrentOld);
-
-					WriteStringB(g_bstr_quot);
-
-					++nCurrent;
-					nCurrentOld = nCurrent;
-					pStartData = pData;
-				}
-				else
-				{
-					++nCurrent;
-				}
-			}
-
-			if (nCurrentOld != nCurrent)
-				WriteString(pStartData, nCurrent - nCurrentOld);			
-		}
-	};
-
 	enum EElementType
 	{
 		et_Unknown,
+
+//Generated code
+et_ct_chartspace,
+et_ct_boolean,
+et_ct_relid,
+et_ct_pagesetup,
+et_ct_pagemargins,
+et_ct_headerfooter,
+et_ct_printsettings,
+et_ct_externaldata,
+et_ct_dispblanksas,
+et_ct_legendentry,
+et_ct_unsignedint,
+et_ct_extension,
+et_ct_legendpos,
+et_ct_legend,
+et_ct_layout,
+et_ct_manuallayout,
+et_ct_layouttarget,
+et_ct_layoutmode,
+et_ct_double,
+et_ct_dtable,
+et_ct_serax,
+et_ct_scaling,
+et_ct_logbase,
+et_ct_orientation,
+et_ct_axpos,
+et_ct_chartlines,
+et_ct_title,
+et_ct_tx,
+et_ct_strref,
+et_ct_strdata,
+et_ct_strval,
+et_ct_numfmt,
+et_ct_tickmark,
+et_ct_ticklblpos,
+et_ct_crosses,
+et_ct_skip,
+et_ct_timeunit,
+et_ct_dateax,
+et_ct_lbloffset,
+et_ct_axisunit,
+et_ct_lblalgn,
+et_ct_catax,
+et_ct_dispunitslbl,
+et_ct_builtinunit,
+et_ct_dispunits,
+et_ct_crossbetween,
+et_ct_valax,
+et_ct_sizerepresents,
+et_ct_bubblescale,
+et_ct_bubbleser,
+et_ct_sertx,
+et_ct_dpt,
+et_ct_marker,
+et_ct_markerstyle,
+et_ct_markersize,
+et_ct_pictureoptions,
+et_ct_pictureformat,
+et_ct_picturestackunit,
+et_ct_dlbls,
+et_ct_dlbl,
+et_ct_dlblpos,
+et_ct_trendline,
+et_ct_trendlinetype,
+et_ct_order,
+et_ct_period,
+et_ct_trendlinelbl,
+et_ct_errbars,
+et_ct_errdir,
+et_ct_errbartype,
+et_ct_errvaltype,
+et_ct_numdatasource,
+et_ct_numdata,
+et_ct_numval,
+et_ct_numref,
+et_ct_axdatasource,
+et_ct_multilvlstrref,
+et_ct_multilvlstrdata,
+et_ct_bubblechart,
+et_ct_surface3dchart,
+et_ct_surfaceser,
+et_ct_bandfmt,
+et_ct_surfacechart,
+et_ct_secondpiesize,
+et_ct_splittype,
+et_ct_ofpietype,
+et_ct_ofpiechart,
+et_ct_pieser,
+et_ct_gapamount,
+et_ct_bar3dchart,
+et_ct_bardir,
+et_ct_bargrouping,
+et_ct_barser,
+et_ct_shape,
+et_ct_overlap,
+et_ct_barchart,
+et_ct_holesize,
+et_ct_doughnutchart,
+et_ct_firstsliceang,
+et_ct_pie3dchart,
+et_ct_piechart,
+et_ct_scatterser,
+et_ct_scatterstyle,
+et_ct_scatterchart,
+et_ct_radarser,
+et_ct_radarstyle,
+et_ct_radarchart,
+et_ct_stockchart,
+et_ct_lineser,
+et_ct_updownbars,
+et_ct_updownbar,
+et_ct_line3dchart,
+et_ct_grouping,
+et_ct_linechart,
+et_ct_area3dchart,
+et_ct_areaser,
+et_ct_areachart,
+et_ct_plotarea,
+et_ct_thickness,
+et_ct_surface,
+et_ct_perspective,
+et_ct_depthpercent,
+et_ct_roty,
+et_ct_hpercent,
+et_ct_rotx,
+et_ct_view3d,
+et_ct_pivotfmt,
+et_ct_chart,
+et_ct_protection,
+et_ct_pivotsource,
+et_ct_style1,
+et_ct_style,
+et_ct_textlanguageid,
+et_alternatecontent,
+et_alternatecontentchoice,
+et_alternatecontentfallback,
 
 		et_BookViews, // <bookViews>
 		et_WorkbookPr,
@@ -723,7 +303,7 @@ namespace Spreadsheet
 		WritingElement(){}
 		virtual ~WritingElement() {}
 
-		virtual void			toXML(CStringWriter& writer) const	= 0;
+		virtual void			toXML(XmlUtils::CStringWriter& writer) const	= 0;
         virtual CString			toXML() const									= 0;
 		virtual EElementType	getType() const
 		{

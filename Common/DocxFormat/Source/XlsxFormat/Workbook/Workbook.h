@@ -82,8 +82,8 @@ namespace OOX
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-				CStringWriter sXml;
-				sXml.WriteStringC(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">"));
+				XmlUtils::CStringWriter sXml;
+				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">"));
 
 				if(m_oWorkbookPr.IsInit())
 					m_oWorkbookPr->toXML(sXml);
@@ -94,10 +94,10 @@ namespace OOX
 				if(m_oDefinedNames.IsInit())
 					m_oDefinedNames->toXML(sXml);
 
-				sXml.WriteStringC(_T("<calcPr calcId=\"145621\"/>"));
-				sXml.WriteStringC(_T("</workbook>"));
+				sXml.WriteString(_T("<calcPr calcId=\"145621\"/>"));
+				sXml.WriteString(_T("</workbook>"));
 
-				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetCString() );
+				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetData() );
 
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write( oPath, oDirectory, oContent );

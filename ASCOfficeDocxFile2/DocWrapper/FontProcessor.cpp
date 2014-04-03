@@ -2,7 +2,6 @@
 #include "FontProcessor.h"
 
 #include "../../Common/ASCUtils.h"
-#include "Foreign/StringWriter.h"
 
 using SimpleTypes::EPitch;
 
@@ -90,7 +89,7 @@ namespace DocWrapper {
 #endif
 	}
 	void FontProcessor::addToFontMap(OOX::CFont& font) {
-		CStringWriter parw;
+		XmlUtils::CStringWriter parw;
 		parw.WriteString(CString(_T("<FontProperties>")));
 		if(font.m_oCharset.IsInit())
 		{

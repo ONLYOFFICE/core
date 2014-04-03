@@ -22,26 +22,26 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<t"));
+				writer.WriteString(_T("<t"));
 				if(-1 != m_sText.Find(' ') || -1 != m_sText.Find('\n'))
-					writer.WriteStringC(_T(" xml:space=\"preserve\""));
-				writer.WriteStringC(_T(">"));
-				writer.WriteStringC(XmlUtils::EncodeXmlString(m_sText));
-				writer.WriteStringC(_T("</t>"));
+					writer.WriteString(_T(" xml:space=\"preserve\""));
+				writer.WriteString(_T(">"));
+				writer.WriteString(XmlUtils::EncodeXmlString(m_sText));
+				writer.WriteString(_T("</t>"));
 			}
-			virtual void toXML2(CStringWriter& writer, CString name) const
+			virtual void toXML2(XmlUtils::CStringWriter& writer, CString name) const
 			{
-				writer.WriteStringC(_T("<"));
-				writer.WriteStringC(name);
+				writer.WriteString(_T("<"));
+				writer.WriteString(name);
 				if(-1 != m_sText.Find(' ') || -1 != m_sText.Find('\n'))
-					writer.WriteStringC(_T(" xml:space=\"preserve\""));
-				writer.WriteStringC(_T(">"));
-				writer.WriteStringC(XmlUtils::EncodeXmlString(m_sText));
-				writer.WriteStringC(_T("</"));
-				writer.WriteStringC(name);
-				writer.WriteStringC(_T(">"));
+					writer.WriteString(_T(" xml:space=\"preserve\""));
+				writer.WriteString(_T(">"));
+				writer.WriteString(XmlUtils::EncodeXmlString(m_sText));
+				writer.WriteString(_T("</"));
+				writer.WriteString(name);
+				writer.WriteString(_T(">"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

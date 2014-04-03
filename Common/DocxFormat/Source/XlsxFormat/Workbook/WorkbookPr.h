@@ -27,25 +27,25 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<workbookPr"));
+				writer.WriteString(_T("<workbookPr"));
 				if(m_oDefaultThemeVersion.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" defaultThemeVersion=\"%d\""), m_oDefaultThemeVersion->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oDate1904.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" date1904=\"%s\""), m_oDate1904->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oDateCompatibility.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" dateCompatibility=\"%s\""), m_oDateCompatibility->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T("/>"));
+				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

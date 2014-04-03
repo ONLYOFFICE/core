@@ -348,7 +348,7 @@ public:
 					pDrawingConverter->SetAdditionalParam(L"SourceFileDir", var);
 					RELEASESYSSTRING(var.bstrVal);
 
-					BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter);
+					BinDocxRW::BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter);
 					oBinaryFileReader.ReadFile();
 
 					if(NULL != pDrawingConverter)
@@ -397,8 +397,8 @@ public:
 		long nLength = oBufferedStream.ReadLong();
 
 		Writers::ContentWriter oTempContentWriter;
-		Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter, NULL);
-		int res = oBinary_DocumentTableReader.Read1(nLength, &Binary_DocumentTableReader::ReadDocumentContent, &oBinary_DocumentTableReader, NULL);
+		BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter, NULL);
+		int res = oBinary_DocumentTableReader.Read1(nLength, &BinDocxRW::Binary_DocumentTableReader::ReadDocumentContent, &oBinary_DocumentTableReader, NULL);
 
 		(*bsXml) = oTempContentWriter.m_oContent.GetData().AllocSysString();
 

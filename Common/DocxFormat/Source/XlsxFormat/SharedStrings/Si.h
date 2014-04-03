@@ -29,14 +29,14 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<si>"));
+				writer.WriteString(_T("<si>"));
 				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
-				writer.WriteStringC(_T("</si>"));
+				writer.WriteString(_T("</si>"));
 			}
-			virtual void toXML2(CStringWriter& writer) const
+			virtual void toXML2(XmlUtils::CStringWriter& writer) const
 			{
 				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);

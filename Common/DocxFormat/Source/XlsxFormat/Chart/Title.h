@@ -20,14 +20,14 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<a:t"));
+				writer.WriteString(_T("<a:t"));
 				if(-1 != m_sText.Find(' ') || -1 != m_sText.Find('\n'))
-					writer.WriteStringC(_T(" xml:space=\"preserve\""));
-				writer.WriteStringC(_T(">"));
-				writer.WriteStringC(XmlUtils::EncodeXmlString(m_sText));
-				writer.WriteStringC(_T("</a:t>"));
+					writer.WriteString(_T(" xml:space=\"preserve\""));
+				writer.WriteString(_T(">"));
+				writer.WriteString(XmlUtils::EncodeXmlString(m_sText));
+				writer.WriteString(_T("</a:t>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -98,7 +98,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -142,7 +142,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -183,10 +183,10 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oXml.IsInit())
-					writer.WriteStringC(m_oXml.get());
+					writer.WriteString(m_oXml.get());
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -219,12 +219,12 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<c:tx>"));
+				writer.WriteString(_T("<c:tx>"));
 				if(m_oRich.IsInit())
 					m_oRich->toXML(writer);
-				writer.WriteStringC(_T("</c:tx>"));
+				writer.WriteString(_T("</c:tx>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -271,15 +271,15 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<c:title>"));
+				writer.WriteString(_T("<c:title>"));
 				if(m_oTx.IsInit())
 					m_oTx->toXML(writer);
-				writer.WriteStringC(_T("<c:layout/><c:overlay val=\"0\"/>"));
+				writer.WriteString(_T("<c:layout/><c:overlay val=\"0\"/>"));
 				if(m_oTxPr.IsInit())
 					m_oTxPr->toXML(writer);
-				writer.WriteStringC(_T("</c:title>"));
+				writer.WriteString(_T("</c:title>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

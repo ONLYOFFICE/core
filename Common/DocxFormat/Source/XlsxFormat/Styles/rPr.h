@@ -37,7 +37,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -68,7 +68,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -339,24 +339,24 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				// גûחמגול ןמ default
 				toXML2(writer, _T("color"));
 			}
-			void toXML2(CStringWriter& writer, CString sName) const
+			void toXML2(XmlUtils::CStringWriter& writer, CString sName) const
 			{
-				writer.WriteStringC(_T("<"));
-				writer.WriteStringC(sName);
+				writer.WriteString(_T("<"));
+				writer.WriteString(sName);
 				if(m_oAuto.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" auto=\"%s\""), m_oAuto->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oIndexed.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" indexed=\"%d\""), m_oIndexed->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oRgb.IsInit())
 				{
@@ -364,26 +364,26 @@ namespace OOX
 					if(-1 == nIndex)
 					{
 						CString sVal;sVal.Format(_T(" rgb=\"%s\""), m_oRgb->ToString());
-						writer.WriteStringC(sVal);
+						writer.WriteString(sVal);
 					}
 					else
 					{
 						CString sVal;sVal.Format(_T(" indexed=\"%d\""), nIndex);
-						writer.WriteStringC(sVal);
+						writer.WriteString(sVal);
 					}
 				}
 				if(m_oThemeColor.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" theme=\"%d\""), m_oThemeColor->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oTint.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" tint=\"%s\""), SpreadsheetCommon::WriteDouble(m_oTint->GetValue()));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 
-				writer.WriteStringC(_T("/>"));
+				writer.WriteString(_T("/>"));
 			}
 			virtual void    fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -434,7 +434,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -636,84 +636,84 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<rPr>"));
+				writer.WriteString(_T("<rPr>"));
 				if(m_oBold.IsInit())
 				{
 					if(SimpleTypes::onoffTrue == m_oBold->m_oVal.GetValue())
-						writer.WriteStringC(_T("<b/>"));
+						writer.WriteString(_T("<b/>"));
 					else
-						writer.WriteStringC(_T("<b val=\"false\"/>"));
+						writer.WriteString(_T("<b val=\"false\"/>"));
 				}
 				if(m_oCharset.IsInit() && m_oCharset->m_oCharset.IsInit())
 				{
 					CString sVal;sVal.Format(_T("<charset val=\"%s\"/>"), m_oCharset->m_oCharset->ToString());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oColor.IsInit())
 					m_oColor->toXML2(writer, _T("color"));
 				if(m_oCondense.IsInit())
 				{
 					if(SimpleTypes::onoffTrue == m_oCondense->m_oVal.GetValue())
-						writer.WriteStringC(_T("<condense/>"));
+						writer.WriteString(_T("<condense/>"));
 					else
-						writer.WriteStringC(_T("<condense val=\"false\"/>"));
+						writer.WriteString(_T("<condense val=\"false\"/>"));
 				}
 				if(m_oExtend.IsInit())
 				{
 					if(SimpleTypes::onoffTrue == m_oExtend->m_oVal.GetValue())
-						writer.WriteStringC(_T("<extend/>"));
+						writer.WriteString(_T("<extend/>"));
 					else
-						writer.WriteStringC(_T("<extend val=\"false\"/>"));
+						writer.WriteString(_T("<extend val=\"false\"/>"));
 				}
 				if(m_oFamily.IsInit() && m_oFamily->m_oFontFamily.IsInit())
 				{
 					CString sVal;sVal.Format(_T("<family val=\"%s\"/>"), m_oFamily->m_oFontFamily->ToString());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oItalic.IsInit())
 				{
 					if(SimpleTypes::onoffTrue == m_oItalic->m_oVal.GetValue())
-						writer.WriteStringC(_T("<i/>"));
+						writer.WriteString(_T("<i/>"));
 					else
-						writer.WriteStringC(_T("<i val=\"false\"/>"));
+						writer.WriteString(_T("<i val=\"false\"/>"));
 				}
 				if(m_oOutline.IsInit())
 				{
 					if(SimpleTypes::onoffTrue == m_oOutline->m_oVal.GetValue())
-						writer.WriteStringC(_T("<outline/>"));
+						writer.WriteString(_T("<outline/>"));
 					else
-						writer.WriteStringC(_T("<outline val=\"false\"/>"));
+						writer.WriteString(_T("<outline val=\"false\"/>"));
 				}
 				if(m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
 				{
 					CString sVal;sVal.Format(_T("<rFont val=\"%s\"/>"), XmlUtils::EncodeXmlString(m_oRFont->m_sVal.get()));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oScheme.IsInit() && m_oScheme->m_oFontScheme.IsInit())
 				{
 					CString sVal;sVal.Format(_T("<scheme val=\"%s\"/>"), m_oScheme->m_oFontScheme->ToString());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oShadow.IsInit())
 				{
 					if(SimpleTypes::onoffTrue == m_oShadow->m_oVal.GetValue())
-						writer.WriteStringC(_T("<shadow/>"));
+						writer.WriteString(_T("<shadow/>"));
 					else
-						writer.WriteStringC(_T("<shadow val=\"false\"/>"));
+						writer.WriteString(_T("<shadow val=\"false\"/>"));
 				}
 				if(m_oStrike.IsInit())
 				{
 					if(SimpleTypes::onoffTrue == m_oStrike->m_oVal.GetValue())
-						writer.WriteStringC(_T("<strike/>"));
+						writer.WriteString(_T("<strike/>"));
 					else
-						writer.WriteStringC(_T("<strike val=\"false\"/>"));
+						writer.WriteString(_T("<strike val=\"false\"/>"));
 				}
 				if(m_oSz.IsInit() && m_oSz->m_oVal.IsInit())
 				{
 					CString sVal;sVal.Format(_T("<sz val=\"%s\"/>"), SpreadsheetCommon::WriteDouble(m_oSz->m_oVal->GetValue()));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oUnderline.IsInit() && m_oUnderline->m_oUnderline.IsInit())
 				{
@@ -722,14 +722,14 @@ namespace OOX
 						sVal.Format(_T("<u val=\"%s\"/>"), m_oUnderline->m_oUnderline->ToString());
 					else
 						sVal.Format(_T("<u/>"), m_oUnderline->m_oUnderline->ToString());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.IsInit())
 				{
 					CString sVal;sVal.Format(_T("<vertAlign val=\"%s\"/>"), m_oVertAlign->m_oVerticalAlign->ToString());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T("</rPr>"));
+				writer.WriteString(_T("</rPr>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

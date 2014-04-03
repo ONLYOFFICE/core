@@ -150,7 +150,7 @@ public:
 		*ppBinary = NULL;
 		CString sChartPath(bsFilename);
 		OOX::Spreadsheet::CChartSpace oChart(sChartPath);
-		if(oChart.m_oChart.IsInit() && oChart.m_oChart->isValid() && NULL != m_pExternalDrawingConverter)
+		if(NULL != m_pExternalDrawingConverter)
 		{
 			long nGrowSize = 1 * 1024 * 1024;//1ьс
 			Streams::CBuffer oBuffer;
@@ -164,7 +164,7 @@ public:
 			SysFreeString(bstrChartPath);
 
 			BinXlsxRW::BinaryChartWriter oBinaryChartWriter(oBufferedStream, m_pExternalDrawingConverter);	
-			oBinaryChartWriter.Write(oChart);
+			oBinaryChartWriter.WriteCT_ChartSpace(oChart.m_oChartSpace);
 
 			ULONG lBinarySize = oBufferedStream.GetPosition();
 			SAFEARRAY* pArray = SafeArrayCreateVector(VT_UI1, lBinarySize);
@@ -192,9 +192,8 @@ public:
 			m_pExternalDrawingConverter->SetDstContentRels();
 
 			OOX::Spreadsheet::CChartSpace oChartSpace;
-			oChartSpace.m_oChart.Init();
 			BinXlsxRW::BinaryChartReader oBinaryChartReader(oBufferedStream, pBinaryObj, m_pExternalDrawingConverter);
-			oBinaryChartReader.ReadChartOut(lLength, &oChartSpace);
+			oBinaryChartReader.ReadCT_ChartSpace(lLength, &oChartSpace.m_oChartSpace);
 
 			if(oChartSpace.isValid())
 			{

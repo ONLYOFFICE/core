@@ -27,12 +27,12 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oId.IsInit())
 				{
 					CString sVal;sVal.Format(_T("<drawing r:id=\"%s\"/>"), m_oId->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				
 			}
@@ -128,13 +128,13 @@ namespace OOX
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-				CStringWriter sXml;
-				sXml.WriteStringC(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><xdr:wsDr xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">"));
+				XmlUtils::CStringWriter sXml;
+				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><xdr:wsDr xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">"));
 				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 					m_arrItems[i]->toXML(sXml);
-				sXml.WriteStringC(_T("</xdr:wsDr>"));				
+				sXml.WriteString(_T("</xdr:wsDr>"));				
 
-				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetCString() );
+				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetData() );
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write(oPath, oDirectory, oContent);
 			}

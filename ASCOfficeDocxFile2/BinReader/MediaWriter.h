@@ -5,7 +5,7 @@ namespace Writers
 {
 	class MediaWriter
 	{
-		CStringWriter	m_oWriter;
+		XmlUtils::CStringWriter	m_oWriter;
 		CString	m_sDir;
 		CString	m_sMediaDir;
 	public:

@@ -26,72 +26,72 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<f"));
+				writer.WriteString(_T("<f"));
 				if(m_oAca.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" aca=\"%s\""), m_oAca->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oBx.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" bx=\"%s\""), m_oBx->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oCa.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" ca=\"%s\""), m_oCa->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oDel1.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" del1=\"%s\""), m_oDel1->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oDel2.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" del2=\"%s\""), m_oDel2->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oDt2D.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" dt2D=\"%s\""), m_oDt2D->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oDtr.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" dtr=\"%s\""), m_oDtr->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oR1.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" r1=\"%s\""), m_oR1.get());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oR2.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" r2=\"%s\""), m_oR2.get());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oRef.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" ref=\"%s\""), m_oRef.get());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oSi.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" si=\"%d\""), m_oSi->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oT.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" t=\"%s\""), m_oT->ToString());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T(">"));
-				writer.WriteStringC(XmlUtils::EncodeXmlString(m_sText));
-				writer.WriteStringC(_T("</f>"));
+				writer.WriteString(_T(">"));
+				writer.WriteString(XmlUtils::EncodeXmlString(m_sText));
+				writer.WriteString(_T("</f>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -164,52 +164,52 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<c"));
+				writer.WriteString(_T("<c"));
 				if(m_oCellMetadata.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" cm=\"%d\""), m_oCellMetadata->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oShowPhonetic.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" ph=\"%s\""), m_oShowPhonetic->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oRef.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" r=\"%s\""), m_oRef.get());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oStyle.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" s=\"%d\""), m_oStyle->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeNumber != m_oType->GetValue())
 				{
 					CString sVal; sVal.Format(_T(" t=\"%s\""), m_oType->ToString());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oValueMetadata.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" vm=\"%d\""), m_oValueMetadata->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oFormula.IsInit() || m_oRichText.IsInit() || m_oValue.IsInit())
 				{
-					writer.WriteStringC(_T(">"));
+					writer.WriteString(_T(">"));
 					if(m_oFormula.IsInit())
 						m_oFormula->toXML(writer);
 					if(m_oRichText.IsInit())
 						m_oRichText->toXML2(writer);
 					if(m_oValue.IsInit())
 						m_oValue->toXML2(writer, _T("v"));
-					writer.WriteStringC(_T("</c>"));
+					writer.WriteString(_T("</c>"));
 				}
 				else
-					writer.WriteStringC(_T("/>"));
+					writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -285,69 +285,69 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<row"));
+				writer.WriteString(_T("<row"));
 				if(m_oCollapsed.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" collapsed=\"%s\""), m_oCollapsed->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oCustomFormat.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" customFormat=\"%s\""), m_oCustomFormat->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oHt.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" ht=\"%s\""), SpreadsheetCommon::WriteDouble(m_oHt->GetValue()));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oCustomHeight.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" customHeight=\"%s\""), m_oCustomHeight->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oHidden.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" hidden=\"%s\""), m_oHidden->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 
 				if(m_oOutlineLevel.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" outlineLevel=\"%d\""), m_oOutlineLevel->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oPh.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" ph=\"%s\""), m_oPh->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oR.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" r=\"%d\""), m_oR->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oS.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" s=\"%d\""), m_oS->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oThickBot.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" thickBot=\"%s\""), m_oThickBot->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oThickTop.IsInit())
 				{
 					CString sVal; sVal.Format(_T(" thickTop=\"%s\""), m_oThickTop->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T(">"));
+				writer.WriteString(_T(">"));
 				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
-				writer.WriteStringC(_T("</row>"));
+				writer.WriteString(_T("</row>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -424,12 +424,12 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<sheetData>"));
+				writer.WriteString(_T("<sheetData>"));
 				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
-				writer.WriteStringC(_T("</sheetData>"));
+				writer.WriteString(_T("</sheetData>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

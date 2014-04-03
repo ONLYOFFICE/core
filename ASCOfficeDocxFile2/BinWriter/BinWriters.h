@@ -4412,12 +4412,9 @@ namespace BinDocxRW
 						if (pFile.IsInit() && OOX::FileTypes::Chart == pFile->type())
 						{
 							OOX::Spreadsheet::CChartSpace* pChartFile = static_cast<OOX::Spreadsheet::CChartSpace*>(pFile.operator ->());
-							if(pChartFile->m_oChart.IsInit() && pChartFile->m_oChart->isValid())
-							{
-								int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
-								WriteDrawing(*pChartDrawing, NULL, pChartFile);
-								m_oBcw.WriteItemEnd(nCurPos);
-							}
+							int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
+							WriteDrawing(*pChartDrawing, NULL, pChartFile);
+							m_oBcw.WriteItemEnd(nCurPos);
 						}
 					}
 				}
@@ -4478,12 +4475,12 @@ namespace BinDocxRW
 					//chart
 					if(NULL != pChart)
 					{
-						m_oBcw.m_oStream.WriteByte(c_oSerImageType2::Chart);
+						m_oBcw.m_oStream.WriteByte(c_oSerImageType2::Chart2);
 						m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Variable);
 
-						BinXlsxRW::BinaryChartWriter oBinaryChartWriter(m_oBcw.m_oStream, m_pOfficeDrawingConverter);	
 						int nCurPos = m_oBcw.WriteItemWithLengthStart();
-						oBinaryChartWriter.Write(*pChart);
+						BinXlsxRW::BinaryChartWriter oBinaryChartWriter(m_oBcw.m_oStream, m_pOfficeDrawingConverter);	
+						oBinaryChartWriter.WriteCT_ChartSpace(pChart->m_oChartSpace);
 						m_oBcw.WriteItemWithLengthEnd(nCurPos);
 					}
 				}
@@ -4649,12 +4646,12 @@ namespace BinDocxRW
 				//chart
 				if(NULL != pChart)
 				{
-					m_oBcw.m_oStream.WriteByte(c_oSerImageType2::Chart);
+					m_oBcw.m_oStream.WriteByte(c_oSerImageType2::Chart2);
 					m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Variable);
 
-					BinXlsxRW::BinaryChartWriter oBinaryChartWriter(m_oBcw.m_oStream, m_pOfficeDrawingConverter);	
 					int nCurPos = m_oBcw.WriteItemWithLengthStart();
-					oBinaryChartWriter.Write(*pChart);
+					BinXlsxRW::BinaryChartWriter oBinaryChartWriter(m_oBcw.m_oStream, m_pOfficeDrawingConverter);	
+					oBinaryChartWriter.WriteCT_ChartSpace(pChart->m_oChartSpace);
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
 			}

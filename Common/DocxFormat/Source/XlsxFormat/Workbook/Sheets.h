@@ -27,30 +27,30 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<sheet"));
+				writer.WriteString(_T("<sheet"));
 				if(m_oName.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" name=\"%s\""), XmlUtils::EncodeXmlString(m_oName.get()));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oSheetId.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" sheetId=\"%d\""), m_oSheetId->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oState.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" state=\"%s\""), m_oState->ToString());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oRid.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" r:id=\"%s\""), m_oRid->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T("/>"));
+				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -104,12 +104,12 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<sheets>"));
+				writer.WriteString(_T("<sheets>"));
 				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
-				writer.WriteStringC(_T("</sheets>"));
+				writer.WriteString(_T("</sheets>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

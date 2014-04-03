@@ -26,25 +26,25 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<cellStyle"));
+				writer.WriteString(_T("<cellStyle"));
 				if(m_oName.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" name=\"%s\""), XmlUtils::EncodeXmlString(m_oName.get()));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oXfId.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" xfId=\"%d\""), m_oXfId->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oBuiltinId.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" builtinId=\"%d\""), m_oBuiltinId->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T("/>"));
+				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -99,18 +99,18 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<cellStyles"));
+				writer.WriteString(_T("<cellStyles"));
 				if(m_oCount.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T(">"));
+				writer.WriteString(_T(">"));
 				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
-				writer.WriteStringC(_T("</cellStyles>"));
+				writer.WriteString(_T("</cellStyles>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

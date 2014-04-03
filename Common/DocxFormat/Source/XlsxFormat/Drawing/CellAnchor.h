@@ -29,7 +29,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(isValid())
 				{
@@ -39,7 +39,7 @@ namespace OOX
 					{
 						sStart.Format(_T("<xdr:twoCellAnchor editAs=\"%s\">"), m_oAnchorType.ToString());
 						sEnd = _T("</xdr:twoCellAnchor>");
-						writer.WriteStringC(sStart);
+						writer.WriteString(sStart);
 						if(m_oFrom.IsInit())
 							m_oFrom->toXML2(writer, _T("xdr:from"));
 						if(m_oTo.IsInit())
@@ -49,7 +49,7 @@ namespace OOX
 					{
 						sStart.Append(_T("<xdr:oneCellAnchor>"));
 						sEnd = _T("</xdr:oneCellAnchor>");
-						writer.WriteStringC(sStart);
+						writer.WriteString(sStart);
 						if(m_oFrom.IsInit())
 							m_oFrom->toXML2(writer, _T("xdr:from"));
 						if(m_oExt.IsInit())
@@ -59,7 +59,7 @@ namespace OOX
 					{
 						sStart.Append(_T("<xdr:absoluteAnchor>"));
 						sEnd = _T("</xdr:absoluteAnchor>");
-						writer.WriteStringC(sStart);
+						writer.WriteString(sStart);
 						if(m_oPos.IsInit())
 						m_oPos->toXML(writer);
 						if(m_oExt.IsInit())
@@ -68,10 +68,10 @@ namespace OOX
 					else
 						return;
 					if(m_oXml.IsInit())
-						writer.WriteStringC(m_oXml.get());	
+						writer.WriteString(m_oXml.get());	
 					if(m_oGraphicFrame.IsInit())
 						m_oGraphicFrame->toXML(writer);
-					writer.WriteStringC(sEnd);	
+					writer.WriteString(sEnd);	
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)

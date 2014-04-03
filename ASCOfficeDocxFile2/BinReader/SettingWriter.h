@@ -10,7 +10,7 @@ namespace Writers
 	class SettingWriter
 	{
 		CString m_sDir;
-		CStringWriter	m_oSettingWriter;
+		XmlUtils::CStringWriter	m_oSettingWriter;
 		HeaderFooterWriter& m_oHeaderFooterWriter;
 	public:
 		SettingWriter(CString sDir, HeaderFooterWriter& oHeaderFooterWriter):m_sDir(sDir),m_oHeaderFooterWriter(oHeaderFooterWriter)

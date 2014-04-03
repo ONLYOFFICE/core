@@ -9,12 +9,12 @@ namespace Writers
 
 	class NumberingWriter
 	{
-		CStringWriter	m_oWriter;
+		XmlUtils::CStringWriter	m_oWriter;
 		CString	m_sDir;
 		ContentTypesWriter& m_oContentTypesWriter;
 	public:
-		CStringWriter	m_oANum;
-		CStringWriter	m_oNumList;
+		XmlUtils::CStringWriter	m_oANum;
+		XmlUtils::CStringWriter	m_oNumList;
 	public:
 		NumberingWriter(CString sDir, ContentTypesWriter& oContentTypesWriter):m_sDir(sDir),m_oContentTypesWriter(oContentTypesWriter)
 		{

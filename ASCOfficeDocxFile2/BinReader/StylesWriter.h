@@ -13,12 +13,12 @@ namespace Writers
 
 	class StylesWriter
 	{
-		CStringWriter	m_oWriter;
+		XmlUtils::CStringWriter	m_oWriter;
 		CString	m_sDir;
 	public:
-		CStringWriter	m_Styles;
-		CStringWriter	m_rPrDefault;
-		CStringWriter	m_pPrDefault;
+		XmlUtils::CStringWriter	m_Styles;
+		XmlUtils::CStringWriter	m_rPrDefault;
+		XmlUtils::CStringWriter	m_pPrDefault;
 		int m_nVersion;
 		StylesWriter(CString sDir, int nVersion):m_sDir(sDir),m_nVersion(nVersion)
 		{

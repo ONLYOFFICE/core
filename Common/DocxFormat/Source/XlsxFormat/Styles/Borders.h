@@ -26,24 +26,24 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
-			void toXML2(CStringWriter& writer, CString sName) const
+			void toXML2(XmlUtils::CStringWriter& writer, CString sName) const
 			{
-				writer.WriteStringC(_T("<"));
-				writer.WriteStringC(sName);
+				writer.WriteString(_T("<"));
+				writer.WriteString(sName);
 				if(m_oStyle.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" style=\"%s\""), m_oStyle->ToString());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T(">"));
+				writer.WriteString(_T(">"));
 				if(m_oColor.IsInit())
 					m_oColor->toXML2(writer, _T("color"));
-				writer.WriteStringC(_T("</"));
-				writer.WriteStringC(sName);
-				writer.WriteStringC(_T(">"));
+				writer.WriteString(_T("</"));
+				writer.WriteString(sName);
+				writer.WriteString(_T(">"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -102,45 +102,45 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<border"));
+				writer.WriteString(_T("<border"));
 				if(m_oDiagonalDown.IsInit() && SimpleTypes::onoffTrue == m_oDiagonalDown->GetValue())
 				{
 					CString sVal;sVal.Format(_T(" diagonalDown=\"%s\""), m_oDiagonalDown->ToString2( SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oDiagonalUp.IsInit() && SimpleTypes::onoffTrue == m_oDiagonalUp->GetValue())
 				{
 					CString sVal;sVal.Format(_T(" diagonalUp=\"%s\""), m_oDiagonalUp->ToString2( SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T(">"));
+				writer.WriteString(_T(">"));
 				if(m_oStart.IsInit() && false == m_oStart->IsEmpty())
 					m_oStart->toXML2(writer, _T("left"));
 				else
-					writer.WriteStringC(_T("<left/>"));
+					writer.WriteString(_T("<left/>"));
 				if(m_oEnd.IsInit() && false == m_oEnd->IsEmpty())
 					m_oEnd->toXML2(writer, _T("right"));
 				else
-					writer.WriteStringC(_T("<right/>"));
+					writer.WriteString(_T("<right/>"));
 				if(m_oTop.IsInit() && false == m_oTop->IsEmpty())
 					m_oTop->toXML2(writer, _T("top"));
 				else
-					writer.WriteStringC(_T("<top/>"));
+					writer.WriteString(_T("<top/>"));
 				if(m_oBottom.IsInit() && false == m_oBottom->IsEmpty())
 					m_oBottom->toXML2(writer, _T("bottom"));
 				else
-					writer.WriteStringC(_T("<bottom/>"));
+					writer.WriteString(_T("<bottom/>"));
 				if(m_oDiagonal.IsInit() && false == m_oDiagonal->IsEmpty())
 					m_oDiagonal->toXML2(writer, _T("diagonal"));
 				else
-					writer.WriteStringC(_T("<diagonal/>"));
+					writer.WriteString(_T("<diagonal/>"));
 				if(m_oHorizontal.IsInit() && false == m_oHorizontal->IsEmpty())
 					m_oHorizontal->toXML2(writer, _T("horizontal"));
 				if(m_oVertical.IsInit() && false == m_oVertical->IsEmpty())
 					m_oVertical->toXML2(writer, _T("vertical"));
-				writer.WriteStringC(_T("</border>"));
+				writer.WriteString(_T("</border>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -218,18 +218,18 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<borders"));
+				writer.WriteString(_T("<borders"));
 				if(m_oCount.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T(">"));
+				writer.WriteString(_T(">"));
 				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
-				writer.WriteStringC(_T("</borders>"));
+				writer.WriteString(_T("</borders>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

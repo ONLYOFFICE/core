@@ -5,7 +5,7 @@ namespace Writers
 {
 	class DocumentWriter : public ContentWriter
 	{
-		CStringWriter	m_oWriter;
+		XmlUtils::CStringWriter	m_oWriter;
 		HeaderFooterWriter& m_oHeaderFooterWriter;
 	public:
 		CString	m_sDir;

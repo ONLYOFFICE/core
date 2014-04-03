@@ -26,7 +26,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oName.IsInit())
 				{
@@ -45,7 +45,7 @@ namespace OOX
 
 					CString sXml;
 					sXml.Format(_T("<tableStyleInfo name=\"%s\" showFirstColumn=\"%d\" showLastColumn=\"%d\" showRowStripes=\"%d\" showColumnStripes=\"%d\"/>"), XmlUtils::EncodeXmlString(m_oName.get()), nShowFirstColumn, nShowLastColumn, nShowRowStripes, nShowColumnStripes);
-					writer.WriteStringC(sXml);
+					writer.WriteString(sXml);
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -98,63 +98,63 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				CString sRoot;
-				writer.WriteStringC(CString(_T("<tableColumn")));
+				writer.WriteString(CString(_T("<tableColumn")));
 				if(m_oId.IsInit())
 				{
 					CString sXml;
 					sXml.Format(_T(" id=\"%d\""), m_oId->GetValue());
-					writer.WriteStringC(sXml);
+					writer.WriteString(sXml);
 				}
 				if(m_oName.IsInit())
 				{
 					CString sXml;
 					sXml.Format(_T(" name=\"%s\""), XmlUtils::EncodeXmlString(m_oName.get()));
-					writer.WriteStringC(sXml);
+					writer.WriteString(sXml);
 				}
 				if(m_oTotalsRowLabel.IsInit())
 				{
 					CString sXml;
 					sXml.Format(_T(" totalsRowLabel=\"%s\""), XmlUtils::EncodeXmlString(m_oTotalsRowLabel.get()));
-					writer.WriteStringC(sXml);
+					writer.WriteString(sXml);
 				}
 				//есть такой баг: при сохранениии "sum" и названия таблицы "Table1" (русский excel), выдается ошибка в формулах
 				if(m_oTotalsRowFunction.IsInit())
 				{
 					CString sXml;
 					sXml.Format(_T(" totalsRowFunction=\"%s\""), m_oTotalsRowFunction->ToString());
-					writer.WriteStringC(sXml);
+					writer.WriteString(sXml);
 				}
 				if(m_oDataDxfId.IsInit())
 				{
 					CString sXml;
 					sXml.Format(_T(" dataDxfId=\"%d\""), m_oDataDxfId->GetValue());
-					writer.WriteStringC(sXml);
+					writer.WriteString(sXml);
 				}
 				if(m_oTotalsRowFormula.IsInit() || m_oCalculatedColumnFormula.IsInit())
 				{
-					writer.WriteStringC(CString(_T(">")));
+					writer.WriteString(CString(_T(">")));
 
 					if(m_oTotalsRowFormula.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T("<totalsRowFormula>%s</totalsRowFormula>"), XmlUtils::EncodeXmlString(m_oTotalsRowFormula.get()));
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
 					if(m_oCalculatedColumnFormula.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T("<calculatedColumnFormula>%s</calculatedColumnFormula>"), XmlUtils::EncodeXmlString(m_oCalculatedColumnFormula.get()));
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
 
-					writer.WriteStringC(CString(_T("</tableColumn>")));
+					writer.WriteString(CString(_T("</tableColumn>")));
 				}
 				else
 				{
-					writer.WriteStringC(CString(_T("/>")));
+					writer.WriteString(CString(_T("/>")));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -220,16 +220,16 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_arrItems.GetSize() > 0)
 				{
 					CString sRoot;
 					sRoot.Format(_T("<tableColumns count=\"%d\">"), m_arrItems.GetSize());
-					writer.WriteStringC(sRoot);
+					writer.WriteString(sRoot);
 					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
-					writer.WriteStringC(CString(_T("</tableColumns>")));
+					writer.WriteString(CString(_T("</tableColumns>")));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -283,23 +283,23 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
-			virtual void toXML2(CStringWriter& writer, int nIndex) const
+			virtual void toXML2(XmlUtils::CStringWriter& writer, int nIndex) const
 			{
 				if(m_oRef.IsInit() && m_oDisplayName.IsInit())
 				{
 					CString sRoot;
 					sRoot.Format(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><table xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" id=\"%d\" name=\"%s\" displayName=\"%s\" ref=\"%s\""), nIndex, m_oDisplayName.get(), m_oDisplayName.get(), m_oRef->GetValue());
-					writer.WriteStringC(sRoot);
+					writer.WriteString(sRoot);
 					if(m_oHeaderRowCount.IsInit() && 0 == m_oHeaderRowCount->GetValue())
-						writer.WriteStringC(CString(_T(" headerRowCount=\"0\"")));
+						writer.WriteString(CString(_T(" headerRowCount=\"0\"")));
 					if(m_oTotalsRowCount.IsInit() && m_oTotalsRowCount->GetValue() > 0)
-						writer.WriteStringC(CString(_T(" totalsRowCount=\"1\"")));
+						writer.WriteString(CString(_T(" totalsRowCount=\"1\"")));
 					else
-						writer.WriteStringC(CString(_T(" totalsRowShown=\"0\"")));
-					writer.WriteStringC(CString(_T(">")));
+						writer.WriteString(CString(_T(" totalsRowShown=\"0\"")));
+					writer.WriteString(CString(_T(">")));
 
 					if(m_oAutoFilter.IsInit())
 						m_oAutoFilter->toXML(writer);
@@ -310,7 +310,7 @@ namespace OOX
 					if(m_oTableStyleInfo.IsInit())
 						m_oTableStyleInfo->toXML(writer);
 
-					writer.WriteStringC(_T("</table>"));
+					writer.WriteString(_T("</table>"));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -381,13 +381,13 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oRId.IsInit())
 				{
 					CString sXml;
 					sXml.Format(_T("<tablePart r:id=\"%s\"/>"), m_oRId->GetValue());
-					writer.WriteStringC(sXml);
+					writer.WriteString(sXml);
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -432,16 +432,16 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_arrItems.GetSize() > 0)
 				{
 					CString sXml;
 					sXml.Format(_T("<tableParts count=\"%d\">"), m_arrItems.GetSize());
-					writer.WriteStringC(sXml);
+					writer.WriteString(sXml);
 					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
-					writer.WriteStringC(CString(_T("</tableParts>")));	
+					writer.WriteString(CString(_T("</tableParts>")));	
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -515,12 +515,12 @@ namespace OOX
 			{
 				if(m_oTable.IsInit())
 				{
-					CStringWriter sXml;
+					XmlUtils::CStringWriter sXml;
 					int nGlobalNumber = OOX::FileGlobalEnumerated::GetGlobalNumber();
 
 					m_oTable->toXML2(sXml, nGlobalNumber);
 
-					CDirectory::SaveToFile( oPath.GetPath(), sXml.GetCString() );
+					CDirectory::SaveToFile( oPath.GetPath(), sXml.GetData() );
 					oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 					IFileContainer::Write( oPath, oDirectory, oContent );
 				}

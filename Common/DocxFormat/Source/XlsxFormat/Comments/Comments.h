@@ -56,15 +56,15 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(CString("<authors>"));
+				writer.WriteString(CString("<authors>"));
 				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 				{
 					CString sAuthor;sAuthor.Format(_T("<author>%s</author>"), XmlUtils::EncodeXmlString(*m_arrItems[i]));
-					writer.WriteStringC(sAuthor);
+					writer.WriteString(sAuthor);
 				}
-				writer.WriteStringC(CString("</authors>"));
+				writer.WriteString(CString("</authors>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -109,27 +109,27 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oRef.IsInit() && m_oAuthorId.IsInit() && m_oText.IsInit())
 				{
-					writer.WriteStringC(CString("<comment"));
+					writer.WriteString(CString("<comment"));
 					if(m_oRef.IsInit())
 					{
 						CString sRef;sRef.Format(_T(" ref=\"%s\""), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
-						writer.WriteStringC(sRef);
+						writer.WriteString(sRef);
 					}
 					if(m_oAuthorId.IsInit())
 					{
 						CString sAuthorId;sAuthorId.Format(_T(" authorId=\"%d\""), m_oAuthorId->GetValue());
-						writer.WriteStringC(sAuthorId);
+						writer.WriteString(sAuthorId);
 					}
-					writer.WriteStringC(CString(">"));
+					writer.WriteString(CString(">"));
 					
-					writer.WriteStringC(CString("<text>"));
+					writer.WriteString(CString("<text>"));
 					m_oText->toXML2(writer);
-					writer.WriteStringC(CString("</text>"));
-					writer.WriteStringC(CString("</comment>"));
+					writer.WriteString(CString("</text>"));
+					writer.WriteString(CString("</comment>"));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -187,14 +187,14 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(CString("<commentList>"));
+				writer.WriteString(CString("<commentList>"));
 				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 				{
 					m_arrItems[i]->toXML(writer);
 				}
-				writer.WriteStringC(CString("</commentList>"));
+				writer.WriteString(CString("</commentList>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -273,15 +273,15 @@ namespace OOX
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-				CStringWriter sXml;
-				sXml.WriteStringC(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><comments xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">"));
+				XmlUtils::CStringWriter sXml;
+				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><comments xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">"));
 				if(m_oAuthors.IsInit())
 					m_oAuthors->toXML(sXml);
 				if(m_oCommentList.IsInit())
 					m_oCommentList->toXML(sXml);
-				sXml.WriteStringC(_T("</comments>"));
+				sXml.WriteString(_T("</comments>"));
 
-				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetCString() );
+				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetData() );
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write(oPath, oDirectory, oContent);
 			}
@@ -326,12 +326,12 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oId.IsInit())
 				{
 					CString sVal;sVal.Format(_T("<legacyDrawing r:id=\"%s\"/>"), m_oId->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				
 			}
@@ -421,8 +421,8 @@ namespace OOX
 			{
 				if(NULL != m_mapComments && m_mapComments->GetCount() > 0)
 				{
-					CStringWriter sXml;
-					sXml.WriteStringC(_T("<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\"><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout><v:shapetype id=\"_x0000_t202\" coordsize=\"21600,21600\" o:spt=\"202\" path=\"m,l,21600r21600,l21600,xe\"><v:stroke joinstyle=\"miter\"/><v:path gradientshapeok=\"t\" o:connecttype=\"rect\"/></v:shapetype>"));
+					XmlUtils::CStringWriter sXml;
+					sXml.WriteString(_T("<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\"><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout><v:shapetype id=\"_x0000_t202\" coordsize=\"21600,21600\" o:spt=\"202\" path=\"m,l,21600r21600,l21600,xe\"><v:stroke joinstyle=\"miter\"/><v:path gradientshapeok=\"t\" o:connecttype=\"rect\"/></v:shapetype>"));
 					int nIndex = 1025;
 					POSITION pos = m_mapComments->GetStartPosition();
 					while ( NULL != pos )
@@ -473,13 +473,13 @@ namespace OOX
 							if(comment->m_sGfxdata.IsInit())
 								sGfxdata.Format(_T("o:gfxdata=\"%s\""), comment->m_sGfxdata.get2());
 							CString sShape;sShape.Format(_T("<v:shape id=\"_x0000_s%d\" type=\"#_x0000_t202\" style='position:absolute;%sz-index:4;visibility:hidden' %s fillcolor=\"#ffffe1\" o:insetmode=\"auto\"><v:fill color2=\"#ffffe1\"/><v:shadow on=\"t\" color=\"black\" obscured=\"t\"/><v:path o:connecttype=\"none\"/><v:textbox style='mso-direction-alt:auto'><div style='text-align:left'></div></v:textbox>%s</v:shape>"), nIndex, sStyle, sGfxdata, sClientData);
-							sXml.WriteStringC(sShape);
+							sXml.WriteString(sShape);
 							nIndex++;
 						}
 					}
-					sXml.WriteStringC(_T("</xml>"));
+					sXml.WriteString(_T("</xml>"));
 
-					CDirectory::SaveToFile( oPath.GetPath(), sXml.GetCString() );
+					CDirectory::SaveToFile( oPath.GetPath(), sXml.GetData() );
 					oContent.AddDefault( oPath.GetFilename() );
 					IFileContainer::Write(oPath, oDirectory, oContent);
 				}

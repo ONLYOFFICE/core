@@ -27,24 +27,24 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if (m_oType.IsInit())
 				{
 					CString sValue;
 					CString sRoot;
 					sRoot.Format(_T("<cfvo type=\"%s\""), m_oType.get());
-					writer.WriteStringC(sRoot);
+					writer.WriteString(sRoot);
 					if (m_oGte.IsInit() && false == m_oGte->ToBool())
-						writer.WriteStringC(_T (" gte=\"0\""));
+						writer.WriteString(_T (" gte=\"0\""));
 					if (m_oVal.IsInit())
 					{
 						sValue.Format(_T(" val=\"%s\""), m_oVal.get());
-						writer.WriteStringC(sValue);
+						writer.WriteString(sValue);
 					}
 					
 
-					writer.WriteStringC(_T("/>"));
+					writer.WriteString(_T("/>"));
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -93,17 +93,17 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if (3 < m_arrItems.GetSize()) // min 2 + 2
 				{
 					CString sValue;
-					writer.WriteStringC(_T("<colorScale>"));
+					writer.WriteString(_T("<colorScale>"));
 
 					for (int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
-					writer.WriteStringC(_T("</colorScale>"));
+					writer.WriteString(_T("</colorScale>"));
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -146,35 +146,35 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if (2 == m_arrItems.GetSize() && m_oColor.IsInit())
 				{
 					CString sValue;
-					writer.WriteStringC(_T("<dataBar"));
+					writer.WriteString(_T("<dataBar"));
 					if (m_oMaxLength.IsInit())
 					{
 						sValue.Format(_T(" maxLength=\"%d\""), m_oMaxLength->GetValue());
-						writer.WriteStringC(sValue);
+						writer.WriteString(sValue);
 					}
 					if (m_oMaxLength.IsInit())
 					{
 						sValue.Format(_T(" maxLength=\"%d\""), m_oMaxLength->GetValue());
-						writer.WriteStringC(sValue);
+						writer.WriteString(sValue);
 					}
 					if (m_oShowValue.IsInit() && false == m_oShowValue->ToBool())
 					{
-						writer.WriteStringC(_T(" showValue=\"0\""));
+						writer.WriteString(_T(" showValue=\"0\""));
 					}
 
-					writer.WriteStringC(_T(">"));
+					writer.WriteString(_T(">"));
 
 					for (int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					m_oColor->toXML2(writer, _T("color"));
 
-					writer.WriteStringC(_T("</dataBar>"));
+					writer.WriteString(_T("</dataBar>"));
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -238,11 +238,11 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<formula>"));
-				writer.WriteStringC(XmlUtils::EncodeXmlString(m_sText));
-				writer.WriteStringC(_T("</formula>"));
+				writer.WriteString(_T("<formula>"));
+				writer.WriteString(XmlUtils::EncodeXmlString(m_sText));
+				writer.WriteString(_T("</formula>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -277,36 +277,36 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if (1 < m_arrItems.GetSize()) // min value = 2
 				{
 					CString sValue;
-					writer.WriteStringC(_T("<iconSet"));
+					writer.WriteString(_T("<iconSet"));
 					if (m_oIconSet.IsInit())
 					{
 						sValue.Format(_T(" iconSet=\"%s\""), m_oIconSet.get());
-						writer.WriteStringC(sValue);
+						writer.WriteString(sValue);
 					}
 					if (m_oPercent.IsInit() && false == m_oPercent->ToBool())
 					{
-						writer.WriteStringC(_T(" percent=\"0\""));
+						writer.WriteString(_T(" percent=\"0\""));
 					}
 					if (m_oReverse.IsInit() && true == m_oReverse->ToBool())
 					{
-						writer.WriteStringC(_T(" reverse=\"1\""));
+						writer.WriteString(_T(" reverse=\"1\""));
 					}
 					if (m_oShowValue.IsInit() && false == m_oShowValue->ToBool())
 					{
-						writer.WriteStringC(_T(" showValue=\"0\""));
+						writer.WriteString(_T(" showValue=\"0\""));
 					}
 
-					writer.WriteStringC(_T(">"));
+					writer.WriteString(_T(">"));
 
 					for (int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
-					writer.WriteStringC(_T("</iconSet>"));
+					writer.WriteString(_T("</iconSet>"));
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -370,61 +370,61 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if (m_oType.IsInit() && m_oPriority.IsInit() && 0 < m_arrItems.GetSize())
 				{
 					CString sValue;
 					CString sRoot;
 					sRoot.Format(_T("<cfRule type=\"%s\" priority=\"%d\""), m_oType.get(), m_oPriority->GetValue());
-					writer.WriteStringC(sRoot);
+					writer.WriteString(sRoot);
 					if (m_oAboveAverage.IsInit() && false == m_oAboveAverage->ToBool())
-						writer.WriteStringC(_T (" aboveAverage=\"0\""));
+						writer.WriteString(_T (" aboveAverage=\"0\""));
 					if (m_oBottom.IsInit() && true == m_oBottom->ToBool())
-						writer.WriteStringC(_T (" bottom=\"1\""));
+						writer.WriteString(_T (" bottom=\"1\""));
 					if (m_oDxfId.IsInit())
 					{
 						sValue.Format(_T(" dxfId=\"%d\""), m_oDxfId->GetValue());
-						writer.WriteStringC(sValue);
+						writer.WriteString(sValue);
 					}
 					if (m_oEqualAverage.IsInit() && true == m_oEqualAverage->ToBool())
-						writer.WriteStringC(_T (" equalAverage=\"1\""));
+						writer.WriteString(_T (" equalAverage=\"1\""));
 					if (m_oOperator.IsInit())
 					{
 						sValue.Format(_T(" text=\"%s\""), m_oOperator.get());
-						writer.WriteStringC(sValue);
+						writer.WriteString(sValue);
 					}
 					if (m_oPercent.IsInit() && true == m_oPercent->ToBool())
-						writer.WriteStringC(_T (" percent=\"1\""));
+						writer.WriteString(_T (" percent=\"1\""));
 					if (m_oRank.IsInit())
 					{
 						sValue.Format(_T(" rank=\"%d\""), m_oRank->GetValue());
-						writer.WriteStringC(sValue);
+						writer.WriteString(sValue);
 					}
 					if (m_oStdDev.IsInit())
 					{
 						sValue.Format(_T(" stdDev=\"%d\""), m_oStdDev->GetValue());
-						writer.WriteStringC(sValue);
+						writer.WriteString(sValue);
 					}
 					if (m_oStopIfTrue.IsInit() && true == m_oStopIfTrue->ToBool())
-						writer.WriteStringC(_T (" stopIfTrue=\"1\""));
+						writer.WriteString(_T (" stopIfTrue=\"1\""));
 					if (m_oText.IsInit())
 					{
 						sValue.Format(_T(" text=\"%s\""), m_oText.get());
-						writer.WriteStringC(sValue);
+						writer.WriteString(sValue);
 					}
 					if (m_oTimePeriod.IsInit())
 					{
 						sValue.Format(_T(" timePeriod=\"%s\""), m_oTimePeriod.get());
-						writer.WriteStringC(sValue);
+						writer.WriteString(sValue);
 					}
 
-					writer.WriteStringC(_T(">"));
+					writer.WriteString(_T(">"));
 
 					for (int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
-					writer.WriteStringC(_T("</cfRule>"));
+					writer.WriteString(_T("</cfRule>"));
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -512,25 +512,25 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if (m_oSqRef.IsInit() && 0 < m_arrItems.GetSize())
 				{
 					CString sRoot;
 					sRoot.Format(_T("<conditionalFormatting sqref=\"%s\""), m_oSqRef->GetValue());
-					writer.WriteStringC(sRoot);
+					writer.WriteString(sRoot);
 
 					if (m_oPivot.IsInit() && true == m_oPivot->ToBool())
 					{
-						writer.WriteStringC(_T (" pivot=\"1\""));
+						writer.WriteString(_T (" pivot=\"1\""));
 					}
 
-					writer.WriteStringC(_T(">"));
+					writer.WriteString(_T(">"));
 
 					for (int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
-					writer.WriteStringC(_T("</conditionalFormatting>"));
+					writer.WriteString(_T("</conditionalFormatting>"));
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)

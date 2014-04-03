@@ -65,26 +65,26 @@ namespace OOX
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-				CStringWriter sXml;
-				sXml.WriteStringC(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><sst xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\""));
+				XmlUtils::CStringWriter sXml;
+				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><sst xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\""));
 				if(m_oCount.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-					sXml.WriteStringC(sVal);
+					sXml.WriteString(sVal);
 				}
 				if(m_oUniqueCount.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" uniqueCount=\"%d\""), m_oUniqueCount->GetValue());
-					sXml.WriteStringC(sVal);
+					sXml.WriteString(sVal);
 				}
-				sXml.WriteStringC(_T(">"));
+				sXml.WriteString(_T(">"));
 
 				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 					m_arrItems[i]->toXML(sXml);
 
-				sXml.WriteStringC(_T("</sst>"));
+				sXml.WriteString(_T("</sst>"));
 
-				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetCString() );
+				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetData() );
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 			}
 			virtual const OOX::FileType type() const

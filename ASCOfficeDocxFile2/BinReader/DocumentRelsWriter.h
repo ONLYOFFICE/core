@@ -5,7 +5,7 @@ namespace Writers
 {
 	class DocumentRelsWriter
 	{
-		CStringWriter m_oWriter;
+		XmlUtils::CStringWriter  m_oWriter;
 		CString	m_sDir;
 		int m_nRid;
 		CAtlArray<CString> m_aRels;

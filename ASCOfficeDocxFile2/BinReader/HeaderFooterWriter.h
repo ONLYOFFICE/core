@@ -6,8 +6,8 @@ namespace Writers
 	class ContentWriter
 	{
 	public:		
-		CStringWriter	m_oContent;
-		CStringWriter	m_oSecPr;
+		XmlUtils::CStringWriter	m_oContent;
+		XmlUtils::CStringWriter	m_oSecPr;
 	};
 	class HdrFtrItem
 	{

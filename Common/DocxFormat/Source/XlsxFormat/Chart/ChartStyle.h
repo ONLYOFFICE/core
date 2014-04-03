@@ -30,9 +30,9 @@ namespace OOX
 				sXml.Format(_T("<mc:AlternateContent xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\"><mc:Choice Requires=\"c14\" xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"><c14:style val=\"%d\"/></mc:Choice><mc:Fallback><c:style val=\"%d\"/></mc:Fallback></mc:AlternateContent>"), 100 + nStyle, nStyle);
 				return sXml;
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(toXML());
+				writer.WriteString(toXML());
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

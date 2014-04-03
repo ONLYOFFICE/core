@@ -26,30 +26,30 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				toXML2(writer, CString(_T("numFmt")));
 			}
-			void toXML2(CStringWriter& writer, CString& sHeader) const
+			void toXML2(XmlUtils::CStringWriter& writer, CString& sHeader) const
 			{
-				writer.WriteStringC(_T("<") + sHeader);
+				writer.WriteString(_T("<") + sHeader);
 				if(m_oNumFmtId.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" numFmtId=\"%d\""), m_oNumFmtId->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oFormatCode.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" formatCode=\"%s\""), XmlUtils::EncodeXmlString(m_oFormatCode.get()));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oSourceLinked.IsInit())
 				{
 					CString sVal;
 					sVal.Format(_T(" sourceLinked=\"%s\""), m_oSourceLinked->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T("/>"));
+				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -97,20 +97,20 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_arrItems.GetSize() > 0 )
 				{
-					writer.WriteStringC(_T("<numFmts"));
+					writer.WriteString(_T("<numFmts"));
 					if(m_oCount.IsInit())
 					{
 						CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-						writer.WriteStringC(sVal);
+						writer.WriteString(sVal);
 					}
-					writer.WriteStringC(_T(">"));
+					writer.WriteString(_T(">"));
 					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
-					writer.WriteStringC(_T("</numFmts>"));
+					writer.WriteString(_T("</numFmts>"));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)

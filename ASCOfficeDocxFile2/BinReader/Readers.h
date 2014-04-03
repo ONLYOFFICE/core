@@ -6,7 +6,7 @@
 #include "../../XlsxSerializerCom/Writer/BinaryReader.h"
 
 
-using namespace BinDocxRW;
+namespace BinDocxRW {
 
 enum ETblStyleOverrideType
 {
@@ -388,7 +388,7 @@ public:
 	int ReadContent( BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CStringWriter* pCStringWriter = static_cast<CStringWriter*>(poResult);
+		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		switch(type)
 		{
 		case c_oSerProp_pPrType::ContextualSpacing:
@@ -402,7 +402,7 @@ public:
 			}
 		case c_oSerProp_pPrType::Ind:
 			{
-				CStringWriter oTempWriter;
+				XmlUtils::CStringWriter oTempWriter;
 				res = Read2(length, &Binary_pPrReader::ReadInd, this, &oTempWriter);
 				if(oTempWriter.GetCurSize() > 0)
 				{
@@ -628,7 +628,7 @@ public:
 	int ReadInd(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CStringWriter* pCStringWriter = static_cast<CStringWriter*>(poResult);
+		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		switch(type)
 		{
 		case c_oSerProp_pPrType::Ind_Left:
@@ -732,7 +732,7 @@ public:
 	int ReadNumPr(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CStringWriter* pCStringWriter = static_cast<CStringWriter*>(poResult);
+		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if(c_oSerProp_pPrType::numPr_lvl == type)
 		{
 			long nLvl = m_oBufferedStream.ReadLong();
@@ -951,7 +951,7 @@ public:
 		}
 		else if( c_oSerProp_tblPrType::TableCellMar == type )
 		{
-			CStringWriter oTempWriter; 
+			XmlUtils::CStringWriter oTempWriter; 
 			res = Read1(length, &Binary_tblPrReader::ReadCellMargins, this, &oTempWriter);
 			if(oTempWriter.GetCurSize() > 0)
 			{
@@ -966,7 +966,7 @@ public:
 			oBinary_pPrReader.ReadBordersOut(length, &odocBorders);
 			if(false == odocBorders.IsEmpty())
 			{
-				CStringWriter oTempWriter; 
+				XmlUtils::CStringWriter oTempWriter; 
 				odocBorders.Write(&oTempWriter, false);
 				pWiterTblPr->TableBorders.Append(CString(_T("<w:tblBorders>")));
 				pWiterTblPr->TableBorders.Append(oTempWriter.GetData());
@@ -985,7 +985,7 @@ public:
 		}
 		else if( c_oSerProp_tblPrType::tblpPr == type )
 		{
-			CStringWriter oTempWriter;
+			XmlUtils::CStringWriter oTempWriter;
 			res = Read2(length, &Binary_tblPrReader::Read_tblpPr, this, &oTempWriter);
 			pWiterTblPr->tblpPr.Append(CString(_T("<w:tblpPr w:vertAnchor=\"page\" w:horzAnchor=\"page\"")));
 			pWiterTblPr->tblpPr.Append(oTempWriter.GetData());
@@ -993,7 +993,7 @@ public:
 		}
 		else if( c_oSerProp_tblPrType::tblpPr2 == type )
 		{
-			CStringWriter oTempWriter;
+			XmlUtils::CStringWriter oTempWriter;
 			res = Read2(length, &Binary_tblPrReader::Read_tblpPr2, this, &oTempWriter);
 			pWiterTblPr->tblpPr.Append(CString(_T("<w:tblpPr")));
 			pWiterTblPr->tblpPr.Append(oTempWriter.GetData());
@@ -1059,7 +1059,7 @@ public:
 	int ReadCellMargins(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CStringWriter* pCStringWriter = static_cast<CStringWriter*>(poResult);
+		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSerMarginsType::left == type )
 		{
 			docW oLeft;
@@ -1091,7 +1091,7 @@ public:
 	int Read_tblpPr(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CStringWriter* pCStringWriter = static_cast<CStringWriter*>(poResult);
+		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSer_tblpPrType::X == type )
 		{
 			double dX = m_oBufferedStream.ReadDouble2();
@@ -1146,7 +1146,7 @@ public:
 	int Read_tblpPr2(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CStringWriter* pCStringWriter = static_cast<CStringWriter*>(poResult);
+		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSer_tblpPrType2::HorzAnchor == type )
 		{
 			CString sXml;
@@ -1222,14 +1222,14 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	};
-	int Read_RowPrOut(long length, CStringWriter* pCStringWriter)
+	int Read_RowPrOut(long length, XmlUtils::CStringWriter* pCStringWriter)
 	{
 		return Read2(length, &Binary_tblPrReader::Read_RowPr, this, pCStringWriter);
 	}
 	int Read_RowPr(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CStringWriter* pCStringWriter = static_cast<CStringWriter*>(poResult);
+		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSerProp_rowPrType::CantSplit == type )
 		{
 			BYTE CantSplit = m_oBufferedStream.ReadByte();
@@ -1351,7 +1351,7 @@ public:
 	int ReadHeight(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CStringWriter* pCStringWriter = static_cast<CStringWriter*>(poResult);
+		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		/*if( c_oSerProp_rowPrType::Height_Rule == type )
 		{
 		Height.HRule = this.stream.GetUChar();
@@ -1367,14 +1367,14 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	};
-	int Read_CellPrOut(long length, CStringWriter* pCStringWriter)
+	int Read_CellPrOut(long length, XmlUtils::CStringWriter* pCStringWriter)
 	{
 		return Read2(length, &Binary_tblPrReader::Read_CellPr, this, pCStringWriter);
 	}
 	int Read_CellPr(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CStringWriter* pCStringWriter = static_cast<CStringWriter*>(poResult);
+		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSerProp_cellPrType::GridSpan == type )
 		{
 			long nGridSpan = m_oBufferedStream.ReadLong();
@@ -1409,7 +1409,7 @@ public:
 		}
 		else if( c_oSerProp_cellPrType::CellMar == type )
 		{
-			CStringWriter oTempWriter; 
+			XmlUtils::CStringWriter oTempWriter; 
 			res = Read1(length, &Binary_tblPrReader::ReadCellMargins, this, &oTempWriter);
 			if(oTempWriter.GetCurSize() > 0)
 			{
@@ -1482,7 +1482,7 @@ public:
 	int ReadPaddings2(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CStringWriter* pCStringWriter = static_cast<CStringWriter*>(poResult);
+		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if (c_oSerPaddingType::left == type)
 		{
 			double dLeft = m_oBufferedStream.ReadDouble2();
@@ -1867,14 +1867,14 @@ public:
 			res = oBinary_rPrReader.Read(length, &oNew_rPr);
 			if(oNew_rPr.IsNoEmpty())
 			{
-				CStringWriter oTempWriter;
+				XmlUtils::CStringWriter oTempWriter;
 				oNew_rPr.Write(&oTempWriter);
 				odocStyle->TextPr = oTempWriter.GetData();
 			}
 		}
 		else if(c_oSer_sts::Style_ParaPr == type)
 		{
-			CStringWriter oTempWriter;
+			XmlUtils::CStringWriter oTempWriter;
 			oBinary_pPrReader.m_nCurNumId = -1;
 			oBinary_pPrReader.m_nCurLvl = -1;
 			res = oBinary_pPrReader.Read(length, &oTempWriter);
@@ -1888,14 +1888,14 @@ public:
 		}
 		else if(c_oSer_sts::Style_RowPr == type)
 		{
-			CStringWriter oTempWriter;
+			XmlUtils::CStringWriter oTempWriter;
 			oBinary_tblPrReader.Read_RowPrOut(length, &oTempWriter);
 			CString sRowPr = oTempWriter.GetData();
 			odocStyle->RowPr = sRowPr;
 		}
 		else if(c_oSer_sts::Style_CellPr == type)
 		{
-			CStringWriter oTempWriter;
+			XmlUtils::CStringWriter oTempWriter;
 			oBinary_tblPrReader.Read_CellPrOut(length, &oTempWriter);
 			CString sCellPr = oTempWriter.GetData();
 			odocStyle->CellPr = sCellPr;
@@ -1918,7 +1918,7 @@ public:
 			Read1(length, &BinaryStyleTableReader::ReadTblStyleProperty, this, &otblStylePr);
 			if(otblStylePr.bType && otblStylePr.Writer.GetCurSize() > 0)
 			{
-				CStringWriter oCStringWriter;
+				XmlUtils::CStringWriter oCStringWriter;
 				switch(otblStylePr.Type)
 				{
 				case ETblStyleOverrideType::tblstyleoverridetypeBand1Horz: oCStringWriter.WriteString(CString(_T("<w:tblStylePr w:type=\"band1Horz\">")));break;
@@ -1965,7 +1965,7 @@ public:
 		}
 		else if(c_oSerProp_tblStylePrType::ParPr == type)
 		{
-			CStringWriter oTempWriter;
+			XmlUtils::CStringWriter oTempWriter;
 			res = oBinary_pPrReader.Read(length, &oTempWriter);
 			if(oTempWriter.GetCurSize() > 0)
 			{
@@ -1983,7 +1983,7 @@ public:
 		}
 		else if(c_oSerProp_tblStylePrType::TrPr == type)
 		{
-			CStringWriter oTempWriter;
+			XmlUtils::CStringWriter oTempWriter;
 			oBinary_tblPrReader.Read_RowPrOut(length, &oTempWriter);
 			if(oTempWriter.GetCurSize() > 0)
 			{
@@ -1994,7 +1994,7 @@ public:
 		}
 		else if(c_oSerProp_tblStylePrType::TcPr == type)
 		{
-			CStringWriter oTempWriter;
+			XmlUtils::CStringWriter oTempWriter;
 			oBinary_tblPrReader.Read_CellPrOut(length, &oTempWriter);
 			if(oTempWriter.GetCurSize() > 0)
 			{
@@ -2609,7 +2609,7 @@ class Binary_DocumentTableReader : public Binary_CommonReader<Binary_DocumentTab
 	CHyperlink* m_pCurHyperlink;
 	rPr m_oCur_rPr;
 	rPr m_oMath_rPr;
-	CStringWriter m_oCur_pPr;
+	XmlUtils::CStringWriter m_oCur_pPr;
 	BYTE m_byteLastElemType;
 	CComments* m_pComments;
 public:
@@ -2628,7 +2628,7 @@ public:
 	{
 		return ReadTable(&Binary_DocumentTableReader::ReadDocumentContent, this);
 	};
-	CStringWriter& GetRunStringWriter()
+	XmlUtils::CStringWriter& GetRunStringWriter()
 	{
 		if(NULL != m_pCurHyperlink)
 			return m_pCurHyperlink->writer;
@@ -5146,7 +5146,7 @@ public:
 	int ReadDocTable(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CStringWriter* pCStringWriter = static_cast<CStringWriter*>(poResult);
+		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSerDocTableType::tblPr == type )
 		{
 			CWiterTblPr oWiterTblPr;
@@ -5171,7 +5171,7 @@ public:
 	int Read_tblGrid(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CStringWriter* pCStringWriter = static_cast<CStringWriter*>(poResult);
+		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSerDocTableType::tblGrid_Item == type )
 		{
 			double dgridCol = m_oBufferedStream.ReadDouble2();
@@ -5187,7 +5187,7 @@ public:
 	int Read_TableContent(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CStringWriter* pCStringWriter = static_cast<CStringWriter*>(poResult);
+		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSerDocTableType::Row == type )
 		{
 			pCStringWriter->WriteString(CString(_T("<w:tr>")));
@@ -5201,7 +5201,7 @@ public:
 	int Read_Row(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CStringWriter* pCStringWriter = static_cast<CStringWriter*>(poResult);
+		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSerDocTableType::Row_Pr == type )
 		{
 			pCStringWriter->WriteString(CString(_T("<w:trPr>")));
@@ -5219,7 +5219,7 @@ public:
 	int ReadRowContent(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CStringWriter* pCStringWriter = static_cast<CStringWriter*>(poResult);
+		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSerDocTableType::Cell == type )
 		{
 			pCStringWriter->WriteString(CString(_T("<w:tc>")));
@@ -5233,7 +5233,7 @@ public:
 	int ReadCell(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CStringWriter* pCStringWriter = static_cast<CStringWriter*>(poResult);
+		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSerDocTableType::Cell_Pr == type )
 		{
 			pCStringWriter->WriteString(CString(_T("<w:tcPr>")));
@@ -5395,18 +5395,17 @@ public:
 			//сейчас пропуская, потому что перед чтение этого поля надо собрать остальные данные
 			res = c_oSerConstants::ReadUnknown;
 		}
-		else if ( c_oSerImageType2::Chart == type )
+		else if ( c_oSerImageType2::Chart2 == type )
 		{
 			if(false == m_oFileWriter.m_bSaveChartAsImg)
 			{
 				BinXlsxRW::BinaryChartReader oBinaryChartReader(m_oBufferedStream, m_oFileWriter.m_pArray, m_oFileWriter.m_pDrawingConverter);
 				OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace();
-				pChartSpace->m_oChart.Init();
-				oBinaryChartReader.ReadChartOut(length, pChartSpace);
+				oBinaryChartReader.ReadCT_ChartSpace(length, &pChartSpace->m_oChartSpace);
 
-				OOX::Spreadsheet::CStringWriter sw;
+				XmlUtils::CStringWriter sw;
 				pChartSpace->toXML(sw);
-				CString sChartContent = sw.GetCString();
+				CString sChartContent = sw.GetData();
 				if(false == sChartContent.IsEmpty())
 				{
 					CString sRelsName;
@@ -6036,3 +6035,4 @@ public: BinaryFileReader(CString& sFileInDir, Streams::CBufferedStream& oBuffere
 			return res;
 		}
 };
+}

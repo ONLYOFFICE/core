@@ -88,8 +88,8 @@ namespace OOX
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-				CStringWriter sXml;
-				sXml.WriteStringC(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" mc:Ignorable=\"x14ac\" xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">"));
+				XmlUtils::CStringWriter sXml;
+				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" mc:Ignorable=\"x14ac\" xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">"));
 				if(m_oNumFmts.IsInit())
 					m_oNumFmts->toXML(sXml);
 				if(m_oFonts.IsInit())
@@ -110,9 +110,9 @@ namespace OOX
 					m_oDxfs->toXML(sXml);
 				if(m_oTableStyles.IsInit())
 					m_oTableStyles->toXML(sXml);
-				sXml.WriteStringC(_T("</styleSheet>"));
+				sXml.WriteString(_T("</styleSheet>"));
 
-				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetCString() );
+				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetData() );
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 			}
 			void PrepareToWrite()

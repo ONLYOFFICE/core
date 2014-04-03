@@ -27,35 +27,35 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<workbookView"));
+				writer.WriteString(_T("<workbookView"));
 				if(m_oXWindow.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" xWindow=\"%d\""), m_oXWindow->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oYWindow.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" yWindow=\"%d\""), m_oYWindow->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oWindowWidth.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" windowWidth=\"%d\""), m_oWindowWidth->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oWindowHeight.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" windowHeight=\"%d\""), m_oWindowHeight->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oActiveTab.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" activeTab=\"%d\""), m_oActiveTab->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T("/>"));
+				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -126,12 +126,12 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<bookViews>"));
+				writer.WriteString(_T("<bookViews>"));
 				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
-				writer.WriteStringC(_T("</bookViews>"));
+				writer.WriteString(_T("</bookViews>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

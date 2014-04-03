@@ -24,55 +24,55 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<alignment"));
+				writer.WriteString(_T("<alignment"));
 				if(m_oHorizontal.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" horizontal=\"%s\""), m_oHorizontal->ToString());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oIndent.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" indent=\"%d\""), m_oIndent->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oJustifyLastLine.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" justifyLastLine=\"%s\""), m_oJustifyLastLine->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oReadingOrder.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" readingOrder=\"%d\""), m_oReadingOrder->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oRelativeIndent.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" relativeIndent=\"%d\""), m_oRelativeIndent->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oShrinkToFit.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" shrinkToFit=\"%s\""), m_oShrinkToFit->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oTextRotation.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" textRotation=\"%d\""), m_oTextRotation->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oVertical.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" vertical=\"%s\""), m_oVertical->ToString());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oWrapText.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" wrapText=\"%s\""), m_oWrapText->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T("/>"));
+				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -136,7 +136,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -185,72 +185,72 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<xf"));
+				writer.WriteString(_T("<xf"));
 				if(m_oFontId.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" fontId=\"%d\""), m_oFontId->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oFillId.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" fillId=\"%d\""), m_oFillId->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oBorderId.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" borderId=\"%d\""), m_oBorderId->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oNumFmtId.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" numFmtId=\"%d\""), m_oNumFmtId->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oXfId.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" xfId=\"%d\""), m_oXfId->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oApplyNumberFormat.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" applyNumberFormat=\"%s\""), m_oApplyNumberFormat->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oApplyFont.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" applyFont=\"%s\""), m_oApplyFont->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oApplyFill.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" applyFill=\"%s\""), m_oApplyFill->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oApplyBorder.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" applyBorder=\"%s\""), m_oApplyBorder->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oApplyAlignment.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" applyAlignment=\"%s\""), m_oApplyAlignment->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oQuotePrefix.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" quotePrefix=\"%s\""), m_oQuotePrefix->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oAligment.IsInit())
 				{
-					writer.WriteStringC(_T(">"));
+					writer.WriteString(_T(">"));
 					m_oAligment->toXML(writer);
-					writer.WriteStringC(_T("</xf>"));
+					writer.WriteString(_T("</xf>"));
 				}
 				else
-					writer.WriteStringC(_T("/>"));
+					writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -334,18 +334,18 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<cellXfs"));
+				writer.WriteString(_T("<cellXfs"));
 				if(m_oCount.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T(">"));
+				writer.WriteString(_T(">"));
 				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
-				writer.WriteStringC(_T("</cellXfs>"));
+				writer.WriteString(_T("</cellXfs>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -398,18 +398,18 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<cellStyleXfs"));
+				writer.WriteString(_T("<cellStyleXfs"));
 				if(m_oCount.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T(">"));
+				writer.WriteString(_T(">"));
 				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
-				writer.WriteStringC(_T("</cellStyleXfs>"));
+				writer.WriteString(_T("</cellStyleXfs>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

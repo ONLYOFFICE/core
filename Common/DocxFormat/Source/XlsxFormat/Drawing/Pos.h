@@ -26,20 +26,20 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<xdr:pos"));
+				writer.WriteString(_T("<xdr:pos"));
 				if(m_oX.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" x=\"%I64d\""), m_oX->ToEmu());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oY.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" y=\"%I64d\""), m_oY->ToEmu());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T("/>"));
+				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

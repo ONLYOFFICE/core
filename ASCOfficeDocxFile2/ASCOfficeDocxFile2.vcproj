@@ -539,14 +539,6 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Foreign"
-			>
-			<File
-				RelativePath=".\Foreign\StringWriter.h"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="BinWiter"
 			>
 			<File
@@ -559,6 +551,22 @@
 			</File>
 			<File
 				RelativePath=".\BinWriter\BinWriters.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsxSerializerCom\Reader\ChartFromToBinary.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsxSerializerCom\Reader\ChartFromToBinary.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsxSerializerCom\Reader\CommonWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsxSerializerCom\Reader\CommonWriter.h"
 				>
 			</File>
 			<File
@@ -581,7 +589,11 @@
 				Name="Reader"
 				>
 				<File
-					RelativePath="..\..\TeamlabOffice\trunk\XlsxSerializerCom\Writer\BinaryReader.h"
+					RelativePath="..\XlsxSerializerCom\Writer\BinaryCommonReader.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsxSerializerCom\Writer\BinaryReader.h"
 					>
 				</File>
 				<File

@@ -22,7 +22,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
 			void toXML2(CString& sDelete, CString& sMajorGrid, CString& sAxTitle, CString& sTxPr) const
@@ -38,15 +38,15 @@ namespace OOX
 					sMajorGrid = _T("<c:majorGridlines/>");
 				if(m_oTitle.IsInit())
 				{
-					CStringWriter temp;
+					XmlUtils::CStringWriter temp;
 					m_oTitle->toXML(temp);
-					sAxTitle = temp.GetCString();
+					sAxTitle = temp.GetData();
 				}
 
 				//CStringWriter temp;
 				//if(m_oNumFmt.IsInit())
 				//	m_oNumFmt->toXML2(temp, CString(_T("c:numFmt")));
-				//sAxNumFmt = temp.GetCString();
+				//sAxNumFmt = temp.GetData();
 				if(m_oTxPr.IsInit() && m_oTxPr->m_oXml.IsInit())
 				{
 					sTxPr = m_oTxPr->m_oXml.get();
@@ -115,7 +115,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
 			void toXML2(bool bScatter, bool bLine, CString& sBarDir, CString& sGrouping, CString& sSeries, CString& sDataLabels, CString& sOverlap, CString& sCatAxDelete, CString& sCatAxMajorGrid, CString& sCatAxTitle, CString& sCatTxPr, CString& sValAxDelete, CString& sValAxMajorGrid, CString& sValAxTitle, CString& sValTxPr) const

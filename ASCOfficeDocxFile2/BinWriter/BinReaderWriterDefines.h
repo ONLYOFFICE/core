@@ -445,7 +445,8 @@ const int g_nFormatVersion = 4;
 		WrapTight = 21,
 		WrapTopAndBottom = 22,
 		Chart = 23,
-		ChartImg = 24
+		ChartImg = 24,
+		Chart2 = 25
 	};}
 	namespace c_oSerEffectExtent{enum c_oSerEffectExtent
 	{

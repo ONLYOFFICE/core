@@ -25,36 +25,36 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oDescending.IsInit() || m_oRef.IsInit() || m_oSortBy.IsInit() || m_oDxfId.IsInit())
 				{
-					writer.WriteStringC(CString(_T("<sortCondition")));
+					writer.WriteString(CString(_T("<sortCondition")));
 					if(m_oSortBy.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T(" sortBy=\"%s\""), m_oSortBy->ToString());
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
 					if(m_oDescending.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T(" descending=\"%s\""), m_oDescending->ToString2(SimpleTypes::onofftostring1));
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
 					if(m_oRef.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T(" ref=\"%s\""), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
 					if(m_oDxfId.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T(" dxfId=\"%d\""), m_oDxfId->GetValue());
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
-					writer.WriteStringC(CString(_T("/>")));
+					writer.WriteString(CString(_T("/>")));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -105,7 +105,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oRef.IsInit() && m_arrItems.GetSize() > 0)
 				{
@@ -114,12 +114,12 @@ namespace OOX
 					if(m_oCaseSensitive.IsInit())
 						sXml.AppendFormat(_T(" caseSensitive=\"%s\""), m_oCaseSensitive->ToString2(SimpleTypes::onofftostring1));
 					sXml.Append(_T(">"));
-					writer.WriteStringC(sXml);
+					writer.WriteString(sXml);
 
 					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
-					writer.WriteStringC(CString(_T("</sortState>")));
+					writer.WriteString(CString(_T("</sortState>")));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -177,16 +177,16 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oDxfId.IsInit())
 				{
 					CString sXml;
 					sXml.Format(_T("<colorFilter dxfId=\"%d\""), m_oDxfId->GetValue());
-					writer.WriteStringC(sXml);
+					writer.WriteString(sXml);
 					if(m_oCellColor.IsInit() && false == m_oCellColor->ToBool())
-						writer.WriteStringC(CString(_T(" cellColor=\"0\"")));
-					writer.WriteStringC(CString(_T("/>")));
+						writer.WriteString(CString(_T(" cellColor=\"0\"")));
+					writer.WriteString(CString(_T("/>")));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -233,26 +233,26 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oType.IsInit())
 				{
 					CString sXml;
 					sXml.Format(_T("<dynamicFilter type=\"%s\""), m_oType->ToString());
-					writer.WriteStringC(sXml);
+					writer.WriteString(sXml);
 					if(m_oVal.IsInit())
 					{
 						CString sVal;
 						sVal.Format(_T(" val=\"%s\""), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(m_oVal->GetValue()));
-						writer.WriteStringC(sVal);
+						writer.WriteString(sVal);
 					}
 					if(m_oMaxVal.IsInit())
 					{
 						CString sVal;
 						sVal.Format(_T(" maxVal=\"%s\""), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(m_oMaxVal->GetValue()));
-						writer.WriteStringC(sVal);
+						writer.WriteString(sVal);
 					}
-					writer.WriteStringC(CString(_T("/>")));
+					writer.WriteString(CString(_T("/>")));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -301,13 +301,13 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oOperator.IsInit() && m_oVal.IsInit())
 				{
 					CString sXml;
 					sXml.Format(_T("<customFilter operator=\"%s\" val=\"%s\"/>"), m_oOperator->ToString(), m_oVal.get());
-					writer.WriteStringC(sXml);
+					writer.WriteString(sXml);
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -354,17 +354,17 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_arrItems.GetSize() > 0)
 				{
-					writer.WriteStringC(CString(_T("<customFilters")));
+					writer.WriteString(CString(_T("<customFilters")));
 					if(m_oAnd.IsInit() && true == m_oAnd->ToBool())
-						writer.WriteStringC(CString(_T(" and=\"1\"")));
-					writer.WriteStringC(CString(_T(">")));
+						writer.WriteString(CString(_T(" and=\"1\"")));
+					writer.WriteString(CString(_T(">")));
 					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
-					writer.WriteStringC(CString(_T("</customFilters>")));
+					writer.WriteString(CString(_T("</customFilters>")));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -418,13 +418,13 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oVal.IsInit())
 				{
 					CString sXml;
 					sXml.Format(_T("<filter val=\"%s\"/>"), XmlUtils::EncodeXmlString(m_oVal.get()));
-					writer.WriteStringC(sXml);
+					writer.WriteString(sXml);
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -469,54 +469,54 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oDateTimeGrouping.IsInit())
 				{
-					writer.WriteStringC(CString(_T("<dateGroupItem")));
+					writer.WriteString(CString(_T("<dateGroupItem")));
 					if(m_oYear.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T(" year=\"%d\""), m_oYear->GetValue());
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
 					if(m_oMonth.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T(" month=\"%d\""), m_oMonth->GetValue());
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
 					if(m_oDay.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T(" day=\"%d\""), m_oDay->GetValue());
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
 					if(m_oHour.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T(" hour=\"%d\""), m_oHour->GetValue());
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
 					if(m_oMinute.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T(" minute=\"%d\""), m_oMinute->GetValue());
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
 					if(m_oSecond.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T(" second=\"%d\""), m_oSecond->GetValue());
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
 					if(m_oDateTimeGrouping.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T(" dateTimeGrouping=\"%s\""), m_oDateTimeGrouping->ToString());
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
-					writer.WriteStringC(CString(_T("/>")));
+					writer.WriteString(CString(_T("/>")));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -573,23 +573,23 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_arrItems.GetSize() > 0)
 				{
-					writer.WriteStringC(_T("<filters"));
+					writer.WriteString(_T("<filters"));
 					if(m_oBlank.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T(" blank=\"%s\""), m_oBlank->ToString2(SimpleTypes::onofftostring1));
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
-					writer.WriteStringC(_T(">"));
+					writer.WriteString(_T(">"));
 
 					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
-					writer.WriteStringC(_T("</filters>"));
+					writer.WriteString(_T("</filters>"));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -645,28 +645,28 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oVal.IsInit())
 				{
-					writer.WriteStringC(CString(_T("<top10")));
+					writer.WriteString(CString(_T("<top10")));
 					if(m_oTop.IsInit() && false == m_oTop->ToBool())
-						writer.WriteStringC(CString(_T(" top=\"0\"")));
+						writer.WriteString(CString(_T(" top=\"0\"")));
 					if(m_oPercent.IsInit() && true == m_oPercent->ToBool())
-						writer.WriteStringC(CString(_T(" percent=\"1\"")));
+						writer.WriteString(CString(_T(" percent=\"1\"")));
 					if(m_oVal.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T(" val=\"%s\""), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(m_oVal->GetValue()));
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
 					if(m_oFilterVal.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T(" filterVal=\"%s\""), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(m_oFilterVal->GetValue()));
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
-					writer.WriteStringC(CString(_T("/>")));
+					writer.WriteString(CString(_T("/>")));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -717,22 +717,22 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oColId.IsInit() && (m_oColorFilter.IsInit() || m_oDynamicFilter.IsInit() || m_oCustomFilters.IsInit() || m_oFilters.IsInit() ||
 										m_oTop10.IsInit() || m_oShowButton.IsInit() || m_oHiddenButton.IsInit()))
 				{
 					CString sXml;
 					sXml.Format(_T("<filterColumn colId=\"%d\""), m_oColId->GetValue());
-					writer.WriteStringC(sXml);
+					writer.WriteString(sXml);
 					if(m_oShowButton.IsInit() && false == m_oShowButton->ToBool())
-						writer.WriteStringC(CString(_T(" showButton=\"0\"")));
+						writer.WriteString(CString(_T(" showButton=\"0\"")));
 					if(m_oHiddenButton.IsInit())
 					{
 						CString sXml;sXml.Format(_T(" hiddenButton=\"%s\""), m_oHiddenButton->ToString2(SimpleTypes::onofftostring1));
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
-					writer.WriteStringC(CString(_T(">")));
+					writer.WriteString(CString(_T(">")));
 					if(m_oColorFilter.IsInit())
 						m_oColorFilter->toXML(writer);
 					if(m_oDynamicFilter.IsInit())
@@ -743,7 +743,7 @@ namespace OOX
 						m_oFilters->toXML(writer);
 					if(m_oTop10.IsInit())
 						m_oTop10->toXML(writer);
-					writer.WriteStringC(CString(_T("</filterColumn>")));
+					writer.WriteString(CString(_T("</filterColumn>")));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -815,18 +815,18 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oRef.IsInit())
 				{
 					CString sXml;
 					sXml.Format(_T("<autoFilter ref=\"%s\">"), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
-					writer.WriteStringC(sXml);
+					writer.WriteString(sXml);
 					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 					if(m_oSortState.IsInit())
 						m_oSortState->toXML(writer);
-					writer.WriteStringC(CString(_T("</autoFilter>")));
+					writer.WriteString(CString(_T("</autoFilter>")));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)

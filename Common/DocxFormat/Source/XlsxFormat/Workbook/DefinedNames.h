@@ -27,23 +27,23 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<definedName"));
+				writer.WriteString(_T("<definedName"));
 				if(m_oName.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" name=\"%s\""), XmlUtils::EncodeXmlString(m_oName.get()));
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oLocalSheetId.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" localSheetId=\"%d\""), m_oLocalSheetId->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T(">"));
+				writer.WriteString(_T(">"));
 				if(m_oRef.IsInit())
-					writer.WriteStringC(XmlUtils::EncodeXmlString(m_oRef.get()));
-				writer.WriteStringC(_T("</definedName>"));
+					writer.WriteString(XmlUtils::EncodeXmlString(m_oRef.get()));
+				writer.WriteString(_T("</definedName>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -123,14 +123,14 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_arrItems.GetSize() > 0)
 				{
-					writer.WriteStringC(_T("<definedNames>"));
+					writer.WriteString(_T("<definedNames>"));
 					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
-					writer.WriteStringC(_T("</definedNames>"));
+					writer.WriteString(_T("</definedNames>"));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)

@@ -8,7 +8,7 @@ namespace Writers
 
 	class FontTableWriter
 	{
-		CStringWriter	m_oWriter;
+		XmlUtils::CStringWriter	m_oWriter;
 		CString	m_sDir;
 		ASCGraphics::IASCFontManager* m_pFontManager;
 	public:

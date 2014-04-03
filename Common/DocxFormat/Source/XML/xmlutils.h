@@ -3092,7 +3092,7 @@ namespace XmlUtils
 
 			return oResult.GetData();
 		}
-		void WriteElement(CStringWriter& oResult)
+		void WriteElement(XmlUtils::CStringWriter& oResult)
 		{
 			/*
 			oResult.WriteString(CString(_T("<")));

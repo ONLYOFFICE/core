@@ -20,7 +20,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -90,7 +90,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -135,7 +135,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -178,26 +178,26 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				if(m_oIndex.IsInit() && m_oIndex->m_oVal.IsInit() && (m_oDelete.IsInit() || m_oTxPr.IsInit()))
 				{
-					writer.WriteStringC(_T("<c:legendEntry>"));
+					writer.WriteString(_T("<c:legendEntry>"));
 					if(m_oIndex.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T("<c:idx val=\"%d\"/>"), m_oIndex->m_oVal->GetValue());
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
 					if(m_oDelete.IsInit())
 					{
 						CString sXml;
 						sXml.Format(_T("<c:delete val=\"%s\"/>"), m_oDelete->m_oVal.ToString2(SimpleTypes::onofftostring1));
-						writer.WriteStringC(sXml);
+						writer.WriteString(sXml);
 					}
 					if(m_oTxPr.IsInit() && m_oTxPr->m_oXml.IsInit())
-						writer.WriteStringC(m_oTxPr->m_oXml.get2());
-					writer.WriteStringC(_T("</c:legendEntry>"));
+						writer.WriteString(m_oTxPr->m_oXml.get2());
+					writer.WriteString(_T("</c:legendEntry>"));
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -243,9 +243,9 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(CString(_T("<c:legend>")));
+				writer.WriteString(CString(_T("<c:legend>")));
 				CString sLegendPos = _T("r");
 				if(m_oLegendPos.IsInit() && m_oLegendPos->m_oVal.IsInit())
 					sLegendPos = m_oLegendPos->m_oVal->ToString();
@@ -254,16 +254,16 @@ namespace OOX
 				{
 					m_arrItems[i]->toXML(writer);
 				}
-				writer.WriteStringC(sLegendPosXml);
-				writer.WriteStringC(CString(_T("<c:layout/>")));
+				writer.WriteString(sLegendPosXml);
+				writer.WriteString(CString(_T("<c:layout/>")));
 				CString sOverlay = _T("0");
 				if(m_oOverlay.IsInit())
 					sOverlay = m_oOverlay->m_oVal.ToString2(SimpleTypes::onofftostring1);
 				CString sOverlayXml;sOverlayXml.Format(_T("<c:overlay val=\"%s\"/>"), sOverlay);
-				writer.WriteStringC(sOverlayXml);
+				writer.WriteString(sOverlayXml);
 				if(m_oTxPr.IsInit())
 					m_oTxPr->toXML(writer);
-				writer.WriteStringC(CString(_T("</c:legend>")));
+				writer.WriteString(CString(_T("</c:legend>")));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

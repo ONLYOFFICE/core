@@ -268,7 +268,8 @@ namespace BinXlsxRW
 		GraphicFrame = 6,
 		Chart = 7,
 		Ext = 8,
-		pptxDrawing = 9
+		pptxDrawing = 9,
+		Chart2 = 10
 	};}
 	namespace c_oSer_DrawingFromToType{enum c_oSer_DrawingFromToType
 	{

@@ -24,35 +24,35 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
-			virtual void toXML2(CStringWriter& writer, CString sName) const
+			virtual void toXML2(XmlUtils::CStringWriter& writer, CString sName) const
 			{
 				CString sStart;sStart.Format(_T("<%s>"), sName);
-				writer.WriteStringC(sStart);
+				writer.WriteString(sStart);
 				if(m_oCol.IsInit())
 				{
 					CString sVal;sVal.Format(_T("<xdr:col>%d</xdr:col>"), m_oCol->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oColOff.IsInit())
 				{
 					CString sVal;sVal.Format(_T("<xdr:colOff>%I64d</xdr:colOff>"), m_oColOff->ToEmu());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oRow.IsInit())
 				{
 					CString sVal;sVal.Format(_T("<xdr:row>%d</xdr:row>"), m_oRow->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oRowOff.IsInit())
 				{
 					CString sVal;sVal.Format(_T("<xdr:rowOff>%I64d</xdr:rowOff>"), m_oRowOff->ToEmu());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				CString sEnd;sEnd.Format(_T("</%s>"), sName);
-				writer.WriteStringC(sEnd);
+				writer.WriteString(sEnd);
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -108,20 +108,20 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<xdr:ext"));
+				writer.WriteString(_T("<xdr:ext"));
 				if(m_oCx.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" cx=\"%I64d\""), m_oCx->ToEmu());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
 				if(m_oCy.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" cy=\"%I64d\""), m_oCy->ToEmu());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T("/>"));
+				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

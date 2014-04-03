@@ -29,9 +29,9 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(CString(_T("<dxf>")));
+				writer.WriteString(CString(_T("<dxf>")));
 				if(m_oFont.IsInit())
 					m_oFont->toXML(writer);
 				if(m_oNumFmt.IsInit())
@@ -44,7 +44,7 @@ namespace OOX
 					m_oBorder->toXML(writer);
 				if(m_oProtection.IsInit())
 					m_oProtection->toXML(writer);
-				writer.WriteStringC(CString(_T("</dxf>")));
+				writer.WriteString(CString(_T("</dxf>")));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -106,18 +106,18 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(CStringWriter& writer) const
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				writer.WriteStringC(_T("<dxfs"));
+				writer.WriteString(_T("<dxfs"));
 				if(m_oCount.IsInit())
 				{
 					CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-					writer.WriteStringC(sVal);
+					writer.WriteString(sVal);
 				}
-				writer.WriteStringC(_T(">"));
+				writer.WriteString(_T(">"));
 				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
-				writer.WriteStringC(_T("</dxfs>"));
+				writer.WriteString(_T("</dxfs>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

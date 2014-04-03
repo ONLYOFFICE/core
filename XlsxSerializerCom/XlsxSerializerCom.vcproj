@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="XlsxSerializerCom"
 	ProjectGUID="{87476A4D-6A42-44E9-A947-42B8E8613070}"
 	RootNamespace="XlsxSerializerCom"
@@ -380,6 +380,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Reader\ChartFromToBinary.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Reader\ChartFromToBinary.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Reader\CommonWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Reader\CommonWriter.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Reader\CSVReader.h"
 				>
 			</File>
@@ -411,6 +427,10 @@
 		<Filter
 			Name="Writer"
 			>
+			<File
+				RelativePath=".\Writer\BinaryCommonReader.h"
+				>
+			</File>
 			<File
 				RelativePath=".\Writer\BinaryReader.h"
 				>

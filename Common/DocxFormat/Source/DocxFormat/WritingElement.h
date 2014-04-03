@@ -52,6 +52,15 @@ namespace OOX
 	while( !wsName.IsNull() )\
 	{
 
+#define WritingElement_ReadAttributes_Start_No_NS(Reader) \
+	if ( Reader.GetAttributesCount() <= 0 )\
+		return;\
+	if ( !Reader.MoveToFirstAttribute() )\
+		return;\
+	CString wsName = XmlUtils::GetNameNoNS(Reader.GetName());\
+	while( !wsName.IsEmpty() )\
+	{
+
 #define WritingElement_ReadAttributes_Read_if(Reader, AttrName, Value) \
 		if ( AttrName == wsName )\
 			Value = Reader.##GetText();

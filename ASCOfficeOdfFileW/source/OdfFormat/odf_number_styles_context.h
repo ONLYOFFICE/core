@@ -62,6 +62,8 @@ private:
 	void create_text_style(number_format_state & state, office_element_ptr & root_elm);
 	void create_percentage_style(number_format_state & state, office_element_ptr & root_elm);
 
+	void create_numbers(number_format_state & state, office_element_ptr & elm);
+
 
 };
 }

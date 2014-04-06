@@ -1,10 +1,12 @@
 #include "precompiled_cpodf.h"
+
 #include "logging.h"
 
 #include "odf_number_styles_context.h"
 #include "ods_conversion_context.h"
 
 #include "number_style.h"
+
 
 namespace cpdoccore {
 namespace odf {
@@ -174,36 +176,78 @@ void odf_number_styles_context::create_number_style(number_format_state & state,
 	if (state.format_code.size()>0)
 	{
 		office_element_ptr elm;
-		create_element(L"number", L"number", elm, &context_);
-		styles_elments.push_back(elm);
-		
-		number_number* number_number_ = dynamic_cast<number_number*>(elm.get());
-
-		if (number_number_)
-		{
-			std::vector<std::wstring> numbers;
-			boost::algorithm::split(numbers, state.format_code[0], boost::algorithm::is_any_of(L",."), boost::algorithm::token_compress_on);
-
-			number_number_->number_min_integer_digits_= numbers[0].size();
-
-			if (numbers.size()>1)
-			{
-				number_number_->number_decimal_places_= numbers[1].size();
-			}
-		}
-		root_elm->add_child_element(elm);
+	
+		create_numbers(state, elm);
+		root_elm->add_child_element(elm); 
 	}
 }
+void odf_number_styles_context::create_numbers(number_format_state & state, office_element_ptr & elm)
+{
+	optional< int>::Type min_digit, min_decimal;
 
+	create_element(L"number", L"number", elm, &context_);
+	styles_elments.push_back(elm);
+		
+	number_number* number_number_ = dynamic_cast<number_number*>(elm.get());
+
+	if (number_number_)
+	{
+		if (state.format_code[0].length()>0)
+		{
+			std::wstring str1,str2;
+			boost::wregex re1(L"([^0-9.,]+)");
+			boost::wsmatch result;
+			boost::wregex re2(L"([^#.,]+)");
+			str1 = boost::regex_replace(state.format_code[0], re1, L"",boost::match_default | boost::format_all);
+			str2 = boost::regex_replace(state.format_code[0], re2, L"",boost::match_default | boost::format_all);
+
+			if (str1.length()<str2.length())str1=str2;
+
+			std::vector<std::wstring> numbers;
+
+			boost::algorithm::split(numbers, str1, boost::algorithm::is_any_of(L".,"), boost::algorithm::token_compress_on);
+			int ind=1;//
+			for (long i=0;i<numbers.size();i++)
+			{
+				if (numbers[i].length()<1)continue;
+				if (ind==1)min_digit= numbers[i].length();
+				if (ind==2)min_decimal= numbers[i].length();
+				ind++;
+			}
+		}
+		else
+		{
+			//формат не определен .. дефолтный
+			min_digit =1;
+		}
+
+		number_number_->number_min_integer_digits_= min_digit;
+		number_number_->number_decimal_places_= min_decimal;
+		number_number_->number_grouping_ = true;
+	}
+}
 void odf_number_styles_context::create_percentage_style(number_format_state & state, office_element_ptr & root_elm)
 {
 	create_element(L"number", L"percentage-style", root_elm, &context_);
+	
+	office_element_ptr elm;
+
+	create_numbers(state, elm);
+	root_elm->add_child_element(elm); 
+
+	create_element(L"number", L"text", elm, &context_);
+	number_text* number_text_ = dynamic_cast<number_text*>(elm.get());
+	if (number_text_)number_text_->add_text(L"%"); 	
+
+	root_elm->add_child_element(elm);
+	styles_elments.push_back(elm);
 }
 
 void odf_number_styles_context::create_currency_style(number_format_state & state, office_element_ptr & root_elm)
 {
 	create_element(L"number", L"currency-style", root_elm, &context_);
 	{
+//1 ??? - определить где ставить значок todooo
 		office_element_ptr elm;
 		create_element(L"number", L"currency-symbol", elm, &context_);
 		styles_elments.push_back(elm);
@@ -214,6 +258,9 @@ void odf_number_styles_context::create_currency_style(number_format_state & stat
 			number_currency_symbol_->add_text(state.currency_str);
 		}
 		root_elm->add_child_element(elm);
+//2 ???
+		create_numbers(state, elm);
+		root_elm->add_child_element(elm);  
 	}
 }
 
@@ -226,10 +273,10 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 	std::wstring s = state.format_code[0];
 	boost::algorithm::to_lower(s);
 	
-	boost::wregex re(L"(\\w+)");
+	boost::wregex re(L"([a-zA-Z]+)(\\W+)");//(L"(\\w+)");
 	std::list<std::wstring> result;
 	bool b = boost::regex_split(std::back_inserter(result),s, re);
-
+	if (b)result.push_back(s);//последний ..выносится - так уж работает boost.regex_split
 	int res;
 	int sz=0;
 	for (std::list<std::wstring>::iterator i=result.begin(); i!=result.end(); ++i)
@@ -243,8 +290,10 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 			number_month* number_month_ = dynamic_cast<number_month*>(elm.get());
 		
 			if (number_month_ && sz > 2)number_month_->number_textual_ = true;
+			if (sz == 1 || sz == 3) number_month_->number_style_ = L"short";
+			if (sz == 2 || sz == 4) number_month_->number_style_ = L"long";
 		}
-		if ((res=s.find(L"d")) >=0) 
+		else if ((res=s.find(L"d")) >=0) 
 		{
 			if (sz < 3)
 			{
@@ -252,16 +301,22 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 				number_day* number_day_ = dynamic_cast<number_day*>(elm.get());
 				if (number_day_)
 				{
-					if (sz == 1)number_day_->number_style_ = L"short";
-					if (sz == 2)number_day_->number_style_ = L"long";
+					if (sz == 1) number_day_->number_style_ = L"short";
+					if (sz == 2) number_day_->number_style_ = L"long";
 				}
 			}
 			else
 			{
 				create_element(L"number", L"day-of-week", elm, &context_);
+				number_day_of_week* number_day_of_week_ = dynamic_cast<number_day_of_week*>(elm.get());
+				if (number_day_of_week_)
+				{
+					if (sz == 3) number_day_of_week_->number_style_ = L"short";
+					if (sz == 4) number_day_of_week_->number_style_ = L"long";
+				}
 			}
 		}
-		if ((res=s.find(L"y")) >=0) 
+		else if ((res=s.find(L"y")) >=0) 
 		{
 			create_element(L"number", L"year", elm, &context_);
 			number_year* number_year_ = dynamic_cast<number_year*>(elm.get());
@@ -271,20 +326,24 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 				else		number_year_->number_style_ = L"long";
 			}
 		}
+		else
+		{	//////////////////// делитель ////////////////////	
+			if(sz>1) 
+			{
+				//выкинем "лишние" слэши
+				boost::algorithm::replace_all(s, L"\\", L"");
+			}
+			create_element(L"number", L"text", elm, &context_);
+			number_text* number_text_ = dynamic_cast<number_text*>(elm.get());
+			if (number_text_)number_text_->add_text(s); 	
+		}
 		if (elm)
 		{
 			root_elm->add_child_element(elm);
 			styles_elments.push_back(elm);
-	//////////////////// делитель ////////////////////	
-			create_element(L"number", L"text", elm, &context_);
-			number_text* number_text_ = dynamic_cast<number_text*>(elm.get());
-			if (number_text_)number_text_->add_text(L"."); //тоже надо вытащить ващето
-			
-			root_elm->add_child_element(elm);
-			styles_elments.push_back(elm);
+
 		}
 	}
-	styles_elments.pop_back();//последний делитель не нужен
 }
 
 void odf_number_styles_context::create_time_style(number_format_state & state, office_element_ptr & root_elm)
@@ -295,9 +354,10 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 	std::wstring s = state.format_code[0];
 	boost::algorithm::to_lower(s);
 	
-	boost::wregex re(L"(\\w+)");
+	boost::wregex re(L"([a-zA-Z]+)(\\W+)");//(L"(\\w+)");
 	std::list<std::wstring> result;
 	bool b = boost::regex_split(std::back_inserter(result),s, re);
+	if (b)result.push_back(s);//последний ..выносится - так уж работает boost.regex_split
 
 	int res;
 	int sz=0;
@@ -316,7 +376,11 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 				if (sz == 2)number_hours_->number_style_ = L"long";
 			}
 		}
-		if ((res=s.find(L"m")) >=0) 
+		else if ((res=s.find(L"am")) >=0/* || (res=s.find(L"pm")) >=0*/)  //излишнее .. 
+		{
+			create_element(L"number", L"am-pm", elm, &context_);
+		}
+		else if ((res=s.find(L"m")) >=0 && (res=s.find(L"am")) <0 && (res=s.find(L"pm")) <0 ) 
 		{
 			create_element(L"number", L"minutes", elm, &context_);
 			number_minutes* number_minutes_ = dynamic_cast<number_minutes*>(elm.get());
@@ -326,7 +390,7 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 				if (sz == 2)number_minutes_->number_style_ = L"long";
 			}
 		}
-		if ((res=s.find(L"s")) >=0) 
+		else if ((res=s.find(L"s")) >=0) 
 		{
 			create_element(L"number", L"seconds", elm, &context_);
 			number_seconds* number_seconds_ = dynamic_cast<number_seconds*>(elm.get());
@@ -334,26 +398,27 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 			{
 				if (sz == 1)	number_seconds_->number_style_ = L"short";
 				if (sz == 2)	number_seconds_->number_style_ = L"long";
+				//number_decimal_places_
 			}
 		}
-		if ((res=s.find(L"am")) >=0 || (res=s.find(L"pm")) >=0) 
+		else if((res=s.find(L"pm")) <0)//так уж формат делится .. а этот текст нам не нужен
 		{
-			create_element(L"number", L"am-pm", elm, &context_);
+		//////////////////// делитель ////////////////////	
+			if(sz>1) 
+			{
+				//выкинем "лишние" слэши
+				boost::algorithm::replace_all(s, L"\\", L"");
+			}
+			create_element(L"number", L"text", elm, &context_);
+			number_text* number_text_ = dynamic_cast<number_text*>(elm.get());
+			if (number_text_)number_text_->add_text(s); 
 		}
 		if (elm)
 		{
 			root_elm->add_child_element(elm);
 			styles_elments.push_back(elm);
-	//////////////////// делитель ////////////////////	
-			create_element(L"number", L"text", elm, &context_);
-			number_text* number_text_ = dynamic_cast<number_text*>(elm.get());
-			if (number_text_)number_text_->add_text(L":"); //тоже надо вытащить ващето
-			
-			root_elm->add_child_element(elm);
-			styles_elments.push_back(elm);
 		}
 	}
-	styles_elments.pop_back();//последний делитель не нужен
 }
 
 void odf_number_styles_context::create_boolean_style(number_format_state & state, office_element_ptr & root_elm)
@@ -398,7 +463,7 @@ void odf_number_styles_context::detect_format(number_format_state & state)
 			state.ods_type = office_value_type::Time;
 			return;
 		}
-		if ((res=tmp.find(L"y"))>=0 || (res=tmp.find(L"d"))>=0)//m низя
+		if ((res=tmp.find(L"y"))>=0 || (res=tmp.find(L"d"))>=0 || (res=tmp.find(L"m"))>=0)//minutes отсеялись выше
 		{
 			state.ods_type = office_value_type::Date;
 			return;

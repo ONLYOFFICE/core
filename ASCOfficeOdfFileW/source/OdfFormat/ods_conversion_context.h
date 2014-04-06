@@ -17,6 +17,7 @@ public:
 	virtual void start_document();
 
 	void start_sheet(std::wstring & name);
+		void set_sheet_dimension(std::wstring & ref);
 	void end_sheet();
 
 	void start_columns();

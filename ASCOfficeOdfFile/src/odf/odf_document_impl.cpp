@@ -582,7 +582,7 @@ void odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context)
     catch(std::exception & ex)
     {
         _CP_LOG(info) << L"\n[error]:\n";
-        _CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(ex.what())) << std::endl;
+        _CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(ex.what())) << L"\n";
         throw;
     }
     catch(...)

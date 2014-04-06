@@ -59,7 +59,7 @@ public:
 		void set_table_style(office_element_ptr & _style);
 		void set_table_hidden(bool Val);
 		void set_table_tab_color(_CP_OPT(color) & _color);
-		void set_table_dimension(std::wstring ref);
+		void set_table_dimension(int col, int row);
 
 	void add_column(office_element_ptr & elm, int repeated ,office_element_ptr & style);
 		void set_column_width(int width);
@@ -102,6 +102,8 @@ public:
 	int current_column() const;
 	int current_row() const;
 
+	int dimension_columns;
+	int dimension_row;
  //   
  //   xlsx_table_metrics & get_table_metrics() { return xlsx_table_metrics_; }
  //   xlsx_drawing_context & get_drawing_context() { return xlsx_drawing_context_; }
@@ -111,6 +113,7 @@ public:
  //   double table_column_last_width() const { return table_column_last_width_; };
 
 private:
+
     ods_conversion_context & context_;   
 	
 	office_element_ptr	office_table_;

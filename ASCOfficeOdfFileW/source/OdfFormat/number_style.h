@@ -190,7 +190,7 @@ public:
 
     // common-number-attlist
     _CP_OPT(int) number_min_integer_digits_;
-    _CP_OPT(bool) number_grouping_;
+    _CP_OPT(Bool) number_grouping_;
     
     office_element_ptr_array number_embedded_text_;
     
@@ -317,7 +317,6 @@ public:
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm);
 
-private:
     _CP_OPT(std::wstring) number_style_;
     _CP_OPT(std::wstring) number_calendar_;
 

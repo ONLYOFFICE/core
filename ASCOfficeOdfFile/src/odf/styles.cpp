@@ -463,7 +463,8 @@ void office_styles::add_child_element( xml::sax * Reader, const ::std::wstring &
         CP_CHECK_NAME(L"number",	L"text-style") ||
         CP_CHECK_NAME(L"number",	L"percentage-style") ||
         CP_CHECK_NAME(L"number",	L"date-style") ||
-        CP_CHECK_NAME(L"number",	L"boolean-style")
+		CP_CHECK_NAME(L"number",	L"time-style") ||
+		CP_CHECK_NAME(L"number",	L"boolean-style")
         )
     {
         styles_.add_child_element(Reader, Ns, Name, getContext());

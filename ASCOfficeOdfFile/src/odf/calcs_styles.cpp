@@ -21,6 +21,7 @@ text_format_properties_content calc_text_properties_content(const std::vector<co
 text_format_properties_content calc_text_properties_content(const style_instance * styleInstance)
 {
     std::vector<const style_text_properties*> textProps;
+
     while (styleInstance)
     {
         if (const style_content * content = styleInstance->content())
@@ -65,7 +66,7 @@ graphic_format_properties calc_graphic_properties_content(const style_instance *
                 graphicProps.push_back(graphicProp);
 		
         styleInstance = styleInstance->parent();
-    }
+	}
     reverse(graphicProps.begin(), graphicProps.end());
     return calc_graphic_properties_content(graphicProps);
 }

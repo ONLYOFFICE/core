@@ -27,7 +27,7 @@ xlsx_table_state::xlsx_table_state(xlsx_conversion_context & Context,
     
 void xlsx_table_state::start_column(unsigned int repeated, const std::wstring & defaultCellStyleName)
 {
-    for (unsigned int i = 0; i < repeated; ++i)
+    for (unsigned int i = 0; i <repeated; ++i)
         column_default_cell_style_name_.push_back(defaultCellStyleName);
 
     columns_count_ += repeated;
@@ -77,7 +77,13 @@ std::wstring xlsx_table_state::default_row_cell_style() const
 
 std::wstring xlsx_table_state::default_column_cell_style() const
 {
-    return column_default_cell_style_name_.at(current_table_column_);
+	if (current_table_column_ < column_default_cell_style_name_.size())
+		return column_default_cell_style_name_.at(current_table_column_);
+	else
+	{
+		//непон€тна€ хрень!! - неправильно сформирован ods???
+		return L"";
+	}
 }
 
 void xlsx_table_state::end_row()

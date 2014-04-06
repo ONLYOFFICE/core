@@ -95,6 +95,10 @@ void XlsxConverter::convert_sheets()
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 {
+	if (oox_sheet->m_oDimension.IsInit())
+	{
+		ods_context->set_sheet_dimension(string2std_string(oox_sheet->m_oDimension->m_oRef.get()));
+	}
 	//текущие дефолтные свойства 
 	if (oox_sheet->m_oSheetFormatPr.IsInit())
 		convert(oox_sheet->m_oSheetFormatPr.GetPointer());
@@ -807,7 +811,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 	if (id_parent >=0)
 	{
 		odf::odf_style_state  *parent_style_state=NULL;
-		ods_context->styles_context().find_odf_style_state(id_parent, odf::style_family::TableCell,parent_style_state );
+		ods_context->styles_context().find_odf_style_state(id_parent, odf::style_family::TableCell,parent_style_state, true );
 
 		if (parent_style_state)
 		{

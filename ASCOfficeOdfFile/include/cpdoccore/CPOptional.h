@@ -1,5 +1,4 @@
-#ifndef _CP_OPTIONAL_H_
-#define _CP_OPTIONAL_H_
+#pragma once
 
 #include <boost/optional.hpp>
 
@@ -17,5 +16,3 @@ struct optional
 #define _CP_OPT(T) optional< T >::Type
 
 }
-
-#endif

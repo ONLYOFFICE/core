@@ -70,10 +70,16 @@ void styles_container::add_style(const std::wstring & Name,
                style_content * Content,
                bool IsAutomatic,
                bool IsDefault,
-               const std::wstring & ParentStyleName,
+               const std::wstring & ParentStyleName_,
                const std::wstring & NextStyleName,
                const std::wstring & DataStyleName)
 {
+	std::wstring ParentStyleName = ParentStyleName_;
+
+	if (Name == ParentStyleName)
+	{
+		ParentStyleName = L"";//иначе в коде возможно зацикливание.
+	}
     style_instance_ptr newStyle = style_instance_ptr( 
         new style_instance(this, Name, Type, Content, IsAutomatic, IsDefault, ParentStyleName, NextStyleName, DataStyleName) 
         );

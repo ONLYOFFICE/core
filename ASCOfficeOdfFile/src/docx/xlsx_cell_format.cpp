@@ -31,7 +31,7 @@ void xlsx_cell_format::set_num_format(int numFmt)
 
 namespace {
 
-	int odf2buildin_map[] = {0,0,0,10,15,21,0,49};
+	int odf2buildin_map[] = {0,0,0,0,0,0,0,0};
 //{
 //    {L"", 0},
 //    {L"float", 0},

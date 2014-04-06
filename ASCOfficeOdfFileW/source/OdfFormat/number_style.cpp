@@ -272,18 +272,6 @@ void number_currency_symbol::add_text(const std::wstring & Text)
     text_.push_back(Text);
 }
 
-//void number_currency_symbol::xlsx_convert(oox::xlsx_conversion_context & Context)
-//{
-//    std::wostream & strm = Context.get_num_format_context().output();
-//    strm << xml::utils::replace_text_to_xml(L"\"");
-//    BOOST_FOREACH(const std::wstring & t, text_)
-//    {
-//        strm << xml::utils::replace_text_to_xml(t);
-//    }
-//    strm << xml::utils::replace_text_to_xml(L"\"");
-//}
-
-
 // number:currency-style
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * number_currency_style::ns = L"number";
@@ -318,8 +306,6 @@ void number_text_content::serialize(std::wostream & strm)
 		}
 	}
 }
-
-
 
 void number_text_content::add_text(const std::wstring & Text)
 {
@@ -363,6 +349,7 @@ void number_percentage_style::serialize(std::wostream & strm)
 
 namespace 
 {
+	//todooo - сделать наоборот string -> в свойства
 void format_number_number(
                           std::wostream & strm,
                           bool number_grouping_,
@@ -396,18 +383,6 @@ void format_number_number(
 }
 }
 
-//void number_number::xlsx_convert(oox::xlsx_conversion_context & Context)
-//{
-//    std::wostream & strm = Context.get_num_format_context().output();
-//
-//    format_number_number(
-//        strm,
-//        number_grouping_.get_value_or(false),
-//        number_min_integer_digits_.get_value_or(0),
-//        number_decimal_places_.get_value_or(0)
-//        );
-//}
-
 
 // number:day
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -426,21 +401,6 @@ void number_day::serialize(std::wostream & strm)
 	}
 }
 
-
-//void number_day::xlsx_convert(oox::xlsx_conversion_context & Context)
-//{
-//    std::wostream & strm = Context.get_num_format_context().output();
-//    if (number_style_.get_value_or(L"short") == L"long")
-//    {
-//        strm << L"DD";
-//    }
-//    else
-//    {
-//        strm << L"D";
-//    }
-//}
-
-
 // number:day-of-week
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * number_day_of_week::ns = L"number";
@@ -457,19 +417,6 @@ void number_day_of_week::serialize(std::wostream & strm)
 		}
 	}
 }
-//
-//void number_day_of_week::xlsx_convert(oox::xlsx_conversion_context & Context)
-//{
-//    std::wostream & strm = Context.get_num_format_context().output();
-//    if (number_style_.get_value_or(L"short") == L"long")
-//    {
-//        strm << L"DDDD";
-//    }
-//    else
-//    {
-//        strm << L"DDD";
-//    }
-//}
 
 // number:quarter
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -487,22 +434,6 @@ void number_quarter::serialize(std::wostream & strm)
 		}
 	}
 }
-
-
-//void number_quarter::xlsx_convert(oox::xlsx_conversion_context & Context) 
-//{
-//    std::wostream & strm = Context.get_num_format_context().output();
-//    if (number_style_.get_value_or(L"short") == L"long")
-//    {
-//        // TODO: ??
-//        strm << L"";
-//    }
-//    else
-//    {
-//        // TODO: ??
-//        strm << L"";
-//    }
-//}
 
 // number:month
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -523,33 +454,6 @@ void number_month::serialize(std::wostream & strm)
 	}
 }
 
-//void number_month::xlsx_convert(oox::xlsx_conversion_context & Context) 
-//{
-//    std::wostream & strm = Context.get_num_format_context().output();
-//    if (!number_textual_.get_value_or(false))
-//    {
-//        if (number_style_.get_value_or(L"short") == L"long")
-//        {
-//            strm << L"MM";
-//        }
-//        else
-//        {
-//            strm << L"M";
-//        }
-//    }
-//    else
-//    {
-//        if (number_style_.get_value_or(L"short") == L"long")
-//        {
-//            strm << L"MMMM";
-//        }
-//        else
-//        {
-//            strm << L"MMM";
-//        }
-//    }
-//}
-
 // number:year
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * number_year::ns = L"number";
@@ -566,19 +470,6 @@ void number_year::serialize(std::wostream & strm)
 		}
 	}
 }
-
-//void number_year::xlsx_convert(oox::xlsx_conversion_context & Context)
-//{
-//    std::wostream & strm = Context.get_num_format_context().output();
-//    if (number_style_.get_value_or(L"short") == L"long")
-//    {
-//        strm << L"YYYY";
-//    }
-//    else
-//    {
-//        strm << L"YY";
-//    }
-//}
 
 // number:date-style
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -608,21 +499,6 @@ void number_hours::serialize(std::wostream & strm)
 }
 
 
-
-//void number_hours::xlsx_convert(oox::xlsx_conversion_context & Context) 
-//{
-//    std::wostream & strm = Context.get_num_format_context().output();
-//    if (number_style_.get_value_or(L"short") == L"long")
-//    {
-//        strm << L"HH";
-//    }
-//    else
-//    {
-//        // TODO
-//        strm << L"HH";
-//    }
-//}
-
 // number:minutes
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * number_minutes::ns = L"number";
@@ -639,22 +515,6 @@ void number_minutes::serialize(std::wostream & strm)
 		}
 	}
 }
-
-
-
-//void number_minutes::xlsx_convert(oox::xlsx_conversion_context & Context)
-//{
-//    std::wostream & strm = Context.get_num_format_context().output();
-//    if (number_style_.get_value_or(L"short") == L"long")
-//    {
-//        strm << L"MM";
-//    }
-//    else
-//    {
-//        // TODO
-//        strm << L"MM";
-//    }
-//}
 
 // number:seconds
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -674,27 +534,6 @@ void number_seconds::serialize(std::wostream & strm)
 	}
 }
 
-
-//void number_seconds::xlsx_convert(oox::xlsx_conversion_context & Context) 
-//{
-//    std::wostream & strm = Context.get_num_format_context().output();
-//    if (number_style_.get_value_or(L"short") == L"long")
-//    {
-//        strm << L"SS";
-//    }
-//    else
-//    {
-//        // TODO
-//        strm << L"SS";
-//    }
-//
-//    if (int dec = number_decimal_places_.get_value_or(0))
-//    {
-//        strm << L".";
-//        strm << std::wstring(dec, L'0');                    
-//    }
-//}
-
 // number:am-pm
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * number_am_pm::ns = L"number";
@@ -707,14 +546,6 @@ void number_am_pm::serialize(std::wostream & strm)
 		CP_XML_NODE_SIMPLE();
 	}
 }
-
-
-
-//void number_am_pm::xlsx_convert(oox::xlsx_conversion_context & Context) 
-//{
-//    std::wostream & strm = Context.get_num_format_context().output();
-//    strm << L"AM/PM";
-//}
 
 // number:fraction
 //////////////////////////////////////////////////////////////////////////////////////////////////

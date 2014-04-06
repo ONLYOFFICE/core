@@ -150,7 +150,10 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 					{
 						CP_XML_ATTR(L"customFormat", 1);
 						CP_XML_ATTR(L"s", Default_Cell_style_in_row_ );
-					}									
+					}
+					else
+						CP_XML_ATTR(L"customFormat", 0);
+
 
                     CP_XML_STREAM();
 
@@ -238,7 +241,7 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
     const std::wstring tableStyleName = table_table_attlist_.table_style_name_ ? table_table_attlist_.table_style_name_->style_name() : L"";
     const std::wstring tableName = table_table_attlist_.table_name_.get_value_or(L"");
 
-    _CP_LOG(info) << L"[info][xlsx] process table \"" << tableName /*L"" */<< L"\"" << std::endl;
+    _CP_LOG(info) << L"[info][xlsx] process table \"" <</* tableName*/ L"1111" << L"\"" << std::endl;
 
 	if (table_table_source_)
 	{
@@ -246,7 +249,7 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 		if ( table_source)
 		{
 			if (table_source->table_linked_source_attlist_.common_xlink_attlist_.href_)return;
-		}
+		} 
 
 	}
     //office-dde-sourcetable_linked_source_attlist
@@ -541,16 +544,21 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
         if (!skip_next_cell)
         {
             // вычислить стиль дл€ €чейки
-            odf_read_context & odfContext = Context.root()->odf_context();    
-            
-			style_instance * defaultCellStyle = 
-				odfContext.styleContainer().style_default_by_type(style_family::TableCell);
-            style_instance * defaultColumnCellStyle = 
-				odfContext.styleContainer().style_by_name(Context.get_table_context().default_column_cell_style(), style_family::TableCell,false);
-            style_instance * defaultRowCellStyle = 
-				odfContext.styleContainer().style_by_name(Context.get_table_context().default_row_cell_style(), style_family::TableCell,false);
-            
-			style_instance * cellStyle = odfContext.styleContainer().style_by_name(styleName, style_family::TableCell,false);
+            odf_read_context & odfContext = Context.root()->odf_context();   
+
+			style_instance *defaultCellStyle=NULL, *defaultColumnCellStyle = NULL,  *defaultRowCellStyle =NULL, *cellStyle = NULL;
+			try
+			{
+				defaultCellStyle		= odfContext.styleContainer().style_default_by_type(style_family::TableCell);
+				defaultColumnCellStyle	= odfContext.styleContainer().style_by_name(Context.get_table_context().default_column_cell_style(), style_family::TableCell,false);
+				defaultRowCellStyle		= odfContext.styleContainer().style_by_name(Context.get_table_context().default_row_cell_style(), style_family::TableCell,false);
+	            
+				cellStyle = odfContext.styleContainer().style_by_name(styleName, style_family::TableCell,false);
+			}
+			catch(...)
+			{
+				_CP_LOG(info) << L"\n[error]: style wrong\n";
+			}
 
             std::wstring data_style = CalcCellDataStyle(Context,
                 Context.get_table_context().default_column_cell_style(),
@@ -589,8 +597,9 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
             XlsxCellType::type t_val = XlsxCellType::s;
             std::wstring number_val = L"";
             _CP_OPT(bool) bool_val;
+			_CP_OPT(std::wstring) str_val;
 
-			int odf_value_type = office_value_type::Custom;
+			office_value_type::type odf_value_type = office_value_type::Custom;
 
             if (table_table_cell_attlist_.common_value_and_type_attlist_)
             {
@@ -650,9 +659,11 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
                         bool_val = oox::parseBoolVal(attr.office_boolean_value_.get());
                 }
                 else if ((odf_value_type == office_value_type::String) ||
-						 (odf_value_type == office_value_type::Custom && attr.office_date_value_))
+						 (odf_value_type == office_value_type::Custom && attr.office_string_value_))
                 {
-                    t_val = XlsxCellType::s;//берем не значение а текстовые элементы
+                    t_val = XlsxCellType::str;
+					if (attr.office_string_value_)
+						str_val = attr.office_string_value_.get();
                 }
             }
 
@@ -704,14 +715,19 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 			is_style_visible = true;
             
 			xfId_last_set= Context.get_style_manager().xfId(&textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, num_format,false,is_style_visible);
-            const int sharedStringId = table_table_cell_content_.xlsx_convert(Context);
+           
+			const int sharedStringId = table_table_cell_content_.xlsx_convert(Context);
+
+			if (t_val == XlsxCellType::str && sharedStringId >=0) t_val = XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
 			
             Context.set_current_cell_style_id(xfId_last_set);
 			
 			bool  is_data_visible = false;
 			
 			if (sharedStringId >= 0 || !formula.empty()	||
-                (t_val == XlsxCellType::n && !number_val.empty()) || (t_val == XlsxCellType::b && !!bool_val))is_data_visible = true;
+                (t_val == XlsxCellType::n && !number_val.empty()) || 
+				(t_val == XlsxCellType::b && bool_val) ||
+				(t_val == XlsxCellType::str && str_val))is_data_visible = true;
 
             // пустые €чейки пропускаем .
             if ( is_data_visible || (cellStyle && is_style_visible))
@@ -743,9 +759,13 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
                         {
                             CP_XML_NODE(L"v")
                             {
-                                CP_XML_CONTENT(sharedStringId);
+								CP_XML_CONTENT(sharedStringId);
                             }
                         }
+						else if (t_val == XlsxCellType::s || str_val) 
+						{
+							CP_XML_CONTENT(str_val.get());
+						}
                         else if (t_val == XlsxCellType::n && !number_val.empty())
                         {
                             CP_XML_NODE(L"v")
@@ -753,7 +773,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
                                 CP_XML_CONTENT(number_val);
                             }
                         }
-                        else if (t_val == XlsxCellType::b && !!bool_val)
+                        else if (t_val == XlsxCellType::b && bool_val)
                         {
                             CP_XML_NODE(L"v")
                             {

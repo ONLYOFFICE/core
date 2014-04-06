@@ -17,6 +17,56 @@
 
 namespace cpdoccore {
 namespace odf {
+//////////////////////////////////////////// ќЅўјя хрень .. вытащить что ли в utils ???
+
+namespace utils
+{
+std::wstring convert_date(std::wstring & oox_date)
+{
+	int iDate = boost::lexical_cast<int>(oox_date);
+
+	boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(iDate-2);
+
+	//to for example, "1899-12-31T05:37:46.66569
+	std::wstring date_str = boost::lexical_cast<std::wstring>(date_.year())
+							+ L"-" +
+							(date_.month() < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(date_.month()) 
+							+ L"-" +
+							(date_.day() < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(date_.day());
+	return date_str;
+}
+
+std::wstring convert_time(std::wstring & oox_time)
+{
+	//PT12H15M42S
+	int hours=0, minutes=0;
+	double sec=0;
+	double dTime = boost::lexical_cast<double>(oox_time);
+	
+	boost::posix_time::time_duration day(24, 0, 0);
+	
+	double millisec = day.total_milliseconds() * dTime;
+
+	sec = millisec /1000.;
+	hours = sec/60./60.;
+	minutes = (sec - (hours * 60 * 60))/60.;
+	sec = sec - (hours *60 + minutes) * 60.;
+
+	int sec1 = sec;
+
+	std::wstring time_str = std::wstring(L"PT") +
+							(hours < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(hours)
+							+ std::wstring(L"H") +
+							(minutes < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(minutes) 
+							+ std::wstring(L"M") +
+							(sec1 < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(sec1)
+							+ std::wstring(L"S");
+
+	return time_str;
+}
+};
+
+///////////////////////////////////////////////////////////////
 
 ods_table_state::ods_table_state(ods_conversion_context & Context, office_element_ptr & elm): context_(Context)
 {     
@@ -28,6 +78,11 @@ ods_table_state::ods_table_state(ods_conversion_context & Context, office_elemen
 	current_column_level_ = 1;
 
 	current_level_.push_back(office_table_);
+
+//default 	dimension
+
+	dimension_columns = 1024;
+	dimension_row = 1024;
 
 }
 
@@ -140,8 +195,12 @@ void ods_table_state::set_column_optimal_width(bool val)
 
 }
 
-void ods_table_state::set_table_dimension(std::wstring ref)
+void ods_table_state::set_table_dimension(int col, int row)
 {
+	if (col<1 || row <1 )return;
+
+	dimension_columns = col +1;
+	dimension_row = row+1;
 }
 
 void ods_table_state::add_row(office_element_ptr & elm, int repeated,office_element_ptr & style_elm)
@@ -426,12 +485,14 @@ void ods_table_state::set_cell_value(std::wstring & value)
 			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_boolean_value_ = value;
 			break;
 		case office_value_type::Date:
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_date_value_ = value;
+			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_date_value_ = utils::convert_date(value);
 			break;
 		case office_value_type::Time:
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_time_value_ = value;
+			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_time_value_ = utils::convert_time(value);
 			break;
 		case office_value_type::Currency:
+		case office_value_type::Percentage:
+		case office_value_type::Float:
 		default:
 			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_ = value;
 		}

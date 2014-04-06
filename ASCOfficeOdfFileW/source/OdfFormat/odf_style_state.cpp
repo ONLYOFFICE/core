@@ -61,6 +61,8 @@ void odf_style_state::set_parent_style_name(std::wstring & name)
 	style* style_ = dynamic_cast<style*>(odf_style_.get());
 	if (!style_)return;
 	
+	if (name == style_->style_name_)
+		return;
 	style_->style_parent_style_name_ = name;
 }
 void odf_style_state::set_data_style_name(std::wstring & name)

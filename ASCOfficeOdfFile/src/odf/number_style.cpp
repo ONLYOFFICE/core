@@ -241,12 +241,12 @@ void number_currency_symbol::add_text(const std::wstring & Text)
 void number_currency_symbol::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     std::wostream & strm = Context.get_num_format_context().output();
-    strm << xml::utils::replace_text_to_xml(L"\"");
+    strm << L"[$";//xml::utils::replace_text_to_xml(L"\"");
     BOOST_FOREACH(const std::wstring & t, text_)
     {
         strm << xml::utils::replace_text_to_xml(t);
     }
-    strm << xml::utils::replace_text_to_xml(L"\"");
+    strm << L"]";;//xml::utils::replace_text_to_xml(L"\"");
 }
 
 

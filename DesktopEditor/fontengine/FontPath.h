@@ -92,26 +92,26 @@ public:
 		*punFlag = m_pFlags[nIndex]; 
 	}
 
-	BOOL GetCurPoint(double *pdX, double *pdY);
+	INT GetCurPoint(double *pdX, double *pdY);
 
 	// Добавляем флаг StrokeAdjust.
 	void AddStrokeAdjustHint(int nFirstControl, int nSecondControl, int nFirstPoint, int nLastPoint);
 	
-	BOOL ToInterface(ISimpleGraphicsPath* pPath);
+	INT ToInterface(ISimpleGraphicsPath* pPath);
 
 private:
 
 	CFontPath(CFontPath *pPath);
 	void Resize(int nPointsCount);
-	BOOL NoCurrentPoint() 
+	INT NoCurrentPoint() 
 	{ 
 		return m_nCurSubpath == m_nPointsCount; 
 	}
-	BOOL OnePointSubpath() 
+	INT OnePointSubpath() 
 	{ 
 		return m_nCurSubpath == m_nPointsCount - 1; 
 	}
-	BOOL OpenSubpath() 
+	INT OpenSubpath() 
 	{ 
 		return m_nCurSubpath < m_nPointsCount - 1; 
 	}

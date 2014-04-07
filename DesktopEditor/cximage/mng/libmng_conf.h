@@ -281,6 +281,15 @@
 #endif
 #endif
 
+
+//!!!
+#define MNG_SUPPORT_DISPLAY
+#define MNG_SUPPORT_READ
+#define	MNG_SUPPORT_WRITE
+#define MNG_ACCESS_CHUNKS
+#define MNG_STORE_CHUNKS
+#define MNG_ERROR_TELLTALE
+
 /* ************************************************************************** */
 /* *                                                                        * */
 /* *  End of user-selectable compile-time options                           * */

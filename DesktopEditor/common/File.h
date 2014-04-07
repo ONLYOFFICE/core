@@ -21,7 +21,7 @@ namespace NSFile
 	class CUtf8Converter
 	{
 	public:
-		static std::wstring GetUnicodeFromCharPtr(const char* pData, LONG lCount, BOOL bIsUtf8 = FALSE)
+		static std::wstring GetUnicodeFromCharPtr(const char* pData, LONG lCount, INT bIsUtf8 = FALSE)
 		{
 			if (bIsUtf8)
 				return GetUnicodeStringFromUTF8((BYTE*)pData, lCount);
@@ -37,7 +37,7 @@ namespace NSFile
 
 			return s;
 		}
-		static std::wstring GetUnicodeFromCharPtr(std::string& sParam, BOOL bIsUtf8 = FALSE)
+		static std::wstring GetUnicodeFromCharPtr(std::string& sParam, INT bIsUtf8 = FALSE)
 		{
 			return GetUnicodeFromCharPtr(sParam.c_str(), (LONG)sParam.length(), bIsUtf8);			
 		}

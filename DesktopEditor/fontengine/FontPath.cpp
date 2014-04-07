@@ -206,7 +206,7 @@ void CFontPath::ToMM(double dHorDpi, double dVerDpi)
 	}
 }
 
-BOOL CFontPath::GetCurPoint(double *pdX, double *pdY) 
+INT CFontPath::GetCurPoint(double *pdX, double *pdY) 
 {
 	if ( NoCurrentPoint() ) 
 	{
@@ -217,7 +217,7 @@ BOOL CFontPath::GetCurPoint(double *pdX, double *pdY)
 	return TRUE;
 }
 
-BOOL CFontPath::ToInterface(ISimpleGraphicsPath* pPath)
+INT CFontPath::ToInterface(ISimpleGraphicsPath* pPath)
 {
 	if ( !pPath  )
 		return FALSE;

@@ -85,9 +85,9 @@ CFontInfo::CFontInfo(const std::wstring& wsFontName,
 	const std::wstring& wsStyle, 
 	const std::wstring& wsFontPath, 
 	long lIndex,
-	BOOL bBold, 
-	BOOL bItalic, 
-	BOOL bFixedWidth, 
+    INT bBold,
+    INT bItalic,
+    INT bFixedWidth,
 	BYTE* pPanose, 
     ULONG ulRange1,
     ULONG ulRange2,
@@ -145,7 +145,7 @@ CFontInfo::~CFontInfo()
 {
 }
 
-BOOL CFontInfo::Equals(const CFontInfo *pFontInfo) 
+INT CFontInfo::Equals(const CFontInfo *pFontInfo)
 {
 	return (m_wsFontName == pFontInfo->m_wsFontName && 
 		m_wsStyle == pFontInfo->m_wsStyle && 
@@ -209,16 +209,16 @@ CFontInfo* CFontInfo::FromBuffer(BYTE*& pBuffer, std::wstring strDir)
     pBuffer += sizeof(int);
 
 	// italic
-	BOOL bItalic = *((BOOL*)pBuffer);
-	pBuffer += sizeof(BOOL);
+    INT bItalic = *((INT*)pBuffer);
+    pBuffer += sizeof(INT);
 
 	// bold
-	BOOL bBold = *((BOOL*)pBuffer);
-	pBuffer += sizeof(BOOL);
+    INT bBold = *((INT*)pBuffer);
+    pBuffer += sizeof(INT);
 
 	// FixedWidth
-	BOOL bFixedWidth = *((BOOL*)pBuffer);
-	pBuffer += sizeof(BOOL);
+    INT bFixedWidth = *((INT*)pBuffer);
+    pBuffer += sizeof(INT);
 
 	// Panose
     lLen = *((int*)pBuffer); // должно быть равно 10
@@ -391,7 +391,7 @@ namespace NSCharsets
 			}
 		}
 	}
-	static int  GetDefaultCharset(BOOL bUseDefCharset)
+    static int  GetDefaultCharset(INT bUseDefCharset)
 	{
 		if ( !bUseDefCharset )
 			return UNKNOWN_CHARSET;
@@ -480,7 +480,7 @@ int CFontList::GetSigPenalty(ULONG ulCandRanges[6], ULONG ulReqRanges[6], double
 	{
 		for ( unsigned long nBitCount = 0, nBit = 1; nBitCount < 32; nBitCount++, nBit *= 2 )
 		{
-			BOOL bReqAdd = FALSE;
+            INT bReqAdd = FALSE;
 
 			if ( ulReqRanges[nIndex] & nBit )
 			{
@@ -513,7 +513,7 @@ int CFontList::GetSigPenalty(ULONG ulCandRanges[6], ULONG ulReqRanges[6], double
 
 	return (int)dPenalty;
 }
-int CFontList::GetFixedPitchPenalty(BOOL bCandFixed, BOOL bReqFixed)
+int CFontList::GetFixedPitchPenalty(INT bCandFixed, INT bReqFixed)
 {
 	int nPenalty = 0;
 
@@ -610,7 +610,7 @@ int CFontList::GetWeightPenalty(USHORT usCandWeight, USHORT usReqWeight)
 	return (3 * ( abs( (int)usCandWeight - (int)usReqWeight ) / 10 ));
 }
 
-int CFontList::GetItalicPenalty(BOOL bCandItalic, BOOL bReqItalic)
+int CFontList::GetItalicPenalty(INT bCandItalic, INT bReqItalic)
 {
 	// Penalty = 4
 
@@ -620,7 +620,7 @@ int CFontList::GetItalicPenalty(BOOL bCandItalic, BOOL bReqItalic)
 	return 0;
 }
 
-int CFontList::GetBoldPenalty(BOOL bCandBold, BOOL bReqBold)
+int CFontList::GetBoldPenalty(INT bCandBold, INT bReqBold)
 {
 	// SmallPenalty
 	// Penalty = 1
@@ -904,8 +904,8 @@ void CFontList::LoadFromFolder(const std::wstring& strDirectory)
 			if (FT_Open_Face( pLibrary, &oOpenArgs, nIndexFace, &pFace))
 				continue;
 
-			BOOL bBold   = (pFace->style_flags & FT_STYLE_FLAG_BOLD ? 1 : 0);
-			BOOL bItalic = pFace->style_flags & FT_STYLE_FLAG_ITALIC;
+            INT bBold   = (pFace->style_flags & FT_STYLE_FLAG_BOLD ? 1 : 0);
+            INT bItalic = pFace->style_flags & FT_STYLE_FLAG_ITALIC;
 
 			const char* pPostName = FT_Get_Postscript_Name(pFace);
 			std::string sPostscriptName = "";
@@ -931,7 +931,7 @@ void CFontList::LoadFromFolder(const std::wstring& strDirectory)
 				}
 			}
 
-			BOOL bFixedWidth = FT_IS_FIXED_WIDTH( pFace );
+            INT bFixedWidth = FT_IS_FIXED_WIDTH( pFace );
 
 			TT_OS2 *pOs2 = (TT_OS2 *)FT_Get_Sfnt_Table( pFace, ft_sfnt_os2 );
 

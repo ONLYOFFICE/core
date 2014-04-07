@@ -112,6 +112,17 @@ extern	char* realloc();
 #include <malloc.h>
 #endif
 
+#ifndef UNICODE
+#define DbgPrint wvsprintf
+#define DbgPrint2 wsprintf
+#define DbgMsgBox MessageBox
+#else
+#define DbgPrint wvsprintfA
+#define DbgPrint2 wsprintfA
+#define DbgMsgBox MessageBoxA
+#endif
+
+#ifndef _IOS
 tdata_t
 _TIFFmalloc(tsize_t s)
 {
@@ -147,16 +158,6 @@ _TIFFmemcmp(const tdata_t p1, const tdata_t p2, tsize_t c)
 {
 	return (memcmp(p1, p2, (size_t) c));
 }
-
-#ifndef UNICODE
-#define DbgPrint wvsprintf
-#define DbgPrint2 wsprintf
-#define DbgMsgBox MessageBox
-#else
-#define DbgPrint wvsprintfA
-#define DbgPrint2 wsprintfA
-#define DbgMsgBox MessageBoxA
-#endif
 
 static void
 Win32WarningHandler(const char* module, const char* fmt, va_list ap)
@@ -216,6 +217,8 @@ Win32ErrorHandler(const char* module, const char* fmt, va_list ap)
 #endif
 }
 TIFFErrorHandler _TIFFerrorHandler = Win32ErrorHandler;
+
+#endif
 
 #endif
 

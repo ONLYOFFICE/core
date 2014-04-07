@@ -26,7 +26,7 @@ int CFontStream::Release()
 	return ret;
 }
 
-BOOL CFontStream::CreateFromFile(const std::wstring& strFileName)
+INT CFontStream::CreateFromFile(const std::wstring& strFileName)
 {
 	NSFile::CFileBinary oFile;
 	if (!oFile.OpenFile(strFileName))
@@ -214,7 +214,7 @@ double CFontManager::UpdateSize(const double &dOldSize, const double &dDpi, cons
 	return dOldSize * dDpi / dNewDpi;
 }
 
-BOOL CFontManager::LoadString(const std::wstring &wsBuffer, const float &fX, const float &fY)
+INT CFontManager::LoadString(const std::wstring &wsBuffer, const float &fX, const float &fY)
 {
 	if (NULL == m_pFont)
 		return FALSE;
@@ -226,7 +226,7 @@ BOOL CFontManager::LoadString(const std::wstring &wsBuffer, const float &fX, con
 	return TRUE;
 }
 
-BOOL CFontManager::LoadString2(const std::wstring &wsBuffer, const float &fX, const float &fY)
+INT CFontManager::LoadString2(const std::wstring &wsBuffer, const float &fX, const float &fY)
 {
 	if (NULL == m_pFont)
 		return FALSE;
@@ -236,7 +236,7 @@ BOOL CFontManager::LoadString2(const std::wstring &wsBuffer, const float &fX, co
 	return TRUE;
 }
 
-BOOL CFontManager::LoadString3(const LONG& gid, const float &fX, const float &fY)
+INT CFontManager::LoadString3(const LONG& gid, const float &fX, const float &fY)
 {
 	if (NULL == m_pFont)
 		return FALSE;
@@ -249,7 +249,7 @@ BOOL CFontManager::LoadString3(const LONG& gid, const float &fX, const float &fY
 	return TRUE;
 }
 
-BOOL CFontManager::LoadString3C(const LONG& gid, const float &fX, const float &fY)
+INT CFontManager::LoadString3C(const LONG& gid, const float &fX, const float &fY)
 {
 	if (NULL == m_pFont)
 		return FALSE;
@@ -262,7 +262,7 @@ BOOL CFontManager::LoadString3C(const LONG& gid, const float &fX, const float &f
 	return TRUE;
 }
 
-BOOL CFontManager::LoadString2C(const LONG& code, const float &fX, const float &fY)
+INT CFontManager::LoadString2C(const LONG& code, const float &fX, const float &fY)
 {
 	if (NULL == m_pFont)
 		return FALSE;
@@ -340,7 +340,7 @@ TBBox CFontManager::MeasureString2()
 	return oBox;
 }
 
-BOOL CFontManager::GetNextChar2(TGlyph*& pGlyph, float& fX, float& fY)
+INT CFontManager::GetNextChar2(TGlyph*& pGlyph, float& fX, float& fY)
 {
 	if (!m_oString.GetNext(pGlyph))
 		return FALSE;
@@ -358,7 +358,7 @@ BOOL CFontManager::GetNextChar2(TGlyph*& pGlyph, float& fX, float& fY)
 	return TRUE;
 }
 
-BOOL CFontManager::SetTextMatrix(const double &fA, const double &fB, const double &fC, const double &fD, const double &fE, const double &fF)
+INT CFontManager::SetTextMatrix(const double &fA, const double &fB, const double &fC, const double &fD, const double &fE, const double &fF)
 {
     if (NULL == m_pFont)
         return FALSE;
@@ -370,7 +370,7 @@ BOOL CFontManager::SetTextMatrix(const double &fA, const double &fB, const doubl
     return TRUE;
 }
 
-BOOL CFontManager::SetTextMatrix2(const double &fA, const double &fB, const double &fC, const double &fD, const double &fE, const double &fF)
+INT CFontManager::SetTextMatrix2(const double &fA, const double &fB, const double &fC, const double &fD, const double &fE, const double &fF)
 {
     if (NULL == m_pFont)
         return FALSE;
@@ -382,7 +382,7 @@ BOOL CFontManager::SetTextMatrix2(const double &fA, const double &fB, const doub
     return TRUE;
 }
 
-void CFontManager::SetStringGID(const BOOL &bStringGID)
+void CFontManager::SetStringGID(const INT &bStringGID)
 {
 	m_bStringGID = bStringGID;
 
@@ -392,7 +392,7 @@ void CFontManager::SetStringGID(const BOOL &bStringGID)
 	m_pFont->SetStringGID(m_bStringGID);
 }
 
-BOOL CFontManager::GetStringPath(ISimpleGraphicsPath* pInterface)
+INT CFontManager::GetStringPath(ISimpleGraphicsPath* pInterface)
 {
 	if (NULL == pInterface)
 		return FALSE;
@@ -453,7 +453,7 @@ int CFontManager::Release()
 	return ret;
 }
 
-BOOL CFontManager::LoadFontByName(const std::wstring& sName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY)
+INT CFontManager::LoadFontByName(const std::wstring& sName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY)
 {
 	if (NULL == m_pApplication)
 		return FALSE;
@@ -461,8 +461,8 @@ BOOL CFontManager::LoadFontByName(const std::wstring& sName, const double& dSize
 	CFontSelectFormat oFormat;
 	oFormat.wsName = new std::wstring(sName);
 
-	oFormat.bBold = new BOOL(FALSE);
-	oFormat.bItalic = new BOOL(FALSE);
+    oFormat.bBold = new INT(FALSE);
+    oFormat.bItalic = new INT(FALSE);
 
 	if (lStyle & 0x01)
 		*oFormat.bBold = TRUE;
@@ -476,7 +476,7 @@ BOOL CFontManager::LoadFontByName(const std::wstring& sName, const double& dSize
 	return LoadFontFromFile(pInfo->m_wsFontPath, pInfo->m_lIndex, dSize, dDpiX, dDpiY);
 }
 
-BOOL CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY)
+INT CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY)
 {
 	if (NULL == m_pApplication)
 		return FALSE;
@@ -490,7 +490,7 @@ BOOL CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceI
 	return TRUE;
 }
 
-BOOL CFontManager::LoadFontFromFile2(CFontsCache* pCache, const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY)
+INT CFontManager::LoadFontFromFile2(CFontsCache* pCache, const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY)
 {
 	if (NULL == pCache)
 		return FALSE;

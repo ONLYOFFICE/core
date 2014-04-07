@@ -416,6 +416,7 @@ print_text_marker (j_decompress_ptr cinfo)
   return TRUE;
 }
 
+#ifndef _IOS
 
 /*
  * The main program.
@@ -615,3 +616,5 @@ main (int argc, char **argv)
   exit(jerr.num_warnings ? EXIT_WARNING : EXIT_SUCCESS);
   return 0;			/* suppress no-return-value warnings */
 }
+
+#endif

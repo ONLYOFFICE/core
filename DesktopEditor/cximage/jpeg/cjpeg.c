@@ -485,6 +485,7 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
   return argn;			/* return index of next arg (file name) */
 }
 
+#ifndef _IOS
 
 /*
  * The main program.
@@ -637,3 +638,5 @@ main (int argc, char **argv)
   exit(jerr.num_warnings ? EXIT_WARNING : EXIT_SUCCESS);
   return 0;			/* suppress no-return-value warnings */
 }
+
+#endif

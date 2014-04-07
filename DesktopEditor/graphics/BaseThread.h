@@ -42,8 +42,8 @@ namespace NSThreads
 	{
 	protected:
 		CThreadDescriptor*	m_hThread;
-		BOOL				m_bRunThread;
-		BOOL				m_bSuspend;
+		INT				m_bRunThread;
+		INT				m_bSuspend;
 
 		long				m_lError;
 		long				m_lThreadPriority;
@@ -100,8 +100,8 @@ namespace NSThreads
 			RELEASEOBJECT(m_hThread);
 		}
 		
-		inline BOOL IsSuspended() { return m_bSuspend; }
-		inline BOOL IsRunned() { return m_bRunThread; }
+		inline INT IsSuspended() { return m_bSuspend; }
+		inline INT IsRunned() { return m_bRunThread; }
 		inline long GetError() { return m_lError; }
 		inline CThreadDescriptor* GetDescriptor() { return m_hThread; }
 		inline int GetPriority() { return m_lThreadPriority; }
@@ -158,7 +158,8 @@ namespace NSThreads
 			pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &old_thread_type);
 
 			CBaseThread* pThis = (CBaseThread*)pv;
-			pThis->ThreadProc();	
+			pThis->ThreadProc();
+            return NULL;
 		}
 		class __native_thread : public NSThreads::CThreadDescriptor
 		{

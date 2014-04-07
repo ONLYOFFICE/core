@@ -322,7 +322,7 @@ bool CxImageICO::Encode(CxFile * hFile, bool bAppend, int32_t nPageCount)
 	int32_t nPages = nPageCount;
 	if (nPages<1) nPages = 1;
 
-	ICONHEADER icon_header={0,1,nPages};
+	ICONHEADER icon_header={0,1,(uint16_t)nPages};
 
 	if (!bAppend)
 		m_dwImageOffset = sizeof(ICONHEADER) + nPages * sizeof(ICONDIRENTRY);
@@ -345,7 +345,7 @@ bool CxImageICO::Encode(CxFile * hFile, bool bAppend, int32_t nPageCount)
 		2*head.biHeight,
 		1,
 		(uint16_t)bitcount,
-		0, imagesize,
+		0, (uint32_t)imagesize,
 		0, 0, 0, 0
 	};
 

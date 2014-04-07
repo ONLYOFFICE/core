@@ -18,7 +18,9 @@
 #endif
 
 typedef unsigned long       DWORD;
+#ifndef _XCODE
 typedef int                 BOOL;
+#endif
 typedef unsigned char       BYTE;
 typedef unsigned short      WORD;
 typedef float               REAL, FLOAT, *PFLOAT;

@@ -65,8 +65,8 @@ public:
 
 		SizeF_T operator+(const SizeF_T& sz) const { return SizeF_T(Width+sz.Width, Height+sz.Height); }
 		SizeF_T operator-(const SizeF_T& sz) const { return SizeF_T(Width-sz.Width, Height-sz.Height); }
-		BOOL Equals(const SizeF_T& sz) const { return((Width == sz.Width) && (Height == sz.Height)); }
-		BOOL Empty() const { return(Width == 0 && Height == 0); }
+		INT Equals(const SizeF_T& sz) const { return((Width == sz.Width) && (Height == sz.Height)); }
+		INT Empty() const { return(Width == 0 && Height == 0); }
 
 public:
 		T Width, Height;
@@ -84,7 +84,7 @@ public:
 		PointF_T(const SizeF_T<T> &size) : X(size.Width), Y(size.Height)  { }
 		PointF_T(T x, T y) : X(x), Y(y) { }
 		//~PointF() { }
-		BOOL Equals(const PointF_T& point) const { return(X==point.X && Y==point.Y); }
+		INT Equals(const PointF_T& point) const { return(X==point.X && Y==point.Y); }
 		PointF_T operator+(const PointF_T& point) const { return PointF_T(X + point.X, Y + point.Y); }
 		PointF_T operator-(const PointF_T& point) const { return PointF_T(X - point.X, Y - point.Y); }
 public:
@@ -111,19 +111,19 @@ public:
 		inline T GetTop() const { return Y; }
 		inline T GetRight() const { return X+Width; }
 		inline T GetBottom() const { return Y+Height; }
-		BOOL IsEmptyArea() const { return (Width <= (T)REAL_EPSILON) || (Height <= (T)REAL_EPSILON); }
-		BOOL Equals(const RectF_T & rect) const
+		INT IsEmptyArea() const { return (Width <= (T)REAL_EPSILON) || (Height <= (T)REAL_EPSILON); }
+		INT Equals(const RectF_T & rect) const
 		{
 			return X == rect.X && Y == rect.Y &&
 				Width == rect.Width && Height == rect.Height;
 		}
-		BOOL Contains(T x, T y) const
+		INT Contains(T x, T y) const
 		{
 			return x >= X && x < X+Width &&
 				y >= Y && y < Y+Height;
 		}
-		BOOL Contains(const PointF_T<T>& pt) const { return Contains(pt.X, pt.Y); }
-		BOOL Contains(const RectF_T& rect) const
+		INT Contains(const PointF_T<T>& pt) const { return Contains(pt.X, pt.Y); }
+		INT Contains(const RectF_T& rect) const
 		{
 			return (X <= rect.X) && (rect.GetRight() <= GetRight()) &&
 				(Y <= rect.Y) && (rect.GetBottom() <= GetBottom());
@@ -132,8 +132,8 @@ public:
 		void Inflate(T dx, T dy) { X -= dx; Y -= dy; Width += 2*dx; Height += 2*dy; }
 		void Inflate(const PointF_T<T>& point) { Inflate(point.X, point.Y); }
 
-		BOOL Intersect(const RectF_T& rect) { return Intersect(*this, *this, rect); }
-		static BOOL Intersect(RectF_T& c, const RectF_T& a, const RectF_T& b)
+		INT Intersect(const RectF_T& rect) { return Intersect(*this, *this, rect); }
+		static INT Intersect(RectF_T& c, const RectF_T& a, const RectF_T& b)
 		{
 				T right = min(a.GetRight(), b.GetRight());
 				T bottom = min(a.GetBottom(), b.GetBottom());
@@ -147,7 +147,7 @@ public:
 				return !c.IsEmptyArea();
 		}
 
-		BOOL IntersectsWith(const RectF_T& rect) const
+		INT IntersectsWith(const RectF_T& rect) const
 		{
 			return (GetLeft() < rect.GetRight() &&
 				GetTop() < rect.GetBottom() &&
@@ -155,7 +155,7 @@ public:
 				GetBottom() > rect.GetTop());
 		}
 
-		static BOOL Union(RectF_T& c, const RectF_T& a, const RectF_T& b)
+		static INT Union(RectF_T& c, const RectF_T& a, const RectF_T& b)
 		{
 				T right = max(a.GetRight(), b.GetRight());
 				T bottom = max(a.GetBottom(), b.GetBottom());
@@ -265,11 +265,11 @@ public:
 		return (top + bottom) / 2.0;
 	}
 
-	inline BOOL IsPointInside(const CDoublePoint& oPoint)
+	inline INT IsPointInside(const CDoublePoint& oPoint)
 	{
 		return IsPointInside(oPoint.x, oPoint.y);
 	}
-	BOOL IsPointInside(const double& pointX, const double& pointY)
+	INT IsPointInside(const double& pointX, const double& pointY)
 	{
 		return ((left <= pointX) && (right >= pointX) &&
 				(top <= pointY) && (bottom >= pointY));

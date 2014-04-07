@@ -83,10 +83,10 @@ public:
 
 public:
 
-	int EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, BOOL bClockDirection);
+	int EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection);
 	double AngToEllPrm(double fAngle, double fXRad, double fYRad);
-	int EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, BOOL bClockDirection);
-	int EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, BOOL bClockDirection = FALSE);
+	int EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection);
+	int EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, INT bClockDirection = FALSE);
 	int Ellipse(double fX, double fY, double fXRad, double fYRad);
 	Status AddArc2(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle);
 };
@@ -110,7 +110,7 @@ public:
 
 public:
 	void SetRenderer(IRenderer* pRenderer);
-	IRenderer* GetRenderer(BOOL bIsAddref = FALSE);
+	IRenderer* GetRenderer(INT bIsAddref = FALSE);
 
 public:
 	bool PathCommandMoveTo(double fX, double fY);
@@ -139,10 +139,10 @@ public:
 protected:
 	bool AddString(std::wstring& bstrText, CFontManager* pFont, double x, double y);
 
-	int EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, BOOL bClockDirection);
+	int EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection);
 	double AngToEllPrm(double fAngle, double fXRad, double fYRad);
-	int EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, BOOL bClockDirection);
-	int EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, BOOL bClockDirection = FALSE);
+	int EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection);
+	int EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, INT bClockDirection = FALSE);
 	int Ellipse(double fX, double fY, double fXRad, double fYRad);
 
 	bool AddArc(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle);

@@ -367,7 +367,7 @@ int CFontFile::GetKerning(UINT unPrevGID, UINT unGID)
     return (delta.x >> 6);
 }
 
-void CFontFile::SetStringGID(const BOOL& bGID)
+void CFontFile::SetStringGID(const INT& bGID)
 {
     if (m_bStringGID == bGID)
         return;
@@ -375,15 +375,15 @@ void CFontFile::SetStringGID(const BOOL& bGID)
     //ClearCache();
     m_bStringGID = bGID;
 }
-BOOL CFontFile::GetStringGID()
+INT CFontFile::GetStringGID()
 {
     return m_bStringGID;
 }
-void CFontFile::SetUseDefaultFont(const BOOL& bUse)
+void CFontFile::SetUseDefaultFont(const INT& bUse)
 {
     m_bUseDefaultFont = bUse;
 }
-BOOL CFontFile::GetUseDefaultFont()
+INT CFontFile::GetUseDefaultFont()
 {
     return m_bUseDefaultFont;
 }
@@ -402,13 +402,13 @@ std::string CFontFile::GetStyleName()
 	return s;
 }
 
-void CFontFile::UpdateStyles(const BOOL& bBold, const BOOL& bItalic)
+void CFontFile::UpdateStyles(const INT& bBold, const INT& bItalic)
 {
 	std::string sStyle = GetStyleName();
 
     // Смотрим какой стиль у исходного шрифта
-    BOOL bSrcBold   = (-1 != sStyle.find("Bold"));
-    BOOL bSrcItalic = (-1 != sStyle.find("Italic"));
+    INT bSrcBold   = (-1 != sStyle.find("Bold"));
+    INT bSrcItalic = (-1 != sStyle.find("Italic"));
 
     if (!bBold) // Нам нужен не жирный шрифт
     {
@@ -447,7 +447,7 @@ void CFontFile::UpdateStyles(const BOOL& bBold, const BOOL& bItalic)
     }
 }
 
-void CFontFile::SetItalic(const BOOL& value)
+void CFontFile::SetItalic(const INT& value)
 {
     if (m_bNeedDoItalic != value)
     {
@@ -456,7 +456,7 @@ void CFontFile::SetItalic(const BOOL& value)
         ResetFontMatrix();
     }
 }
-void CFontFile::SetNeedBold(const BOOL& value)
+void CFontFile::SetNeedBold(const INT& value)
 {
     if (m_bNeedDoBold != value)
         ClearCache();
@@ -714,7 +714,7 @@ TFontCacheSizes CFontFile::GetChar(LONG lUnicode)
     return oSizes;
 }
 
-BOOL CFontFile::GetString2(CGlyphString& oString)
+INT CFontFile::GetString2(CGlyphString& oString)
 {
 	int nCountGlyph = oString.GetLength();
 	if (nCountGlyph <= 0)
@@ -992,7 +992,7 @@ BOOL CFontFile::GetString2(CGlyphString& oString)
 	return TRUE;
 }
 
-BOOL CFontFile::GetString2C(CGlyphString& oString)
+INT CFontFile::GetString2C(CGlyphString& oString)
 {
     unsigned int unPrevGID = 0;
 	float fPenX = 0, fPenY = 0;

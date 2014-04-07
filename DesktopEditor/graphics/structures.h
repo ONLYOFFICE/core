@@ -135,7 +135,7 @@ namespace NSStructures
 			Alpha = dNewAlpha;
 		}
 
-		BOOL IsEqual(CPen* pPen)
+        INT IsEqual(CPen* pPen)
 		{
 			if (NULL == pPen)
 				return FALSE;
@@ -319,7 +319,7 @@ namespace NSStructures
 		}
 
 		
-		BOOL IsEqual(CBrush* pBrush)
+        INT IsEqual(CBrush* pBrush)
 		{
 			if (NULL == pBrush)
 				return FALSE;

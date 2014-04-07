@@ -404,6 +404,7 @@ keymatch (char * arg, const char * keyword, int minchars)
   return 1;			/* A-OK */
 }
 
+#ifndef _IOS
 
 /*
  * The main program.
@@ -581,3 +582,5 @@ main (int argc, char **argv)
   exit(EXIT_SUCCESS);
   return 0;			/* suppress no-return-value warnings */
 }
+
+#endif

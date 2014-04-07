@@ -15,10 +15,10 @@ public:
 	std::wstring*	wsFamilyClass;
 	SHORT*			sFamilyClass;
 
-	BOOL*			bBold;
-	BOOL*			bItalic;
+    INT*			bBold;
+    INT*			bItalic;
 
-	BOOL*			bFixedWidth;
+    INT*			bFixedWidth;
 
 	BYTE*			pPanose;
 
@@ -65,9 +65,9 @@ public:
 		const std::wstring& wsStyle, 
 		const std::wstring& wsFontPath, 
 		long lIndex,
-		BOOL bBold, 
-		BOOL bItalic, 
-		BOOL bFixedWidth, 
+        INT bBold,
+        INT bItalic,
+        INT bFixedWidth,
 		BYTE *pPanose, 
         ULONG ulRange1,
         ULONG ulRange2,
@@ -87,7 +87,7 @@ public:
 		SHORT shCapHeight);
 
 	~CFontInfo();
-	BOOL Equals(const CFontInfo *pFontInfo);
+    INT Equals(const CFontInfo *pFontInfo);
     static CFontInfo* FromBuffer(BYTE*& pBuffer, std::wstring strDir);
 
 public:
@@ -96,9 +96,9 @@ public:
 	long         m_lIndex;       // Номер шрифта в файле(если в файле больше 1 шрифта)
 	std::wstring m_wsStyle;
 
-	BOOL         m_bBold;            // Bold text
-	BOOL         m_bItalic;          // Italic text
-	BOOL         m_bIsFixed;         // Моноширинный шрифт?
+    INT         m_bBold;            // Bold text
+    INT         m_bItalic;          // Italic text
+    INT         m_bIsFixed;         // Моноширинный шрифт?
 
 	BYTE         m_aPanose[10];
 	ULONG	     m_ulUnicodeRange1;  // Bits 0-31
@@ -126,7 +126,7 @@ public:
 namespace NSCharsets
 {
 	static void GetCodePageByCharset(unsigned char unCharset, unsigned long *pulBit, unsigned int *punLongIndex);
-	static int  GetDefaultCharset(BOOL bUseDefCharset = TRUE);
+    static int  GetDefaultCharset(INT bUseDefCharset = TRUE);
 }
 
 class CFontList
@@ -139,14 +139,14 @@ private:
 private:
 	int GetCharsetPenalty(ULONG ulCandRanges[6], unsigned char unReqCharset);
 	int GetSigPenalty(ULONG ulCandRanges[6], ULONG ulReqRanges[6], double dRangeWeight = 1, bool bPenaltyForSuperflouous = false);
-	int GetFixedPitchPenalty(BOOL bCandFixed, BOOL bReqFixed);
+    int GetFixedPitchPenalty(INT bCandFixed, INT bReqFixed);
 	int GetFaceNamePenalty(std::wstring sCandName, std::wstring sReqName);
 	int GetFamilyUnlikelyPenalty(SHORT nCandFamilyClass, SHORT nReqFamilyClass);
 	int GetFamilyUnlikelyPenalty(int nCandFamilyClass, std::wstring sReqFamilyClass);
 	int GetWidthPenalty(USHORT usCandWidth, USHORT usReqWidth);
 	int GetWeightPenalty(USHORT usCandWeight, USHORT usReqWeight);
-	int GetItalicPenalty(BOOL bCandItalic, BOOL bReqItalic);
-	int GetBoldPenalty(BOOL bCandBold, BOOL bReqBold);
+    int GetItalicPenalty(INT bCandItalic, INT bReqItalic);
+    int GetBoldPenalty(INT bCandBold, INT bReqBold);
 	int GetFontFormatPenalty(EFontFormat eCandFormat, EFontFormat eReqFormat);
 	int GetPanosePenalty(BYTE *pCandPanose, BYTE *pReqPanose);
 	int GetAvgWidthPenalty(SHORT shCandWidth, SHORT shReqWidth);

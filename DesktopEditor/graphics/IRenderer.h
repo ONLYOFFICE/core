@@ -168,7 +168,7 @@ public:
 	virtual HRESULT put_BrushTextureAlpha(const LONG& lTxAlpha)			= 0;
 	virtual HRESULT get_BrushLinearAngle(double* dAngle)				= 0;
 	virtual HRESULT put_BrushLinearAngle(const double& dAngle)			= 0;
-	virtual HRESULT BrushRect(const BOOL& val, const double& left, const double& top, const double& width, const double& height) = 0;
+	virtual HRESULT BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height) = 0;
 	virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height) = 0;
 
 	virtual HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount) = 0;
@@ -182,8 +182,8 @@ public:
 	virtual HRESULT put_FontSize(const double& dSize)			= 0;
 	virtual HRESULT get_FontStyle(LONG* lStyle)					= 0;
 	virtual HRESULT put_FontStyle(const LONG& lStyle)			= 0;
-	virtual HRESULT get_FontStringGID(BOOL* bGID)				= 0;
-	virtual HRESULT put_FontStringGID(const BOOL& bGID)			= 0;
+	virtual HRESULT get_FontStringGID(INT* bGID)				= 0;
+	virtual HRESULT put_FontStringGID(const INT& bGID)			= 0;
 	virtual HRESULT get_FontCharSpace(double* dSpace)			= 0;
 	virtual HRESULT put_FontCharSpace(const double& dSpace)		= 0;
 	virtual HRESULT get_FontFaceIndex(int* lFaceIndex)			= 0;

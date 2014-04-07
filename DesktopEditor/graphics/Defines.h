@@ -6,7 +6,7 @@ typedef unsigned int        UINT, *PUINT;
 typedef unsigned long		ARGB;
 
 typedef unsigned char		BYTE;
-typedef int					BOOL;
+typedef int					INT;
 typedef	unsigned long		DWORD;
 typedef	long				LONG;
 

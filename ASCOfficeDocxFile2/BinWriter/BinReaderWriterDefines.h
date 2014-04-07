@@ -1,4 +1,5 @@
 #pragma once
+extern int g_nCurFormatVersion;
 namespace BinDocxRW
 {
 const double eps     = 0.001;
@@ -93,7 +94,7 @@ const double g_dKoef_mm_to_eightpoint = 8 * g_dKoef_mm_to_pt;
 const double g_dKoef_mm_to_hps = 2 * g_dKoef_mm_to_pt;
 
 const static TCHAR* g_sFormatSignature = _T("DOCY");
-const int g_nFormatVersion = 4;
+const int g_nFormatVersion = 5;
 	namespace c_oAscWrapStyle{enum c_oSerFormat
 	{
 		Inline = 0,
@@ -293,7 +294,8 @@ const int g_nFormatVersion = 4;
 		pBdr = 27,
 		Spacing_BeforeAuto = 28,
 		Spacing_AfterAuto = 29,
-		FramePr = 30
+		FramePr = 30,
+		SectPr = 31
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{
@@ -358,7 +360,10 @@ const int g_nFormatVersion = 4;
 	{
 		pgSz = 0,
 		pgMar = 1,
-		setting = 2
+		setting = 2,
+		headers = 3,
+		footers = 4,
+		hdrftrelem = 5
 	};}
 	namespace c_oSerProp_secPrSettingsType{enum c_oSerProp_secPrSettingsType
 	{

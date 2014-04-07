@@ -3,6 +3,7 @@
 #define BINREADER_COMMON 
 
 #include "FileDownloader.h"
+#include "../../Common/Base64.h"
 
 bool IsUnicodeSymbol( WCHAR symbol )
 {

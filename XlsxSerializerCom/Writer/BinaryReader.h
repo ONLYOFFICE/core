@@ -2586,7 +2586,7 @@ namespace BinXlsxRW {
 			{
 				pRow->m_oHt.Init();
 				pRow->m_oHt->SetValue(m_oBufferedStream.ReadDouble());
-				if(g_nFormatVersion < 2)
+				if(g_nCurFormatVersion < 2)
 				{
 					pRow->m_oCustomHeight.Init();
 					pRow->m_oCustomHeight->SetValue(SimpleTypes::onoffTrue);
@@ -2990,7 +2990,9 @@ namespace BinXlsxRW {
 								version = version.Right(version.GetLength() - 1);
 								int nTempVersion = atoi(version);
 								if(0 != nTempVersion)
-									nVersion = nTempVersion;
+								{
+									g_nCurFormatVersion = nVersion = nTempVersion;
+								}
 							}
 							OOX::Spreadsheet::CXlsx oXlsx;
 							CSimpleArray<CString> aDeleteFiles;

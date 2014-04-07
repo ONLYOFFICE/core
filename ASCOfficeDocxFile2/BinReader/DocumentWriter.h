@@ -1,6 +1,6 @@
 #pragma once
 #include "Common.h"
-
+#include "../BinWriter/BinReaderWriterDefines.h";
 namespace Writers
 {
 	class DocumentWriter : public ContentWriter
@@ -29,27 +29,52 @@ namespace Writers
 		CString WriteSectPrHdrFtr()
 		{
 			CString sResult;
-			bool bTitlePage = false;
-			if(!m_oHeaderFooterWriter.m_oHeaderFirst.rId.IsEmpty())
+			if(g_nCurFormatVersion < 5)
 			{
-				sResult += _T("<w:headerReference w:type=\"first\" r:id=\"") + m_oHeaderFooterWriter.m_oHeaderFirst.rId + _T("\"/>");
-				bTitlePage = true;
+				bool bTitlePage = false;
+				for(int i = 0, length = m_oHeaderFooterWriter.m_aHeaders.GetCount(); i < length; ++i)
+				{
+					HdrFtrItem* pHeader = m_oHeaderFooterWriter.m_aHeaders[i];
+					if(false == pHeader->rId.IsEmpty())
+					{
+						if(SimpleTypes::hdrftrFirst == pHeader->eType)
+						{
+							sResult += _T("<w:headerReference w:type=\"first\" r:id=\"") + pHeader->rId + _T("\"/>");
+							bTitlePage = true;
+						}
+						else if(SimpleTypes::hdrftrEven == pHeader->eType)
+						{
+							sResult += _T("<w:headerReference w:type=\"even\" r:id=\"") + pHeader->rId + _T("\"/>");
+						}
+						else
+						{
+							sResult += _T("<w:headerReference w:type=\"default\" r:id=\"") + pHeader->rId + _T("\"/>");
+						}
+					}
+				}
+				for(int i = 0, length = m_oHeaderFooterWriter.m_aFooters.GetCount(); i < length; ++i)
+				{
+					HdrFtrItem* pFooter = m_oHeaderFooterWriter.m_aFooters[i];
+					if(false == pFooter->rId.IsEmpty())
+					{
+						if(SimpleTypes::hdrftrFirst == pFooter->eType)
+						{
+							sResult += _T("<w:footerReference w:type=\"first\" r:id=\"") + pFooter->rId + _T("\"/>");
+							bTitlePage = true;
+						}
+						else if(SimpleTypes::hdrftrEven == pFooter->eType)
+						{
+							sResult += _T("<w:footerReference w:type=\"even\" r:id=\"") + pFooter->rId + _T("\"/>");
+						}
+						else
+						{
+							sResult += _T("<w:footerReference w:type=\"default\" r:id=\"") + pFooter->rId + _T("\"/>");
+						}
+					}
+				}
+				if(true == bTitlePage)
+					sResult += _T("<w:titlePg/>");
 			}
-			if(!m_oHeaderFooterWriter.m_oHeaderEven.rId.IsEmpty())
-				sResult += _T("<w:headerReference w:type=\"even\" r:id=\"") + m_oHeaderFooterWriter.m_oHeaderEven.rId + _T("\"/>");
-			if(!m_oHeaderFooterWriter.m_oHeaderOdd.rId.IsEmpty())
-				sResult += _T("<w:headerReference w:type=\"default\" r:id=\"") + m_oHeaderFooterWriter.m_oHeaderOdd.rId + _T("\"/>");
-			if(!m_oHeaderFooterWriter.m_oFooterFirst.rId.IsEmpty())
-			{
-				sResult += _T("<w:footerReference w:type=\"first\" r:id=\"") + m_oHeaderFooterWriter.m_oFooterFirst.rId + _T("\"/>");
-				bTitlePage = true;
-			}
-			if(!m_oHeaderFooterWriter.m_oFooterEven.rId.IsEmpty())
-				sResult += _T("<w:footerReference w:type=\"even\" r:id=\"") + m_oHeaderFooterWriter.m_oFooterEven.rId + _T("\"/>");
-			if(!m_oHeaderFooterWriter.m_oFooterOdd.rId.IsEmpty())
-				sResult += _T("<w:footerReference w:type=\"default\" r:id=\"") + m_oHeaderFooterWriter.m_oFooterOdd.rId + _T("\"/>");
-			if(true == bTitlePage)
-				sResult += _T("<w:titlePg/>");
 			return sResult;
 		}
 	};

@@ -198,7 +198,7 @@ namespace NSCommon
 
 			return IsInit();
 		}
-		Type* GetPointer()
+		Type* GetPointer() const
 		{
 			return m_pPointer; 
 		}

@@ -141,6 +141,21 @@ private:
 		return res;
 	};
 };
+class Binary_HdrFtrTableReader : public Binary_CommonReader<Binary_HdrFtrTableReader>
+{
+	Writers::FileWriter& m_oFileWriter;
+	int nCurType;
+	int nCurHeaderType;
+public:
+	Writers::HeaderFooterWriter& m_oHeaderFooterWriter;
+public:
+	Binary_HdrFtrTableReader(Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter);
+    int Read();
+    int ReadHdrFtrContent(BYTE type, long length, void* poResult);
+    int ReadHdrFtrFEO(BYTE type, long length, void* poResult);
+    int ReadHdrFtrItem(BYTE type, long length, void* poResult);
+	int ReadHdrFtrItemContent(BYTE type, long length, void* poResult);
+};
 class Binary_rPrReader : public Binary_CommonReader<Binary_rPrReader>
 {
 protected:
@@ -371,11 +386,14 @@ private:
 public:
 	Binary_CommonReader2 oBinary_CommonReader2;
 	Binary_rPrReader oBinary_rPrReader;
+	Binary_HdrFtrTableReader oBinary_HdrFtrTableReader;
+	Writers::FileWriter& m_oFileWriter;
 	bool bDoNotWriteNullProp;
 	long m_nCurNumId;
 	long m_nCurLvl;
 
-	Binary_pPrReader(Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter):m_oFontTableWriter(oFileWriter.m_oFontTableWriter),Binary_CommonReader(poBufferedStream),oBinary_CommonReader2(poBufferedStream),oBinary_rPrReader(poBufferedStream)
+	Binary_pPrReader(Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter):
+		m_oFontTableWriter(oFileWriter.m_oFontTableWriter),Binary_CommonReader(poBufferedStream),oBinary_CommonReader2(poBufferedStream),oBinary_rPrReader(poBufferedStream),oBinary_HdrFtrTableReader(poBufferedStream,oFileWriter),m_oFileWriter(oFileWriter)
 	{
 		bDoNotWriteNullProp = false;
 		m_nCurNumId = -1;
@@ -617,6 +635,15 @@ public:
 				res = Read2(length, &Binary_pPrReader::ReadFramePr, this, &oFramePr);
 				if(false == oFramePr.IsEmpty())
 					oFramePr.Write(*pCStringWriter);
+				break;
+			}
+		case c_oSerProp_pPrType::SectPr:
+			{
+				SectPr oSectPr;
+				res = Read1(length, &Binary_pPrReader::Read_SecPr, this, &oSectPr);
+				pCStringWriter->WriteString(CString(_T("<w:sectPr>")));
+				pCStringWriter->WriteString(oSectPr.Write());
+				pCStringWriter->WriteString(CString(_T("</w:sectPr>")));
 				break;
 			}
 		default:
@@ -904,6 +931,156 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	};
+	int Read_SecPr(BYTE type, long length, void* poResult)
+	{
+		SectPr* pSectPr = static_cast<SectPr*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if( c_oSerProp_secPrType::pgSz == type )
+		{
+			res = Read2(length, &Binary_pPrReader::Read_pgSz, this, poResult);
+		}
+		else if( c_oSerProp_secPrType::pgMar == type )
+		{
+			res = Read2(length, &Binary_pPrReader::Read_pgMar, this, poResult);
+		}
+		else if( c_oSerProp_secPrType::setting == type )
+		{
+			res = Read2(length, &Binary_pPrReader::Read_pgSetting, this, poResult);
+		}
+		else if( c_oSerProp_secPrType::headers == type )
+		{
+			res = Read1(length, &Binary_pPrReader::Read_pgHeader, this, poResult);
+		}
+		else if( c_oSerProp_secPrType::footers == type )
+		{
+			res = Read1(length, &Binary_pPrReader::Read_pgFooter, this, poResult);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int Read_pgSz(BYTE type, long length, void* poResult)
+	{
+		SectPr* pSectPr = static_cast<SectPr*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if( c_oSer_pgSzType::Orientation == type )
+		{
+			pSectPr->cOrientation = m_oBufferedStream.ReadByte();
+		}
+		else if( c_oSer_pgSzType::W == type )
+		{
+			pSectPr->W = m_oBufferedStream.ReadDouble2();
+		}
+		else if( c_oSer_pgSzType::H == type )
+		{
+			pSectPr->H = m_oBufferedStream.ReadDouble2();
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int Read_pgMar(BYTE type, long length, void* poResult)
+	{
+		SectPr* pSectPr = static_cast<SectPr*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if( c_oSer_pgMarType::Left == type )
+		{
+			pSectPr->Left = m_oBufferedStream.ReadDouble2();
+		}
+		else if( c_oSer_pgMarType::Top == type )
+		{
+			pSectPr->Top = m_oBufferedStream.ReadDouble2();
+		}
+		else if( c_oSer_pgMarType::Right == type )
+		{
+			pSectPr->Right = m_oBufferedStream.ReadDouble2();
+		}
+		else if( c_oSer_pgMarType::Bottom == type )
+		{
+			pSectPr->Bottom = m_oBufferedStream.ReadDouble2();
+		}
+		else if( c_oSer_pgMarType::Header == type )
+		{
+			pSectPr->bHeader = true;
+			pSectPr->Header = m_oBufferedStream.ReadDouble2();
+		}
+		else if( c_oSer_pgMarType::Footer == type )
+		{
+			pSectPr->bFooter = true;
+			pSectPr->Footer = m_oBufferedStream.ReadDouble2();
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int Read_pgSetting(BYTE type, long length, void* poResult)
+	{
+		SectPr* pSectPr = static_cast<SectPr*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if( c_oSerProp_secPrSettingsType::titlePg == type )
+		{
+			pSectPr->bTitlePg = true;
+			pSectPr->TitlePg = m_oBufferedStream.ReadBool();
+		}
+		else if( c_oSerProp_secPrSettingsType::EvenAndOddHeaders == type )
+		{
+			pSectPr->bEvenAndOddHeaders = true;
+			pSectPr->EvenAndOddHeaders = m_oBufferedStream.ReadBool();
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int Read_pgHeader(BYTE type, long length, void* poResult)
+	{
+		SectPr* pSectPr = static_cast<SectPr*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if( c_oSerProp_secPrType::hdrftrelem == type )
+		{
+			int nHdrFtrIndex = m_oBufferedStream.ReadLong();
+			if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.GetCount())
+			{
+				Writers::HdrFtrItem* pHdrFtrItem = m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders[nHdrFtrIndex];
+				pHdrFtrItem->m_sFilename;
+				CString sType;
+				if(SimpleTypes::hdrftrFirst == pHdrFtrItem->eType)
+					sType = _T("first");
+				else if(SimpleTypes::hdrftrEven == pHdrFtrItem->eType)
+					sType = _T("even");
+				else
+					sType = _T("default");
+				pSectPr->sHeaderFooterReference += _T("<w:headerReference w:type=\"") + sType +_T("\" r:id=\"") + pHdrFtrItem->rId + _T("\"/>");
+			}
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int Read_pgFooter(BYTE type, long length, void* poResult)
+	{
+		SectPr* pSectPr = static_cast<SectPr*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if( c_oSerProp_secPrType::hdrftrelem == type )
+		{
+			int nHdrFtrIndex = m_oBufferedStream.ReadLong();
+			if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters.GetCount())
+			{
+				Writers::HdrFtrItem* pHdrFtrItem = oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters[nHdrFtrIndex];
+				pHdrFtrItem->m_sFilename;
+				CString sType;
+				if(SimpleTypes::hdrftrFirst == pHdrFtrItem->eType)
+					sType = _T("first");
+				else if(SimpleTypes::hdrftrEven == pHdrFtrItem->eType)
+					sType = _T("even");
+				else
+					sType = _T("default");
+				pSectPr->sHeaderFooterReference += _T("<w:footerReference w:type=\"") + sType +_T("\" r:id=\"") + pHdrFtrItem->rId + _T("\"/>");
+			}
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
 };
 class Binary_tblPrReader : public Binary_CommonReader<Binary_tblPrReader>
 {
@@ -2662,35 +2839,9 @@ public:
 		{
 			SectPr oSectPr;
 			res = Read1(length, &Binary_DocumentTableReader::Read_SecPr, this, &oSectPr);
-			long nWidth = Round(oSectPr.W * g_dKoef_mm_to_twips);
-			long nHeight = Round(oSectPr.H * g_dKoef_mm_to_twips);
-			long nMLeft = Round(oSectPr.Left * g_dKoef_mm_to_twips);
-			long nMTop = Round(oSectPr.Top * g_dKoef_mm_to_twips);
-			long nMRight = Round(oSectPr.Right * g_dKoef_mm_to_twips);
-			long nMBottom = Round(oSectPr.Bottom * g_dKoef_mm_to_twips);
-			long nMHeader = Round(oSectPr.Header * g_dKoef_mm_to_twips);
-			long nMFooter = Round(oSectPr.Footer * g_dKoef_mm_to_twips);
-
-			CString pgSz;
-			if(orientation_Portrait == oSectPr.cOrientation)
-				pgSz.Format(_T("<w:pgSz w:w=\"%d\" w:h=\"%d\"/>"), nWidth, nHeight);
-			else
-				pgSz.Format(_T("<w:pgSz w:w=\"%d\" w:h=\"%d\" w:orient=\"landscape\"/>"), nWidth, nHeight);
-			CString pgMar;pgMar.Format(_T("<w:pgMar w:top=\"%d\" w:right=\"%d\" w:bottom=\"%d\" w:left=\"%d\" w:gutter=\"0\""), nMTop, nMRight, nMBottom, nMLeft);
-			if(oSectPr.bHeader)
-			{
-				CString sHeader;sHeader.Format(_T(" w:header=\"%d\""), nMHeader);
-				pgMar+= sHeader;
-			}
-			if(oSectPr.bFooter)
-			{
-				CString sFooter;sFooter.Format(_T(" w:footer=\"%d\""), nMFooter);
-				pgMar+= sFooter;
-			}
-			pgMar+= _T("/>");
-			m_oDocumentWriter.m_oSecPr.WriteString(pgSz);
-			m_oDocumentWriter.m_oSecPr.WriteString(pgMar);
-			m_oDocumentWriter.m_oSecPr.WriteString(CString(_T("<w:cols w:space=\"708\"/><w:docGrid w:linePitch=\"360\"/>")));
+			m_oDocumentWriter.m_oSecPr.WriteString(oSectPr.Write());
+			if(oSectPr.bEvenAndOddHeaders && oSectPr.EvenAndOddHeaders)
+				m_oFileWriter.m_oSettingWriter.AddSetting(_T("<w:evenAndOddHeaders/>"));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5265,75 +5416,6 @@ public:
 		Binary_DocumentTableReader* pBinary_DocumentTableReader = static_cast<Binary_DocumentTableReader*>(poResult);
 		return pBinary_DocumentTableReader->ReadDocumentContent(type, length, NULL);
 	}
-	int Read_SecPr(BYTE type, long length, void* poResult)
-	{
-		int res = c_oSerConstants::ReadOk;
-		if( c_oSerProp_secPrType::pgSz == type )
-		{
-			res = Read2(length, &Binary_DocumentTableReader::Read_pgSz, this, poResult);
-		}
-		else if( c_oSerProp_secPrType::pgMar == type )
-		{
-			res = Read2(length, &Binary_DocumentTableReader::Read_pgMar, this, poResult);
-		}
-		else
-			res = c_oSerConstants::ReadUnknown;
-		return res;
-	}
-	int Read_pgSz(BYTE type, long length, void* poResult)
-	{
-		SectPr* pSectPr = static_cast<SectPr*>(poResult);
-		int res = c_oSerConstants::ReadOk;
-		if( c_oSer_pgSzType::Orientation == type )
-		{
-			pSectPr->cOrientation = m_oBufferedStream.ReadByte();
-		}
-		else if( c_oSer_pgSzType::W == type )
-		{
-			pSectPr->W = m_oBufferedStream.ReadDouble2();
-		}
-		else if( c_oSer_pgSzType::H == type )
-		{
-			pSectPr->H = m_oBufferedStream.ReadDouble2();
-		}
-		else
-			res = c_oSerConstants::ReadUnknown;
-		return res;
-	}
-	int Read_pgMar(BYTE type, long length, void* poResult)
-	{
-		SectPr* pSectPr = static_cast<SectPr*>(poResult);
-		int res = c_oSerConstants::ReadOk;
-		if( c_oSer_pgMarType::Left == type )
-		{
-			pSectPr->Left = m_oBufferedStream.ReadDouble2();
-		}
-		else if( c_oSer_pgMarType::Top == type )
-		{
-			pSectPr->Top = m_oBufferedStream.ReadDouble2();
-		}
-		else if( c_oSer_pgMarType::Right == type )
-		{
-			pSectPr->Right = m_oBufferedStream.ReadDouble2();
-		}
-		else if( c_oSer_pgMarType::Bottom == type )
-		{
-			pSectPr->Bottom = m_oBufferedStream.ReadDouble2();
-		}
-		else if( c_oSer_pgMarType::Header == type )
-		{
-			pSectPr->bHeader = true;
-			pSectPr->Header = m_oBufferedStream.ReadDouble2();
-		}
-		else if( c_oSer_pgMarType::Footer == type )
-		{
-			pSectPr->bFooter = true;
-			pSectPr->Footer = m_oBufferedStream.ReadDouble2();
-		}
-		else
-			res = c_oSerConstants::ReadUnknown;
-		return res;
-	}
 	int ReadImage(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -5715,76 +5797,65 @@ public:
 		int res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-};
-class Binary_HdrFtrTableReader : public Binary_CommonReader<Binary_HdrFtrTableReader>
-{
-	Writers::FileWriter& m_oFileWriter;
-	Writers::HeaderFooterWriter& m_oHeaderFooterWriter;
-	int nCurType;
-	int nCurHeaderType;
-	int nHeaderCount;
-	int nFooterCount;
-public:
-	Binary_HdrFtrTableReader(Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter),m_oHeaderFooterWriter(oFileWriter.m_oHeaderFooterWriter)
+	int Read_SecPr(BYTE type, long length, void* poResult)
 	{
-		nHeaderCount = 0;
-		nFooterCount = 0;
+		return oBinary_pPrReader.Read_SecPr(type, length, poResult);
 	}
-    int Read()
-    {
-		return ReadTable(&Binary_HdrFtrTableReader::ReadHdrFtrContent, this);
-    };
-    int ReadHdrFtrContent(BYTE type, long length, void* poResult)
-    {
-		int res = c_oSerConstants::ReadOk;
-		if ( c_oSerHdrFtrTypes::Header == type || c_oSerHdrFtrTypes::Footer == type )
-        {
-			nCurType = type;
-			res = Read1(length, &Binary_HdrFtrTableReader::ReadHdrFtrFEO, this, poResult);
-        }
-        else
-			res = c_oSerConstants::ReadUnknown;
-        return res;
-    };
-    int ReadHdrFtrFEO(BYTE type, long length, void* poResult)
-    {
-		int res = c_oSerConstants::ReadOk;
-		if ( c_oSerHdrFtrTypes::HdrFtr_First == type || c_oSerHdrFtrTypes::HdrFtr_Even == type || c_oSerHdrFtrTypes::HdrFtr_Odd == type )
-        {
-			nCurHeaderType = type;
-            res = Read1(length, &Binary_HdrFtrTableReader::ReadHdrFtrItem, this, poResult);
-        }
-        else
-			res = c_oSerConstants::ReadUnknown;
-        return res;
-    };
-    int ReadHdrFtrItem(BYTE type, long length, void* poResult)
-    {
-		int res = c_oSerConstants::ReadOk;
-		if ( c_oSerHdrFtrTypes::HdrFtr_Content == type )
-        {
-			Writers::HdrFtrItem* poHdrFtrItem = NULL;
+};
+Binary_HdrFtrTableReader::Binary_HdrFtrTableReader(Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter),m_oHeaderFooterWriter(oFileWriter.m_oHeaderFooterWriter)
+{
+}
+int Binary_HdrFtrTableReader::Read()
+{
+	return ReadTable(&Binary_HdrFtrTableReader::ReadHdrFtrContent, this);
+};
+int Binary_HdrFtrTableReader::ReadHdrFtrContent(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	if ( c_oSerHdrFtrTypes::Header == type || c_oSerHdrFtrTypes::Footer == type )
+	{
+		nCurType = type;
+		res = Read1(length, &Binary_HdrFtrTableReader::ReadHdrFtrFEO, this, poResult);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+};
+int Binary_HdrFtrTableReader::ReadHdrFtrFEO(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	if ( c_oSerHdrFtrTypes::HdrFtr_First == type || c_oSerHdrFtrTypes::HdrFtr_Even == type || c_oSerHdrFtrTypes::HdrFtr_Odd == type )
+	{
+		nCurHeaderType = type;
+		res = Read1(length, &Binary_HdrFtrTableReader::ReadHdrFtrItem, this, poResult);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+};
+int Binary_HdrFtrTableReader::ReadHdrFtrItem(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	if ( c_oSerHdrFtrTypes::HdrFtr_Content == type )
+	{
+		Writers::HdrFtrItem* poHdrFtrItem = NULL;
+		switch(nCurHeaderType)
+		{
+		case c_oSerHdrFtrTypes::HdrFtr_First:poHdrFtrItem = new Writers::HdrFtrItem(SimpleTypes::hdrftrFirst);break;
+		case c_oSerHdrFtrTypes::HdrFtr_Even:poHdrFtrItem = new Writers::HdrFtrItem(SimpleTypes::hdrftrEven);break;
+		case c_oSerHdrFtrTypes::HdrFtr_Odd:poHdrFtrItem = new Writers::HdrFtrItem(SimpleTypes::hdrftrDefault);break;
+		}
+		if(NULL != poHdrFtrItem)
+		{
 			if(nCurType == c_oSerHdrFtrTypes::Header)
 			{
-				switch(nCurHeaderType)
-				{
-				case c_oSerHdrFtrTypes::HdrFtr_First:poHdrFtrItem = &m_oHeaderFooterWriter.m_oHeaderFirst;break;
-				case c_oSerHdrFtrTypes::HdrFtr_Even:poHdrFtrItem = &m_oHeaderFooterWriter.m_oHeaderEven;break;
-				case c_oSerHdrFtrTypes::HdrFtr_Odd:poHdrFtrItem = &m_oHeaderFooterWriter.m_oHeaderOdd;break;
-				}
-				nHeaderCount++;
-				poHdrFtrItem->m_sFilename.Format(_T("header%d.xml"), nHeaderCount);
+				m_oHeaderFooterWriter.m_aHeaders.Add(poHdrFtrItem);
+				poHdrFtrItem->m_sFilename.Format(_T("header%d.xml"), m_oHeaderFooterWriter.m_aHeaders.GetCount());
 			}
 			else
 			{
-				switch(nCurHeaderType)
-				{
-				case c_oSerHdrFtrTypes::HdrFtr_First:poHdrFtrItem = &m_oHeaderFooterWriter.m_oFooterFirst;break;
-				case c_oSerHdrFtrTypes::HdrFtr_Even:poHdrFtrItem = &m_oHeaderFooterWriter.m_oFooterEven;break;
-				case c_oSerHdrFtrTypes::HdrFtr_Odd:poHdrFtrItem = &m_oHeaderFooterWriter.m_oFooterOdd;break;
-				}
-				nFooterCount++;
-				poHdrFtrItem->m_sFilename.Format(_T("footer%d.xml"), nFooterCount);
+				m_oHeaderFooterWriter.m_aFooters.Add(poHdrFtrItem);
+				poHdrFtrItem->m_sFilename.Format(_T("footer%d.xml"), m_oHeaderFooterWriter.m_aFooters.GetCount());
 			}
 			m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
 			Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, poHdrFtrItem->Header, NULL);
@@ -5797,17 +5868,16 @@ public:
 				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(bstrRelsPath);
 				SysFreeString(bstrRelsPath);
 			}
-            
-        }
-        else
-			res = c_oSerConstants::ReadUnknown;
-        return res;
-    };
-	int ReadHdrFtrItemContent(BYTE type, long length, void* poResult)
-    {
-		Binary_DocumentTableReader* pBinary_DocumentTableReader = static_cast<Binary_DocumentTableReader*>(poResult);
-		return pBinary_DocumentTableReader->ReadDocumentContent(type, length, NULL);
-    };
+		}
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+};
+int Binary_HdrFtrTableReader::ReadHdrFtrItemContent(BYTE type, long length, void* poResult)
+{
+	Binary_DocumentTableReader* pBinary_DocumentTableReader = static_cast<Binary_DocumentTableReader*>(poResult);
+	return pBinary_DocumentTableReader->ReadDocumentContent(type, length, NULL);
 };
 class BinaryFileReader
 {
@@ -5953,53 +6023,29 @@ public: BinaryFileReader(CString& sFileInDir, Streams::CBufferedStream& oBuffere
 					long rId;
 					m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering"), _T("numbering.xml"), NULL, &rId);
 				}
-				if(false == m_oFileWriter.m_oHeaderFooterWriter.m_oHeaderFirst.IsEmpty())
+				for(int i = 0, length = m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.GetCount(); i < length; ++i)
 				{
-					long rId;
-					BSTR bstrFilename = m_oFileWriter.m_oHeaderFooterWriter.m_oHeaderFirst.m_sFilename.AllocSysString();
-					m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/header"), bstrFilename, NULL, &rId);
-					SysFreeString(bstrFilename);
-					m_oFileWriter.m_oHeaderFooterWriter.m_oHeaderFirst.rId.Format(_T("rId%d"), rId);
+					Writers::HdrFtrItem* pHeader = m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders[i];
+					if(false == pHeader->IsEmpty())
+					{
+						long rId;
+						BSTR bstrFilename = pHeader->m_sFilename.AllocSysString();
+						m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/header"), bstrFilename, NULL, &rId);
+						SysFreeString(bstrFilename);
+						pHeader->rId.Format(_T("rId%d"), rId);
+					}
 				}
-				if(false == m_oFileWriter.m_oHeaderFooterWriter.m_oHeaderEven.IsEmpty())
+				for(int i = 0, length = m_oFileWriter.m_oHeaderFooterWriter.m_aFooters.GetCount(); i < length; ++i)
 				{
-					long rId;
-					BSTR bstrFilename = m_oFileWriter.m_oHeaderFooterWriter.m_oHeaderEven.m_sFilename.AllocSysString();
-					m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/header"), bstrFilename, NULL, &rId);
-					SysFreeString(bstrFilename);
-					m_oFileWriter.m_oHeaderFooterWriter.m_oHeaderEven.rId.Format(_T("rId%d"), rId);
-				}
-				if(false == m_oFileWriter.m_oHeaderFooterWriter.m_oHeaderOdd.IsEmpty())
-				{
-					long rId;
-					BSTR bstrFilename = m_oFileWriter.m_oHeaderFooterWriter.m_oHeaderOdd.m_sFilename.AllocSysString();
-					m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/header"), bstrFilename, NULL, &rId);
-					SysFreeString(bstrFilename);
-					m_oFileWriter.m_oHeaderFooterWriter.m_oHeaderOdd.rId.Format(_T("rId%d"), rId);
-				}
-				if(false == m_oFileWriter.m_oHeaderFooterWriter.m_oFooterFirst.IsEmpty())
-				{
-					long rId;
-					BSTR bstrFilename = m_oFileWriter.m_oHeaderFooterWriter.m_oFooterFirst.m_sFilename.AllocSysString();
-					m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer"), bstrFilename, NULL, &rId);
-					SysFreeString(bstrFilename);
-					m_oFileWriter.m_oHeaderFooterWriter.m_oFooterFirst.rId.Format(_T("rId%d"), rId);
-				}
-				if(false == m_oFileWriter.m_oHeaderFooterWriter.m_oFooterEven.IsEmpty())
-				{
-					long rId;
-					BSTR bstrFilename = m_oFileWriter.m_oHeaderFooterWriter.m_oFooterEven.m_sFilename.AllocSysString();
-					m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer"), bstrFilename, NULL, &rId);
-					SysFreeString(bstrFilename);
-					m_oFileWriter.m_oHeaderFooterWriter.m_oFooterEven.rId.Format(_T("rId%d"), rId);
-				}
-				if(false == m_oFileWriter.m_oHeaderFooterWriter.m_oFooterOdd.IsEmpty())
-				{
-					long rId;
-					BSTR bstrFilename = m_oFileWriter.m_oHeaderFooterWriter.m_oFooterOdd.m_sFilename.AllocSysString();
-					m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer"), bstrFilename, NULL, &rId);
-					SysFreeString(bstrFilename);
-					m_oFileWriter.m_oHeaderFooterWriter.m_oFooterOdd.rId.Format(_T("rId%d"), rId);
+					Writers::HdrFtrItem* pFooter = m_oFileWriter.m_oHeaderFooterWriter.m_aFooters[i];
+					if(false == pFooter->IsEmpty())
+					{
+						long rId;
+						BSTR bstrFilename = pFooter->m_sFilename.AllocSysString();
+						m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer"), bstrFilename, NULL, &rId);
+						SysFreeString(bstrFilename);
+						pFooter->rId.Format(_T("rId%d"), rId);
+					}
 				}
 				res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_oDocumentWriter, &oBinary_CommentsTableReader.m_oComments).Read();
 				CString sRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir + _T("\\word\\_rels\\document.xml.rels");

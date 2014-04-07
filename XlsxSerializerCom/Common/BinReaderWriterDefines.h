@@ -1,4 +1,7 @@
 #pragma once
+
+extern int g_nCurFormatVersion;
+
 namespace BinXlsxRW
 {
 	const double g_dKoef_mm_to_pt = 72 / (2.54 * 10);

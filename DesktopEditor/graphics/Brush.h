@@ -70,8 +70,8 @@ class CBrushLinearGradient : public CBrush
 public:
 	CBrushLinearGradient( const PointF& p1, const PointF& p2, const CColor& c1, const CColor& c2 );
 	CBrushLinearGradient( const Point& p1, const Point& p2, const CColor& c1, const CColor& c2 );
-	CBrushLinearGradient( const RectF& rect, const CColor& c1, const CColor& c2, float angle, BOOL isAngleScalable );
-	CBrushLinearGradient( const Rect& rect, const CColor& c1, const CColor& c2, float angle, BOOL isAngleScalable );
+	CBrushLinearGradient( const RectF& rect, const CColor& c1, const CColor& c2, float angle, INT isAngleScalable );
+	CBrushLinearGradient( const Rect& rect, const CColor& c1, const CColor& c2, float angle, INT isAngleScalable );
 	CBrushLinearGradient( const RectF& rect, const CColor& c1, const CColor& c2, Aggplus::LinearGradientMode mode );
 	CBrushLinearGradient( const Rect& rect, const CColor& c1, const CColor& c2, Aggplus::LinearGradientMode mode );
 	CBrushLinearGradient( const CBrushLinearGradient& out );
@@ -98,10 +98,10 @@ public:
 	// additional methods
 	void GetSubColor( int nIndex, CColor* pColor, float* pPosition ) const;
 	
-	void SetRelativeCoords( BOOL bRelative );
-	BOOL IsRelativeCoords() const;
-	BOOL IsAngleScalable() const;
-	BOOL IsRectable() const;
+	void SetRelativeCoords( INT bRelative );
+	INT IsRelativeCoords() const;
+	INT IsAngleScalable() const;
+	INT IsRectable() const;
 	float GetAngle() const;
 	inline void SetBounds(const CDoubleRect& oRect) { Bounds = oRect; }
 	inline CDoubleRect& GetBounds() { return Bounds; }
@@ -125,9 +125,9 @@ protected:
 
 	Aggplus::WrapMode m_wrap;
 
-	BOOL m_bAngleScalable; // масштабировать угол поворота относительно заданных точек b = arctan( width / height * tan(angle) );
-	BOOL m_bRectable; // в качестве направляющей используется диагональ прямоугольника
-	BOOL m_bRelativeCoords; // координаты точек считаются относительно рисуемого примитива
+	INT m_bAngleScalable; // масштабировать угол поворота относительно заданных точек b = arctan( width / height * tan(angle) );
+	INT m_bRectable; // в качестве направляющей используется диагональ прямоугольника
+	INT m_bRelativeCoords; // координаты точек считаются относительно рисуемого примитива
 };
 
 class CBrushTexture : public CBrush
@@ -161,12 +161,12 @@ public:
 		
 public:
 	CImage* m_pImage;
-	BOOL m_bReleaseImage;
+	INT m_bReleaseImage;
 	
 	WrapMode m_wrapMode;
 	CMatrix m_mtx;
 
-	BOOL m_bUsePattern;
+	INT m_bUsePattern;
 	CColor m_colors[2];
 };
 }

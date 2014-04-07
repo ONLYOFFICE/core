@@ -449,6 +449,7 @@ keymatch (char * arg, const char * keyword, int minchars)
 /*
  * The main program.
  */
+#ifndef _IOS
 
 int
 main (int argc, char **argv)
@@ -513,3 +514,5 @@ main (int argc, char **argv)
   exit(EXIT_SUCCESS);
   return 0;			/* suppress no-return-value warnings */
 }
+
+#endif

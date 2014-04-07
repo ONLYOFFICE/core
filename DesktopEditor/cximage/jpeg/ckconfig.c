@@ -281,6 +281,7 @@ int is_shifting_signed (arg)
   return 0;			/* try it with unsigned anyway */
 }
 
+#ifndef _IOS
 
 #ifdef HAVE_PROTOTYPES
 int main (int argc, char ** argv)
@@ -400,3 +401,5 @@ int main (argc, argv)
 
   return 0;
 }
+
+#endif

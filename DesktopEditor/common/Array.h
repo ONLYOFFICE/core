@@ -60,7 +60,7 @@ public:
 		return m_nSize;
 	}
 
-	BOOL SetCount(int nAllocSize)
+	INT SetCount(int nAllocSize)
 	{
 		RemoveAll();
 		if (nAllocSize != m_nAllocSize)
@@ -78,7 +78,7 @@ public:
 		return TRUE;
 	}
 
-	BOOL Add()
+	INT Add()
 	{
 		if (m_nSize == m_nAllocSize)
 		{
@@ -105,7 +105,7 @@ public:
 		return TRUE;
 	}
 
-	BOOL Add(const T& t)
+	INT Add(const T& t)
 	{
 		if (m_nSize == m_nAllocSize)
 		{
@@ -131,7 +131,7 @@ public:
 		m_aT[m_nSize++] = t;		
 		return TRUE;
 	}
-	BOOL RemoveAt(int nIndex)
+	INT RemoveAt(int nIndex)
 	{
 		if (nIndex < 0 || nIndex >= m_nSize)
 			return FALSE;
@@ -148,7 +148,7 @@ public:
 		return TRUE;
 	}
 
-	BOOL RemoveAt(int nIndex, int nCount)
+	INT RemoveAt(int nIndex, int nCount)
 	{
 		if (nIndex < 0 || nIndex >= m_nSize || nCount < 1)
 			return FALSE;

@@ -185,7 +185,7 @@ void CGraphicsRenderer::SetClipRect(double x, double y, double w, double h)
 	m_pRenderer->SetClipRect3(x, y, w, h);
 }
 
-BOOL CGraphicsRenderer::CheckValidate(BOOL bOnlyGraphics)
+INT CGraphicsRenderer::CheckValidate(INT bOnlyGraphics)
 {
 	if (NULL == m_pRenderer)
 		return FALSE;
@@ -481,7 +481,7 @@ HRESULT CGraphicsRenderer::put_BrushLinearAngle(const double& dAngle)
 	m_oBrush.LinearAngle = dAngle;
 	return S_OK;
 }
-HRESULT CGraphicsRenderer::BrushRect(const BOOL& val, const double& left, const double& top, const double& width, const double& height)
+HRESULT CGraphicsRenderer::BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height)
 {
 	m_oBrush.Rectable = val;
 	m_oBrush.Rect.X = (float)left;
@@ -552,12 +552,12 @@ HRESULT CGraphicsRenderer::put_FontStyle(const LONG& lStyle)
 	m_oFont.SetStyle(lStyle);
 	return S_OK;
 }
-HRESULT CGraphicsRenderer::get_FontStringGID(BOOL* bGID)
+HRESULT CGraphicsRenderer::get_FontStringGID(INT* bGID)
 {
 	*bGID = m_oFont.StringGID;
 	return S_OK;
 }
-HRESULT CGraphicsRenderer::put_FontStringGID(const BOOL& bGID)
+HRESULT CGraphicsRenderer::put_FontStringGID(const INT& bGID)
 {
 	m_oFont.StringGID = bGID;
 	return S_OK;
@@ -663,11 +663,11 @@ HRESULT CGraphicsRenderer::EndCommand(const DWORD& lType)
 	{
 	case c_nClipType:
 		{
-			BOOL bIsIn = (c_nClipRegionTypeWinding == (0x0001 & m_lCurrentClipMode));
+			INT bIsIn = (c_nClipRegionTypeWinding == (0x0001 & m_lCurrentClipMode));
 
 			m_pPath->SetRuler(bIsIn ? false : true);
 
-			BOOL bIsIntersect = (c_nClipRegionIntersect == (0x0100 & m_lCurrentClipMode));
+			INT bIsIntersect = (c_nClipRegionIntersect == (0x0100 & m_lCurrentClipMode));
 			m_pRenderer->CombineClip(m_pPath, bIsIntersect ? agg::sbool_and : agg::sbool_or);
 
 			//m_pRenderer->SetClip(m_pPath);
@@ -758,7 +758,7 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 		return S_FALSE;
 
 	LONG lFillType = (nType & 0xFF00);
-	BOOL bIsStroke = (0x01 == (nType & 0x01));
+	INT bIsStroke = (0x01 == (nType & 0x01));
 
 	switch (lFillType)
 	{

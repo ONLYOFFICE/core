@@ -17,9 +17,9 @@ public:
 	int     nY;        // Сдвиг по Y начальной точки для рисования символа
 	int     nWidth;    // Ширина символа
 	int     nHeight;   // Высота символа
-	BOOL    bAA;       // Anti-aliased: True означает, что Bitmap 8-битный(т.е. с альфой); False - Bitmap 1-битный
+	INT    bAA;       // Anti-aliased: True означает, что Bitmap 8-битный(т.е. с альфой); False - Bitmap 1-битный
 	BYTE*	pData;     // Bitmap data(картинка с символом)
-	BOOL    bFreeData; // True, если память в pData нужно освободить
+	INT    bFreeData; // True, если память в pData нужно освободить
 
 	TGlyphBitmap();
 	~TGlyphBitmap();
@@ -149,7 +149,7 @@ public:
 	void Transform(float *pfX, float *pfY);
 	void SetTrans(float fX, float fY);
 	TGlyph* GetAt(int nIndex);
-	BOOL GetNext(TGlyph*& pGlyph);
+	INT GetNext(TGlyph*& pGlyph);
 public:
 	float   m_fTransX;
 	float   m_fTransY;

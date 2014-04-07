@@ -137,7 +137,7 @@ public:
 		// delete all in system wrapper
 	}
 
-	virtual BOOL Create(LONG lWidth, LONG lHeight, double dDPIX, double dDPIY) = 0;
+	virtual INT Create(LONG lWidth, LONG lHeight, double dDPIX, double dDPIY) = 0;
 };
 
 
@@ -209,7 +209,7 @@ public:
 	CGraphics(CImage* pImage);
 	~CGraphics();
 
-	BOOL IsDib();
+	INT IsDib();
 
 	Status Create(BYTE* pPixels, int lWidth, int lHeight, int lStride, LONG lPitch);
 	Status Create2(BYTE* pPixels, int lWidth, int lHeight, int lStride, LONG lPitch, LONG x, LONG y, LONG w, LONG h, double dW, double dH, CDIB* pDib = NULL);
@@ -247,7 +247,7 @@ public:
 	Status CombineClip(CGraphicsPath* pPath, agg::sbool_op_e op);
 
 	// измерение текста
-	BOOL MeasureString(const std::wstring& strText, CFontManager* pManager, double* lWidth, double* lHeight);
+	INT MeasureString(const std::wstring& strText, CFontManager* pManager, double* lWidth, double* lHeight);
 	Status Clear(CColor oColor);
 
 	Status DrawArc(NSStructures::CPen* pPen, double x, double y, double width, double height, double startAngle, double sweepAngle);
@@ -275,13 +275,13 @@ public:
 	Status DrawGdiplusImage(Gdiplus::Bitmap* pImage, double x, double y, double width, double height);
 #endif
 
-	BOOL DrawImageUnscaled(CImage* pImage, double x, double y);
+	INT DrawImageUnscaled(CImage* pImage, double x, double y);
 
 	// отрисовка текста
-	BOOL DrawString(const std::wstring& strText, CFontManager* pFont, CBrush* pBrush, double x, double y);
-	BOOL DrawStringC(const LONG& lText, CFontManager* pFont, CBrush* pBrush, double x, double y);
-	BOOL DrawStringPath(const std::wstring& strText, CFontManager* pFont, CBrush* pBrush, double x, double y);
-	BOOL DrawStringPathC(const LONG& lText, CFontManager* pFont, CBrush* pBrush, double x, double y);
+	INT DrawString(const std::wstring& strText, CFontManager* pFont, CBrush* pBrush, double x, double y);
+	INT DrawStringC(const LONG& lText, CFontManager* pFont, CBrush* pBrush, double x, double y);
+	INT DrawStringPath(const std::wstring& strText, CFontManager* pFont, CBrush* pBrush, double x, double y);
+	INT DrawStringPathC(const LONG& lText, CFontManager* pFont, CBrush* pBrush, double x, double y);
 
 	void CalculateFullTransform();
 	bool IsClip();

@@ -480,7 +480,7 @@ namespace Aggplus
 		return &m_agg_ps;
 	}
 
-	int CGraphicsPath::EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, BOOL bClockDirection)
+	int CGraphicsPath::EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection)
 	{
 		int nRet = 0;
 		
@@ -527,7 +527,7 @@ namespace Aggplus
 		return atan2( sin( fAngle ) / fYRad,  cos( fAngle ) / fXRad );
 	}
 
-	int CGraphicsPath::EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, BOOL bClockDirection)
+	int CGraphicsPath::EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection)
 	{
 		// переведем углы в радианы
 		int nRet = 0;
@@ -588,7 +588,7 @@ namespace Aggplus
 		return nRet;
 	}
 
-	int CGraphicsPath::EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, BOOL bClockDirection)
+	int CGraphicsPath::EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, INT bClockDirection)
 	{
 		// Рассчитаем начальную, конечную и контрольные точки
 		double fX1  = 0.0, fX2  = 0.0, fY1  = 0.0, fY2  = 0.0;
@@ -657,7 +657,7 @@ namespace Aggplus
 					return GenericError;
 		}
 
-		BOOL bClockDirection = FALSE;
+		INT bClockDirection = FALSE;
 		double fEndAngle = 360 - ( fSweepAngle + fStartAngle );
 		double fSrtAngle = 360 - fStartAngle;
 		if( fSweepAngle > 0 )
@@ -696,7 +696,7 @@ namespace Aggplus
 		m_pRenderer = pRenderer;
 		ADDREFINTERFACE(m_pRenderer);
 	}
-	IRenderer* CGraphicsPathSimpleConverter::GetRenderer(BOOL bIsAddref)
+	IRenderer* CGraphicsPathSimpleConverter::GetRenderer(INT bIsAddref)
 	{
 		if (bIsAddref)
 		{
@@ -960,7 +960,7 @@ namespace Aggplus
 		return (TRUE == pFont->GetStringPath(this)) ? true : false;
 	}
 
-	int CGraphicsPathSimpleConverter::EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, BOOL bClockDirection)
+	int CGraphicsPathSimpleConverter::EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection)
 	{
 		int nRet = 0;
 		
@@ -1007,7 +1007,7 @@ namespace Aggplus
 		return atan2( sin( fAngle ) / fYRad,  cos( fAngle ) / fXRad );
 	}
 
-	int CGraphicsPathSimpleConverter::EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, BOOL bClockDirection)
+	int CGraphicsPathSimpleConverter::EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection)
 	{
 		// переведем углы в радианы
 		int nRet = 0;
@@ -1068,7 +1068,7 @@ namespace Aggplus
 		return nRet;
 	}
 
-	int CGraphicsPathSimpleConverter::EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, BOOL bClockDirection)
+	int CGraphicsPathSimpleConverter::EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, INT bClockDirection)
 	{
 		// Рассчитаем начальную, конечную и контрольные точки
 		double fX1  = 0.0, fX2  = 0.0, fY1  = 0.0, fY2  = 0.0;
@@ -1137,7 +1137,7 @@ namespace Aggplus
 					return false;
 		}
 
-		BOOL bClockDirection = FALSE;
+		INT bClockDirection = FALSE;
 		double fEndAngle = 360 - ( fSweepAngle + fStartAngle );
 		double fSrtAngle = 360 - fStartAngle;
 		if( fSweepAngle > 0 )

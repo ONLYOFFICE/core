@@ -6,10 +6,6 @@
 #include "ImageFilesCache.h"
 #include "../raster/BgraFrame.h"
 
-#ifdef BOOL
-#undef BOOL
-#endif
-
 class CGraphicsRenderer : public IRenderer
 {
 private:
@@ -31,7 +27,7 @@ private:
 	DWORD m_lCurrentCommandType;
 
 	LONG  m_lCurrentClipMode;
-	BOOL  m_bIsSetupClip;
+	INT  m_bIsSetupClip;
 
 	// область отсечения
 	LONG	m_lClipLeft;
@@ -46,7 +42,7 @@ private:
 	CImageFilesCache* m_pCache;
 
 	double m_dGlobalAlpha;
-	BOOL m_bGlobalAlphaEnabled;
+	INT m_bGlobalAlphaEnabled;
 
 public:
 	CGraphicsRenderer();
@@ -64,7 +60,7 @@ public:
 	void SetClipRect(double x, double y, double w, double h);
 
 protected:
-	BOOL CheckValidate(BOOL bOnlyGraphics = FALSE);
+	INT CheckValidate(INT bOnlyGraphics = FALSE);
 	void Clear();
 
 	void UpdateSize();
@@ -130,7 +126,7 @@ public:
 	virtual HRESULT put_BrushTextureAlpha(const LONG& lTxAlpha);
 	virtual HRESULT get_BrushLinearAngle(double* dAngle);
 	virtual HRESULT put_BrushLinearAngle(const double& dAngle);
-	virtual HRESULT BrushRect(const BOOL& val, const double& left, const double& top, const double& width, const double& height);
+	virtual HRESULT BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height);
 	virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height);
 	virtual HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount);
 
@@ -143,8 +139,8 @@ public:
 	virtual HRESULT put_FontSize(const double& dSize);
 	virtual HRESULT get_FontStyle(LONG* lStyle);
 	virtual HRESULT put_FontStyle(const LONG& lStyle);
-	virtual HRESULT get_FontStringGID(BOOL* bGID);
-	virtual HRESULT put_FontStringGID(const BOOL& bGID);
+	virtual HRESULT get_FontStringGID(INT* bGID);
+	virtual HRESULT put_FontStringGID(const INT& bGID);
 	virtual HRESULT get_FontCharSpace(double* dSpace);
 	virtual HRESULT put_FontCharSpace(const double& dSpace);
 	virtual HRESULT get_FontFaceIndex(int* lFaceIndex);

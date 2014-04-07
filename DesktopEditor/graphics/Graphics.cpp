@@ -111,7 +111,7 @@ namespace Aggplus
 #endif
 	}
 
-	BOOL CGraphics::IsDib()
+	INT CGraphics::IsDib()
 	{
 		return (NULL != m_pDib);
 	}
@@ -451,7 +451,7 @@ namespace Aggplus
 		return Ok;
 	}
 
-	BOOL CGraphics::MeasureString(const std::wstring& strText, CFontManager* pManager, double* lWidth, double* lHeight)
+	INT CGraphics::MeasureString(const std::wstring& strText, CFontManager* pManager, double* lWidth, double* lHeight)
 	{
 		if (NULL == pManager || NULL == lWidth || NULL == lHeight)
 			return FALSE;
@@ -921,12 +921,12 @@ namespace Aggplus
 	}
 #endif
 
-	BOOL CGraphics::DrawImageUnscaled(CImage* pImage, double x, double y)
+	INT CGraphics::DrawImageUnscaled(CImage* pImage, double x, double y)
 	{
 		return TRUE;
 	}
 
-	BOOL CGraphics::DrawString(const std::wstring& strText, CFontManager* pFont, CBrush* pBrush, double x, double y)
+	INT CGraphics::DrawString(const std::wstring& strText, CFontManager* pFont, CBrush* pBrush, double x, double y)
 	{		
 		if (pBrush->GetType() != BrushTypeSolidColor)
 			return TRUE;
@@ -950,7 +950,7 @@ namespace Aggplus
 		pFont->LoadString2(strText, (float)_x, (float)_y);
 		float fX = 0;
 		float fY = 0;
-		BOOL bRes = FALSE;
+		INT bRes = FALSE;
 
 		while (TRUE)
 		{
@@ -970,7 +970,7 @@ namespace Aggplus
 
 		return TRUE;
 	}
-	BOOL CGraphics::DrawStringC(const LONG& lText, CFontManager* pFont, CBrush* pBrush, double x, double y)
+	INT CGraphics::DrawStringC(const LONG& lText, CFontManager* pFont, CBrush* pBrush, double x, double y)
 	{		
 		if (pBrush->GetType() != BrushTypeSolidColor)
 			return TRUE;
@@ -994,7 +994,7 @@ namespace Aggplus
 		pFont->LoadString2C(lText, (float)_x, (float)_y);
 		float fX = 0;
 		float fY = 0;
-		BOOL bRes = FALSE;
+		INT bRes = FALSE;
 
 		while (TRUE)
 		{
@@ -1014,7 +1014,7 @@ namespace Aggplus
 
 		return TRUE;
 	}
-	BOOL CGraphics::DrawStringPath(const std::wstring& strText, CFontManager* pFont, CBrush* pBrush, double x, double y)
+	INT CGraphics::DrawStringPath(const std::wstring& strText, CFontManager* pFont, CBrush* pBrush, double x, double y)
 	{		
 		if (pBrush->GetType() != BrushTypeSolidColor)
 			return TRUE;
@@ -1032,7 +1032,7 @@ namespace Aggplus
 		
 		return TRUE;
 	}
-	BOOL CGraphics::DrawStringPathC(const LONG& lText, CFontManager* pFont, CBrush* pBrush, double x, double y)
+	INT CGraphics::DrawStringPathC(const LONG& lText, CFontManager* pFont, CBrush* pBrush, double x, double y)
 	{		
 		if (pBrush->GetType() != BrushTypeSolidColor)
 			return TRUE;

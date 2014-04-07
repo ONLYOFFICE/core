@@ -2,8 +2,9 @@
 #define _BUILD_TIMER_H_
 
 #include "BaseThread.h"
+#include "time.h"
 
-#ifdef QT_MAC
+#ifdef _MAC
 #include "mach/mach.h"
 #include "mach/mach_time.h"
 #endif
@@ -31,7 +32,7 @@ namespace NSTimers
 	{
 	private:
 		DWORD	m_dwInterval;
-		BOOL	m_bIsCOMNeed;
+		INT	m_bIsCOMNeed;
 
 	public:
 		CTimer() : NSThreads::CBaseThread()
@@ -44,7 +45,7 @@ namespace NSTimers
 		}
 
 		inline void SetInterval(const DWORD& dwInterval) { m_dwInterval = dwInterval; }
-		inline void SetCOMNeed(const BOOL& bIsCOM) { m_bIsCOMNeed = bIsCOM; }
+		inline void SetCOMNeed(const INT& bIsCOM) { m_bIsCOMNeed = bIsCOM; }
 
 	protected:
 		virtual DWORD ThreadProc()

@@ -117,8 +117,8 @@ public:
     UINT m_unHorDpi;		// Горизонтальное разрешение
     UINT m_unVerDpi;		// Вертикальное разрешение
 
-    BOOL m_bNeedDoItalic;
-    BOOL m_bNeedDoBold;
+    INT m_bNeedDoItalic;
+    INT m_bNeedDoBold;
 
     double m_dCharSpacing;
 
@@ -138,7 +138,7 @@ public:
 	int m_nSymbolic;
 	double m_dTextScale;
 
-    BOOL m_bStringGID;
+    INT m_bStringGID;
 	
 	FT_Matrix m_oFontMatrix;
 	FT_Matrix m_oTextMatrix;
@@ -155,13 +155,13 @@ public:
 	// вот так экономим память. нету пока таких шрифтов, в которых глифов больше 0xFFFF
 	USHORT m_arrCacheSizesIndexs[FONT_CACHE_SIZES_INDEXES_SIZE];
 
-    BOOL		m_bUseDefaultFont;
+    INT		m_bUseDefaultFont;
 	CFontFile*	m_pDefaultFont;
 
-    BOOL		m_bIsNeedUpdateMatrix12;
+    INT		m_bIsNeedUpdateMatrix12;
 
 	CFontManager* m_pFontManager;
-    BOOL m_bHintsSupport;
+    INT m_bHintsSupport;
 
 public:
 
@@ -189,8 +189,8 @@ public:
 	bool SetTextMatrix(const double& fA, const double& fB, const double& fC, const double fD, double fE, double fF);
     void SetFontMatrix(const double& fA, const double& fB, const double& fC, const double fD, double fE, double fF);
     
-	BOOL GetString2(CGlyphString& oString);
-    BOOL GetString2C(CGlyphString& oString);
+	INT GetString2(CGlyphString& oString);
+    INT GetString2C(CGlyphString& oString);
 	TFontCacheSizes GetChar(LONG lUnicode);
 
 	void AddToSizesCache(const TFontCacheSizes& oSizes);
@@ -199,18 +199,18 @@ public:
 	int SetCMapForCharCode2(long lUnicode);
 
     int GetKerning(FT_UInt unPrevGID, FT_UInt unGID);
-    void SetStringGID(const BOOL& bGID);
-    BOOL GetStringGID();
-    void SetUseDefaultFont(const BOOL& bUse);
-    BOOL GetUseDefaultFont();
+    void SetStringGID(const INT& bGID);
+    INT GetStringGID();
+    void SetUseDefaultFont(const INT& bUse);
+    INT GetUseDefaultFont();
     void SetCharSpacing(const double& dCharSpacing);
     double GetCharSpacing();
     std::string GetStyleName();
     
-	void UpdateStyles(const BOOL& bBold, const BOOL& bItalic);
+	void UpdateStyles(const INT& bBold, const INT& bItalic);
     
-	void SetItalic(const BOOL& value);
-    void SetNeedBold(const BOOL& value);
+	void SetItalic(const INT& value);
+    void SetNeedBold(const INT& value);
     
 	int GetAscender();
     int GetDescender();
@@ -227,7 +227,7 @@ public:
 struct TFreeTypeFontPath 
 {
 	CFontPath*	pPath;
-	BOOL		bNeedClose;
+	INT		bNeedClose;
 };
 
 static int GlyphPathMoveTo(const FT_Vector *pPoint, void *pPath);

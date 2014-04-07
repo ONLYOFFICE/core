@@ -450,7 +450,7 @@ TGlyph* CGlyphString::GetAt(int nIndex)
 	return &(m_pGlyphsBuffer[nCurIndex]);
 }
 
-BOOL CGlyphString::GetNext(TGlyph*& pGlyph)
+INT CGlyphString::GetNext(TGlyph*& pGlyph)
 {
 	if ( m_nGlyphIndex >= m_nGlyphsCount || m_nGlyphIndex < 0 )
 	{

@@ -89,7 +89,7 @@ namespace Aggplus
 		m_bRelativeCoords = FALSE;
 	}
 
-	CBrushLinearGradient::CBrushLinearGradient( const RectF& rect, const CColor& c1, const CColor& c2, float angle, BOOL isAngleScalable ) 
+	CBrushLinearGradient::CBrushLinearGradient( const RectF& rect, const CColor& c1, const CColor& c2, float angle, INT isAngleScalable ) 
 		: CBrush(BrushTypeLinearGradient)
 	{
 		m_points[0].X = rect.GetLeft();
@@ -109,7 +109,7 @@ namespace Aggplus
 		m_bRelativeCoords = FALSE;
 	}
 
-	CBrushLinearGradient::CBrushLinearGradient( const Rect& rect, const CColor& c1, const CColor& c2, float angle, BOOL isAngleScalable ) 
+	CBrushLinearGradient::CBrushLinearGradient( const Rect& rect, const CColor& c1, const CColor& c2, float angle, INT isAngleScalable ) 
 		: CBrush(BrushTypeLinearGradient)
 	{
 		m_points[0].X = (float)rect.GetLeft();
@@ -358,20 +358,20 @@ namespace Aggplus
 		*pPosition = m_subcolors[nIndex].position;
 	}
 	
-	void CBrushLinearGradient::SetRelativeCoords( BOOL bRelative )
+	void CBrushLinearGradient::SetRelativeCoords( INT bRelative )
 	{
 		m_bRelativeCoords = bRelative;
 	}
-	BOOL CBrushLinearGradient::IsRelativeCoords() const
+	INT CBrushLinearGradient::IsRelativeCoords() const
 	{
 		return m_bRelativeCoords;
 	}
 
-	BOOL CBrushLinearGradient::IsAngleScalable() const
+	INT CBrushLinearGradient::IsAngleScalable() const
 	{
 		return m_bAngleScalable;
 	}
-	BOOL CBrushLinearGradient::IsRectable() const
+	INT CBrushLinearGradient::IsRectable() const
 	{
 		return m_bRectable;
 	}

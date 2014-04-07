@@ -22,7 +22,7 @@ public:
 	
 
 public:
-	virtual BOOL CreateFromFile(const std::wstring& strFileName);
+	virtual INT CreateFromFile(const std::wstring& strFileName);
 };
 
 class CApplicationFontStreams
@@ -67,9 +67,9 @@ public:
 
 	std::wstring	m_sName;
 
-    BOOL	m_bUseDefaultFont;
+    INT	m_bUseDefaultFont;
     double	m_fCharSpacing;
-    BOOL	m_bStringGID;
+    INT	m_bStringGID;
 
     int m_lUnits_Per_Em;
     int m_lAscender;
@@ -93,11 +93,11 @@ public:
 
 	double UpdateSize(const double& dOldSize, const double& dDpi, const double& dNewDpi);
 	
-	BOOL LoadString(const std::wstring& wsBuffer, const float& fX, const float& fY);	
-	BOOL LoadString2(const std::wstring& wsBuffer, const float& fX, const float& fY);
-	BOOL LoadString3(const LONG& gid, const float& fX, const float& fY);
-	BOOL LoadString3C(const LONG& gid, const float& fX, const float& fY);
-	BOOL LoadString2C(const LONG& wsBuffer, const float& fX, const float& fY);
+	INT LoadString(const std::wstring& wsBuffer, const float& fX, const float& fY);	
+	INT LoadString2(const std::wstring& wsBuffer, const float& fX, const float& fY);
+	INT LoadString3(const LONG& gid, const float& fX, const float& fY);
+	INT LoadString3C(const LONG& gid, const float& fX, const float& fY);
+	INT LoadString2C(const LONG& wsBuffer, const float& fX, const float& fY);
 
 	int GetKerning(UINT unPrevGID, UINT unGID);
 
@@ -105,21 +105,21 @@ public:
 	TBBox MeasureString();
 	TBBox MeasureString2();
 	
-	BOOL GetNextChar2(TGlyph*& pGlyph, float& fX, float& fY);
+	INT GetNextChar2(TGlyph*& pGlyph, float& fX, float& fY);
 
-    BOOL SetTextMatrix(const double& fA, const double& fB, const double& fC, const double& fD, const double& fE, const double& fF);
-	BOOL SetTextMatrix2(const double& fA, const double& fB, const double& fC, const double& fD, const double& fE, const double& fF);
-	void SetStringGID(const BOOL& bStringGID);
+    INT SetTextMatrix(const double& fA, const double& fB, const double& fC, const double& fD, const double& fE, const double& fF);
+	INT SetTextMatrix2(const double& fA, const double& fB, const double& fC, const double& fD, const double& fE, const double& fF);
+	void SetStringGID(const INT& bStringGID);
 
-	BOOL GetStringPath(ISimpleGraphicsPath* pPath);
+	INT GetStringPath(ISimpleGraphicsPath* pPath);
 
 	// addref/release
 	virtual int AddRef();
 	virtual int Release();
 
-	BOOL LoadFontByName(const std::wstring& sName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY);
-	BOOL LoadFontFromFile(const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
-	BOOL LoadFontFromFile2(CFontsCache* pCache, const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
+	INT LoadFontByName(const std::wstring& sName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY);
+	INT LoadFontFromFile(const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
+	INT LoadFontFromFile2(CFontsCache* pCache, const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
 	
 public:
 	static CFontFile* LoadFontFile(FT_Library library, CFontStream* pStream, LONG lFaceIndex);

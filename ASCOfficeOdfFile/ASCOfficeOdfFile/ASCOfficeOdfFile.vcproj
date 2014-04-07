@@ -367,6 +367,30 @@
 			<File
 				RelativePath=".\ASCOfficeOdfFile.rc"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCResourceCompilerTool"
+						Culture="1033"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCResourceCompilerTool"
+						Culture="1033"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release ASC|Win32"
+					>
+					<Tool
+						Name="VCResourceCompilerTool"
+						Culture="1033"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\ASCOfficeOdfFile.rgs"

@@ -355,8 +355,6 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
     {
         CP_XML_NODE(L"col")
         {
-            CP_XML_ATTR(L"min", (cMin+1));
-            CP_XML_ATTR(L"max", cMax);
 
             const bool collapsed = table_table_column_attlist_.table_visibility_.get_type() == table_visibility::Collapse;
 
@@ -364,10 +362,14 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
             {
                 CP_XML_ATTR(L"hidden", L"true");
             }
-            //else
-            //{
-            //    CP_XML_ATTR(L"hidden", L"false");            
-            //}
+            else
+            {
+				//необ€зательно
+                //CP_XML_ATTR(L"collapsed", L"false");            
+                //CP_XML_ATTR(L"hidden", L"false");            
+            }
+			CP_XML_ATTR(L"max", cMax);
+			CP_XML_ATTR(L"min", (cMin+1));
 
             if (table_table_column_attlist_.table_style_name_)
             {
@@ -379,23 +381,19 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
                     {
 						if (const style_table_cell_properties * prop = inst->content()->get_style_table_cell_properties())
 						{//сделать проверку чтоб сюда не попал дефолтный, то  сть пустой стиль
-							//fo:background-color
-							//if (prop->common_background_color_attlist_.fo_background_color)
-							{
-								//oox::xlsx_cell_format cellFormat;
-								//
-								//cellFormat.set_cell_type(XlsxCellType::s);
-								//cellFormat.set_num_format(oox::odf_string_to_build_in(L""));
-								odf::style_table_cell_properties_attlist	cellFormatProperties	= calc_table_cell_properties(inst);
-								size_t style_ = Context.get_style_manager().xfId(NULL,NULL, &cellFormatProperties, NULL, L"",true);	
+							odf::style_table_cell_properties_attlist	cellFormatProperties	= calc_table_cell_properties(inst);
+							
+							bool set_default = false;
+							if (columnsRepeated > 100) set_default = true;
 
-								if (style_>0)
-								CP_XML_ATTR(L"style", style_ );
-							}
-								
+							size_t style_ = Context.get_style_manager().xfId(NULL,NULL, &cellFormatProperties, NULL, L"", set_default);	
+
+							//if (style_>=0)
+							CP_XML_ATTR(L"style", style_ );
 						}
 					}
 				}
+				_CP_OPT(double) width;
                 const std::wstring colStyleName = table_table_column_attlist_.table_style_name_->style_name();
                 if (style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name(colStyleName, style_family::TableColumn,false))
                 {
@@ -415,24 +413,26 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
                                 }
 								
                                 const double pixDpi = in_width * getDefaultDpi();                
-                                const double width = pixToSize(pixDpi, Context.getMaxDigitSize().first); 
+                                width = pixToSize(pixDpi, Context.getMaxDigitSize().first); 
 
 								//const double width = cmToChars(prop->style_table_column_properties_attlist_.style_column_width_->get_value_unit(length::cm));
                               
 								// see ECMA-376 page 1768
-                                CP_XML_ATTR(L"width", width);
+                                CP_XML_ATTR(L"width", *width);
                                 CP_XML_ATTR(L"customWidth", true);
-                                Context.table_column_last_width(width);
-                            }
-                            else
-                            {
-                                CP_XML_ATTR(L"customWidth", 0);
-                                Context.table_column_last_width(0.0);
+                                Context.table_column_last_width(*width);
                             }
                         }
                     }                
                 }
-            }
+				if (!width)//??? default set
+				{
+					width = 11.52;
+                    CP_XML_ATTR(L"width", *width);
+                    CP_XML_ATTR(L"customWidth", false);
+                    Context.table_column_last_width(*width);
+				}
+			}
 
         } // col
     } // CP_XML_WRITER 
@@ -727,7 +727,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 			if (sharedStringId >= 0 || !formula.empty()	||
                 (t_val == XlsxCellType::n && !number_val.empty()) || 
 				(t_val == XlsxCellType::b && bool_val) ||
-				(t_val == XlsxCellType::str && str_val))is_data_visible = true;
+				((t_val == XlsxCellType::str || XlsxCellType::inlineStr) && str_val))is_data_visible = true;
 
             // пустые €чейки пропускаем .
             if ( is_data_visible || (cellStyle && is_style_visible))
@@ -762,9 +762,12 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 								CP_XML_CONTENT(sharedStringId);
                             }
                         }
-						else if (t_val == XlsxCellType::s || str_val) 
-						{
-							CP_XML_CONTENT(str_val.get());
+						else if ((t_val == XlsxCellType::str || t_val == XlsxCellType::inlineStr)  && str_val) 
+                        {    
+							CP_XML_NODE(L"v")
+                            {						
+								CP_XML_CONTENT(str_val.get());
+							}
 						}
                         else if (t_val == XlsxCellType::n && !number_val.empty())
                         {

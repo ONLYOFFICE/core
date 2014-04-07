@@ -290,6 +290,8 @@ void ods_conversion_context::end_columns()
 	//	add_column(current_table().current_column()+1,1024,0,true);
 	//else
 	int repeat = current_table().dimension_columns - current_table().current_column();
+	if (repeat < 0) repeat = 1;
+	
 	add_column(current_table().current_column()+1,repeat,0,true);
 }
 void ods_conversion_context::start_rows()
@@ -298,7 +300,8 @@ void ods_conversion_context::start_rows()
 void ods_conversion_context::end_rows()
 {
 	//add default last row
-	int repeat = current_table().dimension_row - current_table().current_row();
+	int repeat = std::max(current_table().dimension_row,1024) - current_table().current_row();
+	if (repeat < 0) repeat = 1;
 
 	start_row(current_table().current_row()+1,repeat,0,true);
 	end_row();

@@ -95,21 +95,24 @@ xlsx_style_manager::~xlsx_style_manager()
 
 xlsx_style_manager::Impl::Impl() : next_index_(0)
 {
-    {
-        xlsx_xf xfRecord;
-        xfRecord.xfId = 0;
-        xfRecord.borderId = 0;
-        xfRecord.numFmtId = 0;
-        xfRecord.fillId = 0;
-        xfRecord.fontId = 0;
-        insert(xfRecord);
-        //cellXfs_.insert(xfRecord);
-        //cellXfs_.push_back(xfRecord); // default
-    }
+    //{
+    //    xlsx_xf xfRecord;
+    //    xfRecord.xfId = 0;
+    //    xfRecord.borderId = 0;
+    //    xfRecord.numFmtId = 0;
+    //    xfRecord.fillId = 0;
+    //    xfRecord.fontId = 0;
+    //    insert(xfRecord);
+    //    //cellXfs_.insert(xfRecord);
+    //    //cellXfs_.push_back(xfRecord); // default
+    //}
 
     {
         xlsx_xf xfRecord;
-        cellStyleXfs_.insert(xfRecord);
+        xfRecord.applyNumberForm = true;
+		xfRecord.numFmtId = 0;
+        
+		cellStyleXfs_.insert(xfRecord);
         //cellStyleXfs_.push_back(xfRecord);
     }
 }
@@ -133,8 +136,8 @@ size_t xlsx_style_manager::Impl::xfId(const odf::text_format_properties_content 
 
     bool default_fill = false;
     const size_t fillId = fills_.fillId(textProp, parProp, cellProp, default_set,default_fill);
-
-    if (!default_border || !default_fill)
+ 
+    if (!default_border || !default_fill/* || (fillId >2 && default_set!=default_fill)*/)
         is_visible = true;
 
     xlsx_alignment alignment = OdfProperties2XlsxAlignment(textProp, parProp, cellProp);

@@ -5,6 +5,7 @@ namespace BinDocxRW {
 class SectPr
 {
 public: 
+	CString sHeaderFooterReference;
 	double W;
 	double H;
 	BYTE cOrientation;
@@ -14,9 +15,13 @@ public:
 	double Bottom;
 	double Header;
 	double Footer;
+	bool TitlePg;
+	bool EvenAndOddHeaders;
 
 	bool bHeader;
 	bool bFooter;
+	bool bTitlePg;
+	bool bEvenAndOddHeaders;
 	SectPr()
 	{
 		W = Page_Width;
@@ -28,9 +33,40 @@ public:
 		Bottom = 20;
 		Header = 12.5;
 		Footer = 12.5;
+		sHeaderFooterReference = _T("");
 
 		bHeader = false;
 		bFooter = false;
+		bTitlePg = false;
+		bEvenAndOddHeaders = false;
+	}
+	CString Write()
+	{
+		CString sRes = _T("");
+		long nWidth = Round(W * g_dKoef_mm_to_twips);
+		long nHeight = Round(H * g_dKoef_mm_to_twips);
+		long nMLeft = Round(Left * g_dKoef_mm_to_twips);
+		long nMTop = Round(Top * g_dKoef_mm_to_twips);
+		long nMRight = Round(Right * g_dKoef_mm_to_twips);
+		long nMBottom = Round(Bottom * g_dKoef_mm_to_twips);
+		long nMHeader = Round(Header * g_dKoef_mm_to_twips);
+		long nMFooter = Round(Footer * g_dKoef_mm_to_twips);
+		if(!sHeaderFooterReference.IsEmpty())
+			sRes.Append(sHeaderFooterReference);
+		if(orientation_Portrait == cOrientation)
+			sRes.AppendFormat(_T("<w:pgSz w:w=\"%d\" w:h=\"%d\"/>"), nWidth, nHeight);
+		else
+			sRes.AppendFormat(_T("<w:pgSz w:w=\"%d\" w:h=\"%d\" w:orient=\"landscape\"/>"), nWidth, nHeight);
+		sRes.AppendFormat(_T("<w:pgMar w:top=\"%d\" w:right=\"%d\" w:bottom=\"%d\" w:left=\"%d\" w:gutter=\"0\""), nMTop, nMRight, nMBottom, nMLeft);
+		if(bHeader)
+			sRes.AppendFormat(_T(" w:header=\"%d\""), nMHeader);
+		if(bFooter)
+			sRes.AppendFormat(_T(" w:footer=\"%d\""), nMFooter);
+		sRes.Append(_T("/>"));
+		sRes.Append(_T("<w:cols w:space=\"708\"/><w:docGrid w:linePitch=\"360\"/>"));
+		if(bTitlePg && TitlePg)
+			sRes.Append(_T("<w:titlePg/>"));
+		return sRes;
 	}
 };
 class docRGB
@@ -1946,7 +1982,7 @@ public:
 		{
 			if(false == Layout.IsEmpty())
 				sRes.Append(Layout);
-			else if(g_nFormatVersion < 4)
+			else if(g_nCurFormatVersion < 4)
 				sRes.Append(_T("<w:tblLayout w:type=\"fixed\"/>"));
 		}
 		if(false == TableCellMar.IsEmpty())

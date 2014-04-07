@@ -12,8 +12,9 @@ namespace Writers
 	class HdrFtrItem
 	{
 	public:
-		HdrFtrItem(CString sDir)
+		HdrFtrItem(SimpleTypes::EHdrFtr _eType)
 		{
+			eType = _eType;
 		}
 		bool IsEmpty()
 		{
@@ -22,6 +23,7 @@ namespace Writers
 		CString m_sFilename;
 		ContentWriter Header;
 		CString rId;
+		SimpleTypes::EHdrFtr eType;
 	};
 	static CString g_string_hdr_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:hdr xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 wp14\">");
 	static CString g_string_hdr_End = _T("</w:hdr>");
@@ -34,50 +36,38 @@ namespace Writers
 		CString	m_sDir;
 		ContentTypesWriter& m_oContentTypesWriter;
 	public:
-		HdrFtrItem m_oHeaderFirst;
-		HdrFtrItem m_oHeaderEven;
-		HdrFtrItem m_oHeaderOdd;
-
-		HdrFtrItem m_oFooterFirst;
-		HdrFtrItem m_oFooterEven;
-		HdrFtrItem m_oFooterOdd;
+		CAtlArray<HdrFtrItem*> m_aHeaders;
+		CAtlArray<HdrFtrItem*> m_aFooters;
 	public:
-		HeaderFooterWriter(CString sDir, ContentTypesWriter& oContentTypesWriter):m_sDir(sDir),m_oContentTypesWriter(oContentTypesWriter),
-			m_oHeaderFirst(sDir),m_oHeaderEven(sDir),m_oHeaderOdd(sDir),m_oFooterFirst(sDir),m_oFooterEven(sDir),m_oFooterOdd(sDir)
+		HeaderFooterWriter(CString sDir, ContentTypesWriter& oContentTypesWriter):m_sDir(sDir),m_oContentTypesWriter(oContentTypesWriter)
 		{
+		}
+		~HeaderFooterWriter()
+		{
+			for(int i = 0, length = m_aHeaders.GetCount(); i < length; ++i)
+				delete m_aHeaders[i];
+			m_aHeaders.RemoveAll();
+			for(int i = 0, length = m_aFooters.GetCount(); i < length; ++i)
+				delete m_aFooters[i];
+			m_aFooters.RemoveAll();
 		}
 		void Write()
 		{
-			if(false == m_oHeaderFirst.IsEmpty())
+			for(int i = 0, length = m_aHeaders.GetCount(); i < length; ++i)
 			{
-				WriteItem(_T("header"), m_oHeaderFirst.m_sFilename, m_oHeaderFirst.Header, true);
-				//m_oHeaderFirst.RelsWriter.Write(sFilename + _T(".rels"));
+				HdrFtrItem* pHeader = m_aHeaders[i];
+				if(false == pHeader->IsEmpty())
+				{
+					WriteItem(_T("header"), pHeader->m_sFilename, pHeader->Header, true);
+				}
 			}
-			if(false == m_oHeaderEven.IsEmpty())
+			for(int i = 0, length = m_aFooters.GetCount(); i < length; ++i)
 			{
-				WriteItem(_T("header"), m_oHeaderEven.m_sFilename, m_oHeaderEven.Header, true);
-				//m_oHeaderEven.RelsWriter.Write(sFilename + _T(".rels"));
-			}
-			if(false == m_oHeaderOdd.IsEmpty())
-			{
-				WriteItem(_T("header"), m_oHeaderOdd.m_sFilename, m_oHeaderOdd.Header, true);
-				//m_oHeaderOdd.RelsWriter.Write(sFilename + _T(".rels"));
-			}
-
-			if(false == m_oFooterFirst.IsEmpty())
-			{
-				WriteItem(_T("footer"), m_oFooterFirst.m_sFilename, m_oFooterFirst.Header, false);
-				//m_oFooterFirst.RelsWriter.Write(sFilename + _T(".rels"));
-			}
-			if(false == m_oFooterEven.IsEmpty())
-			{
-				WriteItem(_T("footer"), m_oFooterEven.m_sFilename, m_oFooterEven.Header, false);
-				//m_oFooterEven.RelsWriter.Write(sFilename + _T(".rels"));
-			}
-			if(false == m_oFooterOdd.IsEmpty())
-			{
-				WriteItem(_T("footer"), m_oFooterOdd.m_sFilename, m_oFooterOdd.Header, false);
-				//m_oFooterOdd.RelsWriter.Write(sFilename + _T(".rels"));
+				HdrFtrItem* pFooter = m_aFooters[i];
+				if(false == pFooter->IsEmpty())
+				{
+					WriteItem(_T("footer"), pFooter->m_sFilename, pFooter->Header, false);
+				}
 			}
 		}
 		void WriteItem(CString sHeader, CString& sFilename, ContentWriter& m_oWriter, bool bHeader)

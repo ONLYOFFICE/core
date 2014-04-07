@@ -4,6 +4,9 @@
 #include "Reader/BinaryWriter.h"
 #include "Reader/FontProcessor.h"
 #include "Writer/BinaryReader.h"
+
+int g_nCurFormatVersion = 0;
+
 [
 	object,
 	uuid("87476A4D-6A42-44e9-A947-42B8E8613070"),

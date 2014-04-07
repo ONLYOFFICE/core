@@ -10,6 +10,8 @@
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
 #endif
 
+int g_nCurFormatVersion = 0;
+
 #define BUFFER_GROW_SIZE 1 * 1024 * 1024
 
 // IAVSOfficeDocxFile2
@@ -226,7 +228,7 @@ public:
 
 		BinDocxRW::BinaryCommonWriter oBinaryCommonWriter(oBufferedStream, m_oBinaryFileWriter->m_oEmbeddedFontsManager);
 		int nCurPos = oBinaryCommonWriter.WriteItemWithLengthStart();
-		BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(oBufferedStream, m_oBinaryFileWriter->m_oEmbeddedFontsManager, m_oBinaryFileWriter->m_pTheme, m_oBinaryFileWriter->m_pSettings, m_oBinaryFileWriter->m_oFontProcessor, m_oBinaryFileWriter->m_pCurRels, m_oBinaryFileWriter->m_pOfficeDrawingConverter, NULL);
+		BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(oBufferedStream, m_oBinaryFileWriter->m_oEmbeddedFontsManager, m_oBinaryFileWriter->m_pTheme, m_oBinaryFileWriter->m_pSettings, m_oBinaryFileWriter->m_oFontProcessor, m_oBinaryFileWriter->m_pCurRels, m_oBinaryFileWriter->m_pOfficeDrawingConverter, NULL, NULL);
 		oBinaryDocumentTableWriter.WriteDocumentContent(oSdtContent.m_arrItems);
 		oBinaryCommonWriter.WriteItemWithLengthEnd(nCurPos);
 
@@ -321,7 +323,9 @@ public:
 						version = version.Right(version.GetLength() - 1);
 						int nTempVersion = atoi(version);
 						if(0 != nTempVersion)
-							nVersion = nTempVersion;
+						{
+							g_nCurFormatVersion = nVersion = nTempVersion;
+						}
 					}
 					PPTXFile::IAVSOfficeDrawingConverter* pDrawingConverter = NULL;
 					CoCreateInstance(__uuidof(PPTXFile::CAVSOfficeDrawingConverter), NULL, CLSCTX_ALL, __uuidof(PPTXFile::IAVSOfficeDrawingConverter), (void**) &pDrawingConverter);

@@ -803,7 +803,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 
 	if (table_cell_properties)
 	{//default
-		table_cell_properties->style_table_cell_properties_attlist_.fo_wrap_option_ = odf::wrap_option(odf::wrap_option::Wrap);
+		//table_cell_properties->style_table_cell_properties_attlist_.fo_wrap_option_ = odf::wrap_option(odf::wrap_option::Wrap);
 		//table_cell_properties->style_table_cell_properties_attlist_.style_text_align_source_ = odf::text_align_source(odf::text_align_source::Fix);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////

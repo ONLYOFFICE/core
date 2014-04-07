@@ -1,7 +1,7 @@
 #pragma once
 //1
-//0
 //2
-//24
-#define INTVER 1,0,2,24
-#define STRVER "1,0,2,24\0"
+//0
+//3
+#define INTVER 1,2,0,3
+#define STRVER "1,2,0,3\0"

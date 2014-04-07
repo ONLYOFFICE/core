@@ -96,7 +96,16 @@ size_t xlsx_fills::fillId(const odf::text_format_properties_content * textProp,
 				if (i != impl_->fills_.end())
                 {
                     //const unsigned int dbgId = i - impl_->fills_.begin();
+
                     const std::size_t dbgId = i->index;
+					if (default_set && i->bDefault != default_set)
+					{
+						fill.index = i->index;
+						impl_->fills_.insert(i,fill);
+					
+						is_default = default_set;
+						return fill.index;
+					}
 
 					is_default = i->bDefault;
                     return dbgId;

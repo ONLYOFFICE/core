@@ -27,7 +27,7 @@ struct number_format_state
 
 	std::wstring style_name;
 
-	std::wstring language_code;
+	unsigned int language_code;
 	std::wstring currency_str;
 };
 

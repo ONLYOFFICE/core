@@ -651,8 +651,121 @@ void XlsxConverter::convert(OOX::Spreadsheet::CBorder *border, odf::style_table_
 {
 	if (!border)return;
 
+	if (border->m_oBottom.IsInit())
+	{
+		std::wstring odf_border;
+		convert(border->m_oBottom.GetPointer(), odf_border);
+		cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ = odf_border;
+	}
+	if (border->m_oTop.IsInit())
+	{
+		std::wstring odf_border;
+		convert(border->m_oTop.GetPointer(), odf_border);
+		cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ = odf_border;
+	}
+	if (border->m_oStart.IsInit())
+	{
+		std::wstring odf_border;
+		convert(border->m_oStart.GetPointer(), odf_border);
+		if (odf_border.length()>0)
+			cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ = odf_border;
+	}
+	if (border->m_oEnd.IsInit())
+	{
+		std::wstring odf_border;
+		convert(border->m_oEnd.GetPointer(), odf_border);
+		if (odf_border.length()>0)
+			cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ = odf_border;
+	}
+	if (border->m_oEnd.IsInit())
+	{
+		std::wstring odf_border;
+		convert(border->m_oEnd.GetPointer(), odf_border);
+		if (odf_border.length()>0)
+			cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ = odf_border;
+	}
+	if (border->m_oDiagonal.IsInit())
+	{
+		std::wstring odf_border;
+		convert(border->m_oDiagonal.GetPointer(), odf_border);
+		if (border->m_oDiagonalDown.IsInit() && odf_border.length()>0) //and true???
+			cell_properties->style_table_cell_properties_attlist_.style_diagonal_tl_br_= odf_border;
+		if (border->m_oDiagonalUp.IsInit() && odf_border.length()>0) //and true???
+			cell_properties->style_table_cell_properties_attlist_.style_diagonal_bl_tr_= odf_border;
+	}
+	//nullable<CBorderProp>						m_oHorizontal;
+	//nullable<CBorderProp>						m_oVertical;
+	//nullable<SimpleTypes::COnOff<>>			m_oOutline;
 }
+void XlsxConverter::convert(OOX::Spreadsheet::CBorderProp *borderProp, std::wstring & odf_border_prop)
+{
+	if (!borderProp)return;
 
+	std::wstring border_style;
+	std::wstring border_color;
+
+	if (borderProp->m_oStyle.IsInit())
+	{
+		switch(borderProp->m_oStyle->GetValue())
+		{
+			case SimpleTypes::Spreadsheet::borderstyleDashDot:
+				border_style = L"1pt dot-dashed";
+			break;
+			case SimpleTypes::Spreadsheet::borderstyleDashDotDot:
+				border_style = L"1pt dot-dashed";
+			break;
+			case SimpleTypes::Spreadsheet::borderstyleDashed:
+				border_style = L"1pt dashed";
+			break;
+			case SimpleTypes::Spreadsheet::borderstyleDotted:
+				border_style = L"1pt dotted";
+			break;
+			case SimpleTypes::Spreadsheet::borderstyleDouble:
+				border_style = L"1pt double";
+			break;
+			case SimpleTypes::Spreadsheet::borderstyleHair:
+				border_style = L"1pt solid";
+			break;
+			case SimpleTypes::Spreadsheet::borderstyleMedium:
+				border_style = L"2.49pt solid";
+			break;
+			case SimpleTypes::Spreadsheet::borderstyleMediumDashDot:
+				border_style = L"2.49pt dot-dashed";
+			break;
+			case SimpleTypes::Spreadsheet::borderstyleMediumDashDotDot:
+				border_style = L"2.49pt dot-dashed";
+			break;
+			case SimpleTypes::Spreadsheet::borderstyleMediumDashed:
+				border_style = L"2.49pt dashed";
+			break;
+			case SimpleTypes::Spreadsheet::borderstyleNone:
+				border_style = L"none";
+				return;
+			break;
+			case SimpleTypes::Spreadsheet::borderstyleSlantDashDot:
+				border_style = L"1pt solid";
+			break;
+			case SimpleTypes::Spreadsheet::borderstyleThick:
+				border_style = L"1pt solid";
+			break;
+			case SimpleTypes::Spreadsheet::borderstyleThin:
+				 border_style = L"1pt solid";
+			break;
+		}
+	}
+	else return;
+
+	if (borderProp->m_oColor.IsInit())
+	{
+		_CP_OPT(odf::color) odf_color;
+		convert(borderProp->m_oColor.GetPointer(), odf_color);
+		if (odf_color)
+			border_color = L" #" + odf_color->get_hex_value();
+	}
+	if (border_color.length()<1)border_color = L" #000000";
+	
+	odf_border_prop = border_style + border_color;
+}
 void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color) & odf_color)//стоит ли сюда тащить odf type???
 {
 	if (!color)return;
@@ -800,12 +913,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 		convert(xlsx_styles->m_oBorders->m_arrItems[border_id], table_cell_properties); 
 	}
 
-
-	if (table_cell_properties)
-	{//default
-		//table_cell_properties->style_table_cell_properties_attlist_.fo_wrap_option_ = odf::wrap_option(odf::wrap_option::Wrap);
-		//table_cell_properties->style_table_cell_properties_attlist_.style_text_align_source_ = odf::text_align_source(odf::text_align_source::Fix);
-	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	if (id_parent >=0)

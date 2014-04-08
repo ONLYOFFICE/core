@@ -459,6 +459,16 @@ void ods_table_state::set_cell_text(odf_text_context* text_context)
 			cells_.back().elm->add_child_element(text_context->text_elements_list_[i].elm);
 		}
 	}
+	style* style_ = dynamic_cast<style*>(cells_.back().style_elm.get());
+	if (!style_)return;
+	
+	odf::style_table_cell_properties	* table_cell_properties = style_->style_content_.get_style_table_cell_properties();
+
+	if (table_cell_properties)
+	{
+		table_cell_properties->style_table_cell_properties_attlist_.fo_wrap_option_ = odf::wrap_option(odf::wrap_option::Wrap);
+		table_cell_properties->style_table_cell_properties_attlist_.style_text_align_source_ = odf::text_align_source(odf::text_align_source::Fix);
+	}
 }
 void ods_table_state::set_cell_value(std::wstring & value)
 {

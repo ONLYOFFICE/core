@@ -1,6 +1,8 @@
 #include "precompiled_cpodf.h"
 #include "logging.h"
 
+#include <cpdoccore/formulasconvert.h>
+
 #include "ods_table_state.h"
 #include "odf_text_context.h"
 #include "ods_conversion_context.h"
@@ -23,7 +25,15 @@ namespace utils
 {
 std::wstring convert_date(std::wstring & oox_date)
 {
-	int iDate = boost::lexical_cast<int>(oox_date);
+	int iDate = 0;
+
+	try
+	{
+		iDate = boost::lexical_cast<int>(oox_date);
+	}catch(...)
+	{
+		return oox_date;
+	}
 
 	boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(iDate-2);
 
@@ -38,10 +48,19 @@ std::wstring convert_date(std::wstring & oox_date)
 
 std::wstring convert_time(std::wstring & oox_time)
 {
+	double dTime = 0;
+		
+	try
+	{		
+		dTime = boost::lexical_cast<double>(oox_time);
+	}catch(...)
+	{
+		return oox_time;
+	}
+
 	//PT12H15M42S
 	int hours=0, minutes=0;
 	double sec=0;
-	double dTime = boost::lexical_cast<double>(oox_time);
 	
 	boost::posix_time::time_duration day(24, 0, 0);
 	
@@ -446,6 +465,17 @@ void ods_table_state::set_merge_cells(int start_col, int start_row, int end_col,
 			}
 		}
 	}
+}
+static formulasconvert::oox2odf_converter formulas_converter;
+
+void ods_table_state::set_cell_formula(std::wstring & formula)
+{
+	std::wstring odfFormula = formulas_converter.convert_formula(formula);
+	
+	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
+	if (cell == NULL)return;
+
+	cell->table_table_cell_attlist_.table_formula_ = odfFormula;
 }
 
 void ods_table_state::set_cell_text(odf_text_context* text_context)

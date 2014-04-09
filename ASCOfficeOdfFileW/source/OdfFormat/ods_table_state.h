@@ -83,9 +83,9 @@ public:
 
 	void set_cell_format_value(office_value_type::type value_type);
 	void set_cell_type(int type);
-	void set_cell_value(std::wstring & value);
-	
+	void set_cell_value(std::wstring & value);	
 	void set_cell_text(odf_text_context *text_context);
+	void set_cell_formula(std::wstring &formula);
 
 ///////////////////////////////
 	void add_hyperlink(std::wstring & ref,int col, int row, std::wstring & link);

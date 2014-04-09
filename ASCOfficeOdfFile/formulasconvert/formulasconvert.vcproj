@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)include&quot;;&quot;$(SolutionDir)include&quot;;&quot;$(SolutionDir)3dparty\gtest\include\&quot;;&quot;$(SolutionDir)3dparty\utf8cpp\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)include&quot;;..\include;..\3dparty\gtest\include\;..\dparty\utf8cpp\include"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -102,7 +102,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)include&quot;;&quot;$(SolutionDir)include&quot;;&quot;$(SolutionDir)3dparty\gtest\include\&quot;;&quot;$(SolutionDir)3dparty\utf8cpp\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)include&quot;;..\include;..\3dparty\gtest\include\;..\3dparty\utf8cpp\include"
 				RuntimeLibrary="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -148,7 +148,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\src\formulasconvert.cpp"
+				RelativePath=".\src\formulasconvert_odf.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\formulasconvert_oox.cpp"
 				>
 			</File>
 		</Filter>

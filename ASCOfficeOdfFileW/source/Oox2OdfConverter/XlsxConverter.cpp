@@ -385,6 +385,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFormula *oox_formula)
 {
 	if (oox_formula == NULL)return;
 
+	ods_context->current_table().set_cell_formula(string2std_string(oox_formula->m_sText));
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 {

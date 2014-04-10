@@ -449,11 +449,9 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring& expr)
 
      const std::wstring res = boost::regex_replace(
         workstr,
-		//boost::wregex(L"(?:(?=\\()([^\\}]*?)(?=\\)))|(\".*?\")|('.*?')"),//находит от первой скобки ( до первой ) .. и дальше???
 		boost::wregex(L"(?:(?=[()])(.*?)(?=[)]))|(\".*?\")|('.*?')"),
 		&oox2odf_converter::Impl::replace_arguments,
         boost::match_default | boost::format_all);
-	//workstr = replace_arguments(workstr);
 
     return std::wstring(L"of:=") + res;
 }

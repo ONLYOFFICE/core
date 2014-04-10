@@ -1,7 +1,7 @@
 #include "precompiled_cpodf.h"
 #include "docx_drawing.h"
 #include <cpdoccore/xml/simple_xml_writer.h>
-#include "../odf/custom_shape_types_convert.h"
+#include "custom_shape_types_convert.h"
 
 namespace cpdoccore {
 

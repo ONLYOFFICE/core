@@ -10,8 +10,6 @@
 #include "paragraph_elements.h"
 #include "list.h"
 
-#include <cpdoccore/odf/odf_document.h>
-
 #include "odf_conversion_context.h"
 #include "odf_text_context.h"
 

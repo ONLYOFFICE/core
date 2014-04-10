@@ -39,7 +39,12 @@ namespace codegen
             for (int i = 0; i < aClasses.Count; ++i)
                 ProcessToBin(oJsSer, aClasses[i]);
             //FromBin
-            ProcessFromBin(oJsSer, aEnums, aClasses);
+            oJsSer.AppendFormat("function {0}(stream){{\r\n", Utils.gc_sBinaryChartReader);
+            oJsSer.AppendFormat("this.stream = stream;\r\n");
+            oJsSer.AppendFormat("this.bcr = new Binary_CommonReader(this.stream);\r\n");
+            oJsSer.AppendFormat("}}\r\n");
+            for (int i = 0; i < aClasses.Count; ++i)
+                ProcessFromBin(oJsSer, aClasses[i]);
             File.WriteAllText(Path.Combine(sOutputDir, sFileJs), oJsSer.ToString());
         }
         public void ProcessEnums(StringBuilder sb, List<GenClass> aGenClasses)
@@ -50,7 +55,7 @@ namespace codegen
                 for (int j = 0; j < oGenClass.aMembers.Count; ++j)
                 {
                     GenMember oGenMember = oGenClass.aMembers[j];
-                    if(!oGenMember.bInternal)
+                    if (!oGenMember.bInternal)
                         sb.AppendFormat("var {0} = {1};\r\n", Utils.GetEnumElemName(oGenClass.sName, oGenMember.sName), j);
                 }
                 sb.AppendFormat("\r\n");
@@ -80,50 +85,42 @@ namespace codegen
                 sb.AppendFormat("\r\n");
             }
         }
-        public void ProcessFromBin(StringBuilder sb, List<GenClass> aEnums, List<GenClass> aClasses)
+        public void ProcessFromBin(StringBuilder sb, GenClass oGenClass)
         {
-            sb.AppendFormat("function {0}(stream){{\r\n", Utils.gc_sBinaryChartReader);
-            sb.AppendFormat("this.stream = stream;\r\n");
-            sb.AppendFormat("this.bcr = new Binary_CommonReader(this.stream);\r\n");
-            sb.AppendFormat("}}\r\n");
-            for (int i = 0; i < aClasses.Count; ++i)
+            if (oGenClass.bIsRoot)
             {
-                GenClass oGenClass = aClasses[i];
-                if (oGenClass.bIsRoot)
-                {
-                    sb.AppendFormat("{0}.prototype.ExternalRead{1} = function(length, val){{\r\n", Utils.gc_sBinaryChartReader, oGenClass.sName);
-                    sb.AppendFormat("var res = c_oSerConstants.ReadOk;\r\n");
-                    sb.AppendFormat("var oThis = this;\r\n");
-                    sb.AppendFormat("res = this.bcr.Read1(length, function(t, l){{\r\n");
-                    sb.AppendFormat("return oThis.Read{0}(t, l, val);\r\n", oGenClass.sName);
-                    sb.AppendFormat("}});\r\n");
-                    sb.AppendFormat("return res;\r\n");
-                    sb.AppendFormat("}}\r\n");
-                }
-                sb.AppendFormat("{0}.prototype.Read{1} = function(type, length, val){{\r\n", Utils.gc_sBinaryChartReader, oGenClass.sName);
+                sb.AppendFormat("{0}.prototype.ExternalRead{1} = function(length, val){{\r\n", Utils.gc_sBinaryChartReader, oGenClass.sName);
                 sb.AppendFormat("var res = c_oSerConstants.ReadOk;\r\n");
                 sb.AppendFormat("var oThis = this;\r\n");
-                int nCounter = 0;
-                for (int j = 0; j < oGenClass.aMembers.Count; ++j)
+                sb.AppendFormat("res = this.bcr.Read1(length, function(t, l){{\r\n");
+                sb.AppendFormat("return oThis.Read{0}(t, l, val);\r\n", oGenClass.sName);
+                sb.AppendFormat("}});\r\n");
+                sb.AppendFormat("return res;\r\n");
+                sb.AppendFormat("}}\r\n");
+            }
+            sb.AppendFormat("{0}.prototype.Read{1} = function(type, length, val){{\r\n", Utils.gc_sBinaryChartReader, oGenClass.sName);
+            sb.AppendFormat("var res = c_oSerConstants.ReadOk;\r\n");
+            sb.AppendFormat("var oThis = this;\r\n");
+            int nCounter = 0;
+            for (int j = 0; j < oGenClass.aMembers.Count; ++j)
+            {
+                GenMember oGenMember = oGenClass.aMembers[j];
+                if (!oGenMember.bInternal)
                 {
-                    GenMember oGenMember = oGenClass.aMembers[j];
-                    if (!oGenMember.bInternal)
+                    if (null != oGenMember.aArrayTypes)
                     {
-                        if (null != oGenMember.aArrayTypes)
+                        for (int k = 0; k < oGenMember.aArrayTypes.Count; ++k)
                         {
-                            for (int k = 0; k < oGenMember.aArrayTypes.Count; ++k)
-                            {
-                                nCounter = ProcessMemberFromBin(sb, "val", oGenClass, oGenMember.aArrayTypes[k], oGenMember, nCounter);
-                            }
-                        }
-                        else
-                        {
-                            nCounter = ProcessMemberFromBin(sb, "val", oGenClass, oGenMember, null, nCounter);
+                            nCounter = ProcessMemberFromBin(sb, "val", oGenClass, oGenMember.aArrayTypes[k], oGenMember, nCounter);
                         }
                     }
+                    else
+                    {
+                        nCounter = ProcessMemberFromBin(sb, "val", oGenClass, oGenMember, null, nCounter);
+                    }
                 }
-                sb.AppendFormat("else\r\nres = c_oSerConstants.ReadUnknown;\r\nreturn res;\r\n}}\r\n", oGenClass.sName);
             }
+            sb.AppendFormat("else\r\nres = c_oSerConstants.ReadUnknown;\r\nreturn res;\r\n}}\r\n", oGenClass.sName);
         }
         int ProcessMemberFromBin(StringBuilder sb, string sVal, GenClass oGenClass, GenMember oGenMember, GenMember oGenMemberContainer, int nCounter)
         {

@@ -128,47 +128,50 @@ namespace codegen
                     GenMember member = oGenClass.aMembers[i];
                     if (0 != i)
                         m_oDocxSerH.Append(",\r\n");
-                    m_oDocxSerH.AppendFormat("{0} = {1}", Utils.GetEnumElemName(oGenClass.sName, member.sName), i + 1);
+                    m_oDocxSerH.AppendFormat("{0} = {1}", Utils.GetEnumElemName(oGenClass.sName, member.sName), i);
                 }
                 m_oDocxSerH.AppendFormat("\r\n}};\r\n");
                 //.cpp
-                m_oDocxSerCPP.AppendFormat("bool {0}{1}(CString& val, {2}& eOut)\r\n{{\r\n", gc_sEnumFromXmlPrefix, oGenClass.sName, oGenClass.sName);
-                if (oGenClass.aMembers.Count > 0)
+                if (!oGenClass.bInternal)
                 {
-                    m_oDocxSerCPP.AppendFormat("bool bRes = true;\r\n");
-                    for (int i = 0; i < oGenClass.aMembers.Count; ++i)
+                    m_oDocxSerCPP.AppendFormat("bool {0}{1}(CString& val, {2}& eOut)\r\n{{\r\n", gc_sEnumFromXmlPrefix, oGenClass.sName, oGenClass.sName);
+                    if (oGenClass.aMembers.Count > 0)
                     {
-                        GenMember member = oGenClass.aMembers[i];
-                        if (0 == i)
-                            m_oDocxSerCPP.AppendFormat("if(_T(\"{0}\")==val)\r\neOut={1};\r\n", member.sName, Utils.GetEnumElemName(oGenClass.sName, member.sName));
-                        else
-                            m_oDocxSerCPP.AppendFormat("else if(_T(\"{0}\")==val)\r\neOut={1};\r\n", member.sName, Utils.GetEnumElemName(oGenClass.sName, member.sName));
+                        m_oDocxSerCPP.AppendFormat("bool bRes = true;\r\n");
+                        for (int i = 0; i < oGenClass.aMembers.Count; ++i)
+                        {
+                            GenMember member = oGenClass.aMembers[i];
+                            if (0 == i)
+                                m_oDocxSerCPP.AppendFormat("if(_T(\"{0}\")==val)\r\neOut={1};\r\n", member.sName, Utils.GetEnumElemName(oGenClass.sName, member.sName));
+                            else
+                                m_oDocxSerCPP.AppendFormat("else if(_T(\"{0}\")==val)\r\neOut={1};\r\n", member.sName, Utils.GetEnumElemName(oGenClass.sName, member.sName));
+                        }
+                        m_oDocxSerCPP.AppendFormat("else\r\nbRes=false;\r\n");
+                        m_oDocxSerCPP.AppendFormat("return bRes;\r\n");
                     }
-                    m_oDocxSerCPP.AppendFormat("else\r\nbRes=false;\r\n");
-                    m_oDocxSerCPP.AppendFormat("return bRes;\r\n");
-                }
-                else
-                    m_oDocxSerCPP.AppendFormat("return false;\r\n");
-                m_oDocxSerCPP.AppendFormat("}}\r\n");
+                    else
+                        m_oDocxSerCPP.AppendFormat("return false;\r\n");
+                    m_oDocxSerCPP.AppendFormat("}}\r\n");
 
-                m_oDocxSerCPP.AppendFormat("bool {0}{1}({2}& val, CString& sOut)\r\n{{\r\n", gc_sEnumToXmlPrefix, oGenClass.sName, oGenClass.sName);
-                if (oGenClass.aMembers.Count > 0)
-                {
-                    m_oDocxSerCPP.AppendFormat("bool bRes = true;\r\n");
-                    for (int i = 0; i < oGenClass.aMembers.Count; ++i)
+                    m_oDocxSerCPP.AppendFormat("bool {0}{1}({2}& val, CString& sOut)\r\n{{\r\n", gc_sEnumToXmlPrefix, oGenClass.sName, oGenClass.sName);
+                    if (oGenClass.aMembers.Count > 0)
                     {
-                        GenMember member = oGenClass.aMembers[i];
-                        if (0 == i)
-                            m_oDocxSerCPP.AppendFormat("if({0}==val)\r\nsOut=_T(\"{1}\");\r\n", Utils.GetEnumElemName(oGenClass.sName, member.sName), member.sName);
-                        else
-                            m_oDocxSerCPP.AppendFormat("else if({0}==val)\r\nsOut=_T(\"{1}\");\r\n", Utils.GetEnumElemName(oGenClass.sName, member.sName), member.sName);
+                        m_oDocxSerCPP.AppendFormat("bool bRes = true;\r\n");
+                        for (int i = 0; i < oGenClass.aMembers.Count; ++i)
+                        {
+                            GenMember member = oGenClass.aMembers[i];
+                            if (0 == i)
+                                m_oDocxSerCPP.AppendFormat("if({0}==val)\r\nsOut=_T(\"{1}\");\r\n", Utils.GetEnumElemName(oGenClass.sName, member.sName), member.sName);
+                            else
+                                m_oDocxSerCPP.AppendFormat("else if({0}==val)\r\nsOut=_T(\"{1}\");\r\n", Utils.GetEnumElemName(oGenClass.sName, member.sName), member.sName);
+                        }
+                        m_oDocxSerCPP.AppendFormat("else\r\nbRes=false;\r\n");
+                        m_oDocxSerCPP.AppendFormat("return bRes;\r\n");
                     }
-                    m_oDocxSerCPP.AppendFormat("else\r\nbRes=false;\r\n");
-                    m_oDocxSerCPP.AppendFormat("return bRes;\r\n");
+                    else
+                        m_oDocxSerCPP.AppendFormat("return false;\r\n");
+                    m_oDocxSerCPP.AppendFormat("}}\r\n");
                 }
-                else
-                    m_oDocxSerCPP.AppendFormat("return false;\r\n");
-                m_oDocxSerCPP.AppendFormat("}}\r\n");
             }
             else
             {
@@ -761,8 +764,11 @@ namespace codegen
             for (int i = 0; i < oGenClass.aMembers.Count; ++i)
             {
                 GenMember oGenMember = oGenClass.aMembers[i];
-                if (!oGenMember.bInternal && null != oGenMember.aArrayTypes)
-                    ProcessArrayTypesToBin(sb, oGenClass, oGenMember);
+                if (!oGenMember.bInternal)
+                {
+                    if (null != oGenMember.aArrayTypes)
+                        ProcessArrayTypesToBin(sb, oGenClass, oGenMember);
+                }
             }
         }
         void ProcessArrayTypesToBin(StringBuilder sb, GenClass oGenClass, GenMember oGenMember)

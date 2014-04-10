@@ -20,8 +20,10 @@ public:
     static void replace_vertical(std::wstring& expr);
     static void replace_space(std::wstring& expr);
 
-	static std::wstring replace_cells_range_formater(boost::wsmatch const & what);
+	static std::wstring replace_cells_range_formater1(boost::wsmatch const & what);
+	static std::wstring replace_cells_range_formater2(boost::wsmatch const & what);
 	static std::wstring replace_arguments(boost::wsmatch const & what);
+	std::wstring  replace_arguments1(std::wstring & workstr);
 
     void replace_named_ref(std::wstring & expr);
  //   bool find_first_ref(std::wstring const & expr, std::wstring & table,  std::wstring & ref);
@@ -107,70 +109,69 @@ public:
 // [$'Sheet2 A'.$B2] -> 'Sheet2 A'!$B2
 void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr)
 {
-	boost::wregex re(L"([a-zA-Z$ ']+[0-9]+)?\\!?([a-zA-Z$]+\\d+)?\\:?([a-zA-Z$]+\\d+)?");
+	boost::wregex re1(L"(\\$?\\w+)?\\!?([a-zA-Z$]+\\d{1,2})\\:?([a-zA-Z$]+\\d{1,2})?");
+	boost::wregex re2(L"([a-zA-Z$]+\\d{1,2})\\:?([a-zA-Z$]+\\d{1,2})?");
+//                          $   Sheet2   ! $ A1                  :  $ B5          
 	//boost::wsmatch result;
 	//bool b = boost::regex_search(expr, result, re);
     std::wstring workstr = expr;
 
-     const std::wstring res = boost::regex_replace(
+     std::wstring res = boost::regex_replace(
         workstr,	
-		re,
-        &replace_cells_range_formater,
+		re1,
+        &replace_cells_range_formater1,
         boost::match_default | boost::format_all);
-     expr = res;
+     
+	 //workstr = res;
+	 //res = boost::regex_replace(
+		//workstr,	
+		//re2,
+		//&replace_cells_range_formater2,
+		//boost::match_default | boost::format_all);
+	 expr = res;
 
 	return;
 }
-std::wstring oox2odf_converter::Impl::replace_cells_range_formater(boost::wsmatch const & what)
+std::wstring oox2odf_converter::Impl::replace_cells_range_formater1(boost::wsmatch const & what)
 {
     const size_t sz = what.size();
 	
-	if (what[1].matched && what[2].matched && what[3].matched)
+	if (sz>3)
     {
-		//std::vector< std::wstring > splitted;
-	 //   
-		//boost::algorithm::split(splitted, what[0], boost::algorithm::is_any_of(L"!"), boost::algorithm::token_compress_on);
-	 //   
-		//std::wstring table;
-		//std::wstring ref;
-		//if (splitted.size()>1)
-		//{
-		//	table	= splitted[0];	
-		//	ref = splitted[1];
-		//}
-		//else if (splitted.size()==1)
-		//{
-		//	ref = splitted[0];
-		//}
-		//std::wstring expr = std::wstring(L"[") + table + std::wstring(L".") + ref + std::wstring(L"]"); 
-		
 		std::wstring sheet1 = what[1].str();
         boost::algorithm::replace_all(sheet1, L"$", L"");
 
-        const std::wstring c1 = what[2].str(); 
-        const std::wstring c2 = what[3].str(); 
-        const std::wstring s =  std::wstring(L"[") + sheet1 + L"." + c1 + (c2.empty() ? L"" : (L":" + c2) ) + std::wstring(L"]");
+        std::wstring c1 = what[2].str(); 
+        std::wstring c2 = what[3].str(); 
+        const std::wstring s =  std::wstring(L"[") + sheet1 + L"." + c1 + (c2.empty() ? L"" : (L":" + sheet1  + L"." + c2) ) + std::wstring(L"]");
         return s;
-	}	
-	else if ((what[1].matched || what[2].matched) && what[3].matched)
-	{
-		const std::wstring c1 = what[1].matched ? what[1].str() : what[2].str(); 
-        const std::wstring c2 = what[3].str(); 
-        const std::wstring s =  std::wstring(L"[") + c1 + (c2.empty() ? L"" : (L":" + c2) )+ std::wstring(L"]");
-        return s;	
 	}
-	else if (what[1].matched || what[2].matched)
+	else
 	{
-		return what[1].matched ? what[1].str() : what[2].str(); 
+        const std::wstring c1 = what[1].str(); 
+        const std::wstring c2 = what[2].str(); 
+
+		const std::wstring s =  std::wstring(L"[.") +  c1 + (c2.empty() ? L"" : (L":." + c2) ) + std::wstring(L"]");
+
+		return s; 
+	}
+	return L"";
+}	
+
+std::wstring oox2odf_converter::Impl::replace_cells_range_formater2(boost::wsmatch const & what)
+{
+    const size_t sz = what.size();
+	
+	if (sz>2)
+	{
+        const std::wstring c1 = what[1].str(); 
+        const std::wstring c2 = what[2].str(); 
+
+		const std::wstring s =  std::wstring(L"[.") +  c1 + (c2.empty() ? L"" : (L":." + c2) ) + std::wstring(L"]");
+
+		return s; 
 	}
 
-	//if (!what[1].matched)
-	//	return L"";
-	//else if (
-	//{
-
- //   }
- //   else 
     return L"";
 
 }
@@ -321,7 +322,15 @@ bool is_forbidden1(const std::wstring & formula)
     }
     return false;
 }
-
+//void oox2odf_converter::Impl::split_(std::wstring& expr)
+//{
+//     const std::wstring res = boost::regex_split(
+//        expr,
+//        boost::wregex(L"(?:(?:\\{)([^\\}]*?)(?:\\}))|(\".*?\")|('.*?')"),
+//        &replace_vertical_formater,
+//        boost::match_default | boost::format_all);
+//     expr = res;
+//}
 // заменить вертикальную черту во всех вхождениях в фигурных скобках, но не внутри строк
 void oox2odf_converter::Impl::replace_vertical(std::wstring& expr)
 {
@@ -356,12 +365,45 @@ std::wstring replace_(boost::wsmatch const & what)
     else if (what[3].matched)
         return what[3].str();
 }
+std::wstring  oox2odf_converter::Impl::replace_arguments1(std::wstring & workstr1)
+{
+	std::wstring out;
+
+	std::wstring workstr = workstr1;
+		
+	replace_vertical(workstr);
+	replace_semicolons(workstr);		
+	
+	std::vector<std::wstring> distance;
+
+	boost::algorithm::split(distance,workstr, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
+
+	BOOST_FOREACH(std::wstring &d, distance)
+	{		
+	
+		replace_cells_range(d);
+
+		out = out + d + std::wstring(L";");
+	}
+
+	if (out.length()>0) out = out.substr(0,out.length()-1);
+	        
+
+	return out ;
+}
 std::wstring  oox2odf_converter::Impl::replace_arguments(boost::wsmatch const & what)
 {
-     if (what[1].matched)
+	std::wstring out;
+
+	int sz = what.size();
+
+	std::wstring c1= what[1].str();
+	std::wstring c2= what[2].str();
+	std::wstring c3= what[3].str();
+
+    if (what[1].matched)
     {
-        std::wstring workstr = what[1].str(), out;
-		
+        std::wstring workstr = what[1].str();
 		replace_vertical(workstr);
 		replace_semicolons(workstr);		
 		
@@ -378,15 +420,14 @@ std::wstring  oox2odf_converter::Impl::replace_arguments(boost::wsmatch const & 
 		}
 
 		if (out.length()>0) out = out.substr(0,out.length()-1);
-        
-		return std::wstring(L"(") + out + std::wstring(L")") ;
+	
     }    
     else if (what[2].matched)
-        return what[2].str();
+        out = what[2].str();
     else if (what[3].matched)
-        return what[3].str();
+        out = what[3].str();
+	return out ;
 }
-
 std::wstring oox2odf_converter::Impl::convert(const std::wstring& expr)
 {
     if (is_forbidden1(expr))
@@ -408,9 +449,11 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring& expr)
 
      const std::wstring res = boost::regex_replace(
         workstr,
-        boost::wregex(L"(?:(?:\\()([^\\)]*?)(?:\\)))|(\".*?\")|('.*?')"),
+		//boost::wregex(L"(?:(?=\\()([^\\}]*?)(?=\\)))|(\".*?\")|('.*?')"),//находит от первой скобки ( до первой ) .. и дальше???
+		boost::wregex(L"(?:(?=[()])(.*?)(?=[)]))|(\".*?\")|('.*?')"),
 		&oox2odf_converter::Impl::replace_arguments,
         boost::match_default | boost::format_all);
+	//workstr = replace_arguments(workstr);
 
     return std::wstring(L"of:=") + res;
 }

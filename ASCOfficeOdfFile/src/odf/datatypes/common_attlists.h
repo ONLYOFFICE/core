@@ -670,6 +670,8 @@ struct union_common_draw_attlists
     common_draw_shape_with_text_and_styles_attlist	shape_with_text_and_styles_;
     common_draw_position_attlist					position_;
     common_draw_rel_size_attlist					rel_size_;
+	
+	void serialize(CP_ATTR_NODE);
 };
 
 

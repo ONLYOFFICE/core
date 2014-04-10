@@ -133,9 +133,23 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		if (oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.IsInit())
 			ods_context->add_merge_cells(string2std_string(oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.get()));
 	}
-
 	//рисование
-	//m_oDrawing
+
+	if (oox_sheet->m_oDrawing.IsInit() && oox_sheet->m_oDrawing->m_oId.IsInit())
+	{
+		smart_ptr<OOX::File> oFile = oox_sheet->Find(oox_sheet->m_oDrawing->m_oId->GetValue());
+		if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Drawings == oFile->type())
+		{
+			OOX::Spreadsheet::CDrawing* pDrawing = (OOX::Spreadsheet::CDrawing*)oFile.operator->();
+			
+			convert(pDrawing);
+		}
+	}
+	//for (long dr =0; oox_sheet->m_oDrawing.IsInit() && dr < oox_sheet->m_oDrawing->m_arrItems.GetSize(); dr++)
+	//{
+	//	convert(oox_sheet->m_oDrawing->m_arrItems[dr]);
+	//}
+
 
 	//комментарии
 	//m_mapComments
@@ -932,6 +946,52 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 		}
 	}
 	
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
+{
+	//SimpleTypes::Spreadsheet::CCellAnchorType<>		m_oAnchorType;
+	std::wstring ref_from, ref_to;
+	int col_from, col_to, row_from, row_to;
+////////////////// 
+	if (oox_anchor->m_oFrom.IsInit())
+		convert(oox_anchor->m_oFrom.GetPointer(),ref_from, col_from, row_from);
+
+	if (oox_anchor->m_oTo.IsInit())
+		convert(oox_anchor->m_oTo.GetPointer(),ref_to,col_to,row_to);
+//////////////
+	if (oox_anchor->m_oPos.IsInit())
+	{
+	}
+
+	if (oox_anchor->m_oExt.IsInit())
+	{
+	}
+//собственно
+	if (oox_anchor->m_oGraphicFrame.IsInit())
+	{
+		//m_oChartGraphic
+	}
+	if (oox_anchor->m_oXml.IsInit())
+	{
+		//m_oXml
+	}
+}
+
+void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing)
+{
+	if (!oox_drawing)return;
+
+	for (long dr = 0 ; dr < oox_drawing->m_arrItems.GetSize(); dr++)
+	{
+		convert(oox_drawing->m_arrItems[dr]);
+	}
+}
+
+
+void XlsxConverter::convert(OOX::Spreadsheet::CFromTo* oox_from_to, std::wstring & odf_ref, int & col, int & row)
+{
 }
 
 } // namespace Docx2Odt

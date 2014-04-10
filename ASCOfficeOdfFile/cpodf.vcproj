@@ -1760,7 +1760,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\custom_shape_types_convert.h"
+			RelativePath=".\src\odf\datatypes\custom_shape_types_convert.h"
 			>
 		</File>
 		<File

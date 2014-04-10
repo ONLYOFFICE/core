@@ -887,6 +887,22 @@
 			Name="elements"
 			>
 			<File
+				RelativePath=".\OdfFormat\draw_frame.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\draw_frame.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\draw_shapes.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\draw_shapes.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\list.cpp"
 				>
 			</File>
@@ -982,6 +998,14 @@
 		<Filter
 			Name="xml_common"
 			>
+			<File
+				RelativePath=".\OdfFormat\svg_creator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\svg_creator.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\ASCOfficeOdfFile\src\xml\utils.cpp"
 				>

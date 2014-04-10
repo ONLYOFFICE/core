@@ -7,7 +7,6 @@
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
-#include <cpdoccore/odf/odf_document.h>
 
 #include "common_attlists.h"
 

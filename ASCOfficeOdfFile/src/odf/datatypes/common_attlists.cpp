@@ -895,6 +895,12 @@ void common_anim_smil_attlist::apply_from(const common_anim_smil_attlist & Other
     //_CP_APPLY_PROP(smil_type_, Other.smil_type_);
    // _CP_APPLY_PROP(smil_dur_, Other.smil_dur_);
 }
+void union_common_draw_attlists::serialize(CP_ATTR_NODE)
+{
+    shape_with_text_and_styles_.serialize(CP_GET_XML_NODE());
+    position_.serialize(CP_GET_XML_NODE());
+    rel_size_.serialize(CP_GET_XML_NODE());
+}
 
 }
 }

@@ -504,146 +504,6 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ItemsChoiceType3(CString& val, ItemsChoiceType3& eOut)
-		{
-			bool bRes = true;
-			if(_T("dLblPos")==val)
-				eOut=itemschoicetype3DLBLPOS;
-			else if(_T("delete")==val)
-				eOut=itemschoicetype3DELETE;
-			else if(_T("leaderLines")==val)
-				eOut=itemschoicetype3LEADERLINES;
-			else if(_T("numFmt")==val)
-				eOut=itemschoicetype3NUMFMT;
-			else if(_T("separator")==val)
-				eOut=itemschoicetype3SEPARATOR;
-			else if(_T("showBubbleSize")==val)
-				eOut=itemschoicetype3SHOWBUBBLESIZE;
-			else if(_T("showCatName")==val)
-				eOut=itemschoicetype3SHOWCATNAME;
-			else if(_T("showLeaderLines")==val)
-				eOut=itemschoicetype3SHOWLEADERLINES;
-			else if(_T("showLegendKey")==val)
-				eOut=itemschoicetype3SHOWLEGENDKEY;
-			else if(_T("showPercent")==val)
-				eOut=itemschoicetype3SHOWPERCENT;
-			else if(_T("showSerName")==val)
-				eOut=itemschoicetype3SHOWSERNAME;
-			else if(_T("showVal")==val)
-				eOut=itemschoicetype3SHOWVAL;
-			else if(_T("spPr")==val)
-				eOut=itemschoicetype3SPPR;
-			else if(_T("txPr")==val)
-				eOut=itemschoicetype3TXPR;
-			else
-				bRes=false;
-			return bRes;
-		}
-		bool ToXml_ItemsChoiceType3(ItemsChoiceType3& val, CString& sOut)
-		{
-			bool bRes = true;
-			if(itemschoicetype3DLBLPOS==val)
-				sOut=_T("dLblPos");
-			else if(itemschoicetype3DELETE==val)
-				sOut=_T("delete");
-			else if(itemschoicetype3LEADERLINES==val)
-				sOut=_T("leaderLines");
-			else if(itemschoicetype3NUMFMT==val)
-				sOut=_T("numFmt");
-			else if(itemschoicetype3SEPARATOR==val)
-				sOut=_T("separator");
-			else if(itemschoicetype3SHOWBUBBLESIZE==val)
-				sOut=_T("showBubbleSize");
-			else if(itemschoicetype3SHOWCATNAME==val)
-				sOut=_T("showCatName");
-			else if(itemschoicetype3SHOWLEADERLINES==val)
-				sOut=_T("showLeaderLines");
-			else if(itemschoicetype3SHOWLEGENDKEY==val)
-				sOut=_T("showLegendKey");
-			else if(itemschoicetype3SHOWPERCENT==val)
-				sOut=_T("showPercent");
-			else if(itemschoicetype3SHOWSERNAME==val)
-				sOut=_T("showSerName");
-			else if(itemschoicetype3SHOWVAL==val)
-				sOut=_T("showVal");
-			else if(itemschoicetype3SPPR==val)
-				sOut=_T("spPr");
-			else if(itemschoicetype3TXPR==val)
-				sOut=_T("txPr");
-			else
-				bRes=false;
-			return bRes;
-		}
-		bool FromXml_ItemsChoiceType4(CString& val, ItemsChoiceType4& eOut)
-		{
-			bool bRes = true;
-			if(_T("dLblPos")==val)
-				eOut=itemschoicetype4DLBLPOS;
-			else if(_T("delete")==val)
-				eOut=itemschoicetype4DELETE;
-			else if(_T("layout")==val)
-				eOut=itemschoicetype4LAYOUT;
-			else if(_T("numFmt")==val)
-				eOut=itemschoicetype4NUMFMT;
-			else if(_T("separator")==val)
-				eOut=itemschoicetype4SEPARATOR;
-			else if(_T("showBubbleSize")==val)
-				eOut=itemschoicetype4SHOWBUBBLESIZE;
-			else if(_T("showCatName")==val)
-				eOut=itemschoicetype4SHOWCATNAME;
-			else if(_T("showLegendKey")==val)
-				eOut=itemschoicetype4SHOWLEGENDKEY;
-			else if(_T("showPercent")==val)
-				eOut=itemschoicetype4SHOWPERCENT;
-			else if(_T("showSerName")==val)
-				eOut=itemschoicetype4SHOWSERNAME;
-			else if(_T("showVal")==val)
-				eOut=itemschoicetype4SHOWVAL;
-			else if(_T("spPr")==val)
-				eOut=itemschoicetype4SPPR;
-			else if(_T("tx")==val)
-				eOut=itemschoicetype4TX;
-			else if(_T("txPr")==val)
-				eOut=itemschoicetype4TXPR;
-			else
-				bRes=false;
-			return bRes;
-		}
-		bool ToXml_ItemsChoiceType4(ItemsChoiceType4& val, CString& sOut)
-		{
-			bool bRes = true;
-			if(itemschoicetype4DLBLPOS==val)
-				sOut=_T("dLblPos");
-			else if(itemschoicetype4DELETE==val)
-				sOut=_T("delete");
-			else if(itemschoicetype4LAYOUT==val)
-				sOut=_T("layout");
-			else if(itemschoicetype4NUMFMT==val)
-				sOut=_T("numFmt");
-			else if(itemschoicetype4SEPARATOR==val)
-				sOut=_T("separator");
-			else if(itemschoicetype4SHOWBUBBLESIZE==val)
-				sOut=_T("showBubbleSize");
-			else if(itemschoicetype4SHOWCATNAME==val)
-				sOut=_T("showCatName");
-			else if(itemschoicetype4SHOWLEGENDKEY==val)
-				sOut=_T("showLegendKey");
-			else if(itemschoicetype4SHOWPERCENT==val)
-				sOut=_T("showPercent");
-			else if(itemschoicetype4SHOWSERNAME==val)
-				sOut=_T("showSerName");
-			else if(itemschoicetype4SHOWVAL==val)
-				sOut=_T("showVal");
-			else if(itemschoicetype4SPPR==val)
-				sOut=_T("spPr");
-			else if(itemschoicetype4TX==val)
-				sOut=_T("tx");
-			else if(itemschoicetype4TXPR==val)
-				sOut=_T("txPr");
-			else
-				bRes=false;
-			return bRes;
-		}
 		bool FromXml_ST_DLblPos(CString& val, ST_DLblPos& eOut)
 		{
 			bool bRes = true;
@@ -1050,114 +910,47 @@ namespace OOX{
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ItemsChoiceType5(CString& val, ItemsChoiceType5& eOut)
+		CT_extLst::CT_extLst()
 		{
-			bool bRes = true;
-			if(_T("area3DChart")==val)
-				eOut=itemschoicetype5AREA3DCHART;
-			else if(_T("areaChart")==val)
-				eOut=itemschoicetype5AREACHART;
-			else if(_T("bar3DChart")==val)
-				eOut=itemschoicetype5BAR3DCHART;
-			else if(_T("barChart")==val)
-				eOut=itemschoicetype5BARCHART;
-			else if(_T("bubbleChart")==val)
-				eOut=itemschoicetype5BUBBLECHART;
-			else if(_T("doughnutChart")==val)
-				eOut=itemschoicetype5DOUGHNUTCHART;
-			else if(_T("line3DChart")==val)
-				eOut=itemschoicetype5LINE3DCHART;
-			else if(_T("lineChart")==val)
-				eOut=itemschoicetype5LINECHART;
-			else if(_T("ofPieChart")==val)
-				eOut=itemschoicetype5OFPIECHART;
-			else if(_T("pie3DChart")==val)
-				eOut=itemschoicetype5PIE3DCHART;
-			else if(_T("pieChart")==val)
-				eOut=itemschoicetype5PIECHART;
-			else if(_T("radarChart")==val)
-				eOut=itemschoicetype5RADARCHART;
-			else if(_T("scatterChart")==val)
-				eOut=itemschoicetype5SCATTERCHART;
-			else if(_T("stockChart")==val)
-				eOut=itemschoicetype5STOCKCHART;
-			else if(_T("surface3DChart")==val)
-				eOut=itemschoicetype5SURFACE3DCHART;
-			else if(_T("surfaceChart")==val)
-				eOut=itemschoicetype5SURFACECHART;
-			else
-				bRes=false;
-			return bRes;
 		}
-		bool ToXml_ItemsChoiceType5(ItemsChoiceType5& val, CString& sOut)
+		CT_extLst::~CT_extLst()
 		{
-			bool bRes = true;
-			if(itemschoicetype5AREA3DCHART==val)
-				sOut=_T("area3DChart");
-			else if(itemschoicetype5AREACHART==val)
-				sOut=_T("areaChart");
-			else if(itemschoicetype5BAR3DCHART==val)
-				sOut=_T("bar3DChart");
-			else if(itemschoicetype5BARCHART==val)
-				sOut=_T("barChart");
-			else if(itemschoicetype5BUBBLECHART==val)
-				sOut=_T("bubbleChart");
-			else if(itemschoicetype5DOUGHNUTCHART==val)
-				sOut=_T("doughnutChart");
-			else if(itemschoicetype5LINE3DCHART==val)
-				sOut=_T("line3DChart");
-			else if(itemschoicetype5LINECHART==val)
-				sOut=_T("lineChart");
-			else if(itemschoicetype5OFPIECHART==val)
-				sOut=_T("ofPieChart");
-			else if(itemschoicetype5PIE3DCHART==val)
-				sOut=_T("pie3DChart");
-			else if(itemschoicetype5PIECHART==val)
-				sOut=_T("pieChart");
-			else if(itemschoicetype5RADARCHART==val)
-				sOut=_T("radarChart");
-			else if(itemschoicetype5SCATTERCHART==val)
-				sOut=_T("scatterChart");
-			else if(itemschoicetype5STOCKCHART==val)
-				sOut=_T("stockChart");
-			else if(itemschoicetype5SURFACE3DCHART==val)
-				sOut=_T("surface3DChart");
-			else if(itemschoicetype5SURFACECHART==val)
-				sOut=_T("surfaceChart");
-			else
-				bRes=false;
-			return bRes;
+			for(int i = 0, length = m_ext.GetCount(); i < length; ++i)
+				delete m_ext[i];
+			m_ext.RemoveAll();
 		}
-		bool FromXml_ItemsChoiceType6(CString& val, ItemsChoiceType6& eOut)
-		{
-			bool bRes = true;
-			if(_T("catAx")==val)
-				eOut=itemschoicetype6CATAX;
-			else if(_T("dateAx")==val)
-				eOut=itemschoicetype6DATEAX;
-			else if(_T("serAx")==val)
-				eOut=itemschoicetype6SERAX;
-			else if(_T("valAx")==val)
-				eOut=itemschoicetype6VALAX;
-			else
-				bRes=false;
-			return bRes;
+		void CT_extLst::fromXML(XmlUtils::CXmlLiteReader& oReader){
+			if ( oReader.IsEmptyNode() )
+				return;
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				if(_T("ext") == sName)
+				{
+					CT_Extension* pNewElem = new CT_Extension;
+					pNewElem->fromXML(oReader);
+					m_ext.Add(pNewElem);
+				}
+			}
 		}
-		bool ToXml_ItemsChoiceType6(ItemsChoiceType6& val, CString& sOut)
-		{
-			bool bRes = true;
-			if(itemschoicetype6CATAX==val)
-				sOut=_T("catAx");
-			else if(itemschoicetype6DATEAX==val)
-				sOut=_T("dateAx");
-			else if(itemschoicetype6SERAX==val)
-				sOut=_T("serAx");
-			else if(itemschoicetype6VALAX==val)
-				sOut=_T("valAx");
-			else
-				bRes=false;
-			return bRes;
+		void CT_extLst::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
+			writer.WriteString(CString(_T("<")));
+			writer.WriteString(sNodeName);
+			writer.WriteString(CString(_T(">")));
+			for(int i = 0, length = m_ext.GetCount(); i < length; ++i)
+			{
+				CT_Extension* pElem = m_ext[i];
+				if(NULL != pElem)
+				{
+					pElem->toXML(CString(_T("c:ext")), writer);
+				}
+			}
+			writer.WriteString(CString(_T("</")));
+			writer.WriteString(sNodeName);
+			writer.WriteString(CString(_T(">")));
 		}
+		EElementType CT_extLst::getType(){return et_ct_extlst;}
 		CT_ChartSpace::CT_ChartSpace()
 		{
 			m_date1904 = NULL;
@@ -1174,6 +967,7 @@ namespace OOX{
 			m_externalData = NULL;
 			m_printSettings = NULL;
 			m_userShapes = NULL;
+			m_extLst = NULL;
 		}
 		CT_ChartSpace::~CT_ChartSpace()
 		{
@@ -1205,9 +999,8 @@ namespace OOX{
 				delete m_printSettings;
 			if(NULL != m_userShapes)
 				delete m_userShapes;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_ChartSpace::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -1246,14 +1039,14 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					m_style = pNewElem;
 				}
-				//else if(_T("clrMapOvr") == sName)
-				//{
-				//	//todo
-				//	CString* pNewElem = new CString;
-				//	CString sVal = oReader.GetOuterXml();
-				//	*pNewElem = sVal;
-				//	m_clrMapOvr = pNewElem;
-				//}
+				else if(_T("clrMapOvr") == sName)
+				{
+					//todo
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetOuterXml();
+					*pNewElem = sVal;
+					m_clrMapOvr = pNewElem;
+				}
 				else if(_T("pivotSource") == sName)
 				{
 					CT_PivotSource* pNewElem = new CT_PivotSource;
@@ -1286,29 +1079,29 @@ namespace OOX{
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
 				}
-				//else if(_T("externalData") == sName)
-				//{
-				//	CT_ExternalData* pNewElem = new CT_ExternalData;
-				//	pNewElem->fromXML(oReader);
-				//	m_externalData = pNewElem;
-				//}
+				else if(_T("externalData") == sName)
+				{
+					CT_ExternalData* pNewElem = new CT_ExternalData;
+					pNewElem->fromXML(oReader);
+					m_externalData = pNewElem;
+				}
 				else if(_T("printSettings") == sName)
 				{
 					CT_PrintSettings* pNewElem = new CT_PrintSettings;
 					pNewElem->fromXML(oReader);
 					m_printSettings = pNewElem;
 				}
-				//else if(_T("userShapes") == sName)
-				//{
-				//	CT_RelId* pNewElem = new CT_RelId;
-				//	pNewElem->fromXML(oReader);
-				//	m_userShapes = pNewElem;
-				//}
+				else if(_T("userShapes") == sName)
+				{
+					CT_RelId* pNewElem = new CT_RelId;
+					pNewElem->fromXML(oReader);
+					m_userShapes = pNewElem;
+				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -1337,11 +1130,11 @@ namespace OOX{
 			{
 				m_style->toXML(CString(_T("c:style")), writer);
 			}
-			//if(NULL != m_clrMapOvr)
-			//{
-			//	//todo
-			//	writer.WriteString(*m_clrMapOvr);
-			//}
+			if(NULL != m_clrMapOvr)
+			{
+				//todo
+				writer.WriteString(*m_clrMapOvr);
+			}
 			if(NULL != m_pivotSource)
 			{
 				m_pivotSource->toXML(CString(_T("c:pivotSource")), writer);
@@ -1362,25 +1155,21 @@ namespace OOX{
 			{
 				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
 			}
-			//if(NULL != m_externalData)
-			//{
-			//	m_externalData->toXML(CString(_T("c:externalData")), writer);
-			//}
+			if(NULL != m_externalData)
+			{
+				m_externalData->toXML(CString(_T("c:externalData")), writer);
+			}
 			if(NULL != m_printSettings)
 			{
 				m_printSettings->toXML(CString(_T("c:printSettings")), writer);
 			}
-			//if(NULL != m_userShapes)
-			//{
-			//	m_userShapes->toXML(CString(_T("c:userShapes")), writer);
-			//}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_userShapes)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_userShapes->toXML(CString(_T("c:userShapes")), writer);
+			}
+			if(NULL != m_extLst)
+			{
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -2314,6 +2103,7 @@ namespace OOX{
 			m_idx = NULL;
 			m_delete = NULL;
 			m_txPr = NULL;
+			m_extLst = NULL;
 		}
 		CT_LegendEntry::~CT_LegendEntry()
 		{
@@ -2323,9 +2113,8 @@ namespace OOX{
 				delete m_delete;
 			if(NULL != m_txPr)
 				delete m_txPr;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_LegendEntry::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -2355,9 +2144,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -2377,13 +2166,9 @@ namespace OOX{
 			{
 				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -2541,6 +2326,7 @@ namespace OOX{
 			m_overlay = NULL;
 			m_spPr = NULL;
 			m_txPr = NULL;
+			m_extLst = NULL;
 		}
 		CT_Legend::~CT_Legend()
 		{
@@ -2557,9 +2343,8 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_txPr)
 				delete m_txPr;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_Legend::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -2608,9 +2393,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -2646,13 +2431,9 @@ namespace OOX{
 			{
 				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -2662,14 +2443,14 @@ namespace OOX{
 		CT_Layout::CT_Layout()
 		{
 			m_manualLayout = NULL;
+			m_extLst = NULL;
 		}
 		CT_Layout::~CT_Layout()
 		{
 			if(NULL != m_manualLayout)
 				delete m_manualLayout;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_Layout::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -2686,9 +2467,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -2700,13 +2481,9 @@ namespace OOX{
 			{
 				m_manualLayout->toXML(CString(_T("c:manualLayout")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -2724,6 +2501,7 @@ namespace OOX{
 			m_y = NULL;
 			m_w = NULL;
 			m_h = NULL;
+			m_extLst = NULL;
 		}
 		CT_ManualLayout::~CT_ManualLayout()
 		{
@@ -2745,9 +2523,8 @@ namespace OOX{
 				delete m_w;
 			if(NULL != m_h)
 				delete m_h;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_ManualLayout::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -2812,9 +2589,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -2858,13 +2635,9 @@ namespace OOX{
 			{
 				m_h->toXML(CString(_T("c:h")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -2999,6 +2772,7 @@ namespace OOX{
 			m_showKeys = NULL;
 			m_spPr = NULL;
 			m_txPr = NULL;
+			m_extLst = NULL;
 		}
 		CT_DTable::~CT_DTable()
 		{
@@ -3014,9 +2788,8 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_txPr)
 				delete m_txPr;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_DTable::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -3065,9 +2838,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -3099,13 +2872,9 @@ namespace OOX{
 			{
 				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -3132,6 +2901,7 @@ namespace OOX{
 			m_crossesAt = NULL;
 			m_tickLblSkip = NULL;
 			m_tickMarkSkip = NULL;
+			m_extLst = NULL;
 		}
 		CT_SerAx::~CT_SerAx()
 		{
@@ -3171,9 +2941,8 @@ namespace OOX{
 				delete m_tickLblSkip;
 			if(NULL != m_tickMarkSkip)
 				delete m_tickMarkSkip;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_SerAx::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -3294,9 +3063,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -3376,13 +3145,9 @@ namespace OOX{
 			{
 				m_tickMarkSkip->toXML(CString(_T("c:tickMarkSkip")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -3395,6 +3160,7 @@ namespace OOX{
 			m_orientation = NULL;
 			m_max = NULL;
 			m_min = NULL;
+			m_extLst = NULL;
 		}
 		CT_Scaling::~CT_Scaling()
 		{
@@ -3406,9 +3172,8 @@ namespace OOX{
 				delete m_max;
 			if(NULL != m_min)
 				delete m_min;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_Scaling::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -3443,9 +3208,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -3469,13 +3234,9 @@ namespace OOX{
 			{
 				m_min->toXML(CString(_T("c:min")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -3647,6 +3408,7 @@ namespace OOX{
 			m_overlay = NULL;
 			m_spPr = NULL;
 			m_txPr = NULL;
+			m_extLst = NULL;
 		}
 		CT_Title::~CT_Title()
 		{
@@ -3660,9 +3422,8 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_txPr)
 				delete m_txPr;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_Title::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -3705,9 +3466,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -3735,13 +3496,9 @@ namespace OOX{
 			{
 				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -3803,6 +3560,7 @@ namespace OOX{
 		{
 			m_f = NULL;
 			m_strCache = NULL;
+			m_extLst = NULL;
 		}
 		CT_StrRef::~CT_StrRef()
 		{
@@ -3810,9 +3568,8 @@ namespace OOX{
 				delete m_f;
 			if(NULL != m_strCache)
 				delete m_strCache;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_StrRef::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -3836,9 +3593,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -3861,13 +3618,9 @@ namespace OOX{
 			{
 				m_strCache->toXML(CString(_T("c:strCache")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -3877,6 +3630,7 @@ namespace OOX{
 		CT_StrData::CT_StrData()
 		{
 			m_ptCount = NULL;
+			m_extLst = NULL;
 		}
 		CT_StrData::~CT_StrData()
 		{
@@ -3885,9 +3639,8 @@ namespace OOX{
 			for(int i = 0, length = m_pt.GetCount(); i < length; ++i)
 				delete m_pt[i];
 			m_pt.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_StrData::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -3910,9 +3663,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -3932,13 +3685,9 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:pt")), writer);
 				}
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -4300,6 +4049,7 @@ namespace OOX{
 			m_majorTimeUnit = NULL;
 			m_minorUnit = NULL;
 			m_minorTimeUnit = NULL;
+			m_extLst = NULL;
 		}
 		CT_DateAx::~CT_DateAx()
 		{
@@ -4349,9 +4099,8 @@ namespace OOX{
 				delete m_minorUnit;
 			if(NULL != m_minorTimeUnit)
 				delete m_minorTimeUnit;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_DateAx::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -4502,9 +4251,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -4604,13 +4353,9 @@ namespace OOX{
 			{
 				m_minorTimeUnit->toXML(CString(_T("c:minorTimeUnit")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -4762,6 +4507,7 @@ namespace OOX{
 			m_tickLblSkip = NULL;
 			m_tickMarkSkip = NULL;
 			m_noMultiLvlLbl = NULL;
+			m_extLst = NULL;
 		}
 		CT_CatAx::~CT_CatAx()
 		{
@@ -4809,9 +4555,8 @@ namespace OOX{
 				delete m_tickMarkSkip;
 			if(NULL != m_noMultiLvlLbl)
 				delete m_noMultiLvlLbl;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_CatAx::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -4956,9 +4701,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -5054,13 +4799,9 @@ namespace OOX{
 			{
 				m_noMultiLvlLbl->toXML(CString(_T("c:noMultiLvlLbl")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -5191,6 +4932,7 @@ namespace OOX{
 			m_builtInUnit = NULL;
 			m_custUnit = NULL;
 			m_dispUnitsLbl = NULL;
+			m_extLst = NULL;
 		}
 		CT_DispUnits::~CT_DispUnits()
 		{
@@ -5200,9 +4942,8 @@ namespace OOX{
 				delete m_custUnit;
 			if(NULL != m_dispUnitsLbl)
 				delete m_dispUnitsLbl;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_DispUnits::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -5231,9 +4972,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -5253,13 +4994,9 @@ namespace OOX{
 			{
 				m_dispUnitsLbl->toXML(CString(_T("c:dispUnitsLbl")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -5329,6 +5066,7 @@ namespace OOX{
 			m_majorUnit = NULL;
 			m_minorUnit = NULL;
 			m_dispUnits = NULL;
+			m_extLst = NULL;
 		}
 		CT_ValAx::~CT_ValAx()
 		{
@@ -5372,9 +5110,8 @@ namespace OOX{
 				delete m_minorUnit;
 			if(NULL != m_dispUnits)
 				delete m_dispUnits;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_ValAx::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -5507,9 +5244,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -5597,13 +5334,9 @@ namespace OOX{
 			{
 				m_dispUnits->toXML(CString(_T("c:dispUnits")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -5705,6 +5438,7 @@ namespace OOX{
 			m_yVal = NULL;
 			m_bubbleSize = NULL;
 			m_bubble3D = NULL;
+			m_extLst = NULL;
 		}
 		CT_BubbleSer::~CT_BubbleSer()
 		{
@@ -5737,9 +5471,8 @@ namespace OOX{
 				delete m_bubbleSize;
 			if(NULL != m_bubble3D)
 				delete m_bubble3D;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_BubbleSer::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -5829,9 +5562,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -5903,13 +5636,9 @@ namespace OOX{
 			{
 				m_bubble3D->toXML(CString(_T("c:bubble3D")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -5983,6 +5712,7 @@ namespace OOX{
 			m_explosion = NULL;
 			m_spPr = NULL;
 			m_pictureOptions = NULL;
+			m_extLst = NULL;
 		}
 		CT_DPt::~CT_DPt()
 		{
@@ -6000,9 +5730,8 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_pictureOptions)
 				delete m_pictureOptions;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_DPt::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -6056,9 +5785,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -6094,13 +5823,9 @@ namespace OOX{
 			{
 				m_pictureOptions->toXML(CString(_T("c:pictureOptions")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -6112,6 +5837,7 @@ namespace OOX{
 			m_symbol = NULL;
 			m_size = NULL;
 			m_spPr = NULL;
+			m_extLst = NULL;
 		}
 		CT_Marker::~CT_Marker()
 		{
@@ -6121,9 +5847,8 @@ namespace OOX{
 				delete m_size;
 			if(NULL != m_spPr)
 				delete m_spPr;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_Marker::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -6153,9 +5878,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -6175,13 +5900,9 @@ namespace OOX{
 			{
 				writer.WriteString(*m_spPr);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -6441,6 +6162,7 @@ namespace OOX{
 		EElementType CT_PictureStackUnit::getType(){return et_ct_picturestackunit;}
 		CT_DLbls::CT_DLbls()
 		{
+			m_extLst = NULL;
 		}
 		CT_DLbls::~CT_DLbls()
 		{
@@ -6453,9 +6175,8 @@ namespace OOX{
 			for(int i = 0, length = m_Items.GetCount(); i < length; ++i)
 				delete m_Items[i];
 			m_Items.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_DLbls::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -6601,9 +6322,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -6624,13 +6345,9 @@ namespace OOX{
 				ItemsChoiceType3 eType = *m_ItemsElementName0[i];
 				toXML(writer, false, eType, m_Items[i]);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -6792,6 +6509,7 @@ namespace OOX{
 		CT_DLbl::CT_DLbl()
 		{
 			m_idx = NULL;
+			m_extLst = NULL;
 		}
 		CT_DLbl::~CT_DLbl()
 		{
@@ -6803,9 +6521,8 @@ namespace OOX{
 			for(int i = 0, length = m_Items.GetCount(); i < length; ++i)
 				delete m_Items[i];
 			m_Items.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_DLbl::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -6951,9 +6668,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -6970,13 +6687,9 @@ namespace OOX{
 				ItemsChoiceType4 eType = *m_ItemsElementName0[i];
 				toXML(writer, false, eType, m_Items[i]);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -7189,6 +6902,7 @@ namespace OOX{
 			m_dispRSqr = NULL;
 			m_dispEq = NULL;
 			m_trendlineLbl = NULL;
+			m_extLst = NULL;
 		}
 		CT_Trendline::~CT_Trendline()
 		{
@@ -7214,9 +6928,8 @@ namespace OOX{
 				delete m_dispEq;
 			if(NULL != m_trendlineLbl)
 				delete m_trendlineLbl;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_Trendline::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -7295,9 +7008,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -7356,13 +7069,9 @@ namespace OOX{
 			{
 				m_trendlineLbl->toXML(CString(_T("c:trendlineLbl")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -7501,6 +7210,7 @@ namespace OOX{
 			m_numFmt = NULL;
 			m_spPr = NULL;
 			m_txPr = NULL;
+			m_extLst = NULL;
 		}
 		CT_TrendlineLbl::~CT_TrendlineLbl()
 		{
@@ -7514,9 +7224,8 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_txPr)
 				delete m_txPr;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_TrendlineLbl::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -7559,9 +7268,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -7589,13 +7298,9 @@ namespace OOX{
 			{
 				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -7612,6 +7317,7 @@ namespace OOX{
 			m_minus = NULL;
 			m_val = NULL;
 			m_spPr = NULL;
+			m_extLst = NULL;
 		}
 		CT_ErrBars::~CT_ErrBars()
 		{
@@ -7631,9 +7337,8 @@ namespace OOX{
 				delete m_val;
 			if(NULL != m_spPr)
 				delete m_spPr;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_ErrBars::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -7693,9 +7398,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -7735,13 +7440,9 @@ namespace OOX{
 			{
 				writer.WriteString(*m_spPr);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -7925,6 +7626,7 @@ namespace OOX{
 		{
 			m_formatCode = NULL;
 			m_ptCount = NULL;
+			m_extLst = NULL;
 		}
 		CT_NumData::~CT_NumData()
 		{
@@ -7935,9 +7637,8 @@ namespace OOX{
 			for(int i = 0, length = m_pt.GetCount(); i < length; ++i)
 				delete m_pt[i];
 			m_pt.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_NumData::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -7967,9 +7668,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -8000,13 +7701,9 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:pt")), writer);
 				}
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -8100,6 +7797,7 @@ namespace OOX{
 		{
 			m_f = NULL;
 			m_numCache = NULL;
+			m_extLst = NULL;
 		}
 		CT_NumRef::~CT_NumRef()
 		{
@@ -8107,9 +7805,8 @@ namespace OOX{
 				delete m_f;
 			if(NULL != m_numCache)
 				delete m_numCache;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_NumRef::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -8133,9 +7830,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -8158,13 +7855,9 @@ namespace OOX{
 			{
 				m_numCache->toXML(CString(_T("c:numCache")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -8264,6 +7957,7 @@ namespace OOX{
 		{
 			m_f = NULL;
 			m_multiLvlStrCache = NULL;
+			m_extLst = NULL;
 		}
 		CT_MultiLvlStrRef::~CT_MultiLvlStrRef()
 		{
@@ -8271,9 +7965,8 @@ namespace OOX{
 				delete m_f;
 			if(NULL != m_multiLvlStrCache)
 				delete m_multiLvlStrCache;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_MultiLvlStrRef::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -8297,9 +7990,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -8322,22 +8015,60 @@ namespace OOX{
 			{
 				m_multiLvlStrCache->toXML(CString(_T("c:multiLvlStrCache")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
 			writer.WriteString(CString(_T(">")));
 		}
 		EElementType CT_MultiLvlStrRef::getType(){return et_ct_multilvlstrref;}
+		CT_lvl::CT_lvl()
+		{
+		}
+		CT_lvl::~CT_lvl()
+		{
+			for(int i = 0, length = m_pt.GetCount(); i < length; ++i)
+				delete m_pt[i];
+			m_pt.RemoveAll();
+		}
+		void CT_lvl::fromXML(XmlUtils::CXmlLiteReader& oReader){
+			if ( oReader.IsEmptyNode() )
+				return;
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				if(_T("pt") == sName)
+				{
+					CT_StrVal* pNewElem = new CT_StrVal;
+					pNewElem->fromXML(oReader);
+					m_pt.Add(pNewElem);
+				}
+			}
+		}
+		void CT_lvl::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
+			writer.WriteString(CString(_T("<")));
+			writer.WriteString(sNodeName);
+			writer.WriteString(CString(_T(">")));
+			for(int i = 0, length = m_pt.GetCount(); i < length; ++i)
+			{
+				CT_StrVal* pElem = m_pt[i];
+				if(NULL != pElem)
+				{
+					pElem->toXML(CString(_T("c:pt")), writer);
+				}
+			}
+			writer.WriteString(CString(_T("</")));
+			writer.WriteString(sNodeName);
+			writer.WriteString(CString(_T(">")));
+		}
+		EElementType CT_lvl::getType(){return et_ct_lvl;}
 		CT_MultiLvlStrData::CT_MultiLvlStrData()
 		{
 			m_ptCount = NULL;
+			m_extLst = NULL;
 		}
 		CT_MultiLvlStrData::~CT_MultiLvlStrData()
 		{
@@ -8346,9 +8077,8 @@ namespace OOX{
 			for(int i = 0, length = m_lvl.GetCount(); i < length; ++i)
 				delete m_lvl[i];
 			m_lvl.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_MultiLvlStrData::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -8365,15 +8095,15 @@ namespace OOX{
 				}
 				else if(_T("lvl") == sName)
 				{
-					CT_StrVal* pNewElem = new CT_StrVal;
+					CT_lvl* pNewElem = new CT_lvl;
 					pNewElem->fromXML(oReader);
 					m_lvl.Add(pNewElem);
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -8387,19 +8117,15 @@ namespace OOX{
 			}
 			for(int i = 0, length = m_lvl.GetCount(); i < length; ++i)
 			{
-				CT_StrVal* pElem = m_lvl[i];
+				CT_lvl* pElem = m_lvl[i];
 				if(NULL != pElem)
 				{
 					pElem->toXML(CString(_T("c:lvl")), writer);
 				}
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -8414,6 +8140,7 @@ namespace OOX{
 			m_bubbleScale = NULL;
 			m_showNegBubbles = NULL;
 			m_sizeRepresents = NULL;
+			m_extLst = NULL;
 		}
 		CT_BubbleChart::~CT_BubbleChart()
 		{
@@ -8435,9 +8162,8 @@ namespace OOX{
 			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
 				delete m_axId[i];
 			m_axId.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_BubbleChart::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -8496,9 +8222,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -8546,22 +8272,61 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:axId")), writer);
 				}
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
 			writer.WriteString(CString(_T(">")));
 		}
 		EElementType CT_BubbleChart::getType(){return et_ct_bubblechart;}
+		CT_bandFmts::CT_bandFmts()
+		{
+		}
+		CT_bandFmts::~CT_bandFmts()
+		{
+			for(int i = 0, length = m_bandFmt.GetCount(); i < length; ++i)
+				delete m_bandFmt[i];
+			m_bandFmt.RemoveAll();
+		}
+		void CT_bandFmts::fromXML(XmlUtils::CXmlLiteReader& oReader){
+			if ( oReader.IsEmptyNode() )
+				return;
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				if(_T("bandFmt") == sName)
+				{
+					CT_BandFmt* pNewElem = new CT_BandFmt;
+					pNewElem->fromXML(oReader);
+					m_bandFmt.Add(pNewElem);
+				}
+			}
+		}
+		void CT_bandFmts::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
+			writer.WriteString(CString(_T("<")));
+			writer.WriteString(sNodeName);
+			writer.WriteString(CString(_T(">")));
+			for(int i = 0, length = m_bandFmt.GetCount(); i < length; ++i)
+			{
+				CT_BandFmt* pElem = m_bandFmt[i];
+				if(NULL != pElem)
+				{
+					pElem->toXML(CString(_T("c:bandFmt")), writer);
+				}
+			}
+			writer.WriteString(CString(_T("</")));
+			writer.WriteString(sNodeName);
+			writer.WriteString(CString(_T(">")));
+		}
+		EElementType CT_bandFmts::getType(){return et_ct_bandfmts;}
 		CT_Surface3DChart::CT_Surface3DChart()
 		{
 			m_wireframe = NULL;
+			m_bandFmts = NULL;
+			m_extLst = NULL;
 		}
 		CT_Surface3DChart::~CT_Surface3DChart()
 		{
@@ -8570,15 +8335,13 @@ namespace OOX{
 			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
 				delete m_ser[i];
 			m_ser.RemoveAll();
-			for(int i = 0, length = m_bandFmts.GetCount(); i < length; ++i)
-				delete m_bandFmts[i];
-			m_bandFmts.RemoveAll();
+			if(NULL != m_bandFmts)
+				delete m_bandFmts;
 			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
 				delete m_axId[i];
 			m_axId.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_Surface3DChart::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -8601,9 +8364,9 @@ namespace OOX{
 				}
 				else if(_T("bandFmts") == sName)
 				{
-					CT_BandFmt* pNewElem = new CT_BandFmt;
+					CT_bandFmts* pNewElem = new CT_bandFmts;
 					pNewElem->fromXML(oReader);
-					m_bandFmts.Add(pNewElem);
+					m_bandFmts = pNewElem;
 				}
 				else if(_T("axId") == sName)
 				{
@@ -8613,9 +8376,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -8635,13 +8398,9 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:ser")), writer);
 				}
 			}
-			for(int i = 0, length = m_bandFmts.GetCount(); i < length; ++i)
+			if(NULL != m_bandFmts)
 			{
-				CT_BandFmt* pElem = m_bandFmts[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:bandFmts")), writer);
-				}
+				m_bandFmts->toXML(CString(_T("c:bandFmts")), writer);
 			}
 			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
 			{
@@ -8651,13 +8410,9 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:axId")), writer);
 				}
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -8672,6 +8427,7 @@ namespace OOX{
 			m_spPr = NULL;
 			m_cat = NULL;
 			m_val = NULL;
+			m_extLst = NULL;
 		}
 		CT_SurfaceSer::~CT_SurfaceSer()
 		{
@@ -8687,9 +8443,8 @@ namespace OOX{
 				delete m_cat;
 			if(NULL != m_val)
 				delete m_val;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_SurfaceSer::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -8737,9 +8492,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -8771,13 +8526,9 @@ namespace OOX{
 			{
 				m_val->toXML(CString(_T("c:val")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -8838,6 +8589,8 @@ namespace OOX{
 		CT_SurfaceChart::CT_SurfaceChart()
 		{
 			m_wireframe = NULL;
+			m_bandFmts = NULL;
+			m_extLst = NULL;
 		}
 		CT_SurfaceChart::~CT_SurfaceChart()
 		{
@@ -8846,15 +8599,13 @@ namespace OOX{
 			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
 				delete m_ser[i];
 			m_ser.RemoveAll();
-			for(int i = 0, length = m_bandFmts.GetCount(); i < length; ++i)
-				delete m_bandFmts[i];
-			m_bandFmts.RemoveAll();
+			if(NULL != m_bandFmts)
+				delete m_bandFmts;
 			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
 				delete m_axId[i];
 			m_axId.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_SurfaceChart::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -8877,9 +8628,9 @@ namespace OOX{
 				}
 				else if(_T("bandFmts") == sName)
 				{
-					CT_BandFmt* pNewElem = new CT_BandFmt;
+					CT_bandFmts* pNewElem = new CT_bandFmts;
 					pNewElem->fromXML(oReader);
-					m_bandFmts.Add(pNewElem);
+					m_bandFmts = pNewElem;
 				}
 				else if(_T("axId") == sName)
 				{
@@ -8889,9 +8640,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -8911,13 +8662,9 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:ser")), writer);
 				}
 			}
-			for(int i = 0, length = m_bandFmts.GetCount(); i < length; ++i)
+			if(NULL != m_bandFmts)
 			{
-				CT_BandFmt* pElem = m_bandFmts[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:bandFmts")), writer);
-				}
+				m_bandFmts->toXML(CString(_T("c:bandFmts")), writer);
 			}
 			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
 			{
@@ -8927,13 +8674,9 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:axId")), writer);
 				}
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -9064,6 +8807,47 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_OfPieType::getType(){return et_ct_ofpietype;}
+		CT_custSplit::CT_custSplit()
+		{
+		}
+		CT_custSplit::~CT_custSplit()
+		{
+			for(int i = 0, length = m_secondPiePt.GetCount(); i < length; ++i)
+				delete m_secondPiePt[i];
+			m_secondPiePt.RemoveAll();
+		}
+		void CT_custSplit::fromXML(XmlUtils::CXmlLiteReader& oReader){
+			if ( oReader.IsEmptyNode() )
+				return;
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				if(_T("secondPiePt") == sName)
+				{
+					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
+					pNewElem->fromXML(oReader);
+					m_secondPiePt.Add(pNewElem);
+				}
+			}
+		}
+		void CT_custSplit::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
+			writer.WriteString(CString(_T("<")));
+			writer.WriteString(sNodeName);
+			writer.WriteString(CString(_T(">")));
+			for(int i = 0, length = m_secondPiePt.GetCount(); i < length; ++i)
+			{
+				CT_UnsignedInt* pElem = m_secondPiePt[i];
+				if(NULL != pElem)
+				{
+					pElem->toXML(CString(_T("c:secondPiePt")), writer);
+				}
+			}
+			writer.WriteString(CString(_T("</")));
+			writer.WriteString(sNodeName);
+			writer.WriteString(CString(_T(">")));
+		}
+		EElementType CT_custSplit::getType(){return et_ct_custsplit;}
 		CT_OfPieChart::CT_OfPieChart()
 		{
 			m_ofPieType = NULL;
@@ -9072,7 +8856,9 @@ namespace OOX{
 			m_gapWidth = NULL;
 			m_splitType = NULL;
 			m_splitPos = NULL;
+			m_custSplit = NULL;
 			m_secondPieSize = NULL;
+			m_extLst = NULL;
 		}
 		CT_OfPieChart::~CT_OfPieChart()
 		{
@@ -9091,17 +8877,15 @@ namespace OOX{
 				delete m_splitType;
 			if(NULL != m_splitPos)
 				delete m_splitPos;
-			for(int i = 0, length = m_custSplit.GetCount(); i < length; ++i)
-				delete m_custSplit[i];
-			m_custSplit.RemoveAll();
+			if(NULL != m_custSplit)
+				delete m_custSplit;
 			if(NULL != m_secondPieSize)
 				delete m_secondPieSize;
 			for(int i = 0, length = m_serLines.GetCount(); i < length; ++i)
 				delete m_serLines[i];
 			m_serLines.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_OfPieChart::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -9154,9 +8938,9 @@ namespace OOX{
 				}
 				else if(_T("custSplit") == sName)
 				{
-					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
+					CT_custSplit* pNewElem = new CT_custSplit;
 					pNewElem->fromXML(oReader);
-					m_custSplit.Add(pNewElem);
+					m_custSplit = pNewElem;
 				}
 				else if(_T("secondPieSize") == sName)
 				{
@@ -9172,9 +8956,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -9214,13 +8998,9 @@ namespace OOX{
 			{
 				m_splitPos->toXML(CString(_T("c:splitPos")), writer);
 			}
-			for(int i = 0, length = m_custSplit.GetCount(); i < length; ++i)
+			if(NULL != m_custSplit)
 			{
-				CT_UnsignedInt* pElem = m_custSplit[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:custSplit")), writer);
-				}
+				m_custSplit->toXML(CString(_T("c:custSplit")), writer);
 			}
 			if(NULL != m_secondPieSize)
 			{
@@ -9234,13 +9014,9 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:serLines")), writer);
 				}
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -9257,6 +9033,7 @@ namespace OOX{
 			m_dLbls = NULL;
 			m_cat = NULL;
 			m_val = NULL;
+			m_extLst = NULL;
 		}
 		CT_PieSer::~CT_PieSer()
 		{
@@ -9279,9 +9056,8 @@ namespace OOX{
 				delete m_cat;
 			if(NULL != m_val)
 				delete m_val;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_PieSer::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -9347,9 +9123,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -9397,13 +9173,9 @@ namespace OOX{
 			{
 				m_val->toXML(CString(_T("c:val")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -9461,6 +9233,7 @@ namespace OOX{
 			m_gapWidth = NULL;
 			m_gapDepth = NULL;
 			m_shape = NULL;
+			m_extLst = NULL;
 		}
 		CT_Bar3DChart::~CT_Bar3DChart()
 		{
@@ -9484,9 +9257,8 @@ namespace OOX{
 			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
 				delete m_axId[i];
 			m_axId.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_Bar3DChart::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -9551,9 +9323,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -9605,13 +9377,9 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:axId")), writer);
 				}
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -9713,6 +9481,7 @@ namespace OOX{
 			m_cat = NULL;
 			m_val = NULL;
 			m_shape = NULL;
+			m_extLst = NULL;
 		}
 		CT_BarSer::~CT_BarSer()
 		{
@@ -9744,9 +9513,8 @@ namespace OOX{
 				delete m_val;
 			if(NULL != m_shape)
 				delete m_shape;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_BarSer::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -9836,9 +9604,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -9906,13 +9674,9 @@ namespace OOX{
 			{
 				m_shape->toXML(CString(_T("c:shape")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -10010,6 +9774,7 @@ namespace OOX{
 			m_dLbls = NULL;
 			m_gapWidth = NULL;
 			m_overlap = NULL;
+			m_extLst = NULL;
 		}
 		CT_BarChart::~CT_BarChart()
 		{
@@ -10034,9 +9799,8 @@ namespace OOX{
 			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
 				delete m_axId[i];
 			m_axId.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_BarChart::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -10101,9 +9865,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -10159,13 +9923,9 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:axId")), writer);
 				}
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -10220,6 +9980,7 @@ namespace OOX{
 			m_dLbls = NULL;
 			m_firstSliceAng = NULL;
 			m_holeSize = NULL;
+			m_extLst = NULL;
 		}
 		CT_DoughnutChart::~CT_DoughnutChart()
 		{
@@ -10234,9 +9995,8 @@ namespace OOX{
 				delete m_firstSliceAng;
 			if(NULL != m_holeSize)
 				delete m_holeSize;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_DoughnutChart::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -10277,9 +10037,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -10311,13 +10071,9 @@ namespace OOX{
 			{
 				m_holeSize->toXML(CString(_T("c:holeSize")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -10370,6 +10126,7 @@ namespace OOX{
 		{
 			m_varyColors = NULL;
 			m_dLbls = NULL;
+			m_extLst = NULL;
 		}
 		CT_Pie3DChart::~CT_Pie3DChart()
 		{
@@ -10380,9 +10137,8 @@ namespace OOX{
 			m_ser.RemoveAll();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_Pie3DChart::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -10411,9 +10167,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -10437,13 +10193,9 @@ namespace OOX{
 			{
 				m_dLbls->toXML(CString(_T("c:dLbls")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -10455,6 +10207,7 @@ namespace OOX{
 			m_varyColors = NULL;
 			m_dLbls = NULL;
 			m_firstSliceAng = NULL;
+			m_extLst = NULL;
 		}
 		CT_PieChart::~CT_PieChart()
 		{
@@ -10467,9 +10220,8 @@ namespace OOX{
 				delete m_dLbls;
 			if(NULL != m_firstSliceAng)
 				delete m_firstSliceAng;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_PieChart::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -10504,9 +10256,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -10534,13 +10286,9 @@ namespace OOX{
 			{
 				m_firstSliceAng->toXML(CString(_T("c:firstSliceAng")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -10558,6 +10306,7 @@ namespace OOX{
 			m_xVal = NULL;
 			m_yVal = NULL;
 			m_smooth = NULL;
+			m_extLst = NULL;
 		}
 		CT_ScatterSer::~CT_ScatterSer()
 		{
@@ -10588,9 +10337,8 @@ namespace OOX{
 				delete m_yVal;
 			if(NULL != m_smooth)
 				delete m_smooth;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_ScatterSer::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -10674,9 +10422,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -10744,13 +10492,9 @@ namespace OOX{
 			{
 				m_smooth->toXML(CString(_T("c:smooth")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -10803,6 +10547,7 @@ namespace OOX{
 			m_scatterStyle = NULL;
 			m_varyColors = NULL;
 			m_dLbls = NULL;
+			m_extLst = NULL;
 		}
 		CT_ScatterChart::~CT_ScatterChart()
 		{
@@ -10818,9 +10563,8 @@ namespace OOX{
 			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
 				delete m_axId[i];
 			m_axId.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_ScatterChart::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -10861,9 +10605,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -10899,13 +10643,9 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:axId")), writer);
 				}
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -10922,6 +10662,7 @@ namespace OOX{
 			m_dLbls = NULL;
 			m_cat = NULL;
 			m_val = NULL;
+			m_extLst = NULL;
 		}
 		CT_RadarSer::~CT_RadarSer()
 		{
@@ -10944,9 +10685,8 @@ namespace OOX{
 				delete m_cat;
 			if(NULL != m_val)
 				delete m_val;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_RadarSer::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -11012,9 +10752,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -11062,13 +10802,9 @@ namespace OOX{
 			{
 				m_val->toXML(CString(_T("c:val")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -11121,6 +10857,7 @@ namespace OOX{
 			m_radarStyle = NULL;
 			m_varyColors = NULL;
 			m_dLbls = NULL;
+			m_extLst = NULL;
 		}
 		CT_RadarChart::~CT_RadarChart()
 		{
@@ -11136,9 +10873,8 @@ namespace OOX{
 			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
 				delete m_axId[i];
 			m_axId.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_RadarChart::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -11179,9 +10915,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -11217,13 +10953,9 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:axId")), writer);
 				}
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -11236,6 +10968,7 @@ namespace OOX{
 			m_dropLines = NULL;
 			m_hiLowLines = NULL;
 			m_upDownBars = NULL;
+			m_extLst = NULL;
 		}
 		CT_StockChart::~CT_StockChart()
 		{
@@ -11253,9 +10986,8 @@ namespace OOX{
 			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
 				delete m_axId[i];
 			m_axId.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_StockChart::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -11302,9 +11034,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -11344,13 +11076,9 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:axId")), writer);
 				}
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -11369,6 +11097,7 @@ namespace OOX{
 			m_cat = NULL;
 			m_val = NULL;
 			m_smooth = NULL;
+			m_extLst = NULL;
 		}
 		CT_LineSer::~CT_LineSer()
 		{
@@ -11398,9 +11127,8 @@ namespace OOX{
 				delete m_val;
 			if(NULL != m_smooth)
 				delete m_smooth;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_LineSer::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -11484,9 +11212,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -11550,13 +11278,9 @@ namespace OOX{
 			{
 				m_smooth->toXML(CString(_T("c:smooth")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -11568,6 +11292,7 @@ namespace OOX{
 			m_gapWidth = NULL;
 			m_upBars = NULL;
 			m_downBars = NULL;
+			m_extLst = NULL;
 		}
 		CT_UpDownBars::~CT_UpDownBars()
 		{
@@ -11577,9 +11302,8 @@ namespace OOX{
 				delete m_upBars;
 			if(NULL != m_downBars)
 				delete m_downBars;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_UpDownBars::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -11608,9 +11332,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -11630,13 +11354,9 @@ namespace OOX{
 			{
 				m_downBars->toXML(CString(_T("c:downBars")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -11688,6 +11408,7 @@ namespace OOX{
 			m_dLbls = NULL;
 			m_dropLines = NULL;
 			m_gapDepth = NULL;
+			m_extLst = NULL;
 		}
 		CT_Line3DChart::~CT_Line3DChart()
 		{
@@ -11707,9 +11428,8 @@ namespace OOX{
 			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
 				delete m_axId[i];
 			m_axId.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_Line3DChart::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -11762,9 +11482,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -11808,13 +11528,9 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:axId")), writer);
 				}
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -11872,6 +11588,7 @@ namespace OOX{
 			m_upDownBars = NULL;
 			m_marker = NULL;
 			m_smooth = NULL;
+			m_extLst = NULL;
 		}
 		CT_LineChart::~CT_LineChart()
 		{
@@ -11897,9 +11614,8 @@ namespace OOX{
 			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
 				delete m_axId[i];
 			m_axId.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_LineChart::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -11970,9 +11686,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -12028,13 +11744,9 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:axId")), writer);
 				}
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -12048,6 +11760,7 @@ namespace OOX{
 			m_dLbls = NULL;
 			m_dropLines = NULL;
 			m_gapDepth = NULL;
+			m_extLst = NULL;
 		}
 		CT_Area3DChart::~CT_Area3DChart()
 		{
@@ -12067,9 +11780,8 @@ namespace OOX{
 			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
 				delete m_axId[i];
 			m_axId.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_Area3DChart::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -12122,9 +11834,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -12168,13 +11880,9 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:axId")), writer);
 				}
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -12191,6 +11899,7 @@ namespace OOX{
 			m_dLbls = NULL;
 			m_cat = NULL;
 			m_val = NULL;
+			m_extLst = NULL;
 		}
 		CT_AreaSer::~CT_AreaSer()
 		{
@@ -12219,9 +11928,8 @@ namespace OOX{
 				delete m_cat;
 			if(NULL != m_val)
 				delete m_val;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_AreaSer::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -12299,9 +12007,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -12365,13 +12073,9 @@ namespace OOX{
 			{
 				m_val->toXML(CString(_T("c:val")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -12384,6 +12088,7 @@ namespace OOX{
 			m_varyColors = NULL;
 			m_dLbls = NULL;
 			m_dropLines = NULL;
+			m_extLst = NULL;
 		}
 		CT_AreaChart::~CT_AreaChart()
 		{
@@ -12401,9 +12106,8 @@ namespace OOX{
 			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
 				delete m_axId[i];
 			m_axId.RemoveAll();
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_AreaChart::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -12450,9 +12154,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -12492,13 +12196,9 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:axId")), writer);
 				}
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -12510,6 +12210,7 @@ namespace OOX{
 			m_layout = NULL;
 			m_dTable = NULL;
 			m_spPr = NULL;
+			m_extLst = NULL;
 		}
 		CT_PlotArea::~CT_PlotArea()
 		{
@@ -12531,9 +12232,8 @@ namespace OOX{
 				delete m_dTable;
 			if(NULL != m_spPr)
 				delete m_spPr;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_PlotArea::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -12743,9 +12443,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -12775,13 +12475,9 @@ namespace OOX{
 			{
 				writer.WriteString(*m_spPr);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -13041,6 +12737,7 @@ namespace OOX{
 			m_thickness = NULL;
 			m_spPr = NULL;
 			m_pictureOptions = NULL;
+			m_extLst = NULL;
 		}
 		CT_Surface::~CT_Surface()
 		{
@@ -13050,9 +12747,8 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_pictureOptions)
 				delete m_pictureOptions;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_Surface::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -13082,9 +12778,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -13104,13 +12800,9 @@ namespace OOX{
 			{
 				m_pictureOptions->toXML(CString(_T("c:pictureOptions")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -13335,6 +13027,7 @@ namespace OOX{
 			m_depthPercent = NULL;
 			m_rAngAx = NULL;
 			m_perspective = NULL;
+			m_extLst = NULL;
 		}
 		CT_View3D::~CT_View3D()
 		{
@@ -13350,9 +13043,8 @@ namespace OOX{
 				delete m_rAngAx;
 			if(NULL != m_perspective)
 				delete m_perspective;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_View3D::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -13399,9 +13091,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -13433,13 +13125,9 @@ namespace OOX{
 			{
 				m_perspective->toXML(CString(_T("c:perspective")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -13453,6 +13141,7 @@ namespace OOX{
 			m_txPr = NULL;
 			m_marker = NULL;
 			m_dLbl = NULL;
+			m_extLst = NULL;
 		}
 		CT_PivotFmt::~CT_PivotFmt()
 		{
@@ -13466,9 +13155,8 @@ namespace OOX{
 				delete m_marker;
 			if(NULL != m_dLbl)
 				delete m_dLbl;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_PivotFmt::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -13511,9 +13199,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -13541,23 +13229,61 @@ namespace OOX{
 			{
 				m_dLbl->toXML(CString(_T("c:dLbl")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
 			writer.WriteString(CString(_T(">")));
 		}
 		EElementType CT_PivotFmt::getType(){return et_ct_pivotfmt;}
+		CT_pivotFmts::CT_pivotFmts()
+		{
+		}
+		CT_pivotFmts::~CT_pivotFmts()
+		{
+			for(int i = 0, length = m_pivotFmt.GetCount(); i < length; ++i)
+				delete m_pivotFmt[i];
+			m_pivotFmt.RemoveAll();
+		}
+		void CT_pivotFmts::fromXML(XmlUtils::CXmlLiteReader& oReader){
+			if ( oReader.IsEmptyNode() )
+				return;
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				if(_T("pivotFmt") == sName)
+				{
+					CT_PivotFmt* pNewElem = new CT_PivotFmt;
+					pNewElem->fromXML(oReader);
+					m_pivotFmt.Add(pNewElem);
+				}
+			}
+		}
+		void CT_pivotFmts::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
+			writer.WriteString(CString(_T("<")));
+			writer.WriteString(sNodeName);
+			writer.WriteString(CString(_T(">")));
+			for(int i = 0, length = m_pivotFmt.GetCount(); i < length; ++i)
+			{
+				CT_PivotFmt* pElem = m_pivotFmt[i];
+				if(NULL != pElem)
+				{
+					pElem->toXML(CString(_T("c:pivotFmt")), writer);
+				}
+			}
+			writer.WriteString(CString(_T("</")));
+			writer.WriteString(sNodeName);
+			writer.WriteString(CString(_T(">")));
+		}
+		EElementType CT_pivotFmts::getType(){return et_ct_pivotfmts;}
 		CT_Chart::CT_Chart()
 		{
 			m_title = NULL;
 			m_autoTitleDeleted = NULL;
+			m_pivotFmts = NULL;
 			m_view3D = NULL;
 			m_floor = NULL;
 			m_sideWall = NULL;
@@ -13567,6 +13293,7 @@ namespace OOX{
 			m_plotVisOnly = NULL;
 			m_dispBlanksAs = NULL;
 			m_showDLblsOverMax = NULL;
+			m_extLst = NULL;
 		}
 		CT_Chart::~CT_Chart()
 		{
@@ -13574,9 +13301,8 @@ namespace OOX{
 				delete m_title;
 			if(NULL != m_autoTitleDeleted)
 				delete m_autoTitleDeleted;
-			for(int i = 0, length = m_pivotFmts.GetCount(); i < length; ++i)
-				delete m_pivotFmts[i];
-			m_pivotFmts.RemoveAll();
+			if(NULL != m_pivotFmts)
+				delete m_pivotFmts;
 			if(NULL != m_view3D)
 				delete m_view3D;
 			if(NULL != m_floor)
@@ -13595,9 +13321,8 @@ namespace OOX{
 				delete m_dispBlanksAs;
 			if(NULL != m_showDLblsOverMax)
 				delete m_showDLblsOverMax;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
-				delete m_extLst[i];
-			m_extLst.RemoveAll();
+			if(NULL != m_extLst)
+				delete m_extLst;
 		}
 		void CT_Chart::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -13620,9 +13345,9 @@ namespace OOX{
 				}
 				else if(_T("pivotFmts") == sName)
 				{
-					CT_PivotFmt* pNewElem = new CT_PivotFmt;
+					CT_pivotFmts* pNewElem = new CT_pivotFmts;
 					pNewElem->fromXML(oReader);
-					m_pivotFmts.Add(pNewElem);
+					m_pivotFmts = pNewElem;
 				}
 				else if(_T("view3D") == sName)
 				{
@@ -13680,9 +13405,9 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+					m_extLst = pNewElem;
 				}
 			}
 		}
@@ -13698,13 +13423,9 @@ namespace OOX{
 			{
 				m_autoTitleDeleted->toXML(CString(_T("c:autoTitleDeleted")), writer);
 			}
-			for(int i = 0, length = m_pivotFmts.GetCount(); i < length; ++i)
+			if(NULL != m_pivotFmts)
 			{
-				CT_PivotFmt* pElem = m_pivotFmts[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:pivotFmts")), writer);
-				}
+				m_pivotFmts->toXML(CString(_T("c:pivotFmts")), writer);
 			}
 			if(NULL != m_view3D)
 			{
@@ -13742,13 +13463,9 @@ namespace OOX{
 			{
 				m_showDLblsOverMax->toXML(CString(_T("c:showDLblsOverMax")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+			if(NULL != m_extLst)
 			{
-				CT_Extension* pElem = m_extLst[i];
-				if(NULL != pElem)
-				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
-				}
+				m_extLst->toXML(CString(_T("c:extLst")), writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -13881,7 +13598,7 @@ namespace OOX{
 				}
 				else if(_T("extLst") == sName)
 				{
-					CT_Extension* pNewElem = new CT_Extension;
+					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
 					m_extLst.Add(pNewElem);
 				}
@@ -13908,7 +13625,7 @@ namespace OOX{
 			}
 			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
 			{
-				CT_Extension* pElem = m_extLst[i];
+				CT_extLst* pElem = m_extLst[i];
 				if(NULL != pElem)
 				{
 					pElem->toXML(CString(_T("c:extLst")), writer);

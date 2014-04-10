@@ -5,6 +5,7 @@
 #include "..\Writer\BinaryCommonReader.h"
 using namespace OOX::Spreadsheet;
 namespace BinXlsxRW {
+	extern BYTE c_oserct_extlstEXT;
 
 	extern BYTE c_oserct_chartspaceDATE1904;
 	extern BYTE c_oserct_chartspaceLANG;
@@ -427,6 +428,8 @@ namespace BinXlsxRW {
 	extern BYTE c_oserct_multilvlstrrefMULTILVLSTRCACHE;
 	extern BYTE c_oserct_multilvlstrrefEXTLST;
 
+	extern BYTE c_oserct_lvlPT;
+
 	extern BYTE c_oserct_multilvlstrdataPTCOUNT;
 	extern BYTE c_oserct_multilvlstrdataLVL;
 	extern BYTE c_oserct_multilvlstrdataEXTLST;
@@ -440,6 +443,8 @@ namespace BinXlsxRW {
 	extern BYTE c_oserct_bubblechartSIZEREPRESENTS;
 	extern BYTE c_oserct_bubblechartAXID;
 	extern BYTE c_oserct_bubblechartEXTLST;
+
+	extern BYTE c_oserct_bandfmtsBANDFMT;
 
 	extern BYTE c_oserct_surface3dchartWIREFRAME;
 	extern BYTE c_oserct_surface3dchartSER;
@@ -469,6 +474,8 @@ namespace BinXlsxRW {
 	extern BYTE c_oserct_splittypeVAL;
 
 	extern BYTE c_oserct_ofpietypeVAL;
+
+	extern BYTE c_oserct_custsplitSECONDPIEPT;
 
 	extern BYTE c_oserct_ofpiechartOFPIETYPE;
 	extern BYTE c_oserct_ofpiechartVARYCOLORS;
@@ -746,6 +753,8 @@ namespace BinXlsxRW {
 	extern BYTE c_oserct_pivotfmtDLBL;
 	extern BYTE c_oserct_pivotfmtEXTLST;
 
+	extern BYTE c_oserct_pivotfmtsPIVOTFMT;
+
 	extern BYTE c_oserct_chartTITLE;
 	extern BYTE c_oserct_chartAUTOTITLEDELETED;
 	extern BYTE c_oserct_chartPIVOTFMTS;
@@ -790,6 +799,7 @@ namespace BinXlsxRW {
 		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
 	public:
 		BinaryChartReader(Streams::CBufferedStream& oBufferedStream, LPSAFEARRAY pArray, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter);
+	private: int ReadCT_extLst(BYTE type, long length, void* poResult);
 	public: int ReadCT_ChartSpace(long length, CT_ChartSpace* poResult);
 	private: int ReadCT_ChartSpace(BYTE type, long length, void* poResult);
 	private: int ReadCT_Boolean(BYTE type, long length, void* poResult);
@@ -868,8 +878,10 @@ namespace BinXlsxRW {
 	private: int ReadCT_NumRef(BYTE type, long length, void* poResult);
 	private: int ReadCT_AxDataSource(BYTE type, long length, void* poResult);
 	private: int ReadCT_MultiLvlStrRef(BYTE type, long length, void* poResult);
+	private: int ReadCT_lvl(BYTE type, long length, void* poResult);
 	private: int ReadCT_MultiLvlStrData(BYTE type, long length, void* poResult);
 	private: int ReadCT_BubbleChart(BYTE type, long length, void* poResult);
+	private: int ReadCT_bandFmts(BYTE type, long length, void* poResult);
 	private: int ReadCT_Surface3DChart(BYTE type, long length, void* poResult);
 	private: int ReadCT_SurfaceSer(BYTE type, long length, void* poResult);
 	private: int ReadCT_BandFmt(BYTE type, long length, void* poResult);
@@ -877,6 +889,7 @@ namespace BinXlsxRW {
 	private: int ReadCT_SecondPieSize(BYTE type, long length, void* poResult);
 	private: int ReadCT_SplitType(BYTE type, long length, void* poResult);
 	private: int ReadCT_OfPieType(BYTE type, long length, void* poResult);
+	private: int ReadCT_custSplit(BYTE type, long length, void* poResult);
 	private: int ReadCT_OfPieChart(BYTE type, long length, void* poResult);
 	private: int ReadCT_PieSer(BYTE type, long length, void* poResult);
 	private: int ReadCT_GapAmount(BYTE type, long length, void* poResult);
@@ -918,6 +931,7 @@ namespace BinXlsxRW {
 	private: int ReadCT_RotX(BYTE type, long length, void* poResult);
 	private: int ReadCT_View3D(BYTE type, long length, void* poResult);
 	private: int ReadCT_PivotFmt(BYTE type, long length, void* poResult);
+	private: int ReadCT_pivotFmts(BYTE type, long length, void* poResult);
 	private: int ReadCT_Chart(BYTE type, long length, void* poResult);
 	private: int ReadCT_Protection(BYTE type, long length, void* poResult);
 	private: int ReadCT_PivotSource(BYTE type, long length, void* poResult);
@@ -934,6 +948,7 @@ namespace BinXlsxRW {
 		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
 	public:
 		BinaryChartWriter(Streams::CBufferedStream &oCBufferedStream, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter);
+	public: void WriteCT_extLst(CT_extLst& oVal);
 	public: void WriteCT_ChartSpace(CT_ChartSpace& oVal);
 	public: void WriteCT_Boolean(CT_Boolean& oVal);
 	public: void WriteCT_RelId(CT_RelId& oVal);
@@ -1012,8 +1027,10 @@ namespace BinXlsxRW {
 	public: void WriteCT_NumRef(CT_NumRef& oVal);
 	public: void WriteCT_AxDataSource(CT_AxDataSource& oVal);
 	public: void WriteCT_MultiLvlStrRef(CT_MultiLvlStrRef& oVal);
+	public: void WriteCT_lvl(CT_lvl& oVal);
 	public: void WriteCT_MultiLvlStrData(CT_MultiLvlStrData& oVal);
 	public: void WriteCT_BubbleChart(CT_BubbleChart& oVal);
+	public: void WriteCT_bandFmts(CT_bandFmts& oVal);
 	public: void WriteCT_Surface3DChart(CT_Surface3DChart& oVal);
 	public: void WriteCT_SurfaceSer(CT_SurfaceSer& oVal);
 	public: void WriteCT_BandFmt(CT_BandFmt& oVal);
@@ -1021,6 +1038,7 @@ namespace BinXlsxRW {
 	public: void WriteCT_SecondPieSize(CT_SecondPieSize& oVal);
 	public: void WriteCT_SplitType(CT_SplitType& oVal);
 	public: void WriteCT_OfPieType(CT_OfPieType& oVal);
+	public: void WriteCT_custSplit(CT_custSplit& oVal);
 	public: void WriteCT_OfPieChart(CT_OfPieChart& oVal);
 	public: void WriteCT_PieSer(CT_PieSer& oVal);
 	public: void WriteCT_GapAmount(CT_GapAmount& oVal);
@@ -1064,6 +1082,7 @@ namespace BinXlsxRW {
 	public: void WriteCT_RotX(CT_RotX& oVal);
 	public: void WriteCT_View3D(CT_View3D& oVal);
 	public: void WriteCT_PivotFmt(CT_PivotFmt& oVal);
+	public: void WriteCT_pivotFmts(CT_pivotFmts& oVal);
 	public: void WriteCT_Chart(CT_Chart& oVal);
 	public: void WriteCT_Protection(CT_Protection& oVal);
 	public: void WriteCT_PivotSource(CT_PivotSource& oVal);

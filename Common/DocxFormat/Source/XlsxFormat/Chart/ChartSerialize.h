@@ -7,276 +7,277 @@ namespace OOX{
 	namespace Spreadsheet{
 		enum ST_PageSetupOrientation
 		{
-			st_pagesetuporientationDEFAULT = 1,
-			st_pagesetuporientationPORTRAIT = 2,
-			st_pagesetuporientationLANDSCAPE = 3
+			st_pagesetuporientationDEFAULT = 0,
+			st_pagesetuporientationPORTRAIT = 1,
+			st_pagesetuporientationLANDSCAPE = 2
 		};
 		enum ST_DispBlanksAs
 		{
-			st_dispblanksasSPAN = 1,
-			st_dispblanksasGAP = 2,
-			st_dispblanksasZERO = 3
+			st_dispblanksasSPAN = 0,
+			st_dispblanksasGAP = 1,
+			st_dispblanksasZERO = 2
 		};
 		enum ST_LegendPos
 		{
-			st_legendposB = 1,
-			st_legendposTR = 2,
-			st_legendposL = 3,
-			st_legendposR = 4,
-			st_legendposT = 5
+			st_legendposB = 0,
+			st_legendposTR = 1,
+			st_legendposL = 2,
+			st_legendposR = 3,
+			st_legendposT = 4
 		};
 		enum ST_LayoutTarget
 		{
-			st_layouttargetINNER = 1,
-			st_layouttargetOUTER = 2
+			st_layouttargetINNER = 0,
+			st_layouttargetOUTER = 1
 		};
 		enum ST_LayoutMode
 		{
-			st_layoutmodeEDGE = 1,
-			st_layoutmodeFACTOR = 2
+			st_layoutmodeEDGE = 0,
+			st_layoutmodeFACTOR = 1
 		};
 		enum ST_Orientation
 		{
-			st_orientationMAXMIN = 1,
-			st_orientationMINMAX = 2
+			st_orientationMAXMIN = 0,
+			st_orientationMINMAX = 1
 		};
 		enum ST_AxPos
 		{
-			st_axposB = 1,
-			st_axposL = 2,
-			st_axposR = 3,
-			st_axposT = 4
+			st_axposB = 0,
+			st_axposL = 1,
+			st_axposR = 2,
+			st_axposT = 3
 		};
 		enum ST_TickMark
 		{
-			st_tickmarkCROSS = 1,
-			st_tickmarkIN = 2,
-			st_tickmarkNONE = 3,
-			st_tickmarkOUT = 4
+			st_tickmarkCROSS = 0,
+			st_tickmarkIN = 1,
+			st_tickmarkNONE = 2,
+			st_tickmarkOUT = 3
 		};
 		enum ST_TickLblPos
 		{
-			st_ticklblposHIGH = 1,
-			st_ticklblposLOW = 2,
-			st_ticklblposNEXTTO = 3,
-			st_ticklblposNONE = 4
+			st_ticklblposHIGH = 0,
+			st_ticklblposLOW = 1,
+			st_ticklblposNEXTTO = 2,
+			st_ticklblposNONE = 3
 		};
 		enum ST_Crosses
 		{
-			st_crossesAUTOZERO = 1,
-			st_crossesMAX = 2,
-			st_crossesMIN = 3
+			st_crossesAUTOZERO = 0,
+			st_crossesMAX = 1,
+			st_crossesMIN = 2
 		};
 		enum ST_TimeUnit
 		{
-			st_timeunitDAYS = 1,
-			st_timeunitMONTHS = 2,
-			st_timeunitYEARS = 3
+			st_timeunitDAYS = 0,
+			st_timeunitMONTHS = 1,
+			st_timeunitYEARS = 2
 		};
 		enum ST_LblAlgn
 		{
-			st_lblalgnCTR = 1,
-			st_lblalgnL = 2,
-			st_lblalgnR = 3
+			st_lblalgnCTR = 0,
+			st_lblalgnL = 1,
+			st_lblalgnR = 2
 		};
 		enum ST_BuiltInUnit
 		{
-			st_builtinunitHUNDREDS = 1,
-			st_builtinunitTHOUSANDS = 2,
-			st_builtinunitTENTHOUSANDS = 3,
-			st_builtinunitHUNDREDTHOUSANDS = 4,
-			st_builtinunitMILLIONS = 5,
-			st_builtinunitTENMILLIONS = 6,
-			st_builtinunitHUNDREDMILLIONS = 7,
-			st_builtinunitBILLIONS = 8,
-			st_builtinunitTRILLIONS = 9
+			st_builtinunitHUNDREDS = 0,
+			st_builtinunitTHOUSANDS = 1,
+			st_builtinunitTENTHOUSANDS = 2,
+			st_builtinunitHUNDREDTHOUSANDS = 3,
+			st_builtinunitMILLIONS = 4,
+			st_builtinunitTENMILLIONS = 5,
+			st_builtinunitHUNDREDMILLIONS = 6,
+			st_builtinunitBILLIONS = 7,
+			st_builtinunitTRILLIONS = 8
 		};
 		enum ST_CrossBetween
 		{
-			st_crossbetweenBETWEEN = 1,
-			st_crossbetweenMIDCAT = 2
+			st_crossbetweenBETWEEN = 0,
+			st_crossbetweenMIDCAT = 1
 		};
 		enum ST_SizeRepresents
 		{
-			st_sizerepresentsAREA = 1,
-			st_sizerepresentsW = 2
+			st_sizerepresentsAREA = 0,
+			st_sizerepresentsW = 1
 		};
 		enum ST_MarkerStyle
 		{
-			st_markerstyleCIRCLE = 1,
-			st_markerstyleDASH = 2,
-			st_markerstyleDIAMOND = 3,
-			st_markerstyleDOT = 4,
-			st_markerstyleNONE = 5,
-			st_markerstylePICTURE = 6,
-			st_markerstylePLUS = 7,
-			st_markerstyleSQUARE = 8,
-			st_markerstyleSTAR = 9,
-			st_markerstyleTRIANGLE = 10,
-			st_markerstyleX = 11,
-			st_markerstyleAUTO = 12
+			st_markerstyleCIRCLE = 0,
+			st_markerstyleDASH = 1,
+			st_markerstyleDIAMOND = 2,
+			st_markerstyleDOT = 3,
+			st_markerstyleNONE = 4,
+			st_markerstylePICTURE = 5,
+			st_markerstylePLUS = 6,
+			st_markerstyleSQUARE = 7,
+			st_markerstyleSTAR = 8,
+			st_markerstyleTRIANGLE = 9,
+			st_markerstyleX = 10,
+			st_markerstyleAUTO = 11
 		};
 		enum ST_PictureFormat
 		{
-			st_pictureformatSTRETCH = 1,
-			st_pictureformatSTACK = 2,
-			st_pictureformatSTACKSCALE = 3
+			st_pictureformatSTRETCH = 0,
+			st_pictureformatSTACK = 1,
+			st_pictureformatSTACKSCALE = 2
 		};
 		enum ItemsChoiceType3
 		{
-			itemschoicetype3DLBLPOS = 1,
-			itemschoicetype3DELETE = 2,
-			itemschoicetype3LEADERLINES = 3,
-			itemschoicetype3NUMFMT = 4,
-			itemschoicetype3SEPARATOR = 5,
-			itemschoicetype3SHOWBUBBLESIZE = 6,
-			itemschoicetype3SHOWCATNAME = 7,
-			itemschoicetype3SHOWLEADERLINES = 8,
-			itemschoicetype3SHOWLEGENDKEY = 9,
-			itemschoicetype3SHOWPERCENT = 10,
-			itemschoicetype3SHOWSERNAME = 11,
-			itemschoicetype3SHOWVAL = 12,
-			itemschoicetype3SPPR = 13,
-			itemschoicetype3TXPR = 14
+			itemschoicetype3DLBLPOS = 0,
+			itemschoicetype3DELETE = 1,
+			itemschoicetype3LEADERLINES = 2,
+			itemschoicetype3NUMFMT = 3,
+			itemschoicetype3SEPARATOR = 4,
+			itemschoicetype3SHOWBUBBLESIZE = 5,
+			itemschoicetype3SHOWCATNAME = 6,
+			itemschoicetype3SHOWLEADERLINES = 7,
+			itemschoicetype3SHOWLEGENDKEY = 8,
+			itemschoicetype3SHOWPERCENT = 9,
+			itemschoicetype3SHOWSERNAME = 10,
+			itemschoicetype3SHOWVAL = 11,
+			itemschoicetype3SPPR = 12,
+			itemschoicetype3TXPR = 13
 		};
 		enum ItemsChoiceType4
 		{
-			itemschoicetype4DLBLPOS = 1,
-			itemschoicetype4DELETE = 2,
-			itemschoicetype4LAYOUT = 3,
-			itemschoicetype4NUMFMT = 4,
-			itemschoicetype4SEPARATOR = 5,
-			itemschoicetype4SHOWBUBBLESIZE = 6,
-			itemschoicetype4SHOWCATNAME = 7,
-			itemschoicetype4SHOWLEGENDKEY = 8,
-			itemschoicetype4SHOWPERCENT = 9,
-			itemschoicetype4SHOWSERNAME = 10,
-			itemschoicetype4SHOWVAL = 11,
-			itemschoicetype4SPPR = 12,
-			itemschoicetype4TX = 13,
-			itemschoicetype4TXPR = 14
+			itemschoicetype4DLBLPOS = 0,
+			itemschoicetype4DELETE = 1,
+			itemschoicetype4LAYOUT = 2,
+			itemschoicetype4NUMFMT = 3,
+			itemschoicetype4SEPARATOR = 4,
+			itemschoicetype4SHOWBUBBLESIZE = 5,
+			itemschoicetype4SHOWCATNAME = 6,
+			itemschoicetype4SHOWLEGENDKEY = 7,
+			itemschoicetype4SHOWPERCENT = 8,
+			itemschoicetype4SHOWSERNAME = 9,
+			itemschoicetype4SHOWVAL = 10,
+			itemschoicetype4SPPR = 11,
+			itemschoicetype4TX = 12,
+			itemschoicetype4TXPR = 13
 		};
 		enum ST_DLblPos
 		{
-			st_dlblposBESTFIT = 1,
-			st_dlblposB = 2,
-			st_dlblposCTR = 3,
-			st_dlblposINBASE = 4,
-			st_dlblposINEND = 5,
-			st_dlblposL = 6,
-			st_dlblposOUTEND = 7,
-			st_dlblposR = 8,
-			st_dlblposT = 9
+			st_dlblposBESTFIT = 0,
+			st_dlblposB = 1,
+			st_dlblposCTR = 2,
+			st_dlblposINBASE = 3,
+			st_dlblposINEND = 4,
+			st_dlblposL = 5,
+			st_dlblposOUTEND = 6,
+			st_dlblposR = 7,
+			st_dlblposT = 8
 		};
 		enum ST_TrendlineType
 		{
-			st_trendlinetypeEXP = 1,
-			st_trendlinetypeLINEAR = 2,
-			st_trendlinetypeLOG = 3,
-			st_trendlinetypeMOVINGAVG = 4,
-			st_trendlinetypePOLY = 5,
-			st_trendlinetypePOWER = 6
+			st_trendlinetypeEXP = 0,
+			st_trendlinetypeLINEAR = 1,
+			st_trendlinetypeLOG = 2,
+			st_trendlinetypeMOVINGAVG = 3,
+			st_trendlinetypePOLY = 4,
+			st_trendlinetypePOWER = 5
 		};
 		enum ST_ErrDir
 		{
-			st_errdirX = 1,
-			st_errdirY = 2
+			st_errdirX = 0,
+			st_errdirY = 1
 		};
 		enum ST_ErrBarType
 		{
-			st_errbartypeBOTH = 1,
-			st_errbartypeMINUS = 2,
-			st_errbartypePLUS = 3
+			st_errbartypeBOTH = 0,
+			st_errbartypeMINUS = 1,
+			st_errbartypePLUS = 2
 		};
 		enum ST_ErrValType
 		{
-			st_errvaltypeCUST = 1,
-			st_errvaltypeFIXEDVAL = 2,
-			st_errvaltypePERCENTAGE = 3,
-			st_errvaltypeSTDDEV = 4,
-			st_errvaltypeSTDERR = 5
+			st_errvaltypeCUST = 0,
+			st_errvaltypeFIXEDVAL = 1,
+			st_errvaltypePERCENTAGE = 2,
+			st_errvaltypeSTDDEV = 3,
+			st_errvaltypeSTDERR = 4
 		};
 		enum ST_SplitType
 		{
-			st_splittypeAUTO = 1,
-			st_splittypeCUST = 2,
-			st_splittypePERCENT = 3,
-			st_splittypePOS = 4,
-			st_splittypeVAL = 5
+			st_splittypeAUTO = 0,
+			st_splittypeCUST = 1,
+			st_splittypePERCENT = 2,
+			st_splittypePOS = 3,
+			st_splittypeVAL = 4
 		};
 		enum ST_OfPieType
 		{
-			st_ofpietypePIE = 1,
-			st_ofpietypeBAR = 2
+			st_ofpietypePIE = 0,
+			st_ofpietypeBAR = 1
 		};
 		enum ST_BarDir
 		{
-			st_bardirBAR = 1,
-			st_bardirCOL = 2
+			st_bardirBAR = 0,
+			st_bardirCOL = 1
 		};
 		enum ST_BarGrouping
 		{
-			st_bargroupingPERCENTSTACKED = 1,
-			st_bargroupingCLUSTERED = 2,
-			st_bargroupingSTANDARD = 3,
-			st_bargroupingSTACKED = 4
+			st_bargroupingPERCENTSTACKED = 0,
+			st_bargroupingCLUSTERED = 1,
+			st_bargroupingSTANDARD = 2,
+			st_bargroupingSTACKED = 3
 		};
 		enum ST_Shape
 		{
-			st_shapeCONE = 1,
-			st_shapeCONETOMAX = 2,
-			st_shapeBOX = 3,
-			st_shapeCYLINDER = 4,
-			st_shapePYRAMID = 5,
-			st_shapePYRAMIDTOMAX = 6
+			st_shapeCONE = 0,
+			st_shapeCONETOMAX = 1,
+			st_shapeBOX = 2,
+			st_shapeCYLINDER = 3,
+			st_shapePYRAMID = 4,
+			st_shapePYRAMIDTOMAX = 5
 		};
 		enum ST_ScatterStyle
 		{
-			st_scatterstyleNONE = 1,
-			st_scatterstyleLINE = 2,
-			st_scatterstyleLINEMARKER = 3,
-			st_scatterstyleMARKER = 4,
-			st_scatterstyleSMOOTH = 5,
-			st_scatterstyleSMOOTHMARKER = 6
+			st_scatterstyleNONE = 0,
+			st_scatterstyleLINE = 1,
+			st_scatterstyleLINEMARKER = 2,
+			st_scatterstyleMARKER = 3,
+			st_scatterstyleSMOOTH = 4,
+			st_scatterstyleSMOOTHMARKER = 5
 		};
 		enum ST_RadarStyle
 		{
-			st_radarstyleSTANDARD = 1,
-			st_radarstyleMARKER = 2,
-			st_radarstyleFILLED = 3
+			st_radarstyleSTANDARD = 0,
+			st_radarstyleMARKER = 1,
+			st_radarstyleFILLED = 2
 		};
 		enum ST_Grouping
 		{
-			st_groupingPERCENTSTACKED = 1,
-			st_groupingSTANDARD = 2,
-			st_groupingSTACKED = 3
+			st_groupingPERCENTSTACKED = 0,
+			st_groupingSTANDARD = 1,
+			st_groupingSTACKED = 2
 		};
 		enum ItemsChoiceType5
 		{
-			itemschoicetype5AREA3DCHART = 1,
-			itemschoicetype5AREACHART = 2,
-			itemschoicetype5BAR3DCHART = 3,
-			itemschoicetype5BARCHART = 4,
-			itemschoicetype5BUBBLECHART = 5,
-			itemschoicetype5DOUGHNUTCHART = 6,
-			itemschoicetype5LINE3DCHART = 7,
-			itemschoicetype5LINECHART = 8,
-			itemschoicetype5OFPIECHART = 9,
-			itemschoicetype5PIE3DCHART = 10,
-			itemschoicetype5PIECHART = 11,
-			itemschoicetype5RADARCHART = 12,
-			itemschoicetype5SCATTERCHART = 13,
-			itemschoicetype5STOCKCHART = 14,
-			itemschoicetype5SURFACE3DCHART = 15,
-			itemschoicetype5SURFACECHART = 16
+			itemschoicetype5AREA3DCHART = 0,
+			itemschoicetype5AREACHART = 1,
+			itemschoicetype5BAR3DCHART = 2,
+			itemschoicetype5BARCHART = 3,
+			itemschoicetype5BUBBLECHART = 4,
+			itemschoicetype5DOUGHNUTCHART = 5,
+			itemschoicetype5LINE3DCHART = 6,
+			itemschoicetype5LINECHART = 7,
+			itemschoicetype5OFPIECHART = 8,
+			itemschoicetype5PIE3DCHART = 9,
+			itemschoicetype5PIECHART = 10,
+			itemschoicetype5RADARCHART = 11,
+			itemschoicetype5SCATTERCHART = 12,
+			itemschoicetype5STOCKCHART = 13,
+			itemschoicetype5SURFACE3DCHART = 14,
+			itemschoicetype5SURFACECHART = 15
 		};
 		enum ItemsChoiceType6
 		{
-			itemschoicetype6CATAX = 1,
-			itemschoicetype6DATEAX = 2,
-			itemschoicetype6SERAX = 3,
-			itemschoicetype6VALAX = 4
+			itemschoicetype6CATAX = 0,
+			itemschoicetype6DATEAX = 1,
+			itemschoicetype6SERAX = 2,
+			itemschoicetype6VALAX = 3
 		};
+		class CT_extLst;
 		class CT_ChartSpace;
 		class CT_Boolean;
 		class CT_RelId;
@@ -353,8 +354,10 @@ namespace OOX{
 		class CT_NumRef;
 		class CT_AxDataSource;
 		class CT_MultiLvlStrRef;
+		class CT_lvl;
 		class CT_MultiLvlStrData;
 		class CT_BubbleChart;
+		class CT_bandFmts;
 		class CT_Surface3DChart;
 		class CT_SurfaceSer;
 		class CT_BandFmt;
@@ -362,6 +365,7 @@ namespace OOX{
 		class CT_SecondPieSize;
 		class CT_SplitType;
 		class CT_OfPieType;
+		class CT_custSplit;
 		class CT_OfPieChart;
 		class CT_PieSer;
 		class CT_GapAmount;
@@ -403,6 +407,7 @@ namespace OOX{
 		class CT_RotX;
 		class CT_View3D;
 		class CT_PivotFmt;
+		class CT_pivotFmts;
 		class CT_Chart;
 		class CT_Protection;
 		class CT_PivotSource;
@@ -412,6 +417,17 @@ namespace OOX{
 		class AlternateContent;
 		class AlternateContentChoice;
 		class AlternateContentFallback;
+		class CT_extLst
+		{
+		public:
+			//Member
+			CAtlArray<CT_Extension*> m_ext;
+			CT_extLst();
+			~CT_extLst();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
+			EElementType getType();
+		};
 		class CT_ChartSpace
 		{
 		public:
@@ -444,7 +460,7 @@ namespace OOX{
 			//Member
 			CT_RelId* m_userShapes;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_ChartSpace();
 			~CT_ChartSpace();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -601,7 +617,7 @@ namespace OOX{
 			//Member
 			CString* m_txPr;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_LegendEntry();
 			~CT_LegendEntry();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -659,7 +675,7 @@ namespace OOX{
 			//Member
 			CString* m_txPr;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_Legend();
 			~CT_Legend();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -672,7 +688,7 @@ namespace OOX{
 			//Member
 			CT_ManualLayout* m_manualLayout;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_Layout();
 			~CT_Layout();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -701,7 +717,7 @@ namespace OOX{
 			//Member
 			CT_Double* m_h;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_ManualLayout();
 			~CT_ManualLayout();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -757,7 +773,7 @@ namespace OOX{
 			//Member
 			CString* m_txPr;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_DTable();
 			~CT_DTable();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -804,7 +820,7 @@ namespace OOX{
 			//Member
 			CT_Skip* m_tickMarkSkip;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_SerAx();
 			~CT_SerAx();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -823,7 +839,7 @@ namespace OOX{
 			//Member
 			CT_Double* m_min;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_Scaling();
 			~CT_Scaling();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -888,7 +904,7 @@ namespace OOX{
 			//Member
 			CString* m_txPr;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_Title();
 			~CT_Title();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -916,7 +932,7 @@ namespace OOX{
 			//Member
 			CT_StrData* m_strCache;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_StrRef();
 			~CT_StrRef();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -931,7 +947,7 @@ namespace OOX{
 			//Member
 			CAtlArray<CT_StrVal*> m_pt;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_StrData();
 			~CT_StrData();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1069,7 +1085,7 @@ namespace OOX{
 			//Member
 			CT_TimeUnit* m_minorTimeUnit;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_DateAx();
 			~CT_DateAx();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1157,7 +1173,7 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_noMultiLvlLbl;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_CatAx();
 			~CT_CatAx();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1202,7 +1218,7 @@ namespace OOX{
 			//Member
 			CT_DispUnitsLbl* m_dispUnitsLbl;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_DispUnits();
 			~CT_DispUnits();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1264,7 +1280,7 @@ namespace OOX{
 			//Member
 			CT_DispUnits* m_dispUnits;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_ValAx();
 			~CT_ValAx();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1323,7 +1339,7 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_bubble3D;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_BubbleSer();
 			~CT_BubbleSer();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1361,7 +1377,7 @@ namespace OOX{
 			//Member
 			CT_PictureOptions* m_pictureOptions;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_DPt();
 			~CT_DPt();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1378,7 +1394,7 @@ namespace OOX{
 			//Member
 			CString* m_spPr;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_Marker();
 			~CT_Marker();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1458,7 +1474,7 @@ namespace OOX{
 			//Member
 			CAtlArray<void*> m_Items;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_DLbls();
 			~CT_DLbls();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1476,7 +1492,7 @@ namespace OOX{
 			//Member
 			CAtlArray<void*> m_Items;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_DLbl();
 			~CT_DLbl();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1521,7 +1537,7 @@ namespace OOX{
 			//Member
 			CT_TrendlineLbl* m_trendlineLbl;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_Trendline();
 			~CT_Trendline();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1575,7 +1591,7 @@ namespace OOX{
 			//Member
 			CString* m_txPr;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_TrendlineLbl();
 			~CT_TrendlineLbl();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1602,7 +1618,7 @@ namespace OOX{
 			//Member
 			CString* m_spPr;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_ErrBars();
 			~CT_ErrBars();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1665,7 +1681,7 @@ namespace OOX{
 			//Member
 			CAtlArray<CT_NumVal*> m_pt;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_NumData();
 			~CT_NumData();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1695,7 +1711,7 @@ namespace OOX{
 			//Member
 			CT_NumData* m_numCache;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_NumRef();
 			~CT_NumRef();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1729,9 +1745,20 @@ namespace OOX{
 			//Member
 			CT_MultiLvlStrData* m_multiLvlStrCache;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_MultiLvlStrRef();
 			~CT_MultiLvlStrRef();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
+			EElementType getType();
+		};
+		class CT_lvl
+		{
+		public:
+			//Member
+			CAtlArray<CT_StrVal*> m_pt;
+			CT_lvl();
+			~CT_lvl();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
@@ -1742,9 +1769,9 @@ namespace OOX{
 			//Member
 			CT_UnsignedInt* m_ptCount;
 			//Member
-			CAtlArray<CT_StrVal*> m_lvl;
+			CAtlArray<CT_lvl*> m_lvl;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_MultiLvlStrData();
 			~CT_MultiLvlStrData();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1771,9 +1798,20 @@ namespace OOX{
 			//Member
 			CAtlArray<CT_UnsignedInt*> m_axId;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_BubbleChart();
 			~CT_BubbleChart();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
+			EElementType getType();
+		};
+		class CT_bandFmts
+		{
+		public:
+			//Member
+			CAtlArray<CT_BandFmt*> m_bandFmt;
+			CT_bandFmts();
+			~CT_bandFmts();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
@@ -1786,11 +1824,11 @@ namespace OOX{
 			//Member
 			CAtlArray<CT_SurfaceSer*> m_ser;
 			//Member
-			CAtlArray<CT_BandFmt*> m_bandFmts;
+			CT_bandFmts* m_bandFmts;
 			//Member
 			CAtlArray<CT_UnsignedInt*> m_axId;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_Surface3DChart();
 			~CT_Surface3DChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1813,7 +1851,7 @@ namespace OOX{
 			//Member
 			CT_NumDataSource* m_val;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_SurfaceSer();
 			~CT_SurfaceSer();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1841,11 +1879,11 @@ namespace OOX{
 			//Member
 			CAtlArray<CT_SurfaceSer*> m_ser;
 			//Member
-			CAtlArray<CT_BandFmt*> m_bandFmts;
+			CT_bandFmts* m_bandFmts;
 			//Member
 			CAtlArray<CT_UnsignedInt*> m_axId;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_SurfaceChart();
 			~CT_SurfaceChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1885,6 +1923,17 @@ namespace OOX{
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
 		};
+		class CT_custSplit
+		{
+		public:
+			//Member
+			CAtlArray<CT_UnsignedInt*> m_secondPiePt;
+			CT_custSplit();
+			~CT_custSplit();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
+			EElementType getType();
+		};
 		class CT_OfPieChart
 		{
 		public:
@@ -1903,13 +1952,13 @@ namespace OOX{
 			//Member
 			CT_Double* m_splitPos;
 			//Member
-			CAtlArray<CT_UnsignedInt*> m_custSplit;
+			CT_custSplit* m_custSplit;
 			//Member
 			CT_SecondPieSize* m_secondPieSize;
 			//Member
 			CAtlArray<CT_ChartLines*> m_serLines;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_OfPieChart();
 			~CT_OfPieChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1938,7 +1987,7 @@ namespace OOX{
 			//Member
 			CT_NumDataSource* m_val;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_PieSer();
 			~CT_PieSer();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1978,7 +2027,7 @@ namespace OOX{
 			//Member
 			CAtlArray<CT_UnsignedInt*> m_axId;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_Bar3DChart();
 			~CT_Bar3DChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2037,7 +2086,7 @@ namespace OOX{
 			//Member
 			CT_Shape* m_shape;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_BarSer();
 			~CT_BarSer();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2088,7 +2137,7 @@ namespace OOX{
 			//Member
 			CAtlArray<CT_UnsignedInt*> m_axId;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_BarChart();
 			~CT_BarChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2120,7 +2169,7 @@ namespace OOX{
 			//Member
 			CT_HoleSize* m_holeSize;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_DoughnutChart();
 			~CT_DoughnutChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2148,7 +2197,7 @@ namespace OOX{
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_Pie3DChart();
 			~CT_Pie3DChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2167,7 +2216,7 @@ namespace OOX{
 			//Member
 			CT_FirstSliceAng* m_firstSliceAng;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_PieChart();
 			~CT_PieChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2202,7 +2251,7 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_smooth;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_ScatterSer();
 			~CT_ScatterSer();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2234,7 +2283,7 @@ namespace OOX{
 			//Member
 			CAtlArray<CT_UnsignedInt*> m_axId;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_ScatterChart();
 			~CT_ScatterChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2263,7 +2312,7 @@ namespace OOX{
 			//Member
 			CT_NumDataSource* m_val;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_RadarSer();
 			~CT_RadarSer();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2295,7 +2344,7 @@ namespace OOX{
 			//Member
 			CAtlArray<CT_UnsignedInt*> m_axId;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_RadarChart();
 			~CT_RadarChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2318,7 +2367,7 @@ namespace OOX{
 			//Member
 			CAtlArray<CT_UnsignedInt*> m_axId;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_StockChart();
 			~CT_StockChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2353,7 +2402,7 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_smooth;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_LineSer();
 			~CT_LineSer();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2370,7 +2419,7 @@ namespace OOX{
 			//Member
 			CT_UpDownBar* m_downBars;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_UpDownBars();
 			~CT_UpDownBars();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2406,7 +2455,7 @@ namespace OOX{
 			//Member
 			CAtlArray<CT_UnsignedInt*> m_axId;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_Line3DChart();
 			~CT_Line3DChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2448,7 +2497,7 @@ namespace OOX{
 			//Member
 			CAtlArray<CT_UnsignedInt*> m_axId;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_LineChart();
 			~CT_LineChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2473,7 +2522,7 @@ namespace OOX{
 			//Member
 			CAtlArray<CT_UnsignedInt*> m_axId;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_Area3DChart();
 			~CT_Area3DChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2506,7 +2555,7 @@ namespace OOX{
 			//Member
 			CT_NumDataSource* m_val;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_AreaSer();
 			~CT_AreaSer();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2529,7 +2578,7 @@ namespace OOX{
 			//Member
 			CAtlArray<CT_UnsignedInt*> m_axId;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_AreaChart();
 			~CT_AreaChart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2554,7 +2603,7 @@ namespace OOX{
 			//Member
 			CString* m_spPr;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_PlotArea();
 			~CT_PlotArea();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2584,7 +2633,7 @@ namespace OOX{
 			//Member
 			CT_PictureOptions* m_pictureOptions;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_Surface();
 			~CT_Surface();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2662,7 +2711,7 @@ namespace OOX{
 			//Member
 			CT_Perspective* m_perspective;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_View3D();
 			~CT_View3D();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2683,9 +2732,20 @@ namespace OOX{
 			//Member
 			CT_DLbl* m_dLbl;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_PivotFmt();
 			~CT_PivotFmt();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
+			EElementType getType();
+		};
+		class CT_pivotFmts
+		{
+		public:
+			//Member
+			CAtlArray<CT_PivotFmt*> m_pivotFmt;
+			CT_pivotFmts();
+			~CT_pivotFmts();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
@@ -2698,7 +2758,7 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_autoTitleDeleted;
 			//Member
-			CAtlArray<CT_PivotFmt*> m_pivotFmts;
+			CT_pivotFmts* m_pivotFmts;
 			//Member
 			CT_View3D* m_view3D;
 			//Member
@@ -2718,7 +2778,7 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_showDLblsOverMax;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CT_extLst* m_extLst;
 			CT_Chart();
 			~CT_Chart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2752,7 +2812,7 @@ namespace OOX{
 			//Member
 			CT_UnsignedInt* m_fmtId;
 			//Member
-			CAtlArray<CT_Extension*> m_extLst;
+			CAtlArray<CT_extLst*> m_extLst;
 			CT_PivotSource();
 			~CT_PivotSource();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);

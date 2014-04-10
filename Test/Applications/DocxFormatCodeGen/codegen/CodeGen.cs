@@ -24,7 +24,7 @@ namespace codegen
         public List<GenMember> aArrayTypes;
         public string sArrayTypesElementName;
         public string sArrayTypesEnumName;
-        public bool bInternal;
+        public bool bInternal;//отличает массив с типами
 
         public bool bToDo;
         public bool bToDoString;
@@ -51,7 +51,7 @@ namespace codegen
         public string sNamespace;
         public bool bIsEnum;
         public List<GenMember> aMembers = new List<GenMember>();
-        public bool bInternal;
+        public bool bInternal;//отличает enum типов
         public bool bIsRoot;
         public GenClass(string _sName, string _sNamespace)
         {
@@ -64,10 +64,8 @@ namespace codegen
     }
     class CodeGen
     {
-        Dictionary<string, bool> m_mapProcessedTypes = new Dictionary<string, bool>();
-        Dictionary<string, CodeTypeDeclaration> m_mapTypeNames = new Dictionary<string, CodeTypeDeclaration>();
-        Dictionary<string, bool> m_mapIgnoreTypes = new Dictionary<string, bool>();
-        int nItemsChoiceTypeCount = 0;
+        Dictionary<string, GenClass> m_mapGeneratedClasses = new Dictionary<string, GenClass>();
+        int m_nItemsChoiceTypeCount = 0;
         public void Start(string sDirIn, string sDirCppXmlOut, string sDirCppBinOut, string sDirJsBinOut, ValidationEventHandler oValidationEventHandler)
         {
             string sChartNamespace = "http://purl.oclc.org/ooxml/drawingml/chart";
@@ -109,6 +107,8 @@ namespace codegen
                 }
                 CodeGenerator.ValidateIdentifiers(ns);
 
+                //Microsoft.CSharp.CSharpCodeProvider oProvider;
+
                 //// output the C# code
                 //Microsoft.CSharp.CSharpCodeProvider codeProvider = new Microsoft.CSharp.CSharpCodeProvider();
 
@@ -122,8 +122,8 @@ namespace codegen
 
                 aGenClasses = FilterClasses(aGenClasses);
 
-                //(new CodegenCPP()).Process(sDirCppXmlOut, sDirCppBinOut, aGenClasses);
-                //(new CodegenJS()).Process(sDirJsBinOut, aGenClasses);
+                (new CodegenCPP()).Process(sDirCppXmlOut, sDirCppBinOut, aGenClasses);
+                (new CodegenJS()).Process(sDirJsBinOut, aGenClasses);
             }
         }
         List<GenClass> FilterClasses(List<GenClass> aInput)
@@ -262,6 +262,7 @@ namespace codegen
             InitMemberType(oGenMember, codeMemberProperty.Type.BaseType);
             if (null != codeMemberProperty.Type.ArrayElementType)
                 oGenMember.bIsArray = true;
+            List<GenMember> aWrappedMemebers = null;
             for (int i = 0; i < codeMemberProperty.CustomAttributes.Count; i++)
             {
                 CodeAttributeDeclaration attribute = codeMemberProperty.CustomAttributes[i];
@@ -328,6 +329,32 @@ namespace codegen
                         }
                     }
                 }
+                else if (attribute.Name == "System.Xml.Serialization.XmlArrayItemAttribute")
+                {
+                    GenMember oWrapMemeber = new GenMember(null);
+                    for (int j = 0; j < attribute.Arguments.Count; ++j)
+                    {
+                        CodeAttributeArgument oArg = attribute.Arguments[j];
+                        CodeExpression oCodeExpression = oArg.Value;
+                        if (oCodeExpression is CodePrimitiveExpression)
+                        {
+                            CodePrimitiveExpression oCodePrimitiveExpression = oCodeExpression as CodePrimitiveExpression;
+                            if ("" == oArg.Name)
+                                oWrapMemeber.sName = oCodePrimitiveExpression.Value.ToString();
+                        }
+                        else if (oCodeExpression is CodeTypeOfExpression)
+                        {
+                            CodeTypeOfExpression oTypeOfExpression = oCodeExpression as CodeTypeOfExpression;
+                            InitMemberType(oWrapMemeber, oTypeOfExpression.Type.BaseType);
+                        }
+                    }
+                    if (null != oWrapMemeber.sName)
+                    {
+                        if (null == aWrappedMemebers)
+                            aWrappedMemebers = new List<GenMember>();
+                        aWrappedMemebers.Add(oWrapMemeber);
+                    }
+                }
                 //todo не всегда прописан
                 //else if (attribute.Name == "System.Xml.Serialization.XmlChoiceIdentifierAttribute")
                 //{
@@ -342,17 +369,82 @@ namespace codegen
                 return null;
             else
             {
+                if (oGenMember.bIsArray && null != aWrappedMemebers)
+                {
+                    //todo не проверен случай
+                    //[System.Xml.Serialization.XmlArrayItemAttribute("ahPolar", typeof(CT_PolarAdjustHandle), IsNullable=false)]
+                    //[System.Xml.Serialization.XmlArrayItemAttribute("ahXY", typeof(CT_XYAdjustHandle), IsNullable=false)]
+                    //public object[] ahLst {
+
+                    //создаем wrap class чтобы не работать с двумерными массивами
+                    string sNewName = Utils.GetClassName(oGenMember.sName);
+                    GenClass oNewGenClass = new GenClass(sNewName, oGenMember.sNamespace);
+                    if (null == oNewGenClass.sNamespace)
+                        oNewGenClass.sNamespace = oGenClass.sNamespace;
+                    //помещаем класс указанный в атрибутах в aMembers
+                    for (int i = 0; i < aWrappedMemebers.Count; ++i)
+                    {
+                        GenMember oWrappedMemeber = aWrappedMemebers[i];
+                        if (null == oWrappedMemeber.sType && null == oWrappedMemeber.oSystemType)
+                        {
+                            oWrappedMemeber.sType = oGenMember.sType;
+                            oWrappedMemeber.oSystemType = oGenMember.oSystemType;
+                        }
+                        oWrappedMemeber.bIsArray = true;
+                        oWrappedMemeber.sNamespace = oNewGenClass.sNamespace;
+                        oNewGenClass.aMembers.Add(oWrappedMemeber);
+                    }
+                    //проверяем нет ли такого типа
+                    bool bExist = false;
+                    bool bNeedCreate = true;
+                    GenClass oPrevGenClass;
+                    if (m_mapGeneratedClasses.TryGetValue(sNewName, out oPrevGenClass))
+                    {
+                        bExist = true;
+                        if (oNewGenClass.sName == oPrevGenClass.sName && oNewGenClass.sNamespace == oPrevGenClass.sNamespace && oNewGenClass.aMembers.Count == oPrevGenClass.aMembers.Count)
+                        {
+                            bNeedCreate = false;
+                            for (int i = 0; i < oNewGenClass.aMembers.Count; ++i)
+                            {
+                                GenMember oGenMember1 = oNewGenClass.aMembers[i];
+                                GenMember oGenMember2 = oPrevGenClass.aMembers[i];
+                                if (oGenMember1.sName != oGenMember2.sName || oGenMember1.sType != oGenMember2.sType || oGenMember1.oSystemType != oGenMember2.oSystemType)
+                                    bNeedCreate = true;
+                            }
+                        }
+                    }
+                    if(bNeedCreate)
+                    {
+                        if (bExist)
+                        {
+                            int nCount = 1;
+                            GenClass oTemp;
+                            while (m_mapGeneratedClasses.TryGetValue(sNewName = Utils.GetClassName(oGenMember.sName + nCount), out oTemp))
+                                nCount++;
+                            oNewGenClass.sName = sNewName;
+                        }
+                        aGenClasses.Add(oNewGenClass);
+                        m_mapGeneratedClasses[oNewGenClass.sName] = oNewGenClass;
+                    }
+                    //меняем oGenMember, чтобы он ссылался на oNewGenClass
+                    if (codeMemberProperty.Type.ArrayElementType.ArrayRank > 0)
+                        oGenMember.bIsArray = true;
+                    else
+                        oGenMember.bIsArray = false;
+                    oGenMember.oSystemType = null;
+                    oGenMember.sType = oNewGenClass.sName;
+                }
                 if (oGenMember.bIsArray && null != oGenMember.aArrayTypes)
                 {
                     //добавляем enum для member и дополнительный массив для типов
-                    GenClass oNewEnum = new GenClass("ItemsChoiceType" + nItemsChoiceTypeCount++, oGenClass.sNamespace);
+                    GenClass oNewEnum = new GenClass(Utils.gc_sItemsChoiceType + m_nItemsChoiceTypeCount++, oGenClass.sNamespace);
                     oNewEnum.bInternal = true;
                     oNewEnum.bIsEnum = true;
                     for (int i = 0; i < oGenMember.aArrayTypes.Count; ++i)
                     {
                         oNewEnum.aMembers.Add(new GenMember(oGenMember.aArrayTypes[i].sName));
                     }
-                    GenMember oNewPairArray = new GenMember("ItemsElementName" + nItemsElementName++);
+                    GenMember oNewPairArray = new GenMember(Utils.gc_sItemsElementName + nItemsElementName++);
                     oNewPairArray.bInternal = true;
                     oNewPairArray.bIsArray = true;
                     oNewPairArray.sType = oNewEnum.sName;

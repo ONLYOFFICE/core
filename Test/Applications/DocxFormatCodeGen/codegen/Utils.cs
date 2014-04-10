@@ -12,6 +12,8 @@ namespace codegen
         public static string gc_sFilePrefix = "//Generated code\r\n";
         public static string gc_sMemberPrefix = "m_";
         public static string gc_sSerToBinEnumPrefix = "c_oSer";
+        public static string gc_sItemsChoiceType = "ItemsChoiceType";
+        public static string gc_sItemsElementName = "ItemsElementName";
         public static string GetEnumElemName(string sEnumName, string sElemName)
         {
             return sEnumName.ToLower() + sElemName.ToUpper();
@@ -23,6 +25,10 @@ namespace codegen
         public static string GetMemberElemName(string sElemName)
         {
             return gc_sMemberPrefix + sElemName;
+        }
+        public static string GetClassName(string sElemName)
+        {
+            return "CT_" + sElemName;
         }
     }
 }

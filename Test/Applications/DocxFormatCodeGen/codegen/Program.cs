@@ -9,9 +9,9 @@ namespace codegen
     class Program
     {
         static string sDirIn = @"..\..\Resource\";
-        static string sDirCppXmlOut = @"D:\Subversion\AVS\Sources\TeamlabOffice\trunk\ServerComponents\Common\DocxFormat\Source\XlsxFormat\Chart\";
-        static string sDirCppBinOut = @"D:\Subversion\AVS\Sources\TeamlabOffice\trunk\ServerComponents\XlsxSerializerCom\Reader\";
-        static string sDirJsBinOut = @"D:\Subversion\AVS\Sources\TeamlabOffice\trunk\OfficeWeb\Common\";
+        static string sDirCppXmlOut = @"..\..\gen\";
+        static string sDirCppBinOut = @"..\..\gen\";
+        static string sDirJsBinOut = @"..\..\gen\";
         static void Main(string[] args)
         {
             (new codegen.CodeGen()).Start(sDirIn, sDirCppXmlOut, sDirCppBinOut, sDirJsBinOut, ValidationCallback);

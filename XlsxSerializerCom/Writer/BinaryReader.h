@@ -1524,9 +1524,23 @@ namespace BinXlsxRW {
 		{
 			return Read1(length, &BinaryCommentReader::ReadComments, this, poResult);
 		}
-		int ReadCommentDataExternal(long length, void* poResult)
+		int ReadExternal(long length, void* poResult)
 		{
-			return Read1(length, &BinaryCommentReader::ReadCommentData, this, poResult);
+			return Read1(length, &BinaryCommentReader::ReadCommentDatasExternal, this, poResult);
+		}
+		int ReadCommentDatasExternal(BYTE type, long length, void* poResult)
+		{
+			int res = c_oSerConstants::ReadOk;
+			CAtlArray<SerializeCommon::CommentData*>* pCommentDatas = static_cast<CAtlArray<SerializeCommon::CommentData*>*>(poResult);
+			if ( c_oSer_Comments::CommentData == type )
+			{
+				SerializeCommon::CommentData* oCommentData = new SerializeCommon::CommentData();
+				res = Read1(length, &BinaryCommentReader::ReadCommentData, this, oCommentData);
+				pCommentDatas->Add(oCommentData);
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
 		}
 		int ReadComments(BYTE type, long length, void* poResult)
 		{
@@ -1557,7 +1571,46 @@ namespace BinXlsxRW {
 			else if ( c_oSer_Comments::Col == type )
 				pNewComment->m_nCol = m_oBufferedStream.ReadLong();
 			else if ( c_oSer_Comments::CommentDatas == type )
+			{
+				if(!pNewComment->m_sGfxdata.IsInit())
+				{
+					int nStartPos = m_oBufferedStream.GetPosition();
+					BYTE* pSourceBuffer = m_oBufferedStream.ReadPointer(length);
+					m_oBufferedStream.Seek(nStartPos);
+
+					CStringA sSignature(_T("XLST"));
+					int nSignatureSize = sSignature.GetLength();
+					int nDataLengthSize = sizeof(long);
+					int nJunkSize = 2;
+					int nWriteBufferLength = nSignatureSize + nDataLengthSize + length + nJunkSize;
+					BYTE* pWriteBuffer = new BYTE[nWriteBufferLength];
+					memcpy(pWriteBuffer, sSignature.GetBuffer(), nSignatureSize);
+					sSignature.ReleaseBuffer();
+					memcpy(pWriteBuffer + nSignatureSize, &length, nDataLengthSize);
+					memcpy(pWriteBuffer + nSignatureSize + nDataLengthSize, pSourceBuffer, length);
+					//пишем в конце 0, потому что при редактировании Excel меняет посление байты.
+					memset(pWriteBuffer + nSignatureSize + nDataLengthSize + length, 0, nJunkSize);
+
+					int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nWriteBufferLength, Base64::B64_BASE64_FLAG_NONE);
+					BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
+					CString sGfxdata;
+					if(TRUE == Base64::Base64Encode(pWriteBuffer, nWriteBufferLength, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NONE))
+					{
+						sGfxdata = CString((LPSTR)pbBase64Buffer, nBase64BufferLen);
+						//важно иначе при редактировании и сохранении в Excel перетирается
+						sGfxdata.Append(_T("\r\n"));
+					}
+					RELEASEARRAYOBJECTS(pbBase64Buffer);
+					RELEASEARRAYOBJECTS(pWriteBuffer);
+
+					if(!sGfxdata.IsEmpty())
+					{
+						pNewComment->m_sGfxdata.Init();
+						pNewComment->m_sGfxdata->Append(sGfxdata);
+					}
+				}
 				res = Read1(length, &BinaryCommentReader::ReadCommentDatas, this, pNewComment);
+			}
 			else if ( c_oSer_Comments::Left == type )
 				pNewComment->m_nLeft = m_oBufferedStream.ReadLong();
 			else if ( c_oSer_Comments::Top == type )
@@ -1596,43 +1649,6 @@ namespace BinXlsxRW {
 			OOX::Spreadsheet::CCommentItem* pNewComment = static_cast<OOX::Spreadsheet::CCommentItem*>(poResult);
 			if ( c_oSer_Comments::CommentData == type )
 			{
-				if(!pNewComment->m_sGfxdata.IsInit())
-				{
-					int nStartPos = m_oBufferedStream.GetPosition();
-					BYTE* pSourceBuffer = m_oBufferedStream.ReadPointer(length);
-					m_oBufferedStream.Seek(nStartPos);
-					
-					CStringA sSignature(_T("XLST"));
-					int nSignatureSize = sSignature.GetLength();
-					int nDataLengthSize = sizeof(long);
-					int nJunkSize = 2;
-					int nWriteBufferLength = nSignatureSize + nDataLengthSize + length + nJunkSize;
-					BYTE* pWriteBuffer = new BYTE[nWriteBufferLength];
-					memcpy(pWriteBuffer, sSignature.GetBuffer(), nSignatureSize);
-					sSignature.ReleaseBuffer();
-					memcpy(pWriteBuffer + nSignatureSize, &length, nDataLengthSize);
-					memcpy(pWriteBuffer + nSignatureSize + nDataLengthSize, pSourceBuffer, length);
-					//пишем в конце 0, потому что при редактировании Excel меняет посление байты.
-					memset(pWriteBuffer + nSignatureSize + nDataLengthSize + length, 0, nJunkSize);
-
-					int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nWriteBufferLength, Base64::B64_BASE64_FLAG_NONE);
-					BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
-					CString sGfxdata;
-					if(TRUE == Base64::Base64Encode(pWriteBuffer, nWriteBufferLength, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NONE))
-					{
-						sGfxdata = CString((LPSTR)pbBase64Buffer, nBase64BufferLen);
-						//важно иначе при редактировании и сохранении в Excel перетирается
-						sGfxdata.Append(_T("\r\n"));
-					}
-					RELEASEARRAYOBJECTS(pbBase64Buffer);
-					RELEASEARRAYOBJECTS(pWriteBuffer);
-
-					if(!sGfxdata.IsEmpty())
-					{
-						pNewComment->m_sGfxdata.Init();
-						pNewComment->m_sGfxdata->Append(sGfxdata);
-					}
-				}
 				if(!pNewComment->m_oText.IsInit())
 				{
 					SerializeCommon::CommentData oCommentData;

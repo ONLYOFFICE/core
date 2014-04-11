@@ -2467,19 +2467,23 @@ namespace BinXlsxRW {
 				if(pPair->m_value->IsValid())
 				{
 					OOX::Spreadsheet::CCommentItem& oComment = *pPair->m_value;
-					SerializeCommon::CommentData* pSavedData = getSavedComment(oComment);
+					CAtlArray<SerializeCommon::CommentData*> aCommentDatas;
+					getSavedComment(oComment, aCommentDatas);
 					nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Comment);
 					//записываем тот обьект, который был в бинарнике, подменяем только текст, который мог быть отредактирован в Excel
-					WriteComment(oComment, pSavedData, oComment.m_oText);
+					WriteComment(oComment, aCommentDatas, oComment.m_oText);
 					m_oBcw.WriteItemEnd(nCurPos);
 
-					RELEASEOBJECT(pSavedData);
+					for(int i = 0, length = aCommentDatas.GetCount(); i < length; ++i)
+					{
+						RELEASEOBJECT(aCommentDatas[i]);
+					}
+					aCommentDatas.RemoveAll();
 				}
 			}
 		};
-		SerializeCommon::CommentData* getSavedComment(OOX::Spreadsheet::CCommentItem& oComment)
+		void getSavedComment(OOX::Spreadsheet::CCommentItem& oComment, CAtlArray<SerializeCommon::CommentData*>& aDatas)
 		{
-			SerializeCommon::CommentData* pCommentData = NULL;
 			if(oComment.m_sGfxdata.IsInit())
 			{
 				const CString& sGfxData = oComment.m_sGfxdata.get2();
@@ -2501,17 +2505,15 @@ namespace BinXlsxRW {
 						oBufferedStream.SetBuffer(&oBuffer);
 						oBufferedStream.Create((BYTE*)(pBuffer + nSignatureSize + nDataLengthSize), nLength);
 
-						pCommentData = new SerializeCommon::CommentData();
 						BinaryCommentReader oBinaryCommentReader(oBufferedStream, NULL);
-						oBinaryCommentReader.ReadCommentDataExternal(nLength, pCommentData);
+						oBinaryCommentReader.ReadExternal(nLength, &aDatas);
 					}
 					sGfxDataA.ReleaseBuffer();
 					RELEASEARRAYOBJECTS(pBuffer);
 				}
 			}
-			return pCommentData;
 		}
-		void WriteComment(OOX::Spreadsheet::CCommentItem& oComment, SerializeCommon::CommentData* pCommentData, nullable<OOX::Spreadsheet::CSi>& oCommentText)
+		void WriteComment(OOX::Spreadsheet::CCommentItem& oComment, CAtlArray<SerializeCommon::CommentData*>& aCommentDatas, nullable<OOX::Spreadsheet::CSi>& oCommentText)
 		{
 			int nCurPos = 0;
 			int nRow = 0;
@@ -2533,7 +2535,7 @@ namespace BinXlsxRW {
 			m_oBcw.m_oStream.WriteByte(c_oSer_Comments::CommentDatas);
 			m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Variable);
 			nCurPos = m_oBcw.WriteItemWithLengthStart();
-			WriteCommentData(oComment, pCommentData, oCommentText);
+			WriteCommentData(oComment, aCommentDatas, oCommentText);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 
 			if(oComment.m_nLeft.IsInit())
@@ -2621,12 +2623,27 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBool(oComment.m_bSize.get());
 			}
 		}
-		void WriteCommentData(OOX::Spreadsheet::CCommentItem& oComment, SerializeCommon::CommentData* pCommentData, nullable<OOX::Spreadsheet::CSi>& oCommentText)
+		void WriteCommentData(OOX::Spreadsheet::CCommentItem& oComment, CAtlArray<SerializeCommon::CommentData*>& aCommentDatas, nullable<OOX::Spreadsheet::CSi>& oCommentText)
 		{
 			int nCurPos = 0;
-			nCurPos = m_oBcw.WriteItemStart(c_oSer_Comments::CommentData);
-			WriteCommentDataContent(&oComment, pCommentData, &oCommentText);
-			m_oBcw.WriteItemEnd(nCurPos);
+			if(aCommentDatas.GetCount() > 0)
+			{
+				for(int i = 0, length = aCommentDatas.GetCount(); i < length; ++i)
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSer_Comments::CommentData);
+					if(0 == i)
+						WriteCommentDataContent(&oComment, aCommentDatas[i], &oCommentText);
+					else
+						WriteCommentDataContent(NULL, aCommentDatas[i], NULL);
+					m_oBcw.WriteItemEnd(nCurPos);
+				}
+			}
+			else
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_Comments::CommentData);
+				WriteCommentDataContent(&oComment, NULL, &oCommentText);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
 		}
 		void WriteCommentDataContent(OOX::Spreadsheet::CCommentItem* pComment, SerializeCommon::CommentData* pCommentData, nullable<OOX::Spreadsheet::CSi>* pCommentText)
 		{
@@ -2637,16 +2654,13 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteByte(c_oSer_CommentData::Text);
 				m_oBcw.m_oStream.WriteString2(sText);
 			}
+			else if(NULL != pCommentData && !pCommentData->sText.IsEmpty())
+			{
+				m_oBcw.m_oStream.WriteByte(c_oSer_CommentData::Text);
+				m_oBcw.m_oStream.WriteString2(pCommentData->sText);
+			}
 			if(NULL != pCommentData)
 			{
-				if(NULL == pCommentText)
-				{
-					if(!pCommentData->sText.IsEmpty())
-					{
-						m_oBcw.m_oStream.WriteByte(c_oSer_CommentData::Text);
-						m_oBcw.m_oStream.WriteString2(pCommentData->sText);
-					}
-				}
 				if(!pCommentData->sTime.IsEmpty())
 				{
 					m_oBcw.m_oStream.WriteByte(c_oSer_CommentData::Time);

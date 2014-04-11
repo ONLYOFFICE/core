@@ -57,6 +57,7 @@ namespace Oox2Odf
     private:
 		OOX::Spreadsheet::CXlsx		*xlsx_document;
 		odf::package::odf_document	*output_document;
+		OOX::Spreadsheet::CDrawing	*xlsx_current_drawing; //пока сюда .. потом покрасивше
 
 		odf::ods_conversion_context	*ods_context;
 
@@ -101,5 +102,7 @@ namespace Oox2Odf
 
 		void convert_sharing_string(int number);
 		void convert(OOX::Spreadsheet::CFromTo* oox_from_to, std::wstring & odf_ref, int & col, int & row);
+
+		void convert(OOX::Spreadsheet::CPic* oox_picture);
 	};
 }

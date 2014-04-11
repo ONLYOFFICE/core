@@ -478,6 +478,11 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 	cell->table_table_cell_attlist_.table_formula_ = odfFormula;
 }
 
+void ods_table_state::add_child_element(office_element_ptr & child_element)
+{
+	office_table_->add_child_element(child_element);
+}
+
 void ods_table_state::set_cell_text(odf_text_context* text_context)
 {
 	if (text_context == NULL)return;

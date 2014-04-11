@@ -87,6 +87,8 @@ public:
 	void set_cell_text(odf_text_context *text_context);
 	void set_cell_formula(std::wstring &formula);
 
+	void add_child_element(office_element_ptr & child_element);
+
 ///////////////////////////////
 	void add_hyperlink(std::wstring & ref,int col, int row, std::wstring & link);
 	
@@ -97,6 +99,7 @@ public:
 
 	bool	is_cell_hyperlink();
 	int		is_cell_hyperlink(int col, int row);
+
 	ods_hyperlink_state & current_hyperlink();
 
 	int current_column() const;

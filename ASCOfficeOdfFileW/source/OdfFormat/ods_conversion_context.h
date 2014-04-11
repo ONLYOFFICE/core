@@ -39,13 +39,12 @@ public:
 	void add_merge_cells(std::wstring & ref);
 	void add_hyperlink(std::wstring & ref, std::wstring & link, std::wstring & display);
 ///////////////////////////////////////////////////////
-	ods_table_state & current_table() { return table_context_.state();}
-	odf_text_context* current_text_context(){return current_text_context_;}
-
+	ods_table_state &		current_table() { return table_context_.state();}
+	odf_text_context*		current_text_context(){return current_text_context_;}
 /////////////////////////////////////////////////////
 	void start_text_context();
 	void end_text_context();
-
+	
 private:
 	ods_table_context			table_context_;
 	

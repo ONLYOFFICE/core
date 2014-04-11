@@ -112,8 +112,8 @@ namespace OOX
 			nullable<CString>                m_sUri;
 
 			// Childs
-			nullable<OOX::Drawing::CPicture> m_oPicture;
-			nullable<OOX::Drawing::CChart> m_oChart;
+			nullable<OOX::Drawing::CPicture>	m_oPicture;
+			nullable<OOX::Drawing::CChart>		m_oChart;
 
 		};
 	} // Drawing

@@ -955,14 +955,6 @@
 			Name="odf spreadsheet"
 			>
 			<File
-				RelativePath=".\OdfFormat\odf_text_context.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OdfFormat\odf_text_context.h"
-				>
-			</File>
-			<File
 				RelativePath=".\OdfFormat\ods_conversion_context.cpp"
 				>
 			</File>
@@ -1139,6 +1131,34 @@
 			Name="odf presentation"
 			>
 		</Filter>
+		<Filter
+			Name="odf common"
+			>
+			<File
+				RelativePath=".\OdfFormat\odf_conversion_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odf_conversion_context.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odf_drawing_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odf_drawing_context.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odf_text_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odf_text_context.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\OdfFormat\abstract_xml.cpp"
 			>
@@ -1149,14 +1169,6 @@
 		</File>
 		<File
 			RelativePath=".\OdfFormat\logging.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\OdfFormat\odf_conversion_context.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\OdfFormat\odf_conversion_context.h"
 			>
 		</File>
 		<File

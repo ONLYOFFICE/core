@@ -9,6 +9,7 @@
 #include "ods_conversion_context.h"
 
 #include "odf_text_context.h"
+#include "odf_drawing_context.h"
 
 #include "styles.h"
 
@@ -951,6 +952,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 {
+	ods_context->drawing_context().start_drawing();
 	//SimpleTypes::Spreadsheet::CCellAnchorType<>		m_oAnchorType;
 	std::wstring ref_from, ref_to;
 	int col_from, col_to, row_from, row_to;
@@ -973,15 +975,21 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 	{
 		//m_oChartGraphic
 	}
+	if (oox_anchor->m_oPicture.IsInit())
+	{
+		convert(oox_anchor->m_oPicture.GetPointer());
+	}
 	if (oox_anchor->m_oXml.IsInit())
 	{
 		//m_oXml
 	}
+	ods_context->current_table().add_child_element(ods_context->drawing_context().end_drawing());
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing)
 {
 	if (!oox_drawing)return;
+	xlsx_current_drawing = oox_drawing;
 
 	for (long dr = 0 ; dr < oox_drawing->m_arrItems.GetSize(); dr++)
 	{
@@ -992,6 +1000,74 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing)
 
 void XlsxConverter::convert(OOX::Spreadsheet::CFromTo* oox_from_to, std::wstring & odf_ref, int & col, int & row)
 {
+}
+
+void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
+{
+	if (!oox_picture)return;
+
+	//std::wstring name;
+	//if (oox_picture->m_oNvPicPr.IsInit())
+	//{
+	//	//OOX::Drawing::CNonVisualPictureProperties m_oCNvPicPr;
+	//	//OOX::Drawing::CNonVisualDrawingProps      m_oCNvPr;
+	//	
+	//	//потом растощить на поштучно
+	//	if(oox_picture->m_oNvPicPr->m_oCNvPr.IsInit())
+	//	{
+	//		name = string2std_string(oox_picture->m_oNvPicPr->m_oCNvPr->m_sName.get());
+	//		//nullable<CString>                               m_sDescr;
+	//		//nullable<SimpleTypes::COnOff<>>                 m_oHidden;
+	//		//nullable<SimpleTypes::CDrawingElementId<>>      m_oId;
+	//		//nullable<CString>                               m_sTitle;
+	//	}
+	//	if (oox_picture->m_oCNvPicPr.IsInit() && oox_picture->m_oCNvPicPr->m_oPicLocks.IsInit())
+	//	{
+	//		if (oox_picture->m_oCNvPicPr->m_oPicLocks->m_oNoChangeAspect.IsInit())
+	//		{
+	//		}
+	//		if (oox_picture->m_oCNvPicPr->m_oPicLocks->m_oNoCrop.IsInit())
+	//		{
+	//		}
+	//		if (oox_picture->m_oCNvPicPr->m_oPicLocks->m_oNoResize.IsInit())
+	//		{
+	//		}
+	//	}
+	//
+	//}
+	//if (oox_picture->m_oSpPr.IsInit())
+	//{
+	//}
+	CString pathImage;
+	int type = 1;
+	if (oox_picture->m_oBlipFill.IsInit())
+	{
+		if (oox_picture->m_oBlipFill->m_oBlip.IsInit())
+		{
+			CString sID = oox_picture->m_oBlipFill->m_oBlip->m_oEmbed.GetValue();
+			
+			smart_ptr<OOX::File> oFile = xlsx_current_drawing->Find(sID);
+			if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Image == oFile->type())
+			{
+				OOX::Spreadsheet::Image* pImage = (OOX::Spreadsheet::Image*)oFile.operator->();
+
+				pathImage = pImage->filename().GetPath();
+			}		
+		}
+		if (oox_picture->m_oBlipFill->m_oTile.IsInit())
+			type=2;//пока без допов
+
+		if (oox_picture->m_oBlipFill->m_oSrcRect.IsInit())
+		{
+			//set client rect //проценты m_oB; m_oL; m_oR; m_oT;
+			
+		}
+	}
+
+	ods_context->drawing_context().start_image(string2std_string(pathImage));
+
+
+	ods_context->drawing_context().end_image();
 }
 
 } // namespace Docx2Odt

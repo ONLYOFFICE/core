@@ -2,6 +2,7 @@
 
 #include "object_package.h"
 #include "odf_style_context.h"
+#include "odf_drawing_context.h"
 
 namespace cpdoccore { 
 namespace odf {
@@ -30,7 +31,8 @@ public:
 
 	package::odf_document * output_document_;
 
-	odf_style_context & styles_context(){return style_context_;}
+	odf_style_context &		styles_context(){return style_context_;}
+	odf_drawing_context&	drawing_context(){return drawing_context_;}
 		
 	odf_number_styles_context & numbers_styles_context() {return style_context_.numbers_styles();}
 
@@ -41,6 +43,7 @@ private:
 
 public:
 
+	odf_drawing_context		drawing_context_;	
 	odf_style_context		style_context_;
 
     //styles_container		& styleContainer()		{ return major_style_container_; }

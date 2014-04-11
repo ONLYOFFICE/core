@@ -13,7 +13,7 @@ namespace odf {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-odf_conversion_context::odf_conversion_context(package::odf_document * outputDocument) : style_context_(*this)
+odf_conversion_context::odf_conversion_context(package::odf_document * outputDocument) : style_context_(*this),drawing_context_(&style_context_, this)
 { 
 	output_document_ = outputDocument;
 }

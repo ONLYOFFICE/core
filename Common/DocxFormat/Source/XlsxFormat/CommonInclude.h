@@ -5,6 +5,9 @@
 #include "../Common/SimpleTypes_Shared.h"
 #include "../DocxFormat/Rels.h"
 
+#include "../DocxFormat/Drawing/DrawingCoreInfo.h"
+#include "../DocxFormat/Drawing/DrawingEffects.h"
+
 #include "ComplexTypes_Spreadsheet.h"
 #include "FileTypes_Spreadsheet.h"
 #include "WritingElement.h"

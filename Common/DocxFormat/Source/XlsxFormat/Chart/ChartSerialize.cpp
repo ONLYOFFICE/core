@@ -1178,15 +1178,16 @@ namespace OOX{
 		EElementType CT_ChartSpace::getType(){return et_ct_chartspace;}
 		CT_Boolean::CT_Boolean()
 		{
-			m_val = new bool;
+			/*m_val = new bool;
 			CString s_m_val("True");
 			{
-				CString sValLower = s_m_val.MakeLower();
-				if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
-					*m_val = false;
-				else
-					*m_val = true;
-			}
+			CString sValLower = s_m_val.MakeLower();
+			if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
+			*m_val = false;
+			else
+			*m_val = true;
+			}*/
+			m_val = NULL;
 		}
 		CT_Boolean::~CT_Boolean()
 		{
@@ -1272,61 +1273,71 @@ namespace OOX{
 		EElementType CT_RelId::getType(){return et_ct_relid;}
 		CT_PageSetup::CT_PageSetup()
 		{
-			m_paperSize = new unsigned long;
+			/*m_paperSize = new unsigned long;
 			CString s_m_paperSize("1");
 			{
-				*m_paperSize = _ttoi(s_m_paperSize);
-			}
+			*m_paperSize = _ttoi(s_m_paperSize);
+			}*/
+			m_paperSize = NULL;
 			m_paperHeight = NULL;
 			m_paperWidth = NULL;
-			m_firstPageNumber = new unsigned long;
+			/*m_firstPageNumber = new unsigned long;
 			CString s_m_firstPageNumber("1");
 			{
-				*m_firstPageNumber = _ttoi(s_m_firstPageNumber);
-			}
+			*m_firstPageNumber = _ttoi(s_m_firstPageNumber);
+			}*/
+			m_firstPageNumber = NULL;
+			/*m_orientation = new ST_PageSetupOrientation;
+			*m_orientation = st_pagesetuporientationDEFAULT;*/
 			m_orientation = NULL;
-			m_blackAndWhite = new bool;
+			/*m_blackAndWhite = new bool;
 			CString s_m_blackAndWhite("False");
 			{
-				CString sValLower = s_m_blackAndWhite.MakeLower();
-				if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
-					*m_blackAndWhite = false;
-				else
-					*m_blackAndWhite = true;
-			}
-			m_draft = new bool;
+			CString sValLower = s_m_blackAndWhite.MakeLower();
+			if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
+			*m_blackAndWhite = false;
+			else
+			*m_blackAndWhite = true;
+			}*/
+			m_blackAndWhite = NULL;
+			/*m_draft = new bool;
 			CString s_m_draft("False");
 			{
-				CString sValLower = s_m_draft.MakeLower();
-				if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
-					*m_draft = false;
-				else
-					*m_draft = true;
-			}
-			m_useFirstPageNumber = new bool;
+			CString sValLower = s_m_draft.MakeLower();
+			if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
+			*m_draft = false;
+			else
+			*m_draft = true;
+			}*/
+			m_draft = NULL;
+			/*m_useFirstPageNumber = new bool;
 			CString s_m_useFirstPageNumber("False");
 			{
-				CString sValLower = s_m_useFirstPageNumber.MakeLower();
-				if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
-					*m_useFirstPageNumber = false;
-				else
-					*m_useFirstPageNumber = true;
-			}
-			m_horizontalDpi = new long;
+			CString sValLower = s_m_useFirstPageNumber.MakeLower();
+			if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
+			*m_useFirstPageNumber = false;
+			else
+			*m_useFirstPageNumber = true;
+			}*/
+			m_useFirstPageNumber = NULL;
+			/*m_horizontalDpi = new long;
 			CString s_m_horizontalDpi("600");
 			{
-				*m_horizontalDpi = _ttoi(s_m_horizontalDpi);
-			}
-			m_verticalDpi = new long;
+			*m_horizontalDpi = _ttoi(s_m_horizontalDpi);
+			}*/
+			m_horizontalDpi = NULL;
+			/*m_verticalDpi = new long;
 			CString s_m_verticalDpi("600");
 			{
-				*m_verticalDpi = _ttoi(s_m_verticalDpi);
-			}
-			m_copies = new unsigned long;
+			*m_verticalDpi = _ttoi(s_m_verticalDpi);
+			}*/
+			m_verticalDpi = NULL;
+			/*m_copies = new unsigned long;
 			CString s_m_copies("1");
 			{
-				*m_copies = _ttoi(s_m_copies);
-			}
+			*m_copies = _ttoi(s_m_copies);
+			}*/
+			m_copies = NULL;
 		}
 		CT_PageSetup::~CT_PageSetup()
 		{
@@ -1692,33 +1703,36 @@ namespace OOX{
 			m_evenFooter = NULL;
 			m_firstHeader = NULL;
 			m_firstFooter = NULL;
-			m_alignWithMargins = new bool;
+			/*m_alignWithMargins = new bool;
 			CString s_m_alignWithMargins("True");
 			{
-				CString sValLower = s_m_alignWithMargins.MakeLower();
-				if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
-					*m_alignWithMargins = false;
-				else
-					*m_alignWithMargins = true;
-			}
-			m_differentOddEven = new bool;
+			CString sValLower = s_m_alignWithMargins.MakeLower();
+			if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
+			*m_alignWithMargins = false;
+			else
+			*m_alignWithMargins = true;
+			}*/
+			m_alignWithMargins = NULL;
+			/*m_differentOddEven = new bool;
 			CString s_m_differentOddEven("False");
 			{
-				CString sValLower = s_m_differentOddEven.MakeLower();
-				if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
-					*m_differentOddEven = false;
-				else
-					*m_differentOddEven = true;
-			}
-			m_differentFirst = new bool;
+			CString sValLower = s_m_differentOddEven.MakeLower();
+			if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
+			*m_differentOddEven = false;
+			else
+			*m_differentOddEven = true;
+			}*/
+			m_differentOddEven = NULL;
+			/*m_differentFirst = new bool;
 			CString s_m_differentFirst("False");
 			{
-				CString sValLower = s_m_differentFirst.MakeLower();
-				if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
-					*m_differentFirst = false;
-				else
-					*m_differentFirst = true;
-			}
+			CString sValLower = s_m_differentFirst.MakeLower();
+			if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
+			*m_differentFirst = false;
+			else
+			*m_differentFirst = true;
+			}*/
+			m_differentFirst = NULL;
 		}
 		CT_HeaderFooter::~CT_HeaderFooter()
 		{
@@ -2059,6 +2073,8 @@ namespace OOX{
 		EElementType CT_ExternalData::getType(){return et_ct_externaldata;}
 		CT_DispBlanksAs::CT_DispBlanksAs()
 		{
+			/*m_val = new ST_DispBlanksAs;
+			*m_val = st_dispblanksasZERO;*/
 			m_val = NULL;
 		}
 		CT_DispBlanksAs::~CT_DispBlanksAs()
@@ -2280,6 +2296,8 @@ namespace OOX{
 		EElementType CT_Extension::getType(){return et_ct_extension;}
 		CT_LegendPos::CT_LegendPos()
 		{
+			/*m_val = new ST_LegendPos;
+			*m_val = st_legendposR;*/
 			m_val = NULL;
 		}
 		CT_LegendPos::~CT_LegendPos()
@@ -2646,6 +2664,8 @@ namespace OOX{
 		EElementType CT_ManualLayout::getType(){return et_ct_manuallayout;}
 		CT_LayoutTarget::CT_LayoutTarget()
 		{
+			/*m_val = new ST_LayoutTarget;
+			*m_val = st_layouttargetOUTER;*/
 			m_val = NULL;
 		}
 		CT_LayoutTarget::~CT_LayoutTarget()
@@ -2687,6 +2707,8 @@ namespace OOX{
 		EElementType CT_LayoutTarget::getType(){return et_ct_layouttarget;}
 		CT_LayoutMode::CT_LayoutMode()
 		{
+			/*m_val = new ST_LayoutMode;
+			*m_val = st_layoutmodeFACTOR;*/
 			m_val = NULL;
 		}
 		CT_LayoutMode::~CT_LayoutMode()
@@ -3283,6 +3305,8 @@ namespace OOX{
 		EElementType CT_LogBase::getType(){return et_ct_logbase;}
 		CT_Orientation::CT_Orientation()
 		{
+			/*m_val = new ST_Orientation;
+			*m_val = st_orientationMINMAX;*/
 			m_val = NULL;
 		}
 		CT_Orientation::~CT_Orientation()
@@ -3824,6 +3848,8 @@ namespace OOX{
 		EElementType CT_NumFmt::getType(){return et_ct_numfmt;}
 		CT_TickMark::CT_TickMark()
 		{
+			/*m_val = new ST_TickMark;
+			*m_val = st_tickmarkCROSS;*/
 			m_val = NULL;
 		}
 		CT_TickMark::~CT_TickMark()
@@ -3865,6 +3891,8 @@ namespace OOX{
 		EElementType CT_TickMark::getType(){return et_ct_tickmark;}
 		CT_TickLblPos::CT_TickLblPos()
 		{
+			/*m_val = new ST_TickLblPos;
+			*m_val = st_ticklblposNEXTTO;*/
 			m_val = NULL;
 		}
 		CT_TickLblPos::~CT_TickLblPos()
@@ -3985,6 +4013,8 @@ namespace OOX{
 		EElementType CT_Skip::getType(){return et_ct_skip;}
 		CT_TimeUnit::CT_TimeUnit()
 		{
+			/*m_val = new ST_TimeUnit;
+			*m_val = st_timeunitDAYS;*/
 			m_val = NULL;
 		}
 		CT_TimeUnit::~CT_TimeUnit()
@@ -4364,11 +4394,12 @@ namespace OOX{
 		EElementType CT_DateAx::getType(){return et_ct_dateax;}
 		CT_LblOffset::CT_LblOffset()
 		{
-			m_val = new CString;
+			/*m_val = new CString;
 			CString s_m_val("100%");
 			{
-				*m_val = s_m_val;
-			}
+			*m_val = s_m_val;
+			}*/
+			m_val = NULL;
 		}
 		CT_LblOffset::~CT_LblOffset()
 		{
@@ -4888,6 +4919,8 @@ namespace OOX{
 		EElementType CT_DispUnitsLbl::getType(){return et_ct_dispunitslbl;}
 		CT_BuiltInUnit::CT_BuiltInUnit()
 		{
+			/*m_val = new ST_BuiltInUnit;
+			*m_val = st_builtinunitTHOUSANDS;*/
 			m_val = NULL;
 		}
 		CT_BuiltInUnit::~CT_BuiltInUnit()
@@ -5345,6 +5378,8 @@ namespace OOX{
 		EElementType CT_ValAx::getType(){return et_ct_valax;}
 		CT_SizeRepresents::CT_SizeRepresents()
 		{
+			/*m_val = new ST_SizeRepresents;
+			*m_val = st_sizerepresentsAREA;*/
 			m_val = NULL;
 		}
 		CT_SizeRepresents::~CT_SizeRepresents()
@@ -5386,11 +5421,12 @@ namespace OOX{
 		EElementType CT_SizeRepresents::getType(){return et_ct_sizerepresents;}
 		CT_BubbleScale::CT_BubbleScale()
 		{
-			m_val = new CString;
+			/*m_val = new CString;
 			CString s_m_val("100%");
 			{
-				*m_val = s_m_val;
-			}
+			*m_val = s_m_val;
+			}*/
+			m_val = NULL;
 		}
 		CT_BubbleScale::~CT_BubbleScale()
 		{
@@ -5952,11 +5988,12 @@ namespace OOX{
 		EElementType CT_MarkerStyle::getType(){return et_ct_markerstyle;}
 		CT_MarkerSize::CT_MarkerSize()
 		{
-			m_val = new unsigned char;
+			/*m_val = new unsigned char;
 			CString s_m_val("5");
 			{
-				*m_val = _ttoi(s_m_val);
-			}
+			*m_val = _ttoi(s_m_val);
+			}*/
+			m_val = NULL;
 		}
 		CT_MarkerSize::~CT_MarkerSize()
 		{
@@ -7080,6 +7117,8 @@ namespace OOX{
 		EElementType CT_Trendline::getType(){return et_ct_trendline;}
 		CT_TrendlineType::CT_TrendlineType()
 		{
+			/*m_val = new ST_TrendlineType;
+			*m_val = st_trendlinetypeLINEAR;*/
 			m_val = NULL;
 		}
 		CT_TrendlineType::~CT_TrendlineType()
@@ -7121,11 +7160,12 @@ namespace OOX{
 		EElementType CT_TrendlineType::getType(){return et_ct_trendlinetype;}
 		CT_Order::CT_Order()
 		{
-			m_val = new unsigned char;
+			/*m_val = new unsigned char;
 			CString s_m_val("2");
 			{
-				*m_val = _ttoi(s_m_val);
-			}
+			*m_val = _ttoi(s_m_val);
+			}*/
+			m_val = NULL;
 		}
 		CT_Order::~CT_Order()
 		{
@@ -7163,11 +7203,12 @@ namespace OOX{
 		EElementType CT_Order::getType(){return et_ct_order;}
 		CT_Period::CT_Period()
 		{
-			m_val = new unsigned long;
+			/*m_val = new unsigned long;
 			CString s_m_val("2");
 			{
-				*m_val = _ttoi(s_m_val);
-			}
+			*m_val = _ttoi(s_m_val);
+			}*/
+			m_val = NULL;
 		}
 		CT_Period::~CT_Period()
 		{
@@ -7492,6 +7533,8 @@ namespace OOX{
 		EElementType CT_ErrDir::getType(){return et_ct_errdir;}
 		CT_ErrBarType::CT_ErrBarType()
 		{
+			/*m_val = new ST_ErrBarType;
+			*m_val = st_errbartypeBOTH;*/
 			m_val = NULL;
 		}
 		CT_ErrBarType::~CT_ErrBarType()
@@ -7533,6 +7576,8 @@ namespace OOX{
 		EElementType CT_ErrBarType::getType(){return et_ct_errbartype;}
 		CT_ErrValType::CT_ErrValType()
 		{
+			/*m_val = new ST_ErrValType;
+			*m_val = st_errvaltypeFIXEDVAL;*/
 			m_val = NULL;
 		}
 		CT_ErrValType::~CT_ErrValType()
@@ -8685,11 +8730,12 @@ namespace OOX{
 		EElementType CT_SurfaceChart::getType(){return et_ct_surfacechart;}
 		CT_SecondPieSize::CT_SecondPieSize()
 		{
-			m_val = new CString;
+			/*m_val = new CString;
 			CString s_m_val("75%");
 			{
-				*m_val = s_m_val;
-			}
+			*m_val = s_m_val;
+			}*/
+			m_val = NULL;
 		}
 		CT_SecondPieSize::~CT_SecondPieSize()
 		{
@@ -8727,6 +8773,8 @@ namespace OOX{
 		EElementType CT_SecondPieSize::getType(){return et_ct_secondpiesize;}
 		CT_SplitType::CT_SplitType()
 		{
+			/*m_val = new ST_SplitType;
+			*m_val = st_splittypeAUTO;*/
 			m_val = NULL;
 		}
 		CT_SplitType::~CT_SplitType()
@@ -8768,6 +8816,8 @@ namespace OOX{
 		EElementType CT_SplitType::getType(){return et_ct_splittype;}
 		CT_OfPieType::CT_OfPieType()
 		{
+			/*m_val = new ST_OfPieType;
+			*m_val = st_ofpietypePIE;*/
 			m_val = NULL;
 		}
 		CT_OfPieType::~CT_OfPieType()
@@ -9184,11 +9234,12 @@ namespace OOX{
 		EElementType CT_PieSer::getType(){return et_ct_pieser;}
 		CT_GapAmount::CT_GapAmount()
 		{
-			m_val = new CString;
+			/*m_val = new CString;
 			CString s_m_val("150%");
 			{
-				*m_val = s_m_val;
-			}
+			*m_val = s_m_val;
+			}*/
+			m_val = NULL;
 		}
 		CT_GapAmount::~CT_GapAmount()
 		{
@@ -9388,6 +9439,8 @@ namespace OOX{
 		EElementType CT_Bar3DChart::getType(){return et_ct_bar3dchart;}
 		CT_BarDir::CT_BarDir()
 		{
+			/*m_val = new ST_BarDir;
+			*m_val = st_bardirCOL;*/
 			m_val = NULL;
 		}
 		CT_BarDir::~CT_BarDir()
@@ -9429,6 +9482,8 @@ namespace OOX{
 		EElementType CT_BarDir::getType(){return et_ct_bardir;}
 		CT_BarGrouping::CT_BarGrouping()
 		{
+			/*m_val = new ST_BarGrouping;
+			*m_val = st_bargroupingCLUSTERED;*/
 			m_val = NULL;
 		}
 		CT_BarGrouping::~CT_BarGrouping()
@@ -9685,6 +9740,8 @@ namespace OOX{
 		EElementType CT_BarSer::getType(){return et_ct_barser;}
 		CT_Shape::CT_Shape()
 		{
+			/*m_val = new ST_Shape;
+			*m_val = st_shapeBOX;*/
 			m_val = NULL;
 		}
 		CT_Shape::~CT_Shape()
@@ -9726,11 +9783,12 @@ namespace OOX{
 		EElementType CT_Shape::getType(){return et_ct_shape;}
 		CT_Overlap::CT_Overlap()
 		{
-			m_val = new CString;
+			/*m_val = new CString;
 			CString s_m_val("0%");
 			{
-				*m_val = s_m_val;
-			}
+			*m_val = s_m_val;
+			}*/
+			m_val = NULL;
 		}
 		CT_Overlap::~CT_Overlap()
 		{
@@ -9934,11 +9992,12 @@ namespace OOX{
 		EElementType CT_BarChart::getType(){return et_ct_barchart;}
 		CT_HoleSize::CT_HoleSize()
 		{
-			m_val = new CString;
+			/*m_val = new CString;
 			CString s_m_val("10%");
 			{
-				*m_val = s_m_val;
-			}
+			*m_val = s_m_val;
+			}*/
+			m_val = NULL;
 		}
 		CT_HoleSize::~CT_HoleSize()
 		{
@@ -10082,11 +10141,12 @@ namespace OOX{
 		EElementType CT_DoughnutChart::getType(){return et_ct_doughnutchart;}
 		CT_FirstSliceAng::CT_FirstSliceAng()
 		{
-			m_val = new unsigned long;
+			/*m_val = new unsigned long;
 			CString s_m_val("0");
 			{
-				*m_val = _ttoi(s_m_val);
-			}
+			*m_val = _ttoi(s_m_val);
+			}*/
+			m_val = NULL;
 		}
 		CT_FirstSliceAng::~CT_FirstSliceAng()
 		{
@@ -10503,6 +10563,8 @@ namespace OOX{
 		EElementType CT_ScatterSer::getType(){return et_ct_scatterser;}
 		CT_ScatterStyle::CT_ScatterStyle()
 		{
+			/*m_val = new ST_ScatterStyle;
+			*m_val = st_scatterstyleMARKER;*/
 			m_val = NULL;
 		}
 		CT_ScatterStyle::~CT_ScatterStyle()
@@ -10813,6 +10875,8 @@ namespace OOX{
 		EElementType CT_RadarSer::getType(){return et_ct_radarser;}
 		CT_RadarStyle::CT_RadarStyle()
 		{
+			/*m_val = new ST_RadarStyle;
+			*m_val = st_radarstyleSTANDARD;*/
 			m_val = NULL;
 		}
 		CT_RadarStyle::~CT_RadarStyle()
@@ -11539,6 +11603,8 @@ namespace OOX{
 		EElementType CT_Line3DChart::getType(){return et_ct_line3dchart;}
 		CT_Grouping::CT_Grouping()
 		{
+			/*m_val = new ST_Grouping;
+			*m_val = st_groupingSTANDARD;*/
 			m_val = NULL;
 		}
 		CT_Grouping::~CT_Grouping()
@@ -12811,11 +12877,12 @@ namespace OOX{
 		EElementType CT_Surface::getType(){return et_ct_surface;}
 		CT_Perspective::CT_Perspective()
 		{
-			m_val = new unsigned char;
+			/*m_val = new unsigned char;
 			CString s_m_val("30");
 			{
-				*m_val = _ttoi(s_m_val);
-			}
+			*m_val = _ttoi(s_m_val);
+			}*/
+			m_val = NULL;
 		}
 		CT_Perspective::~CT_Perspective()
 		{
@@ -12853,11 +12920,12 @@ namespace OOX{
 		EElementType CT_Perspective::getType(){return et_ct_perspective;}
 		CT_DepthPercent::CT_DepthPercent()
 		{
-			m_val = new CString;
+			/*m_val = new CString;
 			CString s_m_val("100%");
 			{
-				*m_val = s_m_val;
-			}
+			*m_val = s_m_val;
+			}*/
+			m_val = NULL;
 		}
 		CT_DepthPercent::~CT_DepthPercent()
 		{
@@ -12895,11 +12963,12 @@ namespace OOX{
 		EElementType CT_DepthPercent::getType(){return et_ct_depthpercent;}
 		CT_RotY::CT_RotY()
 		{
-			m_val = new unsigned long;
+			/*m_val = new unsigned long;
 			CString s_m_val("0");
 			{
-				*m_val = _ttoi(s_m_val);
-			}
+			*m_val = _ttoi(s_m_val);
+			}*/
+			m_val = NULL;
 		}
 		CT_RotY::~CT_RotY()
 		{
@@ -12937,11 +13006,12 @@ namespace OOX{
 		EElementType CT_RotY::getType(){return et_ct_roty;}
 		CT_HPercent::CT_HPercent()
 		{
-			m_val = new CString;
+			/*m_val = new CString;
 			CString s_m_val("100%");
 			{
-				*m_val = s_m_val;
-			}
+			*m_val = s_m_val;
+			}*/
+			m_val = NULL;
 		}
 		CT_HPercent::~CT_HPercent()
 		{
@@ -12979,11 +13049,12 @@ namespace OOX{
 		EElementType CT_HPercent::getType(){return et_ct_hpercent;}
 		CT_RotX::CT_RotX()
 		{
-			m_val = new char;
+			/*m_val = new char;
 			CString s_m_val("0");
 			{
-				*m_val = _ttoi(s_m_val);
-			}
+			*m_val = _ttoi(s_m_val);
+			}*/
+			m_val = NULL;
 		}
 		CT_RotX::~CT_RotX()
 		{

@@ -234,3 +234,4 @@ static CString SchemeClr_GetStringCode(const BYTE& val)
 #define XMLWRITER_DOC_TYPE_CHART 3
 
 #define XMLWRITER_RECORD_TYPE_SPPR	0
+#define XMLWRITER_RECORD_TYPE_CLRMAPOVR	1

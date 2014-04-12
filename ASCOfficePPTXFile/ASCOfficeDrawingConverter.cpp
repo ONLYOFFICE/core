@@ -3164,6 +3164,14 @@ xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"");
 			pWritingElem = (PPTX::WrapperWritingElement*)pSpPr;
 			break;
 		}
+	case XMLWRITER_RECORD_TYPE_CLRMAPOVR:
+		{
+			PPTX::Logic::ClrMap* pClrMap = new PPTX::Logic::ClrMap();
+			*pClrMap = oNode;
+
+			pWritingElem = (PPTX::WrapperWritingElement*)pClrMap;
+			break;
+		}
 	default:
 		break;
 	}
@@ -3208,6 +3216,14 @@ HRESULT CAVSOfficeDrawingConverter::GetRecordXml(SAFEARRAY* pBinaryObj, LONG lSt
 	case XMLWRITER_RECORD_TYPE_SPPR:
 		{
 			pWritingElem = (PPTX::WrapperWritingElement*)(new PPTX::Logic::SpPr());
+			pWritingElem->fromPPTY(&m_oReader);
+			break;
+		}
+	case XMLWRITER_RECORD_TYPE_CLRMAPOVR:
+		{
+			PPTX::Logic::ClrMap* pClrMap = new  PPTX::Logic::ClrMap();
+			pClrMap->m_name = _T("a:clrMapOvr");
+			pWritingElem = (PPTX::WrapperWritingElement*)(pClrMap);
 			pWritingElem->fromPPTY(&m_oReader);
 			break;
 		}

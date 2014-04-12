@@ -10,7 +10,7 @@
 #endif
 #endif
 
-#include "../../../../../Common/Base64.h"
+#include "../../Common/Base64.h"
 #include "ImageManager.h"
 #include "./XmlWriter.h"
 #include "../PPTXFormat/FileContainer.h"

@@ -37,16 +37,18 @@ public:
 public:
 	void set_styles_context(odf_style_context*  styles_context);//дл€ embedded 
     
-	void start_drawing(){}
-	void start_image(std::wstring & path){}
-
+	void start_drawing();
+	void end_drawing();
+	
+	void start_image(std::wstring & path);
 	void end_image();
-
-	office_element_ptr & end_drawing(){return current_level_.back();}
 		
+	void start_element(office_element_ptr & elm);
+    void end_element();
+
 	std::vector<office_element_ptr> current_level_;//посто€нно мен€ющийс€ список уровней наследовани€
 
-	std::vector<odf_drawing_state> drawing_elements_list_;//параграфы, списки , ... - головные элементы (или нужно включать все?? + уровень элемента????
+	std::vector<odf_drawing_state> drawing_elements_list_;//все элементы
 private:
 
 	odf_style_context * styles_context_;

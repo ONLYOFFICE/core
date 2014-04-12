@@ -847,13 +847,22 @@ namespace BinXlsxRW{
 			res = Read1(length, &BinaryChartReader::ReadCT_Style1, this, pNewElem);
 			poVal->m_style = pNewElem;
 		}
-		//else if(c_oserct_chartspaceCLRMAPOVR == type)
-		//{
-		//	CString* pNewElem = new CString;
-		//	//todo
-		//	*pNewElem = m_oBufferedStream.ReadString2(length);
-		//	poVal->m_clrMapOvr = pNewElem;
-		//}
+		else if(c_oserct_chartspaceCLRMAPOVR == type)
+		{
+			CString* pNewElem = new CString;
+			if(length > 0)
+			{
+				BSTR bstrXml = NULL;
+				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPosition(), length, XMLWRITER_RECORD_TYPE_CLRMAPOVR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
+				if (S_OK == hRes && NULL != bstrXml)
+				{
+					*pNewElem = bstrXml;
+					SysFreeString(bstrXml);
+				}
+				m_oBufferedStream.Skip(length);
+			}
+			poVal->m_clrMapOvr = pNewElem;
+		}
 		else if(c_oserct_chartspacePIVOTSOURCE == type)
 		{
 			CT_PivotSource* pNewElem = new CT_PivotSource;
@@ -6461,13 +6470,18 @@ namespace BinXlsxRW{
 			WriteCT_Style1(*oVal.m_style);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		//if(NULL != oVal.m_clrMapOvr)
-		//{
-		//	int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceCLRMAPOVR);
-		//	//todo
-		//	m_oBcw.m_oStream.WriteString3(*oVal.m_clrMapOvr);
-		//	m_oBcw.WriteItemEnd(nCurPos);
-		//}
+		if(NULL != oVal.m_clrMapOvr)
+		{
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceCLRMAPOVR);
+			LPSAFEARRAY pBinaryObj = NULL;
+			BSTR bstrXml = (*oVal.m_clrMapOvr).AllocSysString();
+			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_CLRMAPOVR, bstrXml, &pBinaryObj);
+			SysFreeString(bstrXml);
+			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
+				m_oBcw.m_oStream.WritePointer((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
+			RELEASEARRAY(pBinaryObj);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
 		if(NULL != oVal.m_pivotSource)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspacePIVOTSOURCE);

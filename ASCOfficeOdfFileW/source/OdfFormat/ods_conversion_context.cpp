@@ -116,6 +116,16 @@ void ods_conversion_context::set_sheet_dimension(std::wstring & ref)
 
 void ods_conversion_context::end_sheet()
 {
+	if (current_table().drawing_context().is_exist_content())
+	{
+		office_element_ptr shapes_root_elm;
+		create_element(L"table", L"shapes",shapes_root_elm,this);
+
+		current_table().drawing_context().finalize(shapes_root_elm);
+		
+		current_table().add_child_element(shapes_root_elm);
+	}
+
 	table_context_.end_table();
 	
 	styles_context().reset_defaults();
@@ -413,5 +423,13 @@ void ods_conversion_context::end_cell_text()
 	}
 }
 
+void ods_conversion_context::start_image(std::wstring & image_file_name)
+{
+	std::wstring odf_ref_name ;
+	
+	mediaitems_.add_or_find(image_file_name,mediaitems::typeImage,odf_ref_name);
+
+	current_table().drawing_context().start_image(odf_ref_name);
+}
 }
 }

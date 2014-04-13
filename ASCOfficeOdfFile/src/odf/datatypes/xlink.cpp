@@ -22,7 +22,10 @@ std::wostream & operator << (std::wostream & _Wostream, const xlink_actuate & _A
 {
     switch (_Actuate.get_type())
     {
-    default:
+    case xlink_actuate::OnLoad:
+        _Wostream << "onLoad";   
+		break;
+	default:
     case xlink_actuate::OnRequest:
         _Wostream << "onRequest";
         break;
@@ -34,12 +37,15 @@ std::wostream & operator << (std::wostream & _Wostream, const xlink_show & _Show
 {
     switch (_Show.get_type())
     {
-    default:
-    case xlink_show::New:
-        _Wostream << L"new";
-        break;
     case xlink_show::Replace:
         _Wostream << L"replace";
+        break;
+     case xlink_show::Embed:
+        _Wostream << L"embed";
+        break;
+	default:
+    case xlink_show::New:
+        _Wostream << L"new";
         break;
     }
     return _Wostream;

@@ -300,7 +300,12 @@ et_alternatecontentfallback,
 		et_IconSet,
 		et_ConditionalFormatValueObject,
 		et_SheetPr,
-		et_Pane
+		et_Pane,
+
+		et_PictureNonVisual,
+		et_NonVisualDrawingProps
+
+
 	};
 	class WritingElement
 	{

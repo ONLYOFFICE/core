@@ -31,7 +31,8 @@ namespace odf {
 class graphic_format_properties
 {
 public:
-    void apply_from(const graphic_format_properties & Other);
+	graphic_format_properties(); //for defaults set
+    //void apply_from(const graphic_format_properties & Other);
 
 	void serialize(std::wostream & strm, const wchar_t * ns, const wchar_t * name );
 

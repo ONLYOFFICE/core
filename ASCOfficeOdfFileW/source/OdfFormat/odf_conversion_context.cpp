@@ -13,7 +13,7 @@ namespace odf {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-odf_conversion_context::odf_conversion_context(package::odf_document * outputDocument) : style_context_(*this),drawing_context_(&style_context_, this)
+odf_conversion_context::odf_conversion_context(package::odf_document * outputDocument) : style_context_(*this)
 { 
 	output_document_ = outputDocument;
 }
@@ -70,6 +70,8 @@ void odf_conversion_context::end_document()
 	{
 		object_files->set_content(content_root_);
 		object_files->set_styles(content_style_);
+		object_files->set_media(mediaitems_);
+		object_files->set_pictures(mediaitems_);
 
 
 		output_document_->add_object(package::element_ptr(object_files ),true);

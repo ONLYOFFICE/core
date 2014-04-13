@@ -105,13 +105,17 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		convert(oox_sheet->m_oSheetFormatPr.GetPointer());
 	if (oox_sheet->m_oSheetPr.IsInit())
 		convert(oox_sheet->m_oSheetPr.GetPointer());
-
-	//гиперлинки ..заранее . 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Предобработка
+	//гиперлинки 
 	for (long hyp = 0; oox_sheet->m_oHyperlinks.IsInit() && hyp < oox_sheet->m_oHyperlinks->m_arrItems.GetSize(); hyp++)
 	{
 		convert(oox_sheet->m_oHyperlinks->m_arrItems[hyp],oox_sheet);
 	}	
-	
+	//комментарии
+	//автофильтры
+	//todooo для оптимизации - перенести мержи в начало
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	//колонки
 	ods_context->start_columns();
 		for (long col = 0 ; oox_sheet->m_oCols.IsInit() && col < oox_sheet->m_oCols->m_arrItems.GetSize(); col++)
@@ -134,8 +138,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		if (oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.IsInit())
 			ods_context->add_merge_cells(string2std_string(oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.get()));
 	}
-	//рисование
-
+	//рисование - делаем ВСЕГДА привязку с таблице(странице) ... так проще 
 	if (oox_sheet->m_oDrawing.IsInit() && oox_sheet->m_oDrawing->m_oId.IsInit())
 	{
 		smart_ptr<OOX::File> oFile = oox_sheet->Find(oox_sheet->m_oDrawing->m_oId->GetValue());
@@ -146,16 +149,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 			convert(pDrawing);
 		}
 	}
-	//for (long dr =0; oox_sheet->m_oDrawing.IsInit() && dr < oox_sheet->m_oDrawing->m_arrItems.GetSize(); dr++)
-	//{
-	//	convert(oox_sheet->m_oDrawing->m_arrItems[dr]);
-	//}
-
-
-	//комментарии
-	//m_mapComments
-
-	//m_oAutofilter
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CHyperlink *oox_hyperlink,OOX::Spreadsheet::CWorksheet *oox_sheet)
@@ -500,7 +493,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 				{			
 					width =  oox_sheet_format_pr->m_oDefaultColWidth->GetValue();
 				}
-		column_properties->style_table_column_properties_attlist_.style_column_width_ = odf::length(width/4.35,odf::length::cm);
+				ods_context->current_table().defaut_column_width_ = 6*width;//pt
+				column_properties->style_table_column_properties_attlist_.style_column_width_ = odf::length(width/4.35,odf::length::cm);
 			}
 		}
 		ods_context->styles_context().add_default(ods_context->styles_context().last_state());
@@ -517,6 +511,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 				if (oox_sheet_format_pr->m_oDefaultRowHeight.IsInit())
 				{
 					double height = oox_sheet_format_pr->m_oDefaultRowHeight->GetValue();
+
+					ods_context->current_table().defaut_row_height_ = height;//pt
 					row_properties->style_table_row_properties_attlist_.style_row_height_ = odf::length(height/32.,odf::length::cm);
 				}
 				row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = true; //???? не знаю cтоит ли 
@@ -952,16 +948,21 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 {
-	ods_context->drawing_context().start_drawing();
-	//SimpleTypes::Spreadsheet::CCellAnchorType<>		m_oAnchorType;
-	std::wstring ref_from, ref_to;
-	int col_from, col_to, row_from, row_to;
 ////////////////// 
-	if (oox_anchor->m_oFrom.IsInit())
-		convert(oox_anchor->m_oFrom.GetPointer(),ref_from, col_from, row_from);
+	if (oox_anchor->m_oFrom.IsInit() || oox_anchor->m_oTo.IsInit())
+	{
+		oox_table_position from={}, to={};
+		
+		convert(oox_anchor->m_oFrom.GetPointer(), &from);	
+		convert(oox_anchor->m_oTo.GetPointer(),&to);
 
-	if (oox_anchor->m_oTo.IsInit())
-		convert(oox_anchor->m_oTo.GetPointer(),ref_to,col_to,row_to);
+		double x1=0, y1=0, x2=0, y2=0;
+		ods_context->current_table().convert_position(from, x1, y1);
+		ods_context->current_table().convert_position(to, x2, y2);
+		
+		ods_context->drawing_context().set_rect(x1, y1, x2-x1, y2-y1);
+	}
+		
 //////////////
 	if (oox_anchor->m_oPos.IsInit())
 	{
@@ -971,19 +972,30 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 	{
 	}
 //собственно
-	if (oox_anchor->m_oGraphicFrame.IsInit())
+	if (oox_anchor->m_oPicture.IsInit())//picture
 	{
+		ods_context->drawing_context().start_frame();
+			convert(oox_anchor->m_oPicture.GetPointer());
+		ods_context->drawing_context().end_frame();
+	}	
+	//else if (oox_anchor->m_oGraphicFrame.IsInit())//shape
+	//{
+	//	//m_oChartGraphic
+	//}
+	else if (oox_anchor->m_oGraphicFrame.IsInit())//chart
+	{
+		ods_context->drawing_context().start_frame();
 		//m_oChartGraphic
+		ods_context->drawing_context().end_frame();
 	}
-	if (oox_anchor->m_oPicture.IsInit())
-	{
-		convert(oox_anchor->m_oPicture.GetPointer());
-	}
+
 	if (oox_anchor->m_oXml.IsInit())
 	{
 		//m_oXml
 	}
-	ods_context->current_table().add_child_element(ods_context->drawing_context().end_drawing());
+
+	
+
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing)
@@ -993,51 +1005,27 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing)
 
 	for (long dr = 0 ; dr < oox_drawing->m_arrItems.GetSize(); dr++)
 	{
-		convert(oox_drawing->m_arrItems[dr]);
+		ods_context->start_drawing();
+			convert(oox_drawing->m_arrItems[dr]);
+		ods_context->end_drawing();
 	}
 }
 
 
-void XlsxConverter::convert(OOX::Spreadsheet::CFromTo* oox_from_to, std::wstring & odf_ref, int & col, int & row)
+void XlsxConverter::convert(OOX::Spreadsheet::CFromTo* oox_from_to, oox_table_position * pos)
 {
+	if (!oox_from_to || !pos)return;
+
+	if (oox_from_to->m_oCol.IsInit()) pos->col = oox_from_to->m_oCol->GetValue();
+	if (oox_from_to->m_oRow.IsInit()) pos->row = oox_from_to->m_oRow->GetValue();
+	if (oox_from_to->m_oRowOff.IsInit()) pos->row_off = oox_from_to->m_oRowOff->GetValue();//pt
+	if (oox_from_to->m_oColOff.IsInit()) pos->col_off = oox_from_to->m_oColOff->GetValue();//pt
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 {
 	if (!oox_picture)return;
 
-	//std::wstring name;
-	//if (oox_picture->m_oNvPicPr.IsInit())
-	//{
-	//	//OOX::Drawing::CNonVisualPictureProperties m_oCNvPicPr;
-	//	//OOX::Drawing::CNonVisualDrawingProps      m_oCNvPr;
-	//	
-	//	//потом растощить на поштучно
-	//	if(oox_picture->m_oNvPicPr->m_oCNvPr.IsInit())
-	//	{
-	//		name = string2std_string(oox_picture->m_oNvPicPr->m_oCNvPr->m_sName.get());
-	//		//nullable<CString>                               m_sDescr;
-	//		//nullable<SimpleTypes::COnOff<>>                 m_oHidden;
-	//		//nullable<SimpleTypes::CDrawingElementId<>>      m_oId;
-	//		//nullable<CString>                               m_sTitle;
-	//	}
-	//	if (oox_picture->m_oCNvPicPr.IsInit() && oox_picture->m_oCNvPicPr->m_oPicLocks.IsInit())
-	//	{
-	//		if (oox_picture->m_oCNvPicPr->m_oPicLocks->m_oNoChangeAspect.IsInit())
-	//		{
-	//		}
-	//		if (oox_picture->m_oCNvPicPr->m_oPicLocks->m_oNoCrop.IsInit())
-	//		{
-	//		}
-	//		if (oox_picture->m_oCNvPicPr->m_oPicLocks->m_oNoResize.IsInit())
-	//		{
-	//		}
-	//	}
-	//
-	//}
-	//if (oox_picture->m_oSpPr.IsInit())
-	//{
-	//}
 	CString pathImage;
 	int type = 1;
 	if (oox_picture->m_oBlipFill.IsInit())
@@ -1064,10 +1052,44 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 		}
 	}
 
-	ods_context->drawing_context().start_image(string2std_string(pathImage));
+	ods_context->start_image(string2std_string(pathImage));
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+	std::wstring name;
+	int id=0;
+	if (oox_picture->m_oNvPicPr.IsInit())
+	{
+		//OOX::Drawing::CNonVisualPictureProperties m_oCNvPicPr;
+		//OOX::Drawing::CNonVisualDrawingProps      m_oCNvPr;
+		
+		//потом растощить на поштучно
+		if(oox_picture->m_oNvPicPr->m_oCNvPr.IsInit())
+		{
+			name = string2std_string(oox_picture->m_oNvPicPr->m_oCNvPr->m_sName.get());
 
-
-	ods_context->drawing_context().end_image();
+			id = oox_picture->m_oNvPicPr->m_oCNvPr->m_oId->GetValue();
+			//nullable<CString>                               m_sDescr;
+			//nullable<SimpleTypes::COnOff<>>                 m_oHidden;
+			//nullable<CString>                               m_sTitle;
+		}
+		//if (oox_picture->m_oCNvPicPr.IsInit() && oox_picture->m_oCNvPicPr->m_oPicLocks.IsInit())
+		//{
+		//	if (oox_picture->m_oCNvPicPr->m_oPicLocks->m_oNoChangeAspect.IsInit())
+		//	{
+		//	}
+		//	if (oox_picture->m_oCNvPicPr->m_oPicLocks->m_oNoCrop.IsInit())
+		//	{
+		//	}
+		//	if (oox_picture->m_oCNvPicPr->m_oPicLocks->m_oNoResize.IsInit())
+		//	{
+		//	}
+		//}
+	
+	}
+	//if (oox_picture->m_oSpPr.IsInit())
+	//{
+	//}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	ods_context->end_image();
 }
 
 } // namespace Docx2Odt

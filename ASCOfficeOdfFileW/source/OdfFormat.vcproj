@@ -963,14 +963,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\OdfFormat\ods_drawing_context.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OdfFormat\ods_drawing_context.h"
-				>
-			</File>
-			<File
 				RelativePath=".\OdfFormat\ods_table_context.cpp"
 				>
 			</File>

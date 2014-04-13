@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-//
+
 //#include "ods_drawing_context.h"
 //#include "ods_comments_context.h"
 //#include "ods_hyperlinks.h"
@@ -19,26 +19,19 @@ class odf_conversion_context;
 class odf_style_context;
 class paragraph;
 
-struct odf_drawing_state
-{
-	office_element_ptr	elm;
-	std::wstring		style_name;
-
-	office_element_ptr	style_elm;
-
-	int level;
-};
-
-class odf_drawing_context: boost::noncopyable
+class odf_drawing_context
 {
 public:
-	odf_drawing_context(odf_style_context * styles_context_,odf_conversion_context *odf_context);
+	odf_drawing_context(odf_conversion_context *odf_context);
     ~odf_drawing_context();
-public:
+
 	void set_styles_context(odf_style_context*  styles_context);//для embedded 
     
 	void start_drawing();
 	void end_drawing();
+	
+	void start_frame();
+	void end_frame();
 	
 	void start_image(std::wstring & path);
 	void end_image();
@@ -46,13 +39,19 @@ public:
 	void start_element(office_element_ptr & elm);
     void end_element();
 
-	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней наследования
+	office_element_ptr & get_current_element();
 
-	std::vector<odf_drawing_state> drawing_elements_list_;//все элементы
+	void set_rect(double x_pt, double y_pt, double width_pt, double height_pt);
+
+	bool is_exist_content();
+
+	void finalize(office_element_ptr & root_elm);
+
 private:
 
-	odf_style_context * styles_context_;
-	odf_conversion_context *odf_context_;
+    class Impl;
+    _CP_PTR(Impl) impl_;
+
 };
 
 }

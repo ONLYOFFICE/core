@@ -26,9 +26,6 @@ public:
 	static const ElementType type = typeDrawShape;
 	static const xml::NodeType xml_type = xml::typeElement;
 
-	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-	virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
-
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element);
 
@@ -121,8 +118,6 @@ CP_REGISTER_OFFICE_ELEMENT2(draw_circle);
 class draw_line_attlist
 {
 public:
- 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
- 
 	_CP_OPT(length) svg_x1_;
     _CP_OPT(length) svg_y1_;
 

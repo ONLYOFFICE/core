@@ -87,14 +87,12 @@ std::wstring convert_time(std::wstring & oox_time)
 
 ///////////////////////////////////////////////////////////////
 
-ods_table_state::ods_table_state(ods_conversion_context & Context, office_element_ptr & elm): context_(Context)
+ods_table_state::ods_table_state(ods_conversion_context & Context, office_element_ptr & elm): context_(Context),drawing_context_(&Context)
 {     
 	office_table_ = elm; 
 
 	current_table_row_ =0;
 	current_table_column_ =0;
-
-	current_column_level_ = 1;
 
 	current_level_.push_back(office_table_);
 
@@ -102,6 +100,10 @@ ods_table_state::ods_table_state(ods_conversion_context & Context, office_elemen
 
 	dimension_columns = 1024;
 	dimension_row = 1024;
+
+
+	defaut_row_height_ = 9;//
+	defaut_column_width_ = 28.34467120181406 * 1.674;// 
 
 }
 
@@ -168,7 +170,7 @@ void ods_table_state::add_column(office_element_ptr & elm, int repeated,office_e
 	odf::style* style = dynamic_cast<odf::style*>(style_elm.get());
 	if (style)style_name = style->style_name_;
 
-	ods_element_state state = {elm, repeated,style_name, style_elm, current_column_level_};
+	ods_element_state state = {elm, repeated,style_name, style_elm, defaut_column_width_ , current_level_.size()};
   
 	if (repeated > 10000)repeated = 1024;//????
 
@@ -200,6 +202,8 @@ void ods_table_state::set_column_width(int width)//cm, pt ???
 	style_table_column_properties * column_properties = style->style_content_.get_style_table_column_properties();
  	if (column_properties == NULL)return; //error ????
 
+	columns_.back().size = width; //pt
+
 	column_properties->style_table_column_properties_attlist_.style_column_width_ = length(width/4.35,length::cm);
 }
 void ods_table_state::set_column_optimal_width(bool val)
@@ -218,8 +222,8 @@ void ods_table_state::set_table_dimension(int col, int row)
 {
 	if (col<1 || row <1 )return;
 
-	dimension_columns = col +1;
-	dimension_row = row+1;
+	if (dimension_columns < col)	dimension_columns = col +1;
+	if (dimension_row < row)		dimension_row = row+1;
 }
 
 void ods_table_state::add_row(office_element_ptr & elm, int repeated,office_element_ptr & style_elm)
@@ -234,7 +238,7 @@ void ods_table_state::add_row(office_element_ptr & elm, int repeated,office_elem
 	odf::style* style = dynamic_cast<odf::style*>(style_elm.get());
 	if (style)style_name = style->style_name_;
 
-	ods_element_state state = {elm, repeated,style_name, style_elm};
+	ods_element_state state = {elm, repeated,style_name, style_elm, defaut_row_height_ , current_level_.size()};
   
     rows_.push_back(state);
 
@@ -272,6 +276,8 @@ void ods_table_state::set_row_height(double height)
 
 	style_table_row_properties * row_properties = style->style_content_.get_style_table_row_properties();
  	if (row_properties == NULL)return; //error ????
+
+	rows_.back().size = height;//pt
 
 	row_properties->style_table_row_properties_attlist_.style_row_height_ = length(height/22.85,length::cm);
 
@@ -478,10 +484,51 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 	cell->table_table_cell_attlist_.table_formula_ = odfFormula;
 }
 
+
 void ods_table_state::add_child_element(office_element_ptr & child_element)
 {
 	office_table_->add_child_element(child_element);
 }
+
+void ods_table_state::convert_position(oox_table_position & oox_pos, double & x, double & y)//c 0 отсчет
+{
+	double sz_col=0;
+	int curr_col = 1,i;
+	for (i=0; i< columns_.size(); i++)
+	{
+		if (oox_pos.col > columns_[i].repeated - curr_col)
+		{
+			sz_col += (columns_[i].repeated ) * columns_[i].size;
+		}
+		else
+		{
+			sz_col += (oox_pos.col + 1 - curr_col ) * columns_[i].size;
+			break;
+		}
+		curr_col += columns_[i].repeated;
+	}
+
+	x= sz_col + oox_pos.col_off;
+
+	double sz_row=0;
+	int curr_row = 1;
+	for (i=0; i< rows_.size(); i++)
+	{
+		if (oox_pos.row > rows_[i].repeated - curr_row)
+		{
+			sz_row += (rows_[i].repeated ) * rows_[i].size;
+		}
+		else
+		{
+			sz_row += (oox_pos.row - curr_row +1) * rows_[i].size;
+			break;
+		}
+		curr_row += rows_[i].repeated;
+	}
+
+	y= sz_row + oox_pos.row_off;
+}
+
 
 void ods_table_state::set_cell_text(odf_text_context* text_context)
 {

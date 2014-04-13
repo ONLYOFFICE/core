@@ -236,36 +236,36 @@ void draw_path::serialize(std::wostream & _Wostream)
 }
 void draw_path::reset_svg_path()//todooo наоборот
 {
-	if (draw_path_attlist_.svg_d_)
-	{
-		std::vector<svg_path::_polyline> o_Polyline_pt;
-		std::vector<svg_path::_polyline> o_Polyline_cm;
-	
-		bool res = svg_path::createSvgD(o_Polyline_cm,draw_path_attlist_.svg_d_.get(),false);
-		
-		BOOST_FOREACH(svg_path::_polyline  & poly, o_Polyline_cm)
-		{
-			for (long i=0;i<poly.points.size();i++)
-			{
-				if (poly.points[i].x)
-				{
-					poly.points[i].x =  length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu); 
-				}
-				if (poly.points[i].y)
-				{
-					poly.points[i].y = length(poly.points[i].y.get()/1000.,length::cm).get_value_unit(length::emu); 
-				}
-			}
-			o_Polyline_pt.push_back(poly);
-		}
-		if (o_Polyline_pt.size()>0)
-		{
-			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
-			std::wstringstream output_;   
-			svg_path::oox_serialize(output_, o_Polyline_pt);
-			additional_.push_back(odf::_property(L"custom_path",output_.str()));
-		}
-	}
+	//if (draw_path_attlist_.svg_d_)
+	//{
+	//	std::vector<svg_path::_polyline> o_Polyline_pt;
+	//	std::vector<svg_path::_polyline> o_Polyline_cm;
+	//
+	//	bool res = svg_path::createSvgD(o_Polyline_cm,draw_path_attlist_.svg_d_.get(),false);
+	//	
+	//	BOOST_FOREACH(svg_path::_polyline  & poly, o_Polyline_cm)
+	//	{
+	//		for (long i=0;i<poly.points.size();i++)
+	//		{
+	//			if (poly.points[i].x)
+	//			{
+	//				poly.points[i].x =  length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu); 
+	//			}
+	//			if (poly.points[i].y)
+	//			{
+	//				poly.points[i].y = length(poly.points[i].y.get()/1000.,length::cm).get_value_unit(length::emu); 
+	//			}
+	//		}
+	//		o_Polyline_pt.push_back(poly);
+	//	}
+	//	if (o_Polyline_pt.size()>0)
+	//	{
+	//		//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
+	//		std::wstringstream output_;   
+	//		//svg_path::oox_serialize(output_, o_Polyline_pt);
+	//		additional_.push_back(odf::_property(L"custom_path",output_.str()));
+	//	}
+	//}
 }
 ///////////////////////////////////////
 void draw_polygon_attlist::serialize(CP_ATTR_NODE)
@@ -297,36 +297,36 @@ void draw_polygon::serialize(std::wostream & _Wostream)
 }
 void draw_polygon::reset_polygon_path()
 {
-	if (draw_polygon_attlist_.draw_points_)
-	{
-		std::vector<svg_path::_polyline> o_Polyline_pt;
-		std::vector<svg_path::_polyline> o_Polyline_cm;
+	//if (draw_polygon_attlist_.draw_points_)
+	//{
+	//	std::vector<svg_path::_polyline> o_Polyline_pt;
+	//	std::vector<svg_path::_polyline> o_Polyline_cm;
 
-		bool res = svg_path::createPolygon(o_Polyline_cm,draw_polygon_attlist_.draw_points_.get(),false);
-		
-		BOOST_FOREACH(svg_path::_polyline  & poly, o_Polyline_cm)
-		{
-			for (long i=0;i<poly.points.size();i++)
-			{
-				if (poly.points[i].x)
-				{
-					poly.points[i].x =  length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu); 
-				}
-				if (poly.points[i].y)
-				{
-					poly.points[i].y = length(poly.points[i].y.get()/1000.,length::cm).get_value_unit(length::emu); 
-				}
-			}
-			o_Polyline_pt.push_back(poly);
-		}
-		if (o_Polyline_pt.size()>0)
-		{
-			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
-			std::wstringstream output_;   
-			svg_path::oox_serialize(output_, o_Polyline_pt);
-			additional_.push_back(odf::_property(L"custom_path",output_.str()));
-		}
-	}
+	//	bool res = svg_path::createPolygon(o_Polyline_cm,draw_polygon_attlist_.draw_points_.get(),false);
+	//	
+	//	BOOST_FOREACH(svg_path::_polyline  & poly, o_Polyline_cm)
+	//	{
+	//		for (long i=0;i<poly.points.size();i++)
+	//		{
+	//			if (poly.points[i].x)
+	//			{
+	//				poly.points[i].x =  length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu); 
+	//			}
+	//			if (poly.points[i].y)
+	//			{
+	//				poly.points[i].y = length(poly.points[i].y.get()/1000.,length::cm).get_value_unit(length::emu); 
+	//			}
+	//		}
+	//		o_Polyline_pt.push_back(poly);
+	//	}
+	//	if (o_Polyline_pt.size()>0)
+	//	{
+	//		//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
+	//		std::wstringstream output_;   
+	//		svg_path::oox_serialize(output_, o_Polyline_pt);
+	//		additional_.push_back(odf::_property(L"custom_path",output_.str()));
+	//	}
+	//}
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void draw_equation_attlist::serialize(CP_ATTR_NODE)
@@ -438,6 +438,24 @@ void draw_enhanced_geometry::create_child_element( const ::std::wstring & Ns, co
     }
 
 }
+void draw_enhanced_geometry::add_child_element(office_element_ptr & child_element)
+{
+ 	ElementType type = child_element->get_type();
+
+    if (type == typeDrawHandle)
+	{
+		draw_handle_.push_back(child_element);
+	}
+	else if (type == typeDrawEquation)
+	{
+		draw_equation_.push_back(child_element);
+	}
+    else
+    {
+        //not_applicable_element(L"draw_enhanced_geometry", Reader, Ns, Name);
+    }
+
+}
 void draw_enhanced_geometry::find_draw_type_odf(std::wstring & oox_type)
 {
 	for (long i=0; i<_OO_OOX_custom_shapes_count;i++)
@@ -542,40 +560,40 @@ void draw_connector::serialize(std::wostream & _Wostream)
 }
 void draw_connector::reset_svg_path()
 {
-	if (draw_connector_attlist_.svg_d_)
-	{
-		std::vector<svg_path::_polyline> o_Polyline_pt;
-		std::vector<svg_path::_polyline> o_Polyline_cm;
-	
-		bool res = svg_path::createSvgD(o_Polyline_cm,draw_connector_attlist_.svg_d_.get(),false);
-	
-		double x1=common_draw_attlists_.position_.svg_x_.get_value_or(length(0)).get_value_unit(length::emu);
-		double y1=common_draw_attlists_.position_.svg_y_.get_value_or(length(0)).get_value_unit(length::emu);
-		
-		BOOST_FOREACH(svg_path::_polyline  & poly, o_Polyline_cm)
-		{
-			for (long i=0;i<poly.points.size();i++)
-			{
-				if (poly.points[i].x)
-				{
-					poly.points[i].x =  length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu)-x1; 
-				}
-				if (poly.points[i].y)
-				{
-					poly.points[i].y = length(poly.points[i].y.get()/1000.,length::cm).get_value_unit(length::emu)-y1; 
-				}
-			}
-			o_Polyline_pt.push_back(poly);
-		}
-		if (o_Polyline_pt.size()>0)
-		{
-			sub_type_ = 6;
-			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
-			std::wstringstream output_;   
-			svg_path::oox_serialize(output_, o_Polyline_pt);
-			additional_.push_back(odf::_property(L"custom_path",output_.str()));
-		}
-	}
+	//if (draw_connector_attlist_.svg_d_)
+	//{
+	//	std::vector<svg_path::_polyline> o_Polyline_pt;
+	//	std::vector<svg_path::_polyline> o_Polyline_cm;
+	//
+	//	bool res = svg_path::createSvgD(o_Polyline_cm,draw_connector_attlist_.svg_d_.get(),false);
+	//
+	//	double x1=common_draw_attlists_.position_.svg_x_.get_value_or(length(0)).get_value_unit(length::emu);
+	//	double y1=common_draw_attlists_.position_.svg_y_.get_value_or(length(0)).get_value_unit(length::emu);
+	//	
+	//	BOOST_FOREACH(svg_path::_polyline  & poly, o_Polyline_cm)
+	//	{
+	//		for (long i=0;i<poly.points.size();i++)
+	//		{
+	//			if (poly.points[i].x)
+	//			{
+	//				poly.points[i].x =  length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu)-x1; 
+	//			}
+	//			if (poly.points[i].y)
+	//			{
+	//				poly.points[i].y = length(poly.points[i].y.get()/1000.,length::cm).get_value_unit(length::emu)-y1; 
+	//			}
+	//		}
+	//		o_Polyline_pt.push_back(poly);
+	//	}
+	//	if (o_Polyline_pt.size()>0)
+	//	{
+	//		sub_type_ = 6;
+	//		//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
+	//		std::wstringstream output_;   
+	//		svg_path::oox_serialize(output_, o_Polyline_pt);
+	//		additional_.push_back(odf::_property(L"custom_path",output_.str()));
+	//	}
+	//}
 }
 ///////////////////////////////////////
 

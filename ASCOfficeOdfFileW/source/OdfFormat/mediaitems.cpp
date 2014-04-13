@@ -18,13 +18,13 @@ namespace odf {
 
 using boost::filesystem::wpath;
 
-mediaitems::item::item(	std::wstring const & _href,
+mediaitems::item::item(	std::wstring const & _oox_ref,
                        Type _type,
-                       std::wstring const & _outputName
+                       std::wstring const & _odf_ref
 					   )
-                       : href(_href),
+                       : oox_ref(_oox_ref),
                        type(_type),
-                       outputName(_outputName)
+                       odf_ref(_odf_ref)
 {    
 
 }
@@ -32,68 +32,55 @@ mediaitems::item::item(	std::wstring const & _href,
 
 namespace fs = boost::filesystem;
 
-void mediaitems::add_or_find(const std::wstring & href, Type type,  std::wstring & ref)
+void mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wstring & odf_ref)
 {
-	std::wstring sub_path;//
-	std::wstring inputFileName;
+	std::wstring output_sub_path;//
+	std::wstring output_fileName;
 	int number=0;
 	
 	if (type == typeImage)
 	{
-		sub_path = L"Pictures/";
+		output_sub_path = L"Pictures/";
 		number= count_image+1;
 	}
 	else
 	{
-		sub_path = L"Media/";
+		output_sub_path = L"Media/";
 		number= count_media+1;
 	}
 
 	
-	inputFileName = utils::media::create_file_name(href, type, number);//guid???
+	output_fileName = utils::media::create_file_name(oox_ref, type, number);//guid???
 	
-    std::wstring inputPath =  BOOST_STRING_PATH(wpath(oox_packet_) / href);
-	std::wstring outputPath ;
+	std::wstring input_path = oox_ref;
+	boost::to_lower(input_path);
+	std::wstring output_path ;
 
 	std::wstring id;
     BOOST_FOREACH(item const & elm, items_)
     {
-		if (elm.href == inputPath)
+		if (elm.oox_ref == input_path)
 		{
-			outputPath  = elm.outputName;
+			output_path  = elm.odf_ref;
 			break;
 		}
 	}
-	if (outputPath .length() < 1)
+	if (output_path .length() < 1)
 	{
-		outputPath = ( sub_path + inputFileName) ;
+		output_path = ( output_sub_path + output_fileName) ;
 		if ( type == typeImage)
 		{
-			fs::wpath file_name  = fs::wpath(inputPath);
-			if (file_name.extension() == L".svm" || file_name.extension().empty())
-			{
-				outputPath = outputPath + L".png"; 
-			}
+			//fs::wpath file_name  = fs::wpath(inputPath);
 			count_image++;
 		}
+		else
+			count_media++;
+
 		
-		items_.push_back( item(inputPath, type, xml::utils::replace_text_to_xml(outputPath)) );
+		items_.push_back( item(input_path, type, xml::utils::replace_text_to_xml(output_path)) );
 	}
 
-  	ref = outputPath;
-}
-
-void mediaitems::dump_rels(rels & Rels)
-{
-    size_t i = 0;
-    BOOST_FOREACH(item & elm, items_)
-    {
-        Rels.add( relationship(
-                utils::media::get_rel_type(elm.type), 
-                elm.outputName)
-                );
-
-    }        
+	odf_ref = output_path;
 }
 
 

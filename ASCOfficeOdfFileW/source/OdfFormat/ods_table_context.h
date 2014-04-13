@@ -5,6 +5,8 @@
 
 
 namespace cpdoccore {
+
+
 namespace odf {
 
 class ods_conversion_context;

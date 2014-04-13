@@ -6,8 +6,10 @@
 //#include "ods_row_spanned.h"
 //#include "ods_merge_cells.h"
 //#include "ods_table_metrics.h"
-//#include "ods_drawing_context.h"
+
 //#include "ods_comments_context.h"
+#include "odf_drawing_context.h"
+
 
 #include "office_elements.h"
 #include "office_elements_create.h"
@@ -15,6 +17,15 @@
 #include "officevaluetype.h"
 
 namespace cpdoccore {
+
+struct oox_table_position
+{
+    int col;    
+    double col_off;
+    int row;
+    double row_off;
+};
+
 namespace odf {
 
 class ods_conversion_context;
@@ -31,6 +42,8 @@ struct ods_element_state
 	int repeated;
 	std::wstring style_name;
 	office_element_ptr style_elm;
+
+	double size;
 
 	int level;
 };
@@ -86,7 +99,7 @@ public:
 	void set_cell_value(std::wstring & value);	
 	void set_cell_text(odf_text_context *text_context);
 	void set_cell_formula(std::wstring &formula);
-
+	
 	void add_child_element(office_element_ptr & child_element);
 
 ///////////////////////////////
@@ -107,9 +120,16 @@ public:
 
 	int dimension_columns;
 	int dimension_row;
+
+	double defaut_column_width_;
+	double defaut_row_height_;
+
+	void convert_position(oox_table_position & oox_pos, double & x, double & y);
+
+	odf_drawing_context&	drawing_context(){return  drawing_context_;}
+
  //   
  //   xlsx_table_metrics & get_table_metrics() { return xlsx_table_metrics_; }
- //   xlsx_drawing_context & get_drawing_context() { return xlsx_drawing_context_; }
  //   xlsx_comments_context & get_comments_context() { return xlsx_comments_context_; }
 
  //   void table_column_last_width(double w) { table_column_last_width_ = w; }
@@ -127,8 +147,6 @@ private:
 	int current_table_column_;
 	int current_table_row_;
 
-	int current_column_level_;
-
 	std::vector<ods_element_state> columns_;
 	std::vector<ods_element_state> rows_;
 	
@@ -137,9 +155,10 @@ private:
 	std::vector<ods_cell_state> cells_;
 	std::vector<ods_hyperlink_state> hyperlinks_;
 
+	odf_drawing_context		drawing_context_;	
+
  //   xlsx_merge_cells		merge_cells_; 
  //   xlsx_table_metrics	xlsx_table_metrics_;
- //   xlsx_drawing_context	xlsx_drawing_context_;
  //   xlsx_comments_context xlsx_comments_context_;
  //   xlsx_hyperlinks		xlsx_hyperlinks_;
 

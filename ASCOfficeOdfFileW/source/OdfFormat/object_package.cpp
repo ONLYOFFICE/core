@@ -155,7 +155,7 @@ namespace odf
 
 		void media::write(const std::wstring & RootPath)
 		{
-			if (mediaitems_.count_media )return;
+			if (mediaitems_.count_media < 1)return;
 
 			fs::wpath path = fs::wpath(RootPath) / L"media";
 			fs::create_directory(path);
@@ -164,10 +164,10 @@ namespace odf
 			{
 				if (item.type == mediaitems::typeAudio || item.type == mediaitems::typeVideo)
 				{
-					fs::wpath file_name  = fs::wpath(item.href);
-					fs::wpath file_name_out = fs::wpath(RootPath) / item.outputName;
+					fs::wpath file_name  = fs::wpath(item.oox_ref);
+					fs::wpath file_name_out = fs::wpath(RootPath) / item.odf_ref;
 
-					boost::filesystem::copy_file(item.href, file_name_out);
+					boost::filesystem::copy_file(file_name, file_name_out);
 				}
 			}
 
@@ -180,7 +180,7 @@ namespace odf
 
 		void pictures::write(const std::wstring & RootPath)//folder by content.xml
 		{
-			if (mediaitems_.count_image )return;
+			if (mediaitems_.count_image < 1 )return;
 
 			fs::wpath path = fs::wpath(RootPath) / L"Pictures";
 			fs::create_directory(path);
@@ -189,10 +189,10 @@ namespace odf
 			{
 				if (item.type == mediaitems::typeImage )
 				{
-					fs::wpath file_name  = fs::wpath(item.href);
-					fs::wpath file_name_out = fs::wpath(RootPath) / item.outputName;
+					fs::wpath file_name  = fs::wpath(item.oox_ref);
+					fs::wpath file_name_out = fs::wpath(RootPath) / item.odf_ref;
 
-					boost::filesystem::copy_file(item.href, file_name_out);
+					boost::filesystem::copy_file(file_name, file_name_out);
 				}
 			}
 

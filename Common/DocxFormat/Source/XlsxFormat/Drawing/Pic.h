@@ -10,6 +10,136 @@ namespace OOX
 
 	namespace Spreadsheet
 	{
+		//--------------------------------------------------------------------------------
+		// Non-Visual Properties for a Picture  20.5.2.22
+		//--------------------------------------------------------------------------------	
+		class CNonVisualDrawingProps : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CNonVisualDrawingProps)
+			CNonVisualDrawingProps()
+			{
+			}
+			virtual ~CNonVisualDrawingProps()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+
+					//if ( _T("xdr:cNvPicPr") == sName )
+					//	m_oCNvPicPr = oReader;
+					//else if ( _T("xdr:cNvPr") == sName )
+					//	m_oCNvPr = oReader;
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_NonVisualDrawingProps;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("descr"),  m_sDescr )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("hidden"), m_oHidden )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("id"),     m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("name"),   m_sName )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("title"),  m_sTitle )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			EElementType      m_eType;
+			// Attributes
+			nullable<CString>                               m_sDescr;
+			nullable<SimpleTypes::COnOff<>>                 m_oHidden;
+			nullable<SimpleTypes::CDrawingElementId<>>      m_oId;
+			nullable<CString>                               m_sName;
+			nullable<CString>                               m_sTitle;
+
+			// Childs
+			//nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
+			//nullable<OOX::Drawing::CHyperlink             > m_oHlinkClick;
+			//nullable<OOX::Drawing::CHyperlink             > m_oHlinkHover;
+		};
+		//--------------------------------------------------------------------------------
+		// Non-Visual Picture Drawing Properties 20.5.2.5
+		//--------------------------------------------------------------------------------	
+		class CPictureNonVisual : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CPictureNonVisual)
+			CPictureNonVisual()
+			{
+			}
+			virtual ~CPictureNonVisual()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+
+/*					if ( _T("xdr:cNvPicPr") == sName )
+						m_oCNvPicPr = oReader;
+					else */if ( _T("xdr:cNvPr") == sName )
+						m_oCNvPr = oReader;
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_PictureNonVisual;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			EElementType      m_eType;
+			// Childs
+			//nullable<CNonVisualPictureProperties> m_oCNvPicPr;
+			nullable<CNonVisualDrawingProps>      m_oCNvPr;
+		};
+
 		class CBlipFill : public WritingElement
 		{
 		public:
@@ -114,8 +244,8 @@ namespace OOX
 
 					if ( _T("xdr:blipFill") == sName )
 						m_oBlipFill = oReader;
-					//if ( _T("xdr:nvPicPr") == sName )
-					//	m_oBlipFill = oReader;
+					if ( _T("xdr:nvPicPr") == sName )
+						m_oNvPicPr = oReader;
 					//if ( _T("xdr:spPr") == sName )
 					//	m_oBlipFill = oReader;
 				}
@@ -131,9 +261,9 @@ namespace OOX
 			{
 			}
 		public:
-			nullable<CBlipFill>		m_oBlipFill;
-			//CNonVisualPictureProperties m_oCNvPicPr;
-			//CNonVisualDrawingProps      m_oCSpPr;
+			nullable<CBlipFill>						m_oBlipFill;
+			nullable<CPictureNonVisual>				m_oNvPicPr;
+			//nullable<CNonVisualDrawingProps>		m_oCSpPr;
 		};
 	} //Spreadsheet
 } // namespace OOX

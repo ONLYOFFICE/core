@@ -44,7 +44,15 @@ public:
 /////////////////////////////////////////////////////
 	void start_text_context();
 	void end_text_context();
+
+	odf_drawing_context&	drawing_context(){return current_table().drawing_context();}
 	
+	void start_drawing(){drawing_context().start_drawing();}
+	void end_drawing(){drawing_context().end_drawing();}
+
+	void start_image(std::wstring & image_file_name);
+	void end_image(){drawing_context().end_image();}
+
 private:
 	ods_table_context			table_context_;
 	

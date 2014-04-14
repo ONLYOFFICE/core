@@ -342,49 +342,6 @@
     <Compile Include="Editor\MergeCells.cs" />
     <Compile Include="Editor\NumberFormat\NumberFormatParser.cs" />
     <Compile Include="Editor\NumberFormat\NumberFormatsStorage.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\AbstractConverter.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\AbstractPostProcessor.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\ConversionOptions.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\ConversionReport.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\CSharpEval.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\EmbeddedResourceResolver.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\EncryptedDocumentException.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\Matrix.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\NotAnOdfDocumentException.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\NotAnOoxDocumentException.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\OdfCharactersPostProcessor.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\OdfEventArgs.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\OoxCharactersPostProcessor.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\OoxDocument.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\OoxShape.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\OoxSpacesPostProcessor.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\OoxTransform.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\SharedXmlUrlResolver.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\UriLoader.cs" />
-    <Compile Include="Editor\ODSConverter\OdfConverterLib\ZipResolver.cs" />
-    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZipArchiveWriter.cs" />
-    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZipEntryNotFoundException.cs" />
-    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZipException.cs" />
-    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZipFactory.cs" />
-    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZipLib.cs" />
-    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZipReader.cs" />
-    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZipWriter.cs" />
-    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZlibZipReader.cs" />
-    <Compile Include="Editor\ODSConverter\OdfZipUtils\ZlibZipWriter.cs" />
-    <Compile Include="Editor\ODSConverter\ODSConverter.cs" />
-    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\Converter.cs" />
-    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OdfConditionalPostProcessor.cs" />
-    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OdfSharedStringsPostProcessor.cs" />
-    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OoxCommentsPostProcessor.cs" />
-    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OoxDrawingsPostProcessor.cs" />
-    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OOXGroupsPostProcessor.cs" />
-    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OoxHeaderFooterPostProcessor.cs" />
-    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OoxMaximumCellTextPostProcessor.cs" />
-    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OoxPhysicalPathPostProcessor.cs" />
-    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OoxPivotCachePostProcessor.cs" />
-    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OoxPivotCrashHandlingPostProcessor.cs" />
-    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\OOXStyleCellPostProcessor.cs" />
-    <Compile Include="Editor\ODSConverter\SpreadsheetConverter\XlsxDocument.cs" />
     <Compile Include="Editor\OOX\ContentTypes.cs" />
     <Compile Include="Editor\OOX\WorkbookFile.cs" />
     <Compile Include="Editor\OOX\Relationships.cs" />
@@ -467,77 +424,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <EmbeddedResource Include="Editor\ODSConverter\OdfConverterLib\resources\odf2oox\dummy.dtd" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\border.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\cell.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\change_tracking.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\chart.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\comments.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\common.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\conditional.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\connections.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\contentTypes.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\data_consolidation.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\date.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\drawing.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\gradient.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\merge_cell.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\number.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\odf2oox-compute-size.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\odf2oox.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\ole_objects.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\package_relationships.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\page.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\part_relationships.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\pivotTable.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\pixel-measure.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\scenario.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\sharedStrings.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\sortFilter.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\source.xml" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\styles.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\validation.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\workbook.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\odf2oox\worksheets.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\border.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\change_tracking.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\chart.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\common.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\conditional.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\connections.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\content.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\database-ranges.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\date_time.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\elements.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\Gradient.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\groups.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\headers.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\insert_cols.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\insert_text.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\merge_cell.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\note.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\number.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\ole_objects.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\oox2odf-compute-size.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\oox2odf.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\picture.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\pivot_tables.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\relationships.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\scenario.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\settings.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\source.xml" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\styles.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\table_body.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\SpreadsheetConverter\resources\oox2odf\validation.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\OdfConverterLib\resources\odf2oox\common-meta.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\OdfConverterLib\resources\odf2oox\measures.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\OdfConverterLib\resources\odf2oox\utils.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\OdfConverterLib\resources\oox2odf\common-meta.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\OdfConverterLib\resources\oox2odf\measures.xsl" />
-    <EmbeddedResource Include="Editor\ODSConverter\OdfConverterLib\resources\oox2odf\utils.xsl" />
-    <Content Include="Editor\ODSConverter\OdfConverterLib\resources\source.xml" />
     <None Include="ExcelDefaultFiles\TableStyleDark1.xml" />
     <None Include="ExcelDefaultFiles\TableStyleDark2.xml" />
     <None Include="ExcelDefaultFiles\TableStyleDark3.xml" />
@@ -625,6 +513,7 @@
     <EmbeddedResource Include="ResourceExcelDefaultStyles.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ResourceExcelDefaultStyles.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -654,6 +543,14 @@
     </COMReference>
     <COMReference Include="ASCOfficeFile">
       <Guid>{74CBF220-BF08-11DE-8A39-0800200C9A66}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="ASCOfficeOdfFileWLib">
+      <Guid>{EDB084E5-EC38-47EF-B421-D5E1A71F98A6}</Guid>
       <VersionMajor>1</VersionMajor>
       <VersionMinor>0</VersionMinor>
       <Lcid>0</Lcid>

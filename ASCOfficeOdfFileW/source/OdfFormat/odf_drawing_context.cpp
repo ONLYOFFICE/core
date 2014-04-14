@@ -48,6 +48,10 @@ struct odf_drawing_state
 
 		name_ = L"";
 		z_order_ = -1;
+		
+		rotateAngle = boost::none;
+		flipH = false;
+		flipV = false;		
 	}
 	std::vector<odf_element_state> elements_;
 
@@ -58,6 +62,10 @@ struct odf_drawing_state
 
 	std::wstring name_;
 	int z_order_;
+
+	bool flipH;
+	bool flipV;
+	_CP_OPT(double) rotateAngle;
 };
 
 class odf_drawing_context::Impl
@@ -113,10 +121,6 @@ void odf_drawing_context::start_frame()
 	if (style_)
 	{
 		style_name = style_->style_name_;
-		style_graphic_properties * gr_properties = style_->style_content_.get_style_graphic_properties();
-		if (gr_properties)
-		{		
-		}
 	}
 	frame->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_ = style_ref(style_name);
 	
@@ -147,7 +151,7 @@ void odf_drawing_context::end_frame()
 {
 	end_element();
 }
-void odf_drawing_context::end_drawing()
+void odf_drawing_context::end_drawing()//убрать раздвоение.. убрать перегруз классов атрибутов
 {
 //все свойства что накапали - засунем в топовый...
 	if (impl_->current_drawing_state_.elements_.size() > 0)
@@ -159,6 +163,15 @@ void odf_drawing_context::end_drawing()
 				frame->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_name_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
 			if (impl_->current_drawing_state_.z_order_ >= 0)
 				frame->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_z_index_attlist_.draw_z_index_ = impl_->current_drawing_state_.z_order_;
+
+			std::wstring strTransform;
+			if (impl_->current_drawing_state_.rotateAngle)
+			{
+				strTransform = strTransform + std::wstring(L"rotate(") + boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.rotateAngle.get()) + std::wstring(L")");
+			}
+			if (strTransform.length()>0)
+				frame->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_transform_attlist_.draw_transform_ = strTransform;
+
 		}
 		draw_shape* shape = dynamic_cast<draw_shape*>(impl_->current_drawing_state_.elements_[0].elm.get());
 		if (shape)
@@ -167,8 +180,31 @@ void odf_drawing_context::end_drawing()
 				shape->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_name_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
 			if (impl_->current_drawing_state_.z_order_ >= 0)
 				shape->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_z_index_attlist_.draw_z_index_ = impl_->current_drawing_state_.z_order_;
+			
+			std::wstring strTransform;
+			if (impl_->current_drawing_state_.rotateAngle!=0)
+			{
+				strTransform = strTransform + std::wstring(L"rotate(") + boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.rotateAngle.get()) + std::wstring(L")");
+			}
+			if (strTransform.length()>0)
+				frame->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_transform_attlist_.draw_transform_ = strTransform;
 		}
+		
+		style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_[0].style_elm.get());
+		if (style_)
+		{
+			style_graphic_properties * gr_properties = style_->style_content_.get_style_graphic_properties();
+			if (gr_properties)
+			{		
+				if (impl_->current_drawing_state_.flipH)
+					gr_properties->content().style_mirror_ = std::wstring(L"horizontal");
+				if (impl_->current_drawing_state_.flipV)
+					gr_properties->content().style_mirror_ = std::wstring(L"vertical");
 
+				//fo:clip
+				//draw:image-opacity
+			}
+		}
 	}
 
 	impl_->drawing_list_.push_back(impl_->current_drawing_state_);//это для добавления frame, shape, групп???
@@ -183,6 +219,20 @@ void odf_drawing_context::set_z_order(int id)
 	impl_->current_drawing_state_.z_order_ = id;
 
 }
+void odf_drawing_context::set_flip_H(bool bVal)
+{
+	impl_->current_drawing_state_.flipH= true;
+}
+void odf_drawing_context::set_flip_V(bool bVal)
+{
+	impl_->current_drawing_state_.flipV= true;
+}
+void odf_drawing_context::set_rotate(int iVal)
+{
+	double dRotate = iVal/60000.;
+	impl_->current_drawing_state_.rotateAngle = (360 - dRotate)/180. * 3.14159265358979323846;
+}
+
 void odf_drawing_context::start_image(std::wstring & path)
 {
 	office_element_ptr image_elm;

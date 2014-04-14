@@ -50,6 +50,12 @@ public:
 ///////////////////////////////////////////////////
 	void set_name(std::wstring  name);
 	void set_z_order(int id);
+	
+	void set_flip_H(bool bVal);
+	void set_flip_V(bool bVal);
+
+	void set_rotate(int iVal);
+
 private:
 
     class Impl;

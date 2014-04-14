@@ -789,6 +789,8 @@ namespace OOX
 					m_eType = et_a_spPr;
 				else if ( _T("pic:spPr") == sName )
 					m_eType = et_pic_spPr;
+				else if ( _T("xdr:spPr") == sName )
+					m_eType = et_xdr_spPr;
 				else
 					return;
 
@@ -871,6 +873,8 @@ namespace OOX
 					sResult = _T("<a:spPr ");
 				else if ( et_pic_spPr == m_eType )
 					sResult = _T("<pic:spPr ");
+				else if ( et_xdr_spPr == m_eType )
+					sResult = _T("<xdr:spPr ");
 				else
 					return _T("");
 
@@ -970,7 +974,8 @@ namespace OOX
 					sResult += _T("</a:spPr>");
 				else if ( et_pic_spPr == m_eType )
 					sResult = _T("</pic:spPr>");
-
+				else if ( et_xdr_spPr == m_eType )
+					sResult = _T("</xdr:spPr>");
 				return sResult;
 			}
 			virtual EElementType getType() const

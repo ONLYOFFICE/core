@@ -29,7 +29,10 @@ void DocxConverter::write(const std::wstring & path)
 	output_document->write(path);
 
 }
-
+odf::odf_conversion_context* DocxConverter::odf_context()
+{
+	return NULL;//odt_context;
+}
 void DocxConverter::convert()
 {
 	if (!docx_document)return;

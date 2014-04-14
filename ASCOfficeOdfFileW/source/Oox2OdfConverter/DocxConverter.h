@@ -15,8 +15,10 @@ namespace cpdoccore
 			class odf_document;
 		}
 		class ods_conversion_context;
+		class odf_conversion_context;
 	}
 }
+using namespace cpdoccore;
 
 namespace Oox2Odf
 {
@@ -27,6 +29,8 @@ namespace Oox2Odf
 
 		virtual void convert();
 		virtual void write(const std::wstring & path);
+		
+		virtual odf::odf_conversion_context* odf_context();
 
     private:
 		OOX::CDocx								*docx_document;

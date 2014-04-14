@@ -36,6 +36,10 @@ void XlsxConverter::write(const std::wstring & path)
 	if (!output_document)return;
 	output_document->write(path);
 }
+odf::odf_conversion_context* XlsxConverter::odf_context()
+{
+	return ods_context;
+}
 
 void XlsxConverter::convert()
 {
@@ -1022,6 +1026,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFromTo* oox_from_to, oox_table_po
 	if (oox_from_to->m_oColOff.IsInit()) pos->col_off = oox_from_to->m_oColOff->GetValue();//pt
 }
 
+
 void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 {
 	if (!oox_picture)return;
@@ -1051,45 +1056,45 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 			
 		}
 	}
+	
+	ods_context->start_image(string2std_string(pathImage));
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 	std::wstring name;
 	int id=0;
 	if (oox_picture->m_oNvPicPr.IsInit())
 	{
-		//OOX::Drawing::CNonVisualPictureProperties m_oCNvPicPr;
-		//OOX::Drawing::CNonVisualDrawingProps      m_oCNvPr;
-		
-		//потом растощить на поштучно
-		if(oox_picture->m_oNvPicPr->m_oCNvPr.IsInit())
+		if (oox_picture->m_oNvPicPr->m_oCNvPr.IsInit())
 		{
-			name = string2std_string(oox_picture->m_oNvPicPr->m_oCNvPr->m_sName.get());
-			ods_context->drawing_context().set_name(name);
-			id = oox_picture->m_oNvPicPr->m_oCNvPr->m_oId->GetValue();
-			ods_context->drawing_context().set_z_order(id);
-			//nullable<CString>                               m_sDescr;
-			//nullable<SimpleTypes::COnOff<>>                 m_oHidden;
-			//nullable<CString>                               m_sTitle;
+			convert_CNvPr(oox_picture->m_oNvPicPr->m_oCNvPr.GetPointer());		
 		}
-		//if (oox_picture->m_oCNvPicPr.IsInit() && oox_picture->m_oCNvPicPr->m_oPicLocks.IsInit())
-		//{
-		//	if (oox_picture->m_oCNvPicPr->m_oPicLocks->m_oNoChangeAspect.IsInit())
-		//	{
-		//	}
-		//	if (oox_picture->m_oCNvPicPr->m_oPicLocks->m_oNoCrop.IsInit())
-		//	{
-		//	}
-		//	if (oox_picture->m_oCNvPicPr->m_oPicLocks->m_oNoResize.IsInit())
-		//	{
-		//	}
-		//}
-	
+
+		if (oox_picture->m_oNvPicPr->m_oCNvPicPr.IsInit())
+		{
+			if (oox_picture->m_oNvPicPr->m_oCNvPicPr->m_oPicLocks.IsInit())
+			{
+				//if (oox_picture->m_oNvPicPr->m_oCNvPicPr->m_oPicLocks->m_oNoChangeAspect)
+				//{
+				//}
+				//if (oox_picture->m_oNvPicPr->m_oCNvPicPr->m_oPicLocks->m_oNoCrop))
+				//{
+				//}
+				//if (oox_picture->m_oNvPicPr->m_oCNvPicPr->m_oPicLocks->m_oNoResize)
+				//{
+				//}
+			}	
+			//m_oExtLst
+		}
 	}
-	//if (oox_picture->m_oSpPr.IsInit())
-	//{
-	//}
+	if (oox_picture->m_oSpPr.IsInit())
+	{
+		convert_SpPr(oox_picture->m_oSpPr.GetPointer());
+	}
+
+	if (oox_picture->m_oShapeStyle.IsInit())
+	{
+	}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	ods_context->start_image(string2std_string(pathImage));
 	ods_context->end_image();
 }
 

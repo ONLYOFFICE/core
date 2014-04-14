@@ -92,6 +92,8 @@ namespace OOX
 				m_eType = et_p_cNvPr;
 			else if ( _T("pic:cNvPr") == sName )
 				m_eType = et_pic_cNvPr;
+			else if ( _T("xdr:cNvPr") == sName )
+				m_eType = et_xdr_cNvPr;	
 			else
 				return;
 
@@ -120,6 +122,8 @@ namespace OOX
 				sResult += _T("<p:cNvPr ");
 			else if ( et_pic_cNvPr == m_eType )
 				sResult = _T("<pic:cNvPr ");
+			else if ( et_xdr_cNvPr == m_eType )
+				sResult = _T("<xdr:cNvPr ");
 			else
 				return _T("");
 
@@ -159,7 +163,8 @@ namespace OOX
 				sResult += _T("</p:cNvPr>");
 			else if ( et_pic_cNvPr == m_eType )
 				sResult += _T("</pic:cNvPr>");
-
+			else if ( et_xdr_cNvPr == m_eType )
+				sResult += _T("</xdr:cNvPr>");
 			return sResult;
 		}
 		//--------------------------------------------------------------------------------

@@ -45,6 +45,9 @@ struct odf_drawing_state
 		svg_y_= boost::none;
 		svg_height_= boost::none;
 		svg_width_= boost::none;
+
+		name_ = L"";
+		z_order_ = -1;
 	}
 	std::vector<odf_element_state> elements_;
 
@@ -52,6 +55,9 @@ struct odf_drawing_state
 	_CP_OPT(length) svg_y_;
 	_CP_OPT(length) svg_height_;
 	_CP_OPT(length) svg_width_;	
+
+	std::wstring name_;
+	int z_order_;
 };
 
 class odf_drawing_context::Impl
@@ -143,10 +149,40 @@ void odf_drawing_context::end_frame()
 }
 void odf_drawing_context::end_drawing()
 {
+//все свойства что накапали - засунем в топовый...
+	if (impl_->current_drawing_state_.elements_.size() > 0)
+	{
+		draw_frame* frame = dynamic_cast<draw_frame*>(impl_->current_drawing_state_.elements_[0].elm.get());
+		if (frame)
+		{
+			if (impl_->current_drawing_state_.name_.length() > 0)
+				frame->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_name_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
+			if (impl_->current_drawing_state_.z_order_ >= 0)
+				frame->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_z_index_attlist_.draw_z_index_ = impl_->current_drawing_state_.z_order_;
+		}
+		draw_shape* shape = dynamic_cast<draw_shape*>(impl_->current_drawing_state_.elements_[0].elm.get());
+		if (shape)
+		{
+			if (impl_->current_drawing_state_.name_.length() > 0)
+				shape->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_name_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
+			if (impl_->current_drawing_state_.z_order_ >= 0)
+				shape->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_z_index_attlist_.draw_z_index_ = impl_->current_drawing_state_.z_order_;
+		}
+
+	}
+
 	impl_->drawing_list_.push_back(impl_->current_drawing_state_);//это для добавления frame, shape, групп???
 	impl_->current_drawing_state_.clear();
 }
+void odf_drawing_context::set_name(std::wstring  name)
+{
+	impl_->current_drawing_state_.name_ = name;
+}
+void odf_drawing_context::set_z_order(int id)
+{
+	impl_->current_drawing_state_.z_order_ = id;
 
+}
 void odf_drawing_context::start_image(std::wstring & path)
 {
 	office_element_ptr image_elm;

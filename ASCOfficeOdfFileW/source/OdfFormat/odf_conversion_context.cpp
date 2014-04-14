@@ -76,6 +76,8 @@ void odf_conversion_context::end_document()
 
 		output_document_->add_object(package::element_ptr(object_files ),true);
 	}
+
+	mediaitems_.dump_rels(rels_);
 	std::vector<package::content_content_ptr> objects_; //styles в объектах почти пустые .. - ссылки на картинки ... и только
 														//собственно стили записываются в сам контент
 

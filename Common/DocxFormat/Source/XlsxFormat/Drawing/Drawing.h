@@ -9,6 +9,8 @@
 
 namespace OOX
 {
+	using namespace Drawing;
+
 	namespace Spreadsheet
 	{
 		class CDrawingWorksheet : public WritingElement

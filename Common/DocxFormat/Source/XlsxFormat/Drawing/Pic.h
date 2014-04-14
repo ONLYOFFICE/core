@@ -6,21 +6,19 @@
 
 namespace OOX
 {
-	using namespace Drawing;
-
 	namespace Spreadsheet
 	{
 		//--------------------------------------------------------------------------------
-		// Non-Visual Properties for a Picture  20.5.2.22
+		// 20.5.2.7 cNvPicPr (Non-Visual Picture Drawing Properties)
 		//--------------------------------------------------------------------------------	
-		class CNonVisualDrawingProps : public WritingElement
+		class CNonVisualPictureDrawingProps : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CNonVisualDrawingProps)
-			CNonVisualDrawingProps()
+			WritingElementSpreadsheet_AdditionConstructors(CNonVisualPictureDrawingProps)
+			CNonVisualPictureDrawingProps()
 			{
 			}
-			virtual ~CNonVisualDrawingProps()
+			virtual ~CNonVisualPictureDrawingProps()
 			{
 			}
 
@@ -44,45 +42,38 @@ namespace OOX
 				{
 					CWCharWrapper sName = oReader.GetName();
 
-					//if ( _T("xdr:cNvPicPr") == sName )
-					//	m_oCNvPicPr = oReader;
-					//else if ( _T("xdr:cNvPr") == sName )
-					//	m_oCNvPr = oReader;
+					sName = oReader.GetName();
+					if ( _T("a:picLocks") == sName )
+						m_oPicLocks = oReader;
+					else if ( _T("a:extLst") == sName )
+						m_oExtLst = oReader;
 				}
 			}
 
 			virtual EElementType getType () const
 			{
-				return et_NonVisualDrawingProps;
+				return et_NonVisualPictureDrawingProps;
 			}
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("descr"),  m_sDescr )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("hidden"), m_oHidden )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("id"),     m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("name"),   m_sName )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("title"),  m_sTitle )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("preferRelativeResize"), m_oPreferRelativeResize )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			EElementType      m_eType;
 			// Attributes
-			nullable<CString>                               m_sDescr;
-			nullable<SimpleTypes::COnOff<>>                 m_oHidden;
-			nullable<SimpleTypes::CDrawingElementId<>>      m_oId;
-			nullable<CString>                               m_sName;
-			nullable<CString>                               m_sTitle;
+			SimpleTypes::COnOff<SimpleTypes::onoffTrue> m_oPreferRelativeResize;
 
 			// Childs
-			//nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
-			//nullable<OOX::Drawing::CHyperlink             > m_oHlinkClick;
-			//nullable<OOX::Drawing::CHyperlink             > m_oHlinkHover;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
+			nullable<OOX::Drawing::CPictureLocking>         m_oPicLocks;
 		};
+
 		//--------------------------------------------------------------------------------
-		// Non-Visual Picture Drawing Properties 20.5.2.5
+		// 20.5.2.22 nvPicPr (Non-Visual Properties for a Picture)
 		//--------------------------------------------------------------------------------	
 		class CPictureNonVisual : public WritingElement
 		{
@@ -115,9 +106,9 @@ namespace OOX
 				{
 					CWCharWrapper sName = oReader.GetName();
 
-/*					if ( _T("xdr:cNvPicPr") == sName )
+					if ( _T("xdr:cNvPicPr") == sName )
 						m_oCNvPicPr = oReader;
-					else */if ( _T("xdr:cNvPr") == sName )
+					else if ( _T("xdr:cNvPr") == sName )
 						m_oCNvPr = oReader;
 				}
 			}
@@ -136,8 +127,8 @@ namespace OOX
 		public:
 			EElementType      m_eType;
 			// Childs
-			//nullable<CNonVisualPictureProperties> m_oCNvPicPr;
-			nullable<CNonVisualDrawingProps>      m_oCNvPr;
+			nullable<CNonVisualPictureDrawingProps>		m_oCNvPicPr;
+			nullable<OOX::Drawing::CNonVisualDrawingProps>			m_oCNvPr;
 		};
 
 		class CBlipFill : public WritingElement
@@ -200,11 +191,15 @@ namespace OOX
 			nullable<SimpleTypes::CDecimalNumber<>>        m_oDpi;
 			nullable<SimpleTypes::COnOff<>>                m_oRotWithShape;
 			// Childs
-			nullable<CBlip>									m_oBlip;
+			nullable<OOX::Drawing::CBlip>					m_oBlip;
 			nullable<OOX::Drawing::CRelativeRect>			m_oSrcRect;
 			nullable<OOX::Drawing::CTileInfoProperties>		m_oTile;
 			nullable<OOX::Drawing::CStretchInfoProperties>	m_oStretch;
 		};
+
+		//--------------------------------------------------------------------------------
+		//			20.5.2.25 pic (Picture)
+		//--------------------------------------------------------------------------------
 		class CPic : public WritingElement
 		{
 		public:
@@ -246,8 +241,10 @@ namespace OOX
 						m_oBlipFill = oReader;
 					if ( _T("xdr:nvPicPr") == sName )
 						m_oNvPicPr = oReader;
-					//if ( _T("xdr:spPr") == sName )
-					//	m_oBlipFill = oReader;
+					if ( _T("xdr:spPr") == sName )
+						m_oSpPr = oReader;
+					if ( _T("xdr:style") == sName )
+						m_oShapeStyle = oReader;				
 				}
 			}
 
@@ -261,9 +258,10 @@ namespace OOX
 			{
 			}
 		public:
-			nullable<CBlipFill>						m_oBlipFill;
-			nullable<CPictureNonVisual>				m_oNvPicPr;
-			//nullable<CNonVisualDrawingProps>		m_oCSpPr;
+			nullable<CBlipFill>							m_oBlipFill;
+			nullable<CPictureNonVisual>					m_oNvPicPr;
+			nullable<OOX::Drawing::CShapeProperties>	m_oSpPr;
+			nullable<OOX::Drawing::CShapeStyle>			m_oShapeStyle;
 		};
 	} //Spreadsheet
 } // namespace OOX

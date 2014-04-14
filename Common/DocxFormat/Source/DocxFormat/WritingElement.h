@@ -452,6 +452,9 @@ namespace OOX
 		et_pic_spPr, // <pic:spPr>
 		et_pic_pic, // <pic:pic>
 
+		et_xdr_cNvPr, // <xdr:cNvPr>
+		et_xdr_spPr, // <xdr:spPr>
+
 		et_c_chart, // <c:chart>
 
 		et_sl_schema, // <sl:shema>

@@ -35,6 +35,7 @@ namespace odf
 		{		
 			class odf_document;
 		}
+		class odf_conversion_context;
 		class ods_conversion_context;
 		class color;
 		class background_color;
@@ -55,6 +56,8 @@ namespace Oox2Odf
 
 		virtual void convert();
 		virtual void write(const std::wstring & path);
+		
+		virtual odf::odf_conversion_context* odf_context();
 
     private:
 		OOX::Spreadsheet::CXlsx		*xlsx_document;
@@ -106,5 +109,6 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CFromTo* oox_from_to, oox_table_position * pos);
 
 		void convert(OOX::Spreadsheet::CPic* oox_picture);
+		
 	};
 }

@@ -303,7 +303,13 @@ et_alternatecontentfallback,
 		et_Pane,
 
 		et_PictureNonVisual,
-		et_NonVisualDrawingProps
+		et_NonVisualDrawingProperies,
+		et_NonVisualPictureDrawingProps,
+		et_ConnectionNonVisualShapeProps,
+		et_ShapeProperties,
+		et_ShapeNonVisual,
+		et_ShapeStyle,
+		et_Shape
 
 
 	};

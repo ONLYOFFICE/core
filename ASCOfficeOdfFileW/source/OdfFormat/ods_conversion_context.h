@@ -45,7 +45,7 @@ public:
 	void start_text_context();
 	void end_text_context();
 
-	odf_drawing_context&	drawing_context(){return current_table().drawing_context();}
+	virtual odf_drawing_context&	drawing_context(){return current_table().drawing_context();}
 	
 	void start_drawing(){drawing_context().start_drawing();}
 	void end_drawing(){drawing_context().end_drawing();}

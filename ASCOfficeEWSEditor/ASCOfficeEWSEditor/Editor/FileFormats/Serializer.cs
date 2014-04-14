@@ -45,6 +45,7 @@ namespace ASCOfficeEWSEditor.Editor.FileFormats
                 case Format.XLS:
                 {
                     XlsxSaver.Save(wb.GetXmlDocument(), temp_dir_path, wb.BinaryDataStorage);
+                    
                     ASCOfficeXlsFile.CXlsFileClass converter = new ASCOfficeXlsFile.CXlsFileClass();
                     converter.SaveToFile(path, temp_dir_path, "");
                     break;
@@ -59,14 +60,10 @@ namespace ASCOfficeEWSEditor.Editor.FileFormats
                 }
                 case Format.ODS:
                 {
-                    XlsxSaver saver = new XlsxSaver(wb.GetXmlDocument(), wb.BinaryDataStorage);
-                    ASCOfficeUtils.COfficeUtilsClass ooxArchiver = new ASCOfficeUtils.COfficeUtilsClass();
-                    if (!ooxArchiver.CompressFilesFromMemory(temp_dir_path + ".xlsx", saver, -1))
-                    {
-                        throw new Events.ReportableException(new Events.InternalError("Compression to \"" + path + "\" failed for unknown reason"));
-                    }
+                    XlsxSaver.Save(wb.GetXmlDocument(), temp_dir_path, wb.BinaryDataStorage);
 
-                    ODSConverter.ODSConverter.ConvertFile(temp_dir_path + ".xlsx", path, CleverAge.OdfConverter.OdfConverterLib.ConversionDirection.XlsxToOds);
+                    ASCOfficeOdfFileWLib.COfficeOdfFileWClass converter = new ASCOfficeOdfFileWLib.COfficeOdfFileWClass();
+                    converter.SaveToFile(path, temp_dir_path, ""); 
                     break;
                 }
                 default:

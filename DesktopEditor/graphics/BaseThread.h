@@ -45,8 +45,8 @@ namespace NSThreads
 		INT				m_bRunThread;
 		INT				m_bSuspend;
 
-		long				m_lError;
-		long				m_lThreadPriority;
+		int				m_lError;
+		int				m_lThreadPriority;
 
 	public:
 		CBaseThread()
@@ -63,7 +63,7 @@ namespace NSThreads
 			Stop();
 		}
 	public:
-		virtual void Start(long lPriority)
+		virtual void Start(int lPriority)
 		{
 			if (m_bRunThread)
 				return;
@@ -102,7 +102,8 @@ namespace NSThreads
 		
 		inline INT IsSuspended() { return m_bSuspend; }
 		inline INT IsRunned() { return m_bRunThread; }
-		inline long GetError() { return m_lError; }
+		inline int GetError() { return m_lError; }
+
 		inline CThreadDescriptor* GetDescriptor() { return m_hThread; }
 		inline int GetPriority() { return m_lThreadPriority; }
 		

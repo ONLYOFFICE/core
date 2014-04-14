@@ -236,20 +236,39 @@ namespace codegen
                 string sMemeberName = Utils.GetMemberElemName(oGenMember.sName);
                 if (!oGenMember.bIsArray)
                 {
+                    //todo подумать нужны ли в конструкторе DefAttribute
                     if (null != oGenMember.sDefAttribute)
                     {
+                        string sTypeClass = "";
+                        bool bIsEnum = false;
+                        if (null != oGenMember.sType)
+                        {
+                            GenClass oTemp;
+                            if (m_mapProcessedClasses.TryGetValue(oGenMember.sType, out oTemp))
+                            {
+                                sTypeClass = oTemp.sName;
+                                bIsEnum = oTemp.bIsEnum;
+                            }
+                        }
                         string sCPPType = GetCPPType(oGenMember);
                         if (null != sCPPType)
                         {
-                            sb.AppendFormat("{0} = new {1};\r\n", sMemeberName, sCPPType);
-                            sb.AppendFormat("CString s_{0}(\"{1}\");\r\n", sMemeberName, oGenMember.sDefAttribute);
-                            //todo enums
-                            sb.AppendFormat("{{\r\n", sMemeberName, oGenMember.sDefAttribute);
-                            ProcessCPPTypeFromXml(sb, "s_" + sMemeberName, "*" + sMemeberName, oGenMember.oSystemType);
-                            sb.AppendFormat("}}\r\n", sMemeberName, oGenMember.sDefAttribute);
+                            sb.AppendFormat("/*{0} = new {1};\r\n", sMemeberName, sCPPType);
+                            if (bIsEnum)
+                            {
+                                sb.AppendFormat("*{0} = {1};*/\r\n", sMemeberName, Utils.GetEnumElemName(sTypeClass, oGenMember.sDefAttribute));
+                            }
+                            else
+                            {
+                                //todo без строк
+                                sb.AppendFormat("CString s_{0}(\"{1}\");\r\n", sMemeberName, oGenMember.sDefAttribute);
+                                sb.AppendFormat("{{\r\n", sMemeberName, oGenMember.sDefAttribute);
+                                ProcessCPPTypeFromXml(sb, "s_" + sMemeberName, "*" + sMemeberName, oGenMember.oSystemType);
+                                sb.AppendFormat("}}*/\r\n", sMemeberName, oGenMember.sDefAttribute);
+                            }
                         }
                     }
-                    else
+                    //else
                         sb.AppendFormat("{0} = NULL;\r\n", sMemeberName);
                 }
             }
@@ -642,26 +661,6 @@ namespace codegen
         void ProcessFromToBinaryH(StringBuilder sb, List<GenClass> aEnums, List<GenClass> aClasses)
         {
             sb.AppendFormat("namespace BinXlsxRW {{\r\n");
-            for (int i = 0; i < aClasses.Count; ++i)
-            {
-                GenClass oGenClass = aClasses[i];
-                for (int j = 0; j < oGenClass.aMembers.Count; ++j)
-                {
-                    GenMember oGenMember = oGenClass.aMembers[j];
-                    if (!oGenMember.bInternal)
-                    {
-                        sb.AppendFormat("extern BYTE {0};\r\n", Utils.GetSerEnumElemName(oGenClass.sName, oGenMember.sName));
-                        if (null != oGenMember.aArrayTypes)
-                        {
-                            for (int k = 0; k < oGenMember.aArrayTypes.Count; ++k)
-                            {
-                                sb.AppendFormat("extern BYTE {0};\r\n", Utils.GetSerEnumElemName(oGenClass.sName, oGenMember.aArrayTypes[k].sName));
-                            }
-                        }
-                    }
-                }
-                sb.AppendFormat("\r\n");
-            }
             sb.AppendFormat("class {0} : public Binary_CommonReader<{0}>\r\n{{\r\n", Utils.gc_sBinaryChartReader);
             sb.AppendFormat("LPSAFEARRAY m_pArray;\r\n");
             sb.AppendFormat("PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;\r\n");

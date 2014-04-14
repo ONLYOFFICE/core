@@ -286,6 +286,8 @@ namespace codegen
                         //todo other
                         if (oCodeExpression is CodePrimitiveExpression)
                             oGenMember.sDefAttribute = ((oCodeExpression as CodePrimitiveExpression)).Value.ToString();
+                        else if (oCodeExpression is CodeFieldReferenceExpression)
+                            oGenMember.sDefAttribute = ((oCodeExpression as CodeFieldReferenceExpression)).FieldName;
                     }
                 }
                 else if (attribute.Name == "System.Xml.Serialization.XmlIgnoreAttribute")

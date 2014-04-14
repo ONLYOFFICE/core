@@ -186,8 +186,8 @@ namespace agg
 		
 		inline double calculate_param(const double& x, const double& y)
 		{
-			double t1 = abs(m_factor.x * x + m_factor.y * y + m_offset.x);
-			double t2 = abs(m_factor.x * x + m_factor.y * y + m_offset.y);
+			double t1 = fabs(m_factor.x * x + m_factor.y * y + m_offset.x);
+			double t2 = fabs(m_factor.x * x + m_factor.y * y + m_offset.y);
 			if (t1 >= 1 || t2 >= 1)
 			{
 				if (t1 > t2)

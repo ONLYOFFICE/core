@@ -11,9 +11,9 @@ using xml::xml_char_wc;
 
 graphic_format_properties::graphic_format_properties()
 {
-	draw_stroke_ = line_style::None;
-	style_mirror_ = L"none";
-	common_draw_fill_attlist_.draw_fill_ = draw_fill::none;
+	//draw_stroke_ = line_style::None;
+	//style_mirror_ = L"none";
+	//common_draw_fill_attlist_.draw_fill_ = draw_fill::none;
 }
 void graphic_format_properties::serialize(std::wostream & _Wostream ,const wchar_t * ns, const wchar_t * name )
 {

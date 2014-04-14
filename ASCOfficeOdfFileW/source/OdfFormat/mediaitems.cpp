@@ -79,8 +79,19 @@ void mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wstr
 		
 		items_.push_back( item(input_path, type, xml::utils::replace_text_to_xml(output_path)) );
 	}
-
 	odf_ref = output_path;
+}
+void mediaitems::dump_rels(rels & Rels)
+{
+    size_t i = 0;
+    BOOST_FOREACH(item & elm, items_)
+    {
+        Rels.add( relationship(
+                utils::media::get_rel_type(elm.type), 
+                elm.odf_ref)
+                );
+
+    }        
 }
 
 

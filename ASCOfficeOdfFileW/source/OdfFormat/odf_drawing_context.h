@@ -47,6 +47,9 @@ public:
 
 	void finalize(office_element_ptr & root_elm);
 
+///////////////////////////////////////////////////
+	void set_name(std::wstring  name);
+	void set_z_order(int id);
 private:
 
     class Impl;

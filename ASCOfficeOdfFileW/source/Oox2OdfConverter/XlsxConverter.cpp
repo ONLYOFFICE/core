@@ -1052,7 +1052,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 		}
 	}
 
-	ods_context->start_image(string2std_string(pathImage));
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 	std::wstring name;
 	int id=0;
@@ -1065,8 +1064,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 		if(oox_picture->m_oNvPicPr->m_oCNvPr.IsInit())
 		{
 			name = string2std_string(oox_picture->m_oNvPicPr->m_oCNvPr->m_sName.get());
-
+			ods_context->drawing_context().set_name(name);
 			id = oox_picture->m_oNvPicPr->m_oCNvPr->m_oId->GetValue();
+			ods_context->drawing_context().set_z_order(id);
 			//nullable<CString>                               m_sDescr;
 			//nullable<SimpleTypes::COnOff<>>                 m_oHidden;
 			//nullable<CString>                               m_sTitle;
@@ -1089,6 +1089,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 	//{
 	//}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	ods_context->start_image(string2std_string(pathImage));
 	ods_context->end_image();
 }
 

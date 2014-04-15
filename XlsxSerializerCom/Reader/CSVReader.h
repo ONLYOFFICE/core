@@ -95,6 +95,10 @@ namespace CSVReader
 		OOX::Spreadsheet::CWorksheet* pWorksheet = new OOX::Spreadsheet::CWorksheet();
 		pWorksheet->m_oSheetData.Init();
 		OOX::Spreadsheet::CSheet *pSheet = new OOX::Spreadsheet::CSheet();
+		pSheet->m_oName.Init();
+		pSheet->m_oName->Append(_T("Sheet1"));
+		pSheet->m_oSheetId.Init();
+		pSheet->m_oSheetId->SetValue(1);
 		pSheet->m_oRid.Init();
 		pSheet->m_oRid->SetValue(sSheetRId);
 

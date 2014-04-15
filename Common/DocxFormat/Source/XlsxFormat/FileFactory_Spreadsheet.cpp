@@ -10,6 +10,7 @@
 #include "Worksheets/Worksheet.h"
 #include "CalcChain/CalcChain.h"
 #include "../DocxFormat/Theme/Theme.h"
+#include "../DocxFormat/Theme/ThemeOverride.h"
 #include "Drawing/Image.h"
 #include "Table/Table.h"
 
@@ -31,6 +32,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CWorksheet( oFileName ));
 			else if ( oRelation.Type() == OOX::FileTypes::Theme )
 				return smart_ptr<OOX::File>(new CTheme( oFileName ));
+			else if ( oRelation.Type() == OOX::FileTypes::ThemeOverride )
+				return smart_ptr<OOX::File>(new CThemeOverride( oFileName ));
 			else if ( oRelation.Type() == FileTypes::Drawings )
 				return smart_ptr<OOX::File>(new CDrawing( oFileName ));
 			else if ( oRelation.Type() == FileTypes::CalcChain )

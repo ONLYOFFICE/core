@@ -102,29 +102,4 @@ namespace BinXlsxRW {
 		m_oStream.WritePointer((BYTE *)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
 		WriteItemWithLengthEnd(nCurPos);
 	}
-	void BinaryCommonWriter::WritePptxTitle(const OOX::Spreadsheet::CChartTitle& oTitle, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter)
-	{
-		int nCurPos = 0;
-		if(oTitle.m_oTx.IsInit() && oTitle.m_oTx->m_oRich.IsInit() && oTitle.m_oTx->m_oRich->m_oXml.IsInit())
-		{
-			nCurPos = WriteItemStart(c_oSer_ChartTitlePptxType::TxPptx);
-			WritePptxParagraph(oTitle.m_oTx->m_oRich->m_oXml.get2(), pOfficeDrawingConverter);
-			WriteItemEnd(nCurPos);
-		}
-		if(oTitle.m_oTxPr.IsInit() && oTitle.m_oTxPr->m_oXml.IsInit())
-		{
-			nCurPos = WriteItemStart(c_oSer_ChartTitlePptxType::TxPrPptx);
-			WritePptxParagraph(oTitle.m_oTxPr->m_oXml.get2(), pOfficeDrawingConverter);
-			WriteItemEnd(nCurPos);
-		}
-	}
-	void BinaryCommonWriter::WritePptxParagraph(CString& sXml, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter)
-	{
-		LPSAFEARRAY pBinaryObj = NULL;
-		BSTR bstrXml = sXml.AllocSysString();
-		HRESULT hRes = pOfficeDrawingConverter->GetTxBodyBinary(bstrXml, &pBinaryObj);
-		SysFreeString(bstrXml);
-		if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-			m_oStream.WritePointer((BYTE *)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-	}
 }

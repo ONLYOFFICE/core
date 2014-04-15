@@ -14,7 +14,5 @@ namespace BinXlsxRW {
 		void WriteItemWithLengthEnd(int nStart);
 		void WriteColor(const OOX::Spreadsheet::CColor& color, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* theme);
 		void WriteSafeArray(SAFEARRAY* pBinaryObj);
-		void WritePptxTitle(const OOX::Spreadsheet::CChartTitle& oTitle, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter);
-		void WritePptxParagraph(CString& sXml, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter);
 	};
 }

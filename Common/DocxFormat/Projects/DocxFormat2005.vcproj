@@ -1076,10 +1076,6 @@
 				Name="Chart"
 				>
 				<File
-					RelativePath="..\Source\XlsxFormat\Chart\BasicChart.h"
-					>
-				</File>
-				<File
 					RelativePath="..\Source\XlsxFormat\Chart\Chart.h"
 					>
 				</File>
@@ -1089,26 +1085,6 @@
 				</File>
 				<File
 					RelativePath="..\Source\XlsxFormat\Chart\ChartSerialize.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\XlsxFormat\Chart\FromTo.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\XlsxFormat\Chart\Layout.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\XlsxFormat\Chart\Legend.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\XlsxFormat\Chart\PlotArea.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\XlsxFormat\Chart\Title.h"
 					>
 				</File>
 			</Filter>

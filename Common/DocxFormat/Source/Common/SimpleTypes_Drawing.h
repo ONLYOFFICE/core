@@ -3946,6 +3946,35 @@ namespace SimpleTypes
 		shapetypeWedgeEllipseCallout,
 		shapetypeWedgeRectCallout,
 		shapetypeWedgeRoundRectCallout,
+////new//////////////
+		 shapetypeBallon,
+		 shapetypeRightUpArrow,
+		 shapetypeTextArchDownPour,
+		 shapetypeTextArchUpPour,
+		 shapetypeTextCanDown,
+		 shapetypeTextCanUp,
+		 shapetypeTextCirclePour,
+		 shapetypeTextCurveDown,
+		 shapetypeTextCurveUp,
+		 shapetypeTextDeflate,
+		 shapetypeTextDeflateBottom,
+		 shapetypeTextDeflateInflate,
+		 shapetypeTextDeflateInflateDeflat,
+		 shapetypeTextDeflateTop,
+		 shapetypeTextDoubleWave1,
+		 shapetypeTextFadeDown,
+		 shapetypeTextFadeLeft,
+		 shapetypeTextFadeRight,
+		 shapetypeTextFadeUp,
+		 shapetypeTextInflateBottom,
+		 shapetypeTextInflateTop,
+		 shapetypeTextRingInside,
+		 shapetypeTextRingOutside,
+		 shapetypeTextWave1,
+		 shapetypeTextWave2,
+		 shapetypeTextWave4,
+		 shapetypeThickArrow
+
 	};
 
 	template<EShapeType eDefValue = shapetypeRect>
@@ -4001,6 +4030,8 @@ namespace SimpleTypes
 				else if ( _T("borderCallout3")			== sValue ) m_eValue = shapetypeBorderCallout3;
 				else if ( _T("bracePair")				== sValue ) m_eValue = shapetypeBracePair;
 				else if ( _T("bracketPair")				== sValue ) m_eValue = shapetypeBracketPair;
+		/////new
+				else if ( _T("Balloon") 				== sValue ) m_eValue = shapetypeBallon;
 				break;
 
 			case 'c':
@@ -4165,6 +4196,8 @@ namespace SimpleTypes
 				else if ( _T("round2SameRect")			== sValue ) m_eValue = shapetypeRound2SameRect;
 				else if ( _T("roundRect")				== sValue ) m_eValue = shapetypeRoundRect;
 				else if ( _T("rtTriangle")				== sValue ) m_eValue = shapetypeRtTriangle;
+		////new
+				else if ( _T("rightUpArrow")			== sValue ) m_eValue = 	 shapetypeRightUpArrow;
 				break;
 
 			case 's':
@@ -4194,8 +4227,33 @@ namespace SimpleTypes
 				if      ( _T("teardrop")				== sValue ) m_eValue = shapetypeTeardrop;
 				else if ( _T("trapezoid")				== sValue ) m_eValue = shapetypeTrapezoid;
 				else if ( _T("triangle")				== sValue ) m_eValue = shapetypeTriangle;
+		/////new
+				else if ( _T("textArchDownPour")		== sValue ) m_eValue = 	 shapetypeTextArchDownPour;
+				else if ( _T("textArchUpPour")			== sValue ) m_eValue = 	 shapetypeTextArchUpPour;
+				else if ( _T("textCanDown")				== sValue ) m_eValue = 	 shapetypeTextCanDown;
+				else if ( _T("textCanUp")				== sValue ) m_eValue = 	 shapetypeTextCanUp;
+				else if ( _T("textCirclePour")			== sValue ) m_eValue = 	 shapetypeTextCirclePour;
+				else if ( _T("textCurveDown")			== sValue ) m_eValue = 	 shapetypeTextCurveDown;
+				else if ( _T("textCurveUp")				== sValue ) m_eValue = 	 shapetypeTextCurveUp;
+				else if ( _T("textDeflate")				== sValue ) m_eValue = 	 shapetypeTextDeflate;
+				else if ( _T("textDeflateBottom")		== sValue ) m_eValue = 	 shapetypeTextDeflateBottom;
+				else if ( _T("textDeflateInflate")		== sValue ) m_eValue = 	 shapetypeTextDeflateInflate;
+				else if ( _T("textDeflateInflateDeflate")	== sValue ) m_eValue = 	 shapetypeTextDeflateInflateDeflat;
+				else if ( _T("textDeflateTop")			== sValue ) m_eValue = 	 shapetypeTextDeflateTop;
+				else if ( _T("textDoubleWave1")			== sValue ) m_eValue = 	 shapetypeTextDoubleWave1;
+				else if ( _T("textFadeDown")			== sValue ) m_eValue = 	 shapetypeTextFadeDown;
+				else if ( _T("textFadeLeft")			== sValue ) m_eValue = 	 shapetypeTextFadeLeft;
+				else if ( _T("textFadeRight")			== sValue ) m_eValue = 	 shapetypeTextFadeRight;
+				else if ( _T("textFadeUp")				== sValue ) m_eValue = 	 shapetypeTextFadeUp;
+				else if ( _T("textInflateBottom")		== sValue ) m_eValue = 	 shapetypeTextInflateBottom;
+				else if ( _T("textInflateTop")			== sValue ) m_eValue = 	 shapetypeTextInflateTop;
+				else if ( _T("textRingInside")			== sValue ) m_eValue = 	 shapetypeTextRingInside;
+				else if ( _T("textRingOutside")			== sValue ) m_eValue = 	 shapetypeTextRingOutside;
+				else if ( _T("textWave1")				== sValue ) m_eValue = 	 shapetypeTextWave1;
+				else if ( _T("textWave2")				== sValue ) m_eValue = 	 shapetypeTextWave2;
+				else if ( _T("textWave4")				== sValue ) m_eValue = 	 shapetypeTextWave4;
+				else if ( _T("thickArrow")				== sValue ) m_eValue = 	 shapetypeThickArrow
 				break;
-
 			case 'u':
 				if      ( _T("upArrow")					== sValue ) m_eValue = shapetypeUpArrow;
 				else if ( _T("upArrowCallout")			== sValue ) m_eValue = shapetypeUpArrowCallout;
@@ -4229,7 +4287,7 @@ namespace SimpleTypes
 			case shapetypeAccentCallout1:				return _T("accentCallout1");
 			case shapetypeAccentCallout2:				return _T("accentCallout2");
 			case shapetypeAccentCallout3:				return _T("accentCallout3");
-			case shapetypeActionButtonBackPrevious:		return _T("accentCallout3");
+			case shapetypeActionButtonBackPrevious:		return _T("actionButtonBackPrevious");
 			case shapetypeActionButtonBeginning:		return _T("actionButtonBeginning");
 			case shapetypeActionButtonBlank:			return _T("actionButtonBlank");
 			case shapetypeActionButtonDocument:			return _T("actionButtonDocument");
@@ -4410,6 +4468,35 @@ namespace SimpleTypes
 			case shapetypeWedgeEllipseCallout:			return _T("wedgeEllipseCallout");
 			case shapetypeWedgeRectCallout:				return _T("wedgeRectCallout");
 			case shapetypeWedgeRoundRectCallout:		return _T("wedgeRoundRectCallout");	
+	///new//
+			case shapetypeBallon:						return _T("Balloon"); 
+			case shapetypeRightUpArrow:					return _T("rightUpArrow");
+			case shapetypeTextArchDownPour:				return _T("textArchDownPour");
+			case shapetypeTextArchUpPour:				return _T("textArchUpPour");
+			case shapetypeTextCanDown:					return _T("textCanDown");
+			case shapetypeTextCanUp:					return _T("textCanUp");
+			case shapetypeTextCirclePour:				return _T("textCirclePour");
+			case shapetypeTextCurveDown:				return _T("textCurveDown");
+			case shapetypeTextCurveUp:					return _T("textCurveUp");
+			case shapetypeTextDeflate:					return _T("textDeflate");
+			case shapetypeTextDeflateBottom:			return _T("textDeflateBottom");
+			case shapetypeTextDeflateInflate:			return _T("textDeflateInflate");
+			case shapetypeTextDeflateInflateDeflat:		return _T("textDeflateInflateDeflate");
+			case shapetypeTextDeflateTop:				return _T("textDeflateTop");
+			case shapetypeTextDoubleWave1:				return _T("textDoubleWave1");
+			case shapetypeTextFadeDown:					return _T("textFadeDown");
+			case shapetypeTextFadeLeft:					return _T("textFadeLeft");
+			case shapetypeTextFadeRight:				return _T("textFadeRight");
+			case shapetypeTextFadeUp:					return _T("textFadeUp");
+			case shapetypeTextInflateBottom:			return _T("textInflateBottom");
+			case shapetypeTextInflateTop:				return _T("textInflateTop");
+			case shapetypeTextRingInside:				return _T("textRingInside");
+			case shapetypeTextRingOutside:				return _T("textRingOutside");
+			case shapetypeTextWave1:					return _T("textWave1");
+			case shapetypeTextWave2:					return _T("textWave2");
+			case shapetypeTextWave4:					return _T("textWave4");
+			case shapetypeThickArrow:					return _T("thickArrow"); 
+
 			default :									return _T("rect");
 			}
 		}

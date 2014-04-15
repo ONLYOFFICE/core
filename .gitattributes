@@ -1257,11 +1257,6 @@ Test/Applications/TestASCWord/ASCWord_src/zlib-1.2.7/contrib/blast/test.pk svn_m
 Test/Applications/TestASCWord/ASCWord_src/zlib-1.2.7/contrib/dotzlib/DotZLib.chm svn_mime_002dtype=application%2Foctet-stream
 Test/Applications/TestASCWord/ASCWord_src/zlib-1.2.7/contrib/puff/zeros.raw svn_mime_002dtype=application%2Foctet-stream
 Test/Applications/TestASCWord/ASCWord_src/zlib-1.2.7/zlib.3.pdf svn_mime_002dtype=application%2Foctet-stream
-Test/Applications/TestAVSOfficeDocxFile2/TestAVSOfficeDocxFile2/bin/Release/Interop.AVSGraphics.dll svn_mime_002dtype=application%2Foctet-stream
-Test/Applications/TestAVSOfficeDocxFile2/TestAVSOfficeDocxFile2/bin/Release/Interop.AVSOfficeDocxFile2.dll svn_mime_002dtype=application%2Foctet-stream
-Test/Applications/TestAVSOfficeDocxFile2/TestAVSOfficeDocxFile2/bin/Release/Interop.AVSOfficeFile.dll svn_mime_002dtype=application%2Foctet-stream
-Test/Applications/TestAVSOfficeDocxFile2/TestAVSOfficeDocxFile2/bin/Release/Ionic.Zip.Reduced.dll svn_mime_002dtype=application%2Foctet-stream
-Test/Applications/TestAVSOfficeDocxFile2/TestAVSOfficeDocxFile2/bin/Release/TestAVSOfficeDocxFile2.exe svn_mime_002dtype=application%2Foctet-stream
 Test/Applications/TestPresentationEditor/PresentationEditor/bin/Debug/WindowsApplication1.vshost.exe svn_mime_002dtype=application%2Foctet-stream
 Test/Applications/TestPresentationEditor/PresentationEditor/bin/Release/Interop.AVSPresentationEditor.dll svn_mime_002dtype=application%2Foctet-stream
 Test/Applications/TestPresentationEditor/PresentationEditor/bin/Release/WindowsApplication1.exe svn_mime_002dtype=application%2Foctet-stream

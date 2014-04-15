@@ -318,12 +318,8 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-	void find_draw_type_odf(std::wstring & oox_type);
-
     draw_enhanced_geometry_attlist draw_enhanced_geometry_attlist_;
 
-	_CP_OPT(int) sub_type_;
-	_CP_OPT(int) draw_type_odf_index_;
 	_CP_OPT(std::wstring) svg_viewbox_;
 
 	typedef std::pair<std::wstring,std::wstring> pair_string_value;

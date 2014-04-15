@@ -108,7 +108,8 @@ namespace Oox2Odf
 		void convert_sharing_string(int number);
 		void convert(OOX::Spreadsheet::CFromTo* oox_from_to, oox_table_position * pos);
 
-		void convert(OOX::Spreadsheet::CPic* oox_picture);
+		void convert(OOX::Spreadsheet::CPic*	oox_picture);
+		void convert(OOX::Spreadsheet::CShape*	oox_shape);
 		
 	};
 }

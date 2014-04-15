@@ -33,6 +33,9 @@ public:
 	void start_frame();
 	void end_frame();
 	
+	void start_shape(int type, std::wstring & sub_type);
+	void end_shape();
+
 	void start_image(std::wstring & path);
 	void end_image();
 		
@@ -54,9 +57,13 @@ public:
 	void set_flip_H(bool bVal);
 	void set_flip_V(bool bVal);
 
+	void set_tile(bool bVal);
+
 	void set_rotate(int iVal);
 
 private:
+
+	office_element_ptr create_shape(int type);
 
     class Impl;
     _CP_PTR(Impl) impl_;

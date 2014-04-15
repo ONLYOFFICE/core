@@ -15,9 +15,6 @@
 
 #ifndef STANDALONE_USE
 	#define STANDALONE_USE 0// что на входе: файл (1) или папка (0)
-#else
-	#undef STANDALONE_USE
-	#define STANDALONE_USE 1
 #endif 
 
 

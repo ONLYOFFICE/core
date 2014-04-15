@@ -20,6 +20,12 @@ namespace OOX
 	{
 		class CNonVisualDrawingProps;
 		class CShapeProperties;
+		class CCustomGeometry2D;
+		class CPresetGeometry2D;
+		class CBlipFillProperties;
+		class CGradientFillProperties;
+		class CPatternFillProperties;
+		class CSolidColorFillProperties;
 	}
 }
 
@@ -37,6 +43,14 @@ public:
 	
 		void convert_CNvPr(OOX::Drawing::CNonVisualDrawingProps* oox_cnvPr);
 		void convert_SpPr(OOX::Drawing::CShapeProperties* oox_spPr);
+		
+		void convert(OOX::Drawing::CCustomGeometry2D *oox_cust_geom);
+		void convert(OOX::Drawing::CPresetGeometry2D *oox_prst_geom);
+		
+		void convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill);
+		void convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill);
+		void convert(OOX::Drawing::CPatternFillProperties *oox_pattern_fill);
+		void convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fill);
 	};
 
 	class Converter

@@ -4252,7 +4252,7 @@ namespace SimpleTypes
 				else if ( _T("textWave1")				== sValue ) m_eValue = 	 shapetypeTextWave1;
 				else if ( _T("textWave2")				== sValue ) m_eValue = 	 shapetypeTextWave2;
 				else if ( _T("textWave4")				== sValue ) m_eValue = 	 shapetypeTextWave4;
-				else if ( _T("thickArrow")				== sValue ) m_eValue = 	 shapetypeThickArrow
+				else if ( _T("thickArrow")				== sValue ) m_eValue = 	 shapetypeThickArrow;
 				break;
 			case 'u':
 				if      ( _T("upArrow")					== sValue ) m_eValue = shapetypeUpArrow;
@@ -4503,6 +4503,11 @@ namespace SimpleTypes
 
 		SimpleType_FromString     (EShapeType)
 		SimpleType_Operator_Equal (CShapeType)
+		
+		EShapeType GetValue() const
+		{
+			return m_eValue;
+		}
 	};
 
 

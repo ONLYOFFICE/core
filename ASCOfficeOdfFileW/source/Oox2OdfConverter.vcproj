@@ -195,6 +195,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Oox2OdfConverter\shape_types_mapping.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Oox2OdfConverter\stdafx.h"
 				>
 			</File>

@@ -51,7 +51,8 @@ struct odf_drawing_state
 		
 		rotateAngle = boost::none;
 		flipH = false;
-		flipV = false;		
+		flipV = false;	
+		tile = false;
 	}
 	std::vector<odf_element_state> elements_;
 
@@ -65,6 +66,7 @@ struct odf_drawing_state
 
 	bool flipH;
 	bool flipV;
+	bool tile;
 	_CP_OPT(double) rotateAngle;
 };
 
@@ -172,6 +174,10 @@ void odf_drawing_context::end_drawing()//убрать раздвоение.. убрать перегруз кла
 			if (strTransform.length()>0)
 				frame->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_transform_attlist_.draw_transform_ = strTransform;
 
+			frame->common_draw_attlists_.position_.svg_x_ = impl_->current_drawing_state_.svg_x_;
+			frame->common_draw_attlists_.position_.svg_y_ = impl_->current_drawing_state_.svg_y_;
+			frame->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = impl_->current_drawing_state_.svg_height_;
+			frame->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = impl_->current_drawing_state_.svg_width_;
 		}
 		draw_shape* shape = dynamic_cast<draw_shape*>(impl_->current_drawing_state_.elements_[0].elm.get());
 		if (shape)
@@ -188,6 +194,11 @@ void odf_drawing_context::end_drawing()//убрать раздвоение.. убрать перегруз кла
 			}
 			if (strTransform.length()>0)
 				frame->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_transform_attlist_.draw_transform_ = strTransform;
+			
+			shape->common_draw_attlists_.position_.svg_x_ = impl_->current_drawing_state_.svg_x_;
+			shape->common_draw_attlists_.position_.svg_y_ = impl_->current_drawing_state_.svg_y_;
+			shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = impl_->current_drawing_state_.svg_height_;
+			shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = impl_->current_drawing_state_.svg_width_;
 		}
 		
 		style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_[0].style_elm.get());
@@ -227,6 +238,10 @@ void odf_drawing_context::set_flip_V(bool bVal)
 {
 	impl_->current_drawing_state_.flipV= true;
 }
+void odf_drawing_context::set_tile(bool bVal)
+{
+	impl_->current_drawing_state_.tile = true;
+}
 void odf_drawing_context::set_rotate(int iVal)
 {
 	double dRotate = iVal/60000.;
@@ -249,6 +264,58 @@ void odf_drawing_context::start_image(std::wstring & path)
 	start_element(image_elm);
 }
 void odf_drawing_context::end_image()
+{
+	end_element();
+}
+void odf_drawing_context::start_shape(int type, std::wstring & sub_type)
+{
+	office_element_ptr & shape_elm = create_shape(type);
+
+	draw_shape* shape = dynamic_cast<draw_shape*>(shape_elm.get());
+	if (shape == NULL)return;
+//////////	
+	impl_->styles_context_->create_style(L"",style_family::Graphic, true, false, -1);		
+	
+	office_element_ptr & style_shape_elm = impl_->styles_context_->last_state().get_office_element();
+	std::wstring style_name;
+
+	style* style_ = dynamic_cast<style*>(style_shape_elm.get());
+	if (style_)
+	{
+		style_name = style_->style_name_;
+	}
+
+	shape->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_ = style_ref(style_name);
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	int level = impl_->current_level_.size();
+	
+	if (impl_->current_level_.size()>0)
+		impl_->current_level_.back()->add_child_element(shape_elm);
+
+	impl_->current_level_.push_back(shape_elm);
+
+	odf_element_state state={shape_elm, style_name, style_shape_elm, level};
+
+	impl_->current_drawing_state_.elements_.push_back(state);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	if (sub_type.length()>0 && shape_elm)
+	{
+		office_element_ptr enhanced_elm;
+		create_element(L"draw", L"enhanced-geometry", enhanced_elm, impl_->odf_context_);
+		draw_enhanced_geometry* enhanced = dynamic_cast<draw_enhanced_geometry*>(enhanced_elm.get());
+		if (enhanced)
+		{
+			enhanced->draw_enhanced_geometry_attlist_.draw_type_ = sub_type;
+		}
+		start_element(enhanced_elm);
+///....
+
+		end_element();
+	}
+}
+void odf_drawing_context::end_shape()
 {
 	end_element();
 }
@@ -294,5 +361,43 @@ void odf_drawing_context::finalize(office_element_ptr & root_elm)
 		}
 	}
 }
+office_element_ptr odf_drawing_context::create_shape(int type)
+{
+	office_element_ptr element;
+	switch(type)
+	{
+	case 1:
+		create_element(L"draw", L"caption", element, impl_->odf_context_);
+		break;
+	case 2:
+		create_element(L"draw", L"rect", element, impl_->odf_context_);
+		break;
+	case 3:
+		create_element(L"draw", L"ellipse", element, impl_->odf_context_);
+		break;
+	case 4:
+		create_element(L"draw", L"circle", element, impl_->odf_context_);
+		break;
+	case 5:
+		create_element(L"draw", L"line", element, impl_->odf_context_);
+		break;
+	case 6:
+		create_element(L"draw", L"path", element, impl_->odf_context_);
+		break;
+	case 7:
+		create_element(L"draw", L"custom-shape", element, impl_->odf_context_);
+		break;
+	case 8:
+		create_element(L"draw", L"polygon", element, impl_->odf_context_);
+		break;
+	case 9:
+		create_element(L"draw", L"connector", element, impl_->odf_context_);
+		break;
+	
+	}
+
+	return element;
+}
+
 }
 }

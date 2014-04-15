@@ -411,11 +411,15 @@ void draw_enhanced_geometry::serialize(std::wostream & _Wostream)
         {
 			draw_enhanced_geometry_attlist_.serialize(CP_GET_XML_NODE());
 			CP_XML_ATTR_OPT(L"svg:viewBox", svg_viewbox_);
-			//draw_shape::serialize_attlist(CP_GET_XML_NODE());
-	
-			//draw_polygon_attlist_.serialize(CP_GET_XML_NODE());
-
-			//draw_shape::serialize(CP_XML_STREAM());
+			
+			BOOST_FOREACH(office_element_ptr & elm, draw_handle_)
+			{
+				elm->serialize(CP_XML_STREAM());
+			}
+			BOOST_FOREACH(office_element_ptr & elm, draw_equation_)
+			{
+				elm->serialize(CP_XML_STREAM());
+			}
 		}
 	}
 }
@@ -455,56 +459,6 @@ void draw_enhanced_geometry::add_child_element(office_element_ptr & child_elemen
         //not_applicable_element(L"draw_enhanced_geometry", Reader, Ns, Name);
     }
 
-}
-void draw_enhanced_geometry::find_draw_type_odf(std::wstring & oox_type)
-{
-	for (long i=0; i<_OO_OOX_custom_shapes_count;i++)
-	{
-		if (_OO_OOX_custom_shapes[i].oox == oox_type)
-		{
-			draw_type_odf_index_ = i;
-			draw_enhanced_geometry_attlist_.draw_type_ = _OO_OOX_custom_shapes[i].odf;
-			break;
-		}
-		
-	}
-	//if ((draw_type_oox_index_) && (*draw_type_oox_index_== 179))//L"textBox"
-	//{
-	//	sub_type_ = 1;//textBox
-	//}
-	//std::wstringstream str;
-
-
- //   BOOST_FOREACH(const office_element_ptr & parElement, draw_handle_)
- //   {
-	//	draw_handle * handle = dynamic_cast<draw_handle *>(parElement.get());
- //       
-	//	int min = -1;
-	//	int max = -1;
-	//	
-	//	try
-	//	{
-	//		min = parsing(handle->draw_handle_attlist_.draw_handle_range_y_minimum_);//пока статик .. и выдается только цыфровое значение
-	//		if (min<0)min =parsing(handle->draw_handle_attlist_.draw_handle_range_x_minimum_);
-	//		if (min<0)min = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_minimum_);
-	//	}
-	//	catch(...)
-	//	{
-	//	}
-	//	if (min<0)min=0;
-
-	//	try
-	//	{	
-	//		max = parsing(handle->draw_handle_attlist_.draw_handle_range_y_maximum_);
-	//		if (max<0)max = parsing(handle->draw_handle_attlist_.draw_handle_range_x_maximum_);
-	//		if (max<0)max = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_maximum_);
-	//	}
-	//	catch(...)
-	//	{
-	//	}		
-	//	draw_handle_geometry elm={min, max};
-	//	draw_handle_geometry_.push_back(elm);
- //   }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // draw:caption

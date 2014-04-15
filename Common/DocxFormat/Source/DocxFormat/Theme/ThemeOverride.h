@@ -32,6 +32,7 @@ namespace OOX
 	public:
 		virtual void read(const CPath& oFilePath)
 		{
+			m_oReadPath = oFilePath;
 			XmlUtils::CXmlLiteReader oReader;
 
 			if ( !oReader.FromFile( oFilePath.GetPath() ) )
@@ -119,7 +120,7 @@ namespace OOX
 		}
 
 	public:
-
+		CPath									m_oReadPath;
 		// Childs
 		nullable<OOX::Drawing::CColorScheme> m_oClrScheme;
 		nullable<OOX::Drawing::CFontScheme>  m_oFontScheme;

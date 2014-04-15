@@ -3,13 +3,6 @@
 #define OOX_CHART_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
-
-#include "Title.h"
-#include "Legend.h"
-#include "PlotArea.h"
-#include "ChartStyle.h"
-#include "../../DocxFormat/Logic/AlternateContent.h"
-
 #include "ChartSerialize.h"
 
 namespace OOX

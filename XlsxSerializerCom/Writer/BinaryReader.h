@@ -1773,6 +1773,9 @@ namespace BinXlsxRW {
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadWorksheet, this, poResult);
 				if(m_pCurSheet->m_oName.IsInit())
 				{
+					const OOX::RId& oRId = m_oWorkbook.Add(smart_ptr<OOX::File>(m_pCurWorksheet));
+					m_pCurSheet->m_oRid.Init();
+					m_pCurSheet->m_oRid->SetValue(oRId.get());
 					m_mapWorksheets.SetAt(m_pCurSheet->m_oName.get(), m_pCurWorksheet);
 					m_oWorkbook.m_oSheets->m_arrItems.Add(m_pCurSheet);
 				}
@@ -1787,9 +1790,6 @@ namespace BinXlsxRW {
 			if(c_oSerWorksheetsTypes::WorksheetProp == type)
 			{
 				res = Read2(length, &BinaryWorksheetsTableReader::ReadWorksheetProp, this, poResult);
-				const OOX::RId& oRId = m_oWorkbook.Add(smart_ptr<OOX::File>(m_pCurWorksheet));
-				m_pCurSheet->m_oRid.Init();
-				m_pCurSheet->m_oRid->SetValue(oRId.get());
 			}
 			else if(c_oSerWorksheetsTypes::Cols == type)
 			{
@@ -1875,6 +1875,7 @@ namespace BinXlsxRW {
 			else if (c_oSerWorksheetsTypes::ConditionalFormatting == type)
 			{
 				// ToDo
+				res = c_oSerConstants::ReadUnknown;
 			}
 			else if(c_oSerWorksheetsTypes::Comments == type)
 			{
@@ -2845,6 +2846,7 @@ namespace BinXlsxRW {
 				BSTR bstrTempTheme = m_sTempTheme.AllocSysString();
 				m_pOfficeDrawingConverter->SaveThemeXml(m_pArray, m_oBufferedStream.GetPosition(), length, bstrTempTheme);
 				SysFreeString(bstrTempTheme);
+				res = c_oSerConstants::ReadUnknown;
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;

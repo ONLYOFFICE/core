@@ -107,13 +107,14 @@ void odf_style_context::process_office(office_element_ptr root )
 			root->add_child_element(style_state_list_[i].odf_style_);
 	}
 }
-std::wstring odf_style_context::find_odf_style_name(int oox_id_style, const style_family family)
+std::wstring odf_style_context::find_odf_style_name(int oox_id_style, const style_family family, bool root)
 {
 	for (long i =0; i < style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i].odf_style_)
 		{
-			if (style_state_list_[i].style_family_ == family)
+			if (style_state_list_[i].style_family_ == family && 
+				style_state_list_[i].root_ == root)
 			{
 				if (oox_id_style >=0 && style_state_list_[i].style_oox_id_ == oox_id_style)	return style_state_list_[i].get_name();
 			}

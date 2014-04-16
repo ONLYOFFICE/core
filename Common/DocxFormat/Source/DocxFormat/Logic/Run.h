@@ -11,7 +11,6 @@
 #include "Pict.h"
 #include "Annotations.h"
 #include "AlternateContent.h"
-#include "../../XlsxFormat/Chart/ChartStyle.h"
 
 namespace OOX
 {
@@ -257,10 +256,6 @@ namespace OOX
 						pItem = new CTab( oReader );
 					else if ( _T("w:yearLong") == sName )
 						pItem = new CYearLong( oReader );
-					else if ( _T("c:style") == sName )
-						pSpreadsheetItem = new OOX::Spreadsheet::CChartStyle( oReader );
-					else if ( _T("c14:style") == sName )
-						pSpreadsheetItem = new OOX::Spreadsheet::CChartStyle( oReader );
 
 					if ( pItem )
 						m_arrItems.Add( pItem );

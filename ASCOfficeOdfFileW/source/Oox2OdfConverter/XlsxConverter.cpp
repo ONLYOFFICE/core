@@ -893,7 +893,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellStyle * cell_style, int oox_i
 	int parent_id = cell_style->m_oXfId.IsInit() ? cell_style->m_oXfId->GetValue() : -1;
 
 	if (parent_id >=0) 
-		style->style_parent_style_name_ = ods_context->styles_context().find_odf_style_name(parent_id, odf::style_family::TableCell);
+		style->style_parent_style_name_ = ods_context->styles_context().find_odf_style_name(parent_id, odf::style_family::TableCell,true);
 	
 	//m_oBuiltinId, m_oCustomBuiltin, m_oHidden, m_oILevel;	???????
 }

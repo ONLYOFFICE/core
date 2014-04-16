@@ -37,7 +37,7 @@ public:
 	void reset_defaults();	
 	void add_default(odf_style_state & state)	{default_styles_.push_back(state);}
 
-	std::wstring 			find_odf_style_name		(int oox_id_style, const style_family family);
+	std::wstring 			find_odf_style_name		(int oox_id_style, const style_family family, bool root = false);
 	office_element_ptr		find_odf_style			(int oox_id_style, const style_family family, bool root = false);
 	
 	std::wstring			find_odf_style_name_default(const style_family family);

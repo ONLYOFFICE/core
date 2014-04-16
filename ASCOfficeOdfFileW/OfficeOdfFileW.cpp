@@ -145,9 +145,6 @@ HRESULT COfficeOdfFileW::SaveToFileImpl(const std::wstring & srcPath,
 	catch(...)
 	{
 	}
-
-    if FAILED(hr)
-        return hr;
    
     if FAILED(hr = office_utils_->CompressFileOrDirectory(CComBSTR(dstTempPath.c_str()), CComBSTR(dstFileName.c_str()), (-1)))
         return hr;

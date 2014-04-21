@@ -5469,47 +5469,6 @@ namespace BinDocxRW
 	void BinaryHeaderFooterTableWriter::WriteHdrFtrItem(OOX::Logic::CSectionProperty* pSectPr, OOX::CHdrFtr* pHdrFtr, bool bHdr)
 		{
 			int nCurPos = 0;
-			double BoundY = 0;
-			double BoundY2 = 0;
-			if(bHdr)
-			{
-				BoundY = Y_Top_Margin;
-				BoundY2 = Y_Default_Header;
-				if(NULL != pSectPr && pSectPr->m_oPgMar.IsInit() && pSectPr->m_oPgMar->m_oTop.IsInit())
-					BoundY = pSectPr->m_oPgMar->m_oTop.get().ToMm();
-				if(NULL != pSectPr && pSectPr->m_oPgMar.IsInit() && pSectPr->m_oPgMar->m_oHeader.IsInit())
-					BoundY2 = pSectPr->m_oPgMar->m_oHeader.get().ToMm();
-			}
-			else
-			{
-				double H = Page_Height;
-				double B = Y_Bottom_Margin;
-				double F = Y_Default_Footer;
-				if(NULL != pSectPr)
-				{
-					if(pSectPr->m_oPgSz.IsInit() && pSectPr->m_oPgSz->m_oH.IsInit())
-						H = pSectPr->m_oPgSz->m_oH.get().ToMm();
-					if(pSectPr->m_oPgMar.IsInit())
-					{
-						if(pSectPr->m_oPgMar->m_oBottom.IsInit())
-							B = pSectPr->m_oPgMar->m_oBottom.get().ToMm();
-						if(pSectPr->m_oPgMar->m_oFooter.IsInit())
-							F = pSectPr->m_oPgMar->m_oFooter.get().ToMm();
-					}
-				}
-				BoundY = H - B;
-				BoundY2 = H - F;
-			}
-
-			//BoundY, BoundY2 при сохранении не используются. вместо них используются pageMarings
-			//BoundY
-			nCurPos = m_oBcw.WriteItemStart(c_oSerHdrFtrTypes::HdrFtr_Y);
-			m_oBcw.m_oStream.WriteDouble2(BoundY);
-			m_oBcw.WriteItemEnd(nCurPos);
-			//BoundY2
-			nCurPos = m_oBcw.WriteItemStart(c_oSerHdrFtrTypes::HdrFtr_Y2);
-			m_oBcw.m_oStream.WriteDouble2(BoundY2);
-			m_oBcw.WriteItemEnd(nCurPos);
 			//Content
 			BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oBcw.m_oStream, m_oBcw.m_pEmbeddedFontsManager, m_poTheme, m_oSettings, m_oFontProcessor, pHdrFtr, m_pOfficeDrawingConverter, NULL, NULL);
 			oBinaryDocumentTableWriter.prepareOfficeDrawingConverter(m_pOfficeDrawingConverter, pHdrFtr->m_oReadPath.GetPath(),  pHdrFtr->m_arrShapeTypes);

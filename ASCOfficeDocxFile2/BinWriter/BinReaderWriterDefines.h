@@ -133,8 +133,8 @@ const int g_nFormatVersion = 5;
 		HdrFtr_Even = 3,
 		HdrFtr_Odd = 4,
 		HdrFtr_Content = 5,
-		HdrFtr_Y2 = 6,
-		HdrFtr_Y = 7
+		HdrFtr_Y2 = 6,//устарел
+		HdrFtr_Y = 7//устарел
 	};}
 	namespace c_oSerNumTypes{enum c_oSerNumTypes
 	{

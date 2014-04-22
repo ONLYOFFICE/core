@@ -181,8 +181,13 @@ void OoxConverter::convert/*_PrstGeom*/(OOX::Drawing::CPresetGeometry2D *oox_prs
 {
 	if (!oox_prst_geom)return;
 
-	//
-
+	if (oox_prst_geom->m_oAvLst.IsInit())
+	{
+		for (long i=0; i<oox_prst_geom->m_oAvLst->m_arrGd.GetSize(); i++)
+		{
+			odf_context()->drawing_context().add_modifier(string2std_string(oox_prst_geom->m_oAvLst->m_arrGd[i].m_oFmla.GetValue()));
+		}
+	}
 }
 void OoxConverter::convert(OOX::Drawing::CPath2D *oox_geom_path)
 {

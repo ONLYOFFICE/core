@@ -32,26 +32,13 @@ const wchar_t * draw_shape::ns = L"draw";
 const wchar_t * draw_shape::name = L"shape";
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void draw_shape::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
-{
-	CP_CREATE_ELEMENT(content_);
-}
-
-void draw_shape::add_child_element( office_element_ptr & child_element)
-{
-	content_.push_back(child_element);
-}
 void draw_shape::serialize(std::wostream & _Wostream)
 {
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
-	{
-		elm->serialize(_Wostream);
-	}
+	draw_base::serialize(_Wostream);
 }
 void draw_shape::serialize_attlist(CP_ATTR_NODE)
 {
-	common_draw_attlists_.serialize(CP_GET_XML_NODE());
-	common_presentation_attlist_.serialize(CP_GET_XML_NODE()); 	
+	draw_base::serialize_attlist(CP_GET_XML_NODE());
 	common_xlink_attlist_.serialize(CP_GET_XML_NODE());
 	
 	CP_XML_ATTR_OPT(L"draw:id", draw_id_);
@@ -155,36 +142,6 @@ void draw_line::serialize(std::wostream & _Wostream)
 
 			draw_shape::serialize(CP_XML_STREAM());
 		}
-	}
-}
-void draw_line::reset_svg_attributes()
-{
-	double x1=draw_line_attlist_.svg_x1_.get_value_or(length(0)).get_value_unit(length::pt);
-	double y1=draw_line_attlist_.svg_y1_.get_value_or(length(0)).get_value_unit(length::pt);
-	double x2=draw_line_attlist_.svg_x2_.get_value_or(length(0)).get_value_unit(length::pt);
-	double y2=draw_line_attlist_.svg_y2_.get_value_or(length(0)).get_value_unit(length::pt);
-	
-	if (x1 > x2)
-	{
-		common_draw_attlists_.position_.svg_x_	 = draw_line_attlist_.svg_x2_;
-		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(x1-x2, length::pt);
-		
-		additional_.push_back(_property(L"flipH",true));
-	}else
-	{
-		common_draw_attlists_.position_.svg_x_	 = draw_line_attlist_.svg_x1_;
-		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(x2-x1, length::pt);
-	}
-	if (y1 > y2)
-	{
-		common_draw_attlists_.position_.svg_y_	 = draw_line_attlist_.svg_y2_;
-		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(y1-y2, length::pt);
-
-		additional_.push_back(_property(L"flipV",true));
-	}else
-	{
-		common_draw_attlists_.position_.svg_y_	 = draw_line_attlist_.svg_y1_;
-		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(y2-y1, length::pt);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -397,8 +354,10 @@ int draw_enhanced_geometry::parsing(_CP_OPT(std::wstring) val)
 void draw_enhanced_geometry_attlist::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR_OPT(L"draw:type", draw_type_);
+    CP_XML_ATTR_OPT(L"draw:text-areas", draw_text_areas_);
     CP_XML_ATTR_OPT(L"draw:modifiers", draw_modifiers_);
-    CP_XML_ATTR_OPT(L"draw:enhanced-path", draw_enhanced_path_);
+    CP_XML_ATTR_OPT(L"draw:enhanced-path", draw_enhanced_path_);	
+	CP_XML_ATTR_OPT(L"draw:glue-points", draw_glue_points_);
 }
 // draw:enhanced_geometry
 const wchar_t * draw_enhanced_geometry::ns = L"draw";
@@ -410,17 +369,19 @@ void draw_enhanced_geometry::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			draw_enhanced_geometry_attlist_.serialize(CP_GET_XML_NODE());
 			CP_XML_ATTR_OPT(L"svg:viewBox", svg_viewbox_);
+			draw_enhanced_geometry_attlist_.serialize(CP_GET_XML_NODE());
+			
+			BOOST_FOREACH(office_element_ptr & elm, draw_equation_)
+			{
+				elm->serialize(CP_XML_STREAM());
+			}		
 			
 			BOOST_FOREACH(office_element_ptr & elm, draw_handle_)
 			{
 				elm->serialize(CP_XML_STREAM());
 			}
-			BOOST_FOREACH(office_element_ptr & elm, draw_equation_)
-			{
-				elm->serialize(CP_XML_STREAM());
-			}
+
 		}
 	}
 }

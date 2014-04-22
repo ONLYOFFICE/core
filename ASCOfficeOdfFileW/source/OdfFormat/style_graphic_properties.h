@@ -94,7 +94,9 @@ public:
     
     _CP_OPT(Bool) style_editable_;
 
-    _CP_OPT(style_wrap) style_wrap_;
+	_CP_OPT(Bool) draw_fit_to_size_;
+
+	_CP_OPT(style_wrap) style_wrap_;
 
     _CP_OPT(unsigned int) style_wrap_dynamic_treshold_;
 

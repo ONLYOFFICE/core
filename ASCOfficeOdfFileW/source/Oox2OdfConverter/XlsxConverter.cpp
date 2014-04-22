@@ -3,7 +3,6 @@
 #include "stdAfx.h"
 
 #include "XlsxConverter.h"
-#include "shape_types_mapping.h"
 
 #include <boost/foreach.hpp>
 
@@ -1029,46 +1028,40 @@ void XlsxConverter::convert(OOX::Spreadsheet::CShape* oox_shape)
 	if (!oox_shape)return;
 	if (!oox_shape->m_oSpPr.IsInit()) return;
 
-	std::wstring sub_type;
 	int type = -1;
-	if (oox_shape->m_oSpPr->m_eGeomType == OOX::Drawing::geomtypeCustom)
+	if (oox_shape->m_oSpPr->m_oCustGeom.IsInit())
 	{
-		type = 7;//6???
+		type = 1000;//6???
 	}
-	else if (oox_shape->m_oSpPr->m_eGeomType == OOX::Drawing::geomtypePreset)
+	if (oox_shape->m_oSpPr->m_oPrstGeom.IsInit())
 	{
-		if (oox_shape->m_oSpPr->m_oPrstGeom.IsInit())
-		{
-			OOX::Drawing::CPresetGeometry2D * geometry = oox_shape->m_oSpPr->m_oPrstGeom.GetPointer();
-			int oox_shape = (int)(geometry->m_oPrst.GetValue());
-			type = Shape_Types_Mapping[oox_shape].second;
-			sub_type = Shape_Types_Mapping[oox_shape].first;
-		}
-	}
-	else
-		return;
-
-	convert_SpPr(oox_shape->m_oSpPr.GetPointer());//все, окромя типа геометрии
-
-	if (oox_shape->m_oNvSpPr.IsInit())
-	{
-		if (oox_shape->m_oNvSpPr->m_oCNvPr.IsInit())
-		{
-			convert_CNvPr(oox_shape->m_oNvSpPr->m_oCNvPr.GetPointer());		
-		}
-
-		if (oox_shape->m_oNvSpPr->m_oCNvSpPr.IsInit())
-		{
-		}
+		OOX::Drawing::CPresetGeometry2D * geometry = oox_shape->m_oSpPr->m_oPrstGeom.GetPointer();
+		type =(geometry->m_oPrst.GetValue());
 	}
 
-
-	if (oox_shape->m_oShapeStyle.IsInit())
-	{
-	}
-	
-	ods_context->drawing_context().start_shape(type,sub_type );
+	if (type < 0)return;
+/////////////////////////////////////////////////////////////////////////////////
+	ods_context->drawing_context().start_shape(type);
 	{	
+		convert_SpPr(oox_shape->m_oSpPr.GetPointer());
+
+		if (oox_shape->m_oNvSpPr.IsInit())
+		{
+			if (oox_shape->m_oNvSpPr->m_oCNvPr.IsInit())
+			{
+				convert_CNvPr(oox_shape->m_oNvSpPr->m_oCNvPr.GetPointer());		
+			}
+
+			if (oox_shape->m_oNvSpPr->m_oCNvSpPr.IsInit())
+			{
+			}
+		}
+
+
+		if (oox_shape->m_oShapeStyle.IsInit())
+		{
+		}
+		
 	}
 	ods_context->drawing_context().end_shape();
 }
@@ -1079,44 +1072,42 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConnShape* oox_shape)
 	if (!oox_shape)return;
 	if (!oox_shape->m_oSpPr.IsInit()) return;
 
-	std::wstring sub_type;
 	int type = -1;
 	if (oox_shape->m_oSpPr->m_eGeomType == OOX::Drawing::geomtypeCustom)
 	{
-		type = 7;//6???
+		type = 1000;//?????
 	}
 	else if (oox_shape->m_oSpPr->m_eGeomType == OOX::Drawing::geomtypePreset)
 	{
 		if (oox_shape->m_oSpPr->m_oPrstGeom.IsInit())
 		{
 			OOX::Drawing::CPresetGeometry2D * geometry = oox_shape->m_oSpPr->m_oPrstGeom.GetPointer();
-			int oox_shape = (int)(geometry->m_oPrst.GetValue());
-			type = Shape_Types_Mapping[oox_shape].second;
-			sub_type = Shape_Types_Mapping[oox_shape].first;
+			type = (int)(geometry->m_oPrst.GetValue());
 		}
 	}
-	else
-		return;
-		
-	convert_SpPr(oox_shape->m_oSpPr.GetPointer());//все, окромя типа геометрии
+	if (type < 0)return;
+//////////////////////////////////////////////////////////////////////////////
+	ods_context->drawing_context().start_shape(type);
+	{		
+		convert_SpPr(oox_shape->m_oSpPr.GetPointer());
 
-	if (oox_shape->m_oNvConnSpPr.IsInit())
-	{
-		if (oox_shape->m_oNvConnSpPr->m_oCNvPr.IsInit())
+		if (oox_shape->m_oNvConnSpPr.IsInit())
 		{
-			convert_CNvPr(oox_shape->m_oNvConnSpPr->m_oCNvPr.GetPointer());		
-		}
+			if (oox_shape->m_oNvConnSpPr->m_oCNvPr.IsInit())
+			{
+				convert_CNvPr(oox_shape->m_oNvConnSpPr->m_oCNvPr.GetPointer());		
+			}
 
-		if (oox_shape->m_oNvConnSpPr->m_oCNvConnSpPr.IsInit())
+			if (oox_shape->m_oNvConnSpPr->m_oCNvConnSpPr.IsInit())
+			{
+			}
+		}
+	
+		if (oox_shape->m_oShapeStyle.IsInit())
 		{
 		}
-	}
+		//avLst
 
-	if (oox_shape->m_oShapeStyle.IsInit())
-	{
-	}
-	ods_context->drawing_context().start_shape(type,sub_type );
-	{	
 	}
 	ods_context->drawing_context().end_shape();
 }

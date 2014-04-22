@@ -3889,7 +3889,7 @@ namespace BinDocxRW
 			if (pNor.m_val.IsInit())
 				m_oBcw.m_oStream.WriteBool(pNor.m_val->GetValue());
 			else 
-				m_oBcw.m_oStream.WriteBool(false);
+				m_oBcw.m_oStream.WriteBool(true);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		void WriteMathNum(const OOX::Logic::CNum &pNum)

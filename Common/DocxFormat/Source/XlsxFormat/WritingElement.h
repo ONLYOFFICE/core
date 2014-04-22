@@ -309,7 +309,10 @@ et_alternatecontentfallback,
 		et_ShapeProperties,
 		et_ShapeNonVisual,
 		et_ShapeStyle,
-		et_Shape
+		et_Shape,
+		et_ConnShape,
+		et_ConnShapeNonVisual,
+		et_ConnectionNonVisualConnShapeProps
 
 
 	};

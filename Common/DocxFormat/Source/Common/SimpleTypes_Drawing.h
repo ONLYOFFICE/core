@@ -154,7 +154,11 @@ namespace SimpleTypes
 		{
 			return m_sGuide;
 		}
-
+			
+		double GetValue() const
+		{
+			return m_dValue;
+		}
 	private:
 
 		void Parse2(CString &sValue)

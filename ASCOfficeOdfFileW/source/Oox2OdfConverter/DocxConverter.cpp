@@ -33,7 +33,7 @@ odf::odf_conversion_context* DocxConverter::odf_context()
 {
 	return NULL;//odt_context;
 }
-void DocxConverter::convert()
+void DocxConverter::convertDocument()
 {
 	if (!docx_document)return;
 

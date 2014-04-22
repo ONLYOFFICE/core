@@ -188,6 +188,188 @@ namespace OOX
 			nullable<OOX::Drawing::CShapeStyle>			m_oShapeStyle;
 			//txBody (Shape Text Body)
 		};
+		
+		//--------------------------------------------------------------------------------
+		// 20.5.2.4 cNvCxnSpPr (Non-Visual Connector Shape Drawing Properties)
+		//--------------------------------------------------------------------------------	
+		class CConnectionNonVisualConnShapeProps : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CConnectionNonVisualConnShapeProps)
+			CConnectionNonVisualConnShapeProps()
+			{
+			}
+			virtual ~CConnectionNonVisualConnShapeProps()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+
+					sName = oReader.GetName();
+					if ( _T("a:picLocks") == sName )
+						m_oPicLocks = oReader;
+					else if ( _T("a:extLst") == sName )
+						m_oExtLst = oReader;
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_ConnectionNonVisualConnShapeProps;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("preferRelativeResize"), m_oPreferRelativeResize )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			EElementType      m_eType;
+			// Attributes
+			SimpleTypes::COnOff<SimpleTypes::onoffTrue> m_oPreferRelativeResize;
+
+			// Childs
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
+			nullable<OOX::Drawing::CPictureLocking>         m_oPicLocks;
+		};
+
+		//--------------------------------------------------------------------------------
+		// 20.5.2.19 nvCxnSpPr (Non-Visual Properties for a Connection Shape)
+		//--------------------------------------------------------------------------------	
+		class CConnShapeNonVisual : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CConnShapeNonVisual)
+			CConnShapeNonVisual()
+			{
+			}
+			virtual ~CConnShapeNonVisual()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+
+					if ( _T("xdr:cNvCxnSpPr") == sName )
+						m_oCNvConnSpPr = oReader;
+					else if ( _T("xdr:cNvPr") == sName )
+						m_oCNvPr = oReader;
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_ConnShapeNonVisual;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			EElementType      m_eType;
+			// Childs
+			nullable<CConnectionNonVisualConnShapeProps>	m_oCNvConnSpPr;
+			nullable<OOX::Drawing::CNonVisualDrawingProps>	m_oCNvPr;
+		};
+
+
+		//--------------------------------------------------------------------------------
+		//20.5.2.13 cxnSp (Connection Shape)
+		//--------------------------------------------------------------------------------
+		class CConnShape : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CConnShape)
+			CConnShape()
+			{
+			}
+			virtual ~CConnShape()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+
+					if ( _T("xdr:nvCxnSpPr") == sName )
+						m_oNvConnSpPr = oReader;
+					if ( _T("xdr:spPr") == sName )
+						m_oSpPr = oReader;
+					if ( _T("xdr:style") == sName )
+						m_oShapeStyle = oReader;				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_ConnShape;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
+		public:
+			nullable<CConnShapeNonVisual>				m_oNvConnSpPr;
+			nullable<OOX::Drawing::CShapeProperties>	m_oSpPr;
+			nullable<OOX::Drawing::CShapeStyle>			m_oShapeStyle;
+			//txBody (Shape Text Body)
+		};
 	} //Spreadsheet
 } // namespace OOX
 

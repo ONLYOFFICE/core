@@ -83,6 +83,8 @@ namespace OOX
 		}
 		void CNonVisualDrawingProps::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
+			ReadAttributes( oReader );
+			
 			m_eType = et_Unknown;
 			CWCharWrapper sName = oReader.GetName();
 

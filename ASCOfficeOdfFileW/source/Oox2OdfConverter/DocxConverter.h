@@ -27,7 +27,7 @@ namespace Oox2Odf
 	public:
 		DocxConverter(const std::wstring & path);
 
-		virtual void convert();
+		virtual void convertDocument();
 		virtual void write(const std::wstring & path);
 		
 		virtual odf::odf_conversion_context* odf_context();

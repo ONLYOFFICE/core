@@ -101,7 +101,9 @@ namespace OOX
 						m_oPicture = oReader;
 					else if (_T("xdr:sp") == sName)
 						m_oShape = oReader;
-					else if (_T("xdr:grpSp") == sName || _T("xdr:cxnSp") == sName || _T("mc:AlternateContent") == sName)
+					else if (_T("xdr:cxnSp") == sName)
+						m_oConnShape = oReader;
+					else if (_T("xdr:grpSp") == sName || _T("mc:AlternateContent") == sName)
 						m_oXml = oReader.GetOuterXml();
 				}
 			}
@@ -141,6 +143,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CGraphicFrame>		m_oGraphicFrame;
 			nullable<OOX::Spreadsheet::CPic>				m_oPicture;
 			nullable<OOX::Spreadsheet::CShape>				m_oShape;
+			nullable<OOX::Spreadsheet::CConnShape>			m_oConnShape;
 			nullable<CString>								m_oXml;
 		};
 	} //Spreadsheet

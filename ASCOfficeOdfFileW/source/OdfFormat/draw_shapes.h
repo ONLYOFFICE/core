@@ -299,6 +299,7 @@ class draw_enhanced_geometry_attlist
 public:
 	_CP_OPT(std::wstring) draw_type_;
 	_CP_OPT(std::wstring) draw_modifiers_;
+	_CP_OPT(std::wstring) draw_enhanced_path_;
 	
 	void serialize(CP_ATTR_NODE);   
 };

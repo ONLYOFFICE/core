@@ -48,6 +48,12 @@ public:
 
 	bool is_exist_content();
 
+	//void start_path(int W, int H);
+	//void end_path();
+
+	void add_path_element(std::wstring command, std::wstring & elm);
+	void set_viewBox(double W, double H);
+
 	void finalize(office_element_ptr & root_elm);
 
 ///////////////////////////////////////////////////
@@ -60,6 +66,8 @@ public:
 	void set_tile(bool bVal);
 
 	void set_rotate(int iVal);
+
+	void set_no_fill();
 
 private:
 

@@ -47,6 +47,11 @@ private:
 std::wostream & operator << (std::wostream & _Wostream, const length::unit _Unit);
 std::wostream & operator << (std::wostream & _Wostream, const length & _Length);
 
+length operator + (length & _Length1, length & _Length2);
+length operator - (length & _Length1, length & _Length2);
+length operator / (length & _Length1, double val);
+length operator * (length & _Length1, double val);
+
 typedef length coordinate;
 
 }

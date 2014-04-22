@@ -54,7 +54,7 @@ namespace Oox2Odf
 	public:
 		XlsxConverter(const std::wstring & path);
 
-		virtual void convert();
+		virtual void convertDocument();
 		virtual void write(const std::wstring & path);
 		
 		virtual odf::odf_conversion_context* odf_context();
@@ -110,6 +110,7 @@ namespace Oox2Odf
 
 		void convert(OOX::Spreadsheet::CPic*	oox_picture);
 		void convert(OOX::Spreadsheet::CShape*	oox_shape);
+		void convert(OOX::Spreadsheet::CConnShape*	oox_conn_shape);
 		
 	};
 }

@@ -16,6 +16,8 @@ namespace cpdoccore
 }
 namespace OOX
 {
+	class WritingElement;
+
 	namespace Drawing
 	{
 		class CNonVisualDrawingProps;
@@ -26,6 +28,14 @@ namespace OOX
 		class CGradientFillProperties;
 		class CPatternFillProperties;
 		class CSolidColorFillProperties;
+		class CPath2D;
+		class CPath2DLineTo;
+		class CPath2DMoveTo;
+		class CPath2DArcTo;
+		class CPath2DQuadBezierTo;
+		class CPath2DCubicBezierTo;
+		class CPath2DClose;
+
 	}
 }
 
@@ -34,23 +44,33 @@ namespace Oox2Odf
 	class OoxConverter
 	{
 public:
-		virtual void convert() = 0;
+		virtual void convertDocument() = 0;
 		virtual void write(const std::wstring & path) = 0;
 		
 		OoxConverter(){}
 
 		virtual cpdoccore::odf::odf_conversion_context* odf_context() = 0;
+
+		void convert(OOX::WritingElement  *oox_unknown);
 	
-		void convert_CNvPr(OOX::Drawing::CNonVisualDrawingProps* oox_cnvPr);
-		void convert_SpPr(OOX::Drawing::CShapeProperties* oox_spPr);
+		void convert_CNvPr(OOX::Drawing::CNonVisualDrawingProps	* oox_cnvPr);
+		void convert_SpPr(OOX::Drawing::CShapeProperties		* oox_spPr);
 		
-		void convert(OOX::Drawing::CCustomGeometry2D *oox_cust_geom);
-		void convert(OOX::Drawing::CPresetGeometry2D *oox_prst_geom);
+		void convert/*_CustGeom*/(OOX::Drawing::CCustomGeometry2D	*oox_cust_geom);
+		void convert/*_PrstGeom*/(OOX::Drawing::CPresetGeometry2D	*oox_prst_geom);
 		
-		void convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill);
-		void convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill);
-		void convert(OOX::Drawing::CPatternFillProperties *oox_pattern_fill);
-		void convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fill);
+		void convert(OOX::Drawing::CBlipFillProperties			*oox_bitmap_fill);
+		void convert(OOX::Drawing::CGradientFillProperties		*oox_grad_fill);
+		void convert(OOX::Drawing::CPatternFillProperties		*oox_pattern_fill);
+		void convert(OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill);
+		void convert(OOX::Drawing::CPath2D						*oox_geom_path);
+		void convert(OOX::Drawing::CPath2DLineTo				*oox_geom_path);
+		void convert(OOX::Drawing::CPath2DMoveTo				*oox_geom_path);
+		void convert(OOX::Drawing::CPath2DArcTo					*oox_geom_path);
+		void convert(OOX::Drawing::CPath2DQuadBezierTo			*oox_geom_path);
+		void convert(OOX::Drawing::CPath2DCubicBezierTo			*oox_geom_path);
+		void convert(OOX::Drawing::CPath2DClose					*oox_geom_path);
+
 	};
 
 	class Converter

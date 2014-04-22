@@ -398,6 +398,7 @@ void draw_enhanced_geometry_attlist::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR_OPT(L"draw:type", draw_type_);
     CP_XML_ATTR_OPT(L"draw:modifiers", draw_modifiers_);
+    CP_XML_ATTR_OPT(L"draw:enhanced-path", draw_enhanced_path_);
 }
 // draw:enhanced_geometry
 const wchar_t * draw_enhanced_geometry::ns = L"draw";

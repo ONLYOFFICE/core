@@ -155,21 +155,17 @@ const wchar_t * draw_frame::name = L"frame";
 
 void draw_frame::serialize(std::wostream & _Wostream)
 {
- //	idx_in_owner = -1;
 	CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
+			draw_base::serialize_attlist(CP_GET_XML_NODE());
+			
 			draw_frame_attlist_.serialize(CP_GET_XML_NODE());
-			common_draw_attlists_.serialize(CP_GET_XML_NODE());
-			common_presentation_attlist_.serialize(CP_GET_XML_NODE());
 
 			if (office_event_listeners_)office_event_listeners_->serialize(CP_XML_STREAM());
 
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
-			{
-				elm->serialize(CP_XML_STREAM());
-			}
+			draw_base::serialize(CP_XML_STREAM());
 		}
 	}
 }
@@ -186,7 +182,7 @@ void draw_frame::create_child_element(  const ::std::wstring & Ns, const ::std::
         CP_CHECK_NAME(L"table", L"table") 
         )
     {
-        CP_CREATE_ELEMENT(content_);
+        draw_base::create_child_element(Ns,Name);
     }
     else if CP_CHECK_NAME(L"office", L"event-listeners")
     {
@@ -216,7 +212,7 @@ void draw_frame::add_child_element(office_element_ptr & child_element)
 
     if (type == typeDrawImage || type == typeDrawTextBox || type == typeDrawObject || type == typeDrawObjectOle || type == typeTableTable)
     {
-		content_.push_back(child_element);
+		draw_base::add_child_element(child_element);
     } 
 	else if (type == typeOfficeEventListeners)
 	{

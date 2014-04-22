@@ -33,7 +33,7 @@ public:
 	void start_frame();
 	void end_frame();
 	
-	void start_shape(int type, std::wstring & sub_type);
+	void start_shape(int type);
 	void end_shape();
 
 	void start_image(std::wstring & path);
@@ -44,19 +44,19 @@ public:
 
 	office_element_ptr & get_current_element();
 
-	void set_rect(double x_pt, double y_pt, double width_pt, double height_pt);
-
 	bool is_exist_content();
-
-	//void start_path(int W, int H);
-	//void end_path();
-
+//////////////////////////////////////////////////////////////////////////////////////
 	void add_path_element(std::wstring command, std::wstring & elm);
+	void add_modifier(std::wstring modifier);
+	
 	void set_viewBox(double W, double H);
 
 	void finalize(office_element_ptr & root_elm);
 
-///////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+
+	void set_rect(double x_pt, double y_pt, double width_pt, double height_pt);
+	
 	void set_name(std::wstring  name);
 	void set_z_order(int id);
 	
@@ -70,8 +70,6 @@ public:
 	void set_no_fill();
 
 private:
-
-	office_element_ptr create_shape(int type);
 
     class Impl;
     _CP_PTR(Impl) impl_;

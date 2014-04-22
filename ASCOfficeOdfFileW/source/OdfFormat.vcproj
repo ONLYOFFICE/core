@@ -887,6 +887,14 @@
 			Name="elements"
 			>
 			<File
+				RelativePath=".\OdfFormat\draw_base.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\draw_base.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\draw_frame.cpp"
 				>
 			</File>
@@ -1148,6 +1156,38 @@
 			</File>
 			<File
 				RelativePath=".\OdfFormat\odf_text_context.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="odf_shapes_defines"
+			>
+			<File
+				RelativePath=".\OdfFormat\oox_shape_defines.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\oox_shape_defines.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\shapes\oox_shapeMathMultiply.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\shapes\oox_shapeSnipRoundRects.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\shapes\oox_shapeStars.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\shapes\oox_shapeSun.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Oox2OdfConverter\shape_types_mapping.h"
 				>
 			</File>
 		</Filter>

@@ -53,6 +53,7 @@ void graphic_format_properties::serialize(std::wostream & _Wostream ,const wchar
 			CP_XML_ATTR_OPT(L"style:flow-with-text", style_flow_with_text_);
 			CP_XML_ATTR_OPT(L"style:overflow-behavior", style_overflow_behavior_);
 			CP_XML_ATTR_OPT(L"style:mirror", style_mirror_);
+			CP_XML_ATTR_OPT(L"draw:fit-to-size", draw_fit_to_size_);
 			
 			common_draw_rel_size_attlist_.serialize(CP_GET_XML_NODE());
 			common_horizontal_margin_attlist_.serialize(CP_GET_XML_NODE());

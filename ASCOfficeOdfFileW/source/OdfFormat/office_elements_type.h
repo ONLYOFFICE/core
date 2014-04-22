@@ -181,6 +181,7 @@ enum ElementType
     typeDrawObjectOle,
  	typeDrawChart,
 
+	typeDrawBase,
 	typeDrawShape,
 
 	typeDrawRect,

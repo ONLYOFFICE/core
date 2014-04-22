@@ -7,7 +7,8 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 #include "common_attlists.h"
-//#include "../docx/xlsxconversioncontext.h"
+
+#include "draw_base.h"
 
 namespace cpdoccore { 
 namespace odf {
@@ -89,8 +90,8 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(draw_chart);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class draw_frame : public office_element_impl<draw_frame>
-{
+class draw_frame : public draw_base
+{    //для  draw-text-box, draw-image, draw-object, draw-object-ole, draw-applet, draw-floating-frame, draw-plugin
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
@@ -104,15 +105,9 @@ public:
     virtual void serialize(std::wostream & _Wostream);
 
 	int idx_in_owner ;
-	common_presentation_attlist common_presentation_attlist_;
-	union_common_draw_attlists  common_draw_attlists_;
 
-  
-	presentation_shape_attlist presentation_shape_attlist_;
+  	presentation_shape_attlist presentation_shape_attlist_;
     draw_frame_attlist draw_frame_attlist_;
-
-    // draw-text-box, draw-image, draw-object, draw-object-ole, draw-applet, draw-floating-frame, draw-plugin
-    office_element_ptr_array content_;
 
     office_element_ptr office_event_listeners_; // в content перенести нельзя - иначе событи будет добавляться не к этому объекту а следующему
     office_element_ptr draw_glue_point_;
@@ -120,9 +115,6 @@ public:
     //office_element_ptr draw_chart_map_;
 
     office_element_ptr draw_contour_; // draw-contour-polygon or draw-contour-path
-
-    friend class draw_image;
-	friend class draw_chart;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_frame);

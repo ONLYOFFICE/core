@@ -8,6 +8,8 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 
+#include "draw_base.h"
+
 #include "common_attlists.h"
 
 
@@ -17,7 +19,7 @@ namespace cpdoccore
 namespace odf {
 
 
-class draw_shape : public office_element_impl<draw_shape>
+class draw_shape : public draw_base
 {  
 public:
     static const wchar_t * ns;
@@ -26,25 +28,17 @@ public:
 	static const ElementType type = typeDrawShape;
 	static const xml::NodeType xml_type = xml::typeElement;
 
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element);
-
     virtual void serialize(std::wostream & _Wostream);
     virtual void serialize_attlist(CP_ATTR_NODE);
 	
 	common_xlink_attlist		common_xlink_attlist_;
-	common_presentation_attlist common_presentation_attlist_;
-	union_common_draw_attlists  common_draw_attlists_;
 	
 	_CP_OPT(std::wstring)		draw_id_;//используется для анимашек
   
-	office_element_ptr_array content_;
 
 	CPDOCCORE_DEFINE_VISITABLE();
 
 	int sub_type_;
-	std::vector<odf::_property> additional_;
-
 
 };
 
@@ -140,7 +134,6 @@ public:
 
     draw_line_attlist draw_line_attlist_;
 
-	void reset_svg_attributes();
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_line);
@@ -300,6 +293,8 @@ public:
 	_CP_OPT(std::wstring) draw_type_;
 	_CP_OPT(std::wstring) draw_modifiers_;
 	_CP_OPT(std::wstring) draw_enhanced_path_;
+	_CP_OPT(std::wstring) draw_text_areas_;
+	_CP_OPT(std::wstring) draw_glue_points_;
 	
 	void serialize(CP_ATTR_NODE);   
 };

@@ -898,8 +898,8 @@ void common_anim_smil_attlist::apply_from(const common_anim_smil_attlist & Other
 void union_common_draw_attlists::serialize(CP_ATTR_NODE)
 {
     shape_with_text_and_styles_.serialize(CP_GET_XML_NODE());
-    position_.serialize(CP_GET_XML_NODE());
     rel_size_.serialize(CP_GET_XML_NODE());
+    position_.serialize(CP_GET_XML_NODE());
 }
 
 }

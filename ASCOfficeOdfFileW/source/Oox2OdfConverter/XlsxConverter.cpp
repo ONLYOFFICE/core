@@ -40,7 +40,13 @@ odf::odf_conversion_context* XlsxConverter::odf_context()
 {
 	return ods_context;
 }
-
+OOX::CTheme* XlsxConverter::oox_theme()
+{
+	if (xlsx_document)
+		return xlsx_document->GetTheme();
+	else
+		return NULL;
+}
 void XlsxConverter::convertDocument()
 {
 	if (!xlsx_document)return;

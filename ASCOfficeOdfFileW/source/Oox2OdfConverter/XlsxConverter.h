@@ -58,6 +58,7 @@ namespace Oox2Odf
 		virtual void write(const std::wstring & path);
 		
 		virtual odf::odf_conversion_context* odf_context();
+		virtual OOX::CTheme* oox_theme();
 
     private:
 		OOX::Spreadsheet::CXlsx		*xlsx_document;

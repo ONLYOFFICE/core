@@ -33,6 +33,10 @@ odf::odf_conversion_context* DocxConverter::odf_context()
 {
 	return NULL;//odt_context;
 }
+OOX::CTheme* DocxConverter::oox_theme()
+{
+	return NULL;
+}
 void DocxConverter::convertDocument()
 {
 	if (!docx_document)return;

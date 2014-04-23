@@ -47,6 +47,8 @@ namespace cpdoccore
 		std::wstring text_areas;
 		std::wstring view_box;
 
+		std::wstring odf_type_name;
+
 		_CP_OPT(std::wstring) glue_points;
 	};
 };

@@ -1,3 +1,5 @@
+//todoooo потом для красивости нужно будет растащить файл на файлики
+
 #pragma once
 #include "stdAfx.h"
 
@@ -99,35 +101,6 @@ void OoxConverter::convert_SpPr(OOX::Drawing::CShapeProperties *   oox_spPr)
 {
 	if (!oox_spPr) return;
 
-	if (oox_spPr->m_oXfrm.IsInit())//CTransform2D
-	{
-		//размеры продублированы
-
-		if (oox_spPr->m_oXfrm->m_oFlipH.GetValue() == SimpleTypes::onoffTrue)
-			odf_context()->drawing_context().set_flip_H(true);
-		if (oox_spPr->m_oXfrm->m_oFlipV.GetValue() == SimpleTypes::onoffTrue)
-			odf_context()->drawing_context().set_flip_V(true);
-		if (oox_spPr->m_oXfrm->m_oRot.GetValue() > 0)
-			odf_context()->drawing_context().set_rotate(oox_spPr->m_oXfrm->m_oRot.GetValue());
-	}
-
-	switch (oox_spPr->m_eFillType)
-	{
-		case OOX::Drawing::filltypeBlip:
-			if(oox_spPr->m_oBlipFill.IsInit())convert(oox_spPr->m_oBlipFill.GetPointer());break;
-		case OOX::Drawing::filltypeGradient:
-			if(oox_spPr->m_oGradFill.IsInit())convert(oox_spPr->m_oGradFill.GetPointer());break;
-		case OOX::Drawing::filltypePattern:
-			if(oox_spPr->m_oPattFill.IsInit())convert(oox_spPr->m_oPattFill.GetPointer());break;
-		case OOX::Drawing::filltypeSolid:
-			if(oox_spPr->m_oSolidFill.IsInit())convert(oox_spPr->m_oSolidFill.GetPointer());break;
-		case OOX::Drawing::filltypeGroup:
-		case OOX::Drawing::filltypeNo:
-			odf_context()->drawing_context().set_no_fill();
-			break;
-		case OOX::Drawing::filltypeUnknown:
-		default: break;
-	}
 	switch(oox_spPr->m_eGeomType)
 	{
 	case OOX::Drawing::geomtypeCustom :
@@ -138,11 +111,45 @@ void OoxConverter::convert_SpPr(OOX::Drawing::CShapeProperties *   oox_spPr)
 	default:
 		break;
 	}
-	//EEffectType                                       m_eEffectType; // Тип контейнера эффектов
+	odf_context()->drawing_context().start_area_properies();
+	{
+		switch (oox_spPr->m_eFillType)
+		{
+			case OOX::Drawing::filltypeBlip:		convert(oox_spPr->m_oBlipFill.GetPointer());break;
+			case OOX::Drawing::filltypeGradient:	convert(oox_spPr->m_oGradFill.GetPointer());break;
+			case OOX::Drawing::filltypePattern:		convert(oox_spPr->m_oPattFill.GetPointer());break;
+			case OOX::Drawing::filltypeSolid:		convert(oox_spPr->m_oSolidFill.GetPointer());break;
+			case OOX::Drawing::filltypeGroup:
+			case OOX::Drawing::filltypeNo:			odf_context()->drawing_context().set_no_fill();
+				break;
+		}
+		//....
+	}
+	odf_context()->drawing_context().end_area_properies();
+
+	odf_context()->drawing_context().start_line_properies();
+	{
+		convert(oox_spPr->m_oLn.GetPointer());	//CLineProperties
+	}
+	odf_context()->drawing_context().end_line_properies();
+////////
+
+	//shadow 
+///////////
+
+	if (oox_spPr->m_oXfrm.IsInit())	//CTransform2D
+	{
+		if (oox_spPr->m_oXfrm->m_oFlipH.GetValue() == SimpleTypes::onoffTrue)
+			odf_context()->drawing_context().set_flip_H(true);
+		if (oox_spPr->m_oXfrm->m_oFlipV.GetValue() == SimpleTypes::onoffTrue)
+			odf_context()->drawing_context().set_flip_V(true);
+		if (oox_spPr->m_oXfrm->m_oRot.GetValue() > 0)
+			odf_context()->drawing_context().set_rotate(oox_spPr->m_oXfrm->m_oRot.GetValue());
+	}
+
 	//nullable<OOX::Drawing::CEffectContainer>          m_oEffectDag;
 	//nullable<OOX::Drawing::CEffectList>               m_oEffectList;
 
-	//nullable<OOX::Drawing::CLineProperties>           m_oLn;
 	//nullable<OOX::Drawing::COfficeArtExtensionList>   m_oExtLst;
 	//nullable<OOX::Drawing::CScene3D>                  m_oScene3D;
 	//nullable<OOX::Drawing::CShape3D>                  m_oSp3D;
@@ -167,7 +174,7 @@ void OoxConverter::convert_CNvPr(OOX::Drawing::CNonVisualDrawingProps * oox_cnvP
 	//nullable<CString>                               m_sTitle;
 }
 
-void OoxConverter::convert/*_CustGeom*/(OOX::Drawing::CCustomGeometry2D *oox_cust_geom)
+void OoxConverter::convert(OOX::Drawing::CCustomGeometry2D *oox_cust_geom)
 {
 	if (!oox_cust_geom)return;
 
@@ -176,8 +183,22 @@ void OoxConverter::convert/*_CustGeom*/(OOX::Drawing::CCustomGeometry2D *oox_cus
 		convert(&oox_cust_geom->m_oPthLst.m_arrPath[i]);
 	}
 }
+void OoxConverter::convert(OOX::Drawing::CLineProperties *oox_line_prop)
+{
+	if (!oox_line_prop)return;
+	
+	switch (oox_line_prop->m_eFillType)
+	{
+		case OOX::Drawing::filltypeGradient:	convert(oox_line_prop->m_oGradFill.GetPointer());break;
+		case OOX::Drawing::filltypePattern:		convert(oox_line_prop->m_oPattFill.GetPointer());break;
+		case OOX::Drawing::filltypeSolid:		convert(oox_line_prop->m_oSolidFill.GetPointer());break;
+		case OOX::Drawing::filltypeGroup:
+		case OOX::Drawing::filltypeNo:			odf_context()->drawing_context().set_no_fill();
+			break;
+	}
+}
 
-void OoxConverter::convert/*_PrstGeom*/(OOX::Drawing::CPresetGeometry2D *oox_prst_geom)
+void OoxConverter::convert(OOX::Drawing::CPresetGeometry2D *oox_prst_geom)
 {
 	if (!oox_prst_geom)return;
 
@@ -204,20 +225,129 @@ void OoxConverter::convert(OOX::Drawing::CPath2D *oox_geom_path)
 void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill)
 {
 	if (!oox_bitmap_fill)return;
+
+	//odf_context()->drawing_context().start_bitmap_fill();
+
+	//odf_context()->drawing_context().end_bitmap_fill();
+
 }
 
 void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill)
 {
 	if (!oox_grad_fill)return;
+	//нужно делать через текущий драунинг, а не напрямую через стили !!! - чарты и их с ними ...
+
+	//odf_context()->drawing_context().start_gradient_fill();
+
+	//odf::office_element_ptr gradient_element;
+
+	//odf::create_element(L"draw",L"gradient",gradient_element,odf_context());
+	//odf_context()->styles_context().add_style(gradient_element,false,true);
+
+	//odf_context()->drawing_context().end_gradient_fill();
 }
 void OoxConverter::convert(OOX::Drawing::CPatternFillProperties *oox_pattern_fill)
 {
 	if (!oox_pattern_fill)return;
+	
+	//odf_context()->drawing_context().start_pattern_fill();
+
+
+	//odf_context()->drawing_context().end_pattern_fill();
+
 }
 void OoxConverter::convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fill)
 {
 	if (!oox_solid_fill)return;
+
+	std::wstring hexColor;//rgb
+	BYTE uA=0, uG=0, uB=0, uR =0;
+	if (oox_solid_fill->tryGetRgb(uR,uG,uB,uA))
+	{
+		SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB> *oRgbColor = new SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB>(uR,uG,uB);
+		if (oRgbColor)
+		{		
+			hexColor = string2std_string(oRgbColor->ToString().Right(6));
+			delete oRgbColor;
+		}
+	}
+	else
+	{
+		switch( oox_solid_fill->m_eType )
+		{
+			case OOX::Drawing::colorHsl:   convert(&oox_solid_fill->m_oHslClr,	hexColor);		break;
+			case OOX::Drawing::colorPrst:  convert(&oox_solid_fill->m_oPrstClr,	hexColor);		break;
+			case OOX::Drawing::colorSheme: convert(&oox_solid_fill->m_oShemeClr,hexColor);		break;
+			case OOX::Drawing::colorScRgb: convert(&oox_solid_fill->m_oScrgbClr,hexColor);		break;
+		}	
+	}	
+	odf_context()->drawing_context().set_solid_fill(hexColor);
 }
+void OoxConverter::convert(OOX::Drawing::CHslColor        *oox_HslClr,	std::wstring & hexString)
+{
+	if (!oox_HslClr)return;
+}
+void OoxConverter::convert(OOX::Drawing::CPresetColor     *oox_PrstClr,	std::wstring & hexString)
+{
+	if (!oox_PrstClr)return;
+}
+void OoxConverter::convert(OOX::Drawing::CSchemeColor     *oox_ShemeClr,	std::wstring & hexString)
+{
+	OOX::CTheme * theme= oox_theme();
+	if (!oox_ShemeClr || !theme)return;
+
+	int theme_ind = oox_ShemeClr->m_oVal.GetValue();
+	
+	BYTE ucA=0, ucG=0, ucB=0, ucR =0;
+	bool result = false;
+
+	switch(theme_ind)
+	{
+		case SimpleTypes::shemecolorvalLt1:
+			result = theme->m_oThemeElements.m_oClrScheme.m_oLt1.tryGetRgb(ucR, ucG, ucB, ucA); break;
+		case SimpleTypes::shemecolorvalLt2:
+			result = theme->m_oThemeElements.m_oClrScheme.m_oLt2.tryGetRgb(ucR, ucG, ucB, ucA); break;
+		case SimpleTypes::shemecolorvalDk1:
+			result = theme->m_oThemeElements.m_oClrScheme.m_oDk1.tryGetRgb(ucR, ucG, ucB, ucA); break;
+		case SimpleTypes::shemecolorvalDk2:
+			result = theme->m_oThemeElements.m_oClrScheme.m_oDk2.tryGetRgb(ucR, ucG, ucB, ucA); break;
+		case SimpleTypes::shemecolorvalAccent1:
+			result = theme->m_oThemeElements.m_oClrScheme.m_oAccent1.tryGetRgb(ucR, ucG, ucB, ucA); break;
+		case SimpleTypes::shemecolorvalAccent2:
+			result = theme->m_oThemeElements.m_oClrScheme.m_oAccent2.tryGetRgb(ucR, ucG, ucB, ucA); break;
+		case SimpleTypes::shemecolorvalAccent3:
+			result = theme->m_oThemeElements.m_oClrScheme.m_oAccent3.tryGetRgb(ucR, ucG, ucB, ucA); break;
+		case SimpleTypes::shemecolorvalAccent4:
+			result = theme->m_oThemeElements.m_oClrScheme.m_oAccent4.tryGetRgb(ucR, ucG, ucB, ucA); break;
+		case SimpleTypes::shemecolorvalAccent5:
+			result = theme->m_oThemeElements.m_oClrScheme.m_oAccent5.tryGetRgb(ucR, ucG, ucB, ucA); break;
+		case SimpleTypes::shemecolorvalAccent6:
+			result = theme->m_oThemeElements.m_oClrScheme.m_oAccent6.tryGetRgb(ucR, ucG, ucB, ucA); break;
+		case SimpleTypes::shemecolorvalFolHlink:
+			result = theme->m_oThemeElements.m_oClrScheme.m_oFolHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
+		case SimpleTypes::shemecolorvalHlink:
+			result = theme->m_oThemeElements.m_oClrScheme.m_oHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
+	}
+	if (result == true)
+	{
+		oox_ShemeClr->SetRGBA(ucR,ucG,ucB);
+		oox_ShemeClr->ApplyTransform();
+
+		oox_ShemeClr->GetRGBA(ucR,ucG,ucB,ucA);
+
+		SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB> *oRgbColor = new SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB>(ucR,ucG,ucB);
+		if (oRgbColor)
+		{		
+			hexString = string2std_string(oRgbColor->ToString().Right(6));
+			delete oRgbColor;
+		}
+	}
+}
+void OoxConverter::convert(OOX::Drawing::CScRgbColor      *oox_ScrgbClr,	std::wstring & hexString)
+{
+	if (!oox_ScrgbClr)return;
+}
+
 void OoxConverter::convert(OOX::Drawing::CPath2DLineTo *oox_geom_path)
 {
 	if (!oox_geom_path) return;

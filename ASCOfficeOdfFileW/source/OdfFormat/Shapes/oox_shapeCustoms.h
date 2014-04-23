@@ -1,5 +1,8 @@
 #include "..\oox_shape_defines.h"
-
+		//	shapetypeIrregularSeal1,
+		//	shapetypeIrregularSeal2,
+//	+	//	shapetypeSun,
+		//	shapetypeWave,
 namespace cpdoccore 
 {
 class oox_shape_sun : public oox_shape
@@ -7,6 +10,8 @@ class oox_shape_sun : public oox_shape
 public:
 	oox_shape_sun()
 	{
+		odf_type_name	=L"ooxml-sun";
+
 		modifiers		= L"23520";
 		enhanced_path	= L"M ?f3 ?f8 L ?f41 ?f57 ?f41 ?f53 Z M ?f31 ?f32 L ?f42 ?f52 ?f43 ?f51 Z M ?f11 ?f4 L ?f44 ?f50 ?f40 ?f50 Z M ?f33 ?f32 L ?f39 ?f51 ?f38 ?f52 Z M ?f2 ?f8 L ?f37 ?f53 ?f37 ?f57 Z M ?f33 ?f34 L ?f38 ?f56 ?f39 ?f55 Z M ?f11 ?f5 L ?f40 ?f54 ?f44 ?f54 Z M ?f31 ?f34 L ?f43 ?f55 ?f42 ?f56 Z M ?f45 ?f8 A ?f97 ?f98 ?f99 ?f100 ?f45 ?f8 ?f94 ?f96  W ?f101 ?f102 ?f103 ?f104 ?f45 ?f8 ?f94 ?f96 Z N";
 		text_areas		= L"?f36 ?f49 ?f35 ?f48";

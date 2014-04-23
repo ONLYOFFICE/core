@@ -17,11 +17,15 @@ public:
 	double Footer;
 	bool TitlePg;
 	bool EvenAndOddHeaders;
+	byte SectionType;
+	int PageNumStart;
 
 	bool bHeader;
 	bool bFooter;
 	bool bTitlePg;
 	bool bEvenAndOddHeaders;
+	bool bSectionType;
+	bool bPageNumStart;
 	SectPr()
 	{
 		W = Page_Width;
@@ -39,6 +43,8 @@ public:
 		bFooter = false;
 		bTitlePg = false;
 		bEvenAndOddHeaders = false;
+		bSectionType = false;
+		bPageNumStart = false;
 	}
 	CString Write()
 	{
@@ -53,6 +59,20 @@ public:
 		long nMFooter = Round(Footer * g_dKoef_mm_to_twips);
 		if(!sHeaderFooterReference.IsEmpty())
 			sRes.Append(sHeaderFooterReference);
+		if(bSectionType)
+		{
+			CString sType;
+			switch(SectionType)
+			{
+			case 0: sType = _T("continuous");break;
+			case 1: sType = _T("evenPage");break;
+			case 2: sType = _T("nextColumn");break;
+			case 3: sType = _T("nextPage");break;
+			case 4: sType = _T("oddPage");break;
+			default: sType = _T("nextPage");break;
+			}
+			sRes.AppendFormat(_T("<w:type w:val=\"%s\"/>"), sType);
+		}
 		if(orientation_Portrait == cOrientation)
 			sRes.AppendFormat(_T("<w:pgSz w:w=\"%d\" w:h=\"%d\"/>"), nWidth, nHeight);
 		else
@@ -63,6 +83,8 @@ public:
 		if(bFooter)
 			sRes.AppendFormat(_T(" w:footer=\"%d\""), nMFooter);
 		sRes.Append(_T("/>"));
+		if(bPageNumStart)
+			sRes.AppendFormat(_T("<w:pgNumType w:start=\"%d\"/>"), PageNumStart);
 		sRes.Append(_T("<w:cols w:space=\"708\"/><w:docGrid w:linePitch=\"360\"/>"));
 		if(bTitlePg && TitlePg)
 			sRes.Append(_T("<w:titlePg/>"));

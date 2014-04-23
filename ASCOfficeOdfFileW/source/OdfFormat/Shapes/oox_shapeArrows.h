@@ -1,0 +1,3 @@
+	//	shapetypeLeftCircularArrow,
+	//	shapetypeLeftRightCircularArrow,
+	//	shapetypeSwooshArrow,

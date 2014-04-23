@@ -68,6 +68,16 @@ public:
 	void set_rotate(int iVal);
 
 	void set_no_fill();
+	void set_solid_fill(std::wstring hexColor);
+//////////////////////////////////////////////////////////////
+	void start_area_properies();
+	void end_area_properies();
+	
+	void start_line_properies();
+	void end_line_properies();
+	
+	void start_shadow_properies();
+	void end_shadow_properies();
 
 private:
 

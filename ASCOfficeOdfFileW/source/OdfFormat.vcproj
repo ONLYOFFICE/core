@@ -1163,6 +1163,10 @@
 			Name="odf_shapes_defines"
 			>
 			<File
+				RelativePath=".\OdfFormat\shapes\odf_shape_mapping.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\oox_shape_defines.cpp"
 				>
 			</File>
@@ -1171,7 +1175,51 @@
 				>
 			</File>
 			<File
-				RelativePath=".\OdfFormat\shapes\oox_shapeMathMultiply.h"
+				RelativePath=".\OdfFormat\shapes\oox_shapeAccentCallouts.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\shapes\oox_shapeActionButtons.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\shapes\oox_shapeArrows.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\shapes\oox_shapeBents.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\shapes\oox_shapeCallouts.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\shapes\oox_shapeCharts.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\shapes\oox_shapeCurvedArrows.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\shapes\oox_shapeCurvedConnectors.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\shapes\oox_shapeCustoms.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\shapes\oox_shapeMaths.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\shapes\oox_shapePrimitives.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\shapes\oox_shapeRibbons.h"
 				>
 			</File>
 			<File
@@ -1180,14 +1228,6 @@
 			</File>
 			<File
 				RelativePath=".\OdfFormat\shapes\oox_shapeStars.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OdfFormat\shapes\oox_shapeSun.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Oox2OdfConverter\shape_types_mapping.h"
 				>
 			</File>
 		</Filter>

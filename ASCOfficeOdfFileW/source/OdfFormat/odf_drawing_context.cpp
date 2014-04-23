@@ -14,7 +14,7 @@
 #include "draw_shapes.h"
 
 #include "oox_shape_defines.h"
-#include "shape_types_mapping.h"
+#include "Shapes\odf_shape_mapping.h"
 
 
 #include "styles.h"
@@ -38,7 +38,13 @@ struct 	odf_element_state
 	
 	int level;
 };
-
+enum _drawing_part
+{
+	Unknown=0,
+	Area,
+	Line,
+	Shadow
+};
 struct odf_drawing_state
 {
 	void clear()
@@ -63,10 +69,19 @@ struct odf_drawing_state
 		path_last_command_ = L"";
 		modifiers_ = L"";
 
-		fill_ = true; //потом по нормальному .. с типами
+		area_type_fill_ = 0; 
+		area_fill_ = L"";
+		area_opacity = boost::none;
+		
+		line_type_fill_ = 0; 
+		line_fill_ = L"";
+		line_opacity = boost::none;
+
+		shadow_type_fill_ = 0; 
+		shadow_fill_ = L"";
+		shadow_opacity = boost::none;
 
 		oox_shape_preset = -1;
-
 	}
 	std::vector<odf_element_state> elements_;
 
@@ -88,7 +103,20 @@ struct odf_drawing_state
 	std::wstring path_last_command_;
 	std::wstring modifiers_;
 
-	bool fill_;
+//пока не аккуратно...
+	std::wstring	area_fill_;
+	int				area_type_fill_;
+	_CP_OPT(double) area_opacity;
+
+	std::wstring	line_fill_;
+	int				line_type_fill_;
+	_CP_OPT(double) line_opacity;
+
+	std::wstring	shadow_fill_;
+	int				shadow_type_fill_;
+	_CP_OPT(double) shadow_opacity;
+
+///////////////////////
 	int oox_shape_preset;
 
 };
@@ -104,6 +132,7 @@ public:
 	std::vector<odf_drawing_state> drawing_list_;//все элементы .. для удобства разделение по "топам"
 	
 	odf_drawing_state current_drawing_state_;
+	_drawing_part current_drawing_part_;
 	
 	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней наследования
 
@@ -186,13 +215,29 @@ void odf_drawing_context::end_drawing()
 			if (impl_->current_drawing_state_.flipV)
 				gr_properties->content().style_mirror_ = std::wstring(L"vertical");
 
-			if (impl_->current_drawing_state_.fill_ == false)
-				gr_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::none;
 
-			gr_properties->content().draw_fit_to_size_ = false;
-			//draw:fit-to-size="false"
-			//fo:clip
-			//draw:image-opacity
+			switch(impl_->current_drawing_state_.area_type_fill_)
+			{
+			case 0:
+				gr_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::none;
+				break;
+			case 1:
+				gr_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::solid;
+				gr_properties->content().common_draw_fill_attlist_.draw_fill_color_ = color(std::wstring(L"#") + impl_->current_drawing_state_.area_fill_);
+				break;
+			}
+			switch(impl_->current_drawing_state_.line_type_fill_)
+			{
+			case 0:
+				break;
+			case 1:
+				gr_properties->content().svg_stroke_color_ = color(std::wstring(L"#") + impl_->current_drawing_state_.line_fill_);
+				break;
+			case 2:
+			case 3:
+				//не существуют !!!!
+				break;
+			}
 		}
 	}
 
@@ -345,6 +390,12 @@ void odf_drawing_context::end_shape()
 			if (sub_type.length()>1)
 			{
 				enhanced->draw_enhanced_geometry_attlist_.draw_type_ = sub_type;
+
+				int res=0;
+				if ((res = sub_type.find(L"ooxml")) >= 0 && impl_->current_drawing_state_.modifiers_.length()>1)
+				{
+					enhanced->draw_enhanced_geometry_attlist_.draw_modifiers_ = impl_->current_drawing_state_.modifiers_;
+				}
 			}
 			else
 			{
@@ -352,8 +403,8 @@ void odf_drawing_context::end_shape()
 
 				if (shape_define)
 				{		
-					enhanced->draw_enhanced_geometry_attlist_.draw_type_		= L"non-primitive";
 					enhanced->svg_viewbox_										= shape_define->view_box;
+					enhanced->draw_enhanced_geometry_attlist_.draw_type_		= shape_define->odf_type_name;
 					enhanced->draw_enhanced_geometry_attlist_.draw_text_areas_	= shape_define->text_areas;
 					if (shape_define->glue_points)
 					{
@@ -435,13 +486,61 @@ void odf_drawing_context::end_element()
 	impl_->current_level_.pop_back();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void odf_drawing_context::start_area_properies()
+{
+	impl_->current_drawing_part_ = Area;
+}
+void odf_drawing_context::end_area_properies()
+{
+	impl_->current_drawing_part_ = Unknown;
+}
+void odf_drawing_context::start_line_properies()
+{
+	impl_->current_drawing_part_ = Line;
+}
+void odf_drawing_context::end_line_properies()
+{
+	impl_->current_drawing_part_ = Unknown;
+}
+
+void odf_drawing_context::start_shadow_properies()
+{
+	impl_->current_drawing_part_ = Shadow;
+}
+void odf_drawing_context::end_shadow_properies()
+{
+	impl_->current_drawing_part_ = Unknown;
+}
+////////////////////////////////////////////////////////////////////
 void odf_drawing_context::set_name(std::wstring  name)
 {
 	impl_->current_drawing_state_.name_ = name;
 }
 void odf_drawing_context::set_no_fill()
 {
-	impl_->current_drawing_state_.fill_ = false;
+	switch(impl_->current_drawing_part_)
+	{
+	case Area:
+		impl_->current_drawing_state_.area_type_fill_ = 0;
+		break;
+	case Line:
+		impl_->current_drawing_state_.line_type_fill_ = 0;
+		break;
+	}
+}
+void odf_drawing_context::set_solid_fill(std::wstring hexColor)
+{
+	switch(impl_->current_drawing_part_)
+	{
+	case Area:
+		impl_->current_drawing_state_.area_type_fill_ = 1;
+		impl_->current_drawing_state_.area_fill_ = hexColor;
+		break;
+	case Line:
+		impl_->current_drawing_state_.line_type_fill_ = 1;
+		impl_->current_drawing_state_.line_fill_ = hexColor;
+		break;
+	}
 }
 void odf_drawing_context::set_z_order(int id)
 {

@@ -17,6 +17,7 @@ namespace cpdoccore
 namespace OOX
 {
 	class WritingElement;
+	class CTheme;
 
 	namespace Drawing
 	{
@@ -35,6 +36,14 @@ namespace OOX
 		class CPath2DQuadBezierTo;
 		class CPath2DCubicBezierTo;
 		class CPath2DClose;
+		class CHslColor;
+		class CSchemeColor;
+		class CScRgbColor;
+		class CSRgbColor;
+		class CSystemColor;
+		class CPresetColor;
+		class CLineProperties;
+		//class ;
 
 	}
 }
@@ -50,19 +59,23 @@ public:
 		OoxConverter(){}
 
 		virtual cpdoccore::odf::odf_conversion_context* odf_context() = 0;
+		virtual OOX::CTheme* oox_theme() = 0;
 
 		void convert(OOX::WritingElement  *oox_unknown);
 	
 		void convert_CNvPr(OOX::Drawing::CNonVisualDrawingProps	* oox_cnvPr);
 		void convert_SpPr(OOX::Drawing::CShapeProperties		* oox_spPr);
 		
-		void convert/*_CustGeom*/(OOX::Drawing::CCustomGeometry2D	*oox_cust_geom);
-		void convert/*_PrstGeom*/(OOX::Drawing::CPresetGeometry2D	*oox_prst_geom);
+		void convert(OOX::Drawing::CCustomGeometry2D	*oox_cust_geom);
+		void convert(OOX::Drawing::CPresetGeometry2D	*oox_prst_geom);
+
+		void convert(OOX::Drawing::CLineProperties		*oox_line_prop);
 		
 		void convert(OOX::Drawing::CBlipFillProperties			*oox_bitmap_fill);
 		void convert(OOX::Drawing::CGradientFillProperties		*oox_grad_fill);
 		void convert(OOX::Drawing::CPatternFillProperties		*oox_pattern_fill);
 		void convert(OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill);
+//////////////////////////////////////////////
 		void convert(OOX::Drawing::CPath2D						*oox_geom_path);
 		void convert(OOX::Drawing::CPath2DLineTo				*oox_geom_path);
 		void convert(OOX::Drawing::CPath2DMoveTo				*oox_geom_path);
@@ -70,6 +83,11 @@ public:
 		void convert(OOX::Drawing::CPath2DQuadBezierTo			*oox_geom_path);
 		void convert(OOX::Drawing::CPath2DCubicBezierTo			*oox_geom_path);
 		void convert(OOX::Drawing::CPath2DClose					*oox_geom_path);
+/////////////////////////////////////////
+		void convert(OOX::Drawing::CHslColor        *oox_HslClr,	std::wstring & hexString);
+		void convert(OOX::Drawing::CPresetColor     *oox_PrstClr,	std::wstring & hexString);
+		void convert(OOX::Drawing::CSchemeColor     *oox_ShemeClr,	std::wstring & hexString);
+		void convert(OOX::Drawing::CScRgbColor      *oox_ScrgbClr,	std::wstring & hexString);
 
 	};
 

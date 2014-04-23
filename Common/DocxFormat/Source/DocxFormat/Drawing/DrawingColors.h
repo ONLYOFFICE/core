@@ -1615,8 +1615,6 @@ namespace OOX
 					RGB2HSL( m_unRawR, m_unRawG, m_unRawB, dH, dS, dL );
 				}
 
-			private:
-
 				void        ApplyTransform()
 				{
 					m_unRawR = m_unR;
@@ -1956,6 +1954,7 @@ namespace OOX
 						}
 					}
 				}
+			private:
 				inline void RGB2HSL(unsigned char unR, unsigned char unG, unsigned char unB, double& dH, double& dS, double& dL)
 				{
 					int nMin   = min( unR, min( unG, unB ) );

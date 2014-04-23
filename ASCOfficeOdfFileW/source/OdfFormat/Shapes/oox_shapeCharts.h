@@ -1,0 +1,3 @@
+//	shapetypeChartPlus,
+//	shapetypeChartStar,
+//	shapetypeChartX,

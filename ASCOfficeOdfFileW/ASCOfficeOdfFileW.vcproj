@@ -4,6 +4,7 @@
 	Version="8,00"
 	Name="ASCOfficeOdfFileW"
 	ProjectGUID="{6258296E-ABCE-4BC6-9F4A-8522CD615603}"
+	RootNamespace="ASCOfficeOdfFileW"
 	Keyword="AtlProj"
 	>
 	<Platforms>
@@ -203,7 +204,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;../Redist&quot;"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;../Redist&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

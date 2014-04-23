@@ -1,5 +1,9 @@
 #include "..\oox_shape_defines.h"
-
+		//	shapetypeMathDivide,
+		//	shapetypeMathEqual,
+		//	shapetypeMathMinus,
+	//+	//	shapetypeMathMultiply,
+		//	shapetypeMathNotEqual,
 namespace cpdoccore 
 {
 class oox_shape_mathMultiply : public oox_shape
@@ -7,6 +11,8 @@ class oox_shape_mathMultiply : public oox_shape
 public:
 	oox_shape_mathMultiply()
 	{
+		odf_type_name	=L"ooxml-mathMultiply";
+
 		modifiers		= L"23520";
 		enhanced_path	= L"M ?f40 ?f41 L ?f42 ?f43 ?f11 ?f46 ?f47 ?f43 ?f48 ?f41 ?f51 ?f8 ?f48 ?f53 ?f47 ?f54 ?f11 ?f55 ?f42 ?f54 ?f40 ?f53 ?f52 ?f8 Z N";
 		text_areas		= L"?f36 ?f49 ?f35 ?f48";

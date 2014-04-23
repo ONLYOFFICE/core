@@ -7,6 +7,8 @@ class oox_shape_snip1Rect : public oox_shape
 public:
 	oox_shape_snip1Rect()
 	{
+		odf_type_name	=L"ooxml-snip1Rect";
+
 		modifiers		= L"16667";
 		enhanced_path	= L"M ?f0 ?f2 L ?f9 ?f2 ?f1 ?f8 ?f1 ?f3 ?f0 ?f3 Z N";
 		text_areas		= L"?f0 ?f10 ?f11 ?f3";
@@ -31,6 +33,8 @@ class oox_shape_snip2DiagRect : public oox_shape
 public:
 	oox_shape_snip2DiagRect()
 	{
+		odf_type_name	=L"ooxml-snip2DiagRect";
+
 		modifiers		= L"0 16667";
 		enhanced_path	= L"M ?f9 ?f2 L ?f13 ?f2 ?f1 ?f12 ?f1 ?f11 ?f10 ?f3 ?f12 ?f3 ?f0 ?f14 ?f0 ?f9 Z N";
 		text_areas		= L"?f17 ?f17 ?f18 ?f19";
@@ -63,6 +67,8 @@ class oox_shape_snip2SameRect : public oox_shape
 public:
 	oox_shape_snip2SameRect()
 	{
+		odf_type_name	=L"ooxml-snip2SameRect";
+
 		modifiers		= L"16667 0";
 		enhanced_path	= L"M ?f9 ?f2 L ?f10 ?f2 ?f1 ?f9 ?f1 ?f13 ?f12 ?f3 ?f11 ?f3 ?f0 ?f13 ?f0 ?f9 Z N";
 		text_areas		= L"?f16 ?f18 ?f17 ?f19";
@@ -95,6 +101,8 @@ class oox_shape_snipRoundRect : public oox_shape
 public:
 	oox_shape_snipRoundRect()
 	{
+		odf_type_name	=L"ooxml-snipRoundRect";
+
 		modifiers		= L"16667 16667";
 		enhanced_path	= L"M ?f12 ?f4 L ?f14 ?f4 ?f3 ?f13 ?f3 ?f5 ?f2 ?f5 ?f2 ?f12 A ?f56 ?f57 ?f58 ?f59 ?f2 ?f12 ?f53 ?f55  W ?f60 ?f61 ?f62 ?f63 ?f2 ?f12 ?f53 ?f55 Z N";
 		text_areas		= L"?f15 ?f15 ?f16 ?f5";
@@ -171,6 +179,8 @@ class oox_shape_round1Rect : public oox_shape
 public:
 	oox_shape_round1Rect()
 	{
+		odf_type_name	=L"ooxml-round1Rect";
+		
 		modifiers		= L"16667";
 		enhanced_path	= L"M ?f3 ?f5 L ?f13 ?f5 A ?f55 ?f56 ?f57 ?f58 ?f13 ?f5 ?f52 ?f54  W ?f59 ?f60 ?f61 ?f62 ?f13 ?f5 ?f52 ?f54 L ?f4 ?f6 ?f3 ?f6 Z N";
 		text_areas		= L"?f3 ?f5 ?f15 ?f6";
@@ -246,6 +256,8 @@ class oox_shape_round2DiagRect : public oox_shape
 public:
 	oox_shape_round2DiagRect()
 	{
+		odf_type_name	=L"ooxml-round2DiagRect";
+
 		modifiers		= L"16667 0";
 		enhanced_path	= L"M ?f13 ?f5 L ?f16 ?f5 A ?f62 ?f63 ?f64 ?f65 ?f16 ?f5 ?f59 ?f61  W ?f66 ?f67 ?f68 ?f69 ?f16 ?f5 ?f59 ?f61 L ?f4 ?f14 A ?f105 ?f106 ?f107 ?f108 ?f4 ?f14 ?f102 ?f104  W ?f109 ?f110 ?f111 ?f112 ?f4 ?f14 ?f102 ?f104 L ?f15 ?f6 A ?f148 ?f149 ?f150 ?f151 ?f15 ?f6 ?f145 ?f147  W ?f152 ?f153 ?f154 ?f155 ?f15 ?f6 ?f145 ?f147 L ?f3 ?f13 A ?f191 ?f192 ?f193 ?f194 ?f3 ?f13 ?f188 ?f190  W ?f195 ?f196 ?f197 ?f198 ?f3 ?f13 ?f188 ?f190 Z N";
 		text_areas		= L"?f20 ?f20 ?f21 ?f22";
@@ -457,6 +469,8 @@ class oox_shape_round2SameRect : public oox_shape
 public:
 	oox_shape_round2SameRect()
 	{
+		odf_type_name	=L"ooxml-round2SameRect";
+
 		modifiers		= L"16667 0";
 		enhanced_path	= L"M ?f13 ?f5 L ?f14 ?f5 A ?f62 ?f63 ?f64 ?f65 ?f14 ?f5 ?f59 ?f61  W ?f66 ?f67 ?f68 ?f69 ?f14 ?f5 ?f59 ?f61 L ?f4 ?f16 A ?f105 ?f106 ?f107 ?f108 ?f4 ?f16 ?f102 ?f104  W ?f109 ?f110 ?f111 ?f112 ?f4 ?f16 ?f102 ?f104 L ?f15 ?f6 A ?f148 ?f149 ?f150 ?f151 ?f15 ?f6 ?f145 ?f147  W ?f152 ?f153 ?f154 ?f155 ?f15 ?f6 ?f145 ?f147 L ?f3 ?f13 A ?f191 ?f192 ?f193 ?f194 ?f3 ?f13 ?f188 ?f190  W ?f195 ?f196 ?f197 ?f198 ?f3 ?f13 ?f188 ?f190 Z N";
 		text_areas		= L"?f20 ?f18 ?f21 ?f22";

@@ -363,12 +363,18 @@ const int g_nFormatVersion = 5;
 		setting = 2,
 		headers = 3,
 		footers = 4,
-		hdrftrelem = 5
+		hdrftrelem = 5,
+		pageNumType = 6
 	};}
 	namespace c_oSerProp_secPrSettingsType{enum c_oSerProp_secPrSettingsType
 	{
 		titlePg = 0,
-		EvenAndOddHeaders = 1
+		EvenAndOddHeaders = 1,
+		SectionType = 2
+	};}
+	namespace c_oSerProp_secPrPageNumType{enum c_oSerProp_secPrPageNumType
+	{
+		start = 0
 	};}
 	namespace c_oSerParType{enum c_oSerParType
 	{

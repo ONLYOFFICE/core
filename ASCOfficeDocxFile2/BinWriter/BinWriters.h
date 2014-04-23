@@ -1146,6 +1146,12 @@ namespace BinDocxRW
 					WriteHeaderFooter(pSectPr, pSectPr->m_arrFooterReference, false);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
+				if(pSectPr->m_oPgNumType.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::pageNumType);
+					WritePageNumType(pSectPr->m_oPgNumType.get());
+					m_oBcw.WriteItemEnd(nCurPos);
+				}
 			};
 			void WritePageSettings(OOX::Logic::CSectionProperty* pSectPr)
 			{
@@ -1163,6 +1169,13 @@ namespace BinDocxRW
 				m_oBcw.m_oStream.WriteByte(c_oSerProp_secPrSettingsType::EvenAndOddHeaders);
 				m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Byte);
 				m_oBcw.m_oStream.WriteBool(EvenAndOddHeaders);
+
+				if(pSectPr->m_oType.IsInit() && pSectPr->m_oType->m_oVal.IsInit())
+				{
+					m_oBcw.m_oStream.WriteByte(c_oSerProp_secPrSettingsType::SectionType);
+					m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteByte(pSectPr->m_oType->m_oVal->GetValue());
+				}
 			};
 			void WritePageSize(OOX::Logic::CSectionProperty* pSectPr)
 			{
@@ -1284,6 +1297,16 @@ namespace BinDocxRW
 							m_oBcw.WriteItemEnd(nCurPos);
 						}
 					}
+				}
+			}
+			void WritePageNumType(const ComplexTypes::Word::CPageNumber& pPageNumber)
+			{
+				int nCurPos = 0;
+				if(pPageNumber.m_oStart.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrPageNumType::start);
+					m_oBcw.m_oStream.WriteLong(pPageNumber.m_oStart->GetValue());
+					m_oBcw.WriteItemEnd(nCurPos);
 				}
 			}
 	};

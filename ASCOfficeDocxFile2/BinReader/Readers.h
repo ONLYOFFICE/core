@@ -955,6 +955,10 @@ public:
 		{
 			res = Read1(length, &Binary_pPrReader::Read_pgFooter, this, poResult);
 		}
+		else if( c_oSerProp_secPrType::pageNumType == type )
+		{
+			res = Read1(length, &Binary_pPrReader::Read_pageNumType, this, poResult);
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -1027,6 +1031,11 @@ public:
 			pSectPr->bEvenAndOddHeaders = true;
 			pSectPr->EvenAndOddHeaders = m_oBufferedStream.ReadBool();
 		}
+		else if( c_oSerProp_secPrSettingsType::SectionType == type )
+		{
+			pSectPr->bSectionType = true;
+			pSectPr->SectionType = m_oBufferedStream.ReadByte();
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -1076,6 +1085,19 @@ public:
 					sType = _T("default");
 				pSectPr->sHeaderFooterReference += _T("<w:footerReference w:type=\"") + sType +_T("\" r:id=\"") + pHdrFtrItem->rId + _T("\"/>");
 			}
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int Read_pageNumType(BYTE type, long length, void* poResult)
+	{
+		SectPr* pSectPr = static_cast<SectPr*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if( c_oSerProp_secPrPageNumType::start == type )
+		{
+			pSectPr->bPageNumStart = true;
+			pSectPr->PageNumStart = m_oBufferedStream.ReadLong();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

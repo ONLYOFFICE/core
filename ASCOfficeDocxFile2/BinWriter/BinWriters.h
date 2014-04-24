@@ -3334,8 +3334,8 @@ namespace BinDocxRW
 			if (pCGpRule.m_val.IsInit())
 			{
 				m_oBcw.m_oStream.WriteByte(c_oSer_OMathBottomNodesValType::Val);
-				m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteByte(pCGpRule.m_val->GetValue());
+				m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Long);
+				m_oBcw.m_oStream.WriteLong(pCGpRule.m_val->GetValue());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4057,8 +4057,8 @@ namespace BinDocxRW
 			if (pRSpRule.m_val.IsInit())
 			{
 				m_oBcw.m_oStream.WriteByte(c_oSer_OMathBottomNodesValType::Val);
-				m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteByte(pRSpRule.m_val->GetValue());
+				m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Long);
+				m_oBcw.m_oStream.WriteLong(pRSpRule.m_val->GetValue());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}

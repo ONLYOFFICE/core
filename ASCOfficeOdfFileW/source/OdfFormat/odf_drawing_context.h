@@ -69,11 +69,16 @@ public:
 
 	void set_no_fill();
 	void set_solid_fill(std::wstring hexColor);
+	void set_opacity(double percent);
 //////////////////////////////////////////////////////////////
 	void start_area_properies();
 	void end_area_properies();
 	
 	void start_line_properies();
+		void set_line_width(double pt);
+		
+		void set_line_head(int type, int len, int width);
+		void set_line_tail(int type, int len, int width);
 	void end_line_properies();
 	
 	void start_shadow_properies();

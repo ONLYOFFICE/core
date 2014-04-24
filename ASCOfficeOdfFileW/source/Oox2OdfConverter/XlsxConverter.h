@@ -4,6 +4,7 @@
 #include <boost/foreach.hpp>
 #include <cpdoccore/CPSharedPtr.h>
 #include <cpdoccore/CPOptional.h>
+
 #include <XlsxFormat\Xlsx.h>
 
 namespace OOX 

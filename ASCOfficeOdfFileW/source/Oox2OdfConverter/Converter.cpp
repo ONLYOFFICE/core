@@ -221,11 +221,11 @@ void OoxConverter::convert(OOX::Drawing::CLineProperties *oox_line_prop)
 
 	if (oox_line_prop->m_oCustDash.IsInit())
 	{
-		//custom not support
+		//через задание стиля и описание геометрии
 	}
-	if (oox_line_prop->m_oPrstDash.IsInit())
+	if (oox_line_prop->m_oPrstDash.IsInit() && oox_line_prop->m_oPrstDash->m_oVal.IsInit())
 	{
-
+		odf_context()->drawing_context().set_line_dash_preset(oox_line_prop->m_oPrstDash->m_oVal->GetValue());
 	}
 	//nullable<SimpleTypes::CPenAlignment<>>            m_oAlgn;
 	//nullable<SimpleTypes::CLineCap<>>                 m_oCap;
@@ -347,12 +347,16 @@ void OoxConverter::convert(OOX::Drawing::CSchemeColor     *oox_ShemeClr,	std::ws
 	switch(theme_ind)
 	{
 		case SimpleTypes::shemecolorvalLt1:
+		case SimpleTypes::shemecolorvalBg1:
 			result = theme->m_oThemeElements.m_oClrScheme.m_oLt1.tryGetRgb(ucR, ucG, ucB, ucA); break;
 		case SimpleTypes::shemecolorvalLt2:
+		case SimpleTypes::shemecolorvalBg2:
 			result = theme->m_oThemeElements.m_oClrScheme.m_oLt2.tryGetRgb(ucR, ucG, ucB, ucA); break;
 		case SimpleTypes::shemecolorvalDk1:
+		case SimpleTypes::shemecolorvalTx1:
 			result = theme->m_oThemeElements.m_oClrScheme.m_oDk1.tryGetRgb(ucR, ucG, ucB, ucA); break;
 		case SimpleTypes::shemecolorvalDk2:
+		case SimpleTypes::shemecolorvalTx2:
 			result = theme->m_oThemeElements.m_oClrScheme.m_oDk2.tryGetRgb(ucR, ucG, ucB, ucA); break;
 		case SimpleTypes::shemecolorvalAccent1:
 			result = theme->m_oThemeElements.m_oClrScheme.m_oAccent1.tryGetRgb(ucR, ucG, ucB, ucA); break;

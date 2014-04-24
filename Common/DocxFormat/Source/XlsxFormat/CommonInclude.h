@@ -7,6 +7,7 @@
 
 #include "../DocxFormat/Drawing/DrawingCoreInfo.h"
 #include "../DocxFormat/Drawing/DrawingEffects.h"
+#include "../DocxFormat/Drawing/DrawingBody.h"
 
 #include "ComplexTypes_Spreadsheet.h"
 #include "FileTypes_Spreadsheet.h"

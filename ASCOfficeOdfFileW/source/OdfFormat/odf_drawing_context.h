@@ -30,15 +30,15 @@ public:
 	void start_drawing();
 	void end_drawing();
 	
-	void start_frame();
-	void end_frame();
-	
 	void start_shape(int type);
 	void end_shape();
 
 	void start_image(std::wstring & path);
 	void end_image();
 		
+	void start_text_box();
+	void end_text_box();
+
 	void start_element(office_element_ptr & elm);
     void end_element();
 
@@ -76,6 +76,7 @@ public:
 	
 	void start_line_properies();
 		void set_line_width(double pt);
+		void set_line_dash_preset(int style);
 		
 		void set_line_head(int type, int len, int width);
 		void set_line_tail(int type, int len, int width);
@@ -85,6 +86,9 @@ public:
 	void end_shadow_properies();
 
 private:
+	
+	void start_frame();
+	void end_frame();
 
     class Impl;
     _CP_PTR(Impl) impl_;

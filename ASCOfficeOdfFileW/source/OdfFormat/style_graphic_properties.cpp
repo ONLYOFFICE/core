@@ -26,6 +26,8 @@ void graphic_format_properties::serialize(std::wostream & _Wostream ,const wchar
 			CP_XML_ATTR_OPT(L"draw:wrap-influence-on-position", draw_wrap_influence_on_position_);
 			CP_XML_ATTR_OPT(L"draw:textarea-horizontal-align", draw_textarea_horizontal_align_);
 			CP_XML_ATTR_OPT(L"draw:textarea-vertical-align", draw_textarea_vertical_align_);
+			CP_XML_ATTR_OPT(L"draw:auto-grow-height", draw_auto_grow_height_);
+			CP_XML_ATTR_OPT(L"draw:auto-grow-width", draw_auto_grow_width_);			
 			
 			CP_XML_ATTR_OPT(L"draw:stroke",		draw_stroke_); 
 			CP_XML_ATTR_OPT(L"draw:stroke-dash",draw_stroke_dash_); 

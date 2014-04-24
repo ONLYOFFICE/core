@@ -311,6 +311,7 @@ et_alternatecontentfallback,
 		et_ShapeStyle,
 		et_Shape,
 		et_ConnShape,
+		et_ShapeTextBody,
 		et_ConnShapeNonVisual,
 		et_ConnectionNonVisualConnShapeProps
 

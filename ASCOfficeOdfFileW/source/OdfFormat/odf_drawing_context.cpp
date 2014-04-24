@@ -60,26 +60,12 @@ struct odf_drawing_state
 		z_order_ = -1;
 		
 		rotateAngle = boost::none;
-		flipH = false;
-		flipV = false;	
 		tile = false;
 		
 		path_ = L"";
 		view_box_ = L"";
 		path_last_command_ = L"";
 		modifiers_ = L"";
-
-		area_type_fill_ = 0; 
-		area_fill_ = L"";
-		area_opacity = boost::none;
-		
-		line_type_fill_ = 0; 
-		line_fill_ = L"";
-		line_opacity = boost::none;
-
-		shadow_type_fill_ = 0; 
-		shadow_fill_ = L"";
-		shadow_opacity = boost::none;
 
 		oox_shape_preset = -1;
 	}
@@ -93,8 +79,6 @@ struct odf_drawing_state
 	std::wstring name_;
 	int z_order_;
 
-	bool flipH;
-	bool flipV;
 	bool tile;
 	_CP_OPT(double) rotateAngle;
 
@@ -103,18 +87,6 @@ struct odf_drawing_state
 	std::wstring path_last_command_;
 	std::wstring modifiers_;
 
-//пока не аккуратно...
-	std::wstring	area_fill_;
-	int				area_type_fill_;
-	_CP_OPT(double) area_opacity;
-
-	std::wstring	line_fill_;
-	int				line_type_fill_;
-	_CP_OPT(double) line_opacity;
-
-	std::wstring	shadow_fill_;
-	int				shadow_type_fill_;
-	_CP_OPT(double) shadow_opacity;
 
 ///////////////////////
 	int oox_shape_preset;
@@ -128,6 +100,8 @@ public:
     {	
 		current_drawing_state_.clear();
 		styles_context_ = &odf_context_->styles_context();
+		
+		current_graphic_properties = NULL;
 	} 
 	std::vector<odf_drawing_state> drawing_list_;//все элементы .. для удобства разделение по "топам"
 	
@@ -141,6 +115,8 @@ public:
 
 	void create_draw_base(int type);
 	office_element_ptr create_draw_element(int type);
+
+	style_graphic_properties *current_graphic_properties;
 
 };
 
@@ -204,46 +180,9 @@ void odf_drawing_context::end_drawing()
 		draw->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = impl_->current_drawing_state_.svg_width_;
 	}
 ///////////////////////////////////////////////////		
-	style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_[0].style_elm.get());
-	if (style_)
-	{
-		style_graphic_properties * gr_properties = style_->style_content_.get_style_graphic_properties();
-		if (gr_properties)
-		{		
-			if (impl_->current_drawing_state_.flipH)
-				gr_properties->content().style_mirror_ = std::wstring(L"horizontal");
-			if (impl_->current_drawing_state_.flipV)
-				gr_properties->content().style_mirror_ = std::wstring(L"vertical");
-
-
-			switch(impl_->current_drawing_state_.area_type_fill_)
-			{
-			case 0:
-				gr_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::none;
-				break;
-			case 1:
-				gr_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::solid;
-				gr_properties->content().common_draw_fill_attlist_.draw_fill_color_ = color(std::wstring(L"#") + impl_->current_drawing_state_.area_fill_);
-				break;
-			}
-			switch(impl_->current_drawing_state_.line_type_fill_)
-			{
-			case 0:
-				break;
-			case 1:
-				gr_properties->content().svg_stroke_color_ = color(std::wstring(L"#") + impl_->current_drawing_state_.line_fill_);
-				break;
-			case 2:
-			case 3:
-				//не существуют !!!!
-				break;
-			}
-		}
-	}
-
-///////////////////////////////////////////////////////////////////
 	impl_->drawing_list_.push_back(impl_->current_drawing_state_);
 	impl_->current_drawing_state_.clear();
+	impl_->current_graphic_properties = NULL;
 }
 
 office_element_ptr odf_drawing_context::Impl::create_draw_element(int type)
@@ -302,6 +241,7 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 	if (style_)
 	{
 		style_name = style_->style_name_;
+		current_graphic_properties = style_->style_content_.get_style_graphic_properties();
 	}
 
 	draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_ = style_ref(style_name);
@@ -317,6 +257,7 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 	odf_element_state state={draw_elm, style_name, style_shape_elm, level};
 
 	current_drawing_state_.elements_.push_back(state);
+
 
 }
 void odf_drawing_context::start_shape(int type)
@@ -516,29 +457,46 @@ void odf_drawing_context::set_name(std::wstring  name)
 {
 	impl_->current_drawing_state_.name_ = name;
 }
-void odf_drawing_context::set_no_fill()
+void odf_drawing_context::set_opacity(double percent_)
 {
+	if (!impl_->current_graphic_properties)return;
+
 	switch(impl_->current_drawing_part_)
 	{
 	case Area:
-		impl_->current_drawing_state_.area_type_fill_ = 0;
+		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_opacity_ = percent(percent_);
 		break;
 	case Line:
-		impl_->current_drawing_state_.line_type_fill_ = 0;
+		impl_->current_graphic_properties->content().svg_stroke_opacity_ = percent(percent_);
+		break;
+	}
+}
+void odf_drawing_context::set_no_fill()
+{
+	if (!impl_->current_graphic_properties)return;
+
+	switch(impl_->current_drawing_part_)
+	{
+	case Area:
+		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::none;
+		break;
+	case Line:
 		break;
 	}
 }
 void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 {
+	if (!impl_->current_graphic_properties)return;
+
 	switch(impl_->current_drawing_part_)
 	{
 	case Area:
-		impl_->current_drawing_state_.area_type_fill_ = 1;
-		impl_->current_drawing_state_.area_fill_ = hexColor;
+		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::solid;
+		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_ = color(std::wstring(L"#") + hexColor);
 		break;
 	case Line:
-		impl_->current_drawing_state_.line_type_fill_ = 1;
-		impl_->current_drawing_state_.line_fill_ = hexColor;
+		impl_->current_graphic_properties->content().svg_stroke_color_ = color(std::wstring(L"#") + hexColor);
+		impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::Solid);//default
 		break;
 	}
 }
@@ -570,11 +528,13 @@ void odf_drawing_context::set_viewBox(double W, double H)
 }
 void odf_drawing_context::set_flip_H(bool bVal)
 {
-	impl_->current_drawing_state_.flipH= true;
+	if (!impl_->current_graphic_properties)return;
+	impl_->current_graphic_properties->content().style_mirror_ = std::wstring(L"horizontal");
 }
 void odf_drawing_context::set_flip_V(bool bVal)
 {
-	impl_->current_drawing_state_.flipV= true;
+	if (!impl_->current_graphic_properties)return;
+	impl_->current_graphic_properties->content().style_mirror_ = std::wstring(L"vertical");
 }
 void odf_drawing_context::set_tile(bool bVal)
 {
@@ -594,6 +554,25 @@ void odf_drawing_context::set_rect(double x_pt, double y_pt, double width_pt, do
 	impl_->current_drawing_state_.svg_height_ = length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
 	impl_->current_drawing_state_.svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);	
 }
+void odf_drawing_context::set_line_width(double pt)
+{
+	if (!impl_->current_graphic_properties)return;
+	impl_->current_graphic_properties->content().svg_stroke_width_ = length(length(pt,length::pt).get_value_unit(length::cm),length::cm);
+}
+
+void odf_drawing_context::set_line_head(int type, int len, int width)
+{
+	if (!impl_->current_graphic_properties)return;
+	
+	//impl_->current_graphic_properties->content().draw_marker_start_ = marker_style(marker_style::from_ms(type));
+}
+void odf_drawing_context::set_line_tail(int type, int len, int width)
+{
+	if (!impl_->current_graphic_properties)return;
+
+	//impl_->current_graphic_properties->content().draw_marker_end_ = marker_style(marker_style::from_ms(type));
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //вложенные элементы
 void odf_drawing_context::start_image(std::wstring & path)

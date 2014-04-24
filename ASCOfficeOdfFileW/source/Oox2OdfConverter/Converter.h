@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost_filesystem_version.h>
+#include <cpdoccore/CPOptional.h>
 
 static std::wstring string2std_string(CString val)
 {
@@ -45,6 +46,10 @@ namespace OOX
 		class CLineProperties;
 		//class ;
 
+		namespace Colors
+		{
+			class CColorTransform;
+		}
 	}
 }
 
@@ -84,10 +89,8 @@ public:
 		void convert(OOX::Drawing::CPath2DCubicBezierTo			*oox_geom_path);
 		void convert(OOX::Drawing::CPath2DClose					*oox_geom_path);
 /////////////////////////////////////////
-		void convert(OOX::Drawing::CHslColor        *oox_HslClr,	std::wstring & hexString);
-		void convert(OOX::Drawing::CPresetColor     *oox_PrstClr,	std::wstring & hexString);
-		void convert(OOX::Drawing::CSchemeColor     *oox_ShemeClr,	std::wstring & hexString);
-		void convert(OOX::Drawing::CScRgbColor      *oox_ScrgbClr,	std::wstring & hexString);
+		void convert(OOX::Drawing::CSchemeColor					*oox_ShemeClr,	std::wstring & hexString, cpdoccore::_CP_OPT(double) &opacity);
+		void convert(OOX::Drawing::Colors::CColorTransform      *oox_ScrgbClr,	std::wstring & hexString, cpdoccore::_CP_OPT(double) &opacity);
 
 	};
 

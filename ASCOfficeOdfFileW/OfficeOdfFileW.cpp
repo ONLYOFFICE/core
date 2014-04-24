@@ -9,7 +9,7 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/random_generator.hpp>
 
-#include "Converter.h"
+#include "source\Oox2OdfConverter\Converter.h"
 
 #import "../Redist/ASCOfficeOdfFile.dll" rename_namespace("ASCOfficeOdfFile"), raw_interfaces_only
 

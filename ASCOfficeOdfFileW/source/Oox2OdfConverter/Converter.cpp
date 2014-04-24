@@ -196,6 +196,47 @@ void OoxConverter::convert(OOX::Drawing::CLineProperties *oox_line_prop)
 		case OOX::Drawing::filltypeNo:			odf_context()->drawing_context().set_no_fill();
 			break;
 	}
+	if (oox_line_prop->m_oW.IsInit())
+	{
+		odf_context()->drawing_context().set_line_width(oox_line_prop->m_oW->ToPoints());
+	}
+	if (oox_line_prop->m_oHeadEnd.IsInit())
+	{
+		int type =0, w=1, len =1;//medium arrow
+		if (oox_line_prop->m_oHeadEnd->m_oLen.IsInit())		len = oox_line_prop->m_oHeadEnd->m_oLen->GetValue();
+		if (oox_line_prop->m_oHeadEnd->m_oType.IsInit())	type = oox_line_prop->m_oHeadEnd->m_oType->GetValue();
+		if (oox_line_prop->m_oHeadEnd->m_oW.IsInit())		w=oox_line_prop->m_oHeadEnd->m_oW->GetValue();
+		odf_context()->drawing_context().set_line_head(type, len, w);
+	}
+	if (oox_line_prop->m_oTailEnd.IsInit())
+	{
+		int type =0, w=1, len =1;//medium arrow
+		if (oox_line_prop->m_oTailEnd->m_oLen.IsInit())		len = oox_line_prop->m_oTailEnd->m_oLen->GetValue();
+		if (oox_line_prop->m_oTailEnd->m_oType.IsInit())	type = oox_line_prop->m_oTailEnd->m_oType->GetValue();
+		if (oox_line_prop->m_oTailEnd->m_oW.IsInit())		w = oox_line_prop->m_oTailEnd->m_oW->GetValue();
+			
+		odf_context()->drawing_context().set_line_tail(type, len, w);
+
+	}
+
+	if (oox_line_prop->m_oCustDash.IsInit())
+	{
+		//custom not support
+	}
+	if (oox_line_prop->m_oPrstDash.IsInit())
+	{
+
+	}
+	//nullable<SimpleTypes::CPenAlignment<>>            m_oAlgn;
+	//nullable<SimpleTypes::CLineCap<>>                 m_oCap;
+	//nullable<SimpleTypes::CCompoundLine<>>            m_oCmpd;
+
+
+	//ELineJoinType                                     m_eJoinType;   // Тип соединения линий
+	//nullable<OOX::Drawing::CLineJoinBevel>            m_oBevel;
+	//nullable<OOX::Drawing::CLineJoinMiterProperties>  m_oMiter;
+	//nullable<OOX::Drawing::CLineJoinRound>            m_oRound;
+
 }
 
 void OoxConverter::convert(OOX::Drawing::CPresetGeometry2D *oox_prst_geom)
@@ -235,7 +276,7 @@ void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill)
 void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill)
 {
 	if (!oox_grad_fill)return;
-	//нужно делать через текущий драунинг, а не напрямую через стили !!! - чарты и их с ними ...
+	//нужно делать через текущий драунинг, а не напрямую через стили !!! - чарты и иже с ними ...
 
 	//odf_context()->drawing_context().start_gradient_fill();
 
@@ -260,38 +301,40 @@ void OoxConverter::convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fi
 {
 	if (!oox_solid_fill)return;
 
-	std::wstring hexColor;//rgb
-	BYTE uA=0, uG=0, uB=0, uR =0;
-	if (oox_solid_fill->tryGetRgb(uR,uG,uB,uA))
+	std::wstring hexColor;
+	_CP_OPT(double) opacity;
+	switch( oox_solid_fill->m_eType )
 	{
-		SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB> *oRgbColor = new SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB>(uR,uG,uB);
-		if (oRgbColor)
-		{		
-			hexColor = string2std_string(oRgbColor->ToString().Right(6));
-			delete oRgbColor;
-		}
-	}
-	else
-	{
-		switch( oox_solid_fill->m_eType )
-		{
-			case OOX::Drawing::colorHsl:   convert(&oox_solid_fill->m_oHslClr,	hexColor);		break;
-			case OOX::Drawing::colorPrst:  convert(&oox_solid_fill->m_oPrstClr,	hexColor);		break;
-			case OOX::Drawing::colorSheme: convert(&oox_solid_fill->m_oShemeClr,hexColor);		break;
-			case OOX::Drawing::colorScRgb: convert(&oox_solid_fill->m_oScrgbClr,hexColor);		break;
-		}	
+		case OOX::Drawing::colorSheme:	convert(&oox_solid_fill->m_oShemeClr,	hexColor, opacity);		break;
+		case OOX::Drawing::colorHsl:	convert(&oox_solid_fill->m_oHslClr,		hexColor, opacity);		break;
+		case OOX::Drawing::colorPrst:	convert(&oox_solid_fill->m_oPrstClr,	hexColor, opacity);		break;
+		case OOX::Drawing::colorScRgb:	convert(&oox_solid_fill->m_oScrgbClr,	hexColor, opacity);		break;
+		case OOX::Drawing::colorSRgb:	convert(&oox_solid_fill->m_oSrgbClr,	hexColor, opacity);		break;
+		case OOX::Drawing::colorSys:	convert(&oox_solid_fill->m_oSysClr,		hexColor, opacity);		break;		
 	}	
 	odf_context()->drawing_context().set_solid_fill(hexColor);
+
+	if (opacity)
+	{
+		odf_context()->drawing_context().set_opacity(*opacity);
+	}
 }
-void OoxConverter::convert(OOX::Drawing::CHslColor        *oox_HslClr,	std::wstring & hexString)
+
+void OoxConverter::convert(OOX::Drawing::Colors::CColorTransform     *oox_Clr,	std::wstring & hexString, _CP_OPT(double) &opacity)
 {
-	if (!oox_HslClr)return;
+	if (!oox_Clr)return;
+	BYTE ucA=0, ucG=0, ucB=0, ucR =0;
+	oox_Clr->GetRGBA(ucR,ucG,ucB,ucA);
+
+	SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB> *oRgbColor = new SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB>(ucR,ucG,ucB);
+	if (oRgbColor)
+	{		
+		hexString = string2std_string(oRgbColor->ToString().Right(6));
+		delete oRgbColor;
+	}
+	if (ucA !=255)opacity = (ucA/255.)* 100.;
 }
-void OoxConverter::convert(OOX::Drawing::CPresetColor     *oox_PrstClr,	std::wstring & hexString)
-{
-	if (!oox_PrstClr)return;
-}
-void OoxConverter::convert(OOX::Drawing::CSchemeColor     *oox_ShemeClr,	std::wstring & hexString)
+void OoxConverter::convert(OOX::Drawing::CSchemeColor     *oox_ShemeClr,	std::wstring & hexString, _CP_OPT(double) &opacity)
 {
 	OOX::CTheme * theme= oox_theme();
 	if (!oox_ShemeClr || !theme)return;
@@ -330,9 +373,7 @@ void OoxConverter::convert(OOX::Drawing::CSchemeColor     *oox_ShemeClr,	std::ws
 	}
 	if (result == true)
 	{
-		oox_ShemeClr->SetRGBA(ucR,ucG,ucB);
-		oox_ShemeClr->ApplyTransform();
-
+		oox_ShemeClr->SetRGBA(ucR,ucG,ucB,ucA);
 		oox_ShemeClr->GetRGBA(ucR,ucG,ucB,ucA);
 
 		SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB> *oRgbColor = new SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB>(ucR,ucG,ucB);
@@ -341,13 +382,9 @@ void OoxConverter::convert(OOX::Drawing::CSchemeColor     *oox_ShemeClr,	std::ws
 			hexString = string2std_string(oRgbColor->ToString().Right(6));
 			delete oRgbColor;
 		}
+		if (ucA !=255)opacity = (ucA/255.)* 100.;
 	}
 }
-void OoxConverter::convert(OOX::Drawing::CScRgbColor      *oox_ScrgbClr,	std::wstring & hexString)
-{
-	if (!oox_ScrgbClr)return;
-}
-
 void OoxConverter::convert(OOX::Drawing::CPath2DLineTo *oox_geom_path)
 {
 	if (!oox_geom_path) return;
@@ -362,8 +399,7 @@ void OoxConverter::convert(OOX::Drawing::CPath2DMoveTo *oox_geom_path)
 	if (!oox_geom_path) return;
 	
 	std::wstring path_elm =						boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oPt.m_oX.GetValue())) + 
-							std::wstring(L" ")+ boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oPt.m_oY.GetValue()));
-	
+							std::wstring(L" ")+ boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oPt.m_oY.GetValue()));	
 	odf_context()->drawing_context().add_path_element(std::wstring(L"M"), path_elm);
 }
 void OoxConverter::convert(OOX::Drawing::CPath2DArcTo *oox_geom_path)
@@ -382,8 +418,7 @@ void OoxConverter::convert(OOX::Drawing::CPath2DQuadBezierTo *oox_geom_path)
 	std::wstring path_elm =							boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oCtrl.m_oX.GetValue())) + 
 							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oCtrl.m_oY.GetValue())) + 
 							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oEnd.m_oX.GetValue())) +
-							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oEnd.m_oY.GetValue())) ;
-	
+							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oEnd.m_oY.GetValue())) ;	
 	odf_context()->drawing_context().add_path_element(std::wstring(L"S"), path_elm);
 
 }
@@ -396,19 +431,14 @@ void OoxConverter::convert(OOX::Drawing::CPath2DCubicBezierTo *oox_geom_path)
 							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oCtrl2.m_oX.GetValue())) +
 							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oCtrl2.m_oY.GetValue())) +
 							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oEnd.m_oX.GetValue())) +
-							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oEnd.m_oY.GetValue())) ;
-	
+							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oEnd.m_oY.GetValue())) ;	
 	odf_context()->drawing_context().add_path_element(std::wstring(L"C"), path_elm);
-
-
 }
 void OoxConverter::convert(OOX::Drawing::CPath2DClose *oox_geom_path)
 {
 	if (!oox_geom_path) return;
 
-	std::wstring path_elm ;
-	
+	std::wstring path_elm ;	
 	odf_context()->drawing_context().add_path_element(std::wstring(L"N"), path_elm);
-
 }
 } // namespace Docx2Odt

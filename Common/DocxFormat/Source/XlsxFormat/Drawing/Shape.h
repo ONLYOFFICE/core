@@ -3,11 +3,77 @@
 #define OOX_SHAPE_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
+//#include "../../DocxFormat/Logic/Paragraph.h"
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		//--------------------------------------------------------------------------------
+		// 20.5.2.34 txBody (Shape Text Body)
+		//--------------------------------------------------------------------------------	
+		class CTextBody : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CTextBody)
+			CTextBody()
+			{
+			}
+			virtual ~CTextBody()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+
+					if ( _T("a:bodyPr") == sName )
+						m_oBodyPr = oReader;
+					//if ( _T("a:lstStyle") == sName )
+					//	m_oLstStyle = oReader;
+					//if ( _T("a:p") == sName )
+					//{
+					//	//Так сделать верно .. в OOX::Logic нужно лишь назначить namespace "a", а не то что там зашито !!! "w"
+					//	OOX::WritingElement *pItem = new OOX::Logic::CParagraph( oReader );
+					//	if ( pItem )	m_arrItems.Add( pItem );
+					//}
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_ShapeTextBody;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
+		public:
+			nullable<OOX::Drawing::CTextBodyProperties>	m_oBodyPr;
+			//nullable<OOX::Drawing::CTextListStyle>	m_oLstStyle;
+
+			//CSimpleArray<OOX::WritingElement*>			m_arrItems;
+
+//lstStyle (Text List Styles) §21.1.2.4.12
+//p (Text Paragraphs)
+		};
 		//--------------------------------------------------------------------------------
 		// 20.5.2.9 cNvSpPr (Connection Non-Visual Shape Properties)
 		//--------------------------------------------------------------------------------	
@@ -43,8 +109,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					sName = oReader.GetName();
-					if ( _T("a:picLocks") == sName )
-						m_oPicLocks = oReader;
+					if ( _T("a:spLocks") == sName )
+						m_oSpLocks = oReader;
 					else if ( _T("a:extLst") == sName )
 						m_oExtLst = oReader;
 				}
@@ -59,17 +125,16 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("preferRelativeResize"), m_oPreferRelativeResize )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("txBox"), m_otxBox )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			EElementType      m_eType;
 			// Attributes
-			SimpleTypes::COnOff<SimpleTypes::onoffTrue> m_oPreferRelativeResize;
+			SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_otxBox;
 
 			// Childs
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
-			nullable<OOX::Drawing::CPictureLocking>         m_oPicLocks;
+			nullable<OOX::Drawing::CPictureLocking>			m_oSpLocks;//todo CShapeLocking
 		};
 
 		//--------------------------------------------------------------------------------
@@ -125,7 +190,6 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			EElementType      m_eType;
 			// Childs
 			nullable<CConnectionNonVisualShapeProps>		m_oCNvSpPr;
 			nullable<OOX::Drawing::CNonVisualDrawingProps>	m_oCNvPr;
@@ -186,7 +250,7 @@ namespace OOX
 			nullable<CShapeNonVisual>					m_oNvSpPr;
 			nullable<OOX::Drawing::CShapeProperties>	m_oSpPr;
 			nullable<OOX::Drawing::CShapeStyle>			m_oShapeStyle;
-			//txBody (Shape Text Body)
+			nullable<OOX::Spreadsheet::CTextBody>		m_oTxBody;
 		};
 		
 		//--------------------------------------------------------------------------------
@@ -244,7 +308,6 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			EElementType      m_eType;
 			// Attributes
 			SimpleTypes::COnOff<SimpleTypes::onoffTrue> m_oPreferRelativeResize;
 
@@ -306,7 +369,6 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			EElementType      m_eType;
 			// Childs
 			nullable<CConnectionNonVisualConnShapeProps>	m_oCNvConnSpPr;
 			nullable<OOX::Drawing::CNonVisualDrawingProps>	m_oCNvPr;
@@ -368,7 +430,6 @@ namespace OOX
 			nullable<CConnShapeNonVisual>				m_oNvConnSpPr;
 			nullable<OOX::Drawing::CShapeProperties>	m_oSpPr;
 			nullable<OOX::Drawing::CShapeStyle>			m_oShapeStyle;
-			//txBody (Shape Text Body)
 		};
 	} //Spreadsheet
 } // namespace OOX

@@ -220,7 +220,6 @@ office_element_ptr odf_drawing_context::Impl::create_draw_element(int type)
 	case 9:
 		create_element(L"draw", L"connector", element, odf_context_);
 		break;
-	
 	}
 
 	return element;
@@ -268,9 +267,13 @@ void odf_drawing_context::start_shape(int type)
 	{
 		impl_->create_draw_base(Shape_Types_Mapping[type].second);
 	}
-	else
+	else if (type == 1000)
 	{
 		impl_->create_draw_base(7);//пока кастом .. потом переделать на path, что правильнее
+	}
+	else if (type == 2000)
+	{
+		impl_->create_draw_base(10);//text-box
 	}
 }
 void odf_drawing_context::end_shape()
@@ -563,6 +566,7 @@ void odf_drawing_context::set_line_width(double pt)
 void odf_drawing_context::set_line_head(int type, int len, int width)
 {
 	if (!impl_->current_graphic_properties)return;
+	//создать стиль, привзать имена
 	
 	//impl_->current_graphic_properties->content().draw_marker_start_ = marker_style(marker_style::from_ms(type));
 }
@@ -570,13 +574,42 @@ void odf_drawing_context::set_line_tail(int type, int len, int width)
 {
 	if (!impl_->current_graphic_properties)return;
 
+	//создать стиль, привзать имена
+
 	//impl_->current_graphic_properties->content().draw_marker_end_ = marker_style(marker_style::from_ms(type));
+}
+void odf_drawing_context::set_line_dash_preset(int style)
+{
+	if (!impl_->current_graphic_properties)return;
+
+	switch(style)	//+создать стиль, привзать имена
+	{
+		case 0://presetlinedashvalDash    
+		case 7://presetlinedashvalSysDash     
+			impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::Dash);		break;
+		case 1://presetlinedashvalDashDot    
+		case 8://presetlinedashvalSysDashDot  
+			impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::DotDash);	break;
+		case 2://presetlinedashvalDot       
+		case 10://presetlinedashvalSysDot        
+			impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::Dotted);	break;
+		case 3://presetlinedashvalLgDash  
+		case 4://presetlinedashvalLgDashDot  
+			impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::LongDash);	break;
+		case 5://presetlinedashvalLgDashDotDot 
+		case 9://presetlinedashvalSysDashDotDot 
+			impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::DotDotDash);break;
+		case 6://presetlinedashvalSolid      
+			impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::Solid);	 break;
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //вложенные элементы
 void odf_drawing_context::start_image(std::wstring & path)
-{
+{	
+	start_frame();
+
 	office_element_ptr image_elm;
 	create_element(L"draw", L"image", image_elm, impl_->odf_context_);
 
@@ -590,11 +623,33 @@ void odf_drawing_context::start_image(std::wstring & path)
 
 	start_element(image_elm);
 }
+void odf_drawing_context::start_text_box()
+{	
+	start_frame();
+
+	if (impl_->current_graphic_properties)
+	{
+		//автоувеличение бокса при добавлении текста
+		impl_->current_graphic_properties->content().draw_auto_grow_height_ = false;
+		impl_->current_graphic_properties->content().draw_auto_grow_width_ = false;
+	}
+	office_element_ptr text_box_elm;
+	create_element(L"draw", L"text-box", text_box_elm, impl_->odf_context_);
+
+	start_element(text_box_elm);
+}
 void odf_drawing_context::end_image()
 {
 	end_element();
-}
 
+	end_frame();
+}
+void odf_drawing_context::end_text_box()
+{
+	end_element();
+
+	end_frame();
+}
 
 bool odf_drawing_context::is_exist_content()
 {

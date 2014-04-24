@@ -984,9 +984,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 //собственно
 	if (oox_anchor->m_oPicture.IsInit())//picture
 	{
-		ods_context->drawing_context().start_frame();
-			convert(oox_anchor->m_oPicture.GetPointer());
-		ods_context->drawing_context().end_frame();
+		convert(oox_anchor->m_oPicture.GetPointer());
 	}	
 	else if (oox_anchor->m_oShape.IsInit())
 	{
@@ -998,9 +996,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 	}	
 	else if (oox_anchor->m_oGraphicFrame.IsInit())//chart
 	{
-		ods_context->drawing_context().start_frame();
 		//m_oChartGraphic
-		ods_context->drawing_context().end_frame();
 	}	
 
 }
@@ -1045,31 +1041,34 @@ void XlsxConverter::convert(OOX::Spreadsheet::CShape* oox_shape)
 		type =(geometry->m_oPrst.GetValue());
 	}
 
+	if ((oox_shape->m_oNvSpPr.IsInit()) && (oox_shape->m_oNvSpPr->m_oCNvSpPr.IsInit()))
+	{
+		if (oox_shape->m_oNvSpPr->m_oCNvSpPr->m_otxBox.GetValue() == 1)
+			type = 2000; //textBox
+	}
+
 	if (type < 0)return;
 /////////////////////////////////////////////////////////////////////////////////
-	ods_context->drawing_context().start_shape(type);
+	if (type == 2000)ods_context->drawing_context().start_text_box(); 
+	else ods_context->drawing_context().start_shape(type);
 	{	
 		convert_SpPr(oox_shape->m_oSpPr.GetPointer());
 
 		if (oox_shape->m_oNvSpPr.IsInit())
 		{
-			if (oox_shape->m_oNvSpPr->m_oCNvPr.IsInit())
-			{
-				convert_CNvPr(oox_shape->m_oNvSpPr->m_oCNvPr.GetPointer());		
-			}
-
-			if (oox_shape->m_oNvSpPr->m_oCNvSpPr.IsInit())
-			{
-			}
+			convert_CNvPr(oox_shape->m_oNvSpPr->m_oCNvPr.GetPointer());	//имя, описалово, номер ...
+			convert(oox_shape->m_oNvSpPr->m_oCNvSpPr.GetPointer());	//заблокированности 
 		}
-
-
 		if (oox_shape->m_oShapeStyle.IsInit())
 		{
+			//доп эффекты
+
 		}
 		
 	}
-	ods_context->drawing_context().end_shape();
+	if (type == 2000)ods_context->drawing_context().end_text_box(); 
+	else ods_context->drawing_context().end_shape();
+
 }
 
 

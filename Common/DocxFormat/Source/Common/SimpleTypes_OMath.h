@@ -432,10 +432,15 @@ namespace SimpleTypes
 		{
 			m_eValue = _wtoi( sValue );
 
+			if (m_eValue < 0)
+                m_eValue = 0;
+            if (m_eValue > 4)
+                m_eValue = 4;
+
 			return m_eValue;
 		}
 
-		virtual CString      ToString  () const 
+		virtual CString ToString  () const 
 		{
 			CString sResult;
 			sResult.Format( _T("%d"), m_eValue);

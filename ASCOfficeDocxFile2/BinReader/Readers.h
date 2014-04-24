@@ -3500,15 +3500,15 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			BYTE CGpRule;
-			CString sCGpRule (_T("centered"));
-			CGpRule = m_oBufferedStream.ReadByte();			
-			switch(CGpRule)
+			LONG lVal;
+			lVal = m_oBufferedStream.ReadLong();
+			CString sVal(_T("<m:cGpRule"));
+			if (lVal)
 			{
-				case 0: sCGpRule = _T("centered");break;
-				case 1: sCGpRule = _T("match");break;
-			}			
-			CString sVal; sVal.Format(_T("<m:cGpRule m:val=\"%s\" />"), sCGpRule);
+				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
+				sVal.Append(sXml);
+			}
+			sVal.Append(_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4648,15 +4648,15 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			BYTE RSpRule;
-			CString sRSpRule (_T("centered"));
-			RSpRule = m_oBufferedStream.ReadByte();			
-			switch(RSpRule)
+			LONG lVal;
+			lVal = m_oBufferedStream.ReadLong();
+			CString sVal(_T("<m:rSpRule"));
+			if (lVal)
 			{
-				case 0: sRSpRule = _T("centered");break;
-				case 1: sRSpRule = _T("match");break;
-			}			
-			CString sVal; sVal.Format(_T("<m:rSpRule m:val=\"%s\" />"), sRSpRule);
+				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
+				sVal.Append(sXml);
+			}
+			sVal.Append(_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else

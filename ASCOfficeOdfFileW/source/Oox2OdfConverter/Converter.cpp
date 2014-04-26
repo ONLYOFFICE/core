@@ -91,6 +91,11 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			OOX::Drawing::CPath2DClose* pClose= static_cast<OOX::Drawing::CPath2DClose*>(oox_unknown);
 			convert(pClose);
 		}break;
+		case OOX::et_a_r:
+		{
+			OOX::Drawing::CRun* pRun= static_cast<OOX::Drawing::CRun*>(oox_unknown);
+			convert(pRun);
+		}break;
 		default:
 		{
 			std::wstringstream ss;
@@ -100,7 +105,7 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 	}
 }
 
-void OoxConverter::convert_SpPr(OOX::Drawing::CShapeProperties *   oox_spPr)
+void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr)
 {
 	if (!oox_spPr) return;
 
@@ -158,7 +163,7 @@ void OoxConverter::convert_SpPr(OOX::Drawing::CShapeProperties *   oox_spPr)
 	//nullable<OOX::Drawing::CShape3D>                  m_oSp3D;
 
 }
-void OoxConverter::convert_CNvPr(OOX::Drawing::CNonVisualDrawingProps * oox_cnvPr)
+void OoxConverter::convert(OOX::Drawing::CNonVisualDrawingProps * oox_cnvPr)
 {
 	if (!oox_cnvPr) return;
 
@@ -448,9 +453,43 @@ void OoxConverter::convert(OOX::Drawing::CPath2DClose *oox_geom_path)
 	std::wstring path_elm ;	
 	odf_context()->drawing_context().add_path_element(std::wstring(L"N"), path_elm);
 }
-void OoxConverter::convert_BodyPr(OOX::Drawing::CTextBodyProperties* oox_bodyPr)
+void OoxConverter::convert(OOX::Drawing::CTextBodyProperties	*oox_bodyPr)
 {
 	if (!oox_bodyPr) return;
 
 }
+void OoxConverter::convert(OOX::Drawing::CRunProperty		*oox_run_pr)
+{
+	if (!oox_run_pr)return; // нужен даже пустой !!
+
+}
+void OoxConverter::convert(OOX::Drawing::CRun		*oox_run)
+{
+	if (!oox_run)return;
+
+	convert(oox_run->m_oRunProperty.GetPointer());
+	
+	odf_context()->text_context()->start_span();	//пока принимает последний сгенереннй на контексте .. вопрос  - может по имени связать??
+	if (oox_run->m_oText.IsInit())
+	{
+		odf_context()->text_context()->add_text_content( string2std_string(oox_run->m_oText->m_sText));
+	}
+	odf_context()->text_context()->end_span();
+}
+void OoxConverter::convert(OOX::Drawing::CParagraphProperty		*oox_paragraph_pr)
+{
+	if (!oox_paragraph_pr)return;
+}
+void OoxConverter::convert(OOX::Drawing::CParagraph		*oox_paragraph)
+{
+	if (!oox_paragraph)return;
+
+	convert(oox_paragraph->m_oParagraphProperty.GetPointer());
+
+	for (long i=0; i< oox_paragraph->m_arrItems.GetSize();i++)
+	{
+		convert(oox_paragraph->m_arrItems[i]);
+	}
+}
+
 } // namespace Docx2Odt

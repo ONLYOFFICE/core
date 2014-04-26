@@ -22,7 +22,8 @@ public:
 	virtual void start_document() = 0 ;
 	void end_document();
 
-	virtual odf_drawing_context& drawing_context() = 0;
+	virtual odf_drawing_context		& drawing_context() = 0;
+	virtual odf_text_context		* text_context() = 0;
 	
 	office_element_ptr & getCurrentElement();
 

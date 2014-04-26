@@ -666,7 +666,23 @@ void odf_drawing_context::finalize(office_element_ptr & root_elm)//для привязки
 		}
 	}
 }
+office_element_ptr & odf_drawing_context::get_current_style_element()
+{
+	if (impl_->current_drawing_state_.elements_.size() > 0)
+		return impl_->current_drawing_state_.elements_.back().style_elm;
+}
+void odf_drawing_context::set_text(odf_text_context* text_context)
+{
+	if (text_context == NULL || impl_->current_level_.size() <1 )return;
 
+	for (long i=0; i< text_context->text_elements_list_.size(); i++)
+	{
+		if (text_context->text_elements_list_[i].level ==0)
+		{
+			impl_->current_level_.back()->add_child_element(text_context->text_elements_list_[i].elm);
+		}
+	}
+}
 
 }
 }

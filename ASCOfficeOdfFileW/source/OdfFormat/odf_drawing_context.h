@@ -17,7 +17,7 @@ namespace odf
 
 class odf_conversion_context;
 class odf_style_context;
-class paragraph;
+class odf_text_context;
 
 class odf_drawing_context
 {
@@ -26,7 +26,10 @@ public:
     ~odf_drawing_context();
 
 	void set_styles_context(odf_style_context*  styles_context);//для embedded 
-    
+	
+	office_element_ptr & get_current_style_element() ;
+	office_element_ptr & get_current_element();
+
 	void start_drawing();
 	void end_drawing();
 	
@@ -42,7 +45,6 @@ public:
 	void start_element(office_element_ptr & elm);
     void end_element();
 
-	office_element_ptr & get_current_element();
 
 	bool is_exist_content();
 //////////////////////////////////////////////////////////////////////////////////////
@@ -84,6 +86,8 @@ public:
 	
 	void start_shadow_properies();
 	void end_shadow_properies();
+
+	void set_text(odf_text_context* text_context);
 
 private:
 	

@@ -13,6 +13,9 @@
 #include "odf_text_context.h"
 #include "odf_drawing_context.h"
 
+#include <XlsxFormat\Xlsx.h>
+
+
 namespace Oox2Odf
 {
 	static double pt2emu(double Val)
@@ -444,5 +447,10 @@ void OoxConverter::convert(OOX::Drawing::CPath2DClose *oox_geom_path)
 
 	std::wstring path_elm ;	
 	odf_context()->drawing_context().add_path_element(std::wstring(L"N"), path_elm);
+}
+void OoxConverter::convert_BodyPr(OOX::Drawing::CTextBodyProperties* oox_bodyPr)
+{
+	if (!oox_bodyPr) return;
+
 }
 } // namespace Docx2Odt

@@ -44,7 +44,7 @@ namespace OOX
 		class CSystemColor;
 		class CPresetColor;
 		class CLineProperties;
-		//class ;
+		class CTextBodyProperties;
 
 		namespace Colors
 		{
@@ -70,6 +70,7 @@ public:
 	
 		void convert_CNvPr(OOX::Drawing::CNonVisualDrawingProps	* oox_cnvPr);
 		void convert_SpPr(OOX::Drawing::CShapeProperties		* oox_spPr);
+		void convert_BodyPr(OOX::Drawing::CTextBodyProperties			*oox_bodyPr);
 		
 		void convert(OOX::Drawing::CCustomGeometry2D	*oox_cust_geom);
 		void convert(OOX::Drawing::CPresetGeometry2D	*oox_prst_geom);

@@ -277,6 +277,8 @@ namespace OOX
 		et_a_txDef, // <a:txDef>
 		et_a_up, // <a:up>
 		et_a_xfrm, // <a:xfrm>
+		et_a_p, // <a:p>
+		et_a_pPr, // <a:pPr>
 
 		et_ds_schemaRef, // <ds:shemeRef>
 		et_ds_schemaRefs, // <ds:schemaRefs>		
@@ -676,5 +678,25 @@ namespace OOX
 			return OOX::et_Unknown;
 		}
 		virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) {}
+	};
+	template<typename ElemType = WritingElement>
+	class WritingElementWithChilds : public WritingElement
+	{
+	public:
+		WritingElementWithChilds(){}
+		virtual ~WritingElementWithChilds() {ClearItems();}
+		virtual void ClearItems()
+		{
+			for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+			{
+				if ( m_arrItems[nIndex] )
+					delete m_arrItems[nIndex];
+
+				m_arrItems[nIndex] = NULL;
+			}
+
+			m_arrItems.RemoveAll();
+		}
+		CSimpleArray<ElemType *>         m_arrItems;
 	};
 }

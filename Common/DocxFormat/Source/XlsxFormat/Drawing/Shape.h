@@ -12,7 +12,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// 20.5.2.34 txBody (Shape Text Body)
 		//--------------------------------------------------------------------------------	
-		class CTextBody : public WritingElement
+		class CTextBody : public WritingElementWithChilds<Drawing::CParagraph>
 		{
 		public:
 			WritingElementSpreadsheet_AdditionConstructors(CTextBody)
@@ -47,12 +47,8 @@ namespace OOX
 						m_oBodyPr = oReader;
 					//if ( _T("a:lstStyle") == sName )
 					//	m_oLstStyle = oReader;
-					//if ( _T("a:p") == sName )
-					//{
-					//	//Так сделать верно .. в OOX::Logic нужно лишь назначить namespace "a", а не то что там зашито !!! "w"
-					//	OOX::WritingElement *pItem = new OOX::Logic::CParagraph( oReader );
-					//	if ( pItem )	m_arrItems.Add( pItem );
-					//}
+					else if ( _T("a:p") == sName )
+						m_arrItems.Add( new Drawing::CParagraph( oReader ));
 				}
 			}
 
@@ -64,15 +60,12 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
+				WritingElement_ReadAttributes_Start	( oReader )
+				WritingElement_ReadAttributes_End	( oReader )
 			}
 		public:
 			nullable<OOX::Drawing::CTextBodyProperties>	m_oBodyPr;
 			//nullable<OOX::Drawing::CTextListStyle>	m_oLstStyle;
-
-			//CSimpleArray<OOX::WritingElement*>			m_arrItems;
-
-//lstStyle (Text List Styles) §21.1.2.4.12
-//p (Text Paragraphs)
 		};
 		//--------------------------------------------------------------------------------
 		// 20.5.2.9 cNvSpPr (Connection Non-Visual Shape Properties)
@@ -231,10 +224,13 @@ namespace OOX
 
 					if ( _T("xdr:nvSpPr") == sName )
 						m_oNvSpPr = oReader;
-					if ( _T("xdr:spPr") == sName )
+					else if ( _T("xdr:spPr") == sName )
 						m_oSpPr = oReader;
-					if ( _T("xdr:style") == sName )
-						m_oShapeStyle = oReader;				}
+					else if ( _T("xdr:style") == sName )
+						m_oShapeStyle = oReader;	
+					else if (_T("xdr:txBody") == sName)
+						m_oTxBody = oReader; 		
+				}
 			}
 
 			virtual EElementType getType () const
@@ -250,7 +246,7 @@ namespace OOX
 			nullable<CShapeNonVisual>					m_oNvSpPr;
 			nullable<OOX::Drawing::CShapeProperties>	m_oSpPr;
 			nullable<OOX::Drawing::CShapeStyle>			m_oShapeStyle;
-			nullable<OOX::Spreadsheet::CTextBody>		m_oTxBody;
+			nullable<OOX::Spreadsheet::CTextBody>		m_oTxBody;	
 		};
 		
 		//--------------------------------------------------------------------------------

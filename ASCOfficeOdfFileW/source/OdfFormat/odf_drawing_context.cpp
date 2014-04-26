@@ -629,9 +629,7 @@ void odf_drawing_context::start_text_box()
 
 	if (impl_->current_graphic_properties)
 	{
-		//автоувеличение бокса при добавлении текста
-		impl_->current_graphic_properties->content().draw_auto_grow_height_ = false;
-		impl_->current_graphic_properties->content().draw_auto_grow_width_ = false;
+
 	}
 	office_element_ptr text_box_elm;
 	create_element(L"draw", L"text-box", text_box_elm, impl_->odf_context_);
@@ -681,6 +679,14 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 		{
 			impl_->current_level_.back()->add_child_element(text_context->text_elements_list_[i].elm);
 		}
+	}
+
+	if (impl_->current_graphic_properties)
+	{
+		//автоувеличение при добавлении текста
+		impl_->current_graphic_properties->content().draw_auto_grow_height_ = false;
+		impl_->current_graphic_properties->content().draw_auto_grow_width_ = false;
+		impl_->current_graphic_properties->content().draw_fit_to_size_ = false;//???
 	}
 }
 

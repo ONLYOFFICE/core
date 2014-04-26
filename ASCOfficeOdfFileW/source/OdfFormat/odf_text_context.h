@@ -39,7 +39,8 @@ public:
     
 	void add_text_content(const std::wstring & text);
     
-    void start_paragraph(office_element_ptr & elm);
+	void start_paragraph();
+	void start_paragraph(office_element_ptr & elm);
     void end_paragraph();
 
 	void start_element(office_element_ptr & elm); // t, h, list???

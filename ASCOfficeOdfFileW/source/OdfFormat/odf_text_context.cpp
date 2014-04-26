@@ -38,7 +38,14 @@ void odf_text_context::add_text_content(const std::wstring & text)
 	{
 	}
 }
+void odf_text_context::start_paragraph()
+{
+	office_element_ptr paragr_elm;
+	create_element(L"text", L"p",paragr_elm,odf_context_);
 
+	start_paragraph(paragr_elm);
+
+}
 void odf_text_context::start_paragraph(office_element_ptr & elm)
 {
 	office_element_ptr style;

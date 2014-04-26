@@ -13,6 +13,8 @@
 #include "odf_text_context.h"
 #include "odf_drawing_context.h"
 
+#include "style_text_properties.h"
+
 #include <XlsxFormat\Xlsx.h>
 
 
@@ -305,12 +307,8 @@ void OoxConverter::convert(OOX::Drawing::CPatternFillProperties *oox_pattern_fil
 	//odf_context()->drawing_context().end_pattern_fill();
 
 }
-void OoxConverter::convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fill)
+void OoxConverter::convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fill,std::wstring & hexColor , _CP_OPT(double) &opacity)
 {
-	if (!oox_solid_fill)return;
-
-	std::wstring hexColor;
-	_CP_OPT(double) opacity;
 	switch( oox_solid_fill->m_eType )
 	{
 		case OOX::Drawing::colorSheme:	convert(&oox_solid_fill->m_oShemeClr,	hexColor, opacity);		break;
@@ -320,6 +318,16 @@ void OoxConverter::convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fi
 		case OOX::Drawing::colorSRgb:	convert(&oox_solid_fill->m_oSrgbClr,	hexColor, opacity);		break;
 		case OOX::Drawing::colorSys:	convert(&oox_solid_fill->m_oSysClr,		hexColor, opacity);		break;		
 	}	
+}
+void OoxConverter::convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fill)
+{
+	if (!oox_solid_fill)return;
+
+	std::wstring hexColor;
+	_CP_OPT(double) opacity;
+	
+	convert(oox_solid_fill, hexColor, opacity);
+
 	odf_context()->drawing_context().set_solid_fill(hexColor);
 
 	if (opacity)
@@ -460,7 +468,55 @@ void OoxConverter::convert(OOX::Drawing::CTextBodyProperties	*oox_bodyPr)
 }
 void OoxConverter::convert(OOX::Drawing::CRunProperty		*oox_run_pr)
 {
-	if (!oox_run_pr)return; // нужен даже пустой !!
+	if (!oox_run_pr)return;
+	bool automatic = true;
+	bool root = false;
+
+	odf_context()->styles_context().create_style(L"",odf::style_family::Text, automatic, root, -1);	
+	
+	odf::style_text_properties	* text_properties = odf_context()->styles_context().last_state().get_text_properties();
+	if (text_properties == NULL)return;
+
+	if (oox_run_pr->m_oBold.IsInit())
+	{
+		if (oox_run_pr->m_oBold->ToBool() == true) 
+			text_properties->content().fo_font_weight_ = odf::font_weight(odf::font_weight::WBold);
+		else
+			text_properties->content().fo_font_weight_ = odf::font_weight(odf::font_weight::WNormal);
+	}
+
+	if (oox_run_pr->m_oSolidFill.IsInit())
+	{
+		std::wstring hexColor;
+		_CP_OPT(double) opacity;
+		convert(oox_run_pr->m_oSolidFill.GetPointer(),hexColor,opacity);
+		
+		text_properties->content().fo_color_ = odf::color(std::wstring(L"#") + hexColor);
+	}
+
+	//if (oox_run_pr->m_oUnderline.IsInit())
+	//{
+	//	convert_element ????
+	//}
+	if (oox_run_pr->m_oItalic.IsInit())
+	{
+		if (oox_run_pr->m_oItalic->ToBool() ==true)
+			text_properties->content().fo_font_style_ = odf::font_style(odf::font_style::Italic);
+		else
+			text_properties->content().fo_font_style_ = odf::font_style(odf::font_style::Normal);
+	}
+	if (oox_run_pr->m_oSz.IsInit())
+	{
+		convert(oox_run_pr->m_oSz->GetValue()/100., text_properties->content().fo_font_size_);
+	}
+	//if (oox_run_pr->m_oFamily.IsInit())
+	//{
+	//}
+
+	//if (oox_run_pr->m_oRFont.IsInit())
+	//{
+	//	text_properties->content().style_font_name_ = string2std_string(oox_run_pr->m_oRFont->m_sVal.get());
+	//}
 
 }
 void OoxConverter::convert(OOX::Drawing::CRun		*oox_run)
@@ -484,12 +540,26 @@ void OoxConverter::convert(OOX::Drawing::CParagraph		*oox_paragraph)
 {
 	if (!oox_paragraph)return;
 
+	odf_context()->text_context()->start_paragraph();
+
 	convert(oox_paragraph->m_oParagraphProperty.GetPointer());
 
 	for (long i=0; i< oox_paragraph->m_arrItems.GetSize();i++)
 	{
 		convert(oox_paragraph->m_arrItems[i]);
 	}
+	odf_context()->text_context()->end_paragraph();
+
+}
+
+void OoxConverter::convert(double oox_font_size,  _CP_OPT(odf::font_size) & odf_font_size)
+{
+	 _CP_OPT(odf::length) odf_length;
+
+	 odf_length = odf::length(oox_font_size, odf::length::pt);
+	 
+	 if (odf_length)
+		 odf_font_size = odf::font_size(odf_length.get());
 }
 
 } // namespace Docx2Odt

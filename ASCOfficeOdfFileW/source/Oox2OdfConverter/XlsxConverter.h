@@ -5,11 +5,43 @@
 #include <cpdoccore/CPSharedPtr.h>
 #include <cpdoccore/CPOptional.h>
 
-#include <XlsxFormat\Xlsx.h>
-
 namespace OOX 
 {
 	class CDocx;
+	class CTheme;
+
+	namespace Spreadsheet
+	{
+		class CXlsx;
+		class WritingElement;
+
+		class CWorksheet;
+		class CDrawing;
+		class CCol;
+		class CRow;
+		class CCell;
+		class CRun;
+		class CRPr;
+		class CText;
+		class CFormula;
+		class CHyperlink;
+		class CSheetFormatPr;
+		class CSheetPr;		
+		class CFont;
+		class CBorder;
+		class CFill;		
+		class CColor;
+		class CBorderProp;
+		class CXfs;
+		class CCellStyle;
+		class CNumFmt;
+		class CCellAnchor;
+		class CDrawing;
+		class CFromTo;
+		class CPic;
+		class CShape;
+		class CConnShape;
+	}
 }
 
 namespace cpdoccore
@@ -64,7 +96,7 @@ namespace Oox2Odf
     private:
 		OOX::Spreadsheet::CXlsx		*xlsx_document;
 		odf::package::odf_document	*output_document;
-		OOX::Spreadsheet::CDrawing	*xlsx_current_drawing; //пока сюда .. потом покрасивше
+		OOX::Spreadsheet::CDrawing	*xlsx_current_drawing; //пока сюда .. потом покрасивше, для внешних ссылок
 
 		odf::ods_conversion_context	*ods_context;
 
@@ -113,6 +145,6 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CPic*	oox_picture);
 		void convert(OOX::Spreadsheet::CShape*	oox_shape);
 		void convert(OOX::Spreadsheet::CConnShape*	oox_conn_shape);
-		
 	};
+
 }

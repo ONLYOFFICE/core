@@ -16,7 +16,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Oox2OdfConverter", "source\Oox2OdfConverter.vcproj", "{BEE01B53-244A-44E6-8947-ED9342D9247E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
-		{36636678-AE25-4BE6-9A34-2561D1BCF302} = {36636678-AE25-4BE6-9A34-2561D1BCF302}
 		{E5A67556-44DA-4481-8F87-0A3AEDBD20DD} = {E5A67556-44DA-4481-8F87-0A3AEDBD20DD}
 	EndProjectSection
 EndProject
@@ -26,8 +25,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeOdfFileWTest", "AS
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpformulasconvert", "..\ASCOfficeOdfFile\formulasconvert\formulasconvert.vcproj", "{94954A67-A853-43B1-A727-6EF2774C5A6A}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PPTXFormat", "..\ASCOfficePPTXFile\PPTXLib\PPTXFormat.vcproj", "{36636678-AE25-4BE6-9A34-2561D1BCF302}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -72,12 +69,6 @@ Global
 		{94954A67-A853-43B1-A727-6EF2774C5A6A}.Release|Win32.Build.0 = Release|Win32
 		{94954A67-A853-43B1-A727-6EF2774C5A6A}.ReleaseASC|Win32.ActiveCfg = Release|Win32
 		{94954A67-A853-43B1-A727-6EF2774C5A6A}.ReleaseASC|Win32.Build.0 = Release|Win32
-		{36636678-AE25-4BE6-9A34-2561D1BCF302}.Debug|Win32.ActiveCfg = Debug|Win32
-		{36636678-AE25-4BE6-9A34-2561D1BCF302}.Debug|Win32.Build.0 = Debug|Win32
-		{36636678-AE25-4BE6-9A34-2561D1BCF302}.Release|Win32.ActiveCfg = Release|Win32
-		{36636678-AE25-4BE6-9A34-2561D1BCF302}.Release|Win32.Build.0 = Release|Win32
-		{36636678-AE25-4BE6-9A34-2561D1BCF302}.ReleaseASC|Win32.ActiveCfg = Release|Win32
-		{36636678-AE25-4BE6-9A34-2561D1BCF302}.ReleaseASC|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

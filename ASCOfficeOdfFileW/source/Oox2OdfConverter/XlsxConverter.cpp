@@ -3,6 +3,7 @@
 #include "stdAfx.h"
 
 #include "XlsxConverter.h"
+#include "XlsxTextShapeConverter.h"
 
 #include <boost/foreach.hpp>
 
@@ -17,6 +18,8 @@
 #include "style_text_properties.h"
 #include "style_paragraph_properties.h"
 #include "style_graphic_properties.h"
+
+#include <XlsxFormat\Xlsx.h>
 
 using namespace cpdoccore;
 
@@ -1064,7 +1067,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CShape* oox_shape)
 			//доп эффекты
 
 		}
-		
+		if (oox_shape->m_oTxBody.IsInit())
+		{
+			convert_BodyPr(oox_shape->m_oTxBody->m_oBodyPr.GetPointer());
+		}		
 	}
 	if (type == 2000)ods_context->drawing_context().end_text_box(); 
 	else ods_context->drawing_context().end_shape();

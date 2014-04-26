@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\ASCOfficeOdfFile\src\odf\datatypes;.\OdfFormat;.\Oox2OdfConverter;..\..\Common\DocxFormat\Source;..\..\Common\DocxFormat\Source\XML;..\..\ASCOfficeOdfFile\include;..\..\ASCOfficeOdfFile\3dparty\utf8cpp\include;..\..\ASCOfficePPTXFile\PPTXFormat\"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;USE_LITE_READER;_USE_XMLLITE_READER_;_DOCWRAPPER_"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"

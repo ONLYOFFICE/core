@@ -4731,7 +4731,71 @@ namespace SimpleTypes
 		unsigned char m_unA;
 	};
 
+	//--------------------------------------------------------------------------------
+	// TextAlignmentType 20.1.10.59 (Part 1)
+	//--------------------------------------------------------------------------------		
+	enum ETextAlignmentType
+	{
+		textalignmenttypeL    = 0,
+		textalignmenttypeCtr  = 1,
+		textalignmenttypeDist = 2,
+		textalignmenttypeJust = 3,
+		textalignmenttypeR    = 4,
+	};
+	template<ETextAlignmentType eDefValue = textalignmenttypeL>
+	class CTextAlignmentType : public CSimpleType<ETextAlignmentType, eDefValue>
+	{
+	public:
+		CTextAlignmentType() {}
 
+		virtual ETextAlignmentType FromString(CString &sValue)
+		{
+			m_eValue = eDefValue;
+
+			if ( sValue.GetLength() <= 0 )
+				return m_eValue;
+
+			wchar_t wChar = sValue.GetAt(0);
+			switch ( wChar )
+			{
+			case 'l':
+				if      ( _T("l")    == sValue ) m_eValue = textalignmenttypeL;
+				break;
+			case 'c':
+				if      ( _T("ctr")  == sValue ) m_eValue = textalignmenttypeCtr;
+				break;
+			case 'd':
+				if      ( _T("dist") == sValue ) m_eValue = textalignmenttypeDist;
+				break;
+			case 'j':
+				if      ( _T("just") == sValue ) m_eValue = textalignmenttypeJust;
+				break;
+			case 'r':
+				if      ( _T("r")    == sValue ) m_eValue = textalignmenttypeR;
+				break;
+			}
+
+			return m_eValue;
+		}
+
+		virtual CString            ToString  () const 
+		{
+			switch(m_eValue)
+			{
+			case textalignmenttypeR   : return _T("r");			
+			case textalignmenttypeCtr : return _T("ctr");		
+			case textalignmenttypeDist: return _T("dist");		
+			case textalignmenttypeJust: return _T("just");		
+			case textalignmenttypeL   : return _T("l");		
+			default                   : return _T("l");
+			}
+		}
+
+		SimpleType_FromString     (ETextAlignmentType)
+		SimpleType_Operator_Equal (CTextAlignmentType)
+	};
+
+	
 	//--------------------------------------------------------------------------------
 	// TextAnchoringType 20.1.10.60 (Part 1)
 	//--------------------------------------------------------------------------------		
@@ -4834,6 +4898,70 @@ namespace SimpleTypes
         SimpleType_FromString     (unsigned char)
         SimpleType_Operator_Equal (CTextColumnCount)
     };
+	
+	//--------------------------------------------------------------------------------
+    // 20.1.10.66 TextFontAlignType (Font Alignment Types)
+	//--------------------------------------------------------------------------------  
+	enum ETextFontAlignType
+	{
+		textfontaligntypeAuto   = 0,
+		textfontaligntypeCtr	= 1,
+		textfontaligntypeBase	= 2,
+		textfontaligntypeT		= 3,
+		textfontaligntypeB		= 4,
+	};
+	template<ETextFontAlignType eDefValue = textfontaligntypeAuto>
+	class CTextFontAlignType : public CSimpleType<ETextFontAlignType, eDefValue>
+	{
+	public:
+		CTextFontAlignType() {}
+
+		virtual ETextFontAlignType FromString(CString &sValue)
+		{
+			m_eValue = eDefValue;
+
+			if ( sValue.GetLength() <= 0 )
+				return m_eValue;
+
+			wchar_t wChar = sValue.GetAt(0);
+			switch ( wChar )
+			{
+			case 'a':
+				if      ( _T("a")    == sValue ) m_eValue = textfontaligntypeAuto;
+				break;
+			case 'c':
+				if      ( _T("ctr")  == sValue ) m_eValue = textfontaligntypeCtr;
+				break;
+			case 'b':
+				if      ( _T("base") == sValue ) m_eValue = textfontaligntypeBase;
+				if      ( _T("b")    == sValue ) m_eValue = textfontaligntypeB;
+			break;
+			case 't':
+				if      ( _T("just") == sValue ) m_eValue = textfontaligntypeT;
+				break;
+			}
+
+			return m_eValue;
+		}
+
+		virtual CString            ToString  () const 
+		{
+			switch(m_eValue)
+			{
+			case textfontaligntypeB   : return _T("b");			
+			case textfontaligntypeCtr : return _T("ctr");		
+			case textfontaligntypeT	  : return _T("t");		
+			case textfontaligntypeBase: return _T("base");		
+			case textfontaligntypeAuto: return _T("auto");		
+			default                   : return _T("auto");
+			}
+		}
+
+		SimpleType_FromString     (ETextFontAlignType)
+		SimpleType_Operator_Equal (CTextFontAlignType)
+	};
+
+	
 	//--------------------------------------------------------------------------------
     // TextFontScalePercentOrPercentString 20.1.10.67 (Part 1) + 12.1.2.5 (Part4)
 	//--------------------------------------------------------------------------------

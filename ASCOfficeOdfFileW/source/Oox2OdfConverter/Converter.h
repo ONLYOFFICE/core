@@ -45,6 +45,10 @@ namespace OOX
 		class CPresetColor;
 		class CLineProperties;
 		class CTextBodyProperties;
+		class CParagraph;
+		class CParagraphProperty;
+		class CRun;
+		class CRunProperty;
 
 		namespace Colors
 		{
@@ -68,14 +72,14 @@ public:
 
 		void convert(OOX::WritingElement  *oox_unknown);
 	
-		void convert_CNvPr(OOX::Drawing::CNonVisualDrawingProps	* oox_cnvPr);
-		void convert_SpPr(OOX::Drawing::CShapeProperties		* oox_spPr);
-		void convert_BodyPr(OOX::Drawing::CTextBodyProperties			*oox_bodyPr);
+		void convert(OOX::Drawing::CNonVisualDrawingProps		*oox_cnvPr);
+		void convert(OOX::Drawing::CShapeProperties				*oox_spPr);
+		void convert(OOX::Drawing::CTextBodyProperties			*oox_bodyPr);
 		
-		void convert(OOX::Drawing::CCustomGeometry2D	*oox_cust_geom);
-		void convert(OOX::Drawing::CPresetGeometry2D	*oox_prst_geom);
+		void convert(OOX::Drawing::CCustomGeometry2D			*oox_cust_geom);
+		void convert(OOX::Drawing::CPresetGeometry2D			*oox_prst_geom);
 
-		void convert(OOX::Drawing::CLineProperties		*oox_line_prop);
+		void convert(OOX::Drawing::CLineProperties				*oox_line_prop);
 		
 		void convert(OOX::Drawing::CBlipFillProperties			*oox_bitmap_fill);
 		void convert(OOX::Drawing::CGradientFillProperties		*oox_grad_fill);
@@ -92,6 +96,12 @@ public:
 /////////////////////////////////////////
 		void convert(OOX::Drawing::CSchemeColor					*oox_ShemeClr,	std::wstring & hexString, cpdoccore::_CP_OPT(double) &opacity);
 		void convert(OOX::Drawing::Colors::CColorTransform      *oox_ScrgbClr,	std::wstring & hexString, cpdoccore::_CP_OPT(double) &opacity);
+
+///////////////////////////////
+		void convert(OOX::Drawing::CParagraph					*oox_paragraph);
+		void convert(OOX::Drawing::CParagraphProperty			*oox_paragraph_pr);
+		void convert(OOX::Drawing::CRun							*oox_run);
+		void convert(OOX::Drawing::CRunProperty					*oox_run_pr);
 
 	};
 

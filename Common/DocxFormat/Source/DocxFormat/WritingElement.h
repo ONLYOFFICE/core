@@ -277,8 +277,12 @@ namespace OOX
 		et_a_txDef, // <a:txDef>
 		et_a_up, // <a:up>
 		et_a_xfrm, // <a:xfrm>
+		
 		et_a_p, // <a:p>
 		et_a_pPr, // <a:pPr>
+		et_a_r, // <a:p>
+		et_a_rPr, // <a:pPr>
+		et_a_t, // <w:t>
 
 		et_ds_schemaRef, // <ds:shemeRef>
 		et_ds_schemaRefs, // <ds:schemaRefs>		

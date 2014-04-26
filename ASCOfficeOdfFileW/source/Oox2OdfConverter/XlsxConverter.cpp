@@ -3,7 +3,6 @@
 #include "stdAfx.h"
 
 #include "XlsxConverter.h"
-#include "XlsxTextShapeConverter.h"
 
 #include <boost/foreach.hpp>
 
@@ -298,7 +297,7 @@ void XlsxConverter::convert_sharing_string(int number)
 	}
 
 	ods_context->end_cell_text();
-	ods_context->current_table().set_cell_text( ods_context->current_text_context());
+	ods_context->current_table().set_cell_text( ods_context->text_context());
 }
 void XlsxConverter::convert(OOX::Spreadsheet::WritingElement  *oox_unknown)
 {
@@ -329,16 +328,14 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRun *oox_text_run)
 {
 	if (oox_text_run == NULL)return;
 	
-	odf::office_element_ptr odf_style;
-
 	convert(oox_text_run->m_oRPr.GetPointer());
-	ods_context->current_text_context()->start_span();	//пока принимает последний сгенереннй на контексте .. вопрос  - может по имени связать??
+	ods_context->text_context()->start_span();	//пока принимает последний сгенереннй на контексте .. вопрос  - может по имени связать??
 	
 	for(int i = 0; i < oox_text_run->m_arrItems.GetSize(); ++i)
 	{
 		convert(oox_text_run->m_arrItems[i]);
 	}
-	ods_context->current_text_context()->end_span();
+	ods_context->text_context()->end_span();
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_text_pr)
 {
@@ -1055,11 +1052,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CShape* oox_shape)
 	if (type == 2000)ods_context->drawing_context().start_text_box(); 
 	else ods_context->drawing_context().start_shape(type);
 	{	
-		convert_SpPr(oox_shape->m_oSpPr.GetPointer());
+		OoxConverter::convert(oox_shape->m_oSpPr.GetPointer());
 
 		if (oox_shape->m_oNvSpPr.IsInit())
 		{
-			convert_CNvPr(oox_shape->m_oNvSpPr->m_oCNvPr.GetPointer());	//имя, описалово, номер ...
+			OoxConverter::convert(oox_shape->m_oNvSpPr->m_oCNvPr.GetPointer());	//имя, описалово, номер ...
 			convert(oox_shape->m_oNvSpPr->m_oCNvSpPr.GetPointer());	//заблокированности 
 		}
 		if (oox_shape->m_oShapeStyle.IsInit())
@@ -1069,7 +1066,15 @@ void XlsxConverter::convert(OOX::Spreadsheet::CShape* oox_shape)
 		}
 		if (oox_shape->m_oTxBody.IsInit())
 		{
-			convert_BodyPr(oox_shape->m_oTxBody->m_oBodyPr.GetPointer());
+			OoxConverter::convert(oox_shape->m_oTxBody->m_oBodyPr.GetPointer());
+			ods_context->start_cell_text();
+			for (long i=0 ; i < oox_shape->m_oTxBody->m_arrItems.GetSize();i++)
+			{
+				OoxConverter::convert(oox_shape->m_oTxBody->m_arrItems[i]);
+			}
+			ods_context->end_cell_text();
+			ods_context->drawing_context().set_text( ods_context->text_context());
+
 		}		
 	}
 	if (type == 2000)ods_context->drawing_context().end_text_box(); 
@@ -1100,13 +1105,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConnShape* oox_shape)
 //////////////////////////////////////////////////////////////////////////////
 	ods_context->drawing_context().start_shape(type);
 	{		
-		convert_SpPr(oox_shape->m_oSpPr.GetPointer());
+		OoxConverter::convert(oox_shape->m_oSpPr.GetPointer());
 
 		if (oox_shape->m_oNvConnSpPr.IsInit())
 		{
 			if (oox_shape->m_oNvConnSpPr->m_oCNvPr.IsInit())
 			{
-				convert_CNvPr(oox_shape->m_oNvConnSpPr->m_oCNvPr.GetPointer());		
+				OoxConverter::convert(oox_shape->m_oNvConnSpPr->m_oCNvPr.GetPointer());		
 			}
 
 			if (oox_shape->m_oNvConnSpPr->m_oCNvConnSpPr.IsInit())
@@ -1157,7 +1162,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 		{
 			if (oox_picture->m_oNvPicPr->m_oCNvPr.IsInit())
 			{
-				convert_CNvPr(oox_picture->m_oNvPicPr->m_oCNvPr.GetPointer());		
+				OoxConverter::convert(oox_picture->m_oNvPicPr->m_oCNvPr.GetPointer());		
 			}
 
 			if (oox_picture->m_oNvPicPr->m_oCNvPicPr.IsInit())
@@ -1179,7 +1184,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 		}
 		if (oox_picture->m_oSpPr.IsInit())
 		{
-			convert_SpPr(oox_picture->m_oSpPr.GetPointer());
+			OoxConverter::convert(oox_picture->m_oSpPr.GetPointer());
 		}
 
 		if (oox_picture->m_oShapeStyle.IsInit())

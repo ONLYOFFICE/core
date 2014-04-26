@@ -337,9 +337,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRun *oox_text_run)
 	}
 	ods_context->text_context()->end_span();
 }
-void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_text_pr)
+void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_run_pr)
 {
-	if (oox_text_pr == NULL)return;
+	if (oox_run_pr == NULL)return;
 
 	bool automatic = true;
 	bool root = false;
@@ -349,40 +349,40 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_text_pr)
 	odf::style_text_properties	* text_properties = ods_context->styles_context().last_state().get_text_properties();
 	if (text_properties == NULL)return;
 
-	if (oox_text_pr->m_oBold.IsInit())
+	if (oox_run_pr->m_oBold.IsInit())
 	{
-		if (oox_text_pr->m_oBold->m_oVal.ToBool() ==true) 
+		if (oox_run_pr->m_oBold->m_oVal.ToBool() ==true) 
 			text_properties->content().fo_font_weight_ = odf::font_weight(odf::font_weight::WBold);
 		else
 			text_properties->content().fo_font_weight_ = odf::font_weight(odf::font_weight::WNormal);
 	}
-	convert(oox_text_pr->m_oColor.GetPointer(),text_properties->content().fo_color_);
+	convert(oox_run_pr->m_oColor.GetPointer(),text_properties->content().fo_color_);
 
-	if (oox_text_pr->m_oUnderline.IsInit())
+	if (oox_run_pr->m_oUnderline.IsInit())
 	{
 		//convert_element ????
 	}
-	if (oox_text_pr->m_oItalic.IsInit())
+	if (oox_run_pr->m_oItalic.IsInit())
 	{
-		if (oox_text_pr->m_oItalic->m_oVal.ToBool() ==true)
+		if (oox_run_pr->m_oItalic->m_oVal.ToBool() ==true)
 			text_properties->content().fo_font_style_ = odf::font_style(odf::font_style::Italic);
 		else
 			text_properties->content().fo_font_style_ = odf::font_style(odf::font_style::Normal);
 	}
-	if (oox_text_pr->m_oSz.IsInit())
+	if (oox_run_pr->m_oSz.IsInit())
 	{
-		convert(oox_text_pr->m_oSz->m_oVal->GetValue(), text_properties->content().fo_font_size_);
+		OoxConverter::convert(oox_run_pr->m_oSz->m_oVal->GetValue(), text_properties->content().fo_font_size_);
 	}
-	if (oox_text_pr->m_oFamily.IsInit())
+	if (oox_run_pr->m_oFamily.IsInit())
 	{
-	}
-
-	if (oox_text_pr->m_oRFont.IsInit())
-	{
-		text_properties->content().style_font_name_ = string2std_string(oox_text_pr->m_oRFont->m_sVal.get());
 	}
 
-	//convert(oox_text_pr->m_oVertAlign.GetPointer(),...
+	if (oox_run_pr->m_oRFont.IsInit())
+	{
+		text_properties->content().style_font_name_ = string2std_string(oox_run_pr->m_oRFont->m_sVal.get());
+	}
+
+	//convert(oox_run_pr->m_oVertAlign.GetPointer(),...
 			//nullable<CCharset>												m_oCharset;
 			//nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oCondense;
 			//nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oExtend;
@@ -596,7 +596,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf::style_text_prop
 	}
 	if (font->m_oSz.IsInit())
 	{
-		convert(font->m_oSz->m_oVal->GetValue(), text_properties->content().fo_font_size_);
+		OoxConverter::convert(font->m_oSz->m_oVal->GetValue(), text_properties->content().fo_font_size_);
 	}
 	if (font->m_oFamily.IsInit())
 	{
@@ -610,15 +610,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf::style_text_prop
 	//...
 	/////
 }
-void XlsxConverter::convert(double oox_font_size,  _CP_OPT(odf::font_size) & odf_font_size)
-{
-	 _CP_OPT(odf::length) odf_length;
 
-	 convert(oox_font_size, odf_length);
-	 
-	 if (odf_length)
-		 odf_font_size = odf::font_size(odf_length.get());
-}
 void XlsxConverter::convert(double oox_size,  _CP_OPT(odf::length) & odf_size)
 {
 	//нужно сделать преобразования типов oox_size
@@ -1066,15 +1058,15 @@ void XlsxConverter::convert(OOX::Spreadsheet::CShape* oox_shape)
 		}
 		if (oox_shape->m_oTxBody.IsInit())
 		{
-			OoxConverter::convert(oox_shape->m_oTxBody->m_oBodyPr.GetPointer());
-			ods_context->start_cell_text();
+			ods_context->start_text_context();
 			for (long i=0 ; i < oox_shape->m_oTxBody->m_arrItems.GetSize();i++)
 			{
 				OoxConverter::convert(oox_shape->m_oTxBody->m_arrItems[i]);
 			}
-			ods_context->end_cell_text();
 			ods_context->drawing_context().set_text( ods_context->text_context());
+			ods_context->end_text_context();
 
+			OoxConverter::convert(oox_shape->m_oTxBody->m_oBodyPr.GetPointer());//вторым .. чтоб дефолты убрать
 		}		
 	}
 	if (type == 2000)ods_context->drawing_context().end_text_box(); 

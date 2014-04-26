@@ -103,6 +103,8 @@ namespace Oox2Odf
 		void convert_sheets();
 		void convert_styles();
 		
+		void convert(double oox_size,				_CP_OPT(odf::length) & odf_size);
+
 		void convert(OOX::Spreadsheet::WritingElement  *oox_unknown);
 		
 		void convert(OOX::Spreadsheet::CWorksheet *oox_sheet);
@@ -129,9 +131,6 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::background_color) & odf_bckgrd_color);
 		void convert(OOX::Spreadsheet::CBorderProp *borderProp, std::wstring & odf_border_prop);
 		
-		void convert(double oox_font_size,  _CP_OPT(odf::font_size) & odf_font_size);
-		void convert(double oox_size,  _CP_OPT(odf::length) & odf_size);
-
 		void convert(OOX::Spreadsheet::CXfs			*cell_style, int oox_id, bool automatic=true, bool root = false);
 		void convert(OOX::Spreadsheet::CCellStyle	*cell_style, int oox_id);
 		void convert(OOX::Spreadsheet::CNumFmt		*numFmt);

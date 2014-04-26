@@ -13,6 +13,7 @@ namespace cpdoccore
 	{
 
 		class odf_conversion_context;
+		class font_size;
 	}
 }
 namespace OOX
@@ -96,13 +97,15 @@ public:
 /////////////////////////////////////////
 		void convert(OOX::Drawing::CSchemeColor					*oox_ShemeClr,	std::wstring & hexString, cpdoccore::_CP_OPT(double) &opacity);
 		void convert(OOX::Drawing::Colors::CColorTransform      *oox_ScrgbClr,	std::wstring & hexString, cpdoccore::_CP_OPT(double) &opacity);
+		void convert(OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill,std::wstring & hexColor , cpdoccore::_CP_OPT(double) &opacity);
 
 ///////////////////////////////
 		void convert(OOX::Drawing::CParagraph					*oox_paragraph);
 		void convert(OOX::Drawing::CParagraphProperty			*oox_paragraph_pr);
 		void convert(OOX::Drawing::CRun							*oox_run);
 		void convert(OOX::Drawing::CRunProperty					*oox_run_pr);
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+		void convert(double oox_font_size,			cpdoccore::_CP_OPT(cpdoccore::odf::font_size) & odf_font_size);
 	};
 
 	class Converter

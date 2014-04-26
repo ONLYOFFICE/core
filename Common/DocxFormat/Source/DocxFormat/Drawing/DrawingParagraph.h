@@ -171,27 +171,32 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start	( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("rtl"), m_oRtl)
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("lvl"), m_oLvl)
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("algn"), m_oAlgn)
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("fontAlgn"), m_oFontAlgn)
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("marL"), m_oMarR)
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("marR"), m_oMarL)
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("b"),		m_oBold)
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("i"),		m_oItalic)
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("sz"),	m_oSz)
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("u"),		m_oUnderline)
 				WritingElement_ReadAttributes_End	( oReader )
 			}
 		public:
 			// Attributes
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>          m_oRtl;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>			m_oHangingPunct;
-			nullable<SimpleTypes::CDecimalNumber<> >						m_oLvl;
-			nullable<SimpleTypes::CDecimalNumber<> >						m_oLatinLnBrk;
-			nullable<SimpleTypes::CDecimalNumber<> >						m_oIndent;
-			nullable<SimpleTypes::CDecimalNumber<> >						m_oEaLnBrk;
-			nullable<SimpleTypes::CDecimalNumber<> >						m_oDefTabSz;
-			nullable<SimpleTypes::CTextAlignmentType<>>						m_oAlgn;
-			nullable<SimpleTypes::CTextFontAlignType<>>						m_oFontAlgn;
-			nullable<SimpleTypes::CCoordinate32>							m_oMarR;
-			nullable<SimpleTypes::CCoordinate32>							m_oMarL;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>					m_oBold;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>					m_oItalic;	
+			nullable<SimpleTypes::CDouble>											m_oSz;
+			nullable<SimpleTypes::CUnderline<SimpleTypes::underlineNone>>			m_oUnderline;
+			
+			//baseline //20.1.10.40
+			//bmk//string
+			//cap//20.1.10.64
+			//dirty//bool
+			//kern//20.1.10.73
+			//kumimoji//bool
+			//lang//22.9.2.6
+			//noProof//bool
+			//normalizeH//bool
+			//smtClean//bool
+			//smtId//unsignedInt
+			//spc//20.1.10.74
+			//strike//20.1.10.79
 
 			// Childs
 			EFillType                                         m_eFillType;   // “ËÔ Á‡ÎË‚ÍË
@@ -201,6 +206,7 @@ namespace OOX
 			nullable<OOX::Drawing::CNoFillProperties>         m_oNoFill;
 			nullable<OOX::Drawing::CPatternFillProperties>    m_oPattFill;
 			nullable<OOX::Drawing::CSolidColorFillProperties> m_oSolidFill;
+
 			//cs (Complex Script Font) ß21.1.2.3.1
 			//ea (East Asian Font) ß21.1.2.3.3
 			//effectDag (Effect Container) ß20.1.8.25
@@ -220,7 +226,7 @@ namespace OOX
 		};
 
 		//--------------------------------------------------------------------------------
-		// 21.1.2.3.9 rPr (Text Run Properties)
+		// 21.1.2.3.8  r (Text Run)
 		//--------------------------------------------------------------------------------
 		class CRun : public WritingElement
 		{
@@ -393,11 +399,11 @@ namespace OOX
 			//buSzPts //(Bullet Size Points) ß21.1.2.4.10
 			//buSzTx //(Bullet Size Follows Text) ß21.1.2.4.11
 			//defRPr //(Default Text Run Properties) ß21.1.2.3.2
-			nullable<OOX::Drawing::COfficeArtExtensionList     > m_oExtLst;			//(Extension List) ß20.1.2.2.15
 			//lnSpc //(Line Spacing) ß21.1.2.2.5
 			//spcAft// (Space After) ß21.1.2.2.9
 			//spcBef //(Space Before) ß21.1.2.2.10
 			//tabLst //(Tab List) ß21.1.2.2.14
+			nullable<OOX::Drawing::COfficeArtExtensionList     > m_oExtLst;			//(Extension List) ß20.1.2.2.15
 		};
 
 		//--------------------------------------------------------------------------------

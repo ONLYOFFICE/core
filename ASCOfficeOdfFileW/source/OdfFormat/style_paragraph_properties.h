@@ -353,7 +353,7 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 
-    const paragraph_format_properties & content() const { return style_paragraph_properties_content_; }
+    paragraph_format_properties & content(){ return style_paragraph_properties_content_; }
 
 private:
     paragraph_format_properties style_paragraph_properties_content_;

@@ -19,7 +19,10 @@ odf_style_context::odf_style_context(odf_conversion_context & Context): context_
 
 odf_style_state & odf_style_context::last_state()
 {
-    return style_state_list_.back();
+	if (style_state_list_.size() >0)
+		return style_state_list_.back();
+	else
+		throw;
 }
 void odf_style_context::create_style(std::wstring oox_name,const style_family family, bool automatic,bool root,int oox_id)
 {

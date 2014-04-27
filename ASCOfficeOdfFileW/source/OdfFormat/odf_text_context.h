@@ -39,19 +39,19 @@ public:
     
 	void add_text_content(const std::wstring & text);
     
-	void start_paragraph();
-	void start_paragraph(office_element_ptr & elm);
+	void start_paragraph(bool styled = false);
+	void start_paragraph(office_element_ptr & elm, bool styled = false);
     void end_paragraph();
 
-	void start_element(office_element_ptr & elm); // t, h, list???
+	void start_element(office_element_ptr & elm);
     void end_element();
  	
-	void start_span(); 
+	void start_span(bool styled = false); 
     void end_span();
 		
 	std::vector<office_element_ptr> current_level_;//посто€нно мен€ющийс€ список уровней наследовани€
 
-	std::vector<odf_text_state> text_elements_list_;//параграфы, списки , ... - головные элементы (или нужно включать все?? + уровень элемента????
+	std::vector<odf_text_state> text_elements_list_;//параграфы, списки , ... 
 private:
 	paragraph * last_paragraph_;
 

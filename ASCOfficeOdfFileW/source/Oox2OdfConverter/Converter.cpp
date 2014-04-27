@@ -465,6 +465,11 @@ void OoxConverter::convert(OOX::Drawing::CTextBodyProperties	*oox_bodyPr)
 {
 	if (!oox_bodyPr) return;
 
+	//свойства прописываются как в графический объект, а так и в свойства параграфов для всего объекта - например отступы
+	//сгенерить стиль - и отнаследовать от него оставльные стили параграфов - например направление текста
+		
+	//text_context().set_parent_paragraph_style(style_name)
+
 }
 void OoxConverter::convert(OOX::Drawing::CRunProperty		*oox_run_pr)
 {
@@ -525,7 +530,7 @@ void OoxConverter::convert(OOX::Drawing::CRun		*oox_run)
 
 	convert(oox_run->m_oRunProperty.GetPointer());
 	
-	odf_context()->text_context()->start_span();	//пока принимает последний сгенереннй на контексте .. вопрос  - может по имени связать??
+	odf_context()->text_context()->start_span(oox_run->m_oRunProperty.GetPointer() ? true : false);	
 	if (oox_run->m_oText.IsInit())
 	{
 		odf_context()->text_context()->add_text_content( string2std_string(oox_run->m_oText->m_sText));
@@ -535,14 +540,45 @@ void OoxConverter::convert(OOX::Drawing::CRun		*oox_run)
 void OoxConverter::convert(OOX::Drawing::CParagraphProperty		*oox_paragraph_pr)
 {
 	if (!oox_paragraph_pr)return;
+
+	bool automatic = true;
+	bool root = false;
+
+	odf_context()->styles_context().create_style(L"",odf::style_family::Paragraph, automatic, root, -1);	
+	
+	odf::style_paragraph_properties	* paragraph_properties = odf_context()->styles_context().last_state().get_paragraph_properties();
+	if (paragraph_properties == NULL)return;
+
+			//nullable<SimpleTypes::COnOff<<>>						        m_oRtl;
+			//nullable<SimpleTypes::CDecimalNumber<> >						m_oLvl;
+			//nullable<SimpleTypes::CTextIndent<> >							m_oIndent;
+			//nullable<SimpleTypes::CCoordinate32<> >							m_oDefTabSz;
+			//nullable<SimpleTypes::CTextAlignmentType<>>						m_oAlgn;
+			//nullable<SimpleTypes::CTextFontAlignType<>>						m_oFontAlgn;
+			//nullable<SimpleTypes::CTextMargin<>>							m_oMarR;
+			//nullable<SimpleTypes::CTextMargin<>>							m_oMarL;
+			//
+			//// Childs
+			//nullable<SimpleTypes::CRunProperty>								m_oDefRunProperty;
+			//nullable<CLineSpacing>											m_oLineSpacing;
+			//nullable<CLineSpacing>											m_oAfterSpacing;
+			//nullable<CLineSpacing>											m_oBeforeSpacing;
+
+
+	if (oox_paragraph_pr->m_oDefRunProperty.IsInit())
+	{
+		convert(oox_paragraph_pr->m_oDefRunProperty.GetPointer());
+		//text_context().set_parent_span_style(style_name)
+	}
+
 }
 void OoxConverter::convert(OOX::Drawing::CParagraph		*oox_paragraph)
 {
 	if (!oox_paragraph)return;
 
-	odf_context()->text_context()->start_paragraph();
-
 	convert(oox_paragraph->m_oParagraphProperty.GetPointer());
+	
+	odf_context()->text_context()->start_paragraph(oox_paragraph->m_oParagraphProperty.GetPointer() ? true : false);
 
 	for (long i=0; i< oox_paragraph->m_arrItems.GetSize();i++)
 	{

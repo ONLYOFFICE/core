@@ -5071,6 +5071,96 @@ namespace SimpleTypes
 
 
 	//--------------------------------------------------------------------------------
+    // 20.1.10.70 ST_TextIndent (Text Indentation)
+	//--------------------------------------------------------------------------------
+    template<__int64 nDefValue = 0>
+    class CTextIndent : public CSimpleType<__int64, nDefValue>
+    {
+    public:
+        CTextIndent() {}
+
+        virtual __int64 FromString(CString &sValue)
+        {
+            m_eValue = _wtoi64( sValue );
+            if (m_eValue < -51206400)
+                m_eValue = -51206400;
+            if (m_eValue > 51206400)
+                m_eValue = 51206400;
+
+            return m_eValue;
+        }
+
+        virtual CString ToString  () const 
+        {
+            CString sResult;
+            sResult.Format( _T("%d"), m_eValue);
+
+            return sResult;
+        }
+
+        SimpleType_FromString     (__int64)
+        SimpleType_Operator_Equal (CTextIndent)
+
+        double ToPoints()
+        {
+            return  Emu_To_Pt(m_eValue);
+        }
+
+        double ToInches()
+        {
+            return Emu_To_Inch( m_eValue );
+        }
+        double ToCm()
+        {
+            return Emu_To_Cm( m_eValue );
+        }
+    };
+	//--------------------------------------------------------------------------------
+    // 20.1.10.72 ST_TextMargin (Text Margin)
+	//--------------------------------------------------------------------------------
+    template<__int64 nDefValue = 0>
+    class CTextMargin : public CSimpleType<__int64, nDefValue>
+    {
+    public:
+        CTextMargin() {}
+
+        virtual __int64 FromString(CString &sValue)
+        {
+            m_eValue = _wtoi64( sValue );
+            if (m_eValue < 0)
+                m_eValue = 0;
+            if (m_eValue > 51206400)
+                m_eValue = 51206400;
+
+            return m_eValue;
+        }
+
+        virtual CString ToString  () const 
+        {
+            CString sResult;
+            sResult.Format( _T("%d"), m_eValue);
+
+            return sResult;
+        }
+
+        SimpleType_FromString     (__int64)
+        SimpleType_Operator_Equal (CTextMargin)
+
+        double ToPoints()
+        {
+            return  Emu_To_Pt(m_eValue);
+        }
+
+        double ToInches()
+        {
+            return Emu_To_Inch( m_eValue );
+        }
+        double ToCm()
+        {
+            return Emu_To_Cm( m_eValue );
+        }
+    };
+	//--------------------------------------------------------------------------------
 	// TextShapeType 20.1.10.76 (Part 1)
 	//--------------------------------------------------------------------------------		
 	enum ETextShapeType
@@ -5334,6 +5424,51 @@ namespace SimpleTypes
 	private:
 
 		double m_dValue;
+    };
+	//--------------------------------------------------------------------------------
+    // 20.1.10.78 ST_TextSpacingPoint (Text Spacing Point)
+	//--------------------------------------------------------------------------------
+    template<__int64 nDefValue = 0>
+    class CTextSpacingPoint : public CSimpleType<__int64, nDefValue>
+    {
+    public:
+        CTextSpacingPoint() {}
+
+        virtual __int64 FromString(CString &sValue)
+        {
+            m_eValue = _wtoi64( sValue );
+            if (m_eValue < 0)
+                m_eValue = 0;
+            if (m_eValue > 158400)
+                m_eValue = 158400;
+
+            return m_eValue;
+        }
+
+        virtual CString ToString  () const 
+        {
+            CString sResult;
+            sResult.Format( _T("%d"), m_eValue);
+
+            return sResult;
+        }
+
+        SimpleType_FromString     (__int64)
+        SimpleType_Operator_Equal (CTextSpacingPoint)
+
+        double ToPoints()
+        {
+            return  m_eValue;
+        }
+
+        double ToInches()
+        {
+            return Pt_To_Inch( m_eValue );
+        }
+        double ToCm()
+        {
+            return Pt_To_Cm( m_eValue );
+        }
     };
 	//--------------------------------------------------------------------------------
 	// TextTypeface 20.1.10.81 (Part 1)

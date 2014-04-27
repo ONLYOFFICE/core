@@ -38,40 +38,36 @@ void odf_text_context::add_text_content(const std::wstring & text)
 	{
 	}
 }
-void odf_text_context::start_paragraph()
+void odf_text_context::start_paragraph(bool styled)
 {
 	office_element_ptr paragr_elm;
 	create_element(L"text", L"p",paragr_elm,odf_context_);
 
-	start_paragraph(paragr_elm);
+	start_paragraph(paragr_elm, styled);
 
 }
-void odf_text_context::start_paragraph(office_element_ptr & elm)
+void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 {
-	office_element_ptr style;
-
 	int level = current_level_.size();
 
-	odf_text_state state={elm,L"", style,level};
+	std::wstring style_name;
+	office_element_ptr style_elm;
+	if (styled)
+	{
+		style_name = styles_context_->last_state().get_name();
+		style_elm = styles_context_->last_state().get_office_element();
+		
+		text_p* p = dynamic_cast<text_p*>(elm.get());
+		if (p)p->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
+	}
+
+	odf_text_state state={elm,  style_name, style_elm,level};
 	text_elements_list_.push_back(state);
 	if (current_level_.size()>0)
 		current_level_.back()->add_child_element(elm);
 
 	current_level_.push_back(elm);
 	
-	//text_p *text_p_ = dynamic_cast<text_p*>(elm.get());
-
-	//if (text_p_ ==  NULL)return;
-	//
-	//paragraph *new_paragraph = &(text_p_->paragraph_);
-
-	//if (last_paragraph_)
-	//	last_paragraph_->set_next(new_paragraph);
-
-	//new_paragraph->set_prev(last_paragraph_);
-
-	//last_paragraph_ =  new_paragraph;
-
 }
 
 void odf_text_context::end_paragraph()
@@ -96,24 +92,28 @@ void odf_text_context::end_element()
 	current_level_.pop_back();
 }
 
-void odf_text_context::start_span()//текст с особым стилем - который определяется по контексту
+void odf_text_context::start_span(bool styled)
 {
 	if (styles_context_ == NULL)return;
 
 	office_element_ptr span_elm;
 	create_element(L"text", L"span", span_elm, odf_context_);
 
-	text_span* span = dynamic_cast<text_span*>(span_elm.get());
-	if (span == NULL)return;
-
-	span->text_style_name_ = style_ref(styles_context_->last_state().get_name());
 
 	int level = current_level_.size();
+	
+	std::wstring style_name;
+	office_element_ptr style_elm;
+	if (styled)
+	{
+		style_name = styles_context_->last_state().get_name();
+		style_elm = styles_context_->last_state().get_office_element();
+		
+		text_span* span = dynamic_cast<text_span*>(span_elm.get());
+		if (span) span->text_style_name_ = style_ref(style_name);
+	}
 
-	odf_text_state state={	span_elm, 
-							styles_context_->last_state().get_name(), 
-							styles_context_->last_state().get_office_element(), 
-							level};
+	odf_text_state state={	span_elm, style_name, style_elm, level};
 
 	text_elements_list_.push_back(state);
 	

@@ -3,6 +3,8 @@
 #include "../../Common/SimpleTypes_Drawing.h"
 #include "../../Common/SimpleTypes_Shared.h"
 
+#include "DrawingParagraphElements.h"
+
 #include "../WritingElement.h"
 
 namespace OOX
@@ -313,6 +315,61 @@ namespace OOX
 
 		};
 		//--------------------------------------------------------------------------------
+		// 21.1.2.2.1 br (Text Line Break)
+		//--------------------------------------------------------------------------------
+		class CTextLineBreak : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CTextLineBreak)
+			CTextLineBreak()
+			{
+			}
+			virtual ~CTextLineBreak()
+			{
+			}
+
+		public:
+
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+					
+					if ( _T("a:rPr") == sName )
+						m_oRunProperty = oReader;
+				}
+			}
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual EElementType getType() const
+			{
+				return et_a_br;
+			}
+
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+		public:
+			// Childs
+			nullable<CRunProperty>			m_oRunProperty;
+		};
+		//--------------------------------------------------------------------------------
 		// 21.1.2.2.7 pPr (Text Paragraph Properties)
 		//--------------------------------------------------------------------------------	
 		class CParagraphProperty : public WritingElement
@@ -347,7 +404,14 @@ namespace OOX
 					
 					if ( _T("a:extLst") == sName )
 						m_oExtLst = oReader;
-
+					else if ( _T("a:lnSpc") == sName )
+						m_oLineSpacing = oReader;
+					else if ( _T("a:defRPr") == sName )
+						m_oDefRunProperty = oReader;
+					else if ( _T("a:spcAft") == sName )
+						m_oAfterSpacing = oReader;
+					else if ( _T("a:spcBef") == sName )
+						m_oBeforeSpacing = oReader;
 				}
 			}
 			virtual CString      toXML() const
@@ -374,19 +438,25 @@ namespace OOX
 			}
 		public:
 			// Attributes
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>          m_oRtl;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>			m_oHangingPunct;
+			nullable<SimpleTypes::COnOff<>>									m_oRtl;
+			nullable<SimpleTypes::COnOff<>>									m_oHangingPunct;
 			nullable<SimpleTypes::CDecimalNumber<> >						m_oLvl;
-			nullable<SimpleTypes::CDecimalNumber<> >						m_oLatinLnBrk;
-			nullable<SimpleTypes::CDecimalNumber<> >						m_oIndent;
-			nullable<SimpleTypes::CDecimalNumber<> >						m_oEaLnBrk;
-			nullable<SimpleTypes::CDecimalNumber<> >						m_oDefTabSz;
+			nullable<SimpleTypes::COnOff<>>									m_oLatinLnBrk;
+			nullable<SimpleTypes::CTextIndent<> >							m_oIndent;
+			nullable<SimpleTypes::COnOff<>>									m_oEaLnBrk;
+			nullable<SimpleTypes::CCoordinate32 >							m_oDefTabSz;
 			nullable<SimpleTypes::CTextAlignmentType<>>						m_oAlgn;
 			nullable<SimpleTypes::CTextFontAlignType<>>						m_oFontAlgn;
-			nullable<SimpleTypes::CCoordinate32>							m_oMarR;
-			nullable<SimpleTypes::CCoordinate32>							m_oMarL;
-
+			nullable<SimpleTypes::CTextMargin<>>							m_oMarR;
+			nullable<SimpleTypes::CTextMargin<>>							m_oMarL;
+			
 			// Childs
+			nullable<CRunProperty>											m_oDefRunProperty;
+			nullable<CLineSpacing>											m_oLineSpacing;
+			nullable<CLineSpacing>											m_oAfterSpacing;
+			nullable<CLineSpacing>											m_oBeforeSpacing;
+			nullable<OOX::Drawing::COfficeArtExtensionList>					m_oExtLst;			
+
 			//buAutoNum //(Auto-Numbered Bullet) §21.1.2.4.1
 			//buBlip //(Picture Bullet) §21.1.2.4.2
 			//buChar //(Character Bullet) §21.1.2.4.3
@@ -398,12 +468,8 @@ namespace OOX
 			//buSzPct //(Bullet Size Percentage) §21.1.2.4.9
 			//buSzPts //(Bullet Size Points) §21.1.2.4.10
 			//buSzTx //(Bullet Size Follows Text) §21.1.2.4.11
-			//defRPr //(Default Text Run Properties) §21.1.2.3.2
-			//lnSpc //(Line Spacing) §21.1.2.2.5
-			//spcAft// (Space After) §21.1.2.2.9
-			//spcBef //(Space Before) §21.1.2.2.10
+
 			//tabLst //(Tab List) §21.1.2.2.14
-			nullable<OOX::Drawing::COfficeArtExtensionList     > m_oExtLst;			//(Extension List) §20.1.2.2.15
 		};
 
 		//--------------------------------------------------------------------------------
@@ -443,8 +509,8 @@ namespace OOX
 						m_oParagraphProperty = oReader; 
 					else if ( _T("a:r") == sName )
 						m_arrItems.Add( new CRun( oReader ));
-					//	 if ( _T("a:br") == sName )
-					//	pItem = new CBr( oReader );
+					else if ( _T("a:br") == sName )
+						m_arrItems.Add( new CTextLineBreak( oReader ));
 					//else if ( _T("a:fld") == sName )
 					//	pItem = new CField( oReader );
 					//else if ( _T("a:endParaRPr") == sName )

@@ -88,6 +88,9 @@ public:
 	void end_shadow_properies();
 
 	void set_text(odf_text_context* text_context);
+	void set_textarea_vertical_align(int align);
+	void set_textarea_padding(double left,double top,double right,double bottom);//in cm
+	void set_textarea_writing_mode(int mode);
 
 private:
 	

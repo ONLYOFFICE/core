@@ -116,7 +116,8 @@ public:
 	void create_draw_base(int type);
 	office_element_ptr create_draw_element(int type);
 
-	style_graphic_properties *current_graphic_properties;
+	style_graphic_properties		*current_graphic_properties;
+	style_paragraph_properties		*current_paragraph_properties;
 
 };
 
@@ -181,8 +182,11 @@ void odf_drawing_context::end_drawing()
 	}
 ///////////////////////////////////////////////////		
 	impl_->drawing_list_.push_back(impl_->current_drawing_state_);
+	
+///////////////
 	impl_->current_drawing_state_.clear();
 	impl_->current_graphic_properties = NULL;
+	impl_->current_paragraph_properties = NULL;
 }
 
 office_element_ptr odf_drawing_context::Impl::create_draw_element(int type)
@@ -604,6 +608,64 @@ void odf_drawing_context::set_line_dash_preset(int style)
 	}
 }
 
+void odf_drawing_context::set_textarea_vertical_align(int align)
+{
+	if (!impl_->current_graphic_properties)return;
+	switch(align)
+	{
+	case 0://SimpleTypes::textanchoringtypeB: 
+			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf::vertical_align(odf::vertical_align::Bottom);	break;
+	case 1://SimpleTypes::textanchoringtypeCtr: 
+			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf::vertical_align(odf::vertical_align::Middle);	break;
+	case 2://SimpleTypes::textanchoringtypeDist: 
+			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf::vertical_align(odf::vertical_align::Baseline);break;
+	case 3://SimpleTypes::textanchoringtypeJust: 
+			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf::vertical_align(odf::vertical_align::Justify);	break;
+	case 4://SimpleTypes::textanchoringtypeT: 
+			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf::vertical_align(odf::vertical_align::Top);		break;
+	}
+}
+
+void odf_drawing_context::set_textarea_writing_mode(int mode)
+{
+	if (mode == 1) return;//незачем
+	if (impl_->current_drawing_state_.elements_.size() < 1)return;
+
+	style_paragraph_properties	* paragraph_properties = impl_->current_paragraph_properties;
+	//if (paragraph_properties == NULL)
+	//{
+	//	style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_.back().style_elm.get());
+	//	if (style_)paragraph_properties =  style_->style_content_.get_style_paragraph_properties();
+	//}
+	if (paragraph_properties == NULL)return;	
+	
+	switch(mode)
+	{
+		case 5://textverticaltypeWordArtVert:
+		case 6://textverticaltypeWordArtVertRtl:
+		case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
+		case 3://SimpleTypes::textverticaltypeVert: 
+		case 2://SimpleTypes::textverticaltypeMongolianVert:
+			paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::TbLr);	break;
+		case 0://SimpleTypes::textverticaltypeEaVert: 
+			paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::TbRl);	break;
+		case 1://SimpleTypes::textverticaltypeHorz: 
+		default:
+			paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::LrTb);	break;
+	}
+}
+
+void odf_drawing_context::set_textarea_padding(double left,double top, double right,double bottom)//in cm
+{
+	if (!impl_->current_graphic_properties)return;
+
+	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_left_	= length(left,	length::cm);
+	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_top_	= length(top,	length::cm);
+	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_right_	= length(right,	length::cm);
+	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_bottom_	= length(bottom,length::cm);
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //вложенные элементы
 void odf_drawing_context::start_image(std::wstring & path)
@@ -631,6 +693,13 @@ void odf_drawing_context::start_text_box()
 	{
 
 	}
+	style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_.back().style_elm.get());
+	if (style_)impl_->current_paragraph_properties = style_->style_content_.get_style_paragraph_properties();
+
+	if (impl_->current_paragraph_properties)
+	{
+
+	}	
 	office_element_ptr text_box_elm;
 	create_element(L"draw", L"text-box", text_box_elm, impl_->odf_context_);
 

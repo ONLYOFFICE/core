@@ -1,5 +1,4 @@
 //todoooo потом для красивости нужно будет растащить файл на файлики
-
 #pragma once
 #include "stdAfx.h"
 
@@ -14,6 +13,7 @@
 #include "odf_drawing_context.h"
 
 #include "style_text_properties.h"
+#include "style_paragraph_properties.h"
 
 #include <XlsxFormat\Xlsx.h>
 
@@ -465,11 +465,20 @@ void OoxConverter::convert(OOX::Drawing::CTextBodyProperties	*oox_bodyPr)
 {
 	if (!oox_bodyPr) return;
 
-	//свойства прописываются как в графический объект, а так и в свойства параграфов для всего объекта - например отступы
-	//сгенерить стиль - и отнаследовать от него оставльные стили параграфов - например направление текста
-		
-	//text_context().set_parent_paragraph_style(style_name)
+	odf_context()->drawing_context().set_textarea_writing_mode		(oox_bodyPr->m_oVert.GetValue());
+	odf_context()->drawing_context().set_textarea_vertical_align	(oox_bodyPr->m_oAnchor.GetValue());
 
+	odf_context()->drawing_context().set_textarea_padding  (oox_bodyPr->m_oLIns.ToCm(),
+															oox_bodyPr->m_oTIns.ToCm(),
+															oox_bodyPr->m_oRIns.ToCm(),
+															oox_bodyPr->m_oBIns.ToCm());
+	//odf_context()->drawing_context().set_textarea_wrap(oox_bodyPr->m_oWrap.GetValue())
+
+	if (oox_bodyPr->m_oNumCol.GetValue() > 1)
+	{
+		//+ style section
+		//+element text:section в котором параграфы
+	}
 }
 void OoxConverter::convert(OOX::Drawing::CRunProperty		*oox_run_pr)
 {
@@ -568,7 +577,7 @@ void OoxConverter::convert(OOX::Drawing::CParagraphProperty		*oox_paragraph_pr)
 	if (oox_paragraph_pr->m_oDefRunProperty.IsInit())
 	{
 		convert(oox_paragraph_pr->m_oDefRunProperty.GetPointer());
-		//text_context().set_parent_span_style(style_name)
+		odf_context()->text_context()->set_parent_span_style(odf_context()->styles_context().last_state().get_name());
 	}
 
 }

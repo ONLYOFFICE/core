@@ -8,6 +8,7 @@
 #include "odf_style_context.h"
 #include "odf_conversion_context.h"
 
+#include "styles.h"
 #include "text_elements.h"
 #include "paragraph_elements.h"
 
@@ -52,6 +53,7 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 
 	std::wstring style_name;
 	office_element_ptr style_elm;
+
 	if (styled)
 	{
 		style_name = styles_context_->last_state().get_name();
@@ -59,6 +61,17 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 		
 		text_p* p = dynamic_cast<text_p*>(elm.get());
 		if (p)p->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
+		
+		if (parent_paragraph_style_.length() >0)
+		{
+			style *style_ = dynamic_cast<style*>(style_elm.get());
+			if (style_)style_->style_parent_style_name_ = parent_paragraph_style_;
+		}
+	}
+	else if (parent_paragraph_style_.length() >0)
+	{
+		text_p* p = dynamic_cast<text_p*>(elm.get());
+		if (p)p->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(parent_paragraph_style_);	
 	}
 
 	odf_text_state state={elm,  style_name, style_elm,level};
@@ -111,6 +124,12 @@ void odf_text_context::start_span(bool styled)
 		
 		text_span* span = dynamic_cast<text_span*>(span_elm.get());
 		if (span) span->text_style_name_ = style_ref(style_name);
+
+		if (parent_span_style_.length() >0)
+		{
+			style *style_ = dynamic_cast<style*>(style_elm.get());
+			if (style_)style_->style_parent_style_name_ = parent_span_style_;
+		}
 	}
 
 	odf_text_state state={	span_elm, style_name, style_elm, level};
@@ -128,5 +147,13 @@ void odf_text_context::end_span()
 	current_level_.pop_back();
 }
 
+void odf_text_context::set_parent_paragraph_style(std::wstring & style_name)
+{
+	parent_paragraph_style_ = style_name;
+}
+void odf_text_context::set_parent_span_style(std::wstring & style_name)
+{
+	parent_span_style_ = style_name;
+}
 }
 }

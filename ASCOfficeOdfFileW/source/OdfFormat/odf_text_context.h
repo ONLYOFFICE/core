@@ -52,11 +52,17 @@ public:
 	std::vector<office_element_ptr> current_level_;//посто€нно мен€ющийс€ список уровней наследовани€
 
 	std::vector<odf_text_state> text_elements_list_;//параграфы, списки , ... 
+
+	void set_parent_paragraph_style	(std::wstring & style_name);
+	void set_parent_span_style		(std::wstring & style_name);
 private:
 	paragraph * last_paragraph_;
 
 	odf_style_context * styles_context_;
 	odf_conversion_context *odf_context_;
+
+	std::wstring parent_span_style_;
+	std::wstring parent_paragraph_style_;
 };
 
 }

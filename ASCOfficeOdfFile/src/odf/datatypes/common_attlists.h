@@ -182,7 +182,6 @@ public:
     void apply_from(const common_writing_mode_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-private:
     _CP_OPT(writing_mode) style_writing_mode_;
 
 };

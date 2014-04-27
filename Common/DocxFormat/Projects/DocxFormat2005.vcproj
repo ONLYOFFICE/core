@@ -829,6 +829,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Source\DocxFormat\Drawing\DrawingParagraphElements.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\DocxFormat\Drawing\DrawingPicture.h"
 				>
 			</File>

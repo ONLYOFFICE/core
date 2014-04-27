@@ -282,7 +282,13 @@ namespace OOX
 		et_a_pPr, // <a:pPr>
 		et_a_r, // <a:p>
 		et_a_rPr, // <a:pPr>
-		et_a_t, // <w:t>
+		et_a_t, // <a:t>
+		et_a_br, // <a:br>
+		et_a_spcPts, // <a:spcPts>
+		et_a_spcPct, // <a:spcPct>
+		et_a_spcAft, // <a:spcAft>
+		et_a_spcBef, // <a:spcBef>
+		et_a_lnSpc, // <a:lnSpc>		
 
 		et_ds_schemaRef, // <ds:shemeRef>
 		et_ds_schemaRefs, // <ds:schemaRefs>		

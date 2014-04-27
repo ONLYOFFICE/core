@@ -1059,6 +1059,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CShape* oox_shape)
 		if (oox_shape->m_oTxBody.IsInit())
 		{
 			ods_context->start_text_context();
+			OoxConverter::convert(oox_shape->m_oTxBody->m_oBodyPr.GetPointer());
+			
 			for (long i=0 ; i < oox_shape->m_oTxBody->m_arrItems.GetSize();i++)
 			{
 				OoxConverter::convert(oox_shape->m_oTxBody->m_arrItems[i]);
@@ -1066,12 +1068,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CShape* oox_shape)
 			ods_context->drawing_context().set_text( ods_context->text_context());
 			ods_context->end_text_context();
 
-			OoxConverter::convert(oox_shape->m_oTxBody->m_oBodyPr.GetPointer());//вторым .. чтоб дефолты убрать
 		}		
 	}
 	if (type == 2000)ods_context->drawing_context().end_text_box(); 
 	else ods_context->drawing_context().end_shape();
-
 }
 
 

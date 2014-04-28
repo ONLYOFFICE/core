@@ -558,20 +558,54 @@ void OoxConverter::convert(OOX::Drawing::CParagraphProperty		*oox_paragraph_pr)
 	odf::style_paragraph_properties	* paragraph_properties = odf_context()->styles_context().last_state().get_paragraph_properties();
 	if (paragraph_properties == NULL)return;
 
-			//nullable<SimpleTypes::COnOff<<>>						        m_oRtl;
-			//nullable<SimpleTypes::CDecimalNumber<> >						m_oLvl;
-			//nullable<SimpleTypes::CTextIndent<> >							m_oIndent;
-			//nullable<SimpleTypes::CCoordinate32<> >							m_oDefTabSz;
-			//nullable<SimpleTypes::CTextAlignmentType<>>						m_oAlgn;
-			//nullable<SimpleTypes::CTextFontAlignType<>>						m_oFontAlgn;
-			//nullable<SimpleTypes::CTextMargin<>>							m_oMarR;
-			//nullable<SimpleTypes::CTextMargin<>>							m_oMarL;
-			//
-			//// Childs
-			//nullable<SimpleTypes::CRunProperty>								m_oDefRunProperty;
-			//nullable<CLineSpacing>											m_oLineSpacing;
-			//nullable<CLineSpacing>											m_oAfterSpacing;
-			//nullable<CLineSpacing>											m_oBeforeSpacing;
+	if (oox_paragraph_pr->m_oLineSpacing.IsInit())
+	{
+		odf::length_or_percent length;
+		convert(oox_paragraph_pr->m_oLineSpacing.GetPointer(), length);
+		paragraph_properties->content().fo_line_height_ = odf::line_width(length);
+	}
+	if (oox_paragraph_pr->m_oAfterSpacing.IsInit())
+	{
+ 		odf::length_or_percent length;
+		convert(oox_paragraph_pr->m_oAfterSpacing.GetPointer(), length);
+		paragraph_properties->content().fo_margin_bottom_ = length;
+	}
+	if (oox_paragraph_pr->m_oBeforeSpacing.IsInit())
+	{
+ 		odf::length_or_percent length;
+		convert(oox_paragraph_pr->m_oBeforeSpacing.GetPointer(), length);
+		paragraph_properties->content().fo_margin_top_ = length;
+	}
+	if (oox_paragraph_pr->m_oAlgn.IsInit())
+	{
+		switch(oox_paragraph_pr->m_oAlgn->GetValue())
+		{
+			case SimpleTypes::textalignmenttypeL    : paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Left);	break;
+			case SimpleTypes::textalignmenttypeCtr  : paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Center);	break;
+			case SimpleTypes::textalignmenttypeDist : paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Justify);	break;
+			case SimpleTypes::textalignmenttypeJust : paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Justify);	break;
+			case SimpleTypes::textalignmenttypeR    : paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Right);	break;
+		}
+	}
+	if (oox_paragraph_pr->m_oMarL.IsInit())
+	{
+		paragraph_properties->content().fo_margin_left_ = odf::length_or_percent(odf::length(oox_paragraph_pr->m_oMarL->ToCm(),odf::length::cm));
+	}
+	if (oox_paragraph_pr->m_oMarR.IsInit())
+	{
+		paragraph_properties->content().fo_margin_right_ = odf::length_or_percent(odf::length(oox_paragraph_pr->m_oMarR->ToCm(),odf::length::cm));
+	}
+	if (oox_paragraph_pr->m_oIndent.IsInit())
+	{
+		paragraph_properties->content().fo_text_indent_ = odf::length_or_percent(odf::length(oox_paragraph_pr->m_oIndent->ToCm(),odf::length::cm));
+	}
+	if (oox_paragraph_pr->m_oRtl.IsInit())
+	{
+	}	
+	//nullable<SimpleTypes::CDecimalNumber<> >				m_oLvl;
+	//nullable<SimpleTypes::CCoordinate32<> >				m_oDefTabSz;
+	//nullable<SimpleTypes::CTextFontAlignType<>>			m_oFontAlgn;
+
 
 
 	if (oox_paragraph_pr->m_oDefRunProperty.IsInit())
@@ -580,6 +614,21 @@ void OoxConverter::convert(OOX::Drawing::CParagraphProperty		*oox_paragraph_pr)
 		odf_context()->text_context()->set_parent_span_style(odf_context()->styles_context().last_state().get_name());
 	}
 
+}
+void OoxConverter::convert(OOX::Drawing::CLineSpacing* oox_spacing,  odf::length_or_percent & length_or_percent)
+{
+	if (!oox_spacing)return;
+
+	if (oox_spacing->m_oLineSpacingPercent.IsInit() && oox_spacing->m_oLineSpacingPercent->m_oVal.IsInit())
+	{
+		odf::percent percent = odf::percent(oox_spacing->m_oLineSpacingPercent->m_oVal->GetValue());
+		length_or_percent = odf::length_or_percent(percent);
+	}
+	if (oox_spacing->m_oLineSpacingPoints.IsInit() && oox_spacing->m_oLineSpacingPoints->m_oVal.IsInit())
+	{
+		odf::length length = odf::length(oox_spacing->m_oLineSpacingPoints->m_oVal->ToCm()/100.,odf::length::cm);
+		length_or_percent = odf::length_or_percent(length);
+	}
 }
 void OoxConverter::convert(OOX::Drawing::CParagraph		*oox_paragraph)
 {

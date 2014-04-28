@@ -5164,6 +5164,53 @@ namespace SimpleTypes
             return Emu_To_Cm( m_eValue );
         }
     };
+//	//--------------------------------------------------------------------------------
+//    // 20.1.10.74 ST_TextPoint (Text Point)
+//	//--------------------------------------------------------------------------------
+//    template<__int64 nDefValue = 0>
+//    class CTextPoint : public CSimpleType<__int64, nDefValue>
+//    {
+//    public:
+///*	The ST_TextPointUnqualified simple type (§20.1.10.75).
+//	The ST_UniversalMeasure simple type (§22.9.2.15). */     
+//	CTextPoint() {}
+//
+//        virtual __int64 FromString(CString &sValue)
+//        {
+//            m_eValue = _wtoi64( sValue );
+//            if (m_eValue < 0)
+//                m_eValue = 0;
+//            if (m_eValue > 51206400)
+//                m_eValue = 51206400;
+//
+//            return m_eValue;
+//        }
+//
+//        virtual CString ToString  () const 
+//        {
+//            CString sResult;
+//            sResult.Format( _T("%d"), m_eValue);
+//
+//            return sResult;
+//        }
+//
+//        SimpleType_FromString     (__int64)
+//        SimpleType_Operator_Equal (TextPoint)
+//
+//        double ToPoints()
+//        {
+//            return  Emu_To_Pt(m_eValue);
+//        }
+//
+//        double ToInches()
+//        {
+//            return Emu_To_Inch( m_eValue );
+//        }
+//        double ToCm()
+//        {
+//            return Emu_To_Cm( m_eValue );
+//        }
+//    };
 	//--------------------------------------------------------------------------------
 	// TextShapeType 20.1.10.76 (Part 1)
 	//--------------------------------------------------------------------------------		
@@ -5405,8 +5452,7 @@ namespace SimpleTypes
 					int nValue = min( 13200000, max( 0, _wtoi( sValue ) ) );
 					m_dValue = nValue / 1000.0;
 				}
-				return
-					m_dValue = 0;
+				return m_dValue;
 			}
 			else
 				m_dValue = _wtof( sValue.Mid( 0, nLen - 1 ) );

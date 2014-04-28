@@ -56,7 +56,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start	( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, _T("a:val"),        m_oVal )
+				WritingElement_ReadAttributes_Read_if( oReader, _T("val"),        m_oVal )
 				WritingElement_ReadAttributes_End	( oReader )
 			}
 		public:
@@ -109,7 +109,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start	( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, _T("a:val"),        m_oVal )
+				WritingElement_ReadAttributes_Read_if( oReader, _T("val"),        m_oVal )
 				WritingElement_ReadAttributes_End	( oReader )
 			}
 		public:

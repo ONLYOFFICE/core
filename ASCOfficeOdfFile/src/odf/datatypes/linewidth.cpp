@@ -43,6 +43,20 @@ std::wostream & operator << (std::wostream & _Wostream, const line_width & _Val)
     return _Wostream;
 }
 
+line_width::line_width(length_or_percent _Val)
+{
+	if (_Val.get_type() == length_or_percent::Length)
+	{
+		type_= PositiveLength;
+		PositiveLength_ = _Val.get_length();
+	}
+	if (_Val.get_type() == length_or_percent::Percent)
+	{
+		type_= Percent;
+		Percent_ = _Val.get_percent();
+	}	
+}
+
 line_width line_width::parse(const std::wstring & Str)
 {
     std::wstring tmp = Str;

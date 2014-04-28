@@ -631,13 +631,37 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 	if (mode == 1) return;//незачем
 	if (impl_->current_drawing_state_.elements_.size() < 1)return;
 
-	style_paragraph_properties	* paragraph_properties = impl_->current_paragraph_properties;
-	//if (paragraph_properties == NULL)
-	//{
-	//	style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_.back().style_elm.get());
-	//	if (style_)paragraph_properties =  style_->style_content_.get_style_paragraph_properties();
-	//}
-	if (paragraph_properties == NULL)return;	
+	if (!impl_->current_paragraph_properties)
+	{
+		style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_[0].style_elm.get());
+		if (style_)impl_->current_paragraph_properties = style_->style_content_.get_style_paragraph_properties();
+	}
+	
+	style_paragraph_properties	* paragraph_properties=NULL;
+	draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
+	if (draw)
+	{
+		style* style_ = NULL;
+		if(!draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_text_style_name_attlist_.draw_text_style_name_)
+		{
+			impl_->styles_context_->create_style(L"",style_family::Paragraph, true, false, -1);		
+		
+			office_element_ptr & style_shape_elm = impl_->styles_context_->last_state().get_office_element();
+			style_ = dynamic_cast<style*>(style_shape_elm.get());
+			if (style_)
+				draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_text_style_name_attlist_.draw_text_style_name_ = style_->style_name_;
+		}
+		else
+		{
+			std::wstring style_name = draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_text_style_name_attlist_.draw_text_style_name_->style_name();
+			//найти
+		}
+		if (style_)
+		{
+			paragraph_properties = style_->style_content_.get_style_paragraph_properties();
+		}
+	}
+	if (paragraph_properties == NULL && impl_->current_paragraph_properties == NULL)return;	
 	
 	switch(mode)
 	{
@@ -646,13 +670,21 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 		case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
 		case 3://SimpleTypes::textverticaltypeVert: 
 		case 2://SimpleTypes::textverticaltypeMongolianVert:
-			paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::TbLr);	break;
+			paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::TbRl);	
+			impl_->current_paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::TbRl);	
+			break;
 		case 0://SimpleTypes::textverticaltypeEaVert: 
-			paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::TbRl);	break;
+			paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::TbRl);	
+			impl_->current_paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::TbRl);	
+			break;
 		case 1://SimpleTypes::textverticaltypeHorz: 
 		default:
-			paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::LrTb);	break;
+			paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::LrTb);	
+			impl_->current_paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::LrTb);	
+			break;
 	}
+
+
 }
 
 void odf_drawing_context::set_textarea_padding(double left,double top, double right,double bottom)//in cm
@@ -693,13 +725,7 @@ void odf_drawing_context::start_text_box()
 	{
 
 	}
-	style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_.back().style_elm.get());
-	if (style_)impl_->current_paragraph_properties = style_->style_content_.get_style_paragraph_properties();
 
-	if (impl_->current_paragraph_properties)
-	{
-
-	}	
 	office_element_ptr text_box_elm;
 	create_element(L"draw", L"text-box", text_box_elm, impl_->odf_context_);
 

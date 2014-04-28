@@ -4,6 +4,7 @@
 #include "../../Common/SimpleTypes_Shared.h"
 
 #include "DrawingParagraphElements.h"
+#include "DrawingRun.h"
 
 #include "../WritingElement.h"
 
@@ -157,7 +158,26 @@ namespace OOX
 						m_oSolidFill = oReader;
 						m_eFillType  = filltypeSolid;
 					}
-				}
+					else if ( _T("a:ln") == sName )
+						m_oOutline = oReader;
+					else if ( _T("a:cs") == sName )
+						m_oComplexFont = oReader;					
+					else if ( _T("a:ea") == sName )
+						m_oAsianFont = oReader;				
+					else if ( _T("a:latin") == sName )
+						m_oLatinFont = oReader;			
+					else if ( _T("a:sym") == sName )
+						m_oSymbolFont = oReader;		
+					else if ( _T("a:hlinkClick") == sName )
+						m_oHlinkClick = oReader;			
+					else if ( _T("a:effectDag") == sName )
+						m_oEffectContainer = oReader;			
+					else if ( _T("a:effectLst") == sName )
+						m_oEffectList = oReader;			
+					else if ( _T("a:extLst") == sName )
+						m_oExtensionList = oReader;			
+				}			
+
 			}
 			virtual CString      toXML() const
 			{
@@ -173,11 +193,19 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start	( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("b"),		m_oBold)
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("i"),		m_oItalic)
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("sz"),	m_oSz)
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("u"),		m_oUnderline)
-				WritingElement_ReadAttributes_End	( oReader )
+					WritingElement_ReadAttributes_Read_if	  ( oReader, _T("b"),		m_oBold)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("i"),		m_oItalic)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("sz"),		m_oSz)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("u"),		m_oUnderline)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("baseline"),m_oBaseline)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("spc"),		m_oSpace)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("lang"),	m_oLanguage)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("kumimoji"),m_oKumimoji)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("dirty"),	m_oDirty)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("normalizeH"),	m_oNormalizeH)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("noProof"),	m_oNoProof)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("smtClean"),m_oSmtClean)
+				WritingElement_ReadAttributes_End	( oReader )		
 			}
 		public:
 			// Attributes
@@ -185,19 +213,18 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>					m_oItalic;	
 			nullable<SimpleTypes::CDouble>											m_oSz;
 			nullable<SimpleTypes::CUnderline<SimpleTypes::underlineNone>>			m_oUnderline;
-			
-			//baseline //20.1.10.40
+			nullable<SimpleTypes::CPercentage>										m_oBaseline;
+			nullable<SimpleTypes::CPoint>											m_oSpace;//Ì‡ Ò‡ÏÓÏ ‰ÂÎÂ ÌÛÊÌÓ - 20.1.10.74 ST_TextPoint (Text Point)
+			nullable<SimpleTypes::CLang>											m_oLanguage;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>					m_oKumimoji;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>					m_oNormalizeH;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>					m_oNoProof;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>					m_oDirty;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>					m_oSmtClean;
 			//bmk//string
 			//cap//20.1.10.64
-			//dirty//bool
 			//kern//20.1.10.73
-			//kumimoji//bool
-			//lang//22.9.2.6
-			//noProof//bool
-			//normalizeH//bool
-			//smtClean//bool
 			//smtId//unsignedInt
-			//spc//20.1.10.74
 			//strike//20.1.10.79
 
 			// Childs
@@ -208,19 +235,19 @@ namespace OOX
 			nullable<OOX::Drawing::CNoFillProperties>         m_oNoFill;
 			nullable<OOX::Drawing::CPatternFillProperties>    m_oPattFill;
 			nullable<OOX::Drawing::CSolidColorFillProperties> m_oSolidFill;
-
-			//cs (Complex Script Font) ß21.1.2.3.1
-			//ea (East Asian Font) ß21.1.2.3.3
-			//effectDag (Effect Container) ß20.1.8.25
-			//effectLst (Effect Container) ß20.1.8.26
-			//extLst (Extension List) ß20.1.2.2.15
+			nullable<OOX::Drawing::CLineProperties>			  m_oOutline;
+			nullable<OOX::Drawing::CTextFont>				  m_oComplexFont;
+			nullable<OOX::Drawing::CTextFont>				  m_oAsianFont;
+			nullable<OOX::Drawing::CTextFont>				  m_oLatinFont;
+			nullable<OOX::Drawing::CTextFont>				  m_oSymbolFont;
+			nullable<OOX::Drawing::CHyperlink>				  m_oHlinkClick;
+			nullable<OOX::Drawing::CEffectContainer>		  m_oEffectContainer;
+			nullable<OOX::Drawing::CEffectList>				  m_oEffectList;
+			nullable<OOX::Drawing::COfficeArtExtensionList>	  m_oExtensionList;
+			
 			//highlight (Highlight Color) ß21.1.2.3.4
-			//hlinkClick (Click Hyperlink) ß21.1.2.3.5
 			//hlinkMouseOver (Mouse-Over Hyperlink) ß21.1.2.3.6
-			//latin (Latin Font) ß21.1.2.3.7
-			//ln (Outline) ß20.1.2.2.24
 			//rtl (Right to Left Run) ß21.1.2.2.8
-			//sym (Symbol Font) ß21.1.2.3.10
 			//uFill (Underline Fill) ß21.1.2.3.12
 			//uFillTx (Underline Fill Properties Follow Text) ß21.1.2.3.13
 			//uLn (Underline Stroke) ß21.1.2.3.14
@@ -428,12 +455,12 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start	( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("rtl"), m_oRtl)
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("lvl"), m_oLvl)
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("algn"), m_oAlgn)
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("fontAlgn"), m_oFontAlgn)
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("marL"), m_oMarR)
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("marR"), m_oMarL)
+					WritingElement_ReadAttributes_Read_if	  ( oReader, _T("rtl"), m_oRtl)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("lvl"), m_oLvl)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("algn"), m_oAlgn)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("fontAlgn"), m_oFontAlgn)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("marL"), m_oMarR)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("marR"), m_oMarL)
 				WritingElement_ReadAttributes_End	( oReader )
 			}
 		public:

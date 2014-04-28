@@ -176,7 +176,7 @@ public:
     _CP_OPT(length) style_line_height_at_least_;         // +
 
     // 15.5.3 style:line-spacing
-    _CP_OPT(length) style_line_spacing_;                 // +
+    _CP_OPT(length_or_percent) style_line_spacing_;                 // +
 
     // 15.5.4 style:font-independent-line-spacing
     _CP_OPT(Bool) style_font_independent_line_spacing_; // ???

@@ -14,6 +14,7 @@ namespace cpdoccore
 
 		class odf_conversion_context;
 		class font_size;
+		class length_or_percent;
 	}
 }
 namespace OOX
@@ -50,6 +51,7 @@ namespace OOX
 		class CParagraphProperty;
 		class CRun;
 		class CRunProperty;
+		class CLineSpacing;
 
 		namespace Colors
 		{
@@ -104,6 +106,7 @@ public:
 		void convert(OOX::Drawing::CParagraphProperty			*oox_paragraph_pr);
 		void convert(OOX::Drawing::CRun							*oox_run);
 		void convert(OOX::Drawing::CRunProperty					*oox_run_pr);
+		void convert(OOX::Drawing::CLineSpacing					*oox_spacing,  cpdoccore::odf::length_or_percent & length_or_percent);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 		void convert(double oox_font_size,			cpdoccore::_CP_OPT(cpdoccore::odf::font_size) & odf_font_size);
 	};

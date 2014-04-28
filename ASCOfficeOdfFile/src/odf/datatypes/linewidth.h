@@ -8,8 +8,8 @@
 #include <iosfwd>
 #include <string>
 #include "odfattributes.h"
-#include "percent.h"
-#include "length.h"
+#include "lengthorpercent.h"
+
 
 
 namespace cpdoccore { namespace odf { 
@@ -39,7 +39,7 @@ public:
 
     line_width(unsigned int _Val) : type_(PositiveInteger), PositiveInteger_(_Val)
     {}
-
+    line_width(length_or_percent _Val) ;
     line_width(percent _Percent) : type_(Percent), Percent_(_Percent)
     {}
 

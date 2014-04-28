@@ -887,7 +887,11 @@ namespace SimpleTypes
 		{
 			return (__int64)Pt_To_Emu( m_dValue );
 		}
-        SimpleType_FromString     (double)
+ 		double ToCm() const
+		{
+			return Pt_To_Cm( m_dValue );
+		}
+		SimpleType_FromString     (double)
         SimpleType_Operator_Equal (CCoordinate)
     };
 

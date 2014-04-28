@@ -368,10 +368,10 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Устанавливаем значения по умолчанию
-				m_oBIns.SetValue(45720);
-				m_oLIns.SetValue(91440);
-				m_oRIns.SetValue(91440);
-				m_oTIns.SetValue(45720);
+				m_oBIns.SetValue(Emu_To_Pt(45720));
+				m_oLIns.SetValue(Emu_To_Pt(91440));
+				m_oRIns.SetValue(Emu_To_Pt(91440));
+				m_oTIns.SetValue(Emu_To_Pt(45720));
 
 				// Читаем атрибуты
 				if ( oReader.GetAttributesCount() <= 0 )

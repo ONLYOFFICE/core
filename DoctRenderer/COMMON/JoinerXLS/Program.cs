@@ -21,146 +21,191 @@ namespace Joiner
             string strRoot = strApplication + "\\OfficeWeb\\";
             List<string> files = new List<string>();
 
-            //files.Add("../ServerComponents/DoctRenderer/COMMON/native.js");
-            //files.Add("Common/3rdparty/XRegExp/xregexp-all.js");
-            //files.Add("../ServerComponents/DoctRenderer/COMMON/jquery_native.js");
+            string[] arrFilesConfig = {
+                "Common/Build/License.js",
+                "Common/browser.js",
+                "Common/docscoapisettings.js",
+                "Common/docscoapicommon.js",
+                "Common/docscoapi.js",
+                "Common/downloaderfiles.js",
+                "Common/apiCommon.js",
+                "Common/commonDefines.js",
+                "Common/editorscommon.js",
+                "Common/NumFormat.js",
+                "Common/Charts/charts.js",
+				"Common/Charts/DrawingArea.js",
+                "Common/Charts/DrawingObjects.js",
+				"Common/Charts/ChartsDrawer.js",
+                "Common/FontsFreeType/font_engine.js",
+                "Common/FontsFreeType/FontFile.js",
+                "Common/FontsFreeType/FontManager.js",
+                "Word/Drawing/HatchPattern.js",
+                "Word/Drawing/Externals.js",
+                "Word/Drawing/Metafile.js",
+                "Excel/model/DrawingObjects/GlobalLoaders.js",
+                "Common/trackFile.js",
+                "Excel/apiDefines.js",
+                "Excel/document/empty-workbook.js",
+                "Excel/utils/utils.js",
+                "Excel/model/clipboard.js",
+                "Excel/model/autofilters.js",
+                "Excel/graphics/DrawingContext.js",
+                "Excel/graphics/pdfprinter.js",
+                "Excel/model/CollaborativeEditing.js",
+                "Excel/model/ConditionalFormatting.js",
+                "Excel/model/FormulaObjects/parserFormula.js",
+                "Excel/model/FormulaObjects/dateandtimeFunctions.js",
+                "Excel/model/FormulaObjects/engineeringFunctions.js",
+                "Excel/model/FormulaObjects/cubeFunctions.js",
+                "Excel/model/FormulaObjects/databaseFunctions.js",
+                "Excel/model/FormulaObjects/textanddataFunctions.js",
+                "Excel/model/FormulaObjects/statisticalFunctions.js",
+                "Excel/model/FormulaObjects/financialFunctions.js",
+                "Excel/model/FormulaObjects/mathematicFunctions.js",
+                "Excel/model/FormulaObjects/lookupandreferenceFunctions.js",
+                "Excel/model/FormulaObjects/informationFunctions.js",
+                "Excel/model/FormulaObjects/logicalFunctions.js",
+                "Excel/model/Serialize.js",
+                "Excel/model/WorkbookElems.js",
+                "Excel/model/Workbook.js",
+                "Excel/model/CellInfo.js",
+                "Excel/model/AdvancedOptions.js",
+                "Excel/model/History.js",
+                "Excel/model/UndoRedo.js",
+                "Excel/model/CellComment.js",
+				"Excel/view/mobileTouch.js",
+				"Excel/view/iscroll.js",
+				"Excel/view/PopUpSelector.js",
+                "Excel/view/StringRender.js",
+                "Excel/view/CellTextRender.js",
+                "Excel/view/CellEditorView.js",
+                "Excel/view/WorksheetView.js",
+                "Excel/view/HandlerList.js",
+                "Excel/view/EventsController.js",
+                "Excel/view/WorkbookView.js",
+                "Common/scroll.js",
+                "Word/Editor/SerializeCommon.js",
+                "Common/Drawings/Math.js",
+                "Common/Drawings/ArcTo.js",
+                "Word/Drawing/ColorArray.js",
+                "Common/Shapes/Serialize.js",
+                "Common/Shapes/SerializeWriter.js",
+                "Common/SerializeCommonWordExcel.js",
+				"Common/SerializeChart.js",
+                "Common/Charts/libraries/OfficeExcel.common.core.js",
+                "Common/Charts/libraries/OfficeExcel.common.key.js",
+                "Common/Charts/libraries/OfficeExcel.bar.js",
+                "Common/Charts/libraries/OfficeExcel.hbar.js",
+                "Common/Charts/libraries/OfficeExcel.line.js",
+                "Common/Charts/libraries/OfficeExcel.pie.js",
+                "Common/Charts/libraries/OfficeExcel.scatter.js",
+                "Common/Charts/libraries/OfficeExcel.chartProperties.js",
 
-            files.Add("Common/browser.js");
-            //files.Add("Excel/jquery/jquery-1.7.1.js");
-            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_xls/jquery_corrector.js");
-            
-	        files.Add("Common/editorscommon.js");
-	        files.Add("Common/downloaderfiles.js");
-	        files.Add("Common/docscoapicommon.js");
-	        files.Add("Common/docscoapi.js");
-	        files.Add("Common/Charts/DrawingObjects.js");
-	        files.Add("Common/Charts/charts.js");
-	        files.Add("Common/commonDefines.js");
-	        files.Add("Common/apiCommon.js");
+                "Common/Drawings/Hit.js",
+                "Common/Drawings/States.js",
+                "Common/Drawings/TrackObjects/AdjustmentTracks.js",
+                "Common/Drawings/TrackObjects/ResizeTracks.js",
+                "Common/Drawings/TrackObjects/RotateTracks.js",
+                "Common/Drawings/TrackObjects/NewShapeTracks.js",
+                "Common/Drawings/TrackObjects/PolyLine.js",
+                "Common/Drawings/TrackObjects/Spline.js",
+                "Common/Drawings/TrackObjects/MoveTracks.js",
 
-            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_xls/corrector2.js");
+                "Common/Drawings/Format/Constants.js",
+                "Common/Drawings/Format/Format.js",
+                "Common/Drawings/Format/CreateGeometry.js",
+                "Common/Drawings/Format/Geometry.js",
+                "Common/Drawings/Format/Path.js",
+                "Common/Drawings/Format/Shape.js",
+                "Common/Drawings/Format/GroupShape.js",
+                "Common/Drawings/Format/Image.js",
+                "Common/Drawings/Format/ChartSpace.js",
+                "Common/Drawings/Format/ChartFormat.js",
+                "Common/Drawings/Format/TextBody.js",
+                "Common/Drawings/CommonController.js",
+                "Excel/view/DrawingObjectsController.js",
 
-	        files.Add("Common/FontsFreeType/font_engine.js");
-	        files.Add("Common/FontsFreeType/FontFile.js");
-	        files.Add("Common/FontsFreeType/FontManager.js");
+                "Excel/model/DrawingObjects/Graphics.js",
+                "Excel/model/DrawingObjects/Overlay.js",
+                "Excel/model/DrawingObjects/Controls.js",
+                "Excel/model/DrawingObjects/ShapeDrawer.js",
 
-	        files.Add("Word/Drawing/HatchPattern.js");
-	        files.Add("Word/Drawing/Metafile.js");
-	        files.Add("Common/AllFonts.js");
-	        files.Add("Word/Drawing/Externals.js");
-        	
-	        files.Add("Excel/apiDefines.js");
 
-	        files.Add("Excel/utils/utils.js");
-	        files.Add("Excel/model/ConditionalFormatting.js");
-	        files.Add("Excel/model/clipboard.js");
-	        files.Add("Excel/model/autofilters.js");
+                "Word/Editor/CollaborativeEditing.js",
 
-	        files.Add("Excel/graphics/DrawingContext.js");
-	        files.Add("Excel/graphics/pdfprinter.js");
+                "Excel/model/DrawingObjects/DrawingDocument.js",
 
-            files.Add("Excel/offlinedocs/empty-workbook.js");
+                "Excel/model/DrawingObjects/Format/ShapePrototype.js",
+                "Excel/model/DrawingObjects/Format/ImagePrototype.js",
+                "Excel/model/DrawingObjects/Format/GroupPrototype.js",
+                "Excel/model/DrawingObjects/Format/ChartSpacePrototype.js",
 
-	        files.Add("Excel/model/CollaborativeEditing.js");
-	        files.Add("Excel/model/FormulaObjects/parserFormula.js");
-	        files.Add("Excel/model/FormulaObjects/dateandtimeFunctions.js");
-	        files.Add("Excel/model/FormulaObjects/engineeringFunctions.js");
-	        files.Add("Excel/model/FormulaObjects/cubeFunctions.js");
-	        files.Add("Excel/model/FormulaObjects/databaseFunctions.js");
-	        files.Add("Excel/model/FormulaObjects/textanddataFunctions.js");
-	        files.Add("Excel/model/FormulaObjects/statisticalFunctions.js");
-	        files.Add("Excel/model/FormulaObjects/financialFunctions.js");
-	        files.Add("Excel/model/FormulaObjects/mathematicFunctions.js");
-	        files.Add("Excel/model/FormulaObjects/lookupandreferenceFunctions.js");
-	        files.Add("Excel/model/FormulaObjects/informationFunctions.js");
-	        files.Add("Excel/model/FormulaObjects/logicalFunctions.js");
-	        files.Add("Excel/model/CellComment.js");
-	        files.Add("Common/NumFormat.js");
-	        files.Add("Excel/model/Serialize.js");
-	        files.Add("Excel/model/WorkbookElems.js");
-	        files.Add("Excel/model/Workbook.js");
-	        files.Add("Excel/model/CellInfo.js");
-	        files.Add("Excel/model/AdvancedOptions.js");
-	        files.Add("Excel/model/History.js");
-	        files.Add("Excel/model/UndoRedo.js");
 
-	        files.Add("Common/scroll.js");
-	        files.Add("Excel/view/StringRender.js");
-	        files.Add("Excel/view/CellTextRender.js");
-	        files.Add("Excel/view/CellEditorView.js");
-	        files.Add("Excel/view/WorksheetView.js");
-	        files.Add("Excel/view/HandlerList.js");
-	        files.Add("Excel/view/EventsController.js");
-	        files.Add("Excel/view/WorkbookView.js");
+                "Word/Math/mathTypes.js",
+                "Word/Math/mathText.js",
+                "Word/Math/mathContent.js",
+                "Word/Math/base.js",
+                "Word/Math/fraction.js",
+                "Word/Math/degree.js",
+                "Word/Math/matrix.js",
+                "Word/Math/limit.js",
+                "Word/Math/nary.js",
+                "Word/Math/radical.js",
+                "Word/Math/operators.js",
+                "Word/Math/accent.js",
+                "Word/Math/borderBox.js",
 
-	        files.Add("Excel/api.js");
+				"Word/Editor/Comments.js",
+				"Word/Editor/Styles.js",
+				"Word/Editor/FlowObjects.js",
+				"Word/Editor/ParagraphContent.js",
+				"Word/Editor/Hyperlink.js",
+				"Word/Editor/Run.js",
+				"Word/Editor/Math.js",
+				"Word/Editor/Paragraph.js",
+				"Word/Editor/Sections.js",
+				"Word/Editor/Numbering.js",
+				"Word/Editor/HeaderFooter.js",
+				"Word/Editor/Document.js",
+				"Word/Editor/DocumentContent.js",
+				"Word/Editor/Table.js",
+				"Word/Editor/Serialize2.js",
+				"Word/Editor/FontClassification.js",
+				"Word/Editor/Spelling.js",
+				
+				"Word/Math/mathTypes.js",
+				"Word/Math/print.js",
+				"Word/Math/mathText.js",
+				"Word/Math/mathContent.js",
+				"Word/Math/actions.js",
+				"Word/Math/base.js",
+				"Word/Math/subBase.js",
+				"Word/Math/fraction.js",
+				"Word/Math/degree.js",
+				"Word/Math/matrix.js",
+				"Word/Math/limit.js",
+				"Word/Math/nary.js",
+				"Word/Math/radical.js",
+				"Word/Math/operators.js",
+				"Word/Math/accent.js",
+				"Word/Math/drawingUnion.js",
+				"Word/Math/borderBox.js",
+				"Word/Math/test_composition.js",
+				
+                "Excel/model/DrawingObjects/GlobalCounters.js",
 
-	        //<!--for theme-->
-	        files.Add("Common/Shapes/EditorSettings.js");
-	        files.Add("Common/Shapes/Serialize.js");
-	        files.Add("Common/Shapes/SerializeWriter.js");
-	        files.Add("Word/Editor/SerializeCommon.js");
-	        files.Add("Word/Editor/GraphicObjects/ObjectTypes/Format.js");
-	        files.Add("Word/Editor/GraphicObjects/ObjectTypes/CreateGeometry.js");
-	        files.Add("Excel/model/DrawingObjects/Format/Geometry.js");
-	        files.Add("Excel/model/DrawingObjects/Format/Path.js");
-	        files.Add("Word/Editor/GraphicObjects/Math.js");
-	        files.Add("Word/Drawing/ArcTo.js");
-	        files.Add("Word/Drawing/ColorArray.js");
-	        files.Add("Word/apiCommon.js");
+                "Word/apiCommon.js",
+                "Excel/api.js"
+            };
 
-	        //<!--for chart-->
-	        files.Add("Common/SerializeCommonWordExcel.js");
-	        files.Add("Common/Charts/libraries/OfficeExcel.common.core.js");
-
-	        files.Add("Common/Charts/libraries/OfficeExcel.common.key.js");
-
-	        files.Add("Common/Charts/libraries/OfficeExcel.bar.js");
-	        files.Add("Common/Charts/libraries/OfficeExcel.hbar.js");
-	        files.Add("Common/Charts/libraries/OfficeExcel.line.js");
-	        files.Add("Common/Charts/libraries/OfficeExcel.pie.js");
-	        files.Add("Common/Charts/libraries/OfficeExcel.scatter.js");
-	        files.Add("Common/Charts/libraries/OfficeExcel.chartProperties.js");
-        	
-	        //<!--for shapes-->
-	        files.Add("Excel/model/DrawingObjects/Graphics.js");
-	        files.Add("Excel/model/DrawingObjects/Overlay.js");
-	        files.Add("Excel/model/DrawingObjects/Controls.js");
-	        files.Add("Excel/model/DrawingObjects/DrawingObjectsController.js");
-	        files.Add("Excel/model/DrawingObjects/DrawingDocument.js");
-	        files.Add("Excel/model/DrawingObjects/States.js");
-	        files.Add("Excel/model/DrawingObjects/GlobalLoaders.js");
-	        files.Add("Excel/model/DrawingObjects/ShapeDrawer.js");
-        		
-	        files.Add("Excel/model/DrawingObjects/Format/GroupShape.js");
-	        files.Add("Excel/model/DrawingObjects/Format/Image.js");
-	        files.Add("Excel/model/DrawingObjects/Format/Shape.js");
-            files.Add("Excel/model/DrawingObjects/Format/TextBody.js");
-            files.Add("Excel/model/DrawingObjects/Format/Styles.js");
-            files.Add("Excel/model/DrawingObjects/Format/Path.js");
-            files.Add("Excel/model/DrawingObjects/Format/Geometry.js");
-            files.Add("Excel/model/DrawingObjects/Format/Paragraph.js");
-            files.Add("Excel/model/DrawingObjects/Format/ParagraphContent.js");
-            files.Add("Excel/model/DrawingObjects/Format/Numbering.js");
-            files.Add("Excel/model/DrawingObjects/Format/Format.js");
-            files.Add("Excel/model/DrawingObjects/Format/DocumentContent.js");
-            files.Add("Excel/model/DrawingObjects/Format/FontClassification.js");
-
-            files.Add("Excel/model/DrawingObjects/Tracks/AdjustmentTracks.js");
-	        files.Add("Excel/model/DrawingObjects/Tracks/ResizeTracks.js");
-	        files.Add("Excel/model/DrawingObjects/Tracks/RotateTracks.js");
-	        files.Add("Excel/model/DrawingObjects/Tracks/NewShapeTracks.js");
-	        files.Add("Excel/model/DrawingObjects/Tracks/PolyLine.js");
-	        files.Add("Excel/model/DrawingObjects/Tracks/Spline.js");
-	        files.Add("Excel/model/DrawingObjects/Tracks/MoveTracks.js");
-	        files.Add("Excel/model/DrawingObjects/Hit.js");
-	        files.Add("Excel/model/DrawingObjects/GlobalCounters.js");
-            files.Add("Excel/model/DrawingObjects/Format/Chart.js");
-            files.Add("Excel/model/DrawingObjects/Format/ChartLayout.js");
-            files.Add("Excel/model/DrawingObjects/Format/ChartTitle.js");
-            files.Add("Excel/model/DrawingObjects/Format/ChartLegend.js");
-
-            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_xls/corrector.js");
+            if (true)
+            {
+                files.Clear();
+                for (int i = 0; i < arrFilesConfig.Length; ++i)
+                {
+                    files.Add(arrFilesConfig[i]);
+                }
+            }
 
             StringBuilder oBuilder = new StringBuilder();
 

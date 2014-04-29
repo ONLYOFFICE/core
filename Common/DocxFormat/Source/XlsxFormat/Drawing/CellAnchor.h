@@ -97,14 +97,42 @@ namespace OOX
 						m_oExt = oReader;
 					else if ( _T("xdr:graphicFrame") == sName )
 						m_oGraphicFrame = oReader;
-					else if (_T("xdr:pic") == sName )
-						m_oPicture = oReader;
-					else if (_T("xdr:sp") == sName)
-						m_oShape = oReader;
-					else if (_T("xdr:cxnSp") == sName)
-						m_oConnShape = oReader;
-					else if (_T("xdr:grpSp") == sName || _T("mc:AlternateContent") == sName)
+	//Так читать правильнее ... но для совместимости нужно хранить и все xml !!!!
+					//else if (_T("xdr:pic") == sName )
+					//	m_oPicture = oReader;
+					//else if (_T("xdr:sp") == sName)
+					//	m_oShape = oReader;
+					//else if (_T("xdr:cxnSp") == sName)
+					//	m_oConnShape = oReader;
+					//else if (_T("xdr:grpSp") == sName || _T("mc:AlternateContent") == sName)
+					//	m_oXml = oReader.GetOuterXml();
+/////////////////////////////////
+					//
+					else if ( _T("xdr:pic") == sName || _T("xdr:sp") == sName || _T("xdr:grpSp") == sName || _T("xdr:cxnSp") == sName || _T("mc:AlternateContent") == sName)
+					{			
 						m_oXml = oReader.GetOuterXml();
+						{
+							XmlUtils::CXmlLiteReader oShapeReader;
+							//сформируем полноценную xml-строку
+							CString xmlString = L"<?xml version=\"1.0\" encoding=\"UTF-16\"?>";
+							xmlString += L"<xdr:cellAnchor xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\">";
+							xmlString += *m_oXml;
+							xmlString += L"</xdr:cellAnchor>";
+							BOOL result =oShapeReader.FromString(xmlString);
+
+							result = oShapeReader.ReadNextNode();//root ... skiping
+							result = oShapeReader.ReadNextNode();
+
+							CWCharWrapper sName = oShapeReader.GetName();
+							
+							if (_T("xdr:pic") == sName)
+								m_oPicture = oShapeReader;
+							else if (_T("xdr:sp") == sName)
+								m_oShape = oShapeReader;
+							else if (_T("xdr:cxnSp") == sName)
+								m_oConnShape = oShapeReader;
+						}
+					}
 				}
 			}
 

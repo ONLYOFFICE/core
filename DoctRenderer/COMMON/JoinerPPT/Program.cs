@@ -21,146 +21,120 @@ namespace Joiner
             string strRoot = strApplication + "\\OfficeWeb\\";
             List<string> files = new List<string>();
 
-            //files.Add("../ServerComponents/DoctRenderer/COMMON/native.js");
-            //files.Add("Common/3rdparty/XRegExp/xregexp-all.js");
-            
-            files.Add("Common/browser.js");
-            files.Add("Common/editorscommon.js");
+            string[] arrFilesConfig = {
+                "Common/browser.js",
+                "Common/docscoapisettings.js",
+                "Common/docscoapicommon.js",
+                "Common/docscoapi.js",
+                "Common/wordcopypaste.js",
+                "Common/downloaderfiles.js",
+                "Common/editorscommon.js",
+                "Common/apiCommon.js",
+                "PowerPoint/Editor/Serialize.js",
+                "Common/Shapes/SerializeWriter.js",
+                "Common/FontsFreeType/font_engine.js",
+                "Common/FontsFreeType/FontFile.js",
+                "Common/FontsFreeType/FontManager.js",
+                "Word/Drawing/Externals.js",
+                "Word/Drawing/GlobalLoaders.js",
+                "PowerPoint/Drawing/ThemeLoader.js",
+                "PowerPoint/Editor/Format/CollaborativeEditing.js",
+                "PowerPoint/Editor/Styles.js",
+                "PowerPoint/Editor/Format/ParagraphContent.js",
+                "PowerPoint/Editor/Format/FontClassification.js",
+                "PowerPoint/Editor/Format/Spelling.js",
+                "PowerPoint/Editor/Format/Comments.js",
+                "PowerPoint/Editor/GraphicObjects.js",
+                "PowerPoint/Editor/States.js",
+                "Common/Charts/DrawingObjects.js",
+                "Common/commonDefines.js",
+                "Common/SerializeCommonWordExcel.js",
+				"Common/SerializeChart.js",
+                "Word/Editor/Serialize2.js",
+                "Common/Charts/charts.js",
+                "Excel/graphics/DrawingContextWord.js",
+                "Common/trackFile.js",
+                "Common/Charts/libraries/OfficeExcel.common.core.js",
+                "Common/Charts/libraries/OfficeExcel.common.key.js",
+                "Common/Charts/libraries/OfficeExcel.bar.js",
+                "Common/Charts/libraries/OfficeExcel.hbar.js",
+                "Common/Charts/libraries/OfficeExcel.line.js",
+                "Common/Charts/libraries/OfficeExcel.pie.js",
+                "Common/Charts/libraries/OfficeExcel.scatter.js",
+                "Common/Charts/libraries/OfficeExcel.chartProperties.js",
+                "Word/Editor/SerializeCommon.js",
+                "Word/Drawing/Metafile.js",
+                "Word/Drawing/GraphicsEvents.js",
+                "Word/Drawing/WorkEvents.js",
+                "Word/Drawing/Controls.js",
+                "Word/Drawing/Rulers.js",
+                "PowerPoint/Editor/Format/Table.js",
+                "Word/Editor/Common.js",
+                "Word/Editor/Sections.js",
+                "Common/scroll.js",
+                "PowerPoint/Editor/History.js",
+                "PowerPoint/Editor/Format/Paragraph.js",
+                "PowerPoint/Editor/FlowObjects.js",
+                "PowerPoint/Editor/Format/DocumentContent.js",
+                "PowerPoint/Editor/Format/Presentation.js",
+                "PowerPoint/Editor/SlideShowInfo.js",
+                "PowerPoint/Editor/PresentationProperties.js",
+                "PowerPoint/Editor/Format/Shape.js",
+                "PowerPoint/Editor/Format/GraphicFrame.js",
+                "PowerPoint/Editor/Numbering.js",
+                "PowerPoint/Editor/TrackObjects/AdjustmentTracks.js",
+                "PowerPoint/Editor/TrackObjects/MoveTracks.js",
+                "PowerPoint/Editor/TrackObjects/NewShapeTracks.js",
+                "PowerPoint/Editor/TrackObjects/PolyLine.js",
+                "PowerPoint/Editor/TrackObjects/ResizeTracks.js",
+                "PowerPoint/Editor/TrackObjects/RotateTracks.js",
+                "PowerPoint/Editor/TrackObjects/Spline.js",
+                "PowerPoint/Editor/Format/TextBody.js",
+                "PowerPoint/Editor/Format/Image.js",
+                "PowerPoint/Editor/Format/GroupShape.js",
+                "PowerPoint/Editor/Format/ChartTitle.js",
+                "PowerPoint/Editor/Format/Chart.js",
+                "PowerPoint/Editor/Format/ChartLayout.js",
+                "PowerPoint/Editor/Format/Slide.js",
+                "PowerPoint/Editor/Format/SlideMaster.js",
+                "PowerPoint/Editor/Format/Layout.js",
+                "PowerPoint/Editor/Drawing/Geometry.js",
+                "PowerPoint/Editor/Drawing/CreateGoemetry.js",
+                "PowerPoint/Editor/Drawing/ColorArray.js",
+                "PowerPoint/Editor/Drawing/Math.js",
+                "PowerPoint/Editor/Drawing/Path.js",
+                "PowerPoint/Editor/Drawing/ArcTo.js",
+                "PowerPoint/Editor/Drawing/GraphicFigure.js",
+                "PowerPoint/Editor/Drawing/Clone.js",
+                "PowerPoint/Editor/Drawing/CImage.js",
+                "PowerPoint/Editor/Drawing/Spline.js",
+                "PowerPoint/Editor/Drawing/PolyLine.js",
+                "PowerPoint/Editor/Drawing/Hit.js",
+                "PowerPoint/Editor/Drawing/Joined.js",
+                "Word/Drawing/Graphics.js",
+                "Word/Drawing/Overlay.js",
+                "Word/Drawing/HatchPattern.js",
+                "Word/Drawing/ShapeDrawer.js",
+                "PowerPoint/Drawing/Transitions.js",
+                "PowerPoint/Drawing/DrawingDocument.js",
+                "PowerPoint/Drawing/HtmlPage.js",
+                "PowerPoint/Editor/Format.js",
+                "PowerPoint/apiDefines.js",
+                "PowerPoint/api.js",
+                "PowerPoint/apiCommon.js",
 
-            files.Add("Common/downloaderfiles.js");
-            files.Add("Common/docscoapicommon.js");
-            files.Add("Common/docscoapi.js");
-            files.Add("Common/spellcheckapi.js");
+                "Common/Shapes/EditorSettings.js",
+                "PowerPoint/themes/Themes.js"
+            };
 
-            files.Add("Common/wordcopypaste.js");
-    		
-            files.Add("Common/apiCommon.js");
-
-            files.Add("Excel/apiDefines.js");
-            files.Add("Common/Charts/DrawingObjects.js");
-            files.Add("Common/Charts/charts.js");
-            files.Add("Common/commonDefines.js");
-            files.Add("Common/SerializeCommonWordExcel.js");
-            files.Add("Common/Charts/libraries/OfficeExcel.common.core.js");
-            files.Add("Common/Charts/libraries/OfficeExcel.common.key.js");
-            files.Add("Common/Charts/libraries/OfficeExcel.bar.js");
-            files.Add("Common/Charts/libraries/OfficeExcel.hbar.js");
-            files.Add("Common/Charts/libraries/OfficeExcel.line.js");
-            files.Add("Common/Charts/libraries/OfficeExcel.pie.js");
-            files.Add("Common/Charts/libraries/OfficeExcel.scatter.js");
-            files.Add("Common/Charts/libraries/OfficeExcel.chartProperties.js");
-
-            files.Add("Common/FontsFreeType/font_engine.js");
-
-            files.Add("Common/FontsFreeType/FontFile.js");
-            files.Add("Common/FontsFreeType/FontManager.js");
-            files.Add("Word/Drawing/Externals.js");
-            files.Add("Word/Drawing/GlobalLoaders.js");
-            
-            files.Add("Word/Drawing/Rulers.js");
-            files.Add("Word/Drawing/WorkEvents.js");
-            files.Add("Word/Drawing/Controls.js");
-
-            files.Add("Word/Drawing/translations.js");            
-            files.Add("Word/Drawing/Metafile.js");
-
-            files.Add("Word/Editor/Sections.js");
-            files.Add("Word/Editor/Common.js");
-            files.Add("Word/Editor/Serialize2.js");
-
-
-            files.Add("PowerPoint/Drawing/ThemeLoader.js");
-            files.Add("PowerPoint/Editor/Styles.js");
-            files.Add("PowerPoint/Editor/Format/CollaborativeEditing.js");
-            files.Add("PowerPoint/Editor/Format/Table.js");
-            files.Add("PowerPoint/Editor/History.js");
-	        files.Add("PowerPoint/Editor/FlowObjects.js");
-	        files.Add("PowerPoint/Editor/Format/Paragraph.js");
-            files.Add("PowerPoint/Editor/Format/FontClassification.js");
-            files.Add("PowerPoint/Editor/Format/ParagraphContent.js");
-            files.Add("PowerPoint/Editor/Format/Spelling.js");
-
-	        files.Add("PowerPoint/Editor/SlideShowInfo.js");
-	        files.Add("PowerPoint/Editor/PresentationProperties.js");
-	        files.Add("PowerPoint/Editor/Format/GraphicFrame.js");
-	        files.Add("PowerPoint/Editor/Numbering.js");
-
-            files.Add("PowerPoint/Editor/TrackObjects/AdjustmentTracks.js");
-            files.Add("PowerPoint/Editor/TrackObjects/MoveTracks.js");
-            files.Add("PowerPoint/Editor/TrackObjects/NewShapeTracks.js");
-            files.Add("PowerPoint/Editor/TrackObjects/PolyLine.js");
-            files.Add("PowerPoint/Editor/TrackObjects/ResizeTracks.js");
-            files.Add("PowerPoint/Editor/TrackObjects/RotateTracks.js");
-            files.Add("PowerPoint/Editor/TrackObjects/Spline.js");
-
-	        files.Add("PowerPoint/Editor/Drawing/Geometry.js");
-	        files.Add("PowerPoint/Editor/Drawing/CreateGoemetry.js");
-	        files.Add("PowerPoint/Editor/Drawing/ColorArray.js");
-	        files.Add("PowerPoint/Editor/Drawing/Math.js");
-	        files.Add("PowerPoint/Editor/Drawing/Path.js");
-	        files.Add("PowerPoint/Editor/Drawing/ArcTo.js");
-	        files.Add("PowerPoint/Editor/Drawing/GraphicFigure.js");
-	        files.Add("PowerPoint/Editor/Drawing/Clone.js");
-	        files.Add("PowerPoint/Editor/Drawing/CImage.js");
-	        files.Add("PowerPoint/Editor/Drawing/Spline.js");
-	        files.Add("PowerPoint/Editor/Drawing/PolyLine.js");
-	        files.Add("PowerPoint/Editor/Drawing/Hit.js");
-	        files.Add("PowerPoint/Editor/Drawing/Joined.js");
-
-            files.Add("PowerPoint/Drawing/Transitions.js");
-            files.Add("PowerPoint/Editor/Format.js");
-	        files.Add("PowerPoint/themes/Themes.js");
-
-            files.Add("Word/Drawing/HatchPattern.js");
-            files.Add("Word/Drawing/Graphics.js");
-            files.Add("Word/Drawing/ArcTo.js");
-            files.Add("Word/Drawing/Hit.js");
-            files.Add("Word/Drawing/ColorArray.js");
-            files.Add("Word/Drawing/Overlay.js");
-            files.Add("Word/Drawing/ShapeDrawer.js");
-            files.Add("Word/Drawing/GraphicsEvents.js");
-            files.Add("PowerPoint/apiDefines.js");
-            files.Add("PowerPoint/apiCommon.js");
-
-            files.Add("Common/Shapes/EditorSettings.js");
-            files.Add("Common/Shapes/Serialize.js");
-            files.Add("Common/Shapes/SerializeWriter.js");
-            files.Add("Word/Editor/SerializeCommon.js");
-            
-            files.Add("Excel/graphics/DrawingContextWord.js");
-
-            files.Add("PowerPoint/Editor/Format/Presentation.js");
-            files.Add("PowerPoint/Editor/Format/Shape.js");
-            files.Add("PowerPoint/Editor/Format/TextBody.js");
-
-            files.Add("PowerPoint/Editor/Format/Image.js");
-            files.Add("PowerPoint/Editor/Format/GroupShape.js");
-            files.Add("PowerPoint/Editor/Format/ChartTitle.js");
-            files.Add("PowerPoint/Editor/Format/Chart.js");
-            files.Add("PowerPoint/Editor/Format/ChartLayout.js");
-
-            files.Add("PowerPoint/Editor/Format/Slide.js");
-            files.Add("PowerPoint/Editor/Format/SlideMaster.js");
-            files.Add("PowerPoint/Editor/Format/Layout.js");
-            files.Add("PowerPoint/Editor/Format/Paragraph.js");
-            files.Add("PowerPoint/Editor/Format/FontClassification.js");
-            files.Add("PowerPoint/Editor/Format/ParagraphContent.js");
-            files.Add("PowerPoint/Editor/Format/Spelling.js");
-            files.Add("PowerPoint/Editor/Format/Comments.js");
-
-
-            files.Add("PowerPoint/Editor/Format/DocumentContent.js");
-            files.Add("PowerPoint/Editor/GraphicObjects.js");
-            files.Add("PowerPoint/Editor/States.js");
-
-            files.Add("PowerPoint/Drawing/DrawingDocument.js");
-            files.Add("PowerPoint/Drawing/HtmlPage.js");
-            files.Add("PowerPoint/api.js");
-
-            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_ppt/DrawingDocument.js");
-            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_ppt/HtmlPage.js");
-            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_ppt/api.js");
-            //files.Add("../ServerComponents/DoctRenderer/COMMON/native_ppt/corrector.js");
+            if (true)
+            {
+                files.Clear();
+                for (int i = 0; i < arrFilesConfig.Length; ++i)
+                {
+                    files.Add(arrFilesConfig[i]);
+                }
+            }
 
             StringBuilder oBuilder = new StringBuilder();
 

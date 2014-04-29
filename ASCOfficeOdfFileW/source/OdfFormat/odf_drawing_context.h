@@ -3,7 +3,8 @@
 #include <string>
 #include <vector>
 
-//#include "ods_drawing_context.h"
+#include <cpdoccore/CPOptional.h>
+
 //#include "ods_comments_context.h"
 //#include "ods_hyperlinks.h"
 
@@ -92,6 +93,15 @@ public:
 	void set_textarea_padding(double left,double top,double right,double bottom);//in cm
 	void set_textarea_writing_mode(int mode);
 
+	void start_gradient_style();
+		void set_gradient_type(int type);
+		void set_gradient_start(std::wstring hexColor, _CP_OPT(double) & intensiv);
+		void set_gradient_end  (std::wstring hexColor, _CP_OPT(double) & intensiv);
+		void set_gradient_rect(double l, double t, double r,double b);
+		void set_gradient_center(double x, double y);
+		void set_opacity(_CP_OPT(double) & start, _CP_OPT(double) & end);//стиль
+		void set_gradient_angle(double angle);
+	void end_gradient_style();
 private:
 	
 	void start_frame();

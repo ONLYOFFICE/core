@@ -205,10 +205,17 @@ std::wstring odf_style_context::get_name_family(const style_family & family)
         case style_family::Presentation:return L"pr";
         case style_family::Control:		return L"ctrl";//??
         case style_family::Ruby:		return L"rb";//??
+ 
+		case style_family::Gradient:	return L"Gradinent";
+        case style_family::Hatch:		return L"Hatch";
+		case style_family::Opacity:		return L"Opacity";
+		case style_family::FillImage:	return L"FillImage";
+		case style_family::Marker:		return L"Marker";
+		case style_family::StokeDash:	return L"StokeDash";
 	}
-	return L"none";
+	return L"UnknownStyle";
 }
-std::wstring odf_style_context::find_free_name(const style_family & family)
+std::wstring odf_style_context::find_free_name(const style_family  family)
 {
 	std::wstring name = get_name_family(family);
 	int count =1;

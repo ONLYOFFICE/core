@@ -455,12 +455,14 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start	( oReader )
-					WritingElement_ReadAttributes_Read_if	  ( oReader, _T("rtl"), m_oRtl)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("lvl"), m_oLvl)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("algn"), m_oAlgn)
+					WritingElement_ReadAttributes_Read_if	  ( oReader, _T("rtl"),		m_oRtl)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("lvl"),		m_oLvl)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("algn"),	m_oAlgn)
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("fontAlgn"), m_oFontAlgn)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("marL"), m_oMarR)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("marR"), m_oMarL)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("marL"),	m_oMarR)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("marR"),	m_oMarL)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("indent"),	m_oIndent)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("defTabSz"),m_oDefTabSz)					
 				WritingElement_ReadAttributes_End	( oReader )
 			}
 		public:

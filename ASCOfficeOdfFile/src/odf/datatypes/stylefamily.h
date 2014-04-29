@@ -26,7 +26,14 @@ public:
         Graphic,
         Presentation,
         Control,
-        Ruby
+        Ruby,
+////////////////////////для генерации "красивых" имен и поиска
+		Gradient,
+		Hatch,
+		Opacity,
+		FillImage,
+		Marker,
+		StokeDash
     };
 
     style_family() : type_(Default) {}

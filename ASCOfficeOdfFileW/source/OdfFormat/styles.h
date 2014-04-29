@@ -131,19 +131,19 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
+	std::wstring				get_style_name(){return draw_name_.get_value_or(L"");}
 
-	_CP_OPT(color)		draw_start_color_;
-	_CP_OPT(color)		draw_end_color_;
+	_CP_OPT(color)				draw_start_color_;
+	_CP_OPT(color)				draw_end_color_;
 
-	_CP_OPT(percent)	draw_end_intensity_; 
-	_CP_OPT(percent)	draw_start_intensity_;
+	_CP_OPT(percent)			draw_end_intensity_; 
+	_CP_OPT(percent)			draw_start_intensity_;
 
-	_CP_OPT(percent)	draw_cy_;//%
-	_CP_OPT(percent)	draw_cx_;
+	_CP_OPT(percent)			draw_cy_;//%
+	_CP_OPT(percent)			draw_cx_;
 	
-	_CP_OPT(percent)	draw_border_;
-	_CP_OPT(int)		draw_angle_;
+	_CP_OPT(percent)			draw_border_;
+	_CP_OPT(int)				draw_angle_;
 	_CP_OPT(gradient_style)		draw_style_;
 
  	_CP_OPT(std::wstring)		draw_name_;
@@ -152,7 +152,7 @@ public:
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
- 	virtual void serialize(std::wostream & strm){}
+ 	virtual void serialize(std::wostream & strm);
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_gradient);
@@ -213,7 +213,7 @@ public:
     virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
      virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_opacity);

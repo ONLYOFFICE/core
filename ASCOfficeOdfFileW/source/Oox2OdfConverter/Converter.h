@@ -52,6 +52,7 @@ namespace OOX
 		class CRun;
 		class CRunProperty;
 		class CLineSpacing;
+		class CColor;
 
 		namespace Colors
 		{
@@ -97,6 +98,7 @@ public:
 		void convert(OOX::Drawing::CPath2DCubicBezierTo			*oox_geom_path);
 		void convert(OOX::Drawing::CPath2DClose					*oox_geom_path);
 /////////////////////////////////////////
+		void convert(OOX::Drawing::CColor						*oox_color,		std::wstring & hexColor , cpdoccore::_CP_OPT(double) &opacity);
 		void convert(OOX::Drawing::CSchemeColor					*oox_ShemeClr,	std::wstring & hexString, cpdoccore::_CP_OPT(double) &opacity);
 		void convert(OOX::Drawing::Colors::CColorTransform      *oox_ScrgbClr,	std::wstring & hexString, cpdoccore::_CP_OPT(double) &opacity);
 		void convert(OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill,std::wstring & hexColor , cpdoccore::_CP_OPT(double) &opacity);

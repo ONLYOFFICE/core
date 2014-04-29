@@ -379,7 +379,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_run_pr)
 
 	if (oox_run_pr->m_oRFont.IsInit())
 	{
-		text_properties->content().style_font_name_ = string2std_string(oox_run_pr->m_oRFont->m_sVal.get());
+		//text_properties->content().style_font_name_ = string2std_string(oox_run_pr->m_oRFont->m_sVal.get());
+		text_properties->content().fo_font_family_ = string2std_string(oox_run_pr->m_oRFont->m_sVal.get());
+
 	}
 
 	//convert(oox_run_pr->m_oVertAlign.GetPointer(),...
@@ -604,7 +606,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf::style_text_prop
 
 	if (font->m_oRFont.IsInit())
 	{
-		text_properties->content().style_font_name_ = string2std_string(font->m_oRFont->m_sVal.get());
+		//text_properties->content().style_font_name_ = string2std_string(font->m_oRFont->m_sVal.get());
+		text_properties->content().fo_font_family_ = string2std_string(font->m_oRFont->m_sVal.get());
 	}
 	/////
 	//...

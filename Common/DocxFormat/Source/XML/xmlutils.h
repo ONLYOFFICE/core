@@ -2832,12 +2832,11 @@ namespace XmlUtils
 		{
 			Clear();
 
-			IStream *m_pStream = NULL;
 			if ( FAILED( ::CreateStreamOnHGlobal( NULL, TRUE, &m_pStream ) ) )
 				return FALSE;
 
 			ULONG cbWritten = 0;
-			if ( FAILED( m_pStream->Write( (wchar_t*)sXml.GetBuffer(), sXml.GetLength() * sizeof(wchar_t), &cbWritten ) ) )
+			if ( FAILED( m_pStream->Write( sXml.GetBuffer(), sXml.GetLength() * sizeof(TCHAR), &cbWritten ) ) )
 			{
 				RELEASEINTERFACE( m_pStream );
 				return FALSE;
@@ -2855,7 +2854,11 @@ namespace XmlUtils
 				RELEASEINTERFACE( m_pStream );
 				return FALSE;
 			}
-			m_pReader->SetInput( m_pStream );
+			if ( FAILED( m_pReader->SetInput( m_pStream )))
+			{
+				RELEASEINTERFACE( m_pStream );
+				return FALSE;
+			}
 
 			return TRUE;
 		}

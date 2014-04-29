@@ -111,6 +111,84 @@ public:
 		return sR + sG + sB;
 	}
 };
+class CThemeColor{
+public:
+	bool Auto;
+	byte Color;
+	byte Tint;
+	byte Shade;
+
+	bool bShade;
+	bool bTint;
+	bool bColor;
+	CThemeColor(){
+		Reset();
+	}
+	void Reset()
+	{
+		bShade = false;
+		bTint = false;
+		bColor = false;
+		Auto = false;
+	}
+	bool IsNoEmpty()
+	{
+		return bShade || bTint || bColor || Auto;
+	}
+	CString ToStringColor()
+	{
+		CString sRes;
+		if(bColor)
+		{
+			switch(Color)
+			{
+			case 0: sRes = _T("accent1");break;
+			case 1: sRes = _T("accent2");break;
+			case 2: sRes = _T("accent3");break;
+			case 3: sRes = _T("accent4");break;
+			case 4: sRes = _T("accent5");break;
+			case 5: sRes = _T("accent6");break;
+			case 6: sRes = _T("background1");break;
+			case 7: sRes = _T("background2");break;
+			case 8: sRes = _T("dark1");break;
+			case 9: sRes = _T("dark2");break;
+			case 10: sRes = _T("followedHyperlink");break;
+			case 11: sRes = _T("hyperlink");break;
+			case 12: sRes = _T("light1");break;
+			case 13: sRes = _T("light2");break;
+			case 14: sRes = _T("none");break;
+			case 15: sRes = _T("text1");break;
+			case 16: sRes = _T("text2");break;
+			default : sRes = _T("none");break;
+			}
+		}
+		return sRes;
+	}
+	CString ToStringTint()
+	{
+		CString sRes;
+		if(bTint)
+		{
+			if(Tint > 0xF)
+				sRes.AppendFormat(_T("%X"), Tint);
+			else
+				sRes.AppendFormat(_T("0%X"), Tint);
+		}
+		return sRes;
+	}
+	CString ToStringShade()
+	{
+		CString sRes;
+		if(bShade)
+		{
+			if(Shade > 0xF)
+				sRes.AppendFormat(_T("%X"), Shade);
+			else
+				sRes.AppendFormat(_T("0%X"), Shade);
+		}
+		return sRes;
+	}
+};
 class Spacing
 {
 public:
@@ -142,13 +220,38 @@ class Shd
 public:
 	BYTE Value;
 	docRGB Color;
+	CThemeColor ThemeColor; 
+
+	bool bColor;
+	bool bThemeColor;
 	Shd()
 	{
 		Value = shd_Nil;
+		bColor = false;
+		bThemeColor = false;
 	}
 	CString ToString()
 	{
-		return Color.ToString();
+		CString sShd;
+		if(bColor || (bThemeColor && ThemeColor.IsNoEmpty()))
+		{
+			sShd.Append(_T("<w:shd w:val=\"clear\" w:color=\"auto\""));
+			if(bColor)
+				sShd.AppendFormat(_T(" w:fill=\"%s\""), Color.ToString());
+			if(bThemeColor && ThemeColor.IsNoEmpty())
+			{
+				if(ThemeColor.Auto && !bColor)
+					sShd.Append(_T(" w:fill=\"auto\""));
+				if(ThemeColor.bColor)
+					sShd.AppendFormat(_T(" w:themeFill=\"%s\""), ThemeColor.ToStringColor());
+				if(ThemeColor.bTint)
+					sShd.AppendFormat(_T(" w:themeFillTint=\"%s\""), ThemeColor.ToStringTint());
+				if(ThemeColor.bShade)
+					sShd.AppendFormat(_T(" w:themeFillShade=\"%s\""), ThemeColor.ToStringShade());
+			}
+			sShd.Append(_T("/>"));
+		}
+		return sShd;
 	}
 };
 class Tab
@@ -199,6 +302,7 @@ public:
 	CString Lang;
 	CString LangBidi;
 	CString LangEA;
+	CThemeColor ThemeColor;
 
 	bool bBold;
 	bool bItalic;
@@ -227,6 +331,7 @@ public:
 	bool bLang;
 	bool bLangBidi;
 	bool bLangEA;
+	bool bThemeColor;
 
 	bool bDoNotWriteNullProp;
 public:
@@ -273,11 +378,13 @@ public:
 		bLang = false;
 		bLangBidi = false;
 		bLangEA = false;
+		bThemeColor = false;
+		ThemeColor.Reset();
 	}
 	bool IsNoEmpty()
 	{
 		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || bHighLight ||
-				bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA;
+				bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor;
 	}
 	void Write(XmlUtils::CStringWriter*  pCStringWriter)
 	{
@@ -375,9 +482,23 @@ public:
 			else if(false == bDoNotWriteNullProp)
 				pCStringWriter->WriteString(CString(_T("<w:dstrike w:val=\"false\"/>")));
 		}
-		if(bColor)
+		if(bColor || (bThemeColor && ThemeColor.IsNoEmpty()))
 		{
-			CString sColor;sColor.Format(_T("<w:color w:val=\"%s\" />"), Color.ToString());
+			CString sColor(_T("<w:color"));
+			if(bColor)
+				sColor.AppendFormat(_T(" w:val=\"%s\""), Color.ToString());
+			if(bThemeColor && ThemeColor.IsNoEmpty())
+			{
+				if(ThemeColor.Auto && !bColor)
+					sColor.Append(_T(" w:val=\"auto\""));
+				if(ThemeColor.bColor)
+					sColor.AppendFormat(_T(" w:themeColor=\"%s\""), ThemeColor.ToStringColor());
+				if(ThemeColor.bTint)
+					sColor.AppendFormat(_T(" w:themeTint=\"%s\""), ThemeColor.ToStringTint());
+				if(ThemeColor.bShade)
+					sColor.AppendFormat(_T(" w:themeShade=\"%s\""), ThemeColor.ToStringShade());
+			}
+			sColor.Append(_T("/>"));
 			pCStringWriter->WriteString(sColor);
 		}
 		if(bSpacing)
@@ -818,17 +939,20 @@ public:
 	double Space;
 	double Size;
 	BYTE Value;
+	CThemeColor ThemeColor;
 
 	bool bColor;
 	bool bSpace;
 	bool bSize;
 	bool bValue;
+	bool bThemeColor;
 	docBorder()
 	{
 		bColor = false;
 		bSpace = false;
 		bSize = false;
 		bValue = false;
+		bThemeColor = false;
 	}
 	void Write(CString sName, XmlUtils::CStringWriter*  pCStringWriter, bool bCell)
 	{
@@ -853,6 +977,29 @@ public:
 				long nSpace = Round(g_dKoef_mm_to_pt * Space);
 				CString sSpace;sSpace.Format(_T(" w:space=\"%d\""), nSpace);
 				pCStringWriter->WriteString(sSpace);
+			}
+			if(bThemeColor && ThemeColor.IsNoEmpty())
+			{
+				if(ThemeColor.Auto && !bColor)
+				{
+					CString sAuto(_T(" w:color=\"auto\""));
+					pCStringWriter->WriteString(sAuto);
+				}
+				if(ThemeColor.bColor)
+				{
+					CString sThemeColor;sThemeColor.Format(_T(" w:themeColor=\"%s\""), ThemeColor.ToStringColor());
+					pCStringWriter->WriteString(sThemeColor);
+				}
+				if(ThemeColor.bTint)
+				{
+					CString sThemeTint;sThemeTint.Format(_T(" w:themeTint=\"%s\""), ThemeColor.ToStringTint());
+					pCStringWriter->WriteString(sThemeTint);
+				}
+				if(ThemeColor.bShade)
+				{
+					CString sThemeShade;sThemeShade.Format(_T(" w:themeShade=\"%s\""), ThemeColor.ToStringShade());
+					pCStringWriter->WriteString(sThemeShade);
+				}
 			}
 			pCStringWriter->WriteString(CString(_T("/>")));
 		}

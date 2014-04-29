@@ -121,6 +121,37 @@ public:
 		oRGB.B = m_oBufferedStream.ReadByte();
 		return oRGB;
 	}
+	void ReadThemeColor(int length, CThemeColor& oCThemeColor)
+	{
+		Read2(length, &Binary_CommonReader2::_ReadThemeColor, this, &oCThemeColor);
+	}
+	int _ReadThemeColor(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		CThemeColor* pCThemeColor = static_cast<CThemeColor*>(poResult);
+		switch(type)
+		{
+		case c_oSer_ColorThemeType::Auto:
+			pCThemeColor->Auto = true;
+			break;
+		case c_oSer_ColorThemeType::Color:
+			pCThemeColor->bColor = true;
+			pCThemeColor->Color = m_oBufferedStream.ReadByte();
+			break;
+		case c_oSer_ColorThemeType::Tint:
+			pCThemeColor->bTint = true;
+			pCThemeColor->Tint = m_oBufferedStream.ReadByte();
+			break;
+		case c_oSer_ColorThemeType::Shade:
+			pCThemeColor->bShade = true;
+			pCThemeColor->Shade = m_oBufferedStream.ReadByte();
+			break;
+		default:
+			res = c_oSerConstants::ReadUnknown;
+			break;
+		}
+		return res;
+	}
 	int ReadShdOut(long length, Shd* shd)
 	{
 		return  Read2(length, &Binary_CommonReader2::ReadShd, this, shd);
@@ -133,7 +164,14 @@ private:
 		switch(type)
 		{
 		case c_oSerShdType::Value: pShd->Value = m_oBufferedStream.ReadByte();break;
-		case c_oSerShdType::Color: pShd->Color = ReadColor();break;
+		case c_oSerShdType::Color:
+			pShd->bColor = true;
+			pShd->Color = ReadColor();
+			break;
+		case c_oSerShdType::ColorTheme:
+			pShd->bThemeColor = true;
+			ReadThemeColor(length, pShd->ThemeColor);
+			break;
 		default:
 			res = c_oSerConstants::ReadUnknown;
 			break;
@@ -372,6 +410,12 @@ public:
 				orPr->LangEA = m_oBufferedStream.ReadString2(length);
 			}
 			break;
+		case c_oSerProp_rPrType::ColorTheme:
+			{
+				orPr->bThemeColor = true;
+				oBinary_CommonReader2.ReadThemeColor(length, orPr->ThemeColor);
+			}
+			break;
 		default:
 			res = c_oSerConstants::ReadUnknown;
 			break;
@@ -544,9 +588,7 @@ public:
 				oBinary_CommonReader2.ReadShdOut(length, &oShd);
 				if(shd_Nil != oShd.Value)
 				{
-					CString sShd;
-					sShd.Format(_T("<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"%s\"/>"), oShd.ToString());
-					pCStringWriter->WriteString(sShd);
+					pCStringWriter->WriteString(oShd.ToString());
 				}
 				else
 				{
@@ -848,6 +890,11 @@ public:
 		{
 			odocBorder->bValue = true;
 			odocBorder->Value = m_oBufferedStream.ReadByte();
+		}
+		else if( c_oSerBorderType::ColorTheme == type )
+		{
+			odocBorder->bThemeColor = true;
+			oBinary_CommonReader2.ReadThemeColor(length, odocBorder->ThemeColor);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1178,7 +1225,7 @@ public:
 			oBinary_CommonReader2.ReadShdOut(length, &oShd);
 			if(shd_Nil != oShd.Value)
 			{
-				pWiterTblPr->Shd.Format(_T("<w:shd w:fill=\"%s\" w:val=\"clear\" w:color=\"auto\" />"), oShd.ToString());
+				pWiterTblPr->Shd = oShd.ToString();
 				m_sCurTableShd = pWiterTblPr->Shd;
 			}
 		}
@@ -1590,9 +1637,7 @@ public:
 			oBinary_CommonReader2.ReadShdOut(length, &oShd);
 			if(shd_Nil != oShd.Value)
 			{
-				CString sShd;
-				sShd.Format(_T("<w:shd w:fill=\"%s\" w:val=\"clear\" w:color=\"auto\" />"), oShd.ToString());
-				pCStringWriter->WriteString(sShd);
+				pCStringWriter->WriteString(oShd.ToString());
 			}
 		}
 		else if( c_oSerProp_cellPrType::TableCellBorders == type )

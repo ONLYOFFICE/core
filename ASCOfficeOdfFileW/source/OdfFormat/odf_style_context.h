@@ -48,6 +48,8 @@ public:
     odf_style_state & last_state();
 
 	odf_number_styles_context & numbers_styles() {return number_styles_context_;}
+	
+	std::wstring find_free_name(const style_family  family);
 
 private:
 	odf_number_styles_context	number_styles_context_;
@@ -61,7 +63,6 @@ private:
 	std::vector<odf_style_state> master_state_list_;
 
 	std::wstring get_name_family(const style_family & family);
-	std::wstring find_free_name(const style_family & family);
 
 };
 

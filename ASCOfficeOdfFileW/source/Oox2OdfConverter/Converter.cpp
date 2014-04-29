@@ -286,16 +286,47 @@ void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill)
 void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill)
 {
 	if (!oox_grad_fill)return;
-	//нужно делать через текущий драунинг, а не напрямую через стили !!! - чарты и иже с ними ...
 
-	//odf_context()->drawing_context().start_gradient_fill();
+	odf_context()->drawing_context().start_gradient_style();
 
-	//odf::office_element_ptr gradient_element;
+	if (oox_grad_fill->m_eGradType == OOX::Drawing::gradfilltypeLinear)
+	{
+		odf_context()->drawing_context().set_gradient_type(1);
+		if (oox_grad_fill->m_oLin->m_oAng.IsInit())
+			odf_context()->drawing_context().set_gradient_angle(oox_grad_fill->m_oLin->m_oAng->GetAngle());
 
-	//odf::create_element(L"draw",L"gradient",gradient_element,odf_context());
-	//odf_context()->styles_context().add_style(gradient_element,false,true);
+	}
+	if (oox_grad_fill->m_eGradType == OOX::Drawing::gradfilltypePath)
+	{
+		if (oox_grad_fill->m_oPath->m_oPath.IsInit())
+		{
+			odf_context()->drawing_context().set_gradient_type((int)oox_grad_fill->m_oPath->m_oPath->GetValue() + 2);
+		}
+		if (oox_grad_fill->m_oPath->m_oFillToRect.IsInit())
+		{
+			odf_context()->drawing_context().set_gradient_rect( oox_grad_fill->m_oPath->m_oFillToRect->m_oL.GetValue(),
+																oox_grad_fill->m_oPath->m_oFillToRect->m_oT.GetValue(),
+																oox_grad_fill->m_oPath->m_oFillToRect->m_oR.GetValue(),
+																oox_grad_fill->m_oPath->m_oFillToRect->m_oB.GetValue());			
 
-	//odf_context()->drawing_context().end_gradient_fill();
+		}
+	}	
+	if (oox_grad_fill->m_oGsLst.IsInit() && oox_grad_fill->m_oGsLst->m_arrGs.GetSize()>1)
+	{
+		std::wstring hexColorStart, hexColorEnd;
+		_CP_OPT(double) opacityStart, opacityEnd;
+		
+		convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.GetSize()-1]),hexColorStart, opacityStart);
+		convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[0]),hexColorEnd, opacityEnd);
+		
+		odf_context()->drawing_context().set_gradient_start(hexColorStart, opacityStart);
+		odf_context()->drawing_context().set_gradient_end(hexColorEnd, opacityEnd);
+	
+		odf_context()->drawing_context().set_opacity(opacityStart, opacityEnd);
+
+	}
+
+	odf_context()->drawing_context().end_gradient_style();
 }
 void OoxConverter::convert(OOX::Drawing::CPatternFillProperties *oox_pattern_fill)
 {
@@ -317,6 +348,18 @@ void OoxConverter::convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fi
 		case OOX::Drawing::colorScRgb:	convert(&oox_solid_fill->m_oScrgbClr,	hexColor, opacity);		break;
 		case OOX::Drawing::colorSRgb:	convert(&oox_solid_fill->m_oSrgbClr,	hexColor, opacity);		break;
 		case OOX::Drawing::colorSys:	convert(&oox_solid_fill->m_oSysClr,		hexColor, opacity);		break;		
+	}	
+}
+void OoxConverter::convert(OOX::Drawing::CColor *oox_color,std::wstring & hexColor , _CP_OPT(double) &opacity)
+{
+	switch( oox_color->m_eType )
+	{
+		case OOX::Drawing::colorSheme:	convert(&oox_color->m_oShemeClr,	hexColor, opacity);		break;
+		case OOX::Drawing::colorHsl:	convert(&oox_color->m_oHslClr,		hexColor, opacity);		break;
+		case OOX::Drawing::colorPrst:	convert(&oox_color->m_oPrstClr,		hexColor, opacity);		break;
+		case OOX::Drawing::colorScRgb:	convert(&oox_color->m_oScrgbClr,	hexColor, opacity);		break;
+		case OOX::Drawing::colorSRgb:	convert(&oox_color->m_oSrgbClr,		hexColor, opacity);		break;
+		case OOX::Drawing::colorSys:	convert(&oox_color->m_oSysClr,		hexColor, opacity);		break;		
 	}	
 }
 void OoxConverter::convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fill)
@@ -508,10 +551,6 @@ void OoxConverter::convert(OOX::Drawing::CRunProperty		*oox_run_pr)
 		text_properties->content().fo_color_ = odf::color(std::wstring(L"#") + hexColor);
 	}
 
-	//if (oox_run_pr->m_oUnderline.IsInit())
-	//{
-	//	convert_element ????
-	//}
 	if (oox_run_pr->m_oItalic.IsInit())
 	{
 		if (oox_run_pr->m_oItalic->ToBool() ==true)
@@ -522,16 +561,56 @@ void OoxConverter::convert(OOX::Drawing::CRunProperty		*oox_run_pr)
 	if (oox_run_pr->m_oSz.IsInit())
 	{
 		convert(oox_run_pr->m_oSz->GetValue()/100., text_properties->content().fo_font_size_);
+		convert(oox_run_pr->m_oSz->GetValue()/100., text_properties->content().style_font_size_asian_);
+		convert(oox_run_pr->m_oSz->GetValue()/100., text_properties->content().style_font_size_complex_);
 	}
-	//if (oox_run_pr->m_oFamily.IsInit())
-	//{
-	//}
+	if (oox_run_pr->m_oLatinFont.IsInit())
+	{
+		if (oox_run_pr->m_oLatinFont->m_oTypeFace.IsInit())	
+			text_properties->content().fo_font_family_ = string2std_string(oox_run_pr->m_oLatinFont->m_oTypeFace->GetValue());
+		else
+		{
+		}
+	}
+	if (oox_run_pr->m_oAsianFont.IsInit())
+	{
+		if (oox_run_pr->m_oAsianFont->m_oTypeFace.IsInit())	
+			text_properties->content().style_font_family_asian_ = string2std_string(oox_run_pr->m_oAsianFont->m_oTypeFace->GetValue());
+		else
+		{
+		}
+	}
+	if (oox_run_pr->m_oComplexFont.IsInit())
+	{
+		if (oox_run_pr->m_oComplexFont->m_oTypeFace.IsInit())
+			text_properties->content().style_font_family_complex_ = string2std_string(oox_run_pr->m_oComplexFont->m_oTypeFace->GetValue());
+		else
+		{
+		}
+	}
+	if (oox_run_pr->m_oLanguage.IsInit())
+	{
+		CString oox_language =  oox_run_pr->m_oLanguage->GetValue(), oox_country;
+		int res = oox_language.Find(L"-");
+		if (res  >=0)
+		{
+			oox_country = oox_language.Right(oox_language.GetLength() - res -1);
+			oox_language = oox_language.Left(res);
+		}
+		
+		text_properties->content().fo_language_ = string2std_string(oox_language);
+		if (oox_country.GetLength() > 0)
+			text_properties->content().fo_country_ = string2std_string(oox_country);
 
-	//if (oox_run_pr->m_oRFont.IsInit())
+	}
+	if (oox_run_pr->m_oSpace.IsInit())
+	{
+		text_properties->content().fo_letter_spacing_ = odf::letter_spacing(odf::length(oox_run_pr->m_oSpace->GetValue()/100., odf::length::pt));
+	}
+	//if (oox_run_pr->m_oUnderline.IsInit())
 	//{
-	//	text_properties->content().style_font_name_ = string2std_string(oox_run_pr->m_oRFont->m_sVal.get());
+	//	convert_element ????
 	//}
-
 }
 void OoxConverter::convert(OOX::Drawing::CRun		*oox_run)
 {

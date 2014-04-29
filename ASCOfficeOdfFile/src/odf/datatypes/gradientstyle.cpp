@@ -6,6 +6,32 @@
 namespace cpdoccore { 
 namespace odf { 
 
+std::wostream & operator << (std::wostream & _Wostream, const gradient_style & _Val)
+{
+    switch(_Val.get_type())
+    {
+	case gradient_style::linear:
+        _Wostream << L"linear";
+        break;
+	case gradient_style::axial:
+        _Wostream << L"axial";
+        break;
+ 	case gradient_style::radial:
+        _Wostream << L"radial";
+        break;
+  	case gradient_style::ellipsoid:
+        _Wostream << L"ellipsoid";
+        break;
+  	case gradient_style::square:
+        _Wostream << L"square";
+        break;
+  	case gradient_style::rectangular:
+        _Wostream << L"rectangular";
+        break;
+  }
+    return _Wostream;
+}
+
 gradient_style gradient_style::parse(const std::wstring & Str)
 {
     std::wstring tmp = Str;

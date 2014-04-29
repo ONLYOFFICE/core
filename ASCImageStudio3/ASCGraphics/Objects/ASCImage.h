@@ -234,53 +234,56 @@ private:
 						delete pMetaFile;
 
 						m_lImageType = c_lImageTypeUnknown;
-						return;
 					}
-
-					::fclose( pFile );
-
-					// Сохраняем Wmf
-					HMETAFILE hTempWmf = CopyMetaFile( hWmf, m_wsTempFilePath.GetBuffer() );
-					DeleteMetaFile( hTempWmf );
-
-					// Открываем Wmf
-					m_oWmfFile.OpenFromFile( m_wsTempFilePath.GetBuffer() );
-					m_oWmfFile.Scan( &m_oRect );
-
-					if ( !m_oWmfFile.CheckError() )
+					else
 					{
-						// Wmf нормально открылся
-						m_lImageType = c_lImageTypeMetafile | c_lMetaEmf;
+						::fclose( pFile );
+
+						// Сохраняем Wmf
+						HMETAFILE hTempWmf = CopyMetaFile( hWmf, m_wsTempFilePath.GetBuffer() );
+						DeleteMetaFile( hTempWmf );
+
+						// Открываем Wmf
+						m_oWmfFile.OpenFromFile( m_wsTempFilePath.GetBuffer() );
+						m_oWmfFile.Scan( &m_oRect );
+
+						if ( !m_oWmfFile.CheckError() )
+						{
+							// Wmf нормально открылся
+							m_lImageType = c_lImageTypeMetafile | c_lMetaEmf;
+
+							DeleteMetaFile( hWmf );
+							DeleteEnhMetaFile( hEmf );
+							delete[] pBuffer;
+							delete pMetaFile;
+
+							return;			
+						}
+						else if ( m_oWmfFile.UnSupportedWmf() )
+						{
+							// Исходный файл Emf, но после конвертации в Wmf он не открылся
+							m_lImageType = c_lImageTypeMetafile | c_lMetaEmf;
+						}
+						else
+						{
+							// Сконвертированный файл не прочитался
+							m_oWmfFile.Close();
+							m_lImageType = c_lImageTypeUnknown;
+						}
 
 						DeleteMetaFile( hWmf );
 						DeleteEnhMetaFile( hEmf );
 						delete[] pBuffer;
 						delete pMetaFile;
-
-						return;			
 					}
-					else if ( m_oWmfFile.UnSupportedWmf() )
-					{
-						// Исходный файл Emf, но после конвертации в Wmf он не открылся
-						m_lImageType = c_lImageTypeMetafile | c_lMetaEmf;
-					}
-					else
-					{
-						// Сконвертированный файл не прочитался
-						m_oWmfFile.Close();
-						m_lImageType = c_lImageTypeUnknown;
-					}
-
-					DeleteMetaFile( hWmf );
-					DeleteEnhMetaFile( hEmf );
-					delete[] pBuffer;
-					delete pMetaFile;
 				}
 				else
 				{
 					DeleteEnhMetaFile( hEmf );
 					delete pMetaFile;
-
+				}
+				if (TRUE)
+				{
 					Gdiplus::Bitmap* pBitmap = new Gdiplus::Bitmap(bsFilePath);
 
 					MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
@@ -297,6 +300,7 @@ private:
 						return;
 					}
 					RELEASEINTERFACE(pFrame);
+					return;
 				}
 			}
 		}

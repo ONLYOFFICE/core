@@ -1,7 +1,7 @@
 #pragma once
 #include "../../../Common/ASCUtils.h"
 #include "../Interfaces/ASCRenderer.h"
-#include "../../../Common/DocxFormat/Source/XML/XmlUtils.h"
+#include "../../../Common/XmlUtils.h"
 #include "../agg/ap_aggplusenums.h"
 
 #include <gdiplus.h>

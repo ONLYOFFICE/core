@@ -61,6 +61,7 @@ namespace BinDocxRW
 				{
 					if(border.m_oColor.IsInit())
 						WriteColor(c_oSerBorderType::Color, border.m_oColor.get());
+					WriteThemeColor(c_oSerBorderType::ColorTheme, border.m_oColor, border.m_oThemeColor, border.m_oThemeTint, border.m_oThemeShade);
 					if(border.m_oSpace.IsInit())
 					{
 						m_oStream.WriteByte(c_oSerBorderType::Space);
@@ -227,37 +228,58 @@ namespace BinDocxRW
 				m_oStream.WriteByte(color.Get_G());
 				m_oStream.WriteByte(color.Get_B());
 			}
-			else if(SimpleTypes::hexcolorAuto == color.GetValue())
+		};
+		void WriteThemeColor(BYTE type, const nullable<SimpleTypes::CHexColor<>>& oHexColor, const nullable<SimpleTypes::CThemeColor<>>& oThemeColor,
+			const nullable<SimpleTypes::CUcharHexNumber<>>& oThemeTint, const nullable<SimpleTypes::CUcharHexNumber<>>& oThemeShade)
+		{
+			if(oHexColor.IsInit() && SimpleTypes::hexcolorAuto == oHexColor->GetValue() || oThemeColor.IsInit() || oThemeTint.IsInit() || oThemeShade.IsInit())
 			{
 				m_oStream.WriteByte(type);
-				m_oStream.WriteByte(c_oSerPropLenType::Three);
-				m_oStream.WriteByte(0);
-				m_oStream.WriteByte(0);
-				m_oStream.WriteByte(0);
+				m_oStream.WriteByte(c_oSerPropLenType::Variable);
+				int nCurPos = WriteItemWithLengthStart();
+				if(oHexColor.IsInit() && SimpleTypes::hexcolorAuto == oHexColor->GetValue())
+				{
+					m_oStream.WriteByte(c_oSer_ColorThemeType::Auto);
+					m_oStream.WriteByte(c_oSerPropLenType::Null);
+				}
+				if(oThemeColor.IsInit())
+				{
+					m_oStream.WriteByte(c_oSer_ColorThemeType::Color);
+					m_oStream.WriteByte(c_oSerPropLenType::Byte);
+					m_oStream.WriteByte(oThemeColor->GetValue());
+				}
+				if(oThemeTint.IsInit())
+				{
+					m_oStream.WriteByte(c_oSer_ColorThemeType::Tint);
+					m_oStream.WriteByte(c_oSerPropLenType::Byte);
+					m_oStream.WriteByte(oThemeTint->GetValue());
+				}
+				if(oThemeShade.IsInit())
+				{
+					m_oStream.WriteByte(c_oSer_ColorThemeType::Shade);
+					m_oStream.WriteByte(c_oSerPropLenType::Byte);
+					m_oStream.WriteByte(oThemeShade->GetValue());
+				}
+				WriteItemWithLengthEnd(nCurPos);
 			}
 		};
 		void WriteShd(const ComplexTypes::Word::CShading& Shd)
 		{
-			if(Shd.m_oFill.IsInit() && SimpleTypes::hexcolorRGB == Shd.m_oFill->GetValue())
+			//Type
+			if(false != Shd.m_oVal.IsInit())
 			{
-				//Type
-				if(false != Shd.m_oVal.IsInit())
+				m_oStream.WriteByte(c_oSerShdType::Value);
+				m_oStream.WriteByte(c_oSerPropLenType::Byte);
+				switch(Shd.m_oVal.get().GetValue())
 				{
-					m_oStream.WriteByte(c_oSerShdType::Value);
-					m_oStream.WriteByte(c_oSerPropLenType::Byte);
-					switch(Shd.m_oVal.get().GetValue())
-					{
-					case SimpleTypes::shdNil: m_oStream.WriteByte(shd_Nil);break;
-					default: m_oStream.WriteByte(shd_Clear);break;
-					}
-				}
-				//Value
-				if(false != Shd.m_oFill.IsInit())
-				{
-					//Todo themeColor
-					WriteColor(c_oSerShdType::Color, Shd.m_oFill.get());
+				case SimpleTypes::shdNil: m_oStream.WriteByte(shd_Nil);break;
+				default: m_oStream.WriteByte(shd_Clear);break;
 				}
 			}
+			//Value
+			if(false != Shd.m_oFill.IsInit())
+				WriteColor(c_oSerShdType::Color, Shd.m_oFill.get());
+			WriteThemeColor(c_oSerShdType::ColorTheme, Shd.m_oFill, Shd.m_oThemeFill, Shd.m_oThemeFillTint, Shd.m_oThemeFillShade);
 		};
 		void WriteDistance(const NSCommon::nullable<SimpleTypes::CWrapDistance<>>& m_oDistL,
 			const NSCommon::nullable<SimpleTypes::CWrapDistance<>>& m_oDistT,
@@ -530,6 +552,8 @@ namespace BinDocxRW
 				if(false != rPr.m_oColor.IsInit())
 				{
 					m_oBcw.WriteColor(c_oSerProp_rPrType::Color, rPr.m_oColor.get().m_oVal.get());
+
+					m_oBcw.WriteThemeColor(c_oSerProp_rPrType::ColorTheme, rPr.m_oColor->m_oVal, rPr.m_oColor->m_oThemeColor, rPr.m_oColor->m_oThemeTint, rPr.m_oColor->m_oThemeShade);
 				}
 				//VertAlign
 				if(false != rPr.m_oVertAlign.IsInit())

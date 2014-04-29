@@ -326,7 +326,8 @@ const int g_nFormatVersion = 5;
 		Rtl = 24,
 		Lang = 25,
 		LangBidi = 26,
-		LangEA = 27
+		LangEA = 27,
+		ColorTheme = 28
 	};}
 	namespace c_oSerProp_rowPrType{enum c_oSerProp_rowPrType
 	{
@@ -521,12 +522,14 @@ const int g_nFormatVersion = 5;
 		Color = 0,
 		Space = 1,
 		Size = 2,
-		Value = 3
+		Value = 3,
+		ColorTheme = 4
 	};}
 	namespace c_oSerShdType{enum c_oSerShdType
 	{
 		Value = 0,
-		Color = 1
+		Color = 1,
+		ColorTheme = 2
 	};}
 	namespace c_oSerPaddingType{enum c_oSerPaddingType
 	{
@@ -785,5 +788,12 @@ const int g_nFormatVersion = 5;
 		History = 4,
 		DocLocation = 5,
 		TgtFrame = 6
+	};}
+	namespace c_oSer_ColorThemeType{ enum c_oSer_ColorThemeType
+	{
+		Auto = 0,
+		Color = 1,
+		Tint = 2,
+		Shade = 3
 	};}
 }

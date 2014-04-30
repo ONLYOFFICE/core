@@ -288,54 +288,72 @@ void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill)
 	if (!oox_grad_fill)return;
 
 	odf_context()->drawing_context().start_gradient_style();
-
-	if (oox_grad_fill->m_eGradType == OOX::Drawing::gradfilltypeLinear)
 	{
-		odf_context()->drawing_context().set_gradient_type(1);
-		if (oox_grad_fill->m_oLin->m_oAng.IsInit())
-			odf_context()->drawing_context().set_gradient_angle(oox_grad_fill->m_oLin->m_oAng->GetAngle());
-
-	}
-	if (oox_grad_fill->m_eGradType == OOX::Drawing::gradfilltypePath)
-	{
-		if (oox_grad_fill->m_oPath->m_oPath.IsInit())
+		if (oox_grad_fill->m_eGradType == OOX::Drawing::gradfilltypeLinear)
 		{
-			odf_context()->drawing_context().set_gradient_type((int)oox_grad_fill->m_oPath->m_oPath->GetValue() + 2);
-		}
-		if (oox_grad_fill->m_oPath->m_oFillToRect.IsInit())
-		{
-			odf_context()->drawing_context().set_gradient_rect( oox_grad_fill->m_oPath->m_oFillToRect->m_oL.GetValue(),
-																oox_grad_fill->m_oPath->m_oFillToRect->m_oT.GetValue(),
-																oox_grad_fill->m_oPath->m_oFillToRect->m_oR.GetValue(),
-																oox_grad_fill->m_oPath->m_oFillToRect->m_oB.GetValue());			
+			odf_context()->drawing_context().set_gradient_type(1);
+			if (oox_grad_fill->m_oLin->m_oAng.IsInit())
+				odf_context()->drawing_context().set_gradient_angle(oox_grad_fill->m_oLin->m_oAng->GetAngle());
 
 		}
-	}	
-	if (oox_grad_fill->m_oGsLst.IsInit() && oox_grad_fill->m_oGsLst->m_arrGs.GetSize()>1)
-	{
-		std::wstring hexColorStart, hexColorEnd;
-		_CP_OPT(double) opacityStart, opacityEnd;
+		if (oox_grad_fill->m_eGradType == OOX::Drawing::gradfilltypePath)
+		{
+			if (oox_grad_fill->m_oPath->m_oPath.IsInit())
+			{
+				odf_context()->drawing_context().set_gradient_type((int)oox_grad_fill->m_oPath->m_oPath->GetValue() + 2);
+			}
+			if (oox_grad_fill->m_oPath->m_oFillToRect.IsInit())
+			{
+				odf_context()->drawing_context().set_gradient_rect( oox_grad_fill->m_oPath->m_oFillToRect->m_oL.GetValue(),
+																	oox_grad_fill->m_oPath->m_oFillToRect->m_oT.GetValue(),
+																	oox_grad_fill->m_oPath->m_oFillToRect->m_oR.GetValue(),
+																	oox_grad_fill->m_oPath->m_oFillToRect->m_oB.GetValue());			
+			}
+		}	
+		if (oox_grad_fill->m_oGsLst.IsInit() && oox_grad_fill->m_oGsLst->m_arrGs.GetSize()>1)
+		{
+			std::wstring hexColorStart, hexColorEnd;
+			_CP_OPT(double) opacityStart, opacityEnd;
+			
+			convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.GetSize()-1]),hexColorStart, opacityStart);
+			convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[0]),hexColorEnd, opacityEnd);
+			
+			odf_context()->drawing_context().set_gradient_start(hexColorStart, opacityStart);
+			odf_context()->drawing_context().set_gradient_end(hexColorEnd, opacityEnd);
 		
-		convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.GetSize()-1]),hexColorStart, opacityStart);
-		convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[0]),hexColorEnd, opacityEnd);
-		
-		odf_context()->drawing_context().set_gradient_start(hexColorStart, opacityStart);
-		odf_context()->drawing_context().set_gradient_end(hexColorEnd, opacityEnd);
-	
-		odf_context()->drawing_context().set_opacity(opacityStart, opacityEnd);
-
+			odf_context()->drawing_context().set_opacity(opacityStart, opacityEnd);
+		}
 	}
-
 	odf_context()->drawing_context().end_gradient_style();
 }
 void OoxConverter::convert(OOX::Drawing::CPatternFillProperties *oox_pattern_fill)
 {
 	if (!oox_pattern_fill)return;
 	
-	//odf_context()->drawing_context().start_pattern_fill();
+	odf_context()->drawing_context().start_hatch_style();
+	{
+		if (oox_pattern_fill->m_oPrst.IsInit())
+		{
+			odf_context()->drawing_context().set_hatch_type(oox_pattern_fill->m_oPrst->GetValue());
+		}			
+		if (oox_pattern_fill->m_oFgClr.IsInit())
+		{
+			std::wstring hexColor;
+			_CP_OPT(double) opacity;
+			convert((OOX::Drawing::CColor*)oox_pattern_fill->m_oFgClr.GetPointer(),hexColor, opacity);
 
+			odf_context()->drawing_context().set_hatch_line_color(hexColor);
+		}
+		if (oox_pattern_fill->m_oBgClr.IsInit())
+		{
+			std::wstring hexColor;
+			_CP_OPT(double) opacity;
+			convert((OOX::Drawing::CColor*)oox_pattern_fill->m_oBgClr.GetPointer(),hexColor, opacity);
 
-	//odf_context()->drawing_context().end_pattern_fill();
+			odf_context()->drawing_context().set_hatch_area_color(hexColor);
+		}
+	}
+	odf_context()->drawing_context().end_hatch_style();
 
 }
 void OoxConverter::convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fill,std::wstring & hexColor , _CP_OPT(double) &opacity)

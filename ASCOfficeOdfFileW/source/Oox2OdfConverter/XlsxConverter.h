@@ -90,8 +90,9 @@ namespace Oox2Odf
 		virtual void convertDocument();
 		virtual void write(const std::wstring & path);
 		
-		virtual odf::odf_conversion_context* odf_context();
-		virtual OOX::CTheme* oox_theme();
+		virtual odf::odf_conversion_context		*odf_context();		
+		virtual OOX::CTheme						*oox_theme();
+		virtual CString							 find_link_by_id (CString sId, int t);
 
     private:
 		OOX::Spreadsheet::CXlsx		*xlsx_document;

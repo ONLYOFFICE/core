@@ -553,6 +553,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\odf\datatypes\fillimagerefpoint.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\odf\datatypes\fillimagerefpoint.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\odf\datatypes\fobreak.cpp"
 				>
 			</File>

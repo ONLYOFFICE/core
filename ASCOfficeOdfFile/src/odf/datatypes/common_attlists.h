@@ -28,6 +28,7 @@
 #include "clockvalue.h"
 #include "stylerepeat.h"
 #include "officevaluetype.h"
+#include "fillimagerefpoint.h"
 
 #define _CP_APPLY_PROP(A, B) \
     if (B) \
@@ -65,6 +66,13 @@ public:
 	
 	_CP_OPT(Bool)				draw_fill_hatch_solid_;
 	_CP_OPT(style_repeat)		style_repeat_;
+
+	_CP_OPT(fill_image_ref_point)draw_fill_image_ref_point_;
+	_CP_OPT(percent)			draw_fill_image_ref_point_y_;
+	_CP_OPT(percent)			draw_fill_image_ref_point_x_;
+
+	_CP_OPT(length)				draw_fill_image_width_;
+	_CP_OPT(length)				draw_fill_image_height_;
 };
 
 // common-horizontal-margin-attlist

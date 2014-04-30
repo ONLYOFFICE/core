@@ -121,7 +121,10 @@ double emu_to_pt(double Val)
 {
     return Val * 72.0 / (360000.0 * 2.54);
 }
-
+double px_to_pt(double Val)
+{
+    return Val * 3 / 4;
+}
 double pt_to_inch(double Val)
 {
     return Val / 72.0;
@@ -147,6 +150,8 @@ double to_pt(const length & Val)
         return Val.get_value();
     case length::emu:
         return emu_to_pt(Val.get_value());
+	case length::px:
+		return px_to_pt(Val.get_value());
     }
     //CP_ASSERT(false);
     return 0.0;

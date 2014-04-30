@@ -3,6 +3,7 @@
 #include "stdAfx.h"
 
 #include "XlsxConverter.h"
+#include "Additional.h"
 
 #include <boost/foreach.hpp>
 
@@ -49,6 +50,25 @@ OOX::CTheme* XlsxConverter::oox_theme()
 	else
 		return NULL;
 }
+
+CString	XlsxConverter::find_link_by_id (CString sId, int t)
+{
+	if (t==1)
+	{
+		smart_ptr<OOX::File> oFile = xlsx_current_drawing->Find(sId);
+		if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Image == oFile->type())
+		{
+			OOX::Spreadsheet::Image* pImage = (OOX::Spreadsheet::Image*)oFile.operator->();
+
+			return pImage->filename().GetPath();
+		}
+		else return L"";
+
+	}
+	else return L"";
+}
+
+
 void XlsxConverter::convertDocument()
 {
 	if (!xlsx_document)return;
@@ -1130,28 +1150,36 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 	if (!oox_picture->m_oBlipFill.IsInit()) return; // невeрная структура оох
 
 	CString pathImage;
+	double Width=0, Height = 0;
 
 	if (oox_picture->m_oBlipFill->m_oBlip.IsInit())
 	{
-		CString sID = oox_picture->m_oBlipFill->m_oBlip->m_oEmbed.GetValue();
+		CString sID = oox_picture->m_oBlipFill->m_oBlip->m_oEmbed.GetValue();		
+		pathImage = find_link_by_id(sID,1);
 		
-		smart_ptr<OOX::File> oFile = xlsx_current_drawing->Find(sID);
-		if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Image == oFile->type())
+		if (pathImage.GetLength() < 1)
 		{
-			OOX::Spreadsheet::Image* pImage = (OOX::Spreadsheet::Image*)oFile.operator->();
-
-			pathImage = pImage->filename().GetPath();
-		}		
+			sID = oox_picture->m_oBlipFill->m_oBlip->m_oLink.GetValue();	
+			//???
+		}
+		_image_file_::GetResolution(pathImage, Width, Height);
 	}
 	ods_context->start_image(string2std_string(pathImage));
 	{
 		if (oox_picture->m_oBlipFill->m_oTile.IsInit()) 
-			ods_context->drawing_context().set_tile(true);
-
-		if (oox_picture->m_oBlipFill->m_oSrcRect.IsInit())
 		{
-			//set client rect //проценты m_oB; m_oL; m_oR; m_oT;
-			
+			ods_context->drawing_context().set_image_style_repeat(2);
+		}
+		if (oox_picture->m_oBlipFill->m_oStretch.IsInit())
+		{
+			ods_context->drawing_context().set_image_style_repeat(1);
+		}
+		if (oox_picture->m_oBlipFill->m_oSrcRect.IsInit() && Width >0 && Height >0)
+		{
+			ods_context->drawing_context().set_image_client_rect(oox_picture->m_oBlipFill->m_oSrcRect->m_oL.GetValue() * Width/100. ,
+																 oox_picture->m_oBlipFill->m_oSrcRect->m_oT.GetValue() * Height/100.,
+																 oox_picture->m_oBlipFill->m_oSrcRect->m_oR.GetValue() * Width/100. , 
+																 oox_picture->m_oBlipFill->m_oSrcRect->m_oB.GetValue() * Height/100.);
 		}		
 		if (oox_picture->m_oNvPicPr.IsInit())
 		{

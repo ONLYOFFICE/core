@@ -3,7 +3,7 @@
 #include <cpdoccore/xml/simple_xml_writer.h>
 #include <cpdoccore/xml/utils.h>
 
-#include "../odf/custom_shape_types_convert.h"
+#include "../odf/datatypes/custom_shape_types_convert.h"
 
 
 namespace cpdoccore {

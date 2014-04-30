@@ -21,6 +21,7 @@ namespace OOX
 {
 	class WritingElement;
 	class CTheme;
+	class IFileContainer;
 
 	namespace Drawing
 	{
@@ -71,8 +72,9 @@ public:
 		
 		OoxConverter(){}
 
-		virtual cpdoccore::odf::odf_conversion_context* odf_context() = 0;
-		virtual OOX::CTheme* oox_theme() = 0;
+		virtual cpdoccore::odf::odf_conversion_context		*odf_context() = 0;
+		virtual OOX::CTheme									*oox_theme() = 0;
+		virtual CString										 find_link_by_id(CString sId, int t) = 0;
 
 		void convert(OOX::WritingElement  *oox_unknown);
 	

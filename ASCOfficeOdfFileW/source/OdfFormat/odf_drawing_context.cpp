@@ -60,7 +60,6 @@ struct odf_drawing_state
 		z_order_ = -1;
 		
 		rotateAngle = boost::none;
-		tile = false;
 		
 		path_ = L"";
 		view_box_ = L"";
@@ -79,7 +78,6 @@ struct odf_drawing_state
 	std::wstring name_;
 	int z_order_;
 
-	bool tile;
 	_CP_OPT(double) rotateAngle;
 
 	std::wstring path_;
@@ -544,10 +542,7 @@ void odf_drawing_context::set_flip_V(bool bVal)
 	if (!impl_->current_graphic_properties)return;
 	impl_->current_graphic_properties->content().style_mirror_ = std::wstring(L"vertical");
 }
-void odf_drawing_context::set_tile(bool bVal)
-{
-	impl_->current_drawing_state_.tile = true;
-}
+
 void odf_drawing_context::set_rotate(int iVal)
 {
 	double dRotate = iVal/60000.;
@@ -717,6 +712,8 @@ void odf_drawing_context::start_image(std::wstring & path)
 	image->common_xlink_attlist_.actuate_= xlink_actuate::OnLoad;
 
 	start_element(image_elm);
+			
+	set_image_style_repeat(1);//default
 }
 void odf_drawing_context::start_text_box()
 {	
@@ -895,7 +892,7 @@ void odf_drawing_context::set_gradient_angle(double angle)
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state().get_office_element().get());
 	if (!gradient) return;
 
-	gradient->draw_angle_ = (360 - angle)/180. * 3.14159265358979323846;
+	gradient->draw_angle_ = (int)((360 - angle)/180. * 3.14159265358979323846);
 }
 void odf_drawing_context::start_hatch_style()
 {
@@ -1217,6 +1214,120 @@ void odf_drawing_context::end_hatch_style()
 {
 }
 
+void odf_drawing_context::start_bitmap_style()
+{
+	odf::office_element_ptr fill_image_element;
 
+	odf::create_element(L"draw",L"fill-image", fill_image_element, impl_->odf_context_);
+	impl_->styles_context_->add_style(fill_image_element,false,true, style_family::FillImage);
+
+	draw_fill_image * fill_image = dynamic_cast<draw_fill_image *>(fill_image_element.get());
+	if (!fill_image) return;
+
+	fill_image->draw_name_ = impl_->styles_context_->find_free_name(style_family::FillImage);
+	fill_image->draw_display_name_ = std::wstring(L"User") + fill_image->draw_name_.get() ;
+	
+	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_name_ = fill_image->draw_name_;
+	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::bitmap);
+	
+	set_image_style_repeat(0);
+
+}
+void odf_drawing_context::end_bitmap_style()
+{
+}
+void odf_drawing_context::set_bitmap_tile_align(int align)
+{
+	if (!impl_->current_graphic_properties)return;
+	switch (align)
+	{
+		case 0: //	rectalignmentB   = 0,
+			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::bottom);break;
+		case 1: //	rectalignmentBL  = 1,
+			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::bottom_left);break;
+		case 2: //	rectalignmentBR  = 2,
+			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::bottom_right);break;
+		case 3: //	rectalignmentCtr = 3,
+			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::center);break;
+		case 4: //	rectalignmentL   = 4,
+			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::left);break;
+		case 5: //	rectalignmentR   = 5,
+			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::right);break;
+		case 6: //	rectalignmentT   = 6,
+			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::top);break;
+		case 7: //	rectalignmentTL  = 7,
+			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::top_left);break;
+		case 8: //	rectalignmentTR  = 8,
+			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::top_right);break;
+	}
+}
+void odf_drawing_context::set_image_style_repeat(int style)
+{
+	if (!impl_->current_graphic_properties)return;
+
+	if (style == 1)
+		impl_->current_graphic_properties->content().common_draw_fill_attlist_.style_repeat_ = style_repeat(style_repeat::Stretch);
+	else if (style ==2)
+		impl_->current_graphic_properties->content().common_draw_fill_attlist_.style_repeat_ = style_repeat(style_repeat::Repeat);
+	else
+		impl_->current_graphic_properties->content().common_draw_fill_attlist_.style_repeat_ = style_repeat(style_repeat::NoRepeat);//default
+}
+void odf_drawing_context::set_image_client_rect(double l_pt, double t_pt, double r_pt, double b_pt)
+{
+	if (!impl_->current_graphic_properties)return;
+	
+	//<top>, <right>, <bottom>, <left> 
+	std::wstringstream str_stream;
+	str_stream << std::wstring(L"rect(") 
+							<< length(length(t_pt,length::pt).get_value_unit(length::cm),length::cm) << std::wstring(L",")
+							<< length(length(r_pt,length::pt).get_value_unit(length::cm),length::cm) << std::wstring(L",")
+							<< length(length(b_pt,length::pt).get_value_unit(length::cm),length::cm) << std::wstring(L",")
+							<< length(length(l_pt,length::pt).get_value_unit(length::cm),length::cm) << std::wstring(L")");
+
+	impl_->current_graphic_properties->content().fo_clip_ = str_stream.str();
+
+}
+void odf_drawing_context::set_bitmap_link(std::wstring link)
+{
+	std::wstring odf_ref_name ;
+	
+	impl_->odf_context_->mediaitems_.add_or_find(link,mediaitems::typeImage,odf_ref_name);
+	
+	draw_fill_image * fill_image = dynamic_cast<draw_fill_image *>(impl_->styles_context_->last_state().get_office_element().get());
+	if (!fill_image) return;
+   
+	fill_image->xlink_attlist_.href_= odf_ref_name;
+	//fill_image->xlink_attlist_.type_= xlink_type::Simple;
+	fill_image->xlink_attlist_.show_ = xlink_show::Embed;
+	fill_image->xlink_attlist_.actuate_= xlink_actuate::OnLoad;
+}
+void odf_drawing_context::set_bitmap_tile_scale_x(double scale_x)
+{
+	if (!impl_->current_graphic_properties)return;
+	
+	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_width_ = 
+				length(length(scale_x,length::pt).get_value_unit(length::cm),length::cm);
+
+}
+void odf_drawing_context::set_bitmap_tile_scale_y(double scale_y)
+{
+	if (!impl_->current_graphic_properties)return;
+	
+	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_height_ = 
+				length(length(scale_y,length::pt).get_value_unit(length::cm),length::cm);
+
+}
+void odf_drawing_context::set_bitmap_tile_translate_y(double y)
+{
+	if (!impl_->current_graphic_properties)return;
+	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_y_ = percent(y);
+
+}
+void odf_drawing_context::set_bitmap_tile_translate_x(double x)
+{
+	if (!impl_->current_graphic_properties)return;
+	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_x_ = percent(x);
+}
+///////////////////
 }
 }

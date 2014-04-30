@@ -187,6 +187,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\Oox2OdfConverter\Additional.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Oox2OdfConverter\Converter.h"
 				>
 			</File>

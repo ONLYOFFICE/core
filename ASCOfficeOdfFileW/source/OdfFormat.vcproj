@@ -311,6 +311,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fillimagerefpoint.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fillimagerefpoint.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\fobreak.cpp"
 				>
 			</File>

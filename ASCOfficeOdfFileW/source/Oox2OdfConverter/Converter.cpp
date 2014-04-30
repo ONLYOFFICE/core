@@ -3,6 +3,7 @@
 #include "stdAfx.h"
 
 #include "Converter.h"
+#include "Additional.h"
 
 #include "XlsxConverter.h"
 #include "DocxConverter.h"
@@ -97,6 +98,14 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 		{
 			OOX::Drawing::CRun* pRun= static_cast<OOX::Drawing::CRun*>(oox_unknown);
 			convert(pRun);
+		}break;
+		case OOX::et_a_alphaModFix:
+		{
+			OOX::Drawing::CAlphaModulateFixedEffect* pAlpha= static_cast<OOX::Drawing::CAlphaModulateFixedEffect*>(oox_unknown);
+			if (pAlpha)
+			{
+				odf_context()->drawing_context().set_opacity(pAlpha->m_oAmt.GetValue());
+			}
 		}break;
 		default:
 		{
@@ -277,10 +286,63 @@ void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill)
 {
 	if (!oox_bitmap_fill)return;
 
-	//odf_context()->drawing_context().start_bitmap_fill();
+	odf_context()->drawing_context().start_bitmap_style();
+	{
+		double Width=0, Height = 0;
+		if (oox_bitmap_fill->m_oBlip.IsInit())
+		{
+			CString sID = oox_bitmap_fill->m_oBlip->m_oEmbed.GetValue();
+			CString pathImage = find_link_by_id(sID,1);
 
-	//odf_context()->drawing_context().end_bitmap_fill();
+			if (pathImage.GetLength() > 0)
+			{
+				odf_context()->drawing_context().set_bitmap_link(string2std_string(pathImage));
+				_image_file_::GetResolution(pathImage, Width, Height);
+			}
+			else
+			{
+				sID = oox_bitmap_fill->m_oBlip->m_oLink.GetValue();
+				//...
+			}
+			for (long i=0 ; i < oox_bitmap_fill->m_oBlip->m_arrEffects.GetSize(); i++)
+				convert(oox_bitmap_fill->m_oBlip->m_arrEffects[i]);
+		}
+		if (oox_bitmap_fill->m_oSrcRect.IsInit() && Width >0  && Height >0)//часть изображения
+		{
+		}
+		if (oox_bitmap_fill->m_oTile.IsInit())
+		{
+			odf_context()->drawing_context().set_image_style_repeat(2);
+			
+			if (oox_bitmap_fill->m_oTile->m_oAlgn.IsInit())
+				odf_context()->drawing_context().set_bitmap_tile_align(oox_bitmap_fill->m_oTile->m_oAlgn->GetValue());
 
+			if (oox_bitmap_fill->m_oTile->m_oFlip.IsInit())	{}
+
+			if (oox_bitmap_fill->m_oTile->m_oSx.IsInit() && Width >0)	
+			{
+				odf_context()->drawing_context().set_bitmap_tile_scale_x(oox_bitmap_fill->m_oTile->m_oSx->GetValue() / 100. * Width);
+			}
+			if (oox_bitmap_fill->m_oTile->m_oSy.IsInit()&& Height >0)
+			{
+				odf_context()->drawing_context().set_bitmap_tile_scale_y(oox_bitmap_fill->m_oTile->m_oSy->GetValue() / 100. * Height);
+			}		
+			if (oox_bitmap_fill->m_oTile->m_oTx.IsInit() && Width >0)
+			{
+				odf_context()->drawing_context().set_bitmap_tile_translate_x(oox_bitmap_fill->m_oTile->m_oTx->GetValue()*100. / Width );
+			}
+			if (oox_bitmap_fill->m_oTile->m_oTy.IsInit() && Height >0)
+			{
+				odf_context()->drawing_context().set_bitmap_tile_translate_y(oox_bitmap_fill->m_oTile->m_oTy->GetValue()*100. / Height );
+			}
+		}
+		if (oox_bitmap_fill->m_oStretch.IsInit())
+		{
+			odf_context()->drawing_context().set_image_style_repeat(1);
+			if (oox_bitmap_fill->m_oStretch->m_oFillRect.IsInit()){} //заполнение неполного объема
+		}
+	}
+	odf_context()->drawing_context().end_bitmap_style();
 }
 
 void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill)

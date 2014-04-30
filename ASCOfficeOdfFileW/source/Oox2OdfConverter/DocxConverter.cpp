@@ -37,6 +37,7 @@ OOX::CTheme* DocxConverter::oox_theme()
 {
 	return NULL;
 }
+
 void DocxConverter::convertDocument()
 {
 	if (!docx_document)return;

@@ -33,7 +33,7 @@ std::wstring get_default_file_name(mediaitems::Type type)
     case mediaitems::typeImage:
         return L"image";
 	default:
-        return L"";
+        return L"media";
     }
 }
 

@@ -2150,7 +2150,7 @@ namespace SimpleTypes
 					m_dValue = nValue / 1000.0;
 				}
 				return
-					m_dValue = 0;
+					m_dValue;
 			}
 			else
 				m_dValue = max( 0, _wtof( sValue.Mid( 0, nLen - 1 ) ) );

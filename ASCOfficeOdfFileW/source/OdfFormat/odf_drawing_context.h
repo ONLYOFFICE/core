@@ -46,7 +46,6 @@ public:
 	void start_element(office_element_ptr & elm);
     void end_element();
 
-
 	bool is_exist_content();
 //////////////////////////////////////////////////////////////////////////////////////
 	void add_path_element(std::wstring command, std::wstring & elm);
@@ -65,8 +64,6 @@ public:
 	
 	void set_flip_H(bool bVal);
 	void set_flip_V(bool bVal);
-
-	void set_tile(bool bVal);
 
 	void set_rotate(int iVal);
 
@@ -108,6 +105,19 @@ public:
 		void set_hatch_area_color(std::wstring hexColor);
 		void set_hatch_type(int type);
 	void end_hatch_style();
+////////////////////////////////////////////////////////////////////////////////////////
+	void start_bitmap_style();
+		void set_bitmap_link(std::wstring link);
+	void end_bitmap_style();
+//////////////////////////////////////////////////////////////////////////////////////
+	void set_image_style_repeat(int style);
+	void set_image_client_rect(double l_pt, double t_pt, double r_pt, double b_pt);
+	
+	void set_bitmap_tile_align(int align);
+	void set_bitmap_tile_scale_x(double scale_x);
+	void set_bitmap_tile_scale_y(double scale_y);
+	void set_bitmap_tile_translate_y(double y);
+	void set_bitmap_tile_translate_x(double x);
 
 private:
 	

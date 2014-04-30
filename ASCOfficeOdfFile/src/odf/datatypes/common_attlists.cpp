@@ -87,8 +87,14 @@ void common_draw_fill_attlist::serialize(CP_ATTR_NODE)
 	CP_XML_ATTR_OPT(L"draw:fill-hatch-name",	draw_fill_hatch_name_);
 	CP_XML_ATTR_OPT(L"draw:opacity-name",		draw_opacity_name_);
 
-	CP_XML_ATTR_OPT(L"draw:fill-hatch-solid",		draw_fill_hatch_solid_);
-    CP_XML_ATTR_OPT(L"style:repeat",				style_repeat_);
+	CP_XML_ATTR_OPT(L"draw:fill-hatch-solid",	draw_fill_hatch_solid_);
+    CP_XML_ATTR_OPT(L"style:repeat",			style_repeat_);
+
+	CP_XML_ATTR_OPT(L"draw:fill-image-ref-point",	draw_fill_image_ref_point_);
+	CP_XML_ATTR_OPT(L"draw:fill-image-ref-point-y",	draw_fill_image_ref_point_y_);
+	CP_XML_ATTR_OPT(L"draw:fill-image-ref-point-x",	draw_fill_image_ref_point_x_);
+	CP_XML_ATTR_OPT(L"draw:fill-image-width",		draw_fill_image_width_);
+	CP_XML_ATTR_OPT(L"draw:fill-image-height",		draw_fill_image_height_);
 
 }
 

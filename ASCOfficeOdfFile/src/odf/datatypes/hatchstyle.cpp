@@ -5,7 +5,22 @@
 
 namespace cpdoccore { 
 namespace odf { 
-
+std::wostream & operator << (std::wostream & _Wostream, const hatch_style & _Val)
+{
+    switch(_Val.get_type())
+    {
+	case hatch_style::single:
+        _Wostream << L"single";
+        break;
+	case hatch_style::doublee:
+        _Wostream << L"double";
+        break;
+ 	case hatch_style::triple:
+        _Wostream << L"triple";
+        break;
+  }
+    return _Wostream;
+}
 hatch_style hatch_style::parse(const std::wstring & Str)
 {
     std::wstring tmp = Str;

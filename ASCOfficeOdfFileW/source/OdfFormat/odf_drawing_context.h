@@ -92,7 +92,7 @@ public:
 	void set_textarea_vertical_align(int align);
 	void set_textarea_padding(double left,double top,double right,double bottom);//in cm
 	void set_textarea_writing_mode(int mode);
-
+//////////////////////////////////////////////////////////////////////////////////////
 	void start_gradient_style();
 		void set_gradient_type(int type);
 		void set_gradient_start(std::wstring hexColor, _CP_OPT(double) & intensiv);
@@ -102,6 +102,13 @@ public:
 		void set_opacity(_CP_OPT(double) & start, _CP_OPT(double) & end);//стиль
 		void set_gradient_angle(double angle);
 	void end_gradient_style();
+////////////////////////////////////////////////////////////////////////////////////////
+	void start_hatch_style();
+		void set_hatch_line_color(std::wstring hexColor);
+		void set_hatch_area_color(std::wstring hexColor);
+		void set_hatch_type(int type);
+	void end_hatch_style();
+
 private:
 	
 	void start_frame();

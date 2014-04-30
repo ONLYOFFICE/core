@@ -264,10 +264,26 @@ void draw_gradient::serialize(std::wostream & strm)
 const wchar_t * draw_hatch::ns = L"draw";
 const wchar_t * draw_hatch::name = L"hatch";
 
-
 void draw_hatch::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
+}
+void draw_hatch::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"draw:color",		draw_color_);
+			CP_XML_ATTR_OPT(L"draw:rotation",	draw_rotation_);
+			
+			CP_XML_ATTR_OPT(L"draw:distance",	draw_distance_);
+			CP_XML_ATTR_OPT(L"draw:style",		draw_style_);
+
+ 			CP_XML_ATTR_OPT(L"draw:name",		draw_name_);
+			CP_XML_ATTR_OPT(L"draw:display_name",draw_display_name_);
+		}
+	}
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * draw_opacity::ns = L"draw";

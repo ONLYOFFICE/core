@@ -504,6 +504,7 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 	case Line:
 		impl_->current_graphic_properties->content().svg_stroke_color_ = color(std::wstring(L"#") + hexColor);
 		impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::Solid);//default
+		impl_->current_graphic_properties->content().svg_stroke_width_ = length(length(0.08,length::pt).get_value_unit(length::cm),length::cm);//default
 		break;
 	}
 }
@@ -896,6 +897,326 @@ void odf_drawing_context::set_gradient_angle(double angle)
 
 	gradient->draw_angle_ = (360 - angle)/180. * 3.14159265358979323846;
 }
+void odf_drawing_context::start_hatch_style()
+{
+	odf::office_element_ptr hatch_element;
+
+	odf::create_element(L"draw",L"hatch", hatch_element, impl_->odf_context_);
+	impl_->styles_context_->add_style(hatch_element,false,true, style_family::Hatch);
+
+	draw_hatch * hatch = dynamic_cast<draw_hatch *>(hatch_element.get());
+	if (!hatch) return;
+
+	hatch->draw_name_ = impl_->styles_context_->find_free_name(style_family::Hatch);
+	hatch->draw_display_name_ = std::wstring(L"User") + hatch->draw_name_.get() ;
+	
+	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_hatch_name_ = hatch->draw_name_;
+	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::hatch);
+}
+void odf_drawing_context::set_hatch_line_color(std::wstring hexColor)
+{
+	if (!impl_->current_graphic_properties)return;
+
+	//impl_->current_graphic_properties->content().svg_stroke_color_ = color(std::wstring(L"#") + hexColor);
+	//impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::Solid);//default
+
+	draw_hatch * hatch = dynamic_cast<draw_hatch *>(impl_->styles_context_->last_state().get_office_element().get());
+	if (!hatch) return;
+
+	hatch->draw_color_ = color(std::wstring(L"#") + hexColor);
+
+}
+void odf_drawing_context::set_hatch_area_color(std::wstring hexColor)
+{
+	if (!impl_->current_graphic_properties)return;
+
+	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_ = color(std::wstring(L"#") + hexColor);
+	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_hatch_solid_ = true;
+}
+void odf_drawing_context::set_hatch_type(int type)
+{
+	draw_hatch * hatch = dynamic_cast<draw_hatch *>(impl_->styles_context_->last_state().get_office_element().get());
+	if (!hatch) return;
+	
+	switch(type)
+	{
+	case 0: //presetpatternvalCross = 0, // (Cross)
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.25, length::cm);
+		break;
+	case 1: //	presetpatternvalDashDnDiag, // (Dashed Downward Diagonal) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.15, length::cm);
+		break;
+	case 2: //	presetpatternvalDashHorz, // (Dashed Horizontal) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.15, length::cm);
+		break;
+	case 3: //	presetpatternvalDashUpDiag, // (Dashed Upward DIagonal) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.15, length::cm);
+		break;
+	case 4: //	presetpatternvalDashVert, // (Dashed Vertical) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 900;
+		hatch->draw_distance_ = length(0.15, length::cm);
+		break;
+	case 5: //	presetpatternvalDiagBrick, // (Diagonal Brick) 
+		hatch->draw_style_ = hatch_style(hatch_style::doublee);
+		hatch->draw_rotation_ = 450;
+		hatch->draw_distance_ = length(0.175, length::cm);
+		break;
+	case 6: //	presetpatternvalDiagCross, // (Diagonal Cross) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 450;
+		hatch->draw_distance_ = length(0.175, length::cm);
+		break;
+	case 7: //	presetpatternvalDivot, // (Divot) 
+		hatch->draw_style_ = hatch_style(hatch_style::doublee);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.05, length::cm);
+		break;
+	case 8: //	presetpatternvalDkDnDiag, // (Dark Downward Diagonal) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 1350;
+		hatch->draw_distance_ = length(0.05, length::cm);
+		break;
+	case 9: //	presetpatternvalDkHorz, // (Dark Horizontal) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.25, length::cm);
+		break;
+	case 10: //	presetpatternvalDkUpDiag, // (Dark Upward Diagonal) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 450;
+		hatch->draw_distance_ = length(0.05, length::cm);
+		break;
+	case 11: //	presetpatternvalDkVert, // (Dark Vertical) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 900;
+		hatch->draw_distance_ = length(0.25, length::cm);
+		break;
+	case 12: //	presetpatternvalDnDiag, // (Downward Diagonal) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 1350;
+		hatch->draw_distance_ = length(0.2, length::cm);
+		break;
+	case 13: //	presetpatternvalDotDmnd, // (Dotted Diamond) 
+		hatch->draw_style_ = hatch_style(hatch_style::doublee);
+		hatch->draw_rotation_ = 450;
+		hatch->draw_distance_ = length(0.15, length::cm);
+		break;
+	case 14: //	presetpatternvalDotGrid, // (Dotted Grid) 
+		hatch->draw_style_ = hatch_style(hatch_style::doublee);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.1, length::cm);
+		break;
+	case 15: //	presetpatternvalHorz, // (Horizontal) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.15, length::cm);
+		break;
+	case 16: //	presetpatternvalHorzBrick, // (Horizontal Brick) 
+		hatch->draw_style_ = hatch_style(hatch_style::doublee);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.175, length::cm);
+		break;
+	case 17: //	presetpatternvalLgCheck, // (Large Checker Board) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.25, length::cm);
+		break;
+	case 18: //	presetpatternvalLgConfetti, // (Large Confetti) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.1, length::cm);
+		break;
+	case 19: //	presetpatternvalLgGrid, // (Large Grid) 
+		hatch->draw_style_ = hatch_style(hatch_style::doublee);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.25, length::cm);
+		break;
+	case 20: //	presetpatternvalLtDnDiag, // (Light Downward Diagonal) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 1350;
+		hatch->draw_distance_ = length(0.1, length::cm);
+		break;
+	case 21: //	presetpatternvalLtHorz, // (Light Horizontal) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.1, length::cm);
+		break;
+	case 22: //	presetpatternvalLtUpDiag, // (Light Upward Diagonal) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 450;
+		hatch->draw_distance_ = length(0.1, length::cm);
+		break;
+	case 23: //	presetpatternvalLtVert, // (Light Vertical) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 900;
+		hatch->draw_distance_ = length(0.1, length::cm);
+		break;
+	case 24: //	presetpatternvalNarHorz, // (Narrow Horizontal) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.05, length::cm);
+		break;
+	case 25: //	presetpatternvalNarVert, // (Narrow Vertical) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 900;
+		hatch->draw_distance_ = length(0.05, length::cm);
+		break;
+	case 26: //	presetpatternvalOpenDmnd, // (Open Diamond) 
+		hatch->draw_style_ = hatch_style(hatch_style::doublee);
+		hatch->draw_rotation_ = 450;
+		hatch->draw_distance_ = length(0.25, length::cm);
+		break;
+	case 27: //	presetpatternvalPct10, // (10%) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.125, length::cm);
+		break;
+	case 28: //	presetpatternvalPct20, // (20%) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.11, length::cm);
+		break;
+	case 29: //	presetpatternvalPct25, // (25%) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.09, length::cm);
+		break;
+	case 30: //	presetpatternvalPct30, // (30%) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.07, length::cm);
+		break;
+	case 31: //	presetpatternvalPct40, // (40%) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.06, length::cm);
+		break;
+	case 32: //	presetpatternvalPct5, // (5%) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.15, length::cm);
+		break;
+	case 33: //	presetpatternvalPct50, // (50%) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.05, length::cm);
+		break;
+	case 34: //	presetpatternvalPct60, // (60%) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.04, length::cm);
+		break;
+	case 35: //	presetpatternvalPct70, // (70%) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.03, length::cm);
+		break;
+	case 36: //	presetpatternvalPct75, // (75%) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.025, length::cm);
+		break;
+	case 37: //	presetpatternvalPct80, // (80%) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.02, length::cm);
+		break;
+	case 38: //	presetpatternvalPct90, // (90%) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.01, length::cm);
+		break;
+	case 39: //	presetpatternvalPlaid, // (Plaid) 
+		hatch->draw_style_ = hatch_style(hatch_style::doublee);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.15, length::cm);
+		break;
+	case 40: //	presetpatternvalShingle, // (Shingle) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.25, length::cm);
+		break;
+	case 41: //	presetpatternvalSmCheck, // (Small Checker Board) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 450;
+		hatch->draw_distance_ = length(0.15, length::cm);
+		break;
+	case 42: //	presetpatternvalSmConfetti, // (Small Confetti) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.05, length::cm);
+		break;
+	case 43: //	presetpatternvalSmGrid, // (Small Grid) 
+		hatch->draw_style_ = hatch_style(hatch_style::doublee);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.1, length::cm);
+		break;
+	case 44: //	presetpatternvalSolidDmnd, // (Solid Diamond) 
+		hatch->draw_style_ = hatch_style(hatch_style::doublee);
+		hatch->draw_rotation_ = 450;
+		hatch->draw_distance_ = length(0.15, length::cm);
+		break;
+	case 45: //	presetpatternvalSphere, // (Sphere) 
+		hatch->draw_style_ = hatch_style(hatch_style::doublee);
+		hatch->draw_rotation_ = 450;
+		hatch->draw_distance_ = length(0.1, length::cm);
+		break;
+	case 46: //	presetpatternvalTrellis, // (Trellis) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.25, length::cm);
+		break;
+	case 47: //	presetpatternvalUpDiag, // (Upward Diagonal) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 450;
+		hatch->draw_distance_ = length(0.2, length::cm);
+		break;
+	case 48: //	presetpatternvalVert, // (Vertical) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 900;
+		hatch->draw_distance_ = length(0.15, length::cm);
+		break;
+	case 49: //	presetpatternvalWave, // (Wave) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.25, length::cm);
+		break;
+	case 50: //	presetpatternvalWdDnDiag, // (Wide Downward Diagonal) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 1350;
+		hatch->draw_distance_ = length(0.3, length::cm);
+		break;
+	case 51: //	presetpatternvalWdUpDiag, // (Wide Upward Diagonal) 
+		hatch->draw_style_ = hatch_style(hatch_style::single);
+		hatch->draw_rotation_ = 450;
+		hatch->draw_distance_ = length(0.3, length::cm);
+		break;
+	case 52: //	presetpatternvalWeave, // (Weave) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 0;
+		hatch->draw_distance_ = length(0.25, length::cm);
+		break;
+	case 53: //	presetpatternvalZigZag, // (Zig Zag) 
+		hatch->draw_style_ = hatch_style(hatch_style::triple);
+		hatch->draw_rotation_ = 450;
+		hatch->draw_distance_ = length(0.25, length::cm);
+		break;
+	}
+}
+
+void odf_drawing_context::end_hatch_style()
+{
+}
+
 
 }
 }

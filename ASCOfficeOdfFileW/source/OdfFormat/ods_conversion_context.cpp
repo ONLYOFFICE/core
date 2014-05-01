@@ -188,13 +188,34 @@ void ods_conversion_context::end_row()
 	//add default last cells
 	int repeated = 1024;// max dimension columns???
 	
-	office_element_ptr default_cell_elm;
-	create_element(L"table", L"table-cell",default_cell_elm,this);
-
-	current_table().add_default_cell(default_cell_elm, repeated);
+	current_table().add_default_cell(repeated);
 
 }
+//////////////////////
+void ods_conversion_context::start_comment(int col, int row, std::wstring & author)
+{
+	current_table().start_comment(col,row,author);
+	start_text_context();
+////////////////
+	office_element_ptr paragr_elm;
+	create_element(L"text", L"p",paragr_elm,this);
+	
+	current_text_context_->start_paragraph(paragr_elm);
+}
+void ods_conversion_context::end_comment()
+{
+	if (current_text_context_)current_text_context_->end_paragraph();
 
+	current_table().end_comment(current_text_context_);
+	end_text_context();
+}
+
+void ods_conversion_context::set_comment_rect(double l, double t, double w, double h)
+{
+	current_table().set_comment_rect(l,t,w,h);
+}
+
+/////////////////////////////
 void ods_conversion_context::add_hyperlink(std::wstring & ref, std::wstring & link, std::wstring & display)
 {
 //////////////////////////////////////////////////////////////////
@@ -252,10 +273,7 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 	{
 		int repeated = col - current_table().current_column() -1;
 		
-		office_element_ptr default_cell_elm;
-		create_element(L"table", L"table-cell",default_cell_elm,this);
-
-		current_table().add_default_cell(default_cell_elm, repeated);
+		current_table().add_default_cell(repeated);
 	}
 
 	office_element_ptr style_elm;
@@ -289,6 +307,11 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 	current_table().set_cell_format_value(format_value_type);
 }
 
+void ods_conversion_context::end_cell()
+{
+	current_table().end_cell();
+	end_text_context();
+}
 void ods_conversion_context::start_columns()
 {
 }
@@ -388,7 +411,6 @@ void ods_conversion_context::add_text_content(std::wstring & text)
 }
 void ods_conversion_context::start_cell_text()
 {
-	end_text_context();
 	start_text_context();
 ////////////
 	office_element_ptr paragr_elm;

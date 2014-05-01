@@ -8,7 +8,7 @@
 #include "ods_conversion_context.h"
 
 #include "table.h"
-
+#include "office_annotation.h"
 #include "styles.h"
 
 #include "style_table_properties.h"
@@ -288,6 +288,11 @@ bool ods_table_state::is_cell_hyperlink()
 	if (cells_.size()<1)return false;
 	return cells_.back().hyperlink_idx >=0 ? true : false;
 }
+bool ods_table_state::is_cell_comment()
+{
+	if (cells_.size()<1)return false;
+	return cells_.back().comment_idx >=0 ? true : false;
+}
 
 int ods_table_state::is_cell_hyperlink(int col, int row)
 {
@@ -300,7 +305,17 @@ int ods_table_state::is_cell_hyperlink(int col, int row)
 	}
 	return -1;
 }
-
+int ods_table_state::is_cell_comment(int col, int row, int repeate_col)
+{
+	for (long i=0; i< comments_.size();i++)
+	{
+		if ((comments_[i].col < col+repeate_col && comments_[i].col >= col) && comments_[i].row == row)
+		{
+			return  i;
+		}
+	}
+	return -1;
+}
 int ods_table_state::current_column() const
 {
     return current_table_column_;
@@ -329,16 +344,14 @@ office_element_ptr  & ods_table_state::current_row_element()
 	if (rows_.size()>0)
 		return rows_.back().elm;
 	else
-	{
-	}
+		throw;
 }
 office_element_ptr  & ods_table_state::current_cell_element()
 {
 	if (cells_.size()>0)
 		return cells_.back().elm;
 	else
-	{
-	}
+		throw;
 }
 ods_hyperlink_state & ods_table_state::current_hyperlink()
 {
@@ -347,8 +360,7 @@ ods_hyperlink_state & ods_table_state::current_hyperlink()
 		return hyperlinks_[cells_.back().hyperlink_idx];
 	}
 	else
-	{
-	}
+		throw;
 }
 
 void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & style_elm)
@@ -373,6 +385,7 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 	state.row=current_table_row_;  state.col =current_table_column_+1; 
 
 	state.hyperlink_idx = is_cell_hyperlink(state.col, state.row);
+	state.comment_idx = is_cell_comment(state.col, state.row);
 
 	current_table_column_ +=  state.repeated;  
     cells_.push_back(state);
@@ -433,11 +446,53 @@ void ods_table_state::add_hyperlink(std::wstring & ref,int col, int row, std::ws
 	ods_hyperlink_state state;
 	
 
-	/*state.elm = text_a_elm;  */state.row=row;  state.col =col; state.ref = ref, state.link = link;
+	state.row=row;  state.col =col; state.ref = ref, state.link = link;
 
 	hyperlinks_.push_back(state);
 }
+void ods_table_state::start_comment(int col, int row, std::wstring & author)
+{
+	ods_comment_state state;
 
+	state.row=row;  state.col =col; state.author = author;	
+	create_element(L"office", L"annotation",state.elm,&context_);
+
+	comments_.push_back(state);
+}
+void ods_table_state::set_comment_rect(double l, double t, double w, double h)
+{
+	if (comments_.size() < 1)return;
+
+	office_annotation * annotation = dynamic_cast<office_annotation*>(comments_.back().elm.get());
+	if (!annotation)return;		
+
+	annotation->office_annotation_attr_.svg_y_		= length(length(t,length::pt).get_value_unit(length::cm),length::cm);
+	annotation->office_annotation_attr_.svg_x_		= length(length(l,length::pt).get_value_unit(length::cm),length::cm);
+	annotation->office_annotation_attr_.svg_width_	= length(length(w,length::pt).get_value_unit(length::cm),length::cm);
+	annotation->office_annotation_attr_.svg_height_	= length(length(h,length::pt).get_value_unit(length::cm),length::cm);
+}
+void ods_table_state::end_comment(odf_text_context *text_context)
+{
+	if (text_context == NULL || comments_.size() <1 )return;
+
+	for (long i=0; i< text_context->text_elements_list_.size(); i++)
+	{
+		if (text_context->text_elements_list_[i].level ==0 && comments_.back().elm)
+		{
+			comments_.back().elm->add_child_element(text_context->text_elements_list_[i].elm);
+		}
+	}
+	if (comments_.back().author.length() > 0 && comments_.back().elm)
+	{
+		office_element_ptr dc_elm;
+		create_element(L"dc", L"creator",dc_elm,&context_);
+		if (dc_elm)
+		{
+			dc_elm->add_text(comments_.back().author);
+			comments_.back().elm->add_child_element(dc_elm);
+		}
+	}
+}
 void ods_table_state::set_merge_cells(int start_col, int start_row, int end_col, int end_row)
 {
 	//потом можно переделать (оптимизировать) - добавлять мержи при добавлении ячеек
@@ -599,23 +654,47 @@ void ods_table_state::set_cell_value(std::wstring & value)
 
 void ods_table_state::end_cell()
 {
+	if ( cells_.size() <1)return;
+
+	if (cells_.back().comment_idx >=0)
+	{
+		office_element_ptr & comm_elm = comments_[cells_.back().comment_idx].elm;
+		cells_.back().elm->add_child_element(comm_elm);
+	}
 }
 
-void ods_table_state::add_default_cell(office_element_ptr &  elm, int repeated)
+void ods_table_state::add_default_cell( int repeated)
 {
-	current_row_element()->add_child_element(elm);
+	int comment_idx = is_cell_comment(current_table_column_+1 , current_table_row_, repeated);
+	if (comment_idx  >=0 && repeated >1)
+	{
+		//делим на 3 - до, с комметом, после;
+		int c = current_table_column_;
+
+		add_default_cell(comments_[comment_idx].col - c -1);
+		add_default_cell(1);
+		add_default_cell(repeated + c +1 - comments_[comment_idx].col);
+
+		return;
+	}
+
+//////////////////////////////////////////////////
+	office_element_ptr default_cell_elm;
+	create_element(L"table", L"table-cell",default_cell_elm, &context_);
+
+	current_row_element()->add_child_element(default_cell_elm);
 	
-	table_table_cell* cell = dynamic_cast<table_table_cell*>(elm.get());
+	table_table_cell* cell = dynamic_cast<table_table_cell*>(default_cell_elm.get());
 	if (cell == NULL)return;
 	
-	ods_cell_state state;
+ 	ods_cell_state state;
 	
-	state.elm = elm;  state.repeated = repeated; 
+	state.elm = default_cell_elm;  state.repeated = repeated; 
 	state.row=current_table_row_;  state.col =current_table_column_+1; 
-
-	state.hyperlink_idx = is_cell_hyperlink(state.col, state.row);
-
-    cells_.push_back(state);
+	state.hyperlink_idx = is_cell_hyperlink(state.col, current_table_row_);
+	state.comment_idx = comment_idx;
+	
+	cells_.push_back(state);
 	
 	current_table_column_+= state.repeated;
 
@@ -623,6 +702,8 @@ void ods_table_state::add_default_cell(office_element_ptr &  elm, int repeated)
 
 	if (row_default_cell_style_name_.length() > 0)
 		cell->table_table_cell_attlist_.table_style_name_ = row_default_cell_style_name_;
+
+	end_cell();
 }
 }
 }

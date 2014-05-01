@@ -5,6 +5,7 @@
 #include <boost/function.hpp>
 #include <cpdoccore/CPAssert.h>
 #include <cpdoccore/CPSharedPtr.h>
+
 #include "office_elements.h"
 
 namespace boost {

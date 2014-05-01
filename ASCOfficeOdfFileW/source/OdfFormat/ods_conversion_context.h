@@ -29,7 +29,7 @@ public:
 		void end_row();
 
 		void start_cell(std::wstring & ref, int xfd_style);
-		void end_cell(){}
+		void end_cell();
 	void end_rows();
 
 	void start_cell_text();
@@ -38,6 +38,10 @@ public:
 
 	void add_merge_cells(std::wstring & ref);
 	void add_hyperlink(std::wstring & ref, std::wstring & link, std::wstring & display);
+
+	void start_comment(int col, int row, std::wstring & author);
+	void set_comment_rect(double l, double t, double w, double h);
+	void end_comment();
 ///////////////////////////////////////////////////////
 	ods_table_state &		current_table() { return table_context_.state();}
 /////////////////////////////////////////////////////

@@ -927,6 +927,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OdfFormat\office_annotation.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\office_annotation.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\office_body.cpp"
 				>
 			</File>

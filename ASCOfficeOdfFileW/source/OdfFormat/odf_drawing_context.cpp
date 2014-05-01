@@ -761,6 +761,8 @@ office_element_ptr & odf_drawing_context::get_current_style_element()
 {
 	if (impl_->current_drawing_state_.elements_.size() > 0)
 		return impl_->current_drawing_state_.elements_.back().style_elm;
+	else
+		throw;
 }
 void odf_drawing_context::set_text(odf_text_context* text_context)
 {

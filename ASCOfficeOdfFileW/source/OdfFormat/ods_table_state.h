@@ -54,6 +54,7 @@ struct ods_cell_state : ods_element_state
 	int row;
 
 	int hyperlink_idx;
+	int comment_idx;
 };
 
 struct ods_hyperlink_state
@@ -63,7 +64,14 @@ struct ods_hyperlink_state
 	int row;
 	std::wstring link;
 };
+struct ods_comment_state
+{
+	int col;
+	int row;
+	std::wstring author;
 
+	office_element_ptr elm;
+};
 class ods_table_state
 {
 public:
@@ -92,7 +100,7 @@ public:
 
 	void start_cell(office_element_ptr & elm ,office_element_ptr & style);
 	void end_cell();
-	void add_default_cell(office_element_ptr & cell, int repeated);
+	void add_default_cell(int repeated);
 
 	void set_cell_format_value(office_value_type::type value_type);
 	void set_cell_type(int type);
@@ -104,6 +112,10 @@ public:
 
 ///////////////////////////////
 	void add_hyperlink(std::wstring & ref,int col, int row, std::wstring & link);
+
+	void start_comment(int col, int row, std::wstring & author);
+		void set_comment_rect(double l, double t, double w, double h);
+	void end_comment(odf_text_context *text_context);
 	
 	void set_merge_cells(int start_col, int start_row, int end_col, int end_row);
 
@@ -112,6 +124,8 @@ public:
 
 	bool	is_cell_hyperlink();
 	int		is_cell_hyperlink(int col, int row);
+	bool	is_cell_comment();
+	int		is_cell_comment(int col, int row, int repeate_col = 1);
 
 	ods_hyperlink_state & current_hyperlink();
 
@@ -153,7 +167,9 @@ private:
 	std::vector<office_element_ptr> current_level_;//посто€нно мен€ющийс€ список уровней ("0-й элемент - сама таблица)
 	
 	std::vector<ods_cell_state> cells_;
-	std::vector<ods_hyperlink_state> hyperlinks_;
+	
+	std::vector<ods_hyperlink_state>	hyperlinks_;
+	std::vector<ods_comment_state>		comments_;
 
 	odf_drawing_context		drawing_context_;	
 

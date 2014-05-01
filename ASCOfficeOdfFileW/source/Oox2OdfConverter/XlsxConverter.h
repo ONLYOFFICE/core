@@ -41,6 +41,7 @@ namespace OOX
 		class CPic;
 		class CShape;
 		class CConnShape;
+		class CCommentItem;
 	}
 }
 
@@ -104,47 +105,48 @@ namespace Oox2Odf
 		void convert_sheets();
 		void convert_styles();
 		
-		void convert(double oox_size,				_CP_OPT(odf::length) & odf_size);
-
-		void convert(OOX::Spreadsheet::WritingElement  *oox_unknown);
+		void convert(OOX::Spreadsheet::WritingElement		*oox_unknown);
 		
-		void convert(OOX::Spreadsheet::CWorksheet *oox_sheet);
+		void convert(OOX::Spreadsheet::CWorksheet			*oox_sheet);
 
-		void convert(OOX::Spreadsheet::CCol *oox_column);
-		void convert(OOX::Spreadsheet::CRow *oox_row);
-		void convert(OOX::Spreadsheet::CCell *oox_cell);
+		void convert(OOX::Spreadsheet::CCol					*oox_column);
+		void convert(OOX::Spreadsheet::CRow					*oox_row);
+		void convert(OOX::Spreadsheet::CCell				*oox_cell);
 
-		void convert(OOX::Spreadsheet::CRun *oox_text_run);
-		void convert(OOX::Spreadsheet::CRPr *oox_text_pr);
-		void convert(OOX::Spreadsheet::CText *oox_text);
+		void convert(OOX::Spreadsheet::CRun					*oox_text_run);
+		void convert(OOX::Spreadsheet::CRPr					*oox_text_pr);
+		void convert(OOX::Spreadsheet::CText				*oox_text);
 
-		void convert(OOX::Spreadsheet::CFormula		*oox_formula);
-		void convert(OOX::Spreadsheet::CHyperlink	*oox_hyperlink,	OOX::Spreadsheet::CWorksheet *oox_sheet);
+		void convert(OOX::Spreadsheet::CFormula				*oox_formula);
+		void convert(OOX::Spreadsheet::CHyperlink			*oox_hyperlink,	OOX::Spreadsheet::CWorksheet *oox_sheet);
+		void convert(OOX::Spreadsheet::CCommentItem			*oox_comment);
 
-		void convert(OOX::Spreadsheet::CSheetFormatPr	*oox_sheet_format_pr);
-		void convert(OOX::Spreadsheet::CSheetPr			*oox_sheet_pr);
+		void convert(OOX::Spreadsheet::CSheetFormatPr		*oox_sheet_format_pr);
+		void convert(OOX::Spreadsheet::CSheetPr				*oox_sheet_pr);
 		
-		void convert(OOX::Spreadsheet::CFont	*font,		odf::style_text_properties		*text_properties);		
-		void convert(OOX::Spreadsheet::CBorder	*border,	odf::style_table_cell_properties *cell_properties);
-		void convert(OOX::Spreadsheet::CFill	*fill,		odf::style_table_cell_properties *cell_properties);
+		void convert(OOX::Spreadsheet::CFont				*font,		odf::style_text_properties		*text_properties);		
+		void convert(OOX::Spreadsheet::CBorder				*border,	odf::style_table_cell_properties *cell_properties);
+		void convert(OOX::Spreadsheet::CFill				*fill,		odf::style_table_cell_properties *cell_properties);
 		
-		void convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color) & odf_color);
-		void convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::background_color) & odf_bckgrd_color);
-		void convert(OOX::Spreadsheet::CBorderProp *borderProp, std::wstring & odf_border_prop);
+		void convert(OOX::Spreadsheet::CColor				*color,		_CP_OPT(odf::color) & odf_color);
+		void convert(OOX::Spreadsheet::CColor				*color,		 _CP_OPT(odf::background_color) & odf_bckgrd_color);
+		void convert(OOX::Spreadsheet::CBorderProp			*borderProp, std::wstring & odf_border_prop);
 		
-		void convert(OOX::Spreadsheet::CXfs			*cell_style, int oox_id, bool automatic=true, bool root = false);
-		void convert(OOX::Spreadsheet::CCellStyle	*cell_style, int oox_id);
-		void convert(OOX::Spreadsheet::CNumFmt		*numFmt);
+		void convert(OOX::Spreadsheet::CXfs					*cell_style, int oox_id, bool automatic=true, bool root = false);
+		void convert(OOX::Spreadsheet::CCellStyle			*cell_style, int oox_id);
+		void convert(OOX::Spreadsheet::CNumFmt				*numFmt);
 
-		void convert(OOX::Spreadsheet::CCellAnchor *oox_anchor);
-		void convert(OOX::Spreadsheet::CDrawing *oox_drawing);
+		void convert(OOX::Spreadsheet::CCellAnchor			*oox_anchor);
+		void convert(OOX::Spreadsheet::CDrawing				*oox_drawing);
 
+		void convert(OOX::Spreadsheet::CFromTo				*oox_from_to, oox_table_position * pos);
+
+		void convert(OOX::Spreadsheet::CPic					*oox_picture);
+		void convert(OOX::Spreadsheet::CShape				*oox_shape);
+		void convert(OOX::Spreadsheet::CConnShape			*oox_conn_shape);
+	
+		void convert(double oox_size,						_CP_OPT(odf::length) & odf_size);
 		void convert_sharing_string(int number);
-		void convert(OOX::Spreadsheet::CFromTo* oox_from_to, oox_table_position * pos);
-
-		void convert(OOX::Spreadsheet::CPic*	oox_picture);
-		void convert(OOX::Spreadsheet::CShape*	oox_shape);
-		void convert(OOX::Spreadsheet::CConnShape*	oox_conn_shape);
 	};
 
 }

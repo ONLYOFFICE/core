@@ -145,6 +145,15 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		convert(oox_sheet->m_oHyperlinks->m_arrItems[hyp],oox_sheet);
 	}	
 	//комментарии
+	if(oox_sheet->m_mapComments.GetCount() > 0)
+	{
+		POSITION pos = oox_sheet->m_mapComments.GetStartPosition();
+		while ( NULL != pos )
+		{
+			CAtlMap<CString, OOX::Spreadsheet::CCommentItem*>::CPair* pPair = oox_sheet->m_mapComments.GetNext( pos );
+			if(pPair->m_value->IsValid())convert(pPair->m_value);
+		}
+	}
 	//автофильтры
 	//todooo для оптимизации - перенести мержи в начало
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
@@ -181,6 +190,30 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 			convert(pDrawing);
 		}
 	}
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CCommentItem * oox_comment)
+{
+	if (oox_comment == NULL)return;
+
+	int col = oox_comment->m_nCol.IsInit() ? oox_comment->m_nCol.get()+1 : -1;
+	int row = oox_comment->m_nRow.IsInit() ? oox_comment->m_nRow.get()+1 : -1;
+
+	std::wstring author = oox_comment->m_sAuthor.IsInit() ? string2std_string(oox_comment->m_sAuthor.get()) : L"";
+
+	ods_context->start_comment(col, row, author);	
+	//if (oox_comment->m_dLeftMM.IsInit() &&  oox_comment->m_dTopMM.IsInit() && oox_comment->m_dWidthMM.IsInit() && oox_comment->m_dHeightMM.IsInit())
+	//{
+	//	ods_context->set_comment_rect(oox_comment->m_dLeft.get(), oox_comment->m_dTop.get(), oox_comment->m_dWidthMM.get(), oox_comment->m_dHeightMM.get());
+	//}
+
+	if (oox_comment->m_oText.IsInit())
+	{
+		for(int i = 0; i < oox_comment->m_oText->m_arrItems.GetSize(); ++i)
+		{
+			convert(oox_comment->m_oText->m_arrItems[i]);
+		}
+	}
+	ods_context->end_comment();
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CHyperlink *oox_hyperlink,OOX::Spreadsheet::CWorksheet *oox_sheet)
@@ -349,7 +382,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRun *oox_text_run)
 	if (oox_text_run == NULL)return;
 	
 	convert(oox_text_run->m_oRPr.GetPointer());
-	ods_context->text_context()->start_span();	//пока принимает последний сгенереннй на контексте .. вопрос  - может по имени связать??
+	ods_context->text_context()->start_span(oox_text_run->m_oRPr.GetPointer() ? true : false);
 	
 	for(int i = 0; i < oox_text_run->m_arrItems.GetSize(); ++i)
 	{

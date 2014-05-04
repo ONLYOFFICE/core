@@ -20,6 +20,7 @@ namespace codegen
         public string sNamespace;
         public bool bIsAttribute;
         public string sDefAttribute;
+        public bool bQualified;//нужно ли при записи в xml писать prefix
         public bool bIsArray;
         public List<GenMember> aArrayTypes;
         public string sArrayTypesElementName;
@@ -35,6 +36,7 @@ namespace codegen
             oSystemType = null;
             sNamespace = null;
             bIsAttribute = false;
+            bQualified = true;
             bIsArray = false;
             sArrayTypesElementName = null;
             sArrayTypesEnumName = null;
@@ -216,11 +218,20 @@ namespace codegen
                             sNamespace = ((CodePrimitiveExpression)argument.Value).Value.ToString();
                         else if (argument.Name == "IncludeInSchema")
                             bIncludeInSchema = Convert.ToBoolean(((CodePrimitiveExpression)argument.Value).Value);
+                        //todo argument.Name == "TypeName"
                     }
                 }
                 else if (attribute.Name == "System.Xml.Serialization.XmlRootAttribute")
                 {
                     bIsRoot = true;
+                    string sName = null;//todo
+                    foreach (CodeAttributeArgument argument in attribute.Arguments)
+                    {
+                        if (argument.Name == "Namespace")
+                            sNamespace = ((CodePrimitiveExpression)argument.Value).Value.ToString();
+                        else if ("" == argument.Name)
+                            sName = ((CodePrimitiveExpression)argument.Value).Value.ToString();
+                    }
                 }
             }
             if(bIncludeInSchema)
@@ -234,7 +245,14 @@ namespace codegen
                     for (int i = 0; i < type.Members.Count; ++i)
                     {
                         CodeTypeMember member = type.Members[i];
-                        oGenClass.aMembers.Add(new GenMember(member.Name));
+                        GenMember oGenMember = new GenMember(member.Name);
+                        for (int j = 0; j < member.CustomAttributes.Count; j++)
+                        {
+                            CodeAttributeDeclaration attribute = member.CustomAttributes[j];
+                            if (attribute.Name == "System.Xml.Serialization.XmlEnumAttribute")
+                                ParseArguments(attribute.Arguments, oGenMember);
+                        }
+                        oGenClass.aMembers.Add(oGenMember);
                     }
                 }
                 else
@@ -268,15 +286,10 @@ namespace codegen
                 CodeAttributeDeclaration attribute = codeMemberProperty.CustomAttributes[i];
                 if (attribute.Name == "System.Xml.Serialization.XmlAttributeAttribute")
                 {
-                    //todo могут быть повторы имен атрибутов и child nodes.
-                    foreach (CodeAttributeArgument argument in attribute.Arguments)
-                    {
-                        if (argument.Name == "Namespace")
-                            oGenMember.sNamespace = ((CodePrimitiveExpression)argument.Value).Value.ToString();
-                        else if (argument.Name == "" && argument.Value is CodePrimitiveExpression)
-                            oGenMember.sName = ((CodePrimitiveExpression)argument.Value).Value.ToString();
-                    }
+                    oGenMember.bQualified = false;
                     oGenMember.bIsAttribute = true;
+                    ParseArguments(attribute.Arguments, oGenMember);
+                    //todo могут быть повторы имен атрибутов и child nodes.
                 }
                 else if (attribute.Name == "System.ComponentModel.DefaultValueAttribute")
                 {
@@ -294,68 +307,43 @@ namespace codegen
                     bIgnore = true;
                 else if (attribute.Name == "System.Xml.Serialization.XmlElementAttribute")
                 {
-                    //todo
-                    if (2 == attribute.Arguments.Count)
+                    GenMember oTemp = oGenMember;
+                    if (null != oGenMember.oSystemType && oGenMember.oSystemType == typeof(object))
+                        oTemp = new GenMember(null);
+                    ParseArguments(attribute.Arguments, oTemp);
+                    if (null != oGenMember.oSystemType && oGenMember.oSystemType == typeof(object))
                     {
-                        if (null != oGenMember.oSystemType && oGenMember.oSystemType == typeof(object))
+                        if (null != oTemp.sName)
                         {
-                            CodeExpression oCodeExpression1 = attribute.Arguments[0].Value;
-                            CodeExpression oCodeExpression2 = attribute.Arguments[1].Value;
-                            if (oCodeExpression1 is CodePrimitiveExpression && oCodeExpression2 is CodeTypeOfExpression)
+                            if (false == oGenMember.bIsArray)
                             {
-                                CodePrimitiveExpression oPrimitiveExpression = oCodeExpression1 as CodePrimitiveExpression;
-                                CodeTypeOfExpression oTypeOfExpression = oCodeExpression2 as CodeTypeOfExpression;
-                                GenMember oNewGenMember = new GenMember(oPrimitiveExpression.Value.ToString());
-                                InitMemberType(oNewGenMember, oTypeOfExpression.Type.BaseType);
-                                if (false == oGenMember.bIsArray)
-                                {
-                                    bIgnore = true;
-                                    oGenClass.aMembers.Add(oNewGenMember);
-                                }
-                                else
-                                {
-                                    bIgnore = false;
-                                    if (null == oGenMember.aArrayTypes)
-                                        oGenMember.aArrayTypes = new List<GenMember>();
-                                    oGenMember.aArrayTypes.Add(oNewGenMember);
-                                }
+                                bIgnore = true;
+                                oGenClass.aMembers.Add(oTemp);
                             }
-                        }
-                    }
-                    else
-                    {
-                        foreach (CodeAttributeArgument argument in attribute.Arguments)
-                        {
-                            if (argument.Name == "Namespace")
-                                oGenMember.sNamespace = ((CodePrimitiveExpression)argument.Value).Value.ToString();
+                            else
+                            {
+                                bIgnore = false;
+                                if (null == oGenMember.aArrayTypes)
+                                    oGenMember.aArrayTypes = new List<GenMember>();
+                                oGenMember.aArrayTypes.Add(oTemp);
+                            }
                         }
                     }
                 }
                 else if (attribute.Name == "System.Xml.Serialization.XmlArrayItemAttribute")
                 {
                     GenMember oWrapMemeber = new GenMember(null);
-                    for (int j = 0; j < attribute.Arguments.Count; ++j)
-                    {
-                        CodeAttributeArgument oArg = attribute.Arguments[j];
-                        CodeExpression oCodeExpression = oArg.Value;
-                        if (oCodeExpression is CodePrimitiveExpression)
-                        {
-                            CodePrimitiveExpression oCodePrimitiveExpression = oCodeExpression as CodePrimitiveExpression;
-                            if ("" == oArg.Name)
-                                oWrapMemeber.sName = oCodePrimitiveExpression.Value.ToString();
-                        }
-                        else if (oCodeExpression is CodeTypeOfExpression)
-                        {
-                            CodeTypeOfExpression oTypeOfExpression = oCodeExpression as CodeTypeOfExpression;
-                            InitMemberType(oWrapMemeber, oTypeOfExpression.Type.BaseType);
-                        }
-                    }
+                    ParseArguments(attribute.Arguments, oWrapMemeber);
                     if (null != oWrapMemeber.sName)
                     {
                         if (null == aWrappedMemebers)
                             aWrappedMemebers = new List<GenMember>();
                         aWrappedMemebers.Add(oWrapMemeber);
                     }
+                }
+                else if (attribute.Name == "System.Xml.Serialization.XmlArrayAttribute")
+                {
+                    ParseArguments(attribute.Arguments, oGenMember);
                 }
                 //todo не всегда прописан
                 //else if (attribute.Name == "System.Xml.Serialization.XmlChoiceIdentifierAttribute")
@@ -457,6 +445,41 @@ namespace codegen
                 }
                 return oGenMember;
             }
+        }
+        void ParseArguments(CodeAttributeArgumentCollection oArguments, GenMember oGenMember)
+        {
+            CodePrimitiveExpression oPrimitiveExpression = null;
+            CodeTypeOfExpression oTypeOfExpression = null;
+            string sNamespace = null;
+            bool? bForm = null;
+            foreach (CodeAttributeArgument argument in oArguments)
+            {
+                if ("" == argument.Name)
+                {
+                    if (argument.Value is CodePrimitiveExpression)
+                        oPrimitiveExpression = argument.Value as CodePrimitiveExpression;
+                    else if (argument.Value is CodeTypeOfExpression)
+                        oTypeOfExpression = argument.Value as CodeTypeOfExpression;
+                }
+                else if ("Namespace" == argument.Name)
+                    sNamespace = ((CodePrimitiveExpression)argument.Value).Value.ToString();
+                else if ("Form" == argument.Name)
+                {
+                    string sValue = ((CodeFieldReferenceExpression)argument.Value).FieldName;
+                    if ("Qualified" == sValue)
+                        bForm = true;
+                    else if ("Unqualified" == sValue)
+                        bForm = false;
+                }
+            }
+            if (null != oPrimitiveExpression)
+                oGenMember.sName = oPrimitiveExpression.Value.ToString();
+            if(null != oTypeOfExpression)
+                InitMemberType(oGenMember, oTypeOfExpression.Type.BaseType);
+            if (null != sNamespace)
+                oGenMember.sNamespace = sNamespace;
+            if (bForm.HasValue)
+                oGenMember.bQualified = bForm.Value;
         }
         void InitMemberType(GenMember oGenMember, string sBaseType)
         {

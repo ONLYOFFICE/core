@@ -1041,7 +1041,6 @@ namespace OOX{
 				}
 				else if(_T("clrMapOvr") == sName)
 				{
-					//todo
 					CString* pNewElem = new CString;
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
@@ -1132,7 +1131,6 @@ namespace OOX{
 			}
 			if(NULL != m_clrMapOvr)
 			{
-				//todo
 				writer.WriteString(*m_clrMapOvr);
 			}
 			if(NULL != m_pivotSource)

@@ -401,7 +401,7 @@ namespace codegen
             if (oGenMember.bToDoString)
             {
                 bRes = false;
-                if ("spPr" == oGenMember.sName || "txPr" == oGenMember.sName || "rich" == oGenMember.sName)
+                if ("spPr" == oGenMember.sName || "txPr" == oGenMember.sName || "rich" == oGenMember.sName || "clrMapOvr" == oGenMember.sName)
                     bRes = true;
             }
             return bRes;
@@ -411,7 +411,7 @@ namespace codegen
             string sRes;
             if (oGenMember.bToDoString)
             {
-                if ("spPr" == oGenMember.sName)
+                if ("spPr" == oGenMember.sName || "clrMapOvr" == oGenMember.sName)
                     sRes = "oReader.GetOuterXml()";
                 else if ("txPr" == oGenMember.sName || "rich" == oGenMember.sName)
                     sRes = "oReader.GetInnerXml()";
@@ -433,7 +433,7 @@ namespace codegen
             if (oGenMember.bToDoString)
             {
                 bRes = true;
-                if ("spPr" == oGenMember.sName)
+                if ("spPr" == oGenMember.sName || "clrMapOvr" == oGenMember.sName)
                     sb.AppendFormat("writer.WriteString(*{0});\r\n", sPVal);
                 else if ("txPr" == oGenMember.sName || "rich" == oGenMember.sName)
                     sb.AppendFormat("writer.WriteString(_T(\"<{0}>\") + *{1} + _T(\"</{0}>\"));\r\n", sElemName, sPVal);
@@ -847,7 +847,7 @@ namespace codegen
         bool ProcessMemberToBinTodo(StringBuilder sb, GenMember oGenMember, string pValPrefix, string pVal)
         {
             bool bRes = false;
-            if ("spPr" == oGenMember.sName || "txPr" == oGenMember.sName || "rich" == oGenMember.sName)
+            if ("spPr" == oGenMember.sName || "txPr" == oGenMember.sName || "rich" == oGenMember.sName || "clrMapOvr" == oGenMember.sName)
             {
                 bRes = true;
                 sb.AppendFormat("LPSAFEARRAY pBinaryObj = NULL;\r\n");
@@ -861,6 +861,11 @@ namespace codegen
                 {
                     sb.AppendFormat("BSTR bstrXml = (_T(\"<c:rich xmlns:c=\\\"http://schemas.openxmlformats.org/drawingml/2006/chart\\\" xmlns:a=\\\"http://schemas.openxmlformats.org/drawingml/2006/main\\\" xmlns:r=\\\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\\\">\") + *{0} + _T(\"</c:rich>\")).AllocSysString();\r\n", pValPrefix + pVal);
                     sb.AppendFormat("HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml, &pBinaryObj);\r\n");
+                }
+                else if ("clrMapOvr" == oGenMember.sName)
+                {
+                    sb.AppendFormat("BSTR bstrXml = (*{0}).AllocSysString();\r\n", pValPrefix + pVal);
+                    sb.AppendFormat("HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_CLRMAPOVR, bstrXml, &pBinaryObj);\r\n");
                 }
                 sb.AppendFormat("SysFreeString(bstrXml);\r\n");
                 sb.AppendFormat("if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)\r\n");
@@ -983,7 +988,7 @@ namespace codegen
         bool ProcessMemberFromBinTodo(StringBuilder sb, GenMember oGenMember, string sElemName)
         {
             bool bRes = true;
-            if ("spPr" == oGenMember.sName || "txPr" == oGenMember.sName || "rich" == oGenMember.sName)
+            if ("spPr" == oGenMember.sName || "txPr" == oGenMember.sName || "rich" == oGenMember.sName || "clrMapOvr" == oGenMember.sName)
             {
                 sb.AppendFormat("if(length > 0)\r\n");
                 sb.AppendFormat("{{\r\n");
@@ -992,6 +997,8 @@ namespace codegen
                     sb.AppendFormat("HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPosition(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);\r\n");
                 else if ("txPr" == oGenMember.sName || "rich" == oGenMember.sName)
                     sb.AppendFormat("HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(m_pArray, m_oBufferedStream.GetPosition(), length, &bstrXml);\r\n");
+                else if ("clrMapOvr" == oGenMember.sName)
+                    sb.AppendFormat("HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPosition(), length, XMLWRITER_RECORD_TYPE_CLRMAPOVR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);\r\n");
                 sb.AppendFormat("if (S_OK == hRes && NULL != bstrXml)\r\n");
                 sb.AppendFormat("{{\r\n");
                 sb.AppendFormat("*{0} = bstrXml;\r\n", sElemName);

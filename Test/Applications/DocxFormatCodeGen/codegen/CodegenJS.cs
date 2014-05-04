@@ -200,6 +200,11 @@ namespace codegen
                     //sb.AppendFormat("var oPPTXContentLoader = new CPPTXContentLoader();\r\n");
                     //sb.AppendFormat("oPPTXContentLoader.ReadTextBody(null, this.stream,  {0});\r\n", oVal);
                 }
+                else if ("clrMapOvr" == oGenMember.sName)
+                {
+                    sb.AppendFormat("res = c_oSerConstants.ReadUnknown;\r\n");
+                    //sb.AppendFormat("var clrMapOvr = this.ReadClrOverride(length);\r\n");
+                }
                 else
                     bRes = false;
             }
@@ -332,6 +337,8 @@ namespace codegen
                     sb.AppendFormat("window.global_pptx_content_writer.WriteSpPr(oThis.memory, {0});\r\n", oVal);
                 else if ("txPr" == oGenMember.sName || "rich" == oGenMember.sName)
                     sb.AppendFormat("window.global_pptx_content_writer.WriteTextBody(oThis.memory, {0});\r\n", oVal);
+                else if ("clrMapOvr" == oGenMember.sName)
+                    sb.AppendFormat("//todo;\r\n", oVal);
                 else
                     bRes = false;
             }
@@ -370,7 +377,7 @@ namespace codegen
             if (oGenMember.bToDoString)
             {
                 bRes = false;
-                if ("spPr" == oGenMember.sName || "txPr" == oGenMember.sName || "rich" == oGenMember.sName)
+                if ("spPr" == oGenMember.sName || "clrMapOvr" == oGenMember.sName || "txPr" == oGenMember.sName || "rich" == oGenMember.sName)
                     bRes = true;
             }
             return bRes;

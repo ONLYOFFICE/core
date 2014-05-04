@@ -528,7 +528,7 @@ namespace codegen
                 sMemberNamespace = oGenClassMember.sNamespace;
             else
                 sMemberNamespace = oGenClass.sNamespace;
-            if (null != sMemberNamespace && (!bIsAttribute || sMemberNamespace != oGenClass.sNamespace))
+            if (null != sMemberNamespace && oGenMember.bQualified)
             {
                 string sShortNamespace;
                 if (m_mapNamespaceToPrefix.TryGetValue(sMemberNamespace, out sShortNamespace))

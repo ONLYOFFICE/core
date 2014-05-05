@@ -142,7 +142,7 @@ namespace PPTX
 						id = _T("");
 					else
 					{
-						LONG lId = pReader->m_oRels.WriteHyperlink(strUrl, action.is_init());
+						LONG lId = pReader->m_pRels->WriteHyperlink(strUrl, action.is_init());
 
 						CString strRid = _T("");
 						strRid.Format(_T("rId%d"), lId);

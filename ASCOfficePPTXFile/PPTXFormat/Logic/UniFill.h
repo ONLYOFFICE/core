@@ -298,7 +298,7 @@ namespace PPTX
 													}
 													// -------------------													
 													
-													LONG lId = pReader->m_oRels.WriteImage(strUrl, strOrigBase64);
+													LONG lId = pReader->m_pRels->WriteImage(strUrl, strOrigBase64);
 
 													// -------------------
 													if (strTempFile != _T(""))

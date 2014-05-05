@@ -1210,7 +1210,7 @@ namespace NSBinPptxRW
 		LONG m_lNextId;
 
 	public:
-		CRelsGenerator m_oRels;
+		//CRelsGenerator m_oRels;
 		CString m_strFolder;
 		CString m_strFolderThemes;
 
@@ -1222,6 +1222,10 @@ namespace NSBinPptxRW
 
 		LONG		m_lDocumentType;
 		IUnknown*	m_pDrawingConverter;
+
+		CRelsGenerator* m_pRels;
+		CAtlArray<CRelsGenerator*> m_stackRels;
+		int m_nCurrentRelsStack;
 	
 	public:
 		CBinaryFileReader()
@@ -1236,10 +1240,22 @@ namespace NSBinPptxRW
 
 			m_lDocumentType = XMLWRITER_DOC_TYPE_PPTX;
 			m_pDrawingConverter = NULL;
+
+			m_pRels = new CRelsGenerator();
+			m_nCurrentRelsStack = -1;
 		}
 		~CBinaryFileReader()
 		{
 			RELEASEINTERFACE(m_pMainDocument);
+			RELEASEOBJECT(m_pRels);
+
+			size_t nCountStackRels = m_stackRels.GetCount();
+			for (size_t i = 0; i < nCountStackRels; ++i)
+			{
+				CRelsGenerator* pCur = m_stackRels[i];
+				RELEASEOBJECT(pCur);
+			}
+			m_stackRels.RemoveAll();
 		}
 
 		AVSINLINE void SetMainDocument(IUnknown* pMainDoc)

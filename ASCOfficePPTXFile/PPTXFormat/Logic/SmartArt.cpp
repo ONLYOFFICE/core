@@ -199,7 +199,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 
 			m_lChartNumber = pReader->m_lChartNumber;
 			pReader->m_lChartNumber++;
-			int lId = pReader->m_oRels.WriteChart(m_lChartNumber, pReader->m_lDocumentType);
+			int lId = pReader->m_pRels->WriteChart(m_lChartNumber, pReader->m_lDocumentType);
 
 			// теперь зачитывание бинарника
 			XlsxCom::IAVSOfficeXlsxSerizer* pSerializer = NULL;
@@ -218,7 +218,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 			var.vt = VT_ARRAY;
 
 			NSBinPptxRW::CBinaryFileWriter oWriter;
-			LPSAFEARRAY pSerializeIM = oWriter.Serialize(pReader->m_oRels.m_pManager);
+			LPSAFEARRAY pSerializeIM = oWriter.Serialize(pReader->m_pRels->m_pManager);
 			var.parray = pSerializeIM;
 			pDrawingConverter->SetAdditionalParam(L"SerializeImageManager2", var);
 
@@ -226,7 +226,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 
 			pSerializer->SetDrawingConverter((IUnknown*)pDrawingConverter);
 
-			CString strDstChart = pReader->m_oRels.m_pManager->GetDstMedia();
+			CString strDstChart = pReader->m_pRels->m_pManager->GetDstMedia();
 			int nPos = strDstChart.ReverseFind(TCHAR('m'));
 			if (-1 != nPos)
 				strDstChart = strDstChart.Mid(0, nPos);
@@ -261,7 +261,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 			if (var.parray != NULL)
 			{
 				NSBinPptxRW::CBinaryFileReader oReader;
-				oReader.Deserialize(pReader->m_oRels.m_pManager, var.parray);
+				oReader.Deserialize(pReader->m_pRels->m_pManager, var.parray);
 
 				RELEASEARRAY((var.parray));
 			}				

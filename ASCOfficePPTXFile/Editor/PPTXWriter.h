@@ -62,7 +62,7 @@ namespace NSBinPptxRW
 			m_oImageManager.Clear();
 			m_oImageManager.SetDstMedia(m_strDstFolder + _T("\\ppt\\media"));
 
-			m_oReader.m_oRels.m_pManager = &m_oImageManager;
+			m_oReader.m_pRels->m_pManager = &m_oImageManager;
 		}
 
 		void OpenPPTY(BYTE* pBuffer, int len, CString srcFolder, CString strThemesFolder)
@@ -263,19 +263,19 @@ namespace NSBinPptxRW
 
 					m_arThemes.Add();
 
-					m_oReader.m_oRels.Clear();
-					m_oReader.m_oRels.StartTheme();
+					m_oReader.m_pRels->Clear();
+					m_oReader.m_pRels->StartTheme();
 					m_arThemes[i].fromPPTY(&m_oReader);
 
 					CString strMasterXml = _T("");
 					strMasterXml.Format(_T("\\theme%d.xml"), i + 1);
 					oXmlWriter.ClearNoAttack();
 
-					m_oReader.m_oRels.CloseRels();
+					m_oReader.m_pRels->CloseRels();
 
 					m_arThemes[i].toXmlWriter(&oXmlWriter);
 					oXmlWriter.SaveToFile(strFolder + strMasterXml);
-					m_oReader.m_oRels.SaveRels(strFolderRels + strMasterXml + _T(".rels"));
+					m_oReader.m_pRels->SaveRels(strFolderRels + strMasterXml + _T(".rels"));
 				}
 			}
 
@@ -298,8 +298,8 @@ namespace NSBinPptxRW
 				{
 					m_arSlideMasters.Add();
 
-					m_oReader.m_oRels.Clear();
-					m_oReader.m_oRels.StartMaster(i, m_arSlideMasters_Theme[i]);
+					m_oReader.m_pRels->Clear();
+					m_oReader.m_pRels->StartMaster(i, m_arSlideMasters_Theme[i]);
 					m_arSlideMasters[i].fromPPTY(&m_oReader);
 					
 					CAtlArray<PPTX::Logic::XmlId>& arrLays = m_arSlideMasters[i].sldLayoutIdLst;
@@ -317,7 +317,7 @@ namespace NSBinPptxRW
 					}
 					__nCountLayouts += (LONG)(lLayouts + 1);
 
-					m_oReader.m_oRels.CloseRels();
+					m_oReader.m_pRels->CloseRels();
 
 					CString strMasterXml = _T("");
 					strMasterXml.Format(_T("\\slideMaster%d.xml"), i + 1);
@@ -326,7 +326,7 @@ namespace NSBinPptxRW
 					m_arSlideMasters[i].toXmlWriter(&oXmlWriter);
 
 					oXmlWriter.SaveToFile(strFolder + strMasterXml);
-					m_oReader.m_oRels.SaveRels(strFolderRels + strMasterXml + _T(".rels"));
+					m_oReader.m_pRels->SaveRels(strFolderRels + strMasterXml + _T(".rels"));
 				}
 			}
 
@@ -347,10 +347,10 @@ namespace NSBinPptxRW
 				{
 					m_arSlideLayouts.Add();
 
-					m_oReader.m_oRels.Clear();
-					m_oReader.m_oRels.StartLayout(m_arSlideLayouts_Master[i]);
+					m_oReader.m_pRels->Clear();
+					m_oReader.m_pRels->StartLayout(m_arSlideLayouts_Master[i]);
 					m_arSlideLayouts[i].fromPPTY(&m_oReader);
-					m_oReader.m_oRels.CloseRels();
+					m_oReader.m_pRels->CloseRels();
 
 					CString strMasterXml = _T("");
 					strMasterXml.Format(_T("\\slideLayout%d.xml"), i + 1);
@@ -359,7 +359,7 @@ namespace NSBinPptxRW
 					m_arSlideLayouts[i].toXmlWriter(&oXmlWriter);
 
 					oXmlWriter.SaveToFile(strFolder + strMasterXml);
-					m_oReader.m_oRels.SaveRels(strFolderRels + strMasterXml + _T(".rels"));	
+					m_oReader.m_pRels->SaveRels(strFolderRels + strMasterXml + _T(".rels"));	
 				}
 			}
 
@@ -381,13 +381,13 @@ namespace NSBinPptxRW
 				{
 					m_arSlides.Add();
 
-					m_oReader.m_oRels.Clear();
-					m_oReader.m_oRels.StartSlide(i, m_arSlides_Layout[i]);
+					m_oReader.m_pRels->Clear();
+					m_oReader.m_pRels->StartSlide(i, m_arSlides_Layout[i]);
 					m_arSlides[i].fromPPTY(&m_oReader);
 
 					if (m_arSlides[i].comments.is_init())
 					{
-						m_oReader.m_oRels.WriteSlideComments(nComment);
+						m_oReader.m_pRels->WriteSlideComments(nComment);
 						if (1 == nComment)
 						{
 							CDirectory::CreateDirectory(m_strDstFolder + _T("\\ppt\\comments"));
@@ -402,7 +402,7 @@ namespace NSBinPptxRW
 						++nComment;
 					}
 
-					m_oReader.m_oRels.CloseRels();
+					m_oReader.m_pRels->CloseRels();
 
 					CString strMasterXml = _T("");
 					strMasterXml.Format(_T("\\slide%d.xml"), i + 1);
@@ -411,7 +411,7 @@ namespace NSBinPptxRW
 					m_arSlides[i].toXmlWriter(&oXmlWriter);
 
 					oXmlWriter.SaveToFile(strFolder + strMasterXml);
-					m_oReader.m_oRels.SaveRels(strFolderRels + strMasterXml + _T(".rels"));	
+					m_oReader.m_pRels->SaveRels(strFolderRels + strMasterXml + _T(".rels"));	
 				}
 			}
 
@@ -460,9 +460,9 @@ namespace NSBinPptxRW
 				LONG lCount = (LONG)m_arSlides.GetCount();				
 				for (LONG i = 0; i < lCount; ++i)
 				{
-					m_oReader.m_oRels.Clear();
-					m_oReader.m_oRels.StartNote(i);
-					m_oReader.m_oRels.CloseRels();
+					m_oReader.m_pRels->Clear();
+					m_oReader.m_pRels->StartNote(i);
+					m_oReader.m_pRels->CloseRels();
 
 					CString strMasterXml = _T("");
 					strMasterXml.Format(_T("\\notesSlide%d.xml"), i + 1);
@@ -471,7 +471,7 @@ namespace NSBinPptxRW
 					m_oDefaultNote.toXmlWriter(&oXmlWriter);
 
 					oXmlWriter.SaveToFile(strFolder + strMasterXml);
-					m_oReader.m_oRels.SaveRels(strFolderRels + strMasterXml + _T(".rels"));	
+					m_oReader.m_pRels->SaveRels(strFolderRels + strMasterXml + _T(".rels"));	
 				}
 			}
 
@@ -553,8 +553,8 @@ namespace NSBinPptxRW
 			m_oViewProps.toXmlWriter(&oXmlWriter);
 			oXmlWriter.SaveToFile(m_strDstFolder + _T("\\ppt\\viewProps.xml"));
 
-			m_oReader.m_oRels.Clear();
-			m_oReader.m_oRels.StartRels();
+			m_oReader.m_pRels->Clear();
+			m_oReader.m_pRels->StartRels();
 
 			// tablestyles
 			oXmlWriter.ClearNoAttack();
@@ -588,10 +588,10 @@ namespace NSBinPptxRW
 					nCountLayouts += (LONG)(m_arSlideMasters_Theme[i].m_arLayouts.GetCount() + 1);
 				}
 
-				m_oReader.m_oRels.WriteMasters(nCountMasters);
-				m_oReader.m_oRels.WriteThemes(nCountThemes);
+				m_oReader.m_pRels->WriteMasters(nCountMasters);
+				m_oReader.m_pRels->WriteThemes(nCountThemes);
 
-				int nCurrentRels = m_oReader.m_oRels.GetNextId();
+				int nCurrentRels = m_oReader.m_pRels->GetNextId();
 
 				m_oPresentation.sldIdLst.RemoveAll();
 				for (LONG i = 0; i < nCountSlides; ++i)
@@ -606,21 +606,21 @@ namespace NSBinPptxRW
 					++nCurrentRels;
 				}
 
-				m_oReader.m_oRels.WriteSlides(nCountSlides);
-				m_oReader.m_oRels.EndPresentationRels(m_oPresentation.commentAuthors.is_init());
+				m_oReader.m_pRels->WriteSlides(nCountSlides);
+				m_oReader.m_pRels->EndPresentationRels(m_oPresentation.commentAuthors.is_init());
 
 				m_oPresentation.notesMasterIdLst.RemoveAll();
 				m_oPresentation.notesMasterIdLst.Add();
 				m_oPresentation.notesMasterIdLst[0].m_name = _T("notesMasterId");
 				m_oPresentation.notesMasterIdLst[0].rid = (size_t)nCurrentRels;
 
-				m_oReader.m_oRels.CloseRels();
+				m_oReader.m_pRels->CloseRels();
 
 				oXmlWriter.ClearNoAttack();
 				m_oPresentation.toXmlWriter(&oXmlWriter);
 
 				oXmlWriter.SaveToFile(strFolder + _T("\\presentation.xml"));
-				m_oReader.m_oRels.SaveRels(strFolderRels + _T("\\presentation.xml.rels"));	
+				m_oReader.m_pRels->SaveRels(strFolderRels + _T("\\presentation.xml.rels"));	
 
 				if (m_oPresentation.commentAuthors.is_init())
 				{

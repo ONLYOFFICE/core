@@ -23,9 +23,11 @@ namespace PPTX
 	public:
 		Theme()
 		{
+			isThemeOverride = false;
 		}
 		Theme(const OOX::CPath& filename, FileMap& map)
 		{
+			isThemeOverride = false;
 			m_map = NULL;
 			read(filename, map);
 		}
@@ -36,11 +38,23 @@ namespace PPTX
 	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
+			isThemeOverride = false;
 			//FileContainer::read(filename, map);
 			m_map = NULL;
 
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlFile2(filename.m_strFilename);
+			
+			CString strNodeName = XmlUtils::GetNameNoNS(oNode.GetName());
+			if (_T("themeOverride") == strNodeName)
+			{
+				themeElements = oNode;
+				themeElements.SetParentFilePointer(this);
+
+				extraClrSchemeLst.RemoveAll();
+				isThemeOverride = true;
+				return;
+			}
 
 			oNode.ReadAttributeBase(_T("name"), name);
 
@@ -105,6 +119,10 @@ namespace PPTX
 
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 			pWriter->WriteString2(0, name);
+
+			if (isThemeOverride)
+				pWriter->WriteBool1(1, true);
+
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord1(0, themeElements);
@@ -117,6 +135,24 @@ namespace PPTX
 		}
 		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
+			if (isThemeOverride)
+			{
+				pWriter->StartNode(_T("a:themeOverride"));
+
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(_T("xmlns:a"), OOX::g_Namespaces.a.m_strLink);
+				pWriter->WriteAttribute(_T("xmlns:r"), OOX::g_Namespaces.r.m_strLink);
+				pWriter->WriteAttribute(_T("xmlns:p"), OOX::g_Namespaces.p.m_strLink);
+				pWriter->EndAttributes();
+
+				themeElements.clrScheme.toXmlWriter(pWriter);
+				themeElements.fontScheme.toXmlWriter(pWriter);
+				themeElements.fmtScheme.toXmlWriter(pWriter);
+
+				pWriter->EndNode(_T("a:themeOverride"));
+				return;
+			}
+
 			pWriter->StartNode(_T("a:theme"));
 
 			pWriter->StartAttributes();
@@ -155,6 +191,8 @@ namespace PPTX
 
 				if (0 == _at)
 					name = pReader->GetString2();
+				else if (1 == _at)
+					isThemeOverride = pReader->GetBool();
 				else
 					break;
 			}
@@ -308,6 +346,8 @@ namespace PPTX
 		nullable<Logic::DefaultShapeDefinition> txDef;
 		
 		CAtlArray<nsTheme::ExtraClrScheme>		extraClrSchemeLst;
+
+		bool									isThemeOverride;
 
 		smart_ptr<Presentation>					Presentation;
 

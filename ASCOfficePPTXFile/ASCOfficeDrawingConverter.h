@@ -678,14 +678,43 @@ xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\
 
 	STDMETHOD(SetDstContentRels)()
 	{
-		m_oReader.m_oRels.Clear();
-		m_oReader.m_oRels.StartRels();
+		++m_oReader.m_nCurrentRelsStack;
+
+		if (0 == m_oReader.m_nCurrentRelsStack)
+		{
+			m_oReader.m_pRels->Clear();
+			m_oReader.m_pRels->StartRels();
+		}
+		else
+		{
+			m_oReader.m_stackRels.Add(m_oReader.m_pRels);
+			NSBinPptxRW::CRelsGenerator* pGenerator = new NSBinPptxRW::CRelsGenerator(m_oReader.m_pRels->m_pManager);
+			m_oReader.m_pRels = pGenerator;
+		}
 		return S_OK;
 	}
 	STDMETHOD(SaveDstContentRels)(BSTR bsRelsPath)
 	{
-		m_oReader.m_oRels.CloseRels();
-		m_oReader.m_oRels.SaveRels((CString)bsRelsPath);
+		m_oReader.m_pRels->CloseRels();
+		m_oReader.m_pRels->SaveRels((CString)bsRelsPath);
+
+		--m_oReader.m_nCurrentRelsStack;
+		if (-1 > m_oReader.m_nCurrentRelsStack)
+			m_oReader.m_nCurrentRelsStack = -1;
+
+		if (-1 != m_oReader.m_nCurrentRelsStack)
+		{
+			int nIndex = m_oReader.m_stackRels.GetCount() - 1;
+
+			if (0 <= nIndex)
+			{
+				NSBinPptxRW::CRelsGenerator* pCur = m_oReader.m_pRels;
+				m_oReader.m_pRels = m_oReader.m_stackRels[nIndex];
+				m_oReader.m_stackRels.RemoveAt(nIndex);
+				RELEASEOBJECT(pCur);								
+			}
+		}
+
 		return S_OK;
 	}
 	STDMETHOD(WriteRels)(BSTR bsType, BSTR bsTarget, BSTR bsTargetMode, LONG* lId)
@@ -693,7 +722,7 @@ xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\
 		if (NULL == lId)
 			return S_FALSE;
 
-		*lId = m_oReader.m_oRels.WriteRels(bsType, bsTarget, bsTargetMode);
+		*lId = m_oReader.m_pRels->WriteRels(bsType, bsTarget, bsTargetMode);
 		return S_OK;
 	}
 
@@ -708,7 +737,7 @@ xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\
 		CString name = (CString)ParamName;
 		if (name == _T("SourceFileDir"))
 		{
-			m_oReader.m_oRels.m_pManager = &m_oImageManager;
+			m_oReader.m_pRels->m_pManager = &m_oImageManager;
 			m_oImageManager.m_bIsWord = TRUE;
 			m_oReader.m_strFolder = CString(ParamValue.bstrVal);
 		}

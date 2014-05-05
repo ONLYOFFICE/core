@@ -2557,13 +2557,13 @@ HRESULT CAVSOfficeDrawingConverter::SaveThemeXml(SAFEARRAY* pBinaryTheme, LONG l
 	
 	m_oReader.Init(pData, lStart, lLength);
 
-	m_oReader.m_oRels.Clear();
-	m_oReader.m_oRels.StartTheme();
+	m_oReader.m_pRels->Clear();
+	m_oReader.m_pRels->StartTheme();
 
 	smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme();
 	pTheme->fromPPTY(&m_oReader);
 	m_oXmlWriter.ClearNoAttack();
-	m_oReader.m_oRels.CloseRels();
+	m_oReader.m_pRels->CloseRels();
 
 	CString strThemePath = (CString)bsThemePath;
 
@@ -2578,7 +2578,7 @@ HRESULT CAVSOfficeDrawingConverter::SaveThemeXml(SAFEARRAY* pBinaryTheme, LONG l
 	else
 		strTemp += (strFileName + _T(".rels"));
 	
-	m_oReader.m_oRels.SaveRels(strTemp);
+	m_oReader.m_pRels->SaveRels(strTemp);
 
 	m_oXmlWriter.ClearNoAttack();
 

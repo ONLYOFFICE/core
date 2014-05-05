@@ -1743,14 +1743,15 @@ namespace BinXlsxRW {
 
 		CString& m_sDestinationDir;
 		CString m_sMediaDir;
+		SaveParams& m_oSaveParams;
 		LPSAFEARRAY m_pArray;
 		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
 	public:
 		BinaryWorksheetsTableReader(Streams::CBufferedStream& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook,
 			OOX::Spreadsheet::CSharedStrings* pSharedStrings, CAtlMap<CString, OOX::Spreadsheet::CWorksheet*>& mapWorksheets,
-			CAtlMap<long, ImageObject*>& mapMedia, CString& sDestinationDir, LPSAFEARRAY pArray,
+			CAtlMap<long, ImageObject*>& mapMedia, CString& sDestinationDir, SaveParams& oSaveParams, LPSAFEARRAY pArray,
 			PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter) : Binary_CommonReader(oBufferedStream), m_oWorkbook(oWorkbook),
-			m_oBcr2(oBufferedStream), m_mapWorksheets(mapWorksheets), m_mapMedia(mapMedia), m_sDestinationDir(sDestinationDir), m_sMediaDir(m_sDestinationDir + _T("\\xl\\media")), m_pSharedStrings(pSharedStrings)
+			m_oBcr2(oBufferedStream), m_mapWorksheets(mapWorksheets), m_mapMedia(mapMedia), m_sDestinationDir(sDestinationDir), m_sMediaDir(m_sDestinationDir + _T("\\xl\\media")), m_oSaveParams(oSaveParams), m_pSharedStrings(pSharedStrings)
 		{
 			m_pCurSheet = NULL;
 			m_pCurWorksheet = NULL;
@@ -1845,11 +1846,6 @@ namespace BinXlsxRW {
 				DWORD dwFileAttr = ::GetFileAttributes( sRelsDir );
 				if( dwFileAttr == INVALID_FILE_ATTRIBUTES )
 					OOX::CSystemUtility::CreateDirectories(sRelsDir);
-				CString sMediaDir;
-				sMediaDir.Format(_T("%s\\xl\\media"), m_sDestinationDir);
-				dwFileAttr = ::GetFileAttributes( sMediaDir );
-				if( dwFileAttr == INVALID_FILE_ATTRIBUTES )
-					OOX::CSystemUtility::CreateDirectories(sMediaDir);
 
 				m_pOfficeDrawingConverter->SetDstContentRels();
 				m_pCurDrawing = new OOX::Spreadsheet::CDrawing();
@@ -2428,12 +2424,25 @@ namespace BinXlsxRW {
 			int res = c_oSerConstants::ReadOk;
 			if(c_oSer_DrawingType::Chart2 == type)
 			{
+				//создаем папку для rels
+				CString sRelsDir;
+				sRelsDir.Format(_T("%s\\xl\\charts\\_rels"), m_sDestinationDir);
+				DWORD dwFileAttr = ::GetFileAttributes( sRelsDir );
+				if( dwFileAttr == INVALID_FILE_ATTRIBUTES )
+					OOX::CSystemUtility::CreateDirectories(sRelsDir);
+				m_pOfficeDrawingConverter->SetDstContentRels();
+
 				OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace();
-				BinaryChartReader oBinaryChartReader(m_oBufferedStream, m_pArray, m_pOfficeDrawingConverter);
+				BinaryChartReader oBinaryChartReader(m_oBufferedStream, m_oSaveParams, m_pArray, m_pOfficeDrawingConverter);
 				oBinaryChartReader.ReadCT_ChartSpace(length, &pChartSpace->m_oChartSpace);
 				NSCommon::smart_ptr<OOX::File> pChartFile(pChartSpace);
 				pChartFile->m_bDoNotAddRels = true;
 				m_pCurDrawing->Add(pChartFile);
+
+				CString sRelsPath;sRelsPath.Format(_T("%s\\%s.rels"), sRelsDir, pChartFile->m_sFilename);
+				BSTR bstrRelsPath = sRelsPath.AllocSysString();
+				m_pOfficeDrawingConverter->SaveDstContentRels(bstrRelsPath);
+				SysFreeString(bstrRelsPath);
 
 				long rId;
 				CString sNewImgRel;
@@ -2822,11 +2831,11 @@ namespace BinXlsxRW {
 		long m_nCurId;
 		CString m_sCurSrc;
 		long m_nCurIndex;
-		CString& m_sTempTheme;
+		SaveParams& m_oSaveParams;
 		LPSAFEARRAY m_pArray;
 		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
 	public:
-		BinaryOtherTableReader(Streams::CBufferedStream& oBufferedStream, CAtlMap<long, ImageObject*>& mapMedia, CString& sFileInDir, CSimpleArray<CString>& aDeleteFiles, CString& sTempTheme, LPSAFEARRAY pArray, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream), m_mapMedia(mapMedia),m_aDeleteFiles(aDeleteFiles),m_sFileInDir(sFileInDir),m_sTempTheme(sTempTheme),m_pArray(pArray),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
+		BinaryOtherTableReader(Streams::CBufferedStream& oBufferedStream, CAtlMap<long, ImageObject*>& mapMedia, CString& sFileInDir, CSimpleArray<CString>& aDeleteFiles, SaveParams& oSaveParams, LPSAFEARRAY pArray, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream), m_mapMedia(mapMedia),m_aDeleteFiles(aDeleteFiles),m_sFileInDir(sFileInDir),m_oSaveParams(oSaveParams),m_pArray(pArray),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 		{
 			m_nCurId = 0;
 			m_sCurSrc = _T("");
@@ -2843,7 +2852,8 @@ namespace BinXlsxRW {
 				res = Read1(length, &BinaryOtherTableReader::ReadMediaContent, this, poResult);
 			else if(c_oSer_OtherType::Theme == type)
 			{
-				BSTR bstrTempTheme = m_sTempTheme.AllocSysString();
+				CString sThemePath;sThemePath.Format(_T("%s\\%s"), m_oSaveParams.sThemePath, OOX::FileTypes::Theme.DefaultFileName());
+				BSTR bstrTempTheme = sThemePath.AllocSysString();
 				m_pOfficeDrawingConverter->SaveThemeXml(m_pArray, m_oBufferedStream.GetPosition(), length, bstrTempTheme);
 				SysFreeString(bstrTempTheme);
 				res = c_oSerConstants::ReadUnknown;
@@ -2937,8 +2947,7 @@ namespace BinXlsxRW {
 	public: BinaryFileReader()
 			{
 			}
-			int ReadFile(CString sSrcFileName, CString sDstPath, CString& sTempTheme,
-				PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter, CString& sXMLOptions)
+			int ReadFile(CString sSrcFileName, CString sDstPath, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter, CString& sXMLOptions)
 			{
 				bool bResultOk = false;
 				MemoryMapping::CMappingFile oMappingFile = MemoryMapping::CMappingFile();
@@ -3014,14 +3023,15 @@ namespace BinXlsxRW {
 							}
 							OOX::Spreadsheet::CXlsx oXlsx;
 							CSimpleArray<CString> aDeleteFiles;
-							ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, aDeleteFiles, sTempTheme, pArray, pOfficeDrawingConverter);
-							CString sAdditionalContentTypes;
+							SaveParams oSaveParams(sDstPath + _T("\\") + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + _T("\\") + OOX::FileTypes::Theme.DefaultDirectory().GetPath());
+							ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, aDeleteFiles, oSaveParams, pArray, pOfficeDrawingConverter);
+							CString sAdditionalContentTypes = oSaveParams.sAdditionalContentTypes;
 							if(NULL != pOfficeDrawingConverter)
 							{
 								VARIANT vt;
 								pOfficeDrawingConverter->GetAdditionalParam(_T("ContentTypes"), &vt);
 								if(VT_BSTR == vt.vt)
-									sAdditionalContentTypes = vt.bstrVal;
+									sAdditionalContentTypes.Append(vt.bstrVal);
 							}
 							oXlsx.PrepareToWrite();
 
@@ -3038,7 +3048,7 @@ namespace BinXlsxRW {
 								break;
 							case BinXlsxRW::c_oFileTypes::XLSX:
 							default:
-								oXlsx.Write(sDstPath, sTempTheme, sAdditionalContentTypes);
+								oXlsx.Write(sDstPath, sAdditionalContentTypes);
 								break;
 							}
 
@@ -3053,7 +3063,7 @@ namespace BinXlsxRW {
 				}
 				return S_OK;
 			}
-			int ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, Streams::CBufferedStream& oBufferedStream, CString& sFileInDir, CString& sOutDir, CSimpleArray<CString>& aDeleteFiles, CString& sTempTheme, LPSAFEARRAY pArray, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter)
+			int ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, Streams::CBufferedStream& oBufferedStream, CString& sFileInDir, CString& sOutDir, CSimpleArray<CString>& aDeleteFiles, SaveParams& oSaveParams, LPSAFEARRAY pArray, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter)
 			{
 				long res = c_oSerConstants::ReadOk;
 				//mtLen
@@ -3088,7 +3098,7 @@ namespace BinXlsxRW {
 				if(-1 != nOtherOffBits)
 				{
 					oBufferedStream.Seek(nOtherOffBits);
-					res = BinaryOtherTableReader(oBufferedStream, mapMedia, sFileInDir, aDeleteFiles, sTempTheme, pArray, pOfficeDrawingConverter).Read();
+					res = BinaryOtherTableReader(oBufferedStream, mapMedia, sFileInDir, aDeleteFiles, oSaveParams, pArray, pOfficeDrawingConverter).Read();
 					if(c_oSerConstants::ReadOk != res)
 						return res;
 				}
@@ -3124,7 +3134,7 @@ namespace BinXlsxRW {
 						break;
 					case c_oSerTableTypes::Worksheets:
 						{
-							res = BinaryWorksheetsTableReader(oBufferedStream, *pWorkbook, pSharedStrings, oXlsx.GetWorksheets(), mapMedia, sOutDir, pArray, pOfficeDrawingConverter).Read();
+							res = BinaryWorksheetsTableReader(oBufferedStream, *pWorkbook, pSharedStrings, oXlsx.GetWorksheets(), mapMedia, sOutDir, oSaveParams, pArray, pOfficeDrawingConverter).Read();
 						}
 						break;
 					}

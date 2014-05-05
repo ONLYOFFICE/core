@@ -3,8 +3,18 @@
 #include "ChartFromToBinary.h"
 #include "../../ASCOfficePPTXFile/Editor/BinReaderWriterDefines.h"
 #include "../Common/BinReaderWriterDefines.h"
+#include "../Common/BinReaderWriterDefines.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Theme/ThemeOverride.h"
+
 using namespace OOX::Spreadsheet;
 namespace BinXlsxRW{
+	SaveParams::SaveParams(CString& _sThemePath)
+	{
+		sThemePath = _sThemePath;
+		sAdditionalContentTypes = _T("");
+		nThemeOverrideCount = 1;
+	}
+
 	BYTE c_oserct_extlstEXT = 0;
 
 	BYTE c_oserct_chartspaceDATE1904 = 0;
@@ -22,6 +32,7 @@ namespace BinXlsxRW{
 	BYTE c_oserct_chartspacePRINTSETTINGS = 12;
 	BYTE c_oserct_chartspaceUSERSHAPES = 13;
 	BYTE c_oserct_chartspaceEXTLST = 14;
+	BYTE c_oserct_chartspaceTHEMEOVERRIDE = 15;
 
 	BYTE c_oserct_booleanVAL = 0;
 
@@ -793,7 +804,7 @@ namespace BinXlsxRW{
 
 	BYTE c_oseralternatecontentfallbackSTYLE = 0;
 
-	BinaryChartReader::BinaryChartReader(Streams::CBufferedStream& oBufferedStream, LPSAFEARRAY pArray, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream),m_pArray(pArray),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
+	BinaryChartReader::BinaryChartReader(Streams::CBufferedStream& oBufferedStream, SaveParams& oSaveParams, LPSAFEARRAY pArray, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream),m_oSaveParams(oSaveParams),m_pArray(pArray),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 	{}
 	int BinaryChartReader::ReadCT_extLst(BYTE type, long length, void* poResult)
 	{
@@ -936,6 +947,23 @@ namespace BinXlsxRW{
 			CT_extLst* pNewElem = new CT_extLst;
 			res = Read1(length, &BinaryChartReader::ReadCT_extLst, this, pNewElem);
 			poVal->m_extLst = pNewElem;
+		}
+		else if(c_oserct_chartspaceTHEMEOVERRIDE == type)
+		{
+			CString sThemeOverrideName;sThemeOverrideName.Format(_T("themeOverride%d.xml"), m_oSaveParams.nThemeOverrideCount++);
+			CString sThemeOverrideRelsPath;sThemeOverrideRelsPath.Format(_T("../theme/%s"), sThemeOverrideName);
+			CString sThemeOverridePath;sThemeOverridePath.Format(_T("%s\\%s"), m_oSaveParams.sThemePath, sThemeOverrideName);
+
+			BSTR bstrTempTheme = sThemeOverridePath.AllocSysString();
+			m_pOfficeDrawingConverter->SaveThemeXml(m_pArray, m_oBufferedStream.GetPosition(), length, bstrTempTheme);
+			SysFreeString(bstrTempTheme);
+			long rId;
+			BSTR bstrThemeOverrideRelsPath = sThemeOverrideRelsPath.AllocSysString();
+			m_pOfficeDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/themeOverride"), bstrThemeOverrideRelsPath, NULL, &rId);
+			SysFreeString(bstrThemeOverrideRelsPath);
+			m_oSaveParams.sAdditionalContentTypes.AppendFormat(_T("<Override PartName=\"/xl/theme/%s\" ContentType=\"application/vnd.openxmlformats-officedocument.themeOverride+xml\"/>"), sThemeOverrideName);
+
+			res = c_oSerConstants::ReadUnknown;
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -6438,8 +6466,9 @@ namespace BinXlsxRW{
 			}
 		}
 	}
-	void BinaryChartWriter::WriteCT_ChartSpace(CT_ChartSpace& oVal)
+	void BinaryChartWriter::WriteCT_ChartSpace(OOX::Spreadsheet::CChartSpace& oChartSpace)
 	{
+		CT_ChartSpace& oVal = oChartSpace.m_oChartSpace;
 		if(NULL != oVal.m_date1904)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceDATE1904);
@@ -6547,6 +6576,17 @@ namespace BinXlsxRW{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceEXTLST);
 			WriteCT_extLst(*oVal.m_extLst);
 			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		smart_ptr<OOX::File> pFile = oChartSpace.Find(OOX::FileTypes::ThemeOverride);
+		if (pFile.IsInit() && OOX::FileTypes::ThemeOverride == pFile->type())
+		{
+			OOX::CThemeOverride* pThemeOverride = static_cast<OOX::CThemeOverride*>(pFile.operator->());
+			LPSAFEARRAY pThemeData = NULL;
+			BSTR bstrThemePath = pThemeOverride->m_oReadPath.GetPath().AllocSysString();
+			m_pOfficeDrawingConverter->GetThemeBinary(bstrThemePath, &pThemeData);
+			SysFreeString(bstrThemePath);
+			m_oBcw.m_oStream.WriteByte(c_oserct_chartspaceTHEMEOVERRIDE);
+			m_oBcw.WriteSafeArray(pThemeData);
 		}
 	}
 	void BinaryChartWriter::WriteCT_Boolean(CT_Boolean& oVal)

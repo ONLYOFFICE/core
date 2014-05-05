@@ -123,7 +123,7 @@ namespace OOX
 
 				return TRUE;
 			}
-			BOOL Write(const CPath& oDirPath, CString& sTempTheme, CString& sAdditionalContentTypes)
+			BOOL Write(const CPath& oDirPath, CString& sAdditionalContentTypes)
 			{
 				if(NULL == m_pWorkbook || 0 == m_aWorksheets.GetCount())
 					return FALSE;
@@ -152,7 +152,7 @@ namespace OOX
 
 				//xl
 				CPath oXlPath = oDirPath / m_pWorkbook->DefaultDirectory();
-				WriteWorkbook(oXlPath, sTempTheme);
+				WriteWorkbook(oXlPath);
 
 				IFileContainer::Write(oDirPath / _T("/"), OOX::CPath(_T("")), oContentTypes);
 				if(!sAdditionalContentTypes.IsEmpty())
@@ -173,16 +173,13 @@ namespace OOX
 				oContentTypes.Write(oDirPath);
 				return TRUE;
 			}
-			BOOL WriteWorkbook(const CPath& oDirPath, CString& sTempTheme)
+			BOOL WriteWorkbook(const CPath& oDirPath)
 			{
 				//Theme
 				OOX::CTheme* pTheme = new OOX::CTheme();
 				pTheme->DoNotWriteContent(true);
 				smart_ptr<OOX::File> pThemeFile(pTheme);
 				m_pWorkbook->Add(pThemeFile);
-				CPath oThemeDir = oDirPath / pTheme->DefaultDirectory();
-				OOX::CSystemUtility::CreateDirectories( oThemeDir );
-				::CopyFile(sTempTheme, (oThemeDir / pTheme->DefaultFileName()).GetPath(), FALSE);
 				//SharedStrings
 				if(NULL != m_pSharedStrings && m_pSharedStrings->m_arrItems.GetSize() > 0)
 				{

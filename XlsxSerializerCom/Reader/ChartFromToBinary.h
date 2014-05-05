@@ -5,12 +5,21 @@
 #include "..\Writer\BinaryCommonReader.h"
 using namespace OOX::Spreadsheet;
 namespace BinXlsxRW {
+	class SaveParams{
+	public:
+		CString sThemePath;
+		CString sAdditionalContentTypes;
+		int nThemeOverrideCount;
+		SaveParams(CString& _sThemePath);
+	};
+
 	class BinaryChartReader : public Binary_CommonReader<BinaryChartReader>
 	{
 		LPSAFEARRAY m_pArray;
 		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
+		SaveParams& m_oSaveParams;
 	public:
-		BinaryChartReader(Streams::CBufferedStream& oBufferedStream, LPSAFEARRAY pArray, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter);
+		BinaryChartReader(Streams::CBufferedStream& oBufferedStream, SaveParams& oSaveParams, LPSAFEARRAY pArray, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter);
 	private: int ReadCT_extLst(BYTE type, long length, void* poResult);
 	public: int ReadCT_ChartSpace(long length, CT_ChartSpace* poResult);
 	private: int ReadCT_ChartSpace(BYTE type, long length, void* poResult);
@@ -161,7 +170,7 @@ namespace BinXlsxRW {
 	public:
 		BinaryChartWriter(Streams::CBufferedStream &oCBufferedStream, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter);
 	public: void WriteCT_extLst(CT_extLst& oVal);
-	public: void WriteCT_ChartSpace(CT_ChartSpace& oVal);
+	public: void WriteCT_ChartSpace(OOX::Spreadsheet::CChartSpace& ChartSpace);
 	public: void WriteCT_Boolean(CT_Boolean& oVal);
 	public: void WriteCT_RelId(CT_RelId& oVal);
 	public: void WriteCT_PageSetup(CT_PageSetup& oVal);

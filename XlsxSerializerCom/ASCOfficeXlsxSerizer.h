@@ -84,11 +84,14 @@ public:
 		pOfficeDrawingConverter->SetAdditionalParam(L"SourceFileDir", var);
 		RELEASESYSSTRING(var.bstrVal);
 
-		//Создаем temp тему, читаем ее и записываем в документ
-		CString sTempTheme = CreateTheme();
+		CString sThemeDir;sThemeDir.Format(_T("%s\\xl\\%s"), sDstPath, OOX::FileTypes::Theme.DefaultDirectory());
+		CString sThemePath;sThemePath.Format(_T("%s\\%s"), sThemeDir, OOX::FileTypes::Theme.DefaultFileName());
+		OOX::CSystemUtility::CreateDirectories(sThemeDir);
+		OOX::CSystemUtility::CreateDirectories(sMediaDir);
+
+		CreateTheme(sThemePath);
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;
-		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, sTempTheme, pOfficeDrawingConverter, CString(sXMLOptions));
-		::DeleteFile(sTempTheme);
+		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, pOfficeDrawingConverter, CString(sXMLOptions));
 		RELEASEINTERFACE(pOfficeDrawingConverter);
 		return S_OK;
 	}
@@ -167,7 +170,7 @@ public:
 			SysFreeString(bstrChartPath);
 
 			BinXlsxRW::BinaryChartWriter oBinaryChartWriter(oBufferedStream, m_pExternalDrawingConverter);	
-			oBinaryChartWriter.WriteCT_ChartSpace(oChart.m_oChartSpace);
+			oBinaryChartWriter.WriteCT_ChartSpace(oChart);
 
 			ULONG lBinarySize = oBufferedStream.GetPosition();
 			SAFEARRAY* pArray = SafeArrayCreateVector(VT_UI1, lBinarySize);
@@ -194,8 +197,10 @@ public:
 
 			m_pExternalDrawingConverter->SetDstContentRels();
 
+			//todo theme path
+			BinXlsxRW::SaveParams oSaveParams(CString(_T("")));
 			OOX::Spreadsheet::CChartSpace oChartSpace;
-			BinXlsxRW::BinaryChartReader oBinaryChartReader(oBufferedStream, pBinaryObj, m_pExternalDrawingConverter);
+			BinXlsxRW::BinaryChartReader oBinaryChartReader(oBufferedStream, oSaveParams, pBinaryObj, m_pExternalDrawingConverter);
 			oBinaryChartReader.ReadCT_ChartSpace(lLength, &oChartSpace.m_oChartSpace);
 
 			if(oChartSpace.isValid())
@@ -263,21 +268,10 @@ public:
 		return S_OK;
 	}
 private:
-	CString CreateTheme()
+	void CreateTheme(CString sThemePath)
 	{
 		HINSTANCE hInst = _AtlBaseModule.GetModuleInstance();
-
-		CString sThemePath;
-		char sTempPath[MAX_PATH], sTempFile[MAX_PATH];
-		if ( 0 == GetTempPathA( MAX_PATH, sTempPath ) )
-			return sThemePath;
-
-		if ( 0 == GetTempFileNameA( sTempPath, NULL, 0, sTempFile ) )
-			return sThemePath;
-
-		sThemePath = sTempFile;
 		LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_DEFAULT_XLSX_THEME), _T("XLSXSER"), sThemePath);
-		return sThemePath;
 	}
 	void LoadResourceFile(HINSTANCE hInst, LPCTSTR sResName, LPCTSTR sResType, const CString& strDstFile)
 	{

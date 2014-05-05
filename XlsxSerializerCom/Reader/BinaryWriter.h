@@ -2446,7 +2446,7 @@ namespace BinXlsxRW {
 							int nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::Chart2);
 							OOX::Spreadsheet::CChartSpace oChart(oNormalizedPath);
 							BinaryChartWriter oBinaryChartWriter(m_oBcw.m_oStream, m_pOfficeDrawingConverter);
-							oBinaryChartWriter.WriteCT_ChartSpace(oChart.m_oChartSpace);
+							oBinaryChartWriter.WriteCT_ChartSpace(oChart);
 							m_oBcw.WriteItemEnd(nCurPos);
 
 							bstrChartPath = sDrawingRelsPath.AllocSysString();
@@ -3351,6 +3351,7 @@ namespace BinXlsxRW {
 			BinaryOtherTableWriter oBinaryOtherTableWriter(oBufferedStream, pEmbeddedFontsManager, pThemeData);
 			oBinaryOtherTableWriter.Write();
 			WriteTableEnd(nCurPos);
+			RELEASEARRAY(pThemeData);
 			
 			WriteMainTableEnd();
 		}

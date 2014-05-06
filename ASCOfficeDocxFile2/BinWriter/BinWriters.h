@@ -4704,7 +4704,7 @@ namespace BinDocxRW
 
 						int nCurPos = m_oBcw.WriteItemWithLengthStart();
 						BinXlsxRW::BinaryChartWriter oBinaryChartWriter(m_oBcw.m_oStream, m_pOfficeDrawingConverter);	
-						oBinaryChartWriter.WriteCT_ChartSpace(pChart->m_oChartSpace);
+						oBinaryChartWriter.WriteCT_ChartSpace(*pChart);
 						m_oBcw.WriteItemWithLengthEnd(nCurPos);
 					}
 				}
@@ -4875,7 +4875,7 @@ namespace BinDocxRW
 
 					int nCurPos = m_oBcw.WriteItemWithLengthStart();
 					BinXlsxRW::BinaryChartWriter oBinaryChartWriter(m_oBcw.m_oStream, m_pOfficeDrawingConverter);	
-					oBinaryChartWriter.WriteCT_ChartSpace(pChart->m_oChartSpace);
+					oBinaryChartWriter.WriteCT_ChartSpace(*pChart);
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
 			}

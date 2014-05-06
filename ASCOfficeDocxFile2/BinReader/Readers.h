@@ -5548,28 +5548,45 @@ public:
 		{
 			if(false == m_oFileWriter.m_bSaveChartAsImg)
 			{
-				BinXlsxRW::BinaryChartReader oBinaryChartReader(m_oBufferedStream, m_oFileWriter.m_pArray, m_oFileWriter.m_pDrawingConverter);
+				//создаем папку для rels
+				CString sRelsDir;
+				sRelsDir.Format(_T("%s\\word\\charts\\_rels"), m_oFileWriter.m_oChartWriter.m_sDir);
+				DWORD dwFileAttr = ::GetFileAttributes( sRelsDir );
+				if( dwFileAttr == INVALID_FILE_ATTRIBUTES )
+					OOX::CSystemUtility::CreateDirectories(sRelsDir);
+				m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
+
+				CString sThemeDir;
+				int nIndex = m_oFileWriter.m_sThemePath.ReverseFind('\\');
+				if(-1 != nIndex)
+					sThemeDir = m_oFileWriter.m_sThemePath.Left(nIndex);
+				BinXlsxRW::SaveParams oSaveParams(sThemeDir);
+				BinXlsxRW::BinaryChartReader oBinaryChartReader(m_oBufferedStream, oSaveParams, m_oFileWriter.m_pArray, m_oFileWriter.m_pDrawingConverter);
 				OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace();
 				oBinaryChartReader.ReadCT_ChartSpace(length, &pChartSpace->m_oChartSpace);
 
 				XmlUtils::CStringWriter sw;
 				pChartSpace->toXML(sw);
 				CString sChartContent = sw.GetData();
-				if(false == sChartContent.IsEmpty())
-				{
-					CString sRelsName;
-					int nIndex;
-					m_oFileWriter.m_oChartWriter.AddChart(sChartContent, sRelsName, nIndex);
+				CString sFilename;
+				CString sRelsName;
+				int nChartIndex;
+				m_oFileWriter.m_oChartWriter.AddChart(sChartContent, sRelsName, sFilename, nChartIndex);
+				m_oFileWriter.m_oContentTypesWriter.AddOverrideRaw(oSaveParams.sAdditionalContentTypes);
 
-					long rId;
-					BSTR bstrChartRelType = OOX::Spreadsheet::FileTypes::Charts.RelationType().AllocSysString();
-					BSTR bstrNewImgRel = sRelsName.AllocSysString();
-					m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartRelType, bstrNewImgRel, NULL, &rId);
-					SysFreeString(bstrChartRelType);
-					SysFreeString(bstrNewImgRel);
+				CString sRelsPath;sRelsPath.Format(_T("%s\\%s.rels"), sRelsDir, sFilename);
+				BSTR bstrRelsPath = sRelsPath.AllocSysString();
+				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(bstrRelsPath);
+				SysFreeString(bstrRelsPath);
 
-					pDrawingProperty->sChartRels.Format(_T("rId%d"), rId);
-				}
+				long rId;
+				BSTR bstrChartRelType = OOX::Spreadsheet::FileTypes::Charts.RelationType().AllocSysString();
+				BSTR bstrNewImgRel = sRelsName.AllocSysString();
+				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartRelType, bstrNewImgRel, NULL, &rId);
+				SysFreeString(bstrChartRelType);
+				SysFreeString(bstrNewImgRel);
+
+				pDrawingProperty->sChartRels.Format(_T("rId%d"), rId);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;

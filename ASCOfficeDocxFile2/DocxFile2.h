@@ -440,6 +440,8 @@ private:
 		// theme
 		CString strTheme = strWord + _T("\\theme");
 		CreateDirectory(strTheme, NULL);
+		CString strThemeRels = strTheme + _T("\\_rels");
+		CreateDirectory(strThemeRels, NULL);
 		sThemePath = strTheme + _T("\\theme1.xml");
 		LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_DEFAULT_DOC_THEME),	_T("DOCXWR"), sThemePath);
 

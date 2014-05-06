@@ -47,6 +47,8 @@ private:
 	SAFEARRAY*				m_pBinaryFonts;
 	BOOL					m_bIsInit;
 
+	CString					m_strEditorFontsDumpFolder;
+
 public:
 	CWinFonts()
 	{
@@ -62,6 +64,8 @@ public:
 		m_pList			= NULL;
 		m_pBinaryFonts	= NULL;
 		m_bIsInit		= FALSE;
+
+		m_strEditorFontsDumpFolder = _T("");
 
 		return S_OK;
 	}
@@ -125,7 +129,10 @@ public:
 			{
 				Init(L"", VARIANT_TRUE, VARIANT_FALSE);
 			}
-
+		}
+		if ( _T("EditorFontsThumbnailsFolder") == sParamName && VT_BSTR == ParamValue.vt )
+		{
+			m_strEditorFontsDumpFolder = (CString)ParamValue.bstrVal;
 		}
 		return S_OK;
 	}
@@ -437,46 +444,153 @@ private:
 		}
 		// -------------------------------------------
 
-		// создаем картинку для табнейлов
-		double dDpi = 96; // 96 * 2 - for retina
-		double dW_mm = 80;
-		LONG lH1_px = LONG(7 * dDpi / 25.4);
-		LONG lWidthPix = (LONG)(dW_mm * dDpi / 25.4);
-		LONG lHeightPix = (LONG)(nCountFonts * lH1_px);
-
-		IUncompressedFrame* pFrame;
-		CoCreateInstance(__uuidof(CUncompressedFrame), NULL, CLSCTX_ALL, __uuidof(IUncompressedFrame), (void**)&pFrame);
-
-		pFrame->put_ColorSpace( ( 1 << 6) | ( 1 << 31) ); // CPS_BGRA | CPS_FLIP
-		pFrame->put_Width( lWidthPix );
-		pFrame->put_Height( lHeightPix );
-		pFrame->put_AspectRatioX( lWidthPix );
-		pFrame->put_AspectRatioY( lHeightPix );
-		pFrame->put_Interlaced( VARIANT_FALSE );
-		pFrame->put_Stride( 0, 4 * lWidthPix );
-		pFrame->AllocateBuffer( -1 );
-
-		BYTE* pBuffer = NULL;
-		pFrame->get_Buffer(&pBuffer);
-		memset(pBuffer, 0xFF, 4 * lWidthPix * lHeightPix);
-
-		for (LONG i = 3; i < lWidthPix * lHeightPix * 4; i += 4)
+		CString strWriteJS_thumbnail = _T("");
+		if (_T("") != m_strEditorFontsDumpFolder)
 		{
-			pBuffer[i] = 0;
+			for (int iX = 1; iX <= 2; ++iX)
+			{
+				// создаем картинку для табнейлов
+				double dDpi = 96 * iX;
+				double dW_mm = 80;
+				LONG lH1_px = LONG(7 * dDpi / 25.4);
+				LONG lWidthPix = (LONG)(dW_mm * dDpi / 25.4);
+				LONG lHeightPix = (LONG)(nCountFonts * lH1_px);
+
+				IUncompressedFrame* pFrame;
+				CoCreateInstance(__uuidof(CUncompressedFrame), NULL, CLSCTX_ALL, __uuidof(IUncompressedFrame), (void**)&pFrame);
+
+				pFrame->put_ColorSpace( ( 1 << 6) | ( 1 << 31) ); // CPS_BGRA | CPS_FLIP
+				pFrame->put_Width( lWidthPix );
+				pFrame->put_Height( lHeightPix );
+				pFrame->put_AspectRatioX( lWidthPix );
+				pFrame->put_AspectRatioY( lHeightPix );
+				pFrame->put_Interlaced( VARIANT_FALSE );
+				pFrame->put_Stride( 0, 4 * lWidthPix );
+				pFrame->AllocateBuffer( -1 );
+
+				BYTE* pBuffer = NULL;
+				pFrame->get_Buffer(&pBuffer);
+				memset(pBuffer, 0xFF, 4 * lWidthPix * lHeightPix);
+
+				for (LONG i = 3; i < lWidthPix * lHeightPix * 4; i += 4)
+				{
+					pBuffer[i] = 0;
+				}
+
+				IImageGdipFile* pImFile;
+				CoCreateInstance(__uuidof(CImageGdipFile), NULL, CLSCTX_ALL, __uuidof(IImageGdipFile), (void**)&pImFile);
+
+				IUnknown* punkFrame = NULL;
+				pFrame->QueryInterface(IID_IUnknown, (void**)&punkFrame);
+
+				pImFile->put_Frame(punkFrame);
+
+				RELEASEINTERFACE(punkFrame);
+
+				CFontManagerLight oFontManager;
+				oFontManager.SetDefaultFont(_T("Arial"), m_pList);
+
+				for (int index = 0; index < nCountFonts; ++index)
+				{
+					const CAtlMap<CString, CFontInfoJS>::CPair* pPair = mapFonts.Lookup(arrFonts[index]);
+
+					// thumbnail
+					LONG lFontIndex = 0;
+					LONG lFaceIndex = 0;
+					if (pPair->m_value.m_lIndexR != -1)
+					{
+						lFontIndex = pPair->m_value.m_lIndexR;
+						lFaceIndex = pPair->m_value.m_lFaceIndexR;
+					}
+					else if (pPair->m_value.m_lIndexI != -1)
+					{
+						lFontIndex = pPair->m_value.m_lIndexI;
+						lFaceIndex = pPair->m_value.m_lFaceIndexI;
+					}
+					else if (pPair->m_value.m_lIndexB != -1)
+					{
+						lFontIndex = pPair->m_value.m_lIndexB;
+						lFaceIndex = pPair->m_value.m_lFaceIndexB;
+					}
+					else if (pPair->m_value.m_lIndexBI != -1)
+					{
+						lFontIndex = pPair->m_value.m_lIndexBI;
+						lFaceIndex = pPair->m_value.m_lFaceIndexBI;
+					}
+
+					CString strFontPath = _T("");
+					CAtlMap<LONG, CString>::CPair* _pair = mapFontFiles2.Lookup(lFontIndex);
+					if (NULL != _pair)
+						strFontPath = _pair->m_value;
+
+					oFontManager.LoadFontFromFile(strFontPath, 14, dDpi, dDpi, lFaceIndex);
+					
+					CFreeTypeFont* pFont = oFontManager.GetFont();
+					BOOL bIsSymbol = FALSE;
+
+					if (pFont)
+						bIsSymbol = (-1 != (pFont->GetSymbolic())) ? TRUE : FALSE;
+
+					if (bIsSymbol)
+					{
+						CString strGetCour = oFontManager.GetFontPath(_T("Courier New"), m_pList);
+						if (_T("") != strGetCour)
+						{
+							oFontManager.LoadFontFromFile(strGetCour, 14, dDpi, dDpi, lFaceIndex);
+							pFont = oFontManager.GetFont();
+						}
+					}
+
+					if (pFont)
+					{
+						pFont->SetStringGID(FALSE);
+						pFont->SetCharSpacing(0);
+					}
+
+					BSTR bsText = pPair->m_value.m_sName.AllocSysString();
+					oFontManager.FillString(bsText, 5, 25.4 * (index * lH1_px + lH1_px) / dDpi - 2, dDpi, dDpi, pFrame, 255 /* black */); 
+					SysFreeString(bsText);
+				}
+									
+				CString strThumbnailPath = m_strEditorFontsDumpFolder + _T("/fonts_thumbnail");
+				if (iX == 1)
+					strThumbnailPath += _T(".png");
+				else
+					strThumbnailPath += _T("@2x.png");
+
+				BSTR bsThPath = strThumbnailPath.AllocSysString();
+				pImFile->SaveFile(bsThPath, 4);
+				SysFreeString(bsThPath);
+
+				if (TRUE)
+				{
+					if (iX == 1)
+					{
+						CFile oImageFile;
+						oImageFile.OpenFile(strThumbnailPath);
+						int nInputLen = (int)oImageFile.GetFileSize();
+						BYTE* pData = new BYTE[nInputLen];
+						oImageFile.ReadFile(pData, nInputLen);
+						oImageFile.CloseFile();
+
+						BSTR bstrDelFile = strThumbnailPath.AllocSysString();
+
+						SysFreeString(bstrDelFile);
+
+						int nOutputLen = Base64EncodeGetRequiredLength(nInputLen, ATL_BASE64_FLAG_NOCRLF);
+						BYTE* pOutput = new BYTE[nOutputLen];
+						Base64Encode(pData, nInputLen, (LPSTR)pOutput, &nOutputLen, ATL_BASE64_FLAG_NOCRLF);
+
+						strWriteJS_thumbnail = CString((char*)pOutput, nOutputLen);
+
+						RELEASEARRAYOBJECTS(pData);
+						RELEASEARRAYOBJECTS(pOutput);
+					}
+				}
+
+				RELEASEINTERFACE(pImFile);
+			}
 		}
-
-		IImageGdipFile* pImFile;
-		CoCreateInstance(__uuidof(CImageGdipFile), NULL, CLSCTX_ALL, __uuidof(IImageGdipFile), (void**)&pImFile);
-
-		IUnknown* punkFrame = NULL;
-		pFrame->QueryInterface(IID_IUnknown, (void**)&punkFrame);
-
-		pImFile->put_Frame(punkFrame);
-
-		RELEASEINTERFACE(punkFrame);
-
-		CFontManagerLight oFontManager;
-		oFontManager.SetDefaultFont(_T("Arial"), m_pList);
 
 		// и самое главное. Здесь должен скидываться скрипт для работы со всеми шрифтами.
 		// все объекты, которые позволят не знать о существующих фонтах
@@ -545,118 +659,24 @@ private:
 					oWriterJS.WriteStringC(_T(",\n"));
 				else
 					oWriterJS.WriteStringC(_T("\n"));
-				
-				// thumbnail
-				LONG lFontIndex = 0;
-				LONG lFaceIndex = 0;
-				if (pPair->m_value.m_lIndexR != -1)
-				{
-					lFontIndex = pPair->m_value.m_lIndexR;
-					lFaceIndex = pPair->m_value.m_lFaceIndexR;
-				}
-				else if (pPair->m_value.m_lIndexI != -1)
-				{
-					lFontIndex = pPair->m_value.m_lIndexI;
-					lFaceIndex = pPair->m_value.m_lFaceIndexI;
-				}
-				else if (pPair->m_value.m_lIndexI != -1)
-				{
-					lFontIndex = pPair->m_value.m_lIndexB;
-					lFaceIndex = pPair->m_value.m_lFaceIndexB;
-				}
-				else if (pPair->m_value.m_lIndexBI != -1)
-				{
-					lFontIndex = pPair->m_value.m_lIndexBI;
-					lFaceIndex = pPair->m_value.m_lFaceIndexBI;
-				}
-
-				CString strFontPath = _T("");
-				CAtlMap<LONG, CString>::CPair* _pair = mapFontFiles2.Lookup(lFontIndex);
-				if (NULL != _pair)
-					strFontPath = _pair->m_value;
-
-				oFontManager.LoadFontFromFile(strFontPath, 14, dDpi, dDpi, lFaceIndex);
-				
-				CFreeTypeFont* pFont = oFontManager.GetFont();
-				BOOL bIsSymbol = FALSE;
-
-				if (pFont)
-					bIsSymbol = (-1 != (pFont->GetSymbolic())) ? TRUE : FALSE;
-
-				if (bIsSymbol)
-				{
-					CString strGetCour = oFontManager.GetFontPath(_T("Courier New"), m_pList);
-					if (_T("") != strGetCour)
-					{
-						oFontManager.LoadFontFromFile(strGetCour, 14, dDpi, dDpi, lFaceIndex);
-						pFont = oFontManager.GetFont();
-					}
-				}
-
-				if (pFont)
-				{
-					pFont->SetStringGID(FALSE);
-					pFont->SetCharSpacing(0);
-				}
-
-				BSTR bsText = pPair->m_value.m_sName.AllocSysString();
-				oFontManager.FillString(bsText, 5, 25.4 * (index * lH1_px + lH1_px) / dDpi - 2, dDpi, dDpi, pFrame, 255 /* black */); 
-				SysFreeString(bsText);
 			}
 			oWriterJS.WriteStringC(_T("];\n\n"));
 
-			wchar_t sTempPath[MAX_PATH], sTempFile[MAX_PATH];
-			if ( 0 == GetTempPath( MAX_PATH, sTempPath ) )
-				return;
-
-			if ( 0 == GetTempFileName( sTempPath, L"thumbnail", 0, sTempFile ) )
-				return;
-			
-			CString strThumbnailPath(sTempFile);
-
-			BSTR bsThPath = strThumbnailPath.AllocSysString();
-			pImFile->SaveFile(bsThPath, 4);
-			SysFreeString(bsThPath);
-
-			RELEASEINTERFACE(pFrame);
-			RELEASEINTERFACE(pImFile);
-
-			CFile oImageFile;
-			oImageFile.OpenFile(strThumbnailPath);
-			int nInputLen = (int)oImageFile.GetFileSize();
-			BYTE* pData = new BYTE[nInputLen];
-			oImageFile.ReadFile(pData, nInputLen);
-			oImageFile.CloseFile();
-
-			BSTR bstrDelFile = strThumbnailPath.AllocSysString();
-
-#ifdef _DEBUG
-			CopyFile(bstrDelFile, L"C:\\thumbnail.png", FALSE);
-#endif
-			DeleteFile(bstrDelFile);
-			SysFreeString(bstrDelFile);
-
-			int nOutputLen = Base64EncodeGetRequiredLength(nInputLen, ATL_BASE64_FLAG_NOCRLF);
-			BYTE* pOutput = new BYTE[nOutputLen];
-			Base64Encode(pData, nInputLen, (LPSTR)pOutput, &nOutputLen, ATL_BASE64_FLAG_NOCRLF);
-
-			CString _s((char*)pOutput, nOutputLen);
-
-			RELEASEARRAYOBJECTS(pData);
-			RELEASEARRAYOBJECTS(pOutput);
-
-			oWriterJS.WriteStringC(_T("window[\"g_standart_fonts_thumbnail\"] = \"data:image/png;base64,"));
-			oWriterJS.WriteStringC(_s);
-			oWriterJS.WriteStringC(_T("\";\n"));
+			if (TRUE)
+			{
+				oWriterJS.WriteStringC(_T("window[\"g_standart_fonts_thumbnail\"] = \"data:image/png;base64,"));
+				oWriterJS.WriteStringC(strWriteJS_thumbnail);
+				oWriterJS.WriteStringC(_T("\";\n"));
+			}
 
 			if (TRUE)
 			{
 				// dump fontselection.bin
 				CheckBinaryData();
 
-				nInputLen = (int)m_pBinaryFonts->rgsabound[0].cElements;
-				nOutputLen = Base64EncodeGetRequiredLength(nInputLen, ATL_BASE64_FLAG_NOCRLF);
-				pOutput = new BYTE[nOutputLen];
+				int nInputLen = (int)m_pBinaryFonts->rgsabound[0].cElements;
+				int nOutputLen = Base64EncodeGetRequiredLength(nInputLen, ATL_BASE64_FLAG_NOCRLF);
+				BYTE* pOutput = new BYTE[nOutputLen];
 				Base64Encode((BYTE*)m_pBinaryFonts->pvData, nInputLen, (LPSTR)pOutput, &nOutputLen, ATL_BASE64_FLAG_NOCRLF);
 
 				CString _ss((char*)pOutput, nOutputLen);

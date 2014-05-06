@@ -642,9 +642,31 @@ private:
 
 			CString _s((char*)pOutput, nOutputLen);
 
+			RELEASEARRAYOBJECTS(pData);
+			RELEASEARRAYOBJECTS(pOutput);
+
 			oWriterJS.WriteStringC(_T("window[\"g_standart_fonts_thumbnail\"] = \"data:image/png;base64,"));
 			oWriterJS.WriteStringC(_s);
 			oWriterJS.WriteStringC(_T("\";\n"));
+
+			if (TRUE)
+			{
+				// dump fontselection.bin
+				CheckBinaryData();
+
+				nInputLen = (int)m_pBinaryFonts->rgsabound[0].cElements;
+				nOutputLen = Base64EncodeGetRequiredLength(nInputLen, ATL_BASE64_FLAG_NOCRLF);
+				pOutput = new BYTE[nOutputLen];
+				Base64Encode((BYTE*)m_pBinaryFonts->pvData, nInputLen, (LPSTR)pOutput, &nOutputLen, ATL_BASE64_FLAG_NOCRLF);
+
+				CString _ss((char*)pOutput, nOutputLen);
+
+				oWriterJS.WriteStringC(_T("window[\"g_fonts_selection_bin\"] = \""));
+				oWriterJS.WriteStringC(_ss);
+				oWriterJS.WriteStringC(_T("\";\n"));
+
+				RELEASEARRAYOBJECTS(pOutput);				
+			}
 
 			CStringA strA = (CStringA)oWriterJS.GetCString();
 			CFile oFileFontsJS;

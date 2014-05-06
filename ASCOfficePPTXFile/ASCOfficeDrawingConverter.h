@@ -690,6 +690,7 @@ xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\
 			m_oReader.m_stackRels.Add(m_oReader.m_pRels);
 			NSBinPptxRW::CRelsGenerator* pGenerator = new NSBinPptxRW::CRelsGenerator(m_oReader.m_pRels->m_pManager);
 			m_oReader.m_pRels = pGenerator;
+			m_oReader.m_pRels->StartRels();
 		}
 		return S_OK;
 	}
@@ -739,6 +740,12 @@ xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\
 		{
 			m_oReader.m_pRels->m_pManager = &m_oImageManager;
 			m_oImageManager.m_bIsWord = TRUE;
+			m_oReader.m_strFolder = CString(ParamValue.bstrVal);
+		}
+		else if (name == _T("SourceFileDir2"))
+		{
+			m_oReader.m_pRels->m_pManager = &m_oImageManager;
+			m_oImageManager.m_bIsWord = FALSE;
 			m_oReader.m_strFolder = CString(ParamValue.bstrVal);
 		}
 		else if (name == _T("UseConvertion2007"))

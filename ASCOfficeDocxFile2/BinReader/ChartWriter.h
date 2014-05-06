@@ -13,9 +13,10 @@ namespace Writers
 			int index;
 		};
 		CSimpleArray<ChartElem*> m_aCharts;
-		CString m_sDir;
 		ContentTypesWriter& m_oContentTypesWriter;
 		int nChartCount;
+	public:
+		CString m_sDir;
 	public:
 		ChartWriter(CString sDir, ContentTypesWriter& oContentTypesWriter):m_sDir(sDir),m_oContentTypesWriter(oContentTypesWriter)
 		{
@@ -54,7 +55,7 @@ namespace Writers
 				}
 			}
 		}
-		void AddChart(CString& content, CString& sRelsName, int& index)
+		void AddChart(CString& content, CString& sRelsName, CString& sFileName, int& index)
 		{
 			ChartElem* pChartElem = new ChartElem();
 			pChartElem->content = content;
@@ -62,6 +63,7 @@ namespace Writers
 			nChartCount++;
 			pChartElem->filename.Format(_T("chart%d.xml"), pChartElem->index);
 			sRelsName = _T("charts/") + pChartElem->filename;
+			sFileName = pChartElem->filename;
 			index = pChartElem->index;
 
 			m_aCharts.Add(pChartElem);

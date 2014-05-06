@@ -2557,14 +2557,16 @@ HRESULT CAVSOfficeDrawingConverter::SaveThemeXml(SAFEARRAY* pBinaryTheme, LONG l
 	
 	m_oReader.Init(pData, lStart, lLength);
 
-	m_oReader.m_pRels->Clear();
-	m_oReader.m_pRels->StartTheme();
+	// reset rels
+	SetDstContentRels();
+
+	//m_oReader.m_pRels->Clear();
+	//m_oReader.m_pRels->StartTheme();
 
 	smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme();
 	pTheme->fromPPTY(&m_oReader);
 	m_oXmlWriter.ClearNoAttack();
-	m_oReader.m_pRels->CloseRels();
-
+	
 	CString strThemePath = (CString)bsThemePath;
 
 	pTheme->toXmlWriter(&m_oXmlWriter);
@@ -2578,7 +2580,9 @@ HRESULT CAVSOfficeDrawingConverter::SaveThemeXml(SAFEARRAY* pBinaryTheme, LONG l
 	else
 		strTemp += (strFileName + _T(".rels"));
 	
-	m_oReader.m_pRels->SaveRels(strTemp);
+	BSTR bsTempSave = strTemp.AllocSysString();
+	SaveDstContentRels(bsTempSave);
+	SysFreeString(bsTempSave);
 
 	m_oXmlWriter.ClearNoAttack();
 
@@ -3202,6 +3206,11 @@ HRESULT CAVSOfficeDrawingConverter::GetRecordXml(SAFEARRAY* pBinaryObj, LONG lSt
 {
 	if (NULL == pBinaryObj || bsXml == NULL)
 		return S_FALSE;
+
+	if (lDocType != XMLWRITER_DOC_TYPE_DOCX)
+		m_oReader.m_pRels->m_pManager->m_bIsWord = FALSE;
+	else
+		m_oReader.m_pRels->m_pManager->m_bIsWord = TRUE;
 
 	BYTE* pData = (BYTE*)pBinaryObj->pvData;
 	m_oReader.Init(pData, lStart, lLength);

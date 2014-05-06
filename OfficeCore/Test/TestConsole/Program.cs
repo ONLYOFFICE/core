@@ -42,6 +42,7 @@ namespace TestConsole
             //oFonts.Init(@"X:\AVS\Sources\TeamlabOffice\trunk\OfficeWeb\Fonts\native", false, false);
 
             oFonts.SetAdditionalParam("BinaryFonts", @"C:\test\font_selection.bin");
+            oFonts.SetAdditionalParam("EditorFontsThumbnailsFolder", @"C:\test");
             oFonts.SetAdditionalParam("AllFonts.js", @"C:\test\AllFonts.js");
             
         }

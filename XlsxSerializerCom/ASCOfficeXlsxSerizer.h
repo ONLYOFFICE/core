@@ -86,7 +86,9 @@ public:
 
 		CString sThemeDir;sThemeDir.Format(_T("%s\\xl\\%s"), sDstPath, OOX::FileTypes::Theme.DefaultDirectory());
 		CString sThemePath;sThemePath.Format(_T("%s\\%s"), sThemeDir, OOX::FileTypes::Theme.DefaultFileName());
+		CString sThemeRelsPath;sThemeRelsPath.Format(_T("%s\\_rels"), sThemeDir);
 		OOX::CSystemUtility::CreateDirectories(sThemeDir);
+		OOX::CSystemUtility::CreateDirectories(sThemeRelsPath);
 		OOX::CSystemUtility::CreateDirectories(sMediaDir);
 
 		CreateTheme(sThemePath);

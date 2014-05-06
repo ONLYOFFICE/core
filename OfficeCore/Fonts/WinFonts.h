@@ -438,9 +438,10 @@ private:
 		// -------------------------------------------
 
 		// создаем картинку для табнейлов
+		double dDpi = 96; // 96 * 2 - for retina
 		double dW_mm = 80;
-		LONG lH1_px = LONG(7 * 96 / 25.4);
-		LONG lWidthPix = (LONG)(dW_mm * 96 / 25.4);
+		LONG lH1_px = LONG(7 * dDpi / 25.4);
+		LONG lWidthPix = (LONG)(dW_mm * dDpi / 25.4);
 		LONG lHeightPix = (LONG)(nCountFonts * lH1_px);
 
 		IUncompressedFrame* pFrame;
@@ -574,7 +575,7 @@ private:
 				if (NULL != _pair)
 					strFontPath = _pair->m_value;
 
-				oFontManager.LoadFontFromFile(strFontPath, 14, 96, 96, lFaceIndex);
+				oFontManager.LoadFontFromFile(strFontPath, 14, dDpi, dDpi, lFaceIndex);
 				
 				CFreeTypeFont* pFont = oFontManager.GetFont();
 				BOOL bIsSymbol = FALSE;
@@ -587,7 +588,7 @@ private:
 					CString strGetCour = oFontManager.GetFontPath(_T("Courier New"), m_pList);
 					if (_T("") != strGetCour)
 					{
-						oFontManager.LoadFontFromFile(strGetCour, 14, 96, 96, lFaceIndex);
+						oFontManager.LoadFontFromFile(strGetCour, 14, dDpi, dDpi, lFaceIndex);
 						pFont = oFontManager.GetFont();
 					}
 				}
@@ -599,7 +600,7 @@ private:
 				}
 
 				BSTR bsText = pPair->m_value.m_sName.AllocSysString();
-				oFontManager.FillString(bsText, 5, 25.4 * (index * lH1_px + lH1_px) / 96 - 2, 96, 96, pFrame, 255 /* black */); 
+				oFontManager.FillString(bsText, 5, 25.4 * (index * lH1_px + lH1_px) / dDpi - 2, dDpi, dDpi, pFrame, 255 /* black */); 
 				SysFreeString(bsText);
 			}
 			oWriterJS.WriteStringC(_T("];\n\n"));

@@ -81,7 +81,7 @@ public:
 		VARIANT var;
 		var.vt = VT_BSTR;
 		var.bstrVal = sFileInDir.AllocSysString();
-		pOfficeDrawingConverter->SetAdditionalParam(L"SourceFileDir", var);
+		pOfficeDrawingConverter->SetAdditionalParam(L"SourceFileDir2", var);
 		RELEASESYSSTRING(var.bstrVal);
 
 		CString sThemeDir;sThemeDir.Format(_T("%s\\xl\\%s"), sDstPath, OOX::FileTypes::Theme.DefaultDirectory());
@@ -199,8 +199,17 @@ public:
 
 			m_pExternalDrawingConverter->SetDstContentRels();
 
+			CString sFilename = bsFilename;
+			//получаем sThemePath из bsFilename предполагая что папка theme находится на уровень выше bsFilename
+			CString sThemePath;
+			CString sFilenameReverse = sFilename;sFilenameReverse.MakeReverse();
+			int nIndex = sFilenameReverse.Find('\\');
+			nIndex = sFilenameReverse.Find('\\', nIndex + 1);
+			if(-1 != nIndex)
+				sThemePath = sFilename.Left(sFilename.GetLength() - nIndex) + _T("theme");
+
 			//todo theme path
-			BinXlsxRW::SaveParams oSaveParams(CString(_T("")));
+			BinXlsxRW::SaveParams oSaveParams(sThemePath);
 			OOX::Spreadsheet::CChartSpace oChartSpace;
 			BinXlsxRW::BinaryChartReader oBinaryChartReader(oBufferedStream, oSaveParams, pBinaryObj, m_pExternalDrawingConverter);
 			oBinaryChartReader.ReadCT_ChartSpace(lLength, &oChartSpace.m_oChartSpace);

@@ -961,7 +961,17 @@ namespace BinXlsxRW{
 			BSTR bstrThemeOverrideRelsPath = sThemeOverrideRelsPath.AllocSysString();
 			m_pOfficeDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/themeOverride"), bstrThemeOverrideRelsPath, NULL, &rId);
 			SysFreeString(bstrThemeOverrideRelsPath);
-			m_oSaveParams.sAdditionalContentTypes.AppendFormat(_T("<Override PartName=\"/xl/theme/%s\" ContentType=\"application/vnd.openxmlformats-officedocument.themeOverride+xml\"/>"), sThemeOverrideName);
+
+			CString sThemePathReverse = m_oSaveParams.sThemePath;sThemePathReverse.MakeReverse();
+			CString sContentTypesPath;
+			int nIndex = sThemePathReverse.Find('\\');
+			nIndex = sThemePathReverse.Find('\\', nIndex + 1);
+			if(-1 != nIndex)
+			{
+				CString sContentTypesPath = m_oSaveParams.sThemePath.Right(nIndex);
+				sContentTypesPath.Replace('\\', '/');
+				m_oSaveParams.sAdditionalContentTypes.AppendFormat(_T("<Override PartName=\"/%s/%s\" ContentType=\"application/vnd.openxmlformats-officedocument.themeOverride+xml\"/>"), sContentTypesPath, sThemeOverrideName);
+			}
 
 			res = c_oSerConstants::ReadUnknown;
 		}

@@ -319,6 +319,17 @@ public:
 				}
 				break;
 			}
+		case c_oSerProp_rPrType::Shd:
+			{
+				Shd oShd;
+				oBinary_CommonReader2.ReadShdOut(length, &oShd);
+				if(shd_Nil != oShd.Value)
+				{
+					orPr->bShd = true;
+					orPr->Shd = oShd.ToString();
+				}
+				break;
+			}
 		case c_oSerProp_rPrType::RStyle:
 			{
 				CString sRStyle((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);

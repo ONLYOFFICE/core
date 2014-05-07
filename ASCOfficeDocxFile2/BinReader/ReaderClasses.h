@@ -287,6 +287,7 @@ public:
 	docRGB Color;
 	BYTE VertAlign;
 	docRGB HighLight;
+	CString Shd;
 	CString RStyle;
 	double Spacing;
 	bool DStrikeout;
@@ -316,6 +317,7 @@ public:
 	bool bColor;
 	bool bVertAlign;
 	bool bHighLight;
+	bool bShd;
 	bool bRStyle;
 	bool bSpacing;
 	bool bDStrikeout;
@@ -363,6 +365,7 @@ public:
 		bColor = false;
 		bVertAlign = false;
 		bHighLight = false;
+		bShd = false;
 		bRStyle = false;
 		bSpacing = false;
 		bDStrikeout = false;
@@ -383,7 +386,7 @@ public:
 	}
 	bool IsNoEmpty()
 	{
-		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || bHighLight ||
+		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || bHighLight || bShd ||
 				bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor;
 	}
 	void Write(XmlUtils::CStringWriter*  pCStringWriter)
@@ -565,7 +568,7 @@ public:
 				sHighLight.Format(_T("<w:highlight w:val=\"%s\" />"), sColor);
 				pCStringWriter->WriteString(sHighLight);
 			}
-			else
+			else if(g_nCurFormatVersion < 5)
 			{
 				//добавляем как shading
 				CString sShd;
@@ -580,6 +583,8 @@ public:
 			else if(false == bDoNotWriteNullProp)
 				pCStringWriter->WriteString(CString(_T("<w:u w:val=\"none\"/>")));
 		}
+		if(bShd)
+			pCStringWriter->WriteString(Shd);
 		if(bVertAlign)
 		{
 			switch(VertAlign)

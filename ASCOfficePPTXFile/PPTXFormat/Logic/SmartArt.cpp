@@ -214,6 +214,12 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 				return;
 			}
 
+			VARIANT varDir;
+			varDir.vt = VT_BSTR;
+			varDir.bstrVal = pReader->m_strFolder.AllocSysString();
+			pDrawingConverter->SetAdditionalParam(L"SourceFileDir2", varDir);
+			SysFreeString(varDir.bstrVal);
+
 			VARIANT var;
 			var.vt = VT_ARRAY;
 

@@ -247,6 +247,7 @@ public:
 
 				CString sContentTypeXml;
 				sContentTypeXml.Format(_T("<Override PartName=\"%s\" ContentType=\"application/vnd.openxmlformats-officedocument.drawingml.chart+xml\"/>"), sContentTypePath);
+				sContentTypeXml.Append(oSaveParams.sAdditionalContentTypes);
 				*bsContentTypeElement = sContentTypeXml.AllocSysString();
 				hRes = S_OK;
 			}

@@ -417,6 +417,7 @@ namespace BinDocxRW
 			}
 			void Write_rPr(const OOX::Logic::CRunProperty& rPr)
 			{
+				int nCurPos = 0;
 				//Bold
 				if(false != rPr.m_oBold.IsInit())
 				{
@@ -570,11 +571,6 @@ namespace BinDocxRW
 				//HighLight
 				if(false != rPr.m_oHighlight.IsInit() || false != rPr.m_oShd.IsInit())
 				{
-					//Эти переменные нужны чтобы разрулить ситуацию, когда в документе используются m_oShd, а мы их отменяем с помощью highlightcolorNone
-					bool bHighLightNone = false;
-					bool bHighLightColor = false;
-					bool bShdNone = false;
-					bool bShdColor = false;
 					if(false != rPr.m_oHighlight.IsInit())
 					{
 						const ComplexTypes::Word::CHighlight& oHighlight = rPr.m_oHighlight.get();
@@ -583,40 +579,26 @@ namespace BinDocxRW
 							const SimpleTypes::CHighlightColor<>& oHighlightVal = oHighlight.m_oVal.get();
 							if(SimpleTypes::highlightcolorNone == oHighlightVal.GetValue())
 							{
-								bHighLightNone = true;
+								m_oBcw.m_oStream.WriteByte(c_oSerProp_rPrType::HighLightTyped);
+								m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Byte);
+								m_oBcw.m_oStream.WriteByte(c_oSer_ColorType::None);
 							}
 							else
 							{
-								bHighLightColor = true;
 								SimpleTypes::CHexColor<> oHexColor(oHighlightVal.Get_R(), oHighlightVal.Get_G(), oHighlightVal.Get_B());
 								m_oBcw.WriteColor(c_oSerProp_rPrType::HighLight, oHexColor);
 							}
 						}
 					}
-					if(false == bHighLightColor && false != rPr.m_oShd.IsInit())
-					{
-						if(rPr.m_oShd->m_oVal.IsInit())
-						{
-							const ComplexTypes::Word::CShading& oShd = rPr.m_oShd.get();
-							if( SimpleTypes::shdNil == oShd.m_oVal->GetValue())
-							{
-								bShdNone = true;
-							}
-							else if(oShd.m_oFill.IsInit() && SimpleTypes::hexcolorRGB == oShd.m_oFill->GetValue())
-							{
-								bShdColor = true;
-								const SimpleTypes::CHexColor<>& oFill = oShd.m_oFill.get();
-								SimpleTypes::CHexColor<> oHexColor(oFill.Get_R(), oFill.Get_G(), oFill.Get_B());
-								m_oBcw.WriteColor(c_oSerProp_rPrType::HighLight, oHexColor);
-							}
-						}
-					}
-					if(false == bHighLightColor && false == bShdColor && ( true == bHighLightNone || true == bShdNone))
-					{
-						m_oBcw.m_oStream.WriteByte(c_oSerProp_rPrType::HighLightTyped);
-						m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Byte);
-						m_oBcw.m_oStream.WriteByte(c_oSer_ColorType::None);
-					}
+				}
+				//Shd
+				if(false != rPr.m_oShd.IsInit())
+				{
+					m_oBcw.m_oStream.WriteByte(c_oSerProp_rPrType::Shd);
+					m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Variable);
+					nCurPos = m_oBcw.WriteItemWithLengthStart();
+					m_oBcw.WriteShd(rPr.m_oShd.get());
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
 				//RStyle
 				if(false != rPr.m_oRStyle.IsInit())

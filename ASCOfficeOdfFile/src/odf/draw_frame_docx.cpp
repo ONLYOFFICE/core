@@ -1178,6 +1178,9 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		process_build_chart process_build_chart_(chartBuild,objectSubDoc.odf_context().styleContainer());
         contentSubDoc->accept(process_build_chart_); 
 
+		if (chartBuild.object_type_ != 1)return;
+			//диаграмма
+		
 		chartBuild.docx_convert(Context);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //отображательная часть	

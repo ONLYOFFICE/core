@@ -33,9 +33,9 @@
 //              значение 0 используется для релиза, так как на выходе по спецификации нам требуется распакованный package
 #ifndef STANDALONE_USE
 	#define STANDALONE_USE 0// что получаем на входе: файл (1) или папку (0)
-#else
-	#undef STANDALONE_USE
-	#define STANDALONE_USE 0
+//#else
+//	#undef STANDALONE_USE
+//	#define STANDALONE_USE 0
 #endif
 
 namespace {

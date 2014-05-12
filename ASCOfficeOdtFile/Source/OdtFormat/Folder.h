@@ -43,7 +43,7 @@ namespace Odt
 		property<Manifest::File>							Manifest;
 		property<Settings::File>							Settings;
 		property<MimeType::File>							Mimetype;
-		property<Meta::File>									Meta;
+		property<Meta::File>								Meta;
 		property<Styles::File>								Styles;
 		property<Content::File>								Content;
 

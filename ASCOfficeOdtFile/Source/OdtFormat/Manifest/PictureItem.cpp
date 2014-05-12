@@ -89,8 +89,14 @@ namespace Odt
 			if ((filename == std::wstring(L"NULL")) || (filename == std::wstring(L"")))
 				return;
 
-			if (!boost::filesystem::exists(path/filename))
-				boost::filesystem::copy_file(m_filename, path/filename);
+			try
+			{
+				if (!boost::filesystem::exists(path/filename))
+					boost::filesystem::copy_file(m_filename, path/filename);
+			}
+			catch(...)
+			{
+			}
 		}
 
 	} // namespace Manifest

@@ -1857,15 +1857,31 @@ namespace BinXlsxRW {
 		void WritePane(const OOX::Spreadsheet::CPane& oPane)
 		{
 			int nCurPos = 0;
+			//State
 			if (oPane.m_oState.IsInit())
 			{
 				m_oBcw.m_oStream.WriteByte(c_oSer_Pane::State);
 				m_oBcw.m_oStream.WriteString2(oPane.m_oState.get2());
 			}
+			//TopLeftCell
 			if (oPane.m_oTopLeftCell.IsInit())
 			{
 				m_oBcw.m_oStream.WriteByte(c_oSer_Pane::TopLeftCell);
 				m_oBcw.m_oStream.WriteString2(oPane.m_oTopLeftCell.get2());
+			}
+			//XSplit
+			if (oPane.m_oXSplit.IsInit())
+			{
+				m_oBcw.m_oStream.WriteByte(c_oSer_Pane::XSplit);
+				m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Double);
+				m_oBcw.m_oStream.WriteDouble(oPane.m_oXSplit->GetValue());
+			}
+			//YSplit
+			if (oPane.m_oYSplit.IsInit())
+			{
+				m_oBcw.m_oStream.WriteByte(c_oSer_Pane::YSplit);
+				m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Double);
+				m_oBcw.m_oStream.WriteDouble(oPane.m_oYSplit->GetValue());
 			}
 		}
 

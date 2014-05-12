@@ -1872,16 +1872,16 @@ namespace BinXlsxRW {
 			//XSplit
 			if (oPane.m_oXSplit.IsInit())
 			{
-				m_oBcw.m_oStream.WriteByte(c_oSer_Pane::XSplit);
-				m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Double);
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_Pane::XSplit);
 				m_oBcw.m_oStream.WriteDouble(oPane.m_oXSplit->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			//YSplit
 			if (oPane.m_oYSplit.IsInit())
 			{
-				m_oBcw.m_oStream.WriteByte(c_oSer_Pane::YSplit);
-				m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Double);
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_Pane::YSplit);
 				m_oBcw.m_oStream.WriteDouble(oPane.m_oYSplit->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
 

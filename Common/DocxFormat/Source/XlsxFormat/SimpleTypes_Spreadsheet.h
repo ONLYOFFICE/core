@@ -214,10 +214,10 @@ namespace SimpleTypes
 
 		enum EThemeColor
 		{
-			themecolorDark1             =  0,
-			themecolorLight1            =  1,
-			themecolorDark2             =  2,
-			themecolorLight2            =  3,
+			themecolorLight1            =  0,
+			themecolorDark1             =  1,
+			themecolorLight2            =  2,
+			themecolorDark2             =  3,
 			themecolorAccent1           =  4,
 			themecolorAccent2           =  5,
 			themecolorAccent3           =  6,

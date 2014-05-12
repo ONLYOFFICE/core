@@ -23,7 +23,13 @@ namespace Docx2Odt
 		const Odt::Content::Table Table::table2table(const OOX::Logic::Table& ooxTable)
 		{
 			if(ooxTable.tblPr->Style.is_init())
-				m_tableStyle = boost::shared_dynamic_cast<OOX::Styles, OOX::File>(m_docxFileContainer.get(OOX::FileTypes::Style))->GetStyleById(*ooxTable.tblPr->Style);
+			{
+				boost::shared_ptr<OOX::Styles> pStyle = boost::shared_dynamic_cast<OOX::Styles, OOX::File>(m_docxFileContainer.get(OOX::FileTypes::Style));
+				if (pStyle)
+				{
+					m_tableStyle = pStyle->GetStyleById(*ooxTable.tblPr->Style);
+				}
+			}
 			m_Look = HexString2Int(ooxTable.tblPr->Look.get_value_or("0000"));
 			Odt::Content::Table odtTable;
 			

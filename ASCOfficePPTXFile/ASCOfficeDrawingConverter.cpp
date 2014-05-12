@@ -2735,6 +2735,7 @@ HRESULT CAVSOfficeDrawingConverter::SaveObjectEx(SAFEARRAY* pBinaryObj, LONG lSt
 {
 	if (XMLWRITER_DOC_TYPE_DOCX == lDocType)
 	{
+		m_oImageManager.m_bIsWord = TRUE;
 		// нужно писать всякие inline/anchor + word2007 format
 		return SaveObject(pBinaryObj, lStart, lLength, bsMainProps, bsXml);
 	}

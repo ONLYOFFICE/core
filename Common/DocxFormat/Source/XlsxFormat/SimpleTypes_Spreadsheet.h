@@ -214,10 +214,10 @@ namespace SimpleTypes
 
 		enum EThemeColor
 		{
-			themecolorLight1            =  0,
-			themecolorDark1             =  1,
-			themecolorLight2            =  2,
-			themecolorDark2             =  3,
+			themecolorDark1             =  0,
+			themecolorLight1            =  1,
+			themecolorDark2             =  2,
+			themecolorLight2            =  3,
 			themecolorAccent1           =  4,
 			themecolorAccent2           =  5,
 			themecolorAccent3           =  6,
@@ -239,10 +239,10 @@ namespace SimpleTypes
 				int nThemeColor = _wtoi(sValue);
 				switch(nThemeColor)
 				{
-				case 0:m_eValue = themecolorDark1;break;
-				case 1:m_eValue = themecolorLight1;break;
-				case 2:m_eValue = themecolorDark2;break;
-				case 3:m_eValue = themecolorLight2;break;
+				case 0:m_eValue = themecolorLight1;break;
+				case 1:m_eValue = themecolorDark1;break;
+				case 2:m_eValue = themecolorLight2;break;
+				case 3:m_eValue = themecolorDark2;break;
 				case 4:m_eValue = themecolorAccent1;break;
 				case 5:m_eValue = themecolorAccent2;break;
 				case 6:m_eValue = themecolorAccent3;break;

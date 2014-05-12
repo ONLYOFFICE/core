@@ -284,7 +284,10 @@ void docx_serialize_shape(std::wostream & strm, _docx_drawing const & val)
 		shapeType =	_ooxShapeType[val.sub_type];
 	} 
 
-	if (shapeType.length()<1)return;	
+	if (shapeType.length()<1)
+	{
+		shapeType = L"rect";
+	}
    
 	CP_XML_WRITER(strm)    
     {

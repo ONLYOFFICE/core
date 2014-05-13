@@ -8,13 +8,13 @@ namespace odf {
 
 class rels;
 
-class mediaitems
+class _mediaitems
 {
 public:
     enum Type { typeUnknown = 0, typeImage, typeAudio, typeVideo};
 	//oleObject ???
 
-    mediaitems()
+    _mediaitems()
     {
  		count_image		=0;
  		count_media		=0;

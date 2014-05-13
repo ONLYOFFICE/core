@@ -83,9 +83,8 @@ ods_conversion_context::ods_conversion_context(package::odf_document * outputDoc
 
 void ods_conversion_context::start_document()
 {
-	create_element(L"office", L"spreadsheet", content_, this,true);
-
-	current_spreadsheet_ = dynamic_cast<office_spreadsheet*>(content_.back().get());
+	start_spreadsheet();
+	current_spreadsheet_ = dynamic_cast<office_spreadsheet*>(objects_.back().content.get());
 }
 
 
@@ -116,19 +115,19 @@ void ods_conversion_context::set_sheet_dimension(std::wstring & ref)
 
 void ods_conversion_context::end_sheet()
 {
-	if (current_table().drawing_context().is_exist_content())
+	if (current_table().drawing_context()->is_exist_content())
 	{
 		office_element_ptr shapes_root_elm;
 		create_element(L"table", L"shapes",shapes_root_elm,this);
 
-		current_table().drawing_context().finalize(shapes_root_elm);
+		current_table().drawing_context()->finalize(shapes_root_elm);
 		
 		current_table().add_child_element(shapes_root_elm);
 	}
 
 	table_context_.end_table();
 	
-	styles_context().reset_defaults();
+	styles_context()->reset_defaults();
 }
 
 void ods_conversion_context::start_row(int _start_row, int repeated, int level, bool _default)
@@ -156,12 +155,12 @@ void ods_conversion_context::start_row(int _start_row, int repeated, int level, 
 	office_element_ptr	style_elm;
 	if ( _default)
 	{
-		style_elm = styles_context().find_odf_style_default(style_family::TableRow);
+		style_elm = styles_context()->find_odf_style_default(style_family::TableRow);
 	}
 	else
 	{
-		styles_context().create_style(L"",style_family::TableRow, true, false, -1);
-		style_elm = styles_context().last_state().get_office_element();
+		styles_context()->create_style(L"",style_family::TableRow, true, false, -1);
+		style_elm = styles_context()->last_state().get_office_element();
 		
 		style* _style = dynamic_cast<style*>(style_elm.get());
 		if (!_style)return;		
@@ -179,7 +178,7 @@ void ods_conversion_context::start_row(int _start_row, int repeated, int level, 
 
 	if ( _default)
 	{
-		//std::wstring style_cell_name= styles_context().find_odf_style_name_default(odf::style_family::TableCell);
+		//std::wstring style_cell_name= styles_context()->find_odf_style_name_default(odf::style_family::TableCell);
 		//current_table().set_row_default_cell_style(style_cell_name);
 	}
 }
@@ -284,7 +283,7 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 	if ( xfd_style >=0)
 	{
 		odf_style_state  *style_state=NULL;
-		styles_context().find_odf_style_state(xfd_style, style_family::TableCell,style_state);
+		styles_context()->find_odf_style_state(xfd_style, style_family::TableCell,style_state);
 		if (style_state)
 		{
 			style_elm = style_state->get_office_element();
@@ -292,7 +291,7 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 			
 			int number_format = style_state->get_number_format();//oox
 			if (number_format >0)
-				format_value_type = numbers_styles_context().add_or_find(number_format).ods_type;
+				format_value_type = numbers_styles_context()->add_or_find(number_format).ods_type;
 		}
 		else
 		{//error
@@ -362,14 +361,14 @@ void ods_conversion_context::add_column(int start_column, int repeated, int leve
 	office_element_ptr	style_elm;
 	if ( _default)
 	{
-		style_elm = styles_context().find_odf_style_default(style_family::TableColumn);
+		style_elm = styles_context()->find_odf_style_default(style_family::TableColumn);
 	}
 	else
 	{
 		//по сути в этом стиле раличные опции ширины колонок тока .. а если свойства совпадают - можно сгенерить один, хотя выше и указано что стили разные.
 		//то есть в оо разделяют оох стиль на 2 (для колонки собственно, и описалово ячеек в колонки)
-		styles_context().create_style(L"",style_family::TableColumn, true, false, -1);
-		style_elm = styles_context().last_state().get_office_element();
+		styles_context()->create_style(L"",style_family::TableColumn, true, false, -1);
+		style_elm = styles_context()->last_state().get_office_element();
 		
 		style* _style = dynamic_cast<style*>(style_elm.get());
 		if (!_style)return;		
@@ -387,13 +386,13 @@ void ods_conversion_context::add_column(int start_column, int repeated, int leve
 
 	if (_default)
 	{
-		std::wstring style_cell_name= styles_context().find_odf_style_name_default(odf::style_family::TableCell);
+		std::wstring style_cell_name= styles_context()->find_odf_style_name_default(odf::style_family::TableCell);
 		current_table().set_column_default_cell_style(style_cell_name);
 	}
 }
 void ods_conversion_context::start_text_context()
 {
-	current_text_context_ = new odf_text_context(&styles_context(),this);
+	current_text_context_ = new odf_text_context(styles_context(),this);
 
 }
 void ods_conversion_context::end_text_context()
@@ -449,9 +448,9 @@ void ods_conversion_context::start_image(std::wstring & image_file_name)
 {
 	std::wstring odf_ref_name ;
 	
-	mediaitems_.add_or_find(image_file_name,mediaitems::typeImage,odf_ref_name);
+	mediaitems()->add_or_find(image_file_name,_mediaitems::typeImage,odf_ref_name);
 
-	current_table().drawing_context().start_image(odf_ref_name);
+	current_table().drawing_context()->start_image(odf_ref_name);
 }
 }
 }

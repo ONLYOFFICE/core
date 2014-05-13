@@ -18,7 +18,7 @@ namespace odf {
 
 using boost::filesystem::wpath;
 
-mediaitems::item::item(	std::wstring const & _oox_ref,
+_mediaitems::item::item(	std::wstring const & _oox_ref,
                        Type _type,
                        std::wstring const & _odf_ref
 					   )
@@ -32,7 +32,7 @@ mediaitems::item::item(	std::wstring const & _oox_ref,
 
 namespace fs = boost::filesystem;
 
-void mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wstring & odf_ref)
+void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wstring & odf_ref)
 {
 	std::wstring output_sub_path;//
 	std::wstring output_fileName;
@@ -81,7 +81,7 @@ void mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wstr
 	}
 	odf_ref = output_path;
 }
-void mediaitems::dump_rels(rels & Rels)
+void _mediaitems::dump_rels(rels & Rels)
 {
     size_t i = 0;
     BOOST_FOREACH(item & elm, items_)

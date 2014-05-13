@@ -152,7 +152,7 @@ namespace odf
 		}
 		///////////////////////////
 
-		media::media(mediaitems & _Mediaitems) : mediaitems_(_Mediaitems)
+		media::media(_mediaitems & mediaitems) : mediaitems_(mediaitems)
 		{    
 		}
 
@@ -163,9 +163,9 @@ namespace odf
 			fs::wpath path = fs::wpath(RootPath) / L"media";
 			fs::create_directory(path);
 
-			BOOST_FOREACH( mediaitems::item & item, mediaitems_.items() )
+			BOOST_FOREACH( _mediaitems::item & item, mediaitems_.items() )
 			{
-				if (item.type == mediaitems::typeAudio || item.type == mediaitems::typeVideo)
+				if (item.type == _mediaitems::typeAudio || item.type == _mediaitems::typeVideo)
 				{
 					fs::wpath file_name  = fs::wpath(item.oox_ref);
 					fs::wpath file_name_out = fs::wpath(RootPath) / item.odf_ref;
@@ -177,7 +177,7 @@ namespace odf
 		}
 
 		
-		pictures::pictures(mediaitems & _Mediaitems) : mediaitems_(_Mediaitems)
+		pictures::pictures(_mediaitems & mediaitems) : mediaitems_(mediaitems)
 		{    
 		}
 
@@ -188,9 +188,9 @@ namespace odf
 			fs::wpath path = fs::wpath(RootPath) / L"Pictures";
 			fs::create_directory(path);
 
-			BOOST_FOREACH( mediaitems::item & item, mediaitems_.items() )
+			BOOST_FOREACH( _mediaitems::item & item, mediaitems_.items() )
 			{
-				if (item.type == mediaitems::typeImage && item.oox_ref.length()>0)
+				if (item.type == _mediaitems::typeImage && item.oox_ref.length()>0)
 				{
 					fs::wpath file_name  = fs::wpath(item.oox_ref);
 					fs::wpath file_name_out = fs::wpath(RootPath) / item.odf_ref;
@@ -212,13 +212,13 @@ namespace odf
 			content_.set_content(_content);
 			meta_ = element_ptr(new meta_file());
 		}
-		void object_files::set_media(mediaitems & _Mediaitems)
+		void object_files::set_media(_mediaitems & mediaitems)
 		{
-			media_ = element_ptr( new media(_Mediaitems) );
+			media_ = element_ptr( new media(mediaitems) );
 		}
-		void object_files::set_pictures(mediaitems & _Mediaitems)
+		void object_files::set_pictures(_mediaitems & mediaitems)
 		{
-			pictures_ = element_ptr( new pictures(_Mediaitems) );
+			pictures_ = element_ptr( new pictures(mediaitems) );
 		}
 		void object_files::set_styles(content_simple_ptr & _content)
 		{
@@ -235,7 +235,7 @@ namespace odf
 			if (pictures_)	pictures_->write(RootPath);
 		}
 
-		void odf_document::add_object(element_ptr _object,bool root)
+		void odf_document::add_object(element_ptr _object, bool root)
 		{
 			if (root)base_ = _object;
 			else objects_.push_back(_object);

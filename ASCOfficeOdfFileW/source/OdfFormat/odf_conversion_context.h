@@ -15,38 +15,43 @@ typedef shared_ptr<office_element>::Type office_element_ptr;
 
 class odf_conversion_context : boost::noncopyable
 {
+	struct _object
+	{
+		office_element_ptr				 content;
+		std::vector<office_element_ptr>  content_styles;
+		std::vector<office_element_ptr>  styles;	
+	
+		odf_style_context_ptr			 style_context;	
+		_mediaitems						 mediaitems;
+	};
+
 public:
     odf_conversion_context(package::odf_document * outputDocument);
     virtual ~odf_conversion_context();
 
-	virtual void start_document() = 0 ;
-	void end_document();
-
-	virtual odf_drawing_context		& drawing_context() = 0;
-	virtual odf_text_context		* text_context() = 0;
+	virtual void	start_document() = 0 ;
+	void			end_document();
 	
-	office_element_ptr & getCurrentElement();
-
-	std::vector<office_element_ptr>  content_;
-	std::vector<office_element_ptr>  content_styles_;
-	std::vector<office_element_ptr>  styles_;
-	
-    void add_rel(relationship const & r);
-
 	package::odf_document * output_document_;
 
-	odf_style_context &		styles_context(){return style_context_;}
-		
-	odf_number_styles_context & numbers_styles_context() {return style_context_.numbers_styles();}
+	std::vector<_object>	objects_;//"0" = root
 
+	virtual odf_drawing_context		* drawing_context() = 0;
+	virtual odf_text_context		* text_context() = 0;
+
+	odf_style_context				* styles_context();
+	odf_number_styles_context		* numbers_styles_context();
+	_mediaitems						* mediaitems();
+
+	void start_chart();
+	void start_spreadsheet();
+	
+	void create_object();
+	void end_object();
 
 private:
-	rels	rels_;
-	void process_styles();
-
-public:
-
-	odf_style_context		style_context_;
+	void process_styles(_object & object);
+	int	 current_object_;
 
 	//page_layout_container & pageLayoutContainer()	{ return page_layout_container_; }
 	//fonts_container		& fontContainer()		{ return fonts_container_; }
@@ -57,7 +62,6 @@ public:
 	//styles_lite_container &	drawStyles()		{ return draw_style_container_; }
 	//styles_lite_container &	Templates()			{ return template_container_; }
 
-	mediaitems mediaitems_;
 
     //styles_container		major_style_container_;
 	//page_layout_container	page_layout_container_;

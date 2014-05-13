@@ -39,23 +39,23 @@ public:
 	void add_merge_cells(std::wstring & ref);
 	void add_hyperlink(std::wstring & ref, std::wstring & link, std::wstring & display);
 
-	void start_comment(int col, int row, std::wstring & author);
-	void set_comment_rect(double l, double t, double w, double h);
-	void end_comment();
+	void start_comment		(int col, int row, std::wstring & author);
+	void set_comment_rect	(double l, double t, double w, double h);
+	void end_comment		();
 ///////////////////////////////////////////////////////
 	ods_table_state &		current_table() { return table_context_.state();}
 /////////////////////////////////////////////////////
 	void start_text_context();
 	void end_text_context();
 
-	virtual odf_drawing_context&	drawing_context(){return current_table().drawing_context();}
-	virtual odf_text_context*		text_context(){return current_text_context_;}
+	virtual odf_drawing_context		* drawing_context()	{return current_table().drawing_context();}
+	virtual odf_text_context		* text_context()	{return current_text_context_;}
 	
-	void start_drawing(){drawing_context().start_drawing();}
-	void end_drawing(){drawing_context().end_drawing();}
+	void start_drawing()		{drawing_context()->start_drawing();}
+	void end_drawing()			{drawing_context()->end_drawing();}
 
 	void start_image(std::wstring & image_file_name);
-	void end_image(){drawing_context().end_image();}
+	void end_image(){drawing_context()->end_image();}
 
 private:
 	ods_table_context			table_context_;

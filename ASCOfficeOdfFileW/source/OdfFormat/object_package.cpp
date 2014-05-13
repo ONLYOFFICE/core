@@ -190,12 +190,17 @@ namespace odf
 
 			BOOST_FOREACH( mediaitems::item & item, mediaitems_.items() )
 			{
-				if (item.type == mediaitems::typeImage )
+				if (item.type == mediaitems::typeImage && item.oox_ref.length()>0)
 				{
 					fs::wpath file_name  = fs::wpath(item.oox_ref);
 					fs::wpath file_name_out = fs::wpath(RootPath) / item.odf_ref;
 
-					boost::filesystem::copy_file(file_name, file_name_out);
+					try
+					{
+						boost::filesystem::copy_file(file_name, file_name_out);
+					}catch (...)
+					{
+					}
 				}
 			}
 

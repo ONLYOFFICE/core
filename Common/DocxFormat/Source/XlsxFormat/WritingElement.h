@@ -310,7 +310,10 @@ namespace Spreadsheet
 		et_ConnShape,
 		et_ShapeTextBody,
 		et_ConnShapeNonVisual,
-		et_ConnectionNonVisualConnShapeProps
+		et_ConnectionNonVisualConnShapeProps,
+		et_GraphicFrameNonVisual,
+		et_ConnectionNonVisualGraphicFrameProps,
+		et_GraphicChart,
 
 
 	};

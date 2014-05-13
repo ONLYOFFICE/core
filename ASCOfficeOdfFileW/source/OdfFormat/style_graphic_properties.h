@@ -16,6 +16,7 @@
 #include "styleverticalpos.h"
 #include "anchortype.h"
 #include "stylewrap.h"
+#include "wrapoption.h"
 #include "hyphenationladdercount.h"
 #include "stylewrapcontourmode.h"
 #include "runthrough.h"
@@ -37,11 +38,11 @@ public:
 	void serialize(std::wostream & strm, const wchar_t * ns, const wchar_t * name );
 
 public:    
-	_CP_OPT(length_or_percent)			 fo_min_width_;
-    _CP_OPT(length_or_percent)			fo_min_height_;
-    
+	_CP_OPT(length_or_percent)			fo_min_width_;
+    _CP_OPT(length_or_percent)			fo_min_height_;    
     _CP_OPT(length_or_percent)			fo_max_width_;
     _CP_OPT(length_or_percent)			fo_max_height_;
+	_CP_OPT(wrap_option)				fo_wrap_option_;
 
 	_CP_OPT(color)						svg_stroke_color_;
 	_CP_OPT(length_or_percent)			svg_stroke_opacity_;

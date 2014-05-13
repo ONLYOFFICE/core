@@ -210,7 +210,7 @@ void ods_conversion_context::end_comment()
 	end_text_context();
 }
 
-void ods_conversion_context::set_comment_rect(double l, double t, double w, double h)
+void ods_conversion_context::set_comment_rect(double l, double t, double w, double h)//in mm
 {
 	current_table().set_comment_rect(l,t,w,h);
 }

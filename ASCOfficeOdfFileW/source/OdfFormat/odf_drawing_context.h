@@ -43,6 +43,9 @@ public:
 	void start_text_box();
 	void end_text_box();
 
+	void start_object();
+	void end_object();
+
 	void start_element(office_element_ptr & elm);
     void end_element();
 
@@ -89,6 +92,7 @@ public:
 	void set_textarea_vertical_align(int align);
 	void set_textarea_padding(double left,double top,double right,double bottom);//in cm
 	void set_textarea_writing_mode(int mode);
+	void set_textarea_wrap(bool val);
 //////////////////////////////////////////////////////////////////////////////////////
 	void start_gradient_style();
 		void set_gradient_type(int type);

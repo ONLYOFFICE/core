@@ -71,6 +71,7 @@ struct ods_comment_state
 	std::wstring author;
 
 	office_element_ptr elm;
+	//style graphic
 };
 class ods_table_state
 {

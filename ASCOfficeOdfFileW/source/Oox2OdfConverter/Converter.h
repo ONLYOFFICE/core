@@ -60,6 +60,10 @@ namespace OOX
 			class CColorTransform;
 		}
 	}
+	namespace Spreadsheet
+	{
+		class CChartSpace;
+	}
 }
 
 namespace Oox2Odf
@@ -111,6 +115,8 @@ public:
 		void convert(OOX::Drawing::CRun							*oox_run);
 		void convert(OOX::Drawing::CRunProperty					*oox_run_pr);
 		void convert(OOX::Drawing::CLineSpacing					*oox_spacing,  cpdoccore::odf::length_or_percent & length_or_percent);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+		void convert(OOX::Spreadsheet::CChartSpace				*oox_chart);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 		void convert(double oox_font_size,			cpdoccore::_CP_OPT(cpdoccore::odf::font_size) & odf_font_size);
 	};

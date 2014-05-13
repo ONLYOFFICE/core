@@ -42,6 +42,7 @@ namespace OOX
 		class CShape;
 		class CConnShape;
 		class CCommentItem;
+		class CGraphicFrame;
 	}
 }
 
@@ -144,6 +145,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CPic					*oox_picture);
 		void convert(OOX::Spreadsheet::CShape				*oox_shape);
 		void convert(OOX::Spreadsheet::CConnShape			*oox_conn_shape);
+		void convert(OOX::Spreadsheet::CGraphicFrame		*oox_graphic_frame);
 	
 		void convert(double oox_size,						_CP_OPT(odf::length) & odf_size);
 		void convert_sharing_string(int number);

@@ -42,6 +42,7 @@ void graphic_format_properties::serialize(std::wostream & _Wostream ,const wchar
 			CP_XML_ATTR_OPT(L"fo:max-width",	fo_max_width_);
 			CP_XML_ATTR_OPT(L"fo:max-height",	fo_max_height_);
 			CP_XML_ATTR_OPT(L"fo:clip",			fo_clip_);
+			CP_XML_ATTR_OPT(L"fo:wrap-option",	fo_wrap_option_);			
 		   
 			CP_XML_ATTR_OPT(L"style:print-content", style_print_content_);
 			CP_XML_ATTR_OPT(L"style:protect", style_protect_);

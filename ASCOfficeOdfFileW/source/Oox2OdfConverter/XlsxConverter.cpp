@@ -51,9 +51,9 @@ OOX::CTheme* XlsxConverter::oox_theme()
 		return NULL;
 }
 
-CString	XlsxConverter::find_link_by_id (CString sId, int t)
+CString	XlsxConverter::find_link_by_id (CString sId, int type)
 {
-	if (t==1)
+	if (type==1)
 	{
 		smart_ptr<OOX::File> oFile = xlsx_current_drawing->Find(sId);
 		if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Image == oFile->type())
@@ -201,10 +201,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCommentItem * oox_comment)
 	std::wstring author = oox_comment->m_sAuthor.IsInit() ? string2std_string(oox_comment->m_sAuthor.get()) : L"";
 
 	ods_context->start_comment(col, row, author);	
-	//if (oox_comment->m_dLeftMM.IsInit() &&  oox_comment->m_dTopMM.IsInit() && oox_comment->m_dWidthMM.IsInit() && oox_comment->m_dHeightMM.IsInit())
-	//{
-	//	ods_context->set_comment_rect(oox_comment->m_dLeft.get(), oox_comment->m_dTop.get(), oox_comment->m_dWidthMM.get(), oox_comment->m_dHeightMM.get());
-	//}
+	if (oox_comment->m_dLeftMM.IsInit() &&  oox_comment->m_dTopMM.IsInit() && oox_comment->m_dWidthMM.IsInit() && oox_comment->m_dHeightMM.IsInit())
+	{
+		ods_context->set_comment_rect(oox_comment->m_dLeftMM.get(), oox_comment->m_dTopMM.get(), oox_comment->m_dWidthMM.get(), oox_comment->m_dHeightMM.get());
+	}
 
 	if (oox_comment->m_oText.IsInit())
 	{
@@ -855,7 +855,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color)
 	{
 		OOX::CTheme * xlsx_theme= xlsx_document->GetTheme();
 		int theme_ind = color->m_oThemeColor->GetValue();
-		switch(theme_ind)//а вот нет CColorMapping на чтение !!!
+		switch(theme_ind)
 		{
 			case SimpleTypes::Spreadsheet::themecolorLight1:
 				result = xlsx_theme->m_oThemeElements.m_oClrScheme.m_oLt1.tryGetRgb(ucR, ucG, ucB, ucA); break;
@@ -1030,7 +1030,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 	{
 	}
 //собственно
-	if (oox_anchor->m_oPicture.IsInit())//picture
+	if (oox_anchor->m_oPicture.IsInit())
 	{
 		convert(oox_anchor->m_oPicture.GetPointer());
 	}	
@@ -1044,7 +1044,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 	}	
 	else if (oox_anchor->m_oGraphicFrame.IsInit())//chart
 	{
-		//m_oChartGraphic
+		convert(oox_anchor->m_oGraphicFrame.GetPointer());
 	}	
 
 }
@@ -1128,6 +1128,41 @@ void XlsxConverter::convert(OOX::Spreadsheet::CShape* oox_shape)
 	}
 	if (type == 2000)ods_context->drawing_context().end_text_box(); 
 	else ods_context->drawing_context().end_shape();
+}
+
+void XlsxConverter::convert(OOX::Spreadsheet::CGraphicFrame* oox_graphic_frame)
+{
+	if (!oox_graphic_frame)return;
+////////////////////////////////////////////////////////////////////////////////
+	ods_context->drawing_context().start_object();
+	{		
+		if (oox_graphic_frame->m_oNvGraphicFramePr.IsInit())
+		{
+			if (oox_graphic_frame->m_oNvGraphicFramePr->m_oCNvPr.IsInit())
+			{
+				OoxConverter::convert(oox_graphic_frame->m_oNvGraphicFramePr->m_oCNvPr.GetPointer());		
+			}
+		}
+		if (oox_graphic_frame->m_oChartGraphic.IsInit() && oox_graphic_frame->m_oChartGraphic->m_oGraphicData.IsInit())
+		{
+			if (oox_graphic_frame->m_oChartGraphic->m_oGraphicData->m_oChart.IsInit() && oox_graphic_frame->m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId.IsInit())
+			{
+				//диаграмма
+				CString sId = oox_graphic_frame->m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId->GetValue();
+				
+				smart_ptr<OOX::File> oFile = xlsx_current_drawing->Find(sId);
+				if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Charts == oFile->type())
+				{
+					OOX::Spreadsheet::CChartSpace* pChart = (OOX::Spreadsheet::CChartSpace*)oFile.operator->();
+					
+					OoxConverter::convert(pChart);
+				}
+			}
+			//могут быть и другие типы объектов
+		}
+
+	}
+	ods_context->drawing_context().end_object();
 }
 
 

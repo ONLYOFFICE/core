@@ -739,11 +739,11 @@ void OoxConverter::convert(OOX::Drawing::CParagraphProperty		*oox_paragraph_pr)
 	{
 		switch(oox_paragraph_pr->m_oAlgn->GetValue())
 		{
-			case SimpleTypes::textalignmenttypeL    : paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Left);	break;
+			case SimpleTypes::textalignmenttypeL    : paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Left);		break;
 			case SimpleTypes::textalignmenttypeCtr  : paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Center);	break;
 			case SimpleTypes::textalignmenttypeDist : paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Justify);	break;
 			case SimpleTypes::textalignmenttypeJust : paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Justify);	break;
-			case SimpleTypes::textalignmenttypeR    : paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Right);	break;
+			case SimpleTypes::textalignmenttypeR    : paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Right);		break;
 		}
 	}
 	if (oox_paragraph_pr->m_oMarL.IsInit())
@@ -819,6 +819,10 @@ void OoxConverter::convert(double oox_font_size,  _CP_OPT(odf::font_size) & odf_
 void OoxConverter::convert(OOX::Spreadsheet::CChartSpace *oox_chart)
 {
 	if (!oox_chart)return;
+	//odf_context()->start_chart();
+
+
+	//odf_context()->end_chart();
 }
 
 }

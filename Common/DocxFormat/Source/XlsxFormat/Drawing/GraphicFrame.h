@@ -8,6 +8,127 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+		//--------------------------------------------------------------------------------
+		// 20.1.2.2.5 cNvGraphicFramePr (Non-Visual Graphic Frame Drawing Properties)
+		//--------------------------------------------------------------------------------	
+		class CConnectionNonVisualGraphicFrameProps : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CConnectionNonVisualGraphicFrameProps)
+			CConnectionNonVisualGraphicFrameProps()
+			{
+			}
+			virtual ~CConnectionNonVisualGraphicFrameProps()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+
+					sName = oReader.GetName();
+					if ( _T("a:picLocks") == sName )
+						m_oPicLocks = oReader;
+					else if ( _T("a:extLst") == sName )
+						m_oExtLst = oReader;
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_ConnectionNonVisualGraphicFrameProps;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("preferRelativeResize"), m_oPreferRelativeResize )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			// Attributes
+			SimpleTypes::COnOff<SimpleTypes::onoffTrue> m_oPreferRelativeResize;
+
+			// Childs
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
+			nullable<OOX::Drawing::CPictureLocking>         m_oPicLocks;
+		};
+		//--------------------------------------------------------------------------------
+		// 20.1.2.2.26 nvGraphicFramePr (Non-Visual Properties for a Graphic Frame)
+		//--------------------------------------------------------------------------------	
+		class CGraphicFrameNonVisual : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CGraphicFrameNonVisual)
+			CGraphicFrameNonVisual()
+			{
+			}
+			virtual ~CGraphicFrameNonVisual()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+
+					if ( _T("xdr:cNvGraphicFramePr") == sName )
+						m_oCNvGraphicFramePr = oReader;
+					else if ( _T("xdr:cNvPr") == sName )
+						m_oCNvPr = oReader;
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_GraphicFrameNonVisual;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			// Childs
+			nullable<CConnectionNonVisualGraphicFrameProps>	m_oCNvGraphicFramePr;
+			nullable<OOX::Drawing::CNonVisualDrawingProps>	m_oCNvPr;
+		};
+
+		//"c:chart"  - нужно перенести в общую часть 
 		class CGraphicChart : public WritingElement
 		{
 		public:
@@ -37,7 +158,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Blip;
+				return et_GraphicChart;
 			}
 
 		private:
@@ -53,6 +174,10 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::CRelationshipId>				m_oRId;
 		};
+
+		//--------------------------------------------------------------------------------
+		// 20.1.2.2.17 graphicData (Graphic Object Data)
+		//--------------------------------------------------------------------------------	
 		class CGraphicData : public WritingElement
 		{
 		public:
@@ -100,7 +225,12 @@ namespace OOX
 			}
 		public:
 			nullable<CGraphicChart>		m_oChart;
+			//Any element in any namespace
 		};
+		
+		//--------------------------------------------------------------------------------
+		// 20.1.2.2.16 graphic (Graphic Object)
+		//--------------------------------------------------------------------------------		
 		class CChartGraphic : public WritingElement
 		{
 		public:
@@ -149,6 +279,10 @@ namespace OOX
 		public:
 			nullable<CGraphicData>		m_oGraphicData;
 		};
+
+		//--------------------------------------------------------------------------------
+		// 20.1.2.2.18 graphicFrame (Graphic Frame)
+		//--------------------------------------------------------------------------------			
 		class CGraphicFrame : public WritingElement
 		{
 		public:
@@ -193,6 +327,8 @@ namespace OOX
 
 					if ( _T("a:graphic") == sName )
 						m_oChartGraphic = oSubReader;
+					else if ( _T("xdr:nvGraphicFramePr") == sName )
+						m_oNvGraphicFramePr = oSubReader;
 				}
 			}
 
@@ -206,8 +342,11 @@ namespace OOX
 			{
 			}
 		public:
-			nullable<CChartGraphic>		m_oChartGraphic;
-			nullable<CString> m_sXml;
+			nullable<CChartGraphic>				m_oChartGraphic;
+			nullable<CGraphicFrameNonVisual>	m_oNvGraphicFramePr;
+			//xfrm
+			//extLst
+			nullable<CString>					m_sXml;
 		};
 	} //Spreadsheet
 } // namespace OOX

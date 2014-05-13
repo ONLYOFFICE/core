@@ -466,10 +466,10 @@ void ods_table_state::set_comment_rect(double l, double t, double w, double h)
 	office_annotation * annotation = dynamic_cast<office_annotation*>(comments_.back().elm.get());
 	if (!annotation)return;		
 
-	annotation->office_annotation_attr_.svg_y_		= length(length(t,length::pt).get_value_unit(length::cm),length::cm);
-	annotation->office_annotation_attr_.svg_x_		= length(length(l,length::pt).get_value_unit(length::cm),length::cm);
-	annotation->office_annotation_attr_.svg_width_	= length(length(w,length::pt).get_value_unit(length::cm),length::cm);
-	annotation->office_annotation_attr_.svg_height_	= length(length(h,length::pt).get_value_unit(length::cm),length::cm);
+	annotation->office_annotation_attr_.svg_y_		= length(t/10.,length::cm);
+	annotation->office_annotation_attr_.svg_x_		= length(l/10.,length::cm);
+	annotation->office_annotation_attr_.svg_width_	= length(w/10.,length::cm);
+	annotation->office_annotation_attr_.svg_height_	= length(h/10.,length::cm);
 }
 void ods_table_state::end_comment(odf_text_context *text_context)
 {

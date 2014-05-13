@@ -621,7 +621,16 @@ void odf_drawing_context::set_textarea_vertical_align(int align)
 			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf::vertical_align(odf::vertical_align::Top);		break;
 	}
 }
+void odf_drawing_context::set_textarea_wrap(bool Val)
+{
+	if (!impl_->current_graphic_properties)return;
 
+	if (Val)
+		impl_->current_graphic_properties->content().fo_wrap_option_ = wrap_option(wrap_option::Wrap);
+	else
+		impl_->current_graphic_properties->content().fo_wrap_option_ = wrap_option(wrap_option::NoWrap);
+
+}
 void odf_drawing_context::set_textarea_writing_mode(int mode)
 {
 	if (mode == 1) return;//незачем
@@ -715,6 +724,16 @@ void odf_drawing_context::start_image(std::wstring & path)
 			
 	set_image_style_repeat(1);//default
 }
+void odf_drawing_context::start_object()
+{
+	start_frame();
+	
+	office_element_ptr object_elm;
+	create_element(L"draw", L"object", object_elm, impl_->odf_context_);
+
+	start_element(object_elm);
+}
+
 void odf_drawing_context::start_text_box()
 {	
 	start_frame();
@@ -736,6 +755,12 @@ void odf_drawing_context::end_image()
 	end_frame();
 }
 void odf_drawing_context::end_text_box()
+{
+	end_element();
+
+	end_frame();
+}
+void odf_drawing_context::end_object()
 {
 	end_element();
 

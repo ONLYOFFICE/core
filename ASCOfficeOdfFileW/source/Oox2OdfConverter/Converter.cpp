@@ -595,7 +595,7 @@ void OoxConverter::convert(OOX::Drawing::CTextBodyProperties	*oox_bodyPr)
 															oox_bodyPr->m_oTIns.ToCm(),
 															oox_bodyPr->m_oRIns.ToCm(),
 															oox_bodyPr->m_oBIns.ToCm());
-	//odf_context()->drawing_context().set_textarea_wrap(oox_bodyPr->m_oWrap.GetValue())
+	odf_context()->drawing_context().set_textarea_wrap(oox_bodyPr->m_oWrap.GetValue());
 
 	if (oox_bodyPr->m_oNumCol.GetValue() > 1)
 	{
@@ -815,4 +815,10 @@ void OoxConverter::convert(double oox_font_size,  _CP_OPT(odf::font_size) & odf_
 		 odf_font_size = odf::font_size(odf_length.get());
 }
 
-} // namespace Docx2Odt
+////////////////////////////////////////////////////////////////////////////////////////////
+void OoxConverter::convert(OOX::Spreadsheet::CChartSpace *oox_chart)
+{
+	if (!oox_chart)return;
+}
+
+}

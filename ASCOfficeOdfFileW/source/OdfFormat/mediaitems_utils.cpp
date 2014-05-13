@@ -15,29 +15,29 @@ namespace media {
 
 using boost::filesystem::wpath;
 
-std::wstring get_rel_type(mediaitems::Type type)
+std::wstring get_rel_type(_mediaitems::Type type)
 {
     switch (type)
     {
-    case mediaitems::typeImage:
+    case _mediaitems::typeImage:
         return L"";
    default:
         return L"";
     }
 }
 
-std::wstring get_default_file_name(mediaitems::Type type)
+std::wstring get_default_file_name(_mediaitems::Type type)
 {
     switch (type)
     {
-    case mediaitems::typeImage:
+    case _mediaitems::typeImage:
         return L"image";
 	default:
         return L"media";
     }
 }
 
-std::wstring create_file_name(const std::wstring & uri, mediaitems::Type type, size_t Num)
+std::wstring create_file_name(const std::wstring & uri, _mediaitems::Type type, size_t Num)
 {
 #ifdef BOOST_FILESYSTEM_LEGACY
     return get_default_file_name(type) + boost::lexical_cast<std::wstring>(Num) + wpath(uri).extension();

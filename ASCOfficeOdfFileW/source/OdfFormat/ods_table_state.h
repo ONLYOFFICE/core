@@ -141,7 +141,7 @@ public:
 
 	void convert_position(oox_table_position & oox_pos, double & x, double & y);
 
-	odf_drawing_context&	drawing_context(){return  drawing_context_;}
+	odf_drawing_context   *	drawing_context(){return  &drawing_context_;}
 
  //   
  //   xlsx_table_metrics & get_table_metrics() { return xlsx_table_metrics_; }

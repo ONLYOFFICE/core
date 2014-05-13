@@ -16,11 +16,14 @@ class odf_conversion_context;
 class office_element;
 typedef shared_ptr<office_element>::Type office_element_ptr;
 
+class odf_style_context;
+typedef shared_ptr<odf_style_context>::Type odf_style_context_ptr;
 /// \class ods_table_context
 class odf_style_context
 {
 public:
-    odf_style_context(odf_conversion_context & Context);
+    odf_style_context();
+	void set_odf_context(odf_conversion_context * Context);
 
     void create_style(std::wstring name, const style_family style_family, bool automatic = false, bool root = false, int oox_id = -1);
     void create_default(const style_family style_family);
@@ -54,7 +57,7 @@ public:
 private:
 	odf_number_styles_context	number_styles_context_;
 
-    odf_conversion_context & context_;
+    odf_conversion_context * odf_context_;
     
 	std::vector<odf_style_state> style_state_list_;
  	

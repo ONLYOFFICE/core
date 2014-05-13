@@ -97,7 +97,7 @@ public:
 	Impl(odf_conversion_context *odf_context) :odf_context_(odf_context)
     {	
 		current_drawing_state_.clear();
-		styles_context_ = &odf_context_->styles_context();
+		styles_context_ = odf_context_->styles_context();
 		
 		current_graphic_properties = NULL;
 	} 
@@ -1318,7 +1318,7 @@ void odf_drawing_context::set_bitmap_link(std::wstring link)
 {
 	std::wstring odf_ref_name ;
 	
-	impl_->odf_context_->mediaitems_.add_or_find(link,mediaitems::typeImage,odf_ref_name);
+	impl_->odf_context_->mediaitems()->add_or_find(link,_mediaitems::typeImage,odf_ref_name);
 	
 	draw_fill_image * fill_image = dynamic_cast<draw_fill_image *>(impl_->styles_context_->last_state().get_office_element().get());
 	if (!fill_image) return;

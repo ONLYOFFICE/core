@@ -10,7 +10,7 @@ namespace cpdoccore
 
 namespace odf 
 {
-	class mediaitems;//picture & media
+	class _mediaitems;//picture & media
 
 	class rels;
 	
@@ -134,21 +134,21 @@ namespace odf
 		class media : public element
 		{
 		public:
-			media(mediaitems & _Mediaitems);
+			media(_mediaitems & mediaitems);
 			virtual void write(const std::wstring & RootPath);
 
 		private:
-			mediaitems & mediaitems_;
+			_mediaitems & mediaitems_;
 		        
 		};
 		class pictures : public element
 		{
 		public:
-			pictures(mediaitems & _Mediaitems);
+			pictures(_mediaitems & mediaitems);
 			virtual void write(const std::wstring & RootPath);
 
 		private:
-			mediaitems & mediaitems_;
+			_mediaitems & mediaitems_;
 		        
 		};
 		class object_files : public element
@@ -160,8 +160,8 @@ namespace odf
 			
 			void set_styles (content_simple_ptr & _Styles);
 			
-			void set_media(mediaitems & _Mediaitems);    
-			void set_pictures(mediaitems & _Mediaitems);    
+			void set_media		(_mediaitems & mediaitems);    
+			void set_pictures	(_mediaitems & mediaitems);    
 
 			virtual void write(const std::wstring & RootPath);
 

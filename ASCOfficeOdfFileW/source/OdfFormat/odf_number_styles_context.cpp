@@ -196,10 +196,13 @@ static const def_language_code LanguageCodeTable[] =
 	{L"Zulu",				L"", L"",	0x0435}
 };
 
-odf_number_styles_context::odf_number_styles_context(odf_conversion_context & Context): context_(Context)
+odf_number_styles_context::odf_number_styles_context()
 {
 }
-
+void odf_number_styles_context::set_odf_context(odf_conversion_context * Context)
+{
+	odf_context_ = Context;
+}
 void odf_number_styles_context::create(int oox_num_fmt, std::wstring formatCode)
 {
 	if (oox_num_fmt <164)return create_default(oox_num_fmt,formatCode);
@@ -358,7 +361,7 @@ void odf_number_styles_context::create_style(number_format_state & state)
 
 void odf_number_styles_context::create_number_style(number_format_state & state, office_element_ptr & root_elm)
 {
-	create_element(L"number", L"number-style", root_elm, &context_);
+	create_element(L"number", L"number-style", root_elm, odf_context_);
 
 	if (state.format_code.size()>0)
 	{
@@ -372,7 +375,7 @@ void odf_number_styles_context::create_numbers(number_format_state & state, offi
 {
 	optional< int>::Type min_digit, min_decimal;
 
-	create_element(L"number", L"number", elm, &context_);
+	create_element(L"number", L"number", elm, odf_context_);
 	styles_elments.push_back(elm);
 		
 	number_number* number_number_ = dynamic_cast<number_number*>(elm.get());
@@ -415,14 +418,14 @@ void odf_number_styles_context::create_numbers(number_format_state & state, offi
 }
 void odf_number_styles_context::create_percentage_style(number_format_state & state, office_element_ptr & root_elm)
 {
-	create_element(L"number", L"percentage-style", root_elm, &context_);
+	create_element(L"number", L"percentage-style", root_elm, odf_context_);
 	
 	office_element_ptr elm;
 
 	create_numbers(state, elm);
 	root_elm->add_child_element(elm); 
 
-	create_element(L"number", L"text", elm, &context_);
+	create_element(L"number", L"text", elm, odf_context_);
 	number_text* number_text_ = dynamic_cast<number_text*>(elm.get());
 	if (number_text_)number_text_->add_text(L"%"); 	
 
@@ -432,14 +435,14 @@ void odf_number_styles_context::create_percentage_style(number_format_state & st
 
 void odf_number_styles_context::create_currency_style(number_format_state & state, office_element_ptr & root_elm)
 {
-	create_element(L"number", L"currency-style", root_elm, &context_);
+	create_element(L"number", L"currency-style", root_elm, odf_context_);
 	{
 		int res1= state.format_code[0].rfind(L"]");
 		int res2= state.format_code[0].rfind(L"#");
 		int res3= state.format_code[0].rfind(L"0");
 
 		office_element_ptr elm_symbol;
-		create_element(L"number", L"currency-symbol", elm_symbol, &context_);
+		create_element(L"number", L"currency-symbol", elm_symbol, odf_context_);
 		styles_elments.push_back(elm_symbol);
 
 		number_currency_symbol* number_currency_symbol_ = dynamic_cast<number_currency_symbol*>(elm_symbol.get());
@@ -472,7 +475,7 @@ void odf_number_styles_context::create_currency_style(number_format_state & stat
 		create_numbers(state, elm_number);
 //////////////////////////////////////////
 		office_element_ptr elm_text;
-		create_element(L"number", L"text", elm_text, &context_);
+		create_element(L"number", L"text", elm_text, odf_context_);
 		number_text* number_text_ = dynamic_cast<number_text*>(elm_text.get());
 		if (number_text_)number_text_->add_text(L" "); 
 		styles_elments.push_back(elm_text);
@@ -494,7 +497,7 @@ void odf_number_styles_context::create_currency_style(number_format_state & stat
 
 void odf_number_styles_context::create_date_style(number_format_state & state, office_element_ptr & root_elm)
 {
-	create_element(L"number", L"date-style", root_elm, &context_);
+	create_element(L"number", L"date-style", root_elm, odf_context_);
 
 	//state.language_code == L"F800" System long date format
 	
@@ -514,7 +517,7 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 		sz = s.length();
 		if ((res=s.find(L"m")) >=0) 
 		{
-			create_element(L"number", L"month", elm, &context_);
+			create_element(L"number", L"month", elm, odf_context_);
 			number_month* number_month_ = dynamic_cast<number_month*>(elm.get());
 		
 			if (number_month_ && sz > 2)number_month_->number_textual_ = true;
@@ -525,7 +528,7 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 		{
 			if (sz < 3)
 			{
-				create_element(L"number", L"day", elm, &context_);
+				create_element(L"number", L"day", elm, odf_context_);
 				number_day* number_day_ = dynamic_cast<number_day*>(elm.get());
 				if (number_day_)
 				{
@@ -535,7 +538,7 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 			}
 			else
 			{
-				create_element(L"number", L"day-of-week", elm, &context_);
+				create_element(L"number", L"day-of-week", elm, odf_context_);
 				number_day_of_week* number_day_of_week_ = dynamic_cast<number_day_of_week*>(elm.get());
 				if (number_day_of_week_)
 				{
@@ -546,7 +549,7 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 		}
 		else if ((res=s.find(L"y")) >=0) 
 		{
-			create_element(L"number", L"year", elm, &context_);
+			create_element(L"number", L"year", elm, odf_context_);
 			number_year* number_year_ = dynamic_cast<number_year*>(elm.get());
 			if (number_year_)
 			{
@@ -561,7 +564,7 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 				//выкинем "лишние" слэши
 				boost::algorithm::replace_all(s, L"\\", L"");
 			}
-			create_element(L"number", L"text", elm, &context_);
+			create_element(L"number", L"text", elm, odf_context_);
 			number_text* number_text_ = dynamic_cast<number_text*>(elm.get());
 			if (number_text_)number_text_->add_text(s); 	
 		}
@@ -576,7 +579,7 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 
 void odf_number_styles_context::create_time_style(number_format_state & state, office_element_ptr & root_elm)
 {
-	create_element(L"number", L"time-style", root_elm, &context_);
+	create_element(L"number", L"time-style", root_elm, odf_context_);
 	
 	// state.language_code == L"F400")//System time format
 	std::wstring s = state.format_code[0];
@@ -596,7 +599,7 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 		sz = s.length();
 		if ((res=s.find(L"h")) >=0) 
 		{
-			create_element(L"number", L"hours", elm, &context_);
+			create_element(L"number", L"hours", elm, odf_context_);
 			number_hours* number_hours_ = dynamic_cast<number_hours*>(elm.get());		
 			if (number_hours_)
 			{
@@ -606,11 +609,11 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 		}
 		else if ((res=s.find(L"am")) >=0/* || (res=s.find(L"pm")) >=0*/)  //излишнее .. 
 		{
-			create_element(L"number", L"am-pm", elm, &context_);
+			create_element(L"number", L"am-pm", elm, odf_context_);
 		}
 		else if ((res=s.find(L"m")) >=0 && (res=s.find(L"am")) <0 && (res=s.find(L"pm")) <0 ) 
 		{
-			create_element(L"number", L"minutes", elm, &context_);
+			create_element(L"number", L"minutes", elm, odf_context_);
 			number_minutes* number_minutes_ = dynamic_cast<number_minutes*>(elm.get());
 			if (number_minutes_)
 			{
@@ -620,7 +623,7 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 		}
 		else if ((res=s.find(L"s")) >=0) 
 		{
-			create_element(L"number", L"seconds", elm, &context_);
+			create_element(L"number", L"seconds", elm, odf_context_);
 			number_seconds* number_seconds_ = dynamic_cast<number_seconds*>(elm.get());
 			if (number_seconds_)
 			{
@@ -637,7 +640,7 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 				//выкинем "лишние" слэши
 				boost::algorithm::replace_all(s, L"\\", L"");
 			}
-			create_element(L"number", L"text", elm, &context_);
+			create_element(L"number", L"text", elm, odf_context_);
 			number_text* number_text_ = dynamic_cast<number_text*>(elm.get());
 			if (number_text_)number_text_->add_text(s); 
 		}
@@ -651,12 +654,12 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 
 void odf_number_styles_context::create_boolean_style(number_format_state & state, office_element_ptr & root_elm)
 {
-	create_element(L"number", L"boolean-style", root_elm, &context_);
+	create_element(L"number", L"boolean-style", root_elm, odf_context_);
 }
 
 void odf_number_styles_context::create_text_style(number_format_state & state, office_element_ptr & root_elm)
 {
-	create_element(L"number", L"text-style", root_elm, &context_);
+	create_element(L"number", L"text-style", root_elm, odf_context_);
 }
 
 void odf_number_styles_context::detect_format(number_format_state & state)

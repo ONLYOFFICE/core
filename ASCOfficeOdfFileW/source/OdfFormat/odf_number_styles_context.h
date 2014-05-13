@@ -34,7 +34,8 @@ struct number_format_state
 class odf_number_styles_context
 {
 public:
-    odf_number_styles_context(odf_conversion_context & Context);
+    odf_number_styles_context();
+	void set_odf_context(odf_conversion_context * Context);
 
 	number_format_state		&	add_or_find(int oox_num_fmt, std::wstring formatCode = L"");
 	void process_styles(office_element_ptr root );
@@ -50,7 +51,7 @@ private:
 	void detect_format(number_format_state & state);
 
 ////////////////
-	odf_conversion_context & context_;
+	odf_conversion_context			*odf_context_;
 	std::vector<office_element_ptr>	styles_elments;
 
 //////////////////

@@ -115,7 +115,12 @@ namespace OOX
 							XmlUtils::CXmlLiteReader oShapeReader;
 							//сформируем полноценную xml-строку
 							CString xmlString = L"<?xml version=\"1.0\" encoding=\"UTF-16\"?>";
-							xmlString += L"<xdr:cellAnchor xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\">";
+							xmlString += L"<xdr:cellAnchor ";
+								xmlString += L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
+								xmlString += L"xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" ";	
+								xmlString += L"xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" ";
+								xmlString += L"xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ";
+							xmlString += L">";
 							xmlString += *m_oXml;
 							xmlString += L"</xdr:cellAnchor>";
 							BOOL result =oShapeReader.FromString(xmlString);

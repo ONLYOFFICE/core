@@ -546,6 +546,10 @@ public:
 				m_arAdjustments.Add((LONG)XmlUtils::GetInteger(arAdj[nIndex]));
 			}
 		}
+
+		int newLen = m_arAdjustments.GetSize();
+		for (int i = newLen; i < nOldLen; ++i)
+			m_arAdjustments.Add(oOldAdj[i]);
 		return true;
 	}
 

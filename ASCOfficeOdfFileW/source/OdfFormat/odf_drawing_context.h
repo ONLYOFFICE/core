@@ -43,7 +43,7 @@ public:
 	void start_text_box();
 	void end_text_box();
 
-	void start_object();
+	void start_object(std::wstring name);
 	void end_object();
 
 	void start_element(office_element_ptr & elm);

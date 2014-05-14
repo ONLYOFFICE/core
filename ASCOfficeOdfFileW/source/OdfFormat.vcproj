@@ -943,6 +943,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OdfFormat\office_chart.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\office_chart.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\office_spreadsheet.cpp"
 				>
 			</File>

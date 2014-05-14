@@ -279,7 +279,6 @@ void draw_object::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			//draw_object_attlist_.serialize(CP_GET_XML_NODE());
 			common_xlink_attlist_.serialize(CP_GET_XML_NODE());
 		}
 	}

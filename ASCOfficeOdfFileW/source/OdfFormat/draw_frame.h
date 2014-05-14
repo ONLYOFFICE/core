@@ -183,6 +183,7 @@ public:
     virtual void serialize(std::wostream & _Wostream);
 
     common_xlink_attlist common_xlink_attlist_;
+	//draw:notify-on-update-of-ranges
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_object);

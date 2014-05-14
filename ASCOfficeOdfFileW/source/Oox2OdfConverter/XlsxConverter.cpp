@@ -1133,7 +1133,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CGraphicFrame* oox_graphic_frame)
 {
 	if (!oox_graphic_frame)return;
 ////////////////////////////////////////////////////////////////////////////////
-	ods_context->drawing_context()->start_object();
+	ods_context->drawing_context()->start_object(ods_context->get_next_name_object());
 	{		
 		if (oox_graphic_frame->m_oNvGraphicFramePr.IsInit())
 		{
@@ -1159,7 +1159,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CGraphicFrame* oox_graphic_frame)
 			}
 			//могут быть и другие типы объектов
 		}
-
 	}
 	ods_context->drawing_context()->end_object();
 }

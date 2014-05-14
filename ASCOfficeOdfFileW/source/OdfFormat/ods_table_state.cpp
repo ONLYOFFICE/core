@@ -551,7 +551,7 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 	int curr_col = 1,i;
 	for (i=0; i< columns_.size(); i++)
 	{
-		if (oox_pos.col > columns_[i].repeated - curr_col)
+		if (oox_pos.col > columns_[i].repeated +  curr_col)
 		{
 			sz_col += (columns_[i].repeated ) * columns_[i].size;
 		}
@@ -569,7 +569,7 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 	int curr_row = 1;
 	for (i=0; i< rows_.size(); i++)
 	{
-		if (oox_pos.row > rows_[i].repeated - curr_row)
+		if (oox_pos.row > rows_[i].repeated + curr_row)
 		{
 			sz_row += (rows_[i].repeated ) * rows_[i].size;
 		}

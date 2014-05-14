@@ -57,11 +57,9 @@ namespace odf
 		{
 		public:
 			virtual ~element() = 0;
-			//void set_main_document(element * _element) { element_ = _element; }
-			//document * get_main_document() { return element_; }
 
 			virtual void write(const std::wstring & RootPath) = 0;
-
+			std::wstring local_path;
 		private:
 			element * element_;
 		};

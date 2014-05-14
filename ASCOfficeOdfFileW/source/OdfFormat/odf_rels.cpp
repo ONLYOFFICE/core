@@ -17,8 +17,8 @@ void relationship::serialize(std::wostream & _Wostream)
     {
         CP_XML_NODE(L"manifest:file-entry")
         {
-            CP_XML_ATTR(L"manifest:media-type", type());
             CP_XML_ATTR(L"manifest:full-path", target());
+            CP_XML_ATTR(L"manifest:media-type", type());
         }    
     }
 }

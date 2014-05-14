@@ -59,7 +59,7 @@ public:
 		RELEASEINTERFACE(m_pExternalDrawingConverter);
 	}
 public:
-	STDMETHOD(LoadFromFile)(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions)
+	STDMETHOD(LoadFromFile)(BSTR sSrcFileName, BSTR sDstPath, BSTR bstrXMLOptions)
 	{
 		PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter;
 		CoCreateInstance(__uuidof(PPTXFile::CAVSOfficeDrawingConverter), NULL, CLSCTX_ALL, __uuidof(PPTXFile::IAVSOfficeDrawingConverter), (void**)(&pOfficeDrawingConverter));
@@ -84,16 +84,27 @@ public:
 		pOfficeDrawingConverter->SetAdditionalParam(L"SourceFileDir2", var);
 		RELEASESYSSTRING(var.bstrVal);
 
-		CString sThemeDir;sThemeDir.Format(_T("%s\\xl\\%s"), sDstPath, OOX::FileTypes::Theme.DefaultDirectory());
-		CString sThemePath;sThemePath.Format(_T("%s\\%s"), sThemeDir, OOX::FileTypes::Theme.DefaultFileName());
-		CString sThemeRelsPath;sThemeRelsPath.Format(_T("%s\\_rels"), sThemeDir);
-		OOX::CSystemUtility::CreateDirectories(sThemeDir);
-		OOX::CSystemUtility::CreateDirectories(sThemeRelsPath);
-		OOX::CSystemUtility::CreateDirectories(sMediaDir);
+		CString sXMLOptions = CString(bstrXMLOptions);
+		// File Type (Можно парсить не два раза, а один, если передавать в ReadFile не опции, а параметры)
+		BYTE fileType;
+		UINT nCodePage;
+		WCHAR wcDelimiter;
+		SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, wcDelimiter);
 
-		CreateTheme(sThemePath);
+		if (BinXlsxRW::c_oFileTypes::CSV != fileType)
+		{
+			CString sThemeDir;sThemeDir.Format(_T("%s\\xl\\%s"), sDstPath, OOX::FileTypes::Theme.DefaultDirectory());
+			CString sThemePath;sThemePath.Format(_T("%s\\%s"), sThemeDir, OOX::FileTypes::Theme.DefaultFileName());
+			CString sThemeRelsPath;sThemeRelsPath.Format(_T("%s\\_rels"), sThemeDir);
+			OOX::CSystemUtility::CreateDirectories(sThemeDir);
+			OOX::CSystemUtility::CreateDirectories(sThemeRelsPath);
+			OOX::CSystemUtility::CreateDirectories(sMediaDir);
+
+			CreateTheme(sThemePath);
+		}
+
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;
-		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, pOfficeDrawingConverter, CString(sXMLOptions));
+		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, pOfficeDrawingConverter, sXMLOptions);
 		RELEASEINTERFACE(pOfficeDrawingConverter);
 		return S_OK;
 	}

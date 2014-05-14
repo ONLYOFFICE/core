@@ -17,6 +17,8 @@ class odf_conversion_context : boost::noncopyable
 {
 	struct _object
 	{
+		std::wstring					 name;
+
 		office_element_ptr				 content;
 		std::vector<office_element_ptr>  content_styles;
 		std::vector<office_element_ptr>  styles;	
@@ -48,9 +50,10 @@ public:
 	
 	void create_object();
 	void end_object();
+	std::wstring get_next_name_object();
 
 private:
-	void process_styles(_object & object);
+	void process_styles(_object & object, bool isRoot);
 	int	 current_object_;
 
 	//page_layout_container & pageLayoutContainer()	{ return page_layout_container_; }

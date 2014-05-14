@@ -448,7 +448,6 @@ void odf_drawing_context::end_line_properies()
 {
 	impl_->current_drawing_part_ = Unknown;
 }
-
 void odf_drawing_context::start_shadow_properies()
 {
 	impl_->current_drawing_part_ = Shadow;
@@ -724,12 +723,20 @@ void odf_drawing_context::start_image(std::wstring & path)
 			
 	set_image_style_repeat(1);//default
 }
-void odf_drawing_context::start_object()
+void odf_drawing_context::start_object(std::wstring name)
 {
 	start_frame();
 	
 	office_element_ptr object_elm;
 	create_element(L"draw", L"object", object_elm, impl_->odf_context_);
+
+	draw_object* object = dynamic_cast<draw_object*>(object_elm.get());
+	if (object == NULL)return;
+
+    object->common_xlink_attlist_.href_= std::wstring(L"./") + name;
+	object->common_xlink_attlist_.type_= xlink_type::Simple;
+	object->common_xlink_attlist_.show_ = xlink_show::Embed;
+	object->common_xlink_attlist_.actuate_= xlink_actuate::OnLoad;
 
 	start_element(object_elm);
 }

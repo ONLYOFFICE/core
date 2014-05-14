@@ -2,6 +2,9 @@
 
 #include <boost/foreach.hpp>
 
+#include "office_spreadsheet.h"
+#include "office_chart.h"
+
 #include "office_elements_create.h"
 
 #include "odf_conversion_context.h"
@@ -42,10 +45,7 @@ odf_conversion_context::~odf_conversion_context()
 
 }
 
-//void odf_conversion_context::start_font_face()
-//{
-//	create_element(L"office", L"font-face-decls", styles_, this,true);
-//}
+
 
 void odf_conversion_context::end_document()
 {
@@ -57,7 +57,7 @@ void odf_conversion_context::end_document()
 	
 		if (object.content == NULL)continue;
 
-		process_styles(object);
+		process_styles(object,isRoot);
 
 		package::content_content_ptr content_root_ = package::content_content::create();		
 		object.content->serialize(content_root_->content());		
@@ -81,7 +81,16 @@ void odf_conversion_context::end_document()
 			object_files->set_media		(object.mediaitems);
 			object_files->set_pictures	(object.mediaitems);
 
-			output_document_->add_object(package::element_ptr(object_files ),isRoot);
+			if (!isRoot)object_files->local_path = object.name + L"/";
+
+			rels_.add(relationship(std::wstring(L"text/xml"), object_files->local_path + L"styles.xml"));
+			rels_.add(relationship(std::wstring(L"text/xml"), object_files->local_path + L"content.xml"));
+			rels_.add(relationship(std::wstring(L"text/xml"), object_files->local_path + L"meta.xml"));
+
+			if (isRoot)object_files->local_path = L"/";
+			rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.") + object.content->get_name(), object_files->local_path));
+
+			output_document_->add_object(package::element_ptr(object_files),isRoot);
 		}
 
 		object.mediaitems.dump_rels(rels_);
@@ -105,6 +114,8 @@ void odf_conversion_context::create_object()
 	
 	obj.style_context = boost::make_shared<odf_style_context>();
 	obj.style_context->set_odf_context(this);
+	obj.name = get_next_name_object();
+	
 	objects_.push_back(obj);
 
 	current_object_ = objects_.size()-1;
@@ -113,22 +124,29 @@ void odf_conversion_context::end_object()
 {
 	current_object_ = 0;
 }
-
-void odf_conversion_context::process_styles(_object & object)
+std::wstring odf_conversion_context::get_next_name_object()
 {
-	create_element(L"office", L"font-face-decls", object.styles, this,true);
-	
+	return std::wstring(L"Object ") + boost::lexical_cast<std::wstring>(objects_.size());
+}
+
+void odf_conversion_context::process_styles(_object & object, bool isRoot)
+{
 	create_element(L"office", L"styles", object.styles, this,true);//общие стили
 	object.style_context->process_office(object.styles.back());
 	
-	create_element(L"office", L"automatic-styles", object.styles, this,true);
-	object.style_context->process_automatic_styles(object.styles.back());
+	if (isRoot)
+	{	
+		create_element(L"office", L"font-face-decls", object.styles, this,true);
+		
+		create_element(L"office", L"automatic-styles", object.styles, this,true);
+		object.style_context->process_automatic_styles(object.styles.back());
 
-	create_element(L"office", L"master-styles", object.styles, this,true);
-	object.style_context->process_master(object.styles.back());
+		create_element(L"office", L"master-styles", object.styles, this,true);
+		object.style_context->process_master(object.styles.back());
+		
+		create_element(L"office", L"font-face-decls", object.content_styles, this,true);
+	}
 
-///////////////////////////////
-	create_element(L"office", L"font-face-decls", object.content_styles, this,true);
 	create_element(L"office", L"automatic-styles", object.content_styles, this,true);
 	object.style_context->process_automatic(object.content_styles.back());
 

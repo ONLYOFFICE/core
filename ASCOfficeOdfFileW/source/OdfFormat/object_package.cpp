@@ -78,30 +78,8 @@ namespace odf
 				CP_XML_NODE(L"manifest:manifest")
 				{  
 					CP_XML_ATTR(L"xmlns:manifest", L"urn:oasis:names:tc:opendocument:xmlns:manifest:1.0");
-					CP_XML_NODE(L"manifest:file-entry")
-					{
-						CP_XML_ATTR(L"manifest:full-path", L"/");
-						CP_XML_ATTR(L"manifest:media-type", std::wstring(L"application/vnd.oasis.opendocument.") + type_);
 
-					}
-
-					rels_.serialize(CP_XML_STREAM());//картинки и медиа
-
-					CP_XML_NODE(L"manifest:file-entry")
-					{
-						CP_XML_ATTR(L"manifest:full-path", L"content.xml");
-						CP_XML_ATTR(L"manifest:media-type", L"text/xml");
-					}			
-					CP_XML_NODE(L"manifest:file-entry")
-					{
-						CP_XML_ATTR(L"manifest:full-path", L"styles.xml");
-						CP_XML_ATTR(L"manifest:media-type", L"text/xml");
-					}
-					CP_XML_NODE(L"manifest:file-entry")
-					{
-						CP_XML_ATTR(L"manifest:full-path", L"meta.xml");
-						CP_XML_ATTR(L"manifest:media-type", L"text/xml");
-					}
+					rels_.serialize(CP_XML_STREAM());
 				}
 			}
 			fs::wpath path = fs::wpath(RootPath) / L"META-INF";
@@ -128,7 +106,7 @@ namespace odf
 					CP_XML_ATTR(L"xmlns:presentation", L"urn:oasis:names:tc:opendocument:xmlns:presentation:1.0");					
 					CP_XML_ATTR(L"xmlns:smil", L"urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0");
 					CP_XML_ATTR(L"xmlns:anim", L"urn:oasis:names:tc:opendocument:xmlns:animation:1.0");
-					
+					CP_XML_ATTR(L"xmlns:chartooo", L"http://openoffice.org/2010/chart");
 		
 					CP_XML_NODE(L"office:meta")
 					{  
@@ -237,13 +215,21 @@ namespace odf
 
 		void odf_document::add_object(element_ptr _object, bool root)
 		{
-			if (root)base_ = _object;
-			else objects_.push_back(_object);
+			rels  r;
+			if (root)
+			{
+				base_ = _object;
+			}
+			else 
+			{
+				objects_.push_back(_object);
+			}
+			dynamic_cast<manifect_file*>(manifest_.get())->add_rels(r);
 		}
 
 		void odf_document::set_rels(rels  & r)
 		{
-			(dynamic_cast<manifect_file*>(manifest_.get()))->add_rels(r);
+			dynamic_cast<manifect_file*>(manifest_.get())->add_rels(r);
 		}
 
 		odf_document::odf_document(std::wstring type)
@@ -257,17 +243,14 @@ namespace odf
 			
 			long count = 0;
 			BOOST_FOREACH(const element_ptr & item, objects_)
-			{
-				std::wstring name = L"Object " + boost::lexical_cast<std::wstring>(++count);
-				fs::wpath path = fs::wpath(RootPath) / name;
+			{				
+				fs::wpath path = fs::wpath(RootPath) / item->local_path;
 				fs::create_directory(path);
 				
 				item->write(path.string());
 			}
-
 			if (manifest_)	manifest_->write(RootPath);
-			if (settings_)	settings_->write(RootPath);
-			
+			if (settings_)	settings_->write(RootPath);			
 		}
 		
 		void content_file::write(const std::wstring & RootPath)
@@ -277,43 +260,44 @@ namespace odf
 			{
 				CP_XML_NODE(L"office:document-content")
 				{  
-					CP_XML_ATTR(L"xmlns:office",L"urn:oasis:names:tc:opendocument:xmlns:office:1.0" );
-					CP_XML_ATTR(L"xmlns:style",	L"urn:oasis:names:tc:opendocument:xmlns:style:1.0" );
-					CP_XML_ATTR(L"xmlns:text",	L"urn:oasis:names:tc:opendocument:xmlns:text:1.0" );
-					CP_XML_ATTR(L"xmlns:table",	L"urn:oasis:names:tc:opendocument:xmlns:table:1.0" );
-					CP_XML_ATTR(L"xmlns:draw",	L"urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" );
-					CP_XML_ATTR(L"xmlns:fo",	L"urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" );
-					CP_XML_ATTR(L"xmlns:xlink",	L"http://www.w3.org/1999/xlink" );
-					CP_XML_ATTR(L"xmlns:dc",	L"http://purl.org/dc/elements/1.1/" );
-					CP_XML_ATTR(L"xmlns:meta",	L"urn:oasis:names:tc:opendocument:xmlns:meta:1.0" );
-					CP_XML_ATTR(L"xmlns:number",L"urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" );
+					CP_XML_ATTR(L"xmlns:office",		L"urn:oasis:names:tc:opendocument:xmlns:office:1.0" );
+					CP_XML_ATTR(L"xmlns:style",			L"urn:oasis:names:tc:opendocument:xmlns:style:1.0" );
+					CP_XML_ATTR(L"xmlns:text",			L"urn:oasis:names:tc:opendocument:xmlns:text:1.0" );
+					CP_XML_ATTR(L"xmlns:table",			L"urn:oasis:names:tc:opendocument:xmlns:table:1.0" );
+					CP_XML_ATTR(L"xmlns:draw",			L"urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" );
+					CP_XML_ATTR(L"xmlns:fo",			L"urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" );
+					CP_XML_ATTR(L"xmlns:xlink",			L"http://www.w3.org/1999/xlink" );
+					CP_XML_ATTR(L"xmlns:dc",			L"http://purl.org/dc/elements/1.1/" );
+					CP_XML_ATTR(L"xmlns:meta",			L"urn:oasis:names:tc:opendocument:xmlns:meta:1.0" );
+					CP_XML_ATTR(L"xmlns:number",		L"urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" );
 					CP_XML_ATTR(L"xmlns:presentation",	L"urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" );
-					CP_XML_ATTR(L"xmlns:svg",	L"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"); 
-					CP_XML_ATTR(L"xmlns:chart",	L"urn:oasis:names:tc:opendocument:xmlns:chart:1.0" );
-					CP_XML_ATTR(L"xmlns:dr3d",	L"urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" );
-					CP_XML_ATTR(L"xmlns:math",	L"http://www.w3.org/1998/Math/MathML" );
-					CP_XML_ATTR(L"xmlns:form",	L"urn:oasis:names:tc:opendocument:xmlns:form:1.0" );
-					CP_XML_ATTR(L"xmlns:script",L"urn:oasis:names:tc:opendocument:xmlns:script:1.0" );
-					CP_XML_ATTR(L"xmlns:ooo",	L"http://openoffice.org/2004/office" );
-					CP_XML_ATTR(L"xmlns:ooow",	L"http://openoffice.org/2004/writer" );
-					CP_XML_ATTR(L"xmlns:oooc",	L"http://openoffice.org/2004/calc" );
-					CP_XML_ATTR(L"xmlns:dom",	L"http://www.w3.org/2001/xml-events" );
-					CP_XML_ATTR(L"xmlns:xforms",L"http://www.w3.org/2002/xforms");
-					CP_XML_ATTR(L"xmlns:xsd",	L"http://www.w3.org/2001/XMLSchema" );
-					CP_XML_ATTR(L"xmlns:xsi",	L"http://www.w3.org/2001/XMLSchema-instance" );
-					CP_XML_ATTR(L"xmlns:rpt",	L"http://openoffice.org/2005/report" );
-					CP_XML_ATTR(L"xmlns:of",	L"urn:oasis:names:tc:opendocument:xmlns:of:1.2" );
-					CP_XML_ATTR(L"xmlns:xhtml",	L"http://www.w3.org/1999/xhtml" );
-					CP_XML_ATTR(L"xmlns:grddl",	L"http://www.w3.org/2003/g/data-view#" );
-					CP_XML_ATTR(L"xmlns:tableooo",	L"http://openoffice.org/2009/table" );
-					CP_XML_ATTR(L"xmlns:drawooo",	L"http://openoffice.org/2010/draw" );
-					CP_XML_ATTR(L"xmlns:calcext",	L"urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" );
-					CP_XML_ATTR(L"xmlns:field",	L"urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" );
-					CP_XML_ATTR(L"xmlns:formx",	L"urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" );
-					CP_XML_ATTR(L"xmlns:css3t",	L"http://www.w3.org/TR/css3-text/" );
-					CP_XML_ATTR(L"office:version",	L"1.2");				
+					CP_XML_ATTR(L"xmlns:svg",			L"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"); 
+					CP_XML_ATTR(L"xmlns:chart",			L"urn:oasis:names:tc:opendocument:xmlns:chart:1.0" );
+					CP_XML_ATTR(L"xmlns:dr3d",			L"urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" );
+					CP_XML_ATTR(L"xmlns:math",			L"http://www.w3.org/1998/Math/MathML" );
+					CP_XML_ATTR(L"xmlns:form",			L"urn:oasis:names:tc:opendocument:xmlns:form:1.0" );
+					CP_XML_ATTR(L"xmlns:script",		L"urn:oasis:names:tc:opendocument:xmlns:script:1.0" );
+					CP_XML_ATTR(L"xmlns:ooo",			L"http://openoffice.org/2004/office" );
+					CP_XML_ATTR(L"xmlns:ooow",			L"http://openoffice.org/2004/writer" );
+					CP_XML_ATTR(L"xmlns:oooc",			L"http://openoffice.org/2004/calc" );
+					CP_XML_ATTR(L"xmlns:dom",			L"http://www.w3.org/2001/xml-events" );
+					CP_XML_ATTR(L"xmlns:xforms",		L"http://www.w3.org/2002/xforms");
+					CP_XML_ATTR(L"xmlns:xsd",			L"http://www.w3.org/2001/XMLSchema" );
+					CP_XML_ATTR(L"xmlns:xsi",			L"http://www.w3.org/2001/XMLSchema-instance" );
+					CP_XML_ATTR(L"xmlns:rpt",			L"http://openoffice.org/2005/report" );
+					CP_XML_ATTR(L"xmlns:of",			L"urn:oasis:names:tc:opendocument:xmlns:of:1.2" );
+					CP_XML_ATTR(L"xmlns:xhtml",			L"http://www.w3.org/1999/xhtml" );
+					CP_XML_ATTR(L"xmlns:grddl",			L"http://www.w3.org/2003/g/data-view#" );
+					CP_XML_ATTR(L"xmlns:tableooo",		L"http://openoffice.org/2009/table" );
+					CP_XML_ATTR(L"xmlns:drawooo",		L"http://openoffice.org/2010/draw" );
+					CP_XML_ATTR(L"xmlns:chartooo",		L"http://openoffice.org/2010/chart" );
+					CP_XML_ATTR(L"xmlns:calcext",		L"urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" );
+					CP_XML_ATTR(L"xmlns:field",			L"urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" );
+					CP_XML_ATTR(L"xmlns:formx",			L"urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" );
+					CP_XML_ATTR(L"xmlns:css3t",			L"http://www.w3.org/TR/css3-text/" );
+					CP_XML_ATTR(L"office:version",		L"1.2");				
 	
-					CP_XML_NODE(L"office:scripts");
+					//CP_XML_NODE(L"office:scripts");
 					if (content_)
 					{
 						CP_XML_STREAM() << content_->styles_str();
@@ -338,41 +322,42 @@ namespace odf
 			{
 				CP_XML_NODE(L"office:document-styles")
 				{  
-					CP_XML_ATTR(L"xmlns:office",L"urn:oasis:names:tc:opendocument:xmlns:office:1.0" );
-					CP_XML_ATTR(L"xmlns:style",	L"urn:oasis:names:tc:opendocument:xmlns:style:1.0" );
-					CP_XML_ATTR(L"xmlns:text",	L"urn:oasis:names:tc:opendocument:xmlns:text:1.0" );
-					CP_XML_ATTR(L"xmlns:table",	L"urn:oasis:names:tc:opendocument:xmlns:table:1.0" );
-					CP_XML_ATTR(L"xmlns:draw",	L"urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" );
-					CP_XML_ATTR(L"xmlns:fo",	L"urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" );
-					CP_XML_ATTR(L"xmlns:xlink",	L"http://www.w3.org/1999/xlink" );
-					CP_XML_ATTR(L"xmlns:dc",	L"http://purl.org/dc/elements/1.1/" );
-					CP_XML_ATTR(L"xmlns:meta",	L"urn:oasis:names:tc:opendocument:xmlns:meta:1.0" );
-					CP_XML_ATTR(L"xmlns:number",L"urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" );
+					CP_XML_ATTR(L"xmlns:office",		L"urn:oasis:names:tc:opendocument:xmlns:office:1.0" );
+					CP_XML_ATTR(L"xmlns:style",			L"urn:oasis:names:tc:opendocument:xmlns:style:1.0" );
+					CP_XML_ATTR(L"xmlns:text",			L"urn:oasis:names:tc:opendocument:xmlns:text:1.0" );
+					CP_XML_ATTR(L"xmlns:table",			L"urn:oasis:names:tc:opendocument:xmlns:table:1.0" );
+					CP_XML_ATTR(L"xmlns:draw",			L"urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" );
+					CP_XML_ATTR(L"xmlns:fo",			L"urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" );
+					CP_XML_ATTR(L"xmlns:xlink",			L"http://www.w3.org/1999/xlink" );
+					CP_XML_ATTR(L"xmlns:dc",			L"http://purl.org/dc/elements/1.1/" );
+					CP_XML_ATTR(L"xmlns:meta",			L"urn:oasis:names:tc:opendocument:xmlns:meta:1.0" );
+					CP_XML_ATTR(L"xmlns:number",		L"urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" );
 					CP_XML_ATTR(L"xmlns:presentation",	L"urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" );
-					CP_XML_ATTR(L"xmlns:svg",	L"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"); 
-					CP_XML_ATTR(L"xmlns:chart",	L"urn:oasis:names:tc:opendocument:xmlns:chart:1.0" );
-					CP_XML_ATTR(L"xmlns:dr3d",	L"urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" );
-					CP_XML_ATTR(L"xmlns:math",	L"http://www.w3.org/1998/Math/MathML" );
-					CP_XML_ATTR(L"xmlns:form",	L"urn:oasis:names:tc:opendocument:xmlns:form:1.0" );
-					CP_XML_ATTR(L"xmlns:script",L"urn:oasis:names:tc:opendocument:xmlns:script:1.0" );
-					CP_XML_ATTR(L"xmlns:ooo",	L"http://openoffice.org/2004/office" );
-					CP_XML_ATTR(L"xmlns:ooow",	L"http://openoffice.org/2004/writer" );
-					CP_XML_ATTR(L"xmlns:oooc",	L"http://openoffice.org/2004/calc" );
-					CP_XML_ATTR(L"xmlns:dom",	L"http://www.w3.org/2001/xml-events" );
-					CP_XML_ATTR(L"xmlns:xforms",L"http://www.w3.org/2002/xforms");
-					CP_XML_ATTR(L"xmlns:xsd",	L"http://www.w3.org/2001/XMLSchema" );
-					CP_XML_ATTR(L"xmlns:xsi",	L"http://www.w3.org/2001/XMLSchema-instance" );
-					CP_XML_ATTR(L"xmlns:rpt",	L"http://openoffice.org/2005/report" );
-					CP_XML_ATTR(L"xmlns:of",	L"urn:oasis:names:tc:opendocument:xmlns:of:1.2" );
-					CP_XML_ATTR(L"xmlns:xhtml",	L"http://www.w3.org/1999/xhtml" );
-					CP_XML_ATTR(L"xmlns:grddl",	L"http://www.w3.org/2003/g/data-view#" );
-					CP_XML_ATTR(L"xmlns:tableooo",	L"http://openoffice.org/2009/table" );
-					CP_XML_ATTR(L"xmlns:drawooo",	L"http://openoffice.org/2010/draw" );
-					CP_XML_ATTR(L"xmlns:calcext",	L"urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" );
-					CP_XML_ATTR(L"xmlns:field",	L"urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" );
-					CP_XML_ATTR(L"xmlns:formx",	L"urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" );
-					CP_XML_ATTR(L"xmlns:css3t",	L"http://www.w3.org/TR/css3-text/" );
-					CP_XML_ATTR(L"office:version",	L"1.2");		
+					CP_XML_ATTR(L"xmlns:svg",			L"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"); 
+					CP_XML_ATTR(L"xmlns:chart",			L"urn:oasis:names:tc:opendocument:xmlns:chart:1.0" );
+					CP_XML_ATTR(L"xmlns:dr3d",			L"urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" );
+					CP_XML_ATTR(L"xmlns:math",			L"http://www.w3.org/1998/Math/MathML" );
+					CP_XML_ATTR(L"xmlns:form",			L"urn:oasis:names:tc:opendocument:xmlns:form:1.0" );
+					CP_XML_ATTR(L"xmlns:script",		L"urn:oasis:names:tc:opendocument:xmlns:script:1.0" );
+					CP_XML_ATTR(L"xmlns:ooo",			L"http://openoffice.org/2004/office" );
+					CP_XML_ATTR(L"xmlns:ooow",			L"http://openoffice.org/2004/writer" );
+					CP_XML_ATTR(L"xmlns:oooc",			L"http://openoffice.org/2004/calc" );
+					CP_XML_ATTR(L"xmlns:dom",			L"http://www.w3.org/2001/xml-events" );
+					CP_XML_ATTR(L"xmlns:xforms",		L"http://www.w3.org/2002/xforms");
+					CP_XML_ATTR(L"xmlns:xsd",			L"http://www.w3.org/2001/XMLSchema" );
+					CP_XML_ATTR(L"xmlns:xsi",			L"http://www.w3.org/2001/XMLSchema-instance" );
+					CP_XML_ATTR(L"xmlns:rpt",			L"http://openoffice.org/2005/report" );
+					CP_XML_ATTR(L"xmlns:of",			L"urn:oasis:names:tc:opendocument:xmlns:of:1.2" );
+					CP_XML_ATTR(L"xmlns:xhtml",			L"http://www.w3.org/1999/xhtml" );
+					CP_XML_ATTR(L"xmlns:grddl",			L"http://www.w3.org/2003/g/data-view#" );
+					CP_XML_ATTR(L"xmlns:tableooo",		L"http://openoffice.org/2009/table" );
+					CP_XML_ATTR(L"xmlns:drawooo",		L"http://openoffice.org/2010/draw" );
+					CP_XML_ATTR(L"xmlns:chartooo",		L"http://openoffice.org/2010/chart" );
+					CP_XML_ATTR(L"xmlns:calcext",		L"urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" );
+					CP_XML_ATTR(L"xmlns:field",			L"urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" );
+					CP_XML_ATTR(L"xmlns:formx",			L"urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" );
+					CP_XML_ATTR(L"xmlns:css3t",			L"http://www.w3.org/TR/css3-text/" );
+					CP_XML_ATTR(L"office:version",		L"1.2");		
 					
 					if (content_)
 					{

@@ -30,6 +30,10 @@ odf_style_context* odf_conversion_context::styles_context()
 	else
 		return NULL;
 }
+odf_chart_context* odf_conversion_context::chart_context()
+{
+	return &chart_context_;
+}
 
 odf_number_styles_context* odf_conversion_context::numbers_styles_context()	
 {

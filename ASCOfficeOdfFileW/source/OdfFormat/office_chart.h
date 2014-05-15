@@ -50,7 +50,7 @@ public:
 
     common_draw_size_attlist	common_draw_size_attlist_;
     common_chart_attlist		common_attlist_;
-    _CP_OPT(std::wstring)				chart_class_;
+    _CP_OPT(std::wstring)		chart_class_;
     _CP_OPT(std::wstring)		chart_column_mapping_;
     _CP_OPT(std::wstring)		chart_row_mapping_;
 };

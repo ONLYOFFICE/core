@@ -61,7 +61,7 @@ private:
 	ods_table_context			table_context_;
 	
 	odf_text_context*			current_text_context_;
-	office_spreadsheet*			current_spreadsheet_;
+	office_spreadsheet*			root_spreadsheet_;
 	
 
 };

@@ -103,8 +103,8 @@ public:
 	} 
 	std::vector<odf_drawing_state> drawing_list_;//все элементы .. для удобства разделение по "топам"
 	
-	odf_drawing_state current_drawing_state_;
-	_drawing_part current_drawing_part_;
+	odf_drawing_state				current_drawing_state_;
+	_drawing_part					current_drawing_part_;
 	
 	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней наследования
 
@@ -414,16 +414,23 @@ void odf_drawing_context::end_frame()
 	end_element();
 }
 /////////////////////
-void odf_drawing_context::start_element(office_element_ptr & elm)
+void odf_drawing_context::start_element(office_element_ptr & elm, office_element_ptr  style_elm)
 {
 	int level = impl_->current_level_.size();
-
-	odf_element_state state={elm, L"", office_element_ptr(), level};
-
-	impl_->current_drawing_state_.elements_.push_back(state);
 	
 	if (impl_->current_level_.size()>0)
 		impl_->current_level_.back()->add_child_element(elm);
+
+	std::wstring style_name;
+	style* style_ = dynamic_cast<style*>(style_elm.get());
+	if (style_)
+	{
+		style_name = style_->style_name_;
+		impl_->current_graphic_properties = style_->style_content_.get_style_graphic_properties();
+	}
+
+	odf_element_state state={elm, style_name, style_elm, level};
+	impl_->current_drawing_state_.elements_.push_back(state);
 
 	impl_->current_level_.push_back(elm);
 }

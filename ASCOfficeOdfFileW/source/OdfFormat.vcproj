@@ -1159,6 +1159,14 @@
 			Name="odf common"
 			>
 			<File
+				RelativePath=".\OdfFormat\odf_chart_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odf_chart_context.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\odf_conversion_context.cpp"
 				>
 			</File>

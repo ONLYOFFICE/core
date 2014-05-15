@@ -46,7 +46,7 @@ public:
 	void start_object(std::wstring name);
 	void end_object();
 
-	void start_element(office_element_ptr & elm);
+	void start_element(office_element_ptr & elm, office_element_ptr  style_elm = office_element_ptr());
     void end_element();
 
 	bool is_exist_content();

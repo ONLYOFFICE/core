@@ -1,8 +1,11 @@
 #pragma once
 
 #include "object_package.h"
+
 #include "odf_style_context.h"
 #include "odf_drawing_context.h"
+#include "odf_chart_context.h"
+
 #include "mediaitems.h"
 
 namespace cpdoccore { 
@@ -36,7 +39,6 @@ public:
 	
 	package::odf_document * output_document_;
 
-	std::vector<_object>	objects_;//"0" = root
 
 	virtual odf_drawing_context		* drawing_context() = 0;
 	virtual odf_text_context		* text_context() = 0;
@@ -46,14 +48,24 @@ public:
 	_mediaitems						* mediaitems();
 
 	void start_chart();
+	void end_chart();
+
 	void start_spreadsheet();
+	void end_spreadsheet();
 	
 	void create_object();
 	void end_object();
-	std::wstring get_next_name_object();
+
+	std::wstring			get_next_name_object();
+	office_element_ptr &	get_current_object_element();
 
 private:
+	std::vector<_object>	objects_;//"0" = root
+
+	odf_chart_context		chart_context_;
+
 	void process_styles(_object & object, bool isRoot);
+	
 	int	 current_object_;
 
 	//page_layout_container & pageLayoutContainer()	{ return page_layout_container_; }
@@ -62,7 +74,6 @@ private:
 
 	//notes_configuration &	noteConfiguration()		{ return notes_configuration_; }
 
-	//styles_lite_container &	drawStyles()		{ return draw_style_container_; }
 	//styles_lite_container &	Templates()			{ return template_container_; }
 
 
@@ -72,7 +83,6 @@ private:
 	//list_style_container	list_style_container_;
 	//notes_configuration	notes_configuration_;
 
-	//styles_lite_container	draw_style_container_;
 	//styles_lite_container	template_container_;
 };
 

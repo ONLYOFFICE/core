@@ -10,7 +10,7 @@
 namespace cpdoccore {
 namespace odf {
 
-ods_table_context::ods_table_context(ods_conversion_context & Context/*, xlsx_text_context & textCotnext*/): context_(Context)
+ods_table_context::ods_table_context(ods_conversion_context & Context): context_(Context)
 {        
 }
 

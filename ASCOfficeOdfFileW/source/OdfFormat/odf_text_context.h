@@ -32,7 +32,7 @@ struct odf_text_state
 class odf_text_context: boost::noncopyable
 {
 public:
-	odf_text_context(odf_style_context * styles_context_,odf_conversion_context *odf_context);
+	odf_text_context(odf_conversion_context *odf_context);
     ~odf_text_context();
 public:
 	void set_styles_context(odf_style_context*  styles_context);//для embedded 

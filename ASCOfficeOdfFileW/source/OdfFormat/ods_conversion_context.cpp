@@ -84,16 +84,18 @@ ods_conversion_context::ods_conversion_context(package::odf_document * outputDoc
 void ods_conversion_context::start_document()
 {
 	start_spreadsheet();
-	current_spreadsheet_ = dynamic_cast<office_spreadsheet*>(objects_.back().content.get());
+	
+	root_spreadsheet_ = dynamic_cast<office_spreadsheet*>(get_current_object_element().get());
 }
 
 
 void ods_conversion_context::start_sheet(std::wstring & name)
 {
-	create_element(L"table", L"table",current_spreadsheet_->getContent(),this);
+	create_element(L"table", L"table",root_spreadsheet_->getContent(),this);
 	
-	table_context_.start_table(current_spreadsheet_->getContent().back(),name);
-	
+	table_context_.start_table(root_spreadsheet_->getContent().back(),name);
+
+	drawing_context()->set_styles_context(styles_context());
 }
 
 void ods_conversion_context::set_sheet_dimension(std::wstring & ref)
@@ -392,7 +394,7 @@ void ods_conversion_context::add_column(int start_column, int repeated, int leve
 }
 void ods_conversion_context::start_text_context()
 {
-	current_text_context_ = new odf_text_context(styles_context(),this);
+	current_text_context_ = new odf_text_context(this);
 
 }
 void ods_conversion_context::end_text_context()

@@ -16,7 +16,7 @@ namespace odf {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-odf_conversion_context::odf_conversion_context(package::odf_document * outputDocument)
+odf_conversion_context::odf_conversion_context(package::odf_document * outputDocument) : chart_context_ (this)
 { 
 	output_document_ = outputDocument;
 
@@ -25,12 +25,15 @@ odf_conversion_context::odf_conversion_context(package::odf_document * outputDoc
 
 odf_style_context* odf_conversion_context::styles_context()
 {
-	return objects_[current_object_].style_context.get();
+	if (objects_.size() > 0)
+		return objects_[current_object_].style_context.get();
+	else
+		return NULL;
 }
 
 odf_number_styles_context* odf_conversion_context::numbers_styles_context()	
 {
-	if (objects_[current_object_].style_context)
+	if (objects_.size() > 0 && objects_[current_object_].style_context)
 			return &(objects_[current_object_].style_context->numbers_styles());
 	else return NULL;
 }
@@ -102,6 +105,9 @@ void odf_conversion_context::start_chart()
 {
 	create_object();
 	create_element(L"office", L"chart", objects_.back().content, this,true);
+
+	chart_context_.set_styles_context(styles_context());
+	chart_context_.start_chart(get_current_object_element());
 }
 void odf_conversion_context::start_spreadsheet()
 {
@@ -120,10 +126,26 @@ void odf_conversion_context::create_object()
 
 	current_object_ = objects_.size()-1;
 }
+void odf_conversion_context::end_chart()
+{
+	chart_context_.end_chart();
+
+	end_object();
+}
+void odf_conversion_context::end_spreadsheet()
+{
+	end_object();
+}
 void odf_conversion_context::end_object()
 {
 	current_object_ = 0;
 }
+
+office_element_ptr & odf_conversion_context::get_current_object_element()
+{
+	return objects_[current_object_].content;
+}
+
 std::wstring odf_conversion_context::get_next_name_object()
 {
 	return std::wstring(L"Object ") + boost::lexical_cast<std::wstring>(objects_.size());

@@ -16,10 +16,10 @@ namespace cpdoccore {
 namespace odf
 {
 
-odf_text_context::odf_text_context(odf_style_context * styles_context,odf_conversion_context *odf_context)
+odf_text_context::odf_text_context(odf_conversion_context *odf_context)
 {
-	styles_context_ = styles_context;
 	odf_context_ = odf_context;
+	styles_context_ = odf_context->styles_context();
 
 	last_paragraph_ = NULL;
 }

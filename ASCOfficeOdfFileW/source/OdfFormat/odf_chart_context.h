@@ -30,12 +30,21 @@ public:
 	odf_text_context	*text_context();
 
 	void start_chart(office_element_ptr & root);
-		void set_type_chart(int type);
-		void start_series();
-		void end_series();
+		void set_type_chart(std::wstring type);
+		void set_3D(bool Val);
 		
+		void start_series();
+	
 		void start_axis();
-		void end_axis();
+		void start_title();
+		void start_plot_area();
+		void start_legend();
+
+		void start_element(office_element_ptr & elm, office_element_ptr & style_elm, std::wstring style_name);
+		void end_element();
+
+		void set_series_formula(int category, std::wstring oox_formula);
+
 	void end_chart();
 
 private:

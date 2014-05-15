@@ -473,7 +473,7 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 	std::vector<std::wstring> distance_inp;
 	std::vector<std::wstring> distance_out;
 
-	boost::algorithm::split(distance_inp,expr, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+	boost::algorithm::split(distance_inp,expr, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 
 	BOOST_FOREACH(std::wstring &d,distance_inp)
 	{
@@ -485,7 +485,7 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 
 		BOOST_FOREACH(std::wstring &c,range)
 		{
-			const ::std::string::size_type colon = c.find('.');
+			const ::std::string::size_type colon = c.find('!');
 			cells.push_back(c.substr(colon+1));
 			if (sheet.size()<1)
 				sheet=c.substr(0, colon);
@@ -493,6 +493,7 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 		std::wstring cells_out;
 		BOOST_FOREACH(std::wstring &c,cells)
 		{
+			cells_out.append(sheet+L".");
 			cells_out.append(c);
 			cells_out.append(L":");
 		}
@@ -504,14 +505,14 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 			sheet = L"'" + sheet + L"'";
 		}
 
-		distance_out.push_back(sheet+L"!"+cells_out.substr(0, cells_out.size()-1));
+		distance_out.push_back(cells_out.substr(0, cells_out.size()-1));
 	}
 	std::wstring result;
 
 	BOOST_FOREACH(std::wstring &d,distance_out)
 	{
 		result.append(d);
-		result.append(L",");
+		result.append(L" ");
 	}
 	return result.substr(0, result.size()-1);
 }

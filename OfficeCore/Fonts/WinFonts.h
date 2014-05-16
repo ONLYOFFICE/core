@@ -133,6 +133,18 @@ public:
 		if ( _T("EditorFontsThumbnailsFolder") == sParamName && VT_BSTR == ParamValue.vt )
 		{
 			m_strEditorFontsDumpFolder = (CString)ParamValue.bstrVal;
+
+			// удаляем слеш
+			int nLen = m_strEditorFontsDumpFolder.GetLength();
+
+			if (nLen > 0)
+			{
+				int nInd1 = m_strEditorFontsDumpFolder.ReverseFind((WCHAR)'\\');
+				int nInd2 = m_strEditorFontsDumpFolder.ReverseFind((WCHAR)'/');
+
+				if ((nInd1 == (nLen - 1)) || (nInd2 == (nLen - 1)))
+					m_strEditorFontsDumpFolder.Delete(nLen - 1);
+			}			
 		}
 		return S_OK;
 	}

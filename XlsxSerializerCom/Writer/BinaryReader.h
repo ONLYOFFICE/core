@@ -2023,7 +2023,7 @@ namespace BinXlsxRW {
 			{
 				pCol->m_oWidth.Init();
 				pCol->m_oWidth->SetValue(m_oBufferedStream.ReadDouble());
-				if(g_nFormatVersion < 2)
+				if(g_nCurFormatVersion < 2)
 				{
 					pCol->m_oCustomWidth.Init();
 					pCol->m_oCustomWidth->SetValue(SimpleTypes::onoffTrue);

@@ -38,7 +38,7 @@ public:
 
     void add_or_find(const std::wstring & oox_ref, Type type, std::wstring & odf_ref);
     
-	void dump_rels(rels & Rels);
+	void dump_rels(rels & Rels, std::wstring local_path = L"");
     items_array & items() { return items_; }
 
 private:

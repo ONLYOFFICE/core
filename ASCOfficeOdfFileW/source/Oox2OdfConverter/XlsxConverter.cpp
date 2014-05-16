@@ -32,6 +32,8 @@ XlsxConverter::XlsxConverter(const std::wstring & path)
 
 	xlsx_document = new OOX::Spreadsheet::CXlsx(oox_path);	
 	output_document = new odf::package::odf_document(L"spreadsheet");
+
+	xlsx_current_drawing = NULL;
 }
 
 void XlsxConverter::write(const std::wstring & path)
@@ -53,19 +55,31 @@ OOX::CTheme* XlsxConverter::oox_theme()
 
 CString	XlsxConverter::find_link_by_id (CString sId, int type)
 {
+	CString ref;
 	if (type==1)
 	{
-		smart_ptr<OOX::File> oFile = xlsx_current_drawing->Find(sId);
-		if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Image == oFile->type())
+		if (xlsx_current_drawing)
 		{
-			OOX::Spreadsheet::Image* pImage = (OOX::Spreadsheet::Image*)oFile.operator->();
+			smart_ptr<OOX::File> oFile = xlsx_current_drawing->Find(sId);
+			if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Image == oFile->type())
+			{
+				OOX::Spreadsheet::Image* pImage = (OOX::Spreadsheet::Image*)oFile.operator->();
 
-			return pImage->filename().GetPath();
+				ref = pImage->filename().GetPath();
+			}
 		}
-		else return L"";
+		if (ref.GetLength() < 1 && oox_current_chart)
+		{
+			smart_ptr<OOX::File> oFile = oox_current_chart->Find(sId);
+			if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Image == oFile->type())
+			{
+				OOX::Spreadsheet::Image* pImage = (OOX::Spreadsheet::Image*)oFile.operator->();
 
+				ref = pImage->filename().GetPath();
+			}
+		}
 	}
-	else return L"";
+	return ref;
 }
 
 
@@ -1074,6 +1088,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing)
 			convert(oox_drawing->m_arrItems[dr]);
 		ods_context->end_drawing();
 	}
+
+	xlsx_current_drawing = NULL;
 }
 
 

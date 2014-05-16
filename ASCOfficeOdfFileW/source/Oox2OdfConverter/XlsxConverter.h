@@ -100,7 +100,7 @@ namespace Oox2Odf
 		OOX::Spreadsheet::CXlsx		*xlsx_document;
 		odf::package::odf_document	*output_document;
 		OOX::Spreadsheet::CDrawing	*xlsx_current_drawing; //пока сюда .. потом покрасивше, для внешних ссылок
-
+		
 		odf::ods_conversion_context	*ods_context;
 
 		void convert_sheets();

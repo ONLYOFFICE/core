@@ -1,5 +1,6 @@
 #include "precompiled_cpodf.h"
 
+#include "../utils.h"
 
 #include "ods_conversion_context.h"
 #include "office_spreadsheet.h"
@@ -74,10 +75,23 @@ void parsing_ref (const std::wstring & ref, int & col,int & row)
 	row = getRowAdderssInv(strRow)+1;
 
 }
+void calculate_size_font_symbols(_font_metrix & metrix)
+{
+	double appr_px = _gdi_graphics_::calculate_size_symbol(metrix.font_name,metrix.font_size,metrix.italic,metrix.bold);
+
+	if (appr_px > 0)
+	{
+		//pixels to pt
+		metrix.approx_symbol_size = appr_px * 72./96. ;///1.1;//"1.2" волшебное число оќ 
+		metrix.IsCalc = true;
+	}
+
+}
 }
 ods_conversion_context::ods_conversion_context(package::odf_document * outputDocument) 
 		: odf_conversion_context(outputDocument), table_context_(*this), current_text_context_(NULL)
 {
+	font_metrix_ = _font_metrix();
 }
 
 
@@ -313,6 +327,19 @@ void ods_conversion_context::end_cell()
 	current_table().end_cell();
 	end_text_context();
 }
+void ods_conversion_context::calculate_font_metrix(std::wstring name, double size, bool italic, bool bold)
+{
+	if (font_metrix_.IsCalc)return;
+
+	font_metrix_.font_size = size;
+	font_metrix_.italic = italic;
+	font_metrix_.bold = bold;
+	font_metrix_.font_name = name;
+
+////////////////////////////////////////////
+	utils::calculate_size_font_symbols(font_metrix_);
+}
+
 void ods_conversion_context::start_columns()
 {
 }
@@ -334,7 +361,7 @@ void ods_conversion_context::start_rows()
 void ods_conversion_context::end_rows()
 {
 	//add default last row
-	int repeat = std::max(current_table().dimension_row,1024) - current_table().current_row();
+	int repeat = max(current_table().dimension_row,1024) - current_table().current_row();
 	if (repeat < 0) repeat = 1;
 
 	start_row(current_table().current_row()+1,repeat,0,true);

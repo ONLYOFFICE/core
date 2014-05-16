@@ -194,7 +194,7 @@ void ods_table_state::set_column_default_cell_style(std::wstring & style_name)
 	column->table_table_column_attlist_.table_default_cell_style_name_ = style_ref(style_name);
 }
 
-void ods_table_state::set_column_width(int width)//cm, pt ???
+void ods_table_state::set_column_width(double width)//cm, pt ???
 {
 	odf::style* style = dynamic_cast<odf::style*>(columns_.back().style_elm.get());
 	if (!style)return;		
@@ -204,7 +204,7 @@ void ods_table_state::set_column_width(int width)//cm, pt ???
 
 	columns_.back().size = width; //pt
 
-	column_properties->style_table_column_properties_attlist_.style_column_width_ = length(width/4.35,length::cm);
+	column_properties->style_table_column_properties_attlist_.style_column_width_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
 }
 void ods_table_state::set_column_optimal_width(bool val)
 {
@@ -279,7 +279,7 @@ void ods_table_state::set_row_height(double height)
 
 	rows_.back().size = height;//pt
 
-	row_properties->style_table_row_properties_attlist_.style_row_height_ = length(height/22.85,length::cm);
+	row_properties->style_table_row_properties_attlist_.style_row_height_ = length(length(height,length::pt).get_value_unit(length::cm),length::cm);
 
 }
 

@@ -48,7 +48,7 @@ namespace odf
 class odf_chart_context::Impl
 {
 public:
-	Impl(odf_conversion_context *odf_context) :odf_context_(odf_context), drawing_context_(odf_context), text_context_(odf_context)
+	Impl(odf_conversion_context *odf_context) :odf_context_(odf_context)/*, drawing_context_(odf_context)*/, text_context_(odf_context)
     {	
 		styles_context_ = NULL;
 		
@@ -62,12 +62,10 @@ public:
 	odf_style_context			*styles_context_;
 	odf_conversion_context		*odf_context_;
 
-	odf_drawing_context			drawing_context_; //для заполения графических стилей объектов чарта
 	odf_text_context			text_context_;
 
 	style_chart_properties		*current_chart_properties;
 	chart_chart					*current_chart_;
-
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -83,13 +81,13 @@ odf_chart_context::~odf_chart_context()
 void odf_chart_context::set_styles_context(odf_style_context * style_context)
 {
 	impl_->styles_context_ = style_context;
-	impl_->drawing_context_.set_styles_context(style_context);
+	impl_->odf_context_->drawing_context()->set_styles_context(style_context);
 	impl_->text_context_.set_styles_context(style_context);
 }
 
 odf_drawing_context * odf_chart_context::drawing_context()
 {
-	return  &impl_->drawing_context_;
+	return  impl_->odf_context_->drawing_context();
 }
 odf_text_context	* odf_chart_context::text_context()
 {

@@ -468,6 +468,7 @@ namespace OOX
 		et_xdr_spPr, // <xdr:spPr>
 
 		et_c_chart, // <c:chart>
+		et_c_spPr,
 
 		et_sl_schema, // <sl:shema>
 		et_sl_schemaLibrary, // <sl:schemaLibrary>

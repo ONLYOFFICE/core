@@ -70,7 +70,6 @@ void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wst
 		output_path = ( output_sub_path + output_fileName) ;
 		if ( type == typeImage)
 		{
-			//fs::wpath file_name  = fs::wpath(inputPath);
 			count_image++;
 		}
 		else
@@ -81,14 +80,14 @@ void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wst
 	}
 	odf_ref = output_path;
 }
-void _mediaitems::dump_rels(rels & Rels)
+void _mediaitems::dump_rels(rels & Rels, std::wstring local_path)
 {
     size_t i = 0;
     BOOST_FOREACH(item & elm, items_)
     {
         Rels.add( relationship(
                 utils::media::get_rel_type(elm.type), 
-                elm.odf_ref)
+                local_path + elm.odf_ref)
                 );
 
     }        

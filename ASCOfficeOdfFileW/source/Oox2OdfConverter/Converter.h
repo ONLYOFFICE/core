@@ -212,11 +212,12 @@ public:
 		virtual void convertDocument() = 0;
 		virtual void write(const std::wstring & path) = 0;
 		
-		OoxConverter(){}
+		OoxConverter(){oox_current_chart = NULL;}
 
 		virtual cpdoccore::odf::odf_conversion_context		*odf_context() = 0;
 		virtual OOX::CTheme									*oox_theme() = 0;
 		virtual CString										 find_link_by_id(CString sId, int t) = 0;
+		OOX::Spreadsheet::CChartSpace						*oox_current_chart;
 
 		void convert(OOX::WritingElement  *oox_unknown);
 	

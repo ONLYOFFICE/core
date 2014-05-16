@@ -820,6 +820,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CChartSpace *oox_chart)
 {
 	if ((!oox_chart) && (!oox_chart->m_oChartSpace.m_chart))return;
 
+	oox_current_chart = oox_chart;
 	odf_context()->start_chart();
 		convert(oox_chart->m_oChartSpace.m_oSpPr.GetPointer());
 
@@ -832,6 +833,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CChartSpace *oox_chart)
 		convert(oox_chart->m_oChartSpace.m_chart->m_floor, 1);
 
 	odf_context()->end_chart();
+	oox_current_chart = NULL;
 }
 
 void OoxConverter::convert(OOX::Spreadsheet::CT_Title* ct_title)

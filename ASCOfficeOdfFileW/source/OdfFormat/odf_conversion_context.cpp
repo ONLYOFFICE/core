@@ -89,6 +89,8 @@ void odf_conversion_context::end_document()
 			object_files->set_pictures	(object.mediaitems);
 
 			if (!isRoot)object_files->local_path = object.name + L"/";
+			
+			object.mediaitems.dump_rels(rels_,object_files->local_path);
 
 			rels_.add(relationship(std::wstring(L"text/xml"), object_files->local_path + L"styles.xml"));
 			rels_.add(relationship(std::wstring(L"text/xml"), object_files->local_path + L"content.xml"));
@@ -100,7 +102,6 @@ void odf_conversion_context::end_document()
 			output_document_->add_object(package::element_ptr(object_files),isRoot);
 		}
 
-		object.mediaitems.dump_rels(rels_);
 	}
 
 	output_document_->set_rels(rels_);

@@ -3,7 +3,7 @@
 #include "stdAfx.h"
 
 #include "XlsxConverter.h"
-#include "Additional.h"
+#include "../utils.h"
 
 #include <boost/foreach.hpp>
 
@@ -484,6 +484,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 	else if (oox_column->m_oCustomWidth.IsInit() == false || 
 			(oox_column->m_oCustomWidth.IsInit() == true && oox_column->m_oCustomWidth->GetValue() == 1))
 	{
+		width = ods_context->convert_symbol_width(width);
 		ods_context->current_table().set_column_width(width);
 		ods_context->current_table().set_column_optimal_width(false);
 		// пока не преобразовываем правильно размерность !!!
@@ -628,10 +629,18 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf::style_text_prop
 	if (font == NULL)return;
  	if (text_properties == NULL)return;
 
+	std::wstring	font_name;
+	double			font_size = 0;
+	bool			font_bold = false;
+	bool			font_italic = false;
+
 	if (font->m_oBold.IsInit())
 	{
 		if (font->m_oBold->m_oVal.ToBool() ==true) 
+		{
+			font_bold = true;
 			text_properties->content().fo_font_weight_ = odf::font_weight(odf::font_weight::WBold);
+		}
 		else
 			text_properties->content().fo_font_weight_ = odf::font_weight(odf::font_weight::WNormal);
 	}
@@ -644,13 +653,17 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf::style_text_prop
 	if (font->m_oItalic.IsInit())
 	{
 		if (font->m_oItalic->m_oVal.ToBool() ==true)
+		{
+			font_italic = true;
 			text_properties->content().fo_font_style_ = odf::font_style(odf::font_style::Italic);
+		}
 		else
 			text_properties->content().fo_font_style_ = odf::font_style(odf::font_style::Normal);
 	}
 	if (font->m_oSz.IsInit())
 	{
-		OoxConverter::convert(font->m_oSz->m_oVal->GetValue(), text_properties->content().fo_font_size_);
+		font_size = font->m_oSz->m_oVal->GetValue();
+		OoxConverter::convert(font_size, text_properties->content().fo_font_size_);
 	}
 	if (font->m_oFamily.IsInit())
 	{
@@ -658,9 +671,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf::style_text_prop
 
 	if (font->m_oRFont.IsInit())
 	{
+		font_name = string2std_string(font->m_oRFont->m_sVal.get());
 		//text_properties->content().style_font_name_ = string2std_string(font->m_oRFont->m_sVal.get());
-		text_properties->content().fo_font_family_ = string2std_string(font->m_oRFont->m_sVal.get());
+		text_properties->content().fo_font_family_ = font_name;
 	}
+	ods_context->calculate_font_metrix(font_name,font_size,font_italic,font_bold);
 	/////
 	//...
 	/////
@@ -1228,7 +1243,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 			sID = oox_picture->m_oBlipFill->m_oBlip->m_oLink.GetValue();	
 			//???
 		}
-		_image_file_::GetResolution(pathImage, Width, Height);
+		_gdi_graphics_::GetResolution(pathImage, Width, Height);
 	}
 	ods_context->start_image(string2std_string(pathImage));
 	{

@@ -785,12 +785,14 @@ namespace OOX
 				m_eEffectType = effecttypeUnknown;
 
 				CWCharWrapper sName = oReader.GetName();
-				if ( _T("a:spPr") == sName )
+					if ( _T("a:spPr") == sName )
 					m_eType = et_a_spPr;
 				else if ( _T("pic:spPr") == sName )
 					m_eType = et_pic_spPr;
 				else if ( _T("xdr:spPr") == sName )
 					m_eType = et_xdr_spPr;
+				else if ( _T("c:spPr") == sName )
+					m_eType = et_c_spPr;
 				else
 					return;
 
@@ -875,6 +877,8 @@ namespace OOX
 					sResult = _T("<pic:spPr ");
 				else if ( et_xdr_spPr == m_eType )
 					sResult = _T("<xdr:spPr ");
+				else if ( et_c_spPr == m_eType )
+					sResult = _T("<c:spPr ");
 				else
 					return _T("");
 
@@ -976,6 +980,8 @@ namespace OOX
 					sResult = _T("</pic:spPr>");
 				else if ( et_xdr_spPr == m_eType )
 					sResult = _T("</xdr:spPr>");
+				else if ( et_c_spPr == m_eType )
+					sResult = _T("</c:spPr>");
 				return sResult;
 			}
 			virtual EElementType getType() const

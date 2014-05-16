@@ -135,6 +135,7 @@ void odf_conversion_context::end_chart()
 	chart_context_.end_chart();
 
 	end_object();
+	chart_context_.set_styles_context(styles_context());
 }
 void odf_conversion_context::end_spreadsheet()
 {

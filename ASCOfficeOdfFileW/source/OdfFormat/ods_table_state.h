@@ -84,7 +84,7 @@ public:
 		void set_table_dimension(int col, int row);
 
 	void add_column(office_element_ptr & elm, int repeated ,office_element_ptr & style);
-		void set_column_width(int width);
+		void set_column_width(double width);
 		void set_column_optimal_width(bool val);
 		void set_column_default_cell_style(std::wstring & style_name);
 

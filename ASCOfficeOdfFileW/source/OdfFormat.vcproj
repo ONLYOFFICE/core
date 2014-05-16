@@ -1291,6 +1291,10 @@
 			RelativePath=".\ReadMe.txt"
 			>
 		</File>
+		<File
+			RelativePath=".\utils.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

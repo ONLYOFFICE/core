@@ -9,10 +9,23 @@ namespace odf {
 class office_spreadsheet;
 class odf_text_context;
 
+struct _font_metrix
+{
+	_font_metrix(){IsCalc = italic = bold = false; font_size = approx_symbol_size =0;}
+	bool IsCalc;
+
+	std::wstring font_name;
+	double		 font_size;
+	bool		 italic;
+	bool		 bold;
+
+	double		 approx_symbol_size;//in pt
+};
+
 class ods_conversion_context : public odf_conversion_context
 {
 public:
-	ods_conversion_context(package::odf_document * outputDocument);// : odf_conversion_context(outputDocument){}
+	ods_conversion_context(package::odf_document * outputDocument);
 	
 	virtual void start_document();
 
@@ -23,6 +36,8 @@ public:
 	void start_columns();
 		void add_column(int start_column, int repeated, int level = 0, bool _default = false);
 	void end_columns();
+
+	void	calculate_font_metrix(std::wstring name, double size, bool italic, bool bold);
 
 	void start_rows();
 		void start_row(int _start_row, int repeated, int level = 0, bool _default = false);
@@ -57,7 +72,10 @@ public:
 	void start_image(std::wstring & image_file_name);
 	void end_image(){drawing_context()->end_image();}
 
+	double convert_symbol_width(double val) {return val * font_metrix_.approx_symbol_size;}
+
 private:
+	_font_metrix				font_metrix_;
 	ods_table_context			table_context_;
 	
 	odf_text_context*			current_text_context_;

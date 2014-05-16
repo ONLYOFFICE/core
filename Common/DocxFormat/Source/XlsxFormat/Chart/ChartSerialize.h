@@ -451,6 +451,7 @@ namespace OOX{
 			CT_Chart* m_chart;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CString* m_txPr;
 			//Member
@@ -672,6 +673,7 @@ namespace OOX{
 			CT_Boolean* m_overlay;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CString* m_txPr;
 			//Member
@@ -770,6 +772,7 @@ namespace OOX{
 			CT_Boolean* m_showKeys;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CString* m_txPr;
 			//Member
@@ -807,6 +810,7 @@ namespace OOX{
 			CT_TickLblPos* m_tickLblPos;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CString* m_txPr;
 			//Member
@@ -884,6 +888,7 @@ namespace OOX{
 		public:
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			CT_ChartLines();
 			~CT_ChartLines();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -901,6 +906,7 @@ namespace OOX{
 			CT_Boolean* m_overlay;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CString* m_txPr;
 			//Member
@@ -1062,6 +1068,7 @@ namespace OOX{
 			CT_TickLblPos* m_tickLblPos;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CString* m_txPr;
 			//Member
@@ -1152,6 +1159,7 @@ namespace OOX{
 			CT_TickLblPos* m_tickLblPos;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CString* m_txPr;
 			//Member
@@ -1189,6 +1197,7 @@ namespace OOX{
 			CT_Tx* m_tx;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CString* m_txPr;
 			CT_DispUnitsLbl();
@@ -1263,6 +1272,7 @@ namespace OOX{
 			CT_TickLblPos* m_tickLblPos;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CString* m_txPr;
 			//Member
@@ -1320,6 +1330,7 @@ namespace OOX{
 			CT_SerTx* m_tx;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CT_Boolean* m_invertIfNegative;
 			//Member
@@ -1374,6 +1385,7 @@ namespace OOX{
 			CT_UnsignedInt* m_explosion;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CT_PictureOptions* m_pictureOptions;
 			//Member
@@ -1393,6 +1405,7 @@ namespace OOX{
 			CT_MarkerSize* m_size;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CT_extLst* m_extLst;
 			CT_Marker();
@@ -1518,6 +1531,7 @@ namespace OOX{
 			CString* m_name;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CT_TrendlineType* m_trendlineType;
 			//Member
@@ -1588,6 +1602,7 @@ namespace OOX{
 			CT_NumFmt* m_numFmt;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CString* m_txPr;
 			//Member
@@ -1617,6 +1632,7 @@ namespace OOX{
 			CT_Double* m_val;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CT_extLst* m_extLst;
 			CT_ErrBars();
@@ -1846,6 +1862,7 @@ namespace OOX{
 			CT_SerTx* m_tx;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CT_AxDataSource* m_cat;
 			//Member
@@ -1865,6 +1882,7 @@ namespace OOX{
 			CT_UnsignedInt* m_idx;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			CT_BandFmt();
 			~CT_BandFmt();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1976,6 +1994,7 @@ namespace OOX{
 			CT_SerTx* m_tx;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CT_UnsignedInt* m_explosion;
 			//Member
@@ -2067,6 +2086,7 @@ namespace OOX{
 			CT_SerTx* m_tx;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CT_Boolean* m_invertIfNegative;
 			//Member
@@ -2234,6 +2254,7 @@ namespace OOX{
 			CT_SerTx* m_tx;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CT_Marker* m_marker;
 			//Member
@@ -2301,6 +2322,7 @@ namespace OOX{
 			CT_SerTx* m_tx;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CT_Marker* m_marker;
 			//Member
@@ -2385,6 +2407,7 @@ namespace OOX{
 			CT_SerTx* m_tx;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CT_Marker* m_marker;
 			//Member
@@ -2431,6 +2454,7 @@ namespace OOX{
 		public:
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			CT_UpDownBar();
 			~CT_UpDownBar();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2540,6 +2564,7 @@ namespace OOX{
 			CT_SerTx* m_tx;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CT_PictureOptions* m_pictureOptions;
 			//Member
@@ -2602,6 +2627,7 @@ namespace OOX{
 			CT_DTable* m_dTable;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CT_extLst* m_extLst;
 			CT_PlotArea();
@@ -2630,6 +2656,7 @@ namespace OOX{
 			CT_Thickness* m_thickness;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CT_PictureOptions* m_pictureOptions;
 			//Member
@@ -2725,6 +2752,7 @@ namespace OOX{
 			CT_UnsignedInt* m_idx;
 			//Member
 			CString* m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
 			//Member
 			CString* m_txPr;
 			//Member

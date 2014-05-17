@@ -60,8 +60,8 @@ public:
 ///////////////////////////////////////////////////////
 	ods_table_state &		current_table() { return table_context_.state();}
 /////////////////////////////////////////////////////
-	void start_text_context();
-	void end_text_context();
+	virtual void start_text_context();
+	virtual void end_text_context();
 
 	virtual odf_drawing_context		* drawing_context()	{return current_table().drawing_context();}
 	virtual odf_text_context		* text_context()	{return current_text_context_;}

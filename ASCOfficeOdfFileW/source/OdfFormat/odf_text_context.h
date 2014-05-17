@@ -18,6 +18,8 @@ namespace odf
 class odf_conversion_context;
 class odf_style_context;
 class paragraph;
+class style_paragraph_properties;
+class style_text_properties;
 
 struct odf_text_state
 {
@@ -37,6 +39,7 @@ public:
 public:
 	void set_styles_context(odf_style_context*  styles_context);//для embedded 
     
+	void set_single_object(bool val, style_paragraph_properties *para_props, style_text_properties *text_props);
 	void add_text_content(const std::wstring & text);
     
 	void start_paragraph(bool styled = false);
@@ -55,7 +58,14 @@ public:
 
 	void set_parent_paragraph_style	(std::wstring & style_name);
 	void set_parent_span_style		(std::wstring & style_name);
+
+	style_text_properties		*get_text_properties(){return text_properties_;}
+	style_paragraph_properties	*get_paragraph_properties(){return paragraph_properties_;}
 private:
+	bool single_paragraph_;
+	style_paragraph_properties	*paragraph_properties_;//хранилка-опознавалка что свойства приписаны другому, не текстовому, объекту
+	style_text_properties		*text_properties_;//хранилка-опознавалка что свойства приписаны другому, не текстовому, объекту
+	
 	paragraph * last_paragraph_;
 
 	odf_style_context * styles_context_;

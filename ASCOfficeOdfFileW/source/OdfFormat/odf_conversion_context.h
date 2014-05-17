@@ -43,6 +43,9 @@ public:
 	virtual odf_drawing_context		* drawing_context() = 0;
 	virtual odf_text_context		* text_context() = 0;
 
+	virtual void					start_text_context() = 0;
+	virtual void					end_text_context() = 0;
+
 	odf_chart_context				* chart_context();
 	odf_style_context				* styles_context();
 	odf_number_styles_context		* numbers_styles_context();

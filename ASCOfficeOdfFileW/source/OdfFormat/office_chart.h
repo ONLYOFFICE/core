@@ -85,7 +85,6 @@ public:
     _CP_OPT(std::wstring)			table_cell_range_;
     common_draw_position_attlist	common_draw_position_attlist_;
     common_chart_attlist			common_attlist_;
-
 };
 
 /// \brief  chart:title
@@ -160,11 +159,14 @@ public:
 
     _CP_OPT(std::wstring)			chart_legend_position_;
     _CP_OPT(std::wstring)			chart_legend_align_;
+
     common_draw_position_attlist	common_draw_position_attlist_;
     _CP_OPT(std::wstring)			style_legend_expansion_;
     _CP_OPT(double)					style_legend_expansion_aspect_ratio_;
     common_chart_attlist			common_attlist_;
 
+	_CP_OPT(length)					chartooo_height_;
+	_CP_OPT(length)					chartooo_width_;
 };
 
 /// \brief  chart:legend
@@ -196,10 +198,12 @@ public:
 
     common_draw_position_attlist	common_draw_position_attlist_;
     common_draw_size_attlist		common_draw_size_attlist_;
-    common_chart_attlist			common_attlist_;
+    
+	common_chart_attlist			common_attlist_;
     
 	_CP_OPT(std::wstring)			table_cell_range_address_;
     _CP_OPT(std::wstring)			chart_data_source_has_labels_;
+
     // dr3d-scene-attlist
     // common-dr3d-transform-attlist
 };

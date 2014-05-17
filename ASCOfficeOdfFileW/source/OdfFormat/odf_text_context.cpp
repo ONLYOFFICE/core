@@ -9,6 +9,8 @@
 #include "odf_conversion_context.h"
 
 #include "styles.h"
+#include "style_text_properties.h"
+
 #include "text_elements.h"
 #include "paragraph_elements.h"
 
@@ -20,6 +22,10 @@ odf_text_context::odf_text_context(odf_conversion_context *odf_context)
 {
 	odf_context_ = odf_context;
 	styles_context_ = odf_context->styles_context();
+	
+	single_paragraph_ = false;
+	paragraph_properties_ = NULL;
+	text_properties_ = NULL;
 
 	last_paragraph_ = NULL;
 }
@@ -29,6 +35,13 @@ odf_text_context::~odf_text_context()
 void odf_text_context::set_styles_context(odf_style_context*  styles_context)
 {
 	styles_context_ = styles_context;
+}
+
+void odf_text_context::set_single_object(bool val, style_paragraph_properties *para_props, style_text_properties *text_props)
+{
+	single_paragraph_ = val;
+	paragraph_properties_ = para_props;
+	text_properties_ = text_props;
 }
 
 void odf_text_context::add_text_content(const std::wstring & text)
@@ -50,7 +63,14 @@ void odf_text_context::start_paragraph(bool styled)
 void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 {
 	int level = current_level_.size();
-
+	
+	if (single_paragraph_ && level >0)
+	{
+		std::wstring str_enter(L"\n");
+		add_text_content(str_enter);
+		return;
+	}
+	
 	std::wstring style_name;
 	office_element_ptr style_elm;
 
@@ -85,7 +105,10 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 
 void odf_text_context::end_paragraph()
 {
-	current_level_.pop_back();
+	if (single_paragraph_ == false)
+	{
+		current_level_.pop_back();
+	}
 }
 
 void odf_text_context::start_element(office_element_ptr & elm)
@@ -102,33 +125,36 @@ void odf_text_context::start_element(office_element_ptr & elm)
 }
 void odf_text_context::end_element()
 {
-	current_level_.pop_back();
+	if (single_paragraph_ == false)
+	{
+		current_level_.pop_back();
+	}
 }
 
 void odf_text_context::start_span(bool styled)
 {
-	if (styles_context_ == NULL)return;
+	if (styles_context_ == NULL || single_paragraph_)return;
 
 	office_element_ptr span_elm;
 	create_element(L"text", L"span", span_elm, odf_context_);
-
 
 	int level = current_level_.size();
 	
 	std::wstring style_name;
 	office_element_ptr style_elm;
+
 	if (styled)
-	{
+	{		
 		style_name = styles_context_->last_state().get_name();
 		style_elm = styles_context_->last_state().get_office_element();
+		style * style_ = dynamic_cast<style*>(style_elm.get());
 		
 		text_span* span = dynamic_cast<text_span*>(span_elm.get());
 		if (span) span->text_style_name_ = style_ref(style_name);
 
-		if (parent_span_style_.length() >0)
+		if (parent_span_style_.length() >0 && style_)
 		{
-			style *style_ = dynamic_cast<style*>(style_elm.get());
-			if (style_)style_->style_parent_style_name_ = parent_span_style_;
+			style_->style_parent_style_name_ = parent_span_style_;
 		}
 	}
 
@@ -144,6 +170,8 @@ void odf_text_context::start_span(bool styled)
 
 void odf_text_context::end_span()
 {
+	if (single_paragraph_)return;
+	
 	current_level_.pop_back();
 }
 

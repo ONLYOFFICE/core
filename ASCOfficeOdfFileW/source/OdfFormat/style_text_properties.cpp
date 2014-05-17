@@ -308,7 +308,6 @@ void text_format_properties_content::serialize(std::wostream & _Wostream,const w
 const wchar_t * style_text_properties::ns = L"style";
 const wchar_t * style_text_properties::name = L"text-properties";
 
-
 void style_text_properties::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();

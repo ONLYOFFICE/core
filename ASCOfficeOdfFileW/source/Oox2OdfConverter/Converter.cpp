@@ -1,5 +1,3 @@
-//todoooo потом для красивости нужно будет растащить файл на файлики
-#pragma once
 #include "stdAfx.h"
 
 #include "Converter.h"
@@ -603,16 +601,10 @@ void OoxConverter::convert(OOX::Drawing::CTextBodyProperties	*oox_bodyPr)
 		//+element text:section в котором параграфы
 	}
 }
-void OoxConverter::convert(OOX::Drawing::CRunProperty		*oox_run_pr)
+void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf::style_text_properties * text_properties)
 {
-	if (!oox_run_pr)return;
-	bool automatic = true;
-	bool root = false;
-
-	odf_context()->styles_context()->create_style(L"",odf::style_family::Text, automatic, root, -1);	
-	
-	odf::style_text_properties	* text_properties = odf_context()->styles_context()->last_state().get_text_properties();
-	if (text_properties == NULL)return;
+	if (!oox_run_pr)		return;
+	if (!text_properties)	return;
 
 	if (oox_run_pr->m_oBold.IsInit())
 	{
@@ -696,26 +688,33 @@ void OoxConverter::convert(OOX::Drawing::CRun		*oox_run)
 {
 	if (!oox_run)return;
 
-	convert(oox_run->m_oRunProperty.GetPointer());
+	bool styled = false;
+
+	if (oox_run->m_oRunProperty.IsInit())
+	{
+		odf::style_text_properties * text_properties = odf_context()->text_context()->get_text_properties();
+		
+		if (!text_properties)
+		{
+			odf_context()->styles_context()->create_style(L"",odf::style_family::Text, true, false, -1);	
+			text_properties = odf_context()->styles_context()->last_state().get_text_properties();
+			styled = true;
+		}
+		convert(oox_run->m_oRunProperty.GetPointer(), text_properties);
+	}
 	
-	odf_context()->text_context()->start_span(oox_run->m_oRunProperty.GetPointer() ? true : false);	
+	odf_context()->text_context()->start_span(styled);	
 	if (oox_run->m_oText.IsInit())
 	{
 		odf_context()->text_context()->add_text_content( string2std_string(oox_run->m_oText->m_sText));
 	}
 	odf_context()->text_context()->end_span();
 }
-void OoxConverter::convert(OOX::Drawing::CParagraphProperty		*oox_paragraph_pr)
+
+void OoxConverter::convert(OOX::Drawing::CParagraphProperty * oox_paragraph_pr, cpdoccore::odf::style_paragraph_properties * paragraph_properties)
 {
-	if (!oox_paragraph_pr)return;
-
-	bool automatic = true;
-	bool root = false;
-
-	odf_context()->styles_context()->create_style(L"",odf::style_family::Paragraph, automatic, root, -1);	
-	
-	odf::style_paragraph_properties	* paragraph_properties = odf_context()->styles_context()->last_state().get_paragraph_properties();
-	if (paragraph_properties == NULL)return;
+	if (!oox_paragraph_pr)		return;
+	if (!paragraph_properties)	return;
 
 	if (oox_paragraph_pr->m_oLineSpacing.IsInit())
 	{
@@ -767,10 +766,15 @@ void OoxConverter::convert(OOX::Drawing::CParagraphProperty		*oox_paragraph_pr)
 
 
 
-	if (oox_paragraph_pr->m_oDefRunProperty.IsInit())
+	if (oox_paragraph_pr->m_oDefRunProperty.IsInit())//может быть пустым !!!
 	{
-		convert(oox_paragraph_pr->m_oDefRunProperty.GetPointer());
-		odf_context()->text_context()->set_parent_span_style(odf_context()->styles_context()->last_state().get_name());
+		odf::style_text_properties * text_properties = odf_context()->text_context()->get_text_properties();
+		if (text_properties) 
+			convert(oox_paragraph_pr->m_oDefRunProperty.GetPointer(), text_properties);
+
+		//надо подумать как брать последний по family !!! 
+		//convert(oox_paragraph_pr->m_oDefRunProperty.GetPointer());
+		//odf_context()->text_context()->set_parent_span_style(odf_context()->styles_context()->last_state().get_name());
 	}
 
 }
@@ -793,9 +797,21 @@ void OoxConverter::convert(OOX::Drawing::CParagraph		*oox_paragraph)
 {
 	if (!oox_paragraph)return;
 
-	convert(oox_paragraph->m_oParagraphProperty.GetPointer());
+	bool styled = false;
+	if (oox_paragraph->m_oParagraphProperty.IsInit())
+	{
+		odf::style_paragraph_properties	* paragraph_properties = odf_context()->text_context()->get_paragraph_properties();
+													//свойства могут быть приписаны не только к параграфу, но и к самому объекту		
+		if (!paragraph_properties)
+		{
+			odf_context()->styles_context()->create_style(L"",odf::style_family::Paragraph, true, false, -1);	
+			paragraph_properties = odf_context()->styles_context()->last_state().get_paragraph_properties();
+			styled = true;
+		}
+		convert(oox_paragraph->m_oParagraphProperty.GetPointer(), paragraph_properties);
+	}
 	
-	odf_context()->text_context()->start_paragraph(oox_paragraph->m_oParagraphProperty.GetPointer() ? true : false);
+	odf_context()->text_context()->start_paragraph(styled);
 
 	for (long i=0; i< oox_paragraph->m_arrItems.GetSize();i++)
 	{
@@ -815,7 +831,6 @@ void OoxConverter::convert(double oox_font_size,  _CP_OPT(odf::font_size) & odf_
 		 odf_font_size = odf::font_size(odf_length.get());
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////
 void OoxConverter::convert(OOX::Spreadsheet::CChartSpace *oox_chart)
 {
 	if ((!oox_chart) && (!oox_chart->m_oChartSpace.m_chart))return;
@@ -823,6 +838,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CChartSpace *oox_chart)
 	oox_current_chart = oox_chart;
 	odf_context()->start_chart();
 		convert(oox_chart->m_oChartSpace.m_oSpPr.GetPointer());
+		convert(oox_chart->m_oChartSpace.m_oTxPr.GetPointer());
 
 		convert(oox_chart->m_oChartSpace.m_chart->m_title);
 		convert(oox_chart->m_oChartSpace.m_chart->m_legend);
@@ -834,405 +850,6 @@ void OoxConverter::convert(OOX::Spreadsheet::CChartSpace *oox_chart)
 
 	odf_context()->end_chart();
 	oox_current_chart = NULL;
-}
-
-void OoxConverter::convert(OOX::Spreadsheet::CT_Title* ct_title)
-{
-	if (ct_title == NULL)return;
-
-	odf_context()->chart_context()->start_title();
-		convert(ct_title->m_oSpPr.GetPointer());
-	odf_context()->chart_context()->end_element();
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_Legend* ct_legend)
-{
-	if (ct_legend == NULL)return;
-
-	odf_context()->chart_context()->start_legend();
-		convert(ct_legend->m_oSpPr.GetPointer());
-	odf_context()->chart_context()->end_element();
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_PlotArea* ct_plotArea)
-{
-	if (ct_plotArea == NULL)return;
-
-	odf_context()->chart_context()->start_plot_area();
-		convert(ct_plotArea->m_oSpPr.GetPointer());
-
-		if (ct_plotArea->m_layout)//разметка
-		{
-		}
-		for (long i=0; i< ct_plotArea->m_Items.GetCount(); i++)//
-		{
-			if (!ct_plotArea->m_ItemsElementName0[i]) continue;
-			switch(*ct_plotArea->m_ItemsElementName0[i])
-			{
-				case OOX::Spreadsheet::itemschoicetype5AREA3DCHART:		convert((OOX::Spreadsheet::CT_Area3DChart*)		ct_plotArea->m_Items[i]);break;
-				case OOX::Spreadsheet::itemschoicetype5AREACHART:		convert((OOX::Spreadsheet::CT_AreaChart*)		ct_plotArea->m_Items[i]);break;
-				case OOX::Spreadsheet::itemschoicetype5BAR3DCHART:		convert((OOX::Spreadsheet::CT_Bar3DChart*)		ct_plotArea->m_Items[i]);break;
-				case OOX::Spreadsheet::itemschoicetype5BARCHART:		convert((OOX::Spreadsheet::CT_BarChart*)		ct_plotArea->m_Items[i]);break;
-				case OOX::Spreadsheet::itemschoicetype5BUBBLECHART:		convert((OOX::Spreadsheet::CT_BubbleChart*)		ct_plotArea->m_Items[i]);break;
-				case OOX::Spreadsheet::itemschoicetype5DOUGHNUTCHART:	convert((OOX::Spreadsheet::CT_DoughnutChart*)	ct_plotArea->m_Items[i]);break;
-				case OOX::Spreadsheet::itemschoicetype5LINE3DCHART:		convert((OOX::Spreadsheet::CT_Line3DChart*)		ct_plotArea->m_Items[i]);break;
-				case OOX::Spreadsheet::itemschoicetype5LINECHART:		convert((OOX::Spreadsheet::CT_LineChart*)		ct_plotArea->m_Items[i]);break;
-				case OOX::Spreadsheet::itemschoicetype5OFPIECHART:		convert((OOX::Spreadsheet::CT_OfPieChart*)		ct_plotArea->m_Items[i]);break;
-				case OOX::Spreadsheet::itemschoicetype5PIE3DCHART:		convert((OOX::Spreadsheet::CT_Pie3DChart*)		ct_plotArea->m_Items[i]);break;
-				case OOX::Spreadsheet::itemschoicetype5PIECHART:		convert((OOX::Spreadsheet::CT_PieChart*)		ct_plotArea->m_Items[i]);break;
-				case OOX::Spreadsheet::itemschoicetype5RADARCHART:		convert((OOX::Spreadsheet::CT_RadarChart*)		ct_plotArea->m_Items[i]);break;
-				case OOX::Spreadsheet::itemschoicetype5SCATTERCHART:	convert((OOX::Spreadsheet::CT_ScatterChart*)	ct_plotArea->m_Items[i]);break;
-				case OOX::Spreadsheet::itemschoicetype5STOCKCHART:		convert((OOX::Spreadsheet::CT_StockChart*)		ct_plotArea->m_Items[i]);break;
-				case OOX::Spreadsheet::itemschoicetype5SURFACE3DCHART:	convert((OOX::Spreadsheet::CT_Surface3DChart*)	ct_plotArea->m_Items[i]);break;
-				case OOX::Spreadsheet::itemschoicetype5SURFACECHART:	convert((OOX::Spreadsheet::CT_SurfaceChart*)	ct_plotArea->m_Items[i]);break;			
-			}
-		}
-		for (long i=0; i< ct_plotArea->m_Items.GetCount(); i++)
-		{
-			if (!ct_plotArea->m_ItemsElementName1[i]) continue;
-			switch(*ct_plotArea->m_ItemsElementName1[i])
-			{		
-				case OOX::Spreadsheet::itemschoicetype6CATAX:	convert((OOX::Spreadsheet::CT_CatAx*)ct_plotArea->m_Items1[i]);break;
-				case OOX::Spreadsheet::itemschoicetype6DATEAX:	convert((OOX::Spreadsheet::CT_DateAx*)ct_plotArea->m_Items1[i]);break;
-				case OOX::Spreadsheet::itemschoicetype6SERAX:	convert((OOX::Spreadsheet::CT_SerAx*)ct_plotArea->m_Items1[i]);break;
-				case OOX::Spreadsheet::itemschoicetype6VALAX:	convert((OOX::Spreadsheet::CT_ValAx*)ct_plotArea->m_Items1[i]);break;				
-			}
-		}
-		if (ct_plotArea->m_dTable)
-		{
-		}
-	odf_context()->chart_context()->end_element();
-}
-//////////////////////////////////////////////////////////////////////////////////////////////
-void OoxConverter::convert(OOX::Spreadsheet::CT_CatAx* ct_catAx)
-{
-	if (ct_catAx == NULL)return;
-
-	odf_context()->chart_context()->start_axis();
-		convert(ct_catAx->m_oSpPr.GetPointer());
-		convert(ct_catAx->m_title);
-	odf_context()->chart_context()->end_element();
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_DateAx* ct_dateAx)
-{
-	if (ct_dateAx == NULL)return;
-
-	odf_context()->chart_context()->start_axis();
-		convert(ct_dateAx->m_oSpPr.GetPointer());
-		convert(ct_dateAx->m_title);
-	odf_context()->chart_context()->end_element();
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_SerAx* ct_serAx)
-{
-	if (ct_serAx == NULL)return;
-
-	odf_context()->chart_context()->start_axis();
-		convert(ct_serAx->m_oSpPr.GetPointer());
-		convert(ct_serAx->m_title);
-	odf_context()->chart_context()->end_element();
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_ValAx* ct_valAx)
-{
-	if (ct_valAx == NULL)return;
-
-	odf_context()->chart_context()->start_axis();
-		convert(ct_valAx->m_oSpPr.GetPointer());
-		convert(ct_valAx->m_title);
-	odf_context()->chart_context()->end_element();
-}
-////////////////////////////////////////////////////////////////////////////////////////////
-void OoxConverter::convert(OOX::Spreadsheet::CT_Area3DChart *chart)
-{
-	if (chart == NULL)return;
-
-	odf_context()->chart_context()->set_type_chart(L"area");
-	odf_context()->chart_context()->set_3D(true);
-
-	for (long i=0; i< chart->m_ser.GetCount(); i++)
-	{
-		convert(chart->m_ser[i]);
-	}
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_AreaChart *chart)
-{
-	if (chart == NULL)return;
-
-	odf_context()->chart_context()->set_type_chart(L"area");
-	
-	for (long i=0; i< chart->m_ser.GetCount(); i++)
-	{
-		convert(chart->m_ser[i]);
-	}
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_Bar3DChart *chart)
-{
-	if (chart == NULL)return;
-
-	odf_context()->chart_context()->set_type_chart(L"bar");
-	odf_context()->chart_context()->set_3D(true);
-	
-	for (long i=0; i< chart->m_ser.GetCount(); i++)
-	{
-		convert(chart->m_ser[i]);
-	}
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_BarChart *chart)
-{
-	if (chart == NULL)return;
-
-	odf_context()->chart_context()->set_type_chart(L"bar");
-	
-	for (long i=0; i< chart->m_ser.GetCount(); i++)
-	{
-		convert(chart->m_ser[i]);
-	}
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_Line3DChart *chart)
-{
-	odf_context()->chart_context()->set_type_chart(L"line");
-	odf_context()->chart_context()->set_3D(true);
-	
-	for (long i=0; i< chart->m_ser.GetCount(); i++)
-	{
-		convert(chart->m_ser[i]);
-	}
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_LineChart *chart)
-{
-	if (chart == NULL)return;
-
-	odf_context()->chart_context()->set_type_chart(L"line");
-	
-	for (long i=0; i< chart->m_ser.GetCount(); i++)
-	{
-		convert(chart->m_ser[i]);
-	}
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_Pie3DChart *chart)
-{
-	if (chart == NULL)return;
-
-	odf_context()->chart_context()->set_type_chart(L"circle");
-	odf_context()->chart_context()->set_3D(true);
-	
-	for (long i=0; i< chart->m_ser.GetCount(); i++)
-	{
-		convert(chart->m_ser[i]);
-	}
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_PieChart *chart)
-{
-	if (chart == NULL)return;
-
-	odf_context()->chart_context()->set_type_chart(L"circle");
-	
-	for (long i=0; i< chart->m_ser.GetCount(); i++)
-	{
-		convert(chart->m_ser[i]);
-	}
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_Surface3DChart *chart)
-{
-	if (chart == NULL)return;
-
-	odf_context()->chart_context()->set_type_chart(L"surface");
-	odf_context()->chart_context()->set_3D(true);
-	
-	for (long i=0; i< chart->m_ser.GetCount(); i++)
-	{
-		convert(chart->m_ser[i]);
-	}
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_SurfaceChart *chart)
-{
-	if (chart == NULL)return;
-
-	odf_context()->chart_context()->set_type_chart(L"surface");
-	
-	for (long i=0; i< chart->m_ser.GetCount(); i++)
-	{
-		convert(chart->m_ser[i]);
-	}
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_BubbleChart *chart)
-{
-	if (chart == NULL)return;
-
-	odf_context()->chart_context()->set_type_chart(L"bubble");
-	
-	for (long i=0; i< chart->m_ser.GetCount(); i++)
-	{
-		convert(chart->m_ser[i]);
-	}
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_DoughnutChart *chart)
-{
-	if (chart == NULL)return;
-
-	odf_context()->chart_context()->set_type_chart(L"ring");
-	
-	for (long i=0; i< chart->m_ser.GetCount(); i++)
-	{
-		convert(chart->m_ser[i]);
-	}
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_ScatterChart *chart)
-{
-	if (chart == NULL)return;
-
-	odf_context()->chart_context()->set_type_chart(L"scatter");
-	
-	for (long i=0; i< chart->m_ser.GetCount(); i++)
-	{
-		convert(chart->m_ser[i]);
-	}
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_RadarChart *chart)
-{
-	if (chart == NULL)return;
-
-	odf_context()->chart_context()->set_type_chart(L"radar");
-	
-	for (long i=0; i< chart->m_ser.GetCount(); i++)
-	{
-		convert(chart->m_ser[i]);
-	}
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_StockChart *chart)
-{
-	if (chart == NULL)return;
-
-	odf_context()->chart_context()->set_type_chart(L"stock");
-	
-	for (long i=0; i< chart->m_ser.GetCount(); i++)
-	{
-		convert(chart->m_ser[i]);
-	}
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_OfPieChart *chart)
-{
-	if (chart == NULL)return;
-
-	odf_context()->chart_context()->set_type_chart(L"circle");
-	
-	for (long i=0; i< chart->m_ser.GetCount(); i++)
-	{
-		convert(chart->m_ser[i]);
-	}
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_AreaSer* ser)
-{
-	odf_context()->chart_context()->start_series();
-		convert(ser->m_oSpPr.GetPointer());
-		convert(ser->m_cat, 1);
-		convert(ser->m_val, 2);
-	odf_context()->chart_context()->end_element();
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_BubbleSer* ser)
-{
-	if (ser == NULL)return;
-
-	odf_context()->chart_context()->start_series();
-		convert(ser->m_oSpPr.GetPointer());
-		convert(ser->m_xVal, 1);
-		convert(ser->m_yVal, 2);
-	odf_context()->chart_context()->end_element();
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_SurfaceSer* ser)
-{
-	if (ser == NULL)return;
-
-	odf_context()->chart_context()->start_series();
-		convert(ser->m_oSpPr.GetPointer());
-		convert(ser->m_cat, 1);
-		convert(ser->m_val, 2);
-	odf_context()->chart_context()->end_element();
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_PieSer* ser)
-{
-	if (ser == NULL)return;
-
-	odf_context()->chart_context()->start_series();
-		convert(ser->m_oSpPr.GetPointer());
-		convert(ser->m_cat, 1);
-		convert(ser->m_val, 2);
-	odf_context()->chart_context()->end_element();
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_BarSer* ser)
-{
-	if (ser == NULL)return;
-
-	odf_context()->chart_context()->start_series();
-		convert(ser->m_oSpPr.GetPointer());
-		convert(ser->m_cat, 1);
-		convert(ser->m_val, 2);
-	odf_context()->chart_context()->end_element();
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_ScatterSer* ser)
-{
-	if (ser == NULL)return;
-
-	odf_context()->chart_context()->start_series();
-		convert(ser->m_oSpPr.GetPointer());
-		convert(ser->m_xVal, 1);
-		convert(ser->m_yVal, 2);
-	odf_context()->chart_context()->end_element();
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_RadarSer* ser)
-{
-	if (ser == NULL)return;
-
-	odf_context()->chart_context()->start_series();
-		convert(ser->m_oSpPr.GetPointer());
-		convert(ser->m_cat, 1);
-		convert(ser->m_val, 2);
-	odf_context()->chart_context()->end_element();
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_LineSer* ser)
-{
-	if (ser == NULL)return;
-
-	odf_context()->chart_context()->start_series();
-		convert(ser->m_oSpPr.GetPointer());
-		convert(ser->m_cat, 1);
-		convert(ser->m_val, 2);
-	odf_context()->chart_context()->end_element();
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_AxDataSource* cat, int category)
-{
-	if (cat == NULL)return;
-
-	if (cat->m_strRef)
-	{
-		if (cat->m_strRef->m_f)odf_context()->chart_context()->set_series_formula(category,string2std_string(*cat->m_strRef->m_f));
-		if (cat->m_strRef->m_strCache){}
-	}
-	else if (cat->m_numRef)
-	{
-		if (cat->m_numRef->m_f)odf_context()->chart_context()->set_series_formula(category,string2std_string(*cat->m_numRef->m_f));
-		if (cat->m_numRef->m_numCache){}
-	}
-	else if (cat->m_numLit)
-	{
-	}
-	else if (cat->m_strLit)
-	{
-	}
-}
-void OoxConverter::convert(OOX::Spreadsheet::CT_NumDataSource* val, int category)
-{
-	if (val == NULL)return;
-	if (val->m_numRef)
-	{
-		if (val->m_numRef->m_f)odf_context()->chart_context()->set_series_formula(category,string2std_string(*val->m_numRef->m_f));
-		if (val->m_numRef->m_numCache){}
-	}
-	else if (val->m_numLit)
-	{
-	}
-}
-///////////////////////////////////////////////////////////////////////////////////////////////
-void OoxConverter::convert(OOX::Spreadsheet::CT_Surface* ct_surface, int type)
-{
-	//floor, side, back
 }
 
 }

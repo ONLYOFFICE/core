@@ -2,7 +2,9 @@
 #pragma once
 #ifndef OOX_CHARTGEN_FILE_INCLUDE_H_
 #define OOX_CHARTGEN_FILE_INCLUDE_H_
+
 #include "../CommonInclude.h"
+
 namespace OOX{
 	namespace Spreadsheet{
 		enum ST_PageSetupOrientation
@@ -417,6 +419,8 @@ namespace OOX{
 		class AlternateContent;
 		class AlternateContentChoice;
 		class AlternateContentFallback;
+		class CTextProperties;
+	///////////////////////////////////////////////////
 		class CT_extLst
 		{
 		public:
@@ -450,10 +454,10 @@ namespace OOX{
 			//Member
 			CT_Chart* m_chart;
 			//Member
-			CString* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CString* m_txPr;
+			CString									*m_spPr;
+			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
+			CString									*m_txPr;
+			nullable<CTextProperties>				 m_oTxPr;	
 			//Member
 			CT_ExternalData* m_externalData;
 			//Member
@@ -616,8 +620,8 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_delete;
 			//Member
-			CString* m_txPr;
-			//Member
+			CString									*m_txPr;
+			nullable<CTextProperties>				 m_oTxPr;	
 			CT_extLst* m_extLst;
 			CT_LegendEntry();
 			~CT_LegendEntry();
@@ -663,21 +667,16 @@ namespace OOX{
 		class CT_Legend
 		{
 		public:
-			//Member
-			CT_LegendPos* m_legendPos;
-			//Member
-			CAtlArray<CT_LegendEntry*> m_legendEntry;
-			//Member
-			CT_Layout* m_layout;
-			//Member
-			CT_Boolean* m_overlay;
-			//Member
-			CString* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CString* m_txPr;
-			//Member
-			CT_extLst* m_extLst;
+			CT_LegendPos							*m_legendPos;
+			CAtlArray<CT_LegendEntry*>				 m_legendEntry;
+			CT_Layout								*m_layout;
+			CT_Boolean								*m_overlay;
+			CString									*m_spPr;
+			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
+			CString									*m_txPr;
+			nullable<CTextProperties>				 m_oTxPr;	
+			CT_extLst								* m_extLst;
+		/*--------------------------------------------------*/
 			CT_Legend();
 			~CT_Legend();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -770,12 +769,10 @@ namespace OOX{
 			CT_Boolean* m_showOutline;
 			//Member
 			CT_Boolean* m_showKeys;
-			//Member
-			CString* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CString* m_txPr;
-			//Member
+			CString									*m_spPr;
+			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
+			CString									*m_txPr;
+			nullable<CTextProperties>				 m_oTxPr;	
 			CT_extLst* m_extLst;
 			CT_DTable();
 			~CT_DTable();
@@ -786,45 +783,28 @@ namespace OOX{
 		class CT_SerAx
 		{
 		public:
-			//Member
-			CT_UnsignedInt* m_axId;
-			//Member
-			CT_Scaling* m_scaling;
-			//Member
-			CT_Boolean* m_delete;
-			//Member
-			CT_AxPos* m_axPos;
-			//Member
-			CT_ChartLines* m_majorGridlines;
-			//Member
-			CT_ChartLines* m_minorGridlines;
-			//Member
-			CT_Title* m_title;
-			//Member
-			CT_NumFmt* m_numFmt;
-			//Member
-			CT_TickMark* m_majorTickMark;
-			//Member
-			CT_TickMark* m_minorTickMark;
-			//Member
-			CT_TickLblPos* m_tickLblPos;
-			//Member
-			CString* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CString* m_txPr;
-			//Member
-			CT_UnsignedInt* m_crossAx;
-			//Member
-			CT_Crosses* m_crosses;
-			//Member
-			CT_Double* m_crossesAt;
-			//Member
-			CT_Skip* m_tickLblSkip;
-			//Member
-			CT_Skip* m_tickMarkSkip;
-			//Member
-			CT_extLst* m_extLst;
+			CT_UnsignedInt							*m_axId;
+			CT_Scaling								*m_scaling;
+			CT_Boolean								*m_delete;
+			CT_AxPos								*m_axPos;
+			CT_ChartLines							*m_majorGridlines;
+			CT_ChartLines							*m_minorGridlines;
+			CT_Title								*m_title;
+			CT_NumFmt								*m_numFmt;
+			CT_TickMark								*m_majorTickMark;
+			CT_TickMark								*m_minorTickMark;
+			CT_TickLblPos							*m_tickLblPos;
+			CString									*m_spPr;
+			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
+			CString									*m_txPr;
+			nullable<CTextProperties>				 m_oTxPr;	
+			CT_UnsignedInt							*m_crossAx;
+			CT_Crosses								*m_crosses;
+			CT_Double								*m_crossesAt;
+			CT_Skip									*m_tickLblSkip;
+			CT_Skip									*m_tickMarkSkip;
+			CT_extLst								*m_extLst;
+		/*--------------------------------------------------------------*/
 			CT_SerAx();
 			~CT_SerAx();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -854,7 +834,7 @@ namespace OOX{
 		{
 		public:
 			//Attribute
-			double* m_val;
+			double	* m_val;
 			CT_LogBase();
 			~CT_LogBase();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -865,7 +845,7 @@ namespace OOX{
 		{
 		public:
 			//Attribute
-			ST_Orientation* m_val;
+			ST_Orientation	* m_val;
 			CT_Orientation();
 			~CT_Orientation();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -876,7 +856,7 @@ namespace OOX{
 		{
 		public:
 			//Attribute
-			ST_AxPos* m_val;
+			ST_AxPos	* m_val;
 			CT_AxPos();
 			~CT_AxPos();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -886,9 +866,9 @@ namespace OOX{
 		class CT_ChartLines
 		{
 		public:
-			//Member
-			CString* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
+			CString										*m_spPr;
+			nullable<OOX::Drawing::CShapeProperties>     m_oSpPr;
+		/*--------------------------------------------------------------*/
 			CT_ChartLines();
 			~CT_ChartLines();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -898,32 +878,143 @@ namespace OOX{
 		class CT_Title
 		{
 		public:
-			//Member
-			CT_Tx* m_tx;
-			//Member
-			CT_Layout* m_layout;
-			//Member
-			CT_Boolean* m_overlay;
-			//Member
-			CString* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CString* m_txPr;
-			//Member
-			CT_extLst* m_extLst;
+			CT_Tx									*m_tx;
+			CT_Layout								*m_layout;
+			CT_Boolean								*m_overlay;
+			CString									*m_spPr;
+			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
+			CString									*m_txPr;
+			nullable<CTextProperties>				 m_oTxPr;	
+			CT_extLst								*m_extLst;
+		/*--------------------------------------------------------------*/
 			CT_Title();
 			~CT_Title();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
 		};
+		//--------------------------------------------------------------------------------
+		// 21.2.2.156	rich	(Rich Text)
+		//--------------------------------------------------------------------------------	
+		class CRichText : public WritingElementWithChilds<Drawing::CParagraph>
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CRichText)
+			CRichText()
+			{
+			}
+			virtual ~CRichText()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+
+					if ( _T("a:bodyPr") == sName )
+						m_oBodyPr = oReader;
+					else if ( _T("a:p") == sName )
+						m_arrItems.Add( new Drawing::CParagraph( oReader ));
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_ChartRichText;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+		public:
+			nullable<OOX::Drawing::CTextBodyProperties>	m_oBodyPr;
+			//nullable<OOX::Drawing::CTextListStyle>	m_oLstStyle; - not supported.
+		};
+		//--------------------------------------------------------------------------------
+		// 21.2.2.216 txPr (Text Properties)
+		//--------------------------------------------------------------------------------	
+		class CTextProperties : public WritingElementWithChilds<Drawing::CParagraph>
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CTextProperties)
+			CTextProperties()
+			{
+			}
+			virtual ~CTextProperties()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+
+					if ( _T("a:bodyPr") == sName )
+						m_oBodyPr = oReader;
+					else if ( _T("a:p") == sName )
+						m_arrItems.Add( new Drawing::CParagraph( oReader ));
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_ChartTextProperties;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+		public:
+			nullable<OOX::Drawing::CTextBodyProperties>	m_oBodyPr;
+			//nullable<OOX::Drawing::CTextListStyle>	m_oLstStyle; - not supported.
+		};
+		//--------------------------------------------------------------------------------
+		// 21.2.2.214 tx (Chart Text)
+		//--------------------------------------------------------------------------------	
 		class CT_Tx
 		{
 		public:
-			//Member
-			CString* m_rich;
-			//Member
-			CT_StrRef* m_strRef;
+			CString						*m_rich;
+			nullable<CRichText>			 m_oRich;	
+			CT_StrRef					*m_strRef;
+		/*--------------------------------------------------------------*/
 			CT_Tx();
 			~CT_Tx();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -933,12 +1024,10 @@ namespace OOX{
 		class CT_StrRef
 		{
 		public:
-			//Member
-			CString* m_f;
-			//Member
-			CT_StrData* m_strCache;
-			//Member
-			CT_extLst* m_extLst;
+			CString			* m_f;
+			CT_StrData		* m_strCache;
+			CT_extLst		* m_extLst;
+		/*--------------------------------------------------------------*/
 			CT_StrRef();
 			~CT_StrRef();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1068,9 +1157,9 @@ namespace OOX{
 			CT_TickLblPos* m_tickLblPos;
 			//Member
 			CString* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CString* m_txPr;
+			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
+			CString									*m_txPr;
+			nullable<CTextProperties>				 m_oTxPr;			
 			//Member
 			CT_UnsignedInt* m_crossAx;
 			//Member
@@ -1158,10 +1247,10 @@ namespace OOX{
 			//Member
 			CT_TickLblPos* m_tickLblPos;
 			//Member
-			CString* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CString* m_txPr;
+			CString									*m_spPr;
+			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
+			CString									*m_txPr;
+			nullable<CTextProperties>				 m_oTxPr;			
 			//Member
 			CT_UnsignedInt* m_crossAx;
 			//Member
@@ -1196,10 +1285,10 @@ namespace OOX{
 			//Member
 			CT_Tx* m_tx;
 			//Member
-			CString* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CString* m_txPr;
+			CString									*m_spPr;
+			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
+			CString									*m_txPr;
+			nullable<CTextProperties>				 m_oTxPr;			
 			CT_DispUnitsLbl();
 			~CT_DispUnitsLbl();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1271,10 +1360,10 @@ namespace OOX{
 			//Member
 			CT_TickLblPos* m_tickLblPos;
 			//Member
-			CString* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CString* m_txPr;
+			CString									*m_spPr;
+			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
+			CString									*m_txPr;
+			nullable<CTextProperties>				 m_oTxPr;			
 			//Member
 			CT_UnsignedInt* m_crossAx;
 			//Member
@@ -1600,12 +1689,10 @@ namespace OOX{
 			CT_Tx* m_tx;
 			//Member
 			CT_NumFmt* m_numFmt;
-			//Member
-			CString* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CString* m_txPr;
-			//Member
+			CString									*m_spPr;
+			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
+			CString									*m_txPr;
+			nullable<CTextProperties>				 m_oTxPr;	
 			CT_extLst* m_extLst;
 			CT_TrendlineLbl();
 			~CT_TrendlineLbl();
@@ -2750,11 +2837,10 @@ namespace OOX{
 		public:
 			//Member
 			CT_UnsignedInt* m_idx;
-			//Member
-			CString* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CString* m_txPr;
+			CString									*m_spPr;
+			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
+			CString									*m_txPr;
+			nullable<CTextProperties>				 m_oTxPr;	
 			//Member
 			CT_Marker* m_marker;
 			//Member

@@ -10,7 +10,7 @@ namespace OOX
 	namespace Spreadsheet
 	{
 		//--------------------------------------------------------------------------------
-		// 20.5.2.34 txBody (Shape Text Body)
+		// 20.5.2.34	txBody	(Shape Text Body)
 		//--------------------------------------------------------------------------------	
 		class CTextBody : public WritingElementWithChilds<Drawing::CParagraph>
 		{

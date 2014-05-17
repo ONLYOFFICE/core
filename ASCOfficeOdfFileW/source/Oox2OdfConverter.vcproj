@@ -153,6 +153,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Oox2OdfConverter\ConverterChart.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Oox2OdfConverter\DocxConverter.cpp"
 				>
 			</File>

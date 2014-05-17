@@ -15,6 +15,8 @@ namespace cpdoccore
 		class odf_conversion_context;
 		class font_size;
 		class length_or_percent;
+		class style_paragraph_properties;
+		class style_text_properties;
 	}
 }
 namespace OOX
@@ -201,6 +203,8 @@ namespace OOX
 		class CT_Style1;
 		class CT_Style;
 		class CT_TextLanguageID;
+		class CRichText;
+		class CTextProperties;
 	}
 }
 
@@ -250,14 +254,15 @@ public:
 
 ///////////////////////////////
 		void convert(OOX::Drawing::CParagraph					*oox_paragraph);
-		void convert(OOX::Drawing::CParagraphProperty			*oox_paragraph_pr);
+		void convert(OOX::Drawing::CParagraphProperty			*oox_paragraph_pr, cpdoccore::odf::style_paragraph_properties * paragraph_properties);
 		void convert(OOX::Drawing::CRun							*oox_run);
-		void convert(OOX::Drawing::CRunProperty					*oox_run_pr);
-		void convert(OOX::Drawing::CLineSpacing					*oox_spacing,  cpdoccore::odf::length_or_percent & length_or_percent);
+		void convert(OOX::Drawing::CRunProperty					*oox_run_pr, cpdoccore::odf::style_text_properties	* text_properties);
+		void convert(OOX::Drawing::CLineSpacing					*oox_spacing, cpdoccore::odf::length_or_percent & length_or_percent);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 		void convert(OOX::Spreadsheet::CChartSpace				*oox_chart);
 		void convert(OOX::Spreadsheet::CT_Title					*ct_title);
 		void convert(OOX::Spreadsheet::CT_Legend				*ct_legend);
+		void convert(OOX::Spreadsheet::CT_LegendEntry			*ct_legend);
 		void convert(OOX::Spreadsheet::CT_PlotArea				*ct_plotArea);
 		void convert(OOX::Spreadsheet::CT_Surface				*ct_surface, int type);
 		void convert(OOX::Spreadsheet::CT_CatAx					*ct_catAx);
@@ -290,6 +295,11 @@ public:
 		void convert(OOX::Spreadsheet::CT_LineSer				*ser);
 		void convert(OOX::Spreadsheet::CT_AxDataSource			*cat, int category);
 		void convert(OOX::Spreadsheet::CT_NumDataSource			*val, int category);
+		void convert(OOX::Spreadsheet::CRichText				*rich);
+		void convert(OOX::Spreadsheet::CTextProperties			*txPr);
+		void convert(OOX::Spreadsheet::CT_Tx					*ct_tx);
+		void convert(OOX::Spreadsheet::CT_Layout				*ct_layout);
+		void convert(OOX::Spreadsheet::CT_ManualLayout			*ct_layout);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 		void convert(double oox_font_size,			cpdoccore::_CP_OPT(cpdoccore::odf::font_size) & odf_font_size);
 	};

@@ -183,13 +183,18 @@ const wchar_t * chart_legend::name = L"legend";
 
 void chart_legend_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"chart:legend-position", chart_legend_position_);
-    CP_XML_ATTR_OPT(L"chart:legend-align", chart_legend_align_);
-    common_draw_position_attlist_.serialize(CP_GET_XML_NODE());
+    CP_XML_ATTR_OPT(L"chart:legend-position",	chart_legend_position_);
+    CP_XML_ATTR_OPT(L"chart:legend-align",		chart_legend_align_);
 
-    CP_XML_ATTR_OPT(L"style:legend-expansion", style_legend_expansion_);
+    CP_XML_ATTR_OPT(L"style:legend-expansion",				style_legend_expansion_);
     CP_XML_ATTR_OPT(L"style:legend-expansion-aspect-ratio", style_legend_expansion_aspect_ratio_);
-    common_attlist_.serialize(CP_GET_XML_NODE());
+
+	CP_XML_ATTR_OPT(L"chartooo:height", chartooo_height_);
+	CP_XML_ATTR_OPT(L"chartooo:width",	chartooo_width_);
+	
+	common_draw_position_attlist_.serialize(CP_GET_XML_NODE());
+   
+	common_attlist_.serialize(CP_GET_XML_NODE());
 }
 void chart_legend::serialize(std::wostream & _Wostream)
 {
@@ -208,8 +213,10 @@ void chart_plot_area_attlist::serialize(CP_ATTR_NODE)
 {
     common_draw_position_attlist_.serialize(CP_GET_XML_NODE());
     common_draw_size_attlist_.serialize(CP_GET_XML_NODE());
-    common_attlist_.serialize(CP_GET_XML_NODE());
-    CP_XML_ATTR_OPT(L"table:cell-range-address", table_cell_range_address_);
+   
+	common_attlist_.serialize(CP_GET_XML_NODE());
+    
+	CP_XML_ATTR_OPT(L"table:cell-range-address", table_cell_range_address_);
     CP_XML_ATTR_OPT(L"chart:data-source-has-labels", chart_data_source_has_labels_);
 }
 

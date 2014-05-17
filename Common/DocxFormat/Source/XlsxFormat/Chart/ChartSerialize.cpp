@@ -3,10 +3,9 @@
 namespace OOX{
 	namespace Spreadsheet{
 
-		nullable<OOX::Drawing::CShapeProperties> FromString_spPr(CString *spPr)
+		void FromString_spPr(CString *spPr, nullable<OOX::Drawing::CShapeProperties> & oSpPr)
 		{
-			nullable<OOX::Drawing::CShapeProperties> oSpPr;
-			XmlUtils::CXmlLiteReader oShapeReader;
+			XmlUtils::CXmlLiteReader oReaderLocal;
 			//сформируем полноценную xml-строку
 			CString xmlString = L"<?xml version=\"1.0\" encoding=\"UTF-16\"?>";
 			xmlString += L"<c:chart ";
@@ -18,16 +17,38 @@ namespace OOX{
 			xmlString += L">";
 			xmlString += *spPr;
 			xmlString += L"</c:chart>";
-			BOOL result =oShapeReader.FromString(xmlString);
+			BOOL result =oReaderLocal.FromString(xmlString);
 
-			result = oShapeReader.ReadNextNode();//root ... skiping
-			result = oShapeReader.ReadNextNode();
+			result = oReaderLocal.ReadNextNode();//root ... skiping
+			result = oReaderLocal.ReadNextNode();
 
-			CWCharWrapper sName = oShapeReader.GetName();
+			CWCharWrapper sName = oReaderLocal.GetName();
 			
 			if (_T("c:spPr") == sName)
-				oSpPr = oShapeReader;
-			return oSpPr;
+				oSpPr = oReaderLocal;
+		}
+		void FromString_txPr(CString *txPr, nullable<CTextProperties> & oTxPr)
+		{
+			XmlUtils::CXmlLiteReader oReaderLocal;
+			//сформируем полноценную xml-строку
+			CString xmlString = L"<?xml version=\"1.0\" encoding=\"UTF-16\"?>";
+			xmlString += L"<c:txPr ";
+				xmlString += L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
+				xmlString += L"xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" ";	
+				xmlString += L"xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" ";
+				xmlString += L"xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ";
+				xmlString += L"xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" ";
+			xmlString += L">";
+			xmlString += *txPr;
+			xmlString += L"</c:txPr>";
+			BOOL result =oReaderLocal.FromString(xmlString);
+
+			result = oReaderLocal.ReadNextNode();//root ... skiping
+
+			CWCharWrapper sName = oReaderLocal.GetName();
+			
+			if (_T("c:txPr") == sName)
+				oTxPr = oReaderLocal;
 		}
 		bool FromXml_ST_PageSetupOrientation(CString& val, ST_PageSetupOrientation& eOut)
 		{
@@ -1097,7 +1118,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
@@ -1105,6 +1126,7 @@ namespace OOX{
 					CString sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
+					FromString_txPr(m_txPr, m_oTxPr);
 				}
 				else if(_T("externalData") == sName)
 				{
@@ -2183,6 +2205,7 @@ namespace OOX{
 					CString sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
+					FromString_txPr(m_txPr, m_oTxPr);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -2427,7 +2450,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
@@ -2435,6 +2458,7 @@ namespace OOX{
 					CString sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
+					FromString_txPr(m_txPr, m_oTxPr);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -2877,7 +2901,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
@@ -2885,6 +2909,7 @@ namespace OOX{
 					CString sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
+					FromString_txPr(m_txPr, m_oTxPr);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -3073,7 +3098,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
@@ -3081,6 +3106,7 @@ namespace OOX{
 					CString sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
+					FromString_txPr(m_txPr, m_oTxPr);
 				}
 				else if(_T("crossAx") == sName)
 				{
@@ -3438,7 +3464,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 			}
 		}
@@ -3510,7 +3536,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
@@ -3518,6 +3544,7 @@ namespace OOX{
 					CString sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
+					FromString_txPr(m_txPr, m_oTxPr);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -3585,6 +3612,29 @@ namespace OOX{
 					CString sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_rich = pNewElem;
+					{
+						nullable<OOX::Drawing::CShapeProperties> oSpPr;
+						XmlUtils::CXmlLiteReader oReaderLocal;
+						//сформируем полноценную xml-строку
+						CString xmlString = L"<?xml version=\"1.0\" encoding=\"UTF-16\"?>";
+						xmlString += L"<c:rich ";
+							xmlString += L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
+							xmlString += L"xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" ";	
+							xmlString += L"xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" ";
+							xmlString += L"xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ";
+							xmlString += L"xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" ";
+						xmlString += L">";
+						xmlString += *m_rich;
+						xmlString += L"</c:rich>";
+						BOOL result =oReaderLocal.FromString(xmlString);
+
+						result = oReaderLocal.ReadNextNode();//root ... skiping
+
+						CWCharWrapper sName = oReaderLocal.GetName();
+						
+						if (_T("c:rich") == sName)
+							m_oRich = oReaderLocal;
+					}
 				}
 				else if(_T("strRef") == sName)
 				{
@@ -4242,7 +4292,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
@@ -4250,6 +4300,7 @@ namespace OOX{
 					CString sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
+					FromString_txPr(m_txPr, m_oTxPr);
 				}
 				else if(_T("crossAx") == sName)
 				{
@@ -4700,7 +4751,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
@@ -4708,6 +4759,7 @@ namespace OOX{
 					CString sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
+					FromString_txPr(m_txPr, m_oTxPr);
 				}
 				else if(_T("crossAx") == sName)
 				{
@@ -4915,7 +4967,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
@@ -4923,6 +4975,7 @@ namespace OOX{
 					CString sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
+					FromString_txPr(m_txPr, m_oTxPr);
 				}
 			}
 		}
@@ -5259,7 +5312,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
@@ -5267,6 +5320,7 @@ namespace OOX{
 					CString sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
+					FromString_txPr(m_txPr, m_oTxPr);
 				}
 				else if(_T("crossAx") == sName)
 				{
@@ -5576,7 +5630,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("invertIfNegative") == sName)
 				{
@@ -5848,7 +5902,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("pictureOptions") == sName)
 				{
@@ -5948,7 +6002,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -7026,7 +7080,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("trendlineType") == sName)
 				{
@@ -7338,7 +7392,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
@@ -7346,6 +7400,7 @@ namespace OOX{
 					CString sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
+					FromString_txPr(m_txPr, m_oTxPr);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -7476,7 +7531,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -8563,7 +8618,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("cat") == sName)
 				{
@@ -8653,7 +8708,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 			}
 		}
@@ -9183,7 +9238,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("explosion") == sName)
 				{
@@ -9646,7 +9701,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("invertIfNegative") == sName)
 				{
@@ -10476,7 +10531,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("marker") == sName)
 				{
@@ -10827,7 +10882,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("marker") == sName)
 				{
@@ -11272,7 +11327,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("marker") == sName)
 				{
@@ -11497,7 +11552,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 			}
 		}
@@ -12077,7 +12132,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("pictureOptions") == sName)
 				{
@@ -12556,7 +12611,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -12886,7 +12941,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("pictureOptions") == sName)
 				{
@@ -13300,7 +13355,7 @@ namespace OOX{
 					CString sVal = oReader.GetOuterXml();
 					*pNewElem = sVal;
 					m_spPr = pNewElem;
-					m_oSpPr = FromString_spPr(m_spPr);
+					FromString_spPr(m_spPr, m_oSpPr);
 				}
 				else if(_T("txPr") == sName)
 				{
@@ -13308,6 +13363,7 @@ namespace OOX{
 					CString sVal = oReader.GetInnerXml();
 					*pNewElem = sVal;
 					m_txPr = pNewElem;
+					FromString_txPr(m_txPr, m_oTxPr);
 				}
 				else if(_T("marker") == sName)
 				{

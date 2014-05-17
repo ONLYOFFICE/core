@@ -100,6 +100,7 @@ public:
 		styles_context_ = odf_context_->styles_context();
 		
 		current_graphic_properties = NULL;
+		current_paragraph_properties = NULL;
 	} 
 	std::vector<odf_drawing_state> drawing_list_;//все элементы .. для удобства разделение по "топам"
 	
@@ -648,7 +649,7 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 		if (style_)impl_->current_paragraph_properties = style_->style_content_.get_style_paragraph_properties();
 	}
 	
-	style_paragraph_properties	* paragraph_properties=NULL;
+	style_paragraph_properties	* paragraph_properties = impl_->odf_context_->text_context()->get_paragraph_properties();
 	draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
 	if (draw)
 	{
@@ -667,7 +668,7 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 			std::wstring style_name = draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_text_style_name_attlist_.draw_text_style_name_->style_name();
 			//найти
 		}
-		if (style_)
+		if (style_ && !paragraph_properties)
 		{
 			paragraph_properties = style_->style_content_.get_style_paragraph_properties();
 		}

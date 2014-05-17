@@ -289,7 +289,6 @@ public:
     style_text_properties(){};
     style_text_properties(const std::wstring & rStyle){ text_format_properties_content_.set_r_style(rStyle); };
  
-private:
     text_format_properties_content text_format_properties_content_;
 };
 

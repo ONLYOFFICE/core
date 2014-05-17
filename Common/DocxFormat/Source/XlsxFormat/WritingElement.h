@@ -314,7 +314,8 @@ namespace Spreadsheet
 		et_GraphicFrameNonVisual,
 		et_ConnectionNonVisualGraphicFrameProps,
 		et_GraphicChart,
-
+		et_ChartTextProperties,
+		et_ChartRichText
 
 	};
 	class WritingElement

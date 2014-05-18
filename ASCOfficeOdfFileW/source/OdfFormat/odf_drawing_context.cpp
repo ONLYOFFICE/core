@@ -493,6 +493,8 @@ void odf_drawing_context::set_no_fill()
 		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::none;
 		break;
 	case Line:
+		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::none;
+		impl_->current_graphic_properties->content().draw_stroke_ = line_style (line_style::None);
 		break;
 	}
 }
@@ -564,6 +566,14 @@ void odf_drawing_context::set_rect(double x_pt, double y_pt, double width_pt, do
 	impl_->current_drawing_state_.svg_height_ = length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
 	impl_->current_drawing_state_.svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);	
 }
+void odf_drawing_context::get_size( double & width_pt, double & height_pt)
+{
+	if (!impl_->current_drawing_state_.svg_width_ || !impl_->current_drawing_state_.svg_height_) return;
+
+	width_pt	= impl_->current_drawing_state_.svg_width_->get_value_unit(length::pt);
+	height_pt	= impl_->current_drawing_state_.svg_height_->get_value_unit(length::pt);
+}
+
 void odf_drawing_context::set_line_width(double pt)
 {
 	if (!impl_->current_graphic_properties)return;

@@ -81,6 +81,9 @@ public:
 	_CP_OPT(chart_data_label_number)	chart_data_label_number_;
 	_CP_OPT(chart_error_category)		chart_error_category_;
 
+	_CP_OPT(std::wstring)				chart_axis_label_position_;
+	_CP_OPT(std::wstring)				chart_axis_position_;
+
 	common_rotation_angle_attlist       common_rotation_angle_attlist_;
 };
 /// \class  style_chart_properties

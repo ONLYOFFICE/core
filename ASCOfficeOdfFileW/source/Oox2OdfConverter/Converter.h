@@ -259,7 +259,7 @@ public:
 		void convert(OOX::Drawing::CRunProperty					*oox_run_pr, cpdoccore::odf::style_text_properties	* text_properties);
 		void convert(OOX::Drawing::CLineSpacing					*oox_spacing, cpdoccore::odf::length_or_percent & length_or_percent);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-		void convert(OOX::Spreadsheet::CChartSpace				*oox_chart);
+		void convert(OOX::Spreadsheet::CT_ChartSpace			*oox_chart);
 		void convert(OOX::Spreadsheet::CT_Title					*ct_title);
 		void convert(OOX::Spreadsheet::CT_Legend				*ct_legend);
 		void convert(OOX::Spreadsheet::CT_LegendEntry			*ct_legend);
@@ -293,13 +293,15 @@ public:
 		void convert(OOX::Spreadsheet::CT_ScatterSer			*ser);
 		void convert(OOX::Spreadsheet::CT_RadarSer				*ser);
 		void convert(OOX::Spreadsheet::CT_LineSer				*ser);
-		void convert(OOX::Spreadsheet::CT_AxDataSource			*cat, int category);
-		void convert(OOX::Spreadsheet::CT_NumDataSource			*val, int category);
+		void convert(OOX::Spreadsheet::CT_AxDataSource			*cat);
+		void convert(OOX::Spreadsheet::CT_NumDataSource			*val);
 		void convert(OOX::Spreadsheet::CRichText				*rich);
 		void convert(OOX::Spreadsheet::CTextProperties			*txPr);
 		void convert(OOX::Spreadsheet::CT_Tx					*ct_tx);
 		void convert(OOX::Spreadsheet::CT_Layout				*ct_layout);
 		void convert(OOX::Spreadsheet::CT_ManualLayout			*ct_layout);
+		void convert(OOX::Spreadsheet::CT_ChartLines			*grid, int type);
+		void convert(OOX::Spreadsheet::CT_SerTx					*ser_tx);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 		void convert(double oox_font_size,			cpdoccore::_CP_OPT(cpdoccore::odf::font_size) & odf_font_size);
 	};

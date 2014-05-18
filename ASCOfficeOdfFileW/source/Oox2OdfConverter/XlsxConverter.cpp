@@ -1164,8 +1164,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CGraphicFrame* oox_graphic_frame)
 {
 	if (!oox_graphic_frame)return;
 ////////////////////////////////////////////////////////////////////////////////
+	
 	ods_context->drawing_context()->start_object(ods_context->get_next_name_object());
 	{		
+		double width =0, height =0;
+		ods_context->drawing_context()->get_size(width, height);
+		
 		if (oox_graphic_frame->m_oNvGraphicFramePr.IsInit())
 		{
 			if (oox_graphic_frame->m_oNvGraphicFramePr->m_oCNvPr.IsInit())
@@ -1185,7 +1189,15 @@ void XlsxConverter::convert(OOX::Spreadsheet::CGraphicFrame* oox_graphic_frame)
 				{
 					OOX::Spreadsheet::CChartSpace* pChart = (OOX::Spreadsheet::CChartSpace*)oFile.operator->();
 					
-					OoxConverter::convert(pChart);
+					if (pChart)
+					{
+						oox_current_chart = pChart;
+						odf_context()->start_chart();
+							odf_context()->chart_context()->set_size_chart(width, height);
+							OoxConverter::convert(&pChart->m_oChartSpace);
+						odf_context()->end_chart();
+						oox_current_chart = NULL; // object???
+					}
 				}
 			}
 			//могут быть и другие типы объектов

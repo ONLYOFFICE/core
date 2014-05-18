@@ -831,25 +831,4 @@ void OoxConverter::convert(double oox_font_size,  _CP_OPT(odf::font_size) & odf_
 		 odf_font_size = odf::font_size(odf_length.get());
 }
 
-void OoxConverter::convert(OOX::Spreadsheet::CChartSpace *oox_chart)
-{
-	if ((!oox_chart) && (!oox_chart->m_oChartSpace.m_chart))return;
-
-	oox_current_chart = oox_chart;
-	odf_context()->start_chart();
-		convert(oox_chart->m_oChartSpace.m_oSpPr.GetPointer());
-		convert(oox_chart->m_oChartSpace.m_oTxPr.GetPointer());
-
-		convert(oox_chart->m_oChartSpace.m_chart->m_title);
-		convert(oox_chart->m_oChartSpace.m_chart->m_legend);
-		convert(oox_chart->m_oChartSpace.m_chart->m_plotArea);
-
-		convert(oox_chart->m_oChartSpace.m_chart->m_sideWall, 2);
-		convert(oox_chart->m_oChartSpace.m_chart->m_backWall, 3);
-		convert(oox_chart->m_oChartSpace.m_chart->m_floor, 1);
-
-	odf_context()->end_chart();
-	oox_current_chart = NULL;
-}
-
 }

@@ -32,19 +32,29 @@ public:
 	void start_chart(office_element_ptr & root);
 		void set_type_chart(std::wstring type);
 		void set_3D(bool Val);
+		void set_size_chart(double width_pt, double height_pt);
 		
 		void start_series(std::wstring type);
+			void set_series_value_formula(std::wstring oox_formula);
+			void set_series_label_formula(std::wstring oox_formula);
+			void set_series_name(std::wstring name);
+			void set_category_axis_formula(std::wstring oox_formula);
 	
 		void start_axis();
+			void set_axis_dimension(std::wstring val);
+			void set_axis_orientation(int type);
+			void set_axis_logarithmic(bool val);
+			void set_axis_label(int type);
+			void set_axis_position(int type);
+			void set_axis_label_position(int type);
 		void start_title();
+		void start_grid(int type);
 		void start_plot_area();
 		void start_legend();
 			void set_legend_position(int val);
 
 		void start_element(office_element_ptr & elm, office_element_ptr & style_elm, std::wstring style_name);
 		void end_element();
-
-		void set_series_formula(int category, std::wstring oox_formula);
 
 		void start_text();
 		void end_text();

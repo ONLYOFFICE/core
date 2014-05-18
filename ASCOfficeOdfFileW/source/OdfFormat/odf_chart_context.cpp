@@ -22,6 +22,7 @@
 #include "style_text_properties.h"
 #include "style_paragraph_properties.h"
 #include "style_graphic_properties.h"
+#include "style_chart_properties.h"
 
 namespace cpdoccore 
 {
@@ -139,7 +140,7 @@ void odf_chart_context::set_type_chart(std::wstring type)
 void odf_chart_context::set_3D(bool Val)
 {
 	if (!impl_->current_chart_properties) return;
-	impl_->current_chart_properties->chart_three_dimensional_ = Val;
+	impl_->current_chart_properties->content().chart_three_dimensional_ = Val;
 }
 void odf_chart_context::start_series(std::wstring type)
 {

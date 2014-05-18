@@ -74,6 +74,8 @@ void chart_format_properties::serialize(std::wostream & _Wostream ,const wchar_t
 			CP_XML_ATTR_OPT(L"chart:regression-type",		chart_regression_type_); 	
 			CP_XML_ATTR_OPT(L"chart:data-label-number",		chart_data_label_number_); 
 			CP_XML_ATTR_OPT(L"chart:error-category",		chart_error_category_); 
+			CP_XML_ATTR_OPT(L"chart:axis-label-position",	chart_axis_label_position_);
+			CP_XML_ATTR_OPT(L"chart:axis-position",			chart_axis_position_);
 
 			common_rotation_angle_attlist_.serialize(CP_GET_XML_NODE());
 		}

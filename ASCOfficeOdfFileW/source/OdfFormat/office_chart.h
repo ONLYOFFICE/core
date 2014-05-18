@@ -286,9 +286,9 @@ class chart_axis_attlist
 public:
     void serialize(CP_ATTR_NODE);
 
-    _CP_OPT(std::wstring) chart_dimension_;
-    _CP_OPT(std::wstring) chart_name_;
-    common_chart_attlist		common_attlist_;
+    _CP_OPT(std::wstring)	chart_dimension_;
+    _CP_OPT(std::wstring)	chart_name_;
+    common_chart_attlist	common_attlist_;
 };
 
 /// \brief  chart:axis

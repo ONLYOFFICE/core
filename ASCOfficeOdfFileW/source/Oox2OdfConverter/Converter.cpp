@@ -375,8 +375,8 @@ void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill)
 			std::wstring hexColorStart, hexColorEnd;
 			_CP_OPT(double) opacityStart, opacityEnd;
 			
-			convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.GetSize()-1]),hexColorStart, opacityStart);
-			convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[0]),hexColorEnd, opacityEnd);
+			convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[0]),hexColorStart, opacityStart);
+			convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.GetSize()-1]),hexColorEnd, opacityEnd);
 			
 			odf_context()->drawing_context()->set_gradient_start(hexColorStart, opacityStart);
 			odf_context()->drawing_context()->set_gradient_end(hexColorEnd, opacityEnd);

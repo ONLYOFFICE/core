@@ -302,6 +302,7 @@ public:
 		void convert(OOX::Spreadsheet::CT_ManualLayout			*ct_layout);
 		void convert(OOX::Spreadsheet::CT_ChartLines			*grid, int type);
 		void convert(OOX::Spreadsheet::CT_SerTx					*ser_tx);
+		void convert(OOX::Spreadsheet::CT_DLbls					*ser_lbls);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 		void convert(double oox_font_size,			cpdoccore::_CP_OPT(cpdoccore::odf::font_size) & odf_font_size);
 	};

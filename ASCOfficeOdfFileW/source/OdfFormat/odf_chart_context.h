@@ -34,19 +34,34 @@ public:
 		void set_3D(bool Val);
 		void set_size_chart(double width_pt, double height_pt);
 		
-		void start_series(std::wstring type);
-			void set_series_value_formula(std::wstring oox_formula);
-			void set_series_label_formula(std::wstring oox_formula);
-			void set_series_name(std::wstring name);
-			void set_category_axis_formula(std::wstring oox_formula);
-	
+		void start_group_series();
+			void add_axis_group_series(unsigned int id);
+				void start_series(std::wstring type);
+					void set_series_value_formula(std::wstring oox_formula);
+					void set_series_label_formula(std::wstring oox_formula);
+				void set_category_axis_formula(std::wstring oox_formula);
+		void end_group_series();
+		
+		void set_label_name(std::wstring name);
+		void set_label_delete(bool val);	
+		void set_label_show_bubble_size(bool val);	
+		void set_label_show_cat_name(bool val);
+		void set_label_show_leader_line(bool val);
+		void set_label_show_legend_key(bool val);
+		void set_label_show_percent(bool val);
+		void set_label_show_ser_name(bool val);
+		void set_label_show_values(bool val);		
+		
 		void start_axis();
-			void set_axis_dimension(std::wstring val);
+			void set_axis_id(unsigned int id);
+			void set_axis_dimension(int type);
 			void set_axis_orientation(int type);
 			void set_axis_logarithmic(bool val);
 			void set_axis_label(int type);
 			void set_axis_position(int type);
 			void set_axis_label_position(int type);
+			void set_axis_max(double val);
+			void set_axis_min(double val);
 		void start_title();
 		void start_grid(int type);
 		void start_plot_area();
@@ -59,7 +74,7 @@ public:
 		void start_text();
 		void end_text();
 
-		void add_categories(std::wstring formula);
+		void add_categories(std::wstring formula, office_element_ptr & axis);
 
 		void set_layout_x(double *val,int mode);
 		void set_layout_y(double *val,int mode);

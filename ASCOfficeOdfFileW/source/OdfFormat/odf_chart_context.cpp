@@ -39,6 +39,7 @@ namespace odf
 	};
 	struct 	odf_chart_state
 	{
+		odf_chart_state() {clear();}
 		void clear()
 		{
 			elements_.clear();
@@ -82,9 +83,35 @@ public:
 	style_paragraph_properties	*current_paragraph_properties_;
 	style_chart_properties		*current_chart_properties_;
 
-	chart_chart					*current_chart_;
+	chart_chart					*get_current_chart();
+	chart_axis					*get_current_axis();
+	//chart_seris					*get_current_series();
+	//chart_plot_area				*get_current_plot_area();
 };
-
+chart_chart* odf_chart_context::Impl::get_current_chart()
+{
+	for (long i=current_chart_state_.elements_.size()-1; i>=0; i--)
+	{
+		chart_chart * chart = dynamic_cast<chart_chart*>(current_chart_state_.elements_[i].elm.get());
+		if (chart) return chart;
+	}
+	return NULL;
+}
+//chart_seris* odf_chart_context::Impl::odf_chart_context::get_current_series()
+//{
+//}
+chart_axis * odf_chart_context::Impl::get_current_axis()
+{
+	for (long i=current_chart_state_.elements_.size()-1; i>=0; i--)
+	{
+		chart_axis * axis = dynamic_cast<chart_axis*>(current_chart_state_.elements_[i].elm.get());
+		if (axis) return axis;
+	}
+	return NULL;
+}
+//chart_plot_area* odf_chart_context::Impl::get_current_plot_area()
+//{
+//}
 ////////////////////////////////////////////////////////////////////////////
 
 odf_chart_context::odf_chart_context(odf_conversion_context *odf_context)  
@@ -116,8 +143,8 @@ void odf_chart_context::start_chart(office_element_ptr & root)
 	office_element_ptr chart_elm;
 	create_element(L"chart", L"chart", chart_elm, impl_->odf_context_);
 
-	impl_->current_chart_ = dynamic_cast<chart_chart*>(chart_elm.get());
-	if (impl_->current_chart_ == NULL)return;
+	chart_chart *chart = dynamic_cast<chart_chart*>(chart_elm.get());
+	if (chart == NULL)return;
 
 	root->add_child_element(chart_elm);
 //////////	
@@ -133,7 +160,7 @@ void odf_chart_context::start_chart(office_element_ptr & root)
 		style_name = style_->style_name_;
 		impl_->current_chart_properties_ = style_->style_content_.get_style_chart_properties();
 		
-		impl_->current_chart_->chart_chart_attlist_.common_attlist_.chart_style_name_ = style_name;
+		chart->chart_chart_attlist_.common_attlist_.chart_style_name_ = style_name;
 	}
 
 	drawing_context()->start_element(chart_elm, style_elm);
@@ -153,15 +180,19 @@ void odf_chart_context::set_size_chart(double width_pt, double height_pt)
 {
 	impl_->current_chart_state_.chart_height_pt = height_pt;
 	impl_->current_chart_state_.chart_width_pt = width_pt;
+	
+	chart_chart *chart = impl_->get_current_chart();
+	if (!chart)return;
 
-	impl_->current_chart_->chart_chart_attlist_.common_draw_size_attlist_.svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);
-	impl_->current_chart_->chart_chart_attlist_.common_draw_size_attlist_.svg_height_ = length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);
+	chart->chart_chart_attlist_.common_draw_size_attlist_.svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);
+	chart->chart_chart_attlist_.common_draw_size_attlist_.svg_height_ = length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);
 }
 void odf_chart_context::set_type_chart(std::wstring type)
 {
-	if (!impl_->current_chart_)return;
+	chart_chart *chart = impl_->get_current_chart();
+	if (!chart)return;
 
-	impl_->current_chart_->chart_chart_attlist_.chart_class_ = std::wstring(L"chart:") + type;
+	chart->chart_chart_attlist_.chart_class_ = std::wstring(L"chart:") + type;
 }
 void odf_chart_context::set_3D(bool Val)
 {
@@ -191,6 +222,25 @@ void odf_chart_context::start_series(std::wstring type)
 	}
 	start_element(chart_elm, style_elm, style_name);
 }
+void odf_chart_context::add_categories(std::wstring formula)
+{
+	office_element_ptr elm;
+	create_element(L"chart", L"categories", elm, impl_->odf_context_);
+		
+	chart_categories *categories = dynamic_cast<chart_categories*>(elm.get());
+	if (categories== NULL)return;
+
+	categories->table_cell_range_address_ = formula;
+
+	int level = impl_->current_level_.size();
+	
+	if (impl_->current_level_.size()>0) 
+		impl_->current_level_.back()->add_child_element(elm);
+
+	odf_element_state state={elm, L"",office_element_ptr(), level};
+	impl_->current_chart_state_.elements_.push_back(state);
+}
+
 void odf_chart_context::start_axis()
 {
 	office_element_ptr chart_elm;
@@ -216,9 +266,7 @@ void odf_chart_context::start_axis()
 	if (impl_->current_chart_state_.axis_id < impl_->current_chart_state_.categories_.size()	&& 
 		impl_->current_chart_state_.categories_[impl_->current_chart_state_.axis_id].length() > 0)
 	{
-		//start_categories();
-		//	set_categories_formula(impl_->categories_[axis_id]);
-		//end_element();
+		add_categories(impl_->current_chart_state_.categories_[impl_->current_chart_state_.axis_id]);
 	}
 	impl_->current_chart_state_.axis_id++;
 }
@@ -403,7 +451,7 @@ void odf_chart_context::set_axis_logarithmic(bool val)
 }
 void odf_chart_context::set_axis_dimension(std::wstring val)
 {
-	chart_axis *axis = dynamic_cast<chart_axis*>(impl_->current_chart_state_.elements_.back().elm.get());
+	chart_axis *axis = impl_->get_current_axis();
 	if (!axis)return;
 
 	axis->chart_axis_attlist_.chart_dimension_ = val;
@@ -568,7 +616,7 @@ void odf_chart_context::set_series_label_formula(std::wstring oox_formula)
 	chart_series *series = dynamic_cast<chart_series*>(impl_->current_chart_state_.elements_.back().elm.get());
 	if (series == NULL)return;
 	
-	series->chart_series_attlist_.chart_label_cell_address_ = odfFormula + L":" + odfFormula;
+	series->chart_series_attlist_.chart_label_cell_address_ = odfFormula;
 }
 void odf_chart_context::set_category_axis_formula(std::wstring oox_formula)
 {
@@ -576,6 +624,5 @@ void odf_chart_context::set_category_axis_formula(std::wstring oox_formula)
 
 	impl_->current_chart_state_.categories_.push_back(odfFormula);
 }
-
 }
 }

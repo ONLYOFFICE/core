@@ -361,7 +361,7 @@ void chart_categories::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR_OPT(L"chart:table-cell-range-address", table_cell_range_address_);
+			CP_XML_ATTR_OPT(L"table:cell-range-address", table_cell_range_address_);
 		}
 	}
 }
@@ -370,7 +370,7 @@ void chart_categories::serialize(std::wostream & _Wostream)
 void chart_series_attlist::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR_OPT(L"chart:values-cell-range-address", chart_values_cell_range_address_);
-    CP_XML_ATTR_OPT(L"chart:label-cell-range-address", chart_label_cell_address_);
+    CP_XML_ATTR_OPT(L"chart:label-cell-address", chart_label_cell_address_);
     CP_XML_ATTR_OPT(L"chart:class", chart_class_);
     CP_XML_ATTR_OPT(L"chart:attached-axis", chart_attached_axis_);
     common_attlist_.serialize(CP_GET_XML_NODE());

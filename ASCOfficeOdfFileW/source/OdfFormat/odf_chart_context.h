@@ -59,6 +59,8 @@ public:
 		void start_text();
 		void end_text();
 
+		void add_categories(std::wstring formula);
+
 		void set_layout_x(double *val,int mode);
 		void set_layout_y(double *val,int mode);
 		void set_layout_w(double *val,int mode);

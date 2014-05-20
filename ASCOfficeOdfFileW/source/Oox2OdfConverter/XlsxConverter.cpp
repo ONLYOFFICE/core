@@ -498,11 +498,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 	else if (oox_column->m_oCustomWidth.IsInit() == false || 
 			(oox_column->m_oCustomWidth.IsInit() == true && oox_column->m_oCustomWidth->GetValue() == 1))
 	{
+		ods_context->current_table().set_column_optimal_width(false);
+	}
+	if (width  > 0 )
+	{
 		width = ods_context->convert_symbol_width(width);
 		ods_context->current_table().set_column_width(width);
-		ods_context->current_table().set_column_optimal_width(false);
-		// пока не преобразовываем правильно размерность !!!
-		//???
 	}
 
 	std::wstring style_cell_name;
@@ -744,6 +745,76 @@ void XlsxConverter::convert(OOX::Spreadsheet::CNumFmt *numFmt)
 	{
 		ods_context->numbers_styles_context()->add_or_find(numFmt->m_oNumFmtId->GetValue(), string2std_string(numFmt->m_oFormatCode.get()));
 	}
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf::style_paragraph_properties	* paragraph_properties
+																 , odf::style_table_cell_properties * cell_properties)
+{
+	if (!aligment)return;
+
+	if (aligment->m_oVertical.IsInit())
+	{
+		switch(aligment->m_oVertical->GetValue())
+		{
+		case SimpleTypes::Spreadsheet::verticalalignmentBottom: paragraph_properties->content().style_vertical_align_ = 
+												odf::vertical_align(odf::vertical_align::Bottom); break;
+		case SimpleTypes::Spreadsheet::verticalalignmentCenter: paragraph_properties->content().style_vertical_align_ = 
+												odf::vertical_align(odf::vertical_align::Middle); break;
+		case SimpleTypes::Spreadsheet::verticalalignmentDistributed: paragraph_properties->content().style_vertical_align_ = 
+												odf::vertical_align(odf::vertical_align::Auto); break;
+		case SimpleTypes::Spreadsheet::verticalalignmentJustify: paragraph_properties->content().style_vertical_align_ = 
+												odf::vertical_align(odf::vertical_align::Justify); break;
+		case SimpleTypes::Spreadsheet::verticalalignmentTop: paragraph_properties->content().style_vertical_align_ = 
+												odf::vertical_align(odf::vertical_align::Top); break;
+
+		}
+		if (paragraph_properties->content().style_vertical_align_)
+			cell_properties->style_table_cell_properties_attlist_.style_vertical_align_ = paragraph_properties->content().style_vertical_align_;
+	}
+	if (aligment->m_oTextRotation.IsInit())
+	{
+		cell_properties->style_table_cell_properties_attlist_.common_rotation_angle_attlist_.style_rotation_angle_ = aligment->m_oTextRotation->GetValue();
+		cell_properties->style_table_cell_properties_attlist_.style_rotation_align_= odf::rotation_align(odf::rotation_align::Bottom);
+	}
+	if(aligment->m_oHorizontal.IsInit())
+	{
+		switch(aligment->m_oHorizontal->GetValue())
+		{
+		case SimpleTypes::Spreadsheet::horizontalalignmentCenter:	paragraph_properties->content().fo_text_align_ = 
+																			odf::text_align(odf::text_align::Center); break;
+		//case SimpleTypes::Spreadsheet::horizontalalignmentContinuous:	paragraph_properties->content().fo_text_align_ = 
+		//																	odf::text_align(odf::text_align::Left); break;
+		//case SimpleTypes::Spreadsheet::horizontalalignmentDistributed:	paragraph_properties->content().fo_text_align_ = 
+		//																	odf::text_align(odf::text_align::Left); break;
+		case SimpleTypes::Spreadsheet::horizontalalignmentFill:	paragraph_properties->content().fo_text_align_ = 
+																			odf::text_align(odf::text_align::Left); break;
+		//case SimpleTypes::Spreadsheet::horizontalalignmentGeneral:	paragraph_properties->content().fo_text_align_ = 
+		//																	odf::text_align(odf::text_align::Left); break;
+		case SimpleTypes::Spreadsheet::horizontalalignmentJustify:	paragraph_properties->content().fo_text_align_ = 
+																			odf::text_align(odf::text_align::Justify); break;
+		case SimpleTypes::Spreadsheet::horizontalalignmentLeft:	paragraph_properties->content().fo_text_align_ = 
+																			odf::text_align(odf::text_align::Left); break;
+		case SimpleTypes::Spreadsheet::horizontalalignmentRight:	paragraph_properties->content().fo_text_align_ = 
+																		odf::text_align(odf::text_align::Right); break;
+		}
+	}
+	if(aligment->m_oWrapText.IsInit())
+	{
+		if (aligment->m_oWrapText->GetValue()) 
+			cell_properties->style_table_cell_properties_attlist_.fo_wrap_option_ = odf::wrap_option(odf::wrap_option::Wrap);
+		else 
+			cell_properties->style_table_cell_properties_attlist_.fo_wrap_option_ = odf::wrap_option(odf::wrap_option::NoWrap);
+	}
+	if(aligment->m_oShrinkToFit.IsInit())
+	{
+		cell_properties->style_table_cell_properties_attlist_.style_shrink_to_fit_ = aligment->m_oShrinkToFit->GetValue();
+	}
+	if (aligment->m_oIndent.IsInit())
+	{
+	}
+		//nullable<SimpleTypes::COnOff<>>									m_oJustifyLastLine;
+		//nullable<SimpleTypes::CUnsignedDecimalNumber<>>					m_oReadingOrder;
+		//nullable<SimpleTypes::CDecimalNumber<>>							m_oRelativeIndent;
+
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CBorder *border, odf::style_table_cell_properties * cell_properties)
 {
@@ -1010,7 +1081,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 	{
 		convert(xlsx_styles->m_oBorders->m_arrItems[border_id], table_cell_properties); 
 	}
-
+	if (xfc_style->m_oAligment.IsInit() && xfc_style->m_oApplyAlignment.IsInit())
+	{
+		odf::style_paragraph_properties	* paragraph_properties = ods_context->styles_context()->last_state().get_paragraph_properties();
+		convert(xfc_style->m_oAligment.GetPointer(), paragraph_properties, table_cell_properties);
+	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	if (id_parent >=0)

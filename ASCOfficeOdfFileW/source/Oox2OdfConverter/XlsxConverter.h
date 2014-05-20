@@ -32,6 +32,7 @@ namespace OOX
 		class CFill;		
 		class CColor;
 		class CBorderProp;
+		class CAligment;
 		class CXfs;
 		class CCellStyle;
 		class CNumFmt;
@@ -130,8 +131,10 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CFill				*fill,		odf::style_table_cell_properties *cell_properties);
 		
 		void convert(OOX::Spreadsheet::CColor				*color,		_CP_OPT(odf::color) & odf_color);
-		void convert(OOX::Spreadsheet::CColor				*color,		 _CP_OPT(odf::background_color) & odf_bckgrd_color);
+		void convert(OOX::Spreadsheet::CColor				*color,		_CP_OPT(odf::background_color) & odf_bckgrd_color);
 		void convert(OOX::Spreadsheet::CBorderProp			*borderProp, std::wstring & odf_border_prop);
+		void convert(OOX::Spreadsheet::CAligment			*aligment,	odf::style_paragraph_properties	* paragraph_properties,
+																		odf::style_table_cell_properties * cell_properties);
 		
 		void convert(OOX::Spreadsheet::CXfs					*cell_style, int oox_id, bool automatic=true, bool root = false);
 		void convert(OOX::Spreadsheet::CCellStyle			*cell_style, int oox_id);

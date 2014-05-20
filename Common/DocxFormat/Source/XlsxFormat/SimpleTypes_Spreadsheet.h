@@ -723,7 +723,7 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EVerticalAlignment)
-				SimpleType_Operator_Equal (CVerticalAlignment)
+			SimpleType_Operator_Equal (CVerticalAlignment)
 		};
 		enum EGradientType
 		{

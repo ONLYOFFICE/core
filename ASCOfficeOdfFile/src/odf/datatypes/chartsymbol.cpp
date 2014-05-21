@@ -10,7 +10,7 @@ std::wostream & operator << (std::wostream & _Wostream, const chart_symbol_type 
 	switch(_Val.get_type())
 	{
 		case chart_symbol_type::noneSymbol:_Wostream << L"none"; break;
-		case chart_symbol_type::autoSymbol:_Wostream << L"auto"; break;
+		case chart_symbol_type::autoSymbol:_Wostream << L"automatic"; break;
 		case chart_symbol_type::namedSymbol:_Wostream << L"named-symbol"; break;
 	}
     return _Wostream;    

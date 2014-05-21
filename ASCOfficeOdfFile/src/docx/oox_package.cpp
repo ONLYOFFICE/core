@@ -189,11 +189,17 @@ void media::write(const std::wstring & RootPath)
 				piImageFile.CreateInstance( __uuidof(ImageFile::ImageFile3) );
 				if( NULL != piImageFile )
 				{
-					VARIANT_BOOL vbSuccess = VARIANT_TRUE;
+					VARIANT_BOOL vbSuccess = VARIANT_FALSE;
 					IUnknown* pImage = NULL;
 				
 					BSTR bstrFilename = SysAllocString(item.href.data());
-					piImageFile->LoadImage2(bstrFilename, &pImage, &vbSuccess);
+					try
+					{
+						piImageFile->LoadImage2(bstrFilename, &pImage, &vbSuccess);
+					}
+					catch(...)
+					{
+					}
 					SysFreeString( bstrFilename );
 					if (vbSuccess && pImage)
 					{

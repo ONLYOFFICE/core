@@ -465,7 +465,7 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 	int res = expr.find(L"(");
 	if (res >=0) expr = expr.substr(res + 1, expr.size()-1);
 
-	res= expr.find(L")");
+	res= expr.rfind(L")");
 	if (res >=0) expr = expr.substr(0, res);
 
 	//распарсить по диапазонам - одф-пробел, ик-эль-запятая
@@ -627,6 +627,8 @@ int oox2odf_converter::get_count_value_points(std::wstring expr)
 	int count =0;
 	std::vector< std::wstring > splitted;
     
+	boost::algorithm::replace_all(expr, L"(", L"");
+	boost::algorithm::replace_all(expr, L")", L"");
 	boost::algorithm::split(splitted, expr, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 
 	for (long i=0; i < splitted.size(); i++)

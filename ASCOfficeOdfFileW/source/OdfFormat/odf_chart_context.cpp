@@ -246,7 +246,7 @@ void odf_chart_context::set_marker_type(int type)
 	case 0://st_markerstyleCIRCLE = 0,
 		impl_->current_level_.back().chart_properties_->content().chart_symbol_name_ = chart_symbol_name(chart_symbol_name::circleSymbol);	break;
 	case 1://st_markerstyleDASH = 1,
-		impl_->current_level_.back().chart_properties_->content().chart_symbol_name_ = chart_symbol_name(chart_symbol_name::circleSymbol);	break;
+		impl_->current_level_.back().chart_properties_->content().chart_symbol_name_ = chart_symbol_name(chart_symbol_name::horizontal_barSymbol);	break;
 	case 2://st_markerstyleDIAMOND = 2,
 		impl_->current_level_.back().chart_properties_->content().chart_symbol_name_ = chart_symbol_name(chart_symbol_name::diamondSymbol);	break;
 	case 3://st_markerstyleDOT = 3,
@@ -262,9 +262,9 @@ void odf_chart_context::set_marker_type(int type)
 	case 8://st_markerstyleSTAR = 8,
 		impl_->current_level_.back().chart_properties_->content().chart_symbol_name_ = chart_symbol_name(chart_symbol_name::starSymbol);	break;
 	case 9://st_markerstyleTRIANGLE = 9,
-		impl_->current_level_.back().chart_properties_->content().chart_symbol_name_ = chart_symbol_name(chart_symbol_name::hourglassSymbol);	break;
+		impl_->current_level_.back().chart_properties_->content().chart_symbol_name_ = chart_symbol_name(chart_symbol_name::arrow_upSymbol);	break;
 	case 10://st_markerstyleX = 10,
-		impl_->current_level_.back().chart_properties_->content().chart_symbol_name_ = chart_symbol_name(chart_symbol_name::asteriskSymbol);	break;
+		impl_->current_level_.back().chart_properties_->content().chart_symbol_name_ = chart_symbol_name(chart_symbol_name::xSymbol);	break;
 	case 11://st_markerstyleAUTO = 11
 		impl_->current_level_.back().chart_properties_->content().chart_symbol_name_ = chart_symbol_name(chart_symbol_name::autoSymbol);	break;
 	default:
@@ -332,6 +332,10 @@ void odf_chart_context::start_series(std::wstring type)
 		impl_->current_level_.back().graphic_properties_ = style_->style_content_.get_style_graphic_properties();
 		impl_->set_default_series_color();
 	}
+	//if (type == L"scatter" || type == L"line" || type == L"radar")
+	//{
+	//	impl_->current_level_.back().chart_properties_->content().chart_symbol_type_ = chart_symbol_type(chart_symbol_type::noneSymbol);
+	//}
 	impl_->current_series_count_ ++;
 }
 void odf_chart_context::end_series()
@@ -380,19 +384,43 @@ void odf_chart_context::end_group_series()
 {
 	std::wstring axis_name;
 
+	bool presentZ = false;
+	long countX = 0;
+	long countY = 0;
+	for (long j = 0; j < impl_->axis_.size(); j++)
+	{
+		if (impl_->axis_[j].dimension ==1)		countX++;
+		else if (impl_->axis_[j].dimension ==3)	presentZ = true;
+		else countY++;
+	}
+	if (countX < 1 && countY > 1)
+	{
+		impl_->axis_[0].dimension == 1;
+		chart_axis *axis = dynamic_cast<chart_axis*>(impl_->axis_[0].elm.get());
+		axis->chart_axis_attlist_.chart_dimension_ = L"x";
+		countY--;
+	}
+	if (presentZ == false && impl_->axis_group_series_.size() == 3 && (countY > 1 || countX > 1))
+	{
+		impl_->axis_.back().dimension == 3;
+		chart_axis *axis = dynamic_cast<chart_axis*>(impl_->axis_.back().elm.get());
+		axis->chart_axis_attlist_.chart_dimension_ = L"z";
+		countY--;
+	}
+
 	for (long i=0; i < impl_->axis_group_series_.size(); i++)
 	{
 		for (long j = 0; j < impl_->axis_.size(); j++)
 		{
-			if (impl_->axis_[j].dimension ==1)continue;
-			if (impl_->axis_[j].oox_id == impl_->axis_group_series_[i])
+			if (impl_->axis_[j].oox_id == impl_->axis_group_series_[i] && impl_->axis_[j].dimension ==2)
 			{
-				axis_name = impl_->axis_[j].name;
+				axis_name = impl_->axis_[j].name;//привязка оси Y
 				break;
 			}
 		}
 		if (axis_name.length() > 0)break;
 	}
+
 
 	for (long i =0; i < impl_->group_series_.size() && axis_name.length() > 0; i++)
 	{
@@ -867,6 +895,7 @@ void odf_chart_context::end_element()
 					case writing_mode::Tb:
 						impl_->current_level_.back().chart_properties_->content().style_direction_ = direction(direction::Ttb); break;
 				}
+				impl_->current_level_.back().chart_properties_->content().common_rotation_angle_attlist_.style_rotation_angle_ =0;
 			}
 		}
 	}
@@ -890,12 +919,11 @@ void odf_chart_context::end_chart()
 		}
 		else
 		{
-			if (i==0) 
-			{
-				chart_axis *axis = dynamic_cast<chart_axis*>(impl_->axis_[i].elm.get());
-				axis->chart_axis_attlist_.chart_dimension_ = L"x";
-				axis->chart_axis_attlist_.chart_name_ = L"axis-x";
-			}
+			//if (i==0) 
+			//{
+			//	chart_axis *axis = dynamic_cast<chart_axis*>(impl_->axis_[i].elm.get());
+			//	axis->chart_axis_attlist_.chart_dimension_ = L"x";
+			//}
 		}
 	}
 ///////////////
@@ -931,6 +959,13 @@ void odf_chart_context::set_category_axis_formula(std::wstring oox_formula,int t
 	std::wstring odfFormula = formulas_converter.convert_chart_distance(oox_formula);
 
 	impl_->categories_.push_back(std::pair<std::wstring,int>(odfFormula,type));
+}
+
+void odf_chart_context::set_series_pie_explosion(int val)
+{
+	if (!impl_->current_level_.back().chart_properties_)return;
+
+	impl_->current_level_.back().chart_properties_->content().chart_pie_offset_ = val;	
 }
 
 }

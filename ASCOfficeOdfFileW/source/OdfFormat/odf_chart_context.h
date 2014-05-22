@@ -47,6 +47,8 @@ public:
 					void set_category_axis_formula(std::wstring oox_formula,int type);
 					void start_data_point_series(int count);
 					long get_count_data_points_series();
+
+					void set_series_pie_explosion(int val);
 				void end_series();
 		void end_group_series();
 		

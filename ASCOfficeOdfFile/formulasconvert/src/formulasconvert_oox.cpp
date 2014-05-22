@@ -3,7 +3,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 #include <boost/foreach.hpp>
-
+#include <boost/lexical_cast.hpp>
 namespace cpdoccore {
 namespace formulasconvert {
 
@@ -459,14 +459,14 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring& expr)
 //в
 //Sheet2.C3:Sheet2.C19 Sheet2.L29:Sheet2.L36
 //todooo
-std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring& expr)
+std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring& expr1)
 {
-    if (is_forbidden1(expr))
-        return L"NULLFORMULA()";
+	std::wstring expr = expr1;
+	int res = expr.find(L"(");
+	if (res >=0) expr = expr.substr(res + 1, expr.size()-1);
 
-    //std::wstring workstr = expr;
-    //replace_space(workstr);
-    //return workstr;
+	res= expr.find(L")");
+	if (res >=0) expr = expr.substr(0, res);
 
 	//распарсить по диапазонам - одф-пробел, ик-эль-запятая
 
@@ -560,6 +560,94 @@ std::wstring oox2odf_converter::convert_spacechar(std::wstring expr)
 		expr.replace(pos,3,L" ");
 	}
 	return expr; 
+}
+size_t getColAddressInv(const std::wstring & a_)
+{
+    std::wstring a = a_;
+    ::boost::algorithm::to_upper(a);
+    static const size_t r = (L'Z' - L'A' + 1);
+    size_t mul = 1;
+    bool f = true;
+    size_t res = 0;
+    BOOST_REVERSE_FOREACH(const wchar_t c, a)
+    {
+        size_t v = c - L'A';
+        if (f)
+            f = false;
+        else
+            v += 1;
+        res += v * mul;
+        mul *= r;
+    }
+    return res;
+}
+
+size_t getRowAdderssInv(const std::wstring & a_)
+{
+	int sz = a_.length();
+	if (a_.length()>0)
+	{
+	   return boost::lexical_cast<size_t>(a_)-1;
+	}
+	else
+		return 0;
+}
+void splitCellAddress(const std::wstring & a_, std::wstring & col, std::wstring & row)
+{   
+	std::wstring a = a_;
+
+	std::reverse(a.begin(), a.end());
+    ::boost::algorithm::replace_all(a, L"$", L"");
+    //::boost::algorithm::replace_all(a, L"'", L"");
+	::boost::algorithm::to_upper(a);
+	
+
+	BOOST_FOREACH(wchar_t c, a)
+    {
+		if (c >= L'0' && c <= L'9')
+			row +=c;
+		else
+			col += c;
+    }
+	std::reverse(col.begin(), col.end());
+	std::reverse(row.begin(), row.end());
+}
+
+void getCellAddressInv(const std::wstring & a_, int & col, int & row)
+{
+    std::wstring colStr=L"", rowStr=L"";
+    splitCellAddress(a_, colStr, rowStr);
+    
+    col = getColAddressInv(colStr);
+    row = getRowAdderssInv(rowStr);
+}
+
+int oox2odf_converter::get_count_value_points(std::wstring expr)
+{
+	int count =0;
+	std::vector< std::wstring > splitted;
+    
+	boost::algorithm::split(splitted, expr, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+
+	for (long i=0; i < splitted.size(); i++)
+	{
+		int res = splitted[i].find(L"!");
+		if (res > 0) splitted[i] = splitted[i].substr(res+1, splitted[i].size()-res);
+
+		std::vector< std::wstring >cells;
+		boost::algorithm::split(cells, splitted[i], boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
+		if (cells.size() >1)
+		{
+			int col_1, row_1, col_2, row_2;
+			getCellAddressInv(cells[0],col_1,row_1);
+			getCellAddressInv(cells[1],col_2,row_2);
+
+			count += std::max(col_2-col_1+1, row_2-row_1+1);
+
+		}
+		else count ++; 
+	}
+	return count;
 }
 
 //bool oox2odf_converter::find_first_ref(std::wstring const & expr, std::wstring & table, std::wstring & ref)

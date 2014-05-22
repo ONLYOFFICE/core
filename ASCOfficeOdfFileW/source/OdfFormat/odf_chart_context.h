@@ -30,16 +30,24 @@ public:
 	odf_text_context	*text_context();
 
 	void start_chart(office_element_ptr & root);
-		void set_type_chart(std::wstring type);
-		void set_3D(bool Val);
-		void set_size_chart(double width_pt, double height_pt);
-		
+		void set_chart_type(std::wstring type);
+		void set_chart_3D(bool Val);
+		void set_chart_size(double width_pt, double height_pt);		
+		void set_chart_colored(bool val);
+		void set_chart_scatter_type(int type);
+
+		void set_marker_size(int size);
+		void set_marker_type(int type);
+
 		void start_group_series();
 			void add_axis_group_series(unsigned int id);
 				void start_series(std::wstring type);
 					void set_series_value_formula(std::wstring oox_formula);
 					void set_series_label_formula(std::wstring oox_formula);
-				void set_category_axis_formula(std::wstring oox_formula);
+					void set_category_axis_formula(std::wstring oox_formula,int type);
+					void start_data_point_series(int count);
+					long get_count_data_points_series();
+				void end_series();
 		void end_group_series();
 		
 		void set_label_name(std::wstring name);
@@ -66,6 +74,8 @@ public:
 		void start_grid(int type);
 		void start_plot_area();
 		void start_legend();
+		void start_floor();
+		void start_wall();
 			void set_legend_position(int val);
 
 		void start_element(office_element_ptr & elm, office_element_ptr & style_elm, std::wstring style_name);
@@ -74,6 +84,7 @@ public:
 		void start_text();
 		void end_text();
 
+		void add_domain(std::wstring formula);
 		void add_categories(std::wstring formula, office_element_ptr & axis);
 
 		void set_layout_x(double *val,int mode);

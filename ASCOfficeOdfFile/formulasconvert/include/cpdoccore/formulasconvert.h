@@ -60,6 +60,8 @@ public:
 
 	std::wstring convert_spacechar(std::wstring expr);
 
+	int get_count_value_points(std::wstring expr);
+
  //   // =[.A1]+[.B1] -> table = ""; ref = "A1"
  //   // of:=['Sheet2 A'.B2] -> table= "Sheet2 A"; ref = "B2"
  //   bool find_first_ref(std::wstring const & expr, std::wstring & table, std::wstring & ref);

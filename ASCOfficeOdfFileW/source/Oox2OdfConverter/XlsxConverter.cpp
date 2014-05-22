@@ -1266,9 +1266,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CGraphicFrame* oox_graphic_frame)
 					
 					if (pChart)
 					{
+						OoxConverter::convert(pChart->m_oChartSpace.m_oSpPr.GetPointer());
+						
 						oox_current_chart = pChart;
 						odf_context()->start_chart();
-							odf_context()->chart_context()->set_size_chart(width, height);
+							odf_context()->chart_context()->set_chart_size(width, height);
 							OoxConverter::convert(&pChart->m_oChartSpace);
 						odf_context()->end_chart();
 						oox_current_chart = NULL; // object???

@@ -295,7 +295,7 @@ std::wstring xlsx_text_context::Impl::dump_text()
 				
 				CP_XML_NODE(prefix_draw + L"t")
 				{
-					CP_XML_ATTR(L"xml:space", L"preserve");
+					if (!in_draw)CP_XML_ATTR(L"xml:space", L"preserve");
 					CP_XML_STREAM() << content;
                 }
 	         }

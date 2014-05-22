@@ -2,6 +2,7 @@
 
 #include <boost_filesystem_version.h>
 #include <cpdoccore/CPOptional.h>
+#include <atlcoll.h>
 
 static std::wstring string2std_string(CString val)
 {
@@ -293,7 +294,7 @@ public:
 		void convert(OOX::Spreadsheet::CT_ScatterSer			*ser);
 		void convert(OOX::Spreadsheet::CT_RadarSer				*ser);
 		void convert(OOX::Spreadsheet::CT_LineSer				*ser);
-		void convert(OOX::Spreadsheet::CT_AxDataSource			*cat);
+		void convert(OOX::Spreadsheet::CT_AxDataSource			*cat, int type);
 		void convert(OOX::Spreadsheet::CT_NumDataSource			*val);
 		void convert(OOX::Spreadsheet::CRichText				*rich);
 		void convert(OOX::Spreadsheet::CTextProperties			*txPr);
@@ -303,6 +304,8 @@ public:
 		void convert(OOX::Spreadsheet::CT_ChartLines			*grid, int type);
 		void convert(OOX::Spreadsheet::CT_SerTx					*ser_tx);
 		void convert(OOX::Spreadsheet::CT_DLbls					*ser_lbls);
+		void convert(OOX::Spreadsheet::CT_Marker				*marker, int count);
+		void convert(OOX::Spreadsheet::CT_Marker				*marker, CAtlArray<OOX::Spreadsheet::CT_DPt*> & dPt);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 		void convert(double oox_font_size,			cpdoccore::_CP_OPT(cpdoccore::odf::font_size) & odf_font_size);
 	};

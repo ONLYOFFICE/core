@@ -232,7 +232,7 @@ namespace BinDocxRW
 		void WriteThemeColor(BYTE type, const nullable<SimpleTypes::CHexColor<>>& oHexColor, const nullable<SimpleTypes::CThemeColor<>>& oThemeColor,
 			const nullable<SimpleTypes::CUcharHexNumber<>>& oThemeTint, const nullable<SimpleTypes::CUcharHexNumber<>>& oThemeShade)
 		{
-			if(oHexColor.IsInit() && SimpleTypes::hexcolorAuto == oHexColor->GetValue() || oThemeColor.IsInit() || oThemeTint.IsInit() || oThemeShade.IsInit())
+			if((oHexColor.IsInit() && SimpleTypes::hexcolorAuto == oHexColor->GetValue()) || oThemeColor.IsInit() || oThemeTint.IsInit() || oThemeShade.IsInit())
 			{
 				m_oStream.WriteByte(type);
 				m_oStream.WriteByte(c_oSerPropLenType::Variable);
@@ -552,7 +552,8 @@ namespace BinDocxRW
 				//Color
 				if(false != rPr.m_oColor.IsInit())
 				{
-					m_oBcw.WriteColor(c_oSerProp_rPrType::Color, rPr.m_oColor.get().m_oVal.get());
+					if(rPr.m_oColor->m_oVal.IsInit())
+						m_oBcw.WriteColor(c_oSerProp_rPrType::Color, rPr.m_oColor->m_oVal.get());
 
 					m_oBcw.WriteThemeColor(c_oSerProp_rPrType::ColorTheme, rPr.m_oColor->m_oVal, rPr.m_oColor->m_oThemeColor, rPr.m_oColor->m_oThemeTint, rPr.m_oColor->m_oThemeShade);
 				}

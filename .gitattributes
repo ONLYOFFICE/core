@@ -399,6 +399,7 @@ DesktopEditor/editor/build/windows/Test/next.bmp svn_mime_002dtype=application%2
 DesktopEditor/editor/build/windows/Test/open.bmp svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/editor/build/windows/Test/prev.bmp svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/expat/lib/libexpat.lib svn_mime_002dtype=application%2Foctet-stream
+DesktopEditor/freetype_names/FontMaps/Debug/FontMaps.exe svn_mime_002dtype=application%2Foctet-stream
 DoctRenderer/COMMON/Dlls/AVSGraphics.dll svn_mime_002dtype=application%2Foctet-stream
 DoctRenderer/COMMON/Dlls/AVSOfficeFOFile.dll svn_mime_002dtype=application%2Foctet-stream
 DoctRenderer/COMMON/Joiner/bin/Debug/Joiner.exe svn_mime_002dtype=application%2Foctet-stream

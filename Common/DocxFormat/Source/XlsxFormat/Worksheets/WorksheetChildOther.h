@@ -560,9 +560,9 @@ namespace OOX
 					CString sVal; sVal.Format(_T(" showZeros=\"%s\""), m_oShowZeros->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
-				if(m_oWabSelected.IsInit())
+				if(m_oTabSelected.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" tabSelected=\"%s\""), m_oWabSelected->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" tabSelected=\"%s\""), m_oTabSelected->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oTopLeftCell.IsInit())
@@ -651,7 +651,7 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showRuler"),      m_oShowRuler)
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showWhiteSpace"),      m_oShowWhiteSpace)
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showZeros"),      m_oShowZeros)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("tabSelected"),      m_oWabSelected)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("tabSelected"),      m_oTabSelected)
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("topLeftCell"),      m_oTopLeftCell)
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("view"),      m_oView)
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("windowProtection"),      m_oWindowProtection)
@@ -677,7 +677,7 @@ namespace OOX
 				nullable<SimpleTypes::COnOff<>>						m_oShowRuler;
 				nullable<SimpleTypes::COnOff<>>						m_oShowWhiteSpace;
 				nullable<SimpleTypes::COnOff<>>						m_oShowZeros;
-				nullable<SimpleTypes::COnOff<>>						m_oWabSelected;
+				nullable<SimpleTypes::COnOff<>>						m_oTabSelected;
 				nullable<CString>									m_oTopLeftCell;
 				nullable<SimpleTypes::Spreadsheet::CSheetViewType<>>m_oView;
 				nullable<SimpleTypes::COnOff<>>						m_oWindowProtection;

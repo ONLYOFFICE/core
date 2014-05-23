@@ -266,6 +266,67 @@ namespace OOX
 			void PrepareWorkbook()
 			{
 				IFileContainer::m_mapEnumeratedGlobal.RemoveAll();
+				if(NULL == m_pWorkbook)
+				{
+					m_pWorkbook = new OOX::Spreadsheet::CWorkbook();
+					m_pWorkbook->m_oWorkbookPr.Init();
+					m_pWorkbook->m_oWorkbookPr->m_oDefaultThemeVersion.Init();
+					m_pWorkbook->m_oWorkbookPr->m_oDefaultThemeVersion->SetValue(124226);
+					m_pWorkbook->m_oBookViews.Init();
+					OOX::Spreadsheet::CWorkbookView* pWorkbookView = new OOX::Spreadsheet::CWorkbookView();
+					pWorkbookView->m_oXWindow.Init();
+					pWorkbookView->m_oXWindow->SetValue(480);
+					pWorkbookView->m_oYWindow.Init();
+					pWorkbookView->m_oYWindow->SetValue(120);
+					pWorkbookView->m_oWindowWidth.Init();
+					pWorkbookView->m_oWindowWidth->SetValue(27795);
+					pWorkbookView->m_oWindowHeight.Init();
+					pWorkbookView->m_oWindowHeight->SetValue(12585);
+					m_pWorkbook->m_oBookViews->m_arrItems.Add(pWorkbookView);
+				}
+				//добавляем sheet, если нет ни одного
+				if(0 == m_aWorksheets.GetCount())
+				{
+					OOX::Spreadsheet::CWorksheet* pWorksheet = new OOX::Spreadsheet::CWorksheet();
+					pWorksheet->m_oDimension.Init();
+					pWorksheet->m_oDimension->m_oRef.Init();
+					pWorksheet->m_oDimension->m_oRef->Append(_T("A1"));
+					pWorksheet->m_oSheetViews.Init();
+					OOX::Spreadsheet::CSheetView* pSheetView = new OOX::Spreadsheet::CSheetView();
+					pSheetView->m_oTabSelected.Init();
+					pSheetView->m_oTabSelected->FromBool(true);
+					pSheetView->m_oWorkbookViewId.Init();
+					pSheetView->m_oWorkbookViewId->SetValue(0);
+					pWorksheet->m_oSheetViews->m_arrItems.Add(pSheetView);
+					pWorksheet->m_oSheetFormatPr.Init();
+					pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight.Init();
+					pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight->SetValue(15);
+					pWorksheet->m_oPageMargins.Init();
+					pWorksheet->m_oPageMargins->m_oLeft.Init();
+					pWorksheet->m_oPageMargins->m_oLeft->FromInches(0.7);
+					pWorksheet->m_oPageMargins->m_oTop.Init();
+					pWorksheet->m_oPageMargins->m_oTop->FromInches(0.7);
+					pWorksheet->m_oPageMargins->m_oRight.Init();
+					pWorksheet->m_oPageMargins->m_oRight->FromInches(0.7);
+					pWorksheet->m_oPageMargins->m_oBottom.Init();
+					pWorksheet->m_oPageMargins->m_oBottom->FromInches(0.7);
+					pWorksheet->m_oPageMargins->m_oHeader.Init();
+					pWorksheet->m_oPageMargins->m_oHeader->FromInches(0.3);
+					pWorksheet->m_oPageMargins->m_oFooter.Init();
+					pWorksheet->m_oPageMargins->m_oFooter->FromInches(0.3);
+					smart_ptr<OOX::File> pWorksheetFile(pWorksheet);
+					OOX::RId oRId = this->Add(pWorksheetFile);
+					m_aWorksheets.SetAt(oRId.ToString(), pWorksheet);
+					m_pWorkbook->m_oSheets.Init();
+					OOX::Spreadsheet::CSheet* pSheet = new OOX::Spreadsheet::CSheet();
+					pSheet->m_oName.Init();
+					pSheet->m_oName->Append(_T("Sheet1"));
+					pSheet->m_oSheetId.Init();
+					pSheet->m_oSheetId->SetValue(1);
+					pSheet->m_oRid.Init();
+					pSheet->m_oRid->SetValue(oRId.ToString());
+					m_pWorkbook->m_oSheets->m_arrItems.Add(pSheet);
+				}
 				//делаем так чтобы всегда были нулевые стили и первый font всегда имел шрифт и размер
 				if(NULL != m_pStyles )
 				{

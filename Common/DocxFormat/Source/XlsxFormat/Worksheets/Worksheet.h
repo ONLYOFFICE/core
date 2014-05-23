@@ -388,16 +388,15 @@ namespace OOX
 			static CString combineRef(int nRow, int nCol)
 			{
 				nRow++;
-				CString sRes;
-				if (nCol >= 702) {
-					int nDig = (nCol / 676 - 1) % 26;
-					sRes.AppendChar('A' + nDig);
+				CString sRes = _T("");
+				if(nCol >= 0){
+					int columnNumber = nCol + 1;
+					while(columnNumber > 0){
+						int currentLetterNumber = (columnNumber - 1) % 26;
+						sRes.Insert(0, 'A' + currentLetterNumber);
+						columnNumber = (columnNumber - (currentLetterNumber + 1)) / 26;
+					}
 				}
-				if (nCol >= 26) {
-					int nDig = (nCol / 26 - 1) % 26;
-					sRes.AppendChar('A' + nDig);
-				}
-				sRes.AppendChar('A' + (nCol % 26));
 				sRes.AppendFormat(_T("%d"), nRow);
 				return sRes;
 			}

@@ -19,7 +19,7 @@ namespace SimpleTypes
 			return m_sValue;
 		}
 
-		void    SetValue(CString &sValue)
+		void    SetValue(const CString &sValue)
 		{
 			m_sValue = sValue;
 		}

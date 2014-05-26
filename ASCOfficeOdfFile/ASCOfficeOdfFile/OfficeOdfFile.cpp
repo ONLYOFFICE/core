@@ -187,7 +187,7 @@ HRESULT COfficeOdfFile::LoadFromFileImpl(const std::wstring & srcFileName,
 
 	hr = ConvertOO2OOX(ext,srcTempPath, dstTempPath,bOnlyPresentation);
 
-	if (hr != S_OK)  hr;
+	if (hr != S_OK)  return hr;
    
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
     if FAILED(hr = office_utils_->CompressFileOrDirectory(ATL::CComBSTR(dstTempPath.c_str()), ATL::CComBSTR(dstPath.c_str()), (-1)))

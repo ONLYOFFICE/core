@@ -1370,27 +1370,35 @@
     face->root.style_name  = NULL;
     if ( face->os2.version != 0xFFFFU && face->os2.fsSelection & 256 )
     {
+#if 0
       if ( !ignore_preferred_family )
         GET_NAME( PREFERRED_FAMILY, &face->root.family_name );
+#endif
       if ( !face->root.family_name )
         GET_NAME( FONT_FAMILY, &face->root.family_name );
 
+#if 0
       if ( !ignore_preferred_subfamily )
         GET_NAME( PREFERRED_SUBFAMILY, &face->root.style_name );
+#endif
       if ( !face->root.style_name )
         GET_NAME( FONT_SUBFAMILY, &face->root.style_name );
     }
     else
     {
       GET_NAME( WWS_FAMILY, &face->root.family_name );
+#if 0
       if ( !face->root.family_name && !ignore_preferred_family )
         GET_NAME( PREFERRED_FAMILY, &face->root.family_name );
+#endif
       if ( !face->root.family_name )
         GET_NAME( FONT_FAMILY, &face->root.family_name );
 
       GET_NAME( WWS_SUBFAMILY, &face->root.style_name );
+#if 0
       if ( !face->root.style_name && !ignore_preferred_subfamily )
         GET_NAME( PREFERRED_SUBFAMILY, &face->root.style_name );
+#endif
       if ( !face->root.style_name )
         GET_NAME( FONT_SUBFAMILY, &face->root.style_name );
     }

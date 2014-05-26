@@ -96,26 +96,6 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	int nCount = m_pList->GetFonts()->GetLength();
 
-	// сначала строим массив всех файлов шрифтов
-	CAtlMap<CString, LONG> mapFontFiles;
-	CAtlMap<LONG, CString> mapFontFiles2;
-	LONG lFontFiles = 0;
-	for (int i = 0; i < nCount; ++i)
-	{
-		CWinFontInfo* pInfo = (CWinFontInfo*)m_pList->GetByIndex(i);
-
-		CString strPath = (CString)pInfo->m_wsFontPath;
-		CAtlMap<CString, LONG>::CPair* pPair = mapFontFiles.Lookup(strPath);
-
-		if (NULL == pPair)
-		{
-			mapFontFiles.SetAt(strPath, lFontFiles);
-			mapFontFiles2.SetAt(lFontFiles, strPath);
-			++lFontFiles;
-		}
-	}
-	// -----------------------------------------
-
 	// теперь строим массив всех шрифтов по имени
 	CAtlMap<CString, CFontInfoJS> mapFonts;
 	CAtlMap<CString, CFontInfoJS> mapFontsUnicodes;
@@ -132,8 +112,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		LONG lFontIndex = 0;
 		LONG lFaceIndex = 0;
 
-		CAtlMap<CString, LONG>::CPair* pPairFontFiles = mapFontFiles.Lookup(strPath);
-		lFontIndex = pPairFontFiles->m_value;
+		//CAtlMap<CString, LONG>::CPair* pPairFontFiles = mapFontFiles.Lookup(strPath);
+		//lFontIndex = pPairFontFiles->m_value;
+		lFontIndex = (LONG)i;
 
 		if (pInfo->m_lIndex >= 0)
 			lFaceIndex = pInfo->m_lIndex;
@@ -232,8 +213,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		LONG lFontIndex = 0;
 		LONG lFaceIndex = 0;
 
-		CAtlMap<CString, LONG>::CPair* pPairFontFiles = mapFontFiles.Lookup(strPath);
-		lFontIndex = pPairFontFiles->m_value;
+		//CAtlMap<CString, LONG>::CPair* pPairFontFiles = mapFontFiles.Lookup(strPath);
+		//lFontIndex = pPairFontFiles->m_value;
+		lFontIndex = (LONG)i;
 
 		if (pInfo->m_lIndex >= 0)
 			lFaceIndex = pInfo->m_lIndex;

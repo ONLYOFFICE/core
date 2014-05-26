@@ -773,7 +773,7 @@ public:
 							int y = 0;
 							y++;
 						}
-						if (_T("\\\\mediaserver\\Exchange\\Korshul\\Fonts\\msmincho.ttc") == wsFilePath)
+						if (_T("\\\\mediaserver\\Exchange\\Korshul\\Fonts\\ARIALN.TTF") == wsFilePath)
 						{
 							int y = 0;
 							y++;

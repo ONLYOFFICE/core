@@ -7,9 +7,9 @@
 #include "../Common/RSA/XMLDecoder.h"
 #include "../Common/GdiPlusEx.h"
 
-//#define AVS_REMOVE_REG
+#define AVS_REMOVE_REG
 #ifdef AVS_REMOVE_REG
-#include "Registration.h"
+#include "../../../../../../Common/Registration.h"
 #endif
 
 #define ONE_INCH 2.54

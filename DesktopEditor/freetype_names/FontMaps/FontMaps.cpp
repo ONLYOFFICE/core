@@ -576,7 +576,6 @@ typedef struct FD_FontMapRecW_\n\
 	CString strConstant2 = _T("typedef struct FD_Font_Rec\n\
 {\n\
 	const char*		m_name;\n\
-	int				m_name_index;\n\
 \n\
 	long			m_lIndex;\n\
 \n\
@@ -618,11 +617,8 @@ typedef struct FD_FontMapRecW_\n\
 	{
 		CWinFontInfo* pInfo = (CWinFontInfo*)m_pList->GetByIndex(k);
 		
-		int nFontName = 0;
-
 		CString sMem = _T("");
-		sMem.Format(_T("\", %d, %d, %d, %d, %d, { %d, %d, %d, %d, %d, %d, %d, %d, %d, %d }, %u, %u, %u, %u, %u, %u, %u, %u, %d, %d, %d, %d, %d, %d, %d, %d }"),
-			nFontName,
+		sMem.Format(_T("\", %d, %d, %d, %d, { %d, %d, %d, %d, %d, %d, %d, %d, %d, %d }, %u, %u, %u, %u, %u, %u, %u, %u, %d, %d, %d, %d, %d, %d, %d, %d }"),
 			pInfo->m_lIndex,
 			pInfo->m_bBold,
 			pInfo->m_bItalic,

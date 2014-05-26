@@ -79,7 +79,8 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	FT_Library pLibrary = NULL;
 					
-	CString strFolder = _T("\\\\mediaserver\\Exchange\\Korshul\\Fonts");
+	//CString strFolder = _T("\\\\mediaserver\\Exchange\\Korshul\\Fonts");
+	CString strFolder = _T("X:\\AVS\\Sources\\TeamlabOffice\\trunk\\ServerComponents\\DesktopEditor\\freetype_names\\FontsDictionaryFiles");
 	CWinFontList* m_pList = NULL;
 
 	if (!FT_Init_FreeType( &pLibrary ))

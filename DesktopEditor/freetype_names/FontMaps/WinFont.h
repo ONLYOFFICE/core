@@ -773,7 +773,7 @@ public:
 							int y = 0;
 							y++;
 						}
-						if (_T("\\\\mediaserver\\Exchange\\Korshul\\Fonts\\ARIALN.TTF") == wsFilePath)
+						if (_T("\\\\mediaserver\\Exchange\\Korshul\\Fonts\\DejaVuSans-BoldOblique.ttf") == wsFilePath)
 						{
 							int y = 0;
 							y++;

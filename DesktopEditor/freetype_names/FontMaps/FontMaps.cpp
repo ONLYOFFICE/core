@@ -102,6 +102,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	CAtlArray<CString> arrFonts;
 	CAtlArray<CString> arrFontsUnicodes;
 
+	int nError = 0;
+
 	CAtlMap<CString, BOOL> mapMainAscii;
 	for (int i = 0; i < nCount; ++i)
 	{
@@ -128,6 +130,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 			if (pInfo->m_bBold && pInfo->m_bItalic)
 			{
+				if (-1 != pPair->m_value.m_lIndexBI)
+					nError++;
+
 				pPair->m_value.m_lIndexBI = lFontIndex;
 				pPair->m_value.m_lFaceIndexBI = lFaceIndex;
 
@@ -136,6 +141,9 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 			else if (pInfo->m_bBold)
 			{
+				if (-1 != pPair->m_value.m_lIndexB)
+					nError++;
+
 				pPair->m_value.m_lIndexB = lFontIndex;
 				pPair->m_value.m_lFaceIndexB = lFaceIndex;
 
@@ -144,6 +152,9 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 			else if (pInfo->m_bItalic)
 			{
+				if (-1 != pPair->m_value.m_lIndexI)
+					nError++;
+
 				pPair->m_value.m_lIndexI = lFontIndex;
 				pPair->m_value.m_lFaceIndexI = lFaceIndex;
 
@@ -152,6 +163,9 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 			else
 			{
+				if (-1 != pPair->m_value.m_lIndexR)
+					nError++;
+
 				pPair->m_value.m_lIndexR = lFontIndex;
 				pPair->m_value.m_lFaceIndexR = lFaceIndex;
 
@@ -252,6 +266,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 				if (pInfo->m_bBold && pInfo->m_bItalic)
 				{
+					if (-1 != pPair->m_value.m_lIndexBI)
+						nError++;
+
 					pPair->m_value.m_lIndexBI = lFontIndex;
 					pPair->m_value.m_lFaceIndexBI = lFaceIndex;
 
@@ -260,6 +277,9 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				else if (pInfo->m_bBold)
 				{
+					if (-1 != pPair->m_value.m_lIndexB)
+						nError++;
+
 					pPair->m_value.m_lIndexB = lFontIndex;
 					pPair->m_value.m_lFaceIndexB = lFaceIndex;
 
@@ -268,6 +288,9 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				else if (pInfo->m_bItalic)
 				{
+					if (-1 != pPair->m_value.m_lIndexI)
+						nError++;
+
 					pPair->m_value.m_lIndexI = lFontIndex;
 					pPair->m_value.m_lFaceIndexI = lFaceIndex;
 
@@ -276,6 +299,9 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				else
 				{
+					if (-1 != pPair->m_value.m_lIndexR)
+						nError++;
+
 					pPair->m_value.m_lIndexR = lFontIndex;
 					pPair->m_value.m_lFaceIndexR = lFaceIndex;
 
@@ -644,6 +670,10 @@ typedef struct FD_FontMapRecW_\n\
 	sAllFontsNames += _T("};\n\n");
 
 	strAll += sAllFontsNames;
+
+	CString strError = _T("");
+	strError.Format(_T("// error : %d\n\n"), nError);
+	strAll += strError;
 
 	strAll += _T("#endif /* _FONT_DICTIONARY_H */");
 

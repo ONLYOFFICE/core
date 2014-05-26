@@ -451,7 +451,16 @@ typedef struct FD_FontMapRec_\n\
 	int				m_index_i;\n\
 	int				m_index_b;\n\
 	int				m_index_bi;\n\
-} FD_FontMapRec;\n\n");
+} FD_FontMapRec;\n\n\
+typedef struct FD_FontMapRecW_\n\
+{\n\
+	const wchar_t*	m_name;\n\
+\n\
+	int				m_index_r;\n\
+	int				m_index_i;\n\
+	int				m_index_b;\n\
+	int				m_index_bi;\n\
+} FD_FontMapRecW;\n\n");
 
 	strAll += strConstant1;
 
@@ -534,13 +543,13 @@ typedef struct FD_FontMapRec_\n\
 	int nUnicodeNamesCount = (int)arrFontsUnicodes.GetCount();
 	CString sUnicodeNames = _T("");
 	sUnicodeNames.Format(_T("#define FONTS_DICT_UNICODE_NAMES_COUNT %d\n"), nUnicodeNamesCount);
-	sUnicodeNames += _T("static const FD_FontMapRec FD_Unicode_Names[FONTS_DICT_UNICODE_NAMES_COUNT] = \n{\n");
+	sUnicodeNames += _T("static const FD_FontMapRecW FD_Unicode_Names[FONTS_DICT_UNICODE_NAMES_COUNT] = \n{\n");
 
 	for (int k = 0; k < nUnicodeNamesCount; ++k)
 	{
 		CAtlMap<CString, CFontInfoJS>::CPair* pPair = mapFontsUnicodes.Lookup(arrFontsUnicodes[k]);
 
-		sUnicodeNames += _T("\t{ \"");
+		sUnicodeNames += _T("\t{ L\"");
 		sUnicodeNames += pPair->m_value.m_sName;
 		sUnicodeNames += _T("\", ");
 

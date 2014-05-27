@@ -16,6 +16,7 @@
 
 #include "officevaluetype.h"
 
+
 namespace cpdoccore {
 
 struct oox_table_position
@@ -113,6 +114,7 @@ public:
 
 ///////////////////////////////
 	void add_hyperlink(std::wstring & ref,int col, int row, std::wstring & link);
+	void add_definded_expression(office_element_ptr & elm);
 
 	void start_comment(int col, int row, std::wstring & author);
 		void set_comment_rect(double l, double t, double w, double h);
@@ -143,19 +145,14 @@ public:
 
 	odf_drawing_context   *	drawing_context(){return  &drawing_context_;}
 
- //   
- //   xlsx_table_metrics & get_table_metrics() { return xlsx_table_metrics_; }
- //   xlsx_comments_context & get_comments_context() { return xlsx_comments_context_; }
-
- //   void table_column_last_width(double w) { table_column_last_width_ = w; }
- //   double table_column_last_width() const { return table_column_last_width_; };
-
 private:
 
     ods_conversion_context & context_;   
 	
+	std::wstring		office_table_name_;
 	office_element_ptr	office_table_;
 	style*				office_table_style_;//??? может хранить как office_element_ptr ???
+	office_element_ptr	table_defined_expressions_;
 
 	std::wstring row_default_cell_style_name_;
 
@@ -174,12 +171,8 @@ private:
 
 	odf_drawing_context		drawing_context_;	
 
- //   xlsx_merge_cells		merge_cells_; 
- //   xlsx_table_metrics	xlsx_table_metrics_;
- //   xlsx_comments_context xlsx_comments_context_;
- //   xlsx_hyperlinks		xlsx_hyperlinks_;
+	friend class ods_table_context;
 
- //   double table_column_last_width_;
 };
 
 

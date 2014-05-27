@@ -139,7 +139,11 @@ void table_table::create_child_element(const ::std::wstring & Ns, const ::std::w
     {
   	    CP_CREATE_ELEMENT(table_shapes_);
     }
-    else
+     else if CP_CHECK_NAME(L"table", L"named-expressions")
+    {
+  	    CP_CREATE_ELEMENT(table_named_expressions_);
+    }
+	 else
         CP_NOT_APPLICABLE_ELM();
 }
 
@@ -170,6 +174,10 @@ void table_table::add_child_element(office_element_ptr & child_element)
     {
   	    table_shapes_ = child_element;
     }
+    else if (type == typeTableNamedExpressions)
+    {
+  	    table_named_expressions_ = child_element;
+    }
 }
 
 void table_table::serialize(std::wostream & _Wostream)
@@ -184,6 +192,8 @@ void table_table::serialize(std::wostream & _Wostream)
    
 			table_columns_and_groups_.serialize(CP_XML_STREAM());
 			table_rows_and_groups_.serialize(CP_XML_STREAM());
+			
+			if (table_named_expressions_)table_named_expressions_->serialize(CP_XML_STREAM());
 		}
 	}
 }

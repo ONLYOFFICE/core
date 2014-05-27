@@ -44,6 +44,7 @@ namespace OOX
 		class CConnShape;
 		class CCommentItem;
 		class CGraphicFrame;
+		class CDefinedName;
 	}
 }
 
@@ -110,6 +111,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::WritingElement		*oox_unknown);
 		
 		void convert(OOX::Spreadsheet::CWorksheet			*oox_sheet);
+		void convert(OOX::Spreadsheet::CDefinedName			*oox_defined);
 
 		void convert(OOX::Spreadsheet::CCol					*oox_column);
 		void convert(OOX::Spreadsheet::CRow					*oox_row);

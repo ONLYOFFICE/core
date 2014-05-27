@@ -138,6 +138,28 @@ void XlsxConverter::convert_sheets()
 			}
 		}
 	}
+	if (Workbook->m_oDefinedNames.IsInit())
+	{
+		ods_context->start_defined_expressions();
+		for (int i = 0; i < Workbook->m_oDefinedNames->m_arrItems.GetSize(); i++)
+		{
+			convert(Workbook->m_oDefinedNames->m_arrItems[i]);
+		}
+		ods_context->end_defined_expressions();
+	}
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CDefinedName *oox_defined)
+{
+	if (oox_defined == NULL) return;
+
+	int sheet_id = -1;
+	if (oox_defined->m_oLocalSheetId.IsInit())
+		sheet_id = oox_defined->m_oLocalSheetId->GetValue();
+
+	if (oox_defined->m_oName.IsInit() && oox_defined->m_oRef.IsInit())
+		ods_context->add_defined_expression (string2std_string(oox_defined->m_oName.get2()), 
+										string2std_string(oox_defined->m_oRef.get2()), sheet_id);
+
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 {
@@ -988,7 +1010,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color)
 	
 		int ind = color->m_oIndexed->GetValue();
 
-		if(xlsx_styles->m_oColors.IsInit() && xlsx_styles->m_oColors->m_oIndexedColors.IsInit())
+		if(xlsx_styles->m_oColors.IsInit() && xlsx_styles->m_oColors->m_oIndexedColors.IsInit() && 
+			ind < xlsx_styles->m_oColors->m_oIndexedColors->m_arrItems.GetSize())
 		{
 			if ((xlsx_styles->m_oColors->m_oIndexedColors->m_arrItems[ind]) && 
 				(xlsx_styles->m_oColors->m_oIndexedColors->m_arrItems[ind]->m_oRgb.IsInit()))

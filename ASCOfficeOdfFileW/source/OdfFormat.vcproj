@@ -975,6 +975,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OdfFormat\table_named_expressions.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\table_named_expressions.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\text_elements.cpp"
 				>
 			</File>

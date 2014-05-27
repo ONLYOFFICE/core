@@ -16,6 +16,8 @@
 #include "FontUtils.h"
 #include "../../Common/XmlUtils.h"
 
+#include "../../DesktopEditor/freetype_names/FontMaps/FontDictionaryWorker.h"
+
 static _bstr_t g_cpszXML_Font_Name    = L"name";
 static _bstr_t g_cpszXML_Font_Bold	  = L"bold";
 static _bstr_t g_cpszXML_Font_Italic  = L"italic";
@@ -1109,6 +1111,11 @@ public:
 			}
 		}
 
+		bool bIsCorrectFromDict = NSFontDictionary::CorrectParamsFromDictionary(wsFamilyName, bBold, bItalic,
+			bFixedWidth, pPanose, ulRange1, ulRange2, ulRange3, ulRange4, ulCodeRange1, ulCodeRange2, usWeight, usWidth,
+			sFamilyClass, shAvgCharWidth, shAscent, shDescent, shLineGap, shXHeight, shCapHeight, bIsStyle,
+			bIsFixed, bIsPanose, bIsRanges, bIsWeight, bIsWidth, bIsFamilyClass, bIsAvgWidth, bIsAscent, bIsDescent, bIsLineGap, bIsXHeight, bIsCapHeight);
+
 		int nMinIndex   = 0; // Номер шрифта в списке с минимальным весом
 		int nMinPenalty = 0; // Минимальный вес
 
@@ -1125,12 +1132,12 @@ public:
 			}
 
 			ULONG arrCandRanges[6] = { pInfo->m_ulUnicodeRange1, pInfo->m_ulUnicodeRange2, pInfo->m_ulUnicodeRange3, pInfo->m_ulUnicodeRange4, pInfo->m_ulCodePageRange1, pInfo->m_ulCodePageRange2 };
-			//if ( bIsRanges )
-			//{
-			//	ULONG arrReqRanges[6]  = { ulRange1, ulRange2, ulRange3, ulRange4, ulCodeRange1, ulCodeRange2 };
+			if ( bIsRanges && bIsCorrectFromDict )
+			{
+				ULONG arrReqRanges[6]  = { ulRange1, ulRange2, ulRange3, ulRange4, ulCodeRange1, ulCodeRange2 };
 
-			//	nCurPenalty += GetSigPenalty( arrCandRanges, arrReqRanges );
-			//}
+				nCurPenalty += GetSigPenalty( arrCandRanges, arrReqRanges );
+			}
 
 			if ( bIsFixed )
 				nCurPenalty += GetFixedPitchPenalty( pInfo->m_bIsFixed, bFixedWidth );

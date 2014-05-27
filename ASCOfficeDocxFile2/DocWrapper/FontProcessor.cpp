@@ -146,7 +146,6 @@ namespace DocWrapper {
 #else
 		fontManager->GetWinFontByParams(bstrParams, &fontPath, &index);
 		int status = fontManager->LoadFontFromFile(fontPath, 12, 72, 72, index);
-		SysFreeString(fontPath);
 		/*if (!CheckRange(fontManager))
 		{
 			params = _T("<FontProperties>");

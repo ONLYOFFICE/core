@@ -295,13 +295,26 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ValAx* axis)
 	odf_context()->chart_context()->end_element();
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
-void OoxConverter::convert(OOX::Spreadsheet::CT_ChartLines *grid, int type)
+void OoxConverter::convert(OOX::Spreadsheet::CT_ChartLines *line, int type)
 {
-	if (grid == NULL)return;
+	if (line == NULL)return;
 
-	odf_context()->chart_context()->start_grid(type);
-		convert(grid->m_oSpPr.GetPointer());	
-	odf_context()->chart_context()->end_element();
+	if (type <3)//grid lines
+	{
+		odf_context()->chart_context()->start_grid(type);
+			convert(line->m_oSpPr.GetPointer());	
+		odf_context()->chart_context()->end_element();
+	}
+	//if (type == 3)//drop line
+	//{
+	//	odf_context()->chart_context()->s
+	//}
+	if (type == 4)//Hi-Lo line
+	{
+		odf_context()->chart_context()->start_stock_range_line();
+			convert(line->m_oSpPr.GetPointer());
+		odf_context()->chart_context()->end_element();
+	}
 }
 
 void OoxConverter::convert(OOX::Spreadsheet::CT_Area3DChart *chart)
@@ -310,6 +323,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Area3DChart *chart)
 
 	odf_context()->chart_context()->set_chart_type(L"area");
 	odf_context()->chart_context()->set_chart_3D(true);
+
+	convert (chart->m_dropLines, 3);
+
+	if (chart->m_grouping && chart->m_grouping->m_val)
+		odf_context()->chart_context()->set_chart_grouping(*chart->m_grouping->m_val);
 
 	for (long i=0; i< chart->m_ser.GetCount(); i++)
 	{
@@ -322,6 +340,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_AreaChart *chart)
 
 	odf_context()->chart_context()->set_chart_type(L"area");
 	
+	if (chart->m_grouping && chart->m_grouping->m_val)
+		odf_context()->chart_context()->set_chart_grouping(*chart->m_grouping->m_val);
+	
+	convert (chart->m_dropLines, 3);
+
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
 
@@ -341,7 +364,22 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Bar3DChart *chart)
 
 	odf_context()->chart_context()->set_chart_type(L"bar");
 	odf_context()->chart_context()->set_chart_3D(true);
+
+	if (chart->m_shape && chart->m_shape->m_val)
+		odf_context()->chart_context()->set_chart_bar_type(*chart->m_shape->m_val);
 	
+	if (chart->m_grouping && chart->m_grouping->m_val)
+		odf_context()->chart_context()->set_chart_bar_grouping(*chart->m_grouping->m_val);
+	
+	if (chart->m_barDir && chart->m_barDir->m_val)
+		odf_context()->chart_context()->set_chart_bar_direction(*chart->m_barDir->m_val);
+
+	if (chart->m_gapWidth && chart->m_gapWidth->m_val)
+		odf_context()->chart_context()->set_chart_bar_gap_width(string2std_string(*chart->m_gapWidth->m_val));
+	
+	//if (chart->m_overlap && chart->m_overlap->m_val)
+	//	odf_context()->chart_context()->set_chart_bar_overlap(string2std_string(*chart->m_overlap->m_val));
+
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
 
@@ -361,6 +399,18 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_BarChart *chart)
 
 	odf_context()->chart_context()->set_chart_type(L"bar");
 	
+	if (chart->m_grouping && chart->m_grouping->m_val)
+		odf_context()->chart_context()->set_chart_bar_grouping(*chart->m_grouping->m_val);
+	
+	if (chart->m_barDir && chart->m_barDir->m_val)
+		odf_context()->chart_context()->set_chart_bar_direction(*chart->m_barDir->m_val);
+
+	if (chart->m_gapWidth && chart->m_gapWidth->m_val)
+		odf_context()->chart_context()->set_chart_bar_gap_width(string2std_string(*chart->m_gapWidth->m_val));
+
+	if (chart->m_overlap && chart->m_overlap->m_val)
+		odf_context()->chart_context()->set_chart_bar_overlap(string2std_string(*chart->m_overlap->m_val));
+
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
 
@@ -379,6 +429,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Line3DChart *chart)
 	odf_context()->chart_context()->set_chart_type(L"line");
 	odf_context()->chart_context()->set_chart_3D(true);
 	
+	if (chart->m_grouping && chart->m_grouping->m_val)
+		odf_context()->chart_context()->set_chart_grouping(*chart->m_grouping->m_val);
+
+	convert (chart->m_dropLines, 3);
+
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
 		for (long i=0; i< chart->m_ser.GetCount(); i++)
@@ -397,6 +452,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_LineChart *chart)
 
 	odf_context()->chart_context()->set_chart_type(L"line");
 	
+	if (chart->m_grouping && chart->m_grouping->m_val)
+		odf_context()->chart_context()->set_chart_grouping(*chart->m_grouping->m_val);
+
+	convert (chart->m_dropLines, 3);
+
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
 		for (long i=0; i< chart->m_ser.GetCount(); i++)
@@ -542,6 +602,9 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_RadarChart *chart)
 	if (chart == NULL)return;
 
 	odf_context()->chart_context()->set_chart_type(L"radar");
+		if (chart->m_radarStyle && chart->m_radarStyle->m_val)
+			odf_context()->chart_context()->set_chart_radar_type(*chart->m_radarStyle->m_val);
+	//odf_context()->chart_context()->set_chart_grouping(2);???
 	
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
@@ -563,6 +626,25 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_StockChart *chart)
 	
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
+		convert (chart->m_dropLines ,3);	
+		convert (chart->m_hiLowLines, 4);
+		
+		if (chart->m_upDownBars)
+		{
+			//m_gapWidth
+			if (chart->m_upDownBars->m_upBars)
+			{
+				odf_context()->chart_context()->start_stock_gain_marker();
+					convert(chart->m_upDownBars->m_upBars->m_oSpPr.GetPointer());
+				odf_context()->chart_context()->end_element();
+			}
+			if (chart->m_upDownBars->m_downBars)
+			{
+				odf_context()->chart_context()->start_stock_loss_marker();
+					convert(chart->m_upDownBars->m_downBars->m_oSpPr.GetPointer());
+				odf_context()->chart_context()->end_element();
+			}
+		}
 		for (long i=0; i< chart->m_ser.GetCount(); i++)
 		{
 			convert(chart->m_ser[i]);
@@ -578,7 +660,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_OfPieChart *chart)
 	if (chart == NULL)return;
 
 	odf_context()->chart_context()->set_chart_type(L"circle");
-	
+
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
 		for (long i=0; i< chart->m_ser.GetCount(); i++)
@@ -664,6 +746,10 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_BarSer* ser)
 		{
 			convert(NULL, ser->m_dPt);
 		}
+	if (ser->m_shape && ser->m_shape->m_val)
+		odf_context()->chart_context()->set_chart_bar_type(*ser->m_shape->m_val);
+	//m_trendline;
+	//m_errBars
 	odf_context()->chart_context()->end_series();
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_ScatterSer* ser)
@@ -716,7 +802,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_LineSer* ser)
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker, CAtlArray<OOX::Spreadsheet::CT_DPt*> & dPt)
 {	
-	if (dPt.GetCount() <1) return convert(marker , -1);
+	if (dPt.GetCount() <1) return convert(marker);
 
 	long count_point = odf_context()->chart_context()->get_count_data_points_series();
 	long current_point = 0;
@@ -727,24 +813,35 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker, CAtlArray<OOX::S
 
 		if (dPt[i]->m_idx && dPt[i]->m_idx->m_val) set_point = *dPt[i]->m_idx->m_val;
 
-		if (set_point - current_point > 0)convert(marker,set_point - current_point);
-		convert(dPt[i]->m_marker,1);
+		if (set_point - current_point > 0)
+		{
+			odf_context()->chart_context()->start_data_point_series(set_point - current_point);
+				convert(marker);
+			odf_context()->chart_context()->end_element();
+		}
+		odf_context()->chart_context()->start_data_point_series(1);
+			convert(dPt[i]->m_oSpPr.GetPointer());
+			convert(dPt[i]->m_marker);
+		odf_context()->chart_context()->end_element();
+		
 		current_point = set_point+1;			
 	}
-	if (count_point - current_point >0) convert(marker,count_point - current_point);
+	if (count_point - current_point >0)
+	{
+		odf_context()->chart_context()->start_data_point_series(count_point - current_point);
+			convert(marker);
+		odf_context()->chart_context()->end_element();
+	}
 }
-void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker, int count)
+void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker)
 {
-	if (count >0)odf_context()->chart_context()->start_data_point_series(count);
-		if (marker)
-		{
-			if (marker->m_symbol && marker->m_symbol->m_val)
-				odf_context()->chart_context()->set_marker_type(*marker->m_symbol->m_val);
-			if (marker->m_size && marker->m_size->m_val)
-				odf_context()->chart_context()->set_marker_size(*marker->m_size->m_val);
-			convert(marker->m_oSpPr.GetPointer());
-		}
-	if (count >0)odf_context()->chart_context()->end_element();
+	if (marker == NULL) return;
+
+	if (marker->m_symbol && marker->m_symbol->m_val)
+			odf_context()->chart_context()->set_marker_type(*marker->m_symbol->m_val);
+	if (marker->m_size && marker->m_size->m_val)
+			odf_context()->chart_context()->set_marker_size(*marker->m_size->m_val);
+	convert(marker->m_oSpPr.GetPointer());
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_DLbls* ser_lbls)
 {

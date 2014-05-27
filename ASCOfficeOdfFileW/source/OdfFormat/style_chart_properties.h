@@ -51,6 +51,7 @@ public:
 	_CP_OPT(Bool) chart_mean_value_;	
 	_CP_OPT(Bool) chart_error_upper_indicator_;	
 	_CP_OPT(Bool) chart_error_lower_indicator_;
+	_CP_OPT(Bool) chart_treat_empty_cells_;
 
 	_CP_OPT(chart_symbol_type) chart_symbol_type_;
 	_CP_OPT(chart_symbol_name) chart_symbol_name_;
@@ -82,7 +83,7 @@ public:
 	_CP_OPT(chart_error_category)		chart_error_category_;
 
 	_CP_OPT(std::wstring)				chart_axis_label_position_;
-	_CP_OPT(std::wstring)				chart_axis_position_;
+	_CP_OPT(std::wstring)				chart_axis_position_;									
 
 	common_rotation_angle_attlist       common_rotation_angle_attlist_;
 };

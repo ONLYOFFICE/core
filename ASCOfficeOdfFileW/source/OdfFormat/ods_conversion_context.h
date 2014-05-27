@@ -73,7 +73,11 @@ public:
 	void end_image(){drawing_context()->end_image();}
 
 	double convert_symbol_width(double val) {return val * font_metrix_.approx_symbol_size;}
-
+	
+	void start_defined_expressions();
+		void add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id);
+		void add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id);
+	void end_defined_expressions(){}
 private:
 	_font_metrix				font_metrix_;
 	ods_table_context			table_context_;

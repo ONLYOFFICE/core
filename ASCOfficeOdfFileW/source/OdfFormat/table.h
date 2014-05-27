@@ -12,7 +12,7 @@
 
 #include "common_attlists.h"
 #include "tablemode.h"
-//#include "table_named_expressions.h"
+#include "table_named_expressions.h"
 
 namespace cpdoccore { 
 namespace odf {
@@ -613,6 +613,7 @@ public:
     //office-dde-source
     //table-scenario
     //office-forms
+	office_element_ptr				table_named_expressions_;
     office_element_ptr				table_shapes_;
     table_columns_and_groups		table_columns_and_groups_;//table-columns-and-groups
     table_rows_and_groups			table_rows_and_groups_;

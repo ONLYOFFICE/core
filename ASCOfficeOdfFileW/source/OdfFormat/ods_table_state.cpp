@@ -109,6 +109,7 @@ ods_table_state::ods_table_state(ods_conversion_context & Context, office_elemen
 
 void ods_table_state::set_table_name(std::wstring name)
 {
+	office_table_name_ = name;
 	table_table* table = dynamic_cast<table_table*>(office_table_.get());
 	if (table == NULL)return;
 
@@ -441,6 +442,16 @@ void ods_table_state::set_cell_type(int type)
 		//сходить по стилю €чейки - проверить тип €чейки и формат - numFmt
 	}
 }
+void ods_table_state::add_definded_expression(office_element_ptr & elm)
+{
+	if (!table_defined_expressions_)
+	{
+		create_element(L"table", L"named-expressions",table_defined_expressions_,&context_);
+		office_table_->add_child_element(table_defined_expressions_);
+	}
+	if (!table_defined_expressions_)return;
+	table_defined_expressions_->add_child_element(elm);
+}
 void ods_table_state::add_hyperlink(std::wstring & ref,int col, int row, std::wstring & link)
 {
 	ods_hyperlink_state state;
@@ -648,8 +659,15 @@ void ods_table_state::set_cell_value(std::wstring & value)
 	{
 		//general !!
 	}
-	//нужно добавить кэшированные значени€ !!!!
-	//это тектовый элемент
+	
+	//кэшированные значени€ 
+	context_.start_text_context();
+		context_.text_context()->start_paragraph();
+			context_.text_context()->add_text_content(value);
+		context_.text_context()->end_paragraph();
+
+		set_cell_text(context_.text_context());
+	context_.end_text_context();
 }
 
 void ods_table_state::end_cell()

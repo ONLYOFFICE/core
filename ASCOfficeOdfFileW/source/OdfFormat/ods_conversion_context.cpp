@@ -101,8 +101,21 @@ void ods_conversion_context::start_document()
 	
 	root_spreadsheet_ = dynamic_cast<office_spreadsheet*>(get_current_object_element().get());
 }
+void ods_conversion_context::start_defined_expressions()
+{
+	create_element(L"table", L"named-expressions",root_spreadsheet_->getContent(),this);
+	
+	table_context_.start_defined_expressions(root_spreadsheet_->getContent().back());
 
-
+}
+void ods_conversion_context::add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id)
+{
+	table_context_.add_defined_range(name,cell_range, sheet_id);
+}
+void ods_conversion_context::add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id)
+{
+	table_context_.add_defined_expression(name,value, sheet_id);
+}
 void ods_conversion_context::start_sheet(std::wstring & name)
 {
 	create_element(L"table", L"table",root_spreadsheet_->getContent(),this);

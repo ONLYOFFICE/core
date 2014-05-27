@@ -44,6 +44,7 @@ void chart_format_properties::serialize(std::wostream & _Wostream ,const wchar_t
 			CP_XML_ATTR_OPT(L"chart:mean-value",			chart_mean_value_ );	
 			CP_XML_ATTR_OPT(L"chart:error-upper-indicator",	chart_error_upper_indicator_ );	
 			CP_XML_ATTR_OPT(L"chart:error-lower-indicator",	chart_error_lower_indicator_ );
+			CP_XML_ATTR_OPT(L"chart:treat-empty-cells",		chart_treat_empty_cells_);
 
 			CP_XML_ATTR_OPT(L"chart:symbol-type",			chart_symbol_type_);	
 			CP_XML_ATTR_OPT(L"chart:symbol-name",			chart_symbol_name_);	

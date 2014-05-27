@@ -34,7 +34,14 @@ public:
 		void set_chart_3D(bool Val);
 		void set_chart_size(double width_pt, double height_pt);		
 		void set_chart_colored(bool val);
+		void set_chart_grouping(int type);
 		void set_chart_scatter_type(int type);
+		void set_chart_bar_grouping(int type);
+		void set_chart_bar_direction(int type);
+		void set_chart_bar_type(int type);
+		void set_chart_bar_gap_width(std::wstring val);
+		void set_chart_bar_overlap(std::wstring val);
+		void set_chart_radar_type(int type);
 
 		void set_marker_size(int size);
 		void set_marker_type(int type);
@@ -79,6 +86,9 @@ public:
 		void start_floor();
 		void start_wall();
 			void set_legend_position(int val);
+		void start_stock_gain_marker();
+		void start_stock_loss_marker();
+		void start_stock_range_line();
 
 		void start_element(office_element_ptr & elm, office_element_ptr & style_elm, std::wstring style_name);
 		void end_element();

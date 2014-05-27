@@ -100,12 +100,22 @@ public:
 
 	chart_chart					*get_current_chart();
 	chart_axis					*get_current_axis();
+	chart_series				*get_current_series();
 };
 chart_chart* odf_chart_context::Impl::get_current_chart()
 {
-	for (long i=current_chart_state_.elements_.size()-1; i>=0; i--)
+	for (long i=current_level_.size()-1; i>=0; i--)
 	{
-		chart_chart * chart = dynamic_cast<chart_chart*>(current_chart_state_.elements_[i].elm.get());
+		chart_chart * chart = dynamic_cast<chart_chart*>(current_level_[i].elm.get());
+		if (chart) return chart;
+	}
+	return NULL;
+}
+chart_series* odf_chart_context::Impl::get_current_series()
+{
+	for (long i=current_level_.size()-1; i>=0; i--)
+	{
+		chart_series * chart = dynamic_cast<chart_series*>(current_level_[i].elm.get());
 		if (chart) return chart;
 	}
 	return NULL;
@@ -218,10 +228,127 @@ void odf_chart_context::set_chart_type(std::wstring type)
 
 	chart->chart_chart_attlist_.chart_class_ = std::wstring(L"chart:") + type;
 }
+
+void odf_chart_context::set_chart_bar_type(int type)
+{	
+	if (!impl_->current_level_.back().chart_properties_) return;
+	switch(type)
+	{
+		case 0:	//	st_shapeCONE = 0,
+			impl_->current_level_.back().chart_properties_->content().chart_solid_type_ = chart_solid_type(chart_solid_type::cone); break;
+		case 1:	//	st_shapeCONETOMAX = 1,
+			impl_->current_level_.back().chart_properties_->content().chart_solid_type_ = chart_solid_type(chart_solid_type::cone); break;
+		case 2:	//	st_shapeBOX = 2,
+			impl_->current_level_.back().chart_properties_->content().chart_solid_type_ = chart_solid_type(chart_solid_type::cuboid); break;
+		case 3:	//	st_shapeCYLINDER = 3,
+			impl_->current_level_.back().chart_properties_->content().chart_solid_type_ = chart_solid_type(chart_solid_type::cylinder); break;
+		case 4:	//	st_shapePYRAMID = 4,
+			impl_->current_level_.back().chart_properties_->content().chart_solid_type_ = chart_solid_type(chart_solid_type::pyramid); break;
+		case 5:	//	st_shapePYRAMIDTOMAX = 5
+			impl_->current_level_.back().chart_properties_->content().chart_solid_type_ = chart_solid_type(chart_solid_type::pyramid); break;
+	}
+}
+
+void odf_chart_context::set_chart_bar_direction(int type)
+{	
+	if (!impl_->current_level_.back().chart_properties_) return;
+	switch(type)
+	{
+		case 0:	//	st_bardirBAR = 0,
+			impl_->current_level_.back().chart_properties_->content().chart_vertical_ = true; break;
+		case 1:	//	st_bardirCOL = 1
+			break;
+	}
+}
+void odf_chart_context::set_chart_bar_gap_width(std::wstring val)
+{
+	if (!impl_->current_level_.back().chart_properties_) return;
+	int res = val.find(L"%");
+
+	bool percent=false;
+	if (res > 0)
+	{
+		val = val.substr(0,res);
+		percent=true;
+	}
+	double dVal = boost::lexical_cast<double>(val);
+	impl_->current_level_.back().chart_properties_->content().chart_gap_width_ = (int)dVal;
+}
+void odf_chart_context::set_chart_bar_overlap(std::wstring val)
+{
+	if (!impl_->current_level_.back().chart_properties_) return;
+	int res = val.find(L"%");
+
+	bool percent=false;
+	if (res > 0)
+	{
+		val = val.substr(0,res);
+		percent=true;
+	}
+	double dVal = boost::lexical_cast<double>(val);
+	impl_->current_level_.back().chart_properties_->content().chart_overlap_ = (int)dVal;
+}
+void odf_chart_context::set_chart_radar_type(int type)
+{
+	switch(type)
+	{
+		case 0:	//	st_radarstyleSTANDARD = 0,
+			break;
+		case 1:	//	st_radarstyleMARKER = 1,
+			set_marker_type(12);//automatic
+			break;
+		case 2:	//	st_radarstyleFILLED = 2
+			chart_chart *chart = impl_->get_current_chart();
+			if (chart)chart->chart_chart_attlist_.chart_class_ = std::wstring(L"chart:filled-radar");
+			break;
+	}
+
+}
+void odf_chart_context::set_chart_bar_grouping(int type)
+{
+	if (!impl_->current_level_.back().chart_properties_) return;
+
+	switch(type)
+	{
+		case 0:	//	st_groupingPERCENTSTACKED = 0,
+			impl_->current_level_.back().chart_properties_->content().chart_percentage_ = true; break;
+		case 1:	//	st_bargroupingCLUSTERED = 1,
+		case 2:	//	st_bargroupingSTANDARD = 2,
+			break;
+		case 3:	//	st_bargroupingSTACKED = 3
+			impl_->current_level_.back().chart_properties_->content().chart_stacked_ = true; break;
+	}
+}
+void odf_chart_context::set_chart_grouping(int type)
+{
+	if (!impl_->current_level_.back().chart_properties_) return;
+
+	switch(type)
+	{
+		case 0:	//	st_groupingPERCENTSTACKED = 0,
+			impl_->current_level_.back().chart_properties_->content().chart_percentage_ = true; break;
+		case 1:	//	st_groupingSTANDARD = 1,
+			break;
+		case 2:	//	st_groupingSTACKED = 2
+			impl_->current_level_.back().chart_properties_->content().chart_stacked_ = true; break;
+	}
+}
 void odf_chart_context::set_chart_3D(bool val)
 {
 	if (!impl_->current_level_.back().chart_properties_) return;
 	impl_->current_level_.back().chart_properties_->content().chart_three_dimensional_ = val;
+
+	impl_->current_level_.back().chart_properties_->content().chart_treat_empty_cells_ = boost::none;
+	impl_->current_level_.back().chart_properties_->content().chart_series_source_ = chart_series_source(chart_series_source::rows);
+
+	//impl_->current_level_.back().chart_properties_->content().
+	//chart:treat-empty-cells="leave-gap" 
+	//chart:series-source="rows"
+		  //impl_->current_level_.back().chart_properties_->content().chart_deep_ = true;
+	//chart_plot_area *plot_area = dynamic_cast<chart_plot_area*>(current_level_.back().elm.get());
+	//if (!plot_area)return;
+
+	//plot_area->chart_plot_area_attlist_.dr3d_shade_mode=L"gouraud";
 }
 void odf_chart_context::set_chart_colored(bool val)
 {
@@ -322,20 +449,26 @@ void odf_chart_context::start_series(std::wstring type)
 		style_name = style_->style_name_;
 		series->chart_series_attlist_.common_attlist_.chart_style_name_ = style_name;
 		series->chart_series_attlist_.chart_class_ = std::wstring(L"chart:") + type;
+
 	}
 	start_element(elm, style_elm, style_name);
 
 	impl_->group_series_.push_back(elm);
 //////////////////////////////////////////////////////////////
+	chart_chart * chart = impl_->get_current_chart();
+	if (chart) 
+	{
+		//может хранить отдельно общий класс чарта??
+		if (type == L"radar" || (*chart->chart_chart_attlist_.chart_class_ == L"chart:stock" && type == L"line"))
+			series->chart_series_attlist_.chart_class_ = chart->chart_chart_attlist_.chart_class_;	
+	}
+
 	if (style_)
 	{
 		impl_->current_level_.back().graphic_properties_ = style_->style_content_.get_style_graphic_properties();
 		impl_->set_default_series_color();
 	}
-	//if (type == L"scatter" || type == L"line" || type == L"radar")
-	//{
-	//	impl_->current_level_.back().chart_properties_->content().chart_symbol_type_ = chart_symbol_type(chart_symbol_type::noneSymbol);
-	//}
+
 	impl_->current_series_count_ ++;
 }
 void odf_chart_context::end_series()
@@ -366,7 +499,7 @@ void odf_chart_context::set_label_show_legend_key(bool val)
 void odf_chart_context::set_label_show_percent(bool val)
 {
 	if (!impl_->current_level_.back().chart_properties_)return;
-	impl_->current_level_.back().chart_properties_->content().chart_percentage_ = val;
+	//impl_->current_level_.back().chart_properties_->content().chart_percentage_ = val;
 }
 void odf_chart_context::set_label_show_ser_name(bool val)
 {
@@ -567,6 +700,11 @@ void odf_chart_context::start_plot_area()
 		plot_area->chart_plot_area_attlist_.common_attlist_.chart_style_name_ = style_name;
 	}
 	start_element(chart_elm, style_elm, style_name);
+	
+	if (!impl_->current_level_.back().chart_properties_) return;
+	
+	impl_->current_level_.back().chart_properties_->content().chart_treat_empty_cells_ = true;
+
 }
 void odf_chart_context::start_text()
 {
@@ -613,7 +751,6 @@ void odf_chart_context::start_floor()
 	create_element(L"chart", L"floor", elm, impl_->odf_context_);
 	
 	chart_floor *floor = dynamic_cast<chart_floor*>(elm.get());
-	if (floor == NULL)return;
 //////////	
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
@@ -621,7 +758,7 @@ void odf_chart_context::start_floor()
 	
 	std::wstring style_name;
 	style* style_ = dynamic_cast<style*>(style_elm.get());
-	if (style_)
+	if (style_ && floor)
 	{
 		style_name = style_->style_name_;
 		floor->common_attlist_.chart_style_name_ = style_name;
@@ -634,7 +771,6 @@ void odf_chart_context::start_wall()
 	create_element(L"chart", L"wall", elm, impl_->odf_context_);
 	
 	chart_wall *wall = dynamic_cast<chart_wall*>(elm.get());
-	if (wall == NULL)return;
 //////////	
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
@@ -642,7 +778,7 @@ void odf_chart_context::start_wall()
 	
 	std::wstring style_name;
 	style* style_ = dynamic_cast<style*>(style_elm.get());
-	if (style_)
+	if (style_ && wall)
 	{
 		style_name = style_->style_name_;
 		wall->chart_wall_attlist_.common_attlist_.chart_style_name_ = style_name;
@@ -662,7 +798,6 @@ void odf_chart_context::start_legend()
 	create_element(L"chart", L"legend", elm, impl_->odf_context_);
 	
 	chart_legend *legend = dynamic_cast<chart_legend*>(elm.get());
-	if (legend == NULL)return;
 //////////	
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
@@ -670,10 +805,79 @@ void odf_chart_context::start_legend()
 	
 	std::wstring style_name;
 	style* style_ = dynamic_cast<style*>(style_elm.get());
-	if (style_)
+	if (style_ && legend)
 	{
 		style_name = style_->style_name_;
 		legend->chart_legend_attlist_.common_attlist_.chart_style_name_ = style_name;
+	}
+	start_element(elm, style_elm, style_name);
+}
+void odf_chart_context::start_stock_range_line()
+{
+	office_element_ptr elm;
+	create_element(L"chart", L"stock-range-line", elm, impl_->odf_context_);
+	
+	chart_stock_range_line *line = dynamic_cast<chart_stock_range_line*>(elm.get());
+//////////	
+	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
+	
+	office_element_ptr & style_elm = impl_->styles_context_->last_state().get_office_element();
+	
+	std::wstring style_name;
+	style* style_ = dynamic_cast<style*>(style_elm.get());
+	if (style_ && line)
+	{
+		style_name = style_->style_name_;
+		line->common_attlist_.chart_style_name_ = style_name;
+		
+		impl_->current_level_.back().graphic_properties_ = style_->style_content_.get_style_graphic_properties();
+		impl_->set_default_series_color();
+	}
+	start_element(elm, style_elm, style_name);
+}
+void odf_chart_context::start_stock_gain_marker()
+{
+	office_element_ptr elm;
+	create_element(L"chart", L"stock-gain-marker", elm, impl_->odf_context_);
+	
+	chart_stock_gain_marker *marker = dynamic_cast<chart_stock_gain_marker*>(elm.get());
+//////////	
+	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
+	
+	office_element_ptr & style_elm = impl_->styles_context_->last_state().get_office_element();
+	
+	std::wstring style_name;
+	style* style_ = dynamic_cast<style*>(style_elm.get());
+	if (style_ && marker)
+	{
+		style_name = style_->style_name_;
+		marker->common_attlist_.chart_style_name_ = style_name;
+		
+		impl_->current_level_.back().graphic_properties_ = style_->style_content_.get_style_graphic_properties();
+		impl_->set_default_series_color();
+	}
+	start_element(elm, style_elm, style_name);
+}
+void odf_chart_context::start_stock_loss_marker()
+{
+	office_element_ptr elm;
+	create_element(L"chart", L"stock-gain-marker", elm, impl_->odf_context_);
+	
+	chart_stock_gain_marker *marker = dynamic_cast<chart_stock_gain_marker*>(elm.get());
+//////////	
+	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
+	
+	office_element_ptr & style_elm = impl_->styles_context_->last_state().get_office_element();
+	
+	std::wstring style_name;
+	style* style_ = dynamic_cast<style*>(style_elm.get());
+	if (style_ && marker)
+	{
+		style_name = style_->style_name_;
+		marker->common_attlist_.chart_style_name_ = style_name;
+	
+		impl_->current_level_.back().graphic_properties_ = style_->style_content_.get_style_graphic_properties();
+		impl_->set_default_series_color();	
 	}
 	start_element(elm, style_elm, style_name);
 }
@@ -704,6 +908,8 @@ void odf_chart_context::start_data_point_series(int count)
 		data_point->chart_data_point_attlist_.common_attlist_.chart_style_name_ = style_name;
 	}
 	start_element(elm, style_elm, style_name);
+//defaults
+	chart_series * series = impl_->get_current_series();
 }
 void odf_chart_context::set_legend_position(int val)
 {

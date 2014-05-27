@@ -493,7 +493,7 @@ void odf_drawing_context::set_no_fill()
 		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::none;
 		break;
 	case Line:
-		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::none;
+		//impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::none;??????
 		impl_->current_graphic_properties->content().draw_stroke_ = line_style (line_style::None);
 		break;
 	}

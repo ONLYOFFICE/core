@@ -17,7 +17,7 @@
 #include "List.h"
 #include "FontUtils.h"
 #include "../../../Common/XmlUtils.h"
-#include "FontDictionary.h"
+#include "FontDictionaryWorker.h"
 
 static _bstr_t g_cpszXML_Font_Name    = L"name";
 static _bstr_t g_cpszXML_Font_Bold	  = L"bold";

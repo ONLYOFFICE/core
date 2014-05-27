@@ -218,6 +218,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FontDictionaryWorker.h"
+				>
+			</File>
+			<File
 				RelativePath=".\FontUtils.h"
 				>
 			</File>

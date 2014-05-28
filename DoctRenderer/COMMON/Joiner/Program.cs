@@ -160,7 +160,6 @@ namespace Joiner
                 "Word/Math/mathContent.js",
                 "Word/Math/actions.js",
                 "Word/Math/base.js",
-                "Word/Math/subBase.js",
                 "Word/Math/fraction.js",
                 "Word/Math/degree.js",
                 "Word/Math/matrix.js",
@@ -171,7 +170,15 @@ namespace Joiner
                 "Word/Math/accent.js",
                 "Word/Math/drawingUnion.js",
                 "Word/Math/borderBox.js",
-                "Word/Math/test_composition.js"
+                "Word/Math/test_composition.js",
+
+                "Excel/utils/utils.js",
+                "Excel/model/CellComment.js",
+                "Excel/model/Serialize.js",
+                "Excel/model/WorkbookElems.js",
+                "Excel/model/Workbook.js",
+                "Excel/model/CellInfo.js",
+                "Excel/model/AdvancedOptions.js"
             };
 
             if (true)

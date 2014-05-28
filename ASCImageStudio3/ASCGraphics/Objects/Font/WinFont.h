@@ -1129,7 +1129,7 @@ public:
 			{
 				ULONG arrReqRanges[6]  = { ulRange1, ulRange2, ulRange3, ulRange4, ulCodeRange1, ulCodeRange2 };
 
-				nCurPenalty += GetSigPenalty( arrCandRanges, arrReqRanges );
+				nCurPenalty += GetSigPenalty( arrCandRanges, arrReqRanges, 1000, true );
 			}
 
 			if ( bIsFixed )

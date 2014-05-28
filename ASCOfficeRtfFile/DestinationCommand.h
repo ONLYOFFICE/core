@@ -1071,8 +1071,6 @@ private: byte* m_pbBin;
 private: int m_nBinLength;
 public: PictureReader( RtfReader& oReader, RtfShape& oShape ):m_oShape(oShape)
 		{
-			m_bUseDoubleByte = false;
-
 			m_bBin = false;
 			m_pbBin = NULL;
 
@@ -1137,7 +1135,6 @@ class OleReader:  public RtfAbstractReader
 private: RtfOle& m_oOle;
 public: OleReader(RtfOle& oOle):m_oOle(oOle)
 		{
-			m_bUseDoubleByte = false;
 		}
 public: bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter);
 
@@ -1345,6 +1342,8 @@ class ShapePropertyReader : public RtfAbstractReader
 					m_oShape.m_nLineEndArrowWidth = nValue;
 				else if( _T("lineEndArrowLength") == m_sPropName )
 					m_oShape.m_nLineEndArrowLength = nValue;
+				else if( _T("lineWidth") == m_sPropName )
+					m_oShape.m_nLineWidth = nValue;
 			}
 	public: void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, CString oText )
 			{

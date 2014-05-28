@@ -119,6 +119,7 @@ public: int m_nLineStartArrowWidth; //lineStartArrowWidth	Start arrow width:
 public: int m_nLineStartArrowLength; //lineStartArrowLength	Start arrow length:
 public: int m_nLineEndArrowWidth; //lineEndArrowWidth	End arrow width (for acceptable values see meaning for lineStartArrowWidth).
 public: int m_nLineEndArrowLength; //lineEndArrowLength	End arrow length (for acceptable values see meaning for lineStartArrowLength).
+public: int m_nLineWidth; //lineWidth Width of the line.
 
 //pWrapPolygonVertices	Points of the text wrap polygon.
 public: CAtlArray< int > m_aWrapPoints;
@@ -342,6 +343,7 @@ public: void SetDefault()
 			DEFAULT_PROPERTY( m_nLineEndArrow )
 			DEFAULT_PROPERTY( m_nLineEndArrowWidth )
 			DEFAULT_PROPERTY( m_nLineEndArrowLength )
+			DEFAULT_PROPERTY( m_nLineWidth )
 
 			m_aTextItems = TextItemContainerPtr();
 			m_oPicture = RtfPicturePtr();

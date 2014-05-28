@@ -46,7 +46,13 @@ public: CString RenderToOOX(RenderParameter oRenderParameter)
 				RenderParameter oNewParam = oRenderParameter;
 				oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 
-				oXmlWriter.WriteString( m_oProperty.RenderToOOX(oNewParam) );
+				CString sRowProp = m_oProperty.RenderToOOX(oNewParam);
+				if( false == sRowProp.IsEmpty() )
+				{
+					CString sXml;
+					sXml.Format(_T("<w:trPr>%s</w:trPr>"), sRowProp);
+					oXmlWriter.WriteString(sXml);
+				}
 				for(int i = 0 ; i < (int)m_aArray.GetCount(); i++)
 				{
 					oXmlWriter.WriteString( m_aArray[i]->RenderToOOX(oNewParam) );

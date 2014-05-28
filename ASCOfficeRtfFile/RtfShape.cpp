@@ -253,6 +253,8 @@ CString RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter)
 				sResult.AppendFormat( _T("{\\sp{\\sn lineEndArrowWidth}{\\sv %d}}"),m_nLineEndArrowWidth );
 			if( PROP_DEF != m_nLineEndArrowLength )
 				sResult.AppendFormat( _T("{\\sp{\\sn lineEndArrowLength}{\\sv %d}}"),m_nLineEndArrowLength );
+			if( PROP_DEF != m_nLineWidth )
+				sResult.AppendFormat( _T("{\\sp{\\sn lineWidth}{\\sv %d}}"),m_nLineWidth );
 
 			//pWrapPolygonVertices	Points of the text wrap polygon.
 			int nWrapPointCount = (int)m_aWrapPoints.GetCount();
@@ -528,7 +530,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 							if( PROP_DEF != nWidth && PROP_DEF != nHeight )
 								sResult.AppendFormat( _T("<wp:extent cx=\"%d\" cy=\"%d\"/>"), RtfUtility::Twips2Emu( nWidth ), RtfUtility::Twips2Emu(  nHeight ) );
 
-							if( PROP_DEF != m_nWrapType )
+							if( PROP_DEF != m_nWrapType && 3 != m_nWrapType)
 							{
 								sResult.Append( _T("<") );
 								CString sTag;
@@ -1006,8 +1008,10 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 				sResult.Append( _T(" stroked=\"t\"") );
 			else
 				sResult.Append( _T(" stroked=\"f\"") );
+			if(PROP_DEF != m_nLineWidth)
+				sResult.AppendFormat( _T(" strokeweight=\"%fpt\""), RtfUtility::Emu2Pt(m_nLineWidth) );
 			sResult.Append( _T(">") );
-			if( PROP_DEF != m_nWrapType )
+			if( PROP_DEF != m_nWrapType && 3 != m_nWrapType)
 			{
 				sResult.Append( _T("<w10:wrap"));
 				switch( m_nWrapType )
@@ -1085,9 +1089,9 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 					case 2: sStroke.Append( _T(" endarrowlength=\"long\"") ); break;
 				}
 			}
-			if( PROP_DEF != m_nLineStartArrowWidth )
+			if( PROP_DEF != m_nLineEndArrowWidth )
 			{
-				switch( m_nLineStartArrowWidth )
+				switch( m_nLineEndArrowWidth )
 				{
 					case 0: sStroke.Append( _T(" endarrowwidth=\"narrow\"") ); break;
 					case 1: sStroke.Append( _T(" endarrowwidth=\"medium\"") ); break;

@@ -467,8 +467,8 @@ public: static int GetFolderSize( CString sFolder )
 public: static int CharsetToCodepage( int nCharset )
 		{
 			CHARSETINFO Info;
-			DWORD dwAcp = nCharset;
-			if( TRUE == TranslateCharsetInfo((DWORD*)dwAcp, &Info, TCI_SRCCHARSET) )
+			DWORD* dwAcp = (DWORD*)nCharset;
+			if( TRUE == TranslateCharsetInfo(dwAcp, &Info, TCI_SRCCHARSET) )
 				return Info.ciACP;
 
 			for( int i = 0; i < nCodePagesLength; i++ )
@@ -479,8 +479,8 @@ public: static int CharsetToCodepage( int nCharset )
 public: static int CodepageToCharset( int nCodepage )
 		{
 			CHARSETINFO Info;
-			DWORD dwAcp = nCodepage;
-			if( TRUE == TranslateCharsetInfo((DWORD*)dwAcp, &Info, TCI_SRCCODEPAGE) )
+			DWORD* dwAcp = (DWORD*)nCodepage;
+			if( TRUE == TranslateCharsetInfo(dwAcp, &Info, TCI_SRCCODEPAGE) )
 				return Info.ciCharset;
 
 			for( int i = 0; i < nCodePagesLength; i++ )

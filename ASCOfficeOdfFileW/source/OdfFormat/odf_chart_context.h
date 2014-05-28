@@ -42,6 +42,7 @@ public:
 		void set_chart_bar_gap_width(std::wstring val);
 		void set_chart_bar_overlap(std::wstring val);
 		void set_chart_radar_type(int type);
+		void set_chart_stock_candle_stick(bool val);
 
 		void set_marker_size(int size);
 		void set_marker_type(int type);
@@ -86,8 +87,11 @@ public:
 		void start_floor();
 		void start_wall();
 			void set_legend_position(int val);
+		
 		void start_stock_gain_marker();
+			void set_stock_gain_marker_width(std::wstring val);
 		void start_stock_loss_marker();
+			void set_stock_loss_marker_width(std::wstring val);
 		void start_stock_range_line();
 
 		void start_element(office_element_ptr & elm, office_element_ptr & style_elm, std::wstring style_name);

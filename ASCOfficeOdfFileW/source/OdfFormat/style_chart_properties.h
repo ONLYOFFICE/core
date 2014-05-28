@@ -52,7 +52,8 @@ public:
 	_CP_OPT(Bool) chart_error_upper_indicator_;	
 	_CP_OPT(Bool) chart_error_lower_indicator_;
 	_CP_OPT(Bool) chart_treat_empty_cells_;
-
+	_CP_OPT(Bool) chart_japanese_candle_stick_;
+	
 	_CP_OPT(chart_symbol_type) chart_symbol_type_;
 	_CP_OPT(chart_symbol_name) chart_symbol_name_;
 	

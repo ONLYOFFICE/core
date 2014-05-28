@@ -263,6 +263,7 @@ void odf_chart_context::set_chart_bar_direction(int type)
 void odf_chart_context::set_chart_bar_gap_width(std::wstring val)
 {
 	if (!impl_->current_level_.back().chart_properties_) return;
+	
 	int res = val.find(L"%");
 
 	bool percent=false;
@@ -288,6 +289,15 @@ void odf_chart_context::set_chart_bar_overlap(std::wstring val)
 	double dVal = boost::lexical_cast<double>(val);
 	impl_->current_level_.back().chart_properties_->content().chart_overlap_ = (int)dVal;
 }
+
+void odf_chart_context::set_chart_stock_candle_stick(bool val)
+{
+	if (!impl_->current_level_.back().chart_properties_) return;
+
+	impl_->current_level_.back().chart_properties_->content().chart_japanese_candle_stick_ = val;
+
+}
+
 void odf_chart_context::set_chart_radar_type(int type)
 {
 	switch(type)
@@ -861,9 +871,9 @@ void odf_chart_context::start_stock_gain_marker()
 void odf_chart_context::start_stock_loss_marker()
 {
 	office_element_ptr elm;
-	create_element(L"chart", L"stock-gain-marker", elm, impl_->odf_context_);
+	create_element(L"chart", L"stock-loss-marker", elm, impl_->odf_context_);
 	
-	chart_stock_gain_marker *marker = dynamic_cast<chart_stock_gain_marker*>(elm.get());
+	chart_stock_loss_marker *marker = dynamic_cast<chart_stock_loss_marker*>(elm.get());
 //////////	
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
@@ -880,6 +890,30 @@ void odf_chart_context::start_stock_loss_marker()
 		impl_->set_default_series_color();	
 	}
 	start_element(elm, style_elm, style_name);
+}
+void odf_chart_context::set_stock_gain_marker_width(std::wstring val)
+{
+	int res = val.find(L"%");
+
+	bool percent=false;
+	if (res > 0)
+	{
+		val = val.substr(0,res);
+		percent=true;
+	}
+	double dVal = boost::lexical_cast<double>(val);
+}
+void odf_chart_context::set_stock_loss_marker_width(std::wstring val)
+{
+	int res = val.find(L"%");
+
+	bool percent=false;
+	if (res > 0)
+	{
+		val = val.substr(0,res);
+		percent=true;
+	}
+	double dVal = boost::lexical_cast<double>(val);
 }
 long odf_chart_context::get_count_data_points_series()
 {

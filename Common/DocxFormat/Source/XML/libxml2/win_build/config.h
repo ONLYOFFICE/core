@@ -120,6 +120,10 @@ static int isnan (double d) {
 #define LIBXML_PUSH_ENABLED
 #endif
 
+#ifndef LIBXML_HTML_ENABLED
+#define LIBXML_HTML_ENABLED
+#endif
+
 /* Some third-party libraries far from our control assume the following
    is defined, which it is not if we don't include windows.h. */
 #if !defined(FALSE)

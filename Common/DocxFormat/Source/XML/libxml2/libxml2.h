@@ -689,3 +689,124 @@ namespace XmlUtils
 
 
 }
+
+#if 0
+#define LIBXML_HTML_ENABLED
+
+#include "XML/include/libxml/parser.h"
+#include "XML/include/libxml/HTMLParser.h"
+
+namespace XmlUtils
+{
+	class CHtmlReader
+	{
+		htmlDocPtr			reader;
+		
+		BYTE*				m_pStream;
+		LONG				m_lStreamLen;
+
+	public:
+
+		CHtmlReader()
+		{			
+			reader = NULL;
+			m_pStream = NULL;
+		}
+		~CHtmlReader()
+		{
+			if (NULL != m_pStream)
+				delete []m_pStream;
+		}
+
+		inline void Clear()
+		{
+		}
+
+		inline BOOL IsValid()
+		{
+			return ( NULL != reader );
+		}
+
+		inline BOOL FromFile(CString& sFilePath)
+		{
+			Clear();
+
+			NSFile::CFile oFile;
+			oFile.OpenFile(sFilePath);
+			m_lStreamLen = (int)oFile.GetFileSize();
+			m_pStream = new BYTE[m_lStreamLen];
+			oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen);
+			oFile.CloseFile();
+
+			reader = htmlReadMemory((char*)m_pStream, m_lStreamLen, "baseUrl", NULL, HTML_PARSE_NOBLANKS | HTML_PARSE_NOERROR | 
+				HTML_PARSE_NOWARNING | HTML_PARSE_NONET);
+
+			return TRUE;
+		}
+		inline BOOL FromString(CString& sXml)
+		{
+			Clear();
+			UnicodeToUtf8(sXml, m_pStream, m_lStreamLen);
+
+			reader = htmlReadMemory((char*)m_pStream, m_lStreamLen, "baseUrl", "utf-8", HTML_PARSE_NOBLANKS | HTML_PARSE_NOERROR | 
+				HTML_PARSE_NOWARNING | HTML_PARSE_NONET);
+
+			return TRUE;
+		}
+
+		CString Parse()
+		{
+			CString strRet = _T("");
+
+			xmlNodePtr root = xmlDocGetRootElement(reader);
+
+			strRet = ParseNode(root);
+
+			return strRet;
+		}
+
+		CString ParseNode(xmlNodePtr root)
+		{
+			CString strRet = _T("");
+
+			XmlNodeType oNodeType = XmlNodeType_None;
+			xmlNodePtr curNode = root;
+
+			for (; curNode; curNode = curNode->next)
+			{
+				int type = curNode->type;
+				
+				if (XmlNodeType_Element == curNode->type)
+				{
+					strRet += _T("<");
+					CString sName(curNode->name);
+					strRet += sName;
+					strRet += _T(">");
+
+					CString strRet2 = ParseNode(curNode->children);
+					strRet += strRet2;
+
+					strRet += _T("</");
+					strRet += sName;
+					strRet += _T(">");
+				}
+			}
+
+			return strRet;
+		}
+
+	private:
+		void UnicodeToUtf8(CString& strXml, BYTE*& pBuffer, LONG& lLen)
+		{
+			int nLength = strXml.GetLength();
+
+			pBuffer = new BYTE[nLength*3 + 1];
+			
+			// Encoding Unicode to UTF-8
+			WideCharToMultiByte(CP_UTF8, 0, strXml.GetBuffer(), nLength + 1, (LPSTR)pBuffer, nLength*3, NULL, NULL);
+			lLen = strlen((LPSTR)pBuffer);
+		}
+	};
+}
+
+#endif

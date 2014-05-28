@@ -21,6 +21,7 @@ public: class ReaderState
 	public: RtfOldList m_oCurOldList;
 	//public: RtfSectionProperty m_oSectionProp;
 	public: ReaderStatePtr psave;
+	public: CStringA m_sCurText;
 	ReaderState()
 	{
 		m_nUD = 1;
@@ -67,8 +68,6 @@ private: bool m_bStop;
 private: int m_nSkipChars;
 protected: int m_nCurGroups;
 private: bool m_bSkip;
-private: int m_nLeading;
-public: bool m_bUseDoubleByte;
 public: NFileWriter::CBufferedFileWriter* m_oFileWriter;
 
 public: RtfAbstractReader()
@@ -78,9 +77,7 @@ public: RtfAbstractReader()
 			m_bSkip = false;
 			m_nSkipChars = 0;
 			m_nCurGroups = 1;
-			m_bUseDoubleByte = true;
 			m_oFileWriter = NULL;
-			m_nLeading = PROP_DEF;
 		}
 public: bool Parse(RtfDocument& oDocument, RtfReader& oReader )
     {
@@ -97,18 +94,18 @@ public: bool Parse(RtfDocument& oDocument, RtfReader& oReader )
             switch (m_oTok.Type)
             {
 				case RtfToken::GroupStart:
-						EndSHIFTJIS_CHARSET( oDocument, oReader );
+						ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
 						PushState(oReader);
 						break;
 				case RtfToken::GroupEnd:
-						EndSHIFTJIS_CHARSET( oDocument, oReader );
+						ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
 						PopState(oDocument, oReader);
 						break;
 				case RtfToken::Keyword:
-						EndSHIFTJIS_CHARSET( oDocument, oReader );
+						ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
 						if( _T("u") == m_oTok.Key )
 						{
-							ExecuteText( oDocument, oReader, ExecuteTextInternal( oDocument, oReader, m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter, m_nSkipChars, m_bUseDoubleByte, &m_nLeading ) );
+							ExecuteText( oDocument, oReader, ExecuteTextInternal( oDocument, oReader, m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter, m_nSkipChars) );
 							break;
 						}
 						else
@@ -128,11 +125,11 @@ public: bool Parse(RtfDocument& oDocument, RtfReader& oReader )
 				case RtfToken::Control:
 						if( m_oTok.Key == _T("42") )
 							m_bSkip = true;
-						if( m_oTok.Key == _T("39") )
-							ExecuteText( oDocument, oReader, ExecuteTextInternal( oDocument, oReader, m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter, m_nSkipChars, m_bUseDoubleByte, &m_nLeading ));
+						if( m_oTok.Key == _T("39") && true == m_oTok.HasParameter )
+							oReader.m_oState->m_sCurText.AppendChar( m_oTok.Parameter );
 						break;
 				case RtfToken::Text:
-						ExecuteText( oDocument, oReader, ExecuteTextInternal( oDocument, oReader, m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter, m_nSkipChars, m_bUseDoubleByte, &m_nLeading ));
+						oReader.m_oState->m_sCurText.Append( m_oTok.Key );
 						break;
 			}
 			if( false == m_bStop )
@@ -204,15 +201,7 @@ public: virtual void ExitReader( RtfDocument& oDocument, RtfReader& oReade )
 public: virtual void ExitReader2( RtfDocument& oDocument, RtfReader& oReader )
 		{
 		}
-public: void EndSHIFTJIS_CHARSET( RtfDocument& oDocument, RtfReader& oReader )// 128 - SHIFTJIS_CHARSET; 932 - codepage
-		{
-			if( PROP_DEF != m_nLeading )
-			{
-				ExecuteText( oDocument, oReader, ExecuteTextInternal( oDocument, oReader, "39", true, m_nLeading, m_nSkipChars ) );
-				m_nLeading = PROP_DEF;
-			}
-		}
-public: static CString ExecuteTextInternal( RtfDocument& oDocument, RtfReader& oReader, CStringA sKey, bool bHasPar, int nPar, int& nSkipChars, bool bUseDoubleByte = false, int* nLeading = NULL )
+public: static CString ExecuteTextInternal( RtfDocument& oDocument, RtfReader& oReader, CStringA& sKey, bool bHasPar, int nPar, int& nSkipChars)
 		{
 			CString sResult;
 
@@ -232,119 +221,27 @@ public: static CString ExecuteTextInternal( RtfDocument& oDocument, RtfReader& o
 				else
 					sCharString = sKey;
 
-				if( false == sCharString.IsEmpty() )
+				sResult = ExecuteTextInternalCodePage(sCharString, oDocument, oReader);
+			}
+			ExecuteTextInternalSkipChars(sResult, oReader, sKey, nSkipChars);
+			return sResult;
+		}
+
+public: void ExecuteTextInternal2( RtfDocument& oDocument, RtfReader& oReader, CStringA& sKey, int& nSkipChars)
+		{
+			if(oReader.m_oState->m_sCurText.GetLength() > 0)
+			{
+				CString sResult = ExecuteTextInternalCodePage(oReader.m_oState->m_sCurText, oDocument, oReader);
+				oReader.m_oState->m_sCurText.Empty();
+				if(sResult.GetLength() > 0)
 				{
-					int nCodepage = -1;
-					//применяем параметры codepage от текущего шрифта todo associated fonts.
-					RtfFont oFont;
-					if( true == oDocument.m_oFontTable.GetFont( oReader.m_oState->m_oCharProp.m_nFont, oFont ) )
-					{
-						if( PROP_DEF != oFont.m_nCharset )
-							nCodepage = RtfUtility::CharsetToCodepage( oFont.m_nCharset );
-						else if( PROP_DEF != oFont.m_nCodePage )
-							nCodepage = oFont.m_nCodePage;
-					}
-					//от настроек документа
-					if( -1 == nCodepage && RtfDocumentProperty::cp_none != oDocument.m_oProperty.m_eCodePage )
-					{
-						switch ( oDocument.m_oProperty.m_eCodePage )
-						{
-							case RtfDocumentProperty::cp_ansi:
-								{
-									if( PROP_DEF != oDocument.m_oProperty.m_nAnsiCodePage )
-										nCodepage = oDocument.m_oProperty.m_nAnsiCodePage;
-									else
-										nCodepage = CP_ACP;
-									break;
-								}
-							case RtfDocumentProperty::cp_mac: nCodepage = CP_MACCP;break;
-							case RtfDocumentProperty::cp_pc: nCodepage = 437;break;
-							case RtfDocumentProperty::cp_pca: nCodepage = 850;break;
-						}
-					}
-					//если ничего нет ставим ANSI
-					if( -1 == nCodepage )
-						nCodepage = CP_ACP;
-
-					if( 932 == nCodepage && true == bUseDoubleByte )// 128 - SHIFTJIS_CHARSET; 932 - codepage
-					{
-						int nStartIndex = 0;
-						if( NULL != nLeading && PROP_DEF != *nLeading )
-						{
-							int nTralingChar = sCharString[0];
-							nStartIndex = 1;
-							CStringA sMultyChar;
-							sMultyChar.AppendChar( *nLeading );
-							sMultyChar.AppendChar( nTralingChar );
-
-							CString sTempRes;
-							if( true == Convert::MultybyteToUnicode( sMultyChar, sTempRes, nCodepage ) )
-							{
-								sResult.Append( sTempRes );
-								*nLeading = PROP_DEF;
-							}
-							else
-							{
-								CStringA sFirstChar;
-								sFirstChar.AppendChar( *nLeading );
-								sTempRes = _T("");
-								Convert::MultybyteToUnicode( sFirstChar, sTempRes, CP_ACP );
-								sResult.Append( sTempRes );
-
-								*nLeading = nTralingChar;
-							}
-						}
-
-						int nTargetLen = sCharString.GetLength();
-						if( nTargetLen > nStartIndex )
-						{
-							int nCurLeading = *nLeading;
-							for( int i = nStartIndex; i < nTargetLen; i++ )
-							{
-								if( PROP_DEF == nCurLeading )
-									nCurLeading = sCharString[ i ];
-								else
-								{
-									int nFirstChar = nCurLeading;
-									int nSecondChar = sCharString[ i ];
-
-									CStringA sMultyChar;
-									sMultyChar.AppendChar( nFirstChar );
-									sMultyChar.AppendChar( nSecondChar );
-
-									CString sTempRes;
-									if( true == Convert::MultybyteToUnicode( sMultyChar, sTempRes, nCodepage ) )
-									{
-										sResult.Append( sTempRes );
-										nCurLeading = PROP_DEF;
-									}
-									else
-									{
-										CStringA sFirstChar;
-										sFirstChar.AppendChar( nFirstChar );
-										sTempRes = _T("");
-										Convert::MultybyteToUnicode( sFirstChar, sTempRes, CP_ACP );
-										sResult.Append( sTempRes );
-
-										nCurLeading = nSecondChar;
-									}
-
-								}
-							}
-							*nLeading = nCurLeading;
-						}
-
-					}
-					else
-					{
-						int nLengthW ;
-						nLengthW = MultiByteToWideChar(nCodepage, 0, sCharString, -1, NULL, NULL);
-						MultiByteToWideChar(nCodepage, 0, sCharString, -1, sResult.GetBuffer( nLengthW ), nLengthW);
-						sResult.ReleaseBuffer();
-						//sResult = sKey;
-					}
+					ExecuteTextInternalSkipChars(sResult, oReader, CStringA(""), nSkipChars);
+					ExecuteText( oDocument, oReader, sResult);
 				}
 			}
+		}
+public: static void ExecuteTextInternalSkipChars(CString & sResult, RtfReader& oReader, CStringA& sKey, int& nSkipChars)
+		{
 			//удаляем символы вслед за юникодом
 			if( nSkipChars > 0 )
 			{
@@ -364,6 +261,50 @@ public: static CString ExecuteTextInternal( RtfDocument& oDocument, RtfReader& o
 			{
 				//надо правильно установить m_nSkipChars по значению \ucN
 				nSkipChars = oReader.m_oState->m_nUD;
+			}
+		}
+public: static CString ExecuteTextInternalCodePage( CStringA& sCharString, RtfDocument& oDocument, RtfReader& oReader)
+		{
+			CString sResult;
+			if( false == sCharString.IsEmpty() )
+			{
+				int nCodepage = -1;
+				//применяем параметры codepage от текущего шрифта todo associated fonts.
+				RtfFont oFont;
+				if( true == oDocument.m_oFontTable.GetFont( oReader.m_oState->m_oCharProp.m_nFont, oFont ) )
+				{
+					if( PROP_DEF != oFont.m_nCharset )
+						nCodepage = RtfUtility::CharsetToCodepage( oFont.m_nCharset );
+					else if( PROP_DEF != oFont.m_nCodePage )
+						nCodepage = oFont.m_nCodePage;
+				}
+				//от настроек документа
+				if( -1 == nCodepage && RtfDocumentProperty::cp_none != oDocument.m_oProperty.m_eCodePage )
+				{
+					switch ( oDocument.m_oProperty.m_eCodePage )
+					{
+					case RtfDocumentProperty::cp_ansi:
+						{
+							if( PROP_DEF != oDocument.m_oProperty.m_nAnsiCodePage )
+								nCodepage = oDocument.m_oProperty.m_nAnsiCodePage;
+							else
+								nCodepage = CP_ACP;
+							break;
+						}
+					case RtfDocumentProperty::cp_mac: nCodepage = CP_MACCP;break;
+					case RtfDocumentProperty::cp_pc: nCodepage = 437;break;
+					case RtfDocumentProperty::cp_pca: nCodepage = 850;break;
+					}
+				}
+				//если ничего нет ставим ANSI
+				if( -1 == nCodepage )
+					nCodepage = CP_ACP;
+
+				int nLengthW ;
+				nLengthW = MultiByteToWideChar(nCodepage, 0, sCharString, -1, NULL, NULL);
+				MultiByteToWideChar(nCodepage, 0, sCharString, -1, sResult.GetBuffer( nLengthW ), nLengthW);
+				sResult.ReleaseBuffer();
+				//sResult = sKey;
 			}
 			return sResult;
 		}

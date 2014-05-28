@@ -310,14 +310,13 @@ private: void parseText(int car, RtfToken& token)
 		//while (c != ';' &&c ! = '\\' && c != '}' && c != '{' && c != EOF) 
 		while (c != '\\' && c != '}' && c != '{' && c != EOF) 
         {
-			if( nTempBufPos < m_nReadBufSize )
-				m_caReadBuffer[nTempBufPos++] = c;
-			else
+			if( nTempBufPos >= m_nReadBufSize )
 			{
 				m_caReadBuffer[nTempBufPos++] = '\0';
-				nTempBufPos = 0;
 				token.Key.Append( m_caReadBuffer );
+				nTempBufPos = 0;
 			}
+			m_caReadBuffer[nTempBufPos++] = c;
 
 			c = m_oStream.getc();
             //Se ignoran los retornos de carro, tabuladores y caracteres nulos

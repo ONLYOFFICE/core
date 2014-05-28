@@ -76,6 +76,9 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 					oOutput->m_nGroupRight = oOutput->m_nGroupLeft + Strings::ToInteger( sCoordsize.Left( nDelimiter ) );
 					oOutput->m_nGroupBottom = oOutput->m_nGroupTop + Strings::ToInteger( sCoordsize.Right( nDelimiter ) );
 				}
+				CString sStrokeweight = oXmlReader.ReadNodeAttribute( _T("strokeweight"), _T("") );
+				if( _T("") != sStrokeweight )
+					oOutput->m_nLineWidth = RtfUtility::Twips2Emu(RtfUtility::String2Twips( sStrokeweight ));
 
 				oXmlReader.ReadNodeList( _T("*") );
 				for( int i = 0; i < oXmlReader.GetLengthList(); i++ )

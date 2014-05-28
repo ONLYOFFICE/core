@@ -141,7 +141,7 @@ namespace NSFontDictionary
 			{
 				const wchar_t* _name = FD_Unicode_Names[i].m_name;
 				if (pName[0] != _name[0])
-					break;
+					continue;
 
 				bool bIsEqual = true;
 				for (int j = 1; j < nNameLen; ++j)

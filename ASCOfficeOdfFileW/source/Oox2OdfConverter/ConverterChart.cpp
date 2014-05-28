@@ -626,25 +626,6 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_StockChart *chart)
 	
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
-		convert (chart->m_dropLines ,3);	
-		convert (chart->m_hiLowLines, 4);
-		
-		if (chart->m_upDownBars)
-		{
-			//m_gapWidth
-			if (chart->m_upDownBars->m_upBars)
-			{
-				odf_context()->chart_context()->start_stock_gain_marker();
-					convert(chart->m_upDownBars->m_upBars->m_oSpPr.GetPointer());
-				odf_context()->chart_context()->end_element();
-			}
-			if (chart->m_upDownBars->m_downBars)
-			{
-				odf_context()->chart_context()->start_stock_loss_marker();
-					convert(chart->m_upDownBars->m_downBars->m_oSpPr.GetPointer());
-				odf_context()->chart_context()->end_element();
-			}
-		}
 		for (long i=0; i< chart->m_ser.GetCount(); i++)
 		{
 			convert(chart->m_ser[i]);
@@ -653,6 +634,36 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_StockChart *chart)
 		{
 			odf_context()->chart_context()->add_axis_group_series(*chart->m_axId[i]->m_val);
 		}		
+		convert (chart->m_dropLines ,3);			
+		if (chart->m_upDownBars)
+		{
+			odf_context()->chart_context()->set_chart_stock_candle_stick(true);
+		
+			std::wstring gap_width;
+			if (chart->m_upDownBars->m_gapWidth && chart->m_upDownBars->m_gapWidth->m_val)
+			{
+				gap_width = string2std_string(*chart->m_upDownBars->m_gapWidth->m_val);
+				/*odf_context()->chart_context()->set_chart_bar_gap_width(gap_width);*/
+			}
+			
+			if (chart->m_upDownBars->m_upBars)
+			{
+				odf_context()->chart_context()->start_stock_gain_marker();
+					convert(chart->m_upDownBars->m_upBars->m_oSpPr.GetPointer());
+					if (gap_width.length() > 0) 
+						odf_context()->chart_context()->set_chart_bar_gap_width(gap_width);
+				odf_context()->chart_context()->end_element();
+			}
+			if (chart->m_upDownBars->m_downBars)
+			{
+				odf_context()->chart_context()->start_stock_loss_marker();
+					convert(chart->m_upDownBars->m_downBars->m_oSpPr.GetPointer());
+					if (gap_width.length() > 0) 
+						odf_context()->chart_context()->set_chart_bar_gap_width(gap_width);
+				odf_context()->chart_context()->end_element();
+			}
+		}
+		convert (chart->m_hiLowLines, 4);
 	odf_context()->chart_context()->end_group_series();
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_OfPieChart *chart)

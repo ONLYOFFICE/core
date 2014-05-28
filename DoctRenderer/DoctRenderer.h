@@ -46,7 +46,7 @@ void CreateNativeMemoryStream(const v8::FunctionCallbackInfo<v8::Value>& args)
 [ object, uuid("353508C9-F3EA-4ceb-8AF6-A5FF4498998C"), dual, pointer_default(unique) ]
 __interface IDoctRenderer : IDispatch
 {
-	[id(100)]	HRESULT Execute([in] BSTR bsXml);
+	[id(100)]	HRESULT Execute([in] BSTR bsXml, [out] BSTR* pbsError);
 	
 //----- Для дополнительных функций ----------------------------------------------------------------
 	[id(10001)]	HRESULT SetAdditionalParam([in] BSTR ParamName, [in] VARIANT	ParamValue);
@@ -250,8 +250,9 @@ public:
 		return S_OK;
 	}
 
-	STDMETHOD(Execute)(BSTR bsXml)
+	STDMETHOD(Execute)(BSTR bsXml, BSTR* pbsError)
 	{
+		*pbsError = NULL;
 		m_oParams.FromXml(bsXml);
 
 		BOOL bIsInnerFonts = FALSE;
@@ -355,8 +356,15 @@ public:
 		strScript += ReadScriptFile(sResourceFile);
 
 		strScript += strCorrector;
-				
-		BOOL bResult = ExecuteScript(strScript);
+		
+		CString strError = _T("");
+		BOOL bResult = ExecuteScript(strScript, strError);
+
+		if (_T("") != strError)
+		{
+			CString sDestError = _T("<result><error code=\"") + strError + _T("\" /></result>");
+			*pbsError = sDestError.AllocSysString();
+		}
 
 		return bResult ? S_OK : S_FALSE;
 	}
@@ -475,7 +483,7 @@ private:
 	}
 
 private:
-	BOOL ExecuteScript(CString& strScript)
+	BOOL ExecuteScript(CString& strScript, CString& strError)
 	{
 		CString strException = _T("");
 
@@ -499,6 +507,8 @@ private:
 		{
 			CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 			strException = to_cstring(try_catch.Message()->Get());
+
+			strError = _T("compile");
 			return FALSE;
 		}
 		
@@ -508,6 +518,8 @@ private:
 		{
 			CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 			strException = to_cstring(try_catch.Message()->Get());
+
+			strError = _T("run");
 			return FALSE;
 		}
 
@@ -543,6 +555,8 @@ private:
 			{
 				int nLineError = try_catch.Message()->GetLineNumber();
 				strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+
+				strError = _T("run");
 				return FALSE;
 			}
 
@@ -564,6 +578,8 @@ private:
 			{
 				CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 				strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+
+				strError = _T("open");
 				return FALSE;
 			}
 		}
@@ -580,6 +596,8 @@ private:
 					int nLineError = try_catch.Message()->GetLineNumber();
 					CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 					strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+
+					strError = _T("changes");
 					return FALSE;
 				}
 			}
@@ -601,6 +619,8 @@ private:
 						int nLineError = try_catch.Message()->GetLineNumber();
 						CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+
+						strError = _T("save");
 						return FALSE;
 					}
 
@@ -610,7 +630,7 @@ private:
 					{
 						oFile.WriteFile((void*)strSave.GetBuffer(), (DWORD)strSave.GetLength());
 						oFile.CloseFile();
-						return S_OK;
+						return TRUE;
 					}
 				}
 				break;
@@ -627,6 +647,8 @@ private:
 						int nLineError = try_catch.Message()->GetLineNumber();
 						CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+
+						strError = _T("calculate");
 						return FALSE;
 					}
 				}
@@ -641,6 +663,8 @@ private:
 					{
 						CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+
+						strError = _T("calculate");
 						return FALSE;
 					}
 
@@ -676,6 +700,8 @@ private:
 							int nLineError = try_catch.Message()->GetLineNumber();
 							CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 							strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+
+							strError = _T("render");
 							return FALSE;
 						}
 
@@ -699,6 +725,9 @@ private:
 					SysFreeString(bsFileDst);
 
 					RELEASEINTERFACE(pPDF);
+
+					if (S_OK != hr)
+						strError = _T("save");
 
 					return (hr == S_OK) ? TRUE : FALSE;
 				}

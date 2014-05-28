@@ -574,7 +574,7 @@ private:
 				pImFile->SaveFile(bsThPath, 4);
 				SysFreeString(bsThPath);
 
-				if (TRUE)
+				if (FALSE)
 				{
 					if (iX == 1)
 					{
@@ -674,7 +674,7 @@ private:
 			}
 			oWriterJS.WriteStringC(_T("];\n\n"));
 
-			if (TRUE)
+			if (strWriteJS_thumbnail != _T(""))
 			{
 				oWriterJS.WriteStringC(_T("window[\"g_standart_fonts_thumbnail\"] = \"data:image/png;base64,"));
 				oWriterJS.WriteStringC(strWriteJS_thumbnail);

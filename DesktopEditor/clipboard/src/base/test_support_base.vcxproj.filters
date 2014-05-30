@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="test">
+      <UniqueIdentifier>{5763B17F-46DA-9ED7-179F-9C9F273B791C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\expectations">
+      <UniqueIdentifier>{98DB47E2-467C-68E4-6260-B4E8A8B6FA43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\build">
+      <UniqueIdentifier>{D5519164-BF26-36DA-740B-76CEFC1827F4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="perftimer.cc"/>
+    <None Include="base.gyp"/>
+    <ClInclude Include="test\test_simple_task_runner.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClCompile Include="test\test_simple_task_runner.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClInclude Include="test\test_reg_util_win.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\test_switches.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClCompile Include="test\sequenced_worker_pool_owner.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\test_timeouts.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\sequenced_task_runner_test_template.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\test_file_util_win.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClInclude Include="test\values_test_util.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\simple_test_clock.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClCompile Include="test\multiprocess_test.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\task_runner_test_template.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClInclude Include="test\perf_test_suite.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClCompile Include="test\test_switches.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\mock_devices_changed_observer.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\trace_event_analyzer.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\mock_time_provider.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\perf_test_suite.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClInclude Include="test\mock_devices_changed_observer.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\test_timeouts.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\test_pending_task.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\trace_event_analyzer.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\test_process_killer_win.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClCompile Include="test\test_reg_util_win.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClInclude Include="test\sequenced_worker_pool_owner.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClCompile Include="test\values_test_util.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\simple_test_clock.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClInclude Include="test\test_support_android.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\simple_test_tick_clock.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClCompile Include="test\thread_test_helper.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClInclude Include="test\mock_time_provider.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\test_shortcut_win.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClCompile Include="test\test_shortcut_win.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClInclude Include="test\thread_test_helper.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\test_suite.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClCompile Include="test\null_task_runner.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClInclude Include="test\multiprocess_test.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClCompile Include="test\test_file_util.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClInclude Include="test\test_file_util.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\sequenced_task_runner_test_template.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClCompile Include="test\test_pending_task.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClInclude Include="test\null_task_runner.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClCompile Include="test\test_suite.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\simple_test_tick_clock.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\scoped_path_override.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClInclude Include="test\scoped_path_override.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClInclude Include="test\task_runner_test_template.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClCompile Include="test\test_process_killer_win.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClInclude Include="test\mock_chrome_application_mac.h">
+      <Filter>test\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="test\multiprocess_test_android.cc">
+      <Filter>test\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="test\test_listener_ios.h">
+      <Filter>test\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="test\test_support_android.cc">
+      <Filter>test\_excluded_files</Filter>
+    </ClCompile>
+    <None Include="test\test_listener_ios.mm">
+      <Filter>test\_excluded_files</Filter>
+    </None>
+    <ClInclude Include="test\scoped_locale.h">
+      <Filter>test\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="test\scoped_locale.cc">
+      <Filter>test\_excluded_files</Filter>
+    </ClCompile>
+    <None Include="test\test_support_ios.mm">
+      <Filter>test\_excluded_files</Filter>
+    </None>
+    <ClCompile Include="test\test_file_util_linux.cc">
+      <Filter>test\_excluded_files</Filter>
+    </ClCompile>
+    <None Include="test\mock_chrome_application_mac.mm">
+      <Filter>test\_excluded_files</Filter>
+    </None>
+    <ClCompile Include="test\test_file_util_posix.cc">
+      <Filter>test\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="test\test_support_ios.h">
+      <Filter>test\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="test\test_file_util_mac.cc">
+      <Filter>test\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="test\expectations\expectation.h">
+      <Filter>test\expectations</Filter>
+    </ClInclude>
+    <ClInclude Include="test\expectations\parser.h">
+      <Filter>test\expectations</Filter>
+    </ClInclude>
+    <ClCompile Include="test\expectations\expectation.cc">
+      <Filter>test\expectations</Filter>
+    </ClCompile>
+    <ClCompile Include="test\expectations\parser.cc">
+      <Filter>test\expectations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\precompile.cc">
+      <Filter>..\build</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

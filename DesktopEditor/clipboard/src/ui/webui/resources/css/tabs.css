@@ -1,0 +1,74 @@
+/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+tabbox {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+}
+
+tabs {
+  -webkit-padding-start: 8px;
+  background: -webkit-linear-gradient(white, rgb(243, 243, 243));
+  border-bottom: 1px solid rgb(160, 160, 160);
+  display: -webkit-box;
+  margin: 0;
+}
+
+tabs > * {
+  -webkit-margin-start: 5px;
+  -webkit-transition: border-color 150ms, background-color 150ms;
+  background: rgba(160, 160, 160, .3);
+  border: 1px solid rgba(160, 160, 160, .3);
+  border-bottom: 0;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  cursor: default;
+  display: block;
+  min-width: 4em;
+  padding: 2px 10px;
+  text-align: center;
+}
+
+tabs > :not([selected]) {
+  background: rgba(238, 238, 238, .3);
+}
+
+tabs > :not([selected]):hover {
+  background: rgba(247, 247, 247, .3);
+}
+
+tabs > [selected] {
+  -webkit-transition: none;
+  background: white;
+  border-color: rgb(160, 160, 160);
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 0;
+}
+
+tabs:focus {
+  outline: none;
+}
+
+html.focus-outline-visible tabs:focus > [selected] {
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+tabpanels {
+  -webkit-box-flex: 1;
+  background: white;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, .2);
+  display: -webkit-box;
+  padding: 5px 15px 0 15px;
+}
+
+tabpanels > * {
+  -webkit-box-flex: 1;
+  display: none;
+}
+
+tabpanels > [selected] {
+  display: block;
+}

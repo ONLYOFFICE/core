@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="examples">
+      <UniqueIdentifier>{44436D1D-970F-7E02-EDA1-3A8DAD062A99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\content_client">
+      <UniqueIdentifier>{77AF1E20-A68A-DEA4-D143-FD13A59BECDB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\content">
+      <UniqueIdentifier>{4D624FB1-28CC-8F22-E07A-F14373BC38A1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\content\app">
+      <UniqueIdentifier>{796C56B0-A938-902A-0081-40464DA4EDD9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="views.gyp"/>
+    <ClCompile Include="examples\content_client\examples_main_delegate.cc">
+      <Filter>examples\content_client</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\content_client\examples_content_browser_client.cc">
+      <Filter>examples\content_client</Filter>
+    </ClCompile>
+    <ClInclude Include="examples\content_client\examples_content_browser_client.h">
+      <Filter>examples\content_client</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\content_client\examples_browser_main_parts.h">
+      <Filter>examples\content_client</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\content_client\examples_main_delegate.h">
+      <Filter>examples\content_client</Filter>
+    </ClInclude>
+    <ClCompile Include="examples\content_client\examples_browser_main_parts.cc">
+      <Filter>examples\content_client</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\content_client\examples_main.cc">
+      <Filter>examples\content_client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\content\app\startup_helper_win.cc">
+      <Filter>..\..\content\app</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

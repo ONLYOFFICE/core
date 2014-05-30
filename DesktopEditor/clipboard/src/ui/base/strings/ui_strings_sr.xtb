@@ -1,0 +1,83 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sr">
+<translation id="4820616160060340806">Command + <ph name="KEY_COMBO_NAME"/></translation>
+<translation id="6420214550675866556">Тихи режим</translation>
+<translation id="1871244248791675517">Ins</translation>
+<translation id="6135826906199951471">Del</translation>
+<translation id="528468243742722775">End</translation>
+<translation id="1190609913194133056">Центар за обавештења</translation>
+<translation id="5613020302032141669">Стрелица налево</translation>
+<translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE"/> датотека (.<ph name="SAVEAS_EXTENSION_NAME"/>)</translation>
+<translation id="4519844444318892125">Тихи режим на један дан</translation>
+<translation id="5948410903763073882">Alt+<ph name="KEY_COMBO_NAME"/></translation>
+<translation id="7658239707568436148">Откажи</translation>
+<translation id="7222373446505536781">F11</translation>
+<translation id="1761785978543082658"><ph name="QUANTITY"/> B</translation>
+<translation id="1809410197924942083"><ph name="QUANTITY"/> MB/s</translation>
+<translation id="3990502903496589789">Десна ивица</translation>
+<translation id="932327136139879170">Home</translation>
+<translation id="3909791450649380159">Ис&amp;еци</translation>
+<translation id="688711909580084195">Веб-страница без наслова</translation>
+<translation id="5076340679995252485">&amp;Налепи</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY"/> TB</translation>
+<translation id="4999762576397546063">Ctrl+<ph name="KEY_COMBO_NAME"/></translation>
+<translation id="3087734570205094154">Дно</translation>
+<translation id="6364916375976753737">Помери налево</translation>
+<translation id="6945221475159498467">Изабери</translation>
+<translation id="6620110761915583480">Чување датотеке</translation>
+<translation id="7394346403752882908">Тихи режим на један сат</translation>
+<translation id="8210608804940886430">Страница надоле</translation>
+<translation id="5329858601952122676">&amp;Избриши</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY"/> KB</translation>
+<translation id="6659594942844771486">Tab</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY"/> MB</translation>
+<translation id="8428213095426709021">Подешавања</translation>
+<translation id="2497284189126895209">Све датотеке</translation>
+<translation id="7814458197256864873">&amp;Копирај</translation>
+<translation id="3889424535448813030">Стрелица надесно</translation>
+<translation id="7135556860107312402">Дозволи обавештења из следећих извора:</translation>
+<translation id="1398853756734560583">Увећај</translation>
+<translation id="4250229828105606438">Снимак екрана</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY"/> GB</translation>
+<translation id="1901303067676059328">Изабери &amp;све</translation>
+<translation id="2168039046890040389">Страница нагоре</translation>
+<translation id="4927753642311223124">Нема шта да се види овде. Наставите даље.</translation>
+<translation id="2482878487686419369">Обавештења</translation>
+<translation id="3183922693828471536">Помери се овде</translation>
+<translation id="4552416320897244156">Page Down</translation>
+<translation id="7052633198403197513">F1</translation>
+<translation id="8677655579646609597"><ph name="QUANTITY"/> KB/s</translation>
+<translation id="2190355936436201913">(празно)</translation>
+<translation id="8447116497070723931">Page Up</translation>
+<translation id="4588090240171750605">Помери надесно</translation>
+<translation id="2666092431469916601">Врх</translation>
+<translation id="8331626408530291785">Помери нагоре</translation>
+<translation id="4773379706300191099">Онемогући обавештења из додатка <ph name="EXTENSION_NAME"/></translation>
+<translation id="7907591526440419938">Отварање датотеке</translation>
+<translation id="1293699935367580298">Esc</translation>
+<translation id="815598010540052116">Помери надоле</translation>
+<translation id="3157931365184549694">Поново отвори</translation>
+<translation id="8179976553408161302">Унеси</translation>
+<translation id="945522503751344254">Пошаљи повратне информације</translation>
+<translation id="9170848237812810038">&amp;Опозови</translation>
+<translation id="520299402983819650"><ph name="QUANTITY"/> PB</translation>
+<translation id="2983818520079887040">Подешавања...</translation>
+<translation id="6845383723252244143">Избор директоријума</translation>
+<translation id="5583640892426849032">Backspace</translation>
+<translation id="3740362395218339114"><ph name="QUANTITY"/> GB/s</translation>
+<translation id="436869212180315161">Притисните</translation>
+<translation id="2297836609126180313"><ph name="QUANTITY"/> TB/s</translation>
+<translation id="6040143037577758943">Затвори</translation>
+<translation id="6142413573757616983"><ph name="QUANTITY"/> B/s</translation>
+<translation id="7457942297256758195">Обриши све</translation>
+<translation id="7509316384504965641"><ph name="PRODUCT"/> – Обавештења</translation>
+<translation id="8400147561352026160">Shift+<ph name="KEY_COMBO_NAME"/></translation>
+<translation id="6907759265145635167"><ph name="QUANTITY"/> PB/s</translation>
+<translation id="4481522213790366002"><ph name="PRODUCT"/> – Обавештења (непрочитаних: <ph name="QUANTITY"/>)</translation>
+<translation id="6965382102122355670">Потврди</translation>
+<translation id="5941711191222866238">Смањи</translation>
+<translation id="4469842253116033348">Онемогући обавештења са <ph name="SITE"/></translation>
+<translation id="3036649622769666520">Отварање датотека</translation>
+<translation id="8328145009876646418">Лева ивица</translation>
+</translationbundle>

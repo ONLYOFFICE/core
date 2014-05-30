@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="common_theme.cc"/>
+    <ClInclude Include="common_theme.h"/>
+    <ClInclude Include="native_theme.h"/>
+    <ClCompile Include="native_theme_base.cc"/>
+    <ClInclude Include="native_theme_win.h"/>
+    <ClCompile Include="native_theme_win.cc"/>
+    <ClInclude Include="native_theme_base.h"/>
+    <ClInclude Include="native_theme_android.h"/>
+    <None Include="native_theme.gyp"/>
+    <ClCompile Include="native_theme.cc"/>
+    <ClInclude Include="native_theme_aura.h">
+      <Filter>_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="native_theme_android.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="native_theme_gtk.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="native_theme_gtk.h">
+      <Filter>_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="native_theme_mac.h">
+      <Filter>_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="native_theme_aura.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <None Include="native_theme_mac.mm">
+      <Filter>_excluded_files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

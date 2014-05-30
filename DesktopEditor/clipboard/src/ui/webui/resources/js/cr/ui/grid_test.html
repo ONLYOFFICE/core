@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<style>
+
+</style>
+<script src=
+  "http://closure-library.googlecode.com/svn/trunk/closure/goog/base.js">
+</script>
+<script src="../../cr.js"></script>
+<script src="../event_target.js"></script>
+<script src="../ui.js"></script>
+<script src="array_data_model.js"></script>
+<script src="list_selection_model.js"></script>
+<script src="list_selection_controller.js"></script>
+<script src="list_item.js"></script>
+<script src="list.js"></script>
+<script src="grid.js"></script>
+<script>
+
+goog.require('goog.testing.jsunit');
+
+</script>
+
+</head>
+<body>
+
+<script>
+
+function testGetColumnCount() {
+  var g = cr.ui.Grid.prototype;
+  g.measured_ = {
+      height: 8,
+      marginTop: 0,
+      marginBottom: 0,
+      width: 10,
+      marginLeft: 0,
+      marginRight: 0
+  };
+  var columns = g.getColumnCount_();
+  g.measured_.width = 0;
+  columns = g.getColumnCount_();
+  // Item width equals 0.
+  assertEquals(0, columns);
+
+  g.measured_.width = 10;
+  columns = g.getColumnCount_();
+  // No item in the list.
+  assertEquals(0, columns);
+
+  g.dataModel_ = new cr.ui.ArrayDataModel([0, 1, 2]);
+  g.clientWidthWithoutScrollbar_ = 8;
+  columns = g.getColumnCount_();
+  // Client width is smaller than item width.
+  assertEquals(0, columns);
+
+  g.clientWidthWithoutScrollbar_ = 20;
+  // Client height can fit two rows.
+  g.clientHeight_ = 16;
+  columns = g.getColumnCount_();
+  assertEquals(2, columns);
+
+  // Client height can not fit two rows. A scroll bar is needed.
+  g.clientHeight_ = 15;
+  g.clientWidthWithScrollbar_ = 18;
+  columns = g.getColumnCount_();
+  // Can not fit two columns due to the scroll bar.
+  assertEquals(1, columns);
+
+  g.clientHeight_ = 16;
+  g.measured_.marginTop = 1;
+  columns = g.getColumnCount_();
+  // Can fit two columns due to uncollapse margin.
+  assertEquals(2, columns);
+
+  g.measured_.marginBottom = 1;
+  columns = g.getColumnCount_();
+  // Can not fit two columns due to margin.
+  assertEquals(1, columns);
+
+  g.measured_.marginTop = 0;
+  g.measured_.marginBottom = 0;
+  g.measured_.marginLeft = 1;
+  columns = g.getColumnCount_();
+  // Can fit two columns due to uncollapse margin.
+  assertEquals(2, columns);
+
+  g.measured_.marginRight = 1;
+  columns = g.getColumnCount_();
+  // Can not fit two columns due to margin on left and right side.
+  assertEquals(1, columns);
+}
+
+</script>
+
+</body>
+</html>

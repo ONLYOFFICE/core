@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Repeater</title>
+  <script src="http://closure-library.googlecode.com/svn/trunk/closure/goog/base.js">
+  </script>
+  <script src="../../cr.js"></script>
+  <script src="../ui.js"></script>
+  <script src="repeating_button.js"></script>
+  <script>
+    goog.require('goog.testing.jsunit');
+    goog.require('goog.testing.MockClock');
+  </script>
+</head>
+<body>
+  <script>
+    var mockClock;
+    var value;
+    var button;
+    var repeatDelay;
+    var repeatInterval;
+
+    /**
+     * Prepare running the tests.
+     */
+    function setUp() {
+      mockClock = new goog.testing.MockClock();
+      mockClock.install();
+      button = new cr.ui.RepeatingButton();
+      repeatDelay = button.repeatDelay;
+      repeatInterval = button.repeatInterval;
+      button.addEventListener(
+          cr.ui.RepeatingButton.Event.BUTTON_HELD,
+          function(e) {
+            value++;
+          });
+    }
+
+    /**
+     * Post-test cleanup.
+     */
+    function tearDown() {
+      mockClock.uninstall();
+    }
+
+    /**
+     * Simulates a mouse or touch event to the repeating button.
+     * @param {string} type The type of event.
+     */
+    function mockEvent(type) {
+      cr.dispatchSimpleEvent(button, type);
+    }
+
+    /**
+     * Simulates a sequence of events.
+     * @param {Array.<string>} events List of event types.
+     * @param {Array.<number>} timeIncrements List of time increments between
+     *     events.
+     * @param {number} expectedValue Expected result.
+     */
+    function mockEventSequence(events, timeIncrements, expectedValue) {
+      assertEquals(events.length, timeIncrements.length);
+      value = 0;
+      for (var i = 0; i < events.length; i++) {
+        mockEvent(events[i]);
+        mockClock.tick(timeIncrements[i]);
+      }
+      assertEquals(expectedValue, value);
+      mockClock.tick(repeatDelay);
+      assertEquals(expectedValue, value);
+    }
+
+    /**
+     * Simulates a tap or touch and hold gesture.
+     * @param {number} time Duration of the hold.
+     * @param {number} expectedValue Expected result.
+     */
+    function mockTouchHold(time, expectedValue) {
+      mockEventSequence(['touchstart', 'touchend'], [time, 0], expectedValue);
+    }
+
+    /**
+     * Simulates a mouse click or mouse press and hold.
+     * @param {number} time Duration of the hold.
+     * @param {number} expectedValue Expected result.
+     */
+    function mockMouseHold(time, expectedValue) {
+      mockEventSequence(['mousedown', 'mouseup', 'mouseclick'], 
+                        [time, 0, 0],
+                        expectedValue);
+    }
+
+    /**
+     * Simulates a mouse press and drag off of the button.
+     * @param {number} time1 Duration that the mouse button is pressed and the
+     *     mouse is over the button.
+     * @param {number} time2 Duration that the mouse button is pressed but the
+     *     mouse is outside the boundary of the button.
+     * @param {number} expectedValue Expected result.
+     */
+    function mockMouseOut(time1, time2, expectedValue) {
+      mockEventSequence(['mousedown', 'mouseout', 'mouseup'], 
+                        [time1, time2, 0],
+                        expectedValue);
+    }
+
+    /**
+     * Runs a series of tests with increasing button hold time.
+     * @param {function} fn Testing function.
+     * @param {Object} opt_arg Optional additional argument for the test.
+     */
+    function runButtonTests(fn, opt_arg) {
+      var holdTime = repeatDelay - repeatInterval / 2;
+      for (var i = 0; i < 3; i++, holdTime += repeatInterval) {
+        var args = opt_arg ? [holdTime, opt_arg, i + 1] : [holdTime, i + 1];
+        fn.apply(this, args);
+      }
+    }
+
+    /**
+     * Simulates a short tap on the button.
+     */
+    function testTap() {
+      mockTouchHold(repeatDelay / 2, 1);
+    }
+
+    /**
+     * Simulates a long press of the button.
+     */
+    function testTouchHold() {
+      runButtonTests(mockTouchHold);
+    }
+
+    /**
+     * Simulates a quick mouse click of the button.
+     */
+    function testClick() {
+      mockMouseHold(repeatDelay / 2, 1);
+    }
+
+    /**
+     * Simulates a mouse press and hold on the button.
+     */
+    function testMousePressHold() {
+      runButtonTests(mockMouseHold);
+    }
+
+    /**
+     * Simulates draging the mouse off of the button while pressed.
+     */
+    function testMouseOut() {
+      runButtonTests(mockMouseOut, repeatDelay);
+    }
+
+    /**
+     * Repeat tests with new delay and interval times.
+     */
+    function testUpdateDelayTimes() {
+      var oldDelay = repeatDelay;
+      var oldInterval = repeatInterval;
+      repeatDelay = button.repeatDelay = 2 * repeatDelay;
+      repeatInterval = button.repeatInterval = 2 * repeatInterval;
+      testTouchHold();
+      testMousePressHold();
+      testMouseOut();
+      testClick();
+      testTap();
+      repeatDelay = button.repeatDelay = oldDelay;
+      repeatInterval = button.repeatInterval = oldInterval;
+    }
+
+    /**
+     * Runs mouse and touch hold tests with a repeat interval that is longer
+     * than the initial repeat delay.
+     */
+    function testLongRepeat() {
+      var oldInterval = repeatInterval;
+      repeatInterval = button.repeatInterval = 3 * button.repeatDelay;
+      testTouchHold();
+      testMousePressHold();
+      repeatInterval = button.repeatInterval = oldInterval;
+    }
+  </script>
+</body>
+</html>

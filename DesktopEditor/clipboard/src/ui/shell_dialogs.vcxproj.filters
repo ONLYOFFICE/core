@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="shell_dialogs">
+      <UniqueIdentifier>{B0131C60-A341-4313-6B0E-012A93F55C39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shell_dialogs\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shell_dialogs\android">
+      <UniqueIdentifier>{840B8E33-5F8C-45A0-5FD6-F07AA5687203}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shell_dialogs\android\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shell_dialogs\gtk">
+      <UniqueIdentifier>{2D4DC4D4-E814-8696-8CA7-5C200B5ACD6F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shell_dialogs\gtk\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ui.gyp"/>
+    <ClInclude Include="shell_dialogs\select_file_dialog.h">
+      <Filter>shell_dialogs</Filter>
+    </ClInclude>
+    <ClCompile Include="shell_dialogs\base_shell_dialog_win.cc">
+      <Filter>shell_dialogs</Filter>
+    </ClCompile>
+    <ClInclude Include="shell_dialogs\select_file_dialog_win.h">
+      <Filter>shell_dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="shell_dialogs\linux_shell_dialog.h">
+      <Filter>shell_dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="shell_dialogs\select_file_policy.h">
+      <Filter>shell_dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="shell_dialogs\base_shell_dialog_win.h">
+      <Filter>shell_dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="shell_dialogs\select_file_dialog_android.h">
+      <Filter>shell_dialogs</Filter>
+    </ClInclude>
+    <ClCompile Include="shell_dialogs\select_file_policy.cc">
+      <Filter>shell_dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="shell_dialogs\select_file_dialog_win.cc">
+      <Filter>shell_dialogs</Filter>
+    </ClCompile>
+    <ClInclude Include="shell_dialogs\base_shell_dialog.h">
+      <Filter>shell_dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="shell_dialogs\selected_file_info.h">
+      <Filter>shell_dialogs</Filter>
+    </ClInclude>
+    <ClCompile Include="shell_dialogs\linux_shell_dialog.cc">
+      <Filter>shell_dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="shell_dialogs\base_shell_dialog.cc">
+      <Filter>shell_dialogs</Filter>
+    </ClCompile>
+    <ClInclude Include="shell_dialogs\select_file_dialog_factory.h">
+      <Filter>shell_dialogs</Filter>
+    </ClInclude>
+    <ClCompile Include="shell_dialogs\select_file_dialog_factory.cc">
+      <Filter>shell_dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="shell_dialogs\select_file_dialog.cc">
+      <Filter>shell_dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="shell_dialogs\selected_file_info.cc">
+      <Filter>shell_dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="shell_dialogs\select_file_dialog_android.cc">
+      <Filter>shell_dialogs\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="shell_dialogs\select_file_dialog_mac.h">
+      <Filter>shell_dialogs\_excluded_files</Filter>
+    </ClInclude>
+    <None Include="shell_dialogs\select_file_dialog_mac.mm">
+      <Filter>shell_dialogs\_excluded_files</Filter>
+    </None>
+    <ClInclude Include="shell_dialogs\android\shell_dialogs_jni_registrar.h">
+      <Filter>shell_dialogs\android\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="shell_dialogs\android\shell_dialogs_jni_registrar.cc">
+      <Filter>shell_dialogs\android\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="shell_dialogs\gtk\select_file_dialog_impl.cc">
+      <Filter>shell_dialogs\gtk\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="shell_dialogs\gtk\select_file_dialog_impl_kde.cc">
+      <Filter>shell_dialogs\gtk\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="shell_dialogs\gtk\select_file_dialog_impl.h">
+      <Filter>shell_dialogs\gtk\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="shell_dialogs\gtk\select_file_dialog_impl_gtk.cc">
+      <Filter>shell_dialogs\gtk\_excluded_files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

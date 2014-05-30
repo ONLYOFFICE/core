@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\third_party">
+      <UniqueIdentifier>{D6C6CEA7-AAD0-03AD-2394-AC6FCBF8A498}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\third_party\jemalloc">
+      <UniqueIdentifier>{E795ED78-4CDB-7056-87C1-A4D275E24496}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\third_party\jemalloc\chromium">
+      <UniqueIdentifier>{A235D2A4-63B6-DD4D-7F7F-D3EA248BB602}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\third_party\tcmalloc">
+      <UniqueIdentifier>{92530044-D819-5E1C-6247-14D180507FBF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\third_party\tcmalloc\chromium">
+      <UniqueIdentifier>{A235D2A4-63B6-DD4D-7F7F-D3EA248BB602}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\third_party\tcmalloc\chromium\src">
+      <UniqueIdentifier>{8CDEE807-BC53-E450-C8B8-4DEBB66742D4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\third_party\tcmalloc\chromium\src\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\third_party\tcmalloc\chromium\src\windows">
+      <UniqueIdentifier>{C1450D01-C033-76F3-3763-6DE88AF48A77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\third_party\tcmalloc\chromium\src\windows\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\third_party\tcmalloc\chromium\src\windows\gperftools">
+      <UniqueIdentifier>{60F39106-1507-58BE-1DD3-C74C23572587}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\third_party\tcmalloc\chromium\src\windows\gperftools\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\third_party\tcmalloc\chromium\src\gperftools">
+      <UniqueIdentifier>{60F39106-1507-58BE-1DD3-C74C23572587}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\third_party\tcmalloc\chromium\src\gperftools\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\third_party\tcmalloc\chromium\src\base">
+      <UniqueIdentifier>{DBBAC0A6-BB0A-CA51-45CC-DA4574B671E6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\third_party\tcmalloc\chromium\src\base\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="allocator_shim.h"/>
+    <ClCompile Include="allocator_shim.cc"/>
+    <None Include="allocator.gyp"/>
+    <ClCompile Include="debugallocation_shim.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="win_allocator.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="generic_allocators.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\jemalloc\chromium\ql.h">
+      <Filter>..\..\third_party\jemalloc\chromium</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\jemalloc\chromium\qr.h">
+      <Filter>..\..\third_party\jemalloc\chromium</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\jemalloc\chromium\rb.h">
+      <Filter>..\..\third_party\jemalloc\chromium</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\jemalloc\chromium\jemalloc.h">
+      <Filter>..\..\third_party\jemalloc\chromium</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\jemalloc\chromium\jemalloc.c">
+      <Filter>..\..\third_party\jemalloc\chromium</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\symbolize.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\config_linux.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\central_freelist.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\thread_cache.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\common.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\stack_trace_table.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\config.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\static_vars.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\page_heap.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\malloc_extension.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\stacktrace.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\central_freelist.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\sampler.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\malloc_hook-inl.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\thread_cache.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\span.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\raw_printer.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\linked_list.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\raw_printer.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\span.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\internal_logging.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\config_win.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\stack_trace_table.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\sampler.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\internal_logging.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\malloc_hook.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\free_list.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\free_list.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\static_vars.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\common.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\page_heap.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\memory_region_map.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\libc_override_glibc.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\stacktrace_powerpc-inl.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\malloc_hook_mmap_freebsd.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\pagemap.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\memfs_malloc.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\system-alloc.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\profile-handler.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\libc_override_redefine.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\tcmalloc_guard.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\heap-checker.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\addressmap-inl.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\packed-cache-inl.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\deep-heap-profile.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\malloc_hook_mmap_linux.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\heap-profile-table.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\libc_override_osx.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\system-alloc.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\heap-profiler.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\stacktrace_x86-inl.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\page_heap_allocator.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\stacktrace_generic-inl.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\heap-checker-bcad.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\profile-handler.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\stacktrace_arm-inl.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\profiler.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\libc_override_gcc_and_weak.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\stacktrace_with_context.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\stacktrace_libunwind-inl.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\maybe_threads.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\maybe_threads.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\libc_override.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\deep-heap-profile.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\profiledata.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\heap-profile-table.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\stacktrace_config.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\tcmalloc.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\debugallocation.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\stacktrace_win32-inl.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\profiledata.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\memory_region_map.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\symbolize.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\getpc.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\windows\port.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\windows</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\windows\port.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\windows</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\windows\mini_disassembler.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\windows\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\windows\patch_functions.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\windows\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\windows\preamble_patcher.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\windows\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\windows\mingw.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\windows\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\windows\ia32_modrm_map.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\windows\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\windows\override_functions.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\windows\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\windows\preamble_patcher.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\windows\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\windows\preamble_patcher_with_stub.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\windows\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\windows\config.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\windows\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\windows\mini_disassembler.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\windows\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\windows\ia32_opcode_map.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\windows\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\windows\get_mangled_names.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\windows\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\windows\mini_disassembler_types.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\windows\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\windows\gperftools\tcmalloc.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\windows\gperftools\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\gperftools\profiler.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\gperftools\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\gperftools\malloc_hook_c.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\gperftools\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\gperftools\heap-checker.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\gperftools\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\gperftools\stacktrace.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\gperftools\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\gperftools\malloc_extension.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\gperftools\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\gperftools\malloc_extension_c.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\gperftools\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\gperftools\heap-profiler.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\gperftools\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\gperftools\malloc_hook.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\gperftools\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\gperftools\tcmalloc.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\gperftools\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\low_level_alloc.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\atomicops-internals-arm-v6plus.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\sysinfo.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\base\spinlock.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\base\abort.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\base\low_level_alloc.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\spinlock_internal.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\base\sysinfo.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\logging.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\base\spinlock_internal.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\atomicops-internals-arm-generic.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\arm_instruction_set_select.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\base\logging.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\abort.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\dynamic_annotations.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\spinlock.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\atomicops-internals-windows.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\synchronization_profiling.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\cycleclock.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\base\elf_mem_image.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\basictypes.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\atomicops.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\atomicops-internals-x86.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\base\atomicops-internals-x86.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\atomicops-internals-macosx.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\base\thread_lister.c">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\base\vdso_support.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\thread_lister.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\atomicops-internals-linuxppc.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\commandlineflags.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\vdso_support.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\elf_mem_image.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\elfcore.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\googleinit.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\linux_syscall_support.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\spinlock_posix-inl.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\simple_mutex.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\linuxthreads.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\spinlock_win32-inl.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\stl_allocator.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\thread_annotations.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tcmalloc\chromium\src\base\spinlock_linux-inl.h">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\third_party\tcmalloc\chromium\src\base\linuxthreads.cc">
+      <Filter>..\..\third_party\tcmalloc\chromium\src\base\_excluded_files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

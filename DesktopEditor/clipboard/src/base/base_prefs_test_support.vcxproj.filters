@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="prefs">
+      <UniqueIdentifier>{211C84FE-F189-109C-6F7E-E0596D5F946E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\build">
+      <UniqueIdentifier>{D5519164-BF26-36DA-740B-76CEFC1827F4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="base.gyp"/>
+    <ClInclude Include="prefs\pref_store_observer_mock.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClInclude Include="prefs\testing_pref_store.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClCompile Include="prefs\testing_pref_store.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClInclude Include="prefs\testing_pref_service.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClCompile Include="prefs\testing_pref_service.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="prefs\pref_store_observer_mock.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="prefs\mock_pref_change_callback.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\precompile.cc">
+      <Filter>..\build</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="win">
+      <UniqueIdentifier>{47FC5EC4-15EB-E92F-89D7-AFE51CF838A9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="message_loop">
+      <UniqueIdentifier>{85BB2B48-8131-AA06-DC6D-4CCE2EF5429B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\build">
+      <UniqueIdentifier>{D5519164-BF26-36DA-740B-76CEFC1827F4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="threading">
+      <UniqueIdentifier>{08E84E43-86EA-0FF0-2578-3ED14D870CD8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="threading\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="system_monitor">
+      <UniqueIdentifier>{9F210339-46B0-E53B-099D-58F06E70D728}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="json">
+      <UniqueIdentifier>{925A1F1B-2B9E-1800-B702-8923A5680923}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="memory">
+      <UniqueIdentifier>{8F5DB3DB-0272-DCA1-4517-81A538CE0517}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="memory\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test">
+      <UniqueIdentifier>{5763B17F-46DA-9ED7-179F-9C9F273B791C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\expectations">
+      <UniqueIdentifier>{98DB47E2-467C-68E4-6260-B4E8A8B6FA43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="android">
+      <UniqueIdentifier>{840B8E33-5F8C-45A0-5FD6-F07AA5687203}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="android\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="prefs">
+      <UniqueIdentifier>{211C84FE-F189-109C-6F7E-E0596D5F946E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="containers">
+      <UniqueIdentifier>{850CC7C6-4057-8728-DB1E-8B89B1880B8C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="files">
+      <UniqueIdentifier>{BB1C967E-6CBB-1192-77C2-20F84C75AB96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="files\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ios">
+      <UniqueIdentifier>{5D988FAB-2F83-50FF-3F70-6A382CF02DF4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ios\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="metrics">
+      <UniqueIdentifier>{DC24B95F-2580-773E-999D-FF21A384B9AB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mac">
+      <UniqueIdentifier>{DDBFF7CF-DBCF-B2FC-793A-DB701B563E8D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mac\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="synchronization">
+      <UniqueIdentifier>{214F8E67-7437-F20E-6191-AECBD38CDFDC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="i18n">
+      <UniqueIdentifier>{366E8577-6226-B711-6772-2EA2AF5F5D10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="profiler">
+      <UniqueIdentifier>{87097DB4-0A18-6E42-07AB-BF3B3651C11F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="power_monitor">
+      <UniqueIdentifier>{4B63DFB6-FEE0-7F3A-96E4-125FEBEC4AF7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="posix">
+      <UniqueIdentifier>{111D2AD9-64D0-7241-0260-63641DD69CAE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="posix\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="debug">
+      <UniqueIdentifier>{FBAE646B-1E91-2C58-956B-A42D67D8DA0E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="strings">
+      <UniqueIdentifier>{03F116E8-99FD-0D5D-3AD5-D756C88BB794}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="strings\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pickle_unittest.cc"/>
+    <ClCompile Include="tracked_objects_unittest.cc"/>
+    <None Include="base.gyp"/>
+    <ClCompile Include="bind_helpers_unittest.cc"/>
+    <ClCompile Include="stl_util_unittest.cc"/>
+    <ClCompile Include="observer_list_unittest.cc"/>
+    <ClCompile Include="values_unittest.cc"/>
+    <ClCompile Include="tools_sanity_unittest.cc"/>
+    <ClCompile Include="security_unittest.cc"/>
+    <ClCompile Include="time_win_unittest.cc"/>
+    <ClCompile Include="path_service_unittest.cc"/>
+    <ClCompile Include="hi_res_timer_manager_unittest.cc"/>
+    <ClCompile Include="timer_unittest.cc"/>
+    <ClCompile Include="time_unittest.cc"/>
+    <ClCompile Include="base64_unittest.cc"/>
+    <ClCompile Include="stringprintf_unittest.cc"/>
+    <ClCompile Include="file_version_info_unittest.cc"/>
+    <ClCompile Include="file_util_unittest.cc"/>
+    <ClCompile Include="message_loop_unittest.cc"/>
+    <ClCompile Include="deferred_sequenced_task_runner_unittest.cc"/>
+    <ClCompile Include="sha1_unittest.cc"/>
+    <ClCompile Include="callback_unittest.cc"/>
+    <ClCompile Include="task_runner_util_unittest.cc"/>
+    <ClCompile Include="scoped_clear_errno_unittest.cc"/>
+    <ClCompile Include="string_util_unittest.cc"/>
+    <ClCompile Include="guid_unittest.cc"/>
+    <ClCompile Include="vlog_unittest.cc"/>
+    <ClCompile Include="template_util_unittest.cc"/>
+    <ClCompile Include="platform_file_unittest.cc"/>
+    <ClCompile Include="scoped_native_library_unittest.cc"/>
+    <ClInclude Include="scoped_observer.h"/>
+    <ClCompile Include="at_exit_unittest.cc"/>
+    <ClCompile Include="sequence_checker_unittest.cc"/>
+    <ClCompile Include="cpu_unittest.cc"/>
+    <ClCompile Include="logging_unittest.cc"/>
+    <ClCompile Include="safe_numerics_unittest.cc"/>
+    <ClCompile Include="environment_unittest.cc"/>
+    <ClCompile Include="version_unittest.cc"/>
+    <ClCompile Include="md5_unittest.cc"/>
+    <ClCompile Include="command_line_unittest.cc"/>
+    <ClCompile Include="bind_unittest.cc"/>
+    <ClCompile Include="gmock_unittest.cc"/>
+    <ClCompile Include="rand_util_unittest.cc"/>
+    <ClCompile Include="id_map_unittest.cc"/>
+    <ClCompile Include="string16_unittest.cc"/>
+    <ClCompile Include="build_time_unittest.cc"/>
+    <ClCompile Include="atomicops_unittest.cc"/>
+    <ClCompile Include="sys_info_unittest.cc"/>
+    <ClCompile Include="bits_unittest.cc"/>
+    <ClCompile Include="sequence_checker_impl_unittest.cc"/>
+    <ClCompile Include="pr_time_unittest.cc"/>
+    <ClCompile Include="tuple_unittest.cc"/>
+    <ClCompile Include="cancelable_callback_unittest.cc"/>
+    <ClCompile Include="lazy_instance_unittest.cc"/>
+    <ClCompile Include="process_util_unittest.cc"/>
+    <ClCompile Include="os_compat_android_unittest.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="message_pump_io_ios_unittest.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="process_util_unittest_mac.h">
+      <Filter>_excluded_files</Filter>
+    </ClInclude>
+    <None Include="bind_unittest.nc">
+      <Filter>_excluded_files</Filter>
+    </None>
+    <ClCompile Include="message_pump_glib_unittest.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <None Include="callback_unittest.nc">
+      <Filter>_excluded_files</Filter>
+    </None>
+    <ClCompile Include="message_pump_libevent_unittest.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <None Include="safe_numerics_unittest.nc">
+      <Filter>_excluded_files</Filter>
+    </None>
+    <ClCompile Include="process_util_unittest_ios.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <None Include="process_util_unittest_mac.mm">
+      <Filter>_excluded_files</Filter>
+    </None>
+    <ClCompile Include="win\scoped_process_information_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\object_watcher_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\event_trace_controller_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\i18n_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\scoped_variant_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\enum_variant_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\event_trace_consumer_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\event_trace_provider_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\registry_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\iunknown_impl_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\pe_image_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\scoped_bstr_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\scoped_comptr_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\startup_information_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\scoped_handle_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\wrapped_window_proc_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\sampling_profiler_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\dllmain.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\win_util_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\shortcut_unittest.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="message_loop\message_loop_proxy_unittest.cc">
+      <Filter>message_loop</Filter>
+    </ClCompile>
+    <ClCompile Include="message_loop\message_loop_proxy_impl_unittest.cc">
+      <Filter>message_loop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\precompile.cc">
+      <Filter>..\build</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\thread_unittest.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\non_thread_safe_unittest.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\watchdog_unittest.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\platform_thread_unittest.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\thread_local_unittest.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\thread_id_name_manager_unittest.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\thread_collision_warner_unittest.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\simple_thread_unittest.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\thread_checker_unittest.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\worker_pool_unittest.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\thread_local_storage_unittest.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\sequenced_worker_pool_unittest.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\worker_pool_posix_unittest.cc">
+      <Filter>threading\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="system_monitor\system_monitor_unittest.cc">
+      <Filter>system_monitor</Filter>
+    </ClCompile>
+    <ClCompile Include="json\string_escape_unittest.cc">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="json\json_value_converter_unittest.cc">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="json\json_parser_unittest.cc">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="json\json_value_serializer_unittest.cc">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="json\json_writer_unittest.cc">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="json\json_reader_unittest.cc">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\ref_counted_unittest.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\aligned_memory_unittest.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\singleton_unittest.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\shared_memory_unittest.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\linked_ptr_unittest.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\ref_counted_memory_unittest.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\discardable_memory_unittest.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\scoped_ptr_unittest.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\weak_ptr_unittest.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\scoped_vector_unittest.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <None Include="memory\weak_ptr_unittest.nc">
+      <Filter>memory\_excluded_files</Filter>
+    </None>
+    <None Include="memory\scoped_ptr_unittest.nc">
+      <Filter>memory\_excluded_files</Filter>
+    </None>
+    <None Include="memory\scoped_nsobject_unittest.mm">
+      <Filter>memory\_excluded_files</Filter>
+    </None>
+    <ClCompile Include="test\trace_event_analyzer_unittest.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\expectations\expectation_unittest.cc">
+      <Filter>test\expectations</Filter>
+    </ClCompile>
+    <ClCompile Include="test\expectations\parser_unittest.cc">
+      <Filter>test\expectations</Filter>
+    </ClCompile>
+    <ClCompile Include="android\jni_string_unittest.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="android\jni_array_unittest.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="android\path_utils_unittest.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="android\jni_android_unittest.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="android\activity_status_unittest.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="android\scoped_java_ref_unittest.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="prefs\pref_notifier_impl_unittest.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="prefs\pref_value_store_unittest.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="prefs\overlay_user_pref_store_unittest.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="prefs\pref_value_map_unittest.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="prefs\pref_member_unittest.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="prefs\default_pref_store_unittest.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="prefs\json_pref_store_unittest.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="prefs\pref_change_registrar_unittest.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="prefs\pref_service_unittest.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClInclude Include="prefs\mock_pref_change_callback.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClCompile Include="containers\mru_cache_unittest.cc">
+      <Filter>containers</Filter>
+    </ClCompile>
+    <ClCompile Include="containers\stack_container_unittest.cc">
+      <Filter>containers</Filter>
+    </ClCompile>
+    <ClCompile Include="containers\small_map_unittest.cc">
+      <Filter>containers</Filter>
+    </ClCompile>
+    <ClCompile Include="containers\linked_list_unittest.cc">
+      <Filter>containers</Filter>
+    </ClCompile>
+    <ClCompile Include="files\file_path_unittest.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="files\scoped_temp_dir_unittest.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="files\important_file_writer_unittest.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="files\file_util_proxy_unittest.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="files\dir_reader_posix_unittest.cc">
+      <Filter>files\_excluded_files</Filter>
+    </ClCompile>
+    <None Include="ios\device_util_unittest.mm">
+      <Filter>ios\_excluded_files</Filter>
+    </None>
+    <ClCompile Include="metrics\field_trial_unittest.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClCompile Include="metrics\histogram_unittest.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClCompile Include="metrics\statistics_recorder_unittest.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClCompile Include="metrics\histogram_base_unittest.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClCompile Include="metrics\stats_table_unittest.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClCompile Include="metrics\sample_vector_unittest.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClCompile Include="metrics\sample_map_unittest.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClCompile Include="metrics\bucket_ranges_unittest.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClCompile Include="metrics\sparse_histogram_unittest.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <None Include="mac\mac_util_unittest.mm">
+      <Filter>mac\_excluded_files</Filter>
+    </None>
+    <None Include="mac\foundation_util_unittest.mm">
+      <Filter>mac\_excluded_files</Filter>
+    </None>
+    <ClCompile Include="mac\libdispatch_task_runner_unittest.cc">
+      <Filter>mac\_excluded_files</Filter>
+    </ClCompile>
+    <None Include="mac\scoped_sending_event_unittest.mm">
+      <Filter>mac\_excluded_files</Filter>
+    </None>
+    <None Include="mac\objc_property_releaser_unittest.mm">
+      <Filter>mac\_excluded_files</Filter>
+    </None>
+    <None Include="mac\bind_objc_block_unittest.mm">
+      <Filter>mac\_excluded_files</Filter>
+    </None>
+    <ClCompile Include="synchronization\cancellation_flag_unittest.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="synchronization\lock_unittest.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="synchronization\waitable_event_unittest.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="synchronization\waitable_event_watcher_unittest.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="synchronization\condition_variable_unittest.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="i18n\break_iterator_unittest.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClCompile Include="i18n\icu_string_conversions_unittest.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClCompile Include="i18n\file_util_icu_unittest.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClCompile Include="i18n\char_iterator_unittest.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClCompile Include="i18n\number_formatting_unittest.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClCompile Include="i18n\case_conversion_unittest.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClCompile Include="i18n\string_search_unittest.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClCompile Include="i18n\time_formatting_unittest.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClCompile Include="i18n\rtl_unittest.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClCompile Include="profiler\tracked_time_unittest.cc">
+      <Filter>profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="power_monitor\power_monitor_unittest.cc">
+      <Filter>power_monitor</Filter>
+    </ClCompile>
+    <ClCompile Include="posix\unix_domain_socket_linux_unittest.cc">
+      <Filter>posix\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="posix\file_descriptor_shuffle_unittest.cc">
+      <Filter>posix\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\crash_logging_unittest.cc">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\leak_tracker_unittest.cc">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClInclude Include="debug\trace_event_unittest.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClCompile Include="debug\stack_trace_unittest.cc">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\trace_event_unittest.cc">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\trace_event_win_unittest.cc">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\string_number_conversions_unittest.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\utf_offset_string_conversions_unittest.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\string_piece_unittest.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\utf_string_conversions_unittest.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\stringize_macros_unittest.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\sys_string_conversions_unittest.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\string_split_unittest.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\string_tokenizer_unittest.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <None Include="strings\sys_string_conversions_mac_unittest.mm">
+      <Filter>strings\_excluded_files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

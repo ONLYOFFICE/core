@@ -1,0 +1,1628 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="win">
+      <UniqueIdentifier>{47FC5EC4-15EB-E92F-89D7-AFE51CF838A9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="chromeos">
+      <UniqueIdentifier>{3250F0B1-2DA3-5E5D-4EBC-552537BE80D1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="chromeos\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="allocator">
+      <UniqueIdentifier>{97B6ECA3-A204-9105-2F14-5256F8C49D81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\build">
+      <UniqueIdentifier>{D5519164-BF26-36DA-740B-76CEFC1827F4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="threading">
+      <UniqueIdentifier>{08E84E43-86EA-0FF0-2578-3ED14D870CD8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="threading\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="system_monitor">
+      <UniqueIdentifier>{9F210339-46B0-E53B-099D-58F06E70D728}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="json">
+      <UniqueIdentifier>{925A1F1B-2B9E-1800-B702-8923A5680923}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="message_loop">
+      <UniqueIdentifier>{85BB2B48-8131-AA06-DC6D-4CCE2EF5429B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="memory">
+      <UniqueIdentifier>{8F5DB3DB-0272-DCA1-4517-81A538CE0517}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="memory\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="android">
+      <UniqueIdentifier>{840B8E33-5F8C-45A0-5FD6-F07AA5687203}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="android\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="containers">
+      <UniqueIdentifier>{850CC7C6-4057-8728-DB1E-8B89B1880B8C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="files">
+      <UniqueIdentifier>{BB1C967E-6CBB-1192-77C2-20F84C75AB96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="files\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party">
+      <UniqueIdentifier>{D6C6CEA7-AAD0-03AD-2394-AC6FCBF8A498}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\xdg_user_dirs">
+      <UniqueIdentifier>{6E9B8795-7E7F-FB3A-1C1F-09B012B41A2D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\xdg_user_dirs\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\dmg_fp">
+      <UniqueIdentifier>{87747271-B296-E169-44C0-12EC81ED35FF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\icu">
+      <UniqueIdentifier>{16A1A08C-CD62-E501-A8C7-8BB00F1B8E2B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\xdg_mime">
+      <UniqueIdentifier>{0EF00DD8-93C9-29B0-738B-E0AA9D143A81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\nspr">
+      <UniqueIdentifier>{2A60EFAC-ED70-41AF-106F-40939EE26573}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\nspr\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ios">
+      <UniqueIdentifier>{5D988FAB-2F83-50FF-3F70-6A382CF02DF4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ios\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="metrics">
+      <UniqueIdentifier>{DC24B95F-2580-773E-999D-FF21A384B9AB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nix">
+      <UniqueIdentifier>{7AAA9544-6A84-A02C-3583-0379204EA5A4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nix\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="synchronization">
+      <UniqueIdentifier>{214F8E67-7437-F20E-6191-AECBD38CDFDC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="synchronization\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mac">
+      <UniqueIdentifier>{DDBFF7CF-DBCF-B2FC-793A-DB701B563E8D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mac\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="profiler">
+      <UniqueIdentifier>{87097DB4-0A18-6E42-07AB-BF3B3651C11F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="power_monitor">
+      <UniqueIdentifier>{4B63DFB6-FEE0-7F3A-96E4-125FEBEC4AF7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="power_monitor\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="posix">
+      <UniqueIdentifier>{111D2AD9-64D0-7241-0260-63641DD69CAE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="posix\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="time">
+      <UniqueIdentifier>{F1CEDE23-A032-A5F0-F773-337166AE9F47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="debug">
+      <UniqueIdentifier>{FBAE646B-1E91-2C58-956B-A42D67D8DA0E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="debug\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="strings">
+      <UniqueIdentifier>{03F116E8-99FD-0D5D-3AD5-D756C88BB794}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="strings\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="hi_res_timer_manager_win.cc"/>
+    <ClInclude Include="message_pump_default.h"/>
+    <ClInclude Include="sys_byteorder.h"/>
+    <ClInclude Include="observer_list_threadsafe.h"/>
+    <ClCompile Include="path_service.cc"/>
+    <ClCompile Include="lazy_instance.cc"/>
+    <ClCompile Include="task_runner.cc"/>
+    <ClInclude Include="pickle.h"/>
+    <ClCompile Include="process_info_win.cc"/>
+    <ClInclude Include="value_conversions.h"/>
+    <ClInclude Include="critical_closure.h"/>
+    <ClInclude Include="sync_socket.h"/>
+    <ClInclude Include="observer_list.h"/>
+    <ClInclude Include="message_pump_observer.h"/>
+    <ClInclude Include="basictypes.h"/>
+    <ClInclude Include="single_thread_task_runner.h"/>
+    <ClCompile Include="hash.cc"/>
+    <ClCompile Include="value_conversions.cc"/>
+    <ClInclude Include="callback_internal.h"/>
+    <ClInclude Include="os_compat_android.h"/>
+    <ClCompile Include="time.cc"/>
+    <ClInclude Include="atomicops_internals_tsan.h"/>
+    <ClInclude Include="path_service.h"/>
+    <ClInclude Include="bits.h"/>
+    <ClInclude Include="platform_file.h"/>
+    <ClInclude Include="values.h"/>
+    <ClCompile Include="base_paths.cc"/>
+    <ClInclude Include="atomicops_internals_x86_msvc.h"/>
+    <ClCompile Include="location.cc"/>
+    <ClCompile Include="event_recorder_win.cc"/>
+    <ClInclude Include="base_paths_android.h"/>
+    <ClInclude Include="base_paths_win.h"/>
+    <ClCompile Include="run_loop.cc"/>
+    <ClCompile Include="command_line.cc"/>
+    <ClInclude Include="sha1.h"/>
+    <ClInclude Include="sequence_checker.h"/>
+    <ClCompile Include="native_library_win.cc"/>
+    <ClInclude Include="format_macros.h"/>
+    <ClInclude Include="callback_helpers.h"/>
+    <ClCompile Include="pending_task.cc"/>
+    <ClInclude Include="task_runner_util.h"/>
+    <ClInclude Include="safe_numerics.h"/>
+    <ClInclude Include="build_time.h"/>
+    <ClInclude Include="stl_util.h"/>
+    <ClInclude Include="sequenced_task_runner.h"/>
+    <ClCompile Include="sequence_checker_impl.cc"/>
+    <ClCompile Include="supports_user_data.cc"/>
+    <ClInclude Include="run_loop.h"/>
+    <ClInclude Include="callback.h"/>
+    <ClInclude Include="tracking_info.h"/>
+    <ClCompile Include="logging_win.cc"/>
+    <ClInclude Include="auto_reset.h"/>
+    <ClCompile Include="guid.cc"/>
+    <ClInclude Include="tuple.h"/>
+    <ClInclude Include="logging_win.h"/>
+    <ClInclude Include="atomicops.h"/>
+    <ClInclude Include="thread_task_runner_handle.h"/>
+    <ClCompile Include="process_win.cc"/>
+    <ClInclude Include="supports_user_data.h"/>
+    <ClCompile Include="bind_helpers.cc"/>
+    <ClInclude Include="message_pump_android.h"/>
+    <ClInclude Include="command_line.h"/>
+    <ClInclude Include="file_version_info.h"/>
+    <ClCompile Include="stringprintf.cc"/>
+    <ClCompile Include="callback_internal.cc"/>
+    <ClInclude Include="atomicops_internals_x86_gcc.h"/>
+    <ClInclude Include="base64.h"/>
+    <ClCompile Include="sync_socket_win.cc"/>
+    <ClCompile Include="message_loop.cc"/>
+    <ClInclude Include="message_loop.h"/>
+    <ClInclude Include="base_paths.h"/>
+    <ClInclude Include="environment.h"/>
+    <ClInclude Include="lazy_instance.h"/>
+    <ClInclude Include="port.h"/>
+    <ClInclude Include="bind_internal.h"/>
+    <ClInclude Include="md5.h"/>
+    <ClCompile Include="message_pump_win.cc"/>
+    <ClInclude Include="bind.h"/>
+    <ClCompile Include="sys_info.cc"/>
+    <ClInclude Include="bind_helpers.h"/>
+    <ClInclude Include="event_recorder.h"/>
+    <ClInclude Include="process.h"/>
+    <ClCompile Include="base_paths_win.cc"/>
+    <ClCompile Include="guid_win.cc"/>
+    <ClCompile Include="cpu.cc"/>
+    <ClCompile Include="file_util.cc"/>
+    <ClCompile Include="sys_info_win.cc"/>
+    <ClCompile Include="message_pump_default.cc"/>
+    <ClCompile Include="values.cc"/>
+    <ClCompile Include="deferred_sequenced_task_runner.cc"/>
+    <ClInclude Include="task_runner.h"/>
+    <ClInclude Include="process_util.h"/>
+    <ClCompile Include="build_time.cc"/>
+    <ClInclude Include="sequenced_task_runner_helpers.h"/>
+    <ClInclude Include="cancelable_callback.h"/>
+    <ClCompile Include="sequenced_task_runner.cc"/>
+    <ClInclude Include="string16.h"/>
+    <ClInclude Include="guid.h"/>
+    <ClCompile Include="logging.cc"/>
+    <ClCompile Include="vlog.cc"/>
+    <ClInclude Include="at_exit.h"/>
+    <ClInclude Include="pending_task.h"/>
+    <ClCompile Include="process_util.cc"/>
+    <ClInclude Include="base_export.h"/>
+    <ClInclude Include="move.h"/>
+    <ClCompile Include="sha1_portable.cc"/>
+    <ClInclude Include="stringprintf.h"/>
+    <ClInclude Include="version.h"/>
+    <ClCompile Include="platform_file.cc"/>
+    <ClCompile Include="rand_util.cc"/>
+    <ClCompile Include="message_pump.cc"/>
+    <ClCompile Include="scoped_native_library.cc"/>
+    <ClInclude Include="deferred_sequenced_task_runner.h"/>
+    <ClInclude Include="timer.h"/>
+    <ClInclude Include="hash.h"/>
+    <ClInclude Include="atomicops_internals_gcc.h"/>
+    <ClInclude Include="vlog.h"/>
+    <ClCompile Include="time_win.cc"/>
+    <ClInclude Include="string_util_win.h"/>
+    <ClCompile Include="md5.cc"/>
+    <ClCompile Include="rand_util_win.cc"/>
+    <ClInclude Include="process_info.h"/>
+    <ClInclude Include="atomic_ref_count.h"/>
+    <ClCompile Include="file_version_info_win.cc"/>
+    <ClInclude Include="template_util.h"/>
+    <ClCompile Include="version.cc"/>
+    <ClCompile Include="file_util_win.cc"/>
+    <ClInclude Include="native_library.h"/>
+    <ClInclude Include="base_switches.h"/>
+    <ClInclude Include="scoped_native_library.h"/>
+    <ClCompile Include="tracking_info.cc"/>
+    <ClInclude Include="gtest_prod_util.h"/>
+    <ClInclude Include="sys_info.h"/>
+    <ClInclude Include="hash_tables.h"/>
+    <ClInclude Include="tracked_objects.h"/>
+    <ClInclude Include="file_util.h"/>
+    <ClInclude Include="file_version_info_win.h"/>
+    <ClInclude Include="id_map.h"/>
+    <ClCompile Include="pickle.cc"/>
+    <ClCompile Include="tracked_objects.cc"/>
+    <None Include="base.gyp"/>
+    <ClCompile Include="string_util.cc"/>
+    <ClCompile Include="process_util_win.cc"/>
+    <ClInclude Include="compiler_specific.h"/>
+    <ClCompile Include="thread_task_runner_handle.cc"/>
+    <ClInclude Include="cpu.h"/>
+    <ClInclude Include="bind_internal_win.h"/>
+    <ClInclude Include="float_util.h"/>
+    <ClInclude Include="string_util.h"/>
+    <ClInclude Include="message_pump_glib.h"/>
+    <ClInclude Include="time.h"/>
+    <ClInclude Include="atomic_sequence_num.h"/>
+    <ClInclude Include="location.h"/>
+    <ClInclude Include="sequence_checker_impl.h"/>
+    <ClInclude Include="linux_util.h"/>
+    <ClInclude Include="logging.h"/>
+    <ClInclude Include="message_pump_libevent.h"/>
+    <ClInclude Include="message_pump.h"/>
+    <ClCompile Include="at_exit.cc"/>
+    <ClInclude Include="hi_res_timer_manager.h"/>
+    <ClCompile Include="base64.cc"/>
+    <ClCompile Include="environment.cc"/>
+    <ClCompile Include="timer.cc"/>
+    <ClInclude Include="rand_util.h"/>
+    <ClInclude Include="message_pump_win.h"/>
+    <ClCompile Include="platform_file_win.cc"/>
+    <None Include="critical_closure_ios.mm">
+      <Filter>_excluded_files</Filter>
+    </None>
+    <ClCompile Include="event_recorder_stubs.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <None Include="process_util_mac.mm">
+      <Filter>_excluded_files</Filter>
+    </None>
+    <None Include="file_version_info_mac.mm">
+      <Filter>_excluded_files</Filter>
+    </None>
+    <ClCompile Include="string16.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="sys_info_posix.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <None Include="base_paths_mac.mm">
+      <Filter>_excluded_files</Filter>
+    </None>
+    <None Include="file_util_mac.mm">
+      <Filter>_excluded_files</Filter>
+    </None>
+    <ClCompile Include="rand_util_nacl.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="string_util_posix.h">
+      <Filter>_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="sys_info_chromeos.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="base_paths_mac.h">
+      <Filter>_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="message_pump_gtk.h">
+      <Filter>_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="file_util_android.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="message_pump_libevent.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="process_util_freebsd.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="time_mac.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="process_util_linux.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="sys_info_openbsd.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="process_util_openbsd.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="time_posix.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="guid_posix.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="platform_file_posix.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="process_util_posix.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="message_pump_aurax11.h">
+      <Filter>_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="base_paths_posix.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="message_pump_mac.h">
+      <Filter>_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="sys_info_mac.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="base_paths_android.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="message_pump_ozone.h">
+      <Filter>_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="message_pump_ozone.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="os_compat_nacl.h">
+      <Filter>_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="message_pump_gtk.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="sys_info_android.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="native_library_posix.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="hi_res_timer_manager_posix.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="rand_util_posix.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="atomicops_internals_mac.h">
+      <Filter>_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="message_pump_aurax11.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="file_descriptor_posix.h">
+      <Filter>_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="message_pump_io_ios.h">
+      <Filter>_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="atomicops_internals_x86_gcc.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="message_pump_io_ios.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="message_pump_android.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="safe_strerror_posix.h">
+      <Filter>_excluded_files</Filter>
+    </ClInclude>
+    <None Include="native_library_mac.mm">
+      <Filter>_excluded_files</Filter>
+    </None>
+    <ClInclude Include="file_version_info_mac.h">
+      <Filter>_excluded_files</Filter>
+    </ClInclude>
+    <None Include="process_util_ios.mm">
+      <Filter>_excluded_files</Filter>
+    </None>
+    <ClCompile Include="sys_info_linux.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="process_linux.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="message_pump_glib.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="base_paths_posix.h">
+      <Filter>_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="sha1_win.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="process_posix.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <None Include="sys_info_ios.mm">
+      <Filter>_excluded_files</Filter>
+    </None>
+    <ClCompile Include="os_compat_nacl.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <None Include="message_pump_mac.mm">
+      <Filter>_excluded_files</Filter>
+    </None>
+    <ClCompile Include="sync_socket_posix.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="linux_util.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="os_compat_android.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="process_info_mac.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="file_util_posix.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="file_util_linux.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="sys_info_freebsd.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="safe_strerror_posix.cc">
+      <Filter>_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="win\iat_patch_function.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClCompile Include="win\metro.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClInclude Include="win\scoped_hglobal.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\scoped_process_information.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\startup_information.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClCompile Include="win\wrapped_window_proc.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\enum_variant.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClInclude Include="win\scoped_select_object.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\scoped_comptr.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\registry.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\shortcut.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\wrapped_window_proc.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\event_trace_consumer.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\resource_util.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClCompile Include="win\scoped_bstr.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClInclude Include="win\metro.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClCompile Include="win\startup_information.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClInclude Include="win\scoped_com_initializer.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\scoped_propvariant.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\event_trace_provider.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClCompile Include="win\resource_util.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\scoped_process_information.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClInclude Include="win\scoped_co_mem.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClCompile Include="win\iunknown_impl.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClInclude Include="win\text_services_message_filter.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\scoped_hdc.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\scoped_handle.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClCompile Include="win\scoped_variant.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClInclude Include="win\event_trace_controller.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClCompile Include="win\object_watcher.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\iat_patch_function.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClInclude Include="win\object_watcher.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClCompile Include="win\i18n.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClInclude Include="win\i18n.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\scoped_variant.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\scoped_bstr.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClCompile Include="win\event_trace_provider.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClInclude Include="win\sampling_profiler.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClCompile Include="win\windows_version.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\win_util.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\sampling_profiler.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClInclude Include="win\scoped_gdi_object.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\windows_version.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClCompile Include="win\text_services_message_filter.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClInclude Include="win\iunknown_impl.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClCompile Include="win\scoped_handle.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\registry.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="win\event_trace_controller.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClInclude Include="win\win_util.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClInclude Include="win\enum_variant.h">
+      <Filter>win</Filter>
+    </ClInclude>
+    <ClCompile Include="win\shortcut.cc">
+      <Filter>win</Filter>
+    </ClCompile>
+    <ClCompile Include="chromeos\chromeos_version.cc">
+      <Filter>chromeos\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="chromeos\chromeos_version.h">
+      <Filter>chromeos\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="allocator\allocator_extension.h">
+      <Filter>allocator</Filter>
+    </ClInclude>
+    <ClInclude Include="allocator\type_profiler_control.h">
+      <Filter>allocator</Filter>
+    </ClInclude>
+    <ClCompile Include="allocator\allocator_extension.cc">
+      <Filter>allocator</Filter>
+    </ClCompile>
+    <ClCompile Include="allocator\type_profiler_control.cc">
+      <Filter>allocator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\precompile.cc">
+      <Filter>..\build</Filter>
+    </ClCompile>
+    <ClInclude Include="..\build\build_config.h">
+      <Filter>..\build</Filter>
+    </ClInclude>
+    <ClCompile Include="threading\sequenced_worker_pool.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClInclude Include="threading\thread_restrictions.h">
+      <Filter>threading</Filter>
+    </ClInclude>
+    <ClCompile Include="threading\platform_thread_win.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\watchdog.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\worker_pool_win.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\thread.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClInclude Include="threading\simple_thread.h">
+      <Filter>threading</Filter>
+    </ClInclude>
+    <ClCompile Include="threading\post_task_and_reply_impl.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClInclude Include="threading\thread.h">
+      <Filter>threading</Filter>
+    </ClInclude>
+    <ClInclude Include="threading\thread_checker_impl.h">
+      <Filter>threading</Filter>
+    </ClInclude>
+    <ClCompile Include="threading\simple_thread.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\thread_local_storage_win.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClInclude Include="threading\post_task_and_reply_impl.h">
+      <Filter>threading</Filter>
+    </ClInclude>
+    <ClInclude Include="threading\worker_pool.h">
+      <Filter>threading</Filter>
+    </ClInclude>
+    <ClInclude Include="threading\thread_local.h">
+      <Filter>threading</Filter>
+    </ClInclude>
+    <ClInclude Include="threading\non_thread_safe_impl.h">
+      <Filter>threading</Filter>
+    </ClInclude>
+    <ClInclude Include="threading\thread_id_name_manager.h">
+      <Filter>threading</Filter>
+    </ClInclude>
+    <ClInclude Include="threading\thread_checker.h">
+      <Filter>threading</Filter>
+    </ClInclude>
+    <ClInclude Include="threading\thread_local_storage.h">
+      <Filter>threading</Filter>
+    </ClInclude>
+    <ClInclude Include="threading\non_thread_safe.h">
+      <Filter>threading</Filter>
+    </ClInclude>
+    <ClCompile Include="threading\thread_local_win.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\worker_pool.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClInclude Include="threading\thread_collision_warner.h">
+      <Filter>threading</Filter>
+    </ClInclude>
+    <ClCompile Include="threading\thread_restrictions.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\thread_collision_warner.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\thread_id_name_manager.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\non_thread_safe_impl.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClInclude Include="threading\watchdog.h">
+      <Filter>threading</Filter>
+    </ClInclude>
+    <ClCompile Include="threading\thread_checker_impl.cc">
+      <Filter>threading</Filter>
+    </ClCompile>
+    <ClInclude Include="threading\sequenced_worker_pool.h">
+      <Filter>threading</Filter>
+    </ClInclude>
+    <ClInclude Include="threading\platform_thread.h">
+      <Filter>threading</Filter>
+    </ClInclude>
+    <ClCompile Include="threading\thread_local_storage_posix.cc">
+      <Filter>threading\_excluded_files</Filter>
+    </ClCompile>
+    <None Include="threading\platform_thread_mac.mm">
+      <Filter>threading\_excluded_files</Filter>
+    </None>
+    <ClCompile Include="threading\worker_pool_posix.cc">
+      <Filter>threading\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="threading\thread_local_posix.cc">
+      <Filter>threading\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="threading\worker_pool_posix.h">
+      <Filter>threading\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="threading\platform_thread_posix.cc">
+      <Filter>threading\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="system_monitor\system_monitor.cc">
+      <Filter>system_monitor</Filter>
+    </ClCompile>
+    <ClInclude Include="system_monitor\system_monitor.h">
+      <Filter>system_monitor</Filter>
+    </ClInclude>
+    <ClInclude Include="json\json_value_converter.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="json\json_file_value_serializer.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClCompile Include="json\json_reader.cc">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClInclude Include="json\json_string_value_serializer.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClCompile Include="json\json_parser.cc">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClInclude Include="json\json_reader.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClCompile Include="json\string_escape.cc">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClInclude Include="json\json_writer.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="json\string_escape.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClCompile Include="json\json_string_value_serializer.cc">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClInclude Include="json\json_parser.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClCompile Include="json\json_writer.cc">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="json\json_file_value_serializer.cc">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="message_loop\message_loop_proxy.cc">
+      <Filter>message_loop</Filter>
+    </ClCompile>
+    <ClCompile Include="message_loop\message_loop_proxy_impl.cc">
+      <Filter>message_loop</Filter>
+    </ClCompile>
+    <ClInclude Include="message_loop\message_loop_proxy.h">
+      <Filter>message_loop</Filter>
+    </ClInclude>
+    <ClInclude Include="message_loop\message_loop_proxy_impl.h">
+      <Filter>message_loop</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\singleton.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\discardable_memory.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\linked_ptr.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\weak_ptr.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\scoped_vector.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\scoped_ptr.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\scoped_policy.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\ref_counted_memory.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\manual_constructor.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\ref_counted.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClCompile Include="memory\aligned_memory.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\weak_ptr.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\singleton.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClInclude Include="memory\scoped_handle.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClCompile Include="memory\ref_counted_memory.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\shared_memory_win.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClInclude Include="memory\scoped_nsobject.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClCompile Include="memory\ref_counted.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClInclude Include="memory\aligned_memory.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClCompile Include="memory\discardable_memory.cc">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClInclude Include="memory\scoped_open_process.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\shared_memory.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="memory\raw_scoped_refptr_mismatch_checker.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClCompile Include="memory\shared_memory_posix.cc">
+      <Filter>memory\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\shared_memory_nacl.cc">
+      <Filter>memory\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\discardable_memory_mac.cc">
+      <Filter>memory\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\shared_memory_android.cc">
+      <Filter>memory\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="memory\discardable_memory_android.cc">
+      <Filter>memory\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="android\build_info.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="android\jni_helper.h">
+      <Filter>android\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="android\important_file_writer_android.h">
+      <Filter>android\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="android\important_file_writer_android.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="android\thread_utils.h">
+      <Filter>android\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="android\scoped_java_ref.h">
+      <Filter>android\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="android\jni_registrar.h">
+      <Filter>android\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="android\jni_array.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="android\jni_string.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="android\build_info.h">
+      <Filter>android\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="android\path_utils.h">
+      <Filter>android\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="android\path_service_android.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="android\base_jni_registrar.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="android\jni_registrar.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="android\jni_helper.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="android\base_jni_registrar.h">
+      <Filter>android\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="android\jni_android.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="android\activity_status.h">
+      <Filter>android\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="android\jni_string.h">
+      <Filter>android\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="android\scoped_java_ref.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="android\jni_android.h">
+      <Filter>android\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="android\jni_array.h">
+      <Filter>android\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="android\cpu_features.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="android\path_service_android.h">
+      <Filter>android\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="android\path_utils.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="android\activity_status.cc">
+      <Filter>android\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="containers\small_map.h">
+      <Filter>containers</Filter>
+    </ClInclude>
+    <ClInclude Include="containers\mru_cache.h">
+      <Filter>containers</Filter>
+    </ClInclude>
+    <ClInclude Include="containers\stack_container.h">
+      <Filter>containers</Filter>
+    </ClInclude>
+    <ClInclude Include="containers\linked_list.h">
+      <Filter>containers</Filter>
+    </ClInclude>
+    <ClCompile Include="files\file_util_proxy.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="files\memory_mapped_file.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClInclude Include="files\file_util_proxy.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClCompile Include="files\file_path.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="files\important_file_writer.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClInclude Include="files\dir_reader_fallback.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="files\file_path_watcher.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClCompile Include="files\memory_mapped_file_win.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClCompile Include="files\file_path_watcher_win.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClInclude Include="files\file_path.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClCompile Include="files\file_path_watcher.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClInclude Include="files\memory_mapped_file.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClCompile Include="files\scoped_temp_dir.cc">
+      <Filter>files</Filter>
+    </ClCompile>
+    <ClInclude Include="files\scoped_temp_dir.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="files\important_file_writer.h">
+      <Filter>files</Filter>
+    </ClInclude>
+    <ClInclude Include="files\dir_reader_linux.h">
+      <Filter>files\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="files\memory_mapped_file_posix.cc">
+      <Filter>files\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="files\file_path_watcher_kqueue.cc">
+      <Filter>files\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="files\file_path_watcher_stub.cc">
+      <Filter>files\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="files\file_path_watcher_linux.cc">
+      <Filter>files\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="files\dir_reader_posix.h">
+      <Filter>files\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\xdg_user_dirs\xdg_user_dir_lookup.h">
+      <Filter>third_party\xdg_user_dirs\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="third_party\xdg_user_dirs\xdg_user_dir_lookup.cc">
+      <Filter>third_party\xdg_user_dirs\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\dmg_fp\g_fmt.cc">
+      <Filter>third_party\dmg_fp</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\dmg_fp\dtoa_wrapper.cc">
+      <Filter>third_party\dmg_fp</Filter>
+    </ClCompile>
+    <ClInclude Include="third_party\dmg_fp\dmg_fp.h">
+      <Filter>third_party\dmg_fp</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\icu\icu_utf.h">
+      <Filter>third_party\icu</Filter>
+    </ClInclude>
+    <ClCompile Include="third_party\icu\icu_utf.cc">
+      <Filter>third_party\icu</Filter>
+    </ClCompile>
+    <ClInclude Include="third_party\xdg_mime\xdgmime.h">
+      <Filter>third_party\xdg_mime</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\nspr\prcpucfg_openbsd.h">
+      <Filter>third_party\nspr</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\nspr\prtypes.h">
+      <Filter>third_party\nspr</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\nspr\prtime.h">
+      <Filter>third_party\nspr</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\nspr\prcpucfg.h">
+      <Filter>third_party\nspr</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\nspr\prcpucfg_freebsd.h">
+      <Filter>third_party\nspr</Filter>
+    </ClInclude>
+    <ClCompile Include="third_party\nspr\prtime.cc">
+      <Filter>third_party\nspr</Filter>
+    </ClCompile>
+    <ClInclude Include="third_party\nspr\prcpucfg_win.h">
+      <Filter>third_party\nspr</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\nspr\prcpucfg_solaris.h">
+      <Filter>third_party\nspr</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\nspr\prcpucfg_linux.h">
+      <Filter>third_party\nspr\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\nspr\prcpucfg_mac.h">
+      <Filter>third_party\nspr\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\nspr\prcpucfg_nacl.h">
+      <Filter>third_party\nspr\_excluded_files</Filter>
+    </ClInclude>
+    <None Include="ios\ios_util.mm">
+      <Filter>ios\_excluded_files</Filter>
+    </None>
+    <ClInclude Include="ios\ios_util.h">
+      <Filter>ios\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="ios\device_util.h">
+      <Filter>ios\_excluded_files</Filter>
+    </ClInclude>
+    <None Include="ios\scoped_critical_action.mm">
+      <Filter>ios\_excluded_files</Filter>
+    </None>
+    <ClInclude Include="ios\scoped_critical_action.h">
+      <Filter>ios\_excluded_files</Filter>
+    </ClInclude>
+    <None Include="ios\device_util.mm">
+      <Filter>ios\_excluded_files</Filter>
+    </None>
+    <ClInclude Include="metrics\statistics_recorder.h">
+      <Filter>metrics</Filter>
+    </ClInclude>
+    <ClCompile Include="metrics\histogram_base.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClInclude Include="metrics\bucket_ranges.h">
+      <Filter>metrics</Filter>
+    </ClInclude>
+    <ClInclude Include="metrics\sample_vector.h">
+      <Filter>metrics</Filter>
+    </ClInclude>
+    <ClCompile Include="metrics\bucket_ranges.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClCompile Include="metrics\sparse_histogram.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClCompile Include="metrics\field_trial.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClCompile Include="metrics\sample_vector.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClCompile Include="metrics\sample_map.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClCompile Include="metrics\stats_counters.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClInclude Include="metrics\histogram_flattener.h">
+      <Filter>metrics</Filter>
+    </ClInclude>
+    <ClInclude Include="metrics\field_trial.h">
+      <Filter>metrics</Filter>
+    </ClInclude>
+    <ClInclude Include="metrics\histogram_snapshot_manager.h">
+      <Filter>metrics</Filter>
+    </ClInclude>
+    <ClCompile Include="metrics\histogram_samples.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClInclude Include="metrics\stats_counters.h">
+      <Filter>metrics</Filter>
+    </ClInclude>
+    <ClInclude Include="metrics\sample_map.h">
+      <Filter>metrics</Filter>
+    </ClInclude>
+    <ClCompile Include="metrics\stats_table.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClInclude Include="metrics\histogram.h">
+      <Filter>metrics</Filter>
+    </ClInclude>
+    <ClCompile Include="metrics\histogram_snapshot_manager.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClInclude Include="metrics\histogram_samples.h">
+      <Filter>metrics</Filter>
+    </ClInclude>
+    <ClCompile Include="metrics\statistics_recorder.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClInclude Include="metrics\sparse_histogram.h">
+      <Filter>metrics</Filter>
+    </ClInclude>
+    <ClInclude Include="metrics\histogram_base.h">
+      <Filter>metrics</Filter>
+    </ClInclude>
+    <ClInclude Include="metrics\stats_table.h">
+      <Filter>metrics</Filter>
+    </ClInclude>
+    <ClCompile Include="metrics\histogram.cc">
+      <Filter>metrics</Filter>
+    </ClCompile>
+    <ClCompile Include="nix\mime_util_xdg.cc">
+      <Filter>nix\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="nix\xdg_util.cc">
+      <Filter>nix\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="nix\mime_util_xdg.h">
+      <Filter>nix\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="nix\xdg_util.h">
+      <Filter>nix\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="synchronization\waitable_event_watcher.h">
+      <Filter>synchronization</Filter>
+    </ClInclude>
+    <ClInclude Include="synchronization\lock.h">
+      <Filter>synchronization</Filter>
+    </ClInclude>
+    <ClCompile Include="synchronization\cancellation_flag.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClInclude Include="synchronization\lock_impl.h">
+      <Filter>synchronization</Filter>
+    </ClInclude>
+    <ClCompile Include="synchronization\waitable_event_watcher_win.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClInclude Include="synchronization\cancellation_flag.h">
+      <Filter>synchronization</Filter>
+    </ClInclude>
+    <ClCompile Include="synchronization\lock.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="synchronization\condition_variable_win.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="synchronization\waitable_event_win.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClInclude Include="synchronization\condition_variable.h">
+      <Filter>synchronization</Filter>
+    </ClInclude>
+    <ClCompile Include="synchronization\lock_impl_win.cc">
+      <Filter>synchronization</Filter>
+    </ClCompile>
+    <ClInclude Include="synchronization\spin_wait.h">
+      <Filter>synchronization</Filter>
+    </ClInclude>
+    <ClInclude Include="synchronization\waitable_event.h">
+      <Filter>synchronization</Filter>
+    </ClInclude>
+    <ClCompile Include="synchronization\waitable_event_watcher_posix.cc">
+      <Filter>synchronization\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="synchronization\condition_variable_posix.cc">
+      <Filter>synchronization\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="synchronization\lock_impl_posix.cc">
+      <Filter>synchronization\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="synchronization\waitable_event_posix.cc">
+      <Filter>synchronization\_excluded_files</Filter>
+    </ClCompile>
+    <None Include="mac\scoped_nsautorelease_pool.mm">
+      <Filter>mac\_excluded_files</Filter>
+    </None>
+    <ClCompile Include="mac\scoped_mach_port.cc">
+      <Filter>mac\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="mac\libdispatch_task_runner.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <None Include="mac\scoped_nsexception_enabler.mm">
+      <Filter>mac\_excluded_files</Filter>
+    </None>
+    <ClInclude Include="mac\cocoa_protocols.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <None Include="mac\foundation_util.mm">
+      <Filter>mac\_excluded_files</Filter>
+    </None>
+    <ClInclude Include="mac\scoped_launch_data.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="mac\os_crash_dumps.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="mac\launch_services_util.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="mac\scoped_nsexception_enabler.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="mac\mac_util.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="mac\bundle_locations.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="mac\mac_logging.cc">
+      <Filter>mac\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="mac\launchd.cc">
+      <Filter>mac\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="mac\scoped_ioobject.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="mac\scoped_mach_port.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="mac\scoped_aedesc.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="mac\scoped_authorizationref.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <None Include="mac\mac_util.mm">
+      <Filter>mac\_excluded_files</Filter>
+    </None>
+    <ClInclude Include="mac\scoped_block.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <None Include="mac\bundle_locations.mm">
+      <Filter>mac\_excluded_files</Filter>
+    </None>
+    <None Include="mac\scoped_sending_event.mm">
+      <Filter>mac\_excluded_files</Filter>
+    </None>
+    <None Include="mac\objc_property_releaser.mm">
+      <Filter>mac\_excluded_files</Filter>
+    </None>
+    <ClInclude Include="mac\bind_objc_block.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="mac\authorization_util.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="mac\objc_property_releaser.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <None Include="mac\authorization_util.mm">
+      <Filter>mac\_excluded_files</Filter>
+    </None>
+    <ClInclude Include="mac\launchd.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="mac\mac_logging.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="mac\libdispatch_task_runner.cc">
+      <Filter>mac\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="mac\os_crash_dumps.cc">
+      <Filter>mac\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="mac\scoped_cftyperef.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="mac\scoped_sending_event.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="mac\foundation_util.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="mac\scoped_nsautorelease_pool.h">
+      <Filter>mac\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="mac\launch_services_util.cc">
+      <Filter>mac\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="profiler\scoped_profile.cc">
+      <Filter>profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="profiler\alternate_timer.cc">
+      <Filter>profiler</Filter>
+    </ClCompile>
+    <ClInclude Include="profiler\scoped_profile.h">
+      <Filter>profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="profiler\tracked_time.h">
+      <Filter>profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="profiler\alternate_timer.h">
+      <Filter>profiler</Filter>
+    </ClInclude>
+    <ClCompile Include="profiler\tracked_time.cc">
+      <Filter>profiler</Filter>
+    </ClCompile>
+    <ClInclude Include="power_monitor\power_monitor.h">
+      <Filter>power_monitor</Filter>
+    </ClInclude>
+    <ClCompile Include="power_monitor\power_monitor_win.cc">
+      <Filter>power_monitor</Filter>
+    </ClCompile>
+    <ClInclude Include="power_monitor\power_observer.h">
+      <Filter>power_monitor</Filter>
+    </ClInclude>
+    <ClCompile Include="power_monitor\power_monitor.cc">
+      <Filter>power_monitor</Filter>
+    </ClCompile>
+    <ClInclude Include="power_monitor\power_monitor_android.h">
+      <Filter>power_monitor</Filter>
+    </ClInclude>
+    <ClCompile Include="power_monitor\power_monitor_posix.cc">
+      <Filter>power_monitor\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="power_monitor\power_monitor_android.cc">
+      <Filter>power_monitor\_excluded_files</Filter>
+    </ClCompile>
+    <None Include="power_monitor\power_monitor_ios.mm">
+      <Filter>power_monitor\_excluded_files</Filter>
+    </None>
+    <None Include="power_monitor\power_monitor_mac.mm">
+      <Filter>power_monitor\_excluded_files</Filter>
+    </None>
+    <ClCompile Include="posix\global_descriptors.cc">
+      <Filter>posix\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="posix\unix_domain_socket_linux.h">
+      <Filter>posix\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="posix\file_descriptor_shuffle.h">
+      <Filter>posix\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="posix\eintr_wrapper.h">
+      <Filter>posix\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="posix\unix_domain_socket_linux.cc">
+      <Filter>posix\_excluded_files</Filter>
+    </ClCompile>
+    <ClInclude Include="posix\global_descriptors.h">
+      <Filter>posix\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="posix\file_descriptor_shuffle.cc">
+      <Filter>posix\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="time\clock.cc">
+      <Filter>time</Filter>
+    </ClCompile>
+    <ClCompile Include="time\tick_clock.cc">
+      <Filter>time</Filter>
+    </ClCompile>
+    <ClInclude Include="time\tick_clock.h">
+      <Filter>time</Filter>
+    </ClInclude>
+    <ClInclude Include="time\default_tick_clock.h">
+      <Filter>time</Filter>
+    </ClInclude>
+    <ClInclude Include="time\default_clock.h">
+      <Filter>time</Filter>
+    </ClInclude>
+    <ClInclude Include="time\clock.h">
+      <Filter>time</Filter>
+    </ClInclude>
+    <ClCompile Include="time\default_clock.cc">
+      <Filter>time</Filter>
+    </ClCompile>
+    <ClCompile Include="time\default_tick_clock.cc">
+      <Filter>time</Filter>
+    </ClCompile>
+    <ClInclude Include="debug\alias.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="debug\profiler.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClCompile Include="debug\debugger_win.cc">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\trace_event_impl.cc">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\trace_event_win.cc">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClInclude Include="debug\trace_event_impl.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClCompile Include="debug\stack_trace.cc">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\profiler.cc">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClInclude Include="debug\leak_tracker.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClCompile Include="debug\debugger.cc">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\alias.cc">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\debug_on_start_win.cc">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClInclude Include="debug\debugger.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="debug\leak_annotations.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClCompile Include="debug\stack_trace_win.cc">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClInclude Include="debug\debug_on_start_win.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="debug\stack_trace.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClCompile Include="debug\crash_logging.cc">
+      <Filter>debug</Filter>
+    </ClCompile>
+    <ClInclude Include="debug\trace_event.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="debug\crash_logging.h">
+      <Filter>debug</Filter>
+    </ClInclude>
+    <ClCompile Include="debug\stack_trace_posix.cc">
+      <Filter>debug\_excluded_files</Filter>
+    </ClCompile>
+    <None Include="debug\stack_trace_ios.mm">
+      <Filter>debug\_excluded_files</Filter>
+    </None>
+    <ClCompile Include="debug\stack_trace_android.cc">
+      <Filter>debug\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\trace_event_android.cc">
+      <Filter>debug\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\debugger_posix.cc">
+      <Filter>debug\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\string_piece.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\utf_offset_string_conversions.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\string_split.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClInclude Include="strings\string_number_conversions.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="strings\utf_string_conversions.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="strings\string_piece.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClCompile Include="strings\sys_string_conversions_win.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClCompile Include="strings\utf_string_conversion_utils.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClInclude Include="strings\sys_string_conversions.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClCompile Include="strings\string_number_conversions.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClInclude Include="strings\stringize_macros.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="strings\string_split.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="strings\utf_string_conversion_utils.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClCompile Include="strings\utf_string_conversions.cc">
+      <Filter>strings</Filter>
+    </ClCompile>
+    <ClInclude Include="strings\string_tokenizer.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClInclude Include="strings\utf_offset_string_conversions.h">
+      <Filter>strings</Filter>
+    </ClInclude>
+    <ClCompile Include="strings\sys_string_conversions_posix.cc">
+      <Filter>strings\_excluded_files</Filter>
+    </ClCompile>
+    <None Include="strings\sys_string_conversions_mac.mm">
+      <Filter>strings\_excluded_files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

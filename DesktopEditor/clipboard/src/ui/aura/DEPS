@@ -1,0 +1,7 @@
+include_rules = [
+  "+grit/ui_resources.h",
+  "+grit/ui_strings.h",
+  "+skia/ext",
+  "+ui/base",
+  "+ui/gfx",
+]

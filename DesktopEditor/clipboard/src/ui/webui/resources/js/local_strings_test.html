@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>LocalStrings Tests</title>
+<script src="http://closure-library.googlecode.com/svn/trunk/closure/goog/base.js"></script>
+<script src="local_strings.js"></script>
+<script>
+goog.require('goog.testing.jsunit');
+</script>
+</head>
+<body>
+<script>
+
+function testGetString() {
+  var localStrings = new LocalStrings;
+  localStrings.templateData = {
+    'a': 'apple',
+    'b': 'banana'
+  };
+  assertEquals(localStrings.getString('a'), 'apple');
+  assertEquals(localStrings.getString('b'), 'banana');
+  assertEquals(localStrings.getString('c'), '');
+}
+
+function testGetStringF() {
+  var localStrings = new LocalStrings;
+  localStrings.templateData = {
+    'a': '$1',
+    'b': '$1$2',
+    'c': '$1$2$3',
+    'd': '$1$2$3$4$5$6$7$8$9'
+  };
+  assertEquals(localStrings.getStringF('a', 'A'), 'A');
+  assertEquals(localStrings.getStringF('b', 'A', 'B'), 'AB');
+  assertEquals(localStrings.getStringF('b', 'A'),
+               'Aundefined');
+  assertEquals(localStrings.getStringF('c', 'A', 'B', 'C'),
+               'ABC');
+  assertEquals(localStrings.getStringF('c', 'A'),
+               'Aundefinedundefined');
+  assertEquals(localStrings.getStringF('d', 'A', 'B', 'C',
+               'D', 'E', 'F', 'G', 'H', 'I'), 'ABCDEFGHI');
+  assertEquals(localStrings.getStringF('e', 'A'), '');
+}
+
+</script>
+</body>
+</html>

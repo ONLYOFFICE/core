@@ -1,0 +1,7 @@
+include_rules = [
+  # TODO(nona): Remove chromoeos/dbus entry once crbug.com/171351 is fixed.
+  "+chromeos/dbus",
+  "+chromeos/ime",
+  "+third_party/gtk+/gdk/gdkkeysyms.h",
+  "+third_party/gtk+/gtk/gtkimcontextsimpleseqs.h",
+]

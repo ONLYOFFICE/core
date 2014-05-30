@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="cocoa">
+      <UniqueIdentifier>{7DE7C50E-B7F9-3610-CB61-C0F25CD5170C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cocoa\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="views">
+      <UniqueIdentifier>{D23515F3-31E8-1B27-FABB-5B45DAAF113D}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="message_center.h"/>
+    <ClCompile Include="notification.cc"/>
+    <ClCompile Include="message_center_tray.cc"/>
+    <ClInclude Include="message_center_tray.h"/>
+    <ClInclude Include="message_center_util.h"/>
+    <ClInclude Include="notification.h"/>
+    <ClCompile Include="message_center.cc"/>
+    <None Include="message_center.gyp"/>
+    <ClInclude Include="message_center_constants.h"/>
+    <ClInclude Include="notification_types.h"/>
+    <ClCompile Include="message_center_util.cc"/>
+    <ClCompile Include="notification_list.cc"/>
+    <ClInclude Include="notification_list.h"/>
+    <ClInclude Include="message_center_tray_delegate.h"/>
+    <ClInclude Include="message_center_observer.h"/>
+    <ClCompile Include="message_center_constants.cc"/>
+    <ClInclude Include="message_center_switches.h"/>
+    <ClCompile Include="message_center_impl.cc"/>
+    <ClCompile Include="message_center_switches.cc"/>
+    <ClInclude Include="message_center_impl.h"/>
+    <ClInclude Include="notifier_settings.h"/>
+    <ClCompile Include="notifier_settings.cc"/>
+    <ClCompile Include="notification_types.cc"/>
+    <ClInclude Include="message_center_export.h"/>
+    <ClInclude Include="cocoa\popup_collection.h">
+      <Filter>cocoa\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="cocoa\notification_controller.h">
+      <Filter>cocoa\_excluded_files</Filter>
+    </ClInclude>
+    <ClInclude Include="cocoa\popup_controller.h">
+      <Filter>cocoa\_excluded_files</Filter>
+    </ClInclude>
+    <None Include="cocoa\popup_collection.mm">
+      <Filter>cocoa\_excluded_files</Filter>
+    </None>
+    <None Include="cocoa\notification_controller.mm">
+      <Filter>cocoa\_excluded_files</Filter>
+    </None>
+    <None Include="cocoa\popup_controller.mm">
+      <Filter>cocoa\_excluded_files</Filter>
+    </None>
+    <ClCompile Include="views\message_popup_collection.cc">
+      <Filter>views</Filter>
+    </ClCompile>
+    <ClInclude Include="views\notifier_settings_view.h">
+      <Filter>views</Filter>
+    </ClInclude>
+    <ClInclude Include="views\message_view.h">
+      <Filter>views</Filter>
+    </ClInclude>
+    <ClCompile Include="views\notifier_settings_view.cc">
+      <Filter>views</Filter>
+    </ClCompile>
+    <ClCompile Include="views\message_center_view.cc">
+      <Filter>views</Filter>
+    </ClCompile>
+    <ClInclude Include="views\toast_contents_view.h">
+      <Filter>views</Filter>
+    </ClInclude>
+    <ClInclude Include="views\notification_view.h">
+      <Filter>views</Filter>
+    </ClInclude>
+    <ClCompile Include="views\bounded_label.cc">
+      <Filter>views</Filter>
+    </ClCompile>
+    <ClInclude Include="views\message_bubble_base.h">
+      <Filter>views</Filter>
+    </ClInclude>
+    <ClInclude Include="views\message_center_view.h">
+      <Filter>views</Filter>
+    </ClInclude>
+    <ClInclude Include="views\message_popup_collection.h">
+      <Filter>views</Filter>
+    </ClInclude>
+    <ClCompile Include="views\message_view.cc">
+      <Filter>views</Filter>
+    </ClCompile>
+    <ClInclude Include="views\bounded_label.h">
+      <Filter>views</Filter>
+    </ClInclude>
+    <ClInclude Include="views\message_simple_view.h">
+      <Filter>views</Filter>
+    </ClInclude>
+    <ClInclude Include="views\message_popup_bubble.h">
+      <Filter>views</Filter>
+    </ClInclude>
+    <ClCompile Include="views\message_center_bubble.cc">
+      <Filter>views</Filter>
+    </ClCompile>
+    <ClCompile Include="views\toast_contents_view.cc">
+      <Filter>views</Filter>
+    </ClCompile>
+    <ClInclude Include="views\message_center_bubble.h">
+      <Filter>views</Filter>
+    </ClInclude>
+    <ClCompile Include="views\notification_view.cc">
+      <Filter>views</Filter>
+    </ClCompile>
+    <ClCompile Include="views\message_simple_view.cc">
+      <Filter>views</Filter>
+    </ClCompile>
+    <ClCompile Include="views\message_popup_bubble.cc">
+      <Filter>views</Filter>
+    </ClCompile>
+    <ClCompile Include="views\message_bubble_base.cc">
+      <Filter>views</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

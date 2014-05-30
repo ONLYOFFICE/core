@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="examples">
+      <UniqueIdentifier>{44436D1D-970F-7E02-EDA1-3A8DAD062A99}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="views.gyp"/>
+    <ClInclude Include="examples\menu_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClCompile Include="examples\button_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\tree_view_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClInclude Include="examples\native_theme_button_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClCompile Include="examples\label_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClInclude Include="examples\label_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClCompile Include="examples\combobox_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClInclude Include="examples\throbber_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClCompile Include="examples\single_split_view_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\progress_bar_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClInclude Include="examples\examples_window.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\example_base.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\radio_button_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\message_box_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\example_combobox_model.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClCompile Include="examples\radio_button_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\text_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\menu_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClInclude Include="examples\single_split_view_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\combobox_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClCompile Include="examples\native_theme_checkbox_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\textfield_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\double_split_view_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClInclude Include="examples\double_split_view_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\scroll_view_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClCompile Include="examples\bubble_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClInclude Include="examples\tabbed_pane_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClCompile Include="examples\message_box_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\link_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClInclude Include="examples\progress_bar_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\widget_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClCompile Include="examples\example_combobox_model.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\slider_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\examples_window.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClInclude Include="examples\tree_view_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClCompile Include="examples\native_theme_button_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClInclude Include="examples\link_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\slider_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClCompile Include="examples\tabbed_pane_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClInclude Include="examples\views_examples_export.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\textfield_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\text_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\bubble_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\native_theme_checkbox_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClCompile Include="examples\throbber_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\widget_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example_base.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClInclude Include="examples\table_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\button_example.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClCompile Include="examples\scroll_view_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\table_example.cc">
+      <Filter>examples</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

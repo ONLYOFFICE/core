@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- TODO(arv): Check in Closue unit tests and make this run as part of the
+     tests -->
+<script src="http://closure-library.googlecode.com/svn/trunk/closure/goog/base.js"></script>
+<script src="../cr.js"></script>
+<script src="event_target.js"></script>
+<script>
+
+goog.require('goog.testing.jsunit');
+
+</script>
+</head>
+<body>
+<script>
+
+const EventTarget = cr.EventTarget;
+const Event = cr.Event;
+
+function testFunctionListener() {
+  var fi = 0;
+  function f(e) {
+    fi++;
+  }
+
+  var gi = 0;
+  function g(e) {
+    gi++;
+  }
+
+  var et = new EventTarget;
+  et.addEventListener('f', f);
+  et.addEventListener('g', g);
+
+  // Adding again should not cause it to be called twice
+  et.addEventListener('f', f);
+  et.dispatchEvent(new Event('f'));
+  assertEquals('Should have been called once', 1, fi);
+  assertEquals(0, gi);
+
+  et.removeEventListener('f', f);
+  et.dispatchEvent(new Event('f'));
+  assertEquals('Should not have been called again', 1, fi);
+
+  et.dispatchEvent(new Event('g'));
+  assertEquals('Should have been called once', 1, gi);
+}
+
+function testHandleEvent() {
+  var fi = 0;
+  var f = {
+    handleEvent: function(e) {
+      fi++;
+    }
+  };
+
+  var gi = 0;
+  var g = {
+    handleEvent: function(e) {
+      gi++;
+    }
+  };
+
+  var et = new EventTarget;
+  et.addEventListener('f', f);
+  et.addEventListener('g', g);
+
+  // Adding again should not cause it to be called twice
+  et.addEventListener('f', f);
+  et.dispatchEvent(new Event('f'));
+  assertEquals('Should have been called once', 1, fi);
+  assertEquals(0, gi);
+
+  et.removeEventListener('f', f);
+  et.dispatchEvent(new Event('f'));
+  assertEquals('Should not have been called again', 1, fi);
+
+  et.dispatchEvent(new Event('g'));
+  assertEquals('Should have been called once', 1, gi);
+}
+
+function testPreventDefault() {
+  var i = 0;
+  function prevent(e) {
+    i++;
+    e.preventDefault();
+  }
+
+  var j = 0;
+  function pass(e) {
+    j++;
+  }
+
+  var et = new EventTarget;
+  et.addEventListener('test', pass);
+
+  assertTrue(et.dispatchEvent(new Event('test')));
+  assertEquals(1, j);
+
+  et.addEventListener('test', prevent);
+
+  console.log('NOW');
+  assertFalse(et.dispatchEvent(new Event('test')));
+  assertEquals(2, j);
+  assertEquals(1, i);
+}
+
+
+function testReturnFalse() {
+  var i = 0;
+  function prevent(e) {
+    i++;
+    return false;
+  }
+
+  var j = 0;
+  function pass(e) {
+    j++;
+  }
+
+  var et = new EventTarget;
+  et.addEventListener('test', pass);
+
+  assertTrue(et.dispatchEvent(new Event('test')));
+  assertEquals(1, j);
+
+  et.addEventListener('test', prevent);
+
+  assertFalse(et.dispatchEvent(new Event('test')));
+  assertEquals(2, j);
+  assertEquals(1, i);
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="i18n">
+      <UniqueIdentifier>{366E8577-6226-B711-6772-2EA2AF5F5D10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\build">
+      <UniqueIdentifier>{D5519164-BF26-36DA-740B-76CEFC1827F4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="base.gyp"/>
+    <ClCompile Include="i18n\break_iterator.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClCompile Include="i18n\icu_string_conversions.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClInclude Include="i18n\icu_string_conversions.h">
+      <Filter>i18n</Filter>
+    </ClInclude>
+    <ClInclude Include="i18n\case_conversion.h">
+      <Filter>i18n</Filter>
+    </ClInclude>
+    <ClInclude Include="i18n\icu_util.h">
+      <Filter>i18n</Filter>
+    </ClInclude>
+    <ClCompile Include="i18n\number_formatting.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClCompile Include="i18n\rtl.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClInclude Include="i18n\rtl.h">
+      <Filter>i18n</Filter>
+    </ClInclude>
+    <ClInclude Include="i18n\time_formatting.h">
+      <Filter>i18n</Filter>
+    </ClInclude>
+    <ClInclude Include="i18n\bidi_line_iterator.h">
+      <Filter>i18n</Filter>
+    </ClInclude>
+    <ClCompile Include="i18n\case_conversion.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClInclude Include="i18n\string_search.h">
+      <Filter>i18n</Filter>
+    </ClInclude>
+    <ClInclude Include="i18n\file_util_icu.h">
+      <Filter>i18n</Filter>
+    </ClInclude>
+    <ClCompile Include="i18n\string_search.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClCompile Include="i18n\time_formatting.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClInclude Include="i18n\string_compare.h">
+      <Filter>i18n</Filter>
+    </ClInclude>
+    <ClCompile Include="i18n\char_iterator.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClInclude Include="i18n\char_iterator.h">
+      <Filter>i18n</Filter>
+    </ClInclude>
+    <ClInclude Include="i18n\number_formatting.h">
+      <Filter>i18n</Filter>
+    </ClInclude>
+    <ClCompile Include="i18n\file_util_icu.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClCompile Include="i18n\icu_encoding_detection.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClInclude Include="i18n\icu_encoding_detection.h">
+      <Filter>i18n</Filter>
+    </ClInclude>
+    <ClInclude Include="i18n\break_iterator.h">
+      <Filter>i18n</Filter>
+    </ClInclude>
+    <ClCompile Include="i18n\bidi_line_iterator.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClCompile Include="i18n\icu_util.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClInclude Include="i18n\base_i18n_export.h">
+      <Filter>i18n</Filter>
+    </ClInclude>
+    <ClCompile Include="i18n\string_compare.cc">
+      <Filter>i18n</Filter>
+    </ClCompile>
+    <ClCompile Include="..\build\precompile.cc">
+      <Filter>..\build</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

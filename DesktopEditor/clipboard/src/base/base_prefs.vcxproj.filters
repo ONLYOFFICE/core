@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="prefs">
+      <UniqueIdentifier>{211C84FE-F189-109C-6F7E-E0596D5F946E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\build">
+      <UniqueIdentifier>{D5519164-BF26-36DA-740B-76CEFC1827F4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="base.gyp"/>
+    <ClCompile Include="prefs\default_pref_store.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClInclude Include="prefs\overlay_user_pref_store.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClCompile Include="prefs\overlay_user_pref_store.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClInclude Include="prefs\pref_member.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClCompile Include="prefs\pref_member.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClInclude Include="prefs\value_map_pref_store.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClCompile Include="prefs\pref_store.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="prefs\value_map_pref_store.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="prefs\pref_value_store.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClInclude Include="prefs\pref_service_builder.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClInclude Include="prefs\pref_registry.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClInclude Include="prefs\pref_notifier_impl.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClInclude Include="prefs\pref_notifier.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClCompile Include="prefs\pref_service.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="prefs\pref_registry_simple.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClInclude Include="prefs\pref_registry_simple.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClCompile Include="prefs\pref_notifier_impl.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClInclude Include="prefs\persistent_pref_store.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClCompile Include="prefs\pref_service_builder.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="prefs\pref_change_registrar.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClInclude Include="prefs\pref_change_registrar.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClInclude Include="prefs\pref_store.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClCompile Include="prefs\pref_registry.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClInclude Include="prefs\pref_value_store.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClInclude Include="prefs\base_prefs_export.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClInclude Include="prefs\default_pref_store.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClCompile Include="prefs\pref_value_map.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClInclude Include="prefs\pref_value_map.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClInclude Include="prefs\json_pref_store.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClCompile Include="prefs\json_pref_store.cc">
+      <Filter>prefs</Filter>
+    </ClCompile>
+    <ClInclude Include="prefs\pref_observer.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClInclude Include="prefs\pref_service.h">
+      <Filter>prefs</Filter>
+    </ClInclude>
+    <ClCompile Include="..\build\precompile.cc">
+      <Filter>..\build</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

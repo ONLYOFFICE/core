@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- TODO(arv): Check in Closue unit tests and make this run as part of the
+     tests -->
+<script src="http://closure-library.googlecode.com/svn/trunk/closure/goog/base.js"></script>
+<script src="../cr.js"></script>
+<script src="promise.js"></script>
+<script>
+
+goog.require('goog.testing.jsunit');
+goog.require('goog.testing.MockClock');
+
+</script>
+</head>
+<body>
+<script>
+
+var mockClock;
+
+function setUp() {
+  mockClock = new goog.testing.MockClock();
+  mockClock.install();
+}
+
+function tearDown() {
+  mockClock.uninstall();
+}
+
+const Promise = cr.Promise;
+
+function testCallbacks() {
+  var calls1 = 0;
+  var calls2 = 0;
+  var V = {};
+  function f1(v) {
+    calls1++;
+    assertEquals(V, v);
+  }
+  function f2(v) {
+    calls2++;
+    assertEquals(V, v);
+  }
+  var p = new Promise;
+  p.addListener(f1);
+  p.addListener(f2);
+  p.value = V;
+  assertEquals(1, calls1);
+  assertEquals(1, calls2);
+}
+
+function testCallbacks2() {
+  var calls1 = 0;
+  var calls2 = 0;
+  var V = {};
+  function f1(v) {
+    calls1++;
+    assertEquals(V, v);
+  }
+  function f2(v) {
+    calls2++;
+    assertEquals(V, v);
+  }
+  var p = new Promise;
+  p.addListener(f1);
+  p.addListener(f2);
+  p.removeListener(f1);
+  p.value = V;
+  assertEquals(0, calls1);
+  assertEquals(1, calls2);
+}
+
+function testCallbacks3() {
+  var calls1 = 0;
+  var calls2 = 0;
+  var V = {};
+  function f1(v) {
+    calls1++;
+    assertEquals(V, v);
+  }
+  function f2(v) {
+    calls2++;
+    assertEquals(V, v);
+  }
+  var p = new Promise;
+  p.addListener(f1);
+  assertEquals(0, calls1);
+  assertEquals(0, calls2);
+  p.value = V;
+  assertEquals(1, calls1);
+  assertEquals(0, calls2);
+  p.addListener(f2);
+  assertEquals(1, calls1);
+  assertEquals(1, calls2);
+}
+
+function testCallbacks4() {
+  var calls1 = 0;
+  var calls2 = 0;
+  var V = {};
+  function f1(v) {
+    calls1++;
+    assertEquals(V, v);
+  }
+  function f2(v) {
+    calls2++;
+    assertEquals(V, v);
+  }
+  var p = new Promise(V);
+  p.addListener(f1);
+  p.addListener(f2);
+  assertEquals(1, calls1);
+  assertEquals(1, calls2);
+}
+
+function testThisInCallback() {
+  var calls = 0;
+  var V = {};
+  function f(v) {
+    calls++;
+    assertEquals(V, v);
+    assertNotEquals(p, this);
+  }
+  var p = new Promise;
+  p.addListener(f);
+  p.value = V;
+  assertEquals(1, calls);
+}
+
+function testPending() {
+  var p = new Promise;
+  assertEquals(undefined, p.value);
+  assertFalse(p.done);
+}
+
+function testValueCanBeUndefined() {
+  var p = new Promise;
+  p.value = undefined;
+  assertEquals(undefined, p.value);
+  assertTrue(p.done);
+}
+
+function testDone() {
+  var p = new Promise;
+  assertFalse(p.done);
+  p.value = 42;
+  assertTrue(p.done);
+}
+
+function testWhen() {
+  const V = {};
+  var calls = 0;
+  var p = new Promise;
+  p.value = V;
+  Promise.when(p, function(v) {
+    assertEquals(V, v);
+    calls++;
+  });
+  assertEquals(1, calls);
+}
+
+function testWhen2() {
+  const V = {};
+  var calls = 0;
+  var p = new Promise;
+  Promise.when(p, function(v) {
+    assertEquals(V, v);
+    calls++;
+  });
+  p.value = V;
+  assertEquals(1, calls);
+}
+
+function testWait() {
+  const S = {};
+  var p = Promise.wait(1000, S);
+  assertFalse(p.done);
+  mockClock.tick(500);
+  assertFalse(p.done);
+  mockClock.tick(500);
+  assertTrue(p.done);
+  assertEquals(S, p.value);
+}
+
+function testAny() {
+  var p1 = new Promise;
+  var p2 = new Promise;
+  var p3 = new Promise;
+
+  var any = Promise.any(p1, p2, p3);
+  p2.value = 2;
+  assertEquals(2, any.value);
+  p1.value = 1;
+  assertEquals(2, any.value);
+}
+
+function testAll() {
+  var p1 = new Promise;
+  var p2 = new Promise;
+  var p3 = new Promise;
+
+  var pAll = Promise.all(p1, p2, p3);
+  p1.value = 1;
+  p2.value = 2;
+  p3.value = 3;
+  assertArrayEquals([1, 2, 3], pAll.value);
+}
+
+function testAllEmpty() {
+  var pAll = Promise.all();
+  assertArrayEquals([], pAll.value);
+}
+
+function testAllAlreadyDone() {
+  var p1 = new Promise(1);
+  var p2 = new Promise(2);
+  var p3 = new Promise(3);
+
+  var pAll = Promise.all(p1, p2, p3);
+  assertArrayEquals([1, 2, 3], pAll.value);
+}
+
+function testEvent() {
+  var p = Promise.event(document.body, 'foo');
+  var e = new cr.Event('foo');
+  document.body.dispatchEvent(e);
+  assertEquals(e, p.value);
+}
+
+function testToString() {
+  var p1 = new Promise;
+  assertEquals('[object Promise]', String(p1));
+
+  var p2 = new Promise;
+  p2.value = 'Hello world';
+  assertEquals('Hello world', String(p2));
+}
+
+function testValueOf() {
+  var p = new Promise;
+  p.value = 42;
+
+  assertTrue(p < 43);
+  assertTrue(p > 41);
+  assertTrue(p == 42);
+}
+
+</script>
+</body>
+</html>

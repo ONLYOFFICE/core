@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="cocoa">
+      <UniqueIdentifier>{7DE7C50E-B7F9-3610-CB61-C0F25CD5170C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cocoa\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cocoa\test">
+      <UniqueIdentifier>{5763B17F-46DA-9ED7-179F-9C9F273B791C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cocoa\test\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test">
+      <UniqueIdentifier>{5763B17F-46DA-9ED7-179F-9C9F273B791C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="views">
+      <UniqueIdentifier>{D23515F3-31E8-1B27-FABB-5B45DAAF113D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="views\test">
+      <UniqueIdentifier>{5763B17F-46DA-9ED7-179F-9C9F273B791C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pagination_model_unittest.cc"/>
+    <None Include="app_list.gyp"/>
+    <None Include="cocoa\app_list_window_controller_unittest.mm">
+      <Filter>cocoa\_excluded_files</Filter>
+    </None>
+    <None Include="cocoa\app_list_view_controller_unittest.mm">
+      <Filter>cocoa\_excluded_files</Filter>
+    </None>
+    <None Include="cocoa\apps_grid_controller_unittest.mm">
+      <Filter>cocoa\_excluded_files</Filter>
+    </None>
+    <None Include="cocoa\test\apps_grid_controller_test_helper.mm">
+      <Filter>cocoa\test\_excluded_files</Filter>
+    </None>
+    <ClInclude Include="cocoa\test\apps_grid_controller_test_helper.h">
+      <Filter>cocoa\test\_excluded_files</Filter>
+    </ClInclude>
+    <ClCompile Include="test\app_list_test_view_delegate.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClInclude Include="test\app_list_test_view_delegate.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClCompile Include="test\app_list_test_model.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClInclude Include="test\app_list_test_model.h">
+      <Filter>test</Filter>
+    </ClInclude>
+    <ClCompile Include="views\apps_grid_view_unittest.cc">
+      <Filter>views</Filter>
+    </ClCompile>
+    <ClCompile Include="views\test\apps_grid_view_test_api.cc">
+      <Filter>views\test</Filter>
+    </ClCompile>
+    <ClInclude Include="views\test\apps_grid_view_test_api.h">
+      <Filter>views\test</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

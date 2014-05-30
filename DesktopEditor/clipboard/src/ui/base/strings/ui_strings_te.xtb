@@ -1,0 +1,83 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="te">
+<translation id="4820616160060340806">Command+<ph name="KEY_COMBO_NAME"/></translation>
+<translation id="6420214550675866556">నిశబ్ద మోడ్</translation>
+<translation id="1871244248791675517">Ins</translation>
+<translation id="6135826906199951471">Del</translation>
+<translation id="528468243742722775">ముగింపు</translation>
+<translation id="1190609913194133056">నోటిఫికేషన్ కేంద్రం</translation>
+<translation id="5613020302032141669">ఎడమ బాణం</translation>
+<translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE"/> ఫైల్ (.<ph name="SAVEAS_EXTENSION_NAME"/>)</translation>
+<translation id="4519844444318892125">ఒక రోజు వరకు నిశబ్ద మోడ్</translation>
+<translation id="5948410903763073882">Alt+<ph name="KEY_COMBO_NAME"/></translation>
+<translation id="7658239707568436148">రద్దు చెయ్యి</translation>
+<translation id="7222373446505536781">F11</translation>
+<translation id="1761785978543082658"><ph name="QUANTITY"/> B</translation>
+<translation id="1809410197924942083"><ph name="QUANTITY"/> MB/s</translation>
+<translation id="3990502903496589789">కుడి సరిహద్దు</translation>
+<translation id="932327136139879170">హోమ్</translation>
+<translation id="3909791450649380159">క&amp;త్తిరించు</translation>
+<translation id="688711909580084195">శీర్షికలేని వెబ్‌పేజీ</translation>
+<translation id="5076340679995252485">&amp;అతికించు</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY"/> TB</translation>
+<translation id="4999762576397546063">Ctrl+<ph name="KEY_COMBO_NAME"/></translation>
+<translation id="3087734570205094154">దిగువ</translation>
+<translation id="6364916375976753737">ఎడమకి స్క్రోల్ చేయి</translation>
+<translation id="6945221475159498467">ఎంచుకోండి</translation>
+<translation id="6620110761915583480">ఫైల్‌ను సేవ్ చేయి</translation>
+<translation id="7394346403752882908">ఒక గంట వరకు నిశబ్ద మోడ్</translation>
+<translation id="8210608804940886430">పేజీ క్రిందికి</translation>
+<translation id="5329858601952122676">&amp;తొలగించు</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY"/> KB</translation>
+<translation id="6659594942844771486">టాబ్</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY"/> MB</translation>
+<translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
+<translation id="2497284189126895209">మొత్తం ఫైళ్లు</translation>
+<translation id="7814458197256864873">&amp;కాపీ</translation>
+<translation id="3889424535448813030">కుడి బాణం</translation>
+<translation id="7135556860107312402">వీటి నుండి నోటిఫికేషన్‌లను అనుమతించు:</translation>
+<translation id="1398853756734560583">గరిష్ఠీకరించు</translation>
+<translation id="4250229828105606438">స్క్రీన్‌షాట్</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY"/> GB</translation>
+<translation id="1901303067676059328">&amp;అన్నీ ఎంచుకోండి</translation>
+<translation id="2168039046890040389">పేజీ పైకి</translation>
+<translation id="4927753642311223124">ఇక్కడ చూడటానికి ఏమీ లేదు, కొనసాగండి.</translation>
+<translation id="2482878487686419369">ప్రకటనలు</translation>
+<translation id="3183922693828471536">ఇక్కడ స్క్రోల్ చెయ్యండి</translation>
+<translation id="4552416320897244156">PgDwn</translation>
+<translation id="7052633198403197513">F1</translation>
+<translation id="8677655579646609597"><ph name="QUANTITY"/> KB/సె</translation>
+<translation id="2190355936436201913">(ఖాళీ)</translation>
+<translation id="8447116497070723931">PgUp</translation>
+<translation id="4588090240171750605">కుడికి స్క్రోల్ చెయ్యి</translation>
+<translation id="2666092431469916601">పైన</translation>
+<translation id="8331626408530291785">పైకి స్క్రోల్ చెయ్యి</translation>
+<translation id="4773379706300191099"><ph name="EXTENSION_NAME"/> నుండి నోటిఫికేషన్‌లను నిలిపివేయి</translation>
+<translation id="7907591526440419938">ఫైల్‌ను తెరువు</translation>
+<translation id="1293699935367580298">Esc</translation>
+<translation id="815598010540052116">క్రిందికి  స్క్రోల్ చేయి</translation>
+<translation id="3157931365184549694">పునరుద్ధరించు</translation>
+<translation id="8179976553408161302">నమోదు చేయండి</translation>
+<translation id="945522503751344254">అభిప్రాయాన్ని పంపండి</translation>
+<translation id="9170848237812810038">&amp;అన్డు</translation>
+<translation id="520299402983819650"><ph name="QUANTITY"/> PB</translation>
+<translation id="2983818520079887040">సెట్టింగ్‌లు...</translation>
+<translation id="6845383723252244143">ఫోల్డర్‌ను ఎంచుకో</translation>
+<translation id="5583640892426849032">Backspace</translation>
+<translation id="3740362395218339114"><ph name="QUANTITY"/> GB/s</translation>
+<translation id="436869212180315161">నొక్కు</translation>
+<translation id="2297836609126180313"><ph name="QUANTITY"/> TB/s</translation>
+<translation id="6040143037577758943">మూసివేయి</translation>
+<translation id="6142413573757616983"><ph name="QUANTITY"/> B/s</translation>
+<translation id="7457942297256758195">అన్నీ క్లియర్ చేయి</translation>
+<translation id="7509316384504965641"><ph name="PRODUCT"/> - నోటిఫికేషన్‌లు</translation>
+<translation id="8400147561352026160">Shift+<ph name="KEY_COMBO_NAME"/></translation>
+<translation id="6907759265145635167"><ph name="QUANTITY"/> PB/s</translation>
+<translation id="4481522213790366002"><ph name="PRODUCT"/> - నోటిఫికేషన్‌లు (<ph name="QUANTITY"/> చదవనివి)</translation>
+<translation id="6965382102122355670">సరే</translation>
+<translation id="5941711191222866238">కనిష్టీకరించు</translation>
+<translation id="4469842253116033348"><ph name="SITE"/> నుండి ప్రకటనలను ఆపివెయ్యి</translation>
+<translation id="3036649622769666520">ఫైళ్ళను తెరువు</translation>
+<translation id="8328145009876646418">ఎడమ హద్దు</translation>
+</translationbundle>

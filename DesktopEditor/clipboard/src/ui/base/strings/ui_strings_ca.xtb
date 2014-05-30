@@ -1,0 +1,83 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ca">
+<translation id="4820616160060340806">Ordre+<ph name="KEY_COMBO_NAME"/></translation>
+<translation id="6420214550675866556">Mode silenciós</translation>
+<translation id="1871244248791675517">Ins</translation>
+<translation id="6135826906199951471">Supr</translation>
+<translation id="528468243742722775">Fi</translation>
+<translation id="1190609913194133056">Centre de notificacions</translation>
+<translation id="5613020302032141669">Fletxa esquerra</translation>
+<translation id="8602707065186045623">Fitxer <ph name="SAVEAS_EXTENSION_TYPE"/> (.<ph name="SAVEAS_EXTENSION_NAME"/>)</translation>
+<translation id="4519844444318892125">Mode silenciós durant un dia</translation>
+<translation id="5948410903763073882">Alt+<ph name="KEY_COMBO_NAME"/></translation>
+<translation id="7658239707568436148">Cancel·la</translation>
+<translation id="7222373446505536781">F11</translation>
+<translation id="1761785978543082658"><ph name="QUANTITY"/> B</translation>
+<translation id="1809410197924942083"><ph name="QUANTITY"/> MB/s</translation>
+<translation id="3990502903496589789">Extrem dret</translation>
+<translation id="932327136139879170">Inici</translation>
+<translation id="3909791450649380159">Re&amp;talla</translation>
+<translation id="688711909580084195">Pàgina web sense títol</translation>
+<translation id="5076340679995252485">Engan&amp;xa</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY"/> TB</translation>
+<translation id="4999762576397546063">Ctrl+<ph name="KEY_COMBO_NAME"/></translation>
+<translation id="3087734570205094154">Part inferior</translation>
+<translation id="6364916375976753737">Desplaçament a l'esquerra</translation>
+<translation id="6945221475159498467">Selecciona</translation>
+<translation id="6620110761915583480">Desa el fitxer</translation>
+<translation id="7394346403752882908">Mode silenciós durant una hora</translation>
+<translation id="8210608804940886430">Av Pàg</translation>
+<translation id="5329858601952122676">&amp;Suprimeix</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY"/> KB</translation>
+<translation id="6659594942844771486">Pestanya</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY"/> MB</translation>
+<translation id="8428213095426709021">Configuració</translation>
+<translation id="2497284189126895209">Tots els fitxers</translation>
+<translation id="7814458197256864873">&amp;Copia</translation>
+<translation id="3889424535448813030">Fletxa dreta</translation>
+<translation id="7135556860107312402">Permet notificacions de les fonts següents:</translation>
+<translation id="1398853756734560583">Maximitza</translation>
+<translation id="4250229828105606438">Captura de pantalla</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY"/> GB</translation>
+<translation id="1901303067676059328">Selecciona-ho &amp;tot</translation>
+<translation id="2168039046890040389">Re Pàg</translation>
+<translation id="4927753642311223124">No hi ha cap notificació, podeu continuar.</translation>
+<translation id="2482878487686419369">Notificacions</translation>
+<translation id="3183922693828471536">Desplaçament fins aquí</translation>
+<translation id="4552416320897244156">Av Pàg</translation>
+<translation id="7052633198403197513">F1</translation>
+<translation id="8677655579646609597"><ph name="QUANTITY"/> KB/s</translation>
+<translation id="2190355936436201913">(buit)</translation>
+<translation id="8447116497070723931">Re Pàg</translation>
+<translation id="4588090240171750605">Desplaçament a la dreta</translation>
+<translation id="2666092431469916601">Superior</translation>
+<translation id="8331626408530291785">Desplaçament amunt</translation>
+<translation id="4773379706300191099">Desactiva les notificacions de <ph name="EXTENSION_NAME"/></translation>
+<translation id="7907591526440419938">Obre un fitxer</translation>
+<translation id="1293699935367580298">Esc</translation>
+<translation id="815598010540052116">Desplaçament avall</translation>
+<translation id="3157931365184549694">Restaura</translation>
+<translation id="8179976553408161302">Intro</translation>
+<translation id="945522503751344254">Envia comentaris</translation>
+<translation id="9170848237812810038">&amp;Desfés</translation>
+<translation id="520299402983819650"><ph name="QUANTITY"/> PB</translation>
+<translation id="2983818520079887040">Configuració...</translation>
+<translation id="6845383723252244143">Selecció d'una carpeta</translation>
+<translation id="5583640892426849032">Retrocés</translation>
+<translation id="3740362395218339114"><ph name="QUANTITY"/> GB/s</translation>
+<translation id="436869212180315161">Prem</translation>
+<translation id="2297836609126180313"><ph name="QUANTITY"/> TB/s</translation>
+<translation id="6040143037577758943">Tanca</translation>
+<translation id="6142413573757616983"><ph name="QUANTITY"/> B/s</translation>
+<translation id="7457942297256758195">Esborra-ho tot</translation>
+<translation id="7509316384504965641"><ph name="PRODUCT"/>: notificacions</translation>
+<translation id="8400147561352026160">Maj+<ph name="KEY_COMBO_NAME"/></translation>
+<translation id="6907759265145635167"><ph name="QUANTITY"/> PB/s</translation>
+<translation id="4481522213790366002"><ph name="PRODUCT"/>: notificacions (<ph name="QUANTITY"/> no llegides)</translation>
+<translation id="6965382102122355670">D'acord</translation>
+<translation id="5941711191222866238">Minimitza</translation>
+<translation id="4469842253116033348">Desactiva les notificacions de <ph name="SITE"/></translation>
+<translation id="3036649622769666520">Obre fitxers</translation>
+<translation id="8328145009876646418">Extrem esquerre</translation>
+</translationbundle>

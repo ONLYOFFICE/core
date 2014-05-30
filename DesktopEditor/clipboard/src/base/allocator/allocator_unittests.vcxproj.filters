@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\profiler">
+      <UniqueIdentifier>{87097DB4-0A18-6E42-07AB-BF3B3651C11F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="allocator_unittests.cc"/>
+    <None Include="allocator.gyp"/>
+    <ClInclude Include="..\profiler\alternate_timer.h">
+      <Filter>..\profiler</Filter>
+    </ClInclude>
+    <ClCompile Include="..\profiler\alternate_timer.cc">
+      <Filter>..\profiler</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

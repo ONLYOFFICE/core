@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="cocoa">
+      <UniqueIdentifier>{7DE7C50E-B7F9-3610-CB61-C0F25CD5170C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cocoa\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test">
+      <UniqueIdentifier>{5763B17F-46DA-9ED7-179F-9C9F273B791C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="views">
+      <UniqueIdentifier>{D23515F3-31E8-1B27-FABB-5B45DAAF113D}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="fake_message_center.h"/>
+    <None Include="message_center.gyp"/>
+    <ClCompile Include="message_center_tray_unittest.cc"/>
+    <ClCompile Include="notification_list_unittest.cc"/>
+    <ClCompile Include="fake_message_center.cc"/>
+    <None Include="cocoa\popup_controller_unittest.mm">
+      <Filter>cocoa\_excluded_files</Filter>
+    </None>
+    <None Include="cocoa\popup_collection_unittest.mm">
+      <Filter>cocoa\_excluded_files</Filter>
+    </None>
+    <None Include="cocoa\notification_controller_unittest.mm">
+      <Filter>cocoa\_excluded_files</Filter>
+    </None>
+    <ClCompile Include="test\run_all_unittests.cc">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="views\message_popup_collection_unittest.cc">
+      <Filter>views</Filter>
+    </ClCompile>
+    <ClCompile Include="views\message_center_view_unittest.cc">
+      <Filter>views</Filter>
+    </ClCompile>
+    <ClCompile Include="views\bounded_label_unittest.cc">
+      <Filter>views</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

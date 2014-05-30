@@ -1,0 +1,2369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="$(OutDir)obj">
+      <UniqueIdentifier>{7BD4F48B-77B4-AB58-9E24-A7302D190D1C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="$(OutDir)obj\global_intermediate">
+      <UniqueIdentifier>{14CEDE64-16A7-96A9-EF19-5C5D6085FF18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="$(OutDir)obj\global_intermediate\ui">
+      <UniqueIdentifier>{3ED3C5AE-0459-82A6-2795-7EAB6F83FEC7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="$(OutDir)obj\global_intermediate\ui\ui_resources">
+      <UniqueIdentifier>{60108B1D-1D06-DEEB-72CD-739BCA047D39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\third_party">
+      <UniqueIdentifier>{D6C6CEA7-AAD0-03AD-2394-AC6FCBF8A498}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\third_party\jstemplate">
+      <UniqueIdentifier>{E44D6E74-6A66-80F5-B9A7-A912824CFD95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\third_party\jstemplate\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools">
+      <UniqueIdentifier>{A0946190-5491-4D66-7E51-19400E36F078}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\gritsettings">
+      <UniqueIdentifier>{170EBF02-9E0C-8C5D-06E5-34F73C1DF75E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\gritsettings\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit">
+      <UniqueIdentifier>{3405616A-C381-F382-5E74-579CB4F91A2D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit">
+      <UniqueIdentifier>{3405616A-C381-F382-5E74-579CB4F91A2D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit\node">
+      <UniqueIdentifier>{A49AD564-6B22-6A46-08E5-B5A7F4427839}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit\node\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit\node\custom">
+      <UniqueIdentifier>{C40A63E8-DEC6-D9F6-B0C6-030D87C22C52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit\node\custom\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit\extern">
+      <UniqueIdentifier>{539A9923-54CF-EA45-54BF-92C1F15D85A1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit\extern\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit\tool">
+      <UniqueIdentifier>{D5609558-F36F-FE7E-9F59-3E68915C83F0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit\tool\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit\gather">
+      <UniqueIdentifier>{9ADB54E8-3A2C-2F09-B748-0DCD0232A4D8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit\gather\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit\format">
+      <UniqueIdentifier>{70B82C25-A362-5F67-ADB1-F53029D26C30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit\format\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit\format\policy_templates">
+      <UniqueIdentifier>{79320D7A-68DD-70F8-76E3-D7F26419AB5A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit\format\policy_templates\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit\format\policy_templates\writers">
+      <UniqueIdentifier>{9A464742-1D51-D9D1-FCF1-63DD8177F13D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\tools\grit\grit\format\policy_templates\writers\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webui">
+      <UniqueIdentifier>{8F834895-4F0E-737B-F9E7-D6D40E9A436B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webui\resources">
+      <UniqueIdentifier>{02993FF4-6DD0-55B6-6A36-E99A964FF863}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webui\resources\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webui\resources\images">
+      <UniqueIdentifier>{417A2AFC-675C-502D-5CF2-E9A58B72D6D5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webui\resources\images\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webui\resources\css">
+      <UniqueIdentifier>{87F14F59-6AAB-9D50-4AA6-3EAC67BD4AB0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webui\resources\css\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webui\resources\js">
+      <UniqueIdentifier>{AFF4C650-55EE-4B49-D17B-E3562B397D81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webui\resources\js\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webui\resources\js\cr">
+      <UniqueIdentifier>{7DFFA872-E578-7EEA-9731-21A52F10AFBE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webui\resources\js\cr\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webui\resources\js\cr\ui">
+      <UniqueIdentifier>{3ED3C5AE-0459-82A6-2795-7EAB6F83FEC7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webui\resources\js\cr\ui\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webui\resources\js\cr\ui\table">
+      <UniqueIdentifier>{0C1E139B-0634-F9F7-68C7-7D220860C8C6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webui\resources\js\cr\ui\table\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{02993FF4-6DD0-55B6-6A36-E99A964FF863}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\touch_140_percent">
+      <UniqueIdentifier>{43FA05DE-1504-08AA-8011-130EA878B06D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\touch_140_percent\common">
+      <UniqueIdentifier>{2F5FD094-EF52-77F7-7AA8-4327A01BF747}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\touch_140_percent\common\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\default_100_percent">
+      <UniqueIdentifier>{5BB05C0D-0017-0CE5-6C08-421462FCC0F7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\default_100_percent\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\default_100_percent\win">
+      <UniqueIdentifier>{47FC5EC4-15EB-E92F-89D7-AFE51CF838A9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\default_100_percent\win\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\default_100_percent\common">
+      <UniqueIdentifier>{2F5FD094-EF52-77F7-7AA8-4327A01BF747}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\default_100_percent\common\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\default_100_percent\cros">
+      <UniqueIdentifier>{896188E8-CF15-0B2C-A569-13BEF03414F6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\default_100_percent\cros\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\touch_180_percent">
+      <UniqueIdentifier>{323B6F67-1620-A095-737C-24C5237E44D7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\touch_180_percent\common">
+      <UniqueIdentifier>{2F5FD094-EF52-77F7-7AA8-4327A01BF747}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\touch_180_percent\common\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\touch_100_percent">
+      <UniqueIdentifier>{B254617E-7454-8EE3-6925-6656E91F6FD5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\touch_100_percent\common">
+      <UniqueIdentifier>{2F5FD094-EF52-77F7-7AA8-4327A01BF747}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\touch_100_percent\common\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\default_200_percent">
+      <UniqueIdentifier>{711141ED-8F7E-80A8-D7AC-366E2C2A9455}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\default_200_percent\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\default_200_percent\win">
+      <UniqueIdentifier>{47FC5EC4-15EB-E92F-89D7-AFE51CF838A9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\default_200_percent\win\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\default_200_percent\common">
+      <UniqueIdentifier>{2F5FD094-EF52-77F7-7AA8-4327A01BF747}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\default_200_percent\common\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\default_200_percent\cros">
+      <UniqueIdentifier>{896188E8-CF15-0B2C-A569-13BEF03414F6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\default_200_percent\cros\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\cursors">
+      <UniqueIdentifier>{9CDCFBAA-4970-52C9-41DF-FEFE993D87EC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\cursors\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ui.gyp"/>
+    <None Include="$(OutDir)obj\global_intermediate\ui\ui_resources\gfx_resources.pak">
+      <Filter>$(OutDir)obj\global_intermediate\ui\ui_resources</Filter>
+    </None>
+    <None Include="..\third_party\jstemplate\jstemplate_compiled.js">
+      <Filter>..\third_party\jstemplate\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\gritsettings\resource_ids">
+      <Filter>..\tools\gritsettings\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit_info.py">
+      <Filter>..\tools\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit.py">
+      <Filter>..\tools\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\PRESUBMIT.py">
+      <Filter>..\tools\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\grit_runner.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\pseudo.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\util.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\clique_unittest.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\grit_runner_unittest.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\shortcuts_unittests.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\pseudo_unittest.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\xtb_reader_unittest.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\__init__.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\xtb_reader.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\clique.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\lazy_re.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\util_unittest.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\test_suite_all.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\lazy_re_unittest.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tclib_unittest.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\grd_reader.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tclib.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\shortcuts.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\scons.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\constants.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\grd_reader_unittest.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\pseudo_rtl.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\exception.py">
+      <Filter>..\tools\grit\grit\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\variant.py">
+      <Filter>..\tools\grit\grit\node\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\include_unittest.py">
+      <Filter>..\tools\grit\grit\node\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\__init__.py">
+      <Filter>..\tools\grit\grit\node\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\misc.py">
+      <Filter>..\tools\grit\grit\node\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\base.py">
+      <Filter>..\tools\grit\grit\node\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\structure.py">
+      <Filter>..\tools\grit\grit\node\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\io_unittest.py">
+      <Filter>..\tools\grit\grit\node\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\misc_unittest.py">
+      <Filter>..\tools\grit\grit\node\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\base_unittest.py">
+      <Filter>..\tools\grit\grit\node\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\io.py">
+      <Filter>..\tools\grit\grit\node\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\mapping.py">
+      <Filter>..\tools\grit\grit\node\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\structure_unittest.py">
+      <Filter>..\tools\grit\grit\node\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\empty.py">
+      <Filter>..\tools\grit\grit\node\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\include.py">
+      <Filter>..\tools\grit\grit\node\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\message.py">
+      <Filter>..\tools\grit\grit\node\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\message_unittest.py">
+      <Filter>..\tools\grit\grit\node\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\custom\filename_unittest.py">
+      <Filter>..\tools\grit\grit\node\custom\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\custom\__init__.py">
+      <Filter>..\tools\grit\grit\node\custom\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\node\custom\filename.py">
+      <Filter>..\tools\grit\grit\node\custom\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\extern\tclib.py">
+      <Filter>..\tools\grit\grit\extern\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\extern\__init__.py">
+      <Filter>..\tools\grit\grit\extern\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\extern\BogoFP.py">
+      <Filter>..\tools\grit\grit\extern\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\extern\FP.py">
+      <Filter>..\tools\grit\grit\extern\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\android2grd.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\build_unittest.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\preprocess_interface.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\rc2grd.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\postprocess_interface.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\newgrd.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\toolbar_postprocess.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\count.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\xmb_unittest.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\toolbar_preprocess.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\transl2tc_unittest.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\test.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\postprocess_unittest.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\xmb.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\diff_structures.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\android2grd_unittest.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\rc2grd_unittest.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\resize.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\preprocess_unittest.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\build.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\unit.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\interface.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\__init__.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\transl2tc.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\buildinfo.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\menu_from_parts.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\tool\buildinfo_unittest.py">
+      <Filter>..\tools\grit\grit\tool\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\igoogle_strings.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\igoogle_strings_unittest.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\chrome_html.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\chrome_html_unittest.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\admin_template.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\admin_template_unittest.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\regexp.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\skeleton_gatherer.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\chrome_scaled_image.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\txt_unittest.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\__init__.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\json_loader.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\interface.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\chrome_scaled_image_unittest.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\tr_html_unittest.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\policy_json_unittest.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\rc.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\txt.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\muppet_strings_unittest.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\muppet_strings.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\rc_unittest.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\tr_html.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\gather\policy_json.py">
+      <Filter>..\tools\grit\grit\gather\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\rc_unittest.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\android_xml_unittest.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\resource_map.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\chrome_messages_json_unittest.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\js_map_format.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\c_format.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\data_pack_unittest.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\data_pack.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\android_xml.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\chrome_messages_json.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\html_inline.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\c_format_unittest.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\rc_header_unittest.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\rc.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\rc_header.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\html_inline_unittest.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\__init__.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\repack.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\js_map_format_unittest.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\resource_map_unittest.py">
+      <Filter>..\tools\grit\grit\format\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\policy_template_generator.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\policy_template_generator_unittest.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writer_configuration.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\__init__.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\template_formatter.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\PRESUBMIT.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\reg_writer.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\plist_writer_unittest.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\reg_writer_unittest.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\adm_writer.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\adml_writer_unittest.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\doc_writer_unittest.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\admx_writer.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\xml_formatted_writer.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\adm_writer_unittest.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\__init__.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\template_writer_unittest.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\adml_writer.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\json_writer.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\plist_strings_writer.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\plist_writer.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\template_writer.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\mock_writer.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\xml_writer_base_unittest.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\plist_strings_writer_unittest.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\writer_unittest_common.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\doc_writer.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\plist_helper.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\admx_writer_unittest.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="..\tools\grit\grit\format\policy_templates\writers\json_writer_unittest.py">
+      <Filter>..\tools\grit\grit\format\policy_templates\writers\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\webui_resources.grd">
+      <Filter>webui\resources\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\images\throbber.svg">
+      <Filter>webui\resources\images\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\images\spinner.svg">
+      <Filter>webui\resources\images\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\images\trash.png">
+      <Filter>webui\resources\images\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\images\clouds.png">
+      <Filter>webui\resources\images\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\images\gear.png">
+      <Filter>webui\resources\images\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\images\checkbox_black.png">
+      <Filter>webui\resources\images\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\images\disabled_select.png">
+      <Filter>webui\resources\images\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\images\help.png">
+      <Filter>webui\resources\images\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\images\select.png">
+      <Filter>webui\resources\images\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\images\check.png">
+      <Filter>webui\resources\images\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\images\google-transparent.png">
+      <Filter>webui\resources\images\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\images\checkbox_white.png">
+      <Filter>webui\resources\images\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\menu_button.css">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\bubble_button.css">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\alert_overlay.css">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\widgets.css">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\table.css">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\menu.css">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\tree.css">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\spinner.css">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\chrome_shared.css">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\overlay.css">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\dialogs.css">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\throbber.css">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\list.css">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\tabs.css">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\butter_bar.css">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\tree.css.js">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\bubble.css">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\css\trash.css">
+      <Filter>webui\resources\css\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\parse_html_subset.js">
+      <Filter>webui\resources\js\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\i18n_template.js">
+      <Filter>webui\resources\js\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\event_tracker.js">
+      <Filter>webui\resources\js\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\media_common.js">
+      <Filter>webui\resources\js\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\util.js">
+      <Filter>webui\resources\js\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\local_strings.js">
+      <Filter>webui\resources\js\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\assert.js">
+      <Filter>webui\resources\js\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\i18n_template2.js">
+      <Filter>webui\resources\js\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\load_time_data.js">
+      <Filter>webui\resources\js\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\i18n_template_no_process.js">
+      <Filter>webui\resources\js\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\i18n_process.js">
+      <Filter>webui\resources\js\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr.js">
+      <Filter>webui\resources\js\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\jstemplate_compiled.js">
+      <Filter>webui\resources\js\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\promise.js">
+      <Filter>webui\resources\js\cr\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\event_target.js">
+      <Filter>webui\resources\js\cr\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\link_controller.js">
+      <Filter>webui\resources\js\cr\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui.js">
+      <Filter>webui\resources\js\cr\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\menu.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\focus_outline_manager.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\table.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\alert_overlay.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\dialogs.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\repeating_button.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\context_menu_button.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\grid.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\tabs.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\list.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\list_item.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\list_single_selection_model.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\command.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\touch_handler.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\overlay.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\bubble_button.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\bubble.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\menu_button.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\focus_manager.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\menu_item.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\autocomplete_list.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\array_data_model.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\card_slider.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\splitter.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\context_menu_handler.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\position_util.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\list_selection_controller.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\list_selection_model.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\drag_wrapper.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\tree.js">
+      <Filter>webui\resources\js\cr\ui\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\table\table_header.js">
+      <Filter>webui\resources\js\cr\ui\table\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\table\table_column_model.js">
+      <Filter>webui\resources\js\cr\ui\table\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\table\table_splitter.js">
+      <Filter>webui\resources\js\cr\ui\table\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\table\table_list.js">
+      <Filter>webui\resources\js\cr\ui\table\_excluded_files</Filter>
+    </None>
+    <None Include="webui\resources\js\cr\ui\table\table_column.js">
+      <Filter>webui\resources\js\cr\ui\table\_excluded_files</Filter>
+    </None>
+    <None Include="resources\ui_resources.grd">
+      <Filter>resources\_excluded_files</Filter>
+    </None>
+    <None Include="resources\ui_unscaled_resources.grd">
+      <Filter>resources\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_hover_bottom_right.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_hover_top_left.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_hover_top_right.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_hover_left.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_pressed_center.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_pressed_bottom.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_hover_top.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_pressed_bottom_left.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_hover_center.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_pressed_right.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_hover_bottom_left.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_pressed_top.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_pressed_top_left.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_pressed_top_right.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_hover_bottom.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_pressed_left.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_hover_right.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_140_percent\common\textbutton_pressed_bottom_right.png">
+      <Filter>resources\touch_140_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_right.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\close_dialog_hover.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_bottom_left.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\panel_top_right_corner.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_pointer_bottom.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\close_hover.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\app_top_center.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\close_2_pressed.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\content_bottom_center.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\restore_hover.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\close_2_hover.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\close.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\panel_top_left_corner.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\content_bottom_left_corner.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\throbber.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_bottom_right.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\panel_bottom_right_corner.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\app_top_left.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\slider_center_active.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_top_left.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\frame_default_inactive.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\close_2_mask.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_shadow_right.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\close_dialog.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\slider_thumb.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_bottom.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\restore.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\slider_right_pressed.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_shadow_top_left.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\app_top_right.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_shadow_top.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\minimize_pressed.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\content_bottom_right_corner.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_shadow_bottom.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\maximize_pressed.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\slider_left_disabled.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\slider_center_disabled.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\frame_default.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\close_sa_hover.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\close_dialog_pressed.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\slider_thumb_disabled.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\restore_pressed.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\slider_left_pressed.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\slider_right_disabled.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_shadow_bottom_right.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\slider_center_pressed.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_top_right.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_shadow_left.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\maximize_hover.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_pointer_left.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\maximize.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\close_sa.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_left.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\minimize.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\slider_left_active.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_shadow_top_right.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\content_left_side.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\minimize_hover.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_shadow_bottom_left.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\panel_bottom_left_corner.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\close_pressed.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_top.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\content_right_side.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\close_2.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_pointer_top.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\slider_right_active.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\bubble_pointer_right.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\frame_app_panel_default.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\close_sa_pressed.png">
+      <Filter>resources\default_100_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\win\notification_close_pressed.png">
+      <Filter>resources\default_100_percent\win\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\win\notification_close.png">
+      <Filter>resources\default_100_percent\win\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\win\notification_close_hover.png">
+      <Filter>resources\default_100_percent\win\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_spike_small_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_bottom_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_shadow_inactive_bottom.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\menu_hierarchy_arrow.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\browser_action_badge_center.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_big_top_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_shadow_active_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_pressed_top_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_shadow_inactive_bottom_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_hover_bottom_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_hover_top_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_pressed_center.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_pressed_center.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bottom_right_corner.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_hover_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_hover_top_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_pressed_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_big_bottom.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_shadow_active_bottom_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_pressed_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\browser_action_badge_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bottom_center.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\app_list_progress_bar_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_center.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\app_list_user_indicator.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\message_close.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_top_left_corner.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_pressed_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_shadow_inactive_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\menu_radio_empty.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_shadow_active_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_center.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_top.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\default_favicon_64.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_pressed_bottom.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_top_center.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\app_list_progress_bar_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_pressed_center.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\folder_open_rtl.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\default_favicon_32.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_shadow_active_top.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_pressed_bottom.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\menu_radio_selected.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_hover_top_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_bottom_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_left_side.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_shadow_active_bottom_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_small_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_spike_big_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_bottom.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_pressed_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_top_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_hover_bottom.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_top.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_pressed_bottom_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_right_side.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_small_top_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\browser_action_badge_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_top_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_hover_top_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_shadow_active_bottom.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\app_list_tools_pressed.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\notification_expand_pressed.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_hover_bottom_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_spike_big_top.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_pressed_top.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_hover_center.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_pressed_bottom.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_pressed_top.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_shadow_active_top_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\app_list_tools_normal.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\notification_expand_hover.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_pressed_top_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_big_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_pressed_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_big_bottom_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_pressed_bottom_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_big_top.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_pressed_bottom_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_pressed_top_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_bottom_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_small_top.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_spike_small_bottom.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_hover_center.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_hover_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\menu_check.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_pressed_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\app_list_progress_bar_center.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_top_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\folder_open.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_small_bottom_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_hover_top.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_top_right_corner.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_pressed_top_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_hover_bottom_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_big_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_hover_top_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bottom_left_corner.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_shadow_inactive_top.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\app_list_tools_hover.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_hover_bottom_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_pressed_bottom_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\notification_expand.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_big_bottom_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_bottom.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_big_top_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_shadow_inactive_top_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\folder_closed_rtl.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_pressed_bottom_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_pressed_top.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_shadow_active_top_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_spike_big_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_hover_bottom_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\app_list_progress_bar_background.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_small_top_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_bottom_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_pressed_top_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_top_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\folder_closed.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_hover_top_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_shadow_inactive_top_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_small_bottom_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_small_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_hover_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\default_favicon.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_hover_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_spike_small_top.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_spike_small_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_small_bottom.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\checkmark.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_bubble_shadow_spike_big_bottom.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_shadow_inactive_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_hover_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_hover_bottom_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_hover_top.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\window_shadow_inactive_bottom_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_hover_bottom.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_hover_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_hover_top.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_hover_bottom.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_focused_pressed_bottom_left.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\button_hover_center.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\common\textbutton_pressed_top_right.png">
+      <Filter>resources\default_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\cros\menu_droparrow.png">
+      <Filter>resources\default_100_percent\cros\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\cros\action_box_button_pressed.png">
+      <Filter>resources\default_100_percent\cros\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\cros\menu_check.png">
+      <Filter>resources\default_100_percent\cros\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\cros\action_box_button_normal.png">
+      <Filter>resources\default_100_percent\cros\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_100_percent\cros\action_box_button_hover.png">
+      <Filter>resources\default_100_percent\cros\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_hover_bottom_left.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_hover_top_left.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_pressed_center.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_pressed_right.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_hover_left.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_hover_center.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_hover_right.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_pressed_bottom_right.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_pressed_left.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_hover_top.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_pressed_top.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_pressed_bottom.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_pressed_top_right.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_pressed_bottom_left.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_hover_bottom_right.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_hover_top_right.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_hover_bottom.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_180_percent\common\textbutton_pressed_top_left.png">
+      <Filter>resources\touch_180_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_pressed_top_right.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_pressed_bottom.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_pressed_top_left.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_hover_top.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_hover_bottom.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_hover_bottom_left.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_pressed_left.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_hover_center.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_pressed_bottom_right.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_pressed_right.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_pressed_bottom_left.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_hover_left.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_hover_top_right.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_hover_right.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_hover_bottom_right.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_pressed_center.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_pressed_top.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\touch_100_percent\common\textbutton_hover_top_left.png">
+      <Filter>resources\touch_100_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\bubble_top_left.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\bubble_pointer_right.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\bubble_top.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\bubble_right.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\slider_left_disabled.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\bubble_top_right.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\bubble_bottom.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\slider_center_disabled.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\slider_right_disabled.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\slider_center_active.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\close_2_pressed.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\close_2_hover.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\throbber.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\bubble_bottom_right.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\slider_left_active.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\close_dialog_pressed.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\bubble_pointer_left.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\close_dialog.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\bubble_bottom_left.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\slider_left_pressed.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\bubble_pointer_bottom.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\slider_right_active.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\close_2.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\slider_right_pressed.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\slider_center_pressed.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\bubble_left.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\bubble_pointer_top.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\slider_thumb.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\close_2_mask.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\close_dialog_hover.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\slider_thumb_disabled.png">
+      <Filter>resources\default_200_percent\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\win\notification_close_pressed.png">
+      <Filter>resources\default_200_percent\win\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\win\notification_close.png">
+      <Filter>resources\default_200_percent\win\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\win\notification_close_hover.png">
+      <Filter>resources\default_200_percent\win\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_hover_top_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_hover_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_hover_bottom.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\browser_action_badge_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_small_top_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_shadow_active_top_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\folder_open_rtl.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_hover_center.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\folder_open.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_small_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_bottom_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_shadow_active_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_spike_big_top.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_spike_big_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_hover_center.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_hover_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\notification_expand_hover.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_center.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_top.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_pressed_top_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_spike_small_top.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\app_list_user_indicator.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_hover_bottom_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_small_top_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_hover_bottom_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_pressed_bottom_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_bottom_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_pressed_top.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_hover_bottom_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_big_bottom_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_small_bottom.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_pressed_top_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_shadow_active_top.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_big_bottom_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_shadow_inactive_top_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\app_list_progress_bar_background.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_shadow_inactive_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\menu_radio_empty.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\notification_expand_pressed.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_shadow_active_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\checkmark.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_pressed_bottom_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_big_top_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_spike_big_bottom.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_hover_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_shadow_inactive_top_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\app_list_progress_bar_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_hover_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_bottom_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_pressed_bottom.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_pressed_center.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_pressed_bottom.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_hover_bottom_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_shadow_active_top_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_pressed_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_pressed_top_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_pressed_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\app_list_progress_bar_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\menu_check.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_shadow_active_bottom.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_hover_center.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_pressed_top.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\notification_expand.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_pressed_bottom.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_hover_bottom_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_big_top.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\browser_action_badge_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_spike_small_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_bottom_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_hover_top.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_hover_top.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\app_list_tools_normal.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_spike_big_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_hover_top_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_small_bottom_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_top_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_spike_small_bottom.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\default_favicon.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_pressed_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_spike_small_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_hover_top.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_shadow_inactive_top.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_pressed_bottom_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_big_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_small_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_small_top.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_pressed_top_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_hover_top_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_shadow_inactive_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_top.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_big_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_pressed_top_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_shadow_inactive_bottom_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_bottom.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\message_close.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\folder_closed_rtl.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_hover_bottom.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_shadow_inactive_bottom_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_hover_bottom.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_pressed_bottom_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_center.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_pressed_center.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_pressed_top.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\app_list_progress_bar_center.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\folder_closed.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_pressed_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_shadow_inactive_bottom.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_bottom.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_top_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_pressed_top_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\app_list_tools_pressed.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_hover_bottom_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_hover_top_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_top_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_pressed_bottom_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_small_bottom_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\browser_action_badge_center.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_pressed_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_hover_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_pressed_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_big_bottom.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\menu_hierarchy_arrow.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_hover_top_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_hover_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_shadow_active_bottom_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_shadow_active_bottom_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_pressed_bottom_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_hover_top_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\menu_radio_selected.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\window_bubble_shadow_big_top_left.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\app_list_tools_hover.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\textbutton_pressed_center.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\common\button_focused_top_right.png">
+      <Filter>resources\default_200_percent\common\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\cros\menu_droparrow.png">
+      <Filter>resources\default_200_percent\cros\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\cros\action_box_button_pressed.png">
+      <Filter>resources\default_200_percent\cros\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\cros\menu_check.png">
+      <Filter>resources\default_200_percent\cros\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\cros\action_box_button_hover.png">
+      <Filter>resources\default_200_percent\cros\_excluded_files</Filter>
+    </None>
+    <None Include="resources\default_200_percent\cros\action_box_button_normal.png">
+      <Filter>resources\default_200_percent\cros\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\row_resize.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\pan_middle.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\zoom_in.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\pan_north.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\hand_grab.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\hand_grabbing.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\copy.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\col_resize.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\none.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\aliasb.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\pan_north_west.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\pan_north_east.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\vertical_text.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\pan_south.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\pan_west.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\pan_east.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\cell.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\pan_south_east.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\zoom_out.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+    <None Include="resources\cursors\pan_south_west.cur">
+      <Filter>resources\cursors\_excluded_files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

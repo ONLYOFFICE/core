@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="test">
+      <UniqueIdentifier>{5763B17F-46DA-9ED7-179F-9C9F273B791C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gfx">
+      <UniqueIdentifier>{C2A0659E-E135-879C-7769-386FD982C409}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gfx\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gfx\image">
+      <UniqueIdentifier>{BE1D29E7-2090-D931-E70B-C37605E8E373}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gfx\image\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gfx\codec">
+      <UniqueIdentifier>{4A6C5824-2193-E513-3482-6EEFAD121845}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base">
+      <UniqueIdentifier>{DBBAC0A6-BB0A-CA51-45CC-DA4574B671E6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\gestures">
+      <UniqueIdentifier>{5C5CF04C-E63C-410F-70B0-EE625427D8CC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\ime">
+      <UniqueIdentifier>{94DDB6FC-0A93-3C79-4942-FD121B6829C8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\ime\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\ime\win">
+      <UniqueIdentifier>{47FC5EC4-15EB-E92F-89D7-AFE51CF838A9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\l10n">
+      <UniqueIdentifier>{1856F9C7-8063-E479-C884-CBFA7375084D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\l10n\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\models">
+      <UniqueIdentifier>{1DEC29F1-A71F-2305-0F9D-CB993E18E9AB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\text">
+      <UniqueIdentifier>{A03EF847-0682-89DE-DB5E-F3ADE72FEA2E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\gtk">
+      <UniqueIdentifier>{2D4DC4D4-E814-8696-8CA7-5C200B5ACD6F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\gtk\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\animation">
+      <UniqueIdentifier>{32754A8C-EDC0-67D4-C2EE-20B9F5EB0ADB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\cocoa">
+      <UniqueIdentifier>{7DE7C50E-B7F9-3610-CB61-C0F25CD5170C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\cocoa\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\accelerators">
+      <UniqueIdentifier>{C943C068-E0DC-7F84-F941-68343358418A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\range">
+      <UniqueIdentifier>{D3823C16-4781-3326-D544-8ACF980D662D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\range\_excluded_files">
+      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\clipboard">
+      <UniqueIdentifier>{CD6DB72A-7AF5-DA53-408A-5C0E1680A389}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\keycodes">
+      <UniqueIdentifier>{12B31B02-0E42-8162-B54F-E65772B458CF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\win">
+      <UniqueIdentifier>{47FC5EC4-15EB-E92F-89D7-AFE51CF838A9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\test">
+      <UniqueIdentifier>{5763B17F-46DA-9ED7-179F-9C9F273B791C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\test\data">
+      <UniqueIdentifier>{BB2F2B9D-F30E-26CC-2AEB-5F1CF39B6163}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\resource">
+      <UniqueIdentifier>{53B0407C-5A5A-C7A9-482B-18E6E41A4E0B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\events">
+      <UniqueIdentifier>{35F9EDA7-7DA5-20A8-B488-78EA975C9F74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\dragdrop">
+      <UniqueIdentifier>{104D1022-D83A-C149-CE10-A22FF9410987}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shell_dialogs">
+      <UniqueIdentifier>{B0131C60-A341-4313-6B0E-012A93F55C39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webui">
+      <UniqueIdentifier>{8F834895-4F0E-737B-F9E7-D6D40E9A436B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ui.gyp"/>
+    <ResourceCompile Include="test\ui_unittests.rc">
+      <Filter>test</Filter>
+    </ResourceCompile>
+    <ClCompile Include="gfx\shadow_value_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\font_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\blit_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\screen_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\display_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\font_fallback_win_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\size_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\vector2d_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\quad_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\interpolated_transform_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\canvas_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\icon_util_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\transform_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\text_utils_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\transform_util_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\font_list_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\color_utils_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\insets_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\render_text_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\break_list_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\matrix3_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\point_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\safe_integer_conversions_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\vector3d_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\color_analysis_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\skbitmap_operations_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\platform_font_win_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\point3_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\rect_unittest.cc">
+      <Filter>gfx</Filter>
+    </ClCompile>
+    <None Include="gfx\platform_font_mac_unittest.mm">
+      <Filter>gfx\_excluded_files</Filter>
+    </None>
+    <ClCompile Include="gfx\image\image_unittest_util.cc">
+      <Filter>gfx\image</Filter>
+    </ClCompile>
+    <ClInclude Include="gfx\image\image_unittest_util.h">
+      <Filter>gfx\image</Filter>
+    </ClInclude>
+    <ClCompile Include="gfx\image\image_skia_unittest.cc">
+      <Filter>gfx\image</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\image\image_unittest.cc">
+      <Filter>gfx\image</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\image\image_util_unittest.cc">
+      <Filter>gfx\image</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\image\image_family_unittest.cc">
+      <Filter>gfx\image</Filter>
+    </ClCompile>
+    <None Include="gfx\image\image_mac_unittest.mm">
+      <Filter>gfx\image\_excluded_files</Filter>
+    </None>
+    <None Include="gfx\image\image_unittest_util_mac.mm">
+      <Filter>gfx\image\_excluded_files</Filter>
+    </None>
+    <None Include="gfx\image\image_unittest_util_ios.mm">
+      <Filter>gfx\image\_excluded_files</Filter>
+    </None>
+    <ClCompile Include="gfx\codec\png_codec_unittest.cc">
+      <Filter>gfx\codec</Filter>
+    </ClCompile>
+    <ClCompile Include="gfx\codec\jpeg_codec_unittest.cc">
+      <Filter>gfx\codec</Filter>
+    </ClCompile>
+    <ClCompile Include="base\layout_unittest.cc">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="base\view_prop_unittest.cc">
+      <Filter>base\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="base\gestures\velocity_calculator_unittest.cc">
+      <Filter>base\gestures</Filter>
+    </ClCompile>
+    <ClCompile Include="base\ime\character_composer_unittest.cc">
+      <Filter>base\ime\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="base\ime\input_method_ibus_unittest.cc">
+      <Filter>base\ime\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="base\ime\win\tsf_text_store_unittest.cc">
+      <Filter>base\ime\win</Filter>
+    </ClCompile>
+    <ClCompile Include="base\l10n\l10n_util_win_unittest.cc">
+      <Filter>base\l10n</Filter>
+    </ClCompile>
+    <ClCompile Include="base\l10n\l10n_util_unittest.cc">
+      <Filter>base\l10n</Filter>
+    </ClCompile>
+    <None Include="base\l10n\l10n_util_mac_unittest.mm">
+      <Filter>base\l10n\_excluded_files</Filter>
+    </None>
+    <ClCompile Include="base\models\list_selection_model_unittest.cc">
+      <Filter>base\models</Filter>
+    </ClCompile>
+    <ClCompile Include="base\models\tree_node_iterator_unittest.cc">
+      <Filter>base\models</Filter>
+    </ClCompile>
+    <ClCompile Include="base\models\list_model_unittest.cc">
+      <Filter>base\models</Filter>
+    </ClCompile>
+    <ClCompile Include="base\models\tree_node_model_unittest.cc">
+      <Filter>base\models</Filter>
+    </ClCompile>
+    <ClCompile Include="base\text\utf16_indexing_unittest.cc">
+      <Filter>base\text</Filter>
+    </ClCompile>
+    <ClCompile Include="base\text\bytes_formatting_unittest.cc">
+      <Filter>base\text</Filter>
+    </ClCompile>
+    <ClCompile Include="base\text\text_elider_unittest.cc">
+      <Filter>base\text</Filter>
+    </ClCompile>
+    <ClCompile Include="base\gtk\gtk_im_context_util_unittest.cc">
+      <Filter>base\gtk\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="base\gtk\gtk_expanded_container_unittest.cc">
+      <Filter>base\gtk\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="base\gtk\menu_label_accelerator_util_unittest.cc">
+      <Filter>base\gtk\_excluded_files</Filter>
+    </ClCompile>
+    <ClCompile Include="base\animation\animation_container_unittest.cc">
+      <Filter>base\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="base\animation\multi_animation_unittest.cc">
+      <Filter>base\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="base\animation\slide_animation_unittest.cc">
+      <Filter>base\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="base\animation\animation_unittest.cc">
+      <Filter>base\animation</Filter>
+    </ClCompile>
+    <None Include="base\cocoa\events_mac_unittest.mm">
+      <Filter>base\cocoa\_excluded_files</Filter>
+    </None>
+    <None Include="base\cocoa\focus_tracker_unittest.mm">
+      <Filter>base\cocoa\_excluded_files</Filter>
+    </None>
+    <None Include="base\cocoa\hover_image_button_unittest.mm">
+      <Filter>base\cocoa\_excluded_files</Filter>
+    </None>
+    <None Include="base\cocoa\tracking_area_unittest.mm">
+      <Filter>base\cocoa\_excluded_files</Filter>
+    </None>
+    <None Include="base\cocoa\fullscreen_window_manager_unittest.mm">
+      <Filter>base\cocoa\_excluded_files</Filter>
+    </None>
+    <None Include="base\cocoa\base_view_unittest.mm">
+      <Filter>base\cocoa\_excluded_files</Filter>
+    </None>
+    <ClCompile Include="base\accelerators\accelerator_manager_unittest.cc">
+      <Filter>base\accelerators</Filter>
+    </ClCompile>
+    <ClCompile Include="base\range\range_unittest.cc">
+      <Filter>base\range</Filter>
+    </ClCompile>
+    <ClCompile Include="base\range\range_win_unittest.cc">
+      <Filter>base\range</Filter>
+    </ClCompile>
+    <None Include="base\range\range_mac_unittest.mm">
+      <Filter>base\range\_excluded_files</Filter>
+    </None>
+    <ClCompile Include="base\clipboard\custom_data_helper_unittest.cc">
+      <Filter>base\clipboard</Filter>
+    </ClCompile>
+    <ClCompile Include="base\clipboard\clipboard_unittest.cc">
+      <Filter>base\clipboard</Filter>
+    </ClCompile>
+    <ClCompile Include="base\keycodes\usb_keycode_map_unittest.cc">
+      <Filter>base\keycodes</Filter>
+    </ClCompile>
+    <ClCompile Include="base\win\hwnd_subclass_unittest.cc">
+      <Filter>base\win</Filter>
+    </ClCompile>
+    <ClInclude Include="base\test\data\resource.h">
+      <Filter>base\test\data</Filter>
+    </ClInclude>
+    <ClCompile Include="base\resource\resource_bundle_unittest.cc">
+      <Filter>base\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="base\resource\data_pack_unittest.cc">
+      <Filter>base\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="base\resource\data_pack_literal.cc">
+      <Filter>base\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="base\events\key_identifier_conversion_unittest.cc">
+      <Filter>base\events</Filter>
+    </ClCompile>
+    <ClCompile Include="base\events\event_dispatcher_unittest.cc">
+      <Filter>base\events</Filter>
+    </ClCompile>
+    <ClCompile Include="base\events\event_unittest.cc">
+      <Filter>base\events</Filter>
+    </ClCompile>
+    <ClCompile Include="base\dragdrop\os_exchange_data_win_unittest.cc">
+      <Filter>base\dragdrop</Filter>
+    </ClCompile>
+    <ClCompile Include="shell_dialogs\select_file_dialog_win_unittest.cc">
+      <Filter>shell_dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="webui\web_ui_util_unittest.cc">
+      <Filter>webui</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

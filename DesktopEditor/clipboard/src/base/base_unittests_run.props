@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(isolateBeforeTargets)' == '' and '$(isolateAfterTargets)' == '' and '$(ConfigurationType)' != 'Makefile'">
+    <isolateBeforeTargets>Midl</isolateBeforeTargets>
+    <isolateAfterTargets>CustomBuild</isolateAfterTargets>
+  </PropertyGroup>
+  <PropertyGroup>
+    <isolateDependsOn Condition="'$(ConfigurationType)' != 'Makefile'">_SelectedFiles;$(isolateDependsOn)</isolateDependsOn>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <isolate>
+      <CommandLineTemplate>call python &quot;..\tools\swarm_client\isolate.py&quot; &quot;check&quot; &quot;--outdir&quot; &quot;$(OutDir) &quot; &quot;--variable&quot; &quot;PRODUCT_DIR&quot; &quot;$(OutDir) &quot; &quot;--variable&quot; &quot;OS=win&quot; &quot;--result&quot; &quot;$(OutDir)%(Filename).isolated&quot; &quot;--isolate&quot; &quot;%(FullPath)&quot; &quot;--ignore_broken_items&quot;</CommandLineTemplate>
+      <Outputs>$(OutDir)%(Filename).isolated</Outputs>
+      <ExecutionDescription>isolate</ExecutionDescription>
+      <AdditionalDependencies>..\tools\swarm_client\isolate.py;..\tools\swarm_client\isolateserver_archive.py;..\tools\swarm_client\run_isolated.py;..\tools\swarm_client\run_test_cases.py;..\tools\swarm_client\short_expression_finder.py;..\tools\swarm_client\trace_inputs.py</AdditionalDependencies>
+    </isolate>
+  </ItemDefinitionGroup>
+</Project>

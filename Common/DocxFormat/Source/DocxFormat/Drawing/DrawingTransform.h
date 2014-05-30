@@ -245,7 +245,7 @@ namespace OOX
 
 			// Childs
 			nullable<ComplexTypes::Drawing::CPositiveSize2D> m_oExt;
-			nullable<ComplexTypes::Drawing::CPositiveSize2D> m_oOff;
+			nullable<ComplexTypes::Drawing::CPoint2D>		 m_oOff;
 
 		};
 

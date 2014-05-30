@@ -349,7 +349,9 @@ void odf_drawing_context::end_shape()
 				oox_shape_ptr shape_define = oox_shape::create(impl_->current_drawing_state_.oox_shape_preset);
 
 				if (shape_define)
-				{		
+				{
+					impl_->current_drawing_state_.rotateAngle = boost::none;
+
 					enhanced->svg_viewbox_										= shape_define->view_box;
 					enhanced->draw_enhanced_geometry_attlist_.draw_type_		= shape_define->odf_type_name;
 					enhanced->draw_enhanced_geometry_attlist_.draw_text_areas_	= shape_define->text_areas;
@@ -566,6 +568,12 @@ void odf_drawing_context::set_rect(double x_pt, double y_pt, double width_pt, do
 	impl_->current_drawing_state_.svg_height_ = length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
 	impl_->current_drawing_state_.svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);	
 }
+void odf_drawing_context::set_position(double x_pt, double y_pt)
+{
+	//хороший тон сохранить все размеры в см (хотя можно и в другой системе)
+	impl_->current_drawing_state_.svg_x_ = length(length(x_pt,length::pt).get_value_unit(length::cm),length::cm);
+	//impl_->current_drawing_state_.svg_y_ = length(length(y_pt,length::pt).get_value_unit(length::cm),length::cm);
+}
 void odf_drawing_context::get_size( double & width_pt, double & height_pt)
 {
 	if (!impl_->current_drawing_state_.svg_width_ || !impl_->current_drawing_state_.svg_height_) return;
@@ -573,7 +581,11 @@ void odf_drawing_context::get_size( double & width_pt, double & height_pt)
 	width_pt	= impl_->current_drawing_state_.svg_width_->get_value_unit(length::pt);
 	height_pt	= impl_->current_drawing_state_.svg_height_->get_value_unit(length::pt);
 }
-
+void odf_drawing_context::set_size( double width_pt, double height_pt)
+{
+	impl_->current_drawing_state_.svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);
+	impl_->current_drawing_state_.svg_height_= length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
+}
 void odf_drawing_context::set_line_width(double pt)
 {
 	if (!impl_->current_graphic_properties)return;

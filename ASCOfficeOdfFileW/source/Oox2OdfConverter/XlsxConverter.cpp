@@ -306,13 +306,18 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row)
 	}
 	ods_context->current_table().set_row_default_cell_style(style_cell_name );
 	
-	if (oox_row->m_oHt.IsInit() == true)
+	if (oox_row->m_oHt.IsInit())
 	{
+		double dyDescent = 0.25;
 		double height = oox_row->m_oHt->GetValue();
+		if (oox_row->m_oDyDescent.IsInit())
+		{
+			dyDescent = oox_row->m_oDyDescent->GetValue();
+		}
 		ods_context->current_table().set_row_height(height);
-		//нужно преобразование размерности !!!
 	}
-	if (oox_row->m_oCustomHeight.IsInit() && oox_row->m_oCustomHeight->GetValue() == 1)
+	if ((oox_row->m_oCustomHeight.IsInit() && oox_row->m_oCustomHeight->GetValue() == 1) || 
+		(oox_row->m_oCustomFormat.IsInit() && oox_row->m_oCustomFormat->GetValue() == 1 && oox_row->m_oHt.IsInit()) )
 	{ 
 		ods_context->current_table().set_row_optimal_height(false);
 	}else
@@ -352,7 +357,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCell *oox_cell)
 		if (value_type == SimpleTypes::Spreadsheet::celltypeSharedString)
 		{
 			convert_sharing_string(_wtoi(oox_cell->m_oValue->m_sText));
-			ods_context->current_table().set_cell_type(5);
 		}
 		else
 		{
@@ -671,36 +675,29 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf::style_text_prop
 	bool			font_bold = false;
 	bool			font_italic = false;
 
-	if (font->m_oBold.IsInit())
-	{
-		if (font->m_oBold->m_oVal.ToBool() ==true) 
-		{
-			font_bold = true;
-			text_properties->content().fo_font_weight_ = odf::font_weight(odf::font_weight::WBold);
-		}
-		else
-			text_properties->content().fo_font_weight_ = odf::font_weight(odf::font_weight::WNormal);
-	}
+	if (font->m_oBold.IsInit() && (font->m_oBold->m_oVal.ToBool() ==true) )font_bold = true;
+
+	if (font_bold)text_properties->content().fo_font_weight_ = odf::font_weight(odf::font_weight::WBold);
+	else 		  text_properties->content().fo_font_weight_ = odf::font_weight(odf::font_weight::WNormal);	
+	
 	convert(font->m_oColor.GetPointer(),text_properties->content().fo_color_);
 
 	if (font->m_oUnderline.IsInit())
 	{
 		//convert_element ????
 	}
-	if (font->m_oItalic.IsInit())
-	{
-		if (font->m_oItalic->m_oVal.ToBool() ==true)
-		{
-			font_italic = true;
-			text_properties->content().fo_font_style_ = odf::font_style(odf::font_style::Italic);
-		}
-		else
-			text_properties->content().fo_font_style_ = odf::font_style(odf::font_style::Normal);
-	}
+	if (font->m_oItalic.IsInit() && (font->m_oItalic->m_oVal.ToBool() ==true))font_italic = true;
+
+	if (font_italic) text_properties->content().fo_font_style_ = odf::font_style(odf::font_style::Italic);
+	else			 text_properties->content().fo_font_style_ = odf::font_style(odf::font_style::Normal);
+	
 	if (font->m_oSz.IsInit())
 	{
 		font_size = font->m_oSz->m_oVal->GetValue();
 		OoxConverter::convert(font_size, text_properties->content().fo_font_size_);
+
+		text_properties->content().style_font_size_asian_= text_properties->content().fo_font_size_;
+		text_properties->content().style_font_size_complex_ = text_properties->content().fo_font_size_;
 	}
 	if (font->m_oFamily.IsInit())
 	{
@@ -709,8 +706,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf::style_text_prop
 	if (font->m_oRFont.IsInit())
 	{
 		font_name = string2std_string(font->m_oRFont->m_sVal.get());
-		//text_properties->content().style_font_name_ = string2std_string(font->m_oRFont->m_sVal.get());
 		text_properties->content().fo_font_family_ = font_name;
+		//text_properties->content().style_font_name_asian_ = font_name;
+		//text_properties->content().style_font_name_complex_ = font_name;
+		text_properties->content().style_font_family_asian_ = font_name;
+		text_properties->content().style_font_family_complex_ = font_name;
 	}
 	ods_context->calculate_font_metrix(font_name,font_size,font_italic,font_bold);
 	/////
@@ -808,23 +808,21 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf::style_pa
 		//case SimpleTypes::Spreadsheet::horizontalalignmentDistributed:	paragraph_properties->content().fo_text_align_ = 
 		//																	odf::text_align(odf::text_align::Left); break;
 		case SimpleTypes::Spreadsheet::horizontalalignmentFill:	paragraph_properties->content().fo_text_align_ = 
-																			odf::text_align(odf::text_align::Left); break;
+																			odf::text_align(odf::text_align::Start); break;
 		//case SimpleTypes::Spreadsheet::horizontalalignmentGeneral:	paragraph_properties->content().fo_text_align_ = 
 		//																	odf::text_align(odf::text_align::Left); break;
 		case SimpleTypes::Spreadsheet::horizontalalignmentJustify:	paragraph_properties->content().fo_text_align_ = 
 																			odf::text_align(odf::text_align::Justify); break;
 		case SimpleTypes::Spreadsheet::horizontalalignmentLeft:	paragraph_properties->content().fo_text_align_ = 
-																			odf::text_align(odf::text_align::Left); break;
+																			odf::text_align(odf::text_align::Start); break;
 		case SimpleTypes::Spreadsheet::horizontalalignmentRight:	paragraph_properties->content().fo_text_align_ = 
-																		odf::text_align(odf::text_align::Right); break;
+																		odf::text_align(odf::text_align::End); break;
 		}
 	}
 	if(aligment->m_oWrapText.IsInit())
 	{
 		if (aligment->m_oWrapText->GetValue()) 
 			cell_properties->style_table_cell_properties_attlist_.fo_wrap_option_ = odf::wrap_option(odf::wrap_option::Wrap);
-		else 
-			cell_properties->style_table_cell_properties_attlist_.fo_wrap_option_ = odf::wrap_option(odf::wrap_option::NoWrap);
 	}
 	if(aligment->m_oShrinkToFit.IsInit())
 	{
@@ -1104,9 +1102,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 	{
 		convert(xlsx_styles->m_oBorders->m_arrItems[border_id], table_cell_properties); 
 	}
+	
+	odf::style_paragraph_properties	* paragraph_properties = ods_context->styles_context()->last_state().get_paragraph_properties();
+	paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::Page);
+	paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Start); 
+
 	if (xfc_style->m_oAligment.IsInit() && xfc_style->m_oApplyAlignment.IsInit())
 	{
-		odf::style_paragraph_properties	* paragraph_properties = ods_context->styles_context()->last_state().get_paragraph_properties();
 		convert(xfc_style->m_oAligment.GetPointer(), paragraph_properties, table_cell_properties);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////

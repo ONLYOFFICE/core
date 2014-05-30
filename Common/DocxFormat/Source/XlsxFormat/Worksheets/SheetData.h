@@ -378,17 +378,18 @@ namespace OOX
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("collapsed"),      m_oCollapsed )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customFormat"),      m_oCustomFormat )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customHeight"),      m_oCustomHeight )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("hidden"),      m_oHidden )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ht"),      m_oHt )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("outlineLevel"),      m_oOutlineLevel )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ph"),      m_oPh )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r"),      m_oR )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("s"),      m_oS )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("thickBot"),      m_oThickBot )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("thickTop"),      m_oThickTop )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("collapsed"),		m_oCollapsed )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customFormat"),    m_oCustomFormat )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customHeight"),    m_oCustomHeight )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("hidden"),			m_oHidden )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ht"),				m_oHt )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("outlineLevel"),    m_oOutlineLevel )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ph"),				m_oPh )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r"),				m_oR )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("s"),				m_oS )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("thickBot"),		m_oThickBot )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("thickTop"),		m_oThickTop )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("x14ac:dyDescent"),	m_oDyDescent )
 
 					WritingElement_ReadAttributes_End( oReader )
 			}
@@ -405,6 +406,7 @@ namespace OOX
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oS;
 				nullable<SimpleTypes::COnOff<>>					m_oThickBot;
 				nullable<SimpleTypes::COnOff<>>					m_oThickTop;
+				nullable<SimpleTypes::CDouble>					m_oDyDescent;
 
 		};
 

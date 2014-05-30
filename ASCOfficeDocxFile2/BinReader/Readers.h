@@ -427,6 +427,12 @@ public:
 				oBinary_CommonReader2.ReadThemeColor(length, orPr->ThemeColor);
 			}
 			break;
+		case c_oSerProp_rPrType::Vanish:
+			{
+				orPr->bVanish = true;
+				orPr->Vanish = m_oBufferedStream.ReadBool();
+			}
+			break;
 		default:
 			res = c_oSerConstants::ReadUnknown;
 			break;

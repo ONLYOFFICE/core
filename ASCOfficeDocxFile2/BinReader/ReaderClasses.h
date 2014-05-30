@@ -304,6 +304,7 @@ public:
 	CString LangBidi;
 	CString LangEA;
 	CThemeColor ThemeColor;
+	bool Vanish;
 
 	bool bBold;
 	bool bItalic;
@@ -334,6 +335,7 @@ public:
 	bool bLangBidi;
 	bool bLangEA;
 	bool bThemeColor;
+	bool bVanish;
 
 	bool bDoNotWriteNullProp;
 public:
@@ -383,11 +385,12 @@ public:
 		bLangEA = false;
 		bThemeColor = false;
 		ThemeColor.Reset();
+		bVanish = false;
 	}
 	bool IsNoEmpty()
 	{
 		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || bHighLight || bShd ||
-				bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor;
+			bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor || bVanish;
 	}
 	void Write(XmlUtils::CStringWriter*  pCStringWriter)
 	{
@@ -484,6 +487,13 @@ public:
 				pCStringWriter->WriteString(CString(_T("<w:dstrike />")));
 			else if(false == bDoNotWriteNullProp)
 				pCStringWriter->WriteString(CString(_T("<w:dstrike w:val=\"false\"/>")));
+		}
+		if(bVanish)
+		{
+			if(Vanish)
+				pCStringWriter->WriteString(CString(_T("<w:vanish />")));
+			else if(false == bDoNotWriteNullProp)
+				pCStringWriter->WriteString(CString(_T("<w:vanish w:val=\"false\"/>")));
 		}
 		if(bColor || (bThemeColor && ThemeColor.IsNoEmpty()))
 		{

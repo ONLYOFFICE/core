@@ -328,7 +328,8 @@ const int g_nFormatVersion = 5;
 		LangBidi = 26,
 		LangEA = 27,
 		ColorTheme = 28,
-		Shd = 29
+		Shd = 29,
+		Vanish = 30
 	};}
 	namespace c_oSerProp_rowPrType{enum c_oSerProp_rowPrType
 	{

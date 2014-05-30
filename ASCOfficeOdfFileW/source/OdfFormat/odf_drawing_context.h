@@ -61,6 +61,8 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////
 
 	void set_rect(double x_pt, double y_pt, double width_pt, double height_pt);
+	void set_size( double width_pt, double height_pt);
+	void set_position(double x_pt, double y_pt);
 	void get_size( double & width_pt, double & height_pt);
 	
 	void set_name(std::wstring  name);

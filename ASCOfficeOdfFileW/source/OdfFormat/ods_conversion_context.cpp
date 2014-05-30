@@ -77,12 +77,15 @@ void parsing_ref (const std::wstring & ref, int & col,int & row)
 }
 void calculate_size_font_symbols(_font_metrix & metrix)
 {
-	double appr_px = _gdi_graphics_::calculate_size_symbol(metrix.font_name,metrix.font_size,metrix.italic,metrix.bold);
+	double appr_px = 0;//(int)_gdi_graphics_::calculate_size_symbol_asc(metrix.font_name,metrix.font_size,metrix.italic,metrix.bold);
+	
+	if (appr_px <0.01)
+		appr_px = (int)_gdi_graphics_::calculate_size_symbol(metrix.font_name,metrix.font_size,false/*metrix.italic*/,false/*metrix.bold*/);
 
 	if (appr_px > 0)
 	{
 		//pixels to pt
-		metrix.approx_symbol_size = appr_px * 72./96. ;///1.1;//"1.2" волшебное число оќ 
+		metrix.approx_symbol_size = appr_px ;///1.1;//"1.2" волшебное число оќ 
 		metrix.IsCalc = true;
 	}
 
@@ -493,6 +496,12 @@ void ods_conversion_context::start_image(std::wstring & image_file_name)
 	mediaitems()->add_or_find(image_file_name,_mediaitems::typeImage,odf_ref_name);
 
 	current_table().drawing_context()->start_image(odf_ref_name);
+}
+double ods_conversion_context:: convert_symbol_width(double val)
+{
+	double pixels = (double)(((256. * val + (int)(128. / font_metrix_.approx_symbol_size)) / 256.) * font_metrix_.approx_symbol_size);
+
+	return pixels* 72./96;
 }
 }
 }

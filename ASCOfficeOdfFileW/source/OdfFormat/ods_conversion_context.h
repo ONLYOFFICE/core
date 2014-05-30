@@ -72,7 +72,7 @@ public:
 	void start_image(std::wstring & image_file_name);
 	void end_image(){drawing_context()->end_image();}
 
-	double convert_symbol_width(double val) {return val * font_metrix_.approx_symbol_size;}
+	double convert_symbol_width(double val);
 	
 	void start_defined_expressions();
 		void add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id);

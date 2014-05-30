@@ -280,7 +280,7 @@ void ods_table_state::set_row_height(double height)
 
 	rows_.back().size = height;//pt
 
-	row_properties->style_table_row_properties_attlist_.style_row_height_ = length(length(height,length::pt).get_value_unit(length::cm),length::cm);
+	row_properties->style_table_row_properties_attlist_.style_row_height_ = length(height,length::pt);//length(length(height,length::pt).get_value_unit(length::cm),length::cm);
 
 }
 
@@ -559,7 +559,7 @@ void ods_table_state::add_child_element(office_element_ptr & child_element)
 void ods_table_state::convert_position(oox_table_position & oox_pos, double & x, double & y)//c 0 отсчет
 {
 	double sz_col=0;
-	int curr_col = 1,i;
+	int curr_col = 0,i;
 	for (i=0; i< columns_.size(); i++)
 	{
 		if (oox_pos.col > columns_[i].repeated +  curr_col)
@@ -568,7 +568,7 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 		}
 		else
 		{
-			sz_col += (oox_pos.col + 1 - curr_col ) * columns_[i].size;
+			sz_col += (oox_pos.col - curr_col ) * columns_[i].size;
 			break;
 		}
 		curr_col += columns_[i].repeated;
@@ -577,7 +577,7 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 	x= sz_col + oox_pos.col_off;
 
 	double sz_row=0;
-	int curr_row = 1;
+	int curr_row =0;
 	for (i=0; i< rows_.size(); i++)
 	{
 		if (oox_pos.row > rows_[i].repeated + curr_row)
@@ -586,7 +586,7 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 		}
 		else
 		{
-			sz_row += (oox_pos.row - curr_row +1) * rows_[i].size;
+			sz_row += (oox_pos.row - curr_row) * rows_[i].size;
 			break;
 		}
 		curr_row += rows_[i].repeated;
@@ -596,7 +596,7 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 }
 
 
-void ods_table_state::set_cell_text(odf_text_context* text_context)
+void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_value)
 {
 	if (text_context == NULL)return;
 
@@ -608,14 +608,30 @@ void ods_table_state::set_cell_text(odf_text_context* text_context)
 		}
 	}
 	style* style_ = dynamic_cast<style*>(cells_.back().style_elm.get());
-	if (!style_)return;
+	if (!style_)return;	
 	
 	odf::style_table_cell_properties	* table_cell_properties = style_->style_content_.get_style_table_cell_properties();
 
 	if (table_cell_properties)
 	{
-		table_cell_properties->style_table_cell_properties_attlist_.fo_wrap_option_ = odf::wrap_option(odf::wrap_option::Wrap);
 		table_cell_properties->style_table_cell_properties_attlist_.style_text_align_source_ = odf::text_align_source(odf::text_align_source::Fix);
+	}	
+	
+	if (cash_value == false)
+	{
+		_CP_OPT(office_value_type) cell_type = office_value_type(office_value_type::String);
+
+		table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
+		if (cell)
+		{
+			if (!cell->table_table_cell_attlist_.common_value_and_type_attlist_)
+			{
+				cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
+			}
+			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
+		}
+
+		style_->style_data_style_name_ = boost::none;
 	}
 }
 void ods_table_state::set_cell_value(std::wstring & value)
@@ -666,7 +682,7 @@ void ods_table_state::set_cell_value(std::wstring & value)
 			context_.text_context()->add_text_content(value);
 		context_.text_context()->end_paragraph();
 
-		set_cell_text(context_.text_context());
+		set_cell_text(context_.text_context(), true);
 	context_.end_text_context();
 }
 

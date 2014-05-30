@@ -156,6 +156,16 @@ void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr)
 
 	if (oox_spPr->m_oXfrm.IsInit())	//CTransform2D
 	{
+		//if (oox_spPr->m_oXfrm->m_oOff.IsInit())
+		//{
+		//	odf_context()->drawing_context()->set_position(oox_spPr->m_oXfrm->m_oOff->m_oX.GetValue(),
+		//													oox_spPr->m_oXfrm->m_oOff->m_oY.GetValue());
+		//}
+		//if (oox_spPr->m_oXfrm->m_oExt.IsInit())
+		//{
+		//	odf_context()->drawing_context()->set_size(	oox_spPr->m_oXfrm->m_oExt->m_oCx.ToPoints(),
+		//												oox_spPr->m_oXfrm->m_oExt->m_oCy.ToPoints());					
+		//}
 		if (oox_spPr->m_oXfrm->m_oFlipH.GetValue() == SimpleTypes::onoffTrue)
 			odf_context()->drawing_context()->set_flip_H(true);
 		if (oox_spPr->m_oXfrm->m_oFlipV.GetValue() == SimpleTypes::onoffTrue)

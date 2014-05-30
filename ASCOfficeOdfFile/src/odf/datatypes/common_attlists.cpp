@@ -317,7 +317,7 @@ void common_value_and_type_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"office:boolean-value", office_boolean_value_);
     CP_XML_ATTR_OPT(L"office:string-value", office_string_value_);
 
-	if (office_string_value_ || office_boolean_value_|| office_time_value_ || office_date_value_ || office_value_)
+	if (office_string_value_ || office_boolean_value_|| office_time_value_ || office_date_value_ || office_value_ || office_value_type_)
 	{
 		CP_XML_ATTR_OPT(L"office:value-type", office_value_type_);
 		//todooo .. а если значение не отпределено.. а тока формула ???

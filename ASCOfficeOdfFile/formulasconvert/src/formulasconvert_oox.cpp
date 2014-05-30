@@ -23,6 +23,7 @@ public:
 	static std::wstring replace_cells_range_formater1(boost::wsmatch const & what);
 	static std::wstring replace_cells_range_formater2(boost::wsmatch const & what);
 	static std::wstring replace_arguments(boost::wsmatch const & what);
+	static std::wstring convert_part_formula(boost::wsmatch const & what);
 	std::wstring  replace_arguments1(std::wstring & workstr);
 
     void replace_named_ref(std::wstring & expr);
@@ -112,8 +113,40 @@ public:
 // [$'Sheet2 A'.$B2] -> 'Sheet2 A'!$B2
 void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr)
 {
+	std::vector<std::wstring> split1;
+	std::vector<std::wstring> split2;
+
+	boost::algorithm::split(split1,expr,boost::algorithm::is_any_of(L"!"), boost::algorithm::token_compress_on);
+
+	std::wstring sheet, cells_range, cell1,cell2;
+	if (split1.size() > 1)
+	{
+		sheet = split1[0];
+		cells_range = split1[1]; //+ остальные???
+	}else
+		cells_range = split1[0];
+
+	boost::algorithm::split(split2,cells_range,boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
+
+	cell1 = split2[0];	
+	if (split2.size() > 1)
+	{
+		cell2 = split2[1];
+	}
+
+	if (!sheet.empty() || !cell1.empty())
+	{
+		std::wstring s =  std::wstring(L"[") + sheet + (sheet.empty() ? L"" : L".") + 
+									cell1 +
+									(cell2.empty() ? L"" : (L":" + sheet  + (sheet.empty() ? L"" : L".") + cell2) ) + std::wstring(L"]");
+
+
+		expr = s;
+	}
+
+	return;
 	boost::wregex re(L"([:$!])+");
-	boost::wregex re1(L"(\\$?\\w+)?\\!?([a-zA-Z$]+\\d{1,2})\\:?([a-zA-Z$]+\\d{1,2})?");
+	boost::wregex re1(L"(\\$?\\w+?)?\\!?([a-zA-Z$]+\\d{1,2})\\:?([a-zA-Z$]+\\d{1,2})?");
 	//boost::wregex re2(L"([a-zA-Z$]+\\d{1,2})\\:?([a-zA-Z$]+\\d{1,2})?");
 //                          $   Sheet2   ! $ A1                  :  $ B5          
 	boost::wsmatch result;
@@ -461,27 +494,77 @@ std::wstring oox2odf_converter::Impl::convert(const std::wstring& expr)
     return workstr;
 }
 // of:=(Formula) -> (Formula)
-std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring& expr)
+std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 {
     if (is_forbidden1(expr))
         return L"NULLFORMULA";
 
-    std::wstring workstr = expr;
+    std::wstring workstr = expr, out;
 
-	std::wstring res = boost::regex_replace(
-        workstr,
-		boost::wregex(L"(?:(?=[()])(.*?)(?=[)]))|(\".*?\")|('.*?')"),
-		&oox2odf_converter::Impl::replace_arguments,
-        boost::match_default | boost::format_all);
+	//std::wstring res = boost::regex_replace(
+ //       workstr,
+	//	boost::wregex(L"(?:([\"']?.*[\"']?))"),//(\".*?\")|('.*?')|
+	//	&oox2odf_converter::Impl::convert_part_formula,
+ //       boost::match_all | boost::format_all);
+	
+	//std::list<std::wstring> result;
+	//bool b = boost::regex_split(std::back_inserter(result),workstr, boost::wregex(L"(\".*?\")|('.*?')"));
+	//
+	//result.push_back(workstr);//последний ..выносится - так уж работает boost.regex_split
+	//for (std::list<std::wstring>::iterator iter=result.begin(); iter!=result.end(); ++iter)
+	//{
+	//	workstr = *iter;
+		//int res1 = workstr.find(L"\'");
+		//int res2 = workstr.find(L"\"");
 
-	 if (res == expr)
-	 {
-		 //возможно не конвертанулось
-		 res= convert(workstr);
+		//if (res1 >=0 || res2 >=0)out += workstr;
+		//else
+		//{
+			std::wstring res = boost::regex_replace(
+				workstr,
+				boost::wregex(L"(?:(?=[()])(.*?)(?=[)]))|(\".*?\")|('.*?')"),
+				&oox2odf_converter::Impl::replace_arguments,
+				boost::match_default | boost::format_all);
 
-	 }
+			 out += res;
+		////}
+	//}
 
-    return std::wstring(L"of:=") + res;
+    return std::wstring(L"of:=") + out;
+
+}
+std::wstring  oox2odf_converter::Impl::convert_part_formula(boost::wsmatch const & what)
+{
+	std::wstring out;
+	
+	if (what[1].matched)
+        out = what[1].str();
+    else if (what[2].matched)
+        out = what[2].str();
+	else if (what[3].matched)
+    {
+		std::wstring workstr = what[3].str();
+	
+		int res1 = workstr.find(L"\'");
+		int res2 = workstr.find(L"\"");
+
+		if (res1 >=0 || res2 >=0)return workstr;
+
+		std::wstring res = boost::regex_replace(
+			workstr,
+			boost::wregex(L"(?:(?=[()])(.*?)(?=[)]))|(\".*?\")|('.*?')"),
+			&oox2odf_converter::Impl::replace_arguments,
+			boost::match_default | boost::format_all);
+
+		 //if (res == workstr)
+		 //{
+			// //возможно не конвертанулось
+			// res= convert(workstr);
+
+		 //}
+		 out = res;
+	}
+	return out ;
 }
 //Sheet2!C3:C19,Sheet2!L27:L34
 //в

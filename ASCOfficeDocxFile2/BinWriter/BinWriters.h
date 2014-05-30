@@ -702,6 +702,13 @@ namespace BinDocxRW
 						m_oBcw.m_oStream.WriteString2(rPr.m_oLang->m_oEastAsia->GetValue());
 					}
 				}
+				//Vanish
+				if(false != rPr.m_oVanish.IsInit())
+				{
+					m_oBcw.m_oStream.WriteByte(c_oSerProp_rPrType::Vanish);
+					m_oBcw.m_oStream.WriteByte(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBool(rPr.m_oVanish->m_oVal.ToBool());
+				}
 			};
 	};
 	class Binary_pPrWriter

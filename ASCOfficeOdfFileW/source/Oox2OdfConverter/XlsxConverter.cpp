@@ -497,7 +497,39 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFormula *oox_formula)
 {
 	if (oox_formula == NULL)return;
 
-	ods_context->current_table().set_cell_formula(string2std_string(oox_formula->m_sText));
+	std::wstring formula = string2std_string(oox_formula->m_sText);
+	std::wstring ref;
+
+	int ind = -1;
+
+	if (oox_formula->m_oSi.IsInit())	ind = oox_formula->m_oSi->GetValue();
+	if (oox_formula->m_oRef.IsInit())	ref = string2std_string(oox_formula->m_oRef.get2());
+
+	if (oox_formula->m_oT.IsInit())
+	{
+		if (oox_formula->m_oT->GetValue() == SimpleTypes::Spreadsheet::cellformulatypeShared)
+		{
+			ods_context->current_table().add_or_find_cell_shared_formula(formula,ref, ind);
+		}
+		else if (oox_formula->m_oT->GetValue() == SimpleTypes::Spreadsheet::cellformulatypeArray)
+		{
+		}
+		else if (oox_formula->m_oT->GetValue() == SimpleTypes::Spreadsheet::cellformulatypeDataTable)
+		{
+		}
+	}
+	if (formula.length() > 0)ods_context->current_table().set_cell_formula(formula);
+
+				//nullable<SimpleTypes::COnOff<>>							m_oAca;
+				//nullable<SimpleTypes::COnOff<>>							m_oBx;
+				//nullable<SimpleTypes::COnOff<>>							m_oCa;
+				//nullable<SimpleTypes::COnOff<>>							m_oDel1;
+				//nullable<SimpleTypes::COnOff<>>							m_oDel2;
+				//nullable<SimpleTypes::COnOff<>>							m_oDt2D;
+				//nullable<SimpleTypes::COnOff<>>							m_oDtr;
+
+				//nullable<CString>										m_oR1;
+				//nullable<CString>										m_oR2;
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 {

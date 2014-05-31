@@ -16,65 +16,7 @@ namespace odf {
 
 namespace utils
 {
-size_t getColAddressInv(const std::wstring & a_)
-{
-    std::wstring a = a_;
-    ::boost::algorithm::to_upper(a);
-    static const size_t r = (L'Z' - L'A' + 1);
-    size_t mul = 1;
-    bool f = true;
-    size_t res = 0;
-    BOOST_REVERSE_FOREACH(const wchar_t c, a)
-    {
-        size_t v = c - L'A';
-        if (f)
-            f = false;
-        else
-            v += 1;
-        res += v * mul;
-        mul *= r;
-    }
-    return res;
-}
-size_t getRowAdderssInv(const std::wstring & a_)
-{
-	int sz = a_.length();
-	if (a_.length()>0)
-	{
-	   return boost::lexical_cast<size_t>(a_)-1;
-	}
-	else
-		return 0;
-}
-void splitCellAddress(const std::wstring & a_, std::wstring & col, std::wstring & row)
-{   
-	std::wstring a = a_;
 
-	std::reverse(a.begin(), a.end());
-    ::boost::algorithm::replace_all(a, L"$", L"");
-    //::boost::algorithm::replace_all(a, L"'", L"");
-	::boost::algorithm::to_upper(a);
-	
-
-	BOOST_FOREACH(wchar_t c, a)
-    {
-		if (c >= L'0' && c <= L'9')
-			row +=c;
-		else
-			col += c;
-    }
-	std::reverse(col.begin(), col.end());
-	std::reverse(row.begin(), row.end());
-}
-void parsing_ref (const std::wstring & ref, int & col,int & row)
-{
-	std::wstring strCol, strRow;
-	splitCellAddress(ref,strCol,strRow);
-
-	col = getColAddressInv(strCol)+1;
-	row = getRowAdderssInv(strRow)+1;
-
-}
 void calculate_size_font_symbols(_font_metrix & metrix)
 {
 	double appr_px = 0;//(int)_gdi_graphics_::calculate_size_symbol_asc(metrix.font_name,metrix.font_size,metrix.italic,metrix.bold);

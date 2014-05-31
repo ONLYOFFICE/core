@@ -16,12 +16,15 @@
 #include "style_paragraph_properties.h"
 #include "style_graphic_properties.h"
 
-
 namespace cpdoccore {
 namespace odf {
-//////////////////////////////////////////// ќЅўјя хрень .. вытащить что ли в utils ???
 
-namespace utils
+int ods_table_state::current_table_column_ = 0;
+int ods_table_state::current_table_row_ = 0;
+int ods_table_state::tmp_value_ =0;
+
+namespace utils//////////////////////////////////////////// ќЅўјя хрень .. вытащить что ли в utils ???
+
 {
 std::wstring convert_date(std::wstring & oox_date)
 {
@@ -550,6 +553,108 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 	cell->table_table_cell_attlist_.table_formula_ = odfFormula;
 }
 
+std::wstring ods_table_state::replace_cell_row(boost::wsmatch const & what)
+{
+    if (what[1].matched)
+	{
+		std::wstring base_str = boost::lexical_cast<std::wstring>(tmp_value_);
+		std::wstring replace_str = boost::lexical_cast<std::wstring>(current_table_row_);
+		std::wstring out = what[1].str();
+		
+		boost::replace_all(out,base_str,replace_str);
+		return out;
+	}
+    else if (what[2].matched)
+        return what[2].str();    
+    else if (what[3].matched)
+        return what[3].str();
+	else
+		return L"";
+}
+std::wstring ods_table_state::replace_cell_column(boost::wsmatch const & what)
+{
+    if (what[1].matched)
+	{
+		std::wstring base_str		= utils::getColAddress(tmp_value_-1);
+		std::wstring replace_str	= utils::getColAddress(current_table_column_-1);
+		std::wstring out			= what[1].str();
+		
+		boost::replace_all(out,base_str,replace_str);
+		return out;
+	}
+    else if (what[2].matched)
+        return what[2].str();    
+    else if (what[3].matched)
+        return what[3].str();
+	else
+		return L"";
+}
+
+void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, std::wstring ref, int ind)
+{
+	if (ind < 0)return;
+	
+	std::wstring odf_formula;
+	
+	if (formula.size() > 0)
+	{
+		odf_formula = formulas_converter.convert_formula(formula);
+
+		int moving_type = 0;
+		
+		std::vector<std::wstring> distance;
+		boost::algorithm::split(distance, ref,boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
+		if (distance.size() >1)
+		{
+			int col1, row1, col2, row2;
+			utils::parsing_ref(distance[0],col1,row1);
+			utils::parsing_ref(distance[1],col2,row2);
+
+			if (row2-row1 >0)moving_type = 2;
+			if (col2-col1 >0)moving_type = 1;
+		}
+		ods_shared_formula_state state = {ind, odf_formula,ref, current_table_column_,current_table_row_, moving_type};
+		shared_formulas_.push_back(state);
+	}
+	else
+	{
+		for (long i=0; i<shared_formulas_.size() ;i++)
+		{
+			if (shared_formulas_[i].index = ind)
+			{
+				odf_formula = shared_formulas_[i].formula;
+				table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
+				if (cell == NULL)return;
+				//помен€ть по ref формулу !!!
+				if (shared_formulas_[i].moving_type == 1)
+				{
+					tmp_value_ = shared_formulas_[i].base_column;
+					
+					const std::wstring res = boost::regex_replace(
+						odf_formula,
+						boost::wregex(L"([a-zA-Z]{1,3}[0-9]{1,3})|(?:'.*?')|(?:\".*?\")"),
+						&ods_table_state::replace_cell_column,
+						boost::match_default | boost::format_all);
+					odf_formula = res;
+				}
+				if (shared_formulas_[i].moving_type == 2)
+				{
+					tmp_value_ = shared_formulas_[i].base_row;
+					
+					const std::wstring res = boost::regex_replace(
+						odf_formula,
+						boost::wregex(L"([a-zA-Z]{1,3}[0-9]{1,3})|(?:'.*?')|(?:\".*?\")"),
+						&ods_table_state::replace_cell_row,
+						boost::match_default | boost::format_all);
+					odf_formula = res;
+				}
+				cell->table_table_cell_attlist_.table_formula_ = odf_formula;
+			}
+		}
+	}
+	
+
+}
 
 void ods_table_state::add_child_element(office_element_ptr & child_element)
 {

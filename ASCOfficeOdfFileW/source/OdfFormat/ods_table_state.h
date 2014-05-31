@@ -2,14 +2,10 @@
 
 #include <string>
 #include <vector>
-//
-//#include "ods_row_spanned.h"
-//#include "ods_merge_cells.h"
-//#include "ods_table_metrics.h"
 
-//#include "ods_comments_context.h"
+#include <boost/regex.hpp>
+
 #include "odf_drawing_context.h"
-
 
 #include "office_elements.h"
 #include "office_elements_create.h"
@@ -36,6 +32,82 @@ class table_table;
 class style;
 class color;
 
+namespace utils {
+	static std::wstring getColAddress(size_t col)
+	{
+		static const size_t r = (L'Z' - L'A' + 1);
+		std::wstring res;
+		size_t r0 = col / r;
+
+		if (r0 > 0)
+		{
+			const std::wstring rest = getColAddress(col - r*r0);
+			const std::wstring res = getColAddress(r0-1) + rest;
+			return res;
+		}
+		else
+			return std::wstring(1, (wchar_t)(L'A' + col));
+	}
+	static size_t getColAddressInv(const std::wstring & a_)
+	{
+		std::wstring a = a_;
+		::boost::algorithm::to_upper(a);
+		static const size_t r = (L'Z' - L'A' + 1);
+		size_t mul = 1;
+		bool f = true;
+		size_t res = 0;
+		BOOST_REVERSE_FOREACH(const wchar_t c, a)
+		{
+			size_t v = c - L'A';
+			if (f)
+				f = false;
+			else
+				v += 1;
+			res += v * mul;
+			mul *= r;
+		}
+		return res;
+	}
+	static size_t getRowAdderssInv(const std::wstring & a_)
+	{
+		int sz = a_.length();
+		if (a_.length()>0)
+		{
+		   return boost::lexical_cast<size_t>(a_)-1;
+		}
+		else
+			return 0;
+	}
+	static void splitCellAddress(const std::wstring & a_, std::wstring & col, std::wstring & row)
+	{   
+		std::wstring a = a_;
+
+		std::reverse(a.begin(), a.end());
+		::boost::algorithm::replace_all(a, L"$", L"");
+		//::boost::algorithm::replace_all(a, L"'", L"");
+		::boost::algorithm::to_upper(a);
+		
+
+		BOOST_FOREACH(wchar_t c, a)
+		{
+			if (c >= L'0' && c <= L'9')
+				row +=c;
+			else
+				col += c;
+		}
+		std::reverse(col.begin(), col.end());
+		std::reverse(row.begin(), row.end());
+	}
+	static void parsing_ref (const std::wstring & ref, int & col,int & row)
+	{
+		std::wstring strCol, strRow;
+		splitCellAddress(ref,strCol,strRow);
+
+		col = getColAddressInv(strCol)+1;
+		row = getRowAdderssInv(strRow)+1;
+
+	}
+};
 struct ods_element_state
 {
 	office_element_ptr elm;
@@ -74,6 +146,18 @@ struct ods_comment_state
 	office_element_ptr elm;
 	//style graphic
 };
+struct ods_shared_formula_state
+{
+	int index;
+	std::wstring formula;
+	std::wstring ref;
+
+	int	base_column;
+	int	base_row;
+
+	int moving_type; //1 - col, 2 - row
+};
+
 class ods_table_state
 {
 public:
@@ -109,8 +193,13 @@ public:
 	void set_cell_value(std::wstring & value);	
 	void set_cell_text(odf_text_context *text_context, bool cash_value = false);
 	void set_cell_formula(std::wstring &formula);
+	void add_or_find_cell_shared_formula(std::wstring & formula, std::wstring ref, int ind);
+	
+	static std::wstring replace_cell_row(boost::wsmatch const & what);
+	static std::wstring replace_cell_column(boost::wsmatch const & what);
 	
 	void add_child_element(office_element_ptr & child_element);
+
 
 ///////////////////////////////
 	void add_hyperlink(std::wstring & ref,int col, int row, std::wstring & link);
@@ -156,8 +245,10 @@ private:
 
 	std::wstring row_default_cell_style_name_;
 
-	int current_table_column_;
-	int current_table_row_;
+	static int current_table_column_;
+	static int current_table_row_;
+
+	static int tmp_value_;
 
 	std::vector<ods_element_state> columns_;
 	std::vector<ods_element_state> rows_;
@@ -168,6 +259,8 @@ private:
 	
 	std::vector<ods_hyperlink_state>	hyperlinks_;
 	std::vector<ods_comment_state>		comments_;
+
+	std::vector<ods_shared_formula_state> shared_formulas_;
 
 	odf_drawing_context		drawing_context_;	
 

@@ -22,10 +22,12 @@ ods_table_state & ods_table_context::state()
 {
     return table_state_list_.back();
 }
+
 void ods_table_context::start_defined_expressions(office_element_ptr & root_elm)
 {
 	table_defined_expressions_.root = root_elm;
 }
+
 void ods_table_context::add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id)
 {
 	office_element_ptr elm;
@@ -102,11 +104,10 @@ void ods_table_context::add_defined_expression(std::wstring & name,std::wstring 
 
 	table_defined_expressions_.defined.push_back(elm);
 }
-void ods_table_context::start_table(office_element_ptr & elm, std::wstring & name)
+
+void ods_table_context::start_table(office_element_ptr & elm)
 {
 	table_state_list_.push_back( ods_table_state(context_, elm) );
-	
-	state().set_table_name(name);
 	
 	std::wstring style_name_new = L"ta" + boost::lexical_cast<std::wstring>(table_state_list_.size());
 

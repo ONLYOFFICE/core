@@ -123,15 +123,17 @@ void XlsxConverter::convert_sheets()
 				if (NULL != pPair)
 				{
 					OOX::Spreadsheet::CWorksheet *pWorksheet = pPair->m_value;
-					if (NULL != pWorksheet && pWorksheet->m_oSheetData.IsInit())
+
+					if (pWorksheet)
 					{
-						std::wstring name = string2std_string(pSheet->m_oName.get2());
-						ods_context->start_sheet(name);
-						if (pSheet->m_oState.IsInit() && (	pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleHidden || 
-															pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleVeryHidden))
-							ods_context->current_table().set_table_hidden(true);
-						convert(pWorksheet);
-						ods_context->end_sheet();						
+						ods_context->start_sheet();
+							ods_context->current_table().set_table_name(string2std_string(pSheet->m_oName.get2()));						
+							if (pSheet->m_oState.IsInit() && (	pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleHidden || 
+																pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleVeryHidden))
+								ods_context->current_table().set_table_hidden(true);
+							
+							convert(pWorksheet);
+						ods_context->end_sheet();	
 					}
 				}
 
@@ -189,7 +191,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 			if(pPair->m_value->IsValid())convert(pPair->m_value);
 		}
 	}
-	//автофильтры
 	//todooo для оптимизации - перенести мержи в начало
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	//колонки
@@ -224,6 +225,20 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 			
 			convert(pDrawing);
 		}
+	}
+	
+	//автофильтры
+	convert(oox_sheet->m_oAutofilter.GetPointer());
+
+	//условное форматирование
+	if (oox_sheet->m_arrConditionalFormatting.GetCount() >0)
+	{
+		ods_context->start_conditional_formats();
+		for (long fmt =0; fmt < oox_sheet->m_arrConditionalFormatting.GetCount(); fmt++)
+		{
+			convert(oox_sheet->m_arrConditionalFormatting[fmt]);
+		}
+		ods_context->end_conditional_formats();
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CCommentItem * oox_comment)
@@ -406,6 +421,16 @@ void XlsxConverter::convert(OOX::Spreadsheet::WritingElement  *oox_unknown)
 		{
 			OOX::Spreadsheet::CText* pText = static_cast<OOX::Spreadsheet::CText*>(oox_unknown);
 			convert(pText);
+		}break;
+		case OOX::Spreadsheet::et_IconSet:
+		{
+			OOX::Spreadsheet::CIconSet *pIc = static_cast<OOX::Spreadsheet::CIconSet*>(oox_unknown);
+			convert(pIc);
+		}break;
+		case OOX::Spreadsheet::et_DataBar:
+		{
+			OOX::Spreadsheet::CDataBar *pB = static_cast<OOX::Spreadsheet::CDataBar*>(oox_unknown);
+			convert(pB);
 		}break;
 		default:
 		{
@@ -1460,4 +1485,94 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 	ods_context->end_image();
 }
 
+void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatting *oox_cond_fmt)
+{
+	if (!oox_cond_fmt)return;
+
+	if (oox_cond_fmt->m_oSqRef.IsInit())	
+	{
+		ods_context->current_table().start_conditional_format(string2std_string(oox_cond_fmt->m_oSqRef->GetValue()));
+
+		for (int i=0; i< oox_cond_fmt->m_arrItems.GetSize(); i++)
+			convert(oox_cond_fmt->m_arrItems[i]);//rule
+		
+		ods_context->current_table().end_conditional_format();
+	}
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_cond_rule)
+{
+	if (!oox_cond_rule)return;
+
+	if (oox_cond_rule->m_oType.IsInit())
+	{
+		ods_context->current_table().start_conditional_rule(string2std_string(oox_cond_rule->m_oType.get2()));
+
+		for (long i=0; i< oox_cond_rule->m_arrItems.GetSize(); i++)
+			convert(oox_cond_rule->m_arrItems[i]);
+	
+		ods_context->current_table().end_conditional_rule();
+	}
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CDataBar *oox_cond_databar)
+{
+	if (!oox_cond_databar)return;
+	
+	_CP_OPT(odf::color) color;
+	convert(oox_cond_databar->m_oColor.GetPointer(), color);
+
+	ods_context->current_table().set_conditional_databar_color(color);
+			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMaxLength;
+			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMinLength;
+			//nullable<SimpleTypes::COnOff<>>					m_oShowValue;
+	for (long i=0; i< oox_cond_databar->m_arrItems.GetSize(); i++)
+		convert(oox_cond_databar->m_arrItems[i]);
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CColorScale *oox_cond_colorscale)
+{
+	if (!oox_cond_colorscale)return;
+	
+	for (long i=0; i< oox_cond_colorscale->m_arrItems.GetSize(); i++)
+	{
+		if (!oox_cond_colorscale->m_arrItems[i])continue;
+	
+		OOX::Spreadsheet::EElementType type = oox_cond_colorscale->m_arrItems[i]->getType();
+		if (type == OOX::Spreadsheet::et_ConditionalFormatValueObject)
+		{
+			convert(oox_cond_colorscale->m_arrItems[i]);
+		}
+		else
+		{
+			_CP_OPT(odf::color) color;
+			convert(static_cast<OOX::Spreadsheet::CColor*>(oox_cond_colorscale->m_arrItems[i]),color);
+			ods_context->current_table().add_conditional_colorscale(color);
+		}
+	}
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CIconSet *oox_cond_iconset)
+{
+	if (!oox_cond_iconset)return;
+	
+	if (oox_cond_iconset->m_oIconSet.IsInit())
+		ods_context->current_table().set_conditional_iconset(string2std_string(oox_cond_iconset->m_oIconSet.get2()));
+			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMaxLength;
+			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMinLength;
+			//nullable<SimpleTypes::COnOff<>>					m_oShowValue;
+	for (long i=0; i< oox_cond_iconset->m_arrItems.GetSize(); i++)
+		convert(oox_cond_iconset->m_arrItems[i]);
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatValueObject *oox_cond_value)
+{
+	if (!oox_cond_value)return;
+
+	std::wstring val, type;
+	if (oox_cond_value->m_oVal.IsInit())	val = string2std_string(oox_cond_value->m_oVal.get2());
+	if (oox_cond_value->m_oType.IsInit())	type = string2std_string(oox_cond_value->m_oType.get2());
+	
+	ods_context->current_table().set_conditional_value(type,val);
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CAutofilter *oox_filter)
+{
+	if (!oox_filter)return;
+	
+}
 } // namespace Docx2Odt

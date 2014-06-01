@@ -9,6 +9,7 @@
 
 #include "table.h"
 #include "office_annotation.h"
+#include "calcext_elements.h"
 #include "styles.h"
 
 #include "style_table_properties.h"
@@ -21,7 +22,9 @@ namespace odf {
 
 int ods_table_state::current_table_column_ = 0;
 int ods_table_state::current_table_row_ = 0;
-int ods_table_state::tmp_value_ =0;
+
+int ods_table_state::tmp_column_ =0;
+int ods_table_state::tmp_row_ =0;
 
 namespace utils//////////////////////////////////////////// ќЅўјя хрень .. вытащить что ли в utils ???
 
@@ -473,6 +476,7 @@ void ods_table_state::start_comment(int col, int row, std::wstring & author)
 
 	comments_.push_back(state);
 }
+
 void ods_table_state::set_comment_rect(double l, double t, double w, double h)
 {
 	if (comments_.size() < 1)return;
@@ -507,6 +511,7 @@ void ods_table_state::end_comment(odf_text_context *text_context)
 		}
 	}
 }
+
 void ods_table_state::set_merge_cells(int start_col, int start_row, int end_col, int end_row)
 {
 	//потом можно переделать (оптимизировать) - добавл€ть мержи при добавлении €чеек
@@ -557,12 +562,14 @@ std::wstring ods_table_state::replace_cell_row(boost::wsmatch const & what)
 {
     if (what[1].matched)
 	{
-		std::wstring base_str = boost::lexical_cast<std::wstring>(tmp_value_);
-		std::wstring replace_str = boost::lexical_cast<std::wstring>(current_table_row_);
-		std::wstring out = what[1].str();
-		
-		boost::replace_all(out,base_str,replace_str);
-		return out;
+		std::wstring ref_formula = what[1].str();
+		int col_formula=0, row_formula=0;
+		utils::parsing_ref(ref_formula, col_formula, row_formula);col_formula--;//инче отсчет с 1
+	
+		ref_formula = utils::getColAddress(col_formula)+boost::lexical_cast<std::wstring>(row_formula+current_table_row_ -tmp_row_);
+
+
+		return ref_formula;
 	}
     else if (what[2].matched)
         return what[2].str();    
@@ -575,12 +582,13 @@ std::wstring ods_table_state::replace_cell_column(boost::wsmatch const & what)
 {
     if (what[1].matched)
 	{
-		std::wstring base_str		= utils::getColAddress(tmp_value_-1);
-		std::wstring replace_str	= utils::getColAddress(current_table_column_-1);
-		std::wstring out			= what[1].str();
-		
-		boost::replace_all(out,base_str,replace_str);
-		return out;
+		std::wstring ref_formula = what[1].str();
+		int col_formula=0, row_formula=0;
+		utils::parsing_ref(ref_formula, col_formula, row_formula);col_formula--;
+	
+		ref_formula = utils::getColAddress(col_formula+current_table_column_ -tmp_column_)+boost::lexical_cast<std::wstring>(row_formula);
+
+		return ref_formula;
 	}
     else if (what[2].matched)
         return what[2].str();    
@@ -620,7 +628,7 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 	{
 		for (long i=0; i<shared_formulas_.size() ;i++)
 		{
-			if (shared_formulas_[i].index = ind)
+			if (shared_formulas_[i].index == ind)
 			{
 				odf_formula = shared_formulas_[i].formula;
 				table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
@@ -628,7 +636,8 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 				//помен€ть по ref формулу !!!
 				if (shared_formulas_[i].moving_type == 1)
 				{
-					tmp_value_ = shared_formulas_[i].base_column;
+					tmp_column_ = shared_formulas_[i].base_column;
+					tmp_row_	= shared_formulas_[i].base_row;
 					
 					const std::wstring res = boost::regex_replace(
 						odf_formula,
@@ -639,7 +648,8 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 				}
 				if (shared_formulas_[i].moving_type == 2)
 				{
-					tmp_value_ = shared_formulas_[i].base_row;
+					tmp_column_ = shared_formulas_[i].base_column;
+					tmp_row_	= shared_formulas_[i].base_row;
 					
 					const std::wstring res = boost::regex_replace(
 						odf_formula,
@@ -733,10 +743,11 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 			{
 				cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
 			}
-			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
+			if (!cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_)
+			{
+				cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
+			}
 		}
-
-		style_->style_data_style_name_ = boost::none;
 	}
 }
 void ods_table_state::set_cell_value(std::wstring & value)
@@ -749,7 +760,7 @@ void ods_table_state::set_cell_value(std::wstring & value)
 	if (!cell->table_table_cell_attlist_.common_value_and_type_attlist_)
 	{
 		cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
-		cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::Float);
+		//cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::Float);
 		//временно... пока нет определ€лки типов
 	}
 	
@@ -782,13 +793,34 @@ void ods_table_state::set_cell_value(std::wstring & value)
 	}
 	
 	//кэшированные значени€ 
-	context_.start_text_context();
-		context_.text_context()->start_paragraph();
-			context_.text_context()->add_text_content(value);
-		context_.text_context()->end_paragraph();
+	if (value.length() >0)
+	{
+		bool need_test_cach = false;
 
-		set_cell_text(context_.text_context(), true);
-	context_.end_text_context();
+		if (cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_)
+		{
+			if (cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Float) need_test_cach = true;
+ 			if (cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Currency) need_test_cach = true;
+			if (cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Percentage) need_test_cach = true;
+		}
+		try
+		{
+			if (need_test_cach)
+			{
+				double test = boost::lexical_cast<double>(value);
+			}
+			context_.start_text_context();
+				context_.text_context()->start_paragraph();
+					context_.text_context()->add_text_content(value);
+				context_.text_context()->end_paragraph();
+
+				set_cell_text(context_.text_context(), true);
+			context_.end_text_context();
+		}
+		catch(...)
+		{
+		}
+	}
 }
 
 void ods_table_state::end_cell()
@@ -844,5 +876,108 @@ void ods_table_state::add_default_cell( int repeated)
 
 	end_cell();
 }
+///////////////////////////////////////////////////
+void ods_table_state::start_conditional_formats()
+{
+	office_element_ptr		elm;
+	create_element(L"calcext", L"conditional-formats",elm,&context_);
+
+	current_level_.back()->add_child_element(elm);
+	current_level_.push_back(elm);
+
+}
+void ods_table_state::end_conditional_formats()
+{
+	current_level_.pop_back();
+}
+void ods_table_state::start_conditional_format(std::wstring ref)
+{
+	office_element_ptr		elm;
+	create_element(L"calcext", L"conditional-format",elm,&context_);
+
+	current_level_.back()->add_child_element(elm);
+	current_level_.push_back(elm);
+
+	calcext_conditional_format* cond_format = dynamic_cast<calcext_conditional_format*>(elm.get());
+
+	if (cond_format)
+	{
+		formulasconvert::oox2odf_converter converter;
+		std::wstring out = converter.convert(ref);
+		boost::algorithm::replace_all(out,L"[",L"");
+		boost::algorithm::replace_all(out,L"]",L"");
+		cond_format->calcext_target_range_address_ = out;
+		//проверить конвертацию на диапазонах с именами листов в кавычках и с пробелами
+	}
+}
+void ods_table_state::end_conditional_format()
+{
+	current_level_.pop_back();
+}
+void ods_table_state::start_conditional_rule(std::wstring rule_type)
+{
+	office_element_ptr		elm;
+	
+	if (rule_type == L"dataBar")
+	{
+		create_element(L"calcext", L"data-bar",elm,&context_);
+	}
+	else if (rule_type == L"iconSet")
+	{
+		create_element(L"calcext", L"icon-set",elm,&context_);
+	}
+	
+	current_level_.back()->add_child_element(elm);
+	current_level_.push_back(elm);
+}
+
+void ods_table_state::end_conditional_rule()
+{
+	current_level_.pop_back();
+}
+void ods_table_state::set_conditional_value(std::wstring type, std::wstring value )
+{
+	office_element_ptr		elm;
+	create_element(L"calcext", L"formatting-entry",elm, &context_);
+	
+	current_level_.back()->add_child_element(elm);
+
+	calcext_formatting_entry * entry = dynamic_cast<calcext_formatting_entry*>(elm.get());
+	if (entry)
+	{
+		if (value.length() >0)	entry->calcext_value_ = value;
+		else entry->calcext_value_ = L"0";
+			  if (type == L"min")		entry->calcext_type_ = calcext_type(calcext_type::AutoMinimum);
+		 else if (type == L"max")		entry->calcext_type_ = calcext_type(calcext_type::AutoMaximum);
+		 else if (type == L"percent")	entry->calcext_type_ = calcext_type(calcext_type::Percent);
+		 else if (type == L"num")		entry->calcext_type_ = calcext_type(calcext_type::Number);
+
+	}
+}
+void ods_table_state::set_conditional_iconset(std::wstring type_iconset)
+{
+	calcext_icon_set* cond_format = dynamic_cast<calcext_icon_set*>(current_level_.back().get());
+
+	if (cond_format)
+	{
+		if (type_iconset == L"3Arrows")
+			cond_format->calcext_icon_set_attr_.calcext_icon_set_type_ = iconset_type(iconset_type::Arrows3);
+		else
+			cond_format->calcext_icon_set_attr_.calcext_icon_set_type_ = iconset_type(iconset_type::Flags3);
+	}
+}
+void ods_table_state::add_conditional_colorscale(_CP_OPT(color) color)
+{
+}
+void ods_table_state::set_conditional_databar_color(_CP_OPT(color) color)
+{
+	calcext_data_bar* cond_format = dynamic_cast<calcext_data_bar*>(current_level_.back().get());
+
+	if (cond_format)
+	{
+		cond_format->calcext_data_bar_attr_.calcext_positive_color_ = color;
+	}
+}
+
 }
 }

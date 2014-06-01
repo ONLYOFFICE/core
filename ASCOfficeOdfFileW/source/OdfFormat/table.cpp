@@ -178,6 +178,10 @@ void table_table::add_child_element(office_element_ptr & child_element)
     {
   	    table_named_expressions_ = child_element;
     }
+	else if (type == typeCalcextConditionalFormats)
+	{
+		table_conditional_formats_ = child_element;
+	}
 }
 
 void table_table::serialize(std::wostream & _Wostream)
@@ -193,7 +197,8 @@ void table_table::serialize(std::wostream & _Wostream)
 			table_columns_and_groups_.serialize(CP_XML_STREAM());
 			table_rows_and_groups_.serialize(CP_XML_STREAM());
 			
-			if (table_named_expressions_)table_named_expressions_->serialize(CP_XML_STREAM());
+			if (table_named_expressions_)	table_named_expressions_->serialize(CP_XML_STREAM());
+			if (table_conditional_formats_)	table_conditional_formats_->serialize(CP_XML_STREAM());
 		}
 	}
 }

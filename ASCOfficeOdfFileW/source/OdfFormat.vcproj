@@ -199,6 +199,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\calcext_type.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\calcext_type.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\chartdatalabelnumber.cpp"
 				>
 			</File>
@@ -420,6 +428,14 @@
 			</File>
 			<File
 				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\hyphenationladdercount.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\iconset_type.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\datatypes\iconset_type.h"
 				>
 			</File>
 			<File
@@ -894,6 +910,14 @@
 		<Filter
 			Name="elements"
 			>
+			<File
+				RelativePath=".\OdfFormat\calcext_elements.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\calcext_elements.h"
+				>
+			</File>
 			<File
 				RelativePath=".\OdfFormat\draw_base.cpp"
 				>

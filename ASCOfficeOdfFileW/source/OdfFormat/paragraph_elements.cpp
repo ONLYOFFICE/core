@@ -64,12 +64,7 @@ void text_s::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 		
-			if (text_c_)
-			{
-				CP_XML_ATTR(L"text:c", *text_c_);
-			}
-			else
-				CP_XML_ATTR(L"text:c", L' ');
+			CP_XML_ATTR_OPT(L"text:c", text_c_);
 		}
 	}
 

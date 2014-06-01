@@ -45,6 +45,13 @@ namespace OOX
 		class CCommentItem;
 		class CGraphicFrame;
 		class CDefinedName;
+		class CConditionalFormatting;
+		class CConditionalFormattingRule;
+		class CDataBar;
+		class CColorScale;
+		class CIconSet;
+		class CConditionalFormatValueObject;
+		class CAutofilter;
 	}
 }
 
@@ -152,6 +159,14 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CConnShape			*oox_conn_shape);
 		void convert(OOX::Spreadsheet::CGraphicFrame		*oox_graphic_frame);
 	
+		void convert(OOX::Spreadsheet::CConditionalFormatting		*oox_cond_fmt);
+		void convert(OOX::Spreadsheet::CConditionalFormattingRule	*oox_cond_rule);
+		void convert(OOX::Spreadsheet::CAutofilter					*oox_filter);
+		void convert(OOX::Spreadsheet::CDataBar						*oox_cond_databar);
+		void convert(OOX::Spreadsheet::CColorScale					*oox_cond_colorscale);
+		void convert(OOX::Spreadsheet::CIconSet						*oox_cond_iconset);
+		void convert(OOX::Spreadsheet::CConditionalFormatValueObject*oox_cond_value);
+
 		void convert(double oox_size,						_CP_OPT(odf::length) & odf_size);
 		void convert_sharing_string(int number);
 	};

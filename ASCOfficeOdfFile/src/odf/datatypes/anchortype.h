@@ -1,9 +1,4 @@
-#ifndef _CPDOCCORE_ODF_ANCHORTYPE_H_
-#define _CPDOCCORE_ODF_ANCHORTYPE_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <string>
@@ -49,4 +44,3 @@ APPLY_PARSE_XML_ATTRIBUTES(odf::anchor_type);
 
 }
 
-#endif

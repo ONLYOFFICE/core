@@ -200,6 +200,16 @@ public:
 	
 	void add_child_element(office_element_ptr & child_element);
 
+	void start_conditional_formats();
+		void start_conditional_format(std::wstring ref);
+			void start_conditional_rule(std::wstring rule_type);
+				void set_conditional_value(std::wstring type, std::wstring value );
+				void set_conditional_iconset(std::wstring type_iconset);
+				void add_conditional_colorscale(_CP_OPT(color) color);
+				void set_conditional_databar_color(_CP_OPT(color) color);
+			void end_conditional_rule();
+		void end_conditional_format();
+	void end_conditional_formats();
 
 ///////////////////////////////
 	void add_hyperlink(std::wstring & ref,int col, int row, std::wstring & link);
@@ -248,7 +258,8 @@ private:
 	static int current_table_column_;
 	static int current_table_row_;
 
-	static int tmp_value_;
+	static int tmp_column_;
+	static int tmp_row_;
 
 	std::vector<ods_element_state> columns_;
 	std::vector<ods_element_state> rows_;

@@ -614,7 +614,8 @@ public:
     //table-scenario
     //office-forms
 	office_element_ptr				table_named_expressions_;
-    office_element_ptr				table_shapes_;
+ 	office_element_ptr				table_conditional_formats_;
+	office_element_ptr				table_shapes_;
     table_columns_and_groups		table_columns_and_groups_;//table-columns-and-groups
     table_rows_and_groups			table_rows_and_groups_;
 

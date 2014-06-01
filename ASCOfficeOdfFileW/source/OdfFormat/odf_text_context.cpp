@@ -46,10 +46,18 @@ void odf_text_context::set_single_object(bool val, style_paragraph_properties *p
 
 void odf_text_context::add_text_content(const std::wstring & text)
 {
-	if (current_level_.size() >=0 )
-		current_level_.back()->add_text(text);
-	else
+	//if (text == L" " && single_paragraph_ == false)
+	//{
+	//	office_element_ptr elm;
+	//	create_element(L"text", L"s", elm, odf_context_);
+
+	//	current_level_.back()->add_child_element(elm);
+
+	//}
+	//else
 	{
+		if (current_level_.size() >=0 )
+			current_level_.back()->add_text(text);
 	}
 }
 void odf_text_context::start_paragraph(bool styled)

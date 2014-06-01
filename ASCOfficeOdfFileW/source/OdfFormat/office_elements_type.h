@@ -227,6 +227,16 @@ enum ElementType
 	typeOfficePresentation,
 	typeOfficeChart,
 	typeOfficeEventListeners,
+
+	typeCalcextConditionalFormats,
+	typeCalcextConditionalFormat,
+	typeCalcextIconSet,
+	typeCalcextDataBar,
+	typeCalcextColorScale,
+	typeCalcextCondition,
+	typeCalcextDateIs,
+	typeCalcextFormattingEntry,
+	typeCalcextColorScaleEntry,
   
 	typePresentationEventListener,	
 

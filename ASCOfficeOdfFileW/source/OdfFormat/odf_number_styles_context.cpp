@@ -413,7 +413,7 @@ void odf_number_styles_context::create_numbers(number_format_state & state, offi
 
 		number_number_->number_min_integer_digits_= min_digit;
 		number_number_->number_decimal_places_= min_decimal;
-		number_number_->number_grouping_ = true;
+		//number_number_->number_grouping_ = true;
 	}
 }
 void odf_number_styles_context::create_percentage_style(number_format_state & state, office_element_ptr & root_elm)

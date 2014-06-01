@@ -29,7 +29,7 @@ public:
 	
 	virtual void start_document();
 
-	void start_sheet(std::wstring & name);
+	void start_sheet();
 		void set_sheet_dimension(std::wstring & ref);
 	void end_sheet();
 
@@ -78,6 +78,10 @@ public:
 		void add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id);
 		void add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id);
 	void end_defined_expressions(){}
+
+	void start_conditional_formats();
+
+	void end_conditional_formats(){}
 private:
 	_font_metrix				font_metrix_;
 	ods_table_context			table_context_;

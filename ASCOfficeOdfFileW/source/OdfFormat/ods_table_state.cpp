@@ -743,10 +743,10 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 			{
 				cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
 			}
-			if (!cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_)
-			{
-				cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
-			}
+			//if (!cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_)
+			//{
+			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
+			//}
 		}
 	}
 }
@@ -914,19 +914,37 @@ void ods_table_state::end_conditional_format()
 {
 	current_level_.pop_back();
 }
-void ods_table_state::start_conditional_rule(std::wstring rule_type)
+void ods_table_state::start_conditional_rule(int rule_type)
 {
 	office_element_ptr		elm;
-	
-	if (rule_type == L"dataBar")
+
+	switch(rule_type)
 	{
-		create_element(L"calcext", L"data-bar",elm,&context_);
+	case 3: /*colorScale*/
+		create_element(L"calcext", L"color-scale",elm,&context_); break;
+	case 7: /*dataBar*/
+		create_element(L"calcext", L"data-bar",elm,&context_);	break;
+	case 10: /*iconSet*/
+		create_element(L"calcext", L"icon-set",elm,&context_);	break;
+	case 14: /*timePeriod*/
+		create_element(L"calcext", L"date-is",elm,&context_); break;
+
+	case 0: /*aboveAverage*/
+	case 1: /*beginsWith*/
+	case 2: /*cellIs*/
+	case 4: /*containsBlanks*/
+	case 5: /*containsErrors*/
+	case 6: /*containsText*/
+	case 8: /*duplicateValues*/
+	case 9: /*expression*/
+	case 11: /*notContainsBlanks*/
+	case 12: /*notContainsErrors*/
+	case 13: /*notContainsText*/
+	case 15: /*top10*/
+	case 16: /*uniqueValues*/
+		default:	create_element(L"calcext", L"condition",elm,&context_);
 	}
-	else if (rule_type == L"iconSet")
-	{
-		create_element(L"calcext", L"icon-set",elm,&context_);
-	}
-	
+
 	current_level_.back()->add_child_element(elm);
 	current_level_.push_back(elm);
 }
@@ -935,35 +953,67 @@ void ods_table_state::end_conditional_rule()
 {
 	current_level_.pop_back();
 }
-void ods_table_state::set_conditional_value(std::wstring type, std::wstring value )
+void ods_table_state::set_conditional_value(int type, std::wstring value )
 {
-	office_element_ptr		elm;
-	create_element(L"calcext", L"formatting-entry",elm, &context_);
-	
-	current_level_.back()->add_child_element(elm);
+	calcext_icon_set* icon_set		 = dynamic_cast<calcext_icon_set*>	 (current_level_.back().get());
+	calcext_data_bar* data_bar		 = dynamic_cast<calcext_data_bar*>	 (current_level_.back().get());
+	calcext_color_scale* color_scale = dynamic_cast<calcext_color_scale*>(current_level_.back().get());
 
-	calcext_formatting_entry * entry = dynamic_cast<calcext_formatting_entry*>(elm.get());
-	if (entry)
+	if (icon_set || data_bar)
 	{
-		if (value.length() >0)	entry->calcext_value_ = value;
-		else entry->calcext_value_ = L"0";
-			  if (type == L"min")		entry->calcext_type_ = calcext_type(calcext_type::AutoMinimum);
-		 else if (type == L"max")		entry->calcext_type_ = calcext_type(calcext_type::AutoMaximum);
-		 else if (type == L"percent")	entry->calcext_type_ = calcext_type(calcext_type::Percent);
-		 else if (type == L"num")		entry->calcext_type_ = calcext_type(calcext_type::Number);
+		office_element_ptr		elm;
+		create_element(L"calcext", L"formatting-entry",elm, &context_);
+		
+		current_level_.back()->add_child_element(elm);
 
+		calcext_formatting_entry * entry = dynamic_cast<calcext_formatting_entry*>(elm.get());
+		if (entry)
+		{
+			switch(type)
+			{
+				case 0: //Formula	
+				case 1: entry->calcext_type_ = calcext_type(calcext_type::AutoMaximum); break;
+				case 2: entry->calcext_type_ = calcext_type(calcext_type::AutoMinimum); break;
+				case 4: entry->calcext_type_ = calcext_type(calcext_type::Percent); break;
+				case 5: //Percentile		
+				case 3: //Number
+				default: entry->calcext_type_ = calcext_type(calcext_type::Number);
+			}
+		}
 	}
+
+	if (color_scale)
+	{
+		office_element_ptr		elm;
+		create_element(L"calcext", L"color-scale-entry",elm, &context_);
+		
+		current_level_.back()->add_child_element(elm);
+
+		calcext_color_scale_entry * entry = dynamic_cast<calcext_color_scale_entry*>(elm.get());
+		if (entry)
+		{
+			switch(type)
+			{				
+				case 0: //Formula	
+				case 1: entry->calcext_type_ = calcext_type(calcext_type::Maximum); break;
+				case 2: entry->calcext_type_ = calcext_type(calcext_type::Minimum); break;
+				case 4: entry->calcext_type_ = calcext_type(calcext_type::Percent); break;
+				case 5: //Percentile		
+				case 3: //Number
+				default: entry->calcext_type_ = calcext_type(calcext_type::Number);
+			}
+		}
+		///color???? - прихоодят выше уровнем !!
+	}
+
 }
-void ods_table_state::set_conditional_iconset(std::wstring type_iconset)
+void ods_table_state::set_conditional_iconset(int type_iconset)
 {
 	calcext_icon_set* cond_format = dynamic_cast<calcext_icon_set*>(current_level_.back().get());
 
 	if (cond_format)
 	{
-		if (type_iconset == L"3Arrows")
-			cond_format->calcext_icon_set_attr_.calcext_icon_set_type_ = iconset_type(iconset_type::Arrows3);
-		else
-			cond_format->calcext_icon_set_attr_.calcext_icon_set_type_ = iconset_type(iconset_type::Flags3);
+		cond_format->calcext_icon_set_attr_.calcext_icon_set_type_ = iconset_type((iconset_type::type)type_iconset);
 	}
 }
 void ods_table_state::add_conditional_colorscale(_CP_OPT(color) color)

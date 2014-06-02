@@ -202,9 +202,9 @@ public:
 
 	void start_conditional_formats();
 		void start_conditional_format(std::wstring ref);
-			void start_conditional_rule(std::wstring rule_type);
-				void set_conditional_value(std::wstring type, std::wstring value );
-				void set_conditional_iconset(std::wstring type_iconset);
+			void start_conditional_rule(int rule_type);
+				void set_conditional_value(int type, std::wstring value );
+				void set_conditional_iconset(int type_iconset);
 				void add_conditional_colorscale(_CP_OPT(color) color);
 				void set_conditional_databar_color(_CP_OPT(color) color);
 			void end_conditional_rule();

@@ -1997,5 +1997,213 @@ namespace SimpleTypes
 			SimpleType_FromString     (EDynamicFilterType)
 				SimpleType_Operator_Equal (CDynamicFilterType)
 		};
+	//--------------------------------------------------------
+	//	ST_IconSetType (18.18.42)
+	//--------------------------------------------------------
+		enum EIconSetType
+		{
+			Arrows3				= 0,
+			Arrows3Gray			= 1,
+			Flags3				= 2,
+			Signs3				= 3,
+			Symbols3			= 4,
+			Symbols3_2			= 5,
+			Traffic3Lights1		= 6,
+			Traffic3Lights2		= 7,
+			Arrows4				= 8,
+			Arrows4Gray			= 9,
+			Rating4				= 10,
+			RedToBlack4			= 11,
+			Traffic4Lights		= 12,
+			Arrows5				= 13,
+			Arrows5Gray			= 14,
+			Quarters5			= 15,
+			Rating5				= 16
+		};
+		template<EIconSetType eDefValue = Arrows3>
+		class ST_IconSetType : public CSimpleType<EIconSetType, eDefValue>
+		{
+		public:
+			ST_IconSetType() {}
+
+			virtual EIconSetType FromString(CString &sValue)
+			{
+				if(_T("3Arrows") == sValue)				m_eValue = Arrows3;
+				else if(_T("3ArrowsGray") == sValue)	m_eValue = Arrows3Gray;
+				else if(_T("3Flags") == sValue)			m_eValue = Flags3;
+				else if(_T("3Signs") == sValue)			m_eValue = Signs3;
+				else if(_T("3Symbols") == sValue)		m_eValue = Symbols3;
+				else if(_T("3Symbols2") == sValue)		m_eValue = Symbols3_2;
+				else if(_T("3TrafficLights1") == sValue)m_eValue = Traffic3Lights1;
+				else if(_T("3TrafficLights2") == sValue)m_eValue = Traffic3Lights2;
+				else if(_T("4Arrows") == sValue)		m_eValue = Arrows4;
+				else if(_T("4ArrowsGray") == sValue)	m_eValue = Arrows4Gray;
+				else if(_T("4Rating") == sValue)		m_eValue = Rating4;
+				else if(_T("4RedToBlack") == sValue)	m_eValue = RedToBlack4;
+				else if(_T("4TrafficLights") == sValue)	m_eValue = Traffic4Lights;
+				else if(_T("5Arrows") == sValue)		m_eValue = Arrows5;
+				else if(_T("5ArrowsGray") == sValue)	m_eValue = Arrows5Gray;
+				else if(_T("5Quarters") == sValue)		m_eValue = Quarters5;
+				else if(_T("5Rating") == sValue)		m_eValue = Rating5;
+				else 									m_eValue = eDefValue;
+				return m_eValue;
+			}
+
+			virtual CString     ToString  () const 
+			{
+				switch(m_eValue)
+				{
+					case Arrows3		:	return _T("3Arrows");		break;
+					case Arrows3Gray	:	return _T("3ArrowsGray");	break;
+					case Flags3			:	return _T("3Flags");		break;
+					case Signs3			:	return _T("3Signs");		break;
+					case Symbols3		:	return _T("3Symbols");		break;
+					case Symbols3_2		:	return _T("3Symbols2");		break;
+					case Traffic3Lights1:	return _T("3TrafficLights1");break;
+					case Traffic3Lights2:	return _T("3TrafficLights2");break;
+					case Arrows4		:	return _T("4Arrows");		break;
+					case Arrows4Gray	:	return _T("4ArrowsGray");	break;
+					case Rating4		:	return _T("4Rating");		break;
+					case RedToBlack4	:	return _T("4RedToBlack");	break;
+					case Traffic4Lights	:	return _T("4TrafficLights");break;
+					case Arrows5		:	return _T("5Arrows");		break;
+					case Arrows5Gray	:	return _T("5ArrowsGray");	break;
+					case Quarters5		:	return _T("5Quarters");		break;
+					case Rating5		:	return _T("5Rating");		break;
+					default				:	return _T("3Arrows");
+				}
+			}
+
+			SimpleType_FromString     (EIconSetType)
+			SimpleType_Operator_Equal (ST_IconSetType)
+		};
+	//----------------------------------------------------
+	//	18.18.12 ST_CfType (Conditional Format Type)
+	//----------------------------------------------------
+		enum ECfType
+		{
+			aboveAverage			= 0,
+			beginsWith				= 1,
+			cellIs					= 2,
+			colorScale				= 3,
+			containsBlanks			= 4,
+			containsErrors			= 5,
+			containsText			= 6,
+			dataBar					= 7,
+			duplicateValues			= 8,
+			expression				= 9,
+			iconSet					= 10,
+			notContainsBlanks		= 11,
+			notContainsErrors		= 12,
+			notContainsText			= 13,
+			timePeriod				= 14,
+			top10					= 15,
+			uniqueValues			= 16
+		};
+		template<ECfType eDefValue = dataBar>
+		class ST_CfType : public CSimpleType<ECfType, eDefValue>
+		{
+		public:
+			ST_CfType() {}
+
+			virtual ECfType FromString(CString &sValue)
+			{
+				if(_T("aboveAverage") == sValue)			m_eValue = aboveAverage;
+				else if(_T("beginsWith") == sValue)			m_eValue = beginsWith;
+				else if(_T("cellIs") == sValue)				m_eValue = cellIs;
+				else if(_T("colorScale") == sValue)			m_eValue = colorScale;
+				else if(_T("containsBlanks") == sValue)		m_eValue = containsBlanks;
+				else if(_T("containsText") == sValue)		m_eValue = containsText;
+				else if(_T("containsErrors") == sValue)		m_eValue = containsErrors;
+				else if(_T("dataBar") == sValue)			m_eValue = dataBar;
+				else if(_T("duplicateValues") == sValue)	m_eValue = duplicateValues;
+				else if(_T("expression") == sValue)			m_eValue = expression;
+				else if(_T("iconSet") == sValue)			m_eValue = iconSet;
+				else if(_T("notContainsBlanks") == sValue)	m_eValue = notContainsBlanks;
+				else if(_T("notContainsErrors") == sValue)	m_eValue = notContainsErrors;
+				else if(_T("notContainsText") == sValue)	m_eValue = notContainsText;
+				else if(_T("timePeriod") == sValue)			m_eValue = timePeriod;
+				else if(_T("top10") == sValue)				m_eValue = top10;
+				else if(_T("uniqueValues") == sValue)		m_eValue = uniqueValues;
+				else 										m_eValue = eDefValue;
+				return m_eValue;
+			}
+
+			virtual CString     ToString  () const 
+			{
+				switch(m_eValue)
+				{
+					case aboveAverage		:	return _T("aboveAverage");		break;			
+					case beginsWith			:	return _T("beginsWith");		break;
+					case cellIs				:	return _T("cellIs");			break;
+					case colorScale			:	return _T("colorScale");		break;
+					case containsBlanks		:	return _T("containsBlanks");	break;
+					case containsErrors		:	return _T("containsErrors");	break;
+					case containsText		:	return _T("containsText");		break;
+					case dataBar			:	return _T("dataBar");			break;
+					case duplicateValues	:	return _T("duplicateValues");	break;
+					case expression			:	return _T("expression");		break;
+					case iconSet			:	return _T("iconSet");			break;
+					case notContainsBlanks	:	return _T("notContainsBlanks");	break;
+					case notContainsErrors	:	return _T("notContainsErrors");	break;
+					case notContainsText	:	return _T("notContainsText");	break;
+					case timePeriod			:	return _T("timePeriod");		break;
+					case top10				:	return _T("top10");				break;
+					case uniqueValues		:	return _T("uniqueValues");		break;
+					default					:	return _T("dataBar");
+				}
+			}
+
+			SimpleType_FromString     (ECfType)
+			SimpleType_Operator_Equal (ST_CfType)
+		};
+	//----------------------------------------------------
+	//	18.18.13 ST_CfvoType (Conditional Format Value Object Type)
+	//----------------------------------------------------
+		enum ECfvoType
+		{
+			Formula					= 0,
+			Maximum					= 1,
+			Minimum					= 2,
+			Number					= 3,
+			Percent					= 4,
+			Percentile				= 5,
+		};
+		template<ECfvoType eDefValue = Number>
+		class ST_CfvoType : public CSimpleType<ECfvoType, eDefValue>
+		{
+		public:
+			ST_CfvoType() {}
+
+			virtual ECfvoType FromString(CString &sValue)
+			{
+				if(_T("formula") == sValue)			m_eValue = Formula;
+				else if(_T("max") == sValue)		m_eValue = Maximum;
+				else if(_T("min") == sValue)		m_eValue = Minimum;
+				else if(_T("num") == sValue)		m_eValue = Number;
+				else if(_T("percent") == sValue)	m_eValue = Percent;
+				else if(_T("percentile") == sValue)	m_eValue = Percentile;
+				else 								m_eValue = eDefValue;
+				return m_eValue;
+			}
+
+			virtual CString     ToString  () const 
+			{
+				switch(m_eValue)
+				{
+					case Formula:	return _T("formula");		break;	
+					case Maximum:	return _T("min");			break;	
+					case Minimum:	return _T("max");			break;	
+					case Number:	return _T("num");			break;	
+					case Percent:	return _T("percent");		break;	
+					case Percentile:return _T("percentile");	break;	
+					default		:	return _T("num");
+				}
+			}
+
+			SimpleType_FromString     (ECfvoType)
+			SimpleType_Operator_Equal (ST_CfvoType)
+		};
+
 	};// Spreadsheet
 } // SimpleTypes

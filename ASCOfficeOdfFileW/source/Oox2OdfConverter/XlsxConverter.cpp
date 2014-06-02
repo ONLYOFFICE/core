@@ -1505,7 +1505,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 
 	if (oox_cond_rule->m_oType.IsInit())
 	{
-		ods_context->current_table().start_conditional_rule(string2std_string(oox_cond_rule->m_oType.get2()));
+		ods_context->current_table().start_conditional_rule(oox_cond_rule->m_oType->GetValue());
 
 		for (long i=0; i< oox_cond_rule->m_arrItems.GetSize(); i++)
 			convert(oox_cond_rule->m_arrItems[i]);
@@ -1553,7 +1553,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CIconSet *oox_cond_iconset)
 	if (!oox_cond_iconset)return;
 	
 	if (oox_cond_iconset->m_oIconSet.IsInit())
-		ods_context->current_table().set_conditional_iconset(string2std_string(oox_cond_iconset->m_oIconSet.get2()));
+		ods_context->current_table().set_conditional_iconset(oox_cond_iconset->m_oIconSet->GetValue());
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMaxLength;
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMinLength;
 			//nullable<SimpleTypes::COnOff<>>					m_oShowValue;
@@ -1564,9 +1564,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatValueObject *oox
 {
 	if (!oox_cond_value)return;
 
-	std::wstring val, type;
+	std::wstring val;
+	int type = 3;
 	if (oox_cond_value->m_oVal.IsInit())	val = string2std_string(oox_cond_value->m_oVal.get2());
-	if (oox_cond_value->m_oType.IsInit())	type = string2std_string(oox_cond_value->m_oType.get2());
+	if (oox_cond_value->m_oType.IsInit())	type = oox_cond_value->m_oType->GetValue();
 	
 	ods_context->current_table().set_conditional_value(type,val);
 }

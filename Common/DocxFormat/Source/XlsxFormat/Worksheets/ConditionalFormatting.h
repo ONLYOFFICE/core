@@ -72,9 +72,9 @@ namespace OOX
 			}
 
 		public:
-			nullable<SimpleTypes::COnOff<>>	m_oGte;
-			nullable<CString>				m_oType;	// ToDo переделать на тип ST_CfvoType (18.18.12)
-			nullable<CString>				m_oVal;
+			nullable<SimpleTypes::COnOff<>>						m_oGte;
+			nullable<SimpleTypes::Spreadsheet::ST_CfvoType<>>	m_oType;	
+			nullable<CString>									m_oVal;
 		};
 
 		class CColorScale : public WritingElementWithChilds<WritingElement>
@@ -346,10 +346,10 @@ namespace OOX
 			}
 
 		public:
-			nullable<CString>				m_oIconSet;	// ToDo переделать на тип ST_IconSetType (18.18.42)
-			nullable<SimpleTypes::COnOff<>>	m_oPercent;
-			nullable<SimpleTypes::COnOff<>>	m_oReverse;
-			nullable<SimpleTypes::COnOff<>>	m_oShowValue;
+			nullable<SimpleTypes::Spreadsheet::ST_IconSetType<>>m_oIconSet;
+			nullable<SimpleTypes::COnOff<>>						m_oPercent;
+			nullable<SimpleTypes::COnOff<>>						m_oReverse;
+			nullable<SimpleTypes::COnOff<>>						m_oShowValue;
 		};
 
 		//необработано:
@@ -491,7 +491,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>					m_oStopIfTrue;
 			nullable<CString>								m_oText;
 			nullable<CString>								m_oTimePeriod;	// ToDo переделать на тип ST_TimePeriod (18.18.82)
-			nullable<CString>								m_oType;		// ToDo переделать на тип ST_CfType (18.18.12)
+			nullable<SimpleTypes::Spreadsheet::ST_CfType<>>	m_oType;	
 		};
 
 		//необработано:

@@ -114,42 +114,8 @@ public:
 // [$'Sheet2 A'.$B2] -> 'Sheet2 A'!$B2
 void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr)
 {
-	//std::vector<std::wstring> split1;
-	//std::vector<std::wstring> split2;
-
-	//boost::algorithm::split(split1,expr,boost::algorithm::is_any_of(L"!"), boost::algorithm::token_compress_on);
-
-	//std::wstring sheet, cells_range, cell1,cell2;
-	//if (split1.size() > 1)
-	//{
-	//	sheet = split1[0];
-	//	cells_range = split1[1]; //+ остальные???
-	//}else
-	//	cells_range = split1[0];
-
-	//boost::algorithm::split(split2,cells_range,boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
-
-	//cell1 = split2[0];	
-	//if (split2.size() > 1)
-	//{
-	//	cell2 = split2[1];
-	//}
-
-	//if (!sheet.empty() || !cell1.empty())
-	//{
-	//	std::wstring s =  /*std::wstring(L"[") */+ sheet + (sheet.empty() ? L"" : L".") + 
-	//								cell1 +
-	//								(cell2.empty() ? L"" : (L":" + sheet  + (sheet.empty() ? L"" : L".") + cell2) )/* + std::wstring(L"]")*/;
-
-
-	//	expr = s;
-	//}
-
-	//return;
 	boost::wregex re(L"([:$!])+");
 	boost::wregex re1(L"(\\$?\\w+\\!)?([a-zA-Z$]+\\d{1,2})\\:?([a-zA-Z$]+\\d{1,2})?");
-	//boost::wregex re1(L"(\\$?(\\w*?\\s*?['\"]*)?)?\\!?([a-zA-Z$]+\\d{1,2})\\:?([a-zA-Z$]+\\d{1,2})?");
-	//boost::wregex re2(L"([a-zA-Z$]+\\d{1,2})\\:?([a-zA-Z$]+\\d{1,2})?");
 //                          $   Sheet2   ! $ A1                  :  $ B5    
 
 	//проблема если им€ таблицы составное и в кавычках
@@ -188,7 +154,10 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater1(boost::wsmat
 
         std::wstring c1 = what[2].str(); 
         std::wstring c2 = what[3].str(); 
-		const std::wstring s =  std::wstring(L"[")/* + (sheet1.length() > 0 ? L"$" : L"" ) */+ sheet1 + L"." + 
+		int res;
+		if (sheet1.length() > 0  && (res = c1.find(L"$")) >=0 ) sheet1 = L"$"  + sheet1;
+
+		const std::wstring s =  std::wstring(L"[")  + sheet1 + L"." + 
 								c1 +
 								(c2.empty() ? L"" : (L":" + sheet1  + L"." + c2) ) + std::wstring(L"]");
         return s;
@@ -267,8 +236,20 @@ void oox2odf_converter::Impl::replace_named_ref(std::wstring & expr)
 	BOOST_FOREACH(std::wstring &d, distance)
 	{		
 	
+		boost::algorithm::replace_all(d, L"(", L"SCOBCAIN");
+		boost::algorithm::replace_all(d, L")", L"SCOBCAOUT");
+		boost::algorithm::replace_all(d, L" ", L"PROBEL");
+		boost::algorithm::replace_all(d, L"'", L"APOSTROF");
+		boost::algorithm::replace_all(d, L"\"", L"KAVYCHKA");
+		
 		replace_cells_range(d);
 
+		boost::algorithm::replace_all(d, L"SCOBCAIN", L"(");
+		boost::algorithm::replace_all(d, L"SCOBCAOUT", L")");
+		boost::algorithm::replace_all(d, L"PROBEL", L" ");
+		boost::algorithm::replace_all(d, L"APOSTROF", L"'");
+		boost::algorithm::replace_all(d, L"KAVYCHKA", L"\"");
+			
 		out = out + d + std::wstring(L";");
 	}
 
@@ -594,16 +575,16 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 {
 	std::wstring expr = expr1;
 	int res = expr.find(L"(");
-	if (res >=0) expr = expr.substr(res + 1, expr.size()-1);
+	if (res ==0) expr = expr.substr(res + 1, expr.size()-1);
 
 	res= expr.rfind(L")");
-	if (res >=0) expr = expr.substr(0, res);
+	if (res ==expr.size()-2) expr = expr.substr(0, res);
 
 	//распарсить по диапазонам - одф-пробел, ик-эль-зап€та€
 
 	std::vector<std::wstring> distance_inp;
 	std::vector<std::wstring> distance_out;
-
+	
 	boost::algorithm::split(distance_inp,expr, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 
 	BOOST_FOREACH(std::wstring &d,distance_inp)

@@ -75,8 +75,8 @@ public:
 	double convert_symbol_width(double val);
 	
 	void start_defined_expressions();
-		void add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id);
-		void add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id);
+		void add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id, bool printable = false);
+		void add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id, bool printable = false);
 	void end_defined_expressions(){}
 
 	void start_conditional_formats();

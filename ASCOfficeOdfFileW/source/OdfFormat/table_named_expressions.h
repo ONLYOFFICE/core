@@ -54,6 +54,8 @@ public:
     _CP_OPT(std::wstring) table_cell_range_address_;
     _CP_OPT(std::wstring) table_base_cell_address_;
 
+	_CP_OPT(std::wstring) table_range_usable_as_;//printrange, filter , repeatrow, repeatcolumn через пробел
+
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_named_range);

@@ -128,6 +128,8 @@ struct ods_cell_state : ods_element_state
 
 	int hyperlink_idx;
 	int comment_idx;
+	
+	bool empty;
 };
 
 struct ods_hyperlink_state
@@ -162,11 +164,12 @@ class ods_table_state
 {
 public:
 	ods_table_state(ods_conversion_context & Context, office_element_ptr & elm);
-		void set_table_name(std::wstring);
+		void set_table_name(std::wstring name);
 		void set_table_style(office_element_ptr & _style);
 		void set_table_hidden(bool Val);
 		void set_table_tab_color(_CP_OPT(color) & _color);
 		void set_table_dimension(int col, int row);
+		void set_print_range(std::wstring range);
 
 	void add_column(office_element_ptr & elm, int repeated ,office_element_ptr & style);
 		void set_column_width(double width);

@@ -58,13 +58,13 @@ void ods_conversion_context::start_conditional_formats()
 	current_table().start_conditional_formats();
 }
 
-void ods_conversion_context::add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id)
+void ods_conversion_context::add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id, bool printable)
 {
-	table_context_.add_defined_range(name,cell_range, sheet_id);
+	table_context_.add_defined_range(name,cell_range, sheet_id, printable);
 }
-void ods_conversion_context::add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id)
+void ods_conversion_context::add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id, bool printable)
 {
-	table_context_.add_defined_expression(name,value, sheet_id);
+	table_context_.add_defined_expression(name,value, sheet_id, printable);
 }
 void ods_conversion_context::start_sheet()
 {

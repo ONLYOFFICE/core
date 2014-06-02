@@ -133,6 +133,14 @@ void ods_table_state::set_table_hidden(bool Val)
 
 }
 
+void ods_table_state::set_print_range(std::wstring range)
+{
+	table_table* table = dynamic_cast<table_table*>(office_table_.get());
+	if (table == NULL)return;
+
+	table->table_table_attlist_.table_print_ranges_ = range;
+}
+
 void ods_table_state::set_table_tab_color(_CP_OPT(color) & _color)
 {
 	if (!office_table_style_)return;
@@ -388,6 +396,7 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 
 	ods_cell_state state;
 	
+	state.empty = true;
 	state.elm = elm;  state.repeated = 1;  state.style_name = style_name; state.style_elm = style_elm;
 	state.row=current_table_row_;  state.col =current_table_column_+1; 
 
@@ -408,7 +417,7 @@ void ods_table_state::set_cell_format_value(office_value_type::type value_type)
 
 	common_value_and_type_attlist cell_type;
 	cell_type.office_value_type_ = office_value_type(value_type);
-	
+
 	cell->table_table_cell_attlist_.common_value_and_type_attlist_ = cell_type;
 
 }
@@ -556,6 +565,7 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 	if (cell == NULL)return;
 
 	cell->table_table_cell_attlist_.table_formula_ = odfFormula;
+	cells_.back().empty = false;
 }
 
 std::wstring ods_table_state::replace_cell_row(boost::wsmatch const & what)
@@ -659,6 +669,8 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 					odf_formula = res;
 				}
 				cell->table_table_cell_attlist_.table_formula_ = odf_formula;
+				
+				cells_.back().empty = false;
 			}
 		}
 	}
@@ -763,6 +775,7 @@ void ods_table_state::set_cell_value(std::wstring & value)
 		//cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::Float);
 		//временно... пока нет определялки типов
 	}
+	cells_.back().empty = false;
 	
 	if (cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_)
 	{
@@ -832,6 +845,11 @@ void ods_table_state::end_cell()
 		office_element_ptr & comm_elm = comments_[cells_.back().comment_idx].elm;
 		cells_.back().elm->add_child_element(comm_elm);
 	}
+	if (cells_.back().empty)
+	{
+		table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
+		if (cell)cell->table_table_cell_attlist_.common_value_and_type_attlist_ = boost::none;
+	}
 }
 
 void ods_table_state::add_default_cell( int repeated)
@@ -860,6 +878,7 @@ void ods_table_state::add_default_cell( int repeated)
 	
  	ods_cell_state state;
 	
+	state.empty = true;
 	state.elm = default_cell_elm;  state.repeated = repeated; 
 	state.row=current_table_row_;  state.col =current_table_column_+1; 
 	state.hyperlink_idx = is_cell_hyperlink(state.col, current_table_row_);

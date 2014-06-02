@@ -198,6 +198,7 @@ static const def_language_code LanguageCodeTable[] =
 
 odf_number_styles_context::odf_number_styles_context()
 {
+	create_default(0);
 }
 void odf_number_styles_context::set_odf_context(odf_conversion_context * Context)
 {

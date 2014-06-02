@@ -28,7 +28,7 @@ void ods_table_context::start_defined_expressions(office_element_ptr & root_elm)
 	table_defined_expressions_.root = root_elm;
 }
 
-void ods_table_context::add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id)
+void ods_table_context::add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id, bool printable)
 {
 	office_element_ptr elm;
 	create_element(L"table", L"named-range",elm, &context_);
@@ -38,11 +38,15 @@ void ods_table_context::add_defined_range(std::wstring & name,std::wstring & cel
 
 	static formulasconvert::oox2odf_converter formulas_converter;
 
-	std::wstring odf_cell_range = formulas_converter.convert_named_ref(cell_range);
+	std::wstring odf_range = formulas_converter.convert_named_ref(cell_range);//todo - разделить конвертацию диапазонов/рэнжей на c [] и без
+	boost::algorithm::replace_all(odf_range, L"[", L"");
+	boost::algorithm::replace_all(odf_range, L"]", L"");
 	std::wstring odf_base_cell = formulas_converter.find_base_cell(cell_range);
 
 	named_range->table_name_ = name;
-	named_range->table_cell_range_address_ = odf_cell_range;
+	named_range->table_cell_range_address_ = odf_range;
+	if (printable)
+		named_range->table_range_usable_as_ = L"print-range";
 	
 	if (odf_base_cell.length() > 0)
 		named_range->table_base_cell_address_ =  odf_base_cell;
@@ -66,7 +70,7 @@ void ods_table_context::add_defined_range(std::wstring & name,std::wstring & cel
 		table_defined_expressions_.root->add_child_element(elm);
 
 }
-void ods_table_context::add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id)
+void ods_table_context::add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id, bool printable)
 {
 	office_element_ptr elm;
 	create_element(L"table", L"named-expression",elm, &context_);
@@ -91,6 +95,14 @@ void ods_table_context::add_defined_expression(std::wstring & name,std::wstring 
 			{
 				odf_base_cell = iter->office_table_name_ + L".$A$1";
 				iter->add_definded_expression(elm);
+				if ( printable)
+				{
+					boost::algorithm::replace_all(odf_value, L"[", L"");
+					boost::algorithm::replace_all(odf_value, L"]", L"");
+					boost::algorithm::replace_all(odf_value, L";", L" ");
+
+					iter->set_print_range(odf_value);
+				}
 				break;
 			}
 			i++;
@@ -101,6 +113,7 @@ void ods_table_context::add_defined_expression(std::wstring & name,std::wstring 
 
 	if (odf_base_cell.length() > 0)
 		named_expression->table_base_cell_address_ =  odf_base_cell;
+
 
 	table_defined_expressions_.defined.push_back(elm);
 }

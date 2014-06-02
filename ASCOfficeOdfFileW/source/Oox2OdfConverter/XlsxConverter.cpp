@@ -159,8 +159,17 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDefinedName *oox_defined)
 		sheet_id = oox_defined->m_oLocalSheetId->GetValue();
 
 	if (oox_defined->m_oName.IsInit() && oox_defined->m_oRef.IsInit())
-		ods_context->add_defined_expression (string2std_string(oox_defined->m_oName.get2()), 
-										string2std_string(oox_defined->m_oRef.get2()), sheet_id);
+	{
+		std::wstring name = string2std_string(oox_defined->m_oName.get2());
+
+		bool printable = false;
+		if (name  == L"_xlnm.Print_Area")printable = true;
+
+		if (false)//если простой - range, составной - выражение
+			ods_context->add_defined_range (name, string2std_string(oox_defined->m_oRef.get2()), sheet_id, printable);
+		else
+			ods_context->add_defined_expression (name, string2std_string(oox_defined->m_oRef.get2()), sheet_id, printable);
+	}
 
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)

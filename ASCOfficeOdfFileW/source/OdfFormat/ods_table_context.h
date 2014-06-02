@@ -37,8 +37,8 @@ public:
 	
 	void start_defined_expressions(office_element_ptr & root_elm);
 
-	void add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id);
- 	void add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id);
+	void add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id, bool printable = false);
+ 	void add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id, bool printable = false);
 
 private:
 

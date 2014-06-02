@@ -13,10 +13,22 @@ public:
     enum type
     {
         Arrows3,
-        Arrows3Grey,
+        Arrows3Gray,
         Flags3,
+		Signs3,
+		Symbols3,
+		Symbols3_2,
 		Traffic3Lights1,
-		Traffic3Lights2
+		Traffic3Lights2,
+		Arrows4,
+		Arrows4Gray,
+		Rating4,
+		RedToBlack4,
+		Traffic4Lights,
+		Arrows5,
+		Arrows5Gray,
+		Quarters5,
+		Rating5
    };
 
     iconset_type() {}

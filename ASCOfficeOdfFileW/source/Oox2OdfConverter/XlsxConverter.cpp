@@ -441,7 +441,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::WritingElement  *oox_unknown)
 			OOX::Spreadsheet::CDataBar *pB = static_cast<OOX::Spreadsheet::CDataBar*>(oox_unknown);
 			convert(pB);
 		}break;
-		default:
+		case OOX::Spreadsheet::et_FormulaCF:
+		{
+			OOX::Spreadsheet::CFormulaCF *pF = static_cast<OOX::Spreadsheet::CFormulaCF*>(oox_unknown);
+			convert(pF);
+		}break;		default:
 		{
 			std::wstringstream ss;
 			ss << L"[warning] :  no convert element(" << oox_unknown->getType() << L")\n";
@@ -1515,10 +1519,20 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 	if (oox_cond_rule->m_oType.IsInit())
 	{
 		ods_context->current_table().start_conditional_rule(oox_cond_rule->m_oType->GetValue());
+		{
+			if (oox_cond_rule->m_oDxfId.IsInit()) 
+			{
+				// это ОСОБЫЕ стили ... оне в styles в dxfs а не в cellXfs
+				//std::wstring odf_style_name;
+				//odf::odf_style_state  *style_state=NULL;
+				//odf_context()->styles_context()->find_odf_style_state(oox_cond_rule->m_oDxfId->GetValue(), odf::style_family::TableCell,style_state);
+				//if (style_state)odf_style_name = style_state->get_name();
 
-		for (long i=0; i< oox_cond_rule->m_arrItems.GetSize(); i++)
-			convert(oox_cond_rule->m_arrItems[i]);
-	
+				//ods_context->current_table().set_conditional_style_name(odf_style_name);
+			}
+			for (long i=0; i< oox_cond_rule->m_arrItems.GetSize(); i++)
+				convert(oox_cond_rule->m_arrItems[i]);
+		}	
 		ods_context->current_table().end_conditional_rule();
 	}
 }
@@ -1579,6 +1593,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatValueObject *oox
 	if (oox_cond_value->m_oType.IsInit())	type = oox_cond_value->m_oType->GetValue();
 	
 	ods_context->current_table().set_conditional_value(type,val);
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CFormulaCF	*oox_cond_formula)
+{
+	if (!oox_cond_formula)return;
+	ods_context->current_table().set_conditional_formula(string2std_string(oox_cond_formula->m_sText));
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CAutofilter *oox_filter)
 {

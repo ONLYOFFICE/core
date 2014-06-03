@@ -651,7 +651,7 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 					
 					const std::wstring res = boost::regex_replace(
 						odf_formula,
-						boost::wregex(L"([a-zA-Z]{1,3}[0-9]{1,3})|(?:'.*?')|(?:\".*?\")"),
+						boost::wregex(L"([a-zA-Z]{1,3}[0-9]{1,3})|(?='.*?')|(?=\".*?\")"),
 						&ods_table_state::replace_cell_column,
 						boost::match_default | boost::format_all);
 					odf_formula = res;
@@ -663,7 +663,7 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 					
 					const std::wstring res = boost::regex_replace(
 						odf_formula,
-						boost::wregex(L"([a-zA-Z]{1,3}[0-9]{1,3})|(?:'.*?')|(?:\".*?\")"),
+						boost::wregex(L"([a-zA-Z]{1,3}[0-9]{1,3})|(?='.*?')|(?=\".*?\")"),
 						&ods_table_state::replace_cell_row,
 						boost::match_default | boost::format_all);
 					odf_formula = res;

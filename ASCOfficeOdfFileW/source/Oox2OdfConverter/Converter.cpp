@@ -689,10 +689,42 @@ void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf::style_t
 	{
 		text_properties->content().fo_letter_spacing_ = odf::letter_spacing(odf::length(oox_run_pr->m_oSpace->GetValue()/100., odf::length::pt));
 	}
-	//if (oox_run_pr->m_oUnderline.IsInit())
-	//{
-	//	convert_element ????
-	//}
+	if (oox_run_pr->m_oUnderline.IsInit())
+	{
+		text_properties->content().style_text_underline_style_ = odf::line_style(odf::line_style::Solid);
+		text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::Single);
+		
+		SimpleTypes::EUnderline 	type = oox_run_pr->m_oUnderline->GetValue();
+		switch(type)
+		{
+		case SimpleTypes::underlineNone	:
+				text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::None);break;
+		case SimpleTypes::underlineDash :
+		case SimpleTypes::underlineDashedHeavy:
+				text_properties->content().style_text_underline_style_ = odf::line_style(odf::line_style::Dash);break;
+		case SimpleTypes::underlineDotDash :
+		case SimpleTypes::underlineDashDotHeavy:
+				text_properties->content().style_text_underline_style_ = odf::line_style(odf::line_style::DotDash);break;
+		case SimpleTypes::underlineDashLong:
+		case SimpleTypes::underlineDashLongHeavy:
+				text_properties->content().style_text_underline_style_ = odf::line_style(odf::line_style::LongDash);break;
+		case SimpleTypes::underlineDotDotDash:
+		case SimpleTypes::underlineDashDotDotHeavy :
+				text_properties->content().style_text_underline_style_ = odf::line_style(odf::line_style::DotDotDash);break;
+		case SimpleTypes::underlineDotted:
+		case SimpleTypes::underlineDottedHeavy:
+				text_properties->content().style_text_underline_style_ = odf::line_style(odf::line_style::Dotted);break;
+		case SimpleTypes::underlineWave :
+		case SimpleTypes::underlineWavyHeavy :
+				text_properties->content().style_text_underline_style_ = odf::line_style(odf::line_style::Wave);break;
+		case SimpleTypes::underlineDouble :
+		case SimpleTypes::underlineThick :
+				text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::Double);break;
+		case SimpleTypes::underlineWavyDouble :
+				text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::Double);
+				text_properties->content().style_text_underline_style_ = odf::line_style(odf::line_style::Wave);break;
+		}
+	}
 }
 void OoxConverter::convert(OOX::Drawing::CRun		*oox_run)
 {

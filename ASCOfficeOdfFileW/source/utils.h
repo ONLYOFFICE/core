@@ -88,7 +88,7 @@ namespace _gdi_graphics_
 		ULONG_PTR gdiplusToken=0;
 		Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 		////
-		std::wstring test_string = L"0123456789abcdefg";
+		std::wstring test_string = L"0123456789";
 
 		int style = Gdiplus::FontStyleRegular;
 		if (bold && italic)	style = Gdiplus::FontStyleBoldItalic;

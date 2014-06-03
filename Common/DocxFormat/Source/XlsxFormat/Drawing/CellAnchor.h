@@ -136,6 +136,8 @@ namespace OOX
 								m_oShape = oShapeReader;
 							else if (_T("xdr:cxnSp") == sName)
 								m_oConnShape = oShapeReader;
+							else if (_T("xdr:grpSp") == sName)
+								m_oGroupShape = oShapeReader;
 						}
 					}
 				}
@@ -175,6 +177,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CExt>				m_oExt;
 			nullable<OOX::Spreadsheet::CGraphicFrame>		m_oGraphicFrame;
 			nullable<OOX::Spreadsheet::CPic>				m_oPicture;
+			nullable<OOX::Spreadsheet::CGroupShape>			m_oGroupShape;
 			nullable<OOX::Spreadsheet::CShape>				m_oShape;
 			nullable<OOX::Spreadsheet::CConnShape>			m_oConnShape;
 			nullable<CString>								m_oXml;

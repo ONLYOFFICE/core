@@ -284,9 +284,9 @@ struct GLSurfaceHandle {
         transport_type(transport_),
         parent_gpu_process_id(0),
         parent_client_id(0) {
-    DCHECK(!is_null() || handle == kNullPluginWindow);
-    DCHECK(transport_type != TEXTURE_TRANSPORT ||
-           handle == kNullPluginWindow);
+    //DCHECK(!is_null() || handle == kNullPluginWindow);
+    //DCHECK(transport_type != TEXTURE_TRANSPORT ||
+    //       handle == kNullPluginWindow);
   }
   bool is_null() const { return transport_type == EMPTY; }
   bool is_transport() const {

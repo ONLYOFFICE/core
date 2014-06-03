@@ -22,7 +22,10 @@ void calculate_size_font_symbols(_font_metrix & metrix)
 	double appr_px = 0;//(int)_gdi_graphics_::calculate_size_symbol_asc(metrix.font_name,metrix.font_size,metrix.italic,metrix.bold);
 	
 	if (appr_px <0.01)
-		appr_px = (int)_gdi_graphics_::calculate_size_symbol(metrix.font_name,metrix.font_size,false/*metrix.italic*/,false/*metrix.bold*/);
+	{
+		appr_px = /*(int)*/_gdi_graphics_::calculate_size_symbol(metrix.font_name,metrix.font_size,false/*metrix.italic*/,false/*metrix.bold*/);
+		appr_px = ((int)(appr_px+0.5) + 2*(int)appr_px)/3.;
+	}
 
 	if (appr_px > 0)
 	{

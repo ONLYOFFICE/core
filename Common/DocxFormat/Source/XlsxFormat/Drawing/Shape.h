@@ -129,7 +129,67 @@ namespace OOX
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
 			nullable<OOX::Drawing::CPictureLocking>			m_oSpLocks;//todo CShapeLocking
 		};
+		//--------------------------------------------------------------------------------
+		// 20.5.2.6 cNvGrpSpPr (Non-Visual Group Shape Drawing Properties)
+		//--------------------------------------------------------------------------------	
+		class CNonVisualGroupShapeDrawingProps : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CNonVisualGroupShapeDrawingProps)
+			CNonVisualGroupShapeDrawingProps()
+			{
+			}
+			virtual ~CNonVisualGroupShapeDrawingProps()
+			{
+			}
 
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+
+					sName = oReader.GetName();
+					if ( _T("a:extLst") == sName )
+						m_oExtLst = oReader;
+					//else ( _T("a:grpSpLocks") == sName )
+					//	m_oSpLocks = oReader;
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_NonVisualGroupShapeDrawingProps;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			// Attributes
+			SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_otxBox;
+
+			// Childs
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
+			//nullable<OOX::Drawing::CPictureLocking>			m_oSpLocks;//todo grpSpLocks
+		};
 		//--------------------------------------------------------------------------------
 		// 20.5.2.23 nvSpPr (Non-Visual Properties for a Shape)
 		//--------------------------------------------------------------------------------	
@@ -313,6 +373,70 @@ namespace OOX
 		};
 
 		//--------------------------------------------------------------------------------
+		//		20.5.2.18 grpSpPr (Group Shape Properties)
+		//--------------------------------------------------------------------------------	
+		class CGroupShapeProperties : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CGroupShapeProperties)
+			CGroupShapeProperties()
+			{
+			}
+			virtual ~CGroupShapeProperties()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+
+					//if ( _T("xdr:cNvCxnSpPr") == sName )
+					//	m_oCNvConnSpPr = oReader;
+					//else if ( _T("xdr:cNvPr") == sName )
+					//	m_oCNvPr = oReader;
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_GroupShapeProperties;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			// Childs
+//blipFill (Picture Fill) §20.1.8.14
+//effectDag (Effect Container) §20.1.8.25
+//effectLst (Effect Container) §20.1.8.26
+//extLst (Extension List) §20.1.2.2.15
+//gradFill (Gradient Fill) §20.1.8.33
+//grpFill (Group Fill) §20.1.8.35
+//noFill (No Fill) §20.1.8.44
+//pattFill (Pattern Fill) §20.1.8.47
+		};
+
+		//--------------------------------------------------------------------------------
 		// 20.5.2.19 nvCxnSpPr (Non-Visual Properties for a Connection Shape)
 		//--------------------------------------------------------------------------------	
 		class CConnShapeNonVisual : public WritingElement
@@ -370,7 +494,6 @@ namespace OOX
 			nullable<OOX::Drawing::CNonVisualDrawingProps>	m_oCNvPr;
 		};
 
-
 		//--------------------------------------------------------------------------------
 		//20.5.2.13 cxnSp (Connection Shape)
 		//--------------------------------------------------------------------------------
@@ -426,6 +549,130 @@ namespace OOX
 			nullable<CConnShapeNonVisual>				m_oNvConnSpPr;
 			nullable<OOX::Drawing::CShapeProperties>	m_oSpPr;
 			nullable<OOX::Drawing::CShapeStyle>			m_oShapeStyle;
+		};
+		//--------------------------------------------------------------------------------
+		// 20.5.2.21 nvGrpSpPr (Non-Visual Properties for a Group Shape)
+		//--------------------------------------------------------------------------------	
+		class CGroupShapeNonVisual : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CGroupShapeNonVisual)
+			CGroupShapeNonVisual()
+			{
+			}
+			virtual ~CGroupShapeNonVisual()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+
+					if ( _T("xdr:cNvGrpSpPr") == sName )
+						m_oCNvGroupSpPr = oReader;
+					else if ( _T("xdr:cNvPr") == sName )
+						m_oCNvPr = oReader;
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_GroupShapeNonVisual;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			// Childs
+			nullable<CNonVisualGroupShapeDrawingProps>	m_oCNvGroupSpPr;
+			nullable<OOX::Drawing::CNonVisualDrawingProps>	m_oCNvPr;
+		};
+
+
+		//--------------------------------------------------------------------------------
+		//			20.5.2.17 grpSp (Group Shape)
+		//--------------------------------------------------------------------------------
+		class CGroupShape : public WritingElementWithChilds<WritingElement>
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CGroupShape)
+			CGroupShape()
+			{
+			}
+			virtual ~CGroupShape()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+
+					if ( _T("xdr:nvGrpSpPr") == sName )
+						m_oNvGroupSpPr = oReader;
+					//else if ( _T("xdr:grpSpPr") == sName )
+					//	m_oGroupSpPr = oReader;
+
+					else if ( _T("xdr:sp") == sName )
+						m_arrItems.Add( new OOX::Spreadsheet::CShape( oReader ));
+					else if ( _T("xdr:cxnSp") == sName )
+						m_arrItems.Add( new OOX::Spreadsheet::CConnShape( oReader ));
+					else if ( _T("xdr:graphicFrame") == sName )
+						m_arrItems.Add( new OOX::Spreadsheet::CGraphicFrame( oReader ));
+					else if ( _T("xdr:pic") == sName )
+						m_arrItems.Add( new OOX::Spreadsheet::CPic( oReader ));
+					else if ( _T("xdr:grpSp") == sName )
+						m_arrItems.Add( new OOX::Spreadsheet::CGroupShape( oReader ));		
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_GroupShape;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
+		public:
+			//nullable<OOX::Drawing::CGroupShapeProperties>	m_oGroupSpPr;
+			nullable<CGroupShapeNonVisual>					m_oNvGroupSpPr;
 		};
 	} //Spreadsheet
 } // namespace OOX

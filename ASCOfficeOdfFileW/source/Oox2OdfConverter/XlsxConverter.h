@@ -50,6 +50,7 @@ namespace OOX
 		class CDataBar;
 		class CColorScale;
 		class CIconSet;
+		class CFormulaCF;
 		class CConditionalFormatValueObject;
 		class CAutofilter;
 	}
@@ -166,6 +167,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CColorScale					*oox_cond_colorscale);
 		void convert(OOX::Spreadsheet::CIconSet						*oox_cond_iconset);
 		void convert(OOX::Spreadsheet::CConditionalFormatValueObject*oox_cond_value);
+		void convert(OOX::Spreadsheet::CFormulaCF					*oox_cond_formula);
 
 		void convert(double oox_size,						_CP_OPT(odf::length) & odf_size);
 		void convert_sharing_string(int number);

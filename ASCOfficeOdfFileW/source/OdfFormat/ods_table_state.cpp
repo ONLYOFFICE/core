@@ -772,7 +772,7 @@ void ods_table_state::set_cell_value(std::wstring & value)
 	if (!cell->table_table_cell_attlist_.common_value_and_type_attlist_)
 	{
 		cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
-		//cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::Float);
+		cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::Float);
 		//временно... пока нет определялки типов
 	}
 	cells_.back().empty = false;
@@ -922,7 +922,7 @@ void ods_table_state::start_conditional_format(std::wstring ref)
 	if (cond_format)
 	{
 		formulasconvert::oox2odf_converter converter;
-		std::wstring out = converter.convert(ref);
+		std::wstring out = converter.convert_ref(ref);
 		boost::algorithm::replace_all(out,L"[",L"");
 		boost::algorithm::replace_all(out,L"]",L"");
 		cond_format->calcext_target_range_address_ = out;
@@ -961,7 +961,16 @@ void ods_table_state::start_conditional_rule(int rule_type)
 	case 13: /*notContainsText*/
 	case 15: /*top10*/
 	case 16: /*uniqueValues*/
-		default:	create_element(L"calcext", L"condition",elm,&context_);
+		default:	
+			{
+				create_element(L"calcext", L"condition",elm,&context_);
+				calcext_condition* condition				= dynamic_cast<calcext_condition*>	 (elm.get());
+				calcext_conditional_format* condition_fmt	= dynamic_cast<calcext_conditional_format*>	 (current_level_.back().get());
+				if (condition && condition_fmt)
+				{
+					condition->calcext_condition_attr_.calcext_base_cell_address_=condition_fmt->calcext_target_range_address_;
+				}
+			}
 	}
 
 	current_level_.back()->add_child_element(elm);
@@ -971,6 +980,21 @@ void ods_table_state::start_conditional_rule(int rule_type)
 void ods_table_state::end_conditional_rule()
 {
 	current_level_.pop_back();
+}
+void ods_table_state::set_conditional_formula(std::wstring formula)
+{
+	calcext_condition* condition		 = dynamic_cast<calcext_condition*>	 (current_level_.back().get());
+
+	if (condition)condition->calcext_condition_attr_.calcext_value_= formula;
+}
+void ods_table_state::set_conditional_style_name(std::wstring style_name)
+{
+	calcext_condition*	condition	 = dynamic_cast<calcext_condition*>	 (current_level_.back().get());
+	calcext_date_is*	date_is		 = dynamic_cast<calcext_date_is*>	 (current_level_.back().get());
+
+	if (condition)condition->calcext_condition_attr_.calcext_apply_style_name_= style_ref(style_name);
+	if (date_is) date_is->calcext_date_is_attr_.calcext_style_ = style_ref(style_name);
+
 }
 void ods_table_state::set_conditional_value(int type, std::wstring value )
 {

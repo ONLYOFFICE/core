@@ -514,7 +514,7 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 
 	std::wstring res1 = boost::regex_replace(
         workstr,
-		boost::wregex(L"('.*?')"),
+		boost::wregex(L"('.*?')|(\".*?\")"),
 		&oox2odf_converter::Impl::convert_scobci,boost::match_default | boost::format_all);
 	
 	std::wstring res = boost::regex_replace(

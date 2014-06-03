@@ -14,7 +14,7 @@
 
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkDevice.h"
-#include "third_party/skia/include/core/SkPreConfig.h"
+#include "third_party/skia/include/core/skpreconfig.h"
 
 class SkMatrix;
 class SkMetaData;

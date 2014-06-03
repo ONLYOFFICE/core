@@ -10,7 +10,7 @@
 #ifndef SkTypes_DEFINED
 #define SkTypes_DEFINED
 
-#include "SkPreConfig.h"
+#include "skpreconfig.h"
 #include "SkUserConfig.h"
 #include "SkPostConfig.h"
 

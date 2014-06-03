@@ -140,9 +140,9 @@ class UI_EXPORT ImageSkia {
 
  private:
   friend class test::TestOnThread;
-  FRIEND_TEST_ALL_PREFIXES(ImageSkiaTest, EmptyOnThreadTest);
-  FRIEND_TEST_ALL_PREFIXES(ImageSkiaTest, StaticOnThreadTest);
-  FRIEND_TEST_ALL_PREFIXES(ImageSkiaTest, SourceOnThreadTest);
+  //FRIEND_TEST_ALL_PREFIXES(ImageSkiaTest, EmptyOnThreadTest);
+  //FRIEND_TEST_ALL_PREFIXES(ImageSkiaTest, StaticOnThreadTest);
+  //FRIEND_TEST_ALL_PREFIXES(ImageSkiaTest, SourceOnThreadTest);
 
   // Initialize ImageSkiaStorage with passed in parameters.
   // If the image rep's bitmap is empty, ImageStorage is set to NULL.

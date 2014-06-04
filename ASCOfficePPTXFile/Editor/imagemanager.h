@@ -125,7 +125,7 @@ namespace NSShapeImageGen
 		AVSINLINE void NewDocument()
 		{
 			m_strDstMedia	= _T("");
-			m_lMaxSizeImage = 800;
+			m_lMaxSizeImage = 1200;
 			m_lNextIDImage	= 0;
 
 			m_mapImageData.RemoveAll();
@@ -458,8 +458,52 @@ namespace NSShapeImageGen
 			SysFreeString(bsDst);
 		}
 #else
+		bool CheckImageSimpleCopy(CString& strFileSrc, CImageInfo& oInfo)
+		{
+			CFile oFile;
+			HRESULT hr = oFile.OpenFile(strFileSrc);
+			if (hr != S_OK)
+				return false;
+
+			if (20 > oFile.GetFileSize())
+				return false;
+
+			ULONG64 max_size = 3 * 1024 * 1024; // 4 Mb
+			if (max_size < oFile.GetFileSize())
+				return false;
+
+			BYTE pBuffer[20];
+			oFile.ReadFile(pBuffer, 20);
+
+			// jpg
+			if ( (0xFF == pBuffer[0]) && (0xD8 == pBuffer[1]) && (0xFF == pBuffer[2]) )
+			{
+				CString strSaveItem = _T("");
+				strSaveItem.Format(_T("\\image%d.jpg"), oInfo.m_lID);
+				CDirectory::CopyFile(strFileSrc, m_strDstMedia + strSaveItem , NULL, NULL);
+				oInfo.m_eType = itJPG;
+				return true;
+			}
+
+			// png
+			if ( (0x89 == pBuffer[0]) && (0x50 == pBuffer[1]) && (0x4E == pBuffer[2]) && (0x47 == pBuffer[3])
+				&& (0x0D == pBuffer[4]) && (0x0A == pBuffer[5]) && (0x1A == pBuffer[6]) && (0x0A == pBuffer[7])
+				&& (0x00 == pBuffer[8]) && (0x00 == pBuffer[9]) && (0x00 == pBuffer[10]) && (0x0D == pBuffer[11])
+				&& (0x49 == pBuffer[12]) && (0x48 == pBuffer[13]) && (0x44 == pBuffer[14]) && (0x52 == pBuffer[15]))
+			{
+				CString strSaveItem = _T("");
+				strSaveItem.Format(_T("\\image%d.png"), oInfo.m_lID);
+				CDirectory::CopyFile(strFileSrc, m_strDstMedia + strSaveItem , NULL, NULL);
+				oInfo.m_eType = itPNG;
+				return true;
+			}
+			return false;
+		}
 		void SaveImage(CString& strFileSrc, CImageInfo& oInfo, LONG __width, LONG __height)
 		{
+			if (CheckImageSimpleCopy(strFileSrc, oInfo))
+				return;
+
 			CString strLoadXml = _T("<transforms><ImageFile-LoadImage sourcepath=\"") + strFileSrc + _T("\"/></transforms>");
 
 			ImageStudio::IImageTransforms* pTransform = NULL;

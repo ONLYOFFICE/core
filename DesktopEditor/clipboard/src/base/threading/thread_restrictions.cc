@@ -35,12 +35,12 @@ bool ThreadRestrictions::SetIOAllowed(bool allowed) {
 // static
 void ThreadRestrictions::AssertIOAllowed() {
   if (g_io_disallowed.Get().Get()) {
-    LOG(FATAL) <<
-        "Function marked as IO-only was called from a thread that "
-        "disallows IO!  If this thread really should be allowed to "
-        "make IO calls, adjust the call to "
-        "base::ThreadRestrictions::SetIOAllowed() in this thread's "
-        "startup.";
+    //LOG(FATAL) <<
+    //    "Function marked as IO-only was called from a thread that "
+    //    "disallows IO!  If this thread really should be allowed to "
+    //    "make IO calls, adjust the call to "
+    //    "base::ThreadRestrictions::SetIOAllowed() in this thread's "
+    //    "startup.";
   }
 }
 
@@ -54,10 +54,10 @@ bool ThreadRestrictions::SetSingletonAllowed(bool allowed) {
 // static
 void ThreadRestrictions::AssertSingletonAllowed() {
   if (g_singleton_disallowed.Get().Get()) {
-    LOG(FATAL) << "LazyInstance/Singleton is not allowed to be used on this "
-               << "thread.  Most likely it's because this thread is not "
-               << "joinable, so AtExitManager may have deleted the object "
-               << "on shutdown, leading to a potential shutdown crash.";
+    //LOG(FATAL) << "LazyInstance/Singleton is not allowed to be used on this "
+    //           << "thread.  Most likely it's because this thread is not "
+    //           << "joinable, so AtExitManager may have deleted the object "
+    //           << "on shutdown, leading to a potential shutdown crash.";
   }
 }
 
@@ -69,8 +69,8 @@ void ThreadRestrictions::DisallowWaiting() {
 // static
 void ThreadRestrictions::AssertWaitAllowed() {
   if (g_wait_disallowed.Get().Get()) {
-    LOG(FATAL) << "Waiting is not allowed to be used on this thread to prevent"
-               << "jank and deadlock.";
+    //LOG(FATAL) << "Waiting is not allowed to be used on this thread to prevent"
+    //           << "jank and deadlock.";
   }
 }
 

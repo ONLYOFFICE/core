@@ -314,6 +314,7 @@ void Clipboard::WriteWebSmartPaste() {
 void Clipboard::WriteBitmap(const char* pixel_data, const char* size_data) {
   const gfx::Size* size = reinterpret_cast<const gfx::Size*>(size_data);
 
+  /*
   // Adopt the pixels into a SkBitmap. Note that the pixel order in memory is
   // actually BGRA.
   SkBitmap bitmap;
@@ -325,6 +326,7 @@ void Clipboard::WriteBitmap(const char* pixel_data, const char* size_data) {
   // Note that this contrasts with the vast majority of entries in our target
   // map, which directly store the data and its length.
   InsertMapping(kMimeTypeBitmap, reinterpret_cast<char*>(pixbuf), 0);
+  */
 }
 
 void Clipboard::WriteBookmark(const char* title_data, size_t title_len,

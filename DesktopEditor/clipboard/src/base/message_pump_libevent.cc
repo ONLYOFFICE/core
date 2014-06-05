@@ -80,8 +80,8 @@ bool MessagePumpLibevent::FileDescriptorWatcher::StopWatchingFileDescriptor() {
 }
 
 void MessagePumpLibevent::FileDescriptorWatcher::Init(event *e) {
-  DCHECK(e);
-  DCHECK(!event_);
+  //DCHECK(e);
+  //DCHECK(!event_);
 
   event_ = e;
 }
@@ -105,7 +105,7 @@ void MessagePumpLibevent::FileDescriptorWatcher::OnFileCanReadWithoutBlocking(
 
 void MessagePumpLibevent::FileDescriptorWatcher::OnFileCanWriteWithoutBlocking(
     int fd, MessagePumpLibevent* pump) {
-  DCHECK(watcher_);
+  //DCHECK(watcher_);
   pump->WillProcessIOEvent();
   watcher_->OnFileCanWriteWithoutBlocking(fd);
   pump->DidProcessIOEvent();
@@ -119,21 +119,27 @@ MessagePumpLibevent::MessagePumpLibevent()
       wakeup_pipe_in_(-1),
       wakeup_pipe_out_(-1) {
   if (!Init())
-     NOTREACHED();
+  {
+     //NOTREACHED();
+  }
 }
 
 MessagePumpLibevent::~MessagePumpLibevent() {
-  DCHECK(wakeup_event_);
-  DCHECK(event_base_);
+  //DCHECK(wakeup_event_);
+  //DCHECK(event_base_);
   event_del(wakeup_event_);
   delete wakeup_event_;
   if (wakeup_pipe_in_ >= 0) {
     if (HANDLE_EINTR(close(wakeup_pipe_in_)) < 0)
-      DPLOG(ERROR) << "close";
+    {
+      //DPLOG(ERROR) << "close";
+    }
   }
   if (wakeup_pipe_out_ >= 0) {
     if (HANDLE_EINTR(close(wakeup_pipe_out_)) < 0)
-      DPLOG(ERROR) << "close";
+    {
+      //DPLOG(ERROR) << "close";
+    }
   }
   event_base_free(event_base_);
 }
@@ -143,13 +149,13 @@ bool MessagePumpLibevent::WatchFileDescriptor(int fd,
                                               int mode,
                                               FileDescriptorWatcher *controller,
                                               Watcher *delegate) {
-  DCHECK_GE(fd, 0);
-  DCHECK(controller);
-  DCHECK(delegate);
-  DCHECK(mode == WATCH_READ || mode == WATCH_WRITE || mode == WATCH_READ_WRITE);
+  //DCHECK_GE(fd, 0);
+  //DCHECK(controller);
+  //DCHECK(delegate);
+  //DCHECK(mode == WATCH_READ || mode == WATCH_WRITE || mode == WATCH_READ_WRITE);
   // WatchFileDescriptor should be called on the pump thread. It is not
   // threadsafe, and your watcher may never be registered.
-  DCHECK(watch_file_descriptor_caller_checker_.CalledOnValidThread());
+  //DCHECK(watch_file_descriptor_caller_checker_.CalledOnValidThread());
 
   int event_mask = persistent ? EV_PERSIST : 0;
   if (mode & WATCH_READ) {
@@ -177,7 +183,7 @@ bool MessagePumpLibevent::WatchFileDescriptor(int fd,
     // It's illegal to use this function to listen on 2 separate fds with the
     // same |controller|.
     if (EVENT_FD(evt.get()) != fd) {
-      NOTREACHED() << "FDs don't match" << EVENT_FD(evt.get()) << "!=" << fd;
+      //NOTREACHED() << "FDs don't match" << EVENT_FD(evt.get()) << "!=" << fd;
       return false;
     }
   }
@@ -220,7 +226,7 @@ static void timer_callback(int fd, short events, void *context)
 
 // Reentrant!
 void MessagePumpLibevent::Run(Delegate* delegate) {
-  DCHECK(keep_running_) << "Quit must have been called outside of Run!";
+  //DCHECK(keep_running_) << "Quit must have been called outside of Run!";
   base::AutoReset<bool> auto_reset_in_run(&in_run_, true);
 
   // event_base_loopexit() + EVLOOP_ONCE is leaky, see http://crbug.com/25641.
@@ -283,7 +289,7 @@ void MessagePumpLibevent::Run(Delegate* delegate) {
 }
 
 void MessagePumpLibevent::Quit() {
-  DCHECK(in_run_);
+  //DCHECK(in_run_);
   // Tell both libevent and Run that they should break out of their loops.
   keep_running_ = false;
   ScheduleWork();
@@ -293,8 +299,8 @@ void MessagePumpLibevent::ScheduleWork() {
   // Tell libevent (in a threadsafe way) that it should break out of its loop.
   char buf = 0;
   int nwrite = HANDLE_EINTR(write(wakeup_pipe_in_, &buf, 1));
-  DCHECK(nwrite == 1 || errno == EAGAIN)
-      << "[nwrite:" << nwrite << "] [errno:" << errno << "]";
+  //DCHECK(nwrite == 1 || errno == EAGAIN)
+  //    << "[nwrite:" << nwrite << "] [errno:" << errno << "]";
 }
 
 void MessagePumpLibevent::ScheduleDelayedWork(
@@ -316,15 +322,15 @@ void MessagePumpLibevent::DidProcessIOEvent() {
 bool MessagePumpLibevent::Init() {
   int fds[2];
   if (pipe(fds)) {
-    DLOG(ERROR) << "pipe() failed, errno: " << errno;
+    //DLOG(ERROR) << "pipe() failed, errno: " << errno;
     return false;
   }
   if (SetNonBlocking(fds[0])) {
-    DLOG(ERROR) << "SetNonBlocking for pipe fd[0] failed, errno: " << errno;
+    //DLOG(ERROR) << "SetNonBlocking for pipe fd[0] failed, errno: " << errno;
     return false;
   }
   if (SetNonBlocking(fds[1])) {
-    DLOG(ERROR) << "SetNonBlocking for pipe fd[1] failed, errno: " << errno;
+    //DLOG(ERROR) << "SetNonBlocking for pipe fd[1] failed, errno: " << errno;
     return false;
   }
   wakeup_pipe_out_ = fds[0];
@@ -345,7 +351,7 @@ void MessagePumpLibevent::OnLibeventNotification(int fd, short flags,
                                                  void* context) {
   base::WeakPtr<FileDescriptorWatcher> controller =
       static_cast<FileDescriptorWatcher*>(context)->weak_factory_.GetWeakPtr();
-  DCHECK(controller.get());
+  //DCHECK(controller.get());
 
   MessagePumpLibevent* pump = controller->pump();
   pump->processed_io_events_ = true;
@@ -365,12 +371,12 @@ void MessagePumpLibevent::OnLibeventNotification(int fd, short flags,
 void MessagePumpLibevent::OnWakeup(int socket, short flags, void* context) {
   base::MessagePumpLibevent* that =
               static_cast<base::MessagePumpLibevent*>(context);
-  DCHECK(that->wakeup_pipe_out_ == socket);
+  //DCHECK(that->wakeup_pipe_out_ == socket);
 
   // Remove and discard the wakeup byte.
   char buf;
   int nread = HANDLE_EINTR(read(socket, &buf, 1));
-  DCHECK_EQ(nread, 1);
+  //DCHECK_EQ(nread, 1);
   that->processed_io_events_ = true;
   // Tell libevent to break out of inner loop.
   event_base_loopbreak(that->event_base_);

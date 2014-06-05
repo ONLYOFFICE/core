@@ -143,7 +143,7 @@ MessagePumpGlib::MessagePumpGlib()
   // Create our wakeup pipe, which is used to flag when work was scheduled.
   int fds[2];
   int ret = pipe(fds);
-  DCHECK_EQ(ret, 0);
+  //DCHECK_EQ(ret, 0);
   (void)ret;  // Prevent warning in release mode.
 
   wakeup_pipe_read_  = fds[0];
@@ -167,9 +167,9 @@ void MessagePumpGlib::RunWithDispatcher(Delegate* delegate,
   // Make sure we only run this on one thread. X/GTK only has one message pump
   // so we can only have one UI loop per process.
   static base::PlatformThreadId thread_id = base::PlatformThread::CurrentId();
-  DCHECK(thread_id == base::PlatformThread::CurrentId()) <<
-      "Running MessagePumpGlib on two different threads; "
-      "this is unsupported by GLib!";
+  //DCHECK(thread_id == base::PlatformThread::CurrentId()) <<
+  //    "Running MessagePumpGlib on two different threads; "
+  //    "this is unsupported by GLib!";
 #endif
 
   RunState state;
@@ -246,10 +246,10 @@ bool MessagePumpGlib::HandleCheck() {
     char msg[2];
     const int num_bytes = HANDLE_EINTR(read(wakeup_pipe_read_, msg, 2));
     if (num_bytes < 1) {
-      NOTREACHED() << "Error reading from the wakeup pipe.";
+      //NOTREACHED() << "Error reading from the wakeup pipe.";
     }
-    DCHECK((num_bytes == 1 && msg[0] == '!') ||
-           (num_bytes == 2 && msg[0] == '!' && msg[1] == '!'));
+    //DCHECK((num_bytes == 1 && msg[0] == '!') ||
+    //       (num_bytes == 2 && msg[0] == '!' && msg[1] == '!'));
     // Since we ate the message, we need to record that we have more work,
     // because HandleCheck() may be called without HandleDispatch being called
     // afterwards.
@@ -300,7 +300,7 @@ void MessagePumpGlib::Quit() {
   if (state_) {
     state_->should_quit = true;
   } else {
-    NOTREACHED() << "Quit called outside Run!";
+    //NOTREACHED() << "Quit called outside Run!";
   }
 }
 
@@ -310,7 +310,7 @@ void MessagePumpGlib::ScheduleWork() {
   // we are sleeping in a poll that we will wake up.
   char msg = '!';
   if (HANDLE_EINTR(write(wakeup_pipe_write_, &msg, 1)) != 1) {
-    NOTREACHED() << "Could not write to the UI message loop wakeup pipe!";
+    //NOTREACHED() << "Could not write to the UI message loop wakeup pipe!";
   }
 }
 

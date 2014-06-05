@@ -102,19 +102,19 @@ int DefaultX11ErrorHandler(Display* d, XErrorEvent* e) {
     base::MessageLoop::current()->PostTask(
         FROM_HERE, base::Bind(&LogErrorEventDescription, d, *e));
   } else {
-    LOG(ERROR)
-        << "X error received: "
-        << "serial " << e->serial << ", "
-        << "error_code " << static_cast<int>(e->error_code) << ", "
-        << "request_code " << static_cast<int>(e->request_code) << ", "
-        << "minor_code " << static_cast<int>(e->minor_code);
+    //LOG(ERROR)
+    //    << "X error received: "
+    //   << "serial " << e->serial << ", "
+    //    << "error_code " << static_cast<int>(e->error_code) << ", "
+    //    << "request_code " << static_cast<int>(e->request_code) << ", "
+    //    << "minor_code " << static_cast<int>(e->minor_code);
   }
   return 0;
 }
 
 int DefaultX11IOErrorHandler(Display* d) {
   // If there's an IO error it likely means the X server has gone away
-  LOG(ERROR) << "X IO error received (X server probably went away)";
+  //LOG(ERROR) << "X IO error received (X server probably went away)";
   _exit(1);
 }
 
@@ -375,8 +375,8 @@ bool GetEDIDProperty(XID output, unsigned long* nitems, unsigned char** prop) {
                        nitems,
                        &bytes_after,
                        prop);
-  DCHECK_EQ(XA_INTEGER, actual_type);
-  DCHECK_EQ(8, actual_format);
+  //DCHECK_EQ(XA_INTEGER, actual_type);
+  //DCHECK_EQ(8, actual_format);
   return true;
 }
 
@@ -413,10 +413,10 @@ static SharedMemorySupport DoQuerySharedMemorySupport(Display* dpy) {
   // Next we probe to see if shared memory will really work
   int shmkey = shmget(IPC_PRIVATE, 1, 0600);
   if (shmkey == -1) {
-    LOG(WARNING) << "Failed to get shared memory segment.";
+    //LOG(WARNING) << "Failed to get shared memory segment.";
     return SHARED_MEMORY_NONE;
   } else {
-    VLOG(1) << "Got shared memory segment " << shmkey;
+    //VLOG(1) << "Got shared memory segment " << shmkey;
   }
 
   void* address = shmat(shmkey, NULL, 0);
@@ -430,19 +430,23 @@ static SharedMemorySupport DoQuerySharedMemorySupport(Display* dpy) {
   gdk_error_trap_push();
   bool result = XShmAttach(dpy, &shminfo);
   if (result)
-    VLOG(1) << "X got shared memory segment " << shmkey;
+  {
+    //VLOG(1) << "X got shared memory segment " << shmkey;
+  }
   else
-    LOG(WARNING) << "X failed to attach to shared memory segment " << shmkey;
+  {
+    //LOG(WARNING) << "X failed to attach to shared memory segment " << shmkey;
+  }
   XSync(dpy, False);
   if (gdk_error_trap_pop())
     result = false;
   shmdt(address);
   if (!result) {
-    LOG(WARNING) << "X failed to attach to shared memory segment " << shmkey;
+    //LOG(WARNING) << "X failed to attach to shared memory segment " << shmkey;
     return SHARED_MEMORY_NONE;
   }
 
-  VLOG(1) << "X attached to shared memory segment " << shmkey;
+  //VLOG(1) << "X attached to shared memory segment " << shmkey;
 
   XShmDetach(dpy, &shminfo);
   return pixmaps_supported ? SHARED_MEMORY_PIXMAP : SHARED_MEMORY_PUTIMAGE;
@@ -723,7 +727,7 @@ void ClearX11DefaultRootWindow() {
   XID root_window = GetX11RootWindow();
   gfx::Rect root_bounds;
   if (!GetWindowRect(root_window, &root_bounds)) {
-    LOG(ERROR) << "Failed to get the bounds of the X11 root window";
+    //LOG(ERROR) << "Failed to get the bounds of the X11 root window";
     return;
   }
 
@@ -955,7 +959,7 @@ bool SetIntArrayProperty(XID window,
                          const std::string& name,
                          const std::string& type,
                          const std::vector<int>& value) {
-  DCHECK(!value.empty());
+  //DCHECK(!value.empty());
   Atom name_atom = GetAtom(name.c_str());
   Atom type_atom = GetAtom(type.c_str());
 
@@ -1132,7 +1136,7 @@ void RestackWindow(XID window, XID sibling, bool above) {
 }
 
 XSharedMemoryId AttachSharedMemory(Display* display, int shared_memory_key) {
-  DCHECK(QuerySharedMemorySupport(display));
+  //DCHECK(QuerySharedMemorySupport(display));
 
   XShmSegmentInfo shminfo;
   memset(&shminfo, 0, sizeof(shminfo));
@@ -1142,25 +1146,27 @@ XSharedMemoryId AttachSharedMemory(Display* display, int shared_memory_key) {
   // which case we've already succeeded in having the X server attach to one of
   // our shared memory segments.
   if (!XShmAttach(display, &shminfo)) {
-    LOG(WARNING) << "X failed to attach to shared memory segment "
-                 << shminfo.shmid;
-    NOTREACHED();
+    //LOG(WARNING) << "X failed to attach to shared memory segment "
+    //             << shminfo.shmid;
+    //NOTREACHED();
   } else {
-    VLOG(1) << "X attached to shared memory segment " << shminfo.shmid;
+    //VLOG(1) << "X attached to shared memory segment " << shminfo.shmid;
   }
 
   return shminfo.shmseg;
 }
 
 void DetachSharedMemory(Display* display, XSharedMemoryId shmseg) {
-  DCHECK(QuerySharedMemorySupport(display));
+  //DCHECK(QuerySharedMemorySupport(display));
 
   XShmSegmentInfo shminfo;
   memset(&shminfo, 0, sizeof(shminfo));
   shminfo.shmseg = shmseg;
 
   if (!XShmDetach(display, &shminfo))
-    NOTREACHED();
+  {
+    //NOTREACHED();
+  }
 }
 
 XID CreatePictureFromSkiaPixmap(Display* display, XID pixmap) {
@@ -1283,9 +1289,9 @@ void PutARGBImage(Display* display,
               copy_width, copy_height);
     free(orig_bitmap16);
   } else {
-    LOG(FATAL) << "Sorry, we don't support your visual depth without "
-                  "Xrender support (depth:" << depth
-               << " bpp:" << pixmap_bpp << ")";
+    //LOG(FATAL) << "Sorry, we don't support your visual depth without "
+    //              "Xrender support (depth:" << depth
+    //           << " bpp:" << pixmap_bpp << ")";
   }
 }
 
@@ -1486,7 +1492,7 @@ bool ParseOutputOverscanFlag(const unsigned char* prop,
 }
 
 bool GetWindowManagerName(std::string* wm_name) {
-  DCHECK(wm_name);
+  //DCHECK(wm_name);
   int wm_window = 0;
   if (!GetIntProperty(GetX11RootWindow(),
                       "_NET_SUPPORTING_WM_CHECK",
@@ -1628,11 +1634,11 @@ void InitXKeyEventForTesting(EventType type,
                              KeyboardCode key_code,
                              int flags,
                              XEvent* event) {
-  CHECK(event);
+  //CHECK(event);
   Display* display = GetXDisplay();
   XKeyEvent key_event;
   key_event.type = XKeyEventType(type);
-  CHECK_NE(0, key_event.type);
+  //CHECK_NE(0, key_event.type);
   key_event.serial = 0;
   key_event.send_event = 0;
   key_event.display = display;
@@ -1719,14 +1725,14 @@ XRenderPictFormat* GetRenderARGB32Format(Display* dpy) {
     // Not all X servers support xRGB32 formats. However, the XRENDER spec says
     // that they must support an ARGB32 format, so we can always return that.
     pictformat = XRenderFindStandardFormat(dpy, PictStandardARGB32);
-    CHECK(pictformat) << "XRENDER ARGB32 not supported.";
+    //CHECK(pictformat) << "XRENDER ARGB32 not supported.";
   }
 
   return pictformat;
 }
 
 XRenderPictFormat* GetRenderVisualFormat(Display* dpy, Visual* visual) {
-  DCHECK(QueryRenderSupport(dpy));
+  //DCHECK(QueryRenderSupport(dpy));
 
   CachedPictFormats* formats = get_cached_pict_formats();
 
@@ -1738,7 +1744,7 @@ XRenderPictFormat* GetRenderVisualFormat(Display* dpy, Visual* visual) {
 
   // Not cached, look up the value.
   XRenderPictFormat* pictformat = XRenderFindVisualFormat(dpy, visual);
-  CHECK(pictformat) << "XRENDER does not support default visual";
+  //CHECK(pictformat) << "XRENDER does not support default visual";
 
   // And store it in the cache.
   CachedPictFormat cached_value;
@@ -1756,7 +1762,7 @@ XRenderPictFormat* GetRenderVisualFormat(Display* dpy, Visual* visual) {
     // If we get here it's not fatal, we just need to make sure we aren't
     // always blowing away the cache. If we are, then we should figure out why
     // and make it bigger.
-    NOTREACHED();
+    //NOTREACHED();
   }
 
   return pictformat;
@@ -1801,14 +1807,14 @@ void LogErrorEventDescription(Display* dpy,
     XFreeExtensionList(ext_list);
   }
 
-  LOG(ERROR)
-      << "X error received: "
-      << "serial " << error_event.serial << ", "
-      << "error_code " << static_cast<int>(error_event.error_code)
-      << " (" << error_str << "), "
-      << "request_code " << static_cast<int>(error_event.request_code) << ", "
-      << "minor_code " << static_cast<int>(error_event.minor_code)
-      << " (" << request_str << ")";
+  //LOG(ERROR)
+  //    << "X error received: "
+  //    << "serial " << error_event.serial << ", "
+  //    << "error_code " << static_cast<int>(error_event.error_code)
+  //    << " (" << error_str << "), "
+  //    << "request_code " << static_cast<int>(error_event.request_code) << ", "
+  //    << "minor_code " << static_cast<int>(error_event.minor_code)
+  //    << " (" << request_str << ")";
 }
 
 // ----------------------------------------------------------------------------

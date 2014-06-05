@@ -375,7 +375,7 @@ class PassedWrapper {
       : is_valid_(other.is_valid_), scoper_(other.scoper_.Pass()) {
   }
   T Pass() const {
-    CHECK(is_valid_);
+    //CHECK(is_valid_);
     is_valid_ = false;
     return scoper_.Pass();
   }

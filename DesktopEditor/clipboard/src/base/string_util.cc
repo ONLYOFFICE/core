@@ -402,8 +402,6 @@ bool ContainsOnlyWhitespaceASCII(const std::string& str) {
 }
 
 bool ContainsOnlyWhitespace(const string16& str) {
-	std::wstring str1;
-	str1.find_first_not_of (kWhitespaceUTF16);
   return str.find_first_not_of(kWhitespaceUTF16) == string16::npos;
 }
 

@@ -18,12 +18,12 @@
 */
 
 static bool SkStrStartsWith(const char string[], const char prefixStr[]) {
-    SkASSERT(string);
-    SkASSERT(prefixStr);
+    //SkASSERT(string);
+    //SkASSERT(prefixStr);
     return !strncmp(string, prefixStr, strlen(prefixStr));
 }
 static bool SkStrStartsWith(const char string[], const char prefixChar) {
-    SkASSERT(string);
+    //SkASSERT(string);
     return (prefixChar == *string);
 }
 
@@ -39,12 +39,12 @@ static int SkStrFind(const char string[], const char substring[]) {
 }
 
 static bool SkStrContains(const char string[], const char substring[]) {
-    SkASSERT(string);
-    SkASSERT(substring);
+    //SkASSERT(string);
+    //SkASSERT(substring);
     return (-1 != SkStrFind(string, substring));
 }
 static bool SkStrContains(const char string[], const char subchar) {
-    SkASSERT(string);
+    //SkASSERT(string);
     char tmp[2];
     tmp[0] = subchar;
     tmp[1] = '\0';

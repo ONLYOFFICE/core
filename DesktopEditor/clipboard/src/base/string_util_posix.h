@@ -44,7 +44,7 @@ inline int strncmp16(const char16* s1, const char16* s2, size_t count) {
 
 inline int vswprintf(wchar_t* buffer, size_t size,
                      const wchar_t* format, va_list arguments) {
-  DCHECK(IsWprintfFormatPortable(format));
+  //DCHECK(IsWprintfFormatPortable(format));
   return ::vswprintf(buffer, size, format, arguments);
 }
 

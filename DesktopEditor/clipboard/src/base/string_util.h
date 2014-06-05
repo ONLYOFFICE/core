@@ -479,7 +479,7 @@ BASE_EXPORT void ReplaceSubstringsAfterOffset(
 template <class string_type>
 inline typename string_type::value_type* WriteInto(string_type* str,
                                                    size_t length_with_null) {
-  DCHECK_GT(length_with_null, 1u);
+  //DCHECK_GT(length_with_null, 1u);
   str->reserve(length_with_null);
   str->resize(length_with_null - 1);
   return &((*str)[0]);

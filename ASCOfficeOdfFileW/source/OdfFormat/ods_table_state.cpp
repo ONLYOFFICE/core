@@ -209,7 +209,7 @@ void ods_table_state::set_column_default_cell_style(std::wstring & style_name)
 	column->table_table_column_attlist_.table_default_cell_style_name_ = style_ref(style_name);
 }
 
-void ods_table_state::set_column_width(double width)//cm, pt ???
+void ods_table_state::set_column_width(double width)//pt
 {
 	odf::style* style = dynamic_cast<odf::style*>(columns_.back().style_elm.get());
 	if (!style)return;		

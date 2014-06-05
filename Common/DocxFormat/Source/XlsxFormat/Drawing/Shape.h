@@ -373,70 +373,6 @@ namespace OOX
 		};
 
 		//--------------------------------------------------------------------------------
-		//		20.5.2.18 grpSpPr (Group Shape Properties)
-		//--------------------------------------------------------------------------------	
-		class CGroupShapeProperties : public WritingElement
-		{
-		public:
-			WritingElementSpreadsheet_AdditionConstructors(CGroupShapeProperties)
-			CGroupShapeProperties()
-			{
-			}
-			virtual ~CGroupShapeProperties()
-			{
-			}
-
-		public:
-			virtual CString      toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
-			{
-			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					CWCharWrapper sName = oReader.GetName();
-
-					//if ( _T("xdr:cNvCxnSpPr") == sName )
-					//	m_oCNvConnSpPr = oReader;
-					//else if ( _T("xdr:cNvPr") == sName )
-					//	m_oCNvPr = oReader;
-				}
-			}
-
-			virtual EElementType getType () const
-			{
-				return et_GroupShapeProperties;
-			}
-
-		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-		public:
-			// Childs
-//blipFill (Picture Fill) §20.1.8.14
-//effectDag (Effect Container) §20.1.8.25
-//effectLst (Effect Container) §20.1.8.26
-//extLst (Extension List) §20.1.2.2.15
-//gradFill (Gradient Fill) §20.1.8.33
-//grpFill (Group Fill) §20.1.8.35
-//noFill (No Fill) §20.1.8.44
-//pattFill (Pattern Fill) §20.1.8.47
-		};
-
-		//--------------------------------------------------------------------------------
 		// 20.5.2.19 nvCxnSpPr (Non-Visual Properties for a Connection Shape)
 		//--------------------------------------------------------------------------------	
 		class CConnShapeNonVisual : public WritingElement
@@ -645,8 +581,8 @@ namespace OOX
 
 					if ( _T("xdr:nvGrpSpPr") == sName )
 						m_oNvGroupSpPr = oReader;
-					//else if ( _T("xdr:grpSpPr") == sName )
-					//	m_oGroupSpPr = oReader;
+					else if ( _T("xdr:grpSpPr") == sName )
+						m_oGroupSpPr = oReader;
 
 					else if ( _T("xdr:sp") == sName )
 						m_arrItems.Add( new OOX::Spreadsheet::CShape( oReader ));
@@ -671,7 +607,7 @@ namespace OOX
 			{
 			}
 		public:
-			//nullable<OOX::Drawing::CGroupShapeProperties>	m_oGroupSpPr;
+			nullable<OOX::Drawing::CGroupShapeProperties>	m_oGroupSpPr;
 			nullable<CGroupShapeNonVisual>					m_oNvGroupSpPr;
 		};
 	} //Spreadsheet

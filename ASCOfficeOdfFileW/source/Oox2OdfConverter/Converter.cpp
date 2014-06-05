@@ -113,7 +113,36 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 		}
 	}
 }
+void OoxConverter::convert(OOX::Drawing::CGroupShapeProperties *   oox_group_spPr)
+{
+	if (!oox_group_spPr) return;
+	
+	if (oox_group_spPr->m_oXfrm.IsInit())	//CTransform2D
+	{
+		if (oox_group_spPr->m_oXfrm->m_oChOff.IsInit() && oox_group_spPr->m_oXfrm->m_oOff.IsInit())
+		{
+			double x =oox_group_spPr->m_oXfrm->m_oOff->m_oX.GetValue()/ oox_group_spPr->m_oXfrm->m_oChOff->m_oX.GetValue();
+			double y =oox_group_spPr->m_oXfrm->m_oOff->m_oY.GetValue()/ oox_group_spPr->m_oXfrm->m_oChOff->m_oY.GetValue();
 
+			//odf_context()->drawing_context()->set_group_position_delata(x, y);
+		}
+		if (oox_group_spPr->m_oXfrm->m_oExt.IsInit() && oox_group_spPr->m_oXfrm->m_oChExt.IsInit())
+		{
+			double x =oox_group_spPr->m_oXfrm->m_oExt->m_oCx.GetValue()/ oox_group_spPr->m_oXfrm->m_oChExt->m_oCx.GetValue();
+			double y =oox_group_spPr->m_oXfrm->m_oExt->m_oCy.GetValue()/ oox_group_spPr->m_oXfrm->m_oChExt->m_oCy.GetValue();
+
+			//odf_context()->drawing_context()->set_group_size_koeff(x, y);					
+		}
+		//???
+		//if (oox_group_spPr->m_oXfrm->m_oFlipH.GetValue() == SimpleTypes::onoffTrue)
+		//	odf_context()->drawing_context()->set_group_flip_H(true);
+		//if (oox_group_spPr->m_oXfrm->m_oFlipV.GetValue() == SimpleTypes::onoffTrue)
+		//	odf_context()->drawing_context()->set_group_flip_V(true);
+		if (oox_group_spPr->m_oXfrm->m_oRot.GetValue() > 0)
+			odf_context()->drawing_context()->set_group_rotate(oox_group_spPr->m_oXfrm->m_oRot.GetValue());
+	}
+
+}
 void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr)
 {
 	if (!oox_spPr) return;
@@ -156,16 +185,16 @@ void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr)
 
 	if (oox_spPr->m_oXfrm.IsInit())	//CTransform2D
 	{
-		//if (oox_spPr->m_oXfrm->m_oOff.IsInit())
-		//{
-		//	odf_context()->drawing_context()->set_position(oox_spPr->m_oXfrm->m_oOff->m_oX.GetValue(),
-		//													oox_spPr->m_oXfrm->m_oOff->m_oY.GetValue());
-		//}
-		//if (oox_spPr->m_oXfrm->m_oExt.IsInit())
-		//{
-		//	odf_context()->drawing_context()->set_size(	oox_spPr->m_oXfrm->m_oExt->m_oCx.ToPoints(),
-		//												oox_spPr->m_oXfrm->m_oExt->m_oCy.ToPoints());					
-		//}
+		if (oox_spPr->m_oXfrm->m_oOff.IsInit())
+		{
+			odf_context()->drawing_context()->set_position(oox_spPr->m_oXfrm->m_oOff->m_oX.GetValue(),
+															oox_spPr->m_oXfrm->m_oOff->m_oY.GetValue());
+		}
+		if (oox_spPr->m_oXfrm->m_oExt.IsInit())
+		{
+			odf_context()->drawing_context()->set_size(	oox_spPr->m_oXfrm->m_oExt->m_oCx.ToPoints(),
+														oox_spPr->m_oXfrm->m_oExt->m_oCy.ToPoints());					
+		}
 		if (oox_spPr->m_oXfrm->m_oFlipH.GetValue() == SimpleTypes::onoffTrue)
 			odf_context()->drawing_context()->set_flip_H(true);
 		if (oox_spPr->m_oXfrm->m_oFlipV.GetValue() == SimpleTypes::onoffTrue)

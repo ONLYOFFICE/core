@@ -26,14 +26,27 @@ public:
 	odf_drawing_context(odf_conversion_context *odf_context);
     ~odf_drawing_context();
 
+	void set_drawings_rect(double x_pt, double y_pt, double width_pt, double height_pt);
+	void clear();
 	void set_styles_context(odf_style_context*  styles_context);//для embedded 
 	
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	office_element_ptr & get_current_style_element() ;
 	office_element_ptr & get_current_element();
 
 	void start_drawing();
 	void end_drawing();
 	
+	void start_group(std::wstring name, int id);
+		void set_group_size( double width_pt, double height_pt);
+		void set_group_position(double x_pt, double y_pt);
+		
+		void set_group_flip_H(bool bVal);
+		void set_group_flip_V(bool bVal);
+
+		void set_group_rotate(int iVal);
+	void end_group();
+
 	void start_shape(int type);
 	void end_shape();
 
@@ -60,7 +73,6 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-	void set_rect(double x_pt, double y_pt, double width_pt, double height_pt);
 	void set_size( double width_pt, double height_pt);
 	void set_position(double x_pt, double y_pt);
 	void get_size( double & width_pt, double & height_pt);

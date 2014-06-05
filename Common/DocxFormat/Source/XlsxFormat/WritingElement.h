@@ -312,7 +312,6 @@ namespace Spreadsheet
 		et_ShapeTextBody,
 		et_ConnShapeNonVisual,
 		et_GroupShapeNonVisual,
-		et_GroupShapeProperties,
 		et_NonVisualGroupShapeDrawingProps,
 		et_ConnectionNonVisualConnShapeProps,
 		et_GraphicFrameNonVisual,

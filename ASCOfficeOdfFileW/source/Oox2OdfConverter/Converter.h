@@ -30,6 +30,7 @@ namespace OOX
 	{
 		class CNonVisualDrawingProps;
 		class CShapeProperties;
+		class CGroupShapeProperties;
 		class CCustomGeometry2D;
 		class CPresetGeometry2D;
 		class CBlipFillProperties;
@@ -228,6 +229,7 @@ public:
 	
 		void convert(OOX::Drawing::CNonVisualDrawingProps		*oox_cnvPr);
 		void convert(OOX::Drawing::CShapeProperties				*oox_spPr);
+		void convert(OOX::Drawing::CGroupShapeProperties		*oox_groupSpPr);
 		void convert(OOX::Drawing::CTextBodyProperties			*oox_bodyPr);
 		
 		void convert(OOX::Drawing::CCustomGeometry2D			*oox_cust_geom);

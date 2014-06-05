@@ -133,7 +133,7 @@ namespace OOX
 			nullable<ComplexTypes::Drawing::CPositiveSize2D> m_oChExt;
 			nullable<ComplexTypes::Drawing::CPoint2D>        m_oChOff;
 			nullable<ComplexTypes::Drawing::CPositiveSize2D> m_oExt;
-			nullable<ComplexTypes::Drawing::CPositiveSize2D> m_oOff;
+			nullable<ComplexTypes::Drawing::CPoint2D>		 m_oOff;
 
 		};
 		//--------------------------------------------------------------------------------

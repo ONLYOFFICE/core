@@ -1047,6 +1047,152 @@ namespace OOX
 
 
 		};
+
+		//--------------------------------------------------------------------------------
+		//		20.5.2.18 grpSpPr (Group Shape Properties)
+		//--------------------------------------------------------------------------------	
+		class CGroupShapeProperties : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CGroupShapeProperties)
+			CGroupShapeProperties()
+			{
+				m_eType       = et_Unknown;
+				m_eFillType   = filltypeUnknown;
+				m_eEffectType = effecttypeUnknown;
+			}
+			virtual ~CGroupShapeProperties()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				m_eType       = et_Unknown;
+				m_eFillType   = filltypeUnknown;
+				m_eEffectType = effecttypeUnknown;
+
+				// TO DO: Реализовать CShapeProperties::fromXML(XmlUtils::CXmlNode& oNode)
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_eType       = et_Unknown;
+				m_eFillType   = filltypeUnknown;
+				m_eEffectType = effecttypeUnknown;
+
+				CWCharWrapper sName = oReader.GetName();
+				if ( _T("a:grpSpPr") == sName )
+					m_eType = 		et_a_groupSpPr;
+				else if ( _T("xdr:grpSpPr") == sName )
+					m_eType = et_xdr_groupSpPr;
+				else
+					return;
+
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					sName = oReader.GetName();
+					if ( _T("a:blipFill") == sName )
+					{
+						m_oBlipFill = oReader;
+						m_eFillType = filltypeBlip;
+					}
+					else if ( _T("a:effectDag") == sName )
+					{
+						m_oEffectDag  = oReader;
+						m_eEffectType = effecttypeDag;
+					}
+					else if ( _T("a:effectLst") == sName )
+					{
+						m_oEffectList = oReader;
+						m_eEffectType = effecttypeLst;
+					}
+					else if ( _T("a:extLst") == sName )
+						m_oExtLst = oReader;
+					else if ( _T("a:gradFill") == sName )
+					{
+						m_oGradFill = oReader;
+						m_eFillType = filltypeGradient;
+					}
+					else if ( _T("a:grpFill") == sName )
+					{
+						m_oGrpFill  = oReader;
+						m_eFillType = filltypeGroup;
+					}
+					else if ( _T("a:noFill") == sName )
+					{
+						m_oNoFill   = oReader;
+						m_eFillType = filltypeNo;
+					}
+					else if ( _T("a:pattFill") == sName )
+					{
+						m_oPattFill = oReader;
+						m_eFillType = filltypePattern;
+					}
+					else if ( _T("a:scene3d") == sName )
+						m_oScene3D = oReader;
+					else if ( _T("a:solidFill") == sName )
+					{
+						m_oSolidFill = oReader;
+						m_eFillType  = filltypeSolid;
+					}
+					else if ( _T("a:xfrm") == sName )
+						m_oXfrm = oReader;
+				}			
+			}
+
+			virtual EElementType getType () const
+			{
+				return m_eType;
+			}
+			
+			EFillType   GetFillType() const
+			{
+				return m_eFillType;
+			}
+
+			EEffectType GetEffectType() const
+			{
+				return m_eEffectType;
+			}
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			EElementType                                      m_eType;       // Тип ноды
+
+			// Childs
+			EFillType                                         m_eFillType;   // Тип заливки
+			nullable<OOX::Drawing::CBlipFillProperties>       m_oBlipFill;
+			nullable<OOX::Drawing::CGradientFillProperties>   m_oGradFill;
+			nullable<OOX::Drawing::CGroupFillProperties>      m_oGrpFill;
+			nullable<OOX::Drawing::CNoFillProperties>         m_oNoFill;
+			nullable<OOX::Drawing::CPatternFillProperties>    m_oPattFill;
+			nullable<OOX::Drawing::CSolidColorFillProperties> m_oSolidFill;
+
+			EEffectType                                       m_eEffectType; // Тип контейнера эффектов
+			nullable<OOX::Drawing::CEffectContainer>          m_oEffectDag;
+			nullable<OOX::Drawing::CEffectList>               m_oEffectList;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList>   m_oExtLst;
+			nullable<OOX::Drawing::CScene3D>                  m_oScene3D;
+			nullable<OOX::Drawing::CGroupTransform2D>		  m_oXfrm;
+		};
         //-----------------------------------------------------------------------
         // CShapeStyle 20.1.2.2.37
         //-----------------------------------------------------------------------

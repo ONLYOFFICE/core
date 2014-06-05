@@ -38,6 +38,24 @@ struct 	odf_element_state
 	
 	int level;
 };
+struct 	odf_group_state
+{
+	office_element_ptr	elm;
+	
+	int level;
+
+	double delta_x;
+	double delta_y;
+	
+	double koef_cx;
+	double koef_cy;
+
+	double rotate;
+
+	bool flipH;
+	bool flipV;
+};
+
 enum _drawing_part
 {
 	Unknown=0,
@@ -67,6 +85,8 @@ struct odf_drawing_state
 		modifiers_ = L"";
 
 		oox_shape_preset = -1;
+
+		in_group = false;
 	}
 	std::vector<odf_element_state> elements_;
 
@@ -85,9 +105,9 @@ struct odf_drawing_state
 	std::wstring path_last_command_;
 	std::wstring modifiers_;
 
-
 ///////////////////////
 	int oox_shape_preset;
+	bool in_group;
 
 };
 
@@ -122,7 +142,7 @@ public:
 	_CP_OPT(length) global_svg_height_;
 	_CP_OPT(length) global_svg_width_;
 
-	std::vector<odf_element_state>	group_list_; //группы
+	std::vector<odf_group_state>	group_list_; //группы
 	std::vector<odf_drawing_state>	drawing_list_;	//все элементы(кроме групп) .. для удобства разделение по "топам"
 
 };
@@ -153,7 +173,7 @@ void odf_drawing_context::start_group(std::wstring name, int id)
 
 	int level = impl_->current_level_.size();
 	
-	odf_element_state group_state = {group_elm, L"", office_element_ptr(),level};
+	odf_group_state group_state = {group_elm, level, 0, 0, 1., 1., false, false};
 	impl_->group_list_.push_back(group_state);
 	
 	if (impl_->current_level_.size()>0)
@@ -173,65 +193,75 @@ void odf_drawing_context::end_group()
 	impl_->current_level_.pop_back();
 }
 
-void odf_drawing_context::set_group_size( double width_pt, double height_pt)
+void odf_drawing_context::set_group_size_koef( double cx, double cy)
 {
 	if (impl_->group_list_.size()<1)return;
-	//draw_g* group = dynamic_cast<draw_g*>(impl_->group_list_.back().elm.get());
-	//if (!group) return;
 
-	//group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);
-	//group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);
+	for (long i = impl_->group_list_.size()-1; i>=0; i--)
+	{
+		cx *= impl_->group_list_[i].koef_cx;
+		cy *= impl_->group_list_[i].koef_cy;
+
+		if (impl_->group_list_[i].level <1) break;
+	}
+	impl_->group_list_.back().koef_cx = cx;
+	impl_->group_list_.back().koef_cy = cy;
 }
 
-void odf_drawing_context::set_group_position(double x_pt, double y_pt)
+void odf_drawing_context::set_group_position_delta(double x_pt, double y_pt)
 {
 	if (impl_->group_list_.size()<1)return;
-	//draw_g* group = dynamic_cast<draw_g*>(impl_->group_list_.back().elm.get());
-	//if (!group) return;
-	//
-	//group->common_draw_attlists_.position_.svg_x_ = length(length(x_pt,length::pt).get_value_unit(length::cm),length::cm);
-	//group->common_draw_attlists_.position_.svg_y_ = length(length(y_pt,length::pt).get_value_unit(length::cm),length::cm);
+	
+	for (long i = impl_->group_list_.size()-1; i>=0; i--)
+	{
+		x_pt += impl_->group_list_[i].delta_x;
+		y_pt += impl_->group_list_[i].delta_y;
+
+		if (impl_->group_list_[i].level <1) break;
+	}
+	impl_->group_list_.back().delta_x = x_pt;
+	impl_->group_list_.back().delta_y = y_pt;
 }
 
 void odf_drawing_context::set_group_flip_H(bool bVal)
 {
 	if (impl_->group_list_.size()<1)return;
-	//draw_g* group = dynamic_cast<draw_g*>(impl_->group_list_.back().elm.get());
-	//if (!group) return;
 
+	for (long i = impl_->group_list_.size()-1; i>=0; i--)
+	{
+		bVal += impl_->group_list_[i].flipH;
+
+		if (impl_->group_list_[i].level <1) break;
+	}
+	impl_->group_list_.back().flipH= bVal;
 }
 void odf_drawing_context::set_group_flip_V(bool bVal)
 {
 	if (impl_->group_list_.size()<1)return;
+
+	for (long i = impl_->group_list_.size()-1; i>=0; i--)
+	{
+		bVal += impl_->group_list_[i].flipV;
+
+		if (impl_->group_list_[i].level <1) break;
+	}
+	impl_->group_list_.back().flipV= bVal;
 }
 
 void odf_drawing_context::set_group_rotate(int iVal)
 {
 	if (impl_->group_list_.size()<1)return;
-	//draw_g* group = dynamic_cast<draw_g*>(impl_->group_list_.back().elm.get());
-	//if (!group) return;
 
-	//double dRotate = iVal/60000.;
-	//dRotate = (360 - dRotate)/180. * 3.14159265358979323846;
-	//
-	//std::wstring strTransform;	
-	//if (abs(dRotate)>0.001)
-	//{
-	//	strTransform = std::wstring(L"rotate(") + boost::lexical_cast<std::wstring>(dRotate) + std::wstring(L")");
-	//	//так как вращения все в мс относительно центра фигуры, а не от начала координат - убираем смещение
-	//	if (group->common_draw_attlists_.position_.svg_x_ && group->common_draw_attlists_.position_.svg_y_)
-	//	{
-	//		strTransform += std::wstring(L" translate(") +	boost::lexical_cast<std::wstring>(group->common_draw_attlists_.position_.svg_x_.get() +
-	//															(group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_.get()/2))+ std::wstring(L",") + 
-	//														boost::lexical_cast<std::wstring>(group->common_draw_attlists_.position_.svg_y_.get() +
-	//															(group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_.get()/2))+ std::wstring(L")") ; 
-	//	}
+	double dRotate = (360 - iVal/60000.)/180. * 3.14159265358979323846;
 
-	//	group->common_draw_attlists_.position_.svg_x_ = boost::none;
-	//	group->common_draw_attlists_.position_.svg_y_ = boost::none;
-	//}
-	//if (strTransform.length()>0)
-	//	group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_transform_attlist_.draw_transform_ = strTransform;
+	for (long i = impl_->group_list_.size()-1; i>=0; i--)
+	{
+		dRotate += impl_->group_list_[i].rotate;
+
+		if (impl_->group_list_[i].level <1) break;
+	}
+	impl_->group_list_.back().rotate = dRotate;
+
 }
 
 void odf_drawing_context::clear()
@@ -254,17 +284,14 @@ void odf_drawing_context::start_drawing()
 		impl_->current_drawing_state_.svg_width_ = impl_->global_svg_width_;
 		impl_->current_drawing_state_.svg_height_ = impl_->global_svg_height_;
 	}
+	else 
+		impl_->current_drawing_state_.in_group = true;
+
 }
 void odf_drawing_context::end_drawing()
 {
 	if (impl_->current_drawing_state_.elements_.size() < 1) return;
 
-	if (!impl_->current_drawing_state_.svg_x_)	impl_->current_drawing_state_.svg_x_ = impl_->global_svg_x_;
-	if (!impl_->current_drawing_state_.svg_y_)	impl_->current_drawing_state_.svg_y_ = impl_->global_svg_y_;
-	
-	if (!impl_->current_drawing_state_.svg_width_)	impl_->current_drawing_state_.svg_width_ = impl_->global_svg_width_;
-	if (!impl_->current_drawing_state_.svg_height_)	impl_->current_drawing_state_.svg_height_ = impl_->global_svg_height_;
-	
 	draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
 
 	if (draw)
@@ -275,6 +302,14 @@ void odf_drawing_context::end_drawing()
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_z_index_attlist_.draw_z_index_ = impl_->current_drawing_state_.z_order_;
 
 		std::wstring strTransform;
+		if (impl_->current_drawing_state_.in_group)
+		{
+			double rotate = impl_->group_list_.back().rotate;
+			if (impl_->current_drawing_state_.rotateAngle )
+				rotate += *impl_->current_drawing_state_.rotateAngle;
+
+			if (abs(rotate)>0.001)impl_->current_drawing_state_.rotateAngle = rotate;
+		}
 		if (impl_->current_drawing_state_.rotateAngle)
 		{
 			strTransform = std::wstring(L"rotate(") + boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.rotateAngle.get()) + std::wstring(L")");
@@ -289,6 +324,16 @@ void odf_drawing_context::end_drawing()
 
 			impl_->current_drawing_state_.svg_x_ = boost::none;
 			impl_->current_drawing_state_.svg_y_ = boost::none;
+		}else if (impl_->current_drawing_state_.in_group)
+		{
+				strTransform += std::wstring(L"translate(") +	boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_x_.get() +
+																	(impl_->current_drawing_state_.svg_width_.get()/2))+ std::wstring(L",") + 
+																boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_y_.get() +
+																	(impl_->current_drawing_state_.svg_height_.get()/2))+ std::wstring(L")") ; 
+			
+
+			impl_->current_drawing_state_.svg_x_ = boost::none;
+			impl_->current_drawing_state_.svg_y_ = boost::none;		
 		}
 		if (strTransform.length()>0)
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_transform_attlist_.draw_transform_ = strTransform;
@@ -681,8 +726,8 @@ void odf_drawing_context::set_flip_V(bool bVal)
 
 void odf_drawing_context::set_rotate(int iVal)
 {
-	double dRotate = iVal/60000.;
-	impl_->current_drawing_state_.rotateAngle = (360 - dRotate)/180. * 3.14159265358979323846;
+	double dRotate = (360 - iVal/60000.)/180. * 3.14159265358979323846;
+	impl_->current_drawing_state_.rotateAngle = dRotate;
 }
 void odf_drawing_context::set_drawings_rect(double x_pt, double y_pt, double width_pt, double height_pt)
 {
@@ -696,9 +741,19 @@ void odf_drawing_context::set_drawings_rect(double x_pt, double y_pt, double wid
 void odf_drawing_context::set_position(double x_pt, double y_pt)
 {
 	if (!impl_->current_drawing_state_.svg_x_) 
+	{
+		if (impl_->current_drawing_state_.in_group)
+			x_pt += impl_->group_list_.back().delta_x;
+
 		impl_->current_drawing_state_.svg_x_ = length(length(x_pt,length::pt).get_value_unit(length::cm),length::cm);
+	}
 	if (!impl_->current_drawing_state_.svg_y_) 
+	{
+		if (impl_->current_drawing_state_.in_group)
+			y_pt += impl_->group_list_.back().delta_y;
+
 		impl_->current_drawing_state_.svg_y_ = length(length(y_pt,length::pt).get_value_unit(length::cm),length::cm);
+	}
 }
 void odf_drawing_context::get_size( double & width_pt, double & height_pt)
 {
@@ -709,6 +764,11 @@ void odf_drawing_context::get_size( double & width_pt, double & height_pt)
 }
 void odf_drawing_context::set_size( double width_pt, double height_pt)
 {
+	if (impl_->current_drawing_state_.in_group)
+	{
+		width_pt  *= impl_->group_list_.back().koef_cx;
+		height_pt *= impl_->group_list_.back().koef_cy;
+	}
 	//if (!impl_->current_drawing_state_.svg_width_)	
 		impl_->current_drawing_state_.svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);
 	//if (!impl_->current_drawing_state_.svg_height_)

@@ -35,7 +35,7 @@ public:
     virtual ~odf_conversion_context();
 
 	virtual void	start_document() = 0 ;
-	void			end_document();
+	virtual void	end_document();
 	
 	package::odf_document * output_document_;
 

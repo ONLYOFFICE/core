@@ -49,13 +49,22 @@ void ods_conversion_context::start_document()
 	
 	root_spreadsheet_ = dynamic_cast<office_spreadsheet*>(get_current_object_element().get());
 }
-void ods_conversion_context::start_defined_expressions()
+
+void ods_conversion_context::end_document()
 {
-	create_element(L"table", L"named-expressions",root_spreadsheet_->getContent(),this);
-	
-	table_context_.start_defined_expressions(root_spreadsheet_->getContent().back());
+	if (table_context_.table_database_ranges_.root)
+		root_spreadsheet_->add_child_element(table_context_.table_database_ranges_.root);
+
+	if (table_context_.table_defined_expressions_.root)
+		root_spreadsheet_->add_child_element(table_context_.table_defined_expressions_.root);
+
+	odf_conversion_context::end_document();
 }
 
+void ods_conversion_context::start_autofilter(std::wstring ref)
+{
+	table_context_.start_autofilter(ref);
+}
 void ods_conversion_context::start_conditional_formats()
 {
 	current_table().start_conditional_formats();

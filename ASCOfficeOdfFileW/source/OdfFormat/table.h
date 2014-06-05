@@ -13,6 +13,7 @@
 #include "common_attlists.h"
 #include "tablemode.h"
 #include "table_named_expressions.h"
+#include "table_database_ranges.h"
 
 namespace cpdoccore { 
 namespace odf {

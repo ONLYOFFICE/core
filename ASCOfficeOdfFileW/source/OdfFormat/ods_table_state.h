@@ -257,6 +257,7 @@ private:
 	office_element_ptr	office_table_;
 	style*				office_table_style_;//??? может хранить как office_element_ptr ???
 	office_element_ptr	table_defined_expressions_;
+	
 
 	std::wstring row_default_cell_style_name_;
 

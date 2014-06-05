@@ -999,6 +999,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OdfFormat\table_database_ranges.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\table_database_ranges.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\table_named_expressions.cpp"
 				>
 			</File>

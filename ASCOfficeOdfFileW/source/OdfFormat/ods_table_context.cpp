@@ -22,7 +22,29 @@ ods_table_state & ods_table_context::state()
 {
     return table_state_list_.back();
 }
+void ods_table_context::start_autofilter(std::wstring ref)
+{
+	if (!table_database_ranges_.root) create_element(L"table", L"database-ranges",table_database_ranges_.root,&context_);
 
+	office_element_ptr elm;
+	create_element(L"table", L"database-range",elm,&context_);
+	table_database_range * d_range = dynamic_cast<table_database_range*>(elm.get());
+
+	if (!d_range)return;
+
+	static formulasconvert::oox2odf_converter formulas_converter;
+
+	std::wstring odf_range = formulas_converter.convert_named_ref(ref);
+	boost::algorithm::replace_all(odf_range, L"[", L"");
+	boost::algorithm::replace_all(odf_range, L"]", L"");
+
+	d_range->table_target_range_address_ = odf_range;
+	d_range->table_display_filter_buttons_= true;
+
+	table_database_ranges_.root->add_child_element(elm);
+	table_database_ranges_.elements.push_back(elm);
+
+}
 void ods_table_context::start_defined_expressions(office_element_ptr & root_elm)
 {
 	table_defined_expressions_.root = root_elm;
@@ -51,7 +73,7 @@ void ods_table_context::add_defined_range(std::wstring & name,std::wstring & cel
 	if (odf_base_cell.length() > 0)
 		named_range->table_base_cell_address_ =  odf_base_cell;
 
-	table_defined_expressions_.defined.push_back(elm);
+	table_defined_expressions_.elements.push_back(elm);
 	
 	if (sheet_id >=0)
 	{
@@ -67,7 +89,11 @@ void ods_table_context::add_defined_range(std::wstring & name,std::wstring & cel
 		}
 	}
 	else
+	{
+		if (!table_defined_expressions_.root)create_element(L"table", L"named-expressions",table_defined_expressions_.root,&context_);
+
 		table_defined_expressions_.root->add_child_element(elm);
+	}
 
 }
 void ods_table_context::add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id, bool printable)
@@ -109,13 +135,16 @@ void ods_table_context::add_defined_expression(std::wstring & name,std::wstring 
 		}
 	}
 	else
+	{
+		if (!table_defined_expressions_.root)create_element(L"table", L"named-expressions",table_defined_expressions_.root,&context_);
 		table_defined_expressions_.root->add_child_element(elm);
+	}
 
 	if (odf_base_cell.length() > 0)
 		named_expression->table_base_cell_address_ =  odf_base_cell;
 
 
-	table_defined_expressions_.defined.push_back(elm);
+	table_defined_expressions_.elements.push_back(elm);
 }
 
 void ods_table_context::start_table(office_element_ptr & elm)

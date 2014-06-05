@@ -124,14 +124,14 @@ void OoxConverter::convert(OOX::Drawing::CGroupShapeProperties *   oox_group_spP
 			double x =oox_group_spPr->m_oXfrm->m_oOff->m_oX.GetValue()/ oox_group_spPr->m_oXfrm->m_oChOff->m_oX.GetValue();
 			double y =oox_group_spPr->m_oXfrm->m_oOff->m_oY.GetValue()/ oox_group_spPr->m_oXfrm->m_oChOff->m_oY.GetValue();
 
-			//odf_context()->drawing_context()->set_group_position_delata(x, y);
+			odf_context()->drawing_context()->set_group_position_delta(x, y);
 		}
 		if (oox_group_spPr->m_oXfrm->m_oExt.IsInit() && oox_group_spPr->m_oXfrm->m_oChExt.IsInit())
 		{
-			double x =oox_group_spPr->m_oXfrm->m_oExt->m_oCx.GetValue()/ oox_group_spPr->m_oXfrm->m_oChExt->m_oCx.GetValue();
-			double y =oox_group_spPr->m_oXfrm->m_oExt->m_oCy.GetValue()/ oox_group_spPr->m_oXfrm->m_oChExt->m_oCy.GetValue();
+			double x =oox_group_spPr->m_oXfrm->m_oExt->m_oCx.ToPoints()/ oox_group_spPr->m_oXfrm->m_oChExt->m_oCx.ToPoints();
+			double y =oox_group_spPr->m_oXfrm->m_oExt->m_oCy.ToPoints()/ oox_group_spPr->m_oXfrm->m_oChExt->m_oCy.ToPoints();
 
-			//odf_context()->drawing_context()->set_group_size_koeff(x, y);					
+			if (x != 0 && y != 0)	odf_context()->drawing_context()->set_group_size_koef(x, y);					
 		}
 		//???
 		//if (oox_group_spPr->m_oXfrm->m_oFlipH.GetValue() == SimpleTypes::onoffTrue)

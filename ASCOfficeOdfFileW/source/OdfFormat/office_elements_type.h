@@ -141,6 +141,8 @@ enum ElementType
     typeTableNamedExpressions,
     typeTableNamedExpression,
     typeTableNamedRange,
+	typeTableDatabaseRanges,
+	typeTableDatabaseRange,
     typeTableTable,
     typeTableTableColumn,
     typeTableTableColumns,

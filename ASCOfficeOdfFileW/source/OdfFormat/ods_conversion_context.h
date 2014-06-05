@@ -28,6 +28,7 @@ public:
 	ods_conversion_context(package::odf_document * outputDocument);
 	
 	virtual void start_document();
+	virtual void end_document();
 
 	void start_sheet();
 		void set_sheet_dimension(std::wstring & ref);
@@ -73,10 +74,11 @@ public:
 
 	double convert_symbol_width(double val);
 	
-	void start_defined_expressions();
-		void add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id, bool printable = false);
-		void add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id, bool printable = false);
-	void end_defined_expressions(){}
+	void add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id, bool printable = false);
+	void add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id, bool printable = false);
+
+	void start_autofilter(std::wstring ref);
+	void end_autofilter(){}
 
 	void start_conditional_formats();
 

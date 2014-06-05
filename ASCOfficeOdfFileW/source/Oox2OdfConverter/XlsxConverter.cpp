@@ -142,12 +142,10 @@ void XlsxConverter::convert_sheets()
 	}
 	if (Workbook->m_oDefinedNames.IsInit())
 	{
-		ods_context->start_defined_expressions();
 		for (int i = 0; i < Workbook->m_oDefinedNames->m_arrItems.GetSize(); i++)
 		{
 			convert(Workbook->m_oDefinedNames->m_arrItems[i]);
 		}
-		ods_context->end_defined_expressions();
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CDefinedName *oox_defined)
@@ -235,6 +233,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 			convert(pDrawing);
 		}
 	}
+	////сортировки
+	//convert(oox_sheet->m_oSortState.GetPointer());
 	
 	//автофильтры
 	convert(oox_sheet->m_oAutofilter.GetPointer());
@@ -709,8 +709,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 				if (oox_sheet_format_pr->m_oDefaultColWidth.IsInit())
 				{			
 					width =  oox_sheet_format_pr->m_oDefaultColWidth->GetValue();
-					width = ods_context->convert_symbol_width(width);
 				}
+				width = ods_context->convert_symbol_width(width);
 				ods_context->current_table().defaut_column_width_ = width;//pt
 				column_properties->style_table_column_properties_attlist_.style_column_width_ = odf::length(odf::length(width,odf::length::pt).get_value_unit(odf::length::cm),odf::length::cm);
 			}
@@ -1751,9 +1751,42 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFormulaCF	*oox_cond_formula)
 	if (!oox_cond_formula)return;
 	ods_context->current_table().set_conditional_formula(string2std_string(oox_cond_formula->m_sText));
 }
+void XlsxConverter::convert(OOX::Spreadsheet::CFilterColumn *oox_filter_column)
+{
+	//nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oColId;
+	//nullable<SimpleTypes::COnOff<> > m_oHiddenButton;
+	//nullable<SimpleTypes::COnOff<> > m_oShowButton;
+
+	//nullable<CColorFilter > m_oColorFilter;
+	//nullable<CDynamicFilter > m_oDynamicFilter;
+	//nullable<CCustomFilters > m_oCustomFilters;
+	//nullable<CFilters > m_oFilters;
+	//nullable<CTop10 > m_oTop10;
+}
 void XlsxConverter::convert(OOX::Spreadsheet::CAutofilter *oox_filter)
 {
 	if (!oox_filter)return;
 	
+	std::wstring ref, sort_ref;	
+	bool sort = false, caseSensitive = false;
+	if (oox_filter->m_oRef.IsInit())
+		ref = string2std_string(oox_filter->m_oRef->GetValue());
+	if (oox_filter->m_oSortState.IsInit())
+	{
+		sort = true;
+		if (oox_filter->m_oSortState->m_oRef.IsInit())
+			sort_ref = 	string2std_string(oox_filter->m_oSortState->m_oRef->GetValue());
+		if (oox_filter->m_oSortState->m_oCaseSensitive.IsInit() && oox_filter->m_oSortState->m_oCaseSensitive->GetValue()==1)
+			caseSensitive = true;
+	}
+	ods_context->start_autofilter(ref);//target
+	{
+
+		for (long i=0; i < oox_filter->m_arrItems.GetSize(); i++)//set items todooo
+		{
+		}
+	}
+	ods_context->end_autofilter();
 }
+
 } // namespace Docx2Odt

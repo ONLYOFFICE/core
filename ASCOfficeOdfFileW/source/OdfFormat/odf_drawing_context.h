@@ -38,8 +38,8 @@ public:
 	void end_drawing();
 	
 	void start_group(std::wstring name, int id);
-		void set_group_size( double width_pt, double height_pt);
-		void set_group_position(double x_pt, double y_pt);
+		void set_group_size_koef( double cx, double cy);
+		void set_group_position_delta(double x_pt, double y_pt);
 		
 		void set_group_flip_H(bool bVal);
 		void set_group_flip_V(bool bVal);

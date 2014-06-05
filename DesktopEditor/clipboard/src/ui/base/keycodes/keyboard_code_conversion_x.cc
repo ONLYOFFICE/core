@@ -424,14 +424,14 @@ KeyboardCode KeyboardCodeFromXKeysym(unsigned int keysym) {
 
     // TODO(sad): some keycodes are still missing.
   }
-  DLOG(WARNING) << "Unknown keysym: " << base::StringPrintf("0x%x", keysym);
+  //DLOG(WARNING) << "Unknown keysym: " << base::StringPrintf("0x%x", keysym);
   return VKEY_UNKNOWN;
 }
 
 uint16 GetCharacterFromXEvent(XEvent* xev) {
   char buf[6];
   int bytes_written = XLookupString(&xev->xkey, buf, 6, NULL, NULL);
-  DCHECK_LE(bytes_written, 6);
+  //DCHECK_LE(bytes_written, 6);
 
   string16 result;
   return (bytes_written > 0 && UTF8ToUTF16(buf, bytes_written, &result) &&
@@ -783,7 +783,7 @@ int XKeysymForWindowsKeyCode(KeyboardCode keycode, bool shift) {
       return XF86XK_KbdBrightnessUp;
 
     default:
-      LOG(WARNING) << "Unknown keycode:" << keycode;
+      //LOG(WARNING) << "Unknown keycode:" << keycode;
       return 0;
     }
 }

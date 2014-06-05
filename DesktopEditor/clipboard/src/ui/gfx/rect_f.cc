@@ -9,7 +9,7 @@
 #include "base/logging.h"
 #include "base/stringprintf.h"
 #include "ui/gfx/insets_f.h"
-#include "ui/gfx/rect_base_impl.h"
+//#include "ui/gfx/rect_base_impl.h"
 #include "ui/gfx/safe_integer_conversions.h"
 
 namespace gfx {

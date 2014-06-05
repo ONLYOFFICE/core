@@ -144,7 +144,7 @@ MessageLoop::MessageLoop(Type type)
       os_modal_loop_(false),
 #endif  // OS_WIN
       next_sequence_num_(0) {
-  DCHECK(!current()) << "should only have one message loop per thread";
+  //DCHECK(!current()) << "should only have one message loop per thread";
   lazy_tls_ptr.Pointer()->Set(this);
 
   message_loop_proxy_ = new MessageLoopProxyImpl();
@@ -183,15 +183,15 @@ MessageLoop::MessageLoop(Type type)
   } else if (type_ == TYPE_IO) {
     pump_ = MESSAGE_PUMP_IO;
   } else {
-    DCHECK_EQ(TYPE_DEFAULT, type_);
+    //DCHECK_EQ(TYPE_DEFAULT, type_);
     pump_ = new MessagePumpDefault();
   }
 }
 
 MessageLoop::~MessageLoop() {
-  DCHECK_EQ(this, current());
+  //DCHECK_EQ(this, current());
 
-  DCHECK(!run_loop_);
+  //DCHECK(!run_loop_);
 
   // Clean up any unprocessed tasks, but take care: deleting a task could
   // result in the addition of more tasks (e.g., via DeleteSoon).  We set a
@@ -208,7 +208,7 @@ MessageLoop::~MessageLoop() {
     if (!did_work)
       break;
   }
-  DCHECK(!did_work);
+  //DCHECK(!did_work);
 
   // Let interested parties have one last shot at accessing this.
   FOR_EACH_OBSERVER(DestructionObserver, destruction_observers_,
@@ -259,20 +259,20 @@ bool MessageLoop::InitMessagePumpForUIFactory(MessagePumpFactory* factory) {
 
 void MessageLoop::AddDestructionObserver(
     DestructionObserver* destruction_observer) {
-  DCHECK_EQ(this, current());
+  //DCHECK_EQ(this, current());
   destruction_observers_.AddObserver(destruction_observer);
 }
 
 void MessageLoop::RemoveDestructionObserver(
     DestructionObserver* destruction_observer) {
-  DCHECK_EQ(this, current());
+  //DCHECK_EQ(this, current());
   destruction_observers_.RemoveObserver(destruction_observer);
 }
 
 void MessageLoop::PostTask(
     const tracked_objects::Location& from_here,
     const Closure& task) {
-  DCHECK(!task.is_null()) << from_here.ToString();
+  //DCHECK(!task.is_null()) << from_here.ToString();
   PendingTask pending_task(
       from_here, task, CalculateDelayedRuntime(TimeDelta()), true);
   AddToIncomingQueue(&pending_task, false);
@@ -281,7 +281,7 @@ void MessageLoop::PostTask(
 bool MessageLoop::TryPostTask(
     const tracked_objects::Location& from_here,
     const Closure& task) {
-  DCHECK(!task.is_null()) << from_here.ToString();
+  //DCHECK(!task.is_null()) << from_here.ToString();
   PendingTask pending_task(
       from_here, task, CalculateDelayedRuntime(TimeDelta()), true);
   return AddToIncomingQueue(&pending_task, true);
@@ -291,7 +291,7 @@ void MessageLoop::PostDelayedTask(
     const tracked_objects::Location& from_here,
     const Closure& task,
     TimeDelta delay) {
-  DCHECK(!task.is_null()) << from_here.ToString();
+  //DCHECK(!task.is_null()) << from_here.ToString();
   PendingTask pending_task(
       from_here, task, CalculateDelayedRuntime(delay), true);
   AddToIncomingQueue(&pending_task, false);
@@ -300,7 +300,7 @@ void MessageLoop::PostDelayedTask(
 void MessageLoop::PostNonNestableTask(
     const tracked_objects::Location& from_here,
     const Closure& task) {
-  DCHECK(!task.is_null()) << from_here.ToString();
+  //DCHECK(!task.is_null()) << from_here.ToString();
   PendingTask pending_task(
       from_here, task, CalculateDelayedRuntime(TimeDelta()), false);
   AddToIncomingQueue(&pending_task, false);
@@ -310,7 +310,7 @@ void MessageLoop::PostNonNestableDelayedTask(
     const tracked_objects::Location& from_here,
     const Closure& task,
     TimeDelta delay) {
-  DCHECK(!task.is_null()) << from_here.ToString();
+  //DCHECK(!task.is_null()) << from_here.ToString();
   PendingTask pending_task(
       from_here, task, CalculateDelayedRuntime(delay), false);
   AddToIncomingQueue(&pending_task, false);
@@ -327,20 +327,20 @@ void MessageLoop::RunUntilIdle() {
 }
 
 void MessageLoop::QuitWhenIdle() {
-  DCHECK_EQ(this, current());
+  //DCHECK_EQ(this, current());
   if (run_loop_) {
     run_loop_->quit_when_idle_received_ = true;
   } else {
-    NOTREACHED() << "Must be inside Run to call Quit";
+    //NOTREACHED() << "Must be inside Run to call Quit";
   }
 }
 
 void MessageLoop::QuitNow() {
-  DCHECK_EQ(this, current());
+  //DCHECK_EQ(this, current());
   if (run_loop_) {
     pump_->Quit();
   } else {
-    NOTREACHED() << "Must be inside Run to call Quit";
+    //NOTREACHED() << "Must be inside Run to call Quit";
   }
 }
 
@@ -376,23 +376,23 @@ bool MessageLoop::IsNested() {
 }
 
 void MessageLoop::AddTaskObserver(TaskObserver* task_observer) {
-  DCHECK_EQ(this, current());
+  //DCHECK_EQ(this, current());
   task_observers_.AddObserver(task_observer);
 }
 
 void MessageLoop::RemoveTaskObserver(TaskObserver* task_observer) {
-  DCHECK_EQ(this, current());
+  //DCHECK_EQ(this, current());
   task_observers_.RemoveObserver(task_observer);
 }
 
 void MessageLoop::AssertIdle() const {
   // We only check |incoming_queue_|, since we don't want to lock |work_queue_|.
   AutoLock lock(incoming_queue_lock_);
-  DCHECK(incoming_queue_.empty());
+  //DCHECK(incoming_queue_.empty());
 }
 
 bool MessageLoop::is_running() const {
-  DCHECK_EQ(this, current());
+  //DCHECK_EQ(this, current());
   return run_loop_ != NULL;
 }
 
@@ -426,7 +426,7 @@ __declspec(noinline) void MessageLoop::RunInternalInSEHFrame() {
 #endif
 
 void MessageLoop::RunInternal() {
-  DCHECK_EQ(this, current());
+  //DCHECK_EQ(this, current());
 
   StartHistogrammer();
 
@@ -461,7 +461,7 @@ void MessageLoop::RunTask(const PendingTask& pending_task) {
   TRACE_EVENT2("task", "MessageLoop::RunTask",
                "src_file", pending_task.posted_from.file_name(),
                "src_func", pending_task.posted_from.function_name());
-  DCHECK(nestable_tasks_allowed_);
+  //DCHECK(nestable_tasks_allowed_);
   // Execute the task and assume the worst: It is probably not reentrant.
   nestable_tasks_allowed_ = false;
 
@@ -524,7 +524,7 @@ void MessageLoop::ReloadWorkQueue() {
     if (incoming_queue_.empty())
       return;
     incoming_queue_.Swap(&work_queue_);  // Constant time
-    DCHECK(incoming_queue_.empty());
+    //DCHECK(incoming_queue_.empty());
   }
 }
 
@@ -580,7 +580,7 @@ TimeTicks MessageLoop::CalculateDelayedRuntime(TimeDelta delay) {
     }
 #endif
   } else {
-    DCHECK_EQ(delay.InMilliseconds(), 0) << "delay should not be negative";
+    //DCHECK_EQ(delay.InMilliseconds(), 0) << "delay should not be negative";
   }
 
 #if defined(OS_WIN)
@@ -646,7 +646,7 @@ void MessageLoop::StartHistogrammer() {
 #if !defined(OS_NACL)  // NaCl build has no metrics code.
   if (enable_histogrammer_ && !message_histogram_
       && StatisticsRecorder::IsActive()) {
-    DCHECK(!thread_name_.empty());
+    //DCHECK(!thread_name_.empty());
     message_histogram_ = LinearHistogram::FactoryGetWithRangeDescription(
         "MsgLoop:" + thread_name_,
         kLeastNonZeroMessageId, kMaxMessageId,

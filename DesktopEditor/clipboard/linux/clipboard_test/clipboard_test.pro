@@ -28,7 +28,9 @@ INCLUDEPATH += \
     /usr/include/gtk-2.0 \
     /usr/include/glib-2.0 \
     ../../src/third_party/skia/include/core \
-    ../../src/third_party/skia/include/config
+    ../../src/third_party/skia/include/config \
+    ../../src/third_party/skia/include/pathops \
+    ../../src/third_party/skia/src/image
 
 SOURCES += main.cpp \
     ../../src/ui/base/clipboard/clipboard.cc \
@@ -55,7 +57,45 @@ SOURCES += main.cpp \
     ../../src/base/message_pump_gtk.cc \
     ../../src/base/message_pump_glib.cc \
     ../../src/base/message_pump_default.cc \
-    ../../src/base/message_pump_libevent.cc
+    ../../src/base/message_pump_libevent.cc \
+    ../../src/third_party/skia/src/core/SkDebug.cpp \
+    ../../src/ui/gfx/image/image.cc \
+    ../../src/ui/gfx/gtk_util.cc \
+    ../../src/base/threading/thread_restrictions.cc \
+    ../../src/base/at_exit.cc \
+    ../../src/base/memory/singleton.cc \
+    ../../src/base/atomicops_internals_x86_gcc.cc \
+    ../../src/base/message_loop.cc \
+    ../../src/ui/base/keycodes/keyboard_code_conversion.cc \
+    ../../src/ui/base/keycodes/keyboard_code_conversion_gtk.cc \
+    ../../src/ui/base/keycodes/keyboard_code_conversion_x.cc \
+    ../../src/base/location.cc \
+    ../../src/ui/gfx/rect.cc \
+    ../../src/ui/gfx/rect_conversions.cc \
+    ../../src/ui/gfx/rect_f.cc \
+    ../../src/ui/gfx/point.cc \
+    ../../src/ui/gfx/point3_f.cc \
+    ../../src/ui/gfx/point_conversions.cc \
+    ../../src/ui/gfx/point_f.cc \
+    ../../src/base/memory/ref_counted.cc \
+    ../../src/base/memory/ref_counted_memory.cc \
+    ../../src/base/callback_internal.cc \
+    ../../src/third_party/skia/src/ports/SkDebug_stdio.cpp \
+    ../../src/third_party/skia/src/core/Sk64.cpp \
+    ../../src/third_party/skia/src/core/SkPixelRef.cpp \
+    ../../src/third_party/skia/src/core/SkMallocPixelRef.cpp \
+    ../../src/third_party/skia/src/ports/SkMemory_malloc.cpp \
+    ../../src/third_party/skia/src/core/SkCanvas.cpp \
+    ../../src/third_party/skia/src/core/SkColor.cpp \
+    ../../src/third_party/skia/src/core/SkColorTable.cpp \
+    ../../src/third_party/skia/src/core/SkMask.cpp \
+    ../../src/third_party/skia/src/core/SkMatrix.cpp \
+    ../../src/third_party/skia/src/core/SkUnPreMultiply.cpp \
+    ../../src/third_party/skia/src/core/SkPackBits.cpp \
+    ../../src/third_party/skia/src/core/SkPoint.cpp \
+    ../../src/third_party/skia/src/core/SkRect.cpp \
+    ../../src/third_party/skia/src/core/SkUtils.cpp \
+    ../../src/third_party/skia/src/core/SkPaint.cpp
 
 HEADERS += \
     ../../src/ui/base/clipboard/clipboard.h \
@@ -182,4 +222,36 @@ HEADERS += \
     ../../src/base/message_pump_glib.h \
     ../../src/base/message_pump_default.h \
     ../../src/base/message_pump_dispatcher.h \
-    ../../src/base/message_pump_libevent.h
+    ../../src/base/message_pump_libevent.h \
+    ../../src/ui/gfx/image/image.h \
+    ../../src/ui/gfx/gtk_util.h \
+    ../../src/base/threading/thread_restrictions.h \
+    ../../src/base/at_exit.h \
+    ../../src/base/memory/singleton.h \
+    ../../src/base/atomicops.h \
+    ../../src/base/atomicops_internals_atomicword_compat.h \
+    ../../src/base/atomicops_internals_gcc.h \
+    ../../src/base/atomicops_internals_x86_gcc.h \
+    ../../src/base/message_loop.h \
+    ../../src/base/message_loop_proxy.h \
+    ../../src/ui/base/keycodes/keyboard_code_conversion.h \
+    ../../src/ui/base/keycodes/keyboard_code_conversion_gtk.h \
+    ../../src/ui/base/keycodes/keyboard_code_conversion_x.h \
+    ../../src/ui/base/keycodes/keyboard_codes.h \
+    ../../src/ui/base/keycodes/keyboard_codes_posix.h \
+    ../../src/ui/base/keycodes/usb_keycode_map.h \
+    ../../src/base/location.h \
+    ../../src/ui/gfx/rect.h \
+    ../../src/ui/gfx/rect_base.h \
+    ../../src/ui/gfx/rect_conversions.h \
+    ../../src/ui/gfx/rect_f.h \
+    ../../src/ui/gfx/point.h \
+    ../../src/ui/gfx/point3_f.h \
+    ../../src/ui/gfx/point_base.h \
+    ../../src/ui/gfx/point_conversions.h \
+    ../../src/ui/gfx/point_f.h \
+    ../../src/base/memory/ref_counted.h \
+    ../../src/base/memory/ref_counted_memory.h \
+    ../../src/base/callback_internal.h \
+    ../../src/third_party/skia/include/pathops/SkPathOps.h \
+    ../../src/third_party/skia/src/image/SkSurface_Base.h

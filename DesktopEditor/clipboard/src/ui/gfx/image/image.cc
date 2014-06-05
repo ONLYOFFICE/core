@@ -40,7 +40,7 @@ namespace internal {
 
 #if defined(TOOLKIT_GTK)
 const ImageSkia ImageSkiaFromGdkPixbuf(GdkPixbuf* pixbuf) {
-  CHECK(pixbuf);
+  //CHECK(pixbuf);
   gfx::Canvas canvas(gfx::Size(gdk_pixbuf_get_width(pixbuf),
                                gdk_pixbuf_get_height(pixbuf)),
                      ui::SCALE_FACTOR_100P,
@@ -55,7 +55,7 @@ const ImageSkia ImageSkiaFromGdkPixbuf(GdkPixbuf* pixbuf) {
 // Returns a 16x16 red pixbuf to visually show error in decoding PNG.
 // Also logs error to console.
 GdkPixbuf* GetErrorPixbuf() {
-  LOG(ERROR) << "Unable to decode PNG.";
+  //LOG(ERROR) << "Unable to decode PNG.";
   GdkPixbuf* pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 16, 16);
   gdk_pixbuf_fill(pixbuf, 0xff0000ff);
   return pixbuf;
@@ -102,8 +102,10 @@ scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromPixbuf(
   gchar* image = NULL;
   gsize image_size;
   GError* error = NULL;
-  CHECK(gdk_pixbuf_save_to_buffer(
-      pixbuf, &image, &image_size, "png", &error, NULL));
+  //CHECK(
+  gdk_pixbuf_save_to_buffer(
+      pixbuf, &image, &image_size, "png", &error, NULL);
+  //);
   scoped_refptr<base::RefCountedBytes> png_bytes(
       new base::RefCountedBytes());
   png_bytes->data().assign(image, image + image_size);
@@ -153,13 +155,13 @@ ImageSkia* ImageSkiaFromPNG(
   for (size_t i = 0; i < image_png_reps.size(); ++i) {
     scoped_refptr<base::RefCountedMemory> raw_data =
         image_png_reps[i].raw_data;
-    CHECK(raw_data.get());
+    //CHECK(raw_data.get());
     SkBitmap bitmap;
     if (!gfx::PNGCodec::Decode(raw_data->front(), raw_data->size(),
                                &bitmap)) {
-      LOG(ERROR) << "Unable to decode PNG for "
-                 << ui::GetScaleFactorScale(image_png_reps[i].scale_factor)
-                 << ".";
+      //LOG(ERROR) << "Unable to decode PNG for "
+      //           << ui::GetScaleFactorScale(image_png_reps[i].scale_factor)
+      //           << ".";
       return GetErrorImageSkia();
     }
     image_skia->AddRepresentation(gfx::ImageSkiaRep(
@@ -204,35 +206,35 @@ class ImageRep {
 
   // Cast helpers ("fake RTTI").
   ImageRepPNG* AsImageRepPNG() {
-    CHECK_EQ(type_, Image::kImageRepPNG);
+    //CHECK_EQ(type_, Image::kImageRepPNG);
     return reinterpret_cast<ImageRepPNG*>(this);
   }
 
   ImageRepSkia* AsImageRepSkia() {
-    CHECK_EQ(type_, Image::kImageRepSkia);
+    //CHECK_EQ(type_, Image::kImageRepSkia);
     return reinterpret_cast<ImageRepSkia*>(this);
   }
 
 #if defined(TOOLKIT_GTK)
   ImageRepGdk* AsImageRepGdk() {
-    CHECK_EQ(type_, Image::kImageRepGdk);
+    //CHECK_EQ(type_, Image::kImageRepGdk);
     return reinterpret_cast<ImageRepGdk*>(this);
   }
 
   ImageRepCairo* AsImageRepCairo() {
-    CHECK_EQ(type_, Image::kImageRepCairo);
+    //CHECK_EQ(type_, Image::kImageRepCairo);
     return reinterpret_cast<ImageRepCairo*>(this);
   }
 #endif
 
 #if defined(OS_IOS)
   ImageRepCocoaTouch* AsImageRepCocoaTouch() {
-    CHECK_EQ(type_, Image::kImageRepCocoaTouch);
+    //CHECK_EQ(type_, Image::kImageRepCocoaTouch);
     return reinterpret_cast<ImageRepCocoaTouch*>(this);
   }
 #elif defined(OS_MACOSX)
   ImageRepCocoa* AsImageRepCocoa() {
-    CHECK_EQ(type_, Image::kImageRepCocoa);
+    //CHECK_EQ(type_, Image::kImageRepCocoa);
     return reinterpret_cast<ImageRepCocoa*>(this);
   }
 #endif
@@ -332,7 +334,7 @@ class ImageRepGdk : public ImageRep {
   explicit ImageRepGdk(GdkPixbuf* pixbuf)
       : ImageRep(Image::kImageRepGdk),
         pixbuf_(pixbuf) {
-    CHECK(pixbuf);
+    //CHECK(pixbuf);
   }
 
   virtual ~ImageRepGdk() {
@@ -368,7 +370,7 @@ class ImageRepCairo : public ImageRep {
   explicit ImageRepCairo(GdkPixbuf* pixbuf)
       : ImageRep(Image::kImageRepCairo),
         cairo_cache_(new CairoCachedSurface) {
-    CHECK(pixbuf);
+    //CHECK(pixbuf);
     cairo_cache_->UsePixbuf(pixbuf);
   }
 
@@ -629,9 +631,12 @@ const ImageSkia* Image::ToImageSkia() const {
       }
 #endif
       default:
-        NOTREACHED();
+        {
+        //NOTREACHED();
+        }
+        break;
     }
-    CHECK(rep);
+    //CHECK(rep);
     AddRepresentation(rep);
   }
   return rep->AsImageRepSkia()->image();
@@ -657,9 +662,10 @@ GdkPixbuf* Image::ToGdkPixbuf() const {
         break;
       }
       default:
-        NOTREACHED();
+        //NOTREACHED();
+        break;
     }
-    CHECK(rep);
+    //CHECK(rep);
     AddRepresentation(rep);
   }
   return rep->AsImageRepGdk()->pixbuf();
@@ -671,7 +677,7 @@ CairoCachedSurface* const Image::ToCairo() const {
     // Handle any-to-Cairo conversion. This may create and cache an intermediate
     // pixbuf before sending the data to the display server.
     rep = new internal::ImageRepCairo(ToGdkPixbuf());
-    CHECK(rep);
+    //CHECK(rep);
     AddRepresentation(rep);
   }
   return rep->AsImageRepCairo()->surface();
@@ -699,9 +705,10 @@ UIImage* Image::ToUIImage() const {
         break;
       }
       default:
-        NOTREACHED();
+        //NOTREACHED();
+        break;
     }
-    CHECK(rep);
+    //CHECK(rep);
     AddRepresentation(rep);
   }
   return rep->AsImageRepCocoaTouch()->image();
@@ -727,9 +734,10 @@ NSImage* Image::ToNSImage() const {
         break;
       }
       default:
-        NOTREACHED();
+        //NOTREACHED();
+        break;
     }
-    CHECK(rep);
+    //CHECK(rep);
     AddRepresentation(rep);
   }
   return rep->AsImageRepCocoa()->image();
@@ -785,7 +793,8 @@ scoped_refptr<base::RefCountedMemory> Image::As1xPNGBytes() const {
       break;
     }
     default:
-      NOTREACHED();
+      //NOTREACHED();
+      break;
   }
   if (!png_bytes.get() || !png_bytes->size()) {
     // Add an ImageRepPNG with no data such that the conversion is not
@@ -897,27 +906,27 @@ void Image::SwapRepresentations(gfx::Image* other) {
 }
 
 Image::RepresentationType Image::DefaultRepresentationType() const {
-  CHECK(storage_.get());
+  //CHECK(storage_.get());
   RepresentationType default_type = storage_->default_representation_type();
   // The conversions above assume that the default representation type is never
   // kImageRepCairo.
-  DCHECK_NE(default_type, kImageRepCairo);
+  //DCHECK_NE(default_type, kImageRepCairo);
   return default_type;
 }
 
 internal::ImageRep* Image::GetRepresentation(
     RepresentationType rep_type, bool must_exist) const {
-  CHECK(storage_.get());
+  //CHECK(storage_.get());
   RepresentationMap::iterator it = storage_->representations().find(rep_type);
   if (it == storage_->representations().end()) {
-    CHECK(!must_exist);
+    //CHECK(!must_exist);
     return NULL;
   }
   return it->second;
 }
 
 void Image::AddRepresentation(internal::ImageRep* rep) const {
-  CHECK(storage_.get());
+  //CHECK(storage_.get());
   storage_->representations().insert(std::make_pair(rep->type(), rep));
 }
 

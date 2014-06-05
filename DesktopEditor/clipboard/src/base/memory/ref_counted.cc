@@ -21,7 +21,7 @@ RefCountedBase::RefCountedBase()
 
 RefCountedBase::~RefCountedBase() {
 #ifndef NDEBUG
-  DCHECK(in_dtor_) << "RefCounted object deleted without calling Release()";
+  //DCHECK(in_dtor_) << "RefCounted object deleted without calling Release()";
 #endif
 }
 
@@ -30,7 +30,7 @@ void RefCountedBase::AddRef() const {
   // Current thread books the critical section "AddRelease" without release it.
   // DFAKE_SCOPED_LOCK_THREAD_LOCKED(add_release_);
 #ifndef NDEBUG
-  DCHECK(!in_dtor_);
+  //DCHECK(!in_dtor_);
 #endif
   ++ref_count_;
 }
@@ -40,7 +40,7 @@ bool RefCountedBase::Release() const {
   // Current thread books the critical section "AddRelease" without release it.
   // DFAKE_SCOPED_LOCK_THREAD_LOCKED(add_release_);
 #ifndef NDEBUG
-  DCHECK(!in_dtor_);
+  //DCHECK(!in_dtor_);
 #endif
   if (--ref_count_ == 0) {
 #ifndef NDEBUG
@@ -64,22 +64,22 @@ RefCountedThreadSafeBase::RefCountedThreadSafeBase() : ref_count_(0) {
 
 RefCountedThreadSafeBase::~RefCountedThreadSafeBase() {
 #ifndef NDEBUG
-  DCHECK(in_dtor_) << "RefCountedThreadSafe object deleted without "
-                      "calling Release()";
+  //DCHECK(in_dtor_) << "RefCountedThreadSafe object deleted without "
+  //                    "calling Release()";
 #endif
 }
 
 void RefCountedThreadSafeBase::AddRef() const {
 #ifndef NDEBUG
-  DCHECK(!in_dtor_);
+  //DCHECK(!in_dtor_);
 #endif
   AtomicRefCountInc(&ref_count_);
 }
 
 bool RefCountedThreadSafeBase::Release() const {
 #ifndef NDEBUG
-  DCHECK(!in_dtor_);
-  DCHECK(!AtomicRefCountIsZero(&ref_count_));
+  //DCHECK(!in_dtor_);
+  //DCHECK(!AtomicRefCountIsZero(&ref_count_));
 #endif
   if (!AtomicRefCountDec(&ref_count_)) {
 #ifndef NDEBUG

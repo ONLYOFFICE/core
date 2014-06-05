@@ -277,7 +277,8 @@ namespace OOX
 		et_a_txDef, // <a:txDef>
 		et_a_up, // <a:up>
 		et_a_xfrm, // <a:xfrm>
-		
+		et_a_groupSpPr, // <a:groupSpPr>
+	
 		et_a_p, // <a:p>
 		et_a_pPr, // <a:pPr>
 		et_a_r, // <a:p>
@@ -466,6 +467,7 @@ namespace OOX
 
 		et_xdr_cNvPr, // <xdr:cNvPr>
 		et_xdr_spPr, // <xdr:spPr>
+		et_xdr_groupSpPr, // <xdr:groupSpPr>
 
 		et_c_chart, // <c:chart>
 		et_c_spPr,

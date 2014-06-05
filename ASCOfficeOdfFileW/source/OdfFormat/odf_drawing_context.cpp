@@ -102,7 +102,6 @@ public:
 		current_graphic_properties = NULL;
 		current_paragraph_properties = NULL;
 	} 
-	std::vector<odf_drawing_state> drawing_list_;//все элементы .. для удобства разделение по "топам"
 	
 	odf_drawing_state				current_drawing_state_;
 	_drawing_part					current_drawing_part_;
@@ -118,10 +117,18 @@ public:
 	style_graphic_properties		*current_graphic_properties;
 	style_paragraph_properties		*current_paragraph_properties;
 
+	_CP_OPT(length) global_svg_x_;		//from anchor cell
+	_CP_OPT(length) global_svg_y_;
+	_CP_OPT(length) global_svg_height_;
+	_CP_OPT(length) global_svg_width_;
+
+	std::vector<odf_element_state>	group_list_; //группы
+	std::vector<odf_drawing_state>	drawing_list_;	//все элементы(кроме групп) .. для удобства разделение по "топам"
+
 };
 
 ////////////////////////////////////////////////////////////////////////////
-
+////////////////////////////////////////////////////////////////////////////
 odf_drawing_context::odf_drawing_context(odf_conversion_context *odf_context)  
 	: impl_(new  odf_drawing_context::Impl(odf_context))
 {
@@ -138,16 +145,128 @@ void odf_drawing_context::set_styles_context(odf_style_context*  styles_context)
 	impl_->styles_context_ = styles_context;
 }
 
+void odf_drawing_context::start_group(std::wstring name, int id)
+{
+	office_element_ptr & group_elm = impl_->create_draw_element(5000);
+
+	draw_g* group = dynamic_cast<draw_g*>(group_elm.get());
+
+	int level = impl_->current_level_.size();
+	
+	odf_element_state group_state = {group_elm, L"", office_element_ptr(),level};
+	impl_->group_list_.push_back(group_state);
+	
+	if (impl_->current_level_.size()>0)
+		impl_->current_level_.back()->add_child_element(group_elm);
+
+	impl_->current_level_.push_back(group_elm);
+	
+	if (group== NULL)return;
+
+	group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_name_attlist_.draw_name_ = name;
+	if (id >=0)
+		group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_z_index_attlist_.draw_z_index_ = id;
+
+}
+void odf_drawing_context::end_group()
+{
+	impl_->current_level_.pop_back();
+}
+
+void odf_drawing_context::set_group_size( double width_pt, double height_pt)
+{
+	if (impl_->group_list_.size()<1)return;
+	//draw_g* group = dynamic_cast<draw_g*>(impl_->group_list_.back().elm.get());
+	//if (!group) return;
+
+	//group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);
+	//group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);
+}
+
+void odf_drawing_context::set_group_position(double x_pt, double y_pt)
+{
+	if (impl_->group_list_.size()<1)return;
+	//draw_g* group = dynamic_cast<draw_g*>(impl_->group_list_.back().elm.get());
+	//if (!group) return;
+	//
+	//group->common_draw_attlists_.position_.svg_x_ = length(length(x_pt,length::pt).get_value_unit(length::cm),length::cm);
+	//group->common_draw_attlists_.position_.svg_y_ = length(length(y_pt,length::pt).get_value_unit(length::cm),length::cm);
+}
+
+void odf_drawing_context::set_group_flip_H(bool bVal)
+{
+	if (impl_->group_list_.size()<1)return;
+	//draw_g* group = dynamic_cast<draw_g*>(impl_->group_list_.back().elm.get());
+	//if (!group) return;
+
+}
+void odf_drawing_context::set_group_flip_V(bool bVal)
+{
+	if (impl_->group_list_.size()<1)return;
+}
+
+void odf_drawing_context::set_group_rotate(int iVal)
+{
+	if (impl_->group_list_.size()<1)return;
+	//draw_g* group = dynamic_cast<draw_g*>(impl_->group_list_.back().elm.get());
+	//if (!group) return;
+
+	//double dRotate = iVal/60000.;
+	//dRotate = (360 - dRotate)/180. * 3.14159265358979323846;
+	//
+	//std::wstring strTransform;	
+	//if (abs(dRotate)>0.001)
+	//{
+	//	strTransform = std::wstring(L"rotate(") + boost::lexical_cast<std::wstring>(dRotate) + std::wstring(L")");
+	//	//так как вращения все в мс относительно центра фигуры, а не от начала координат - убираем смещение
+	//	if (group->common_draw_attlists_.position_.svg_x_ && group->common_draw_attlists_.position_.svg_y_)
+	//	{
+	//		strTransform += std::wstring(L" translate(") +	boost::lexical_cast<std::wstring>(group->common_draw_attlists_.position_.svg_x_.get() +
+	//															(group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_.get()/2))+ std::wstring(L",") + 
+	//														boost::lexical_cast<std::wstring>(group->common_draw_attlists_.position_.svg_y_.get() +
+	//															(group->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_.get()/2))+ std::wstring(L")") ; 
+	//	}
+
+	//	group->common_draw_attlists_.position_.svg_x_ = boost::none;
+	//	group->common_draw_attlists_.position_.svg_y_ = boost::none;
+	//}
+	//if (strTransform.length()>0)
+	//	group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_transform_attlist_.draw_transform_ = strTransform;
+}
+
+void odf_drawing_context::clear()
+{
+	impl_->global_svg_x_		= boost::none;
+	impl_->global_svg_y_		= boost::none;
+	impl_->global_svg_height_	= boost::none;
+	impl_->global_svg_width_	= boost::none;
+}
+
 void odf_drawing_context::start_drawing()
 {
 	impl_->current_drawing_state_.clear();
-	//text_context_.clear();
+
+	if (impl_->current_level_.size() < 1)
+	{
+		impl_->current_drawing_state_.svg_x_ = impl_->global_svg_x_;
+		impl_->current_drawing_state_.svg_y_ = impl_->global_svg_y_;
+		
+		impl_->current_drawing_state_.svg_width_ = impl_->global_svg_width_;
+		impl_->current_drawing_state_.svg_height_ = impl_->global_svg_height_;
+	}
 }
 void odf_drawing_context::end_drawing()
 {
 	if (impl_->current_drawing_state_.elements_.size() < 1) return;
 
+	if (!impl_->current_drawing_state_.svg_x_)	impl_->current_drawing_state_.svg_x_ = impl_->global_svg_x_;
+	if (!impl_->current_drawing_state_.svg_y_)	impl_->current_drawing_state_.svg_y_ = impl_->global_svg_y_;
+	
+	if (!impl_->current_drawing_state_.svg_width_)	impl_->current_drawing_state_.svg_width_ = impl_->global_svg_width_;
+	if (!impl_->current_drawing_state_.svg_height_)	impl_->current_drawing_state_.svg_height_ = impl_->global_svg_height_;
+	
 	draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
+
 	if (draw)
 	{
 		if (impl_->current_drawing_state_.name_.length() > 0)
@@ -188,6 +307,9 @@ void odf_drawing_context::end_drawing()
 	impl_->current_paragraph_properties = NULL;
 }
 
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 office_element_ptr odf_drawing_context::Impl::create_draw_element(int type)
 {
 	office_element_ptr element;
@@ -222,6 +344,9 @@ office_element_ptr odf_drawing_context::Impl::create_draw_element(int type)
 		break;
 	case 9:
 		create_element(L"draw", L"connector", element, odf_context_);
+		break;
+	case 5000:
+		create_element(L"draw", L"g", element, odf_context_);
 		break;
 	}
 
@@ -559,20 +684,21 @@ void odf_drawing_context::set_rotate(int iVal)
 	double dRotate = iVal/60000.;
 	impl_->current_drawing_state_.rotateAngle = (360 - dRotate)/180. * 3.14159265358979323846;
 }
-void odf_drawing_context::set_rect(double x_pt, double y_pt, double width_pt, double height_pt)
+void odf_drawing_context::set_drawings_rect(double x_pt, double y_pt, double width_pt, double height_pt)
 {
 	//хороший тон сохранить все размеры в см (хотя можно и в другой системе)
-	impl_->current_drawing_state_.svg_x_ = length(length(x_pt,length::pt).get_value_unit(length::cm),length::cm);
-	impl_->current_drawing_state_.svg_y_ = length(length(y_pt,length::pt).get_value_unit(length::cm),length::cm);
+	impl_->global_svg_x_ = length(length(x_pt,length::pt).get_value_unit(length::cm),length::cm);
+	impl_->global_svg_y_ = length(length(y_pt,length::pt).get_value_unit(length::cm),length::cm);
 
-	impl_->current_drawing_state_.svg_height_ = length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
-	impl_->current_drawing_state_.svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);	
+	impl_->global_svg_height_ = length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
+	impl_->global_svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);	
 }
 void odf_drawing_context::set_position(double x_pt, double y_pt)
 {
-	//хороший тон сохранить все размеры в см (хотя можно и в другой системе)
-	impl_->current_drawing_state_.svg_x_ = length(length(x_pt,length::pt).get_value_unit(length::cm),length::cm);
-	//impl_->current_drawing_state_.svg_y_ = length(length(y_pt,length::pt).get_value_unit(length::cm),length::cm);
+	if (!impl_->current_drawing_state_.svg_x_) 
+		impl_->current_drawing_state_.svg_x_ = length(length(x_pt,length::pt).get_value_unit(length::cm),length::cm);
+	if (!impl_->current_drawing_state_.svg_y_) 
+		impl_->current_drawing_state_.svg_y_ = length(length(y_pt,length::pt).get_value_unit(length::cm),length::cm);
 }
 void odf_drawing_context::get_size( double & width_pt, double & height_pt)
 {
@@ -583,8 +709,10 @@ void odf_drawing_context::get_size( double & width_pt, double & height_pt)
 }
 void odf_drawing_context::set_size( double width_pt, double height_pt)
 {
-	impl_->current_drawing_state_.svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);
-	impl_->current_drawing_state_.svg_height_= length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
+	//if (!impl_->current_drawing_state_.svg_width_)	
+		impl_->current_drawing_state_.svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);
+	//if (!impl_->current_drawing_state_.svg_height_)
+		impl_->current_drawing_state_.svg_height_= length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
 }
 void odf_drawing_context::set_line_width(double pt)
 {
@@ -811,9 +939,16 @@ bool odf_drawing_context::is_exist_content()
 
 void odf_drawing_context::finalize(office_element_ptr & root_elm)//для привязки 
 {
+	for (int i=0; i< impl_->group_list_.size(); i++)
+	{
+		if (impl_->group_list_[i].level ==0 )
+		{
+			root_elm->add_child_element(impl_->group_list_[i].elm);
+		}
+	}	
 	for (int i=0; i< impl_->drawing_list_.size(); i++)
 	{
-		if (impl_->drawing_list_[i].elements_.size() > 0)
+		if (impl_->drawing_list_[i].elements_.size() > 0 && impl_->drawing_list_[i].elements_[0].level == 0 )
 		{
 			root_elm->add_child_element(impl_->drawing_list_[i].elements_[0].elm);
 		}

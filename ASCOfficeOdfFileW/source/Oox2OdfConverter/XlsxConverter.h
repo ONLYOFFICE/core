@@ -42,6 +42,7 @@ namespace OOX
 		class CPic;
 		class CShape;
 		class CConnShape;
+		class CGroupShape;
 		class CCommentItem;
 		class CGraphicFrame;
 		class CDefinedName;
@@ -159,6 +160,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CShape				*oox_shape);
 		void convert(OOX::Spreadsheet::CConnShape			*oox_conn_shape);
 		void convert(OOX::Spreadsheet::CGraphicFrame		*oox_graphic_frame);
+		void convert(OOX::Spreadsheet::CGroupShape			*oox_group_shape);
 	
 		void convert(OOX::Spreadsheet::CConditionalFormatting		*oox_cond_fmt);
 		void convert(OOX::Spreadsheet::CConditionalFormattingRule	*oox_cond_rule);

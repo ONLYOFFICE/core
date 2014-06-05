@@ -66,11 +66,10 @@ public:
 	virtual odf_drawing_context		* drawing_context()	{return current_table().drawing_context();}
 	virtual odf_text_context		* text_context()	{return current_text_context_;}
 	
-	void start_drawing()		{drawing_context()->start_drawing();}
-	void end_drawing()			{drawing_context()->end_drawing();}
+	void start_drawings();
+	void end_drawings();
 
 	void start_image(std::wstring & image_file_name);
-	void end_image(){drawing_context()->end_image();}
 
 	double convert_symbol_width(double val);
 	

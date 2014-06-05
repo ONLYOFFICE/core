@@ -438,7 +438,13 @@ void ods_conversion_context::end_cell_text()
 		current_text_context_->end_paragraph();
 	}
 }
-
+void ods_conversion_context::start_drawings()
+{
+}
+void ods_conversion_context::end_drawings()
+{
+	current_table().drawing_context()->clear();
+}
 void ods_conversion_context::start_image(std::wstring & image_file_name)
 {
 	std::wstring odf_ref_name ;

@@ -160,6 +160,12 @@ struct ods_shared_formula_state
 	int moving_type; //1 - col, 2 - row
 };
 
+struct ods_array_formula_state
+{
+	std::wstring formula;
+	std::wstring ref;
+};
+
 class ods_table_state
 {
 public:
@@ -167,6 +173,7 @@ public:
 		void set_table_name(std::wstring name);
 		void set_table_style(office_element_ptr & _style);
 		void set_table_hidden(bool Val);
+		void set_table_rtl(bool Val);
 		void set_table_tab_color(_CP_OPT(color) & _color);
 		void set_table_dimension(int col, int row);
 		void set_print_range(std::wstring range);
@@ -196,6 +203,7 @@ public:
 	void set_cell_value(std::wstring & value);	
 	void set_cell_text(odf_text_context *text_context, bool cash_value = false);
 	void set_cell_formula(std::wstring &formula);
+	void set_cell_array_formula(std::wstring & formula, std::wstring ref);
 	void add_or_find_cell_shared_formula(std::wstring & formula, std::wstring ref, int ind);
 	
 	static std::wstring replace_cell_row(boost::wsmatch const & what);
@@ -277,7 +285,7 @@ private:
 	std::vector<ods_hyperlink_state>	hyperlinks_;
 	std::vector<ods_comment_state>		comments_;
 
-	std::vector<ods_shared_formula_state> shared_formulas_;
+	std::vector<ods_shared_formula_state>	shared_formulas_;
 
 	odf_drawing_context		drawing_context_;	
 

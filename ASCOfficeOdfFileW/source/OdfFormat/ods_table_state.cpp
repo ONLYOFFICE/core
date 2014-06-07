@@ -132,6 +132,16 @@ void ods_table_state::set_table_hidden(bool Val)
 	table_properties->table_format_properties_.table_display_ = !Val;
 
 }
+void ods_table_state::set_table_rtl(bool Val)
+{
+	if (!office_table_style_)return;
+
+	style_table_properties *table_properties = office_table_style_->style_content_.get_style_table_properties();
+	if (table_properties == NULL)return;
+
+	table_properties->table_format_properties_.common_writing_mode_attlist_.style_writing_mode_ = writing_mode(writing_mode::RlTb);
+
+}
 
 void ods_table_state::set_print_range(std::wstring range)
 {
@@ -559,6 +569,8 @@ static formulasconvert::oox2odf_converter formulas_converter;
 
 void ods_table_state::set_cell_formula(std::wstring & formula)
 {
+	if (formula.length() < 1)return;
+
 	std::wstring odfFormula = formulas_converter.convert_formula(formula);
 	
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
@@ -612,6 +624,9 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 {
 	if (ind < 0)return;
 	
+	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
+	if (cell == NULL)return;	
+
 	std::wstring odf_formula;
 	
 	if (formula.size() > 0)
@@ -633,6 +648,9 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 		}
 		ods_shared_formula_state state = {ind, odf_formula,ref, current_table_column_,current_table_row_, moving_type};
 		shared_formulas_.push_back(state);
+		
+		cell->table_table_cell_attlist_.table_formula_ = odf_formula;
+		cells_.back().empty = false;
 	}
 	else
 	{
@@ -641,8 +659,7 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 			if (shared_formulas_[i].index == ind)
 			{
 				odf_formula = shared_formulas_[i].formula;
-				table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
-				if (cell == NULL)return;
+
 				//поменять по ref формулу !!!
 				if (shared_formulas_[i].moving_type == 1)
 				{
@@ -668,14 +685,51 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 						boost::match_default | boost::format_all);
 					odf_formula = res;
 				}
-				cell->table_table_cell_attlist_.table_formula_ = odf_formula;
-				
+				cell->table_table_cell_attlist_.table_formula_ = odf_formula;				
 				cells_.back().empty = false;
 			}
 		}
 	}
-	
+}
+void ods_table_state::set_cell_array_formula(std::wstring & formula, std::wstring ref)
+{
+	set_cell_formula(formula);
 
+	//; ??? C2:D5 или D1;F1;G; ... ???
+
+ 	std::vector<std::wstring> ref_cells;
+	boost::algorithm::split(ref_cells,ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
+
+	int row_span =0;
+	int col_span =0;
+
+	if (ref_cells.size() ==2)
+	{
+		int col1 = -1, row1 = -1;
+		int col2 = -1, row2 = -1;
+
+		utils::parsing_ref (ref_cells[0], col1, row1);
+		utils::parsing_ref (ref_cells[1], col2, row2);
+
+		row_span = abs(row2-row1) +1;
+		col_span = abs(col2-col1) +1;
+
+	}
+	else if (ref_cells.size() ==1)	row_span = col_span = 1;
+	else
+	{
+		row_span = col_span = 1;//???
+	}
+
+	if (col_span >0 && row_span > 0)
+	{
+		table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
+		if (cell == NULL)return;
+
+		cell->table_table_cell_attlist_extra_.table_number_matrix_columns_spanned_ = col_span;
+		cell->table_table_cell_attlist_extra_.table_number_matrix_rows_spanned_ = row_span;
+
+	}
 }
 
 void ods_table_state::add_child_element(office_element_ptr & child_element)
@@ -734,16 +788,6 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 			cells_.back().elm->add_child_element(text_context->text_elements_list_[i].elm);
 		}
 	}
-	style* style_ = dynamic_cast<style*>(cells_.back().style_elm.get());
-	if (!style_)return;	
-	
-	odf::style_table_cell_properties	* table_cell_properties = style_->style_content_.get_style_table_cell_properties();
-
-	if (table_cell_properties)
-	{
-		table_cell_properties->style_table_cell_properties_attlist_.style_text_align_source_ = odf::text_align_source(odf::text_align_source::Fix);
-	}	
-	
 	if (cash_value == false)
 	{
 		_CP_OPT(office_value_type) cell_type = office_value_type(office_value_type::String);
@@ -755,12 +799,21 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 			{
 				cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
 			}
-			//if (!cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_)
-			//{
 			cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
-			//}
 		}
+		cells_.back().empty = false;
+
 	}
+
+	style* style_ = dynamic_cast<style*>(cells_.back().style_elm.get());
+	if (!style_)return;	
+	
+	odf::style_table_cell_properties	* table_cell_properties = style_->style_content_.get_style_table_cell_properties();
+
+	if (table_cell_properties)
+	{
+		table_cell_properties->style_table_cell_properties_attlist_.style_text_align_source_ = odf::text_align_source(odf::text_align_source::Fix);
+	}	
 }
 void ods_table_state::set_cell_value(std::wstring & value)
 {

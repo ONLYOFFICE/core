@@ -103,7 +103,7 @@ static const def_language_code LanguageCodeTable[] =
 	{L"German Luxembourg",	L"", L"de",	0x01007},
 	{L"Greek",				L"", L"",	0x0408},
 	{L"Gujarati",			L"", L"",	0x0447},
-	{L"Hebrew",				L"", L"",	0x040D},
+	{L"Hebrew",				L"IN", L"hi",	0x040D},
 	{L"Hindi",				L"", L"",	0x0439},
 	{L"Hungarian",			L"", L"",	0x040E},
 	{L"Icelandic",			L"", L"",	0x040F},

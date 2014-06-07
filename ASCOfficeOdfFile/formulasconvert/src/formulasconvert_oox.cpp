@@ -154,8 +154,8 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater1(boost::wsmat
 
         std::wstring c1 = what[2].str(); 
         std::wstring c2 = what[3].str(); 
-		int res;
-		if (sheet1.length() > 0  && (res = c1.find(L"$")) >=0 ) sheet1 = L"$"  + sheet1;
+		int res=0;
+		if (sheet1.length() > 0  && (res = c1.find(L"$")) >=0) sheet1 = L"$"  + sheet1;
 
 		const std::wstring s =  std::wstring(L"[")  + sheet1 + L"." + 
 								c1 +
@@ -521,6 +521,13 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 		res1,
 		boost::wregex(L"(?:(?=[()])(.*?)(?=[)]))"),
 		&oox2odf_converter::Impl::replace_arguments,boost::match_default | boost::format_all);
+
+	if (res1 == res)
+	{
+		res = convert(res1);
+		boost::algorithm::replace_all(res, L"[", L"");
+		boost::algorithm::replace_all(res, L"]", L"");
+	}
 
     boost::algorithm::replace_all(res, L"SCOBCAIN", L"(");
     boost::algorithm::replace_all(res, L"SCOBCAOUT", L")");

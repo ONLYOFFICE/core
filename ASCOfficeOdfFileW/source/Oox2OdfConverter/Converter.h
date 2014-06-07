@@ -58,6 +58,8 @@ namespace OOX
 		class CRunProperty;
 		class CLineSpacing;
 		class CColor;
+		class CShapeStyle;
+		class CStyleMatrixReference;
 
 		namespace Colors
 		{
@@ -228,19 +230,20 @@ public:
 		void convert(OOX::WritingElement  *oox_unknown);
 	
 		void convert(OOX::Drawing::CNonVisualDrawingProps		*oox_cnvPr);
-		void convert(OOX::Drawing::CShapeProperties				*oox_spPr);
+		void convert(OOX::Drawing::CShapeProperties				*oox_spPr, OOX::Drawing::CShapeStyle* oox_sp_style /*= NULL)*/);
 		void convert(OOX::Drawing::CGroupShapeProperties		*oox_groupSpPr);
 		void convert(OOX::Drawing::CTextBodyProperties			*oox_bodyPr);
 		
 		void convert(OOX::Drawing::CCustomGeometry2D			*oox_cust_geom);
 		void convert(OOX::Drawing::CPresetGeometry2D			*oox_prst_geom);
 
-		void convert(OOX::Drawing::CLineProperties				*oox_line_prop);
+		void convert(OOX::Drawing::CLineProperties				*oox_line_prop,		CString *change_sheme_color = NULL);
 		
-		void convert(OOX::Drawing::CBlipFillProperties			*oox_bitmap_fill);
-		void convert(OOX::Drawing::CGradientFillProperties		*oox_grad_fill);
-		void convert(OOX::Drawing::CPatternFillProperties		*oox_pattern_fill);
-		void convert(OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill);
+		void convert(OOX::Drawing::CBlipFillProperties			*oox_bitmap_fill,	CString *change_sheme_color = NULL);
+		void convert(OOX::Drawing::CGradientFillProperties		*oox_grad_fill	,	CString *change_sheme_color = NULL);
+		void convert(OOX::Drawing::CPatternFillProperties		*oox_pattern_fill,	CString *change_sheme_color = NULL);
+		void convert(OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill	,	CString *change_sheme_color = NULL);
+		void convert(OOX::Drawing::CStyleMatrixReference		*style_matrix_ref);
 //////////////////////////////////////////////
 		void convert(OOX::Drawing::CPath2D						*oox_geom_path);
 		void convert(OOX::Drawing::CPath2DLineTo				*oox_geom_path);

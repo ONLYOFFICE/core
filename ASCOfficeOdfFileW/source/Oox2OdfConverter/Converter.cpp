@@ -143,9 +143,47 @@ void OoxConverter::convert(OOX::Drawing::CGroupShapeProperties *   oox_group_spP
 	}
 
 }
-void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr)
+
+void OoxConverter::convert(OOX::Drawing::CStyleMatrixReference *style_matrix_ref)
+{
+	if (!style_matrix_ref) return;
+
+	int fmt_index = style_matrix_ref->m_oIdx.GetValue()-1;
+
+	OOX::CTheme *theme = oox_theme();
+	if (!theme || fmt_index <0) return;
+
+	CString color = style_matrix_ref->m_oShemeClr.m_oVal.ToString();
+
+	if (style_matrix_ref->getType() == OOX::et_a_fillRef && fmt_index < theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems.GetSize())
+	{
+		switch(theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index]->getType())
+		{
+			case OOX::et_a_blipFill:	
+				convert((OOX::Drawing::CBlipFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index], &color);break;
+			case OOX::et_a_gradFill:	
+				convert((OOX::Drawing::CGradientFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index], &color);break;
+			case OOX::et_a_pattFill:	
+				convert((OOX::Drawing::CPatternFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index], &color);break;
+			case OOX::et_a_solidFill:	
+				convert((OOX::Drawing::CSolidColorFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index], &color);break;
+			case OOX::Drawing::filltypeNo:
+				odf_context()->drawing_context()->set_no_fill();break;
+		}
+	}
+
+	if (style_matrix_ref->getType() == OOX::et_a_lnRef && fmt_index < theme->m_oThemeElements.m_oFmtScheme.m_oLineStyleLst.m_arrLn.GetSize())
+	{
+		convert(&theme->m_oThemeElements.m_oFmtScheme.m_oLineStyleLst.m_arrLn[fmt_index], &color);
+	}
+
+}
+void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr, OOX::Drawing::CShapeStyle* oox_sp_style)
 {
 	if (!oox_spPr) return;
+
+	bool use_fill_from_style = false;
+	bool use_line_from_style = false;
 
 	switch(oox_spPr->m_eGeomType)
 	{
@@ -166,16 +204,26 @@ void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr)
 			case OOX::Drawing::filltypePattern:		convert(oox_spPr->m_oPattFill.GetPointer());break;
 			case OOX::Drawing::filltypeSolid:		convert(oox_spPr->m_oSolidFill.GetPointer());break;
 			case OOX::Drawing::filltypeGroup:
-			case OOX::Drawing::filltypeNo:			odf_context()->drawing_context()->set_no_fill();
+			case OOX::Drawing::filltypeNo:			odf_context()->drawing_context()->set_no_fill();break;
+			default:
+				use_fill_from_style = true;
 				break;
 		}
-		//....
+		if ((use_fill_from_style && oox_sp_style) && (oox_sp_style->m_oFillRef.getType() == OOX::et_a_fillRef))
+		{
+			convert(&oox_sp_style->m_oFillRef);
+		}
 	}
 	odf_context()->drawing_context()->end_area_properies();
 
 	odf_context()->drawing_context()->start_line_properies();
 	{
-		convert(oox_spPr->m_oLn.GetPointer());	//CLineProperties
+		if (oox_spPr->m_oLn.IsInit())
+			convert(oox_spPr->m_oLn.GetPointer());	//CLineProperties
+		else if ((oox_sp_style) && (oox_sp_style->m_oLnRef.getType() == OOX::et_a_lnRef))
+		{
+			convert(&oox_sp_style->m_oLnRef);
+		}
 	}
 	odf_context()->drawing_context()->end_line_properies();
 ////////
@@ -239,15 +287,15 @@ void OoxConverter::convert(OOX::Drawing::CCustomGeometry2D *oox_cust_geom)
 		convert(&oox_cust_geom->m_oPthLst.m_arrPath[i]);
 	}
 }
-void OoxConverter::convert(OOX::Drawing::CLineProperties *oox_line_prop)
+void OoxConverter::convert(OOX::Drawing::CLineProperties *oox_line_prop, CString *change_sheme_color )
 {
 	if (!oox_line_prop)return;
 	
 	switch (oox_line_prop->m_eFillType)
 	{
-		case OOX::Drawing::filltypeGradient:	convert(oox_line_prop->m_oGradFill.GetPointer());break;
-		case OOX::Drawing::filltypePattern:		convert(oox_line_prop->m_oPattFill.GetPointer());break;
-		case OOX::Drawing::filltypeSolid:		convert(oox_line_prop->m_oSolidFill.GetPointer());break;
+		case OOX::Drawing::filltypeGradient:	convert(oox_line_prop->m_oGradFill.GetPointer(), change_sheme_color);break;
+		case OOX::Drawing::filltypePattern:		convert(oox_line_prop->m_oPattFill.GetPointer(), change_sheme_color);break;
+		case OOX::Drawing::filltypeSolid:		convert(oox_line_prop->m_oSolidFill.GetPointer(), change_sheme_color);break;
 		case OOX::Drawing::filltypeGroup:
 		case OOX::Drawing::filltypeNo:			odf_context()->drawing_context()->set_no_fill();
 			break;
@@ -319,7 +367,7 @@ void OoxConverter::convert(OOX::Drawing::CPath2D *oox_geom_path)
 	}
 }
 //////////////////////////////////////////////////////////////////////////////////////////
-void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill)
+void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill,	CString *change_sheme_color)
 {
 	if (!oox_bitmap_fill)return;
 
@@ -382,7 +430,7 @@ void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill)
 	odf_context()->drawing_context()->end_bitmap_style();
 }
 
-void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill)
+void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill,	CString *change_sheme_color)
 {
 	if (!oox_grad_fill)return;
 
@@ -414,6 +462,11 @@ void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill)
 			std::wstring hexColorStart, hexColorEnd;
 			_CP_OPT(double) opacityStart, opacityEnd;
 			
+			if (change_sheme_color && oox_grad_fill->m_oGsLst->m_arrGs[0].m_eType == OOX::Drawing::colorSheme)
+			{
+				oox_grad_fill->m_oGsLst->m_arrGs[0].m_oShemeClr.m_oVal.FromString(*change_sheme_color);
+				oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.GetSize()-1].m_oShemeClr.m_oVal.FromString(*change_sheme_color);
+			}
 			convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[0]),hexColorStart, opacityStart);
 			convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.GetSize()-1]),hexColorEnd, opacityEnd);
 			
@@ -425,7 +478,7 @@ void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill)
 	}
 	odf_context()->drawing_context()->end_gradient_style();
 }
-void OoxConverter::convert(OOX::Drawing::CPatternFillProperties *oox_pattern_fill)
+void OoxConverter::convert(OOX::Drawing::CPatternFillProperties *oox_pattern_fill,	CString *change_sheme_color)
 {
 	if (!oox_pattern_fill)return;
 	
@@ -445,6 +498,9 @@ void OoxConverter::convert(OOX::Drawing::CPatternFillProperties *oox_pattern_fil
 		}
 		if (oox_pattern_fill->m_oBgClr.IsInit())
 		{
+			if (change_sheme_color && oox_pattern_fill->m_oBgClr.IsInit() && oox_pattern_fill->m_oBgClr->m_eType == OOX::Drawing::colorSheme)
+				oox_pattern_fill->m_oBgClr->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
+
 			std::wstring hexColor;
 			_CP_OPT(double) opacity;
 			convert((OOX::Drawing::CColor*)oox_pattern_fill->m_oBgClr.GetPointer(),hexColor, opacity);
@@ -479,12 +535,15 @@ void OoxConverter::convert(OOX::Drawing::CColor *oox_color,std::wstring & hexCol
 		case OOX::Drawing::colorSys:	convert(&oox_color->m_oSysClr,		hexColor, opacity);		break;		
 	}	
 }
-void OoxConverter::convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fill)
+void OoxConverter::convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fill,	CString *change_sheme_color)
 {
 	if (!oox_solid_fill)return;
 
 	std::wstring hexColor;
 	_CP_OPT(double) opacity;
+	
+	if (change_sheme_color && oox_solid_fill->m_eType == OOX::Drawing::colorSheme)
+		oox_solid_fill->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
 	
 	convert(oox_solid_fill, hexColor, opacity);
 

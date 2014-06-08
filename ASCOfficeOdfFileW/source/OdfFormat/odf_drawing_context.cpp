@@ -29,15 +29,6 @@ namespace cpdoccore
 namespace odf
 {
 
-struct 	odf_element_state
-{
-	office_element_ptr	elm;
-	std::wstring		style_name;
-
-	office_element_ptr	style_elm;
-	
-	int level;
-};
 struct 	odf_group_state
 {
 	office_element_ptr	elm;

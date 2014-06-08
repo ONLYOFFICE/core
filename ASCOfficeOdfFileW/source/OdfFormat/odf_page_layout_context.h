@@ -1,0 +1,47 @@
+#pragma once
+
+#include <string>
+
+#include "odf_page_layout_state.h"
+
+
+namespace cpdoccore {
+namespace odf {
+
+class odf_style_context;
+class odf_conversion_context;
+
+class office_element;
+typedef shared_ptr<office_element>::Type office_element_ptr;
+
+class odf_page_layout_context;
+typedef shared_ptr<odf_page_layout_context>::Type odf_page_layout_context_ptr;
+
+class odf_page_layout_context
+{
+public:
+    odf_page_layout_context();
+	void set_odf_context	(odf_conversion_context * Context);
+	void set_style_context	(odf_style_context * Context);
+
+	void create_master_page(std::wstring oox_name);
+	void create_layout_page();
+
+
+    odf_layout_state & last_layout();
+    odf_master_state & last_master();
+
+
+private:
+
+    odf_conversion_context	* odf_context_;
+    odf_style_context		* style_context_;
+    
+	std::vector<odf_layout_state> layout_state_list_;
+ 	std::vector<odf_master_state> master_state_list_;
+	
+};
+
+
+}
+}

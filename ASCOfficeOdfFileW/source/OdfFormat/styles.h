@@ -337,7 +337,7 @@ public:
     void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
     void add_child_element(office_element_ptr & child);
 
-	void serialize(std::wostream & strm){}
+	void serialize(std::wostream & strm);
 
 	office_element_ptr_array table_templates_;    
 
@@ -396,6 +396,8 @@ CP_REGISTER_OFFICE_ELEMENT2(office_master_styles);
 class style_master_page_attlist
 {
 public:
+	void serialize(CP_ATTR_NODE);
+
     _CP_OPT(style_ref)		style_name_;
     _CP_OPT(std::wstring)	style_display_name_;
     _CP_OPT(style_ref)		style_page_layout_name_;
@@ -421,7 +423,7 @@ public:
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
 	int find_placeHolderIndex(presentation_class::type placeHolder,int & last_idx);
    
@@ -495,9 +497,7 @@ private:
 
 };
 
-/// \class  style_header
 ///         style:header
-///         style-header
 class style_header : public office_element_impl<style_header>, public header_footer_impl
 {
 public:
@@ -510,18 +510,14 @@ public:
     virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
-public:
-    //header_footer_content_impl content_;
-
+    header_footer_content_impl content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header);
 
-/// \class  style_footer
 ///         style:footer
-///         style-header
 class style_footer : public office_element_impl<style_footer>, public header_footer_impl
 {
 public:
@@ -531,20 +527,18 @@ public:
     static const ElementType type = typeStyleFooter;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-public:
-   // header_footer_content_impl content_;
+    header_footer_content_impl content_;
 
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer);
-/// \class  style_header_first
+
 ///         style:header-first
-///         style-header
 class style_header_first : public office_element_impl<style_header_first>, public header_footer_impl
 {
 public:
@@ -554,20 +548,17 @@ public:
     static const ElementType type = typeStyleHeaderFirst;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-    //header_footer_content_impl content_;
-
+    header_footer_content_impl content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header_first);
 
-/// \class  style_footer_first
 ///         style:footer_first
-///         style-header
 class style_footer_first : public office_element_impl<style_footer_first>, public header_footer_impl
 {
 public:
@@ -580,10 +571,9 @@ public:
     virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
-   // header_footer_content_impl content_;
-
+    header_footer_content_impl content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer_first);
@@ -601,9 +591,9 @@ public:
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-	virtual void serialize(std::wostream & strm){}
-  // header_footer_content_impl content_;
-
+	virtual void serialize(std::wostream & strm);
+  
+	header_footer_content_impl content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header_left);
@@ -621,11 +611,9 @@ public:
     virtual void create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
-public:
-   // header_footer_content_impl content_;
-
+	header_footer_content_impl content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer_left);
@@ -641,9 +629,9 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child);
+	virtual void add_child_element(office_element_ptr & child);
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
     _CP_OPT(unsigned int) fo_column_count_;
     _CP_OPT(length) fo_column_gap_;
@@ -655,7 +643,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_columns);
 
-/// style:column
+///		style:column
 class style_column : public office_element_impl<style_column>
 {
 public:
@@ -666,15 +654,14 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
-	virtual void serialize(std::wostream & strm){}
+	virtual void add_child_element(office_element_ptr & child){}
+	virtual void serialize(std::wostream & strm);
 
     _CP_OPT(length) style_rel_width_;
-    length fo_start_indent_;
-    length fo_end_indent_;
-    length fo_space_before_;
-    length fo_space_after_;
+	_CP_OPT( length) fo_start_indent_;
+    _CP_OPT(length) fo_end_indent_;
+    _CP_OPT(length) fo_space_before_;
+    _CP_OPT(length) fo_space_after_;
     
 };
 
@@ -691,15 +678,15 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
-	virtual void serialize(std::wostream & strm){}
+	virtual void add_child_element(office_element_ptr & child){}
+	
+	virtual void serialize(std::wostream & strm);
 
-    std::wstring style_style_; // default solid
-    _CP_OPT(length) style_width_;
-    percent style_height_; // default 100
-    vertical_align style_vertical_align_; //default top
-    color style_color_; // default #000000
+    _CP_OPT(std::wstring)	style_style_;			 // default solid
+    _CP_OPT(length)			style_width_;
+	_CP_OPT(percent)		style_height_;			// default 100
+    _CP_OPT(vertical_align) style_vertical_align_;	// default top
+    _CP_OPT(color)			style_color_;			// default #000000
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_column_sep);
@@ -717,22 +704,17 @@ public:
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
-    common_background_color_attlist common_background_color_attlist_;
-    office_element_ptr style_background_image_;
+    common_background_color_attlist		common_background_color_attlist_;
+    common_horizontal_margin_attlist	common_horizontal_margin_attlist_;
+    common_writing_mode_attlist			common_writing_mode_attlist_;
 
-    common_horizontal_margin_attlist common_horizontal_margin_attlist_;
-
-    office_element_ptr style_columns_;
-
-    bool style_protect_; // default false
-
+    _CP_OPT(Bool) style_protect_; // default false
     _CP_OPT(Bool) text_dont_balance_text_columns_;
-
-    common_writing_mode_attlist common_writing_mode_attlist_;
-    
-
+ 
+    office_element_ptr style_columns_;
+    office_element_ptr style_background_image_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_section_properties);
@@ -741,10 +723,10 @@ CP_REGISTER_OFFICE_ELEMENT2(style_section_properties);
 class style_page_layout_attlist
 {
 public:
-    const std::wstring & get_style_name() const { return style_name_; }
+	void serialize(CP_ATTR_NODE);
 
-    std::wstring style_name_;
-    page_usage style_page_usage_; // default All
+	_CP_OPT(std::wstring)	style_name_;
+    _CP_OPT(page_usage)		style_page_usage_; // default All
         
 };
 
@@ -758,10 +740,10 @@ public:
     static const ElementType type = typeStyleHeaderStyle;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void serialize(std::wostream & strm){}
-
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element(office_element_ptr & child);
+
+	virtual void serialize(std::wostream & strm);
 
 	office_element_ptr style_header_footer_properties_;
 
@@ -783,10 +765,9 @@ public:
     virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
 	office_element_ptr style_header_footer_properties_;
-
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer_style);
@@ -800,17 +781,17 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStylePageLayout;
     CPDOCCORE_DEFINE_VISITABLE();
-
    
 	style_page_layout_attlist style_page_layout_attlist_;
-    office_element_ptr style_page_layout_properties_;
+   
+	office_element_ptr style_page_layout_properties_;
     office_element_ptr style_header_style_;
     office_element_ptr style_footer_style_;
 
     virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-	virtual void serialize(std::wostream & strm){}    
+	virtual void serialize(std::wostream & strm);  
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_page_layout);
@@ -819,6 +800,7 @@ CP_REGISTER_OFFICE_ELEMENT2(style_page_layout);
 class style_page_layout_properties_attlist
 {
 public:
+	void serialize(CP_ATTR_NODE);
     _CP_OPT(length) fo_page_width_;         // +
     _CP_OPT(length) fo_page_height_;        // +
     common_num_format_attlist common_num_format_attlist_;
@@ -894,12 +876,13 @@ public:
 class style_footnote_sep_attlist
 {
 public:
+	void serialize(CP_ATTR_NODE);
 
     _CP_OPT(length) style_width_;
     _CP_OPT(percent) style_rel_width_;
     _CP_OPT(color) style_color_;
     _CP_OPT(line_style) style_line_style_;
-    style_type style_adjustment_; // default Left
+   _CP_OPT(style_type) style_adjustment_; // default Left
     _CP_OPT(length) style_distance_before_sep_;
     _CP_OPT(length) style_distance_after_sep_;
                 
@@ -918,7 +901,7 @@ public:
     virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
     style_footnote_sep_attlist style_footnote_sep_attlist_;
     
@@ -932,6 +915,7 @@ class style_page_layout_properties_elements
 public:
     void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
     void add_child_element(office_element_ptr & child);
+	void serialize(std::wostream & strm);
 
     office_element_ptr style_background_image_;
     office_element_ptr style_columns_;
@@ -962,7 +946,7 @@ public:
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
     style_page_layout_properties_attlist style_page_layout_properties_attlist_;
     style_page_layout_properties_elements style_page_layout_properties_elements_;

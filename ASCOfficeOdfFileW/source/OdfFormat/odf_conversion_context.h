@@ -3,6 +3,8 @@
 #include "object_package.h"
 
 #include "odf_style_context.h"
+#include "odf_page_layout_context.h"
+
 #include "odf_drawing_context.h"
 #include "odf_chart_context.h"
 

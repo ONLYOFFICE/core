@@ -33,7 +33,11 @@ public:
 		Opacity,
 		FillImage,
 		Marker,
-		StokeDash
+		StokeDash,
+		PageLayout,
+		MasterPage,
+		HandoutMaster,
+		LayerSet
     };
 
     style_family() : type_(Default) {}

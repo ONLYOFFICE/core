@@ -30,6 +30,7 @@ odf_style_state & odf_style_context::last_state()
 	else
 		throw;
 }
+
 void odf_style_context::create_style(std::wstring oox_name,const style_family family, bool automatic,bool root,int oox_id)
 {
 	std::wstring odf_name = oox_name;
@@ -39,7 +40,7 @@ void odf_style_context::create_style(std::wstring oox_name,const style_family fa
 	office_element_ptr elm;
 	create_element(L"style", L"style", elm, odf_context_);
 	
-	style_state_list_.push_back( odf_style_state(/*context_, */elm, family) ); 
+	style_state_list_.push_back( odf_style_state(elm, family) ); 
 
 ///////////////////////////////////////	
 	last_state().set_name(odf_name);
@@ -57,8 +58,15 @@ void odf_style_context::add_style(office_element_ptr elm, bool automatic, bool r
 	last_state().set_automatic(automatic);
 	last_state().set_root(root);
 }
+void odf_style_context::add_master_style(office_element_ptr & elm)
+{
+	if (!elm) return;
+	
+	master_style_list_.push_back( elm); 
 
-void odf_style_context::create_default(const style_family family)
+}
+
+void odf_style_context::create_default_style(const style_family family)
 {
 	office_element_ptr elm;
 	create_element(L"style", L"default-style", elm, odf_context_);
@@ -80,7 +88,7 @@ void odf_style_context::create_default(const style_family family)
 }
 void odf_style_context::reset_defaults()
 {
-	default_styles_.clear();
+	current_default_styles_.clear();
 }
 
 void odf_style_context::process_automatic_styles(office_element_ptr root )
@@ -101,9 +109,9 @@ void odf_style_context::process_automatic(office_element_ptr root )
 }
 void odf_style_context::process_master(office_element_ptr root )
 {
-	for (long i =0; i < master_state_list_.size(); i++)
+	for (long i =0; i < master_style_list_.size(); i++)
 	{
-		root->add_child_element(master_state_list_[i].odf_style_);
+		root->add_child_element(master_style_list_[i]);
 	}
 }
 void odf_style_context::process_office(office_element_ptr root )
@@ -171,22 +179,22 @@ bool odf_style_context::find_odf_style_state(int oox_id_style, const style_famil
 }
 office_element_ptr odf_style_context::find_odf_style_default(const style_family family)
 {
-	for (int i=0;i<default_styles_.size(); i++)
+	for (int i=0;i<current_default_styles_.size(); i++)
 	{
-		if (default_styles_[i].odf_style_)
+		if (current_default_styles_[i].odf_style_)
 		{
-			if (default_styles_[i].style_family_ == family)return default_styles_[i].get_office_element();
+			if (current_default_styles_[i].style_family_ == family)return current_default_styles_[i].get_office_element();
 		}
 	}
 	return office_element_ptr();
 }
 std::wstring odf_style_context::find_odf_style_name_default(const style_family family)
 {
-	for (int i=0;i<default_styles_.size(); i++)
+	for (int i=0;i<current_default_styles_.size(); i++)
 	{
-		if (default_styles_[i].odf_style_)
+		if (current_default_styles_[i].odf_style_)
 		{
-			if (default_styles_[i].style_family_ == family)return default_styles_[i].get_name();
+			if (current_default_styles_[i].style_family_ == family)return current_default_styles_[i].get_name();
 		}
 	}
 	return L"";
@@ -218,6 +226,12 @@ std::wstring odf_style_context::get_name_family(const style_family & family)
 		case style_family::FillImage:	return L"FillImage";
 		case style_family::Marker:		return L"Marker";
 		case style_family::StokeDash:	return L"StokeDash";
+
+		case style_family::PageLayout:	return L"Mpm";
+		case style_family::MasterPage:	return L"MasterPage";
+		case style_family::HandoutMaster:return L"Handout";
+		case style_family::LayerSet:	return L"";//нету
+
 	}
 	return L"UnknownStyle";
 }

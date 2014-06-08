@@ -86,6 +86,7 @@ public:
 private:
 	_font_metrix				font_metrix_;
 	ods_table_context			table_context_;
+	odf_page_layout_context		page_layout_context_;
 	
 	odf_text_context*			current_text_context_;
 	office_spreadsheet*			root_spreadsheet_;

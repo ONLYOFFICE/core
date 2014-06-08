@@ -1099,6 +1099,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OdfFormat\odf_page_layout_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odf_page_layout_context.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odf_page_layout_state.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odf_page_layout_state.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\odf_style_context.cpp"
 				>
 			</File>

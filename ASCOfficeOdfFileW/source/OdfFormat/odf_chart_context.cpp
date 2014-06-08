@@ -32,15 +32,7 @@ namespace odf
 	{
 		L"#355a86", L"#883533", L"#6e963c", L"#594573", L"#327a8d", L"#3d679a", L"#9d3e3b", L"#7e9945", L"#674f84", L"#398ba2", L"#cb7934"
 	};
-	struct 	odf_element_state
-	{
-		office_element_ptr	elm;
-		std::wstring		style_name;
 
-		office_element_ptr	style_elm;
-		
-		int level;
-	};
 	struct 	odf_axis_state
 	{
 		unsigned int		oox_id;

@@ -798,7 +798,7 @@ void XlsxConverter::convert_styles()
 	if (!ods_context) return;
 
 //	add default styles
-	ods_context->styles_context()->create_default(odf::style_family::TableCell);
+	ods_context->styles_context()->create_default_style(odf::style_family::TableCell);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 	OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->GetStyles();

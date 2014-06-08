@@ -2,13 +2,6 @@
 
 #include <string>
 #include <vector>
-//
-//#include "ods_row_spanned.h"
-//#include "ods_merge_cells.h"
-//#include "ods_table_metrics.h"
-//#include "ods_drawing_context.h"
-//#include "ods_comments_context.h"
-//#include "ods_hyperlinks.h"
 
 #include "office_elements.h"
 #include "office_elements_create.h"

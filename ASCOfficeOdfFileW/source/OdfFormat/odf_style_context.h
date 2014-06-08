@@ -26,9 +26,11 @@ public:
 	void set_odf_context(odf_conversion_context * Context);
 
     void create_style(std::wstring name, const style_family style_family, bool automatic = false, bool root = false, int oox_id = -1);
-    void create_default(const style_family style_family);
+    void create_default_style(const style_family style_family);
+	void create_master_style(std::wstring oox_name, int type = 1);
 
 	void add_style(office_element_ptr elm, bool automatic = false, bool root = false, style_family style_family=style_family::None);
+	void add_master_style(office_element_ptr & elm);
 
 	office_element_ptr & add_or_find(std::wstring name, const style_family family, bool automatic = false, bool root = false, int id = -1);
 
@@ -38,7 +40,7 @@ public:
 	void process_office(office_element_ptr root );
 
 	void reset_defaults();	
-	void add_default(odf_style_state & state)	{default_styles_.push_back(state);}
+	void add_default(odf_style_state & state)	{current_default_styles_.push_back(state);}
 
 	std::wstring 			find_odf_style_name		(int oox_id_style, const style_family family, bool root = false);
 	office_element_ptr		find_odf_style			(int oox_id_style, const style_family family, bool root = false);
@@ -60,10 +62,10 @@ private:
     odf_conversion_context * odf_context_;
     
 	std::vector<odf_style_state> style_state_list_;
- 	
-	std::vector<odf_style_state> default_styles_;//для внутренней работы .. переодически очищаемый частично или полностью
+ 	std::vector<office_element_ptr> master_style_list_;
+	
+	std::vector<odf_style_state> current_default_styles_;//для внутренней работы .. переодически очищаемый частично или полностью
    
-	std::vector<odf_style_state> master_state_list_;
 
 	std::wstring get_name_family(const style_family & family);
 

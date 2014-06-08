@@ -19,10 +19,6 @@
 
 //#include "style_presentation.h"
 
-//#include "odfcontext.h"
-
-//#include "draw_common.h"
-
 
 
 namespace cpdoccore { 
@@ -427,7 +423,7 @@ void styles::add_child_element(office_element_ptr & child, odf_conversion_contex
 		break; 
 	}
 }
-void styles::serialize(std::wostream & strm)//content from defferent element
+void styles::serialize(std::wostream & strm)//content from different element
 {
 	BOOST_FOREACH(office_element_ptr & elm, number_styles_)
     {
@@ -458,7 +454,14 @@ void templates::add_child_element(office_element_ptr & child)
 	if (type == typeTableTemplate)
     {
         table_templates_.push_back(child);
-    } 
+    }
+}
+void templates::serialize(std::wostream & strm)
+{
+	BOOST_FOREACH(office_element_ptr & elm, table_templates_)
+	{
+		elm->serialize(strm);
+	}	
 }
 void draw_styles::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context)
 {
@@ -541,8 +544,6 @@ void draw_styles::serialize(std::wostream & strm)
 const wchar_t * office_automatic_styles::ns = L"office";
 const wchar_t * office_automatic_styles::name = L"automatic-styles";
 
-
-
 void office_automatic_styles::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     if (L"style" == Ns && L"page-layout" == Name)
@@ -588,9 +589,18 @@ void office_automatic_styles::serialize(std::wostream & strm)
 }
 // office:master-styles
 //////////////////////////////////////////////////////////////////////////////////////////////////
+void style_master_page_attlist::serialize(CP_ATTR_NODE)
+{
+    CP_XML_ATTR_OPT(L"style:name",				style_name_);
+    CP_XML_ATTR_OPT(L"style:display-name",		style_display_name_);
+    CP_XML_ATTR_OPT(L"style:page-layout-name",	style_page_layout_name_);
+    CP_XML_ATTR_OPT(L"draw:style-name",			draw_style_name_);
+    CP_XML_ATTR_OPT(L"style:next-style-name",	style_next_style_name_);
+}
+
+
 const wchar_t * office_master_styles::ns = L"office";
 const wchar_t * office_master_styles::name = L"master-styles";
-
 
 void office_master_styles::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
@@ -764,7 +774,6 @@ void office_styles::serialize(std::wostream & strm)
 const wchar_t * style_header::ns = L"style";
 const wchar_t * style_header::name = L"header";
 
-
 void style_header::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     content().header_footer_content_.create_child_element( Ns, Name, getContext());
@@ -772,6 +781,16 @@ void style_header::create_child_element(  const ::std::wstring & Ns, const ::std
 void style_header::add_child_element(office_element_ptr & child)
 {
 	content().header_footer_content_.add_child_element( child);
+}
+void style_header::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			content().header_footer_content_.serialize(CP_XML_STREAM());
+		}
+	}
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_footer::ns = L"style";
@@ -786,6 +805,16 @@ void style_footer::add_child_element(office_element_ptr & child)
 {
     content().header_footer_content_.add_child_element( child);
 }
+void style_footer::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			content().header_footer_content_.serialize(CP_XML_STREAM());
+		}
+	}
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_header_first::ns = L"style";
 const wchar_t * style_header_first::name = L"header-first";
@@ -798,11 +827,19 @@ void style_header_first::add_child_element(office_element_ptr & child)
 {
     content().header_footer_content_.add_child_element(child);
 }
-
+void style_header_first::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			content().header_footer_content_.serialize(CP_XML_STREAM());
+		}
+	}
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_footer_first::ns = L"style";
 const wchar_t * style_footer_first::name = L"footer-first";
-
 
 void style_footer_first::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
@@ -812,10 +849,19 @@ void style_footer_first::add_child_element( office_element_ptr & child)
 {
     content().header_footer_content_.add_child_element( child);
 }
+void style_footer_first::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			content().header_footer_content_.serialize(CP_XML_STREAM());
+		}
+	}
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_header_left::ns = L"style";
 const wchar_t * style_header_left::name = L"header-left";
-
 
 void style_header_left::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
 {
@@ -824,6 +870,17 @@ void style_header_left::create_child_element(const ::std::wstring & Ns, const ::
 void style_header_left::add_child_element(office_element_ptr & child)
 {
     content().header_footer_content_.add_child_element( child);
+}
+
+void style_header_left::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			content().header_footer_content_.serialize(CP_XML_STREAM());
+		}
+	}
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_footer_left::ns = L"style";
@@ -837,7 +894,16 @@ void style_footer_left::add_child_element(office_element_ptr & child)
 {
     content().header_footer_content_.add_child_element(child);
 }
-
+void style_footer_left::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			content().header_footer_content_.serialize(CP_XML_STREAM());
+		}
+	}
+}
 /// style:columns
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_columns::ns = L"style";
@@ -870,28 +936,72 @@ void style_columns::add_child_element(office_element_ptr & child)
 		break;
 	}
 }
+void style_columns::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"fo:column-count",	fo_column_count_);
+			CP_XML_ATTR_OPT(L"fo:column-gap",	fo_column_gap_);
+
+			if(style_column_sep_) style_column_sep_->serialize(CP_XML_STREAM());
+			
+			BOOST_FOREACH(const office_element_ptr & elm, style_column_)
+			{
+				elm->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
 /// style:column
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_column::ns = L"style";
 const wchar_t * style_column::name = L"column";
-
 
 void style_column::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
 
+void style_column::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"style:rel-width",	style_rel_width_);
+			CP_XML_ATTR_OPT(L"fo:start-indent",	fo_start_indent_);
+			CP_XML_ATTR_OPT(L"fo:end-indent",	fo_end_indent_);
+			CP_XML_ATTR_OPT(L"fo:space-before",	fo_space_before_);
+			CP_XML_ATTR_OPT(L"fo:space-after",	fo_space_after_);
+		}
+	}
+}
 /// style:column-sep
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_column_sep::ns = L"style";
 const wchar_t * style_column_sep::name = L"column-sep";
-
 
 void style_column_sep::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
 
+void style_column_sep::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"style:style",			style_style_);			// default solid
+			CP_XML_ATTR_OPT(L"style:width",			style_width_);
+			CP_XML_ATTR_OPT(L"style:height",		style_height_);			// default 100
+			CP_XML_ATTR_OPT(L"style:vertical-align",style_vertical_align_); //default top
+			CP_XML_ATTR_OPT(L"style:color",			style_color_);			// default #000000
+		}
+	}
+}
 /// style:section-properties
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_section_properties::ns = L"style";
@@ -924,6 +1034,24 @@ void style_section_properties::add_child_element(office_element_ptr & child)
 		break;
 	}
 }
+void style_section_properties::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			common_background_color_attlist_.serialize(CP_GET_XML_NODE());
+			common_horizontal_margin_attlist_.serialize(CP_GET_XML_NODE());
+			common_writing_mode_attlist_.serialize(CP_GET_XML_NODE());
+
+			CP_XML_ATTR_OPT(L"style:protect",				style_protect_); // default false
+			CP_XML_ATTR_OPT(L"text:dont-balance-text-columns",	text_dont_balance_text_columns_);
+		 
+			if (style_columns_)			style_columns_->serialize(CP_XML_STREAM());
+			if (style_background_image_)style_background_image_->serialize(CP_XML_STREAM());
+		}
+	}
+}
 /// style:header-style
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_header_style::ns = L"style";
@@ -949,6 +1077,16 @@ void style_header_style::add_child_element(office_element_ptr & child)
 	if (type == typeStyleHeaderFooterProperties)
         style_header_footer_properties_  = child;
 
+}
+void style_header_style::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {	 
+			if (style_header_footer_properties_)	style_header_footer_properties_->serialize(CP_XML_STREAM());
+		}
+	}
 }
 /// style:footer-style
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -976,8 +1114,23 @@ void style_footer_style::add_child_element(office_element_ptr & child)
         style_header_footer_properties_  = child;
 
 }
+void style_footer_style::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {	 
+			if (style_header_footer_properties_)	style_header_footer_properties_->serialize(CP_XML_STREAM());
+		}
+	}
+}
 /// style:page-layout
 //////////////////////////////////////////////////////////////////////////////////////////////////
+void style_page_layout_attlist::serialize(CP_ATTR_NODE)
+{
+    CP_XML_ATTR_OPT(L"style:name",				style_name_);
+    CP_XML_ATTR_OPT(L"style:page-usage",		style_page_usage_);
+}
 const wchar_t * style_page_layout::ns = L"style";
 const wchar_t * style_page_layout::name = L"page-layout";
 
@@ -1019,8 +1172,33 @@ void style_page_layout::add_child_element( office_element_ptr & child)
 		break;
 	}
 }
+void style_page_layout::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			style_page_layout_attlist_.serialize( CP_GET_XML_NODE());
+			
+			if (style_page_layout_properties_)	style_page_layout_properties_->serialize(CP_XML_STREAM());
+			if (style_header_style_)			style_header_style_->serialize(CP_XML_STREAM());
+			if (style_footer_style_)			style_footer_style_->serialize(CP_XML_STREAM());
+		}
+	}
+}
 /// style:footnote-sep
 //////////////////////////////////////////////////////////////////////////////////////////////////
+void style_footnote_sep_attlist::serialize(CP_ATTR_NODE)
+{
+    CP_XML_ATTR_OPT(L"style:width", style_width_);
+    CP_XML_ATTR_OPT(L"style:rel-width", style_rel_width_);
+    CP_XML_ATTR_OPT(L"style:color", style_color_);
+    CP_XML_ATTR_OPT(L"style:line-style", style_line_style_);
+    CP_XML_ATTR_OPT(L"style:type", style_adjustment_); // default Left
+    CP_XML_ATTR_OPT(L"style:distance-before-sep", style_distance_before_sep_);
+    CP_XML_ATTR_OPT(L"style:distance-after-sep", style_distance_after_sep_);
+}
+
 const wchar_t * style_footnote_sep::ns = L"style";
 const wchar_t * style_footnote_sep::name = L"footnote-sep";
 
@@ -1028,9 +1206,52 @@ void style_footnote_sep::create_child_element( const ::std::wstring & Ns, const 
 {
     CP_NOT_APPLICABLE_ELM();
 }
-
+void style_footnote_sep::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			style_footnote_sep_attlist_.serialize(CP_GET_XML_NODE());
+		}
+	}
+}
 /// style:page-layout-properties
 //////////////////////////////////////////////////////////////////////////////////////////////////
+void style_page_layout_properties_attlist::serialize(CP_ATTR_NODE)
+{
+    CP_XML_ATTR_OPT(L"fo:page-width", fo_page_width_);
+    CP_XML_ATTR_OPT(L"fo:page-height", fo_page_height_);
+    common_num_format_attlist_.serialize(CP_GET_XML_NODE());
+    common_num_format_prefix_suffix_attlist_.serialize(CP_GET_XML_NODE());
+    CP_XML_ATTR_OPT(L"style:paper-tray-name", style_paper_tray_name_);
+    CP_XML_ATTR_OPT(L"style:print-orientation", style_print_orientation_);
+    common_horizontal_margin_attlist_.serialize(CP_GET_XML_NODE());
+    common_vertical_margin_attlist_.serialize(CP_GET_XML_NODE());
+    common_margin_attlist_.serialize(CP_GET_XML_NODE());
+    common_border_attlist_.serialize(CP_GET_XML_NODE());
+    common_border_line_width_attlist_.serialize(CP_GET_XML_NODE());
+    common_padding_attlist_.serialize(CP_GET_XML_NODE());
+    common_shadow_attlist_.serialize(CP_GET_XML_NODE());
+    common_background_color_attlist_.serialize(CP_GET_XML_NODE());
+    CP_XML_ATTR_OPT(L"style:register-truth-ref-style-name", style_register_truth_ref_style_name_);
+    CP_XML_ATTR_OPT(L"style:print", style_print_);
+    CP_XML_ATTR_OPT(L"style:print-page-order", style_print_page_order_);
+    CP_XML_ATTR_OPT(L"style:first-page-number", style_first_page_number_);
+    CP_XML_ATTR_OPT(L"style:scale-to", style_scale_to_);
+    CP_XML_ATTR_OPT(L"style:scale-to_pages", style_scale_to_pages_);
+    CP_XML_ATTR_OPT(L"style:table-centering", style_table_centering_);
+    CP_XML_ATTR_OPT(L"style:footnote-max-height", style_footnote_max_height_);
+    common_writing_mode_attlist_.serialize(CP_GET_XML_NODE());
+    CP_XML_ATTR_OPT(L"style:layout-grid-mode", style_layout_grid_mode_);
+    CP_XML_ATTR_OPT(L"style:layout-grid-base-height", style_layout_grid_base_height_);
+    CP_XML_ATTR_OPT(L"style:layout-grid-ruby-height", style_layout_grid_ruby_height_);
+    CP_XML_ATTR_OPT(L"style:layout-grid-lines", style_layout_grid_lines_);
+    CP_XML_ATTR_OPT(L"style:layout-grid-color", style_layout_grid_color_);
+    CP_XML_ATTR_OPT(L"style:layout-grid-ruby-below", style_layout_grid_ruby_below_);  
+    CP_XML_ATTR_OPT(L"style:layout-grid-print", style_layout_grid_print_);
+    CP_XML_ATTR_OPT(L"style:layout-grid-display", style_layout_grid_display_);
+}
 const wchar_t * style_page_layout_properties::ns = L"style";
 const wchar_t * style_page_layout_properties::name = L"page-layout-properties";
 
@@ -1042,6 +1263,18 @@ void style_page_layout_properties::create_child_element( const ::std::wstring & 
 void style_page_layout_properties::add_child_element( office_element_ptr & child)
 {
 	style_page_layout_properties_elements_.add_child_element(child);
+}
+
+void style_page_layout_properties::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			style_page_layout_properties_attlist_.serialize( CP_GET_XML_NODE());
+			style_page_layout_properties_elements_.serialize(CP_XML_STREAM());
+		}
+	}
 }
 // style-page-layout-properties-elements
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1080,6 +1313,12 @@ void style_page_layout_properties_elements::add_child_element( office_element_pt
 	case typeStyleFootnoteSep:
         style_footnote_sep_ = child;       
     }
+}
+void style_page_layout_properties_elements::serialize(std::wostream & strm)
+{
+    if (style_background_image_) style_background_image_->serialize(strm);
+    if (style_columns_)			style_columns_->serialize(strm);
+    if (style_footnote_sep_)	style_footnote_sep_->serialize(strm);
 }
 
 
@@ -1154,7 +1393,36 @@ void style_master_page::add_child_element(office_element_ptr & child)
 		break;
     }
 }
-
+void style_master_page::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			style_master_page_attlist_.serialize( CP_GET_XML_NODE());
+			
+			if (style_header_)			style_footer_->serialize(strm);
+			if (style_footer_)			style_header_->serialize(strm);
+			
+			if (style_header_left_)		style_header_left_->serialize(strm);
+			if (style_header_first_)	style_header_first_->serialize(strm);
+			
+			if (style_footer_left_)		style_footer_left_->serialize(strm);
+			if (style_footer_first_)	style_footer_first_->serialize(strm);
+			
+			if (office_forms_)			office_forms_->serialize(strm);
+			
+			BOOST_FOREACH(const office_element_ptr & elm, style_style_)
+			{
+				elm->serialize(CP_XML_STREAM());
+			}
+			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			{
+				elm->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
 int style_master_page::find_placeHolderIndex(presentation_class::type placeHolder,int & last_idx)
 {
 	int idx = -1;
@@ -1182,8 +1450,6 @@ int style_master_page::find_placeHolderIndex(presentation_class::type placeHolde
  //   }
 	return idx;
 }
-
-
 
 /// text:notes-configuration
 //////////////////////////////////////////////////////////////////////////////////////////////////

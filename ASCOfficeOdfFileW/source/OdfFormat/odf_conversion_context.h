@@ -50,6 +50,8 @@ public:
 
 	odf_chart_context				* chart_context();
 	odf_style_context				* styles_context();
+	odf_page_layout_context			* page_layout_context();
+
 	odf_number_styles_context		* numbers_styles_context();
 	_mediaitems						* mediaitems();
 
@@ -69,10 +71,12 @@ private:
 	std::vector<_object>	objects_;//"0" = root
 
 	odf_chart_context		chart_context_;
+	odf_page_layout_context	page_layout_context_;	
 
 	void process_styles(_object & object, bool isRoot);
 	
 	int	 current_object_;
+
 
 	//page_layout_container & pageLayoutContainer()	{ return page_layout_container_; }
 	//fonts_container		& fontContainer()		{ return fonts_container_; }

@@ -230,7 +230,7 @@ public:
 		void convert(OOX::WritingElement  *oox_unknown);
 	
 		void convert(OOX::Drawing::CNonVisualDrawingProps		*oox_cnvPr);
-		void convert(OOX::Drawing::CShapeProperties				*oox_spPr, OOX::Drawing::CShapeStyle* oox_sp_style /*= NULL)*/);
+		void convert(OOX::Drawing::CShapeProperties				*oox_spPr, OOX::Drawing::CShapeStyle* oox_sp_style = NULL);
 		void convert(OOX::Drawing::CGroupShapeProperties		*oox_groupSpPr);
 		void convert(OOX::Drawing::CTextBodyProperties			*oox_bodyPr);
 		

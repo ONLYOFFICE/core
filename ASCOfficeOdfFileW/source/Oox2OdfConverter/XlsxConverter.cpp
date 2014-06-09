@@ -176,11 +176,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	{
 		ods_context->set_sheet_dimension(string2std_string(oox_sheet->m_oDimension->m_oRef.get()));
 	}
-	//текущие & дефолтные свойства 
 	convert(oox_sheet->m_oSheetFormatPr.GetPointer());
 	convert(oox_sheet->m_oSheetPr.GetPointer());
-	convert(oox_sheet->m_oSheetViews.GetPointer());
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Предобработка
 	//гиперлинки 
@@ -249,6 +246,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		}
 		ods_context->end_conditional_formats();
 	}
+/////////////////////////////////////////////////////////////////////////
+	convert(oox_sheet->m_oSheetViews.GetPointer());
+	convert(oox_sheet->m_oPageSetup.GetPointer());
+	convert(oox_sheet->m_oPageMargins.GetPointer());
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CCommentItem * oox_comment)
 {
@@ -731,6 +732,22 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 	}
 }
 
+void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup			*oox_page)
+{
+	if (!oox_page) return;
+
+	int type = 1;	
+	ods_context->page_layout_context()->set_page_orientation(type);
+}
+
+void XlsxConverter::convert(OOX::Spreadsheet::CPageMargins			*oox_page)
+{
+	if (!oox_page) return;
+	_CP_OPT(double) top, left,right,header,footer,bottom;
+
+	ods_context->page_layout_context()->set_page_margin(top,left,bottom, right,header,footer);
+
+}
 void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_pr)
 {
 	if (!oox_sheet_format_pr)return;
@@ -1606,7 +1623,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConnShape* oox_shape)
 //////////////////////////////////////////////////////////////////////////////
 	ods_context->drawing_context()->start_shape(type);
 	{		
-		OoxConverter::convert(oox_shape->m_oSpPr.GetPointer());
+		OoxConverter::convert(oox_shape->m_oSpPr.GetPointer(), oox_shape->m_oShapeStyle.GetPointer());
+	
+		//частенько приплывает из стиля заполенение объекта .. а он то одномерный :)
+		odf_context()->drawing_context()->start_area_properies();
+			odf_context()->drawing_context()->set_no_fill();
+		odf_context()->drawing_context()->end_area_properies();
 
 		if (oox_shape->m_oNvConnSpPr.IsInit())
 		{
@@ -1619,12 +1641,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConnShape* oox_shape)
 			{
 			}
 		}
-	
-		if (oox_shape->m_oShapeStyle.IsInit())
-		{
-		}
 		//avLst
-
 	}
 	ods_context->drawing_context()->end_shape();
 	ods_context->drawing_context()->end_drawing();
@@ -1694,14 +1711,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 				//m_oExtLst
 			}
 		}
-		if (oox_picture->m_oSpPr.IsInit())
-		{
-			OoxConverter::convert(oox_picture->m_oSpPr.GetPointer());
-		}
 
-		if (oox_picture->m_oShapeStyle.IsInit())
-		{
-		}
+		OoxConverter::convert(oox_picture->m_oSpPr.GetPointer(), oox_picture->m_oShapeStyle.GetPointer());
+
 	}
 	ods_context->drawing_context()->end_image();
 	ods_context->drawing_context()->end_drawing();

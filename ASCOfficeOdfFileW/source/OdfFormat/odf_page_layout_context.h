@@ -20,17 +20,17 @@ typedef shared_ptr<odf_page_layout_context>::Type odf_page_layout_context_ptr;
 class odf_page_layout_context
 {
 public:
-    odf_page_layout_context();
-	void set_odf_context	(odf_conversion_context * Context);
-	void set_style_context	(odf_style_context * Context);
+    odf_page_layout_context(odf_conversion_context * Context);
+	void set_styles_context	(odf_style_context * Context);
 
 	void create_master_page(std::wstring oox_name);
 	void create_layout_page();
 
-
     odf_layout_state & last_layout();
     odf_master_state & last_master();
 
+	void set_page_margin(_CP_OPT(double) top, _CP_OPT(double) left, _CP_OPT(double) bottom, _CP_OPT(double) right, _CP_OPT(double) header, _CP_OPT(double) footer);
+	void set_page_orientation(int type);
 
 private:
 

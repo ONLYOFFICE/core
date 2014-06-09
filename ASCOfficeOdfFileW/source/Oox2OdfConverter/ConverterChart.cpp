@@ -170,7 +170,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_PlotArea* ct_plotArea)
 		odf_context()->chart_context()->start_wall();
 			convert(ct_plotArea->m_oSpPr.GetPointer());
 		odf_context()->chart_context()->end_element();
-	odf_context()->chart_context()->end_element();
+	odf_context()->chart_context()->end_plot_area();
 
 }
 //////////////////////////////////////////////////////////////////////////////////////////////

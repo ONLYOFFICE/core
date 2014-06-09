@@ -66,6 +66,8 @@ odf_layout_state::odf_layout_state(office_element_ptr & layout_elm )
 
 void odf_layout_state::add_child(office_element_ptr & child_elm, office_element_ptr  style_elm, std::wstring style_name )
 {
+	if (current_level_.size() < 1) return;
+
 	int level =current_level_.size();
 	odf_element_state state = {child_elm, style_name, style_elm,level};
 	
@@ -88,5 +90,19 @@ std::wstring odf_layout_state::get_name()
 
 	return style_->style_page_layout_attlist_.style_name_.get_value_or(L"");
 }
+style_page_layout_properties *odf_layout_state::get_properties()
+{
+	style_page_layout_properties *result=NULL;
+
+	for (long i= 1; i<elements_.size(); i++)//"0" - root
+	{
+		result = dynamic_cast<style_page_layout_properties *>(elements_[i].elm.get());
+		if (result) return result;
+	}
+	return NULL;
+}
+
+
+
 }
 }

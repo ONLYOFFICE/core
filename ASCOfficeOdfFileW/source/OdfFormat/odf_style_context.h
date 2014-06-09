@@ -58,11 +58,10 @@ public:
 
 private:
 	odf_number_styles_context	number_styles_context_;
-
-    odf_conversion_context * odf_context_;
+    odf_conversion_context *	odf_context_;
     
-	std::vector<odf_style_state> style_state_list_;
- 	std::vector<office_element_ptr> master_style_list_;
+	std::vector<odf_style_state>		style_state_list_;
+ 	std::vector<office_element_ptr>		master_style_list_;
 	
 	std::vector<odf_style_state> current_default_styles_;//для внутренней работы .. переодически очищаемый частично или полностью
    

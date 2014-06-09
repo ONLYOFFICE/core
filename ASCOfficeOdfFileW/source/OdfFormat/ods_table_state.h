@@ -173,6 +173,7 @@ public:
 		void set_table_name(std::wstring name);
 		void set_table_style(office_element_ptr & _style);
 		void set_table_hidden(bool Val);
+		void set_table_master_page(std::wstring name);
 		void set_table_rtl(bool Val);
 		void set_table_tab_color(_CP_OPT(color) & _color);
 		void set_table_dimension(int col, int row);

@@ -16,7 +16,7 @@ namespace odf {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-odf_conversion_context::odf_conversion_context(package::odf_document * outputDocument) : chart_context_ (this)
+odf_conversion_context::odf_conversion_context(package::odf_document * outputDocument) : chart_context_ (this), page_layout_context_(this)
 { 
 	output_document_ = outputDocument;
 
@@ -29,6 +29,11 @@ odf_style_context* odf_conversion_context::styles_context()
 		return objects_[current_object_].style_context.get();
 	else
 		return NULL;
+}
+
+odf_page_layout_context* odf_conversion_context::page_layout_context()
+{
+	return &page_layout_context_;
 }
 odf_chart_context* odf_conversion_context::chart_context()
 {

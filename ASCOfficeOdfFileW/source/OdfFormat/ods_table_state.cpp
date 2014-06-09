@@ -122,6 +122,13 @@ void ods_table_state::set_table_name(std::wstring name)
 	table->table_table_attlist_.table_name_ = name;
 }
 
+void ods_table_state::set_table_master_page(std::wstring name)
+{
+	if (!office_table_style_)return;
+
+	office_table_style_->style_master_page_name_ = name;
+}
+
 void ods_table_state::set_table_hidden(bool Val)
 {
 	if (!office_table_style_)return;

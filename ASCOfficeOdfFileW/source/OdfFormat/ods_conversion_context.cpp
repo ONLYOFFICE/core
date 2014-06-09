@@ -37,7 +37,7 @@ void calculate_size_font_symbols(_font_metrix & metrix)
 }
 }
 ods_conversion_context::ods_conversion_context(package::odf_document * outputDocument) 
-		: odf_conversion_context(outputDocument), table_context_(*this), current_text_context_(NULL)
+		: odf_conversion_context(outputDocument), table_context_(*this), current_text_context_(NULL), page_layout_context_(this)
 {
 	font_metrix_ = _font_metrix();
 }
@@ -80,11 +80,15 @@ void ods_conversion_context::add_defined_expression(std::wstring & name,std::wst
 }
 void ods_conversion_context::start_sheet()
 {
-	create_element(L"table", L"table",root_spreadsheet_->getContent(),this);
-	
+	create_element(L"table", L"table",root_spreadsheet_->getContent(),this);	
 	table_context_.start_table(root_spreadsheet_->getContent().back());
 
-	drawing_context()->set_styles_context(styles_context());
+		drawing_context()->set_styles_context(styles_context());
+		page_layout_context()->set_styles_context(styles_context());
+		
+	page_layout_context()->create_master_page(L"");
+
+	current_table().set_table_master_page(page_layout_context()->last_master().get_name());
 }
 
 void ods_conversion_context::set_sheet_dimension(std::wstring & ref)

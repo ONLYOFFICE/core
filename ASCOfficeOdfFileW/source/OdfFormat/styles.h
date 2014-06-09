@@ -935,12 +935,6 @@ public:
     static const ElementType type = typeStylePageLayout;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    const style_page_layout_properties_attlist & get_style_page_layout_properties_attlist() const
-    {
-        return style_page_layout_properties_attlist_;
-    };
-
-
     style_page_layout_properties() { }
 
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);

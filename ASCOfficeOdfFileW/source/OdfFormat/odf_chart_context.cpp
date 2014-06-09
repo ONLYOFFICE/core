@@ -81,6 +81,7 @@ public:
 	std::vector<odf_axis_state>				axis_;
 	std::vector<office_element_ptr>			group_series_;
 	std::vector<unsigned int>				axis_group_series_;
+	std::vector<std::wstring>				data_cell_ranges_;
 
 	std::vector<odf_chart_level_state>	current_level_;	//постоянно меняющийся список уровней наследования
 	std::vector<odf_chart_state>		chart_list_;		//все элементы .. для удобства разделение по "топам"
@@ -124,6 +125,7 @@ void odf_chart_context::Impl::clear_current()
 	categories_.clear();
 	axis_.clear();
 	group_series_.clear();
+	data_cell_ranges_.clear();
 
 	current_series_count_ = 0;
 }
@@ -687,7 +689,7 @@ void odf_chart_context::start_plot_area()
 	chart_plot_area *plot_area = dynamic_cast<chart_plot_area*>(chart_elm.get());
 	if (plot_area == NULL)return;
 
-	//plot_area->chart_plot_area_attlist_.chart_data_source_has_labels_ = L"both";
+	plot_area->chart_plot_area_attlist_.chart_data_source_has_labels_ = L"both";
 //////////	
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
@@ -706,7 +708,27 @@ void odf_chart_context::start_plot_area()
 	if (!impl_->current_level_.back().chart_properties_) return;
 	
 	impl_->current_level_.back().chart_properties_->content().chart_treat_empty_cells_ = true;
-
+}
+void odf_chart_context::end_plot_area()
+{
+	if (impl_->axis_.size() < 1 && impl_->categories_.size() > 0)
+	{
+		start_axis();
+			set_axis_dimension(1);
+			//set_axis_type();
+		end_element();
+	}
+	chart_plot_area *plot_area = dynamic_cast<chart_plot_area*>(impl_->current_level_.back().elm.get());
+	if (plot_area)
+	{
+		std::wstring cell_range;
+		for (long i=0; i< impl_->data_cell_ranges_.size();i++)
+		{
+			cell_range = cell_range + impl_->data_cell_ranges_[i] + L" ";
+		}
+		plot_area->chart_plot_area_attlist_.table_cell_range_address_ = cell_range;
+	}
+	end_element();
 }
 void odf_chart_context::start_text()
 {
@@ -1108,6 +1130,7 @@ void odf_chart_context::start_element(office_element_ptr & elm, office_element_p
 	impl_->current_level_.push_back(level_state);//стоит ли сюда перенести и current_chart_properties ????
 
 }
+
 void odf_chart_context::end_element()
 {
 	//допричесываение элемента
@@ -1142,6 +1165,7 @@ void odf_chart_context::end_chart()
 	
 	end_element();
 ///////////////////
+
 	for (long i=0; i< impl_->axis_.size() && impl_->categories_.size() > 0; i++)
 	{
 		if (impl_->axis_[i].elm == NULL)continue;
@@ -1174,6 +1198,7 @@ void odf_chart_context::set_series_value_formula(std::wstring oox_formula)
 	
 	series->chart_series_attlist_.chart_values_cell_range_address_ = odfFormula;
 
+	impl_->data_cell_ranges_.push_back(odfFormula);
 	impl_->current_data_points_series_count_ = formulas_converter.get_count_value_points(oox_formula);
 }
 void odf_chart_context::set_series_label_formula(std::wstring oox_formula)
@@ -1183,6 +1208,7 @@ void odf_chart_context::set_series_label_formula(std::wstring oox_formula)
 	chart_series *series = dynamic_cast<chart_series*>(impl_->current_chart_state_.elements_.back().elm.get());
 	if (series == NULL)return;
 	
+	impl_->data_cell_ranges_.push_back(odfFormula);
 	series->chart_series_attlist_.chart_label_cell_address_ = odfFormula;
 }
 
@@ -1190,6 +1216,7 @@ void odf_chart_context::set_category_axis_formula(std::wstring oox_formula,int t
 {
 	std::wstring odfFormula = formulas_converter.convert_chart_distance(oox_formula);
 
+	impl_->data_cell_ranges_.push_back(odfFormula);
 	impl_->categories_.push_back(std::pair<std::wstring,int>(odfFormula,type));
 }
 

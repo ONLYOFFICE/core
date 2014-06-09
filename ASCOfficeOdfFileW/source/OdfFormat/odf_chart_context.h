@@ -46,6 +46,9 @@ public:
 
 		void set_marker_size(int size);
 		void set_marker_type(int type);
+		
+		void start_plot_area();
+		void end_plot_area();
 
 		void start_group_series();
 			void add_axis_group_series(unsigned int id);
@@ -82,7 +85,6 @@ public:
 			void set_axis_min(double val);
 		void start_title();
 		void start_grid(int type);
-		void start_plot_area();
 		void start_legend();
 		void start_floor();
 		void start_wall();

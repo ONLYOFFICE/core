@@ -56,6 +56,8 @@ namespace OOX
 		class CAutofilter;
 		class CFilterColumn;
 		class CSheetViews;
+		class CPageSetup;
+		class CPageMargins;
 	}
 }
 
@@ -139,6 +141,8 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CSheetFormatPr		*oox_sheet_format_pr);
 		void convert(OOX::Spreadsheet::CSheetPr				*oox_sheet_pr);
 		void convert(OOX::Spreadsheet::CSheetViews			*oox_sheet_views);
+		void convert(OOX::Spreadsheet::CPageSetup			*oox_page);
+		void convert(OOX::Spreadsheet::CPageMargins			*oox_page);
 		
 		void convert(OOX::Spreadsheet::CFont				*font,		odf::style_text_properties		*text_properties);		
 		void convert(OOX::Spreadsheet::CBorder				*border,	odf::style_table_cell_properties *cell_properties);

@@ -127,6 +127,8 @@ GdkPixbuf* GdkPixbufFromSkBitmap(const SkBitmap& bitmap) {
   return pixbuf;
 }
 */
+
+/*
 void SubtractRectanglesFromRegion(GdkRegion* region,
                                   const std::vector<Rect>& cutouts) {
   for (size_t i = 0; i < cutouts.size(); ++i) {
@@ -137,6 +139,7 @@ void SubtractRectanglesFromRegion(GdkRegion* region,
     gdk_region_destroy(rect_region);
   }
 }
+*/
 
 GdkCursor* GetCursor(int type) {
   CR_DEFINE_STATIC_LOCAL(GdkCursorCache, impl, ());

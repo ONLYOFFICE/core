@@ -2,15 +2,19 @@
 
 #include "../../src/ui/base/clipboard/clipboard.h"
 #include <iostream>
-
+#include "gtk/gtk.h"
 int main(int argc, char *argv[])
 {
     //QCoreApplication a(argc, argv);
 
-    //return a.exec();
+
+
+    gtk_init (&argc, &argv);
 
     ui::Clipboard *pClipboard = ui::Clipboard::GetForCurrentThread();
+
         bool bIsHtmlAvailable = pClipboard->IsFormatAvailable(ui::Clipboard::GetHtmlFormatType(), ui::Clipboard::BUFFER_STANDARD);
+        bool bIsTextAvailable = pClipboard->IsFormatAvailable(ui::Clipboard::GetPlainTextFormatType(), ui::Clipboard::BUFFER_STANDARD);
         if (bIsHtmlAvailable)
         {
             base::string16 markup;
@@ -24,5 +28,6 @@ int main(int argc, char *argv[])
         }
         ui::Clipboard::DestroyClipboardForCurrentThread (pClipboard);
 
+        //return a.exec();
         return 0;
 }

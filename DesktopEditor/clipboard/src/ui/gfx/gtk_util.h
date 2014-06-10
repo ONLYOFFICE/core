@@ -33,8 +33,8 @@ UI_EXPORT void GdkInitFromCommandLine(const CommandLine& command_line);
 //UI_EXPORT GdkPixbuf* GdkPixbufFromSkBitmap(const SkBitmap& bitmap);
 
 // Modify the given region by subtracting the given rectangles.
-UI_EXPORT void SubtractRectanglesFromRegion(GdkRegion* region,
-                                            const std::vector<Rect>& cutouts);
+//UI_EXPORT void SubtractRectanglesFromRegion(GdkRegion* region,
+//                                            const std::vector<Rect>& cutouts);
 
 // Returns a static instance of a GdkCursor* object, sharable across the
 // process. Caller must gdk_cursor_ref() it if they want to assume ownership.

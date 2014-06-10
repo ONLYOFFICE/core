@@ -52,83 +52,7 @@ SOURCES += main.cpp \
     ../../src/base/strings/utf_string_conversions.cc \
     ../../src/base/strings/utf_string_conversion_utils.cc \
     ../../src/ui/gfx/size.cc \
-    ../../src/ui/base/x/x11_util.cc \
-    ../../src/base/message_pump.cc \
-    ../../src/base/message_pump_gtk.cc \
-    ../../src/base/message_pump_glib.cc \
-    ../../src/base/message_pump_default.cc \
-    ../../src/base/message_pump_libevent.cc \
-    ../../src/ui/gfx/gtk_util.cc \
-    ../../src/base/threading/thread_restrictions.cc \
-    ../../src/base/at_exit.cc \
-    ../../src/base/memory/singleton.cc \
-    ../../src/base/atomicops_internals_x86_gcc.cc \
-    ../../src/base/message_loop.cc \
-    ../../src/ui/base/keycodes/keyboard_code_conversion.cc \
-    ../../src/ui/base/keycodes/keyboard_code_conversion_gtk.cc \
-    ../../src/ui/base/keycodes/keyboard_code_conversion_x.cc \
-    ../../src/base/location.cc \
-    ../../src/ui/gfx/rect.cc \
-    ../../src/ui/gfx/rect_conversions.cc \
-    ../../src/ui/gfx/rect_f.cc \
-    ../../src/ui/gfx/point.cc \
-    ../../src/ui/gfx/point3_f.cc \
-    ../../src/ui/gfx/point_conversions.cc \
-    ../../src/ui/gfx/point_f.cc \
-    ../../src/base/memory/ref_counted.cc \
-    ../../src/base/memory/ref_counted_memory.cc \
-    ../../src/base/callback_internal.cc \
-    ../../src/base/threading/platform_thread_posix.cc \
-    ../../src/base/time.cc \
-    ../../src/base/time_posix.cc \
-    ../../src/base/memory/weak_ptr.cc \
-    ../../src/base/synchronization/waitable_event_posix.cc \
-    ../../src/third_party/libevent/event.c \
-    ../../src/base/synchronization/lock.cc \
-    ../../src/base/synchronization/lock_impl_posix.cc \
-    ../../src/base/threading/thread_checker_impl.cc \
-    ../../src/base/threading/thread_local_posix.cc \
-    ../../src/base/threading/thread_local_storage_posix.cc \
-    ../../src/base/pending_task.cc \
-    ../../src/base/message_loop/message_loop_proxy.cc \
-    ../../src/base/message_loop/message_loop_proxy_impl.cc \
-    ../../src/base/run_loop.cc \
-    ../../src/base/task_runner.cc \
-    ../../src/base/synchronization/condition_variable_posix.cc \
-    ../../src/base/threading/thread_id_name_manager.cc \
-    ../../src/base/tracked_objects.cc \
-    ../../src/base/tracking_info.cc \
-    ../../src/base/profiler/tracked_time.cc \
-    ../../src/base/debug/trace_event_impl.cc \
-    ../../src/base/lazy_instance.cc \
-    ../../src/base/thread_task_runner_handle.cc \
-    ../../src/base/debug/alias.cc \
-    ../../src/base/metrics/statistics_recorder.cc \
-    ../../src/base/metrics/histogram.cc \
-    ../../src/base/metrics/histogram_base.cc \
-    ../../src/base/json/json_string_value_serializer.cc \
-    ../../src/base/json/json_reader.cc \
-    ../../src/base/json/json_writer.cc \
-    ../../src/base/json/string_escape.cc \
-    ../../src/base/json/json_parser.cc \
-    ../../src/ui/gfx/vector2d.cc \
-    ../../src/ui/gfx/vector2d_conversions.cc \
-    ../../src/ui/gfx/vector2d_f.cc \
-    ../../src/ui/gfx/vector3d_f.cc \
-    ../../src/base/third_party/nspr/prtime.cc \
-    ../../src/base/values.cc \
-    ../../src/base/metrics/bucket_ranges.cc \
-    ../../src/base/metrics/sample_vector.cc \
-    ../../src/base/metrics/histogram_samples.cc \
-    ../../src/base/synchronization/cancellation_flag.cc \
-    ../../src/base/strings/string_split.cc \
-    ../../src/base/process_util.cc \
-    ../../src/base/process_util_linux.cc \
-    ../../src/base/process_util_posix.cc \
-    ../../src/base/files/file_path.cc \
-    ../../src/ui/gfx/insets.cc \
-    ../../src/ui/gfx/insets_f.cc
-
+    ../../src/ui/gfx/gtk_util.cc
 
 HEADERS += \
     ../../src/ui/base/clipboard/clipboard.h \
@@ -149,7 +73,6 @@ HEADERS += \
     ../../src/base/strings/utf_string_conversions.h \
     ../../src/base/strings/utf_string_conversion_utils.h \
     ../../src/ui/gfx/size.h \
-    ../../src/ui/base/x/x11_util.h \
     ../../src/base/message_pump.h \
     ../../src/base/message_pump_gtk.h \
     ../../src/base/message_pump_glib.h \
@@ -171,69 +94,5 @@ HEADERS += \
     ../../src/ui/base/keycodes/keyboard_code_conversion_x.h \
     ../../src/ui/base/keycodes/keyboard_codes.h \
     ../../src/ui/base/keycodes/keyboard_codes_posix.h \
-    ../../src/ui/base/keycodes/usb_keycode_map.h \
-    ../../src/base/location.h \
-    ../../src/ui/gfx/rect.h \
-    ../../src/ui/gfx/rect_base.h \
-    ../../src/ui/gfx/rect_conversions.h \
-    ../../src/ui/gfx/rect_f.h \
-    ../../src/ui/gfx/point.h \
-    ../../src/ui/gfx/point3_f.h \
-    ../../src/ui/gfx/point_base.h \
-    ../../src/ui/gfx/point_conversions.h \
-    ../../src/ui/gfx/point_f.h \
-    ../../src/base/memory/ref_counted.h \
-    ../../src/base/memory/ref_counted_memory.h \
-    ../../src/base/callback_internal.h \
-    ../../src/base/synchronization/waitable_event.h \
-    ../../src/third_party/libevent/event.h \
-    ../../src/base/synchronization/lock.h \
-    ../../src/base/synchronization/lock_impl.h \
-    ../../src/base/threading/thread_checker.h \
-    ../../src/base/threading/thread_checker_impl.h \
-    ../../src/base/threading/thread_local.h \
-    ../../src/base/threading/thread_local_storage.h \
-    ../../src/base/pending_task.h \
-    ../../src/base/message_loop/message_loop_proxy.h \
-    ../../src/base/message_loop/message_loop_proxy_impl.h \
-    ../../src/base/run_loop.h \
-    ../../src/base/task_runner.h \
-    ../../src/base/task_runner_util.h \
-    ../../src/base/synchronization/condition_variable.h \
-    ../../src/base/threading/thread_id_name_manager.h \
-    ../../src/base/tracked_objects.h \
-    ../../src/base/tracking_info.h \
-    ../../src/base/profiler/tracked_time.h \
-    ../../src/base/debug/trace_event.h \
-    ../../src/base/debug/trace_event_impl.h \
-    ../../src/base/lazy_instance.h \
-    ../../src/base/thread_task_runner_handle.h \
-    ../../src/base/debug/alias.h \
-    ../../src/base/metrics/statistics_recorder.h \
-    ../../src/base/metrics/histogram.h \
-    ../../src/base/metrics/histogram_base.h \
-    ../../src/base/json/json_string_value_serializer.h \
-    ../../src/base/json/json_reader.h \
-    ../../src/base/json/json_writer.h \
-    ../../src/base/json/string_escape.h \
-    ../../src/base/json/json_parser.h \
-    ../../src/ui/gfx/vector2d.h \
-    ../../src/ui/gfx/vector2d_conversions.h \
-    ../../src/ui/gfx/vector2d_f.h \
-    ../../src/ui/gfx/vector3d_f.h \
-    ../../src/ui/gfx/rect_base_impl.h \
-    ../../src/base/third_party/nspr/prcpucfg.h \
-    ../../src/base/third_party/nspr/prcpucfg_linux.h \
-    ../../src/base/third_party/nspr/prtime.h \
-    ../../src/base/third_party/nspr/prtypes.h \
-    ../../src/base/values.h \
-    ../../src/base/metrics/bucket_ranges.h \
-    ../../src/base/metrics/sample_vector.h \
-    ../../src/base/metrics/histogram_samples.h \
-    ../../src/base/synchronization/cancellation_flag.h \
-    ../../src/base/strings/string_split.h \
-    ../../src/base/process_util.h \
-    ../../src/base/files/file_path.h \
-    ../../src/ui/gfx/insets.h \
-    ../../src/ui/gfx/insets_base.h \
-    ../../src/ui/gfx/insets_f.h
+    ../../src/ui/base/keycodes/usb_keycode_map.h
+

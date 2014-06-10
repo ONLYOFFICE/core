@@ -21,7 +21,7 @@
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/gtk/gtk_signal.h"
 #include "ui/base/gtk/scoped_gobject.h"
-#include "ui/base/x/x11_util.h"
+//#include "ui/base/x/x11_util.h"
 //#include "ui/gfx/canvas.h"
 #include "ui/gfx/gtk_util.h"
 #include "ui/gfx/size.h"
@@ -210,6 +210,7 @@ bool Clipboard::FormatType::Equals(const FormatType& other) const {
 
 Clipboard::Clipboard() : clipboard_data_(NULL) {
   //DCHECK(CalledOnValidThread());
+
   clipboard_ = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
   primary_selection_ = gtk_clipboard_get(GDK_SELECTION_PRIMARY);
 }

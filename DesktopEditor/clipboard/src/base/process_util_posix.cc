@@ -193,13 +193,13 @@ void ResetChildSignalHandlersToDefaults(void) {
       // If the number of signals in the Linux kernel changes, someone should
       // look at this code.
       const int kNumberOfSignals = 64;
-      RAW_CHECK(signum == kNumberOfSignals + 1);
+      //RAW_CHECK(signum == kNumberOfSignals + 1);
 #endif  // !defined(NDEBUG)
       break;
     }
     // All other failures are fatal.
     if (sigaction_get_ret) {
-      RAW_LOG(FATAL, "sigaction (get) failed.");
+      //RAW_LOG(FATAL, "sigaction (get) failed.");
     }
 
     // The kernel won't allow to re-set SIGKILL or SIGSTOP.
@@ -207,13 +207,13 @@ void ResetChildSignalHandlersToDefaults(void) {
       act.k_sa_handler = reinterpret_cast<void*>(SIG_DFL);
       act.k_sa_restorer = NULL;
       if (sys_rt_sigaction(signum, &act, NULL)) {
-        RAW_LOG(FATAL, "sigaction (set) failed.");
+        //RAW_LOG(FATAL, "sigaction (set) failed.");
       }
     }
 #if !defined(NDEBUG)
     // Now ask the kernel again and check that no restorer will leak.
     if (sys_rt_sigaction(signum, NULL, &act) || act.k_sa_restorer) {
-      RAW_LOG(FATAL, "Cound not fix sa_restorer.");
+      //RAW_LOG(FATAL, "Cound not fix sa_restorer.");
     }
 #endif  // !defined(NDEBUG)
   }
@@ -228,7 +228,7 @@ TerminationStatus GetTerminationStatusImpl(ProcessHandle handle,
   const pid_t result = HANDLE_EINTR(waitpid(handle, &status,
                                             can_block ? 0 : WNOHANG));
   if (result == -1) {
-    DPLOG(ERROR) << "waitpid(" << handle << ")";
+    //DPLOG(ERROR) << "waitpid(" << handle << ")";
     if (exit_code)
       *exit_code = 0;
     return TERMINATION_STATUS_NORMAL_TERMINATION;
@@ -309,7 +309,7 @@ ProcessId GetProcId(ProcessHandle process) {
 // entry structure.  Ignores specified exit_code; posix can't force that.
 // Returns true if this is successful, false otherwise.
 bool KillProcess(ProcessHandle process_id, int exit_code, bool wait) {
-  DCHECK_GT(process_id, 1) << " tried to kill invalid process_id";
+  //DCHECK_GT(process_id, 1) << " tried to kill invalid process_id";
   if (process_id <= 1)
     return false;
   bool result = kill(process_id, SIGTERM) == 0;
@@ -339,7 +339,7 @@ bool KillProcess(ProcessHandle process_id, int exit_code, bool wait) {
           exited = true;
           break;
         }
-        DPLOG(ERROR) << "Error waiting for process " << process_id;
+        //DPLOG(ERROR) << "Error waiting for process " << process_id;
       }
 
       usleep(sleep_ms * 1000);
@@ -355,7 +355,9 @@ bool KillProcess(ProcessHandle process_id, int exit_code, bool wait) {
   }
 
   if (!result)
-    DPLOG(ERROR) << "Unable to terminate process " << process_id;
+  {
+    //DPLOG(ERROR) << "Unable to terminate process " << process_id;
+  }
 
   return result;
 }
@@ -363,7 +365,9 @@ bool KillProcess(ProcessHandle process_id, int exit_code, bool wait) {
 bool KillProcessGroup(ProcessHandle process_group_id) {
   bool result = kill(-1 * process_group_id, SIGKILL) == 0;
   if (!result)
-    DPLOG(ERROR) << "Unable to terminate process group " << process_group_id;
+  {
+    //DPLOG(ERROR) << "Unable to terminate process group " << process_group_id;
+  }
   return result;
 }
 
@@ -408,7 +412,7 @@ void CloseSuperfluousFds(const base::InjectiveMultimap& saved_mapping) {
   if (getrlimit(RLIMIT_NOFILE, &nofile)) {
     // getrlimit failed. Take a best guess.
     max_fds = kSystemDefaultMaxFds;
-    RAW_LOG(ERROR, "getrlimit(RLIMIT_NOFILE) failed");
+    //RAW_LOG(ERROR, "getrlimit(RLIMIT_NOFILE) failed");
   } else {
     max_fds = nofile.rlim_cur;
   }
@@ -469,7 +473,7 @@ void CloseSuperfluousFds(const base::InjectiveMultimap& saved_mapping) {
     // before closing.  See https://bugs.kde.org/show_bug.cgi?id=191758
     if (fd < static_cast<int>(max_fds)) {
       int ret = HANDLE_EINTR(close(fd));
-      DPCHECK(ret == 0);
+      //DPCHECK(ret == 0);
     }
   }
 }
@@ -625,7 +629,7 @@ bool LaunchProcess(const std::vector<std::string>& argv,
   }
 
   if (pid < 0) {
-    DPLOG(ERROR) << "fork";
+    //DPLOG(ERROR) << "fork";
     return false;
   } else if (pid == 0) {
     // Child process
@@ -637,7 +641,7 @@ bool LaunchProcess(const std::vector<std::string>& argv,
     // in the child.
 
     if (options.debug) {
-      RAW_LOG(INFO, "Right after fork");
+      //RAW_LOG(INFO, "Right after fork");
     }
 
     // If a child process uses the readline library, the process block forever.
@@ -645,14 +649,14 @@ bool LaunchProcess(const std::vector<std::string>& argv,
     // See http://crbug.com/56596.
     int null_fd = HANDLE_EINTR(open("/dev/null", O_RDONLY));
     if (null_fd < 0) {
-      RAW_LOG(ERROR, "Failed to open /dev/null");
+      //RAW_LOG(ERROR, "Failed to open /dev/null");
       _exit(127);
     }
 
     file_util::ScopedFD null_fd_closer(&null_fd);
     int new_fd = HANDLE_EINTR(dup2(null_fd, STDIN_FILENO));
     if (new_fd != STDIN_FILENO) {
-      RAW_LOG(ERROR, "Failed to dup /dev/null for stdin");
+      //RAW_LOG(ERROR, "Failed to dup /dev/null for stdin");
       _exit(127);
     }
 
@@ -660,13 +664,13 @@ bool LaunchProcess(const std::vector<std::string>& argv,
       // Instead of inheriting the process group ID of the parent, the child
       // starts off a new process group with pgid equal to its process ID.
       if (setpgid(0, 0) < 0) {
-        RAW_LOG(ERROR, "setpgid failed");
+        //RAW_LOG(ERROR, "setpgid failed");
         _exit(127);
       }
     }
 
     if (options.debug) {
-      RAW_LOG(INFO, "Right before base::type_profiler::Controller::Stop()");
+      //RAW_LOG(INFO, "Right before base::type_profiler::Controller::Stop()");
     }
 
     // Stop type-profiler.
@@ -675,7 +679,7 @@ bool LaunchProcess(const std::vector<std::string>& argv,
     base::type_profiler::Controller::Stop();
 
     if (options.debug) {
-      RAW_LOG(INFO, "Right after base::type_profiler::Controller::Stop()");
+      //RAW_LOG(INFO, "Right after base::type_profiler::Controller::Stop()");
     }
 
     if (options.maximize_rlimits) {
@@ -686,11 +690,11 @@ bool LaunchProcess(const std::vector<std::string>& argv,
            ++resource) {
         struct rlimit limit;
         if (getrlimit(*resource, &limit) < 0) {
-          RAW_LOG(WARNING, "getrlimit failed");
+          //RAW_LOG(WARNING, "getrlimit failed");
         } else if (limit.rlim_cur < limit.rlim_max) {
           limit.rlim_cur = limit.rlim_max;
           if (setrlimit(*resource, &limit) < 0) {
-            RAW_LOG(WARNING, "setrlimit failed");
+            //RAW_LOG(WARNING, "setrlimit failed");
           }
         }
       }
@@ -703,7 +707,7 @@ bool LaunchProcess(const std::vector<std::string>& argv,
     ResetChildSignalHandlersToDefaults();
 
     if (options.debug) {
-      RAW_LOG(INFO, "Right after signal/exception handler restoration.");
+      //RAW_LOG(INFO, "Right after signal/exception handler restoration.");
     }
 
 #if 0
@@ -724,10 +728,10 @@ bool LaunchProcess(const std::vector<std::string>& argv,
       if (HANDLE_EINTR(setsid()) != -1) {
         if (HANDLE_EINTR(
                 ioctl(options.ctrl_terminal_fd, TIOCSCTTY, NULL)) == -1) {
-          RAW_LOG(WARNING, "ioctl(TIOCSCTTY), ctrl terminal not set");
+          //RAW_LOG(WARNING, "ioctl(TIOCSCTTY), ctrl terminal not set");
         }
       } else {
-        RAW_LOG(WARNING, "setsid failed, ctrl terminal not set");
+        //RAW_LOG(WARNING, "setsid failed, ctrl terminal not set");
       }
     }
 #endif  // defined(OS_CHROMEOS)
@@ -742,7 +746,7 @@ bool LaunchProcess(const std::vector<std::string>& argv,
     }
 
     if (options.debug) {
-      RAW_LOG(INFO, "Right after fd_shuffle push_backs.");
+      //RAW_LOG(INFO, "Right after fd_shuffle push_backs.");
     }
 
     if (options.environ)
@@ -753,17 +757,17 @@ bool LaunchProcess(const std::vector<std::string>& argv,
       _exit(127);
 
     if (options.debug) {
-      RAW_LOG(INFO, "Right after ShuffleFileDescriptors");
+      //RAW_LOG(INFO, "Right after ShuffleFileDescriptors");
     }
 
     CloseSuperfluousFds(fd_shuffle2);
 
     if (options.debug) {
-      RAW_LOG(INFO, "Right after CloseSuperfluousFds");
+      //RAW_LOG(INFO, "Right after CloseSuperfluousFds");
     }
 
     if (options.debug) {
-      RAW_LOG(INFO, "Right before execvp");
+      //RAW_LOG(INFO, "Right before execvp");
     }
 
     for (size_t i = 0; i < argv.size(); i++)
@@ -771,8 +775,8 @@ bool LaunchProcess(const std::vector<std::string>& argv,
     argv_cstr[argv.size()] = NULL;
     execvp(argv_cstr[0], argv_cstr.get());
 
-    RAW_LOG(ERROR, "LaunchProcess: failed to execvp:");
-    RAW_LOG(ERROR, argv_cstr[0]);
+    //RAW_LOG(ERROR, "LaunchProcess: failed to execvp:");
+    //RAW_LOG(ERROR, argv_cstr[0]);
     _exit(127);
   } else {
     // Parent process
@@ -781,7 +785,7 @@ bool LaunchProcess(const std::vector<std::string>& argv,
       // finish is the sort of thing ThreadRestrictions is trying to prevent.
       base::ThreadRestrictions::AssertIOAllowed();
       pid_t ret = HANDLE_EINTR(waitpid(pid, 0, 0));
-      DPCHECK(ret > 0);
+      //DPCHECK(ret > 0);
     }
 
     if (process_handle)
@@ -817,7 +821,7 @@ TerminationStatus WaitForTerminationStatus(ProcessHandle handle,
 bool WaitForExitCode(ProcessHandle handle, int* exit_code) {
   int status;
   if (HANDLE_EINTR(waitpid(handle, &status, 0)) == -1) {
-    NOTREACHED();
+    //NOTREACHED();
     return false;
   }
 
@@ -827,7 +831,7 @@ bool WaitForExitCode(ProcessHandle handle, int* exit_code) {
   }
 
   // If it didn't exit cleanly, it must have been signaled.
-  DCHECK(WIFSIGNALED(status));
+  //DCHECK(WIFSIGNALED(status));
   return false;
 }
 
@@ -952,7 +956,7 @@ bool WaitForSingleProcess(ProcessHandle handle, base::TimeDelta wait) {
     return WaitForSingleNonChildProcess(handle, wait);
 #else
     // Currently on Linux we can't handle non child processes.
-    NOTIMPLEMENTED();
+    //NOTIMPLEMENTED();
 #endif  // OS_MACOSX
   }
 
@@ -966,7 +970,7 @@ bool WaitForSingleProcess(ProcessHandle handle, base::TimeDelta wait) {
   }
 
   if (status != -1) {
-    DCHECK(waitpid_success);
+    //DCHECK(waitpid_success);
     return WIFEXITED(status);
   } else {
     return false;
@@ -1014,7 +1018,7 @@ static GetAppOutputInternalResult GetAppOutputInternal(
   // Doing a blocking wait for another command to finish counts as IO.
   base::ThreadRestrictions::AssertIOAllowed();
   // exit_code must be supplied so calling function can determine success.
-  DCHECK(exit_code);
+  //DCHECK(exit_code);
   *exit_code = EXIT_FAILURE;
 
   int pipe_fd[2];
@@ -1027,7 +1031,7 @@ static GetAppOutputInternalResult GetAppOutputInternal(
 
   // Either |do_search_path| should be false or |envp| should be null, but not
   // both.
-  DCHECK(!do_search_path ^ !envp);
+  //DCHECK(!do_search_path ^ !envp);
 
   if (pipe(pipe_fd) < 0)
     return EXECUTE_FAILURE;
@@ -1196,8 +1200,8 @@ namespace {
 static bool IsChildDead(pid_t child) {
   const pid_t result = HANDLE_EINTR(waitpid(child, NULL, WNOHANG));
   if (result == -1) {
-    DPLOG(ERROR) << "waitpid(" << child << ")";
-    NOTREACHED();
+    //DPLOG(ERROR) << "waitpid(" << child << ")";
+    //NOTREACHED();
   } else if (result > 0) {
     // The child has died.
     return true;
@@ -1226,8 +1230,8 @@ class BackgroundReaper : public PlatformThread::Delegate {
     if (timeout_ == 0) {
       pid_t r = HANDLE_EINTR(waitpid(child_, NULL, 0));
       if (r != child_) {
-        DPLOG(ERROR) << "While waiting for " << child_
-                     << " to terminate, we got the following result: " << r;
+        //DPLOG(ERROR) << "While waiting for " << child_
+        //             << " to terminate, we got the following result: " << r;
       }
       return;
     }
@@ -1246,10 +1250,12 @@ class BackgroundReaper : public PlatformThread::Delegate {
       // SIGKILL is uncatchable. Since the signal was delivered, we can
       // just wait for the process to die now in a blocking manner.
       if (HANDLE_EINTR(waitpid(child_, NULL, 0)) < 0)
-        DPLOG(WARNING) << "waitpid";
+      {
+        //DPLOG(WARNING) << "waitpid";
+      }
     } else {
-      DLOG(ERROR) << "While waiting for " << child_ << " to terminate we"
-                  << " failed to deliver a SIGKILL signal (" << errno << ").";
+      //DLOG(ERROR) << "While waiting for " << child_ << " to terminate we"
+      //            << " failed to deliver a SIGKILL signal (" << errno << ").";
     }
   }
 

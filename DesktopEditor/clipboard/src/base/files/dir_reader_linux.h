@@ -38,7 +38,9 @@ class DirReaderLinux {
   ~DirReaderLinux() {
     if (fd_ >= 0) {
       if (HANDLE_EINTR(close(fd_)))
-        RAW_LOG(ERROR, "Failed to close directory handle");
+      {
+      //  RAW_LOG(ERROR, "Failed to close directory handle");
+      }
     }
   }
 
@@ -60,7 +62,7 @@ class DirReaderLinux {
     if (r == 0)
       return false;
     if (r == -1) {
-      DPLOG(FATAL) << "getdents64 returned an error: " << errno;
+      //DPLOG(FATAL) << "getdents64 returned an error: " << errno;
       return false;
     }
     size_ = r;

@@ -227,7 +227,7 @@ bool FilePath::IsSeparator(CharType character) {
 }
 
 void FilePath::GetComponents(std::vector<StringType>* components) const {
-  DCHECK(components);
+  //DCHECK(components);
   if (!components)
     return;
   components->clear();
@@ -408,7 +408,7 @@ FilePath FilePath::InsertBeforeExtension(const StringType& suffix) const {
 
 FilePath FilePath::InsertBeforeExtensionASCII(const StringPiece& suffix)
     const {
-  DCHECK(IsStringASCII(suffix));
+  //DCHECK(IsStringASCII(suffix));
 #if defined(OS_WIN)
   return InsertBeforeExtension(ASCIIToUTF16(suffix.as_string()));
 #elif defined(OS_POSIX)
@@ -450,7 +450,7 @@ FilePath FilePath::ReplaceExtension(const StringType& extension) const {
 }
 
 bool FilePath::MatchesExtension(const StringType& extension) const {
-  DCHECK(extension.empty() || extension[0] == kExtensionSeparator);
+  //DCHECK(extension.empty() || extension[0] == kExtensionSeparator);
 
   StringType current_extension = Extension();
 
@@ -470,7 +470,7 @@ FilePath FilePath::Append(const StringType& component) const {
     appended = &without_nuls;
   }
 
-  DCHECK(!IsPathAbsolute(*appended));
+  //DCHECK(!IsPathAbsolute(*appended));
 
   if (path_.compare(kCurrentDirectory) == 0) {
     // Append normally doesn't do any normalization, but as a special case,
@@ -509,7 +509,7 @@ FilePath FilePath::Append(const FilePath& component) const {
 }
 
 FilePath FilePath::AppendASCII(const StringPiece& component) const {
-  DCHECK(IsStringASCII(component));
+  //DCHECK(IsStringASCII(component));
 #if defined(OS_WIN)
   return Append(ASCIIToUTF16(component.as_string()));
 #elif defined(OS_POSIX)

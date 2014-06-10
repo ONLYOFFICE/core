@@ -17,7 +17,7 @@ typedef HistogramBase::Sample Sample;
 SampleVector::SampleVector(const BucketRanges* bucket_ranges)
     : counts_(bucket_ranges->size() - 1),
       bucket_ranges_(bucket_ranges) {
-  CHECK_GE(bucket_ranges_->size(), 2u);
+  //CHECK_GE(bucket_ranges_->size(), 2u);
 }
 
 SampleVector::~SampleVector() {}
@@ -43,7 +43,7 @@ Count SampleVector::TotalCount() const {
 }
 
 Count SampleVector::GetCountAtIndex(size_t bucket_index) const {
-  DCHECK(bucket_index < counts_.size());
+  //DCHECK(bucket_index < counts_.size());
   return counts_[bucket_index];
 }
 
@@ -84,15 +84,15 @@ bool SampleVector::AddSubtractImpl(SampleCountIterator* iter,
 // approaches if we knew that the buckets were linearly distributed.
 size_t SampleVector::GetBucketIndex(Sample value) const {
   size_t bucket_count = bucket_ranges_->size() - 1;
-  CHECK_GE(bucket_count, 1u);
-  CHECK_GE(value, bucket_ranges_->range(0));
-  CHECK_LT(value, bucket_ranges_->range(bucket_count));
+  //CHECK_GE(bucket_count, 1u);
+  //CHECK_GE(value, bucket_ranges_->range(0));
+  //CHECK_LT(value, bucket_ranges_->range(bucket_count));
 
   size_t under = 0;
   size_t over = bucket_count;
   size_t mid;
   do {
-    DCHECK_GE(over, under);
+    //DCHECK_GE(over, under);
     mid = under + (over - under)/2;
     if (mid == under)
       break;
@@ -102,8 +102,8 @@ size_t SampleVector::GetBucketIndex(Sample value) const {
       over = mid;
   } while (true);
 
-  DCHECK_LE(bucket_ranges_->range(mid), value);
-  CHECK_GT(bucket_ranges_->range(mid + 1), value);
+  //DCHECK_LE(bucket_ranges_->range(mid), value);
+  //CHECK_GT(bucket_ranges_->range(mid + 1), value);
   return mid;
 }
 
@@ -112,7 +112,7 @@ SampleVectorIterator::SampleVectorIterator(const vector<Count>* counts,
     : counts_(counts),
       bucket_ranges_(bucket_ranges),
       index_(0) {
-  CHECK_GT(bucket_ranges_->size(), counts_->size());
+  //CHECK_GT(bucket_ranges_->size(), counts_->size());
   SkipEmptyBuckets();
 }
 
@@ -123,7 +123,7 @@ bool SampleVectorIterator::Done() const {
 }
 
 void SampleVectorIterator::Next() {
-  DCHECK(!Done());
+  //DCHECK(!Done());
   index_++;
   SkipEmptyBuckets();
 }
@@ -131,7 +131,7 @@ void SampleVectorIterator::Next() {
 void SampleVectorIterator::Get(HistogramBase::Sample* min,
                                HistogramBase::Sample* max,
                                HistogramBase::Count* count) const {
-  DCHECK(!Done());
+  //DCHECK(!Done());
   if (min != NULL)
     *min = bucket_ranges_->range(index_);
   if (max != NULL)
@@ -141,7 +141,7 @@ void SampleVectorIterator::Get(HistogramBase::Sample* min,
 }
 
 bool SampleVectorIterator::GetBucketIndex(size_t* index) const {
-  DCHECK(!Done());
+  //DCHECK(!Done());
   if (index != NULL)
     *index = index_;
   return true;

@@ -40,7 +40,7 @@ bool SampleCountPickleIterator::Done() const {
 }
 
 void SampleCountPickleIterator::Next() {
-  DCHECK(!Done());
+  //DCHECK(!Done());
   if (!iter_->ReadInt(&min_) ||
       !iter_->ReadInt(&max_) ||
       !iter_->ReadInt(&count_))
@@ -50,7 +50,7 @@ void SampleCountPickleIterator::Next() {
 void SampleCountPickleIterator::Get(HistogramBase::Sample* min,
                                     HistogramBase::Sample* max,
                                     HistogramBase::Count* count) const {
-  DCHECK(!Done());
+  //DCHECK(!Done());
   *min = min_;
   *max = max_;
   *count = count_;
@@ -66,7 +66,7 @@ void HistogramSamples::Add(const HistogramSamples& other) {
   sum_ += other.sum();
   redundant_count_ += other.redundant_count();
   bool success = AddSubtractImpl(other.Iterator().get(), ADD);
-  DCHECK(success);
+  //DCHECK(success);
 }
 
 bool HistogramSamples::AddFromPickle(PickleIterator* iter) {
@@ -86,7 +86,7 @@ void HistogramSamples::Subtract(const HistogramSamples& other) {
   sum_ -= other.sum();
   redundant_count_ -= other.redundant_count();
   bool success = AddSubtractImpl(other.Iterator().get(), SUBTRACT);
-  DCHECK(success);
+  //DCHECK(success);
 }
 
 bool HistogramSamples::Serialize(Pickle* pickle) const {
@@ -119,7 +119,7 @@ void HistogramSamples::IncreaseRedundantCount(HistogramBase::Count diff) {
 SampleCountIterator::~SampleCountIterator() {}
 
 bool SampleCountIterator::GetBucketIndex(size_t* index) const {
-  DCHECK(!Done());
+  //DCHECK(!Done());
   return false;
 }
 

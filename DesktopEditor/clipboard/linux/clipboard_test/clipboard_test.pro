@@ -114,7 +114,20 @@ SOURCES += main.cpp \
     ../../src/ui/gfx/vector2d.cc \
     ../../src/ui/gfx/vector2d_conversions.cc \
     ../../src/ui/gfx/vector2d_f.cc \
-    ../../src/ui/gfx/vector3d_f.cc
+    ../../src/ui/gfx/vector3d_f.cc \
+    ../../src/base/third_party/nspr/prtime.cc \
+    ../../src/base/values.cc \
+    ../../src/base/metrics/bucket_ranges.cc \
+    ../../src/base/metrics/sample_vector.cc \
+    ../../src/base/metrics/histogram_samples.cc \
+    ../../src/base/synchronization/cancellation_flag.cc \
+    ../../src/base/strings/string_split.cc \
+    ../../src/base/process_util.cc \
+    ../../src/base/process_util_linux.cc \
+    ../../src/base/process_util_posix.cc \
+    ../../src/base/files/file_path.cc \
+    ../../src/ui/gfx/insets.cc \
+    ../../src/ui/gfx/insets_f.cc
 
 
 HEADERS += \
@@ -207,4 +220,20 @@ HEADERS += \
     ../../src/ui/gfx/vector2d.h \
     ../../src/ui/gfx/vector2d_conversions.h \
     ../../src/ui/gfx/vector2d_f.h \
-    ../../src/ui/gfx/vector3d_f.h
+    ../../src/ui/gfx/vector3d_f.h \
+    ../../src/ui/gfx/rect_base_impl.h \
+    ../../src/base/third_party/nspr/prcpucfg.h \
+    ../../src/base/third_party/nspr/prcpucfg_linux.h \
+    ../../src/base/third_party/nspr/prtime.h \
+    ../../src/base/third_party/nspr/prtypes.h \
+    ../../src/base/values.h \
+    ../../src/base/metrics/bucket_ranges.h \
+    ../../src/base/metrics/sample_vector.h \
+    ../../src/base/metrics/histogram_samples.h \
+    ../../src/base/synchronization/cancellation_flag.h \
+    ../../src/base/strings/string_split.h \
+    ../../src/base/process_util.h \
+    ../../src/base/files/file_path.h \
+    ../../src/ui/gfx/insets.h \
+    ../../src/ui/gfx/insets_base.h \
+    ../../src/ui/gfx/insets_f.h

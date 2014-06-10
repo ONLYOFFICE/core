@@ -10,7 +10,7 @@ namespace base {
 
 void CancellationFlag::Set() {
 #if !defined(NDEBUG)
-  DCHECK_EQ(set_on_, PlatformThread::CurrentId());
+  //DCHECK_EQ(set_on_, PlatformThread::CurrentId());
 #endif
   base::subtle::Release_Store(&flag_, 1);
 }

@@ -72,7 +72,7 @@ void ThreadIdNameManager::RemoveName(PlatformThreadId id) {
 
   AutoLock locked(lock_);
   ThreadIdToInternedNameIterator iter = thread_id_to_interned_name_.find(id);
-  DCHECK((iter != thread_id_to_interned_name_.end()));
+  //DCHECK((iter != thread_id_to_interned_name_.end()));
   thread_id_to_interned_name_.erase(iter);
 }
 

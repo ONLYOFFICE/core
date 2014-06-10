@@ -15,10 +15,10 @@ ThreadLocalStorage::Slot::Slot(TLSDestructorFunc destructor) {
 }
 
 bool ThreadLocalStorage::StaticSlot::Initialize(TLSDestructorFunc destructor) {
-  DCHECK(!initialized_);
+  //DCHECK(!initialized_);
   int error = pthread_key_create(&key_, destructor);
   if (error) {
-    NOTREACHED();
+    //NOTREACHED();
     return false;
   }
 
@@ -27,23 +27,27 @@ bool ThreadLocalStorage::StaticSlot::Initialize(TLSDestructorFunc destructor) {
 }
 
 void ThreadLocalStorage::StaticSlot::Free() {
-  DCHECK(initialized_);
+  //DCHECK(initialized_);
   int error = pthread_key_delete(key_);
   if (error)
-    NOTREACHED();
+  {
+    //NOTREACHED();
+  }
   initialized_ = false;
 }
 
 void* ThreadLocalStorage::StaticSlot::Get() const {
-  DCHECK(initialized_);
+  //DCHECK(initialized_);
   return pthread_getspecific(key_);
 }
 
 void ThreadLocalStorage::StaticSlot::Set(void* value) {
-  DCHECK(initialized_);
+  //DCHECK(initialized_);
   int error = pthread_setspecific(key_, value);
   if (error)
-    NOTREACHED();
+  {
+    //NOTREACHED();
+  }
 }
 
 }  // namespace base

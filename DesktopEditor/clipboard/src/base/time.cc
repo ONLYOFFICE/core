@@ -87,8 +87,8 @@ time_t Time::ToTimeT() const {
     return std::numeric_limits<time_t>::max();
   }
   if (std::numeric_limits<int64>::max() - kTimeTToMicrosecondsOffset <= us_) {
-    DLOG(WARNING) << "Overflow when converting base::Time with internal " <<
-                     "value " << us_ << " to time_t.";
+    //DLOG(WARNING) << "Overflow when converting base::Time with internal " <<
+    //                 "value " << us_ << " to time_t.";
     return std::numeric_limits<time_t>::max();
   }
   return (us_ - kTimeTToMicrosecondsOffset) / kMicrosecondsPerSecond;
@@ -160,7 +160,7 @@ Time Time::LocalMidnight() const {
 bool Time::FromStringInternal(const char* time_string,
                               bool is_local,
                               Time* parsed_time) {
-  DCHECK((time_string != NULL) && (parsed_time != NULL));
+  //DCHECK((time_string != NULL) && (parsed_time != NULL));
 
   if (time_string[0] == '\0')
     return false;

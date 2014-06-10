@@ -44,7 +44,7 @@ class BASE_EXPORT_PRIVATE SampleVector : public HistogramSamples {
   virtual size_t GetBucketIndex(HistogramBase::Sample value) const;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(HistogramTest, CorruptSampleCounts);
+  //FRIEND_TEST_ALL_PREFIXES(HistogramTest, CorruptSampleCounts);
 
   std::vector<HistogramBase::Count> counts_;
 

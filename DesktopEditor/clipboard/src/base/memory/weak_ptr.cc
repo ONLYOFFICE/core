@@ -13,12 +13,12 @@ WeakReference::Flag::Flag() : is_valid_(true) {
 void WeakReference::Flag::Invalidate() {
   // The flag being invalidated with a single ref implies that there are no
   // weak pointers in existence. Allow deletion on other thread in this case.
-  DCHECK(thread_checker_.CalledOnValidThread() || HasOneRef());
+  //DCHECK(thread_checker_.CalledOnValidThread() || HasOneRef());
   is_valid_ = false;
 }
 
 bool WeakReference::Flag::IsValid() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  //DCHECK(thread_checker_.CalledOnValidThread());
   return is_valid_;
 }
 

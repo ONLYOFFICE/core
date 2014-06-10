@@ -22,7 +22,7 @@
 #include "ui/base/gtk/gtk_signal.h"
 #include "ui/base/gtk/scoped_gobject.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/gfx/canvas.h"
+//#include "ui/gfx/canvas.h"
 #include "ui/gfx/gtk_util.h"
 #include "ui/gfx/size.h"
 

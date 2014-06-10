@@ -52,7 +52,7 @@ void SetCurrentThreadPriority(ThreadPriority priority) {
 #if defined(OS_LINUX) || defined(OS_ANDROID)
   switch (priority) {
     case kThreadPriority_Normal:
-      NOTREACHED() << "Don't reset priority as not all processes can.";
+      //NOTREACHED() << "Don't reset priority as not all processes can.";
       break;
     case kThreadPriority_RealtimeAudio:
 #if defined(OS_LINUX)
@@ -62,7 +62,9 @@ void SetCurrentThreadPriority(ThreadPriority priority) {
       // in the process.  Setting this priority will only succeed if the user
       // has been granted permission to adjust nice values on the system.
       if (setpriority(PRIO_PROCESS, PlatformThread::CurrentId(), kNiceSetting))
-        DVLOG(1) << "Failed to set nice value of thread to " << kNiceSetting;
+      {
+        //DVLOG(1) << "Failed to set nice value of thread to " << kNiceSetting;
+      }
 #elif defined(OS_ANDROID)
       JNIEnv* env = base::android::AttachCurrentThread();
       Java_ThreadUtils_setThreadPriorityAudio(env, PlatformThread::CurrentId());
@@ -80,7 +82,9 @@ void* ThreadFunc(void* params) {
   // where they were created. This sets all threads to the default.
   // TODO(epenner): Move thread priorities to base. (crbug.com/170549)
   if (setpriority(PRIO_PROCESS, PlatformThread::CurrentId(), 0))
-    DVLOG(1) << "Failed to reset initial thread nice value to zero.";
+  {
+    //DVLOG(1) << "Failed to reset initial thread nice value to zero.";
+  }
 #endif
   ThreadParams* thread_params = static_cast<ThreadParams*>(params);
   PlatformThread::Delegate* delegate = thread_params->delegate;
@@ -160,7 +164,7 @@ bool CreateThread(size_t stack_size, bool joinable,
   success = !err;
   if (!success) {
     errno = err;
-    PLOG(ERROR) << "pthread_create";
+    //PLOG(ERROR) << "pthread_create";
   }
 
   pthread_attr_destroy(&attributes);
@@ -234,7 +238,9 @@ void PlatformThread::SetName(const char* name) {
   int err = prctl(PR_SET_NAME, name);
   // We expect EPERM failures in sandboxed processes, just ignore those.
   if (err < 0 && errno != EPERM)
-    DPLOG(ERROR) << "prctl(PR_SET_NAME)";
+  {
+    //DPLOG(ERROR) << "prctl(PR_SET_NAME)";
+  }
 }
 #elif defined(OS_MACOSX)
 // Mac is implemented in platform_thread_mac.mm.

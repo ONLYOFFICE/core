@@ -29,7 +29,7 @@ class PostTaskAndReplyTaskRunner : public internal::PostTaskAndReplyImpl {
 
 PostTaskAndReplyTaskRunner::PostTaskAndReplyTaskRunner(
     TaskRunner* destination) : destination_(destination) {
-  DCHECK(destination_);
+  //DCHECK(destination_);
 }
 
 bool PostTaskAndReplyTaskRunner::PostTask(

@@ -64,7 +64,7 @@ base::Closure RunLoop::QuitClosure() {
 }
 
 bool RunLoop::BeforeRun() {
-  DCHECK(!run_called_);
+  //DCHECK(!run_called_);
   run_called_ = true;
 
   // Allow Quit to be called before Run.

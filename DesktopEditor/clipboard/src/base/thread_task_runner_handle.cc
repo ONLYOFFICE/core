@@ -20,7 +20,7 @@ base::LazyInstance<base::ThreadLocalPointer<ThreadTaskRunnerHandle> >
 // static
 scoped_refptr<SingleThreadTaskRunner> ThreadTaskRunnerHandle::Get() {
   ThreadTaskRunnerHandle* current = lazy_tls_ptr.Pointer()->Get();
-  DCHECK(current);
+  //DCHECK(current);
   return current->task_runner_;
 }
 
@@ -32,14 +32,14 @@ bool ThreadTaskRunnerHandle::IsSet() {
 ThreadTaskRunnerHandle::ThreadTaskRunnerHandle(
     const scoped_refptr<SingleThreadTaskRunner>& task_runner)
     : task_runner_(task_runner) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!lazy_tls_ptr.Pointer()->Get());
+  //DCHECK(task_runner_->BelongsToCurrentThread());
+  //DCHECK(!lazy_tls_ptr.Pointer()->Get());
   lazy_tls_ptr.Pointer()->Set(this);
 }
 
 ThreadTaskRunnerHandle::~ThreadTaskRunnerHandle() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK_EQ(lazy_tls_ptr.Pointer()->Get(), this);
+  //DCHECK(task_runner_->BelongsToCurrentThread());
+  //DCHECK_EQ(lazy_tls_ptr.Pointer()->Get(), this);
   lazy_tls_ptr.Pointer()->Set(NULL);
 }
 

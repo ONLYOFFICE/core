@@ -254,13 +254,13 @@ class BASE_EXPORT_PRIVATE JSONParser {
   int error_column_;
 
   friend class JSONParserTest;
-  FRIEND_TEST_ALL_PREFIXES(JSONParserTest, NextChar);
-  FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ConsumeDictionary);
-  FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ConsumeList);
-  FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ConsumeString);
-  FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ConsumeLiterals);
-  FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ConsumeNumbers);
-  FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ErrorMessages);
+  //FRIEND_TEST_ALL_PREFIXES(JSONParserTest, NextChar);
+  //FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ConsumeDictionary);
+  //FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ConsumeList);
+  //FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ConsumeString);
+  //FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ConsumeLiterals);
+  //FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ConsumeNumbers);
+  //FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ErrorMessages);
 
   DISALLOW_COPY_AND_ASSIGN(JSONParser);
 };

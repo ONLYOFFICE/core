@@ -110,8 +110,8 @@ Time Time::Now() {
   struct timeval tv;
   struct timezone tz = { 0, 0 };  // UTC
   if (gettimeofday(&tv, &tz) != 0) {
-    DCHECK(0) << "Could not determine time of day";
-    LOG_ERRNO(ERROR) << "Call to gettimeofday failed.";
+    //DCHECK(0) << "Could not determine time of day";
+    //LOG_ERRNO(ERROR) << "Call to gettimeofday failed.";
     // Return null instead of uninitialized |tv| value, which contains random
     // garbage data. This may result in the crash seen in crbug.com/147570.
     return Time();
@@ -237,7 +237,7 @@ TimeTicks TimeTicks::Now() {
 
   struct timespec ts;
   if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0) {
-    NOTREACHED() << "clock_gettime(CLOCK_MONOTONIC) failed.";
+    //NOTREACHED() << "clock_gettime(CLOCK_MONOTONIC) failed.";
     return TimeTicks();
   }
 
@@ -292,8 +292,8 @@ TimeTicks TimeTicks::NowFromSystemTraceTime() {
 
 // static
 Time Time::FromTimeVal(struct timeval t) {
-  DCHECK_LT(t.tv_usec, static_cast<int>(Time::kMicrosecondsPerSecond));
-  DCHECK_GE(t.tv_usec, 0);
+  //DCHECK_LT(t.tv_usec, static_cast<int>(Time::kMicrosecondsPerSecond));
+  //DCHECK_GE(t.tv_usec, 0);
   if (t.tv_usec == 0 && t.tv_sec == 0)
     return Time();
   if (t.tv_usec == static_cast<suseconds_t>(Time::kMicrosecondsPerSecond) - 1 &&

@@ -33,12 +33,12 @@ const int32 kExtendedASCIIStart = 0x80;
 class DictionaryHiddenRootValue : public base::DictionaryValue {
  public:
   DictionaryHiddenRootValue(std::string* json, Value* root) : json_(json) {
-    DCHECK(root->IsType(Value::TYPE_DICTIONARY));
+    //DCHECK(root->IsType(Value::TYPE_DICTIONARY));
     DictionaryValue::Swap(static_cast<DictionaryValue*>(root));
   }
 
   virtual void Swap(DictionaryValue* other) OVERRIDE {
-    DVLOG(1) << "Swap()ing a DictionaryValue inefficiently.";
+    //DVLOG(1) << "Swap()ing a DictionaryValue inefficiently.";
 
     // First deep copy to convert JSONStringValue to std::string and swap that
     // copy with |other|, which contains the new contents of |this|.
@@ -61,7 +61,7 @@ class DictionaryHiddenRootValue : public base::DictionaryValue {
     if (!out)
       return DictionaryValue::RemoveWithoutPathExpansion(key, out);
 
-    DVLOG(1) << "Remove()ing from a DictionaryValue inefficiently.";
+    //DVLOG(1) << "Remove()ing from a DictionaryValue inefficiently.";
 
     // Otherwise, remove the value while its still "owned" by this and copy it
     // to convert any JSONStringValues to std::string.
@@ -84,12 +84,12 @@ class DictionaryHiddenRootValue : public base::DictionaryValue {
 class ListHiddenRootValue : public base::ListValue {
  public:
   ListHiddenRootValue(std::string* json, Value* root) : json_(json) {
-    DCHECK(root->IsType(Value::TYPE_LIST));
+    //DCHECK(root->IsType(Value::TYPE_LIST));
     ListValue::Swap(static_cast<ListValue*>(root));
   }
 
   virtual void Swap(ListValue* other) OVERRIDE {
-    DVLOG(1) << "Swap()ing a ListValue inefficiently.";
+    //DVLOG(1) << "Swap()ing a ListValue inefficiently.";
 
     // First deep copy to convert JSONStringValue to std::string and swap that
     // copy with |other|, which contains the new contents of |this|.
@@ -108,7 +108,7 @@ class ListHiddenRootValue : public base::ListValue {
     if (!out)
       return ListValue::Remove(index, out);
 
-    DVLOG(1) << "Remove()ing from a ListValue inefficiently.";
+    //DVLOG(1) << "Remove()ing from a ListValue inefficiently.";
 
     // Otherwise, remove the value while its still "owned" by this and copy it
     // to convert any JSONStringValues to std::string.
@@ -168,7 +168,7 @@ class StackMarker {
  public:
   explicit StackMarker(int* depth) : depth_(depth) {
     ++(*depth_);
-    DCHECK_LE(*depth_, kStackMaxDepth);
+    //DCHECK_LE(*depth_, kStackMaxDepth);
   }
   ~StackMarker() {
     --(*depth_);
@@ -300,8 +300,8 @@ JSONParser::StringBuilder::~StringBuilder() {
 }
 
 void JSONParser::StringBuilder::Append(const char& c) {
-  DCHECK_GE(c, 0);
-  DCHECK_LT(c, 128);
+  //DCHECK_GE(c, 0);
+  //DCHECK_LT(c, 128);
 
   if (string_)
     string_->push_back(c);
@@ -310,7 +310,7 @@ void JSONParser::StringBuilder::Append(const char& c) {
 }
 
 void JSONParser::StringBuilder::AppendString(const std::string& str) {
-  DCHECK(string_);
+  //DCHECK(string_);
   string_->append(str);
 }
 
@@ -343,14 +343,14 @@ inline bool JSONParser::CanConsume(int length) {
 }
 
 const char* JSONParser::NextChar() {
-  DCHECK(CanConsume(1));
+  //DCHECK(CanConsume(1));
   ++index_;
   ++pos_;
   return pos_;
 }
 
 void JSONParser::NextNChars(int n) {
-  DCHECK(CanConsume(n));
+  //DCHECK(CanConsume(n));
   index_ += n;
   pos_ += n;
 }
@@ -781,7 +781,7 @@ bool JSONParser::DecodeUTF16(std::string* dest_string) {
     CBU8_APPEND_UNSAFE(code_unit8, offset, code_point);
   } else {
     // Not a surrogate.
-    DCHECK(CBU16_IS_SINGLE(code_unit16_high));
+    //DCHECK(CBU16_IS_SINGLE(code_unit16_high));
     CBU8_APPEND_UNSAFE(code_unit8, offset, code_unit16_high);
   }
 

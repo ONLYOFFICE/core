@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 message($$PWD)
-DEFINES += USE_X11
+DEFINES += USE_X11 HAVE_SYS_TIME_H
 
 QT       += core
 
@@ -30,7 +30,8 @@ INCLUDEPATH += \
     ../../src/third_party/skia/include/core \
     ../../src/third_party/skia/include/config \
     ../../src/third_party/skia/include/pathops \
-    ../../src/third_party/skia/src/image
+    ../../src/third_party/skia/src/image \
+    ../../src/third_party/libevent/linux \
 
 SOURCES += main.cpp \
     ../../src/ui/base/clipboard/clipboard.cc \
@@ -52,14 +53,11 @@ SOURCES += main.cpp \
     ../../src/base/strings/utf_string_conversion_utils.cc \
     ../../src/ui/gfx/size.cc \
     ../../src/ui/base/x/x11_util.cc \
-    ../../src/third_party/skia/src/core/SkBitmap.cpp \
     ../../src/base/message_pump.cc \
     ../../src/base/message_pump_gtk.cc \
     ../../src/base/message_pump_glib.cc \
     ../../src/base/message_pump_default.cc \
     ../../src/base/message_pump_libevent.cc \
-    ../../src/third_party/skia/src/core/SkDebug.cpp \
-    ../../src/ui/gfx/image/image.cc \
     ../../src/ui/gfx/gtk_util.cc \
     ../../src/base/threading/thread_restrictions.cc \
     ../../src/base/at_exit.cc \
@@ -80,22 +78,44 @@ SOURCES += main.cpp \
     ../../src/base/memory/ref_counted.cc \
     ../../src/base/memory/ref_counted_memory.cc \
     ../../src/base/callback_internal.cc \
-    ../../src/third_party/skia/src/ports/SkDebug_stdio.cpp \
-    ../../src/third_party/skia/src/core/Sk64.cpp \
-    ../../src/third_party/skia/src/core/SkPixelRef.cpp \
-    ../../src/third_party/skia/src/core/SkMallocPixelRef.cpp \
-    ../../src/third_party/skia/src/ports/SkMemory_malloc.cpp \
-    ../../src/third_party/skia/src/core/SkCanvas.cpp \
-    ../../src/third_party/skia/src/core/SkColor.cpp \
-    ../../src/third_party/skia/src/core/SkColorTable.cpp \
-    ../../src/third_party/skia/src/core/SkMask.cpp \
-    ../../src/third_party/skia/src/core/SkMatrix.cpp \
-    ../../src/third_party/skia/src/core/SkUnPreMultiply.cpp \
-    ../../src/third_party/skia/src/core/SkPackBits.cpp \
-    ../../src/third_party/skia/src/core/SkPoint.cpp \
-    ../../src/third_party/skia/src/core/SkRect.cpp \
-    ../../src/third_party/skia/src/core/SkUtils.cpp \
-    ../../src/third_party/skia/src/core/SkPaint.cpp
+    ../../src/base/threading/platform_thread_posix.cc \
+    ../../src/base/time.cc \
+    ../../src/base/time_posix.cc \
+    ../../src/base/memory/weak_ptr.cc \
+    ../../src/base/synchronization/waitable_event_posix.cc \
+    ../../src/third_party/libevent/event.c \
+    ../../src/base/synchronization/lock.cc \
+    ../../src/base/synchronization/lock_impl_posix.cc \
+    ../../src/base/threading/thread_checker_impl.cc \
+    ../../src/base/threading/thread_local_posix.cc \
+    ../../src/base/threading/thread_local_storage_posix.cc \
+    ../../src/base/pending_task.cc \
+    ../../src/base/message_loop/message_loop_proxy.cc \
+    ../../src/base/message_loop/message_loop_proxy_impl.cc \
+    ../../src/base/run_loop.cc \
+    ../../src/base/task_runner.cc \
+    ../../src/base/synchronization/condition_variable_posix.cc \
+    ../../src/base/threading/thread_id_name_manager.cc \
+    ../../src/base/tracked_objects.cc \
+    ../../src/base/tracking_info.cc \
+    ../../src/base/profiler/tracked_time.cc \
+    ../../src/base/debug/trace_event_impl.cc \
+    ../../src/base/lazy_instance.cc \
+    ../../src/base/thread_task_runner_handle.cc \
+    ../../src/base/debug/alias.cc \
+    ../../src/base/metrics/statistics_recorder.cc \
+    ../../src/base/metrics/histogram.cc \
+    ../../src/base/metrics/histogram_base.cc \
+    ../../src/base/json/json_string_value_serializer.cc \
+    ../../src/base/json/json_reader.cc \
+    ../../src/base/json/json_writer.cc \
+    ../../src/base/json/string_escape.cc \
+    ../../src/base/json/json_parser.cc \
+    ../../src/ui/gfx/vector2d.cc \
+    ../../src/ui/gfx/vector2d_conversions.cc \
+    ../../src/ui/gfx/vector2d_f.cc \
+    ../../src/ui/gfx/vector3d_f.cc
+
 
 HEADERS += \
     ../../src/ui/base/clipboard/clipboard.h \
@@ -116,106 +136,6 @@ HEADERS += \
     ../../src/base/strings/utf_string_conversions.h \
     ../../src/base/strings/utf_string_conversion_utils.h \
     ../../src/ui/gfx/size.h \
-    ../../src/third_party/skia/include/core/Sk64.h \
-    ../../src/third_party/skia/include/core/SkAdvancedTypefaceMetrics.h \
-    ../../src/third_party/skia/include/core/SkAnnotation.h \
-    ../../src/third_party/skia/include/core/SkBitmap.h \
-    ../../src/third_party/skia/include/core/SkBlitRow.h \
-    ../../src/third_party/skia/include/core/SkBounder.h \
-    ../../src/third_party/skia/include/core/SkCanvas.h \
-    ../../src/third_party/skia/include/core/SkChecksum.h \
-    ../../src/third_party/skia/include/core/SkChunkAlloc.h \
-    ../../src/third_party/skia/include/core/SkClipStack.h \
-    ../../src/third_party/skia/include/core/SkColor.h \
-    ../../src/third_party/skia/include/core/SkColorFilter.h \
-    ../../src/third_party/skia/include/core/SkColorPriv.h \
-    ../../src/third_party/skia/include/core/SkColorShader.h \
-    ../../src/third_party/skia/include/core/SkColorTable.h \
-    ../../src/third_party/skia/include/core/SkComposeShader.h \
-    ../../src/third_party/skia/include/core/SkData.h \
-    ../../src/third_party/skia/include/core/SkDataSet.h \
-    ../../src/third_party/skia/include/core/SkDataTable.h \
-    ../../src/third_party/skia/include/core/SkDeque.h \
-    ../../src/third_party/skia/include/core/SkDevice.h \
-    ../../src/third_party/skia/include/core/SkDeviceProperties.h \
-    ../../src/third_party/skia/include/core/SkDither.h \
-    ../../src/third_party/skia/include/core/SkDraw.h \
-    ../../src/third_party/skia/include/core/SkDrawFilter.h \
-    ../../src/third_party/skia/include/core/SkDrawLooper.h \
-    ../../src/third_party/skia/include/core/SkEmptyShader.h \
-    ../../src/third_party/skia/include/core/SkEndian.h \
-    ../../src/third_party/skia/include/core/SkError.h \
-    ../../src/third_party/skia/include/core/SkFixed.h \
-    ../../src/third_party/skia/include/core/SkFlate.h \
-    ../../src/third_party/skia/include/core/SkFlattenable.h \
-    ../../src/third_party/skia/include/core/SkFlattenableBuffers.h \
-    ../../src/third_party/skia/include/core/SkFloatBits.h \
-    ../../src/third_party/skia/include/core/SkFloatingPoint.h \
-    ../../src/third_party/skia/include/core/SkFontHost.h \
-    ../../src/third_party/skia/include/core/SkFontLCDConfig.h \
-    ../../src/third_party/skia/include/core/SkGeometry.h \
-    ../../src/third_party/skia/include/core/SkGraphics.h \
-    ../../src/third_party/skia/include/core/SkImage.h \
-    ../../src/third_party/skia/include/core/SkImageFilter.h \
-    ../../src/third_party/skia/include/core/SkImageFilterUtils.h \
-    ../../src/third_party/skia/include/core/SkImageTypes.h \
-    ../../src/third_party/skia/include/core/SkInstCnt.h \
-    ../../src/third_party/skia/include/core/SkLineClipper.h \
-    ../../src/third_party/skia/include/core/SkMallocPixelRef.h \
-    ../../src/third_party/skia/include/core/SkMask.h \
-    ../../src/third_party/skia/include/core/SkMaskFilter.h \
-    ../../src/third_party/skia/include/core/SkMath.h \
-    ../../src/third_party/skia/include/core/SkMatrix.h \
-    ../../src/third_party/skia/include/core/SkMetaData.h \
-    ../../src/third_party/skia/include/core/SkOSFile.h \
-    ../../src/third_party/skia/include/core/SkPackBits.h \
-    ../../src/third_party/skia/include/core/SkPaint.h \
-    ../../src/third_party/skia/include/core/SkPath.h \
-    ../../src/third_party/skia/include/core/SkPathEffect.h \
-    ../../src/third_party/skia/include/core/SkPathMeasure.h \
-    ../../src/third_party/skia/include/core/SkPicture.h \
-    ../../src/third_party/skia/include/core/SkPixelRef.h \
-    ../../src/third_party/skia/include/core/SkPoint.h \
-    ../../src/third_party/skia/include/core/SkPostConfig.h \
-    ../../src/third_party/skia/include/core/skpreconfig.h \
-    ../../src/third_party/skia/include/core/SkRasterizer.h \
-    ../../src/third_party/skia/include/core/SkReader32.h \
-    ../../src/third_party/skia/include/core/SkRect.h \
-    ../../src/third_party/skia/include/core/SkRefCnt.h \
-    ../../src/third_party/skia/include/core/SkRegion.h \
-    ../../src/third_party/skia/include/core/SkRRect.h \
-    ../../src/third_party/skia/include/core/SkScalar.h \
-    ../../src/third_party/skia/include/core/SkScalarCompare.h \
-    ../../src/third_party/skia/include/core/SkShader.h \
-    ../../src/third_party/skia/include/core/SkSize.h \
-    ../../src/third_party/skia/include/core/SkStream.h \
-    ../../src/third_party/skia/include/core/SkString.h \
-    ../../src/third_party/skia/include/core/SkStringUtils.h \
-    ../../src/third_party/skia/include/core/SkStrokeRec.h \
-    ../../src/third_party/skia/include/core/SkSurface.h \
-    ../../src/third_party/skia/include/core/SkTArray.h \
-    ../../src/third_party/skia/include/core/SkTDArray.h \
-    ../../src/third_party/skia/include/core/SkTDict.h \
-    ../../src/third_party/skia/include/core/SkTDStack.h \
-    ../../src/third_party/skia/include/core/SkTemplates.h \
-    ../../src/third_party/skia/include/core/SkThread.h \
-    ../../src/third_party/skia/include/core/SkThread_platform.h \
-    ../../src/third_party/skia/include/core/SkTileGridPicture.h \
-    ../../src/third_party/skia/include/core/SkTime.h \
-    ../../src/third_party/skia/include/core/SkTInternalLList.h \
-    ../../src/third_party/skia/include/core/SkTLazy.h \
-    ../../src/third_party/skia/include/core/SkTrace.h \
-    ../../src/third_party/skia/include/core/SkTRegistry.h \
-    ../../src/third_party/skia/include/core/SkTScopedPtr.h \
-    ../../src/third_party/skia/include/core/SkTSearch.h \
-    ../../src/third_party/skia/include/core/SkTypeface.h \
-    ../../src/third_party/skia/include/core/SkTypes.h \
-    ../../src/third_party/skia/include/core/SkUnitMapper.h \
-    ../../src/third_party/skia/include/core/SkUnPreMultiply.h \
-    ../../src/third_party/skia/include/core/SkUtils.h \
-    ../../src/third_party/skia/include/core/SkWeakRefCnt.h \
-    ../../src/third_party/skia/include/core/SkWriter32.h \
-    ../../src/third_party/skia/include/core/SkXfermode.h \
     ../../src/ui/base/x/x11_util.h \
     ../../src/base/message_pump.h \
     ../../src/base/message_pump_gtk.h \
@@ -223,7 +143,6 @@ HEADERS += \
     ../../src/base/message_pump_default.h \
     ../../src/base/message_pump_dispatcher.h \
     ../../src/base/message_pump_libevent.h \
-    ../../src/ui/gfx/image/image.h \
     ../../src/ui/gfx/gtk_util.h \
     ../../src/base/threading/thread_restrictions.h \
     ../../src/base/at_exit.h \
@@ -253,5 +172,39 @@ HEADERS += \
     ../../src/base/memory/ref_counted.h \
     ../../src/base/memory/ref_counted_memory.h \
     ../../src/base/callback_internal.h \
-    ../../src/third_party/skia/include/pathops/SkPathOps.h \
-    ../../src/third_party/skia/src/image/SkSurface_Base.h
+    ../../src/base/synchronization/waitable_event.h \
+    ../../src/third_party/libevent/event.h \
+    ../../src/base/synchronization/lock.h \
+    ../../src/base/synchronization/lock_impl.h \
+    ../../src/base/threading/thread_checker.h \
+    ../../src/base/threading/thread_checker_impl.h \
+    ../../src/base/threading/thread_local.h \
+    ../../src/base/threading/thread_local_storage.h \
+    ../../src/base/pending_task.h \
+    ../../src/base/message_loop/message_loop_proxy.h \
+    ../../src/base/message_loop/message_loop_proxy_impl.h \
+    ../../src/base/run_loop.h \
+    ../../src/base/task_runner.h \
+    ../../src/base/task_runner_util.h \
+    ../../src/base/synchronization/condition_variable.h \
+    ../../src/base/threading/thread_id_name_manager.h \
+    ../../src/base/tracked_objects.h \
+    ../../src/base/tracking_info.h \
+    ../../src/base/profiler/tracked_time.h \
+    ../../src/base/debug/trace_event.h \
+    ../../src/base/debug/trace_event_impl.h \
+    ../../src/base/lazy_instance.h \
+    ../../src/base/thread_task_runner_handle.h \
+    ../../src/base/debug/alias.h \
+    ../../src/base/metrics/statistics_recorder.h \
+    ../../src/base/metrics/histogram.h \
+    ../../src/base/metrics/histogram_base.h \
+    ../../src/base/json/json_string_value_serializer.h \
+    ../../src/base/json/json_reader.h \
+    ../../src/base/json/json_writer.h \
+    ../../src/base/json/string_escape.h \
+    ../../src/base/json/json_parser.h \
+    ../../src/ui/gfx/vector2d.h \
+    ../../src/ui/gfx/vector2d_conversions.h \
+    ../../src/ui/gfx/vector2d_f.h \
+    ../../src/ui/gfx/vector3d_f.h

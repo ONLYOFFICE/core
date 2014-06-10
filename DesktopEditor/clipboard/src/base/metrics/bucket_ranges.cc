@@ -86,7 +86,7 @@ static uint32 Crc32(uint32 sum, HistogramBase::Sample value) {
       HistogramBase::Sample range;
       uint16 ints[sizeof(HistogramBase::Sample) / 2];
     } converter;
-    DCHECK_EQ(sizeof(HistogramBase::Sample), sizeof(converter));
+    //DCHECK_EQ(sizeof(HistogramBase::Sample), sizeof(converter));
     converter.range = value;
     sum += converter.ints[0];
     sum = (sum << 16) ^ sum ^ (static_cast<uint32>(converter.ints[1]) << 11);
@@ -102,8 +102,8 @@ BucketRanges::BucketRanges(size_t num_ranges)
 BucketRanges::~BucketRanges() {}
 
 void BucketRanges::set_range(size_t i, HistogramBase::Sample value) {
-  DCHECK_LT(i, ranges_.size());
-  CHECK_GE(value, 0);
+  //DCHECK_LT(i, ranges_.size());
+  //CHECK_GE(value, 0);
   ranges_[i] = value;
 }
 

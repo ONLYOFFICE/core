@@ -60,7 +60,7 @@ bool ReadProcStats(pid_t pid, std::string* buffer) {
 
   FilePath stat_file = GetProcPidDir(pid).Append(kStatFile);
   if (!file_util::ReadFileToString(stat_file, buffer)) {
-    DLOG(WARNING) << "Failed to get process stats.";
+    //DLOG(WARNING) << "Failed to get process stats.";
     return false;
   }
   return !buffer->empty();
@@ -85,8 +85,8 @@ bool ParseProcStats(const std::string& stats_data,
   if (open_parens_idx == std::string::npos ||
       close_parens_idx == std::string::npos ||
       open_parens_idx > close_parens_idx) {
-    DLOG(WARNING) << "Failed to find matched parens in '" << stats_data << "'";
-    NOTREACHED();
+    //DLOG(WARNING) << "Failed to find matched parens in '" << stats_data << "'";
+    //NOTREACHED();
     return false;
   }
   open_parens_idx++;
@@ -112,8 +112,8 @@ bool ParseProcStats(const std::string& stats_data,
 // simply |pid|, and the next two values are strings.
 int GetProcStatsFieldAsInt(const std::vector<std::string>& proc_stats,
                            ProcStatsFields field_num) {
-  DCHECK_GE(field_num, VM_PPID);
-  CHECK_LT(static_cast<size_t>(field_num), proc_stats.size());
+  //DCHECK_GE(field_num, VM_PPID);
+  //CHECK_LT(static_cast<size_t>(field_num), proc_stats.size());
 
   int value;
   return StringToInt(proc_stats[field_num], &value) ? value : 0;
@@ -122,8 +122,8 @@ int GetProcStatsFieldAsInt(const std::vector<std::string>& proc_stats,
 // Same as GetProcStatsFieldAsInt(), but for size_t values.
 size_t GetProcStatsFieldAsSizeT(const std::vector<std::string>& proc_stats,
                                 ProcStatsFields field_num) {
-  DCHECK_GE(field_num, VM_PPID);
-  CHECK_LT(static_cast<size_t>(field_num), proc_stats.size());
+  //DCHECK_GE(field_num, VM_PPID);
+  //CHECK_LT(static_cast<size_t>(field_num), proc_stats.size());
 
   size_t value;
   return StringToSizeT(proc_stats[field_num], &value) ? value : 0;
@@ -160,14 +160,14 @@ std::string GetProcStatsFieldAsString(
     const std::vector<std::string>& proc_stats,
     ProcStatsFields field_num) {
   if (field_num < VM_COMM || field_num > VM_STATE) {
-    NOTREACHED();
+    //NOTREACHED();
     return std::string();
   }
 
   if (proc_stats.size() > static_cast<size_t>(field_num))
     return proc_stats[field_num];
 
-  NOTREACHED();
+  //NOTREACHED();
   return 0;
 }
 
@@ -208,7 +208,7 @@ pid_t ProcDirSlotToPid(const char* d_name) {
   pid_t pid;
   std::string pid_string(d_name);
   if (!StringToInt(pid_string, &pid)) {
-    NOTREACHED();
+    //NOTREACHED();
     return 0;
   }
   return pid;
@@ -222,7 +222,7 @@ int GetProcessCPU(pid_t pid) {
 
   DIR* dir = opendir(task_path.value().c_str());
   if (!dir) {
-    DPLOG(ERROR) << "opendir(" << task_path.value() << ")";
+    //DPLOG(ERROR) << "opendir(" << task_path.value() << ")";
     return -1;
   }
 
@@ -270,7 +270,7 @@ size_t ReadProcStatusAndGetFieldAsSizeT(pid_t pid, const std::string& field) {
         state = KEY_VALUE;
         break;
       case KEY_VALUE:
-        DCHECK(!last_key_name.empty());
+        //DCHECK(!last_key_name.empty());
         if (last_key_name == field) {
           std::string value_str;
           tokenizer.token_piece().CopyToString(&value_str);
@@ -279,12 +279,12 @@ size_t ReadProcStatusAndGetFieldAsSizeT(pid_t pid, const std::string& field) {
           std::vector<std::string> split_value_str;
           SplitString(value_str_trimmed, ' ', &split_value_str);
           if (split_value_str.size() != 2 || split_value_str[1] != "kB") {
-            NOTREACHED();
+            //NOTREACHED();
             return 0;
           }
           size_t value;
           if (!StringToSizeT(split_value_str[0], &value)) {
-            NOTREACHED();
+            //NOTREACHED();
             return 0;
           }
           return value;
@@ -293,7 +293,7 @@ size_t ReadProcStatusAndGetFieldAsSizeT(pid_t pid, const std::string& field) {
         break;
     }
   }
-  NOTREACHED();
+  //NOTREACHED();
   return 0;
 }
 
@@ -369,7 +369,7 @@ bool ProcessIterator::CheckForNextProcess() {
 
     std::string runstate = GetProcStatsFieldAsString(proc_stats, VM_STATE);
     if (runstate.size() != 1) {
-      NOTREACHED();
+      //NOTREACHED();
       continue;
     }
 
@@ -383,7 +383,7 @@ bool ProcessIterator::CheckForNextProcess() {
     // There could be a lot of zombies, can't really decrement i here.
   }
   if (skipped >= kSkipLimit) {
-    NOTREACHED();
+    //NOTREACHED();
     return false;
   }
 
@@ -507,7 +507,7 @@ double ProcessMetrics::GetCPUUsage() {
   }
 
   int64 time_delta = time - last_time_;
-  DCHECK_NE(time_delta, 0);
+  //DCHECK_NE(time_delta, 0);
   if (time_delta == 0)
     return 0;
 
@@ -549,7 +549,7 @@ bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
         state = KEY_VALUE;
         break;
       case KEY_VALUE:
-        DCHECK(!last_key_name.empty());
+        //DCHECK(!last_key_name.empty());
         if (last_key_name == "syscr") {
           StringToInt64(tokenizer.token_piece(),
               reinterpret_cast<int64*>(&(*io_counters).ReadOperationCount));
@@ -638,26 +638,26 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
   FilePath meminfo_file("/proc/meminfo");
   std::string meminfo_data;
   if (!file_util::ReadFileToString(meminfo_file, &meminfo_data)) {
-    DLOG(WARNING) << "Failed to open " << meminfo_file.value();
+    //DLOG(WARNING) << "Failed to open " << meminfo_file.value();
     return false;
   }
   std::vector<std::string> meminfo_fields;
   SplitStringAlongWhitespace(meminfo_data, &meminfo_fields);
 
   if (meminfo_fields.size() < kMemCachedIndex) {
-    DLOG(WARNING) << "Failed to parse " << meminfo_file.value()
-                  << ".  Only found " << meminfo_fields.size() << " fields.";
+    //DLOG(WARNING) << "Failed to parse " << meminfo_file.value()
+    //                  << ".  Only found " << meminfo_fields.size() << " fields.";
     return false;
   }
 
-  DCHECK_EQ(meminfo_fields[kMemTotalIndex-1], "MemTotal:");
-  DCHECK_EQ(meminfo_fields[kMemFreeIndex-1], "MemFree:");
-  DCHECK_EQ(meminfo_fields[kMemBuffersIndex-1], "Buffers:");
-  DCHECK_EQ(meminfo_fields[kMemCachedIndex-1], "Cached:");
-  DCHECK_EQ(meminfo_fields[kMemActiveAnonIndex-1], "Active(anon):");
-  DCHECK_EQ(meminfo_fields[kMemInactiveAnonIndex-1], "Inactive(anon):");
-  DCHECK_EQ(meminfo_fields[kMemActiveFileIndex-1], "Active(file):");
-  DCHECK_EQ(meminfo_fields[kMemInactiveFileIndex-1], "Inactive(file):");
+  //DCHECK_EQ(meminfo_fields[kMemTotalIndex-1], "MemTotal:");
+  //DCHECK_EQ(meminfo_fields[kMemFreeIndex-1], "MemFree:");
+  //DCHECK_EQ(meminfo_fields[kMemBuffersIndex-1], "Buffers:");
+  //DCHECK_EQ(meminfo_fields[kMemCachedIndex-1], "Cached:");
+  //DCHECK_EQ(meminfo_fields[kMemActiveAnonIndex-1], "Active(anon):");
+  //DCHECK_EQ(meminfo_fields[kMemInactiveAnonIndex-1], "Inactive(anon):");
+  //DCHECK_EQ(meminfo_fields[kMemActiveFileIndex-1], "Active(file):");
+  //DCHECK_EQ(meminfo_fields[kMemInactiveFileIndex-1], "Inactive(file):");
 
   StringToInt(meminfo_fields[kMemTotalIndex], &meminfo->total);
   StringToInt(meminfo_fields[kMemFreeIndex], &meminfo->free);
@@ -735,8 +735,10 @@ void OnNoMemorySize(size_t size) {
 #endif
 
   if (size != 0)
-    LOG(FATAL) << "Out of memory, size = " << size;
-  LOG(FATAL) << "Out of memory.";
+  {
+    //LOG(FATAL) << "Out of memory, size = " << size;
+  }
+  //LOG(FATAL) << "Out of memory.";
 }
 
 void OnNoMemory() {
@@ -857,8 +859,8 @@ bool AdjustOOMScore(ProcessId process, int score) {
   FilePath oom_file = oom_path.AppendASCII("oom_score_adj");
   if (file_util::PathExists(oom_file)) {
     std::string score_str = IntToString(score);
-    DVLOG(1) << "Adjusting oom_score_adj of " << process << " to "
-             << score_str;
+    //DVLOG(1) << "Adjusting oom_score_adj of " << process << " to "
+    //         << score_str;
     int score_len = static_cast<int>(score_str.length());
     return (score_len == file_util::WriteFile(oom_file,
                                               score_str.c_str(),
@@ -875,7 +877,7 @@ bool AdjustOOMScore(ProcessId process, int score) {
 
     int converted_score = score * kMaxOldOomScore / kMaxOomScore;
     std::string score_str = IntToString(converted_score);
-    DVLOG(1) << "Adjusting oom_adj of " << process << " to " << score_str;
+    //DVLOG(1) << "Adjusting oom_adj of " << process << " to " << score_str;
     int score_len = static_cast<int>(score_str.length());
     return (score_len == file_util::WriteFile(oom_file,
                                               score_str.c_str(),

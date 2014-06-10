@@ -19,7 +19,7 @@ namespace {
 // in the copy. It's possible for this function to return NULL and it
 // expects |node| to always be non-NULL.
 Value* CopyWithoutEmptyChildren(const Value* node) {
-  DCHECK(node);
+  //DCHECK(node);
   switch (node->GetType()) {
     case Value::TYPE_LIST: {
       const ListValue* list = static_cast<const ListValue*>(node);
@@ -152,14 +152,14 @@ bool Value::GetAsDictionary(const DictionaryValue** out_value) const {
 Value* Value::DeepCopy() const {
   // This method should only be getting called for null Values--all subclasses
   // need to provide their own implementation;.
-  DCHECK(IsType(TYPE_NULL));
+  //DCHECK(IsType(TYPE_NULL));
   return CreateNullValue();
 }
 
 bool Value::Equals(const Value* other) const {
   // This method should only be getting called for null Values--all subclasses
   // need to provide their own implementation;.
-  DCHECK(IsType(TYPE_NULL));
+  //DCHECK(IsType(TYPE_NULL));
   return other->IsType(TYPE_NULL);
 }
 
@@ -192,8 +192,8 @@ FundamentalValue::FundamentalValue(int in_value)
 FundamentalValue::FundamentalValue(double in_value)
     : Value(TYPE_DOUBLE), double_value_(in_value) {
   if (!IsFinite(double_value_)) {
-    NOTREACHED() << "Non-finite (i.e. NaN or positive/negative infinity) "
-                 << "values cannot be represented in JSON";
+    //NOTREACHED() << "Non-finite (i.e. NaN or positive/negative infinity) "
+    //             << "values cannot be represented in JSON";
     double_value_ = 0.0;
   }
 }
@@ -233,7 +233,7 @@ FundamentalValue* FundamentalValue::DeepCopy() const {
       return CreateDoubleValue(double_value_);
 
     default:
-      NOTREACHED();
+      //NOTREACHED();
       return NULL;
   }
 }
@@ -256,7 +256,7 @@ bool FundamentalValue::Equals(const Value* other) const {
       return GetAsDouble(&lhs) && other->GetAsDouble(&rhs) && lhs == rhs;
     }
     default:
-      NOTREACHED();
+      //NOTREACHED();
       return false;
   }
 }
@@ -266,7 +266,7 @@ bool FundamentalValue::Equals(const Value* other) const {
 StringValue::StringValue(const std::string& in_value)
     : Value(TYPE_STRING),
       value_(in_value) {
-  DCHECK(IsStringUTF8(in_value));
+  //DCHECK(IsStringUTF8(in_value));
 }
 
 StringValue::StringValue(const string16& in_value)
@@ -361,9 +361,9 @@ bool DictionaryValue::GetAsDictionary(const DictionaryValue** out_value) const {
 }
 
 bool DictionaryValue::HasKey(const std::string& key) const {
-  DCHECK(IsStringUTF8(key));
+  //DCHECK(IsStringUTF8(key));
   ValueMap::const_iterator current_entry = dictionary_.find(key);
-  DCHECK((current_entry == dictionary_.end()) || current_entry->second);
+  //DCHECK((current_entry == dictionary_.end()) || current_entry->second);
   return current_entry != dictionary_.end();
 }
 
@@ -378,8 +378,8 @@ void DictionaryValue::Clear() {
 }
 
 void DictionaryValue::Set(const std::string& path, Value* in_value) {
-  DCHECK(IsStringUTF8(path));
-  DCHECK(in_value);
+  //DCHECK(IsStringUTF8(path));
+  //DCHECK(in_value);
 
   std::string current_path(path);
   DictionaryValue* current_dictionary = this;
@@ -430,7 +430,7 @@ void DictionaryValue::SetWithoutPathExpansion(const std::string& key,
   std::pair<ValueMap::iterator, bool> ins_res =
       dictionary_.insert(std::make_pair(key, in_value));
   if (!ins_res.second) {
-    DCHECK_NE(ins_res.first->second, in_value);  // This would be bogus
+    //DCHECK_NE(ins_res.first->second, in_value);  // This would be bogus
     delete ins_res.first->second;
     ins_res.first->second = in_value;
   }
@@ -463,7 +463,7 @@ void DictionaryValue::SetStringWithoutPathExpansion(
 
 bool DictionaryValue::Get(
     const std::string& path, const Value** out_value) const {
-  DCHECK(IsStringUTF8(path));
+  //DCHECK(IsStringUTF8(path));
   std::string current_path(path);
   const DictionaryValue* current_dictionary = this;
   for (size_t delimiter_position = current_path.find('.');
@@ -539,7 +539,7 @@ bool DictionaryValue::GetStringASCII(const std::string& path,
     return false;
 
   if (!IsStringASCII(out)) {
-    NOTREACHED();
+    //NOTREACHED();
     return false;
   }
 
@@ -608,7 +608,7 @@ bool DictionaryValue::GetList(const std::string& path, ListValue** out_value) {
 
 bool DictionaryValue::GetWithoutPathExpansion(const std::string& key,
                                               const Value** out_value) const {
-  DCHECK(IsStringUTF8(key));
+  //DCHECK(IsStringUTF8(key));
   ValueMap::const_iterator entry_iterator = dictionary_.find(key);
   if (entry_iterator == dictionary_.end())
     return false;
@@ -719,7 +719,7 @@ bool DictionaryValue::GetListWithoutPathExpansion(const std::string& key,
 }
 
 bool DictionaryValue::Remove(const std::string& path, Value** out_value) {
-  DCHECK(IsStringUTF8(path));
+  //DCHECK(IsStringUTF8(path));
   std::string current_path(path);
   DictionaryValue* current_dictionary = this;
   size_t delimiter_position = current_path.rfind('.');
@@ -736,7 +736,7 @@ bool DictionaryValue::Remove(const std::string& path, Value** out_value) {
 
 bool DictionaryValue::RemoveWithoutPathExpansion(const std::string& key,
                                                  Value** out_value) {
-  DCHECK(IsStringUTF8(key));
+  //DCHECK(IsStringUTF8(key));
   ValueMap::iterator entry_iterator = dictionary_.find(key);
   if (entry_iterator == dictionary_.end())
     return false;
@@ -839,7 +839,7 @@ bool ListValue::Set(size_t index, Value* in_value) {
       Append(CreateNullValue());
     Append(in_value);
   } else {
-    DCHECK(list_[index] != in_value);
+    //DCHECK(list_[index] != in_value);
     delete list_[index];
     list_[index] = in_value;
   }
@@ -995,7 +995,7 @@ ListValue::iterator ListValue::Erase(iterator iter, Value** out_value) {
 }
 
 void ListValue::Append(Value* in_value) {
-  DCHECK(in_value);
+  //DCHECK(in_value);
   list_.push_back(in_value);
 }
 
@@ -1034,7 +1034,7 @@ void ListValue::AppendStrings(const std::vector<string16>& in_values) {
 }
 
 bool ListValue::AppendIfNotPresent(Value* in_value) {
-  DCHECK(in_value);
+  //DCHECK(in_value);
   for (ValueVector::const_iterator i(list_.begin()); i != list_.end(); ++i) {
     if ((*i)->Equals(in_value)) {
       delete in_value;
@@ -1046,7 +1046,7 @@ bool ListValue::AppendIfNotPresent(Value* in_value) {
 }
 
 bool ListValue::Insert(size_t index, Value* in_value) {
-  DCHECK(in_value);
+  //DCHECK(in_value);
   if (index > list_.size())
     return false;
 

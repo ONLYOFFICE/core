@@ -67,6 +67,7 @@
 #include "base/third_party/nspr/prtime.h"
 #include "build/build_config.h"
 
+#include <ctype.h>
 #if defined(OS_WIN)
 #include <windows.h>
 #elif defined(OS_MACOSX)
@@ -540,7 +541,7 @@ PR_ParseTimeString(
 
   int iterations = 0;
 
-  PR_ASSERT(string && result);
+  //PR_ASSERT(string && result);
   if (!string || !result) return PR_FAILURE;
 
   while (*rest)
@@ -1073,7 +1074,7 @@ PR_ParseTimeString(
                 case TT_EET: zone_offset =  2 * 60; break;
                 case TT_JST: zone_offset =  9 * 60; break;
                 default:
-                  PR_ASSERT (0);
+                  //PR_ASSERT (0);
                   break;
                 }
         }
@@ -1121,11 +1122,11 @@ PR_ParseTimeString(
           struct tm localTime;
           time_t secs;
 
-          PR_ASSERT(result->tm_month > -1 &&
-                    result->tm_mday > 0 &&
-                    result->tm_hour > -1 &&
-                    result->tm_min > -1 &&
-                    result->tm_sec > -1);
+          //PR_ASSERT(result->tm_month > -1 &&
+          //          result->tm_mday > 0 &&
+          //          result->tm_hour > -1 &&
+          //          result->tm_min > -1 &&
+          //          result->tm_sec > -1);
 
             /*
              * To obtain time_t from a tm structure representing the local

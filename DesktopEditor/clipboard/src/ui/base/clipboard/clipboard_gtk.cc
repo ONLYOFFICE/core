@@ -15,7 +15,7 @@
 #include "base/basictypes.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/memory/singleton.h"
+//#include "base/memory/singleton.h"
 #include "base/utf_string_conversions.h"
 //#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -30,6 +30,7 @@ namespace ui {
 
 namespace {
 
+/*
 class SelectionChangeObserver {
  public:
   static SelectionChangeObserver* GetInstance();
@@ -105,7 +106,7 @@ GdkFilterReturn SelectionChangeObserver::OnXEvent(GdkXEvent* xevent,
   }
   return GDK_FILTER_CONTINUE;
 }
-
+*/
 const char kSourceTagType[] = "org.chromium.source-tag";
 const char kMimeTypeBitmap[] = "image/bmp";
 const char kMimeTypeMozillaURL[] = "text/x-moz-url";
@@ -621,11 +622,14 @@ SourceTag Clipboard::ReadSourceTag(Buffer buffer) const {
 }
 
 uint64 Clipboard::GetSequenceNumber(Buffer buffer) {
+    return 0;
   //DCHECK(CalledOnValidThread());
+    /*
   if (buffer == BUFFER_STANDARD)
     return SelectionChangeObserver::GetInstance()->clipboard_sequence_number();
   else
     return SelectionChangeObserver::GetInstance()->primary_sequence_number();
+    */
 }
 
 //static

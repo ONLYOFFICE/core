@@ -58,7 +58,7 @@ JSONWriter::JSONWriter(bool escape, bool omit_binary_values,
       omit_double_type_preservation_(omit_double_type_preservation),
       pretty_print_(pretty_print),
       json_string_(json) {
-  DCHECK(json);
+  //DCHECK(json);
 }
 
 void JSONWriter::BuildJSONString(const Value* const node, int depth) {
@@ -71,7 +71,7 @@ void JSONWriter::BuildJSONString(const Value* const node, int depth) {
       {
         bool value;
         bool result = node->GetAsBoolean(&value);
-        DCHECK(result);
+        //DCHECK(result);
         json_string_->append(value ? "true" : "false");
         break;
       }
@@ -80,7 +80,7 @@ void JSONWriter::BuildJSONString(const Value* const node, int depth) {
       {
         int value;
         bool result = node->GetAsInteger(&value);
-        DCHECK(result);
+        //DCHECK(result);
         base::StringAppendF(json_string_, "%d", value);
         break;
       }
@@ -89,7 +89,7 @@ void JSONWriter::BuildJSONString(const Value* const node, int depth) {
       {
         double value;
         bool result = node->GetAsDouble(&value);
-        DCHECK(result);
+        //DCHECK(result);
         if (omit_double_type_preservation_ &&
             value <= kint64max &&
             value >= kint64min &&
@@ -122,7 +122,7 @@ void JSONWriter::BuildJSONString(const Value* const node, int depth) {
       {
         std::string value;
         bool result = node->GetAsString(&value);
-        DCHECK(result);
+        //DCHECK(result);
         if (escape_) {
           JsonDoubleQuote(UTF8ToUTF16(value), true, json_string_);
         } else {
@@ -141,7 +141,7 @@ void JSONWriter::BuildJSONString(const Value* const node, int depth) {
         for (size_t i = 0; i < list->GetSize(); ++i) {
           const Value* value = NULL;
           bool result = list->Get(i, &value);
-          DCHECK(result);
+          //DCHECK(result);
 
           if (omit_binary_values_ && value->GetType() == Value::TYPE_BINARY) {
             continue;
@@ -208,13 +208,14 @@ void JSONWriter::BuildJSONString(const Value* const node, int depth) {
     case Value::TYPE_BINARY:
       {
         if (!omit_binary_values_) {
-          NOTREACHED() << "Cannot serialize binary value.";
+          //NOTREACHED() << "Cannot serialize binary value.";
         }
         break;
       }
 
     default:
-      NOTREACHED() << "unknown json type";
+      //NOTREACHED() << "unknown json type";
+      break;
   }
 }
 

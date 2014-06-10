@@ -12,10 +12,10 @@ MAKEFILE      = Makefile
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DUSE_X11 -DQT_CORE_LIB
+DEFINES       = -DUSE_X11 -DHAVE_SYS_TIME_H -DQT_CORE_LIB
 CFLAGS        = -pipe -g -pthread -Wall -W -D_REENTRANT -fPIE $(DEFINES)
 CXXFLAGS      = -pipe -g -pthread -Wall -W -D_REENTRANT -fPIE $(DEFINES)
-INCPATH       = -I/home/iekmuf/Qt/5.3/gcc/mkspecs/linux-g++ -I../clipboard_test -I../../src -I/usr/include/gtk-2.0 -I/usr/include/glib-2.0 -I../../src/third_party/skia/include/core -I../../src/third_party/skia/include/config -I../../src/third_party/skia/include/pathops -I../../src/third_party/skia/src/image -I/usr/lib/i386-linux-gnu/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/pango-1.0 -I/usr/include/gio-unix-2.0 -I/usr/include/freetype2 -I/usr/lib/i386-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/harfbuzz -I/home/iekmuf/Qt/5.3/gcc/include -I/home/iekmuf/Qt/5.3/gcc/include/QtCore -I. -I.
+INCPATH       = -I/home/iekmuf/Qt/5.3/gcc/mkspecs/linux-g++ -I../clipboard_test -I../../src -I/usr/include/gtk-2.0 -I/usr/include/glib-2.0 -I../../src/third_party/skia/include/core -I../../src/third_party/skia/include/config -I../../src/third_party/skia/include/pathops -I../../src/third_party/skia/src/image -I../../src/third_party/libevent/linux -I/usr/lib/i386-linux-gnu/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/pango-1.0 -I/usr/include/gio-unix-2.0 -I/usr/include/freetype2 -I/usr/lib/i386-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/harfbuzz -I/home/iekmuf/Qt/5.3/gcc/include -I/home/iekmuf/Qt/5.3/gcc/include/QtCore -I. -I.
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/home/iekmuf/Qt/5.3/gcc -Wl,-rpath,/home/iekmuf/Qt/5.3/gcc/lib
 LIBS          = $(SUBLIBS) -lX11 -lXfixes -lXrender -lXrandr -lXext -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lcairo -lpango-1.0 -lfontconfig -lgobject-2.0 -lglib-2.0 -lfreetype -L/home/iekmuf/Qt/5.3/gcc/lib -lQt5Core -lpthread 
@@ -65,14 +65,11 @@ SOURCES       = ../clipboard_test/main.cpp \
 		../../src/base/strings/utf_string_conversion_utils.cc \
 		../../src/ui/gfx/size.cc \
 		../../src/ui/base/x/x11_util.cc \
-		../../src/third_party/skia/src/core/SkBitmap.cpp \
 		../../src/base/message_pump.cc \
 		../../src/base/message_pump_gtk.cc \
 		../../src/base/message_pump_glib.cc \
 		../../src/base/message_pump_default.cc \
 		../../src/base/message_pump_libevent.cc \
-		../../src/third_party/skia/src/core/SkDebug.cpp \
-		../../src/ui/gfx/image/image.cc \
 		../../src/ui/gfx/gtk_util.cc \
 		../../src/base/threading/thread_restrictions.cc \
 		../../src/base/at_exit.cc \
@@ -93,22 +90,43 @@ SOURCES       = ../clipboard_test/main.cpp \
 		../../src/base/memory/ref_counted.cc \
 		../../src/base/memory/ref_counted_memory.cc \
 		../../src/base/callback_internal.cc \
-		../../src/third_party/skia/src/ports/SkDebug_stdio.cpp \
-		../../src/third_party/skia/src/core/Sk64.cpp \
-		../../src/third_party/skia/src/core/SkPixelRef.cpp \
-		../../src/third_party/skia/src/core/SkMallocPixelRef.cpp \
-		../../src/third_party/skia/src/ports/SkMemory_malloc.cpp \
-		../../src/third_party/skia/src/core/SkCanvas.cpp \
-		../../src/third_party/skia/src/core/SkColor.cpp \
-		../../src/third_party/skia/src/core/SkColorTable.cpp \
-		../../src/third_party/skia/src/core/SkMask.cpp \
-		../../src/third_party/skia/src/core/SkMatrix.cpp \
-		../../src/third_party/skia/src/core/SkUnPreMultiply.cpp \
-		../../src/third_party/skia/src/core/SkPackBits.cpp \
-		../../src/third_party/skia/src/core/SkPoint.cpp \
-		../../src/third_party/skia/src/core/SkRect.cpp \
-		../../src/third_party/skia/src/core/SkUtils.cpp \
-		../../src/third_party/skia/src/core/SkPaint.cpp 
+		../../src/base/threading/platform_thread_posix.cc \
+		../../src/base/time.cc \
+		../../src/base/time_posix.cc \
+		../../src/base/memory/weak_ptr.cc \
+		../../src/base/synchronization/waitable_event_posix.cc \
+		../../src/third_party/libevent/event.c \
+		../../src/base/synchronization/lock.cc \
+		../../src/base/synchronization/lock_impl_posix.cc \
+		../../src/base/threading/thread_checker_impl.cc \
+		../../src/base/threading/thread_local_posix.cc \
+		../../src/base/threading/thread_local_storage_posix.cc \
+		../../src/base/pending_task.cc \
+		../../src/base/message_loop/message_loop_proxy.cc \
+		../../src/base/message_loop/message_loop_proxy_impl.cc \
+		../../src/base/run_loop.cc \
+		../../src/base/task_runner.cc \
+		../../src/base/synchronization/condition_variable_posix.cc \
+		../../src/base/threading/thread_id_name_manager.cc \
+		../../src/base/tracked_objects.cc \
+		../../src/base/tracking_info.cc \
+		../../src/base/profiler/tracked_time.cc \
+		../../src/base/debug/trace_event_impl.cc \
+		../../src/base/lazy_instance.cc \
+		../../src/base/thread_task_runner_handle.cc \
+		../../src/base/debug/alias.cc \
+		../../src/base/metrics/statistics_recorder.cc \
+		../../src/base/metrics/histogram.cc \
+		../../src/base/metrics/histogram_base.cc \
+		../../src/base/json/json_string_value_serializer.cc \
+		../../src/base/json/json_reader.cc \
+		../../src/base/json/json_writer.cc \
+		../../src/base/json/string_escape.cc \
+		../../src/base/json/json_parser.cc \
+		../../src/ui/gfx/vector2d.cc \
+		../../src/ui/gfx/vector2d_conversions.cc \
+		../../src/ui/gfx/vector2d_f.cc \
+		../../src/ui/gfx/vector3d_f.cc 
 OBJECTS       = main.o \
 		clipboard.o \
 		clipboard_gtk.o \
@@ -129,14 +147,11 @@ OBJECTS       = main.o \
 		utf_string_conversion_utils.o \
 		size.o \
 		x11_util.o \
-		SkBitmap.o \
 		message_pump.o \
 		message_pump_gtk.o \
 		message_pump_glib.o \
 		message_pump_default.o \
 		message_pump_libevent.o \
-		SkDebug.o \
-		image.o \
 		gtk_util.o \
 		thread_restrictions.o \
 		at_exit.o \
@@ -157,22 +172,43 @@ OBJECTS       = main.o \
 		ref_counted.o \
 		ref_counted_memory.o \
 		callback_internal.o \
-		SkDebug_stdio.o \
-		Sk64.o \
-		SkPixelRef.o \
-		SkMallocPixelRef.o \
-		SkMemory_malloc.o \
-		SkCanvas.o \
-		SkColor.o \
-		SkColorTable.o \
-		SkMask.o \
-		SkMatrix.o \
-		SkUnPreMultiply.o \
-		SkPackBits.o \
-		SkPoint.o \
-		SkRect.o \
-		SkUtils.o \
-		SkPaint.o
+		platform_thread_posix.o \
+		time.o \
+		time_posix.o \
+		weak_ptr.o \
+		waitable_event_posix.o \
+		event.o \
+		lock.o \
+		lock_impl_posix.o \
+		thread_checker_impl.o \
+		thread_local_posix.o \
+		thread_local_storage_posix.o \
+		pending_task.o \
+		message_loop_proxy.o \
+		message_loop_proxy_impl.o \
+		run_loop.o \
+		task_runner.o \
+		condition_variable_posix.o \
+		thread_id_name_manager.o \
+		tracked_objects.o \
+		tracking_info.o \
+		tracked_time.o \
+		trace_event_impl.o \
+		lazy_instance.o \
+		thread_task_runner_handle.o \
+		alias.o \
+		statistics_recorder.o \
+		histogram.o \
+		histogram_base.o \
+		json_string_value_serializer.o \
+		json_reader.o \
+		json_writer.o \
+		string_escape.o \
+		json_parser.o \
+		vector2d.o \
+		vector2d_conversions.o \
+		vector2d_f.o \
+		vector3d_f.o
 DIST          = /home/iekmuf/Qt/5.3/gcc/mkspecs/features/spec_pre.prf \
 		/home/iekmuf/Qt/5.3/gcc/mkspecs/common/shell-unix.conf \
 		/home/iekmuf/Qt/5.3/gcc/mkspecs/common/unix.conf \
@@ -299,14 +335,11 @@ DIST          = /home/iekmuf/Qt/5.3/gcc/mkspecs/features/spec_pre.prf \
 		../../src/base/strings/utf_string_conversion_utils.cc \
 		../../src/ui/gfx/size.cc \
 		../../src/ui/base/x/x11_util.cc \
-		../../src/third_party/skia/src/core/SkBitmap.cpp \
 		../../src/base/message_pump.cc \
 		../../src/base/message_pump_gtk.cc \
 		../../src/base/message_pump_glib.cc \
 		../../src/base/message_pump_default.cc \
 		../../src/base/message_pump_libevent.cc \
-		../../src/third_party/skia/src/core/SkDebug.cpp \
-		../../src/ui/gfx/image/image.cc \
 		../../src/ui/gfx/gtk_util.cc \
 		../../src/base/threading/thread_restrictions.cc \
 		../../src/base/at_exit.cc \
@@ -327,22 +360,43 @@ DIST          = /home/iekmuf/Qt/5.3/gcc/mkspecs/features/spec_pre.prf \
 		../../src/base/memory/ref_counted.cc \
 		../../src/base/memory/ref_counted_memory.cc \
 		../../src/base/callback_internal.cc \
-		../../src/third_party/skia/src/ports/SkDebug_stdio.cpp \
-		../../src/third_party/skia/src/core/Sk64.cpp \
-		../../src/third_party/skia/src/core/SkPixelRef.cpp \
-		../../src/third_party/skia/src/core/SkMallocPixelRef.cpp \
-		../../src/third_party/skia/src/ports/SkMemory_malloc.cpp \
-		../../src/third_party/skia/src/core/SkCanvas.cpp \
-		../../src/third_party/skia/src/core/SkColor.cpp \
-		../../src/third_party/skia/src/core/SkColorTable.cpp \
-		../../src/third_party/skia/src/core/SkMask.cpp \
-		../../src/third_party/skia/src/core/SkMatrix.cpp \
-		../../src/third_party/skia/src/core/SkUnPreMultiply.cpp \
-		../../src/third_party/skia/src/core/SkPackBits.cpp \
-		../../src/third_party/skia/src/core/SkPoint.cpp \
-		../../src/third_party/skia/src/core/SkRect.cpp \
-		../../src/third_party/skia/src/core/SkUtils.cpp \
-		../../src/third_party/skia/src/core/SkPaint.cpp
+		../../src/base/threading/platform_thread_posix.cc \
+		../../src/base/time.cc \
+		../../src/base/time_posix.cc \
+		../../src/base/memory/weak_ptr.cc \
+		../../src/base/synchronization/waitable_event_posix.cc \
+		../../src/third_party/libevent/event.c \
+		../../src/base/synchronization/lock.cc \
+		../../src/base/synchronization/lock_impl_posix.cc \
+		../../src/base/threading/thread_checker_impl.cc \
+		../../src/base/threading/thread_local_posix.cc \
+		../../src/base/threading/thread_local_storage_posix.cc \
+		../../src/base/pending_task.cc \
+		../../src/base/message_loop/message_loop_proxy.cc \
+		../../src/base/message_loop/message_loop_proxy_impl.cc \
+		../../src/base/run_loop.cc \
+		../../src/base/task_runner.cc \
+		../../src/base/synchronization/condition_variable_posix.cc \
+		../../src/base/threading/thread_id_name_manager.cc \
+		../../src/base/tracked_objects.cc \
+		../../src/base/tracking_info.cc \
+		../../src/base/profiler/tracked_time.cc \
+		../../src/base/debug/trace_event_impl.cc \
+		../../src/base/lazy_instance.cc \
+		../../src/base/thread_task_runner_handle.cc \
+		../../src/base/debug/alias.cc \
+		../../src/base/metrics/statistics_recorder.cc \
+		../../src/base/metrics/histogram.cc \
+		../../src/base/metrics/histogram_base.cc \
+		../../src/base/json/json_string_value_serializer.cc \
+		../../src/base/json/json_reader.cc \
+		../../src/base/json/json_writer.cc \
+		../../src/base/json/string_escape.cc \
+		../../src/base/json/json_parser.cc \
+		../../src/ui/gfx/vector2d.cc \
+		../../src/ui/gfx/vector2d_conversions.cc \
+		../../src/ui/gfx/vector2d_f.cc \
+		../../src/ui/gfx/vector3d_f.cc
 QMAKE_TARGET  = clipboard_test
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = clipboard_test
@@ -599,7 +653,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/clipboard_test1.0.0 || mkdir -p .tmp/clipboard_test1.0.0
-	$(COPY_FILE) --parents $(DIST) .tmp/clipboard_test1.0.0/ && $(COPY_FILE) --parents ../../src/ui/base/clipboard/clipboard.h ../../src/ui/base/clipboard/custom_data_helper.h ../../src/ui/base/clipboard/scoped_clipboard_writer.h ../../src/build/build_config.h ../../src/base/third_party/dmg_fp/dmg_fp.h ../../src/base/third_party/icu/icu_utf.h ../../src/base/pickle.h ../../src/base/string16.h ../../src/base/string_piece.h ../../src/base/string_util.h ../../src/base/string_util_posix.h ../../src/base/strings/string_number_conversions.h ../../src/base/strings/string_piece.h ../../src/base/stringprintf.h ../../src/base/strings/utf_offset_string_conversions.h ../../src/base/strings/utf_string_conversions.h ../../src/base/strings/utf_string_conversion_utils.h ../../src/ui/gfx/size.h ../../src/third_party/skia/include/core/Sk64.h ../../src/third_party/skia/include/core/SkAdvancedTypefaceMetrics.h ../../src/third_party/skia/include/core/SkAnnotation.h ../../src/third_party/skia/include/core/SkBitmap.h ../../src/third_party/skia/include/core/SkBlitRow.h ../../src/third_party/skia/include/core/SkBounder.h ../../src/third_party/skia/include/core/SkCanvas.h ../../src/third_party/skia/include/core/SkChecksum.h ../../src/third_party/skia/include/core/SkChunkAlloc.h ../../src/third_party/skia/include/core/SkClipStack.h ../../src/third_party/skia/include/core/SkColor.h ../../src/third_party/skia/include/core/SkColorFilter.h ../../src/third_party/skia/include/core/SkColorPriv.h ../../src/third_party/skia/include/core/SkColorShader.h ../../src/third_party/skia/include/core/SkColorTable.h ../../src/third_party/skia/include/core/SkComposeShader.h ../../src/third_party/skia/include/core/SkData.h ../../src/third_party/skia/include/core/SkDataSet.h ../../src/third_party/skia/include/core/SkDataTable.h ../../src/third_party/skia/include/core/SkDeque.h ../../src/third_party/skia/include/core/SkDevice.h ../../src/third_party/skia/include/core/SkDeviceProperties.h ../../src/third_party/skia/include/core/SkDither.h ../../src/third_party/skia/include/core/SkDraw.h ../../src/third_party/skia/include/core/SkDrawFilter.h ../../src/third_party/skia/include/core/SkDrawLooper.h ../../src/third_party/skia/include/core/SkEmptyShader.h ../../src/third_party/skia/include/core/SkEndian.h ../../src/third_party/skia/include/core/SkError.h ../../src/third_party/skia/include/core/SkFixed.h ../../src/third_party/skia/include/core/SkFlate.h ../../src/third_party/skia/include/core/SkFlattenable.h ../../src/third_party/skia/include/core/SkFlattenableBuffers.h ../../src/third_party/skia/include/core/SkFloatBits.h ../../src/third_party/skia/include/core/SkFloatingPoint.h ../../src/third_party/skia/include/core/SkFontHost.h ../../src/third_party/skia/include/core/SkFontLCDConfig.h ../../src/third_party/skia/include/core/SkGeometry.h ../../src/third_party/skia/include/core/SkGraphics.h ../../src/third_party/skia/include/core/SkImage.h ../../src/third_party/skia/include/core/SkImageFilter.h ../../src/third_party/skia/include/core/SkImageFilterUtils.h ../../src/third_party/skia/include/core/SkImageTypes.h ../../src/third_party/skia/include/core/SkInstCnt.h ../../src/third_party/skia/include/core/SkLineClipper.h ../../src/third_party/skia/include/core/SkMallocPixelRef.h ../../src/third_party/skia/include/core/SkMask.h ../../src/third_party/skia/include/core/SkMaskFilter.h ../../src/third_party/skia/include/core/SkMath.h ../../src/third_party/skia/include/core/SkMatrix.h ../../src/third_party/skia/include/core/SkMetaData.h ../../src/third_party/skia/include/core/SkOSFile.h ../../src/third_party/skia/include/core/SkPackBits.h ../../src/third_party/skia/include/core/SkPaint.h ../../src/third_party/skia/include/core/SkPath.h ../../src/third_party/skia/include/core/SkPathEffect.h ../../src/third_party/skia/include/core/SkPathMeasure.h ../../src/third_party/skia/include/core/SkPicture.h ../../src/third_party/skia/include/core/SkPixelRef.h ../../src/third_party/skia/include/core/SkPoint.h ../../src/third_party/skia/include/core/SkPostConfig.h ../../src/third_party/skia/include/core/skpreconfig.h ../../src/third_party/skia/include/core/SkRasterizer.h ../../src/third_party/skia/include/core/SkReader32.h ../../src/third_party/skia/include/core/SkRect.h ../../src/third_party/skia/include/core/SkRefCnt.h ../../src/third_party/skia/include/core/SkRegion.h ../../src/third_party/skia/include/core/SkRRect.h ../../src/third_party/skia/include/core/SkScalar.h ../../src/third_party/skia/include/core/SkScalarCompare.h ../../src/third_party/skia/include/core/SkShader.h ../../src/third_party/skia/include/core/SkSize.h ../../src/third_party/skia/include/core/SkStream.h ../../src/third_party/skia/include/core/SkString.h ../../src/third_party/skia/include/core/SkStringUtils.h ../../src/third_party/skia/include/core/SkStrokeRec.h ../../src/third_party/skia/include/core/SkSurface.h ../../src/third_party/skia/include/core/SkTArray.h ../../src/third_party/skia/include/core/SkTDArray.h ../../src/third_party/skia/include/core/SkTDict.h ../../src/third_party/skia/include/core/SkTDStack.h ../../src/third_party/skia/include/core/SkTemplates.h ../../src/third_party/skia/include/core/SkThread.h ../../src/third_party/skia/include/core/SkThread_platform.h ../../src/third_party/skia/include/core/SkTileGridPicture.h ../../src/third_party/skia/include/core/SkTime.h ../../src/third_party/skia/include/core/SkTInternalLList.h ../../src/third_party/skia/include/core/SkTLazy.h ../../src/third_party/skia/include/core/SkTrace.h ../../src/third_party/skia/include/core/SkTRegistry.h ../../src/third_party/skia/include/core/SkTScopedPtr.h ../../src/third_party/skia/include/core/SkTSearch.h ../../src/third_party/skia/include/core/SkTypeface.h ../../src/third_party/skia/include/core/SkTypes.h ../../src/third_party/skia/include/core/SkUnitMapper.h ../../src/third_party/skia/include/core/SkUnPreMultiply.h ../../src/third_party/skia/include/core/SkUtils.h ../../src/third_party/skia/include/core/SkWeakRefCnt.h ../../src/third_party/skia/include/core/SkWriter32.h ../../src/third_party/skia/include/core/SkXfermode.h ../../src/ui/base/x/x11_util.h ../../src/base/message_pump.h ../../src/base/message_pump_gtk.h ../../src/base/message_pump_glib.h ../../src/base/message_pump_default.h ../../src/base/message_pump_dispatcher.h ../../src/base/message_pump_libevent.h ../../src/ui/gfx/image/image.h ../../src/ui/gfx/gtk_util.h ../../src/base/threading/thread_restrictions.h ../../src/base/at_exit.h ../../src/base/memory/singleton.h ../../src/base/atomicops.h ../../src/base/atomicops_internals_atomicword_compat.h ../../src/base/atomicops_internals_gcc.h ../../src/base/atomicops_internals_x86_gcc.h ../../src/base/message_loop.h ../../src/base/message_loop_proxy.h ../../src/ui/base/keycodes/keyboard_code_conversion.h ../../src/ui/base/keycodes/keyboard_code_conversion_gtk.h ../../src/ui/base/keycodes/keyboard_code_conversion_x.h ../../src/ui/base/keycodes/keyboard_codes.h ../../src/ui/base/keycodes/keyboard_codes_posix.h ../../src/ui/base/keycodes/usb_keycode_map.h ../../src/base/location.h ../../src/ui/gfx/rect.h ../../src/ui/gfx/rect_base.h ../../src/ui/gfx/rect_conversions.h ../../src/ui/gfx/rect_f.h ../../src/ui/gfx/point.h ../../src/ui/gfx/point3_f.h ../../src/ui/gfx/point_base.h ../../src/ui/gfx/point_conversions.h ../../src/ui/gfx/point_f.h ../../src/base/memory/ref_counted.h ../../src/base/memory/ref_counted_memory.h ../../src/base/callback_internal.h ../../src/third_party/skia/include/pathops/SkPathOps.h ../../src/third_party/skia/src/image/SkSurface_Base.h .tmp/clipboard_test1.0.0/ && $(COPY_FILE) --parents ../clipboard_test/main.cpp ../../src/ui/base/clipboard/clipboard.cc ../../src/ui/base/clipboard/clipboard_gtk.cc ../../src/ui/base/clipboard/custom_data_helper.cc ../../src/ui/base/clipboard/custom_data_helper_linux.cc ../../src/ui/base/clipboard/scoped_clipboard_writer.cc ../../src/base/third_party/dmg_fp/dtoa.cc ../../src/base/third_party/dmg_fp/g_fmt.cc ../../src/base/third_party/icu/icu_utf.cc ../../src/base/pickle.cc ../../src/base/string16.cc ../../src/base/string_util.cc ../../src/base/strings/string_number_conversions.cc ../../src/base/strings/string_piece.cc ../../src/base/stringprintf.cc ../../src/base/strings/utf_offset_string_conversions.cc ../../src/base/strings/utf_string_conversions.cc ../../src/base/strings/utf_string_conversion_utils.cc ../../src/ui/gfx/size.cc ../../src/ui/base/x/x11_util.cc ../../src/third_party/skia/src/core/SkBitmap.cpp ../../src/base/message_pump.cc ../../src/base/message_pump_gtk.cc ../../src/base/message_pump_glib.cc ../../src/base/message_pump_default.cc ../../src/base/message_pump_libevent.cc ../../src/third_party/skia/src/core/SkDebug.cpp ../../src/ui/gfx/image/image.cc ../../src/ui/gfx/gtk_util.cc ../../src/base/threading/thread_restrictions.cc ../../src/base/at_exit.cc ../../src/base/memory/singleton.cc ../../src/base/atomicops_internals_x86_gcc.cc ../../src/base/message_loop.cc ../../src/ui/base/keycodes/keyboard_code_conversion.cc ../../src/ui/base/keycodes/keyboard_code_conversion_gtk.cc ../../src/ui/base/keycodes/keyboard_code_conversion_x.cc ../../src/base/location.cc ../../src/ui/gfx/rect.cc ../../src/ui/gfx/rect_conversions.cc ../../src/ui/gfx/rect_f.cc ../../src/ui/gfx/point.cc ../../src/ui/gfx/point3_f.cc ../../src/ui/gfx/point_conversions.cc ../../src/ui/gfx/point_f.cc ../../src/base/memory/ref_counted.cc ../../src/base/memory/ref_counted_memory.cc ../../src/base/callback_internal.cc ../../src/third_party/skia/src/ports/SkDebug_stdio.cpp ../../src/third_party/skia/src/core/Sk64.cpp ../../src/third_party/skia/src/core/SkPixelRef.cpp ../../src/third_party/skia/src/core/SkMallocPixelRef.cpp ../../src/third_party/skia/src/ports/SkMemory_malloc.cpp ../../src/third_party/skia/src/core/SkCanvas.cpp ../../src/third_party/skia/src/core/SkColor.cpp ../../src/third_party/skia/src/core/SkColorTable.cpp ../../src/third_party/skia/src/core/SkMask.cpp ../../src/third_party/skia/src/core/SkMatrix.cpp ../../src/third_party/skia/src/core/SkUnPreMultiply.cpp ../../src/third_party/skia/src/core/SkPackBits.cpp ../../src/third_party/skia/src/core/SkPoint.cpp ../../src/third_party/skia/src/core/SkRect.cpp ../../src/third_party/skia/src/core/SkUtils.cpp ../../src/third_party/skia/src/core/SkPaint.cpp .tmp/clipboard_test1.0.0/ && (cd `dirname .tmp/clipboard_test1.0.0` && $(TAR) clipboard_test1.0.0.tar clipboard_test1.0.0 && $(COMPRESS) clipboard_test1.0.0.tar) && $(MOVE) `dirname .tmp/clipboard_test1.0.0`/clipboard_test1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/clipboard_test1.0.0
+	$(COPY_FILE) --parents $(DIST) .tmp/clipboard_test1.0.0/ && $(COPY_FILE) --parents ../../src/ui/base/clipboard/clipboard.h ../../src/ui/base/clipboard/custom_data_helper.h ../../src/ui/base/clipboard/scoped_clipboard_writer.h ../../src/build/build_config.h ../../src/base/third_party/dmg_fp/dmg_fp.h ../../src/base/third_party/icu/icu_utf.h ../../src/base/pickle.h ../../src/base/string16.h ../../src/base/string_piece.h ../../src/base/string_util.h ../../src/base/string_util_posix.h ../../src/base/strings/string_number_conversions.h ../../src/base/strings/string_piece.h ../../src/base/stringprintf.h ../../src/base/strings/utf_offset_string_conversions.h ../../src/base/strings/utf_string_conversions.h ../../src/base/strings/utf_string_conversion_utils.h ../../src/ui/gfx/size.h ../../src/ui/base/x/x11_util.h ../../src/base/message_pump.h ../../src/base/message_pump_gtk.h ../../src/base/message_pump_glib.h ../../src/base/message_pump_default.h ../../src/base/message_pump_dispatcher.h ../../src/base/message_pump_libevent.h ../../src/ui/gfx/gtk_util.h ../../src/base/threading/thread_restrictions.h ../../src/base/at_exit.h ../../src/base/memory/singleton.h ../../src/base/atomicops.h ../../src/base/atomicops_internals_atomicword_compat.h ../../src/base/atomicops_internals_gcc.h ../../src/base/atomicops_internals_x86_gcc.h ../../src/base/message_loop.h ../../src/base/message_loop_proxy.h ../../src/ui/base/keycodes/keyboard_code_conversion.h ../../src/ui/base/keycodes/keyboard_code_conversion_gtk.h ../../src/ui/base/keycodes/keyboard_code_conversion_x.h ../../src/ui/base/keycodes/keyboard_codes.h ../../src/ui/base/keycodes/keyboard_codes_posix.h ../../src/ui/base/keycodes/usb_keycode_map.h ../../src/base/location.h ../../src/ui/gfx/rect.h ../../src/ui/gfx/rect_base.h ../../src/ui/gfx/rect_conversions.h ../../src/ui/gfx/rect_f.h ../../src/ui/gfx/point.h ../../src/ui/gfx/point3_f.h ../../src/ui/gfx/point_base.h ../../src/ui/gfx/point_conversions.h ../../src/ui/gfx/point_f.h ../../src/base/memory/ref_counted.h ../../src/base/memory/ref_counted_memory.h ../../src/base/callback_internal.h ../../src/base/synchronization/waitable_event.h ../../src/third_party/libevent/event.h ../../src/base/synchronization/lock.h ../../src/base/synchronization/lock_impl.h ../../src/base/threading/thread_checker.h ../../src/base/threading/thread_checker_impl.h ../../src/base/threading/thread_local.h ../../src/base/threading/thread_local_storage.h ../../src/base/pending_task.h ../../src/base/message_loop/message_loop_proxy.h ../../src/base/message_loop/message_loop_proxy_impl.h ../../src/base/run_loop.h ../../src/base/task_runner.h ../../src/base/task_runner_util.h ../../src/base/synchronization/condition_variable.h ../../src/base/threading/thread_id_name_manager.h ../../src/base/tracked_objects.h ../../src/base/tracking_info.h ../../src/base/profiler/tracked_time.h ../../src/base/debug/trace_event.h ../../src/base/debug/trace_event_impl.h ../../src/base/lazy_instance.h ../../src/base/thread_task_runner_handle.h ../../src/base/debug/alias.h ../../src/base/metrics/statistics_recorder.h ../../src/base/metrics/histogram.h ../../src/base/metrics/histogram_base.h ../../src/base/json/json_string_value_serializer.h ../../src/base/json/json_reader.h ../../src/base/json/json_writer.h ../../src/base/json/string_escape.h ../../src/base/json/json_parser.h ../../src/ui/gfx/vector2d.h ../../src/ui/gfx/vector2d_conversions.h ../../src/ui/gfx/vector2d_f.h ../../src/ui/gfx/vector3d_f.h .tmp/clipboard_test1.0.0/ && $(COPY_FILE) --parents ../clipboard_test/main.cpp ../../src/ui/base/clipboard/clipboard.cc ../../src/ui/base/clipboard/clipboard_gtk.cc ../../src/ui/base/clipboard/custom_data_helper.cc ../../src/ui/base/clipboard/custom_data_helper_linux.cc ../../src/ui/base/clipboard/scoped_clipboard_writer.cc ../../src/base/third_party/dmg_fp/dtoa.cc ../../src/base/third_party/dmg_fp/g_fmt.cc ../../src/base/third_party/icu/icu_utf.cc ../../src/base/pickle.cc ../../src/base/string16.cc ../../src/base/string_util.cc ../../src/base/strings/string_number_conversions.cc ../../src/base/strings/string_piece.cc ../../src/base/stringprintf.cc ../../src/base/strings/utf_offset_string_conversions.cc ../../src/base/strings/utf_string_conversions.cc ../../src/base/strings/utf_string_conversion_utils.cc ../../src/ui/gfx/size.cc ../../src/ui/base/x/x11_util.cc ../../src/base/message_pump.cc ../../src/base/message_pump_gtk.cc ../../src/base/message_pump_glib.cc ../../src/base/message_pump_default.cc ../../src/base/message_pump_libevent.cc ../../src/ui/gfx/gtk_util.cc ../../src/base/threading/thread_restrictions.cc ../../src/base/at_exit.cc ../../src/base/memory/singleton.cc ../../src/base/atomicops_internals_x86_gcc.cc ../../src/base/message_loop.cc ../../src/ui/base/keycodes/keyboard_code_conversion.cc ../../src/ui/base/keycodes/keyboard_code_conversion_gtk.cc ../../src/ui/base/keycodes/keyboard_code_conversion_x.cc ../../src/base/location.cc ../../src/ui/gfx/rect.cc ../../src/ui/gfx/rect_conversions.cc ../../src/ui/gfx/rect_f.cc ../../src/ui/gfx/point.cc ../../src/ui/gfx/point3_f.cc ../../src/ui/gfx/point_conversions.cc ../../src/ui/gfx/point_f.cc ../../src/base/memory/ref_counted.cc ../../src/base/memory/ref_counted_memory.cc ../../src/base/callback_internal.cc ../../src/base/threading/platform_thread_posix.cc ../../src/base/time.cc ../../src/base/time_posix.cc ../../src/base/memory/weak_ptr.cc ../../src/base/synchronization/waitable_event_posix.cc ../../src/third_party/libevent/event.c ../../src/base/synchronization/lock.cc ../../src/base/synchronization/lock_impl_posix.cc ../../src/base/threading/thread_checker_impl.cc ../../src/base/threading/thread_local_posix.cc ../../src/base/threading/thread_local_storage_posix.cc ../../src/base/pending_task.cc ../../src/base/message_loop/message_loop_proxy.cc ../../src/base/message_loop/message_loop_proxy_impl.cc ../../src/base/run_loop.cc ../../src/base/task_runner.cc ../../src/base/synchronization/condition_variable_posix.cc ../../src/base/threading/thread_id_name_manager.cc ../../src/base/tracked_objects.cc ../../src/base/tracking_info.cc ../../src/base/profiler/tracked_time.cc ../../src/base/debug/trace_event_impl.cc ../../src/base/lazy_instance.cc ../../src/base/thread_task_runner_handle.cc ../../src/base/debug/alias.cc ../../src/base/metrics/statistics_recorder.cc ../../src/base/metrics/histogram.cc ../../src/base/metrics/histogram_base.cc ../../src/base/json/json_string_value_serializer.cc ../../src/base/json/json_reader.cc ../../src/base/json/json_writer.cc ../../src/base/json/string_escape.cc ../../src/base/json/json_parser.cc ../../src/ui/gfx/vector2d.cc ../../src/ui/gfx/vector2d_conversions.cc ../../src/ui/gfx/vector2d_f.cc ../../src/ui/gfx/vector3d_f.cc .tmp/clipboard_test1.0.0/ && (cd `dirname .tmp/clipboard_test1.0.0` && $(TAR) clipboard_test1.0.0.tar clipboard_test1.0.0 && $(COMPRESS) clipboard_test1.0.0.tar) && $(MOVE) `dirname .tmp/clipboard_test1.0.0`/clipboard_test1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/clipboard_test1.0.0
 
 
 clean:compiler_clean 
@@ -1918,61 +1972,10 @@ clipboard_gtk.o: ../../src/ui/base/clipboard/clipboard_gtk.cc ../../src/ui/base/
 		../../src/ui/gfx/point_f.h \
 		../../src/ui/gfx/vector2d_f.h \
 		../../src/ui/gfx/vector2d.h \
-		../../src/ui/gfx/canvas.h \
-		../../src/skia/ext/platform_canvas.h \
-		../../src/skia/ext/platform_device.h \
-		../../src/third_party/skia/include/core/SkColor.h \
-		../../src/third_party/skia/include/core/SkScalar.h \
-		../../src/third_party/skia/include/core/SkFixed.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h \
-		../../src/third_party/skia/include/core/SkFloatingPoint.h \
-		../../src/third_party/skia/include/core/SkFloatBits.h \
-		../../src/third_party/skia/include/core/SkDevice.h \
-		../../src/third_party/skia/include/core/SkRefCnt.h \
-		../../src/third_party/skia/include/core/SkThread.h \
-		../../src/third_party/skia/include/core/SkThread_platform.h \
-		../../src/third_party/skia/include/core/SkInstCnt.h \
-		../../src/third_party/skia/include/core/SkTArray.h \
-		../../src/third_party/skia/include/core/SkTemplates.h \
-		../../src/third_party/skia/include/core/SkBitmap.h \
-		../../src/third_party/skia/include/core/Sk64.h \
-		../../src/third_party/skia/include/core/SkColorTable.h \
-		../../src/third_party/skia/include/core/SkFlattenable.h \
-		../../src/third_party/skia/include/core/SkPoint.h \
-		../../src/third_party/skia/include/core/SkMath.h \
-		../../src/third_party/skia/include/core/SkCanvas.h \
-		../../src/third_party/skia/include/core/SkDeque.h \
-		../../src/third_party/skia/include/core/SkClipStack.h \
-		../../src/third_party/skia/include/core/SkPath.h \
-		../../src/third_party/skia/include/core/SkMatrix.h \
-		../../src/third_party/skia/include/core/SkRect.h \
-		../../src/third_party/skia/include/core/SkSize.h \
-		../../src/third_party/skia/include/core/SkTDArray.h \
-		../../src/third_party/skia/include/core/SkRegion.h \
-		../../src/third_party/skia/include/core/SkPaint.h \
-		../../src/third_party/skia/include/core/SkDrawLooper.h \
-		../../src/third_party/skia/include/core/SkXfermode.h \
-		../../src/third_party/skia/include/core/SkScalarCompare.h \
-		../../src/third_party/skia/include/core/SkDeviceProperties.h \
-		../../src/third_party/skia/include/core/SkFontLCDConfig.h \
-		../../src/skia/ext/refptr.h \
-		../../src/third_party/skia/include/core/SkPixelRef.h \
-		../../src/third_party/skia/include/core/SkString.h \
-		../../src/ui/gfx/image/image_skia.h \
-		../../src/base/gtest_prod_util.h \
-		../../src/ui/gfx/image/image_skia_rep.h \
-		../../src/ui/base/layout.h \
-		../../src/ui/gfx/native_widget_types.h \
-		../../src/ui/base/cursor/cursor.h \
+		../../src/ui/gfx/gtk_util.h \
 		../../src/ui/gfx/size.h \
 		../../src/ui/gfx/size_base.h \
-		../../src/ui/gfx/size_f.h \
-		../../src/ui/gfx/shadow_value.h \
-		../../src/ui/gfx/gtk_util.h
+		../../src/ui/gfx/size_f.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o clipboard_gtk.o ../../src/ui/base/clipboard/clipboard_gtk.cc
 
 custom_data_helper.o: ../../src/ui/base/clipboard/custom_data_helper.cc ../../src/ui/base/clipboard/custom_data_helper.h \
@@ -2624,6 +2627,7 @@ x11_util.o: ../../src/ui/base/x/x11_util.cc ../../src/ui/base/x/x11_util.h \
 		../../src/third_party/skia/include/core/SkFixed.h \
 		../../src/third_party/skia/include/core/SkTypes.h \
 		../../src/third_party/skia/include/core/skpreconfig.h \
+		../../src/third_party/libevent/linux/config.h \
 		../../src/third_party/skia/include/config/sk_stdint.h \
 		../../src/third_party/skia/include/config/SkUserConfig.h \
 		../../src/third_party/skia/include/core/SkPostConfig.h \
@@ -3199,62 +3203,6 @@ x11_util.o: ../../src/ui/base/x/x11_util.cc ../../src/ui/base/x/x11_util.h \
 		../../src/ui/base/gtk/gdk_x_compat.h \
 		../../src/ui/base/gtk/gtk_compat.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o x11_util.o ../../src/ui/base/x/x11_util.cc
-
-SkBitmap.o: ../../src/third_party/skia/src/core/SkBitmap.cpp ../../src/third_party/skia/include/core/SkBitmap.h \
-		../../src/third_party/skia/include/core/Sk64.h \
-		../../src/third_party/skia/include/core/SkFixed.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h \
-		../../src/third_party/skia/include/core/SkColor.h \
-		../../src/third_party/skia/include/core/SkScalar.h \
-		../../src/third_party/skia/include/core/SkFloatingPoint.h \
-		../../src/third_party/skia/include/core/SkFloatBits.h \
-		../../src/third_party/skia/include/core/SkColorTable.h \
-		../../src/third_party/skia/include/core/SkFlattenable.h \
-		../../src/third_party/skia/include/core/SkRefCnt.h \
-		../../src/third_party/skia/include/core/SkThread.h \
-		../../src/third_party/skia/include/core/SkThread_platform.h \
-		../../src/third_party/skia/include/core/SkInstCnt.h \
-		../../src/third_party/skia/include/core/SkTArray.h \
-		../../src/third_party/skia/include/core/SkTemplates.h \
-		../../src/third_party/skia/include/core/SkPoint.h \
-		../../src/third_party/skia/include/core/SkMath.h \
-		../../src/third_party/skia/include/core/SkColorPriv.h \
-		../../src/third_party/skia/include/core/SkDither.h \
-		../../src/third_party/skia/include/core/SkMallocPixelRef.h \
-		../../src/third_party/skia/include/core/SkPixelRef.h \
-		../../src/third_party/skia/include/core/SkString.h \
-		../../src/third_party/skia/include/core/SkMask.h \
-		../../src/third_party/skia/include/core/SkRect.h \
-		../../src/third_party/skia/include/core/SkSize.h \
-		../../src/third_party/skia/src/core/SkOrderedReadBuffer.h \
-		../../src/third_party/skia/src/core/SkBitmapHeap.h \
-		../../src/third_party/skia/include/core/SkTDArray.h \
-		../../src/third_party/skia/src/core/SkTRefArray.h \
-		../../src/third_party/skia/include/core/SkFlattenableBuffers.h \
-		../../src/third_party/skia/include/core/SkPaint.h \
-		../../src/third_party/skia/include/core/SkDrawLooper.h \
-		../../src/third_party/skia/include/core/SkXfermode.h \
-		../../src/third_party/skia/include/core/SkPath.h \
-		../../src/third_party/skia/include/core/SkMatrix.h \
-		../../src/third_party/skia/include/core/SkPicture.h \
-		../../src/third_party/skia/include/core/SkReader32.h \
-		../../src/third_party/skia/include/core/SkRegion.h \
-		../../src/third_party/skia/include/core/SkRRect.h \
-		../../src/third_party/skia/src/core/SkOrderedWriteBuffer.h \
-		../../src/third_party/skia/include/core/SkWriter32.h \
-		../../src/third_party/skia/include/core/SkUnPreMultiply.h \
-		../../src/third_party/skia/include/core/SkUtils.h \
-		../../src/third_party/skia/include/core/SkPackBits.h \
-		../../src/third_party/skia/include/core/SkCanvas.h \
-		../../src/third_party/skia/include/core/SkDeque.h \
-		../../src/third_party/skia/include/core/SkClipStack.h \
-		../../src/third_party/skia/include/core/SkScalarCompare.h \
-		../../src/third_party/skia/include/core/SkMaskFilter.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SkBitmap.o ../../src/third_party/skia/src/core/SkBitmap.cpp
 
 message_pump.o: ../../src/base/message_pump.cc ../../src/base/message_pump.h \
 		../../src/base/base_export.h \
@@ -4086,413 +4034,6 @@ message_pump_libevent.o: ../../src/base/message_pump_libevent.cc ../../src/base/
 		../../src/third_party/libevent/evutil.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o message_pump_libevent.o ../../src/base/message_pump_libevent.cc
 
-SkDebug.o: ../../src/third_party/skia/src/core/SkDebug.cpp ../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SkDebug.o ../../src/third_party/skia/src/core/SkDebug.cpp
-
-image.o: ../../src/ui/gfx/image/image.cc ../../src/ui/gfx/image/image.h \
-		../../src/base/basictypes.h \
-		../../src/base/port.h \
-		../../src/build/build_config.h \
-		../../src/base/gtest_prod_util.h \
-		../../src/base/memory/ref_counted_memory.h \
-		../../src/base/base_export.h \
-		../../src/base/compiler_specific.h \
-		../../src/base/memory/ref_counted.h \
-		../../src/base/atomic_ref_count.h \
-		../../src/base/atomicops.h \
-		../../src/base/atomicops_internals_tsan.h \
-		../../src/base/atomicops_internals_x86_msvc.h \
-		../../src/base/atomicops_internals_mac.h \
-		../../src/base/atomicops_internals_gcc.h \
-		../../src/base/atomicops_internals_x86_gcc.h \
-		../../src/base/atomicops_internals_mips_gcc.h \
-		../../src/base/atomicops_internals_atomicword_compat.h \
-		../../src/base/third_party/dynamic_annotations/dynamic_annotations.h \
-		../../src/base/threading/thread_collision_warner.h \
-		../../src/ui/base/ui_export.h \
-		../../src/ui/gfx/native_widget_types.h \
-		../../src/base/logging.h \
-		../../src/ui/base/cursor/cursor.h \
-		../../src/base/memory/scoped_ptr.h \
-		../../src/base/move.h \
-		../../src/base/template_util.h \
-		../../src/base/stl_util.h \
-		../../src/third_party/skia/include/core/SkBitmap.h \
-		../../src/third_party/skia/include/core/Sk64.h \
-		../../src/third_party/skia/include/core/SkFixed.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h \
-		../../src/third_party/skia/include/core/SkColor.h \
-		../../src/third_party/skia/include/core/SkScalar.h \
-		../../src/third_party/skia/include/core/SkFloatingPoint.h \
-		../../src/third_party/skia/include/core/SkFloatBits.h \
-		../../src/third_party/skia/include/core/SkColorTable.h \
-		../../src/third_party/skia/include/core/SkFlattenable.h \
-		../../src/third_party/skia/include/core/SkRefCnt.h \
-		../../src/third_party/skia/include/core/SkThread.h \
-		../../src/third_party/skia/include/core/SkThread_platform.h \
-		../../src/third_party/skia/include/core/SkInstCnt.h \
-		../../src/third_party/skia/include/core/SkTArray.h \
-		../../src/third_party/skia/include/core/SkTemplates.h \
-		../../src/third_party/skia/include/core/SkPoint.h \
-		../../src/third_party/skia/include/core/SkMath.h \
-		../../src/ui/gfx/image/image_png_rep.h \
-		../../src/ui/base/layout.h \
-		../../src/ui/gfx/image/image_skia.h \
-		../../src/ui/gfx/image/image_skia_rep.h \
-		../../src/ui/gfx/size.h \
-		../../src/ui/gfx/size_base.h \
-		../../src/ui/gfx/size_f.h \
-		../../src/ui/gfx/codec/png_codec.h \
-		/usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf.h \
-		/usr/include/glib-2.0/glib.h \
-		/usr/include/glib-2.0/glib/galloca.h \
-		/usr/include/glib-2.0/glib/gtypes.h \
-		/usr/lib/i386-linux-gnu/glib-2.0/include/glibconfig.h \
-		/usr/include/glib-2.0/glib/gmacros.h \
-		/usr/include/glib-2.0/glib/gversionmacros.h \
-		/usr/include/glib-2.0/glib/garray.h \
-		/usr/include/glib-2.0/glib/gasyncqueue.h \
-		/usr/include/glib-2.0/glib/gthread.h \
-		/usr/include/glib-2.0/glib/gatomic.h \
-		/usr/include/glib-2.0/glib/gerror.h \
-		/usr/include/glib-2.0/glib/gquark.h \
-		/usr/include/glib-2.0/glib/gbacktrace.h \
-		/usr/include/glib-2.0/glib/gbase64.h \
-		/usr/include/glib-2.0/glib/gbitlock.h \
-		/usr/include/glib-2.0/glib/gbookmarkfile.h \
-		/usr/include/glib-2.0/glib/gbytes.h \
-		/usr/include/glib-2.0/glib/gcharset.h \
-		/usr/include/glib-2.0/glib/gchecksum.h \
-		/usr/include/glib-2.0/glib/gconvert.h \
-		/usr/include/glib-2.0/glib/gdataset.h \
-		/usr/include/glib-2.0/glib/gdate.h \
-		/usr/include/glib-2.0/glib/gdatetime.h \
-		/usr/include/glib-2.0/glib/gtimezone.h \
-		/usr/include/glib-2.0/glib/gdir.h \
-		/usr/include/glib-2.0/glib/genviron.h \
-		/usr/include/glib-2.0/glib/gfileutils.h \
-		/usr/include/glib-2.0/glib/ggettext.h \
-		/usr/include/glib-2.0/glib/ghash.h \
-		/usr/include/glib-2.0/glib/glist.h \
-		/usr/include/glib-2.0/glib/gmem.h \
-		/usr/include/glib-2.0/glib/gnode.h \
-		/usr/include/glib-2.0/glib/ghmac.h \
-		/usr/include/glib-2.0/glib/ghook.h \
-		/usr/include/glib-2.0/glib/ghostutils.h \
-		/usr/include/glib-2.0/glib/giochannel.h \
-		/usr/include/glib-2.0/glib/gmain.h \
-		/usr/include/glib-2.0/glib/gpoll.h \
-		/usr/include/glib-2.0/glib/gslist.h \
-		/usr/include/glib-2.0/glib/gstring.h \
-		/usr/include/glib-2.0/glib/gunicode.h \
-		/usr/include/glib-2.0/glib/gutils.h \
-		/usr/include/glib-2.0/glib/gkeyfile.h \
-		/usr/include/glib-2.0/glib/gmappedfile.h \
-		/usr/include/glib-2.0/glib/gmarkup.h \
-		/usr/include/glib-2.0/glib/gmessages.h \
-		/usr/include/glib-2.0/glib/goption.h \
-		/usr/include/glib-2.0/glib/gpattern.h \
-		/usr/include/glib-2.0/glib/gprimes.h \
-		/usr/include/glib-2.0/glib/gqsort.h \
-		/usr/include/glib-2.0/glib/gqueue.h \
-		/usr/include/glib-2.0/glib/grand.h \
-		/usr/include/glib-2.0/glib/gregex.h \
-		/usr/include/glib-2.0/glib/gscanner.h \
-		/usr/include/glib-2.0/glib/gsequence.h \
-		/usr/include/glib-2.0/glib/gshell.h \
-		/usr/include/glib-2.0/glib/gslice.h \
-		/usr/include/glib-2.0/glib/gspawn.h \
-		/usr/include/glib-2.0/glib/gstrfuncs.h \
-		/usr/include/glib-2.0/glib/gstringchunk.h \
-		/usr/include/glib-2.0/glib/gtestutils.h \
-		/usr/include/glib-2.0/glib/gthreadpool.h \
-		/usr/include/glib-2.0/glib/gtimer.h \
-		/usr/include/glib-2.0/glib/gtrashstack.h \
-		/usr/include/glib-2.0/glib/gtree.h \
-		/usr/include/glib-2.0/glib/gurifuncs.h \
-		/usr/include/glib-2.0/glib/gvarianttype.h \
-		/usr/include/glib-2.0/glib/gvariant.h \
-		/usr/include/glib-2.0/glib/gversion.h \
-		/usr/include/glib-2.0/glib/gwin32.h \
-		/usr/include/glib-2.0/glib/deprecated/gallocator.h \
-		/usr/include/glib-2.0/glib/deprecated/gcache.h \
-		/usr/include/glib-2.0/glib/deprecated/gcompletion.h \
-		/usr/include/glib-2.0/glib/deprecated/gmain.h \
-		/usr/include/glib-2.0/glib/deprecated/grel.h \
-		/usr/include/glib-2.0/glib/deprecated/gthread.h \
-		/usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-features.h \
-		/usr/include/glib-2.0/glib-object.h \
-		/usr/include/glib-2.0/gobject/gbinding.h \
-		/usr/include/glib-2.0/gobject/gobject.h \
-		/usr/include/glib-2.0/gobject/gtype.h \
-		/usr/include/glib-2.0/gobject/gvalue.h \
-		/usr/include/glib-2.0/gobject/gparam.h \
-		/usr/include/glib-2.0/gobject/gclosure.h \
-		/usr/include/glib-2.0/gobject/gsignal.h \
-		/usr/include/glib-2.0/gobject/gmarshal.h \
-		/usr/include/glib-2.0/gobject/gboxed.h \
-		/usr/include/glib-2.0/gobject/glib-types.h \
-		/usr/include/glib-2.0/gobject/genums.h \
-		/usr/include/glib-2.0/gobject/gparamspecs.h \
-		/usr/include/glib-2.0/gobject/gsourceclosure.h \
-		/usr/include/glib-2.0/gobject/gtypemodule.h \
-		/usr/include/glib-2.0/gobject/gtypeplugin.h \
-		/usr/include/glib-2.0/gobject/gvaluearray.h \
-		/usr/include/glib-2.0/gobject/gvaluetypes.h \
-		/usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-core.h \
-		/usr/include/glib-2.0/gio/gio.h \
-		/usr/include/glib-2.0/gio/giotypes.h \
-		/usr/include/glib-2.0/gio/gioenums.h \
-		/usr/include/glib-2.0/gio/gaction.h \
-		/usr/include/glib-2.0/gio/gactiongroup.h \
-		/usr/include/glib-2.0/gio/gactiongroupexporter.h \
-		/usr/include/glib-2.0/gio/gactionmap.h \
-		/usr/include/glib-2.0/gio/gappinfo.h \
-		/usr/include/glib-2.0/gio/gapplication.h \
-		/usr/include/glib-2.0/gio/gapplicationcommandline.h \
-		/usr/include/glib-2.0/gio/gasyncinitable.h \
-		/usr/include/glib-2.0/gio/ginitable.h \
-		/usr/include/glib-2.0/gio/gasyncresult.h \
-		/usr/include/glib-2.0/gio/gbufferedinputstream.h \
-		/usr/include/glib-2.0/gio/gfilterinputstream.h \
-		/usr/include/glib-2.0/gio/ginputstream.h \
-		/usr/include/glib-2.0/gio/gbufferedoutputstream.h \
-		/usr/include/glib-2.0/gio/gfilteroutputstream.h \
-		/usr/include/glib-2.0/gio/goutputstream.h \
-		/usr/include/glib-2.0/gio/gbytesicon.h \
-		/usr/include/glib-2.0/gio/gcancellable.h \
-		/usr/include/glib-2.0/gio/gcharsetconverter.h \
-		/usr/include/glib-2.0/gio/gconverter.h \
-		/usr/include/glib-2.0/gio/gcontenttype.h \
-		/usr/include/glib-2.0/gio/gconverterinputstream.h \
-		/usr/include/glib-2.0/gio/gconverteroutputstream.h \
-		/usr/include/glib-2.0/gio/gcredentials.h \
-		/usr/include/glib-2.0/gio/gdatainputstream.h \
-		/usr/include/glib-2.0/gio/gdataoutputstream.h \
-		/usr/include/glib-2.0/gio/gdbusaddress.h \
-		/usr/include/glib-2.0/gio/gdbusauthobserver.h \
-		/usr/include/glib-2.0/gio/gdbusconnection.h \
-		/usr/include/glib-2.0/gio/gdbuserror.h \
-		/usr/include/glib-2.0/gio/gdbusintrospection.h \
-		/usr/include/glib-2.0/gio/gdbusmessage.h \
-		/usr/include/glib-2.0/gio/gdbusmethodinvocation.h \
-		/usr/include/glib-2.0/gio/gdbusnameowning.h \
-		/usr/include/glib-2.0/gio/gdbusnamewatching.h \
-		/usr/include/glib-2.0/gio/gdbusproxy.h \
-		/usr/include/glib-2.0/gio/gdbusserver.h \
-		/usr/include/glib-2.0/gio/gdbusutils.h \
-		/usr/include/glib-2.0/gio/gdrive.h \
-		/usr/include/glib-2.0/gio/gemblemedicon.h \
-		/usr/include/glib-2.0/gio/gicon.h \
-		/usr/include/glib-2.0/gio/gemblem.h \
-		/usr/include/glib-2.0/gio/gfileattribute.h \
-		/usr/include/glib-2.0/gio/gfileenumerator.h \
-		/usr/include/glib-2.0/gio/gfile.h \
-		/usr/include/glib-2.0/gio/gfileicon.h \
-		/usr/include/glib-2.0/gio/gfileinfo.h \
-		/usr/include/glib-2.0/gio/gfileinputstream.h \
-		/usr/include/glib-2.0/gio/gfileiostream.h \
-		/usr/include/glib-2.0/gio/giostream.h \
-		/usr/include/glib-2.0/gio/gioerror.h \
-		/usr/include/glib-2.0/gio/gfilemonitor.h \
-		/usr/include/glib-2.0/gio/gfilenamecompleter.h \
-		/usr/include/glib-2.0/gio/gfileoutputstream.h \
-		/usr/include/glib-2.0/gio/ginetaddress.h \
-		/usr/include/glib-2.0/gio/ginetaddressmask.h \
-		/usr/include/glib-2.0/gio/ginetsocketaddress.h \
-		/usr/include/glib-2.0/gio/gsocketaddress.h \
-		/usr/include/glib-2.0/gio/gioenumtypes.h \
-		/usr/include/glib-2.0/gio/giomodule.h \
-		/usr/include/glib-2.0/gmodule.h \
-		/usr/include/glib-2.0/gio/gioscheduler.h \
-		/usr/include/glib-2.0/gio/gloadableicon.h \
-		/usr/include/glib-2.0/gio/gmemoryinputstream.h \
-		/usr/include/glib-2.0/gio/gmemoryoutputstream.h \
-		/usr/include/glib-2.0/gio/gmount.h \
-		/usr/include/glib-2.0/gio/gmountoperation.h \
-		/usr/include/glib-2.0/gio/gnativevolumemonitor.h \
-		/usr/include/glib-2.0/gio/gvolumemonitor.h \
-		/usr/include/glib-2.0/gio/gnetworkaddress.h \
-		/usr/include/glib-2.0/gio/gnetworkmonitor.h \
-		/usr/include/glib-2.0/gio/gnetworkservice.h \
-		/usr/include/glib-2.0/gio/gpermission.h \
-		/usr/include/glib-2.0/gio/gpollableinputstream.h \
-		/usr/include/glib-2.0/gio/gpollableoutputstream.h \
-		/usr/include/glib-2.0/gio/gpollableutils.h \
-		/usr/include/glib-2.0/gio/gpropertyaction.h \
-		/usr/include/glib-2.0/gio/gproxy.h \
-		/usr/include/glib-2.0/gio/gproxyaddress.h \
-		/usr/include/glib-2.0/gio/gproxyaddressenumerator.h \
-		/usr/include/glib-2.0/gio/gsocketaddressenumerator.h \
-		/usr/include/glib-2.0/gio/gproxyresolver.h \
-		/usr/include/glib-2.0/gio/gresolver.h \
-		/usr/include/glib-2.0/gio/gresource.h \
-		/usr/include/glib-2.0/gio/gseekable.h \
-		/usr/include/glib-2.0/gio/gsettingsschema.h \
-		/usr/include/glib-2.0/gio/gsettings.h \
-		/usr/include/glib-2.0/gio/gsimpleaction.h \
-		/usr/include/glib-2.0/gio/gsimpleactiongroup.h \
-		/usr/include/glib-2.0/gio/gsimpleasyncresult.h \
-		/usr/include/glib-2.0/gio/gsimplepermission.h \
-		/usr/include/glib-2.0/gio/gsocketclient.h \
-		/usr/include/glib-2.0/gio/gsocketconnectable.h \
-		/usr/include/glib-2.0/gio/gsocketconnection.h \
-		/usr/include/glib-2.0/gio/gsocket.h \
-		/usr/include/glib-2.0/gio/gsocketcontrolmessage.h \
-		/usr/include/glib-2.0/gio/gsocketlistener.h \
-		/usr/include/glib-2.0/gio/gsocketservice.h \
-		/usr/include/glib-2.0/gio/gsrvtarget.h \
-		/usr/include/glib-2.0/gio/gsimpleproxyresolver.h \
-		/usr/include/glib-2.0/gio/gtask.h \
-		/usr/include/glib-2.0/gio/gsubprocess.h \
-		/usr/include/glib-2.0/gio/gsubprocesslauncher.h \
-		/usr/include/glib-2.0/gio/gtcpconnection.h \
-		/usr/include/glib-2.0/gio/gtcpwrapperconnection.h \
-		/usr/include/glib-2.0/gio/gtestdbus.h \
-		/usr/include/glib-2.0/gio/gthemedicon.h \
-		/usr/include/glib-2.0/gio/gthreadedsocketservice.h \
-		/usr/include/glib-2.0/gio/gtlsbackend.h \
-		/usr/include/glib-2.0/gio/gtlscertificate.h \
-		/usr/include/glib-2.0/gio/gtlsclientconnection.h \
-		/usr/include/glib-2.0/gio/gtlsconnection.h \
-		/usr/include/glib-2.0/gio/gtlsdatabase.h \
-		/usr/include/glib-2.0/gio/gtlsfiledatabase.h \
-		/usr/include/glib-2.0/gio/gtlsinteraction.h \
-		/usr/include/glib-2.0/gio/gtlsserverconnection.h \
-		/usr/include/glib-2.0/gio/gtlspassword.h \
-		/usr/include/glib-2.0/gio/gvfs.h \
-		/usr/include/glib-2.0/gio/gvolume.h \
-		/usr/include/glib-2.0/gio/gzlibcompressor.h \
-		/usr/include/glib-2.0/gio/gzlibdecompressor.h \
-		/usr/include/glib-2.0/gio/gdbusinterface.h \
-		/usr/include/glib-2.0/gio/gdbusinterfaceskeleton.h \
-		/usr/include/glib-2.0/gio/gdbusobject.h \
-		/usr/include/glib-2.0/gio/gdbusobjectskeleton.h \
-		/usr/include/glib-2.0/gio/gdbusobjectproxy.h \
-		/usr/include/glib-2.0/gio/gdbusobjectmanager.h \
-		/usr/include/glib-2.0/gio/gdbusobjectmanagerclient.h \
-		/usr/include/glib-2.0/gio/gdbusobjectmanagerserver.h \
-		/usr/include/glib-2.0/gio/gdbusactiongroup.h \
-		/usr/include/glib-2.0/gio/gremoteactiongroup.h \
-		/usr/include/glib-2.0/gio/gmenumodel.h \
-		/usr/include/glib-2.0/gio/gmenu.h \
-		/usr/include/glib-2.0/gio/gmenuexporter.h \
-		/usr/include/glib-2.0/gio/gdbusmenumodel.h \
-		/usr/include/glib-2.0/gio/gnotification.h \
-		/usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-transform.h \
-		/usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-animation.h \
-		/usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-simple-anim.h \
-		/usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-io.h \
-		/usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-loader.h \
-		/usr/include/gdk-pixbuf-2.0/gdk-pixbuf/gdk-pixbuf-enum-types.h \
-		/usr/include/gtk-2.0/gdk/gdk.h \
-		/usr/include/gtk-2.0/gdk/gdkapplaunchcontext.h \
-		/usr/include/gtk-2.0/gdk/gdkscreen.h \
-		/usr/include/cairo/cairo.h \
-		/usr/include/cairo/cairo-version.h \
-		/usr/include/cairo/cairo-features.h \
-		/usr/include/cairo/cairo-deprecated.h \
-		/usr/include/gtk-2.0/gdk/gdktypes.h \
-		/usr/include/pango-1.0/pango/pango.h \
-		/usr/include/pango-1.0/pango/pango-attributes.h \
-		/usr/include/pango-1.0/pango/pango-font.h \
-		/usr/include/pango-1.0/pango/pango-coverage.h \
-		/usr/include/pango-1.0/pango/pango-types.h \
-		/usr/include/pango-1.0/pango/pango-gravity.h \
-		/usr/include/pango-1.0/pango/pango-matrix.h \
-		/usr/include/pango-1.0/pango/pango-script.h \
-		/usr/include/pango-1.0/pango/pango-language.h \
-		/usr/include/pango-1.0/pango/pango-bidi-type.h \
-		/usr/include/pango-1.0/pango/pango-break.h \
-		/usr/include/pango-1.0/pango/pango-item.h \
-		/usr/include/pango-1.0/pango/pango-context.h \
-		/usr/include/pango-1.0/pango/pango-fontmap.h \
-		/usr/include/pango-1.0/pango/pango-fontset.h \
-		/usr/include/pango-1.0/pango/pango-engine.h \
-		/usr/include/pango-1.0/pango/pango-glyph.h \
-		/usr/include/pango-1.0/pango/pango-enum-types.h \
-		/usr/include/pango-1.0/pango/pango-features.h \
-		/usr/include/pango-1.0/pango/pango-glyph-item.h \
-		/usr/include/pango-1.0/pango/pango-layout.h \
-		/usr/include/pango-1.0/pango/pango-tabs.h \
-		/usr/include/pango-1.0/pango/pango-renderer.h \
-		/usr/include/pango-1.0/pango/pango-utils.h \
-		/usr/lib/i386-linux-gnu/gtk-2.0/include/gdkconfig.h \
-		/usr/include/gtk-2.0/gdk/gdkdisplay.h \
-		/usr/include/gtk-2.0/gdk/gdkevents.h \
-		/usr/include/gtk-2.0/gdk/gdkcolor.h \
-		/usr/include/gtk-2.0/gdk/gdkdnd.h \
-		/usr/include/gtk-2.0/gdk/gdkinput.h \
-		/usr/include/gtk-2.0/gdk/gdkcairo.h \
-		/usr/include/gtk-2.0/gdk/gdkpixbuf.h \
-		/usr/include/gtk-2.0/gdk/gdkrgb.h \
-		/usr/include/pango-1.0/pango/pangocairo.h \
-		/usr/include/gtk-2.0/gdk/gdkcursor.h \
-		/usr/include/gtk-2.0/gdk/gdkdisplaymanager.h \
-		/usr/include/gtk-2.0/gdk/gdkdrawable.h \
-		/usr/include/gtk-2.0/gdk/gdkgc.h \
-		/usr/include/gtk-2.0/gdk/gdkenumtypes.h \
-		/usr/include/gtk-2.0/gdk/gdkfont.h \
-		/usr/include/gtk-2.0/gdk/gdkimage.h \
-		/usr/include/gtk-2.0/gdk/gdkkeys.h \
-		/usr/include/gtk-2.0/gdk/gdkpango.h \
-		/usr/include/gtk-2.0/gdk/gdkpixmap.h \
-		/usr/include/gtk-2.0/gdk/gdkproperty.h \
-		/usr/include/gtk-2.0/gdk/gdkregion.h \
-		/usr/include/gtk-2.0/gdk/gdkselection.h \
-		/usr/include/gtk-2.0/gdk/gdkspawn.h \
-		/usr/include/gtk-2.0/gdk/gdktestutils.h \
-		/usr/include/gtk-2.0/gdk/gdkwindow.h \
-		/usr/include/gtk-2.0/gdk/gdkvisual.h \
-		../../src/ui/base/gtk/scoped_gobject.h \
-		../../src/ui/gfx/canvas.h \
-		../../src/base/string16.h \
-		../../src/skia/ext/platform_canvas.h \
-		../../src/skia/ext/platform_device.h \
-		../../src/third_party/skia/include/core/SkDevice.h \
-		../../src/third_party/skia/include/core/SkCanvas.h \
-		../../src/third_party/skia/include/core/SkDeque.h \
-		../../src/third_party/skia/include/core/SkClipStack.h \
-		../../src/third_party/skia/include/core/SkPath.h \
-		../../src/third_party/skia/include/core/SkMatrix.h \
-		../../src/third_party/skia/include/core/SkRect.h \
-		../../src/third_party/skia/include/core/SkSize.h \
-		../../src/third_party/skia/include/core/SkTDArray.h \
-		../../src/third_party/skia/include/core/SkRegion.h \
-		../../src/third_party/skia/include/core/SkPaint.h \
-		../../src/third_party/skia/include/core/SkDrawLooper.h \
-		../../src/third_party/skia/include/core/SkXfermode.h \
-		../../src/third_party/skia/include/core/SkScalarCompare.h \
-		../../src/third_party/skia/include/core/SkDeviceProperties.h \
-		../../src/third_party/skia/include/core/SkFontLCDConfig.h \
-		../../src/skia/ext/refptr.h \
-		../../src/third_party/skia/include/core/SkPixelRef.h \
-		../../src/third_party/skia/include/core/SkString.h \
-		../../src/ui/gfx/shadow_value.h \
-		../../src/ui/gfx/point.h \
-		../../src/ui/gfx/point_base.h \
-		../../src/ui/gfx/point_f.h \
-		../../src/ui/gfx/vector2d_f.h \
-		../../src/ui/gfx/vector2d.h \
-		../../src/ui/gfx/gtk_util.h \
-		../../src/base/time.h \
-		../../src/ui/gfx/image/cairo_cached_surface.h \
-		../../src/base/mac/foundation_util.h \
-		../../src/base/mac/scoped_cftyperef.h \
-		../../src/base/memory/scoped_policy.h \
-		../../src/ui/gfx/image/image_skia_util_ios.h \
-		../../src/base/mac/mac_util.h \
-		../../src/ui/gfx/image/image_skia_util_mac.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o image.o ../../src/ui/gfx/image/image.cc
-
 gtk_util.o: ../../src/ui/gfx/gtk_util.cc ../../src/ui/gfx/gtk_util.h \
 		../../src/base/time.h \
 		../../src/base/atomicops.h \
@@ -5056,29 +4597,6 @@ gtk_util.o: ../../src/ui/gfx/gtk_util.cc ../../src/ui/gfx/gtk_util.h \
 		../../src/base/compiler_specific.h \
 		../../src/base/move.h \
 		../../src/base/template_util.h \
-		../../src/third_party/skia/include/core/SkBitmap.h \
-		../../src/third_party/skia/include/core/Sk64.h \
-		../../src/third_party/skia/include/core/SkFixed.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h \
-		../../src/third_party/skia/include/core/SkColor.h \
-		../../src/third_party/skia/include/core/SkScalar.h \
-		../../src/third_party/skia/include/core/SkFloatingPoint.h \
-		../../src/third_party/skia/include/core/SkFloatBits.h \
-		../../src/third_party/skia/include/core/SkColorTable.h \
-		../../src/third_party/skia/include/core/SkFlattenable.h \
-		../../src/third_party/skia/include/core/SkRefCnt.h \
-		../../src/third_party/skia/include/core/SkThread.h \
-		../../src/third_party/skia/include/core/SkThread_platform.h \
-		../../src/third_party/skia/include/core/SkInstCnt.h \
-		../../src/third_party/skia/include/core/SkTArray.h \
-		../../src/third_party/skia/include/core/SkTemplates.h \
-		../../src/third_party/skia/include/core/SkPoint.h \
-		../../src/third_party/skia/include/core/SkMath.h \
-		../../src/third_party/skia/include/core/SkUnPreMultiply.h \
 		../../src/ui/gfx/rect.h \
 		../../src/ui/gfx/point.h \
 		../../src/ui/gfx/point_base.h \
@@ -6435,378 +5953,1060 @@ callback_internal.o: ../../src/base/callback_internal.cc ../../src/base/callback
 		../../src/base/logging.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o callback_internal.o ../../src/base/callback_internal.cc
 
-SkDebug_stdio.o: ../../src/third_party/skia/src/ports/SkDebug_stdio.cpp ../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SkDebug_stdio.o ../../src/third_party/skia/src/ports/SkDebug_stdio.cpp
+platform_thread_posix.o: ../../src/base/threading/platform_thread_posix.cc ../../src/base/threading/platform_thread.h \
+		../../src/base/base_export.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/time.h \
+		../../src/base/atomicops.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/lazy_instance.h \
+		../../src/base/logging.h \
+		../../src/base/memory/aligned_memory.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/third_party/dynamic_annotations/dynamic_annotations.h \
+		../../src/base/threading/thread_restrictions.h \
+		../../src/base/memory/scoped_ptr.h \
+		../../src/base/move.h \
+		../../src/base/template_util.h \
+		../../src/base/safe_strerror_posix.h \
+		../../src/base/threading/thread_id_name_manager.h \
+		../../src/base/synchronization/lock.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/base/tracked_objects.h \
+		../../src/base/gtest_prod_util.h \
+		../../src/base/location.h \
+		../../src/base/profiler/alternate_timer.h \
+		../../src/base/profiler/tracked_time.h \
+		../../src/base/threading/thread_local_storage.h \
+		../../src/base/tracking_info.h \
+		../../src/base/android/thread_utils.h \
+		../../src/base/android/jni_android.h \
+		../../src/base/android/scoped_java_ref.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o platform_thread_posix.o ../../src/base/threading/platform_thread_posix.cc
 
-Sk64.o: ../../src/third_party/skia/src/core/Sk64.cpp ../../src/third_party/skia/include/core/Sk64.h \
-		../../src/third_party/skia/include/core/SkFixed.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h \
-		../../src/third_party/skia/src/core/SkMathPriv.h \
-		../../src/third_party/skia/include/core/SkMath.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Sk64.o ../../src/third_party/skia/src/core/Sk64.cpp
+time.o: ../../src/base/time.cc ../../src/base/time.h \
+		../../src/base/atomicops.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/base_export.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/strings/sys_string_conversions.h \
+		../../src/base/string16.h \
+		../../src/base/strings/string_piece.h \
+		../../src/base/hash_tables.h \
+		../../src/base/third_party/nspr/prtime.h \
+		../../src/base/third_party/nspr/prtypes.h \
+		../../src/base/third_party/nspr/prcpucfg.h \
+		../../src/base/third_party/nspr/prcpucfg_win.h \
+		../../src/base/third_party/nspr/prcpucfg_mac.h \
+		../../src/base/third_party/nspr/prcpucfg_nacl.h \
+		../../src/base/third_party/nspr/prcpucfg_linux.h \
+		../../src/base/third_party/nspr/prcpucfg_freebsd.h \
+		../../src/base/third_party/nspr/prcpucfg_openbsd.h \
+		../../src/base/third_party/nspr/prcpucfg_solaris.h \
+		../../src/base/logging.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o time.o ../../src/base/time.cc
 
-SkPixelRef.o: ../../src/third_party/skia/src/core/SkPixelRef.cpp ../../src/third_party/skia/include/core/SkPixelRef.h \
-		../../src/third_party/skia/include/core/SkBitmap.h \
-		../../src/third_party/skia/include/core/Sk64.h \
-		../../src/third_party/skia/include/core/SkFixed.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h \
-		../../src/third_party/skia/include/core/SkColor.h \
-		../../src/third_party/skia/include/core/SkScalar.h \
-		../../src/third_party/skia/include/core/SkFloatingPoint.h \
-		../../src/third_party/skia/include/core/SkFloatBits.h \
-		../../src/third_party/skia/include/core/SkColorTable.h \
-		../../src/third_party/skia/include/core/SkFlattenable.h \
-		../../src/third_party/skia/include/core/SkRefCnt.h \
-		../../src/third_party/skia/include/core/SkThread.h \
-		../../src/third_party/skia/include/core/SkThread_platform.h \
-		../../src/third_party/skia/include/core/SkInstCnt.h \
-		../../src/third_party/skia/include/core/SkTArray.h \
-		../../src/third_party/skia/include/core/SkTemplates.h \
-		../../src/third_party/skia/include/core/SkPoint.h \
-		../../src/third_party/skia/include/core/SkMath.h \
-		../../src/third_party/skia/include/core/SkString.h \
-		../../src/third_party/skia/include/core/SkFlattenableBuffers.h \
-		../../src/third_party/skia/include/core/SkPaint.h \
-		../../src/third_party/skia/include/core/SkDrawLooper.h \
-		../../src/third_party/skia/include/core/SkXfermode.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SkPixelRef.o ../../src/third_party/skia/src/core/SkPixelRef.cpp
+time_posix.o: ../../src/base/time_posix.cc ../../src/base/time.h \
+		../../src/base/atomicops.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/base_export.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/logging.h \
+		../../src/base/os_compat_android.h \
+		../../src/base/os_compat_nacl.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o time_posix.o ../../src/base/time_posix.cc
 
-SkMallocPixelRef.o: ../../src/third_party/skia/src/core/SkMallocPixelRef.cpp ../../src/third_party/skia/include/core/SkMallocPixelRef.h \
-		../../src/third_party/skia/include/core/SkPixelRef.h \
-		../../src/third_party/skia/include/core/SkBitmap.h \
-		../../src/third_party/skia/include/core/Sk64.h \
-		../../src/third_party/skia/include/core/SkFixed.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h \
-		../../src/third_party/skia/include/core/SkColor.h \
-		../../src/third_party/skia/include/core/SkScalar.h \
-		../../src/third_party/skia/include/core/SkFloatingPoint.h \
-		../../src/third_party/skia/include/core/SkFloatBits.h \
-		../../src/third_party/skia/include/core/SkColorTable.h \
-		../../src/third_party/skia/include/core/SkFlattenable.h \
-		../../src/third_party/skia/include/core/SkRefCnt.h \
-		../../src/third_party/skia/include/core/SkThread.h \
-		../../src/third_party/skia/include/core/SkThread_platform.h \
-		../../src/third_party/skia/include/core/SkInstCnt.h \
-		../../src/third_party/skia/include/core/SkTArray.h \
-		../../src/third_party/skia/include/core/SkTemplates.h \
-		../../src/third_party/skia/include/core/SkPoint.h \
-		../../src/third_party/skia/include/core/SkMath.h \
-		../../src/third_party/skia/include/core/SkString.h \
-		../../src/third_party/skia/include/core/SkFlattenableBuffers.h \
-		../../src/third_party/skia/include/core/SkPaint.h \
-		../../src/third_party/skia/include/core/SkDrawLooper.h \
-		../../src/third_party/skia/include/core/SkXfermode.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SkMallocPixelRef.o ../../src/third_party/skia/src/core/SkMallocPixelRef.cpp
+weak_ptr.o: ../../src/base/memory/weak_ptr.cc ../../src/base/memory/weak_ptr.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/base_export.h \
+		../../src/base/logging.h \
+		../../src/base/memory/ref_counted.h \
+		../../src/base/atomic_ref_count.h \
+		../../src/base/atomicops.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/third_party/dynamic_annotations/dynamic_annotations.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/threading/thread_collision_warner.h \
+		../../src/base/template_util.h \
+		../../src/base/threading/thread_checker.h \
+		../../src/base/threading/thread_checker_impl.h \
+		../../src/base/synchronization/lock.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/base/threading/platform_thread.h \
+		../../src/base/time.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o weak_ptr.o ../../src/base/memory/weak_ptr.cc
 
-SkMemory_malloc.o: ../../src/third_party/skia/src/ports/SkMemory_malloc.cpp ../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SkMemory_malloc.o ../../src/third_party/skia/src/ports/SkMemory_malloc.cpp
+waitable_event_posix.o: ../../src/base/synchronization/waitable_event_posix.cc ../../src/base/logging.h \
+		../../src/base/synchronization/waitable_event.h \
+		../../src/base/base_export.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/memory/ref_counted.h \
+		../../src/base/atomic_ref_count.h \
+		../../src/base/atomicops.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/third_party/dynamic_annotations/dynamic_annotations.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/threading/thread_collision_warner.h \
+		../../src/base/synchronization/lock.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/base/threading/platform_thread.h \
+		../../src/base/time.h \
+		../../src/base/synchronization/condition_variable.h \
+		../../src/base/threading/thread_restrictions.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o waitable_event_posix.o ../../src/base/synchronization/waitable_event_posix.cc
 
-SkCanvas.o: ../../src/third_party/skia/src/core/SkCanvas.cpp ../../src/third_party/skia/include/core/SkCanvas.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h \
-		../../src/third_party/skia/include/core/SkBitmap.h \
-		../../src/third_party/skia/include/core/Sk64.h \
-		../../src/third_party/skia/include/core/SkFixed.h \
-		../../src/third_party/skia/include/core/SkColor.h \
-		../../src/third_party/skia/include/core/SkScalar.h \
-		../../src/third_party/skia/include/core/SkFloatingPoint.h \
-		../../src/third_party/skia/include/core/SkFloatBits.h \
-		../../src/third_party/skia/include/core/SkColorTable.h \
-		../../src/third_party/skia/include/core/SkFlattenable.h \
-		../../src/third_party/skia/include/core/SkRefCnt.h \
-		../../src/third_party/skia/include/core/SkThread.h \
-		../../src/third_party/skia/include/core/SkThread_platform.h \
-		../../src/third_party/skia/include/core/SkInstCnt.h \
-		../../src/third_party/skia/include/core/SkTArray.h \
-		../../src/third_party/skia/include/core/SkTemplates.h \
-		../../src/third_party/skia/include/core/SkPoint.h \
-		../../src/third_party/skia/include/core/SkMath.h \
-		../../src/third_party/skia/include/core/SkDeque.h \
-		../../src/third_party/skia/include/core/SkClipStack.h \
-		../../src/third_party/skia/include/core/SkPath.h \
-		../../src/third_party/skia/include/core/SkMatrix.h \
-		../../src/third_party/skia/include/core/SkRect.h \
-		../../src/third_party/skia/include/core/SkSize.h \
-		../../src/third_party/skia/include/core/SkTDArray.h \
-		../../src/third_party/skia/include/core/SkRegion.h \
-		../../src/third_party/skia/include/core/SkPaint.h \
-		../../src/third_party/skia/include/core/SkDrawLooper.h \
-		../../src/third_party/skia/include/core/SkXfermode.h \
-		../../src/third_party/skia/include/core/SkScalarCompare.h \
-		../../src/third_party/skia/include/core/SkBounder.h \
-		../../src/third_party/skia/include/core/SkDevice.h \
-		../../src/third_party/skia/include/core/SkDeviceProperties.h \
-		../../src/third_party/skia/include/core/SkFontLCDConfig.h \
-		../../src/third_party/skia/src/core/SkDeviceImageFilterProxy.h \
-		../../src/third_party/skia/include/core/SkImageFilter.h \
-		../../src/third_party/skia/include/core/SkDraw.h \
-		../../src/third_party/skia/include/core/SkMask.h \
-		../../src/third_party/skia/include/core/SkDrawFilter.h \
-		../../src/third_party/skia/include/core/SkMetaData.h \
-		../../src/third_party/skia/include/pathops/SkPathOps.h \
-		../../src/third_party/skia/include/core/SkPicture.h \
-		../../src/third_party/skia/src/core/SkRasterClip.h \
-		../../src/third_party/skia/src/core/SkAAClip.h \
-		../../src/third_party/skia/src/core/SkBlitter.h \
-		../../src/third_party/skia/include/core/SkRRect.h \
-		../../src/third_party/skia/src/image/SkSurface_Base.h \
-		../../src/third_party/skia/include/core/SkSurface.h \
-		../../src/third_party/skia/include/core/SkImage.h \
-		../../src/third_party/skia/include/core/SkShader.h \
-		../../src/third_party/skia/src/core/SkTextFormatParams.h \
-		../../src/third_party/skia/include/core/SkTLazy.h \
-		../../src/third_party/skia/include/core/SkUtils.h \
-		../../src/third_party/skia/include/core/SkPixelRef.h \
-		../../src/third_party/skia/include/core/SkString.h \
-		../../src/third_party/skia/include/core/SkColorPriv.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SkCanvas.o ../../src/third_party/skia/src/core/SkCanvas.cpp
+event.o: ../../src/third_party/libevent/event.c ../../src/third_party/libevent/linux/config.h \
+		../../src/third_party/libevent/event.h \
+		../../src/third_party/libevent/event-config.h \
+		../../src/third_party/libevent/mac/event-config.h \
+		../../src/third_party/libevent/android/event-config.h \
+		../../src/third_party/libevent/linux/event-config.h \
+		../../src/third_party/libevent/freebsd/event-config.h \
+		../../src/third_party/libevent/solaris/event-config.h \
+		../../src/third_party/libevent/evutil.h \
+		../../src/third_party/libevent/event-internal.h \
+		../../src/third_party/libevent/min_heap.h \
+		../../src/third_party/libevent/evsignal.h \
+		../../src/third_party/libevent/log.h
+	$(CC) -c $(CFLAGS) $(INCPATH) -o event.o ../../src/third_party/libevent/event.c
 
-SkColor.o: ../../src/third_party/skia/src/core/SkColor.cpp ../../src/third_party/skia/include/core/SkColor.h \
-		../../src/third_party/skia/include/core/SkScalar.h \
-		../../src/third_party/skia/include/core/SkFixed.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h \
-		../../src/third_party/skia/include/core/SkFloatingPoint.h \
-		../../src/third_party/skia/include/core/SkFloatBits.h \
-		../../src/third_party/skia/include/core/SkColorPriv.h \
-		../../src/third_party/skia/include/core/SkMath.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SkColor.o ../../src/third_party/skia/src/core/SkColor.cpp
+lock.o: ../../src/base/synchronization/lock.cc ../../src/base/synchronization/lock.h \
+		../../src/base/base_export.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/build/build_config.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/base/threading/platform_thread.h \
+		../../src/base/time.h \
+		../../src/base/atomicops.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/logging.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o lock.o ../../src/base/synchronization/lock.cc
 
-SkColorTable.o: ../../src/third_party/skia/src/core/SkColorTable.cpp ../../src/third_party/skia/include/core/SkColorTable.h \
-		../../src/third_party/skia/include/core/SkColor.h \
-		../../src/third_party/skia/include/core/SkScalar.h \
-		../../src/third_party/skia/include/core/SkFixed.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h \
-		../../src/third_party/skia/include/core/SkFloatingPoint.h \
-		../../src/third_party/skia/include/core/SkFloatBits.h \
-		../../src/third_party/skia/include/core/SkFlattenable.h \
-		../../src/third_party/skia/include/core/SkRefCnt.h \
-		../../src/third_party/skia/include/core/SkThread.h \
-		../../src/third_party/skia/include/core/SkThread_platform.h \
-		../../src/third_party/skia/include/core/SkInstCnt.h \
-		../../src/third_party/skia/include/core/SkTArray.h \
-		../../src/third_party/skia/include/core/SkTemplates.h \
-		../../src/third_party/skia/include/core/SkFlattenableBuffers.h \
-		../../src/third_party/skia/include/core/SkPaint.h \
-		../../src/third_party/skia/include/core/SkDrawLooper.h \
-		../../src/third_party/skia/include/core/SkXfermode.h \
-		../../src/third_party/skia/include/core/SkPoint.h \
-		../../src/third_party/skia/include/core/SkMath.h \
-		../../src/third_party/skia/include/core/SkStream.h \
-		../../src/third_party/skia/include/core/SkString.h \
-		../../src/third_party/skia/include/core/SkColorPriv.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SkColorTable.o ../../src/third_party/skia/src/core/SkColorTable.cpp
+lock_impl_posix.o: ../../src/base/synchronization/lock_impl_posix.cc ../../src/base/synchronization/lock_impl.h \
+		../../src/build/build_config.h \
+		../../src/base/base_export.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/base/logging.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o lock_impl_posix.o ../../src/base/synchronization/lock_impl_posix.cc
 
-SkMask.o: ../../src/third_party/skia/src/core/SkMask.cpp ../../src/third_party/skia/include/core/Sk64.h \
-		../../src/third_party/skia/include/core/SkFixed.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h \
-		../../src/third_party/skia/include/core/SkMask.h \
-		../../src/third_party/skia/include/core/SkRect.h \
-		../../src/third_party/skia/include/core/SkPoint.h \
-		../../src/third_party/skia/include/core/SkMath.h \
-		../../src/third_party/skia/include/core/SkScalar.h \
-		../../src/third_party/skia/include/core/SkFloatingPoint.h \
-		../../src/third_party/skia/include/core/SkFloatBits.h \
-		../../src/third_party/skia/include/core/SkSize.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SkMask.o ../../src/third_party/skia/src/core/SkMask.cpp
+thread_checker_impl.o: ../../src/base/threading/thread_checker_impl.cc ../../src/base/threading/thread_checker_impl.h \
+		../../src/base/base_export.h \
+		../../src/base/synchronization/lock.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/build/build_config.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/base/threading/platform_thread.h \
+		../../src/base/time.h \
+		../../src/base/atomicops.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o thread_checker_impl.o ../../src/base/threading/thread_checker_impl.cc
 
-SkMatrix.o: ../../src/third_party/skia/src/core/SkMatrix.cpp ../../src/third_party/skia/include/core/SkMatrix.h \
-		../../src/third_party/skia/include/core/SkRect.h \
-		../../src/third_party/skia/include/core/SkPoint.h \
-		../../src/third_party/skia/include/core/SkMath.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h \
-		../../src/third_party/skia/include/core/SkScalar.h \
-		../../src/third_party/skia/include/core/SkFixed.h \
-		../../src/third_party/skia/include/core/SkFloatingPoint.h \
-		../../src/third_party/skia/include/core/SkFloatBits.h \
-		../../src/third_party/skia/include/core/SkSize.h \
-		../../src/third_party/skia/include/core/Sk64.h \
-		../../src/third_party/skia/include/core/SkScalarCompare.h \
-		../../src/third_party/skia/include/core/SkString.h \
-		../../src/third_party/skia/src/core/SkPerspIter.h \
-		../../src/third_party/skia/src/core/SkMatrixUtils.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SkMatrix.o ../../src/third_party/skia/src/core/SkMatrix.cpp
+thread_local_posix.o: ../../src/base/threading/thread_local_posix.cc ../../src/base/threading/thread_local.h \
+		../../src/base/base_export.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/logging.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o thread_local_posix.o ../../src/base/threading/thread_local_posix.cc
 
-SkUnPreMultiply.o: ../../src/third_party/skia/src/core/SkUnPreMultiply.cpp ../../src/third_party/skia/include/core/SkUnPreMultiply.h \
-		../../src/third_party/skia/include/core/SkColor.h \
-		../../src/third_party/skia/include/core/SkScalar.h \
-		../../src/third_party/skia/include/core/SkFixed.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h \
-		../../src/third_party/skia/include/core/SkFloatingPoint.h \
-		../../src/third_party/skia/include/core/SkFloatBits.h \
-		../../src/third_party/skia/include/core/SkColorPriv.h \
-		../../src/third_party/skia/include/core/SkMath.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SkUnPreMultiply.o ../../src/third_party/skia/src/core/SkUnPreMultiply.cpp
+thread_local_storage_posix.o: ../../src/base/threading/thread_local_storage_posix.cc ../../src/base/threading/thread_local_storage.h \
+		../../src/base/base_export.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/logging.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o thread_local_storage_posix.o ../../src/base/threading/thread_local_storage_posix.cc
 
-SkPackBits.o: ../../src/third_party/skia/src/core/SkPackBits.cpp ../../src/third_party/skia/include/core/SkPackBits.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h \
-		../../src/third_party/skia/include/core/SkUtils.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SkPackBits.o ../../src/third_party/skia/src/core/SkPackBits.cpp
+pending_task.o: ../../src/base/pending_task.cc ../../src/base/pending_task.h \
+		../../src/base/base_export.h \
+		../../src/base/callback.h \
+		../../src/base/callback_forward.h \
+		../../src/base/callback_internal.h \
+		../../src/base/memory/ref_counted.h \
+		../../src/base/atomic_ref_count.h \
+		../../src/base/atomicops.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/third_party/dynamic_annotations/dynamic_annotations.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/threading/thread_collision_warner.h \
+		../../src/base/memory/scoped_ptr.h \
+		../../src/base/move.h \
+		../../src/base/template_util.h \
+		../../src/base/location.h \
+		../../src/base/time.h \
+		../../src/base/tracking_info.h \
+		../../src/base/tracked_objects.h \
+		../../src/base/gtest_prod_util.h \
+		../../src/base/lazy_instance.h \
+		../../src/base/logging.h \
+		../../src/base/memory/aligned_memory.h \
+		../../src/base/threading/thread_restrictions.h \
+		../../src/base/profiler/alternate_timer.h \
+		../../src/base/profiler/tracked_time.h \
+		../../src/base/synchronization/lock.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/base/threading/platform_thread.h \
+		../../src/base/threading/thread_local_storage.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o pending_task.o ../../src/base/pending_task.cc
 
-SkPoint.o: ../../src/third_party/skia/src/core/SkPoint.cpp ../../src/third_party/skia/include/core/SkPoint.h \
-		../../src/third_party/skia/include/core/SkMath.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h \
-		../../src/third_party/skia/include/core/SkScalar.h \
-		../../src/third_party/skia/include/core/SkFixed.h \
-		../../src/third_party/skia/include/core/SkFloatingPoint.h \
-		../../src/third_party/skia/include/core/SkFloatBits.h \
-		../../src/third_party/skia/include/core/Sk64.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SkPoint.o ../../src/third_party/skia/src/core/SkPoint.cpp
+message_loop_proxy.o: ../../src/base/message_loop/message_loop_proxy.cc ../../src/base/message_loop/message_loop_proxy.h \
+		../../src/base/base_export.h \
+		../../src/base/compiler_specific.h \
+		../../src/build/build_config.h \
+		../../src/base/memory/ref_counted.h \
+		../../src/base/atomic_ref_count.h \
+		../../src/base/atomicops.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/third_party/dynamic_annotations/dynamic_annotations.h \
+		../../src/base/threading/thread_collision_warner.h \
+		../../src/base/single_thread_task_runner.h \
+		../../src/base/sequenced_task_runner.h \
+		../../src/base/sequenced_task_runner_helpers.h \
+		../../src/base/task_runner.h \
+		../../src/base/callback_forward.h \
+		../../src/base/time.h \
+		../../src/base/bind.h \
+		../../src/base/bind_internal.h \
+		../../src/base/bind_helpers.h \
+		../../src/base/callback.h \
+		../../src/base/callback_internal.h \
+		../../src/base/memory/scoped_ptr.h \
+		../../src/base/move.h \
+		../../src/base/template_util.h \
+		../../src/base/memory/weak_ptr.h \
+		../../src/base/logging.h \
+		../../src/base/threading/thread_checker.h \
+		../../src/base/threading/thread_checker_impl.h \
+		../../src/base/synchronization/lock.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/base/threading/platform_thread.h \
+		../../src/base/memory/raw_scoped_refptr_mismatch_checker.h \
+		../../src/base/tuple.h \
+		../../src/base/bind_internal_win.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o message_loop_proxy.o ../../src/base/message_loop/message_loop_proxy.cc
 
-SkRect.o: ../../src/third_party/skia/src/core/SkRect.cpp ../../src/third_party/skia/include/core/SkRect.h \
-		../../src/third_party/skia/include/core/SkPoint.h \
-		../../src/third_party/skia/include/core/SkMath.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h \
-		../../src/third_party/skia/include/core/SkScalar.h \
-		../../src/third_party/skia/include/core/SkFixed.h \
-		../../src/third_party/skia/include/core/SkFloatingPoint.h \
-		../../src/third_party/skia/include/core/SkFloatBits.h \
-		../../src/third_party/skia/include/core/SkSize.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SkRect.o ../../src/third_party/skia/src/core/SkRect.cpp
+message_loop_proxy_impl.o: ../../src/base/message_loop/message_loop_proxy_impl.cc ../../src/base/message_loop/message_loop_proxy_impl.h \
+		../../src/base/base_export.h \
+		../../src/base/message_loop.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/callback_forward.h \
+		../../src/base/location.h \
+		../../src/base/memory/ref_counted.h \
+		../../src/base/atomic_ref_count.h \
+		../../src/base/atomicops.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/third_party/dynamic_annotations/dynamic_annotations.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/threading/thread_collision_warner.h \
+		../../src/base/message_loop_proxy.h \
+		../../src/base/message_loop/message_loop_proxy.h \
+		../../src/base/single_thread_task_runner.h \
+		../../src/base/sequenced_task_runner.h \
+		../../src/base/sequenced_task_runner_helpers.h \
+		../../src/base/task_runner.h \
+		../../src/base/time.h \
+		../../src/base/message_pump.h \
+		../../src/base/observer_list.h \
+		../../src/base/memory/weak_ptr.h \
+		../../src/base/logging.h \
+		../../src/base/template_util.h \
+		../../src/base/threading/thread_checker.h \
+		../../src/base/threading/thread_checker_impl.h \
+		../../src/base/synchronization/lock.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/base/threading/platform_thread.h \
+		../../src/base/pending_task.h \
+		../../src/base/callback.h \
+		../../src/base/callback_internal.h \
+		../../src/base/memory/scoped_ptr.h \
+		../../src/base/move.h \
+		../../src/base/tracking_info.h \
+		../../src/base/message_pump_win.h \
+		../../src/base/message_pump_dispatcher.h \
+		../../src/base/event_types.h \
+		../../src/base/message_pump_observer.h \
+		../../src/base/win/scoped_handle.h \
+		../../src/base/message_pump_io_ios.h \
+		../../src/base/mac/scoped_cffiledescriptorref.h \
+		../../src/base/mac/scoped_cftyperef.h \
+		../../src/base/memory/scoped_policy.h \
+		../../src/base/message_pump_mac.h \
+		../../src/base/message_pump_libevent.h \
+		../../src/base/message_pump_aurax11.h \
+		../../src/base/message_pump_glib.h \
+		../../src/base/message_pump_ozone.h \
+		../../src/base/memory/scoped_vector.h \
+		../../src/base/stl_util.h \
+		../../src/base/message_pump_gtk.h \
+		../../src/base/threading/thread_restrictions.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o message_loop_proxy_impl.o ../../src/base/message_loop/message_loop_proxy_impl.cc
 
-SkUtils.o: ../../src/third_party/skia/src/core/SkUtils.cpp ../../src/third_party/skia/include/core/SkUtils.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SkUtils.o ../../src/third_party/skia/src/core/SkUtils.cpp
+run_loop.o: ../../src/base/run_loop.cc ../../src/base/run_loop.h \
+		../../src/base/base_export.h \
+		../../src/base/callback.h \
+		../../src/base/callback_forward.h \
+		../../src/base/callback_internal.h \
+		../../src/base/memory/ref_counted.h \
+		../../src/base/atomic_ref_count.h \
+		../../src/base/atomicops.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/third_party/dynamic_annotations/dynamic_annotations.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/threading/thread_collision_warner.h \
+		../../src/base/memory/scoped_ptr.h \
+		../../src/base/move.h \
+		../../src/base/template_util.h \
+		../../src/base/memory/weak_ptr.h \
+		../../src/base/logging.h \
+		../../src/base/threading/thread_checker.h \
+		../../src/base/threading/thread_checker_impl.h \
+		../../src/base/synchronization/lock.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/base/threading/platform_thread.h \
+		../../src/base/time.h \
+		../../src/base/message_loop.h \
+		../../src/base/location.h \
+		../../src/base/message_loop_proxy.h \
+		../../src/base/message_loop/message_loop_proxy.h \
+		../../src/base/single_thread_task_runner.h \
+		../../src/base/sequenced_task_runner.h \
+		../../src/base/sequenced_task_runner_helpers.h \
+		../../src/base/task_runner.h \
+		../../src/base/message_pump.h \
+		../../src/base/observer_list.h \
+		../../src/base/pending_task.h \
+		../../src/base/tracking_info.h \
+		../../src/base/message_pump_win.h \
+		../../src/base/message_pump_dispatcher.h \
+		../../src/base/event_types.h \
+		../../src/base/message_pump_observer.h \
+		../../src/base/win/scoped_handle.h \
+		../../src/base/message_pump_io_ios.h \
+		../../src/base/mac/scoped_cffiledescriptorref.h \
+		../../src/base/mac/scoped_cftyperef.h \
+		../../src/base/memory/scoped_policy.h \
+		../../src/base/message_pump_mac.h \
+		../../src/base/message_pump_libevent.h \
+		../../src/base/message_pump_aurax11.h \
+		../../src/base/message_pump_glib.h \
+		../../src/base/message_pump_ozone.h \
+		../../src/base/memory/scoped_vector.h \
+		../../src/base/stl_util.h \
+		../../src/base/message_pump_gtk.h \
+		../../src/base/bind.h \
+		../../src/base/bind_internal.h \
+		../../src/base/bind_helpers.h \
+		../../src/base/memory/raw_scoped_refptr_mismatch_checker.h \
+		../../src/base/tuple.h \
+		../../src/base/bind_internal_win.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o run_loop.o ../../src/base/run_loop.cc
 
-SkPaint.o: ../../src/third_party/skia/src/core/SkPaint.cpp ../../src/third_party/skia/include/core/SkPaint.h \
-		../../src/third_party/skia/include/core/SkColor.h \
-		../../src/third_party/skia/include/core/SkScalar.h \
-		../../src/third_party/skia/include/core/SkFixed.h \
-		../../src/third_party/skia/include/core/SkTypes.h \
-		../../src/third_party/skia/include/core/skpreconfig.h \
-		../../src/third_party/skia/include/config/sk_stdint.h \
-		../../src/third_party/skia/include/config/SkUserConfig.h \
-		../../src/third_party/skia/include/core/SkPostConfig.h \
-		../../src/third_party/skia/include/core/SkFloatingPoint.h \
-		../../src/third_party/skia/include/core/SkFloatBits.h \
-		../../src/third_party/skia/include/core/SkDrawLooper.h \
-		../../src/third_party/skia/include/core/SkFlattenable.h \
-		../../src/third_party/skia/include/core/SkRefCnt.h \
-		../../src/third_party/skia/include/core/SkThread.h \
-		../../src/third_party/skia/include/core/SkThread_platform.h \
-		../../src/third_party/skia/include/core/SkInstCnt.h \
-		../../src/third_party/skia/include/core/SkTArray.h \
-		../../src/third_party/skia/include/core/SkTemplates.h \
-		../../src/third_party/skia/include/core/SkXfermode.h \
-		../../src/third_party/skia/include/core/SkAnnotation.h \
-		../../src/third_party/skia/src/core/SkAutoKern.h \
-		../../src/third_party/skia/src/core/SkGlyph.h \
-		../../src/third_party/skia/include/core/SkMask.h \
-		../../src/third_party/skia/include/core/SkRect.h \
-		../../src/third_party/skia/include/core/SkPoint.h \
-		../../src/third_party/skia/include/core/SkMath.h \
-		../../src/third_party/skia/include/core/SkSize.h \
-		../../src/third_party/skia/include/core/SkColorFilter.h \
-		../../src/third_party/skia/include/core/SkData.h \
-		../../src/third_party/skia/include/core/SkDeviceProperties.h \
-		../../src/third_party/skia/include/core/SkFontLCDConfig.h \
-		../../src/third_party/skia/src/core/SkFontDescriptor.h \
-		../../src/third_party/skia/include/core/SkString.h \
-		../../src/third_party/skia/include/core/SkTypeface.h \
-		../../src/third_party/skia/include/core/SkAdvancedTypefaceMetrics.h \
-		../../src/third_party/skia/include/core/SkTDArray.h \
-		../../src/third_party/skia/include/core/SkTScopedPtr.h \
-		../../src/third_party/skia/include/core/SkWeakRefCnt.h \
-		../../src/third_party/skia/include/core/SkFontHost.h \
-		../../src/third_party/skia/src/core/SkGlyphCache.h \
-		../../src/third_party/skia/include/core/SkBitmap.h \
-		../../src/third_party/skia/include/core/Sk64.h \
-		../../src/third_party/skia/include/core/SkColorTable.h \
-		../../src/third_party/skia/include/core/SkChunkAlloc.h \
-		../../src/third_party/skia/src/core/SkDescriptor.h \
-		../../src/third_party/skia/include/core/SkChecksum.h \
-		../../src/third_party/skia/src/core/SkScalerContext.h \
-		../../src/third_party/skia/src/core/SkMaskGamma.h \
-		../../src/third_party/skia/include/core/SkColorPriv.h \
-		../../src/third_party/skia/include/core/SkMatrix.h \
-		../../src/third_party/skia/include/core/SkImageFilter.h \
-		../../src/third_party/skia/include/core/SkMaskFilter.h \
-		../../src/third_party/skia/src/core/SkOrderedReadBuffer.h \
-		../../src/third_party/skia/src/core/SkBitmapHeap.h \
-		../../src/third_party/skia/src/core/SkTRefArray.h \
-		../../src/third_party/skia/include/core/SkFlattenableBuffers.h \
-		../../src/third_party/skia/include/core/SkPath.h \
-		../../src/third_party/skia/include/core/SkPicture.h \
-		../../src/third_party/skia/include/core/SkReader32.h \
-		../../src/third_party/skia/include/core/SkRegion.h \
-		../../src/third_party/skia/include/core/SkRRect.h \
-		../../src/third_party/skia/src/core/SkOrderedWriteBuffer.h \
-		../../src/third_party/skia/include/core/SkWriter32.h \
-		../../src/third_party/skia/src/core/SkPaintDefaults.h \
-		../../src/third_party/skia/include/core/SkPathEffect.h \
-		../../src/third_party/skia/include/core/SkStrokeRec.h \
-		../../src/third_party/skia/include/core/SkRasterizer.h \
-		../../src/third_party/skia/include/core/SkShader.h \
-		../../src/third_party/skia/include/core/SkStringUtils.h \
-		../../src/third_party/skia/src/core/SkStroke.h \
-		../../src/third_party/skia/src/core/SkTextFormatParams.h \
-		../../src/third_party/skia/src/core/SkTextToPathIter.h \
-		../../src/third_party/skia/include/core/SkUtils.h \
-		../../src/third_party/skia/include/core/SkDraw.h \
-		../../src/third_party/skia/include/core/SkCanvas.h \
-		../../src/third_party/skia/include/core/SkDeque.h \
-		../../src/third_party/skia/include/core/SkClipStack.h \
-		../../src/third_party/skia/include/core/SkScalarCompare.h \
-		../../src/third_party/skia/include/core/SkStream.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SkPaint.o ../../src/third_party/skia/src/core/SkPaint.cpp
+task_runner.o: ../../src/base/task_runner.cc ../../src/base/task_runner.h \
+		../../src/base/base_export.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/callback_forward.h \
+		../../src/base/memory/ref_counted.h \
+		../../src/base/atomic_ref_count.h \
+		../../src/base/atomicops.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/third_party/dynamic_annotations/dynamic_annotations.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/threading/thread_collision_warner.h \
+		../../src/base/time.h \
+		../../src/base/logging.h \
+		../../src/base/threading/post_task_and_reply_impl.h \
+		../../src/base/location.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o task_runner.o ../../src/base/task_runner.cc
+
+condition_variable_posix.o: ../../src/base/synchronization/condition_variable_posix.cc ../../src/base/synchronization/condition_variable.h \
+		../../src/build/build_config.h \
+		../../src/base/base_export.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/base/synchronization/lock.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/base/threading/platform_thread.h \
+		../../src/base/time.h \
+		../../src/base/atomicops.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/logging.h \
+		../../src/base/threading/thread_restrictions.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o condition_variable_posix.o ../../src/base/synchronization/condition_variable_posix.cc
+
+thread_id_name_manager.o: ../../src/base/threading/thread_id_name_manager.cc ../../src/base/threading/thread_id_name_manager.h \
+		../../src/base/base_export.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/synchronization/lock.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/base/threading/platform_thread.h \
+		../../src/base/time.h \
+		../../src/base/atomicops.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/logging.h \
+		../../src/base/memory/singleton.h \
+		../../src/base/at_exit.h \
+		../../src/base/callback.h \
+		../../src/base/callback_forward.h \
+		../../src/base/callback_internal.h \
+		../../src/base/memory/ref_counted.h \
+		../../src/base/atomic_ref_count.h \
+		../../src/base/third_party/dynamic_annotations/dynamic_annotations.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/threading/thread_collision_warner.h \
+		../../src/base/memory/scoped_ptr.h \
+		../../src/base/move.h \
+		../../src/base/template_util.h \
+		../../src/base/memory/aligned_memory.h \
+		../../src/base/threading/thread_restrictions.h \
+		../../src/base/string_util.h \
+		../../src/base/string16.h \
+		../../src/base/strings/string_piece.h \
+		../../src/base/hash_tables.h \
+		../../src/base/string_util_win.h \
+		../../src/base/string_util_posix.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o thread_id_name_manager.o ../../src/base/threading/thread_id_name_manager.cc
+
+tracked_objects.o: ../../src/base/tracked_objects.cc ../../src/base/tracked_objects.h \
+		../../src/base/base_export.h \
+		../../src/base/gtest_prod_util.h \
+		../../src/base/lazy_instance.h \
+		../../src/base/atomicops.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/logging.h \
+		../../src/base/memory/aligned_memory.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/third_party/dynamic_annotations/dynamic_annotations.h \
+		../../src/base/threading/thread_restrictions.h \
+		../../src/base/location.h \
+		../../src/base/profiler/alternate_timer.h \
+		../../src/base/profiler/tracked_time.h \
+		../../src/base/time.h \
+		../../src/base/synchronization/lock.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/base/threading/platform_thread.h \
+		../../src/base/threading/thread_local_storage.h \
+		../../src/base/tracking_info.h \
+		../../src/base/format_macros.h \
+		../../src/base/memory/scoped_ptr.h \
+		../../src/base/move.h \
+		../../src/base/template_util.h \
+		../../src/base/process_util.h \
+		../../src/base/files/file_path.h \
+		../../src/base/hash_tables.h \
+		../../src/base/string16.h \
+		../../src/base/strings/string_piece.h \
+		../../src/base/process.h \
+		../../src/base/posix/file_descriptor_shuffle.h \
+		../../src/base/stringprintf.h \
+		../../src/base/third_party/valgrind/memcheck.h \
+		../../src/base/third_party/valgrind/valgrind.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tracked_objects.o ../../src/base/tracked_objects.cc
+
+tracking_info.o: ../../src/base/tracking_info.cc ../../src/base/tracking_info.h \
+		../../src/base/time.h \
+		../../src/base/atomicops.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/base_export.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/tracked_objects.h \
+		../../src/base/gtest_prod_util.h \
+		../../src/base/lazy_instance.h \
+		../../src/base/logging.h \
+		../../src/base/memory/aligned_memory.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/third_party/dynamic_annotations/dynamic_annotations.h \
+		../../src/base/threading/thread_restrictions.h \
+		../../src/base/location.h \
+		../../src/base/profiler/alternate_timer.h \
+		../../src/base/profiler/tracked_time.h \
+		../../src/base/synchronization/lock.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/base/threading/platform_thread.h \
+		../../src/base/threading/thread_local_storage.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tracking_info.o ../../src/base/tracking_info.cc
+
+tracked_time.o: ../../src/base/profiler/tracked_time.cc ../../src/base/profiler/tracked_time.h \
+		../../src/base/base_export.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/time.h \
+		../../src/base/atomicops.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tracked_time.o ../../src/base/profiler/tracked_time.cc
+
+trace_event_impl.o: ../../src/base/debug/trace_event_impl.cc ../../src/base/debug/trace_event_impl.h \
+		../../src/base/callback.h \
+		../../src/base/callback_forward.h \
+		../../src/base/callback_internal.h \
+		../../src/base/base_export.h \
+		../../src/base/memory/ref_counted.h \
+		../../src/base/atomic_ref_count.h \
+		../../src/base/atomicops.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/third_party/dynamic_annotations/dynamic_annotations.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/threading/thread_collision_warner.h \
+		../../src/base/memory/scoped_ptr.h \
+		../../src/base/move.h \
+		../../src/base/template_util.h \
+		../../src/base/hash_tables.h \
+		../../src/base/string16.h \
+		../../src/base/memory/ref_counted_memory.h \
+		../../src/base/memory/scoped_vector.h \
+		../../src/base/stl_util.h \
+		../../src/base/observer_list.h \
+		../../src/base/memory/weak_ptr.h \
+		../../src/base/logging.h \
+		../../src/base/threading/thread_checker.h \
+		../../src/base/threading/thread_checker_impl.h \
+		../../src/base/synchronization/lock.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/base/threading/platform_thread.h \
+		../../src/base/time.h \
+		../../src/base/string_util.h \
+		../../src/base/strings/string_piece.h \
+		../../src/base/string_util_win.h \
+		../../src/base/string_util_posix.h \
+		../../src/base/synchronization/condition_variable.h \
+		../../src/base/threading/thread.h \
+		../../src/base/message_loop.h \
+		../../src/base/location.h \
+		../../src/base/message_loop_proxy.h \
+		../../src/base/message_loop/message_loop_proxy.h \
+		../../src/base/single_thread_task_runner.h \
+		../../src/base/sequenced_task_runner.h \
+		../../src/base/sequenced_task_runner_helpers.h \
+		../../src/base/task_runner.h \
+		../../src/base/message_pump.h \
+		../../src/base/pending_task.h \
+		../../src/base/tracking_info.h \
+		../../src/base/message_pump_win.h \
+		../../src/base/message_pump_dispatcher.h \
+		../../src/base/event_types.h \
+		../../src/base/message_pump_observer.h \
+		../../src/base/win/scoped_handle.h \
+		../../src/base/message_pump_io_ios.h \
+		../../src/base/mac/scoped_cffiledescriptorref.h \
+		../../src/base/mac/scoped_cftyperef.h \
+		../../src/base/memory/scoped_policy.h \
+		../../src/base/message_pump_mac.h \
+		../../src/base/message_pump_libevent.h \
+		../../src/base/message_pump_aurax11.h \
+		../../src/base/message_pump_glib.h \
+		../../src/base/message_pump_ozone.h \
+		../../src/base/message_pump_gtk.h \
+		../../src/base/timer.h \
+		../../src/base/bind.h \
+		../../src/base/bind_internal.h \
+		../../src/base/bind_helpers.h \
+		../../src/base/memory/raw_scoped_refptr_mismatch_checker.h \
+		../../src/base/tuple.h \
+		../../src/base/bind_internal_win.h \
+		../../src/base/debug/leak_annotations.h \
+		../../src/base/debug/trace_event.h \
+		../../src/base/format_macros.h \
+		../../src/base/lazy_instance.h \
+		../../src/base/memory/aligned_memory.h \
+		../../src/base/threading/thread_restrictions.h \
+		../../src/base/memory/singleton.h \
+		../../src/base/at_exit.h \
+		../../src/base/process_util.h \
+		../../src/base/files/file_path.h \
+		../../src/base/process.h \
+		../../src/base/posix/file_descriptor_shuffle.h \
+		../../src/base/stringprintf.h \
+		../../src/base/strings/string_split.h \
+		../../src/base/strings/string_tokenizer.h \
+		../../src/base/synchronization/cancellation_flag.h \
+		../../src/base/synchronization/waitable_event.h \
+		../../src/base/sys_info.h \
+		../../src/base/threading/thread_id_name_manager.h \
+		../../src/base/threading/thread_local.h \
+		../../src/base/utf_string_conversions.h \
+		../../src/base/strings/utf_string_conversions.h \
+		../../src/base/debug/trace_event_win.h \
+		../../src/base/win/event_trace_provider.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o trace_event_impl.o ../../src/base/debug/trace_event_impl.cc
+
+lazy_instance.o: ../../src/base/lazy_instance.cc ../../src/base/lazy_instance.h \
+		../../src/base/atomicops.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/base_export.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/logging.h \
+		../../src/base/memory/aligned_memory.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/third_party/dynamic_annotations/dynamic_annotations.h \
+		../../src/base/threading/thread_restrictions.h \
+		../../src/base/at_exit.h \
+		../../src/base/callback.h \
+		../../src/base/callback_forward.h \
+		../../src/base/callback_internal.h \
+		../../src/base/memory/ref_counted.h \
+		../../src/base/atomic_ref_count.h \
+		../../src/base/threading/thread_collision_warner.h \
+		../../src/base/memory/scoped_ptr.h \
+		../../src/base/move.h \
+		../../src/base/template_util.h \
+		../../src/base/synchronization/lock.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/base/threading/platform_thread.h \
+		../../src/base/time.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o lazy_instance.o ../../src/base/lazy_instance.cc
+
+thread_task_runner_handle.o: ../../src/base/thread_task_runner_handle.cc ../../src/base/thread_task_runner_handle.h \
+		../../src/base/base_export.h \
+		../../src/base/memory/ref_counted.h \
+		../../src/base/atomic_ref_count.h \
+		../../src/base/atomicops.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/third_party/dynamic_annotations/dynamic_annotations.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/threading/thread_collision_warner.h \
+		../../src/base/lazy_instance.h \
+		../../src/base/logging.h \
+		../../src/base/memory/aligned_memory.h \
+		../../src/base/threading/thread_restrictions.h \
+		../../src/base/single_thread_task_runner.h \
+		../../src/base/sequenced_task_runner.h \
+		../../src/base/sequenced_task_runner_helpers.h \
+		../../src/base/task_runner.h \
+		../../src/base/callback_forward.h \
+		../../src/base/time.h \
+		../../src/base/threading/thread_local.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o thread_task_runner_handle.o ../../src/base/thread_task_runner_handle.cc
+
+alias.o: ../../src/base/debug/alias.cc ../../src/base/debug/alias.h \
+		../../src/base/base_export.h \
+		../../src/build/build_config.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o alias.o ../../src/base/debug/alias.cc
+
+statistics_recorder.o: ../../src/base/metrics/statistics_recorder.cc ../../src/base/metrics/statistics_recorder.h \
+		../../src/base/base_export.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/gtest_prod_util.h \
+		../../src/base/lazy_instance.h \
+		../../src/base/atomicops.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/logging.h \
+		../../src/base/memory/aligned_memory.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/third_party/dynamic_annotations/dynamic_annotations.h \
+		../../src/base/threading/thread_restrictions.h \
+		../../src/base/at_exit.h \
+		../../src/base/callback.h \
+		../../src/base/callback_forward.h \
+		../../src/base/callback_internal.h \
+		../../src/base/memory/ref_counted.h \
+		../../src/base/atomic_ref_count.h \
+		../../src/base/threading/thread_collision_warner.h \
+		../../src/base/memory/scoped_ptr.h \
+		../../src/base/move.h \
+		../../src/base/template_util.h \
+		../../src/base/synchronization/lock.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/base/threading/platform_thread.h \
+		../../src/base/time.h \
+		../../src/base/debug/leak_annotations.h \
+		../../src/base/metrics/histogram.h \
+		../../src/base/metrics/bucket_ranges.h \
+		../../src/base/metrics/histogram_base.h \
+		../../src/base/metrics/histogram_samples.h \
+		../../src/base/stringprintf.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o statistics_recorder.o ../../src/base/metrics/statistics_recorder.cc
+
+histogram.o: ../../src/base/metrics/histogram.cc ../../src/base/metrics/histogram.h \
+		../../src/base/atomicops.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/base_export.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/gtest_prod_util.h \
+		../../src/base/logging.h \
+		../../src/base/memory/scoped_ptr.h \
+		../../src/base/move.h \
+		../../src/base/template_util.h \
+		../../src/base/metrics/bucket_ranges.h \
+		../../src/base/metrics/histogram_base.h \
+		../../src/base/time.h \
+		../../src/base/metrics/histogram_samples.h \
+		../../src/base/debug/alias.h \
+		../../src/base/metrics/sample_vector.h \
+		../../src/base/metrics/statistics_recorder.h \
+		../../src/base/lazy_instance.h \
+		../../src/base/memory/aligned_memory.h \
+		../../src/base/third_party/dynamic_annotations/dynamic_annotations.h \
+		../../src/base/threading/thread_restrictions.h \
+		../../src/base/pickle.h \
+		../../src/base/string16.h \
+		../../src/base/string_util.h \
+		../../src/base/strings/string_piece.h \
+		../../src/base/hash_tables.h \
+		../../src/base/string_util_win.h \
+		../../src/base/string_util_posix.h \
+		../../src/base/stringprintf.h \
+		../../src/base/synchronization/lock.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/base/threading/platform_thread.h \
+		../../src/base/values.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o histogram.o ../../src/base/metrics/histogram.cc
+
+histogram_base.o: ../../src/base/metrics/histogram_base.cc ../../src/base/metrics/histogram_base.h \
+		../../src/base/base_export.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/memory/scoped_ptr.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/move.h \
+		../../src/base/template_util.h \
+		../../src/base/time.h \
+		../../src/base/atomicops.h \
+		../../src/base/atomicops_internals_tsan.h \
+		../../src/base/atomicops_internals_x86_msvc.h \
+		../../src/base/atomicops_internals_mac.h \
+		../../src/base/atomicops_internals_gcc.h \
+		../../src/base/atomicops_internals_x86_gcc.h \
+		../../src/base/atomicops_internals_mips_gcc.h \
+		../../src/base/atomicops_internals_atomicword_compat.h \
+		../../src/base/logging.h \
+		../../src/base/json/json_string_value_serializer.h \
+		../../src/base/files/file_path.h \
+		../../src/base/hash_tables.h \
+		../../src/base/string16.h \
+		../../src/base/strings/string_piece.h \
+		../../src/base/values.h \
+		../../src/base/metrics/histogram.h \
+		../../src/base/gtest_prod_util.h \
+		../../src/base/metrics/bucket_ranges.h \
+		../../src/base/metrics/histogram_samples.h \
+		../../src/base/metrics/sparse_histogram.h \
+		../../src/base/metrics/sample_map.h \
+		../../src/base/synchronization/lock.h \
+		../../src/base/synchronization/lock_impl.h \
+		../../src/base/threading/platform_thread.h \
+		../../src/base/pickle.h \
+		../../src/base/process_util.h \
+		../../src/base/process.h \
+		../../src/base/posix/file_descriptor_shuffle.h \
+		../../src/base/stringprintf.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o histogram_base.o ../../src/base/metrics/histogram_base.cc
+
+json_string_value_serializer.o: ../../src/base/json/json_string_value_serializer.cc ../../src/base/json/json_string_value_serializer.h \
+		../../src/base/base_export.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/files/file_path.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/hash_tables.h \
+		../../src/base/string16.h \
+		../../src/base/strings/string_piece.h \
+		../../src/base/values.h \
+		../../src/base/memory/scoped_ptr.h \
+		../../src/base/move.h \
+		../../src/base/template_util.h \
+		../../src/base/json/json_reader.h \
+		../../src/base/json/json_writer.h \
+		../../src/base/logging.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o json_string_value_serializer.o ../../src/base/json/json_string_value_serializer.cc
+
+json_reader.o: ../../src/base/json/json_reader.cc ../../src/base/json/json_reader.h \
+		../../src/base/base_export.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/memory/scoped_ptr.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/move.h \
+		../../src/base/template_util.h \
+		../../src/base/strings/string_piece.h \
+		../../src/base/hash_tables.h \
+		../../src/base/string16.h \
+		../../src/base/json/json_parser.h \
+		../../src/base/gtest_prod_util.h \
+		../../src/base/logging.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o json_reader.o ../../src/base/json/json_reader.cc
+
+json_writer.o: ../../src/base/json/json_writer.cc ../../src/base/json/json_writer.h \
+		../../src/base/base_export.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/json/string_escape.h \
+		../../src/base/string16.h \
+		../../src/base/logging.h \
+		../../src/base/stringprintf.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/strings/string_number_conversions.h \
+		../../src/base/strings/string_piece.h \
+		../../src/base/hash_tables.h \
+		../../src/base/utf_string_conversions.h \
+		../../src/base/strings/utf_string_conversions.h \
+		../../src/base/values.h \
+		../../src/base/memory/scoped_ptr.h \
+		../../src/base/move.h \
+		../../src/base/template_util.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o json_writer.o ../../src/base/json/json_writer.cc
+
+string_escape.o: ../../src/base/json/string_escape.cc ../../src/base/json/string_escape.h \
+		../../src/base/base_export.h \
+		../../src/base/string16.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/string_util.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/strings/string_piece.h \
+		../../src/base/hash_tables.h \
+		../../src/base/string_util_win.h \
+		../../src/base/string_util_posix.h \
+		../../src/base/logging.h \
+		../../src/base/stringprintf.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o string_escape.o ../../src/base/json/string_escape.cc
+
+json_parser.o: ../../src/base/json/json_parser.cc ../../src/base/json/json_parser.h \
+		../../src/base/base_export.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/base/compiler_specific.h \
+		../../src/base/json/json_reader.h \
+		../../src/base/memory/scoped_ptr.h \
+		../../src/base/move.h \
+		../../src/base/template_util.h \
+		../../src/base/strings/string_piece.h \
+		../../src/base/hash_tables.h \
+		../../src/base/string16.h \
+		../../src/base/gtest_prod_util.h \
+		../../src/base/float_util.h \
+		../../src/base/logging.h \
+		../../src/base/string_util.h \
+		../../src/base/string_util_win.h \
+		../../src/base/string_util_posix.h \
+		../../src/base/stringprintf.h \
+		../../src/base/strings/string_number_conversions.h \
+		../../src/base/strings/utf_string_conversion_utils.h \
+		../../src/base/third_party/icu/icu_utf.h \
+		../../src/base/utf_string_conversions.h \
+		../../src/base/strings/utf_string_conversions.h \
+		../../src/base/values.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o json_parser.o ../../src/base/json/json_parser.cc
+
+vector2d.o: ../../src/ui/gfx/vector2d.cc ../../src/ui/gfx/vector2d.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/ui/base/ui_export.h \
+		../../src/ui/gfx/vector2d_f.h \
+		../../src/base/stringprintf.h \
+		../../src/base/base_export.h \
+		../../src/base/compiler_specific.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o vector2d.o ../../src/ui/gfx/vector2d.cc
+
+vector2d_conversions.o: ../../src/ui/gfx/vector2d_conversions.cc ../../src/ui/gfx/vector2d_conversions.h \
+		../../src/ui/gfx/vector2d.h \
+		../../src/base/basictypes.h \
+		../../src/base/port.h \
+		../../src/build/build_config.h \
+		../../src/ui/base/ui_export.h \
+		../../src/ui/gfx/vector2d_f.h \
+		../../src/ui/gfx/safe_integer_conversions.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o vector2d_conversions.o ../../src/ui/gfx/vector2d_conversions.cc
+
+vector2d_f.o: ../../src/ui/gfx/vector2d_f.cc ../../src/ui/gfx/vector2d_f.h \
+		../../src/ui/base/ui_export.h \
+		../../src/base/stringprintf.h \
+		../../src/base/base_export.h \
+		../../src/base/compiler_specific.h \
+		../../src/build/build_config.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o vector2d_f.o ../../src/ui/gfx/vector2d_f.cc
+
+vector3d_f.o: ../../src/ui/gfx/vector3d_f.cc ../../src/ui/gfx/vector3d_f.h \
+		../../src/ui/base/ui_export.h \
+		../../src/ui/gfx/vector2d_f.h \
+		../../src/base/stringprintf.h \
+		../../src/base/base_export.h \
+		../../src/base/compiler_specific.h \
+		../../src/build/build_config.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o vector3d_f.o ../../src/ui/gfx/vector3d_f.cc
 
 ####### Install
 

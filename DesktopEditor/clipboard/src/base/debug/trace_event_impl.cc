@@ -123,7 +123,7 @@ class TraceBufferRingBuffer : public TraceBuffer {
   }
 
   virtual const TraceEvent& NextEvent() OVERRIDE {
-    DCHECK(HasMoreEvents());
+    //DCHECK(HasMoreEvents());
 
     size_t next = oldest_event_index_;
     oldest_event_index_ = NextIndex(oldest_event_index_);
@@ -151,7 +151,7 @@ class TraceBufferRingBuffer : public TraceBuffer {
   }
 
   virtual const TraceEvent& GetEventAt(size_t index) const OVERRIDE {
-    DCHECK(index < logged_events_.size());
+    //DCHECK(index < logged_events_.size());
     return logged_events_[index];
   }
 
@@ -190,7 +190,7 @@ class TraceBufferVector : public TraceBuffer {
   }
 
   virtual const TraceEvent& NextEvent() OVERRIDE {
-    DCHECK(HasMoreEvents());
+    //DCHECK(HasMoreEvents());
     return GetEventAt(current_iteration_index_++);
   }
 
@@ -213,7 +213,7 @@ class TraceBufferVector : public TraceBuffer {
   }
 
   virtual const TraceEvent& GetEventAt(size_t index) const OVERRIDE {
-    DCHECK(index < logged_events_.size());
+    //DCHECK(index < logged_events_.size());
     return logged_events_[index];
   }
 
@@ -236,7 +236,7 @@ class TraceBufferDiscardsEvents : public TraceBuffer {
   virtual bool HasMoreEvents() const OVERRIDE { return false; }
 
   virtual const TraceEvent& NextEvent() OVERRIDE {
-    NOTREACHED();
+    //NOTREACHED();
     return *static_cast<TraceEvent*>(NULL);
   }
 
@@ -251,7 +251,7 @@ class TraceBufferDiscardsEvents : public TraceBuffer {
   virtual size_t Size() const OVERRIDE { return 0; }
 
   virtual const TraceEvent& GetEventAt(size_t index) const OVERRIDE {
-    NOTREACHED();
+    //NOTREACHED();
     return *static_cast<TraceEvent*>(NULL);
   }
 };
@@ -273,7 +273,7 @@ void CopyTraceEventParameter(char** buffer,
                              const char* end) {
   if (*member) {
     size_t written = strlcpy(*buffer, *member, end - *buffer) + 1;
-    DCHECK_LE(static_cast<int>(written), end - *buffer);
+    //DCHECK_LE(static_cast<int>(written), end - *buffer);
     *member = *buffer;
     *buffer += written;
   }
@@ -372,7 +372,7 @@ TraceEvent::TraceEvent(
       if (arg_is_copy[i])
         CopyTraceEventParameter(&ptr, &arg_values_[i].as_string, end);
     }
-    DCHECK_EQ(end, ptr) << "Overrun by " << ptr - end;
+    //DCHECK_EQ(end, ptr) << "Overrun by " << ptr - end;
   }
 }
 
@@ -471,7 +471,7 @@ void TraceEvent::AppendValueAsJSON(unsigned char type,
       *out += "\"";
       break;
     default:
-      NOTREACHED() << "Don't know how to print this value";
+      //NOTREACHED() << "Don't know how to print this value";
       break;
   }
 }
@@ -480,7 +480,7 @@ void TraceEvent::AppendAsJSON(std::string* out) const {
   int64 time_int64 = timestamp_.ToInternalValue();
   int process_id = TraceLog::GetInstance()->process_id();
   // Category group checked at category creation time.
-  DCHECK(!strchr(name_, '"'));
+  //DCHECK(!strchr(name_, '"'));
   StringAppendF(out,
       "{\"cat\":\"%s\",\"pid\":%i,\"tid\":%i,\"ts\":%" PRId64 ","
       "\"ph\":\"%c\",\"name\":\"%s\",\"args\":{",
@@ -678,7 +678,7 @@ void TraceSamplingThread::RegisterSampleBucket(
     TRACE_EVENT_API_ATOMIC_WORD* bucket,
     const char* const name,
     TraceSampleCallback callback) {
-  DCHECK(!thread_running_);
+  //DCHECK(!thread_running_);
   sample_buckets_.push_back(TraceBucketData(bucket, name, callback));
 }
 
@@ -759,7 +759,7 @@ TraceLog::Options TraceLog::TraceOptionsFromString(const std::string& options) {
     } else if (*iter == kRecordContinuously) {
       ret |= RECORD_CONTINUOUSLY;
     } else {
-      NOTREACHED();  // Unknown option provided.
+      //NOTREACHED();  // Unknown option provided.
     }
   }
   if (!(ret & RECORD_UNTIL_FULL) && !(ret & RECORD_CONTINUOUSLY))
@@ -804,7 +804,7 @@ const unsigned char* TraceLog::GetCategoryGroupEnabled(
     const char* category_group) {
   TraceLog* tracelog = GetInstance();
   if (!tracelog) {
-    DCHECK(!g_category_group_enabled[g_category_already_shutdown]);
+    //DCHECK(!g_category_group_enabled[g_category_already_shutdown]);
     return &g_category_group_enabled[g_category_already_shutdown];
   }
   return tracelog->GetCategoryGroupEnabledInternal(category_group);
@@ -817,10 +817,10 @@ const char* TraceLog::GetCategoryGroupName(
   uintptr_t category_begin =
       reinterpret_cast<uintptr_t>(g_category_group_enabled);
   uintptr_t category_ptr = reinterpret_cast<uintptr_t>(category_group_enabled);
-  DCHECK(category_ptr >= category_begin &&
-         category_ptr < reinterpret_cast<uintptr_t>(
-             g_category_group_enabled + MAX_CATEGORY_GROUPS)) <<
-      "out of bounds category pointer";
+  //DCHECK(category_ptr >= category_begin &&
+  //       category_ptr < reinterpret_cast<uintptr_t>(
+  //           g_category_group_enabled + MAX_CATEGORY_GROUPS)) <<
+  //    "out of bounds category pointer";
   uintptr_t category_index =
       (category_ptr - category_begin) / sizeof(g_category_group_enabled[0]);
   return g_category_groups[category_index];
@@ -840,8 +840,8 @@ void TraceLog::EnableIncludedCategoryGroups() {
 
 const unsigned char* TraceLog::GetCategoryGroupEnabledInternal(
     const char* category_group) {
-  DCHECK(!strchr(category_group, '"')) <<
-      "Category groups may not contain double quote";
+  //DCHECK(!strchr(category_group, '"')) <<
+  //    "Category groups may not contain double quote";
   AutoLock lock(lock_);
 
   unsigned char* category_group_enabled = NULL;
@@ -855,8 +855,8 @@ const unsigned char* TraceLog::GetCategoryGroupEnabledInternal(
 
   if (!category_group_enabled) {
     // Create a new category group
-    DCHECK(g_category_index < MAX_CATEGORY_GROUPS) <<
-        "must increase MAX_CATEGORY_GROUPS";
+    //DCHECK(g_category_index < MAX_CATEGORY_GROUPS) <<
+    //    "must increase MAX_CATEGORY_GROUPS";
     if (g_category_index < MAX_CATEGORY_GROUPS) {
       int new_index = g_category_index++;
       // Don't hold on to the category_group pointer, so that we can create
@@ -865,7 +865,7 @@ const unsigned char* TraceLog::GetCategoryGroupEnabledInternal(
       const char* new_group = strdup(category_group);
       ANNOTATE_LEAKING_OBJECT_PTR(new_group);
       g_category_groups[new_index] = new_group;
-      DCHECK(!g_category_group_enabled[new_index]);
+      //DCHECK(!g_category_group_enabled[new_index]);
       if (enable_count_) {
         // Note that if both included and excluded patterns in the
         // CategoryFilter are empty, we exclude nothing,
@@ -899,8 +899,8 @@ void TraceLog::SetEnabled(const CategoryFilter& category_filter,
 
   if (enable_count_++ > 0) {
     if (options != trace_options_) {
-      DLOG(ERROR) << "Attemting to re-enable tracing with a different "
-                  << "set of options.";
+      //DLOG(ERROR) << "Attemting to re-enable tracing with a different "
+      //            << "set of options.";
     }
 
     // Tracing is already enabled, so just merge in enabled categories.
@@ -922,8 +922,8 @@ void TraceLog::SetEnabled(const CategoryFilter& category_filter,
   }
 
   if (dispatching_to_observer_list_) {
-    DLOG(ERROR) <<
-        "Cannot manipulate TraceLog::Enabled state from an observer.";
+    //DLOG(ERROR) <<
+    //    "Cannot manipulate TraceLog::Enabled state from an observer.";
     return;
   }
 
@@ -951,26 +951,26 @@ void TraceLog::SetEnabled(const CategoryFilter& category_filter,
         Bind(&TraceSamplingThread::DefaultSampleCallback));
     if (!PlatformThread::Create(
           0, sampling_thread_.get(), &sampling_thread_handle_)) {
-      DCHECK(false) << "failed to create thread";
+      //DCHECK(false) << "failed to create thread";
     }
   }
 }
 
 const CategoryFilter& TraceLog::GetCurrentCategoryFilter() {
   AutoLock lock(lock_);
-  DCHECK(enable_count_ > 0);
+  //DCHECK(enable_count_ > 0);
   return category_filter_;
 }
 
 void TraceLog::SetDisabled() {
   AutoLock lock(lock_);
-  DCHECK(enable_count_ > 0);
+  //DCHECK(enable_count_ > 0);
   if (--enable_count_ != 0)
     return;
 
   if (dispatching_to_observer_list_) {
-    DLOG(ERROR)
-        << "Cannot manipulate TraceLog::Enabled state from an observer.";
+    //DLOG(ERROR)
+    //    << "Cannot manipulate TraceLog::Enabled state from an observer.";
     return;
   }
 
@@ -1089,7 +1089,7 @@ void TraceLog::AddTraceEventWithThreadIdAndTimestamp(
     const unsigned long long* arg_values,
     scoped_ptr<ConvertableToTraceFormat> convertable_values[],
     unsigned char flags) {
-  DCHECK(name);
+  //DCHECK(name);
 
   TimeDelta duration;
   if (phase == TRACE_EVENT_PHASE_END && trace_options_ & ECHO_TO_VLOG) {
@@ -1149,6 +1149,7 @@ void TraceLog::AddTraceEventWithThreadIdAndTimestamp(
       }
     }
 
+    /*
     if (trace_options_ & ECHO_TO_VLOG) {
       std::string thread_name = thread_names_[thread_id];
       if (thread_colors_.find(thread_name) == thread_colors_.end())
@@ -1172,8 +1173,9 @@ void TraceLog::AddTraceEventWithThreadIdAndTimestamp(
       if (phase == TRACE_EVENT_PHASE_END)
         log << base::StringPrintf(" (%.3f ms)", duration.InMillisecondsF());
 
-      VLOG(0) << log.str() << "\x1b[0;m";
+      //VLOG(0) << log.str() << "\x1b[0;m";
     }
+    */
 
     logged_events_->AddEvent(TraceEvent(thread_id,
         now, phase, category_group_enabled, name, id,
@@ -1309,15 +1311,15 @@ bool CategoryFilter::IsEmptyOrContainsLeadingOrTrailingWhitespace(
 
 static bool DoesCategoryGroupContainCategory(const char* category_group,
                                              const char* category) {
-  DCHECK(category);
+  //DCHECK(category);
   CStringTokenizer category_group_tokens(category_group,
                           category_group + strlen(category_group), ",");
   while (category_group_tokens.GetNext()) {
     std::string category_group_token = category_group_tokens.token();
     // Don't allow empty tokens, nor tokens with leading or trailing space.
-    DCHECK(!CategoryFilter::IsEmptyOrContainsLeadingOrTrailingWhitespace(
-        category_group_token))
-        << "Disallowed category string";
+   // DCHECK(!CategoryFilter::IsEmptyOrContainsLeadingOrTrailingWhitespace(
+   //     category_group_token))
+   //     << "Disallowed category string";
     if (MatchPattern(category_group_token.c_str(), category))
       return true;
   }

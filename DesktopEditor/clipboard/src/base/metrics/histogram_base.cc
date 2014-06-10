@@ -32,7 +32,9 @@ std::string HistogramTypeToString(HistogramType type) {
     case SPARSE_HISTOGRAM:
       return "SPARSE_HISTOGRAM";
     default:
-      NOTREACHED();
+      //NOTREACHED();
+      break;
+
   }
   return "UNKNOWN";
 }
@@ -64,8 +66,8 @@ void DeserializeHistogramAndAddSamples(PickleIterator* iter) {
     return;
 
   if (histogram->flags() & base::HistogramBase::kIPCSerializationSourceFlag) {
-    DVLOG(1) << "Single process mode, histogram observed and not copied: "
-             << histogram->histogram_name();
+    //DVLOG(1) << "Single process mode, histogram observed and not copied: "
+    //         << histogram->histogram_name();
     return;
   }
   histogram->AddSamplesFromPickle(iter);

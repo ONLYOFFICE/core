@@ -90,7 +90,7 @@ std::string JSONReader::ErrorCodeToString(JsonParseError error_code) {
     case JSON_UNQUOTED_DICTIONARY_KEY:
       return kUnquotedDictionaryKey;
     default:
-      NOTREACHED();
+      //NOTREACHED();
       return std::string();
   }
 }

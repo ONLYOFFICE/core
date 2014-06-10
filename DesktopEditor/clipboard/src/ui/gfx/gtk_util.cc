@@ -11,8 +11,8 @@
 #include "base/basictypes.h"
 #include "base/command_line.h"
 #include "base/memory/scoped_ptr.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkUnPreMultiply.h"
+//#include "third_party/skia/include/core/SkBitmap.h"
+//#include "third_party/skia/include/core/SkUnPreMultiply.h"
 #include "ui/gfx/rect.h"
 
 namespace {
@@ -83,6 +83,7 @@ void GdkInitFromCommandLine(const CommandLine& command_line) {
   CommonInitFromCommandLine(command_line, gdk_init);
 }
 
+/*
 GdkPixbuf* GdkPixbufFromSkBitmap(const SkBitmap& bitmap) {
   if (bitmap.isNull())
     return NULL;
@@ -125,7 +126,7 @@ GdkPixbuf* GdkPixbufFromSkBitmap(const SkBitmap& bitmap) {
 
   return pixbuf;
 }
-
+*/
 void SubtractRectanglesFromRegion(GdkRegion* region,
                                   const std::vector<Rect>& cutouts) {
   for (size_t i = 0; i < cutouts.size(); ++i) {

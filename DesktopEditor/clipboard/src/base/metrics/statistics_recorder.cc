@@ -54,7 +54,7 @@ HistogramBase* StatisticsRecorder::RegisterOrDeleteDuplicate(
   // Callers are responsible for not calling RegisterOrDeleteDuplicate(ptr)
   // twice if (lock_ == NULL) || (!histograms_).
   if (lock_ == NULL) {
-    ANNOTATE_LEAKING_OBJECT_PTR(histogram);  // see crbug.com/79322
+    //ANNOTATE_LEAKING_OBJECT_PTR(histogram);  // see crbug.com/79322
     return histogram;
   }
 
@@ -69,7 +69,7 @@ HistogramBase* StatisticsRecorder::RegisterOrDeleteDuplicate(
       HistogramMap::iterator it = histograms_->find(name);
       if (histograms_->end() == it) {
         (*histograms_)[name] = histogram;
-        ANNOTATE_LEAKING_OBJECT_PTR(histogram);  // see crbug.com/79322
+        //ANNOTATE_LEAKING_OBJECT_PTR(histogram);  // see crbug.com/79322
         ++number_of_histograms_;
         histogram_to_return = histogram;
       } else if (histogram == it->second) {
@@ -89,17 +89,17 @@ HistogramBase* StatisticsRecorder::RegisterOrDeleteDuplicate(
 // static
 const BucketRanges* StatisticsRecorder::RegisterOrDeleteDuplicateRanges(
     const BucketRanges* ranges) {
-  DCHECK(ranges->HasValidChecksum());
+  //DCHECK(ranges->HasValidChecksum());
   scoped_ptr<const BucketRanges> ranges_deleter;
 
   if (lock_ == NULL) {
-    ANNOTATE_LEAKING_OBJECT_PTR(ranges);
+    //ANNOTATE_LEAKING_OBJECT_PTR(ranges);
     return ranges;
   }
 
   base::AutoLock auto_lock(*lock_);
   if (ranges_ == NULL) {
-    ANNOTATE_LEAKING_OBJECT_PTR(ranges);
+    //ANNOTATE_LEAKING_OBJECT_PTR(ranges);
     return ranges;
   }
 
@@ -108,7 +108,7 @@ const BucketRanges* StatisticsRecorder::RegisterOrDeleteDuplicateRanges(
   if (ranges_->end() == ranges_it) {
     // Add a new matching list to map.
     checksum_matching_list = new list<const BucketRanges*>();
-    ANNOTATE_LEAKING_OBJECT_PTR(checksum_matching_list);
+    //ANNOTATE_LEAKING_OBJECT_PTR(checksum_matching_list);
     (*ranges_)[ranges->checksum()] = checksum_matching_list;
   } else {
     checksum_matching_list = ranges_it->second;
@@ -228,7 +228,7 @@ void StatisticsRecorder::GetHistograms(Histograms* output) {
   for (HistogramMap::iterator it = histograms_->begin();
        histograms_->end() != it;
        ++it) {
-    DCHECK_EQ(it->first, it->second->histogram_name());
+    //DCHECK_EQ(it->first, it->second->histogram_name());
     output->push_back(it->second);
   }
 }
@@ -290,7 +290,7 @@ void StatisticsRecorder::GetSnapshot(const std::string& query,
 // of main(), and hence it is not thread safe.  It initializes globals to
 // provide support for all future calls.
 StatisticsRecorder::StatisticsRecorder() {
-  DCHECK(!histograms_);
+  //DCHECK(!histograms_);
   if (lock_ == NULL) {
     // This will leak on purpose. It's the only way to make sure we won't race
     // against the static uninitialization of the module while one of our
@@ -304,22 +304,22 @@ StatisticsRecorder::StatisticsRecorder() {
   histograms_ = new HistogramMap;
   ranges_ = new RangesMap;
 
-  if (VLOG_IS_ON(1))
-    AtExitManager::RegisterCallback(&DumpHistogramsToVlog, this);
+  //if (VLOG_IS_ON(1))
+  //  AtExitManager::RegisterCallback(&DumpHistogramsToVlog, this);
 }
 
 // static
 void StatisticsRecorder::DumpHistogramsToVlog(void* instance) {
-  DCHECK(VLOG_IS_ON(1));
+  //DCHECK(VLOG_IS_ON(1));
 
   StatisticsRecorder* me = reinterpret_cast<StatisticsRecorder*>(instance);
   string output;
   me->WriteGraph(std::string(), &output);
-  VLOG(1) << output;
+  //VLOG(1) << output;
 }
 
 StatisticsRecorder::~StatisticsRecorder() {
-  DCHECK(histograms_ && ranges_ && lock_);
+  //DCHECK(histograms_ && ranges_ && lock_);
 
   // Clean up.
   scoped_ptr<HistogramMap> histograms_deleter;

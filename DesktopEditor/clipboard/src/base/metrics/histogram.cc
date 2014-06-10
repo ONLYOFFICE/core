@@ -45,7 +45,7 @@ bool ReadHistogramArguments(PickleIterator* iter,
       !iter->ReadInt(declared_max) ||
       !iter->ReadUInt64(bucket_count) ||
       !iter->ReadUInt32(range_checksum)) {
-    DLOG(ERROR) << "Pickle error decoding Histogram: " << *histogram_name;
+    //DLOG(ERROR) << "Pickle error decoding Histogram: " << *histogram_name;
     return false;
   }
 
@@ -56,13 +56,13 @@ bool ReadHistogramArguments(PickleIterator* iter,
       *declared_max < *declared_min ||
       INT_MAX / sizeof(HistogramBase::Count) <= *bucket_count ||
       *bucket_count < 2) {
-    DLOG(ERROR) << "Values error decoding Histogram: " << histogram_name;
+    //DLOG(ERROR) << "Values error decoding Histogram: " << histogram_name;
     return false;
   }
 
   // We use the arguments to find or create the local version of the histogram
   // in this process, so we need to clear the IPC flag.
-  DCHECK(*flags & HistogramBase::kIPCSerializationSourceFlag);
+  //DCHECK(*flags & HistogramBase::kIPCSerializationSourceFlag);
   *flags &= ~HistogramBase::kIPCSerializationSourceFlag;
 
   return true;
@@ -91,7 +91,7 @@ HistogramBase* Histogram::FactoryGet(const string& name,
                                      int32 flags) {
   bool valid_arguments =
       InspectConstructionArguments(name, &minimum, &maximum, &bucket_count);
-  DCHECK(valid_arguments);
+  //DCHECK(valid_arguments);
 
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
   if (!histogram) {
@@ -109,8 +109,8 @@ HistogramBase* Histogram::FactoryGet(const string& name,
         StatisticsRecorder::RegisterOrDeleteDuplicate(tentative_histogram);
   }
 
-  DCHECK_EQ(HISTOGRAM, histogram->GetHistogramType());
-  CHECK(histogram->HasConstructionArguments(minimum, maximum, bucket_count));
+  //DCHECK_EQ(HISTOGRAM, histogram->GetHistogramType());
+  //CHECK(histogram->HasConstructionArguments(minimum, maximum, bucket_count));
   return histogram;
 }
 
@@ -145,7 +145,7 @@ void Histogram::InitializeBucketRanges(Sample minimum,
                                        Sample maximum,
                                        size_t bucket_count,
                                        BucketRanges* ranges) {
-  DCHECK_EQ(ranges->size(), bucket_count + 1);
+  //DCHECK_EQ(ranges->size(), bucket_count + 1);
   double log_max = log(static_cast<double>(maximum));
   double log_ratio;
   double log_next;
@@ -197,7 +197,7 @@ int Histogram::FindCorruption(const HistogramSamples& samples) const {
       if (delta > kCommonRaceBasedCountMismatch)
         inconsistencies |= COUNT_HIGH_ERROR;
     } else {
-      DCHECK_GT(0, delta);
+      //DCHECK_GT(0, delta);
       UMA_HISTOGRAM_COUNTS("Histogram.InconsistentCountLow", -delta);
       if (-delta > kCommonRaceBasedCountMismatch)
         inconsistencies |= COUNT_LOW_ERROR;
@@ -221,16 +221,16 @@ bool Histogram::InspectConstructionArguments(const string& name,
                                              size_t* bucket_count) {
   // Defensive code for backward compatibility.
   if (*minimum < 1) {
-    DVLOG(1) << "Histogram: " << name << " has bad minimum: " << *minimum;
+    //DVLOG(1) << "Histogram: " << name << " has bad minimum: " << *minimum;
     *minimum = 1;
   }
   if (*maximum >= kSampleType_MAX) {
-    DVLOG(1) << "Histogram: " << name << " has bad maximum: " << *maximum;
+    //DVLOG(1) << "Histogram: " << name << " has bad maximum: " << *maximum;
     *maximum = kSampleType_MAX - 1;
   }
   if (*bucket_count >= kBucketCount_MAX) {
-    DVLOG(1) << "Histogram: " << name << " has bad bucket_count: "
-             << *bucket_count;
+    //DVLOG(1) << "Histogram: " << name << " has bad bucket_count: "
+    //         << *bucket_count;
     *bucket_count = kBucketCount_MAX - 1;
   }
 
@@ -255,8 +255,8 @@ bool Histogram::HasConstructionArguments(Sample minimum,
 }
 
 void Histogram::Add(int value) {
-  DCHECK_EQ(0, ranges(0));
-  DCHECK_EQ(kSampleType_MAX, ranges(bucket_count_));
+  //DCHECK_EQ(0, ranges(0));
+  //DCHECK_EQ(kSampleType_MAX, ranges(bucket_count_));
 
   if (value > kSampleType_MAX - 1)
     value = kSampleType_MAX - 1;
@@ -290,7 +290,7 @@ void Histogram::WriteAscii(string* output) const {
 }
 
 bool Histogram::SerializeInfoImpl(Pickle* pickle) const {
-  DCHECK(bucket_ranges()->HasValidChecksum());
+  //DCHECK(bucket_ranges()->HasValidChecksum());
   return pickle->WriteString(histogram_name()) &&
       pickle->WriteInt(flags()) &&
       pickle->WriteInt(declared_min()) &&
@@ -326,7 +326,7 @@ bool Histogram::PrintEmptyBucket(size_t index) const {
 // buckets), so we need this to make it possible to see what is going on and
 // not have 0-graphical-height buckets.
 double Histogram::GetBucketSize(Count current, size_t i) const {
-  DCHECK_GT(ranges(i + 1), ranges(i));
+  //DCHECK_GT(ranges(i + 1), ranges(i));
   static const double kTransitionWidth = 5;
   double denominator = ranges(i + 1) - ranges(i);
   if (denominator > kTransitionWidth)
@@ -436,7 +436,7 @@ void Histogram::WriteAsciiImpl(bool graph_it,
     output->append(newline);
     past += current;
   }
-  DCHECK_EQ(sample_count, past);
+  //DCHECK_EQ(sample_count, past);
 }
 
 double Histogram::GetPeakBucketSize(const SampleVector& samples) const {
@@ -457,7 +457,7 @@ void Histogram::WriteAsciiHeader(const SampleVector& samples,
                 histogram_name().c_str(),
                 sample_count);
   if (0 == sample_count) {
-    DCHECK_EQ(samples.sum(), 0);
+    //DCHECK_EQ(samples.sum(), 0);
   } else {
     double average = static_cast<float>(samples.sum()) / sample_count;
 
@@ -539,7 +539,7 @@ HistogramBase* LinearHistogram::FactoryGetWithRangeDescription(
       const DescriptionPair descriptions[]) {
   bool valid_arguments = Histogram::InspectConstructionArguments(
       name, &minimum, &maximum, &bucket_count);
-  DCHECK(valid_arguments);
+  //DCHECK(valid_arguments);
 
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
   if (!histogram) {
@@ -566,8 +566,8 @@ HistogramBase* LinearHistogram::FactoryGetWithRangeDescription(
         StatisticsRecorder::RegisterOrDeleteDuplicate(tentative_histogram);
   }
 
-  DCHECK_EQ(LINEAR_HISTOGRAM, histogram->GetHistogramType());
-  CHECK(histogram->HasConstructionArguments(minimum, maximum, bucket_count));
+  //DCHECK_EQ(LINEAR_HISTOGRAM, histogram->GetHistogramType());
+  //CHECK(histogram->HasConstructionArguments(minimum, maximum, bucket_count));
   return histogram;
 }
 
@@ -584,7 +584,7 @@ LinearHistogram::LinearHistogram(const string& name,
 }
 
 double LinearHistogram::GetBucketSize(Count current, size_t i) const {
-  DCHECK_GT(ranges(i + 1), ranges(i));
+  //DCHECK_GT(ranges(i + 1), ranges(i));
   // Adjacent buckets with different widths would have "surprisingly" many (few)
   // samples in a histogram if we didn't normalize this way.
   double denominator = ranges(i + 1) - ranges(i);
@@ -608,7 +608,7 @@ void LinearHistogram::InitializeBucketRanges(Sample minimum,
                                              Sample maximum,
                                              size_t bucket_count,
                                              BucketRanges* ranges) {
-  DCHECK_EQ(ranges->size(), bucket_count + 1);
+  //DCHECK_EQ(ranges->size(), bucket_count + 1);
   double min = minimum;
   double max = maximum;
   size_t i;
@@ -665,7 +665,7 @@ HistogramBase* BooleanHistogram::FactoryGet(const string& name, int32 flags) {
         StatisticsRecorder::RegisterOrDeleteDuplicate(tentative_histogram);
   }
 
-  DCHECK_EQ(BOOLEAN_HISTOGRAM, histogram->GetHistogramType());
+  //DCHECK_EQ(BOOLEAN_HISTOGRAM, histogram->GetHistogramType());
   return histogram;
 }
 
@@ -706,7 +706,7 @@ HistogramBase* BooleanHistogram::DeserializeInfoImpl(PickleIterator* iter) {
 HistogramBase* CustomHistogram::FactoryGet(const string& name,
                                            const vector<Sample>& custom_ranges,
                                            int32 flags) {
-  CHECK(ValidateCustomRanges(custom_ranges));
+  //CHECK(ValidateCustomRanges(custom_ranges));
 
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
   if (!histogram) {
@@ -724,7 +724,7 @@ HistogramBase* CustomHistogram::FactoryGet(const string& name,
         StatisticsRecorder::RegisterOrDeleteDuplicate(tentative_histogram);
   }
 
-  DCHECK_EQ(histogram->GetHistogramType(), CUSTOM_HISTOGRAM);
+  //DCHECK_EQ(histogram->GetHistogramType(), CUSTOM_HISTOGRAM);
   return histogram;
 }
 

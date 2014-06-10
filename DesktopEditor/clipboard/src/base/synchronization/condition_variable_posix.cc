@@ -21,12 +21,12 @@ ConditionVariable::ConditionVariable(Lock* user_lock)
 #endif
 {
   int rv = pthread_cond_init(&condition_, NULL);
-  DCHECK_EQ(0, rv);
+  //DCHECK_EQ(0, rv);
 }
 
 ConditionVariable::~ConditionVariable() {
   int rv = pthread_cond_destroy(&condition_);
-  DCHECK_EQ(0, rv);
+  //DCHECK_EQ(0, rv);
 }
 
 void ConditionVariable::Wait() {
@@ -35,7 +35,7 @@ void ConditionVariable::Wait() {
   user_lock_->CheckHeldAndUnmark();
 #endif
   int rv = pthread_cond_wait(&condition_, user_mutex_);
-  DCHECK_EQ(0, rv);
+  //DCHECK_EQ(0, rv);
 #if !defined(NDEBUG)
   user_lock_->CheckUnheldAndMark();
 #endif
@@ -55,13 +55,13 @@ void ConditionVariable::TimedWait(const TimeDelta& max_time) {
                     Time::kNanosecondsPerMicrosecond;
   abstime.tv_sec += abstime.tv_nsec / Time::kNanosecondsPerSecond;
   abstime.tv_nsec %= Time::kNanosecondsPerSecond;
-  DCHECK_GE(abstime.tv_sec, now.tv_sec);  // Overflow paranoia
+  //DCHECK_GE(abstime.tv_sec, now.tv_sec);  // Overflow paranoia
 
 #if !defined(NDEBUG)
   user_lock_->CheckHeldAndUnmark();
 #endif
   int rv = pthread_cond_timedwait(&condition_, user_mutex_, &abstime);
-  DCHECK(rv == 0 || rv == ETIMEDOUT);
+  //DCHECK(rv == 0 || rv == ETIMEDOUT);
 #if !defined(NDEBUG)
   user_lock_->CheckUnheldAndMark();
 #endif
@@ -69,12 +69,12 @@ void ConditionVariable::TimedWait(const TimeDelta& max_time) {
 
 void ConditionVariable::Broadcast() {
   int rv = pthread_cond_broadcast(&condition_);
-  DCHECK_EQ(0, rv);
+  //DCHECK_EQ(0, rv);
 }
 
 void ConditionVariable::Signal() {
   int rv = pthread_cond_signal(&condition_);
-  DCHECK_EQ(0, rv);
+  //DCHECK_EQ(0, rv);
 }
 
 }  // namespace base

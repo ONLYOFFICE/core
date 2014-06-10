@@ -92,7 +92,7 @@ void DeathData::RecordDeath(const int32 queue_duration,
   // don't clamp count_... but that should be inconsequentially likely).
   // We ignore the fact that we correlated our selection of a sample to the run
   // and queue times (i.e., we used them to generate random_number).
-  CHECK_GT(count_, 0);
+  //CHECK_GT(count_, 0);
   if (0 == (random_number % count_)) {
     queue_duration_sample_ = queue_duration;
     run_duration_sample_ = run_duration;
@@ -238,7 +238,7 @@ ThreadData::ThreadData(const std::string& suggested_name)
       next_retired_worker_(NULL),
       worker_thread_number_(0),
       incarnation_count_for_pool_(-1) {
-  DCHECK_GE(suggested_name.size(), 0u);
+  //DCHECK_GE(suggested_name.size(), 0u);
   thread_name_ = suggested_name;
   PushToHeadOfList();  // Which sets real incarnation_count_for_pool_.
 }
@@ -248,7 +248,7 @@ ThreadData::ThreadData(int thread_number)
       next_retired_worker_(NULL),
       worker_thread_number_(thread_number),
       incarnation_count_for_pool_(-1)  {
-  CHECK_GT(thread_number, 0);
+  //CHECK_GT(thread_number, 0);
   base::StringAppendF(&thread_name_, "WorkerThread-%d", thread_number);
   PushToHeadOfList();  // Which sets real incarnation_count_for_pool_.
 }
@@ -263,7 +263,7 @@ void ThreadData::PushToHeadOfList() {
   random_number_ += static_cast<int32>(this - static_cast<ThreadData*>(0));
   random_number_ ^= (Now() - TrackedTime()).InMilliseconds();
 
-  DCHECK(!next_);
+  //DCHECK(!next_);
   base::AutoLock lock(*list_lock_.Pointer());
   incarnation_count_for_pool_ = incarnation_counter_;
   next_ = all_thread_data_list_head_;
@@ -314,10 +314,10 @@ ThreadData* ThreadData::Get() {
 
   // If we can't find a previously used instance, then we have to create one.
   if (!worker_thread_data) {
-    DCHECK_GT(worker_thread_number, 0);
+    //DCHECK_GT(worker_thread_number, 0);
     worker_thread_data = new ThreadData(worker_thread_number);
   }
-  DCHECK_GT(worker_thread_data->worker_thread_number_, 0);
+  //DCHECK_GT(worker_thread_data->worker_thread_number_, 0);
 
   tls_index_.Set(worker_thread_data);
   return worker_thread_data;
@@ -325,7 +325,7 @@ ThreadData* ThreadData::Get() {
 
 // static
 void ThreadData::OnThreadTermination(void* thread_data) {
-  DCHECK(thread_data);  // TLS should *never* call us with a NULL.
+  //DCHECK(thread_data);  // TLS should *never* call us with a NULL.
   // We must NOT do any allocations during this callback. There is a chance
   // that the allocator is no longer active on this thread.
   if (!kTrackAllTaskObjects)
@@ -346,7 +346,7 @@ void ThreadData::OnThreadTerminationCleanup() {
   }
   // We must NOT do any allocations during this callback.
   // Using the simple linked lists avoids all allocations.
-  DCHECK_EQ(this->next_retired_worker_, reinterpret_cast<ThreadData*>(NULL));
+  //DCHECK_EQ(this->next_retired_worker_, reinterpret_cast<ThreadData*>(NULL));
   this->next_retired_worker_ = first_retired_worker_;
   first_retired_worker_ = this;
 }
@@ -428,7 +428,7 @@ void ThreadData::TallyADeath(const Births& birth,
   if (!kTrackParentChildLinks)
     return;
   if (!parent_stack_.empty()) {  // We might get turned off.
-    DCHECK_EQ(parent_stack_.top(), &birth);
+    //DCHECK_EQ(parent_stack_.top(), &birth);
     parent_stack_.pop();
   }
 }
@@ -681,13 +681,13 @@ bool ThreadData::Initialize() {
   // Perform the "real" TLS initialization now, and leave it intact through
   // process termination.
   if (!tls_index_.initialized()) {  // Testing may have initialized this.
-    DCHECK_EQ(status_, UNINITIALIZED);
+    //DCHECK_EQ(status_, UNINITIALIZED);
     tls_index_.Initialize(&ThreadData::OnThreadTermination);
     if (!tls_index_.initialized())
       return false;
   } else {
     // TLS was initialzed for us earlier.
-    DCHECK_EQ(status_, DORMANT_DURING_TESTS);
+    //DCHECK_EQ(status_, DORMANT_DURING_TESTS);
   }
 
   // Incarnation counter is only significant to testing, as it otherwise will
@@ -701,14 +701,14 @@ bool ThreadData::Initialize() {
   if (!kTrackParentChildLinks &&
       kInitialStartupState == PROFILING_CHILDREN_ACTIVE)
     status_ = PROFILING_ACTIVE;
-  DCHECK(status_ != UNINITIALIZED);
+  //DCHECK(status_ != UNINITIALIZED);
   return true;
 }
 
 // static
 bool ThreadData::InitializeAndSetTrackingStatus(Status status) {
-  DCHECK_GE(status, DEACTIVATED);
-  DCHECK_LE(status, PROFILING_CHILDREN_ACTIVE);
+  //DCHECK_GE(status, DEACTIVATED);
+  //DCHECK_LE(status, PROFILING_CHILDREN_ACTIVE);
 
   if (!Initialize())  // No-op if already initialized.
     return false;  // Not compiled in.
@@ -751,7 +751,7 @@ TrackedTime ThreadData::NowForEndOfRun() {
 
 // static
 void ThreadData::SetAlternateTimeSource(NowFunction* now_function) {
-  DCHECK(now_function);
+  //DCHECK(now_function);
   if (kAllowAlternateTimeSourceHandling)
     now_function_ = now_function;
 }
@@ -774,7 +774,7 @@ void ThreadData::EnsureCleanupWasCalled(int major_threads_shutdown_count) {
   // caller should tell us how many thread shutdowns should have taken place by
   // now.
   return;  // TODO(jar): until this is working on XP, don't run the real test.
-  CHECK_GT(cleanup_count_, major_threads_shutdown_count);
+  //CHECK_GT(cleanup_count_, major_threads_shutdown_count);
 }
 
 // static
@@ -793,7 +793,7 @@ void ThreadData::ShutdownSingleThreadedCleanup(bool leak) {
     // To be clean, break apart the retired worker list (though we leak them).
     while (first_retired_worker_) {
       ThreadData* worker = first_retired_worker_;
-      CHECK_GT(worker->worker_thread_number_, 0);
+      //CHECK_GT(worker->worker_thread_number_, 0);
       first_retired_worker_ = worker->next_retired_worker_;
       worker->next_retired_worker_ = NULL;
     }

@@ -15,10 +15,10 @@ CXX           = g++
 DEFINES       = -DUSE_X11 -DHAVE_SYS_TIME_H -DQT_CORE_LIB
 CFLAGS        = -pipe -g -pthread -Wall -W -D_REENTRANT -fPIE $(DEFINES)
 CXXFLAGS      = -pipe -g -pthread -Wall -W -D_REENTRANT -fPIE $(DEFINES)
-INCPATH       = -I/home/iekmuf/Qt/5.3/gcc/mkspecs/linux-g++ -I../clipboard_test -I../../src -I/usr/include/gtk-2.0 -I/usr/include/glib-2.0 -I../../src/third_party/skia/include/core -I../../src/third_party/skia/include/config -I../../src/third_party/skia/include/pathops -I../../src/third_party/skia/src/image -I../../src/third_party/libevent/linux -I/usr/lib/i386-linux-gnu/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/pango-1.0 -I/usr/include/gio-unix-2.0 -I/usr/include/freetype2 -I/usr/lib/i386-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/harfbuzz -I/home/iekmuf/Qt/5.3/gcc/include -I/home/iekmuf/Qt/5.3/gcc/include/QtCore -I. -I.
+INCPATH       = -I/home/iekmuf/Qt/5.3/gcc/mkspecs/linux-g++ -I../clipboard_test -I../../src -I/usr/include/gtk-2.0 -I/usr/include/glib-2.0 -I/usr/include/libxml2 -I/usr/lib/i386-linux-gnu/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/pango-1.0 -I/usr/include/gio-unix-2.0 -I/usr/include/freetype2 -I/usr/lib/i386-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/libpng12 -I/usr/include/harfbuzz -I/home/iekmuf/Qt/5.3/gcc/include -I/home/iekmuf/Qt/5.3/gcc/include/QtCore -I. -I.
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/home/iekmuf/Qt/5.3/gcc -Wl,-rpath,/home/iekmuf/Qt/5.3/gcc/lib
-LIBS          = $(SUBLIBS) -lX11 -lXfixes -lXrender -lXrandr -lXext -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lcairo -lpango-1.0 -lfontconfig -lgobject-2.0 -lglib-2.0 -lfreetype -L/home/iekmuf/Qt/5.3/gcc/lib -lQt5Core -lpthread 
+LIBS          = $(SUBLIBS) -lX11 -lXfixes -lXrender -lXrandr -lXext -lxml2 -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lcairo -lpango-1.0 -lfontconfig -lgobject-2.0 -lglib-2.0 -lfreetype -L/home/iekmuf/Qt/5.3/gcc/lib -lQt5Core -lpthread 
 AR            = ar cqs
 RANLIB        = 
 QMAKE         = /home/iekmuf/Qt/5.3/gcc/bin/qmake
@@ -467,7 +467,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/clipboard_test1.0.0 || mkdir -p .tmp/clipboard_test1.0.0
-	$(COPY_FILE) --parents $(DIST) .tmp/clipboard_test1.0.0/ && $(COPY_FILE) --parents ../../src/ui/base/clipboard/clipboard.h ../../src/ui/base/clipboard/custom_data_helper.h ../../src/ui/base/clipboard/scoped_clipboard_writer.h ../../src/build/build_config.h ../../src/base/third_party/dmg_fp/dmg_fp.h ../../src/base/third_party/icu/icu_utf.h ../../src/base/pickle.h ../../src/base/string16.h ../../src/base/string_piece.h ../../src/base/string_util.h ../../src/base/string_util_posix.h ../../src/base/strings/string_number_conversions.h ../../src/base/strings/string_piece.h ../../src/base/stringprintf.h ../../src/base/strings/utf_offset_string_conversions.h ../../src/base/strings/utf_string_conversions.h ../../src/base/strings/utf_string_conversion_utils.h ../../src/ui/gfx/size.h ../../src/base/message_pump.h ../../src/base/message_pump_gtk.h ../../src/base/message_pump_glib.h ../../src/base/message_pump_default.h ../../src/base/message_pump_dispatcher.h ../../src/base/message_pump_libevent.h ../../src/ui/gfx/gtk_util.h ../../src/base/threading/thread_restrictions.h ../../src/base/at_exit.h ../../src/base/memory/singleton.h ../../src/base/atomicops.h ../../src/base/atomicops_internals_atomicword_compat.h ../../src/base/atomicops_internals_gcc.h ../../src/base/atomicops_internals_x86_gcc.h ../../src/base/message_loop.h ../../src/base/message_loop_proxy.h ../../src/ui/base/keycodes/keyboard_code_conversion.h ../../src/ui/base/keycodes/keyboard_code_conversion_gtk.h ../../src/ui/base/keycodes/keyboard_code_conversion_x.h ../../src/ui/base/keycodes/keyboard_codes.h ../../src/ui/base/keycodes/keyboard_codes_posix.h ../../src/ui/base/keycodes/usb_keycode_map.h .tmp/clipboard_test1.0.0/ && $(COPY_FILE) --parents ../clipboard_test/main.cpp ../../src/ui/base/clipboard/clipboard.cc ../../src/ui/base/clipboard/clipboard_gtk.cc ../../src/ui/base/clipboard/custom_data_helper.cc ../../src/ui/base/clipboard/custom_data_helper_linux.cc ../../src/ui/base/clipboard/scoped_clipboard_writer.cc ../../src/base/third_party/dmg_fp/dtoa.cc ../../src/base/third_party/dmg_fp/g_fmt.cc ../../src/base/third_party/icu/icu_utf.cc ../../src/base/pickle.cc ../../src/base/string16.cc ../../src/base/string_util.cc ../../src/base/strings/string_number_conversions.cc ../../src/base/strings/string_piece.cc ../../src/base/stringprintf.cc ../../src/base/strings/utf_offset_string_conversions.cc ../../src/base/strings/utf_string_conversions.cc ../../src/base/strings/utf_string_conversion_utils.cc ../../src/ui/gfx/size.cc ../../src/ui/gfx/gtk_util.cc .tmp/clipboard_test1.0.0/ && (cd `dirname .tmp/clipboard_test1.0.0` && $(TAR) clipboard_test1.0.0.tar clipboard_test1.0.0 && $(COMPRESS) clipboard_test1.0.0.tar) && $(MOVE) `dirname .tmp/clipboard_test1.0.0`/clipboard_test1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/clipboard_test1.0.0
+	$(COPY_FILE) --parents $(DIST) .tmp/clipboard_test1.0.0/ && $(COPY_FILE) --parents ../../src/ui/base/clipboard/clipboard.h ../../src/ui/base/clipboard/custom_data_helper.h ../../src/ui/base/clipboard/scoped_clipboard_writer.h ../../src/build/build_config.h ../../src/base/third_party/dmg_fp/dmg_fp.h ../../src/base/third_party/icu/icu_utf.h ../../src/base/pickle.h ../../src/base/string16.h ../../src/base/string_piece.h ../../src/base/string_util.h ../../src/base/string_util_posix.h ../../src/base/strings/string_number_conversions.h ../../src/base/strings/string_piece.h ../../src/base/stringprintf.h ../../src/base/strings/utf_offset_string_conversions.h ../../src/base/strings/utf_string_conversions.h ../../src/base/strings/utf_string_conversion_utils.h ../../src/ui/gfx/size.h ../../src/ui/gfx/gtk_util.h .tmp/clipboard_test1.0.0/ && $(COPY_FILE) --parents ../clipboard_test/main.cpp ../../src/ui/base/clipboard/clipboard.cc ../../src/ui/base/clipboard/clipboard_gtk.cc ../../src/ui/base/clipboard/custom_data_helper.cc ../../src/ui/base/clipboard/custom_data_helper_linux.cc ../../src/ui/base/clipboard/scoped_clipboard_writer.cc ../../src/base/third_party/dmg_fp/dtoa.cc ../../src/base/third_party/dmg_fp/g_fmt.cc ../../src/base/third_party/icu/icu_utf.cc ../../src/base/pickle.cc ../../src/base/string16.cc ../../src/base/string_util.cc ../../src/base/strings/string_number_conversions.cc ../../src/base/strings/string_piece.cc ../../src/base/stringprintf.cc ../../src/base/strings/utf_offset_string_conversions.cc ../../src/base/strings/utf_string_conversions.cc ../../src/base/strings/utf_string_conversion_utils.cc ../../src/ui/gfx/size.cc ../../src/ui/gfx/gtk_util.cc .tmp/clipboard_test1.0.0/ && (cd `dirname .tmp/clipboard_test1.0.0` && $(TAR) clipboard_test1.0.0.tar clipboard_test1.0.0 && $(COMPRESS) clipboard_test1.0.0.tar) && $(MOVE) `dirname .tmp/clipboard_test1.0.0`/clipboard_test1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/clipboard_test1.0.0
 
 
 clean:compiler_clean 
@@ -835,7 +835,249 @@ main.o: ../clipboard_test/main.cpp ../../src/ui/base/clipboard/clipboard.h \
 		../../src/base/android/scoped_java_ref.h \
 		../../src/base/memory/scoped_ptr.h \
 		../../src/base/move.h \
-		../../src/base/template_util.h
+		../../src/base/template_util.h \
+		/usr/include/gtk-2.0/gtk/gtk.h \
+		/usr/include/gtk-2.0/gtk/gtkaboutdialog.h \
+		/usr/include/gtk-2.0/gtk/gtkdialog.h \
+		/usr/include/gtk-2.0/gtk/gtkwindow.h \
+		/usr/include/gtk-2.0/gtk/gtkaccelgroup.h \
+		/usr/include/gtk-2.0/gtk/gtkenums.h \
+		/usr/include/gtk-2.0/gtk/gtkbin.h \
+		/usr/include/gtk-2.0/gtk/gtkcontainer.h \
+		/usr/include/gtk-2.0/gtk/gtkwidget.h \
+		/usr/include/gtk-2.0/gtk/gtkobject.h \
+		/usr/include/gtk-2.0/gtk/gtktypeutils.h \
+		/usr/include/gtk-2.0/gtk/gtktypebuiltins.h \
+		/usr/include/gtk-2.0/gtk/gtkdebug.h \
+		/usr/include/gtk-2.0/gtk/gtkadjustment.h \
+		/usr/include/gtk-2.0/gtk/gtkstyle.h \
+		/usr/include/gtk-2.0/gtk/gtksettings.h \
+		/usr/include/gtk-2.0/gtk/gtkrc.h \
+		/usr/include/atk-1.0/atk/atk.h \
+		/usr/include/atk-1.0/atk/atkobject.h \
+		/usr/include/atk-1.0/atk/atkstate.h \
+		/usr/include/atk-1.0/atk/atkrelationtype.h \
+		/usr/include/atk-1.0/atk/atkaction.h \
+		/usr/include/atk-1.0/atk/atkcomponent.h \
+		/usr/include/atk-1.0/atk/atkutil.h \
+		/usr/include/atk-1.0/atk/atkdocument.h \
+		/usr/include/atk-1.0/atk/atkeditabletext.h \
+		/usr/include/atk-1.0/atk/atktext.h \
+		/usr/include/atk-1.0/atk/atkgobjectaccessible.h \
+		/usr/include/atk-1.0/atk/atkhyperlink.h \
+		/usr/include/atk-1.0/atk/atkhyperlinkimpl.h \
+		/usr/include/atk-1.0/atk/atkhypertext.h \
+		/usr/include/atk-1.0/atk/atkimage.h \
+		/usr/include/atk-1.0/atk/atknoopobject.h \
+		/usr/include/atk-1.0/atk/atknoopobjectfactory.h \
+		/usr/include/atk-1.0/atk/atkobjectfactory.h \
+		/usr/include/atk-1.0/atk/atkplug.h \
+		/usr/include/atk-1.0/atk/atkregistry.h \
+		/usr/include/atk-1.0/atk/atkrelation.h \
+		/usr/include/atk-1.0/atk/atkrelationset.h \
+		/usr/include/atk-1.0/atk/atkselection.h \
+		/usr/include/atk-1.0/atk/atksocket.h \
+		/usr/include/atk-1.0/atk/atkstateset.h \
+		/usr/include/atk-1.0/atk/atkstreamablecontent.h \
+		/usr/include/atk-1.0/atk/atktable.h \
+		/usr/include/atk-1.0/atk/atkmisc.h \
+		/usr/include/atk-1.0/atk/atkvalue.h \
+		/usr/include/atk-1.0/atk/atkversion.h \
+		/usr/include/atk-1.0/atk/atkwindow.h \
+		/usr/include/gtk-2.0/gtk/gtkaccellabel.h \
+		/usr/include/gtk-2.0/gtk/gtklabel.h \
+		/usr/include/gtk-2.0/gtk/gtkmisc.h \
+		/usr/include/gtk-2.0/gtk/gtkmenu.h \
+		/usr/include/gtk-2.0/gtk/gtkmenushell.h \
+		/usr/include/gtk-2.0/gtk/gtkaccelmap.h \
+		/usr/include/gtk-2.0/gtk/gtkaccessible.h \
+		/usr/include/gtk-2.0/gtk/gtkaction.h \
+		/usr/include/gtk-2.0/gtk/gtkactiongroup.h \
+		/usr/include/gtk-2.0/gtk/gtkactivatable.h \
+		/usr/include/gtk-2.0/gtk/gtkalignment.h \
+		/usr/include/gtk-2.0/gtk/gtkarrow.h \
+		/usr/include/gtk-2.0/gtk/gtkaspectframe.h \
+		/usr/include/gtk-2.0/gtk/gtkframe.h \
+		/usr/include/gtk-2.0/gtk/gtkassistant.h \
+		/usr/include/gtk-2.0/gtk/gtkbbox.h \
+		/usr/include/gtk-2.0/gtk/gtkbox.h \
+		/usr/include/gtk-2.0/gtk/gtkbindings.h \
+		/usr/include/gtk-2.0/gtk/gtkbuildable.h \
+		/usr/include/gtk-2.0/gtk/gtkbuilder.h \
+		/usr/include/gtk-2.0/gtk/gtkbutton.h \
+		/usr/include/gtk-2.0/gtk/gtkimage.h \
+		/usr/include/gtk-2.0/gtk/gtkcalendar.h \
+		/usr/include/gtk-2.0/gtk/gtksignal.h \
+		/usr/include/gtk-2.0/gtk/gtkmarshal.h \
+		/usr/include/gtk-2.0/gtk/gtkcelleditable.h \
+		/usr/include/gtk-2.0/gtk/gtkcelllayout.h \
+		/usr/include/gtk-2.0/gtk/gtkcellrenderer.h \
+		/usr/include/gtk-2.0/gtk/gtktreeviewcolumn.h \
+		/usr/include/gtk-2.0/gtk/gtktreemodel.h \
+		/usr/include/gtk-2.0/gtk/gtktreesortable.h \
+		/usr/include/gtk-2.0/gtk/gtkcellrendereraccel.h \
+		/usr/include/gtk-2.0/gtk/gtkcellrenderertext.h \
+		/usr/include/gtk-2.0/gtk/gtkcellrenderercombo.h \
+		/usr/include/gtk-2.0/gtk/gtkcellrendererpixbuf.h \
+		/usr/include/gtk-2.0/gtk/gtkcellrendererprogress.h \
+		/usr/include/gtk-2.0/gtk/gtkcellrendererspin.h \
+		/usr/include/gtk-2.0/gtk/gtkcellrendererspinner.h \
+		/usr/include/gtk-2.0/gtk/gtkcellrenderertoggle.h \
+		/usr/include/gtk-2.0/gtk/gtkcellview.h \
+		/usr/include/gtk-2.0/gtk/gtkcheckbutton.h \
+		/usr/include/gtk-2.0/gtk/gtktogglebutton.h \
+		/usr/include/gtk-2.0/gtk/gtkcheckmenuitem.h \
+		/usr/include/gtk-2.0/gtk/gtkmenuitem.h \
+		/usr/include/gtk-2.0/gtk/gtkitem.h \
+		/usr/include/gtk-2.0/gtk/gtkclipboard.h \
+		/usr/include/gtk-2.0/gtk/gtkselection.h \
+		/usr/include/gtk-2.0/gtk/gtktextiter.h \
+		/usr/include/gtk-2.0/gtk/gtktexttag.h \
+		/usr/include/gtk-2.0/gtk/gtktextchild.h \
+		/usr/include/gtk-2.0/gtk/gtkcolorbutton.h \
+		/usr/include/gtk-2.0/gtk/gtkcolorsel.h \
+		/usr/include/gtk-2.0/gtk/gtkvbox.h \
+		/usr/include/gtk-2.0/gtk/gtkcolorseldialog.h \
+		/usr/include/gtk-2.0/gtk/gtkcombobox.h \
+		/usr/include/gtk-2.0/gtk/gtktreeview.h \
+		/usr/include/gtk-2.0/gtk/gtkdnd.h \
+		/usr/include/gtk-2.0/gtk/gtkentry.h \
+		/usr/include/gtk-2.0/gtk/gtkeditable.h \
+		/usr/include/gtk-2.0/gtk/gtkimcontext.h \
+		/usr/include/gtk-2.0/gtk/gtkentrybuffer.h \
+		/usr/include/gtk-2.0/gtk/gtkentrycompletion.h \
+		/usr/include/gtk-2.0/gtk/gtkliststore.h \
+		/usr/include/gtk-2.0/gtk/gtktreemodelfilter.h \
+		/usr/include/gtk-2.0/gtk/gtkcomboboxentry.h \
+		/usr/include/gtk-2.0/gtk/gtkcomboboxtext.h \
+		/usr/include/gtk-2.0/gtk/gtkdrawingarea.h \
+		/usr/include/gtk-2.0/gtk/gtkeventbox.h \
+		/usr/include/gtk-2.0/gtk/gtkexpander.h \
+		/usr/include/gtk-2.0/gtk/gtkfixed.h \
+		/usr/include/gtk-2.0/gtk/gtkfilechooser.h \
+		/usr/include/gtk-2.0/gtk/gtkfilefilter.h \
+		/usr/include/gtk-2.0/gtk/gtkfilechooserbutton.h \
+		/usr/include/gtk-2.0/gtk/gtkhbox.h \
+		/usr/include/gtk-2.0/gtk/gtkfilechooserdialog.h \
+		/usr/include/gtk-2.0/gtk/gtkfilechooserwidget.h \
+		/usr/include/gtk-2.0/gtk/gtkfontbutton.h \
+		/usr/include/gtk-2.0/gtk/gtkfontsel.h \
+		/usr/include/gtk-2.0/gtk/gtkgc.h \
+		/usr/include/gtk-2.0/gtk/gtkhandlebox.h \
+		/usr/include/gtk-2.0/gtk/gtkhbbox.h \
+		/usr/include/gtk-2.0/gtk/gtkhpaned.h \
+		/usr/include/gtk-2.0/gtk/gtkpaned.h \
+		/usr/include/gtk-2.0/gtk/gtkhruler.h \
+		/usr/include/gtk-2.0/gtk/gtkruler.h \
+		/usr/include/gtk-2.0/gtk/gtkhscale.h \
+		/usr/include/gtk-2.0/gtk/gtkscale.h \
+		/usr/include/gtk-2.0/gtk/gtkrange.h \
+		/usr/include/gtk-2.0/gtk/gtkhscrollbar.h \
+		/usr/include/gtk-2.0/gtk/gtkscrollbar.h \
+		/usr/include/gtk-2.0/gtk/gtkhseparator.h \
+		/usr/include/gtk-2.0/gtk/gtkseparator.h \
+		/usr/include/gtk-2.0/gtk/gtkhsv.h \
+		/usr/include/gtk-2.0/gtk/gtkiconfactory.h \
+		/usr/include/gtk-2.0/gtk/gtkicontheme.h \
+		/usr/include/gtk-2.0/gtk/gtkiconview.h \
+		/usr/include/gtk-2.0/gtk/gtktooltip.h \
+		/usr/include/gtk-2.0/gtk/gtkimagemenuitem.h \
+		/usr/include/gtk-2.0/gtk/gtkimcontextsimple.h \
+		/usr/include/gtk-2.0/gtk/gtkimmulticontext.h \
+		/usr/include/gtk-2.0/gtk/gtkinfobar.h \
+		/usr/include/gtk-2.0/gtk/gtkinvisible.h \
+		/usr/include/gtk-2.0/gtk/gtklayout.h \
+		/usr/include/gtk-2.0/gtk/gtklinkbutton.h \
+		/usr/include/gtk-2.0/gtk/gtkmain.h \
+		/usr/include/gtk-2.0/gtk/gtkmenubar.h \
+		/usr/include/gtk-2.0/gtk/gtkmenutoolbutton.h \
+		/usr/include/gtk-2.0/gtk/gtktoolbutton.h \
+		/usr/include/gtk-2.0/gtk/gtktoolitem.h \
+		/usr/include/gtk-2.0/gtk/gtktooltips.h \
+		/usr/include/gtk-2.0/gtk/gtksizegroup.h \
+		/usr/include/gtk-2.0/gtk/gtkmessagedialog.h \
+		/usr/include/gtk-2.0/gtk/gtkmodules.h \
+		/usr/include/gtk-2.0/gtk/gtkmountoperation.h \
+		/usr/include/gtk-2.0/gtk/gtknotebook.h \
+		/usr/include/gtk-2.0/gtk/gtkoffscreenwindow.h \
+		/usr/include/gtk-2.0/gtk/gtkorientable.h \
+		/usr/include/gtk-2.0/gtk/gtkpagesetup.h \
+		/usr/include/gtk-2.0/gtk/gtkpapersize.h \
+		/usr/include/gtk-2.0/gtk/gtkplug.h \
+		/usr/include/gtk-2.0/gtk/gtksocket.h \
+		/usr/include/gtk-2.0/gtk/gtkprintcontext.h \
+		/usr/include/gtk-2.0/gtk/gtkprintoperation.h \
+		/usr/include/gtk-2.0/gtk/gtkprintsettings.h \
+		/usr/include/gtk-2.0/gtk/gtkprintoperationpreview.h \
+		/usr/include/gtk-2.0/gtk/gtkprogressbar.h \
+		/usr/include/gtk-2.0/gtk/gtkprogress.h \
+		/usr/include/gtk-2.0/gtk/gtkradioaction.h \
+		/usr/include/gtk-2.0/gtk/gtktoggleaction.h \
+		/usr/include/gtk-2.0/gtk/gtkradiobutton.h \
+		/usr/include/gtk-2.0/gtk/gtkradiomenuitem.h \
+		/usr/include/gtk-2.0/gtk/gtkradiotoolbutton.h \
+		/usr/include/gtk-2.0/gtk/gtktoggletoolbutton.h \
+		/usr/include/gtk-2.0/gtk/gtkrecentaction.h \
+		/usr/include/gtk-2.0/gtk/gtkrecentmanager.h \
+		/usr/include/gtk-2.0/gtk/gtkrecentchooser.h \
+		/usr/include/gtk-2.0/gtk/gtkrecentfilter.h \
+		/usr/include/gtk-2.0/gtk/gtkrecentchooserdialog.h \
+		/usr/include/gtk-2.0/gtk/gtkrecentchoosermenu.h \
+		/usr/include/gtk-2.0/gtk/gtkrecentchooserwidget.h \
+		/usr/include/gtk-2.0/gtk/gtkscalebutton.h \
+		/usr/include/gtk-2.0/gtk/gtkscrolledwindow.h \
+		/usr/include/gtk-2.0/gtk/gtkvscrollbar.h \
+		/usr/include/gtk-2.0/gtk/gtkviewport.h \
+		/usr/include/gtk-2.0/gtk/gtkseparatormenuitem.h \
+		/usr/include/gtk-2.0/gtk/gtkseparatortoolitem.h \
+		/usr/include/gtk-2.0/gtk/gtkshow.h \
+		/usr/include/gtk-2.0/gtk/gtkspinbutton.h \
+		/usr/include/gtk-2.0/gtk/gtkspinner.h \
+		/usr/include/gtk-2.0/gtk/gtkstatusbar.h \
+		/usr/include/gtk-2.0/gtk/gtkstatusicon.h \
+		/usr/include/gtk-2.0/gtk/gtkstock.h \
+		/usr/include/gtk-2.0/gtk/gtktable.h \
+		/usr/include/gtk-2.0/gtk/gtktearoffmenuitem.h \
+		/usr/include/gtk-2.0/gtk/gtktextbuffer.h \
+		/usr/include/gtk-2.0/gtk/gtktexttagtable.h \
+		/usr/include/gtk-2.0/gtk/gtktextmark.h \
+		/usr/include/gtk-2.0/gtk/gtktextbufferrichtext.h \
+		/usr/include/gtk-2.0/gtk/gtktextview.h \
+		/usr/include/gtk-2.0/gtk/gtktoolbar.h \
+		/usr/include/gtk-2.0/gtk/gtkpixmap.h \
+		/usr/include/gtk-2.0/gtk/gtktoolitemgroup.h \
+		/usr/include/gtk-2.0/gtk/gtktoolpalette.h \
+		/usr/include/gtk-2.0/gtk/gtktoolshell.h \
+		/usr/include/gtk-2.0/gtk/gtktestutils.h \
+		/usr/include/gtk-2.0/gtk/gtktreednd.h \
+		/usr/include/gtk-2.0/gtk/gtktreemodelsort.h \
+		/usr/include/gtk-2.0/gtk/gtktreeselection.h \
+		/usr/include/gtk-2.0/gtk/gtktreestore.h \
+		/usr/include/gtk-2.0/gtk/gtkuimanager.h \
+		/usr/include/gtk-2.0/gtk/gtkvbbox.h \
+		/usr/include/gtk-2.0/gtk/gtkversion.h \
+		/usr/include/gtk-2.0/gtk/gtkvolumebutton.h \
+		/usr/include/gtk-2.0/gtk/gtkvpaned.h \
+		/usr/include/gtk-2.0/gtk/gtkvruler.h \
+		/usr/include/gtk-2.0/gtk/gtkvscale.h \
+		/usr/include/gtk-2.0/gtk/gtkvseparator.h \
+		/usr/include/gtk-2.0/gtk/gtktext.h \
+		/usr/include/gtk-2.0/gtk/gtkoldeditable.h \
+		/usr/include/gtk-2.0/gtk/gtktree.h \
+		/usr/include/gtk-2.0/gtk/gtktreeitem.h \
+		/usr/include/gtk-2.0/gtk/gtkclist.h \
+		/usr/include/gtk-2.0/gtk/gtkcombo.h \
+		/usr/include/gtk-2.0/gtk/gtkctree.h \
+		/usr/include/gtk-2.0/gtk/gtkcurve.h \
+		/usr/include/gtk-2.0/gtk/gtkfilesel.h \
+		/usr/include/gtk-2.0/gtk/gtkgamma.h \
+		/usr/include/gtk-2.0/gtk/gtkinputdialog.h \
+		/usr/include/gtk-2.0/gtk/gtkitemfactory.h \
+		/usr/include/gtk-2.0/gtk/gtklist.h \
+		/usr/include/gtk-2.0/gtk/gtklistitem.h \
+		/usr/include/gtk-2.0/gtk/gtkoptionmenu.h \
+		/usr/include/gtk-2.0/gtk/gtkpreview.h \
+		/usr/include/gtk-2.0/gtk/gtktipsquery.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../clipboard_test/main.cpp
 
 clipboard.o: ../../src/ui/base/clipboard/clipboard.cc ../../src/ui/base/clipboard/clipboard.h \

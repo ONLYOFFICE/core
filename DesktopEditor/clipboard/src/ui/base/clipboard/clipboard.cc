@@ -12,6 +12,10 @@
 #include "base/synchronization/lock.h"
 #include "ui/gfx/size.h"
 
+#include "libxml2/libxml/parser.h"
+#include "libxml2/libxml/HTMLparser.h"
+#include "base/strings/utf_string_conversions.h"
+
 namespace ui {
 
 namespace {
@@ -147,7 +151,9 @@ void Clipboard::SetAllowedThreads(
 // static
 Clipboard* Clipboard::GetForCurrentThread() {
 
-	return new Clipboard ();/*
+    return new Clipboard ();
+
+    /*
   base::AutoLock lock(g_clipboard_map_lock.Get());
 
   base::PlatformThreadId id = base::PlatformThread::CurrentId();
@@ -192,6 +198,44 @@ void Clipboard::DestroyClipboardForCurrentThread(Clipboard* clipboard) {
     clipboard_map->erase(it);
   }
   */
+}
+
+void Clipboard::ReadDoct(Buffer buffer, base::string16* content) const
+{
+    // read HTML
+    base::string16 markup;
+    std::string src_url;
+    uint32 fragment_start;
+    uint32 fragment_end;
+
+    ReadHTML(buffer, &markup, &src_url, &fragment_start, &fragment_end);
+    xmlDocPtr pDoc = NULL;
+    xmlNodePtr pRoot = NULL;
+    //String filepath = App::GetInstance()->GetAppRootPath() + L"data/tizen.html";
+    //ByteBuffer* pBuf = null;
+    //pBuf = Tizen::Base::Utility::StringUtil::StringToUtf8N(filepath);
+
+    //pDoc = htmlParseFile((const char*)pBuf->GetPointer(), (const char*)"utf-8");
+
+    base::string16 markupFragment = markup.substr(fragment_start, fragment_end - fragment_start);
+    std::string markupUtf8 = base::UTF16ToUTF8(markupFragment);
+
+    pDoc = htmlParseDoc		((xmlChar*) markupUtf8.c_str(),  (const char*)"utf-8");
+
+    if (pDoc)
+    {
+       pRoot = xmlDocGetRootElement(pDoc);
+    }
+
+    xmlNodePtr pCurrentElement = NULL;
+    for (pCurrentElement = pRoot; pCurrentElement; pCurrentElement = pCurrentElement->next)
+    {
+       if (pCurrentElement->type == XML_ELEMENT_NODE)
+       {
+          // Insert your code to extract required contents from the parsed HTML document
+           content->assign (base::UTF8ToUTF16(base::StringPiece((const char *) pCurrentElement->name)));
+       }
+    }
 }
 
 

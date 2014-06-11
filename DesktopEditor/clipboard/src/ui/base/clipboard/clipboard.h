@@ -20,6 +20,8 @@
 #include "ui/base/clipboard/clipboard_sourcetag.h"
 #include "ui/base/ui_export.h"
 
+
+
 #if defined(TOOLKIT_GTK)
 #include <gdk/gdk.h>
 #endif
@@ -264,6 +266,8 @@ class UI_EXPORT Clipboard
   // they will contain 0 and markup->size().
   void ReadHTML(Buffer buffer, string16* markup, std::string* src_url,
                 uint32* fragment_start, uint32* fragment_end) const;
+
+  void ReadDoct(Buffer buffer, base::string16* content) const;
 
   // Reads RTF from the clipboard, if available. Stores the result as a byte
   // vector.

@@ -19,7 +19,7 @@ CONFIG   -= app_bundle
 
 PKGCONFIG = gtk+-2.0
 
-LIBS += -lX11 -lXfixes -lXrender -lXrandr -lXext
+LIBS += -lX11 -lXfixes -lXrender -lXrandr -lXext -lxml2
 
 TEMPLATE = app
 
@@ -27,11 +27,7 @@ INCLUDEPATH += \
     ../../src \
     /usr/include/gtk-2.0 \
     /usr/include/glib-2.0 \
-    ../../src/third_party/skia/include/core \
-    ../../src/third_party/skia/include/config \
-    ../../src/third_party/skia/include/pathops \
-    ../../src/third_party/skia/src/image \
-    ../../src/third_party/libevent/linux \
+    /usr/include/libxml2
 
 SOURCES += main.cpp \
     ../../src/ui/base/clipboard/clipboard.cc \
@@ -73,26 +69,5 @@ HEADERS += \
     ../../src/base/strings/utf_string_conversions.h \
     ../../src/base/strings/utf_string_conversion_utils.h \
     ../../src/ui/gfx/size.h \
-    ../../src/base/message_pump.h \
-    ../../src/base/message_pump_gtk.h \
-    ../../src/base/message_pump_glib.h \
-    ../../src/base/message_pump_default.h \
-    ../../src/base/message_pump_dispatcher.h \
-    ../../src/base/message_pump_libevent.h \
-    ../../src/ui/gfx/gtk_util.h \
-    ../../src/base/threading/thread_restrictions.h \
-    ../../src/base/at_exit.h \
-    ../../src/base/memory/singleton.h \
-    ../../src/base/atomicops.h \
-    ../../src/base/atomicops_internals_atomicword_compat.h \
-    ../../src/base/atomicops_internals_gcc.h \
-    ../../src/base/atomicops_internals_x86_gcc.h \
-    ../../src/base/message_loop.h \
-    ../../src/base/message_loop_proxy.h \
-    ../../src/ui/base/keycodes/keyboard_code_conversion.h \
-    ../../src/ui/base/keycodes/keyboard_code_conversion_gtk.h \
-    ../../src/ui/base/keycodes/keyboard_code_conversion_x.h \
-    ../../src/ui/base/keycodes/keyboard_codes.h \
-    ../../src/ui/base/keycodes/keyboard_codes_posix.h \
-    ../../src/ui/base/keycodes/usb_keycode_map.h
+    ../../src/ui/gfx/gtk_util.h
 

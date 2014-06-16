@@ -115,7 +115,7 @@ public:
 void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr)
 {
 	boost::wregex re(L"([:$!])+");
-	boost::wregex re1(L"(\\$?\\w+\\!)?([a-zA-Z$]+\\d{1,2})\\:?([a-zA-Z$]+\\d{1,2})?");
+	boost::wregex re1(L"(\\$?\\w+\\!)?([a-zA-Z$]+\\d{1,})\\:?([a-zA-Z$]+\\d{1,})?");
 //                          $   Sheet2   ! $ A1                  :  $ B5    
 
 	//проблема если имя таблицы составное и в кавычках

@@ -52,7 +52,7 @@ namespace OOX
 					while ( NULL != pos )
 					{
 						const CAtlMap<CString, CWorksheet*>::CPair* pPair = m_aWorksheets.GetNext( pos );
-						delete pPair->m_value;
+						if (pPair->m_value) delete pPair->m_value;
 					}
 				}
 			}

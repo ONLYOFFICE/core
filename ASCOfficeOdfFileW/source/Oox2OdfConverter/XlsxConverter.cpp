@@ -40,6 +40,8 @@ void XlsxConverter::write(const std::wstring & path)
 {
 	if (!output_document)return;
 	output_document->write(path);
+
+	delete output_document; output_document = NULL;
 }
 odf::odf_conversion_context* XlsxConverter::odf_context()
 {
@@ -97,6 +99,9 @@ void XlsxConverter::convertDocument()
 	convert_styles();
 	convert_sheets();
 
+	//удалим уже ненужный документ xlsx 
+	delete xlsx_document; xlsx_document = NULL;
+
 	ods_context->end_document();
 
 }
@@ -108,35 +113,30 @@ void XlsxConverter::convert_sheets()
 	if (!Workbook) return;
 
 	CAtlMap<CString, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = xlsx_document->GetWorksheets();
+	
 	if(Workbook->m_oSheets.IsInit())
-	{			
-		CSimpleArray<OOX::Spreadsheet::CSheet*>& aWs = Workbook->m_oSheets->m_arrItems;//отсюда только имена 
-		
-		for(int i = 0, length = aWs.GetSize(); i < length; ++i)
+	{				
+		for(int i = 0, length = Workbook->m_oSheets->m_arrItems.GetSize(); i < length; ++i)
 		{
-			OOX::Spreadsheet::CSheet* pSheet = aWs[i];
+			OOX::Spreadsheet::CSheet* pSheet = Workbook->m_oSheets->m_arrItems[i];
 				
 			if(pSheet->m_oRid.IsInit())
 			{
 				CString sSheetRId = pSheet->m_oRid.get2().ToString();
-				CAtlMap<CString, OOX::Spreadsheet::CWorksheet*>::CPair* pPair = arrWorksheets.Lookup(sSheetRId);
-				if (NULL != pPair)
+				CAtlMap<CString, OOX::Spreadsheet::CWorksheet*>::CPair* pPairWorksheet = arrWorksheets.Lookup(sSheetRId);
+				
+				if ((pPairWorksheet) && (pPairWorksheet->m_value))
 				{
-					OOX::Spreadsheet::CWorksheet *pWorksheet = pPair->m_value;
-
-					if (pWorksheet)
-					{
-						ods_context->start_sheet();
-							ods_context->current_table().set_table_name(string2std_string(pSheet->m_oName.get2()));						
-							if (pSheet->m_oState.IsInit() && (	pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleHidden || 
-																pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleVeryHidden))
-								ods_context->current_table().set_table_hidden(true);
-							
-							convert(pWorksheet);
-						ods_context->end_sheet();	
-					}
+					ods_context->start_sheet();
+						ods_context->current_table().set_table_name(string2std_string(pSheet->m_oName.get2()));						
+						if (pSheet->m_oState.IsInit() && (	pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleHidden || 
+															pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleVeryHidden))
+							ods_context->current_table().set_table_hidden(true);
+						
+						convert(pPairWorksheet->m_value);
+						delete pPairWorksheet->m_value; pPairWorksheet->m_value = NULL;
+					ods_context->end_sheet();	
 				}
-
 			}
 		}
 	}
@@ -172,6 +172,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDefinedName *oox_defined)
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 {
+	if (!oox_sheet) return;
+
 	if (oox_sheet->m_oDimension.IsInit())
 	{
 		ods_context->set_sheet_dimension(string2std_string(oox_sheet->m_oDimension->m_oRef.get()));
@@ -206,12 +208,21 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	ods_context->end_columns();
 
 	//строки
-	ods_context->start_rows();
-		for (long row = 0 ; oox_sheet->m_oSheetData.IsInit() && row < oox_sheet->m_oSheetData->m_arrItems.GetSize(); row++)
-		{
-			convert(oox_sheet->m_oSheetData->m_arrItems[row]);
-		}
-	ods_context->end_rows();
+	if (oox_sheet->m_oSheetData.IsInit() )
+	{
+		ods_context->start_rows();
+			for (long row = 0 ; row < oox_sheet->m_oSheetData->m_arrItems.GetSize(); row++)
+			{
+				convert(oox_sheet->m_oSheetData->m_arrItems[row]);
+				
+				if ( oox_sheet->m_oSheetData->m_arrItems[row] )
+					delete oox_sheet->m_oSheetData->m_arrItems[row];
+				oox_sheet->m_oSheetData->m_arrItems[row] = NULL;
+			}
+		ods_context->end_rows();
+		//грохнем память .. а то на больших доках не остается ее :( - нужно переходить на х64 или делсть постраничное чтение-запись
+		oox_sheet->m_oSheetData.reset();
+	}
 
 	//мержи
 	for (long mrg = 0 ; oox_sheet->m_oMergeCells.IsInit() && mrg < oox_sheet->m_oMergeCells->m_arrItems.GetSize(); mrg++)
@@ -253,7 +264,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CCommentItem * oox_comment)
 {
-	if (oox_comment == NULL)return;
+	if (!oox_comment) return;
 
 	int col = oox_comment->m_nCol.IsInit() ? oox_comment->m_nCol.get()+1 : -1;
 	int row = oox_comment->m_nRow.IsInit() ? oox_comment->m_nRow.get()+1 : -1;
@@ -356,6 +367,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row)
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CCell *oox_cell)
 {
+	if (oox_cell == NULL)return;
 				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCellMetadata;
 				//nullable<SimpleTypes::COnOff<>>						m_oShowPhonetic;
 				//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oValueMetadata;
@@ -386,8 +398,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCell *oox_cell)
 
 		else
 		{
+			if (value_type >=0)		
+				ods_context->current_table().set_cell_type	(value_type);
+			
 			ods_context->current_table().set_cell_value (string2std_string(oox_cell->m_oValue->m_sText));
-			ods_context->current_table().set_cell_type	(value_type);
 		}
 	}
 
@@ -1040,6 +1054,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf::style_pa
 			paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::End); break;
 		}
 	}
+	if (!paragraph_properties->content().fo_text_align_)
+		paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Start);
 
 	if (aligment->m_oWrapText.IsInit())
 	{

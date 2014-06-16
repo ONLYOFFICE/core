@@ -20,11 +20,11 @@
 namespace cpdoccore {
 namespace odf {
 
-int ods_table_state::current_table_column_ = 0;
-int ods_table_state::current_table_row_ = 0;
+__int32 ods_table_state::current_table_column_ = 0;
+__int32 ods_table_state::current_table_row_ = 0;
 
-int ods_table_state::tmp_column_ =0;
-int ods_table_state::tmp_row_ =0;
+__int32 ods_table_state::tmp_column_ =0;
+__int32 ods_table_state::tmp_row_ =0;
 
 namespace utils//////////////////////////////////////////// ќЅўјя хрень .. вытащить что ли в utils ???
 
@@ -111,6 +111,8 @@ ods_table_state::ods_table_state(ods_conversion_context & Context, office_elemen
 	defaut_row_height_ = 9;
 	defaut_column_width_ = 28.34467120181406 * 1.674;// 
 
+
+	cells_size_ = 0;
 }
 
 void ods_table_state::set_table_name(std::wstring name)
@@ -193,7 +195,7 @@ void ods_table_state::end_group()
 	current_level_.pop_back();
 }
 
-void ods_table_state::add_column(office_element_ptr & elm, int repeated,office_element_ptr & style_elm)
+void ods_table_state::add_column(office_element_ptr & elm, __int16 repeated,office_element_ptr & style_elm)
 {
 	current_level_.back()->add_child_element(elm);
 
@@ -224,8 +226,23 @@ void ods_table_state::set_column_default_cell_style(std::wstring & style_name)
 	if (column == NULL)return;
 
 	column->table_table_column_attlist_.table_default_cell_style_name_ = style_ref(style_name);
-}
 
+	columns_.back().cell_style_name = style_name;
+}
+std::wstring ods_table_state::get_column_default_cell_style(__int32 column)
+{
+	__int32 curr=0;
+
+	for (__int32 i=0; i < columns_.size(); i++)
+	{
+		if (curr + columns_[i].repeated < column + 1)continue;
+		else
+		{
+			return columns_[i].cell_style_name;
+		}
+	}
+	return L"";
+}
 void ods_table_state::set_column_width(double width)//pt
 {
 	odf::style* style = dynamic_cast<odf::style*>(columns_.back().style_elm.get());
@@ -250,7 +267,7 @@ void ods_table_state::set_column_optimal_width(bool val)
 
 }
 
-void ods_table_state::set_table_dimension(int col, int row)
+void ods_table_state::set_table_dimension(__int32 col, __int32 row)
 {
 	if (col<1 || row <1 )return;
 
@@ -258,7 +275,7 @@ void ods_table_state::set_table_dimension(int col, int row)
 	if (dimension_row < row)		dimension_row = row+1;
 }
 
-void ods_table_state::add_row(office_element_ptr & elm, int repeated,office_element_ptr & style_elm)
+void ods_table_state::add_row(office_element_ptr & elm, __int16 repeated,office_element_ptr & style_elm)
 {
     current_table_column_ = 0; 
     current_table_row_+=repeated;
@@ -317,16 +334,16 @@ void ods_table_state::set_row_height(double height)
 
 bool ods_table_state::is_cell_hyperlink()
 {
-	if (cells_.size()<1)return false;
+	if (cells_size_ <1)return false;
 	return cells_.back().hyperlink_idx >=0 ? true : false;
 }
 bool ods_table_state::is_cell_comment()
 {
-	if (cells_.size()<1)return false;
+	if (cells_size_ <1)return false;
 	return cells_.back().comment_idx >=0 ? true : false;
 }
 
-int ods_table_state::is_cell_hyperlink(int col, int row)
+__int32 ods_table_state::is_cell_hyperlink(__int32 col, __int32 row)
 {
 	for (long i=0; i< hyperlinks_.size();i++)
 	{
@@ -337,7 +354,7 @@ int ods_table_state::is_cell_hyperlink(int col, int row)
 	}
 	return -1;
 }
-int ods_table_state::is_cell_comment(int col, int row, int repeate_col)
+__int32 ods_table_state::is_cell_comment(__int32 col, __int32 row, __int16 repeate_col)
 {
 	for (long i=0; i< comments_.size();i++)
 	{
@@ -348,13 +365,13 @@ int ods_table_state::is_cell_comment(int col, int row, int repeate_col)
 	}
 	return -1;
 }
-int ods_table_state::current_column() const
+__int32 ods_table_state::current_column() const
 {
     return current_table_column_;
 }
 
 
-int ods_table_state::current_row() const
+__int32 ods_table_state::current_row() const
 {
     return current_table_row_;
 }
@@ -380,14 +397,14 @@ office_element_ptr  & ods_table_state::current_row_element()
 }
 office_element_ptr  & ods_table_state::current_cell_element()
 {
-	if (cells_.size()>0)
+	if (cells_size_ >0)
 		return cells_.back().elm;
 	else
 		throw;
 }
 ods_hyperlink_state & ods_table_state::current_hyperlink()
 {
-	if ((cells_.size()>0 && hyperlinks_.size()>0) && (cells_.back().hyperlink_idx>=0) )
+	if ((cells_size_ >0 && hyperlinks_.size()>0) && (cells_.back().hyperlink_idx>=0) )
 	{
 		return hyperlinks_[cells_.back().hyperlink_idx];
 	}
@@ -408,8 +425,10 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 	if (style)style_name = style->style_name_;
 	else style_name = row_default_cell_style_name_;
 
-	if (style_name.length() > 0) 
+	if (style_name.length() > 0 && style_name != get_column_default_cell_style(current_column())) 
+	{
 		cell->table_table_cell_attlist_.table_style_name_=	style_name;
+	}
 
 	ods_cell_state state;
 	
@@ -422,11 +441,12 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 
 	current_table_column_ +=  state.repeated;  
     cells_.push_back(state);
+	cells_size_++;
 }
 
 void ods_table_state::set_cell_format_value(office_value_type::type value_type)
 {
-	if (cells_.size() < 1)return;
+	if (cells_size_  < 1)return;
 	if (value_type == office_value_type::Custom)return;	//general .. need detect
 
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
@@ -440,7 +460,7 @@ void ods_table_state::set_cell_format_value(office_value_type::type value_type)
 }
 void ods_table_state::set_cell_type(int type)
 {
-	if (cells_.size() < 1)return;
+	if (cells_size_  < 1)return;
 
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 	if (cell == NULL)return;
@@ -457,7 +477,7 @@ void ods_table_state::set_cell_type(int type)
 	case 2:// error-type
 	case 3:// inline
 	case 5:// shared
-	case 6:// обычна€
+	case 6:// обычна€ строка
 		cell_type = office_value_type(office_value_type::String);
 		break;
 	}
@@ -468,10 +488,6 @@ void ods_table_state::set_cell_type(int type)
 			cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
 		}
 		cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = cell_type;
-	}
-	else
-	{
-		//сходить по стилю €чейки - проверить тип €чейки и формат - numFmt
 	}
 }
 void ods_table_state::add_definded_expression(office_element_ptr & elm)
@@ -484,7 +500,7 @@ void ods_table_state::add_definded_expression(office_element_ptr & elm)
 	if (!table_defined_expressions_)return;
 	table_defined_expressions_->add_child_element(elm);
 }
-void ods_table_state::add_hyperlink(std::wstring & ref,int col, int row, std::wstring & link)
+void ods_table_state::add_hyperlink(std::wstring & ref,__int32 col, __int32 row, std::wstring & link)
 {
 	ods_hyperlink_state state;
 	
@@ -493,7 +509,7 @@ void ods_table_state::add_hyperlink(std::wstring & ref,int col, int row, std::ws
 
 	hyperlinks_.push_back(state);
 }
-void ods_table_state::start_comment(int col, int row, std::wstring & author)
+void ods_table_state::start_comment(__int32 col, __int32 row, std::wstring & author)
 {
 	ods_comment_state state;
 
@@ -538,7 +554,7 @@ void ods_table_state::end_comment(odf_text_context *text_context)
 	}
 }
 
-void ods_table_state::set_merge_cells(int start_col, int start_row, int end_col, int end_row)
+void ods_table_state::set_merge_cells(__int32 start_col, __int32 start_row, __int32 end_col, __int32 end_row)
 {
 	//потом можно переделать (оптимизировать) - добавл€ть мержи при добавлении €чеек
 	//вс€ко выгоднее хранить данные о мержах, а не шерстить каждый раз ¬—≈ €чейки дл€ добавлени€ фенечки
@@ -552,20 +568,19 @@ void ods_table_state::set_merge_cells(int start_col, int start_row, int end_col,
 
 	if (spanned_cols > 10000)spanned_cols = 1024;
 
-	for (int i = 0; i < cells_.size(); i++)
+	for (std::list<ods_cell_state>::iterator cell = cells_.begin(); cell != cells_.end(); cell++)
 	{
-		if (cells_[i].row > end_row) break;
+		if (cell->row > end_row) break;
 
-		if (/*cells_[i].row <= end_row && */cells_[i].row >= start_row)
+		if (cell->row >= start_row)
 		{
-			if (/*(cells_[i].col <= end_col || cells_[i].col + cells_[i].repeated-1 <= end_col) 
-				&&*/ (cells_[i].col >= start_col/* || cells_[i].col + cells_[i].repeated-1 >= start_col*/))
+			if (cell->col >= start_col)
 			{
-				table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_[i].elm.get());
-				if (cell == NULL)return;
+				table_table_cell* cell_elm = dynamic_cast<table_table_cell*>(cell->elm.get());
+				if (cell_elm == NULL)return;
 
-				cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = spanned_cols;
-				cell->table_table_cell_attlist_extra_.table_number_rows_spanned_ = spanned_rows;
+				cell_elm->table_table_cell_attlist_extra_.table_number_columns_spanned_ = spanned_cols;
+				cell_elm->table_table_cell_attlist_extra_.table_number_rows_spanned_ = spanned_rows;
 
 				break;
 			}
@@ -592,7 +607,7 @@ std::wstring ods_table_state::replace_cell_row(boost::wsmatch const & what)
     if (what[1].matched)
 	{
 		std::wstring ref_formula = what[1].str();
-		int col_formula=0, row_formula=0;
+		__int32 col_formula=0, row_formula=0;
 		utils::parsing_ref(ref_formula, col_formula, row_formula);col_formula--;//инче отсчет с 1
 	
 		ref_formula = utils::getColAddress(col_formula)+boost::lexical_cast<std::wstring>(row_formula+current_table_row_ -tmp_row_);
@@ -612,7 +627,7 @@ std::wstring ods_table_state::replace_cell_column(boost::wsmatch const & what)
     if (what[1].matched)
 	{
 		std::wstring ref_formula = what[1].str();
-		int col_formula=0, row_formula=0;
+		__int32 col_formula=0, row_formula=0;
 		utils::parsing_ref(ref_formula, col_formula, row_formula);col_formula--;
 	
 		ref_formula = utils::getColAddress(col_formula+current_table_column_ -tmp_column_)+boost::lexical_cast<std::wstring>(row_formula);
@@ -627,7 +642,7 @@ std::wstring ods_table_state::replace_cell_column(boost::wsmatch const & what)
 		return L"";
 }
 
-void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, std::wstring ref, int ind)
+void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, std::wstring ref, __int32 ind)
 {
 	if (ind < 0)return;
 	
@@ -646,7 +661,7 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 		boost::algorithm::split(distance, ref,boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 		if (distance.size() >1)
 		{
-			int col1, row1, col2, row2;
+			__int32 col1, row1, col2, row2;
 			utils::parsing_ref(distance[0],col1,row1);
 			utils::parsing_ref(distance[1],col2,row2);
 
@@ -661,7 +676,7 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 	}
 	else
 	{
-		for (long i=0; i<shared_formulas_.size() ;i++)
+		for (__int32 i=0; i<shared_formulas_.size() ;i++)
 		{
 			if (shared_formulas_[i].index == ind)
 			{
@@ -707,13 +722,13 @@ void ods_table_state::set_cell_array_formula(std::wstring & formula, std::wstrin
  	std::vector<std::wstring> ref_cells;
 	boost::algorithm::split(ref_cells,ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
-	int row_span =0;
-	int col_span =0;
+	__int32 row_span =0;
+	__int32 col_span =0;
 
 	if (ref_cells.size() ==2)
 	{
-		int col1 = -1, row1 = -1;
-		int col2 = -1, row2 = -1;
+		__int32 col1 = -1, row1 = -1;
+		__int32 col2 = -1, row2 = -1;
 
 		utils::parsing_ref (ref_cells[0], col1, row1);
 		utils::parsing_ref (ref_cells[1], col2, row2);
@@ -747,7 +762,7 @@ void ods_table_state::add_child_element(office_element_ptr & child_element)
 void ods_table_state::convert_position(oox_table_position & oox_pos, double & x, double & y)//c 0 отсчет
 {
 	double sz_col=0;
-	int curr_col = 0,i;
+	__int32 curr_col = 0,i;
 	for (i=0; i< columns_.size(); i++)
 	{
 		if (oox_pos.col > columns_[i].repeated +  curr_col)
@@ -765,7 +780,7 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 	x= sz_col + oox_pos.col_off;
 
 	double sz_row=0;
-	int curr_row =0;
+	__int32 curr_row =0;
 	for (i=0; i< rows_.size(); i++)
 	{
 		if (oox_pos.row > rows_[i].repeated + curr_row)
@@ -824,7 +839,7 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 }
 void ods_table_state::set_cell_value(std::wstring & value)
 {
-	if (cells_.size() < 1)return;
+	if (cells_size_  < 1)return;
 
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 	if (cell == NULL)return;
@@ -898,7 +913,7 @@ void ods_table_state::set_cell_value(std::wstring & value)
 
 void ods_table_state::end_cell()
 {
-	if ( cells_.size() <1)return;
+	if ( cells_size_  <1)return;
 
 	if (cells_.back().comment_idx >=0)
 	{
@@ -912,13 +927,13 @@ void ods_table_state::end_cell()
 	}
 }
 
-void ods_table_state::add_default_cell( int repeated)
+void ods_table_state::add_default_cell( __int16 repeated)
 {
-	int comment_idx = is_cell_comment(current_table_column_+1 , current_table_row_, repeated);
+	__int32 comment_idx = is_cell_comment(current_table_column_+1 , current_table_row_, repeated);
 	if (comment_idx  >=0 && repeated >1)
 	{
 		//делим на 3 - до, с комметом, после;
-		int c = current_table_column_;
+		__int32 c = current_table_column_;
 
 		add_default_cell(comments_[comment_idx].col - c -1);
 		add_default_cell(1);
@@ -945,6 +960,7 @@ void ods_table_state::add_default_cell( int repeated)
 	state.comment_idx = comment_idx;
 	
 	cells_.push_back(state);
+	cells_size_++;
 	
 	current_table_column_+= state.repeated;
 
@@ -993,7 +1009,7 @@ void ods_table_state::end_conditional_format()
 {
 	current_level_.pop_back();
 }
-void ods_table_state::start_conditional_rule(int rule_type)
+void ods_table_state::start_conditional_rule(__int32 rule_type)
 {
 	office_element_ptr		elm;
 
@@ -1056,7 +1072,7 @@ void ods_table_state::set_conditional_style_name(std::wstring style_name)
 	if (date_is) date_is->calcext_date_is_attr_.calcext_style_ = style_ref(style_name);
 
 }
-void ods_table_state::set_conditional_value(int type, std::wstring value )
+void ods_table_state::set_conditional_value(__int32 type, std::wstring value )
 {
 	calcext_icon_set* icon_set		 = dynamic_cast<calcext_icon_set*>	 (current_level_.back().get());
 	calcext_data_bar* data_bar		 = dynamic_cast<calcext_data_bar*>	 (current_level_.back().get());
@@ -1110,7 +1126,7 @@ void ods_table_state::set_conditional_value(int type, std::wstring value )
 	}
 
 }
-void ods_table_state::set_conditional_iconset(int type_iconset)
+void ods_table_state::set_conditional_iconset(__int32 type_iconset)
 {
 	calcext_icon_set* cond_format = dynamic_cast<calcext_icon_set*>(current_level_.back().get());
 

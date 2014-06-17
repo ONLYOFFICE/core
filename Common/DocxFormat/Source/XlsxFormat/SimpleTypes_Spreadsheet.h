@@ -2076,6 +2076,70 @@ namespace SimpleTypes
 
 			SimpleType_FromString     (EIconSetType)
 			SimpleType_Operator_Equal (ST_IconSetType)
+		};				
+	//----------------------------------------------------
+	//	18.18.15 ST_CfOperator (Conditional Format Operators)
+	//----------------------------------------------------
+		enum ECfOperator
+		{
+			Operator_beginsWith			= 0,
+			Operator_between			= 1,
+			Operator_containsText		= 2,
+			Operator_endsWith			= 3,
+			Operator_equal				= 4,
+			Operator_greaterThan		= 5,
+			Operator_greaterThanOrEqual	= 6,
+			Operator_lessThan			= 7,
+			Operator_lessThanOrEqual	= 8,
+			Operator_notBetween			= 9,
+			Operator_notContains		= 10,
+			Operator_notEqual			= 11
+		};
+		template<ECfOperator eDefValue = Operator_equal>
+		class ST_CfOperator : public CSimpleType<ECfOperator, eDefValue>
+		{
+		public:
+			ST_CfOperator() {}
+
+			virtual ECfOperator FromString(CString &sValue)
+			{
+				if(_T("beginsWith") == sValue)				m_eValue = Operator_beginsWith;
+				else if(_T("between") == sValue)			m_eValue = Operator_between;
+				else if(_T("containsText") == sValue)		m_eValue = Operator_containsText;
+				else if(_T("endsWith") == sValue)			m_eValue = Operator_endsWith;
+				else if(_T("equal") == sValue)				m_eValue = Operator_equal;
+				else if(_T("greaterThan") == sValue)		m_eValue = Operator_greaterThan;
+				else if(_T("greaterThanOrEqual") == sValue)	m_eValue = Operator_greaterThanOrEqual;
+				else if(_T("lessThan") == sValue)			m_eValue = Operator_lessThan;
+				else if(_T("lessThanOrEqual") == sValue)	m_eValue = Operator_lessThanOrEqual;
+				else if(_T("notBetween") == sValue)			m_eValue = Operator_notBetween;
+				else if(_T("notContains") == sValue)		m_eValue = Operator_notContains;
+				else if(_T("notEqual") == sValue)			m_eValue = Operator_notEqual;
+				return m_eValue;
+			}
+
+			virtual CString     ToString  () const 
+			{
+				switch(m_eValue)
+				{
+					case Operator_beginsWith		:	return _T("beginsWith");		break;			
+					case Operator_between			:	return _T("between");			break;
+					case Operator_containsText		:	return _T("containsText");		break;
+					case Operator_endsWith			:	return _T("endsWith");			break;
+					case Operator_equal				:	return _T("equal");				break;
+					case Operator_greaterThan		:	return _T("greaterThan");		break;
+					case Operator_greaterThanOrEqual:	return _T("greaterThanOrEqual");break;
+					case Operator_lessThan			:	return _T("lessThan");			break;
+					case Operator_lessThanOrEqual	:	return _T("lessThanOrEqual");	break;
+					case Operator_notBetween		:	return _T("notBetween");		break;
+					case Operator_notContains		:	return _T("notContains");		break;
+					case Operator_notEqual			:	return _T("notEqual");			break;
+					default							:	return _T("equal");
+				}
+			}
+
+			SimpleType_FromString     (ECfOperator)
+			SimpleType_Operator_Equal (ST_CfOperator)
 		};
 	//----------------------------------------------------
 	//	18.18.12 ST_CfType (Conditional Format Type)

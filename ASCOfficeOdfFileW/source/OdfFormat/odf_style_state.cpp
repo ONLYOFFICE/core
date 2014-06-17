@@ -13,8 +13,9 @@ odf_style_state::odf_style_state(office_element_ptr & elm, const style_family fa
 {        
 	odf_style_ = elm;
 	
-	automatic_= false;
-	default_ = false;
+	automatic_	= false;
+	default_	= false;
+	conditional_ = false;
 
 	num_fmt_id_ =0;
 	style_family_ = family;
@@ -84,6 +85,10 @@ void odf_style_state::set_root(bool val)//метка того что в файле styles, а не co
 void odf_style_state::set_default(bool val)
 {
 	default_ = val;
+}
+void odf_style_state::set_conditional(bool val)
+{
+	conditional_ = val;
 }
 //////////////////////////////////////////////////////////////////
 style_text_properties * odf_style_state::get_text_properties() 

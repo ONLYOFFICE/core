@@ -34,6 +34,7 @@ public:
 	void set_automatic(bool val);
 	void set_root(bool val);
 	void set_default(bool val);
+	void set_conditional(bool val);
 
 	office_element_ptr & get_office_element();
 
@@ -69,6 +70,7 @@ private:
 	bool automatic_;
 	bool root_;
 	bool default_; // это для тех стилей что в root
+	bool conditional_; //стили накладываемые по условию
 
 	style_family style_family_;
 	

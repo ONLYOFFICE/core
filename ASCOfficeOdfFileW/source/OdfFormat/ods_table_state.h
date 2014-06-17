@@ -223,7 +223,9 @@ public:
 				void set_conditional_iconset(__int32 type_iconset);
 				void add_conditional_colorscale(_CP_OPT(color) color);
 				void set_conditional_databar_color(_CP_OPT(color) color);
+				
 				void set_conditional_style_name(std::wstring style_name);
+				void set_conditional_operator(__int32 _operator);
 			void end_conditional_rule();
 		void end_conditional_format();
 	void end_conditional_formats();

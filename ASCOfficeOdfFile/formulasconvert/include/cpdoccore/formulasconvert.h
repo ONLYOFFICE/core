@@ -49,7 +49,9 @@ public:
     // SUM(DDA1:BA3) -> of:=SUM([.DDA1:.BA3]) 
     std::wstring convert(std::wstring const & expr);
 	std::wstring convert_formula(std::wstring const & expr);
-   
+ 	
+	std::wstring convert_conditional_formula(std::wstring const & expr);
+  
     // Лист1!$A$1 -> $Лист1.$A$1 
     std::wstring convert_named_ref(std::wstring const & expr);
 

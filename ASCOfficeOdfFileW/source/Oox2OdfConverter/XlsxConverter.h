@@ -34,6 +34,7 @@ namespace OOX
 		class CBorderProp;
 		class CAligment;
 		class CXfs;
+		class CDxf;
 		class CCellStyle;
 		class CNumFmt;
 		class CCellAnchor;
@@ -157,6 +158,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CXfs					*cell_style, int oox_id, bool automatic=true, bool root = false);
 		void convert(OOX::Spreadsheet::CCellStyle			*cell_style, int oox_id);
 		void convert(OOX::Spreadsheet::CNumFmt				*numFmt);
+		void convert(OOX::Spreadsheet::CDxf					*dxFmt, int oox_id);
 
 		void convert(OOX::Spreadsheet::CCellAnchor			*oox_anchor);
 		void convert(OOX::Spreadsheet::CDrawing				*oox_drawing);

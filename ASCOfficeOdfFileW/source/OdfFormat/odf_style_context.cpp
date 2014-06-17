@@ -131,7 +131,7 @@ std::wstring odf_style_context::find_odf_style_name(int oox_id_style, const styl
 		if (style_state_list_[i].odf_style_)
 		{
 			if (style_state_list_[i].style_family_ == family && 
-				style_state_list_[i].root_ == root)
+				style_state_list_[i].root_ == root && style_state_list_[i].conditional_ == false)
 			{
 				if (oox_id_style >=0 && style_state_list_[i].style_oox_id_ == oox_id_style)	return style_state_list_[i].get_name();
 			}
@@ -148,7 +148,39 @@ office_element_ptr odf_style_context::find_odf_style(int oox_id_style, const sty
 		if (style_state_list_[i].odf_style_)
 		{
 			if (style_state_list_[i].style_family_ == family && 
-				style_state_list_[i].root_ == root)
+				style_state_list_[i].root_ == root && style_state_list_[i].conditional_ == false)
+			{
+				if (oox_id_style >=0 && style_state_list_[i].style_oox_id_ == oox_id_style)	return style_state_list_[i].get_office_element();
+			}
+				
+		}
+	}
+	return office_element_ptr();
+}
+std::wstring odf_style_context::find_conditional_style_name(int oox_id_style, const style_family family)
+{
+	for (long i =0; i < style_state_list_.size(); i++)
+	{
+		if (style_state_list_[i].odf_style_)
+		{
+			if (style_state_list_[i].style_family_ == family 
+						&& style_state_list_[i].conditional_ == true)
+			{
+				if (oox_id_style >=0 && style_state_list_[i].style_oox_id_ == oox_id_style)	return style_state_list_[i].get_name();
+			}
+				
+		}
+	}
+	return L"";
+}
+office_element_ptr odf_style_context::find_conditional_style(int oox_id_style, const style_family family)
+{
+	for (int i=0;i<style_state_list_.size(); i++)
+	{
+		if (style_state_list_[i].odf_style_)
+		{
+			if (style_state_list_[i].style_family_ == family 
+						&& style_state_list_[i].conditional_ == true)
 			{
 				if (oox_id_style >=0 && style_state_list_[i].style_oox_id_ == oox_id_style)	return style_state_list_[i].get_office_element();
 			}
@@ -164,7 +196,7 @@ bool odf_style_context::find_odf_style_state(int oox_id_style, const style_famil
 		if (style_state_list_[i].odf_style_)
 		{
 			if (style_state_list_[i].style_family_ == family && 
-				style_state_list_[i].root_ == root)
+				style_state_list_[i].root_ == root && style_state_list_[i].conditional_ == false)
 			{
 				if (oox_id_style >=0 && style_state_list_[i].style_oox_id_ == oox_id_style)
 				{

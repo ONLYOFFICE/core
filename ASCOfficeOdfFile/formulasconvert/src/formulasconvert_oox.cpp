@@ -12,6 +12,7 @@ class oox2odf_converter::Impl
 public:
     std::wstring convert(const std::wstring& expr);
 	std::wstring convert_formula(const std::wstring& expr);
+	std::wstring convert_conditional_formula(const std::wstring& expr);
 
 	std::wstring convert_chart_distance(const std::wstring& expr);
     static void replace_cells_range(std::wstring& expr);
@@ -23,7 +24,6 @@ public:
 	static std::wstring replace_cells_range_formater1(boost::wsmatch const & what);
 	static std::wstring replace_cells_range_formater2(boost::wsmatch const & what);
 	static std::wstring replace_arguments(boost::wsmatch const & what);
-	static std::wstring convert_part_formula(boost::wsmatch const & what);
 	static std::wstring convert_scobci(boost::wsmatch const & what);
 	std::wstring  replace_arguments1(std::wstring & workstr);
 
@@ -115,15 +115,14 @@ public:
 void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr)
 {
 	boost::wregex re(L"([:$!])+");
-	boost::wregex re1(L"(\\$?\\w+\\!)?([a-zA-Z$]+\\d{1,})\\:?([a-zA-Z$]+\\d{1,})?");
-//                          $   Sheet2   ! $ A1                  :  $ B5    
 
-	//проблема если имя таблицы составное и в кавычках
 	boost::wsmatch result;
 	bool b = boost::regex_search(expr, result, re);
 
 	if (b)
 	{
+		boost::wregex re1(L"(\\$?\\w+\\!)?([a-zA-Z$]+\\d{1,})\\:?([a-zA-Z$]+\\d{1,})?");
+//                          $   Sheet2   ! $ A1                  :  $ B5    
 		std::wstring workstr = expr;
 		
 		std::wstring res = boost::regex_replace(
@@ -132,13 +131,11 @@ void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr)
 			&replace_cells_range_formater1,
 			boost::match_default | boost::format_all);
 	     
-		 //workstr = res;
-		 //res = boost::regex_replace(
-			//workstr,	
-			//re2,
-			//&replace_cells_range_formater2,
-			//boost::match_default | boost::format_all);
 		 expr = res;
+	}
+	else
+	{
+
 	}
 
 	return;
@@ -507,9 +504,6 @@ std::wstring oox2odf_converter::Impl::convert(const std::wstring& expr)
 // of:=(Formula) -> (Formula)
 std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 {
-    if (is_forbidden1(expr))
-        return L"NULLFORMULA";
-
     std::wstring workstr = expr;
 
 	std::wstring res1 = boost::regex_replace(
@@ -524,9 +518,14 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 
 	if (res1 == res)
 	{
-		res = convert(res1);
-		boost::algorithm::replace_all(res, L"[", L"");
-		boost::algorithm::replace_all(res, L"]", L"");
+		res = boost::regex_replace(
+			res1,	
+			boost::wregex(L"(\\$?\\w+\\!)?([a-zA-Z$]+\\d{1,})\\:?([a-zA-Z$]+\\d{1,})?"),
+			&replace_cells_range_formater1,
+			boost::match_default | boost::format_all);
+
+		replace_vertical(res);
+		replace_semicolons(res);
 	}
 
     boost::algorithm::replace_all(res, L"SCOBCAIN", L"(");
@@ -541,38 +540,42 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
     return std::wstring(L"of:=") + res;
 
 }
-std::wstring  oox2odf_converter::Impl::convert_part_formula(boost::wsmatch const & what)
+std::wstring oox2odf_converter::Impl::convert_conditional_formula(const std::wstring & expr)
 {
-	std::wstring out;
-	
-	if (what[1].matched)
-        out = what[1].str();
-    else if (what[2].matched)
-        out = what[2].str();
-	else if (what[3].matched)
-    {
-		std::wstring workstr = what[3].str();
-	
-		int res1 = workstr.find(L"\'");
-		int res2 = workstr.find(L"\"");
+    std::wstring workstr = expr;
 
-		if (res1 >=0 || res2 >=0)return workstr;
+	std::wstring res1 = boost::regex_replace(
+        workstr,
+		boost::wregex(L"('.*?')|(\".*?\")"),
+		&oox2odf_converter::Impl::convert_scobci,boost::match_default | boost::format_all);
+	
+	std::wstring res = boost::regex_replace(
+		res1,
+		boost::wregex(L"(?:(?=[()])(.*?)(?=[)]))"),
+		&oox2odf_converter::Impl::replace_arguments,boost::match_default | boost::format_all);
 
-		std::wstring res = boost::regex_replace(
-			workstr,
-			boost::wregex(L"(?:(?=[()])(.*?)(?=[)]))|(\".*?\")|('.*?')"),
-			&oox2odf_converter::Impl::replace_arguments,
+	if (res1 == res)
+	{
+		res = boost::regex_replace(res1,	
+			boost::wregex(L"(\\$?\\w+\\!)?([a-zA-Z$]+\\d{1,})\\:?([a-zA-Z$]+\\d{1,})?"),
+			&replace_cells_range_formater1,
 			boost::match_default | boost::format_all);
-
-		 //if (res == workstr)
-		 //{
-			// //возможно не конвертанулось
-			// res= convert(workstr);
-
-		 //}
-		 out = res;
+	     
+		replace_vertical(res);
+		replace_semicolons(res);
 	}
-	return out ;
+
+    boost::algorithm::replace_all(res, L"SCOBCAIN", L"(");
+    boost::algorithm::replace_all(res, L"SCOBCAOUT", L")");
+
+    boost::algorithm::replace_all(res, L"PROBEL", L" ");
+
+    boost::algorithm::replace_all(res, L"APOSTROF", L"'");
+
+    boost::algorithm::replace_all(res, L"KAVYCHKA", L"\"");
+
+    return res;
+
 }
 //Sheet2!C3:C19,Sheet2!L27:L34
 //в
@@ -646,6 +649,10 @@ oox2odf_converter::~oox2odf_converter()
 std::wstring oox2odf_converter::convert(const std::wstring& expr)
 {
     return impl_->convert(expr);
+}
+std::wstring oox2odf_converter::convert_conditional_formula(const std::wstring& expr)
+{
+    return impl_->convert_conditional_formula(expr);
 }
 std::wstring oox2odf_converter::convert_formula(const std::wstring& expr)
 {

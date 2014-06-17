@@ -479,19 +479,19 @@ namespace OOX
 			}
 
 		public:
-			nullable<SimpleTypes::COnOff<>>					m_oAboveAverage;
-			nullable<SimpleTypes::COnOff<>>					m_oBottom;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oDxfId;
-			nullable<SimpleTypes::COnOff<>>					m_oEqualAverage;
-			nullable<CString>								m_oOperator;	// ToDo переделать на тип ST_ConditionalFormattingOperator (18.18.15)
-			nullable<SimpleTypes::COnOff<>>					m_oPercent;
-			nullable<SimpleTypes::CDecimalNumber<>>			m_oPriority;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oRank;
-			nullable<SimpleTypes::CDecimalNumber<>>			m_oStdDev;
-			nullable<SimpleTypes::COnOff<>>					m_oStopIfTrue;
-			nullable<CString>								m_oText;
-			nullable<CString>								m_oTimePeriod;	// ToDo переделать на тип ST_TimePeriod (18.18.82)
-			nullable<SimpleTypes::Spreadsheet::ST_CfType<>>	m_oType;	
+			nullable<SimpleTypes::COnOff<>>						m_oAboveAverage;
+			nullable<SimpleTypes::COnOff<>>						m_oBottom;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oDxfId;
+			nullable<SimpleTypes::COnOff<>>						m_oEqualAverage;
+			nullable<SimpleTypes::Spreadsheet::ST_CfOperator<>>	m_oOperator;	
+			nullable<SimpleTypes::COnOff<>>						m_oPercent;
+			nullable<SimpleTypes::CDecimalNumber<>>				m_oPriority;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRank;
+			nullable<SimpleTypes::CDecimalNumber<>>				m_oStdDev;
+			nullable<SimpleTypes::COnOff<>>						m_oStopIfTrue;
+			nullable<CString>									m_oText;
+			nullable<CString>									m_oTimePeriod;	// ToDo переделать на тип ST_TimePeriod (18.18.82)
+			nullable<SimpleTypes::Spreadsheet::ST_CfType<>>		m_oType;	
 		};
 
 		//необработано:

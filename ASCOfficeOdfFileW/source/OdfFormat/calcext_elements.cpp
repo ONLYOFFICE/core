@@ -82,7 +82,7 @@ void calcext_conditional_format::serialize(std::wostream & _Wostream)
         {   
 			CP_XML_ATTR_OPT(L"calcext:target-range-address",calcext_target_range_address_);
 
-			BOOST_FOREACH(const office_element_ptr & item, content_)
+			BOOST_REVERSE_FOREACH(const office_element_ptr & item, content_)
 			{
 				item->serialize(CP_XML_STREAM());
 			}

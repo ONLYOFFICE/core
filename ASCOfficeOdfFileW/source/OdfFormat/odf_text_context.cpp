@@ -178,7 +178,7 @@ void odf_text_context::start_span(bool styled)
 
 void odf_text_context::end_span()
 {
-	if (single_paragraph_)return;
+	if (styles_context_ == NULL || single_paragraph_)return;
 	
 	current_level_.pop_back();
 }

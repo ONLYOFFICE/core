@@ -984,6 +984,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OdfFormat\office_text.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\office_text.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\paragraph_elements.cpp"
 				>
 			</File>
@@ -1207,6 +1215,14 @@
 		<Filter
 			Name="odf text"
 			>
+			<File
+				RelativePath=".\OdfFormat\odt_conversion_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odt_conversion_context.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="odf presentation"

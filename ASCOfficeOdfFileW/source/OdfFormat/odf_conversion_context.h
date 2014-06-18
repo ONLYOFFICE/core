@@ -61,6 +61,9 @@ public:
 	void start_spreadsheet();
 	void end_spreadsheet();
 	
+	void start_text();
+	void end_text();
+
 	void create_object();
 	void end_object();
 

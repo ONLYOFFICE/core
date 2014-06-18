@@ -659,8 +659,14 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 	
 	if (oox_column->m_oHidden.IsInit() && oox_column->m_oHidden->ToBool()) width = 0;
 
-	if (width  >  0 )	width = ods_context->convert_symbol_width(width);
-	if (width  >= 0 )	ods_context->current_table().set_column_width(width);
+	if (width <0.01)
+	{
+		width = 0;
+		ods_context->current_table().set_column_hidden(true);
+	}
+	
+	width = ods_context->convert_symbol_width(width);	
+	ods_context->current_table().set_column_width(width);
 
 	std::wstring style_cell_name;
 	if (oox_column->m_oStyle.IsInit())

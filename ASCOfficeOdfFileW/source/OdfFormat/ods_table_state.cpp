@@ -267,7 +267,13 @@ void ods_table_state::set_column_optimal_width(bool val)
 	column_properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = val;
 
 }
+void ods_table_state::set_column_hidden(bool val)
+{
+	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
+	if (column == NULL)return;
 
+	column->table_table_column_attlist_.table_visibility_ = table_visibility(table_visibility::Collapse);
+}
 void ods_table_state::set_table_dimension(__int32 col, __int32 row)
 {
 	if (col<1 || row <1 )return;
@@ -594,8 +600,13 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 	if (formula.length() < 1)return;
 
 	//test external link
-	int res = formula.find(L"[");
-	if (res == 0)return; //todoooo
+	{
+		boost::wregex re(L"(\[\\d+\])");
+
+		boost::wsmatch result;
+		bool b = boost::regex_search(formula, result, re);
+		if (b) return;  //todoooo
+	}
 
 	std::wstring odfFormula = formulas_converter.convert_formula(formula);
 	

@@ -184,7 +184,9 @@ public:
 	void add_column(office_element_ptr & elm, __int16 repeated ,office_element_ptr & style);
 		void set_column_width(double width);
 		void set_column_optimal_width(bool val);
+		void set_column_hidden(bool val);
 		void set_column_default_cell_style(std::wstring & style_name);
+		
 		std::wstring get_column_default_cell_style(__int32 column);
 
 	void start_group(office_element_ptr & elm);

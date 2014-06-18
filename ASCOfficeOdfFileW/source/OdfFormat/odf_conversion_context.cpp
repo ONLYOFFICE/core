@@ -124,6 +124,11 @@ void odf_conversion_context::start_spreadsheet()
 	create_object();
 	create_element(L"office", L"spreadsheet", objects_.back().content, this,true);
 }
+void odf_conversion_context::start_text()
+{
+	create_object();
+	create_element(L"office", L"text", objects_.back().content, this,true);
+}
 void odf_conversion_context::create_object()
 {
 	_object obj;
@@ -142,6 +147,10 @@ void odf_conversion_context::end_chart()
 
 	end_object();
 	chart_context_.set_styles_context(styles_context());
+}
+void odf_conversion_context::end_text()
+{
+	end_object();
 }
 void odf_conversion_context::end_spreadsheet()
 {

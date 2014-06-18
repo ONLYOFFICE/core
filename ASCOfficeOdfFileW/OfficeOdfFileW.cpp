@@ -8,6 +8,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/random_generator.hpp>
+#include <boost/algorithm/string.hpp> 
 
 #include "source\Oox2OdfConverter\Converter.h"
 
@@ -137,7 +138,9 @@ HRESULT COfficeOdfFileW::SaveToFileImpl(const std::wstring & srcPath,
 
 	try
 	{
-		Oox2Odf::Converter converter(srcTempPath);
+		std::wstring type = DetectTypeDocument(srcTempPath);
+
+		Oox2Odf::Converter converter(srcTempPath, type);
 		
 		converter.convert();
 		converter.write(dstTempPath);
@@ -150,4 +153,52 @@ HRESULT COfficeOdfFileW::SaveToFileImpl(const std::wstring & srcPath,
         return hr;
 
     return S_OK;
+}
+namespace fs = boost::filesystem;
+
+std::wstring COfficeOdfFileW::DetectTypeDocument(const std::wstring & Path)
+{
+	fs::wpath full_path(/* fs::initial_path<fs::wpath>()*/ Path);
+
+	//full_path = fs::system_complete( fs::wpath( Path ) );
+
+	unsigned long file_count = 0;
+	unsigned long dir_count = 0;
+	unsigned long other_count = 0;
+	unsigned long err_count = 0;
+
+	if (!fs::exists( full_path ) )return L"";
+
+	if (!fs::is_directory( full_path ) )return L"";
+
+	fs::wdirectory_iterator end_iter;
+	
+	for ( fs::wdirectory_iterator dir_itr( full_path );	  dir_itr != end_iter;  ++dir_itr )
+	{
+		try
+		{
+			if ( fs::is_directory( dir_itr->status() ) )
+			{
+			  ++dir_count;
+			  std::wstring tmp = dir_itr->path().filename();
+			  boost::algorithm::to_lower(tmp);
+			 
+			  if (tmp == L"word") return  L"text";
+			  if (tmp == L"xl") return  L"spreadsheet";
+			}
+			else if ( fs::is_regular_file( dir_itr->status() ) )
+			{
+			  ++file_count;
+			}
+			else
+			{
+			  ++other_count;
+			}
+		}
+		catch ( const std::exception & ex )
+		{
+			++err_count;
+		}
+	}
+	return L"";
 }

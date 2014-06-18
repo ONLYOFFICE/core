@@ -23,10 +23,8 @@ namespace Oox2Odf
 	{
 		return (Val * 360000 * 2.54) / 72;
 	}
-	Converter::Converter(const std::wstring & path) 
+	Converter::Converter(const std::wstring & path, std::wstring  type) 
     {
-		std::wstring  type = L"spreadsheet";
-
 		if (type == L"text")			impl_ = new DocxConverter(path);
 		if (type == L"spreadsheet")		impl_ = new XlsxConverter(path);
 	}

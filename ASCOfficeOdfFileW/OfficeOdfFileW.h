@@ -90,5 +90,7 @@ private:
 	HRESULT SaveToFileImpl(const std::wstring & srcPath, const std::wstring & srcTempPath,
 						   const std::wstring & dstTempPath,	 const std::wstring & dstFileName);
 
+	std::wstring DetectTypeDocument(const std::wstring & Path);
+
 };
 

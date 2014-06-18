@@ -28,6 +28,8 @@ namespace OOX
 
 	namespace Drawing
 	{
+		class CInline;
+		class CAnchor;
 		class CNonVisualDrawingProps;
 		class CShapeProperties;
 		class CGroupShapeProperties;
@@ -319,7 +321,7 @@ public:
 	{
 
 	public:
-		Converter(const std::wstring & path);
+		Converter(const std::wstring & path, std::wstring  type);
         virtual ~Converter();
 
 	public:

@@ -1,0 +1,331 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>XML</ProjectName>
+    <ProjectGuid>{C1587C15-6268-4451-9263-937E63A945F6}</ProjectGuid>
+    <RootNamespace>XML</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.60610.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\Lib\Debug\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\Lib\Release\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>./../Source/Utility;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>precompiled_xml.h</PrecompiledHeaderFile>
+      <ProgramDataBaseFileName>$(IntDir)xml.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>false</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>./../Source/Utility;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>precompiled_xml.h</PrecompiledHeaderFile>
+      <ProgramDataBaseFileName>$(IntDir)xml.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>false</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Source\XML\Exception\Base.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Exception\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Exception\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Exception\Declaration.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Exception\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Exception\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Exception\Namespace.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Exception\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Exception\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Exception\Parse.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Exception\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Exception\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Limit\Encoding.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Limit\Standalone.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Limit\Version.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\Attribute.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\Comment.cpp" />
+    <ClCompile Include="..\Source\XML\Private\Element.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\Lexigraph.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\Namespace.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\Node.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\NodeContainer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\Null.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\NullAttribute.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\NullElement.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\NullNamespace.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\NullText.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\NullXAttribute.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\NullXElement.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\NullXNamespace.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\Text.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\XAttributeContainer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\XDeclaration.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\XElementContainer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\XFileSource.cpp" />
+    <ClCompile Include="..\Source\XML\Private\XList.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\XNamespaceContainer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\XNodeContainer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\XSingleSource.cpp" />
+    <ClCompile Include="..\Source\XML\Private\XSpace.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\XString.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\XStringSource.cpp" />
+    <ClCompile Include="..\Source\XML\Private\XTextContainer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\Private\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\Private\XWFileSource.cpp" />
+    <ClCompile Include="..\Source\XML\Private\XWideSource.cpp" />
+    <ClCompile Include="..\Source\XML\Private\XWStringSource.cpp" />
+    <ClCompile Include="..\..\DocxFormat\Source\SystemUtility\SystemUtility.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\precompiled_xml.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\XAttribute.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\XComment.cpp" />
+    <ClCompile Include="..\Source\XML\XContainer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\XDocument.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\XElement.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\XName.cpp" />
+    <ClCompile Include="..\Source\XML\XNamespace.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\XNode.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\XObject.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\XText.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)XML\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)XML\</ObjectFileName>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Source\XML\Exception\Base.h" />
+    <ClInclude Include="..\Source\XML\Exception\Declaration.h" />
+    <ClInclude Include="..\Source\XML\Exception\Namespace.h" />
+    <ClInclude Include="..\Source\XML\Exception\Parse.h" />
+    <ClInclude Include="..\Source\XML\Extension\Fill.h" />
+    <ClInclude Include="..\Source\XML\Limit\Encoding.h" />
+    <ClInclude Include="..\Source\XML\Limit\Standalone.h" />
+    <ClInclude Include="..\Source\XML\Limit\Version.h" />
+    <ClInclude Include="..\Source\XML\Private\Attribute.h" />
+    <ClInclude Include="..\Source\XML\Private\Comment.h" />
+    <ClInclude Include="..\Source\XML\Private\Element.h" />
+    <ClInclude Include="..\Source\XML\Private\Lexigraph.h" />
+    <ClInclude Include="..\Source\XML\Private\Namespace.h" />
+    <ClInclude Include="..\Source\XML\Private\Node.h" />
+    <ClInclude Include="..\Source\XML\Private\NodeContainer.h" />
+    <ClInclude Include="..\Source\XML\Private\Null.h" />
+    <ClInclude Include="..\Source\XML\Private\NullAttribute.h" />
+    <ClInclude Include="..\Source\XML\Private\NullElement.h" />
+    <ClInclude Include="..\Source\XML\Private\NullNamespace.h" />
+    <ClInclude Include="..\Source\XML\Private\NullText.h" />
+    <ClInclude Include="..\Source\XML\Private\NullXAttribute.h" />
+    <ClInclude Include="..\Source\XML\Private\NullXElement.h" />
+    <ClInclude Include="..\Source\XML\Private\NullXNamespace.h" />
+    <ClInclude Include="..\Source\XML\Private\Text.h" />
+    <ClInclude Include="..\Source\XML\Private\XAttributeContainer.h" />
+    <ClInclude Include="..\Source\XML\Private\XContainer.h" />
+    <ClInclude Include="..\Source\XML\Private\XDeclaration.h" />
+    <ClInclude Include="..\Source\XML\Private\XElementContainer.h" />
+    <ClInclude Include="..\Source\XML\Private\XFileSource.h" />
+    <ClInclude Include="..\Source\XML\Private\XList.h" />
+    <ClInclude Include="..\Source\XML\Private\XNamespaceContainer.h" />
+    <ClInclude Include="..\Source\XML\Private\XNodeContainer.h" />
+    <ClInclude Include="..\Source\XML\Private\XPointer.h" />
+    <ClInclude Include="..\Source\XML\Private\XSingleSource.h" />
+    <ClInclude Include="..\Source\XML\Private\XSpace.h" />
+    <ClInclude Include="..\Source\XML\Private\XString.h" />
+    <ClInclude Include="..\Source\XML\Private\XStringSource.h" />
+    <ClInclude Include="..\Source\XML\Private\XTextContainer.h" />
+    <ClInclude Include="..\Source\XML\Private\XWFileSource.h" />
+    <ClInclude Include="..\Source\XML\Private\XWideSource.h" />
+    <ClInclude Include="..\Source\XML\Private\XWStringSource.h" />
+    <ClInclude Include="..\Source\XML\Private\Filter\Element.h" />
+    <ClInclude Include="..\Source\XML\Private\Filter\Text.h" />
+    <ClInclude Include="..\..\DocxFormat\Source\SystemUtility\SystemUtility.h" />
+    <ClInclude Include="..\Source\XML\precompiled_xml.h" />
+    <ClInclude Include="..\Source\XML\XAttribute.h" />
+    <ClInclude Include="..\Source\XML\XComment.h" />
+    <ClInclude Include="..\Source\XML\XContainer.h" />
+    <ClInclude Include="..\Source\XML\XDocument.h" />
+    <ClInclude Include="..\Source\XML\XElement.h" />
+    <ClInclude Include="..\Source\XML\XML.h" />
+    <ClInclude Include="..\Source\XML\XName.h" />
+    <ClInclude Include="..\Source\XML\XNamespace.h" />
+    <ClInclude Include="..\Source\XML\XNode.h" />
+    <ClInclude Include="..\Source\XML\XObject.h" />
+    <ClInclude Include="..\Source\XML\XText.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Utility2012.vcxproj">
+      <Project>{7b9f3647-32d3-4f82-8ca5-a43e490e1457}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

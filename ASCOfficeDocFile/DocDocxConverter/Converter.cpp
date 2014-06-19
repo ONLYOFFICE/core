@@ -163,7 +163,7 @@ namespace DocFileFormat
 
 		long result = AVS_ERROR_UNEXPECTED;
 
-		//	в режиме отладки приложение будет где произошло падение
+		// NOTE: debug mode - disable exceptions
 
 #ifdef DEBUG
 		

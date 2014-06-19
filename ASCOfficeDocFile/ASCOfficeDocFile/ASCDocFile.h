@@ -57,7 +57,7 @@ public:
 	// OfficeFileTemplate Methods
 public:
 
-	STDMETHOD(LoadFromFile)(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions);
+	STDMETHOD(LoadFromFile)(BSTR bsDocFile, BSTR bsDocxFilePath, BSTR bsXMLOptions);
 	STDMETHOD(SaveToFile)(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions);
 
 protected:

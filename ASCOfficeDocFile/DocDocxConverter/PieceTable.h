@@ -20,24 +20,24 @@ namespace DocFileFormat
 
 	public:
 		~PieceTable();
-		/// Parses the pice table and creates a list of PieceDescriptors.
-		PieceTable( FileInformationBlock *fib, IStream *tableStream );
-		vector<WCHAR>* GetAllEncodingText( IStream *wordStream );
-		vector<WCHAR>* GetEncodingChars( int fcStart, int fcEnd, IStream *wordStream);
-		vector<WCHAR>* GetChars (int fcStart, int fcEnd, int cp, IStream* word);
+		// Parses the pice table and creates a list of PieceDescriptors.
+		PieceTable(FileInformationBlock* fib, IStream* tableStream);
+		std::vector<WCHAR>* GetAllEncodingText(IStream* wordStream);
+		std::vector<WCHAR>* GetEncodingChars(int fcStart, int fcEnd, IStream* wordStream);
+		std::vector<WCHAR>* GetChars (int fcStart, int fcEnd, int cp, IStream* word);
 
 	private:
-		bool ReadSymbolsBuffer(int pos, int size, Encoding encoding, IStream* word, vector<WCHAR>* encodingChars);
+		bool ReadSymbolsBuffer(int pos, int size, Encoding encoding, IStream* word, std::vector<WCHAR>* encodingChars);
 
 	public:
 
-		/// A list of PieceDescriptor standing for each piece of text.
-		list<PieceDescriptor> Pieces;
-		/// A dictionary with character positions as keys and the matching FCs as values
-		map<int, int>* FileCharacterPositions;
-		/// A dictionary with file character positions as keys and the matching CPs as values
-		map<int, int>* CharacterPositions;
+		// A list of PieceDescriptor standing for each piece of text.
+		std::list<PieceDescriptor> Pieces;
+		// A dictionary with character positions as keys and the matching FCs as values
+		std::map<int, int>* FileCharacterPositions;
+		// A dictionary with file character positions as keys and the matching CPs as values
+		std::map<int, int>* CharacterPositions;
 
-		list<PieceDescriptor>::iterator	m_carriageIter;
+		std::list<PieceDescriptor>::iterator	m_carriageIter;
 	};
 }

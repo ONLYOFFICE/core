@@ -1,7 +1,3 @@
-// stdafx.h : include file for standard system include files,
-// or project specific include files that are used frequently,
-// but are changed infrequently
-
 #pragma once
 
 #ifndef STRICT
@@ -15,7 +11,7 @@
 #endif
 
 #ifndef _WIN32_WINNT		// Allow use of features specific to Windows NT 4 or later.
-#define _WIN32_WINNT 0x0400	// Change this to the appropriate value to target Windows 2000 or later.
+#define _WIN32_WINNT 0x0400	// 0x0501 // VS_2012// Change this to the appropriate value to target Windows 2000 or later.
 #endif						
 
 #ifndef _WIN32_WINDOWS		// Allow use of features specific to Windows 98 or later.

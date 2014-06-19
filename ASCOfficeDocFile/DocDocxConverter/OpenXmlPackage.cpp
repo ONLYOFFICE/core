@@ -22,12 +22,12 @@ namespace DocFileFormat
 {
 	void OpenXmlPackage::GetOutputDir()
 	{
-		wstring::size_type pos = this->_fileName.find_last_of( _T( "\\" ) );
-		this->_outputDir = std::wstring( pos, NULL );
-		copy( this->_fileName.begin(), ( this->_fileName.begin() + pos ), this->_outputDir.begin() );
+		wstring::size_type pos = m_strFileName.find_last_of( _T( "\\" ) );
+		m_strOutputPath = std::wstring( pos, NULL );
+		copy(m_strFileName.begin(), (m_strFileName.begin() + pos ),m_strOutputPath.begin() );
 	}
 
-	OpenXmlPackage::OpenXmlPackage( const WordDocument* _docFile ):	_fileName( _T( "" ) ), _outputDir( _T( "" ) ), relID(1), _imageCounter(0), _headerCounter(0), _footerCounter(0),
+	OpenXmlPackage::OpenXmlPackage(const WordDocument* _docFile) : m_strFileName(_T("")), m_strOutputPath(_T("")), relID(1), _imageCounter(0), _headerCounter(0), _footerCounter(0),
 		_oleCounter(0), docFile(NULL), DocumentRelationshipsFile( _T( "word/_rels/document.xml.rels" ) ), MainRelationshipsFile( _T( "_rels/.rels" ) ),
 		FootnotesRelationshipsFile( _T( "word/_rels/footnotes.xml.rels" ) ), EndnotesRelationshipsFile( _T( "word/_rels/endnotes.xml.rels" ) ),
 		CommentsRelationshipsFile( _T( "word/_rels/comments.xml.rels" ) ), NumberingRelationshipsFile( _T( "word/_rels/numbering.xml.rels" ) )
@@ -53,7 +53,7 @@ namespace DocFileFormat
 	{
 #ifdef CREATE_UNZIPPED_XMLS
 
-		CreateDirectory( ( this->_outputDir + std::wstring( _T( "\\_rels" ) ) ).c_str(), NULL );
+		CreateDirectory( (m_strOutputPath + std::wstring( _T( "\\_rels" ) ) ).c_str(), NULL );
 
 #endif //CREATE_UNZIPPED_XMLS
 
@@ -61,7 +61,7 @@ namespace DocFileFormat
 
 #ifdef CREATE_UNZIPPED_XMLS
 
-		CreateDirectory( ( this->_outputDir + std::wstring( _T( "\\word\\_rels" ) ) ).c_str(), NULL );
+		CreateDirectory( (m_strOutputPath + std::wstring( _T( "\\word\\_rels" ) ) ).c_str(), NULL );
 
 #endif //CREATE_UNZIPPED_XMLS
 
@@ -428,11 +428,11 @@ namespace DocFileFormat
 
 #ifdef CREATE_ZIPPED_DOCX
 
-			SaveToFile( this->_outputDir, relationshipsFile.FileName, zf, std::wstring( writer.GetXmlString() ) );
+			SaveToFile(m_strOutputPath, relationshipsFile.FileName, zf, std::wstring( writer.GetXmlString() ) );
 
 #else
 
-			SaveToFile( this->_outputDir, relationshipsFile.FileName, std::wstring( writer.GetXmlString() ) );
+			SaveToFile(m_strOutputPath, relationshipsFile.FileName, std::wstring( writer.GetXmlString() ) );
 
 #endif // CREATE_ZIPPED_DOCX
 		}
@@ -471,11 +471,11 @@ namespace DocFileFormat
 
 #ifdef CREATE_ZIPPED_DOCX
 
-		SaveToFile( this->_outputDir, std::wstring( _T( "[Content_Types].xml" ) ), zf, std::wstring( writer.GetXmlString() ) );
+		SaveToFile(m_strOutputPath, std::wstring( _T( "[Content_Types].xml" ) ), zf, std::wstring( writer.GetXmlString() ) );
 
 #else
 
-		SaveToFile( this->_outputDir, std::wstring( _T( "[Content_Types].xml" ) ), std::wstring( writer.GetXmlString() ) );
+		SaveToFile(m_strOutputPath, std::wstring( _T( "[Content_Types].xml" ) ), std::wstring( writer.GetXmlString() ) );
 
 #endif // CREATE_ZIPPED_DOCX
 	}

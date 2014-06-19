@@ -128,8 +128,9 @@ namespace DocFileFormat
 		int AddPart( const IMapping* mapping, const wstring& packageDir, const wstring& fileName, const wstring& contentType = _T( "" ), const wstring& relationshipType = _T( "" ), const wstring& targetMode = _T( "" ) );
 
 	protected:	  
-		wstring _outputDir;
-		wstring _fileName;
+
+		std::wstring m_strOutputPath;
+		std::wstring m_strFileName;
 
 		OpenXmlPackage( const WordDocument* _docFile );
 

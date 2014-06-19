@@ -115,12 +115,12 @@ namespace DocFileFormat
 
 		CharacterPropertyExceptions* paraEndChpx		=	NULL;
 
-		if (NULL != chpxFcs)
+		if (chpxFcs)
 		{
 			chpxFcs->push_back(fcEnd);
 		}
 
-		if (NULL != chpxs)
+		if (chpxs)
 		{
 			// the last of these CHPX formats the paragraph end mark
 			paraEndChpx = *(chpxs->rbegin());
@@ -128,17 +128,17 @@ namespace DocFileFormat
 
 		// start paragraph
 		
-		m_pXmlWriter->WriteNodeBegin( _T( "w:p" ), TRUE );
+		m_pXmlWriter->WriteNodeBegin(_T("w:p"), TRUE);
 		writeParagraphRsid(papx);
 
 		// check for section properties
 		
-		if (NULL != sectionEnd)
+		if (sectionEnd)
 		{
 			// this is the last paragraph of this section
 			// write properties with section properties
 			
-			if (NULL != papx)
+			if (papx)
 			{
 				ParagraphPropertiesMapping oMapping(m_pXmlWriter, m_context, m_document, paraEndChpx, findValidSepx(cpEnd), _sectionNr);
 				papx->Convert(&oMapping);
@@ -150,14 +150,14 @@ namespace DocFileFormat
 		{
 			// write properties
 			
-			if (NULL != papx)
+			if (papx)
 			{
 				ParagraphPropertiesMapping oMapping(m_pXmlWriter, m_context, m_document, paraEndChpx);
 				papx->Convert(&oMapping);
 			}
 		}
 
-		if ( ( chpxs != NULL ) && ( chpxFcs != NULL ) && !chpxFcs->empty() )
+		if ((chpxs != NULL) && (chpxFcs != NULL) && !chpxFcs->empty())
 		{
 			int i = 0;
 
@@ -188,52 +188,53 @@ namespace DocFileFormat
 
 				//read the chars that are formatted via this CHPX
 
-				std::vector<WCHAR>* chpxChars	=	m_document->m_PieceTable->GetChars(fcChpxStart, fcChpxEnd, cp, m_document->WordDocumentStream);
+				std::vector<WCHAR>* chpxChars = m_document->m_PieceTable->GetChars(fcChpxStart, fcChpxEnd, cp, m_document->WordDocumentStream);
 
 #ifdef _DEBUG
 				if (0)
 				{
 					ATLTRACE(L"fcBegin : %d, fcEnd : %d\n", fcChpxStart, fcChpxEnd);
-					for (size_t j = 0; j < chpxChars->size(); ++j) ATLTRACE (L"%c", chpxChars->operator [](j));
-					ATLTRACE(L"\n");
+					for (size_t j = 0; j < chpxChars->size(); ++j) ATLTRACE (L"%c", chpxChars->operator [](j)); ATLTRACE(L"\n");
 				}
 #endif
 
 				//search for bookmarks in the chars
-				std::vector<int> bookmarks		=	searchBookmarks(chpxChars, cp);
+				std::vector<int> bookmarks = searchBookmarks(chpxChars, cp);
 
 				//if there are bookmarks in this run, split the run into several runs
 				if (bookmarks.size())
 				{
 					std::list<vector<WCHAR>>* runs = splitCharList(chpxChars, &bookmarks);
-
-					for (std::list<vector<WCHAR> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
+					if (runs) 
 					{
-						if (writeBookmarks(cp))
+						for (std::list<vector<WCHAR> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
 						{
-							cp = writeRun(&(*iter), *cpeIter, cp);
+							if (writeBookmarks(cp))
+							{
+								cp = writeRun(&(*iter), *cpeIter, cp);
+							}
 						}
-					}
 
-					RELEASEOBJECT(runs);
+						RELEASEOBJECT(runs);
+					}
 				}
 				else
 				{
 					cp = writeRun(chpxChars, *cpeIter, cp);
 				}
 
-				RELEASEOBJECT( chpxChars );
+				RELEASEOBJECT(chpxChars);
 
 				i++;
 			}
 
 			//end paragraph
-			m_pXmlWriter->WriteNodeEnd( _T( "w:p" ) );
+			m_pXmlWriter->WriteNodeEnd(_T("w:p"));
 		}
 		else
 		{
 			//end paragraph
-			m_pXmlWriter->WriteNodeEnd( _T( "w:p" ) );
+			m_pXmlWriter->WriteNodeEnd(_T("w:p"));
 		}
 
 		RELEASEOBJECT(chpxFcs);
@@ -246,7 +247,7 @@ namespace DocFileFormat
 	{
 		if (papx)  
 		{
-			for (std::list<SinglePropertyModifier>::const_iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); iter++ )
+			for (std::list<SinglePropertyModifier>::const_iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); ++iter)
 			{
 				// rsid for paragraph property enditing (write to parent element)
 				
@@ -270,63 +271,63 @@ namespace DocFileFormat
 	{
 		int cp = initialCp;
 
-		if ( ( _skipRuns <= 0 ) && ( chars->size() > 0 ) )
+		if ((_skipRuns <= 0) && (chars->size() > 0))
 		{
-			RevisionData rev = RevisionData( chpx );
+			RevisionData rev = RevisionData(chpx);
 
-			if ( rev.Type == Deleted )
+			if (Deleted == rev.Type)
 			{
 				//If it's a deleted run
-				m_pXmlWriter->WriteNodeBegin( _T( "w:del" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:author" ), _T( "[b2x: could not retrieve author]" ) ); 
-				m_pXmlWriter->WriteAttribute( _T( "w:date" ), _T( "[b2x: could not retrieve date]" ) ); 
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+				m_pXmlWriter->WriteNodeBegin(_T("w:del"), TRUE);
+				m_pXmlWriter->WriteAttribute(_T("w:author"), _T("[b2x: could not retrieve author]")); 
+				m_pXmlWriter->WriteAttribute(_T("w:date"), _T("[b2x: could not retrieve date]")); 
+				m_pXmlWriter->WriteNodeEnd(_T(""), TRUE, FALSE);
 			}
 			else if ( rev.Type == Inserted )
 			{
 				//if it's a inserted run
-				m_pXmlWriter->WriteNodeBegin( _T( "w:ins" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:author" ), dynamic_cast<WideString*>( m_document->RevisionAuthorTable->operator [] ( rev.Isbt ) )->c_str() ); 
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+				m_pXmlWriter->WriteNodeBegin(_T("w:ins"), TRUE);
+				m_pXmlWriter->WriteAttribute(_T("w:author"), dynamic_cast<WideString*>(m_document->RevisionAuthorTable->operator[](rev.Isbt))->c_str()); 
+				m_pXmlWriter->WriteNodeEnd(_T(""), TRUE, FALSE);
 				//rev.Dttm.Convert(new DateMapping(m_pXmlWriter));
 			}
 
 			//start run
-			m_pXmlWriter->WriteNodeBegin( _T( "w:r" ), TRUE );
+			m_pXmlWriter->WriteNodeBegin(_T("w:r"), TRUE);
 
 			//append rsids
-			if ( rev.Rsid != 0 )
+			if (0 != rev.Rsid)
 			{
-				std::wstring rsid = FormatUtils::IntToFormattedWideString( rev.Rsid, _T( "%08x" ) );
-				m_pXmlWriter->WriteAttribute( _T( "w:rsidR" ), rsid.c_str() );
-				m_context->AddRsid( rsid );
+				std::wstring rsid = FormatUtils::IntToFormattedWideString(rev.Rsid, _T("%08x"));
+				m_pXmlWriter->WriteAttribute(_T("w:rsidR"), rsid.c_str());
+				m_context->AddRsid(rsid);
 			}
 
-			if ( rev.RsidDel != 0 )
+			if (0 != rev.RsidDel)
 			{
-				std::wstring rsidDel = FormatUtils::IntToFormattedWideString( rev.RsidDel, _T( "%08x" ) );
-				m_pXmlWriter->WriteAttribute( _T( "w:rsidDel" ), rsidDel.c_str() );
-				m_context->AddRsid( rsidDel );
+				std::wstring rsidDel = FormatUtils::IntToFormattedWideString(rev.RsidDel, _T("%08x"));
+				m_pXmlWriter->WriteAttribute(_T("w:rsidDel"), rsidDel.c_str());
+				m_context->AddRsid(rsidDel);
 			}
 
-			if ( rev.RsidProp != 0 )
+			if (0 != rev.RsidProp)
 			{
-				std::wstring rsidProp = FormatUtils::IntToFormattedWideString( rev.RsidProp, _T( "%08x" ) ); 
-				m_pXmlWriter->WriteAttribute( _T( "w:rsidRPr" ), rsidProp.c_str() );
-				m_context->AddRsid( rsidProp );
+				std::wstring rsidProp = FormatUtils::IntToFormattedWideString(rev.RsidProp, _T("%08x")); 
+				m_pXmlWriter->WriteAttribute(_T("w:rsidRPr"), rsidProp.c_str());
+				m_context->AddRsid(rsidProp);
 			}
 
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+			m_pXmlWriter->WriteNodeEnd(_T(""), TRUE, FALSE);
 
 			/// <w:rPr>
 			CharacterPropertiesMapping* rPr = new CharacterPropertiesMapping(m_pXmlWriter, m_document, &rev, _lastValidPapx, false);
-			if(rPr)
+			if (rPr)
 			{
 				chpx->Convert(rPr);
 				RELEASEOBJECT(rPr);
 			}
 
-			if ( rev.Type == Deleted )
+			if (Deleted == rev.Type)
 			{
 				writeText(chars, cp, chpx, true);
 			}
@@ -336,15 +337,15 @@ namespace DocFileFormat
 			}
 
 			//end run
-			m_pXmlWriter->WriteNodeEnd( _T("w:r") );
+			m_pXmlWriter->WriteNodeEnd(_T("w:r"));
 
-			if ( rev.Type == Deleted )
+			if (Deleted == rev.Type)
 			{
-				m_pXmlWriter->WriteNodeEnd( _T("w:del") );
+				m_pXmlWriter->WriteNodeEnd(_T("w:del"));
 			}
-			else if ( rev.Type == Inserted )
+			else if (Inserted == rev.Type)
 			{
-				m_pXmlWriter->WriteNodeEnd( _T("w:ins") );
+				m_pXmlWriter->WriteNodeEnd(_T("w:ins"));
 			}
 		}
 		else
@@ -363,6 +364,7 @@ namespace DocFileFormat
 		bool fSpec = isSpecial (chpx);
 
 		//detect text type
+		
 		std::wstring textType = _T( "t" );
 		std::wstring text;
 
@@ -389,80 +391,81 @@ namespace DocFileFormat
 				ATLTRACE (L"\n");
 			}
 #endif
-			if( writeDeletedText )
+			if (writeDeletedText)
 			{
-				textType = wstring( _T( "delText" ) );
+				textType = std::wstring(_T("delText"));
 			}
-			else if( this->_writeInstrText )
+			else if (_writeInstrText)
 			{
-				textType = wstring( _T( "instrText" ) );
+				textType = std::wstring(_T("instrText"));
 			}
 
 			//write text
-			for ( unsigned int i = 0; i < chars->size(); i++ )
+			for (unsigned int i = 0; i < chars->size(); ++i)
 			{
-				WCHAR c = chars->at( i );
+				WCHAR c = chars->at(i);
 
-				if ( c == TextMark::Tab )
+				if (TextMark::Tab == c)
 				{
-					writeTextElement( text, textType );
+					writeTextElement(text, textType);
 
 					text.clear();
 
-					XMLTools::XMLElement<WCHAR> elem( _T( "w:tab" ) );
+					XMLTools::XMLElement<WCHAR> elem(_T("w:tab"));
 
-					m_pXmlWriter->WriteString( elem.GetXMLString().c_str() );
+					m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
 				}
-				else if ( c == TextMark::HardLineBreak )
+				else if (TextMark::HardLineBreak == c)
 				{
-					writeTextElement( text, textType );
+					writeTextElement(text, textType);
 
 					text.clear();
 
-					XMLTools::XMLElement<WCHAR> elem( _T( "w:br" ) );
-					elem.AppendAttribute( _T( "w:type" ), _T( "textWrapping" ) );
-					elem.AppendAttribute( _T( "w:clear" ), _T( "all" ) );
+					XMLTools::XMLElement<WCHAR> elem(_T("w:br"));
+					elem.AppendAttribute(_T("w:type"), _T("textWrapping"));
+					elem.AppendAttribute(_T("w:clear"), _T("all"));
 
-					m_pXmlWriter->WriteString( elem.GetXMLString().c_str() );
+					m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
 				}
-				else if ( c == TextMark::ParagraphEnd )
+				else if (TextMark::ParagraphEnd == c)
 				{
 					//do nothing
 				}
-				else if ( c == TextMark::PageBreakOrSectionMark )
+				else if (TextMark::PageBreakOrSectionMark == c)
 				{
 					//write page break, section breaks are written by writeParagraph() method
-					if ( !isSectionEnd( cp ) )
+					if (!isSectionEnd(c))
 					{
-						writeTextElement( text, textType );
+						writeTextElement(text, textType);
 
 						text.clear();
 
-						XMLTools::XMLElement<WCHAR> elem( _T( "w:br" ) );
-						elem.AppendAttribute( _T( "w:type" ), _T( "page" ) );
+						XMLTools::XMLElement<WCHAR> elem(_T("w:br"));
+						elem.AppendAttribute(_T("w:type"), _T("page"));
 
-						m_pXmlWriter->WriteString( elem.GetXMLString().c_str() );
+						m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
 					}
 				}
-				else if ( c == TextMark::ColumnBreak )
+				else if (TextMark::ColumnBreak == c)
 				{
-					writeTextElement( text, textType );
+					writeTextElement(text, textType);
 
 					text.clear();
 
-					XMLTools::XMLElement<WCHAR> elem( _T( "w:br" ) );
-					elem.AppendAttribute( _T( "w:type" ), _T( "column" ) );
+					XMLTools::XMLElement<WCHAR> elem(_T("w:br"));
+					elem.AppendAttribute(_T("w:type"), _T("column"));
 
-					m_pXmlWriter->WriteString( elem.GetXMLString().c_str() );
+					m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
 				}
-				else if ( c == TextMark::FieldBeginMark )
+				else if (TextMark::FieldBeginMark == c)
 				{
 					int cpFieldStart = initialCp + i;
 					int cpFieldEnd = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::FieldEndMark );
-					wstring f( ( m_document->Text->begin() + cpFieldStart ), ( m_document->Text->begin() + cpFieldEnd + 1 ) );
-					wstring embed( _T( " EMBED" ) );
-					wstring link( _T( " LINK" ) );
-					wstring form( _T( " FORM" ) );
+					
+					std::wstring f( ( m_document->Text->begin() + cpFieldStart ), ( m_document->Text->begin() + cpFieldEnd + 1 ) );
+					std::wstring embed( _T( " EMBED" ) );
+					std::wstring link( _T( " LINK" ) );
+					std::wstring form( _T( " FORM" ) );
 
 					if ( search( f.begin(), f.end(), form.begin(), form.end() ) != f.end() )
 					{
@@ -547,9 +550,9 @@ namespace DocFileFormat
 						this->_fldCharCounter++;
 					}
 				}
-				else if ( c == TextMark::FieldSeparator )
+				else if (TextMark::FieldSeparator == c)
 				{
-					if ( this->_fldCharCounter > 0 )
+					if (_fldCharCounter > 0)
 					{
 						XMLTools::XMLElement<WCHAR> elem( _T( "w:fldChar" ) );
 						elem.AppendAttribute( _T( "w:fldCharType" ), _T( "separate" ) );
@@ -557,9 +560,9 @@ namespace DocFileFormat
 						m_pXmlWriter->WriteString( elem.GetXMLString().c_str() );
 					}
 				}
-				else if ( c == TextMark::FieldEndMark )
+				else if (TextMark::FieldEndMark == c)
 				{
-					if ( this->_fldCharCounter > 0 )
+					if (_fldCharCounter > 0)
 					{
 						XMLTools::XMLElement<WCHAR> elem( _T( "w:fldChar" ) );
 						elem.AppendAttribute( _T( "w:fldCharType" ), _T( "end" ) );
@@ -574,7 +577,7 @@ namespace DocFileFormat
 						this->_writeInstrText = false;
 					}
 				}
-				else if ( ( c == TextMark::Symbol ) && fSpec )
+				else if ((TextMark::Symbol == c) && fSpec)
 				{
 					Symbol s = getSymbol( chpx );
 
@@ -583,7 +586,7 @@ namespace DocFileFormat
 					m_pXmlWriter->WriteAttribute(_T("w:char"), FormatUtils::XmlEncode(s.HexValue).c_str()); 
 					m_pXmlWriter->WriteNodeEnd(_T(""), TRUE);
 				}
-				else if ((c == TextMark::DrawnObject ) && fSpec)
+				else if ((TextMark::DrawnObject == c) && fSpec)
 				{
 					Spa* pSpa			=	NULL;
 					if (typeid(*this) == typeid(MainDocumentMapping))
@@ -598,7 +601,7 @@ namespace DocFileFormat
 
 					if (pSpa)
 					{
-						ShapeContainer* pShape	=	m_document->GetOfficeArt()->GetShapeContainer(pSpa->GetShapeID());
+						ShapeContainer* pShape = m_document->GetOfficeArt()->GetShapeContainer(pSpa->GetShapeID());
 
 						if (pShape)
 						{
@@ -609,7 +612,7 @@ namespace DocFileFormat
 						}
 					}
 				}
-				else if ( ( c == TextMark::Picture ) && fSpec )
+				else if ((TextMark::Picture == c) && fSpec)
 				{
 					PictureDescriptor oPicture (chpx, m_document->DataStream);
 
@@ -626,35 +629,35 @@ namespace DocFileFormat
 						}
 					}                   
 				}
-				else if ( ( c == TextMark::AutoNumberedFootnoteReference ) && fSpec )
+				else if ((TextMark::AutoNumberedFootnoteReference == c) && fSpec)
 				{
-					if ( ( m_document->FootnoteReferenceCharactersPlex != NULL ) && ( m_document->FootnoteReferenceCharactersPlex->IsCpExists( cp ) ) )
+					if ((m_document->FootnoteReferenceCharactersPlex != NULL) && (m_document->FootnoteReferenceCharactersPlex->IsCpExists(cp)))
 					{
 						m_pXmlWriter->WriteNodeBegin( _T( "w:footnoteReference" ), TRUE );
 						m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString(_footnoteNr++ ).c_str() ); 
 						m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 					}
-					else if ( ( m_document->IndividualFootnotesPlex != NULL ) && ( m_document->IndividualFootnotesPlex->IsCpExists( cp - m_document->FIB->m_RgLw97.ccpText ) ) )
+					else if ((m_document->IndividualFootnotesPlex != NULL) && (m_document->IndividualFootnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpText)))
 					{
 						m_pXmlWriter->WriteNodeBegin( _T( "w:footnoteRef" ), TRUE );
 						m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 					}
-					else if ( ( m_document->EndnoteReferenceCharactersPlex != NULL ) && (m_document->EndnoteReferenceCharactersPlex->IsCpExists( cp ) ) )
+					else if ((m_document->EndnoteReferenceCharactersPlex != NULL) && (m_document->EndnoteReferenceCharactersPlex->IsCpExists(cp)))
 					{
 						m_pXmlWriter->WriteNodeBegin( _T( "w:endnoteReference" ), TRUE );
 						m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString(_endnoteNr++ ).c_str() ); 
 						m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 					}
-					else if ( ( m_document->IndividualEndnotesPlex != NULL ) && 
-						( m_document->IndividualEndnotesPlex->IsCpExists( cp - m_document->FIB->m_RgLw97.ccpAtn - m_document->FIB->m_RgLw97.ccpHdr - m_document->FIB->m_RgLw97.ccpFtn - m_document->FIB->m_RgLw97.ccpText ) ) )
+					else if ((m_document->IndividualEndnotesPlex != NULL) && 
+						(m_document->IndividualEndnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpAtn - m_document->FIB->m_RgLw97.ccpHdr - m_document->FIB->m_RgLw97.ccpFtn - m_document->FIB->m_RgLw97.ccpText)))
 					{
 						m_pXmlWriter->WriteNodeBegin( _T( "w:endnoteRef" ), TRUE );
 						m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 					}
 				}
-				else if ( c == TextMark::AnnotationReference )
+				else if (TextMark::AnnotationReference == c)
 				{
-					if ( typeid( *this ) != typeid( CommentsMapping ) )
+					if (typeid(*this) != typeid(CommentsMapping))
 					{
 						m_pXmlWriter->WriteNodeBegin( _T( "w:commentReference" ), TRUE );
 						m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString( this->_commentNr ).c_str() ); 
@@ -668,21 +671,21 @@ namespace DocFileFormat
 
 					this->_commentNr++;
 				}
-				else if ( !FormatUtils::IsControlSymbol( c ) && ( (int)c != 0xFFFF ) )
+				else if (!FormatUtils::IsControlSymbol(c) && ((int)c != 0xFFFF))
 				{
-					text += FormatUtils::GetXMLSymbol( c );
+					text += FormatUtils::GetXMLSymbol(c);
 				}
 
 				cp++;
 			}
 
-			if ( !text.empty() )
+			if (!text.empty())
 			{
-				writeTextStart( textType );
+				writeTextStart(textType);
 
-				m_pXmlWriter->WriteString( text.c_str() );
+				m_pXmlWriter->WriteString(text.c_str());
 
-				writeTextEnd( textType );
+				writeTextEnd(textType);
 
 #ifdef _DEBUG
 				//OutputDebugStringW ( text.c_str() );
@@ -691,7 +694,7 @@ namespace DocFileFormat
 			}
 	}
 
-	void DocumentMapping::writeTextElement(const wstring& text, const wstring& textType)
+	void DocumentMapping::writeTextElement(const std::wstring& text, const std::wstring& textType)
 	{
 		if ( !text.empty() )
 		{
@@ -703,18 +706,18 @@ namespace DocFileFormat
 		}
 	}
 
-	void DocumentMapping::writeTextStart(const wstring& textType)
+	void DocumentMapping::writeTextStart(const std::wstring& textType)
 	{
-		wstring str = ( wstring( _T( "w:" ) ) + textType );
+		std::wstring str = ( std::wstring( _T( "w:" ) ) + textType );
 
 		m_pXmlWriter->WriteNodeBegin( str.c_str(), TRUE );
 		m_pXmlWriter->WriteAttribute( _T( "xml:space" ), _T( "preserve" ) ); 
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 	}
 
-	void DocumentMapping::writeTextEnd(const wstring& textType)
+	void DocumentMapping::writeTextEnd(const std::wstring& textType)
 	{
-		wstring str = ( wstring( _T( "w:" ) ) + textType );
+		std::wstring str = ( std::wstring( _T( "w:" ) ) + textType );
 
 		m_pXmlWriter->WriteNodeEnd( str.c_str() );
 	}

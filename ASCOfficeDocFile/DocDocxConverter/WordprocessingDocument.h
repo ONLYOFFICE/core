@@ -49,9 +49,8 @@ namespace DocFileFormat
 #endif // CREATE_ZIPPED_DOCX
 
 	public:
-		WordprocessingDocument( const WCHAR* _fileName, const WordDocument* _docFile );
+		WordprocessingDocument(const WCHAR* _fileName, const WordDocument* _docFile);
 		virtual ~WordprocessingDocument();
 		void SaveDocument();
-		void SaveDocument( const WCHAR *file );
 	};
 }

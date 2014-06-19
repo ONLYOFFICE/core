@@ -8,33 +8,34 @@
 
 ASCOfficeCriticalSection  g_oCriticalSection;
 
-STDMETHODIMP COfficeDocFile::LoadFromFile (BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions)
+STDMETHODIMP COfficeDocFile::LoadFromFile(BSTR bsDocFile, BSTR bsDocxFilePath, BSTR bsXMLOptions) 
 {
-	HRESULT hr					=	AVS_ERROR_UNEXPECTED;
-
-	wstring fullFileNameStr (sSrcFileName);
-
-	wstring::size_type lastCh	=	fullFileNameStr.find_last_of( _T( '\\' ) );
-	wstring::size_type lastDot	=	fullFileNameStr.find_last_of( _T( '.' ) );
-
-	wstring FileNameStr( ( fullFileNameStr.begin() + lastCh ), ( fullFileNameStr.begin() + lastDot ) );
-	FileNameStr += wstring( _T( ".docx" ) );
-	wstring outPutFile = wstring( sDstPath ) + FileNameStr;
-
 #ifdef _DEBUG
 	//_CrtDumpMemoryLeaks();
 	//_CrtSetBreakAlloc(11001);
-#endif 
+#endif 	
+	
+	HRESULT hr = AVS_ERROR_UNEXPECTED;
 
-	ProgressCallback			ffCallBack;
+	std::wstring strDocFile(bsDocFile);
+	std::wstring strDocxPath(bsDocxFilePath);
 
-	ffCallBack.OnProgress		=	OnProgressFunc;
-	ffCallBack.OnProgressEx		=	OnProgressExFunc;
-	ffCallBack.caller			=	this;
+	std::wstring::size_type lastCh	= strDocFile.find_last_of(_T('\\'));
+	std::wstring::size_type lastDot	= strDocFile.find_last_of(_T('.'));
+
+	std::wstring strFileName((strDocFile.begin() + lastCh), (strDocFile.begin() + lastDot));
+	strFileName += std::wstring(_T(".docx"));
+	std::wstring docxFile = strDocxPath + strFileName;
+
+	ProgressCallback ffCallBack;
+
+	ffCallBack.OnProgress	= OnProgressFunc;
+	ffCallBack.OnProgressEx	= OnProgressExFunc;
+	ffCallBack.caller		= this;
 
 	DocFileFormat::Converter docToDocx;
 
-	hr							=	docToDocx.LoadAndConvert(sSrcFileName, outPutFile.c_str(), &ffCallBack);
+	hr						=	docToDocx.LoadAndConvert(bsDocFile, docxFile.c_str(), &ffCallBack);
 
 #ifdef _DEBUG
 	//_CrtDumpMemoryLeaks();

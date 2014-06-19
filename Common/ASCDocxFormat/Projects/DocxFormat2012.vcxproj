@@ -1,0 +1,1225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>DocxFormat</ProjectName>
+    <ProjectGuid>{A100103A-353E-45E8-A9B8-90B87CC5C0B0}</ProjectGuid>
+    <RootNamespace>DocxFormat</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.60610.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\Lib\Debug\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\Lib\Release\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>precompiled_docxformat.h</PrecompiledHeaderFile>
+      <ProgramDataBaseFileName>$(IntDir)DocxFormat.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>.\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>precompiled_docxformat.h</PrecompiledHeaderFile>
+      <ProgramDataBaseFileName>$(IntDir)DocxFormat.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Source\DocxFormat\Rels\File.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Rels\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Rels\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Rels\RelationShip.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Rels\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Rels\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Rels\RelationTable.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Rels\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Rels\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\WebSettings.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\WebSettings\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\WebSettings\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\App.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\App\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\App\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Core.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Core\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Core\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Settings\ClrSchemeMapping.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Settings\Endnote.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Settings\EndnotePr.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Settings\File.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Settings\Footnote.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Settings\FootnotePr.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Settings\HdrShapeDefaults.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Settings\IdMap.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Settings\MathPr.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Settings\ProofState.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Settings\Rule.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Settings\Rules.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Settings\Shapedefault.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Settings\ShapeDefaults.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Settings\Shapelayout.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Settings\Zoom.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Setting\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Document.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Document\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Document\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\BevelT.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\BgFillStyleLst.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\Camera.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\ClrScheme.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\ClrSchemeItem.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\EffectLst.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\EffectStyle.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\EffectStyleLst.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\ExtraClrSchemeLst.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\File.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\FillStyleLst.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\FillToRect.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\FmtScheme.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\Font.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\FontScheme.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\GradFill.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\Gs.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\GsLst.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\LightRig.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\Lin.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\Ln.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\LnStyleLst.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\MajorFont.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\MinorFont.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\ObjectDefaults.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\OuterShdw.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\Path.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\Rot.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\Scene3d.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\SchemeClr.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\SolidFill.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\Sp3d.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\SrgbClr.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\SysClr.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Theme\ThemeElements.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Theme\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\ContentTypes\File.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\ContentTypes\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\ContentTypes\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Styles\DocDefaults.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Styles\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Styles\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Styles\LattentStyles.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Styles\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Styles\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Styles\LsdException.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Styles\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Styles\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Styles\Style.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Styles\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Styles\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Styles.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Styles\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Styles\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\ItemProps.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\ItemProps\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\ItemProps\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\ItemProps\SchemaRef.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\ItemProps\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\ItemProps\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\ItemProps\SchemaRefs.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\ItemProps\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\ItemProps\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Align.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Background.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\BackgroundColor.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\BookmarkEnd.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\BookmarkEndParagraph.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\BookmarkStart.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\BookmarkStartParagraph.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Border.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\BorderItem.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Bottom.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Color.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\ColorsTable.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Column.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Columns.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Delete.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\DocumentGrid.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\EndNoteProperty.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\FooterReference.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\FootNoteProperty.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\HeaderReference.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Index.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Insert.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Lang.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\LnNumType.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\NoteProperty.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\NumFormat.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\PageBorders.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\PageMargin.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\PageSize.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Paragraph.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\ParagraphBorder.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\ParagraphItem.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\ParagraphItemBase.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\ParagraphProperty.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\ParagraphPropertyChange.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\RFonts.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Run.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\RunItem.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\RunItemBase.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\RunProperty.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\RunPropertyChange.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\SectorProperty.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Shading.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Spacing.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TabProperty.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TabsProperty.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TextFrameProperties.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\TextItem.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TextItemBase.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\CellMarginItem.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\GridColumn.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Table.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TableBorders.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TableCell.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TableCellBorders.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TableCellMar.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TableCellMargin.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\TableCellProperties.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TableCellWidth.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TableGrid.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TableInd.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TableProperty.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TableRow.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TableRowHeight.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\TableRowProperties.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\TableStyle.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\TableStyleProperties.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\TableWidth.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TCMar.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\VMerge.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\FootnoteRef.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\FootnoteReference.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\EndnoteRef.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\EndnoteReference.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\FieldCodes.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\OleObject.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\OleZIndex.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\ContinuationSeparator.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Separator.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Break.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\NullRun.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Symbol.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Tab.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Text.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Ind.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\List.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\NumPr.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\DocPr.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Drawing.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\DrawingWrap.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\EffectExtent.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Extent.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Graphic.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Inline.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Pic.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Point2D.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\WrapPath.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Hyperlink.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\DelText.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\DocPartObj.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\FldChar.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\InstrText.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Sdt.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\SdtContent.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\SdtEndProperty.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\SdtProperty.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\FldSimple.cpp">
+      <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</AssemblerListingLocation>
+      <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</AssemblerListingLocation>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Complex.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Extrusion.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\F.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Fill.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\FillStyle.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Formulas.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Group.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\H.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Handles.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\ImageData.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Line.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\LineStyle.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Lock.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Oval.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Path.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Pict.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Rect.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Roundrect.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Shadow.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Shape.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\ShapeStyle.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\ShapeType.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Stroke.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Logic\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TextBox.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\TextBoxContent.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\TextPath.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Logic\Wrap.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\BorderName.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\BorderValue.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\BreakClear.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\BreakType.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\Cap.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\Cmpd.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\ComplexExt.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\ConnectType.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\Dash.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\DocGridType.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\DrawingWrapType.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\DropCap.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\Ext.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\FillType.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\FldCharType.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\FontCharset.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\FontFamily.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\FontName.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\FontPitch.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\HorizontalAnchorLocation.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\InlineName.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\Join.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\Leader.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\LineRule.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\MsoRelative.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\Orient.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\PictName.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\Position.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\Prst.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\PrstClrVal.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\RelativeFrom.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\SectPrType.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\SeparatorType.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\Suffix.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\TableCellWidthType.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\TableRowHeightRule.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\TableStyleType.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\TableWidthType.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\TabVal.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\TextAlignment.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\TextFrameType.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\TextWrapType.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\TrueFalse.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\TypeFootHead.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Limit\UnderType.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\VerticalAlign.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\VerticalAnchorLocation.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Limit\VMergeVal.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Limit\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Numbering.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Numbering\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Numbering\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Item.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Item\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Item\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\FootNote.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\FootNote\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\FootNote\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\FootNote\Note.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\FootNote\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\FootNote\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\EndNote.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\EndNote\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\EndNote\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\EndNote\Note.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\EndNote\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\EndNote\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Footer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Footer\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Footer\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Header.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\Header\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\Header\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\FontTable\Font.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\FontTable\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\FontTable\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\FontTable.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\FontTable\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\FontTable\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Media\Media.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\External\External.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\External\ExternalAudio.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\External\ExternalImage.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\External\ExternalVideo.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\External\HyperLink.cpp" />
+    <ClCompile Include="..\..\DocxFormat\Source\SystemUtility\FileSystem\Directory.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\DocxFormat\Source\SystemUtility\FileSystem\File.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\DocxFormat\Source\SystemUtility\SystemUtility.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\DateTime.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\File.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\FileFactory.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\FileType.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Folder.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\FormatError.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\IFileBuilder.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\IFileContainer.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\NamespaceOwn.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Namespaces.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\precompiled_docxformat.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\RId.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Docx\</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Docx\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\UnknowTypeFile.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Source\DocxFormat\Rels\File.h" />
+    <ClInclude Include="..\Source\DocxFormat\Rels\RelationShip.h" />
+    <ClInclude Include="..\Source\DocxFormat\Rels\RelationTable.h" />
+    <ClInclude Include="..\Source\DocxFormat\WebSettings.h" />
+    <ClInclude Include="..\Source\DocxFormat\App.h" />
+    <ClInclude Include="..\Source\DocxFormat\Core.h" />
+    <ClInclude Include="..\Source\DocxFormat\Settings\ClrSchemeMapping.h" />
+    <ClInclude Include="..\Source\DocxFormat\Settings\Endnote.h" />
+    <ClInclude Include="..\Source\DocxFormat\Settings\EndnotePr.h" />
+    <ClInclude Include="..\Source\DocxFormat\Settings\File.h" />
+    <ClInclude Include="..\Source\DocxFormat\Settings\Footnote.h" />
+    <ClInclude Include="..\Source\DocxFormat\Settings\FootnotePr.h" />
+    <ClInclude Include="..\Source\DocxFormat\Settings\HdrShapeDefaults.h" />
+    <ClInclude Include="..\Source\DocxFormat\Settings\IdMap.h" />
+    <ClInclude Include="..\Source\DocxFormat\Settings\MathPr.h" />
+    <ClInclude Include="..\Source\DocxFormat\Settings\ProofState.h" />
+    <ClInclude Include="..\Source\DocxFormat\Settings\Rule.h" />
+    <ClInclude Include="..\Source\DocxFormat\Settings\Rules.h" />
+    <ClInclude Include="..\Source\DocxFormat\Settings\Shapedefault.h" />
+    <ClInclude Include="..\Source\DocxFormat\Settings\ShapeDefaults.h" />
+    <ClInclude Include="..\Source\DocxFormat\Settings\Shapelayout.h" />
+    <ClInclude Include="..\Source\DocxFormat\Settings\Zoom.h" />
+    <ClInclude Include="..\Source\DocxFormat\Document.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\BevelT.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\BgFillStyleLst.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\Camera.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\ClrScheme.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\ClrSchemeItem.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\EffectLst.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\EffectStyle.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\EffectStyleLst.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\ExtraClrSchemeLst.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\File.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\FillStyleLst.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\FillToRect.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\FmtScheme.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\Font.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\FontScheme.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\GradFill.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\Gs.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\GsLst.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\LightRig.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\Lin.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\Ln.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\LnStyleLst.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\MajorFont.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\MinorFont.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\ObjectDefaults.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\OuterShdw.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\Path.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\Rot.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\Scene3d.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\SchemeClr.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\SolidFill.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\Sp3d.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\SrgbClr.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\SysClr.h" />
+    <ClInclude Include="..\Source\DocxFormat\Theme\ThemeElements.h" />
+    <ClInclude Include="..\Source\DocxFormat\ContentTypes\File.h" />
+    <ClInclude Include="..\Source\DocxFormat\Styles.h" />
+    <ClInclude Include="..\Source\DocxFormat\ItemProps.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Align.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Background.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\BackgroundColor.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\BookmarkEnd.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\BookmarkEndParagraph.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\BookmarkStart.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\BookmarkStartParagraph.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Border.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\BorderItem.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Bottom.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Color.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\ColorsTable.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Column.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Columns.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Delete.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\DocumentGrid.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\EndNoteProperty.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\FooterReference.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\FootNoteProperty.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\HeaderReference.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Index.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Insert.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Lang.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\LnNumType.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\NoteProperty.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\NumFormat.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\PageBorders.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\PageMargin.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\PageSize.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Paragraph.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\ParagraphBorder.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\ParagraphItem.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\ParagraphItemBase.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\ParagraphProperty.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\ParagraphPropertyChange.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\RFonts.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Run.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\RunItem.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\RunItemBase.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\RunProperty.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\RunPropertyChange.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\SectorProperty.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Shading.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Spacing.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TabProperty.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TabsProperty.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TextFrameProperties.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TextItem.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TextItemBase.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\CellMarginItem.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\GridColumn.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Table.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TableBorders.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TableCell.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TableCellBorders.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TableCellMar.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TableCellMargin.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TableCellProperties.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TableCellWidth.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TableGrid.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TableInd.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TableProperty.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TableRow.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TableRowHeight.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TableRowProperties.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TableStyle.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TableStyleProperties.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TableWidth.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TCMar.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\VMerge.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\FootnoteRef.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\FootnoteReference.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\EndnoteRef.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\EndnoteReference.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\FieldCodes.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\OleObject.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\OleZIndex.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\ContinuationSeparator.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Separator.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Break.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\NullRun.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Symbol.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Tab.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Text.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Ind.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\List.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\NumPr.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\DocPr.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Drawing.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\DrawingWrap.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\EffectExtent.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Extent.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Graphic.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Inline.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Pic.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Point2D.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\WrapPath.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Hyperlink.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\DelText.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\DocPartObj.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\FldChar.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\InstrText.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Sdt.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\SdtContent.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\SdtEndProperty.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\SdtProperty.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\FldSimple.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Complex.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Extrusion.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\F.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Fill.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\FillStyle.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Formulas.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Group.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\H.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Handles.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\ImageData.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Line.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\LineStyle.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Lock.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Oval.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Path.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Pict.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Rect.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Roundrect.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Shadow.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Shape.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\ShapeStyle.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\ShapeType.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Stroke.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TextBox.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TextBoxContent.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\TextPath.h" />
+    <ClInclude Include="..\Source\DocxFormat\Logic\Wrap.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\BorderName.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\BorderValue.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\BreakClear.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\BreakType.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\Cap.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\Cmpd.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\ComplexExt.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\ConnectType.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\Dash.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\DocGridType.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\DrawingWrapType.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\DropCap.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\Ext.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\FillType.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\FldCharType.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\FontCharset.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\FontFamily.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\FontName.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\FontPitch.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\HorizontalAnchorLocation.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\InlineName.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\Join.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\Leader.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\LineRule.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\MsoRelative.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\Orient.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\PictName.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\Position.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\Prst.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\PrstClrVal.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\RelativeFrom.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\SectPrType.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\SeparatorType.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\Suffix.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\TableCellWidthType.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\TableRowHeightRule.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\TableStyleType.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\TableWidthType.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\TabVal.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\TextAlignment.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\TextFrameType.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\TextWrapType.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\TrueFalse.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\TypeFootHead.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\UnderType.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\VerticalAlign.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\VerticalAnchorLocation.h" />
+    <ClInclude Include="..\Source\DocxFormat\Limit\VMergeVal.h" />
+    <ClInclude Include="..\Source\DocxFormat\Numbering.h" />
+    <ClInclude Include="..\Source\DocxFormat\Item.h" />
+    <ClInclude Include="..\Source\DocxFormat\FootNote.h" />
+    <ClInclude Include="..\Source\DocxFormat\EndNote.h" />
+    <ClInclude Include="..\Source\DocxFormat\Footer.h" />
+    <ClInclude Include="..\Source\DocxFormat\Header.h" />
+    <ClInclude Include="..\Source\DocxFormat\FontTable.h" />
+    <ClInclude Include="..\Source\DocxFormat\Media\Media.h" />
+    <ClInclude Include="..\Source\DocxFormat\External\External.h" />
+    <ClInclude Include="..\Source\DocxFormat\External\ExternalAudio.h" />
+    <ClInclude Include="..\Source\DocxFormat\External\ExternalImage.h" />
+    <ClInclude Include="..\Source\DocxFormat\External\ExternalVideo.h" />
+    <ClInclude Include="..\Source\DocxFormat\External\HyperLink.h" />
+    <ClInclude Include="..\..\DocxFormat\Source\SystemUtility\FileSystem\Directory.h" />
+    <ClInclude Include="..\..\DocxFormat\Source\SystemUtility\FileSystem\File.h" />
+    <ClInclude Include="..\..\DocxFormat\Source\SystemUtility\SystemUtility.h" />
+    <ClInclude Include="..\Source\DocxFormat\DateTime.h" />
+    <ClInclude Include="..\Source\DocxFormat\Docx.h" />
+    <ClInclude Include="..\Source\DocxFormat\File.h" />
+    <ClInclude Include="..\Source\DocxFormat\FileFactory.h" />
+    <ClInclude Include="..\Source\DocxFormat\FileType.h" />
+    <ClInclude Include="..\Source\DocxFormat\FileTypes.h" />
+    <ClInclude Include="..\Source\DocxFormat\Folder.h" />
+    <ClInclude Include="..\Source\DocxFormat\FormatError.h" />
+    <ClInclude Include="..\Source\DocxFormat\IFileBuilder.h" />
+    <ClInclude Include="..\Source\DocxFormat\IFileContainer.h" />
+    <ClInclude Include="..\Source\DocxFormat\NamespaceOwn.h" />
+    <ClInclude Include="..\Source\DocxFormat\Namespaces.h" />
+    <ClInclude Include="..\Source\DocxFormat\precompiled_docxformat.h" />
+    <ClInclude Include="..\Source\DocxFormat\RId.h" />
+    <ClInclude Include="..\Source\DocxFormat\Unit.h" />
+    <ClInclude Include="..\Source\DocxFormat\UnknowTypeFile.h" />
+    <ClInclude Include="..\Source\DocxFormat\WritingElement.h" />
+    <ClInclude Include="..\Source\DocxFormat\WritingVector.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Common2012.vcxproj">
+      <Project>{399893aa-3617-4cd8-a980-7f15cdafa3d2}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="Utility2012.vcxproj">
+      <Project>{7b9f3647-32d3-4f82-8ca5-a43e490e1457}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="XML2012.vcxproj">
+      <Project>{c1587c15-6268-4451-9263-937e63a945f6}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -128,9 +128,9 @@ namespace DocFileFormat
 
 namespace DocFileFormat
 {
-	vector<WCHAR>* PieceTable::GetAllEncodingText(IStream* stream)
+	std::vector<WCHAR>* PieceTable::GetAllEncodingText(IStream* stream)
 	{
-		vector<WCHAR> *piecePairs = new vector<WCHAR>();
+		std::vector<WCHAR> *piecePairs = new std::vector<WCHAR>();
 
 		for ( list<PieceDescriptor>::iterator iter = this->Pieces.begin(); iter != this->Pieces.end(); ++iter)
 		{
@@ -156,7 +156,7 @@ namespace DocFileFormat
 			stream->Seek(nSeekPos, STREAM_SEEK_SET, NULL);
 			stream->Read(bytes, cb, NULL);
 
-			FormatUtils::GetSTLCollectionFromBytes<vector<WCHAR> >(piecePairs, bytes, cb, pcd.encoding);
+			FormatUtils::GetSTLCollectionFromBytes<std::vector<WCHAR> >(piecePairs, bytes, cb, pcd.encoding);
 
 			RELEASEARRAYOBJECTS(bytes);
 		}
@@ -164,9 +164,9 @@ namespace DocFileFormat
 		return piecePairs;
 	}
 
-	vector<WCHAR>* PieceTable::GetEncodingChars (int fcStart, int fcEnd, IStream* wordStream)
+	std::vector<WCHAR>* PieceTable::GetEncodingChars (int fcStart, int fcEnd, IStream* wordStream)
 	{
-		vector<WCHAR> *encodingChars = new vector<WCHAR>();
+		std::vector<WCHAR> *encodingChars = new std::vector<WCHAR>();
 
 		for (list<PieceDescriptor>::iterator iter = Pieces.begin(); iter != Pieces.end(); ++iter)
 		{
@@ -223,7 +223,7 @@ namespace DocFileFormat
 				wordStream->Read( bytes, cb, NULL );
 
 				//get the chars
-				FormatUtils::GetSTLCollectionFromBytes<vector<WCHAR>>( encodingChars, bytes, cb, pcd.encoding );
+				FormatUtils::GetSTLCollectionFromBytes<std::vector<WCHAR>>( encodingChars, bytes, cb, pcd.encoding );
 
 				RELEASEARRAYOBJECTS( bytes );
 			}
@@ -243,13 +243,13 @@ namespace DocFileFormat
 				wordStream->Read( bytes, cb, NULL );
 
 				//get the chars
-				FormatUtils::GetSTLCollectionFromBytes<vector<WCHAR>>( encodingChars, bytes, cb, pcd.encoding );
+				FormatUtils::GetSTLCollectionFromBytes<std::vector<WCHAR>>(encodingChars, bytes, cb, pcd.encoding);
 
-				RELEASEARRAYOBJECTS( bytes );
+				RELEASEARRAYOBJECTS(bytes);
 
 				break;
 			}
-			else if ( ( fcStart >= (int)pcd.fc ) && ( fcEnd <= pcdFcEnd ) )
+			else if ((fcStart >= (int)pcd.fc) && (fcEnd <= pcdFcEnd))
 			{
 				//requested chars are completly in this piece
 				//read from fcStart to fcEnd
@@ -290,23 +290,25 @@ namespace DocFileFormat
 		}
 		return encodingChars;
 	}
-	vector<WCHAR>* PieceTable::GetChars(int fcStart, int fcEnd, int cp, IStream* word)
+	std::vector<WCHAR>* PieceTable::GetChars(int fcStart, int fcEnd, int cp, IStream* word)
 	{
-		vector<WCHAR>* encodingChars = new vector<WCHAR>();
+		std::vector<WCHAR>* encodingChars = new std::vector<WCHAR>();
 
 		//if (fcStart >= fcEnd)
 		//	return encodingChars;
 
-		if (fcStart == 20488 && fcEnd == 20560)
-		{
-			int ccc = 0;
-		}
+#ifdef _DEBUG
+		//if (fcStart == 3296 && fcEnd == 3326)
+		//{
+		//	int ccc = 0;
+		//}
+#endif
 
 		int fcSize = fcEnd - fcStart;
 
 		bool read = true;
 
-		for (list<PieceDescriptor>::iterator iter = m_carriageIter; iter != Pieces.end(); ++iter)
+		for (list<PieceDescriptor>::iterator iter = Pieces.begin(); iter != Pieces.end(); ++iter)
 		{
 			PieceDescriptor pcd = (*iter);
 
@@ -410,6 +412,8 @@ namespace DocFileFormat
 			}
 			else if (fcEnd < (int)pcd.fc)		//	this piece is beyond the requested range
 			{	
+				//ATLTRACE(_T("PieceTable::GetChars() - fcEnd < (int)pcd.fc\n"));
+
 				// имеет место быть перескок по стриму, поэтому корректируем начальную позицию
 
 				//size_t count = encodingChars->size();
@@ -447,7 +451,7 @@ namespace DocFileFormat
 		return encodingChars;
 	}
 
-	inline bool PieceTable::ReadSymbolsBuffer(int pos, int size, Encoding encoding, IStream* word, vector<WCHAR>* encodingChars)
+	inline bool PieceTable::ReadSymbolsBuffer(int pos, int size, Encoding encoding, IStream* word, std::vector<WCHAR>* encodingChars)
 	{
 		byte* bytes = new byte[size];
 		if (NULL == bytes)
@@ -458,7 +462,7 @@ namespace DocFileFormat
 		word->Seek(readPos, STREAM_SEEK_SET, NULL);
 		word->Read(bytes, size, NULL);
 
-		FormatUtils::GetSTLCollectionFromBytes<vector<WCHAR>>(encodingChars, bytes, size, encoding);
+		FormatUtils::GetSTLCollectionFromBytes<std::vector<WCHAR>>(encodingChars, bytes, size, encoding);
 		RELEASEARRAYOBJECTS(bytes);
 
 		return true;

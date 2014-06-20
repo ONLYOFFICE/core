@@ -171,7 +171,7 @@ struct ods_array_formula_state
 class ods_table_state
 {
 public:
-	ods_table_state(ods_conversion_context & Context, office_element_ptr & elm);
+	ods_table_state(odf_conversion_context * Context, office_element_ptr & elm);
 		void set_table_name(std::wstring name);
 		void set_table_style(office_element_ptr & _style);
 		void set_table_hidden(bool Val);
@@ -206,7 +206,7 @@ public:
 
 	void set_cell_format_value(office_value_type::type value_type);
 	void set_cell_type(__int32 type);
-	void set_cell_value(std::wstring & value);	
+	void set_cell_value(std::wstring & value, bool need_cash = false);	
 	void set_cell_text(odf_text_context *text_context, bool cash_value = false);
 	void set_cell_formula(std::wstring &formula);
 	void set_cell_array_formula(std::wstring & formula, std::wstring ref);
@@ -267,7 +267,7 @@ public:
 
 private:
 
-    ods_conversion_context & context_;   
+    odf_conversion_context * context_;   
 	
 	std::wstring		office_table_name_;
 	office_element_ptr	office_table_;

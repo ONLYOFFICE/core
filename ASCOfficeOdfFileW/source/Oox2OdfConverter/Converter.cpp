@@ -15,7 +15,7 @@
 #include "style_paragraph_properties.h"
 
 #include <XlsxFormat\Xlsx.h>
-
+#include <DocxFormat\Docx.h>
 
 namespace Oox2Odf
 {

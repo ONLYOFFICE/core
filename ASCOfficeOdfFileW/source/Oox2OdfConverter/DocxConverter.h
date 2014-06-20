@@ -9,13 +9,15 @@ namespace OOX
 
 	namespace Logic
 	{
-		class CDrawing;		
 		class CParagraph;
 		class CParagraphProperty;
 		class CRun;
 		class CRunProperty;
 		class CText;
 		class CAlternateContent;
+		class CDrawing;	
+		class CGroupShape;
+		class CShape;
 	}
 }
 
@@ -69,6 +71,11 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CDrawing				*oox_drawing);
 		void convert(OOX::Drawing::CAnchor				*oox_anchor);
 		void convert(OOX::Drawing::CInline				*oox_inline);
+		void convert(OOX::Drawing::CGraphic				*oox_graphic);
+		void convert(OOX::Logic::CGroupShape			*oox_group_shape);
+		void convert(OOX::Logic::CShape					*oox_shape);
+		void convert(OOX::Drawing::CChart				*oox_chart);
+		void convert(OOX::Drawing::CPicture				*oox_chart);
 
 	};
 }

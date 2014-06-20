@@ -110,6 +110,10 @@ public:
 		void set_layout_w(double *val,int mode);
 		void set_layout_h(double *val,int mode);
 
+		void set_local_table(bool Val);
+		//void set_cash(std::wstring format, std::vector<double>		&data);
+		void set_cash(std::wstring format, std::vector<std::wstring> &data);
+
 	void end_chart();
 
 private:

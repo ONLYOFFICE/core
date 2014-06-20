@@ -3,7 +3,6 @@
 #define OOX_SHAPE_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
-//#include "../../DocxFormat/Logic/Paragraph.h"
 
 namespace OOX
 {

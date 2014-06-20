@@ -2505,6 +2505,8 @@ HRESULT CAVSOfficeDrawingConverter::GetThemeBinary(BSTR bsThemeFilePath, SAFEARR
 	if (ppBinary == NULL)
 		return S_FALSE;
 
+	CString strOldRels = m_strCurrentRelsPath;
+
 	m_strCurrentRelsPath = bsThemeFilePath;
 	SetCurrentRelsPath();
 
@@ -2527,6 +2529,9 @@ HRESULT CAVSOfficeDrawingConverter::GetThemeBinary(BSTR bsThemeFilePath, SAFEARR
 
 	m_oBinaryWriter.ThemeDoc = pTheme.smart_dynamic_cast<PPTX::FileContainer>();
 	//m_oBinaryWriter.ThemeDoc.reset();
+
+	m_strCurrentRelsPath = strOldRels;
+	SetCurrentRelsPath();
 
 	return S_OK;
 }

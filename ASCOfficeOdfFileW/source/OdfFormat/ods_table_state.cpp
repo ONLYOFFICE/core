@@ -94,7 +94,7 @@ std::wstring convert_time(std::wstring & oox_time)
 ///////////////////////////////////////////////////////////////
 static formulasconvert::oox2odf_converter formulas_converter;
 
-ods_table_state::ods_table_state(ods_conversion_context & Context, office_element_ptr & elm): context_(Context),drawing_context_(&Context)
+ods_table_state::ods_table_state(odf_conversion_context * Context, office_element_ptr & elm): context_(Context),drawing_context_(Context)
 {     
 	office_table_ = elm; 
 
@@ -501,7 +501,7 @@ void ods_table_state::add_definded_expression(office_element_ptr & elm)
 {
 	if (!table_defined_expressions_)
 	{
-		create_element(L"table", L"named-expressions",table_defined_expressions_,&context_);
+		create_element(L"table", L"named-expressions",table_defined_expressions_,context_);
 		office_table_->add_child_element(table_defined_expressions_);
 	}
 	if (!table_defined_expressions_)return;
@@ -521,7 +521,7 @@ void ods_table_state::start_comment(__int32 col, __int32 row, std::wstring & aut
 	ods_comment_state state;
 
 	state.row=row;  state.col =col; state.author = author;	
-	create_element(L"office", L"annotation",state.elm,&context_);
+	create_element(L"office", L"annotation",state.elm,context_);
 
 	comments_.push_back(state);
 }
@@ -552,7 +552,7 @@ void ods_table_state::end_comment(odf_text_context *text_context)
 	if (comments_.back().author.length() > 0 && comments_.back().elm)
 	{
 		office_element_ptr dc_elm;
-		create_element(L"dc", L"creator",dc_elm,&context_);
+		create_element(L"dc", L"creator",dc_elm,context_);
 		if (dc_elm)
 		{
 			dc_elm->add_text(comments_.back().author);
@@ -852,7 +852,7 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 	//	table_cell_properties->style_table_cell_properties_attlist_.style_text_align_source_ = odf::text_align_source(odf::text_align_source::Fix);
 	//}	
 }
-void ods_table_state::set_cell_value(std::wstring & value)
+void ods_table_state::set_cell_value(std::wstring & value, bool need_cash)
 {
 	if (cells_size_  < 1)return;
 
@@ -910,18 +910,27 @@ void ods_table_state::set_cell_value(std::wstring & value)
 		{
 			if (need_test_cach)
 			{
-				double test = boost::lexical_cast<double>(value);
+				double test = boost::lexical_cast<double>(value);			
+				need_cash =true;
 			}
-			context_.start_text_context();
-				context_.text_context()->start_paragraph();
-					context_.text_context()->add_text_content(value);
-				context_.text_context()->end_paragraph();
-
-				set_cell_text(context_.text_context(), true);
-			context_.end_text_context();
 		}
 		catch(...)
 		{
+			if (need_cash)
+			{
+				cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_ = boost::none;
+				cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::String);
+			}
+		}
+		if (need_cash)
+		{
+			context_->start_text_context();
+				context_->text_context()->start_paragraph();
+					context_->text_context()->add_text_content(value);
+				context_->text_context()->end_paragraph();
+
+				set_cell_text(context_->text_context(), true);
+			context_->end_text_context();
 		}
 	}
 }
@@ -959,7 +968,7 @@ void ods_table_state::add_default_cell( __int16 repeated)
 
 //////////////////////////////////////////////////
 	office_element_ptr default_cell_elm;
-	create_element(L"table", L"table-cell",default_cell_elm, &context_);
+	create_element(L"table", L"table-cell",default_cell_elm, context_);
 
 	current_row_element()->add_child_element(default_cell_elm);
 	
@@ -990,7 +999,7 @@ void ods_table_state::add_default_cell( __int16 repeated)
 void ods_table_state::start_conditional_formats()
 {
 	office_element_ptr		elm;
-	create_element(L"calcext", L"conditional-formats",elm,&context_);
+	create_element(L"calcext", L"conditional-formats",elm,context_);
 
 	current_level_.back()->add_child_element(elm);
 	current_level_.push_back(elm);
@@ -1003,7 +1012,7 @@ void ods_table_state::end_conditional_formats()
 void ods_table_state::start_conditional_format(std::wstring ref)
 {
 	office_element_ptr		elm;
-	create_element(L"calcext", L"conditional-format",elm,&context_);
+	create_element(L"calcext", L"conditional-format",elm,context_);
 
 	current_level_.back()->add_child_element(elm);
 	current_level_.push_back(elm);
@@ -1028,13 +1037,13 @@ void ods_table_state::start_conditional_rule(__int32 rule_type)
 {
 	office_element_ptr		elm;
 
-	if (rule_type == 3)		create_element(L"calcext", L"color-scale",elm,&context_); 
-	else if (rule_type == 7)create_element(L"calcext", L"data-bar",elm,&context_);
-	else if (rule_type ==10)create_element(L"calcext", L"icon-set",elm,&context_);
-	else if (rule_type ==14)create_element(L"calcext", L"date-is",elm,&context_);
+	if (rule_type == 3)		create_element(L"calcext", L"color-scale",elm,context_); 
+	else if (rule_type == 7)create_element(L"calcext", L"data-bar",elm,context_);
+	else if (rule_type ==10)create_element(L"calcext", L"icon-set",elm,context_);
+	else if (rule_type ==14)create_element(L"calcext", L"date-is",elm,context_);
 	else
 	{
-		create_element(L"calcext", L"condition",elm,&context_);
+		create_element(L"calcext", L"condition",elm,context_);
 		calcext_condition* condition = dynamic_cast<calcext_condition*>	 (elm.get());
 		
 		if (condition) 
@@ -1147,7 +1156,7 @@ void ods_table_state::set_conditional_value(__int32 type, std::wstring value )
 	if (icon_set || data_bar)
 	{
 		office_element_ptr		elm;
-		create_element(L"calcext", L"formatting-entry",elm, &context_);
+		create_element(L"calcext", L"formatting-entry",elm, context_);
 		
 		current_level_.back()->add_child_element(elm);
 
@@ -1170,7 +1179,7 @@ void ods_table_state::set_conditional_value(__int32 type, std::wstring value )
 	if (color_scale)
 	{
 		office_element_ptr		elm;
-		create_element(L"calcext", L"color-scale-entry",elm, &context_);
+		create_element(L"calcext", L"color-scale-entry",elm, context_);
 		
 		current_level_.back()->add_child_element(elm);
 

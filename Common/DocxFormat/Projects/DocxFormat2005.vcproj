@@ -366,18 +366,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Sections"
-				>
-				<File
-					RelativePath="..\Source\DocxFormat\Logic\SectionProperty.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\DocxFormat\Logic\SectionProperty.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="Fields and Hyperlinks"
 				>
 				<File
@@ -680,6 +668,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Drawing"
+				>
+				<File
+					RelativePath="..\Source\DocxFormat\Logic\Shape.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Numbering"
@@ -864,6 +860,18 @@
 				RelativePath="..\Source\DocxFormat\Drawing\DrawingTransform.h"
 				>
 			</File>
+			<Filter
+				Name="Sections"
+				>
+				<File
+					RelativePath="..\Source\DocxFormat\Logic\SectionProperty.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\DocxFormat\Logic\SectionProperty.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Utility"

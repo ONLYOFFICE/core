@@ -16,20 +16,24 @@
 #include "DrawingPicture.h"
 #include "DrawingCoreInfo.h"
 
+#include "../Logic/Shape.h"
+
 namespace OOX
 {
 	namespace Drawing
 	{
 		//--------------------------------------------------------------------------------
-		// CGraphic 20.1.2.2.16;20.1.2.2.17 (Part 1)
+		// CGraphic 20.1.2.2.16; 20.1.2.2.17 (Part 1)
 		//--------------------------------------------------------------------------------	
 		enum EGraphicType
 		{
 			// Согласно спецификации Docx стр.3456 (20.4) элементами графики могут быть только
-			graphictypePicture      = 0, // Картинки  20.2
-			graphictypeLockedCanvas = 1, // Канвы     20.3
-			graphictypeChart        = 2, // Графики   21.2
-			graphictypeDiagram      = 3, // Диаграммы 21.4
+			graphictypePicture      = 0, // Картинки		20.2
+			graphictypeLockedCanvas = 1, // Канвы			20.3
+			graphictypeChart        = 2, // Графики			21.2
+			graphictypeDiagram      = 3, // Диаграммы		21.4
+			graphictypeShape	    = 4, // Шейпы			20.4
+			graphictypeGroupShape   = 5, // Группы Шейпов	20.4
 		};
 
 		class CGraphic : public WritingElement
@@ -59,6 +63,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("a:graphicData") == sName )
 					{
+						// 20.1.2.2.17 graphicData (Graphic Object Data)
+						//Child Elements/Subclause = Any element in any namespace/n/a
 						ReadAttributes( oReader );
 						
 						if ( oReader.IsEmptyNode() )
@@ -78,9 +84,18 @@ namespace OOX
 								m_oChart     = oReader;
 								m_eGraphicType = graphictypeChart;
 							}
-							
+							else if ( _T("wps:wsp") == sName )
+							{
+								m_oShape   = oReader;
+								m_eGraphicType = graphictypeShape;
+							}
+							else if ( _T("wpg:wgp") == sName )
+							{
+								 m_oGroupShape   = oReader;
+								m_eGraphicType = graphictypeGroupShape;
+							}
 						}
-					}
+					} 
 				}
 			}
 			virtual CString      toXML() const
@@ -114,6 +129,10 @@ namespace OOX
 			// Childs
 			nullable<OOX::Drawing::CPicture>	m_oPicture;
 			nullable<OOX::Drawing::CChart>		m_oChart;
+
+			nullable<OOX::Logic::CGroupShape>	m_oGroupShape;
+			nullable<OOX::Logic::CShape>		m_oShape;
+
 
 		};
 	} // Drawing

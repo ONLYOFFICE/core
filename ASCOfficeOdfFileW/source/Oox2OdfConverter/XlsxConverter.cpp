@@ -1418,12 +1418,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 	{
 		oox_table_position from={}, to={};
 		
-		convert(oox_anchor->m_oFrom.GetPointer(), &from);	
-		convert(oox_anchor->m_oTo.GetPointer(),&to);
+		convert(oox_anchor->m_oFrom.GetPointer(),	&from);	
+		convert(oox_anchor->m_oTo.GetPointer(),		&to);
 
 		double x1=0, y1=0, x2=0, y2=0;
 		ods_context->current_table().convert_position(from, x1, y1);
-		ods_context->current_table().convert_position(to, x2, y2);
+		ods_context->current_table().convert_position(to,	x2, y2);
 		
 		ods_context->drawing_context()->set_drawings_rect(x1, y1, x2-x1, y2-y1);
 	}
@@ -1566,8 +1566,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CShape* oox_shape)
 
 	if (type < 0)return;
 /////////////////////////////////////////////////////////////////////////////////
-	if (type == 2000)ods_context->drawing_context()->start_text_box(); 
-	else ods_context->drawing_context()->start_shape(type);
+	if (type == 2000)	ods_context->drawing_context()->start_text_box(); 
+	else				ods_context->drawing_context()->start_shape(type);
+	
 	{	
 		OoxConverter::convert(oox_shape->m_oSpPr.GetPointer(), oox_shape->m_oShapeStyle.GetPointer());
 
@@ -1743,10 +1744,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 		}		
 		if (oox_picture->m_oNvPicPr.IsInit())
 		{
-			if (oox_picture->m_oNvPicPr->m_oCNvPr.IsInit())
-			{
-				OoxConverter::convert(oox_picture->m_oNvPicPr->m_oCNvPr.GetPointer());		
-			}
+			OoxConverter::convert(oox_picture->m_oNvPicPr->m_oCNvPr.GetPointer());		
 
 			if (oox_picture->m_oNvPicPr->m_oCNvPicPr.IsInit())
 			{

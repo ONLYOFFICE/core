@@ -676,6 +676,18 @@ namespace OOX
 		et_w15_presenceInfo, // <w15:presenceInfo>
 		et_w15_person, // <w15:person>
 		et_w15_commentEx, // <w15:commentEx>
+
+		et_w_ShapeTextBody,		//<wps:txbx>
+		et_w_Shape,				//<wps:wsp>
+		et_w_GroupShape,		//<wpg:wgp>
+		et_w_cNvPr,				//<wps:cNvPr>
+		et_w_spPr,				//<wps:spPr>
+		et_w_groupSpPr,			//<wpg:grpSpPr>
+		et_w_ConnectionNonVisualShapeProps,//<wps:cNvSpPr>
+		et_w_NonVisualGroupShapeDrawingProps,//<wpg:cNvGrpSpPr>
+		et_w_ConnectionNonVisualConnShapeProps,
+		et_w_ShapeNonVisual		//<wps:spPr>
+
 	};
 
 	class WritingElement

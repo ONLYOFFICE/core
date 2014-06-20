@@ -23,6 +23,8 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ChartSpace  *oox_chart)
 {
 	if (!oox_chart)return;
 
+	convert(oox_chart->m_externalData);
+
 	convert(oox_chart->m_oSpPr.GetPointer());	
 	convert(oox_chart->m_oTxPr.GetPointer());
 
@@ -901,7 +903,8 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_SerTx* ser_tx)
 	if (ser_tx->m_strRef)
 	{
 		if (ser_tx->m_strRef->m_f)odf_context()->chart_context()->set_series_label_formula(string2std_string(*ser_tx->m_strRef->m_f));
-		if (ser_tx->m_strRef->m_strCache){}
+		
+		convert(ser_tx->m_strRef->m_strCache);
 	}
 	//if (ser_tx->m_v)odf_context()->chart_context()->set_series_name(string2std_string(*ser_tx->m_v));
 
@@ -917,12 +920,14 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_AxDataSource* cat, int type)
 	if (cat->m_strRef)
 	{
 		if (cat->m_strRef->m_f)odf_context()->chart_context()->set_category_axis_formula(string2std_string(*cat->m_strRef->m_f),type);
-		if (cat->m_strRef->m_strCache){}
+		
+		convert(cat->m_strRef->m_strCache);
 	}
 	else if (cat->m_numRef)
 	{
 		if (cat->m_numRef->m_f)odf_context()->chart_context()->set_category_axis_formula(string2std_string(*cat->m_numRef->m_f),type);
-		if (cat->m_numRef->m_numCache){}
+		
+		convert(cat->m_numRef->m_numCache);
 	}
 	else if (cat->m_numLit)
 	{
@@ -937,7 +942,8 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_NumDataSource* val)
 	if (val->m_numRef)
 	{
 		if (val->m_numRef->m_f)odf_context()->chart_context()->set_series_value_formula(string2std_string(*val->m_numRef->m_f));
-		if (val->m_numRef->m_numCache){}
+		
+		convert(val->m_numRef->m_numCache);
 	}
 	else if (val->m_numLit)
 	{
@@ -954,5 +960,67 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Surface* ct_surface, int type)
 
 
 	//odf_context()->chart_context()->end_element();
+}
+void OoxConverter::convert(OOX::Spreadsheet::CT_ExternalData *external_data)
+{
+	if (external_data == NULL)return;
+	//данные для диаграммы внутренние !!!
+
+	if (external_data->m_id == NULL)return;
+
+	//CString pathEmbeddings = GetEmbeddings(*external_data->m_id);
+	//oO
+	//unpack
+
+	//get/check Format - xlsx
+	//конверт sheets -> table:table
+
+	//или
+	//convert xlsx -> ods & read tables???
+
+	odf_context()->chart_context()->set_local_table(true);//пока пользуем кэш ....
+}
+void OoxConverter::convert(OOX::Spreadsheet::CT_NumData	*num_data)
+{
+	if (num_data == NULL)return;
+
+	//std::vector<double> data;
+	std::vector<std::wstring> data;
+
+	for (long i=0; i < num_data->m_pt.GetCount(); i++)
+	{
+
+		if (num_data->m_pt[i] && num_data->m_pt[i]->m_v)
+		{
+			data.push_back(string2std_string(*num_data->m_pt[i]->m_v));
+			//double val=0;
+			//try
+			//{		
+			//	val = boost::lexical_cast<double>(num_data->m_pt[i]->m_v->GetBuffer());
+			//}catch(...)
+			//{
+			//}
+			//data.push_back(val);
+		}
+	}
+	std::wstring format;
+	if (num_data->m_formatCode) format = string2std_string(*num_data->m_formatCode);
+	
+	odf_context()->chart_context()->set_cash(format, data);
+}
+void OoxConverter::convert(OOX::Spreadsheet::CT_StrData *str_data)
+{
+	if (str_data == NULL)return;
+	std::vector<std::wstring> data;
+
+	for (long i=0; i < str_data->m_pt.GetCount(); i++)
+	{
+		if (str_data->m_pt[i] && str_data->m_pt[i]->m_v)
+			data.push_back(string2std_string(*str_data->m_pt[i]->m_v));
+
+	}
+	std::wstring format;
+
+	odf_context()->chart_context()->set_cash(format, data);
 }
 }

@@ -793,6 +793,8 @@ namespace OOX
 					m_eType = et_xdr_spPr;
 				else if ( _T("c:spPr") == sName )
 					m_eType = et_c_spPr;
+				else if ( _T("wps:spPr") == sName )
+					m_eType = et_w_spPr;
 				else
 					return;
 
@@ -879,6 +881,8 @@ namespace OOX
 					sResult = _T("<xdr:spPr ");
 				else if ( et_c_spPr == m_eType )
 					sResult = _T("<c:spPr ");
+				else if ( et_w_spPr == m_eType )
+					sResult = _T("<wps:spPr ");
 				else
 					return _T("");
 
@@ -982,6 +986,8 @@ namespace OOX
 					sResult = _T("</xdr:spPr>");
 				else if ( et_c_spPr == m_eType )
 					sResult = _T("</c:spPr>");
+				else if ( et_w_spPr == m_eType )
+					sResult = _T("</wps:spPr>");
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -1092,6 +1098,8 @@ namespace OOX
 					m_eType = 		et_a_groupSpPr;
 				else if ( _T("xdr:grpSpPr") == sName )
 					m_eType = et_xdr_groupSpPr;
+				else if ( _T("wpg:grpSpPr") == sName )
+					m_eType = et_w_groupSpPr;
 				else
 					return;
 

@@ -56,7 +56,7 @@ void odf_text_context::add_text_content(const std::wstring & text)
 	//}
 	//else
 	{
-		if (current_level_.size() >=0 )
+		if (current_level_.size() > 0 )
 			current_level_.back()->add_text(text);
 	}
 }

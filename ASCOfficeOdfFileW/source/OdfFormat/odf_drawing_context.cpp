@@ -136,6 +136,8 @@ public:
 	std::vector<odf_group_state>	group_list_; //группы
 	std::vector<odf_drawing_state>	drawing_list_;	//все элементы(кроме групп) .. для удобства разделение по "топам"
 
+	office_element_ptr root_element_;
+
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -261,6 +263,8 @@ void odf_drawing_context::clear()
 	impl_->global_svg_y_		= boost::none;
 	impl_->global_svg_height_	= boost::none;
 	impl_->global_svg_width_	= boost::none;
+
+	impl_->root_element_ = office_element_ptr();
 }
 
 void odf_drawing_context::start_drawing()
@@ -385,6 +389,7 @@ office_element_ptr odf_drawing_context::Impl::create_draw_element(int type)
 		create_element(L"draw", L"g", element, odf_context_);
 		break;
 	}
+	if (root_element_ == NULL) root_element_ = element;
 
 	return element;
 }
@@ -720,14 +725,14 @@ void odf_drawing_context::set_rotate(int iVal)
 	double dRotate = (360 - iVal/60000.)/180. * 3.14159265358979323846;
 	impl_->current_drawing_state_.rotateAngle = dRotate;
 }
-void odf_drawing_context::set_drawings_rect(double x_pt, double y_pt, double width_pt, double height_pt)
+void odf_drawing_context::set_drawings_rect(double x_pt, double y_pt, double width_pt, double height_pt)// "- 1" не задано
 {
 	//хороший тон сохранить все размеры в см (хотя можно и в другой системе)
-	impl_->global_svg_x_ = length(length(x_pt,length::pt).get_value_unit(length::cm),length::cm);
-	impl_->global_svg_y_ = length(length(y_pt,length::pt).get_value_unit(length::cm),length::cm);
+	if (x_pt >= 0)	impl_->global_svg_x_ = length(length(x_pt,length::pt).get_value_unit(length::cm),length::cm);
+	if (y_pt >= 0)	impl_->global_svg_y_ = length(length(y_pt,length::pt).get_value_unit(length::cm),length::cm);
 
-	impl_->global_svg_height_ = length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
-	impl_->global_svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);	
+	if (width_pt >= 0) impl_->global_svg_height_	= length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
+	if (height_pt >= 0)impl_->global_svg_width_		= length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);	
 }
 void odf_drawing_context::set_position(double x_pt, double y_pt)
 {
@@ -1577,6 +1582,11 @@ void odf_drawing_context::set_bitmap_tile_translate_x(double x)
 {
 	if (!impl_->current_graphic_properties)return;
 	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_x_ = percent(x);
+}
+
+office_element_ptr & odf_drawing_context::get_root_element()
+{
+	return impl_->root_element_;
 }
 ///////////////////
 }

@@ -28,6 +28,9 @@ namespace OOX
 
 	namespace Drawing
 	{
+		class CPicture;
+		class CChart;
+		class CGraphic;
 		class CInline;
 		class CAnchor;
 		class CNonVisualDrawingProps;
@@ -313,6 +316,10 @@ public:
 		void convert(OOX::Spreadsheet::CT_DLbls					*ser_lbls);
 		void convert(OOX::Spreadsheet::CT_Marker				*marker);
 		void convert(OOX::Spreadsheet::CT_Marker				*marker, CAtlArray<OOX::Spreadsheet::CT_DPt*> & dPt);
+		void convert(OOX::Spreadsheet::CT_ExternalData			*external_data);
+		void convert(OOX::Spreadsheet::CT_NumData				*num_data);
+		void convert(OOX::Spreadsheet::CT_StrData				*str_data);
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 		void convert(double oox_font_size,			cpdoccore::_CP_OPT(cpdoccore::odf::font_size) & odf_font_size);
 	};

@@ -149,7 +149,7 @@ void ods_table_context::add_defined_expression(std::wstring & name,std::wstring 
 
 void ods_table_context::start_table(office_element_ptr & elm)
 {
-	table_state_list_.push_back( ods_table_state(context_, elm) );
+	table_state_list_.push_back( ods_table_state(&context_, elm) );
 	
 	std::wstring style_name_new = L"ta" + boost::lexical_cast<std::wstring>(table_state_list_.size());
 

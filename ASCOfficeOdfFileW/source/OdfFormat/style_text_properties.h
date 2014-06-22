@@ -9,8 +9,8 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 
-#include "bool.h"
-#include "style_ref.h"
+#include "common_attlists.h"
+
 #include "fontvariant.h"
 #include "texttransform.h"
 #include "color.h"
@@ -260,6 +260,8 @@ public:
 
     // style:text-overline-style
     _CP_OPT(std::wstring) style_text_overline_style_;
+
+	common_border_attlist common_border_attlist_;
 
 };
 

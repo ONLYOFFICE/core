@@ -2,6 +2,12 @@
 
 #include "Converter.h"
 
+#include <boost/foreach.hpp>
+#include <cpdoccore/CPSharedPtr.h>
+#include <cpdoccore/CPOptional.h>
+
+#include <Common/SimpleTypes_Word.h>
+
 namespace OOX 
 {
 	class CDocx;
@@ -18,9 +24,20 @@ namespace OOX
 		class CDrawing;	
 		class CGroupShape;
 		class CShape;
+		class CPBdr;
+	}
+
+}
+namespace ComplexTypes
+{
+	namespace Word
+	{
+		class CColor;
+		class CJc;
+		class CBorder;
+		class CShading;
 	}
 }
-
 namespace cpdoccore 
 {
 	namespace odf 
@@ -34,6 +51,7 @@ namespace cpdoccore
 		class odt_conversion_context;
 	}
 }
+
 using namespace cpdoccore;
 
 namespace Oox2Odf
@@ -64,8 +82,8 @@ namespace Oox2Odf
 
 		void convert(OOX::Logic::CParagraph				*oox_paragraph);
 		void convert(OOX::Logic::CRun					*oox_run);
-		void convert(OOX::Logic::CParagraphProperty		*oox_paragraph_prop);
-		void convert(OOX::Logic::CRunProperty			*oox_run_prop);
+		void convert(OOX::Logic::CParagraphProperty		*oox_paragraph_prop,	odf::style_paragraph_properties *paragraph_properties);
+		void convert(OOX::Logic::CRunProperty			*oox_run_prop,			odf::style_text_properties		*text_properties);
 		void convert(OOX::Logic::CText					*oox_text);
 		void convert(OOX::Logic::CAlternateContent		*oox_alt_content);
 		void convert(OOX::Logic::CDrawing				*oox_drawing);
@@ -76,6 +94,15 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CShape					*oox_shape);
 		void convert(OOX::Drawing::CChart				*oox_chart);
 		void convert(OOX::Drawing::CPicture				*oox_chart);
+		void convert(ComplexTypes::Word::CColor			*color,			_CP_OPT(odf::color)		 & odf_color);
+		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf::length)	 & odf_size);
+		void convert(ComplexTypes::Word::CJc			*oox_jc,		_CP_OPT(odf::text_align) & align);
+		void convert(OOX::Logic::CPBdr					*oox_border,	odf::style_paragraph_properties * paragraph_properties);
+		void convert(ComplexTypes::Word::CBorder		*borderProp,	std::wstring & odf_border_prop);
+		void convert(ComplexTypes::Word::CShading		*oox_shading, odf::style_text_properties * text_properties );
 
+		void convert(SimpleTypes::CHexColor<>			*color, SimpleTypes::CThemeColor<>	*theme_color, 
+														SimpleTypes::CUcharHexNumber<>* theme_tint,
+														SimpleTypes::CUcharHexNumber<>* theme_shade, _CP_OPT(odf::color) & odf_color);
 	};
 }

@@ -112,7 +112,7 @@ public:
 
 		void set_local_table(bool Val);
 		//void set_cash(std::wstring format, std::vector<double>		&data);
-		void set_cash(std::wstring format, std::vector<std::wstring> &data);
+		void set_cash(std::wstring format, std::vector<std::wstring> &data,bool label = false);
 
 	void end_chart();
 

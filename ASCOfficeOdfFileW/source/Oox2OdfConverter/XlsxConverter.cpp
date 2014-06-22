@@ -1045,8 +1045,15 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf::style_pa
 	}
 	if (aligment->m_oTextRotation.IsInit())
 	{
-		cell_properties->style_table_cell_properties_attlist_.common_rotation_angle_attlist_.style_rotation_angle_ = aligment->m_oTextRotation->GetValue();
-		cell_properties->style_table_cell_properties_attlist_.style_rotation_align_= odf::rotation_align(odf::rotation_align::Bottom);
+		int rot = aligment->m_oTextRotation->GetValue();
+		if (rot <=180 && rot >= 0 ) 
+		{
+			cell_properties->style_table_cell_properties_attlist_.common_rotation_angle_attlist_.style_rotation_angle_ = rot;
+			cell_properties->style_table_cell_properties_attlist_.style_rotation_align_= odf::rotation_align(odf::rotation_align::Bottom);
+		}
+		else if (rot == 0xff)//вертикальный текст
+			cell_properties->style_table_cell_properties_attlist_.style_direction_ = odf::direction(odf::direction::Ttb);
+
 	}
 	if(aligment->m_oHorizontal.IsInit())
 	{

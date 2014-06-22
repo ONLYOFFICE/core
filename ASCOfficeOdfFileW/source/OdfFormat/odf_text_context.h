@@ -39,6 +39,8 @@ public:
 public:
 	void set_styles_context(odf_style_context*  styles_context);//дл€ embedded 
     
+	void add_text_style(office_element_ptr & style_elm, std::wstring style_name);
+
 	void set_single_object(bool val, style_paragraph_properties *para_props, style_text_properties *text_props);
 	void add_text_content(const std::wstring & text);
     
@@ -52,6 +54,9 @@ public:
 	void start_span(bool styled = false); 
     void end_span();
 		
+	void add_textline_break();
+	void add_page_break();
+
 	std::vector<office_element_ptr> current_level_;//посто€нно мен€ющийс€ список уровней наследовани€
 
 	std::vector<odf_text_state> text_elements_list_;//параграфы, списки , ... 

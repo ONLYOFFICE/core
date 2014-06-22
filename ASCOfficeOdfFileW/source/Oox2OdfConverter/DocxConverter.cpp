@@ -56,29 +56,29 @@ OOX::CTheme* DocxConverter::oox_theme()
 CString	DocxConverter::find_link_by_id (CString sId, int type)
 {
 	CString ref;
-	//if (type==1)
-	//{
-	//	if (docx_current_drawing)
-	//	{
-	//		smart_ptr<OOX::File> oFile = docx_current_drawing->Find(sId);
-	//		if (oFile.IsInit() && OOX::FileTypes::Image == oFile->type())
-	//		{
-	//			OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+	if (type==1)
+	{
+		if (docx_document->GetDocument())
+		{
+			smart_ptr<OOX::File> oFile = docx_document->GetDocument()->Find(sId);
+			if (oFile.IsInit() && OOX::FileTypes::Image == oFile->type())
+			{
+				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 
-	//			ref = pImage->filename().GetPath();
-	//		}
-	//	}
-	//	if (ref.GetLength() < 1 && oox_current_chart)
-	//	{
-	//		smart_ptr<OOX::File> oFile = oox_current_chart->Find(sId);
-	//		if (oFile.IsInit() && OOX::FileTypes::Image == oFile->type())
-	//		{
-	//			OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+				ref = pImage->filename().GetPath();
+			}
+		}
+		if (ref.GetLength() < 1 && oox_current_chart)
+		{
+			smart_ptr<OOX::File> oFile = oox_current_chart->Find(sId);
+			if (oFile.IsInit() && OOX::FileTypes::Image == oFile->type())
+			{
+				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 
-	//			ref = pImage->filename().GetPath();
-	//		}
-	//	}
-	//}
+				ref = pImage->filename().GetPath();
+			}
+		}
+	}
 	return ref;
 }
 
@@ -138,11 +138,6 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 			OOX::Logic::CRunProperty* pRProp= static_cast<OOX::Logic::CRunProperty*>(oox_unknown);
 			convert(pRProp);
 		}break;
-		case OOX::et_w_t:
-		{
-			OOX::Logic::CText* pText= static_cast<OOX::Logic::CText*>(oox_unknown);
-			convert(pText);
-		}break;
 		case OOX::et_mc_alternateContent:
 		{
 			OOX::Logic::CAlternateContent* pAltCont= static_cast<OOX::Logic::CAlternateContent*>(oox_unknown);
@@ -173,35 +168,438 @@ void DocxConverter::convert(OOX::Logic::CParagraph	*oox_paragraph)
 {
 	if (oox_paragraph == NULL) return;
 
+	bool styled = false;
 	odt_context->start_paragraph();
+	
 	for ( int nIndex = 0; nIndex < oox_paragraph->m_arrItems.GetSize(); nIndex++ )
 	{
-		convert(oox_paragraph->m_arrItems[nIndex]);
+		//те элементы которые тока для Paragraph - здесь - остальные в общей куче		
+		switch(oox_paragraph->m_arrItems[nIndex]->getType())
+		{
+			case OOX::et_w_pPr:
+			{
+				styled = true;
+				OOX::Logic::CParagraphProperty* pPProp= static_cast<OOX::Logic::CParagraphProperty*>(oox_paragraph->m_arrItems[nIndex]);
+
+				odt_context->styles_context()->create_style(L"",odf::style_family::Paragraph, true, false, -1);					
+				odf::style_paragraph_properties	* paragraph_properties	= odt_context->styles_context()->last_state().get_paragraph_properties();
+				//odf::style_text_properties		* text_properties		= odt_context->styles_context()->last_state().get_text_properties();
+
+				convert(pPProp, paragraph_properties/*, text_properties*/);
+				
+				odt_context->text_context()->add_text_style(odt_context->styles_context()->last_state().get_office_element(),odt_context->styles_context()->last_state().get_name());
+			}break;		
+			default:
+				convert(oox_paragraph->m_arrItems[nIndex]);
+				break;
+		}
 	}
 	odt_context->end_paragraph();
 }
-void DocxConverter::convert(OOX::Logic::CRun	*oox_run)
+void DocxConverter::convert(OOX::Logic::CRun	*oox_run)//wordprocessing 22.1.2.87 math 17.3.2.25
 {
 	if (oox_run == NULL) return;
 	
-	odt_context->start_run();	
+	odt_context->start_run();
+	bool styled = false;
+	
 	for(int i = 0; i < oox_run->m_arrItems.GetSize(); ++i)
 	{
-		convert(oox_run->m_arrItems[i]);
+		//те элементы которые тока для Run - здесь - остальные в общей куче		
+		switch(oox_run->m_arrItems[i]->getType())
+		{
+			case OOX::et_w_rPr:
+			{
+				styled = true;
+				OOX::Logic::CRunProperty* pRProp= static_cast<OOX::Logic::CRunProperty*>(oox_run->m_arrItems[i]);
+
+				odt_context->styles_context()->create_style(L"",odf::style_family::Text, true, false, -1);					
+				odf::style_text_properties	* text_properties = odt_context->styles_context()->last_state().get_text_properties();
+
+				convert(pRProp, text_properties);
+	
+				odt_context->text_context()->add_text_style(odt_context->styles_context()->last_state().get_office_element(),odt_context->styles_context()->last_state().get_name());
+			}break;		
+			case OOX::et_w_lastRenderedPageBreak:
+			{
+				odt_context->add_page_break();
+			}break;
+			case OOX::et_w_br:
+			{
+				odt_context->add_textline_break();
+			}break;
+			case OOX::et_w_t:
+			{
+				OOX::Logic::CText* pText= static_cast<OOX::Logic::CText*>(oox_run->m_arrItems[i]);
+				convert(pText);
+			}break;
+			case OOX::et_w_sym:
+			{
+				OOX::Logic::CSym* pSym= static_cast<OOX::Logic::CSym*>(oox_run->m_arrItems[i]);
+				convert(pSym);
+			}break;
+			case OOX::et_w_tab:
+			{
+				OOX::Logic::CTab* pTab= static_cast<OOX::Logic::CTab*>(oox_run->m_arrItems[i]);
+				convert(pTab);
+			}break;
+			case OOX::et_w_delText:
+			{
+			}break;
+			case OOX::et_w_separator:
+			case OOX::et_w_continuationSeparator:
+			{
+			}break;
+			//annotationRef
+			//endnoteRef
+			//endnoteReference
+			//footnoteRef
+			//footnoteReference
+			//commentReference
+			//separator			
+			//contentPart
+			//cr
+			//dayLong, dayShort, monthLong, monthShort, yearLong, yearShort
+			//delText
+			//noBreakHyphen
+			//pgNum
+			//ptab
+			//ruby
+			//softHyphen
+			//delInstrText
+			//fldChar
+			//instrText
+			default:
+				convert(oox_run->m_arrItems[i]);
+		}
+	}
+	if (styled)
+	{
+		odt_context->text_context()->add_text_style(odt_context->styles_context()->last_state().get_office_element(),odt_context->styles_context()->last_state().get_name());
+		//на после разрыва
 	}
 	odt_context->end_run();
 
 }
-void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_prop)
+void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cpdoccore::odf::style_paragraph_properties * paragraph_properties)
 {
-	if (oox_paragraph_prop == NULL) return;
+	if (!oox_paragraph_pr)		return;
+	if (!paragraph_properties)	return;
+
+	if (oox_paragraph_pr->m_oSpacing.IsInit())
+	{
+		if (oox_paragraph_pr->m_oSpacing->m_oLine.IsInit())
+		{
+			_CP_OPT(odf::length) length;
+			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oLine.GetPointer()), length);
+			if (length) paragraph_properties->content().fo_line_height_ = odf::line_width(*length);
+		}
+		if (oox_paragraph_pr->m_oSpacing->m_oAfter.IsInit())
+		{
+ 			_CP_OPT(odf::length) length;
+			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oAfter.GetPointer()), length);
+			paragraph_properties->content().fo_margin_bottom_ = length;
+		}
+		if (oox_paragraph_pr->m_oSpacing->m_oBefore.IsInit())
+		{
+ 			_CP_OPT(odf::length) length;
+			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oBefore.GetPointer()), length);
+			paragraph_properties->content().fo_margin_top_ = length;
+		}
+			//nullable<SimpleTypes::COnOff<>            > m_oAfterAutospacing;
+			//nullable<SimpleTypes::CDecimalNumber<>    > m_oAfterLines;
+			//nullable<SimpleTypes::COnOff<>            > m_oBeforeAutospacing;
+			//nullable<SimpleTypes::CDecimalNumber<>    > m_oBeforeLines;
+			//nullable<SimpleTypes::CLineSpacingRule<>  > m_oLineRule;
+	}
+	convert(oox_paragraph_pr->m_oJc.GetPointer(), paragraph_properties->content().fo_text_align_);
+
+	if (oox_paragraph_pr->m_oTextAlignment.IsInit() && oox_paragraph_pr->m_oTextAlignment->m_oVal.IsInit())
+	{
+		switch(oox_paragraph_pr->m_oTextAlignment->m_oVal->GetValue())
+		{
+		//case SimpleTypes::textalignAuto     :
+		//case SimpleTypes::textalignBaseLine :
+		//case SimpleTypes::textalignBottom   :
+		//case SimpleTypes::textalignCenter   :
+		//case SimpleTypes::textalignTop      :
+		}
+	}
+	//if (oox_paragraph_pr->m_oMarL.IsInit())
+	//{
+	//	paragraph_properties->content().fo_margin_left_ = odf::length_or_percent(odf::length(oox_paragraph_pr->m_oMarL->ToCm(),odf::length::cm));
+	//}
+	//if (oox_paragraph_pr->m_oMarR.IsInit())
+	//{
+	//	paragraph_properties->content().fo_margin_right_ = odf::length_or_percent(odf::length(oox_paragraph_pr->m_oMarR->ToCm(),odf::length::cm));
+	//}
+	//if (oox_paragraph_pr->m_oIndent.IsInit())
+	//{
+	//	paragraph_properties->content().fo_text_indent_ = odf::length_or_percent(odf::length(oox_paragraph_pr->m_oIndent->ToCm(),odf::length::cm));
+	//}
+	//if (oox_paragraph_pr->m_oRtl.IsInit())
+	//{
+	//}	
+	//m_oWordWrap
+	convert(oox_paragraph_pr->m_oPBdr.GetPointer(), paragraph_properties);
+
+	if (oox_paragraph_pr->m_oRPr.IsInit())//может быть пустым !!!
+	{
+		odf::style_text_properties * text_properties = odf_context()->text_context()->get_text_properties();
+		if (text_properties) 
+			convert(oox_paragraph_pr->m_oRPr.GetPointer(), text_properties);
+
+		//надо подумать как брать последний по family !!! 
+		//convert(oox_paragraph_pr->m_oDefRunProperty.GetPointer());
+		//odf_context()->text_context()->set_parent_span_style(odf_context()->styles_context()->last_state().get_name());
+	}
+	//m_oSectPr
 
 }
-void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_prop)
+void DocxConverter::convert(OOX::Logic::CPBdr *oox_border, odf::style_paragraph_properties * paragraph_properties)
 {
-	if (oox_run_prop == NULL) return;
+	if (oox_border == NULL) return;
+	if (paragraph_properties == NULL) return;
+
+	std::wstring odf_border;
+	if (oox_border->m_oBottom.IsInit())
+	{
+		convert(oox_border->m_oBottom.GetPointer(), odf_border);
+		if (paragraph_properties && odf_border.length() >0 ) paragraph_properties->content().fo_border_bottom_ = odf_border;
+	}
+	if (oox_border->m_oTop.IsInit())
+	{
+		convert(oox_border->m_oTop.GetPointer(), odf_border);
+		if (paragraph_properties && odf_border.length() >0 ) paragraph_properties->content().fo_border_top_ = odf_border;
+	}
+	if (oox_border->m_oLeft.IsInit())
+	{
+		convert(oox_border->m_oLeft.GetPointer(), odf_border);
+		if (paragraph_properties && odf_border.length() >0 ) paragraph_properties->content().fo_border_left_ = odf_border;
+	}
+	if (oox_border->m_oRight.IsInit())
+	{
+		convert(oox_border->m_oRight.GetPointer(), odf_border);
+		if (paragraph_properties && odf_border.length() >0 ) paragraph_properties->content().fo_border_right_ = odf_border;
+	}
+	//if (oox_border->m_oTL2BR.IsInit())
+	//{
+	//	convert(oox_border->m_oTL2BR.GetPointer(), odf_border);
+	//	if (paragraph_properties && odf_border.length() >0 ) paragraph_properties->content().style_diagonal_tl_br_ = odf_border;
+	//}
 
 }
+void DocxConverter::convert(ComplexTypes::Word::CBorder *borderProp, std::wstring & odf_border_prop)
+{
+	if (!borderProp)return;
+
+	std::wstring border_style;
+	std::wstring border_color;
+			//nullable<SimpleTypes::COnOff<>              > m_oFrame;
+			//nullable<SimpleTypes::COnOff<>              > m_oShadow;
+			//nullable<SimpleTypes::CPointMeasure<>       > m_oSpace;
+			//nullable<SimpleTypes::CUcharHexNumber<>     > m_oThemeShade;
+
+	if (borderProp->m_oSz.IsInit()) border_style = boost::lexical_cast<std::wstring>(borderProp->m_oSz->ToPoints()) + L"pt";
+	else border_style = L"1pt";
+	if (borderProp->m_oVal.IsInit())//266 styles  oO
+	{
+		switch(borderProp->m_oVal->GetValue())
+		{
+			case SimpleTypes::bordervalueDotDash:
+				border_style += L" dashed";
+			break;
+			case SimpleTypes::bordervalueDashed:
+				border_style += L" dashed";
+			break;
+			case SimpleTypes::bordervalueDotted:
+				border_style += L" dotted";
+			break;
+			case SimpleTypes::bordervalueDouble:
+				border_style += L" double";
+			break;
+			case SimpleTypes::bordervalueSingle:
+				border_style += L" solid";
+			break;
+			case SimpleTypes::bordervalueNone:
+				border_style == L" none";
+				return;
+			break;
+		}
+	}else border_style += L" solid";
+///////////////////////////////////////////////////////////////////
+	_CP_OPT(odf::color) color;
+
+	convert(borderProp->m_oColor.GetPointer(), borderProp->m_oThemeColor.GetPointer(), borderProp->m_oThemeTint.GetPointer(),borderProp->m_oThemeShade.GetPointer(), color);
+
+	if (color) border_color = color->get_hex_value();
+	else border_color = L"000000";
+	
+	odf_border_prop = border_style + L" #" + border_color;
+}
+void DocxConverter::convert(ComplexTypes::Word::CJc * oox_jc,  _CP_OPT(odf::text_align) & align)
+{
+	if (oox_jc == NULL) return;
+	if (oox_jc->m_oVal.IsInit() == false) return;
+
+	switch(oox_jc->m_oVal->GetValue())
+	{
+		case SimpleTypes::jcBoth            : align = odf::text_align(odf::text_align::Justify);break;
+		case SimpleTypes::jcCenter          : align = odf::text_align(odf::text_align::Center);	break;
+		case SimpleTypes::jcThaiDistribute  :	
+		case SimpleTypes::jcDistribute      : align = odf::text_align(odf::text_align::Justify);break;
+		case SimpleTypes::jcEnd             : align = odf::text_align(odf::text_align::End);	break;
+		case SimpleTypes::jcHighKashida     :	break;
+		case SimpleTypes::jcLowKashida      :	break;
+		case SimpleTypes::jcMediumKashida   :	break;
+		case SimpleTypes::jcNumTab          :	break;
+		case SimpleTypes::jcStart           : align = odf::text_align(odf::text_align::Start);	break;
+		case SimpleTypes::jcLeft            : align = odf::text_align(odf::text_align::Left);	break;
+		case SimpleTypes::jcRight           : align = odf::text_align(odf::text_align::Right);	break;
+	}
+}
+void DocxConverter::convert(SimpleTypes::CUniversalMeasure *oox_size, _CP_OPT(odf::length) & odf_size)
+{
+	if (oox_size == NULL)return;
+
+	odf_size = odf::length(oox_size->ToPoints(), odf::length::pt);
+}
+
+void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf::style_text_properties * text_properties)
+{
+	if (oox_run_pr == NULL) return;
+	if (text_properties == NULL)return;
+	
+	if (oox_run_pr->m_oBold.IsInit())
+	{
+		if (oox_run_pr->m_oBold->m_oVal.ToBool() ==true) 
+			text_properties->content().fo_font_weight_ = odf::font_weight(odf::font_weight::WBold);
+		else
+			text_properties->content().fo_font_weight_ = odf::font_weight(odf::font_weight::WNormal);
+	}
+	convert(oox_run_pr->m_oColor.GetPointer(),text_properties->content().fo_color_);
+
+	text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::None);
+	if (oox_run_pr->m_oU.IsInit())
+	{
+		text_properties->content().style_text_underline_style_ = odf::line_style(odf::line_style::Solid);
+		text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::Single);
+		if (oox_run_pr->m_oU->m_oVal.IsInit())
+		{
+			SimpleTypes::EUnderline 	type = oox_run_pr->m_oU->m_oVal->GetValue();
+			text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::Single);
+			switch(type)
+			{
+			case SimpleTypes::underlineDouble		:
+					text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::Double);break;
+			case SimpleTypes::underlineNone			:
+					text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::None);break;
+			case SimpleTypes::underlineDash            :
+			case SimpleTypes::underlineDashedHeavy     :
+					text_properties->content().style_text_underline_style_= odf::line_style(odf::line_style::Dash);break;
+			case SimpleTypes::underlineDashLong        :
+			case SimpleTypes::underlineDashLongHeavy   :
+					text_properties->content().style_text_underline_style_= odf::line_style(odf::line_style::LongDash);break;
+			case SimpleTypes::underlineDotDash         :
+			case SimpleTypes::underlineDashDotHeavy    :
+					text_properties->content().style_text_underline_style_= odf::line_style(odf::line_style::DotDash);break;
+			case SimpleTypes::underlineDotted          :
+			case SimpleTypes::underlineDottedHeavy     :
+					text_properties->content().style_text_underline_style_= odf::line_style(odf::line_style::Dotted);break;
+			case SimpleTypes::underlineDotDotDash      :
+			case SimpleTypes::underlineDashDotDotHeavy :
+					text_properties->content().style_text_underline_style_= odf::line_style(odf::line_style::DotDotDash);break;
+			case SimpleTypes::underlineThick           :
+			case SimpleTypes::underlineWave            :
+			case SimpleTypes::underlineWavyDouble      :
+			case SimpleTypes::underlineWavyHeavy       :
+					text_properties->content().style_text_underline_style_= odf::line_style(odf::line_style::Wave);break;
+			}
+		}
+		text_properties->content().style_text_underline_color_ = odf::underline_color(odf::underline_color::FontColor);
+	}
+	if (oox_run_pr->m_oItalic.IsInit())
+	{
+		if (oox_run_pr->m_oItalic->m_oVal.ToBool() ==true)
+			text_properties->content().fo_font_style_ = odf::font_style(odf::font_style::Italic);
+		else
+			text_properties->content().fo_font_style_ = odf::font_style(odf::font_style::Normal);
+	}
+	if (oox_run_pr->m_oSz.IsInit() && oox_run_pr->m_oSz->m_oVal.IsInit())
+	{
+		OoxConverter::convert(oox_run_pr->m_oSz->m_oVal->ToPoints(), text_properties->content().fo_font_size_);
+	}
+	if (oox_run_pr->m_oCaps.IsInit() && oox_run_pr->m_oCaps->m_oVal.ToBool())
+		text_properties->content().fo_text_transform_ = odf::text_transform(odf::text_transform::Uppercase);
+	
+	if (oox_run_pr->m_oSmallCaps.IsInit() && oox_run_pr->m_oSmallCaps->m_oVal.ToBool())
+		text_properties->content().fo_font_variant_ = odf::font_variant(odf::font_variant::SmallCaps);
+
+	if (oox_run_pr->m_oRFonts.IsInit())
+	{
+		if (oox_run_pr->m_oRFonts->m_sAscii.IsInit())
+			text_properties->content().fo_font_family_ = string2std_string(oox_run_pr->m_oRFonts->m_sAscii.get());
+		if (oox_run_pr->m_oRFonts->m_sCs.IsInit())
+			text_properties->content().style_font_family_complex_ = string2std_string(oox_run_pr->m_oRFonts->m_sCs.get());
+		if (oox_run_pr->m_oRFonts->m_sEastAsia.IsInit())
+			text_properties->content().style_font_family_asian_= string2std_string(oox_run_pr->m_oRFonts->m_sEastAsia.get());
+			//nullable<CString              > m_sAscii;
+			//nullable<SimpleTypes::CTheme<>> m_oAsciiTheme;
+			//nullable<SimpleTypes::CTheme<>> m_oCsTheme;
+			//nullable<CString              > m_sEastAsia;
+			//nullable<SimpleTypes::CTheme<>> m_oEastAsiaTheme;
+			//nullable<CString              > m_sHAnsi;
+			//nullable<SimpleTypes::CTheme<>> m_oHAnsiTheme;
+			//nullable<SimpleTypes::CHint<> > m_oHint;
+	}
+	if (oox_run_pr->m_oVertAlign.IsInit() && oox_run_pr->m_oVertAlign->m_oVal.IsInit())
+	{ 
+		switch(oox_run_pr->m_oVertAlign->m_oVal->GetValue())
+		{
+		case SimpleTypes::verticalalignrunSuperscript:
+			//text_properties->content().style_text_position_ = odf::text_position(odf::text_position::Super); break;
+			text_properties->content().style_text_position_ = odf::text_position(+33.); break;
+		case SimpleTypes::verticalalignrunSubscript:
+			//text_properties->content().style_text_position_ = odf::text_position(odf::text_position::Sub); break;
+			text_properties->content().style_text_position_ = odf::text_position(-33.); break;//по умолчанию 58% - хуже выглядит
+		}
+	}
+	if (oox_run_pr->m_oW.IsInit() && oox_run_pr->m_oW->m_oVal.IsInit())
+	{
+			text_properties->content().style_text_scale_ = odf::percent(oox_run_pr->m_oW->m_oVal->GetValue());
+	}
+	if (oox_run_pr->m_oStrike.IsInit())
+		text_properties->content().style_text_line_through_type_ = odf::line_type(odf::line_type::Single);
+
+	if (oox_run_pr->m_oBdr.IsInit())
+	{
+		std::wstring odf_border;
+		convert(oox_run_pr->m_oBdr.GetPointer(), odf_border);
+		if (odf_border.length() > 0)
+			text_properties->content().common_border_attlist_.fo_border_ = odf_border;
+	}
+	if (oox_run_pr->m_oHighlight.IsInit() && oox_run_pr->m_oHighlight->m_oVal.IsInit())
+	{
+		BYTE ucR = oox_run_pr->m_oHighlight->m_oVal->Get_R(); 
+		BYTE ucB = oox_run_pr->m_oHighlight->m_oVal->Get_B(); 
+		BYTE ucG = oox_run_pr->m_oHighlight->m_oVal->Get_G(); 
+		SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
+		if (oRgbColor)
+		{		
+			text_properties->content().fo_background_color_ = odf::color(std::wstring(L"#") + string2std_string(oRgbColor->ToString().Right(6)));
+			delete oRgbColor;
+		}
+	}
+	if (oox_run_pr->m_oShd.IsInit())
+	{
+		_CP_OPT(odf::color) odf_color;
+		convert(oox_run_pr->m_oShd->m_oFill.GetPointer(), oox_run_pr->m_oShd->m_oThemeFill.GetPointer(),
+			oox_run_pr->m_oShd->m_oThemeFillTint.GetPointer(), oox_run_pr->m_oShd->m_oThemeShade.GetPointer(), odf_color);
+		if (odf_color)
+			text_properties->content().fo_background_color_ = *odf_color;
+	}
+}
+
 void DocxConverter::convert(OOX::Logic::CText *oox_text)
 {
 	if (oox_text == NULL) return;
@@ -430,14 +828,19 @@ void DocxConverter::convert(OOX::Logic::CShape	 *oox_shape)
 	//имя, описалово, номер ...		
 		OoxConverter::convert(oox_shape->m_oCNvPr.GetPointer());	
 	//заблокированности 
-		OoxConverter::convert(oox_shape->m_oCNvSpPr.GetPointer());			
-		OoxConverter::convert(oox_shape->m_oCNvConnSpPr.GetPointer());
+		OoxConverter::convert(oox_shape->m_oCNvSpPr.GetPointer());	
 		
+		if (oox_shape->m_oCNvConnSpPr.IsInit())
+		{
+			OoxConverter::convert(oox_shape->m_oCNvConnSpPr.GetPointer());
+			//частенько приплывает из стиля заполенение объекта .. а он то одномерный :)
+			odf_context()->drawing_context()->start_area_properies();
+				odf_context()->drawing_context()->set_no_fill();
+			odf_context()->drawing_context()->end_area_properies();
+		}
 		if (oox_shape->m_oTxBody.IsInit() && oox_shape->m_oTxBody->m_oTxtbxContent.IsInit())
 		{
 			odt_context->start_text_context();
-			odt_context->text_context()->set_single_object(true, NULL, NULL);
-
 			for (long i=0 ; i < oox_shape->m_oTxBody->m_oTxtbxContent->m_arrItems.GetSize();i++)
 			{
 				convert(oox_shape->m_oTxBody->m_oTxtbxContent->m_arrItems[i]);
@@ -450,5 +853,83 @@ void DocxConverter::convert(OOX::Logic::CShape	 *oox_shape)
 	else				odt_context->drawing_context()->end_shape();
 	
 	odt_context->drawing_context()->end_drawing();
+}
+
+void DocxConverter::convert(SimpleTypes::CHexColor<>		*color, 
+							SimpleTypes::CThemeColor<>		*theme_color, 
+							SimpleTypes::CUcharHexNumber<>	*theme_tint,
+							SimpleTypes::CUcharHexNumber<>	*theme_shade, _CP_OPT(odf::color) & odf_color)
+{
+	odf_color = boost::none;
+
+	unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
+	bool result = false;	
+
+	if(color)//easy, faster,realy  !!
+	{
+		ucR = color->Get_R(); 
+		ucB = color->Get_B(); 
+		ucG = color->Get_G(); 
+		ucA = color->Get_A(); 
+		result = true;
+	}
+	if(theme_color)
+	{
+		OOX::CTheme * docx_theme= docx_document->GetTheme();
+		int theme_ind = theme_color->GetValue();
+		switch(theme_ind)
+		{
+			case SimpleTypes::themecolorLight1:
+				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oLt1.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorLight2:
+				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oLt2.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorDark1:
+				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oDk1.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorDark2:
+				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oDk2.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorAccent1:
+				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oAccent1.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorAccent2:
+				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oAccent2.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorAccent3:
+				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oAccent3.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorAccent4:
+				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oAccent4.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorAccent5:
+				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oAccent5.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorAccent6:
+				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oAccent6.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorFollowedHyperlink:
+				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oFolHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
+			case SimpleTypes::themecolorHyperlink:
+				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
+		}
+	}
+	if (result == true)
+	{
+		if ((theme_tint) && (theme_tint->GetValue() > 0))
+		{
+			ucR = theme_tint->GetValue() * 0xff + (1. - theme_tint->GetValue()) * ucR; 
+			ucG = theme_tint->GetValue() * 0xff + (1. - theme_tint->GetValue()) * ucG;
+			ucB = theme_tint->GetValue() * 0xff + (1. - theme_tint->GetValue()) * ucB; 
+		}
+		if ((theme_tint) && (theme_tint->GetValue() <  0))
+		{
+			ucR = -theme_tint->GetValue() * 0x00 + (1. + theme_tint->GetValue()) * ucR; 
+			ucG = -theme_tint->GetValue() * 0x00 + (1. + theme_tint->GetValue()) * ucG; 
+			ucB = -theme_tint->GetValue() * 0x00 + (1. + theme_tint->GetValue()) * ucB; 
+		}
+		SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
+		if (oRgbColor)
+		{		
+			odf_color = odf::color(std::wstring(L"#") + string2std_string(oRgbColor->ToString().Right(6)));
+			delete oRgbColor;
+		}
+	}
+}
+void DocxConverter::convert(ComplexTypes::Word::CColor *color, _CP_OPT(odf::color) & odf_color)
+{
+	if (!color)return;
+	convert(color->m_oVal.GetPointer(), color->m_oThemeColor.GetPointer(),color->m_oThemeTint.GetPointer(),color->m_oThemeShade.GetPointer(), odf_color);
 }
 } 

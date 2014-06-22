@@ -18,6 +18,9 @@ namespace cpdoccore
 		class length_or_percent;
 		class style_paragraph_properties;
 		class style_text_properties;
+		class color;
+		class length;
+		class text_align;
 	}
 }
 namespace OOX
@@ -318,7 +321,7 @@ public:
 		void convert(OOX::Spreadsheet::CT_Marker				*marker, CAtlArray<OOX::Spreadsheet::CT_DPt*> & dPt);
 		void convert(OOX::Spreadsheet::CT_ExternalData			*external_data);
 		void convert(OOX::Spreadsheet::CT_NumData				*num_data);
-		void convert(OOX::Spreadsheet::CT_StrData				*str_data);
+		void convert(OOX::Spreadsheet::CT_StrData				*str_data, bool label = false);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 		void convert(double oox_font_size,			cpdoccore::_CP_OPT(cpdoccore::odf::font_size) & odf_font_size);

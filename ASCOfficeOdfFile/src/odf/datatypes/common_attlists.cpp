@@ -307,6 +307,7 @@ void common_value_and_type_attlist::apply_from(const common_value_and_type_attli
 }
 void common_value_and_type_attlist::serialize(CP_ATTR_NODE)
 {
+	CP_XML_ATTR_OPT(L"office:value-type", office_value_type_);
     CP_XML_ATTR_OPT(L"office:value", office_value_);
 	if (office_value_)
 	{
@@ -316,7 +317,6 @@ void common_value_and_type_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"office:time-value", office_time_value_);
     CP_XML_ATTR_OPT(L"office:boolean-value", office_boolean_value_);
     CP_XML_ATTR_OPT(L"office:string-value", office_string_value_);
-	CP_XML_ATTR_OPT(L"office:value-type", office_value_type_);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

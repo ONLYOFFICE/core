@@ -25,6 +25,8 @@ namespace Oox2Odf
 	}
 	Converter::Converter(const std::wstring & path, std::wstring  type) 
     {
+		impl_ = NULL;
+		
 		if (type == L"text")			impl_ = new DocxConverter(path);
 		if (type == L"spreadsheet")		impl_ = new XlsxConverter(path);
 	}
@@ -40,6 +42,7 @@ namespace Oox2Odf
     }
     void Converter::write(const std::wstring & path) const
     {
+		if (!impl_)return;
         return impl_->write(path);
     }
 

@@ -7,8 +7,6 @@
 #include <cpdoccore/xml/serialize.h>
 #include <cpdoccore/xml/attributes.h>
 
-#include <cpdoccore/xml/simple_xml_writer.h>
-
 namespace cpdoccore { 
 namespace odf {
 
@@ -59,7 +57,10 @@ bool is_text_content(const std::wstring & ns, const std::wstring & name)
     return false;
 }
 }
-
+void office_text_attlist::serialize(CP_ATTR_NODE)	
+{
+	CP_XML_ATTR_OPT(L"text:use-soft-page-breaks", text_use_soft_page_breaks_);
+}
 void office_text::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     if (is_text_content(Ns, Name))
@@ -80,6 +81,8 @@ void office_text::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
+			office_text_attlist_.serialize(CP_GET_XML_NODE());
+
 			BOOST_FOREACH(office_element_ptr & elm, content_)
 			{
 				elm->serialize(CP_XML_STREAM());

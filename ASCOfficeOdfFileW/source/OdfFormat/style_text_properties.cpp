@@ -299,6 +299,8 @@ void text_format_properties_content::serialize(std::wostream & _Wostream,const w
 			CP_XML_ATTR_OPT(L"style:text-overline-color", style_text_overline_color_);
 			CP_XML_ATTR_OPT(L"style:text-overline-mode", style_text_overline_mode_);
 			CP_XML_ATTR_OPT(L"style:text-overline-style", style_text_overline_style_);
+
+			common_border_attlist_.serialize(CP_GET_XML_NODE());
 		}
 	}
 }

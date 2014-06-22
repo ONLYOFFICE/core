@@ -787,7 +787,7 @@ void table_rows_and_groups::add_child_element(office_element_ptr & child_element
 	{
 		content_.push_back(child_element); 
 	}
-    else if (type == typeTableTableRows || type == typeTableTableRow)
+    else if (type == typeTableTableRows || type == typeTableTableRow  || type == typeTableTableHeaderRows)
 	{
         _CP_PTR(table_rows_no_group) elm = table_rows_no_group::create(Context);
         elm->add_child_element(child_element);

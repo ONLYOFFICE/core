@@ -4,13 +4,26 @@
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/xml/nodetype.h>
+
 #include "office_elements.h"
 #include "office_elements_create.h"
+
+#include <cpdoccore/xml/simple_xml_writer.h>
+
+#include "Bool.h"
 
 namespace cpdoccore { 
 namespace odf {
 
-/// \class  office_text
+//office_text_attlist
+class office_text_attlist
+{
+public:
+    _CP_OPT(Bool)			text_use_soft_page_breaks_;
+
+	void serialize(CP_ATTR_NODE);
+};
+
 /// \brief  office:text
 class office_text : public office_element_impl<office_text>
 {
@@ -29,6 +42,8 @@ public:
 //    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 //    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 //    virtual void add_text(const std::wstring & Text);
+
+	office_text_attlist office_text_attlist_;
 
 private:
     bool text_global_;

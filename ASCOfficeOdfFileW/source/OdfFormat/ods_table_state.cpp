@@ -196,6 +196,17 @@ void ods_table_state::end_group()
 	current_level_.pop_back();
 }
 
+void ods_table_state::start_headers(office_element_ptr & elm)
+{
+	current_level_.back()->add_child_element(elm);
+	current_level_.push_back(elm);
+}
+
+void ods_table_state::end_headers()
+{
+	current_level_.pop_back();
+}
+
 void ods_table_state::add_column(office_element_ptr & elm, __int16 repeated,office_element_ptr & style_elm)
 {
 	current_level_.back()->add_child_element(elm);
@@ -601,7 +612,7 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 
 	//test external link
 	{
-		boost::wregex re(L"(\[\\d+\])");
+		boost::wregex re(L"([\[]\\d+\[\]])+");
 
 		boost::wsmatch result;
 		bool b = boost::regex_search(formula, result, re);

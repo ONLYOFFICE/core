@@ -835,6 +835,8 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker, CAtlArray<OOX::S
 		odf_context()->chart_context()->start_data_point_series(1);
 			convert(dPt[i]->m_oSpPr.GetPointer());
 			convert(dPt[i]->m_marker);
+			if (dPt[i]->m_explosion && dPt[i]->m_explosion->m_val)
+					odf_context()->chart_context()->set_series_pie_explosion(*dPt[i]->m_explosion->m_val);
 		odf_context()->chart_context()->end_element();
 		
 		current_point = set_point+1;			
@@ -904,7 +906,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_SerTx* ser_tx)
 	{
 		if (ser_tx->m_strRef->m_f)odf_context()->chart_context()->set_series_label_formula(string2std_string(*ser_tx->m_strRef->m_f));
 		
-		convert(ser_tx->m_strRef->m_strCache);
+		convert(ser_tx->m_strRef->m_strCache,true);
 	}
 	//if (ser_tx->m_v)odf_context()->chart_context()->set_series_name(string2std_string(*ser_tx->m_v));
 
@@ -1008,7 +1010,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_NumData	*num_data)
 	
 	odf_context()->chart_context()->set_cash(format, data);
 }
-void OoxConverter::convert(OOX::Spreadsheet::CT_StrData *str_data)
+void OoxConverter::convert(OOX::Spreadsheet::CT_StrData *str_data, bool label)
 {
 	if (str_data == NULL)return;
 	std::vector<std::wstring> data;
@@ -1021,6 +1023,6 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_StrData *str_data)
 	}
 	std::wstring format;
 
-	odf_context()->chart_context()->set_cash(format, data);
+	odf_context()->chart_context()->set_cash(format, data,label);
 }
 }

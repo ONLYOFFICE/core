@@ -182,7 +182,56 @@ void odf_text_context::end_span()
 	
 	current_level_.pop_back();
 }
+void odf_text_context::add_textline_break()
+{
+	office_element_ptr elm;
+	create_element(L"text", L"line-break", elm, odf_context_);
 
+	if (current_level_.size()>0)
+		current_level_.back()->add_child_element(elm);
+}
+void odf_text_context::add_text_style(office_element_ptr & style_elm, std::wstring style_name)
+{
+	if (text_elements_list_.size() < 1 )return;
+	if (text_span* span = dynamic_cast<text_span*>(text_elements_list_.back().elm.get()))
+	{
+		span->text_style_name_ = style_ref(style_name);
+
+		text_elements_list_.back().style_elm = style_elm;
+		text_elements_list_.back().style_name = style_name;
+	}
+	
+	if (text_p* p = dynamic_cast<text_p*>(text_elements_list_.back().elm.get()))
+	{
+		p->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
+	
+		text_elements_list_.back().style_elm = style_elm;
+		text_elements_list_.back().style_name = style_name;
+	}
+
+}
+void odf_text_context::add_page_break()
+{
+ 	office_element_ptr elm;
+	create_element(L"text", L"soft-page-break", elm, odf_context_);
+
+	bool in_span = false;
+	if (text_span* span = dynamic_cast<text_span*>(current_level_.back().get()))
+	{
+		in_span = true;
+		end_span(); // todoo - перенос стиля
+	}
+
+	if (current_level_.size()>0)
+		current_level_.back()->add_child_element(elm);
+
+	//end paragraph + style add after-break = page
+	//start paragraph - continues style
+	if (in_span)
+	{ 
+		start_span(false);
+	}
+}
 void odf_text_context::set_parent_paragraph_style(std::wstring & style_name)
 {
 	parent_paragraph_style_ = style_name;

@@ -88,10 +88,8 @@ namespace odf
 		}
 		class odf_conversion_context;
 		class ods_conversion_context;
-		class color;
 		class background_color;
 		class font_size;
-		class length;
 	}
 }
 

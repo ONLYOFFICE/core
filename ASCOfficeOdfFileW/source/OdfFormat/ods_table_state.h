@@ -194,6 +194,9 @@ public:
 		
 	__int32 current_level() {return current_level_.size()-1;}
 
+	void start_headers(office_element_ptr & elm);
+	void end_headers();
+
 	void add_row(office_element_ptr & elm, __int16 repeated ,office_element_ptr & style);//const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
 		void set_row_hidden(bool Val);
 		void set_row_optimal_height(bool val);

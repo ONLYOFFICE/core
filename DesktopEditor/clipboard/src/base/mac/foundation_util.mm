@@ -8,9 +8,9 @@
 #include <string.h>
 
 #include "base/files/file_path.h"
-#include "base/logging.h"
+//#include "base/logging.h"
 #include "base/mac/bundle_locations.h"
-#include "base/mac/mac_logging.h"
+//#include "base/mac/mac_logging.h"
 #include "base/strings/sys_string_conversions.h"
 
 #if !defined(OS_IOS)
@@ -40,7 +40,7 @@ static bool UncachedAmIBundled() {
   FSRef fsref;
   OSStatus pbErr;
   if ((pbErr = GetProcessBundleLocation(&psn, &fsref)) != noErr) {
-    OSSTATUS_DLOG(ERROR, pbErr) << "GetProcessBundleLocation failed";
+    //OSSTATUS_DLOG(ERROR, pbErr) << "GetProcessBundleLocation failed";
     return false;
   }
 
@@ -48,7 +48,7 @@ static bool UncachedAmIBundled() {
   OSErr fsErr;
   if ((fsErr = FSGetCatalogInfo(&fsref, kFSCatInfoNodeFlags, &info,
                                 NULL, NULL, NULL)) != noErr) {
-    OSSTATUS_DLOG(ERROR, fsErr) << "FSGetCatalogInfo failed";
+    //OSSTATUS_DLOG(ERROR, fsErr) << "FSGetCatalogInfo failed";
     return false;
   }
 
@@ -61,10 +61,10 @@ bool AmIBundled() {
   // values depending on when it's called. This confuses some client code, see
   // http://crbug.com/63183 .
   static bool result = UncachedAmIBundled();
-  DCHECK_EQ(result, UncachedAmIBundled())
-      << "The return value of AmIBundled() changed. This will confuse tests. "
-      << "Call SetAmIBundled() override manually if your test binary "
-      << "delay-loads the framework.";
+  //DCHECK_EQ(result, UncachedAmIBundled())
+  //    << "The return value of AmIBundled() changed. This will confuse tests. "
+  //    << "Call SetAmIBundled() override manually if your test binary "
+  //    << "delay-loads the framework.";
   return result;
 }
 
@@ -110,7 +110,7 @@ OSType CreatorCodeForApplication() {
 bool GetSearchPathDirectory(NSSearchPathDirectory directory,
                             NSSearchPathDomainMask domain_mask,
                             FilePath* result) {
-  DCHECK(result);
+  //DCHECK(result);
   NSArray* dirs =
       NSSearchPathForDirectoriesInDomains(directory, domain_mask, YES);
   if ([dirs count] < 1) {
@@ -131,7 +131,7 @@ bool GetUserDirectory(NSSearchPathDirectory directory, FilePath* result) {
 FilePath GetUserLibraryPath() {
   FilePath user_library_path;
   if (!GetUserDirectory(NSLibraryDirectory, &user_library_path)) {
-    DLOG(WARNING) << "Could not get user library path";
+    //DLOG(WARNING) << "Could not get user library path";
   }
   return user_library_path;
 }
@@ -156,7 +156,7 @@ FilePath GetAppBundlePath(const FilePath& exec_name) {
   // Don't prepend '/' to the first component.
   std::vector<std::string>::const_iterator it = components.begin();
   std::string bundle_name = *it;
-  DCHECK_GT(it->length(), 0U);
+  //DCHECK_GT(it->length(), 0U);
   // If the first component ends in ".app", we're already done.
   if (it->length() > kExtLength &&
       !it->compare(it->length() - kExtLength, kExtLength, kExt, kExtLength))
@@ -169,7 +169,7 @@ FilePath GetAppBundlePath(const FilePath& exec_name) {
 
   // Go through the remaining components.
   for (++it; it != components.end(); ++it) {
-    DCHECK_GT(it->length(), 0U);
+    //DCHECK_GT(it->length(), 0U);
 
     bundle_name += *it;
 
@@ -257,7 +257,6 @@ void SetBaseBundleID(const char* new_base_bundle_id) {
 #define CF_TO_NS_CAST_DEFN(TypeCF, TypeNS) \
 \
 TypeNS* CFToNSCast(TypeCF##Ref cf_val) { \
-  DCHECK(!cf_val || TypeCF##GetTypeID() == CFGetTypeID(cf_val)); \
   TypeNS* ns_val = \
       const_cast<TypeNS*>(reinterpret_cast<const TypeNS*>(cf_val)); \
   return ns_val; \
@@ -265,7 +264,6 @@ TypeNS* CFToNSCast(TypeCF##Ref cf_val) { \
 \
 TypeCF##Ref NSToCFCast(TypeNS* ns_val) { \
   TypeCF##Ref cf_val = reinterpret_cast<TypeCF##Ref>(ns_val); \
-  DCHECK(!cf_val || TypeCF##GetTypeID() == CFGetTypeID(cf_val)); \
   return cf_val; \
 }
 
@@ -273,7 +271,6 @@ TypeCF##Ref NSToCFCast(TypeNS* ns_val) { \
 CF_TO_NS_CAST_DEFN(CF##name, NS##name) \
 \
 NSMutable##name* CFToNSCast(CFMutable##name##Ref cf_val) { \
-  DCHECK(!cf_val || CF##name##GetTypeID() == CFGetTypeID(cf_val)); \
   NSMutable##name* ns_val = reinterpret_cast<NSMutable##name*>(cf_val); \
   return ns_val; \
 } \
@@ -281,7 +278,6 @@ NSMutable##name* CFToNSCast(CFMutable##name##Ref cf_val) { \
 CFMutable##name##Ref NSToCFCast(NSMutable##name* ns_val) { \
   CFMutable##name##Ref cf_val = \
       reinterpret_cast<CFMutable##name##Ref>(ns_val); \
-  DCHECK(!cf_val || CF##name##GetTypeID() == CFGetTypeID(cf_val)); \
   return cf_val; \
 }
 
@@ -321,7 +317,6 @@ CFCast<TypeCF##Ref>(const CFTypeRef& cf_val) { \
 template<> TypeCF##Ref \
 CFCastStrict<TypeCF##Ref>(const CFTypeRef& cf_val) { \
   TypeCF##Ref rv = CFCast<TypeCF##Ref>(cf_val); \
-  DCHECK(cf_val == NULL || rv); \
   return rv; \
 }
 

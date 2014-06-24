@@ -19,7 +19,7 @@ launch_data_t MessageForJob(const std::string& job_label,
   // launch_data_alloc returns something that needs to be freed.
   ScopedLaunchData message(launch_data_alloc(LAUNCH_DATA_DICTIONARY));
   if (!message) {
-    LOG(ERROR) << "launch_data_alloc";
+    //LOG(ERROR) << "launch_data_alloc";
     return NULL;
   }
 
@@ -29,7 +29,7 @@ launch_data_t MessageForJob(const std::string& job_label,
   // dictionary.
   ScopedLaunchData job_label_launchd(launch_data_new_string(job_label.c_str()));
   if (!job_label_launchd) {
-    LOG(ERROR) << "launch_data_new_string";
+    //LOG(ERROR) << "launch_data_new_string";
     return NULL;
   }
 
@@ -51,9 +51,9 @@ pid_t PIDForJob(const std::string& job_label) {
   launch_data_type_t response_type = launch_data_get_type(response);
   if (response_type != LAUNCH_DATA_DICTIONARY) {
     if (response_type == LAUNCH_DATA_ERRNO) {
-      LOG(ERROR) << "PIDForJob: error " << launch_data_get_errno(response);
+      //LOG(ERROR) << "PIDForJob: error " << launch_data_get_errno(response);
     } else {
-      LOG(ERROR) << "PIDForJob: expected dictionary, got " << response_type;
+      //LOG(ERROR) << "PIDForJob: expected dictionary, got " << response_type;
     }
     return -1;
   }
@@ -64,7 +64,7 @@ pid_t PIDForJob(const std::string& job_label) {
     return 0;
 
   if (launch_data_get_type(pid_data) != LAUNCH_DATA_INTEGER) {
-    LOG(ERROR) << "PIDForJob: expected integer";
+    //LOG(ERROR) << "PIDForJob: expected integer";
     return -1;
   }
 

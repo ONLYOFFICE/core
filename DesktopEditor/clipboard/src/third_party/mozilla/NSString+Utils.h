@@ -65,7 +65,7 @@ typedef enum
 // Utility method to ensure validity of URI strings. NSURL is used to validate
 // most of them, but the NSURL test may fail for |javascript:| and |data:| URIs
 // because they often contain invalid (per RFC2396) characters such as spaces.
-- (BOOL)isValidURI;
+//- (BOOL)isValidURI;
 
 - (NSString *)stringByRemovingCharactersInSet:(NSCharacterSet*)characterSet;
 - (NSString *)stringByReplacingCharactersInSet:(NSCharacterSet*)characterSet withString:(NSString*)string;

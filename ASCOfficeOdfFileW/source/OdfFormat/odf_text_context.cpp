@@ -10,6 +10,7 @@
 
 #include "styles.h"
 #include "style_text_properties.h"
+#include "style_paragraph_properties.h"
 
 #include "text_elements.h"
 #include "paragraph_elements.h"
@@ -192,6 +193,8 @@ void odf_text_context::add_textline_break()
 }
 void odf_text_context::add_text_style(office_element_ptr & style_elm, std::wstring style_name)
 {
+	if (style_name.size() < 1 || !style_elm)return;
+
 	if (text_elements_list_.size() < 1 )return;
 	if (text_span* span = dynamic_cast<text_span*>(text_elements_list_.back().elm.get()))
 	{
@@ -210,27 +213,52 @@ void odf_text_context::add_text_style(office_element_ptr & style_elm, std::wstri
 	}
 
 }
-void odf_text_context::add_page_break()
+void odf_text_context::add_tab()
 {
  	office_element_ptr elm;
-	create_element(L"text", L"soft-page-break", elm, odf_context_);
-
-	bool in_span = false;
-	if (text_span* span = dynamic_cast<text_span*>(current_level_.back().get()))
-	{
-		in_span = true;
-		end_span(); // todoo - перенос стиля
-	}
-
+	create_element(L"text", L"tab", elm, odf_context_);
+	
 	if (current_level_.size()>0)
 		current_level_.back()->add_child_element(elm);
+}
+void odf_text_context::add_page_break()
+{
+ //	office_element_ptr elm;
+	//create_element(L"text", L"soft-page-break", elm, odf_context_);
 
-	//end paragraph + style add after-break = page
-	//start paragraph - continues style
-	if (in_span)
-	{ 
-		start_span(false);
-	}
+	//bool in_span = false;
+	//if (text_span* span = dynamic_cast<text_span*>(current_level_.back().get()))
+	//{
+	//	in_span = true;
+	//	end_span(); // todoo - перенос стиля
+	//}
+
+	//bool in_paragraph = false;
+	//if (text_p* p = dynamic_cast<text_p*>(current_level_.back().get()))
+	//{
+	//	in_paragraph = true;
+	////fo:break-before
+
+	if (paragraph_properties_) paragraph_properties_->content().fo_break_before_ = fo_break(fo_break::Page);
+
+		//if (current_level_.size()>0)
+		//	current_level_.back()->add_child_element(elm);
+//		end_paragraph(); // todoo - перенос стиля
+	//}
+
+	////end paragraph + style add after-break = page
+	////start paragraph - continues style
+	//if (in_paragraph)
+	//{
+	////	start_paragraph(false);
+	//	
+	//	//if (current_level_.size()>0)
+	//	//	current_level_.back()->add_child_element(elm);
+	//}
+	//if (in_span)
+	//{ 
+	//	start_span(false);
+	//}
 }
 void odf_text_context::set_parent_paragraph_style(std::wstring & style_name)
 {

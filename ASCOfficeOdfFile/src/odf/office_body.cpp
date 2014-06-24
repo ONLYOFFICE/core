@@ -66,7 +66,8 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
         Context.set_master_page_name(masterPages[0]->style_master_page_attlist_.style_name_.get_value_or(style_ref(L"Standard")).style_name() );
     }
 
-    Context.set_page_properties(Context.root()->odf_context().pageLayoutContainer().page_layout_first()->name());
+	const page_layout_instance * layout = Context.root()->odf_context().pageLayoutContainer().page_layout_first();
+	if (layout)    Context.set_page_properties(layout->name());
 //backcolor (for all pages) 
     if (page_layout_instance * firtsPageLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_by_name(Context.get_page_properties()))
 	{

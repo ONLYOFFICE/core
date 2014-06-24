@@ -56,6 +56,7 @@ public:
 		
 	void add_textline_break();
 	void add_page_break();
+	void add_tab();
 
 	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней наследования
 

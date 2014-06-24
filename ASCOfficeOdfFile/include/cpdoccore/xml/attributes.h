@@ -5,7 +5,9 @@
 #include <vector>
 #include <cpdoccore/CPSharedPtr.h>
 #include <cpdoccore/CPOptional.h>
-#include <cpdoccore/common/readstring.h>
+
+#include <logging.h>
+
 #include <boost_string.h>
 #include <cpdoccore/xml/xmlchar.h>
 
@@ -92,7 +94,8 @@ namespace cpdoccore
 			{
 				try 
 				{
-					return common::read_string<V>( *val );
+					return optional<V>::Type ( ::boost::lexical_cast<V>( *val ) );
+					//return common::read_string<V>( *val );
 				}
 				catch(...)
 				{
@@ -205,8 +208,14 @@ namespace cpdoccore
 	template <class StringT, class T>
 	static bool _cp_apply_attribute(xml::attributes_wc_ptr attr, const StringT & QualifiedName, T & Val, const T & Default)
 	{
-		_CP_OPT(T) tmp = attr->get_val<T>(QualifiedName);
-		Val = tmp.get_value_or(Default);
+		_CP_OPT(T) tmp;
+		try
+		{
+			tmp = attr->get_val<T>(QualifiedName);
+			Val = tmp.get_value_or(Default);
+		}catch(...)
+		{
+		}
 		return (!!tmp);
 	}
 

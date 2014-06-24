@@ -335,6 +335,8 @@ public:
 
     // 
     _CP_OPT(Bool) style_join_border_;
+
+	_CP_OPT(Bool) style_contextual_spacing_;
 };
 
 /// \class  style_paragraph_properties

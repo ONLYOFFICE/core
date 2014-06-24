@@ -39,6 +39,24 @@ docx_conversion_context::docx_conversion_context(package::docx_document * Output
 	process_note_(noNote)
 {}
 
+std::wstring styles_map::get(const std::wstring & Name, odf::style_family::type Type)
+{
+    const std::wstring n = name(Name, Type);
+    if (map_.count(n))
+    {
+        return map_[n];
+    }
+    else
+    {
+        const std::wstring id = std::wstring(L"style") + boost::lexical_cast<std::wstring>(count_++);
+        map_[n] = id;
+        return id;        
+    }
+}
+std::wstring styles_map::name(const std::wstring & Name, odf::style_family::type Type)
+{
+    return Name + L":" + boost::lexical_cast<std::wstring>(odf::style_family(Type));
+}
 void docx_conversion_context::add_element_to_run()
 {
     if (!current_run_)

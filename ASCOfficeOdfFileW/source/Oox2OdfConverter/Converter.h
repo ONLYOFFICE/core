@@ -1,7 +1,9 @@
 #pragma once
 
 #include <boost_filesystem_version.h>
+#include <boost/lexical_cast.hpp>
 #include <cpdoccore/CPOptional.h>
+
 #include <atlcoll.h>
 
 static std::wstring string2std_string(CString val)

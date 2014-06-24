@@ -30,7 +30,17 @@ odf_style_state & odf_style_context::last_state()
 	else
 		throw;
 }
-
+odf_style_state * odf_style_context::last_state(style_family family)
+{
+	for (long i = style_state_list_.size()-1; i>=0; i--)
+	{
+		if (style_state_list_[i].get_family() == family)
+		{
+			return &style_state_list_[i];
+		}
+	}
+	return NULL;
+}
 void odf_style_context::create_style(std::wstring oox_name,const style_family family, bool automatic,bool root,int oox_id)
 {
 	std::wstring odf_name = oox_name;
@@ -77,14 +87,6 @@ void odf_style_context::create_default_style(const style_family family)
 	last_state().set_automatic(false);
 	last_state().set_root(true);
 	last_state().set_default(true);
-////////////////////////////////////////////
-	odf::default_style* style = dynamic_cast<odf::default_style*>(elm.get());
-
-	if (style == NULL)return;
-	
-	odf::style_table_cell_properties	* cell_properties		= style->style_content_.get_style_table_cell_properties();
-	odf::style_text_properties			* text_properties		= style->style_content_.get_style_text_properties();
-	odf::style_paragraph_properties		* paragraph_properties	= style->style_content_.get_style_paragraph_properties();
 }
 void odf_style_context::reset_defaults()
 {

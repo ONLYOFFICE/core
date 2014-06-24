@@ -3373,7 +3373,7 @@ public:
 				case 4: sBaseJc = _T("outside");break;
 				case 5: sBaseJc = _T("top");break;
 			}			
-			CString sVal; sVal.Format(_T("<m:pos m:val=\"%s\" />"), sBaseJc);
+			CString sVal; sVal.Format(_T("<m:baseJc m:val=\"%s\" />"), sBaseJc);
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else

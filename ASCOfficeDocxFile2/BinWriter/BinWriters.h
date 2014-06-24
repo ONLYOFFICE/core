@@ -3865,8 +3865,22 @@ namespace BinDocxRW
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathBottomNodesType::Mcs);
 
-			if ( pMcs.m_oMc.IsInit() )
-				WriteMathMc(pMcs.m_oMc.get());
+			for(int i = 0; i< pMcs.m_arrItems.GetSize(); ++i)
+			{			
+				OOX::WritingElement* item = pMcs.m_arrItems[i];
+				OOX::EElementType eType = item->getType();
+				int nCurPos1 = 0;
+				if (eType == OOX::et_m_mc)
+				{					
+					OOX::Logic::CMc* pMc = static_cast<OOX::Logic::CMc*>(item);
+					nCurPos1 = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Mc);
+
+					if ( pMc->m_oMcPr.IsInit() )
+						WriteMathMcPr(pMc->m_oMcPr.get());
+
+					m_oBcw.WriteItemEnd(nCurPos1);
+				}
+			}
 								
 			m_oBcw.WriteItemEnd(nCurPos);
 		}

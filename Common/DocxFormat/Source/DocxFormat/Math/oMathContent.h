@@ -1678,6 +1678,7 @@ namespace OOX
 			}
 			virtual ~CMcs()
 			{
+				Clear();
 			}
 
 		public:
@@ -1688,24 +1689,50 @@ namespace OOX
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CWCharWrapper sName = oReader.GetName();				
+					WritingElement *pItem = NULL;
+
 					if ( _T("m:mc") == sName )
-						m_oMc = oReader;
+						pItem = new Logic::CMc( oReader );
+
+					if ( pItem )
+						m_arrItems.Add( pItem );
+					
 				}
 			}
+
 			virtual CString      toXML() const
 			{
 				CString sResult = _T("<m:mcs>");
 
-				if ( m_oMc.IsInit() )
-					sResult += m_oMc->toXML();
+				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				{
+					if ( m_arrItems[nIndex])
+					{
+						sResult += m_arrItems[nIndex]->toXML();
+					}
+				}
 				
 				sResult += _T("</m:mcs>");
 
 				return sResult;
+			}
+
+			void Clear()
+			{
+				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				{
+					if ( m_arrItems[nIndex] )
+						delete m_arrItems[nIndex];
+
+					m_arrItems[nIndex] = NULL;
+				}
+
+				m_arrItems.RemoveAll();
 			}
 
 			virtual EElementType getType() const
@@ -1714,7 +1741,7 @@ namespace OOX
 			}
 		public:				
 			//Childs
-			nullable<OOX::Logic::CMc>		m_oMc;
+			CSimpleArray<WritingElement *> m_arrItems;
 		};
 		//--------------------------------------------------------------------------------
 		// CMPr 22.1.2.68   (Matrix Properties) 

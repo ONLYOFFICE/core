@@ -129,7 +129,8 @@ public:
 		pOfficeDrawingConverter->SetMediaDstPath(bstrMediaDir);
 		SysFreeString(bstrMediaDir);
 
-		m_oBinaryFileWriter = new BinDocxRW::BinaryFileWriter(oBufferedStream, fp, pEmbeddedFontsManager, pOfficeDrawingConverter);
+		BinDocxRW::ParamsWriter oParamsWriter(oBufferedStream, fp, pOfficeDrawingConverter, pEmbeddedFontsManager);
+		m_oBinaryFileWriter = new BinDocxRW::BinaryFileWriter(oParamsWriter);
 		m_oBinaryFileWriter->intoBindoc(CString(bsInputDir));
 
 		BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
@@ -225,10 +226,16 @@ public:
 
 		OOX::Logic::CSdtContent oSdtContent;
 		oSdtContent.fromXML(oReader);
+		BinDocxRW::ParamsWriter oCurParamsWriter(m_oBinaryFileWriter->m_oParamsWriter);
+		BinDocxRW::ParamsWriter oParamsWriter(oBufferedStream, oCurParamsWriter.m_oFontProcessor, oCurParamsWriter.m_pOfficeDrawingConverter, oCurParamsWriter.m_pEmbeddedFontsManager);
+		oParamsWriter.m_poTheme = oCurParamsWriter.m_poTheme;
+		oParamsWriter.m_oSettings = oCurParamsWriter.m_oSettings;
+		oParamsWriter.m_pCurRels = oCurParamsWriter.m_pCurRels;
+		oParamsWriter.m_sCurDocumentPath = oCurParamsWriter.m_sCurDocumentPath;
 
-		BinDocxRW::BinaryCommonWriter oBinaryCommonWriter(oBufferedStream, m_oBinaryFileWriter->m_oEmbeddedFontsManager);
+		BinDocxRW::BinaryCommonWriter oBinaryCommonWriter(oParamsWriter);
 		int nCurPos = oBinaryCommonWriter.WriteItemWithLengthStart();
-		BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(oBufferedStream, m_oBinaryFileWriter->m_oEmbeddedFontsManager, m_oBinaryFileWriter->m_pTheme, m_oBinaryFileWriter->m_pSettings, m_oBinaryFileWriter->m_oFontProcessor, m_oBinaryFileWriter->m_pCurRels, m_oBinaryFileWriter->m_pOfficeDrawingConverter, NULL, NULL);
+		BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(oParamsWriter, BinDocxRW::ParamsDocumentWriter(oParamsWriter.m_pCurRels, oParamsWriter.m_sCurDocumentPath), NULL, NULL);
 		oBinaryDocumentTableWriter.WriteDocumentContent(oSdtContent.m_arrItems);
 		oBinaryCommonWriter.WriteItemWithLengthEnd(nCurPos);
 

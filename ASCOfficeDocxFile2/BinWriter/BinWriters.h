@@ -8,6 +8,32 @@
 
 namespace BinDocxRW
 {
+	class ParamsWriter {
+	public:
+		Streams::CBufferedStream& m_oCBufferedStream;
+		DocWrapper::FontProcessor& m_oFontProcessor;
+		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
+		NSFontCutter::CEmbeddedFontsManager* m_pEmbeddedFontsManager;
+
+		OOX::CSettings* m_oSettings;
+		OOX::CTheme* m_poTheme;
+
+		OOX::IFileContainer* m_pCurRels;
+		CString m_sCurDocumentPath;
+	public: ParamsWriter(Streams::CBufferedStream& oCBufferedStream, DocWrapper::FontProcessor& oFontProcessor, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager):
+				m_oCBufferedStream(oCBufferedStream),m_oFontProcessor(oFontProcessor),m_pOfficeDrawingConverter(pOfficeDrawingConverter),m_pEmbeddedFontsManager(pEmbeddedFontsManager)
+		{
+		}
+	};
+	class ParamsDocumentWriter {
+	public:
+		OOX::IFileContainer* m_pRels;
+		CString m_sDocumentPath;
+	public:
+		ParamsDocumentWriter(OOX::IFileContainer* pRels, CString& sDocumentPath):m_pRels(pRels), m_sDocumentPath(sDocumentPath)
+		{
+		}
+	};
 	class FldStruct{
 	protected:
 		int m_nType;
@@ -24,7 +50,7 @@ namespace BinDocxRW
 	public: 
 		NSFontCutter::CEmbeddedFontsManager* m_pEmbeddedFontsManager;
 		Streams::CBufferedStream &m_oStream;
-		BinaryCommonWriter(Streams::CBufferedStream &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager):m_oStream(oCBufferedStream),m_pEmbeddedFontsManager(pEmbeddedFontsManager)
+		BinaryCommonWriter(ParamsWriter& oParamsWriter):m_oStream(oParamsWriter.m_oCBufferedStream),m_pEmbeddedFontsManager(oParamsWriter.m_pEmbeddedFontsManager)
 		{
 		}
 		int WriteItemStart(BYTE type)
@@ -372,6 +398,7 @@ namespace BinDocxRW
 	class BinaryHeaderFooterTableWriter
 	{
 		BinaryCommonWriter m_oBcw;
+		ParamsWriter& m_oParamsWriter;
 		OOX::CSettings* m_oSettings;
 		OOX::CTheme* m_poTheme;
 		DocWrapper::FontProcessor& m_oFontProcessor;
@@ -385,7 +412,7 @@ namespace BinDocxRW
 		CAtlArray<SimpleTypes::EHdrFtr> m_aFooterTypes;
 		CAtlArray<OOX::Logic::CSectionProperty*> m_aFooterSectPrs;
 	public:
-		BinaryHeaderFooterTableWriter(Streams::CBufferedStream &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::CTheme* poTheme, DocWrapper::FontProcessor& oFontProcessor, OOX::CSettings* oSettings, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter, OOX::IFileContainer* oDocumentRels);
+		BinaryHeaderFooterTableWriter(ParamsWriter& oParamsWriter, OOX::IFileContainer* oDocumentRels);
 		void Write();
 		void WriteHdrFtrContent(CAtlArray<OOX::CHdrFtr*>& aHdrFtrs, CAtlArray<SimpleTypes::EHdrFtr>& aHdrFtrTypes, CAtlArray<OOX::Logic::CSectionProperty*>& aHdrSectPrs, bool bHdr);
 		void WriteHdrFtrItem(OOX::Logic::CSectionProperty* pSectPr, OOX::CHdrFtr* pHdrFtr, bool bHdr);
@@ -394,7 +421,7 @@ namespace BinDocxRW
 	{
 		BinaryCommonWriter m_oBcw;
 	public:
-		BinarySigTableWriter(Streams::CBufferedStream &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager):m_oBcw(oCBufferedStream, pEmbeddedFontsManager)
+		BinarySigTableWriter(ParamsWriter& oParamsWriter):m_oBcw(oParamsWriter)
 		{
 		}
 		void Write()
@@ -412,7 +439,7 @@ namespace BinDocxRW
 		OOX::CTheme* m_poTheme;
 	public:
 		DocWrapper::FontProcessor& m_oFontProcessor;
-	public: Binary_rPrWriter(Streams::CBufferedStream &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::CTheme* poTheme, DocWrapper::FontProcessor& oFontProcessor):m_oBcw(oCBufferedStream, pEmbeddedFontsManager),m_poTheme(poTheme),m_oFontProcessor(oFontProcessor)
+	public: Binary_rPrWriter(ParamsWriter& oParamsWriter):m_oBcw(oParamsWriter),m_poTheme(oParamsWriter.m_poTheme),m_oFontProcessor(oParamsWriter.m_oFontProcessor)
 			{
 			}
 			void Write_rPr(const OOX::Logic::CRunProperty& rPr)
@@ -718,8 +745,8 @@ namespace BinDocxRW
 		OOX::CSettings* m_oSettings;
 	public:
 		BinaryHeaderFooterTableWriter* m_oBinaryHeaderFooterTableWriter;
-	public: Binary_pPrWriter(Streams::CBufferedStream &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::CTheme* poTheme, DocWrapper::FontProcessor& oFontProcessor, OOX::CSettings* oSettings, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter, OOX::IFileContainer* oDocumentRels, BinaryHeaderFooterTableWriter* oBinaryHeaderFooterTableWriter):
-				m_oBcw(oCBufferedStream, pEmbeddedFontsManager),brPrs(oCBufferedStream, pEmbeddedFontsManager, poTheme, oFontProcessor),m_oSettings(oSettings),m_oBinaryHeaderFooterTableWriter(oBinaryHeaderFooterTableWriter)
+	public: Binary_pPrWriter(ParamsWriter& oParamsWriter, BinaryHeaderFooterTableWriter* oBinaryHeaderFooterTableWriter):
+				m_oBcw(oParamsWriter),brPrs(oParamsWriter),m_oSettings(oParamsWriter.m_oSettings),m_oBinaryHeaderFooterTableWriter(oBinaryHeaderFooterTableWriter)
 			{
 			}
 			void Write_pPr(const OOX::Logic::CParagraphProperty& pPr)
@@ -1328,7 +1355,7 @@ namespace BinDocxRW
 	{
 		BinaryCommonWriter m_oBcw;
 	public:
-	public: Binary_tblPrWriter(Streams::CBufferedStream &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager):m_oBcw(oCBufferedStream, pEmbeddedFontsManager)
+	public: Binary_tblPrWriter(ParamsWriter& oParamsWriter):m_oBcw(oParamsWriter)
 			{
 			}
 			void WriteTblPr(OOX::Logic::CTableProperty* p_tblPr)
@@ -1763,8 +1790,8 @@ namespace BinDocxRW
 		Binary_tblPrWriter btblPrs;
 		int m_nReaderGenName;
 	public:
-		BinaryStyleTableWriter(Streams::CBufferedStream &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::CTheme* poTheme, DocWrapper::FontProcessor& oFontProcessor, OOX::CSettings* oSettings, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter):
-		  m_oBcw(oCBufferedStream, pEmbeddedFontsManager),bpPrs(oCBufferedStream, pEmbeddedFontsManager, poTheme, oFontProcessor, oSettings, pOfficeDrawingConverter, NULL, NULL),brPrs(oCBufferedStream, pEmbeddedFontsManager, poTheme, oFontProcessor),btblPrs(oCBufferedStream, pEmbeddedFontsManager)
+		BinaryStyleTableWriter(ParamsWriter& oParamsWriter):
+		  m_oBcw(oParamsWriter),bpPrs(oParamsWriter, NULL),brPrs(oParamsWriter),btblPrs(oParamsWriter)
 		{
 			m_nReaderGenName = 0;
 		};
@@ -2030,8 +2057,8 @@ namespace BinDocxRW
 		Binary_pPrWriter bpPrs;
 		Binary_rPrWriter brPrs;
 	public:
-		BinaryNumberingTableWriter(Streams::CBufferedStream &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::CTheme* poTheme, DocWrapper::FontProcessor& oFontProcessor, OOX::CSettings* oSettings, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter):
-		  m_oBcw(oCBufferedStream, pEmbeddedFontsManager),bpPrs(oCBufferedStream, pEmbeddedFontsManager, poTheme, oFontProcessor, oSettings, pOfficeDrawingConverter, NULL, NULL),brPrs(oCBufferedStream, pEmbeddedFontsManager, poTheme, oFontProcessor)
+		BinaryNumberingTableWriter(ParamsWriter& oParamsWriter):
+		  m_oBcw(oParamsWriter),bpPrs(oParamsWriter, NULL),brPrs(oParamsWriter)
 		{
 		};
 		void Write(const OOX::CNumbering& numbering)
@@ -2338,7 +2365,7 @@ namespace BinDocxRW
 		BinaryCommonWriter m_oBcw;
 		LPSAFEARRAY m_pTheme;
 	public:
-		BinaryOtherTableWriter(Streams::CBufferedStream &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, LPSAFEARRAY pTheme):m_oBcw(oCBufferedStream, pEmbeddedFontsManager),m_pTheme(pTheme)
+		BinaryOtherTableWriter(ParamsWriter& oParamsWriter, LPSAFEARRAY pTheme):m_oBcw(oParamsWriter),m_pTheme(pTheme)
 		{
 		};
 		void Write()
@@ -2389,6 +2416,8 @@ namespace BinDocxRW
 	};
 	class BinaryDocumentTableWriter
 	{
+		ParamsWriter& m_oParamsWriter;
+		ParamsDocumentWriter& m_oParamsDocumentWriter;
 		BinaryCommonWriter m_oBcw;
 		Binary_pPrWriter bpPrs;
 		Binary_rPrWriter brPrs;
@@ -2401,7 +2430,6 @@ namespace BinDocxRW
 		int m_nSkipFldChar;
 		CString m_sFldChar;
 		SimpleTypes::EFldCharType m_eFldState;
-		OOX::IFileContainer* m_oDocumentRels;
 		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
 		CAtlMap<int, bool>* m_mapIgnoreComments;
 	public:
@@ -2409,8 +2437,8 @@ namespace BinDocxRW
 		OOX::Logic::CSectionProperty* pSectPr;
 		bool m_bWriteSectPr;//Записывать ли свойства секции в данном экземпляре BinaryOtherTableWriter
 	public:
-		BinaryDocumentTableWriter(Streams::CBufferedStream &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::CTheme* poTheme, OOX::CSettings* oSettings, DocWrapper::FontProcessor& oFontProcessor, OOX::IFileContainer* oDocumentRels, PPTXFile::IAVSOfficeDrawingConverter* oOfficeDrawingConverter, CAtlMap<int, bool>* mapIgnoreComments, BinaryHeaderFooterTableWriter* oBinaryHeaderFooterTableWriter):
-		  m_oBcw(oCBufferedStream, pEmbeddedFontsManager),bpPrs(oCBufferedStream, pEmbeddedFontsManager, poTheme, oFontProcessor, oSettings, oOfficeDrawingConverter, oDocumentRels, oBinaryHeaderFooterTableWriter),brPrs(oCBufferedStream, pEmbeddedFontsManager, poTheme, oFontProcessor),m_oSettings(oSettings),m_oDocumentRels(oDocumentRels),btblPrs(oCBufferedStream, pEmbeddedFontsManager),m_pOfficeDrawingConverter(oOfficeDrawingConverter),m_mapIgnoreComments(mapIgnoreComments)
+		BinaryDocumentTableWriter(ParamsWriter& oParamsWriter, ParamsDocumentWriter& oParamsDocumentWriter, CAtlMap<int, bool>* mapIgnoreComments, BinaryHeaderFooterTableWriter* oBinaryHeaderFooterTableWriter):
+			m_oParamsWriter(oParamsWriter), m_oParamsDocumentWriter(oParamsDocumentWriter),m_oBcw(oParamsWriter),bpPrs(oParamsWriter, oBinaryHeaderFooterTableWriter),brPrs(oParamsWriter),btblPrs(oParamsWriter),m_oSettings(oParamsWriter.m_oSettings),m_pOfficeDrawingConverter(oParamsWriter.m_pOfficeDrawingConverter),m_mapIgnoreComments(mapIgnoreComments)
 		{
 			pSectPr = NULL;
 			m_bWriteSectPr = false;
@@ -2687,7 +2715,7 @@ namespace BinDocxRW
 						WriteComment(OOX::et_w_commentRangeEnd, pCommentRangeEnd->m_oId);
 						break;
 					}
-				case OOX::et_m_oMathPara:
+				/*case OOX::et_m_oMathPara:
 					{
 						OOX::Logic::COMathPara* pOMathPara = static_cast<OOX::Logic::COMathPara*>(item);
 
@@ -2706,7 +2734,7 @@ namespace BinDocxRW
 						WriteMathArgNodes( pOMath->m_arrItems );
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
-					}
+					}*/
 				}
 			}
 		};
@@ -2737,14 +2765,11 @@ namespace BinDocxRW
 			if(pHyperlink->m_oId.IsInit())
 			{
 				OOX::Rels::CRelationShip* oRels = NULL;
-				if(NULL != m_oDocumentRels)
+				smart_ptr<OOX::File> pFile = m_oParamsDocumentWriter.m_pRels->Find( OOX::RId(pHyperlink->m_oId.get().GetValue()));
+				if (pFile.IsInit() && OOX::FileTypes::HyperLink == pFile->type())
 				{
-					smart_ptr<OOX::File> pFile = m_oDocumentRels->Find( OOX::RId(pHyperlink->m_oId.get().GetValue()));
-					if (pFile.IsInit() && OOX::FileTypes::HyperLink == pFile->type())
-					{
-						OOX::HyperLink* pHyperlinkFile = static_cast<OOX::HyperLink*>(pFile.operator ->());
-						sLink = pHyperlinkFile->Uri().GetPath();
-					}
+					OOX::HyperLink* pHyperlinkFile = static_cast<OOX::HyperLink*>(pFile.operator ->());
+					sLink = pHyperlinkFile->Uri().GetPath();
 				}
 			}
 			
@@ -4622,13 +4647,22 @@ namespace BinDocxRW
 				{
 					if(pChart->m_oRId.IsInit())
 					{
-						smart_ptr<OOX::File> pFile = m_oDocumentRels->Find( OOX::RId(pChart->m_oRId->GetValue()));
+						smart_ptr<OOX::File> pFile = m_oParamsDocumentWriter.m_pRels->Find( OOX::RId(pChart->m_oRId->GetValue()));
 						if (pFile.IsInit() && OOX::FileTypes::Chart == pFile->type())
 						{
 							OOX::Spreadsheet::CChartSpace* pChartFile = static_cast<OOX::Spreadsheet::CChartSpace*>(pFile.operator ->());
+							CString sChartPath = pChartFile->GetReadPath().GetPath();
+							BSTR bstrChartPath = sChartPath.AllocSysString();
+							m_pOfficeDrawingConverter->SetRelsPath(bstrChartPath);
+							SysFreeString(bstrChartPath);
+
 							int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
 							WriteDrawing(*pChartDrawing, NULL, pChartFile);
 							m_oBcw.WriteItemEnd(nCurPos);
+
+							BSTR bstrDocumentRels = m_oParamsDocumentWriter.m_sDocumentPath.AllocSysString();
+							m_pOfficeDrawingConverter->SetRelsPath(bstrDocumentRels);
+							SysFreeString(bstrDocumentRels);
 						}
 					}
 				}
@@ -5451,7 +5485,7 @@ namespace BinDocxRW
 			}
 
 			//Content
-			BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oBcw.m_oStream, m_oBcw.m_pEmbeddedFontsManager, brPrs.m_poTheme, m_oSettings, brPrs.m_oFontProcessor, m_oDocumentRels, m_pOfficeDrawingConverter, m_mapIgnoreComments, bpPrs.m_oBinaryHeaderFooterTableWriter);
+			BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, m_oParamsDocumentWriter, m_mapIgnoreComments, bpPrs.m_oBinaryHeaderFooterTableWriter);
 			nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::Cell_Content);
 			oBinaryDocumentTableWriter.WriteDocumentContent(tc.m_arrItems);
 			m_oBcw.WriteItemEnd(nCurPos);
@@ -5459,8 +5493,8 @@ namespace BinDocxRW
 			RELEASEOBJECT(pTcPr);
 		};
 	};
-	BinaryHeaderFooterTableWriter::BinaryHeaderFooterTableWriter(Streams::CBufferedStream &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::CTheme* poTheme, DocWrapper::FontProcessor& oFontProcessor, OOX::CSettings* oSettings, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter, OOX::IFileContainer* oDocumentRels):
-	m_oBcw(oCBufferedStream, pEmbeddedFontsManager), m_poTheme(poTheme), m_oFontProcessor(oFontProcessor), m_oSettings(oSettings),m_pOfficeDrawingConverter(pOfficeDrawingConverter), m_oDocumentRels(oDocumentRels)
+	BinaryHeaderFooterTableWriter::BinaryHeaderFooterTableWriter(ParamsWriter& oParamsWriter, OOX::IFileContainer* oDocumentRels):
+	m_oBcw(oParamsWriter), m_oParamsWriter(oParamsWriter), m_poTheme(oParamsWriter.m_poTheme), m_oFontProcessor(oParamsWriter.m_oFontProcessor), m_oSettings(oParamsWriter.m_oSettings),m_pOfficeDrawingConverter(oParamsWriter.m_pOfficeDrawingConverter), m_oDocumentRels(oDocumentRels)
 	{
 	};
 	void BinaryHeaderFooterTableWriter::Write()
@@ -5507,8 +5541,11 @@ namespace BinDocxRW
 		{
 			int nCurPos = 0;
 			//Content
-			BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oBcw.m_oStream, m_oBcw.m_pEmbeddedFontsManager, m_poTheme, m_oSettings, m_oFontProcessor, pHdrFtr, m_pOfficeDrawingConverter, NULL, NULL);
-			oBinaryDocumentTableWriter.prepareOfficeDrawingConverter(m_pOfficeDrawingConverter, pHdrFtr->m_oReadPath.GetPath(),  pHdrFtr->m_arrShapeTypes);
+			ParamsDocumentWriter oParamsDocumentWriter(pHdrFtr, pHdrFtr->m_oReadPath.GetPath());
+			m_oParamsWriter.m_pCurRels = oParamsDocumentWriter.m_pRels;
+			m_oParamsWriter.m_sCurDocumentPath = oParamsDocumentWriter.m_sDocumentPath;
+			BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, NULL, NULL);
+			oBinaryDocumentTableWriter.prepareOfficeDrawingConverter(m_pOfficeDrawingConverter, oParamsDocumentWriter.m_sDocumentPath,  pHdrFtr->m_arrShapeTypes);
 			nCurPos = m_oBcw.WriteItemStart(c_oSerHdrFtrTypes::HdrFtr_Content);
 			oBinaryDocumentTableWriter.WriteDocumentContent(pHdrFtr->m_arrItems);
 			m_oBcw.WriteItemEnd(nCurPos);
@@ -5525,7 +5562,7 @@ namespace BinDocxRW
 		};
 		BinaryCommonWriter m_oBcw;
 	public:
-		BinaryCommentsTableWriter(Streams::CBufferedStream &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager):m_oBcw(oCBufferedStream, pEmbeddedFontsManager)
+		BinaryCommentsTableWriter(ParamsWriter& oParamsWriter):m_oBcw(oParamsWriter)
 		{
 		};
 		void Write(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CPeople* pPeople, CAtlMap<int, bool>& mapIgnoreComments)
@@ -5686,7 +5723,7 @@ namespace BinDocxRW
 	{
 		BinaryCommonWriter m_oBcw;
 	public:
-		BinarySettingsTableWriter(Streams::CBufferedStream &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager):m_oBcw(oCBufferedStream, pEmbeddedFontsManager)
+		BinarySettingsTableWriter(ParamsWriter& oParamsWriter):m_oBcw(oParamsWriter)
 		{
 		};
 		void Write(OOX::CSettings& oSettings)
@@ -6020,15 +6057,9 @@ namespace BinDocxRW
 		int m_nRealTableCount;
 		int m_nMainTableStart;
 	public:
-		DocWrapper::FontProcessor& m_oFontProcessor;
-		NSFontCutter::CEmbeddedFontsManager* m_oEmbeddedFontsManager;
-		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
-		OOX::CTheme* m_pTheme;
-		OOX::CSettings* m_pSettings;
-		OOX::IFileContainer* m_pCurRels;
+		ParamsWriter& m_oParamsWriter;
 
-	public: BinaryFileWriter(Streams::CBufferedStream &oCBufferedStream, DocWrapper::FontProcessor& fp, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter):
-					m_oBcw(oCBufferedStream, pEmbeddedFontsManager), m_oFontProcessor(fp), m_oEmbeddedFontsManager(pEmbeddedFontsManager), m_pOfficeDrawingConverter(pOfficeDrawingConverter)
+	public: BinaryFileWriter(ParamsWriter& oParamsWriter):m_oParamsWriter(oParamsWriter), m_oBcw(oParamsWriter)
 			{
 				m_nLastFilePos = 0;
 				m_nRealTableCount = 0;
@@ -6052,7 +6083,7 @@ namespace BinDocxRW
 
 				//BinarySigTableWriter
 				int nCurPos = WriteTableStart(c_oSerTableTypes::Signature);
-				BinarySigTableWriter oBinarySigTableWriter(m_oBcw.m_oStream, m_oBcw.m_pEmbeddedFontsManager);
+				BinarySigTableWriter oBinarySigTableWriter(m_oParamsWriter);
 				oBinarySigTableWriter.Write();
 				WriteTableEnd(nCurPos);
 			}
@@ -6060,7 +6091,7 @@ namespace BinDocxRW
 			{
 				//OtherTable
 				int nCurPos = WriteTableStart(c_oSerTableTypes::Other);
-				BinaryOtherTableWriter oBinaryOtherTableWriter(m_oBcw.m_oStream, m_oBcw.m_pEmbeddedFontsManager, pTheme);
+				BinaryOtherTableWriter oBinaryOtherTableWriter(m_oParamsWriter, pTheme);
 				oBinaryOtherTableWriter.Write();
 				WriteTableEnd(nCurPos);
 
@@ -6100,12 +6131,11 @@ namespace BinDocxRW
 				Streams::CBufferedStream& oBufferedStream = m_oBcw.m_oStream;
 				OOX::CDocx oDocx = OOX::CDocx(OOX::CPath(sDir));
 				
-				m_pTheme = oDocx.GetTheme();
-				DocWrapper::FontProcessor& oFontProcessor = m_oFontProcessor;
+				m_oParamsWriter.m_poTheme = oDocx.GetTheme();
+				m_oParamsWriter.m_oSettings =  oDocx.GetSettings();
 				OOX::CFontTable* pFontTable = oDocx.GetFontTable();
 				if(NULL != pFontTable)
-					oFontProcessor.setFontTable(pFontTable);
-				m_pSettings = oDocx.GetSettings();
+					m_oParamsWriter.m_oFontProcessor.setFontTable(pFontTable);
 
 				//ищем первый SectPr и расставляем pageBreak
 				OOX::CDocument* poDocument = oDocx.GetDocument();
@@ -6116,10 +6146,10 @@ namespace BinDocxRW
 				int nCurPos = 0;
 
 				LPSAFEARRAY pThemeData = NULL;
-				if(NULL != m_pTheme)
+				if(NULL != m_oParamsWriter.m_poTheme)
 				{
-					BSTR bstrThemePath = m_pTheme->m_oReadPath.GetPath().AllocSysString();
-					m_pOfficeDrawingConverter->GetThemeBinary(bstrThemePath, &pThemeData);
+					BSTR bstrThemePath = m_oParamsWriter.m_poTheme->m_oReadPath.GetPath().AllocSysString();
+					m_oParamsWriter.m_pOfficeDrawingConverter->GetThemeBinary(bstrThemePath, &pThemeData);
 					SysFreeString(bstrThemePath);
 				}
 
@@ -6127,7 +6157,7 @@ namespace BinDocxRW
 				OOX::CSettings* pSettings = oDocx.GetSettings();
 				if(NULL != pSettings)
 				{
-					BinDocxRW::BinarySettingsTableWriter oBinarySettingsTableWriter(oBufferedStream, m_oEmbeddedFontsManager);
+					BinDocxRW::BinarySettingsTableWriter oBinarySettingsTableWriter(m_oParamsWriter);
 					int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Settings);
 					oBinarySettingsTableWriter.Write(*pSettings);
 					this->WriteTableEnd(nCurPos);
@@ -6140,7 +6170,7 @@ namespace BinDocxRW
 				OOX::CPeople* pPeople = oDocx.GetPeople();
 				if(NULL != pComments)
 				{
-					BinDocxRW::BinaryCommentsTableWriter oBinaryCommentsTableWriter(oBufferedStream, m_oEmbeddedFontsManager);
+					BinDocxRW::BinaryCommentsTableWriter oBinaryCommentsTableWriter(m_oParamsWriter);
 					int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Comments);
 					oBinaryCommentsTableWriter.Write(*pComments, pCommentsExt, pPeople, mapIgnoreComments);
 					this->WriteTableEnd(nCurPos);
@@ -6148,7 +6178,7 @@ namespace BinDocxRW
 
 				//Write StyleTable
 				OOX::CStyles* pStyles = oDocx.GetStyles();
-				BinDocxRW::BinaryStyleTableWriter oBinaryStyleTableWriter(oBufferedStream, m_oEmbeddedFontsManager, m_pTheme, oFontProcessor, m_pSettings, m_pOfficeDrawingConverter);
+				BinDocxRW::BinaryStyleTableWriter oBinaryStyleTableWriter(m_oParamsWriter);
 				if(NULL != pStyles)
 				{
 					int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Style);
@@ -6157,7 +6187,7 @@ namespace BinDocxRW
 				}
 				//Write Numbering
 				OOX::CNumbering* pNumbering = oDocx.GetNumbering();
-				BinDocxRW::BinaryNumberingTableWriter oBinaryNumberingTableWriter(oBufferedStream, m_oEmbeddedFontsManager, m_pTheme, oFontProcessor, m_pSettings, m_pOfficeDrawingConverter);
+				BinDocxRW::BinaryNumberingTableWriter oBinaryNumberingTableWriter(m_oParamsWriter);
 				if(NULL != pNumbering)
 				{
 					nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Numbering);
@@ -6165,14 +6195,17 @@ namespace BinDocxRW
 					this->WriteTableEnd(nCurPos);
 				}
 
-				BinDocxRW::BinaryHeaderFooterTableWriter oBinaryHeaderFooterTableWriter(oBufferedStream, m_oEmbeddedFontsManager, m_pTheme, oFontProcessor, m_pSettings, m_pOfficeDrawingConverter, poDocument);
+				BinDocxRW::BinaryHeaderFooterTableWriter oBinaryHeaderFooterTableWriter(m_oParamsWriter, poDocument);
 
 				//Write DocumentTable
-				m_pCurRels = poDocument;
+				ParamsDocumentWriter oParamsDocumentWriter(poDocument, poDocument->m_oReadPath.GetPath());
+				m_oParamsWriter.m_pCurRels = oParamsDocumentWriter.m_pRels;
+				m_oParamsWriter.m_sCurDocumentPath = oParamsDocumentWriter.m_sDocumentPath;
+				
 				//DocumentTable всегда пишем последней, чтобы сначала заполнить все вспомогательные структуры, а при заполении документа, вызывать методы типа Style_Add...
 				nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Document);
-				BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(oBufferedStream, m_oEmbeddedFontsManager, m_pTheme, m_pSettings, oFontProcessor, poDocument, m_pOfficeDrawingConverter, &mapIgnoreComments, &oBinaryHeaderFooterTableWriter);
-				oBinaryDocumentTableWriter.prepareOfficeDrawingConverter(m_pOfficeDrawingConverter, poDocument->m_oReadPath.GetPath(), poDocument->m_arrShapeTypes);
+				BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, &mapIgnoreComments, &oBinaryHeaderFooterTableWriter);
+				oBinaryDocumentTableWriter.prepareOfficeDrawingConverter(m_oParamsWriter.m_pOfficeDrawingConverter, oParamsDocumentWriter.m_sDocumentPath, poDocument->m_arrShapeTypes);
 				oBinaryDocumentTableWriter.pSectPr = pFirstSectPr;
 				oBinaryDocumentTableWriter.m_bWriteSectPr = true;
 				oBinaryDocumentTableWriter.Write(poDocument->m_arrItems);

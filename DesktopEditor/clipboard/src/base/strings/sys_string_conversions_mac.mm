@@ -152,13 +152,26 @@ CFStringRef SysUTF16ToCFStringRef(const string16& utf16) {
   return STLStringToCFStringWithEncodingsT(utf16, kMediumStringEncoding);
 }
 
+void* CFTypeRefToNSObjectAutorelease(CFTypeRef cf_object) {
+  // When GC is on, NSMakeCollectable marks cf_object for GC and autorelease
+  // is a no-op.
+  //
+  // In the traditional GC-less environment, NSMakeCollectable is a no-op,
+  // and cf_object is autoreleased, balancing out the caller's ownership claim.
+  //
+  // NSMakeCollectable returns nil when used on a NULL object.
+  return [NSMakeCollectable(cf_object) autorelease];
+}
+
 NSString* SysUTF8ToNSString(const std::string& utf8) {
-  return (NSString*)base::mac::CFTypeRefToNSObjectAutorelease(
+  //return (NSString*)base::mac::CFTypeRefToNSObjectAutorelease(
+    return (NSString*) CFTypeRefToNSObjectAutorelease(
       SysUTF8ToCFStringRef(utf8));
 }
 
 NSString* SysUTF16ToNSString(const string16& utf16) {
-  return (NSString*)base::mac::CFTypeRefToNSObjectAutorelease(
+  //return (NSString*)base::mac::CFTypeRefToNSObjectAutorelease(
+    return (NSString*) CFTypeRefToNSObjectAutorelease(
       SysUTF16ToCFStringRef(utf16));
 }
 

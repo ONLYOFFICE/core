@@ -2877,8 +2877,9 @@ namespace BinXlsxRW {
 			}
 			if (oConditionalFormattingRule.m_oOperator.IsInit())
 			{
-				m_oBcw.m_oStream.WriteByte(c_oSer_ConditionalFormattingRule::Operator);
-				m_oBcw.m_oStream.WriteString2(oConditionalFormattingRule.m_oOperator.get2());
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRule::Operator);
+				m_oBcw.m_oStream.WriteByte(oConditionalFormattingRule.m_oOperator->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			if (oConditionalFormattingRule.m_oPercent.IsInit())
 			{
@@ -2922,8 +2923,9 @@ namespace BinXlsxRW {
 			}
 			if (oConditionalFormattingRule.m_oType.IsInit())
 			{
-				m_oBcw.m_oStream.WriteByte(c_oSer_ConditionalFormattingRule::Type);
-				m_oBcw.m_oStream.WriteString2(oConditionalFormattingRule.m_oType.get2());
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRule::Type);
+				m_oBcw.m_oStream.WriteByte(oConditionalFormattingRule.m_oType->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
 			}
 
 			if (0 < oConditionalFormattingRule.m_arrItems.GetSize())
@@ -3039,8 +3041,9 @@ namespace BinXlsxRW {
 
 			if (oIconSet.m_oIconSet.IsInit())
 			{
-				m_oBcw.m_oStream.WriteByte(c_oSer_ConditionalFormattingIconSet::IconSet);
-				m_oBcw.m_oStream.WriteString2(oIconSet.m_oIconSet.get2());
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingIconSet::IconSet);
+				m_oBcw.m_oStream.WriteByte(oIconSet.m_oIconSet->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			if (oIconSet.m_oPercent.IsInit())
 			{
@@ -3079,8 +3082,9 @@ namespace BinXlsxRW {
 			}
 			if (oCFVO.m_oType.IsInit())
 			{
-				m_oBcw.m_oStream.WriteByte(c_oSer_ConditionalFormattingValueObject::Type);
-				m_oBcw.m_oStream.WriteString2(oCFVO.m_oType.get2());
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingValueObject::Type);
+				m_oBcw.m_oStream.WriteByte(oCFVO.m_oType->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			if (oCFVO.m_oVal.IsInit())
 			{

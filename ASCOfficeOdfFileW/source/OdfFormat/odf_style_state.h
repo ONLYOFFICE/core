@@ -42,7 +42,8 @@ public:
 /////////////////////////////////////////////////////////////////////////////////////////
 	void set_name(std::wstring & name);
 	std::wstring & get_name();
-	
+	style_family & get_family();
+
 	void	set_number_format(int id)	{num_fmt_id_ = id;}
 	int		get_number_format()			{return num_fmt_id_;}
 

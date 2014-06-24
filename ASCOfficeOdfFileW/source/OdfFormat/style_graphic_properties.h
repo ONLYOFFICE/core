@@ -33,7 +33,7 @@ class graphic_format_properties
 {
 public:
 	graphic_format_properties(); //for defaults set
-    //void apply_from(const graphic_format_properties & Other);
+    void apply_from(const graphic_format_properties & Other);
 
 	void serialize(std::wostream & strm, const wchar_t * ns, const wchar_t * name );
 

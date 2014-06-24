@@ -11,6 +11,7 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 
+#include "anchortype.h"
 
 namespace cpdoccore {
 namespace odf
@@ -29,7 +30,23 @@ public:
 	void set_drawings_rect(double x_pt, double y_pt, double width_pt, double height_pt);
 	void clear();
 	void set_styles_context(odf_style_context*  styles_context);//для embedded 
-	
+
+	void set_margin_left	(double valPt);
+	void set_margin_right	(double valPt);
+	void set_margin_top		(double valPt);
+	void set_margin_bottom	(double valPt);
+
+	void set_anchor	(anchor_type::type type);
+
+	void set_vertical_rel(int from);
+	void set_vertical_pos(int align);
+	void set_vertical_pos(double offset_pt);
+
+	void set_horizontal_rel(int from);
+	void set_horizontal_pos(int align);
+	void set_horizontal_pos(double offset_pt);
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	office_element_ptr & get_current_style_element() ;
 	office_element_ptr & get_current_element();

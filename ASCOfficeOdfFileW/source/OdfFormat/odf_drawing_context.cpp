@@ -47,6 +47,54 @@ struct 	odf_group_state
 	bool flipV;
 };
 
+struct anchor_settings
+{
+	_CP_OPT(length) svg_x_;
+	_CP_OPT(length) svg_y_;
+	_CP_OPT(length) svg_height_;
+	_CP_OPT(length) svg_width_;	
+
+	_CP_OPT(length) style_vertical_pos_svg_y_;
+	_CP_OPT(length) style_horizontal_pos_svg_x_;
+	
+	_CP_OPT(vertical_pos)	style_vertical_pos_;
+	_CP_OPT(horizontal_pos) style_horizontal_pos_;
+
+	_CP_OPT(vertical_rel)	style_vertical_rel_;
+	_CP_OPT(horizontal_rel) style_horizontal_rel_;
+
+	_CP_OPT(length)		fo_margin_left_; 
+	_CP_OPT(length)		fo_margin_top_; 
+	_CP_OPT(length)		fo_margin_right_; 
+	_CP_OPT(length)		fo_margin_bottom_; 
+
+	_CP_OPT(anchor_type) anchor_type_;
+
+	void clear()
+	{
+		svg_x_ = boost::none;
+		svg_y_ = boost::none;
+		svg_height_ = boost::none;
+		svg_height_ = boost::none;
+		
+		style_vertical_pos_svg_y_ = boost::none;
+		style_horizontal_pos_svg_x_ = boost::none;
+		
+		anchor_type_ = boost::none;
+		
+		style_vertical_pos_ = boost::none;
+		style_horizontal_pos_ = boost::none;
+		
+		style_vertical_rel_	= boost::none;
+		style_horizontal_rel_ = boost::none;
+
+		fo_margin_left_		= boost::none;
+		fo_margin_top_		= boost::none;
+		fo_margin_right_	= boost::none;
+		fo_margin_bottom_	= boost::none;
+	}
+};	
+
 enum _drawing_part
 {
 	Unknown=0,
@@ -128,10 +176,9 @@ public:
 	style_graphic_properties		*current_graphic_properties;
 	style_paragraph_properties		*current_paragraph_properties;
 
-	_CP_OPT(length) global_svg_x_;		//from anchor cell
-	_CP_OPT(length) global_svg_y_;
-	_CP_OPT(length) global_svg_height_;
-	_CP_OPT(length) global_svg_width_;
+	anchor_settings anchor_settings_;
+
+	graphic_format_properties		preset_graphic_format_properties;
 
 	std::vector<odf_group_state>	group_list_; //группы
 	std::vector<odf_drawing_state>	drawing_list_;	//все элементы(кроме групп) .. для удобства разделение по "топам"
@@ -259,12 +306,11 @@ void odf_drawing_context::set_group_rotate(int iVal)
 
 void odf_drawing_context::clear()
 {
-	impl_->global_svg_x_		= boost::none;
-	impl_->global_svg_y_		= boost::none;
-	impl_->global_svg_height_	= boost::none;
-	impl_->global_svg_width_	= boost::none;
 
 	impl_->root_element_ = office_element_ptr();
+
+	impl_->anchor_settings_.clear();
+
 }
 
 void odf_drawing_context::start_drawing()
@@ -273,11 +319,11 @@ void odf_drawing_context::start_drawing()
 
 	if (impl_->current_level_.size() < 1)
 	{
-		impl_->current_drawing_state_.svg_x_ = impl_->global_svg_x_;
-		impl_->current_drawing_state_.svg_y_ = impl_->global_svg_y_;
+		impl_->current_drawing_state_.svg_x_ = impl_->anchor_settings_.svg_x_;
+		impl_->current_drawing_state_.svg_y_ = impl_->anchor_settings_.svg_y_;
 		
-		impl_->current_drawing_state_.svg_width_ = impl_->global_svg_width_;
-		impl_->current_drawing_state_.svg_height_ = impl_->global_svg_height_;
+		impl_->current_drawing_state_.svg_width_ = impl_->anchor_settings_.svg_width_;
+		impl_->current_drawing_state_.svg_height_ = impl_->anchor_settings_.svg_height_;
 	}
 	else 
 		impl_->current_drawing_state_.in_group = true;
@@ -325,8 +371,6 @@ void odf_drawing_context::end_drawing()
 																	(impl_->current_drawing_state_.svg_width_.get()/2))+ std::wstring(L",") + 
 																boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_y_.get() +
 																	(impl_->current_drawing_state_.svg_height_.get()/2))+ std::wstring(L")") ; 
-			
-
 			impl_->current_drawing_state_.svg_x_ = boost::none;
 			impl_->current_drawing_state_.svg_y_ = boost::none;		
 		}
@@ -335,9 +379,34 @@ void odf_drawing_context::end_drawing()
 
 		draw->common_draw_attlists_.position_.svg_x_ = impl_->current_drawing_state_.svg_x_;
 		draw->common_draw_attlists_.position_.svg_y_ = impl_->current_drawing_state_.svg_y_;
-		draw->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = impl_->current_drawing_state_.svg_height_;
-		draw->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = impl_->current_drawing_state_.svg_width_;
+
+		draw->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_		= impl_->current_drawing_state_.svg_height_;
+		draw->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_		= impl_->current_drawing_state_.svg_width_;
 	}
+///////////////////////////////////////////////////////
+	if (impl_->anchor_settings_.style_vertical_pos_svg_y_)
+		draw->common_draw_attlists_.position_.svg_y_= impl_->anchor_settings_.style_vertical_pos_svg_y_;
+	if (impl_->anchor_settings_.style_horizontal_pos_svg_x_)
+		draw->common_draw_attlists_.position_.svg_x_= impl_->anchor_settings_.style_horizontal_pos_svg_x_;		
+	
+	//impl_->current_graphic_properties->content().common_vertical_pos_attlist_.svg_y_		= impl_->anchor_settings_.style_vertical_pos_.svg_y_;
+	//impl_->current_graphic_properties->content().common_horizontal_pos_attlist_.svg_x_		= impl_->anchor_settings_.style_horizontal_pos_.svg_x_;
+	
+	impl_->current_graphic_properties->content().common_vertical_pos_attlist_.style_vertical_pos_		= impl_->anchor_settings_.style_vertical_pos_;
+	impl_->current_graphic_properties->content().common_horizontal_pos_attlist_.style_horizontal_pos_	= impl_->anchor_settings_.style_horizontal_pos_;
+
+	impl_->current_graphic_properties->content().common_vertical_rel_attlist_.style_vertical_rel_		= impl_->anchor_settings_.style_vertical_rel_;
+	impl_->current_graphic_properties->content().common_horizontal_rel_attlist_.style_horizontal_rel_	= impl_->anchor_settings_.style_horizontal_rel_;
+
+	impl_->current_graphic_properties->content().common_horizontal_margin_attlist_.fo_margin_left_	= impl_->anchor_settings_.fo_margin_left_; 
+	impl_->current_graphic_properties->content().common_vertical_margin_attlist_.fo_margin_top_		= impl_->anchor_settings_.fo_margin_top_; 
+	impl_->current_graphic_properties->content().common_horizontal_margin_attlist_.fo_margin_right_	= impl_->anchor_settings_.fo_margin_right_; 
+	impl_->current_graphic_properties->content().common_vertical_margin_attlist_.fo_margin_bottom_	= impl_->anchor_settings_.fo_margin_bottom_; 
+
+	if (draw)
+		draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_text_spreadsheet_shape_attlist_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
+
+	//impl_->current_graphic_properties->content().common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
 ///////////////////////////////////////////////////		
 	impl_->drawing_list_.push_back(impl_->current_drawing_state_);
 	
@@ -728,12 +797,108 @@ void odf_drawing_context::set_rotate(int iVal)
 void odf_drawing_context::set_drawings_rect(double x_pt, double y_pt, double width_pt, double height_pt)// "- 1" не задано
 {
 	//хороший тон сохранить все размеры в см (хотя можно и в другой системе)
-	if (x_pt >= 0)	impl_->global_svg_x_ = length(length(x_pt,length::pt).get_value_unit(length::cm),length::cm);
-	if (y_pt >= 0)	impl_->global_svg_y_ = length(length(y_pt,length::pt).get_value_unit(length::cm),length::cm);
+	if (x_pt >= 0)	impl_->anchor_settings_.svg_x_ = length(length(x_pt,length::pt).get_value_unit(length::cm),length::cm);
+	if (y_pt >= 0)	impl_->anchor_settings_.svg_y_ = length(length(y_pt,length::pt).get_value_unit(length::cm),length::cm);
 
-	if (width_pt >= 0) impl_->global_svg_height_	= length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
-	if (height_pt >= 0)impl_->global_svg_width_		= length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);	
+	if (width_pt >= 0) impl_->anchor_settings_.svg_height_	= length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
+	if (height_pt >= 0)impl_->anchor_settings_.svg_width_	= length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);	
 }
+void odf_drawing_context::set_margin_left	(double valPt)
+{
+	impl_->anchor_settings_.fo_margin_left_ = length(length(valPt,length::pt).get_value_unit(length::cm),length::cm);
+}
+void odf_drawing_context::set_margin_right	(double valPt)
+{
+	impl_->anchor_settings_.fo_margin_right_ = length(length(valPt,length::pt).get_value_unit(length::cm),length::cm);
+}
+void odf_drawing_context::set_margin_top	(double valPt)
+{
+	impl_->anchor_settings_.fo_margin_top_ = length(length(valPt,length::pt).get_value_unit(length::cm),length::cm);
+}
+void odf_drawing_context::set_margin_bottom	(double valPt)
+{
+	impl_->anchor_settings_.fo_margin_bottom_ = length(length(valPt,length::pt).get_value_unit(length::cm),length::cm);
+}
+void odf_drawing_context::set_anchor(anchor_type::type  type)
+{
+	impl_->anchor_settings_.anchor_type_ = anchor_type(type);
+}
+//////////////////////////////////////////////////////////////////////////////////////
+void odf_drawing_context::set_vertical_rel(int from)
+{
+	vertical_rel::type type;
+
+	switch(from)
+	{
+	case 0:	type = vertical_rel::Baseline;		break;//	relfromvBottomMargin ???
+	case 1:	type = vertical_rel::Baseline;		break;//	relfromvInsideMargin ???
+	case 2:	type = vertical_rel::Line;			break;//	relfromvLine          
+	case 3:	type = vertical_rel::Baseline;		break;//	relfromvMargin       ???
+	case 4:	type = vertical_rel::Baseline;		break;//	relfromvOutsideMargin ???
+	case 5:	type = vertical_rel::Page;			
+		impl_->anchor_settings_.anchor_type_ = anchor_type(anchor_type::Page);
+		break;//	relfromvPage          
+	case 6:	type = vertical_rel::Paragraph;	
+		impl_->anchor_settings_.anchor_type_ = anchor_type(anchor_type::Paragraph);
+		break;//	relfromvParagraph    
+	case 7:	type = vertical_rel::Baseline;		break;//	relfromvTopMargin   ???  
+	}
+
+	impl_->anchor_settings_.style_vertical_rel_ = vertical_rel(type);
+}
+void odf_drawing_context::set_vertical_pos(int align)
+{
+	vertical_pos::type type;
+	switch(align)
+	{
+	case 0:	type =	vertical_pos::Bottom;		break;//alignvBottom  = 0,
+	case 1:	type =	vertical_pos::Middle;		break;//alignvCenter  = 1,
+	case 2:	type =	vertical_pos::FromTop;		break;//alignvInside  = 2, ???
+	case 3:	type =	vertical_pos::Below;		break;//alignvOutside = 3, ???
+	case 4:	type =	vertical_pos::Top;			break;//alignvTop     = 4
+	}
+	impl_->anchor_settings_.style_vertical_pos_ = vertical_pos(type);
+}
+void odf_drawing_context::set_vertical_pos( double offset_pt)
+{
+	impl_->anchor_settings_.style_vertical_pos_svg_y_ = length(length(offset_pt,length::pt).get_value_unit(length::cm),length::cm);
+}
+void odf_drawing_context::set_horizontal_rel(int from)
+{
+	horizontal_rel::type type;
+	switch(from)
+	{
+		case 0:	type = horizontal_rel::Char;				break;	//	relfromhCharacter     = 0,
+		case 1:	type = horizontal_rel::Paragraph;			break;	//	relfromhColumn        = 1,
+		case 2:	type = horizontal_rel::ParagraphStartMargin;break;	//	relfromhInsideMargin  = 2, ???
+		case 3:	type = horizontal_rel::PageStartMargin;		break;	//	relfromhLeftMargin    = 3,
+		case 4:	type = horizontal_rel::ParagraphStartMargin;break;	//	relfromhMargin        = 4, ???
+		case 5:	type = horizontal_rel::ParagraphEndMargin;	break;	//	relfromhOutsideMargin = 5,
+		case 6:	type = horizontal_rel::Page;				break;	//	relfromhPage          = 6, ???
+		case 7:	type = horizontal_rel::PageEndMargin;		break;	//	relfromhRightMargin   = 7
+	}
+
+	impl_->anchor_settings_.style_horizontal_rel_ = horizontal_rel(type);
+}
+void odf_drawing_context::set_horizontal_pos(int align)
+{
+	horizontal_pos::type type;
+
+	switch(align)
+	{
+	case 0:	type =	horizontal_pos::Center;		break;//alignhCenter  = 0,
+	case 1:	type =	horizontal_pos::Inside;		break;//alignhInside  = 1,
+	case 2:	type =	horizontal_pos::Left;		break;//alignhLeft    = 2,
+	case 3:	type =	horizontal_pos::Outside;	break;//alignhOutside = 3,
+	case 4:	type =	horizontal_pos::Right;		break;//alignhRight   = 4
+	}
+	impl_->anchor_settings_.style_horizontal_pos_ = horizontal_pos(type);
+}
+void odf_drawing_context::set_horizontal_pos(double offset_pt)
+{
+	impl_->anchor_settings_.style_horizontal_pos_svg_x_ = length(length(offset_pt,length::pt).get_value_unit(length::cm),length::cm);
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void odf_drawing_context::set_position(double x_pt, double y_pt)
 {
 	if (!impl_->current_drawing_state_.svg_x_) 

@@ -64,20 +64,7 @@ class styles_map
 {
 public:
     styles_map() : count_(0) {}
-    std::wstring get(const std::wstring & Name, odf::style_family::type Type)
-    {
-        const std::wstring n = name(Name, Type);
-        if (map_.count(n))
-        {
-            return map_[n];
-        }
-        else
-        {
-            const std::wstring id = std::wstring(L"style") + boost::lexical_cast<std::wstring>(count_++);
-            map_[n] = id;
-            return id;        
-        }
-    }
+    std::wstring get(const std::wstring & Name, odf::style_family::type Type);
 
     bool check(const std::wstring & Name, odf::style_family::type Type)
     {
@@ -86,12 +73,8 @@ public:
     }
 
 private:
-    std::wstring name(const std::wstring & Name, odf::style_family::type Type)
-    {
-        return Name + L":" + boost::lexical_cast<std::wstring>(odf::style_family(Type));
-    }
+    std::wstring name(const std::wstring & Name, odf::style_family::type Type);
     
-private:
     size_t count_;
     boost::unordered_map<std::wstring, std::wstring> map_;
 

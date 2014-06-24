@@ -238,10 +238,6 @@
 			RelativePath=".\src\common\readdocelement.cpp"
 			>
 		</File>
-		<File
-			RelativePath=".\include\cpdoccore\common\readstring.h"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

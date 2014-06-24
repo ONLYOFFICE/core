@@ -54,6 +54,7 @@ public:
 	bool find_odf_style_state(int oox_id_style, const style_family family, odf_style_state *& state, bool root = false);
 
     odf_style_state & last_state();
+    odf_style_state * last_state(style_family family);
 
 	odf_number_styles_context & numbers_styles() {return number_styles_context_;}
 	

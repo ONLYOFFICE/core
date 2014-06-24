@@ -181,6 +181,7 @@ void paragraph_format_properties::serialize(std::wostream & _Wostream ,const wch
 			CP_XML_ATTR_OPT(L"style:writing-mode", style_writing_mode_);
 			CP_XML_ATTR_OPT(L"style:writing-mode-automatic", style_writing_mode_automatic_);
 			CP_XML_ATTR_OPT(L"style:snap-to-layout-grid", style_snap_to_layout_grid_);
+			CP_XML_ATTR_OPT(L"style:contextual-spacing", style_contextual_spacing_);
 		
 			//_CP_OPT(std::wstring) style_page_number_str_;
 			//CP_XML_ATTR_OPT(L"style:page-number", style_page_number_str_);

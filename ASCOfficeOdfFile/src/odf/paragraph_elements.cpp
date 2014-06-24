@@ -287,7 +287,7 @@ const wchar_t * span::name = L"span";
 
 void span::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"text:style-name", text_style_name_, style_ref(L""));
+	CP_APPLY_ATTR(L"text:style-name", text_style_name_, style_ref(L""));
     
     const ::std::wstring classNames = Attributes->get_val< ::std::wstring >(L"text:class-names").get_value_or(L"");
     ::std::vector< ::std::wstring > classNamesArray;

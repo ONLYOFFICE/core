@@ -273,7 +273,7 @@ NSString* const kWebURLsWithTitlesPboardType  = @"WebURLsWithTitlesPboardType"; 
     // Trim whitespace off the ends and newlines out of the middle so we don't reject otherwise-valid URLs;
     // we'll do another cleaning when we set the URLs and titles later, so this is safe.
     NSString* potentialURLString = [self cleanedStringWithPasteboardString:[self stringForType:NSStringPboardType]];
-    return [potentialURLString isValidURI];
+    return YES;//return [potentialURLString isValidURI];
   }
   
   return NO;

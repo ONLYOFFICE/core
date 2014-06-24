@@ -12,7 +12,7 @@
 #include "base/basictypes.h"
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
-#include "base/mac/mac_logging.h"
+//#include "base/mac/mac_logging.h"
 #import "base/mac/mac_util.h"
 #include "base/mac/scoped_authorizationref.h"
 #include "base/posix/eintr_wrapper.h"
@@ -30,7 +30,7 @@ AuthorizationRef AuthorizationCreateToRunAsRoot(CFStringRef prompt) {
                                         kAuthorizationFlagDefaults,
                                         &authorization);
   if (status != errAuthorizationSuccess) {
-    OSSTATUS_LOG(ERROR, status) << "AuthorizationCreate";
+    //OSSTATUS_LOG(ERROR, status) << "AuthorizationCreate";
     return NULL;
   }
 
@@ -75,7 +75,7 @@ AuthorizationRef AuthorizationCreateToRunAsRoot(CFStringRef prompt) {
                                    NULL);
   if (status != errAuthorizationSuccess) {
     if (status != errAuthorizationCanceled) {
-      OSSTATUS_LOG(ERROR, status) << "AuthorizationCopyRights";
+      //OSSTATUS_LOG(ERROR, status) << "AuthorizationCopyRights";
     }
     return NULL;
   }
@@ -125,11 +125,11 @@ OSStatus ExecuteWithPrivilegesAndGetPID(AuthorizationRef authorization,
     if (!base::StringToInt(line, &line_pid)) {
       // StringToInt may have set line_pid to something, but if the conversion
       // was imperfect, use -1.
-      LOG(ERROR) << "ExecuteWithPrivilegesAndGetPid: funny line: " << line;
+      //LOG(ERROR) << "ExecuteWithPrivilegesAndGetPid: funny line: " << line;
       line_pid = -1;
     }
   } else {
-    LOG(ERROR) << "ExecuteWithPrivilegesAndGetPid: no line";
+    //LOG(ERROR) << "ExecuteWithPrivilegesAndGetPid: no line";
   }
 
   if (!pipe) {
@@ -173,7 +173,7 @@ OSStatus ExecuteWithPrivilegesAndWait(AuthorizationRef authorization,
   if (pid != -1) {
     pid_t wait_result = HANDLE_EINTR(waitpid(pid, exit_status_pointer, 0));
     if (wait_result != pid) {
-      PLOG(ERROR) << "waitpid";
+      //PLOG(ERROR) << "waitpid";
       *exit_status_pointer = -1;
     }
   } else {

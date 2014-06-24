@@ -39,7 +39,7 @@
 #import <AppKit/AppKit.h>		// for NSStringDrawing.h
 
 #import "NSString+Utils.h"
-#include "googleurl/src/gurl.h"
+//#include "googleurl/src/gurl.h"
 
 
 @implementation NSString (ChimeraStringUtils)
@@ -88,6 +88,7 @@
   return ([self hasCaseInsensitivePrefix:@"javascript:"] || [self hasCaseInsensitivePrefix:@"data:"]);
 }
 
+/*
 - (BOOL)isValidURI
 {
   // isValid() will only be true for valid, well-formed URI strings
@@ -100,6 +101,7 @@
   }
   return NO;
 }
+*/
 
 - (NSString *)stringByRemovingCharactersInSet:(NSCharacterSet*)characterSet
 {

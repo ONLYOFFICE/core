@@ -6,10 +6,10 @@
 
 #include <iterator>
 
-#include "base/lazy_instance.h"
+//#include "base/lazy_instance.h"
 //#include "base/logging.h"
-#include "base/memory/scoped_ptr.h"
-#include "base/synchronization/lock.h"
+//#include "base/memory/scoped_ptr.h"
+//#include "base/synchronization/lock.h"
 #include "ui/gfx/size.h"
 
 #include "libxml2/libxml/parser.h"

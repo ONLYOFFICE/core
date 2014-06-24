@@ -89,17 +89,17 @@ std::string ReleasableInstanceName(objc_property_t property) {
 }  // namespace
 
 void ObjCPropertyReleaser::Init(id object, Class classy) {
-  DCHECK(!object_);
-  DCHECK(!class_);
-  CHECK([object isKindOfClass:classy]);
+  //DCHECK(!object_);
+  //DCHECK(!class_);
+  //CHECK([object isKindOfClass:classy]);
 
   object_ = object;
   class_ = classy;
 }
 
 void ObjCPropertyReleaser::ReleaseProperties() {
-  DCHECK(object_);
-  DCHECK(class_);
+  //DCHECK(object_);
+  //DCHECK(class_);
 
   unsigned int property_count = 0;
   objc_property_t* properties = class_copyPropertyList(class_, &property_count);
@@ -114,7 +114,7 @@ void ObjCPropertyReleaser::ReleaseProperties() {
       Ivar instance_variable =
           object_getInstanceVariable(object_, instance_name.c_str(),
                                      (void**)&instance_value);
-      DCHECK(instance_variable);
+      //DCHECK(instance_variable);
       [instance_value release];
     }
   }

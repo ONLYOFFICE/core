@@ -8,7 +8,7 @@
 
 #include "base/basictypes.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
+//#include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/scoped_nsobject.h"
@@ -16,9 +16,9 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/utf_string_conversions.h"
 #import "third_party/mozilla/NSPasteboard+Utils.h"
-#include "third_party/skia/include/core/SkBitmap.h"
+//#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/custom_data_helper.h"
-#include "ui/gfx/canvas.h"
+//#include "ui/gfx/canvas.h"
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
 #include "ui/gfx/size.h"
 
@@ -45,7 +45,7 @@ NSPasteboard* GetPasteboard() {
   // can help track down problems if someone tries using clipboard code outside
   // of a UI session.
   NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
-  DCHECK(pasteboard);
+  //DCHECK(pasteboard);
   return pasteboard;
 }
 
@@ -95,18 +95,18 @@ Clipboard::FormatType Clipboard::FormatType::Deserialize(
 }
 
 Clipboard::Clipboard() {
-  DCHECK(CalledOnValidThread());
+  //DCHECK(CalledOnValidThread());
 }
 
 Clipboard::~Clipboard() {
-  DCHECK(CalledOnValidThread());
+  //DCHECK(CalledOnValidThread());
 }
 
 void Clipboard::WriteObjectsImpl(Buffer buffer,
                                  const ObjectMap& objects,
                                  SourceTag tag) {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, BUFFER_STANDARD);
+  //DCHECK(CalledOnValidThread());
+  //DCHECK_EQ(buffer, BUFFER_STANDARD);
 
   NSPasteboard* pb = GetPasteboard();
   [pb declareTypes:[NSArray array] owner:nil];
@@ -173,6 +173,7 @@ void Clipboard::WriteBookmark(const char* title_data,
 void Clipboard::WriteBitmap(const char* pixel_data, const char* size_data) {
   const gfx::Size* size = reinterpret_cast<const gfx::Size*>(size_data);
 
+  /*
   // Safe because the image goes away before the call returns.
   base::mac::ScopedCFTypeRef<CFDataRef> data(
       CFDataCreateWithBytesNoCopy(kCFAllocatorDefault,
@@ -212,10 +213,12 @@ void Clipboard::WriteBitmap(const char* pixel_data, const char* size_data) {
   NSPasteboard* pb = GetPasteboard();
   [pb addTypes:[NSArray arrayWithObject:NSTIFFPboardType] owner:nil];
   NSData *tiff_data = [image TIFFRepresentation];
-  LOG_IF(ERROR, tiff_data == NULL) << "Failed to allocate image for clipboard";
+  //LOG_IF(ERROR, tiff_data == NULL) << "Failed to allocate image for clipboard";
   if (tiff_data) {
     [pb setData:tiff_data forType:NSTIFFPboardType];
   }
+  */
+
 }
 
 void Clipboard::WriteData(const FormatType& format,
@@ -250,8 +253,8 @@ void Clipboard::WriteWebSmartPaste() {
 }
 
 uint64 Clipboard::GetSequenceNumber(Buffer buffer) {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, BUFFER_STANDARD);
+  //DCHECK(CalledOnValidThread());
+  //DCHECK_EQ(buffer, BUFFER_STANDARD);
 
   NSPasteboard* pb = GetPasteboard();
   return [pb changeCount];
@@ -259,8 +262,8 @@ uint64 Clipboard::GetSequenceNumber(Buffer buffer) {
 
 bool Clipboard::IsFormatAvailable(const FormatType& format,
                                   Buffer buffer) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, BUFFER_STANDARD);
+  //DCHECK(CalledOnValidThread());
+  //DCHECK_EQ(buffer, BUFFER_STANDARD);
 
   NSPasteboard* pb = GetPasteboard();
   NSArray* types = [pb types];
@@ -275,8 +278,8 @@ bool Clipboard::IsFormatAvailable(const FormatType& format,
 }
 
 void Clipboard::Clear(Buffer buffer) {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, BUFFER_STANDARD);
+  //DCHECK(CalledOnValidThread());
+  //DCHECK_EQ(buffer, BUFFER_STANDARD);
 
   NSPasteboard* pb = GetPasteboard();
   [pb declareTypes:[NSArray array] owner:nil];
@@ -285,7 +288,7 @@ void Clipboard::Clear(Buffer buffer) {
 void Clipboard::ReadAvailableTypes(Clipboard::Buffer buffer,
                                    std::vector<string16>* types,
                                    bool* contains_filenames) const {
-  DCHECK(CalledOnValidThread());
+  //DCHECK(CalledOnValidThread());
   types->clear();
   if (IsFormatAvailable(Clipboard::GetPlainTextFormatType(), buffer))
     types->push_back(UTF8ToUTF16(kMimeTypeText));
@@ -306,8 +309,8 @@ void Clipboard::ReadAvailableTypes(Clipboard::Buffer buffer,
 }
 
 void Clipboard::ReadText(Clipboard::Buffer buffer, string16* result) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, BUFFER_STANDARD);
+  //DCHECK(CalledOnValidThread());
+  //DCHECK_EQ(buffer, BUFFER_STANDARD);
   NSPasteboard* pb = GetPasteboard();
   NSString* contents = [pb stringForType:NSStringPboardType];
 
@@ -318,8 +321,8 @@ void Clipboard::ReadText(Clipboard::Buffer buffer, string16* result) const {
 
 void Clipboard::ReadAsciiText(Clipboard::Buffer buffer,
                               std::string* result) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, BUFFER_STANDARD);
+  //DCHECK(CalledOnValidThread());
+  //DCHECK_EQ(buffer, BUFFER_STANDARD);
   NSPasteboard* pb = GetPasteboard();
   NSString* contents = [pb stringForType:NSStringPboardType];
 
@@ -332,8 +335,8 @@ void Clipboard::ReadAsciiText(Clipboard::Buffer buffer,
 void Clipboard::ReadHTML(Clipboard::Buffer buffer, string16* markup,
                          std::string* src_url, uint32* fragment_start,
                          uint32* fragment_end) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, BUFFER_STANDARD);
+  //DCHECK(CalledOnValidThread());
+  //DCHECK_EQ(buffer, BUFFER_STANDARD);
 
   // TODO(avi): src_url?
   markup->clear();
@@ -356,21 +359,24 @@ void Clipboard::ReadHTML(Clipboard::Buffer buffer, string16* markup,
   }
 
   *fragment_start = 0;
-  DCHECK(markup->length() <= kuint32max);
+  //DCHECK(markup->length() <= kuint32max);
   *fragment_end = static_cast<uint32>(markup->length());
 }
 
 void Clipboard::ReadRTF(Buffer buffer, std::string* result) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, BUFFER_STANDARD);
+  //DCHECK(CalledOnValidThread());
+  //DCHECK_EQ(buffer, BUFFER_STANDARD);
 
   return ReadData(GetRtfFormatType(), result);
 }
 
-SkBitmap Clipboard::ReadImage(Buffer buffer) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, BUFFER_STANDARD);
+/*SkBitmap*/
+bool Clipboard::ReadImage(Buffer buffer) const {
+  //DCHECK(CalledOnValidThread());
+  //DCHECK_EQ(buffer, BUFFER_STANDARD);
 
+    return true;
+    /*
   scoped_nsobject<NSImage> image(
       [[NSImage alloc] initWithPasteboard:GetPasteboard()]);
   if (!image.get())
@@ -394,13 +400,14 @@ SkBitmap Clipboard::ReadImage(Buffer buffer) const {
              fraction:1.0];
   }
   return canvas.ExtractImageRep().sk_bitmap();
+  */
 }
 
 void Clipboard::ReadCustomData(Buffer buffer,
                                const string16& type,
                                string16* result) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, BUFFER_STANDARD);
+  //DCHECK(CalledOnValidThread());
+  //DCHECK_EQ(buffer, BUFFER_STANDARD);
 
   NSPasteboard* pb = GetPasteboard();
   if ([[pb types] containsObject:kWebCustomDataPboardType]) {
@@ -411,7 +418,7 @@ void Clipboard::ReadCustomData(Buffer buffer,
 }
 
 void Clipboard::ReadBookmark(string16* title, std::string* url) const {
-  DCHECK(CalledOnValidThread());
+  //DCHECK(CalledOnValidThread());
   NSPasteboard* pb = GetPasteboard();
 
   if (title) {
@@ -431,7 +438,7 @@ void Clipboard::ReadBookmark(string16* title, std::string* url) const {
 }
 
 void Clipboard::ReadData(const FormatType& format, std::string* result) const {
-  DCHECK(CalledOnValidThread());
+  //DCHECK(CalledOnValidThread());
   NSPasteboard* pb = GetPasteboard();
   NSData* data = [pb dataForType:format.ToNSString()];
   if ([data length])
@@ -439,7 +446,7 @@ void Clipboard::ReadData(const FormatType& format, std::string* result) const {
 }
 
 SourceTag Clipboard::ReadSourceTag(Buffer buffer) const {
-  DCHECK_EQ(buffer, BUFFER_STANDARD);
+  //DCHECK_EQ(buffer, BUFFER_STANDARD);
   std::string result;
   ReadData(GetSourceTagFormatType(), &result);
   return Binary2SourceTag(result);

@@ -339,9 +339,9 @@ T GetValueFromDictionary(CFDictionaryRef dict, CFStringRef key) {
 
   if (value && !value_specific) {
     std::string expected_type = TypeNameForCFType(value_specific);
-    DLOG(WARNING) << GetValueFromDictionaryErrorMessage(key,
-                                                        expected_type,
-                                                        value);
+    //DLOG(WARNING) << GetValueFromDictionaryErrorMessage(key,
+    //                                                    expected_type,
+    //                                                    value);
   }
 
   return value_specific;

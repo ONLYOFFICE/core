@@ -16,7 +16,7 @@
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/mac_logging.h"
+//#include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/scoped_generic_obj.h"
 #include "base/memory/scoped_nsobject.h"
@@ -95,7 +95,7 @@ LSSharedFileListItemRef GetLoginItemForApp() {
       NULL, kLSSharedFileListSessionLoginItems, NULL));
 
   if (!login_items.get()) {
-    DLOG(ERROR) << "Couldn't get a Login Items list.";
+    //DLOG(ERROR) << "Couldn't get a Login Items list.";
     return NULL;
   }
 
@@ -148,7 +148,7 @@ CGColorSpaceRef GetSRGBColorSpace() {
   // Leaked.  That's OK, it's scoped to the lifetime of the application.
   static CGColorSpaceRef g_color_space_sRGB =
       CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
-  DLOG_IF(ERROR, !g_color_space_sRGB) << "Couldn't get the sRGB color space";
+  //DLOG_IF(ERROR, !g_color_space_sRGB) << "Couldn't get the sRGB color space";
   return g_color_space_sRGB;
 }
 
@@ -163,10 +163,10 @@ CGColorSpaceRef GetSystemColorSpace() {
     g_system_color_space = CGColorSpaceCreateDeviceRGB();
 
     if (g_system_color_space) {
-      DLOG(WARNING) <<
-          "Couldn't get the main display's color space, using generic";
+      //DLOG(WARNING) <<
+      //    "Couldn't get the main display's color space, using generic";
     } else {
-      DLOG(ERROR) << "Couldn't get any color space";
+      //DLOG(ERROR) << "Couldn't get any color space";
     }
   }
 
@@ -175,11 +175,11 @@ CGColorSpaceRef GetSystemColorSpace() {
 
 // Add a request for full screen mode.  Must be called on the main thread.
 void RequestFullScreen(FullScreenMode mode) {
-  DCHECK_LT(mode, kNumFullScreenModes);
+  //DCHECK_LT(mode, kNumFullScreenModes);
   if (mode >= kNumFullScreenModes)
     return;
 
-  DCHECK_GE(g_full_screen_requests[mode], 0);
+  //DCHECK_GE(g_full_screen_requests[mode], 0);
   if (mode < 0)
     return;
 
@@ -189,11 +189,11 @@ void RequestFullScreen(FullScreenMode mode) {
 
 // Release a request for full screen mode.  Must be called on the main thread.
 void ReleaseFullScreen(FullScreenMode mode) {
-  DCHECK_LT(mode, kNumFullScreenModes);
+  //DCHECK_LT(mode, kNumFullScreenModes);
   if (mode >= kNumFullScreenModes)
     return;
 
-  DCHECK_GE(g_full_screen_requests[mode], 0);
+  //DCHECK_GE(g_full_screen_requests[mode], 0);
   if (mode < 0)
     return;
 
@@ -204,13 +204,13 @@ void ReleaseFullScreen(FullScreenMode mode) {
 // Switches full screen modes.  Releases a request for |from_mode| and adds a
 // new request for |to_mode|.  Must be called on the main thread.
 void SwitchFullScreenModes(FullScreenMode from_mode, FullScreenMode to_mode) {
-  DCHECK_LT(from_mode, kNumFullScreenModes);
-  DCHECK_LT(to_mode, kNumFullScreenModes);
+  //DCHECK_LT(from_mode, kNumFullScreenModes);
+  //DCHECK_LT(to_mode, kNumFullScreenModes);
   if (from_mode >= kNumFullScreenModes || to_mode >= kNumFullScreenModes)
     return;
 
-  DCHECK_GT(g_full_screen_requests[from_mode], 0);
-  DCHECK_GE(g_full_screen_requests[to_mode], 0);
+  //DCHECK_GT(g_full_screen_requests[from_mode], 0);
+  //DCHECK_GE(g_full_screen_requests[to_mode], 0);
   g_full_screen_requests[from_mode] =
       std::max(g_full_screen_requests[from_mode] - 1, 0);
   g_full_screen_requests[to_mode] =
@@ -233,7 +233,7 @@ bool ShouldWindowsMiniaturizeOnDoubleClick() {
   //          [defaults boolForKey:@"AppleMiniaturizeOnDoubleClick"];
   BOOL methodImplemented =
       [NSWindow respondsToSelector:@selector(_shouldMiniaturizeOnDoubleClick)];
-  DCHECK(methodImplemented);
+  //DCHECK(methodImplemented);
   return !methodImplemented ||
       [NSWindow performSelector:@selector(_shouldMiniaturizeOnDoubleClick)];
 }
@@ -244,7 +244,7 @@ void ActivateProcess(pid_t pid) {
   if (status == noErr) {
     SetFrontProcess(&process);
   } else {
-    OSSTATUS_DLOG(WARNING, status) << "Unable to get process for pid " << pid;
+    //OSSTATUS_DLOG(WARNING, status) << "Unable to get process for pid " << pid;
   }
 }
 
@@ -252,7 +252,7 @@ bool AmIForeground() {
   ProcessSerialNumber foreground_psn = { 0 };
   OSErr err = GetFrontProcess(&foreground_psn);
   if (err != noErr) {
-    OSSTATUS_DLOG(WARNING, err) << "GetFrontProcess";
+    //OSSTATUS_DLOG(WARNING, err) << "GetFrontProcess";
     return false;
   }
 
@@ -261,7 +261,7 @@ bool AmIForeground() {
   Boolean result = FALSE;
   err = SameProcess(&foreground_psn, &my_psn, &result);
   if (err != noErr) {
-    OSSTATUS_DLOG(WARNING, err) << "SameProcess";
+    //OSSTATUS_DLOG(WARNING, err) << "SameProcess";
     return false;
   }
 
@@ -282,21 +282,21 @@ bool SetFileBackupExclusion(const FilePath& file_path) {
   OSStatus os_err =
       CSBackupSetItemExcluded(base::mac::NSToCFCast(file_url), TRUE, FALSE);
   if (os_err != noErr) {
-    OSSTATUS_DLOG(WARNING, os_err)
-        << "Failed to set backup exclusion for file '"
-        << file_path.value().c_str() << "'";
+    //OSSTATUS_DLOG(WARNING, os_err)
+    //    << "Failed to set backup exclusion for file '"
+    //    << file_path.value().c_str() << "'";
   }
   return os_err == noErr;
 }
 
 void SetProcessName(CFStringRef process_name) {
   if (!process_name || CFStringGetLength(process_name) == 0) {
-    NOTREACHED() << "SetProcessName given bad name.";
+    //NOTREACHED() << "SetProcessName given bad name.";
     return;
   }
 
   if (![NSThread isMainThread]) {
-    NOTREACHED() << "Should only set process name from main thread.";
+    //NOTREACHED() << "Should only set process name from main thread.";
     return;
   }
 
@@ -326,7 +326,7 @@ void SetProcessName(CFStringRef process_name) {
     CFBundleRef launch_services_bundle =
         CFBundleGetBundleWithIdentifier(CFSTR("com.apple.LaunchServices"));
     if (!launch_services_bundle) {
-      DLOG(ERROR) << "Failed to look up LaunchServices bundle";
+      //DLOG(ERROR) << "Failed to look up LaunchServices bundle";
       return;
     }
 
@@ -335,7 +335,9 @@ void SetProcessName(CFStringRef process_name) {
             CFBundleGetFunctionPointerForName(
                 launch_services_bundle, CFSTR("_LSGetCurrentApplicationASN")));
     if (!ls_get_current_application_asn_func)
-      DLOG(ERROR) << "Could not find _LSGetCurrentApplicationASN";
+    {
+      //DLOG(ERROR) << "Could not find _LSGetCurrentApplicationASN";
+    }
 
     ls_set_application_information_item_func =
         reinterpret_cast<LSSetApplicationInformationItemType>(
@@ -343,14 +345,18 @@ void SetProcessName(CFStringRef process_name) {
                 launch_services_bundle,
                 CFSTR("_LSSetApplicationInformationItem")));
     if (!ls_set_application_information_item_func)
-      DLOG(ERROR) << "Could not find _LSSetApplicationInformationItem";
+    {
+      //DLOG(ERROR) << "Could not find _LSSetApplicationInformationItem";
+    }
 
     CFStringRef* key_pointer = reinterpret_cast<CFStringRef*>(
         CFBundleGetDataPointerForName(launch_services_bundle,
                                       CFSTR("_kLSDisplayNameKey")));
     ls_display_name_key = key_pointer ? *key_pointer : NULL;
     if (!ls_display_name_key)
-      DLOG(ERROR) << "Could not find _kLSDisplayNameKey";
+    {
+      //DLOG(ERROR) << "Could not find _kLSDisplayNameKey";
+    }
 
     // Internally, this call relies on the Mach ports that are started up by the
     // Carbon Process Manager.  In debug builds this usually happens due to how
@@ -375,8 +381,8 @@ void SetProcessName(CFStringRef process_name) {
                                                ls_display_name_key,
                                                process_name,
                                                NULL /* optional out param */);
-  OSSTATUS_DLOG_IF(ERROR, err != noErr, err)
-      << "Call to set process name failed";
+  //OSSTATUS_DLOG_IF(ERROR, err != noErr, err)
+  //    << "Call to set process name failed";
 }
 
 // Converts a NSImage to a CGImageRef.  Normally, the system frameworks can do
@@ -433,7 +439,7 @@ void AddToLoginItems(bool hide_on_startup) {
       NULL, kLSSharedFileListSessionLoginItems, NULL));
 
   if (!login_items.get()) {
-    DLOG(ERROR) << "Couldn't get a Login Items list.";
+    //DLOG(ERROR) << "Couldn't get a Login Items list.";
     return;
   }
 
@@ -457,7 +463,7 @@ void AddToLoginItems(bool hide_on_startup) {
       reinterpret_cast<CFDictionaryRef>(properties), NULL));
 
   if (!new_item.get()) {
-    DLOG(ERROR) << "Couldn't insert current app into Login Items list.";
+    //DLOG(ERROR) << "Couldn't insert current app into Login Items list.";
   }
 }
 
@@ -470,7 +476,7 @@ void RemoveFromLoginItems() {
       NULL, kLSSharedFileListSessionLoginItems, NULL));
 
   if (!login_items.get()) {
-    DLOG(ERROR) << "Couldn't get a Login Items list.";
+    //DLOG(ERROR) << "Couldn't get a Login Items list.";
     return;
   }
 
@@ -508,8 +514,10 @@ bool WasLaunchedAsHiddenLoginItem() {
     // Lion can launch items for the resume feature.  So log an error only for
     // Snow Leopard or earlier.
     if (IsOSSnowLeopard())
-      DLOG(ERROR) <<
-          "Process launched at Login but can't access Login Item List.";
+    {
+      //DLOG(ERROR) <<
+      //    "Process launched at Login but can't access Login Item List.";
+    }
 
     return false;
   }
@@ -542,12 +550,12 @@ int DarwinMajorVersionInternal() {
 
   struct utsname uname_info;
   if (uname(&uname_info) != 0) {
-    DPLOG(ERROR) << "uname";
+    //DPLOG(ERROR) << "uname";
     return 0;
   }
 
   if (strcmp(uname_info.sysname, "Darwin") != 0) {
-    DLOG(ERROR) << "unexpected uname sysname " << uname_info.sysname;
+    //DLOG(ERROR) << "unexpected uname sysname " << uname_info.sysname;
     return 0;
   }
 
@@ -562,7 +570,7 @@ int DarwinMajorVersionInternal() {
   }
 
   if (!dot) {
-    DLOG(ERROR) << "could not parse uname release " << uname_info.release;
+    //DLOG(ERROR) << "could not parse uname release " << uname_info.release;
     return 0;
   }
 
@@ -581,11 +589,11 @@ int MacOSXMinorVersionInternal() {
   // encountering a version higher than anything seen before. Older Darwin
   // versions, or versions that can't be determined, result in
   // immediate death.
-  CHECK(darwin_major_version >= 6);
+  //CHECK(darwin_major_version >= 6);
   int mac_os_x_minor_version = darwin_major_version - 4;
-  DLOG_IF(WARNING, darwin_major_version > 12) << "Assuming Darwin "
-      << base::IntToString(darwin_major_version) << " is Mac OS X 10."
-      << base::IntToString(mac_os_x_minor_version);
+  //DLOG_IF(WARNING, darwin_major_version > 12) << "Assuming Darwin "
+  //    << base::IntToString(darwin_major_version) << " is Mac OS X 10."
+  //    << base::IntToString(mac_os_x_minor_version);
 
   return mac_os_x_minor_version;
 }

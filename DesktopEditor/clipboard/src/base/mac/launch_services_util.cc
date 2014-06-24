@@ -7,7 +7,7 @@
 #include <ApplicationServices/ApplicationServices.h>
 
 #include "base/logging.h"
-#include "base/mac/mac_logging.h"
+//#include "base/mac/mac_logging.h"
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 
@@ -19,7 +19,7 @@ bool OpenApplicationWithPath(const base::FilePath& bundle_path,
                              ProcessSerialNumber* out_psn) {
   FSRef app_fsref;
   if (!base::mac::FSRefFromPath(bundle_path.value(), &app_fsref)) {
-    LOG(ERROR) << "base::mac::FSRefFromPath failed for " << bundle_path.value();
+    //LOG(ERROR) << "base::mac::FSRefFromPath failed for " << bundle_path.value();
     return false;
   }
 
@@ -28,7 +28,7 @@ bool OpenApplicationWithPath(const base::FilePath& bundle_path,
   base::mac::ScopedCFTypeRef<CFMutableArrayRef> launch_args(
       CFArrayCreateMutable(NULL, argc - 1, &kCFTypeArrayCallBacks));
   if (!launch_args) {
-    LOG(ERROR) << "CFArrayCreateMutable failed, size was " << argc;
+    //LOG(ERROR) << "CFArrayCreateMutable failed, size was " << argc;
     return false;
   }
 
@@ -38,7 +38,7 @@ bool OpenApplicationWithPath(const base::FilePath& bundle_path,
     base::mac::ScopedCFTypeRef<CFStringRef> arg_cf(
         base::SysUTF8ToCFStringRef(arg));
     if (!arg_cf) {
-      LOG(ERROR) << "base::SysUTF8ToCFStringRef failed for " << arg;
+      //LOG(ERROR) << "base::SysUTF8ToCFStringRef failed for " << arg;
       return false;
     }
     CFArrayAppendValue(launch_args, arg_cf);
@@ -57,7 +57,7 @@ bool OpenApplicationWithPath(const base::FilePath& bundle_path,
   // running without any windows open.
   OSStatus status = LSOpenApplication(&ls_parameters, out_psn);
   if (status != noErr) {
-    OSSTATUS_LOG(ERROR, status) << "LSOpenApplication";
+    //OSSTATUS_LOG(ERROR, status) << "LSOpenApplication";
     return false;
   }
   return true;

@@ -49,6 +49,8 @@ public:
 
 	void	set_parent_style_name(std::wstring & name) ;
 	void	set_data_style_name(std::wstring & name);
+
+	void	set_display_name(std::wstring & name);
 //////////////////////////////////////////////////////////////////////////////////////////
     style_text_properties *			get_text_properties();
     style_paragraph_properties *	get_paragraph_properties() ;

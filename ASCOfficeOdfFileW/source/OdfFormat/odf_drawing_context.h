@@ -12,6 +12,7 @@
 #include "office_elements_create.h"
 
 #include "anchortype.h"
+#include "stylewrap.h"
 
 namespace cpdoccore {
 namespace odf
@@ -45,6 +46,8 @@ public:
 	void set_horizontal_rel(int from);
 	void set_horizontal_pos(int align);
 	void set_horizontal_pos(double offset_pt);
+
+	void set_wrap_style(style_wrap::type  style);
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1316,13 +1316,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellStyle * cell_style, int oox_i
 
 	ods_context->styles_context()->create_style(style_name,odf::style_family::TableCell, automatic, root, oox_id);
 
-	odf::style* style = dynamic_cast<odf::style*>(ods_context->styles_context()->last_state().get_office_element().get());
-	if (!style)return;
+	if (style_name.length() > 0)ods_context->styles_context()->last_state().set_display_name(style_name);
 
 	int parent_id = cell_style->m_oXfId.IsInit() ? cell_style->m_oXfId->GetValue() : -1;
 
 	if (parent_id >=0) 
-		style->style_parent_style_name_ = ods_context->styles_context()->find_odf_style_name(parent_id, odf::style_family::TableCell,true);
+		ods_context->styles_context()->last_state().set_parent_style_name(ods_context->styles_context()->find_odf_style_name(parent_id, odf::style_family::TableCell,true));
 	
 	//m_oBuiltinId, m_oCustomBuiltin, m_oHidden, m_oILevel;	???????
 }

@@ -50,6 +50,15 @@ void odf_style_state::set_name(std::wstring & name)
 	
 	style_->style_name_ = name;
 }
+
+void odf_style_state::set_display_name(std::wstring & name)
+{
+	style* style_ = dynamic_cast<style*>(odf_style_.get());
+	if (!style_)return;
+	
+	style_->style_display_name_ = name;
+
+}
 std::wstring & odf_style_state::get_name()
 {
 	style* style_ = dynamic_cast<style*>(odf_style_.get());

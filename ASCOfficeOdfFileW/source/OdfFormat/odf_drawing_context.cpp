@@ -16,13 +16,14 @@
 #include "oox_shape_defines.h"
 #include "Shapes\odf_shape_mapping.h"
 
-
 #include "styles.h"
 
 #include "style_table_properties.h"
 #include "style_text_properties.h"
 #include "style_paragraph_properties.h"
 #include "style_graphic_properties.h"
+
+
 
 namespace cpdoccore 
 {
@@ -70,6 +71,8 @@ struct anchor_settings
 
 	_CP_OPT(anchor_type) anchor_type_;
 
+	_CP_OPT(style_wrap) style_wrap_;
+
 	void clear()
 	{
 		svg_x_ = boost::none;
@@ -92,6 +95,8 @@ struct anchor_settings
 		fo_margin_top_		= boost::none;
 		fo_margin_right_	= boost::none;
 		fo_margin_bottom_	= boost::none;
+
+		style_wrap_ = boost::none;
 	}
 };	
 
@@ -407,6 +412,8 @@ void odf_drawing_context::end_drawing()
 		draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_text_spreadsheet_shape_attlist_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
 
 	//impl_->current_graphic_properties->content().common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
+	
+	impl_->current_graphic_properties->content().style_wrap_ = impl_->anchor_settings_.style_wrap_;
 ///////////////////////////////////////////////////		
 	impl_->drawing_list_.push_back(impl_->current_drawing_state_);
 	
@@ -898,6 +905,12 @@ void odf_drawing_context::set_horizontal_pos(double offset_pt)
 {
 	impl_->anchor_settings_.style_horizontal_pos_svg_x_ = length(length(offset_pt,length::pt).get_value_unit(length::cm),length::cm);
 }
+
+void odf_drawing_context::set_wrap_style(style_wrap::type type)
+{
+	impl_->anchor_settings_.style_wrap_ = style_wrap(type);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void odf_drawing_context::set_position(double x_pt, double y_pt)
 {

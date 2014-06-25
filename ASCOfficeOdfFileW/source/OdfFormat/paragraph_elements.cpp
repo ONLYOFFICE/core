@@ -94,6 +94,10 @@ const wchar_t * text_line_break::name = L"line-break";
 
 void text_line_break::serialize(std::wostream & _Wostream) 
 {
+ 	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE();
+	}
 }
 
 

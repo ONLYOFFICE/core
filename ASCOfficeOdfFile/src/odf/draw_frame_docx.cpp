@@ -801,6 +801,13 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 	graphicProperties.apply_to(drawing.additional);
 //////////////////////////////////////////
 	Compute_GraphicFill(graphicProperties.common_draw_fill_attlist_, Context.root()->odf_context().drawStyles() ,drawing.fill);	
+
+	if ((drawing.fill.bitmap) && (drawing.fill.bitmap->rId.length() < 1))
+	{
+		std::wstring href = drawing.fill.bitmap->xlink_href_;
+		drawing.fill.bitmap->rId = Context.add_mediaitem(href, oox::mediaitems::typeImage,drawing.fill.bitmap->isInternal,href);
+	}
+
 ////////////////////////////////////////////////////
 	drawing.additional.push_back(odf::_property(L"border_width_left",	Compute_BorderWidth(graphicProperties, sideLeft)));
 	drawing.additional.push_back(odf::_property(L"border_width_top",	Compute_BorderWidth(graphicProperties, sideTop)));

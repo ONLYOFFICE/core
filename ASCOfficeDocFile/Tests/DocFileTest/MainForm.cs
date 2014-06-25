@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.InteropServices;
 
 using ASCDocFile;
 
@@ -14,6 +15,15 @@ namespace DocFileTest
 {
     public partial class MainForm : Form
     {
+        public const int ERROR_FIRST = (1 << 31) | (4 << 16) | 0x0300;
+        public const int ERROR_UNEXPECTED = ERROR_FIRST + 0x0000;
+        public const int ERROR_BUSY = ERROR_FIRST + 0x0001;
+        public const int ERROR_MEMORY = ERROR_FIRST + 0x0002;
+        public const int ERROR_FILEACCESS = ERROR_FIRST + 0x0003;
+        public const int ERROR_FILEFORMAT = ERROR_FIRST + 0x0004;
+        public const int ERROR_PASSWORD = ERROR_FIRST + 0x0005;
+        public const int ERROR_DRM = ERROR_FIRST + 0x0006;
+
         public const bool DOC_TO_DOCX = true;
         public const string DOC_FILE_NAME = "test";
 
@@ -53,7 +63,40 @@ namespace DocFileTest
                             File.Delete(docxFile);
                         }
 
-                        oFile.LoadFromFile(docFile, docxFilePath, "");
+                        try
+                        {
+                            oFile.LoadFromFile(docFile, docxFilePath, "");
+                        }
+                        catch (COMException ex) 
+                        {
+                            if (ERROR_BUSY == ex.ErrorCode)
+                            {
+                                MessageBox.Show("ERROR_BUSY - Source File: " + docFile, "DocTest (doc to docx)", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            else if (ERROR_MEMORY == ex.ErrorCode)
+                            {
+                                MessageBox.Show("ERROR_BUSY - Source File: " + docFile, "DocTest (doc to docx)", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            else if (ERROR_FILEACCESS == ex.ErrorCode)
+                            {
+                                MessageBox.Show("ERROR_FILEACCESS - Source File: " + docFile, "DocTest (doc to docx)", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            else if (ERROR_FILEFORMAT == ex.ErrorCode)
+                            {
+                                MessageBox.Show("ERROR_FILEFORMAT - Source File: " + docFile, "DocTest (doc to docx)", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            else if (ERROR_PASSWORD == ex.ErrorCode)
+                            {
+                                MessageBox.Show("ERROR_PASSWORD - Source File: " + docFile, "DocTest (doc to docx)", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            else if (ERROR_DRM == ex.ErrorCode)
+                            {
+                                MessageBox.Show("ERROR_DRM - Source File: " + docFile, "DocTest (doc to docx)", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+
+                            Directory.Delete(docxFilePath, true);
+                            Close();
+                        }
 
                         using (var fs = new FileStream(docxFile, FileMode.Create))
                         {

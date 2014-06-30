@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+
 #include "odf_style_state.h"
 #include "odf_number_styles_context.h"
 
@@ -8,17 +9,17 @@
 namespace cpdoccore {
 namespace odf {
 
-//class ods_conversion_context;
-//class odt_conversion_context;
 class odf_conversion_context;
-
 
 class office_element;
 typedef shared_ptr<office_element>::Type office_element_ptr;
 
 class odf_style_context;
 typedef shared_ptr<odf_style_context>::Type odf_style_context_ptr;
-/// \class ods_table_context
+
+class style;
+class paragraph_format_properties;
+
 class odf_style_context
 {
 public:
@@ -42,16 +43,18 @@ public:
 	void reset_defaults();	
 	void add_default(odf_style_state & state)	{current_default_styles_.push_back(state);}
 
-	std::wstring 			find_odf_style_name		(int oox_id_style, const style_family family, bool root = false);
-	office_element_ptr		find_odf_style			(int oox_id_style, const style_family family, bool root = false);
+	std::wstring 			find_odf_style_name			(int oox_id_style, const style_family family, bool root = false);
+	office_element_ptr		find_odf_style				(int oox_id_style, const style_family family, bool root = false);
 	
-	std::wstring			find_odf_style_name_default(const style_family family);
-	office_element_ptr		find_odf_style_default	(const style_family family);
+	std::wstring			find_odf_style_name_default	(const style_family family);
+	office_element_ptr		find_odf_style_default		(const style_family family);
 
-	std::wstring 			find_conditional_style_name(int oox_id_style, const style_family family);
+	std::wstring 			find_conditional_style_name	(int oox_id_style, const style_family family);
 	office_element_ptr		find_conditional_style		(int oox_id_style, const style_family family);
 	
 	bool find_odf_style_state(int oox_id_style, const style_family family, odf_style_state *& state, bool root = false);
+	
+	bool find_odf_style(std::wstring style_name, style_family::type family, style *& style_);
 
     odf_style_state & last_state();
     odf_style_state * last_state(style_family family);
@@ -59,6 +62,9 @@ public:
 	odf_number_styles_context & numbers_styles() {return number_styles_context_;}
 	
 	std::wstring find_free_name(const style_family  family);
+
+//////////////////////////////////////////////////////////////////////
+	void calc_paragraph_properties(std::wstring style_name, style_family::type family, paragraph_format_properties * result);
 
 private:
 	odf_number_styles_context	number_styles_context_;

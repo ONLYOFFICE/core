@@ -58,6 +58,8 @@ public:
 	void add_page_break();
 	void add_tab();
 
+	int current_outline_;
+
 	std::vector<office_element_ptr> current_level_;//посто€нно мен€ющийс€ список уровней наследовани€
 
 	std::vector<odf_text_state> text_elements_list_;//параграфы, списки , ... 
@@ -67,6 +69,8 @@ public:
 
 	style_text_properties		*get_text_properties(){return text_properties_;}
 	style_paragraph_properties	*get_paragraph_properties(){return paragraph_properties_;}
+
+	void set_outline_level(int level);
 private:
 	bool single_paragraph_;
 	style_paragraph_properties	*paragraph_properties_;//хранилка-опознавалка что свойства приписаны другому, не текстовому, объекту

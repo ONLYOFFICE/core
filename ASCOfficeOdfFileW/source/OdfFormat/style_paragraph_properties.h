@@ -166,7 +166,7 @@ public:
 
 	void serialize(std::wostream & strm, const wchar_t * ns, const wchar_t * name );
 
-    void apply_from(const paragraph_format_properties & Other);
+    void apply_from( paragraph_format_properties & Other);
 
 public:
     // 15.5.1 fo:line-height
@@ -337,6 +337,13 @@ public:
     _CP_OPT(Bool) style_join_border_;
 
 	_CP_OPT(Bool) style_contextual_spacing_;
+
+//-----------------------------------------------------------------------------
+//not writing elements - used in other place
+//-----------------------------------------------------------------------------
+
+	_CP_OPT(unsigned int) outline_level_;
+
 };
 
 /// \class  style_paragraph_properties

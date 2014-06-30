@@ -4,10 +4,13 @@
 
 namespace DocFileFormat
 {
-
 	typedef enum FibVersion
 	{
-		Fib1997 = 0x00C1,
+		//Fib1993 = 0x0065,	// Word 6.0
+		//Fib1995 = 0x0068,	// Word 7.0 (95)
+		//Fib2002 = 0x0069,	// Word 8.0 (97)
+		
+		Fib1997 = 0x00C1,		
 		Fib2000 = 0x00D9,
 		Fib2002 = 0x0101,
 		Fib2003 = 0x010C,

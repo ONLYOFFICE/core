@@ -62,17 +62,19 @@ namespace DocFileFormat
 
 	struct ImageFileStructure
 	{
-		wstring ext;
-		vector<byte> data;
-
 		ImageFileStructure()
 		{
+
 		}
 
-		ImageFileStructure( const wstring& _ext, const vector<byte>& _data ):
-		ext(_ext), data(_data)
+		ImageFileStructure(const wstring& _ext, const vector<byte>& _data, Global::BlipType	_blipType = Global::msoblipUNKNOWN) : ext(_ext), data(_data), blipType(_blipType)
 		{
+
 		}
+
+		std::wstring		ext;
+		std::vector<byte>	data;
+		Global::BlipType	blipType;	
 	};
 
 	struct OleObjectFileStructure

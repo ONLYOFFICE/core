@@ -412,7 +412,10 @@ namespace DocFileFormat
 			}
 			else if (fcEnd < (int)pcd.fc)		//	this piece is beyond the requested range
 			{	
-				//ATLTRACE(_T("PieceTable::GetChars() - fcEnd < (int)pcd.fc\n"));
+#ifdef _DEBUG
+				ATLTRACE(_T("PieceTable::GetChars() - fcEnd < (int)pcd.fc\n"));
+
+#endif
 
 				// имеет место быть перескок по стриму, поэтому корректируем начальную позицию
 

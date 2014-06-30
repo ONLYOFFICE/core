@@ -63,14 +63,11 @@ namespace GdiPlusHelper
 		// codec not found
 		throw 0;
 	}
-
-
-
 }
 
 namespace OfficeArt
 {
-	OfficeArtBlip* BlipFactory::GetBlipWithPngTransform ()
+	OfficeArtBlip* BlipFactory::GetBlipWithPngTransform()
 	{
 		CString strTempPath;
 		if (::GetTempPath(_MAX_PATH, strTempPath.GetBuffer(_MAX_PATH)) != 0)

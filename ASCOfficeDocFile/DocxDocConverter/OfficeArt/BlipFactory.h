@@ -112,7 +112,7 @@ namespace OfficeArt
 						//	MS WORD конвертит исходник в PNG формат ( UUID берет их исходника BMP файла )
 
 						m_sOriginalData		=	xstr;
-						officeArtBlip		=	GetBlipWithPngTransform ();
+						officeArtBlip		=	GetBlipWithPngTransform();
 					}
 					else if ((extension == std::wstring(L"jpg")) || (extension == std::wstring(L"jpeg")))
 					{

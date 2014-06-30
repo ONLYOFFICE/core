@@ -146,11 +146,30 @@ namespace DocFileFormat
 		}
 
 		// Parse FIB
-		FIB			=	new FileInformationBlock ( VirtualStreamReader (WordDocumentStream,0));
+		FIB			=	new FileInformationBlock(VirtualStreamReader(WordDocumentStream,0));
+
+#ifdef _DEBUG
+		if (Fib2007 == FIB->m_FibBase.nFib)			ATLTRACE (_T("NOTE: OFFICE 2007 file format\n"));
+		else if (Fib2003 == FIB->m_FibBase.nFib)	ATLTRACE (_T("NOTE: OFFICE 2003 file format\n"));
+		else if (Fib2002 == FIB->m_FibBase.nFib)	ATLTRACE (_T("NOTE: OFFICE 2002 file format\n"));
+		else if (Fib2000 == FIB->m_FibBase.nFib)	ATLTRACE (_T("NOTE: OFFICE 2000 file format\n"));
+		else if (Fib1997 == FIB->m_FibBase.nFib)	ATLTRACE (_T("NOTE: OFFICE 1997 file format\n"));
+		else if (Fib1997 < FIB->m_FibBase.nFib)		ATLTRACE (_T("ERROR: OFFICE file format - UNSUPPORTED\n"));
+#endif
 
 		// Check the file version
 		if (FIB->m_FibBase.nFib)
 		{
+			//	nFib (2 bytes): An unsigned integer that specifies the version number of the file format used. 
+			//	Superseded by FibRgCswNew.nFibNew if it is present. This value SHOULD<12> be 0x00C1.
+
+			//	<12> Section 2.5.2: A special empty document is installed with Word 97, Word 2000, Word 2002, 
+			//	and Office Word 2003 to allow "Create New Word Document" from the operating system. This 
+			//	document has an nFib of 0x00C0. In addition the BiDi build of Word 97 differentiates its documents 
+			//	by saving 0x00C2 as the nFib. In both cases treat them as if they were 0x00C1. 
+
+			//	FIB version written. This will be >= 101 for all Word 6.0 for Windows and after documents
+
 			if (FIB->m_FibBase.nFib < Fib1997)
 			{
 				Clear();

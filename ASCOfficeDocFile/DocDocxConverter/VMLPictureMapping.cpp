@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "VMLPictureMapping.h"
 
+#include "GdiplusEx.h"
+
 namespace DocFileFormat
 {
 	VMLPictureMapping::VMLPictureMapping(ConversionContext* ctx, XmlUtils::CXmlWriter* writer, bool olePreview, IMapping* caller, bool isBulletPicture) : PropertiesMapping(writer)
@@ -79,11 +81,11 @@ namespace DocFileFormat
 					//BORDERS
 
 				case borderBottomColor:
-			  {
-				  RGBColor bottomColor( (int)iter->op, RedFirst );
-				  m_pXmlWriter->WriteAttribute( _T( "o:borderbottomcolor" ), ( wstring( _T( "#" ) ) + bottomColor.SixDigitHexCode ).c_str() );
-			  }
-			  break;
+					{
+						RGBColor bottomColor( (int)iter->op, RedFirst );
+						m_pXmlWriter->WriteAttribute( _T( "o:borderbottomcolor" ), ( wstring( _T( "#" ) ) + bottomColor.SixDigitHexCode ).c_str() );
+					}
+					break;
 
 				case borderLeftColor:
 					{  
@@ -96,14 +98,14 @@ namespace DocFileFormat
 					{  
 						RGBColor rightColor( (int)iter->op, RedFirst );
 						m_pXmlWriter->WriteAttribute( _T( "o:borderrightcolor" ), ( wstring( _T( "#" ) ) + rightColor.SixDigitHexCode ).c_str() );
-			  }
+					}
 					break;
 
 				case borderTopColor:
 					{
 						RGBColor topColor( (int)iter->op, RedFirst );
 						m_pXmlWriter->WriteAttribute( _T( "o:bordertopcolor" ), ( wstring( _T( "#" ) ) + topColor.SixDigitHexCode ).c_str() );
-			  }
+					}
 					break;
 
 					//CROPPING
@@ -113,7 +115,7 @@ namespace DocFileFormat
 						//cast to signed integer
 						int cropBottom = (int)iter->op;
 						appendValueAttribute( this->_imageData, _T( "cropbottom" ), ( FormatUtils::IntToWideString( cropBottom ) + wstring( _T( "f" ) ) ).c_str() );
-			  }
+					}
 					break;
 
 				case cropFromLeft:
@@ -121,24 +123,24 @@ namespace DocFileFormat
 						//cast to signed integer
 						int cropLeft = (int)iter->op;
 						appendValueAttribute( this->_imageData, _T( "cropleft" ), ( FormatUtils::IntToWideString( cropLeft ) + wstring( _T( "f" ) ) ).c_str() );
-			  }
+					}
 					break;
 
 				case cropFromRight:
-			  {
-				  //cast to signed integer
-				  int cropRight = (int)iter->op;
-				  appendValueAttribute( this->_imageData, _T( "cropright" ), ( FormatUtils::IntToWideString( cropRight ) + wstring( _T( "f" ) ) ).c_str() );
-			  }
-			  break;
+					{
+						//cast to signed integer
+						int cropRight = (int)iter->op;
+						appendValueAttribute( this->_imageData, _T( "cropright" ), ( FormatUtils::IntToWideString( cropRight ) + wstring( _T( "f" ) ) ).c_str() );
+					}
+					break;
 
 				case cropFromTop:
-			  {
-				  //cast to signed integer
-				  int cropTop = (int)iter->op;
-				  appendValueAttribute( this->_imageData, _T( "croptop" ), ( FormatUtils::IntToWideString( cropTop ) + wstring( _T( "f" ) ) ).c_str() );
-			  }
-			  break;
+					{
+						//cast to signed integer
+						int cropTop = (int)iter->op;
+						appendValueAttribute( this->_imageData, _T( "croptop" ), ( FormatUtils::IntToWideString( cropTop ) + wstring( _T( "f" ) ) ).c_str() );
+					}
+					break;
 				}
 			}
 
@@ -190,16 +192,19 @@ namespace DocFileFormat
 				{
 					//it's a meta image
 					MetafilePictBlip* metaBlip = static_cast<MetafilePictBlip*>(oBlipEntry->Blip);
+					if (metaBlip)
+					{
+						//meta images can be compressed
+						byte* decompressed = NULL;
+						int decompressedSize = 0;
 
-					//meta images can be compressed
-					byte* decompressed = NULL;
-					int decompressedSize = 0;
-
-					decompressedSize = metaBlip->Decompress( &decompressed );
-
-					_ctx->_docx->ImagesList.push_back (ImageFileStructure (GetTargetExt(oBlipEntry->btWin32 ), vector<byte>( decompressed, ( decompressed + decompressedSize ) ) ) );
-
-					RELEASEARRAYOBJECTS( decompressed );
+						decompressedSize = metaBlip->Decompress(&decompressed);
+						if (0 != decompressedSize && NULL != decompressed)
+						{
+							_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), std::vector<byte>(decompressed, (decompressed + decompressedSize))));
+							RELEASEARRAYOBJECTS(decompressed);
+						}
+					}
 				}
 				break;
 
@@ -209,10 +214,12 @@ namespace DocFileFormat
 			case Global::msoblipTIFF:
 			case Global::msoblipDIB:
 				{
-					//it's a bitmap image
 					BitmapBlip* bitBlip = static_cast<BitmapBlip*>(oBlipEntry->Blip);
-
-					_ctx->_docx->ImagesList.push_back(ImageFileStructure (GetTargetExt(oBlipEntry->btWin32 ), vector<byte>( bitBlip->m_pvBits, ( bitBlip->m_pvBits + bitBlip->pvBitsSize ) ) ));
+					if (bitBlip)
+					{
+						_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), 
+							vector<byte>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlipEntry->btWin32));
+					}
 				}
 				break;
 
@@ -225,7 +232,7 @@ namespace DocFileFormat
 				break;
 			}
 
-			m_nImageId	=	_ctx->_docx->RegisterImage (_caller, oBlipEntry->btWin32);
+			m_nImageId	=	_ctx->_docx->RegisterImage(_caller, oBlipEntry->btWin32);
 
 			result		=	true;
 		}
@@ -240,24 +247,27 @@ namespace DocFileFormat
 	{
 		switch (nType)
 		{
-		//case msoblipBMP:
-		//  return wstring( _T( ".bmp" ) );
+			//case Global::msoblipDIB:
+			//	return std::wstring( _T( ".bmp" ) );
+
+			//case msoblipBMP:
+			//  return wstring( _T( ".bmp" ) );
 
 		case Global::msoblipEMF:
 			return std::wstring(_T(".emf"));
 
-		//case msoblipGIF:
-		//  return wstring( _T( ".gif" ) );
+			//case msoblipGIF:
+			//  return wstring( _T( ".gif" ) );
 
-		//case msoblipICON:
-		//  return wstring( _T( ".ico" ) );
+			//case msoblipICON:
+			//  return wstring( _T( ".ico" ) );
 
 		case Global::msoblipJPEG:
 		case Global::msoblipCMYKJPEG:
 			return std::wstring(_T(".jpg"));
 
-		//case msoblipPCX:
-		//  return wstring( _T( ".pcx" ) );
+			//case msoblipPCX:
+			//  return wstring( _T( ".pcx" ) );
 
 		case Global::msoblipPNG:
 			return std::wstring(_T(".png"));
@@ -277,24 +287,24 @@ namespace DocFileFormat
 	{
 		switch (nType)
 		{
-		//case msoblipBMP:
-		//  return wstring( _T( "image/bmp" ) );
+			//case msoblipBMP:
+			//  return wstring( _T( "image/bmp" ) );
 
 		case Global::msoblipEMF:
 			return std::wstring(OpenXmlContentTypes::Emf);
 
-		//case msoblipGIF:
-		//  return wstring( _T( "image/gif" ) );
+			//case msoblipGIF:
+			//  return wstring( _T( "image/gif" ) );
 
-		//case msoblipICON:
-		//  return wstring( _T( "image/x-icon" ) );
+			//case msoblipICON:
+			//  return wstring( _T( "image/x-icon" ) );
 
 		case Global::msoblipJPEG:
 		case Global::msoblipCMYKJPEG:
 			return std::wstring(OpenXmlContentTypes::Jpeg);
 
-		//case msoblipPCX:
-		//  return wstring( _T( "image/pcx" ) );
+			//case msoblipPCX:
+			//  return wstring( _T( "image/pcx" ) );
 
 		case Global::msoblipPNG:
 			return std::wstring(OpenXmlContentTypes::Png);

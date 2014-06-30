@@ -13,55 +13,56 @@ namespace DocFileFormat
 		static const unsigned short TYPE_CODE_0xF020 = 0xF020;
 		static const unsigned short TYPE_CODE_0xF021 = 0xF021;
 
-		/// The secondary, or data, UID - should always be set.
-		byte* m_rgbUid;
-		/// The primary UID - this defaults to 0, in which case the primary ID is that of the internal data.
-		/// NOTE!: The primary UID is only saved to disk if (blip_instance ^ blip_signature == 1).
-		/// Blip_instance is MSOFBH.finst and blip_signature is one of the values defined in MSOBI
-		byte* m_rgbUidPrimary;
-		byte m_bTag;
-		/// Raster bits of the blip
-		byte* m_pvBits;
-		unsigned int pvBitsSize;
-
-		BitmapBlip():
-		Record(), m_rgbUid(NULL), m_rgbUidPrimary(NULL), m_bTag(0), m_pvBits(NULL)
+	public:
+		BitmapBlip() : Record(), m_rgbUid(NULL), m_rgbUidPrimary(NULL), m_bTag(0), m_pvBits(NULL)
 		{
 		}
 
-		BitmapBlip( IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance ):
-		Record( _reader, size, typeCode, version, instance ), m_rgbUid(NULL), m_rgbUidPrimary(NULL), m_bTag(0), m_pvBits(NULL), pvBitsSize(0)
+		BitmapBlip(IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance) : 
+			Record(_reader, size, typeCode, version, instance ), m_rgbUid(NULL), m_rgbUidPrimary(NULL), m_bTag(0), m_pvBits(NULL), pvBitsSize(0)
 		{
-			this->m_rgbUid = this->Reader->ReadBytes( 16, true );
+			m_rgbUid = Reader->ReadBytes(16, true);
 
-			if ( ( instance == 0x46B ) || ( instance == 0x6E3 ) || ( instance == 0x6E1 ) || ( instance == 0x7A9 ) || 
-				( instance == 0x6E5 ) )
+			if ((instance == 0x46B) || (instance == 0x6E3) || (instance == 0x6E1) || (instance == 0x7A9) || (instance == 0x6E5))
 			{
-				this->m_rgbUidPrimary = this->Reader->ReadBytes( 16, true );
+				m_rgbUidPrimary = Reader->ReadBytes(16, true);
 			}
 
-			this->m_bTag = this->Reader->ReadByte();
+			m_bTag = Reader->ReadByte();
 
-			this->pvBitsSize = ( size - 17 );
+			pvBitsSize = (size - 17);
 
-			if ( this->m_rgbUidPrimary != NULL )
+			if (m_rgbUidPrimary)
 			{
-				this->pvBitsSize -= 16;  
+				pvBitsSize -= 16;  
 			}
 
-			this->m_pvBits = this->Reader->ReadBytes( (int)( this->pvBitsSize ), true );
+			m_pvBits = Reader->ReadBytes((int)(pvBitsSize), true);
 		}
 
 		virtual ~BitmapBlip()
 		{
-			RELEASEARRAYOBJECTS( this->m_rgbUid );
-			RELEASEARRAYOBJECTS( this->m_rgbUidPrimary );
-			RELEASEARRAYOBJECTS( this->m_pvBits );
+			RELEASEARRAYOBJECTS(m_rgbUid);
+			RELEASEARRAYOBJECTS(m_rgbUidPrimary);
+			RELEASEARRAYOBJECTS(m_pvBits);
 		}
 
-		virtual Record* NewObject( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance )
+		virtual Record* NewObject(IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance)
 		{
-			return new BitmapBlip( _reader, bodySize, typeCode, version, instance );
+			return new BitmapBlip(_reader, bodySize, typeCode, version, instance);
 		}
+
+	public:
+
+		/// The secondary, or data, UID - should always be set.
+		byte*			m_rgbUid;
+		/// The primary UID - this defaults to 0, in which case the primary ID is that of the internal data.
+		/// NOTE!: The primary UID is only saved to disk if (blip_instance ^ blip_signature == 1).
+		/// Blip_instance is MSOFBH.finst and blip_signature is one of the values defined in MSOBI
+		byte*			m_rgbUidPrimary;
+		byte			m_bTag;
+		/// Raster bits of the blip
+		byte*			m_pvBits;
+		unsigned int	pvBitsSize;
 	};
 }

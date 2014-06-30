@@ -1156,24 +1156,28 @@ namespace DocFileFormat
 		{
 			VirtualStreamReader reader(_ctx->_doc->WordDocumentStream, oBlip->foDelay);
 
-			switch ( oBlip->btWin32 )
+			switch (oBlip->btWin32)
 			{
 			case Global::msoblipEMF:
 			case Global::msoblipWMF:
 				{
 					//it's a meta image
-					MetafilePictBlip* metaBlip = static_cast<MetafilePictBlip*>(RecordFactory::ReadRecord( &reader, 0 ));
+					MetafilePictBlip* metaBlip = static_cast<MetafilePictBlip*>(RecordFactory::ReadRecord(&reader, 0));
+					if (metaBlip)
+					{
+						//meta images can be compressed
+						byte* decompressed = NULL;
+						int decompressedSize = 0;
 
-					//meta images can be compressed
-					byte* decompressed = NULL;
-					int decompressedSize = 0;
+						decompressedSize = metaBlip->Decompress(&decompressed);
+						if (0 != decompressedSize && NULL != decompressed)
+						{
+							_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), vector<byte>(decompressed, (decompressed + decompressedSize))));
+							RELEASEARRAYOBJECTS(decompressed);
+						}
 
-					decompressedSize = metaBlip->Decompress( &decompressed );
-
-					_ctx->_docx->ImagesList.push_back( ImageFileStructure( GetTargetExt( oBlip->btWin32 ), vector<byte>( decompressed, ( decompressed + decompressedSize ) ) ) );
-
-					RELEASEARRAYOBJECTS( decompressed );
-					RELEASEOBJECT( metaBlip );
+						RELEASEOBJECT(metaBlip);
+					}
 				}
 				break;
 
@@ -1184,18 +1188,19 @@ namespace DocFileFormat
 			case Global::msoblipDIB:
 				{
 					//it's a bitmap image
-					BitmapBlip* bitBlip = static_cast<BitmapBlip*>(RecordFactory::ReadRecord( &reader, 0 ));
-
-					_ctx->_docx->ImagesList.push_back( ImageFileStructure( GetTargetExt( oBlip->btWin32 ), vector<byte>( bitBlip->m_pvBits, ( bitBlip->m_pvBits + bitBlip->pvBitsSize ) ) ) );
-
-					RELEASEOBJECT (bitBlip);
+					BitmapBlip* bitBlip = static_cast<BitmapBlip*>(RecordFactory::ReadRecord(&reader, 0));
+					if (bitBlip)
+					{
+						_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), 
+							vector<byte>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlip->btWin32));
+						RELEASEOBJECT (bitBlip);
+					}
 				}
 				break;
 
 			default:
 				{
 					result = false;
-
 					return result;
 				}
 				break;

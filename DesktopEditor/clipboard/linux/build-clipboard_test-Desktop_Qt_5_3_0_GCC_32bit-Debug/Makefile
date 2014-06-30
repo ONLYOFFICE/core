@@ -1419,7 +1419,10 @@ clipboard.o: ../../src/ui/base/clipboard/clipboard.cc ../../src/ui/base/clipboar
 		../../src/base/threading/thread_restrictions.h \
 		../../src/ui/gfx/size.h \
 		../../src/ui/gfx/size_base.h \
-		../../src/ui/gfx/size_f.h
+		../../src/ui/gfx/size_f.h \
+		../../src/base/strings/utf_string_conversions.h \
+		../../src/base/strings/string_piece.h \
+		../../src/base/hash_tables.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o clipboard.o ../../src/ui/base/clipboard/clipboard.cc
 
 clipboard_gtk.o: ../../src/ui/base/clipboard/clipboard_gtk.cc ../../src/ui/base/clipboard/clipboard.h \

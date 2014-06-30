@@ -7,7 +7,7 @@
 message($$PWD)
 DEFINES += USE_X11 HAVE_SYS_TIME_H
 
-QT       += core
+#QT       += core
 
 QT       -= gui
 

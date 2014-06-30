@@ -223,6 +223,7 @@ enum ElementType
 
 	typeOfficeSpreadsheet,
 	typeOfficeAnnotation,
+	typeOfficeAnnotationEnd,
 	typeStyleRegionLeft,
 	typeOfficeScripts,
 	typeOfficeScript,

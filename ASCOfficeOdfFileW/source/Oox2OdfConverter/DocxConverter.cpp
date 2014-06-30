@@ -183,16 +183,18 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		}break;
 		case OOX::et_w_commentRangeEnd:
 		{
-			OOX::Logic::CShape* pShape = static_cast<OOX::Logic::CShape*>(oox_unknown);
-			convert(pShape);
+			OOX::Logic::CCommentRangeEnd* pCommEnd = static_cast<OOX::Logic::CCommentRangeEnd*>(oox_unknown);
+			convert(pCommEnd);
 		}break;
 		case OOX::et_w_commentRangeStart:
 		{
-			OOX::Logic::CShape* pShape = static_cast<OOX::Logic::CShape*>(oox_unknown);
-			convert(pShape);
+			OOX::Logic::CCommentRangeStart* pCommStart = static_cast<OOX::Logic::CCommentRangeStart*>(oox_unknown);
+			convert(pCommStart);
 		}break;
 		case OOX::et_w_commentReference:
 		{
+			OOX::Logic::CCommentReference* pCommRef = static_cast<OOX::Logic::CCommentReference*>(oox_unknown);
+			convert(pCommRef);		//если нет Start - означает начало с предыдущего Run
 		}break;
 		default:
 		{
@@ -1241,7 +1243,74 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 
 }
 
+void DocxConverter::convert(OOX::Logic::CCommentRangeStart* oox_comm_start)
+{
+	if(oox_comm_start == NULL)return;
+	if (oox_comm_start->m_oId.IsInit() == false) return;
 
+	int oox_comm_id = oox_comm_start->m_oId->GetValue();
 
+	bool added = odt_context->start_comment(oox_comm_id);
+
+	if (added==false)
+	{
+		convert_comment(oox_comm_id);
+	}
+}
+
+void DocxConverter::convert(OOX::Logic::CCommentRangeEnd* oox_comm_end)
+{
+	if(oox_comm_end == NULL)return;
+	if (oox_comm_end->m_oId.IsInit() == false) return;
+
+	int oox_comm_id = oox_comm_end->m_oId->GetValue();
+
+	 odt_context->end_comment(oox_comm_id);
+}
+void DocxConverter::convert(OOX::Logic::CCommentReference* oox_comm_ref)
+{
+	if(oox_comm_ref == NULL)return;
+	if (oox_comm_ref->m_oId.IsInit() == false) return;
+
+	int oox_comm_id = oox_comm_ref->m_oId->GetValue();
+
+	bool added = odt_context->start_comment(oox_comm_id);
+
+	if (added == false)
+	{
+		//значит старт тута а не по RangeStart
+		convert_comment(oox_comm_id);
+	}
+
+}
+void DocxConverter::convert_comment(int oox_comm_id)
+{
+	OOX::CComments * docx_comments = docx_document->GetComments();
+	if (!docx_comments)return;
+
+	for (int comm =0 ; comm < docx_comments->m_arrComments.GetSize(); comm++)
+	{
+		OOX::CComment* oox_comment = docx_comments->m_arrComments[comm];
+		if (oox_comment == NULL) continue;
+		if (oox_comment->m_oId.IsInit() == false) continue;
+		
+		if (oox_comment->m_oId->GetValue() == oox_comm_id)
+		{
+			odt_context->start_comment_content();
+			{
+				if (oox_comment->m_oAuthor.IsInit())odt_context->comment_context()->set_author	(string2std_string(*oox_comment->m_oAuthor));
+				if (oox_comment->m_oDate.IsInit())	odt_context->comment_context()->set_date	(string2std_string(oox_comment->m_oDate->GetValue()));
+				if (oox_comment->m_oInitials.IsInit()){}
+
+				for (long i=0; i <oox_comment->m_arrItems.GetSize(); i++)
+				{
+					convert(oox_comment->m_arrItems[i]);
+				}
+			}
+			odt_context->end_comment_content();
+		}
+	}
+}
 
 } 
+

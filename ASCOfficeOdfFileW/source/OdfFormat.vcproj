@@ -1240,6 +1240,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OdfFormat\odf_comment_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odf_comment_context.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\odf_conversion_context.cpp"
 				>
 			</File>

@@ -65,6 +65,7 @@ void office_annotation_attr::serialize(CP_ATTR_NODE)
 	CP_XML_ATTR_OPT(L"svg:height",	svg_height_); 
 	
 	CP_XML_ATTR_OPT(L"office:display",display_);
+	CP_XML_ATTR_OPT(L"office:name",name_);
 }
 
 // office:annotation
@@ -97,6 +98,19 @@ void office_annotation::add_child_element( office_element_ptr & child_element)
 		dc_date_ = child_element;
 	else
 		content_.push_back(child_element);
+}
+const wchar_t * office_annotation_end::ns = L"office";
+const wchar_t * office_annotation_end::name = L"annotation-end";
+
+void office_annotation_end::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {   
+			office_annotation_attr_.serialize(CP_GET_XML_NODE());
+		}
+	}
 }
 void office_annotation::serialize(std::wostream & _Wostream)
 {

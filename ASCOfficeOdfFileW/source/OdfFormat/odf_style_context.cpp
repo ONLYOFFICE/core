@@ -7,11 +7,24 @@
 #include "logging.h"
 #include "styles.h"
 
+#include "style_paragraph_properties.h"
+
 #include <boost/foreach.hpp>
 #include <iostream>
 
 namespace cpdoccore {
 namespace odf {
+
+void calc_paragraph_properties_content(std::vector<style_paragraph_properties*> & parProps, paragraph_format_properties * result)
+{
+	if (result == NULL)return;
+
+    BOOST_REVERSE_FOREACH(style_paragraph_properties* v, parProps)
+    {
+        if (v)
+            result->apply_from(v->content());
+    }
+}
 
 odf_style_context::odf_style_context()
 {        
@@ -211,6 +224,24 @@ bool odf_style_context::find_odf_style_state(int oox_id_style, const style_famil
 	}
 	return false;
 }
+
+bool odf_style_context::find_odf_style(std::wstring style_name, style_family::type family, style *& style_)
+{
+	for (int i=0;i<style_state_list_.size(); i++)
+	{
+		if (style_state_list_[i].odf_style_)
+		{
+			if (style_state_list_[i].style_family_.get_type() == family && style_state_list_[i].get_name() == style_name)
+			{
+				style_ = dynamic_cast<style*>(style_state_list_[i].odf_style_.get());
+
+				return true;
+			}
+				
+		}
+	}
+	return false;
+}
 office_element_ptr odf_style_context::find_odf_style_default(const style_family family)
 {
 	for (int i=0;i<current_default_styles_.size(); i++)
@@ -303,6 +334,24 @@ office_element_ptr & odf_style_context::add_or_find(std::wstring name, const sty
 	create_style(name,family, automatic, root,oox_id);
 	
 	return last_state().get_office_element();
+}
+
+void odf_style_context::calc_paragraph_properties(std::wstring style_name, style_family::type family, paragraph_format_properties * result)
+{
+    std::vector<style_paragraph_properties*> parProps;
+	
+	while (style_name.length()>0)
+    {
+		style *style_ = NULL;
+		if (!find_odf_style(style_name, family, style_) || !style_)break;
+
+       if (style_paragraph_properties * parProp = style_->style_content_.get_style_paragraph_properties())
+			parProps.push_back(parProp);
+        		
+	   style_name = style_->style_parent_style_name_ ? *style_->style_parent_style_name_ : L"";
+
+    }   
+	calc_paragraph_properties_content(parProps, result);
 }
 
 

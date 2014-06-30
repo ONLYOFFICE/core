@@ -212,7 +212,7 @@ void style_paragraph_properties::serialize(std::wostream & strm)
 {
 	 style_paragraph_properties_content_.serialize(strm,ns,name);
 }
-void paragraph_format_properties::apply_from(const paragraph_format_properties & Other)
+void paragraph_format_properties::apply_from(paragraph_format_properties & Other)
 {
     apply_line_width(fo_line_height_, Other.fo_line_height_);
     _CP_APPLY_PROP(style_line_height_at_least_, Other.style_line_height_at_least_);
@@ -283,6 +283,8 @@ void paragraph_format_properties::apply_from(const paragraph_format_properties &
     _CP_APPLY_PROP(style_page_number_, Other.style_page_number_);
     _CP_APPLY_PROP(style_background_transparency_, Other.style_background_transparency_);
     _CP_APPLY_PROP(style_join_border_, Other.style_join_border_);
+    
+	_CP_APPLY_PROP(outline_level_, Other.outline_level_);
 }
 
 

@@ -207,7 +207,16 @@ void DocxConverter::convert(OOX::Logic::CParagraph	*oox_paragraph)
 	if (oox_paragraph == NULL) return;
 
 	bool styled = false;
-	odt_context->start_paragraph();
+	if (oox_paragraph->m_oParagraphProperty) 
+	{
+		styled = true;
+
+		odt_context->styles_context()->create_style(L"",odf::style_family::Paragraph, true, false, -1);					
+		odf::style_paragraph_properties	* paragraph_properties	= odt_context->styles_context()->last_state().get_paragraph_properties();
+
+		convert(oox_paragraph->m_oParagraphProperty, paragraph_properties); 
+	}
+	odt_context->start_paragraph(styled);
 	
 	for ( int nIndex = 0; nIndex < oox_paragraph->m_arrItems.GetSize(); nIndex++ )
 	{
@@ -216,17 +225,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph	*oox_paragraph)
 		{
 			case OOX::et_w_pPr:
 			{
-				styled = true;
-				OOX::Logic::CParagraphProperty* pPProp= static_cast<OOX::Logic::CParagraphProperty*>(oox_paragraph->m_arrItems[nIndex]);
-
-				odt_context->styles_context()->create_style(L"",odf::style_family::Paragraph, true, false, -1);					
-				odf::style_paragraph_properties	* paragraph_properties	= odt_context->styles_context()->last_state().get_paragraph_properties();
-				//odf::style_text_properties		* text_properties		= odt_context->styles_context()->last_state().get_text_properties();
-
-				convert(pPProp, paragraph_properties/*, text_properties*/); 
-				
-				odt_context->text_context()->add_text_style(odt_context->styles_context()->last_state().get_office_element(),odt_context->styles_context()->last_state().get_name());
-				odt_context->text_context()->set_single_object(false, paragraph_properties,NULL);// - пока так .. ваще то эта функция для текста диаграмм - он специфический
+				// пропускаем .. 
 			}break;		
 			default:
 				convert(oox_paragraph->m_arrItems[nIndex]);
@@ -360,7 +359,17 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 
 	if (oox_paragraph_pr->m_oPStyle.IsInit() && oox_paragraph_pr->m_oPStyle->m_sVal.IsInit())
 	{
-		odt_context->styles_context()->last_state().set_parent_style_name(string2std_string(*oox_paragraph_pr->m_oPStyle->m_sVal));
+		std::wstring style_name = string2std_string(*oox_paragraph_pr->m_oPStyle->m_sVal);
+		odt_context->styles_context()->last_state().set_parent_style_name(style_name);
+		/////////////////////////find parent properties 
+
+		cpdoccore::odf::style_paragraph_properties  parent_paragraph_properties;
+		odt_context->styles_context()->calc_paragraph_properties(style_name,odf::style_family::Paragraph, &parent_paragraph_properties.content());
+		
+		if (parent_paragraph_properties.content().outline_level_)
+		{
+			odt_context->text_context()->set_outline_level(*parent_paragraph_properties.content().outline_level_);
+		}
 	}
 
 	if (oox_paragraph_pr->m_oSpacing.IsInit())
@@ -446,7 +455,7 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 
 	convert(oox_paragraph_pr->m_oPBdr.GetPointer(), paragraph_properties);
 
-	if (oox_paragraph_pr->m_oRPr.IsInit())//может быть пустым !!!
+	if (oox_paragraph_pr->m_oRPr.IsInit())
 	{
 		odf::style_text_properties * text_properties = odf_context()->text_context()->get_text_properties();
 		if (text_properties) 
@@ -480,6 +489,12 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 	}
 	//m_oSectPr
 
+	if (oox_paragraph_pr->m_oOutlineLvl.IsInit() && oox_paragraph_pr->m_oOutlineLvl->m_oVal.IsInit())
+	{
+		int level = oox_paragraph_pr->m_oOutlineLvl->m_oVal->GetValue();
+		paragraph_properties->content().outline_level_ =  level;
+		odt_context->text_context()->set_outline_level ( level);
+	}
 }
 void DocxConverter::convert(OOX::Logic::CPBdr *oox_border, odf::style_paragraph_properties * paragraph_properties)
 {
@@ -1216,8 +1231,12 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 	if (oox_style->m_oRunPr.IsInit())
 	{
 		odf::style_text_properties	* text_properties = odt_context->styles_context()->last_state().get_text_properties();
-
 		convert(oox_style->m_oRunPr.GetPointer(), text_properties);
+	}
+	if (oox_style->m_oParPr.IsInit())
+	{
+		odf::style_paragraph_properties	* paragraph_properties = odt_context->styles_context()->last_state().get_paragraph_properties();
+		convert(oox_style->m_oParPr.GetPointer(), paragraph_properties);
 	}
 	if (oox_style->m_oBasedOn.IsInit() && oox_style->m_oBasedOn->m_sVal.IsInit())
 		odt_context->styles_context()->last_state().set_parent_style_name(string2std_string(*oox_style->m_oBasedOn->m_sVal));

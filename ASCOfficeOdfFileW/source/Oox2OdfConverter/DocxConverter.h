@@ -30,6 +30,9 @@ namespace OOX
 		class CHyperlink;
 		class CFldChar;
 		class CInstrText;
+		class CCommentRangeStart;
+		class CCommentRangeEnd;
+		class CCommentReference;
 	}
 
 }
@@ -82,6 +85,7 @@ namespace Oox2Odf
 
 		void convert_document();
 		void convert_styles();
+		void convert_comment(int oox_comm_id);
 
 		void convert(OOX::WritingElement				*oox_unknown);
 
@@ -116,5 +120,9 @@ namespace Oox2Odf
 														SimpleTypes::CUcharHexNumber<>* theme_shade, _CP_OPT(odf::color) & odf_color);
 		void convert(OOX::CDocDefaults					*def_style);
 		void convert(OOX::CStyle						*style);
+
+		void convert(OOX::Logic::CCommentRangeStart		*oox_comm_start);
+		void convert(OOX::Logic::CCommentRangeEnd		*oox_comm_end);
+		void convert(OOX::Logic::CCommentReference		*oox_comm_ref);
 	};
 }

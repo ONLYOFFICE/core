@@ -15,12 +15,14 @@ class oox_chart_shape: boost::noncopyable
 public:
 	oox_chart_shape(){}
 	~oox_chart_shape(){}
+
+	void set(std::vector<odf::_property> & prop,_oox_fill & fill);
  
     void oox_serialize(std::wostream & _Wostream);
 			
+private:
 	std::vector<odf::_property> content_;
-
-	_oox_fill fill;
+	_oox_fill					fill_;
 
     
 private:

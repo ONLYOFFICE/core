@@ -369,7 +369,7 @@ void oox_stock_chart::set_properties(std::vector<odf::_property> g)
 void oox_stock_chart::oox_serialize(std::wostream & _Wostream)
 {
 	oox_chart_shape shape;
-	shape.content_ = graphic_properties_;
+	shape.set(graphic_properties_, fill_);
 
     CP_XML_WRITER(_Wostream)
     {

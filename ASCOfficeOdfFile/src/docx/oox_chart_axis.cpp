@@ -124,11 +124,12 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 		//oox_serialize_ln(_Wostream,content_.graphic_properties_);
 
 		oox_chart_shape shape;
-		shape.content_ = content_.graphic_properties_;
+		shape.set(content_.graphic_properties_,content_.fill_) ;
 		shape.oox_serialize(_Wostream);
-		BOOST_FOREACH(odf::chart::axis::grid const & g, content_.grids_)
+		BOOST_FOREACH(odf::chart::axis::grid  & g, content_.grids_)
 		{
-			shape.content_ = g.graphic_properties_;
+			_oox_fill fill_null;
+			shape.set(g.graphic_properties_, fill_null);
 			
 			if (g.type_ == odf::chart::axis::grid::major)
 			{

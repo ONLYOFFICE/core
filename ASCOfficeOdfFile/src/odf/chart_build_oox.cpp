@@ -83,6 +83,11 @@ void chart_build::end_axis()
     in_axis_ = false;
 }
 
+void chart_build::add_categories(std::wstring const & cellRange)
+{
+	categories_.push_back(cellRange);
+}
+
 void chart_build::add_grid(std::wstring const & className, std::wstring const & styleName)
 {
     if (!axises_.empty())
@@ -180,9 +185,9 @@ void chart_build::oox_convert(oox::oox_chart_context & chart)
 	chart.set_wall(wall_);
 	chart.set_floor(floor_);
 	chart.set_legend(legend_);
-	chart.set_plot_area_properties(plot_area_.properties_);
+	chart.set_plot_area_properties(plot_area_.properties_, plot_area_.fill_);
 	//chart.set_footer(footer_);
-	chart.set_chart_graphic_properties(chart_graphic_properties_);
+	chart.set_chart_graphic_properties(chart_graphic_properties_, chart_fill_);
 	//chart.set_chart_properties(chart_graphic_properties_);
 
 	class_type last_set_type=chart_unknown; 
@@ -202,13 +207,18 @@ void chart_build::oox_convert(oox::oox_chart_context & chart)
 		
 		current->set_properties(plot_area_.properties_);
 		current->set_additional_properties(chart_graphic_properties_);
-		
+	
 		current->add_series(series_id++);
 		
-
-		std::vector<std::wstring> cell_cash;
-
-		calc_cash_series(s.cell_range_address_,cell_cash);
+		if (s.cell_range_address_.length()<1) s.cell_range_address_ = plot_area_.cell_range_address_;//SplitByColumn(ind_ser,range);
+																									//SplitByRow(ind_ser,range)
+		//тут данные нужно поделить по столбцам или строкам - так как в плот-ареа общий диапазон
+		//первый столбец-строка ћќ∆≈т использоватьс€ дл€ подписей
+		//кажда€ сери€ берет каждый последующий диапазрн
+		//такое определение - редкость = todooo
+		
+		std::vector<std::wstring>				cell_cash;
+		calc_cash_series(s.cell_range_address_,	cell_cash);
 
 		if (domain_cell_range_adress_.length()>0) 
 		{
@@ -237,6 +247,15 @@ void chart_build::oox_convert(oox::oox_chart_context & chart)
 		{
 			current->set_formula_series(0, s.cell_range_address_);//common
 			current->set_values_series(0, cell_cash);//common
+		}
+
+		if (categories_.size() > 0)//названи€ 
+		{			
+			std::vector<std::wstring>			cat_cash;
+			calc_cash_series(categories_[0],	cat_cash);
+			
+			current->set_formula_series(4,categories_[0]);
+			current->set_values_series(4,cat_cash);
 		}
 		current->set_name(s.name_);
 		chart.set_content_series(s);
@@ -302,12 +321,14 @@ void process_build_chart::ApplyTextProperties(std::wstring style,std::vector<_pr
 		properties.apply_to(propertiesOut);
     }
 }
-void process_build_chart::ApplyGraphicProperties(std::wstring style,std::vector<_property> & propertiesOut)
+void process_build_chart::ApplyGraphicProperties(std::wstring style,std::vector<_property> & propertiesOut,oox::_oox_fill & fill)
 {
 	style_instance* styleInst = styles_.style_by_name(style, odf::style_family::Chart,false/*Context.process_headers_footers_*/);
     if(styleInst)
 	{
 		graphic_format_properties properties = calc_graphic_properties_content(styleInst);
+
+		Compute_GraphicFill(properties.common_draw_fill_attlist_, draw_styles_ , fill);	
 		properties.apply_to(propertiesOut);
     }
 }	
@@ -370,7 +391,7 @@ void process_build_chart::visit(const chart_chart& val)
     {
         chart_build_.set_height(val.chart_chart_attlist_.common_draw_size_attlist_.svg_height_->get_value_unit(length::pt));
     }
-	ApplyGraphicProperties	(val.chart_chart_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.chart_graphic_properties_);
+	ApplyGraphicProperties	(val.chart_chart_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.chart_graphic_properties_, chart_build_.chart_fill_);
 
 	chart_build_.set_class(val.chart_chart_attlist_.chart_class_);
 
@@ -420,14 +441,14 @@ void process_build_chart::visit(const chart_subtitle & val)
 void process_build_chart::visit(const chart_footer& val)
 {
 	ApplyChartProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.footer_.properties_);
-	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.footer_.graphic_properties_);
+	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.footer_.graphic_properties_, chart_build_.footer_.fill_);
 	ApplyTextProperties		(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.footer_.text_properties_);
 }
 
 void process_build_chart::visit(const chart_legend& val)
 {
 	ApplyChartProperties	(val.chart_legend_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.legend_.properties_);
-	ApplyGraphicProperties	(val.chart_legend_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.legend_.graphic_properties_);
+	ApplyGraphicProperties	(val.chart_legend_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.legend_.graphic_properties_,chart_build_.legend_.fill_);
 	ApplyTextProperties		(val.chart_legend_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.legend_.text_properties_);
 }
 
@@ -435,8 +456,10 @@ void process_build_chart::visit(const chart_plot_area& val)
 {
 	ACCEPT_ALL_CONTENT_CONST(val.content_);
 
+	chart_build_.plot_area_.cell_range_address_ = val.chart_plot_area_attlist_.table_cell_range_address_.get_value_or(L"");
+
 	ApplyChartProperties	(val.chart_plot_area_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),chart_build_.plot_area_.properties_);
-	ApplyGraphicProperties	(val.chart_plot_area_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),chart_build_.plot_area_.graphic_properties_);
+	ApplyGraphicProperties	(val.chart_plot_area_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),chart_build_.plot_area_.graphic_properties_, chart_build_.plot_area_.fill_);
 	ApplyTextProperties		(val.chart_plot_area_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),chart_build_.plot_area_.text_properties_);
 }
 
@@ -450,7 +473,7 @@ void process_build_chart::visit(const chart_axis& val)
     ACCEPT_ALL_CONTENT_CONST(val.content_);
 
 	ApplyChartProperties	(val.chart_axis_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),chart_build_.axises_.back().properties_);
-	ApplyGraphicProperties	(val.chart_axis_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),chart_build_.axises_.back().graphic_properties_);
+	ApplyGraphicProperties	(val.chart_axis_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),chart_build_.axises_.back().graphic_properties_,chart_build_.axises_.back().fill_);
 	ApplyTextProperties		(val.chart_axis_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),chart_build_.axises_.back().text_properties_);
 
     chart_build_.end_axis();        
@@ -473,7 +496,7 @@ void process_build_chart::visit(const chart_series& val)
 	ACCEPT_ALL_CONTENT_CONST(val.content_);
 
 	ApplyChartProperties	(att.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.series_.back().properties_);
-	ApplyGraphicProperties	(att.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.series_.back().graphic_properties_);
+	ApplyGraphicProperties	(att.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.series_.back().graphic_properties_,chart_build_.series_.back().fill_);
 	ApplyTextProperties		(att.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.series_.back().text_properties_);
 
 }
@@ -487,20 +510,22 @@ void process_build_chart::visit(const chart_grid& val)
     chart_build_.add_grid(val.chart_grid_attlist_.chart_class_.get_value_or(L""),
         val.chart_grid_attlist_.common_attlist_.chart_style_name_.get_value_or(L"") );
 	
-	ApplyGraphicProperties	(val.chart_grid_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	(chart_build_.axises_.back()).grids_.back().graphic_properties_);
+	oox::_oox_fill fill;
+	
+	ApplyGraphicProperties	(val.chart_grid_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	(chart_build_.axises_.back()).grids_.back().graphic_properties_, fill);
 
  }
 void process_build_chart::visit(const chart_wall& val)
 {      
 	ApplyChartProperties	(val.chart_wall_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.wall_.properties_);
-	ApplyGraphicProperties	(val.chart_wall_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.wall_.graphic_properties_);
+	ApplyGraphicProperties	(val.chart_wall_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.wall_.graphic_properties_,chart_build_.wall_.fill_);
 	ApplyTextProperties		(val.chart_wall_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.wall_.text_properties_);
 } 
 
 void process_build_chart::visit(const chart_floor& val)
 {   
 	ApplyChartProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.floor_.properties_);
-	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.floor_.graphic_properties_);
+	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.floor_.graphic_properties_,chart_build_.floor_.fill_);
 	ApplyTextProperties		(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.floor_.text_properties_);
 } 
 
@@ -513,15 +538,16 @@ void process_build_chart::visit(const chart_data_point & val)
 void process_build_chart::visit(const chart_mean_value & val)
 {
 	ApplyChartProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.series_.back().mean_value_.properties_);
-	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.series_.back().mean_value_.graphic_properties_);
+	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.series_.back().mean_value_.graphic_properties_,chart_build_.series_.back().mean_value_.fill_);
 }
 void process_build_chart::visit(const chart_error_indicator & val)
 {
-	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.series_.back().error_indicator_.graphic_properties_);
+	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.series_.back().error_indicator_.graphic_properties_,chart_build_.series_.back().error_indicator_.fill_ );
 }	
 void process_build_chart::visit(const chart_regression_curve & val)
 {
-	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.series_.back().regression_curve_.line_properties_);
+	oox::_oox_fill fill;
+	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.series_.back().regression_curve_.line_properties_, fill);
 
 	if (val.chart_equation_)
 	{
@@ -538,13 +564,13 @@ void process_build_chart::visit(const chart_equation & val)
 	if (val.display_r_square_)
 		chart_build_.series_.back().regression_curve_.bREquation = val.display_r_square_.get();
 
-	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.series_.back().regression_curve_.equation_properties_.graphic_properties_);
+	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.series_.back().regression_curve_.equation_properties_.graphic_properties_,chart_build_.series_.back().regression_curve_.equation_properties_.fill_);
 	ApplyTextProperties		(val.common_attlist_.chart_style_name_.get_value_or(L""),	chart_build_.series_.back().regression_curve_.equation_properties_.text_properties_);
 
 }
 void process_build_chart::visit(const chart_categories& val)
-{        
-    // TODO
+{     
+	if (val.table_cell_range_address_)  chart_build_.add_categories(*val.table_cell_range_address_);
 }    
 void process_build_chart::visit(const table_table& val)
 {        

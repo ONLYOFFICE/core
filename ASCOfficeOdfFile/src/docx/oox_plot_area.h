@@ -22,6 +22,8 @@ public:
 	
 	std::vector<odf::_property> graphic_properties_;
 	std::vector<odf::_property> properties_;
+	_oox_fill					fill_; 
+	
 	//std::vector<odf::_property> wall_graphic_properties_;
 	
 	void oox_serialize(std::wostream & _Wostream);

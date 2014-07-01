@@ -54,11 +54,22 @@ void oox_chart_series::setName(std::wstring &value)
 void oox_chart_series::setFormula(int ind, std::wstring &value)
 {
 	formulasconvert::odf2oox_converter converter;
-	values_[ind].numRef_.formula=converter.convert_chart_distance(value);
 
-	values_[ind].numRef_.present = true;
-	values_[ind].present = true;
-
+	if (ind == 4)
+	{
+		long res = value.find(L"local-table");
+		if (res >=0) return;
+		
+		values_[ind].strRef_.formula=converter.convert_chart_distance(value);
+		values_[ind].strRef_.present = true;
+		values_[ind].present = true;
+	}
+	else
+	{
+		values_[ind].numRef_.formula=converter.convert_chart_distance(value);
+		values_[ind].numRef_.present = true;
+		values_[ind].present = true;
+	}
 }
 
 void oox_chart_series::parse_properties()
@@ -81,11 +92,22 @@ void oox_chart_series::setValues(int ind, std::vector<std::wstring> & values)
 {
 	values_[ind].present = true;
 
+	if (ind == 4)values_[ind].strRef_.present = true;
+	else values_[ind].numRef_.present = true;
+
 	BOOST_FOREACH(std::wstring & v, values)
 	{
 		boost::algorithm::trim(v);
-		values_[ind].numRef_.num_cash.push_back(v);
-		values_[ind].numRef_.num_cash_count++;
+		if (ind == 4)
+		{
+			values_[ind].strRef_.str_cash.push_back(v);
+			values_[ind].strRef_.str_cash_count++;
+		}
+		else
+		{
+			values_[ind].numRef_.num_cash.push_back(v);
+			values_[ind].numRef_.num_cash_count++;
+		}
 	}
 }
 void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
@@ -93,7 +115,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 	parse_properties();
 
 	oox_chart_shape shape;
-	shape.content_ = content_.graphic_properties_;
+	shape.set(content_.graphic_properties_, content_.fill_);
 	
 	CP_XML_WRITER(_Wostream)
     {
@@ -107,7 +129,8 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 
 		}
 		shape.oox_serialize(_Wostream);
-		for (int i=0;i<4;i++)
+
+		for (int i=0; i < 4; i++)
 		{
 			if (values_[i].present)
 			{
@@ -134,12 +157,12 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 									{
 										CP_XML_ATTR(L"val", values_[i].numRef_.num_cash_count);
 									}
-									int i=0;
+									int j=0;
 									BOOST_FOREACH(std::wstring & v, values_[i].numRef_.num_cash)
 									{								
 										CP_XML_NODE(L"c:pt")
 										{
-											CP_XML_ATTR(L"idx", i++);
+											CP_XML_ATTR(L"idx", j++);
 											CP_XML_NODE(L"c:v")
 											{
 												CP_XML_CONTENT(boost::lexical_cast<double>(v));
@@ -150,13 +173,46 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 							}
 						}
 					}
+					//if (values_[i].strRef_.present)
+					//{
+					//	CP_XML_NODE(L"c:strRef")
+					//	{
+					//		CP_XML_NODE(L"c:f")
+					//		{
+					//			CP_XML_CONTENT(values_[i].strRef_.formula);
+					//		}
+					//	
+					//		if (values_[i].strRef_.str_cash_count>0)
+					//		{
+					//			CP_XML_NODE(L"c:strCache")//необязательно
+					//			{
+					//				CP_XML_NODE(L"c:ptCount")
+					//				{
+					//					CP_XML_ATTR(L"val", values_[i].strRef_.str_cash_count);
+					//				}
+					//				int j=0;
+					//				BOOST_FOREACH(std::wstring & v, values_[i].strRef_.str_cash)
+					//				{								
+					//					CP_XML_NODE(L"c:pt")
+					//					{
+					//						CP_XML_ATTR(L"idx", j++);
+					//						CP_XML_NODE(L"c:v")
+					//						{
+					//							CP_XML_CONTENT(v);
+					//						}
+					//					}
+					//				}
+					//			}
+					//		}
+					//	}
+					//}
 				}
 			}
 		}		
 		if (content_.regression_curve_.line_properties_.size()>0)
 		{
 			std::wstring typeTrendline= L"log"; //"exp" | "linear" | "log" | "movingAvg" | "poly" | "power"
-			shape.content_ = content_.regression_curve_.line_properties_;
+			shape.set(content_.regression_curve_.line_properties_,_oox_fill());
 			
 			_CP_OPT(int) iType;
 			odf::GetProperty(content_.properties_, L"regression-type",iType);   //     none, linear, logarithmic, exponential, power
@@ -184,12 +240,12 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 				{
 					CP_XML_NODE(L"c:trendlineLbl")
 					{
-						shape.content_ = content_.regression_curve_.equation_properties_.graphic_properties_;
+						shape.set(content_.regression_curve_.equation_properties_.graphic_properties_,content_.regression_curve_.equation_properties_.fill_);
 						shape.oox_serialize(CP_XML_STREAM());
 					}
 				}		
 
-				shape.content_ = content_.regression_curve_.line_properties_;
+				shape.set( content_.regression_curve_.line_properties_,_oox_fill());
 				shape.oox_serialize(CP_XML_STREAM());
 
 

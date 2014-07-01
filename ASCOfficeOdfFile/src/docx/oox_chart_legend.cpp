@@ -72,11 +72,11 @@ void oox_chart_legend::oox_serialize(std::wostream & _Wostream)
 				CP_XML_ATTR(L"val", "r");//  "b" | "l" |  "r" |  "t"// == bottom left right top
 
 			}
-			shape.content_ = content_.graphic_properties_;
+			shape.set(content_.graphic_properties_,content_.fill_);
 			shape.oox_serialize(CP_XML_STREAM());
 			
-			oox_chart_shape shape;
-			shape.content_ = content_.graphic_properties_;
+			//oox_chart_shape shape;
+			//shape.set(content_.graphic_properties_,content_.fill_);
 
 			oox_serialize_default_text(CP_XML_STREAM());
 

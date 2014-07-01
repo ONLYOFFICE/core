@@ -27,6 +27,15 @@ struct _oox_numLit
 //	int formatCode;
 //	std::vector<std::wstring>num_cash;
 //};
+struct _oox_strRef
+{
+	bool present;
+
+	std::wstring formula;
+	int str_cash_count;
+	std::vector<std::wstring>str_cash;
+
+};
 struct _oox_numRef
 {
 	bool present;
@@ -51,6 +60,9 @@ public:
 		numRef_.formatCode = L"General";
 		numRef_.num_cash_count=0;
 
+		strRef_.present=false;
+		strRef_.str_cash_count=0;
+
 		present = false;
 	}
 
@@ -59,6 +71,8 @@ public:
 	
 	_oox_numLit numLit_;
 	_oox_numRef numRef_;
+	_oox_strRef strRef_;
+
 };
 //numLit (Number Literal) §21.2.2.122
 //numRef (Number Reference) §21.2.2.123

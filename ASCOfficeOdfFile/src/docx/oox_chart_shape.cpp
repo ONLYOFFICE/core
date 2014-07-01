@@ -15,19 +15,23 @@ namespace oox {
 
 void oox_chart_shape::oox_serialize(std::wostream & _Wostream)
 {
-	_CP_OPT(std::wstring) strVal;
- 	_CP_OPT(double) dVal;
- 	_CP_OPT(int) iVal;
 	CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE(L"c:spPr")
         {
-			oox_serialize_fill(CP_XML_STREAM(),fill);
+			oox_serialize_fill(CP_XML_STREAM(),fill_);
 	
 			oox_serialize_ln(CP_XML_STREAM(),content_);
 		}
     }
 
 }
+
+void oox_chart_shape::set(std::vector<odf::_property> & prop,_oox_fill & fill)
+{
+	content_ = prop;
+	fill_ = fill;
+}
+
 }
 }

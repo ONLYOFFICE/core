@@ -60,6 +60,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf::_property> & 
 	_CP_OPT(std::wstring) strVal; 
 	_CP_OPT(int) iVal;
 	_CP_OPT(double) dVal;
+	
 	odf::GetProperty(prop,L"stroke-color",strVal);	
 	odf::GetProperty(prop,L"stroke",iVal);	
 	odf::GetProperty(prop,L"stroke-width",dVal);

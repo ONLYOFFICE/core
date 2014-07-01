@@ -1,6 +1,6 @@
 #pragma once
 #include <cpdoccore/xml/attributes.h>
-
+#include "..\docx\oox_drawing_fills.h"
 //описание всяких графических объектов ( вложенная мелочевка) которые используются в xlsx & odf - 
 
 namespace cpdoccore { 
@@ -43,6 +43,7 @@ namespace chart {
 		std::vector<_property> properties_; 
  		std::vector<_property> text_properties_;
 		std::vector<_property> graphic_properties_;
+		oox::_oox_fill fill_;
 	};
 	struct treadline
 	{
@@ -54,7 +55,13 @@ namespace chart {
 		treadline(){bEquation = false;bREquation = false;}
 
 	};
-    struct axis
+	struct plot_area : public simple
+    {
+		std::wstring cell_range_address_;
+		//series_in_column_or_row
+		//uses_first_as_label
+	};
+	struct axis: public simple
     {
         struct grid
         {
@@ -73,11 +80,8 @@ namespace chart {
         std::wstring style_name_;
         std::vector<grid> grids_;
 		
-		std::vector<_property> properties_; 
- 		std::vector<_property> text_properties_;
-		std::vector<_property> graphic_properties_;
   };
-    struct series
+    struct series : public simple
     {
         struct point
         {
@@ -100,10 +104,6 @@ namespace chart {
 		simple mean_value_;
 		simple error_indicator_;
 		treadline regression_curve_;
-
-		std::vector<_property> properties_; 
- 		std::vector<_property> text_properties_;
-		std::vector<_property> graphic_properties_;
 
 		series(){}
         series(

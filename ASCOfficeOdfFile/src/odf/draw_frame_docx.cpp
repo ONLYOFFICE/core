@@ -1182,7 +1182,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			return;
 
 		chart_build chartBuild;
-		process_build_chart process_build_chart_(chartBuild,objectSubDoc.odf_context().styleContainer());
+		process_build_chart process_build_chart_(chartBuild,objectSubDoc.odf_context().styleContainer(),objectSubDoc.odf_context().drawStyles());
         contentSubDoc->accept(process_build_chart_); 
 
 		if (chartBuild.object_type_ != 1)return;

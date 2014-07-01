@@ -238,7 +238,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 		chart_build chartBuild;
 
-		process_build_chart process_build_chart_(chartBuild,objectSubDoc.odf_context().styleContainer());
+		process_build_chart process_build_chart_(chartBuild,objectSubDoc.odf_context().styleContainer(),objectSubDoc.odf_context().drawStyles() );
         contentSubDoc->accept(process_build_chart_); 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

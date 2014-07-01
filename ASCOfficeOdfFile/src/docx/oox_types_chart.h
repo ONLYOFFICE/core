@@ -294,6 +294,8 @@ class oox_stock_chart: public oox_chart
 	std::vector<odf::_property> properties_;
 	std::vector<odf::_property> graphic_properties_;
 
+	_oox_fill					fill_;
+
 	//dropLines (Drop Lines) §21.2.2.53
 	//hiLowLines (High Low Lines) §21.2.2.80
 	//ser (Line Chart Series) §21.2.2.171

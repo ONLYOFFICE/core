@@ -71,7 +71,7 @@ void oox_chart_context::write_to(std::wostream & strm)
 				}	
 			}
 			oox_chart_shape shape;
-			shape.content_ = graphic_properties_;
+			shape.set(graphic_properties_,fill_);
 			shape.oox_serialize(CP_XML_STREAM());
 	
 

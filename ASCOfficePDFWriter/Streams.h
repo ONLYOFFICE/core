@@ -7,9 +7,9 @@
 //#define NOZLIB
 
 #ifndef NOZLIB
-#include "zlib.h"
-#include "zconf.h"
-#pragma comment(lib, "Zlib\\zlib.lib")
+#include "ZLib/zlib.h"
+#include "ZLib/zconf.h"
+#pragma comment(lib, "Zlib/zlib.lib")
 #endif /* NOZLIB */
 
 #include "Consts.h"

@@ -121,5 +121,13 @@ namespace WindowsFormsApplication1
                 textBox2.Text = Convert.ToBase64String(bytes, Base64FormattingOptions.None);
             }            
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            byte[] resBinary = Convert.FromBase64String(textBox2.Text);
+            StreamWriter oW = new StreamWriter("E:\\123.bin");
+            oW.BaseStream.Write(resBinary, 0, resBinary.Length);
+            oW.Close();
+        }
     }
 }

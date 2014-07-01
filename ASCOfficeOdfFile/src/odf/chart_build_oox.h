@@ -96,6 +96,8 @@ public:
 
     void end_axis();
 
+	void add_categories(std::wstring const & cellRangeAddress);
+
     void add_grid(std::wstring const & className, std::wstring const & styleName);
     void add_series(std::wstring const & cellRangeAddress,
             std::wstring const & labelCell,
@@ -124,8 +126,10 @@ public:
  	std::wstring name_;
   
 	bool in_axis_;
-    std::vector<chart::axis> axises_;
-    std::vector<chart::series> series_;
+    std::vector<chart::axis>	axises_;
+    std::vector<chart::series>	series_;
+	std::vector<std::wstring>	categories_;
+
 	std::wstring domain_cell_range_adress_;
 
 	chart::title title_;
@@ -134,15 +138,16 @@ public:
 	chart::title sub_title_;
 	chart::simple legend_;
 
-	chart::simple plot_area_;
+	chart::plot_area plot_area_;
 
 	chart::simple wall_;
 	chart::simple floor_;
 	
 	chart::simple footer_;
 
-	std::vector<_property> chart_properties_;
-	std::vector<_property> chart_graphic_properties_;
+	std::vector<_property>	chart_properties_;
+	std::vector<_property>	chart_graphic_properties_;
+	oox::_oox_fill			chart_fill_;
 
 	std::vector<_cell> cash_values;
 public:
@@ -217,10 +222,11 @@ class process_build_chart : public base_visitor,
 {
 public:
 
-    process_build_chart(chart_build & chartBuild, styles_container & styles):	
+    process_build_chart(chart_build & chartBuild, styles_container & styles, styles_lite_container & draw_styles):	
 	 stop_(false)
 	,chart_build_(chartBuild)
 	,styles_(styles)
+	,draw_styles_(draw_styles)
     {
         _CP_LOG(warning) << L"[process_draw_object] \"" << L"\"" << std::endl;
 
@@ -229,7 +235,7 @@ public:
 private:
 	void ApplyChartProperties(std::wstring style,std::vector<_property> & propertiesOut);
 	void ApplyTextProperties(std::wstring style,std::vector<_property> & propertiesOut);
-	void ApplyGraphicProperties(std::wstring style,std::vector<_property> & propertiesOut);
+	void ApplyGraphicProperties(std::wstring style,std::vector<_property> & propertiesOut, oox::_oox_fill & fill);
 
 	bool visit_table(std::wstring const & name);
     void visit_column(unsigned int repeated);
@@ -283,8 +289,10 @@ public:
 
 private:
     bool stop_;
-    chart_build & chart_build_;
-	styles_container & styles_;
+    
+	chart_build				& chart_build_;
+	styles_container		& styles_;
+	styles_lite_container	& draw_styles_;
 
 
 };

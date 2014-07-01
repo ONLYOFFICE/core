@@ -22,6 +22,7 @@ public:
 		values_[1].type=L"c:xVal";
 		values_[2].type=L"c:yVal";
 		values_[3].type=L"c:bubbleSize";//заместо оси х!!!!
+		values_[4].type=L"c:cat";//подписи
 	
 		iSymbolMarkerType_ =0;
 	}
@@ -30,7 +31,7 @@ public:
     void oox_serialize_common(std::wostream & _Wostream);
 	virtual void oox_serialize(std::wostream & _Wostream){}
 	    
-	_oox_chart_values values_[4]; //common,x, y, bubble
+	_oox_chart_values		values_[5]; //common,x, y, bubble, cat(labels)
 
 	int id_;
 

@@ -61,6 +61,7 @@ public:
 	{
 		//plot_area_.wall_graphic_properties_	= l.graphic_properties_;
 		plot_area_.graphic_properties_	= l.graphic_properties_;
+		plot_area_.fill_	= l.fill_;
 	}
 	void set_floor(odf::chart::simple & l)
 	{
@@ -71,23 +72,26 @@ public:
 		legend_.content_= l;
 	}
 
-	void set_chart_graphic_properties(std::vector<odf::_property> & prop)
+	void set_chart_graphic_properties(std::vector<odf::_property> & prop, _oox_fill &fill)
 	{
 		graphic_properties_= prop;
+		fill_ = fill;
 	}
-	void set_plot_area_properties(std::vector<odf::_property> & prop)
+	void set_plot_area_properties(std::vector<odf::_property> & prop, _oox_fill &fill)
 	{
-		plot_area_.properties_			= prop; 
+		plot_area_.properties_		= prop; 
+		plot_area_.fill_			= fill; 
 	}
 private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;
 	
-	cpdoccore::oox::oox_title title_;
-	cpdoccore::oox::oox_plot_area plot_area_;
-	cpdoccore::oox::oox_chart_legend legend_;
+	cpdoccore::oox::oox_title			title_;
+	cpdoccore::oox::oox_plot_area		plot_area_;
+	cpdoccore::oox::oox_chart_legend	legend_;
 
-	std::vector<odf::_property> graphic_properties_;
+	std::vector<odf::_property>			graphic_properties_;
+	_oox_fill							fill_;
               
 };
 //autoTitleDeleted (Auto Title Is Deleted) §21.2.2.7

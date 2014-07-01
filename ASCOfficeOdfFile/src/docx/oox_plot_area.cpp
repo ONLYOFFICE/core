@@ -61,7 +61,7 @@ void oox_plot_area::oox_serialize(std::wostream & _Wostream)
 	reset_cross_axis();
 
 	oox_chart_shape shape;
-	shape.content_ = graphic_properties_;
+	shape.set(graphic_properties_, fill_);
 
     CP_XML_WRITER(_Wostream)
     {

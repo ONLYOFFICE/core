@@ -7,7 +7,11 @@ namespace cpdoccore {
 namespace odf {
 
 class office_text;
+
 class odf_text_context;
+
+typedef shared_ptr<odf_text_context>::Type odf_text_context_ptr;
+typedef shared_ptr<odf_drawing_context>::Type odf_drawing_context_ptr;
 
 struct odt_section_state
 {
@@ -68,17 +72,12 @@ private:
 	office_text*				root_text_;
 	office_element_ptr			root_document_;
 	
-	odf_page_layout_context		page_layout_context_;
-	odf_drawing_context			drawing_context_;	
-	
+	odf_page_layout_context		page_layout_context_;	
 	odf_comment_context			comment_context_;	
-	
-	odf_text_context*			current_text_context_;//for embedded 
-	
 	odf_text_context*			main_text_context_;
-
-	//std::vector<office_element_ptr> current_level_;//посто€нно мен€ющийс€ список уровней ("0-й элемент - сам документ)
-
+	
+	std::vector<odf_drawing_context_ptr>	drawing_context_;	
+	std::vector<odf_text_context_ptr>		text_context_;//for embedded 
 
 	std::vector<office_element_ptr> current_paragraphs_; // for section, if needed
 	std::vector<odt_section_state>	sections_;

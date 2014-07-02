@@ -98,9 +98,14 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 
 	if (styled)
 	{		
-		style_name = styles_context_->last_state().get_name();
-		style_elm = styles_context_->last_state().get_office_element();
-		
+		odf_style_state *style_state = styles_context_->last_state(style_family::Paragraph);
+
+		if (style_state)
+		{
+			style_name = style_state->get_name();
+			style_elm = style_state->get_office_element();
+		}
+	
 		text_p* p = dynamic_cast<text_p*>(elm.get());
 		if (p)p->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
 		
@@ -135,7 +140,7 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 
 void odf_text_context::end_paragraph()
 {
-	if (single_paragraph_ == false)
+	if (single_paragraph_ == false && current_level_.size() > 0)
 	{
 		current_level_.pop_back();
 	}
@@ -175,9 +180,14 @@ void odf_text_context::start_span(bool styled)
 
 	if (styled)
 	{		
-		style_name = styles_context_->last_state().get_name();
-		style_elm = styles_context_->last_state().get_office_element();
-		style * style_ = dynamic_cast<style*>(style_elm.get());
+		odf_style_state *style_state = styles_context_->last_state(style_family::Text);
+
+		if (style_state)
+		{
+			style_name = style_state->get_name();
+			style_elm = style_state->get_office_element();
+		}
+		style *style_ = dynamic_cast<style*>(style_elm.get());
 		
 		text_span* span = dynamic_cast<text_span*>(span_elm.get());
 		if (span) span->text_style_name_ = style_ref(style_name);
@@ -202,7 +212,8 @@ void odf_text_context::end_span()
 {
 	if (styles_context_ == NULL || single_paragraph_)return;
 	
-	current_level_.pop_back();
+	if (current_level_.size() > 0)	
+		current_level_.pop_back();
 }
 void odf_text_context::add_textline_break()
 {

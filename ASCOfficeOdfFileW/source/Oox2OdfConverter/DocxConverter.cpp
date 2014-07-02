@@ -196,6 +196,11 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 			OOX::Logic::CCommentReference* pCommRef = static_cast<OOX::Logic::CCommentReference*>(oox_unknown);
 			convert(pCommRef);		//если нет Start - означает начало с предыдущего Run
 		}break;
+		case OOX::et_w_sectPr:
+		{
+			OOX::Logic::CSectionProperty *pSectionPr = static_cast<OOX::Logic::CSectionProperty*>(oox_unknown); 
+			convert(pSectionPr, true);
+		}break;
 		default:
 		{
 			OoxConverter::convert(oox_unknown);
@@ -494,6 +499,80 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 		int level = oox_paragraph_pr->m_oOutlineLvl->m_oVal->GetValue();
 		paragraph_properties->content().outline_level_ =  level;
 		odt_context->text_context()->set_outline_level ( level);
+	}
+	
+	convert(oox_paragraph_pr->m_oSectPr.GetPointer());
+}
+void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool root)
+{
+	if (oox_section_pr == NULL) return;
+	if (root) return;
+	
+	if (oox_section_pr->m_oType.IsInit() && oox_section_pr->m_oType->m_oVal.IsInit())
+	{
+		switch(oox_section_pr->m_oType->m_oVal->GetValue())
+		{		
+		case SimpleTypes::sectionmarkNextColumn :
+		case SimpleTypes::sectionmarkContinious :
+		case SimpleTypes::sectionmarkEvenPage   :
+		case SimpleTypes::sectionmarkNextPage   :
+		case SimpleTypes::sectionmarkOddPage    :
+			break;
+		}
+	}
+
+	odt_context->add_section();
+			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBidi;
+			//nullable<ComplexTypes::Word::CDocGrid                        > m_oDocGrid;
+			//nullable<OOX::Logic::CEdnProps                               > m_oEndnotePr;
+			//CSimpleArray<ComplexTypes::Word::CHdrFtrRef                  > m_arrFooterReference;
+			//nullable<OOX::Logic::CFtnProps                               > m_oFootnotePr;
+			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oFormProt;
+			//CSimpleArray<ComplexTypes::Word::CHdrFtrRef                  > m_arrHeaderReference;
+			//nullable<ComplexTypes::Word::CLineNumber                     > m_oLnNumType;
+			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oNoEndnote;
+			//nullable<ComplexTypes::Word::CPaperSource                    > m_oPaperSrc;
+			//nullable<OOX::Logic::CPageBorders                            > m_oPgBorders;
+			//nullable<ComplexTypes::Word::CPageMar                        > m_oPgMar;
+			//nullable<ComplexTypes::Word::CPageNumber                     > m_oPgNumType;
+			//nullable<ComplexTypes::Word::CPageSz                         > m_oPgSz;
+			//nullable<ComplexTypes::Word::CRel                            > m_oPrinterSettings;
+			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oRtlGutter;
+			//nullable<OOX::Logic::CSectPrChange                           > m_oSectPrChange;
+			//nullable<ComplexTypes::Word::CTextDirection                  > m_oTextDirection;
+			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oTitlePg;
+			//nullable<ComplexTypes::Word::CVerticalJc                     > m_oVAlign;
+
+	if (oox_section_pr->m_oCols.IsInit() && oox_section_pr->m_oCols->m_oNum.IsInit())
+	{
+		int count = oox_section_pr->m_oCols->m_oNum->GetValue();
+
+		double default_space_pt = -1;
+		if (oox_section_pr->m_oCols->m_oSpace.IsInit())	default_space_pt = oox_section_pr->m_oCols->m_oSpace->ToPoints();
+		
+		bool separator = oox_section_pr->m_oCols->m_oSep.IsInit() && oox_section_pr->m_oCols->m_oSep->ToBool();
+		
+		odt_context->add_section_columns(count, default_space_pt, separator );
+
+		std::vector<std::pair<double,double>> width_space;
+		
+		for (long i =0; i< oox_section_pr->m_oCols->m_arrColumns.GetSize(); i++)
+		{
+			double space = default_space_pt;
+			if (oox_section_pr->m_oCols->m_arrColumns[i].m_oSpace.IsInit())
+				space = oox_section_pr->m_oCols->m_arrColumns[i].m_oSpace->ToPoints();
+		
+			double w = -1; 
+			if (oox_section_pr->m_oCols->m_arrColumns[i].m_oW.IsInit())
+				w = oox_section_pr->m_oCols->m_arrColumns[i].m_oW->ToPoints();
+			
+			width_space.push_back(std::pair<double,double>(w,space));
+		}
+		for (long i= oox_section_pr->m_oCols->m_arrColumns.GetSize(); i< count; i ++)
+		{
+			width_space.push_back(std::pair<double,double>(-1, default_space_pt));
+		}
+		odt_context->add_section_column(width_space);
 	}
 }
 void DocxConverter::convert(OOX::Logic::CPBdr *oox_border, odf::style_paragraph_properties * paragraph_properties)

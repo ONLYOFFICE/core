@@ -529,7 +529,8 @@ void docx_conversion_context::process_page_properties(std::wostream & strm)
     if (is_next_dump_page_properties())
     {
         const std::wstring pageProperties = get_page_properties();
-        root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties)->docx_convert_serialize(strm,*this);
+		odf::page_layout_instance * page_layout_instance_ = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);
+		if (page_layout_instance_) page_layout_instance_->docx_convert_serialize(strm,*this);
     }
 }
 

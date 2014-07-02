@@ -165,7 +165,7 @@ void chart_build::calc_cash_series(std::wstring adress, std::vector<std::wstring
 	int res;
    
 	if (!converter.find_first_last_ref(adress,table,ref_1,ref_2))return;
-	if ((res = table.find(L"local-table"))<0)return;
+	//if ((res = table.find(L"local-table"))<0)return;
 
 	oox::getCellAddressInv(ref_1,col_1,row_1);
 	oox::getCellAddressInv(ref_2,col_2,row_2);
@@ -403,10 +403,12 @@ void process_build_chart::visit(const chart_title& val)
 {
 	title t;
 
-	std::wstringstream v;
-	val.text_p_->text_to_stream(v);
-	t.content_ = v.str();
-
+	if (val.text_p_)
+	{
+		std::wstringstream v;
+		val.text_p_->text_to_stream(v);
+		t.content_ = v.str();
+	}
 	ApplyTextProperties(val.chart_title_attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.text_properties_);
 
 ///////////////////////////////////////////////////////////////////////////////////////

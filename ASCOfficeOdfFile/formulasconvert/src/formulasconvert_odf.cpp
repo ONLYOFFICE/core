@@ -28,11 +28,18 @@ bool odf2oox_converter::Impl::find_first_last_ref(std::wstring const & expr, std
     
 	boost::algorithm::split(splitted, expr, boost::algorithm::is_any_of(L".:"), boost::algorithm::token_compress_on);
     
-	if (splitted.size()>2)
+	if (splitted.size()==3)
 	{
 		table	= splitted[0];	
 		ref_first = splitted[1];
 		ref_last = splitted[2];
+		return true;
+	}
+	if (splitted.size()==4)
+	{
+		table	= splitted[0];	
+		ref_first = splitted[1];
+		ref_last = splitted[3];
 		return true;
 	}
 	return false;

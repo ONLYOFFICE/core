@@ -16,6 +16,7 @@ namespace cpdoccore {
 namespace odf {
 
 class odf_text_context;
+
 class paragraph_attrs
 {
 public:

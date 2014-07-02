@@ -547,6 +547,16 @@ void odf_chart_context::add_axis_group_series(unsigned int id)
 }
 void odf_chart_context::end_group_series()
 {
+	if (impl_->axis_.size() < 1 && impl_->categories_.size() > 0)
+	{//без осей нихера не понимает MS Office !!! - причем оси для MS должны идти обязательно перед сериями
+		start_axis();
+			set_axis_dimension(1);
+		end_element();
+		start_axis();
+			set_axis_dimension(2);
+		end_element();
+	}
+
 	std::wstring axis_name;
 
 	bool presentZ = false;
@@ -739,13 +749,6 @@ void odf_chart_context::start_plot_area()
 }
 void odf_chart_context::end_plot_area()
 {
-	if (impl_->axis_.size() < 1 && impl_->categories_.size() > 0)
-	{
-		start_axis();
-			set_axis_dimension(1);
-			//set_axis_type();
-		end_element();
-	}
 	chart_plot_area *plot_area = dynamic_cast<chart_plot_area*>(impl_->current_level_.back().elm.get());
 	if (plot_area)
 	{
@@ -999,6 +1002,7 @@ void odf_chart_context::set_legend_position(int val)
 		case 3: legend->chart_legend_attlist_.chart_legend_position_ = L"end";		break;//st_legendposR
 		case 4:	legend->chart_legend_attlist_.chart_legend_position_ = L"top";		break;//st_legendposT
 	}
+	legend->chart_legend_attlist_.chart_legend_align_  = L"center";
 }
 void odf_chart_context::set_layout_x(double *val,int mode)//edge, factor
 {
@@ -1057,12 +1061,12 @@ void odf_chart_context::set_axis_dimension(int type)
 	if (type == 3) val = L"z";
 	
 	axis->chart_axis_attlist_.chart_dimension_ = val;
-	axis->chart_axis_attlist_.chart_name_ = std::wstring(L"axis-") + boost::lexical_cast<std::wstring>(impl_->axis_.size()+1); 
+	//axis->chart_axis_attlist_.chart_name_ = std::wstring(L"axis-") + boost::lexical_cast<std::wstring>(impl_->axis_.size()+1); 
 
 	if (impl_->axis_.size()>0)
 	{
 		impl_->axis_.back().dimension = type;
-		impl_->axis_.back().name = *axis->chart_axis_attlist_.chart_name_;
+		//impl_->axis_.back().name = *axis->chart_axis_attlist_.chart_name_;
 	}
 }
 void odf_chart_context::set_axis_position(int type)
@@ -1206,11 +1210,11 @@ void odf_chart_context::end_chart()
 		}
 		else
 		{
-			//if (i==0) 
-			//{
-			//	chart_axis *axis = dynamic_cast<chart_axis*>(impl_->axis_[i].elm.get());
-			//	axis->chart_axis_attlist_.chart_dimension_ = L"x";
-			//}
+			if (i==0) 
+			{
+				chart_axis *axis = dynamic_cast<chart_axis*>(impl_->axis_[i].elm.get());
+				axis->chart_axis_attlist_.chart_dimension_ = L"x";
+			}
 		}
 	}
 ///////////////

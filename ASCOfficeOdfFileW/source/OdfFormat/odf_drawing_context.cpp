@@ -348,7 +348,7 @@ void odf_drawing_context::end_drawing()
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_z_index_attlist_.draw_z_index_ = impl_->current_drawing_state_.z_order_;
 
 		std::wstring strTransform;
-		if (impl_->current_drawing_state_.in_group)
+		if (impl_->current_drawing_state_.in_group && impl_->group_list_.size()>0)
 		{
 			double rotate = impl_->group_list_.back().rotate;
 			if (impl_->current_drawing_state_.rotateAngle )
@@ -523,6 +523,8 @@ void odf_drawing_context::start_shape(int type)
 }
 void odf_drawing_context::end_shape()
 {
+	if (impl_->current_drawing_state_.elements_.size() < 1) 
+		return;
 	//вторичные, вычисляемые свойства шейпов
 
 	draw_path* path = dynamic_cast<draw_path*>(impl_->current_drawing_state_.elements_[0].elm.get());
@@ -914,6 +916,8 @@ void odf_drawing_context::set_wrap_style(style_wrap::type type)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void odf_drawing_context::set_position(double x_pt, double y_pt)
 {
+	if (impl_->group_list_.size() < 1)return;
+
 	if (!impl_->current_drawing_state_.svg_x_) 
 	{
 		if (impl_->current_drawing_state_.in_group)

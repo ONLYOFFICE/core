@@ -18,8 +18,7 @@ namespace cpdoccore {
 namespace odf {
 
 odt_conversion_context::odt_conversion_context(package::odf_document * outputDocument) 
-		: odf_conversion_context(outputDocument),  current_text_context_(NULL), page_layout_context_(this), 
-		main_text_context_(NULL),drawing_context_(this),comment_context_(this)
+		: odf_conversion_context(outputDocument),comment_context_(this), page_layout_context_(this), main_text_context_(NULL)	
 {
 	current_field_.enabled = false;
 	current_field_.started = false;
@@ -42,9 +41,7 @@ void odt_conversion_context::start_document()
 
 	//current_level_.push_back(get_current_object_element());
 
-	drawing_context_.set_styles_context(styles_context());
-
-//////////////////настройки дефолтовые
+/////////////////настройки дефолтовые
 
 	root_text_->office_text_attlist_.text_use_soft_page_breaks_ = true;
 }
@@ -70,7 +67,12 @@ void odt_conversion_context::end_document()
 
 odf_drawing_context* odt_conversion_context::drawing_context()	
 {
-	return &drawing_context_;
+	if (drawing_context_.size() > 0)
+	{
+		return drawing_context_.back().get();
+	}
+	else
+		return NULL;
 }
 odf_comment_context* odt_conversion_context::comment_context()	
 {
@@ -79,9 +81,9 @@ odf_comment_context* odt_conversion_context::comment_context()
 
 odf_text_context* odt_conversion_context::text_context()	
 {
-	if (current_text_context_)
+	if (text_context_.size() > 0)
 	{
-		return current_text_context_;
+		return text_context_.back().get();
 	}
 	else
 	{
@@ -90,14 +92,17 @@ odf_text_context* odt_conversion_context::text_context()
 } 
 void odt_conversion_context::start_text_context()
 {
-	current_text_context_ = new odf_text_context(this);
+	odf_text_context_ptr new_text_context_ = boost::shared_ptr<odf_text_context>(new odf_text_context(this));
+	if (!new_text_context_)return;
 
+	text_context_.push_back(new_text_context_);
 }
 void odt_conversion_context::end_text_context()
 {
-	if (current_text_context_)
-		delete current_text_context_;
-	current_text_context_ = NULL;
+	if (text_context_.size() > 0)
+	{
+		text_context_.pop_back();
+	}
 }
 void odt_conversion_context::add_text_content(std::wstring & text)
 {
@@ -105,9 +110,17 @@ void odt_conversion_context::add_text_content(std::wstring & text)
 }
 void odt_conversion_context::start_drawings()
 {
+	odf_drawing_context_ptr new_drawing_context_ = boost::shared_ptr<odf_drawing_context>(new odf_drawing_context(this));
+	if (!new_drawing_context_)return;
+	
+	new_drawing_context_->set_styles_context(styles_context());
+
+	drawing_context_.push_back(new_drawing_context_);
 }
 void odt_conversion_context::end_drawings()
 {
+	if (drawing_context_.size() < 1) return;
+
 	office_element_ptr & elm = drawing_context()->get_root_element();
 	if (elm )
 	{
@@ -118,12 +131,14 @@ void odt_conversion_context::end_drawings()
 	}
 		//current_level_.back()->add_child_element(elm);
 	drawing_context()->clear();
+
+	drawing_context_.pop_back();
 }
 void odt_conversion_context::start_paragraph(bool styled)
 {
 	text_context()->start_paragraph(styled);	
 	
-	if (current_text_context_ == NULL && !comment_context_.is_started())
+	if (text_context_.size() < 1 && !comment_context_.is_started())
 	{
 		office_element_ptr & paragr_elm = text_context()->current_level_.back();
 		//current_level_.back()->add_child_element(paragr_elm);
@@ -280,13 +295,13 @@ void odt_conversion_context::end_paragraph()
 }
 void odt_conversion_context::start_run()
 {
-	if (is_hyperlink_ && current_text_context_) return;
+	if (is_hyperlink_ && text_context_.size() > 0) return;
 
 	text_context()->start_span();
 }
 void odt_conversion_context::end_run()
 {
-	if (is_hyperlink_ && current_text_context_) return;
+	if (is_hyperlink_ && text_context_.size() > 0) return;
 
 	text_context()->end_span();
 

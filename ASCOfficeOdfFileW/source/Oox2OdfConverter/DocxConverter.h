@@ -21,6 +21,7 @@ namespace OOX
 		class CParagraphProperty;
 		class CRun;
 		class CRunProperty;
+		class CSectionProperty;
 		class CText;
 		class CAlternateContent;
 		class CDrawing;	
@@ -89,6 +90,7 @@ namespace Oox2Odf
 
 		void convert(OOX::WritingElement				*oox_unknown);
 
+		void convert(OOX::Logic::CSectionProperty		*oox_section_pr, bool root = false);
 		void convert(OOX::Logic::CParagraph				*oox_paragraph);
 		void convert(OOX::Logic::CRun					*oox_run);
 		void convert(OOX::Logic::CParagraphProperty		*oox_paragraph_prop,	odf::style_paragraph_properties *paragraph_properties);

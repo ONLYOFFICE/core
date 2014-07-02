@@ -1,15 +1,17 @@
 #include "precompiled_cpodf.h"
+#include "logging.h"
+
+#include <boost/foreach.hpp>
+#include <iostream>
 
 #include "odf_page_layout_context.h" 
 
 #include "odf_style_context.h"
 #include "ods_conversion_context.h"
 
-#include "logging.h"
 #include "styles.h"
+#include "style_page_layout_properties.h" 
 
-#include <boost/foreach.hpp>
-#include <iostream>
 
 namespace cpdoccore {
 namespace odf {

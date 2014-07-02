@@ -5,6 +5,7 @@
 #include "odf_conversion_context.h"
 
 #include "styles.h"
+#include "style_page_layout_properties.h" 
 
 namespace cpdoccore {
 namespace odf {

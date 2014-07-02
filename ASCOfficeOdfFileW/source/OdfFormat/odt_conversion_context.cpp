@@ -1,0 +1,354 @@
+#include "precompiled_cpodf.h"
+
+#include "../utils.h"
+
+#include "odt_conversion_context.h"
+#include "odf_text_context.h"
+
+#include "styles.h"
+
+#include "style_table_properties.h"
+#include "style_section_properties.h"
+
+#include "office_text.h"
+#include "paragraph_elements.h"
+#include "text_elements.h"
+
+namespace cpdoccore { 
+namespace odf {
+
+odt_conversion_context::odt_conversion_context(package::odf_document * outputDocument) 
+		: odf_conversion_context(outputDocument),  current_text_context_(NULL), page_layout_context_(this), 
+		main_text_context_(NULL),drawing_context_(this),comment_context_(this)
+{
+	current_field_.enabled = false;
+	current_field_.started = false;
+	
+	is_hyperlink_ = false;
+}
+
+odt_conversion_context::~odt_conversion_context()
+{
+	if (main_text_context_)	delete main_text_context_;
+}
+
+void odt_conversion_context::start_document()
+{
+	start_text();
+	
+	root_document_ = get_current_object_element();
+	root_text_ = dynamic_cast<office_text*>(root_document_.get());
+	main_text_context_ = new odf_text_context(this); 
+
+	//current_level_.push_back(get_current_object_element());
+
+	drawing_context_.set_styles_context(styles_context());
+
+//////////////////настройки дефолтовые
+
+	root_text_->office_text_attlist_.text_use_soft_page_breaks_ = true;
+}
+
+void odt_conversion_context::end_document()
+{
+	//add sections to root
+	for (long i=0; i< sections_.size(); i++)
+	{
+		root_document_->add_child_element(sections_[i].elm);
+	}
+	sections_.clear();
+	//add last paragraphs to root 
+	for (long i=0; i< current_paragraphs_.size(); i++)
+	{
+		root_document_->add_child_element(current_paragraphs_[i]);
+	}
+	current_paragraphs_.clear();
+	//current_level_.pop_back();
+	
+	odf_conversion_context::end_document();
+}
+
+odf_drawing_context* odt_conversion_context::drawing_context()	
+{
+	return &drawing_context_;
+}
+odf_comment_context* odt_conversion_context::comment_context()	
+{
+	return &comment_context_;
+}
+
+odf_text_context* odt_conversion_context::text_context()	
+{
+	if (current_text_context_)
+	{
+		return current_text_context_;
+	}
+	else
+	{
+		return main_text_context_;
+	}
+} 
+void odt_conversion_context::start_text_context()
+{
+	current_text_context_ = new odf_text_context(this);
+
+}
+void odt_conversion_context::end_text_context()
+{
+	if (current_text_context_)
+		delete current_text_context_;
+	current_text_context_ = NULL;
+}
+void odt_conversion_context::add_text_content(std::wstring & text)
+{
+	text_context()->add_text_content(text);
+}
+void odt_conversion_context::start_drawings()
+{
+}
+void odt_conversion_context::end_drawings()
+{
+	office_element_ptr & elm = drawing_context()->get_root_element();
+	if (elm )
+	{
+		//if (current_paragraphs_.size() >0) 
+		//	current_paragraphs_.back()->add_child_element(elm);
+		
+		text_context()->current_level_.back()->add_child_element(elm);
+	}
+		//current_level_.back()->add_child_element(elm);
+	drawing_context()->clear();
+}
+void odt_conversion_context::start_paragraph(bool styled)
+{
+	text_context()->start_paragraph(styled);	
+	
+	if (current_text_context_ == NULL && !comment_context_.is_started())
+	{
+		office_element_ptr & paragr_elm = text_context()->current_level_.back();
+		//current_level_.back()->add_child_element(paragr_elm);
+		//current_level_.push_back(paragr_elm);
+		current_paragraphs_.push_back(paragr_elm);
+	}
+}
+void odt_conversion_context::start_hyperlink(std::wstring ref)
+{
+	office_element_ptr hyperlink_elm;
+	create_element(L"text", L"a",hyperlink_elm,this);
+
+	text_a* hyperlink = dynamic_cast<text_a*>(hyperlink_elm.get());
+	if (!hyperlink)return;
+
+////////////////////////////
+
+	hyperlink->common_xlink_attlist_.href_ = ref;
+	hyperlink->common_xlink_attlist_.type_= xlink_type::Simple;
+	
+	//current_level_.back()->add_child_element(hyperlink_elm);
+	//current_level_.push_back(hyperlink_elm);
+	
+	text_context()->start_element(hyperlink_elm);
+
+	is_hyperlink_ = true;
+}
+void odt_conversion_context::end_hyperlink()
+{
+	if (!is_hyperlink_) return;
+
+	//current_level_.pop_back();
+	text_context()->end_element();
+
+	is_hyperlink_ = false; //метка .. для гиперлинков в объектах - там не будет span
+}
+
+void odt_conversion_context::set_field_instr(std::wstring instr)
+{
+	if (current_field_.enabled == false) 	return;
+
+	int res1 = instr.find(L"HYPERLINK");
+		//FORMCHECKBOX
+
+	if (res1 >=0)
+	{
+		std::wstring ref;
+		current_field_.type = 1;
+
+		boost::match_results<std::wstring::const_iterator> res;
+		boost::wregex r2 (L"(\".*?\")+");	
+        if (boost::regex_search(instr, res, r2))
+        {
+            ref = res[1].str();
+			current_field_.value = ref.substr(1, ref.length()-2);
+
+        }
+	}
+}
+void odt_conversion_context::start_field()
+{
+	current_field_.enabled = true;
+
+	current_field_.value = L"";
+	current_field_.type = 0;
+}
+
+void odt_conversion_context::add_section()
+{
+	odt_section_state state;
+	state.empty = true;
+//----------------------------------------------------------------
+	styles_context()->create_style(L"",odf::style_family::Section, true, false, -1);		
+
+	create_element(L"text", L"section",state.elm,this);
+	state.style_elm		= styles_context()->last_state().get_office_element();
+	state.style_name	= styles_context()->last_state().get_name();
+	
+	text_section* section = dynamic_cast<text_section*>(state.elm.get());
+	if (section)section->text_section_attr_.text_style_name_ = style_ref(state.style_name);	
+
+	sections_.push_back(state);
+}
+void odt_conversion_context::add_section_columns(int count, double space_pt, bool separator )
+{
+	if (sections_.size() < 1 || count < 1) return;
+
+	style* style_ = dynamic_cast<style*>(sections_.back().style_elm.get());
+	if (!style_)return;
+
+	style_section_properties	* section_properties	= style_->style_content_.get_style_section_properties();
+	
+	create_element(L"style", L"columns",section_properties->style_columns_,this);	
+	style_columns* columns = dynamic_cast<style_columns*>(section_properties->style_columns_.get());
+	if (!columns)return;
+
+						columns->fo_column_count_	= count;
+	if (space_pt >= 0)	columns->fo_column_gap_		= length(length(space_pt,length::pt).get_value_unit(length::cm),length::cm);
+
+	if (separator)
+	{
+		create_element(L"style", L"column-sep",columns->style_column_sep_,this);
+		style_column_sep* sep = dynamic_cast<style_column_sep*>(columns->style_column_sep_.get());
+		if (sep)//default set
+		{
+			sep->style_width_			= length(0,length::cm);
+			sep->style_height_			= percent(100);
+			sep->style_vertical_align_	= vertical_align(vertical_align::Middle);
+			sep->style_color_			= color(L"#000000");	
+		}
+	}
+}
+void odt_conversion_context::add_section_column(std::vector<std::pair<double,double>> width_space)
+{
+	if (sections_.size() < 1 || width_space.size() < 1) return;
+
+	style* style_ = dynamic_cast<style*>(sections_.back().style_elm.get());
+	if (!style_)return;
+
+	style_section_properties	* section_properties	= style_->style_content_.get_style_section_properties();
+	style_columns* columns = dynamic_cast<style_columns*>(section_properties->style_columns_.get());
+	if (!columns)return;
+
+	//office_element_ptr col_elm;
+	//
+	//create_element(L"style", L"column",col_elm,this);
+	//style_column* col = dynamic_cast<style_column*>(col_elm.get());
+	//if (!col) return;
+}
+void odt_conversion_context::end_field()
+{
+	if (current_field_.enabled && current_field_.started)	
+	{
+		if (current_field_.type == 1) end_hyperlink();
+	}
+	current_field_.enabled = false;
+	current_field_.started = false;
+}
+void odt_conversion_context::end_paragraph()
+{
+	text_context()->end_paragraph();
+///////////////////
+
+	if (sections_.size() > 0 && sections_.back().empty)
+	{
+		for (long i=0; i< current_paragraphs_.size(); i++)
+		{
+			sections_.back().elm->add_child_element(current_paragraphs_[i]);
+		}
+		current_paragraphs_.clear();
+
+		sections_.back().empty = false;
+	}
+}
+void odt_conversion_context::start_run()
+{
+	if (is_hyperlink_ && current_text_context_) return;
+
+	text_context()->start_span();
+}
+void odt_conversion_context::end_run()
+{
+	if (is_hyperlink_ && current_text_context_) return;
+
+	text_context()->end_span();
+
+	if (current_field_.started== false && current_field_.type >0 && current_field_.enabled ==true)
+	{
+		if (current_field_.type == 1)start_hyperlink(current_field_.value);
+		current_field_.started = true;
+	}
+}
+bool odt_conversion_context::start_comment(int oox_comm_id)
+{
+	bool added = comment_context_.find_by_id(oox_comm_id);
+
+	if (added == false)
+	{
+		office_element_ptr comm_elm;
+		create_element(L"office", L"annotation",comm_elm,this);
+
+		comment_context_.start_comment(comm_elm, oox_comm_id);
+		
+		text_context()->current_level_.back()->add_child_element(comm_elm);
+		text_context()->current_level_.push_back(comm_elm);
+		//current_level_.back()->add_child_element(comm_elm);
+		//current_level_.push_back(comm_elm);
+	}
+	return added;
+}
+void odt_conversion_context::start_comment_content()
+{
+	comment_context_.start_comment_content();
+}
+void odt_conversion_context::end_comment_content()
+{
+	if (comment_context_.is_started())
+	{
+		comment_context_.end_comment_content();
+		text_context()->current_level_.pop_back();
+	}
+}
+void odt_conversion_context::end_comment(int oox_comm_id)
+{
+	bool added = comment_context_.find_by_id(oox_comm_id);
+
+	if (added == true)
+	{
+		office_element_ptr comm_elm;
+		create_element(L"office", L"annotation-end",comm_elm,this);
+
+		comment_context_.end_comment(comm_elm, oox_comm_id);
+		
+		//current_level_.back()->add_child_element(comm_elm);
+		text_context()->current_level_.back()->add_child_element(comm_elm);
+	}
+}
+void odt_conversion_context::start_image(std::wstring & image_file_name)
+{
+	std::wstring odf_ref_name ;
+	
+	mediaitems()->add_or_find(image_file_name,_mediaitems::typeImage,odf_ref_name);
+
+	drawing_context()->start_image(odf_ref_name);
+}
+
+}
+}

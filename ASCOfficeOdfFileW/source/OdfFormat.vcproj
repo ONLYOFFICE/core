@@ -1164,11 +1164,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OdfFormat\style_page_layout_properties.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\style_page_layout_properties.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\style_paragraph_properties.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\OdfFormat\style_paragraph_properties.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\style_section_properties.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\style_section_properties.h"
 				>
 			</File>
 			<File

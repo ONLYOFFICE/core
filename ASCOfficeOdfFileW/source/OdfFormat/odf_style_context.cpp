@@ -271,7 +271,7 @@ std::wstring odf_style_context::get_name_family(const style_family & family)
         case style_family::None:		return L"none";
 		case style_family::Paragraph:	return L"P";
         case style_family::Text:		return L"T";
-        case style_family::Section:		return L"sct";
+        case style_family::Section:		return L"Sect";
         case style_family::Table:		return L"ta";
         case style_family::TableColumn: return L"co";
         case style_family::TableRow:	return L"ro";

@@ -7,8 +7,10 @@
 
 #include "styles.h"
 
+#include "style_paragraph_properties.h"
 #include "style_table_properties.h"
 #include "style_section_properties.h"
+#include "style_text_properties.h"
 
 #include "office_text.h"
 #include "paragraph_elements.h"
@@ -17,6 +19,22 @@
 namespace cpdoccore { 
 namespace odf {
 
+namespace utils
+{
+
+double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name, double font_size)
+{
+	double appr_px = 0;//(int)_gdi_graphics_::calculate_size_symbol_asc(metrix.font_name,metrix.font_size,metrix.italic,metrix.bold);
+	
+	if (appr_px <0.01)
+	{
+		appr_px = /*(int)*/_gdi_graphics_::calculate_size_symbol(font_name,font_size,false,false, str_test);
+		//appr_px = ((int)(appr_px+0.5) + 2*(int)appr_px)/3.;
+	}
+
+	return appr_px*0.55;
+}
+}
 odt_conversion_context::odt_conversion_context(package::odf_document * outputDocument) 
 		: odf_conversion_context(outputDocument),comment_context_(this), page_layout_context_(this), main_text_context_(NULL)	
 {
@@ -24,6 +42,7 @@ odt_conversion_context::odt_conversion_context(package::odf_document * outputDoc
 	current_field_.started = false;
 	
 	is_hyperlink_ = false;
+	drop_cap_state_.clear();
 }
 
 odt_conversion_context::~odt_conversion_context()
@@ -106,6 +125,23 @@ void odt_conversion_context::end_text_context()
 }
 void odt_conversion_context::add_text_content(std::wstring & text)
 {
+	if (drop_cap_state_.enabled)
+	{
+		int count = text.size();
+		drop_cap_state_.characters += count;
+		if (drop_cap_state_.inline_style == false)
+		{
+			style_text_properties * props = text_context()->get_text_properties();
+			if (props)
+			{
+				std::wstring f_name = props->content().fo_font_family_.get_value_or(L"Arial");
+				double f_size = props->content().fo_font_size_.get_value_or(font_size(length(12,length::pt))).get_length().get_value_unit(length::pt);
+				
+				drop_cap_state_.characters_size_pt += utils::calculate_size_font_symbols(text, f_name, f_size);
+			}
+		}
+	}
+
 	text_context()->add_text_content(text);
 }
 void odt_conversion_context::start_drawings()
@@ -293,11 +329,11 @@ void odt_conversion_context::end_paragraph()
 		sections_.back().empty = false;
 	}
 }
-void odt_conversion_context::start_run()
+void odt_conversion_context::start_run(bool styled)
 {
 	if (is_hyperlink_ && text_context_.size() > 0) return;
 
-	text_context()->start_span();
+	text_context()->start_span(styled);
 }
 void odt_conversion_context::end_run()
 {
@@ -363,6 +399,64 @@ void odt_conversion_context::start_image(std::wstring & image_file_name)
 	mediaitems()->add_or_find(image_file_name,_mediaitems::typeImage,odf_ref_name);
 
 	drawing_context()->start_image(odf_ref_name);
+}
+
+void odt_conversion_context::start_drop_cap(style_paragraph_properties *paragraph_properties)
+{
+	if (drop_cap_state_.enabled) end_drop_cap(); // 2 подряд ваще возможны ???
+
+	if (paragraph_properties == NULL) return;
+
+	drop_cap_state_.enabled = true;
+	drop_cap_state_.paragraph_properties = paragraph_properties;
+
+	office_element_ptr comm_elm;
+	create_element(L"style", L"drop-cap",drop_cap_state_.paragraph_properties->content().style_drop_cap_,this);
+}
+
+void odt_conversion_context::set_drop_cap_lines(int lines)
+{
+	if (!drop_cap_state_.enabled) return;
+	if (!drop_cap_state_.paragraph_properties) return;
+
+	style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->content().style_drop_cap_.get());
+	if (drop_cap)drop_cap->style_lines_ = lines;
+}
+void odt_conversion_context::set_drop_cap_margin(bool val)
+{
+	if (!drop_cap_state_.enabled) return;
+	drop_cap_state_.inline_style = !val;
+}
+void odt_conversion_context::end_drop_cap()
+{
+	if (!drop_cap_state_.enabled) return;
+
+	if (drop_cap_state_.characters >0 && drop_cap_state_.paragraph_properties)
+	{
+		style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->content().style_drop_cap_.get());
+		if (drop_cap)
+		{
+			drop_cap->style_length_ = drop_cap_length(drop_cap_state_.characters);
+		}
+		if (drop_cap_state_.inline_style == false)
+		{
+			//сдвинуть первую строку - так чтоб буквица вся (что поместится) была на поле
+			//double indent_pt = 0;
+			//double indent_percent = 0;
+			//if (drop_cap_state_.paragraph_properties->content().fo_text_indent_)
+			//{
+			//	if ( drop_cap_state_.paragraph_properties->content().fo_text_indent_->get_type() == length_or_percent::Length)
+			//		indent_pt = drop_cap_state_.paragraph_properties->content().fo_text_indent_->get_length().get_value_unit(length::pt);
+			//	else
+			//		indent_percent = drop_cap_state_.paragraph_properties->content().fo_text_indent_->get_percent()->get_value();
+			//}
+			
+			drop_cap_state_.paragraph_properties->content().fo_text_indent_ = length(length(-drop_cap_state_.characters_size_pt,length::pt).get_value_unit(length::cm),length::cm);
+			//drop_cap_state_.characters * size_char;
+		}
+	}
+
+	drop_cap_state_.clear();
 }
 
 }

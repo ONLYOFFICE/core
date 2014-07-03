@@ -45,6 +45,7 @@ namespace ComplexTypes
 		class CJc;
 		class CBorder;
 		class CShading;
+		class CFramePr;
 	}
 }
 namespace cpdoccore 
@@ -94,8 +95,9 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CParagraph				*oox_paragraph);
 		void convert(OOX::Logic::CRun					*oox_run);
 		void convert(OOX::Logic::CParagraphProperty		*oox_paragraph_prop,	odf::style_paragraph_properties *paragraph_properties);
-		void convert(OOX::Logic::CRunProperty			*oox_run_prop,			odf::style_text_properties		*text_properties);
 		void convert(OOX::Logic::CPBdr					*oox_border,			odf::style_paragraph_properties *paragraph_properties);
+		void convert(ComplexTypes::Word::CFramePr		*oox_frame_pr,			odf::style_paragraph_properties *paragraph_properties);
+		void convert(OOX::Logic::CRunProperty			*oox_run_prop,			odf::style_text_properties		*text_properties);
 		void convert(ComplexTypes::Word::CShading		*oox_shading,			odf::style_text_properties		*text_properties );
 		void convert(OOX::Logic::CFldChar				*oox_fld);
 		void convert(OOX::Logic::CInstrText				*oox_instr);
@@ -126,5 +128,9 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CCommentRangeStart		*oox_comm_start);
 		void convert(OOX::Logic::CCommentRangeEnd		*oox_comm_end);
 		void convert(OOX::Logic::CCommentReference		*oox_comm_ref);
+
+
+//--------------------------------------------------------------------------------
+		bool m_bKeepNextParagraph;
 	};
 }

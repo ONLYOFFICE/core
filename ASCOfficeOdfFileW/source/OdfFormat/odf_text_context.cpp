@@ -61,6 +61,7 @@ void odf_text_context::add_text_content(const std::wstring & text)
 	{
 		if (current_level_.size() > 0 )
 			current_level_.back()->add_text(text);
+
 	}
 }
 void odf_text_context::start_paragraph(bool styled)
@@ -144,6 +145,7 @@ void odf_text_context::end_paragraph()
 	{
 		current_level_.pop_back();
 	}
+	paragraph_properties_ = NULL;
 }
 
 void odf_text_context::start_element(office_element_ptr & elm)
@@ -192,9 +194,13 @@ void odf_text_context::start_span(bool styled)
 		text_span* span = dynamic_cast<text_span*>(span_elm.get());
 		if (span) span->text_style_name_ = style_ref(style_name);
 
-		if (parent_span_style_.length() >0 && style_)
+		if (style_)
 		{
-			style_->style_parent_style_name_ = parent_span_style_;
+			if (parent_span_style_.length() >0)
+			{
+				style_->style_parent_style_name_ = parent_span_style_;
+			}
+			text_properties_ = style_->style_content_.get_style_text_properties();//для  буквиц на поле
 		}
 	}
 
@@ -214,6 +220,8 @@ void odf_text_context::end_span()
 	
 	if (current_level_.size() > 0)	
 		current_level_.pop_back();
+
+	text_properties_ = NULL;
 }
 void odf_text_context::add_textline_break()
 {
@@ -233,30 +241,21 @@ void odf_text_context::add_text_style(office_element_ptr & style_elm, std::wstri
 {
 	if (style_name.size() < 1 || !style_elm)return;
 
-	if (text_elements_list_.size() < 1 )return;
+	if (current_level_.size() < 1 )return;
 	
-	if (text_span* span = dynamic_cast<text_span*>(text_elements_list_.back().elm.get()))
+	if (text_span* span = dynamic_cast<text_span*>(current_level_.back().get()))
 	{
 		span->text_style_name_ = style_ref(style_name);
-
-		text_elements_list_.back().style_elm = style_elm;
-		text_elements_list_.back().style_name = style_name;
 	}
 	
-	if (text_p* p = dynamic_cast<text_p*>(text_elements_list_.back().elm.get()))
+	if (text_p* p = dynamic_cast<text_p*>(current_level_.back().get()))
 	{
 		p->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
-	
-		text_elements_list_.back().style_elm = style_elm;
-		text_elements_list_.back().style_name = style_name;
 	}
 
-	if (text_h* h = dynamic_cast<text_h*>(text_elements_list_.back().elm.get()))
+	if (text_h* h = dynamic_cast<text_h*>(current_level_.back().get()))
 	{
 		h->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
-	
-		text_elements_list_.back().style_elm = style_elm;
-		text_elements_list_.back().style_name = style_name;
 	}
 }
 void odf_text_context::add_tab()

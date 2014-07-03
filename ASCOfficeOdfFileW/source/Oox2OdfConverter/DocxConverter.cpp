@@ -35,6 +35,9 @@ DocxConverter::DocxConverter(const std::wstring & path)
 
 	const OOX::CPath oox_path(CString(path.c_str()));	
 	docx_document = new OOX::CDocx(oox_path);	
+
+//set flags to default
+	m_bKeepNextParagraph = false;
 }
 void DocxConverter::write(const std::wstring & path)
 {
@@ -212,16 +215,28 @@ void DocxConverter::convert(OOX::Logic::CParagraph	*oox_paragraph)
 	if (oox_paragraph == NULL) return;
 
 	bool styled = false;
+
+	bool bStartNewParagraph = !m_bKeepNextParagraph;
+
 	if (oox_paragraph->m_oParagraphProperty) 
 	{
 		styled = true;
+		odf::style_paragraph_properties	*paragraph_properties = NULL;
 
-		odt_context->styles_context()->create_style(L"",odf::style_family::Paragraph, true, false, -1);					
-		odf::style_paragraph_properties	* paragraph_properties	= odt_context->styles_context()->last_state().get_paragraph_properties();
-
+		if (m_bKeepNextParagraph)
+		{
+			odf::odf_style_state *state =  odt_context->styles_context()->last_state(odf::style_family::Paragraph);
+			if (state)
+				paragraph_properties = state->get_paragraph_properties();
+		}
+		else
+		{
+			odt_context->styles_context()->create_style(L"",odf::style_family::Paragraph, true, false, -1);					
+			paragraph_properties = odt_context->styles_context()->last_state().get_paragraph_properties();
+		}
 		convert(oox_paragraph->m_oParagraphProperty, paragraph_properties); 
 	}
-	odt_context->start_paragraph(styled);
+	if (bStartNewParagraph) odt_context->start_paragraph(styled);
 	
 	for ( int nIndex = 0; nIndex < oox_paragraph->m_arrItems.GetSize(); nIndex++ )
 	{
@@ -237,14 +252,27 @@ void DocxConverter::convert(OOX::Logic::CParagraph	*oox_paragraph)
 				break;
 		}
 	}
-	odt_context->end_paragraph();
+	if (m_bKeepNextParagraph) odt_context->end_drop_cap();
+
+	if (bStartNewParagraph && !m_bKeepNextParagraph) odt_context->end_paragraph();
 }
 void DocxConverter::convert(OOX::Logic::CRun	*oox_run)//wordprocessing 22.1.2.87 math 17.3.2.25
 {
 	if (oox_run == NULL) return;
 	
-	odt_context->start_run();
 	bool styled = false;
+	
+	if (oox_run->m_oRunProperty) 
+	{
+		styled = true;
+
+		odt_context->styles_context()->create_style(L"",odf::style_family::Text, true, false, -1);					
+		odf::style_text_properties	* text_properties = odt_context->styles_context()->last_state().get_text_properties();
+
+		convert(oox_run->m_oRunProperty, text_properties);
+	}	
+	
+	odt_context->start_run(styled);
 	
 	for(int i = 0; i < oox_run->m_arrItems.GetSize(); ++i)
 	{
@@ -263,17 +291,7 @@ void DocxConverter::convert(OOX::Logic::CRun	*oox_run)//wordprocessing 22.1.2.87
 			}break;
 			case OOX::et_w_rPr:
 			{
-				styled = true;
-				OOX::Logic::CRunProperty* pRProp= static_cast<OOX::Logic::CRunProperty*>(oox_run->m_arrItems[i]);
-
-				odt_context->styles_context()->create_style(L"",odf::style_family::Text, true, false, -1);					
-				odf::style_text_properties	* text_properties = odt_context->styles_context()->last_state().get_text_properties();
-
-				convert(pRProp, text_properties);
-	
-				odf::odf_style_state * state = odt_context->styles_context()->last_state(odf::style_family::Text);
-				if (state)
-					odt_context->text_context()->add_text_style(state->get_office_element(),state->get_name());
+				// пропускаем .. 
 			}break;		
 			case OOX::et_w_lastRenderedPageBreak:
 			{
@@ -326,15 +344,7 @@ void DocxConverter::convert(OOX::Logic::CRun	*oox_run)//wordprocessing 22.1.2.87
 				convert(oox_run->m_arrItems[i]);
 		}
 	}
-	if (styled)
-	{
-		//odf::odf_style_state * state = odt_context->styles_context()->last_state(odf::style_family::Text);
-		//if (state)
-		//	odt_context->text_context()->add_text_style(state->get_office_element(),state->get_name());
-		//на после разрыва
-	}
 	odt_context->end_run();
-
 }
 void DocxConverter::convert(OOX::Logic::CFldChar	*oox_fld)
 {
@@ -361,6 +371,8 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 {
 	if (!oox_paragraph_pr)		return;
 	if (!paragraph_properties)	return;
+
+	m_bKeepNextParagraph = false;
 
 	if (oox_paragraph_pr->m_oPStyle.IsInit() && oox_paragraph_pr->m_oPStyle->m_sVal.IsInit())
 	{
@@ -500,7 +512,14 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 		paragraph_properties->content().outline_level_ =  level;
 		odt_context->text_context()->set_outline_level ( level);
 	}
-	
+
+	if (oox_paragraph_pr->m_oKeepNext.IsInit())
+	{
+		m_bKeepNextParagraph = true;
+	}
+
+	convert(oox_paragraph_pr->m_oFramePr.GetPointer(), paragraph_properties);		//буквица
+
 	convert(oox_paragraph_pr->m_oSectPr.GetPointer());
 }
 void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool root)
@@ -574,6 +593,31 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		}
 		odt_context->add_section_column(width_space);
 	}
+}
+void DocxConverter::convert(ComplexTypes::Word::CFramePr *oox_frame_pr, odf::style_paragraph_properties * paragraph_properties)
+{
+	if (oox_frame_pr == NULL) return;
+	if (paragraph_properties == NULL) return;
+
+	odt_context->start_drop_cap(paragraph_properties);
+
+	if (oox_frame_pr->m_oDropCap.IsInit() && oox_frame_pr->m_oDropCap->GetValue() == SimpleTypes::dropcapMargin)
+		odt_context->set_drop_cap_margin(true);
+	if (oox_frame_pr->m_oLines.IsInit())
+		odt_context->set_drop_cap_lines(oox_frame_pr->m_oLines->GetValue());
+			//nullable<SimpleTypes::COnOff<>            > m_oAnchorLock;
+			//nullable<SimpleTypes::CTwipsMeasure       > m_oH;
+			//nullable<SimpleTypes::CHAnchor<>          > m_oHAnchor;
+			//nullable<SimpleTypes::CHeightRule<>       > m_oHRule;
+			//nullable<SimpleTypes::CTwipsMeasure       > m_oHSpace;
+			//nullable<SimpleTypes::CVAnchor<>          > m_oVAnchor;
+			//nullable<SimpleTypes::CTwipsMeasure       > m_oVSpace;
+			//nullable<SimpleTypes::CTwipsMeasure       > m_oW;
+			//nullable<SimpleTypes::CWrap<>             > m_oWrap;
+			//nullable<SimpleTypes::CSignedTwipsMeasure > m_oX;
+			//nullable<SimpleTypes::CXAlign<>           > m_oXAlign;
+			//nullable<SimpleTypes::CSignedTwipsMeasure > m_oY;
+			//nullable<SimpleTypes::CYAlign<>           > m_oYAlign;
 }
 void DocxConverter::convert(OOX::Logic::CPBdr *oox_border, odf::style_paragraph_properties * paragraph_properties)
 {

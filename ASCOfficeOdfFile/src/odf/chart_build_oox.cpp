@@ -194,6 +194,11 @@ void chart_build::oox_convert(oox::oox_chart_context & chart)
 
 	int series_id =0;
 
+	if (series_.empty())
+	{
+		chart.add_chart(class_);
+	}
+
 	BOOST_FOREACH(series & s, series_)
 	{
 		if (s.class_!=last_set_type)

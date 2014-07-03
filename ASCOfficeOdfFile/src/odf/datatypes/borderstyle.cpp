@@ -9,7 +9,7 @@ border_style::border_style(const std::wstring & Value) : initialized_(false), no
     std::wstring tmp =  boost::algorithm::trim_copy(Value);
     boost::algorithm::to_lower(tmp);
     
-    if (L"none" == tmp)
+    if (L"none" == tmp || tmp.length() < 1)
     {
         none_ = true;
     }

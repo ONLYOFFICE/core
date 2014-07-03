@@ -81,14 +81,19 @@ namespace _gdi_graphics_
 		Gdiplus::GdiplusShutdown(gdiplusToken);
 		return result;
 	}
-	double	static calculate_size_symbol(std::wstring name, double size, bool italic, bool bold)
+	double	static calculate_size_symbol(std::wstring name, double size, bool italic, bool bold, std::wstring test_str = L"")
 	{
 		double result =0;
 		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 		ULONG_PTR gdiplusToken=0;
 		Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 		////
-		std::wstring test_string = L"0123456789";
+		bool to_one_char = false;
+		if (test_str.length() <1 )
+		{
+			test_str = L"0123456789";
+			to_one_char = true;
+		}
 
 		int style = Gdiplus::FontStyleRegular;
 		if (bold && italic)	style = Gdiplus::FontStyleBoldItalic;
@@ -105,9 +110,10 @@ namespace _gdi_graphics_
 				Gdiplus::SizeF layout;
 					
 				Gdiplus::RectF bound;
-				Gdiplus::Status res = gr->MeasureString(test_string.c_str(),test_string.length(),font,layout,&bound);
+				Gdiplus::Status res = gr->MeasureString(test_str.c_str(),test_str.length(),font,layout,&bound);
 
-				if (res==0)result = (bound.Width - 2)/ test_string.length();
+				if (res==0)result = (bound.Width - 2);
+				if (to_one_char) result /= test_str.length();
 
 				//normalize to dpi = 96;
 				double dpi = gr->GetDpiX();

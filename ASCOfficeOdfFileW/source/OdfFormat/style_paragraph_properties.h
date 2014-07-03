@@ -116,12 +116,11 @@ public:
 	virtual void add_child_element(office_element_ptr & child){}
 
 	virtual void serialize(std::wostream & strm);
-
     
-	drop_cap_length style_length_;
-    unsigned int style_lines_;
-    _CP_OPT(length) style_distance_;
-    _CP_OPT(style_ref) style_style_name_;
+	_CP_OPT(drop_cap_length)	style_length_;
+    _CP_OPT(unsigned int)		style_lines_;
+    _CP_OPT(length)				style_distance_;
+    _CP_OPT(style_ref)			style_style_name_;
     _CP_OPT(common_xlink_attlist) common_xlink_attlist_;
         
 };

@@ -1002,7 +1002,6 @@ void odf_chart_context::set_legend_position(int val)
 		case 3: legend->chart_legend_attlist_.chart_legend_position_ = L"end";		break;//st_legendposR
 		case 4:	legend->chart_legend_attlist_.chart_legend_position_ = L"top";		break;//st_legendposT
 	}
-	legend->chart_legend_attlist_.chart_legend_align_  = L"center";
 }
 void odf_chart_context::set_layout_x(double *val,int mode)//edge, factor
 {
@@ -1339,7 +1338,7 @@ void odf_chart_context::Impl::create_local_table_rows(ods_table_state * table_st
 		
 		table_state->start_cell(cell_elm,office_element_ptr());
 			table_state->set_cell_value(cells[i].val, true);
-			//add type
+			//add type ???
 		table_state->end_cell();
 
 		curr_cell = cells[i].col;
@@ -1430,16 +1429,47 @@ void odf_chart_context::Impl::create_local_table()
 		for (long i=0; i < max_columns; i++)
 			cols_elm->add_child_element(col_elm);
 
-		if (cells_cash_label.size() > 0)
-		{
-			office_element_ptr row_headers_elm;
-			create_element(L"table", L"table-header-rows",row_headers_elm, odf_context_);
+		office_element_ptr row_headers_elm;
+		office_element_ptr row_elm;
 
-			table_state->start_headers(row_headers_elm);
-				create_local_table_rows(table_state, cells_cash_label ,true);
-			table_state->end_headers();
+		if (cells_cash_label.size() > 0 || cells_cash.size() > 0)
+		{
+			if (cells_cash_label.size() > 0)
+			{
+				create_element(L"table", L"table-header-rows",row_headers_elm, odf_context_);
+				
+				table_state->start_headers(row_headers_elm);
+					create_local_table_rows(table_state, cells_cash_label ,true);
+				table_state->end_headers();
+			}
+			if (cells_cash.size() > 0) create_local_table_rows(table_state, cells_cash ,false);
+			else 
+			{
+				create_element(L"table", L"table-rows",row_elm, odf_context_);
+				table_state->add_row(row_elm,1,office_element_ptr());
+			}
 		}
-		create_local_table_rows(table_state, cells_cash ,false);
+		else
+		{
+			create_element(L"table", L"table-header-rows",row_headers_elm, odf_context_);
+			
+			table_state->start_headers(row_headers_elm);
+			{
+				create_element(L"table", L"table-row",row_elm, odf_context_);
+				table_state->add_row(row_elm,1,office_element_ptr());
+				{
+					office_element_ptr cell_elm;
+					create_element(L"table", L"table-cell",cell_elm, odf_context_);
+					
+					table_state->start_cell(cell_elm,office_element_ptr());
+					table_state->end_cell();
+				}
+			}
+			table_state->end_headers();
+
+			create_element(L"table", L"table-rows",row_elm, odf_context_);
+			table_state->add_row(row_elm,1,office_element_ptr());
+		}
 	}
 
 	delete table_state;

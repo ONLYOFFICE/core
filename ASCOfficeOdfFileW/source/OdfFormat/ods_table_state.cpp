@@ -347,7 +347,6 @@ void ods_table_state::set_row_height(double height)
 	rows_.back().size = height;//pt
 
 	row_properties->style_table_row_properties_attlist_.style_row_height_ = length(height,length::pt);//length(length(height,length::pt).get_value_unit(length::cm),length::cm);
-
 }
 
 bool ods_table_state::is_cell_hyperlink()

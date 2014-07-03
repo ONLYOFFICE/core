@@ -70,10 +70,10 @@ void style_drop_cap::serialize(std::wostream & strm)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR	(L"style:length", style_length_);
-			CP_XML_ATTR	(L"style:lines", style_lines_);
-			CP_XML_ATTR_OPT(L"style:distance", style_distance_);
-			CP_XML_ATTR_OPT(L"style:style-name", style_style_name_);
+			CP_XML_ATTR_OPT(L"style:length",	style_length_);
+			CP_XML_ATTR_OPT(L"style:lines",		style_lines_);
+			CP_XML_ATTR_OPT(L"style:distance",	style_distance_);
+			CP_XML_ATTR_OPT(L"style:style-name",style_style_name_);
 		}
 	}
 
@@ -195,6 +195,10 @@ void paragraph_format_properties::serialize(std::wostream & _Wostream ,const wch
 
 			CP_XML_ATTR_OPT(L"style:background-transparency", style_background_transparency_);
 			CP_XML_ATTR_OPT(L"style:join_border", style_join_border_);
+
+			if (style_tab_stops_)		style_tab_stops_->serialize(CP_XML_STREAM());
+			if (style_drop_cap_)		style_drop_cap_->serialize(CP_XML_STREAM());
+			if (style_background_image_)style_background_image_->serialize(CP_XML_STREAM());
 		}
 	}
 }

@@ -55,12 +55,17 @@ public:
 	void end_field();
 	void set_field_instr(std::wstring instr);
 
-	void start_run();
+	void start_run(bool styled = false);
 	void end_run();
 
 	void add_section();
 	void add_section_columns(int count, double space_pt, bool separator );
 	void add_section_column(std::vector<std::pair<double,double>> width_space);
+
+	void start_drop_cap(style_paragraph_properties * paragraph_properties);
+		void set_drop_cap_lines(int lines);
+		void set_drop_cap_margin(bool val);
+	void end_drop_cap();
 
 	bool start_comment(int oox_comment_id);
 	void end_comment(int oox_comment_id);
@@ -82,7 +87,7 @@ private:
 	std::vector<office_element_ptr> current_paragraphs_; // for section, if needed
 	std::vector<odt_section_state>	sections_;
 
-	struct _field
+	struct _field_state
 	{
 		bool enabled;	
 		int type;
@@ -91,6 +96,18 @@ private:
 	}current_field_;
 
 	bool is_hyperlink_;
+
+	struct _drop_cap_state
+	{
+		void clear(){enabled = false; paragraph_properties = NULL;	characters = 0; inline_style = true; characters_size_pt =0;}
+
+		bool enabled;
+		style_paragraph_properties *paragraph_properties;
+
+		int characters;
+		bool inline_style;
+		double characters_size_pt;
+	}drop_cap_state_;
 
 
 

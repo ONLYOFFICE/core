@@ -47,8 +47,10 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 	std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_shape());
 	Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));
 
-	bool pState = Context.get_paragraph_state();
+	bool pParaState = Context.get_paragraph_state();
+	bool pRunState = Context.get_run_state();
 	Context.set_paragraph_state(false);		
+	Context.set_run_state(false);		
 
 	BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
@@ -56,7 +58,9 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
         elm->docx_convert(Context);
     }
 
-	Context.set_paragraph_state(pState);	
+	Context.set_paragraph_state(pParaState);	
+	Context.set_run_state(pRunState);	
+
 	Context.get_drawing_context().get_text_stream_shape() = temp_stream.str();
 	Context.set_stream_man(prev);
 }

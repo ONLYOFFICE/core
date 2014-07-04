@@ -198,14 +198,20 @@ void paragraph::drop_cap_text_docx_convert(office_element_ptr first_text_element
 	
 	int textStyle = process_paragraph_attr(paragraph_attrs_, Context);
 	first_text_paragraph->docx_convert(Context); 
-	
-	str=store_str.substr(Context.get_drop_cap_context().Length,store_str.length()-Context.get_drop_cap_context().Length);
+
+	int str_start = Context.get_drop_cap_context().Length;
+	int str_size = store_str.length()-Context.get_drop_cap_context().Length;
+
+	if (str_size <0) str_size = 0;										// это если на буквы в буквице разные стили
+	if (str_start > store_str.length()) str_start = store_str.length(); // это если на буквы в буквице разные стили
+
+	str=store_str.substr(str_start, str_size);
 }
 void paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 {
 	if ( paragraph_content_.size()<1)return;
 
-	//в рассчет берутс€ только первые элементы !!! разные там break-и отмен€ют реэжим drop_cap!!
+	//в рассчет берутс€ только первые элементы !!! разные там break-и отмен€ют реэжим drop_cap!!- todooo сделать возможным множественным span
 	if ( paragraph_content_[0]->get_type() == typeTextText)
 	{
 		drop_cap_text_docx_convert(paragraph_content_[0],Context);

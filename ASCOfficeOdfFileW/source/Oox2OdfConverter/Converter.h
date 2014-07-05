@@ -280,7 +280,7 @@ public:
 		void convert(OOX::Spreadsheet::CT_Legend				*ct_legend);
 		void convert(OOX::Spreadsheet::CT_LegendEntry			*ct_legend);
 		void convert(OOX::Spreadsheet::CT_PlotArea				*ct_plotArea);
-		void convert(OOX::Spreadsheet::CT_Surface				*ct_surface, int type);
+		void convert(OOX::Spreadsheet::CT_Surface				*ct_surface, int type, bool chart3D);
 		void convert(OOX::Spreadsheet::CT_CatAx					*ct_catAx);
 		void convert(OOX::Spreadsheet::CT_SerAx					*ct_serAx);
 		void convert(OOX::Spreadsheet::CT_DateAx				*ct_dateAx);

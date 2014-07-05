@@ -38,6 +38,7 @@ public:
 	_CP_OPT(Bool) chart_connect_bars_;		
 	_CP_OPT(Bool) chart_deep_;		
 	_CP_OPT(Bool) chart_tick_marks_major_outer_;	
+	_CP_OPT(Bool) chart_tick_marks_major_inner_;	
 	_CP_OPT(Bool) chart_tick_marks_minor_inner_;	
 	_CP_OPT(Bool) chart_tick_marks_minor_outer_;	
 	_CP_OPT(Bool) chart_lines_;		

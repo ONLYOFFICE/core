@@ -30,6 +30,7 @@ void chart_format_properties::serialize(std::wostream & _Wostream ,const wchar_t
 			CP_XML_ATTR_OPT(L"chart:percentage",			chart_percentage_ );		
 			CP_XML_ATTR_OPT(L"chart:connect-bars",			chart_connect_bars_ );		
 			CP_XML_ATTR_OPT(L"chart:deep",					chart_deep_ );		
+			CP_XML_ATTR_OPT(L"chart:tick-marks-major-inner",chart_tick_marks_major_inner_ );	
 			CP_XML_ATTR_OPT(L"chart:tick-marks-major-outer",chart_tick_marks_major_outer_ );	
 			CP_XML_ATTR_OPT(L"chart:tick-marks-minor-inner",chart_tick_marks_minor_inner_ );	
 			CP_XML_ATTR_OPT(L"chart:tick-marks-minor-outer",chart_tick_marks_minor_outer_ );	

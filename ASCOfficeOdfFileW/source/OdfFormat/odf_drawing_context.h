@@ -5,9 +5,6 @@
 
 #include <cpdoccore/CPOptional.h>
 
-//#include "ods_comments_context.h"
-//#include "ods_hyperlinks.h"
-
 #include "office_elements.h"
 #include "office_elements_create.h"
 

@@ -204,6 +204,11 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 			OOX::Logic::CSectionProperty *pSectionPr = static_cast<OOX::Logic::CSectionProperty*>(oox_unknown); 
 			convert(pSectionPr, true);
 		}break;
+		case OOX::et_w_tbl:
+		{
+			OOX::Logic::CTbl* pTable= static_cast<OOX::Logic::CTbl*>(oox_unknown);
+			convert(pTable);
+		}break;
 		default:
 		{
 			OoxConverter::convert(oox_unknown);
@@ -217,7 +222,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph	*oox_paragraph)
 	bool styled = false;
 
 	bool bStartNewParagraph = !m_bKeepNextParagraph;
-
+	
 	if (oox_paragraph->m_oParagraphProperty) 
 	{
 		styled = true;
@@ -234,8 +239,11 @@ void DocxConverter::convert(OOX::Logic::CParagraph	*oox_paragraph)
 			odt_context->styles_context()->create_style(L"",odf::style_family::Paragraph, true, false, -1);					
 			paragraph_properties = odt_context->styles_context()->last_state().get_paragraph_properties();
 		}
+		m_bKeepNextParagraph = false;
+
 		convert(oox_paragraph->m_oParagraphProperty, paragraph_properties); 
-	}
+	}else m_bKeepNextParagraph = false;
+	
 	if (bStartNewParagraph) odt_context->start_paragraph(styled);
 	
 	for ( int nIndex = 0; nIndex < oox_paragraph->m_arrItems.GetSize(); nIndex++ )
@@ -254,7 +262,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph	*oox_paragraph)
 	}
 	if (m_bKeepNextParagraph) odt_context->end_drop_cap();
 
-	if (bStartNewParagraph && !m_bKeepNextParagraph) odt_context->end_paragraph();
+	if (!m_bKeepNextParagraph)  odt_context->end_paragraph();
 }
 void DocxConverter::convert(OOX::Logic::CRun	*oox_run)//wordprocessing 22.1.2.87 math 17.3.2.25
 {
@@ -1452,6 +1460,80 @@ void DocxConverter::convert_comment(int oox_comm_id)
 			odt_context->end_comment_content();
 		}
 	}
+}
+void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
+{
+	if (oox_table == NULL) return;
+
+	odt_context->start_table();
+
+	convert(oox_table->m_oTblGrid.GetPointer());
+	
+	for (int i =0 ; i < oox_table->m_arrItems.GetSize(); i++)
+	{
+		convert(oox_table->m_arrItems[i]);
+	}
+
+	odt_context->end_table();
+}
+void DocxConverter::convert(OOX::Logic::CTblGrid	*oox_table_grid)
+{
+	if (oox_table_grid == NULL) return;
+
+	odt_context->start_table_columns();
+	//nullable<OOX::Logic::CTblGridChange          > m_oTblGridChange;
+	for (int i =0 ; i < oox_table_grid->m_arrGridCol.GetSize(); i++)
+	{
+		//m_oW
+		odt_context->add_table_column(/*10*/);
+	}	
+	odt_context->end_table_columns();
+}
+
+void DocxConverter::convert(OOX::Logic::CTr	*oox_table_row)
+{
+	if (oox_table_row == NULL) return;
+
+	for (int i =0 ; i < oox_table_row->m_arrItems.GetSize(); i++)
+	{
+		odt_context->start_table_row();
+			convert(oox_table_row->m_arrItems[i]);
+		odt_context->end_table_row();
+	}	
+}
+void DocxConverter::convert(OOX::Logic::CTc	*oox_table_cell)
+{
+	if (oox_table_cell == NULL) return;
+
+	odt_context->start_table_cell();
+	for (int i =0 ; i < oox_table_cell->m_arrItems.GetSize(); i++)
+	{
+		convert(oox_table_cell->m_arrItems[i]);
+	}		
+	odt_context->end_table_cell();
+}
+void DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr)
+{
+	if (oox_table_cell_pr == NULL) return;
+
+	//nullable<ComplexTypes::Word::CTrackChange                    > m_oCellDel;
+	//nullable<ComplexTypes::Word::CTrackChange                    > m_oCellIns;
+	//nullable<ComplexTypes::Word::CCellMergeTrackChange           > m_oCellMerge;
+	//nullable<ComplexTypes::Word::CCnf                            > m_oCnfStyle;
+	//nullable<ComplexTypes::Word::CDecimalNumber                  > m_oGridSpan;
+	//nullable<OOX::Logic::CHeaders                                > m_oHeaders;
+	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oHideMark;
+	//nullable<ComplexTypes::Word::CHMerge                         > m_oHMerge;
+	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oNoWrap;
+	//nullable<ComplexTypes::Word::CShading                        > m_oShd;
+	//nullable<OOX::Logic::CTcBorders                              > m_oTcBorders;
+	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oTcFitText;
+	//nullable<OOX::Logic::CTcMar                                  > m_oTcMar;
+	//nullable<OOX::Logic::CTcPrChange                             > m_oTcPrChange;
+	//nullable<ComplexTypes::Word::CTblWidth                       > m_oTcW;
+	//nullable<ComplexTypes::Word::CTextDirection                  > m_oTextDirection;
+	//nullable<ComplexTypes::Word::CVerticalJc                     > m_oVAlign;
+	//nullable<ComplexTypes::Word::CVMerge                         > m_oVMerge;
 }
 
 } 

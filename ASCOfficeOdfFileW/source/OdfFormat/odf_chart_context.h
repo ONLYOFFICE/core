@@ -78,17 +78,22 @@ public:
 			void set_axis_dimension(int type);
 			void set_axis_orientation(int type);
 			void set_axis_logarithmic(bool val);
-			void set_axis_label(int type);
+			void set_display_label(bool Val); 
+			void set_display_label_position(int type);
 			void set_axis_position(int type);
 			void set_axis_label_position(int type);
 			void set_axis_max(double val);
 			void set_axis_min(double val);
+			void set_axis_tick_minor(int type);
+			void set_axis_tick_major(int type);
 		void start_title();
 		void start_grid(int type);
 		void start_legend();
 		void start_floor();
 		void start_wall();
 			void set_legend_position(int val);
+
+		void set_no_fill(bool val);
 		
 		void start_stock_gain_marker();
 			void set_stock_gain_marker_width(std::wstring val);

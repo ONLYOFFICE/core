@@ -1280,6 +1280,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OdfFormat\odf_table_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OdfFormat\odf_table_context.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OdfFormat\odf_text_context.cpp"
 				>
 			</File>

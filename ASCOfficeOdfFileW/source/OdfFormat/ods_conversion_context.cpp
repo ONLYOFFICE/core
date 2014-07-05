@@ -208,7 +208,6 @@ void ods_conversion_context::set_comment_rect(double l, double t, double w, doub
 {
 	current_table().set_comment_rect(l,t,w,h);
 }
-
 /////////////////////////////
 void ods_conversion_context::add_hyperlink(std::wstring & ref, std::wstring & link, std::wstring & display)
 {

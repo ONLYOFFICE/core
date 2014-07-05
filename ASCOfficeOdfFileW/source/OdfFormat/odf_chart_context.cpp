@@ -269,6 +269,14 @@ void odf_chart_context::set_chart_bar_type(int type)
 		case 5:	//	st_shapePYRAMIDTOMAX = 5
 			impl_->current_level_.back().chart_properties_->content().chart_solid_type_ = chart_solid_type(chart_solid_type::pyramid); break;
 	}
+	if (type == -1)
+	{
+		//нужно вытащить свойство с уровня выше.
+		int sz = impl_->current_level_.size();
+		if (sz > 1)
+			impl_->current_level_.back().chart_properties_->content().chart_solid_type_ = 
+					impl_->current_level_[sz-2].chart_properties_->content().chart_solid_type_;
+	}
 }
 
 void odf_chart_context::set_chart_bar_direction(int type)
@@ -697,6 +705,7 @@ void odf_chart_context::start_grid(int type)
 	}
 	start_element(chart_elm, style_elm, style_name);
 }
+
 void odf_chart_context::start_title()
 {
 	office_element_ptr chart_elm;
@@ -819,6 +828,11 @@ void odf_chart_context::start_floor()
 		floor->common_attlist_.chart_style_name_ = style_name;
 	}
 	start_element(elm, style_elm, style_name);
+
+	if (style_)
+	{
+		impl_->current_level_.back().graphic_properties_ = style_->style_content_.get_style_graphic_properties();
+	}
 }
 void odf_chart_context::start_wall()
 {
@@ -1019,11 +1033,15 @@ void odf_chart_context::set_layout_x(double *val,int mode)//edge, factor
 	chart_title *title = dynamic_cast<chart_title*>(impl_->current_chart_state_.elements_.back().elm.get());
 	if (title)title->chart_title_attlist_.common_draw_position_attlist_.svg_x_ = x_cm;
 }
-void odf_chart_context::set_axis_label(int type)
+void odf_chart_context::set_display_label(bool Val)
 {
 	if (!impl_->current_level_.back().chart_properties_)return;
-	if (type == 1 || type == 2)
-		impl_->current_level_.back().chart_properties_->content().chart_display_label_ =  true;
+	impl_->current_level_.back().chart_properties_->content().chart_display_label_ =  Val;
+}
+void odf_chart_context::set_display_label_position(int type)
+{
+	if (!impl_->current_level_.back().chart_properties_)return;
+	//impl_->current_level_.back().chart_properties_->content().chart:label-arrangement_ =  Val;
 }
 void odf_chart_context::set_axis_orientation(int type)
 {
@@ -1039,6 +1057,50 @@ void odf_chart_context::set_axis_min(double val)
 {
 	if (!impl_->current_level_.back().chart_properties_)return;
 	impl_->current_level_.back().chart_properties_->content().chart_minimum_ =  val;
+}
+void odf_chart_context::set_axis_tick_minor(int type)
+{
+	if (!impl_->current_level_.back().chart_properties_)return;
+
+	switch (type)
+	{
+		case 0: break;//		st_tickmarkCROSS = 0,		
+		case 1: //		st_tickmarkIN = 1,
+		impl_->current_level_.back().chart_properties_->content().chart_tick_marks_minor_inner_ = true;	
+		impl_->current_level_.back().chart_properties_->content().chart_tick_marks_minor_outer_ = false; break;
+		case 2: //		st_tickmarkNONE = 2,
+		impl_->current_level_.back().chart_properties_->content().chart_tick_marks_minor_inner_ = false;	
+		impl_->current_level_.back().chart_properties_->content().chart_tick_marks_minor_outer_ = false; break;
+		case 3: //		st_tickmarkOUT = 3
+		impl_->current_level_.back().chart_properties_->content().chart_tick_marks_minor_inner_ = false;	
+		impl_->current_level_.back().chart_properties_->content().chart_tick_marks_minor_outer_ = true; break;
+	}
+
+}
+void odf_chart_context::set_no_fill(bool Val)
+{
+	if (Val == false)return;
+	if (!impl_->current_level_.back().graphic_properties_)return;
+
+	impl_->current_level_.back().graphic_properties_->content().common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::none);
+
+}
+void odf_chart_context::set_axis_tick_major(int type)
+{
+	if (!impl_->current_level_.back().chart_properties_)return;
+	switch (type)
+	{
+		case 0: break;//		st_tickmarkCROSS = 0,		
+		case 1: //		st_tickmarkIN = 1,
+		impl_->current_level_.back().chart_properties_->content().chart_tick_marks_major_inner_ = true;	
+		impl_->current_level_.back().chart_properties_->content().chart_tick_marks_major_outer_ = false; break;
+		case 2: //		st_tickmarkNONE = 2,
+		impl_->current_level_.back().chart_properties_->content().chart_tick_marks_major_inner_ = false;	
+		impl_->current_level_.back().chart_properties_->content().chart_tick_marks_major_outer_ = false; break;
+		case 3: //		st_tickmarkOUT = 3
+		impl_->current_level_.back().chart_properties_->content().chart_tick_marks_major_inner_ = false;	
+		impl_->current_level_.back().chart_properties_->content().chart_tick_marks_major_outer_ = true; break;
+	}
 }
 void odf_chart_context::set_axis_logarithmic(bool val)
 {
@@ -1165,6 +1227,7 @@ void odf_chart_context::start_element(office_element_ptr & elm, office_element_p
 void odf_chart_context::end_element()
 {
 	//допричесываение элемента
+	//if (impl_->current_level_.size()>0)
 	{
 		if (impl_->current_level_.back().paragraph_properties_)
 		{
@@ -1185,7 +1248,6 @@ void odf_chart_context::end_element()
 			}
 		}
 	}
-
 	impl_->current_level_.pop_back();
 	drawing_context()->end_element();
 }
@@ -1353,7 +1415,18 @@ void odf_chart_context::Impl::create_local_table()
 
 	std::wstring table_name = L"local-table";
 	int max_columns=0;
-
+	
+	//выкинем дублирующие ref
+	for (long i=0; i < cash_.size(); i++)
+	{
+		for (long j=i+1; j < cash_.size(); j++)
+		{
+			if (cash_[j].ref == cash_[i].ref)
+			{
+				cash_.erase(cash_.begin()+j);
+			}
+		}
+	}
 	for (long i=0; i < cash_.size(); i++)
 	{
 		std::vector<std::wstring> refs;
@@ -1388,9 +1461,12 @@ void odf_chart_context::Impl::create_local_table()
 			c.row = (row2==row1) ? row1 : row1+j;
 			c.val = cash_[i].data_str[j];
 			c.label = cash_[i].label;
+			
 			cells_cash.push_back(c);
 
 			if (c.label) cells_cash_label.push_back(c);
+			//else cells_cash.push_back(c);
+
 			if (c.col > max_columns) max_columns = c.col;
 		}
 
@@ -1415,18 +1491,20 @@ void odf_chart_context::Impl::create_local_table()
 		table_state->set_table_name(table_name);
 
 		/////////////////////////////////////////////////
+		office_element_ptr col_elm;
+		create_element(L"table", L"table-column",col_elm, odf_context_);
+
 		office_element_ptr cols_header_elm;
 		create_element(L"table", L"table-header-columns",cols_header_elm, odf_context_);
 		table_elm->add_child_element(cols_header_elm);	
+			cols_header_elm->add_child_element(col_elm);
 
 		office_element_ptr cols_elm;
 		create_element(L"table", L"table-columns",cols_elm, odf_context_);
 		table_elm->add_child_element(cols_elm);
 
-		office_element_ptr col_elm;
-		create_element(L"table", L"table-column",col_elm, odf_context_);
 
-		for (long i=0; i < max_columns; i++)
+		for (long i=0; i < max_columns-1; i++)
 			cols_elm->add_child_element(col_elm);
 
 		office_element_ptr row_headers_elm;

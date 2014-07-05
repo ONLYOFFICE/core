@@ -34,6 +34,13 @@ namespace OOX
 		class CCommentRangeStart;
 		class CCommentRangeEnd;
 		class CCommentReference;
+		class CTbl;
+		class CTblGrid;
+		class CTr;
+		class CTc;
+		class CTableCellProperties;
+		class CTblGridCol;
+
 	}
 
 }
@@ -129,7 +136,11 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CCommentRangeEnd		*oox_comm_end);
 		void convert(OOX::Logic::CCommentReference		*oox_comm_ref);
 
-
+		void convert(OOX::Logic::CTbl					*oox_table);
+		void convert(OOX::Logic::CTblGrid				*oox_table_grid);
+		void convert(OOX::Logic::CTr					*oox_table_row);
+		void convert(OOX::Logic::CTc					*oox_table_cell);
+		void convert(OOX::Logic::CTableCellProperties	*oox_table_cell_pr);
 //--------------------------------------------------------------------------------
 		bool m_bKeepNextParagraph;
 	};

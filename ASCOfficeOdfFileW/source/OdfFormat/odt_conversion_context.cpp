@@ -36,7 +36,7 @@ double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name
 }
 }
 odt_conversion_context::odt_conversion_context(package::odf_document * outputDocument) 
-		: odf_conversion_context(outputDocument),comment_context_(this), page_layout_context_(this), main_text_context_(NULL)	
+		: odf_conversion_context(outputDocument),comment_context_(this), page_layout_context_(this), main_text_context_(NULL),table_context_(this)	
 {
 	current_field_.enabled = false;
 	current_field_.started = false;
@@ -458,6 +458,34 @@ void odt_conversion_context::end_drop_cap()
 
 	drop_cap_state_.clear();
 }
+///////////////////////////////////////
+void odt_conversion_context::start_table()
+{
+}
+void odt_conversion_context::start_table_columns()
+{
+}
+void odt_conversion_context::add_table_column()
+{
+}
+void odt_conversion_context::end_table_columns()
+{
+}
+void odt_conversion_context::start_table_row()
+{
+}
+void odt_conversion_context::start_table_cell()
+{
 
+}
+void odt_conversion_context::end_table_cell()
+{
+}
+void odt_conversion_context::end_table_row()
+{
+}
+void odt_conversion_context::end_table()
+{
+}
 }
 }

@@ -1,7 +1,9 @@
 #pragma once
 
 #include "odf_conversion_context.h"
+
 #include "odf_comment_context.h"
+#include "odf_table_context.h"
 
 namespace cpdoccore { 
 namespace odf {
@@ -73,6 +75,16 @@ public:
 	void start_comment_content();
 	void end_comment_content();
 
+	void start_table();
+		void start_table_columns();
+			void add_table_column();
+		void end_table_columns();
+		void start_table_row();
+			void start_table_cell();
+			void end_table_cell();
+		void end_table_row();
+	void end_table();
+
 private:
 	office_text*				root_text_;
 	office_element_ptr			root_document_;
@@ -86,6 +98,8 @@ private:
 
 	std::vector<office_element_ptr> current_paragraphs_; // for section, if needed
 	std::vector<odt_section_state>	sections_;
+
+	odf_table_context			table_context_;
 
 	struct _field_state
 	{

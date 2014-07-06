@@ -739,7 +739,8 @@ void table_rows_no_group::add_child_element(office_element_ptr & child_element)
 	else if (type == typeTableTableHeaderRows)
 	{
         was_header_ = true;
-		table_table_header_rows_ = child_element;    
+		if (table_table_header_rows_ == NULL)	
+			table_table_header_rows_ = child_element;    
 	}	
 }
 void table_rows_no_group::serialize(std::wostream & _Wostream)

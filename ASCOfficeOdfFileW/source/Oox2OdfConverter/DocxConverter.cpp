@@ -209,6 +209,21 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 			OOX::Logic::CTbl* pTable= static_cast<OOX::Logic::CTbl*>(oox_unknown);
 			convert(pTable);
 		}break;
+		case OOX::et_w_tr:
+		{
+			OOX::Logic::CTr* pRow= static_cast<OOX::Logic::CTr*>(oox_unknown);
+			convert(pRow);
+		}break;
+		case OOX::et_w_tc:
+		{
+			OOX::Logic::CTc* pCell= static_cast<OOX::Logic::CTc*>(oox_unknown);
+			convert(pCell);
+		}break;
+		case OOX::et_w_proofErr:
+		case OOX::et_w_proofState:
+		{
+			//бяка
+		}break;
 		default:
 		{
 			OoxConverter::convert(oox_unknown);
@@ -1465,13 +1480,21 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 {
 	if (oox_table == NULL) return;
 
-	odt_context->start_table();
+	odt_context->start_table(convert(oox_table->m_oTableProperties)); 
 
 	convert(oox_table->m_oTblGrid.GetPointer());
 	
 	for (int i =0 ; i < oox_table->m_arrItems.GetSize(); i++)
 	{
-		convert(oox_table->m_arrItems[i]);
+		switch(oox_table->m_arrItems[i]->getType())
+		{
+			case OOX::et_w_tblPr:	
+			{
+				//skip 
+			}break;
+			default:				
+				convert(oox_table->m_arrItems[i]);
+		}
 	}
 
 	odt_context->end_table();
@@ -1484,8 +1507,14 @@ void DocxConverter::convert(OOX::Logic::CTblGrid	*oox_table_grid)
 	//nullable<OOX::Logic::CTblGridChange          > m_oTblGridChange;
 	for (int i =0 ; i < oox_table_grid->m_arrGridCol.GetSize(); i++)
 	{
-		//m_oW
-		odt_context->add_table_column(/*10*/);
+		double width = -1;
+
+		if (oox_table_grid->m_arrGridCol[i].m_oW.IsInit())
+		{
+			width = oox_table_grid->m_arrGridCol[i].m_oW->ToPoints();
+		}
+		
+		odt_context->add_table_column(width);
 	}	
 	odt_context->end_table_columns();
 }
@@ -1494,28 +1523,124 @@ void DocxConverter::convert(OOX::Logic::CTr	*oox_table_row)
 {
 	if (oox_table_row == NULL) return;
 
+	bool styled = oox_table_row->m_oTableRowProperties ? true : false;
+	bool is_header = false;
+
+	if (styled && oox_table_row->m_oTableRowProperties->m_oTblHeader.IsInit()
+		&& oox_table_row->m_oTableRowProperties->m_oTblHeader->m_oVal.ToBool() )is_header = true;
+
+	if (is_header)odt_context->start_table_header_rows();
+
+	odt_context->start_table_row(styled);
+	
+	convert(oox_table_row->m_oTableRowProperties);
+
 	for (int i =0 ; i < oox_table_row->m_arrItems.GetSize(); i++)
 	{
-		odt_context->start_table_row();
-			convert(oox_table_row->m_arrItems[i]);
-		odt_context->end_table_row();
+		switch(oox_table_row->m_arrItems[i]->getType())
+		{
+			case OOX::et_w_trPr:	
+			{
+				//skip
+			}break;
+			default:
+				convert(oox_table_row->m_arrItems[i]);
+		}
 	}	
+	odt_context->end_table_row();
+
+	if (is_header)odt_context->end_table_header_rows();
 }
 void DocxConverter::convert(OOX::Logic::CTc	*oox_table_cell)
 {
 	if (oox_table_cell == NULL) return;
 
-	odt_context->start_table_cell();
+	int spanned = 1;
+
+	if (oox_table_cell->m_oTableCellProperties && oox_table_cell->m_oTableCellProperties->m_oGridSpan.IsInit() && oox_table_cell->m_oTableCellProperties->m_oGridSpan->m_oVal.IsInit())
+		spanned = oox_table_cell->m_oTableCellProperties->m_oGridSpan->m_oVal->GetValue();
+	
+	odt_context->start_table_cell( oox_table_cell->m_nNumCol, spanned, convert(oox_table_cell->m_oTableCellProperties));
+
 	for (int i =0 ; i < oox_table_cell->m_arrItems.GetSize(); i++)
 	{
-		convert(oox_table_cell->m_arrItems[i]);
+		switch(oox_table_cell->m_arrItems[i]->getType())
+		{
+			case OOX::et_w_tcPr:	
+			{
+				//skip
+			}break;
+			default:
+				convert(oox_table_cell->m_arrItems[i]);
+		}
 	}		
 	odt_context->end_table_cell();
 }
-void DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr)
+bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr)
 {
-	if (oox_table_cell_pr == NULL) return;
+	if (oox_table_pr == NULL) return false;
 
+	odt_context->styles_context()->create_style(L"",odf::style_family::Table, true, false, -1);
+	
+	odf::style_table_properties	* table_properties = odt_context->styles_context()->last_state().get_table_properties();
+	//odf::style_table_cell_properties	* table_cell_properties = odt_context->styles_context()->last_state().get_table_cell_properties();
+
+	return true;
+}
+void DocxConverter::convert(OOX::Logic::CTableRowProperties *oox_table_row_pr)
+{
+	if (oox_table_row_pr == NULL) return;
+
+	odf::style_table_row_properties	* table_row_properties = odt_context->styles_context()->last_state().get_table_row_properties();
+
+	if (table_row_properties == NULL) return;
+
+	if (oox_table_row_pr->m_oTblHeight.IsInit())
+	{
+		_CP_OPT(odf::length) length;
+		convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_table_row_pr->m_oTblHeight->m_oVal.GetPointer()), length);
+
+		if (oox_table_row_pr->m_oTblHeight->m_oHRule.IsInit())
+		{
+			switch(oox_table_row_pr->m_oTblHeight->m_oHRule->GetValue())
+			{
+				case SimpleTypes::heightruleAtLeast:
+					table_row_properties->style_table_row_properties_attlist_.style_min_row_height_ = length; break;
+				case SimpleTypes::heightruleExact:
+					table_row_properties->style_table_row_properties_attlist_.style_row_height_ = length; break;
+				case SimpleTypes::heightruleAuto:
+					table_row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = true;		break;
+			}
+		}
+	}
+
+
+	if (oox_table_row_pr->m_oCnfStyle.IsInit())
+	{
+	}
+
+	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oCantSplit;
+	//nullable<ComplexTypes::Word::CCnf                            > m_oCnfStyle;
+	//nullable<ComplexTypes::Word::CTrackChange                    > m_oDel;
+	//nullable<ComplexTypes::Word::CDecimalNumber                  > m_oDivId;
+	//nullable<ComplexTypes::Word::CDecimalNumber                  > m_oGridAfter;
+	//nullable<ComplexTypes::Word::CDecimalNumber                  > m_oGridBefore;
+	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oHidden;
+	//nullable<ComplexTypes::Word::CTrackChange                    > m_oIns;
+	//nullable<ComplexTypes::Word::CJcTable                        > m_oJc;
+	//nullable<ComplexTypes::Word::CTblWidth                       > m_oTblCellSpacing;
+	//nullable<OOX::Logic::CTrPrChange                             > m_oTrPrChange;
+	//nullable<ComplexTypes::Word::CTblWidth                       > m_oWAfter;
+	//nullable<ComplexTypes::Word::CTblWidth                       > m_oWBefore;
+
+}
+bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr)
+{
+	if (oox_table_cell_pr == NULL) return false;
+
+	odt_context->styles_context()->create_style(L"",odf::style_family::TableCell, true, false, -1); 
+	
+	odf::style_table_cell_properties	* table_cell_properties = odt_context->styles_context()->last_state().get_table_cell_properties();
 	//nullable<ComplexTypes::Word::CTrackChange                    > m_oCellDel;
 	//nullable<ComplexTypes::Word::CTrackChange                    > m_oCellIns;
 	//nullable<ComplexTypes::Word::CCellMergeTrackChange           > m_oCellMerge;
@@ -1534,6 +1659,8 @@ void DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr)
 	//nullable<ComplexTypes::Word::CTextDirection                  > m_oTextDirection;
 	//nullable<ComplexTypes::Word::CVerticalJc                     > m_oVAlign;
 	//nullable<ComplexTypes::Word::CVMerge                         > m_oVMerge;
+
+	return true;
 }
 
 } 

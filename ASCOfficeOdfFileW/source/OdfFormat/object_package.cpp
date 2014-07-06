@@ -113,7 +113,7 @@ namespace odf
 					{  
 						CP_XML_NODE(L"meta:generator")
 						{
-							CP_XML_STREAM() << L"Teamlab Office";
+							CP_XML_STREAM() << L"ONLYOFFICE Online Editor";
 						}
 						CP_XML_NODE(L"meta:initial-creator");
 						CP_XML_NODE(L"meta:creation-date");

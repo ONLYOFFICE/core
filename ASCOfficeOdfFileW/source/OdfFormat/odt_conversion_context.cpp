@@ -73,13 +73,13 @@ void odt_conversion_context::end_document()
 		root_document_->add_child_element(sections_[i].elm);
 	}
 	sections_.clear();
-	//add last paragraphs to root 
-	for (long i=0; i< current_paragraphs_.size(); i++)
+	
+	//add last elements to root 
+	for (long i=0; i< current_root_elements_.size(); i++)
 	{
-		root_document_->add_child_element(current_paragraphs_[i]);
+		root_document_->add_child_element(current_root_elements_[i]);
 	}
-	current_paragraphs_.clear();
-	//current_level_.pop_back();
+	current_root_elements_.clear();
 	
 	odf_conversion_context::end_document();
 }
@@ -96,6 +96,10 @@ odf_drawing_context* odt_conversion_context::drawing_context()
 odf_comment_context* odt_conversion_context::comment_context()	
 {
 	return &comment_context_;
+}
+odf_table_context* odt_conversion_context::table_context()
+{
+	return &table_context_;
 }
 
 odf_text_context* odt_conversion_context::text_context()	
@@ -144,6 +148,17 @@ void odt_conversion_context::add_text_content(std::wstring & text)
 
 	text_context()->add_text_content(text);
 }
+void odt_conversion_context::add_to_root()
+{
+	if (text_context_.size() >0) return; // не root element (embedded) ????
+
+	if (comment_context_.is_started()) return;
+
+	if (text_context()->current_level_.size() > 1) return;
+
+	office_element_ptr & elm = text_context()->current_level_.back();
+	current_root_elements_.push_back(elm);
+}
 void odt_conversion_context::start_drawings()
 {
 	odf_drawing_context_ptr new_drawing_context_ = boost::shared_ptr<odf_drawing_context>(new odf_drawing_context(this));
@@ -160,8 +175,8 @@ void odt_conversion_context::end_drawings()
 	office_element_ptr & elm = drawing_context()->get_root_element();
 	if (elm )
 	{
-		//if (current_paragraphs_.size() >0) 
-		//	current_paragraphs_.back()->add_child_element(elm);
+		//if (current_root_elements_.size() >0) 
+		//	current_root_elements_.back()->add_child_element(elm);
 		
 		text_context()->current_level_.back()->add_child_element(elm);
 	}
@@ -174,14 +189,11 @@ void odt_conversion_context::start_paragraph(bool styled)
 {
 	text_context()->start_paragraph(styled);	
 	
-	if (text_context_.size() < 1 && !comment_context_.is_started())
-	{
-		office_element_ptr & paragr_elm = text_context()->current_level_.back();
-		//current_level_.back()->add_child_element(paragr_elm);
-		//current_level_.push_back(paragr_elm);
-		current_paragraphs_.push_back(paragr_elm);
-	}
+	add_to_root();
+	
+
 }
+
 void odt_conversion_context::start_hyperlink(std::wstring ref)
 {
 	office_element_ptr hyperlink_elm;
@@ -320,11 +332,11 @@ void odt_conversion_context::end_paragraph()
 
 	if (sections_.size() > 0 && sections_.back().empty)
 	{
-		for (long i=0; i< current_paragraphs_.size(); i++)
+		for (long i=0; i< current_root_elements_.size(); i++)
 		{
-			sections_.back().elm->add_child_element(current_paragraphs_[i]);
+			sections_.back().elm->add_child_element(current_root_elements_[i]);
 		}
-		current_paragraphs_.clear();
+		current_root_elements_.clear();
 
 		sections_.back().empty = false;
 	}
@@ -459,33 +471,89 @@ void odt_conversion_context::end_drop_cap()
 	drop_cap_state_.clear();
 }
 ///////////////////////////////////////
-void odt_conversion_context::start_table()
+void odt_conversion_context::start_table(bool styled)
 {
+	office_element_ptr elm;
+	create_element(L"table", L"table",elm,this);
+
+	table_context()->start_table(elm, styled);
+	text_context()->start_element(elm);
+
+	add_to_root();
 }
 void odt_conversion_context::start_table_columns()
 {
+	office_element_ptr elm;
+	create_element(L"table", L"table-columns",elm,this);
+
+	text_context()->start_element(elm);
 }
-void odt_conversion_context::add_table_column()
+void odt_conversion_context::add_table_column(double width)
 {
+	office_element_ptr elm;
+	create_element(L"table", L"table-column",elm,this);
+
+	styles_context()->create_style(L"",odf::style_family::TableColumn, true, false, -1);
+
+	table_context()->add_column(elm, true);
+		table_context()->set_column_width(width);
+
+	text_context()->start_element(elm); // для связи элментов
+	text_context()->end_element();
 }
 void odt_conversion_context::end_table_columns()
 {
+	text_context()->end_element();
 }
-void odt_conversion_context::start_table_row()
+void odt_conversion_context::start_table_header_rows()
 {
-}
-void odt_conversion_context::start_table_cell()
-{
+	office_element_ptr elm;
+	create_element(L"table", L"table-header-rows",elm,this);
 
+	text_context()->start_element(elm);
+}
+void odt_conversion_context::end_table_header_rows()
+{
+	text_context()->end_element();
+}
+void odt_conversion_context::start_table_row(bool styled)
+{
+	office_element_ptr elm;
+	create_element(L"table", L"table-row",elm,this);
+
+	if (styled)
+	{
+		styles_context()->create_style(L"",odf::style_family::TableRow, true, false, -1);
+	}
+	text_context()->start_element(elm);
+
+	table_context()->start_row(elm, styled);
+
+}
+void odt_conversion_context::start_table_cell(int col, int spanned, bool styled)
+{
+	office_element_ptr elm;
+	create_element(L"table", L"table-cell",elm,this);
+
+	table_context()->start_cell(elm, styled);
+	text_context()->start_element(elm);
+	table_context()->set_cell_spanned(spanned);
+	
 }
 void odt_conversion_context::end_table_cell()
 {
+	table_context()->end_cell();
+	text_context()->end_element();
 }
 void odt_conversion_context::end_table_row()
 {
+	table_context()->end_row();
+	text_context()->end_element();
 }
 void odt_conversion_context::end_table()
 {
+	table_context()->end_table();
+	text_context()->end_element();
 }
 }
 }

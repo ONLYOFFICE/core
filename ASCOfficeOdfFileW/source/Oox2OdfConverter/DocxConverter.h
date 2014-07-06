@@ -38,8 +38,10 @@ namespace OOX
 		class CTblGrid;
 		class CTr;
 		class CTc;
-		class CTableCellProperties;
 		class CTblGridCol;
+		class CTableCellProperties;
+		class CTableProperty;
+		class CTableRowProperties;
 
 	}
 
@@ -140,7 +142,10 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CTblGrid				*oox_table_grid);
 		void convert(OOX::Logic::CTr					*oox_table_row);
 		void convert(OOX::Logic::CTc					*oox_table_cell);
-		void convert(OOX::Logic::CTableCellProperties	*oox_table_cell_pr);
+		
+		bool convert(OOX::Logic::CTableCellProperties	*oox_table_cell_pr);
+		bool convert(OOX::Logic::CTableProperty			*oox_table_pr);
+		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr);
 //--------------------------------------------------------------------------------
 		bool m_bKeepNextParagraph;
 	};

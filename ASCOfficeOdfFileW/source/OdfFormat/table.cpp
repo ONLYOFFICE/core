@@ -565,7 +565,7 @@ const wchar_t * table_table_row::name = L"table-row";
 void table_table_row::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     if ( CP_CHECK_NAME(L"table", L"table-cell") || 
-         CP_CHECK_NAME(L"table", L"covered-table-cell") )
+         CP_CHECK_NAME(L"table", L"table-covered-cell") )
     {
 		CP_CREATE_ELEMENT(content_);
     }

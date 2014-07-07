@@ -48,6 +48,7 @@ void table_format_properties::serialize(std::wostream & _Wostream,const wchar_t 
 			common_background_color_attlist_.serialize(CP_GET_XML_NODE());
 			common_shadow_attlist_.serialize(CP_GET_XML_NODE());
 			common_keep_with_next_attlist_.serialize(CP_GET_XML_NODE());
+			common_border_attlist_.serialize(CP_GET_XML_NODE());
 			
 			if (style_background_image_) style_background_image_->serialize(_Wostream);
 		}

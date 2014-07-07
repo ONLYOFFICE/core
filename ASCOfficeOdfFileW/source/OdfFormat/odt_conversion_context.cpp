@@ -530,15 +530,22 @@ void odt_conversion_context::start_table_row(bool styled)
 	table_context()->start_row(elm, styled);
 
 }
-void odt_conversion_context::start_table_cell(int col, int spanned, bool styled)
+void odt_conversion_context::start_table_cell(int col, bool covered, bool styled)
 {
+	for (int i=table_context()->current_column() ; i < col;  i++)
+	{
+		add_default_cell();
+	}
+//-------------------------------------------------------
 	office_element_ptr elm;
-	create_element(L"table", L"table-cell",elm,this);
+	if (covered)
+		create_element(L"table", L"covered-table-cell",elm,this);
+	else
+		create_element(L"table", L"table-cell",elm,this);
+
 
 	table_context()->start_cell(elm, styled);
 	text_context()->start_element(elm);
-	table_context()->set_cell_spanned(spanned);
-	
 }
 void odt_conversion_context::end_table_cell()
 {
@@ -547,7 +554,24 @@ void odt_conversion_context::end_table_cell()
 }
 void odt_conversion_context::end_table_row()
 {
+	for (int i=table_context()->current_column() ; i < table_context()->count_column(); i++)
+	{
+		add_default_cell();
+	}
+//---------------------------------------------
 	table_context()->end_row();
+	text_context()->end_element();
+}
+
+void odt_conversion_context::add_default_cell()
+{
+	office_element_ptr elm;
+	create_element(L"table", L"covered-table-cell",elm,this);
+
+	table_context()->start_cell(elm, false);
+	text_context()->start_element(elm);
+
+	table_context()->end_cell();
 	text_context()->end_element();
 }
 void odt_conversion_context::end_table()

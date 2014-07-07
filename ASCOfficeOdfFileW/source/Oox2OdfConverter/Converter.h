@@ -14,15 +14,25 @@ namespace cpdoccore
 {
 	namespace odf 
 	{
-
 		class odf_conversion_context;
-		class font_size;
-		class length_or_percent;
+
 		class style_paragraph_properties;
 		class style_text_properties;
+		class style_graphic_properties;
+		class style_section_properties;
+		class style_table_properties;
+		class style_table_cell_properties;
+		class style_table_row_properties;
+		class style_table_column_properties;
+		class style_chart_properties;
+		class style_drawing_page_properties;
+
 		class color;
 		class length;
 		class text_align;
+		class font_size;
+		class length_or_percent;
+
 	}
 }
 namespace OOX

@@ -83,7 +83,8 @@ public:
 		void start_table_header_rows();
 		void end_table_header_rows();
 		void start_table_row(bool styled = false);
-			void start_table_cell(int col, int spanned = 1, bool styled = false);
+			void add_default_cell();
+			void start_table_cell(int col, bool covered, bool styled = false);
 			void end_table_cell();
 		void end_table_row();
 	void end_table();

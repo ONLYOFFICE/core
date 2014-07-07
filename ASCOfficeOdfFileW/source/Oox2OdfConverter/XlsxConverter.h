@@ -71,17 +71,6 @@ namespace odf
 		class office_element;
 		typedef shared_ptr<office_element>::Type office_element_ptr;
 
-		class style_text_properties;
-		class style_paragraph_properties;
-		class style_graphic_properties;
-		class style_table_properties;
-		class style_section_properties;
-		class style_table_cell_properties;
-		class style_table_row_properties;
-		class style_table_column_properties;
-		class style_chart_properties;
-		class style_drawing_page_properties;
-
 		namespace package 
 		{		
 			class odf_document;

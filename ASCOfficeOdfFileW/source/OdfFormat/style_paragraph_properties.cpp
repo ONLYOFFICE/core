@@ -155,11 +155,6 @@ void paragraph_format_properties::serialize(std::wostream & _Wostream ,const wch
 			CP_XML_ATTR_OPT(L"fo:break-before", fo_break_before_);
 			CP_XML_ATTR_OPT(L"fo:break-after", fo_break_after_);
 			CP_XML_ATTR_OPT(L"fo:background-color", fo_background_color_);
-			CP_XML_ATTR_OPT(L"fo:border", fo_border_);
-			CP_XML_ATTR_OPT(L"fo:border-top", fo_border_top_);
-			CP_XML_ATTR_OPT(L"fo:border-bottom", fo_border_bottom_);
-			CP_XML_ATTR_OPT(L"fo:border-left", fo_border_left_);
-			CP_XML_ATTR_OPT(L"fo:border-right", fo_border_right_);
 			CP_XML_ATTR_OPT(L"style:border-line-width", style_border_line_width_);
 			CP_XML_ATTR_OPT(L"style:border-line-width-top", style_border_line_width_top_);
 			CP_XML_ATTR_OPT(L"style:border-line-width-bottom", style_border_line_width_bottom_);
@@ -182,7 +177,10 @@ void paragraph_format_properties::serialize(std::wostream & _Wostream ,const wch
 			CP_XML_ATTR_OPT(L"style:writing-mode-automatic", style_writing_mode_automatic_);
 			CP_XML_ATTR_OPT(L"style:snap-to-layout-grid", style_snap_to_layout_grid_);
 			CP_XML_ATTR_OPT(L"style:contextual-spacing", style_contextual_spacing_);
+			CP_XML_ATTR_OPT(L"style:background-transparency", style_background_transparency_);
+			CP_XML_ATTR_OPT(L"style:join_border", style_join_border_);
 		
+			common_border_attlist_.serialize(CP_GET_XML_NODE());
 			//_CP_OPT(std::wstring) style_page_number_str_;
 			//CP_XML_ATTR_OPT(L"style:page-number", style_page_number_str_);
 
@@ -193,8 +191,6 @@ void paragraph_format_properties::serialize(std::wostream & _Wostream ,const wch
 			//		style_page_number_=  boost::lexical_cast<int>(style_page_number_str_.get());
 			//}
 
-			CP_XML_ATTR_OPT(L"style:background-transparency", style_background_transparency_);
-			CP_XML_ATTR_OPT(L"style:join_border", style_join_border_);
 
 			if (style_tab_stops_)		style_tab_stops_->serialize(CP_XML_STREAM());
 			if (style_drop_cap_)		style_drop_cap_->serialize(CP_XML_STREAM());
@@ -258,12 +254,9 @@ void paragraph_format_properties::apply_from(paragraph_format_properties & Other
     // TODO
     _CP_APPLY_PROP(style_background_image_, Other.style_background_image_);
 
-    _CP_APPLY_PROP(fo_border_, Other.fo_border_);
-    _CP_APPLY_PROP(fo_border_top_, Other.fo_border_top_);
-    _CP_APPLY_PROP(fo_border_bottom_, Other.fo_border_bottom_);
-    _CP_APPLY_PROP(fo_border_left_, Other.fo_border_left_);
-    _CP_APPLY_PROP(fo_border_right_, Other.fo_border_right_);
-    _CP_APPLY_PROP(style_border_line_width_, Other.style_border_line_width_);
+	common_border_attlist_.apply_from(Other.common_border_attlist_);
+
+	_CP_APPLY_PROP(style_border_line_width_, Other.style_border_line_width_);
     _CP_APPLY_PROP(style_border_line_width_top_, Other.style_border_line_width_top_);
     _CP_APPLY_PROP(style_border_line_width_bottom_, Other.style_border_line_width_bottom_);
     _CP_APPLY_PROP(style_border_line_width_left_, Other.style_border_line_width_left_);

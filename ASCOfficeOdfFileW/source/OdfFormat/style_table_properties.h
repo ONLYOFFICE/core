@@ -51,6 +51,8 @@ public:
     common_shadow_attlist				common_shadow_attlist_;
     common_keep_with_next_attlist		common_keep_with_next_attlist_;
     common_writing_mode_attlist			common_writing_mode_attlist_;
+	common_border_attlist				common_border_attlist_;
+
  
 	office_element_ptr style_background_image_;
 

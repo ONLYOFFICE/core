@@ -22,6 +22,10 @@ namespace cpdoccore
 {
 namespace odf
 {
+	struct odf_column_state : odf_element_state
+	{
+		std::vector<office_element_ptr>	spanned_row_cell;
+	};
 	struct odf_table_state
 	{
 		odf_table_state()
@@ -29,10 +33,9 @@ namespace odf
 			current_row = 0;
 			current_column = 0;
 			count_header_row = 0;
-			current_spanned_row = 0;
 		}
 		std::vector<odf_element_state> rows;
-		std::vector<odf_element_state> columns;
+		std::vector<odf_column_state> columns;
 		std::vector<odf_element_state> cells;
 
 		odf_element_state table;
@@ -42,7 +45,6 @@ namespace odf
 
 		__int32 count_header_row;
 
-		__int32 current_spanned_row;
 	};
 
 class odf_table_context::Impl
@@ -61,9 +63,12 @@ public:
 	void end_table() {if (tables_.size() > 0) tables_.pop_back();}
 
 	odf_style_context	* styles_context() {return odf_context_->styles_context();}
+
+	//std::wstring default_cell_style_name_ ; // нету :( придетс€ накатывать на обычные
+	odf_conversion_context *odf_context_; 
+
 private:
 	std::vector<odf_table_state> tables_;//типо current level ... дл€ вложенных таблиц
-	odf_conversion_context *odf_context_; 
 
 };
 
@@ -94,6 +99,10 @@ void odf_table_context::start_table(office_element_ptr &elm, bool styled)
 			state.table.style_elm = style_state->get_office_element();
 			state.table.style_name = style_state->get_name();
 			table->table_table_attlist_.table_style_name_ = state.table.style_name;		
+			
+			//дл€ красивой отрисовки в редакторах - разрешим объеденить стили пересекающихс€ обрамлений 
+			style_table_properties *table_properties = style_state->get_table_properties();
+			table_properties->table_format_properties_.table_border_model_ = odf::border_model(odf::border_model::Collapsing);
 		}
 	}
 
@@ -101,6 +110,12 @@ void odf_table_context::start_table(office_element_ptr &elm, bool styled)
 }
 void odf_table_context::end_table()
 {
+	//последние объединенные по вертикали €чейки .. 
+	for (long i =0 ; i < impl_->current_table().columns.size(); i++)
+	{
+		impl_->current_table().current_column = i+1;
+		set_cell_row_span_restart();
+	}
 	impl_->end_table(); 
 }
 void odf_table_context::start_row(office_element_ptr &elm, bool styled)
@@ -124,6 +139,7 @@ void odf_table_context::start_row(office_element_ptr &elm, bool styled)
 		}
 	}
 
+
 	impl_->current_table().rows.push_back(state);
 
 	impl_->current_table().current_column =0;
@@ -133,7 +149,18 @@ void odf_table_context::start_row(office_element_ptr &elm, bool styled)
 void odf_table_context::end_row()
 {
 	if (impl_->empty()) return;
+	
+	//for (int i = impl_->current_table().current_column ; i< impl_->current_table().columns.size() ; i++)
+	//{
+	//	office_element_ptr cell; //потом на default ???
+	//	create_element(L"table", L"table-cell",cell , impl_->odf_context_);
+	//	start_cell(cell,false);
+	//	end_cell();
+	//}
+	impl_->current_table().current_column =0;
 }
+
+
 
 void odf_table_context::add_column(office_element_ptr &elm, bool styled)
 {
@@ -142,7 +169,7 @@ void odf_table_context::add_column(office_element_ptr &elm, bool styled)
 	table_table_column * column = dynamic_cast<table_table_column *>(elm.get());;
 	if (!column)return;
 
-	odf_element_state state;
+	odf_column_state state;
 
 	state.elm = elm;
 	if (styled)
@@ -178,17 +205,31 @@ void odf_table_context::set_column_width(double width)
 	else
 		properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = true;
 }
+int odf_table_context::current_column ()
+{
+	if (impl_->empty()) return 0;
+	
+	return impl_->current_table().current_column;
+}
+int odf_table_context::count_column ()
+{
+	if (impl_->empty()) return 0;
+
+	return impl_->current_table().columns.size();
+
+}
 void odf_table_context::start_cell(office_element_ptr &elm, bool styled)
 {
 	if (impl_->empty()) return;
 
 	table_table_cell * cell = dynamic_cast<table_table_cell *>(elm.get());;
-	if (!cell)return;
+	table_covered_table_cell * covered_cell = dynamic_cast<table_covered_table_cell *>(elm.get());;
+	if (!cell && !covered_cell)return;
 	
 	odf_element_state state;
 
 	state.elm = elm;
-	if (styled)
+	if (styled && cell)
 	{
 		odf_style_state * style_state = impl_->styles_context()->last_state(style_family::TableCell);
 		if (style_state)
@@ -203,7 +244,7 @@ void odf_table_context::start_cell(office_element_ptr &elm, bool styled)
 
 	impl_->current_table().current_column++;
 }
-void odf_table_context::set_cell_spanned(int spanned)
+void odf_table_context::set_cell_column_span(int spanned)
 {
 	if (impl_->empty()) return;
 	if (impl_->current_table().cells.size() < 1)return;
@@ -214,10 +255,37 @@ void odf_table_context::set_cell_spanned(int spanned)
 
 	cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = spanned;
 
-	impl_->current_table().current_column += spanned-1;
+	//impl_->current_table().current_column += spanned-1;
 				
-	//cell_elm->table_table_cell_attlist_extra_.table_number_rows_spanned_ = spanned_rows;	
 }
+
+void odf_table_context::set_cell_row_span()
+{
+	int col = impl_->current_table().current_column-1;
+	odf_column_state & state = impl_->current_table().columns[col];
+
+	state.spanned_row_cell.push_back(impl_->current_table().cells.back().elm);
+}
+
+void odf_table_context::set_cell_row_span_restart()
+{
+	int col = impl_->current_table().current_column-1;
+	odf_column_state & state = impl_->current_table().columns[col];
+
+	int sz = state.spanned_row_cell.size();
+	
+	if (sz  > 1)
+	{
+		table_table_cell * cell = dynamic_cast<table_table_cell *>(state.spanned_row_cell[0].get());
+		if (!cell)return;
+
+		cell->table_table_cell_attlist_extra_.table_number_rows_spanned_ = sz;
+	}
+	state.spanned_row_cell.clear();
+	state.spanned_row_cell.push_back(impl_->current_table().cells.back().elm);
+
+}
+
 void odf_table_context::end_cell()
 {
 	if (impl_->empty()) return;

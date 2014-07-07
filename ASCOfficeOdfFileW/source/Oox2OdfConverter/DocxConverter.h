@@ -42,6 +42,8 @@ namespace OOX
 		class CTableCellProperties;
 		class CTableProperty;
 		class CTableRowProperties;
+		class CTcBorders;
+		class CTblBorders;
 
 	}
 
@@ -104,7 +106,6 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CParagraph				*oox_paragraph);
 		void convert(OOX::Logic::CRun					*oox_run);
 		void convert(OOX::Logic::CParagraphProperty		*oox_paragraph_prop,	odf::style_paragraph_properties *paragraph_properties);
-		void convert(OOX::Logic::CPBdr					*oox_border,			odf::style_paragraph_properties *paragraph_properties);
 		void convert(ComplexTypes::Word::CFramePr		*oox_frame_pr,			odf::style_paragraph_properties *paragraph_properties);
 		void convert(OOX::Logic::CRunProperty			*oox_run_prop,			odf::style_text_properties		*text_properties);
 		void convert(ComplexTypes::Word::CShading		*oox_shading,			odf::style_text_properties		*text_properties );
@@ -127,6 +128,10 @@ namespace Oox2Odf
 		void convert(ComplexTypes::Word::CJc			*oox_jc,		_CP_OPT(odf::text_align)		& align);
 		void convert(ComplexTypes::Word::CBorder		*borderProp,	std::wstring & odf_border_prop);
 		
+		void convert(OOX::Logic::CPBdr					*oox_border,			odf::style_paragraph_properties		*paragraph_properties);
+		void convert(OOX::Logic::CTcBorders 			*oox_border,			odf::style_table_cell_properties	*table_cell_properties);
+		void convert(OOX::Logic::CTblBorders			*oox_border,			odf::style_table_cell_properties	*table_cell_properties);
+		//void convert(OOX::Logic::CTblBorders			*oox_border,			odf::style_table_properties			*table_properties);
 
 		void convert(SimpleTypes::CHexColor<>			*color, SimpleTypes::CThemeColor<>	*theme_color, 
 														SimpleTypes::CUcharHexNumber<>* theme_tint,
@@ -144,8 +149,11 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CTc					*oox_table_cell);
 		
 		bool convert(OOX::Logic::CTableCellProperties	*oox_table_cell_pr);
+		bool convert(OOX::Logic::CTableCellProperties	*oox_table_cell_pr,	odf::style_table_cell_properties	*table_cell_properties/*,odf::style_table_cell_properties	* table_cell_properties = NULL*/);
 		bool convert(OOX::Logic::CTableProperty			*oox_table_pr);
+		bool convert(OOX::Logic::CTableProperty			*oox_table_pr,			odf::style_table_properties		*table_properties);
 		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr);
+		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr,		odf::style_table_row_properties	*table_row_properties);
 //--------------------------------------------------------------------------------
 		bool m_bKeepNextParagraph;
 	};

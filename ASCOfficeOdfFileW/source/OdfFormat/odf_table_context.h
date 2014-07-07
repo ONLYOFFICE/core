@@ -23,6 +23,9 @@ public:
 
 	void set_styles_context(odf_style_context*  styles_context);
 
+	int current_column ();
+	int count_column ();
+
 	void start_table(office_element_ptr &elm, bool styled = false);
 	void end_table();
 
@@ -30,11 +33,15 @@ public:
 	void end_row();
 
 	void start_cell(office_element_ptr &elm, bool styled = false);
-		void set_cell_spanned(int spanned);
+		void set_cell_column_span(int spanned);
+		void set_cell_row_span();
+		void set_cell_row_span_restart();	
 	void end_cell();
 
 	void add_column(office_element_ptr &elm, bool styled = false);
 		void set_column_width(double width);
+
+
 
 private:
 

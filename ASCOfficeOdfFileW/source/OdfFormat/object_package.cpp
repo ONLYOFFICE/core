@@ -251,6 +251,7 @@ namespace odf
 				item->write(path.string());
 			}
 			if (manifest_)	manifest_->write(RootPath);
+			if (mimetype_)  mimetype_->write(RootPath);
 			if (settings_)	settings_->write(RootPath);			
 		}
 		

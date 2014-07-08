@@ -1100,46 +1100,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\OdfFormat\odf_number_styles_context.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OdfFormat\odf_number_styles_context.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OdfFormat\odf_page_layout_context.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OdfFormat\odf_page_layout_context.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OdfFormat\odf_page_layout_state.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OdfFormat\odf_page_layout_state.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OdfFormat\odf_style_context.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OdfFormat\odf_style_context.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OdfFormat\odf_style_state.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OdfFormat\odf_style_state.h"
-				>
-			</File>
-			<File
 				RelativePath=".\OdfFormat\style_chart_properties.cpp"
 				>
 			</File>
@@ -1227,6 +1187,58 @@
 				RelativePath=".\OdfFormat\styles_lite_container.h"
 				>
 			</File>
+			<Filter
+				Name="contexts"
+				>
+				<File
+					RelativePath=".\OdfFormat\odf_number_styles_context.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OdfFormat\odf_number_styles_context.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OdfFormat\odf_page_layout_context.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OdfFormat\odf_page_layout_context.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OdfFormat\odf_page_layout_state.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OdfFormat\odf_page_layout_state.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OdfFormat\odf_style_context.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OdfFormat\odf_style_context.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OdfFormat\odf_style_state.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OdfFormat\odf_style_state.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OdfFormat\odf_table_styles_context.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OdfFormat\odf_table_styles_context.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="odf text"

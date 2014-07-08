@@ -4,6 +4,7 @@
 
 #include "odf_style_state.h"
 #include "odf_number_styles_context.h"
+#include "odf_table_styles_context.h"
 
 
 namespace cpdoccore {
@@ -60,6 +61,7 @@ public:
     odf_style_state * last_state(style_family family);
 
 	odf_number_styles_context & numbers_styles() {return number_styles_context_;}
+	odf_table_styles_context & table_styles() {return table_styles_context_;}
 	
 	std::wstring find_free_name(const style_family  family);
 
@@ -67,6 +69,7 @@ public:
 	void calc_paragraph_properties(std::wstring style_name, style_family::type family, paragraph_format_properties * result);
 
 private:
+	odf_table_styles_context	table_styles_context_;
 	odf_number_styles_context	number_styles_context_;
     odf_conversion_context *	odf_context_;
     

@@ -1645,11 +1645,9 @@ void DocxConverter::convert(OOX::Logic::CTc	*oox_table_cell)
 	{
 		if (oox_table_cell->m_oTableCellProperties->m_oVMerge.IsInit())
 		{
-			if (oox_table_cell->m_oTableCellProperties->m_oVMerge->m_oVal.IsInit() && 
-					oox_table_cell->m_oTableCellProperties->m_oVMerge->m_oVal->GetValue() == SimpleTypes::mergeRestart)
-			{}
-			else 
-				 covered = true;
+			if (!(oox_table_cell->m_oTableCellProperties->m_oVMerge->m_oVal.IsInit() && 
+					oox_table_cell->m_oTableCellProperties->m_oVMerge->m_oVal->GetValue() == SimpleTypes::mergeRestart))
+				covered = true; 
 		}
 	}
 
@@ -1716,20 +1714,24 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr)
 	
 	odf::style_table_properties	* table_properties = odt_context->styles_context()->last_state().get_table_properties();
 
+
 	if (oox_table_pr->m_oTblStyle.IsInit() && oox_table_pr->m_oTblStyle->m_sVal.IsInit())
 	{
-		odt_context->styles_context()->last_state().set_parent_style_name(string2std_string(*oox_table_pr->m_oTblStyle->m_sVal));
+		std::wstring base_style_name = string2std_string(*oox_table_pr->m_oTblStyle->m_sVal);
+
+		bool res = odt_context->styles_context()->table_styles().set_current_style(base_style_name);
+		if (res) odt_context->table_context()->set_table_base_style(base_style_name );
 	}
 	convert(oox_table_pr, table_properties);
-
-///////////////////////////////////////////////////////////////////////////
+	
 	if (oox_table_pr->m_oTblBorders.IsInit())
 	{//напр€мую задать cell_prop на саму таблицу низ€ - тока как default-cell-style-name на columns & row
 
 		odf::style_table_cell_properties	* table_cell_properties = odt_context->styles_context()->last_state().get_table_cell_properties();
 		convert(oox_table_pr->m_oTblBorders.GetPointer(), table_cell_properties);
-
 	}
+///////////////////////////////////////////////////////////////////////////
+
 	//дл€ красивой отрисовки в редакторах - разрешим объеденить стили пересекающихс€ обрамлений 
 	table_properties->table_format_properties_.table_border_model_ = odf::border_model(odf::border_model::Collapsing);
 
@@ -1825,25 +1827,30 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 }
 bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr)
 {
-	if (oox_table_cell_pr == NULL) return false;
+	bool is_base_styled = odt_context->table_context()->is_styled();
+	odf::style_table_cell_properties * parent_cell_properties = NULL;
 
-	odt_context->styles_context()->create_style(L"",odf::style_family::TableCell, true, false, -1); 
+	odf::odf_style_state * state  = odt_context->styles_context()->last_state(odf::style_family::Table); // стиль придетс€ генерить всегда
+	//проверить ситуацию когда дефолтовые настройки в целом на все €чейки есть, а локальные свойства ваще не заданы
+	if (state)parent_cell_properties = state->get_table_cell_properties();
 	
+	if (oox_table_cell_pr == NULL && is_base_styled == false && parent_cell_properties == NULL) return false;
+	
+	odt_context->styles_context()->create_style(L"",odf::style_family::TableCell, true, false, -1); 	
 	odf::style_table_cell_properties	* cell_properties = odt_context->styles_context()->last_state().get_table_cell_properties();
 
-	//так как дефолтоыве (общие) свойства дл€ всей таблицы не поддерживаютс€  - придетс€ из вытащить - и накатить сначала 
+	if (cell_properties == NULL) return false;
+
+	if (is_base_styled)
 	{
-		odf::odf_style_state * state  = odt_context->styles_context()->last_state(odf::style_family::Table); // стиль придетс€ генерить всегда
-		//проверить ситуацию когда дефолтовые настройки в целом на все €чейки есть, а локальные свойства ваще не заданы
-		if (state)
-		{
-			odf::style_table_cell_properties * parent_cell_properties = state->get_table_cell_properties();
-			if (parent_cell_properties && cell_properties)
-			{
-				cell_properties->apply_from(parent_cell_properties);
-			}
-		}
+		int col=odt_context->table_context()->current_column();
+		int row=odt_context->table_context()->current_row();
+		
+		odf::style_table_cell_properties *base_style = odt_context->styles_context()->table_styles().get_table_cell_properties(col, row);
+
+		cell_properties->apply_from(base_style);
 	}
+	cell_properties->apply_from(parent_cell_properties);
 	bool res = convert(oox_table_cell_pr, cell_properties);
 
 

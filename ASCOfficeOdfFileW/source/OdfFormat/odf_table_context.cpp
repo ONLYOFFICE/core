@@ -45,6 +45,8 @@ namespace odf
 
 		__int32 count_header_row;
 
+		std::wstring base_style_name;
+
 	};
 
 class odf_table_context::Impl
@@ -83,6 +85,15 @@ odf_table_context::~odf_table_context()
 {
 }
 
+void odf_table_context::set_table_base_style(std::wstring base_style_name)
+{
+	impl_->current_table().base_style_name = base_style_name;
+}
+
+bool odf_table_context::is_styled()
+{
+	return impl_->current_table().base_style_name.length() >0 ? true : false;
+}
 void odf_table_context::start_table(office_element_ptr &elm, bool styled)
 {
 	table_table * table = dynamic_cast<table_table *>(elm.get());
@@ -211,6 +222,12 @@ int odf_table_context::current_column ()
 	
 	return impl_->current_table().current_column;
 }
+int odf_table_context::current_row ()
+{
+	if (impl_->empty()) return 0;
+	
+	return impl_->current_table().current_row;
+}
 int odf_table_context::count_column ()
 {
 	if (impl_->empty()) return 0;
@@ -223,7 +240,7 @@ void odf_table_context::start_cell(office_element_ptr &elm, bool styled)
 	if (impl_->empty()) return;
 
 	table_table_cell * cell = dynamic_cast<table_table_cell *>(elm.get());;
-	table_covered_table_cell * covered_cell = dynamic_cast<table_covered_table_cell *>(elm.get());;
+	table_covered_table_cell * covered_cell = dynamic_cast<table_covered_table_cell *>(elm.get());
 	if (!cell && !covered_cell)return;
 	
 	odf_element_state state;

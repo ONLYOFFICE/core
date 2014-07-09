@@ -212,6 +212,13 @@ void style_paragraph_properties::serialize(std::wostream & strm)
 {
 	 style_paragraph_properties_content_.serialize(strm,ns,name);
 }
+void style_paragraph_properties::apply_from(style_paragraph_properties * Other)
+{
+	if (Other == NULL)return;
+
+	style_paragraph_properties_content_.apply_from(Other->content());
+}
+
 void paragraph_format_properties::apply_from(paragraph_format_properties & Other)
 {
     apply_line_width(fo_line_height_, Other.fo_line_height_);

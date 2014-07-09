@@ -138,6 +138,7 @@ namespace Oox2Odf
 														SimpleTypes::CUcharHexNumber<>* theme_shade, _CP_OPT(odf::color) & odf_color);
 		void convert(OOX::CDocDefaults					*def_style);
 		void convert(OOX::CStyle						*style);
+		void convert_table_style(OOX::CStyle			*oox_style);
 
 		void convert(OOX::Logic::CCommentRangeStart		*oox_comm_start);
 		void convert(OOX::Logic::CCommentRangeEnd		*oox_comm_end);

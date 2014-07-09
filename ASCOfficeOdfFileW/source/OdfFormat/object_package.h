@@ -71,14 +71,15 @@ namespace odf
 		class simple_element : public element
 		{
 		public:
-			simple_element(const std::wstring & FileName, const std::wstring & Content);
-			static element_ptr create(const std::wstring & FileName, const std::wstring & Content);
+			simple_element(const std::wstring & FileName, const std::wstring & Content, bool utf8 = true);
+			static element_ptr create(const std::wstring & FileName, const std::wstring & Content, bool utf8 = true);
 
 			virtual void write(const std::wstring & RootPath);
 
 		private:
 			std::wstring file_name_;
 			std::string content_utf8_;
+			bool utf8_;
 
 		};
 

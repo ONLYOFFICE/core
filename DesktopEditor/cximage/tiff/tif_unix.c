@@ -235,6 +235,7 @@ TIFFOpenW(const wchar_t* name, const char* mode)
 }
 #endif
 
+#ifndef _QT
 void*
 _TIFFmalloc(tsize_t s)
 {
@@ -298,3 +299,5 @@ TIFFErrorHandler _TIFFerrorHandler = unixErrorHandler;
  * fill-column: 78
  * End:
  */
+
+#endif

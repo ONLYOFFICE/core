@@ -254,10 +254,10 @@ void DocxConverter::convert(OOX::Logic::CParagraph	*oox_paragraph)
 			odt_context->styles_context()->create_style(L"",odf::style_family::Paragraph, true, false, -1);					
 			paragraph_properties = odt_context->styles_context()->last_state().get_paragraph_properties();
 		}
-		m_bKeepNextParagraph = false;
 
 		convert(oox_paragraph->m_oParagraphProperty, paragraph_properties); 
-	}else m_bKeepNextParagraph = false;
+	}else m_bKeepNextParagraph = false; //Ќ”∆Ќќ ѕ–»¬я«ј“№ к ”–ќ¬Ќё на котором хранить m_bKeepNextParagraph !!! todooo
+	//пока - если следующий не параграф - скидываем !!!
 	
 	if (bStartNewParagraph) odt_context->start_paragraph(styled);
 	
@@ -392,10 +392,10 @@ void DocxConverter::convert(OOX::Logic::CInstrText	*oox_instr)
 }
 void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cpdoccore::odf::style_paragraph_properties * paragraph_properties)
 {
+	m_bKeepNextParagraph = false;
+	
 	if (!oox_paragraph_pr)		return;
 	if (!paragraph_properties)	return;
-
-	m_bKeepNextParagraph = false;
 
 	if (oox_paragraph_pr->m_oPStyle.IsInit() && oox_paragraph_pr->m_oPStyle->m_sVal.IsInit())
 	{
@@ -1292,7 +1292,7 @@ void DocxConverter::convert(SimpleTypes::CHexColor<>		*color,
 		ucA = color->Get_A(); 
 		result = true;
 	}
-	if(theme_color)
+	if(theme_color && result == false)
 	{
 		OOX::CTheme * docx_theme= docx_document->GetTheme();
 		int theme_ind = theme_color->GetValue();
@@ -1323,10 +1323,7 @@ void DocxConverter::convert(SimpleTypes::CHexColor<>		*color,
 			case SimpleTypes::themecolorHyperlink:
 				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
 		}
-	}
-	if (result == true)
-	{
-		if (theme_tint)
+		if (result == true && theme_tint)
 		{
 			OOX::Drawing::CHslColor col;
 			col.SetRGBA(ucR, ucG, ucB);
@@ -1336,6 +1333,9 @@ void DocxConverter::convert(SimpleTypes::CHexColor<>		*color,
 			col.SetHSL(dH, dS,dL);
 			col.GetRGBA(ucR, ucG, ucB,ucA);
 		}
+	}
+	if (result == true)
+	{
 		SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
 		if (oRgbColor)
 		{		
@@ -1434,11 +1434,23 @@ void DocxConverter::convert_table_style(OOX::CStyle *oox_style)
 			convert(oox_style->m_oTblPr->m_oTblBorders.GetPointer(), table_cell_properties);
 		}
 	}
+	if (oox_style->m_oRunPr.IsInit())
+	{
+		odf::style_text_properties	* text_properties = odt_context->styles_context()->table_styles().get_text_properties();
+		convert(oox_style->m_oRunPr.GetPointer(), text_properties);
+	}
+	if (oox_style->m_oParPr.IsInit())
+	{
+		odf::style_paragraph_properties	* paragraph_properties = odt_context->styles_context()->table_styles().get_paragraph_properties();
+		convert(oox_style->m_oParPr.GetPointer(), paragraph_properties);
+	}
+
 	if (oox_style->m_oTcPr.IsInit())
 	{
 		odf::style_table_cell_properties	* table_cell_properties = odt_context->styles_context()->table_styles().get_table_cell_properties();
 		convert(oox_style->m_oTcPr.GetPointer(), table_cell_properties);
-	}	//if (oox_style->m_oTrPr.IsInit())
+	}	
+	//if (oox_style->m_oTrPr.IsInit())
 	//{
 	//	odf::style_table_row_properties	* table_row_properties = odt_context->styles_context()->table_styles().get_table_row_properties();
 	//	convert(oox_style->m_oTrPr.GetPointer(), table_row_properties);
@@ -1600,19 +1612,31 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 {
 	if (oox_table == NULL) return;
 
+	if (m_bKeepNextParagraph)
+	{
+		odt_context->end_paragraph();
+		m_bKeepNextParagraph = false;
+	}
+
+
 	convert(oox_table->m_oTableProperties);	
 	odt_context->start_table(true); 
 
-
+//настройка предустановленного стил€
 	if (oox_table->m_oTableProperties && (oox_table->m_oTableProperties->m_oTblStyle.IsInit() && oox_table->m_oTableProperties->m_oTblStyle->m_sVal.IsInit()))
 	{
 		std::wstring base_style_name = string2std_string(*oox_table->m_oTableProperties->m_oTblStyle->m_sVal);
 
-		bool res = odt_context->styles_context()->table_styles().set_current_style(base_style_name);
-		if (res) odt_context->table_context()->set_table_base_style(base_style_name );
+		bool res = odt_context->styles_context()->table_styles().start_table(base_style_name);
+		if (res)
+		{
+			odt_context->table_context()->set_table_styled(res);
+			if (oox_table->m_oTableProperties->m_oTblLook.IsInit() && oox_table->m_oTableProperties->m_oTblLook->m_oVal.IsInit())
+				odt_context->styles_context()->table_styles().set_flags(oox_table->m_oTableProperties->m_oTblLook->m_oVal->GetValue());
+		}
 	}
 
-	int count_rows = oox_table->m_arrItems.GetSize();
+	int count_rows = oox_table->m_nCountRow;
 	int count_columns = 0;
 	if (oox_table->m_oTblGrid.IsInit())count_columns = oox_table->m_oTblGrid->m_arrGridCol.GetSize();
 	
@@ -1636,6 +1660,9 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 	}
 
 	odt_context->end_table();
+
+	if (odt_context->table_context()->is_styled())
+		odt_context->styles_context()->table_styles().end_table();
 }
 void DocxConverter::convert(OOX::Logic::CTblGrid	*oox_table_grid)
 {
@@ -1706,7 +1733,7 @@ void DocxConverter::convert(OOX::Logic::CTc	*oox_table_cell)
 		}
 	}
 
-	odt_context->start_table_cell( oox_table_cell->m_nNumCol,covered, convert(oox_table_cell->m_oTableCellProperties));
+	odt_context->start_table_cell( oox_table_cell->m_nNumCol,covered, convert(oox_table_cell->m_oTableCellProperties, oox_table_cell->m_nNumCol+1));
 	
 	if (oox_table_cell->m_oTableCellProperties)
 	{
@@ -1872,9 +1899,13 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 	//nullable<ComplexTypes::Word::CVerticalJc                     > m_oVAlign;
 	return true;
 }
-bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr)
+bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr, int col)
 {
 	bool is_base_styled = odt_context->table_context()->is_styled();
+	
+	if (col < 0) col=odt_context->table_context()->current_column()+1;
+	int row=odt_context->table_context()->current_row();
+		
 	odf::style_table_cell_properties * parent_cell_properties = NULL;
 
 	odf::odf_style_state * state  = odt_context->styles_context()->last_state(odf::style_family::Table); // стиль придетс€ генерить всегда
@@ -1893,7 +1924,7 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr)
 		odf::style_text_properties		* text_properties		= odt_context->styles_context()->last_state().get_text_properties();
 		odf::style_paragraph_properties	* paragraph_properties	= odt_context->styles_context()->last_state().get_paragraph_properties();
 		
-		int col=odt_context->table_context()->current_column()+1;
+		if (col < 0) col=odt_context->table_context()->current_column()+1;
 		int row=odt_context->table_context()->current_row();
 		
 		odt_context->styles_context()->table_styles().get_table_cell_properties (col, row, cell_properties);

@@ -23,9 +23,9 @@ public:
 
 	void set_styles_context(odf_style_context*  styles_context);
 	
-	void set_table_base_style(std::wstring base_style_name);
+	void		set_table_styled(bool val);
+	bool		is_styled();
 
-	bool is_styled() ;
 	int current_column ();
 	int current_row ();
 	int count_column ();

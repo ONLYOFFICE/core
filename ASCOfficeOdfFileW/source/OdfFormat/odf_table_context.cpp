@@ -33,6 +33,7 @@ namespace odf
 			current_row = 0;
 			current_column = 0;
 			count_header_row = 0;
+			styled = false;
 		}
 		std::vector<odf_element_state> rows;
 		std::vector<odf_column_state> columns;
@@ -45,7 +46,7 @@ namespace odf
 
 		__int32 count_header_row;
 
-		std::wstring base_style_name;
+		bool styled;
 
 	};
 
@@ -66,7 +67,6 @@ public:
 
 	odf_style_context	* styles_context() {return odf_context_->styles_context();}
 
-	//std::wstring default_cell_style_name_ ; // нету :( придется накатывать на обычные
 	odf_conversion_context *odf_context_; 
 
 private:
@@ -85,15 +85,17 @@ odf_table_context::~odf_table_context()
 {
 }
 
-void odf_table_context::set_table_base_style(std::wstring base_style_name)
+void odf_table_context::set_table_styled(bool val)
 {
-	impl_->current_table().base_style_name = base_style_name;
+	impl_->current_table().styled = val;
 }
 
 bool odf_table_context::is_styled()
 {
-	return impl_->current_table().base_style_name.length() >0 ? true : false;
+	if (impl_->empty()) return false;
+	return impl_->current_table().styled;
 }
+
 void odf_table_context::start_table(office_element_ptr &elm, bool styled)
 {
 	table_table * table = dynamic_cast<table_table *>(elm.get());

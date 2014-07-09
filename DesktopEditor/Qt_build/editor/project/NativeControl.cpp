@@ -4,7 +4,9 @@
 #include <QGLContext>
 #include <QThread>
 
+#ifdef _QTX
 #include "GL/glx.h"
+#endif
 
 class CEditorCtrlWrapper : public CEditorCtrl
 {
@@ -286,9 +288,11 @@ void CNativeCtrl::paintGL()
 
     DWORD dwTime2 = NSTimers::GetTickCount();
 
+    /*
     FILE* file = fopen("/home/oleg/activex/AVS/Sources/TeamlabOffice/trunk/ServerComponents/DesktopEditor/log.txt", "a+");
     fprintf(file, "time: %d\n", (int)(dwTime2 - dwTime1));
     fclose(file);
+    */
 }
 
 void CNativeCtrl::resizeGL(int width, int height)

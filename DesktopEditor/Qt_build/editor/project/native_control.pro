@@ -21,6 +21,8 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
 
 mac {
     DEFINES += \
+    _LINUX \
+    _LINUX_QT \
     _MAC \
     QT_MAC
 }

@@ -21,9 +21,12 @@ class style_paragraph_properties;
 
 struct _style_properties
 {
+	_style_properties(){is = false;}
 	office_element_ptr	text_props;
 	office_element_ptr	paragraph_props;
 	office_element_ptr	table_cell_props;
+
+	bool is;
 };
 struct table_format_state
 {
@@ -49,7 +52,7 @@ struct table_format_state
 class odf_table_styles_context
 {
 public:
-	odf_table_styles_context(){current = NULL; context_ = NULL; current_table_style_ = -1;}
+	odf_table_styles_context(){current = NULL; context_ = NULL; }
 	
 	void set_odf_context(odf_conversion_context * Context)
 	{
@@ -84,12 +87,14 @@ public:
 //-----------------------------------------------
 // output
 //-----------------------------------------------
-	bool set_current_style(std::wstring name);
-	void set_current_dimension(int col, int row);
+	bool start_table(std::wstring style_name);
+		void set_current_dimension(int col, int row);
+		void set_flags(int val);
 
-	void get_table_cell_properties	(int col, int row, style_table_cell_properties *props);
-	void get_text_properties		(int col, int row, style_text_properties *props);
-	void get_paragraph_properties	(int col, int row, style_paragraph_properties *props);
+		void get_table_cell_properties	(int col, int row, style_table_cell_properties *props);
+		void get_text_properties		(int col, int row, style_text_properties *props);
+		void get_paragraph_properties	(int col, int row, style_paragraph_properties *props);
+	void end_table();
 
 private:
 
@@ -99,9 +104,21 @@ private:
 
 	odf_conversion_context *context_;
 
-	int current_table_style_;
-	int current_table_col_count_;
-	int current_table_row_count_;
+	struct _use_style
+	{
+		int table_style_;
+		int table_col_count_;
+		int table_row_count_;
+
+		bool cols;
+		bool rows;
+		bool first_row;
+		bool last_row;
+		bool first_col;
+		bool last_col;
+	};
+
+	std::vector<_use_style> current_used_;
 
 //////////////////
 

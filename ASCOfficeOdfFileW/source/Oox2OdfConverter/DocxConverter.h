@@ -149,7 +149,7 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CTr					*oox_table_row);
 		void convert(OOX::Logic::CTc					*oox_table_cell);
 		
-		bool convert(OOX::Logic::CTableCellProperties	*oox_table_cell_pr);
+		bool convert(OOX::Logic::CTableCellProperties	*oox_table_cell_pr, int col = -1);
 		bool convert(OOX::Logic::CTableCellProperties	*oox_table_cell_pr,	odf::style_table_cell_properties	*table_cell_properties/*,odf::style_table_cell_properties	* table_cell_properties = NULL*/);
 		bool convert(OOX::Logic::CTableProperty			*oox_table_pr);
 		bool convert(OOX::Logic::CTableProperty			*oox_table_pr,			odf::style_table_properties		*table_properties);

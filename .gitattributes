@@ -2103,6 +2103,7 @@ RedistOpenSource/XlsxSerializerCom.dll svn_mime_002dtype=application%2Foctet-str
 SDK/include svnc_tsvn_003alogminsize=5
 SDK/lib svnc_tsvn_003alogminsize=5
 SDK/lib/DocumentEditorCtrl_ios.framework svn_mime_002dtype=application%2Foctet-stream
+SDK/lib/linux_32 svnc_tsvn_003alogminsize=5
 Test/Applications/AVSOfficeDocFileTest/AVSOfficeDocFileTest/AVSDocFileTest.aps svn_mime_002dtype=application%2Foctet-stream
 Test/Applications/AVSOfficeDocFileTest/AVSOfficeDocFileTest/res/AVSDocFileTest.ico svn_mime_002dtype=application%2Foctet-stream
 Test/Applications/AVSOfficeDocFileTest/Test/Test.doc svn_mime_002dtype=application%2Foctet-stream

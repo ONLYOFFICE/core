@@ -17,21 +17,27 @@ namespace odf
 	{
 
 		namespace fs = boost::filesystem;
-		simple_element::simple_element(const std::wstring & FileName, const std::wstring & Content) : file_name_(FileName)
+		simple_element::simple_element(const std::wstring & FileName, const std::wstring & Content, bool utf8) : file_name_(FileName), utf8_(utf8)
 		{
-			utf8::utf16to8(Content.begin(), Content.end(), std::back_inserter(content_utf8_));
+			if (utf8_)
+			{
+				utf8::utf16to8(Content.begin(), Content.end(), std::back_inserter(content_utf8_));
+			}else
+				content_utf8_ = std::string( Content.begin(), Content.end());
 		}
 
 		void simple_element::write(const std::wstring & RootPath)
 		{
 			fs::ofstream file( fs::wpath(RootPath) / file_name_, std::ios_base::out | std::ios_base::binary );
-			file << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+			
+			if (utf8_) 
+				file << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 			file << content_utf8_;
 		}
 
-		element_ptr simple_element::create(const std::wstring & FileName, const std::wstring & Content)
+		element_ptr simple_element::create(const std::wstring & FileName, const std::wstring & Content, bool utf8)
 		{
-			return boost::make_shared<simple_element>(FileName, Content);
+			return boost::make_shared<simple_element>(FileName, Content, utf8);
 		}
 
 ////////////
@@ -62,11 +68,11 @@ namespace odf
 		void mimetype_file::write(const std::wstring & RootPath)
 		{
 			std::wstringstream resStream;
-
+			
 			resStream << L"application/vnd.oasis.opendocument.";
 			resStream << type_;
-			
-			simple_element elm(L"mimetype", resStream.str());
+
+			simple_element elm(L"mimetype", resStream.str(),false);
 			elm.write(RootPath);
 		}
 		void manifect_file::write(const std::wstring & RootPath)

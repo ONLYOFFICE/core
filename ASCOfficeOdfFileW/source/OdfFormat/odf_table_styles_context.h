@@ -11,25 +11,97 @@ namespace cpdoccore {
 namespace odf {
 
 class style_table_cell_properties;
+class style_text_properties;
+class style_paragraph_properties;
 
+//typedef shared_ptr<style_text_properties>::Type			style_text_properties_ptr;
+//typedef shared_ptr<style_paragraph_properties>::Type	style_paragraph_properties_ptr;
+//typedef shared_ptr<style_table_cell_properties>::Type	style_table_cell_properties_ptr;
+//row, column ???
+
+struct _style_properties
+{
+	office_element_ptr	text_props;
+	office_element_ptr	paragraph_props;
+	office_element_ptr	table_cell_props;
+};
 struct table_format_state
 {
 	std::wstring style_name;
+	
+	_style_properties table_;
 
+	_style_properties band1Horz_;
+	_style_properties band1Vert_;
+	_style_properties band2Horz_;
+	_style_properties band2Vert_;
+	_style_properties firstCol_;
+	_style_properties firstRow_;
+	_style_properties lastCol_;
+	_style_properties lastRow_;
+	_style_properties neCell_;
+	_style_properties nwCell_;
+	_style_properties seCell_;
+	_style_properties swCell_;
+	_style_properties wholeTable_; //???
 };
 
 class odf_table_styles_context
 {
 public:
-	odf_table_styles_context(){}
+	odf_table_styles_context(){current = NULL; context_ = NULL; current_table_style_ = -1;}
+	
+	void set_odf_context(odf_conversion_context * Context)
+	{
+		context_ = Context;
+	}
 
-	style_table_cell_properties * get_table_cell_properties(int col, int row){return NULL;}
+//-----------------------------------------------
+// input
+//-----------------------------------------------
 
-	bool set_current_style(std::wstring name) {return false;}
+	void start_style(std::wstring styale_name);
+	void end_style();
 
+	void add_band1Horz();
+	void add_band1Vert();
+	void add_band2Horz();
+	void add_band2Vert();
+	void add_firstCol();
+	void add_firstRow();
+	void add_lastCol();
+	void add_lastRow();
+	void add_neCell();
+	void add_nwCell();
+	void add_seCell();
+	void add_swCell();
+	void add_wholeTable(); 
+
+	style_table_cell_properties *get_table_cell_properties();
+	style_paragraph_properties	*get_paragraph_properties();
+	style_text_properties		*get_text_properties();
+
+//-----------------------------------------------
+// output
+//-----------------------------------------------
+	bool set_current_style(std::wstring name);
+	void set_current_dimension(int col, int row);
+
+	void get_table_cell_properties	(int col, int row, style_table_cell_properties *props);
+	void get_text_properties		(int col, int row, style_text_properties *props);
+	void get_paragraph_properties	(int col, int row, style_paragraph_properties *props);
 
 private:
+
 	std::vector<table_format_state> table_format_array_;
+
+	_style_properties *current;
+
+	odf_conversion_context *context_;
+
+	int current_table_style_;
+	int current_table_col_count_;
+	int current_table_row_count_;
 
 //////////////////
 

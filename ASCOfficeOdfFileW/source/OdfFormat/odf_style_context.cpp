@@ -34,6 +34,7 @@ void odf_style_context::set_odf_context(odf_conversion_context * Context)
 {
 	odf_context_ = Context;
 	number_styles_context_.set_odf_context(Context);
+	table_styles_context_.set_odf_context(Context);
 }
 
 odf_style_state & odf_style_context::last_state()

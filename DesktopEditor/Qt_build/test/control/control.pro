@@ -64,6 +64,14 @@ win32 {
 
     DEFINES -= UNICODE
 
+    LIBS += -lwinmm
+    LIBS += -ladvapi32
+    LIBS += -L../../../../../../../../../v8/build/Release/lib -lv8_base.x64
+    LIBS += -L../../../../../../../../../v8/build/Release/lib -lv8_snapshot
+    LIBS += -L../../../../../../../../../v8/build/Release/lib -lv8_nosnapshot.x64
+    LIBS += -L../../../../../../../../../v8/build/Release/lib -licui18n
+    LIBS += -L../../../../../../../../../v8/build/Release/lib -licuuc
+
     message(windows)
 }
 

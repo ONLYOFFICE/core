@@ -17,6 +17,8 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     DEFINES += \
     _LINUX \
     _LINUX_QT
+
+    message(linux)
 }
 
 mac {
@@ -25,11 +27,17 @@ mac {
     _LINUX_QT \
     _MAC \
     QT_MAC
+
+    message(mac)
 }
 
 win32 {
     DEFINES += \
     WIN32
+
+    DEFINES -= UNICODE
+
+    message(windows)
 }
 
 INCLUDEPATH += \

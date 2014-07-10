@@ -36,6 +36,8 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     LIBS += -L../../../../../../../../../v8/out/native/obj.target/third_party/icu -licui18n
     LIBS += -L../../../../../../../../../v8/out/native/obj.target/third_party/icu -licuuc
     LIBS += -L../../../../../../../../../v8/out/native/obj.target/third_party/icu -licudata
+
+    message(linux)
 }
 
 mac {
@@ -52,11 +54,17 @@ mac {
     LIBS += -L../../../../../../../../../v8/out/native -licui18n
     LIBS += -L../../../../../../../../../v8/out/native -licuuc
     LIBS += -L../../../../../../../../../v8/out/native -licudata
+
+    message(mac)
 }
 
 win32 {
     DEFINES += \
     WIN32
+
+    DEFINES -= UNICODE
+
+    message(windows)
 }
 
 INCLUDEPATH += \

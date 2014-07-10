@@ -9,6 +9,10 @@
 #include "mach/mach_time.h"
 #endif
 
+#ifdef WIN32
+//#define _CAN_USE_COM_THREADS
+#endif
+
 namespace NSTimers
 {
 #ifdef _MAC
@@ -67,7 +71,7 @@ namespace NSTimers
 	protected:
 		virtual DWORD ThreadProc()
 		{
-#if defined(WIN32) || defined(_WIN32_WCE)
+#ifdef _CAN_USE_COM_THREADS
 			if (m_bIsCOMNeed)
 				CoInitialize(NULL);
 #endif
@@ -89,7 +93,7 @@ namespace NSTimers
 				OnTimer();				
 			}
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#ifdef _CAN_USE_COM_THREADS
 			if (m_bIsCOMNeed)
 				CoUninitialize();
 #endif

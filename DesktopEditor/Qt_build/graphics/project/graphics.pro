@@ -13,7 +13,6 @@ DEFINES += \
     _QT \
     FT2_BUILD_LIBRARY \
     EXCLUDE_JPG_SUPPORT \
-    HAVE_UNISTD_H \
     MNG_SUPPORT_DISPLAY \
     MNG_SUPPORT_READ \
     MNG_SUPPORT_WRITE \
@@ -23,21 +22,32 @@ DEFINES += \
 
 linux-g++ | linux-g++-64 | linux-g++-32 {
     DEFINES += \
+    HAVE_UNISTD_H \
     _LINUX \
     _LINUX_QT
+
+    message(linux)
 }
 
 mac {
     DEFINES += \
+    HAVE_UNISTD_H \
     _LINUX \
     _LINUX_QT \
     _MAC \
     QT_MAC
+
+    message(mac)
 }
 
 win32 {
     DEFINES += \
+    JAS_WIN_MSVC_BUILD \
     WIN32
+
+    DEFINES -= UNICODE
+
+    message(windows)
 }
 
 INCLUDEPATH += \

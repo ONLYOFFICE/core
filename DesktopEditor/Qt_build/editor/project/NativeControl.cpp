@@ -4,10 +4,6 @@
 #include <QGLContext>
 #include <QThread>
 
-#ifdef _QTX
-#include "GL/glx.h"
-#endif
-
 class CEditorCtrlWrapper : public CEditorCtrl
 {
 public:
@@ -30,11 +26,10 @@ public:
     }
 };
 
-
+#if !defined(WIN32) && !defined(_MAC)
 void CVideoMemory::Init()
 {
     CTemporaryCS oCS(&m_oCS);
-#if 1
 
     QGLContext* ctx = const_cast<QGLContext *>(QGLContext::currentContext());
 
@@ -46,41 +41,10 @@ void CVideoMemory::Init()
     m_arContext.Add((void*)pShare);
 
     ctx->makeCurrent();
-#endif
-
-#if 0
-    m_x_context = (void*)glXGetCurrentContext();
-    m_xd_draw = (unsigned long)glXGetCurrentDrawable();
-    m_xd_read = (unsigned long)glXGetCurrentReadDrawable();
-    m_display = (void*)glXGetCurrentDisplay();
-#endif
 }
 
 void CVideoMemory::SetCurrentCtx()
 {
-#if 1
-
-#if 0
-    QThread* pThread = QThread::currentThread();
-
-    int nCount = m_arThreads.GetCount();
-    for (int i = 0; i <  nCount; ++i)
-    {
-        if (pThread == m_arThreads[i])
-        {
-            ((QGLContext*)m_arContext[i])->moveToThread(pThread);
-            ((QGLContext*)m_arContext[i])->makeCurrent();
-            return;
-        }
-    }
-
-    QGLContext* pContext = QGLContext::fromOpenGLContext(((QGLContext*)m_arContext[0])->contextHandle());
-    pContext->create((QGLContext*)m_arContext[0]);
-    pContext->makeCurrent();
-    m_arThreads.Add((void*)pThread);
-    m_arContext.Add((void*)pContext);
-#endif
-
     QThread* pThread = QThread::currentThread();
 
     int nCount = m_arThreads.GetCount();
@@ -103,15 +67,13 @@ void CVideoMemory::SetCurrentCtx()
     m_arContext.Add((void*)pWorker);
 
     pWorker->makeCurrent();
-
-#else
-    glXMakeContextCurrent((Display*)m_display, (GLXDrawable)m_xd_draw, (GLXDrawable)m_xd_read, (GLXContext)m_x_context);
-#endif
 }
 
 void CVideoMemory::UnSetCurrentCtx()
 {
 }
+
+#endif
 
 // Native control
 void CNativeCtrl::slot_threadRepaint()
@@ -132,10 +94,23 @@ CNativeCtrl::CNativeCtrl(QWidget *parent, const char *name) : QGLWidget(parent)
     m_pWrapper = new CEditorCtrlWrapper();
     m_pWrapper->m_pCtrl = this;
 
-    m_pWrapper->m_strFontsDirectory = L"/home/oleg/activex/AVS/Sources/TeamlabOffice/trunk/OfficeWeb/Fonts/native";
+    m_pWrapper->m_strFontsDirectory = L"";
 }
 CNativeCtrl::~CNativeCtrl()
 {
+}
+
+void CNativeCtrl::InitSDK(const std::wstring& sFontsPath, const std::wstring& sSdkPath)
+{
+    m_pWrapper->m_strFontsDirectory = sFontsPath;
+    std::wstring sScriptPath = sSdkPath;
+    m_pWrapper->m_oWorkJS.m_oThreadJS.StartFromScript(sScriptPath);
+}
+
+void CNativeCtrl::OpenFile(const std::wstring& sFilePath)
+{
+    m_pWrapper->InternalOpenFile(sFilePath);
+    m_pWrapper->InternalCalculateFile();
 }
 
 void CNativeCtrl::initializeGL()
@@ -145,12 +120,6 @@ void CNativeCtrl::initializeGL()
     m_pWrapper->InternalInit();
 
     m_pWrapper->m_oWorkJS.m_oThreadJS.SetMainCtrl((CEditorCtrl*)m_pWrapper);
-
-    std::wstring strFile = L"/home/oleg/activex/AVS/Sources/TeamlabOffice/trunk/test/sdk-all.js";
-    m_pWrapper->m_oWorkJS.m_oThreadJS.StartFromScript(strFile);
-
-    m_pWrapper->InternalOpenFile(L"/home/oleg/activex/AVS/Sources/TeamlabOffice/trunk/test/Editor.bin");
-    m_pWrapper->InternalCalculateFile();
 }
 
 void CNativeCtrl::paintGL()
@@ -170,11 +139,7 @@ void CNativeCtrl::paintGL()
 
     pCS_GL->Enter();
 
-    m_pCPlusPlusWrapper->m_oDevicePainter.m_oFrameControls.m_oFrame.SetCurrentCtx();
-
-    GLenum err = glGetError();
-
-    pVRAM_Worker->m_oFrame.SetCurrentCtx();
+	pVRAM_Worker->m_oFrame.SetCurrentCtx();
 
     DWORD dwTime1 = NSTimers::GetTickCount();
 
@@ -184,8 +149,6 @@ void CNativeCtrl::paintGL()
                  1);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    err = glGetError();
-
     GLfloat _width = this->width();
     GLfloat _height = this->height();
 
@@ -194,11 +157,7 @@ void CNativeCtrl::paintGL()
     glLoadIdentity();
     glOrtho(0.0, _width, 0.0, _height, -1.0, 1.0);
 
-    err = glGetError();
-
     glEnable(GL_BLEND);
-
-    err = glGetError();
 
     glColor3f(1,1,1);
 
@@ -224,6 +183,7 @@ void CNativeCtrl::paintGL()
                 oRect.Offset(m_pCPlusPlusWrapper->m_oViewer.X, m_pCPlusPlusWrapper->m_oViewer.Y);
 
                 {
+                    pVRAM_Worker->m_oFrame.UnSetCurrentCtx();
                     pCS_GL->Leave();
                     m_pCPlusPlusWrapper->m_oCacheDocument.DrawGL(&m_pCPlusPlusWrapper->m_oDevicePainter,
                                           oClipRect,
@@ -282,6 +242,9 @@ void CNativeCtrl::paintGL()
     glPopMatrix();
 
     glFlush();
+
+    pVRAM_Worker->m_oFrame.UnSetCurrentCtx();
+
     pCS_GL->Leave();
 
     RELEASEOBJECT(pCS);

@@ -149,8 +149,8 @@ void CNativeCtrl::paintGL()
                  1);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    GLfloat _width = this->width();
-    GLfloat _height = this->height();
+    GLfloat _width = this->width() * this->devicePixelRatio();
+    GLfloat _height = this->height() * this->devicePixelRatio();
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -255,12 +255,12 @@ void CNativeCtrl::paintGL()
     FILE* file = fopen("/home/oleg/activex/AVS/Sources/TeamlabOffice/trunk/ServerComponents/DesktopEditor/log.txt", "a+");
     fprintf(file, "time: %d\n", (int)(dwTime2 - dwTime1));
     fclose(file);
-    */
 }
 
 void CNativeCtrl::resizeGL(int width, int height)
 {
-    m_pWrapper->Resize(this->width(), this->height());
+    int nDevicePixelRatio = this->devicePixelRatio();
+    m_pWrapper->Resize(this->width() * nDevicePixelRatio, this->height() * nDevicePixelRatio);
 }
 
 void CNativeCtrl::closeEvent(QCloseEvent* e)
@@ -271,8 +271,8 @@ void CNativeCtrl::closeEvent(QCloseEvent* e)
 
 void CNativeCtrl::mousePressEvent(QMouseEvent* e)
 {
-    m_pWrapper->m_oMouseController.X = e->pos().x();
-    m_pWrapper->m_oMouseController.Y = e->pos().y();
+    m_pWrapper->m_oMouseController.X = e->pos().x() * this->devicePixelRatio();
+    m_pWrapper->m_oMouseController.Y = e->pos().y() * this->devicePixelRatio();
 
     Qt::MouseButton button = e->button();
     if (button == Qt::LeftButton)
@@ -293,8 +293,8 @@ void CNativeCtrl::mousePressEvent(QMouseEvent* e)
 }
 void CNativeCtrl::mouseMoveEvent(QMouseEvent* e)
 {
-    m_pWrapper->m_oMouseController.X = e->pos().x();
-    m_pWrapper->m_oMouseController.Y = e->pos().y();
+    m_pWrapper->m_oMouseController.X = e->pos().x() * this->devicePixelRatio();
+    m_pWrapper->m_oMouseController.Y = e->pos().y() * this->devicePixelRatio();
 
     Qt::KeyboardModifiers mods = e->modifiers();
 
@@ -308,8 +308,8 @@ void CNativeCtrl::mouseMoveEvent(QMouseEvent* e)
 
 void CNativeCtrl::mouseReleaseEvent(QMouseEvent* e)
 {
-    m_pWrapper->m_oMouseController.X = e->pos().x();
-    m_pWrapper->m_oMouseController.Y = e->pos().y();
+    m_pWrapper->m_oMouseController.X = e->pos().x() * this->devicePixelRatio();
+    m_pWrapper->m_oMouseController.Y = e->pos().y() * this->devicePixelRatio();
 
     Qt::MouseButton button = e->button();
     if (button == Qt::LeftButton)

@@ -35,7 +35,7 @@ namespace Aggplus
 		m_dGlobalAlpha		= 1.0;
         m_bSwapRGB = false;
 
-#ifdef _LINUX
+#if defined (_LINUX) || defined (_QT)
         m_bSwapRGB = true;
 #endif
 	}
@@ -64,7 +64,7 @@ namespace Aggplus
 
         m_bSwapRGB = false;
 
-#ifdef _LINUX
+#if defined (_LINUX) || defined (_QT)
         m_bSwapRGB = true;
 #endif
 	}
@@ -98,7 +98,7 @@ namespace Aggplus
 
         m_bSwapRGB = false;
 
-#ifdef _LINUX
+#if defined (_LINUX) || defined (_QT)
         m_bSwapRGB = true;
 #endif
 	}

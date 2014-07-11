@@ -21,8 +21,8 @@ protected slots:
 public:
     CNativeCtrl(QWidget *parent = 0, const char *name = NULL);
     virtual ~CNativeCtrl();
-public:
 
+public:
     virtual void initializeGL();
 
     virtual void paintGL();
@@ -38,6 +38,10 @@ public:
     virtual void keyReleaseEvent(QKeyEvent* e);
 
     virtual void InvalidateRectNative(int x, int y, int w, int h);
+
+public:
+    void InitSDK(const std::wstring& sFontsPath, const std::wstring& sSdkPath);
+    void OpenFile(const std::wstring& sFilePath);
 
 private:
     CEditorCtrlWrapper* m_pWrapper;

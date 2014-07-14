@@ -29,22 +29,27 @@ using namespace cpdoccore;
 
 namespace Oox2Odf
 {
-DocxConverter::DocxConverter(const std::wstring & path)
+DocxConverter::DocxConverter(const std::wstring & path, const ProgressCallback* CallBack)
 {
 	output_document = new  odf::package::odf_document(L"text");
+
+	pCallBack = CallBack;
 
 	const OOX::CPath oox_path(CString(path.c_str()));	
 	docx_document = new OOX::CDocx(oox_path);	
 
 //set flags to default
 	m_bKeepNextParagraph = false;
+	
+	if (UpdateProgress(400000))return;
 }
 void DocxConverter::write(const std::wstring & path)
 {
 	if (!output_document)return;
 
 	output_document->write(path);
-
+		
+	if (UpdateProgress(1000000))return;
 }
 odf::odf_conversion_context* DocxConverter::odf_context()
 {
@@ -114,13 +119,17 @@ void DocxConverter::convertDocument()
 	odt_context->start_document();
 
 	convert_styles();
+	if (UpdateProgress(500000))return;
+
 	convert_document();
 
+	if (UpdateProgress(800000))return;
 	//удалим уже ненужный документ docx 
 	delete docx_document; docx_document = NULL;
 
 	odt_context->end_document();
- 
+ 	
+	if (UpdateProgress(850000))return;
 }
 
 void DocxConverter::convert_document()

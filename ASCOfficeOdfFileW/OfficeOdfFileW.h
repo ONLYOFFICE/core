@@ -45,7 +45,7 @@ __interface _IOfficeOdfFileWEvents
 
 [
 	coclass,
-	default(IOfficeOdfFileW, _IOfficeOdfFileWEvents),
+	default(IOfficeOdfFileW, _IAVSOfficeFileTemplateEvents),
 	threading(apartment),
 	event_source(com),
 	vi_progid("ASCOfficeOdfFileW.OfficeOdfFileW"),
@@ -62,7 +62,8 @@ public:
 	{
 	}
 
-	__event __interface _IOfficeOdfFileWEvents;
+	__event __interface _IAVSOfficeFileTemplateEvents;
+	__event __interface _IAVSOfficeFileTemplateEvents2;
 
 
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
@@ -91,6 +92,11 @@ private:
 						   const std::wstring & dstTempPath,	 const std::wstring & dstFileName);
 
 	std::wstring DetectTypeDocument(const std::wstring & Path);
+
+protected:
+
+	static void OnProgressFunc (LPVOID lpParam, long nID, long nPercent);
+	static void OnProgressExFunc (LPVOID lpParam, long nID, long nPercent, short* pStop);
 
 };
 

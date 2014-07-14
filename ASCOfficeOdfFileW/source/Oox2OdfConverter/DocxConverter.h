@@ -80,7 +80,7 @@ namespace Oox2Odf
 	class DocxConverter : public OoxConverter
 	{
 	public:
-		DocxConverter(const std::wstring & path);
+		DocxConverter(const std::wstring & path, const ProgressCallback* ffCallBack);
 
 		virtual void convertDocument();
 		virtual void write(const std::wstring & path);

@@ -1,13 +1,8 @@
-#ifndef CPDOCCORE_ODF_DOCUMENT_IMPL_H_
-#define CPDOCCORE_ODF_DOCUMENT_IMPL_H_
+#pragma once
 
-#include <cpdoccore/odf/odf_document.h>
 #include <string>
 #include "odf_content_xml.h"
-
-#ifdef _MSC_VER
-#pragma once
-#endif
+#include <cpdoccore/odf/odf_document.h>
 
 namespace cpdoccore { 
 
@@ -28,12 +23,12 @@ typedef shared_ptr<content_xml_t>::Type content_xml_t_ptr;
 class odf_document::Impl
 {
 public:
-    Impl(const std::wstring & Folder);
+    Impl(const std::wstring & Folder, const ProgressCallback* CallBack);
     odf_read_context & odf_context();
    
-	void docx_convert(oox::docx_conversion_context & Context);
-    void xlsx_convert(oox::xlsx_conversion_context & Context);
-    void pptx_convert(oox::pptx_conversion_context & Context);
+	bool docx_convert(oox::docx_conversion_context & Context);
+    bool xlsx_convert(oox::xlsx_conversion_context & Context);
+    bool pptx_convert(oox::pptx_conversion_context & Context);
 
     const std::wstring & get_folder() const { return base_folder_; }
     const office_element * get_content() const;
@@ -41,9 +36,14 @@ public:
 	long get_office_mime_type() {return office_mime_type_;}
 
 	bool get_encrypted(){return encrypted;}
+
+	bool UpdateProgress(long Complete);
     
 private:
-    odf_read_context_ptr context_;
+	const ProgressCallback* pCallBack;
+	short bUserStopConvert;
+   
+	odf_read_context_ptr context_;
     void parse_styles();
     void parse_fonts();
 	void parse_manifests();
@@ -65,4 +65,3 @@ private:
 }
 }
 
-#endif

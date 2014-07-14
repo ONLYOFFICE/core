@@ -1174,7 +1174,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
        const std::wstring dbgObjectPathStr = objectPath.normalize().wstring();
 #endif
 
-        cpdoccore::odf::odf_document objectSubDoc(dbgObjectPathStr);    
+        cpdoccore::odf::odf_document objectSubDoc(dbgObjectPathStr,NULL);    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //функциональная часть
 		const office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();

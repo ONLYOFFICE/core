@@ -17,18 +17,20 @@
 #include <XlsxFormat\Xlsx.h>
 #include <DocxFormat\Docx.h>
 
+#define PROGRESSEVENT_ID	0
+
 namespace Oox2Odf
 {
 	static double pt2emu(double Val)
 	{
 		return (Val * 360000 * 2.54) / 72;
 	}
-	Converter::Converter(const std::wstring & path, std::wstring  type) 
+	Converter::Converter(const std::wstring & path, std::wstring  type, const ProgressCallback* CallBack) 
     {
 		impl_ = NULL;
 		
-		if (type == L"text")			impl_ = new DocxConverter(path);
-		if (type == L"spreadsheet")		impl_ = new XlsxConverter(path);
+		if (type == L"text")			impl_ = new DocxConverter(path, CallBack);
+		if (type == L"spreadsheet")		impl_ = new XlsxConverter(path, CallBack);
 	}
 
 	Converter::~Converter() 
@@ -38,15 +40,35 @@ namespace Oox2Odf
     void Converter::convert()
     {
 		if (!impl_)return;
-        impl_->convertDocument();
+		
+		if (impl_->bUserStopConvert) return;
+       
+		impl_->convertDocument();
     }
     void Converter::write(const std::wstring & path) const
     {
 		if (!impl_)return;
-        return impl_->write(path);
+
+		if (impl_->bUserStopConvert) return;
+
+		return impl_->write(path);
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+BOOL  OoxConverter::UpdateProgress(long nComplete)
+{
+	if (pCallBack)
+	{
+		pCallBack->OnProgress (pCallBack->caller, PROGRESSEVENT_ID, nComplete);
+
+		bUserStopConvert = 0;
+		pCallBack->OnProgressEx (pCallBack->caller, PROGRESSEVENT_ID, nComplete, &bUserStopConvert);
+
+		if (bUserStopConvert !=0 ) return TRUE;
+	}
+
+	return FALSE;
+}
 void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 {
 	if (oox_unknown == NULL)return;

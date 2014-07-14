@@ -90,7 +90,7 @@ namespace Oox2Odf
 	class XlsxConverter : public OoxConverter
 	{
 	public:
-		XlsxConverter(const std::wstring & path);
+		XlsxConverter(const std::wstring & path, const ProgressCallback* ffCallBack);
 
 		virtual void convertDocument();
 		virtual void write(const std::wstring & path);

@@ -184,8 +184,13 @@ HRESULT COfficeOdfFile::LoadFromFileImpl(const std::wstring & srcFileName,
         NULL, 0))
         return hr;
 
+	ProgressCallback ffCallBack;
 
-	hr = ConvertOO2OOX(ext,srcTempPath, dstTempPath,bOnlyPresentation);
+	ffCallBack.OnProgress	=	OnProgressFunc;
+	ffCallBack.OnProgressEx	=	OnProgressExFunc;
+	ffCallBack.caller		=	this;
+
+	hr = ConvertOO2OOX(ext,srcTempPath, dstTempPath,bOnlyPresentation, &ffCallBack);
 
 	if (hr != S_OK)  return hr;
    
@@ -208,4 +213,28 @@ bool COfficeOdfFile::initialized()
     return (!!office_utils_);
 }
 
-// COfficeOdfFile3
+void COfficeOdfFile::OnProgressFunc (LPVOID lpParam, long nID, long nPercent)
+{
+	//g_oCriticalSection.Enter();
+
+	COfficeOdfFile* pOdfFile = reinterpret_cast<COfficeOdfFile*>(lpParam);
+	if (pOdfFile != NULL)
+	{
+		pOdfFile->OnProgress(nID, nPercent);
+	}
+
+	//g_oCriticalSection.Leave();
+}
+
+void COfficeOdfFile::OnProgressExFunc (LPVOID lpParam, long nID, long nPercent, short* pStop)
+{
+	//g_oCriticalSection.Enter();
+
+	COfficeOdfFile* pOdfFile = reinterpret_cast<COfficeOdfFile*>(lpParam);
+	if (pOdfFile != NULL)
+	{
+		pOdfFile->OnProgressEx(nID, nPercent, pStop);
+	}
+
+	//g_oCriticalSection.Leave();
+}

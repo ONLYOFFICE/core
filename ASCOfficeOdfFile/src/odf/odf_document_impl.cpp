@@ -48,6 +48,9 @@
 
 #include "documentcontext.h"
 
+#include "..\progressCallback.h"
+#define PROGRESSEVENT_ID 0
+
 namespace cpdoccore { 
 namespace odf {
 
@@ -73,7 +76,7 @@ content_xml_t_ptr read_file_content(const fs::wpath & Path)
 }
 }
 
-odf_document::Impl::Impl(const std::wstring & Folder) : context_(new odf_read_context()), base_folder_(Folder)
+odf_document::Impl::Impl(const std::wstring & Folder, const ProgressCallback* CallBack) : context_(new odf_read_context()), base_folder_(Folder), pCallBack(CallBack), bUserStopConvert (0)
 {
 	office_mime_type_ = 0;
 	encrypted = false;
@@ -107,8 +110,22 @@ odf_document::Impl::Impl(const std::wstring & Folder) : context_(new odf_read_co
     _CP_LOG(info) << L"[info] parse manifest" << std::endl;
     parse_manifests();
 
+	UpdateProgress(400000);
 }
+bool odf_document::Impl::UpdateProgress(long nComplete)
+{
+	if (pCallBack)
+	{
+		pCallBack->OnProgress (pCallBack->caller, PROGRESSEVENT_ID, nComplete);
 
+		bUserStopConvert = 0;
+		pCallBack->OnProgressEx (pCallBack->caller, PROGRESSEVENT_ID, nComplete, &bUserStopConvert);
+
+		if (bUserStopConvert !=0 ) return true;
+	}
+
+	return false;
+}
 void odf_document::Impl::parse_fonts()
 {
     do 
@@ -529,8 +546,7 @@ void odf_document::Impl::parse_styles()
             {
                 const number_style_base * style = dynamic_cast<const number_style_base *>(elm.get());
 
-                if (!style)
-                    continue;
+                if (!style)  continue;
 
                 context_->numberStyles().add(style->get_style_name(), elm);
             }
@@ -541,16 +557,23 @@ void odf_document::Impl::parse_styles()
     while (false);
 }
 
-void odf_document::Impl::docx_convert(oox::docx_conversion_context & Context)
+bool odf_document::Impl::docx_convert(oox::docx_conversion_context & Context)
 {
-    Context.process_styles();
+ 	if (bUserStopConvert !=0 ) return false;
+
+	Context.process_styles();	
+	if (UpdateProgress(450000)) return false;
+
     Context.process_fonts();
     Context.process_headers_footers();
+	if (UpdateProgress(500000)) return false;
 
     Context.start_document();
 	
 	if (content_xml_)
         content_xml_->docx_convert(Context);
+
+	if (UpdateProgress(800000)) return false;
     
 	Context.end_document();
 
@@ -558,20 +581,32 @@ void odf_document::Impl::docx_convert(oox::docx_conversion_context & Context)
     // так как в процессе конвертации документа у нас могу добавиться стили — 
     // в случае если используется text:start-value (начинаем нумерацию заново)
     Context.process_list_styles();
+	if (UpdateProgress(850000)) return false;
+
+	return true;
 }
-void odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context) 
+bool odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context) 
 {
-    try
+ 	if (bUserStopConvert !=0 ) return false;
+
+	try
     {
         _CP_LOG(info) << L"[info] convert content" << std::endl;
-        Context.start_document();
-        if (content_xml_)
+       
+		Context.start_document();
+ 		if (UpdateProgress(450000)) return false;
+      
+		if (content_xml_)
             content_xml_->xlsx_convert(Context);
+		if (UpdateProgress(700000)) return false;
+
         Context.end_document();
+		if (UpdateProgress(750000)) return false;
 
         _CP_LOG(info) << L"[info] process styles" << std::endl;
         Context.process_styles();
-       
+ 		if (UpdateProgress(800000)) return false;
+      
     }
     catch(boost::exception & ex)
     {
@@ -590,22 +625,33 @@ void odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context)
         _CP_LOG(info) << L"\n[error]: undefined\n";
         throw;
     }
+
+	return true;
 }
 
-void odf_document::Impl::pptx_convert(oox::pptx_conversion_context & Context) 
+bool odf_document::Impl::pptx_convert(oox::pptx_conversion_context & Context) 
 {
+	if (bUserStopConvert !=0 ) return false;
+
     try
     {
         _CP_LOG(info) << L"[info] convert content" << std::endl;
 	
 		Context.start_document();
-        if (content_xml_)
+		if (UpdateProgress(450000)) return false;
+       
+		if (content_xml_)
             content_xml_->pptx_convert(Context);
+		if (UpdateProgress(700000)) return false;
 		
 		Context.process_layouts();
+		if (UpdateProgress(750000)) return false;
+		
 		Context.process_master_pages();
+		if (UpdateProgress(800000)) return false;
 
         Context.end_document();
+		if (UpdateProgress(850000)) return false;
 	}
     catch(boost::exception & ex)
     {
@@ -624,6 +670,7 @@ void odf_document::Impl::pptx_convert(oox::pptx_conversion_context & Context)
         _CP_LOG(info) << L"\n[error]: undefined\n";
         throw;
     }
+	return true;
 }
 
 odf_read_context & odf_document::Impl::odf_context() 

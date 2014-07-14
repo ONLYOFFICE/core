@@ -4,28 +4,13 @@
 #include "resource.h"       // main symbols
 #include <string>
 
-#import "../../Redist/ASCOfficeUtils.dll" rename_namespace("ASCOfficeUtils"), raw_interfaces_only
-
-////////////////////////////////////////////////////////////////
-// IASCOfficeFileTemplate
-[
-	object,
-	uuid("3FC4EC15-9467-4D66-AD6A-A0C0BAEDD3CD"),
-	dual,	helpstring("IASCOfficeFileTemplate Interface"),
-	pointer_default(unique)
-]
-__interface IASCOfficeFileTemplate : IDispatch
-{
-	[id(1), helpstring("method LoadFromFile")] HRESULT LoadFromFile([in] BSTR sSrcFileName, [in] BSTR sDstPath, [in] BSTR sXMLOptions);
-	[id(2), helpstring("method SaveToFile")] HRESULT SaveToFile([in] BSTR sDstFileName, [in] BSTR sSrcPath, [in] BSTR sXMLOptions);
-};
-////////////////////////////////////////////////////////////////
-
+#include "../../Common/OfficeFileTemplate.h"
 
 #if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
 #endif
 
+#import "../../Redist/ASCOfficeUtils.dll" rename_namespace("ASCOfficeUtils"), raw_interfaces_only
 
 // IOfficeOdfFile
 [
@@ -34,7 +19,7 @@ __interface IASCOfficeFileTemplate : IDispatch
 	dual,	helpstring("IOfficeOdfFile Interface"),
 	pointer_default(unique)
 ]
-__interface IOfficeOdfFile : IASCOfficeFileTemplate
+__interface IOfficeOdfFile : IAVSOfficeFileTemplate
 {
 };
 
@@ -54,7 +39,7 @@ __interface _IOfficeOdfFileEvents
 
 [
 	coclass,
-	default(IOfficeOdfFile, _IOfficeOdfFileEvents),
+	default(IOfficeOdfFile, _IAVSOfficeFileTemplateEvents),
 	threading(apartment),
 	support_error_info("IOfficeOdfFile"),
 	event_source(com),
@@ -70,7 +55,9 @@ class ATL_NO_VTABLE COfficeOdfFile :
 public:
 	COfficeOdfFile();
 
-	__event __interface _IOfficeOdfFileEvents;
+	__event __interface _IAVSOfficeFileTemplateEvents;
+	__event __interface _IAVSOfficeFileTemplateEvents2;
+
 
 
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
@@ -91,7 +78,6 @@ public:
 private:
     ATL::CComPtr< ASCOfficeUtils::IOfficeUtils > office_utils_;
     
-private:
 	bool bOnlyPresentation;
 	bool loadOptionFromXML(CString parametr,BSTR sXMLOptions);
     bool initialized();
@@ -99,4 +85,9 @@ private:
         const std::wstring & srcTempPath,
         const std::wstring & dstTempPath,
         const std::wstring & dstPath);
+
+protected:
+
+	static void OnProgressFunc (LPVOID lpParam, long nID, long nPercent);
+	static void OnProgressExFunc (LPVOID lpParam, long nID, long nPercent, short* pStop);
 };

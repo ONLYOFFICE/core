@@ -6,6 +6,9 @@
 
 #include <atlcoll.h>
 
+#include "..\progressCallback.h"
+
+
 static std::wstring string2std_string(CString val)
 {
 	return std::wstring(val.GetBuffer());
@@ -240,7 +243,9 @@ public:
 		virtual void convertDocument() = 0;
 		virtual void write(const std::wstring & path) = 0;
 		
-		OoxConverter(){oox_current_chart = NULL;}
+		OoxConverter(const ProgressCallback* CallBack = NULL){oox_current_chart = NULL; pCallBack = CallBack;bUserStopConvert = 0;}
+	
+		BOOL UpdateProgress(long nComplete);
 
 		virtual cpdoccore::odf::odf_conversion_context		*odf_context() = 0;
 		virtual OOX::CTheme									*oox_theme() = 0;
@@ -337,13 +342,16 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 		void convert(double oox_font_size,			cpdoccore::_CP_OPT(cpdoccore::odf::font_size) & odf_font_size);
+
+		const ProgressCallback* pCallBack;
+		short bUserStopConvert;
 	};
 
 	class Converter
 	{
 
 	public:
-		Converter(const std::wstring & path, std::wstring  type);
+		Converter(const std::wstring & path, std::wstring  type, const ProgressCallback* ffCallBack);
         virtual ~Converter();
 
 	public:

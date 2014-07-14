@@ -140,8 +140,15 @@ HRESULT COfficeOdfFileW::SaveToFileImpl(const std::wstring & srcPath,
 	{
 		std::wstring type = DetectTypeDocument(srcTempPath);
 
-		Oox2Odf::Converter converter(srcTempPath, type);
+		ProgressCallback ffCallBack;
+
+		ffCallBack.OnProgress	=	OnProgressFunc;
+		ffCallBack.OnProgressEx	=	OnProgressExFunc;
+		ffCallBack.caller		=	this;
 		
+		Oox2Odf::Converter converter(srcTempPath, type, &ffCallBack);
+		
+
 		converter.convert();
 		converter.write(dstTempPath);
 	}
@@ -201,4 +208,30 @@ std::wstring COfficeOdfFileW::DetectTypeDocument(const std::wstring & Path)
 		}
 	}
 	return L"";
+}
+
+void COfficeOdfFileW::OnProgressFunc (LPVOID lpParam, long nID, long nPercent)
+{
+	//g_oCriticalSection.Enter();
+
+	COfficeOdfFileW* pOdfFile = reinterpret_cast<COfficeOdfFileW*>(lpParam);
+	if (pOdfFile != NULL)
+	{
+		pOdfFile->OnProgress(nID, nPercent);
+	}
+
+	//g_oCriticalSection.Leave();
+}
+
+void COfficeOdfFileW::OnProgressExFunc (LPVOID lpParam, long nID, long nPercent, short* pStop)
+{
+	//g_oCriticalSection.Enter();
+
+	COfficeOdfFileW* pOdfFile = reinterpret_cast<COfficeOdfFileW*>(lpParam);
+	if (pOdfFile != NULL)
+	{
+		pOdfFile->OnProgressEx(nID, nPercent, pStop);
+	}
+
+	//g_oCriticalSection.Leave();
 }

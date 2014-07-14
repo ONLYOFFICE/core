@@ -228,7 +228,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
        const std::wstring dbgObjectPathStr = objectPath.normalize().wstring();
 #endif
 
-        cpdoccore::odf::odf_document objectSubDoc(dbgObjectPathStr);    
+        cpdoccore::odf::odf_document objectSubDoc(dbgObjectPathStr,NULL);    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //в отдельных embd объектах чаще всего диаграммы... но МОГУТ быть и обычные объекты подтипа frame!!! пример RemanejamentoOrcamentario.ods
 ///////////////////////////////////////////////////////////////////////////

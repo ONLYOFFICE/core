@@ -26,14 +26,18 @@ using namespace cpdoccore;
 namespace Oox2Odf
 {
 
-XlsxConverter::XlsxConverter(const std::wstring & path) 
+XlsxConverter::XlsxConverter(const std::wstring & path, const ProgressCallback* CallBack) 
 {
 	const OOX::CPath oox_path(CString(path.c_str()));			
+
+	pCallBack = CallBack;
 
 	xlsx_document = new OOX::Spreadsheet::CXlsx(oox_path);	
 	output_document = new odf::package::odf_document(L"spreadsheet");
 
 	xlsx_current_drawing = NULL;
+
+	if (UpdateProgress(400000))return;
 }
 
 void XlsxConverter::write(const std::wstring & path)
@@ -42,6 +46,8 @@ void XlsxConverter::write(const std::wstring & path)
 	output_document->write(path);
 
 	delete output_document; output_document = NULL;
+
+	if (UpdateProgress(1000000))return;
 }
 odf::odf_conversion_context* XlsxConverter::odf_context()
 {
@@ -97,13 +103,17 @@ void XlsxConverter::convertDocument()
 	ods_context->start_document();
 
 	convert_styles();
+	if (UpdateProgress(500000))return;
+
 	convert_sheets();
 
 	//удалим уже ненужный документ xlsx 
+	if (UpdateProgress(800000))return;
 	delete xlsx_document; xlsx_document = NULL;
 
 	ods_context->end_document();
 
+	if (UpdateProgress(850000))return;
 }
 void XlsxConverter::convert_sheets()
 {

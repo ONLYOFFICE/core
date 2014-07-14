@@ -249,7 +249,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
        const std::wstring dbgObjectPathStr = objectPath.normalize().wstring();
 #endif
 
-        cpdoccore::odf::odf_document objectSubDoc(dbgObjectPathStr);    
+        cpdoccore::odf::odf_document objectSubDoc(dbgObjectPathStr, NULL);    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //в отдельных embd объектах чаще всего диаграммы, уравнения... но МОГУТ быть и обычные объекты подтипа frame!!! 
 		//пример RemanejamentoOrcamentario.ods

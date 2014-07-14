@@ -14,43 +14,49 @@
 
 #include <cpdoccore/odf/odf_document.h>
 
-HRESULT ConvertOds2Xlsx(cpdoccore::odf::odf_document & inputDoc, const std::wstring & dstPath)
+
+HRESULT ConvertOds2Xlsx(cpdoccore::odf::odf_document & inputOdf, const std::wstring & dstPath)
 {
-    cpdoccore::oox::package::xlsx_document xlsx;
-    cpdoccore::oox::xlsx_conversion_context conversionContext(&xlsx, &inputDoc);
-    inputDoc.xlsx_convert(conversionContext);
-    xlsx.write(dstPath);
+    cpdoccore::oox::package::xlsx_document outputXlsx;
+    
+	cpdoccore::oox::xlsx_conversion_context conversionContext(&outputXlsx, &inputOdf);
+   
+	if (inputOdf.xlsx_convert(conversionContext) == false) return S_FALSE;
+    
+	outputXlsx.write(dstPath);
+    return S_OK;
+}
+HRESULT ConvertOdt2Docx(cpdoccore::odf::odf_document & inputOdf, const std::wstring & dstPath)
+{
+    cpdoccore::oox::package::docx_document	outputDocx;
+    cpdoccore::oox::docx_conversion_context conversionContext(&outputDocx, &inputOdf);
+   
+	if (inputOdf.docx_convert(conversionContext) == false) return S_FALSE;
+		
+    outputDocx.write(dstPath);
+		
+    return S_OK;
+}
+HRESULT ConvertOdp2Pptx(cpdoccore::odf::odf_document & inputOdf, const std::wstring & dstPath)
+{
+    cpdoccore::oox::package::pptx_document	outputPptx;
+    cpdoccore::oox::pptx_conversion_context conversionContext(&outputPptx, &inputOdf);
+    
+	if (inputOdf.pptx_convert(conversionContext) == false) return S_FALSE;
+    outputPptx.write(dstPath);
 
     return S_OK;
 }
-HRESULT ConvertOdt2Docx(cpdoccore::odf::odf_document & inputDoc, const std::wstring & dstPath)
-{
-    cpdoccore::oox::package::docx_document docx;
-    cpdoccore::oox::docx_conversion_context conversionContext(&docx, &inputDoc);
-    inputDoc.docx_convert(conversionContext);
-    docx.write(dstPath);
-
-    return S_OK;
-}
-HRESULT ConvertOdp2Pptx(cpdoccore::odf::odf_document & inputDoc, const std::wstring & dstPath)
-{
-    cpdoccore::oox::package::pptx_document pptx;
-    cpdoccore::oox::pptx_conversion_context conversionContext(&pptx, &inputDoc);
-    inputDoc.pptx_convert(conversionContext);
-    pptx.write(dstPath);
-
-    return S_OK;
-}
-HRESULT ConvertOO2OOX(const std::wstring &ext, const std::wstring & srcPath, const std::wstring & dstPath, bool bOnlyPresentation)
+HRESULT ConvertOO2OOX(const std::wstring &ext, const std::wstring & srcPath, const std::wstring & dstPath, bool bOnlyPresentation, const ProgressCallback* CallBack)
 {
 	HRESULT hr = S_OK;
 
 	try 
     {
-		cpdoccore::odf::odf_document inputDoc(srcPath);
-
-		int type = inputDoc.get_office_mime_type();
-		bool encrypted = inputDoc.get_encrypted();
+		cpdoccore::odf::odf_document inputOdf(srcPath, CallBack);
+		
+		int type = inputOdf.get_office_mime_type();
+		bool encrypted = inputOdf.get_encrypted();
 
 		if (encrypted) return AVS_ERROR_DRM;
 
@@ -67,15 +73,21 @@ HRESULT ConvertOO2OOX(const std::wstring &ext, const std::wstring & srcPath, con
 		switch (type)
 		{
 		case 1:
-			hr = ConvertOdt2Docx(inputDoc,dstPath);
+			hr = ConvertOdt2Docx(inputOdf,dstPath);
 			break;
 		case 2:
-			hr = ConvertOds2Xlsx(inputDoc,dstPath);
+			hr = ConvertOds2Xlsx(inputOdf,dstPath);
 			break;
 		case 3:
-			hr = ConvertOdp2Pptx(inputDoc,dstPath);
+			hr = ConvertOdp2Pptx(inputOdf,dstPath);
 			break;
 		}
+		if (hr == S_OK)
+		{
+			hr = S_OK;
+			inputOdf.UpdateProgress(1000000);
+		}
+
 	}
 	catch(...)
 	{

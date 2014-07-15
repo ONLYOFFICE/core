@@ -106,6 +106,19 @@ void odf_style_state::set_conditional(bool val)
 {
 	conditional_ = val;
 }
+
+void odf_style_state::apply_from(style* other_style)
+{
+	if (other_style == NULL)return;
+	style* style_ = dynamic_cast<style*>(odf_style_.get());
+	if (!style_)return;
+
+	//style_->style_parent_style_name_ = other_style->style_parent_style_name_;
+
+	//style_paragraph_properties * props = style_->style_content_.get_style_text_properties();
+	//if (props)props->apply_from(other_style->style_content_.get_style_paragraph_properties());
+	
+}
 //////////////////////////////////////////////////////////////////
 style_text_properties * odf_style_state::get_text_properties() 
 {

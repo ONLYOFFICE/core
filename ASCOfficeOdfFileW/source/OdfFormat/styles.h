@@ -282,8 +282,8 @@ public:
     _CP_OPT(std::wstring)	style_default_outline_level_; 
 
 
-    style_content style_content_;
-    office_element_ptr_array style_map_;
+    style_content				style_content_;
+    office_element_ptr_array	style_map_;
 
 };
 

@@ -265,40 +265,48 @@ void chart_build::oox_convert(oox::oox_chart_context & chart)
 		current->set_name(s.name_);
 		chart.set_content_series(s);
 	}
+	bool x_enabled = false;
+	bool y_enabled = false;
+	bool z_enabled = false;
 	BOOST_FOREACH(axis & a, axises_)
 	{
-		if (a.chart_name_.find(L"primary")==0)//в xl нет двойной шкалы - сверху и снизу к примеру. только одна
+		if	(a.dimension_ == L"x" && x_enabled)continue;
+		if	(a.dimension_ == L"y" && y_enabled)continue;
+		if	(a.dimension_ == L"z" && z_enabled)continue;
+
+		int type =3;
+		if		(a.dimension_ == L"x")
 		{
-			int type =3;
-			if		(a.dimension_ == L"x" )
-			{
-				type=1;
-				if (last_set_type == chart_scatter ||
-					last_set_type == chart_bubble)type = 2;
+			//могут быть типы 1, 2, 3, 4
+			type=1;
+			if (last_set_type == chart_scatter ||
+				last_set_type == chart_bubble)type = 2;
 
-				//if (last_set_type == chart_stock)type = 4; //шкала дат.
-			}
-			else if (a.dimension_ == L"y")
-			{
-				type=2;
-				if (last_set_type ==  chart_bar)
-				{
-					//вот нахрена свойства относящиеся к серии и самому чарту воткнули в оси ???? (ооо писали идиеты???)
-					//или это банальная ошибка которую так никогда и не исправили???
-					//overlap & gap-width
-					oox::oox_chart_ptr current = chart.get_current_chart();
-					current->set_additional_properties(a.properties_);
-				}
-			}
-			else if (a.dimension_ == L"z")
-			{
-				//пока не будет :(
-				continue;
-			}
-
-			chart.add_axis(type);
-			chart.set_content_axis(a);
+			//if (last_set_type == chart_stock)type = 4; //шкала дат.
+			x_enabled = true;
 		}
+		else if (a.dimension_ == L"y")
+		{
+			type=2;
+			if (last_set_type ==  chart_bar)
+			{
+				//вот нахрена свойства относящиеся к серии и самому чарту воткнули в оси ???? (ооо писали идиеты???)
+				//или это банальная ошибка которую так никогда и не исправили???
+				//overlap & gap-width
+				oox::oox_chart_ptr current = chart.get_current_chart();
+				current->set_additional_properties(a.properties_);
+			}
+			y_enabled = true;
+		}
+		else if (a.dimension_ == L"z")
+		{
+			type=2;
+			z_enabled = true;
+			continue;
+		}
+
+		chart.add_axis(type);
+		chart.set_content_axis(a);
 	}
 }
 void process_build_chart::ApplyChartProperties(std::wstring style,std::vector<_property> & propertiesOut)

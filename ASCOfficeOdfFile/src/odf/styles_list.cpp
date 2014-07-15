@@ -284,7 +284,7 @@ void text_list_level_style_number::docx_convert(oox::docx_conversion_context & C
 			}
 			CP_XML_NODE(L"w:numFmt")
 			{
-				CP_XML_ATTR(L"w:val",GetNumFormat( text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ ));
+				CP_XML_ATTR(L"w:val",GetNumFormat( text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_.get_value_or(L"") ));
 			}
 			CP_XML_NODE(L"w:suff")
 			{
@@ -329,7 +329,7 @@ void text_list_level_style_number::docx_convert(oox::docx_conversion_context & C
 
 			double minLabelDistanceTwip = 0.0;
 			if (listLevelProperties && 
-				!text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_.empty() &&
+				text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ &&
 				listLevelProperties->text_min_label_distance_)
 			{
 				minLabelDistanceTwip = 20.0 * listLevelProperties->text_min_label_distance_->get_value_unit(length::pt);
@@ -397,18 +397,21 @@ void text_list_level_style_number::pptx_convert(oox::pptx_conversion_context & C
 	
 	std::wstring num_format;
 
-	if (text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"1")
-	num_format= L"arabic";
-	else if (text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"I")
-		num_format= L"romanUc";
-	else if (text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"i")
-		num_format= L"romanLc";
-	else if (text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"A")
-		num_format= L"alphaUc";
-	else if (text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"a")
-		num_format= L"alphaLc";
-	else 
-		num_format= L"arabic";
+	if (text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_)
+	{
+		if (*text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"1")
+			num_format= L"arabic";
+		else if (*text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"I")
+			num_format= L"romanUc";
+		else if (*text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"i")
+			num_format= L"romanLc";
+		else if (*text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"A")
+			num_format= L"alphaUc";
+		else if (*text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_ == L"a")
+			num_format= L"alphaLc";
+		else 
+			num_format= L"arabic";
+	}else num_format= L"arabic";
 
 	if (text_list_level_style_number_attr_.common_num_format_prefix_suffix_attlist_.style_num_prefix_)
 	{

@@ -198,10 +198,13 @@ void odt_conversion_context::add_page_break()
 	if (current_root_elements_.size()>0)			
 	{ 	
 		text_p* para = NULL;
+		style * style_ = NULL;
 		//http://docs.oasis-open.org/office/v1.2/os/OpenDocument-v1.2-os-part1.html#__RefHeading__1415190_253892949
 		//нихере не работает !! в span, ... приходится генерить разрыв вручную !!
+
 		if (para = dynamic_cast<text_p*>(current_root_elements_.back().elm.get()))
 		{
+			style_ = dynamic_cast<style*>(current_root_elements_.back().style_elm.get());
 			end_paragraph();
 		}			
 		text_context()->start_element(elm);
@@ -210,10 +213,16 @@ void odt_conversion_context::add_page_break()
 
 		if (para)
 		{
-			std::wstring parent_style_name = para->paragraph_.paragraph_attrs_.text_style_name_.get_value_or(style_ref(L"")).style_name();
-			
 			styles_context()->create_style(L"",odf::style_family::Paragraph, true, false, -1);	
-			styles_context()->last_state().set_parent_style_name(parent_style_name);
+			//styles_context()->last_state().apply_from(style_);
+			if (style_ )
+			{
+				style_paragraph_properties * new_props = styles_context()->last_state().get_paragraph_properties();
+				if (new_props)new_props->apply_from(style_->style_content_.get_style_paragraph_properties());
+				
+				if (style_->style_parent_style_name_)
+					styles_context()->last_state().set_parent_style_name(*style_->style_parent_style_name_);
+			}	
 			start_paragraph(true);
 		}
 	}

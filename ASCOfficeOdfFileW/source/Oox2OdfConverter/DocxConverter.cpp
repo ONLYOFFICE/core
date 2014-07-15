@@ -290,8 +290,15 @@ void DocxConverter::convert(OOX::Logic::CRun	*oox_run)//wordprocessing 22.1.2.87
 {
 	if (oox_run == NULL) return;
 	
-	bool styled = false;
-	
+	//test for break - 2 first element ЭТОТ элемент НУЖНО вытащить отдельно !!!
+	for(int i = 0; i < min (2,oox_run->m_arrItems.GetSize()); ++i)
+	{
+		if (oox_run->m_arrItems[i]->getType() == OOX::et_w_lastRenderedPageBreak)
+		{
+			odt_context->add_page_break();
+		}
+	}	
+	bool styled = false;	
 	if (oox_run->m_oRunProperty) 
 	{
 		styled = true;
@@ -301,14 +308,7 @@ void DocxConverter::convert(OOX::Logic::CRun	*oox_run)//wordprocessing 22.1.2.87
 
 		convert(oox_run->m_oRunProperty, text_properties);
 	}
-	//test for break - 2 first element ЭТОТ элемент НУЖНО вытащить отдельно !!!
-	for(int i = 0; i < min (2,oox_run->m_arrItems.GetSize()); ++i)
-	{
-		if (oox_run->m_arrItems[i]->getType() == OOX::et_w_lastRenderedPageBreak)
-		{
-			odt_context->add_page_break();
-		}
-	}
+	
 	odt_context->start_run(styled);
 	
 	for(int i = 0; i < oox_run->m_arrItems.GetSize(); ++i)
@@ -1321,6 +1321,7 @@ void DocxConverter::convert(OOX::Logic::CShape	 *oox_shape)
 				odf_context()->drawing_context()->set_no_fill();
 			odf_context()->drawing_context()->end_area_properies();
 		}
+		
 		if (oox_shape->m_oTxBody.IsInit() && oox_shape->m_oTxBody->m_oTxtbxContent.IsInit())
 		{
 			odt_context->start_text_context();
@@ -1331,6 +1332,7 @@ void DocxConverter::convert(OOX::Logic::CShape	 *oox_shape)
 			odt_context->drawing_context()->set_text( odt_context->text_context());
 			odt_context->end_text_context();	
 		}
+		OoxConverter::convert(oox_shape->m_oTxBodyProperties.GetPointer());
 
 	if (type == 2000)	odt_context->drawing_context()->end_text_box();
 	else				odt_context->drawing_context()->end_shape();

@@ -51,6 +51,8 @@ public:
 	void start_paragraph(bool styled = false);
 	void end_paragraph();
 
+	void add_page_break();
+
 	void start_hyperlink(std::wstring ref);
 	void end_hyperlink();
 
@@ -64,6 +66,9 @@ public:
 	void add_section();
 	void add_section_columns(int count, double space_pt, bool separator );
 	void add_section_column(std::vector<std::pair<double,double>> width_space);
+	void flush_section();
+
+	void set_master_page_name(std::wstring master_name);
 
 	void start_drop_cap(style_paragraph_properties * paragraph_properties);
 		void set_drop_cap_lines(int lines);
@@ -102,8 +107,8 @@ private:
 	std::vector<odf_drawing_context_ptr>	drawing_context_;	
 	std::vector<odf_text_context_ptr>		text_context_;//for embedded 
 
-	std::vector<office_element_ptr> current_root_elements_; // for section, if needed
-	std::vector<odt_section_state>	sections_;
+	std::vector<odf_element_state>		current_root_elements_; // for section, if needed
+	std::vector<odt_section_state>		sections_;
 
 	void add_to_root();
 

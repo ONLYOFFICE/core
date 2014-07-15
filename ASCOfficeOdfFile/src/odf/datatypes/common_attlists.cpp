@@ -564,19 +564,18 @@ void common_horizontal_pos_attlist::serialize(CP_ATTR_NODE)
 
 void common_num_format_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"style:num-format", style_num_format_, std::wstring(L""));
+    CP_APPLY_ATTR(L"style:num-format",		style_num_format_);
     CP_APPLY_ATTR(L"style:num-letter-sync", style_num_letter_sync_);    
 }
 void common_num_format_attlist::apply_from(const common_num_format_attlist & Other)
 {
-    if (!Other.style_num_format_.empty())
-        style_num_format_ = Other.style_num_format_;
+    _CP_APPLY_PROP2(style_num_format_);
     _CP_APPLY_PROP2(style_num_letter_sync_);
 }
 void common_num_format_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR(L"style:num-format", style_num_format_);
-    CP_XML_ATTR_OPT(L"style:num-letter-sync", style_num_letter_sync_);    
+    CP_XML_ATTR_OPT(L"style:num-format",		style_num_format_);
+    CP_XML_ATTR_OPT(L"style:num-letter-sync",	style_num_letter_sync_);    
 }
 
 //  common_num_format_prefix_suffix_attlist

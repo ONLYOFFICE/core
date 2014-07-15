@@ -1034,6 +1034,9 @@ PPTX::Logic::SpTreeElem CAVSOfficeDrawingConverter::doc_LoadShape(XmlUtils::CXml
 #endif
 		*/
 
+		if (!pShape->TextBoxBodyPr.is_init())
+			pShape->TextBoxBodyPr = new PPTX::Logic::BodyPr();
+
 		XmlUtils::CXmlNode oNodeTextBox;
 		if (oNode.GetNode(_T("v:textbox"), oNodeTextBox))
 		{
@@ -1041,6 +1044,30 @@ PPTX::Logic::SpTreeElem CAVSOfficeDrawingConverter::doc_LoadShape(XmlUtils::CXml
 			if (oNodeTextBox.GetNode(_T("w:txbxContent"), oNodeContent))
 			{
 				pShape->TextBoxShape = oNodeContent.GetXml();
+			}
+
+			CString sTextInset = oNodeTextBox.GetAttribute(_T("inset"));
+			CString sTextInsetMode = oNodeTextBox.GetAttribute(_T("o:insetmode"));
+			if (_T("") != sTextInset && ((_T("") == sTextInsetMode) || (_T("custom") == sTextInsetMode)))
+			{
+				CString sL = _T("0.1in");
+				CString sT = _T("0.05in");
+				CString sR = _T("0.1in");
+				CString sB = _T("0.05in");
+
+				PPTX::CStringTrimmer oTrimmer;
+				oTrimmer.m_Separator = (TCHAR)',';
+				oTrimmer.LoadFromString(sTextInset);
+
+				double dTextMarginLeft = oTrimmer.GetParameter(0, 0.1);
+				double dTextMarginTop = oTrimmer.GetParameter(1, 0.05);
+				double dTextMarginRight = oTrimmer.GetParameter(2, 0.1);
+				double dTextMarginBottom = oTrimmer.GetParameter(3, 0.05);
+
+				pShape->TextBoxBodyPr->lIns = (int)(12700 * dTextMarginLeft);
+				pShape->TextBoxBodyPr->tIns = (int)(12700 * dTextMarginTop);
+				pShape->TextBoxBodyPr->rIns = (int)(12700 * dTextMarginRight);
+				pShape->TextBoxBodyPr->bIns = (int)(12700 * dTextMarginBottom);
 			}
 		}
 
@@ -1054,9 +1081,6 @@ PPTX::Logic::SpTreeElem CAVSOfficeDrawingConverter::doc_LoadShape(XmlUtils::CXml
 		CSpTreeElemProps oProps;
 		oProps.IsTop = bIsTop;
 		CString strMainPos = GetDrawingMainProps(oNode, oCSSParser, oProps);
-
-		if (!pShape->TextBoxBodyPr.is_init())
-			pShape->TextBoxBodyPr = new PPTX::Logic::BodyPr();
 
 		// в старом офисе нету такого флага. всегда - не поворачивать
 		pShape->TextBoxBodyPr->upright = true;

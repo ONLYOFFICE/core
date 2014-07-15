@@ -88,6 +88,7 @@ public:
     {	
 		styles_context_ = NULL;
 		current_series_count_= 0;
+		local_table_enabled_ = false;
 		
 	} 
 
@@ -173,7 +174,7 @@ odf_chart_context::odf_chart_context(odf_conversion_context *odf_context)
 
 odf_chart_context::~odf_chart_context()
 {
-}
+} 
 void odf_chart_context::set_styles_context(odf_style_context * style_context)
 {
 	impl_->styles_context_ = style_context;

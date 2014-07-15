@@ -163,9 +163,13 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 										CP_XML_NODE(L"c:pt")
 										{
 											CP_XML_ATTR(L"idx", j++);
+											double val = 0;
+
+											try { val = boost::lexical_cast<double>(v);}
+											catch(...){}			
 											CP_XML_NODE(L"c:v")
 											{
-												CP_XML_CONTENT(boost::lexical_cast<double>(v));
+												CP_XML_CONTENT(val);
 											}
 										}
 									}

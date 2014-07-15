@@ -11,6 +11,7 @@
 namespace cpdoccore {
 namespace odf {
 
+class style;
 class odf_conversion_context;
 class odf_style_context;
 
@@ -37,6 +38,8 @@ public:
 	void set_conditional(bool val);
 
 	office_element_ptr & get_office_element();
+
+	void apply_from(style* other_style);
 
 	void add_child(office_element_ptr & child);
 /////////////////////////////////////////////////////////////////////////////////////////

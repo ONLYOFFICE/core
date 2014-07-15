@@ -259,10 +259,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\progressCallback.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Resource.h"
 				>
 			</File>

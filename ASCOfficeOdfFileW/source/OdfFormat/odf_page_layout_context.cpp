@@ -79,7 +79,7 @@ void odf_page_layout_context::create_layout_page()
 	std::wstring odf_name = style_context_->find_free_name(style_family::PageLayout);
 	if (!elm) return;
 
-	style_context_->add_style(elm, true, true);
+	style_context_->add_style(elm, true, true, style_family::PageLayout);
 	
 	layout_state_list_.push_back( odf_layout_state(elm) ); 
 ///////////////////////////////////////
@@ -89,15 +89,7 @@ void odf_page_layout_context::create_layout_page()
 
 void odf_page_layout_context::set_page_margin(_CP_OPT(double) top, _CP_OPT(double) left, _CP_OPT(double) bottom, _CP_OPT(double) right, _CP_OPT(double) header, _CP_OPT(double) footer)
 {
-	if (layout_state_list_.size() < 1) return;
-	style_page_layout_properties * props = layout_state_list_.back().get_properties();
-	if (props == NULL)
-	{
-		office_element_ptr elm;
-		create_element(L"style", L"page-layout-properties", elm, odf_context_);
-		layout_state_list_.back().add_child(elm, office_element_ptr(),L"");
-		props = layout_state_list_.back().get_properties();
-	}
+	style_page_layout_properties * props = get_properties();
 	if (!props)return;
 
 	if (top)
@@ -113,10 +105,46 @@ void odf_page_layout_context::set_page_margin(_CP_OPT(double) top, _CP_OPT(doubl
 		props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_right_ = 
 												length(length(*right,length::inch).get_value_unit(length::cm),length::cm);
 }
-
-void odf_page_layout_context::set_page_orientation(int type)
+void odf_page_layout_context::set_page_margin(_CP_OPT(length) top, _CP_OPT(length) left, _CP_OPT(length) bottom, _CP_OPT(length) right)
 {
-	if (layout_state_list_.size() < 1) return;
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	if (top)
+		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_ = 
+												length(top->get_value_unit(length::cm),length::cm);
+	if (bottom)
+		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_= 
+												length(bottom->get_value_unit(length::cm),length::cm);
+	if (left)
+		props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_ = 
+												length(left->get_value_unit(length::cm),length::cm);
+	if (right)
+		props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_right_ = 
+												length(right->get_value_unit(length::cm),length::cm);
+	//if (header)
+	//	props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_right_ = 
+	//											length(header->get_value_unit(length::cm),length::cm);
+	//if (footer)
+	//	props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_right_ = 
+	//											length(footer->get_value_unit(length::cm),length::cm);
+}
+void odf_page_layout_context::set_page_size(_CP_OPT(length) width, _CP_OPT(length) height)
+{
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	if (width)
+		props->style_page_layout_properties_attlist_.fo_page_width_ = 
+												length(width->get_value_unit(length::cm),length::cm);
+	if (height)
+		props->style_page_layout_properties_attlist_.fo_page_height_ = 
+												length(height->get_value_unit(length::cm),length::cm);
+}
+
+style_page_layout_properties * odf_page_layout_context::get_properties()
+{
+	if (layout_state_list_.size() < 1) return NULL;
 	style_page_layout_properties * props = layout_state_list_.back().get_properties();
 	if (props == NULL)
 	{
@@ -125,9 +153,14 @@ void odf_page_layout_context::set_page_orientation(int type)
 		layout_state_list_.back().add_child(elm, office_element_ptr(),L"");
 		props = layout_state_list_.back().get_properties();
 	}
+	return props;
+}
+void odf_page_layout_context::set_page_orientation(int type)
+{
+	style_page_layout_properties * props = get_properties();
 	if (!props)return;
 
-	if (type == 2)
+	if (type == 0)
 		props->style_page_layout_properties_attlist_.style_print_orientation_ = L"landscape";
 	else
 		props->style_page_layout_properties_attlist_.style_print_orientation_ = L"portrait";

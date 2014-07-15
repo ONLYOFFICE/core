@@ -137,10 +137,13 @@ void DocxConverter::convert_document()
 	const OOX::CDocument* document = docx_document->GetDocument();
 	if (!document)return;
 
+	convert(document->m_oBackground.GetPointer());//подложка
 	for ( int nIndex = 0; nIndex < document->m_arrItems.GetSize(); nIndex++ )
 	{
 		convert(document->m_arrItems[nIndex]);
 	}
+
+	convert(document->m_oSectPr.GetPointer(),true);
 }
 void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 {
@@ -207,11 +210,6 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		{
 			OOX::Logic::CCommentReference* pCommRef = static_cast<OOX::Logic::CCommentReference*>(oox_unknown);
 			convert(pCommRef);		//если нет Start - означает начало с предыдущего Run
-		}break;
-		case OOX::et_w_sectPr:
-		{
-			OOX::Logic::CSectionProperty *pSectionPr = static_cast<OOX::Logic::CSectionProperty*>(oox_unknown); 
-			convert(pSectionPr, true);
 		}break;
 		case OOX::et_w_tbl:
 		{
@@ -302,8 +300,15 @@ void DocxConverter::convert(OOX::Logic::CRun	*oox_run)//wordprocessing 22.1.2.87
 		odf::style_text_properties	* text_properties = odt_context->styles_context()->last_state().get_text_properties();
 
 		convert(oox_run->m_oRunProperty, text_properties);
-	}	
-	
+	}
+	//test for break - 2 first element ЭТОТ элемент НУЖНО вытащить отдельно !!!
+	for(int i = 0; i < min (2,oox_run->m_arrItems.GetSize()); ++i)
+	{
+		if (oox_run->m_arrItems[i]->getType() == OOX::et_w_lastRenderedPageBreak)
+		{
+			odt_context->add_page_break();
+		}
+	}
 	odt_context->start_run(styled);
 	
 	for(int i = 0; i < oox_run->m_arrItems.GetSize(); ++i)
@@ -327,11 +332,12 @@ void DocxConverter::convert(OOX::Logic::CRun	*oox_run)//wordprocessing 22.1.2.87
 			}break;		
 			case OOX::et_w_lastRenderedPageBreak:
 			{
-				odt_context->text_context()->add_page_break();
+				//odt_context->text_context()->add_page_break(); выше
 			}break;
 			case OOX::et_w_br:
 			{
-				odt_context->text_context()->add_textline_break();
+				OOX::Logic::CBr* pBr= static_cast<OOX::Logic::CBr*>(oox_run->m_arrItems[i]);
+				if (pBr)odt_context->text_context()->add_break(pBr->m_oType.GetValue(), pBr->m_oClear.GetValue());
 			}break;
 			case OOX::et_w_t:
 			{
@@ -557,8 +563,58 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool root)
 {
 	if (oox_section_pr == NULL) return;
-	if (root) return;
+	bool needGenerateSection  = true; // чтоб не сгенерить секцию однократно 
 	
+	odt_context->page_layout_context()->create_master_page(L"");
+	
+	odt_context->set_master_page_name(odt_context->page_layout_context()->last_master().get_name());
+	
+	if (oox_section_pr->m_oPgMar.IsInit())
+	{
+		_CP_OPT(odf::length) top, left, right, bottom;
+		convert(oox_section_pr->m_oPgMar->m_oBottom.GetPointer(), bottom);
+		convert(oox_section_pr->m_oPgMar->m_oLeft.GetPointer()	, left);
+		convert(oox_section_pr->m_oPgMar->m_oRight.GetPointer()	, right);
+		convert(oox_section_pr->m_oPgMar->m_oTop.GetPointer()	, top);
+		
+		odt_context->page_layout_context()->set_page_margin(top,left,bottom, right);
+		
+			//nullable<SimpleTypes::CTwipsMeasure        > m_oFooter;
+			//nullable<SimpleTypes::CTwipsMeasure        > m_oGutter;
+			//nullable<SimpleTypes::CTwipsMeasure        > m_oHeader;
+	}
+
+	if (oox_section_pr->m_oPgSz.IsInit())
+	{
+		if (oox_section_pr->m_oPgSz->m_oOrient.IsInit())
+			odt_context->page_layout_context()->set_page_orientation(oox_section_pr->m_oPgSz->m_oOrient->GetValue());
+
+		_CP_OPT(odf::length) width, height;
+
+		convert(oox_section_pr->m_oPgSz->m_oW.GetPointer(), width);
+		convert(oox_section_pr->m_oPgSz->m_oH.GetPointer(), height);
+
+		odt_context->page_layout_context()->set_page_size(width, height);
+		//nullable<SimpleTypes::CDecimalNumber<>   > m_oCode;
+	}
+			//nullable<ComplexTypes::Word::CTextDirection                  > m_oTextDirection;
+			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oRtlGutter;
+			//nullable<ComplexTypes::Word::CVerticalJc                     > m_oVAlign;
+
+	// разметка + колонтитулы
+			//CSimpleArray<ComplexTypes::Word::CHdrFtrRef                  > m_arrFooterReference;
+			//CSimpleArray<ComplexTypes::Word::CHdrFtrRef                  > m_arrHeaderReference;	
+			//nullable<ComplexTypes::Word::CPageMar                        > m_oPgMar;
+			//nullable<ComplexTypes::Word::CPageNumber                     > m_oPgNumType;
+			//nullable<ComplexTypes::Word::CPageSz                         > m_oPgSz;
+			//nullable<OOX::Logic::CPageBorders                            > m_oPgBorders;
+			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oTitlePg;	
+
+	//master page create
+	// add colontitul
+	// style name master page -> 0-й элемент текщей цепочки параграфов
+//--------------------------------------------------------------------------------------------------------------------------------------------		
+	// то что относится собственно к секциям 
 	if (oox_section_pr->m_oType.IsInit() && oox_section_pr->m_oType->m_oVal.IsInit())
 	{
 		switch(oox_section_pr->m_oType->m_oVal->GetValue())
@@ -568,34 +624,31 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		case SimpleTypes::sectionmarkEvenPage   :
 		case SimpleTypes::sectionmarkNextPage   :
 		case SimpleTypes::sectionmarkOddPage    :
+			odt_context->add_section();
+			needGenerateSection = false; //??? 
 			break;
 		}
 	}
 
-	odt_context->add_section();
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBidi;
 			//nullable<ComplexTypes::Word::CDocGrid                        > m_oDocGrid;
 			//nullable<OOX::Logic::CEdnProps                               > m_oEndnotePr;
-			//CSimpleArray<ComplexTypes::Word::CHdrFtrRef                  > m_arrFooterReference;
 			//nullable<OOX::Logic::CFtnProps                               > m_oFootnotePr;
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oFormProt;
-			//CSimpleArray<ComplexTypes::Word::CHdrFtrRef                  > m_arrHeaderReference;
+
 			//nullable<ComplexTypes::Word::CLineNumber                     > m_oLnNumType;
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oNoEndnote;
 			//nullable<ComplexTypes::Word::CPaperSource                    > m_oPaperSrc;
-			//nullable<OOX::Logic::CPageBorders                            > m_oPgBorders;
-			//nullable<ComplexTypes::Word::CPageMar                        > m_oPgMar;
-			//nullable<ComplexTypes::Word::CPageNumber                     > m_oPgNumType;
-			//nullable<ComplexTypes::Word::CPageSz                         > m_oPgSz;
-			//nullable<ComplexTypes::Word::CRel                            > m_oPrinterSettings;
-			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oRtlGutter;
-			//nullable<OOX::Logic::CSectPrChange                           > m_oSectPrChange;
-			//nullable<ComplexTypes::Word::CTextDirection                  > m_oTextDirection;
-			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oTitlePg;
-			//nullable<ComplexTypes::Word::CVerticalJc                     > m_oVAlign;
 
-	if (oox_section_pr->m_oCols.IsInit() && oox_section_pr->m_oCols->m_oNum.IsInit())
+			//nullable<ComplexTypes::Word::CRel                            > m_oPrinterSettings;
+			//nullable<OOX::Logic::CSectPrChange                           > m_oSectPrChange;
+//--------------------------------------------------------------------------------------------------------------------------------------------		
+
+
+	if (oox_section_pr->m_oCols.IsInit() && oox_section_pr->m_oCols->m_oNum.IsInit())//колонки
 	{
+		if (needGenerateSection) odt_context->add_section(); // для колонок тож надо генерить секции /???
+
 		int count = oox_section_pr->m_oCols->m_oNum->GetValue();
 
 		double default_space_pt = -1;
@@ -624,6 +677,8 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 			width_space.push_back(std::pair<double,double>(-1, default_space_pt));
 		}
 		odt_context->add_section_column(width_space);
+
+		if (root) odt_context->flush_section();
 	}
 }
 void DocxConverter::convert(ComplexTypes::Word::CFramePr *oox_frame_pr, odf::style_paragraph_properties * paragraph_properties)
@@ -1692,7 +1747,6 @@ void DocxConverter::convert(OOX::Logic::CTblGrid	*oox_table_grid)
 	}	
 	odt_context->end_table_columns();
 }
-
 void DocxConverter::convert(OOX::Logic::CTr	*oox_table_row)
 {
 	if (oox_table_row == NULL) return;

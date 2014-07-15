@@ -28,8 +28,6 @@ odf_text_context::odf_text_context(odf_conversion_context *odf_context)
 	paragraph_properties_ = NULL;
 	text_properties_ = NULL;
 
-	last_paragraph_ = NULL;
-
 	current_outline_ = 0;
 }
 odf_text_context::~odf_text_context()
@@ -45,6 +43,13 @@ void odf_text_context::set_single_object(bool val, style_paragraph_properties *p
 	single_paragraph_ = val;
 	paragraph_properties_ = para_props;
 	text_properties_ = text_props;
+
+	//if (paragraph_properties_)//??? а могут ли быть разрывы после-до диаграммы??? 
+	//{
+	//	paragraph_properties_->content().fo_break_before_ = need_break_;
+	//	need_break_ = boost::none;
+	//}
+
 }
 
 void odf_text_context::add_text_content(const std::wstring & text)
@@ -54,13 +59,13 @@ void odf_text_context::add_text_content(const std::wstring & text)
 	//	office_element_ptr elm;
 	//	create_element(L"text", L"s", elm, odf_context_);
 
-	//	current_level_.back()->add_child_element(elm);
+	//	current_level_.back().elm->add_child_element(elm);
 
 	//}
 	//else
 	{
 		if (current_level_.size() > 0 )
-			current_level_.back()->add_text(text);
+			current_level_.back().elm->add_text(text);
 
 	}
 }
@@ -118,7 +123,7 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 		{
 			if (parent_paragraph_style_.length() >0)style_->style_parent_style_name_ = parent_paragraph_style_;
 			
-			paragraph_properties_ = style_->style_content_.get_style_paragraph_properties();//для бряков
+			paragraph_properties_ = style_->style_content_.get_style_paragraph_properties();
 		}
 	}
 	else if (parent_paragraph_style_.length() >0)
@@ -129,13 +134,15 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 		text_h* h = dynamic_cast<text_h*>(elm.get());
 		if (h)p->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(parent_paragraph_style_);	
 	}
-
-	odf_text_state state={elm,  style_name, style_elm,level};
+	if (paragraph_properties_)paragraph_properties_->content().fo_break_before_ = need_break_;
+	need_break_ = boost::none;
+	
+	odf_element_state state={elm,  style_name, style_elm,level};
 	text_elements_list_.push_back(state);
 	if (current_level_.size()>0)
-		current_level_.back()->add_child_element(elm);
+		current_level_.back().elm->add_child_element(elm);
 
-	current_level_.push_back(elm);
+	current_level_.push_back(state);
 	
 }
 
@@ -148,17 +155,17 @@ void odf_text_context::end_paragraph()
 	paragraph_properties_ = NULL;
 }
 
-void odf_text_context::start_element(office_element_ptr & elm)
+void odf_text_context::start_element(office_element_ptr & elm, office_element_ptr style_elm ,std::wstring style_name)
 {
 	int level = current_level_.size();
 
-	odf_text_state state={elm, L"", office_element_ptr(), level};
+	odf_element_state state={elm, style_name, style_elm, level};
 
 	text_elements_list_.push_back(state);
 	if (current_level_.size()>0)
-		current_level_.back()->add_child_element(elm);
+		current_level_.back().elm->add_child_element(elm);
 
-	current_level_.push_back(elm);
+	current_level_.push_back(state);
 }
 void odf_text_context::end_element()
 {
@@ -204,14 +211,14 @@ void odf_text_context::start_span(bool styled)
 		}
 	}
 
-	odf_text_state state={	span_elm, style_name, style_elm, level};
+	odf_element_state state={	span_elm, style_name, style_elm, level};
 
 	text_elements_list_.push_back(state);
 	
 	if (current_level_.size()>0)
-		current_level_.back()->add_child_element(span_elm);
+		current_level_.back().elm->add_child_element(span_elm);
 
-	current_level_.push_back(span_elm);
+	current_level_.push_back(state);
 }
 
 void odf_text_context::end_span()
@@ -222,14 +229,6 @@ void odf_text_context::end_span()
 		current_level_.pop_back();
 
 	text_properties_ = NULL;
-}
-void odf_text_context::add_textline_break()
-{
-	office_element_ptr elm;
-	create_element(L"text", L"line-break", elm, odf_context_);
-
-	if (current_level_.size()>0)
-		current_level_.back()->add_child_element(elm);
 }
 
 void odf_text_context::set_outline_level(int level)
@@ -243,17 +242,17 @@ void odf_text_context::add_text_style(office_element_ptr & style_elm, std::wstri
 
 	if (current_level_.size() < 1 )return;
 	
-	if (text_span* span = dynamic_cast<text_span*>(current_level_.back().get()))
+	if (text_span* span = dynamic_cast<text_span*>(current_level_.back().elm.get()))
 	{
 		span->text_style_name_ = style_ref(style_name);
 	}
 	
-	if (text_p* p = dynamic_cast<text_p*>(current_level_.back().get()))
+	if (text_p* p = dynamic_cast<text_p*>(current_level_.back().elm.get()))
 	{
 		p->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
 	}
 
-	if (text_h* h = dynamic_cast<text_h*>(current_level_.back().get()))
+	if (text_h* h = dynamic_cast<text_h*>(current_level_.back().elm.get()))
 	{
 		h->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
 	}
@@ -264,47 +263,61 @@ void odf_text_context::add_tab()
 	create_element(L"text", L"tab", elm, odf_context_);
 	
 	if (current_level_.size()>0)
-		current_level_.back()->add_child_element(elm);
+		current_level_.back().elm->add_child_element(elm);
 }
 void odf_text_context::add_page_break()
 {
- //	office_element_ptr elm;
-	//create_element(L"text", L"soft-page-break", elm, odf_context_);
+	//office_element_ptr elm;
+	//create_element(L"text", L"soft-page-break", elm, odf_context_);	
+	//
+	//if (current_level_.size()>0)			
+	//{ 	
+	//	text_p* para = NULL;
+	//	//http://docs.oasis-open.org/office/v1.2/os/OpenDocument-v1.2-os-part1.html#__RefHeading__1415190_253892949
+	//	//нихере не работает !! в span, ... приходится генерить разрыв вручную !!
+	//	if (para = dynamic_cast<text_p*>(current_level_.back().elm.get()))
+	//	{
+	//		end_paragraph();
+	//	}			
+	//	current_level_.back().elm->add_child_element(elm);
 
-	//bool in_span = false;
-	//if (text_span* span = dynamic_cast<text_span*>(current_level_.back().get()))
-	//{
-	//	in_span = true;
-	//	end_span(); // todoo - перенос стиля
-	//}
-
-	//bool in_paragraph = false;
-	//if (text_p* p = dynamic_cast<text_p*>(current_level_.back().get()))
-	//{
-	//	in_paragraph = true;
-	////fo:break-before
-
-	if (paragraph_properties_) paragraph_properties_->content().fo_break_before_ = fo_break(fo_break::Page);
-
-		//if (current_level_.size()>0)
-		//	current_level_.back()->add_child_element(elm);
-//		end_paragraph(); // todoo - перенос стиля
-	//}
-
-	////end paragraph + style add after-break = page
-	////start paragraph - continues style
-	//if (in_paragraph)
-	//{
-	////	start_paragraph(false);
-	//	
-	//	//if (current_level_.size()>0)
-	//	//	current_level_.back()->add_child_element(elm);
-	//}
-	//if (in_span)
-	//{ 
-	//	start_span(false);
+	//	if (para)
+	//	{
+	//		bool styled = para->paragraph_.paragraph_attrs_.text_style_name_ ? true : false;
+	//		start_paragraph(styled);
+	//	}
 	//}
 }
+void odf_text_context::add_break(int type, int clear)
+{
+		//brclearAll   = 0,
+		//brclearLeft  = 1,
+		//brclearNone  = 2,
+		//brclearRight = 3
+
+		//brtypeColumn       = 0,
+		//brtypePage         = 1,
+		//brtypeTextWrapping = 2
+
+	if (type == 0)
+	{
+		need_break_= fo_break(fo_break::Column);
+	}
+	else if (type == 1)
+	{
+		need_break_ = fo_break(fo_break::Page);
+	}
+	else 
+	{
+		office_element_ptr elm;
+		create_element(L"text", L"line-break", elm, odf_context_);
+
+		if (current_level_.size()>0)
+			current_level_.back().elm->add_child_element(elm);	
+	}
+
+}
+
 void odf_text_context::set_parent_paragraph_style(std::wstring & style_name)
 {
 	parent_paragraph_style_ = style_name;

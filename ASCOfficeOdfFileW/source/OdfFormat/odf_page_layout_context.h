@@ -3,7 +3,7 @@
 #include <string>
 
 #include "odf_page_layout_state.h"
-
+#include "length.h"
 
 namespace cpdoccore {
 namespace odf {
@@ -30,9 +30,13 @@ public:
     odf_master_state & last_master();
 
 	void set_page_margin(_CP_OPT(double) top, _CP_OPT(double) left, _CP_OPT(double) bottom, _CP_OPT(double) right, _CP_OPT(double) header, _CP_OPT(double) footer);
+	void set_page_margin(_CP_OPT(length) top, _CP_OPT(length) left, _CP_OPT(length) bottom, _CP_OPT(length) right);
 	void set_page_orientation(int type);
+	void set_page_size(_CP_OPT(length) width, _CP_OPT(length) height);
 
 private:
+
+	style_page_layout_properties *get_properties();
 
     odf_conversion_context	* odf_context_;
     odf_style_context		* style_context_;

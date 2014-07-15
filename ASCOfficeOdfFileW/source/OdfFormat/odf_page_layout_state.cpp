@@ -62,7 +62,7 @@ odf_layout_state::odf_layout_state(office_element_ptr & layout_elm )
 	odf_element_state state = {layout_elm,L"",office_element_ptr(),level};
 	
 	elements_.push_back(state);
-
+	current_level_.push_back(layout_elm);
 }
 
 void odf_layout_state::add_child(office_element_ptr & child_elm, office_element_ptr  style_elm, std::wstring style_name )

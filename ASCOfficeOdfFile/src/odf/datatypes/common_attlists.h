@@ -325,8 +325,8 @@ public:
 	void serialize(CP_ATTR_NODE);
 
 public:
-    std::wstring style_num_format_;
-    _CP_OPT(Bool) style_num_letter_sync_;
+     _CP_OPT(std::wstring)	style_num_format_;
+    _CP_OPT(Bool)			style_num_letter_sync_;
 
 };
 

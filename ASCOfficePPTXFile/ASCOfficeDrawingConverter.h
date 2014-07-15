@@ -14,6 +14,61 @@
 
 namespace PPTX
 {
+	class CStringTrimmer
+	{
+	public:
+		CAtlArray<CString>	m_arParams;
+		TCHAR				m_Separator;
+
+	public:
+		CStringTrimmer()
+		{
+			m_Separator = (TCHAR)' ';
+		}
+		~CStringTrimmer()
+		{
+		}
+
+	public:
+		void LoadFromString(CString& strParams)
+		{
+			// здесь не будем плодить тормозов - напишем без всяких Mid, Find, чтобы был только один проход
+			TCHAR* pData	= strParams.GetBuffer();
+			int nCount		= strParams.GetLength();
+
+			int nPosition	= 0;
+			TCHAR* pDataMem = pData;
+
+			int nCurPosition = 0;
+			while (nPosition <= nCount)
+			{
+				if (nPosition == nCount || (pData[nPosition] == m_Separator))
+				{
+					int nLen = nPosition - nCurPosition;
+					if (nLen == 0)
+					{
+						m_arParams.Add(_T(""));
+					}
+					else
+					{
+						m_arParams.Add(strParams.Mid(nCurPosition, nLen));
+					}
+					nCurPosition = nPosition + 1;
+				}
+				++nPosition;
+			}
+		}
+
+		double GetParameter(int nIndex, double dDefault)
+		{
+			if (nIndex < 0 || nIndex >= (int)m_arParams.GetCount())
+				return dDefault;
+
+			SimpleTypes::CPoint parserPoint;
+			return parserPoint.FromString(m_arParams[nIndex]);
+		}
+	};
+
 	class CCSS
 	{
 	public:

@@ -1050,11 +1050,6 @@ PPTX::Logic::SpTreeElem CAVSOfficeDrawingConverter::doc_LoadShape(XmlUtils::CXml
 			CString sTextInsetMode = oNodeTextBox.GetAttribute(_T("o:insetmode"));
 			if (_T("") != sTextInset && ((_T("") == sTextInsetMode) || (_T("custom") == sTextInsetMode)))
 			{
-				CString sL = _T("0.1in");
-				CString sT = _T("0.05in");
-				CString sR = _T("0.1in");
-				CString sB = _T("0.05in");
-
 				PPTX::CStringTrimmer oTrimmer;
 				oTrimmer.m_Separator = (TCHAR)',';
 				oTrimmer.LoadFromString(sTextInset);

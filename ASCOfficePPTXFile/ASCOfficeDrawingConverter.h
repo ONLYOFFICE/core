@@ -64,6 +64,9 @@ namespace PPTX
 			if (nIndex < 0 || nIndex >= (int)m_arParams.GetCount())
 				return dDefault;
 
+			if (m_arParams[nIndex].GetLength() == 0)
+				return dDefault;
+
 			SimpleTypes::CPoint parserPoint;
 			return parserPoint.FromString(m_arParams[nIndex]);
 		}

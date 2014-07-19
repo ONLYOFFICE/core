@@ -41,6 +41,8 @@ public:
 
 	void apply_from(style* other_style);
 
+	void set_dont_write(bool val);
+
 	void add_child(office_element_ptr & child);
 /////////////////////////////////////////////////////////////////////////////////////////
 	void			set_name(std::wstring & name);
@@ -79,6 +81,8 @@ private:
 	bool root_;
 	bool default_; // это для тех стилей что в root
 	bool conditional_; //стили накладываемые по условию
+
+	bool writable_;
 
 	style_family style_family_;
 	

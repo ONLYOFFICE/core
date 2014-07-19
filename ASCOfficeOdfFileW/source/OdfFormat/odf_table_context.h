@@ -31,7 +31,13 @@ public:
 	int count_column ();
 
 	void start_table(office_element_ptr &elm, bool styled = false);
+		void set_default_column_width(double width);
 	void end_table();
+	
+	void		 set_default_cell_properties(std::wstring style_name);
+	std::wstring get_default_cell_properties();
+	
+	double		 get_table_width();
 
 	void start_row(office_element_ptr &elm, bool styled = false);
 	void end_row();

@@ -45,7 +45,7 @@ public:
 	void start_drawings();
 	void end_drawings();
 
-	void start_image(std::wstring & image_file_name);
+	virtual void start_image(std::wstring & image_file_name);
 	void add_text_content	(std::wstring & text);
 
 	void start_paragraph(bool styled = false);

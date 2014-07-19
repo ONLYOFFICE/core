@@ -33,7 +33,6 @@ void table_format_properties::serialize(std::wostream & _Wostream,const wchar_t 
         {
 			CP_XML_ATTR_OPT(L"style:width", style_width_);
 			CP_XML_ATTR_OPT(L"style:rel-width", style_rel_width_);
-			CP_XML_ATTR_OPT(L"table:align", table_align_);
 			CP_XML_ATTR_OPT(L"style:may-break-between-rows", style_may_break_between_rows_);
 			CP_XML_ATTR_OPT(L"table:border-model", table_border_model_);
 			CP_XML_ATTR_OPT(L"table:display", table_display_);
@@ -51,6 +50,7 @@ void table_format_properties::serialize(std::wostream & _Wostream,const wchar_t 
 			common_border_attlist_.serialize(CP_GET_XML_NODE());
 			
 			if (style_background_image_) style_background_image_->serialize(_Wostream);
+			CP_XML_ATTR_OPT(L"table:align", table_align_);
 		}
 	}
 }

@@ -99,6 +99,7 @@ namespace Oox2Odf
 		virtual OOX::CTheme						*oox_theme();
 		virtual CString							 find_link_by_id (CString sId, int t);
 
+		void convert(OOX::Spreadsheet::WritingElement	*oox_unknown);
     private:
 		OOX::Spreadsheet::CXlsx		*xlsx_document;
 		odf::package::odf_document	*output_document;
@@ -107,9 +108,7 @@ namespace Oox2Odf
 		odf::ods_conversion_context	*ods_context;
 
 		void convert_sheets();
-		void convert_styles();
-		
-		void convert(OOX::Spreadsheet::WritingElement		*oox_unknown);
+		void convert_styles();		
 		
 		void convert(OOX::Spreadsheet::CWorksheet			*oox_sheet);
 		void convert(OOX::Spreadsheet::CDefinedName			*oox_defined);

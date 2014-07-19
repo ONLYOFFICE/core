@@ -69,6 +69,7 @@ BOOL  OoxConverter::UpdateProgress(long nComplete)
 
 	return FALSE;
 }
+ 
 void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 {
 	if (oox_unknown == NULL)return;
@@ -128,11 +129,52 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 				odf_context()->drawing_context()->set_opacity(pAlpha->m_oAmt.GetValue());
 			}
 		}break;
+		case OOX::et_v_imagedata:
+		{
+			OOX::Vml::CImageData *vml = static_cast<OOX::Vml::CImageData*>(oox_unknown);
+			convert(vml);
+		}break;
+		case OOX::et_v_textbox:
+		{
+			OOX::Vml::CTextbox *vml = static_cast<OOX::Vml::CTextbox*>(oox_unknown);
+			convert(vml);
+		}break;
+		//case OOX::et_v_background:
+		//{
+		//	OOX::Vml::CBackground *vml = static_cast<OOX::Vml::CBackground*>(oox_unknown);
+		//	convert(vml);
+		//}break;
+		case OOX::et_v_path:
+		{
+			OOX::Vml::CPath *vml = static_cast<OOX::Vml::CPath*>(oox_unknown);
+			convert(vml);
+		}break;	
+		case OOX::et_v_fill:
+		{
+			OOX::Vml::CFill *vml = static_cast<OOX::Vml::CFill*>(oox_unknown);
+			convert(vml);
+		}break;
+		case OOX::et_v_stroke:
+		{
+			OOX::Vml::CStroke *vml = static_cast<OOX::Vml::CStroke*>(oox_unknown);
+			convert(vml);
+		}break;
+		case OOX::et_wd_wrap:
+		{
+			OOX::VmlWord::CWrap *vml = static_cast<OOX::VmlWord::CWrap*>(oox_unknown);
+			convert(vml);
+		}break;
 		default:
 		{
-			std::wstringstream ss;
-			ss << L"[warning] :  no convert element(" << oox_unknown->getType() << L")\n";
-			_CP_LOG(error) << ss.str();
+			OOX::Vml::CVmlShapeElements *vml = dynamic_cast<OOX::Vml::CVmlShapeElements*>(oox_unknown);
+			if (vml)convert( vml);
+			else
+			{
+				int ttt = (int) oox_unknown->getType();
+				std::wstringstream ss;
+				ss << L"[warning] :  no convert element(" << oox_unknown->getType() << L")\n";
+				_CP_LOG(error) << ss.str();
+			}
 		}
 	}
 }
@@ -177,21 +219,41 @@ void OoxConverter::convert(OOX::Drawing::CStyleMatrixReference *style_matrix_ref
 	if (!theme || fmt_index <0) return;
 
 	CString color = style_matrix_ref->m_oShemeClr.m_oVal.ToString();
-
-	if (style_matrix_ref->getType() == OOX::et_a_fillRef && fmt_index < theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems.GetSize())
+	
+	if (style_matrix_ref->getType() == OOX::et_a_fillRef)
 	{
-		switch(theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index]->getType())
+		if (fmt_index < 1000 && fmt_index < theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems.GetSize()) 
 		{
-			case OOX::et_a_blipFill:	
-				convert((OOX::Drawing::CBlipFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index], &color);break;
-			case OOX::et_a_gradFill:	
-				convert((OOX::Drawing::CGradientFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index], &color);break;
-			case OOX::et_a_pattFill:	
-				convert((OOX::Drawing::CPatternFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index], &color);break;
-			case OOX::et_a_solidFill:	
-				convert((OOX::Drawing::CSolidColorFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index], &color);break;
-			case OOX::Drawing::filltypeNo:
-				odf_context()->drawing_context()->set_no_fill();break;
+			switch(theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index]->getType())
+			{
+				case OOX::et_a_blipFill:	
+					convert((OOX::Drawing::CBlipFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index], &color);break;
+				case OOX::et_a_gradFill:	
+					convert((OOX::Drawing::CGradientFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index], &color);break;
+				case OOX::et_a_pattFill:	
+					convert((OOX::Drawing::CPatternFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index], &color);break;
+				case OOX::et_a_solidFill:	
+					convert((OOX::Drawing::CSolidColorFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index], &color);break;
+				case OOX::Drawing::filltypeNo:
+					odf_context()->drawing_context()->set_no_fill();break;
+			}
+		}
+		else if (fmt_index > 1000 && ((fmt_index-1000) < theme->m_oThemeElements.m_oFmtScheme.m_oBgFillStyleLst.m_arrItems.GetSize()))
+		{
+			fmt_index -= 1000; 
+			switch(theme->m_oThemeElements.m_oFmtScheme.m_oBgFillStyleLst.m_arrItems[fmt_index]->getType())
+			{
+				case OOX::et_a_blipFill:	
+					convert((OOX::Drawing::CBlipFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oBgFillStyleLst.m_arrItems[fmt_index], &color);break;
+				case OOX::et_a_gradFill:	
+					convert((OOX::Drawing::CGradientFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oBgFillStyleLst.m_arrItems[fmt_index], &color);break;
+				case OOX::et_a_pattFill:	
+					convert((OOX::Drawing::CPatternFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oBgFillStyleLst.m_arrItems[fmt_index], &color);break;
+				case OOX::et_a_solidFill:	
+					convert((OOX::Drawing::CSolidColorFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oBgFillStyleLst.m_arrItems[fmt_index], &color);break;
+				case OOX::Drawing::filltypeNo:
+					odf_context()->drawing_context()->set_no_fill();break;
+			}
 		}
 	}
 
@@ -200,7 +262,17 @@ void OoxConverter::convert(OOX::Drawing::CStyleMatrixReference *style_matrix_ref
 		convert(&theme->m_oThemeElements.m_oFmtScheme.m_oLineStyleLst.m_arrLn[fmt_index], &color);
 	}
 
+	if (style_matrix_ref->getType() == OOX::et_a_effectRef && fmt_index < theme->m_oThemeElements.m_oFmtScheme.m_oEffectStyleLst.m_arrEffectStyle.GetSize())
+	{
+		convert(theme->m_oThemeElements.m_oFmtScheme.m_oEffectStyleLst.m_arrEffectStyle[fmt_index].m_oEffectList.GetPointer(), &color);
+
+		//todooo
+		//convert(theme->m_oThemeElements.m_oFmtScheme.m_oEffectStyleLst.m_arrEffectStyle[fmt_index].m_oEffectDag.GetPointer(), &color);
+		//convert(theme->m_oThemeElements.m_oFmtScheme.m_oEffectStyleLst.m_arrEffectStyle[fmt_index].m_oScene3D.GetPointer(), &color);
+		//convert(theme->m_oThemeElements.m_oFmtScheme.m_oEffectStyleLst.m_arrEffectStyle[fmt_index].m_oSp3D.GetPointer(), &color);
+	}
 }
+
 void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr, OOX::Drawing::CShapeStyle* oox_sp_style)
 {
 	if (!oox_spPr) return;
@@ -249,11 +321,20 @@ void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr, OOX::Dra
 		}
 	}
 	odf_context()->drawing_context()->end_line_properies();
-////////
+//-----------------------------------------------------------------------------------------------------------------------------
+	if (oox_spPr->m_oEffectList.IsInit())
+		convert(oox_spPr->m_oEffectList.GetPointer());
+	else if ((oox_sp_style) && (oox_sp_style->m_oEffectRef.getType() == OOX::et_a_effectRef))
+	{
+		convert(&oox_sp_style->m_oEffectRef);
+	}
 
-	//shadow 
-///////////
+	//nullable<OOX::Drawing::CEffectContainer>          m_oEffectDag;
 
+	//nullable<OOX::Drawing::COfficeArtExtensionList>   m_oExtLst;
+	//nullable<OOX::Drawing::CScene3D>                  m_oScene3D;
+	//nullable<OOX::Drawing::CShape3D>                  m_oSp3D;	
+//-----------------------------------------------------------------------------------------------------------------------------
 	if (oox_spPr->m_oXfrm.IsInit())	//CTransform2D
 	{
 		if (oox_spPr->m_oXfrm->m_oOff.IsInit())
@@ -274,12 +355,6 @@ void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr, OOX::Dra
 			odf_context()->drawing_context()->set_rotate(oox_spPr->m_oXfrm->m_oRot.GetValue());
 	}
 
-	//nullable<OOX::Drawing::CEffectContainer>          m_oEffectDag;
-	//nullable<OOX::Drawing::CEffectList>               m_oEffectList;
-
-	//nullable<OOX::Drawing::COfficeArtExtensionList>   m_oExtLst;
-	//nullable<OOX::Drawing::CScene3D>                  m_oScene3D;
-	//nullable<OOX::Drawing::CShape3D>                  m_oSp3D;
 
 }
 void OoxConverter::convert(OOX::Drawing::CNonVisualDrawingProps * oox_cnvPr)
@@ -389,10 +464,90 @@ void OoxConverter::convert(OOX::Drawing::CPath2D *oox_geom_path)
 		convert(oox_geom_path->m_arrItems[i]);
 	}
 }
-//////////////////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------------------------------------------
+void OoxConverter::convert(OOX::Drawing::CEffectList *oox_effect_list, CString *change_sheme_color)
+{
+	if (oox_effect_list == NULL) return;
+
+	for (long i=0;i< oox_effect_list->m_arrEffects.GetSize(); i++)
+	{
+		switch(oox_effect_list->m_arrEffects[i]->getType())
+		{
+		case OOX::et_a_outerShdw:
+			{
+				OOX::Drawing::COuterShadowEffect * shadow = static_cast<OOX::Drawing::COuterShadowEffect *>(oox_effect_list->m_arrEffects[i]);
+				convert(shadow, change_sheme_color);
+			}break;
+		case OOX::et_a_innerShdw:
+			{
+				OOX::Drawing::CInnerShadowEffect * shadow = static_cast<OOX::Drawing::CInnerShadowEffect *>(oox_effect_list->m_arrEffects[i]);
+				convert(shadow, change_sheme_color);
+			}break;
+		case OOX::et_a_prstShdw:
+			{
+				OOX::Drawing::CPresetShadowEffect * shadow = static_cast<OOX::Drawing::CPresetShadowEffect *>(oox_effect_list->m_arrEffects[i]);
+				//convert(shadow, change_sheme_color);
+			}break;
+		case OOX::et_a_reflection:
+			{
+				OOX::Drawing::CReflectionEffect * refelection = static_cast<OOX::Drawing::CReflectionEffect *>(oox_effect_list->m_arrEffects[i]);
+			}
+			//CGlowEffect, CBlurEffect, CFillOverlayEffect, CSoftEdgesEffect
+		}
+	}
+}
+void OoxConverter::convert(OOX::Drawing::COuterShadowEffect *oox_shadow, CString *change_sheme_color)
+{
+	if (oox_shadow == NULL) return; 
+
+	std::wstring hexColor;
+	_CP_OPT(double) opacity;
+
+	CString keep_sheme_color;
+	if (oox_shadow->m_eType == OOX::Drawing::colorSheme && change_sheme_color)
+	{
+		keep_sheme_color = oox_shadow->m_oShemeClr.m_oVal.ToString();
+		oox_shadow->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
+	}
+	convert(static_cast<OOX::Drawing::CColor*>(oox_shadow), hexColor, opacity);
+	if (keep_sheme_color.GetLength() > 0)	oox_shadow->m_oShemeClr.m_oVal.FromString(keep_sheme_color);
+
+	odf_context()->drawing_context()->set_shadow(1, hexColor, opacity, oox_shadow->m_oDist.ToPoints());
+
+			//SimpleTypes::CPositiveFixedAngle<0>                      m_oDir;
+			//SimpleTypes::CPositiveCoordinate<0>                      m_oBlurRad;
+//-------------
+	//SimpleTypes::CRectAlignment<SimpleTypes::rectalignmentB> m_oAlgn;
+	//SimpleTypes::CFixedAngle<>                               m_oKx;
+	//SimpleTypes::CFixedAngle<>                               m_oKy;
+	//SimpleTypes::COnOff<SimpleTypes::onoffTrue>              m_oRotWithShape;
+	//SimpleTypes::CPercentage                                 m_oSx;
+	//SimpleTypes::CPercentage                                 m_oSy;
+
+}
+void OoxConverter::convert(OOX::Drawing::CInnerShadowEffect *oox_shadow, CString *change_sheme_color)
+{
+	if (oox_shadow == NULL) return;
+
+	std::wstring hexColor;
+	_CP_OPT(double) opacity;
+
+	CString keep_sheme_color;
+	if (oox_shadow->m_eType == OOX::Drawing::colorSheme && change_sheme_color)
+	{
+		keep_sheme_color = oox_shadow->m_oShemeClr.m_oVal.ToString();
+		oox_shadow->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
+	}
+	convert(static_cast<OOX::Drawing::CColor*>(oox_shadow), hexColor, opacity);
+	if (keep_sheme_color.GetLength() > 0)	oox_shadow->m_oShemeClr.m_oVal.FromString(keep_sheme_color);
+
+	odf_context()->drawing_context()->set_shadow(2, hexColor, opacity, oox_shadow->m_oDist.ToPoints());
+
+}
+//-----------------------------------------------------------------------------------------------------------------
 void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill,	CString *change_sheme_color)
 {
-	if (!oox_bitmap_fill)return;
+	if (oox_bitmap_fill == NULL)return;
 
 	odf_context()->drawing_context()->start_bitmap_style();
 	{

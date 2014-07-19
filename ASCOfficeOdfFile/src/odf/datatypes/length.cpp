@@ -43,7 +43,7 @@ std::wostream & operator << (std::wostream & _Wostream, const length::unit _Unit
 
 std::wostream & operator << (std::wostream & _Wostream, const length & _Length)
 {
-    _Wostream << _Length.get_value() << _Length.get_unit();
+    _Wostream  << std::setprecision(4) << _Length.get_value() << _Length.get_unit();
     return _Wostream;
 }
 length operator + (length & _Length1, length & _Length2)

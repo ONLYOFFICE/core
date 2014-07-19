@@ -296,6 +296,8 @@ namespace odf
 					CP_XML_ATTR(L"xmlns:of",			L"urn:oasis:names:tc:opendocument:xmlns:of:1.2" );
 					CP_XML_ATTR(L"xmlns:xhtml",			L"http://www.w3.org/1999/xhtml" );
 					CP_XML_ATTR(L"xmlns:grddl",			L"http://www.w3.org/2003/g/data-view#" );
+					CP_XML_ATTR(L"xmlns:officeooo",		L"http://openoffice.org/2009/office" );
+					CP_XML_ATTR(L"xmlns:textooo",		L"http://openoffice.org/2013/office" ); 
 					CP_XML_ATTR(L"xmlns:tableooo",		L"http://openoffice.org/2009/table" );
 					CP_XML_ATTR(L"xmlns:drawooo",		L"http://openoffice.org/2010/draw" );
 					CP_XML_ATTR(L"xmlns:chartooo",		L"http://openoffice.org/2010/chart" );
@@ -359,6 +361,8 @@ namespace odf
 					CP_XML_ATTR(L"xmlns:of",			L"urn:oasis:names:tc:opendocument:xmlns:of:1.2" );
 					CP_XML_ATTR(L"xmlns:xhtml",			L"http://www.w3.org/1999/xhtml" );
 					CP_XML_ATTR(L"xmlns:grddl",			L"http://www.w3.org/2003/g/data-view#" );
+					CP_XML_ATTR(L"xmlns:officeooo",		L"http://openoffice.org/2009/office" );
+					CP_XML_ATTR(L"xmlns:textooo",		L"http://openoffice.org/2013/office" ); 
 					CP_XML_ATTR(L"xmlns:tableooo",		L"http://openoffice.org/2009/table" );
 					CP_XML_ATTR(L"xmlns:drawooo",		L"http://openoffice.org/2010/draw" );
 					CP_XML_ATTR(L"xmlns:chartooo",		L"http://openoffice.org/2010/chart" );

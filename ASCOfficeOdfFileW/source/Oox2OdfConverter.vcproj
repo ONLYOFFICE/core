@@ -157,6 +157,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Oox2OdfConverter\ConvertVml.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Oox2OdfConverter\DocxConverter.cpp"
 				>
 			</File>
@@ -179,6 +183,10 @@
 						UsePrecompiledHeader="1"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\Oox2OdfConverter\VmlShapeTypes2Oox.h"
+				>
 			</File>
 			<File
 				RelativePath=".\Oox2OdfConverter\XlsxConverter.cpp"

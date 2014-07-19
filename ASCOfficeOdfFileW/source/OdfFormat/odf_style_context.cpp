@@ -111,6 +111,8 @@ void odf_style_context::process_automatic_styles(office_element_ptr root )
 {//автоматические стили для стилей
 	for (long i =0; i < style_state_list_.size(); i++)
 	{
+		if (style_state_list_[i].writable_ == false) continue;
+
 		if (style_state_list_[i].automatic_== true && style_state_list_[i].root_== true && style_state_list_[i].odf_style_)
 			root->add_child_element(style_state_list_[i].odf_style_);
 	}
@@ -119,6 +121,8 @@ void odf_style_context::process_automatic(office_element_ptr root )
 {//автоматические стили для элементов
 	for (long i =0; i < style_state_list_.size(); i++)
 	{
+		if (style_state_list_[i].writable_ == false) continue;
+
 		if (/*it->automatic_== true && */style_state_list_[i].root_== false && style_state_list_[i].odf_style_)
 			root->add_child_element(style_state_list_[i].odf_style_);
 	}
@@ -127,6 +131,8 @@ void odf_style_context::process_master(office_element_ptr root )
 {
 	for (long i =0; i < master_style_list_.size(); i++)
 	{
+		if (style_state_list_[i].writable_ == false) continue;
+
 		root->add_child_element(master_style_list_[i]);
 	}
 }
@@ -136,6 +142,8 @@ void odf_style_context::process_office(office_element_ptr root )
 	
 	for (long i =0; i < style_state_list_.size(); i++)
 	{
+		if (style_state_list_[i].writable_ == false) continue;
+
 		if (style_state_list_[i].automatic_== false && style_state_list_[i].root_ == true && style_state_list_[i].odf_style_)
 			root->add_child_element(style_state_list_[i].odf_style_);
 	}

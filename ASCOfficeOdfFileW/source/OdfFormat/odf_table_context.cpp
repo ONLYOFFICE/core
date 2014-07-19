@@ -13,6 +13,7 @@
 #include "table.h"
 
 #include "style_table_properties.h"
+
 //#include "style_text_properties.h"
 //#include "style_paragraph_properties.h"
 //#include "style_graphic_properties.h"
@@ -34,6 +35,8 @@ namespace odf
 			current_column = 0;
 			count_header_row = 0;
 			styled = false;
+
+			table_width = 0;
 		}
 		std::vector<odf_element_state> rows;
 		std::vector<odf_column_state> columns;
@@ -48,6 +51,8 @@ namespace odf
 
 		bool styled;
 
+		double table_width;
+		std::wstring default_cell_properties;
 	};
 
 class odf_table_context::Impl
@@ -55,7 +60,7 @@ class odf_table_context::Impl
 public:
 	Impl(odf_conversion_context *odf_context) :odf_context_(odf_context)
     {	
-
+		default_column_width = -1;
 	} 
 
 	odf_table_state & current_table()	{return tables_.back();}
@@ -63,11 +68,14 @@ public:
 
 	void start_table(odf_table_state & state) {tables_.push_back(state);}
 
-	void end_table() {if (tables_.size() > 0) tables_.pop_back();}
+	void end_table() {if (tables_.size() > 0) tables_.pop_back(); default_column_width = -1; default_cell_properties = L"";}
 
 	odf_style_context	* styles_context() {return odf_context_->styles_context();}
 
 	odf_conversion_context *odf_context_; 
+
+	double default_column_width;
+	std::wstring default_cell_properties; // дл€ предустановки ..
 
 private:
 	std::vector<odf_table_state> tables_;//типо current level ... дл€ вложенных таблиц
@@ -112,14 +120,13 @@ void odf_table_context::start_table(office_element_ptr &elm, bool styled)
 			state.table.style_elm = style_state->get_office_element();
 			state.table.style_name = style_state->get_name();
 			table->table_table_attlist_.table_style_name_ = state.table.style_name;		
-			
-			//дл€ красивой отрисовки в редакторах - разрешим объеденить стили пересекающихс€ обрамлений 
-			style_table_properties *table_properties = style_state->get_table_properties();
-			table_properties->table_format_properties_.table_border_model_ = odf::border_model(odf::border_model::Collapsing);
 		}
 	}
+	state.default_cell_properties = impl_->default_cell_properties;
+	impl_->default_cell_properties = L"";
 
 	impl_->start_table(state);
+
 }
 void odf_table_context::end_table()
 {
@@ -128,6 +135,19 @@ void odf_table_context::end_table()
 	{
 		impl_->current_table().current_column = i+1;
 		set_cell_row_span_restart();
+	}
+
+	style * style_ = dynamic_cast<style *>(impl_->current_table().table.style_elm.get());
+	if (style_)
+	{
+		if (impl_->current_table().table_width > 0)
+		{
+			style_table_properties * table_props = style_->style_content_.get_style_table_properties();
+			if (table_props)
+			{
+				table_props->table_format_properties_.style_width_ = length(length(impl_->current_table().table_width,length::pt).get_value_unit(length::cm),length::cm);
+			}
+		}
 	}
 	impl_->end_table(); 
 }
@@ -199,6 +219,24 @@ void odf_table_context::add_column(office_element_ptr &elm, bool styled)
 	impl_->current_table().columns.push_back(state);
 
 }
+void odf_table_context::set_default_cell_properties(std::wstring style_name)
+{
+	impl_->default_cell_properties = style_name;
+}
+double odf_table_context::get_table_width()
+{
+	if (impl_->empty()) return -1;
+	else return impl_->current_table().table_width;
+}
+std::wstring odf_table_context::get_default_cell_properties()
+{
+	if (impl_->empty()) return impl_->default_cell_properties;
+	else return impl_->current_table().default_cell_properties;
+}
+void odf_table_context::set_default_column_width(double width)
+{
+	impl_->default_column_width = width;
+}
 void odf_table_context::set_column_width(double width)
 {
 	if (impl_->empty()) return;
@@ -213,10 +251,23 @@ void odf_table_context::set_column_width(double width)
 	if (width >= 0)
 	{
 		properties->style_table_column_properties_attlist_.style_column_width_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
-		properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = false;
+		//properties->style_table_column_properties_attlist_.style_rel_column_width_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
+		//properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = false;
+
+		impl_->current_table().table_width += width;
 	}
 	else
+	{
 		properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = true;
+
+		if (impl_->default_column_width >=0)
+		{
+			properties->style_table_column_properties_attlist_.style_column_width_ = length(length(impl_->default_column_width,length::pt).get_value_unit(length::cm),length::cm);
+			//properties->style_table_column_properties_attlist_.style_rel_column_width_ = length(length(impl_->current_table().table_width,length::pt).get_value_unit(length::cm),length::cm);
+			
+			impl_->current_table().table_width += impl_->default_column_width;
+		}
+	}
 }
 int odf_table_context::current_column ()
 {
@@ -258,6 +309,11 @@ void odf_table_context::start_cell(office_element_ptr &elm, bool styled)
 			cell->table_table_cell_attlist_.table_style_name_ = state.style_name;		
 		}
 	}
+	//if (cell)
+	//{
+	//	cell->table_table_cell_attlist_.common_value_and_type_attlist_ = common_value_and_type_attlist();
+	//	cell->table_table_cell_attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::String);
+	//}
 
 	impl_->current_table().cells.push_back(state);
 

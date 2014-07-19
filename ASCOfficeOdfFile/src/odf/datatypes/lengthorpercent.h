@@ -41,6 +41,15 @@ public:
         return Length_;
     }
 
+    percent & get_percent() 
+    {
+        return Percent_;        
+    }
+
+    length & get_length() 
+    {
+        return Length_;
+    }
     static length_or_percent parse(const std::wstring & );
 
 private:

@@ -35,7 +35,9 @@ public:
 
 	void set_single_object(bool val, style_paragraph_properties *para_props, style_text_properties *text_props);
 	void add_text_content(const std::wstring & text);
-    
+	void set_symbol_font(std::wstring & font);
+ 	void set_symbol_text(int sym);
+   
 	void start_paragraph(bool styled = false);
 	void start_paragraph(office_element_ptr & elm, bool styled = false);
     void end_paragraph();

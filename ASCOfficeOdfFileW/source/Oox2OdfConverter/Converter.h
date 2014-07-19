@@ -8,7 +8,6 @@
 
 #include "..\progressCallback.h"
 
-
 static std::wstring string2std_string(CString val)
 {
 	return std::wstring(val.GetBuffer());
@@ -83,6 +82,9 @@ namespace OOX
 		class CColor;
 		class CShapeStyle;
 		class CStyleMatrixReference;
+		class CEffectList;
+		class COuterShadowEffect;
+		class CInnerShadowEffect;
 
 		namespace Colors
 		{
@@ -233,6 +235,42 @@ namespace OOX
 		class CRichText;
 		class CTextProperties;
 	}
+
+
+	namespace Vml
+	{
+		class CVmlShapeElements;
+		class CShapeType;
+		class CShape;
+		class CImage;
+		class CImageData;
+		class CArc;
+		class CBackground;
+		class CCurve;
+		class CFill;
+		class CLine;
+		class COval;
+		class CPath	;
+		class CPolyLine	;
+		class CRect;
+		class CRoundRect;
+		class CShadow;
+		class CStroke;
+		class CTextbox;
+		class CTextPath;
+		class CGroup;
+	}
+	namespace VmlWord
+	{	
+		class CWrap;
+	}
+}
+namespace SimpleTypes
+{
+	namespace Vml
+	{
+		class CCssStyle;
+	}
 }
 
 namespace Oox2Odf
@@ -244,16 +282,21 @@ public:
 		virtual void write(const std::wstring & path) = 0;
 		
 		OoxConverter(const ProgressCallback* CallBack = NULL){oox_current_chart = NULL; pCallBack = CallBack;bUserStopConvert = 0;}
-	
+		
+		const ProgressCallback* pCallBack;
+		short bUserStopConvert;
 		BOOL UpdateProgress(long nComplete);
-
+	
+//.......................................................................................................................
 		virtual cpdoccore::odf::odf_conversion_context		*odf_context() = 0;
 		virtual OOX::CTheme									*oox_theme() = 0;
 		virtual CString										 find_link_by_id(CString sId, int t) = 0;
 		OOX::Spreadsheet::CChartSpace						*oox_current_chart;
-
+//.......................................................................................................................
 		void convert(OOX::WritingElement  *oox_unknown);
+		void convert(double oox_font_size,			cpdoccore::_CP_OPT(cpdoccore::odf::font_size) & odf_font_size);
 	
+//.drawing......................................................................................................................
 		void convert(OOX::Drawing::CNonVisualDrawingProps		*oox_cnvPr);
 		void convert(OOX::Drawing::CShapeProperties				*oox_spPr, OOX::Drawing::CShapeStyle* oox_sp_style = NULL);
 		void convert(OOX::Drawing::CGroupShapeProperties		*oox_groupSpPr);
@@ -268,8 +311,12 @@ public:
 		void convert(OOX::Drawing::CGradientFillProperties		*oox_grad_fill	,	CString *change_sheme_color = NULL);
 		void convert(OOX::Drawing::CPatternFillProperties		*oox_pattern_fill,	CString *change_sheme_color = NULL);
 		void convert(OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill	,	CString *change_sheme_color = NULL);
+
+		void convert(OOX::Drawing::CEffectList					*oox_effect_list,	CString *change_sheme_color = NULL);
+		void convert(OOX::Drawing::COuterShadowEffect			*oox_shadow,		CString *change_sheme_color = NULL);
+		void convert(OOX::Drawing::CInnerShadowEffect			*oox_shadow,		CString *change_sheme_color = NULL);
+
 		void convert(OOX::Drawing::CStyleMatrixReference		*style_matrix_ref);
-//////////////////////////////////////////////
 		void convert(OOX::Drawing::CPath2D						*oox_geom_path);
 		void convert(OOX::Drawing::CPath2DLineTo				*oox_geom_path);
 		void convert(OOX::Drawing::CPath2DMoveTo				*oox_geom_path);
@@ -277,19 +324,17 @@ public:
 		void convert(OOX::Drawing::CPath2DQuadBezierTo			*oox_geom_path);
 		void convert(OOX::Drawing::CPath2DCubicBezierTo			*oox_geom_path);
 		void convert(OOX::Drawing::CPath2DClose					*oox_geom_path);
-/////////////////////////////////////////
 		void convert(OOX::Drawing::CColor						*oox_color,		std::wstring & hexColor , cpdoccore::_CP_OPT(double) &opacity);
 		void convert(OOX::Drawing::CSchemeColor					*oox_ShemeClr,	std::wstring & hexString, cpdoccore::_CP_OPT(double) &opacity);
 		void convert(OOX::Drawing::Colors::CColorTransform      *oox_ScrgbClr,	std::wstring & hexString, cpdoccore::_CP_OPT(double) &opacity);
 		void convert(OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill,std::wstring & hexColor , cpdoccore::_CP_OPT(double) &opacity);
 
-///////////////////////////////
 		void convert(OOX::Drawing::CParagraph					*oox_paragraph);
 		void convert(OOX::Drawing::CParagraphProperty			*oox_paragraph_pr, cpdoccore::odf::style_paragraph_properties * paragraph_properties);
 		void convert(OOX::Drawing::CRun							*oox_run);
 		void convert(OOX::Drawing::CRunProperty					*oox_run_pr, cpdoccore::odf::style_text_properties	* text_properties);
 		void convert(OOX::Drawing::CLineSpacing					*oox_spacing, cpdoccore::odf::length_or_percent & length_or_percent);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//.chart............................................................................................................................
 		void convert(OOX::Spreadsheet::CT_ChartSpace			*oox_chart);
 		void convert(OOX::Spreadsheet::CT_Title					*ct_title);
 		void convert(OOX::Spreadsheet::CT_Legend				*ct_legend);
@@ -340,11 +385,31 @@ public:
 		void convert(OOX::Spreadsheet::CT_NumData				*num_data);
 		void convert(OOX::Spreadsheet::CT_StrData				*str_data, bool label = false);
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-		void convert(double oox_font_size,			cpdoccore::_CP_OPT(cpdoccore::odf::font_size) & odf_font_size);
 
-		const ProgressCallback* pCallBack;
-		short bUserStopConvert;
+//.vml............................................................................................................................
+		void convert(OOX::Vml::CVmlShapeElements		*vml);
+
+		void convert(OOX::Vml::CShapeType				*vml_shape_type);
+		void convert(OOX::Vml::CShape					*vml_shape);
+		void convert(OOX::Vml::CImage					*vml_image);
+		void convert(OOX::Vml::CImageData				*vml_image_data);
+		void convert(OOX::Vml::CArc						*vml_arc);
+		void convert(OOX::Vml::CBackground				*vml_background);
+		void convert(OOX::Vml::CCurve					*vml_curve);
+		void convert(OOX::Vml::CFill					*vml_fill);
+		void convert(OOX::Vml::CLine					*vml_line);
+		void convert(OOX::Vml::COval					*vml_oval);
+		void convert(OOX::Vml::CPath					*vml_path);
+		void convert(OOX::Vml::CPolyLine				*vml_polyline);
+		void convert(OOX::Vml::CRect					*vml_rect);
+		void convert(OOX::Vml::CRoundRect				*vml_roundrect);
+		void convert(OOX::Vml::CShadow					*vml_shadow);
+		void convert(OOX::Vml::CStroke					*vml_stroke);
+		void convert(OOX::Vml::CTextbox					*vml_textbox);
+		void convert(OOX::Vml::CTextPath				*vml_textpath);
+		void convert(SimpleTypes::Vml::CCssStyle		*vml_style);
+		void convert(OOX::VmlWord::CWrap				*vml_wrap);
+		void convert(OOX::Vml::CGroup					*vml_group);
 	};
 
 	class Converter

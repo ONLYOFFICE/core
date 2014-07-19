@@ -34,7 +34,7 @@ public:
 	void set_margin_top		(double valPt);
 	void set_margin_bottom	(double valPt);
 
-	void set_anchor	(anchor_type::type type);
+	void set_anchor	(int type);//anchor_type
 
 	void set_vertical_rel(int from);
 	void set_vertical_pos(int align);
@@ -71,6 +71,7 @@ public:
 	void end_image();
 		
 	void start_text_box();
+		void set_text_box_min_size(double w_pt, double h_pt);
 	void end_text_box();
 
 	void start_object(std::wstring name);
@@ -121,6 +122,8 @@ public:
 	
 	void start_shadow_properies();
 	void end_shadow_properies();
+// пока одной функией ..
+	void set_shadow(int type, std::wstring hexColor, _CP_OPT(double) opacity, double dist_pt, double dist_pt_y = -1);
 
 	void set_text(odf_text_context* text_context);
 	void set_textarea_vertical_align(int align);

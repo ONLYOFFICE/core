@@ -54,20 +54,22 @@ void odf_text_context::set_single_object(bool val, style_paragraph_properties *p
 
 void odf_text_context::add_text_content(const std::wstring & text)
 {
-	//if (text == L" " && single_paragraph_ == false)
-	//{
-	//	office_element_ptr elm;
-	//	create_element(L"text", L"s", elm, odf_context_);
+	if (current_level_.size() > 0 )
+		current_level_.back().elm->add_text(text);
+}
+void odf_text_context::set_symbol_font(std::wstring & font)
+{
+	if (text_properties_ == NULL) return;
 
-	//	current_level_.back().elm->add_child_element(elm);
-
-	//}
-	//else
-	{
-		if (current_level_.size() > 0 )
-			current_level_.back().elm->add_text(text);
-
-	}
+	text_properties_->text_format_properties_content_.fo_font_family_ = font;
+	text_properties_->text_format_properties_content_.style_font_family_complex_ = font;
+	text_properties_->text_format_properties_content_.style_font_family_asian_ = font;
+}
+void odf_text_context::set_symbol_text(int sym)
+{
+	char ch  = char( sym ^ 0xF000);
+	std::wstring s;s.push_back(ch);
+	add_text_content(s);
 }
 void odf_text_context::start_paragraph(bool styled)
 {

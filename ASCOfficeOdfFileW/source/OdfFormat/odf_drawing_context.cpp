@@ -729,6 +729,22 @@ void odf_drawing_context::set_opacity(double percent_)
 		break;
 	}
 }
+void odf_drawing_context::set_shadow(int type, std::wstring hexColor, _CP_OPT(double) opacity, double dist_pt, double dist_pt_y )
+{
+	if (!impl_->current_graphic_properties)return;
+
+	impl_->current_graphic_properties->content().draw_shadow_ = shadow_type1(shadow_type1::Visible);
+	if (opacity) impl_->current_graphic_properties->content().draw_shadow_opacity_ = *opacity;
+
+	impl_->current_graphic_properties->content().draw_shadow_color_ = hexColor;
+	impl_->current_graphic_properties->content().draw_shadow_offset_y_ = length(length(dist_pt,length::pt).get_value_unit(length::cm),length::cm);
+	
+	if (dist_pt_y > 0)
+		impl_->current_graphic_properties->content().draw_shadow_offset_x_ = length(length(dist_pt_y,length::pt).get_value_unit(length::cm),length::cm);
+	else
+		impl_->current_graphic_properties->content().draw_shadow_offset_x_ = length(length(dist_pt,length::pt).get_value_unit(length::cm),length::cm);
+}
+
 void odf_drawing_context::set_no_fill()
 {
 	if (!impl_->current_graphic_properties)return;
@@ -828,9 +844,9 @@ void odf_drawing_context::set_margin_bottom	(double valPt)
 {
 	impl_->anchor_settings_.fo_margin_bottom_ = length(length(valPt,length::pt).get_value_unit(length::cm),length::cm);
 }
-void odf_drawing_context::set_anchor(anchor_type::type  type)
+void odf_drawing_context::set_anchor(int  type)
 {
-	impl_->anchor_settings_.anchor_type_ = anchor_type(type);
+	impl_->anchor_settings_.anchor_type_ = anchor_type((anchor_type::type)type);
 }
 //////////////////////////////////////////////////////////////////////////////////////
 void odf_drawing_context::set_vertical_rel(int from)
@@ -948,9 +964,9 @@ void odf_drawing_context::set_size( double width_pt, double height_pt)
 		height_pt *= impl_->group_list_.back().koef_cy;
 	}
 	//if (!impl_->current_drawing_state_.svg_width_)	
-		impl_->current_drawing_state_.svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);
+	if (width_pt >= 0) impl_->current_drawing_state_.svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);
 	//if (!impl_->current_drawing_state_.svg_height_)
-		impl_->current_drawing_state_.svg_height_= length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
+	if (height_pt >=0) impl_->current_drawing_state_.svg_height_= length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
 }
 void odf_drawing_context::set_line_width(double pt)
 {
@@ -1141,6 +1157,13 @@ void odf_drawing_context::start_text_box()
 {	
 	start_frame();
 
+	//добавить в стиль ссыль на базовый стиль Frame - зачемто нужно :(
+	style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_.back().style_elm.get());
+	if (style_)
+	{
+		style_->style_parent_style_name_ = L"Frame";
+	}
+
 	if (impl_->current_graphic_properties)
 	{
 
@@ -1150,6 +1173,17 @@ void odf_drawing_context::start_text_box()
 	create_element(L"draw", L"text-box", text_box_elm, impl_->odf_context_);
 
 	start_element(text_box_elm);
+}
+void odf_drawing_context::set_text_box_min_size(double w_pt, double h_pt)
+{
+	draw_text_box* draw = dynamic_cast<draw_text_box*>(impl_->current_drawing_state_.elements_.back().elm.get());
+
+	if (draw)
+	{
+		if (h_pt >=0) draw->draw_text_box_attlist_.fo_min_height_= length(length(h_pt,length::pt).get_value_unit(length::cm), length::cm);
+		if (w_pt >=0) draw->draw_text_box_attlist_.fo_min_width_= length(length(w_pt,length::pt).get_value_unit(length::cm), length::cm);
+
+	}
 }
 void odf_drawing_context::end_image()
 {
@@ -1217,6 +1251,7 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 		impl_->current_graphic_properties->content().draw_auto_grow_height_ = false;
 		impl_->current_graphic_properties->content().draw_auto_grow_width_ = false;
 		impl_->current_graphic_properties->content().draw_fit_to_size_ = false;//???
+
 	}
 }
 void odf_drawing_context::start_gradient_style()

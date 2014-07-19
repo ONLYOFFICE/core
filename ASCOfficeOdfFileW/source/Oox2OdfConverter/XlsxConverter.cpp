@@ -1102,52 +1102,35 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf::style_pa
 		//nullable<SimpleTypes::CDecimalNumber<>>							m_oRelativeIndent;
 
 }
-void XlsxConverter::convert(OOX::Spreadsheet::CBorder *border, odf::style_table_cell_properties * cell_properties)
+void XlsxConverter::convert(OOX::Spreadsheet::CBorder *oox_border, odf::style_table_cell_properties * table_cell_properties)
 {
-	if (!border)return;
+	if (!oox_border)return;
 
-	if (border->m_oBottom.IsInit())
+	std::wstring left,right,top,bottom, other;
+
+	convert(oox_border->m_oBottom.GetPointer()	, bottom);
+	convert(oox_border->m_oTop.GetPointer()		, top);
+	convert(oox_border->m_oStart.GetPointer()	, left);
+	convert(oox_border->m_oEnd.GetPointer()		, right);
+	
+	if (bottom == top && top == left && left== right && bottom.length() > 0)
 	{
-		std::wstring odf_border;
-		convert(border->m_oBottom.GetPointer(), odf_border);
-		cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ = odf_border;
+		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_ = left;
 	}
-	if (border->m_oTop.IsInit())
+	else
 	{
-		std::wstring odf_border;
-		convert(border->m_oTop.GetPointer(), odf_border);
-		cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ = odf_border;
+		if (bottom.length() >0 )table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_	= bottom;
+		if (top.length() >0 )	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_		= top;
+		if (left.length() >0 )	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_		= left;
+		if (right.length() >0 ) table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_		= right;
 	}
-	if (border->m_oStart.IsInit())
-	{
-		std::wstring odf_border;
-		convert(border->m_oStart.GetPointer(), odf_border);
-		if (odf_border.length()>0)
-			cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ = odf_border;
-	}
-	if (border->m_oEnd.IsInit())
-	{
-		std::wstring odf_border;
-		convert(border->m_oEnd.GetPointer(), odf_border);
-		if (odf_border.length()>0)
-			cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ = odf_border;
-	}
-	if (border->m_oEnd.IsInit())
-	{
-		std::wstring odf_border;
-		convert(border->m_oEnd.GetPointer(), odf_border);
-		if (odf_border.length()>0)
-			cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ = odf_border;
-	}
-	if (border->m_oDiagonal.IsInit())
-	{
-		std::wstring odf_border;
-		convert(border->m_oDiagonal.GetPointer(), odf_border);
-		if (border->m_oDiagonalDown.IsInit() && odf_border.length()>0) //and true???
-			cell_properties->style_table_cell_properties_attlist_.style_diagonal_tl_br_= odf_border;
-		if (border->m_oDiagonalUp.IsInit() && odf_border.length()>0) //and true???
-			cell_properties->style_table_cell_properties_attlist_.style_diagonal_bl_tr_= odf_border;
-	}
+
+	convert(oox_border->m_oDiagonal.GetPointer(), other);
+	
+	if (oox_border->m_oDiagonalDown.IsInit() && other.length()>0) //and true???
+		table_cell_properties->style_table_cell_properties_attlist_.style_diagonal_tl_br_= other;
+	if (oox_border->m_oDiagonalUp.IsInit() && other.length()>0) //and true???
+		table_cell_properties->style_table_cell_properties_attlist_.style_diagonal_bl_tr_= other;
 	//nullable<CBorderProp>						m_oHorizontal;
 	//nullable<CBorderProp>						m_oVertical;
 	//nullable<SimpleTypes::COnOff<>>			m_oOutline;

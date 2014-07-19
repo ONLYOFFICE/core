@@ -58,6 +58,13 @@ public:
 
 	_CP_OPT(Bool)						draw_auto_grow_height_;
 	_CP_OPT(Bool)						draw_auto_grow_width_;
+    
+    //common_shadow_attlist				common_shadow_attlist_;
+	_CP_OPT(shadow_type1)				draw_shadow_;
+	_CP_OPT(percent)					draw_shadow_opacity_;
+	_CP_OPT(color)						draw_shadow_color_;
+	_CP_OPT(length)						draw_shadow_offset_y_;
+	_CP_OPT(length)						draw_shadow_offset_x_;
 	
 	common_draw_fill_attlist			common_draw_fill_attlist_;
     common_draw_rel_size_attlist		common_draw_rel_size_attlist_;
@@ -79,8 +86,6 @@ public:
     common_border_line_width_attlist	common_border_line_width_attlist_;
 
     common_padding_attlist				common_padding_attlist_;
-    
-    common_shadow_attlist				common_shadow_attlist_;
     
     common_background_color_attlist		common_background_color_attlist_;    
  

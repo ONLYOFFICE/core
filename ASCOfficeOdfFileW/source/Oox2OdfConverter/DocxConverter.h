@@ -20,6 +20,7 @@ namespace OOX
 		class CParagraph;
 		class CParagraphProperty;
 		class CRun;
+		class CSym;
 		class CRunProperty;
 		class CSectionProperty;
 		class CText;
@@ -27,6 +28,7 @@ namespace OOX
 		class CDrawing;	
 		class CGroupShape;
 		class CShape;
+		class CPicture;
 		class CPBdr;
 		class CHyperlink;
 		class CFldChar;
@@ -57,6 +59,7 @@ namespace ComplexTypes
 		class CBorder;
 		class CShading;
 		class CFramePr;
+		class CTblWidth;
 	}
 }
 namespace cpdoccore 
@@ -89,6 +92,7 @@ namespace Oox2Odf
 		virtual OOX::CTheme						*oox_theme();
 		virtual CString							 find_link_by_id (CString sId, int t);
 
+		void convert(OOX::WritingElement		*oox_unknown);
     private:
 		OOX::CDocx								*docx_document;
 		cpdoccore::odf::package::odf_document	*output_document;
@@ -99,8 +103,6 @@ namespace Oox2Odf
 		void convert_document();
 		void convert_styles();
 		void convert_comment(int oox_comm_id);
-
-		void convert(OOX::WritingElement				*oox_unknown);
 
 		void convert(OOX::Logic::CSectionProperty		*oox_section_pr, bool root = false);
 		void convert(OOX::Logic::CParagraph				*oox_paragraph);
@@ -113,18 +115,24 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CInstrText				*oox_instr);
 		void convert(OOX::Logic::CText					*oox_text);
 		void convert(OOX::Logic::CHyperlink				*oox_hyperlink);
+		void convert(OOX::Logic::CSym					*oox_sym);
+		
 		void convert(OOX::Logic::CAlternateContent		*oox_alt_content);
 		void convert(OOX::Logic::CDrawing				*oox_drawing);
-		void convert(OOX::Drawing::CAnchor				*oox_anchor);
-		void convert(OOX::Drawing::CInline				*oox_inline);
-		void convert(OOX::Drawing::CGraphic				*oox_graphic);
 		void convert(OOX::Logic::CGroupShape			*oox_group_shape);
 		void convert(OOX::Logic::CShape					*oox_shape);
+		void convert(OOX::Logic::CPicture				*oox_picture);
+		
+		void convert(OOX::Drawing::CAnchor				*oox_anchor);
+		void convert(OOX::Drawing::CInline				*oox_inline);
+		void convert(OOX::Drawing::CGraphic				*oox_graphic);		
 		void convert(OOX::Drawing::CChart				*oox_chart);
 		void convert(OOX::Drawing::CPicture				*oox_picture);
+
 		void convert(ComplexTypes::Word::CColor			*color,			_CP_OPT(odf::color)				& odf_color);
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf::length)			& odf_size);
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf::length_or_percent) & odf_size);
+		void convert(ComplexTypes::Word::CTblWidth		*oox_size,		_CP_OPT(odf::length)			& odf_size);
 		void convert(ComplexTypes::Word::CJc			*oox_jc,		_CP_OPT(odf::text_align)		& align);
 		void convert(ComplexTypes::Word::CBorder		*borderProp,	std::wstring & odf_border_prop);
 		
@@ -153,6 +161,7 @@ namespace Oox2Odf
 		bool convert(OOX::Logic::CTableCellProperties	*oox_table_cell_pr,	odf::style_table_cell_properties	*table_cell_properties/*,odf::style_table_cell_properties	* table_cell_properties = NULL*/);
 		bool convert(OOX::Logic::CTableProperty			*oox_table_pr);
 		bool convert(OOX::Logic::CTableProperty			*oox_table_pr,			odf::style_table_properties		*table_properties);
+		void convert(OOX::Logic::CTableProperty			*oox_table_pr,		odf::style_table_cell_properties	*table_cell_properties);
 		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr);
 		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr,		odf::style_table_row_properties	*table_row_properties);
 //--------------------------------------------------------------------------------

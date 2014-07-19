@@ -175,9 +175,8 @@ void odt_conversion_context::end_drawings()
 	if (drawing_context_.size() < 1) return;
 
 	office_element_ptr & elm = drawing_context()->get_root_element();
-	if (elm )
+	if (elm && text_context()->current_level_.size() > 0)
 	{
-		
 		text_context()->current_level_.back().elm->add_child_element(elm);
 	}
 	drawing_context()->clear();
@@ -556,7 +555,22 @@ void odt_conversion_context::add_table_column(double width)
 	office_element_ptr elm;
 	create_element(L"table", L"table-column",elm,this);
 
-	styles_context()->create_style(L"",odf::style_family::TableColumn, true, false, -1);
+	styles_context()->create_style(L"", style_family::TableColumn, true, false, -1);
+
+	//не срабатывает ..
+	//std::wstring parent_name = table_context()->get_default_cell_properties();
+
+	//if (parent_name.length() > 0) 
+	//{
+	//	odf::style_table_cell_properties * props = styles_context()->last_state().get_table_cell_properties();
+	//	style * style_ = NULL;
+	//	
+	//	if (styles_context()->find_odf_style(parent_name,style_family::TableCell,style_))
+	//	{
+	//		style_table_cell_properties * parent = style_->style_content_.get_style_table_cell_properties();
+	//		props->apply_from(parent);
+	//	}
+	//}
 
 	table_context()->add_column(elm, true);
 		table_context()->set_column_width(width);

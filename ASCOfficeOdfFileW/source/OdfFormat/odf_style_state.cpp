@@ -20,6 +20,8 @@ odf_style_state::odf_style_state(office_element_ptr & elm, const style_family fa
 	num_fmt_id_ =0;
 	style_family_ = family;
 
+	writable_ = true;
+
 	style* style_ = dynamic_cast<style*>(elm.get());
 	if (style_)
 	{
@@ -81,6 +83,10 @@ void odf_style_state::set_parent_style_name(std::wstring & name)
 	if (name == style_->style_name_ || name.length() <1)
 		return;
 	style_->style_parent_style_name_ = name;
+}
+void odf_style_state::set_dont_write(bool Val)
+{
+	writable_ = !Val;
 }
 void odf_style_state::set_data_style_name(std::wstring & name)
 {

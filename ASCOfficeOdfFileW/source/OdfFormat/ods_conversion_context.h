@@ -70,7 +70,7 @@ public:
 	void start_drawings();
 	void end_drawings();
 
-	void start_image(std::wstring & image_file_name);
+	virtual void start_image(std::wstring & image_file_name);
 
 	double convert_symbol_width(double val);
 	

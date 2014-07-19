@@ -32,5 +32,33 @@ shadow_type shadow_type::parse(const std::wstring & Str)
         return shadow_type( Str );
 
 }
+//----------------------------------------------------------------------------------------
 
+std::wostream & operator << (std::wostream & _Wostream, const shadow_type1 & _Val)
+{
+    switch(_Val.get_type())
+    {
+    case shadow_type1::Hidden:
+        _Wostream << L"hidden";
+        break;
+	case shadow_type1::Visible:
+        _Wostream << L"visible";
+        break;
+    default:
+        break;
+    }
+    return _Wostream;    
+}
+
+shadow_type1 shadow_type1::parse(const std::wstring & Str)
+{
+    std::wstring tmp = Str;
+    boost::algorithm::to_lower(tmp);
+
+    if (tmp == L"visible")
+        return shadow_type1( Visible );
+    else 
+        return shadow_type1( Hidden );
+
+}
 } }

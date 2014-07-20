@@ -165,7 +165,7 @@ public:
 	void serialize(CP_ATTR_NODE);
 
 public:
-    _CP_OPT(shadow_type) style_shadow_;
+	_CP_OPT(std::wstring) style_shadow_;
 
 };
 

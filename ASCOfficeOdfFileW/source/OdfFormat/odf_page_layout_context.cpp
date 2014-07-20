@@ -59,8 +59,11 @@ void odf_page_layout_context::create_master_page(std::wstring oox_name)
 	//default layout
 	create_layout_page();
 	master_state_list_.back().set_layout_name(layout_state_list_.back().get_name());
+}
 
-
+void odf_page_layout_context::set_current_master_page_base()
+{
+	style_context_->set_current_master_page_base();
 }
 
 void odf_page_layout_context::set_styles_context(odf_style_context * Context)
@@ -128,6 +131,36 @@ void odf_page_layout_context::set_page_margin(_CP_OPT(length) top, _CP_OPT(lengt
 	//if (footer)
 	//	props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_right_ = 
 	//											length(footer->get_value_unit(length::cm),length::cm);
+}
+void odf_page_layout_context::set_page_gutter(_CP_OPT(length) length_)
+{
+	if (!length_) return;
+
+
+}
+void odf_page_layout_context::set_page_border_shadow(bool val)
+{
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	props->style_page_layout_properties_attlist_.common_shadow_attlist_.style_shadow_ = L"#000000 0.159cm 0.159cm";
+}
+void odf_page_layout_context::set_page_border(std::wstring top, std::wstring left, std::wstring bottom, std::wstring right)
+{
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	if (bottom == top && top == left && left== right && bottom.length() > 0)
+	{
+		props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_ = left;
+	}
+	else
+	{
+		if (bottom.length() >0 )props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_bottom_	= bottom;
+		if (top.length() >0 )	props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_top_		= top;
+		if (left.length() >0 )	props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_left_		= left;
+		if (right.length() >0 ) props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_right_	= right;
+	}
 }
 void odf_page_layout_context::set_page_size(_CP_OPT(length) width, _CP_OPT(length) height)
 {

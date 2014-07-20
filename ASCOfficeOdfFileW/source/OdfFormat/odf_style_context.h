@@ -33,6 +33,7 @@ public:
 
 	void add_style(office_element_ptr elm, bool automatic = false, bool root = false, style_family style_family=style_family::None);
 	void add_master_style(office_element_ptr & elm);
+	void set_current_master_page_base();
 
 	office_element_ptr & add_or_find(std::wstring name, const style_family family, bool automatic = false, bool root = false, int id = -1);
 

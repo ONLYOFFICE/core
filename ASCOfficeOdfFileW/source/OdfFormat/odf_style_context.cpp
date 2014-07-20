@@ -90,6 +90,12 @@ void odf_style_context::add_master_style(office_element_ptr & elm)
 
 }
 
+void odf_style_context::set_current_master_page_base()
+{
+	master_style_list_.insert(master_style_list_.begin(), master_style_list_.back());
+	master_style_list_.pop_back();
+}
+
 void odf_style_context::create_default_style(const style_family family)
 {
 	office_element_ptr elm;

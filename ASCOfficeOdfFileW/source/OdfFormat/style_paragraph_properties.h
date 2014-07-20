@@ -280,7 +280,7 @@ public:
     _CP_OPT(length) fo_padding_right_;           // +
 
     // 15.5.28 style:shadow
-    _CP_OPT(shadow_type) style_shadow_;
+	_CP_OPT(std::wstring) style_shadow_;
 
     // 15.5.29 fo:keep-with-next
     _CP_OPT(keep_together) fo_keep_with_next_;   // +

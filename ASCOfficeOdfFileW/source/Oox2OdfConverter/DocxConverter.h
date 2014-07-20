@@ -46,6 +46,7 @@ namespace OOX
 		class CTableRowProperties;
 		class CTcBorders;
 		class CTblBorders;
+		class CSdt;
 
 	}
 
@@ -60,6 +61,7 @@ namespace ComplexTypes
 		class CShading;
 		class CFramePr;
 		class CTblWidth;
+		class CPageBorder;
 	}
 }
 namespace cpdoccore 
@@ -102,8 +104,10 @@ namespace Oox2Odf
 
 		void convert_document();
 		void convert_styles();
+		void convert_settings();
 		void convert_comment(int oox_comm_id);
 
+		void convert(OOX::Logic::CSdt					*oox_sdt);
 		void convert(OOX::Logic::CSectionProperty		*oox_section_pr, bool root = false);
 		void convert(OOX::Logic::CParagraph				*oox_paragraph);
 		void convert(OOX::Logic::CRun					*oox_run);
@@ -135,6 +139,7 @@ namespace Oox2Odf
 		void convert(ComplexTypes::Word::CTblWidth		*oox_size,		_CP_OPT(odf::length)			& odf_size);
 		void convert(ComplexTypes::Word::CJc			*oox_jc,		_CP_OPT(odf::text_align)		& align);
 		void convert(ComplexTypes::Word::CBorder		*borderProp,	std::wstring & odf_border_prop);
+		void convert(ComplexTypes::Word::CPageBorder	*borderProp,	std::wstring & odf_border_prop);
 		
 		void convert(OOX::Logic::CPBdr					*oox_border,			odf::style_paragraph_properties		*paragraph_properties);
 		void convert(OOX::Logic::CTcBorders 			*oox_border,			odf::style_table_cell_properties	*table_cell_properties);

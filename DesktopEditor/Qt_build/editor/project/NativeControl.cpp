@@ -255,6 +255,7 @@ void CNativeCtrl::paintGL()
     FILE* file = fopen("/home/oleg/activex/AVS/Sources/TeamlabOffice/trunk/ServerComponents/DesktopEditor/log.txt", "a+");
     fprintf(file, "time: %d\n", (int)(dwTime2 - dwTime1));
     fclose(file);
+    */
 }
 
 void CNativeCtrl::resizeGL(int width, int height)

@@ -184,20 +184,21 @@ void OoxConverter::convert(OOX::Drawing::CGroupShapeProperties *   oox_group_spP
 	
 	if (oox_group_spPr->m_oXfrm.IsInit())	//CTransform2D
 	{
-		if (oox_group_spPr->m_oXfrm->m_oChOff.IsInit() && oox_group_spPr->m_oXfrm->m_oOff.IsInit())
+		if (oox_group_spPr->m_oXfrm->m_oChExt.IsInit() && oox_group_spPr->m_oXfrm->m_oExt.IsInit())
 		{
-			double x =oox_group_spPr->m_oXfrm->m_oOff->m_oX.GetValue()/ oox_group_spPr->m_oXfrm->m_oChOff->m_oX.GetValue();
-			double y =oox_group_spPr->m_oXfrm->m_oOff->m_oY.GetValue()/ oox_group_spPr->m_oXfrm->m_oChOff->m_oY.GetValue();
-
-			odf_context()->drawing_context()->set_group_position_delta(x, y);
+			odf_context()->drawing_context()->set_group_size(	oox_group_spPr->m_oXfrm->m_oExt->m_oCx.ToPoints(),
+																oox_group_spPr->m_oXfrm->m_oExt->m_oCy.ToPoints(),
+																oox_group_spPr->m_oXfrm->m_oChExt->m_oCx.ToPoints(),
+																oox_group_spPr->m_oXfrm->m_oChExt->m_oCy.ToPoints());
 		}
-		if (oox_group_spPr->m_oXfrm->m_oExt.IsInit() && oox_group_spPr->m_oXfrm->m_oChExt.IsInit())
+		if (oox_group_spPr->m_oXfrm->m_oOff.IsInit() && oox_group_spPr->m_oXfrm->m_oChOff.IsInit())
 		{
-			double x =oox_group_spPr->m_oXfrm->m_oExt->m_oCx.ToPoints()/ oox_group_spPr->m_oXfrm->m_oChExt->m_oCx.ToPoints();
-			double y =oox_group_spPr->m_oXfrm->m_oExt->m_oCy.ToPoints()/ oox_group_spPr->m_oXfrm->m_oChExt->m_oCy.ToPoints();
-
-			if (x != 0 && y != 0)	odf_context()->drawing_context()->set_group_size_koef(x, y);					
+			odf_context()->drawing_context()->set_group_position(	oox_group_spPr->m_oXfrm->m_oOff->m_oX.ToPoints(), 
+																	oox_group_spPr->m_oXfrm->m_oOff->m_oY.ToPoints(),
+																	oox_group_spPr->m_oXfrm->m_oChOff->m_oX.ToPoints(), 
+																	oox_group_spPr->m_oXfrm->m_oChOff->m_oY.ToPoints());
 		}
+
 		//???
 		//if (oox_group_spPr->m_oXfrm->m_oFlipH.GetValue() == SimpleTypes::onoffTrue)
 		//	odf_context()->drawing_context()->set_group_flip_H(true);
@@ -339,8 +340,8 @@ void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr, OOX::Dra
 	{
 		if (oox_spPr->m_oXfrm->m_oOff.IsInit())
 		{
-			odf_context()->drawing_context()->set_position(oox_spPr->m_oXfrm->m_oOff->m_oX.GetValue(),
-															oox_spPr->m_oXfrm->m_oOff->m_oY.GetValue());
+			odf_context()->drawing_context()->set_position(oox_spPr->m_oXfrm->m_oOff->m_oX.ToPoints(),
+															oox_spPr->m_oXfrm->m_oOff->m_oY.ToPoints());
 		}
 		if (oox_spPr->m_oXfrm->m_oExt.IsInit())
 		{

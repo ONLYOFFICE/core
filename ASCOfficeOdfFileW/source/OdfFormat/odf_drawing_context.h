@@ -55,13 +55,16 @@ public:
 	void end_drawing();
 	
 	void start_group(std::wstring name, int id);
-		void set_group_size_koef( double cx, double cy);
-		void set_group_position_delta(double x_pt, double y_pt);
+		//void set_group_size_koef( double cx, double cy);
+		//void set_group_position_delta(double x_pt, double y_pt);
+		//void set_group_child_position	(double x_pt,		double y_pt);
 		
 		void set_group_flip_H(bool bVal);
 		void set_group_flip_V(bool bVal);
 
 		void set_group_rotate(int iVal);
+		void set_group_size( double cx, double cy, double ch_cx, double ch_cy);
+		void set_group_position(double x, double y, double ch_x, double ch_y);
 	void end_group();
 
 	void start_shape(int type);
@@ -95,6 +98,7 @@ public:
 
 	void set_size( double width_pt, double height_pt);
 	void set_position(double x_pt, double y_pt);
+	
 	void get_size( double & width_pt, double & height_pt);
 	
 	void set_name(std::wstring  name);

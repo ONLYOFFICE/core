@@ -1514,12 +1514,12 @@ void DocxConverter::convert(OOX::Logic::CGroupShape	 *oox_group_shape)
 	std::wstring name;
 	int id = -1;
 	
-	//if (oox_group_shape->m_oCNvPr.IsInit())
+	if (oox_group_shape->m_oCNvPr.IsInit())
 	{
-		//if (oox_group_shape->m_oCNvPr->m_sName.IsInit())
-		//		name = string2std_string(*oox_group_shape->m_oCNvPr->m_sName);
-		//if (oox_group_shape->m_oCNvPr->m_oId.IsInit())
-		//		id = oox_group_shape->m_oCNvPr->m_oId->GetValue();
+		if (oox_group_shape->m_oCNvPr->m_sName.IsInit())
+				name = string2std_string(*oox_group_shape->m_oCNvPr->m_sName);
+		if (oox_group_shape->m_oCNvPr->m_oId.IsInit())
+				id = oox_group_shape->m_oCNvPr->m_oId->GetValue();
 	}
 
 	odt_context->drawing_context()->start_group(name,id);
@@ -1603,7 +1603,7 @@ void DocxConverter::convert(SimpleTypes::CHexColor<>		*color,
 	unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
 	bool result = false;	
 
-	if(color)//easy, faster,realy  !!
+	if(color && color->GetValue() == SimpleTypes::hexcolorRGB)//easy, faster,realy  !!
 	{
 		ucR = color->Get_R(); 
 		ucB = color->Get_B(); 

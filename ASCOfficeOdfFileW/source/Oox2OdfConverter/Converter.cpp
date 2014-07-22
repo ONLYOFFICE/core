@@ -200,10 +200,10 @@ void OoxConverter::convert(OOX::Drawing::CGroupShapeProperties *   oox_group_spP
 		}
 
 		//???
-		//if (oox_group_spPr->m_oXfrm->m_oFlipH.GetValue() == SimpleTypes::onoffTrue)
-		//	odf_context()->drawing_context()->set_group_flip_H(true);
-		//if (oox_group_spPr->m_oXfrm->m_oFlipV.GetValue() == SimpleTypes::onoffTrue)
-		//	odf_context()->drawing_context()->set_group_flip_V(true);
+		if (oox_group_spPr->m_oXfrm->m_oFlipH.GetValue() == SimpleTypes::onoffTrue)
+			odf_context()->drawing_context()->set_group_flip_H(true);
+		if (oox_group_spPr->m_oXfrm->m_oFlipV.GetValue() == SimpleTypes::onoffTrue)
+			odf_context()->drawing_context()->set_group_flip_V(true);
 		if (oox_group_spPr->m_oXfrm->m_oRot.GetValue() > 0)
 			odf_context()->drawing_context()->set_group_rotate(oox_group_spPr->m_oXfrm->m_oRot.GetValue());
 	}

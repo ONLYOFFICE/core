@@ -94,6 +94,8 @@ public:
 		void end_table_row();
 	void end_table();
 
+	bool is_empty_section(){return current_root_elements_.size() > 0 ? false : true; }
+
 private:
 	office_text*				root_text_;
 	office_element_ptr			root_document_;

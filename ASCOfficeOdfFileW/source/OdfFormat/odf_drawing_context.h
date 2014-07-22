@@ -45,7 +45,7 @@ public:
 	void set_horizontal_pos(double offset_pt);
 
 	void set_wrap_style(style_wrap::type  style);
-
+	void set_overlap (bool val);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	office_element_ptr & get_current_style_element() ;

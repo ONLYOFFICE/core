@@ -210,7 +210,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			std::wstring w_shadow;
 	        
 			if (style_shadow_)
-				w_shadow = style_shadow_->length()>0 ! ? L"1" : L"0"; //стиль тени задается а-ля стилю бордера
+				w_shadow = style_shadow_->get_type() != shadow_type::None ? L"1" : L"0";
 
 			std::wstring w_top, w_left, w_right, w_bottom, w_between;
 	        

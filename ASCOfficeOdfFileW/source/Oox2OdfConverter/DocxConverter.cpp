@@ -273,7 +273,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 
 	bool bStartNewParagraph = !m_bKeepNextParagraph;
 	
-	if (oox_paragraph->m_oParagraphProperty) 
+	if (oox_paragraph->m_oParagraphProperty || odt_context->is_empty_section()) 
 	{
 		styled = true;
 		odf::style_paragraph_properties	*paragraph_properties = NULL;
@@ -1373,6 +1373,10 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 	{
 		odt_context->drawing_context()->set_wrap_style(odf::style_wrap::Parallel);
 	}
+	if (oox_anchor->m_oAllowOverlap.IsInit())
+	{
+		odt_context->drawing_context()->set_overlap(oox_anchor->m_oAllowOverlap->ToBool());
+	}
 	convert(oox_anchor->m_oGraphic.GetPointer());
 }
 void DocxConverter::convert(OOX::Drawing::CInline *oox_inline)
@@ -1554,6 +1558,12 @@ void DocxConverter::convert(OOX::Logic::CShape	 *oox_shape)
 		{
 			if (oox_shape->m_oCNvSpPr->m_otxBox.GetValue() == 1)
 				type = 2000; //textBox
+		}
+
+		if (type == SimpleTypes::shapetypeRect && oox_shape->m_oTxBody.IsInit() && oox_shape->m_oTxBodyProperties.IsInit() /*&&
+			oox_shape->m_oTxBodyProperties->m_eAutoFitType == OOX::Drawing::textautofitShape*/)
+		{
+			type = 2000;// ваще то тут обычный прямоугольник, но в него не вставишь таблицы, ...
 		}
 		if (type < 0)return;
 	/////////////////////////////////////////////////////////////////////////////////

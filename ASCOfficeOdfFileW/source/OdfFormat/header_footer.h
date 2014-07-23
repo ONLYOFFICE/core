@@ -50,8 +50,8 @@ public:
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm);
 
-    style_header_footer_properties_attlist style_header_footer_properties_attlist_;
-    office_element_ptr style_background_image_;
+    style_header_footer_properties_attlist	style_header_footer_properties_attlist_;
+    office_element_ptr						style_background_image_;
     
 };
 CP_REGISTER_OFFICE_ELEMENT2(style_header_footer_properties);

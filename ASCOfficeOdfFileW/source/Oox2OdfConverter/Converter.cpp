@@ -184,6 +184,11 @@ void OoxConverter::convert(OOX::Drawing::CGroupShapeProperties *   oox_group_spP
 	
 	if (oox_group_spPr->m_oXfrm.IsInit())	//CTransform2D
 	{
+		if (oox_group_spPr->m_oXfrm->m_oFlipH.GetValue() == SimpleTypes::onoffTrue)
+			odf_context()->drawing_context()->set_group_flip_H(true);
+		if (oox_group_spPr->m_oXfrm->m_oFlipV.GetValue() == SimpleTypes::onoffTrue)
+			odf_context()->drawing_context()->set_group_flip_V(true);
+
 		if (oox_group_spPr->m_oXfrm->m_oChExt.IsInit() && oox_group_spPr->m_oXfrm->m_oExt.IsInit())
 		{
 			odf_context()->drawing_context()->set_group_size(	oox_group_spPr->m_oXfrm->m_oExt->m_oCx.ToPoints(),
@@ -199,11 +204,6 @@ void OoxConverter::convert(OOX::Drawing::CGroupShapeProperties *   oox_group_spP
 																	oox_group_spPr->m_oXfrm->m_oChOff->m_oY.ToPoints());
 		}
 
-		//???
-		if (oox_group_spPr->m_oXfrm->m_oFlipH.GetValue() == SimpleTypes::onoffTrue)
-			odf_context()->drawing_context()->set_group_flip_H(true);
-		if (oox_group_spPr->m_oXfrm->m_oFlipV.GetValue() == SimpleTypes::onoffTrue)
-			odf_context()->drawing_context()->set_group_flip_V(true);
 		if (oox_group_spPr->m_oXfrm->m_oRot.GetValue() > 0)
 			odf_context()->drawing_context()->set_group_rotate(oox_group_spPr->m_oXfrm->m_oRot.GetValue());
 	}

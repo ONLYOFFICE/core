@@ -34,6 +34,9 @@ public:
 
 	void			set_name(std::wstring & name);
 	std::wstring	get_name();
+
+	void add_footer(office_element_ptr & elm);
+	void add_header(office_element_ptr & elm);
 	
 	void			set_layout_name(std::wstring & name);
 	

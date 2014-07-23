@@ -1153,16 +1153,16 @@ void style_master_page::serialize(std::wostream & strm)
         {
 			style_master_page_attlist_.serialize( CP_GET_XML_NODE());
 			
-			if (style_header_)			style_footer_->serialize(strm);
-			if (style_footer_)			style_header_->serialize(strm);
+			if (style_header_)			style_footer_->serialize(CP_XML_STREAM());
+			if (style_footer_)			style_header_->serialize(CP_XML_STREAM());
 			
-			if (style_header_left_)		style_header_left_->serialize(strm);
-			if (style_header_first_)	style_header_first_->serialize(strm);
+			if (style_header_left_)		style_header_left_->serialize(CP_XML_STREAM());
+			if (style_header_first_)	style_header_first_->serialize(CP_XML_STREAM());
 			
-			if (style_footer_left_)		style_footer_left_->serialize(strm);
-			if (style_footer_first_)	style_footer_first_->serialize(strm);
+			if (style_footer_left_)		style_footer_left_->serialize(CP_XML_STREAM());
+			if (style_footer_first_)	style_footer_first_->serialize(CP_XML_STREAM());
 			
-			if (office_forms_)			office_forms_->serialize(strm);
+			if (office_forms_)			office_forms_->serialize(CP_XML_STREAM());
 			
 			BOOST_FOREACH(const office_element_ptr & elm, style_style_)
 			{

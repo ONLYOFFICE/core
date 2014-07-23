@@ -478,27 +478,27 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(office_styles);
 
-class header_footer_content_impl
+class header_footer_content_common
 {
 public:
-    common_style_header_footer_attlist common_style_header_footer_attlist_;
-    header_footer_content header_footer_content_;
+    common_style_header_footer_attlist	common_style_header_footer_attlist_;
+    header_footer_content				header_footer_content_;
 };
 
-class header_footer_impl
+class header_footer_common
 {
 public:
-    header_footer_content_impl & content() { return content_; }
-    const header_footer_content_impl & content() const { return content_; }
-    virtual ~header_footer_impl() {}
+    header_footer_content_common & content() { return content_; }
+    const header_footer_content_common & content() const { return content_; }
+    virtual ~header_footer_common() {}
 
 private:
-    header_footer_content_impl content_;
+    header_footer_content_common content_;
 
 };
 
 ///         style:header
-class style_header : public office_element_impl<style_header>, public header_footer_impl
+class style_header : public office_element_impl<style_header>, public header_footer_common
 {
 public:
     static const wchar_t * ns;
@@ -512,13 +512,13 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 
-    header_footer_content_impl content_;
+    header_footer_content_common content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header);
 
 ///         style:footer
-class style_footer : public office_element_impl<style_footer>, public header_footer_impl
+class style_footer : public office_element_impl<style_footer>, public header_footer_common
 {
 public:
     static const wchar_t * ns;
@@ -532,14 +532,14 @@ public:
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-    header_footer_content_impl content_;
+    header_footer_content_common content_;
 
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer);
 
 ///         style:header-first
-class style_header_first : public office_element_impl<style_header_first>, public header_footer_impl
+class style_header_first : public office_element_impl<style_header_first>, public header_footer_common
 {
 public:
     static const wchar_t * ns;
@@ -553,13 +553,13 @@ public:
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
 
-    header_footer_content_impl content_;
+    header_footer_content_common content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header_first);
 
 ///         style:footer_first
-class style_footer_first : public office_element_impl<style_footer_first>, public header_footer_impl
+class style_footer_first : public office_element_impl<style_footer_first>, public header_footer_common
 {
 public:
     static const wchar_t * ns;
@@ -573,13 +573,13 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 
-    header_footer_content_impl content_;
+    header_footer_content_common content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer_first);
 
 ///         style:header-left
-class style_header_left : public office_element_impl<style_header_left>, public header_footer_impl
+class style_header_left : public office_element_impl<style_header_left>, public header_footer_common
 {
 public:
     static const wchar_t * ns;
@@ -593,13 +593,13 @@ public:
 
 	virtual void serialize(std::wostream & strm);
   
-	header_footer_content_impl content_;
+	header_footer_content_common content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header_left);
 
 ///         style:footer-left
-class style_footer_left : public office_element_impl<style_footer_left>, public header_footer_impl
+class style_footer_left : public office_element_impl<style_footer_left>, public header_footer_common
 {
 public:
     static const wchar_t * ns;
@@ -613,7 +613,7 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 
-	header_footer_content_impl content_;
+	header_footer_content_common content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer_left);

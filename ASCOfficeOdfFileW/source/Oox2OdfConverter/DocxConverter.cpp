@@ -621,8 +621,11 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		convert(oox_section_pr->m_oPgMar->m_oGutter.GetPointer(), other);
 		odt_context->page_layout_context()->set_page_gutter(other);
 
-			//nullable<SimpleTypes::CTwipsMeasure        > m_oFooter;
-			//nullable<SimpleTypes::CTwipsMeasure        > m_oHeader;
+		convert(oox_section_pr->m_oPgMar->m_oFooter.GetPointer(), other);
+		odt_context->page_layout_context()->set_page_footer(other);
+		
+		convert(oox_section_pr->m_oPgMar->m_oFooter.GetPointer(), other);
+		odt_context->page_layout_context()->set_page_header(other);
 	}
 	if (oox_section_pr->m_oPgBorders.IsInit())
 	{

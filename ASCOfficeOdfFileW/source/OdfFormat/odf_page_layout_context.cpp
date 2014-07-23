@@ -41,9 +41,9 @@ odf_master_state & odf_page_layout_context::last_master()
 void odf_page_layout_context::create_master_page(std::wstring oox_name)
 {
 	std::wstring odf_name = oox_name;	
+	style_family family = style_family::MasterPage;
 
 	office_element_ptr elm;
-	style_family family = style_family::MasterPage;
 	create_element(L"style", L"master-page", elm, odf_context_);
 
 	if (!elm) return;
@@ -125,18 +125,50 @@ void odf_page_layout_context::set_page_margin(_CP_OPT(length) top, _CP_OPT(lengt
 	if (right)
 		props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_right_ = 
 												length(right->get_value_unit(length::cm),length::cm);
-	//if (header)
-	//	props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_right_ = 
-	//											length(header->get_value_unit(length::cm),length::cm);
-	//if (footer)
-	//	props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_right_ = 
-	//											length(footer->get_value_unit(length::cm),length::cm);
 }
 void odf_page_layout_context::set_page_gutter(_CP_OPT(length) length_)
 {
 	if (!length_) return;
 
 
+}
+void odf_page_layout_context::set_page_footer(_CP_OPT(length) length_)
+{
+	if (!length_) return;
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	if (props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_)
+	{
+		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_= 
+			props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_->get_length() + length(length_->get_value_unit(length::cm),length::cm);
+	}
+	else
+		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_= length(length_->get_value_unit(length::cm),length::cm);
+///////////////////////////////////////////////////////////////
+	office_element_ptr elm;
+	create_element(L"style", L"footer", elm, odf_context_);
+	
+	master_state_list_.back().add_footer(elm);
+}
+void odf_page_layout_context::set_page_header(_CP_OPT(length) length_)
+{
+	if (!length_) return;
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	if (props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_)
+	{
+		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_= 
+			props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_->get_length() + length(length_->get_value_unit(length::cm),length::cm);
+	}
+	else
+		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_= length(length_->get_value_unit(length::cm),length::cm);
+
+	office_element_ptr elm;
+	create_element(L"style", L"header", elm, odf_context_);
+	
+	master_state_list_.back().add_header(elm);
 }
 void odf_page_layout_context::set_page_border_shadow(bool val)
 {

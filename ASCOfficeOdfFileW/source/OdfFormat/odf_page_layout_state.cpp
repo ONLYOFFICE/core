@@ -55,6 +55,28 @@ std::wstring odf_master_state::get_name()
 		return style_->style_master_page_attlist_.style_name_->style_name();
 	else return L"";
 }
+void odf_master_state::add_footer(office_element_ptr & elm)
+{
+	style_master_page* style_ = dynamic_cast<style_master_page*>(elements_[0].elm.get());
+	if (!style_)return;
+
+	style_->add_child_element(elm);
+
+	odf_element_state state = {elm,L"",office_element_ptr(), 1};
+	elements_.push_back(state);
+
+}
+void odf_master_state::add_header(office_element_ptr & elm)
+{
+	style_master_page* style_ = dynamic_cast<style_master_page*>(elements_[0].elm.get());
+	if (!style_)return;
+
+	style_->add_child_element(elm);
+
+	odf_element_state state = {elm,L"",office_element_ptr(), 1};
+	elements_.push_back(state);
+
+}
 ///////////////////////////////////////////////////////////////////////////////
 odf_layout_state::odf_layout_state(office_element_ptr & layout_elm )
 {        

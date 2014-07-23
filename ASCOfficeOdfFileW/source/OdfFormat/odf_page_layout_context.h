@@ -32,6 +32,9 @@ public:
 	void set_page_margin(_CP_OPT(double) top, _CP_OPT(double) left, _CP_OPT(double) bottom, _CP_OPT(double) right, _CP_OPT(double) header, _CP_OPT(double) footer);
 	void set_page_margin(_CP_OPT(length) top, _CP_OPT(length) left, _CP_OPT(length) bottom, _CP_OPT(length) right);
 	void set_page_gutter(_CP_OPT(length) length_);
+	void set_page_header(_CP_OPT(length) length_);
+	void set_page_footer(_CP_OPT(length) length_);
+	
 	void set_page_border(std::wstring top, std::wstring left, std::wstring bottom, std::wstring right);
 	void set_page_border_shadow(bool val);
 	void set_page_orientation(int type);

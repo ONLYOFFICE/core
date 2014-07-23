@@ -51,6 +51,11 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 	if (vml_shape_type == NULL) return;
 	//custom shape 
 
+	if (vml_shape_type->m_oCoordSize.IsInit())
+	{
+		odf_context()->drawing_context()->set_position(vml_shape_type->m_oCoordSize->GetX(), vml_shape_type->m_oCoordSize->GetY());
+	}
+
 	for (long i=0 ; i < vml_shape_type->m_arrItems.GetSize();i++)
 	{
 		convert(vml_shape_type->m_arrItems[i]);

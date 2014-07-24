@@ -26,28 +26,6 @@ public:
     }
 };
 
-class CEditorCtrlWrapper2 : public CEditorCtrl
-{
-public:
-    COpenGLSceneCtrl* m_pCtrl;
-
-public:
-    CEditorCtrlWrapper2() : CEditorCtrl()
-    {
-        m_pCtrl = NULL;
-    }
-    virtual ~CEditorCtrlWrapper2()
-    {
-        m_pCtrl = NULL;
-    }
-
-    virtual void InvalidateRectNative(int x, int y, int w, int h)
-    {
-        if (m_pCtrl != NULL)
-            m_pCtrl->InvalidateRectNative(x, y, w, h);
-    }
-};
-
 #if !defined(WIN32) && !defined(_MAC)
 void CVideoMemory::Init()
 {
@@ -395,6 +373,28 @@ void CNativeCtrl::InvalidateRectNative(int x, int y, int w, int h)
 
 //////////////////
 #ifdef _USE_WEB_MENU_
+
+class CEditorCtrlWrapper2 : public CEditorCtrl
+{
+public:
+    COpenGLSceneCtrl* m_pCtrl;
+
+public:
+    CEditorCtrlWrapper2() : CEditorCtrl()
+    {
+        m_pCtrl = NULL;
+    }
+    virtual ~CEditorCtrlWrapper2()
+    {
+        m_pCtrl = NULL;
+    }
+
+    virtual void InvalidateRectNative(int x, int y, int w, int h)
+    {
+        if (m_pCtrl != NULL)
+            m_pCtrl->InvalidateRectNative(x, y, w, h);
+    }
+};
 
 void COpenGLSceneCtrl::_native_OnResize(int X, int Y, int W, int H)
 {

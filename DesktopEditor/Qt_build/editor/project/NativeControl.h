@@ -85,10 +85,16 @@ public:
 
 signals:
     void native_OnResize(int X, int Y, int W, int H);
+    void native_OnMouse(int type, int x, int y, int flags);
+    void native_OnKeyboard(int type, int keycode, int charcode, int flags);
+
     void signal_threadRepaint();
 
 public slots:
     void _native_OnResize(int X, int Y, int W, int H);
+    void _native_OnMouse(int type, int x, int y, int flags);
+    void _native_OnKeyboard(int type, int keycode, int charcode, int flags);
+
     void slot_threadRepaint();
 
     void onWebViewFinishLoading(bool)
@@ -152,13 +158,15 @@ public:
         settings->setOfflineStorageDefaultQuota(5*1024*1024);
         settings->setOfflineWebApplicationCacheQuota(5*1024*1024);
 
-        QString sMenu = "file:///E:/Office/Application/apps/api/documents/index.html";
-        QString sFile = "?url=file:///E:/Office/Application/sdk/Word/document/";
+        QString sMenu = "file:///D:/Office/Application/apps/api/documents/index.html";
+        QString sFile = "?url=file:///D:/Office/Application/sdk/Word/document/";
         QString sFullUrl = sMenu + sFile;
         QUrl url = sFullUrl;
 
         connect(m_pWebView, SIGNAL(loadFinished(bool)), SLOT(onWebViewFinishLoading(bool)));
         connect(this, SIGNAL (native_OnResize(int, int, int, int)), SLOT (_native_OnResize(int, int, int, int)));
+        connect(this, SIGNAL (native_OnMouse(int, int, int, int)), SLOT (_native_OnMouse(int, int, int, int)));
+        connect(this, SIGNAL (native_OnKeyboard(int, int, int, int)), SLOT (_native_OnKeyboard(int, int, int, int)));
 
         m_pWebView->load(url);
 
@@ -202,10 +210,12 @@ class CNativeCtrlWebMenu : public QGraphicsView
 {
 private:
     COpenGLSceneCtrl* m_pScene;
+    QGLWidget* m_pWidget;
 public:
     CNativeCtrlWebMenu(QWidget *parent = 0) : QGraphicsView(parent)
     {
-        setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+        m_pWidget = new QGLWidget(QGLFormat(QGL::SampleBuffers));
+        setViewport(m_pWidget);
         setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
         setStyleSheet("border-width: 0px; border-style: none;");
@@ -243,6 +253,21 @@ public:
     virtual void closeEvent(QCloseEvent *e)
     {
         QGraphicsView::closeEvent(e);
+    }
+
+    virtual void drawBackground(QPainter *painter, const QRectF &rect)
+    {
+        /*
+        m_pWidget->makeCurrent();
+        QGraphicsView::drawBackground(painter, rect);
+        m_pWidget->doneCurrent();
+        */
+        m_pWidget->makeCurrent();
+        if (NULL != m_pScene)
+        {
+            m_pScene->drawBackground(painter, rect);
+        }
+        m_pWidget->doneCurrent();
     }
 };
 

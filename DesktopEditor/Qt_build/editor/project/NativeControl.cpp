@@ -424,6 +424,67 @@ void COpenGLSceneCtrl::_native_OnResize(int X, int Y, int W, int H)
     }
 }
 
+void COpenGLSceneCtrl::_native_OnMouse(int type, int x, int y, int flags)
+{
+    if (m_pWrapper == NULL)
+        return;
+
+    int m_fDeviceScale = 1;
+    m_pWrapper->m_oMouseController.X = (int)((x - m_nEditorX) * m_fDeviceScale);
+    m_pWrapper->m_oMouseController.Y = (int)((y - m_nEditorY) * m_fDeviceScale);
+
+    m_pWrapper->m_oKeyboardController.CtrlKey = ((flags & 0x01) == 0x01) ? true : false;
+    m_pWrapper->m_oKeyboardController.AltKey = ((flags & 0x02) == 0x02) ? true : false;
+    m_pWrapper->m_oKeyboardController.ShiftKey = ((flags & 0x04) == 0x04) ? true : false;
+
+    switch (type)
+    {
+        case 0:
+        {
+            m_pWrapper->m_oMouseController.Button = CMouseController::mbtLeft;
+            m_pWrapper->m_oMouseController.CheckDownCallback(true);
+            m_pWrapper->InternalOnMouseDown();
+            break;
+        }
+        case 1:
+        {
+            m_pWrapper->InternalOnMouseMove();
+            break;
+        }
+        case 2:
+        {
+            m_pWrapper->InternalOnMouseUp();
+            break;
+        }
+    }
+}
+
+void COpenGLSceneCtrl::_native_OnKeyboard(int type, int keycode, int charcode, int flags)
+{
+    if (m_pWrapper == NULL)
+        return;
+
+    m_pWrapper->m_oKeyboardController.KeyCode = keycode;
+    m_pWrapper->m_oKeyboardController.CharCode = charcode;
+
+    m_pWrapper->m_oKeyboardController.CtrlKey = ((flags & 0x01) == 0x01) ? true : false;
+    m_pWrapper->m_oKeyboardController.AltKey = ((flags & 0x02) == 0x02) ? true : false;
+    m_pWrapper->m_oKeyboardController.ShiftKey = ((flags & 0x04) == 0x04) ? true : false;
+
+    switch (type)
+    {
+        case 0:
+            m_pWrapper->InternalOnKeyDown();
+            break;
+        case 1:
+            m_pWrapper->InternalOnKeyPress();
+            break;
+        case 2:
+            m_pWrapper->InternalOnKeyUp();
+            break;
+    }
+}
+
 void COpenGLSceneCtrl::slot_threadRepaint()
 {
     this->update(0, 0, this->width(), this->height());
@@ -445,10 +506,7 @@ void COpenGLSceneCtrl::drawBackground(QPainter *painter, const QRectF &rect)
     }
 
     /*
-    glClearColor(1,
-                 0,
-                 0,
-                 1);
+    glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glFlush();
     return;
@@ -468,7 +526,6 @@ void COpenGLSceneCtrl::drawBackground(QPainter *painter, const QRectF &rect)
     NSCriticalSection::CRITICAL_SECTION* pCS_GL = pVRAM_Worker->m_oFrame.GetLocker();
 
     pCS_GL->Enter();
-
     pVRAM_Worker->m_oFrame.SetCurrentCtx();
 
     DWORD dwTime1 = NSTimers::GetTickCount();
@@ -501,6 +558,8 @@ void COpenGLSceneCtrl::drawBackground(QPainter *painter, const QRectF &rect)
                             m_pCPlusPlusWrapper->m_oViewer.Width,
                             m_pCPlusPlusWrapper->m_oViewer.Height);
 
+    oClipRect.Offset(m_nEditorX, m_nEditorY);
+
     if (m_pCPlusPlusWrapper->m_oDrawingDocument.m_lStartBlock >= 0)
     {
         for (int i = (int)m_pCPlusPlusWrapper->m_oDrawingDocument.m_lStartBlock;
@@ -511,16 +570,17 @@ void COpenGLSceneCtrl::drawBackground(QPainter *painter, const QRectF &rect)
             {
                 Aggplus::Rect oRect = pBlock->m_arPages[j]->m_oGlobalBounds;
                 oRect.Offset(m_pCPlusPlusWrapper->m_oViewer.X, m_pCPlusPlusWrapper->m_oViewer.Y);
+                oRect.Offset(m_nEditorX, m_nEditorY);
 
                 {
-                    pVRAM_Worker->m_oFrame.UnSetCurrentCtx();
+                    //pVRAM_Worker->m_oFrame.UnSetCurrentCtx();
                     pCS_GL->Leave();
                     m_pCPlusPlusWrapper->m_oCacheDocument.DrawGL(&m_pCPlusPlusWrapper->m_oDevicePainter,
                                           oClipRect,
                                           oRect,
                                           pBlock->m_arPages[j]->m_lPageIndex);
                     pCS_GL->Enter();
-                    pVRAM_Worker->m_oFrame.SetCurrentCtx();
+                    //pVRAM_Worker->m_oFrame.SetCurrentCtx();
                 }
             }
         }
@@ -535,8 +595,8 @@ void COpenGLSceneCtrl::drawBackground(QPainter *painter, const QRectF &rect)
         glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
 
         pVRAM_Worker->m_oFrame.DrawTexture(pVRAM_Worker->m_pOverlay,
-                                           m_pCPlusPlusWrapper->m_oViewer.X,
-                                           m_pCPlusPlusWrapper->m_oViewer.Y,
+                                           m_pCPlusPlusWrapper->m_oViewer.X + m_nEditorX,
+                                           m_pCPlusPlusWrapper->m_oViewer.Y + m_nEditorY,
                                            true);
 
         //glDisable(GL_BLEND);
@@ -544,27 +604,27 @@ void COpenGLSceneCtrl::drawBackground(QPainter *painter, const QRectF &rect)
 
     // buttons
     pVRAM_Worker->m_oFrame.DrawTexture(pVRAM_Worker->m_pButtonRulers,
-                                       m_pCPlusPlusWrapper->m_oButtonRulers.X,
-                                       m_pCPlusPlusWrapper->m_oButtonRulers.Y, true);
+                                       m_pCPlusPlusWrapper->m_oButtonRulers.X + m_nEditorX,
+                                       m_pCPlusPlusWrapper->m_oButtonRulers.Y + m_nEditorY, true);
 
     pVRAM_Worker->m_oFrame.DrawTexture(pVRAM_Worker->m_pButtonNextPage,
-                                       m_pCPlusPlusWrapper->m_oNext.X,
-                                       m_pCPlusPlusWrapper->m_oNext.Y, true);
+                                       m_pCPlusPlusWrapper->m_oNext.X + m_nEditorX,
+                                       m_pCPlusPlusWrapper->m_oNext.Y + m_nEditorY, true);
 
     pVRAM_Worker->m_oFrame.DrawTexture(pVRAM_Worker->m_pButtonPrevPage,
-                                       m_pCPlusPlusWrapper->m_oPrev.X,
-                                       m_pCPlusPlusWrapper->m_oPrev.Y, true);
+                                       m_pCPlusPlusWrapper->m_oPrev.X + m_nEditorX,
+                                       m_pCPlusPlusWrapper->m_oPrev.Y + m_nEditorY, true);
 
     // scrolls
     pVRAM_Worker->m_oFrame.DrawTexture(pVRAM_Worker->m_pVerScroll,
-                                       m_pCPlusPlusWrapper->m_oVerScroll.X,
-                                       m_pCPlusPlusWrapper->m_oVerScroll.Y, true);
+                                       m_pCPlusPlusWrapper->m_oVerScroll.X + m_nEditorX,
+                                       m_pCPlusPlusWrapper->m_oVerScroll.Y + m_nEditorY, true);
 
     if (m_pCPlusPlusWrapper->m_bIsHorScrollVisible)
     {
         pVRAM_Worker->m_oFrame.DrawTexture(pVRAM_Worker->m_pHorScroll,
-                                           m_pCPlusPlusWrapper->m_oHorScroll.X,
-                                           m_pCPlusPlusWrapper->m_oHorScroll.Y, true);
+                                           m_pCPlusPlusWrapper->m_oHorScroll.X + m_nEditorX,
+                                           m_pCPlusPlusWrapper->m_oHorScroll.Y + m_nEditorY, true);
     }
 
     glDisable(GL_BLEND);

@@ -26,6 +26,28 @@ public:
     }
 };
 
+class CEditorCtrlWrapper2 : public CEditorCtrl
+{
+public:
+    COpenGLSceneCtrl* m_pCtrl;
+
+public:
+    CEditorCtrlWrapper2() : CEditorCtrl()
+    {
+        m_pCtrl = NULL;
+    }
+    virtual ~CEditorCtrlWrapper2()
+    {
+        m_pCtrl = NULL;
+    }
+
+    virtual void InvalidateRectNative(int x, int y, int w, int h)
+    {
+        if (m_pCtrl != NULL)
+            m_pCtrl->InvalidateRectNative(x, y, w, h);
+    }
+};
+
 #if !defined(WIN32) && !defined(_MAC)
 void CVideoMemory::Init()
 {
@@ -370,3 +392,207 @@ void CNativeCtrl::InvalidateRectNative(int x, int y, int w, int h)
 {
     emit signal_threadRepaint();
 }
+
+//////////////////
+#ifdef _USE_WEB_MENU_
+
+void COpenGLSceneCtrl::_native_OnResize(int X, int Y, int W, int H)
+{
+    m_nEditorX = X;
+    m_nEditorY = Y;
+    m_nEditorW = W;
+    m_nEditorH = H;
+
+    if (NULL == m_pWrapper)
+    {
+        m_pWrapper = new CEditorCtrlWrapper2();
+        m_pWrapper->m_pCtrl = this;
+
+        m_pWrapper->m_oDevicePainter.m_oFrameControls.m_oFrame.Init();
+        m_pWrapper->Resize(m_nEditorW, m_nEditorH);
+
+        m_pWrapper->InternalInit();
+
+        m_pWrapper->m_oWorkJS.m_oThreadJS.SetMainCtrl((CEditorCtrl*)m_pWrapper);
+
+        InitSDK(m_sFontsPath, m_sSdkPath);
+        OpenFile(m_sFilePath);
+    }
+    else
+    {
+        m_pWrapper->Resize(m_nEditorW, m_nEditorH);
+    }
+}
+
+void COpenGLSceneCtrl::slot_threadRepaint()
+{
+    this->update(0, 0, this->width(), this->height());
+}
+
+void COpenGLSceneCtrl::InvalidateRectNative(int x, int y, int w, int h)
+{
+    emit signal_threadRepaint();
+}
+
+void COpenGLSceneCtrl::drawBackground(QPainter *painter, const QRectF &rect)
+{
+    if (NULL == m_pWrapper)
+    {
+        glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glFlush();
+        return;
+    }
+
+    /*
+    glClearColor(1,
+                 0,
+                 0,
+                 1);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glFlush();
+    return;
+    */
+
+    CEditorCtrl* m_pCPlusPlusWrapper = (CEditorCtrl*)m_pWrapper;
+
+    CTemporaryCS* pCS = NULL;
+    if (!m_pCPlusPlusWrapper || !m_pCPlusPlusWrapper->m_pSkin)
+        return;
+
+    if (m_pCPlusPlusWrapper->m_bIsNeedCheckCSOnNativeBlitting)
+        pCS = new CTemporaryCS(&m_pCPlusPlusWrapper->m_oCS);
+
+    CVideoFrameControls* pVRAM_Worker = &m_pCPlusPlusWrapper->m_oDevicePainter.m_oFrameControls;
+
+    NSCriticalSection::CRITICAL_SECTION* pCS_GL = pVRAM_Worker->m_oFrame.GetLocker();
+
+    pCS_GL->Enter();
+
+    pVRAM_Worker->m_oFrame.SetCurrentCtx();
+
+    DWORD dwTime1 = NSTimers::GetTickCount();
+
+    glClearColor(m_pCPlusPlusWrapper->m_pSkin->BackgroundColor.R / 255.0,
+                 m_pCPlusPlusWrapper->m_pSkin->BackgroundColor.G / 255.0,
+                 m_pCPlusPlusWrapper->m_pSkin->BackgroundColor.B / 255.0,
+                 1);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    GLfloat _width = this->width() * m_pView->devicePixelRatio();
+    GLfloat _height = this->height() * m_pView->devicePixelRatio();
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0.0, _width, 0.0, _height, -1.0, 1.0);
+
+    glEnable(GL_BLEND);
+
+    glColor3f(1,1,1);
+
+    glViewport(0, 0, _width, _height);
+
+    pVRAM_Worker->m_oFrame.SetSizes((int)_width, (int)_height);
+
+    // pages
+    Aggplus::Rect oClipRect(m_pCPlusPlusWrapper->m_oViewer.X,
+                            m_pCPlusPlusWrapper->m_oViewer.Y,
+                            m_pCPlusPlusWrapper->m_oViewer.Width,
+                            m_pCPlusPlusWrapper->m_oViewer.Height);
+
+    if (m_pCPlusPlusWrapper->m_oDrawingDocument.m_lStartBlock >= 0)
+    {
+        for (int i = (int)m_pCPlusPlusWrapper->m_oDrawingDocument.m_lStartBlock;
+             i <= m_pCPlusPlusWrapper->m_oDrawingDocument.m_lEndBlock; ++i)
+        {
+            NSDrawingDocument::CBlockPages* pBlock = &m_pCPlusPlusWrapper->m_oDrawingDocument.m_arBlocks[i];
+            for (int j = 0; j < pBlock->m_arPages.GetCount(); ++j)
+            {
+                Aggplus::Rect oRect = pBlock->m_arPages[j]->m_oGlobalBounds;
+                oRect.Offset(m_pCPlusPlusWrapper->m_oViewer.X, m_pCPlusPlusWrapper->m_oViewer.Y);
+
+                {
+                    pVRAM_Worker->m_oFrame.UnSetCurrentCtx();
+                    pCS_GL->Leave();
+                    m_pCPlusPlusWrapper->m_oCacheDocument.DrawGL(&m_pCPlusPlusWrapper->m_oDevicePainter,
+                                          oClipRect,
+                                          oRect,
+                                          pBlock->m_arPages[j]->m_lPageIndex);
+                    pCS_GL->Enter();
+                    pVRAM_Worker->m_oFrame.SetCurrentCtx();
+                }
+            }
+        }
+    }
+
+    // overlay
+    if (m_pCPlusPlusWrapper->m_oOverlay.m_oBounds.max_x >= m_pCPlusPlusWrapper->m_oOverlay.m_oBounds.min_x &&
+        m_pCPlusPlusWrapper->m_oOverlay.m_oBounds.max_y >= m_pCPlusPlusWrapper->m_oOverlay.m_oBounds.min_y &&
+        NULL != pVRAM_Worker->m_pOverlay)
+    {
+        //glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+
+        pVRAM_Worker->m_oFrame.DrawTexture(pVRAM_Worker->m_pOverlay,
+                                           m_pCPlusPlusWrapper->m_oViewer.X,
+                                           m_pCPlusPlusWrapper->m_oViewer.Y,
+                                           true);
+
+        //glDisable(GL_BLEND);
+    }
+
+    // buttons
+    pVRAM_Worker->m_oFrame.DrawTexture(pVRAM_Worker->m_pButtonRulers,
+                                       m_pCPlusPlusWrapper->m_oButtonRulers.X,
+                                       m_pCPlusPlusWrapper->m_oButtonRulers.Y, true);
+
+    pVRAM_Worker->m_oFrame.DrawTexture(pVRAM_Worker->m_pButtonNextPage,
+                                       m_pCPlusPlusWrapper->m_oNext.X,
+                                       m_pCPlusPlusWrapper->m_oNext.Y, true);
+
+    pVRAM_Worker->m_oFrame.DrawTexture(pVRAM_Worker->m_pButtonPrevPage,
+                                       m_pCPlusPlusWrapper->m_oPrev.X,
+                                       m_pCPlusPlusWrapper->m_oPrev.Y, true);
+
+    // scrolls
+    pVRAM_Worker->m_oFrame.DrawTexture(pVRAM_Worker->m_pVerScroll,
+                                       m_pCPlusPlusWrapper->m_oVerScroll.X,
+                                       m_pCPlusPlusWrapper->m_oVerScroll.Y, true);
+
+    if (m_pCPlusPlusWrapper->m_bIsHorScrollVisible)
+    {
+        pVRAM_Worker->m_oFrame.DrawTexture(pVRAM_Worker->m_pHorScroll,
+                                           m_pCPlusPlusWrapper->m_oHorScroll.X,
+                                           m_pCPlusPlusWrapper->m_oHorScroll.Y, true);
+    }
+
+    glDisable(GL_BLEND);
+
+    glPopMatrix();
+
+    glFlush();
+
+    pVRAM_Worker->m_oFrame.UnSetCurrentCtx();
+
+    pCS_GL->Leave();
+
+    RELEASEOBJECT(pCS);
+
+    DWORD dwTime2 = NSTimers::GetTickCount();
+}
+
+void COpenGLSceneCtrl::InitSDK(const std::wstring& sFontsPath, const std::wstring& sSdkPath)
+{
+    m_pWrapper->m_strFontsDirectory = sFontsPath;
+    std::wstring sScriptPath = sSdkPath;
+    m_pWrapper->m_oWorkJS.m_oThreadJS.StartFromScript(sScriptPath);
+}
+
+void COpenGLSceneCtrl::OpenFile(const std::wstring& sFilePath)
+{
+    m_pWrapper->InternalOpenFile(sFilePath);
+    m_pWrapper->InternalCalculateFile();
+}
+
+#endif

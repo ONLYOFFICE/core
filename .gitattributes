@@ -398,6 +398,10 @@ DesktopEditor/Qt_build/test_resources/document/media/image2.jpg svn_mime_002dtyp
 DesktopEditor/Qt_build/test_resources/document/media/image3.png svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/Qt_build/test_resources/document/media/image4.png svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/Qt_build/test_resources/document/media/image5.png svn_mime_002dtype=application%2Foctet-stream
+DesktopEditor/Qt_build/test_web svnc_tsvn_003alogminsize=5
+DesktopEditor/Qt_build/test_web/Debug svnc_tsvn_003alogminsize=5
+DesktopEditor/Qt_build/test_web/Release svnc_tsvn_003alogminsize=5
+DesktopEditor/Qt_build/test_web/control svnc_tsvn_003alogminsize=5
 DesktopEditor/Teamlab[!!-~]Editor[!!-~]IOS/Document[!!-~]Editor/Document[!!-~]Editor.xcodeproj/project.xcworkspace/xcuserdata/Korol.xcuserdatad/UserInterfaceState.xcuserstate svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/Teamlab[!!-~]Editor[!!-~]IOS/Document[!!-~]Editor/Document[!!-~]Editor.xcodeproj/project.xcworkspace/xcuserdata/admin.xcuserdatad/UserInterfaceState.xcuserstate svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/Teamlab[!!-~]Editor[!!-~]IOS/Document[!!-~]Editor/ios_app_resources/media/image1.jpg svn_mime_002dtype=application%2Foctet-stream

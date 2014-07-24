@@ -26,7 +26,7 @@ public:
     }
 };
 
-#if !defined(WIN32) && !defined(_MAC)
+#ifdef _USE_QT_SHARING_GL_
 void CVideoMemory::Init()
 {
     CTemporaryCS oCS(&m_oCS);

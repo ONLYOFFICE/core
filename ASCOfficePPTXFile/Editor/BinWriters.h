@@ -1405,6 +1405,16 @@ namespace NSBinPptxRW
 			return m_lPos;
 		}
 
+		LONG GetSize()
+		{
+			return m_lSize;
+		}
+
+		BYTE* GetData()
+		{
+			return m_pData;
+		}
+
 	public:
 		void Deserialize(NSBinPptxRW::CImageManager2* pManager, LPSAFEARRAY pArray)
 		{

@@ -264,6 +264,8 @@ namespace PPTX
 								LONG lLenRec = pReader->GetLong();
 
 								LONG lPosition = pReader->GetPos();
+								LONG lSize_Reader = pReader->GetSize();
+								BYTE* pData_Reader = pReader->GetData();
 
 								DocxFile2::IAVSOfficeDocxFile2* pDocxFile2 = NULL;
 								pReader->m_pMainDocument->QueryInterface(DocxFile2::IID_IAVSOfficeDocxFile2, (void**)&pDocxFile2);
@@ -279,7 +281,8 @@ namespace PPTX
 
 								SysFreeString(bsXmlContent);
 
-								pReader->Seek(lPosition + lLenRec);
+								//pReader->Seek(lPosition + lLenRec);
+								pReader->Init(pData_Reader, lPosition + lLenRec, lSize_Reader - (lPosition + lLenRec));
 							}
 							else
 							{

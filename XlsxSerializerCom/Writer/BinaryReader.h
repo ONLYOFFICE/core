@@ -3021,6 +3021,16 @@ namespace BinXlsxRW {
 									g_nCurFormatVersion = nVersion = nTempVersion;
 								}
 							}
+							// File Type
+							CString sDstPathCSV = sDstPath;
+							BYTE fileType;
+							UINT nCodePage;
+							WCHAR wcDelimiter;
+							SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, wcDelimiter);
+							// Делаем для CSV перебивку пути, иначе создается папка с одинаковым имеем (для rels) и файл не создается.
+							if (BinXlsxRW::c_oFileTypes::CSV == fileType)
+								sDstPath += _T("Temp");
+
 							OOX::Spreadsheet::CXlsx oXlsx;
 							CSimpleArray<CString> aDeleteFiles;
 							SaveParams oSaveParams(sDstPath + _T("\\") + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + _T("\\") + OOX::FileTypes::Theme.DefaultDirectory().GetPath());
@@ -3035,16 +3045,10 @@ namespace BinXlsxRW {
 							}
 							oXlsx.PrepareToWrite();
 
-							// File Type
-							BYTE fileType;
-							UINT nCodePage;
-							WCHAR wcDelimiter;
-							SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, wcDelimiter);
-
 							switch(fileType)
 							{
 							case BinXlsxRW::c_oFileTypes::CSV:
-								CSVWriter::WriteFromXlsxToCsv(sDstPath, oXlsx, nCodePage, wcDelimiter);
+								CSVWriter::WriteFromXlsxToCsv(sDstPathCSV, oXlsx, nCodePage, wcDelimiter);
 								break;
 							case BinXlsxRW::c_oFileTypes::XLSX:
 							default:

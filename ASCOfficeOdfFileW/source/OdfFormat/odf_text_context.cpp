@@ -52,10 +52,72 @@ void odf_text_context::set_single_object(bool val, style_paragraph_properties *p
 
 }
 
-void odf_text_context::add_text_content(const std::wstring & text)
+void odf_text_context::add_text_content(std::wstring & text)
 {
-	if (current_level_.size() > 0 )
-		current_level_.back().elm->add_text(text);
+	if (current_level_.size() < 1) return;
+
+	//boost::wregex re(L"?:([ ]{2,})|(.+)");//(L"(\\w+)");
+	//std::list<std::wstring> result;
+	////boost::match_results<std::wstring::const_iterator> result;
+	////bool b = boost::regex_match(text, result, re);
+	//std::wstring t = text;
+	//bool b = boost::regex_split(std::back_inserter(result),t, re);
+
+	//int res;
+	//int sz=0;
+	//for (std::list<std::wstring>::iterator i=result.begin(); i!=result.end(); ++i)
+	//{
+	//	office_element_ptr elm;
+	//	text = *i;
+	//	sz = text.length();
+
+	//	if (res = text.find(L" "))
+	//	{
+	//		add_text_space(sz);
+	//	}
+	//	else
+	//		current_level_.back().elm->add_text(text);
+	//}
+
+	//std::string expression = "1a234bc43";
+	boost::wregex re(L"[ ]{2,}");
+	boost::wsregex_iterator i(
+	  text.begin (),     
+	  text.end (),     
+	  re);
+	boost::wsregex_iterator j;
+	size_t pos=0;
+	for(; i!=j;++i) 
+	{
+		std::wstring s = text.substr(pos, (*i).position()-pos); 
+		if (s.length() > 0)current_level_.back().elm->add_text(s);
+
+		std::wstringstream s1;
+		s1 << (*i);
+		s= s1.str();
+		if (s.length() >0)
+			add_text_space(s.length());
+	  
+		pos = (*i).position() + s.length();
+	}
+	std::wstring last = text.substr(pos);
+	if (last.length() > 0)current_level_.back().elm->add_text(last);
+}
+void odf_text_context::add_text_space(int count)
+{
+	office_element_ptr s_elm;
+	create_element(L"text", L"s", s_elm, odf_context_);
+
+	text_s* s = dynamic_cast<text_s*>(s_elm.get());
+	if (s)s->text_c_ = count;
+
+	//необязательно хранить..
+	//int level = current_level_.size();
+	//odf_element_state state={	s_elm, L"", office_element_ptr(), level};
+	//text_elements_list_.push_back(state);
+	
+	if (current_level_.size()>0)
+		current_level_.back().elm->add_child_element(s_elm);
 }
 void odf_text_context::set_symbol_font(std::wstring & font)
 {

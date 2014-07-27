@@ -7,14 +7,12 @@
 #include <cpdoccore/CPWeakPtr.h>
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/xml/attributes.h>
-//#include <cpdoccore/common/readdocelement.h>
-//#include <cpdoccore/common/writedocelement.h>
+
 #include <cpdoccore/CPAssert.h>
 
 #include "office_elements_type.h"
 
 #include "visitor.h"
-//#include "..\conversionelement.h"
 
 namespace cpdoccore {
 namespace odf {

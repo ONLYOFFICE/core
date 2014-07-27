@@ -133,6 +133,7 @@ namespace Oox2Odf
 		void convert(OOX::Drawing::CChart				*oox_chart);
 		void convert(OOX::Drawing::CPicture				*oox_picture);
 
+		void convert(SimpleTypes::CTheme<>				*oox_font_theme,_CP_OPT(std::wstring)			& odf_font_name);
 		void convert(ComplexTypes::Word::CColor			*color,			_CP_OPT(odf::color)				& odf_color);
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf::length)			& odf_size);
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf::length_or_percent) & odf_size);

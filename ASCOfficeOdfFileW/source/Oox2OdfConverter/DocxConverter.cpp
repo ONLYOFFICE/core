@@ -1125,15 +1125,16 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf::style_tex
 	{
 		if (oox_run_pr->m_oRFonts->m_sAscii.IsInit())
 			text_properties->content().fo_font_family_ = string2std_string(oox_run_pr->m_oRFonts->m_sAscii.get());
+		else convert(oox_run_pr->m_oRFonts->m_oAsciiTheme.GetPointer(), text_properties->content().fo_font_family_);
+
 		if (oox_run_pr->m_oRFonts->m_sCs.IsInit())
 			text_properties->content().style_font_family_complex_ = string2std_string(oox_run_pr->m_oRFonts->m_sCs.get());
+		else convert(oox_run_pr->m_oRFonts->m_oCsTheme.GetPointer(), text_properties->content().style_font_family_complex_);
+
 		if (oox_run_pr->m_oRFonts->m_sEastAsia.IsInit())
 			text_properties->content().style_font_family_asian_= string2std_string(oox_run_pr->m_oRFonts->m_sEastAsia.get());
-			//nullable<CString              > m_sAscii;
-			//nullable<SimpleTypes::CTheme<>> m_oAsciiTheme;
-			//nullable<SimpleTypes::CTheme<>> m_oCsTheme;
-			//nullable<CString              > m_sEastAsia;
-			//nullable<SimpleTypes::CTheme<>> m_oEastAsiaTheme;
+		else convert(oox_run_pr->m_oRFonts->m_oEastAsiaTheme.GetPointer(), text_properties->content().style_font_family_asian_);
+
 			//nullable<CString              > m_sHAnsi;
 			//nullable<SimpleTypes::CTheme<>> m_oHAnsiTheme;
 			//nullable<SimpleTypes::CHint<> > m_oHint;
@@ -1186,10 +1187,77 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf::style_tex
 	}
 }
 
+void DocxConverter::convert(SimpleTypes::CTheme<>* oox_font_theme, _CP_OPT(std::wstring) & odf_font_name)
+{
+	if (oox_font_theme == NULL) return;
+
+	OOX::CTheme * docx_theme= docx_document->GetTheme();
+	if (docx_theme == NULL) return;
+
+	std::wstring font;
+
+	switch(oox_font_theme->GetValue())
+	{
+	case SimpleTypes::themeMajorAscii:
+	case SimpleTypes::themeMajorHAnsi :
+		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oLatin.m_oTypeFace.IsInit())
+		{
+			font = string2std_string(docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oLatin.m_oTypeFace->GetValue());
+			if (font.length() > 0) odf_font_name = font;
+		}
+		break;
+	case SimpleTypes::themeMajorBidi:
+		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oCs.m_oTypeFace.IsInit())
+		{
+			font = string2std_string(docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oCs.m_oTypeFace->GetValue());
+			if (font.length() > 0) odf_font_name = font;
+		}
+		break;
+	case SimpleTypes::themeMajorEastAsia:
+		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oEa.m_oTypeFace.IsInit())
+		{
+			font = string2std_string(docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oEa.m_oTypeFace->GetValue());
+			if (font.length() > 0) odf_font_name = font;
+		}
+		break;
+	case SimpleTypes::themeMinorAscii:
+	case SimpleTypes::themeMinorHAnsi:
+		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oLatin.m_oTypeFace.IsInit())
+		{
+			font = string2std_string(docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oLatin.m_oTypeFace->GetValue());
+			if (font.length() > 0) odf_font_name = font;
+		}
+		break;
+	case SimpleTypes::themeMinorBidi:
+		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oCs.m_oTypeFace.IsInit())
+		{
+			font = string2std_string(docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oCs.m_oTypeFace->GetValue());
+			if (font.length() > 0) odf_font_name = font;
+		}
+		break;
+	case SimpleTypes::themeMinorEastAsia:
+		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oEa.m_oTypeFace.IsInit())
+		{
+			font = string2std_string(docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oEa.m_oTypeFace->GetValue());
+			if (font.length() > 0) odf_font_name = font;
+		}
+		break;
+	}
+
+
+}
+
 void DocxConverter::convert(OOX::Logic::CText *oox_text)
 {
 	if (oox_text == NULL) return;
 
+	if (oox_text->m_oSpace.IsInit())
+	{
+		if (oox_text->m_oSpace->GetValue() == SimpleTypes::xmlspacePreserve)
+		{
+		}
+			//odt_context->text_context()->add_text_space(26);
+	}
 	odt_context->add_text_content(string2std_string(oox_text->m_sText));
 }
 void DocxConverter::convert(OOX::Logic::CAlternateContent *oox_alt_content)
@@ -1755,9 +1823,20 @@ void DocxConverter::convert(OOX::CDocDefaults *def_style)
 		odt_context->styles_context()->create_default_style(odf::style_family::Paragraph);					
 		odf::style_paragraph_properties	* paragraph_properties	= odt_context->styles_context()->last_state().get_paragraph_properties();
 
-		convert(def_style->m_oParPr.GetPointer(), paragraph_properties/*, text_properties*/); 
+		convert(def_style->m_oParPr.GetPointer(), paragraph_properties); 
+		if (def_style->m_oParPr->m_oRPr.IsInit())
+		{
+			odf::style_text_properties	* text_properties = odt_context->styles_context()->last_state().get_text_properties();
+			convert(def_style->m_oParPr->m_oRPr.GetPointer(), text_properties);
+		}
+		else if (def_style->m_oRunPr.IsInit())
+		{
+			odf::style_text_properties	* text_properties = odt_context->styles_context()->last_state().get_text_properties();
+
+			convert(def_style->m_oRunPr.GetPointer(), text_properties);
+		}
 	}
-	if (def_style->m_oRunPr.IsInit())
+	else if (def_style->m_oRunPr.IsInit())
 	{
 		odt_context->styles_context()->create_default_style(odf::style_family::Text);					
 		odf::style_text_properties	* text_properties = odt_context->styles_context()->last_state().get_text_properties();

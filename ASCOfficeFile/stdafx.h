@@ -56,7 +56,7 @@ using namespace ATL;
 #import "../Redist/ASCOfficeDocFile.dll"						rename_namespace("AVSOfficeDocFile"), raw_interfaces_only 
 #import "../Redist/ASCOfficeDocxFile.dll"						rename_namespace("AVSOfficeDocxFile"), raw_interfaces_only 
 #import "../Redist/ASCOfficeHtmlFile.dll"						rename_namespace("AVSOfficeHtmlFile"), raw_interfaces_only 
-#import "../Redist/ASCOfficeOdtFile.dll"						rename_namespace("AVSOfficeOdtFile"), raw_interfaces_only 
+#import "../Redist/ASCOfficeOdfFileW.dll"						rename_namespace("AVSOfficeOdfFileW"), raw_interfaces_only 
 #import "../Redist/ASCOfficeRtfFile.dll"						rename_namespace("AVSOfficeRtfFile"), raw_interfaces_only 
 #import "../Redist/ASCOfficeTxtFile.dll"						rename_namespace("AVSOfficeTxtFile"), raw_interfaces_only 
 #import "../Redist/ASCOfficePDFFile.dll"						rename_namespace("AVSOfficePDFFile"), raw_interfaces_only 

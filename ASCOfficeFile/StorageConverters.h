@@ -16,7 +16,7 @@ public:	BOOL GetConverter( int nFormat  , IAVSOfficeFileTemplate** ppiOutConvert
 			else if( AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML == nFormat || AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT == nFormat )
 				return GetInterface(	__uuidof(AVSOfficeHtmlFile::CHtmlFile),			ppiOutConverter );
 			else if( AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT == nFormat )
-				return GetInterface(	__uuidof(AVSOfficeOdtFile::COdtFile),			ppiOutConverter );
+				return GetInterface(	__uuidof(AVSOfficeOdfFileW::COfficeOdfFileW),	ppiOutConverter );
 			else if( AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF == nFormat )
 				return GetInterface(	__uuidof(AVSOfficeRtfFile::CRtfFile),			ppiOutConverter );
 			else if( AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormat )

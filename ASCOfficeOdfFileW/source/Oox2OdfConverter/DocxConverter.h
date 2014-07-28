@@ -105,7 +105,9 @@ namespace Oox2Odf
 		void convert_document();
 		void convert_styles();
 		void convert_settings();
-		void convert_comment(int oox_comm_id);
+		
+		void convert_comment	(int oox_comm_id);
+		void convert_hdr_ftr	(CString sId);
 
 		void convert(OOX::Logic::CSdt					*oox_sdt);
 		void convert(OOX::Logic::CSectionProperty		*oox_section_pr, bool root = false);

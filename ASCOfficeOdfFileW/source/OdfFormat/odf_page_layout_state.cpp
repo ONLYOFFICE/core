@@ -21,6 +21,20 @@ odf_master_state::odf_master_state(office_element_ptr & master_elm )
 
 }
 
+office_element_ptr & odf_master_state::get_root()
+{
+	if (elements_.size() >0)
+		return elements_[0].elm;
+	else
+		throw;
+}
+office_element_ptr & odf_master_state::get_last_element()
+{
+	if (elements_.size() >0)
+		return elements_.back().elm;
+	else
+		throw;
+}
 void odf_master_state::add_child(office_element_ptr & child_elm, office_element_ptr  style_elm, std::wstring style_name )
 {
 	int level =current_level_.size();

@@ -38,6 +38,8 @@ public:
 
 	virtual odf_drawing_context		* drawing_context();
 	virtual odf_text_context		* text_context();
+
+	virtual odf_style_context		* styles_context();
 		
 	odf_comment_context				* comment_context(); 
 	odf_table_context				* table_context();
@@ -95,6 +97,10 @@ public:
 	void end_table();
 
 	bool is_empty_section(){return current_root_elements_.size() > 0 ? false : true; }
+
+	void start_header(int type);
+	void start_footer(int type);
+	void end_header_footer();
 
 private:
 	office_text*				root_text_;

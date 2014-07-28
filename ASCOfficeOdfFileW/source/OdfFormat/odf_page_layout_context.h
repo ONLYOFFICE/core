@@ -21,13 +21,23 @@ class odf_page_layout_context
 {
 public:
     odf_page_layout_context(odf_conversion_context * Context);
+    ~odf_page_layout_context();
+
 	void set_styles_context	(odf_style_context * Context);
 
 	void create_master_page(std::wstring oox_name);
 	void create_layout_page();
 
+	void set_current_master_page_base();
+
+	void process_master_styles			(office_element_ptr root );
+	void process_automatic_for_styles	(office_element_ptr root );
+
     odf_layout_state & last_layout();
     odf_master_state & last_master();
+
+	odf_style_context *get_local_styles_context() //для автоматических стилей самих стилей
+		{return local_style_context_;}
 
 	void set_page_margin(_CP_OPT(double) top, _CP_OPT(double) left, _CP_OPT(double) bottom, _CP_OPT(double) right, _CP_OPT(double) header, _CP_OPT(double) footer);
 	void set_page_margin(_CP_OPT(length) top, _CP_OPT(length) left, _CP_OPT(length) bottom, _CP_OPT(length) right);
@@ -40,7 +50,8 @@ public:
 	void set_page_orientation(int type);
 	void set_page_size(_CP_OPT(length) width, _CP_OPT(length) height);
 
-	void set_current_master_page_base();
+	void add_footer(int type);
+	void add_header(int type);
 
 private:
 
@@ -48,7 +59,8 @@ private:
 
     odf_conversion_context	* odf_context_;
     odf_style_context		* style_context_;
-    
+    odf_style_context		* local_style_context_;
+  
 	std::vector<odf_layout_state> layout_state_list_;
  	std::vector<odf_master_state> master_state_list_;
 	

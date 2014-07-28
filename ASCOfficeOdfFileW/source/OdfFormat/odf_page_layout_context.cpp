@@ -19,7 +19,15 @@ namespace odf {
 odf_page_layout_context::odf_page_layout_context(odf_conversion_context * Context)
 {
 	odf_context_	= Context;
-	style_context_	= Context->styles_context();       
+	style_context_	= Context->styles_context();   
+
+	local_style_context_ = new odf_style_context();
+	local_style_context_->set_odf_context(odf_context_);
+}
+
+odf_page_layout_context::~odf_page_layout_context()
+{
+	delete local_style_context_;
 }
 
 
@@ -38,22 +46,17 @@ odf_master_state & odf_page_layout_context::last_master()
 		throw;
 }
 
-void odf_page_layout_context::create_master_page(std::wstring oox_name)
+void odf_page_layout_context::create_master_page(std::wstring page_name)
 {
-	std::wstring odf_name = oox_name;	
-	style_family family = style_family::MasterPage;
-
 	office_element_ptr elm;
 	create_element(L"style", L"master-page", elm, odf_context_);
 
 	if (!elm) return;
 
-	style_context_->add_master_style(elm);
-	
 	master_state_list_.push_back( odf_master_state(elm) ); 
 ///////////////////////////////////////
-	if (odf_name.length() <1)odf_name =L"MasterPage" + boost::lexical_cast<std::wstring>(master_state_list_.size());
-	master_state_list_.back().set_name(odf_name);
+	if (page_name.length() <1)page_name =L"MasterPage" + boost::lexical_cast<std::wstring>(master_state_list_.size());
+	master_state_list_.back().set_name(page_name);
 /////////////////////////
 
 	//default layout
@@ -61,9 +64,30 @@ void odf_page_layout_context::create_master_page(std::wstring oox_name)
 	master_state_list_.back().set_layout_name(layout_state_list_.back().get_name());
 }
 
+void odf_page_layout_context::process_master_styles(office_element_ptr root )
+{
+	for (long i =0; i < master_state_list_.size(); i++)
+	{
+		try
+		{
+			root->add_child_element(master_state_list_[i].get_root());
+		}
+		catch(...)
+		{
+			//почему то нет страницы
+		}
+	}
+}
+
+void odf_page_layout_context::process_automatic_for_styles(office_element_ptr root )
+{
+	local_style_context_->process_automatic(root);
+}
+
 void odf_page_layout_context::set_current_master_page_base()
 {
-	style_context_->set_current_master_page_base();
+	master_state_list_.insert(master_state_list_.begin(), master_state_list_.back());
+	master_state_list_.pop_back();
 }
 
 void odf_page_layout_context::set_styles_context(odf_style_context * Context)
@@ -74,15 +98,12 @@ void odf_page_layout_context::set_styles_context(odf_style_context * Context)
 void odf_page_layout_context::create_layout_page()
 {
 	office_element_ptr elm;
-	style_family family;
-
-	family = style_family::MasterPage;
 	create_element(L"style", L"page-layout", elm, odf_context_);
 
-	std::wstring odf_name = style_context_->find_free_name(style_family::PageLayout);
+	std::wstring odf_name = local_style_context_->find_free_name(style_family::PageLayout);
 	if (!elm) return;
 
-	style_context_->add_style(elm, true, true, style_family::PageLayout);
+	local_style_context_->add_style(elm, true, false, style_family::PageLayout);
 	
 	layout_state_list_.push_back( odf_layout_state(elm) ); 
 ///////////////////////////////////////
@@ -145,11 +166,22 @@ void odf_page_layout_context::set_page_footer(_CP_OPT(length) length_)
 	}
 	else
 		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_= length(length_->get_value_unit(length::cm),length::cm);
+}
 ///////////////////////////////////////////////////////////////
+void odf_page_layout_context::add_footer(int type)
+{
 	office_element_ptr elm;
 	create_element(L"style", L"footer", elm, odf_context_);
 	
 	master_state_list_.back().add_footer(elm);
+}
+void odf_page_layout_context::add_header(int type)
+{
+	office_element_ptr elm;
+	create_element(L"style", L"header", elm, odf_context_);
+	
+	master_state_list_.back().add_header(elm);
+
 }
 void odf_page_layout_context::set_page_header(_CP_OPT(length) length_)
 {
@@ -164,11 +196,6 @@ void odf_page_layout_context::set_page_header(_CP_OPT(length) length_)
 	}
 	else
 		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_= length(length_->get_value_unit(length::cm),length::cm);
-
-	office_element_ptr elm;
-	create_element(L"style", L"header", elm, odf_context_);
-	
-	master_state_list_.back().add_header(elm);
 }
 void odf_page_layout_context::set_page_border_shadow(bool val)
 {

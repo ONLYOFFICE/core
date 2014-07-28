@@ -49,9 +49,10 @@ public:
 	virtual void					end_text_context() = 0;
 
 	virtual void start_image(std::wstring & image_file_name) = 0;
+	
+	virtual odf_style_context		* styles_context();
 
 	odf_chart_context				* chart_context();
-	odf_style_context				* styles_context();
 	odf_page_layout_context			* page_layout_context();
 
 	odf_number_styles_context		* numbers_styles_context();

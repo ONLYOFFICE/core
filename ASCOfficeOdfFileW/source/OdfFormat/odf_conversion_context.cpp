@@ -181,10 +181,11 @@ void odf_conversion_context::process_styles(_object & object, bool isRoot)
 		create_element(L"office", L"font-face-decls", object.styles, this,true);
 		
 		create_element(L"office", L"automatic-styles", object.styles, this,true);
-		object.style_context->process_automatic_styles(object.styles.back());
+		object.style_context->process_automatic_for_styles(object.styles.back());
+		page_layout_context()->process_automatic_for_styles(object.styles.back());
 
 		create_element(L"office", L"master-styles", object.styles, this,true);
-		object.style_context->process_master(object.styles.back());
+		page_layout_context()->process_master_styles(object.styles.back());
 		
 		create_element(L"office", L"font-face-decls", object.content_styles, this,true);
 	}

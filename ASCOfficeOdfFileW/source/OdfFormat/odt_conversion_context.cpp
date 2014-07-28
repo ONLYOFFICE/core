@@ -99,6 +99,19 @@ odf_comment_context* odt_conversion_context::comment_context()
 {
 	return &comment_context_;
 }
+
+odf_style_context* odt_conversion_context::styles_context()	
+{
+	if (text_context_.size() > 0)
+	{
+		return text_context_.back()->get_styles_context();
+	}
+	else
+	{
+		return odf_conversion_context::styles_context();
+	}
+}
+
 odf_table_context* odt_conversion_context::table_context()
 {
 	return &table_context_;
@@ -656,5 +669,32 @@ void odt_conversion_context::end_table()
 	table_context()->end_table();
 	text_context()->end_element();
 }
+
+
+void odt_conversion_context::start_header(int type)
+{
+	page_layout_context()->add_header(type);
+	start_text_context();
+	text_context()->set_styles_context(page_layout_context()->get_local_styles_context());
+
+	text_context()->start_element(page_layout_context()->last_master().get_last_element());
+}
+
+void odt_conversion_context::end_header_footer()
+{
+	text_context()->end_element();
+	end_text_context();
+}
+
+void odt_conversion_context::start_footer(int type)
+{
+	page_layout_context()->add_footer(type);
+	start_text_context();
+	text_context()->set_styles_context(page_layout_context()->get_local_styles_context());
+	
+	text_context()->start_element(page_layout_context()->last_master().get_last_element());
+}
+
+
 }
 }

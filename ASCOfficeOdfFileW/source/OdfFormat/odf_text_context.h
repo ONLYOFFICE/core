@@ -29,8 +29,9 @@ public:
 	odf_text_context(odf_conversion_context *odf_context);
     ~odf_text_context();
 public:
-	void set_styles_context(odf_style_context*  styles_context);//для embedded 
-    
+	void				set_styles_context(odf_style_context*  styles_context);//для embedded 
+ 	odf_style_context*	get_styles_context();//для embedded 
+   
 	void add_text_style(office_element_ptr & style_elm, std::wstring style_name);
 
 	void set_single_object(bool val, style_paragraph_properties *para_props, style_text_properties *text_props);

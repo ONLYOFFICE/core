@@ -29,17 +29,13 @@ public:
 
     void create_style(std::wstring name, const style_family style_family, bool automatic = false, bool root = false, int oox_id = -1);
     void create_default_style(const style_family style_family);
-	void create_master_style(std::wstring oox_name, int type = 1);
 
 	void add_style(office_element_ptr elm, bool automatic = false, bool root = false, style_family style_family=style_family::None);
-	void add_master_style(office_element_ptr & elm);
-	void set_current_master_page_base();
 
 	office_element_ptr & add_or_find(std::wstring name, const style_family family, bool automatic = false, bool root = false, int id = -1);
 
-	void process_automatic_styles(office_element_ptr root );
+	void process_automatic_for_styles(office_element_ptr root );
 	void process_automatic(office_element_ptr root );
-	void process_master(office_element_ptr root );
 	void process_office(office_element_ptr root );
 
 	void reset_defaults();	
@@ -75,7 +71,6 @@ private:
     odf_conversion_context *	odf_context_;
     
 	std::vector<odf_style_state>		style_state_list_;
- 	std::vector<office_element_ptr>		master_style_list_;
 	
 	std::vector<odf_style_state> current_default_styles_;//для внутренней работы .. переодически очищаемый частично или полностью
    

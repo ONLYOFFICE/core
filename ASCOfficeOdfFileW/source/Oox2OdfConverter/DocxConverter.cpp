@@ -624,7 +624,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		convert(oox_section_pr->m_oPgMar->m_oFooter.GetPointer(), other);
 		odt_context->page_layout_context()->set_page_footer(other);
 		
-		convert(oox_section_pr->m_oPgMar->m_oFooter.GetPointer(), other);
+		convert(oox_section_pr->m_oPgMar->m_oHeader.GetPointer(), other);
 		odt_context->page_layout_context()->set_page_header(other);
 	}
 	if (oox_section_pr->m_oPgBorders.IsInit())
@@ -675,15 +675,30 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oRtlGutter;
 			//nullable<ComplexTypes::Word::CVerticalJc                     > m_oVAlign;
 
-	// разметка + колонтитулы
-			//CSimpleArray<ComplexTypes::Word::CHdrFtrRef                  > m_arrFooterReference;
-			//CSimpleArray<ComplexTypes::Word::CHdrFtrRef                  > m_arrHeaderReference;	
-			//nullable<ComplexTypes::Word::CPageMar                        > m_oPgMar;
 			//nullable<ComplexTypes::Word::CPageNumber                     > m_oPgNumType;
-			//nullable<ComplexTypes::Word::CPageSz                         > m_oPgSz;
-			//nullable<OOX::Logic::CPageBorders                            > m_oPgBorders;
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oTitlePg;	
 
+	for (long i=0; i< oox_section_pr->m_arrHeaderReference.GetSize(); i++)
+	{
+		int type =oox_section_pr->m_arrHeaderReference[i].m_oType.IsInit() ? oox_section_pr->m_arrHeaderReference[i].m_oType->GetValue() :0 ;
+		odt_context->start_header(type);
+
+		if (oox_section_pr->m_arrHeaderReference[i].m_oId.IsInit())
+			convert_hdr_ftr(oox_section_pr->m_arrHeaderReference[i].m_oId->GetValue());
+
+		odt_context->end_header_footer();
+	}
+	
+	for (long i=0; i< oox_section_pr->m_arrFooterReference.GetSize(); i++)
+	{
+		int type =oox_section_pr->m_arrFooterReference[i].m_oType.IsInit() ? oox_section_pr->m_arrFooterReference[i].m_oType->GetValue() :0 ;
+		odt_context->start_footer(type);
+
+		if (oox_section_pr->m_arrFooterReference[i].m_oId.IsInit())
+			convert_hdr_ftr(oox_section_pr->m_arrFooterReference[i].m_oId->GetValue());
+
+		odt_context->end_header_footer();	
+	}
 	//master page create
 	// add colontitul
 	// style name master page -> 0-й элемент текщей цепочки параграфов
@@ -978,6 +993,8 @@ void DocxConverter::convert(ComplexTypes::Word::CBorder *borderProp, std::wstrin
 				odf_border_prop == L"none";
 				return;
 			break;
+			default:
+				border_style << L" solid";
 		}
 	}else border_style << L" solid";
 ///////////////////////////////////////////////////////////////////
@@ -2055,6 +2072,16 @@ void DocxConverter::convert_comment(int oox_comm_id)
 			}
 			odt_context->end_comment_content();
 		}
+	}
+}
+void DocxConverter::convert_hdr_ftr	(CString sId)
+{
+	OOX::CHdrFtr * oox_hdr_ftr = docx_document->GetHeaderOrFooter(sId);
+	if (oox_hdr_ftr == NULL ) return;
+
+	for ( int nIndex = 0; nIndex < oox_hdr_ftr->m_arrItems.GetSize(); nIndex++ )
+	{
+		convert(oox_hdr_ftr->m_arrItems[nIndex]);
 	}
 }
 void DocxConverter::convert(OOX::Logic::CTbl *oox_table)

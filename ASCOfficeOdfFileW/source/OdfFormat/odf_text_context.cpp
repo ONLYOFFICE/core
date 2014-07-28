@@ -37,7 +37,10 @@ void odf_text_context::set_styles_context(odf_style_context*  styles_context)
 {
 	styles_context_ = styles_context;
 }
-
+odf_style_context* odf_text_context::get_styles_context()
+{
+	return styles_context_;
+}
 void odf_text_context::set_single_object(bool val, style_paragraph_properties *para_props, style_text_properties *text_props)
 {
 	single_paragraph_ = val;

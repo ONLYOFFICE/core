@@ -82,19 +82,6 @@ void odf_style_context::add_style(office_element_ptr elm, bool automatic, bool r
 	last_state().set_automatic(automatic);
 	last_state().set_root(root);
 }
-void odf_style_context::add_master_style(office_element_ptr & elm)
-{
-	if (!elm) return;
-	
-	master_style_list_.push_back( elm); 
-
-}
-
-void odf_style_context::set_current_master_page_base()
-{
-	master_style_list_.insert(master_style_list_.begin(), master_style_list_.back());
-	master_style_list_.pop_back();
-}
 
 void odf_style_context::create_default_style(const style_family family)
 {
@@ -113,8 +100,8 @@ void odf_style_context::reset_defaults()
 	current_default_styles_.clear();
 }
 
-void odf_style_context::process_automatic_styles(office_element_ptr root )
-{//автоматические стили для стилей
+void odf_style_context::process_automatic_for_styles(office_element_ptr root )
+{//автоматические стили для эементнов стилей
 	for (long i =0; i < style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i].writable_ == false) continue;
@@ -133,15 +120,7 @@ void odf_style_context::process_automatic(office_element_ptr root )
 			root->add_child_element(style_state_list_[i].odf_style_);
 	}
 }
-void odf_style_context::process_master(office_element_ptr root )
-{
-	for (long i =0; i < master_style_list_.size(); i++)
-	{
-		if (style_state_list_[i].writable_ == false) continue;
 
-		root->add_child_element(master_style_list_[i]);
-	}
-}
 void odf_style_context::process_office(office_element_ptr root )
 {
 	number_styles_context_.process_styles(root );

@@ -202,7 +202,6 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 		if (h)p->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(parent_paragraph_style_);	
 	}
 	if (paragraph_properties_)paragraph_properties_->content().fo_break_before_ = need_break_;
-	need_break_ = boost::none;
 	
 	odf_element_state state={elm,  style_name, style_elm,level};
 	text_elements_list_.push_back(state);
@@ -220,6 +219,7 @@ void odf_text_context::end_paragraph()
 		current_level_.pop_back();
 	}
 	paragraph_properties_ = NULL;
+	need_break_ = boost::none;
 }
 
 void odf_text_context::start_element(office_element_ptr & elm, office_element_ptr style_elm ,std::wstring style_name)

@@ -22,6 +22,7 @@ struct odt_section_state
 	std::wstring		style_name;
 
 	bool				empty;
+	bool				continuous;
 };
 
 class odt_conversion_context : public odf_conversion_context
@@ -65,7 +66,7 @@ public:
 	void start_run(bool styled = false);
 	void end_run();
 
-	void add_section();
+	void add_section(bool continuous);
 	void add_section_columns(int count, double space_pt, bool separator );
 	void add_section_column(std::vector<std::pair<double,double>> width_space);
 	void flush_section();

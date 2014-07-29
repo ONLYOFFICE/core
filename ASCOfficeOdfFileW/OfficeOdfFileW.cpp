@@ -151,7 +151,7 @@ HRESULT COfficeOdfFileW::SaveToFileImpl(const std::wstring & srcPath,
 
 		converter.convert();
 		converter.write(dstTempPath);
-	}
+	} 
 	catch(...)
 	{
 	}

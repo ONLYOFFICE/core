@@ -46,6 +46,8 @@ public:
 	void start_paragraph(office_element_ptr & elm, bool styled = false);
     void end_paragraph();
 
+	bool is_need_break(){return bool(need_break_);}
+
 	void start_element(office_element_ptr & elm, office_element_ptr style_elm = office_element_ptr(),std::wstring style_name = L"");
     void end_element();
  	

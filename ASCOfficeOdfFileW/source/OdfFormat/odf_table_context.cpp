@@ -114,7 +114,7 @@ void odf_table_context::start_table(office_element_ptr &elm, bool styled)
 
 	if (styled)
 	{
-		odf_style_state * style_state = impl_->styles_context()->last_state(style_family::Table);
+		odf_style_state_ptr style_state = impl_->styles_context()->last_state(style_family::Table);
 		if (style_state)
 		{
 			state.table.style_elm = style_state->get_office_element();
@@ -163,7 +163,7 @@ void odf_table_context::start_row(office_element_ptr &elm, bool styled)
 	state.elm = elm;
 	if (styled)
 	{
-		odf_style_state * style_state = impl_->styles_context()->last_state(style_family::TableRow);
+		odf_style_state_ptr style_state = impl_->styles_context()->last_state(style_family::TableRow);
 		if (style_state)
 		{
 			state.style_elm = style_state->get_office_element();
@@ -207,7 +207,7 @@ void odf_table_context::add_column(office_element_ptr &elm, bool styled)
 	state.elm = elm;
 	if (styled)
 	{
-		odf_style_state * style_state = impl_->styles_context()->last_state(style_family::TableColumn);
+		odf_style_state_ptr style_state = impl_->styles_context()->last_state(style_family::TableColumn);
 		if (style_state)
 		{
 			state.style_elm = style_state->get_office_element();
@@ -301,7 +301,7 @@ void odf_table_context::start_cell(office_element_ptr &elm, bool styled)
 	state.elm = elm;
 	if (styled && cell)
 	{
-		odf_style_state * style_state = impl_->styles_context()->last_state(style_family::TableCell);
+		odf_style_state_ptr style_state = impl_->styles_context()->last_state(style_family::TableCell);
 		if (style_state)
 		{
 			state.style_elm = style_state->get_office_element();

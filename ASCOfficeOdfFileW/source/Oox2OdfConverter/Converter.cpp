@@ -1006,7 +1006,7 @@ void OoxConverter::convert(OOX::Drawing::CRun		*oox_run)
 		if (!text_properties)
 		{
 			odf_context()->styles_context()->create_style(L"",odf::style_family::Text, true, false, -1);	
-			text_properties = odf_context()->styles_context()->last_state().get_text_properties();
+			text_properties = odf_context()->styles_context()->last_state()->get_text_properties();
 			styled = true;
 		}
 		convert(oox_run->m_oRunProperty.GetPointer(), text_properties);
@@ -1114,7 +1114,7 @@ void OoxConverter::convert(OOX::Drawing::CParagraph		*oox_paragraph)
 		if (!paragraph_properties)
 		{
 			odf_context()->styles_context()->create_style(L"",odf::style_family::Paragraph, true, false, -1);	
-			paragraph_properties = odf_context()->styles_context()->last_state().get_paragraph_properties();
+			paragraph_properties = odf_context()->styles_context()->last_state()->get_paragraph_properties();
 			styled = true;
 		}
 		convert(oox_paragraph->m_oParagraphProperty.GetPointer(), paragraph_properties);

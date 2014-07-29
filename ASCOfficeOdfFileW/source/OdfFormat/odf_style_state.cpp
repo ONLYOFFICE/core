@@ -9,29 +9,29 @@
 namespace cpdoccore {
 namespace odf {
 
-odf_style_state::odf_style_state(office_element_ptr & elm, const style_family family )
+	odf_style_state::odf_style_state(office_element_ptr & elm, style_family::type family )
 {        
 	odf_style_ = elm;
 	
-	automatic_	= false;
-	default_	= false;
-	conditional_ = false;
+	automatic_		= false;
+	default_		= false;
+	conditional_	= false;
 
-	num_fmt_id_ =0;
-	style_family_ = family;
+	num_fmt_id_		= 0;
+	style_family_	= family;
 
-	writable_ = true;
+	writable_		= true;
 
 	style* style_ = dynamic_cast<style*>(elm.get());
 	if (style_)
 	{
-		style_->style_family_ = style_family_;
+		style_->style_family_ = style_family(style_family_);
 	}
 	default_style* default_style_ = dynamic_cast<default_style*>(elm.get());
 
 	if (default_style_)
 	{
-		default_style_->style_family_ = style_family_;
+		default_style_->style_family_ = style_family(style_family_);
 	}
 }
 
@@ -64,15 +64,13 @@ void odf_style_state::set_display_name(std::wstring & name)
 std::wstring odf_style_state::get_name()
 {
 	style* style_ = dynamic_cast<style*>(odf_style_.get());
-	if (!style_)return L"";
+	if (!style_)
+		return L"";
 
 	return style_->style_name_;
 }
-style_family & odf_style_state::get_family()
+style_family::type odf_style_state::get_family_type()
 {
-	style* style_ = dynamic_cast<style*>(odf_style_.get());
-	if (!style_)return style_family(style_family::None);
-
 	return style_family_;
 }
 void odf_style_state::set_parent_style_name(std::wstring & name)

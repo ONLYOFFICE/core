@@ -501,7 +501,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_run_pr)
 
 	ods_context->styles_context()->create_style(L"",odf::style_family::Text, automatic, root, -1);	
 	
-	odf::style_text_properties	* text_properties = ods_context->styles_context()->last_state().get_text_properties();
+	odf::style_text_properties	* text_properties = ods_context->styles_context()->last_state()->get_text_properties();
 	if (text_properties == NULL)return;
 
 	if (oox_run_pr->m_oBold.IsInit())
@@ -789,16 +789,15 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 				//nullable<SimpleTypes::COnOff<>>					m_oZeroHeight;
 //пока не красиво :(
 //Cell default////////////////////////////
-	odf::odf_style_state  *default_cell_style=NULL;
+	odf::odf_style_state_ptr default_cell_style;
 	ods_context->styles_context()->find_odf_style_state(0,odf::style_family::TableCell, default_cell_style, true);
-	if (default_cell_style)
-		ods_context->styles_context()->add_default(*default_cell_style);
+	if (default_cell_style)	ods_context->styles_context()->add_default(default_cell_style);
 ///Column///////////////////////////////////////////////////////////////////////////////////////
 	ods_context->styles_context()->create_style(L"",odf::style_family::TableColumn, true, false, -1);		
 	{	
 		double width = 8.1; // из приложния MS Office 2010
 		//в xlsx необязательно задавать ширину (колонок) - дефолтное по приложению. в oo - обязательно
-		odf::style* style = dynamic_cast<odf::style*>(ods_context->styles_context()->last_state().get_office_element().get());
+		odf::style* style = dynamic_cast<odf::style*>(ods_context->styles_context()->last_state()->get_office_element().get());
 		if (style)
 		{
 			odf::style_table_column_properties * column_properties = style->style_content_.get_style_table_column_properties();
@@ -819,7 +818,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 //Row default //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		ods_context->styles_context()->create_style(L"",odf::style_family::TableRow, true, false, -1);	
-		odf::style* style = dynamic_cast<odf::style*>(ods_context->styles_context()->last_state().get_office_element().get());
+		odf::style* style = dynamic_cast<odf::style*>(ods_context->styles_context()->last_state()->get_office_element().get());
 		if (style)
 		{		
 			odf::style_table_row_properties * row_properties = style->style_content_.get_style_table_row_properties();
@@ -1093,7 +1092,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf::style_pa
 	}
 	if (aligment->m_oShrinkToFit.IsInit())
 	{
-		cell_properties->style_table_cell_properties_attlist_.style_shrink_to_fit_ = aligment->m_oShrinkToFit->GetValue();
+		cell_properties->style_table_cell_properties_attlist_.style_shrink_to_fit_ = aligment->m_oShrinkToFit->ToBool();
 	}
 	if (aligment->m_oIndent.IsInit())
 	{
@@ -1309,12 +1308,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellStyle * cell_style, int oox_i
 
 	ods_context->styles_context()->create_style(style_name,odf::style_family::TableCell, automatic, root, oox_id);
 
-	if (style_name.length() > 0)ods_context->styles_context()->last_state().set_display_name(style_name);
+	if (style_name.length() > 0)ods_context->styles_context()->last_state()->set_display_name(style_name);
 
 	int parent_id = cell_style->m_oXfId.IsInit() ? cell_style->m_oXfId->GetValue() : -1;
 
 	if (parent_id >=0) 
-		ods_context->styles_context()->last_state().set_parent_style_name(ods_context->styles_context()->find_odf_style_name(parent_id, odf::style_family::TableCell,true));
+		ods_context->styles_context()->last_state()->set_parent_style_name(ods_context->styles_context()->find_odf_style_name(parent_id, odf::style_family::TableCell,true));
 	
 	//m_oBuiltinId, m_oCustomBuiltin, m_oHidden, m_oILevel;	???????
 }
@@ -1322,10 +1321,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDxf *dxFmt, int oox_id)
 {
 	if (!dxFmt)return;
 	ods_context->styles_context()->create_style(L"",odf::style_family::TableCell, false, true, oox_id); 
-	ods_context->styles_context()->last_state().set_conditional(true);
+	ods_context->styles_context()->last_state()->set_conditional(true);
 
-	odf::style_text_properties			* text_properties		= ods_context->styles_context()->last_state().get_text_properties();
-	odf::style_table_cell_properties	* table_cell_properties = ods_context->styles_context()->last_state().get_table_cell_properties();
+	odf::style_text_properties			* text_properties		= ods_context->styles_context()->last_state()->get_text_properties();
+	odf::style_table_cell_properties	* table_cell_properties = ods_context->styles_context()->last_state()->get_table_cell_properties();
 
 	convert(dxFmt->m_oBorder.GetPointer(), table_cell_properties); 
 	convert(dxFmt->m_oFill.GetPointer(), table_cell_properties); 
@@ -1336,13 +1335,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDxf *dxFmt, int oox_id)
 		int numFmt_id =  dxFmt->m_oNumFmt->m_oNumFmtId.IsInit() ? dxFmt->m_oNumFmt->m_oNumFmtId->GetValue() : -1;
 		if (numFmt_id >=0)
 		{
-			ods_context->styles_context()->last_state().set_data_style_name(ods_context->numbers_styles_context()->add_or_find(numFmt_id).style_name);
-			ods_context->styles_context()->last_state().set_number_format(numFmt_id);
+			ods_context->styles_context()->last_state()->set_data_style_name(ods_context->numbers_styles_context()->add_or_find(numFmt_id).style_name);
+			ods_context->styles_context()->last_state()->set_number_format(numFmt_id);
 		}
 	}
 	if (dxFmt->m_oAlignment.IsInit())
 	{
-		odf::style_paragraph_properties	* paragraph_properties = ods_context->styles_context()->last_state().get_paragraph_properties();
+		odf::style_paragraph_properties	* paragraph_properties = ods_context->styles_context()->last_state()->get_paragraph_properties();
 		paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::Page);		
 		
 		convert(dxFmt->m_oAlignment.GetPointer(), paragraph_properties, table_cell_properties); 
@@ -1361,8 +1360,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 		
 	ods_context->styles_context()->create_style(L"",odf::style_family::TableCell, automatic, root, oox_id); 
 	
-	odf::style_text_properties			* text_properties		= ods_context->styles_context()->last_state().get_text_properties();
-	odf::style_table_cell_properties	* table_cell_properties = ods_context->styles_context()->last_state().get_table_cell_properties();
+	odf::style_text_properties			* text_properties		= ods_context->styles_context()->last_state()->get_text_properties();
+	odf::style_table_cell_properties	* table_cell_properties = ods_context->styles_context()->last_state()->get_table_cell_properties();
 
 	if (xlsx_styles->m_oFonts.IsInit() && font_id >=0 && (id_parent < 0 || xfc_style->m_oApplyFont.IsInit()))	
 	{
@@ -1374,15 +1373,15 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 	}
 	if (numFmt_id>=0/* && (id_parent < 0 || xfc_style->m_oApplyNumberFormat.IsInit())*/)	
 	{
-		ods_context->styles_context()->last_state().set_data_style_name(ods_context->numbers_styles_context()->add_or_find(numFmt_id).style_name);
-		ods_context->styles_context()->last_state().set_number_format(numFmt_id);
+		ods_context->styles_context()->last_state()->set_data_style_name(ods_context->numbers_styles_context()->add_or_find(numFmt_id).style_name);
+		ods_context->styles_context()->last_state()->set_number_format(numFmt_id);
 	}
 	if (xlsx_styles->m_oBorders.IsInit() && border_id >=0 && (id_parent < 0 || xfc_style->m_oApplyBorder.IsInit()))	
 	{
 		convert(xlsx_styles->m_oBorders->m_arrItems[border_id], table_cell_properties); 
 	}
 	
-	odf::style_paragraph_properties	* paragraph_properties = ods_context->styles_context()->last_state().get_paragraph_properties();
+	odf::style_paragraph_properties	* paragraph_properties = ods_context->styles_context()->last_state()->get_paragraph_properties();
 	paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::Page);
 
 	if (xfc_style->m_oAligment.IsInit() && xfc_style->m_oApplyAlignment.IsInit())
@@ -1393,16 +1392,16 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 
 	if (id_parent >=0)
 	{
-		odf::odf_style_state  *parent_style_state=NULL;
+		odf::odf_style_state_ptr parent_style_state;
 		ods_context->styles_context()->find_odf_style_state(id_parent, odf::style_family::TableCell,parent_style_state, true );
 
 		if (parent_style_state)
 		{
-			ods_context->styles_context()->last_state().set_parent_style_name(parent_style_state->get_name());
+			ods_context->styles_context()->last_state()->set_parent_style_name(parent_style_state->get_name());
 
 			if (numFmt_id < 0)
 			{
-				ods_context->styles_context()->last_state().set_number_format(parent_style_state->get_number_format());
+				ods_context->styles_context()->last_state()->set_number_format(parent_style_state->get_number_format());
 			}
 		}
 	}

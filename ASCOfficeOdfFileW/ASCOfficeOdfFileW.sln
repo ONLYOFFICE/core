@@ -8,14 +8,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OdfFormat", "source\OdfForm
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Oox2OdfConverter", "source\Oox2OdfConverter.vcproj", "{BEE01B53-244A-44E6-8947-ED9342D9247E}"
 	ProjectSection(ProjectDependencies) = postProject
-		{E5A67556-44DA-4481-8F87-0A3AEDBD20DD} = {E5A67556-44DA-4481-8F87-0A3AEDBD20DD}
 		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
+		{E5A67556-44DA-4481-8F87-0A3AEDBD20DD} = {E5A67556-44DA-4481-8F87-0A3AEDBD20DD}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeOdfFileWTest", "ASCOfficeOdfFileWTest\ASCOfficeOdfFileWTest.vcproj", "{FBA8446A-150F-4A10-B4DA-1022048D6473}"
-	ProjectSection(ProjectDependencies) = postProject
-		{6258296E-ABCE-4BC6-9F4A-8522CD615603} = {6258296E-ABCE-4BC6-9F4A-8522CD615603}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpformulasconvert", "..\ASCOfficeOdfFile\formulasconvert\formulasconvert.vcproj", "{94954A67-A853-43B1-A727-6EF2774C5A6A}"
 EndProject

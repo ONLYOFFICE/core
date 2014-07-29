@@ -21,13 +21,12 @@ odf_page_layout_context::odf_page_layout_context(odf_conversion_context * Contex
 	odf_context_	= Context;
 	style_context_	= Context->styles_context();   
 
-	local_style_context_ = new odf_style_context();
+	local_style_context_ =  boost::shared_ptr<odf_style_context>(new odf_style_context());
 	local_style_context_->set_odf_context(odf_context_);
 }
 
 odf_page_layout_context::~odf_page_layout_context()
 {
-	delete local_style_context_;
 }
 
 

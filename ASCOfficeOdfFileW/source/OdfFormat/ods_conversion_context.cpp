@@ -37,7 +37,7 @@ void calculate_size_font_symbols(_font_metrix & metrix)
 }
 }
 ods_conversion_context::ods_conversion_context(package::odf_document * outputDocument) 
-		: odf_conversion_context(outputDocument), table_context_(*this), current_text_context_(NULL), page_layout_context_(this)
+		: odf_conversion_context(outputDocument), table_context_(*this), current_text_context_(NULL)
 {
 	font_metrix_ = _font_metrix();
 }
@@ -155,7 +155,7 @@ void ods_conversion_context::start_row(int _start_row, int repeated, int level, 
 	else
 	{
 		styles_context()->create_style(L"",style_family::TableRow, true, false, -1);
-		style_elm = styles_context()->last_state().get_office_element();
+		style_elm = styles_context()->last_state()->get_office_element();
 		
 		style* _style = dynamic_cast<style*>(style_elm.get());
 		if (!_style)return;		
@@ -276,7 +276,7 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 	
 	if ( xfd_style >=0)
 	{
-		odf_style_state  *style_state=NULL;
+		odf_style_state_ptr  style_state;
 		styles_context()->find_odf_style_state(xfd_style, style_family::TableCell,style_state);
 		if (style_state)
 		{
@@ -375,7 +375,7 @@ void ods_conversion_context::add_column(int start_column, int repeated, int leve
 		//по сути в этом стиле раличные опции ширины колонок тока .. а если свойства совпадают - можно сгенерить один, хотя выше и указано что стили разные.
 		//то есть в оо разделяют оох стиль на 2 (для колонки собственно, и описалово ячеек в колонки)
 		styles_context()->create_style(L"",style_family::TableColumn, true, false, -1);
-		style_elm = styles_context()->last_state().get_office_element();
+		style_elm = styles_context()->last_state()->get_office_element();
 		
 		style* _style = dynamic_cast<style*>(style_elm.get());
 		if (!_style)return;		

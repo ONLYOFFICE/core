@@ -171,7 +171,7 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 
 	if (styled)
 	{		
-		odf_style_state *style_state = styles_context_->last_state(style_family::Paragraph);
+		odf_style_state_ptr style_state = styles_context_->last_state(style_family::Paragraph);
 
 		if (style_state)
 		{
@@ -256,7 +256,7 @@ void odf_text_context::start_span(bool styled)
 
 	if (styled)
 	{		
-		odf_style_state *style_state = styles_context_->last_state(style_family::Text);
+		odf_style_state_ptr style_state = styles_context_->last_state(style_family::Text);
 
 		if (style_state)
 		{

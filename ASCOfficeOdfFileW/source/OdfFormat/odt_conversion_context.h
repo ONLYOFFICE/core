@@ -109,7 +109,6 @@ private:
 	
 	odf_text_context*			main_text_context_;
 
-	odf_page_layout_context		page_layout_context_;	
 	odf_table_context			table_context_;
 	odf_comment_context			comment_context_;	
 	

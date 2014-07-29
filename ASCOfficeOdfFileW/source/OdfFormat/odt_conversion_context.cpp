@@ -36,7 +36,7 @@ double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name
 }
 }
 odt_conversion_context::odt_conversion_context(package::odf_document * outputDocument) 
-		: odf_conversion_context(outputDocument),comment_context_(this), page_layout_context_(this), main_text_context_(NULL),table_context_(this)	
+		: odf_conversion_context(outputDocument),comment_context_(this), main_text_context_(NULL),table_context_(this)	
 {
 	current_field_.enabled = false;
 	current_field_.started = false;
@@ -229,11 +229,15 @@ void odt_conversion_context::add_page_break()
 			//styles_context()->last_state().apply_from(style_);
 			if (style_ )
 			{
-				style_paragraph_properties * new_props = styles_context()->last_state().get_paragraph_properties();
-				if (new_props)new_props->apply_from(style_->style_content_.get_style_paragraph_properties());
-				
-				if (style_->style_parent_style_name_)
-					styles_context()->last_state().set_parent_style_name(*style_->style_parent_style_name_);
+				style_paragraph_properties * new_props = NULL;
+				if (styles_context()->last_state())
+				{
+					new_props = styles_context()->last_state()->get_paragraph_properties();				
+					if (new_props)new_props->apply_from(style_->style_content_.get_style_paragraph_properties());
+					
+					if (style_->style_parent_style_name_)
+						styles_context()->last_state()->set_parent_style_name(*style_->style_parent_style_name_);
+				}
 			}	
 			start_paragraph(true);
 		}
@@ -317,8 +321,8 @@ void odt_conversion_context::add_section(bool continuous)
 	styles_context()->create_style(L"",odf::style_family::Section, true, false, -1);		
 
 	create_element(L"text", L"section",state.elm,this);
-	state.style_elm		= styles_context()->last_state().get_office_element();
-	state.style_name	= styles_context()->last_state().get_name();
+	state.style_elm		= styles_context()->last_state()->get_office_element();
+	state.style_name	= styles_context()->last_state()->get_name();
 	
 	text_section* section = dynamic_cast<text_section*>(state.elm.get());
 	if (section)section->text_section_attr_.text_style_name_ = style_ref(state.style_name);	
@@ -564,7 +568,7 @@ void odt_conversion_context::start_table(bool styled)
 	std::wstring		style_name;
 	if (styled)
 	{
-		odf_style_state * style_state = styles_context()->last_state(style_family::Table);
+		odf_style_state_ptr style_state = styles_context()->last_state(style_family::Table);
 		if (style_state)
 		{
 			style_elm = style_state->get_office_element();

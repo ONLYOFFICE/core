@@ -203,7 +203,7 @@ void odf_chart_context::start_chart(office_element_ptr & root)
 //////////	
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
-	office_element_ptr & style_elm = impl_->styles_context_->last_state().get_office_element();
+	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
 	int level = impl_->current_level_.size();
 	std::wstring style_name;
@@ -480,7 +480,7 @@ void odf_chart_context::start_series(std::wstring type)
 //////////	
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
-	office_element_ptr & style_elm = impl_->styles_context_->last_state().get_office_element();
+	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
 	std::wstring style_name;
 
@@ -663,7 +663,7 @@ void odf_chart_context::start_axis()
 //////////	
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
-	office_element_ptr & style_elm = impl_->styles_context_->last_state().get_office_element();
+	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
 	std::wstring style_name;
 
@@ -693,7 +693,7 @@ void odf_chart_context::start_grid(int type)
 
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
-	office_element_ptr & style_elm = impl_->styles_context_->last_state().get_office_element();
+	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
 	std::wstring style_name;
 
@@ -717,7 +717,7 @@ void odf_chart_context::start_title()
 //////////	
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
-	office_element_ptr & style_elm = impl_->styles_context_->last_state().get_office_element();
+	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
 	std::wstring style_name;
 
@@ -741,7 +741,7 @@ void odf_chart_context::start_plot_area()
 //////////	
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
-	office_element_ptr & style_elm = impl_->styles_context_->last_state().get_office_element();
+	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
 	std::wstring style_name;
 
@@ -819,7 +819,7 @@ void odf_chart_context::start_floor()
 //////////	
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
-	office_element_ptr & style_elm = impl_->styles_context_->last_state().get_office_element();
+	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
 	std::wstring style_name;
 	style* style_ = dynamic_cast<style*>(style_elm.get());
@@ -844,7 +844,7 @@ void odf_chart_context::start_wall()
 //////////	
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
-	office_element_ptr & style_elm = impl_->styles_context_->last_state().get_office_element();
+	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
 	std::wstring style_name;
 	style* style_ = dynamic_cast<style*>(style_elm.get());
@@ -871,7 +871,7 @@ void odf_chart_context::start_legend()
 //////////	
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
-	office_element_ptr & style_elm = impl_->styles_context_->last_state().get_office_element();
+	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
 	std::wstring style_name;
 	style* style_ = dynamic_cast<style*>(style_elm.get());
@@ -891,7 +891,7 @@ void odf_chart_context::start_stock_range_line()
 //////////	
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
-	office_element_ptr & style_elm = impl_->styles_context_->last_state().get_office_element();
+	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
 	std::wstring style_name;
 	style* style_ = dynamic_cast<style*>(style_elm.get());
@@ -914,7 +914,7 @@ void odf_chart_context::start_stock_gain_marker()
 //////////	
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
-	office_element_ptr & style_elm = impl_->styles_context_->last_state().get_office_element();
+	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
 	std::wstring style_name;
 	style* style_ = dynamic_cast<style*>(style_elm.get());
@@ -937,7 +937,7 @@ void odf_chart_context::start_stock_loss_marker()
 //////////	
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
-	office_element_ptr & style_elm = impl_->styles_context_->last_state().get_office_element();
+	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
 	std::wstring style_name;
 	style* style_ = dynamic_cast<style*>(style_elm.get());
@@ -992,7 +992,7 @@ void odf_chart_context::start_data_point_series(int count)
 //////////	
 	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
 	
-	office_element_ptr & style_elm = impl_->styles_context_->last_state().get_office_element();
+	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
 	std::wstring style_name;
 	style* style_ = dynamic_cast<style*>(style_elm.get());

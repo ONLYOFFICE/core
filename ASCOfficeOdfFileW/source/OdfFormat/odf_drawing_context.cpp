@@ -493,7 +493,7 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 //////////	
 	styles_context_->create_style(L"",style_family::Graphic, true, false, -1);		
 	
-	office_element_ptr & style_shape_elm = styles_context_->last_state().get_office_element();
+	office_element_ptr & style_shape_elm = styles_context_->last_state()->get_office_element();
 	std::wstring style_name;
 
 	style* style_ = dynamic_cast<style*>(style_shape_elm.get());
@@ -1207,7 +1207,7 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 		{
 			impl_->styles_context_->create_style(L"",style_family::Paragraph, true, false, -1);		
 		
-			office_element_ptr & style_shape_elm = impl_->styles_context_->last_state().get_office_element();
+			office_element_ptr & style_shape_elm = impl_->styles_context_->last_state()->get_office_element();
 			style_ = dynamic_cast<style*>(style_shape_elm.get());
 			if (style_)
 				draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_text_style_name_attlist_.draw_text_style_name_ = style_->style_name_;
@@ -1428,7 +1428,7 @@ void odf_drawing_context::end_gradient_style()
 }
 void odf_drawing_context::set_gradient_type(int type)
 {
-	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state().get_office_element().get());
+	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state()->get_office_element().get());
 	if (!gradient) return;
 
 	switch(type)
@@ -1441,7 +1441,7 @@ void odf_drawing_context::set_gradient_type(int type)
 }
 void odf_drawing_context::set_gradient_start(std::wstring hexColor, _CP_OPT(double) & intensiv)
 {
-	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state().get_office_element().get());
+	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state()->get_office_element().get());
 	if (!gradient) return;
 
 	gradient->draw_start_color_ = color(std::wstring(L"#") + hexColor);
@@ -1449,7 +1449,7 @@ void odf_drawing_context::set_gradient_start(std::wstring hexColor, _CP_OPT(doub
 }
 void odf_drawing_context::set_gradient_end  (std::wstring hexColor, _CP_OPT(double) & intensiv)
 {
-	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state().get_office_element().get());
+	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state()->get_office_element().get());
 	if (!gradient) return;
 
 	gradient->draw_end_color_ = color(std::wstring(L"#") + hexColor);
@@ -1457,7 +1457,7 @@ void odf_drawing_context::set_gradient_end  (std::wstring hexColor, _CP_OPT(doub
 }
 void odf_drawing_context::set_gradient_center(double x, double y)
 {
-	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state().get_office_element().get());
+	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state()->get_office_element().get());
 	if (!gradient) return;
 	
 	gradient->draw_cy_ = percent(x);
@@ -1465,7 +1465,7 @@ void odf_drawing_context::set_gradient_center(double x, double y)
 }
 void odf_drawing_context::set_gradient_rect(double l, double t, double r,double b)
 {
-	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state().get_office_element().get());
+	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state()->get_office_element().get());
 	if (!gradient) return;
 	
 	gradient->draw_cy_ = percent((b-t)/2. + 50.);
@@ -1500,7 +1500,7 @@ void odf_drawing_context::set_opacity(_CP_OPT(double) & start, _CP_OPT(double) &
 		opacity->draw_start_ = *start;
 		opacity->draw_end_ = *end;
 
-		draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state().get_office_element().get());
+		draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state()->get_office_element().get());
 		if (gradient)
 		{
 			opacity->draw_style_ =  gradient->draw_style_;
@@ -1513,7 +1513,7 @@ void odf_drawing_context::set_opacity(_CP_OPT(double) & start, _CP_OPT(double) &
 }
 void odf_drawing_context::set_gradient_angle(double angle)
 {
-	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state().get_office_element().get());
+	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state()->get_office_element().get());
 	if (!gradient) return;
 
 	gradient->draw_angle_ = (int)((360 - angle)/180. * 3.14159265358979323846);
@@ -1541,7 +1541,7 @@ void odf_drawing_context::set_hatch_line_color(std::wstring hexColor)
 	//impl_->current_graphic_properties->content().svg_stroke_color_ = color(std::wstring(L"#") + hexColor);
 	//impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::Solid);//default
 
-	draw_hatch * hatch = dynamic_cast<draw_hatch *>(impl_->styles_context_->last_state().get_office_element().get());
+	draw_hatch * hatch = dynamic_cast<draw_hatch *>(impl_->styles_context_->last_state()->get_office_element().get());
 	if (!hatch) return;
 
 	hatch->draw_color_ = color(std::wstring(L"#") + hexColor);
@@ -1556,7 +1556,7 @@ void odf_drawing_context::set_hatch_area_color(std::wstring hexColor)
 }
 void odf_drawing_context::set_hatch_type(int type)
 {
-	draw_hatch * hatch = dynamic_cast<draw_hatch *>(impl_->styles_context_->last_state().get_office_element().get());
+	draw_hatch * hatch = dynamic_cast<draw_hatch *>(impl_->styles_context_->last_state()->get_office_element().get());
 	if (!hatch) return;
 	
 	switch(type)
@@ -1917,7 +1917,7 @@ void odf_drawing_context::set_bitmap_link(std::wstring link)
 	
 	impl_->odf_context_->mediaitems()->add_or_find(link,_mediaitems::typeImage,odf_ref_name);
 	
-	draw_fill_image * fill_image = dynamic_cast<draw_fill_image *>(impl_->styles_context_->last_state().get_office_element().get());
+	draw_fill_image * fill_image = dynamic_cast<draw_fill_image *>(impl_->styles_context_->last_state()->get_office_element().get());
 	if (!fill_image) return;
    
 	fill_image->xlink_attlist_.href_= odf_ref_name;

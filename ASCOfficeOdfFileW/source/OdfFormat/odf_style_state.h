@@ -26,11 +26,13 @@ class style_table_column_properties;
 class style_chart_properties;
 //class style_drawing_page_properties;
 
+class odf_style_state;
+typedef shared_ptr<odf_style_state>::Type odf_style_state_ptr;
 
 class odf_style_state
 {
 public:
-	odf_style_state(office_element_ptr & elm, const style_family style_family );
+	odf_style_state(office_element_ptr & elm, const style_family::type family );
 
 	void set_automatic(bool val);
 	void set_root(bool val);
@@ -48,7 +50,7 @@ public:
 	void			set_name(std::wstring & name);
 	std::wstring 	get_name();
 
-	style_family & get_family();
+	style_family::type get_family_type();
 
 	void	set_number_format(int id)	{num_fmt_id_ = id;}
 	int		get_number_format()			{return num_fmt_id_;}
@@ -84,7 +86,7 @@ private:
 
 	bool writable_;
 
-	style_family style_family_;
+	style_family::type style_family_;
 	
 	office_element_ptr	odf_style_;
 

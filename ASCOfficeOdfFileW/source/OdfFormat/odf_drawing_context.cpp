@@ -256,7 +256,7 @@ void odf_drawing_context::start_group(std::wstring name, int id)
 	draw_g* group = dynamic_cast<draw_g*>(group_elm.get());
 
 	int level = impl_->current_level_.size();
-	
+//////////////////////////
 	
 	odf_group_state_ptr group_state = boost::shared_ptr<odf_group_state>(new odf_group_state(group_elm, level,impl_->current_group_));
 	impl_->group_list_.push_back(group_state);
@@ -316,7 +316,9 @@ void odf_drawing_context::start_drawing()
 		impl_->current_drawing_state_.svg_height_ = impl_->anchor_settings_.svg_height_;
 	}
 	else 
+	{
 		impl_->current_drawing_state_.in_group = true;
+	}
 
 }
 void odf_drawing_context::end_drawing()
@@ -384,17 +386,38 @@ void odf_drawing_context::end_drawing()
 		draw->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_		= impl_->current_drawing_state_.svg_width_;
 	}
 ///////////////////////////////////////////////////////
-	if (impl_->current_drawing_state_.flipV + ((impl_->current_drawing_state_.in_group && impl_->current_group_) ? impl_->current_group_->flipV: false))
-		impl_->current_graphic_properties->content().style_mirror_ = std::wstring(L"vertical");
-	if (impl_->current_drawing_state_.flipH + ((impl_->current_drawing_state_.in_group && impl_->current_group_) ? impl_->current_group_->flipH: false))
-		impl_->current_graphic_properties->content().style_mirror_ = std::wstring(L"horizontal");
+	if (impl_->current_drawing_state_.in_group)
+	{
+		odf_group_state_ptr gr = impl_->current_group_;
+
+		while(gr)
+		{
+			impl_->current_drawing_state_.flipH = impl_->current_drawing_state_.flipH ^ gr->flipH;
+			impl_->current_drawing_state_.flipV = impl_->current_drawing_state_.flipV ^ gr->flipV;
+			
+			gr = gr->prev_group;
+		}
+	}
+	draw_custom_shape* custom = dynamic_cast<draw_custom_shape*>(draw);
+	if (custom)
+	{
+		draw_enhanced_geometry* enhan = dynamic_cast<draw_enhanced_geometry*>(custom->draw_enhanced_geometry_.get());
+		if(enhan)
+		{
+			if (impl_->current_drawing_state_.flipV) enhan->draw_enhanced_geometry_attlist_.draw_mirror_vertical_ = true;
+			if (impl_->current_drawing_state_.flipH) enhan->draw_enhanced_geometry_attlist_.draw_mirror_horizontal_ = true;
+		}
+	}else
+	{
+		//не поддерживается :( - нужно считать искажения на простейшие фигуры - линии, ректы, эллипсы 
+	}
+
 
 	impl_->current_graphic_properties->content().common_vertical_pos_attlist_.style_vertical_pos_		= impl_->anchor_settings_.style_vertical_pos_;
 	impl_->current_graphic_properties->content().common_horizontal_pos_attlist_.style_horizontal_pos_	= impl_->anchor_settings_.style_horizontal_pos_;
 
 	impl_->current_graphic_properties->content().common_vertical_rel_attlist_.style_vertical_rel_		= impl_->anchor_settings_.style_vertical_rel_;
 	impl_->current_graphic_properties->content().common_horizontal_rel_attlist_.style_horizontal_rel_	= impl_->anchor_settings_.style_horizontal_rel_;
-	
 
 	impl_->current_graphic_properties->content().common_horizontal_margin_attlist_.fo_margin_left_	= impl_->anchor_settings_.fo_margin_left_; 
 	impl_->current_graphic_properties->content().common_vertical_margin_attlist_.fo_margin_top_		= impl_->anchor_settings_.fo_margin_top_; 
@@ -799,10 +822,26 @@ void odf_drawing_context::set_viewBox(double W, double H)
 }
 void odf_drawing_context::set_flip_H(bool bVal)
 {
+	if (impl_->current_graphic_properties == NULL) return;
+	if (bVal == false)return;
+//for image 
+	if (impl_->current_graphic_properties->content().style_mirror_)
+		impl_->current_graphic_properties->content().style_mirror_ = *impl_->current_graphic_properties->content().style_mirror_ + std::wstring(L" horizontal");
+	else
+		impl_->current_graphic_properties->content().style_mirror_ = std::wstring(L"horizontal");
+//else	
 	impl_->current_drawing_state_.flipH = bVal;
 }
 void odf_drawing_context::set_flip_V(bool bVal)
 {
+	if (impl_->current_graphic_properties == NULL) return;
+	if (bVal == false)return;
+//for image 
+	if (impl_->current_graphic_properties->content().style_mirror_)
+		impl_->current_graphic_properties->content().style_mirror_ = *impl_->current_graphic_properties->content().style_mirror_ + std::wstring(L" vertical");
+	else
+		impl_->current_graphic_properties->content().style_mirror_ = std::wstring(L"vertical");
+//else
 	impl_->current_drawing_state_.flipV = bVal;
 }
 
@@ -868,6 +907,8 @@ void odf_drawing_context::set_vertical_rel(int from)
 	}
 
 	impl_->anchor_settings_.style_vertical_rel_ = vertical_rel(type);
+	impl_->anchor_settings_.style_vertical_pos_ = vertical_pos(vertical_pos::FromTop);//default
+
 }
 void odf_drawing_context::set_vertical_pos(int align)
 {
@@ -904,6 +945,7 @@ void odf_drawing_context::set_horizontal_rel(int from)
 	}
 
 	impl_->anchor_settings_.style_horizontal_rel_ = horizontal_rel(type);
+	impl_->anchor_settings_.style_horizontal_pos_ = horizontal_pos(horizontal_pos::FromLeft);//default
 }
 void odf_drawing_context::set_horizontal_pos(int align)
 {
@@ -912,8 +954,8 @@ void odf_drawing_context::set_horizontal_pos(int align)
 	switch(align)
 	{
 	case 0:	type =	horizontal_pos::Center;		break;//alignhCenter  = 0,
-	case 1:	type =	horizontal_pos::Inside;		break;//alignhInside  = 1,
-	case 2:	type =	horizontal_pos::Left;		break;//alignhLeft    = 2,
+	case 1:	type =	horizontal_pos::FromInside;	break;//alignhInside  = 1,
+	case 2:	type =	horizontal_pos::FromLeft;	break;//alignhLeft    = 2,
 	case 3:	type =	horizontal_pos::Outside;	break;//alignhOutside = 3,
 	case 4:	type =	horizontal_pos::Right;		break;//alignhRight   = 4
 	}
@@ -934,28 +976,31 @@ void odf_drawing_context::set_overlap (bool val)
 	//if (val) impl_->anchor_settings_.run_through_ = run_through(run_through::Background);
 	//else impl_->anchor_settings_.run_through_ = run_through(run_through::Foreground);
 
-	impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
+	if (val) impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void odf_drawing_context::set_group_position(double x, double y, double ch_x, double ch_y)
 {
 	if (impl_->group_list_.size()<1)return;
 
-	impl_->group_list_.back()->x = ch_x; 
-	impl_->group_list_.back()->y = ch_y; 
+	impl_->current_group_->x = ch_x; 
+	impl_->current_group_->y = ch_y; 
 
 	if (impl_->current_group_->prev_group)
 	{
-		impl_->group_list_.back()->x *= impl_->current_group_->prev_group->scale_cx;
-		impl_->group_list_.back()->y *= impl_->current_group_->prev_group->scale_cy;
+		//impl_->group_list_.back()->x *= impl_->current_group_->prev_group->scale_cx;
+		//impl_->group_list_.back()->y *= impl_->current_group_->prev_group->scale_cy;
 	
-		double x1= (x-ch_x)* impl_->current_group_->prev_group->scale_cx;
-		double y1= (y-ch_y)* impl_->current_group_->prev_group->scale_cy;
+		double x1= (x-ch_x/*-x*/)* impl_->current_group_->prev_group->scale_cx;
+		double y1= (y-ch_y/*-y*/)* impl_->current_group_->prev_group->scale_cy;
 
-		impl_->current_group_->shift_x = impl_->current_group_->prev_group->shift_x + x1 + 
-								(impl_->current_group_->prev_group->flipH ? (impl_->current_group_->prev_group->cx - 2 *x1) : 0) ;
-		impl_->current_group_->shift_y = impl_->current_group_->prev_group->shift_y + y1 +
-								(impl_->current_group_->prev_group->flipV ? (impl_->current_group_->prev_group->cy - 2 *y1) : 0) ;
+		double x2= impl_->current_group_->prev_group->shift_x ;
+		double y2= impl_->current_group_->prev_group->shift_y ;
+
+		impl_->current_group_->shift_x = x2 + x1  
+								+(impl_->current_group_->prev_group->flipH ? (impl_->current_group_->prev_group->cx - 2 *x1) : 0) ;
+		impl_->current_group_->shift_y = y2 + y1 
+								+(impl_->current_group_->prev_group->flipV ? (impl_->current_group_->prev_group->cy - 2 *y1) : 0) ;
 	}else
 	{
 		impl_->current_group_->shift_x = impl_->x + (x-ch_x) ;
@@ -992,14 +1037,14 @@ void odf_drawing_context::set_group_flip_V(bool bVal)
 {
 	if (impl_->group_list_.size()<1)return;
 
-	//impl_->current_group_->flipV= bVal;
+	impl_->current_group_->flipV= bVal;
 }
 
 void odf_drawing_context::set_group_flip_H(bool bVal)
 {
 	if (impl_->group_list_.size()<1)return;
 
-	//impl_->current_group_->flipH= bVal;
+	impl_->current_group_->flipH= bVal;
 }
 void odf_drawing_context::set_group_rotate(int iVal)
 {
@@ -1029,7 +1074,9 @@ void odf_drawing_context::set_position(double x_pt, double y_pt)
 		if (impl_->current_drawing_state_.in_group && impl_->current_group_)
 		{
 			x_pt *= impl_->current_group_->scale_cx;
-			x_pt += impl_->current_group_->shift_x + impl_->current_group_->flipH ? (impl_->current_group_->cx - 2 * x_pt): 0;
+			
+			x_pt += impl_->current_group_->shift_x ;
+				// +  (impl_->current_group_->flipH ? (impl_->current_group_->cx - 2 * x_pt): 0);
 		}
 
 		impl_->current_drawing_state_.svg_x_ = length(length(x_pt,length::pt).get_value_unit(length::cm),length::cm);
@@ -1039,7 +1086,9 @@ void odf_drawing_context::set_position(double x_pt, double y_pt)
 		if (impl_->current_drawing_state_.in_group && impl_->current_group_)
 		{
 			y_pt *= impl_->current_group_->scale_cy;
-			y_pt += impl_->current_group_->shift_y + impl_->current_group_->flipV ? (impl_->current_group_->cy - 2 * y_pt): 0;
+			
+			y_pt += impl_->current_group_->shift_y ;
+				 //+  (impl_->current_group_->flipV ? (impl_->current_group_->cy - 2 * y_pt): 0);
 		}
 
 		impl_->current_drawing_state_.svg_y_ = length(length(y_pt,length::pt).get_value_unit(length::cm),length::cm);
@@ -1216,6 +1265,13 @@ void odf_drawing_context::start_image(std::wstring & path)
 {	
 	start_frame();
 
+	//добавить в стиль ссыль на базовый стиль Frame - зачемто нужно :(
+	style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_.back().style_elm.get());
+	if (style_)
+	{
+		style_->style_parent_style_name_ = L"Frame";
+	}
+///////////////////////////////////////////////////////////////////////////////////////////////
 	office_element_ptr image_elm;
 	create_element(L"draw", L"image", image_elm, impl_->odf_context_);
 

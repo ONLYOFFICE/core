@@ -204,6 +204,7 @@ enum ElementType
 	typeDrawCustomShape,
 	typeDrawHandle,
 	typeDrawEquation,
+	typeDrawEnhancedGeometry,
 
 	typeDrawPage,    
 	typePresentationFooterDecl,

@@ -196,6 +196,9 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
 
     virtual void serialize(std::wostream & _Wostream);
+    virtual void add_child_element( office_element_ptr & child_element);
+
+	office_element_ptr draw_enhanced_geometry_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_custom_shape);
@@ -288,6 +291,9 @@ public:
 	_CP_OPT(std::wstring) draw_text_areas_;
 	_CP_OPT(std::wstring) draw_glue_points_;
 	
+	_CP_OPT(Bool)		draw_mirror_vertical_;
+	_CP_OPT(Bool)		draw_mirror_horizontal_;
+	
 	void serialize(CP_ATTR_NODE);   
 };
 /////////////////////////////////////////////////////////////////////////
@@ -298,7 +304,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 	
-	static const ElementType type = typeDrawCustomShape;
+	static const ElementType type = typeDrawEnhancedGeometry;
 	static const xml::NodeType xml_type = xml::typeElement;
 	
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);

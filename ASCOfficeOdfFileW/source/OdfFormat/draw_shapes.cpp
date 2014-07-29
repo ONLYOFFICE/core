@@ -157,9 +157,21 @@ void draw_custom_shape::serialize(std::wostream & _Wostream)
 		CP_XML_NODE_SIMPLE()
         {
 			draw_shape::serialize_attlist(CP_GET_XML_NODE());
-	
+
+			if (draw_enhanced_geometry_)draw_enhanced_geometry_->serialize(CP_XML_STREAM());
 			draw_shape::serialize(CP_XML_STREAM());
 		}
+	}
+}
+void draw_custom_shape::add_child_element( office_element_ptr & child_element)
+{
+	switch(child_element->get_type())
+	{
+		case typeDrawEnhancedGeometry:
+			draw_enhanced_geometry_ = child_element;
+			break;
+		default:
+			draw_base::add_child_element(child_element);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -358,6 +370,8 @@ void draw_enhanced_geometry_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"draw:modifiers", draw_modifiers_);
     CP_XML_ATTR_OPT(L"draw:enhanced-path", draw_enhanced_path_);	
 	CP_XML_ATTR_OPT(L"draw:glue-points", draw_glue_points_);
+	CP_XML_ATTR_OPT(L"draw:mirror-vertical", draw_mirror_vertical_);
+	CP_XML_ATTR_OPT(L"draw:mirror-horizontal", draw_mirror_horizontal_);
 }
 // draw:enhanced_geometry
 const wchar_t * draw_enhanced_geometry::ns = L"draw";

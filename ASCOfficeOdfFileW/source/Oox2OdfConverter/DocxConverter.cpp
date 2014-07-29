@@ -603,7 +603,24 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool root)
 {
 	if (oox_section_pr == NULL) return;
-	
+
+	bool continuous	= false;
+
+	if (oox_section_pr->m_oType.IsInit() && oox_section_pr->m_oType->m_oVal.IsInit())
+	{
+		switch(oox_section_pr->m_oType->m_oVal->GetValue())
+		{		
+		case SimpleTypes::sectionmarkContinious :
+			continuous = true; // нужно убрать разрыв
+			break;
+		case SimpleTypes::sectionmarkNextColumn :
+		case SimpleTypes::sectionmarkEvenPage   :
+		case SimpleTypes::sectionmarkNextPage   :
+		case SimpleTypes::sectionmarkOddPage    :
+			// возможен разрыв
+			break;
+		}
+	}
 	odt_context->page_layout_context()->create_master_page(root ? L"Standart" : L"");
 	
 	odt_context->set_master_page_name(odt_context->page_layout_context()->last_master().get_name());
@@ -704,19 +721,8 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 	// style name master page -> 0-й элемент текщей цепочки параграфов
 //--------------------------------------------------------------------------------------------------------------------------------------------		
 	// то что относится собственно к секциям 
-	if (oox_section_pr->m_oType.IsInit() && oox_section_pr->m_oType->m_oVal.IsInit())
-	{
-		switch(oox_section_pr->m_oType->m_oVal->GetValue())
-		{		
-		case SimpleTypes::sectionmarkNextColumn :
-		case SimpleTypes::sectionmarkContinious :
-		case SimpleTypes::sectionmarkEvenPage   :
-		case SimpleTypes::sectionmarkNextPage   :
-		case SimpleTypes::sectionmarkOddPage    :
-			break;
-		}
-	}
-	if (!root)odt_context->add_section();
+
+	if (!root)odt_context->add_section(continuous);
 
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBidi;
 			//nullable<ComplexTypes::Word::CDocGrid                        > m_oDocGrid;
@@ -735,7 +741,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 
 	if ((oox_section_pr->m_oCols.IsInit()) && (oox_section_pr->m_oCols->m_oNum.IsInit()) && (oox_section_pr->m_oCols->m_oNum->GetValue() > 1))//колонки
 	{
-		if (root)odt_context->add_section();
+		if (root)odt_context->add_section(continuous);
 		
 		int count = oox_section_pr->m_oCols->m_oNum->GetValue();
 		

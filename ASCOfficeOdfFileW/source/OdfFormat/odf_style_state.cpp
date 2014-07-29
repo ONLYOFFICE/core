@@ -61,10 +61,10 @@ void odf_style_state::set_display_name(std::wstring & name)
 	style_->style_display_name_ = name;
 
 }
-std::wstring & odf_style_state::get_name()
+std::wstring odf_style_state::get_name()
 {
 	style* style_ = dynamic_cast<style*>(odf_style_.get());
-	if (!style_)return std::wstring();
+	if (!style_)return L"";
 
 	return style_->style_name_;
 }
@@ -77,6 +77,8 @@ style_family & odf_style_state::get_family()
 }
 void odf_style_state::set_parent_style_name(std::wstring & name)
 {
+	if (name.length() < 1) return;
+
 	style* style_ = dynamic_cast<style*>(odf_style_.get());
 	if (!style_)return;
 	

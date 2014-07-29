@@ -207,7 +207,7 @@ void odt_conversion_context::add_page_break()
 	office_element_ptr elm;
 	create_element(L"text", L"soft-page-break", elm, this);	
 	
-	if (current_root_elements_.size()>0)			
+	if (current_root_elements_.size()>0/* && text_context()->is_need_break()*/)			
 	{ 	
 		text_p* para = NULL;
 		style * style_ = NULL;
@@ -308,10 +308,11 @@ void odt_conversion_context::set_master_page_name(std::wstring master_name)
 	if (style_)style_->style_master_page_name_ = master_name;
 }
 
-void odt_conversion_context::add_section()
+void odt_conversion_context::add_section(bool continuous)
 {
 	odt_section_state state;
 	state.empty = true;
+	state.continuous = continuous;
 //----------------------------------------------------------------
 	styles_context()->create_style(L"",odf::style_family::Section, true, false, -1);		
 
@@ -394,6 +395,24 @@ void odt_conversion_context::flush_section()
 	{
 		for (long i=0; i< current_root_elements_.size(); i++)
 		{
+			if (sections_.back().continuous && i<2)// при вставлении параграфа возможен искусственный разрыв в параграфах - см add_page_break
+			{
+				text_soft_page_break * break_ = dynamic_cast<text_soft_page_break*>(current_root_elements_[i].elm.get());
+				if (break_)
+				{
+					//необходимо добавить в свойства предыдущего параграфа	(если он есть, если нет - следующего), что брейк не нужен
+					//int paragraph_break = i-1;
+					//if (paragraph_break < 0) paragraph_break = i+1;
+					//style *style_ = dynamic_cast<style*>(current_root_elements_[paragraph_break].style_elm.get());
+					//if (style_)
+					//{
+					//	style_paragraph_properties *props = style_->style_content_.get_style_paragraph_properties();
+					//	props->content().fo_break_before_ = fo_break(fo_break::Auto);
+					//	props->content().fo_break_after_  = fo_break(fo_break::Auto);
+					//}
+					continue;
+				}
+			}
 			sections_.back().elm->add_child_element(current_root_elements_[i].elm);
 		}
 		current_root_elements_.clear();

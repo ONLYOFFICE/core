@@ -1153,8 +1153,8 @@ void style_master_page::serialize(std::wostream & strm)
         {
 			style_master_page_attlist_.serialize( CP_GET_XML_NODE());
 			
-			if (style_header_)			style_footer_->serialize(CP_XML_STREAM());
-			if (style_footer_)			style_header_->serialize(CP_XML_STREAM());
+			if (style_footer_)			style_footer_->serialize(CP_XML_STREAM());
+			if (style_header_)			style_header_->serialize(CP_XML_STREAM());
 			
 			if (style_header_left_)		style_header_left_->serialize(CP_XML_STREAM());
 			if (style_header_first_)	style_header_first_->serialize(CP_XML_STREAM());

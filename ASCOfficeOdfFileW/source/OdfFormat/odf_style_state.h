@@ -46,7 +46,7 @@ public:
 	void add_child(office_element_ptr & child);
 /////////////////////////////////////////////////////////////////////////////////////////
 	void			set_name(std::wstring & name);
-	std::wstring &	get_name();
+	std::wstring 	get_name();
 
 	style_family & get_family();
 

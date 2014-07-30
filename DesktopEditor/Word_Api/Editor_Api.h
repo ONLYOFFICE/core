@@ -1,0 +1,6 @@
+﻿#ifndef _BUILD_EDITOR_API_CROSSPLATFORM_H_
+#define _BUILD_EDITOR_API_CROSSPLATFORM_H_
+
+#include "./Editor_Defines.h"
+
+#endif //_BUILD_EDITOR_API_CROSSPLATFORM_H_

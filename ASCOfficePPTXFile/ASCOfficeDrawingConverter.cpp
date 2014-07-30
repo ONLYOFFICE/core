@@ -2533,18 +2533,21 @@ HRESULT CAVSOfficeDrawingConverter::GetThemeBinary(BSTR bsThemeFilePath, SAFEARR
 	OOX::CPath oPath = m_strCurrentRelsPath;
 	smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme(oPath, oFileMap);
 
-	m_oBinaryWriter.ClearNoAttack();
+	//m_oBinaryWriter.ClearNoAttack();
+	ULONG lOldPos = m_oBinaryWriter.GetPosition();
 	m_oBinaryWriter.m_oCommon.CheckFontPicker();
 	pTheme->toPPTY(&m_oBinaryWriter);
 
-	ULONG lBinarySize = m_oBinaryWriter.GetPosition();
+	ULONG lBinarySize = m_oBinaryWriter.GetPosition() - lOldPos;
 	SAFEARRAY* pArray = SafeArrayCreateVector(VT_UI1, lBinarySize);
 	
 	BYTE* pDataD = (BYTE*)pArray->pvData;
-	BYTE* pDataS = m_oBinaryWriter.GetBuffer();
+	BYTE* pDataS = m_oBinaryWriter.GetBuffer() + lOldPos;
 	memcpy(pDataD, pDataS, lBinarySize);
 
 	*ppBinary = pArray;
+
+	m_oBinaryWriter.SetPosition(lOldPos);
 
 	m_oBinaryWriter.ThemeDoc = pTheme.smart_dynamic_cast<PPTX::FileContainer>();
 	//m_oBinaryWriter.ThemeDoc.reset();
@@ -3084,7 +3087,8 @@ HRESULT CAVSOfficeDrawingConverter::GetTxBodyBinary(BSTR bsXml, SAFEARRAY** ppBi
 	
 	PPTX::Logic::TxBody oTxBody(oNode);
 
-	m_oBinaryWriter.ClearNoAttack();
+	//m_oBinaryWriter.ClearNoAttack();
+	ULONG lOldPos = m_oBinaryWriter.GetPosition();
 	m_oBinaryWriter.m_oCommon.CheckFontPicker();
 	//m_oBinaryWriter.m_oCommon.m_pNativePicker->Init(m_strFontDirectory);
 
@@ -3092,17 +3096,19 @@ HRESULT CAVSOfficeDrawingConverter::GetTxBodyBinary(BSTR bsXml, SAFEARRAY** ppBi
 
 	if (NULL != ppBinary)
 	{
-		ULONG lBinarySize = m_oBinaryWriter.GetPosition();
+		ULONG lBinarySize = m_oBinaryWriter.GetPosition() - lOldPos;
 		SAFEARRAY* pArray = SafeArrayCreateVector(VT_UI1, lBinarySize);
 		
 		BYTE* pDataD = (BYTE*)pArray->pvData;
-		BYTE* pDataS = m_oBinaryWriter.GetBuffer();
+		BYTE* pDataS = m_oBinaryWriter.GetBuffer() + lOldPos;
 		memcpy(pDataD, pDataS, lBinarySize);
 
 		*ppBinary = pArray;
 	}
 
-	m_oBinaryWriter.ClearNoAttack();
+	m_oBinaryWriter.SetPosition(lOldPos);
+
+	//m_oBinaryWriter.ClearNoAttack();
 	return S_OK;
 }
 
@@ -3208,21 +3214,25 @@ xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"");
 	if (NULL == pWritingElem)
 		return S_FALSE;
 
-	m_oBinaryWriter.ClearNoAttack();
+	//m_oBinaryWriter.ClearNoAttack();
 	m_oBinaryWriter.m_oCommon.CheckFontPicker();
+
+	ULONG lOldPos = m_oBinaryWriter.GetPosition();
 
 	m_oBinaryWriter.WriteRecord1(0, *pWritingElem);
 	
-	ULONG lBinarySize = m_oBinaryWriter.GetPosition();
+	ULONG lBinarySize = m_oBinaryWriter.GetPosition() - lOldPos;
 	SAFEARRAY* pArray = SafeArrayCreateVector(VT_UI1, lBinarySize);
 	
 	BYTE* pDataD = (BYTE*)pArray->pvData;
-	BYTE* pDataS = m_oBinaryWriter.GetBuffer();
+	BYTE* pDataS = m_oBinaryWriter.GetBuffer() + lOldPos;
 	memcpy(pDataD, pDataS, lBinarySize);
 
 	*ppBinary = pArray;
 	
 	RELEASEOBJECT(pWritingElem);
+
+	m_oBinaryWriter.SetPosition(lOldPos);
 
 	return S_OK;	
 }

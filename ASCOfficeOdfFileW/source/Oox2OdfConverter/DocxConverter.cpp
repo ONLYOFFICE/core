@@ -160,6 +160,11 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 			OOX::Logic::CSdt* pP= static_cast<OOX::Logic::CSdt*>(oox_unknown);
 			convert(pP);
 		}break;
+		case OOX::et_w_fldSimple:	
+		{
+			OOX::Logic::CFldSimple* pFldS= static_cast<OOX::Logic::CFldSimple*>(oox_unknown);
+			convert(pFldS);
+		}break;
 		case OOX::et_w_r:
 		{
 			OOX::Logic::CRun* pRun= static_cast<OOX::Logic::CRun*>(oox_unknown);
@@ -437,6 +442,22 @@ void DocxConverter::convert(OOX::Logic::CFldChar	*oox_fld)
 		if (oox_fld->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeEnd)		odt_context->end_field();
 	}
 
+}
+void DocxConverter::convert(OOX::Logic::CFldSimple	*oox_fld)
+{
+	if (oox_fld == NULL) return;
+
+	//SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_oDirty;
+	//SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_oFldLock;
+
+	odt_context->start_field();
+		if (oox_fld->m_sInstr.IsInit())	odt_context->set_field_instr(string2std_string(oox_fld->m_sInstr.get2()));
+
+		for (long i=0; i< oox_fld->m_arrItems.GetSize(); i++)
+		{
+			convert(oox_fld->m_arrItems[i]);
+		}
+	odt_context->end_field();
 }
 void DocxConverter::convert(OOX::Logic::CInstrText	*oox_instr)
 {
@@ -1307,6 +1328,8 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 
 	odt_context->start_drawings();
 	odt_context->drawing_context()->set_anchor(odf::anchor_type::AsChar); //??? перекрытие 
+	//odt_context->drawing_context()->set_overlap(true);
+	//odt_context->drawing_context()->set_wrap_style(odf::style_wrap::Dynamic);
 			
 	if (oox_pic->m_oShapeGroup.IsInit())
 	{
@@ -1384,8 +1407,26 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 		}
 		else // and oox_pic->m_oShapeRect
 		{
-			odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);			
-				OoxConverter::convert(oox_pic->m_oShape.GetPointer()); 			
+			bool bSet = false;
+			if (oox_pic->m_oShape.IsInit())
+			{
+				OOX::Vml::SptType sptType = static_cast<OOX::Vml::SptType>(oox_pic->m_oShape->m_oSpt.GetValue());
+				if (sptType != OOX::Vml::SptType::sptNotPrimitive)
+				{
+					odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
+					bSet = true;
+				}
+				else if (oox_pic->m_oShape->m_oConnectorType.GetValue() != SimpleTypes::connectortypeNone)
+				{
+					odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeStraightConnector1);
+					bSet = true;
+				}
+			}
+			if (!bSet)
+			{
+				odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);			
+			}
+			OoxConverter::convert(oox_pic->m_oShape.GetPointer()); 			
 			odf_context()->drawing_context()->end_shape(); 
 		}
 		odf_context()->drawing_context()->end_drawing();
@@ -1445,9 +1486,6 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 		else
 			odt_context->drawing_context()->set_horizontal_pos(SimpleTypes::alignhLeft);
 	}
-	//if (oox_anchor->m_oWrapNone.IsInit())
-	//{
-	//}
 	if (oox_anchor->m_oWrapSquare.IsInit())
 	{
 		if (oox_anchor->m_oWrapSquare->m_oWrapText.IsInit() && oox_anchor->m_oWrapSquare->m_oWrapText->GetValue() == SimpleTypes::wraptextLargest)
@@ -1455,19 +1493,19 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 		else	
 			odt_context->drawing_context()->set_wrap_style(odf::style_wrap::Parallel);
 	}	
-	if (oox_anchor->m_oWrapThrough.IsInit())//style:wrap="run-through" draw:wrap-influence-on-position style:wrap-contour
+	else if (oox_anchor->m_oWrapThrough.IsInit())//style:wrap="run-through" draw:wrap-influence-on-position style:wrap-contour
 	{
 		odt_context->drawing_context()->set_wrap_style(odf::style_wrap::RunThrough);
 	}
-	if (oox_anchor->m_oWrapTight.IsInit())
+	else if (oox_anchor->m_oWrapTight.IsInit())
 	{
 		odt_context->drawing_context()->set_wrap_style(odf::style_wrap::Parallel);
 	}
-	if (oox_anchor->m_oWrapTopAndBottom.IsInit())
+	else if (oox_anchor->m_oWrapTopAndBottom.IsInit())
 	{
 		odt_context->drawing_context()->set_wrap_style(odf::style_wrap::Parallel);
 	}
-	if (oox_anchor->m_oAllowOverlap.IsInit())
+	else if (oox_anchor->m_oAllowOverlap.IsInit())
 	{
 		odt_context->drawing_context()->set_overlap(oox_anchor->m_oAllowOverlap->ToBool());
 	}

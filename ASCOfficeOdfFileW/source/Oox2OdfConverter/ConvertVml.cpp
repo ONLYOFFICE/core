@@ -100,6 +100,7 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style)
 			break;
 		}
 	}
+	if (height_pt == 0) height_pt = -1;
 	odf_context()->drawing_context()->set_drawings_rect(-1, -1, width_pt, height_pt);
 }
 void OoxConverter::convert(OOX::Vml::CShape *vml_shape)
@@ -143,9 +144,13 @@ void OoxConverter::convert(OOX::Vml::CImageData *vml_image_data)
 
 void OoxConverter::convert(OOX::Vml::CArc *vml_arc)
 {
+	if (vml_arc == NULL) return;
+
+	convert(vml_arc->m_oStyle.GetPointer());
 }
 void OoxConverter::convert(OOX::Vml::CBackground *vml_background)
 {
+	if (vml_background == NULL) return;
 }
 
 void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
@@ -166,24 +171,45 @@ void OoxConverter::convert(OOX::Vml::COval	*vml_oval)
 {
 	if (vml_oval == NULL) return;
 	
-
 	convert(vml_oval->m_oStyle.GetPointer());
 	
 }
 void OoxConverter::convert(OOX::Vml::CPath	*vml_path)
 {
+	if (vml_path == NULL) return;
+	
+	//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oArrowOk;
+	//nullable<CString>                                         m_oConnectAngles;
+	//nullable<CString>                                         m_oConnectLocs;
+	//SimpleTypes::CConnectType<SimpleTypes::connecttypeNone>   m_oConnectType;
+	//SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oExtrusionOk;
+	//SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oFillOk;
+	//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oGradientShapeOk;
+	//nullable<CString>                                         m_oId;
+	//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oInsetPenOk;
+	//SimpleTypes::Vml::CVml_Vector2D_Units                     m_oLimo;
+	//SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oShadowOk;
+	//SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oStrokeOk;
+	//nullable<SimpleTypes::Vml::CVml_Polygon2D>                m_oTextBoxRect;
+	//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oTextPathOk;
+	//nullable<SimpleTypes::Vml::CVmlPath>                      m_oV;
+
+	if (vml_path->m_oV.IsInit())
+	{
+	}
 }
 void OoxConverter::convert(OOX::Vml::CPolyLine	*vml_polyline)
 {
+	if (vml_polyline == NULL) return;
+	
+	convert(vml_polyline->m_oStyle.GetPointer());
 }
 void OoxConverter::convert(OOX::Vml::CRect	*vml_rect)
 {
 	if (vml_rect == NULL) return;
 	
 	
-	convert(vml_rect->m_oStyle.GetPointer());
-	
-	
+	convert(vml_rect->m_oStyle.GetPointer());	
 }
 
 void OoxConverter::convert(OOX::Vml::CRoundRect	*vml_roundrect)
@@ -196,6 +222,8 @@ void OoxConverter::convert(OOX::Vml::CRoundRect	*vml_roundrect)
 void OoxConverter::convert(OOX::Vml::CCurve	*vml_curve)
 {
 	if (vml_curve == NULL) return;
+
+	convert(vml_curve->m_oStyle.GetPointer());
 }
 void OoxConverter::convert(OOX::Vml::CShadow *vml_shadow)
 {
@@ -203,7 +231,7 @@ void OoxConverter::convert(OOX::Vml::CShadow *vml_shadow)
 	if (vml_shadow->m_oOn.GetValue() == false) return;
 
 	std::wstring hexColor = string2std_string(vml_shadow->m_oColor.ToString());
-	_CP_OPT(double) opacity = vml_shadow->m_oOpacity.GetValue();
+	_CP_OPT(double) opacity = 100 - 100 * vml_shadow->m_oOpacity.GetValue();
 
 	double offset_x = vml_shadow->m_oOffset.IsXinPoints() ? vml_shadow->m_oOffset.GetX() : -1;
 	double offset_y = vml_shadow->m_oOffset.IsYinPoints() ? vml_shadow->m_oOffset.GetY() : -1;
@@ -231,7 +259,7 @@ void OoxConverter::convert(OOX::Vml::CStroke *vml_stroke)
 	if (hexColor.length() < 1)hexColor = L"000000";
 	odf_context()->drawing_context()->set_solid_fill(hexColor);
 
-	odf_context()->drawing_context()->set_opacity(vml_stroke->m_oOpacity.GetValue());
+	odf_context()->drawing_context()->set_opacity(100 - vml_stroke->m_oOpacity.GetValue() * 100);
 	odf_context()->drawing_context()->set_line_width(vml_stroke->m_oWeight.GetValue());
 
 	switch(vml_stroke->m_oStartArrow.GetValue())
@@ -294,6 +322,7 @@ void OoxConverter::convert(OOX::Vml::CTextbox *vml_textbox)
 }
 void OoxConverter::convert(OOX::Vml::CTextPath *vml_textpath)
 {
+	if (vml_textpath == NULL) return;
 }
 
 void OoxConverter::convert(OOX::VmlWord::CWrap	*vml_wrap)

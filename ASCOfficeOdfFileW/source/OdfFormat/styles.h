@@ -217,6 +217,7 @@ public:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_opacity);
+
 /// \class  style_draw_fill_image
 class draw_fill_image : public office_element_impl<draw_fill_image>
 {
@@ -239,10 +240,34 @@ public:
     virtual void add_child_element(office_element_ptr & child)
 		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm);
-
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_fill_image);
+
+/// \class  style_draw_marker
+class draw_marker : public office_element_impl<draw_marker>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStyleDrawMarker;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	std::wstring get_style_name(){return draw_name_.get_value_or(L"");}
+	
+	_CP_OPT(std::wstring)		svg_viewBox_;
+	_CP_OPT(std::wstring)		svg_d_;
+
+ 	_CP_OPT(std::wstring)		draw_name_;
+	_CP_OPT(std::wstring)		draw_display_name_;
+
+    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element(office_element_ptr & child)
+		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
+	virtual void serialize(std::wostream & strm);
+};
+CP_REGISTER_OFFICE_ELEMENT2(draw_marker);
 /////////////////////////////////////////////////////////////////////////////////////////////////
 class style;
 typedef shared_ptr<style>::Type style_ptr;

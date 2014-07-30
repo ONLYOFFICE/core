@@ -29,6 +29,7 @@ odf_text_context::odf_text_context(odf_conversion_context *odf_context)
 	text_properties_ = NULL;
 
 	current_outline_ = 0;
+	in_field_ = false;
 }
 odf_text_context::~odf_text_context()
 {
@@ -202,6 +203,7 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 		if (h)p->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(parent_paragraph_style_);	
 	}
 	if (paragraph_properties_)paragraph_properties_->content().fo_break_before_ = need_break_;
+	need_break_ = boost::none;
 	
 	odf_element_state state={elm,  style_name, style_elm,level};
 	text_elements_list_.push_back(state);
@@ -219,7 +221,7 @@ void odf_text_context::end_paragraph()
 		current_level_.pop_back();
 	}
 	paragraph_properties_ = NULL;
-	need_break_ = boost::none;
+	//need_break_ = boost::none;
 }
 
 void odf_text_context::start_element(office_element_ptr & elm, office_element_ptr style_elm ,std::wstring style_name)
@@ -298,6 +300,36 @@ void odf_text_context::end_span()
 	text_properties_ = NULL;
 }
 
+void odf_text_context::start_field(int type)
+{
+	if (single_paragraph_ == true) return;
+
+	office_element_ptr elm;
+	if (type == 2)
+	{
+		create_element(L"text", L"page-number", elm, odf_context_);
+		text_page_number *page_numb = dynamic_cast<text_page_number*>(elm.get());
+		if (page_numb)
+		{
+			page_numb->text_select_page_ = L"current";
+		}	
+	}
+	if (elm)
+	{
+		in_field_ = true;
+		start_element(elm);
+	}
+}
+
+void odf_text_context::end_field()
+{
+	if (single_paragraph_ == true) return;
+	if (in_field_ == false) return;
+	
+	end_element();
+	in_field_ = false;
+}
+
 void odf_text_context::set_outline_level(int level)
 {
 	current_outline_ = level;
@@ -332,49 +364,21 @@ void odf_text_context::add_tab()
 	if (current_level_.size()>0)
 		current_level_.back().elm->add_child_element(elm);
 }
-void odf_text_context::add_page_break()
-{
-	//office_element_ptr elm;
-	//create_element(L"text", L"soft-page-break", elm, odf_context_);	
-	//
-	//if (current_level_.size()>0)			
-	//{ 	
-	//	text_p* para = NULL;
-	//	//http://docs.oasis-open.org/office/v1.2/os/OpenDocument-v1.2-os-part1.html#__RefHeading__1415190_253892949
-	//	//нихере не работает !! в span, ... приходится генерить разрыв вручную !!
-	//	if (para = dynamic_cast<text_p*>(current_level_.back().elm.get()))
-	//	{
-	//		end_paragraph();
-	//	}			
-	//	current_level_.back().elm->add_child_element(elm);
-
-	//	if (para)
-	//	{
-	//		bool styled = para->paragraph_.paragraph_attrs_.text_style_name_ ? true : false;
-	//		start_paragraph(styled);
-	//	}
-	//}
-}
 void odf_text_context::add_break(int type, int clear)
 {
 		//brclearAll   = 0,
 		//brclearLeft  = 1,
 		//brclearNone  = 2,
 		//brclearRight = 3
-
-		//brtypeColumn       = 0,
-		//brtypePage         = 1,
-		//brtypeTextWrapping = 2
-
-	if (type == 0)
+	if (type == 0)//brtypeColumn 
 	{
 		need_break_= fo_break(fo_break::Column);
 	}
-	else if (type == 1)
+	else if (type == 1)//brtypePage
 	{
 		need_break_ = fo_break(fo_break::Page);
 	}
-	else 
+	else //brtypeTextWrapping
 	{
 		office_element_ptr elm;
 		create_element(L"text", L"line-break", elm, odf_context_);

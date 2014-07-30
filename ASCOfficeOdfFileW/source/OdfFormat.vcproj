@@ -1348,11 +1348,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\OdfFormat\shapes\oox_shapeCurvedArrows.h"
+				RelativePath=".\OdfFormat\Shapes\oox_shapeConnectors.h"
 				>
 			</File>
 			<File
-				RelativePath=".\OdfFormat\shapes\oox_shapeCurvedConnectors.h"
+				RelativePath=".\OdfFormat\shapes\oox_shapeCurvedArrows.h"
 				>
 			</File>
 			<File

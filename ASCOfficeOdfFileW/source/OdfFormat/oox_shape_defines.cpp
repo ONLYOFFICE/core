@@ -10,6 +10,7 @@
 #include "Shapes\oox_shapeCharts.h"
 #include "Shapes\oox_shapePrimitives.h"
 #include "Shapes\oox_shapeRibbons.h"
+#include "Shapes\oox_shapeConnectors.h"
 
 #include "..\..\..\Common\DocxFormat\Source\Common\SimpleTypes_Drawing.h"
 
@@ -35,6 +36,8 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 	case SimpleTypes::shapetypeStar12:			return boost::make_shared<oox_shape_star12>();
 	case SimpleTypes::shapetypeStar16:			return boost::make_shared<oox_shape_star16>();
 	case SimpleTypes::shapetypeStar32:			return boost::make_shared<oox_shape_star32>();
+
+	//case SimpleTypes::shapetypeStraightConnector1: return boost::make_shared<oox_shape_straightConnector1>();
 
 	default:
 		return boost::make_shared<oox_shape>();

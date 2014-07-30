@@ -53,6 +53,9 @@ public:
 	_CP_OPT(marker_style)				draw_marker_end_;
 	_CP_OPT(marker_style)				draw_marker_start_;
 
+	_CP_OPT(length)						draw_marker_start_width_;
+	_CP_OPT(length)						draw_marker_end_width_;
+
 	_CP_OPT(text_align)					draw_textarea_horizontal_align_;
 	_CP_OPT(vertical_align)				draw_textarea_vertical_align_;
 

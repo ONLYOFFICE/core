@@ -122,10 +122,12 @@ public:
 		
 		void set_line_head(int type, int len, int width);
 		void set_line_tail(int type, int len, int width);
+
+		std::wstring add_marker_style(int type);
 	void end_line_properies();
 	
-	void start_shadow_properies();
-	void end_shadow_properies();
+	//void start_shadow_properies();
+	//void end_shadow_properies();
 // пока одной функией ..
 	void set_shadow(int type, std::wstring hexColor, _CP_OPT(double) opacity, double dist_pt, double dist_pt_y = -1);
 

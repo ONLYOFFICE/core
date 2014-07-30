@@ -384,11 +384,10 @@ void text_ruby::add_text(const std::wstring & Text)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-//void common_field_fixed_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
-//{
-//    CP_XML_ATTR_OPT(L"text:fixed", text_fixed_);
-//}
-
+void common_field_fixed_attlist::serialize(CP_ATTR_NODE)
+{
+    CP_XML_ATTR_OPT(L"text:fixed", text_fixed_);
+}
 // text:title
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * text_title::ns = L"text";
@@ -462,10 +461,12 @@ void text_page_number::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-			//    //text:select-page
-			//	//common-field-num-format-attlist"/> ----	//style:num-format="1"/>
-			//	//common-field-fixed-attlist"/>
-			//	//text:page-adjust="1"    
+			common_num_format_attlist_.serialize(CP_GET_XML_NODE());
+			common_field_fixed_attlist_.serialize(CP_GET_XML_NODE());
+
+			CP_XML_ATTR_OPT(L"text:page-adjust",text_page_adjust_);
+			CP_XML_ATTR_OPT(L"text:select-page",text_select_page_);
+			
 			BOOST_FOREACH(const office_element_ptr & elm, text_)
 			{
 				elm->serialize(CP_XML_STREAM());
@@ -501,6 +502,8 @@ void text_page_count::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
+			common_field_fixed_attlist_.serialize(CP_GET_XML_NODE());
+
 			BOOST_FOREACH(const office_element_ptr & elm, text_)
 			{
 				elm->serialize(CP_XML_STREAM());
@@ -536,9 +539,8 @@ void text_date::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-			//	CP_XML_ATTR_OPT(L"style:data-style-name", style_data_style_name_);
-			//    CP_XML_ATTR_OPT(L"text:fixed", text_fixed_);
-			//    CP_XML_ATTR_OPT(L"text:date-value", text_date_value_);   
+			common_field_fixed_attlist_.serialize(CP_GET_XML_NODE());
+
 			BOOST_FOREACH(const office_element_ptr & elm, text_)
 			{
 				elm->serialize(CP_XML_STREAM());
@@ -573,9 +575,9 @@ void text_time::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-			CP_XML_ATTR_OPT(L"style:data-style-name", style_data_style_name_);
+			common_field_fixed_attlist_.serialize(CP_GET_XML_NODE());
 
-			CP_XML_ATTR_OPT(L"text:fixed", text_fixed_);
+			CP_XML_ATTR_OPT(L"style:data-style-name", style_data_style_name_);
 			CP_XML_ATTR_OPT(L"text:time-value", text_time_value_);
 			
 			BOOST_FOREACH(const office_element_ptr & elm, text_)
@@ -615,6 +617,8 @@ void text_file_name::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
+			common_field_fixed_attlist_.serialize(CP_GET_XML_NODE());
+			
 			BOOST_FOREACH(const office_element_ptr & elm, text_)
 			{
 				elm->serialize(CP_XML_STREAM());

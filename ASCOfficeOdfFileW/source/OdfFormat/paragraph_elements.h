@@ -399,7 +399,7 @@ class common_field_fixed_attlist
 {
 public:
 
-    _CP_OPT(bool) text_fixed_;
+    _CP_OPT(Bool) text_fixed_;
 
 	void serialize(CP_ATTR_NODE);   
     
@@ -471,6 +471,11 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
+	common_num_format_attlist		common_num_format_attlist_;
+	common_field_fixed_attlist		common_field_fixed_attlist_;
+
+	_CP_OPT(int)			text_page_adjust_;
+	_CP_OPT(std::wstring)	text_select_page_;
 
     virtual void add_text(const std::wstring & Text);
 
@@ -498,6 +503,8 @@ public:
 
     virtual void add_text(const std::wstring & Text);
 
+	common_field_fixed_attlist common_field_fixed_attlist_;
+private:
     office_element_ptr_array text_;
     
 };
@@ -522,9 +529,9 @@ public:
 
     virtual void add_text(const std::wstring & Text);
 
-	_CP_OPT(std::wstring)		style_data_style_name_;
+	common_field_fixed_attlist		common_field_fixed_attlist_;
 
-	_CP_OPT(bool)				text_fixed_;
+	_CP_OPT(std::wstring)		style_data_style_name_;
 	_CP_OPT(std::wstring)		text_date_value_;//with format
 
     office_element_ptr_array text_;
@@ -549,14 +556,14 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-
 	virtual void add_text(const std::wstring & Text);
 
-	_CP_OPT(std::wstring)		style_data_style_name_;
-	_CP_OPT(bool)				text_fixed_;
-	_CP_OPT(std::wstring)		text_time_value_;//with format
+	common_field_fixed_attlist		common_field_fixed_attlist_;
 
-    office_element_ptr_array	text_;
+	_CP_OPT(std::wstring)			style_data_style_name_;
+	_CP_OPT(std::wstring)			text_time_value_;//with format
+
+    office_element_ptr_array		text_;
     
 };
 
@@ -579,6 +586,8 @@ public:
     virtual void serialize(std::wostream & _Wostream);
 
     virtual void add_text(const std::wstring & Text);
+
+	common_field_fixed_attlist		common_field_fixed_attlist_;
 
 private:
     // TODO: attributes

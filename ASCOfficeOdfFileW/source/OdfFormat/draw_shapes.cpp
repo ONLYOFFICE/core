@@ -471,7 +471,7 @@ const wchar_t * draw_connector::name = L"connector";
 
 void draw_connector::serialize(std::wostream & _Wostream)
 {
-	sub_type_ = 5; //коннектор - линия, если ломаная (ниже определяется) - то путь
+	sub_type_ = 9; //коннектор - линия, если ломаная (ниже определяется) - то путь
 
 	reset_svg_path();
 

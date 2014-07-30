@@ -221,7 +221,6 @@ void default_style::serialize(std::wostream & strm)
 const wchar_t * draw_fill_image::ns = L"draw";
 const wchar_t * draw_fill_image::name = L"fill-image";
 
-
 void draw_fill_image::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
@@ -236,6 +235,28 @@ void draw_fill_image::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"draw:display_name",draw_display_name_);
 			
 			xlink_attlist_.serialize(CP_GET_XML_NODE());
+		}
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * draw_marker::ns = L"draw";
+const wchar_t * draw_marker::name = L"marker";
+
+void draw_marker::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+{
+    CP_NOT_APPLICABLE_ELM();
+}
+void draw_marker::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+ 			CP_XML_ATTR_OPT(L"draw:name",	draw_name_);
+			CP_XML_ATTR_OPT(L"draw:display_name",draw_display_name_);
+			
+			CP_XML_ATTR_OPT(L"svg:d",	svg_d_);
+			CP_XML_ATTR_OPT(L"svg:viewBox",	svg_viewBox_);
 		}
 	}
 }

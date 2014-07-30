@@ -294,6 +294,13 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 
         }
 	}
+
+	res1 = instr.find(L"PAGE");
+	if (res1 >=0)
+	{
+		current_field_.type = 2;
+	}
+
 }
 void odt_conversion_context::start_field()
 {
@@ -383,6 +390,7 @@ void odt_conversion_context::end_field()
 	if (current_field_.enabled && current_field_.started)	
 	{
 		if (current_field_.type == 1) end_hyperlink();
+		else text_context()->end_field();
 	}
 	current_field_.enabled = false;
 	current_field_.started = false;
@@ -429,16 +437,29 @@ void odt_conversion_context::start_run(bool styled)
 	if (is_hyperlink_ && text_context_.size() > 0) return;
 
 	text_context()->start_span(styled);
+
+	if (current_field_.started== false && current_field_.type >1 && current_field_.enabled ==true)//поле стартуется в span - нужно для сохранения стиля
+	{
+		text_context()->start_field(current_field_.type);
+		current_field_.started = true;
+	}
+
 }
 void odt_conversion_context::end_run()
 {
 	if (is_hyperlink_ && text_context_.size() > 0) return;
 
+	if (current_field_.started== true && current_field_.type >1 && current_field_.enabled ==true)
+	{	
+		end_field();
+	}
+
 	text_context()->end_span();
 
-	if (current_field_.started== false && current_field_.type >0 && current_field_.enabled ==true)
+	if (current_field_.started== false && current_field_.type == 1 && current_field_.enabled ==true)
 	{
-		if (current_field_.type == 1)start_hyperlink(current_field_.value);
+		//поле с "выкрутасами" - короче ... совсем не поле ввода
+		start_hyperlink(current_field_.value);
 		current_field_.started = true;
 	}
 }

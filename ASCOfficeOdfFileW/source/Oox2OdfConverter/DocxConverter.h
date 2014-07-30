@@ -32,6 +32,7 @@ namespace OOX
 		class CPBdr;
 		class CHyperlink;
 		class CFldChar;
+		class CFldSimple;
 		class CInstrText;
 		class CCommentRangeStart;
 		class CCommentRangeEnd;
@@ -117,6 +118,7 @@ namespace Oox2Odf
 		void convert(ComplexTypes::Word::CFramePr		*oox_frame_pr,			odf::style_paragraph_properties *paragraph_properties);
 		void convert(OOX::Logic::CRunProperty			*oox_run_prop,			odf::style_text_properties		*text_properties);
 		void convert(ComplexTypes::Word::CShading		*oox_shading,			odf::style_text_properties		*text_properties );
+		void convert(OOX::Logic::CFldSimple				*oox_fld);
 		void convert(OOX::Logic::CFldChar				*oox_fld);
 		void convert(OOX::Logic::CInstrText				*oox_instr);
 		void convert(OOX::Logic::CText					*oox_text);

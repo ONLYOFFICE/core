@@ -51,14 +51,18 @@ public:
 	void start_element(office_element_ptr & elm, office_element_ptr style_elm = office_element_ptr(),std::wstring style_name = L"");
     void end_element();
  	
-	void start_span(bool styled = false); 
+	void start_field(int type);
+	void end_field();
+
+	void start_span	(bool styled = false); 
     void end_span();
+
 		
 	void add_break(int type, int clear);
-	void add_page_break();
 	void add_tab();
 
 	int current_outline_;
+	bool in_field_;
 
 	std::vector<odf_element_state>	current_level_;//посто€нно мен€ющийс€ список уровней наследовани€
 	std::vector<odf_element_state>	text_elements_list_;//параграфы, списки , ... 

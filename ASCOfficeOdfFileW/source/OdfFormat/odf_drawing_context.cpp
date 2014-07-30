@@ -516,7 +516,7 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 	odf_element_state state={draw_elm, style_name, style_shape_elm, level};
 
 	current_drawing_state_.elements_.push_back(state);
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 }
 void odf_drawing_context::start_shape(int type)
@@ -551,16 +551,40 @@ void odf_drawing_context::end_shape()
 			path->draw_path_attlist_.svg_viewbox_ = impl_->current_drawing_state_.view_box_;
 	}
 ////////////////////////////////////////////////////////////////////////////////////
+	draw_connector* connector = dynamic_cast<draw_connector*>(impl_->current_level_.back().get());
+	if (connector)
+	{
+		if (!connector->draw_connector_attlist_.draw_type_) connector->draw_connector_attlist_.draw_type_ = L"line";
 
+		if (impl_->current_drawing_state_.svg_x_)connector->draw_line_attlist_.svg_x1_ = impl_->current_drawing_state_.svg_x_;
+		else connector->draw_line_attlist_.svg_x1_ = length(0,length::cm);
+
+		if (impl_->current_drawing_state_.svg_y_)connector->draw_line_attlist_.svg_y1_ = impl_->current_drawing_state_.svg_y_;
+		else connector->draw_line_attlist_.svg_y1_ = length(0,length::cm);
+
+		connector->draw_line_attlist_.svg_x2_ = connector->draw_line_attlist_.svg_x1_;
+		connector->draw_line_attlist_.svg_y2_ = connector->draw_line_attlist_.svg_y1_;
+		
+		if (impl_->current_drawing_state_.svg_width_)
+			connector->draw_line_attlist_.svg_x2_ = connector->draw_line_attlist_.svg_x2_.get() + impl_->current_drawing_state_.svg_width_.get();
+		
+		if (impl_->current_drawing_state_.svg_height_)
+			connector->draw_line_attlist_.svg_y2_ = connector->draw_line_attlist_.svg_y2_.get() + impl_->current_drawing_state_.svg_height_.get();
+	}
 ////////////////////////////////////////////////////////////////////////////////////////////
 	draw_line* line = dynamic_cast<draw_line*>(impl_->current_level_.back().get());
 	if (line)
 	{
 		line->draw_line_attlist_.svg_x1_ = impl_->current_drawing_state_.svg_x_;
 		line->draw_line_attlist_.svg_y1_ = impl_->current_drawing_state_.svg_y_;
-		line->draw_line_attlist_.svg_x2_ = impl_->current_drawing_state_.svg_x_.get() + impl_->current_drawing_state_.svg_width_.get();
-		line->draw_line_attlist_.svg_y2_ = impl_->current_drawing_state_.svg_y_.get() + impl_->current_drawing_state_.svg_height_.get();
+		
+		if (impl_->current_drawing_state_.svg_x_ && impl_->current_drawing_state_.svg_width_)
+			line->draw_line_attlist_.svg_x2_ = impl_->current_drawing_state_.svg_x_.get() + impl_->current_drawing_state_.svg_width_.get();
+		
+		if (impl_->current_drawing_state_.svg_y_ && impl_->current_drawing_state_.svg_height_)
+			line->draw_line_attlist_.svg_y2_ = impl_->current_drawing_state_.svg_y_.get() + impl_->current_drawing_state_.svg_height_.get();
 	}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 	draw_custom_shape* custom = dynamic_cast<draw_custom_shape*>(impl_->current_drawing_state_.elements_[0].elm.get());
 	if (custom)
@@ -717,14 +741,14 @@ void odf_drawing_context::end_line_properies()
 {
 	impl_->current_drawing_part_ = Unknown;
 }
-void odf_drawing_context::start_shadow_properies()
-{
-	impl_->current_drawing_part_ = Shadow;
-}
-void odf_drawing_context::end_shadow_properies()
-{
-	impl_->current_drawing_part_ = Unknown;
-}
+//void odf_drawing_context::start_shadow_properies()
+//{
+//	impl_->current_drawing_part_ = Shadow;
+//}
+//void odf_drawing_context::end_shadow_properies()
+//{
+//	impl_->current_drawing_part_ = Unknown;
+//}
 ////////////////////////////////////////////////////////////////////
 void odf_drawing_context::set_name(std::wstring  name)
 {
@@ -733,6 +757,7 @@ void odf_drawing_context::set_name(std::wstring  name)
 void odf_drawing_context::set_opacity(double percent_)
 {
 	if (!impl_->current_graphic_properties)return;
+	if (percent_ < 0.01) return;
 
 	switch(impl_->current_drawing_part_)
 	{
@@ -862,8 +887,8 @@ void odf_drawing_context::set_drawings_rect(double x_pt, double y_pt, double wid
 	impl_->width = width_pt;
 	impl_->height = height_pt;
 
-	if (width_pt >= 0) impl_->anchor_settings_.svg_height_	= length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
-	if (height_pt >= 0)impl_->anchor_settings_.svg_width_	= length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);	
+	if (height_pt >= 0) impl_->anchor_settings_.svg_height_	= length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
+	if (width_pt >= 0)	impl_->anchor_settings_.svg_width_	= length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);	
 }
 void odf_drawing_context::set_margin_left	(double valPt)
 {
@@ -1119,20 +1144,86 @@ void odf_drawing_context::set_line_width(double pt)
 	impl_->current_graphic_properties->content().svg_stroke_width_ = length(length(pt,length::pt).get_value_unit(length::cm),length::cm);
 }
 
-void odf_drawing_context::set_line_head(int type, int len, int width)
-{
-	if (!impl_->current_graphic_properties)return;
-	//создать стиль, привзать имена
-	
-	//impl_->current_graphic_properties->content().draw_marker_start_ = marker_style(marker_style::from_ms(type));
-}
 void odf_drawing_context::set_line_tail(int type, int len, int width)
 {
 	if (!impl_->current_graphic_properties)return;
 
-	//создать стиль, привзать имена
+	impl_->current_graphic_properties->content().draw_marker_start_ = add_marker_style(type);
 
-	//impl_->current_graphic_properties->content().draw_marker_end_ = marker_style(marker_style::from_ms(type));
+	switch(width)
+	{
+	case 0://lineendwidthLarge
+		impl_->current_graphic_properties->content().draw_marker_end_width_ = length(0.4,length::cm); break;
+	case 1://lineendwidthMedium
+		impl_->current_graphic_properties->content().draw_marker_end_width_ = length(0.3,length::cm); break;
+	case 2://lineendwidthSmall
+		impl_->current_graphic_properties->content().draw_marker_end_width_ = length(0.2,length::cm); break;
+	}
+}
+void odf_drawing_context::set_line_head(int type, int len, int width)
+{
+	if (!impl_->current_graphic_properties)return;
+	
+	impl_->current_graphic_properties->content().draw_marker_end_ = add_marker_style(type);
+
+	switch(width)
+	{
+	case 0://lineendwidthLarge
+		impl_->current_graphic_properties->content().draw_marker_start_width_ = length(0.4,length::cm); break;
+	case 1://lineendwidthMedium
+		impl_->current_graphic_properties->content().draw_marker_start_width_ = length(0.3,length::cm); break;
+	case 2://lineendwidthSmall
+		impl_->current_graphic_properties->content().draw_marker_start_width_ = length(0.2,length::cm); break;
+	}
+}
+std::wstring odf_drawing_context::add_marker_style(int type)
+{
+	if (type == 2) return L"";
+
+	std::wstring str_types [] = {L"ArrowMarker", L"DiamondMarker", L"None", L"OvalMarker", L"StealthMarker", L"TriangleMarker"};
+
+	style * style_=NULL;
+	if (impl_->styles_context_->find_odf_style(str_types[type],style_family::Marker,style_)) return str_types[type];
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+//	генерация типа маркера
+	odf::office_element_ptr marker_element;
+
+	odf::create_element(L"draw",L"marker", marker_element, impl_->odf_context_);
+	impl_->styles_context_->add_style(marker_element,false,true, style_family::Marker);
+	impl_->styles_context_->last_state()->set_name(str_types[type]);
+
+	draw_marker * marker = dynamic_cast<draw_marker *>(marker_element.get());
+	if (!marker) return L"";
+
+	marker->draw_name_ = str_types[type];
+	marker->draw_display_name_ = str_types[type]; ;
+
+	switch(type)
+	{
+	case 1:
+		marker->svg_d_ = L"M0 564l564 567 567-567-567-564z";
+		marker->svg_viewBox_ = L"0 0 1131 1131";
+		break;
+	case 3:
+		marker->svg_d_ = L"M462 1118l-102-29-102-51-93-72-72-93-51-102-29-102-13-105 13-102 29-106 51-102 72-89 93-72 102-50 102-34 106-9 101 9 106 34 98 50 93 72 72 89 51 102 29 106 13 102-13 105-29 102-51 102-72 93-93 72-98 51-106 29-101 13z";
+		marker->svg_viewBox_ = L"0 0 1131 1131";
+		break;
+	case 4:
+		marker->svg_d_ = L"M1013 1491l118 89-567-1580-564 1580 114-85 136-68 148-46 161-17 161 13 153 46z";
+		marker->svg_viewBox_ = L"0 0 1131 1580";
+		break;
+	case 5:
+		marker->svg_d_ = L"M1321 3493h-1321l702-3493z";
+		marker->svg_viewBox_ = L"0 0 1321 3493";
+		break;
+	case 0:
+	default:
+		marker->svg_d_ =L"M0 2108v17 17l12 42 30 34 38 21 43 4 29-8 30-21 25-26 13-34 343-1532 339 1520 13 42 29 34 39 21 42 4 42-12 34-30 21-42v-39-12l-4 4-440-1998-9-42-25-39-38-25-43-8-42 8-38 25-26 39-8 42z";
+		marker->svg_viewBox_ = L"0 0 1122 2243";
+	}
+
+	return str_types[type];
 }
 void odf_drawing_context::set_line_dash_preset(int style)
 {

@@ -33,6 +33,8 @@ void graphic_format_properties::serialize(std::wostream & _Wostream ,const wchar
 			CP_XML_ATTR_OPT(L"draw:stroke-dash",	draw_stroke_dash_); 
 			CP_XML_ATTR_OPT(L"draw:marker-start",	draw_marker_start_); 
 			CP_XML_ATTR_OPT(L"draw:marker-end",		draw_marker_end_); 
+			CP_XML_ATTR_OPT(L"draw:marker-start-width",		draw_marker_start_width_);
+			CP_XML_ATTR_OPT(L"draw:marker-end-width",		draw_marker_end_width_);
 			CP_XML_ATTR_OPT(L"svg:stroke-color",	svg_stroke_color_); 
 			CP_XML_ATTR_OPT(L"svg:stroke-width",	svg_stroke_width_);	
 			CP_XML_ATTR_OPT(L"svg:stroke-opacity",	svg_stroke_opacity_); 

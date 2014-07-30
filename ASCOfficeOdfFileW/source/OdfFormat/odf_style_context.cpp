@@ -68,7 +68,6 @@ void odf_style_context::create_style(std::wstring oox_name, style_family::type f
 	style_state_list_.back()->set_root(root);
 
 	style_state_list_.back()->style_oox_id_ = oox_id;
-	style_state_list_.back()->style_oox_name_ = oox_name;
 }
 
 void odf_style_context::add_style(office_element_ptr elm, bool automatic, bool root, style_family::type family)

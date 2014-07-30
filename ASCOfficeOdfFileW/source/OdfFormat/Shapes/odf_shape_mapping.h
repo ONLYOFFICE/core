@@ -178,7 +178,7 @@ static const _sh_typ Shape_Types_Mapping[] = // index === OOX::Drawing::EShapeTy
 	{	L""								,  7},			//	shapetypeStar6,
 	{	L""								,  7},			//	shapetypeStar7,
 	{	L"star8"						,  7},			//	shapetypeStar8,
-	{	L"mso-spt32"					,  7},			//	shapetypeStraightConnector1,
+	{	L"mso-spt32"					,  9},			//	shapetypeStraightConnector1,
 	{	L"striped-right-arrow"			,  7},			//	shapetypeStripedRightArrow,
 	{	L""								,  7},			//	shapetypeSun,
 	{	L""								,  7},			//	shapetypeSwooshArrow,

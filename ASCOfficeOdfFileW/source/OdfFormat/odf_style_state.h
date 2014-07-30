@@ -73,7 +73,8 @@ public:
 	//style_drawing_page_properties*	get_drawing_page_properties();
 	
 private:
-	std::wstring	style_oox_name_;
+	std::wstring	odf_style_name_;
+	std::wstring	oox_style_name_;
 
 //инфа дл€ описани€ €чеек
 	int				style_oox_id_;

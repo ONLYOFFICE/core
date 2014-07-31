@@ -48,6 +48,7 @@ namespace OOX
 		class CTcBorders;
 		class CTblBorders;
 		class CSdt;
+		class CBackground;
 
 	}
 
@@ -110,6 +111,7 @@ namespace Oox2Odf
 		void convert_comment	(int oox_comm_id);
 		void convert_hdr_ftr	(CString sId);
 
+		void convert(OOX::Logic::CBackground			*oox_background, int type);
 		void convert(OOX::Logic::CSdt					*oox_sdt);
 		void convert(OOX::Logic::CSectionProperty		*oox_section_pr, bool root = false);
 		void convert(OOX::Logic::CParagraph				*oox_paragraph);
@@ -169,11 +171,11 @@ namespace Oox2Odf
 		
 		bool convert(OOX::Logic::CTableCellProperties	*oox_table_cell_pr, int col = -1);
 		bool convert(OOX::Logic::CTableCellProperties	*oox_table_cell_pr,	odf::style_table_cell_properties	*table_cell_properties/*,odf::style_table_cell_properties	* table_cell_properties = NULL*/);
-		bool convert(OOX::Logic::CTableProperty			*oox_table_pr);
-		bool convert(OOX::Logic::CTableProperty			*oox_table_pr,			odf::style_table_properties		*table_properties);
+		bool convert(OOX::Logic::CTableProperty			*oox_table_pr, bool base_styled);
+		bool convert(OOX::Logic::CTableProperty			*oox_table_pr,		odf::style_table_properties		*table_properties);
 		void convert(OOX::Logic::CTableProperty			*oox_table_pr,		odf::style_table_cell_properties	*table_cell_properties);
 		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr);
-		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr,		odf::style_table_row_properties	*table_row_properties);
+		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr,	odf::style_table_row_properties	*table_row_properties);
 //--------------------------------------------------------------------------------
 		bool m_bKeepNextParagraph;
 	};

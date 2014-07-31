@@ -70,26 +70,10 @@ CString	DocxConverter::find_link_by_id (CString sId, int type)
 	if (oox_doc == NULL)return L"";
 		
 	CString ref;
-	smart_ptr<OOX::File> oFile = docx_document->GetDocument()->Find(sId);
 
-	if (oFile.IsInit())
+	if (ref.GetLength() < 1 && oox_current_child_document_spreadsheet)
 	{
-		if (type==1 && OOX::FileTypes::Image == oFile->type())
-		{
-			OOX::Image* pImage = (OOX::Image*)oFile.operator->();
-
-			ref = pImage->filename().GetPath();
-		}
-		if (type == 2 && OOX::FileTypes::HyperLink == oFile->type())
-		{
-			OOX::HyperLink* pHyperlink = (OOX::HyperLink*)oFile.operator->();
-
-			ref = pHyperlink->Uri().GetPath();
-		}
-	}
-	if (ref.GetLength() < 1 && oox_current_chart)
-	{
-		smart_ptr<OOX::File> oFile = oox_current_chart->Find(sId);
+		smart_ptr<OOX::File> oFile = oox_current_child_document_spreadsheet->Find(sId);
 		if (oFile.IsInit())
 		{		
 			if (type==1 && OOX::FileTypes::Image == oFile->type())
@@ -106,6 +90,42 @@ CString	DocxConverter::find_link_by_id (CString sId, int type)
 			}
 		}
 	}
+	if (ref.GetLength() < 1 && oox_current_child_document)
+	{
+		smart_ptr<OOX::File> oFile = oox_current_child_document->Find(sId);
+		if (oFile.IsInit())
+		{		
+			if (type==1 && OOX::FileTypes::Image == oFile->type())
+			{
+				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+
+				ref = pImage->filename().GetPath();
+			}
+			if (type==2 && oFile.IsInit() && OOX::FileTypes::Image == oFile->type())
+			{
+				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+
+				ref = pImage->filename().GetPath();
+			}
+		}
+	}
+	smart_ptr<OOX::File> oFile = docx_document->GetDocument()->Find(sId);
+	if (ref.GetLength() < 1 && oFile.IsInit())
+	{
+		if (type==1 && OOX::FileTypes::Image == oFile->type())
+		{
+			OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+
+			ref = pImage->filename().GetPath();
+		}
+		if (type == 2 && OOX::FileTypes::HyperLink == oFile->type())
+		{
+			OOX::HyperLink* pHyperlink = (OOX::HyperLink*)oFile.operator->();
+
+			ref = pHyperlink->Uri().GetPath();
+		}
+	}
+
 	return ref;
 }
 
@@ -140,8 +160,6 @@ void DocxConverter::convert_document()
 	const OOX::CDocument* document = docx_document->GetDocument();
 	if (!document)return;
 
-	convert(document->m_oBackground.GetPointer());//подложка
-	
 	for ( int nIndex = 0; nIndex < document->m_arrItems.GetSize(); nIndex++ )
 	{
 		convert(document->m_arrItems[nIndex]);
@@ -438,8 +456,9 @@ void DocxConverter::convert(OOX::Logic::CFldChar	*oox_fld)
 		//nullable<OOX::Logic::CFFData         > m_oFFData;
 	if (oox_fld->m_oFldCharType.IsInit())
 	{
-		if (oox_fld->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeBegin)	odt_context->start_field();
+		if (oox_fld->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeBegin)	odt_context->start_field(false);
 		if (oox_fld->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeEnd)		odt_context->end_field();
+		if (oox_fld->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeSeparate){}
 	}
 
 }
@@ -450,7 +469,7 @@ void DocxConverter::convert(OOX::Logic::CFldSimple	*oox_fld)
 	//SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_oDirty;
 	//SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_oFldLock;
 
-	odt_context->start_field();
+	odt_context->start_field(true);
 		if (oox_fld->m_sInstr.IsInit())	odt_context->set_field_instr(string2std_string(oox_fld->m_sInstr.get2()));
 
 		for (long i=0; i< oox_fld->m_arrItems.GetSize(); i++)
@@ -660,10 +679,10 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		odt_context->page_layout_context()->set_page_gutter(other);
 
 		convert(oox_section_pr->m_oPgMar->m_oFooter.GetPointer(), other);
-		odt_context->page_layout_context()->set_page_footer(other);
+		odt_context->page_layout_context()->set_footer_size(other);
 		
 		convert(oox_section_pr->m_oPgMar->m_oHeader.GetPointer(), other);
-		odt_context->page_layout_context()->set_page_header(other);
+		odt_context->page_layout_context()->set_header_size(other);
 	}
 	if (oox_section_pr->m_oPgBorders.IsInit())
 	{
@@ -709,6 +728,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 
 		//nullable<SimpleTypes::CDecimalNumber<>   > m_oCode;
 	}
+	convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 1);//подложка - вот в таком она месте :(, причЄм одна на все разделы, не как в оо
 			//nullable<ComplexTypes::Word::CTextDirection                  > m_oTextDirection;
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oRtlGutter;
 			//nullable<ComplexTypes::Word::CVerticalJc                     > m_oVAlign;
@@ -722,7 +742,10 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		odt_context->start_header(type);
 
 		if (oox_section_pr->m_arrHeaderReference[i].m_oId.IsInit())
+		{
 			convert_hdr_ftr(oox_section_pr->m_arrHeaderReference[i].m_oId->GetValue());
+			//convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 2);
+		}
 
 		odt_context->end_header_footer();
 	}
@@ -733,16 +756,15 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		odt_context->start_footer(type);
 
 		if (oox_section_pr->m_arrFooterReference[i].m_oId.IsInit())
+		{
 			convert_hdr_ftr(oox_section_pr->m_arrFooterReference[i].m_oId->GetValue());
+			//convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 3);
+		}
 
 		odt_context->end_header_footer();	
 	}
-	//master page create
-	// add colontitul
-	// style name master page -> 0-й элемент текщей цепочки параграфов
 //--------------------------------------------------------------------------------------------------------------------------------------------		
-	// то что относитс€ собственно к секци€м 
-
+	// то что относитс€ собственно к секци€м-разделам
 	if (!root)odt_context->add_section(continuous);
 
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBidi;
@@ -796,9 +818,29 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		if (root) odt_context->flush_section();
 	}
 
-
 	if (root)odt_context->page_layout_context()->set_current_master_page_base();
 }
+void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
+{
+	if (oox_background == NULL) return;
+
+	if (oox_background->m_oDrawing.IsInit())
+	{
+		//подложка
+	}
+	else
+	{
+		//цветова€ подложка
+		_CP_OPT(odf::color) color;
+		convert (	oox_background->m_oColor.GetPointer(), 
+					oox_background->m_oThemeColor.GetPointer(), 
+					oox_background->m_oThemeTint.GetPointer(), 
+					oox_background->m_oThemeShade.GetPointer(), color);
+
+		odt_context->set_background(color, type);
+	}
+}
+
 void DocxConverter::convert(ComplexTypes::Word::CFramePr *oox_frame_pr, odf::style_paragraph_properties * paragraph_properties)
 {
 	if (oox_frame_pr == NULL) return;
@@ -1612,7 +1654,13 @@ void DocxConverter::convert(OOX::Drawing::CChart * oox_chart)
 
 	if (oox_chart->m_oRId.IsInit())
 	{
-		smart_ptr<OOX::File> oFile = docx_document->GetDocument()->Find(oox_chart->m_oRId->GetValue());
+		smart_ptr<OOX::File> oFile;
+		
+		if (oox_current_child_document)
+			oFile = oox_current_child_document->Find(oox_chart->m_oRId->GetValue());
+		else
+			oFile = docx_document->GetDocument()->Find(oox_chart->m_oRId->GetValue());
+		
 		if (oFile.IsInit() && OOX::FileTypes::Chart == oFile->type())
 		{
 			OOX::Spreadsheet::CChartSpace* pChart = (OOX::Spreadsheet::CChartSpace*)oFile.operator->();
@@ -1627,12 +1675,14 @@ void DocxConverter::convert(OOX::Drawing::CChart * oox_chart)
 
 					OoxConverter::convert(pChart->m_oChartSpace.m_oSpPr.GetPointer());
 					
-					oox_current_chart = pChart;
+					oox_current_child_document_spreadsheet = dynamic_cast<OOX::Spreadsheet::IFileContainer*>(pChart);
+					
 					odf_context()->start_chart();
 						odf_context()->chart_context()->set_chart_size(width, height);
 						OoxConverter::convert(&pChart->m_oChartSpace);
 					odf_context()->end_chart();
-					oox_current_chart = NULL; // object???
+					
+					oox_current_child_document_spreadsheet = NULL; 
 
 				odt_context->drawing_context()->end_object();	
 				odt_context->drawing_context()->end_drawing();
@@ -1933,8 +1983,8 @@ void DocxConverter::convert_table_style(OOX::CStyle *oox_style)
 
 	if (oox_style->m_oTblPr.IsInit())
 	{
-		//odf::style_table_properties	* table_properties = odt_context->styles_context()->table_styles().get_table_properties();
-		//convert(oox_style->m_oTblPr.GetPointer(), table_properties);
+		odf::style_table_properties	* table_properties = odt_context->styles_context()->table_styles().get_table_properties();
+		convert(oox_style->m_oTblPr.GetPointer(), table_properties);
 		
 		//нужно проверить стоит ли отнаследоватьс€ от base_on 
 		
@@ -2123,10 +2173,14 @@ void DocxConverter::convert_hdr_ftr	(CString sId)
 	OOX::CHdrFtr * oox_hdr_ftr = docx_document->GetHeaderOrFooter(sId);
 	if (oox_hdr_ftr == NULL ) return;
 
+	oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(oox_hdr_ftr);
+
 	for ( int nIndex = 0; nIndex < oox_hdr_ftr->m_arrItems.GetSize(); nIndex++ )
 	{
 		convert(oox_hdr_ftr->m_arrItems[nIndex]);
 	}
+
+	oox_current_child_document  = NULL;
 }
 void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 {
@@ -2137,8 +2191,18 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 		odt_context->end_paragraph();
 		m_bKeepNextParagraph = false;
 	}
+	bool styled_table	= false;
+	bool in_frame		= false;
+	
+	if (oox_table->m_oTableProperties && (oox_table->m_oTableProperties->m_oTblStyle.IsInit() && oox_table->m_oTableProperties->m_oTblStyle->m_sVal.IsInit()))
+	{//настройка предустановленного стил€
+		std::wstring base_style_name = string2std_string(*oox_table->m_oTableProperties->m_oTblStyle->m_sVal);
 
-	bool in_frame = false;
+		styled_table = odt_context->styles_context()->table_styles().start_table(base_style_name);
+	}
+
+	convert(oox_table->m_oTableProperties, styled_table );	
+	
 	if(oox_table->m_oTableProperties && oox_table->m_oTableProperties->m_oTblpPr.IsInit() && 
 			(oox_table->m_oTableProperties->m_oTblpPr->m_oTblpX.IsInit() && oox_table->m_oTableProperties->m_oTblpPr->m_oTblpY.IsInit()))
 	{
@@ -2157,21 +2221,13 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 				odt_context->start_text_context();
 	}
 
-	convert(oox_table->m_oTableProperties);	
 	odt_context->start_table(true); 
 
-//настройка предустановленного стил€
-	if (oox_table->m_oTableProperties && (oox_table->m_oTableProperties->m_oTblStyle.IsInit() && oox_table->m_oTableProperties->m_oTblStyle->m_sVal.IsInit()))
+	if (styled_table)
 	{
-		std::wstring base_style_name = string2std_string(*oox_table->m_oTableProperties->m_oTblStyle->m_sVal);
-
-		bool res = odt_context->styles_context()->table_styles().start_table(base_style_name);
-		if (res)
-		{
-			odt_context->table_context()->set_table_styled(res);
-			if (oox_table->m_oTableProperties->m_oTblLook.IsInit() && oox_table->m_oTableProperties->m_oTblLook->m_oVal.IsInit())
-				odt_context->styles_context()->table_styles().set_flags(oox_table->m_oTableProperties->m_oTblLook->m_oVal->GetValue());
-		}
+		odt_context->table_context()->set_table_styled(styled_table);
+		if (oox_table->m_oTableProperties->m_oTblLook.IsInit() && oox_table->m_oTableProperties->m_oTblLook->m_oVal.IsInit())
+			odt_context->styles_context()->table_styles().set_flags(oox_table->m_oTableProperties->m_oTblLook->m_oVal->GetValue());
 	}
 
 	int count_rows = oox_table->m_nCountRow;
@@ -2415,11 +2471,9 @@ void DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf::style
 
 	}
 }
-bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr)
+bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, bool base_styled)
 {
-	if (oox_table_pr == NULL) return false;
-
-	if (oox_table_pr->m_oTblBorders.IsInit())
+	if (oox_table_pr && oox_table_pr->m_oTblBorders.IsInit())
 	{//напр€мую задать cell_prop на саму таблицу низ€ - тока как default-cell-style-name на columns & row
 
 		//общие свойства €чеек
@@ -2431,11 +2485,15 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr)
 
 		odt_context->table_context()->set_default_cell_properties(odt_context->styles_context()->last_state()->get_name());
 	}
-
-	odt_context->styles_context()->create_style(L"",odf::style_family::Table, true, false, -1); //ради нормального задани€ дефолтовых свойств на cells
-	if (oox_table_pr == NULL) return false;
+//стиль создаем всегда	
+	odt_context->styles_context()->create_style(L"",odf::style_family::Table, true, false, -1); 
 	
 	odf::style_table_properties	* table_properties = odt_context->styles_context()->last_state()->get_table_properties();
+	if (base_styled)
+	{
+		// накатим свойства - они не наследуютс€ :(
+		odt_context->styles_context()->table_styles().get_table_properties(table_properties);
+	}
 	convert(oox_table_pr, table_properties);
 	
 	return true;
@@ -2606,8 +2664,8 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 		int row=odt_context->table_context()->current_row();
 		
 		odt_context->styles_context()->table_styles().get_table_cell_properties (col, row, cell_properties);
-		odt_context->styles_context()->table_styles().get_text_properties (col, row, text_properties);
-		odt_context->styles_context()->table_styles().get_paragraph_properties (col, row, paragraph_properties);
+		odt_context->styles_context()->table_styles().get_text_properties		(col, row, text_properties);
+		odt_context->styles_context()->table_styles().get_paragraph_properties	(col, row, paragraph_properties);
 	}
 	cell_properties->apply_from(parent_cell_properties);
 	bool res = convert(oox_table_cell_pr, cell_properties);

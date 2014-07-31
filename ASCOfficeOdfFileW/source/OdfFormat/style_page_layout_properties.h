@@ -133,8 +133,8 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 
-    style_page_layout_properties_attlist style_page_layout_properties_attlist_;
-    style_page_layout_properties_elements style_page_layout_properties_elements_;
+    style_page_layout_properties_attlist	style_page_layout_properties_attlist_;
+    style_page_layout_properties_elements	style_page_layout_properties_elements_;
     
 };
 

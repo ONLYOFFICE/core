@@ -54,6 +54,29 @@ void table_format_properties::serialize(std::wostream & _Wostream,const wchar_t 
 		}
 	}
 }
+void table_format_properties::apply_from(const table_format_properties & Other)
+{
+	_CP_APPLY_PROP(style_width_					, Other.style_width_);
+	_CP_APPLY_PROP(style_rel_width_				, Other.style_rel_width_);
+	_CP_APPLY_PROP(style_may_break_between_rows_, Other.style_may_break_between_rows_);
+	_CP_APPLY_PROP(table_border_model_			, Other.table_border_model_);
+	_CP_APPLY_PROP(table_display_				, Other.table_display_);
+	_CP_APPLY_PROP(tableooo_tab_color_			, Other.tableooo_tab_color_);			
+	_CP_APPLY_PROP(table_align_					, Other.table_align_);
+
+	common_writing_mode_attlist_.apply_from(Other.common_writing_mode_attlist_);
+	common_horizontal_margin_attlist_.apply_from(Other.common_horizontal_margin_attlist_);
+	common_vertical_margin_attlist_.apply_from(Other.common_vertical_margin_attlist_);
+	common_margin_attlist_.apply_from(Other.common_margin_attlist_);
+	common_page_number_attlist_.apply_from(Other.common_page_number_attlist_);
+	common_break_attlist_.apply_from(Other.common_break_attlist_);
+	common_background_color_attlist_.apply_from(Other.common_background_color_attlist_);
+	common_shadow_attlist_.apply_from(Other.common_shadow_attlist_);
+	common_keep_with_next_attlist_.apply_from(Other.common_keep_with_next_attlist_);
+	common_border_attlist_.apply_from(Other.common_border_attlist_);
+	
+	style_background_image_ = Other.style_background_image_;
+}
 
 // style:table-properties
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -71,6 +94,14 @@ void style_table_properties::serialize(std::wostream & _Wostream)
 	table_format_properties_.serialize(_Wostream,ns,name);
 
 }
+   
+void style_table_properties::apply_from(const style_table_properties * Other)
+{
+	if (Other == NULL) return;
+
+	table_format_properties_.apply_from(Other->table_format_properties_);
+}
+
 
 // style-table-column-properties-attlist
 //////////////////////////////////////////////////////////////////////////////////////////////////

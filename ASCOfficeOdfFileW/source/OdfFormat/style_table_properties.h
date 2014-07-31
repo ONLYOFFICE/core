@@ -31,7 +31,7 @@ class table_format_properties
 {
 public:
     bool create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
-   
+	void apply_from(const table_format_properties & Other);
 	void serialize(std::wostream & strm ,const wchar_t * ns, const wchar_t * name );
 
     _CP_OPT(length)			style_width_;
@@ -73,6 +73,8 @@ public:
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element(office_element_ptr & child){}
+
+    void apply_from(const style_table_properties * Other);
 
 	virtual void serialize(std::wostream & strm);
 

@@ -76,9 +76,19 @@ CString	XlsxConverter::find_link_by_id (CString sId, int type)
 				ref = pImage->filename().GetPath();
 			}
 		}
-		if (ref.GetLength() < 1 && oox_current_chart)
+		if (ref.GetLength() < 1 && oox_current_child_document)
 		{
-			smart_ptr<OOX::File> oFile = oox_current_chart->Find(sId);
+			smart_ptr<OOX::File> oFile = oox_current_child_document->Find(sId);
+			if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Image == oFile->type())
+			{
+				OOX::Spreadsheet::Image* pImage = (OOX::Spreadsheet::Image*)oFile.operator->();
+
+				ref = pImage->filename().GetPath();
+			}
+		}
+		if (ref.GetLength() < 1 && oox_current_child_document_spreadsheet)
+		{
+			smart_ptr<OOX::File> oFile = oox_current_child_document_spreadsheet->Find(sId);
 			if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Image == oFile->type())
 			{
 				OOX::Spreadsheet::Image* pImage = (OOX::Spreadsheet::Image*)oFile.operator->();
@@ -1635,12 +1645,14 @@ void XlsxConverter::convert(OOX::Spreadsheet::CGraphicFrame* oox_graphic_frame)
 					{
 						OoxConverter::convert(pChart->m_oChartSpace.m_oSpPr.GetPointer());
 						
-						oox_current_chart = pChart;
+						oox_current_child_document_spreadsheet = dynamic_cast<OOX::Spreadsheet::IFileContainer*>(pChart);
+						
 						odf_context()->start_chart();
 							odf_context()->chart_context()->set_chart_size(width, height);
 							OoxConverter::convert(&pChart->m_oChartSpace);
 						odf_context()->end_chart();
-						oox_current_chart = NULL; // object???
+						
+						oox_current_child_document_spreadsheet = NULL;
 					}
 				}
 			}

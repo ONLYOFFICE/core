@@ -37,6 +37,14 @@ style_text_properties		*odf_table_styles_context::get_text_properties()
 		create_element(L"style", L"text-properties",current->text_props, context_);
 	return dynamic_cast<style_text_properties *>(current->text_props.get());
 }
+style_table_properties		*odf_table_styles_context::get_table_properties()
+{
+	if (current == NULL)return NULL;
+	
+	if (!current->table_props)
+		create_element(L"style", L"table-properties",current->table_props, context_);
+	return dynamic_cast<style_table_properties *>(current->table_props.get());
+}
 
 void odf_table_styles_context::start_style(std::wstring style_name)
 {
@@ -212,10 +220,22 @@ void odf_table_styles_context::get_table_cell_properties (int col, int row, styl
 	if (se)			cell_props->apply_from(dynamic_cast<style_table_cell_properties *>(state.seCell_.table_cell_props.get()));
 	if (sw)			cell_props->apply_from(dynamic_cast<style_table_cell_properties *>(state.swCell_.table_cell_props.get()));
 }
+
+void odf_table_styles_context::get_table_properties (style_table_properties* table_props)
+{
+	if (current_used_.size() < 1) return;
+	if (table_props == NULL)	  return;
+
+	table_format_state & state = table_format_array_[current_used_.back().table_style_];
+
+
+	table_props->apply_from(dynamic_cast<style_table_properties *>(state.table_.table_props.get()));
+
+}
 void odf_table_styles_context::get_text_properties (int col, int row, style_text_properties* text_props)
 {
 	if (current_used_.size() < 1) return;
-	if (text_props == NULL)			return;
+	if (text_props == NULL)		  return;
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 	

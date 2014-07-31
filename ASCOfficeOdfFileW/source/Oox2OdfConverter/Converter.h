@@ -93,6 +93,7 @@ namespace OOX
 	}
 	namespace Spreadsheet
 	{
+		class IFileContainer;
 		class CChartSpace;
 
 		class CT_extLst;
@@ -281,7 +282,11 @@ public:
 		virtual void convertDocument() = 0;
 		virtual void write(const std::wstring & path) = 0;
 		
-		OoxConverter(const ProgressCallback* CallBack = NULL){oox_current_chart = NULL; pCallBack = CallBack;bUserStopConvert = 0;}
+		OoxConverter(const ProgressCallback* CallBack = NULL){	oox_current_child_document_spreadsheet = NULL; 
+																oox_current_child_document = NULL; 
+																
+																pCallBack = CallBack;
+																bUserStopConvert = 0;}
 		
 		const ProgressCallback* pCallBack;
 		short bUserStopConvert;
@@ -291,7 +296,9 @@ public:
 		virtual cpdoccore::odf::odf_conversion_context		*odf_context() = 0;
 		virtual OOX::CTheme									*oox_theme() = 0;
 		virtual CString										 find_link_by_id(CString sId, int t) = 0;
-		OOX::Spreadsheet::CChartSpace						*oox_current_chart;
+		
+		OOX::Spreadsheet::IFileContainer					*oox_current_child_document_spreadsheet;
+		OOX::IFileContainer									*oox_current_child_document;
 //.......................................................................................................................
 		void convert(OOX::WritingElement  *oox_unknown);
 		void convert(double oox_font_size,			cpdoccore::_CP_OPT(cpdoccore::odf::font_size) & odf_font_size);

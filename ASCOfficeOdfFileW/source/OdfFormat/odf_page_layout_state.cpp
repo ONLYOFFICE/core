@@ -139,7 +139,29 @@ style_page_layout_properties *odf_layout_state::get_properties()
 	return NULL;
 }
 
-
-
+style_header_footer_properties *odf_layout_state::get_header_properties()
+{
+	for (long i= 1; i<elements_.size(); i++)//"0" - root
+	{
+		style_header_style *style_ = dynamic_cast<style_header_style *>(elements_[i].elm.get());
+		if (style_)
+		{
+			return dynamic_cast<style_header_footer_properties *>(style_->style_header_footer_properties_.get());
+		}
+	}
+	return NULL;
+}
+style_header_footer_properties *odf_layout_state::get_footer_properties()
+{
+	for (long i= 1; i<elements_.size(); i++)//"0" - root
+	{
+		style_footer_style *style_ = dynamic_cast<style_footer_style *>(elements_[i].elm.get());
+		if (style_)
+		{
+			return dynamic_cast<style_header_footer_properties *>(style_->style_header_footer_properties_.get());
+		}
+	}
+	return NULL;
+}
 }
 }

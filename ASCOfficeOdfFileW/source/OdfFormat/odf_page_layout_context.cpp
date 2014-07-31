@@ -170,6 +170,8 @@ void odf_page_layout_context::set_footer_size(_CP_OPT(length) length_)//тут собс
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;
 
+	length_ = length(length_->get_value_unit(length::cm),length::cm);
+
 	_CP_OPT(length) bottom_;
 	
 	if (props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_)
@@ -187,6 +189,8 @@ void odf_page_layout_context::set_header_size(_CP_OPT(length) length_)
 	if (!header_props)return;
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;
+
+	length_ = length(length_->get_value_unit(length::cm),length::cm);
 
 	_CP_OPT(length) top_;
 

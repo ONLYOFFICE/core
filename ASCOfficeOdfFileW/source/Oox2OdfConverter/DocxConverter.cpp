@@ -744,12 +744,12 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		if (oox_section_pr->m_arrHeaderReference[i].m_oId.IsInit())
 		{
 			convert_hdr_ftr(oox_section_pr->m_arrHeaderReference[i].m_oId->GetValue());
-			//convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 2);
+			convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 2);
 		}
 
 		odt_context->end_header_footer();
 	}
-	
+	 
 	for (long i=0; i< oox_section_pr->m_arrFooterReference.GetSize(); i++)
 	{
 		int type =oox_section_pr->m_arrFooterReference[i].m_oType.IsInit() ? oox_section_pr->m_arrFooterReference[i].m_oType->GetValue() :0 ;
@@ -758,7 +758,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		if (oox_section_pr->m_arrFooterReference[i].m_oId.IsInit())
 		{
 			convert_hdr_ftr(oox_section_pr->m_arrFooterReference[i].m_oId->GetValue());
-			//convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 3);
+			convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 3);
 		}
 
 		odt_context->end_header_footer();	

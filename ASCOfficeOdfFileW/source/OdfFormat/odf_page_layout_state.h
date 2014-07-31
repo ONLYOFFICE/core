@@ -13,7 +13,10 @@ namespace odf {
 class odf_conversion_context;
 class odf_style_context;
 class odf_page_layout_context;
+
 class style_page_layout_properties;
+class style_header_footer_properties;
+
 
 struct 	odf_element_state
 {
@@ -62,7 +65,9 @@ public:
 	void			set_name(std::wstring & name);
 	std::wstring	get_name();	
 
-	style_page_layout_properties * get_properties();//пока не красиво ... лучше хранить прямую ссыль нежели искать
+	style_page_layout_properties	*get_properties();//пока не красиво ... лучше хранить прямую ссыль нежели искать
+	style_header_footer_properties	*get_header_properties();//-''-
+	style_header_footer_properties	*get_footer_properties();//-''-
 private:
 	std::wstring	style_oox_name_;
 

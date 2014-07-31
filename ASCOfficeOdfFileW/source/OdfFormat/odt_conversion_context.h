@@ -59,7 +59,7 @@ public:
 	void start_hyperlink(std::wstring ref);
 	void end_hyperlink();
 
-	void start_field();
+	void start_field(bool in_span);
 	void end_field();
 	void set_field_instr(std::wstring instr);
 
@@ -103,6 +103,8 @@ public:
 	void start_footer(int type);
 	void end_header_footer();
 
+	void set_background(_CP_OPT(color) & color, int type);
+
 private:
 	office_text*				root_text_;
 	office_element_ptr			root_document_;
@@ -125,7 +127,9 @@ private:
 		bool enabled;	
 		int type;
 		std::wstring value;
+		std::wstring format;
 		bool started;
+		bool in_span;
 	}current_field_;
 
 	bool is_hyperlink_;

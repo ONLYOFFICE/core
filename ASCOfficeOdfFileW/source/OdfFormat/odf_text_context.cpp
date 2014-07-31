@@ -314,6 +314,14 @@ void odf_text_context::start_field(int type)
 			page_numb->text_select_page_ = L"current";
 		}	
 	}
+	if (type == 3)
+	{
+		create_element(L"text", L"page-count", elm, odf_context_);
+	}
+	if (type == 4)
+	{
+		create_element(L"text", L"date", elm, odf_context_);
+	}
 	if (elm)
 	{
 		in_field_ = true;

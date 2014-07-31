@@ -853,8 +853,10 @@ std::wstring process_page_margin(const _CP_OPT(length_or_percent) & Val, const _
     double v2 = (!Val2 || Val2->get_type() == length_or_percent::Percent) ? 0 :
         (20.0 * Val2->get_length().get_value_unit(length::pt));
     
-    
-    return boost::lexical_cast<std::wstring>( (int)( (!Val ? v2 : v1) + AddVal.get_value_or(length(0, length::pt)).get_value_unit(length::pt) + 0.5 ));
+    double dAddVal = AddVal.get_value_or(length(0, length::pt)).get_value_unit(length::pt) + 0.5;
+
+	if (dAddVal < 0 ) dAddVal = 0;
+    return boost::lexical_cast<std::wstring>( (int)( (!Val ? v2 : v1) + dAddVal));
 }
 
 }

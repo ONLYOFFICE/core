@@ -40,6 +40,7 @@ odt_conversion_context::odt_conversion_context(package::odf_document * outputDoc
 {
 	current_field_.enabled = false;
 	current_field_.started = false;
+	current_field_.in_span = false;
 	
 	is_hyperlink_ = false;
 	drop_cap_state_.clear();
@@ -278,13 +279,11 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 	if (current_field_.enabled == false) 	return;
 
 	int res1 = instr.find(L"HYPERLINK");
-		//FORMCHECKBOX
-
-	if (res1 >=0)
+	if (res1 >=0)							//это не поле - это hyperlink
 	{
-		std::wstring ref;
 		current_field_.type = 1;
-
+		
+		std::wstring ref;
 		boost::match_results<std::wstring::const_iterator> res;
 		boost::wregex r2 (L"(\".*?\")+");	
         if (boost::regex_search(instr, res, r2))
@@ -294,18 +293,44 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 
         }
 	}
-
+	res1 = instr.find(L"NUMPAGES");
+	if (res1 >=0 && current_field_.type == 0)
+	{
+		current_field_.type = 3;
+	}	
+	res1 = instr.find(L"PAGEREF");
+	if (res1 >=0 && current_field_.type == 0)	//это не поле - это bookmark
+	{
+		current_field_.type = 5;
+		current_field_.value = instr.substr(9, instr.length()-5);
+	}
 	res1 = instr.find(L"PAGE");
-	if (res1 >=0)
+	if (res1 >=0 && current_field_.type == 0)
 	{
 		current_field_.type = 2;
 	}
-
+	res1 = instr.find(L"TIME");
+	if (res1 >=0 && current_field_.type == 0)
+	{
+		current_field_.type = 4;
+	}
+	res1 = instr.find(L"BIBLIOGRAPHY");
+	if (res1 >=0 && current_field_.type == 0)
+	{
+		current_field_.type = 6;
+	}
+////////////////////////////////////////// 
+	res1 = instr.find(L"@");
+	if (res1 >=0)
+	{
+		current_field_.format = instr.substr(res1+1, instr.length());
+	}
 }
-void odt_conversion_context::start_field()
+void odt_conversion_context::start_field(bool in_span)
 {
 	current_field_.enabled = true;
 
+	current_field_.in_span = in_span;
 	current_field_.value = L"";
 	current_field_.type = 0;
 }
@@ -392,8 +417,12 @@ void odt_conversion_context::end_field()
 		if (current_field_.type == 1) end_hyperlink();
 		else text_context()->end_field();
 	}
+	current_field_.value	= L"";
+	current_field_.format	= L"";
+
 	current_field_.enabled = false;
 	current_field_.started = false;
+	current_field_.in_span = false;
 }
 void odt_conversion_context::end_paragraph()
 {
@@ -435,30 +464,32 @@ void odt_conversion_context::flush_section()
 void odt_conversion_context::start_run(bool styled)
 {
 	if (is_hyperlink_ && text_context_.size() > 0) return;
+	
 
-	text_context()->start_span(styled);
-
-	if (current_field_.started== false && current_field_.type >1 && current_field_.enabled ==true)//поле стартуется в span - нужно для сохранения стиля
+	if (current_field_.started== false && current_field_.type >1 && current_field_.enabled ==true && !current_field_.in_span)
 	{
 		text_context()->start_field(current_field_.type);
 		current_field_.started = true;
-	}
+	}	
+	
+	text_context()->start_span(styled);
 
+	if (current_field_.started== false && current_field_.type >1 && current_field_.enabled ==true && current_field_.in_span)//поле стартуется в span - нужно для сохранения стиля
+	{
+		text_context()->start_field(current_field_.type);
+		current_field_.started = true;
+	}	
 }
 void odt_conversion_context::end_run()
 {
 	if (is_hyperlink_ && text_context_.size() > 0) return;
 
-	if (current_field_.started== true && current_field_.type >1 && current_field_.enabled ==true)
-	{	
-		end_field();
-	}
-
+	if (current_field_.in_span && current_field_.started== true && current_field_.enabled ==true) end_field();
+	
 	text_context()->end_span();
 
 	if (current_field_.started== false && current_field_.type == 1 && current_field_.enabled ==true)
 	{
-		//поле с "выкрутасами" - короче ... совсем не поле ввода
 		start_hyperlink(current_field_.value);
 		current_field_.started = true;
 	}
@@ -728,6 +759,13 @@ void odt_conversion_context::end_header_footer()
 {
 	text_context()->end_element();
 	end_text_context();
+}
+
+void odt_conversion_context::set_background(_CP_OPT(color) & color, int type)
+{
+	if (!color) return;
+
+	page_layout_context()->set_background(color, type);
 }
 
 void odt_conversion_context::start_footer(int type)

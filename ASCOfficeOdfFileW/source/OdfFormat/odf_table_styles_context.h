@@ -13,6 +13,7 @@ namespace odf {
 class style_table_cell_properties;
 class style_text_properties;
 class style_paragraph_properties;
+class style_table_properties;
 
 //typedef shared_ptr<style_text_properties>::Type			style_text_properties_ptr;
 //typedef shared_ptr<style_paragraph_properties>::Type	style_paragraph_properties_ptr;
@@ -22,6 +23,7 @@ class style_paragraph_properties;
 struct _style_properties
 {
 	_style_properties(){is = false;}
+	office_element_ptr	table_props;
 	office_element_ptr	text_props;
 	office_element_ptr	paragraph_props;
 	office_element_ptr	table_cell_props;
@@ -83,6 +85,7 @@ public:
 	style_table_cell_properties *get_table_cell_properties();
 	style_paragraph_properties	*get_paragraph_properties();
 	style_text_properties		*get_text_properties();
+	style_table_properties		*get_table_properties();
 
 //-----------------------------------------------
 // output
@@ -91,9 +94,10 @@ public:
 		void set_current_dimension(int col, int row);
 		void set_flags(int val);
 
-		void get_table_cell_properties	(int col, int row, style_table_cell_properties *props);
-		void get_text_properties		(int col, int row, style_text_properties *props);
-		void get_paragraph_properties	(int col, int row, style_paragraph_properties *props);
+		void get_table_properties		(					style_table_properties		*props);
+		void get_table_cell_properties	(int col, int row,	style_table_cell_properties *props);
+		void get_text_properties		(int col, int row,	style_text_properties		*props);
+		void get_paragraph_properties	(int col, int row,	style_paragraph_properties	*props);
 	void end_table();
 
 private:

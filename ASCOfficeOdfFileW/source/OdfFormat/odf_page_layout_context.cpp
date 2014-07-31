@@ -149,27 +149,93 @@ void odf_page_layout_context::set_page_margin(_CP_OPT(length) top, _CP_OPT(lengt
 void odf_page_layout_context::set_page_gutter(_CP_OPT(length) length_)
 {
 	if (!length_) return;
-
-
-}
-void odf_page_layout_context::set_page_footer(_CP_OPT(length) length_)
-{
-	if (!length_) return;
+	
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;
 
-	if (props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_)
+	if (props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_)
 	{
-		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_= 
-			props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_->get_length() + length(length_->get_value_unit(length::cm),length::cm);
+		props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_= 
+			props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_->get_length() + length(length_->get_value_unit(length::cm),length::cm);
 	}
 	else
-		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_= length(length_->get_value_unit(length::cm),length::cm);
+		props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_= length(length_->get_value_unit(length::cm),length::cm);
+
 }
+void odf_page_layout_context::set_footer_size(_CP_OPT(length) length_)//тут собственно не footer а размер после колонтитула
+{
+	if (!length_) return;
+	style_header_footer_properties * footer_props = get_footer_properties();
+	if (!footer_props)return;
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	_CP_OPT(length) bottom_;
+	
+	if (props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_)
+		bottom_= props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_->get_length();
+
+	props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_ = length_;
+
+	if (bottom_)
+		footer_props->style_header_footer_properties_attlist_.svg_height_ = bottom_.get() - length_.get();//fo_min_height_
+}
+void odf_page_layout_context::set_header_size(_CP_OPT(length) length_)
+{
+	if (!length_) return;
+	style_header_footer_properties * header_props = get_header_properties();
+	if (!header_props)return;
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	_CP_OPT(length) top_;
+
+	if (props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_)
+		top_ = props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_->get_length();;
+
+	props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_ = length_;
+
+	if (top_)
+		header_props->style_header_footer_properties_attlist_.svg_height_ = top_.get()- length_.get();//fo_min_height_
+}
+
+void odf_page_layout_context::set_background(_CP_OPT(color) & color, int type)
+{
+	if (!color) return;
+
+	if (type == 1)
+	{
+		style_page_layout_properties * props = get_properties();
+		if (!props)return;
+
+		props->style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_ = color;
+	}
+	if (type == 2)
+	{
+		style_header_footer_properties * props = get_header_properties();
+		if (!props)return;
+
+		props->style_header_footer_properties_attlist_.common_background_color_attlist_.fo_background_color_ = color;
+	}
+	if (type == 3)
+	{
+		style_header_footer_properties * props = get_footer_properties();
+		if (!props)return;
+
+		props->style_header_footer_properties_attlist_.common_background_color_attlist_.fo_background_color_ = color;
+	}
+}
+
 ///////////////////////////////////////////////////////////////
 void odf_page_layout_context::add_footer(int type)
 {
 	office_element_ptr elm;
+	
+	if (type == 1) 
+		create_element(L"style", L"footer-left", elm, odf_context_);
+	else if (type == 2)
+		create_element(L"style", L"footer-first", elm, odf_context_);
+	else
 	create_element(L"style", L"footer", elm, odf_context_);
 	
 	master_state_list_.back().add_footer(elm);
@@ -177,25 +243,18 @@ void odf_page_layout_context::add_footer(int type)
 void odf_page_layout_context::add_header(int type)
 {
 	office_element_ptr elm;
-	create_element(L"style", L"header", elm, odf_context_);
+
+	if (type == 1)
+		create_element(L"style", L"header-left", elm, odf_context_);
+	else if (type == 2)
+		create_element(L"style", L"header-first", elm, odf_context_);
+	else
+		create_element(L"style", L"header", elm, odf_context_);
 	
 	master_state_list_.back().add_header(elm);
 
 }
-void odf_page_layout_context::set_page_header(_CP_OPT(length) length_)
-{
-	if (!length_) return;
-	style_page_layout_properties * props = get_properties();
-	if (!props)return;
 
-	if (props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_)
-	{
-		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_= 
-			props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_->get_length() + length(length_->get_value_unit(length::cm),length::cm);
-	}
-	else
-		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_= length(length_->get_value_unit(length::cm),length::cm);
-}
 void odf_page_layout_context::set_page_border_shadow(bool val)
 {
 	style_page_layout_properties * props = get_properties();
@@ -246,6 +305,45 @@ style_page_layout_properties * odf_page_layout_context::get_properties()
 	}
 	return props;
 }
+style_header_footer_properties *odf_page_layout_context::get_header_properties()
+{
+	if (layout_state_list_.size() < 1) return NULL;
+	style_header_footer_properties *props = layout_state_list_.back().get_header_properties();
+	if (props == NULL)
+	{
+		office_element_ptr elm;
+		create_element(L"style", L"header-style", elm, odf_context_);
+		layout_state_list_.back().add_child(elm, office_element_ptr(),L"");
+		
+		office_element_ptr pr;
+		create_element(L"style", L"header-footer-properties", pr, odf_context_);
+		elm->add_child_element(pr);
+
+		props = layout_state_list_.back().get_header_properties();
+	}
+	return props;
+}
+
+style_header_footer_properties *odf_page_layout_context::get_footer_properties()
+{
+	if (layout_state_list_.size() < 1) return NULL;
+	style_header_footer_properties *props = layout_state_list_.back().get_footer_properties();
+	if (props == NULL)
+	{
+		office_element_ptr elm;
+		create_element(L"style", L"footer-style", elm, odf_context_);
+			layout_state_list_.back().add_child(elm, office_element_ptr(),L"");
+
+		office_element_ptr pr;
+		create_element(L"style", L"header-footer-properties", pr, odf_context_);
+		elm->add_child_element(pr);
+
+		props = layout_state_list_.back().get_footer_properties();
+	}
+	return props;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
 void odf_page_layout_context::set_page_orientation(int type)
 {
 	style_page_layout_properties * props = get_properties();

@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef _WIN32
 #pragma warning( disable : 4996 )
 
 
@@ -46,15 +47,40 @@
 #define _ATL_ALL_WARNINGS
 #endif
 
-#include <windows.h>
-#include <atlbase.h>
-#include <atlcoll.h>
-#include <atlstr.h>
-#include <atltypes.h>
+//#include <windows.h>
+//#include <atlbase.h>
+//#include <atlcoll.h>
+//#include <atlstr.h>
+//#include <atltypes.h>
 
-#include "..\..\..\ASCUtils.h"
+#include "../../../ASCUtils.h"
 
 using namespace ATL;
+
+#else
+#include "ASCString.h"
+#include "stdint.h"
+
+typedef int BOOL;
+static const BOOL TRUE = 1;
+static const BOOL FALSE = 0;
+
+
+typedef int HRESULT;
+static const HRESULT S_OK = 0;
+static const HRESULT S_FALSE = -1;
+
+typedef unsigned char BYTE;
+typedef unsigned short USHORT;
+typedef short SHORT;
+typedef long LONG;
+typedef unsigned long ULONG;
+typedef unsigned int DWORD;
+typedef unsigned long long ULONG64;
+typedef long long LONG64;
+
+typedef wchar_t WCHAR;
+#endif // #ifdef _WIN32
 
 #ifndef AVSINLINE
 #if defined(_MSC_VER)

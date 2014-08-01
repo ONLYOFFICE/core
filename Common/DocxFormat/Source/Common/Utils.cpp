@@ -1,8 +1,8 @@
 #include "Utils.h"
 
-#include "../XML/XmlUtils.h"
+#include "../XML/xmlutils.h"
 
-void Common::readAllShapeTypes(const OOX::CPath& oPath, CSimpleArray<CString>& aShapetypes)
+void Common::readAllShapeTypes(const OOX::CPath& oPath, std::vector<CString>& aShapetypes)
 {
 	XmlUtils::CXmlLiteReader oReader;
 
@@ -16,7 +16,7 @@ void Common::readAllShapeTypes(const OOX::CPath& oPath, CSimpleArray<CString>& a
 		{
 			CString sXml = oReader.GetOuterXml();
 			if(false == sXml.IsEmpty())
-				aShapetypes.Add(sXml);
+                aShapetypes.push_back(sXml);
 		}
 	}
 }

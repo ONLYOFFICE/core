@@ -875,20 +875,30 @@ void odf_drawing_context::set_rotate(int iVal)
 	double dRotate = (360 - iVal/60000.)/180. * 3.14159265358979323846;
 	impl_->current_drawing_state_.rotateAngle = dRotate;
 }
-void odf_drawing_context::set_drawings_rect(double x_pt, double y_pt, double width_pt, double height_pt)// "- 1" не задано
+void odf_drawing_context::set_drawings_rect(_CP_OPT(double) x_pt, _CP_OPT(double) y_pt, _CP_OPT(double) width_pt, _CP_OPT(double) height_pt)// "- 1" не задано
 {
 	//хороший тон сохранить все размеры в см (хотя можно и в другой системе)
-	if (x_pt >= 0)	impl_->anchor_settings_.svg_x_ = length(length(x_pt,length::pt).get_value_unit(length::cm),length::cm);
-	if (y_pt >= 0)	impl_->anchor_settings_.svg_y_ = length(length(y_pt,length::pt).get_value_unit(length::cm),length::cm);
+	if (x_pt)
+	{
+		impl_->x = *x_pt;
+		impl_->anchor_settings_.svg_x_ = length(length(*x_pt,length::pt).get_value_unit(length::cm),length::cm);
+	}
+	if (y_pt)
+	{
+		impl_->y = *y_pt;
+		impl_->anchor_settings_.svg_y_ = length(length(*y_pt,length::pt).get_value_unit(length::cm),length::cm);
+	}
 
-	impl_->x = x_pt >=0 ? x_pt :0 ;
-	impl_->y = y_pt >=0 ? y_pt :0;
-
-	impl_->width = width_pt;
-	impl_->height = height_pt;
-
-	if (height_pt >= 0) impl_->anchor_settings_.svg_height_	= length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
-	if (width_pt >= 0)	impl_->anchor_settings_.svg_width_	= length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);	
+	if (height_pt)	
+	{
+		impl_->height = *height_pt;
+		impl_->anchor_settings_.svg_height_	= length(length(*height_pt,length::pt).get_value_unit(length::cm),length::cm);	
+	}
+	if (width_pt)
+	{
+		impl_->width = *width_pt;
+		impl_->anchor_settings_.svg_width_	= length(length(*width_pt,length::pt).get_value_unit(length::cm),length::cm);	
+	}
 }
 void odf_drawing_context::set_margin_left	(double valPt)
 {

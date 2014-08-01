@@ -1490,8 +1490,9 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 {
 	if (oox_anchor == NULL)return;
 
-	double width =0, height=0;
-	double x =0, y=0;
+	_CP_OPT(double) width, height;
+	_CP_OPT(double) x, y;
+
 	if (oox_anchor->m_oExtent.IsInit()) //size
 	{
 		width = oox_anchor->m_oExtent->m_oCx.ToPoints();
@@ -1502,7 +1503,7 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 	if (oox_anchor->m_oDistR.IsInit())odt_context->drawing_context()->set_margin_right(oox_anchor->m_oDistR->ToPoints());
 	if (oox_anchor->m_oDistB.IsInit())odt_context->drawing_context()->set_margin_bottom(oox_anchor->m_oDistB->ToPoints());
 
-	odt_context->drawing_context()->set_drawings_rect(-1, -1, width, height);
+	odt_context->drawing_context()->set_drawings_rect(x, y, width, height);
 
 	if (oox_anchor->m_oPositionV.IsInit() && oox_anchor->m_oPositionV->m_oRelativeFrom.IsInit())
 	{
@@ -1557,14 +1558,16 @@ void DocxConverter::convert(OOX::Drawing::CInline *oox_inline)
 {
 	if (oox_inline == NULL)return;
 
-	double width =0, height=0;
+	_CP_OPT(double) width, height;
+	_CP_OPT(double) x = 0., y = 0.;
+	
 	if (oox_inline->m_oExtent.IsInit()) //size
 	{
 		width = oox_inline->m_oExtent->m_oCx.ToPoints();
 		height = oox_inline->m_oExtent->m_oCy.ToPoints();
 	}
 
-	odt_context->drawing_context()->set_drawings_rect(0, 0, width, height);
+	odt_context->drawing_context()->set_drawings_rect(x, y, width, height);
 
 	odt_context->drawing_context()->set_anchor(odf::anchor_type::AsChar); 
 	
@@ -2210,8 +2213,12 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 		odt_context->start_paragraph();
 			odt_context->start_drawings();
 				odt_context->drawing_context()->set_anchor(odf::anchor_type::Paragraph); 
-				odt_context->drawing_context()->set_drawings_rect(oox_table->m_oTableProperties->m_oTblpPr->m_oTblpX->ToPoints(),
-							oox_table->m_oTableProperties->m_oTblpPr->m_oTblpY->ToPoints(), -1, -1);		
+				_CP_OPT(double) width, height, x, y ;
+				
+				x = oox_table->m_oTableProperties->m_oTblpPr->m_oTblpX->ToPoints();
+				y = oox_table->m_oTableProperties->m_oTblpPr->m_oTblpY->ToPoints();
+
+				odt_context->drawing_context()->set_drawings_rect(x, y, width, height);		
 				
 				odt_context->drawing_context()->start_drawing();	
 

@@ -73,8 +73,7 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style)
 {
 	if (vml_style == NULL) return;
 
-	double width_pt = -1, height_pt = -1;
-
+	_CP_OPT(double) width_pt, height_pt, x, y;
 
 	for (long i=0; i < vml_style->m_arrProperties.GetSize(); i++)
 	{
@@ -100,8 +99,7 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style)
 			break;
 		}
 	}
-	if (height_pt == 0) height_pt = -1;
-	odf_context()->drawing_context()->set_drawings_rect(-1, -1, width_pt, height_pt);
+	odf_context()->drawing_context()->set_drawings_rect(x, y, width_pt, height_pt);
 }
 void OoxConverter::convert(OOX::Vml::CShape *vml_shape)
 {

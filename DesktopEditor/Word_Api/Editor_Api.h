@@ -7,6 +7,82 @@
 
 namespace NSEditorApi
 {
+	class CColorMod
+	{
+	private:
+		std::string m_sName;
+		int m_nValue;
+
+	public:
+		CColorMod()
+		{
+			m_sName		= "";
+			m_nValue	= 0;
+		}
+
+		LINK_PROPERTY_STRING(Name)
+		LINK_PROPERTY_INT(Value)
+	};
+
+	class CAscColor
+	{
+	private:
+		int m_nType; // c_oAscColor_COLOR_TYPE
+		
+		BYTE m_nR;
+		BYTE m_nG;
+		BYTE m_nB;
+		BYTE m_nA;
+
+		bool m_bAuto;
+		
+		int m_nValue;
+		int m_nColorSchemeId;
+
+		CColorMod* m_pMods;
+
+	public:
+		CAscColor()
+		{
+			m_nType = c_oAscColor_COLOR_TYPE_SRGB;
+
+			m_nR = 0;
+			m_nG = 0;
+			m_nB = 0;
+			m_nA = 255;
+
+			m_bAuto = false;
+
+			m_nValue = -1;
+			m_nColorSchemeId = -1;
+
+			m_pMods = NULL;
+		}
+		~CAscColor()
+		{
+			if (NULL != m_pMods)
+				delete [] m_pMods;
+		}
+
+		LINK_PROPERTY_INT(Type)
+		LINK_PROPERTY_BYTE(R)
+		LINK_PROPERTY_BYTE(G)
+		LINK_PROPERTY_BYTE(B)
+		LINK_PROPERTY_BYTE(A)
+		LINK_PROPERTY_BOOL(Auto)
+		LINK_PROPERTY_INT(Value)
+		LINK_PROPERTY_INT(ColorSchemeId)
+
+		// эти методы дергает лишь sdk. оно должно следить за удалением само.
+		CColorMod* GetMods() { return m_pMods; }
+		void SetMods(CColorMod* pMods) { m_pMods = pMods; }		
+	};
+
+}
+
+
+namespace NSEditorApi
+{
 
 class CAscEditorPermissions
 {
@@ -186,50 +262,6 @@ public:
 
 	LINK_PROPERTY_INT(Id)
 	LINK_PROPERTY_STRING(Image)
-};
-
-class CAscColor
-{
-private:
-	int m_nType;
-	BYTE m_nR;
-	BYTE m_nG;
-	BYTE m_nB;
-	BYTE m_nA;
-
-	bool m_bAuto;
-	
-	int m_nValue;
-	int m_nColorSchemeId;
-
-	void* m_pMods;
-
-public:
-	CAscColor()
-	{
-		m_nType = c_oAscColor_COLOR_TYPE_SRGB;
-
-		m_nR = 0;
-		m_nG = 0;
-		m_nB = 0;
-		m_nA = 255;
-
-		m_bAuto = false;
-
-		m_nValue = -1;
-		m_nColorSchemeId = -1;
-
-		m_pMods = NULL;
-	}
-
-	LINK_PROPERTY_INT(Type)
-	LINK_PROPERTY_BYTE(R)
-	LINK_PROPERTY_BYTE(G)
-	LINK_PROPERTY_BYTE(B)
-	LINK_PROPERTY_BYTE(A)
-	LINK_PROPERTY_BOOL(Auto)
-	LINK_PROPERTY_INT(Value)
-	LINK_PROPERTY_INT(ColorSchemeId)
 };
 
 // fill

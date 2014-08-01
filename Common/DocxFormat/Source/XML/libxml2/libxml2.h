@@ -1,8 +1,9 @@
 #pragma once
 
+#ifdef _WIN32
 #pragma comment(lib, "libxml2.lib")
 
-#include "win_build/Config.h"
+#include "./win_build/config.h"
 #include "XML/include/libxml/xmlreader.h"
 
 #include <windows.h>
@@ -293,7 +294,314 @@ namespace XmlUtils
 			LONG64 m_lFilePosition;
 		};
 	}
+#else //#ifdef _WIN32
 
+#include "XML/include/libxml/xmlreader.h"
+#include "../../Base/Base.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+
+#include "assert.h"
+
+namespace NSFile
+{
+    class CFile
+    {
+    public:
+        CFile()
+        {
+            m_pFileHandle = NULL;
+            m_lFileSize = 0;
+            m_lFilePosition = 0;
+        }
+
+        virtual ~CFile()
+        {
+            CloseFile();
+        }
+
+        virtual HRESULT OpenFile(CString FileName)
+        {
+            CloseFile();
+
+#ifdef _WIN32
+            m_pFileHandle = _wfopen(FileName.c_str(), L"rb");
+#else
+
+            std::string aMutliByteName  = stringWstingToUtf8String (FileName);
+            m_pFileHandle = fopen(aMutliByteName.c_str(), "rb");
+#endif
+            if (NULL == m_pFileHandle)
+            {
+                throw std::exception();
+            }
+
+            // get buffer size
+            fseek(m_pFileHandle, 0, SEEK_END);
+            m_lFileSize = ftell(m_pFileHandle);
+            fseek(m_pFileHandle, 0, SEEK_SET);
+            return S_OK;
+        }
+
+        /*
+        virtual HRESULT OpenFileRW(CString FileName)
+        {
+            CloseFile();
+
+            HRESULT hRes = S_OK;
+            DWORD AccessMode = GENERIC_READ | GENERIC_WRITE;
+            DWORD ShareMode = FILE_SHARE_READ;
+            DWORD Disposition = OPEN_EXISTING;
+            m_hFileHandle = ::CreateFile(FileName, AccessMode, ShareMode, NULL, Disposition, 0, 0);
+
+            if (NULL == m_hFileHandle || INVALID_HANDLE_VALUE == m_hFileHandle)
+            {
+                hRes = S_FALSE;
+            }
+            else
+            {
+                ULARGE_INTEGER nTempSize;
+                nTempSize.LowPart = ::GetFileSize(m_hFileHandle, &nTempSize.HighPart);
+                m_lFileSize = nTempSize.QuadPart;
+
+                SetPosition(0);
+            }
+
+            return hRes;
+        }
+        */
+
+        HRESULT ReadFile(BYTE* pData, DWORD nBytesToRead)
+        {
+            if(NULL == pData)
+                return S_FALSE;
+
+            if(m_pFileHandle && (pData))
+            {
+                fseek(m_pFileHandle, m_lFilePosition, SEEK_SET);
+
+                size_t res = fread (pData, 1, nBytesToRead, m_pFileHandle);
+
+
+                m_lFilePosition += res;
+                if (res != nBytesToRead)
+                {
+                    return S_FALSE;
+                }
+            }
+            return S_OK;
+        }
+
+        HRESULT ReadFile2(BYTE* pData, DWORD nBytesToRead)
+        {
+            if(NULL == pData)
+                return S_FALSE;
+
+            if (m_pFileHandle && (pData))
+            {
+                fseek(m_pFileHandle, m_lFilePosition, SEEK_SET);
+
+                size_t res = fread (pData, 1, nBytesToRead, m_pFileHandle);
+
+
+                m_lFilePosition += res;
+
+                for (size_t index = 0; index < nBytesToRead / 2; ++index)
+                {
+                    BYTE temp = pData[index];
+                    pData[index] = pData[nBytesToRead - index - 1];
+                    pData[nBytesToRead - index - 1] = temp;
+                }
+            }
+            return S_OK;
+        }
+        HRESULT ReadFile3(void* pData, DWORD nBytesToRead)
+        {
+            if(NULL == pData)
+                return S_FALSE;
+
+            if (m_pFileHandle && (pData))
+            {
+                fseek(m_pFileHandle, m_lFilePosition, SEEK_SET);
+
+                size_t res = fread (pData, 1, nBytesToRead, m_pFileHandle);
+
+                m_lFilePosition += res;
+            }
+            return S_OK;
+        }
+
+        HRESULT WriteFile(void* pData, DWORD nBytesToWrite)
+        {
+            DWORD dwWritten = 0;
+            if (m_pFileHandle)
+            {
+                dwWritten = fwrite (pData, 1, nBytesToWrite, m_pFileHandle);
+                m_lFilePosition += nBytesToWrite;
+            }
+            return (dwWritten == nBytesToWrite) ? S_OK : S_FALSE;
+        }
+
+        HRESULT WriteFile2(void* pData, DWORD nBytesToWrite)
+        {
+            DWORD dwWritten = 0;
+            if(m_pFileHandle)
+            {
+                BYTE* mem = new BYTE[nBytesToWrite];
+                memcpy(mem, pData, nBytesToWrite);
+
+                for (size_t index = 0; index < nBytesToWrite / 2; ++index)
+                {
+                    BYTE temp = mem[index];
+                    mem[index] = mem[nBytesToWrite - index - 1];
+                    mem[nBytesToWrite - index - 1] = temp;
+                }
+
+                dwWritten = fwrite (pData, 1, nBytesToWrite, m_pFileHandle);
+                m_lFilePosition += nBytesToWrite;
+                delete [] mem;
+            }
+            return (dwWritten == nBytesToWrite) ? S_OK : S_FALSE;
+        }
+
+        HRESULT CreateFile(CString strFileName)
+        {
+            CloseFile();
+#ifdef _WIN32
+            m_pFileHandle = _wfopen(strFileName.c_str(), L"w");
+#else
+            std::string aMutliByteName  = stringWstingToUtf8String (strFileName);
+            m_pFileHandle = fopen(aMutliByteName.c_str(), "w");
+#endif
+            return SetPosition(0);
+        }
+        HRESULT SetPosition( ULONG64 nPos )
+        {
+            if (m_pFileHandle && nPos < (ULONG)m_lFileSize)
+            {
+                fseek(m_pFileHandle, nPos, SEEK_SET);
+                m_lFilePosition = nPos;
+                return S_OK;
+            }
+            else
+            {
+                return (NULL == m_pFileHandle) ? S_FALSE : S_OK;
+            }
+        }
+        LONG64  GetPosition()
+        {
+            return m_lFilePosition;
+        }
+        HRESULT SkipBytes(ULONG64 nCount)
+        {
+            return SetPosition(m_lFilePosition + nCount);
+        }
+
+        HRESULT CloseFile()
+        {
+            m_lFileSize = 0;
+            m_lFilePosition = 0;
+            if (NULL != m_pFileHandle)
+            {
+                fclose (m_pFileHandle);
+            }
+            return S_OK;
+        }
+
+        ULONG64 GetFileSize()
+        {
+            return m_lFileSize;
+        }
+
+        HRESULT WriteReserved(DWORD dwCount)
+        {
+            BYTE* buf = new BYTE[dwCount];
+            memset(buf, 0, (size_t)dwCount);
+            HRESULT hr = WriteFile(buf, dwCount);
+            delete [] buf;
+            return hr;
+        }
+        HRESULT WriteReserved2(DWORD dwCount)
+        {
+            BYTE* buf = new BYTE[dwCount];
+            memset(buf, 0xFF, (size_t)dwCount);
+            HRESULT hr = WriteFile(buf, dwCount);
+            delete [] buf;
+            return hr;
+        }
+        HRESULT WriteReservedTo(DWORD dwPoint)
+        {
+            if (m_lFilePosition >= dwPoint)
+                return S_OK;
+
+            DWORD dwCount = dwPoint - (DWORD)m_lFilePosition;
+            BYTE* buf = new BYTE[dwCount];
+            memset(buf, 0, (size_t)dwCount);
+            HRESULT hr = WriteFile(buf, dwCount);
+            delete [] buf;
+            return hr;
+        }
+        HRESULT SkipReservedTo(DWORD dwPoint)
+        {
+            if (m_lFilePosition >= dwPoint)
+                return S_OK;
+
+            DWORD dwCount = dwPoint - (DWORD)m_lFilePosition;
+            return SkipBytes(dwCount);
+        }
+
+        LONG GetProgress()
+        {
+            if (0 >= m_lFileSize)
+                return -1;
+
+            double dVal = (double)(100 * m_lFilePosition);
+            LONG lProgress = (LONG)(dVal / m_lFileSize);
+            return lProgress;
+        }
+
+        void WriteStringUTF8(CString& strXml)
+        {
+            std::string utf8_str;
+
+
+    #ifdef UNICODE
+            // Encoding Unicode to UTF-8
+            utf8_str = stringWstingToUtf8String (strXml);
+    #else
+            utf8_str = strXml;
+            /*
+            wchar_t* pWStr = new wchar_t[nLength + 1];
+            if (!pWStr)
+                return;
+
+            // set end string
+            pWStr[nLength] = 0;
+
+            // Encoding ASCII to Unicode
+            MultiByteToWideChar(CP_ACP, 0, strXml, nLength, pWStr, nLength);
+
+            int nLengthW = (int)wcslen(pWStr);
+
+            // Encoding Unicode to UTF-8
+            WideCharToMultiByte(CP_UTF8, 0, pWStr, nLengthW + 1, saStr.GetBuffer(nLengthW*3 + 1), nLengthW*3, NULL, NULL);
+            saStr.ReleaseBuffer();
+
+            delete[] pWStr;
+            */
+    #endif
+
+            WriteFile((void*)utf8_str.c_str(), utf8_str.size());
+        }
+
+    protected:
+        FILE    *m_pFileHandle;
+        long    m_lFileSize;
+        long m_lFilePosition;
+    };
+}
+#endif //#ifdef _WIN32
 		
 	typedef 
 	enum XmlNodeType

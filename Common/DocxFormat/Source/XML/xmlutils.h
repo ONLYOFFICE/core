@@ -1,5 +1,7 @@
+
 #pragma once
 
+#ifdef _WIN32
 #import <msxml3.dll> rename_namespace("XML")
 
 #ifdef  _USE_XMLLITE_READER_
@@ -2773,7 +2775,9 @@ __forceinline const bool operator!=(const wchar_t* cwsStr1, const CWCharWrapper&
 	return false;
 }
 
-//#define _USE_LIBXML2_READER_
+#endif // #ifdef _WIN32
+
+#define _USE_LIBXML2_READER_
 
 #ifdef _USE_LIBXML2_READER_
 

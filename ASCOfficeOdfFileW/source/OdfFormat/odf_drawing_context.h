@@ -25,7 +25,7 @@ public:
 	odf_drawing_context(odf_conversion_context *odf_context);
     ~odf_drawing_context();
 
-	void set_drawings_rect(double x_pt, double y_pt, double width_pt, double height_pt);
+	void set_drawings_rect(_CP_OPT(double) x_pt, _CP_OPT(double) y_pt, _CP_OPT(double) width_pt, _CP_OPT(double) height_pt);
 	void clear();
 	void set_styles_context(odf_style_context*  styles_context);//для embedded 
 

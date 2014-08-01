@@ -454,6 +454,29 @@ public:
 	LINK_PROPERTY_BOOL(CanChangeArrows)
 };
 
+class CAscPaddings
+{
+private:
+	double m_dLeft;
+	double m_dTop;
+	double m_dRight;
+	double m_dBottom;
+
+public:
+	CAscPaddings()
+	{
+		m_dLeft = -100000;
+		m_dTop	= -100000;
+		m_dRight = -100000;
+		m_dBottom = -100000;
+	}
+
+	LINK_PROPERTY_DOUBLE(Left)
+	LINK_PROPERTY_DOUBLE(Top)
+	LINK_PROPERTY_DOUBLE(Right)
+	LINK_PROPERTY_DOUBLE(Bottom)
+};
+
 class CAscShapeProp
 {
     int m_nType;
@@ -461,7 +484,7 @@ class CAscShapeProp
 	CAscFill m_oFill;
 	CAscStroke m_oStroke;
 
-	// TODO: paddings
+	CAscPaddings m_oPaddings;
 
 	bool m_bCanFill;
 	bool m_bFromChart;
@@ -481,6 +504,209 @@ public:
 
 	CAscFill& get_Fill() { return m_oFill; }
 	CAscStroke& get_Stroke() { return m_oStroke; }
+};
+
+class CAscDocumentOpenProgress
+{
+private:
+	int m_nType;
+
+	int m_nFontsCount;
+	int m_nFontCurrent;
+
+	int m_nImagesCount;
+	int m_nImageCurrent;
+
+public:
+	CAscDocumentOpenProgress()
+	{
+		m_nType = c_oAscAsyncAction_Open;
+
+		m_nFontsCount = 0;
+		m_nFontCurrent = 0;
+
+		m_nImagesCount = 0;
+		m_nImageCurrent = 0;
+	}
+
+	LINK_PROPERTY_INT(Type)
+	LINK_PROPERTY_INT(FontsCount)
+	LINK_PROPERTY_INT(FontCurrent)
+	LINK_PROPERTY_INT(ImagesCount)
+	LINK_PROPERTY_INT(ImageCurrent)
+};
+
+class CAscDocumentInfo
+{
+private:
+	std::wstring m_sId;
+	std::wstring m_sUrl;
+	std::wstring m_sTitle;
+	std::wstring m_sFormat;
+	std::wstring m_sVKey;
+	std::wstring m_sUserId;
+	std::wstring m_sUserName;
+
+public:
+	CAscDocumentInfo()
+	{
+		m_sId = L"";
+		m_sUrl = L"";
+		m_sTitle = L"";
+		m_sFormat = L"";
+		m_sVKey = L"";
+		m_sUserId = L"";
+		m_sUserName = L"";
+	}
+
+	LINK_PROPERTY_STRING(Id)
+	LINK_PROPERTY_STRING(Url)
+	LINK_PROPERTY_STRING(Title)
+	LINK_PROPERTY_STRING(Format)
+	LINK_PROPERTY_STRING(VKey)
+	LINK_PROPERTY_STRING(UserId)
+	LINK_PROPERTY_STRING(UserName)
+};
+
+class CAscListType
+{
+private:
+	int m_nType;
+	int m_nSubType;
+
+public:
+
+	CAscListType()
+	{
+		m_nType = -1;
+		m_nSubType = -1;
+	}
+
+	LINK_PROPERTY_INT(Type)
+	LINK_PROPERTY_INT(SubType)
+};
+
+class CAscSection
+{
+private:
+	double m_dPageWidth;
+	double m_dPageHeight;
+
+	double m_dMarginLeft;
+	double m_dMarginRight;
+	double m_dMarginTop;
+	double m_dMarginBottom;
+
+public:
+	CAscSection()
+	{
+		m_dPageWidth = 0;
+		m_dPageHeight = 0;
+
+		m_dMarginLeft = 0;
+		m_dMarginRight = 0;
+		m_dMarginTop = 0;
+		m_dMarginBottom = 0;
+	}
+
+	LINK_PROPERTY_DOUBLE(PageWidth)
+	LINK_PROPERTY_DOUBLE(PageHeight)
+	LINK_PROPERTY_DOUBLE(MarginLeft)
+	LINK_PROPERTY_DOUBLE(MarginRight)
+	LINK_PROPERTY_DOUBLE(MarginTop)
+	LINK_PROPERTY_DOUBLE(MarginBottom)
+};
+
+class CAscImagePosition
+{
+private:
+	int m_nRelativeFrom;
+	bool m_bUseAlign;
+	int m_nAlign;
+	int m_nValue;
+
+public:
+	CAscImagePosition()
+	{
+		m_nRelativeFrom = 0;
+		m_bUseAlign = false;
+		m_nAlign = 0;
+		m_nValue = 0;
+	}
+
+	LINK_PROPERTY_INT(RelativeFrom)
+	LINK_PROPERTY_BOOL(UseAlign)
+	LINK_PROPERTY_INT(Align)
+	LINK_PROPERTY_INT(Value)
+};
+
+class CAscPosition
+{
+private:
+	double m_dX;
+	double m_dY;
+
+public:
+	CAscPosition()
+	{
+		m_dX = 0;
+		m_dY = 0;
+	}
+
+	LINK_PROPERTY_DOUBLE(X)
+	LINK_PROPERTY_DOUBLE(Y)
+};
+
+class CAscImageSize
+{
+private:
+	double m_dWidth;
+	double m_dHeight;
+	bool m_bIsCorrect;
+
+public:
+	CAscImageSize()
+	{
+		m_dWidth = 0;
+		m_dHeight = 0;
+		m_bIsCorrect = false;
+	}
+
+	LINK_PROPERTY_DOUBLE(Width)
+	LINK_PROPERTY_DOUBLE(Height)
+	LINK_PROPERTY_BOOL(IsCorrect)
+};
+
+class CAscImageProp
+{
+private:
+	bool m_bCanBeFlow;
+
+	double m_dWidth;
+	double m_dHeight;
+
+	int m_nWrappingStyle;
+
+	CAscPaddings m_oPaddings;
+	CAscPosition m_oPosition;
+
+	bool m_bAllowOverlap;
+
+	CAscImagePosition m_oPositionH;
+	CAscImagePosition m_oPositionV;
+
+	int m_nInternalPosition;
+
+	std::wstring m_sUrl;
+	bool m_bLocked;
+
+	CAscChartSettings m_oChartProps;
+	CAscShapeProp m_oShapeProp;
+
+	int m_nChangeLevel;
+	bool m_bGroup;
+
+	// TODO:
 };
 
 }

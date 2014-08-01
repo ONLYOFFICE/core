@@ -5,57 +5,6 @@
 
 #include <string>
 
-#define LINK_PROPERTY_INT(memberName)					\
-	inline int get_##memberName##()						\
-	{													\
-		return m_n##memberName##;						\
-	}													\
-	inline void put_##memberName##(const int& newVal)	\
-	{													\
-		m_n##memberName## = newVal;						\
-	}
-
-#define LINK_PROPERTY_DOUBLE(memberName)				\
-	inline double get_##memberName##()					\
-	{													\
-		return m_d##memberName##;						\
-	}													\
-	inline void put_##memberName##(const double& newVal)\
-	{													\
-		m_d##memberName## = newVal;						\
-	}
-
-#define LINK_PROPERTY_BOOL(memberName)					\
-	inline bool get_##memberName##()					\
-	{													\
-		return m_b##memberName##;						\
-	}													\
-	inline void put_##memberName##(const bool& newVal)	\
-	{													\
-		m_b##memberName## = newVal;						\
-	}
-
-#define LINK_PROPERTY_BYTE(memberName)					\
-	inline BYTE get_##memberName##()					\
-	{													\
-		return m_n##memberName##;						\
-	}													\
-	inline void put_##memberName##(const BYTE& newVal)	\
-	{													\
-		m_n##memberName## = newVal;						\
-	}
-
-#define LINK_PROPERTY_STRING(memberName)						\
-	inline std::wstring get_##memberName##()					\
-	{															\
-		return m_s##memberName##;								\
-	}															\
-	inline void put_##memberName##(const std::wstring& newVal)	\
-	{															\
-		m_s##memberName## = newVal;								\
-	}
-
-
 namespace NSEditorApi
 {
 

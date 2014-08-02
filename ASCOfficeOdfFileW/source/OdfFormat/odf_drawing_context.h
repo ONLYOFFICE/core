@@ -70,7 +70,7 @@ public:
 	void start_shape(int type);
 	void end_shape();
 
-	void start_image(std::wstring & path);
+	void start_image(std::wstring file_path);
 	void end_image();
 		
 	void start_text_box();

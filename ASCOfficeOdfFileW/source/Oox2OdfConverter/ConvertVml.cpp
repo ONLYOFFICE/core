@@ -97,6 +97,47 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style)
 		case SimpleTypes::Vml::cssptMarginTop:
 			odf_context()->drawing_context()->set_margin_top(vml_style->m_arrProperties[i].get_Value().oValue.dValue);
 			break;
+////////////////////////////////////////////////////////////////
+		case SimpleTypes::Vml::cssptMsoPositionHorizontal:
+			switch(vml_style->m_arrProperties[i].get_Value().eMsoPosHor)
+			{
+			case SimpleTypes::Vml::cssmsoposhorAbsolute:	odf_context()->drawing_context()->set_horizontal_pos(2); break;
+			case SimpleTypes::Vml::cssmsoposhorLeft:		odf_context()->drawing_context()->set_horizontal_pos(2); break;
+			case SimpleTypes::Vml::cssmsoposhorCenter:		odf_context()->drawing_context()->set_horizontal_pos(0); break;
+			case SimpleTypes::Vml::cssmsoposhorRight:		odf_context()->drawing_context()->set_horizontal_pos(4); break;
+			case SimpleTypes::Vml::cssmsoposhorInside:		odf_context()->drawing_context()->set_horizontal_pos(1); break;
+			case SimpleTypes::Vml::cssmsoposhorOutside :	odf_context()->drawing_context()->set_horizontal_pos(3); break;
+			}
+			break;
+		case SimpleTypes::Vml::cssptMsoPositionHorizontalRelative:
+			switch(vml_style->m_arrProperties[i].get_Value().eMsoPosHorRel)
+			{
+			case SimpleTypes::Vml::cssmsoposhorrelMargin:	odf_context()->drawing_context()->set_horizontal_rel(2); break;
+			case SimpleTypes::Vml::cssmsoposhorrelPage:		odf_context()->drawing_context()->set_horizontal_rel(6); break;
+			case SimpleTypes::Vml::cssmsoposhorrelText:		odf_context()->drawing_context()->set_horizontal_rel(1); break;
+			case SimpleTypes::Vml::cssmsoposhorrelChar:		odf_context()->drawing_context()->set_horizontal_rel(0); break;
+			}
+			break;
+		case SimpleTypes::Vml::cssptMsoPositionVertical:
+			switch(vml_style->m_arrProperties[i].get_Value().eMsoPosVer)
+			{
+			case SimpleTypes::Vml::cssmsoposverAbsolute:	odf_context()->drawing_context()->set_vertical_pos(2); break;
+			case SimpleTypes::Vml::cssmsoposverTop:			odf_context()->drawing_context()->set_vertical_pos(4); break;
+			case SimpleTypes::Vml::cssmsoposverCenter:		odf_context()->drawing_context()->set_vertical_pos(1); break;
+			case SimpleTypes::Vml::cssmsoposverBottom:		odf_context()->drawing_context()->set_vertical_pos(0); break;
+			case SimpleTypes::Vml::cssmsoposverInside:		odf_context()->drawing_context()->set_vertical_pos(2); break;//??
+			case SimpleTypes::Vml::cssmsoposverOutside:		odf_context()->drawing_context()->set_vertical_pos(3); break;//??
+			}
+			break;
+		case SimpleTypes::Vml::cssptMsoPositionVerticalRelative:
+			switch(vml_style->m_arrProperties[i].get_Value().eMsoPosVerRel)
+			{
+			case SimpleTypes::Vml::cssmsoposverrelMargin:	odf_context()->drawing_context()->set_vertical_rel(3); break;
+			case SimpleTypes::Vml::cssmsoposverrelPage:		odf_context()->drawing_context()->set_vertical_rel(5); break;
+			case SimpleTypes::Vml::cssmsoposverrelText:		odf_context()->drawing_context()->set_vertical_rel(6); break;
+			case SimpleTypes::Vml::cssmsoposverrelLine:		odf_context()->drawing_context()->set_vertical_rel(2); break;
+			}
+			break;
 		}
 	}
 	odf_context()->drawing_context()->set_drawings_rect(x, y, width_pt, height_pt);
@@ -104,6 +145,11 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style)
 void OoxConverter::convert(OOX::Vml::CShape *vml_shape)
 {
 	if (vml_shape == NULL) return;
+
+	if (vml_shape->m_oAllowInCell.GetValue())
+	{
+	}
+	odf_context()->drawing_context()->set_overlap(vml_shape->m_oAllowOverlap.GetValue());
 
 	for (long i=0 ; i < vml_shape->m_arrItems.GetSize();i++)
 	{
@@ -127,6 +173,7 @@ void OoxConverter::convert(OOX::Vml::CImageData *vml_image_data)
 		pathImage = find_link_by_id(sID,1);
 	}
 		
+	//что именно нужно заливка объекта или картинка - разрулится внутри drawing_context
 	if (pathImage.GetLength() < 1)return;
 	_gdi_graphics_::GetResolution(pathImage, Width, Height);
 
@@ -135,6 +182,10 @@ void OoxConverter::convert(OOX::Vml::CImageData *vml_image_data)
 		
 			odf_context()->drawing_context()->set_bitmap_link(string2std_string(pathImage));
 			odf_context()->drawing_context()->set_image_style_repeat(1);//stretch
+
+			double gain = vml_image_data->m_oGain.GetValue();
+			if (gain > 1)
+				odf_context()->drawing_context()->set_opacity(gain/1000.);
 
 		odf_context()->drawing_context()->end_bitmap_style();
 	odf_context()->drawing_context()->end_area_properies();

@@ -204,7 +204,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;../../Redist&quot;"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;../Redist&quot;"
 			/>
 		</Configuration>
 	</Configurations>

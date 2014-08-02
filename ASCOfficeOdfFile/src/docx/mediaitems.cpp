@@ -29,10 +29,10 @@ mediaitems::item::item(	std::wstring const & _href,
                        outputName(_outputName),
                        mediaInternal(_mediaInternal),
 					   Id(_Id),
-					   used_rels (false),
                        valid(true) //вообще говоря даже если файл покоцанный то мы все равно обязаны перенести "объект"
 {    
-
+	count_add = 1;
+	count_used = 0;
 }
 
 std::wstring mediaitems::add_or_find(const std::wstring & href, Type type, bool & isInternal)
@@ -72,12 +72,13 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, Type type, bool 
 	if ( type == typeChart)outputPath= outputPath + L".xml";
 
 	std::wstring id;
-    BOOST_FOREACH(item const & elm, items_)
+    BOOST_FOREACH(item & elm, items_)
     {
 		if (elm.href == inputPath)
 		{
 			id = elm.Id;
 			outputPath  = elm.outputName;
+			elm.count_add++;
 			break;
 		}
 	}
@@ -117,15 +118,14 @@ void mediaitems::dump_rels(rels & Rels)
     size_t i = 0;
     BOOST_FOREACH(item & elm, items_)
     {
-		if (elm.used_rels)continue; // уже использовали этот релс выше(колонтитул ....)
+		if (elm.count_used > elm.count_add)continue; // уже использовали этот релс выше(колонтитул ....)
         Rels.add( relationship(
                 elm.Id, 
                 utils::media::get_rel_type(elm.type), 
                 elm.valid ? elm.outputName : L"NULL", 
                 elm.mediaInternal ? L"" : L"External" )
                 );
-		elm.used_rels = true;
-
+		elm.count_used++;
     }        
 }
 

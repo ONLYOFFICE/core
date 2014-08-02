@@ -36,7 +36,8 @@ public:
         bool mediaInternal;
         bool valid;
 		std::wstring  Id;
-		bool used_rels;
+		int count_used;
+		int count_add;
     };
     typedef std::vector< item > items_array;
 	

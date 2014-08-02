@@ -174,7 +174,8 @@ std::wstring odf_conversion_context::get_next_name_object()
 void odf_conversion_context::process_styles(_object & object, bool isRoot)
 {
 	create_element(L"office", L"styles", object.styles, this,true);//общие стили
-	object.style_context->process_office(object.styles.back());
+	object.style_context->process_office_styles(object.styles.back());
+	page_layout_context()->process_office_styles(object.styles.back());
 	
 	if (isRoot)
 	{	
@@ -191,7 +192,7 @@ void odf_conversion_context::process_styles(_object & object, bool isRoot)
 	}
 
 	create_element(L"office", L"automatic-styles", object.content_styles, this,true);
-	object.style_context->process_automatic(object.content_styles.back());
+	object.style_context->process_automatic_styles(object.content_styles.back());
 
 }
 

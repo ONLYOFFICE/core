@@ -34,9 +34,9 @@ public:
 
 	office_element_ptr & add_or_find(std::wstring name, style_family::type family, bool automatic = false, bool root = false, int id = -1);
 
-	void process_automatic_for_styles(office_element_ptr root );
-	void process_automatic(office_element_ptr root );
-	void process_office(office_element_ptr root );
+	void process_automatic_for_styles	(office_element_ptr root );
+	void process_automatic_styles		(office_element_ptr root );
+	void process_office_styles			(office_element_ptr root );
 
 	void reset_defaults();	
 	void add_default(odf_style_state_ptr & state)	{current_default_styles_.push_back(state);}

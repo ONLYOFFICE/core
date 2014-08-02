@@ -643,7 +643,7 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool root)
 {
 	if (oox_section_pr == NULL) return;
-
+ 
 	bool continuous	= false;
 
 	if (oox_section_pr->m_oType.IsInit() && oox_section_pr->m_oType->m_oVal.IsInit())
@@ -1369,10 +1369,8 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 	if (oox_pic == NULL) return;
 
 	odt_context->start_drawings();
-	odt_context->drawing_context()->set_anchor(odf::anchor_type::AsChar); //??? перекрытие 
-	//odt_context->drawing_context()->set_overlap(true);
-	//odt_context->drawing_context()->set_wrap_style(odf::style_wrap::Dynamic);
 			
+	int type = 1; // shape .. default
 	if (oox_pic->m_oShapeGroup.IsInit())
 	{
 		OoxConverter::convert(oox_pic->m_oShapeGroup.GetPointer());
@@ -1440,6 +1438,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 		else if (oox_pic->m_oShapeType.IsInit())
 		{
 			OOX::Vml::SptType sptType = static_cast<OOX::Vml::SptType>(oox_pic->m_oShapeType->m_oSpt.GetValue());
+
 			odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
 			
 			OoxConverter::convert(oox_pic->m_oShape.GetPointer());	

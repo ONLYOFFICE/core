@@ -533,13 +533,20 @@ void odf_drawing_context::start_shape(int type)
 	}
 	else if (type == 2000)
 	{
-		impl_->create_draw_base(10);//text-box
+		start_text_box();
+	}
+	else if (type == 3000)
+	{
+		start_image(L"");
 	}
 }
 void odf_drawing_context::end_shape()
 {
 	if (impl_->current_drawing_state_.elements_.size() < 1) 
 		return;
+
+	if (impl_->current_drawing_state_.oox_shape_preset == 2000) return end_text_box();
+	if (impl_->current_drawing_state_.oox_shape_preset == 3000) return end_image();
 	//вторичные, вычисляемые свойства шейпов
 
 	draw_path* path = dynamic_cast<draw_path*>(impl_->current_drawing_state_.elements_[0].elm.get());
@@ -595,7 +602,7 @@ void odf_drawing_context::end_shape()
 		{
 			sub_type = Shape_Types_Mapping[impl_->current_drawing_state_.oox_shape_preset].first;
 		}
-		else
+		else //if (impl_->current_drawing_state_.oox_shape_preset != 2000)// 3000 - все равно сюда не попадет
 		{
 			sub_type = L"polyline";
 		}
@@ -928,9 +935,9 @@ void odf_drawing_context::set_vertical_rel(int from)
 	switch(from)
 	{
 	case 0:	type = vertical_rel::Baseline;		break;//	relfromvBottomMargin ???
-	case 1:	type = vertical_rel::Baseline;		break;//	relfromvInsideMargin ???
+	case 1:	type = vertical_rel::PageContent;	break;//	relfromvInsideMargin ???
 	case 2:	type = vertical_rel::Line;			break;//	relfromvLine          
-	case 3:	type = vertical_rel::Baseline;		break;//	relfromvMargin       ???
+	case 3:	type = vertical_rel::PageContent;	break;//	relfromvMargin     
 	case 4:	type = vertical_rel::Baseline;		break;//	relfromvOutsideMargin ???
 	case 5:	type = vertical_rel::Page;			
 		impl_->anchor_settings_.anchor_type_ = anchor_type(anchor_type::Page);
@@ -942,7 +949,9 @@ void odf_drawing_context::set_vertical_rel(int from)
 	}
 
 	impl_->anchor_settings_.style_vertical_rel_ = vertical_rel(type);
-	impl_->anchor_settings_.style_vertical_pos_ = vertical_pos(vertical_pos::FromTop);//default
+
+	if (!impl_->anchor_settings_.style_vertical_pos_)//default
+		impl_->anchor_settings_.style_vertical_pos_ = vertical_pos(vertical_pos::FromTop);
 
 }
 void odf_drawing_context::set_vertical_pos(int align)
@@ -978,9 +987,10 @@ void odf_drawing_context::set_horizontal_rel(int from)
 		case 6:	type = horizontal_rel::Page;				break;	//	relfromhPage          = 6, ???
 		case 7:	type = horizontal_rel::PageEndMargin;		break;	//	relfromhRightMargin   = 7
 	}
-
 	impl_->anchor_settings_.style_horizontal_rel_ = horizontal_rel(type);
-	impl_->anchor_settings_.style_horizontal_pos_ = horizontal_pos(horizontal_pos::FromLeft);//default
+	
+	if (!impl_->anchor_settings_.style_horizontal_pos_) //default
+		impl_->anchor_settings_.style_horizontal_pos_ = horizontal_pos(horizontal_pos::FromLeft);
 }
 void odf_drawing_context::set_horizontal_pos(int align)
 {
@@ -1362,8 +1372,10 @@ void odf_drawing_context::set_textarea_padding(double left,double top, double ri
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //вложенные элементы
-void odf_drawing_context::start_image(std::wstring & path)
+void odf_drawing_context::start_image(std::wstring path)
 {	
+	impl_->current_drawing_state_.oox_shape_preset = 3000;
+	
 	start_frame();
 
 	//добавить в стиль ссыль на базовый стиль Frame - зачемто нужно :(
@@ -1379,11 +1391,12 @@ void odf_drawing_context::start_image(std::wstring & path)
 	draw_image* image = dynamic_cast<draw_image*>(image_elm.get());
 	if (image == NULL)return;
 
-    image->common_xlink_attlist_.href_= path;
 	image->common_xlink_attlist_.type_= xlink_type::Simple;
 	image->common_xlink_attlist_.show_ = xlink_show::Embed;
 	image->common_xlink_attlist_.actuate_= xlink_actuate::OnLoad;
 
+	if (path.length() >0)   image->common_xlink_attlist_.href_= path; //may be later set
+	
 	start_element(image_elm);
 			
 	set_image_style_repeat(1);//default
@@ -1408,6 +1421,8 @@ void odf_drawing_context::start_object(std::wstring name)
 
 void odf_drawing_context::start_text_box()
 {	
+	impl_->current_drawing_state_.oox_shape_preset = 2000;
+
 	start_frame();
 
 	//добавить в стиль ссыль на базовый стиль Frame - зачемто нужно :(
@@ -1941,6 +1956,8 @@ void odf_drawing_context::end_hatch_style()
 
 void odf_drawing_context::start_bitmap_style()
 {
+	if (impl_->current_drawing_state_.oox_shape_preset == 3000) return;
+
 	odf::office_element_ptr fill_image_element;
 
 	odf::create_element(L"draw",L"fill-image", fill_image_element, impl_->odf_context_);
@@ -1949,8 +1966,11 @@ void odf_drawing_context::start_bitmap_style()
 	draw_fill_image * fill_image = dynamic_cast<draw_fill_image *>(fill_image_element.get());
 	if (!fill_image) return;
 
-	fill_image->draw_name_ = impl_->styles_context_->find_free_name(style_family::FillImage);
-	fill_image->draw_display_name_ = std::wstring(L"User") + fill_image->draw_name_.get() ;
+	fill_image->draw_name_				= impl_->styles_context_->find_free_name(style_family::FillImage);
+	fill_image->draw_display_name_		= std::wstring(L"User") + fill_image->draw_name_.get() ;
+	//fill_image->xlink_attlist_.type_	= xlink_type::Simple;
+	fill_image->xlink_attlist_.show_	= xlink_show::Embed;
+	fill_image->xlink_attlist_.actuate_	= xlink_actuate::OnLoad;
 	
 	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_name_ = fill_image->draw_name_;
 	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::bitmap);
@@ -2012,19 +2032,30 @@ void odf_drawing_context::set_image_client_rect(double l_pt, double t_pt, double
 	impl_->current_graphic_properties->content().fo_clip_ = str_stream.str();
 
 }
-void odf_drawing_context::set_bitmap_link(std::wstring link)
+void odf_drawing_context::set_bitmap_link(std::wstring file_path)
 {
-	std::wstring odf_ref_name ;
+	std::wstring odf_ref_name ;	
+	impl_->odf_context_->mediaitems()->add_or_find(file_path,_mediaitems::typeImage,odf_ref_name);
 	
-	impl_->odf_context_->mediaitems()->add_or_find(link,_mediaitems::typeImage,odf_ref_name);
-	
-	draw_fill_image * fill_image = dynamic_cast<draw_fill_image *>(impl_->styles_context_->last_state()->get_office_element().get());
-	if (!fill_image) return;
-   
-	fill_image->xlink_attlist_.href_= odf_ref_name;
-	//fill_image->xlink_attlist_.type_= xlink_type::Simple;
-	fill_image->xlink_attlist_.show_ = xlink_show::Embed;
-	fill_image->xlink_attlist_.actuate_= xlink_actuate::OnLoad;
+	if (impl_->current_drawing_state_.oox_shape_preset == 3000)
+	{
+		if (impl_->current_level_.size() < 1) return;
+		
+		draw_image* image = dynamic_cast<draw_image*>(impl_->current_level_.back().get());
+		if (image == NULL)return;
+
+		image->common_xlink_attlist_.href_= odf_ref_name;
+//backgroud image 
+		//set_anchor(anchor_type::Char);
+		//set_overlap(true);
+	}
+	else
+	{
+		draw_fill_image * fill_image = dynamic_cast<draw_fill_image *>(impl_->styles_context_->last_state()->get_office_element().get());
+		if (!fill_image) return;
+	   
+		fill_image->xlink_attlist_.href_= odf_ref_name;
+	}
 }
 void odf_drawing_context::set_bitmap_tile_scale_x(double scale_x)
 {

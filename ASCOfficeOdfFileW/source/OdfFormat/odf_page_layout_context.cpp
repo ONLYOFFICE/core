@@ -80,7 +80,11 @@ void odf_page_layout_context::process_master_styles(office_element_ptr root )
 
 void odf_page_layout_context::process_automatic_for_styles(office_element_ptr root )
 {
-	local_style_context_->process_automatic(root);
+	local_style_context_->process_automatic_styles(root);
+}
+void odf_page_layout_context::process_office_styles(office_element_ptr root )
+{
+	local_style_context_->process_office_styles(root);
 }
 
 void odf_page_layout_context::set_current_master_page_base()
@@ -180,7 +184,10 @@ void odf_page_layout_context::set_footer_size(_CP_OPT(length) length_)//тут собс
 	props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_ = length_;
 
 	if (bottom_)
-		footer_props->style_header_footer_properties_attlist_.svg_height_ = bottom_.get() - length_.get();//fo_min_height_
+	{
+		double length_cm = bottom_->get_value_unit(length::cm) - length_->get_value_unit(length::cm);
+		footer_props->style_header_footer_properties_attlist_.svg_height_ = length(abs(length_cm),length::cm);//fo_min_height_
+	}
 }
 void odf_page_layout_context::set_header_size(_CP_OPT(length) length_)
 {
@@ -200,7 +207,10 @@ void odf_page_layout_context::set_header_size(_CP_OPT(length) length_)
 	props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_ = length_;
 
 	if (top_)
-		header_props->style_header_footer_properties_attlist_.svg_height_ = top_.get()- length_.get();//fo_min_height_
+	{
+		double length_cm = top_->get_value_unit(length::cm) - length_->get_value_unit(length::cm);
+		header_props->style_header_footer_properties_attlist_.svg_height_ = length(abs(length_cm),length::cm);//fo_min_height_
+	}
 }
 
 void odf_page_layout_context::set_background(_CP_OPT(color) & color, int type)

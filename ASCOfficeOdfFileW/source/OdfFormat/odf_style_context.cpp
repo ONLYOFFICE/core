@@ -108,7 +108,7 @@ void odf_style_context::process_automatic_for_styles(office_element_ptr root )
 			root->add_child_element(style_state_list_[i]->odf_style_);
 	}
 }
-void odf_style_context::process_automatic(office_element_ptr root )
+void odf_style_context::process_automatic_styles(office_element_ptr root )
 {//автоматические стили для элементов
 	for (long i =0; i < style_state_list_.size(); i++)
 	{
@@ -119,7 +119,7 @@ void odf_style_context::process_automatic(office_element_ptr root )
 	}
 }
 
-void odf_style_context::process_office(office_element_ptr root )
+void odf_style_context::process_office_styles(office_element_ptr root )
 {
 	number_styles_context_.process_styles(root );
 	

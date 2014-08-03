@@ -197,6 +197,9 @@ public:
 		current_paragraph_properties = NULL;
 
 		width = height = x = y = 0;
+
+		is_footer_header_ = false;  //некоторые свойства для объектов графики не поддерживаюися в редакторах Liber && OpenOffice.net
+									//в MS Office и в нашем - проблем таких нет.
 	} 
 	
 	odf_drawing_state				current_drawing_state_;
@@ -206,6 +209,8 @@ public:
 
 	odf_style_context			*styles_context_;
 	odf_conversion_context		*odf_context_;
+
+	bool is_footer_header_;
 
 	void create_draw_base(int type);
 	office_element_ptr create_draw_element(int type);
@@ -247,6 +252,11 @@ office_element_ptr & odf_drawing_context::get_current_element(){return impl_->cu
 void odf_drawing_context::set_styles_context(odf_style_context*  styles_context)
 {
 	impl_->styles_context_ = styles_context;
+}
+
+void odf_drawing_context::set_footer_header_state(bool Val)
+{
+	impl_->is_footer_header_ = Val;
 }
 
 void odf_drawing_context::start_group(std::wstring name, int id)
@@ -732,27 +742,27 @@ void odf_drawing_context::end_element()
 	impl_->current_level_.pop_back();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void odf_drawing_context::start_area_properies()
+void odf_drawing_context::start_area_properties()
 {
 	impl_->current_drawing_part_ = Area;
 }
-void odf_drawing_context::end_area_properies()
+void odf_drawing_context::end_area_properties()
 {
 	impl_->current_drawing_part_ = Unknown;
 }
-void odf_drawing_context::start_line_properies()
+void odf_drawing_context::start_line_properties()
 {
 	impl_->current_drawing_part_ = Line;
 }
-void odf_drawing_context::end_line_properies()
+void odf_drawing_context::end_line_properties()
 {
 	impl_->current_drawing_part_ = Unknown;
 }
-//void odf_drawing_context::start_shadow_properies()
+//void odf_drawing_context::start_shadow_properties()
 //{
 //	impl_->current_drawing_part_ = Shadow;
 //}
-//void odf_drawing_context::end_shadow_properies()
+//void odf_drawing_context::end_shadow_properties()
 //{
 //	impl_->current_drawing_part_ = Unknown;
 //}
@@ -925,7 +935,10 @@ void odf_drawing_context::set_margin_bottom	(double valPt)
 }
 void odf_drawing_context::set_anchor(int  type)
 {
+	if (impl_->is_footer_header_ && type == anchor_type::Page)
+		type = anchor_type::Paragraph;
 	impl_->anchor_settings_.anchor_type_ = anchor_type((anchor_type::type)type);
+
 }
 //////////////////////////////////////////////////////////////////////////////////////
 void odf_drawing_context::set_vertical_rel(int from)
@@ -939,11 +952,11 @@ void odf_drawing_context::set_vertical_rel(int from)
 	case 2:	type = vertical_rel::Line;			break;//	relfromvLine          
 	case 3:	type = vertical_rel::PageContent;	break;//	relfromvMargin     
 	case 4:	type = vertical_rel::Baseline;		break;//	relfromvOutsideMargin ???
-	case 5:	type = vertical_rel::Page;			
-		impl_->anchor_settings_.anchor_type_ = anchor_type(anchor_type::Page);
+	case 5:	type = vertical_rel::Page;		
+		set_anchor(anchor_type::Page); //???нужно ли ваще перебивать/задавать???
 		break;//	relfromvPage          
 	case 6:	type = vertical_rel::Paragraph;	
-		impl_->anchor_settings_.anchor_type_ = anchor_type(anchor_type::Paragraph);
+		set_anchor(anchor_type::Paragraph);
 		break;//	relfromvParagraph    
 	case 7:	type = vertical_rel::Baseline;		break;//	relfromvTopMargin   ???  
 	}
@@ -1434,13 +1447,20 @@ void odf_drawing_context::start_text_box()
 
 	if (impl_->current_graphic_properties)
 	{
+		impl_->anchor_settings_.run_through_ = run_through(run_through::Foreground);
+		impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
 
+		impl_->current_graphic_properties->content().common_background_color_attlist_.fo_background_color_ = odf::background_color(odf::background_color::Transparent);
 	}
 
 	office_element_ptr text_box_elm;
 	create_element(L"draw", L"text-box", text_box_elm, impl_->odf_context_);
 
 	start_element(text_box_elm);
+
+	start_area_properties();
+		set_no_fill();
+	end_area_properties();
 }
 void odf_drawing_context::set_text_box_min_size(double w_pt, double h_pt)
 {

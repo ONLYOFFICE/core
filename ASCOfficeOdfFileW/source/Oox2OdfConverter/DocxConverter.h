@@ -102,8 +102,10 @@ namespace Oox2Odf
 		cpdoccore::odf::package::odf_document	*output_document;
 		
 		odf::odt_conversion_context				*odt_context;
-		OOX::Logic::CDrawing					*docx_current_drawing; //пока сюда .. потом покрасивше, для внешних ссылок
+		OOX::Logic::CSectionProperty			*last_seсtion_properties; // для режима "продолжение" раздела с обновленными свойствами
 
+		void apply_from(OOX::Logic::CSectionProperty *props, OOX::Logic::CSectionProperty *other);
+		
 		void convert_document();
 		void convert_styles();
 		void convert_settings();

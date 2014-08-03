@@ -291,7 +291,7 @@ void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr, OOX::Dra
 	default:
 		break;
 	}
-	odf_context()->drawing_context()->start_area_properies();
+	odf_context()->drawing_context()->start_area_properties();
 	{
 		switch (oox_spPr->m_eFillType)
 		{
@@ -310,9 +310,9 @@ void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr, OOX::Dra
 			convert(&oox_sp_style->m_oFillRef);
 		}
 	}
-	odf_context()->drawing_context()->end_area_properies();
+	odf_context()->drawing_context()->end_area_properties();
 
-	odf_context()->drawing_context()->start_line_properies();
+	odf_context()->drawing_context()->start_line_properties();
 	{
 		if (oox_spPr->m_oLn.IsInit())
 			convert(oox_spPr->m_oLn.GetPointer());	//CLineProperties
@@ -321,7 +321,7 @@ void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr, OOX::Dra
 			convert(&oox_sp_style->m_oLnRef);
 		}
 	}
-	odf_context()->drawing_context()->end_line_properies();
+	odf_context()->drawing_context()->end_line_properties();
 //-----------------------------------------------------------------------------------------------------------------------------
 	if (oox_spPr->m_oEffectList.IsInit())
 		convert(oox_spPr->m_oEffectList.GetPointer());

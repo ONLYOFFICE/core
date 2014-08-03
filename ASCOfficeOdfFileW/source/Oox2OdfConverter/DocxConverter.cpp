@@ -41,6 +41,8 @@ DocxConverter::DocxConverter(const std::wstring & path, const ProgressCallback* 
 
 //set flags to default
 	m_bKeepNextParagraph = false;
+
+	last_seсtion_properties = NULL;
 	
 	if (UpdateProgress(290000))return;
 }
@@ -316,6 +318,10 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 		convert(oox_paragraph->m_oParagraphProperty, paragraph_properties); 
 	}else m_bKeepNextParagraph = false; //Ќ”∆Ќќ ѕ–»¬я«ј“№ к ”–ќ¬Ќё на котором хранить m_bKeepNextParagraph !!! todooo
 	//пока - если следующий не параграф - скидываем !!!
+
+	//анализ - список или неа ...
+
+	// 
 	
 	if (bStartNewParagraph) odt_context->start_paragraph(styled);
 	
@@ -505,6 +511,7 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 		{
 			odt_context->text_context()->set_outline_level(*parent_paragraph_properties.content().outline_level_);
 		}
+		//список тож €вно ??? 
 	}
 
 	if (oox_paragraph_pr->m_oSpacing.IsInit())
@@ -640,6 +647,58 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 
 	convert(oox_paragraph_pr->m_oSectPr.GetPointer());
 }
+
+void DocxConverter::apply_from(OOX::Logic::CSectionProperty *props, OOX::Logic::CSectionProperty *other)
+{
+	if (props == NULL || other== NULL)return;
+
+	props->m_bSectPrChange = other->m_bSectPrChange;
+
+	// Attributes
+	if (other->m_oRsidDel.IsInit())	props->m_oRsidDel		= other->m_oRsidDel;
+	if (other->m_oRsidR.IsInit())	props->m_oRsidR			= other->m_oRsidR;
+	if (other->m_oRsidRPr.IsInit())	props->m_oRsidRPr		= other->m_oRsidRPr;
+	if (other->m_oRsidSect.IsInit())props->m_oRsidSect		= other->m_oRsidSect;
+
+	// Child Elements
+	if (other->m_oBidi.IsInit())		props->m_oBidi		= other->m_oBidi;
+	if (other->m_oCols.IsInit())		props->m_oCols		= other->m_oCols;
+	if (other->m_oDocGrid.IsInit())		props->m_oDocGrid	= other->m_oDocGrid;
+	if (other->m_oEndnotePr.IsInit())	props->m_oEndnotePr	= other->m_oEndnotePr;
+	if (other->m_oRsidSect.IsInit())	props->m_oRsidSect	= other->m_oRsidSect;
+
+	if (other->m_oFootnotePr.IsInit())	props->m_oFootnotePr= other->m_oFootnotePr;
+	if (other->m_oFormProt.IsInit())	props->m_oFormProt	= other->m_oFormProt;
+	if (other->m_oLnNumType.IsInit())	props->m_oLnNumType	= other->m_oLnNumType;
+	if (other->m_oNoEndnote.IsInit())	props->m_oNoEndnote	= other->m_oNoEndnote;
+
+	if (other->m_oPaperSrc.IsInit())	props->m_oPaperSrc	= other->m_oPaperSrc;
+	if (other->m_oPgBorders.IsInit())	props->m_oPgBorders	= other->m_oPgBorders;
+	if (other->m_oPgMar.IsInit())		props->m_oPgMar		= other->m_oPgMar;
+	if (other->m_oPgNumType.IsInit())	props->m_oPgNumType	= other->m_oPgNumType;
+	if (other->m_oPgSz.IsInit())		props->m_oPgSz		= other->m_oPgSz;
+	if (other->m_oPrinterSettings.IsInit())	props->m_oPrinterSettings = other->m_oPrinterSettings;
+
+	if (other->m_oRtlGutter.IsInit())		props->m_oRtlGutter		= other->m_oRtlGutter;
+	if (other->m_oSectPrChange.IsInit())	props->m_oSectPrChange	= other->m_oSectPrChange;
+	if (other->m_oTextDirection.IsInit())	props->m_oTextDirection	= other->m_oTextDirection;
+	if (other->m_oTitlePg.IsInit())			props->m_oTitlePg		= other->m_oTitlePg;
+	if (other->m_oType.IsInit())			props->m_oType			= other->m_oType;
+	if (other->m_oVAlign.IsInit())			props->m_oVAlign		= other->m_oVAlign;
+	if (other->m_oTitlePg.IsInit())			props->m_oTitlePg		= other->m_oTitlePg;
+
+
+	if (other->m_arrFooterReference.GetSize() > 0)
+	{
+		props->m_arrFooterReference.RemoveAll();
+		props->m_arrFooterReference = other->m_arrFooterReference;
+	}
+	if (other->m_arrHeaderReference.GetSize() > 0)
+	{
+		props->m_arrHeaderReference.RemoveAll();
+		props->m_arrHeaderReference = other->m_arrHeaderReference;
+	}
+}
 void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool root)
 {
 	if (oox_section_pr == NULL) return;
@@ -651,7 +710,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		switch(oox_section_pr->m_oType->m_oVal->GetValue())
 		{		
 		case SimpleTypes::sectionmarkContinious :
-			continuous = true; // нужно убрать разрыв
+			continuous = true; 
 			break;
 		case SimpleTypes::sectionmarkNextColumn :
 		case SimpleTypes::sectionmarkEvenPage   :
@@ -661,6 +720,20 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 			break;
 		}
 	}
+
+	if (continuous && last_seсtion_properties)
+	{	// нужно убрать автоматический разрыв.на следующую страницу
+		// + 
+		//нужно текущие совйства накотить на предыдущие !! .. и так пока continues далее повтор€етс€ 
+		apply_from(last_seсtion_properties,oox_section_pr);
+	}
+	else
+	{
+		last_seсtion_properties = oox_section_pr;
+	}
+
+	oox_section_pr = last_seсtion_properties;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	odt_context->page_layout_context()->create_master_page(root ? L"Standart" : L"");
 	
 	odt_context->set_master_page_name(odt_context->page_layout_context()->last_master().get_name());
@@ -1764,9 +1837,9 @@ void DocxConverter::convert(OOX::Logic::CShape	 *oox_shape)
 		{
 			OoxConverter::convert(oox_shape->m_oCNvConnSpPr.GetPointer());
 			//частенько приплывает из стил€ заполенение объекта .. а он то одномерный :)
-			odf_context()->drawing_context()->start_area_properies();
+			odf_context()->drawing_context()->start_area_properties();
 				odf_context()->drawing_context()->set_no_fill();
-			odf_context()->drawing_context()->end_area_properies();
+			odf_context()->drawing_context()->end_area_properties();
 		}
 		
 		if (oox_shape->m_oTxBody.IsInit() && oox_shape->m_oTxBody->m_oTxtbxContent.IsInit())
@@ -1969,7 +2042,9 @@ void DocxConverter::convert(OOX::CDocDefaults *def_style)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 	//зачемто ?! дл€ OpenOffice дл€ врезок/фреймов нужен базовый стиль - без него другой тип геометрии oO !!!
-	odt_context->styles_context()->create_style(L"Frame", odf::style_family::Graphic,false,true);					
+	odt_context->styles_context()->create_style(L"Frame", odf::style_family::Graphic,false,true);		
+	odf::style_graphic_properties	* graphic_properties	= odt_context->styles_context()->last_state()->get_graphic_properties();
+	if (graphic_properties)graphic_properties->content().common_background_color_attlist_.fo_background_color_ = odf::background_color(odf::background_color::Transparent);
 
 }
 
@@ -2181,7 +2256,6 @@ void DocxConverter::convert_hdr_ftr	(CString sId)
 	{
 		convert(oox_hdr_ftr->m_arrItems[nIndex]);
 	}
-
 	oox_current_child_document  = NULL;
 }
 void DocxConverter::convert(OOX::Logic::CTbl *oox_table)

@@ -86,16 +86,19 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style)
 			width_pt = vml_style->m_arrProperties[i].get_Value().oValue.dValue;
 			break;
 		case SimpleTypes::Vml::cssptMarginBottom:
-			odf_context()->drawing_context()->set_margin_bottom(vml_style->m_arrProperties[i].get_Value().oValue.dValue);
+			//odf_context()->drawing_context()->set_margin_bottom(vml_style->m_arrProperties[i].get_Value().oValue.dValue);
+			x = vml_style->m_arrProperties[i].get_Value().oValue.dValue;
 			break;
 		case SimpleTypes::Vml::cssptMarginLeft:
-			odf_context()->drawing_context()->set_margin_left (vml_style->m_arrProperties[i].get_Value().oValue.dValue);
+			//odf_context()->drawing_context()->set_margin_left (vml_style->m_arrProperties[i].get_Value().oValue.dValue);
+			x = vml_style->m_arrProperties[i].get_Value().oValue.dValue;
 			break;
 		case SimpleTypes::Vml::cssptMarginRight:
-			odf_context()->drawing_context()->set_margin_right(vml_style->m_arrProperties[i].get_Value().oValue.dValue);
+			//odf_context()->drawing_context()->set_margin_right(vml_style->m_arrProperties[i].get_Value().oValue.dValue);
 			break;
 		case SimpleTypes::Vml::cssptMarginTop:
-			odf_context()->drawing_context()->set_margin_top(vml_style->m_arrProperties[i].get_Value().oValue.dValue);
+			//odf_context()->drawing_context()->set_margin_top(vml_style->m_arrProperties[i].get_Value().oValue.dValue);
+			y = vml_style->m_arrProperties[i].get_Value().oValue.dValue;
 			break;
 ////////////////////////////////////////////////////////////////
 		case SimpleTypes::Vml::cssptMsoPositionHorizontal:
@@ -177,7 +180,7 @@ void OoxConverter::convert(OOX::Vml::CImageData *vml_image_data)
 	if (pathImage.GetLength() < 1)return;
 	_gdi_graphics_::GetResolution(pathImage, Width, Height);
 
-	odf_context()->drawing_context()->start_area_properies();
+	odf_context()->drawing_context()->start_area_properties();
 		odf_context()->drawing_context()->start_bitmap_style();
 		
 			odf_context()->drawing_context()->set_bitmap_link(string2std_string(pathImage));
@@ -188,7 +191,7 @@ void OoxConverter::convert(OOX::Vml::CImageData *vml_image_data)
 				odf_context()->drawing_context()->set_opacity(gain/1000.);
 
 		odf_context()->drawing_context()->end_bitmap_style();
-	odf_context()->drawing_context()->end_area_properies();
+	odf_context()->drawing_context()->end_area_properties();
 }
 
 void OoxConverter::convert(OOX::Vml::CArc *vml_arc)
@@ -206,9 +209,9 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 {
 	if (vml_fill == NULL) return;
 
-	odf_context()->drawing_context()->start_area_properies();
+	odf_context()->drawing_context()->start_area_properties();
 
-	odf_context()->drawing_context()->end_area_properies();
+	odf_context()->drawing_context()->end_area_properties();
 }
 void OoxConverter::convert(OOX::Vml::CLine	*vml_line)
 {
@@ -300,7 +303,7 @@ void OoxConverter::convert(OOX::Vml::CStroke *vml_stroke)
 			//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>                    m_oForceDash;
 			//SimpleTypes::CStrokeJoinStyle<SimpleTypes::strokejoinstyleRound>      m_oJoinStyle;
 
-	odf_context()->drawing_context()->start_line_properies();
+	odf_context()->drawing_context()->start_line_properties();
 
 	//switch(vml_stroke->m_oFillType){}
 
@@ -343,7 +346,7 @@ void OoxConverter::convert(OOX::Vml::CStroke *vml_stroke)
 		default:
 				break;
 	}	
-	odf_context()->drawing_context()->end_line_properies();
+	odf_context()->drawing_context()->end_line_properties();
 }
 void OoxConverter::convert(OOX::Vml::CTextbox *vml_textbox)
 {

@@ -112,7 +112,9 @@ private:
 	odf_text_context*			main_text_context_;
 
 	odf_table_context			table_context_;
-	odf_comment_context			comment_context_;	
+	odf_comment_context			comment_context_;
+
+	bool is_footer_header_;
 	
 	std::vector<odf_drawing_context_ptr>	drawing_context_;	
 	std::vector<odf_text_context_ptr>		text_context_;//for embedded 

@@ -1691,9 +1691,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConnShape* oox_shape)
 		OoxConverter::convert(oox_shape->m_oSpPr.GetPointer(), oox_shape->m_oShapeStyle.GetPointer());
 	
 		//частенько приплывает из стиля заполенение объекта .. а он то одномерный :)
-		odf_context()->drawing_context()->start_area_properies();
+		odf_context()->drawing_context()->start_area_properties();
 			odf_context()->drawing_context()->set_no_fill();
-		odf_context()->drawing_context()->end_area_properies();
+		odf_context()->drawing_context()->end_area_properties();
 
 		if (oox_shape->m_oNvConnSpPr.IsInit())
 		{

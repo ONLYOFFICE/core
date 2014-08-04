@@ -651,19 +651,206 @@ namespace NSEditorApi
 	class CAscListType
 	{
 	private:
-		int m_nType;
-		int m_nSubType;
+		js_wrapper<int> m_nType;
+		js_wrapper<int> m_nSubType;
 
 	public:
 
 		CAscListType()
 		{
-			m_nType = -1;
-			m_nSubType = -1;
+			m_nType.SetNull();
+			m_nSubType.SetNull();
 		}
 
-		LINK_PROPERTY_INT(Type)
-		LINK_PROPERTY_INT(SubType)
+		LINK_PROPERTY_INT_JS(Type)
+		LINK_PROPERTY_INT_JS(SubType)
+	};
+
+	class CAscTextFontFamily
+	{
+	private:
+		js_wrapper<std::wstring> m_sName;
+		js_wrapper<int> m_nIndex;
+
+	public:
+
+		CAscTextFontFamily()
+		{
+			m_sName = L"Times New Roman";
+			m_nIndex = -1;
+		}
+
+		LINK_PROPERTY_STRING_JS(Name)
+		LINK_PROPERTY_INT_JS(Index)
+	};
+
+	class CAscTextPr
+	{
+	private:
+		js_wrapper<bool> m_bBold;
+		js_wrapper<bool> m_bItalic;
+		js_wrapper<bool> m_bUnderline;
+		js_wrapper<bool> m_bStrikeout;
+
+		js_wrapper<CAscTextFontFamily> m_oFontFamily;
+		js_wrapper<double> m_dFontSize;
+
+		js_wrapper<CAscColor> m_oColor;
+
+		js_wrapper<int> m_nVertAlign;
+		js_wrapper<CAscColor> m_oHighLight; // null = none. undefined = no init
+
+		js_wrapper<bool> m_bDStrikeout;
+		
+		js_wrapper<bool> m_bCaps;
+		js_wrapper<bool> m_bSmallCaps;
+
+	public:
+
+		CAscTextPr()
+		{			
+		}
+
+		LINK_PROPERTY_BOOL_JS(Bold)
+		LINK_PROPERTY_BOOL_JS(Italic)
+		LINK_PROPERTY_BOOL_JS(Underline)
+		LINK_PROPERTY_BOOL_JS(Strikeout)
+
+		LINK_PROPERTY_OBJECT_JS(CAscTextFontFamily, FontFamily)
+
+		LINK_PROPERTY_DOUBLE_JS(FontSize)
+		LINK_PROPERTY_INT_JS(VertAlign)
+
+		LINK_PROPERTY_OBJECT_JS(CAscColor, Color)
+		LINK_PROPERTY_OBJECT_JS(CAscColor, HighLight)
+
+		LINK_PROPERTY_BOOL_JS(DStrikeout)
+		LINK_PROPERTY_BOOL_JS(Caps)
+		LINK_PROPERTY_BOOL_JS(SmallCaps)
+	};
+
+	class CAscParagraphInd
+	{
+	private:
+		js_wrapper<double>	m_dLeft;
+		js_wrapper<double>	m_dRight;
+		js_wrapper<double>	m_dFirstLine;
+
+		CAscParagraphInd()
+		{
+		}
+
+		LINK_PROPERTY_DOUBLE_JS(Left)
+		LINK_PROPERTY_DOUBLE_JS(Right)
+		LINK_PROPERTY_DOUBLE_JS(FirstLine)
+	};
+
+	class CAscParagraphSpacing
+	{
+	private:
+		js_wrapper<double>	m_dLine;
+		js_wrapper<int>		m_nLineRule;
+		js_wrapper<double>	m_dBefore;
+		js_wrapper<double>	m_dAfter;
+
+	public:
+		
+		CAscParagraphSpacing()
+		{
+		}
+
+		LINK_PROPERTY_DOUBLE_JS(Line)
+		LINK_PROPERTY_INT_JS(LineRule)
+		LINK_PROPERTY_DOUBLE_JS(Before)
+		LINK_PROPERTY_DOUBLE_JS(After)
+	};
+
+	class CAscParagraphShd
+	{
+	private:
+		js_wrapper<int>			m_nType;
+		js_wrapper<CAscColor>	m_oColor;
+
+	public:
+
+		CAscParagraphShd()
+		{
+		}
+
+		LINK_PROPERTY_INT_JS(Type)
+		LINK_PROPERTY_OBJECT_JS(CAscColor, Color)
+	};
+
+	class CAscParagraphPr
+	{
+	private:
+		js_wrapper<bool>		m_bContextualSpacing;
+
+		js_wrapper<CAscParagraphInd> m_oInd;
+
+		js_wrapper<bool>		m_bKeepLines;
+		js_wrapper<bool>		m_bKeepNext;
+		js_wrapper<bool>		m_bWidowControl;
+		js_wrapper<bool>		m_bPageBreakBefore;
+
+		js_wrapper<CAscParagraphSpacing> m_oSpacing;
+		
+		//this.Brd               = undefined;
+		js_wrapper<CAscParagraphShd> m_oShd;
+        
+		js_wrapper<bool>		m_bLocked;
+		js_wrapper<bool>		m_bCanAddTable;
+
+        //this.Tabs              = undefined;
+
+		js_wrapper<bool>		m_bCanAddDropCap;
+
+		js_wrapper<bool>		m_bSubscript;
+		js_wrapper<bool>		m_bSuperscript;
+		js_wrapper<bool>		m_bSmallCaps;
+		js_wrapper<bool>		m_bAllCaps;
+		js_wrapper<bool>		m_bStrikeout;
+		js_wrapper<bool>		m_bDStrikeout;
+
+		js_wrapper<double>		m_dTextSpacing;
+		js_wrapper<double>      m_dPosition;
+
+	public:
+
+		CAscParagraphPr()
+		{
+		}
+
+		LINK_PROPERTY_BOOL_JS(ContextualSpacing)
+		
+		LINK_PROPERTY_OBJECT_JS(CAscParagraphInd, Ind)
+
+		LINK_PROPERTY_BOOL_JS(KeepLines)
+		LINK_PROPERTY_BOOL_JS(KeepNext)
+		LINK_PROPERTY_BOOL_JS(WidowControl)
+		LINK_PROPERTY_BOOL_JS(PageBreakBefore)
+
+		LINK_PROPERTY_OBJECT_JS(CAscParagraphSpacing, Spacing)
+
+		//
+		LINK_PROPERTY_OBJECT_JS(CAscParagraphShd, Shd)
+
+		LINK_PROPERTY_BOOL_JS(Locked)
+		LINK_PROPERTY_BOOL_JS(CanAddTable)
+
+		//
+
+		LINK_PROPERTY_BOOL_JS(CanAddDropCap)
+
+		LINK_PROPERTY_BOOL_JS(Subscript)
+		LINK_PROPERTY_BOOL_JS(Superscript)
+		LINK_PROPERTY_BOOL_JS(SmallCaps)
+		LINK_PROPERTY_BOOL_JS(AllCaps)
+		LINK_PROPERTY_BOOL_JS(Strikeout)
+		LINK_PROPERTY_BOOL_JS(DStrikeout)
+
+		LINK_PROPERTY_DOUBLE_JS(TextSpacing)
+		LINK_PROPERTY_DOUBLE_JS(Position)
 	};
 }
 

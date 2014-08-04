@@ -23,9 +23,9 @@ public:
 
 	void set_styles_context(odf_style_context*  styles_context);
 
-	bool find_by_id(int oox_id);
+	int find_by_id(int oox_id);
 	
-	bool is_started();
+	bool is_started();// for content
 
 	void start_comment(office_element_ptr &elm, int oox_id);
 	void end_comment(office_element_ptr & elm, int oox_id);

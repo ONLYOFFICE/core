@@ -499,33 +499,42 @@ void odt_conversion_context::end_run()
 }
 bool odt_conversion_context::start_comment(int oox_comm_id)
 {
-	bool added = comment_context_.find_by_id(oox_comm_id);
+	int comm_state = comment_context_.find_by_id(oox_comm_id);
 
-	if (added == false)
+	if (comm_state == 0)
 	{
 		office_element_ptr comm_elm;
 		create_element(L"office", L"annotation",comm_elm,this);
 
 		comment_context_.start_comment(comm_elm, oox_comm_id);
 		
-		text_context()->current_level_.back().elm->add_child_element(comm_elm);
+		if (text_context()->current_level_.size() > 0)
+			text_context()->current_level_.back().elm->add_child_element(comm_elm);
 
 		odf_element_state state={comm_elm, L"", office_element_ptr(),text_context()->current_level_.size()};
 		text_context()->current_level_.push_back(state);
-		//current_level_.back()->add_child_element(comm_elm);
-		//current_level_.push_back(comm_elm);
+
+		return false; //типо новый
 	}
-	return added;
+	return true;
 }
 void odt_conversion_context::start_comment_content()
 {
 	comment_context_.start_comment_content();
+	office_element_ptr & root_comm_element = text_context()->current_level_.back().elm;
+	start_text_context();
+
+	text_context()->start_element(root_comm_element);
 }
 void odt_conversion_context::end_comment_content()
 {
 	if (comment_context_.is_started())
 	{
 		comment_context_.end_comment_content();
+
+		text_context()->end_element();
+		end_text_context();
+
 		text_context()->current_level_.pop_back();
 	}
 }
@@ -540,9 +549,8 @@ void odt_conversion_context::end_comment(int oox_comm_id)
 
 		comment_context_.end_comment(comm_elm, oox_comm_id);
 		
-		//current_level_.back()->add_child_element(comm_elm);
-		odf_element_state state={comm_elm, L"", office_element_ptr(),text_context()->current_level_.size()};
-		text_context()->current_level_.push_back(state);
+		if (text_context()->current_level_.size() > 0)
+			text_context()->current_level_.back().elm->add_child_element(comm_elm);
 	}
 }
 void odt_conversion_context::start_image(std::wstring & image_file_name)

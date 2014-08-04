@@ -55,6 +55,7 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 	{
 		odf_context()->drawing_context()->set_position(vml_shape_type->m_oCoordSize->GetX(), vml_shape_type->m_oCoordSize->GetY());
 	}
+	//m_oPreferRelative//типо можно менять размер 
 
 	for (long i=0 ; i < vml_shape_type->m_arrItems.GetSize();i++)
 	{
@@ -87,7 +88,7 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style)
 			break;
 		case SimpleTypes::Vml::cssptMarginBottom:
 			//odf_context()->drawing_context()->set_margin_bottom(vml_style->m_arrProperties[i].get_Value().oValue.dValue);
-			x = vml_style->m_arrProperties[i].get_Value().oValue.dValue;
+			//x = vml_style->m_arrProperties[i].get_Value().oValue.dValue;
 			break;
 		case SimpleTypes::Vml::cssptMarginLeft:
 			//odf_context()->drawing_context()->set_margin_left (vml_style->m_arrProperties[i].get_Value().oValue.dValue);
@@ -141,6 +142,20 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style)
 			case SimpleTypes::Vml::cssmsoposverrelLine:		odf_context()->drawing_context()->set_vertical_rel(2); break;
 			}
 			break;
+		case SimpleTypes::Vml::cssptZIndex:
+			{
+				if (vml_style->m_arrProperties[i].get_Value().oZIndex.eType == SimpleTypes::Vml::csszindextypeOrder)
+				odf_context()->drawing_context()->set_z_order(vml_style->m_arrProperties[i].get_Value().oZIndex.nOrder);
+			}break;
+		case SimpleTypes::Vml::cssptPosition:
+			{
+				switch (vml_style->m_arrProperties[i].get_Value().ePosition)
+				{
+				case SimpleTypes::Vml::csspositionStatic:	break;
+				case SimpleTypes::Vml::csspositionAbsolute:	break;
+				case SimpleTypes::Vml::csspositionRelative:	break;
+				}
+			}break;
 		}
 	}
 	odf_context()->drawing_context()->set_drawings_rect(x, y, width_pt, height_pt);

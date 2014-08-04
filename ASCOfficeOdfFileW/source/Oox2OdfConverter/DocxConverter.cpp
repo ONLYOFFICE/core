@@ -957,6 +957,8 @@ void DocxConverter::convert(OOX::Logic::CTblBorders	*oox_border, odf::style_tabl
 	}
 	else
 	{
+		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_ = boost::none;
+
 		if (bottom.length() >0 )table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_	= bottom;
 		if (top.length() >0 )	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_		= top;
 		if (left.length() >0 )	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_		= left;
@@ -983,6 +985,8 @@ void DocxConverter::convert(OOX::Logic::CTcBorders 	*oox_border, odf::style_tabl
 	}
 	else
 	{
+		table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_ = boost::none;
+
 		if (bottom.length() >0 )table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_	= bottom;
 		if (top.length() >0 )	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_		= top;
 		if (left.length() >0 )	table_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_		= left;
@@ -1019,6 +1023,8 @@ void DocxConverter::convert(OOX::Logic::CPBdr *oox_border, odf::style_paragraph_
 	}
 	else
 	{
+		paragraph_properties->content().common_border_attlist_.fo_border_ = boost::none;
+
 		if (bottom.length() >0 )paragraph_properties->content().common_border_attlist_.fo_border_bottom_	= bottom;
 		if (top.length() >0 )	paragraph_properties->content().common_border_attlist_.fo_border_top_		= top;
 		if (left.length() >0 )	paragraph_properties->content().common_border_attlist_.fo_border_left_		= left;
@@ -1077,9 +1083,12 @@ void DocxConverter::convert(ComplexTypes::Word::CPageBorder *borderProp, std::ws
 				border_style << L" solid";
 			break;
 			case SimpleTypes::bordervalueNone:
+			case SimpleTypes::bordervalueNil:
 				odf_border_prop == L"none";
 				return;
 			break;
+			default:
+				border_style << L" solid";
 		}
 	}else border_style << L" solid";
 ///////////////////////////////////////////////////////////////////
@@ -1132,6 +1141,7 @@ void DocxConverter::convert(ComplexTypes::Word::CBorder *borderProp, std::wstrin
 				border_style << L" solid";
 			break;
 			case SimpleTypes::bordervalueNone:
+			case SimpleTypes::bordervalueNil:
 				odf_border_prop == L"none";
 				return;
 			break;
@@ -1450,6 +1460,8 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 	}
 	else
 	{
+		//odf_context()->drawing_context()->set_anchor(odf::anchor_type::Char);
+		
 		if (oox_pic->m_oShape.IsInit())
 			OoxConverter::convert(oox_pic->m_oShape->m_oStyle.GetPointer());
 		
@@ -1565,6 +1577,23 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 	_CP_OPT(double) width, height;
 	_CP_OPT(double) x, y;
 
+	if (oox_anchor->m_oBehindDoc.IsInit())
+	{
+		if (oox_anchor->m_oBehindDoc->ToBool())
+		{
+			odt_context->drawing_context()->set_object_background(true);
+		}
+		else
+		{
+			//z - order foreground
+		}
+	}
+	else
+	{
+		//always ??? foreground ????
+		odt_context->drawing_context()->set_object_foreground(true);
+	}
+
 	if (oox_anchor->m_oExtent.IsInit()) //size
 	{
 		width = oox_anchor->m_oExtent->m_oCx.ToPoints();
@@ -1624,6 +1653,7 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 	{
 		odt_context->drawing_context()->set_overlap(oox_anchor->m_oAllowOverlap->ToBool());
 	}
+	OoxConverter::convert(oox_anchor->m_oDocPr.GetPointer());
 	convert(oox_anchor->m_oGraphic.GetPointer());
 }
 void DocxConverter::convert(OOX::Drawing::CInline *oox_inline)
@@ -1648,8 +1678,10 @@ void DocxConverter::convert(OOX::Drawing::CInline *oox_inline)
 	if (oox_inline->m_oDistR.IsInit())odt_context->drawing_context()->set_margin_right(oox_inline->m_oDistR->ToPoints());
 	if (oox_inline->m_oDistB.IsInit())odt_context->drawing_context()->set_margin_bottom(oox_inline->m_oDistB->ToPoints());
 
+	OoxConverter::convert(oox_inline->m_oDocPr.GetPointer());
 	convert(oox_inline->m_oGraphic.GetPointer());
 }
+
 void DocxConverter::convert(OOX::Drawing::CGraphic *oox_graphic)
 {
 	if (oox_graphic == NULL)return;
@@ -1817,11 +1849,11 @@ void DocxConverter::convert(OOX::Logic::CShape	 *oox_shape)
 				type = 2000; //textBox
 		}
 
-		if (type == SimpleTypes::shapetypeRect && oox_shape->m_oTxBody.IsInit() && oox_shape->m_oTxBodyProperties.IsInit() /*&&
-			oox_shape->m_oTxBodyProperties->m_eAutoFitType == OOX::Drawing::textautofitShape*/)
-		{
-			type = 2000;// ваще то тут обычный прямоугольник, но в него не вставишь таблицы, ...
-		}
+		//if (type == SimpleTypes::shapetypeRect && oox_shape->m_oTxBody.IsInit() && oox_shape->m_oTxBodyProperties.IsInit() /*&&
+		//	oox_shape->m_oTxBodyProperties->m_eAutoFitType == OOX::Drawing::textautofitShape*/)
+		//{
+		//	type = 2000;// ваще то тут обычный прямоугольник, но в него не вставишь таблицы, ...
+		//}
 		if (type < 0)return;
 	/////////////////////////////////////////////////////////////////////////////////
 		if (type == 2000)	odt_context->drawing_context()->start_text_box(); 
@@ -2210,7 +2242,7 @@ void DocxConverter::convert(OOX::Logic::CCommentReference* oox_comm_ref)
 
 	bool added = odt_context->start_comment(oox_comm_id);
 
-	if (added == false)
+	if (added == false) // типо тока стартанул
 	{
 		//значит старт тута а не по RangeStart
 		convert_comment(oox_comm_id);
@@ -2280,7 +2312,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 	convert(oox_table->m_oTableProperties, styled_table );	
 	
 	if(oox_table->m_oTableProperties && oox_table->m_oTableProperties->m_oTblpPr.IsInit() && 
-			(oox_table->m_oTableProperties->m_oTblpPr->m_oTblpX.IsInit() && oox_table->m_oTableProperties->m_oTblpPr->m_oTblpY.IsInit()))
+			(oox_table->m_oTableProperties->m_oTblpPr->m_oTblpX.IsInit() || oox_table->m_oTableProperties->m_oTblpPr->m_oTblpY.IsInit()))
 	{
 		in_frame = true;
 		odt_context->start_paragraph();
@@ -2288,16 +2320,46 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 				odt_context->drawing_context()->set_anchor(odf::anchor_type::Paragraph); 
 				_CP_OPT(double) width, height, x, y ;
 				
-				x = oox_table->m_oTableProperties->m_oTblpPr->m_oTblpX->ToPoints();
-				y = oox_table->m_oTableProperties->m_oTblpPr->m_oTblpY->ToPoints();
+				if (oox_table->m_oTableProperties->m_oTblpPr->m_oTblpX.IsInit())
+					x = oox_table->m_oTableProperties->m_oTblpPr->m_oTblpX->ToPoints();
+				if (oox_table->m_oTableProperties->m_oTblpPr->m_oTblpY.IsInit())
+					y = oox_table->m_oTableProperties->m_oTblpPr->m_oTblpY->ToPoints();
 
 				odt_context->drawing_context()->set_drawings_rect(x, y, width, height);		
-				
+
+				if (oox_table->m_oTableProperties->m_oTblpPr->m_oVertAnchor.IsInit())
+				{
+					switch(oox_table->m_oTableProperties->m_oTblpPr->m_oVertAnchor->GetValue())
+					{
+						case SimpleTypes::vanchorMargin: odt_context->drawing_context()->set_vertical_rel(6); break;
+						case SimpleTypes::vanchorPage:	odt_context->drawing_context()->set_vertical_rel(5); break;
+						case SimpleTypes::vanchorText:	odt_context->drawing_context()->set_vertical_rel(0); break;
+					}
+				}
+				if (oox_table->m_oTableProperties->m_oTblpPr->m_oHorzAnchor.IsInit())
+				{
+					switch(oox_table->m_oTableProperties->m_oTblpPr->m_oHorzAnchor->GetValue())
+					{
+						case SimpleTypes::hanchorMargin: odt_context->drawing_context()->set_horizontal_rel(2); break;
+						case SimpleTypes::hanchorPage:	odt_context->drawing_context()->set_horizontal_rel(6); break;
+						case SimpleTypes::hanchorText:	odt_context->drawing_context()->set_horizontal_rel(0); break;
+					}
+				}		
+
+				if (oox_table->m_oTableProperties->m_oTblpPr->m_oRightFromText.IsInit())
+				{
+					odt_context->drawing_context()->set_horizontal_pos(oox_table->m_oTableProperties->m_oTblpPr->m_oRightFromText->ToPoints());
+				}
+				if (oox_table->m_oTableProperties->m_oTblpPr->m_oTopFromText.IsInit())
+				{
+					odt_context->drawing_context()->set_vertical_pos(oox_table->m_oTableProperties->m_oTblpPr->m_oTopFromText->ToPoints());
+				}
 				odt_context->drawing_context()->start_drawing();	
 
 				odt_context->drawing_context()->start_text_box();
-				odt_context->drawing_context()->set_name(L"TableFrame");
-				odt_context->drawing_context()->set_no_fill();
+					odt_context->drawing_context()->set_z_order(0x7fffffff-1);
+					odt_context->drawing_context()->set_text_box_parent_style(L"Frame");
+					odt_context->drawing_context()->set_name(L"TableFrame");
 				odt_context->start_text_context();
 	}
 

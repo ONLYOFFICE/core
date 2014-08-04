@@ -209,7 +209,7 @@ public: // Attributes
 public: // Operations
 
   // Sets the read position.
-  std::streampos seek( std::streampos pos, std::ios_base::seekdir origin, std::ios_base::openmode mode )
+  std::streampos seek( std::streampos pos, std::ios::seekdir origin = std::ios_base::beg, std::ios::openmode mode = std::ios::in)
   {
     if( impl ) return impl->seek( pos, origin, mode );
 	return 0;

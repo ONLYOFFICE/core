@@ -98,7 +98,7 @@ namespace NSEditorApi
 	};
 }
 
-// common
+// document
 namespace NSEditorApi
 {
 	class CAscEditorPermissions
@@ -160,6 +160,72 @@ namespace NSEditorApi
 		LINK_PROPERTY_STRING_JS(CustomerLogo)
 	};
 
+	class CAscDocumentOpenProgress
+	{
+	private:
+		int m_nType;
+
+		int m_nFontsCount;
+		int m_nFontCurrent;
+
+		int m_nImagesCount;
+		int m_nImageCurrent;
+
+	public:
+		CAscDocumentOpenProgress()
+		{
+			m_nType = c_oAscAsyncAction_Open;
+
+			m_nFontsCount = 0;
+			m_nFontCurrent = 0;
+
+			m_nImagesCount = 0;
+			m_nImageCurrent = 0;
+		}
+
+		LINK_PROPERTY_INT(Type)
+		LINK_PROPERTY_INT(FontsCount)
+		LINK_PROPERTY_INT(FontCurrent)
+		LINK_PROPERTY_INT(ImagesCount)
+		LINK_PROPERTY_INT(ImageCurrent)
+	};
+
+	class CAscDocumentInfo
+	{
+	private:
+		js_wrapper<std::wstring> m_sId;
+		js_wrapper<std::wstring> m_sUrl;
+		js_wrapper<std::wstring> m_sTitle;
+		js_wrapper<std::wstring> m_sFormat;
+		js_wrapper<std::wstring> m_sVKey;
+		js_wrapper<std::wstring> m_sUserId;
+		js_wrapper<std::wstring> m_sUserName;
+
+	public:
+		CAscDocumentInfo()
+		{
+			m_sId.SetNull();
+			m_sUrl.SetNull();
+			m_sTitle.SetNull();
+			m_sFormat.SetNull();
+			m_sVKey.SetNull();
+			m_sUserId.SetNull();
+			m_sUserName.SetNull();
+		}
+
+		LINK_PROPERTY_STRING_JS(Id)
+		LINK_PROPERTY_STRING_JS(Url)
+		LINK_PROPERTY_STRING_JS(Title)
+		LINK_PROPERTY_STRING_JS(Format)
+		LINK_PROPERTY_STRING_JS(VKey)
+		LINK_PROPERTY_STRING_JS(UserId)
+		LINK_PROPERTY_STRING_JS(UserName)
+	};
+}
+
+// base
+namespace NSEditorApi
+{
 	class CAscRect
 	{
 	public:
@@ -176,6 +242,42 @@ namespace NSEditorApi
 			Width = 0;
 			Height = 0;
 		}
+	};
+
+	class CAscPaddings
+	{
+	private:
+		js_wrapper<double> m_dLeft;
+		js_wrapper<double> m_dTop;
+		js_wrapper<double> m_dRight;
+		js_wrapper<double> m_dBottom;
+
+	public:
+		CAscPaddings()
+		{
+		}
+
+		LINK_PROPERTY_DOUBLE_JS(Left)
+		LINK_PROPERTY_DOUBLE_JS(Top)
+		LINK_PROPERTY_DOUBLE_JS(Right)
+		LINK_PROPERTY_DOUBLE_JS(Bottom)
+	};
+
+	class CAscPosition
+	{
+	private:
+		js_wrapper<double> m_dX;
+		js_wrapper<double> m_dY;
+
+	public:
+		CAscPosition()
+		{
+			m_dX.SetNull();
+			m_dY.SetNull();
+		}
+
+		LINK_PROPERTY_DOUBLE_JS(X)
+		LINK_PROPERTY_DOUBLE_JS(Y)
 	};
 }
 
@@ -356,334 +458,293 @@ namespace NSEditorApi
 	};
 }
 
+// shape/image/chart props
 namespace NSEditorApi
 {
+	class CAscShapeProp
+	{
+		js_wrapper<int>				m_nType;
 
-class CAscColorScheme
+		js_wrapper<CAscFill>		m_oFill;
+		js_wrapper<CAscStroke>		m_oStroke;
+
+		js_wrapper<CAscPaddings>	m_oPaddings;
+
+		js_wrapper<bool>			m_bCanFill;
+		js_wrapper<bool>			m_bFromChart;
+
+	public:
+		CAscShapeProp()
+		{
+			m_nType.SetNull();
+			m_oFill.SetNull();
+			m_oStroke.SetNull();
+			m_oPaddings.SetNull();
+
+			m_bCanFill = true;
+			m_bFromChart = false;
+		}
+
+		LINK_PROPERTY_INT_JS(Type)
+		LINK_PROPERTY_BOOL_JS(CanFill)
+		LINK_PROPERTY_BOOL_JS(FromChart)
+
+		LINK_PROPERTY_OBJECT_JS(CAscFill, Fill)
+		LINK_PROPERTY_OBJECT_JS(CAscStroke, Stroke)		
+	};
+
+	class CAscImagePosition
+	{
+	private:
+		js_wrapper<int>		m_nRelativeFrom;
+		js_wrapper<bool>	m_bUseAlign;
+		js_wrapper<int>		m_nAlign;
+		js_wrapper<int>		m_nValue;
+
+	public:
+		CAscImagePosition()
+		{
+		}
+
+		LINK_PROPERTY_INT_JS(RelativeFrom)
+		LINK_PROPERTY_BOOL_JS(UseAlign)
+		LINK_PROPERTY_INT_JS(Align)
+		LINK_PROPERTY_INT_JS(Value)
+	};
+
+	class CAscImageSize
+	{
+	private:
+		double m_dWidth;
+		double m_dHeight;
+		bool m_bIsCorrect;
+
+	public:
+		CAscImageSize()
+		{
+			m_dWidth = 0;
+			m_dHeight = 0;
+			m_bIsCorrect = false;
+		}
+
+		LINK_PROPERTY_DOUBLE(Width)
+		LINK_PROPERTY_DOUBLE(Height)
+		LINK_PROPERTY_BOOL(IsCorrect)
+	};
+
+	class CAscChartProperties
+	{
+		// TODO:
+	};
+
+	class CAscImageProp
+	{
+	private:
+		js_wrapper<bool> m_bCanBeFlow;
+
+		js_wrapper<double> m_dWidth;
+		js_wrapper<double> m_dHeight;
+
+		js_wrapper<int> m_nWrappingStyle;
+
+		js_wrapper<CAscPaddings> m_oPaddings;
+		js_wrapper<CAscPosition> m_oPosition;
+
+		js_wrapper<bool> m_bAllowOverlap;
+
+		js_wrapper<CAscImagePosition> m_oPositionH;
+		js_wrapper<CAscImagePosition> m_oPositionV;
+
+		js_wrapper<int> m_nInternalPosition;
+
+		js_wrapper<std::wstring> m_sUrl;
+		js_wrapper<bool> m_bLocked;
+
+		js_wrapper<CAscChartProperties> m_oChartProperties;
+		js_wrapper<CAscShapeProp> m_oShapeProperties;
+
+		js_wrapper<int> m_nChangeLevel;
+		js_wrapper<bool> m_bGroup;
+
+		js_wrapper<bool> m_bFromGroup;
+		
+		js_wrapper<bool> m_bSeveralCharts;
+		js_wrapper<int> m_nSeveralChartTypes;
+		js_wrapper<int> m_nSeveralChartStyles;
+
+		js_wrapper<int> m_nVerticalTextAlign;
+
+	public:
+		LINK_PROPERTY_BOOL_JS(CanBeFlow)
+		
+		LINK_PROPERTY_DOUBLE_JS(Width)
+		LINK_PROPERTY_DOUBLE_JS(Height)
+
+		LINK_PROPERTY_INT_JS(WrappingStyle)
+
+		LINK_PROPERTY_OBJECT_JS(CAscPaddings, Paddings)
+		LINK_PROPERTY_OBJECT_JS(CAscPosition, Position)
+
+		LINK_PROPERTY_BOOL_JS(AllowOverlap)
+
+		LINK_PROPERTY_OBJECT_JS(CAscImagePosition, PositionH)
+		LINK_PROPERTY_OBJECT_JS(CAscImagePosition, PositionV)
+
+		LINK_PROPERTY_INT_JS(InternalPosition)
+
+		LINK_PROPERTY_STRING_JS(Url)
+		LINK_PROPERTY_BOOL_JS(Locked)
+
+		LINK_PROPERTY_OBJECT_JS(CAscChartProperties, ChartProperties)
+		LINK_PROPERTY_OBJECT_JS(CAscShapeProp, ShapeProperties)
+
+		LINK_PROPERTY_INT_JS(ChangeLevel)
+
+		LINK_PROPERTY_BOOL_JS(Group)
+		LINK_PROPERTY_BOOL_JS(FromGroup)
+		LINK_PROPERTY_BOOL_JS(SeveralCharts)
+
+		LINK_PROPERTY_INT_JS(SeveralChartTypes)
+		LINK_PROPERTY_INT_JS(SeveralChartStyles)
+		LINK_PROPERTY_INT_JS(VerticalTextAlign)
+	};
+}
+
+// section
+namespace NSEditorApi
 {
-private:
-	std::wstring m_sName;
-	
-	bool				m_bIsDelete;
-	CAscColorSimple*	m_pColors;
-	int					m_lColorsCount;
+	class CAscSection
+	{
+	private:
+		js_wrapper<double> m_dPageWidth;
+		js_wrapper<double> m_dPageHeight;
 
-public:
-	CAscColorScheme()
+		js_wrapper<double> m_dMarginLeft;
+		js_wrapper<double> m_dMarginRight;
+		js_wrapper<double> m_dMarginTop;
+		js_wrapper<double> m_dMarginBottom;
+
+	public:
+		CAscSection()
+		{
+			m_dPageWidth	= (double)0;
+			m_dPageHeight	= (double)0;
+
+			m_dMarginLeft	= (double)0;
+			m_dMarginRight	= (double)0;
+			m_dMarginTop	= (double)0;
+			m_dMarginBottom = (double)0;
+		}
+
+		LINK_PROPERTY_DOUBLE_JS(PageWidth)
+		LINK_PROPERTY_DOUBLE_JS(PageHeight)
+		LINK_PROPERTY_DOUBLE_JS(MarginLeft)
+		LINK_PROPERTY_DOUBLE_JS(MarginRight)
+		LINK_PROPERTY_DOUBLE_JS(MarginTop)
+		LINK_PROPERTY_DOUBLE_JS(MarginBottom)
+	};
+}
+
+// text
+namespace NSEditorApi
+{
+	class CAscListType
 	{
-		m_sName			= L"";
-		m_bIsDelete		= true;
-		m_pColors		= NULL;
-		m_lColorsCount	= 0;
-	}
-	~CAscColorScheme()
+	private:
+		int m_nType;
+		int m_nSubType;
+
+	public:
+
+		CAscListType()
+		{
+			m_nType = -1;
+			m_nSubType = -1;
+		}
+
+		LINK_PROPERTY_INT(Type)
+		LINK_PROPERTY_INT(SubType)
+	};
+}
+
+// common
+namespace NSEditorApi
+{
+	class CAscColorScheme
 	{
-		if (m_bIsDelete)
+	private:
+		std::wstring m_sName;
+		
+		bool				m_bIsDelete;
+		CAscColorSimple*	m_pColors;
+		int					m_lColorsCount;
+
+	public:
+		CAscColorScheme()
+		{
+			m_sName			= L"";
+			m_bIsDelete		= true;
+			m_pColors		= NULL;
+			m_lColorsCount	= 0;
+		}
+		~CAscColorScheme()
+		{
+			if (m_bIsDelete)
+			{
+				if (NULL != m_pColors)
+					delete [] m_pColors;
+				m_pColors = NULL;
+			}
+		}
+
+		void Create(const std::wstring& sName, const bool& bDelete, const int& nCountColors)
+		{
+			if (m_bIsDelete)
+			{
+				if (NULL != m_pColors)
+					delete [] m_pColors;
+				m_pColors = NULL;
+			}
+
+			m_sName			= sName;
+			m_bIsDelete		= bDelete;
+			m_lColorsCount	= nCountColors;
+
+			if (0 < m_lColorsCount)
+			{
+				m_pColors = new CAscColorSimple[m_lColorsCount];
+			}
+		}
+
+		LINK_PROPERTY_STRING(Name)
+		
+		inline int get_ColorsCount() { return m_lColorsCount; }
+		inline CAscColorSimple* get_Colors() { return m_pColors; }
+		void put_AscColorSimple(CAscColorSimple* pColors, int lCount)
 		{
 			if (NULL != m_pColors)
 				delete [] m_pColors;
-			m_pColors = NULL;
+			m_pColors = pColors;
+			m_lColorsCount = lCount;
 		}
-	}
+	};
 
-	void Create(const std::wstring& sName, const bool& bDelete, const int& nCountColors)
+	class CAscTexture
 	{
-		if (m_bIsDelete)
+	private:
+		int m_nId;
+		std::wstring m_sImage;
+
+	public:
+		CAscTexture()
 		{
-			if (NULL != m_pColors)
-				delete [] m_pColors;
-			m_pColors = NULL;
+			m_nId = 0;
+			m_sImage = L"";
 		}
 
-		m_sName			= sName;
-		m_bIsDelete		= bDelete;
-		m_lColorsCount	= nCountColors;
-
-		if (0 < m_lColorsCount)
-		{
-			m_pColors = new CAscColorSimple[m_lColorsCount];
-		}
-	}
-
-	LINK_PROPERTY_STRING(Name)
-	
-	inline int get_ColorsCount() { return m_lColorsCount; }
-	inline CAscColorSimple* get_Colors() { return m_pColors; }
-	void put_AscColorSimple(CAscColorSimple* pColors, int lCount)
-	{
-		if (NULL != m_pColors)
-			delete [] m_pColors;
-		m_pColors = pColors;
-		m_lColorsCount = lCount;
-	}
-};
-
-class CAscTexture
-{
-private:
-	int m_nId;
-	std::wstring m_sImage;
-
-public:
-	CAscTexture()
-	{
-		m_nId = 0;
-		m_sImage = L"";
-	}
-
-	LINK_PROPERTY_INT(Id)
-	LINK_PROPERTY_STRING(Image)
-};
-
-
-class CAscPaddings
-{
-private:
-	js_wrapper<double> m_dLeft;
-	js_wrapper<double> m_dTop;
-	js_wrapper<double> m_dRight;
-	js_wrapper<double> m_dBottom;
-
-public:
-	CAscPaddings()
-	{
-	}
-
-	LINK_PROPERTY_DOUBLE_JS(Left)
-	LINK_PROPERTY_DOUBLE_JS(Top)
-	LINK_PROPERTY_DOUBLE_JS(Right)
-	LINK_PROPERTY_DOUBLE_JS(Bottom)
-};
-
-class CAscShapeProp
-{
-    int m_nType;
-
-	CAscFill m_oFill;
-	CAscStroke m_oStroke;
-
-	CAscPaddings m_oPaddings;
-
-	bool m_bCanFill;
-	bool m_bFromChart;
-
-public:
-	CAscShapeProp()
-	{
-		m_nType = 0;
-
-		m_bCanFill = true;
-		m_bFromChart = false;
-	}
-
-	LINK_PROPERTY_INT(Type)
-	LINK_PROPERTY_BOOL(CanFill)
-	LINK_PROPERTY_BOOL(FromChart)
-
-	CAscFill& get_Fill() { return m_oFill; }
-	CAscStroke& get_Stroke() { return m_oStroke; }
-};
-
-class CAscDocumentOpenProgress
-{
-private:
-	int m_nType;
-
-	int m_nFontsCount;
-	int m_nFontCurrent;
-
-	int m_nImagesCount;
-	int m_nImageCurrent;
-
-public:
-	CAscDocumentOpenProgress()
-	{
-		m_nType = c_oAscAsyncAction_Open;
-
-		m_nFontsCount = 0;
-		m_nFontCurrent = 0;
-
-		m_nImagesCount = 0;
-		m_nImageCurrent = 0;
-	}
-
-	LINK_PROPERTY_INT(Type)
-	LINK_PROPERTY_INT(FontsCount)
-	LINK_PROPERTY_INT(FontCurrent)
-	LINK_PROPERTY_INT(ImagesCount)
-	LINK_PROPERTY_INT(ImageCurrent)
-};
-
-class CAscDocumentInfo
-{
-private:
-	std::wstring m_sId;
-	std::wstring m_sUrl;
-	std::wstring m_sTitle;
-	std::wstring m_sFormat;
-	std::wstring m_sVKey;
-	std::wstring m_sUserId;
-	std::wstring m_sUserName;
-
-public:
-	CAscDocumentInfo()
-	{
-		m_sId = L"";
-		m_sUrl = L"";
-		m_sTitle = L"";
-		m_sFormat = L"";
-		m_sVKey = L"";
-		m_sUserId = L"";
-		m_sUserName = L"";
-	}
-
-	LINK_PROPERTY_STRING(Id)
-	LINK_PROPERTY_STRING(Url)
-	LINK_PROPERTY_STRING(Title)
-	LINK_PROPERTY_STRING(Format)
-	LINK_PROPERTY_STRING(VKey)
-	LINK_PROPERTY_STRING(UserId)
-	LINK_PROPERTY_STRING(UserName)
-};
-
-class CAscListType
-{
-private:
-	int m_nType;
-	int m_nSubType;
-
-public:
-
-	CAscListType()
-	{
-		m_nType = -1;
-		m_nSubType = -1;
-	}
-
-	LINK_PROPERTY_INT(Type)
-	LINK_PROPERTY_INT(SubType)
-};
-
-class CAscSection
-{
-private:
-	double m_dPageWidth;
-	double m_dPageHeight;
-
-	double m_dMarginLeft;
-	double m_dMarginRight;
-	double m_dMarginTop;
-	double m_dMarginBottom;
-
-public:
-	CAscSection()
-	{
-		m_dPageWidth = 0;
-		m_dPageHeight = 0;
-
-		m_dMarginLeft = 0;
-		m_dMarginRight = 0;
-		m_dMarginTop = 0;
-		m_dMarginBottom = 0;
-	}
-
-	LINK_PROPERTY_DOUBLE(PageWidth)
-	LINK_PROPERTY_DOUBLE(PageHeight)
-	LINK_PROPERTY_DOUBLE(MarginLeft)
-	LINK_PROPERTY_DOUBLE(MarginRight)
-	LINK_PROPERTY_DOUBLE(MarginTop)
-	LINK_PROPERTY_DOUBLE(MarginBottom)
-};
-
-class CAscImagePosition
-{
-private:
-	int m_nRelativeFrom;
-	bool m_bUseAlign;
-	int m_nAlign;
-	int m_nValue;
-
-public:
-	CAscImagePosition()
-	{
-		m_nRelativeFrom = 0;
-		m_bUseAlign = false;
-		m_nAlign = 0;
-		m_nValue = 0;
-	}
-
-	LINK_PROPERTY_INT(RelativeFrom)
-	LINK_PROPERTY_BOOL(UseAlign)
-	LINK_PROPERTY_INT(Align)
-	LINK_PROPERTY_INT(Value)
-};
-
-class CAscPosition
-{
-private:
-	double m_dX;
-	double m_dY;
-
-public:
-	CAscPosition()
-	{
-		m_dX = 0;
-		m_dY = 0;
-	}
-
-	LINK_PROPERTY_DOUBLE(X)
-	LINK_PROPERTY_DOUBLE(Y)
-};
-
-class CAscImageSize
-{
-private:
-	double m_dWidth;
-	double m_dHeight;
-	bool m_bIsCorrect;
-
-public:
-	CAscImageSize()
-	{
-		m_dWidth = 0;
-		m_dHeight = 0;
-		m_bIsCorrect = false;
-	}
-
-	LINK_PROPERTY_DOUBLE(Width)
-	LINK_PROPERTY_DOUBLE(Height)
-	LINK_PROPERTY_BOOL(IsCorrect)
-};
-
-class CAscImageProp
-{
-private:
-	bool m_bCanBeFlow;
-
-	double m_dWidth;
-	double m_dHeight;
-
-	int m_nWrappingStyle;
-
-	CAscPaddings m_oPaddings;
-	CAscPosition m_oPosition;
-
-	bool m_bAllowOverlap;
-
-	CAscImagePosition m_oPositionH;
-	CAscImagePosition m_oPositionV;
-
-	int m_nInternalPosition;
-
-	std::wstring m_sUrl;
-	bool m_bLocked;
-
-	int m_nChangeLevel;
-	bool m_bGroup;
-
-	// TODO:
-};
-
+		LINK_PROPERTY_INT(Id)
+		LINK_PROPERTY_STRING(Image)
+	};
 }
 
 #endif //_BUILD_EDITOR_API_CROSSPLATFORM_H_

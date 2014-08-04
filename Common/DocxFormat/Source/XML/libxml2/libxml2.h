@@ -1,608 +1,247 @@
 #pragma once
 
-#ifdef _WIN32
 #pragma comment(lib, "libxml2.lib")
 
-#include "./win_build/config.h"
+#include "win_build/Config.h"
 #include "XML/include/libxml/xmlreader.h"
 
-#include <windows.h>
-#include "../Utils.h"
+#include <vector>
+#include <map>
+#include <string>
+
+#include "../../../../../DesktopEditor/common/File.h"
 
 namespace XmlUtils
 {
-	namespace NSFile
+	class CStringWriter
 	{
-		class CFile 
+	private:
+		wchar_t*	m_pData;
+		size_t		m_lSize;
+
+		wchar_t*	m_pDataCur;
+		size_t		m_lSizeCur;
+
+		int			m_lBinaryFactor;
+
+	public:
+		CStringWriter()
 		{
-		public:
-			CFile() 
+			m_pData = NULL;
+			m_lSize = 0;
+
+			m_pDataCur	= m_pData;
+			m_lSizeCur	= m_lSize;
+
+			m_bInitTable = FALSE;
+
+			m_lBinaryFactor = (((sizeof(wchar_t)) >> 1));
+		}
+		~CStringWriter()
+		{
+			RELEASEMEM(m_pData);
+		}
+
+		__forceinline void AddSize(size_t nSize)
+		{
+			if (NULL == m_pData)
 			{
-				m_hFileHandle = NULL;
-				m_lFileSize = 0;
-				m_lFilePosition = 0;
+				m_lSize = max(nSize, 1000);				
+				m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
+
+				m_lSizeCur = 0;
+				m_pDataCur = m_pData;
+				return;
 			}
 
-			virtual ~CFile()
+			if ((m_lSizeCur + nSize) > m_lSize)
 			{
-				CloseFile();
-			}
-
-			virtual HRESULT OpenFile(CString FileName)
-			{	
-				CloseFile();
-
-				HRESULT hRes = S_OK;
-				DWORD AccessMode = GENERIC_READ;
-				DWORD ShareMode = FILE_SHARE_READ;
-				DWORD Disposition = OPEN_EXISTING;
-				m_hFileHandle = ::CreateFile(FileName, AccessMode, ShareMode, NULL, Disposition, FILE_ATTRIBUTE_NORMAL, NULL);
-
-				if (NULL == m_hFileHandle || INVALID_HANDLE_VALUE == m_hFileHandle)
-					hRes = S_FALSE;
-				else 
+				while ((m_lSizeCur + nSize) > m_lSize)
 				{
-					ULARGE_INTEGER nTempSize;
-					nTempSize.LowPart = ::GetFileSize(m_hFileHandle, &nTempSize.HighPart);
-					m_lFileSize = nTempSize.QuadPart;
-
-					SetPosition(0);
+					m_lSize *= 2;
 				}
 
-				return hRes;
-			}
-
-			virtual HRESULT OpenFileRW(CString FileName)
-			{	
-				CloseFile();
-
-				HRESULT hRes = S_OK;
-				DWORD AccessMode = GENERIC_READ | GENERIC_WRITE;
-				DWORD ShareMode = FILE_SHARE_READ;
-				DWORD Disposition = OPEN_EXISTING;
-				m_hFileHandle = ::CreateFile(FileName, AccessMode, ShareMode, NULL, Disposition, 0, 0);
-
-				if (NULL == m_hFileHandle || INVALID_HANDLE_VALUE == m_hFileHandle)
+				wchar_t* pRealloc = (wchar_t*)realloc(m_pData, m_lSize * sizeof(wchar_t));
+				if (NULL != pRealloc)
 				{
-					hRes = S_FALSE;
+					// реаллок сработал
+					m_pData		= pRealloc;
+					m_pDataCur	= m_pData + m_lSizeCur;
 				}
-				else 
+				else
 				{
-					ULARGE_INTEGER nTempSize;
-					nTempSize.LowPart = ::GetFileSize(m_hFileHandle, &nTempSize.HighPart);
-					m_lFileSize = nTempSize.QuadPart;
+					wchar_t* pMalloc = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
+					memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(wchar_t));
 
-					SetPosition(0);
-				}
-
-				return hRes;
-			}
-
-			HRESULT ReadFile(BYTE* pData, DWORD nBytesToRead)
-			{
-				DWORD nBytesRead = 0;
-				if(NULL == pData)
-					return S_FALSE;
-
-				if(m_hFileHandle && (pData))
-				{	
-					SetPosition(m_lFilePosition);
-					::ReadFile(m_hFileHandle, pData, nBytesToRead, &nBytesRead, NULL);
-					m_lFilePosition += nBytesRead; 
-				}
-				return S_OK;
-			}
-
-			HRESULT ReadFile2(BYTE* pData, DWORD nBytesToRead)
-			{
-				DWORD nBytesRead = 0;
-				if(NULL == pData)
-					return S_FALSE;
-
-				if(m_hFileHandle && (pData))
-				{	
-					SetPosition(m_lFilePosition);
-					::ReadFile(m_hFileHandle, pData, nBytesToRead, &nBytesRead, NULL);
-					m_lFilePosition += nBytesRead; 
-
-					for (size_t index = 0; index < nBytesToRead / 2; ++index)
-					{
-						BYTE temp = pData[index];
-						pData[index] = pData[nBytesToRead - index - 1];
-						pData[nBytesToRead - index - 1] = temp;
-					}
-				}
-				return S_OK;
-			}
-			HRESULT ReadFile3(void* pData, DWORD nBytesToRead)
-			{
-				DWORD nBytesRead = 0;
-				if(NULL == pData)
-					return S_FALSE;
-
-				if(m_hFileHandle && (pData))
-				{	
-					SetPosition(m_lFilePosition);
-					::ReadFile(m_hFileHandle, pData, nBytesToRead, &nBytesRead, NULL);
-					m_lFilePosition += nBytesRead; 
-				}
-				return S_OK;
-			}
-
-			HRESULT WriteFile(void* pData, DWORD nBytesToWrite)
-			{
-				if(m_hFileHandle)
-				{	
-					DWORD dwWritten = 0;
-					::WriteFile(m_hFileHandle, pData, nBytesToWrite, &dwWritten, NULL);
-					m_lFilePosition += nBytesToWrite; 
-				}
-				return S_OK;
-			}
-
-			HRESULT WriteFile2(void* pData, DWORD nBytesToWrite)
-			{
-				if(m_hFileHandle)
-				{	
-					BYTE* mem = new BYTE[nBytesToWrite];
-					memcpy(mem, pData, nBytesToWrite);
-					
-					for (size_t index = 0; index < nBytesToWrite / 2; ++index)
-					{
-						BYTE temp = mem[index];
-						mem[index] = mem[nBytesToWrite - index - 1];
-						mem[nBytesToWrite - index - 1] = temp;
-					}
-					
-					DWORD dwWritten = 0;
-					::WriteFile(m_hFileHandle, (void*)mem, nBytesToWrite, &dwWritten, NULL);
-					m_lFilePosition += nBytesToWrite; 
-					RELEASEARRAYOBJECTS(mem);
-				}
-				return S_OK;
-			}
-
-			HRESULT CreateFile(CString strFileName)
-			{
-				CloseFile();
-				DWORD AccessMode = GENERIC_WRITE;
-				DWORD ShareMode = FILE_SHARE_WRITE;
-				DWORD Disposition = CREATE_ALWAYS;
-				m_hFileHandle = ::CreateFile(strFileName, AccessMode, ShareMode, NULL, Disposition, FILE_ATTRIBUTE_NORMAL, NULL);
-				return SetPosition(0);
-			}
-			HRESULT SetPosition( ULONG64 nPos )
-			{	
-				if (m_hFileHandle && nPos < (ULONG)m_lFileSize)
-				{
-					LARGE_INTEGER nTempPos;
-					nTempPos.QuadPart = nPos;
-					::SetFilePointer(m_hFileHandle, nTempPos.LowPart, &nTempPos.HighPart, FILE_BEGIN);
-					m_lFilePosition = nPos;
-					return S_OK;
-				}
-				else 
-				{
-					return (INVALID_HANDLE_VALUE == m_hFileHandle) ? S_FALSE : S_OK;
+					free(m_pData);
+					m_pData		= pMalloc;
+					m_pDataCur	= m_pData + m_lSizeCur;
 				}
 			}
-			LONG64  GetPosition()
-			{
-				return m_lFilePosition;
-			}
-			HRESULT SkipBytes(ULONG64 nCount)
-			{
-				return SetPosition(m_lFilePosition + nCount);
-			}
-
-			HRESULT CloseFile()
-			{
-				m_lFileSize = 0;
-				m_lFilePosition = 0;
-				RELEASEHANDLE(m_hFileHandle);
-				return S_OK;
-			}
-
-			ULONG64 GetFileSize()
-			{
-				return m_lFileSize;
-			}
-
-			HRESULT WriteReserved(DWORD dwCount)
-			{
-				BYTE* buf = new BYTE[dwCount];
-				memset(buf, 0, (size_t)dwCount);
-				HRESULT hr = WriteFile(buf, dwCount);
-				RELEASEARRAYOBJECTS(buf);
-				return hr;
-			}
-			HRESULT WriteReserved2(DWORD dwCount)
-			{
-				BYTE* buf = new BYTE[dwCount];
-				memset(buf, 0xFF, (size_t)dwCount);
-				HRESULT hr = WriteFile(buf, dwCount);
-				RELEASEARRAYOBJECTS(buf);
-				return hr;
-			}
-			HRESULT WriteReservedTo(DWORD dwPoint)
-			{
-				if (m_lFilePosition >= dwPoint)
-					return S_OK;
-
-				DWORD dwCount = dwPoint - (DWORD)m_lFilePosition;
-				BYTE* buf = new BYTE[dwCount];
-				memset(buf, 0, (size_t)dwCount);
-				HRESULT hr = WriteFile(buf, dwCount);
-				RELEASEARRAYOBJECTS(buf);
-				return hr;
-			}
-			HRESULT SkipReservedTo(DWORD dwPoint)
-			{
-				if (m_lFilePosition >= dwPoint)
-					return S_OK;
-
-				DWORD dwCount = dwPoint - (DWORD)m_lFilePosition;
-				return SkipBytes(dwCount);
-			}
-
-			LONG GetProgress()
-			{
-				if (0 >= m_lFileSize)
-					return -1;
-
-				double dVal = (double)(100 * m_lFilePosition);
-				LONG lProgress = (LONG)(dVal / m_lFileSize);
-				return lProgress;
-			}
-
-			void WriteStringUTF8(CString& strXml)
-			{
-				int nLength = strXml.GetLength();
-
-				CStringA saStr;
-				
-		#ifdef UNICODE
-				// Encoding Unicode to UTF-8
-				WideCharToMultiByte(CP_UTF8, 0, strXml.GetBuffer(), nLength + 1, saStr.GetBuffer(nLength*3 + 1), nLength*3, NULL, NULL);
-				saStr.ReleaseBuffer();    
-		#else
-				wchar_t* pWStr = new wchar_t[nLength + 1];
-				if (!pWStr)
-					return;
-
-				// set end string
-				pWStr[nLength] = 0;
-
-				// Encoding ASCII to Unicode
-				MultiByteToWideChar(CP_ACP, 0, strXml, nLength, pWStr, nLength);
-
-				int nLengthW = (int)wcslen(pWStr);
-
-				// Encoding Unicode to UTF-8
-				WideCharToMultiByte(CP_UTF8, 0, pWStr, nLengthW + 1, saStr.GetBuffer(nLengthW*3 + 1), nLengthW*3, NULL, NULL);
-				saStr.ReleaseBuffer();
-
-				delete[] pWStr;
-		#endif
-				
-				WriteFile((void*)saStr.GetBuffer(), saStr.GetLength());
-			}
-
-		protected:
-			HANDLE m_hFileHandle;		
-			LONG64 m_lFileSize;
-			LONG64 m_lFilePosition;
-		};
-	}
-#else //#ifdef _WIN32
-
-#include "XML/include/libxml/xmlreader.h"
-#include "../../Base/Base.h"
-
-#include <stdlib.h>
-#include <stdio.h>
-
-#include "assert.h"
-
-namespace NSFile
-{
-    class CFile
-    {
-    public:
-        CFile()
-        {
-            m_pFileHandle = NULL;
-            m_lFileSize = 0;
-            m_lFilePosition = 0;
-        }
-
-        virtual ~CFile()
-        {
-            CloseFile();
-        }
-
-        virtual HRESULT OpenFile(CString FileName)
-        {
-            CloseFile();
-
-#ifdef _WIN32
-            m_pFileHandle = _wfopen(FileName.c_str(), L"rb");
-#else
-
-            std::string aMutliByteName  = stringWstingToUtf8String (FileName);
-            m_pFileHandle = fopen(aMutliByteName.c_str(), "rb");
-#endif
-            if (NULL == m_pFileHandle)
-            {
-                throw std::exception();
-            }
-
-            // get buffer size
-            fseek(m_pFileHandle, 0, SEEK_END);
-            m_lFileSize = ftell(m_pFileHandle);
-            fseek(m_pFileHandle, 0, SEEK_SET);
-            return S_OK;
-        }
-
-        /*
-        virtual HRESULT OpenFileRW(CString FileName)
-        {
-            CloseFile();
-
-            HRESULT hRes = S_OK;
-            DWORD AccessMode = GENERIC_READ | GENERIC_WRITE;
-            DWORD ShareMode = FILE_SHARE_READ;
-            DWORD Disposition = OPEN_EXISTING;
-            m_hFileHandle = ::CreateFile(FileName, AccessMode, ShareMode, NULL, Disposition, 0, 0);
-
-            if (NULL == m_hFileHandle || INVALID_HANDLE_VALUE == m_hFileHandle)
-            {
-                hRes = S_FALSE;
-            }
-            else
-            {
-                ULARGE_INTEGER nTempSize;
-                nTempSize.LowPart = ::GetFileSize(m_hFileHandle, &nTempSize.HighPart);
-                m_lFileSize = nTempSize.QuadPart;
-
-                SetPosition(0);
-            }
-
-            return hRes;
-        }
-        */
-
-        HRESULT ReadFile(BYTE* pData, DWORD nBytesToRead)
-        {
-            if(NULL == pData)
-                return S_FALSE;
-
-            if(m_pFileHandle && (pData))
-            {
-                fseek(m_pFileHandle, m_lFilePosition, SEEK_SET);
-
-                size_t res = fread (pData, 1, nBytesToRead, m_pFileHandle);
-
-
-                m_lFilePosition += res;
-                if (res != nBytesToRead)
-                {
-                    return S_FALSE;
-                }
-            }
-            return S_OK;
-        }
-
-        HRESULT ReadFile2(BYTE* pData, DWORD nBytesToRead)
-        {
-            if(NULL == pData)
-                return S_FALSE;
-
-            if (m_pFileHandle && (pData))
-            {
-                fseek(m_pFileHandle, m_lFilePosition, SEEK_SET);
-
-                size_t res = fread (pData, 1, nBytesToRead, m_pFileHandle);
-
-
-                m_lFilePosition += res;
-
-                for (size_t index = 0; index < nBytesToRead / 2; ++index)
-                {
-                    BYTE temp = pData[index];
-                    pData[index] = pData[nBytesToRead - index - 1];
-                    pData[nBytesToRead - index - 1] = temp;
-                }
-            }
-            return S_OK;
-        }
-        HRESULT ReadFile3(void* pData, DWORD nBytesToRead)
-        {
-            if(NULL == pData)
-                return S_FALSE;
-
-            if (m_pFileHandle && (pData))
-            {
-                fseek(m_pFileHandle, m_lFilePosition, SEEK_SET);
-
-                size_t res = fread (pData, 1, nBytesToRead, m_pFileHandle);
-
-                m_lFilePosition += res;
-            }
-            return S_OK;
-        }
-
-        HRESULT WriteFile(void* pData, DWORD nBytesToWrite)
-        {
-            DWORD dwWritten = 0;
-            if (m_pFileHandle)
-            {
-                dwWritten = fwrite (pData, 1, nBytesToWrite, m_pFileHandle);
-                m_lFilePosition += nBytesToWrite;
-            }
-            return (dwWritten == nBytesToWrite) ? S_OK : S_FALSE;
-        }
-
-        HRESULT WriteFile2(void* pData, DWORD nBytesToWrite)
-        {
-            DWORD dwWritten = 0;
-            if(m_pFileHandle)
-            {
-                BYTE* mem = new BYTE[nBytesToWrite];
-                memcpy(mem, pData, nBytesToWrite);
-
-                for (size_t index = 0; index < nBytesToWrite / 2; ++index)
-                {
-                    BYTE temp = mem[index];
-                    mem[index] = mem[nBytesToWrite - index - 1];
-                    mem[nBytesToWrite - index - 1] = temp;
-                }
-
-                dwWritten = fwrite (pData, 1, nBytesToWrite, m_pFileHandle);
-                m_lFilePosition += nBytesToWrite;
-                delete [] mem;
-            }
-            return (dwWritten == nBytesToWrite) ? S_OK : S_FALSE;
-        }
-
-        HRESULT CreateFile(CString strFileName)
-        {
-            CloseFile();
-#ifdef _WIN32
-            m_pFileHandle = _wfopen(strFileName.c_str(), L"w");
-#else
-            std::string aMutliByteName  = stringWstingToUtf8String (strFileName);
-            m_pFileHandle = fopen(aMutliByteName.c_str(), "w");
-#endif
-            return SetPosition(0);
-        }
-        HRESULT SetPosition( ULONG64 nPos )
-        {
-            if (m_pFileHandle && nPos < (ULONG)m_lFileSize)
-            {
-                fseek(m_pFileHandle, nPos, SEEK_SET);
-                m_lFilePosition = nPos;
-                return S_OK;
-            }
-            else
-            {
-                return (NULL == m_pFileHandle) ? S_FALSE : S_OK;
-            }
-        }
-        LONG64  GetPosition()
-        {
-            return m_lFilePosition;
-        }
-        HRESULT SkipBytes(ULONG64 nCount)
-        {
-            return SetPosition(m_lFilePosition + nCount);
-        }
-
-        HRESULT CloseFile()
-        {
-            m_lFileSize = 0;
-            m_lFilePosition = 0;
-            if (NULL != m_pFileHandle)
-            {
-                fclose (m_pFileHandle);
-            }
-            return S_OK;
-        }
-
-        ULONG64 GetFileSize()
-        {
-            return m_lFileSize;
-        }
-
-        HRESULT WriteReserved(DWORD dwCount)
-        {
-            BYTE* buf = new BYTE[dwCount];
-            memset(buf, 0, (size_t)dwCount);
-            HRESULT hr = WriteFile(buf, dwCount);
-            delete [] buf;
-            return hr;
-        }
-        HRESULT WriteReserved2(DWORD dwCount)
-        {
-            BYTE* buf = new BYTE[dwCount];
-            memset(buf, 0xFF, (size_t)dwCount);
-            HRESULT hr = WriteFile(buf, dwCount);
-            delete [] buf;
-            return hr;
-        }
-        HRESULT WriteReservedTo(DWORD dwPoint)
-        {
-            if (m_lFilePosition >= dwPoint)
-                return S_OK;
-
-            DWORD dwCount = dwPoint - (DWORD)m_lFilePosition;
-            BYTE* buf = new BYTE[dwCount];
-            memset(buf, 0, (size_t)dwCount);
-            HRESULT hr = WriteFile(buf, dwCount);
-            delete [] buf;
-            return hr;
-        }
-        HRESULT SkipReservedTo(DWORD dwPoint)
-        {
-            if (m_lFilePosition >= dwPoint)
-                return S_OK;
-
-            DWORD dwCount = dwPoint - (DWORD)m_lFilePosition;
-            return SkipBytes(dwCount);
-        }
-
-        LONG GetProgress()
-        {
-            if (0 >= m_lFileSize)
-                return -1;
-
-            double dVal = (double)(100 * m_lFilePosition);
-            LONG lProgress = (LONG)(dVal / m_lFileSize);
-            return lProgress;
-        }
-
-        void WriteStringUTF8(CString& strXml)
-        {
-            std::string utf8_str;
-
-
-    #ifdef UNICODE
-            // Encoding Unicode to UTF-8
-            utf8_str = stringWstingToUtf8String (strXml);
-    #else
-            utf8_str = strXml;
-            /*
-            wchar_t* pWStr = new wchar_t[nLength + 1];
-            if (!pWStr)
-                return;
-
-            // set end string
-            pWStr[nLength] = 0;
-
-            // Encoding ASCII to Unicode
-            MultiByteToWideChar(CP_ACP, 0, strXml, nLength, pWStr, nLength);
-
-            int nLengthW = (int)wcslen(pWStr);
-
-            // Encoding Unicode to UTF-8
-            WideCharToMultiByte(CP_UTF8, 0, pWStr, nLengthW + 1, saStr.GetBuffer(nLengthW*3 + 1), nLengthW*3, NULL, NULL);
-            saStr.ReleaseBuffer();
-
-            delete[] pWStr;
-            */
-    #endif
-
-            WriteFile((void*)utf8_str.c_str(), utf8_str.size());
-        }
-
-    protected:
-        FILE    *m_pFileHandle;
-        long    m_lFileSize;
-        long m_lFilePosition;
-    };
-}
-#endif //#ifdef _WIN32
+		}
+
+	public:
+
+		__forceinline void WriteString(const wchar_t* pString, const size_t& nLen)
+		{
+			AddSize(nLen);
+			memcpy(m_pDataCur, pString, nLen << m_lBinaryFactor);
+			m_pDataCur += nLen;
+			m_lSizeCur += nLen;
+		}
+		__forceinline void WriteString(const std::wstring& bsString)
+		{
+			WriteString(bsString.c_str(), (size_t)bsString.length());
+		}
 		
+		__forceinline void AddCharSafe(const TCHAR& _c)
+		{
+			AddSize(1);
+			*m_pDataCur++ = _c;
+			++m_lSizeCur;
+		}
+		__forceinline void AddChar2Safe(const TCHAR _c1, const TCHAR& _c2)
+		{
+			AddSize(2);
+			*m_pDataCur++ = _c1;
+			*m_pDataCur++ = _c2;
+			m_lSizeCur += 2;
+		}
+
+		inline void WriteEncodeXmlString(const std::wstring& _string)
+		{
+			WriteEncodeXmlString(_string.c_str());
+		}
+
+		inline void WriteEncodeXmlString(const wchar_t* pString)
+		{
+			const wchar_t* pData = pString;
+			while (*pData != 0)
+			{
+				BYTE _code = CheckCode(*pData);
+
+				switch (_code)
+				{
+				case 1:
+					AddCharSafe(*pData);
+					break;
+				case 0:
+					AddCharSafe((WCHAR)' ');
+					break;
+				case 2:
+					AddSize(5);
+					*m_pDataCur++ = (WCHAR)('&');
+					*m_pDataCur++ = (WCHAR)('a');
+					*m_pDataCur++ = (WCHAR)('m');
+					*m_pDataCur++ = (WCHAR)('p');
+					*m_pDataCur++ = (WCHAR)(';');
+					m_lSizeCur += 5;
+					break;
+				case 3:
+					AddSize(6);
+					*m_pDataCur++ = (WCHAR)('&');
+					*m_pDataCur++ = (WCHAR)('a');
+					*m_pDataCur++ = (WCHAR)('p');
+					*m_pDataCur++ = (WCHAR)('o');
+					*m_pDataCur++ = (WCHAR)('s');
+					*m_pDataCur++ = (WCHAR)(';');
+					m_lSizeCur += 6;
+					break;
+				case 4:
+					AddSize(4);
+					*m_pDataCur++ = (WCHAR)('&');
+					*m_pDataCur++ = (WCHAR)('l');
+					*m_pDataCur++ = (WCHAR)('t');
+					*m_pDataCur++ = (WCHAR)(';');
+					m_lSizeCur += 4;
+					break;
+				case 5:
+					AddSize(4);
+					*m_pDataCur++ = (WCHAR)('&');
+					*m_pDataCur++ = (WCHAR)('g');
+					*m_pDataCur++ = (WCHAR)('t');
+					*m_pDataCur++ = (WCHAR)(';');
+					m_lSizeCur += 4;
+					break;
+				case 6:
+					AddSize(6);
+					*m_pDataCur++ = (WCHAR)('&');
+					*m_pDataCur++ = (WCHAR)('q');
+					*m_pDataCur++ = (WCHAR)('u');
+					*m_pDataCur++ = (WCHAR)('o');
+					*m_pDataCur++ = (WCHAR)('t');
+					*m_pDataCur++ = (WCHAR)(';');
+					m_lSizeCur += 6;
+					break;
+				default:
+					break;						
+				}
+			
+				++pData;
+			}
+		}
+
+		__forceinline size_t GetCurSize()
+		{
+			return m_lSizeCur;
+		}
+
+		__forceinline void Write(CStringWriter& oWriter)
+		{
+			WriteString(oWriter.m_pData, oWriter.m_lSizeCur);
+		}
+
+		inline void Clear()
+		{
+			RELEASEMEM(m_pData);
+
+			m_pData = NULL;
+			m_lSize = 0;
+
+			m_pDataCur	= m_pData;
+			m_lSizeCur	= 0;
+		}
+		inline void ClearNoAttack()
+		{
+			m_pDataCur	= m_pData;
+			m_lSizeCur	= 0;
+		}
+
+		std::wstring GetData()
+		{
+			std::wstring str(m_pData, (int)m_lSizeCur);
+			return str;
+		}
+
+	protected:
+		BYTE m_arTableUnicodes[65536];
+		BOOL m_bInitTable;
+
+	protected:
+		BYTE CheckCode(const WCHAR& c)
+		{
+			if (!m_bInitTable)
+			{
+				memset(m_arTableUnicodes, 0, 65536);
+				m_arTableUnicodes[0x0009] = 1;
+				m_arTableUnicodes[0x000A] = 1;
+				m_arTableUnicodes[0x000D] = 1;
+
+				memset(m_arTableUnicodes + 0x0020, 1, 0xD7FF - 0x0020 + 1);
+				memset(m_arTableUnicodes + 0xE000, 1, 0xFFFD - 0xE000 + 1);
+
+				m_arTableUnicodes['&'] = 2;
+				m_arTableUnicodes['\''] = 3;
+				m_arTableUnicodes['<'] = 4;
+				m_arTableUnicodes['>'] = 5;
+				m_arTableUnicodes['\"'] = 6;
+
+				m_bInitTable = TRUE;
+			}
+			return m_arTableUnicodes[c];
+		}
+	};	
+
 	typedef 
 	enum XmlNodeType
 	{	
@@ -629,6 +268,7 @@ namespace NSFile
 
 	class CXmlLiteReader
 	{
+	protected:
 		xmlTextReaderPtr	reader;
 		
 		BYTE*				m_pStream;
@@ -646,10 +286,16 @@ namespace NSFile
 				delete []m_pStream;
 		}
 
+		xmlTextReaderPtr getNativeReader() { return reader; }
+
 	public:
 
 		inline void Clear()
 		{
+			if (NULL != m_pStream)
+				delete []m_pStream;
+			m_pStream = NULL;
+			m_lStreamLen = 0;
 		}
 
 		inline BOOL IsValid()
@@ -657,27 +303,36 @@ namespace NSFile
 			return ( NULL != reader );
 		}
 
-		inline BOOL FromFile(CString& sFilePath)
+		inline BOOL FromFile(const std::wstring& sFilePath)
 		{
 			Clear();
 
-			NSFile::CFile oFile;
+			NSFile::CFileBinary oFile;
 			oFile.OpenFile(sFilePath);
-			m_lStreamLen = (int)oFile.GetFileSize();
+			m_lStreamLen = (LONG)oFile.GetFileSize();
 			m_pStream = new BYTE[m_lStreamLen];
-			oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen);
+			DWORD dwRead = 0;
+			oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
 			oFile.CloseFile();
 
 			reader = xmlReaderForMemory((char*)m_pStream, m_lStreamLen, NULL, NULL, 0);
 
 			return TRUE;
 		}
-		inline BOOL FromString(CString& sXml)
+		inline BOOL FromString(const std::wstring& sXml)
 		{
 			Clear();
-			UnicodeToUtf8(sXml, m_pStream, m_lStreamLen);
 
+			NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.c_str(), sXml.length(), m_pStream, m_lStreamLen, false);
 			reader = xmlReaderForMemory((char*)m_pStream, m_lStreamLen, NULL, NULL, 0);
+
+			return TRUE;
+		}
+		inline BOOL FromStringA(const std::string& sXml)
+		{
+			Clear();
+
+			reader = xmlReaderForMemory((char*)sXml.c_str(), sXml.length(), NULL, NULL, 0);
 
 			return TRUE;
 		}
@@ -770,13 +425,32 @@ namespace NSFile
 
 			return TRUE;
 		}
-		inline const wchar_t* GetName()
+		inline std::wstring GetName()
 		{
 			if ( !IsValid() )
-				return NULL;
+				return L"";
 
 			xmlChar* pName = xmlTextReaderName(reader);
-			return UnicodeFromUtf8(pName);
+			if (NULL == pName)
+				return L"";
+
+			std::wstring s = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pName, (LONG)strlen((const char*)pName));
+			delete [] pName;
+			return s;
+		}
+		inline std::string GetNameA()
+		{
+			if ( !IsValid() )
+				return "";
+
+			xmlChar* pName = xmlTextReaderName(reader);
+			if (NULL == pName)
+				return "";
+
+			//return std::string((const char*)pName);
+			std::string s((const char*)pName);
+			delete [] pName;
+			return s;
 		}
 		inline int GetDepth()
 		{
@@ -793,21 +467,39 @@ namespace NSFile
 			return xmlTextReaderIsEmptyElement(reader);
 		}
 
-		inline const WCHAR *GetText()
+		inline std::wstring GetText()
 		{
 			if ( !IsValid() )
 				return NULL;
 
 			xmlChar* pValue = xmlTextReaderValue(reader);
-			return UnicodeFromUtf8(pValue);
+			if (NULL == pValue)
+				return L"";
+			
+			std::wstring s = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen((const char*)pValue));
+			delete [] pValue;
+			return s;
 		}
-		inline CString GetText2()
+		inline std::string GetTextA()
+		{
+			if ( !IsValid() )
+				return NULL;
+
+			xmlChar* pValue = xmlTextReaderValue(reader);
+			if (NULL == pValue)
+				return "";
+
+			std::string s((const char*)pValue);
+			delete [] pValue;
+			return s;
+		}
+
+		inline std::wstring GetText2()
 		{
 			if ( !IsValid() )
 				return _T("");
 
-			// TO DO: Ускорить (убрать CString)
-			CString sResult;
+			std::wstring sResult;
 
 			if ( xmlTextReaderIsEmptyElement(reader) )
 				return sResult;
@@ -822,15 +514,15 @@ namespace NSFile
 
 			return sResult;
 		}
-		inline CString GetOuterXml()
+		inline std::wstring GetOuterXml()
 		{
 			return GetXml(false);
 		}
-		inline CString GetInnerXml()
+		inline std::wstring GetInnerXml()
 		{
 			return GetXml(true);
 		}
-		inline int  GetAttributesCount()
+		inline int GetAttributesCount()
 		{
 			if ( !IsValid() )
 				return -1;
@@ -860,10 +552,10 @@ namespace NSFile
 			return (BOOL)xmlTextReaderMoveToElement(reader);
 		}
 	private:
-		inline CString GetXml(bool bInner)
+		inline std::wstring GetXml(bool bInner)
 		{
 			if ( !IsValid() )
-				return _T("");
+				return L"";
 
 			CStringWriter oResult;
 			if(false == bInner)
@@ -916,8 +608,8 @@ namespace NSFile
 			if(GetAttributesCount() > 0)
 			{
 				MoveToFirstAttribute();
-				CString sName = GetName();
-				while( !sName.IsEmpty() )
+				std::wstring sName = GetName();
+				while( !sName.empty() )
 				{
 					oResult.AddCharSafe(TCHAR(' '));
 					oResult.WriteEncodeXmlString(GetName());
@@ -936,66 +628,159 @@ namespace NSFile
 			else
 				oResult.AddCharSafe(TCHAR('>'));
 		}
-
-		WCHAR* UnicodeFromUtf8(xmlChar* pValue)
-		{
-			BYTE* pBuffer = (BYTE*)pValue;
-			LONG lCount = strlen((char*)pValue);
-			LONG lLenght = 0;
-
-			WCHAR* pUnicodeString = new WCHAR[lCount + 1];
-			LONG lIndexUnicode = 0;
-
-			for (LONG lIndex = 0; lIndex < lCount; ++lIndex)
-			{
-				if (0x00 == (0x80 & pBuffer[lIndex]))
-				{
-					//strRes += (WCHAR)pBuffer[lIndex];
-					pUnicodeString[lIndexUnicode++] = (WCHAR)pBuffer[lIndex];
-					continue;
-				}
-				else if (0x00 == (0x20 & pBuffer[lIndex]))
-				{
-					WCHAR mem = (WCHAR)(((pBuffer[lIndex] & 0x1F) << 6) + (pBuffer[lIndex + 1] & 0x3F));
-					
-					//strRes += mem;
-					pUnicodeString[lIndexUnicode++] = mem;
-
-					lIndex += 1;
-				}
-				else if (0x00 == (0x10 & pBuffer[lIndex]))
-				{
-					WCHAR mem = (WCHAR)(((pBuffer[lIndex] & 0x0F) << 12) + ((pBuffer[lIndex + 1] & 0x3F) << 6) + (pBuffer[lIndex + 2] & 0x3F));
-					
-					//strRes += mem;
-					pUnicodeString[lIndexUnicode++] = mem;
-
-					lIndex += 2;
-				}
-				else
-				{
-					BYTE mem = pBuffer[lIndex];
-					//pUnicodeString[lIndexUnicode++] = mem;
-				}
-			}
-
-			pUnicodeString[lIndexUnicode] = 0;
-			return pUnicodeString;
-		}
-
-		void UnicodeToUtf8(CString& strXml, BYTE*& pBuffer, LONG& lLen)
-		{
-			int nLength = strXml.GetLength();
-
-			pBuffer = new BYTE[nLength*3 + 1];
-			
-			// Encoding Unicode to UTF-8
-			WideCharToMultiByte(CP_UTF8, 0, strXml.GetBuffer(), nLength + 1, (LPSTR)pBuffer, nLength*3, NULL, NULL);
-			lLen = strlen((LPSTR)pBuffer);
-		}
 	};
 
+	class IXmlDOMDocument
+	{
+	private:
+		ULONG m_lRef;
+	
+	public:
+		IXmlDOMDocument()
+		{
+			m_lRef = 1;
+		}
+		virtual ~IXmlDOMDocument()
+		{
+		}
 
+		virtual ULONG AddRef()
+		{
+			++m_lRef;
+			return m_lRef;
+		}
+		virtual ULONG Release()
+		{
+			ULONG lReturn = --m_lRef;
+			if (0 == m_lRef)
+				delete this;
+			return lReturn;
+		}		
+	};
+
+	class CXmlNodeBase : public IXmlDOMDocument
+	{
+	public:
+		IXmlDOMDocument* m_pDocument;
+
+		std::map<std::string, std::string> m_attributes;
+		std::vector<CXmlNodeBase*> m_nodes;
+		std::wstring m_sText;
+		std::wstring m_sName;
+
+	public:
+		CXmlNodeBase() : IXmlDOMDocument()
+		{
+			m_pDocument = NULL;
+			m_sText = L"";
+			m_sName = L"";
+		}
+		~CXmlNodeBase()
+		{
+			if (NULL != m_pDocument)
+				m_pDocument->Release();
+
+			int nCount = (int)m_nodes.size();
+			for (int i = 0; i < nCount; ++i)
+			{
+				CXmlNodeBase* pNode = m_nodes[i];
+				if (NULL != pNode)
+					delete pNode;
+			}
+		}
+
+		void AddRefDoc()
+		{
+			if (NULL != m_pDocument)
+				m_pDocument->AddRef();
+		}
+		void ReleaseDoc()
+		{
+			if (NULL != m_pDocument)
+				m_pDocument->Release();
+		}
+
+		std::wstring GetXml();
+		void GetXml(CStringWriter& oWriter);
+	};
+
+	class CXmlNodes;
+	class CXmlNode
+	{
+	private:
+		CXmlNodeBase* m_pBase;
+
+	public:
+		CXmlNode()
+		{
+			m_pBase = NULL;
+		}
+		~CXmlNode()
+		{
+			if (NULL != m_pBase)
+				m_pBase->Release();
+		}
+		CXmlNode(const CXmlNode& oSrc);
+
+	public:
+		bool FromXmlFile(const std::wstring& sFile);
+		bool FromXmlStringA(const std::string& sString);
+		bool FromXmlString(const std::wstring& sString);
+
+		std::string GetAttributeA(const std::string& sName, const std::string& _default = "");
+		std::string GetAttributeA(const std::wstring& sName, const std::string& _default = "");
+
+		std::wstring GetAttribute(const std::string& sName, const std::wstring& _default = L"");
+		std::wstring GetAttribute(const std::wstring& sName, const std::wstring& _default = L"");
+
+		int GetAttributeInt(const std::string& sName, const int& _default = 0);
+		int GetAttributeInt(const std::wstring& sName, const int& _default = 0);
+
+		double GetAttributeDouble(const std::string& sName, const double& _default = 0);
+		double GetAttributeDouble(const std::wstring& sName, const double& _default = 0);
+
+		std::wstring GetText();
+
+		bool IsValid();
+
+		CXmlNode GetNode(const std::wstring& sName);
+		CXmlNodes GetNodes(const std::wstring& sName);
+
+		bool GetNode(const std::wstring& sName, CXmlNode& oNode);
+		bool GetNodes(const std::wstring& sName, CXmlNodes& oNodes);
+
+		CXmlNode& operator=(const CXmlNode& oSrc);
+
+	public:
+		std::wstring private_GetXml();
+		std::wstring private_GetXmlFast();
+	};
+
+	class CXmlNodes
+	{
+	private:
+		std::vector<CXmlNode> m_nodes;
+
+	public:
+		CXmlNodes() : m_nodes()
+		{
+		}
+
+		int GetCount()
+		{
+			return (int)m_nodes.size();
+		}
+		bool GetAt(int nIndex, CXmlNode& oXmlNode)
+		{
+			if (nIndex < 0 && nIndex >= GetCount())
+				return false;
+
+			oXmlNode = m_nodes[nIndex];
+			return true;
+		}
+
+		friend class CXmlNode;
+	};
 }
 
 #if 0

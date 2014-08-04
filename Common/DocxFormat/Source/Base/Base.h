@@ -47,11 +47,11 @@
 #define _ATL_ALL_WARNINGS
 #endif
 
-//#include <windows.h>
-//#include <atlbase.h>
-//#include <atlcoll.h>
-//#include <atlstr.h>
-//#include <atltypes.h>
+#include <windows.h>
+#include <atlbase.h>
+#include <atlcoll.h>
+#include <atlstr.h>
+#include <atltypes.h>
 
 #include "../../../ASCUtils.h"
 

@@ -2777,7 +2777,7 @@ __forceinline const bool operator!=(const wchar_t* cwsStr1, const CWCharWrapper&
 
 #endif // #ifdef _WIN32
 
-#define _USE_LIBXML2_READER_
+//#define _USE_LIBXML2_READER_
 
 #ifdef _USE_LIBXML2_READER_
 

@@ -5,8 +5,27 @@
 
 #include <string>
 
+// colors
 namespace NSEditorApi
 {
+	class CAscColorSimple
+	{
+	public:
+		BYTE R;
+		BYTE G;
+		BYTE B;
+		BYTE A;
+
+	public:
+		CAscColorSimple()
+		{
+			R = 0;
+			G = 0;
+			B = 0;
+			A = 0;
+		}
+	};
+
 	class CColorMod
 	{
 	private:
@@ -20,7 +39,7 @@ namespace NSEditorApi
 			m_nValue	= 0;
 		}
 
-		LINK_PROPERTY_STRING(Name)
+		LINK_PROPERTY_STRINGA(Name)
 		LINK_PROPERTY_INT(Value)
 	};
 
@@ -77,124 +96,269 @@ namespace NSEditorApi
 		CColorMod* GetMods() { return m_pMods; }
 		void SetMods(CColorMod* pMods) { m_pMods = pMods; }		
 	};
-
 }
 
+// common
+namespace NSEditorApi
+{
+	class CAscEditorPermissions
+	{
+	private:
+		bool m_bCanEdit;
+		bool m_bCanDownload;
+		bool m_bCanCoAuthoring;
+		bool m_bCanBranding;
+		bool m_bIsAutosaveEnabled;
+		int m_nAutosaveMinInterval;
+
+	public:
+		CAscEditorPermissions()
+		{
+			m_bCanEdit				= true;
+			m_bCanDownload			= true;
+			m_bCanCoAuthoring		= true;
+			m_bCanBranding			= true;
+			m_bIsAutosaveEnabled	= true;
+			m_nAutosaveMinInterval	= 300;
+		}
+
+	public:
+		LINK_PROPERTY_BOOL(CanEdit)
+		LINK_PROPERTY_BOOL(CanDownload)
+		LINK_PROPERTY_BOOL(CanCoAuthoring)
+		LINK_PROPERTY_BOOL(CanBranding)
+		LINK_PROPERTY_BOOL(IsAutosaveEnabled)
+		LINK_PROPERTY_INT(AutosaveMinInterval)
+	};
+
+	class CAscLicense
+	{
+	private:
+		js_wrapper<std::wstring> m_sCustomer;
+		js_wrapper<std::wstring> m_sCustomerAddr;
+		js_wrapper<std::wstring> m_sCustomerWww;
+		js_wrapper<std::wstring> m_sCustomerMail;
+		js_wrapper<std::wstring> m_sCustomerInfo;
+		js_wrapper<std::wstring> m_sCustomerLogo;
+
+	public:
+		CAscLicense()
+		{
+			m_sCustomer.SetNull();
+			m_sCustomerAddr.SetNull();
+			m_sCustomerWww.SetNull();
+			m_sCustomerMail.SetNull();
+			m_sCustomerInfo.SetNull();
+			m_sCustomerLogo.SetNull();
+		}
+
+		LINK_PROPERTY_STRING_JS(Customer)
+		LINK_PROPERTY_STRING_JS(CustomerAddr)
+		LINK_PROPERTY_STRING_JS(CustomerWww)
+		LINK_PROPERTY_STRING_JS(CustomerMail)
+		LINK_PROPERTY_STRING_JS(CustomerInfo)
+		LINK_PROPERTY_STRING_JS(CustomerLogo)
+	};
+
+	class CAscRect
+	{
+	public:
+		int X;
+		int Y;
+		int Width;
+		int Height;
+
+	public:
+		CAscRect()
+		{
+			X = 0;
+			Y = 0;
+			Width = 0;
+			Height = 0;
+		}
+	};
+}
+
+// fill
+namespace NSEditorApi
+{
+	class CAscFillSolid
+	{
+	private:
+		CAscColor m_oColor;
+
+	public:
+		CAscFillSolid()
+		{
+		}
+
+		CAscColor& get_Color() { return m_oColor; }
+	};
+
+	class CAscFillBlip
+	{
+	private:
+		int				m_nType; // c_oAscFillBlipType_
+		std::wstring	m_sUrl;
+		int				m_nTextureId;
+
+	public:
+		CAscFillBlip()
+		{
+			m_nType = c_oAscFillBlipType_STRETCH;
+			m_sUrl = L"";
+			m_nTextureId = -1;
+		}
+
+		LINK_PROPERTY_INT(Type)
+		LINK_PROPERTY_STRING(Url)
+		LINK_PROPERTY_INT(TextureId)
+	};
+
+	class CAscFillHatch
+	{
+	private:
+		int m_nPatternType;
+		CAscColor m_oFg;
+		CAscColor m_oBg;
+
+	public:
+		CAscFillHatch()
+		{
+			m_nPatternType = -1;
+		}
+
+		LINK_PROPERTY_INT(PatternType)
+
+		CAscColor& get_Fg() { return m_oFg; }
+		CAscColor& get_Bg() { return m_oBg; }
+	};
+
+	class CAscFillGrad
+	{
+	private:
+		int			m_nCountColors;
+		CAscColor*	m_pColors;
+		int*		m_pPositions;
+
+		int			m_nGradType;
+
+		double		m_dLinearAngle;
+		bool		m_bLinearScale;
+
+		int			m_nPathType;
+
+	public:
+		CAscFillGrad()
+		{
+			m_nCountColors	= 0;
+			m_pColors		= NULL;
+			m_pPositions	= NULL;
+
+			m_nGradType = 0;
+
+			m_dLinearAngle = 0;
+			m_bLinearScale = 0;
+
+			m_nPathType = 0;
+		}
+
+		inline int get_CountColors() { return m_nCountColors; }
+		inline CAscColor* get_Colors() { return m_pColors; }
+		inline int* get_Positions() { return m_pPositions; }
+
+		LINK_PROPERTY_INT(GradType)
+		LINK_PROPERTY_DOUBLE(LinearAngle)
+		LINK_PROPERTY_BOOL(LinearScale)
+		LINK_PROPERTY_INT(PathType)
+	};
+
+	class CAscFill
+	{
+	private:
+		js_wrapper<int>		m_nType;
+		js_wrapper<void*>	m_pFill;
+		js_wrapper<int>		m_nTransparent;
+
+	public:
+		CAscFill()
+		{
+			m_nType.SetNull();
+			m_pFill.SetNull();
+			m_nTransparent.SetNull();
+		}
+
+		LINK_PROPERTY_INT_JS(Type)
+		LINK_PROPERTY_INT_JS(Transparent)
+		
+		inline js_wrapper<void*> get_Fill() { return m_pFill; }
+
+		inline void put_Fill(js_wrapper<void*> pFill)
+		{
+			m_pFill = pFill;
+		}
+	};
+}
+
+// stroke
+namespace NSEditorApi
+{
+	class CAscStroke
+	{
+	private:
+		js_wrapper<int>			m_nType;
+		js_wrapper<double>		m_dWidth;
+		js_wrapper<CAscColor>	m_oColor;
+
+		js_wrapper<BYTE> m_nLineJoin;
+		js_wrapper<BYTE> m_nLineCap;
+
+		js_wrapper<BYTE> m_nLineBeginStyle;
+		js_wrapper<BYTE> m_nLineBeginSize;
+
+		js_wrapper<BYTE> m_nLineEndStyle;
+		js_wrapper<BYTE> m_nLineEndSize;
+
+		js_wrapper<bool> m_bCanChangeArrows;
+
+	public:
+		CAscStroke()
+		{
+			m_nType.SetNull();
+			m_dWidth.SetNull();
+			m_oColor.SetNull();
+
+			m_nLineJoin.SetNull();
+			m_nLineCap.SetNull();
+
+			m_nLineBeginSize.SetNull();
+			m_nLineBeginStyle.SetNull();
+
+			m_nLineEndSize.SetNull();
+			m_nLineEndStyle.SetNull();
+
+			m_bCanChangeArrows = false;
+		}
+
+		LINK_PROPERTY_OBJECT_JS(CAscColor, Color)
+
+		LINK_PROPERTY_INT_JS(Type)
+		LINK_PROPERTY_DOUBLE_JS(Width)
+		
+		LINK_PROPERTY_BYTE_JS(LineJoin)
+		LINK_PROPERTY_BYTE_JS(LineCap)
+		LINK_PROPERTY_BYTE_JS(LineBeginStyle)
+		LINK_PROPERTY_BYTE_JS(LineBeginSize)
+		LINK_PROPERTY_BYTE_JS(LineEndStyle)
+		LINK_PROPERTY_BYTE_JS(LineEndSize)
+
+		LINK_PROPERTY_BOOL_JS(CanChangeArrows)
+	};
+}
 
 namespace NSEditorApi
 {
 
-class CAscEditorPermissions
-{
-private:
-	bool m_bCanEdit;
-	bool m_bCanDownload;
-	bool m_bCanCoAuthoring;
-	bool m_bCanBranding;
-	bool m_bIsAutosaveEnabled;
-	int m_nAutosaveMinInterval;
-
-public:
-	CAscEditorPermissions()
-	{
-		m_bCanEdit				= true;
-		m_bCanDownload			= true;
-		m_bCanCoAuthoring		= true;
-		m_bCanBranding			= true;
-		m_bIsAutosaveEnabled	= true;
-		m_nAutosaveMinInterval	= 300;
-	}
-
-public:
-	LINK_PROPERTY_BOOL(CanEdit)
-	LINK_PROPERTY_BOOL(CanDownload)
-	LINK_PROPERTY_BOOL(CanCoAuthoring)
-	LINK_PROPERTY_BOOL(CanBranding)
-	LINK_PROPERTY_BOOL(IsAutosaveEnabled)
-	LINK_PROPERTY_INT(AutosaveMinInterval)
-};
-
-class CAscLicense
-{
-private:
-	std::wstring m_sCustomer;
-	std::wstring m_sCustomerAddr;
-	std::wstring m_sCustomerWww;
-	std::wstring m_sCustomerMail;
-	std::wstring m_sCustomerInfo;
-	std::wstring m_sCustomerLogo;
-
-public:
-	CAscLicense()
-	{
-		m_sCustomer			= L"";
-		m_sCustomerAddr		= L"";
-		m_sCustomerWww		= L"";
-		m_sCustomerMail		= L"";
-		m_sCustomerInfo		= L"";
-		m_sCustomerLogo		= L"";
-	}
-
-	LINK_PROPERTY_STRING(Customer)
-	LINK_PROPERTY_STRING(CustomerAddr)
-	LINK_PROPERTY_STRING(CustomerWww)
-	LINK_PROPERTY_STRING(CustomerMail)
-	LINK_PROPERTY_STRING(CustomerInfo)
-	LINK_PROPERTY_STRING(CustomerLogo)
-};
-
-class CAscColorSimple
-{
-public:
-	BYTE R;
-	BYTE G;
-	BYTE B;
-	BYTE A;
-
-public:
-	CAscColorSimple()
-	{
-		R = 0;
-		G = 0;
-		B = 0;
-		A = 0;
-	}
-};
-
-class CAscRect
-{
-public:
-	int X;
-	int Y;
-	int Width;
-	int Height;
-
-public:
-	CAscRect()
-	{
-		X = 0;
-		Y = 0;
-		Width = 0;
-		Height = 0;
-	}
-};
-
-// charts
-class CAscValAxisSettings
-{
-	// TODO:
-};
-
-class CAscCatAxisSettings
-{
-};
-
-class CAscChartSettings
-{
-	// TODO:
-};
-
-// 
 class CAscColorScheme
 {
 private:
@@ -243,8 +407,15 @@ public:
 
 	LINK_PROPERTY_STRING(Name)
 	
-	inline int GetColorsCount() { return m_lColorsCount; }
-	inline CAscColorSimple* GetColors() { return m_pColors; }
+	inline int get_ColorsCount() { return m_lColorsCount; }
+	inline CAscColorSimple* get_Colors() { return m_pColors; }
+	void put_AscColorSimple(CAscColorSimple* pColors, int lCount)
+	{
+		if (NULL != m_pColors)
+			delete [] m_pColors;
+		m_pColors = pColors;
+		m_lColorsCount = lCount;
+	}
 };
 
 class CAscTexture
@@ -264,198 +435,24 @@ public:
 	LINK_PROPERTY_STRING(Image)
 };
 
-// fill
-class CAscFillSolid
-{
-private:
-	CAscColor m_oColor;
-
-public:
-	CAscFillSolid()
-	{
-	}
-
-	CAscColor& get_Color() { return m_oColor; }
-};
-
-class CAscFillBlip
-{
-private:
-	int m_nType;
-	std::wstring m_sUrl;
-	int m_nTextureId;
-
-public:
-	CAscFillBlip()
-	{
-		m_nType = c_oAscFillBlipType_STRETCH;
-		m_sUrl = L"";
-		m_nTextureId = -1;
-	}
-
-	LINK_PROPERTY_INT(Type)
-	LINK_PROPERTY_STRING(Url)
-	LINK_PROPERTY_INT(TextureId)
-};
-
-class CAscFillHatch
-{
-private:
-	int m_nPatternType;
-	CAscColor m_oFg;
-	CAscColor m_oBg;
-
-public:
-	CAscFillHatch()
-	{
-		m_nPatternType = -1;
-	}
-
-	LINK_PROPERTY_INT(PatternType)
-
-	CAscColor& get_Fg() { return m_oFg; }
-	CAscColor& get_Bg() { return m_oBg; }
-};
-
-class CAscFillGrad
-{
-private:
-	int m_nCountColors;
-	CAscColor* m_pColors;
-	int* m_pPositions;
-
-	int m_nGradType;
-
-	double m_dLinearAngle;
-	bool m_bLinearScale;
-
-	int m_nPathType;
-
-public:
-	CAscFillGrad()
-	{
-		m_nCountColors	= 0;
-		m_pColors		= NULL;
-		m_pPositions	= NULL;
-
-		m_nGradType = 0;
-
-		m_dLinearAngle = 0;
-		m_bLinearScale = 0;
-
-		m_nPathType = 0;
-	}
-
-	inline int get_CountColors() { return m_nCountColors; }
-	inline CAscColor* get_Colors() { return m_pColors; }
-	inline int* get_Positions() { return m_pPositions; }
-
-	LINK_PROPERTY_INT(GradType)
-	LINK_PROPERTY_DOUBLE(LinearAngle)
-	LINK_PROPERTY_BOOL(LinearScale)
-	LINK_PROPERTY_INT(PathType)
-};
-
-class CAscFill
-{
-private:
-	int m_nType;
-	void* m_pFill;
-	
-	int m_nTransparent;
-
-public:
-	CAscFill()
-	{
-		m_nType = c_oAscFill_FILL_TYPE_NOFILL;
-		m_pFill = NULL;
-		m_nTransparent = -1;
-	}
-
-	LINK_PROPERTY_INT(Type)
-	LINK_PROPERTY_INT(Transparent)
-
-	inline void* get_Fill() { return m_pFill; }
-
-	inline void put_Fill(void* pFill)
-	{
-		m_pFill = pFill;
-	}
-};
-
-class CAscStroke
-{
-private:
-    int m_nType;
-	double m_dWidth;
-	CAscColor m_oColor;
-
-    BYTE m_nLineJoin;
-    BYTE m_nLineCap;
-
-    BYTE m_nLineBeginStyle;
-    BYTE m_nLineBeginSize;
-
-    BYTE m_nLineEndStyle;
-	BYTE m_nLineEndSize;
-
-    bool m_bCanChangeArrows;
-
-public:
-	CAscStroke()
-	{
-		m_nType = 0;
-
-		m_dWidth = -1;
-
-		m_nLineJoin = 0;
-		m_nLineCap = 0;
-
-		m_nLineBeginSize = c_oAscLineBeginSize_mid_mid;
-		m_nLineBeginStyle = c_oAscLineBeginType_None;
-
-		m_nLineEndSize = c_oAscLineBeginSize_mid_mid;
-		m_nLineEndStyle = c_oAscLineBeginType_None;
-
-		m_bCanChangeArrows = false;
-	}
-
-	CAscColor& get_Color() { return m_oColor; }
-
-	LINK_PROPERTY_INT(Type)
-	LINK_PROPERTY_DOUBLE(Width)
-	
-	LINK_PROPERTY_BYTE(LineJoin)
-	LINK_PROPERTY_BYTE(LineCap)
-	LINK_PROPERTY_BYTE(LineBeginStyle)
-	LINK_PROPERTY_BYTE(LineBeginSize)
-	LINK_PROPERTY_BYTE(LineEndStyle)
-	LINK_PROPERTY_BYTE(LineEndSize)
-
-	LINK_PROPERTY_BOOL(CanChangeArrows)
-};
 
 class CAscPaddings
 {
 private:
-	double m_dLeft;
-	double m_dTop;
-	double m_dRight;
-	double m_dBottom;
+	js_wrapper<double> m_dLeft;
+	js_wrapper<double> m_dTop;
+	js_wrapper<double> m_dRight;
+	js_wrapper<double> m_dBottom;
 
 public:
 	CAscPaddings()
 	{
-		m_dLeft = -100000;
-		m_dTop	= -100000;
-		m_dRight = -100000;
-		m_dBottom = -100000;
 	}
 
-	LINK_PROPERTY_DOUBLE(Left)
-	LINK_PROPERTY_DOUBLE(Top)
-	LINK_PROPERTY_DOUBLE(Right)
-	LINK_PROPERTY_DOUBLE(Bottom)
+	LINK_PROPERTY_DOUBLE_JS(Left)
+	LINK_PROPERTY_DOUBLE_JS(Top)
+	LINK_PROPERTY_DOUBLE_JS(Right)
+	LINK_PROPERTY_DOUBLE_JS(Bottom)
 };
 
 class CAscShapeProp
@@ -680,9 +677,6 @@ private:
 
 	std::wstring m_sUrl;
 	bool m_bLocked;
-
-	CAscChartSettings m_oChartProps;
-	CAscShapeProp m_oShapeProp;
 
 	int m_nChangeLevel;
 	bool m_bGroup;

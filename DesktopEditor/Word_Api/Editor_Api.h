@@ -781,6 +781,79 @@ namespace NSEditorApi
 		LINK_PROPERTY_OBJECT_JS(CAscColor, Color)
 	};
 
+	class CAscBorder
+	{
+	private:
+		js_wrapper<CAscColor>	m_oColor;
+		js_wrapper<double>		m_dSize;
+		js_wrapper<int>			m_nValue;
+		js_wrapper<double>		m_dSpace;
+
+	public:
+
+		CAscBorder()
+		{
+		}
+
+		LINK_PROPERTY_OBJECT_JS(CAscColor, Color)
+		LINK_PROPERTY_DOUBLE_JS(Size)
+		LINK_PROPERTY_INT_JS(Value)
+		LINK_PROPERTY_DOUBLE_JS(Space)
+	};
+
+	class CAscParagraphBorders
+	{
+	private:
+		js_wrapper<CAscBorder> m_oLeft;
+		js_wrapper<CAscBorder> m_oTop;
+		js_wrapper<CAscBorder> m_oRight;
+		js_wrapper<CAscBorder> m_oBottom;
+		js_wrapper<CAscBorder> m_oBetween;
+
+	public:
+
+		CAscParagraphBorders()
+		{
+		}
+
+		LINK_PROPERTY_OBJECT_JS(CAscBorder, Left)
+		LINK_PROPERTY_OBJECT_JS(CAscBorder, Top)
+		LINK_PROPERTY_OBJECT_JS(CAscBorder, Right)
+		LINK_PROPERTY_OBJECT_JS(CAscBorder, Bottom)
+		LINK_PROPERTY_OBJECT_JS(CAscBorder, Between)
+	};
+
+	class CAscParagraphTab
+	{
+	private:
+		js_wrapper<double>	m_dPos;
+		js_wrapper<int>		m_nValue;
+
+	public:
+
+		CAscParagraphTab()
+		{
+		}
+
+		LINK_PROPERTY_DOUBLE_JS(Pos)
+		LINK_PROPERTY_INT_JS(Value)
+	};
+
+	class CAscParagraphTabs
+	{
+	private:
+		CAscParagraphTab* m_pTabs;
+		int m_lCount;
+
+	public:
+
+		CAscParagraphTabs()
+		{
+			m_pTabs = NULL;
+			m_lCount = 0;
+		}
+	};
+
 	class CAscParagraphPr
 	{
 	private:
@@ -795,13 +868,13 @@ namespace NSEditorApi
 
 		js_wrapper<CAscParagraphSpacing> m_oSpacing;
 		
-		//this.Brd               = undefined;
+		js_wrapper<CAscParagraphBorders> m_oBrd;
 		js_wrapper<CAscParagraphShd> m_oShd;
         
 		js_wrapper<bool>		m_bLocked;
 		js_wrapper<bool>		m_bCanAddTable;
 
-        //this.Tabs              = undefined;
+        js_wrapper<CAscParagraphTabs> m_oTabs;
 
 		js_wrapper<bool>		m_bCanAddDropCap;
 
@@ -832,13 +905,13 @@ namespace NSEditorApi
 
 		LINK_PROPERTY_OBJECT_JS(CAscParagraphSpacing, Spacing)
 
-		//
+		LINK_PROPERTY_OBJECT_JS(CAscParagraphBorders, Brd)
 		LINK_PROPERTY_OBJECT_JS(CAscParagraphShd, Shd)
 
 		LINK_PROPERTY_BOOL_JS(Locked)
 		LINK_PROPERTY_BOOL_JS(CanAddTable)
 
-		//
+		LINK_PROPERTY_OBJECT_JS(CAscParagraphTabs, Tabs)
 
 		LINK_PROPERTY_BOOL_JS(CanAddDropCap)
 

@@ -5,9 +5,10 @@
 #ifndef _AVSUTILS_H_	// For Borland compiler
 #define _AVSUTILS_H_
 
+#ifdef _WIN32
 //#include <windows.h>
-#include <atlbase.h>
-#include <atlcoll.h>
+//#include <atlbase.h>
+//#include <atlcoll.h>
 #include <stdio.h>
 
 #include "ASCUtilsDefines.h"
@@ -302,4 +303,6 @@ static SAFEARRAY* SafeArrayCreateVector(VARTYPE vt, unsigned int size)
 	rgsabound[0].cElements = size;
 	return SafeArrayCreate(vt, 1, rgsabound);
 }
+#endif // #ifdef _WIN32
 #endif // #ifndef _AVSUTILS_H_	// For Borland compiler
+

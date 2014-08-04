@@ -628,6 +628,110 @@ namespace NSEditorApi
 	{															\
 		m_s##memberName## = newVal;								\
 	}
+#define LINK_PROPERTY_STRINGA(memberName)						\
+	inline std::string get_##memberName##()						\
+	{															\
+		return m_s##memberName##;								\
+	}															\
+	inline void put_##memberName##(const std::string& newVal)	\
+	{															\
+		m_s##memberName## = newVal;								\
+	}
+
+// JS
+#define LINK_PROPERTY_INT_JS(memberName)								\
+	inline js_wrapper<int> get_##memberName##()							\
+	{																	\
+		return m_n##memberName##;										\
+	}																	\
+	inline void put_##memberName##(const int& newVal)					\
+	{																	\
+		m_n##memberName## = newVal;										\
+	}																	\
+	inline void put_##memberName##(const js_wrapper<int>& newVal)		\
+	{																	\
+		m_n##memberName## = newVal;										\
+	}
+
+#define LINK_PROPERTY_DOUBLE_JS(memberName)								\
+	inline js_wrapper<double> get_##memberName##()						\
+	{																	\
+		return m_d##memberName##;										\
+	}																	\
+	inline void put_##memberName##(const double& newVal)				\
+	{																	\
+		m_d##memberName## = newVal;										\
+	}																	\
+	inline void put_##memberName##(const js_wrapper<double>& newVal)	\
+	{																	\
+		m_d##memberName## = newVal;										\
+	}
+
+#define LINK_PROPERTY_BOOL_JS(memberName)								\
+	inline js_wrapper<bool> get_##memberName##()						\
+	{																	\
+		return m_b##memberName##;										\
+	}																	\
+	inline void put_##memberName##(const bool& newVal)					\
+	{																	\
+		m_b##memberName## = newVal;										\
+	}																	\
+	inline void put_##memberName##(const js_wrapper<bool>& newVal)		\
+	{																	\
+		m_b##memberName## = newVal;										\
+	}
+
+#define LINK_PROPERTY_BYTE_JS(memberName)								\
+	inline js_wrapper<BYTE> get_##memberName##()						\
+	{																	\
+		return m_n##memberName##;										\
+	}																	\
+	inline void put_##memberName##(const BYTE& newVal)					\
+	{																	\
+		m_n##memberName## = newVal;										\
+	}																	\
+	inline void put_##memberName##(const js_wrapper<BYTE>& newVal)		\
+	{																	\
+		m_n##memberName## = newVal;										\
+	}
+
+#define LINK_PROPERTY_STRING_JS(memberName)									\
+	inline js_wrapper<std::wstring> get_##memberName##()					\
+	{																		\
+		return m_s##memberName##;											\
+	}																		\
+	inline void put_##memberName##(const std::wstring& newVal)				\
+	{																		\
+		m_s##memberName## = newVal;											\
+	}																		\
+	inline void put_##memberName##(const js_wrapper<std::wstring>& newVal)	\
+	{																		\
+		m_s##memberName## = newVal;											\
+	}
+
+#define LINK_PROPERTY_STRINGA_JS(memberName)								\
+	inline js_wrapper<std::string> get_##memberName##()						\
+	{																		\
+		return m_s##memberName##;											\
+	}																		\
+	inline void put_##memberName##(const std::string& newVal)				\
+	{																		\
+		m_s##memberName## = newVal;											\
+	}																		\
+	inline void put_##memberName##(const js_wrapper<std::string>& newVal)	\
+	{																		\
+		m_s##memberName## = newVal;											\
+	}
+
+#define LINK_PROPERTY_OBJECT_JS(objectType, memberName)						\
+	inline js_wrapper<##objectType##>& get_##memberName##()					\
+	{																		\
+		return m_o##memberName##;											\
+	}																		\
+	inline void put_##memberName##(const js_wrapper<##objectType##>& newVal)\
+	{																		\
+		m_o##memberName## = newVal;											\
+	}
 
 template<typename Type>
 class js_wrapper
@@ -719,6 +823,10 @@ public:
 	inline bool IsUndefined() const
 	{ 
 		return (NULL == m_pPointer);
+	}
+	inline bool IsInit() const
+	{
+		return ((NULL != m_pPointer) && !m_bIsNull);
 	}
 	inline void SetNull()
 	{

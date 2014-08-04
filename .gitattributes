@@ -318,6 +318,7 @@ Common/ASCDocxFormat/Lib/Release/DocxFormat.lib svn_mime_002dtype=application%2F
 Common/ASCDocxFormat/Lib/Release/Utility.lib svn_mime_002dtype=application%2Foctet-stream
 Common/ASCDocxFormat/Lib/Release/XML.lib svn_mime_002dtype=application%2Foctet-stream
 Common/DocxFormat/Source/SystemUtility/Solution/FileSystemTest/app.ico svn_mime_002dtype=application%2Foctet-stream
+Common/DocxFormat/Source/XML/libxml2/LIBXML2_LIB_TEST svnc_tsvn_003alogminsize=5
 Common/DocxFormat/Source/XML/libxml2/XML/doc/DOM.gif svn_mime_002dtype=application%2Foctet-stream
 Common/DocxFormat/Source/XML/libxml2/XML/doc/Libxml2-Logo-180x168.gif svn_mime_002dtype=application%2Foctet-stream
 Common/DocxFormat/Source/XML/libxml2/XML/doc/Libxml2-Logo-90x34.gif svn_mime_002dtype=application%2Foctet-stream

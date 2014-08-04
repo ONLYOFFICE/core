@@ -35,7 +35,7 @@
 #include "header.hpp"
 #include "dirtree.hpp"
 
-#include "../../../../../../../DesktopEditor/common/File.h"
+#include "../../../../../DesktopEditor/common/File.h"
 
 namespace POLE
 {

@@ -226,6 +226,8 @@ namespace XmlUtils
 
 			m_pDataCur	= m_pData;
 			m_lSizeCur	= m_lSize;
+
+			m_bInitTable = FALSE;
 		}
 		~CStringWriter()
 		{
@@ -414,11 +416,11 @@ namespace XmlUtils
 		}
 
 	protected:
-		static BYTE m_arTableUnicodes[65536];
-		static BOOL m_bInitTable;
+		BYTE m_arTableUnicodes[65536];
+		BOOL m_bInitTable;
 
 	protected:
-		static BYTE CheckCode(const WCHAR& c)
+		BYTE CheckCode(const WCHAR& c)
 		{
 			if (!m_bInitTable)
 			{

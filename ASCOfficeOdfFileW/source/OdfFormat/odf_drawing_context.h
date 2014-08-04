@@ -38,6 +38,9 @@ public:
 
 	void set_anchor	(int type);//anchor_type
 
+	void set_object_background(bool Val);
+	void set_object_foreground(bool Val);
+
 	void set_vertical_rel(int from);
 	void set_vertical_pos(int align);
 	void set_vertical_pos(double offset_pt);
@@ -77,6 +80,7 @@ public:
 		
 	void start_text_box();
 		void set_text_box_min_size(double w_pt, double h_pt);
+		void set_text_box_parent_style(std::wstring style_name);
 	void end_text_box();
 
 	void start_object(std::wstring name);

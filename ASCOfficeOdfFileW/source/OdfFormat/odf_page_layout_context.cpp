@@ -287,6 +287,8 @@ void odf_page_layout_context::set_page_border(std::wstring top, std::wstring lef
 	}
 	else
 	{
+		props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_ = boost::none;
+
 		if (bottom.length() >0 )props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_bottom_	= bottom;
 		if (top.length() >0 )	props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_top_		= top;
 		if (left.length() >0 )	props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_left_		= left;

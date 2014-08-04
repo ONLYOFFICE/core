@@ -1102,6 +1102,7 @@ void OoxConverter::convert(OOX::Drawing::CLineSpacing* oox_spacing,  odf::length
 		length_or_percent = odf::length_or_percent(length);
 	}
 }
+
 void OoxConverter::convert(OOX::Drawing::CParagraph		*oox_paragraph)
 {
 	if (!oox_paragraph)return;

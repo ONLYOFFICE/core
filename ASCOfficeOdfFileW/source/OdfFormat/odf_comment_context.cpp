@@ -33,6 +33,8 @@ namespace odf
 
 		bool is_started;
 
+		int state;
+
 	};
 
 class odf_comment_context::Impl
@@ -71,6 +73,7 @@ void odf_comment_context::start_comment(office_element_ptr &elm, int oox_id)
 	impl_->comments_.back().odf_name = L"comment_" + boost::lexical_cast<std::wstring>(oox_id);
 
 	impl_->comments_.back().is_started = false;
+	impl_->comments_.back().state = 1;
 
 	office_annotation* comm = dynamic_cast<office_annotation*>(elm.get());
 	if (!comm)return;
@@ -90,6 +93,8 @@ void odf_comment_context::end_comment(office_element_ptr &elm, int oox_id)
 
 			comm->office_annotation_attr_.name_ = impl_->comments_[i].odf_name;
 
+			impl_->comments_[i].state = 2;//stoped
+
 			impl_->comments_[i].elements_.push_back(elm);
 			return;
 		}
@@ -104,14 +109,17 @@ void odf_comment_context::end_comment_content()
 {
 	impl_->comments_.back().is_started = false;
 }
-bool odf_comment_context::find_by_id(int oox_id)
+int odf_comment_context::find_by_id(int oox_id)
 {
 	for(long i=0; i < impl_->comments_.size(); i++)
 	{
-		if (impl_->comments_[i].oox_id == oox_id) return true;
+		if (impl_->comments_[i].oox_id == oox_id)
+		{
+			return impl_->comments_[i].state;
+		}
 	}
 
-	return false;
+	return 0;
 }
 std::wstring odf_comment_context::find_name_by_id(int oox_id)
 {

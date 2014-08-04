@@ -304,7 +304,7 @@ void odf_drawing_context::clear()
 
 void odf_drawing_context::start_drawing()
 {
-	impl_->current_drawing_state_.clear();
+	//impl_->current_drawing_state_.clear();
 
 	if (impl_->current_level_.size() < 1)
 	{
@@ -710,6 +710,13 @@ void odf_drawing_context::end_shape()
 void odf_drawing_context::start_frame()
 {
 	impl_->create_draw_base(0);
+	
+	if (impl_->current_graphic_properties)
+	{
+		impl_->anchor_settings_.run_through_ = run_through(run_through::Background);
+		impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
+		impl_->current_graphic_properties->content().common_background_color_attlist_.fo_background_color_ = odf::background_color(odf::background_color::Transparent);
+	}
 }
 
 void odf_drawing_context::end_frame()
@@ -838,8 +845,12 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 }
 void odf_drawing_context::set_z_order(int id)
 {
-	impl_->current_drawing_state_.z_order_ = id;
-
+	if (id < 0)
+		id = 0x7fffffff + id;
+	if (impl_->current_drawing_state_.in_group)
+		impl_->current_drawing_state_.z_order_ = 0x7fffffff - id;
+	else
+		impl_->current_drawing_state_.z_order_ = id;
 }
 void odf_drawing_context::add_path_element(std::wstring command, std::wstring & strE)
 {
@@ -917,6 +928,15 @@ void odf_drawing_context::set_drawings_rect(_CP_OPT(double) x_pt, _CP_OPT(double
 		impl_->anchor_settings_.svg_width_	= length(length(*width_pt,length::pt).get_value_unit(length::cm),length::cm);	
 	}
 }
+void odf_drawing_context::set_object_background(bool Val)
+{
+	if (Val)impl_->anchor_settings_.run_through_ = run_through(run_through::Background);
+}
+void odf_drawing_context::set_object_foreground(bool Val)
+{
+	if (Val)impl_->anchor_settings_.run_through_ = run_through(run_through::Foreground);
+}
+
 void odf_drawing_context::set_margin_left	(double valPt)
 {
 	impl_->anchor_settings_.fo_margin_left_ = length(length(valPt,length::pt).get_value_unit(length::cm),length::cm);
@@ -1031,10 +1051,7 @@ void odf_drawing_context::set_wrap_style(style_wrap::type type)
 }
 void odf_drawing_context::set_overlap (bool val)
 {
-	//if (val) impl_->anchor_settings_.run_through_ = run_through(run_through::Background);
-	//else impl_->anchor_settings_.run_through_ = run_through(run_through::Foreground);
-
-	if (val) impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
+	if (val) impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);//??
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void odf_drawing_context::set_group_position(double x, double y, double ch_x, double ch_y)
@@ -1181,7 +1198,7 @@ void odf_drawing_context::set_line_tail(int type, int len, int width)
 {
 	if (!impl_->current_graphic_properties)return;
 
-	impl_->current_graphic_properties->content().draw_marker_start_ = add_marker_style(type);
+	impl_->current_graphic_properties->content().draw_marker_end_ = add_marker_style(type);
 
 	switch(width)
 	{
@@ -1197,7 +1214,7 @@ void odf_drawing_context::set_line_head(int type, int len, int width)
 {
 	if (!impl_->current_graphic_properties)return;
 	
-	impl_->current_graphic_properties->content().draw_marker_end_ = add_marker_style(type);
+	impl_->current_graphic_properties->content().draw_marker_start_ = add_marker_style(type);
 
 	switch(width)
 	{
@@ -1438,32 +1455,17 @@ void odf_drawing_context::start_text_box()
 
 	start_frame();
 
-	//добавить в стиль ссыль на базовый стиль Frame - зачемто нужно :(
-	style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_.back().style_elm.get());
-	if (style_)
-	{
-		style_->style_parent_style_name_ = L"Frame";
-	}
-
-	if (impl_->current_graphic_properties)
-	{
-		impl_->anchor_settings_.run_through_ = run_through(run_through::Foreground);
-		impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
-
-		impl_->current_graphic_properties->content().common_background_color_attlist_.fo_background_color_ = odf::background_color(odf::background_color::Transparent);
-	}
-
 	office_element_ptr text_box_elm;
 	create_element(L"draw", L"text-box", text_box_elm, impl_->odf_context_);
 
 	start_element(text_box_elm);
 
-	start_area_properties();
-		set_no_fill();
-	end_area_properties();
+	if (impl_->is_footer_header_ ==false)
+		set_text_box_parent_style(L"Frame");
 }
 void odf_drawing_context::set_text_box_min_size(double w_pt, double h_pt)
 {
+	if (impl_->current_drawing_state_.elements_.size() < 1) return;
 	draw_text_box* draw = dynamic_cast<draw_text_box*>(impl_->current_drawing_state_.elements_.back().elm.get());
 
 	if (draw)
@@ -1473,6 +1475,22 @@ void odf_drawing_context::set_text_box_min_size(double w_pt, double h_pt)
 
 	}
 }
+
+void odf_drawing_context::set_text_box_parent_style(std::wstring style_name)
+{
+	if (impl_->current_drawing_state_.elements_.size() < 1) return;
+	//добавить в стиль ссыль на базовый стиль Frame - зачемто нужно для таблиц которые не инлайн 
+	style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_[0].style_elm.get()); // на "головной" элекмент
+	
+	if (style_)
+	{
+		if (style_name.length() > 0)
+			style_->style_parent_style_name_ = style_name;
+		else
+			style_->style_parent_style_name_ = boost::none;
+	}
+}
+
 void odf_drawing_context::end_image()
 {
 	end_element();

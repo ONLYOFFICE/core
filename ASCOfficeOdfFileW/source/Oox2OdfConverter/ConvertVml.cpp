@@ -310,6 +310,7 @@ void OoxConverter::convert(OOX::Vml::CStroke *vml_stroke)
 {
 	if (vml_stroke == NULL) return;
 	if (vml_stroke->m_oOn.GetValue() == false) return;
+	if (vml_stroke->m_oColor.IsInit() == false) return; // ?????
 
 			//nullable<SimpleTypes::CColorType<SimpleTypes::colortypeBlack>>        m_oColor2;
 			//SimpleTypes::Vml::CVmlDashStyle<SimpleTypes::Vml::vmldashstyleSolid>  m_oDahsStyle;
@@ -322,9 +323,12 @@ void OoxConverter::convert(OOX::Vml::CStroke *vml_stroke)
 
 	//switch(vml_stroke->m_oFillType){}
 
-	std::wstring hexColor = string2std_string(vml_stroke->m_oColor.ToString());
-	if (hexColor.length() < 1)hexColor = L"000000";
-	odf_context()->drawing_context()->set_solid_fill(hexColor);
+	if (vml_stroke->m_oColor.IsInit())
+	{
+		std::wstring hexColor = string2std_string(vml_stroke->m_oColor->ToString());
+		if (hexColor.length() < 1)hexColor = L"000000";
+		odf_context()->drawing_context()->set_solid_fill(hexColor);
+	}
 
 	odf_context()->drawing_context()->set_opacity(100 - vml_stroke->m_oOpacity.GetValue() * 100);
 	odf_context()->drawing_context()->set_line_width(vml_stroke->m_oWeight.GetValue());
@@ -467,7 +471,7 @@ void OoxConverter::convert(OOX::Vml::CGroup * vml_group)
 {
 	if (vml_group == NULL) return;
 
-	odf_context()->drawing_context()->start_group(L"",1);
+	odf_context()->drawing_context()->start_group();
 
 	if (vml_group->m_oShapeGroup.IsInit())
 	{

@@ -1037,6 +1037,31 @@ namespace NSEditorApi
 				delete m_pData;
 		}
 	};
+
+	class CAscMenuEventListener
+	{
+	public:
+		// alloc memory release!!!
+		virtual void OnEvent(CAscMenuEvent* pEvent)
+		{
+			if (NULL != pEvent)
+				delete pEvent;
+		}
+		virtual bool IsSupportEvent(int nEventType)
+		{
+			return true;
+		}
+	};
+
+	class CAscMenuController
+	{
+		// release memory in sdk
+		virtual void Apply(CAscMenuEvent* pEvent)
+		{
+			if (NULL != pEvent)
+				delete pEvent;
+		}
+	};
 }
 
 #define ASC_MENU_EVENT_TYPE_TEXTPR				1

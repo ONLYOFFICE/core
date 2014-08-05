@@ -731,6 +731,10 @@ namespace NSEditorApi
 	inline void put_##memberName##(const js_wrapper<##objectType##>& newVal)\
 	{																		\
 		m_o##memberName## = newVal;											\
+	}																		\
+	inline void put_##memberName##(##objectType##* newVal)\
+	{																		\
+		m_o##memberName## = newVal;											\
 	}
 
 template<typename Type>
@@ -759,6 +763,11 @@ public:
 			if ( NULL != oOther.m_pPointer )
 				m_pPointer = new Type( (const Type&)*(oOther.m_pPointer) );
 		}
+	}
+	js_wrapper(Type* pOther)
+	{
+		m_pPointer = pOther;
+		m_bIsNull = false;
 	}
 	virtual ~js_wrapper()
 	{

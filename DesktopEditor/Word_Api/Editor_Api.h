@@ -43,58 +43,68 @@ namespace NSEditorApi
 		LINK_PROPERTY_INT(Value)
 	};
 
-	class CAscColor
+	class CColorMods
 	{
 	private:
-		int m_nType; // c_oAscColor_COLOR_TYPE
-		
-		BYTE m_nR;
-		BYTE m_nG;
-		BYTE m_nB;
-		BYTE m_nA;
-
-		bool m_bAuto;
-		
-		int m_nValue;
-		int m_nColorSchemeId;
-
 		CColorMod* m_pMods;
+		int m_lCount;
 
 	public:
-		CAscColor()
+		CColorMods()
 		{
-			m_nType = c_oAscColor_COLOR_TYPE_SRGB;
-
-			m_nR = 0;
-			m_nG = 0;
-			m_nB = 0;
-			m_nA = 255;
-
-			m_bAuto = false;
-
-			m_nValue = -1;
-			m_nColorSchemeId = -1;
-
 			m_pMods = NULL;
+			m_lCount = 0;
 		}
-		~CAscColor()
+		~CColorMods()
 		{
 			if (NULL != m_pMods)
 				delete [] m_pMods;
 		}
 
-		LINK_PROPERTY_INT(Type)
-		LINK_PROPERTY_BYTE(R)
-		LINK_PROPERTY_BYTE(G)
-		LINK_PROPERTY_BYTE(B)
-		LINK_PROPERTY_BYTE(A)
-		LINK_PROPERTY_BOOL(Auto)
-		LINK_PROPERTY_INT(Value)
-		LINK_PROPERTY_INT(ColorSchemeId)
-
-		// эти методы дергает лишь sdk. оно должно следить за удалением само.
+		int GetCount() { return m_lCount; }
 		CColorMod* GetMods() { return m_pMods; }
-		void SetMods(CColorMod* pMods) { m_pMods = pMods; }		
+
+		void SetMods(CColorMod* pMods, int nCount)
+		{
+			m_pMods = pMods;
+			m_lCount = nCount;
+		}
+	};
+
+	class CAscColor
+	{
+	private:
+		js_wrapper<int> m_nType; // c_oAscColor_COLOR_TYPE
+		
+		js_wrapper<BYTE> m_nR;
+		js_wrapper<BYTE> m_nG;
+		js_wrapper<BYTE> m_nB;
+		js_wrapper<BYTE> m_nA;
+
+		js_wrapper<bool> m_bAuto;
+		
+		js_wrapper<int> m_nValue;
+		js_wrapper<int> m_nColorSchemeId;
+
+		js_wrapper<CColorMods> m_oMods;
+
+	public:
+		CAscColor()
+		{
+		}
+		~CAscColor()
+		{
+		}
+
+		LINK_PROPERTY_INT_JS(Type)
+		LINK_PROPERTY_BYTE_JS(R)
+		LINK_PROPERTY_BYTE_JS(G)
+		LINK_PROPERTY_BYTE_JS(B)
+		LINK_PROPERTY_BYTE_JS(A)
+		LINK_PROPERTY_BOOL_JS(Auto)
+		LINK_PROPERTY_INT_JS(Value)
+		LINK_PROPERTY_INT_JS(ColorSchemeId)
+		LINK_PROPERTY_OBJECT_JS(CColorMods, Mods)
 	};
 }
 

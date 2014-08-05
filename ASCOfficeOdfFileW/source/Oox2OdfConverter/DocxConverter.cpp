@@ -162,6 +162,8 @@ void DocxConverter::convert_document()
 	const OOX::CDocument* document = docx_document->GetDocument();
 	if (!document)return;
 
+	m_bKeepNextParagraph = false; //в одном файле чегой то запихнули свойство в стиль
+
 	for ( int nIndex = 0; nIndex < document->m_arrItems.GetSize(); nIndex++ )
 	{
 		convert(document->m_arrItems[nIndex]);
@@ -643,7 +645,7 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 		m_bKeepNextParagraph = true;
 	}
 
-	convert(oox_paragraph_pr->m_oFramePr.GetPointer(), paragraph_properties);		//буквица
+	convert(oox_paragraph_pr->m_oFramePr.GetPointer(), paragraph_properties);		//буквица или фрейм
 
 	convert(oox_paragraph_pr->m_oSectPr.GetPointer());
 }
@@ -919,25 +921,56 @@ void DocxConverter::convert(ComplexTypes::Word::CFramePr *oox_frame_pr, odf::sty
 	if (oox_frame_pr == NULL) return;
 	if (paragraph_properties == NULL) return;
 
-	odt_context->start_drop_cap(paragraph_properties);
+	if (oox_frame_pr->m_oDropCap.IsInit() || oox_frame_pr->m_oLines.IsInit())
+	{
+		//буквица
+		odt_context->start_drop_cap(paragraph_properties);
 
-	if (oox_frame_pr->m_oDropCap.IsInit() && oox_frame_pr->m_oDropCap->GetValue() == SimpleTypes::dropcapMargin)
-		odt_context->set_drop_cap_margin(true);
-	if (oox_frame_pr->m_oLines.IsInit())
-		odt_context->set_drop_cap_lines(oox_frame_pr->m_oLines->GetValue());
-			//nullable<SimpleTypes::COnOff<>            > m_oAnchorLock;
-			//nullable<SimpleTypes::CTwipsMeasure       > m_oH;
-			//nullable<SimpleTypes::CHAnchor<>          > m_oHAnchor;
-			//nullable<SimpleTypes::CHeightRule<>       > m_oHRule;
-			//nullable<SimpleTypes::CTwipsMeasure       > m_oHSpace;
-			//nullable<SimpleTypes::CVAnchor<>          > m_oVAnchor;
-			//nullable<SimpleTypes::CTwipsMeasure       > m_oVSpace;
-			//nullable<SimpleTypes::CTwipsMeasure       > m_oW;
-			//nullable<SimpleTypes::CWrap<>             > m_oWrap;
-			//nullable<SimpleTypes::CSignedTwipsMeasure > m_oX;
-			//nullable<SimpleTypes::CXAlign<>           > m_oXAlign;
-			//nullable<SimpleTypes::CSignedTwipsMeasure > m_oY;
-			//nullable<SimpleTypes::CYAlign<>           > m_oYAlign;
+		if (oox_frame_pr->m_oDropCap.IsInit() && oox_frame_pr->m_oDropCap->GetValue() == SimpleTypes::dropcapMargin)
+			odt_context->set_drop_cap_margin(true);
+		if (oox_frame_pr->m_oLines.IsInit())
+			odt_context->set_drop_cap_lines(oox_frame_pr->m_oLines->GetValue());
+		//??
+	//nullable<SimpleTypes::CTwipsMeasure       > m_oHSpace;
+	//nullable<SimpleTypes::CTwipsMeasure       > m_oVSpace;
+	}
+	else
+	{
+		//фрейм текста .. ваще то его никто не формирует .. странно todoo ??
+		if (oox_frame_pr->m_oXAlign.IsInit())
+		{
+			switch(oox_frame_pr->m_oXAlign->GetValue())
+			{
+			case SimpleTypes::xalignCenter  :	paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Center); break;
+			case SimpleTypes::xalignInside  :	paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Start ); break;
+			case SimpleTypes::xalignLeft    :	paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Left ); break;
+			case SimpleTypes::xalignOutside :	paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::End ); break;
+			case SimpleTypes::xalignRight   :	paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Right); break;
+			}
+		}
+		if (oox_frame_pr->m_oYAlign.IsInit())
+		{
+			switch(oox_frame_pr->m_oYAlign->GetValue())
+			{
+			case SimpleTypes::yalignBottom  :	paragraph_properties->content().style_vertical_align_ = odf::vertical_align(odf::vertical_align::Bottom); break;
+			case SimpleTypes::yalignCenter  :	paragraph_properties->content().style_vertical_align_ = odf::vertical_align(odf::vertical_align::Middle ); break;
+			case SimpleTypes::yalignInline  :	paragraph_properties->content().style_vertical_align_ = odf::vertical_align(odf::vertical_align::Baseline ); break;
+			case SimpleTypes::yalignInside	:	paragraph_properties->content().style_vertical_align_ = odf::vertical_align(odf::vertical_align::Auto ); break;
+			case SimpleTypes::yalignOutside :	paragraph_properties->content().style_vertical_align_ = odf::vertical_align(odf::vertical_align::Auto); break;
+			case SimpleTypes::yalignTop		:	paragraph_properties->content().style_vertical_align_ = odf::vertical_align(odf::vertical_align::Top); break;
+			}
+		}
+	}
+	//nullable<SimpleTypes::CHeightRule<>       > m_oHRule;
+
+//имеют отношение только в drawing
+	//nullable<SimpleTypes::CTwipsMeasure       > m_oW;
+	//nullable<SimpleTypes::CWrap<>             > m_oWrap;
+	//nullable<SimpleTypes::CTwipsMeasure       > m_oH;
+	//nullable<SimpleTypes::CHAnchor<>          > m_oHAnchor;
+	//nullable<SimpleTypes::CVAnchor<>          > m_oVAnchor;
+	//nullable<SimpleTypes::CSignedTwipsMeasure > m_oX;
+	//nullable<SimpleTypes::CSignedTwipsMeasure > m_oY;
 }
 void DocxConverter::convert(OOX::Logic::CTblBorders	*oox_border, odf::style_table_cell_properties	*table_cell_properties)
 {
@@ -1324,8 +1357,10 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf::style_tex
 	{
 			text_properties->content().style_text_scale_ = odf::percent(oox_run_pr->m_oW->m_oVal->GetValue());
 	}
-	if (oox_run_pr->m_oStrike.IsInit())
+	if (oox_run_pr->m_oStrike.IsInit() && oox_run_pr->m_oStrike->m_oVal.ToBool())
+	{
 		text_properties->content().style_text_line_through_type_ = odf::line_type(odf::line_type::Single);
+	}
 
 	if (oox_run_pr->m_oBdr.IsInit())
 	{

@@ -1007,4 +1007,29 @@ namespace NSEditorApi
 	};
 }
 
+namespace NSEditorApi
+{
+	class CAscMenuEvent
+	{
+	public:
+		int		m_nType;
+		void*	m_pData;
+
+	public:
+		CAscMenuEvent()
+		{
+			m_nType = -1;
+			m_pData = NULL;
+		}
+		~CAscMenuEvent()
+		{
+			if (NULL != m_pData)
+				delete m_pData;
+		}
+	};
+}
+
+#define ASC_MENU_EVENT_TYPE_TEXTPR				1
+#define ASC_MENU_EVENT_TYPE_PARAPR				2
+
 #endif //_BUILD_EDITOR_API_CROSSPLATFORM_H_

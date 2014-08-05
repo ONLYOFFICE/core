@@ -1041,7 +1041,7 @@ namespace NSEditorApi
 	class CAscMenuEventListener
 	{
 	public:
-		// alloc memory release!!!
+		// memory release!!!
 		virtual void OnEvent(CAscMenuEvent* pEvent)
 		{
 			if (NULL != pEvent)

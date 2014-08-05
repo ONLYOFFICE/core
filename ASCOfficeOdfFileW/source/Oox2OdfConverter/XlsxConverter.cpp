@@ -1498,19 +1498,18 @@ void XlsxConverter::convert(OOX::Spreadsheet::CGroupShape* oox_group_shape)
 	if (!oox_group_shape)return;
 	if (oox_group_shape->m_arrItems.GetSize() < 1) return;
 
-	std::wstring name;
-	int id = -1;
+	ods_context->drawing_context()->start_group();
+
 	if (oox_group_shape->m_oNvGroupSpPr.IsInit())
 	{
 		if (oox_group_shape->m_oNvGroupSpPr->m_oCNvPr.IsInit())
 		{
 			if (oox_group_shape->m_oNvGroupSpPr->m_oCNvPr->m_sName.IsInit())
-					name = string2std_string(*oox_group_shape->m_oNvGroupSpPr->m_oCNvPr->m_sName);
+				ods_context->drawing_context()->set_group_name(string2std_string(*oox_group_shape->m_oNvGroupSpPr->m_oCNvPr->m_sName));
 			if (oox_group_shape->m_oNvGroupSpPr->m_oCNvPr->m_oId.IsInit())
-					id = oox_group_shape->m_oNvGroupSpPr->m_oCNvPr->m_oId->GetValue();
+				ods_context->drawing_context()->set_group_z_order(oox_group_shape->m_oNvGroupSpPr->m_oCNvPr->m_oId->GetValue());
 		}
 	}
-	ods_context->drawing_context()->start_group(name,id);
 
 	OoxConverter::convert(oox_group_shape->m_oGroupSpPr.GetPointer());
 

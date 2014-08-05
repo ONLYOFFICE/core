@@ -164,6 +164,13 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			OOX::VmlWord::CWrap *vml = static_cast<OOX::VmlWord::CWrap*>(oox_unknown);
 			convert(vml);
 		}break;
+		// "ненужные" элементы
+		case OOX::et_w_softHyphen:
+		case OOX::et_w_proofErr:
+		case OOX::et_w_proofState:
+		{
+			//бяка
+		}break;
 		default:
 		{
 			OOX::Vml::CVmlShapeElements *vml = dynamic_cast<OOX::Vml::CVmlShapeElements*>(oox_unknown);

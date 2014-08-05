@@ -259,7 +259,7 @@ void odf_drawing_context::set_footer_header_state(bool Val)
 	impl_->is_footer_header_ = Val;
 }
 
-void odf_drawing_context::start_group(std::wstring name, int id)
+void odf_drawing_context::start_group()
 {
 	office_element_ptr & group_elm = impl_->create_draw_element(5000);
 
@@ -280,10 +280,50 @@ void odf_drawing_context::start_group(std::wstring name, int id)
 	
 	if (group== NULL)return;
 
-	group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_name_attlist_.draw_name_ = name;
-	if (id >=0)
-		group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_z_index_attlist_.draw_z_index_ = id;
+	//если группа топовая - то данные если не записать - сотруться
+	if (impl_->current_drawing_state_.name_.length() > 0)
+		group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_name_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
+	if (impl_->current_drawing_state_.z_order_ >= 0)
+		group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_z_index_attlist_.draw_z_index_ = impl_->current_drawing_state_.z_order_;
 
+	impl_->current_drawing_state_.name_		= L"";
+	impl_->current_drawing_state_.z_order_	= -1;
+
+////////////////////////////////////////////////////////////////////////////////////////
+//////////	
+	impl_->styles_context_->create_style(L"",style_family::Graphic, true, false, -1);		
+	
+	office_element_ptr & style_group_elm = impl_->styles_context_->last_state()->get_office_element();
+	std::wstring style_name;
+
+	style* style_ = dynamic_cast<style*>(style_group_elm.get());
+	if (style_)
+	{
+		style_name = style_->style_name_;
+		impl_->current_graphic_properties = style_->style_content_.get_style_graphic_properties();
+	}
+
+	group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_ = style_ref(style_name);
+
+	impl_->current_graphic_properties->content().style_wrap_ = impl_->anchor_settings_.style_wrap_;
+	impl_->current_graphic_properties->content().style_run_through_ = impl_->anchor_settings_.run_through_;	
+
+	impl_->current_graphic_properties->content().common_vertical_pos_attlist_.style_vertical_pos_		= impl_->anchor_settings_.style_vertical_pos_;
+	impl_->current_graphic_properties->content().common_horizontal_pos_attlist_.style_horizontal_pos_	= impl_->anchor_settings_.style_horizontal_pos_;
+
+	impl_->current_graphic_properties->content().common_vertical_rel_attlist_.style_vertical_rel_		= impl_->anchor_settings_.style_vertical_rel_;
+	impl_->current_graphic_properties->content().common_horizontal_rel_attlist_.style_horizontal_rel_	= impl_->anchor_settings_.style_horizontal_rel_;
+
+	impl_->current_graphic_properties->content().common_horizontal_margin_attlist_.fo_margin_left_	= impl_->anchor_settings_.fo_margin_left_; 
+	impl_->current_graphic_properties->content().common_vertical_margin_attlist_.fo_margin_top_		= impl_->anchor_settings_.fo_margin_top_; 
+	impl_->current_graphic_properties->content().common_horizontal_margin_attlist_.fo_margin_right_	= impl_->anchor_settings_.fo_margin_right_; 
+	impl_->current_graphic_properties->content().common_vertical_margin_attlist_.fo_margin_bottom_	= impl_->anchor_settings_.fo_margin_bottom_; 
+
+	if (group)
+		group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_text_spreadsheet_shape_attlist_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
+
+
+//
 }
 void odf_drawing_context::end_group()
 {
@@ -436,9 +476,11 @@ void odf_drawing_context::end_drawing()
 
 	if (draw)
 		draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_text_spreadsheet_shape_attlist_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
-
+//if (impl_->current_drawing_state_.in_group == false)
+//{
 	impl_->current_graphic_properties->content().style_wrap_ = impl_->anchor_settings_.style_wrap_;
 	impl_->current_graphic_properties->content().style_run_through_ = impl_->anchor_settings_.run_through_;
+//}
 ///////////////////////////////////////////////////		
 	impl_->drawing_list_.push_back(impl_->current_drawing_state_);
 	
@@ -713,9 +755,10 @@ void odf_drawing_context::start_frame()
 	
 	if (impl_->current_graphic_properties)
 	{
-		impl_->anchor_settings_.run_through_ = run_through(run_through::Background);
 		if (!impl_->anchor_settings_.style_wrap_)
+		{
 			impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
+		}
 		impl_->current_graphic_properties->content().common_background_color_attlist_.fo_background_color_ = odf::background_color(odf::background_color::Transparent);
 	}
 }
@@ -848,10 +891,13 @@ void odf_drawing_context::set_z_order(int id)
 {
 	if (id < 0)
 		id = 0x7fffffff + id;
-	if (impl_->current_drawing_state_.in_group)
-		impl_->current_drawing_state_.z_order_ = 0x7fffffff - id;
-	else
-		impl_->current_drawing_state_.z_order_ = id;
+	
+	//if (impl_->current_drawing_state_.in_group)
+	//{
+	//	id += (impl_->current_group_->level+1) *100;
+	//}
+
+	impl_->current_drawing_state_.z_order_ =id;
 }
 void odf_drawing_context::add_path_element(std::wstring command, std::wstring & strE)
 {
@@ -1052,7 +1098,11 @@ void odf_drawing_context::set_wrap_style(style_wrap::type type)
 }
 void odf_drawing_context::set_overlap (bool val)
 {
-	if (val) impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);//??
+	if (val)
+	{
+		impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);//??
+		//impl_->anchor_settings_.run_through_ = run_through(run_through::Foreground);
+	}
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void odf_drawing_context::set_group_position(double x, double y, double ch_x, double ch_y)
@@ -1115,7 +1165,25 @@ void odf_drawing_context::set_group_flip_V(bool bVal)
 
 	impl_->current_group_->flipV= bVal;
 }
+void odf_drawing_context::set_group_z_order(int Val)
+{
+	if (impl_->group_list_.size()<1)return;
 
+	draw_g* group = dynamic_cast<draw_g*>(impl_->current_group_->elm.get());
+
+	if (Val >= 0)
+		group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_z_index_attlist_.draw_z_index_ = Val;
+
+}
+void odf_drawing_context::set_group_name(std::wstring name)
+{
+	if (impl_->group_list_.size()<1)return;
+
+	draw_g* group = dynamic_cast<draw_g*>(impl_->current_group_->elm.get());
+
+	if (name.length() > 0)
+		group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_name_attlist_.draw_name_ = name;
+}
 void odf_drawing_context::set_group_flip_H(bool bVal)
 {
 	if (impl_->group_list_.size()<1)return;
@@ -1463,6 +1531,10 @@ void odf_drawing_context::start_text_box()
 
 	if (impl_->is_footer_header_ ==false)
 		set_text_box_parent_style(L"Frame");
+
+	start_area_properties();
+		set_no_fill();
+	end_area_properties();
 }
 void odf_drawing_context::set_text_box_min_size(double w_pt, double h_pt)
 {

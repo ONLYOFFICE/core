@@ -267,11 +267,6 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 			OOX::Logic::CTc* pCell= static_cast<OOX::Logic::CTc*>(oox_unknown);
 			convert(pCell);
 		}break;
-		case OOX::et_w_proofErr:
-		case OOX::et_w_proofState:
-		{
-			//бяка
-		}break;
 		default:
 		{
 			OoxConverter::convert(oox_unknown);
@@ -1612,23 +1607,6 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 	_CP_OPT(double) width, height;
 	_CP_OPT(double) x, y;
 
-	if (oox_anchor->m_oBehindDoc.IsInit())
-	{
-		if (oox_anchor->m_oBehindDoc->ToBool())
-		{
-			odt_context->drawing_context()->set_object_background(true);
-		}
-		else
-		{
-			//z - order foreground
-		}
-	}
-	else
-	{
-		//always ??? foreground ????
-		odt_context->drawing_context()->set_object_foreground(true);
-	}
-
 	if (oox_anchor->m_oExtent.IsInit()) //size
 	{
 		width = oox_anchor->m_oExtent->m_oCx.ToPoints();
@@ -1687,6 +1665,25 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 	else if (oox_anchor->m_oAllowOverlap.IsInit())
 	{
 		odt_context->drawing_context()->set_overlap(oox_anchor->m_oAllowOverlap->ToBool());
+	}
+
+	if (oox_anchor->m_oBehindDoc.IsInit())
+	{
+		if (oox_anchor->m_oBehindDoc->ToBool())
+		{
+			odt_context->drawing_context()->set_object_background(true);
+			//odt_context->drawing_context()->set_object_foreground(true);
+		}
+		else
+		{
+			//z - order foreground
+			odt_context->drawing_context()->set_object_foreground(true);
+		}
+	}
+	else
+	{
+		//always ??? foreground ????
+		//odt_context->drawing_context()->set_object_background(true);
 	}
 	OoxConverter::convert(oox_anchor->m_oDocPr.GetPointer());
 	convert(oox_anchor->m_oGraphic.GetPointer());
@@ -1839,26 +1836,20 @@ void DocxConverter::convert(OOX::Logic::CGroupShape	 *oox_group_shape)
 	if (oox_group_shape == NULL)return;
 	if (oox_group_shape->m_arrItems.GetSize() < 1) return;
 
-	std::wstring name;
-	int id = -1;
-	
-	if (oox_group_shape->m_oCNvPr.IsInit())
-	{
-		if (oox_group_shape->m_oCNvPr->m_sName.IsInit())
-				name = string2std_string(*oox_group_shape->m_oCNvPr->m_sName);
-		if (oox_group_shape->m_oCNvPr->m_oId.IsInit())
-				id = oox_group_shape->m_oCNvPr->m_oId->GetValue();
-	}
+	odt_context->drawing_context()->start_group();
+		if (oox_group_shape->m_oCNvPr.IsInit())
+		{	
+			if (oox_group_shape->m_oCNvPr->m_sName.IsInit())
+				odt_context->drawing_context()->set_group_name(string2std_string(*oox_group_shape->m_oCNvPr->m_sName));
+			if (oox_group_shape->m_oCNvPr->m_oId.IsInit())
+				odt_context->drawing_context()->set_group_z_order(oox_group_shape->m_oCNvPr->m_oId->GetValue());
+		}
+		OoxConverter::convert(oox_group_shape->m_oGroupSpPr.GetPointer());
 
-	odt_context->drawing_context()->start_group(name,id);
-
-	OoxConverter::convert(oox_group_shape->m_oGroupSpPr.GetPointer());
-
-	for (long i=0; i < oox_group_shape->m_arrItems.GetSize(); i++)
-	{
-		convert(oox_group_shape->m_arrItems[i]);
-	}
-
+		for (long i=0; i < oox_group_shape->m_arrItems.GetSize(); i++)
+		{
+			convert(oox_group_shape->m_arrItems[i]);
+		}
 	odt_context->drawing_context()->end_group();
 }
 void DocxConverter::convert(OOX::Logic::CShape	 *oox_shape)
@@ -1884,15 +1875,17 @@ void DocxConverter::convert(OOX::Logic::CShape	 *oox_shape)
 				type = 2000; //textBox
 		}
 
-		//if (type == SimpleTypes::shapetypeRect && oox_shape->m_oTxBody.IsInit() && oox_shape->m_oTxBodyProperties.IsInit() /*&&
-		//	oox_shape->m_oTxBodyProperties->m_eAutoFitType == OOX::Drawing::textautofitShape*/)
-		//{
-		//	type = 2000;// ваще то тут обычный прямоугольник, но в него не вставишь таблицы, ...
-		//}
+		if (type == SimpleTypes::shapetypeRect && oox_shape->m_oTxBody.IsInit() && oox_shape->m_oTxBodyProperties.IsInit() /*&&
+			oox_shape->m_oTxBodyProperties->m_eAutoFitType == OOX::Drawing::textautofitShape*/)
+		{
+			type = 2000;// ваще то тут обычный прямоугольник, но в него не вставишь таблицы, ...
+			//второй вариант таблицы ВСЕГДА оборачивать фреймами.
+			//надо тогда хотя бы сделать определялку где мы находимся - в drawing_context или нет - причем пофиг на уровень вложенности
+			//todooo
+		}
 		if (type < 0)return;
 	/////////////////////////////////////////////////////////////////////////////////
-		if (type == 2000)	odt_context->drawing_context()->start_text_box(); 
-		else				odt_context->drawing_context()->start_shape(type);
+		odt_context->drawing_context()->start_shape(type);
 		
 		OoxConverter::convert(oox_shape->m_oSpPr.GetPointer(), oox_shape->m_oShapeStyle.GetPointer());
 	//имя, описалово, номер ...		
@@ -1921,8 +1914,7 @@ void DocxConverter::convert(OOX::Logic::CShape	 *oox_shape)
 		}
 		OoxConverter::convert(oox_shape->m_oTxBodyProperties.GetPointer());
 
-	if (type == 2000)	odt_context->drawing_context()->end_text_box();
-	else				odt_context->drawing_context()->end_shape();
+	odt_context->drawing_context()->end_shape();
 	
 	odt_context->drawing_context()->end_drawing();
 }
@@ -2026,6 +2018,9 @@ void DocxConverter::convert_settings()
 //nullable<OOX::Settings::CCaptions>                            m_oCaptions;
 	//m_oFootnotePr;
 }
+//void DocxConverter::convert_styles_li()
+//{
+//}
 void DocxConverter::convert_styles()
 {
 	if (!odt_context) return;
@@ -2042,7 +2037,6 @@ void DocxConverter::convert_styles()
 	{
 		convert(&docx_styles->m_arrStyle[i]);
 	}
-
 }
 
 void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
@@ -2064,7 +2058,6 @@ void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
 	//nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oHistory;
 	//nullable<CString                                      > m_sTgtFrame;
 	//nullable<CString                                      > m_sTooltip;
-
 }
 
 void DocxConverter::convert(OOX::CDocDefaults *def_style)

@@ -714,7 +714,8 @@ void odf_drawing_context::start_frame()
 	if (impl_->current_graphic_properties)
 	{
 		impl_->anchor_settings_.run_through_ = run_through(run_through::Background);
-		impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
+		if (!impl_->anchor_settings_.style_wrap_)
+			impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
 		impl_->current_graphic_properties->content().common_background_color_attlist_.fo_background_color_ = odf::background_color(odf::background_color::Transparent);
 	}
 }

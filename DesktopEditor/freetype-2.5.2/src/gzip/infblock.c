@@ -15,7 +15,7 @@
 #define bits word.what.Bits
 
 /* Table for deflate from PKZIP's appnote.txt. */
-local const uInt border[] = { /* Order of the bit length code lengths */
+local const uInt __border[] = { /* Order of the bit length code lengths */
         16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
 
 /*
@@ -239,11 +239,11 @@ int r )
       while (s->sub.trees.index < 4 + (s->sub.trees.table >> 10))
       {
         NEEDBITS(3)
-        s->sub.trees.blens[border[s->sub.trees.index++]] = (uInt)b & 7;
+        s->sub.trees.blens[__border[s->sub.trees.index++]] = (uInt)b & 7;
         DUMPBITS(3)
       }
       while (s->sub.trees.index < 19)
-        s->sub.trees.blens[border[s->sub.trees.index++]] = 0;
+        s->sub.trees.blens[__border[s->sub.trees.index++]] = 0;
       s->sub.trees.bb = 7;
       t = inflate_trees_bits(s->sub.trees.blens, &s->sub.trees.bb,
                              &s->sub.trees.tb, s->hufts, z);

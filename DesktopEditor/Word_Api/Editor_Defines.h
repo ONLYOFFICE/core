@@ -582,9 +582,9 @@ namespace NSEditorApi
 #define LINK_PROPERTY_INT(memberName)					\
 	inline int get_##memberName()						\
 	{													\
-		return m_n##memberName;						\
+		return m_n##memberName;							\
 	}													\
-	inline void put_##memberName(const int& newVal)	\
+	inline void put_##memberName(const int& newVal)		\
 	{													\
 		m_n##memberName = newVal;						\
 	}
@@ -592,17 +592,17 @@ namespace NSEditorApi
 #define LINK_PROPERTY_DOUBLE(memberName)				\
 	inline double get_##memberName()					\
 	{													\
-		return m_d##memberName;						\
+		return m_d##memberName;							\
 	}													\
-	inline void put_##memberName(const double& newVal)\
+	inline void put_##memberName(const double& newVal)	\
 	{													\
 		m_d##memberName = newVal;						\
 	}
 
 #define LINK_PROPERTY_BOOL(memberName)					\
-	inline bool get_##memberName()					\
+	inline bool get_##memberName()						\
 	{													\
-		return m_b##memberName;						\
+		return m_b##memberName;							\
 	}													\
 	inline void put_##memberName(const bool& newVal)	\
 	{													\
@@ -612,17 +612,17 @@ namespace NSEditorApi
 #define LINK_PROPERTY_BYTE(memberName)					\
 	inline unsigned char get_##memberName()				\
 	{													\
-		return m_n##memberName;						\
+		return m_n##memberName;							\
 	}													\
 	inline void put_##memberName(const unsigned char& newVal)	\
-	{													\
-		m_n##memberName = newVal;						\
+	{															\
+		m_n##memberName = newVal;								\
 	}
 
 #define LINK_PROPERTY_STRING(memberName)						\
-	inline std::wstring get_##memberName()					\
+	inline std::wstring get_##memberName()						\
 	{															\
-		return m_s##memberName;								\
+		return m_s##memberName;									\
 	}															\
 	inline void put_##memberName(const std::wstring& newVal)	\
 	{															\
@@ -631,9 +631,9 @@ namespace NSEditorApi
 #define LINK_PROPERTY_STRINGA(memberName)						\
 	inline std::string get_##memberName()						\
 	{															\
-		return m_s##memberName;								\
+		return m_s##memberName;									\
 	}															\
-	inline void put_##memberName(const std::string& newVal)	\
+	inline void put_##memberName(const std::string& newVal)		\
 	{															\
 		m_s##memberName = newVal;								\
 	}
@@ -642,13 +642,13 @@ namespace NSEditorApi
 #define LINK_PROPERTY_INT_JS(memberName)								\
 	inline js_wrapper<int>& get_##memberName()							\
 	{																	\
-		return m_n##memberName;										\
+		return m_n##memberName;											\
 	}																	\
-	inline void put_##memberName(const int& newVal)					\
+	inline void put_##memberName(const int& newVal)						\
 	{																	\
 		m_n##memberName = newVal;										\
 	}																	\
-	inline void put_##memberName(const js_wrapper<int>& newVal)		\
+	inline void put_##memberName(const js_wrapper<int>& newVal)			\
 	{																	\
 		m_n##memberName = newVal;										\
 	}
@@ -656,21 +656,21 @@ namespace NSEditorApi
 #define LINK_PROPERTY_DOUBLE_JS(memberName)								\
 	inline js_wrapper<double>& get_##memberName()						\
 	{																	\
-		return m_d##memberName;										\
+		return m_d##memberName;											\
 	}																	\
-	inline void put_##memberName(const double& newVal)				\
+	inline void put_##memberName(const double& newVal)					\
 	{																	\
 		m_d##memberName = newVal;										\
 	}																	\
-	inline void put_##memberName(const js_wrapper<double>& newVal)	\
+	inline void put_##memberName(const js_wrapper<double>& newVal)		\
 	{																	\
 		m_d##memberName = newVal;										\
 	}
 
 #define LINK_PROPERTY_BOOL_JS(memberName)								\
-	inline js_wrapper<bool>& get_##memberName()						\
+	inline js_wrapper<bool>& get_##memberName()							\
 	{																	\
-		return m_b##memberName;										\
+		return m_b##memberName;											\
 	}																	\
 	inline void put_##memberName(const bool& newVal)					\
 	{																	\
@@ -682,9 +682,9 @@ namespace NSEditorApi
 	}
 
 #define LINK_PROPERTY_BYTE_JS(memberName)								\
-	inline js_wrapper<unsigned char>& get_##memberName()               \
+	inline js_wrapper<unsigned char>& get_##memberName()				\
 	{																	\
-		return m_n##memberName;										\
+		return m_n##memberName;											\
 	}																	\
 	inline void put_##memberName(const unsigned char& newVal)			\
 	{																	\
@@ -696,9 +696,9 @@ namespace NSEditorApi
 	}
 
 #define LINK_PROPERTY_STRING_JS(memberName)									\
-	inline js_wrapper<std::wstring>& get_##memberName()					\
+	inline js_wrapper<std::wstring>& get_##memberName()						\
 	{																		\
-		return m_s##memberName;											\
+		return m_s##memberName;												\
 	}																		\
 	inline void put_##memberName(const std::wstring& newVal)				\
 	{																		\
@@ -712,27 +712,27 @@ namespace NSEditorApi
 #define LINK_PROPERTY_STRINGA_JS(memberName)								\
 	inline js_wrapper<std::string>& get_##memberName()						\
 	{																		\
-		return m_s##memberName;											\
+		return m_s##memberName;												\
 	}																		\
-	inline void put_##memberName(const std::string& newVal)				\
+	inline void put_##memberName(const std::string& newVal)					\
 	{																		\
 		m_s##memberName = newVal;											\
 	}																		\
-	inline void put_##memberName(const js_wrapper<std::string>& newVal)	\
+	inline void put_##memberName(const js_wrapper<std::string>& newVal)		\
 	{																		\
 		m_s##memberName = newVal;											\
 	}
 
 #define LINK_PROPERTY_OBJECT_JS(objectType, memberName)						\
-	inline js_wrapper<objectType>& get_##memberName()					\
+	inline js_wrapper<objectType>& get_##memberName()						\
 	{																		\
-		return m_o##memberName;											\
+		return m_o##memberName;												\
 	}																		\
-	inline void put_##memberName(const js_wrapper<objectType>& newVal)\
+	inline void put_##memberName(const js_wrapper<objectType>& newVal)		\
 	{																		\
 		m_o##memberName = newVal;											\
 	}																		\
-	inline void put_##memberName(objectType* newVal)\
+	inline void put_##memberName(objectType* newVal)						\
 	{																		\
 		m_o##memberName = newVal;											\
 	}

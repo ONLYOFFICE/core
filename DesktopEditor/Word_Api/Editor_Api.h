@@ -11,10 +11,10 @@ namespace NSEditorApi
 	class CAscColorSimple
 	{
 	public:
-		BYTE R;
-		BYTE G;
-		BYTE B;
-		BYTE A;
+		unsigned char R;
+		unsigned char G;
+		unsigned char B;
+		unsigned char A;
 
 	public:
 		CAscColorSimple()
@@ -76,10 +76,10 @@ namespace NSEditorApi
 	private:
 		js_wrapper<int> m_nType; // c_oAscColor_COLOR_TYPE
 		
-		js_wrapper<BYTE> m_nR;
-		js_wrapper<BYTE> m_nG;
-		js_wrapper<BYTE> m_nB;
-		js_wrapper<BYTE> m_nA;
+		js_wrapper<unsigned char> m_nR;
+		js_wrapper<unsigned char> m_nG;
+		js_wrapper<unsigned char> m_nB;
+		js_wrapper<unsigned char> m_nA;
 
 		js_wrapper<bool> m_bAuto;
 		
@@ -422,14 +422,14 @@ namespace NSEditorApi
 		js_wrapper<double>		m_dWidth;
 		js_wrapper<CAscColor>	m_oColor;
 
-		js_wrapper<BYTE> m_nLineJoin;
-		js_wrapper<BYTE> m_nLineCap;
+		js_wrapper<unsigned char> m_nLineJoin;
+		js_wrapper<unsigned char> m_nLineCap;
 
-		js_wrapper<BYTE> m_nLineBeginStyle;
-		js_wrapper<BYTE> m_nLineBeginSize;
+		js_wrapper<unsigned char> m_nLineBeginStyle;
+		js_wrapper<unsigned char> m_nLineBeginSize;
 
-		js_wrapper<BYTE> m_nLineEndStyle;
-		js_wrapper<BYTE> m_nLineEndSize;
+		js_wrapper<unsigned char> m_nLineEndStyle;
+		js_wrapper<unsigned char> m_nLineEndSize;
 
 		js_wrapper<bool> m_bCanChangeArrows;
 
@@ -688,6 +688,11 @@ namespace NSEditorApi
 		{
 			m_sName = L"Times New Roman";
 			m_nIndex = -1;
+		}
+        CAscTextFontFamily(const CAscTextFontFamily& oSrc)
+		{
+			m_sName = oSrc.m_sName;
+			m_nIndex = oSrc.m_nIndex;
 		}
 
 		LINK_PROPERTY_STRING_JS(Name)

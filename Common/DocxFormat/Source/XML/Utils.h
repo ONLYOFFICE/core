@@ -6,8 +6,10 @@
 #ifdef _WIN32
 #include <atlcoll.h>
 #include <atlenc.h>
-
+#include <comutil.h>
 #endif
+
+
 #ifndef _USE_NULLABLE_PROPERTY_
 using namespace NSCommon;
 #endif
@@ -213,7 +215,7 @@ namespace XmlUtils
 		sResult.Replace(_T("\""),	_T("&quot;"));
 		return sResult;
 	}
-    /*
+#ifndef _USE_LIBXML2_READER_
 	class CStringWriter
 	{
 	private:
@@ -450,5 +452,5 @@ namespace XmlUtils
 			return m_arTableUnicodes[c];
 		}
 	};	
-    */
+#endif // ifndef _USE_LIBXML2_READER_
 }

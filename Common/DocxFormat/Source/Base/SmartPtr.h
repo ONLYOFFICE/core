@@ -1,6 +1,6 @@
 #pragma once
 #include "Base.h"
-#include "../../../../ServerComponents/DesktopEditor/common/Types.h"
+#include "../../../../DesktopEditor/common/Types.h"
 
 namespace NSCommon
 {

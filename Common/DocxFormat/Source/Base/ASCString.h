@@ -4174,6 +4174,7 @@ struct StdStringEqualsNoCaseA
 #ifdef UNICODE
 typedef CStdStringW CStringW;
 typedef CStringW CString;
+typedef CStringW BSTR;
 #define __T(x)      L ## x
 #else // UNICODE
 typedef CStdStringA CStringA;

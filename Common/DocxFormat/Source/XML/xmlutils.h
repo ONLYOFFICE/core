@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "Utils.h"
+
 #ifdef _WIN32
 #import <msxml3.dll> rename_namespace("XML")
 
@@ -9,7 +11,7 @@
 #include "XmlLite.h"
 #endif
 
-#include "Utils.h"
+
 
 namespace MSXML
 {
@@ -2687,6 +2689,9 @@ namespace XmlUtils
 	}
 }
 
+#endif // #ifdef _WIN32
+
+#include "../Base/Base.h"
 class CWCharWrapper
 {
 public:
@@ -2699,13 +2704,13 @@ public:
 	{
 	}
 
-	__forceinline const CWCharWrapper operator=(const wchar_t* cwsOther)
+    AVSINLINE const CWCharWrapper operator=(const wchar_t* cwsOther)
 	{
 		m_cwsString = cwsOther;
 		return *this;
 	}
 
-	__forceinline const bool operator==(const wchar_t* cwsOther)
+    AVSINLINE const bool operator==(const wchar_t* cwsOther)
 	{
 		if ( 0 == WStrCmp( m_cwsString, cwsOther ) )
 			return true;
@@ -2713,7 +2718,7 @@ public:
 		return false;
 	}
 
-	__forceinline const bool operator!=(const wchar_t* cwsOther)
+    AVSINLINE const bool operator!=(const wchar_t* cwsOther)
 	{
 		if ( 0 != WStrCmp( m_cwsString, cwsOther ) )
 			return true;
@@ -2721,7 +2726,7 @@ public:
 		return false;
 	}
 
-	__forceinline const wchar_t operator[](const int nIndex) const
+    AVSINLINE const wchar_t operator[](const int nIndex) const
 	{
 		int nLen = GetLength();
 
@@ -2730,13 +2735,13 @@ public:
 
 		return m_cwsString[nIndex];
 	}
-	__forceinline const bool IsNull() const
+    AVSINLINE const bool IsNull() const
 	{
 		return (m_cwsString == NULL);
 	}
 
 
-	__forceinline const int  GetLength() const
+    AVSINLINE const int  GetLength() const
 	{
 		if ( NULL == m_cwsString )
 			return 0;
@@ -2744,7 +2749,7 @@ public:
 		return (const int)wcslen( m_cwsString );
 	}
 public:
-	static __forceinline int WStrCmp(const wchar_t* cwsStr1, const wchar_t* cwsStr2)
+    static AVSINLINE int WStrCmp(const wchar_t* cwsStr1, const wchar_t* cwsStr2)
 	{
 		if ( NULL == cwsStr1 && NULL == cwsStr2 )
 			return 0;
@@ -2759,7 +2764,7 @@ public:
 	const wchar_t* m_cwsString;
 };
 
-__forceinline const bool operator==(const wchar_t* cwsStr1, const CWCharWrapper& cwsStr2)
+AVSINLINE const bool operator==(const wchar_t* cwsStr1, const CWCharWrapper& cwsStr2)
 {
 	if ( 0 == CWCharWrapper::WStrCmp( cwsStr2.m_cwsString, cwsStr1 ) )
 		return true;
@@ -2767,7 +2772,7 @@ __forceinline const bool operator==(const wchar_t* cwsStr1, const CWCharWrapper&
 	return false;
 }
 
-__forceinline const bool operator!=(const wchar_t* cwsStr1, const CWCharWrapper& cwsStr2)
+AVSINLINE const bool operator!=(const wchar_t* cwsStr1, const CWCharWrapper& cwsStr2)
 {
 	if ( 0 != CWCharWrapper::WStrCmp( cwsStr2.m_cwsString, cwsStr1 ) )
 		return true;
@@ -2775,7 +2780,7 @@ __forceinline const bool operator!=(const wchar_t* cwsStr1, const CWCharWrapper&
 	return false;
 }
 
-#endif // #ifdef _WIN32
+
 
 //#define _USE_LIBXML2_READER_
 

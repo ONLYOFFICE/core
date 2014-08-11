@@ -2,7 +2,9 @@
 
 #include "math.h"
 #include "../Common/Unit.h"
-#include "../XML/XmlUtils.h"
+#include "../XML/xmlutils.h"
+#include "../../../DesktopEditor/common/Types.h"
+
 
 namespace SimpleTypes
 {

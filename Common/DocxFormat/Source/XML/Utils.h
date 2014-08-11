@@ -3,16 +3,18 @@
 #include "../Base/Base.h"
 #include "../Base/SmartPtr.h"
 
+#ifdef _WIN32
 #include <atlcoll.h>
 #include <atlenc.h>
 
+#endif
 #ifndef _USE_NULLABLE_PROPERTY_
 using namespace NSCommon;
 #endif
 namespace XmlUtils
 {
 	static CString strInvalidValue		= _T("x(-Jdl%^8sFGs@gkp14jJU(90dyjhjnb*EcfFf%#2124sf98hc");
-	static _bstr_t g_cpszXML_TextExt	= L"./text()";
+    //static _bstr_t g_cpszXML_TextExt	= L"./text()";
 
 	// common
 	AVSINLINE static int     GetDigit   (TCHAR c)
@@ -94,6 +96,7 @@ namespace XmlUtils
 		_stscanf(string, _T("%f"), &f);
 		return f;
 	}
+#ifdef _WIN32
 	AVSINLINE static int     GetInteger (BSTR string)
 	{
 		return _wtoi(string);
@@ -129,6 +132,7 @@ namespace XmlUtils
 		*p = 0;
 		swscanf(string, _T("%d"), *p);
 	}
+#endif
 
 	AVSINLINE CString BoolToString  (const bool  & value)
 	{
@@ -209,6 +213,7 @@ namespace XmlUtils
 		sResult.Replace(_T("\""),	_T("&quot;"));
 		return sResult;
 	}
+    /*
 	class CStringWriter
 	{
 	private:
@@ -234,7 +239,7 @@ namespace XmlUtils
 			RELEASEMEM(m_pData);
 		}
 
-		__forceinline void AddSize(size_t nSize)
+        AVSINLINE void AddSize(size_t nSize)
 		{
 			if (NULL == m_pData)
 			{
@@ -274,7 +279,7 @@ namespace XmlUtils
 
 	public:
 
-		__forceinline void WriteString(wchar_t* pString, size_t& nLen)
+        AVSINLINE void WriteString(wchar_t* pString, size_t& nLen)
 		{
 			AddSize(nLen);
 			//memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
@@ -282,12 +287,14 @@ namespace XmlUtils
 			m_pDataCur += nLen;
 			m_lSizeCur += nLen;
 		}
-		__forceinline void WriteString(_bstr_t& bsString)
+#ifdef _WIN32
+        AVSINLINE void WriteString(_bstr_t& bsString)
 		{
 			size_t nLen = bsString.length();
 			WriteString(bsString.GetBSTR(), nLen);
 		}
-		__forceinline void WriteString(const CString& sString)
+#endif
+        AVSINLINE void WriteString(const CString& sString)
 		{
 			size_t nLen = (size_t)sString.GetLength();
 
@@ -300,13 +307,13 @@ namespace XmlUtils
 #endif
 		}
 
-		__forceinline void AddCharSafe(const TCHAR& _c)
+        AVSINLINE void AddCharSafe(const TCHAR& _c)
 		{
 			AddSize(1);
 			*m_pDataCur++ = _c;
 			++m_lSizeCur;
 		}
-		__forceinline void AddChar2Safe(const TCHAR _c1, const TCHAR& _c2)
+        AVSINLINE void AddChar2Safe(const TCHAR _c1, const TCHAR& _c2)
 		{
 			AddSize(2);
 			*m_pDataCur++ = _c1;
@@ -383,12 +390,12 @@ namespace XmlUtils
 
 		}
 
-		__forceinline size_t GetCurSize()
+        AVSINLINE size_t GetCurSize()
 		{
 			return m_lSizeCur;
 		}
 
-		__forceinline void Write(CStringWriter& oWriter)
+        AVSINLINE void Write(CStringWriter& oWriter)
 		{
 			WriteString(oWriter.m_pData, oWriter.m_lSizeCur);
 		}
@@ -443,4 +450,5 @@ namespace XmlUtils
 			return m_arTableUnicodes[c];
 		}
 	};	
+    */
 }

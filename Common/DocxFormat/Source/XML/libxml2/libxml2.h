@@ -2,7 +2,7 @@
 
 #pragma comment(lib, "libxml2.lib")
 
-#include "win_build/Config.h"
+//#include "./win_build/config.h"
 #include "XML/include/libxml/xmlreader.h"
 
 #include <vector>
@@ -10,9 +10,11 @@
 #include <string>
 
 #include "../../../../../DesktopEditor/common/File.h"
+#include "../Utils.h"
 
 namespace XmlUtils
 {
+
 	class CStringWriter
 	{
 	private:
@@ -42,7 +44,7 @@ namespace XmlUtils
 			RELEASEMEM(m_pData);
 		}
 
-		__forceinline void AddSize(size_t nSize)
+        AVSINLINE void AddSize(size_t nSize)
 		{
 			if (NULL == m_pData)
 			{
@@ -82,25 +84,25 @@ namespace XmlUtils
 
 	public:
 
-		__forceinline void WriteString(const wchar_t* pString, const size_t& nLen)
+        AVSINLINE void WriteString(const wchar_t* pString, const size_t& nLen)
 		{
 			AddSize(nLen);
 			memcpy(m_pDataCur, pString, nLen << m_lBinaryFactor);
 			m_pDataCur += nLen;
 			m_lSizeCur += nLen;
 		}
-		__forceinline void WriteString(const std::wstring& bsString)
+        AVSINLINE void WriteString(const std::wstring& bsString)
 		{
 			WriteString(bsString.c_str(), (size_t)bsString.length());
 		}
 		
-		__forceinline void AddCharSafe(const TCHAR& _c)
+        AVSINLINE void AddCharSafe(const TCHAR& _c)
 		{
 			AddSize(1);
 			*m_pDataCur++ = _c;
 			++m_lSizeCur;
 		}
-		__forceinline void AddChar2Safe(const TCHAR _c1, const TCHAR& _c2)
+        AVSINLINE void AddChar2Safe(const TCHAR _c1, const TCHAR& _c2)
 		{
 			AddSize(2);
 			*m_pDataCur++ = _c1;
@@ -181,12 +183,12 @@ namespace XmlUtils
 			}
 		}
 
-		__forceinline size_t GetCurSize()
+        AVSINLINE size_t GetCurSize()
 		{
 			return m_lSizeCur;
 		}
 
-		__forceinline void Write(CStringWriter& oWriter)
+        AVSINLINE void Write(CStringWriter& oWriter)
 		{
 			WriteString(oWriter.m_pData, oWriter.m_lSizeCur);
 		}
@@ -241,6 +243,7 @@ namespace XmlUtils
 			return m_arTableUnicodes[c];
 		}
 	};	
+
 
 	typedef 
 	enum XmlNodeType

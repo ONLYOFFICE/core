@@ -3,7 +3,7 @@
 #define OOX_RID_INCLUDE_H_
 
 #include "../Base/Base.h"
-#include "../XML/XmlUtils.h"
+#include "../XML/xmlutils.h"
 
 namespace OOX
 {

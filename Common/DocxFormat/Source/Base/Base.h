@@ -61,6 +61,7 @@ using namespace ATL;
 #include "ASCString.h"
 #include "stdint.h"
 
+/*
 typedef int BOOL;
 static const BOOL TRUE = 1;
 static const BOOL FALSE = 0;
@@ -80,6 +81,22 @@ typedef unsigned long long ULONG64;
 typedef long long LONG64;
 
 typedef wchar_t WCHAR;
+*/
+
+#ifndef _wtof
+#include <string>
+#define _wtof std::stod
+#define _wtoi std::stoi
+#define _wtoi64(p) std::wcstoll((p),NULL,10)
+#ifdef UNICODE
+#define _ttoi _wtoi
+#define _stscanf swscanf
+#else
+#define _ttoi atoi
+#define _stscanf scanf
+#endif // #ifdef UNICODE
+#endif // #ifndef _wtof
+
 #endif // #ifdef _WIN32
 
 #ifndef AVSINLINE

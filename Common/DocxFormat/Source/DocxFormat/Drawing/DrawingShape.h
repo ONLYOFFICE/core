@@ -130,7 +130,7 @@ namespace OOX
 			{
 				CString sResult = _T("<a:ahPolar ");
 
-				if ( m_oGdRefR.IsInit() )
+                if ( m_oGdRefR.IsInit() )
 				{
 					sResult += _T("gdRefR=\"");
 					sResult += m_oGdRefR->ToString();

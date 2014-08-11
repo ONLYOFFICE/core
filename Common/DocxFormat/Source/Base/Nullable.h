@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SmartPtr.h"
-#include "../XML/XmlUtils.h"
+#include "../XML/xmlutils.h"
 
 // чтобы не писать мега классы с мега приведением типов - 
 // - напишем все по-простому. Зато будет все максимально быстро и 
@@ -9,7 +9,7 @@
 
 namespace NSCommon
 {
-	template<typename Type>
+    template<class Type>
 	class nullable_base
 	{
 	protected:
@@ -81,7 +81,7 @@ namespace NSCommon
 		}
 	};
 
-	template<typename Type> 
+    template<class Type>
 	class nullable : public nullable_base<Type>
 	{
 	public:
@@ -91,16 +91,16 @@ namespace NSCommon
 		nullable(const nullable<Type>& oOther)
 		{
 			if ( NULL == oOther.m_pPointer )
-				m_pPointer = NULL;
+                this->m_pPointer = NULL;
 			else
-				m_pPointer = new Type( (const Type&)*(oOther.m_pPointer) );
+                this->m_pPointer = new Type( (const Type&)*(oOther.m_pPointer) );
 		}
 
 		AVSINLINE void operator=(XmlUtils::CXmlNode& oNode)
 		{
-			RELEASEOBJECT(m_pPointer);
+            RELEASEOBJECT(this->m_pPointer);
 			if (oNode.IsValid())
-				m_pPointer = new Type(oNode);
+                this->m_pPointer = new Type(oNode);
 		}
 	#ifdef _USE_XMLLITE_READER_
 		AVSINLINE void operator=(XmlUtils::CXmlLiteReader& oReader)
@@ -112,102 +112,102 @@ namespace NSCommon
 	#endif
 		AVSINLINE void operator=(const wchar_t* &cwsValue)
 		{
-			RELEASEOBJECT(m_pPointer);
+            RELEASEOBJECT(this->m_pPointer);
 			if (NULL != cwsValue)
-				m_pPointer = new Type( cwsValue );
+                this->m_pPointer = new Type( cwsValue );
 		}
 		AVSINLINE void operator=(const BSTR &value)
 		{
-			RELEASEOBJECT(m_pPointer);
+            RELEASEOBJECT(this->m_pPointer);
 			if (NULL != value)
-				m_pPointer = new Type( value );
+                this->m_pPointer = new Type( value );
 		}
 
 		nullable<Type>& operator=(const nullable<Type> &oOther)
 		{
-			RELEASEOBJECT(m_pPointer);
+            RELEASEOBJECT(this->m_pPointer);
 
 			if ( NULL != oOther.m_pPointer )
-				m_pPointer = new Type( (const Type&)*(oOther.m_pPointer) );
+                this->m_pPointer = new Type( (const Type&)*(oOther.m_pPointer) );
 
 			return *this;
 		}
 		nullable<Type>& operator=(Type* pType)
 		{
-			RELEASEOBJECT(m_pPointer);
-			m_pPointer	= pType;
+            RELEASEOBJECT(this->m_pPointer);
+            this->m_pPointer	= pType;
 			return *this;
 		}
 		nullable<Type>& operator=(const Type& oSrc)
 		{
-			RELEASEOBJECT(m_pPointer);
-			m_pPointer	= new Type(oSrc);
+            RELEASEOBJECT(this->m_pPointer);
+            this->m_pPointer	= new Type(oSrc);
 			return *this;
 		}
 
 		const bool operator==(const nullable<Type>& oOther) const
 		{
-			if ( !m_pPointer && !oOther.m_pPointer )
+            if ( !this->m_pPointer && !oOther.m_pPointer )
 				return true;
-			else if ( !m_pPointer || !oOther.m_pPointer )
+            else if ( !this->m_pPointer || !oOther.m_pPointer )
 				return false;
 
-			return (*m_pPointer) == (*(oOther.m_pPointer));
+            return (*this->m_pPointer) == (*(oOther.m_pPointer));
 		}
 
 		const bool operator==(const Type& oOther) const
 		{
-			if ( !m_pPointer )
+            if ( !this->m_pPointer )
 				return false;
 
-			return (*m_pPointer) == oOther;
+            return (*this->m_pPointer) == oOther;
 		}
 
-		AVSINLINE Type& operator*()  { return *m_pPointer; }
-		AVSINLINE Type* operator->() { return  m_pPointer; }
+        AVSINLINE Type& operator*()  { return *this->m_pPointer; }
+        AVSINLINE Type* operator->() { return  this->m_pPointer; }
 
-		AVSINLINE Type& operator*() const  { return *m_pPointer; }
-		AVSINLINE Type* operator->() const { return  m_pPointer; }
+        AVSINLINE Type& operator*() const  { return *this->m_pPointer; }
+        AVSINLINE Type* operator->() const { return  this->m_pPointer; }
 
-		AVSINLINE const Type& get()const { return  *m_pPointer; } 
-		AVSINLINE Type& get2()const { return  *m_pPointer; } 
+        AVSINLINE const Type& get()const { return  *this->m_pPointer; }
+        AVSINLINE Type& get2()const { return  *this->m_pPointer; }
 
 		template<class T> const bool is()const
 		{
-			if (NULL == m_pPointer)
+            if (NULL == this->m_pPointer)
 				return false;
-			T* pResult = dynamic_cast<T*>(const_cast<Type*>(m_pPointer));
+            T* pResult = dynamic_cast<T*>(const_cast<Type*>(this->m_pPointer));
 			return (NULL != pResult);
 		}
 		template<class T> const T& as()const
 		{
-			T* pResult = dynamic_cast<T*>(const_cast<Type*>(m_pPointer));
+            T* pResult = dynamic_cast<T*>(const_cast<Type*>(this->m_pPointer));
 			return *pResult;
 		}
 		template<class T> T& as()
 		{
-			T* pResult = dynamic_cast<T*>(const_cast<Type*>(m_pPointer));
+            T* pResult = dynamic_cast<T*>(const_cast<Type*>(this->m_pPointer));
 			return *pResult;
 		}
 
 		AVSINLINE bool Init()
 		{
-			RELEASEOBJECT(m_pPointer);
+            RELEASEOBJECT(this->m_pPointer);
 
-			m_pPointer = new Type;
+            this->m_pPointer = new Type;
 
-			return IsInit();
+            return this->IsInit();
 		}
 		Type* GetPointer() const
 		{
-			return m_pPointer; 
+            return this->m_pPointer;
 		}
 		//GetPointerEmptyNullable - небезопасная операция, использовать при крайней необходимости
 		//Передает указатель и очищает nullable, в дальнейшем память надо удалять самостоятельно
 		Type* GetPointerEmptyNullable()
 		{
-			Type* pOldPointer = m_pPointer;
-			m_pPointer = NULL;
+            Type* pOldPointer = this->m_pPointer;
+            this->m_pPointer = NULL;
 			return pOldPointer; 
 		}
 	};
@@ -224,29 +224,31 @@ namespace NSCommon
 
 		AVSINLINE void operator=(const CString& value)
 		{
-			RELEASEOBJECT(m_pPointer);
-			m_pPointer = new Type();
-			m_pPointer->_set(value);
+            RELEASEOBJECT(this->m_pPointer);
+            this->m_pPointer = new Type();
+            this->m_pPointer->_set(value);
 		}
 		AVSINLINE void operator=(Type* pType)
 		{
-			RELEASEOBJECT(m_pPointer);
-			m_pPointer	= pType;
+            RELEASEOBJECT(this->m_pPointer);
+            this->m_pPointer	= pType;
 		}
+#ifdef _WIN32
 		AVSINLINE void operator=(const BSTR& value)
 		{
-			RELEASEOBJECT(m_pPointer);
+            RELEASEOBJECT(this->m_pPointer);
 			if (NULL != value)
 			{
-				m_pPointer = new Type();
-				m_pPointer->_set((CString)value);
+                this->m_pPointer = new Type();
+                this->m_pPointer->_set((CString)value);
 			}
 		}
+#endif
 		AVSINLINE void operator=(const BYTE& value)
 		{
-			RELEASEOBJECT(m_pPointer);
-			m_pPointer = new Type();
-			m_pPointer->SetBYTECode(value);			
+            RELEASEOBJECT(this->m_pPointer);
+            this->m_pPointer = new Type();
+            this->m_pPointer->SetBYTECode(value);
 		}
 
 		AVSINLINE void operator=(const Type& value)
@@ -256,12 +258,12 @@ namespace NSCommon
 
 		nullable_limit<Type>& operator=(const nullable_limit<Type>& oSrc)
 		{
-			RELEASEOBJECT(m_pPointer);
+            RELEASEOBJECT(this->m_pPointer);
 
 			if ( NULL != oSrc.m_pPointer )
 			{
-				m_pPointer = new Type();
-				m_pPointer->set(oSrc->get());
+                this->m_pPointer = new Type();
+                this->m_pPointer->set(oSrc->get());
 			}
 
 			return *this;
@@ -269,23 +271,23 @@ namespace NSCommon
 
 		AVSINLINE const CString& get_value_or(const CString& value) const
 		{
-			if (NULL == m_pPointer)
+            if (NULL == this->m_pPointer)
 				return value;
-			return m_pPointer->get();
+            return this->m_pPointer->get();
 		}
 		AVSINLINE const CString& get_value() const
 		{
-			return m_pPointer->get();
+            return this->m_pPointer->get();
 		}
 
 	public:
-		AVSINLINE Type& operator*()  { return *m_pPointer; }
-		AVSINLINE Type* operator->() { return  m_pPointer; }
+        AVSINLINE Type& operator*()  { return *this->m_pPointer; }
+        AVSINLINE Type* operator->() { return  this->m_pPointer; }
 
-		AVSINLINE Type& operator*() const  { return *m_pPointer; }
-		AVSINLINE Type* operator->() const { return  m_pPointer; }
+        AVSINLINE Type& operator*() const  { return *this->m_pPointer; }
+        AVSINLINE Type* operator->() const { return  this->m_pPointer; }
 
-		AVSINLINE const Type& get()const { return  *m_pPointer; } 
+        AVSINLINE const Type& get()const { return  *this->m_pPointer; }
 	};
 
 	class nullable_int : public nullable_base<int>
@@ -313,23 +315,24 @@ namespace NSCommon
 					*m_pPointer = 0;
 			}
 		}
-
+#ifdef _WIN32
 		AVSINLINE void operator=(const BSTR& value)
 		{
-			RELEASEOBJECT(m_pPointer);
+            RELEASEOBJECT(this->m_pPointer);
 			
 			if (NULL != value)
-				m_pPointer = new int(XmlUtils::GetInteger(value));
+                this->m_pPointer = new int(XmlUtils::GetInteger(value));
 		}
+#endif
 		AVSINLINE void operator=(const CString& value)
 		{
-			RELEASEOBJECT(m_pPointer);
-			m_pPointer = new int(XmlUtils::GetInteger(value));
+            RELEASEOBJECT(this->m_pPointer);
+            this->m_pPointer = new int(XmlUtils::GetInteger(value));
 		}
 		AVSINLINE void operator=(const int& value)
 		{
-			RELEASEOBJECT(m_pPointer);
-			m_pPointer = new int(value);
+            RELEASEOBJECT(this->m_pPointer);
+            this->m_pPointer = new int(value);
 		}
 
 		nullable_int& operator=(const nullable_int& oSrc)
@@ -562,13 +565,14 @@ namespace NSCommon
 			else
 				m_pPointer	= new CString( *oOther.m_pPointer );
 		}
-
+#ifdef _WIN32
 		AVSINLINE void operator=(const BSTR& value)
 		{
 			RELEASEOBJECT(m_pPointer);
 			if (NULL != value)
 				m_pPointer = new CString(value);
 		}
+#endif
 		AVSINLINE void operator=(const CString& value)
 		{
 			RELEASEOBJECT(m_pPointer);

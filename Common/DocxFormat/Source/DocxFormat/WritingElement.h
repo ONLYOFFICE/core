@@ -1,8 +1,8 @@
 #pragma once
 
 //#include "NamespaceOwn.h"
-#include "../XML/XmlUtils.h"
-#include "atlstr.h"
+#include "../XML/xmlutils.h"
+//#include "atlstr.h"
 
 namespace OOX
 {
@@ -63,11 +63,11 @@ namespace OOX
 
 #define WritingElement_ReadAttributes_Read_if(Reader, AttrName, Value) \
 		if ( AttrName == wsName )\
-			Value = Reader.##GetText();
+            Value = Reader.GetText();
 
 #define WritingElement_ReadAttributes_Read_else_if(Reader, AttrName, Value) \
 		else if ( AttrName == wsName )\
-			Value = Reader.##GetText();
+            Value = Reader.GetText();
 
 #define WritingElement_ReadAttributes_ReadSingle(Reader, AttrName, Value) \
 		if ( AttrName == wsName )\

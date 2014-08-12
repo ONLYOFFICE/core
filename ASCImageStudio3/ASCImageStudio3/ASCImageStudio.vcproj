@@ -78,7 +78,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				AdditionalDependencies=" Msimg32.lib"
+				AdditionalDependencies=" Msimg32.lib Windowscodecs.lib"
 				OutputFile="$(OutDir)/ASCImageStudio3.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../Common/libs/Debug"
@@ -186,7 +186,7 @@
 				Name="VCLinkerTool"
 				RegisterOutput="true"
 				IgnoreImportLibrary="true"
-				AdditionalDependencies=" Msimg32.lib"
+				AdditionalDependencies=" Msimg32.lib Windowscodecs.lib"
 				OutputFile="$(OutDir)/ASCImageStudio3.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\Common\libs\Release\"

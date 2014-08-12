@@ -78,7 +78,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="false"
-				AdditionalDependencies="graydither.lib Msimg32.lib"
+				AdditionalDependencies="graydither.lib Msimg32.lib Windowscodecs.lib"
 				OutputFile="$(OutDir)/ASCImageFile3.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="Libs"
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="false"
-				AdditionalDependencies="graydither.lib Msimg32.lib"
+				AdditionalDependencies="graydither.lib Msimg32.lib Windowscodecs.lib"
 				OutputFile="$(OutDir)/ASCImageFile3.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="Libs"

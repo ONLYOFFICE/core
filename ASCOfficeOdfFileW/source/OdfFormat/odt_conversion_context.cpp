@@ -45,6 +45,9 @@ odt_conversion_context::odt_conversion_context(package::odf_document * outputDoc
 	is_hyperlink_		= false;
 	is_footer_header_	= false;
 
+	list_state_.currnet_level = -1 ;
+	list_state_.started = false;
+
 	drop_cap_state_.clear();
 }
 
@@ -432,6 +435,59 @@ void odt_conversion_context::end_paragraph()
 	text_context()->end_paragraph();
 	
 	flush_section();
+}
+
+void odt_conversion_context::start_list_item(int level, std::wstring style_name )
+{
+	if (list_state_.started == false)
+	{
+		text_context()->start_list(style_name);
+		list_state_.started  = true;
+		add_to_root();
+	}
+/*	if (list_state_.currnet_level == level)
+	{
+		text_context()->start_list_item();
+		list_state_.currnet_level++;
+	}
+	else */
+	if (list_state_.currnet_level >= level)
+	{
+		while (list_state_.currnet_level >= level)
+		{
+			text_context()->end_list_item();
+			list_state_.currnet_level--;
+		}
+	}
+	
+	if (list_state_.currnet_level < level)
+	{
+		while (list_state_.currnet_level < level)
+		{
+			text_context()->start_list_item();
+			list_state_.currnet_level++;
+		}
+	}
+}
+void odt_conversion_context::end_list_item()
+{
+	if (list_state_.currnet_level < 0) return;
+
+	text_context()->end_list_item();
+	list_state_.currnet_level--;
+}
+void odt_conversion_context::set_no_list()
+{
+	if (list_state_.started == false) return;
+
+	while (list_state_.currnet_level >=0)
+	{
+		text_context()->end_list_item();
+		
+		list_state_.currnet_level--;
+	}
+	text_context()->end_list();
+	list_state_.started = false;
 }
 void odt_conversion_context::flush_section()
 {

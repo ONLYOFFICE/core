@@ -21,12 +21,11 @@ class text_list_style_attr
 {
 public:
 
-    const std::wstring & get_style_name() { return style_name_; }
+    _CP_OPT(std::wstring)	style_name_;
+    _CP_OPT(std::wstring)	style_display_name_;
+    _CP_OPT(Bool)			text_consecutive_numbering_;
 
-    std::wstring style_name_;
-    optional<std::wstring>::Type style_display_name_;
-    optional<bool>::Type text_consecutive_numbering_;
-
+	void serialize(CP_ATTR_NODE);
 };
 
 /// \class  text_list_style
@@ -40,16 +39,12 @@ public:
     static const ElementType type = typeTextListStyle;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    const std::wstring & get_style_name() { return text_list_style_attr_.get_style_name(); }
-    office_element_ptr_array & get_content() { return text_list_style_content_; }
+	virtual void create_child_element(  const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element(office_element_ptr & child);
+	virtual void serialize(std::wostream & strm);
 
-    virtual void create_child_element(  const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
-	virtual void serialize(std::wostream & strm){}
-
-    text_list_style_attr text_list_style_attr_;
-    office_element_ptr_array text_list_style_content_;
+    text_list_style_attr		text_list_style_attr_;
+    office_element_ptr_array	text_list_style_content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_list_style);
@@ -63,13 +58,13 @@ public:
 
 	_CP_OPT(style_ref) text_style_name_;
     
-	common_num_format_attlist common_num_format_attlist_;
+	common_num_format_attlist				common_num_format_attlist_;
     common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
     
-	unsigned int text_display_levels_;
-    unsigned int text_start_value_;
+	unsigned int			text_display_levels_;
+    _CP_OPT(unsigned int)	text_start_value_;
 
-    friend class text_list_level_style_number;
+	void serialize(CP_ATTR_NODE);
 };
 
 
@@ -79,11 +74,10 @@ class text_list_level_style_attr
 public:
     text_list_level_style_attr() : text_level_(0) {}
 
-	unsigned int get_text_level() const { return text_level_; }
-
     unsigned int text_level_;
-
+	void serialize(CP_ATTR_NODE);
 };
+
 
 
 /// \class  style_list_level_properties
@@ -98,27 +92,21 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
-	virtual void serialize(std::wostream & strm){}
+    virtual void add_child_element(office_element_ptr & child);
+	virtual void serialize(std::wostream & strm);
 
-    friend class text_list_level_style_number;
-    friend class text_list_level_style_bullet;
-    
-	const common_text_align & get_common_text_align() const { return common_text_align_; }
-
-    common_text_align common_text_align_;
-    optional<length>::Type text_space_before_;
-    optional<length>::Type text_min_label_width_;
-    optional<length>::Type text_min_label_distance_;
-    optional<std::wstring>::Type style_font_name_;
-    optional<length>::Type fo_width_;
-    optional<length>::Type fo_height_;
+    _CP_OPT(length)			text_space_before_;
+    _CP_OPT(length)			text_min_label_width_;
+    _CP_OPT(length)			text_min_label_distance_;
+    _CP_OPT(std::wstring)	style_font_name_;
+    _CP_OPT(length)			fo_width_;
+    _CP_OPT(length)			fo_height_;
   
+     common_text_align			common_text_align_;
 	common_vertical_rel_attlist common_vertical_rel_attlist_;
     common_vertical_pos_attlist common_vertical_pos_attlist_;
 
-    office_element_ptr style_list_level_label_alignment_;
+    office_element_ptr			style_list_level_label_alignment_;
 
 
 };
@@ -137,16 +125,10 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
-	virtual void serialize(std::wostream & strm){}
+    virtual void add_child_element(office_element_ptr & child);
+	virtual void serialize(std::wostream & strm);
 
-    const _CP_OPT(length) & get_fo_text_indent() const { return fo_text_indent_; }
-    const _CP_OPT(length) & get_fo_margin_left() const { return fo_margin_left_; }
-    const _CP_OPT(length) & get_text_list_tab_stop_position() const { return text_list_tab_stop_position_; }
-
-    _CP_OPT(std::wstring) text_label_followed_by_;
-
+	_CP_OPT(std::wstring) text_label_followed_by_;
 	_CP_OPT(length) text_list_tab_stop_position_;
     _CP_OPT(length) fo_text_indent_;
     _CP_OPT(length) fo_margin_left_;
@@ -170,12 +152,11 @@ public:
 	office_element_ptr style_list_level_properties_;
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
-	virtual void serialize(std::wostream & strm){}
+    virtual void add_child_element(office_element_ptr & child);
+	virtual void serialize(std::wostream & strm);
 
-    text_list_level_style_attr text_list_level_style_attr_;
-    text_list_level_style_number_attr text_list_level_style_number_attr_;
+    text_list_level_style_attr			text_list_level_style_attr_;
+    text_list_level_style_number_attr	text_list_level_style_number_attr_;
 
 	office_element_ptr style_text_properties_;
 
@@ -189,12 +170,13 @@ class text_list_level_style_bullet_attr
 {
 public:
 
-    _CP_OPT(style_ref) text_style_name_;
-    optional<wchar_t>::Type text_bullet_char_;
+    _CP_OPT(style_ref)		text_style_name_;
+    _CP_OPT(wchar_t)		text_bullet_char_;
+    _CP_OPT(percent)		text_bullet_relative_size_;
+
     common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
-    optional<percent>::Type text_bullet_relative_size_;
 
-
+	void serialize(CP_ATTR_NODE);
 };
 
 /// \class  text_list_level_style_bullet
@@ -208,22 +190,20 @@ public:
     static const ElementType type = typeTextListLevelStyleBullet;
     CPDOCCORE_DEFINE_VISITABLE();
 
-   
-	office_element_ptr style_list_level_properties_;
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);   
+	virtual void add_child_element(office_element_ptr & child);
 
-    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
-   
-	virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
-	virtual void serialize(std::wostream & strm){}
+	virtual void serialize(std::wostream & strm);
 
-    text_list_level_style_attr text_list_level_style_attr_;
-    text_list_level_style_bullet_attr text_list_level_style_bullet_attr_;
+    text_list_level_style_attr			text_list_level_style_attr_;
+    text_list_level_style_bullet_attr	text_list_level_style_bullet_attr_;
     
-    office_element_ptr style_text_properties_;
+    office_element_ptr					style_text_properties_;
+	office_element_ptr					style_list_level_properties_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_list_level_style_bullet);
 
 
-} }
+} 
+}

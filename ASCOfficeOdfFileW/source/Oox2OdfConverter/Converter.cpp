@@ -76,6 +76,11 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 
 	switch(oox_unknown->getType())
 	{
+		case OOX::et_a_Shape:
+		{
+			OOX::Drawing::CShape* pShape = static_cast<OOX::Drawing::CShape*>(oox_unknown);
+			convert(pShape);
+		}break;
 		case OOX::et_a_prstGeom:
 		{
 			OOX::Drawing::CPresetGeometry2D* pPresetGeom = static_cast<OOX::Drawing::CPresetGeometry2D*>(oox_unknown);
@@ -184,6 +189,89 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			}
 		}
 	}
+}
+
+void OoxConverter::convert(OOX::Drawing::CShape	*oox_shape)
+{
+	if (oox_shape == NULL)return;
+	if (!oox_shape->m_oSpPr.IsInit()) return;
+
+	odf_context()->drawing_context()->start_drawing();
+	
+		int type = -1;
+		if (oox_shape->m_oSpPr->m_oCustGeom.IsInit())
+		{
+			type = 1000;//6???
+		}
+		if (oox_shape->m_oSpPr->m_oPrstGeom.IsInit())
+		{
+			OOX::Drawing::CPresetGeometry2D * geometry = oox_shape->m_oSpPr->m_oPrstGeom.GetPointer();
+			type =(geometry->m_oPrst.GetValue());
+		}
+		if (oox_shape->m_oNvSpPr.IsInit() && oox_shape->m_oNvSpPr->m_oCNvSpPr.IsInit())
+		{
+			if (oox_shape->m_oNvSpPr->m_oCNvSpPr->m_otxBox.GetValue() == 1)
+				type = 2000; //textBox
+		}
+
+		if (type == SimpleTypes::shapetypeRect && oox_shape->m_oTxSp.IsInit() && oox_shape->m_oTxSp->m_oTxBody.IsInit())
+		{
+			type = 2000;// ваще то тут обычный прямоугольник, но в него не вставишь таблицы, ...
+			if (oox_shape->m_oTxSp->m_oTxBody->m_oBodyPr.IsInit())
+			{
+				int wordart_type = convert(oox_shape->m_oTxSp->m_oTxBody->m_oBodyPr->m_oPrstTxWrap.GetPointer());
+
+				if (wordart_type >=0)type = wordart_type;
+			}
+		}
+
+		if (type < 0)return;
+	/////////////////////////////////////////////////////////////////////////////////
+		odf_context()->drawing_context()->start_shape(type);
+		
+		convert(oox_shape->m_oSpPr.GetPointer(), oox_shape->m_oShapeStyle.GetPointer());
+	//имя, описалово, номер ...	
+		if (oox_shape->m_oNvSpPr.IsInit())
+			convert(oox_shape->m_oNvSpPr->m_oCNvPr.GetPointer());	
+
+		if (oox_shape->m_oTxSp.IsInit() && oox_shape->m_oTxSp->m_oTxBody.IsInit())
+		{
+			odf_context()->start_text_context();
+		
+			convert(oox_shape->m_oTxSp->m_oTxBody->m_oBodyPr.GetPointer());
+			for (long i=0 ; i < oox_shape->m_oTxSp->m_oTxBody->m_arrItems.GetSize();i++)
+			{
+				convert(oox_shape->m_oTxSp->m_oTxBody->m_arrItems[i]);
+			}
+			odf_context()->drawing_context()->set_text( odf_context()->text_context());
+			odf_context()->end_text_context();	
+		}
+
+	odf_context()->drawing_context()->end_shape();
+	
+	odf_context()->drawing_context()->end_drawing();
+}
+
+void OoxConverter::convert(OOX::Drawing::CLockedCanvas  *oox_canvas)
+{
+	if (oox_canvas == NULL)return;
+
+	odf_context()->drawing_context()->start_group();
+		if (oox_canvas->m_oNvGroupSpPr.IsInit() && oox_canvas->m_oNvGroupSpPr->m_oCNvPr.IsInit())
+		{	
+			if (oox_canvas->m_oNvGroupSpPr->m_oCNvPr->m_sName.IsInit())
+				odf_context()->drawing_context()->set_group_name(string2std_string(*oox_canvas->m_oNvGroupSpPr->m_oCNvPr->m_sName));
+			if (oox_canvas->m_oNvGroupSpPr->m_oCNvPr->m_oId.IsInit())
+				odf_context()->drawing_context()->set_group_z_order(oox_canvas->m_oNvGroupSpPr->m_oCNvPr->m_oId->GetValue());
+		}
+		convert(oox_canvas->m_oGroupSpPr.GetPointer());
+		convert(oox_canvas->m_oSpPr.GetPointer());
+
+		for (long i=0; i < oox_canvas->m_arrItems.GetSize(); i++)
+		{
+			convert(oox_canvas->m_arrItems[i]);
+		}
+	odf_context()->drawing_context()->end_group();
 }
 void OoxConverter::convert(OOX::Drawing::CGroupShapeProperties *   oox_group_spPr)
 {
@@ -884,6 +972,64 @@ void OoxConverter::convert(OOX::Drawing::CTextBodyProperties	*oox_bodyPr)
 		//+ style section
 		//+element text:section в котором параграфы
 	}
+
+	//for (long i=0; i<oox_prst_geom->m_oAvLst->m_arrGd.GetSize(); i++)
+	//{
+	//	odf_context()->drawing_context()->add_modifier(string2std_string(oox_prst_geom->m_oAvLst->m_arrGd[i].m_oFmla.GetValue()));
+	//}
+}
+
+int OoxConverter::convert(OOX::Drawing::CPresetTextShape *oox_text_preset)
+{
+	if (oox_text_preset == NULL) return -1;
+
+	int type = 2001 + oox_text_preset->m_oPrst.GetValue();
+
+	switch(oox_text_preset->m_oPrst.GetValue())
+	{
+		case SimpleTypes::textshapetypeTextArchDown		: break;
+		case SimpleTypes::textshapetypeTextArchDownPour	: break;
+		case SimpleTypes::textshapetypeTextArchUp		: break;
+		case SimpleTypes::textshapetypeTextArchUpPour	: break;
+		case SimpleTypes::textshapetypeTextButton		: break;
+		case SimpleTypes::textshapetypeTextButtonPour	: break;
+		case SimpleTypes::textshapetypeTextCanDown		: break;
+		case SimpleTypes::textshapetypeTextCanUp		: break;
+		case SimpleTypes::textshapetypeTextCascadeDown	: break;
+		case SimpleTypes::textshapetypeTextCascadeUp	: break;
+		case SimpleTypes::textshapetypeTextChevron		: break;
+		case SimpleTypes::textshapetypeTextChevronInverted: break;
+		case SimpleTypes::textshapetypeTextCircle		: break;
+		case SimpleTypes::textshapetypeTextCirclePour	: break;
+		case SimpleTypes::textshapetypeTextCurveDown	: break;
+		case SimpleTypes::textshapetypeTextCurveUp		: break;
+		case SimpleTypes::textshapetypeTextDeflate		: break;
+		case SimpleTypes::textshapetypeTextDeflateBottom: break;
+		case SimpleTypes::textshapetypeTextDeflateInflate: break;
+		case SimpleTypes::textshapetypeTextDeflateInflateDeflate: break;
+		case SimpleTypes::textshapetypeTextDeflateTop	: break;
+		case SimpleTypes::textshapetypeTextDoubleWave1	: break;
+		case SimpleTypes::textshapetypeTextFadeDown		: break;
+		case SimpleTypes::textshapetypeTextFadeLeft		: break;
+		case SimpleTypes::textshapetypeTextFadeRight	: break;
+		case SimpleTypes::textshapetypeTextFadeUp		: break;
+		case SimpleTypes::textshapetypeTextInflate		: break;
+		case SimpleTypes::textshapetypeTextInflateBottom: break;
+		case SimpleTypes::textshapetypeTextInflateTop	: break;
+		case SimpleTypes::textshapetypeTextNoShape		: break;
+		case SimpleTypes::textshapetypeTextPlain		: break;
+		case SimpleTypes::textshapetypeTextRingInside	: break;
+		case SimpleTypes::textshapetypeTextRingOutside	: break;
+		case SimpleTypes::textshapetypeTextSlantDown	: break;
+		case SimpleTypes::textshapetypeTextSlantUp		: break;
+		case SimpleTypes::textshapetypeTextStop			: break;
+		case SimpleTypes::textshapetypeTextTriangle		: break;
+		case SimpleTypes::textshapetypeTextTriangleInverted	: break;
+		case SimpleTypes::textshapetypeTextWave1		: break;
+		case SimpleTypes::textshapetypeTextWave2		: break;
+		case SimpleTypes::textshapetypeTextWave4		: break;
+	}
+	return type;
 }
 void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf::style_text_properties * text_properties)
 {

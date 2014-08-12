@@ -591,6 +591,10 @@ void odf_drawing_context::start_shape(int type)
 	{
 		start_image(L"");
 	}
+	else if (type > 2000 && type < 3000)
+	{
+		impl_->create_draw_base(7);
+	}
 }
 void odf_drawing_context::end_shape()
 {
@@ -654,10 +658,12 @@ void odf_drawing_context::end_shape()
 		{
 			sub_type = Shape_Types_Mapping[impl_->current_drawing_state_.oox_shape_preset].first;
 		}
-		else //if (impl_->current_drawing_state_.oox_shape_preset != 2000)// 3000 - все равно сюда не попадет
+		else if (impl_->current_drawing_state_.oox_shape_preset > 2000 && impl_->current_drawing_state_.oox_shape_preset < 3000)// 3000 - все равно сюда не попадет
 		{
-			sub_type = L"polyline";
+			sub_type = L"fontwork-plain-text";
 		}
+		else
+			sub_type = L"polyline";
 		
 		office_element_ptr enhanced_elm;
 		create_element(L"draw", L"enhanced-geometry", enhanced_elm, impl_->odf_context_);

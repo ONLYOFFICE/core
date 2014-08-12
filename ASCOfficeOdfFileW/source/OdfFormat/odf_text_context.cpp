@@ -238,9 +238,13 @@ void odf_text_context::start_element(office_element_ptr & elm, office_element_pt
 }
 void odf_text_context::end_element()
 {
-	if (single_paragraph_ == false)
+	if (single_paragraph_ == false && current_level_.size() > 0)
 	{
 		current_level_.pop_back();
+	}
+	else
+	{
+		int t=0;
 	}
 }
 
@@ -299,7 +303,66 @@ void odf_text_context::end_span()
 
 	text_properties_ = NULL;
 }
+/////////////////////////////////////////////////////////////////////////////////   LIST 
+void odf_text_context::start_list_item()
+{
+	if (styles_context_ == NULL || single_paragraph_)return;
+	
+	office_element_ptr list_elm;
+	create_element(L"text", L"list-item", list_elm, odf_context_);
 
+	int level = current_level_.size();
+	
+	std::wstring style_name;
+	office_element_ptr style_elm;
+
+	odf_element_state state={list_elm, style_name, style_elm, level};
+
+	text_elements_list_.push_back(state);
+	
+	if (current_level_.size()>0)
+		current_level_.back().elm->add_child_element(list_elm);
+
+	current_level_.push_back(state);
+}
+void odf_text_context::end_list_item()
+{
+	if (styles_context_ == NULL || single_paragraph_)return;
+	
+	if (current_level_.size() > 0)	
+		current_level_.pop_back();
+}
+void odf_text_context::start_list(std::wstring style_name)
+{
+	if (styles_context_ == NULL || single_paragraph_)return;
+	office_element_ptr list_elm;
+	create_element(L"text", L"list", list_elm, odf_context_);
+
+	int level = current_level_.size();
+	
+	office_element_ptr style_elm;
+	odf_element_state state = {	list_elm, style_name, style_elm, level};
+	
+	if (style_name.length() > 0)
+	{		
+		text_list* list = dynamic_cast<text_list*>(list_elm.get());
+		if (list) list->text_style_name_ = style_ref(style_name);
+	}
+	text_elements_list_.push_back(state);
+	
+	if (current_level_.size()>0)
+		current_level_.back().elm->add_child_element(list_elm);
+
+	current_level_.push_back(state);
+}
+void odf_text_context::end_list()
+{
+	if (styles_context_ == NULL || single_paragraph_)return;
+	
+	if (current_level_.size() > 0)	
+		current_level_.pop_back();
+}
+///////////////////////////////////////////////////////////////////////////////////////////  LIST
 void odf_text_context::start_field(int type)
 {
 	if (single_paragraph_ == true) return;

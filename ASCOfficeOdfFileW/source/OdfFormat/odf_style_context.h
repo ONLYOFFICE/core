@@ -5,6 +5,7 @@
 #include "odf_style_state.h"
 #include "odf_number_styles_context.h"
 #include "odf_table_styles_context.h"
+#include "odf_lists_styles_context.h"
 
 
 namespace cpdoccore {
@@ -51,13 +52,16 @@ public:
 	office_element_ptr		find_conditional_style		(int oox_id_style, style_family::type family);
 	
 	bool find_odf_style_state(int oox_id_style, style_family::type family, odf_style_state_ptr & state, bool root = false);
+	bool find_odf_default_style_state(style_family::type family, odf_style_state_ptr & state);
 	
 	bool find_odf_style(std::wstring style_name, style_family::type family, style *& style_);
 
+	
 	odf_style_state_ptr	last_state(style_family::type family = style_family::None);
 
 	odf_number_styles_context & numbers_styles() {return number_styles_context_;}
 	odf_table_styles_context & table_styles() {return table_styles_context_;}
+	odf_lists_styles_context & lists_styles() {return lists_styles_context_;}
 	
 	std::wstring find_free_name(style_family::type  family);
 
@@ -67,14 +71,15 @@ public:
 private:
 	odf_table_styles_context	table_styles_context_;
 	odf_number_styles_context	number_styles_context_;
-    odf_conversion_context *	odf_context_;
+	odf_lists_styles_context	lists_styles_context_;
+   
     
 	std::vector<odf_style_state_ptr>		style_state_list_;	
 	std::vector<odf_style_state_ptr>		current_default_styles_;//для внутренней работы .. переодически очищаемый частично или полностью
    
-
 	std::wstring get_name_family(style_family::type family);
 
+	odf_conversion_context *	odf_context_;
 };
 
 

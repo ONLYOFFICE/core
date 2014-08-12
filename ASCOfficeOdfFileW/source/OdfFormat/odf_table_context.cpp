@@ -194,7 +194,10 @@ void odf_table_context::end_row()
 }
 
 
-
+bool odf_table_context::empty()
+{
+	return impl_->empty();
+}
 void odf_table_context::add_column(office_element_ptr &elm, bool styled)
 {
 	if (impl_->empty()) return;
@@ -248,7 +251,7 @@ void odf_table_context::set_column_width(double width)
 	style_table_column_properties *properties = style_->style_content_.get_style_table_column_properties();
 	if (properties == NULL) return;
 
-	if (width >= 0)
+	if (width > 0)
 	{
 		properties->style_table_column_properties_attlist_.style_column_width_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
 		//properties->style_table_column_properties_attlist_.style_rel_column_width_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);

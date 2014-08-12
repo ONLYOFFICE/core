@@ -33,13 +33,13 @@ void text_format_properties_content::apply_from(const text_format_properties_con
 {
     _CP_APPLY_PROP(r_style_, Other.r_style_);
 
-    _CP_APPLY_PROP(fo_font_variant_, Other.fo_font_variant_);
-    _CP_APPLY_PROP(fo_text_transform_, Other.fo_text_transform_);
-    _CP_APPLY_PROP(fo_color_, Other.fo_color_);
-    _CP_APPLY_PROP(style_use_window_font_color_, Other.style_use_window_font_color_);
-    _CP_APPLY_PROP(style_text_outline_, Other.style_text_outline_);
-    _CP_APPLY_PROP(style_text_line_through_type_, Other.style_text_line_through_type_); 
-    _CP_APPLY_PROP(style_text_line_through_style_, Other.style_text_line_through_style_);
+    _CP_APPLY_PROP(fo_font_variant_,		Other.fo_font_variant_);
+    _CP_APPLY_PROP(fo_text_transform_,		Other.fo_text_transform_);
+    _CP_APPLY_PROP(fo_color_,				Other.fo_color_);
+    _CP_APPLY_PROP(style_use_window_font_color_,	Other.style_use_window_font_color_);
+    _CP_APPLY_PROP(style_text_outline_,				Other.style_text_outline_);
+    _CP_APPLY_PROP(style_text_line_through_type_,	Other.style_text_line_through_type_); 
+    _CP_APPLY_PROP(style_text_line_through_style_,	Other.style_text_line_through_style_);
     
     apply_line_width(style_text_line_through_width_, Other.style_text_line_through_width_);
     
@@ -66,19 +66,22 @@ void text_format_properties_content::apply_from(const text_format_properties_con
     _CP_APPLY_PROP(style_font_pitch_asian_, Other.style_font_pitch_asian_);
     _CP_APPLY_PROP(style_font_pitch_complex_, Other.style_font_pitch_complex_);
 
-    _CP_APPLY_PROP(style_font_charset_, Other.style_font_charset_);
-    _CP_APPLY_PROP(style_font_charset_asian_, Other.style_font_charset_asian_);
+    _CP_APPLY_PROP(style_font_charset_,			Other.style_font_charset_);
+    _CP_APPLY_PROP(style_font_charset_asian_,	Other.style_font_charset_asian_);
     _CP_APPLY_PROP(style_font_charset_complex_, Other.style_font_charset_complex_);
     
-    // TODO check
-    _CP_APPLY_PROP(style_font_size_rel_, Other.style_font_size_rel_);
-    _CP_APPLY_PROP(style_font_size_rel_asian_, Other.style_font_size_rel_asian_);
+	_CP_APPLY_PROP(fo_font_size_,				Other.fo_font_size_);
+	_CP_APPLY_PROP(style_font_size_asian_,		Other.style_font_size_asian_);
+	_CP_APPLY_PROP(style_font_size_complex_,	Other.style_font_size_complex_);
+	
+	_CP_APPLY_PROP(style_font_size_rel_,		Other.style_font_size_rel_);
+    _CP_APPLY_PROP(style_font_size_rel_asian_,	Other.style_font_size_rel_asian_);
     _CP_APPLY_PROP(style_font_size_rel_complex_, Other.style_font_size_rel_complex_);
 
-    _CP_APPLY_PROP(style_script_type_, Other.style_script_type_);
-    _CP_APPLY_PROP(fo_letter_spacing_, Other.fo_letter_spacing_);
-    _CP_APPLY_PROP(fo_language_, Other.fo_language_);
-    _CP_APPLY_PROP(style_language_asian_, Other.style_language_asian_);
+    _CP_APPLY_PROP(style_script_type_,		Other.style_script_type_);
+    _CP_APPLY_PROP(fo_letter_spacing_,		Other.fo_letter_spacing_);
+    _CP_APPLY_PROP(fo_language_,			Other.fo_language_);
+    _CP_APPLY_PROP(style_language_asian_,	Other.style_language_asian_);
     _CP_APPLY_PROP(style_language_complex_, Other.style_language_complex_);
 
     _CP_APPLY_PROP(fo_country_, Other.fo_country_);
@@ -121,6 +124,8 @@ void text_format_properties_content::apply_from(const text_format_properties_con
     _CP_APPLY_PROP(style_text_overline_color_, Other.style_text_overline_color_);
     _CP_APPLY_PROP(style_text_overline_mode_, Other.style_text_overline_mode_);
     _CP_APPLY_PROP(style_text_overline_style_, Other.style_text_overline_style_);
+
+	common_border_attlist_.apply_from(Other.common_border_attlist_);
 
 }
 void text_format_properties_content::serialize(std::wostream & _Wostream,const wchar_t * ns, const wchar_t * name  )
@@ -166,29 +171,29 @@ void text_format_properties_content::serialize(std::wostream & _Wostream,const w
 			CP_XML_ATTR_OPT(L"style:text-position", style_text_position_);
 		    
 			// 15.4.13 
-			CP_XML_ATTR_OPT(L"style:font-name", style_font_name_);
-			CP_XML_ATTR_OPT(L"style:font-name-asian", style_font_name_asian_);
+			CP_XML_ATTR_OPT(L"style:font-name",			style_font_name_);
+			CP_XML_ATTR_OPT(L"style:font-name-asian",	style_font_name_asian_);
 			CP_XML_ATTR_OPT(L"style:font-name-complex", style_font_name_complex_);
 		    
 			// 15.4.14 
-			CP_XML_ATTR_OPT(L"fo:font-family", fo_font_family_);
-			CP_XML_ATTR_OPT(L"style:font-family-asian", style_font_family_asian_);
-			CP_XML_ATTR_OPT(L"style:font-family-complex", style_font_family_complex_);
+			CP_XML_ATTR_OPT(L"fo:font-family",				fo_font_family_);
+			CP_XML_ATTR_OPT(L"style:font-family-asian",		style_font_family_asian_);
+			CP_XML_ATTR_OPT(L"style:font-family-complex",	style_font_family_complex_);
 
 			// 15.4.15 
-			CP_XML_ATTR_OPT(L"style:font-family-generic", style_font_family_generic_);
-			CP_XML_ATTR_OPT(L"style:font-family-generic-asian", style_font_family_generic_asian_);
-			CP_XML_ATTR_OPT(L"style:font-family-generic-complex", style_font_family_generic_complex_);
+			CP_XML_ATTR_OPT(L"style:font-family-generic",			style_font_family_generic_);
+			CP_XML_ATTR_OPT(L"style:font-family-generic-asian",		style_font_family_generic_asian_);
+			CP_XML_ATTR_OPT(L"style:font-family-generic-complex",	style_font_family_generic_complex_);
 
 			// 15.4.16 
-			CP_XML_ATTR_OPT(L"style:font-style-name", style_font_style_name_);
-			CP_XML_ATTR_OPT(L"style:font-style-name-asian", style_font_style_name_asian_);
-			CP_XML_ATTR_OPT(L"style:font-style-name-complex", style_font_style_name_complex_);
+			CP_XML_ATTR_OPT(L"style:font-style-name",			style_font_style_name_);
+			CP_XML_ATTR_OPT(L"style:font-style-name-asian",		style_font_style_name_asian_);
+			CP_XML_ATTR_OPT(L"style:font-style-name-complex",	style_font_style_name_complex_);
 
 			// 15.4.17 
-			CP_XML_ATTR_OPT(L"style:font-pitch", style_font_pitch_);
-			CP_XML_ATTR_OPT(L"style:font-pitch", style_font_pitch_asian_);
-			CP_XML_ATTR_OPT(L"style:font-pitch-complex", style_font_pitch_complex_);
+			CP_XML_ATTR_OPT(L"style:font-pitch",			style_font_pitch_);
+			CP_XML_ATTR_OPT(L"style:font-pitch",			style_font_pitch_asian_);
+			CP_XML_ATTR_OPT(L"style:font-pitch-complex",	style_font_pitch_complex_);
 
 			// 15.4.18 
 			CP_XML_ATTR_OPT(L"style:font-charset", style_font_charset_);
@@ -196,13 +201,13 @@ void text_format_properties_content::serialize(std::wostream & _Wostream,const w
 			CP_XML_ATTR_OPT(L"style:font-charset-complex", style_font_charset_complex_);
 		    
 			// 15.4.19 
-			CP_XML_ATTR_OPT(L"fo:font-size", fo_font_size_);
-			CP_XML_ATTR_OPT(L"style:font-size-asian", style_font_size_asian_);
+			CP_XML_ATTR_OPT(L"fo:font-size",			fo_font_size_);
+			CP_XML_ATTR_OPT(L"style:font-size-asian",	style_font_size_asian_);
 			CP_XML_ATTR_OPT(L"style:font-size-complex", style_font_size_complex_);
 
 			// 15.4.20 
-			CP_XML_ATTR_OPT(L"style:font-size-rel", style_font_size_rel_);
-			CP_XML_ATTR_OPT(L"style:font-size-rel-asian", style_font_size_rel_asian_);
+			CP_XML_ATTR_OPT(L"style:font-size-rel",			style_font_size_rel_);
+			CP_XML_ATTR_OPT(L"style:font-size-rel-asian",	style_font_size_rel_asian_);
 			CP_XML_ATTR_OPT(L"style:font-size-rel-complex", style_font_size_rel_complex_);
 
 			// 15.4.21 

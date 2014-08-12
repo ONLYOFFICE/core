@@ -1183,6 +1183,14 @@
 				Name="contexts"
 				>
 				<File
+					RelativePath=".\OdfFormat\odf_lists_styles_context.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OdfFormat\odf_lists_styles_context.h"
+					>
+				</File>
+				<File
 					RelativePath=".\OdfFormat\odf_number_styles_context.cpp"
 					>
 				</File>

@@ -36,6 +36,7 @@ void odf_style_context::set_odf_context(odf_conversion_context * Context)
 	
 	number_styles_context_.set_odf_context(Context);
 	table_styles_context_.set_odf_context(Context);
+	lists_styles_context_.set_odf_context(Context);
 }
 
 
@@ -130,6 +131,8 @@ void odf_style_context::process_office_styles(office_element_ptr root )
 		if (style_state_list_[i]->automatic_== false && style_state_list_[i]->root_ == true && style_state_list_[i]->odf_style_)
 			root->add_child_element(style_state_list_[i]->odf_style_);
 	}
+	
+	lists_styles_context_.process_styles(root );
 }
 std::wstring odf_style_context::find_odf_style_name(int oox_id_style, style_family::type family, bool root)
 {
@@ -216,6 +219,20 @@ bool odf_style_context::find_odf_style_state(int oox_id_style, style_family::typ
 				}
 			}
 				
+		}
+	}
+	return false;
+}
+bool odf_style_context::find_odf_default_style_state(style_family::type family, odf_style_state_ptr & state)
+{
+	for (int i=0;i<style_state_list_.size(); i++)
+	{
+		if (style_state_list_[i]->default_ == false) continue;
+
+		if (style_state_list_[i]->odf_style_ && style_state_list_[i]->get_family_type() == family)
+		{
+			state = style_state_list_[i];
+			return true;
 		}
 	}
 	return false;

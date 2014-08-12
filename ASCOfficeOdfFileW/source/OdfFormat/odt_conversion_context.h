@@ -25,6 +25,7 @@ struct odt_section_state
 	bool				continuous;
 };
 
+
 class odt_conversion_context : public odf_conversion_context
 {
 public:
@@ -97,6 +98,11 @@ public:
 		void end_table_row();
 	void end_table();
 
+	void start_list_item(int level, std::wstring style_name);
+	void end_list_item();
+
+	void set_no_list();
+
 	bool is_empty_section(){return current_root_elements_.size() > 0 ? false : true; }
 
 	void start_header(int type);
@@ -148,7 +154,18 @@ private:
 		double characters_size_pt;
 	}drop_cap_state_;
 
+	struct _list_state
+	{
+	//	office_element_ptr	elm;
+	//	office_element_ptr	style_elm;
+	//	std::wstring		style_name;
+	//
+	//	bool				empty;
+	//	bool				continuous;
 
+		bool started;
+		int currnet_level;
+	}list_state_;
 
 };
 

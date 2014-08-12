@@ -26,6 +26,8 @@ public:
 	void		set_table_styled(bool val);
 	bool		is_styled();
 
+	bool		empty();
+
 	int current_column ();
 	int current_row ();
 	int count_column ();

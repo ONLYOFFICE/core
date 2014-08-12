@@ -45,6 +45,9 @@ namespace OOX
 
 	namespace Drawing
 	{
+		class CPresetTextShape;
+		class CShape;
+		class CLockedCanvas;
 		class CPicture;
 		class CChart;
 		class CGraphic;
@@ -304,6 +307,8 @@ public:
 		void convert(double oox_font_size,			cpdoccore::_CP_OPT(cpdoccore::odf::font_size) & odf_font_size);
 	
 //.drawing......................................................................................................................
+		void convert(OOX::Drawing::CLockedCanvas				*oox_canvas);
+		void convert(OOX::Drawing::CShape						*oox_shape);
 		void convert(OOX::Drawing::CNonVisualDrawingProps		*oox_cnvPr);
 		void convert(OOX::Drawing::CShapeProperties				*oox_spPr, OOX::Drawing::CShapeStyle* oox_sp_style = NULL);
 		void convert(OOX::Drawing::CGroupShapeProperties		*oox_groupSpPr);
@@ -311,6 +316,7 @@ public:
 		
 		void convert(OOX::Drawing::CCustomGeometry2D			*oox_cust_geom);
 		void convert(OOX::Drawing::CPresetGeometry2D			*oox_prst_geom);
+		int	 convert(OOX::Drawing::CPresetTextShape				*oox_text_preset);
 
 		void convert(OOX::Drawing::CLineProperties				*oox_line_prop,		CString *change_sheme_color = NULL);
 		

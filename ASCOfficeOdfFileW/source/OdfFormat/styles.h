@@ -299,7 +299,7 @@ public:
 
     _CP_OPT( std::wstring ) style_parent_style_name_; 
     _CP_OPT( std::wstring ) style_next_style_name_; 
-    _CP_OPT( std::wstring ) style_list_style_name_; //  may be empty
+    _CP_OPT( std::wstring ) style_list_style_name_; 
     _CP_OPT( std::wstring ) style_master_page_name_;
 	_CP_OPT( bool)			style_auto_update_; // default = false
     _CP_OPT( std::wstring ) style_data_style_name_; 

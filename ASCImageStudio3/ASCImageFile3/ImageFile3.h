@@ -1156,6 +1156,12 @@ protected:
 				bLoading = oReaderTga.FromFile( sFilePath, nFormat, &oImage );
 			}
 			else
+				if( eFileType ==_ImageFileFormats::c_Wdp)
+			{
+				ImageStudio::IO::Wdp oReaderWdp;
+				bLoading = oReaderWdp.FromFile( sFilePath, nFormat, &oImage );
+			}
+			else
 				if( eFileType ==_ImageFileFormats::c_Pcx)
 			{
 				ImageStudio::IO::Pcx oReaderPcx;

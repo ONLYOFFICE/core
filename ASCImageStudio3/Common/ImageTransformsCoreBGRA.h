@@ -352,9 +352,9 @@ namespace ImageStudio
 					//	nG = int(nG * dK + 0.5);
 					//	nB = int(nB * dK + 0.5);
 
-					//	pPixels[0] = IntToByte(nB);
-					//	pPixels[1] = IntToByte(nG);
-					//	pPixels[2] = IntToByte(nR);
+					//	pPixels[0] = _IntToByte(nB);
+					//	pPixels[1] = _IntToByte(nG);
+					//	pPixels[2] = _IntToByte(nR);
 					//}
 
 					/* Целочисленный вариант */
@@ -379,9 +379,9 @@ namespace ImageStudio
 						nG = (nG * nK + 512) >> 10;
 						nB = (nB * nK + 512) >> 10;
 
-						pPixels[0] = IntToByte(nB);
-						pPixels[1] = IntToByte(nG);
-						pPixels[2] = IntToByte(nR);
+						pPixels[0] = _IntToByte(nB);
+						pPixels[1] = _IntToByte(nG);
+						pPixels[2] = _IntToByte(nR);
 					}
 
 					return ImageStudio::Transforms::Core::c_nErrorNone;
@@ -448,9 +448,9 @@ namespace ImageStudio
 					//	nG = int(nG * dK + 0.5);
 					//	nB = int(nB * dK + 0.5);
 
-					//	pPixels[0] = IntToByte(nB);
-					//	pPixels[1] = IntToByte(nG);
-					//	pPixels[2] = IntToByte(nR);
+					//	pPixels[0] = _IntToByte(nB);
+					//	pPixels[1] = _IntToByte(nG);
+					//	pPixels[2] = _IntToByte(nR);
 					//}
 
 					/* Целочисленный вариант */
@@ -477,9 +477,9 @@ namespace ImageStudio
 						nG = (nG * nK + 512) >> 10;
 						nB = (nB * nK + 512) >> 10;
 
-						pPixels[0] = IntToByte(nB);
-						pPixels[1] = IntToByte(nG);
-						pPixels[2] = IntToByte(nR);
+						pPixels[0] = _IntToByte(nB);
+						pPixels[1] = _IntToByte(nG);
+						pPixels[2] = _IntToByte(nR);
 					}
 
 					return ImageStudio::Transforms::Core::c_nErrorNone;
@@ -802,9 +802,9 @@ namespace ImageStudio
 						nG = int(nG * dFactor + dOffset);
 						nB = int(nB * dFactor + dOffset);
 
-						pPixels[0] = IntToByte(nB);
-						pPixels[1] = IntToByte(nG);
-						pPixels[2] = IntToByte(nR);
+						pPixels[0] = _IntToByte(nB);
+						pPixels[1] = _IntToByte(nG);
+						pPixels[2] = _IntToByte(nR);
 					}
 
 					return ImageStudio::Transforms::Core::c_nErrorNone;
@@ -891,9 +891,9 @@ namespace ImageStudio
 						nG = int(nG * (nG * dFactor + dOffset));
 						nB = int(nB * (nB * dFactor + dOffset));
 
-						pPixels[0] = IntToByte(nB);
-						pPixels[1] = IntToByte(nG);
-						pPixels[2] = IntToByte(nR);
+						pPixels[0] = _IntToByte(nB);
+						pPixels[1] = _IntToByte(nG);
+						pPixels[2] = _IntToByte(nR);
 					}
 
 					return ImageStudio::Transforms::Core::c_nErrorNone;
@@ -1183,7 +1183,7 @@ namespace ImageStudio
 						GetBValue(nColor),
 						GetGValue(nColor),
 						GetRValue(nColor),
-						IntToByte(alpha)
+						_IntToByte(alpha)
 					};
 
 					IppiSize oImageSize = {nWidth, nHeight};
@@ -1867,7 +1867,7 @@ namespace ImageStudio
 					if (nAlpha == 0 || dCompleteness < 0.0001)
 						return c_nErrorNone;
 					
-					double dAlpha = IntToByte( nAlpha ) / 255.0;
+					double dAlpha = _IntToByte( nAlpha ) / 255.0;
 
 					if (dCompleteness >= 0.999 || nWidth < 2 || nHeight < 2)
 						return BGRA_Fog( pBGRA, nWidth, nHeight, nColor, dAlpha );
@@ -3220,7 +3220,7 @@ namespace ImageStudio
 						//	Table[nIndex] = BYTE((unsigned)(nIndex * (255 + Level) + 127) * 0x8081u >> 23);
 						//}
 
-						Table[nIndex] = IntToByte( nIndex + Level );
+						Table[nIndex] = _IntToByte( nIndex + Level );
 					}
 
 					// apply table
@@ -3247,9 +3247,9 @@ namespace ImageStudio
 					// compose table
 					for (int i = 0; i < 256; ++i)
 					{
-						Table[2][i] = IntToByte( i + LevelR );
-						Table[1][i] = IntToByte( i + LevelG );
-						Table[0][i] = IntToByte( i + LevelB );
+						Table[2][i] = _IntToByte( i + LevelR );
+						Table[1][i] = _IntToByte( i + LevelG );
+						Table[0][i] = _IntToByte( i + LevelB );
 					}
 
 					// apply table
@@ -3278,7 +3278,7 @@ namespace ImageStudio
 					// compose table
 					for (int i = 0; i < 256; ++i)
 					{
-						Table[i] = IntToByte( int(127.5 + (i - 127.5)*dLevel) );
+						Table[i] = _IntToByte( int(127.5 + (i - 127.5)*dLevel) );
 					}
 
 					// apply table
@@ -3588,9 +3588,9 @@ namespace ImageStudio
 					// compose table
 					for( int i = 0; i < 256; ++i )
 					{
-						Table[2][i] = IntToByte(i + nDeltaRed);
-						Table[1][i] = IntToByte(i + nDeltaGreen);
-						Table[0][i] = IntToByte(i + nDeltaBlue);
+						Table[2][i] = _IntToByte(i + nDeltaRed);
+						Table[1][i] = _IntToByte(i + nDeltaGreen);
+						Table[0][i] = _IntToByte(i + nDeltaBlue);
 					}
 
 					// apply table
@@ -3606,9 +3606,9 @@ namespace ImageStudio
 					if( Type < 0 || Type > 3 )
 						return c_nErrorNone;
 
-					Blue  = IntToByte( Blue );
-					Green = IntToByte( Green );
-					Red   = IntToByte( Red );
+					Blue  = _IntToByte( Blue );
+					Green = _IntToByte( Green );
+					Red   = _IntToByte( Red );
 					
 					// color tables
 					BYTE oTableB[256];
@@ -4062,9 +4062,9 @@ namespace ImageStudio
 						g = int( (g - gray) * dLevel + g + 0.5 );
 						r = int( (r - gray) * dLevel + r + 0.5 );
 
-						src[0] = IntToByte( b );
-						src[1] = IntToByte( g );
-						src[2] = IntToByte( r );
+						src[0] = _IntToByte( b );
+						src[1] = _IntToByte( g );
+						src[2] = _IntToByte( r );
 					}
 					
 					return c_nErrorNone;
@@ -6598,9 +6598,9 @@ namespace ImageStudio
 							g += pBackup[1] * 31;
 							r += pBackup[2] * 31;
 
-							r = IntToByte( r );
-							g = IntToByte( g );
-							b = IntToByte( b );
+							r = _IntToByte( r );
+							g = _IntToByte( g );
+							b = _IntToByte( b );
 
 							int clr = Intensity2( r, g, b ) > level ? 255 : 0;
 
@@ -6915,9 +6915,9 @@ namespace ImageStudio
 									dSumV *= 0.25;
 
 									// 8 шаг переводим YUV -> RGB
-									pPixel[nX * 4 + 0] = IntToByte( int(dSumY + 1.772   * dSumU) );
-									pPixel[nX * 4 + 1] = IntToByte( int(dSumY - 0.34414 * dSumU - 0.71414 * dSumV) );
-									pPixel[nX * 4 + 2] = IntToByte( int(dSumY + 1.402   * dSumV) );
+									pPixel[nX * 4 + 0] = _IntToByte( int(dSumY + 1.772   * dSumU) );
+									pPixel[nX * 4 + 1] = _IntToByte( int(dSumY - 0.34414 * dSumU - 0.71414 * dSumV) );
+									pPixel[nX * 4 + 2] = _IntToByte( int(dSumY + 1.402   * dSumV) );
 								}      
 							}
 						}
@@ -7032,7 +7032,7 @@ namespace ImageStudio
 					int nMaxLight = Round(dIntensity);
 					for( int i = 0; i < 256; i++ )
 					{
-						oTable[i] = IntToByte(i + nMaxLight);
+						oTable[i] = _IntToByte(i + nMaxLight);
 					}
 
 					dAngle *= IPP_PI180;
@@ -7091,9 +7091,9 @@ namespace ImageStudio
 							g = int(g + t);
 							r = int(r + t);
 
-							pPixels[0] = IntToByte( b );
-							pPixels[1] = IntToByte( g );
-							pPixels[2] = IntToByte( r );
+							pPixels[0] = _IntToByte( b );
+							pPixels[1] = _IntToByte( g );
+							pPixels[2] = _IntToByte( r );
 						}
 					}
 					
@@ -7114,7 +7114,7 @@ namespace ImageStudio
 
 					for( int i = 0; i < 256; i++ )
 					{
-						oTable[i] = IntToByte(i + nMaxLight);
+						oTable[i] = _IntToByte(i + nMaxLight);
 					}
 
 					dFeather  = max(0, min(100, dFeather )) / 100.0;
@@ -7202,9 +7202,9 @@ namespace ImageStudio
 
 									int disp = Round( t );
 
-									pPixels[0] = IntToByte( pPixels[0] + disp );
-									pPixels[1] = IntToByte( pPixels[1] + disp );
-									pPixels[2] = IntToByte( pPixels[2] + disp );
+									pPixels[0] = _IntToByte( pPixels[0] + disp );
+									pPixels[1] = _IntToByte( pPixels[1] + disp );
+									pPixels[2] = _IntToByte( pPixels[2] + disp );
 								}
 								else
 								{
@@ -7255,9 +7255,9 @@ namespace ImageStudio
 
 									int disp = Round( t );
 
-									pPixels[0] = IntToByte( pPixels[0] + disp );
-									pPixels[1] = IntToByte( pPixels[1] + disp );
-									pPixels[2] = IntToByte( pPixels[2] + disp );
+									pPixels[0] = _IntToByte( pPixels[0] + disp );
+									pPixels[1] = _IntToByte( pPixels[1] + disp );
+									pPixels[2] = _IntToByte( pPixels[2] + disp );
 								}
 							}
 							else
@@ -7282,9 +7282,9 @@ namespace ImageStudio
 
 									int disp = Round( t );
 
-									pPixels[0] = IntToByte( pPixels[0] + disp );
-									pPixels[1] = IntToByte( pPixels[1] + disp );
-									pPixels[2] = IntToByte( pPixels[2] + disp );
+									pPixels[0] = _IntToByte( pPixels[0] + disp );
+									pPixels[1] = _IntToByte( pPixels[1] + disp );
+									pPixels[2] = _IntToByte( pPixels[2] + disp );
 								}
 							}
 						}
@@ -10036,7 +10036,7 @@ namespace ImageStudio
 						GetBValue(nBackColor),
 						GetGValue(nBackColor),
 						GetRValue(nBackColor),
-						IntToByte(nBackAlpha),
+						_IntToByte(nBackAlpha),
 					};
 
 					nDstStride -= nWidth * 4;
@@ -11376,9 +11376,9 @@ namespace ImageStudio
 								g += c *  24615;
 								r += c * -714;
 
-								pDst[0] = IntToByte( (b + 32768) >> 16 );
-								pDst[1] = IntToByte( (g + 32768) >> 16 );
-								pDst[2] = IntToByte( (r + 32768) >> 16 );
+								pDst[0] = _IntToByte( (b + 32768) >> 16 );
+								pDst[1] = _IntToByte( (g + 32768) >> 16 );
+								pDst[2] = _IntToByte( (r + 32768) >> 16 );
 							}
 							break;
 

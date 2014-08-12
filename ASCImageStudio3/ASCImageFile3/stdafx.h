@@ -52,10 +52,10 @@ using namespace ATL;
 
 #include "../../Common/VideoFileInterface.h"
 
-#import "../../Redist/ASCMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")
-#import "../../Redist/ASCMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat"), exclude("tagRECT")
-#import "../../Redist/ASCGraphics.dll"				named_guids rename_namespace("AVSGraphics")
-#import "../../Redist/ASCImageJpeg2000.dll"           named_guids rename_namespace("Jpeg2000")
+#import "../../Redist/ASCMediaCore3.dll"				named_guids rename_namespace("MediaCore"), exclude("tagRECT")  raw_interfaces_only
+#import "../../Redist/ASCMediaFormatSettings3.dll"	named_guids rename_namespace("MediaFormat"), exclude("tagRECT") raw_interfaces_only
+#import "../../Redist/ASCGraphics.dll"				named_guids rename_namespace("AVSGraphics") raw_interfaces_only
+#import "../../Redist/ASCImageJpeg2000.dll"           named_guids rename_namespace("Jpeg2000") raw_interfaces_only
 
 #ifndef NO_SWF_CHECKER
 #import "../../Redist/ASCSWFFile3.dll"				named_guids rename_namespace("SWF")

@@ -71,7 +71,7 @@ namespace ImageStudio
 		return DWORD(value + 127) * 0x8081U >> 23;
 	}
 
-	inline int IntToByte( int value )
+	inline int _IntToByte( int value )
 	{
 		if( value < 0 )   value = 0; else
 		if( value > 255 ) value = 255;
@@ -89,7 +89,7 @@ namespace ImageStudio
 
 	inline int RealToByte( double value )
 	{
-		return IntToByte( RealToInt( value ) );
+		return _IntToByte( RealToInt( value ) );
 	}
 
 	int ColorBlend( int dst, int src, double alpha )
@@ -98,7 +98,7 @@ namespace ImageStudio
 	}
 	Gdiplus::Color GetColor( int color, int alpha )
 	{
-		return Gdiplus::Color( IntToByte(alpha), GetRValue(color), GetGValue(color), GetBValue(color) );
+		return Gdiplus::Color( _IntToByte(alpha), GetRValue(color), GetGValue(color), GetBValue(color) );
 	}
 
 	

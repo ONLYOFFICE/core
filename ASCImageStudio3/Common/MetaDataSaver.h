@@ -132,6 +132,24 @@ struct TRationalU
 				SetPropertyShort(bitmap,PropertyTagExifSensingMethod , m_nSensingMethod);
 				SetPropertyShort(bitmap,PropertyTagExifFocalLengthIn35mmFilm,m_nFocalLengthIn35mmFilm);
 
+				if (m_sGpsVersion[0]>0 || m_sGpsVersion[1] >0 || m_sGpsVersion[2]>0)
+				{
+					SetPropertyByte(bitmap, PropertyTagGpsVer,			m_sGpsVersion, 4);
+				}
+				if (m_sGpsLatitudeRef.GetLength()>0)
+				{
+					SetPropertyStr(bitmap, PropertyTagGpsLatitudeRef,	m_sGpsLatitudeRef);
+					SetPropertyRational(bitmap, PropertyTagGpsLatitude,	m_sGpsLatitude,3);
+				}
+				if (m_sGpsLongitudeRef.GetLength()>0)
+				{
+					SetPropertyStr(bitmap, PropertyTagGpsLongitudeRef,	m_sGpsLongitudeRef);
+					SetPropertyRational(bitmap, PropertyTagGpsLongitude,m_sGpsLongitude,3);
+				}
+				SetPropertyByte(bitmap, PropertyTagGpsAltitudeRef,	&m_sGpsAltitudeRef,1);
+				SetPropertyRational(bitmap, PropertyTagGpsAltitude,	m_sGpsAltitude,3);
+				SetPropertyRational(bitmap, PropertyTagGpsGpsTime,	m_sGpsTimeStamp,3);
+				SetPropertyStr(bitmap, PropertyTagGpsDate,			m_sGpsDateStamp);
 
 				if (bitmap->GetLastStatus() != Ok)
 					return FALSE;
@@ -206,9 +224,19 @@ struct TRationalU
 				
 				m_nBitDepth                         = 1;
 
+				m_sGpsLongitudeRef	= _T("");
+				m_sGpsAltitudeRef	= 0;
+				m_sGpsLatitudeRef	= _T("");
+				m_sGpsDateStamp		= _T("");
+
+				ZeroMemory(m_sGpsLatitude,	3*sizeof(TRationalU));
+				ZeroMemory(m_sGpsLongitude,	3*sizeof(TRationalU));
+				ZeroMemory(m_sGpsAltitude,	3*sizeof(TRationalU));
+				ZeroMemory(m_sGpsTimeStamp,	3*sizeof(TRationalU));
+				ZeroMemory(m_sGpsVersion,	4*sizeof(BYTE));
+
+
 				m_sMetaDataXML = _T("");
-
-
 			}
 			
 			CString GetXML()
@@ -230,6 +258,10 @@ struct TRationalU
 		protected:
 
 			//common functions
+			BYTE  IntFromBytes1( const BYTE* pBytes)
+			{
+				return pBytes[0];
+			}
 			int  IntFromBytes2( const BYTE* pBytes, int nType)
 			{
 				int nValue = 0;
@@ -351,8 +383,78 @@ struct TRationalU
 				}
 				return nValue;
 			}
+			void GetPropertyByte(Bitmap*& pImage, PROPID nId, BYTE *Value, int size)
+			{
+				// retrieve property size
+				UINT nSize = pImage->GetPropertyItemSize(nId);
 
+				// check for valid size
+				if (nSize > 0)
+				{
+					// allocate memory for tag
+					PropertyItem* pProp = (PropertyItem*)(malloc(nSize));
+					if ( NULL == pProp )
+						return;
 
+					// read tag to buffer
+					pImage->GetPropertyItem(nId, nSize, pProp);
+
+					// copy data to buffer
+					if ( NULL != pProp->value )
+						memcpy(Value,pProp->value,min (size,nSize));
+					
+					// release buffer
+					free(pProp);
+				}
+			}
+
+			BYTE GetPropertyByte(Bitmap*& pImage, PROPID nId)
+			{
+				// reset value
+				int nValue = 0;
+
+				// retrieve property size
+				UINT nSize = pImage->GetPropertyItemSize(nId);
+
+				// check for valid size
+				if (nSize > 0)
+				{
+					// allocate memory for tag
+					PropertyItem* pProp = (PropertyItem*)(malloc(nSize));
+					if ( NULL == pProp )
+						return nValue;
+
+					// read tag to buffer
+					pImage->GetPropertyItem(nId, nSize, pProp);
+
+					// copy data to buffer
+					if ( NULL != pProp->value )
+						nValue = *(int*)pProp->value;
+					
+					// release buffer
+					free(pProp);
+				}
+				return nValue;
+			}
+			void SetPropertyByte(Bitmap*& pImage, PROPID nId, BYTE* nValue, int size )
+			{
+				// create new property item
+				PropertyItem* pProp = new PropertyItem;
+				if ( NULL == pProp )
+					return;
+
+				// compose property item
+				pProp->id = nId;
+				pProp->length = size * sizeof(BYTE);
+				pProp->type = PropertyTagTypeByte; 
+				pProp->value = nValue;
+
+				// sset property item
+				pImage->SetPropertyItem(pProp);
+
+				// delete property item
+				delete pProp;
+			}
 			short GetPropertyShort(Bitmap*& pImage, PROPID nId)
 			{
 				// reset value
@@ -412,8 +514,10 @@ struct TRationalU
 				return dValue;
 			}
 
-			void GetPropertyRationalU(Bitmap*& pImage, PROPID nId, TRationalU *pResult)
+			void GetPropertyRationalU(Bitmap*& pImage, PROPID nId, TRationalU *pResult,int sizeResult = 1)
 			{
+				if (sizeResult <1)return;
+
 				//rational - пара двух чисел (числитель и знаменатель)
 				(*pResult).Denominator = 1;
 				(*pResult).Fraction    = 0;
@@ -433,12 +537,22 @@ struct TRationalU
 
 					// copy data to buffer
 					if ( NULL != pProp->value )
+					{
+						if (sizeResult >1)
+						{
+							memcpy(pResult,pProp->value,min(nSize-8,sizeResult * 2 * 4));
+						}
+						else
+						{
 						*pResult = *(TRationalU*)pProp->value;
+						}
+					}
 					
 					// release buffer
 					free(pProp);
 				}
 			}
+
 
 
 			void GetPropertyRational(Bitmap*& pImage, PROPID nId, TRational *pResult)
@@ -533,6 +647,25 @@ struct TRationalU
 				// delete property item
 				delete pProp;
 			}
+			void SetPropertyRational(Bitmap*& pImage, PROPID nId, TRationalU* nValue,int size=1)
+			{//unsignes
+				// create new property item
+				PropertyItem* pProp = new PropertyItem;
+				if ( NULL == pProp )
+					return;
+
+				// compose property item
+				pProp->id = nId;
+				pProp->length = 2 * sizeof(long) * size;
+				pProp->type = PropertyTagTypeRational; 
+				pProp->value = (unsigned long*)(nValue);
+
+				// sset property item
+				pImage->SetPropertyItem(pProp);
+
+				// delete property item
+				delete pProp;
+			}
 			void SetPropertySRational(Bitmap*& pImage, PROPID nId, TRational& nValue)
 			{//signed
 				// create new property item
@@ -563,6 +696,24 @@ struct TRationalU
 					sResult += _T("/");
 					_itoa(oRat.Denominator, str, 10);
 					sResult += str;
+				}
+				return sResult;
+			}
+			CString RationalUToString(TRationalU *oRat,int size =1)
+			{
+				CString sResult = _T("");
+				for (long i=0;i<size;i++)
+				{
+					char str[32];
+					_itoa(oRat[i].Fraction, str, 10);
+					sResult += str;
+					if ( 0 != oRat[i].Denominator )
+					{
+						sResult += _T("/");
+						_itoa(oRat[i].Denominator, str, 10);
+						sResult += str;
+					}
+					sResult += _T(" ");
 				}
 				return sResult;
 			}
@@ -630,6 +781,16 @@ struct TRationalU
 
 				m_nOrientation          = GetPropertyShort(bitmap, PropertyTagOrientation);
 
+				GetPropertyByte(bitmap, PropertyTagGpsVer, m_sGpsVersion, 4);				
+				m_sGpsLatitudeRef	= GetPropertyStr(bitmap, PropertyTagGpsLatitudeRef);
+				GetPropertyRationalU(bitmap, PropertyTagGpsLatitude, m_sGpsLatitude,3);
+				m_sGpsLongitudeRef	= GetPropertyStr(bitmap, PropertyTagGpsLongitudeRef);
+				GetPropertyRationalU(bitmap, PropertyTagGpsLongitude, m_sGpsLongitude,3);
+				m_sGpsAltitudeRef	= GetPropertyByte(bitmap, PropertyTagGpsAltitudeRef);
+				GetPropertyRationalU(bitmap, PropertyTagGpsAltitude, m_sGpsAltitude,3);
+				GetPropertyRationalU(bitmap, PropertyTagGpsGpsTime, m_sGpsTimeStamp,3);
+				m_sGpsDateStamp	= GetPropertyStr(bitmap, PropertyTagGpsDate);		
+				
 				if ( m_nBitDepth <= 1 )
 					m_nBitDepth = (short)GetPixelFormatSize( bitmap->GetPixelFormat() );
 
@@ -723,35 +884,57 @@ struct TRationalU
 					}
 				}
 			}			
-			void ReadNodeText(XmlUtils::CXmlReader &oReader, const CString &sName, TRationalU *oValue)
+			void ReadNodeText(XmlUtils::CXmlReader &oReader, const CString &sName, TRationalU *oValue,int max_size_read = 1)
 			{
 				CString sValue = _T("");
 				oReader.ReadRootNode();
 				oReader.ReadNode(sName);
 				sValue = oReader.ReadNodeText();
-				int pos_flash = sValue.Find(_T("/"));
-				int pos_point = sValue.Find(_T("."));
+				
+				CString sValueOne = sValue;
+				
+				int i=0;
+				while(true)
+				{					
+					int pos_space = sValue.Find(_T(" "));
+					if (pos_space > 0)
+					{
+						sValueOne = sValue.Left(pos_space);
+						sValue = sValue.Mid(pos_space +1);
+					}else
+					{
+						sValueOne = sValue;
+						sValue = L"";
+					}
+
+					int pos_flash = sValueOne.Find(_T("/"));
+					int pos_point = sValueOne.Find(_T("."));
 				
 				if (pos_flash >=0)
 				{
-					oValue->Fraction = _ttoi(sValue.Left(pos_flash));
-					oValue->Denominator = _ttoi(sValue.Mid(pos_flash+1));
+						oValue[i].Fraction = _ttoi(sValueOne.Left(pos_flash));
+						oValue[i].Denominator = _ttoi(sValueOne.Mid(pos_flash+1));
 				}
 				else
 				{
 					if (pos_point>=0)
 					{
-						float fValue = _tstof(sValue);
-						oValue->Denominator = 100;
-						oValue->Fraction = int(fValue*100);
+							float fValue = _tstof(sValueOne);
+							oValue[i].Denominator = 100;
+							oValue[i].Fraction = int(fValue*100);
 					}
 					else
 					{
-						oValue->Fraction = _ttoi(sValue);
-						oValue->Denominator = 0;
+							oValue[i].Fraction = _ttoi(sValueOne);
+							oValue[i].Denominator = 0;
+						}
 					}
+					if (sValue.GetLength()<1)break;
+					i++;
+					if (i>max_size_read)break;
 				}
 			}
+
 			void ReadNodeText(XmlUtils::CXmlReader &oReader, const CString &sName, short *nValue)
 			{
 				CString sValue = _T("");
@@ -759,6 +942,14 @@ struct TRationalU
 				oReader.ReadNode(sName);
 				sValue = oReader.ReadNodeText();
 				*nValue = _ttoi(sValue);
+			}
+			void ReadNodeText(XmlUtils::CXmlReader &oReader, const CString &sName, BYTE *nValue, int size=1)
+			{
+				CString sValue = _T("");
+				oReader.ReadRootNode();
+				oReader.ReadNode(sName);
+				sValue = oReader.ReadNodeText();
+				BytesFromString(sValue,nValue,size);
 			}
 			void ReadNodeText(XmlUtils::CXmlReader &oReader, const CString &sName, BOOL *nValue)
 			{
@@ -970,8 +1161,16 @@ struct TRationalU
 				}
 				WriteNode(oXmlWriter, _T("ColorSpace"), sColorSpace);
 
+				WriteNode(oXmlWriter, _T("GpsVersion"),		CString(m_sGpsVersion));
+				WriteNode(oXmlWriter, _T("GpsLatitudeRef"),	m_sGpsLatitudeRef);
+				WriteNode(oXmlWriter, _T("GpsLatitude"),	RationalUToString(m_sGpsLatitude,3));
+				WriteNode(oXmlWriter, _T("GpsLongitudeRef"),m_sGpsLongitudeRef);
+				WriteNode(oXmlWriter, _T("GpsLongitude"),	RationalUToString(m_sGpsLongitude,3));
+				oXmlWriter.WriteNode(_T("GpsAltitudeRef"),	m_sGpsAltitudeRef);
+				WriteNode(oXmlWriter, _T("GpsAltitude"),	RationalUToString(m_sGpsAltitude,3));
+				WriteNode(oXmlWriter, _T("GpsTimeStamp"),	RationalUToString(m_sGpsTimeStamp,3));
+				WriteNode(oXmlWriter, _T("GpsDateStamp"),	m_sGpsDateStamp);
 
-				// Дополнительный параметр
 				oXmlWriter.WriteNode(_T("BitDepth"), m_nBitDepth);
 				oXmlWriter.WriteNode(_T("MultiPageImage"), (int)m_bMultiPageImage );
 
@@ -1104,6 +1303,15 @@ struct TRationalU
 				ReadNodeText(oReader, _T("BitDepth"),&m_nBitDepth);
 				ReadNodeText(oReader, _T("MultiPageImage"), &m_bMultiPageImage );
 			
+				ReadNodeText(oReader, _T("GpsVersion"),		m_sGpsVersion, 4);
+				ReadNodeText(oReader, _T("GpsLatitudeRef"),	&m_sGpsLatitudeRef);
+				ReadNodeText(oReader, _T("GpsLatitude"),	m_sGpsLatitude, 3);
+				ReadNodeText(oReader, _T("GpsLongitudeRef"),&m_sGpsLongitudeRef);
+				ReadNodeText(oReader, _T("GpsLongitude"),	m_sGpsLongitude, 3);
+				ReadNodeText(oReader, _T("GpsAltitudeRef"),	&m_sGpsAltitudeRef,1);
+				ReadNodeText(oReader, _T("GpsAltitude"),	m_sGpsAltitude, 3);
+				ReadNodeText(oReader, _T("GpsTimeStamp"),	m_sGpsTimeStamp, 3);
+				ReadNodeText(oReader, _T("GpsDateStamp"),	&m_sGpsDateStamp);
 				return TRUE;
 			}
 		private:
@@ -1139,6 +1347,16 @@ struct TRationalU
 			CString   m_sPageName;
 			short     m_nPageNumber;
 			short     m_nPagesCount;
+
+			BYTE		m_sGpsVersion[4];
+			CString		m_sGpsLatitudeRef;//size = 2
+			TRationalU	m_sGpsLatitude[3];
+			CString		m_sGpsLongitudeRef;//size = 2
+			TRationalU	m_sGpsLongitude[3];
+			BYTE		m_sGpsAltitudeRef;
+			TRationalU	m_sGpsAltitude[3];
+			TRationalU	m_sGpsTimeStamp[3];
+			CString		m_sGpsDateStamp;//size = 11
 
 			short      m_nExposureProgram;
 			TRationalU m_oExposureTime;

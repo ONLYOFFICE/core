@@ -37,6 +37,8 @@
 
 #endif
 
+#include "Wincodec.h"
+
 
 namespace ImageStudio
 {
@@ -1385,6 +1387,78 @@ namespace ImageStudio
 				return Utils::ToFile(pSourceImage, strFilePath, nFormat, TRUE, _T("image/gif"), NULL);
 			}
 		};
+	#define DIB_WIDTHBYTES(bits) ((((bits) + 31)>>5)<<2)
+		class Wdp
+		{
+		public:
+			
+			virtual BOOL FromFile(const CString& strFilePath, int& nFormat, ImageStudio::Core::Image* pResultImage)
+			{
+				IWICImagingFactory  *m_pIWICFactory = NULL;
+
+				HRESULT hr = CoCreateInstance(CLSID_WICImagingFactory,NULL,CLSCTX_INPROC_SERVER,IID_PPV_ARGS(&m_pIWICFactory));
+
+				if (hr || m_pIWICFactory ==NULL) return FALSE;
+
+				IWICBitmapDecoder *pDecoder = NULL;
+
+				hr = m_pIWICFactory->CreateDecoderFromFilename(strFilePath,  &CLSID_WICWmpDecoder,GENERIC_READ,WICDecodeMetadataCacheOnDemand,&pDecoder);
+
+				IWICBitmapFrameDecode *pFrame = NULL;
+				if (SUCCEEDED(hr && pDecoder))
+				{
+				   hr = pDecoder->GetFrame(0, &pFrame);
+				   pDecoder->Release();
+				}
+
+				UINT Width =0, Height =0;
+				IWICFormatConverter *m_pConvertedFrame = NULL;
+				if (pFrame)
+				{
+					m_pIWICFactory->CreateFormatConverter(&m_pConvertedFrame);
+
+					m_pConvertedFrame->Initialize(
+							pFrame,                        // Source frame to convert
+							GUID_WICPixelFormat32bppBGR,     // The desired pixel format
+							WICBitmapDitherTypeNone,         // The desired dither pattern
+							NULL,                            // The desired palette 
+							0.f,                             // The desired alpha threshold
+							WICBitmapPaletteTypeCustom       // Palette translation type
+					);					
+					pFrame->GetSize(&Width, &Height);
+
+					pFrame->Release();
+				}
+
+				IMediaFrame* pMediaFrame = NULL;
+				if (m_pConvertedFrame)
+				{
+					BYTE* pPixels = NULL;
+					pMediaFrame = CreateFrame( Width, Height, CSP_BGRA | CSP_VFLIP, &pPixels);
+					if( pFrame &&pPixels)
+					{
+						UINT nStride = DIB_WIDTHBYTES(Width * 32);
+						UINT nImage = nStride * Height;
+						m_pConvertedFrame->CopyPixels(NULL,nStride,nImage,pPixels);
+					}
+		
+					m_pConvertedFrame->Release();
+				}
+			
+				m_pIWICFactory->Release();
+
+				BOOL bRetValue = pResultImage->FromMediaData( (IUnknown *)pMediaFrame, FALSE );
+				
+				RELEASEINTERFACE( pMediaFrame );
+
+				return bRetValue;
+
+			}
+			virtual BOOL ToFile(ImageStudio::Core::Image* pSourceImage, const CString& strFilePath, int nFormat)
+			{
+				return FALSE;
+			}
+		};
 		class Jpeg
 		{
 		public:
@@ -1410,8 +1484,17 @@ namespace ImageStudio
 				if( !pFile ) 
 					return FALSE;
 
-				BOOL bSuccess = SaveToFile( pFile, pSourceImage->GetBuffer(), pSourceImage->GetWidth(), pSourceImage->GetHeight(), pSourceImage->GetWidth() * 4, nQuality );
+				BYTE *pPixels = pSourceImage->GetBuffer();
 
+				BOOL bSuccess = FALSE;
+				if (pPixels)
+				{
+					bSuccess = SaveToFile( pFile, pSourceImage->GetBuffer(), pSourceImage->GetWidth(), pSourceImage->GetHeight(), pSourceImage->GetWidth() * 4, nQuality/*,SubSampling */);
+				}
+				else
+				{
+					bSuccess = SaveToFile( pFile, pSourceImage->GetMediaData().GetMediaData(FALSE), nQuality/*,SubSampling*/ );
+				}
 				fclose(pFile);
 
 				return bSuccess;
@@ -7145,16 +7228,16 @@ namespace ImageStudio
 						int G = 128 - 100 * U - 208 * V;
 						int B = 128 + 516 * U;
 
-						dst[0] = IntToByte( (Y + B) >> 8 );
-						dst[1] = IntToByte( (Y + G) >> 8 );
-						dst[2] = IntToByte( (Y + R) >> 8 );
+						dst[0] = _IntToByte( (Y + B) >> 8 );
+						dst[1] = _IntToByte( (Y + G) >> 8 );
+						dst[2] = _IntToByte( (Y + R) >> 8 );
 						dst[3] = 255;
 						
 						Y = (int(src[3]) - 16) * 298;
 
-						dst[4] = IntToByte( (Y + B) >> 8 );
-						dst[5] = IntToByte( (Y + G) >> 8 );
-						dst[6] = IntToByte( (Y + R) >> 8 );
+						dst[4] = _IntToByte( (Y + B) >> 8 );
+						dst[5] = _IntToByte( (Y + G) >> 8 );
+						dst[6] = _IntToByte( (Y + R) >> 8 );
 						dst[7] = 255;
 
 						// вторая строка						
@@ -7166,16 +7249,16 @@ namespace ImageStudio
 						G = 128 - 100 * U - 208 * V;
 						B = 128 + 516 * U;
 
-						dst[0 + nWidth * 4] = IntToByte( (Y + B) >> 8 );
-						dst[1 + nWidth * 4] = IntToByte( (Y + G) >> 8 );
-						dst[2 + nWidth * 4] = IntToByte( (Y + R) >> 8 );
+						dst[0 + nWidth * 4] = _IntToByte( (Y + B) >> 8 );
+						dst[1 + nWidth * 4] = _IntToByte( (Y + G) >> 8 );
+						dst[2 + nWidth * 4] = _IntToByte( (Y + R) >> 8 );
 						dst[3 + nWidth * 4] = 255;
 
 						Y = (int(src[3 + offset]) - 16) * 298;
 
-						dst[4 + nWidth * 4] = IntToByte( (Y + B) >> 8 );
-						dst[5 + nWidth * 4] = IntToByte( (Y + G) >> 8 );
-						dst[6 + nWidth * 4] = IntToByte( (Y + R) >> 8 );
+						dst[4 + nWidth * 4] = _IntToByte( (Y + B) >> 8 );
+						dst[5 + nWidth * 4] = _IntToByte( (Y + G) >> 8 );
+						dst[6 + nWidth * 4] = _IntToByte( (Y + R) >> 8 );
 						dst[7 + nWidth * 4] = 255;
 					}
 				}
@@ -7205,16 +7288,16 @@ namespace ImageStudio
 						int G = 128 - 100 * U - 208 * V;
 						int B = 128 + 516 * U;
 
-						dst[0] = IntToByte( (Y + B) >> 8 );
-						dst[1] = IntToByte( (Y + G) >> 8 );
-						dst[2] = IntToByte( (Y + R) >> 8 );
+						dst[0] = _IntToByte( (Y + B) >> 8 );
+						dst[1] = _IntToByte( (Y + G) >> 8 );
+						dst[2] = _IntToByte( (Y + R) >> 8 );
 						dst[3] = 255;
 						
 						Y = (int(src[3]) - 16) * 298;
 
-						dst[4] = IntToByte( (Y + B) >> 8 );
-						dst[5] = IntToByte( (Y + G) >> 8 );
-						dst[6] = IntToByte( (Y + R) >> 8 );
+						dst[4] = _IntToByte( (Y + B) >> 8 );
+						dst[5] = _IntToByte( (Y + G) >> 8 );
+						dst[6] = _IntToByte( (Y + R) >> 8 );
 						dst[7] = 255;
 					}
 				}
@@ -7245,30 +7328,30 @@ namespace ImageStudio
 						int G = 128 - 100 * U - 208 * V;
 						int B = 128 + 516 * U;
 
-						dst[0] = IntToByte( (Y + B) >> 8 );
-						dst[1] = IntToByte( (Y + G) >> 8 );
-						dst[2] = IntToByte( (Y + R) >> 8 );
+						dst[0] = _IntToByte( (Y + B) >> 8 );
+						dst[1] = _IntToByte( (Y + G) >> 8 );
+						dst[2] = _IntToByte( (Y + R) >> 8 );
 						dst[3] = 255;
 
 						Y = (int(pY[1]) - 16) * 298;
 
-						dst[4] = IntToByte( (Y + B) >> 8 );
-						dst[5] = IntToByte( (Y + G) >> 8 );
-						dst[6] = IntToByte( (Y + R) >> 8 );
+						dst[4] = _IntToByte( (Y + B) >> 8 );
+						dst[5] = _IntToByte( (Y + G) >> 8 );
+						dst[6] = _IntToByte( (Y + R) >> 8 );
 						dst[7] = 255;
 
 						Y = (int(pY[0 + nWidth]) - 16) * 298;
 
-						dst[0 + nWidth * 4] = IntToByte( (Y + B) >> 8 );
-						dst[1 + nWidth * 4] = IntToByte( (Y + G) >> 8 );
-						dst[2 + nWidth * 4] = IntToByte( (Y + R) >> 8 );
+						dst[0 + nWidth * 4] = _IntToByte( (Y + B) >> 8 );
+						dst[1 + nWidth * 4] = _IntToByte( (Y + G) >> 8 );
+						dst[2 + nWidth * 4] = _IntToByte( (Y + R) >> 8 );
 						dst[3 + nWidth * 4] = 255;
 
 						Y = (int(pY[1 + nWidth]) - 16) * 298;
 
-						dst[4 + nWidth * 4] = IntToByte( (Y + B) >> 8 );
-						dst[5 + nWidth * 4] = IntToByte( (Y + G) >> 8 );
-						dst[6 + nWidth * 4] = IntToByte( (Y + R) >> 8 );
+						dst[4 + nWidth * 4] = _IntToByte( (Y + B) >> 8 );
+						dst[5 + nWidth * 4] = _IntToByte( (Y + G) >> 8 );
+						dst[6 + nWidth * 4] = _IntToByte( (Y + R) >> 8 );
 						dst[7 + nWidth * 4] = 255;
 					}
 				}

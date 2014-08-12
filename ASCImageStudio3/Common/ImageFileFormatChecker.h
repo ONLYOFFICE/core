@@ -23,7 +23,8 @@ enum _ImageFileFormats
 	c_Swf,
 	c_Wbz,
 	c_Wbc,
-	c_Svm
+	c_Svm,
+	c_Wdp
 };
 
 struct _ImageFileExtension
@@ -87,7 +88,10 @@ static _ImageFileExtension tableSupportImageFormats[] =
 	{_T("wbz"),  c_Wbz},
 	{_T("wbc"),  c_Wbc},
 	{_T("svm"),  c_Svm},
-	{_T("mj2"),  c_Jpeg2000}
+	{_T("mj2"),  c_Jpeg2000},
+	{_T("wdp"),  c_Wdp},
+	{_T("hdp"),  c_Wdp},
+	{_T("jxr"),  c_Wdp}
 };
 
 

@@ -1191,6 +1191,11 @@ namespace ImageStudio
 							bLoading = IO::Utils::FromFile( sFilePath, nFormatOutput, oImage, nFrame, 0, 0, cxType );
 							break;
 						}
+					case c_Wdp:
+					{
+						ImageStudio::IO::Wdp oReaderWdp;
+						bLoading = oReaderWdp.FromFile( sFilePath, nFormatOutput, oImage);
+					}break;
 					case c_Psd:
 						{
 							ImageStudio::IO::Psd oReaderPsd;

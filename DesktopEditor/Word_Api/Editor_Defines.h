@@ -568,6 +568,13 @@ namespace NSEditorDefines
 #define c_oAscDropCap_Drop						1
 #define c_oAscDropCap_Margin					2
 
+#define c_oAsc_wrap_Around						0x01
+#define c_oAsc_wrap_Auto						0x02
+#define c_oAsc_wrap_None						0x03
+#define c_oAsc_wrap_NotBeside					0x04
+#define c_oAsc_wrap_Through						0x05
+#define c_oAsc_wrap_Tight						0x06
+
 #define c_oAscSectionBreakType_NextPage			0x00
 #define c_oAscSectionBreakType_OddPage			0x01
 #define c_oAscSectionBreakType_EvenPage			0x02

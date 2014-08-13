@@ -2498,10 +2498,28 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 
 	convert(oox_table->m_oTableProperties, styled_table );	
 	
-	if(oox_table->m_oTableProperties && oox_table->m_oTableProperties->m_oTblpPr.IsInit() && 
-			(oox_table->m_oTableProperties->m_oTblpPr->m_oTblpX.IsInit() || oox_table->m_oTableProperties->m_oTblpPr->m_oTblpY.IsInit()))
+	if(oox_table->m_oTableProperties && oox_table->m_oTableProperties->m_oTblpPr.IsInit())
 	{
-		in_frame = true;
+		if (oox_table->m_oTableProperties->m_oTblpPr->m_oTblpX.IsInit()) 
+		{
+			if (oox_table->m_oTableProperties->m_oTblpPr->m_oHorzAnchor.IsInit() && 
+				oox_table->m_oTableProperties->m_oTblpPr->m_oHorzAnchor->GetValue() == SimpleTypes::hanchorText)
+				in_frame = false;
+			else 
+				in_frame = true;
+		}
+		if (oox_table->m_oTableProperties->m_oTblpPr->m_oTblpY.IsInit())
+		{
+			if (oox_table->m_oTableProperties->m_oTblpPr->m_oVertAnchor.IsInit() && 
+				oox_table->m_oTableProperties->m_oTblpPr->m_oVertAnchor->GetValue() == SimpleTypes::vanchorText)
+				in_frame = false;
+			else 
+				in_frame = true;
+		}
+	}
+
+	if (in_frame)
+	{
 		odt_context->start_paragraph();
 			odt_context->start_drawings();
 				odt_context->drawing_context()->set_anchor(odf::anchor_type::Paragraph); 
@@ -2519,17 +2537,15 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 					switch(oox_table->m_oTableProperties->m_oTblpPr->m_oVertAnchor->GetValue())
 					{
 						case SimpleTypes::vanchorMargin: odt_context->drawing_context()->set_vertical_rel(6); break;
-						case SimpleTypes::vanchorPage:	odt_context->drawing_context()->set_vertical_rel(5); break;
-						case SimpleTypes::vanchorText:	odt_context->drawing_context()->set_vertical_rel(0); break;
+						case SimpleTypes::vanchorPage:	 odt_context->drawing_context()->set_vertical_rel(5); break;
 					}
 				}
 				if (oox_table->m_oTableProperties->m_oTblpPr->m_oHorzAnchor.IsInit())
 				{
 					switch(oox_table->m_oTableProperties->m_oTblpPr->m_oHorzAnchor->GetValue())
 					{
-						case SimpleTypes::hanchorMargin: odt_context->drawing_context()->set_horizontal_rel(2); break;
-						case SimpleTypes::hanchorPage:	odt_context->drawing_context()->set_horizontal_rel(6); break;
-						case SimpleTypes::hanchorText:	odt_context->drawing_context()->set_horizontal_rel(0); break;
+						case SimpleTypes::hanchorMargin:	odt_context->drawing_context()->set_horizontal_rel(2); break;
+						case SimpleTypes::hanchorPage:		odt_context->drawing_context()->set_horizontal_rel(6); break;
 					}
 				}		
 

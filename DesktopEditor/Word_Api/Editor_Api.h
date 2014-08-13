@@ -766,7 +766,9 @@ namespace NSEditorApi
 		js_wrapper<double>	m_dLine;
 		js_wrapper<int>		m_nLineRule;
 		js_wrapper<double>	m_dBefore;
+		js_wrapper<bool>	m_dBeforeAuto;
 		js_wrapper<double>	m_dAfter;
+		js_wrapper<bool>	m_dAfterAuto;
 
 	public:
 		
@@ -778,6 +780,8 @@ namespace NSEditorApi
 		LINK_PROPERTY_INT_JS(LineRule)
 		LINK_PROPERTY_DOUBLE_JS(Before)
 		LINK_PROPERTY_DOUBLE_JS(After)
+		LINK_PROPERTY_BOOL_JS(BeforeAuto)
+		LINK_PROPERTY_BOOL_JS(AfterAuto)
 	};
 
 	class CAscParagraphShd
@@ -869,6 +873,67 @@ namespace NSEditorApi
 		}
 	};
 
+	class CAscParagraphFrame
+	{
+	private:
+		js_wrapper<bool>		m_bFromDropCapMenu;
+		js_wrapper<int>			m_nDropCap;				// c_oAscDropCap_
+		
+		js_wrapper<double>		m_dW;
+		js_wrapper<double>		m_dH;
+
+		js_wrapper<int>			m_nHAnchor;
+		js_wrapper<int>			m_nHRule;				// linerule_
+		js_wrapper<double>		m_dHSpace;
+
+		js_wrapper<int>			m_nVAnchor;
+		js_wrapper<double>		m_dVSpace;
+
+		js_wrapper<double>		m_dX;
+		js_wrapper<double>		m_dY;
+
+		js_wrapper<int>			m_nXAlign;
+		js_wrapper<int>			m_nYAlign;
+
+		js_wrapper<int>			m_nLines;
+		js_wrapper<int>			m_nWrap;				// c_oAsc_wrap_
+
+		js_wrapper<CAscParagraphBorders>	m_oBrd;
+		js_wrapper<CAscParagraphShd>		m_oShd;
+		js_wrapper<CAscTextFontFamily>		m_oFontFamily;
+
+	public:
+		CAscParagraphFrame()
+		{
+		}
+
+		LINK_PROPERTY_BOOL_JS(FromDropCapMenu)
+		LINK_PROPERTY_INT_JS(DropCap)
+
+		LINK_PROPERTY_DOUBLE_JS(W)
+		LINK_PROPERTY_DOUBLE_JS(H)
+
+		LINK_PROPERTY_INT_JS(HAnchor)
+		LINK_PROPERTY_INT_JS(HRule)
+		LINK_PROPERTY_DOUBLE_JS(HSpace)
+
+		LINK_PROPERTY_INT_JS(VAnchor)
+		LINK_PROPERTY_DOUBLE_JS(VSpace)
+
+		LINK_PROPERTY_DOUBLE_JS(X)
+		LINK_PROPERTY_DOUBLE_JS(Y)
+
+		LINK_PROPERTY_INT_JS(XAlign)
+		LINK_PROPERTY_INT_JS(YAlign)
+
+		LINK_PROPERTY_INT_JS(Lines)
+		LINK_PROPERTY_INT_JS(Wrap)
+
+		LINK_PROPERTY_OBJECT_JS(CAscParagraphBorders, Brd)
+		LINK_PROPERTY_OBJECT_JS(CAscParagraphShd, Shd)
+		LINK_PROPERTY_OBJECT_JS(CAscTextFontFamily, FontFamily)
+	};
+
 	class CAscParagraphPr
 	{
 	private:
@@ -888,11 +953,13 @@ namespace NSEditorApi
         
 		js_wrapper<bool>		m_bLocked;
 		js_wrapper<bool>		m_bCanAddTable;
-
-        js_wrapper<CAscParagraphTabs> m_oTabs;
-
 		js_wrapper<bool>		m_bCanAddDropCap;
 
+		js_wrapper<double>		m_dDefaultTab;
+        js_wrapper<CAscParagraphTabs> m_oTabs;
+
+		js_wrapper<CAscParagraphFrame> m_oFramePr;
+		
 		js_wrapper<bool>		m_bSubscript;
 		js_wrapper<bool>		m_bSuperscript;
 		js_wrapper<bool>		m_bSmallCaps;
@@ -902,6 +969,11 @@ namespace NSEditorApi
 
 		js_wrapper<double>		m_dTextSpacing;
 		js_wrapper<double>      m_dPosition;
+
+		js_wrapper<CAscListType>			m_oListType;
+		js_wrapper<std::wstring>			m_sStyle;
+		js_wrapper<int>						m_nJc;
+		js_wrapper<CAscParagraphSpacing>	m_oSpacing;
 
 	public:
 
@@ -925,10 +997,12 @@ namespace NSEditorApi
 
 		LINK_PROPERTY_BOOL_JS(Locked)
 		LINK_PROPERTY_BOOL_JS(CanAddTable)
+		LINK_PROPERTY_BOOL_JS(CanAddDropCap)
 
+		LINK_PROPERTY_DOUBLE_JS(DefaultTab)
 		LINK_PROPERTY_OBJECT_JS(CAscParagraphTabs, Tabs)
 
-		LINK_PROPERTY_BOOL_JS(CanAddDropCap)
+		LINK_PROPERTY_OBJECT_JS(CAscParagraphFrame, FramePr)
 
 		LINK_PROPERTY_BOOL_JS(Subscript)
 		LINK_PROPERTY_BOOL_JS(Superscript)
@@ -939,6 +1013,11 @@ namespace NSEditorApi
 
 		LINK_PROPERTY_DOUBLE_JS(TextSpacing)
 		LINK_PROPERTY_DOUBLE_JS(Position)
+
+		LINK_PROPERTY_OBJECT_JS(CAscListType, ListType)
+		LINK_PROPERTY_STRING_JS(Style)
+		LINK_PROPERTY_INT_JS(Jc)
+		LINK_PROPERTY_OBJECT_JS(CAscParagraphSpacing, Spacing)
 	};
 }
 

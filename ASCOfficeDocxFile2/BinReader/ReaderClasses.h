@@ -971,11 +971,14 @@ public:
 	}
 	void Write(CString sName, XmlUtils::CStringWriter*  pCStringWriter, bool bCell)
 	{
-		if(bValue && border_Single == Value)
+		if(bValue)
 		{
 			pCStringWriter->WriteString(CString(_T("<")));
 			pCStringWriter->WriteString(sName);
-			pCStringWriter->WriteString(CString(_T(" w:val=\"single\"")));
+			if(border_Single == Value)
+				pCStringWriter->WriteString(CString(_T(" w:val=\"single\"")));
+			else
+				pCStringWriter->WriteString(CString(_T(" w:val=\"none\"")));
 			if(bColor)
 			{
 				CString sColorAttr;sColorAttr.Format(_T(" w:color=\"%s\""), Color.ToString());

@@ -82,29 +82,25 @@ namespace BinDocxRW
 		{
 			if(border.m_oVal.IsInit())
 			{
-				const SimpleTypes::EBorder& borderVal = border.m_oVal.get().GetValue();
-				if(SimpleTypes::bordervalueNone != borderVal && SimpleTypes::bordervalueNil != borderVal)
+				if(border.m_oColor.IsInit())
+					WriteColor(c_oSerBorderType::Color, border.m_oColor.get());
+				WriteThemeColor(c_oSerBorderType::ColorTheme, border.m_oColor, border.m_oThemeColor, border.m_oThemeTint, border.m_oThemeShade);
+				if(border.m_oSpace.IsInit())
 				{
-					if(border.m_oColor.IsInit())
-						WriteColor(c_oSerBorderType::Color, border.m_oColor.get());
-					WriteThemeColor(c_oSerBorderType::ColorTheme, border.m_oColor, border.m_oThemeColor, border.m_oThemeTint, border.m_oThemeShade);
-					if(border.m_oSpace.IsInit())
-					{
-						m_oStream.WriteByte(c_oSerBorderType::Space);
-						m_oStream.WriteByte(c_oSerPropLenType::Double);
-						m_oStream.WriteDouble2(border.m_oSpace->ToMM());
-					}
-					if(border.m_oSz.IsInit())
-					{
-						m_oStream.WriteByte(c_oSerBorderType::Size);
-						m_oStream.WriteByte(c_oSerPropLenType::Double);
-						m_oStream.WriteDouble2(border.m_oSz->ToMM());
-					}
+					m_oStream.WriteByte(c_oSerBorderType::Space);
+					m_oStream.WriteByte(c_oSerPropLenType::Double);
+					m_oStream.WriteDouble2(border.m_oSpace->ToMM());
+				}
+				if(border.m_oSz.IsInit())
+				{
+					m_oStream.WriteByte(c_oSerBorderType::Size);
+					m_oStream.WriteByte(c_oSerPropLenType::Double);
+					m_oStream.WriteDouble2(border.m_oSz->ToMM());
 				}
 				//Val
 				m_oStream.WriteByte(c_oSerBorderType::Value);
 				m_oStream.WriteByte(c_oSerPropLenType::Byte);
-				switch(borderVal)
+				switch(border.m_oVal.get().GetValue())
 				{
 				case SimpleTypes::bordervalueNone:
 				case SimpleTypes::bordervalueNil:m_oStream.WriteByte(border_None);break;

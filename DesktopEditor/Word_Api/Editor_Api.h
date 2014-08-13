@@ -751,6 +751,7 @@ namespace NSEditorApi
 		js_wrapper<double>	m_dRight;
 		js_wrapper<double>	m_dFirstLine;
 
+	public:
 		CAscParagraphInd()
 		{
 		}
@@ -766,9 +767,9 @@ namespace NSEditorApi
 		js_wrapper<double>	m_dLine;
 		js_wrapper<int>		m_nLineRule;
 		js_wrapper<double>	m_dBefore;
-		js_wrapper<bool>	m_dBeforeAuto;
+		js_wrapper<bool>	m_bBeforeAuto;
 		js_wrapper<double>	m_dAfter;
-		js_wrapper<bool>	m_dAfterAuto;
+		js_wrapper<bool>	m_bAfterAuto;
 
 	public:
 		
@@ -870,6 +871,19 @@ namespace NSEditorApi
 		{
 			m_pTabs = NULL;
 			m_lCount = 0;
+		}
+		~CAscParagraphTabs()
+		{
+			if (NULL != m_pTabs)
+				delete [] m_pTabs;
+		}
+
+		int GetCount() { return m_lCount; }
+		CAscParagraphTab* GetTabs() { return m_pTabs; }
+		void SetTabs(CAscParagraphTab* pTabs, int nCount)
+		{
+			m_pTabs = pTabs;
+			m_lCount = nCount;
 		}
 	};
 
@@ -973,7 +987,6 @@ namespace NSEditorApi
 		js_wrapper<CAscListType>			m_oListType;
 		js_wrapper<std::wstring>			m_sStyle;
 		js_wrapper<int>						m_nJc;
-		js_wrapper<CAscParagraphSpacing>	m_oSpacing;
 
 	public:
 
@@ -1017,7 +1030,6 @@ namespace NSEditorApi
 		LINK_PROPERTY_OBJECT_JS(CAscListType, ListType)
 		LINK_PROPERTY_STRING_JS(Style)
 		LINK_PROPERTY_INT_JS(Jc)
-		LINK_PROPERTY_OBJECT_JS(CAscParagraphSpacing, Spacing)
 	};
 }
 

@@ -1061,6 +1061,8 @@ BOOL CPDFWriter::ApplyFillGradient()
 	PDF::Pattern* pattern = m_oPatternState.GetFill();
 	if (pattern)
 	{
+		ATLTRACE2(_T("ApplyFillGradient\n"));
+
 		//	%	fill 
 
 		//	/Pattern cs
@@ -1193,6 +1195,8 @@ BOOL CPDFWriter::ApplyStrokeGradient()
 	PDF::Pattern* pattern = m_oPatternState.GetStroke();
 	if (pattern)
 	{
+		ATLTRACE2(_T("ApplyStrokeGradient\n"));
+
 		//	%	stroke 
 
 		//	/Pattern CS
@@ -1317,6 +1321,8 @@ BOOL CPDFWriter::ApplyTileFill()
 	IUnknown* pImage = ImageUtils::LoadImage(m_oBrush.TexturePath);
 	if (pImage)
 	{
+		ATLTRACE2(_T("ApplyTileFill\n"));
+
 		LONG width  =	0;
 		LONG height	=	0;
 
@@ -1430,6 +1436,11 @@ BOOL CPDFWriter::ApplyTileFill()
 
 BOOL CPDFWriter::CreateLinearGradientFromSvgXml(const CString& sXml, BOOL fill)
 {
+	ATLTRACE2(_T("CreateLinearGradientFromSvgXml\n"));
+
+	m_oBrush.TexturePath	=	L"";
+	m_oBrush.Type			=	1000;
+
 	int FormId		=	-1;
 
 	XrefEntry entry	=	XrefGetEntry(m_pDocument->pXref, m_pDocument->pXref->pEntries->nCount - 2);
@@ -1746,6 +1757,11 @@ BOOL CPDFWriter::CreateLinearGradientFromSvgXml(const CString& sXml, BOOL fill)
 }
 BOOL CPDFWriter::CreateRadialGradientFromSvgXml(const CString& sXml, BOOL fill)
 {
+	ATLTRACE2(_T("CreateRadialGradientFromSvgXml\n"));
+
+	m_oBrush.TexturePath	=	L"";
+	m_oBrush.Type			=	1000;
+
 	int FormId		=	-1;
 
 	XrefEntry entry	=	XrefGetEntry(m_pDocument->pXref, m_pDocument->pXref->pEntries->nCount - 2);

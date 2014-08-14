@@ -4,6 +4,7 @@
 #include "./Editor_Defines.h"
 
 #include <string>
+#include <vector>
 
 // colors
 namespace NSEditorApi
@@ -1134,6 +1135,26 @@ namespace NSEditorApi
 		}
 	};
 
+	class CAscMenuEventStackData
+	{
+	public:
+		std::vector<CAscMenuEvent*> m_data;
+
+	public:
+		CAscMenuEventStackData()
+		{
+		}
+		~CAscMenuEventStackData()
+		{
+			for (std::vector<CAscMenuEvent*>::iterator i = m_data.begin(), i != m_data.end(); ++i)
+			{
+				CAscMenuEvent* data = *i;
+				if (NULL != data)
+					delete data;
+			}
+		}
+	};
+
 	class CAscMenuEventListener
 	{
 	public:
@@ -1165,5 +1186,6 @@ namespace NSEditorApi
 #define ASC_MENU_EVENT_TYPE_UNDO				3
 #define ASC_MENU_EVENT_TYPE_REDO				4
 #define ASC_MENU_EVENT_TYPE_LOADDOCUMENT		5
+#define ASC_MENU_EVENT_TYPE_STACK_OBJECTS		6
 
 #endif //_BUILD_EDITOR_API_CROSSPLATFORM_H_

@@ -127,6 +127,16 @@ std::wstring odf_layout_state::get_name()
 
 	return style_->style_page_layout_attlist_.style_name_.get_value_or(L"");
 }
+
+void odf_layout_state::set_pages_mirrored(bool val)
+{
+	style_page_layout* style_ = dynamic_cast<style_page_layout*>(elements_[0].elm.get());//0 - root
+
+	if (!style_)return;
+
+	style_->style_page_layout_attlist_.style_page_usage_ = page_usage(page_usage::Mirrored);
+}
+
 style_page_layout_properties *odf_layout_state::get_properties()
 {
 	style_page_layout_properties *result=NULL;

@@ -1379,6 +1379,10 @@
 				RelativePath=".\OdfFormat\shapes\oox_shapeStars.h"
 				>
 			</File>
+			<File
+				RelativePath=".\OdfFormat\Shapes\oox_shapeWordArt.h"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\OdfFormat\abstract_xml.cpp"

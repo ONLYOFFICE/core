@@ -45,6 +45,7 @@ namespace OOX
 
 	namespace Drawing
 	{
+		class CDiagrammParts;
 		class CPresetTextShape;
 		class CShape;
 		class CLockedCanvas;
@@ -88,6 +89,8 @@ namespace OOX
 		class CEffectList;
 		class COuterShadowEffect;
 		class CInnerShadowEffect;
+		class CFontReference;
+		class CFontCollection;
 
 		namespace Colors
 		{
@@ -239,8 +242,11 @@ namespace OOX
 		class CRichText;
 		class CTextProperties;
 	}
-
-
+	namespace Diagram	
+	{
+		class CShape;
+		class CShapeTree;
+	}
 	namespace Vml
 	{
 		class CVmlShapeElements;
@@ -329,6 +335,8 @@ public:
 		void convert(OOX::Drawing::COuterShadowEffect			*oox_shadow,		CString *change_sheme_color = NULL);
 		void convert(OOX::Drawing::CInnerShadowEffect			*oox_shadow,		CString *change_sheme_color = NULL);
 
+		void convert(OOX::Drawing::CFontCollection				*style_font,		CString *change_sheme_color = NULL);
+		void convert(OOX::Drawing::CFontReference				*style_font_ref);
 		void convert(OOX::Drawing::CStyleMatrixReference		*style_matrix_ref);
 		void convert(OOX::Drawing::CPath2D						*oox_geom_path);
 		void convert(OOX::Drawing::CPath2DLineTo				*oox_geom_path);
@@ -347,6 +355,9 @@ public:
 		void convert(OOX::Drawing::CRun							*oox_run);
 		void convert(OOX::Drawing::CRunProperty					*oox_run_pr, cpdoccore::odf::style_text_properties	* text_properties);
 		void convert(OOX::Drawing::CLineSpacing					*oox_spacing, cpdoccore::odf::length_or_percent & length_or_percent);
+//.diagram................................................................................................................................
+		void convert(OOX::Diagram::CShapeTree					*oox_shape_tree);
+		void convert(OOX::Diagram::CShape						*oox_shape);
 //.chart............................................................................................................................
 		void convert(OOX::Spreadsheet::CT_ChartSpace			*oox_chart);
 		void convert(OOX::Spreadsheet::CT_Title					*ct_title);

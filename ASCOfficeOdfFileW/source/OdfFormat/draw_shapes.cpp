@@ -365,13 +365,18 @@ int draw_enhanced_geometry::parsing(_CP_OPT(std::wstring) val)
 /// draw-enhanced_geometry_attlist
 void draw_enhanced_geometry_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"draw:type", draw_type_);
-    CP_XML_ATTR_OPT(L"draw:text-areas", draw_text_areas_);
-    CP_XML_ATTR_OPT(L"draw:modifiers", draw_modifiers_);
-    CP_XML_ATTR_OPT(L"draw:enhanced-path", draw_enhanced_path_);	
-	CP_XML_ATTR_OPT(L"draw:glue-points", draw_glue_points_);
-	CP_XML_ATTR_OPT(L"draw:mirror-vertical", draw_mirror_vertical_);
-	CP_XML_ATTR_OPT(L"draw:mirror-horizontal", draw_mirror_horizontal_);
+    CP_XML_ATTR_OPT(L"draw:type",				draw_type_);
+    CP_XML_ATTR_OPT(L"draw:text-areas",			draw_text_areas_);
+    CP_XML_ATTR_OPT(L"draw:modifiers",			draw_modifiers_);
+    CP_XML_ATTR_OPT(L"draw:enhanced-path",		draw_enhanced_path_);	
+	CP_XML_ATTR_OPT(L"draw:glue-points",		draw_glue_points_);
+	CP_XML_ATTR_OPT(L"draw:mirror-vertical",	draw_mirror_vertical_);
+	CP_XML_ATTR_OPT(L"draw:mirror-horizontal",	draw_mirror_horizontal_);
+
+	CP_XML_ATTR_OPT(L"draw:text-path",						draw_text_path_);
+	CP_XML_ATTR_OPT(L"draw:text-path-mode",					draw_text_path_mode_);
+	CP_XML_ATTR_OPT(L"draw:text-path-scale",				draw_text_path_scale_);
+	CP_XML_ATTR_OPT(L"draw:text-path-same-letter-heights",	draw_text_path_same_letter_heights_);
 }
 // draw:enhanced_geometry
 const wchar_t * draw_enhanced_geometry::ns = L"draw";

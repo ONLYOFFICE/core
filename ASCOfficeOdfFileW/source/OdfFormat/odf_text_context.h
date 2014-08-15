@@ -29,6 +29,7 @@ public:
 	odf_text_context(odf_conversion_context *odf_context);
     ~odf_text_context();
 public:
+	void				clear_params();
 	void				set_styles_context(odf_style_context*  styles_context);//для embedded 
  	odf_style_context*	get_styles_context();//для embedded 
    
@@ -46,7 +47,6 @@ public:
 	void start_paragraph(office_element_ptr & elm, bool styled = false);
     void end_paragraph();
 
-	bool is_need_break(){return bool(need_break_);}
 
 	void start_element(office_element_ptr & elm, office_element_ptr style_elm = office_element_ptr(),std::wstring style_name = L"");
     void end_element();
@@ -63,7 +63,10 @@ public:
 	void start_list(std::wstring style_name);
 	void end_list();
 
-	void add_break(int type, int clear);
+	bool is_need_break(){return bool(need_break_);}
+	void set_type_break(int type, int clear);
+	void save_property_break();
+
 	void add_tab();
 
 	int current_outline_;
@@ -79,7 +82,22 @@ public:
 	style_paragraph_properties	*get_paragraph_properties(){return paragraph_properties_;}
 
 	void set_outline_level(int level);
+
+	bool get_KeepNextParagraph()			{return keep_next_paragraph_;}
+	void set_KeepNextParagraph(bool val)	{keep_next_paragraph_ = val;}
+
+	bool get_list_item_state()				{return list_state_.started_list_item;}
+
+	struct _list_state
+	{
+		bool started_list_item;
+		bool started_list;
+
+		int currnet_level;
+	}list_state_;
 private:
+	bool	keep_next_paragraph_;
+
 	_CP_OPT(fo_break) need_break_; 
 
 	bool single_paragraph_;

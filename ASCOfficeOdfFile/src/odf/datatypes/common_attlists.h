@@ -286,19 +286,11 @@ public:
 	void serialize(CP_ATTR_NODE);
 
 public:
-    // fo:padding
     _CP_OPT(length) fo_padding_;
     
-    // fo:padding-top
     _CP_OPT(length) fo_padding_top_;
-    
-    // fo:padding-bottom
     _CP_OPT(length) fo_padding_bottom_;
-    
-    // fo:padding-left
     _CP_OPT(length) fo_padding_left_;
-    
-    // fo:padding-right
     _CP_OPT(length) fo_padding_right_;
 };
 

@@ -30,9 +30,31 @@ odf_text_context::odf_text_context(odf_conversion_context *odf_context)
 
 	current_outline_ = 0;
 	in_field_ = false;
+	
+	keep_next_paragraph_ = false;
+	
+	list_state_.currnet_level = -1 ;
+	list_state_.started_list = false;
+	list_state_.started_list_item = false;
 }
 odf_text_context::~odf_text_context()
 {
+
+}
+void odf_text_context::clear_params()
+{
+	single_paragraph_ = false;
+	paragraph_properties_ = NULL;
+	text_properties_ = NULL;
+
+	current_outline_ = 0;
+	in_field_ = false;
+	
+	keep_next_paragraph_ = false;
+	
+	list_state_.currnet_level = -1 ;
+	list_state_.started_list = false;
+	list_state_.started_list_item = false;
 }
 void odf_text_context::set_styles_context(odf_style_context*  styles_context)
 {
@@ -202,8 +224,11 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 		text_h* h = dynamic_cast<text_h*>(elm.get());
 		if (h)p->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(parent_paragraph_style_);	
 	}
-	if (paragraph_properties_)paragraph_properties_->content().fo_break_before_ = need_break_;
-	need_break_ = boost::none;
+	if (paragraph_properties_ && need_break_)
+	{
+		paragraph_properties_->content().fo_break_before_ = need_break_;
+		need_break_ = boost::none;
+	}
 	
 	odf_element_state state={elm,  style_name, style_elm,level};
 	text_elements_list_.push_back(state);
@@ -221,7 +246,7 @@ void odf_text_context::end_paragraph()
 		current_level_.pop_back();
 	}
 	paragraph_properties_ = NULL;
-	//need_break_ = boost::none;
+	text_properties_ = NULL;
 }
 
 void odf_text_context::start_element(office_element_ptr & elm, office_element_ptr style_elm ,std::wstring style_name)
@@ -260,6 +285,7 @@ void odf_text_context::start_span(bool styled)
 	std::wstring style_name;
 	office_element_ptr style_elm;
 
+	text_properties_ = NULL;
 	if (styled)
 	{		
 		odf_style_state_ptr style_state = styles_context_->last_state(style_family::Text);
@@ -324,17 +350,25 @@ void odf_text_context::start_list_item()
 		current_level_.back().elm->add_child_element(list_elm);
 
 	current_level_.push_back(state);
+
+	list_state_.started_list_item = true;
+	list_state_.currnet_level++;
 }
 void odf_text_context::end_list_item()
 {
-	if (styles_context_ == NULL || single_paragraph_)return;
+	if (styles_context_ == NULL || single_paragraph_)
+		return;
 	
 	if (current_level_.size() > 0)	
 		current_level_.pop_back();
+
+	list_state_.currnet_level--;
+	list_state_.started_list_item = false;
 }
-void odf_text_context::start_list(std::wstring style_name)
+void odf_text_context::start_list(std::wstring style_name) //todoooo add new_numbering ???
 {
 	if (styles_context_ == NULL || single_paragraph_)return;
+
 	office_element_ptr list_elm;
 	create_element(L"text", L"list", list_elm, odf_context_);
 
@@ -346,7 +380,11 @@ void odf_text_context::start_list(std::wstring style_name)
 	if (style_name.length() > 0)
 	{		
 		text_list* list = dynamic_cast<text_list*>(list_elm.get());
-		if (list) list->text_style_name_ = style_ref(style_name);
+		if (list)
+		{
+			list->text_style_name_ = style_ref(style_name);
+			list->text_continue_numbering_ = true;
+		}
 	}
 	text_elements_list_.push_back(state);
 	
@@ -354,6 +392,8 @@ void odf_text_context::start_list(std::wstring style_name)
 		current_level_.back().elm->add_child_element(list_elm);
 
 	current_level_.push_back(state);
+
+	list_state_.started_list = true;
 }
 void odf_text_context::end_list()
 {
@@ -361,6 +401,9 @@ void odf_text_context::end_list()
 	
 	if (current_level_.size() > 0)	
 		current_level_.pop_back();
+
+	list_state_.started_list_item = false;
+	list_state_.started_list = false;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////  LIST
 void odf_text_context::start_field(int type)
@@ -435,7 +478,16 @@ void odf_text_context::add_tab()
 	if (current_level_.size()>0)
 		current_level_.back().elm->add_child_element(elm);
 }
-void odf_text_context::add_break(int type, int clear)
+void odf_text_context::save_property_break()
+{
+	if (paragraph_properties_ == NULL) return;
+	if (!need_break_) return;
+
+	paragraph_properties_->content().fo_break_before_ = need_break_;
+	need_break_ = boost::none;
+
+}
+void odf_text_context::set_type_break(int type, int clear)
 {
 		//brclearAll   = 0,
 		//brclearLeft  = 1,

@@ -1146,7 +1146,7 @@ namespace NSEditorApi
 		}
 		~CAscMenuEventStackData()
 		{
-			for (std::vector<CAscMenuEvent*>::iterator i = m_data.begin(), i != m_data.end(); ++i)
+			for (std::vector<CAscMenuEvent*>::iterator i = m_data.begin(); i != m_data.end(); ++i)
 			{
 				CAscMenuEvent* data = *i;
 				if (NULL != data)

@@ -6,6 +6,7 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 
+#include "length.h"
 
 namespace cpdoccore {
 namespace odf {
@@ -68,6 +69,12 @@ public:
 	style_page_layout_properties	*get_properties();//пока не красиво ... лучше хранить прямую ссыль нежели искать
 	style_header_footer_properties	*get_header_properties();//-''-
 	style_header_footer_properties	*get_footer_properties();//-''-
+
+	void set_pages_mirrored(bool val);
+
+	_CP_OPT(length) header_size_;
+	_CP_OPT(length) footer_size_;
+
 private:
 	std::wstring	style_oox_name_;
 

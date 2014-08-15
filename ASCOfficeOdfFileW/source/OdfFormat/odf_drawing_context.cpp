@@ -195,6 +195,7 @@ public:
 		
 		current_graphic_properties = NULL;
 		current_paragraph_properties = NULL;
+		current_text_properties = NULL;
 
 		width = height = x = y = 0;
 
@@ -217,6 +218,7 @@ public:
 
 	style_graphic_properties		*current_graphic_properties;
 	style_paragraph_properties		*current_paragraph_properties;
+	style_text_properties			*current_text_properties;
 
 	anchor_settings anchor_settings_;
 
@@ -320,7 +322,10 @@ void odf_drawing_context::start_group()
 	impl_->current_graphic_properties->content().common_vertical_margin_attlist_.fo_margin_bottom_	= impl_->anchor_settings_.fo_margin_bottom_; 
 
 	if (group)
+	{
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_text_spreadsheet_shape_attlist_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
+		impl_->anchor_settings_.anchor_type_ = boost::none;
+	}
 
 
 //
@@ -397,33 +402,30 @@ void odf_drawing_context::end_drawing()
 		double x = impl_->current_drawing_state_.svg_x_->get_value();
 		double y = impl_->current_drawing_state_.svg_y_->get_value();
 
-
 		if (impl_->current_drawing_state_.rotateAngle)
 		{
+			if (impl_->current_drawing_state_.in_group)
+			{
+				
+					strTransform += std::wstring(L" translate(-") +	boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_width_.get()/2)
+											+ std::wstring(L",-") + boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_height_.get()/2)
+											+ std::wstring(L")" ); 
 
+			}
 			strTransform += std::wstring(L"rotate(") + boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.rotateAngle.get()) + std::wstring(L")");
 			//так как вращения все в мс относительно центра фигуры, а не от начала координат - убираем смещение
 
 			if (impl_->current_drawing_state_.svg_x_ && impl_->current_drawing_state_.svg_y_)
 			{
-				if (impl_->current_drawing_state_.in_group)
-				{
-					strTransform += std::wstring(L" translate(") +	boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_x_.get()) +
-																	/*(impl_->current_drawing_state_.svg_width_.get()/2))+*/ std::wstring(L",") + 
-												boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_y_.get()) +
-																	/*(impl_->current_drawing_state_.svg_height_.get()/2))+ */std::wstring(L")") ; 
-				}
-				else
-				{
-					strTransform += std::wstring(L" translate(") +	boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_x_.get() +
-																	(impl_->current_drawing_state_.svg_width_.get()/2))+ std::wstring(L",") + 
-												boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_y_.get() +
-																	(impl_->current_drawing_state_.svg_height_.get()/2))+ std::wstring(L")") ; 
-				}
+				strTransform += std::wstring(L" translate(") +	boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_x_.get() +
+																(impl_->current_drawing_state_.svg_width_.get()/2))
+										+ std::wstring(L",") +  boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_y_.get() +
+																(impl_->current_drawing_state_.svg_height_.get()/2))
+										+ std::wstring(L")") ; 
+				impl_->current_drawing_state_.svg_x_ = boost::none;
+				impl_->current_drawing_state_.svg_y_ = boost::none;
 			}
 
-			impl_->current_drawing_state_.svg_x_ = boost::none;
-			impl_->current_drawing_state_.svg_y_ = boost::none;
 		}
 
 		if (strTransform.length()>0)
@@ -474,7 +476,7 @@ void odf_drawing_context::end_drawing()
 	impl_->current_graphic_properties->content().common_horizontal_margin_attlist_.fo_margin_right_	= impl_->anchor_settings_.fo_margin_right_; 
 	impl_->current_graphic_properties->content().common_vertical_margin_attlist_.fo_margin_bottom_	= impl_->anchor_settings_.fo_margin_bottom_; 
 
-	if (draw)
+	if (draw && !impl_->current_drawing_state_.in_group)
 		draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_text_spreadsheet_shape_attlist_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
 //if (impl_->current_drawing_state_.in_group == false)
 //{
@@ -488,6 +490,7 @@ void odf_drawing_context::end_drawing()
 	impl_->current_drawing_state_.clear();
 	impl_->current_graphic_properties = NULL;
 	impl_->current_paragraph_properties = NULL;
+	impl_->current_text_properties = NULL;
 }
 
 
@@ -653,14 +656,15 @@ void odf_drawing_context::end_shape()
 	if (custom)
 	{
 		std::wstring sub_type;
-		
+		bool text_shape = false;
+
 		if (impl_->current_drawing_state_.oox_shape_preset < sizeof(Shape_Types_Mapping)/sizeof(_sh_typ))
 		{
 			sub_type = Shape_Types_Mapping[impl_->current_drawing_state_.oox_shape_preset].first;
 		}
 		else if (impl_->current_drawing_state_.oox_shape_preset > 2000 && impl_->current_drawing_state_.oox_shape_preset < 3000)// 3000 - все равно сюда не попадет
 		{
-			sub_type = L"fontwork-plain-text";
+			text_shape = true;
 		}
 		else
 			sub_type = L"polyline";
@@ -673,6 +677,13 @@ void odf_drawing_context::end_shape()
 		draw_enhanced_geometry* enhanced = dynamic_cast<draw_enhanced_geometry*>(enhanced_elm.get());
 		if (enhanced)
 		{
+			if (text_shape)
+			{
+				enhanced->draw_enhanced_geometry_attlist_.draw_text_path_same_letter_heights_ = false;
+				enhanced->draw_enhanced_geometry_attlist_.draw_text_path_scale_ = L"path" ;
+				enhanced->draw_enhanced_geometry_attlist_.draw_text_path_mode_ = L"shape" ;
+				enhanced->draw_enhanced_geometry_attlist_.draw_text_path_ = true; 
+			}
 
 			if (impl_->current_drawing_state_.path_.length()>1)
 			{
@@ -924,6 +935,16 @@ void odf_drawing_context::add_modifier(std::wstring modifier)
 }
 void odf_drawing_context::set_viewBox(double W, double H)
 {
+	if (W  < 0.01)
+	{
+		if (impl_->current_drawing_state_.svg_width_)
+			W = impl_->current_drawing_state_.svg_width_->get_value_unit(length::emu);
+	}
+	if (H < 0.01)
+	{
+		if (impl_->current_drawing_state_.svg_height_)
+			H = impl_->current_drawing_state_.svg_height_->get_value_unit(length::emu);
+	}
 	impl_->current_drawing_state_.view_box_ = std::wstring(L"0 0 ") + boost::lexical_cast<std::wstring>((int)W) + L" " + boost::lexical_cast<std::wstring>((int)H); 
 }
 void odf_drawing_context::set_flip_H(bool bVal)
@@ -1144,8 +1165,11 @@ void odf_drawing_context::set_group_size( double cx, double cy, double ch_cx, do
 {
 	if (impl_->group_list_.size()<1)return;
 
-	impl_->current_group_->scale_cx = cx / ch_cx;
-	impl_->current_group_->scale_cy = cy / ch_cy;
+	impl_->current_group_->scale_cx = cx ;
+	if (ch_cx > 0) impl_->current_group_->scale_cx /= ch_cx;
+	
+	impl_->current_group_->scale_cy = cy ;
+	if (ch_cy > 0) impl_->current_group_->scale_cy /= ch_cy;
 
 	if(impl_->current_group_->prev_group)
 	{
@@ -1219,7 +1243,7 @@ void odf_drawing_context::set_position(double x_pt, double y_pt)
 {
 	if (impl_->group_list_.size() < 1)return;
 
-	if (!impl_->current_drawing_state_.svg_x_) 
+	if (!impl_->current_drawing_state_.svg_x_ || impl_->current_drawing_state_.in_group) 
 	{
 		if (impl_->current_drawing_state_.in_group && impl_->current_group_)
 		{
@@ -1231,7 +1255,7 @@ void odf_drawing_context::set_position(double x_pt, double y_pt)
 
 		impl_->current_drawing_state_.svg_x_ = length(length(x_pt,length::pt).get_value_unit(length::cm),length::cm);
 	}
-	if (!impl_->current_drawing_state_.svg_y_) 
+	if (!impl_->current_drawing_state_.svg_y_ || impl_->current_drawing_state_.in_group) 
 	{
 		if (impl_->current_drawing_state_.in_group && impl_->current_group_)
 		{
@@ -1402,6 +1426,44 @@ void odf_drawing_context::set_textarea_wrap(bool Val)
 	else
 		impl_->current_graphic_properties->content().fo_wrap_option_ = wrap_option(wrap_option::NoWrap);
 
+}
+void odf_drawing_context::set_textarea_font(_CP_OPT(std::wstring) & latin, _CP_OPT(std::wstring) & cs, _CP_OPT(std::wstring) & ea)
+{
+	if (!latin && !cs && !ea)return;
+	if (impl_->current_drawing_state_.elements_.size() < 1)return;
+
+	if (!impl_->current_text_properties)
+	{
+		odf_style_state_ptr style_state = impl_->styles_context_->last_state(style_family::Paragraph);
+		if (style_state)
+		{
+			impl_->current_text_properties = style_state->get_text_properties();
+		}
+	}
+
+	if (!impl_->current_text_properties) return;
+
+	if (ea)		impl_->current_text_properties->content().fo_font_family_			= *ea;
+	if (cs)		impl_->current_text_properties->content().style_font_family_complex_= *cs;
+	if (latin)	impl_->current_text_properties->content().style_font_family_asian_	= *latin;
+
+}
+void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)
+{
+	if (impl_->current_drawing_state_.elements_.size() < 1)return;
+
+	if (!impl_->current_text_properties)
+	{
+		odf_style_state_ptr style_state = impl_->styles_context_->last_state(style_family::Paragraph);
+		if (style_state)
+		{
+			impl_->current_text_properties = style_state->get_text_properties();
+		}
+	}
+
+	if (!impl_->current_text_properties) return;
+
+	impl_->current_text_properties->content().fo_color_ = color(std::wstring(L"#") + hexColor);
 }
 void odf_drawing_context::set_textarea_writing_mode(int mode)
 {
@@ -1637,6 +1699,39 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 		impl_->current_graphic_properties->content().draw_auto_grow_width_ = false;
 		impl_->current_graphic_properties->content().draw_fit_to_size_ = false;//???
 
+	}
+
+	if (impl_->current_drawing_state_.oox_shape_preset > 2000 && impl_->current_drawing_state_.oox_shape_preset < 3000)
+	{
+		//настройки цвета - перетащить в линии и заливки - так уж нужно wordart-у оо
+		style_text_properties *text_properties_ = text_context->get_text_properties();
+		
+		if (text_properties_)
+		{
+			color color_ = text_properties_->content().fo_color_.get_value_or(color(L"#000000"));
+			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_ = color_;			
+			
+			if (text_properties_->content().style_text_outline_)
+			{
+				//line
+				impl_->current_graphic_properties->content().svg_stroke_color_	= color_;
+				impl_->current_graphic_properties->content().draw_stroke_		= line_style(line_style::Solid);
+				impl_->current_graphic_properties->content().svg_stroke_width_	= length(0.08,length::pt);
+				impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::none);
+			}
+			else
+			{
+				impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::solid);			
+			}
+		}
+		//text_context->text_elements_list_[0].style_elm.get()
+		//start_line_properties();
+		//	
+		//end_line_properties();
+		//
+		//start_area_properties();
+
+		//end_area_properties();
 	}
 }
 void odf_drawing_context::start_gradient_style()

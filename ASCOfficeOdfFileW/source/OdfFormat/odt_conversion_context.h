@@ -154,18 +154,7 @@ private:
 		double characters_size_pt;
 	}drop_cap_state_;
 
-	struct _list_state
-	{
-	//	office_element_ptr	elm;
-	//	office_element_ptr	style_elm;
-	//	std::wstring		style_name;
-	//
-	//	bool				empty;
-	//	bool				continuous;
 
-		bool started;
-		int currnet_level;
-	}list_state_;
 
 };
 

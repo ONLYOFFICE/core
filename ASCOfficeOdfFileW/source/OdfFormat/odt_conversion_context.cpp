@@ -45,9 +45,6 @@ odt_conversion_context::odt_conversion_context(package::odf_document * outputDoc
 	is_hyperlink_		= false;
 	is_footer_header_	= false;
 
-	list_state_.currnet_level = -1 ;
-	list_state_.started = false;
-
 	drop_cap_state_.clear();
 }
 
@@ -221,11 +218,17 @@ void odt_conversion_context::add_page_break()
 		//http://docs.oasis-open.org/office/v1.2/os/OpenDocument-v1.2-os-part1.html#__RefHeading__1415190_253892949
 		//нихере не работает !! в span, ... приходится генерить разрыв вручную !!
 
-		if (para = dynamic_cast<text_p*>(current_root_elements_.back().elm.get()))
+		//if (para = dynamic_cast<text_p*>(current_root_elements_.back().elm.get()))
+		//{
+		//	style_ = dynamic_cast<style*>(current_root_elements_.back().style_elm.get());//для переноса свойств параграфа
+		//	end_paragraph();
+		//}	
+		//else/* if (header = dynamic_cast<text_h*>(current_root_elements_.back().elm.get()))*/
 		{
-			style_ = dynamic_cast<style*>(current_root_elements_.back().style_elm.get());
-			end_paragraph();
-		}			
+			//тут получается что разрыв будет прописан внутри элемента (не параграфа) - так что вручную свойство запишем
+			//в случае разрыва параграфов оно запишется при старте после-разрывного параграфа
+			text_context()->save_property_break();
+		}
 		text_context()->start_element(elm);
 		add_to_root();
 		text_context()->end_element();
@@ -238,7 +241,7 @@ void odt_conversion_context::add_page_break()
 			{
 				style_paragraph_properties * new_props = NULL;
 				if (styles_context()->last_state())
-				{
+				{// нужна именно копия св-в так как будет добавочные свойства
 					new_props = styles_context()->last_state()->get_paragraph_properties();				
 					if (new_props)new_props->apply_from(style_->style_content_.get_style_paragraph_properties());
 					
@@ -439,55 +442,44 @@ void odt_conversion_context::end_paragraph()
 
 void odt_conversion_context::start_list_item(int level, std::wstring style_name )
 {
-	if (list_state_.started == false)
+	if (text_context()->list_state_.started_list == false)
 	{
 		text_context()->start_list(style_name);
-		list_state_.started  = true;
 		add_to_root();
 	}
-/*	if (list_state_.currnet_level == level)
+
+	if (text_context()->list_state_.currnet_level >= level)
 	{
-		text_context()->start_list_item();
-		list_state_.currnet_level++;
-	}
-	else */
-	if (list_state_.currnet_level >= level)
-	{
-		while (list_state_.currnet_level >= level)
+		while (text_context()->list_state_.currnet_level >= level)
 		{
 			text_context()->end_list_item();
-			list_state_.currnet_level--;
 		}
 	}
 	
-	if (list_state_.currnet_level < level)
+	if (text_context()->list_state_.currnet_level < level)
 	{
-		while (list_state_.currnet_level < level)
+		while (text_context()->list_state_.currnet_level < level)
 		{
 			text_context()->start_list_item();
-			list_state_.currnet_level++;
 		}
 	}
 }
 void odt_conversion_context::end_list_item()
 {
-	if (list_state_.currnet_level < 0) return;
+	if (text_context()->list_state_.currnet_level < 0) 
+		return;
 
 	text_context()->end_list_item();
-	list_state_.currnet_level--;
 }
 void odt_conversion_context::set_no_list()
 {
-	if (list_state_.started == false) return;
+	if (text_context()->list_state_.started_list == false) return;
 
-	while (list_state_.currnet_level >=0)
+	while (text_context()->list_state_.currnet_level >=0)
 	{
 		text_context()->end_list_item();
-		
-		list_state_.currnet_level--;
 	}
-	text_context()->end_list();
-	list_state_.started = false;
+	text_context()->end_list();	
 }
 void odt_conversion_context::flush_section()
 {
@@ -495,7 +487,8 @@ void odt_conversion_context::flush_section()
 	{
 		for (long i=0; i< current_root_elements_.size(); i++)
 		{
-			if (sections_.back().continuous && i<2)// при вставлении параграфа возможен искусственный разрыв в параграфах - см add_page_break
+			if ((sections_.back().continuous && i<2) || !sections_.back().continuous)
+				// при вставлении параграфа возможен искусственный разрыв в параграфах - см add_page_break
 			{
 				text_soft_page_break * break_ = dynamic_cast<text_soft_page_break*>(current_root_elements_[i].elm.get());
 				if (break_)

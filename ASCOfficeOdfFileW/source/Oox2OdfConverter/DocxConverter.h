@@ -49,14 +49,14 @@ namespace OOX
 		class CTblBorders;
 		class CSdt;
 		class CBackground;
+		class CLockedCanvas;
 
 	}
 	namespace Numbering
 	{
 		class CAbstractNum;
 		class CLvl;
-	};
-
+	}
 }
 namespace ComplexTypes
 {
@@ -140,13 +140,15 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CGroupShape			*oox_group_shape);
 		void convert(OOX::Logic::CShape					*oox_shape);
 		void convert(OOX::Logic::CPicture				*oox_picture);
+		void convert(OOX::Logic::CLockedCanvas			*oox_canvas);
 		
 		void convert(OOX::Drawing::CAnchor				*oox_anchor);
 		void convert(OOX::Drawing::CInline				*oox_inline);
 		void convert(OOX::Drawing::CGraphic				*oox_graphic);		
 		void convert(OOX::Drawing::CChart				*oox_chart);
 		void convert(OOX::Drawing::CPicture				*oox_picture);
-
+		void convert(OOX::Drawing::CDiagrammParts		*oox_diagramm);
+		
 		void convert(SimpleTypes::CTheme<>				*oox_font_theme,_CP_OPT(std::wstring)			& odf_font_name);
 		void convert(ComplexTypes::Word::CColor			*color,			_CP_OPT(odf::color)				& odf_color);
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf::length)			& odf_size);
@@ -187,6 +189,5 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr);
 		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr,	odf::style_table_row_properties	*table_row_properties);
 //--------------------------------------------------------------------------------
-		bool m_bKeepNextParagraph;
 	};
 }

@@ -159,6 +159,11 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			OOX::Vml::CPath *vml = static_cast<OOX::Vml::CPath*>(oox_unknown);
 			convert(vml);
 		}break;	
+			case OOX::et_v_textpath:
+		{
+			OOX::Vml::CTextPath *vml = static_cast<OOX::Vml::CTextPath*>(oox_unknown);
+			convert(vml);
+		}break;	
 		case OOX::et_v_fill:
 		{
 			OOX::Vml::CFill *vml = static_cast<OOX::Vml::CFill*>(oox_unknown);
@@ -440,7 +445,7 @@ void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr, OOX::Dra
 		if (oox_spPr->m_oXfrm->m_oFlipV.GetValue() == SimpleTypes::onoffTrue)
 			odf_context()->drawing_context()->set_flip_V(true);
 		if (oox_spPr->m_oXfrm->m_oRot.GetValue() > 0)
-			odf_context()->drawing_context()->set_rotate(oox_spPr->m_oXfrm->m_oRot.GetValue());
+			odf_context()->drawing_context()->set_rotate(180. - oox_spPr->m_oXfrm->m_oRot.GetValue()/60000.);
 	}
 	switch(oox_spPr->m_eGeomType)
 	{
@@ -521,6 +526,10 @@ void OoxConverter::convert(OOX::Drawing::CCustomGeometry2D *oox_cust_geom)
 {
 	if (!oox_cust_geom)return;
 
+	for (long i=0; i< oox_cust_geom->m_oPthLst.m_arrPath.GetSize();i++)
+	{
+		convert(&oox_cust_geom->m_oPthLst.m_arrPath[i]);
+	}
 	for (long i=0; i< oox_cust_geom->m_oPthLst.m_arrPath.GetSize();i++)
 	{
 		convert(&oox_cust_geom->m_oPthLst.m_arrPath[i]);

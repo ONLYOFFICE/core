@@ -969,8 +969,18 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_AxDataSource* cat, int type)
 		odf_context()->chart_context()->set_category_axis_formula(L"",type);
 		return;
 	}
-
-	if (cat->m_strRef)
+	if (cat->m_numLit)
+	{
+		odf_context()->chart_context()->set_series_value_formula(L"");
+		
+		convert(cat->m_numLit);	
+	}
+	else if (cat->m_strLit)
+	{
+		odf_context()->chart_context()->set_category_axis_formula(L"", type);
+		convert(cat->m_strLit,true);
+	}
+	else if (cat->m_strRef)
 	{
 		if (cat->m_strRef->m_f)odf_context()->chart_context()->set_category_axis_formula(string2std_string(*cat->m_strRef->m_f),type);
 		
@@ -982,25 +992,25 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_AxDataSource* cat, int type)
 		
 		convert(cat->m_numRef->m_numCache);
 	}
-	else if (cat->m_numLit)
-	{
-	}
-	else if (cat->m_strLit)
-	{
-	}
+
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_NumDataSource* val)
 {
 	if (val == NULL)return;
-	if (val->m_numRef)
+	
+	if (val->m_numLit)
+	{
+		odf_context()->chart_context()->set_series_value_formula(L"");
+		
+		convert(val->m_numLit);
+	}
+	else if (val->m_numRef)
 	{
 		if (val->m_numRef->m_f)odf_context()->chart_context()->set_series_value_formula(string2std_string(*val->m_numRef->m_f));
 		
 		convert(val->m_numRef->m_numCache);
 	}
-	else if (val->m_numLit)
-	{
-	}
+	
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////
 void OoxConverter::convert(OOX::Spreadsheet::CT_Surface* ct_surface, int type, bool chart3D)

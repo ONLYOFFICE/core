@@ -111,7 +111,7 @@ public:
 	void set_flip_H(bool bVal);
 	void set_flip_V(bool bVal);
 
-	void set_rotate(int iVal);
+	void set_rotate(double iVal);
 
 	void set_no_fill();
 	void set_solid_fill(std::wstring hexColor);

@@ -709,7 +709,7 @@ void odf_drawing_context::end_shape()
 
 				if (shape_define)
 				{
-					impl_->current_drawing_state_.rotateAngle = boost::none;
+					//impl_->current_drawing_state_.rotateAngle = boost::none; ??? зачем ???
 
 					enhanced->svg_viewbox_										= shape_define->view_box;
 					enhanced->draw_enhanced_geometry_attlist_.draw_type_		= shape_define->odf_type_name;
@@ -972,9 +972,9 @@ void odf_drawing_context::set_flip_V(bool bVal)
 	impl_->current_drawing_state_.flipV = bVal;
 }
 
-void odf_drawing_context::set_rotate(int iVal)
+void odf_drawing_context::set_rotate(double dVal)
 {
-	double dRotate = (360 - iVal/60000.)/180. * 3.14159265358979323846;
+	double dRotate = dVal / 180. * 3.14159265358979323846;
 	impl_->current_drawing_state_.rotateAngle = dRotate;
 }
 void odf_drawing_context::set_drawings_rect(_CP_OPT(double) x_pt, _CP_OPT(double) y_pt, _CP_OPT(double) width_pt, _CP_OPT(double) height_pt)// "- 1" не задано
@@ -1050,16 +1050,22 @@ void odf_drawing_context::set_vertical_rel(int from)
 		set_anchor(anchor_type::Page); //???нужно ли ваще перебивать/задавать???
 		break;//	relfromvPage          
 	case 6:	type = vertical_rel::Paragraph;	
-		set_anchor(anchor_type::Paragraph);
+		if (!impl_->is_footer_header_)set_anchor(anchor_type::Paragraph);
 		break;//	relfromvParagraph    
 	case 7:	type = vertical_rel::Baseline;		break;//	relfromvTopMargin   ???  
+	}
+
+	if (impl_->is_footer_header_ && ( from ==3 /*|| 5*/))
+	{
+		set_anchor(anchor_type::Paragraph);
+		//подозгительно на подложку страницы
+		impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
 	}
 
 	impl_->anchor_settings_.style_vertical_rel_ = vertical_rel(type);
 
 	if (!impl_->anchor_settings_.style_vertical_pos_)//default
 		impl_->anchor_settings_.style_vertical_pos_ = vertical_pos(vertical_pos::FromTop);
-
 }
 void odf_drawing_context::set_vertical_pos(int align)
 {

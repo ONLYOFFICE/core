@@ -223,6 +223,11 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 			OOX::Logic::CDrawing* pDrawing= static_cast<OOX::Logic::CDrawing*>(oox_unknown);
 			convert(pDrawing);
 		}break;
+		case OOX::et_c_chart:
+		{
+			OOX::Drawing::CChart* pChart = static_cast<OOX::Drawing::CChart*>(oox_unknown);
+			convert(pChart);
+		}break;
 		case OOX::et_w_Shape:
 		{
 			OOX::Logic::CShape* pShape = static_cast<OOX::Logic::CShape*>(oox_unknown);
@@ -1585,6 +1590,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 			OoxConverter::convert(oox_pic->m_oShape->m_oStyle.GetPointer());
 		
 		odf_context()->drawing_context()->start_drawing();
+		
 		if (oox_pic->m_oShapeOval.IsInit())
 		{
 			odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeEllipse);

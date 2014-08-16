@@ -62,6 +62,10 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 		convert(vml_shape_type->m_arrItems[i]);
 	}
 
+	if (vml_shape_type->m_oAdj.IsInit())//настройка дл фигуры заданной формулами
+	{
+	}
+
 	//o:spt
 		//nullable<CString>                                  m_oAdj;
 		//nullable<SimpleTypes::Vml::CVmlPath>               m_oPath;
@@ -116,7 +120,7 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style)
 		case SimpleTypes::Vml::cssptMsoPositionHorizontalRelative:
 			switch(vml_style->m_arrProperties[i].get_Value().eMsoPosHorRel)
 			{
-			case SimpleTypes::Vml::cssmsoposhorrelMargin:	odf_context()->drawing_context()->set_horizontal_rel(2); break;
+			case SimpleTypes::Vml::cssmsoposhorrelMargin:	odf_context()->drawing_context()->set_horizontal_rel(2); break; 
 			case SimpleTypes::Vml::cssmsoposhorrelPage:		odf_context()->drawing_context()->set_horizontal_rel(6); break;
 			case SimpleTypes::Vml::cssmsoposhorrelText:		odf_context()->drawing_context()->set_horizontal_rel(1); break;
 			case SimpleTypes::Vml::cssmsoposhorrelChar:		odf_context()->drawing_context()->set_horizontal_rel(0); break;
@@ -136,7 +140,7 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style)
 		case SimpleTypes::Vml::cssptMsoPositionVerticalRelative:
 			switch(vml_style->m_arrProperties[i].get_Value().eMsoPosVerRel)
 			{
-			case SimpleTypes::Vml::cssmsoposverrelMargin:	odf_context()->drawing_context()->set_vertical_rel(3); break;
+			case SimpleTypes::Vml::cssmsoposverrelMargin:	odf_context()->drawing_context()->set_vertical_rel(3); break;//3 ???
 			case SimpleTypes::Vml::cssmsoposverrelPage:		odf_context()->drawing_context()->set_vertical_rel(5); break;
 			case SimpleTypes::Vml::cssmsoposverrelText:		odf_context()->drawing_context()->set_vertical_rel(6); break;
 			case SimpleTypes::Vml::cssmsoposverrelLine:		odf_context()->drawing_context()->set_vertical_rel(2); break;
@@ -155,6 +159,10 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style)
 				case SimpleTypes::Vml::csspositionAbsolute:	break;
 				case SimpleTypes::Vml::csspositionRelative:	break;
 				}
+			}break;
+		case SimpleTypes::Vml::cssptRotation:
+			{
+				odf_context()->drawing_context()->set_rotate(180 + vml_style->m_arrProperties[i].get_Value().dValue);
 			}break;
 		}
 	}
@@ -225,6 +233,9 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 	if (vml_fill == NULL) return;
 
 	odf_context()->drawing_context()->start_area_properties();
+		
+	if (vml_fill->m_oOpacity.GetValue() > 0)
+		odf_context()->drawing_context()->set_opacity(100 - vml_fill->m_oOpacity.GetValue() * 100);
 
 	odf_context()->drawing_context()->end_area_properties();
 }
@@ -393,7 +404,24 @@ void OoxConverter::convert(OOX::Vml::CTextbox *vml_textbox)
 }
 void OoxConverter::convert(OOX::Vml::CTextPath *vml_textpath)
 {
-	if (vml_textpath == NULL) return;
+	if (vml_textpath == NULL) return; //это типо фигурный текст
+	if (vml_textpath->m_sString.IsInit()==false) return;
+
+	//DocxConverter *docx_converter = dynamic_cast<DocxConverter*>(this);
+
+	odf_context()->start_text_context();
+
+	odf_context()->text_context()->start_paragraph(false);
+		odf_context()->text_context()->start_span(false);
+			odf_context()->text_context()->add_text_content(string2std_string(vml_textpath->m_sString.get()));
+		odf_context()->text_context()->end_span();
+	odf_context()->text_context()->end_paragraph();
+
+	odf_context()->drawing_context()->set_text( odf_context()->text_context());
+	odf_context()->end_text_context();	
+
+
+	odf_context()->drawing_context()->set_textarea_wrap(true);
 }
 
 void OoxConverter::convert(OOX::VmlWord::CWrap	*vml_wrap)

@@ -586,6 +586,10 @@ void odf_drawing_context::start_shape(int type)
 	{
 		impl_->create_draw_base(7);//пока кастом .. потом переделать на path, что правильнее
 	}
+	else if (type == 1001)
+	{
+		impl_->create_draw_base(6);//пока кастом .. потом переделать на path, что правильнее
+	}
 	else if (type == 2000)
 	{
 		start_text_box();
@@ -611,10 +615,12 @@ void odf_drawing_context::end_shape()
 	draw_path* path = dynamic_cast<draw_path*>(impl_->current_drawing_state_.elements_[0].elm.get());
 	if (path)
 	{
-		if (impl_->current_drawing_state_.path_.length()>1)
-			path->draw_path_attlist_.svg_d_ = impl_->current_drawing_state_.path_;
-		if (impl_->current_drawing_state_.view_box_.length()>1)
-			path->draw_path_attlist_.svg_viewbox_ = impl_->current_drawing_state_.view_box_;
+		if (impl_->current_drawing_state_.view_box_.length() < 1 && impl_->current_drawing_state_.svg_width_ && impl_->current_drawing_state_.svg_height_)
+			set_viewBox( impl_->current_drawing_state_.svg_width_->get_value_unit(length::cm) * 1000, 
+						 impl_->current_drawing_state_.svg_height_->get_value_unit(length::cm) *1000);
+		
+		if (impl_->current_drawing_state_.path_.length()>1) 	path->draw_path_attlist_.svg_d_ = impl_->current_drawing_state_.path_;
+		if (impl_->current_drawing_state_.view_box_.length()>1)	path->draw_path_attlist_.svg_viewbox_ = impl_->current_drawing_state_.view_box_;
 	}
 ////////////////////////////////////////////////////////////////////////////////////
 	draw_connector* connector = dynamic_cast<draw_connector*>(impl_->current_level_.back().get());
@@ -636,6 +642,8 @@ void odf_drawing_context::end_shape()
 		
 		if (impl_->current_drawing_state_.svg_height_)
 			connector->draw_line_attlist_.svg_y2_ = connector->draw_line_attlist_.svg_y2_.get() + impl_->current_drawing_state_.svg_height_.get();
+
+		impl_->current_drawing_state_.svg_height_ = boost::none;
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////
 	draw_line* line = dynamic_cast<draw_line*>(impl_->current_level_.back().get());
@@ -649,6 +657,8 @@ void odf_drawing_context::end_shape()
 		
 		if (impl_->current_drawing_state_.svg_y_ && impl_->current_drawing_state_.svg_height_)
 			line->draw_line_attlist_.svg_y2_ = impl_->current_drawing_state_.svg_y_.get() + impl_->current_drawing_state_.svg_height_.get();
+		
+		impl_->current_drawing_state_.svg_height_ = boost::none;
 	}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -916,6 +926,13 @@ void odf_drawing_context::set_z_order(int id)
 
 	impl_->current_drawing_state_.z_order_ =id;
 }
+void odf_drawing_context::set_path(std::wstring path_string)
+{
+	boost::replace_all(path_string, L",,", L" 0 ");
+	boost::replace_all(path_string, L" -", L"-");
+	boost::replace_all(path_string, L",", L"0"); // нужен разбор
+	impl_->current_drawing_state_.path_ = path_string;
+}
 void odf_drawing_context::add_path_element(std::wstring command, std::wstring & strE)
 {
 	if (command != impl_->current_drawing_state_.path_last_command_)
@@ -1004,11 +1021,19 @@ void odf_drawing_context::set_drawings_rect(_CP_OPT(double) x_pt, _CP_OPT(double
 }
 void odf_drawing_context::set_object_background(bool Val)
 {
-	if (Val)impl_->anchor_settings_.run_through_ = run_through(run_through::Background);
+	if (Val)
+	{
+		impl_->anchor_settings_.run_through_ = run_through(run_through::Background);
+		impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
+	}
 }
 void odf_drawing_context::set_object_foreground(bool Val)
 {
-	if (Val)impl_->anchor_settings_.run_through_ = run_through(run_through::Foreground);
+	if (Val)
+	{
+		impl_->anchor_settings_.run_through_ = run_through(run_through::Foreground);
+		impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
+	}
 }
 
 void odf_drawing_context::set_margin_left	(double valPt)
@@ -1041,18 +1066,14 @@ void odf_drawing_context::set_vertical_rel(int from)
 
 	switch(from)
 	{
-	case 0:	type = vertical_rel::Baseline;		break;//	relfromvBottomMargin ???
-	case 1:	type = vertical_rel::PageContent;	break;//	relfromvInsideMargin ???
-	case 2:	type = vertical_rel::Line;			break;//	relfromvLine          
-	case 3:	type = vertical_rel::PageContent;	break;//	relfromvMargin     
-	case 4:	type = vertical_rel::Baseline;		break;//	relfromvOutsideMargin ???
-	case 5:	type = vertical_rel::Page;		
-		set_anchor(anchor_type::Page); //???нужно ли ваще перебивать/задавать???
-		break;//	relfromvPage          
-	case 6:	type = vertical_rel::Paragraph;	
-		if (!impl_->is_footer_header_)set_anchor(anchor_type::Paragraph);
-		break;//	relfromvParagraph    
-	case 7:	type = vertical_rel::Baseline;		break;//	relfromvTopMargin   ???  
+	case 0:	type = vertical_rel::Baseline;										break;//	relfromvBottomMargin ???
+	case 1:	type = vertical_rel::PageContent;									break;//	relfromvInsideMargin ???
+	case 2:	type = vertical_rel::Line;											break;//	relfromvLine          
+	case 3:	type = vertical_rel::PageContent;									break;//	relfromvMargin     
+	case 4:	type = vertical_rel::Baseline;										break;//	relfromvOutsideMargin ???
+	case 5:	type = vertical_rel::Page;		set_anchor(anchor_type::Page);		break;//	relfromvPage          
+	case 6:	type = vertical_rel::Paragraph;	set_anchor(anchor_type::Paragraph);	break;//	relfromvParagraph    
+	case 7:	type = vertical_rel::Baseline;										break;//	relfromvTopMargin   ???  
 	}
 
 	if (impl_->is_footer_header_ && ( from ==3 /*|| 5*/))
@@ -1064,8 +1085,8 @@ void odf_drawing_context::set_vertical_rel(int from)
 
 	impl_->anchor_settings_.style_vertical_rel_ = vertical_rel(type);
 
-	if (!impl_->anchor_settings_.style_vertical_pos_)//default
-		impl_->anchor_settings_.style_vertical_pos_ = vertical_pos(vertical_pos::FromTop);
+	if (!impl_->anchor_settings_.style_vertical_pos_)
+		impl_->anchor_settings_.style_vertical_pos_ = vertical_pos(vertical_pos::FromTop);//default
 }
 void odf_drawing_context::set_vertical_pos(int align)
 {
@@ -1134,7 +1155,6 @@ void odf_drawing_context::set_overlap (bool val)
 	if (val)
 	{
 		impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);//??
-		//impl_->anchor_settings_.run_through_ = run_through(run_through::Foreground);
 	}
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -83,11 +83,11 @@ CString	DocxConverter::find_link_by_id (CString sId, int type)
 
 				ref = pImage->filename().GetPath();
 			}
-			if (type==2 && oFile.IsInit() && OOX::FileTypes::Image == oFile->type())
+			if (type==2 && oFile.IsInit() && OOX::FileTypes::HyperLink == oFile->type())
 			{
-				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+				OOX::HyperLink* pHyperlink = (OOX::HyperLink*)oFile.operator->();
 
-				ref = pImage->filename().GetPath();
+				ref = pHyperlink->Uri().GetPath();
 			}
 		}
 	}
@@ -102,11 +102,11 @@ CString	DocxConverter::find_link_by_id (CString sId, int type)
 
 				ref = pImage->filename().GetPath();
 			}
-			if (type==2 && oFile.IsInit() && OOX::FileTypes::Image == oFile->type())
+			if (type==2 && oFile.IsInit() && OOX::FileTypes::HyperLink == oFile->type())
 			{
-				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+				OOX::HyperLink* pHyperlink = (OOX::HyperLink*)oFile.operator->();
 
-				ref = pImage->filename().GetPath();
+				ref = pHyperlink->Uri().GetPath();
 			}
 		}
 	}
@@ -1584,7 +1584,14 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 	}
 	else
 	{
-		odf_context()->drawing_context()->set_anchor(odf::anchor_type::AsChar);//default
+		odf_context()->drawing_context()->set_name(L"Name");
+		if (odt_context->table_context()->empty())
+			odf_context()->drawing_context()->set_anchor(odf::anchor_type::AsChar);//default
+		else
+		{
+			odf_context()->drawing_context()->set_anchor(odf::anchor_type::Paragraph);
+			odf_context()->drawing_context()->set_object_background(true);
+		}
 		
 		if (oox_pic->m_oShape.IsInit())
 			OoxConverter::convert(oox_pic->m_oShape->m_oStyle.GetPointer());
@@ -1612,6 +1619,8 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 		else if (oox_pic->m_oShapeLine.IsInit())
 		{
 			odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeLine);
+
+			odf_context()->drawing_context()->set_line_width(1.);
 			
 			OoxConverter::convert(oox_pic->m_oShape.GetPointer());
 			OoxConverter::convert(oox_pic->m_oShapeLine.GetPointer());
@@ -1622,6 +1631,8 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 		{
 			odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeLine);
 			
+			odf_context()->drawing_context()->set_line_width(1.);
+
 			OoxConverter::convert(oox_pic->m_oShape.GetPointer());	
 			OoxConverter::convert(oox_pic->m_oShapePolyLine.GetPointer());
 			
@@ -1670,6 +1681,13 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 				else if (oox_pic->m_oShape->m_oConnectorType.GetValue() != SimpleTypes::connectortypeNone)
 				{
 					odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeStraightConnector1);
+					odf_context()->drawing_context()->set_line_width(1.);
+					bSet = true;
+				}
+				else if (oox_pic->m_oShape->m_oPath.IsInit())
+				{
+					odf_context()->drawing_context()->start_shape(1001);
+					odf_context()->drawing_context()->set_line_width(1.);
 					bSet = true;
 				}
 			}

@@ -167,6 +167,9 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style)
 		}
 	}
 	odf_context()->drawing_context()->set_drawings_rect(x, y, width_pt, height_pt);
+
+	if (width_pt && height_pt)
+		odf_context()->drawing_context()->set_viewBox(width_pt.get(), height_pt.get());
 }
 void OoxConverter::convert(OOX::Vml::CShape *vml_shape)
 {
@@ -176,6 +179,11 @@ void OoxConverter::convert(OOX::Vml::CShape *vml_shape)
 	{
 	}
 	odf_context()->drawing_context()->set_overlap(vml_shape->m_oAllowOverlap.GetValue());
+	
+	if (vml_shape->m_oPath.IsInit())
+	{
+		odf_context()->drawing_context()->set_path(string2std_string(vml_shape->m_oPath->GetValue()));
+	}
 
 	for (long i=0 ; i < vml_shape->m_arrItems.GetSize();i++)
 	{
@@ -270,11 +278,6 @@ void OoxConverter::convert(OOX::Vml::CPath	*vml_path)
 	//SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oStrokeOk;
 	//nullable<SimpleTypes::Vml::CVml_Polygon2D>                m_oTextBoxRect;
 	//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oTextPathOk;
-	//nullable<SimpleTypes::Vml::CVmlPath>                      m_oV;
-
-	if (vml_path->m_oV.IsInit())
-	{
-	}
 }
 void OoxConverter::convert(OOX::Vml::CPolyLine	*vml_polyline)
 {

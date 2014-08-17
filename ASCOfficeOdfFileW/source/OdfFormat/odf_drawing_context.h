@@ -91,6 +91,7 @@ public:
 
 	bool is_exist_content();
 //////////////////////////////////////////////////////////////////////////////////////
+	void set_path(std::wstring path_string);
 	void add_path_element(std::wstring command, std::wstring & elm);
 	void add_modifier(std::wstring modifier);
 	

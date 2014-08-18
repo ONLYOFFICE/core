@@ -1621,12 +1621,20 @@ namespace NSEditorApi
 		unsigned int	Width;
 		unsigned int	Height;
 
+		bool			Release;
+
 	public:
 		CAscImageRaw()
 		{
 			Data = NULL;
 			Width = 0;
 			Height = 0;
+			Release = false;
+		}
+		~CAscImageRaw()
+		{
+			if (NULL != Data && Release)
+				delete [] Data;
 		}
 	};
 
@@ -1635,7 +1643,7 @@ namespace NSEditorApi
 	private:
 		js_wrapper<CAscImageRaw>	m_oRaw;
 		js_wrapper<std::wstring>	m_sPath;
-		js_wrapper<std::string>		m_sBase64;
+		js_wrapper<std::string>		m_sBase64;	
 
 	public:
 		CAscInsertImage()
@@ -1682,6 +1690,26 @@ namespace NSEditorApi
 
 	typedef CAscMethodParamInt CAscInsertSectionBreak;
 	typedef CAscMethodParamInt CAscInsertPageNumber;
+}
+
+namespace NSEditorApi
+{
+	class CAscStylesTemplate
+	{
+	public:
+		std::vector<std::wstring>	m_names;
+		int							m_nWidth;
+		int							m_nHeight;
+		CAscImageRaw				m_oImage;
+
+	public:
+		CAscStylesTemplate()
+		{
+		}
+	};
+
+	typedef CAscStylesTemplate CAscParagraphStyles;
+	typedef CAscStylesTemplate CAscTableStyles;
 }
 
 namespace NSEditorApi
@@ -1761,6 +1789,8 @@ namespace NSEditorApi
 #define ASC_MENU_EVENT_TYPE_HYPERLINK			8
 #define ASC_MENU_EVENT_TYPE_IMAGE				9
 #define ASC_MENU_EVENT_TYPE_TABLE				10
+#define ASC_MENU_EVENT_TYPE_PARAGRAPHSTYLES		11
+#define ASC_MENU_EVENT_TYPE_TABLESTYLES			12
 
 // insert commands
 #define ASC_MENU_EVENT_TYPE_INSERT_IMAGE			50
@@ -1771,6 +1801,5 @@ namespace NSEditorApi
 #define ASC_MENU_EVENT_TYPE_INSERT_LINEBREAK		55
 #define ASC_MENU_EVENT_TYPE_INSERT_PAGENUMBER		56
 #define ASC_MENU_EVENT_TYPE_INSERT_SECTIONBREAK		57
-
 
 #endif //_BUILD_EDITOR_API_CROSSPLATFORM_H_

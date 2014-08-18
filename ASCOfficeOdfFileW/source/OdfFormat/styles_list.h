@@ -54,14 +54,14 @@ CP_REGISTER_OFFICE_ELEMENT2(text_list_style);
 class text_list_level_style_number_attr
 {
 public:
-    text_list_level_style_number_attr() : text_display_levels_(1), text_start_value_(1) {}
+    text_list_level_style_number_attr()  {}
 
 	_CP_OPT(style_ref) text_style_name_;
     
 	common_num_format_attlist				common_num_format_attlist_;
     common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
     
-	unsigned int			text_display_levels_;
+	_CP_OPT(unsigned int)	text_display_levels_;
     _CP_OPT(unsigned int)	text_start_value_;
 
 	void serialize(CP_ATTR_NODE);
@@ -98,11 +98,12 @@ public:
     _CP_OPT(length)			text_space_before_;
     _CP_OPT(length)			text_min_label_width_;
     _CP_OPT(length)			text_min_label_distance_;
+
     _CP_OPT(std::wstring)	style_font_name_;
     _CP_OPT(length)			fo_width_;
     _CP_OPT(length)			fo_height_;
   
-     common_text_align			common_text_align_;
+    common_text_align			common_text_align_;
 	common_vertical_rel_attlist common_vertical_rel_attlist_;
     common_vertical_pos_attlist common_vertical_pos_attlist_;
 
@@ -129,9 +130,13 @@ public:
 	virtual void serialize(std::wostream & strm);
 
 	_CP_OPT(std::wstring) text_label_followed_by_;
+	
 	_CP_OPT(length) text_list_tab_stop_position_;
     _CP_OPT(length) fo_text_indent_;
-    _CP_OPT(length) fo_margin_left_;
+   
+	_CP_OPT(length) fo_margin_left_;
+    _CP_OPT(length) fo_margin_right_;
+	
 
 };
 

@@ -20,9 +20,9 @@ void text_list_style_attr::serialize(CP_ATTR_NODE)
 
 void text_list_level_style_number_attr::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"text:style-name",	text_style_name_);
-    CP_XML_ATTR(L"text:display-levels",	text_display_levels_);
-    CP_XML_ATTR_OPT(L"text:start-value",	text_start_value_);
+    CP_XML_ATTR_OPT(L"text:style-name"		,	text_style_name_);
+    CP_XML_ATTR_OPT(L"text:display-levels"	,	text_display_levels_);
+    CP_XML_ATTR_OPT(L"text:start-value"		,	text_start_value_);
 
 	common_num_format_attlist_.serialize(CP_GET_XML_NODE());
     common_num_format_prefix_suffix_attlist_.serialize(CP_GET_XML_NODE());
@@ -165,7 +165,11 @@ void style_list_level_properties::serialize(std::wostream & strm)
 			common_vertical_rel_attlist_.serialize(CP_GET_XML_NODE());
 			common_vertical_pos_attlist_.serialize(CP_GET_XML_NODE());
 
-			if (style_list_level_label_alignment_)	style_list_level_label_alignment_->serialize(CP_XML_STREAM());
+			if (style_list_level_label_alignment_)
+			{
+				CP_XML_ATTR(L"text:list-level-position-and-space-mode", L"label-alignment");
+				style_list_level_label_alignment_->serialize(CP_XML_STREAM());
+			}
 		}
 	}
 }
@@ -193,6 +197,7 @@ void style_list_level_label_alignment::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"text:list-tab-stop-position",	text_list_tab_stop_position_);
 			CP_XML_ATTR_OPT(L"fo:text-indent",				fo_text_indent_);
 			CP_XML_ATTR_OPT(L"fo:margin-left",				fo_margin_left_);
+			CP_XML_ATTR_OPT(L"fo:margin-right",				fo_margin_right_);
 		}
 	}
 }

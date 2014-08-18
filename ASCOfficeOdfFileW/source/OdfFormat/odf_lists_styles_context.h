@@ -12,6 +12,8 @@ namespace cpdoccore {
 namespace odf {
 
 class ods_conversion_context;
+class style_list_level_properties;
+class style_list_level_label_alignment;
 
 class office_element;
 typedef shared_ptr<office_element>::Type office_element_ptr;
@@ -33,7 +35,8 @@ public:
 
 	void start_style(int abstract_number);
 		void start_style_level(int level, int type);
-
+			style_list_level_properties			* get_list_level_properties();
+			style_list_level_label_alignment	* get_list_level_alignment_properties();
 		void end_style_level();
 	void end_style();
 
@@ -42,6 +45,7 @@ public:
 	void process_styles(office_element_ptr root );
 
 	std::wstring get_style_name(int oox_style_num);
+	std::wstring get_style_name1(int oox_style_num);
 private:
 	std::vector<list_format_state> lists_format_array_;
 	

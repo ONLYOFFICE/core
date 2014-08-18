@@ -86,14 +86,13 @@ public:
 	bool get_KeepNextParagraph()			{return keep_next_paragraph_;}
 	void set_KeepNextParagraph(bool val)	{keep_next_paragraph_ = val;}
 
-	bool get_list_item_state()				{return list_state_.started_list_item;}
+	bool get_list_item_state()				{return list_state_.levels.size() > 0 ? list_state_.levels.back() : false;}
 
 	struct _list_state
 	{
-		bool started_list_item;
-		bool started_list;
-
-		int currnet_level;
+		bool				started_list;
+		std::vector<bool>	levels;
+		std::wstring		style_name;
 	}list_state_;
 private:
 	bool	keep_next_paragraph_;

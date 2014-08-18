@@ -928,9 +928,9 @@ void odf_drawing_context::set_z_order(int id)
 }
 void odf_drawing_context::set_path(std::wstring path_string)
 {
-	boost::replace_all(path_string, L",,", L" 0 ");
-	boost::replace_all(path_string, L" -", L"-");
-	boost::replace_all(path_string, L",", L"0"); // нужен разбор
+	//boost::replace_all(path_string, L",,", L" 0 ");
+	//boost::replace_all(path_string, L" -", L"-");
+	//boost::replace_all(path_string, L",", L"0"); // нужен разбор
 	impl_->current_drawing_state_.path_ = path_string;
 }
 void odf_drawing_context::add_path_element(std::wstring command, std::wstring & strE)

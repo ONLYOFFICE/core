@@ -147,8 +147,8 @@ void text_list::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {   
-			CP_XML_ATTR(L"text:style-name",text_style_name_);
-			CP_XML_ATTR_OPT(L"text_continue_numbering_", text_continue_numbering_ );
+			CP_XML_ATTR_OPT(L"text:style-name"			, text_style_name_);
+			CP_XML_ATTR_OPT(L"text_continue_numbering_"	, text_continue_numbering_ );
 			
 			if (text_list_header_) text_list_header_->serialize(CP_XML_STREAM());
    

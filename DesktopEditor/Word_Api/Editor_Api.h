@@ -838,8 +838,6 @@ namespace NSEditorApi
 
 		CAscListType()
 		{
-			m_nType.SetNull();
-			m_nSubType.SetNull();
 		}
 
 		LINK_PROPERTY_INT_JS(Type)
@@ -1200,6 +1198,285 @@ namespace NSEditorApi
 		LINK_PROPERTY_OBJECT_JS(CAscListType, ListType)
 		LINK_PROPERTY_STRING_JS(Style)
 		LINK_PROPERTY_INT_JS(Jc)
+	};
+}
+
+// table
+namespace NSEditorApi
+{
+	class CAscCellMargins
+	{
+	private:
+		js_wrapper<double> m_dLeft;
+		js_wrapper<double> m_dTop;
+		js_wrapper<double> m_dRight;
+		js_wrapper<double> m_dBottom;
+		js_wrapper<int>	   m_nFlag;	
+
+	public:
+		CAscCellMargins()
+		{
+		}
+
+		LINK_PROPERTY_DOUBLE_JS(Left)
+		LINK_PROPERTY_DOUBLE_JS(Top)
+		LINK_PROPERTY_DOUBLE_JS(Right)
+		LINK_PROPERTY_DOUBLE_JS(Bottom)
+		LINK_PROPERTY_INT_JS(Flag)
+	};
+
+	class CAscTableBorders
+	{
+	private:
+		js_wrapper<CAscBorder> m_oLeft;
+		js_wrapper<CAscBorder> m_oTop;
+		js_wrapper<CAscBorder> m_oRight;
+		js_wrapper<CAscBorder> m_oBottom;
+		js_wrapper<CAscBorder> m_oInsideH;
+		js_wrapper<CAscBorder> m_oInsideV;
+
+	public:
+
+		CAscTableBorders()
+		{
+		}
+
+		LINK_PROPERTY_OBJECT_JS(CAscBorder, Left)
+		LINK_PROPERTY_OBJECT_JS(CAscBorder, Top)
+		LINK_PROPERTY_OBJECT_JS(CAscBorder, Right)
+		LINK_PROPERTY_OBJECT_JS(CAscBorder, Bottom)
+		LINK_PROPERTY_OBJECT_JS(CAscBorder, InsideH)
+		LINK_PROPERTY_OBJECT_JS(CAscBorder, InsideV)
+	};
+
+	class CAscCellBackground
+	{
+	private:
+		js_wrapper<CAscColor>		m_oColor;
+		js_wrapper<int>				m_nValue;
+
+	public:
+		CAscCellBackground()
+		{
+		}
+
+		LINK_PROPERTY_OBJECT_JS(CAscColor, Color)
+		LINK_PROPERTY_INT_JS(Value)
+	};
+
+	class CAscTableLook
+	{
+	private:
+		js_wrapper<bool>		m_bFirstCol;
+		js_wrapper<bool>		m_bFirstRow;
+		js_wrapper<bool>		m_bLastCol;
+		js_wrapper<bool>		m_bLastRow;
+		js_wrapper<bool>		m_bBandHor;
+		js_wrapper<bool>		m_bBandVer;
+
+	public:
+		CAscTableLook()
+		{
+		}
+
+		LINK_PROPERTY_BOOL_JS(FirstCol)
+		LINK_PROPERTY_BOOL_JS(FirstRow)
+		LINK_PROPERTY_BOOL_JS(LastCol)
+		LINK_PROPERTY_BOOL_JS(LastRow)
+		LINK_PROPERTY_BOOL_JS(BandHor)
+		LINK_PROPERTY_BOOL_JS(BandVer)
+	};
+
+	class CAscTableAnchorPosition
+	{
+	public:
+		// Рассчитанные координаты
+		double CalcX;
+		double CalcY;
+
+		// Данные для Flow-объектов
+		double W;
+		double H;
+		double X;
+		double Y;
+		double Left_Margin;
+		double Right_Margin;
+		double Top_Margin;
+		double Bottom_Margin;
+		double Page_W;
+		double Page_H;
+
+		double X_min;
+		double Y_min;
+		double X_max;
+		double Y_max;
+
+	public:
+		CAscTableAnchorPosition()
+		{
+			CalcX         = 0;
+			CalcY         = 0;
+
+			W             = 0;
+			H             = 0;
+			X             = 0;
+			Y             = 0;
+			Left_Margin   = 0;
+			Right_Margin  = 0;
+			Top_Margin    = 0;
+			Bottom_Margin = 0;
+			Page_W        = 0;
+			Page_H        = 0;
+
+			X_min         = 0;
+			Y_min         = 0;
+			X_max         = 0;
+			Y_max         = 0;
+		}
+
+		// По значению CalcX получем Value
+		double Calculate_X_Value(const int& RelativeFrom)
+		{
+			switch (RelativeFrom)
+			{
+				case c_oAscHAnchor_Text:
+				case c_oAscHAnchor_Margin:
+				{
+					return CalcX - Left_Margin;
+				}
+				case c_oAscHAnchor_Page:
+				{
+					return CalcX - X_min;
+				}
+				case c_oAscHAnchor_PageInternal:
+				{
+					return CalcX;
+				}
+				default:
+					break;
+			}
+
+			return 0;
+		}
+
+		// По значению CalcY и заданному RelativeFrom получем Value
+		double Calculate_Y_Value(const int& RelativeFrom)
+		{
+			switch (RelativeFrom)
+			{
+				case c_oAscVAnchor_Margin:
+				{
+					return CalcY - Top_Margin;
+				}
+				case c_oAscVAnchor_Page:
+				{
+					return CalcY;
+				}
+				case c_oAscVAnchor_Text:
+				{
+					return CalcY - Y;
+				}
+			}
+
+			return 0;
+		}
+	};
+
+	class CAscTableProperties
+	{
+	private:
+		js_wrapper<bool>			m_bCanBeFlow;
+		js_wrapper<bool>			m_bCellSelect;
+
+		js_wrapper<double>			m_dWidth;
+		js_wrapper<double>			m_dSpacing;
+
+		js_wrapper<CAscPaddings>	m_oDefaultMargins;
+		js_wrapper<CAscCellMargins>	m_oCellMargins;
+
+		js_wrapper<int>				m_nAlignment;
+		js_wrapper<double>			m_dIndent;
+
+		js_wrapper<int>				m_nWrappingStyle;
+
+		js_wrapper<CAscPaddings>	m_oPaddings;
+
+		js_wrapper<CAscTableBorders>	m_oTableBorders;
+		js_wrapper<CAscTableBorders>	m_oCellBorders;
+
+		js_wrapper<CAscCellBackground>	m_oTableBackground;
+		js_wrapper<CAscCellBackground>	m_oCellBackground;
+
+		js_wrapper<CAscPosition>		m_oPosition;
+
+		js_wrapper<CAscImagePosition>	m_oPositionH;
+		js_wrapper<CAscImagePosition>	m_oPositionV;
+
+		js_wrapper<CAscTableAnchorPosition> m_oInternalPosition;
+
+		js_wrapper<bool>				m_bForSelectedCells;
+		js_wrapper<std::wstring>		m_sStyle;
+		js_wrapper<CAscTableLook>		m_oLook;
+		js_wrapper<int>					m_nRowsInHeader;
+		js_wrapper<int>					m_nCellsVAlign;		// c_oAscVertAlignJc_
+		
+		js_wrapper<bool>				m_bAllowOverlap;
+
+		js_wrapper<int>					m_nLayout;
+		js_wrapper<bool>				m_bLocked;
+
+	public:
+		CAscTableProperties()
+		{
+			m_bCellSelect = false;
+			m_bLocked = false;
+		}
+
+		LINK_PROPERTY_BOOL_JS(CanBeFlow)
+		LINK_PROPERTY_BOOL_JS(CellSelect)
+
+		LINK_PROPERTY_DOUBLE_JS(Width)
+		LINK_PROPERTY_DOUBLE_JS(Spacing)
+
+		LINK_PROPERTY_OBJECT_JS(CAscPaddings, DefaultMargins)
+		LINK_PROPERTY_OBJECT_JS(CAscCellMargins, CellMargins)
+
+		LINK_PROPERTY_INT_JS(Alignment)
+		LINK_PROPERTY_DOUBLE_JS(Indent)
+		LINK_PROPERTY_INT_JS(WrappingStyle)
+
+		LINK_PROPERTY_OBJECT_JS(CAscPaddings, Paddings)
+		LINK_PROPERTY_OBJECT_JS(CAscTableBorders, TableBorders)
+		LINK_PROPERTY_OBJECT_JS(CAscTableBorders, CellBorders)
+		LINK_PROPERTY_OBJECT_JS(CAscCellBackground, TableBackground)
+		LINK_PROPERTY_OBJECT_JS(CAscCellBackground, CellBackground)
+		LINK_PROPERTY_OBJECT_JS(CAscPosition, Position)
+		LINK_PROPERTY_OBJECT_JS(CAscImagePosition, PositionH)
+		LINK_PROPERTY_OBJECT_JS(CAscImagePosition, PositionV)
+
+		LINK_PROPERTY_BOOL_JS(ForSelectedCells)
+		LINK_PROPERTY_STRING_JS(Style)
+		LINK_PROPERTY_OBJECT_JS(CAscTableLook, Look)
+
+		LINK_PROPERTY_INT_JS(RowsInHeader)
+		LINK_PROPERTY_INT_JS(CellsVAlign)
+
+		LINK_PROPERTY_BOOL_JS(AllowOverlap)
+		LINK_PROPERTY_INT_JS(Layout)
+		LINK_PROPERTY_BOOL_JS(Locked)
+
+		double get_Value_X(const int& RelativeFrom) 
+		{ 
+			if (m_oInternalPosition.IsInit()) 
+				return m_oInternalPosition->Calculate_X_Value(RelativeFrom);  
+			return 0; 
+		}
+		double get_Value_Y(const int& RelativeFrom) 
+		{ 
+			if (m_oInternalPosition.IsInit()) 
+				return m_oInternalPosition->Calculate_Y_Value(RelativeFrom);  
+			return 0; 
+		}
 	};
 }
 

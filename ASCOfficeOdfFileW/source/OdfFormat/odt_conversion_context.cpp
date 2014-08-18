@@ -442,44 +442,56 @@ void odt_conversion_context::end_paragraph()
 
 void odt_conversion_context::start_list_item(int level, std::wstring style_name )
 {
+	//if (text_context()->list_state_.started_list == false)
+	//{
+	//	text_context()->start_list(style_name);
+	//	add_to_root();
+	//	text_context()->start_list_item();
+	//}
+	level = level +1; //отсчет от 1 (а не 0)
+
+	if (text_context()->list_state_.style_name != style_name && text_context()->list_state_.started_list)
+	{
+		set_no_list();
+	}
+
+	while (text_context()->list_state_.levels.size() > level)
+	{
+		text_context()->end_list();
+	}
 	if (text_context()->list_state_.started_list == false)
 	{
 		text_context()->start_list(style_name);
 		add_to_root();
+		text_context()->start_list_item();
 	}
+	else
+	{
+		text_context()->start_list_item();
 
-	if (text_context()->list_state_.currnet_level >= level)
-	{
-		while (text_context()->list_state_.currnet_level >= level)
+		while (text_context()->list_state_.levels.size() < level)
 		{
-			text_context()->end_list_item();
-		}
-	}
-	
-	if (text_context()->list_state_.currnet_level < level)
-	{
-		while (text_context()->list_state_.currnet_level < level)
-		{
+			text_context()->start_list(L"");
 			text_context()->start_list_item();
 		}
 	}
+	
 }
 void odt_conversion_context::end_list_item()
 {
-	if (text_context()->list_state_.currnet_level < 0) 
-		return;
-
 	text_context()->end_list_item();
 }
 void odt_conversion_context::set_no_list()
 {
 	if (text_context()->list_state_.started_list == false) return;
 
-	while (text_context()->list_state_.currnet_level >=0)
+	while (text_context()->list_state_.levels.size()>0)
 	{
 		text_context()->end_list_item();
+		text_context()->end_list();	
 	}
-	text_context()->end_list();	
+	text_context()->list_state_.started_list = false;
+	text_context()->list_state_.style_name = L"";
 }
 void odt_conversion_context::flush_section()
 {

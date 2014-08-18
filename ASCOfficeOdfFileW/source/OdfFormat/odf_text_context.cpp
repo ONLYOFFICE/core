@@ -33,9 +33,7 @@ odf_text_context::odf_text_context(odf_conversion_context *odf_context)
 	
 	keep_next_paragraph_ = false;
 	
-	list_state_.currnet_level = -1 ;
 	list_state_.started_list = false;
-	list_state_.started_list_item = false;
 }
 odf_text_context::~odf_text_context()
 {
@@ -52,9 +50,9 @@ void odf_text_context::clear_params()
 	
 	keep_next_paragraph_ = false;
 	
-	list_state_.currnet_level = -1 ;
+	list_state_.levels.clear();
 	list_state_.started_list = false;
-	list_state_.started_list_item = false;
+	list_state_.style_name = L"";
 }
 void odf_text_context::set_styles_context(odf_style_context*  styles_context)
 {
@@ -333,6 +331,9 @@ void odf_text_context::end_span()
 void odf_text_context::start_list_item()
 {
 	if (styles_context_ == NULL || single_paragraph_)return;
+	if (list_state_.levels.size() < 1) return;
+	
+	if (list_state_.levels.back()) end_list_item();	
 	
 	office_element_ptr list_elm;
 	create_element(L"text", L"list-item", list_elm, odf_context_);
@@ -350,20 +351,20 @@ void odf_text_context::start_list_item()
 		current_level_.back().elm->add_child_element(list_elm);
 
 	current_level_.push_back(state);
-
-	list_state_.started_list_item = true;
-	list_state_.currnet_level++;
+	
+	list_state_.levels.back() = true;
 }
 void odf_text_context::end_list_item()
 {
-	if (styles_context_ == NULL || single_paragraph_)
-		return;
-	
+	if (styles_context_ == NULL || single_paragraph_) return;
+	if (list_state_.levels.size() < 1) return;
+
+	if (list_state_.levels.back() == false) return;
+
 	if (current_level_.size() > 0)	
 		current_level_.pop_back();
 
-	list_state_.currnet_level--;
-	list_state_.started_list_item = false;
+	list_state_.levels.back() = false;
 }
 void odf_text_context::start_list(std::wstring style_name) //todoooo add new_numbering ???
 {
@@ -383,8 +384,9 @@ void odf_text_context::start_list(std::wstring style_name) //todoooo add new_num
 		if (list)
 		{
 			list->text_style_name_ = style_ref(style_name);
-			list->text_continue_numbering_ = true;
+			//list->text_continue_numbering_ = true;
 		}
+		list_state_.style_name = style_name;
 	}
 	text_elements_list_.push_back(state);
 	
@@ -393,17 +395,19 @@ void odf_text_context::start_list(std::wstring style_name) //todoooo add new_num
 
 	current_level_.push_back(state);
 
+	list_state_.levels.push_back(false);
 	list_state_.started_list = true;
 }
 void odf_text_context::end_list()
 {
 	if (styles_context_ == NULL || single_paragraph_)return;
-	
-	if (current_level_.size() > 0)	
-		current_level_.pop_back();
+	if (list_state_.levels.size() < 1) return;
 
-	list_state_.started_list_item = false;
-	list_state_.started_list = false;
+	if (list_state_.levels.back()) end_list_item();	
+	
+	if (current_level_.size() > 0)	current_level_.pop_back();
+
+	list_state_.levels.pop_back();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////  LIST
 void odf_text_context::start_field(int type)

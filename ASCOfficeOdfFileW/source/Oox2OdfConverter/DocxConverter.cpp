@@ -25,6 +25,7 @@
 #include "style_text_properties.h"
 #include "style_paragraph_properties.h"
 #include "style_graphic_properties.h"
+#include "styles_list.h"
 
 
 using namespace cpdoccore;
@@ -344,7 +345,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 			{
 				if (oox_paragraph->m_oParagraphProperty->m_oNumPr->m_oNumID.IsInit() && oox_paragraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal.IsInit())
 				{
-					list_style_name = odt_context->styles_context()->lists_styles().get_style_name(oox_paragraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal->GetValue());
+					list_style_name = odt_context->styles_context()->lists_styles().get_style_name1(oox_paragraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal->GetValue());
 					odt_context->styles_context()->last_state()->set_list_style_name(list_style_name);
 				}
 			}
@@ -390,7 +391,9 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 	if (!odt_context->text_context()->get_KeepNextParagraph())  odt_context->end_paragraph();
 
 	if(bListItemNeed && !odt_context->text_context()->get_KeepNextParagraph())
+	{
 		odt_context->end_list_item();
+	}
 	else
 		bListItemNeed = bListItemNeed;
 }
@@ -2247,7 +2250,7 @@ void DocxConverter::convert_lists_styles()
 			odt_context->styles_context()->lists_styles().add_style( lists_styles->m_arrNum[i].m_oNumId->GetValue(), abstr_num);
 		}
 
-		convert(&lists_styles->m_arrNum[i]);
+		convert(&lists_styles->m_arrNum[i]);//for override ???
 	}
 //nullable<ComplexTypes::Word::CDecimalNumber > m_oNumIdMacAtCleanup;
 }
@@ -2387,6 +2390,12 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 	if (oox_num_lvl->m_oNumFmt->m_oVal.IsInit()== false) return; //???
 
 	odt_context->styles_context()->lists_styles().start_style_level(oox_num_lvl->m_oIlvl->GetValue(), oox_num_lvl->m_oNumFmt->m_oVal->GetValue());
+	
+	odf::style_list_level_properties		* level_props		= odt_context->styles_context()->lists_styles().get_list_level_properties();
+	odf::style_list_level_label_alignment	* aligment_props	= odt_context->styles_context()->lists_styles().get_list_level_alignment_properties();
+	
+	if (level_props		== NULL)return;
+	if (aligment_props	== NULL)return;
 
 	//nullable<SimpleTypes::COnOff<>         > m_oTentative;
 	//nullable<SimpleTypes::CLongHexNumber<> > m_oTplc;
@@ -2394,15 +2403,61 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 	//// Childs
 	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oIsLgl;
 	//nullable<ComplexTypes::Word::CLvlLegacy                      > m_oLegacy;
-	//nullable<ComplexTypes::Word::CJc                             > m_oLvlJc;
-	//nullable<ComplexTypes::Word::CDecimalNumber                  > m_oLvlPicBulletId;
 	//nullable<ComplexTypes::Word::CDecimalNumber                  > m_oLvlRestart;
 	//nullable<ComplexTypes::Word::CLevelText                      > m_oLvlText;
-	//nullable<OOX::Logic::CParagraphProperty                      > m_oPPr;
 	//nullable<ComplexTypes::Word::CString_                        > m_oPStyle;
-	//nullable<OOX::Logic::CRunProperty                            > m_oRPr;
+	if (oox_num_lvl->m_oLvlPicBulletId.IsInit())
+	{
+		//ссылка на картику bullet
+	}
+	if (oox_num_lvl->m_oLvlJc.IsInit())
+	{
+	}
+	if (oox_num_lvl->m_oPPr.IsInit())
+	{
+		if (oox_num_lvl->m_oPPr->m_oInd.IsInit())
+		{
+			_CP_OPT(odf::length) length_indent;
+			
+			convert(oox_num_lvl->m_oPPr->m_oInd->m_oHanging.GetPointer(), length_indent);	
+			
+			if (length_indent) aligment_props->fo_text_indent_ = odf::length(-length_indent->get_value_unit(odf::length::cm),odf::length::cm);//text_min_label_width_
+
+			_CP_OPT(odf::length) length_margin;
+			if (oox_num_lvl->m_oPPr->m_oInd->m_oStart.IsInit())
+			{
+				convert(oox_num_lvl->m_oPPr->m_oInd->m_oStart.GetPointer(), length_margin);
+				if (length_margin && length_indent)	length_margin = *length_margin + *length_indent;
+
+				if (length_margin) aligment_props->fo_margin_left_ = odf::length(length_margin->get_value_unit(odf::length::cm),odf::length::cm);
+			}
+			if (oox_num_lvl->m_oPPr->m_oInd->m_oEnd.IsInit())
+			{
+				convert(oox_num_lvl->m_oPPr->m_oInd->m_oEnd.GetPointer(), length_margin);
+
+				if (length_margin && length_indent)	length_margin = *length_margin + *length_indent;
+			
+				if (length_margin) aligment_props->fo_margin_right_  = odf::length(length_margin->get_value_unit(odf::length::cm),odf::length::cm);
+			}
+			
+
+			//level_props->text_space_before_ = odf::length(length_margin->get_value_unit(odf::length::cm),odf::length::cm);
+			//nullable<SimpleTypes::CDecimalNumber<>    > m_oEndChars;
+			//nullable<SimpleTypes::CTwipsMeasure       > m_oFirstLine;
+			//nullable<SimpleTypes::CDecimalNumber<>    > m_oFirstLineChars;
+			//nullable<SimpleTypes::CDecimalNumber<>    > m_oHangingChars;
+			//nullable<SimpleTypes::CDecimalNumber<>    > m_oStartChars;
+
+			//level_props->text_min_label_width_
+		}
+	}
+	if (oox_num_lvl->m_oRPr.IsInit())//для обозначений списка
+	{
+	}
 	//nullable<ComplexTypes::Word::CDecimalNumber                  > m_oStart;
-	//nullable<ComplexTypes::Word::CLevelSuffix                    > m_oSuffix;
+	if (oox_num_lvl->m_oSuffix.IsInit())
+	{
+	}
 	odt_context->styles_context()->lists_styles().end_style_level();
 
 }

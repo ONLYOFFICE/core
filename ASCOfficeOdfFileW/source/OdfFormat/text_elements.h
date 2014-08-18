@@ -128,7 +128,7 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-    style_ref					text_style_name_;
+	_CP_OPT(style_ref)			text_style_name_;
     _CP_OPT(Bool)				text_continue_numbering_;
 
     office_element_ptr          text_list_header_;

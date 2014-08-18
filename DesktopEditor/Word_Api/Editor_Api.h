@@ -474,7 +474,7 @@ namespace NSEditorApi
 {
 	class CAscShapeProp
 	{
-		js_wrapper<int>				m_nType;
+		js_wrapper<std::wstring>	m_sType;
 
 		js_wrapper<CAscFill>		m_oFill;
 		js_wrapper<CAscStroke>		m_oStroke;
@@ -487,16 +487,11 @@ namespace NSEditorApi
 	public:
 		CAscShapeProp()
 		{
-			m_nType.SetNull();
-			m_oFill.SetNull();
-			m_oStroke.SetNull();
-			m_oPaddings.SetNull();
-
 			m_bCanFill = true;
 			m_bFromChart = false;
 		}
 
-		LINK_PROPERTY_INT_JS(Type)
+		LINK_PROPERTY_STRING_JS(Type)
 		LINK_PROPERTY_BOOL_JS(CanFill)
 		LINK_PROPERTY_BOOL_JS(FromChart)
 
@@ -543,9 +538,183 @@ namespace NSEditorApi
 		LINK_PROPERTY_BOOL(IsCorrect)
 	};
 
+	class CAscValAxisSettings
+    {
+	private:
+		js_wrapper<int>			m_nMinValRule;		// c_oAscValAxisRule_
+		js_wrapper<int>			m_nMinVal;
+		js_wrapper<int>			m_nMaxValRule;		// c_oAscValAxisRule_
+		js_wrapper<int>			m_nMaxVal;
+
+        js_wrapper<bool>		m_bInsertValOrder;
+
+		js_wrapper<bool>		m_bLogScale;
+		js_wrapper<int>			m_nLogBase;
+
+        js_wrapper<int>			m_nDispUnitsRule;	// c_oAscValAxUnits_
+		js_wrapper<int>			m_nUnits;			// c_oAscValAxUnits_
+
+		js_wrapper<bool>		m_bShowUnitsOnChart;
+
+		js_wrapper<int>			m_nMajorTickMark;	// c_oAscTickMark_
+		js_wrapper<int>			m_nMinorTickMark;	// c_oAscTickMark_
+
+		js_wrapper<int>			m_nTickLabelsPos;	// c_oAscTickLabelsPos_
+
+		js_wrapper<int>			m_nCrossesRule;		// c_oAscCrossesRule_
+		js_wrapper<int>			m_nCrosses;
+
+		js_wrapper<int>			m_nAxisType;		// c_oAscAxisType_
+
+	public:
+		CAscValAxisSettings()
+		{
+		}
+
+		LINK_PROPERTY_INT_JS(MinValRule)
+		LINK_PROPERTY_INT_JS(MinVal)
+		LINK_PROPERTY_INT_JS(MaxValRule)
+		LINK_PROPERTY_INT_JS(MaxVal)
+		
+		LINK_PROPERTY_BOOL_JS(InsertValOrder)
+
+		LINK_PROPERTY_BOOL_JS(LogScale)
+		LINK_PROPERTY_INT_JS(LogBase)
+
+		LINK_PROPERTY_INT_JS(DispUnitsRule)
+		LINK_PROPERTY_INT_JS(Units)
+
+		LINK_PROPERTY_BOOL_JS(ShowUnitsOnChart)
+
+		LINK_PROPERTY_INT_JS(MajorTickMark)
+		LINK_PROPERTY_INT_JS(MinorTickMark)
+
+		LINK_PROPERTY_INT_JS(TickLabelsPos)
+
+		LINK_PROPERTY_INT_JS(CrossesRule)
+		LINK_PROPERTY_INT_JS(Crosses)
+
+		LINK_PROPERTY_INT_JS(AxisType)
+    };
+
+	class CAscCatAxisSettings
+    {
+	private:
+        js_wrapper<double>		m_dInternalBetweenTick;
+		js_wrapper<int>			m_nIntervalBetweenLabelsRule;	// c_oAscBetweenLabelsRule_
+		js_wrapper<double>		m_dInternalBetweenLabels;
+
+		js_wrapper<bool>		m_bInvertCatOrder;
+		js_wrapper<double>		m_dLabelsAxisDistance;
+
+		js_wrapper<int>			m_nMajorTickMark;	// c_oAscTickMark_
+		js_wrapper<int>			m_nMinorTickMark;	// c_oAscTickMark_
+
+		js_wrapper<int>			m_nTickLabelsPos;	// c_oAscTickLabelsPos_
+
+		js_wrapper<int>			m_nCrossesRule;		// c_oAscCrossesRule_
+		js_wrapper<int>			m_nCrosses;
+
+		js_wrapper<int>			m_nLabelsPosition;	// c_oAscLabelsPosition_
+
+		js_wrapper<int>			m_nAxisType;		// c_oAscAxisType_
+
+	public:
+		CAscCatAxisSettings()
+		{
+		}
+
+		LINK_PROPERTY_DOUBLE_JS(InternalBetweenTick)
+		LINK_PROPERTY_INT_JS(IntervalBetweenLabelsRule)
+		LINK_PROPERTY_DOUBLE_JS(InternalBetweenLabels)
+
+		LINK_PROPERTY_BOOL_JS(InvertCatOrder)
+		LINK_PROPERTY_DOUBLE_JS(LabelsAxisDistance)
+
+		LINK_PROPERTY_INT_JS(MajorTickMark)
+		LINK_PROPERTY_INT_JS(MinorTickMark)
+		LINK_PROPERTY_INT_JS(TickLabelsPos)
+		LINK_PROPERTY_INT_JS(CrossesRule)
+		LINK_PROPERTY_INT_JS(Crosses)
+		LINK_PROPERTY_INT_JS(LabelsPosition)
+		LINK_PROPERTY_INT_JS(AxisType)
+    };
+
 	class CAscChartProperties
 	{
-		// TODO:
+	private:
+		js_wrapper<int>				m_nStyle;
+		js_wrapper<int>				m_nTitle;	// c_oAscChartTitleShowSettings_
+        
+		js_wrapper<int>				m_nRowCols;
+
+        js_wrapper<int>				m_nHorAxisLabel;	// c_oAscChartHorAxisLabelShowSettings_
+		js_wrapper<int>				m_nVertAxisLabel;	// c_oAscChartVertAxisLabelShowSettings_
+
+		js_wrapper<int>				m_nLegendPos;		// c_oAscChartLegendShowSettings_
+		js_wrapper<int>				m_nDataLabelPos;	// c_oAscChartDataLabelsPos_
+
+		js_wrapper<int>				m_nHorAx;
+		js_wrapper<int>				m_nVertAx;
+        
+		js_wrapper<int>				m_nHorGridLines;	// c_oAscGridLinesSettings_
+		js_wrapper<int>				m_nVertGridLines;	// c_oAscGridLinesSettings_
+        
+		js_wrapper<int>				m_nType;
+
+		js_wrapper<bool>			m_bShowSerName;
+		js_wrapper<bool>			m_bShowCatName;
+		js_wrapper<bool>			m_bShowVal;
+        
+		js_wrapper<std::wstring>	m_sSeparator;
+
+		js_wrapper<CAscValAxisSettings>	m_oHorAxisProps;
+		js_wrapper<CAscValAxisSettings>	m_oVertAxisProps;
+        
+		js_wrapper<std::wstring>	m_sRange;
+		js_wrapper<bool>			m_bInColumns;
+
+		js_wrapper<bool>			m_bShowMarker;
+		js_wrapper<bool>			m_bLine;
+		js_wrapper<bool>			m_bSmooth;
+
+	public:
+		CAscChartProperties()
+		{
+		}
+
+		LINK_PROPERTY_INT_JS(Style)
+		LINK_PROPERTY_INT_JS(Title)
+
+		LINK_PROPERTY_INT_JS(RowCols)
+
+		LINK_PROPERTY_INT_JS(HorAxisLabel)
+		LINK_PROPERTY_INT_JS(VertAxisLabel)
+
+		LINK_PROPERTY_INT_JS(LegendPos)
+		LINK_PROPERTY_INT_JS(DataLabelPos)
+		LINK_PROPERTY_INT_JS(HorAx)
+		LINK_PROPERTY_INT_JS(VertAx)
+
+		LINK_PROPERTY_INT_JS(HorGridLines)
+		LINK_PROPERTY_INT_JS(VertGridLines)
+		LINK_PROPERTY_INT_JS(Type)
+
+		LINK_PROPERTY_BOOL_JS(ShowSerName)
+		LINK_PROPERTY_BOOL_JS(ShowCatName)
+		LINK_PROPERTY_BOOL_JS(ShowVal)
+
+		LINK_PROPERTY_STRING_JS(Separator)
+
+		LINK_PROPERTY_OBJECT_JS(CAscValAxisSettings, HorAxisProps)
+		LINK_PROPERTY_OBJECT_JS(CAscValAxisSettings, VertAxisProps)
+
+		LINK_PROPERTY_STRING_JS(Range)
+		LINK_PROPERTY_BOOL_JS(InColumns)
+
+		LINK_PROPERTY_BOOL_JS(ShowMarker)
+		LINK_PROPERTY_BOOL_JS(Line)
+		LINK_PROPERTY_BOOL_JS(Smooth)
 	};
 
 	class CAscImageProp
@@ -575,7 +744,7 @@ namespace NSEditorApi
 		js_wrapper<CAscShapeProp> m_oShapeProperties;
 
 		js_wrapper<int> m_nChangeLevel;
-		js_wrapper<bool> m_bGroup;
+		js_wrapper<int> m_nGroup;
 
 		js_wrapper<bool> m_bFromGroup;
 		
@@ -611,7 +780,7 @@ namespace NSEditorApi
 
 		LINK_PROPERTY_INT_JS(ChangeLevel)
 
-		LINK_PROPERTY_BOOL_JS(Group)
+		LINK_PROPERTY_INT_JS(Group)
 		LINK_PROPERTY_BOOL_JS(FromGroup)
 		LINK_PROPERTY_BOOL_JS(SeveralCharts)
 
@@ -1034,6 +1203,56 @@ namespace NSEditorApi
 	};
 }
 
+// header/footer
+namespace NSEditorApi
+{
+	class CAscHeaderFooterPr
+	{
+	private:
+		js_wrapper<int>		m_nType;
+		js_wrapper<double>	m_dPosition;
+		js_wrapper<bool>	m_bDifferentFirst;
+		js_wrapper<bool>	m_bDifferentEvenOdd;
+		js_wrapper<bool>	m_bLinkToPrevious;
+		js_wrapper<bool>	m_bLocked;
+
+	public:
+
+		CAscHeaderFooterPr()
+		{
+		}
+
+		LINK_PROPERTY_INT_JS(Type)
+		LINK_PROPERTY_DOUBLE_JS(Position)
+		LINK_PROPERTY_BOOL_JS(DifferentFirst)
+		LINK_PROPERTY_BOOL_JS(DifferentEvenOdd)
+		LINK_PROPERTY_BOOL_JS(LinkToPrevious)
+		LINK_PROPERTY_BOOL_JS(Locked)
+	};
+}
+
+// hyperlink
+namespace NSEditorApi
+{
+	class CAscHyperlinkPr
+	{
+	private:
+		js_wrapper<std::wstring> m_sText;
+		js_wrapper<std::wstring> m_sValue;
+		js_wrapper<std::wstring> m_sToolTip;
+
+	public:
+
+		CAscHyperlinkPr()
+		{
+		}
+
+		LINK_PROPERTY_STRING_JS(Text)
+		LINK_PROPERTY_STRING_JS(Value)
+		LINK_PROPERTY_STRING_JS(ToolTip)
+	};
+}
+
 // common
 namespace NSEditorApi
 {
@@ -1187,5 +1406,7 @@ namespace NSEditorApi
 #define ASC_MENU_EVENT_TYPE_REDO				4
 #define ASC_MENU_EVENT_TYPE_LOADDOCUMENT		5
 #define ASC_MENU_EVENT_TYPE_STACK_OBJECTS		6
+#define ASC_MENU_EVENT_TYPE_HEADERFOOTER		7
+#define ASC_MENU_EVENT_TYPE_HYPERLINK			8
 
 #endif //_BUILD_EDITOR_API_CROSSPLATFORM_H_

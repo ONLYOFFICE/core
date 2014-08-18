@@ -1610,6 +1610,80 @@ namespace NSEditorApi
 	};
 }
 
+// insert
+namespace NSEditorApi
+{
+	// not release data!!!
+	class CAscImageRaw
+	{
+	public:
+		unsigned char*	Data;
+		unsigned int	Width;
+		unsigned int	Height;
+
+	public:
+		CAscImageRaw()
+		{
+			Data = NULL;
+			Width = 0;
+			Height = 0;
+		}
+	};
+
+	class CAscInsertImage
+	{
+	private:
+		js_wrapper<CAscImageRaw>	m_oRaw;
+		js_wrapper<std::wstring>	m_sPath;
+		js_wrapper<std::string>		m_sBase64;
+
+	public:
+		CAscInsertImage()
+		{
+		}
+
+		LINK_PROPERTY_OBJECT_JS(CAscImageRaw, Raw)
+		LINK_PROPERTY_STRING_JS(Path)
+		LINK_PROPERTY_STRINGA_JS(Base64)
+	};
+
+	class CAscInsertTable
+	{
+	private:
+		js_wrapper<std::wstring>	m_sStyle;
+		js_wrapper<int>				m_nColumns;
+		js_wrapper<int>				m_nRows;
+
+	public:
+		CAscInsertTable()
+		{
+		}
+
+		LINK_PROPERTY_STRING_JS(Style)
+		LINK_PROPERTY_INT_JS(Columns)
+		LINK_PROPERTY_INT_JS(Rows)
+	};
+
+	typedef CAscShapeProp CAscInsertShape;
+	typedef CAscHyperlinkPr CAscInsertHyperlink;
+
+	class CAscMethodParamInt
+	{
+	private:
+		js_wrapper<int>	m_nValue;
+
+	public:
+		CAscMethodParamInt()
+		{
+		}
+
+		LINK_PROPERTY_INT_JS(Value)
+	};
+
+	typedef CAscMethodParamInt CAscInsertSectionBreak;
+	typedef CAscMethodParamInt CAscInsertPageNumber;
+}
+
 namespace NSEditorApi
 {
 	class CAscMenuEvent
@@ -1687,5 +1761,16 @@ namespace NSEditorApi
 #define ASC_MENU_EVENT_TYPE_HYPERLINK			8
 #define ASC_MENU_EVENT_TYPE_IMAGE				9
 #define ASC_MENU_EVENT_TYPE_TABLE				10
+
+// insert commands
+#define ASC_MENU_EVENT_TYPE_INSERT_IMAGE			50
+#define ASC_MENU_EVENT_TYPE_INSERT_TABLE			51
+#define ASC_MENU_EVENT_TYPE_INSERT_HYPERLINK		52
+#define ASC_MENU_EVENT_TYPE_INSERT_SHAPE			53
+#define ASC_MENU_EVENT_TYPE_INSERT_PAGEBREAK		54
+#define ASC_MENU_EVENT_TYPE_INSERT_LINEBREAK		55
+#define ASC_MENU_EVENT_TYPE_INSERT_PAGENUMBER		56
+#define ASC_MENU_EVENT_TYPE_INSERT_SECTIONBREAK		57
+
 
 #endif //_BUILD_EDITOR_API_CROSSPLATFORM_H_

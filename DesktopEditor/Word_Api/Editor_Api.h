@@ -1,4 +1,4 @@
-#ifndef _BUILD_EDITOR_API_CROSSPLATFORM_H_
+п»ї#ifndef _BUILD_EDITOR_API_CROSSPLATFORM_H_
 #define _BUILD_EDITOR_API_CROSSPLATFORM_H_
 
 #include "./Editor_Defines.h"
@@ -1298,11 +1298,11 @@ namespace NSEditorApi
 	class CAscTableAnchorPosition
 	{
 	public:
-		// Рассчитанные координаты
+		// Р Р°СЃСЃС‡РёС‚Р°РЅРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
 		double CalcX;
 		double CalcY;
 
-		// Данные для Flow-объектов
+		// Р”Р°РЅРЅС‹Рµ РґР»СЏ Flow-РѕР±СЉРµРєС‚РѕРІ
 		double W;
 		double H;
 		double X;
@@ -1342,7 +1342,7 @@ namespace NSEditorApi
 			Y_max         = 0;
 		}
 
-		// По значению CalcX получем Value
+		// РџРѕ Р·РЅР°С‡РµРЅРёСЋ CalcX РїРѕР»СѓС‡РµРј Value
 		double Calculate_X_Value(const int& RelativeFrom)
 		{
 			switch (RelativeFrom)
@@ -1367,7 +1367,7 @@ namespace NSEditorApi
 			return 0;
 		}
 
-		// По значению CalcY и заданному RelativeFrom получем Value
+		// РџРѕ Р·РЅР°С‡РµРЅРёСЋ CalcY Рё Р·Р°РґР°РЅРЅРѕРјСѓ RelativeFrom РїРѕР»СѓС‡РµРј Value
 		double Calculate_Y_Value(const int& RelativeFrom)
 		{
 			switch (RelativeFrom)

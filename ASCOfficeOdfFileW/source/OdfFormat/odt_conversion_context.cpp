@@ -462,6 +462,7 @@ void odt_conversion_context::start_list_item(int level, std::wstring style_name 
 	if (text_context()->list_state_.started_list == false)
 	{
 		text_context()->start_list(style_name);
+		//text_context()->set_list_continue(true); //??? держать в памяти все списки????
 		add_to_root();
 		text_context()->start_list_item();
 	}
@@ -818,15 +819,17 @@ void odt_conversion_context::end_table()
 }
 
 
-void odt_conversion_context::start_header(int type)
+bool odt_conversion_context::start_header(int type)
 {
-	page_layout_context()->add_header(type);
+	if (page_layout_context()->add_header(type) == false) return false;
 	start_text_context();
 	text_context()->set_styles_context(page_layout_context()->get_local_styles_context());
 
 	text_context()->start_element(page_layout_context()->last_master().get_last_element());
 
 	is_footer_header_ = true;
+
+	return true;
 }
 
 void odt_conversion_context::end_header_footer()
@@ -844,15 +847,18 @@ void odt_conversion_context::set_background(_CP_OPT(color) & color, int type)
 	page_layout_context()->set_background(color, type);
 }
 
-void odt_conversion_context::start_footer(int type)
+bool odt_conversion_context::start_footer(int type)
 {
-	page_layout_context()->add_footer(type);
+	if (page_layout_context()->add_footer(type) == false) return false;
+
 	start_text_context();
 	text_context()->set_styles_context(page_layout_context()->get_local_styles_context());
 	
 	text_context()->start_element(page_layout_context()->last_master().get_last_element());
 
  	is_footer_header_ = true;
+
+	return true;
 }
 
 

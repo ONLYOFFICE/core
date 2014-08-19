@@ -62,6 +62,11 @@ length operator * (length & _Length1, double val)
 {
 	return length(_Length1.get_value() * val ,_Length1.get_unit()); 
 }
+bool operator == (length & _Length1, length & _Length2)
+{
+	if (_Length1.get_value() == _Length2.get_value())return true;
+	else return false;
+}
 
 length length::parse(const std::wstring & Str)
 {

@@ -14,6 +14,7 @@ namespace odf {
 class ods_conversion_context;
 class style_list_level_properties;
 class style_list_level_label_alignment;
+class style_text_properties;
 
 class office_element;
 typedef shared_ptr<office_element>::Type office_element_ptr;
@@ -34,9 +35,14 @@ public:
 	void set_odf_context(odf_conversion_context * Context);
 
 	void start_style(int abstract_number);
-		void start_style_level(int level, int type);
+		int start_style_level(int level, int type);
 			style_list_level_properties			* get_list_level_properties();
 			style_list_level_label_alignment	* get_list_level_alignment_properties();
+			style_text_properties				* get_text_properties();
+
+			void set_bullet_char	(std::wstring val);
+			void set_start_number	(int val);
+			void set_text_style_name(std::wstring val);
 		void end_style_level();
 	void end_style();
 

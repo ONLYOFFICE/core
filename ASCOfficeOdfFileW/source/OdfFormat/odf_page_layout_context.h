@@ -29,8 +29,9 @@ public:
 
 	void set_styles_context	(odf_style_context * Context);
 
-	void create_master_page(std::wstring oox_name);
-	void create_layout_page();
+	void start_master_page(std::wstring oox_name);
+		void create_layout_page();
+	void end_master_page();
 
 	void set_current_master_page_base();
 
@@ -61,15 +62,18 @@ public:
 
 	void set_title_page_enable(bool val);
 	void set_pages_mirrored(bool val);
+	void set_even_and_left_headers(bool val);
 	
-	void add_footer(int type);
+	bool add_footer(int type);
 		void set_footer_size(_CP_OPT(length) length_);
-	void add_header(int type);
+	bool add_header(int type);
 		void set_header_size(_CP_OPT(length) length_);
 
 	void set_background(_CP_OPT(color) & color, int type);
 
 private:
+
+	bool even_and_left_headers_;
 
 	style_page_layout_properties	*get_properties();
 	style_header_footer_properties	*get_header_properties();

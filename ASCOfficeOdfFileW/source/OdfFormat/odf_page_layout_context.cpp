@@ -23,6 +23,9 @@ odf_page_layout_context::odf_page_layout_context(odf_conversion_context * Contex
 
 	local_style_context_ =  boost::shared_ptr<odf_style_context>(new odf_style_context());
 	local_style_context_->set_odf_context(odf_context_);
+
+
+	even_and_left_headers_ = true;
 }
 
 odf_page_layout_context::~odf_page_layout_context()
@@ -45,7 +48,7 @@ odf_master_state & odf_page_layout_context::last_master()
 		throw;
 }
 
-void odf_page_layout_context::create_master_page(std::wstring page_name)
+void odf_page_layout_context::start_master_page(std::wstring page_name)
 {
 	office_element_ptr elm;
 	create_element(L"style", L"master-page", elm, odf_context_);
@@ -61,6 +64,43 @@ void odf_page_layout_context::create_master_page(std::wstring page_name)
 	//default layout
 	create_layout_page();
 	master_state_list_.back().set_layout_name(layout_state_list_.back().get_name());
+}
+void odf_page_layout_context::end_master_page()
+{
+	if (master_state_list_.size() < 1)return;
+
+	bool header=false, f_header = false, l_header = false;
+	bool footer=false, f_footer = false, l_footer = false;
+
+	for (long i = 0; i < master_state_list_.back().elements_.size(); i++)
+	{
+		if (!master_state_list_.back().elements_[i].elm)continue;
+		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleHeader)header = true;
+		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleFooter)footer = true;
+
+		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleHeaderFirst)f_header = true;
+		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleFooterFirst)f_footer = true;
+
+		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleHeaderLeft)l_header = true;
+		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleFooterLeft)l_footer = true;
+	}
+	if (f_header && !f_footer && footer)
+	{
+		add_footer(2);
+		f_footer = true;
+	}
+	if (!header && (f_header || l_header))
+	{
+		add_header(0);
+		header = true;
+	}
+	if (!footer && (f_footer || l_footer))
+	{
+		add_footer(0);
+		footer = true;
+	}
+
+
 }
 
 void odf_page_layout_context::process_master_styles(office_element_ptr root )
@@ -211,27 +251,31 @@ void odf_page_layout_context::set_background(_CP_OPT(color) & color, int type)
 }
 
 ///////////////////////////////////////////////////////////////
-void odf_page_layout_context::add_footer(int type)
+bool odf_page_layout_context::add_footer(int type)
 {
 	office_element_ptr elm;
 	
 	if (type == 1) 
-		create_element(L"style", L"footer-left", elm, odf_context_);
+	{
+		if (even_and_left_headers_)create_element(L"style", L"footer-left", elm, odf_context_);
+	}
 	else if (type == 2)
 		create_element(L"style", L"footer-first", elm, odf_context_);
 	else
-	create_element(L"style", L"footer", elm, odf_context_);
+		create_element(L"style", L"footer", elm, odf_context_);
+
+	if (!elm) return false;
 	
 	master_state_list_.back().add_footer(elm);
 
 /////////////////////////////////////////////////////////////////////
 //настраить нужно 1 раз
-	if (!layout_state_list_.back().footer_size_) return;
+	if (!layout_state_list_.back().footer_size_) return true;
 
 	style_header_footer_properties * footer_props = get_footer_properties();
-	if (!footer_props)return;
+	if (!footer_props)return true;
 	style_page_layout_properties * props = get_properties();
-	if (!props)return;
+	if (!props)return true;
 
 	length length_ = length(layout_state_list_.back().footer_size_->get_value_unit(length::cm),length::cm);
 
@@ -259,27 +303,33 @@ void odf_page_layout_context::add_footer(int type)
 		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_ = length_;
 	}
 	layout_state_list_.back().footer_size_ = boost::none;
+
+	return true;
 }
-void odf_page_layout_context::add_header(int type)
+bool odf_page_layout_context::add_header(int type)
 {
 	office_element_ptr elm;
 
 	if (type == 1)
-		create_element(L"style", L"header-left", elm, odf_context_);
+	{
+		if (even_and_left_headers_)create_element(L"style", L"header-left", elm, odf_context_);
+	}
 	else if (type == 2)
 		create_element(L"style", L"header-first", elm, odf_context_);
 	else
 		create_element(L"style", L"header", elm, odf_context_);
+
+	if (!elm)return false;
 	
 	master_state_list_.back().add_header(elm);
 ////////////////////////////////////////////////////////////////////////
 //настроить нужно один раз
-	if (!layout_state_list_.back().header_size_) return;
+	if (!layout_state_list_.back().header_size_) return true;
 	
 	style_header_footer_properties * header_props = get_header_properties();
-	if (!header_props)return;
+	if (!header_props)return true;
 	style_page_layout_properties * props = get_properties();
-	if (!props)return;
+	if (!props)return true;
 
 	length length_ = length(layout_state_list_.back().header_size_->get_value_unit(length::cm),length::cm);
 
@@ -307,6 +357,7 @@ void odf_page_layout_context::add_header(int type)
 		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_ = length_;
 	
 	layout_state_list_.back().header_size_ = boost::none;
+	return true;
 }
 
 void odf_page_layout_context::set_page_border_padding_bottom(int offset_type, double length_pt)
@@ -433,6 +484,11 @@ void odf_page_layout_context::set_pages_mirrored(bool val)
 	{
 		layout_state_list_[i].set_pages_mirrored(val);
 	}	
+}
+
+void odf_page_layout_context::set_even_and_left_headers(bool val)
+{
+	even_and_left_headers_ = val;
 }
 
 void odf_page_layout_context::set_title_page_enable(bool val)

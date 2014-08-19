@@ -168,8 +168,8 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style)
 	}
 	odf_context()->drawing_context()->set_drawings_rect(x, y, width_pt, height_pt);
 
-	if (width_pt && height_pt)
-		odf_context()->drawing_context()->set_viewBox(width_pt.get(), height_pt.get());
+	//if (width_pt && height_pt)
+	//	odf_context()->drawing_context()->set_viewBox(width_pt.get(), height_pt.get());
 }
 void OoxConverter::convert(OOX::Vml::CShape *vml_shape)
 {

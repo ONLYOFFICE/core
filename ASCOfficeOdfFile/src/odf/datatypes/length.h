@@ -51,6 +51,7 @@ length operator + (length & _Length1, length & _Length2);
 length operator - (length & _Length1, length & _Length2);
 length operator / (length & _Length1, double val);
 length operator * (length & _Length1, double val);
+bool operator == (length & _Length1, length & _Length2);
 
 typedef length coordinate;
 

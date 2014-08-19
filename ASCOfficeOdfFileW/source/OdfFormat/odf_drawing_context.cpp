@@ -808,6 +808,11 @@ void odf_drawing_context::start_element(office_element_ptr & elm, office_element
 	{
 		style_name = style_->style_name_;
 		impl_->current_graphic_properties = style_->style_content_.get_style_graphic_properties();
+
+		if (impl_->current_drawing_state_.name_.length() < 1)
+		{
+			impl_->current_drawing_state_.name_ = std::wstring(L"Object_") + style_name;
+		}
 	}
 
 	odf_element_state state={elm, style_name, style_elm, level};
@@ -931,7 +936,7 @@ void odf_drawing_context::set_path(std::wstring path_string)
 	//boost::replace_all(path_string, L",,", L" 0 ");
 	//boost::replace_all(path_string, L" -", L"-");
 	//boost::replace_all(path_string, L",", L"0"); // нужен разбор
-	impl_->current_drawing_state_.path_ = path_string;
+	//impl_->current_drawing_state_.path_ = path_string;
 }
 void odf_drawing_context::add_path_element(std::wstring command, std::wstring & strE)
 {

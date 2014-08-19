@@ -384,7 +384,7 @@ void odf_text_context::start_list(std::wstring style_name) //todoooo add new_num
 		if (list)
 		{
 			list->text_style_name_ = style_ref(style_name);
-			//list->text_continue_numbering_ = true;
+			list->text_continue_numbering_ = true;
 		}
 		list_state_.style_name = style_name;
 	}

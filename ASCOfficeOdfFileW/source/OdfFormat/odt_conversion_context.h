@@ -105,8 +105,8 @@ public:
 
 	bool is_empty_section(){return current_root_elements_.size() > 0 ? false : true; }
 
-	void start_header(int type);
-	void start_footer(int type);
+	bool start_header(int type);
+	bool start_footer(int type);
 	void end_header_footer();
 
 	void set_background(_CP_OPT(color) & color, int type);

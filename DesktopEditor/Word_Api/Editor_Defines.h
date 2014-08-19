@@ -581,6 +581,8 @@ namespace NSEditorDefines
 #define c_oAscSectionBreakType_Continuous		0x03
 #define c_oAscSectionBreakType_Column			0x04
 
+#define INSERT_PAGE_NUM_PARAM(AlignV, AlignH)	((AlignV << 16) | AlignH)
+
 }
 
 namespace NSEditorApi

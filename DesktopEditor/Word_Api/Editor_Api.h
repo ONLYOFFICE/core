@@ -4,6 +4,11 @@
 #include "./Editor_Defines.h"
 
 #include <string>
+
+#ifdef max
+#undef max
+#endif
+
 #include <vector>
 
 #ifndef max

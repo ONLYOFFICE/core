@@ -33,7 +33,9 @@ public:
 	CString m_strImagesDirectory;
 
 	CString m_strEditorType;
+
 	int m_nCurrentChangesNumber;
+	int m_nMaxChangesNumber;
 
 public:
 	CMemoryStream* m_pStream;
@@ -44,6 +46,7 @@ public:
 		m_pChanges = NULL;
 
 		m_nCurrentChangesNumber = -1;
+		m_nMaxChangesNumber = -1;
 	}
 	~CNativeControl()
 	{
@@ -165,17 +168,20 @@ void _SetFileId(const v8::FunctionCallbackInfo<v8::Value>& args)
 	pNative->SetFileId(to_cstring(args[0]));
 }
 
-void _SetCurrentChangeFile(const v8::FunctionCallbackInfo<v8::Value>& args)
+void _CheckNextChange(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
-	args.GetReturnValue().Set(v8::Undefined());
-
-	if (args.Length() < 1) 
-		return;
-	
 	CNativeControl* pNative = unwrap_nativeobject(args.This());
 
-	int nIndex = args[0]->ToInt32()->Value();
-	pNative->m_nCurrentChangesNumber = nIndex;
+	pNative->m_nCurrentChangesNumber++;
+	if (-1 != pNative->m_nCurrentChangesNumber)
+	{
+		if (pNative->m_nCurrentChangesNumber >= pNative->m_nMaxChangesNumber)
+		{
+			args.GetReturnValue().Set(v8::Boolean::New(false));
+			return;
+		}
+	}
+	args.GetReturnValue().Set(v8::Boolean::New(true));
 }
 
 void _GetFileArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args)
@@ -269,7 +275,7 @@ v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate)
 	result->Set(v8::String::NewSymbol("GetFileString"), v8::FunctionTemplate::New(_GetFileString));
 
 	result->Set(v8::String::NewSymbol("GetEditorType"), v8::FunctionTemplate::New(_GetEditorType));
-	result->Set(v8::String::NewSymbol("SetCurrentChangeFile"), v8::FunctionTemplate::New(_SetCurrentChangeFile));
+	result->Set(v8::String::NewSymbol("CheckNextChange"), v8::FunctionTemplate::New(_CheckNextChange));
 
 	result->Set(v8::String::NewSymbol("GetCountChanges"), v8::FunctionTemplate::New(_GetChangesCount));
 	result->Set(v8::String::NewSymbol("GetChangesFile"), v8::FunctionTemplate::New(_GetChangesFile));

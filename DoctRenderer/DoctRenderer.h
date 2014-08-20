@@ -78,6 +78,7 @@ public:
 	CString m_strDstFilePath;
 
 	CAtlArray<CString> m_arChanges;
+	int m_nCountChangesItems;
 
 public:
 	CExecuteParams() : m_arChanges()
@@ -91,6 +92,8 @@ public:
 
 		m_strSrcFilePath = _T("");
 		m_strDstFilePath = _T("");
+
+		m_nCountChangesItems = -1;
 	}
 	~CExecuteParams()
 	{
@@ -119,6 +122,8 @@ public:
 		XmlUtils::CXmlNode oNodeChanges;
 		if (oNode.GetNode(_T("Changes"), oNodeChanges))
 		{
+			m_nCountChangesItems = oNodeChanges.ReadAttributeInt(_T("TopItem"), -1);
+
 			XmlUtils::CXmlNodes oNodes;
 			oNodeChanges.GetNodes(_T("Change"), oNodes);
 
@@ -604,6 +609,8 @@ private:
 		pNative->m_strEditorType		= m_strEditorType;
 		pNative->SetFilePath(m_strFilePath);
 
+		pNative->m_nMaxChangesNumber	= m_oParams.m_nCountChangesItems;
+
 		if (js_func_open->IsFunction()) 
 		{
 			v8::Handle<v8::Function> func_open = v8::Handle<v8::Function>::Cast(js_func_open);
@@ -634,10 +641,7 @@ private:
 					strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 
 					strError = _T("");
-					int nNumberC = pNative->m_nCurrentChangesNumber;
-					if (nNumberC >= 0)
-						--nNumberC;
-					strError.Format(_T("index=\"%d\""), nNumberC);
+					strError.Format(_T("index=\"%d\""), pNative->m_nCurrentChangesNumber);
 					return FALSE;
 				}
 			}

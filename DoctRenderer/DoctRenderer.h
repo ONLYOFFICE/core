@@ -14,14 +14,12 @@
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
 #endif
 
-CNativeControlsList NativeStaticList;
-
 void CreateNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
 	v8::Isolate* isolate = v8::Isolate::GetCurrent();
 	
 	v8::Handle<v8::ObjectTemplate> NativeObjectTemplate = CreateNativeControlTemplate(isolate);
-	CNativeControl* pNativeObject = NativeStaticList.CreateControl();
+	CNativeControl* pNativeObject = new CNativeControl();
 
 	v8::Local<v8::Object> obj = NativeObjectTemplate->NewInstance();
 	obj->SetInternalField(0, v8::External::New(pNativeObject));
@@ -154,11 +152,17 @@ private:
 	CString m_strDoctSDK;
 	CString m_strPpttSDK;
 	CString m_strXlstSDK;
+
+	CString m_strEditorType;
+	CString m_strFilePath;
+
+	BOOL	m_bIsInitTypedArrays;
 	
 public:
 	CDoctRenderer()
 	{
 		m_pRenderer = NULL;
+		m_bIsInitTypedArrays = FALSE;
 	}
 
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
@@ -282,7 +286,7 @@ public:
 				case DoctRendererFormat::PDF:
 					{
 						sResourceFile = m_strDoctSDK;
-						strCorrector = _T("var NATIVE_DOCUMENT_TYPE = \"document\";");
+						m_strEditorType = _T("document");
 						break;
 					}
 				default:
@@ -298,7 +302,7 @@ public:
 				case DoctRendererFormat::PDF:
 					{
 						sResourceFile = m_strPpttSDK;
-						strCorrector = _T("var NATIVE_DOCUMENT_TYPE = \"presentation\";");
+						m_strEditorType = _T("presentation");
 						break;
 					}
 				default:
@@ -314,7 +318,7 @@ public:
 				case DoctRendererFormat::PDF:
 					{
 						sResourceFile = m_strXlstSDK;
-						strCorrector = _T("var NATIVE_DOCUMENT_TYPE = \"spreadsheet\";$.ready();");
+						m_strEditorType = _T("spreadsheet");
 						break;
 					}
 				default:
@@ -348,21 +352,20 @@ public:
 		strFileName.Replace(_T("\\"), _T("\\\\"));
 		strFileName += _T("Editor.bin");
 		
-		CString strScript = _T("var g_file_path = \"");
-		strScript += strFileName;
-		strScript += _T("\";\n\n");
-
-		strScript += strMainPart;
+		m_strFilePath = strFileName;
+		
+		CString strScript = strMainPart;
 		strScript += ReadScriptFile(sResourceFile);
 
-		strScript += strCorrector;
-		
+		if (m_strEditorType == _T("spreadsheet"))
+			strScript += _T("\n$.ready();");
+
 		CString strError = _T("");
 		BOOL bResult = ExecuteScript(strScript, strError);
 
 		if (_T("") != strError)
 		{
-			CString sDestError = _T("<result><error code=\"") + strError + _T("\" /></result>");
+			CString sDestError = _T("<result><error ") + strError + _T(" /></result>");
 			*pbsError = sDestError.AllocSysString();
 		}
 
@@ -487,7 +490,12 @@ private:
 	{
 		CString strException = _T("");
 
-		enableTypedArrays();
+		if (!m_bIsInitTypedArrays)
+		{
+			enableTypedArrays();
+			m_bIsInitTypedArrays = TRUE;
+		}
+
 		WCHAR* javascript = (WCHAR*)strScript.GetBuffer();
 
 		v8::Isolate* isolate = v8::Isolate::GetCurrent();
@@ -508,7 +516,7 @@ private:
 			CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 			strException = to_cstring(try_catch.Message()->Get());
 
-			strError = _T("compile");
+			strError = _T("code=\"compile\"");
 			return FALSE;
 		}
 		
@@ -519,7 +527,7 @@ private:
 			CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 			strException = to_cstring(try_catch.Message()->Get());
 
-			strError = _T("run");
+			strError = _T("code=\"run\"");
 			return FALSE;
 		}
 
@@ -556,17 +564,45 @@ private:
 				int nLineError = try_catch.Message()->GetLineNumber();
 				strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 
-				strError = _T("run");
+				strError = _T("code=\"run\"");
 				return FALSE;
 			}
 
 			strDocumentId = to_cstring(js_result2);
 		}
 
-		CNativeControl* pNative = NativeStaticList.GetControlById(strDocumentId);
+		CNativeControl* pNative = NULL;
+
+		v8::Handle<v8::Value> js_func_get_native = global_js->Get(v8::String::New("GetNativeEngine"));
+		v8::Local<v8::Object> objNative;
+		if (js_func_get_native->IsFunction()) 
+		{
+			v8::Handle<v8::Function> func_get_native = v8::Handle<v8::Function>::Cast(js_func_get_native);
+			v8::Local<v8::Value> js_result2 = func_get_native->Call(global_js, 1, args);
+			
+			if (try_catch.HasCaught()) 
+			{
+				int nLineError = try_catch.Message()->GetLineNumber();
+				strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+				
+				isolate->Exit();
+				
+				strError = _T("code=\"run\"");
+				return FALSE;
+			}
+
+			objNative = js_result2->ToObject();
+			v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(objNative->GetInternalField(0));
+			
+			pNative = static_cast<CNativeControl*>(field->Value());
+		}
+
 		pNative->m_pChanges				= &m_oParams.m_arChanges;
 		pNative->m_strFontsDirectory	= m_oParams.m_strFontsDirectory;
 		pNative->m_strImagesDirectory	= m_oParams.m_strImagesDirectory;
+
+		pNative->m_strEditorType		= m_strEditorType;
+		pNative->SetFilePath(m_strFilePath);
 
 		if (js_func_open->IsFunction()) 
 		{
@@ -579,7 +615,7 @@ private:
 				CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 				strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 
-				strError = _T("open");
+				strError = _T("code=\"open\"");
 				return FALSE;
 			}
 		}
@@ -597,7 +633,11 @@ private:
 					CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 					strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 
-					strError = _T("changes");
+					strError = _T("");
+					int nNumberC = pNative->m_nCurrentChangesNumber;
+					if (nNumberC >= 0)
+						--nNumberC;
+					strError.Format(_T("index=\"%d\""), nNumberC);
 					return FALSE;
 				}
 			}
@@ -620,7 +660,7 @@ private:
 						CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 
-						strError = _T("save");
+						strError = _T("code=\"save\"");
 						return FALSE;
 					}
 
@@ -648,7 +688,7 @@ private:
 						CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 
-						strError = _T("calculate");
+						strError = _T("code=\"calculate\"");
 						return FALSE;
 					}
 				}
@@ -664,7 +704,7 @@ private:
 						CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 
-						strError = _T("calculate");
+						strError = _T("code=\"calculate\"");
 						return FALSE;
 					}
 
@@ -701,7 +741,7 @@ private:
 							CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 							strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 
-							strError = _T("render");
+							strError = _T("code=\"render\"");
 							return FALSE;
 						}
 
@@ -727,7 +767,7 @@ private:
 					RELEASEINTERFACE(pPDF);
 
 					if (S_OK != hr)
-						strError = _T("save");
+						strError = _T("code=\"save\"");
 
 					return (hr == S_OK) ? TRUE : FALSE;
 				}

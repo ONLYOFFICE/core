@@ -32,6 +32,9 @@ public:
 	CString m_strFontsDirectory;
 	CString m_strImagesDirectory;
 
+	CString m_strEditorType;
+	int m_nCurrentChangesNumber;
+
 public:
 	CMemoryStream* m_pStream;
 
@@ -39,6 +42,8 @@ public:
 	{
 		m_pStream = NULL;
 		m_pChanges = NULL;
+
+		m_nCurrentChangesNumber = -1;
 	}
 	~CNativeControl()
 	{
@@ -112,6 +117,12 @@ void _GetFontsDirectory(const v8::FunctionCallbackInfo<v8::Value>& args)
 	args.GetReturnValue().Set(v8::String::New((uint16_t*)pNative->m_strFontsDirectory.GetBuffer()));
 }
 
+void _GetEditorType(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+	CNativeControl* pNative = unwrap_nativeobject(args.This());
+    args.GetReturnValue().Set(v8::String::New((uint16_t*)pNative->m_strEditorType.GetBuffer()));
+}
+
 void _GetChangesCount(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
 	CNativeControl* pNative = unwrap_nativeobject(args.This());
@@ -152,6 +163,19 @@ void _SetFileId(const v8::FunctionCallbackInfo<v8::Value>& args)
 	
 	CNativeControl* pNative = unwrap_nativeobject(args.This());
 	pNative->SetFileId(to_cstring(args[0]));
+}
+
+void _SetCurrentChangeFile(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+	args.GetReturnValue().Set(v8::Undefined());
+
+	if (args.Length() < 1) 
+		return;
+	
+	CNativeControl* pNative = unwrap_nativeobject(args.This());
+
+	int nIndex = args[0]->ToInt32()->Value();
+	pNative->m_nCurrentChangesNumber = nIndex;
 }
 
 void _GetFileArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args)
@@ -243,6 +267,9 @@ v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate)
 	result->Set(v8::String::NewSymbol("GetFontBinary"), v8::FunctionTemplate::New(_GetFontArrayBuffer));
 	result->Set(v8::String::NewSymbol("GetFontsDirectory"), v8::FunctionTemplate::New(_GetFontsDirectory));
 	result->Set(v8::String::NewSymbol("GetFileString"), v8::FunctionTemplate::New(_GetFileString));
+
+	result->Set(v8::String::NewSymbol("GetEditorType"), v8::FunctionTemplate::New(_GetEditorType));
+	result->Set(v8::String::NewSymbol("SetCurrentChangeFile"), v8::FunctionTemplate::New(_SetCurrentChangeFile));
 
 	result->Set(v8::String::NewSymbol("GetCountChanges"), v8::FunctionTemplate::New(_GetChangesCount));
 	result->Set(v8::String::NewSymbol("GetChangesFile"), v8::FunctionTemplate::New(_GetChangesFile));

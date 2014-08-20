@@ -39,7 +39,12 @@ void text_list_level_style_attr::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR(L"text:level",	text_level_);
  }
+void text_list_level_style_image_attr::serialize(CP_ATTR_NODE)
+{
+    CP_XML_ATTR_OPT(L"text:style-name",			text_style_name_);
 
+	common_xlink_attlist_.serialize(CP_GET_XML_NODE());
+ }
 // text:list-style
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * text_list_style::ns = L"text";
@@ -238,6 +243,50 @@ void text_list_level_style_bullet::serialize(std::wostream & strm)
         {
 			text_list_level_style_attr_.serialize(CP_GET_XML_NODE());
 			text_list_level_style_bullet_attr_.serialize(CP_GET_XML_NODE());	
+
+			if (style_list_level_properties_)	style_list_level_properties_->serialize(CP_XML_STREAM());
+			if (style_text_properties_)			style_text_properties_->serialize(CP_XML_STREAM());
+		}
+	}
+}
+
+// text:list-level-style-image
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * text_list_level_style_image::ns = L"text";
+const wchar_t * text_list_level_style_image::name = L"list-level-style-image";
+
+
+void text_list_level_style_image::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+{
+    if (L"style" == Ns && L"list-level-properties" == Name)
+        CP_CREATE_ELEMENT(style_list_level_properties_);
+    else if (L"style" == Ns && L"text-properties" == Name)
+        CP_CREATE_ELEMENT(style_text_properties_);    
+    else
+    {
+         CP_NOT_APPLICABLE_ELM();
+    }
+}
+void text_list_level_style_image::add_child_element( office_element_ptr & child)
+{
+ 	ElementType type = child->get_type();
+	
+	if (type == typeStyleListLevelProperties)
+		style_list_level_properties_ = child;
+    else if (type == typeStyleTextProperties)
+       style_text_properties_ = child;    
+    else
+    {
+    }
+}
+void text_list_level_style_image::serialize(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			text_list_level_style_attr_.serialize(CP_GET_XML_NODE());
+			text_list_level_style_image_attr_.serialize(CP_GET_XML_NODE());	
 
 			if (style_list_level_properties_)	style_list_level_properties_->serialize(CP_XML_STREAM());
 			if (style_text_properties_)			style_text_properties_->serialize(CP_XML_STREAM());

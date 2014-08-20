@@ -72,132 +72,141 @@ BOOL  OoxConverter::UpdateProgress(long nComplete)
  
 void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 {
-	if (oox_unknown == NULL)return;
-
-	switch(oox_unknown->getType())
+	try
 	{
-		case OOX::et_a_Shape:
+		if (oox_unknown == NULL)return;
+
+		switch(oox_unknown->getType())
 		{
-			OOX::Drawing::CShape* pShape = static_cast<OOX::Drawing::CShape*>(oox_unknown);
-			convert(pShape);
-		}break;
-		case OOX::et_a_LockedCanvas:
-		{
-			OOX::Drawing::CLockedCanvas* pLockedCanvas = static_cast<OOX::Drawing::CLockedCanvas*>(oox_unknown);
-			convert(pLockedCanvas);
-		}break;
-		case OOX::et_a_prstGeom:
-		{
-			OOX::Drawing::CPresetGeometry2D* pPresetGeom = static_cast<OOX::Drawing::CPresetGeometry2D*>(oox_unknown);
-			convert(pPresetGeom);
-		}break;
-		case OOX::et_a_custGeom:
-		{
-			OOX::Drawing::CCustomGeometry2D* pCustomGeom = static_cast<OOX::Drawing::CCustomGeometry2D*>(oox_unknown);
-			convert(pCustomGeom);
-		}break;
-		case OOX::et_a_lnTo:
-		{
-			OOX::Drawing::CPath2DLineTo* pLineTo = static_cast<OOX::Drawing::CPath2DLineTo*>(oox_unknown);
-			convert(pLineTo);
-		}break;
-		case OOX::et_a_moveTo:
-		{
-			OOX::Drawing::CPath2DMoveTo* pMoveTo = static_cast<OOX::Drawing::CPath2DMoveTo*>(oox_unknown);
-			convert(pMoveTo);
-		}break;
-		case OOX::et_a_arcTo:
-		{
-			OOX::Drawing::CPath2DArcTo* pArcTo = static_cast<OOX::Drawing::CPath2DArcTo*>(oox_unknown);
-			convert(pArcTo);
-		}break;
-		case OOX::et_a_quadBezTo:
-		{
-			OOX::Drawing::CPath2DQuadBezierTo* pQuadBezierTo = static_cast<OOX::Drawing::CPath2DQuadBezierTo*>(oox_unknown);
-			convert(pQuadBezierTo);
-		}break;
-		case OOX::et_a_cubicBezTo:
-		{
-			OOX::Drawing::CPath2DCubicBezierTo* pCubicBezierT = static_cast<OOX::Drawing::CPath2DCubicBezierTo*>(oox_unknown);
-			convert(pCubicBezierT);
-		}break;
-		case OOX::et_a_close:
-		{
-			OOX::Drawing::CPath2DClose* pClose= static_cast<OOX::Drawing::CPath2DClose*>(oox_unknown);
-			convert(pClose);
-		}break;
-		case OOX::et_a_r:
-		{
-			OOX::Drawing::CRun* pRun= static_cast<OOX::Drawing::CRun*>(oox_unknown);
-			convert(pRun);
-		}break;
-		case OOX::et_a_alphaModFix:
-		{
-			OOX::Drawing::CAlphaModulateFixedEffect* pAlpha= static_cast<OOX::Drawing::CAlphaModulateFixedEffect*>(oox_unknown);
-			if (pAlpha)
+			case OOX::et_a_Shape:
 			{
-				odf_context()->drawing_context()->set_opacity(pAlpha->m_oAmt.GetValue());
-			}
-		}break;
-		case OOX::et_v_imagedata:
-		{
-			OOX::Vml::CImageData *vml = static_cast<OOX::Vml::CImageData*>(oox_unknown);
-			convert(vml);
-		}break;
-		case OOX::et_v_textbox:
-		{
-			OOX::Vml::CTextbox *vml = static_cast<OOX::Vml::CTextbox*>(oox_unknown);
-			convert(vml);
-		}break;
-		//case OOX::et_v_background:
-		//{
-		//	OOX::Vml::CBackground *vml = static_cast<OOX::Vml::CBackground*>(oox_unknown);
-		//	convert(vml);
-		//}break;
-		case OOX::et_v_path:
-		{
-			OOX::Vml::CPath *vml = static_cast<OOX::Vml::CPath*>(oox_unknown);
-			convert(vml);
-		}break;	
-			case OOX::et_v_textpath:
-		{
-			OOX::Vml::CTextPath *vml = static_cast<OOX::Vml::CTextPath*>(oox_unknown);
-			convert(vml);
-		}break;	
-		case OOX::et_v_fill:
-		{
-			OOX::Vml::CFill *vml = static_cast<OOX::Vml::CFill*>(oox_unknown);
-			convert(vml);
-		}break;
-		case OOX::et_v_stroke:
-		{
-			OOX::Vml::CStroke *vml = static_cast<OOX::Vml::CStroke*>(oox_unknown);
-			convert(vml);
-		}break;
-		case OOX::et_wd_wrap:
-		{
-			OOX::VmlWord::CWrap *vml = static_cast<OOX::VmlWord::CWrap*>(oox_unknown);
-			convert(vml);
-		}break;
-		// "ненужные" элементы
-		case OOX::et_w_softHyphen:
-		case OOX::et_w_proofErr:
-		case OOX::et_w_proofState:
-		{
-			//бяка
-		}break;
-		default:
-		{
-			OOX::Vml::CVmlShapeElements *vml = dynamic_cast<OOX::Vml::CVmlShapeElements*>(oox_unknown);
-			if (vml)convert( vml);
-			else
+				OOX::Drawing::CShape* pShape = static_cast<OOX::Drawing::CShape*>(oox_unknown);
+				convert(pShape);
+			}break;
+			case OOX::et_a_LockedCanvas:
 			{
-				int ttt = (int) oox_unknown->getType();
-				std::wstringstream ss;
-				ss << L"[warning] :  no convert element(" << oox_unknown->getType() << L")\n";
-				_CP_LOG(error) << ss.str();
+				OOX::Drawing::CLockedCanvas* pLockedCanvas = static_cast<OOX::Drawing::CLockedCanvas*>(oox_unknown);
+				convert(pLockedCanvas);
+			}break;
+			case OOX::et_a_prstGeom:
+			{
+				OOX::Drawing::CPresetGeometry2D* pPresetGeom = static_cast<OOX::Drawing::CPresetGeometry2D*>(oox_unknown);
+				convert(pPresetGeom);
+			}break;
+			case OOX::et_a_custGeom:
+			{
+				OOX::Drawing::CCustomGeometry2D* pCustomGeom = static_cast<OOX::Drawing::CCustomGeometry2D*>(oox_unknown);
+				convert(pCustomGeom);
+			}break;
+			case OOX::et_a_lnTo:
+			{
+				OOX::Drawing::CPath2DLineTo* pLineTo = static_cast<OOX::Drawing::CPath2DLineTo*>(oox_unknown);
+				convert(pLineTo);
+			}break;
+			case OOX::et_a_moveTo:
+			{
+				OOX::Drawing::CPath2DMoveTo* pMoveTo = static_cast<OOX::Drawing::CPath2DMoveTo*>(oox_unknown);
+				convert(pMoveTo);
+			}break;
+			case OOX::et_a_arcTo:
+			{
+				OOX::Drawing::CPath2DArcTo* pArcTo = static_cast<OOX::Drawing::CPath2DArcTo*>(oox_unknown);
+				convert(pArcTo);
+			}break;
+			case OOX::et_a_quadBezTo:
+			{
+				OOX::Drawing::CPath2DQuadBezierTo* pQuadBezierTo = static_cast<OOX::Drawing::CPath2DQuadBezierTo*>(oox_unknown);
+				convert(pQuadBezierTo);
+			}break;
+			case OOX::et_a_cubicBezTo:
+			{
+				OOX::Drawing::CPath2DCubicBezierTo* pCubicBezierT = static_cast<OOX::Drawing::CPath2DCubicBezierTo*>(oox_unknown);
+				convert(pCubicBezierT);
+			}break;
+			case OOX::et_a_close:
+			{
+				OOX::Drawing::CPath2DClose* pClose= static_cast<OOX::Drawing::CPath2DClose*>(oox_unknown);
+				convert(pClose);
+			}break;
+			case OOX::et_a_r:
+			{
+				OOX::Drawing::CRun* pRun= static_cast<OOX::Drawing::CRun*>(oox_unknown);
+				convert(pRun);
+			}break;
+			case OOX::et_a_alphaModFix:
+			{
+				OOX::Drawing::CAlphaModulateFixedEffect* pAlpha= static_cast<OOX::Drawing::CAlphaModulateFixedEffect*>(oox_unknown);
+				if (pAlpha)
+				{
+					odf_context()->drawing_context()->set_opacity(pAlpha->m_oAmt.GetValue());
+				}
+			}break;
+			case OOX::et_v_imagedata:
+			{
+				OOX::Vml::CImageData *vml = static_cast<OOX::Vml::CImageData*>(oox_unknown);
+				convert(vml);
+			}break;
+			case OOX::et_v_textbox:
+			{
+				OOX::Vml::CTextbox *vml = static_cast<OOX::Vml::CTextbox*>(oox_unknown);
+				convert(vml);
+			}break;
+			//case OOX::et_v_background:
+			//{
+			//	OOX::Vml::CBackground *vml = static_cast<OOX::Vml::CBackground*>(oox_unknown);
+			//	convert(vml);
+			//}break;
+			case OOX::et_v_path:
+			{
+				OOX::Vml::CPath *vml = static_cast<OOX::Vml::CPath*>(oox_unknown);
+				convert(vml);
+			}break;	
+				case OOX::et_v_textpath:
+			{
+				OOX::Vml::CTextPath *vml = static_cast<OOX::Vml::CTextPath*>(oox_unknown);
+				convert(vml);
+			}break;	
+			case OOX::et_v_fill:
+			{
+				OOX::Vml::CFill *vml = static_cast<OOX::Vml::CFill*>(oox_unknown);
+				convert(vml);
+			}break;
+			case OOX::et_v_stroke:
+			{
+				OOX::Vml::CStroke *vml = static_cast<OOX::Vml::CStroke*>(oox_unknown);
+				convert(vml);
+			}break;
+			case OOX::et_wd_wrap:
+			{
+				OOX::VmlWord::CWrap *vml = static_cast<OOX::VmlWord::CWrap*>(oox_unknown);
+				convert(vml);
+			}break;
+			// "ненужные" элементы
+			case OOX::et_w_softHyphen:
+			case OOX::et_w_proofErr:
+			case OOX::et_w_proofState:
+			{
+				//бяка
+			}break;
+
+			default:
+			{
+				OOX::Vml::CVmlShapeElements *vml = dynamic_cast<OOX::Vml::CVmlShapeElements*>(oox_unknown);
+				if (vml)convert( vml);
+				else
+				{
+					int ttt = (int) oox_unknown->getType();
+					std::wstringstream ss;
+					ss << L"[warning] :  no convert element(" << oox_unknown->getType() << L")\n";
+					_CP_LOG(error) << ss.str();
+				}
 			}
 		}
+	}catch(...)
+	{
+		std::wstringstream ss;
+		ss << L"[error] :  no convert element(" << (oox_unknown ? oox_unknown->getType() : -1 ) << L")\n";
+		_CP_LOG(error) << ss.str();
 	}
 }
 

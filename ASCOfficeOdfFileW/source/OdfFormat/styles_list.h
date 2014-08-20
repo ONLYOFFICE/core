@@ -169,7 +169,6 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(text_list_level_style_number);
 
-/// \class  text_list_level_style_bullet_attr
 ///         text-list-level-style-bullet-attr
 class text_list_level_style_bullet_attr
 {
@@ -184,7 +183,6 @@ public:
 	void serialize(CP_ATTR_NODE);
 };
 
-/// \class  text_list_level_style_bullet
 ///         text:list-level-style-bullet
 class text_list_level_style_bullet : public office_element_impl<text_list_level_style_bullet>
 {
@@ -209,6 +207,38 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(text_list_level_style_bullet);
 
+///         text-list-level-style-image-attr
+class text_list_level_style_image_attr
+{
+public:
 
+    _CP_OPT(style_ref)		text_style_name_;
+    common_xlink_attlist	common_xlink_attlist_;
+
+ 	void serialize(CP_ATTR_NODE);
+};
+///         text:list-level-style-image
+class text_list_level_style_image : public office_element_impl<text_list_level_style_image>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextListLevelStyleImage;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);   
+	virtual void add_child_element(office_element_ptr & child);
+
+	virtual void serialize(std::wostream & strm);
+
+    text_list_level_style_attr			text_list_level_style_attr_;
+    text_list_level_style_image_attr	text_list_level_style_image_attr_;
+    
+    office_element_ptr					style_text_properties_;
+	office_element_ptr					style_list_level_properties_;
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(text_list_level_style_image);
 } 
 }

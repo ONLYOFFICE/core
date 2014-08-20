@@ -87,16 +87,41 @@ void odf_page_layout_context::end_master_page()
 	if (f_header && !f_footer && footer)
 	{
 		add_footer(2);
+		office_element_ptr blank_p_elm;
+		create_element(L"text", L"p", blank_p_elm, odf_context_);
+
+		master_state_list_.back().elements_.back().elm->add_child_element(blank_p_elm);
+		
 		f_footer = true;
 	}
+	if (!f_header && f_footer && header)
+	{
+		add_header(2);
+		office_element_ptr blank_p_elm;
+		create_element(L"text", L"p", blank_p_elm, odf_context_);
+
+		master_state_list_.back().elements_.back().elm->add_child_element(blank_p_elm);
+
+		f_header = true;
+	}	
+	//“ак как лажовый Libra и Apach ќо не воспринимают бланковые колонтитулы только первых страниц - городим велосипед на остальные страницы
 	if (!header && (f_header || l_header))
 	{
 		add_header(0);
+		office_element_ptr blank_p_elm;
+		create_element(L"text", L"p", blank_p_elm, odf_context_);
+
+		master_state_list_.back().elements_.back().elm->add_child_element(blank_p_elm);
 		header = true;
 	}
 	if (!footer && (f_footer || l_footer))
 	{
 		add_footer(0);
+		office_element_ptr blank_p_elm;
+		create_element(L"text", L"p", blank_p_elm, odf_context_);
+
+		master_state_list_.back().elements_.back().elm->add_child_element(blank_p_elm);
+
 		footer = true;
 	}
 
@@ -120,6 +145,7 @@ void odf_page_layout_context::process_master_styles(office_element_ptr root )
 
 void odf_page_layout_context::process_automatic_for_styles(office_element_ptr root )
 {
+	//local_style_context_->process_automatic_for_styles(root);
 	local_style_context_->process_automatic_styles(root);
 }
 void odf_page_layout_context::process_office_styles(office_element_ptr root )

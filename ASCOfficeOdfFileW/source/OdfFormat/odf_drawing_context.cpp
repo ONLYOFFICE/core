@@ -351,7 +351,7 @@ void odf_drawing_context::start_drawing()
 {
 	//impl_->current_drawing_state_.clear();
 
-	if (impl_->current_level_.size() < 1)
+	//if (impl_->current_level_.size() < 1)
 	{
 		impl_->current_drawing_state_.svg_x_ = impl_->anchor_settings_.svg_x_;
 		impl_->current_drawing_state_.svg_y_ = impl_->anchor_settings_.svg_y_;
@@ -370,7 +370,8 @@ void odf_drawing_context::start_drawing()
 		impl_->current_drawing_state_.svg_width_ = impl_->anchor_settings_.svg_width_;
 		impl_->current_drawing_state_.svg_height_ = impl_->anchor_settings_.svg_height_;
 	}
-	else 
+	//else 
+	if (impl_->current_level_.size() > 0)
 	{
 		impl_->current_drawing_state_.in_group = true;
 	}
@@ -406,10 +407,12 @@ void odf_drawing_context::end_drawing()
 		{
 			if (impl_->current_drawing_state_.in_group)
 			{
-				
+				if (impl_->current_drawing_state_.svg_width_ && impl_->current_drawing_state_.svg_height_)
+				{
 					strTransform += std::wstring(L" translate(-") +	boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_width_.get()/2)
 											+ std::wstring(L",-") + boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_height_.get()/2)
 											+ std::wstring(L")" ); 
+				}
 
 			}
 			strTransform += std::wstring(L"rotate(") + boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.rotateAngle.get()) + std::wstring(L")");
@@ -417,11 +420,11 @@ void odf_drawing_context::end_drawing()
 
 			if (impl_->current_drawing_state_.svg_x_ && impl_->current_drawing_state_.svg_y_)
 			{
-				strTransform += std::wstring(L" translate(") +	boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_x_.get() +
-																(impl_->current_drawing_state_.svg_width_.get()/2))
-										+ std::wstring(L",") +  boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_y_.get() +
-																(impl_->current_drawing_state_.svg_height_.get()/2))
-										+ std::wstring(L")") ; 
+					strTransform += std::wstring(L" translate(") +	boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_x_.get() +
+											(impl_->current_drawing_state_.svg_width_ ? (impl_->current_drawing_state_.svg_width_.get()/2) : 0))
+											+ std::wstring(L",") +  boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_y_.get() +
+											(impl_->current_drawing_state_.svg_height_ ? (impl_->current_drawing_state_.svg_height_.get()/2) : 0))
+											+ std::wstring(L")") ; 
 				impl_->current_drawing_state_.svg_x_ = boost::none;
 				impl_->current_drawing_state_.svg_y_ = boost::none;
 			}

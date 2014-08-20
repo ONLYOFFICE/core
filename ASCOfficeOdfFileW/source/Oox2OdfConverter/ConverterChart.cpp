@@ -984,7 +984,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_AxDataSource* cat, int type)
 	{
 		if (cat->m_strRef->m_f)odf_context()->chart_context()->set_category_axis_formula(string2std_string(*cat->m_strRef->m_f),type);
 		
-		convert(cat->m_strRef->m_strCache/*, type == 1 ? true:false*/);
+		convert(cat->m_strRef->m_strCache,true/*, type == 1 ? true:false*/);
 	}
 	else if (cat->m_numRef)
 	{

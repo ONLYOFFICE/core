@@ -1358,7 +1358,7 @@ void odf_chart_context::set_series_pie_explosion(int val)//или точка серии
 //	impl_->cash_.push_back(state);
 //}
 
-void odf_chart_context::set_cash(std::wstring format, std::vector<std::wstring> & data_str,bool label)
+void odf_chart_context::set_cash(std::wstring format, std::vector<std::wstring> & data_str, bool label)
 {
 	if (data_str.size() <1) return;
 	if (impl_->data_cell_ranges_.size()<1) return;

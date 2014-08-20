@@ -80,6 +80,7 @@ enum ElementType
     typeStyleDefaultStyle,
     typeStyleStyle,
     typeTextListStyle,
+	typeTextListLevelStyleImage,
     typeTextListLevelStyleNumber,
     typeTextListLevelStyleBullet,
     typeStyleListLevelProperties,

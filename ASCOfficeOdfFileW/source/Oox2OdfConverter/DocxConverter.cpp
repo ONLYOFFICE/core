@@ -796,7 +796,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 
 	oox_section_pr = last_seсtion_properties;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	odt_context->page_layout_context()->start_master_page(root ? L"Standart" : L"");
+	odt_context->page_layout_context()->start_master_page(root ? L"Standard" : L"");
 	
 	odt_context->set_master_page_name(odt_context->page_layout_context()->last_master().get_name());
 	
@@ -1484,6 +1484,9 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf::style_tex
 	}
 	if (oox_run_pr->m_oOutline.IsInit())
 		text_properties->content().style_text_outline_ = true; //контур
+
+	if (oox_run_pr->m_oVanish.IsInit())
+		text_properties->content().text_display_ = odf::text_display(odf::text_display::None);
 }
 
 void DocxConverter::convert(SimpleTypes::CTheme<>* oox_font_theme, _CP_OPT(std::wstring) & odf_font_name)
@@ -1583,6 +1586,14 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 
 	odt_context->start_drawings();
 			
+	if (odt_context->table_context()->empty())
+		odf_context()->drawing_context()->set_anchor(odf::anchor_type::AsChar);//default
+	else
+	{
+		odf_context()->drawing_context()->set_anchor(odf::anchor_type::Paragraph);
+		odf_context()->drawing_context()->set_object_background(true);
+	}
+		
 	int type = 1; // shape .. default
 	if (oox_pic->m_oShapeGroup.IsInit())
 	{
@@ -1590,14 +1601,6 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 	}
 	else
 	{
-		if (odt_context->table_context()->empty())
-			odf_context()->drawing_context()->set_anchor(odf::anchor_type::AsChar);//default
-		else
-		{
-			odf_context()->drawing_context()->set_anchor(odf::anchor_type::Paragraph);
-			odf_context()->drawing_context()->set_object_background(true);
-		}
-		
 		if (oox_pic->m_oShape.IsInit())
 			OoxConverter::convert(oox_pic->m_oShape->m_oStyle.GetPointer());
 		
@@ -2405,7 +2408,10 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 
 	if (oox_num_lvl->m_oNumFmt->m_oVal.IsInit()== false) return; //???
 
-	int type_list = odt_context->styles_context()->lists_styles().start_style_level(oox_num_lvl->m_oIlvl->GetValue(), oox_num_lvl->m_oNumFmt->m_oVal->GetValue());
+	int oox_type_list = oox_num_lvl->m_oNumFmt->m_oVal->GetValue();
+	if (oox_num_lvl->m_oLvlPicBulletId.IsInit()) oox_type_list = 1000;
+
+	int type_list = odt_context->styles_context()->lists_styles().start_style_level(oox_num_lvl->m_oIlvl->GetValue(), oox_type_list );
 	if (type_list < 0) return;
 
 	odf::style_list_level_properties		* level_props		= odt_context->styles_context()->lists_styles().get_list_level_properties();
@@ -2465,17 +2471,19 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 	}
 	if (oox_num_lvl->m_oRPr.IsInit())//дл€ обозначений списка
 	{
+		odf::odf_style_context* styles_context = /*odt_context->styles_context();*/odf_context()->page_layout_context()->get_local_styles_context();
+		
 		odf::style_text_properties *text_props = odt_context->styles_context()->lists_styles().get_text_properties();
 		convert(oox_num_lvl->m_oRPr.GetPointer(), text_props);
 
-		//create text style for symbols list
-		odt_context->styles_context()->create_style(L"",odf::style_family::Text, true, true, -1);					
-		odf::odf_style_state_ptr style_state = odt_context->styles_context()->last_state(odf::style_family::Text);
+		//create text style for symbols list Ќј Ћќ јЋ№Ќќћ контексте - иначе пересечение имен стилей (todoo вытащить генерацию имен в общую часть)
+		styles_context->create_style(L"",odf::style_family::Text, false, true, -1);					
+		odf::odf_style_state_ptr style_state = styles_context->last_state(odf::style_family::Text);
 		if (style_state)
 		{
 			odt_context->styles_context()->lists_styles().set_text_style_name( style_state->get_name());		
 			
-			odf::style_text_properties	* text_props_2 = odt_context->styles_context()->last_state()->get_text_properties();			
+			odf::style_text_properties	* text_props_2 = style_state->get_text_properties();			
 			if (text_props_2)text_props_2->apply_from(text_props);
 		}
 	}
@@ -2487,9 +2495,20 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 	{
 		 odt_context->styles_context()->lists_styles().set_bullet_char(string2std_string(oox_num_lvl->m_oLvlText->m_sVal.get()));
 	}
-	if (oox_num_lvl->m_oLvlPicBulletId.IsInit() && type_list == 2)
+	if (oox_num_lvl->m_oLvlPicBulletId.IsInit() && oox_num_lvl->m_oLvlPicBulletId->m_oVal.IsInit())
 	{
-		//ссылка на картику bullet
+		int id = oox_num_lvl->m_oLvlPicBulletId->m_oVal->GetValue();
+		OOX::CNumbering * lists_styles = docx_document->GetNumbering();
+
+		for (long i = 0; (lists_styles) && (i< lists_styles->m_arrNumPicBullet.GetSize()); i++)
+		{
+			if (lists_styles->m_arrNumPicBullet[i].m_oNumPicBulletId.GetValue() == id)
+			{
+				//convert(lists_styles->m_arrNumPicBullet[i].m_oDrawing.GetPointer());
+				//convert(lists_styles->m_arrNumPicBullet[i].m_oVmlDrawing.GetPointer());
+			}
+		}
+
 	}
 	if (oox_num_lvl->m_oLvlRestart.IsInit() && oox_num_lvl->m_oLvlRestart->m_oVal.IsInit() && type_list == 1)
 	{

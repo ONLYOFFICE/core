@@ -19,6 +19,276 @@
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
+namespace NSEditorApi
+{
+
+#define LINK_PROPERTY_INT(memberName)					\
+	inline int get_##memberName()						\
+	{													\
+		return m_n##memberName;							\
+	}													\
+	inline void put_##memberName(const int& newVal)		\
+	{													\
+		m_n##memberName = newVal;						\
+	}
+
+#define LINK_PROPERTY_DOUBLE(memberName)				\
+	inline double get_##memberName()					\
+	{													\
+		return m_d##memberName;							\
+	}													\
+	inline void put_##memberName(const double& newVal)	\
+	{													\
+		m_d##memberName = newVal;						\
+	}
+
+#define LINK_PROPERTY_BOOL(memberName)					\
+	inline bool get_##memberName()						\
+	{													\
+		return m_b##memberName;							\
+	}													\
+	inline void put_##memberName(const bool& newVal)	\
+	{													\
+		m_b##memberName = newVal;						\
+	}
+
+#define LINK_PROPERTY_BYTE(memberName)					\
+	inline unsigned char get_##memberName()				\
+	{													\
+		return m_n##memberName;							\
+	}													\
+	inline void put_##memberName(const unsigned char& newVal)	\
+	{															\
+		m_n##memberName = newVal;								\
+	}
+
+#define LINK_PROPERTY_STRING(memberName)						\
+	inline std::wstring get_##memberName()						\
+	{															\
+		return m_s##memberName;									\
+	}															\
+	inline void put_##memberName(const std::wstring& newVal)	\
+	{															\
+		m_s##memberName = newVal;								\
+	}
+#define LINK_PROPERTY_STRINGA(memberName)						\
+	inline std::string get_##memberName()						\
+	{															\
+		return m_s##memberName;									\
+	}															\
+	inline void put_##memberName(const std::string& newVal)		\
+	{															\
+		m_s##memberName = newVal;								\
+	}
+
+// JS
+#define LINK_PROPERTY_INT_JS(memberName)								\
+	inline js_wrapper<int>& get_##memberName()							\
+	{																	\
+		return m_n##memberName;											\
+	}																	\
+	inline void put_##memberName(const int& newVal)						\
+	{																	\
+		m_n##memberName = newVal;										\
+	}																	\
+	inline void put_##memberName(const js_wrapper<int>& newVal)			\
+	{																	\
+		m_n##memberName = newVal;										\
+	}
+
+#define LINK_PROPERTY_DOUBLE_JS(memberName)								\
+	inline js_wrapper<double>& get_##memberName()						\
+	{																	\
+		return m_d##memberName;											\
+	}																	\
+	inline void put_##memberName(const double& newVal)					\
+	{																	\
+		m_d##memberName = newVal;										\
+	}																	\
+	inline void put_##memberName(const js_wrapper<double>& newVal)		\
+	{																	\
+		m_d##memberName = newVal;										\
+	}
+
+#define LINK_PROPERTY_BOOL_JS(memberName)								\
+	inline js_wrapper<bool>& get_##memberName()							\
+	{																	\
+		return m_b##memberName;											\
+	}																	\
+	inline void put_##memberName(const bool& newVal)					\
+	{																	\
+		m_b##memberName = newVal;										\
+	}																	\
+	inline void put_##memberName(const js_wrapper<bool>& newVal)		\
+	{																	\
+		m_b##memberName = newVal;										\
+	}
+
+#define LINK_PROPERTY_BYTE_JS(memberName)								\
+	inline js_wrapper<unsigned char>& get_##memberName()				\
+	{																	\
+		return m_n##memberName;											\
+	}																	\
+	inline void put_##memberName(const unsigned char& newVal)			\
+	{																	\
+		m_n##memberName = newVal;										\
+	}																	\
+	inline void put_##memberName(const js_wrapper<unsigned char>& newVal)		\
+	{																	\
+		m_n##memberName = newVal;										\
+	}
+
+#define LINK_PROPERTY_STRING_JS(memberName)									\
+	inline js_wrapper<std::wstring>& get_##memberName()						\
+	{																		\
+		return m_s##memberName;												\
+	}																		\
+	inline void put_##memberName(const std::wstring& newVal)				\
+	{																		\
+		m_s##memberName = newVal;											\
+	}																		\
+	inline void put_##memberName(const js_wrapper<std::wstring>& newVal)	\
+	{																		\
+		m_s##memberName = newVal;											\
+	}
+
+#define LINK_PROPERTY_STRINGA_JS(memberName)								\
+	inline js_wrapper<std::string>& get_##memberName()						\
+	{																		\
+		return m_s##memberName;												\
+	}																		\
+	inline void put_##memberName(const std::string& newVal)					\
+	{																		\
+		m_s##memberName = newVal;											\
+	}																		\
+	inline void put_##memberName(const js_wrapper<std::string>& newVal)		\
+	{																		\
+		m_s##memberName = newVal;											\
+	}
+
+#define LINK_PROPERTY_OBJECT_JS(objectType, memberName)						\
+	inline js_wrapper<objectType>& get_##memberName()						\
+	{																		\
+		return m_o##memberName;												\
+	}																		\
+	inline void put_##memberName(const js_wrapper<objectType>& newVal)		\
+	{																		\
+		m_o##memberName = newVal;											\
+	}																		\
+	inline void put_##memberName(objectType* newVal)						\
+	{																		\
+		m_o##memberName = newVal;											\
+	}
+
+template<typename Type>
+class js_wrapper
+{
+protected:
+	Type* m_pPointer;
+	bool m_bIsNull;
+
+public:
+	js_wrapper()
+	{
+		m_pPointer = NULL;
+		m_bIsNull = false;
+	}
+	js_wrapper(const js_wrapper<Type>& oOther)
+	{
+		m_pPointer = NULL;
+		
+		if (oOther.m_bIsNull)
+			m_bIsNull = true;
+		else
+		{
+			m_bIsNull = false;
+
+			if ( NULL != oOther.m_pPointer )
+				m_pPointer = new Type( (const Type&)*(oOther.m_pPointer) );
+		}
+	}
+	js_wrapper(Type* pOther)
+	{
+		m_pPointer = pOther;
+		m_bIsNull = false;
+	}
+	virtual ~js_wrapper()
+	{
+		if (NULL != m_pPointer)
+			delete m_pPointer;
+	}
+
+public:
+	inline Type& operator*()  { return *m_pPointer; }
+	inline Type* operator->() { return  m_pPointer; }
+
+	inline Type& operator*() const  { return *m_pPointer; }
+	inline Type* operator->() const { return  m_pPointer; }
+
+	inline const Type& get()const { return  *m_pPointer; } 
+	inline Type& get() { return  *m_pPointer; }
+
+public:
+	js_wrapper<Type>& operator=(const js_wrapper<Type> &oOther)
+	{
+		if (NULL != m_pPointer)
+		{
+			delete m_pPointer;
+			m_pPointer = NULL;
+		}
+
+		if (oOther.m_bIsNull)
+			m_bIsNull = true;
+		else
+		{
+			m_bIsNull = false;
+
+			if ( NULL != oOther.m_pPointer )
+				m_pPointer = new Type( (const Type&)*(oOther.m_pPointer) );
+		}
+		return *this;
+	}
+	js_wrapper<Type>& operator=(Type* pType)
+	{
+		if (NULL != m_pPointer)
+			delete m_pPointer;
+
+		m_pPointer	= pType;
+		m_bIsNull = false;
+		return *this;
+	}
+	js_wrapper<Type>& operator=(const Type& oSrc)
+	{
+		if (NULL != m_pPointer)
+			delete m_pPointer;
+
+		m_pPointer	= new Type(oSrc);
+		m_bIsNull = false;
+		return *this;
+	}
+
+public:
+	inline bool IsNull() const
+	{ 
+		return m_bIsNull;
+	}
+	inline bool IsUndefined() const
+	{ 
+		return (NULL == m_pPointer);
+	}
+	inline bool IsInit() const
+	{
+		return ((NULL != m_pPointer) && !m_bIsNull);
+	}
+	inline void SetNull()
+	{
+		m_bIsNull = true;
+	}
+};
+
+}
+
+
 // colors
 namespace NSEditorApi
 {
@@ -1804,6 +2074,8 @@ namespace NSEditorApi
 #define ASC_MENU_EVENT_TYPE_TABLE				10
 #define ASC_MENU_EVENT_TYPE_PARAGRAPHSTYLES		11
 #define ASC_MENU_EVENT_TYPE_TABLESTYLES			12
+#define ASC_MENU_EVENT_TYPE_INCREASEPARAINDENT		13
+#define ASC_MENU_EVENT_TYPE_DECREASEPARAINDENT		14
 
 // insert commands
 #define ASC_MENU_EVENT_TYPE_INSERT_IMAGE			50

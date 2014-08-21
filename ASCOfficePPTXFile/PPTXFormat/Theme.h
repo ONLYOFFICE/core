@@ -64,15 +64,15 @@ namespace PPTX
 			XmlUtils::CXmlNode oDefaults;
 			if (oNode.GetNode(_T("a:objectDefaults"), oDefaults))
 			{
-				spDef = oNode.ReadNode(_T("a:spDef"));
+				spDef = oDefaults.ReadNode(_T("a:spDef"));
 				if (spDef.IsInit())
 					spDef->SetParentFilePointer(this);
 
-				lnDef = oNode.ReadNode(_T("a:lnDef"));
+				lnDef = oDefaults.ReadNode(_T("a:lnDef"));
 				if (lnDef.IsInit())
 					lnDef->SetParentFilePointer(this);
 
-				txDef = oNode.ReadNode(_T("a:txDef"));
+				txDef = oDefaults.ReadNode(_T("a:txDef"));
 				if (txDef.IsInit())
 					txDef->SetParentFilePointer(this);
 			}

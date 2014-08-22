@@ -284,6 +284,10 @@ public:
 	{
 		m_bIsNull = true;
 	}
+	inline void ReleaseNoAttack()
+	{
+		m_pPointer = NULL;
+	}
 };
 
 }
@@ -578,121 +582,149 @@ namespace NSEditorApi
 // fill
 namespace NSEditorApi
 {
-	class CAscFillSolid
+	class CAscFillBase
+	{
+	public:
+		CAscFillBase()
+		{
+		}
+		virtual ~CAscFillBase()
+		{
+		}
+	};
+
+	class CAscFillSolid : public CAscFillBase
 	{
 	private:
-		CAscColor m_oColor;
+		js_wrapper<CAscColor> m_oColor;
 
 	public:
 		CAscFillSolid()
 		{
 		}
+		virtual ~CAscFillSolid()
+		{
+		}
 
-		CAscColor& get_Color() { return m_oColor; }
+		LINK_PROPERTY_OBJECT_JS(CAscColor, Color)
 	};
 
-	class CAscFillBlip
+	class CAscFillBlip : public CAscFillBase
 	{
 	private:
-		int				m_nType; // c_oAscFillBlipType_
-		std::wstring	m_sUrl;
-		int				m_nTextureId;
+		js_wrapper<int>				m_nType; // c_oAscFillBlipType_
+		js_wrapper<std::wstring>	m_sUrl;
+		js_wrapper<int>				m_nTextureId;
 
 	public:
 		CAscFillBlip()
 		{
-			m_nType = c_oAscFillBlipType_STRETCH;
-			m_sUrl = L"";
-			m_nTextureId = -1;
+		}
+		virtual ~CAscFillBlip()
+		{
 		}
 
-		LINK_PROPERTY_INT(Type)
-		LINK_PROPERTY_STRING(Url)
-		LINK_PROPERTY_INT(TextureId)
+		LINK_PROPERTY_INT_JS(Type)
+		LINK_PROPERTY_STRING_JS(Url)
+		LINK_PROPERTY_INT_JS(TextureId)
 	};
 
-	class CAscFillHatch
+	class CAscFillHatch : public CAscFillBase
 	{
 	private:
-		int m_nPatternType;
-		CAscColor m_oFg;
-		CAscColor m_oBg;
+		js_wrapper<int>			m_nPatternType;
+		js_wrapper<CAscColor>	m_oFg;
+		js_wrapper<CAscColor>	m_oBg;
 
 	public:
 		CAscFillHatch()
 		{
-			m_nPatternType = -1;
+		}
+		virtual ~CAscFillHatch()
+		{
 		}
 
-		LINK_PROPERTY_INT(PatternType)
+		LINK_PROPERTY_INT_JS(PatternType)
 
-		CAscColor& get_Fg() { return m_oFg; }
-		CAscColor& get_Bg() { return m_oBg; }
+		LINK_PROPERTY_OBJECT_JS(CAscColor, Fg)
+		LINK_PROPERTY_OBJECT_JS(CAscColor, Bg)
 	};
 
-	class CAscFillGrad
+	class CAscFillGradColors
 	{
 	private:
-		int			m_nCountColors;
-		CAscColor*	m_pColors;
-		int*		m_pPositions;
+		js_wrapper<CAscColor>*	m_pColors;
+		js_wrapper<int>*		m_pPositions;
+		int m_lCount;
 
-		int			m_nGradType;
+	public:
 
-		double		m_dLinearAngle;
-		bool		m_bLinearScale;
+		CAscFillGradColors()
+		{
+			m_pColors = NULL;
+			m_pPositions = NULL;
+			m_lCount = 0;			
+		}
+		virtual ~CAscFillGradColors()
+		{
+			if (NULL != m_pColors)
+				delete [] m_pColors;
+			if (NULL != m_pPositions)
+				delete [] m_pPositions;
+		}
 
-		int			m_nPathType;
+		int GetCount() { return m_lCount; }
+		js_wrapper<CAscColor>* GetColors() { return m_pColors; }
+		js_wrapper<int>* GetPositions() { return m_pPositions; }
+		void SetColors(js_wrapper<CAscColor>* pColors, js_wrapper<int>* pPositions, int nCount)
+		{
+			m_pColors = pColors;
+			m_pPositions = pPositions;
+			m_lCount = nCount;
+		}
+	};
+
+	class CAscFillGrad : public CAscFillBase
+	{
+	private:
+		js_wrapper<CAscFillGradColors>	m_oColors;
+
+		js_wrapper<int>					m_nGradType;
+
+		js_wrapper<double>				m_dLinearAngle;
+		js_wrapper<bool>				m_bLinearScale;
+
+		js_wrapper<int>					m_nPathType;
 
 	public:
 		CAscFillGrad()
 		{
-			m_nCountColors	= 0;
-			m_pColors		= NULL;
-			m_pPositions	= NULL;
-
-			m_nGradType = 0;
-
-			m_dLinearAngle = 0;
-			m_bLinearScale = 0;
-
-			m_nPathType = 0;
 		}
 
-		inline int get_CountColors() { return m_nCountColors; }
-		inline CAscColor* get_Colors() { return m_pColors; }
-		inline int* get_Positions() { return m_pPositions; }
+		LINK_PROPERTY_OBJECT_JS(CAscFillGradColors, Colors)
 
-		LINK_PROPERTY_INT(GradType)
-		LINK_PROPERTY_DOUBLE(LinearAngle)
-		LINK_PROPERTY_BOOL(LinearScale)
-		LINK_PROPERTY_INT(PathType)
+		LINK_PROPERTY_INT_JS(GradType)
+		LINK_PROPERTY_DOUBLE_JS(LinearAngle)
+		LINK_PROPERTY_BOOL_JS(LinearScale)
+		LINK_PROPERTY_INT_JS(PathType)
 	};
 
 	class CAscFill
 	{
 	private:
-		js_wrapper<int>		m_nType;
-		js_wrapper<void*>	m_pFill;
-		js_wrapper<int>		m_nTransparent;
+		js_wrapper<int>				m_nType;
+		js_wrapper<CAscFillBase>	m_oFill;
+		js_wrapper<int>				m_nTransparent;
 
 	public:
 		CAscFill()
 		{
-			m_nType.SetNull();
-			m_pFill.SetNull();
-			m_nTransparent.SetNull();
 		}
 
 		LINK_PROPERTY_INT_JS(Type)
 		LINK_PROPERTY_INT_JS(Transparent)
 		
-		inline js_wrapper<void*> get_Fill() { return m_pFill; }
-
-		inline void put_Fill(js_wrapper<void*> pFill)
-		{
-			m_pFill = pFill;
-		}
+		LINK_PROPERTY_OBJECT_JS(CAscFillBase, Fill)
 	};
 }
 

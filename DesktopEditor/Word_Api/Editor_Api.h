@@ -720,19 +720,6 @@ namespace NSEditorApi
 	public:
 		CAscStroke()
 		{
-			m_nType.SetNull();
-			m_dWidth.SetNull();
-			m_oColor.SetNull();
-
-			m_nLineJoin.SetNull();
-			m_nLineCap.SetNull();
-
-			m_nLineBeginSize.SetNull();
-			m_nLineBeginStyle.SetNull();
-
-			m_nLineEndSize.SetNull();
-			m_nLineEndStyle.SetNull();
-
 			m_bCanChangeArrows = false;
 		}
 
@@ -779,7 +766,8 @@ namespace NSEditorApi
 		LINK_PROPERTY_BOOL_JS(FromChart)
 
 		LINK_PROPERTY_OBJECT_JS(CAscFill, Fill)
-		LINK_PROPERTY_OBJECT_JS(CAscStroke, Stroke)		
+		LINK_PROPERTY_OBJECT_JS(CAscStroke, Stroke)
+		LINK_PROPERTY_OBJECT_JS(CAscPaddings, Paddings)	
 	};
 
 	class CAscImagePosition

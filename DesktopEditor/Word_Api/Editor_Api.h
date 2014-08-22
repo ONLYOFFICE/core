@@ -1737,6 +1737,8 @@ namespace NSEditorApi
 		LINK_PROPERTY_OBJECT_JS(CAscImagePosition, PositionH)
 		LINK_PROPERTY_OBJECT_JS(CAscImagePosition, PositionV)
 
+		LINK_PROPERTY_OBJECT_JS(CAscTableAnchorPosition, InternalPosition)
+
 		LINK_PROPERTY_BOOL_JS(ForSelectedCells)
 		LINK_PROPERTY_STRING_JS(Style)
 		LINK_PROPERTY_OBJECT_JS(CAscTableLook, Look)

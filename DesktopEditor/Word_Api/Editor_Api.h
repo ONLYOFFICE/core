@@ -1685,6 +1685,19 @@ namespace NSEditorApi
 		}
 	};
 
+	class CAscTableCellSplit
+	{
+	public:
+		int Rows;
+		int Cols;
+
+		CAscTableCellSplit()
+		{
+			Rows = 0;
+			Cols = 0;
+		}
+	};
+
 	class CAscTableProperties
 	{
 	private:

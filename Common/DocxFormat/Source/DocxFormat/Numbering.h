@@ -674,6 +674,10 @@ namespace OOX
 					{
 						m_oDrawing = oReader;
 					}
+					if ( _T("w:pict") == sName )
+					{
+						m_oVmlDrawing = oReader;
+					}
 				}
 			}
 			virtual CString      toXML() const
@@ -682,7 +686,7 @@ namespace OOX
 
 				sResult += m_oNumPicBulletId.ToString() + _T(">");
 
-				sResult += m_oDrawing.toXML();
+				sResult += m_oDrawing->toXML();
 
 				sResult += _T("</w:numPicBullet>");
 
@@ -709,14 +713,15 @@ namespace OOX
 			SimpleTypes::CDecimalNumber<> m_oNumPicBulletId;
 
 			// Childs
-			OOX::Logic::CDrawing          m_oDrawing;
+			nullable<OOX::Logic::CDrawing>			m_oDrawing;
+			nullable<OOX::Logic::CPicture>			m_oVmlDrawing;
 		};
 	} // Numbering
 } // OOX 
 
 namespace OOX
 {
-	class CNumbering : public OOX::File
+	class CNumbering : public OOX::File, public IFileContainer
 	{
 	public:
 		CNumbering()
@@ -728,11 +733,21 @@ namespace OOX
 		}
 		virtual ~CNumbering()
 		{
+			for ( int nIndex = 0; nIndex < m_arrNumPicBullet.GetSize(); nIndex++ )
+			{
+				if (m_arrNumPicBullet[nIndex])delete m_arrNumPicBullet[nIndex];
+				m_arrNumPicBullet[nIndex] = NULL;
+			}
+			m_arrNumPicBullet.RemoveAll();
+
+			 m_arrNum.RemoveAll();
+			 m_arrAbstractNum.RemoveAll();
 		}
 	public:
 
 		virtual void read(const CPath& oFilePath)
 		{
+			IFileContainer::Read( oFilePath );
 #ifdef USE_LITE_READER
 
 			XmlUtils::CXmlLiteReader oReader;
@@ -764,8 +779,8 @@ namespace OOX
 						m_oNumIdMacAtCleanup = oReader;
 					else if ( _T("w:numPicBullet") == sName )
 					{
-						OOX::Numbering::CNumPicBullet oNumPic = oReader;
-						m_arrNumPicBullet.Add( oNumPic );
+						OOX::Numbering::CNumPicBullet *oNumPic =  new OOX::Numbering::CNumPicBullet(oReader);
+						if (oNumPic) m_arrNumPicBullet.Add( oNumPic );
 					}
 				}
 			}
@@ -847,7 +862,8 @@ namespace OOX
 
 			for ( int nIndex = 0; nIndex < m_arrNumPicBullet.GetSize(); nIndex++ )
 			{
-				sXml += m_arrNumPicBullet[nIndex].toXML();
+				if (m_arrNumPicBullet[nIndex])
+					sXml += m_arrNumPicBullet[nIndex]->toXML();
 			}
 
 			sXml += _T("</w:numbering>");
@@ -875,7 +891,7 @@ namespace OOX
 		CSimpleArray<OOX::Numbering::CAbstractNum   > m_arrAbstractNum;
 		CSimpleArray<OOX::Numbering::CNum           > m_arrNum;
 		nullable<ComplexTypes::Word::CDecimalNumber > m_oNumIdMacAtCleanup;
-		CSimpleArray<OOX::Numbering::CNumPicBullet  > m_arrNumPicBullet;
+		CSimpleArray<OOX::Numbering::CNumPicBullet *> m_arrNumPicBullet;
 
 	};
 } // namespace OOX

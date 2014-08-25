@@ -176,6 +176,11 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 				OOX::Vml::CStroke *vml = static_cast<OOX::Vml::CStroke*>(oox_unknown);
 				convert(vml);
 			}break;
+			case OOX::et_v_image:
+			{
+				OOX::Vml::CImage *vml = static_cast<OOX::Vml::CImage*>(oox_unknown);
+				convert(vml);
+			}break;
 			case OOX::et_wd_wrap:
 			{
 				OOX::VmlWord::CWrap *vml = static_cast<OOX::VmlWord::CWrap*>(oox_unknown);
@@ -191,15 +196,10 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 
 			default:
 			{
-				OOX::Vml::CVmlShapeElements *vml = dynamic_cast<OOX::Vml::CVmlShapeElements*>(oox_unknown);
-				if (vml)convert( vml);
-				else
-				{
-					int ttt = (int) oox_unknown->getType();
-					std::wstringstream ss;
-					ss << L"[warning] :  no convert element(" << oox_unknown->getType() << L")\n";
-					_CP_LOG(error) << ss.str();
-				}
+				int ttt = (int) oox_unknown->getType();
+				std::wstringstream ss;
+				ss << L"[warning] :  no convert element(" << oox_unknown->getType() << L")\n";
+				_CP_LOG(error) << ss.str();
 			}
 		}
 	}catch(...)

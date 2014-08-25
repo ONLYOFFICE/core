@@ -249,7 +249,6 @@ namespace OOX
 	}
 	namespace Vml
 	{
-		class CVmlShapeElements;
 		class CShapeType;
 		class CShape;
 		class CImage;
@@ -269,7 +268,7 @@ namespace OOX
 		class CTextbox;
 		class CTextPath;
 		class CGroup;
-		class CVmlAttributes;
+		class CVmlCommonElements;
 	}
 	namespace VmlWord
 	{	
@@ -412,8 +411,6 @@ public:
 
 
 //.vml............................................................................................................................
-		void convert(OOX::Vml::CVmlShapeElements		*vml);
-
 		void convert(OOX::Vml::CShapeType				*vml_shape_type);
 		void convert(OOX::Vml::CShape					*vml_shape);
 		void convert(OOX::Vml::CImage					*vml_image);
@@ -435,7 +432,7 @@ public:
 		void convert(SimpleTypes::Vml::CCssStyle		*vml_style, bool group = false);
 		void convert(OOX::VmlWord::CWrap				*vml_wrap);
 		void convert(OOX::Vml::CGroup					*vml_group);
-		void convert(OOX::Vml::CVmlAttributes			*vml_attr);
+		void convert(OOX::Vml::CVmlCommonElements		*vml_attr);
 	};
 
 	class Converter

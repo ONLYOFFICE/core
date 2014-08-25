@@ -21,31 +21,6 @@
 namespace Oox2Odf
 {
 
-void OoxConverter::convert(OOX::Vml::CVmlShapeElements *unknown)
-{
-	if (unknown == NULL) return;
-
-	switch(unknown->getType())
-	{
-		case OOX::et_v_image:
-		{
-			OOX::Vml::CImage *vml = static_cast<OOX::Vml::CImage*>(unknown);
-			convert(vml);
-		}break;		
-		//et_v_f, // <v:f>
-		//et_v_formulas, // <v:formulas>
-		//et_v_group, // <v:group>
-		//et_v_h, // <v:h>
-		//et_v_handles, // <v:handles>
-		//et_v_shadow, // <v:shadow>
-		default:
-		{
-			std::wstringstream ss;
-			ss << L"[warning] :  no convert vml element(" << unknown->getType() << L")\n";
-			_CP_LOG(error) << ss.str();
-		}
-	}
-}
 void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 {
 	if (vml_shape_type == NULL) return;
@@ -68,7 +43,7 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 		//nullable<SimpleTypes::Vml::CVmlPath>               m_oPath;
 		//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse> m_oMaster;
 	//m_arrItems
-	//CVmlAttributes
+	//CVmlCommonElements
 }
 
 void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
@@ -186,7 +161,7 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 }
 void OoxConverter::convert(OOX::Vml::CShape *vml_shape)
 {
-	if (vml_shape == NULL) return;
+	if (vml_shape == NULL) return; 
 
 	if (vml_shape->m_oAllowInCell.GetValue())
 	{
@@ -242,7 +217,8 @@ void OoxConverter::convert(OOX::Vml::CArc *vml_arc)
 {
 	if (vml_arc == NULL) return;
 
-	convert(vml_arc->m_oStyle.GetPointer());
+	OOX::Vml::CVmlCommonElements *vml_common = static_cast<OOX::Vml::CVmlCommonElements *>(vml_arc);
+	convert(vml_common);
 }
 void OoxConverter::convert(OOX::Vml::CBackground *vml_background)
 {
@@ -264,14 +240,15 @@ void OoxConverter::convert(OOX::Vml::CLine	*vml_line)
 {
 	if (vml_line == NULL) return;
 	
-	convert(vml_line->m_oStyle.GetPointer());
+	OOX::Vml::CVmlCommonElements *vml_common = static_cast<OOX::Vml::CVmlCommonElements *>(vml_line);
+	convert(vml_common);
 }
 void OoxConverter::convert(OOX::Vml::COval	*vml_oval)
 {
 	if (vml_oval == NULL) return;
 	
-	convert(vml_oval->m_oStyle.GetPointer());
-	
+	OOX::Vml::CVmlCommonElements *vml_common = static_cast<OOX::Vml::CVmlCommonElements *>(vml_oval);
+	convert(vml_common);
 }
 void OoxConverter::convert(OOX::Vml::CPath	*vml_path)
 {
@@ -296,28 +273,31 @@ void OoxConverter::convert(OOX::Vml::CPolyLine	*vml_polyline)
 {
 	if (vml_polyline == NULL) return;
 	
-	convert(vml_polyline->m_oStyle.GetPointer());
+	OOX::Vml::CVmlCommonElements *vml_common = static_cast<OOX::Vml::CVmlCommonElements *>(vml_polyline);
+	convert(vml_common);
 }
 void OoxConverter::convert(OOX::Vml::CRect	*vml_rect)
 {
 	if (vml_rect == NULL) return;
 	
-	
-	convert(vml_rect->m_oStyle.GetPointer());	
+	OOX::Vml::CVmlCommonElements *vml_common = static_cast<OOX::Vml::CVmlCommonElements *>(vml_rect);
+	convert(vml_common);
 }
 
 void OoxConverter::convert(OOX::Vml::CRoundRect	*vml_roundrect)
 {
 	if (vml_roundrect == NULL) return;
 	
-	convert(vml_roundrect->m_oStyle.GetPointer());
+	OOX::Vml::CVmlCommonElements *vml_common = static_cast<OOX::Vml::CVmlCommonElements *>(vml_roundrect);
+	convert(vml_common);
 }
 
 void OoxConverter::convert(OOX::Vml::CCurve	*vml_curve)
 {
 	if (vml_curve == NULL) return;
 
-	convert(vml_curve->m_oStyle.GetPointer());
+	OOX::Vml::CVmlCommonElements *vml_common = static_cast<OOX::Vml::CVmlCommonElements *>(vml_curve);
+	convert(vml_common);
 }
 void OoxConverter::convert(OOX::Vml::CShadow *vml_shadow)
 {
@@ -400,8 +380,17 @@ void OoxConverter::convert(OOX::Vml::CTextbox *vml_textbox)
 	if (vml_textbox->m_oTxtbxContent.IsInit() == false) return;
 	if (vml_textbox->m_oTxtbxContent->m_arrItems.GetSize() < 1) return;
 
-	
 	convert(vml_textbox->m_oStyle.GetPointer());
+
+	if (vml_textbox->m_oInsetMode.GetValue() == SimpleTypes::insetmodeCustom)
+	{
+		odf_context()->drawing_context()->set_textarea_padding(odf::length(vml_textbox->m_oInset.GetLeft(0), odf::length::pt).get_value_unit(odf::length::cm),
+													odf::length(vml_textbox->m_oInset.GetTop(0), odf::length::pt).get_value_unit(odf::length::cm), 
+													odf::length(vml_textbox->m_oInset.GetRight(0), odf::length::pt).get_value_unit(odf::length::cm),
+													odf::length(vml_textbox->m_oInset.GetBottom(0), odf::length::pt).get_value_unit(odf::length::cm));	
+	}
+
+	odf_context()->drawing_context()->set_textarea_wrap(true);
 	
 	DocxConverter *docx_converter = dynamic_cast<DocxConverter*>(this);
 
@@ -412,10 +401,6 @@ void OoxConverter::convert(OOX::Vml::CTextbox *vml_textbox)
 	}
 	odf_context()->drawing_context()->set_text( odf_context()->text_context());
 	odf_context()->end_text_context();	
-
-
-	odf_context()->drawing_context()->set_textarea_wrap(true);
-
 
 }
 void OoxConverter::convert(OOX::Vml::CTextPath *vml_textpath)
@@ -511,16 +496,23 @@ void OoxConverter::convert(OOX::VmlWord::CWrap	*vml_wrap)
 		}
 	}
 }
-void OoxConverter::convert(OOX::Vml::CVmlAttributes *vml_attr)
+void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 {
-	if (vml_attr == NULL) return;
+	if (vml_common == NULL) return;
 
-	convert(vml_attr->m_oStyle.GetPointer());
+	convert(vml_common->m_oStyle.GetPointer());
 	
-	if (vml_attr->m_oCoordSize.IsInit())
+	if (vml_common->m_oCoordSize.IsInit())
 	{
-		odf_context()->drawing_context()->set_position(vml_attr->m_oCoordSize->GetX(), vml_attr->m_oCoordSize->GetY());
+		odf_context()->drawing_context()->set_position(vml_common->m_oCoordSize->GetX(), vml_common->m_oCoordSize->GetY());
 	}	
+
+	if (vml_common->m_oInsetMode.GetValue() == SimpleTypes::insetmodeCustom)
+	{
+		//odf_context()->drawing_context()->set_textarea_padding(vml_common->m_oInset.GetLeft(0), vml_common->m_oInset.GetTop(0), 
+		//														vml_common->m_oInset.GetRight(0), vml_common->m_oInset.GetBottom(0));	
+	}
+
 }
 void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 {
@@ -543,21 +535,21 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 				continue;
 			}
 			
-			OOX::Vml::CVmlAttributes * vml_attr = dynamic_cast<OOX::Vml::CVmlAttributes*>(vml_group->m_arrItems[i]);
+			OOX::Vml::CVmlCommonElements * vml_common = static_cast<OOX::Vml::CVmlCommonElements*>(vml_group->m_arrItems[i]);
 
-			if (vml_attr == NULL) continue; // не элемент
+			if (vml_common == NULL) continue; // не элемент
 
-			convert(vml_attr);
+			convert(vml_common);
 			odf_context()->drawing_context()->start_drawing();						
 			
-			//OOX::Vml::CVmlShapeElements * vml_elm = dynamic_cast<OOX::Vml::CVmlShapeElements*>(oox_unknown);
-			//if (vml_elm) vml_elm-> convert(vml_attr);
+			//OOX::Vml::CVmlShapeElements * vml_elm = static_cast<OOX::Vml::CVmlShapeElements*>(oox_unknown);
+			//if (vml_elm) vml_elm-> convert(vml_common);
 
 			switch(vml_group->m_arrItems[i]->getType())
 			{
 				case OOX::et_v_shape:
 				{
-					OOX::Vml::CShape * vml = dynamic_cast<OOX::Vml::CShape*>(vml_group->m_arrItems[i]);
+					OOX::Vml::CShape * vml = static_cast<OOX::Vml::CShape*>(vml_group->m_arrItems[i]);
 					bool bSet = false;
 					if (vml)
 					{
@@ -590,7 +582,7 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 				}break;	
 				case OOX::et_v_shapetype:
 				{
-					OOX::Vml::CShapeType * vml = dynamic_cast<OOX::Vml::CShapeType*>(vml_group->m_arrItems[i]);
+					OOX::Vml::CShapeType * vml = static_cast<OOX::Vml::CShapeType*>(vml_group->m_arrItems[i]);
 					OOX::Vml::SptType sptType = static_cast<OOX::Vml::SptType>(vml->m_oSpt.GetValue());
 					odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));					
 						OoxConverter::convert(vml);			
@@ -598,28 +590,28 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 				}break;
 				case OOX::et_v_oval:
 				{
-					OOX::Vml::COval * vml = dynamic_cast<OOX::Vml::COval*>(vml_group->m_arrItems[i]);
+					OOX::Vml::COval * vml = static_cast<OOX::Vml::COval*>(vml_group->m_arrItems[i]);
 					odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeEllipse);		
 						OoxConverter::convert(vml);					
 					odf_context()->drawing_context()->end_shape();
 				}break;		
 				case OOX::et_v_rect:
 				{
-					OOX::Vml::CRect * vml = dynamic_cast<OOX::Vml::CRect*>(vml_group->m_arrItems[i]);
+					OOX::Vml::CRect * vml = static_cast<OOX::Vml::CRect*>(vml_group->m_arrItems[i]);
 					odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);		
 						OoxConverter::convert(vml);					
 					odf_context()->drawing_context()->end_shape();
 				}break;		
 				case OOX::et_v_line:
 				{
-					OOX::Vml::CLine * vml = dynamic_cast<OOX::Vml::CLine*>(vml_group->m_arrItems[i]);
+					OOX::Vml::CLine * vml = static_cast<OOX::Vml::CLine*>(vml_group->m_arrItems[i]);
 					odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeLine);		
 						OoxConverter::convert(vml);					
 					odf_context()->drawing_context()->end_shape();
 				}break;	
 				case OOX::et_v_curve:
 				{
-					OOX::Vml::CCurve * vml = dynamic_cast<OOX::Vml::CCurve*>(vml_group->m_arrItems[i]);
+					OOX::Vml::CCurve * vml = static_cast<OOX::Vml::CCurve*>(vml_group->m_arrItems[i]);
 					odf_context()->drawing_context()->start_shape(1000);		
 						OoxConverter::convert(vml);					
 					odf_context()->drawing_context()->end_shape();

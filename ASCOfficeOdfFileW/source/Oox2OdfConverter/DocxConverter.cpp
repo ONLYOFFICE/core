@@ -111,6 +111,7 @@ CString	DocxConverter::find_link_by_id (CString sId, int type)
 			}
 		}
 	}
+
 	smart_ptr<OOX::File> oFile = docx_document->GetDocument()->Find(sId);
 	if (ref.GetLength() < 1 && oFile.IsInit())
 	{
@@ -2245,6 +2246,8 @@ void DocxConverter::convert_lists_styles()
 	OOX::CNumbering * lists_styles = docx_document->GetNumbering();
 	
 	if (!lists_styles)return;
+
+	oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(lists_styles);
 //базовые
 	for (long i=0; i < lists_styles->m_arrAbstractNum.GetSize(); i++)
 	{
@@ -2271,6 +2274,7 @@ void DocxConverter::convert_lists_styles()
 
 		convert(&lists_styles->m_arrNum[i]);//for override ???
 	}
+	oox_current_child_document = NULL;
 //nullable<ComplexTypes::Word::CDecimalNumber > m_oNumIdMacAtCleanup;
 }
 void DocxConverter::convert_styles()
@@ -2502,10 +2506,17 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 
 		for (long i = 0; (lists_styles) && (i< lists_styles->m_arrNumPicBullet.GetSize()); i++)
 		{
-			if (lists_styles->m_arrNumPicBullet[i].m_oNumPicBulletId.GetValue() == id)
+			if ((lists_styles->m_arrNumPicBullet[i]) && (lists_styles->m_arrNumPicBullet[i]->m_oNumPicBulletId.GetValue() == id))
 			{
-				//convert(lists_styles->m_arrNumPicBullet[i].m_oDrawing.GetPointer());
-				//convert(lists_styles->m_arrNumPicBullet[i].m_oVmlDrawing.GetPointer());
+				if (lists_styles->m_arrNumPicBullet[i]->m_oDrawing.IsInit())
+				{
+					convert(lists_styles->m_arrNumPicBullet[i]->m_oDrawing.GetPointer());
+				}
+				else
+				{
+					convert(lists_styles->m_arrNumPicBullet[i]->m_oVmlDrawing.GetPointer());
+				}
+				odt_context->styles_context()->lists_styles().set_bullet_image(odt_context->mediaitems()->items().back().odf_ref);
 			}
 		}
 

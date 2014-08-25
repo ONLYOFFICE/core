@@ -349,8 +349,6 @@ void odf_drawing_context::clear()
 
 void odf_drawing_context::start_drawing()
 {
-	//impl_->current_drawing_state_.clear();
-
 	//if (impl_->current_level_.size() < 1)
 	{
 		impl_->current_drawing_state_.svg_x_ = impl_->anchor_settings_.svg_x_;
@@ -722,8 +720,6 @@ void odf_drawing_context::end_shape()
 
 				if (shape_define)
 				{
-					//impl_->current_drawing_state_.rotateAngle = boost::none; ??? зачем ???
-
 					enhanced->svg_viewbox_										= shape_define->view_box;
 					enhanced->draw_enhanced_geometry_attlist_.draw_type_		= shape_define->odf_type_name;
 					enhanced->draw_enhanced_geometry_attlist_.draw_text_areas_	= shape_define->text_areas;
@@ -1731,7 +1727,7 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 		//автоувеличение при добавлении текста
 		impl_->current_graphic_properties->content().draw_auto_grow_height_ = false;
 		impl_->current_graphic_properties->content().draw_auto_grow_width_ = false;
-		impl_->current_graphic_properties->content().draw_fit_to_size_ = false;//???
+		//impl_->current_graphic_properties->content().draw_fit_to_size_ = false;//???
 
 	}
 

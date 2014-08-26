@@ -277,8 +277,25 @@ namespace OOX
 		et_a_txDef, // <a:txDef>
 		et_a_up, // <a:up>
 		et_a_xfrm, // <a:xfrm>
-		et_a_groupSpPr, // <a:groupSpPr>
 	
+		et_a_groupSpPr,			// <a:groupSpPr>
+		et_a_Shape,				// <a:sp>
+		et_a_GroupShape,		// <a:srpSp>
+		et_a_TextShape,			// <a:txSp>
+		et_a_TextShapeBody,		// <a:txBody>
+		et_a_LockedCanvas,		// <a:LockedCanvas>
+		et_a_GroupShapeNonVisual,	
+		et_a_ConnectionNonVisualShapeProps,
+		et_a_ShapeNonVisual,
+		
+		et_dgm_DiagrammParts,	// <dgm:relIds> 
+		et_dsp_Shape,			// <dsp:sp>
+		et_dsp_ShapeTree,		// <dsp:spTree>
+		et_dsp_spPr,			// <dsp:spPr>
+		et_dsp_style,			// <dsp:style>
+		et_dsp_groupSpPr,		// <dsp:grpSpPr>
+		et_dsp_cNvPr,
+		
 		et_a_p, // <a:p>
 		et_a_pPr, // <a:pPr>
 		et_a_r, // <a:p>
@@ -289,7 +306,7 @@ namespace OOX
 		et_a_spcPct, // <a:spcPct>
 		et_a_spcAft, // <a:spcAft>
 		et_a_spcBef, // <a:spcBef>
-		et_a_lnSpc, // <a:lnSpc>		
+		et_a_lnSpc, // <a:lnSpc>	
 
 		et_ds_schemaRef, // <ds:shemeRef>
 		et_ds_schemaRefs, // <ds:schemaRefs>		
@@ -499,6 +516,8 @@ namespace OOX
 		et_v_textbox, // <v:textbox>
 		et_v_textpath, // <v:textpath>
 		et_v_ClientData, // <x:textpath>
+		et_v_shape_elements,
+		et_v_shape_attrs,
 
 		et_w_abstractNum, // <w:abstractNum>
 		et_w_activeWritingStyle, // <w:activeWritingStyle>
@@ -680,6 +699,7 @@ namespace OOX
 		et_w_ShapeTextBody,		//<wps:txbx>
 		et_w_Shape,				//<wps:wsp>
 		et_w_GroupShape,		//<wpg:wgp>
+		et_w_LockedCanvas,		//<wpc:wgc>
 		et_w_cNvPr,				//<wps:cNvPr>
 		et_w_spPr,				//<wps:spPr>
 		et_w_groupSpPr,			//<wpg:grpSpPr>

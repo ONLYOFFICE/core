@@ -10,7 +10,7 @@
 #include "../RId.h"
 
 #include "DrawingExt.h"
-#include "DrawingShape.h"
+#include "DrawingShapeElements.h"
 #include "DrawingTransform.h"
 #include "DrawingEffects.h"
 #include "DrawingStyles2.h"
@@ -795,6 +795,8 @@ namespace OOX
 					m_eType = et_c_spPr;
 				else if ( _T("wps:spPr") == sName )
 					m_eType = et_w_spPr;
+				else if ( _T("dsp:spPr") == sName )
+					m_eType = et_dsp_spPr;
 				else
 					return;
 
@@ -883,6 +885,8 @@ namespace OOX
 					sResult = _T("<c:spPr ");
 				else if ( et_w_spPr == m_eType )
 					sResult = _T("<wps:spPr ");
+				else if ( et_dsp_spPr == m_eType )
+					sResult = _T("<dsp:spPr ");
 				else
 					return _T("");
 
@@ -988,6 +992,8 @@ namespace OOX
 					sResult = _T("</c:spPr>");
 				else if ( et_w_spPr == m_eType )
 					sResult = _T("</wps:spPr>");
+				else if ( et_dsp_spPr == m_eType )
+					sResult = _T("</dsp:spPr>");
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -1100,6 +1106,8 @@ namespace OOX
 					m_eType = et_xdr_groupSpPr;
 				else if ( _T("wpg:grpSpPr") == sName )
 					m_eType = et_w_groupSpPr;
+				else if ( _T("dsp:grpSpPr") == sName )
+					m_eType = et_dsp_groupSpPr;
 				else
 					return;
 
@@ -1257,6 +1265,7 @@ namespace OOX
 			{
 				return et_a_style;
 			}
+			//todooo сделать расширение до разных namespaсe
 
 		public:
 

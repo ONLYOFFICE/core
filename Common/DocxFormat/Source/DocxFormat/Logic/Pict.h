@@ -107,19 +107,20 @@ namespace OOX
 			CPicture() {}
 			virtual ~CPicture() 
 			{
+				Clear();
+			}
+
+		public:
+			void Clear()
+			{
 				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
 				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
+					if ( m_arrItems[nIndex] )delete m_arrItems[nIndex];
 					m_arrItems[nIndex] = NULL;
 				}
 
 				m_arrItems.RemoveAll();
 			}
-
-		public:
-
 			virtual void         fromXML(XmlUtils::CXmlNode &oNode)
 			{
 				// TO DO: Реализовать CPicture::fromXML(XmlUtils::CXmlNode &oNode)
@@ -131,10 +132,9 @@ namespace OOX
 					return;
 
 				m_sXml.Init();
-				m_sXml->Append(oReader.GetOuterXml());
-				//остальное прочитается в pptx dll
-				return;
+				m_sXml->Append(oReader.GetOuterXml());	//для pptx dll
 
+				//альтернатива pptx
 				CString sXml;
 				sXml.Format(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">%s</root>"), m_sXml.get());
 
@@ -251,7 +251,7 @@ namespace OOX
 							{
 							case 'a':
 								if ( _T("v:arc") == sName )
-									pItem = new OOX::Vml::CArc( oSubReader );
+									m_oShapeArc =  oSubReader;
 
 								break;
 
@@ -263,7 +263,7 @@ namespace OOX
 
 							case 'c':
 								if ( _T("v:curve") == sName )
-									pItem = new OOX::Vml::CCurve( oSubReader );
+									m_oShapeCurve =  oSubReader;//???
 
 								break;
 
@@ -277,7 +277,7 @@ namespace OOX
 
 							case 'g':
 								if ( _T("v:group") == sName )
-									pItem = new OOX::Vml::CGroup( oSubReader );
+									m_oShapeGroup =  oSubReader;
 
 								break;
 
@@ -297,29 +297,28 @@ namespace OOX
 
 							case 'l':
 								if ( _T("v:line") == sName )
-									pItem = new OOX::Vml::CLine( oSubReader );
+									m_oShapeLine =  oSubReader;
 
 								break;
 
 							case 'o':
 								if ( _T("v:oval") == sName )
-									pItem = new OOX::Vml::COval( oSubReader );
-
+									m_oShapeOval =  oSubReader;
 								break;
 
 							case 'p':
 								if ( _T("v:path") == sName )
 									pItem = new OOX::Vml::CPath( oSubReader );
 								else if ( _T("v:polyline") == sName )
-									pItem = new OOX::Vml::CPolyLine( oSubReader );
+									m_oShapePolyLine =  oSubReader;
 
 								break;
 
 							case 'r':
 								if ( _T("v:rect") == sName )
-									pItem = new OOX::Vml::CRect( oSubReader );
+									m_oShapeRect =  oSubReader;
 								else if ( _T("v:roundrect") == sName )
-									pItem = new OOX::Vml::CRoundRect( oSubReader );
+									m_oShapeRoundRect =  oSubReader;
 
 								break;
 
@@ -327,9 +326,9 @@ namespace OOX
 								if ( _T("v:shadow") == sName )
 									pItem = new OOX::Vml::CShadow( oSubReader );
 								else if ( _T("v:shape") == sName )
-									pItem = new OOX::Vml::CShape( oSubReader );
+									m_oShape = oSubReader;
 								else if ( _T("v:shapetype") == sName )
-									pItem = new OOX::Vml::CShapeType( oSubReader );
+									m_oShapeType = oSubReader;
 								else if ( _T("v:stroke") == sName )
 									pItem = new OOX::Vml::CStroke( oSubReader );
 
@@ -353,7 +352,9 @@ namespace OOX
 					}
 
 					if ( pItem )
+					{
 						m_arrItems.Add( pItem );
+					}
 				}
 			}
 
@@ -385,11 +386,256 @@ namespace OOX
 			nullable<CString> m_sXml;
 
 			// Childs
-			nullable<OOX::Logic::CControl> m_oControl;
-			// TO DO: Добавить класс, читающий movie
+			nullable<OOX::Logic::CControl>	m_oControl;
+//top childs
+			nullable<OOX::Vml::CShapeType>	m_oShapeType;//custom
+			nullable<OOX::Vml::COval>		m_oShapeOval;
+			nullable<OOX::Vml::CRect>		m_oShapeRect;
+			nullable<OOX::Vml::CLine>		m_oShapeLine;
+			nullable<OOX::Vml::CPolyLine>	m_oShapePolyLine;
+			nullable<OOX::Vml::CArc>		m_oShapeArc;
+			nullable<OOX::Vml::CCurve>		m_oShapeCurve;
+			nullable<OOX::Vml::CRoundRect>	m_oShapeRoundRect;		
 
-			CSimpleArray<WritingElement*>  m_arrItems;
+			nullable<OOX::Vml::CGroup>		m_oShapeGroup;
+			
+			nullable<OOX::Vml::CShape>		m_oShape;
+//minor childs
+			CSimpleArray<WritingElement*>	m_arrItems;
+			
+			// TO DO: Добавить класс, читающий movie
 		};
+
+
+		//--------------------------------------------------------------------------------
+		// CObject 17.3.3.19 (Part 1)
+		//--------------------------------------------------------------------------------	
+		class CObject : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CObject)
+			CObject() {}
+			virtual ~CObject() 
+			{
+				Clear();
+			}
+	
+		public:
+			void Clear()
+			{
+				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				{
+					if ( m_arrItems[nIndex] )delete m_arrItems[nIndex];
+					m_arrItems[nIndex] = NULL;
+				}
+
+				m_arrItems.RemoveAll();
+			}
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				m_sXml.Init();
+				m_sXml->Append(oReader.GetOuterXml());	//для pptx dll
+
+				//альтернатива pptx
+				CString sXml; //??? + ole наверно что то (лень ...) 
+				sXml.Format(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">%s</root>"), m_sXml.get());
+
+				XmlUtils::CXmlLiteReader oSubReader;
+				oSubReader.FromString(sXml);
+				oSubReader.ReadNextNode();//root
+				oSubReader.ReadNextNode();//pict
+
+				int nCurDepth = oSubReader.GetDepth();
+				while ( oSubReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CWCharWrapper sName = oSubReader.GetName();
+
+					WritingElement* pItem = NULL;
+
+					wchar_t wChar0 = sName[0];
+					switch (wChar0)
+					{
+					case 'o':
+						{
+							wchar_t wChar2 = sName[2]; // o:_
+							switch ( wChar2 )
+							{
+							case 'b':
+								if ( _T("o:bottom") == sName )
+									pItem = new OOX::VmlOffice::CStrokeChild( oSubReader );
+								break;
+
+							case 'c':
+								if ( _T("o:callout") == sName )
+									pItem = new OOX::VmlOffice::CCallout( oSubReader );
+								else if ( _T("o:clippath") == sName )
+									pItem = new OOX::VmlOffice::CClipPath( oSubReader );
+								else if ( _T("o:column") == sName )
+									pItem = new OOX::VmlOffice::CStrokeChild( oSubReader );
+								else if ( _T("o:complex") == sName )
+									pItem = new OOX::VmlOffice::CComplex( oSubReader );
+
+								break;
+
+							case 'd':
+								if ( _T("o:diagram") == sName )
+									pItem = new OOX::VmlOffice::CDiagram( oSubReader );
+
+								break;
+
+							case 'e':
+								if ( _T("o:equationxml") == sName )
+									pItem = new OOX::VmlOffice::CEquationXml( oSubReader );
+								else if ( _T("o:extrusion") == sName )
+									pItem = new OOX::VmlOffice::CExtrusion( oSubReader );
+
+								break;
+
+							case 'f':
+								if ( _T("o:fill") == sName )
+									pItem = new OOX::VmlOffice::CFill( oSubReader );
+
+								break;
+
+							case 'i':
+								if ( _T("o:ink") == sName )
+									pItem = new OOX::VmlOffice::CInk( oSubReader );
+
+								break;
+
+							case 'l':
+								if ( _T("o:left") == sName )
+									pItem = new OOX::VmlOffice::CStrokeChild( oSubReader );
+								else if ( _T("o:lock") == sName )
+									pItem = new OOX::VmlOffice::CLock( oSubReader );
+
+								break;
+
+							case 'O':// собственно это и есть самый главный под-объект
+								if ( _T("o:OLEObject") == sName )
+									m_oOleObject = oSubReader ;
+								break;
+
+							case 'r':
+								if ( _T("o:right") == sName )
+									pItem = new OOX::VmlOffice::CStrokeChild( oSubReader );
+								break;
+
+							case 's':
+								if ( _T("o:shapedefaults") == sName )
+									pItem = new OOX::VmlOffice::CShapeDefaults( oSubReader );
+								else if ( _T("o:shapelayout") == sName )
+									pItem = new OOX::VmlOffice::CShapeLayout( oSubReader );
+								else if ( _T("o:signatureline") == sName )
+									pItem = new OOX::VmlOffice::CSignatureLine( oSubReader );
+								else if ( _T("o:skew") == sName )
+									pItem = new OOX::VmlOffice::CSkew( oSubReader );
+								break;
+
+							case 't':
+								if ( _T("o:top") == sName )
+									pItem = new OOX::VmlOffice::CStrokeChild( oSubReader );
+								break;
+							}
+
+							break;
+						}
+
+					case 'v':
+						{
+							wchar_t wChar2 = sName[2]; // v:_
+							switch ( wChar2 )
+							{
+							case 'b':
+								if ( _T("v:background") == sName )
+									pItem = new OOX::Vml::CBackground( oSubReader );
+								break;
+
+							case 'f':
+								if ( _T("v:fill") == sName )
+									pItem = new OOX::Vml::CFill( oSubReader );
+								else if ( _T("v:formulas") == sName )
+									pItem = new OOX::Vml::CFormulas( oSubReader );
+								break;
+
+							case 'h':
+								if ( _T("v:handles") == sName )
+									pItem = new OOX::Vml::CHandles( oSubReader );
+								break;
+
+							case 'i':
+								if ( _T("v:image") == sName )
+									pItem = new OOX::Vml::CImage( oSubReader );
+								else if ( _T("v:imagedata") == sName )
+									pItem = new OOX::Vml::CImageData( oSubReader );
+								break;
+							case 'p':
+								if ( _T("v:path") == sName )
+									pItem = new OOX::Vml::CPath( oSubReader );
+								break;
+
+							case 's':
+								if ( _T("v:shadow") == sName )
+									pItem = new OOX::Vml::CShadow( oSubReader );
+								else if ( _T("v:shape") == sName )
+									m_oShape = oSubReader;
+								else if ( _T("v:shapetype") == sName )
+									m_oShapeType = oSubReader;
+								else if ( _T("v:stroke") == sName )
+									pItem = new OOX::Vml::CStroke( oSubReader );
+								break;
+
+							case 't':
+								if ( _T("v:textbox") == sName )
+									pItem = new OOX::Vml::CTextbox( oSubReader );
+								else if ( _T("v:textpath") == sName )
+									pItem = new OOX::Vml::CTextPath( oSubReader );
+								break;
+							}
+							break;
+						}
+					case 'w':
+						if ( _T("w:control") == sName )
+							m_oControl = oSubReader;
+						break;
+					}
+
+					if ( pItem )
+					{
+						m_arrItems.Add( pItem );
+					}
+				}
+			}
+			virtual CString      toXML() const
+			{
+				return _T("<w:object />");
+			}
+
+			virtual EElementType getType() const
+			{
+				return et_w_object;
+			}
+			nullable<CString> m_sXml;
+
+			// Childs
+			nullable<OOX::Logic::CControl>			m_oControl;
+//top childs
+			nullable<OOX::Vml::CShapeType>			m_oShapeType;//?? нужен ли отдельно тута???
+			nullable<OOX::VmlOffice::COLEObject>	m_oOleObject;
+			
+			nullable<OOX::Vml::CShape>				m_oShape;
+//minor childs
+			CSimpleArray<WritingElement*>			m_arrItems;
+
+		};
+
+
 
 	} // namespace Logic
 } // namespace OOX

@@ -125,10 +125,10 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			EElementType      m_eType;
+			EElementType									m_eType;
 			// Childs
-			nullable<CNonVisualPictureDrawingProps>		m_oCNvPicPr;
-			nullable<OOX::Drawing::CNonVisualDrawingProps>			m_oCNvPr;
+			nullable<CNonVisualPictureDrawingProps>			m_oCNvPicPr;
+			nullable<OOX::Drawing::CNonVisualDrawingProps>	m_oCNvPr;
 		};
 
 		class CBlipFill : public WritingElement

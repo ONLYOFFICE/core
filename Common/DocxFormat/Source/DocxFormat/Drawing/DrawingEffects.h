@@ -868,6 +868,9 @@ namespace OOX
 			nullable<OOX::Drawing::CTileInfoProperties>    m_oTile;
 			nullable<OOX::Drawing::CStretchInfoProperties> m_oStretch;
 
+			//todooo extList 
+			//HD картинка
+
 		};	
 		//-----------------------------------------------------------------------
         // BlurEffect 20.1.8.15

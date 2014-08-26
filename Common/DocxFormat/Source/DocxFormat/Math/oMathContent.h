@@ -9,6 +9,7 @@
 #include "../Logic/FldChar.h"
 #include "../Logic/RunProperty.h"
 #include "../Logic/Annotations.h"
+#include "../Logic/Pict.h"
 #include "../Drawing/Drawing.h"
 
 

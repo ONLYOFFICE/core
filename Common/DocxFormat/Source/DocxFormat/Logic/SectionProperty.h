@@ -317,10 +317,143 @@ namespace ComplexTypes
 		};
 
 
+
+		//--------------------------------------------------------------------------------
+		// PageBorder 17.6.7 (Part 1)
+		//--------------------------------------------------------------------------------
+		class CPageBorder : public ComplexType
+		{
+		public:
+			ComplexTypes_AdditionConstructors(CPageBorder)
+			CPageBorder()
+			{
+			}
+			virtual ~CPageBorder()
+			{
+			}
+
+			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			{
+				oNode.ReadAttributeBase( _T("w:color"),       m_oColor );
+				oNode.ReadAttributeBase( _T("w:frame"),       m_oFrame );
+				oNode.ReadAttributeBase( _T("r:id"),          m_oId );
+				oNode.ReadAttributeBase( _T("w:shadow"),      m_oShadow );
+				oNode.ReadAttributeBase( _T("w:space"),       m_oSpace );
+				oNode.ReadAttributeBase( _T("w:sz"),          m_oSz );
+				oNode.ReadAttributeBase( _T("w:themeColor"),  m_oThemeColor );
+				oNode.ReadAttributeBase( _T("w:themeShade"),  m_oThemeShade );
+				oNode.ReadAttributeBase( _T("w:themeTint"),   m_oThemeTint );
+				oNode.ReadAttributeBase( _T("w:val"),         m_oVal );
+			}
+			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:color"),       m_oColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:frame"),       m_oFrame )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:id"),          m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:shadow"),      m_oShadow )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:space"),       m_oSpace )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:sz"),          m_oSz )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeColor"),  m_oThemeColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeShade"),  m_oThemeShade )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeTint"),   m_oThemeTint )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"),         m_oVal )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+			virtual CString ToString() const
+			{
+				CString sResult;
+
+				if ( m_oColor.IsInit() )
+				{
+					sResult += "w:color=\"";
+					sResult += m_oColor->ToString();
+					sResult += "\" ";
+				}
+
+				if ( m_oFrame.IsInit() )
+				{
+					sResult += "w:frame=\"";
+					sResult += m_oFrame->ToString();
+					sResult += "\" ";
+				}
+				if ( m_oId.IsInit() )
+				{
+					sResult += "r:id=\"";
+					sResult += m_oId->ToString();
+					sResult += "\" ";
+				}
+
+				if ( m_oShadow.IsInit() )
+				{
+					sResult += "w:shadow=\"";
+					sResult += m_oShadow->ToString();
+					sResult += "\" ";
+				}
+
+				if ( m_oSpace.IsInit() )
+				{
+					sResult += "w:space=\"";
+					sResult += m_oSpace->ToString();
+					sResult += "\" ";
+				}
+
+				if ( m_oSz.IsInit() )
+				{
+					sResult += "w:sz=\"";
+					sResult += m_oSz->ToString();
+					sResult += "\" ";
+				}
+				if ( m_oThemeColor.IsInit() )
+				{
+					sResult += "w:themeColor=\"";
+					sResult += m_oThemeColor->ToString();
+					sResult += "\" ";
+				}
+
+				if ( m_oThemeShade.IsInit() )
+				{
+					sResult += "w:themeShade=\"";
+					sResult += m_oThemeShade->ToString();
+					sResult += "\" ";
+				}
+
+				if ( m_oThemeTint.IsInit() )
+				{
+					sResult += "w:themeTint=\"";
+					sResult += m_oThemeTint->ToString();
+					sResult += "\" ";
+				}
+
+				if ( m_oVal.IsInit() )
+				{
+					sResult += "w:val=\"";
+					sResult += m_oVal->ToString();
+					sResult += "\" ";
+				}
+
+				return sResult;
+			}
+
+		public:
+
+			nullable<SimpleTypes::CHexColor<>                     > m_oColor;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oFrame;
+			nullable<SimpleTypes::CRelationshipId                 > m_oId;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oShadow;
+			nullable<SimpleTypes::CPointMeasure<>                 > m_oSpace;
+			nullable<SimpleTypes::CEighthPointMeasure<>           > m_oSz;
+			nullable<SimpleTypes::CThemeColor<>                   > m_oThemeColor;
+			nullable<SimpleTypes::CUcharHexNumber<>               > m_oThemeShade;
+			nullable<SimpleTypes::CUcharHexNumber<>               > m_oThemeTint;
+			nullable<SimpleTypes::CBorder<>                       > m_oVal;
+		};
+
 		//--------------------------------------------------------------------------------
 		// BottomPageBorder 17.6.2 (Part 1)
 		//--------------------------------------------------------------------------------
-		class CBottomPageBorder : public ComplexType
+		class CBottomPageBorder : public CPageBorder
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CBottomPageBorder)
@@ -457,150 +590,6 @@ namespace ComplexTypes
 
 			nullable<SimpleTypes::CRelationshipId                 > m_oBottomLeft;
 			nullable<SimpleTypes::CRelationshipId                 > m_oBottomRight;
-			nullable<SimpleTypes::CHexColor<>                     > m_oColor;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oFrame;
-			nullable<SimpleTypes::CRelationshipId                 > m_oId;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oShadow;
-			nullable<SimpleTypes::CPointMeasure<>                 > m_oSpace;
-			nullable<SimpleTypes::CEighthPointMeasure<>           > m_oSz;
-			nullable<SimpleTypes::CThemeColor<>                   > m_oThemeColor;
-			nullable<SimpleTypes::CUcharHexNumber<>               > m_oThemeShade;
-			nullable<SimpleTypes::CUcharHexNumber<>               > m_oThemeTint;
-			nullable<SimpleTypes::CBorder<>                       > m_oVal;
-		};
-
-
-
-		//--------------------------------------------------------------------------------
-		// PageBorder 17.6.7 (Part 1)
-		//--------------------------------------------------------------------------------
-		class CPageBorder : public ComplexType
-		{
-		public:
-			ComplexTypes_AdditionConstructors(CPageBorder)
-			CPageBorder()
-			{
-			}
-			virtual ~CPageBorder()
-			{
-			}
-
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				oNode.ReadAttributeBase( _T("w:color"),       m_oColor );
-				oNode.ReadAttributeBase( _T("w:frame"),       m_oFrame );
-				oNode.ReadAttributeBase( _T("r:id"),          m_oId );
-				oNode.ReadAttributeBase( _T("w:shadow"),      m_oShadow );
-				oNode.ReadAttributeBase( _T("w:space"),       m_oSpace );
-				oNode.ReadAttributeBase( _T("w:sz"),          m_oSz );
-				oNode.ReadAttributeBase( _T("w:themeColor"),  m_oThemeColor );
-				oNode.ReadAttributeBase( _T("w:themeShade"),  m_oThemeShade );
-				oNode.ReadAttributeBase( _T("w:themeTint"),   m_oThemeTint );
-				oNode.ReadAttributeBase( _T("w:val"),         m_oVal );
-			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:color"),       m_oColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:frame"),       m_oFrame )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:id"),          m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:shadow"),      m_oShadow )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:space"),       m_oSpace )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:sz"),          m_oSz )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeColor"),  m_oThemeColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeShade"),  m_oThemeShade )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeTint"),   m_oThemeTint )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"),         m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			virtual CString ToString() const
-			{
-				CString sResult;
-
-				if ( m_oColor.IsInit() )
-				{
-					sResult += "w:color=\"";
-					sResult += m_oColor->ToString();
-					sResult += "\" ";
-				}
-
-				if ( m_oFrame.IsInit() )
-				{
-					sResult += "w:frame=\"";
-					sResult += m_oFrame->ToString();
-					sResult += "\" ";
-				}
-				if ( m_oId.IsInit() )
-				{
-					sResult += "r:id=\"";
-					sResult += m_oId->ToString();
-					sResult += "\" ";
-				}
-
-				if ( m_oShadow.IsInit() )
-				{
-					sResult += "w:shadow=\"";
-					sResult += m_oShadow->ToString();
-					sResult += "\" ";
-				}
-
-				if ( m_oSpace.IsInit() )
-				{
-					sResult += "w:space=\"";
-					sResult += m_oSpace->ToString();
-					sResult += "\" ";
-				}
-
-				if ( m_oSz.IsInit() )
-				{
-					sResult += "w:sz=\"";
-					sResult += m_oSz->ToString();
-					sResult += "\" ";
-				}
-				if ( m_oThemeColor.IsInit() )
-				{
-					sResult += "w:themeColor=\"";
-					sResult += m_oThemeColor->ToString();
-					sResult += "\" ";
-				}
-
-				if ( m_oThemeShade.IsInit() )
-				{
-					sResult += "w:themeShade=\"";
-					sResult += m_oThemeShade->ToString();
-					sResult += "\" ";
-				}
-
-				if ( m_oThemeTint.IsInit() )
-				{
-					sResult += "w:themeTint=\"";
-					sResult += m_oThemeTint->ToString();
-					sResult += "\" ";
-				}
-
-				if ( m_oVal.IsInit() )
-				{
-					sResult += "w:val=\"";
-					sResult += m_oVal->ToString();
-					sResult += "\" ";
-				}
-
-				return sResult;
-			}
-
-		public:
-
-			nullable<SimpleTypes::CHexColor<>                     > m_oColor;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oFrame;
-			nullable<SimpleTypes::CRelationshipId                 > m_oId;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oShadow;
-			nullable<SimpleTypes::CPointMeasure<>                 > m_oSpace;
-			nullable<SimpleTypes::CEighthPointMeasure<>           > m_oSz;
-			nullable<SimpleTypes::CThemeColor<>                   > m_oThemeColor;
-			nullable<SimpleTypes::CUcharHexNumber<>               > m_oThemeShade;
-			nullable<SimpleTypes::CUcharHexNumber<>               > m_oThemeTint;
-			nullable<SimpleTypes::CBorder<>                       > m_oVal;
 		};
 
 
@@ -608,7 +597,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// TopPageBorder 17.6.7 (Part 1)
 		//--------------------------------------------------------------------------------
-		class CTopPageBorder : public ComplexType
+		class CTopPageBorder : public CPageBorder
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CTopPageBorder)
@@ -743,18 +732,8 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CHexColor<>                     > m_oColor;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oFrame;
-			nullable<SimpleTypes::CRelationshipId                 > m_oId;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oShadow;
-			nullable<SimpleTypes::CPointMeasure<>                 > m_oSpace;
-			nullable<SimpleTypes::CEighthPointMeasure<>           > m_oSz;
-			nullable<SimpleTypes::CThemeColor<>                   > m_oThemeColor;
-			nullable<SimpleTypes::CUcharHexNumber<>               > m_oThemeShade;
-			nullable<SimpleTypes::CUcharHexNumber<>               > m_oThemeTint;
 			nullable<SimpleTypes::CRelationshipId                 > m_oTopLeft;
 			nullable<SimpleTypes::CRelationshipId                 > m_oTopRight;
-			nullable<SimpleTypes::CBorder<>                       > m_oVal;
 		};
 
 

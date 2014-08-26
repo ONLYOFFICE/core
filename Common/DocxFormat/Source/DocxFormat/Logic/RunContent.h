@@ -5,7 +5,6 @@
 #include "../../Common/SimpleTypes_Word.h"
 #include "../../Common/ComplexTypes.h"
 
-// TO DO: 1. Класс CObject 17.3.3.19
 //        2. Класс CRuby   17.3.3.25
 
 namespace OOX
@@ -481,39 +480,6 @@ namespace OOX
 			virtual EElementType getType() const
 			{
 				return et_w_nonBreakHyphen;
-			}
-		};
-
-
-		//--------------------------------------------------------------------------------
-		// CObject 17.3.3.19 (Part 1)
-		//--------------------------------------------------------------------------------	
-		// TO DO: Реализовать класс CObject 17.3.3.19 (Part 1)
-		class CObject : public WritingElement
-		{
-		public:
-			WritingElement_AdditionConstructors(CObject)
-			CObject() {}
-			virtual ~CObject() {}
-	
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
-			{
-			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd( oReader.GetDepth() );
-			}
-			virtual CString      toXML() const
-			{
-				return _T("<w:object />");
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_object;
 			}
 		};
 

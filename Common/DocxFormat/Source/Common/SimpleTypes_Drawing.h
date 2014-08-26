@@ -3957,6 +3957,7 @@ namespace SimpleTypes
 ////new//////////////
 		 shapetypeBallon,
 		 shapetypeRightUpArrow,
+ //дубирует с WordArd - может задаваться как внутри текстого бокса, так и в виде объекта
 		 shapetypeTextArchDownPour,
 		 shapetypeTextArchUpPour,
 		 shapetypeTextCanDown,
@@ -5275,7 +5276,7 @@ namespace SimpleTypes
 			wchar_t wChar = sValue.GetAt(4);
 			switch ( wChar )
 			{
-			case 'a':
+			case 'A':
 
                 if      ( _T("textArchDown")		== sValue ) this->m_eValue = textshapetypeTextArchDown;
                 else if ( _T("textArchDownPour")	== sValue ) this->m_eValue = textshapetypeTextArchDownPour;
@@ -5283,13 +5284,13 @@ namespace SimpleTypes
                 else if ( _T("textArchUpPour")		== sValue ) this->m_eValue = textshapetypeTextArchUpPour;
 				break;
 
-			case 'b':
+			case 'B':
 
                 if      ( _T("textButton")			== sValue ) this->m_eValue = textshapetypeTextButton;
                 else if ( _T("textButtonPour")		== sValue ) this->m_eValue = textshapetypeTextButtonPour;
 				break;
 
-			case 'c':
+			case 'C':
 
                 if      ( _T("textCanDown")			== sValue ) this->m_eValue = textshapetypeTextCanDown;
                 else if ( _T("textCanUp")			== sValue ) this->m_eValue = textshapetypeTextCanUp;
@@ -5303,7 +5304,7 @@ namespace SimpleTypes
                 else if ( _T("textCurveUp")			== sValue ) this->m_eValue = textshapetypeTextCurveUp;
 				break;
 
-			case 'd':
+			case 'D':
                 if      ( _T("textDeflate")			== sValue ) this->m_eValue = textshapetypeTextDeflate;
                 else if ( _T("textDeflateBottom")	== sValue ) this->m_eValue = textshapetypeTextDeflateBottom;
                 else if ( _T("textDeflateInflate")	== sValue ) this->m_eValue = textshapetypeTextDeflateInflate;
@@ -5312,49 +5313,49 @@ namespace SimpleTypes
                 else if ( _T("textDoubleWave1")		== sValue ) this->m_eValue = textshapetypeTextDoubleWave1;
 				break;
 
-			case 'f':
+			case 'F':
                 if      ( _T("textFadeDown")		== sValue ) this->m_eValue = textshapetypeTextFadeDown;
                 else if ( _T("textFadeLeft")		== sValue ) this->m_eValue = textshapetypeTextFadeLeft;
                 else if ( _T("textFadeRight")		== sValue ) this->m_eValue = textshapetypeTextFadeRight;
                 else if ( _T("textFadeUp")			== sValue ) this->m_eValue = textshapetypeTextFadeUp;
 				break;
 
-			case 'i':
+			case 'I':
 
                 if      ( _T("textInflate")			== sValue ) this->m_eValue = textshapetypeTextInflate;
                 else if ( _T("textInflateBottom")	== sValue ) this->m_eValue = textshapetypeTextInflateBottom;
                 else if ( _T("textInflateTop")		== sValue ) this->m_eValue = textshapetypeTextInflateTop;
 				break;
 
-			case 'n':
+			case 'N':
                 if      ( _T("textNoShape")			== sValue ) this->m_eValue = textshapetypeTextNoShape;
 				break;
 
-			case 'p':
+			case 'P':
 
                 if      ( _T("textPlain")			== sValue ) this->m_eValue = textshapetypeTextPlain;
 				break;
 
-			case 'r':
+			case 'R':
 
                 if		( _T("textRingInside")		== sValue ) this->m_eValue = textshapetypeTextRingInside;
                 else if ( _T("textRingOutside")		== sValue ) this->m_eValue = textshapetypeTextRingOutside;
 				break;
 
-			case 's':
+			case 'S':
 
                 if      ( _T("textSlantDown")		== sValue ) this->m_eValue = textshapetypeTextSlantDown;
                 else if ( _T("textSlantUp")			== sValue ) this->m_eValue = textshapetypeTextSlantUp;
                 else if ( _T("textStop")			== sValue ) this->m_eValue = textshapetypeTextStop;
 				break;
 
-			case 't':
+			case 'T':
 				
                 if      ( _T("textTriangle")		== sValue ) this->m_eValue = textshapetypeTextTriangle;
                 else if ( _T("textTriangleInverted")== sValue ) this->m_eValue = textshapetypeTextTriangleInverted;
 				break;
 
-			case 'w':
+			case 'W':
 				
                 if      ( _T("textWave1")			== sValue ) this->m_eValue = textshapetypeTextWave1;
                 else if ( _T("textWave2")			== sValue ) this->m_eValue = textshapetypeTextWave2;

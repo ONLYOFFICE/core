@@ -24,6 +24,7 @@ namespace OOX
 		public:
 			CRun()
 			{
+				m_oRunProperty = NULL;
 			}
 			CRun(XmlUtils::CXmlNode &oNode)
 			{
@@ -66,7 +67,6 @@ namespace OOX
 
 					m_arrItems[nIndex] = NULL;
 				}
-
 				m_arrItems.RemoveAll();
 
 				for ( int nIndex = 0; nIndex < m_arrSpreadsheetItems.GetSize(); nIndex++ )
@@ -78,12 +78,15 @@ namespace OOX
 				}
 
 				m_arrSpreadsheetItems.RemoveAll();
+				m_oRunProperty = NULL;
 			}
 
 		public:
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
+				m_oRunProperty = NULL;
+				
 				oNode.ReadAttributeBase( _T("w:rsidDel"), m_oRsidDel );
 				oNode.ReadAttributeBase( _T("w:rsidR"),   m_oRsidR );
 				oNode.ReadAttributeBase( _T("w:rsidRPr"), m_oRsidRPr );
@@ -150,7 +153,9 @@ namespace OOX
 							else if ( _T("w:ptab") == sName )
 								pItem = new CPTab( oItem );
 							else if ( _T("w:rPr") == sName )
-								pItem = new CRunProperty( oItem );
+							{
+								pItem = m_oRunProperty = new CRunProperty( oItem );
+							}
 							else if ( _T("w:ruby") == sName )
 								pItem = new CRuby( oItem );
 							else if ( _T("w:separator") == sName )
@@ -176,6 +181,8 @@ namespace OOX
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
+				m_oRunProperty = NULL;
+
 				ReadAttributes( oReader );
 
 				if ( oReader.IsEmptyNode() )
@@ -241,7 +248,9 @@ namespace OOX
 					else if ( _T("w:ptab") == sName )
 						pItem = new CPTab( oReader );
 					else if ( _T("w:rPr") == sName )
-						pItem = new CRunProperty( oReader );
+					{
+						pItem = m_oRunProperty = new CRunProperty( oReader );
+					}
 					else if ( _T("w:ruby") == sName )
 						pItem = new CRuby( oReader );
 					else if ( _T("w:separator") == sName )
@@ -335,8 +344,11 @@ namespace OOX
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRPr;
 
 			// Childs
-			CSimpleArray<WritingElement *> m_arrItems;
+			CSimpleArray<WritingElement *>					 m_arrItems;
 			CSimpleArray<OOX::Spreadsheet::WritingElement *> m_arrSpreadsheetItems;
+
+			OOX::Logic::CRunProperty						*m_oRunProperty;	// копия того что в m_arrItems...  - для быстрого доступа/анализа
+			// по идее нужно сделать как в Drawing::Run - то есть единственные подобъекты вынести отдельно
 		};
 	} // namespace Logic
 } // namespace OOX

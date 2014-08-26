@@ -117,6 +117,10 @@ namespace OOX
 												_T("application/vnd.openxmlformats-officedocument.drawingml.diagramData+xml"),
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramData"));
 
+		const FileType DiagDrawing(L"diagrams", L"drawing.xml",
+												_T("application/vnd.openxmlformats-officedocument.drawingml.diagramDrawing+xml"),
+												_T("http://schemas.microsoft.com/office/2007/relationships/diagramDrawing"));
+
 		const FileType Layout(L"diagrams", L"layout.xml",
 												_T("application/vnd.openxmlformats-officedocument.drawingml.diagramLayout+xml"),
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramLayout"));

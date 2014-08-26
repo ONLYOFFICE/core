@@ -11,11 +11,11 @@
 
 #include "DrawingExt.h"
 #include "DrawingStyles.h"
-#include "DrawingShape.h"
-#include "DrawingTransform.h"
-#include "DrawingPicture.h"
-#include "DrawingCoreInfo.h"
 
+#include "DrawingTransform.h"
+
+#include "DrawingPicture.h"
+#include "DrawingShape.h"
 #include "../Logic/Shape.h"
 
 namespace OOX
@@ -36,7 +36,7 @@ namespace OOX
 			graphictypeGroupShape   = 5, // Группы Шейпов	20.4
 		};
 
-		class CGraphic : public WritingElement
+		class CGraphic : public WritingElementWithChilds<WritingElement> //в данном случае псевдо - так как ДОЛЖЕН быть тока 1 элемент
 		{
 		public:
 			WritingElement_AdditionConstructors(CGraphic)
@@ -76,23 +76,38 @@ namespace OOX
 							sName = oReader.GetName();
 							if ( _T("pic:pic") == sName )
 							{
-								m_oPicture     = oReader;
+								m_arrItems.Add( new OOX::Drawing::CPicture( oReader ));
 								m_eGraphicType = graphictypePicture;
 							}
 							else if ( _T("c:chart") == sName )
 							{
-								m_oChart     = oReader;
+								m_arrItems.Add(  new OOX::Drawing::CChart( oReader ));
 								m_eGraphicType = graphictypeChart;
 							}
 							else if ( _T("wps:wsp") == sName )
 							{
-								m_oShape   = oReader;
+								m_arrItems.Add(  new OOX::Logic::CShape( oReader ));
 								m_eGraphicType = graphictypeShape;
 							}
 							else if ( _T("wpg:wgp") == sName )
 							{
-								 m_oGroupShape   = oReader;
+								m_arrItems.Add( new OOX::Logic::CGroupShape( oReader ));
 								m_eGraphicType = graphictypeGroupShape;
+							}
+							else if ( _T("wpc:wpc") == sName )
+							{
+								m_arrItems.Add( new OOX::Logic::CLockedCanvas( oReader ));
+								m_eGraphicType = graphictypeLockedCanvas;
+							}
+							else if ( _T("lc:lockedCanvas") == sName )
+							{
+								m_arrItems.Add( new OOX::Drawing::CLockedCanvas( oReader ));
+								m_eGraphicType = graphictypeLockedCanvas;
+							}
+							else if ( _T("dgm:relIds") == sName )
+							{
+								m_arrItems.Add( new OOX::Drawing::CDiagrammParts( oReader ));
+								m_eGraphicType = graphictypeDiagram;
 							}
 						}
 					} 
@@ -119,21 +134,10 @@ namespace OOX
 			}
 
         public:
-
-
 			EGraphicType                     m_eGraphicType;
-
 			// Attributes
 			nullable<CString>                m_sUri;
-
-			// Childs
-			nullable<OOX::Drawing::CPicture>	m_oPicture;
-			nullable<OOX::Drawing::CChart>		m_oChart;
-
-			nullable<OOX::Logic::CGroupShape>	m_oGroupShape;
-			nullable<OOX::Logic::CShape>		m_oShape;
-
-
+			//Child
 		};
 	} // Drawing
 

@@ -300,7 +300,7 @@ namespace Spreadsheet
 		et_Pane,
 
 		et_PictureNonVisual,
-		et_NonVisualDrawingProperies,
+		et_NonVisualDrawingProperties,
 		et_NonVisualPictureDrawingProps,
 		et_ConnectionNonVisualShapeProps,
 		et_ShapeProperties,

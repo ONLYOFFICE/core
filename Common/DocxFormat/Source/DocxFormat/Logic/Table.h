@@ -65,6 +65,7 @@ namespace OOX
 		// CTblGridChange 17.13.5.33 (Part 1)
 		//--------------------------------------------------------------------------------
 		class CTblGrid;
+
 		class CTblGridChange : public WritingElement
 		{
 		public:
@@ -373,26 +374,24 @@ namespace OOX
 		public:
 			CTbl()
 			{
+				m_oTableProperties	= NULL;
+				m_nCountRow			=0;
 			}
 			CTbl(XmlUtils::CXmlNode &oNode)
 			{
+				m_oTableProperties	= NULL;
+				m_nCountRow			=0;
 				fromXML( oNode );
 			}
 			CTbl(XmlUtils::CXmlLiteReader& oReader)
 			{
+				m_oTableProperties	= NULL;
+				m_nCountRow			=0;
 				fromXML( oReader );
 			}
 			virtual ~CTbl()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
+				Clear();
 			}
 
 		public:
@@ -413,6 +412,10 @@ namespace OOX
 
 			void Clear()
 			{	
+				m_oTblGrid.reset();
+				m_oTableProperties	= NULL;
+				m_nCountRow			=0;
+				
 				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
@@ -435,10 +438,13 @@ namespace OOX
 			}
 
 		public:
+			int										m_nCountRow; 
 
 			// Childs
-			CSimpleArray<WritingElement *> m_arrItems;
-			nullable<OOX::Logic::CTblGrid> m_oTblGrid;
+			CSimpleArray<WritingElement *>			m_arrItems;
+			nullable<OOX::Logic::CTblGrid>			m_oTblGrid;
+			
+			OOX::Logic::CTableProperty*				m_oTableProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
 		};
 
 		//--------------------------------------------------------------------------------
@@ -449,26 +455,21 @@ namespace OOX
 		public:
 			CTr()
 			{
+				m_oTableRowProperties = NULL;
 			}
 			CTr(XmlUtils::CXmlNode &oNode)
 			{
+				m_oTableRowProperties = NULL;
 				fromXML( oNode );
 			}
 			CTr(XmlUtils::CXmlLiteReader& oReader)
 			{
+				m_oTableRowProperties = NULL;
 				fromXML( oReader );
 			}
 			virtual ~CTr()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
+				Clear();
 			}
 
 		public:
@@ -488,6 +489,7 @@ namespace OOX
 
 			void Clear()
 			{
+				m_oTableRowProperties = NULL;
 				m_oRsidDel.reset();
 				m_oRsidR.reset();
 				m_oRsidRPr.reset();
@@ -527,7 +529,8 @@ namespace OOX
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidTr;
 
 			// Childs
-			CSimpleArray<WritingElement *> m_arrItems;
+			CSimpleArray<WritingElement *>		m_arrItems;
+			OOX::Logic::CTableRowProperties*	m_oTableRowProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
 		};
 
 		//--------------------------------------------------------------------------------
@@ -539,28 +542,23 @@ namespace OOX
 			CTc()
 			{
 				m_nNumCol = 0;
+				m_oTableCellProperties = NULL;
 			}
 			CTc(XmlUtils::CXmlNode &oNode)
 			{
 				m_nNumCol = 0;
+				m_oTableCellProperties = NULL;
 				fromXML( oNode );
 			}
 			CTc(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_nNumCol = 0;
+				m_oTableCellProperties = NULL;
 				fromXML( oReader );
 			}
 			virtual ~CTc()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
+				Clear();
 			}
 
 		public:
@@ -579,6 +577,8 @@ namespace OOX
 			}
 			void Clear()
 			{
+				m_oTableCellProperties = NULL;
+				m_nNumCol = 0;
 				m_sId.reset();
 
 				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
@@ -627,7 +627,8 @@ namespace OOX
 			nullable<CString >             m_sId;
 
 			// Childs
-			CSimpleArray<WritingElement *> m_arrItems;
+			CSimpleArray<WritingElement *>			m_arrItems;
+			OOX::Logic::CTableCellProperties*		m_oTableCellProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
 		};
 
 	} // namespace Logic

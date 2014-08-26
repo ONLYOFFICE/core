@@ -1936,8 +1936,8 @@ namespace NSEditorApi
 	{
 	public:
 		unsigned char*	Data;
-		unsigned int	Width;
-		unsigned int	Height;
+		int				Width;
+		int				Height;
 
 		bool			Release;
 
@@ -2008,6 +2008,41 @@ namespace NSEditorApi
 
 	typedef CAscMethodParamInt CAscInsertSectionBreak;
 	typedef CAscMethodParamInt CAscInsertPageNumber;
+}
+
+namespace NSEditorApi
+{
+	class CAscParagraphStyleImage
+	{
+	public:
+		std::wstring	Name;
+		int				Type;
+		int				Priority;
+
+		CAscImageRaw	Image;
+
+	public:
+		CAscParagraphStyleImage()
+		{
+			Type		= c_oAscStyleImage_Default;
+			Priority	= 0;
+		}
+	};
+
+	class CAscTableStyleImage
+	{
+	public:
+		std::wstring	Name;
+		int				Type;
+
+		CAscImageRaw	Image;
+
+	public:
+		CAscTableStyleImage()
+		{
+			Type		= c_oAscStyleImage_Default;
+		}
+	};
 }
 
 namespace NSEditorApi

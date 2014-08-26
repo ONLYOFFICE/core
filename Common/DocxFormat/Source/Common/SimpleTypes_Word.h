@@ -3492,7 +3492,7 @@ namespace SimpleTypes
             else if ( _T("textFile")    == sValue ) this->m_eValue = mailmergeddatatypeTextFile;
             else if ( _T("xQuery")      == sValue ) this->m_eValue = mailmergeddatatypeXQuery;
             else if ( _T("xmlFile")     == sValue ) this->m_eValue = mailmergeddatatypeXmlFile;
-            else                                   this-> this->m_eValue = eDefValue;
+            else                                   this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
@@ -5144,7 +5144,7 @@ namespace SimpleTypes
 			}
 			else
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case stylesortBasedOn  : return _T("0004");
 				case stylesortDefault  : return _T("0002");

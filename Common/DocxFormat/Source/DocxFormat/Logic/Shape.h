@@ -486,13 +486,13 @@ namespace OOX
 						m_oCNvGroupSpPr = oReader;
 
 					else if ( _T("wps:wsp") == sName )
-						m_arrItems.Add( new OOX::Logic::CShape( oReader ));
+						m_arrItems.push_back( new OOX::Logic::CShape( oReader ));
 					else if ( _T("c:chart") == sName ) //??? 
-						m_arrItems.Add( new OOX::Drawing::CChart( oReader ));
+						m_arrItems.push_back( new OOX::Drawing::CChart( oReader ));
 					else if ( _T("pic:pic") == sName )
-						m_arrItems.Add( new OOX::Drawing::CPicture( oReader ));
+						m_arrItems.push_back( new OOX::Drawing::CPicture( oReader ));
 					else if ( _T("wpg:grpSp") == sName )
-						m_arrItems.Add( new OOX::Logic::CGroupShape( oReader ));	
+						m_arrItems.push_back( new OOX::Logic::CGroupShape( oReader ));	
 				}
 			}
 
@@ -563,13 +563,13 @@ namespace OOX
 					//	m_oCNvGroupSpPr = oReader;
 
 					if ( _T("wps:wsp") == sName )
-						m_arrItems.Add( new OOX::Logic::CShape( oReader ));
+						m_arrItems.push_back( new OOX::Logic::CShape( oReader ));
 					else if ( _T("c:chart") == sName ) //??? 
-						m_arrItems.Add( new OOX::Drawing::CChart( oReader ));
+						m_arrItems.push_back( new OOX::Drawing::CChart( oReader ));
 					else if ( _T("pic:pic") == sName )
-						m_arrItems.Add( new OOX::Drawing::CPicture( oReader ));
+						m_arrItems.push_back( new OOX::Drawing::CPicture( oReader ));
 					else if ( _T("wpg:grpSp") == sName )
-						m_arrItems.Add( new OOX::Logic::CGroupShape( oReader ));	
+						m_arrItems.push_back( new OOX::Logic::CGroupShape( oReader ));	
 				}
 			}
 

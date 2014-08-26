@@ -325,9 +325,9 @@ namespace OOX
 						m_oTxSp = oReader; 		
 
 					else if ( _T("a:sp") == sName )
-						m_arrItems.Add( new OOX::Drawing::CShape( oReader ));
+						m_arrItems.push_back( new OOX::Drawing::CShape( oReader ));
 					else if ( _T("pic:pic") == sName )//???
-						m_arrItems.Add( new OOX::Drawing::CPicture( oReader ));
+						m_arrItems.push_back( new OOX::Drawing::CPicture( oReader ));
 					//else if ( _T("a:grpSp") == sName )//????
 					//	m_arrItems.Add( new OOX::Drawing::CGroupShape( oReader ));	
 

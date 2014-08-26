@@ -76,37 +76,37 @@ namespace OOX
 							sName = oReader.GetName();
 							if ( _T("pic:pic") == sName )
 							{
-								m_arrItems.Add( new OOX::Drawing::CPicture( oReader ));
+								m_arrItems.push_back( new OOX::Drawing::CPicture( oReader ));
 								m_eGraphicType = graphictypePicture;
 							}
 							else if ( _T("c:chart") == sName )
 							{
-								m_arrItems.Add(  new OOX::Drawing::CChart( oReader ));
+								m_arrItems.push_back(  new OOX::Drawing::CChart( oReader ));
 								m_eGraphicType = graphictypeChart;
 							}
 							else if ( _T("wps:wsp") == sName )
 							{
-								m_arrItems.Add(  new OOX::Logic::CShape( oReader ));
+								m_arrItems.push_back(  new OOX::Logic::CShape( oReader ));
 								m_eGraphicType = graphictypeShape;
 							}
 							else if ( _T("wpg:wgp") == sName )
 							{
-								m_arrItems.Add( new OOX::Logic::CGroupShape( oReader ));
+								m_arrItems.push_back( new OOX::Logic::CGroupShape( oReader ));
 								m_eGraphicType = graphictypeGroupShape;
 							}
 							else if ( _T("wpc:wpc") == sName )
 							{
-								m_arrItems.Add( new OOX::Logic::CLockedCanvas( oReader ));
+								m_arrItems.push_back( new OOX::Logic::CLockedCanvas( oReader ));
 								m_eGraphicType = graphictypeLockedCanvas;
 							}
 							else if ( _T("lc:lockedCanvas") == sName )
 							{
-								m_arrItems.Add( new OOX::Drawing::CLockedCanvas( oReader ));
+								m_arrItems.push_back( new OOX::Drawing::CLockedCanvas( oReader ));
 								m_eGraphicType = graphictypeLockedCanvas;
 							}
 							else if ( _T("dgm:relIds") == sName )
 							{
-								m_arrItems.Add( new OOX::Drawing::CDiagrammParts( oReader ));
+								m_arrItems.push_back( new OOX::Drawing::CDiagrammParts( oReader ));
 								m_eGraphicType = graphictypeDiagram;
 							}
 						}

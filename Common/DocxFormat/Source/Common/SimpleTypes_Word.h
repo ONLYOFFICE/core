@@ -580,7 +580,7 @@ namespace SimpleTypes
 				}
 			}
 
-            return this->m_eValuem_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString  () const 
@@ -2492,17 +2492,17 @@ namespace SimpleTypes
 
 		virtual EHeightRule FromString(CString &sValue)
 		{
-            if      ( _T("atLeast") == sValue ) this->m_eValuethis->m_eValue = heightruleAtLeast;
-            else if ( _T("auto")    == sValue ) this->m_eValuethis->m_eValue = heightruleAuto;
-            else if ( _T("exact")   == sValue ) this->m_eValuethis->m_eValue = heightruleExact;
-            else                                this->m_eValuethis->m_eValue = eDefValue;
+            if      ( _T("atLeast") == sValue ) this->m_eValue = heightruleAtLeast;
+            else if ( _T("auto")    == sValue ) this->m_eValue = heightruleAuto;
+            else if ( _T("exact")   == sValue ) this->m_eValue = heightruleExact;
+            else                                this->m_eValue = eDefValue;
 
-            return this->m_eValuem_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString     ToString  () const 
 		{
-            switch(this->m_eValuem_eValue)
+            switch(this->m_eValue)
 			{
 			case heightruleAtLeast : return _T("atLeast");
 			case heightruleAuto    : return _T("auto");
@@ -2561,7 +2561,7 @@ namespace SimpleTypes
 				}
 				else if ( 6 <= sValue.GetLength() )
 				{
-                    this->m_eValuethis->m_eValue = hexcolorRGB;
+                    this->m_eValue = hexcolorRGB;
 					m_sValue = sValue.Mid( 0, 6 );
 					Parse();
 				}
@@ -2955,7 +2955,7 @@ namespace SimpleTypes
             if      ( _T("cs")       == sValue ) this->m_eValue = hintCs;
             else if ( _T("default")  == sValue ) this->m_eValue = hintDefault;
             else if ( _T("eastAsia") == sValue ) this->m_eValue = hintEastAsia;
-            else                                this-> this->m_eValue = eDefValue;
+            else                                this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}

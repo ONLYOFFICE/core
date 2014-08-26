@@ -732,7 +732,7 @@ namespace OOX
 		virtual ~WritingElementWithChilds() {ClearItems();}
 		virtual void ClearItems()
 		{
-			for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+            for ( int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
 				if ( m_arrItems[nIndex] )
 					delete m_arrItems[nIndex];
@@ -742,6 +742,7 @@ namespace OOX
 
 			m_arrItems.RemoveAll();
 		}
-		CSimpleArray<ElemType *>         m_arrItems;
+        std::vector<ElemType *>     m_arrItems;
+        //CSimpleArray<ElemType *>         m_arrItems;
 	};
 }

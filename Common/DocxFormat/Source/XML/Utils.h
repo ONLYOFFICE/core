@@ -86,6 +86,10 @@ namespace XmlUtils
 	{
 		return _ttoi(string);
 	}
+    AVSINLINE static size_t  GetUInteger(const CString& string)
+    {
+        return (size_t) _ttoi(string);
+    }
 	AVSINLINE static double  GetDouble  (const CString& string)
 	{
 		double d = 0;

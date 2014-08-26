@@ -107,7 +107,7 @@ namespace OOX
 					if ( _T("a:ext") == sName )
 					{
 						OOX::Drawing::COfficeArtExtension oExt = oReader;
-						m_arrExt.Add( oExt );
+                        m_arrExt.push_back( oExt );
 					}
 				}
 			}
@@ -115,7 +115,7 @@ namespace OOX
 			{
 				CString sResult = _T("<a:extLst>");
 				
-				for ( int nIndex = 0; nIndex < m_arrExt.GetSize(); nIndex++ )
+                for ( int nIndex = 0; nIndex < m_arrExt.size(); nIndex++ )
 					sResult += m_arrExt[nIndex].toXML();
 
 				sResult += _T("</a:extLst>");
@@ -130,7 +130,8 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<OOX::Drawing::COfficeArtExtension> m_arrExt;
+            //CSimpleArray<OOX::Drawing::COfficeArtExtension> m_arrExt;
+            std::vector<OOX::Drawing::COfficeArtExtension> m_arrExt;
 		};
 	} // namespace Drawing
 } // namespace OOX

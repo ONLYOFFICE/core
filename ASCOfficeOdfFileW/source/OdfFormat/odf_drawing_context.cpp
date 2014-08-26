@@ -1300,10 +1300,17 @@ void odf_drawing_context::set_position(double x_pt, double y_pt)
 }
 void odf_drawing_context::get_size( double & width_pt, double & height_pt)
 {
-	if (!impl_->current_drawing_state_.svg_width_ || !impl_->current_drawing_state_.svg_height_) return;
+	if (impl_->current_drawing_state_.svg_width_ && impl_->current_drawing_state_.svg_height_)
+	{
+		width_pt	= impl_->current_drawing_state_.svg_width_->get_value_unit(length::pt);
+		height_pt	= impl_->current_drawing_state_.svg_height_->get_value_unit(length::pt);
+	}
+	else if (impl_->anchor_settings_.svg_width_ && impl_->anchor_settings_.svg_height_)
+	{
+		width_pt	= impl_->anchor_settings_.svg_width_->get_value_unit(length::pt);
+		height_pt	= impl_->anchor_settings_.svg_height_->get_value_unit(length::pt);
+	}
 
-	width_pt	= impl_->current_drawing_state_.svg_width_->get_value_unit(length::pt);
-	height_pt	= impl_->current_drawing_state_.svg_height_->get_value_unit(length::pt);
 }
 void odf_drawing_context::set_size( double width_pt, double height_pt)
 {
@@ -1764,6 +1771,7 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 		//end_area_properties();
 	}
 }
+//-------------------------------------------------------------------------------------------------------------------------------------
 void odf_drawing_context::start_gradient_style()
 {
 	odf::office_element_ptr gradient_element;
@@ -1781,25 +1789,16 @@ void odf_drawing_context::start_gradient_style()
 	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::gradient);
 
 }
-void odf_drawing_context::end_gradient_style()
+void odf_drawing_context::set_gradient_type(gradient_style style)
 {
-}
-void odf_drawing_context::set_gradient_type(int type)
-{
-	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state()->get_office_element().get());
+	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 
-	switch(type)
-	{
-	case 1:	gradient->draw_style_ = gradient_style(gradient_style::linear);		break;
-	case 2: gradient->draw_style_ = gradient_style(gradient_style::radial);		break;
-	case 3: gradient->draw_style_ = gradient_style(gradient_style::rectangular); break;
-	case 4: gradient->draw_style_ = gradient_style(gradient_style::square);		break;
-	}	
+	gradient->draw_style_ = style;
 }
 void odf_drawing_context::set_gradient_start(std::wstring hexColor, _CP_OPT(double) & intensiv)
 {
-	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state()->get_office_element().get());
+	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 
 	gradient->draw_start_color_ = color(std::wstring(L"#") + hexColor);
@@ -1807,75 +1806,85 @@ void odf_drawing_context::set_gradient_start(std::wstring hexColor, _CP_OPT(doub
 }
 void odf_drawing_context::set_gradient_end  (std::wstring hexColor, _CP_OPT(double) & intensiv)
 {
-	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state()->get_office_element().get());
+	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 
 	gradient->draw_end_color_ = color(std::wstring(L"#") + hexColor);
 	gradient->draw_end_intensity_ = 100.;
 }
-void odf_drawing_context::set_gradient_center(double x, double y)
+void odf_drawing_context::set_gradient_angle(double angle)
 {
-	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state()->get_office_element().get());
+	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
-	
-	gradient->draw_cy_ = percent(x);
-	gradient->draw_cx_ = percent(y);
+
+	gradient->draw_angle_ = (270-angle)*10;//(int)((360 - angle)/180. * 3.14159265358979323846);
 }
 void odf_drawing_context::set_gradient_rect(double l, double t, double r,double b)
 {
-	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state()->get_office_element().get());
+	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 	
 	gradient->draw_cy_ = percent((b-t)/2. + 50.);
 	gradient->draw_cx_ = percent((r-l)/2. + 50.);
 }
-void odf_drawing_context::set_opacity(_CP_OPT(double) & start, _CP_OPT(double) & end)
+void odf_drawing_context::end_gradient_style()
 {
-	if (!start && !end)return;
-
-	if (!start) start = 100;
-	if (!end)	end = 100;
-
-	if (*start == *end)
-	{
-		set_opacity(*start);
-	}
-	else
-	{
-		odf::office_element_ptr opacity_element;
-
-		odf::create_element(L"draw",L"opacity", opacity_element, impl_->odf_context_);
-		impl_->styles_context_->add_style(opacity_element,false,true, style_family::Opacity);
-
-		draw_opacity * opacity = dynamic_cast<draw_opacity *>(opacity_element.get());
-		if (!opacity) return;
-
-		opacity->draw_name_ = impl_->styles_context_->find_free_name(style_family::Opacity);
-		opacity->draw_display_name_ = std::wstring(L"User") + opacity->draw_name_.get() ;
-		
-		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_opacity_name_ = opacity->draw_name_;
-///////////////////////////////////////////////////////////////////////////////////////////////////
-		opacity->draw_start_ = *start;
-		opacity->draw_end_ = *end;
-
-		draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state()->get_office_element().get());
-		if (gradient)
-		{
-			opacity->draw_style_ =  gradient->draw_style_;
-		}
-		else
-		{
-			opacity->draw_style_ = gradient_style(gradient_style::linear);
-		}
-	}
 }
-void odf_drawing_context::set_gradient_angle(double angle)
+//-------------------------------------------------------------------------------------------------------------------------------------
+void odf_drawing_context::start_opacity_style()
 {
-	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state()->get_office_element().get());
-	if (!gradient) return;
+	odf::office_element_ptr opacity_element;
+	odf::create_element(L"draw",L"opacity", opacity_element, impl_->odf_context_);
+	impl_->styles_context_->add_style(opacity_element,false,true, style_family::Opacity);
 
-	gradient->draw_angle_ = (int)((360 - angle)/180. * 3.14159265358979323846);
+	draw_opacity * opacity = dynamic_cast<draw_opacity *>(opacity_element.get());
+	if (!opacity) return;
+
+	opacity->draw_name_ = impl_->styles_context_->find_free_name(style_family::Opacity);
+	opacity->draw_display_name_ = std::wstring(L"User") + opacity->draw_name_.get() ;
+	
+	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_opacity_name_ = opacity->draw_name_;
 }
+void odf_drawing_context::set_opacity_start(double val)
+{
+	draw_opacity * opacity = dynamic_cast<draw_opacity *>(impl_->styles_context_->last_state(style_family::Opacity)->get_office_element().get());
+	if (!opacity) return;
+
+	opacity->draw_start_ = val;
+}
+void odf_drawing_context::set_opacity_angle(double angle)
+{
+	draw_opacity * opacity = dynamic_cast<draw_opacity *>(impl_->styles_context_->last_state(style_family::Opacity)->get_office_element().get());
+	if (!opacity) return;
+
+	opacity->draw_angle_ = (270-angle)*10;//(int)((360 - angle)/180. * 3.14159265358979323846);
+}
+void odf_drawing_context::set_opacity_type(gradient_style style)
+{
+	draw_opacity * opacity = dynamic_cast<draw_opacity *>(impl_->styles_context_->last_state(style_family::Opacity)->get_office_element().get());
+	if (!opacity) return;
+
+	opacity->draw_style_ = style;
+}
+void odf_drawing_context::set_opacity_rect(double l, double t, double r,double b)
+{
+	draw_opacity * opacity = dynamic_cast<draw_opacity *>(impl_->styles_context_->last_state(style_family::Opacity)->get_office_element().get());
+	if (!opacity) return;
+	
+	opacity->draw_cy_ = percent((b-t)/2. + 50.);
+	opacity->draw_cx_ = percent((r-l)/2. + 50.);
+}
+void odf_drawing_context::set_opacity_end (double val)
+{
+	draw_opacity * opacity = dynamic_cast<draw_opacity *>(impl_->styles_context_->last_state(style_family::Opacity)->get_office_element().get());
+	if (!opacity) return;
+
+	opacity->draw_end_ = val;
+}
+void odf_drawing_context::end_opacity_style()
+{
+}
+//-------------------------------------------------------------------------------------------------------------------------------------
 void odf_drawing_context::start_hatch_style()
 {
 	odf::office_element_ptr hatch_element;

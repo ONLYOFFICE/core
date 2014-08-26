@@ -187,18 +187,22 @@ void odt_conversion_context::start_drawings()
 
 	drawing_context_.push_back(new_drawing_context_);
 }
-void odt_conversion_context::end_drawings()
+void odt_conversion_context::end_drawings(bool delete_only)
 {
 	if (drawing_context_.size() < 1) return;
 
 	office_element_ptr & elm = drawing_context()->get_root_element();
 	if (elm && text_context()->current_level_.size() > 0)
 	{
-		text_context()->current_level_.back().elm->add_child_element(elm);
+		if (!delete_only)text_context()->current_level_.back().elm->add_child_element(elm);
+		drawing_context()->clear();
+		drawing_context_.pop_back();
 	}
-	drawing_context()->clear();
-
-	drawing_context_.pop_back();
+	else// if (delete_only)
+	{		
+		drawing_context()->clear();
+		drawing_context_.pop_back();
+	}
 }
 void odt_conversion_context::start_paragraph(bool styled)
 {

@@ -80,6 +80,8 @@ private:
 	std::wstring get_name_family(style_family::type family);
 
 	odf_conversion_context *	odf_context_;
+
+	int style_family_counts_[26];//согласно количеству разных стилей
 };
 
 

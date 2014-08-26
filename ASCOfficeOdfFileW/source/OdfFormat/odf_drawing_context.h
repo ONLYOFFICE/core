@@ -10,6 +10,7 @@
 
 #include "anchortype.h"
 #include "stylewrap.h"
+#include "gradientstyle.h"
 
 namespace cpdoccore {
 namespace odf
@@ -145,15 +146,21 @@ public:
 	void set_textarea_font(_CP_OPT(std::wstring) & latin, _CP_OPT(std::wstring) & cs, _CP_OPT(std::wstring) & ea);
 //////////////////////////////////////////////////////////////////////////////////////
 	void start_gradient_style();
-		void set_gradient_type(int type);
+		void set_gradient_type(gradient_style style);
 		void set_gradient_start(std::wstring hexColor, _CP_OPT(double) & intensiv);
 		void set_gradient_end  (std::wstring hexColor, _CP_OPT(double) & intensiv);
 		void set_gradient_rect(double l, double t, double r,double b);
-		void set_gradient_center(double x, double y);
-		void set_opacity(_CP_OPT(double) & start, _CP_OPT(double) & end);//стиль
 		void set_gradient_angle(double angle);
 	void end_gradient_style();
 ////////////////////////////////////////////////////////////////////////////////////////
+	void start_opacity_style();
+		void set_opacity_type(gradient_style style);
+		void set_opacity_start(double val);
+		void set_opacity_end  (double val);
+		void set_opacity_rect(double l, double t, double r,double b);
+		void set_opacity_angle(double angle);
+	void end_opacity_style();
+//////////////////////////////////////////////////////////////////////////////////////
 	void start_hatch_style();
 		void set_hatch_line_color(std::wstring hexColor);
 		void set_hatch_area_color(std::wstring hexColor);

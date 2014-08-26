@@ -202,6 +202,9 @@ public:
 	_CP_OPT(gradient_style)	draw_style_;//linear, radial, ..
 	_CP_OPT(int)			draw_angle_;
 
+	_CP_OPT(percent)		draw_cy_;//%
+	_CP_OPT(percent)		draw_cx_;
+
 	_CP_OPT(percent)		draw_start_;
 	_CP_OPT(percent)		draw_end_;
 	

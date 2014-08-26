@@ -38,6 +38,8 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 	case SimpleTypes::shapetypeStar16:			return boost::make_shared<oox_shape_star16>();
 	case SimpleTypes::shapetypeStar32:			return boost::make_shared<oox_shape_star32>();
 
+	case SimpleTypes::shapetypePlaque:			return boost::make_shared<oox_shape_Plaque>();
+
 	//case (2001 + SimpleTypes::textshapetypeTextArchDown): 
 	//case (2001 + SimpleTypes::textshapetypeTextArchDownPour): 
 	//case (2001 + SimpleTypes::textshapetypeTextArchUp): 
@@ -71,7 +73,7 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 	//case (2001 + SimpleTypes::textshapetypeTextRingInside): 
 	//case (2001 + SimpleTypes::textshapetypeTextRingOutside): 
 	//case (2001 + SimpleTypes::textshapetypeTextSlantDown): 
-	//case (2001 + SimpleTypes::textshapetypeTextSlantUp): 
+	case (2001 + SimpleTypes::textshapetypeTextSlantUp): return boost::make_shared<oox_shape_textSlantUp>();
 	//case (2001 + SimpleTypes::textshapetypeTextStop): 
 	//case (2001 + SimpleTypes::textshapetypeTextTriangle): 
 	//case (2001 + SimpleTypes::textshapetypeTextTriangleInverted): 

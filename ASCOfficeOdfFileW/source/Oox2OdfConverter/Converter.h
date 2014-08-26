@@ -49,6 +49,7 @@ namespace OOX
 		class CPresetTextShape;
 		class CShape;
 		class CLockedCanvas;
+		//class CObject;
 		class CPicture;
 		class CChart;
 		class CGraphic;

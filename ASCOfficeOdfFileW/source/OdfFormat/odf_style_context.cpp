@@ -27,7 +27,8 @@ void calc_paragraph_properties_content(std::vector<style_paragraph_properties*> 
 }
 
 odf_style_context::odf_style_context()
-{        
+{    
+	memset(style_family_counts_,0,sizeof(style_family_counts_)); 
 }
 
 void odf_style_context::set_odf_context(odf_conversion_context * Context)
@@ -69,6 +70,8 @@ void odf_style_context::create_style(std::wstring oox_name, style_family::type f
 	style_state_list_.back()->set_root(root);
 
 	style_state_list_.back()->style_oox_id_ = oox_id;
+
+	style_family_counts_[(int)family]++;
 }
 
 void odf_style_context::add_style(office_element_ptr elm, bool automatic, bool root, style_family::type family)
@@ -316,16 +319,17 @@ std::wstring odf_style_context::get_name_family(style_family::type family)
 std::wstring odf_style_context::find_free_name(style_family::type  family)
 {
 	std::wstring name = get_name_family(family);
-	int count =1;
+	int count = style_family_counts_[(int)family];
 
-	for (int i=0;i<style_state_list_.size(); i++)
-	{
-		if ((style_state_list_[i]->odf_style_) && (style_state_list_[i]->get_family_type() == family))
-		{
-			count++;
-		}
-	}
-	name = name + boost::lexical_cast<std::wstring>(count);
+	//доооолго .. проще хранить
+	//for (int i=0;i<style_state_list_.size(); i++)
+	//{
+	//	if ((style_state_list_[i]->odf_style_) && (style_state_list_[i]->get_family_type() == family))
+	//	{
+	//		count++;
+	//	}
+	//}
+	name = name + boost::lexical_cast<std::wstring>(count+1);
 	return name;
 }
 office_element_ptr & odf_style_context::add_or_find(std::wstring name, style_family::type family, bool automatic , bool root, int oox_id)

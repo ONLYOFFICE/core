@@ -773,19 +773,20 @@ void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill,
 
 	odf_context()->drawing_context()->start_gradient_style();
 	{
-		if (oox_grad_fill->m_eGradType == OOX::Drawing::gradfilltypeLinear)
+		odf::gradient_style grad_style = odf::gradient_style::linear;
+	
+		if (oox_grad_fill->m_eGradType == OOX::Drawing::gradfilltypeLinear && oox_grad_fill->m_oLin->m_oAng.IsInit())
 		{
-			odf_context()->drawing_context()->set_gradient_type(1);
-			if (oox_grad_fill->m_oLin->m_oAng.IsInit())
-				odf_context()->drawing_context()->set_gradient_angle(oox_grad_fill->m_oLin->m_oAng->GetAngle());
-
+			odf_context()->drawing_context()->set_gradient_angle(oox_grad_fill->m_oLin->m_oAng->GetAngle());
 		}
-		if (oox_grad_fill->m_eGradType == OOX::Drawing::gradfilltypePath)
+		if (oox_grad_fill->m_eGradType == OOX::Drawing::gradfilltypePath && oox_grad_fill->m_oPath->m_oPath.IsInit())
 		{
-			if (oox_grad_fill->m_oPath->m_oPath.IsInit())
+			switch(oox_grad_fill->m_oPath->m_oPath->GetValue())
 			{
-				odf_context()->drawing_context()->set_gradient_type((int)oox_grad_fill->m_oPath->m_oPath->GetValue() + 2);
-			}
+				case SimpleTypes::pathshadetypeCircle:	grad_style = odf::gradient_style::radial;		break;
+				case SimpleTypes::pathshadetypeRect:	grad_style = odf::gradient_style::rectangular;	break;
+				case SimpleTypes::pathshadetypeShape:	grad_style = odf::gradient_style::square;		break;
+			}	
 			if (oox_grad_fill->m_oPath->m_oFillToRect.IsInit())
 			{
 				odf_context()->drawing_context()->set_gradient_rect( oox_grad_fill->m_oPath->m_oFillToRect->m_oL.GetValue(),
@@ -794,6 +795,8 @@ void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill,
 																	oox_grad_fill->m_oPath->m_oFillToRect->m_oB.GetValue());			
 			}
 		}	
+		odf_context()->drawing_context()->set_gradient_type(grad_style);
+
 		if (oox_grad_fill->m_oGsLst.IsInit() && oox_grad_fill->m_oGsLst->m_arrGs.GetSize()>1)
 		{
 			std::wstring hexColorStart, hexColorEnd;
@@ -804,13 +807,42 @@ void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill,
 				oox_grad_fill->m_oGsLst->m_arrGs[0].m_oShemeClr.m_oVal.FromString(*change_sheme_color);
 				oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.GetSize()-1].m_oShemeClr.m_oVal.FromString(*change_sheme_color);
 			}
-			convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[0]),hexColorStart, opacityStart);
-			convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.GetSize()-1]),hexColorEnd, opacityEnd);
+			convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.GetSize()-1]),hexColorStart, opacityStart);
+			convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[0]),hexColorEnd, opacityEnd);
 			
 			odf_context()->drawing_context()->set_gradient_start(hexColorStart, opacityStart);
-			odf_context()->drawing_context()->set_gradient_end(hexColorEnd, opacityEnd);
-		
-			odf_context()->drawing_context()->set_opacity(opacityStart, opacityEnd);
+			odf_context()->drawing_context()->set_gradient_end	(hexColorEnd,	opacityEnd);
+
+			if (opacityStart || opacityEnd)
+			{
+				if (!opacityStart)	opacityStart = 100;
+				if (!opacityEnd)	opacityEnd = 100;
+				
+				if (*opacityStart == *opacityEnd)
+				{
+					odf_context()->drawing_context()->set_opacity(*opacityStart);
+				}
+				else
+				{
+					odf_context()->drawing_context()->start_opacity_style();
+						odf_context()->drawing_context()->set_opacity_type	(grad_style);
+						odf_context()->drawing_context()->set_opacity_start	(*opacityStart);
+						odf_context()->drawing_context()->set_opacity_end	(*opacityEnd);
+						
+						if (oox_grad_fill->m_eGradType == OOX::Drawing::gradfilltypeLinear && oox_grad_fill->m_oLin->m_oAng.IsInit())
+						{
+							odf_context()->drawing_context()->set_opacity_angle(oox_grad_fill->m_oLin->m_oAng->GetAngle());
+						}
+						if (oox_grad_fill->m_eGradType == OOX::Drawing::gradfilltypePath && oox_grad_fill->m_oPath->m_oFillToRect.IsInit())
+						{
+							odf_context()->drawing_context()->set_opacity_rect (oox_grad_fill->m_oPath->m_oFillToRect->m_oL.GetValue(),
+																			oox_grad_fill->m_oPath->m_oFillToRect->m_oT.GetValue(),
+																			oox_grad_fill->m_oPath->m_oFillToRect->m_oR.GetValue(),
+																			oox_grad_fill->m_oPath->m_oFillToRect->m_oB.GetValue());
+						}
+					odf_context()->drawing_context()->end_opacity_style();
+				}
+			}
 		}
 	}
 	odf_context()->drawing_context()->end_gradient_style();

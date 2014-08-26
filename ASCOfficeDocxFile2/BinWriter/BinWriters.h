@@ -4607,7 +4607,7 @@ namespace BinDocxRW
 			OOX::EElementType pElementType = item->getType();
 			CString* pXml = NULL;
 			OOX::Logic::CDrawing* pChartDrawing = NULL;
-			OOX::Drawing::CChart* pChart = NULL;
+			OOX::Drawing::CGraphic* pGraphic = NULL;
 			if(OOX::et_mc_alternateContent == pElementType)
 			{
 				OOX::Logic::CAlternateContent* pAlternateContent = static_cast<OOX::Logic::CAlternateContent*>(item);
@@ -4618,15 +4618,15 @@ namespace BinDocxRW
 					if(OOX::et_w_drawing == we->getType())
 					{
 						OOX::Logic::CDrawing* pDrawing = static_cast<OOX::Logic::CDrawing*>(we);
-						if(pDrawing->m_bAnchor && pDrawing->m_oAnchor.IsInit() && pDrawing->m_oAnchor->m_oGraphic.IsInit() && pDrawing->m_oAnchor->m_oGraphic->m_oChart.IsInit())
+						if(pDrawing->m_bAnchor && pDrawing->m_oAnchor.IsInit() && pDrawing->m_oAnchor->m_oGraphic.IsInit())
 						{
 							pChartDrawing = pDrawing;
-							pChart = pDrawing->m_oAnchor->m_oGraphic->m_oChart.GetPointer();
+							pGraphic = pDrawing->m_oAnchor->m_oGraphic.GetPointer();
 						}
-						else if(pDrawing->m_oInline.IsInit() && pDrawing->m_oInline->m_oGraphic.IsInit() && pDrawing->m_oInline->m_oGraphic->m_oChart.IsInit())
+						else if(pDrawing->m_oInline.IsInit() && pDrawing->m_oInline->m_oGraphic.IsInit())
 						{
 							pChartDrawing = pDrawing;
-							pChart = pDrawing->m_oInline->m_oGraphic->m_oChart.GetPointer();
+							pGraphic = pDrawing->m_oInline->m_oGraphic.GetPointer();
 						}
 					}
 				}
@@ -4635,15 +4635,15 @@ namespace BinDocxRW
 			{
 				OOX::Logic::CDrawing* pDrawing = static_cast<OOX::Logic::CDrawing*>(item);
 				pXml = pDrawing->m_sXml.GetPointer();
-				if(pDrawing->m_bAnchor && pDrawing->m_oAnchor.IsInit() && pDrawing->m_oAnchor->m_oGraphic.IsInit() && pDrawing->m_oAnchor->m_oGraphic->m_oChart.IsInit())
+				if(pDrawing->m_bAnchor && pDrawing->m_oAnchor.IsInit() && pDrawing->m_oAnchor->m_oGraphic.IsInit())
 				{
 					pChartDrawing = pDrawing;
-					pChart = pDrawing->m_oAnchor->m_oGraphic->m_oChart.GetPointer();
+					pGraphic = pDrawing->m_oAnchor->m_oGraphic.GetPointer();
 				}
-				else if(pDrawing->m_oInline.IsInit() && pDrawing->m_oInline->m_oGraphic.IsInit() && pDrawing->m_oInline->m_oGraphic->m_oChart.IsInit())
+				else if(pDrawing->m_oInline.IsInit() && pDrawing->m_oInline->m_oGraphic.IsInit())
 				{
 					pChartDrawing = pDrawing;
-					pChart = pDrawing->m_oInline->m_oGraphic->m_oChart.GetPointer();
+					pGraphic = pDrawing->m_oInline->m_oGraphic.GetPointer();
 				}
 			}
 			else if(OOX::et_w_pict == pElementType)
@@ -4653,6 +4653,19 @@ namespace BinDocxRW
 			}
 			if(NULL != pXml)
 			{
+				OOX::Drawing::CChart* pChart = NULL;
+				if(NULL != pGraphic)
+				{
+					for(int i = 0; i < pGraphic->m_arrItems.GetSize(); i++)
+					{
+						OOX::WritingElement* we = pGraphic->m_arrItems[i];
+						if(OOX::et_c_chart == we->getType())
+						{
+							pChart = static_cast<OOX::Drawing::CChart*>(item);
+							break;
+						}
+					}
+				}
 				if(NULL != pChart)
 				{
 					if(pChart->m_oRId.IsInit())

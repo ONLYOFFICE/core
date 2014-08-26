@@ -48,7 +48,7 @@ namespace SimpleTypes
 #define SimpleTypes_AdditionalOpearators(Class) \
 	const bool operator==(const Class& oOther) const\
 	{\
-		if ( m_eValue == oOther.m_eValue )\
+        if ( this->m_eValue == oOther.m_eValue )\
 			return true;\
 		return false;\
 	}

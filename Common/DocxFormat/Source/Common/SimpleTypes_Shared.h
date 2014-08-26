@@ -181,59 +181,73 @@ namespace SimpleTypes
 			if ( sValue.GetLength() != 38 )
 				return false;
 			
-			unsigned __int64 unTemp = 0;
+            T_ULONG64 unTemp = 0;
 
-			if ( !HexToInt( sValue.Mid( 1, 8 ), unTemp ) )
+            CString sMidValue;
+            sMidValue = sValue.Mid( 1, 8 );
+
+            if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.a = (unsigned int)unTemp;
 
-			if ( !HexToInt( sValue.Mid( 10, 4 ), unTemp ) )
+            sMidValue = sValue.Mid( 10, 4 );
+            if ( !HexToInt(sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.b = (unsigned short)unTemp;
 
-			if ( !HexToInt( sValue.Mid( 15, 4 ), unTemp ) )
+            sMidValue = sValue.Mid( 15, 4 );
+            if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.c = (unsigned short)unTemp;
 
-			if ( !HexToInt( sValue.Mid( 20, 2 ), unTemp ) )
+            sMidValue = sValue.Mid( 20, 2 );
+            if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.d = (unsigned char)unTemp;
 
-			if ( !HexToInt( sValue.Mid( 22, 2 ), unTemp ) )
+
+            sMidValue = sValue.Mid( 22, 2 );
+            if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.e = (unsigned char)unTemp;
 
-			if ( !HexToInt( sValue.Mid( 25, 2 ), unTemp ) )
+            sMidValue = sValue.Mid( 25, 2 );
+            if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.f = (unsigned char)unTemp;
 
-			if ( !HexToInt( sValue.Mid( 27, 2 ), unTemp ) )
+            sMidValue = sValue.Mid( 27, 2 );
+            if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.g = (unsigned char)unTemp;
 
-			if ( !HexToInt( sValue.Mid( 29, 2 ), unTemp ) )
+            sMidValue = sValue.Mid( 29, 2 );
+            if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.h = (unsigned char)unTemp;
 
-			if ( !HexToInt( sValue.Mid( 31, 2 ), unTemp ) )
+            sMidValue = sValue.Mid( 31, 2 );
+            if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.i = (unsigned char)unTemp;
 
-			if ( !HexToInt( sValue.Mid( 33, 2 ), unTemp ) )
+            sMidValue = sValue.Mid( 33, 2 );
+            if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.j = (unsigned char)unTemp;
 
-			if ( !HexToInt( sValue.Mid( 35, 2 ), unTemp ) )
+            sMidValue = sValue.Mid( 35, 2 );
+            if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.k = (unsigned char)unTemp;
@@ -241,22 +255,25 @@ namespace SimpleTypes
 			return true;
 		}
 
+#ifdef _WIN32
 		bool    FromString(const BSTR bsValue)
 		{
 			CString sTemp( bsValue );
 			return FromString( (CString &)sTemp );
 		}
-		bool    FromString(const wchar_t* cwsStr)
-		{
-			CWCharWrapper wsStr = cwsStr;
-			return FromString( (const CWCharWrapper&)wsStr );
-		}
+#endif
+
 		bool    FromString(const CWCharWrapper& wsStr)
 		{
 			// TO DO: переделать
 			CString sTemp( wsStr.m_cwsString );
 			return FromString( (CString &)sTemp );
 		}
+        bool    FromString(const wchar_t* cwsStr)
+        {
+            CWCharWrapper wsStr = cwsStr;
+            return FromString( (const CWCharWrapper&)wsStr );
+        }
 		CString ToString  () const 
 		{
 			CString sResult;
@@ -268,7 +285,7 @@ namespace SimpleTypes
 
 	private:
 
-		bool HexToInt(CString& sValue, unsigned __int64& unResult)
+        bool HexToInt(CString& sValue, T_ULONG64& unResult)
 		{
 			bool bResult = true;
 

@@ -676,6 +676,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Sections"
+				>
+				<File
+					RelativePath="..\Source\DocxFormat\Logic\SectionProperty.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\DocxFormat\Logic\SectionProperty.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Numbering"
@@ -841,6 +853,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Source\DocxFormat\Drawing\DrawingShapeElements.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\DocxFormat\Drawing\DrawingShared.h"
 				>
 			</File>
@@ -857,21 +873,17 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Source\DocxFormat\Drawing\DrawingText.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\DocxFormat\Drawing\DrawingTextProperties.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\DocxFormat\Drawing\DrawingTransform.h"
 				>
 			</File>
-			<Filter
-				Name="Sections"
-				>
-				<File
-					RelativePath="..\Source\DocxFormat\Logic\SectionProperty.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\DocxFormat\Logic\SectionProperty.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Utility"
@@ -1326,6 +1338,14 @@
 			</File>
 			<File
 				RelativePath="..\Source\DocxFormat\Math\oMathPara.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Diagram"
+			>
+			<File
+				RelativePath="..\Source\DocxFormat\Diagram\DiagramDrawing.h"
 				>
 			</File>
 		</Filter>

@@ -18,6 +18,7 @@ namespace OOX
 {
 	namespace Logic
 	{
+		class CParagraphProperty;
 		//--------------------------------------------------------------------------------
 		// CParagraph 17.3.1.22 (Part 1)
 		//--------------------------------------------------------------------------------	
@@ -26,6 +27,7 @@ namespace OOX
 		public:
 			CParagraph()
 			{
+				m_oParagraphProperty = NULL;
 			}
 			CParagraph(XmlUtils::CXmlNode &oNode)
 			{
@@ -46,6 +48,7 @@ namespace OOX
 				}
 
 				m_arrItems.RemoveAll();
+				m_oParagraphProperty = NULL;
 			}
 
 		public:
@@ -83,6 +86,7 @@ namespace OOX
 				}
 
 				m_arrItems.RemoveAll();
+				m_oParagraphProperty = NULL;
 			}
 
 			void AddRun(CRun *pRun);
@@ -122,6 +126,8 @@ namespace OOX
 
 			// Childs
 			CSimpleArray<WritingElement *>           m_arrItems;
+			CParagraphProperty *					 m_oParagraphProperty; // копия того что в m_arrItems...  - для быстрого доступа/анализа
+			// по идее нужно сделать как в Drawing::Paragraph - то есть единственные подобъекты вынести отдельно
 		};
 	} // namespace Logic
 } // namespace OOX

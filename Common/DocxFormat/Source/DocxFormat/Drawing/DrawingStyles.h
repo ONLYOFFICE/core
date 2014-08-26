@@ -12,7 +12,7 @@
 #include "DrawingExt.h"
 #include "DrawingEffects.h"
 #include "DrawingRun.h"
-#include "DrawingBody.h"
+#include "DrawingTextProperties.h"
 #include "DrawingCoreInfo.h"
 
 namespace OOX

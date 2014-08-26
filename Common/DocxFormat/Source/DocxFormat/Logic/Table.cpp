@@ -291,7 +291,9 @@ namespace OOX
 						else if ( _T("w:tblGrid") == sName )
 							m_oTblGrid = oItem;
 						else if ( _T("w:tblPr") == sName )
-							pItem = new CTableProperty( oItem );
+						{
+							pItem = m_oTableProperties = new CTableProperty( oItem );
+						}
 						else if ( _T("w:tr") == sName )
 							pItem = new CTr( oItem );
 
@@ -371,9 +373,14 @@ namespace OOX
 				else if ( _T("w:tblGrid") == sName )
 					m_oTblGrid = oReader;
 				else if ( _T("w:tblPr") == sName )
-					pItem = new CTableProperty( oReader );
+				{
+					pItem = m_oTableProperties = new CTableProperty( oReader );
+				}
 				else if ( _T("w:tr") == sName )
+				{
 					pItem = new CTr( oReader );
+					m_nCountRow ++;
+				}
 
 				if ( pItem )
 					m_arrItems.Add( pItem );
@@ -508,7 +515,9 @@ namespace OOX
 							}
 						}
 						else if ( _T("w:trPr") == sName )
-							pItem = new CTableRowProperties( oItem );
+						{
+							pItem = m_oTableRowProperties = new CTableRowProperties( oItem );
+						}
 
 						if ( pItem )
 							m_arrItems.Add( pItem );
@@ -609,7 +618,9 @@ namespace OOX
 					}
 				}
 				else if ( _T("w:trPr") == sName )
-					pItem = new CTableRowProperties( oReader );
+				{
+					pItem = m_oTableRowProperties = new CTableRowProperties( oReader );
+				}
 
 				if ( pItem )
 					m_arrItems.Add( pItem );
@@ -736,7 +747,9 @@ namespace OOX
 						else if ( _T("w:tbl") == sName )
 							pItem = new CTbl( oItem );
 						else if ( _T("w:tcPr") == sName )
-							pItem = new CTableCellProperties( oItem );
+						{
+							pItem = m_oTableCellProperties = new CTableCellProperties( oItem );
+						}
 
 						if ( pItem )
 							m_arrItems.Add( pItem );
@@ -820,7 +833,9 @@ namespace OOX
 				else if ( _T("w:tbl") == sName )
 					pItem = new CTbl( oReader );
 				else if ( _T("w:tcPr") == sName )
-					pItem = new CTableCellProperties( oReader );
+				{
+					pItem = m_oTableCellProperties = new CTableCellProperties( oReader );
+				}
 
 				if ( pItem )
 					m_arrItems.Add( pItem );

@@ -21,305 +21,26 @@ namespace OOX
 {
 	namespace Vml
 	{
-		//--------------------------------------------------------------------------------
-		// CVmlAttributes: базовый класс, для чтения атрибутов из групп 
-		//                 AG_AllCoreAttributes и AG_AllShapeAttributes
-		//--------------------------------------------------------------------------------	
-		class CVmlAttributes : public virtual WritingElement
+		class CVmlCommonElements : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CVmlAttributes)
-			CVmlAttributes()
+			WritingElement_AdditionConstructors(CVmlCommonElements)
+			CVmlCommonElements(){}
+			
+			virtual ~CVmlCommonElements(){}
+
+			virtual void			fromXML(XmlUtils::CXmlNode& oNode){}
+			virtual void			fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
+				ReadAttributes	(oReader);
+				ReadElements	(oReader);
 			}
-			virtual ~CVmlAttributes()
+			virtual CString			toXML() const;
+			virtual EElementType	getType() const
 			{
+				return et_v_shape_elements;
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				// TO DO: Реализовать CVmlAttributes::fromXML(XmlUtils::CXmlNode& oNode)
-			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-			}
-			virtual CString      toXML() const
-			{
-				CString sResult;
-
-				ComplexTypes_WriteAttribute2( _T("id=\""),          m_sId );
-				ComplexTypes_WriteAttribute ( _T("style=\""),       m_oStyle );
-				ComplexTypes_WriteAttribute2( _T("href=\""),        m_sHref );
-				ComplexTypes_WriteAttribute2( _T("target=\""),      m_sTarget );
-				ComplexTypes_WriteAttribute2( _T("class=\""),       m_sClass );
-				ComplexTypes_WriteAttribute2( _T("title=\""),       m_sTitle );
-				ComplexTypes_WriteAttribute2( _T("alt=\""),         m_sAlt );
-
-				ComplexTypes_WriteAttribute ( _T("coordsize=\""),   m_oCoordSize );
-				ComplexTypes_WriteAttribute ( _T("coordorigin=\""), m_oCoordOrigin );
-				ComplexTypes_WriteAttribute ( _T("wrapcoords=\""),  m_oWrapCoords );
-
-				if ( SimpleTypes::booleanTrue != m_oPrint.GetValue() )
-					sResult += _T("print=\"false\" ");
-
-				ComplexTypes_WriteAttribute2( _T("o:spid=\""),      m_sSpId );
-
-				if ( SimpleTypes::booleanFalse != m_oOned.GetValue() )
-					sResult += _T("o:oned=\"true\" ");
-				
-				ComplexTypes_WriteAttribute ( _T("o:regroupid=\""), m_oRegroupId );
-
-				if ( SimpleTypes::booleanFalse != m_oDoubleClickNotify.GetValue() )
-					sResult += _T("o:doubleclicknotify=\"true\" ");
-
-				if ( SimpleTypes::booleanFalse != m_oButton.GetValue() )
-					sResult += _T("o:button=\"true\" ");
-
-				if ( SimpleTypes::booleanFalse != m_oUserHidden.GetValue() )
-					sResult += _T("o:userhidden=\"true\" ");
-
-				if ( SimpleTypes::booleanFalse != m_oBullet.GetValue() )
-					sResult += _T("o:bullet=\"true\" ");
-
-				if ( SimpleTypes::booleanFalse != m_oHr.GetValue() )
-					sResult += _T("o:hr=\"true\" ");
-
-				if ( SimpleTypes::booleanFalse != m_oHrStd.GetValue() )
-					sResult += _T("o:hrstd=\"true\" ");
-
-				if ( SimpleTypes::booleanFalse != m_oHrNoShade.GetValue() )
-					sResult += _T("o:hrnoshade=\"true\" ");
-
-				if ( 0 != m_oHrPct.GetValue() )
-					sResult += _T("o:hrpct=\"") + m_oHrPct.ToString() + _T("\" ");
-
-				if ( SimpleTypes::hralignLeft != m_oHrAlign.GetValue() )
-					sResult += _T("o:hralign=\"") + m_oHrAlign.ToString() + _T("\" ");
-
-				if ( SimpleTypes::booleanFalse != m_oAllowInCell.GetValue() )
-					sResult += _T("o:allowincell=\"true\" ");
-
-				if ( SimpleTypes::booleanFalse != m_oAllowOverlap.GetValue() )
-					sResult += _T("o:allowoverlap=\"true\" ");
-
-				if ( SimpleTypes::booleanFalse != m_oUserDrawn.GetValue() )
-					sResult += _T("o:userdrawn=\"true\" ");
-
-				ComplexTypes_WriteAttribute ( _T("o:bordertopcolor=\""),    m_oBorderTopColor );
-				ComplexTypes_WriteAttribute ( _T("o:borderleftcolor=\""),   m_oBorderLeftColor );
-				ComplexTypes_WriteAttribute ( _T("o:borderbottomcolor=\""), m_oBorderBottomColor );
-				ComplexTypes_WriteAttribute ( _T("o:borderrightcolor=\""),  m_oBorderRightColor );
-
-				ComplexTypes_WriteAttribute ( _T("o:dgmlayout=\""),     m_oDgmLayout );
-				ComplexTypes_WriteAttribute ( _T("o:dgmlayoutmru=\""),  m_oDgmLayoutMru );
-				ComplexTypes_WriteAttribute2( _T("o:dgmnodekind=\""),   m_oDgmNodeKind );
-
-				if ( SimpleTypes::insetmodeCustom != m_oInsetMode.GetValue() )
-					sResult += _T("o:insetmode=\"") + m_oInsetMode.ToString() + _T("\" ");
-
-				ComplexTypes_WriteAttribute ( _T("chromakey=\""),  m_oChromaKey );
-
-				if ( SimpleTypes::booleanTrue != m_oFilled.GetValue() )
-					sResult += _T("filled=\"false\" ");
-
-				if ( SimpleTypes::colortypeWhite != m_oFillColor.GetValue() )
-					sResult += _T("fillcolor=\"") + m_oFillColor.ToString() + _T("\" ");
-
-				if ( 1 != m_oOpacity.GetValue() )
-					sResult += _T("opacity=\"") + m_oOpacity.ToString() + _T("\" ");
-
-				ComplexTypes_WriteAttribute ( _T("stroked=\""), m_oStroked );
-
-				if ( SimpleTypes::colortypeBlack != m_oStrokeColor.GetValue() )
-					sResult += _T("strokecolor=\"") + m_oStrokeColor.ToString() + _T("\" ");
-
-				if ( 1 != m_oStrokeWeight.GetValue() )
-					sResult += _T("strokeweight=\"") + m_oStrokeWeight.ToString() + _T("\" ");
-
-				ComplexTypes_WriteAttribute ( _T("insetpen=\""),  m_oInsetPen );
-
-				if ( 0 != m_oSpt.GetValue() )
-					sResult += _T("o:spt=\"") + m_oSpt.ToString() + _T("\" ");
-
-				if ( SimpleTypes::connectortypeStraight != m_oConnectorType.GetValue() )
-					sResult += _T("o:connectortype=\"") + m_oConnectorType.ToString() + _T("\" ");
-
-				ComplexTypes_WriteAttribute ( _T("o:bwmode=\""),   m_oBwMode );
-				ComplexTypes_WriteAttribute ( _T("o:bwpure=\""),   m_oBwPure );
-				ComplexTypes_WriteAttribute ( _T("o:bwnormal=\""), m_oBwNormal );
-
-				if ( SimpleTypes::booleanFalse != m_oForceDash.GetValue() )
-					sResult += _T("o:forcedash=\"true\" ");
-
-				if ( SimpleTypes::booleanFalse != m_oOleIcon.GetValue() )
-					sResult += _T("o:oleicon=\"true\" ");
-
-				if ( SimpleTypes::booleanFalse != m_oOle.GetValue() )
-					sResult += _T("o:ole=\"true\" ");
-
-				if ( SimpleTypes::booleanFalse != m_oPreferRelative.GetValue() )
-					sResult += _T("o:preferrelative=\"true\" ");
-
-				if ( SimpleTypes::booleanFalse != m_oClipToWrap.GetValue() )
-					sResult += _T("o:cliptowrap=\"true\" ");
-
-				ComplexTypes_WriteAttribute ( _T("o:clip=\""), m_oClip );
-
-				return sResult;
-			}
-			virtual EElementType getType() const
-			{
-				return OOX::et_Unknown;
-			}
-
-		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Выставляем значения по умолчанию
-				m_oHrPct.SetValue( 0 );
-				m_oOpacity.SetValue( 1.0 );
-				m_oSpt.SetValue( 0 );
-				m_oStrokeWeight.FromPoints( 1 );
-
-				// Читаем атрибуты
-				if ( oReader.GetAttributesCount() <= 0 )
-					return;
-				
-				if ( !oReader.MoveToFirstAttribute() )
-					return;
-				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
-				{
-					wchar_t wsChar = wsName[0];
-					switch ( wsChar )
-					{
-					case 'a':
-						if      ( _T("alt") == wsName ) m_sAlt = oReader.GetText();
-						break;
-
-					case 'c':
-						if      ( _T("chromakey")   == wsName ) m_oChromaKey   = oReader.GetText();
-						else if ( _T("class")       == wsName ) m_sClass       = oReader.GetText();
-						else if ( _T("coordorigin") == wsName ) m_oCoordOrigin = oReader.GetText();
-						else if ( _T("coordsize")   == wsName ) m_oCoordSize   = oReader.GetText();
-						break;
-
-					case 'f':
-						if      ( _T("fillcolor") == wsName ) m_oFillColor = oReader.GetText();
-						else if ( _T("filled")    == wsName ) m_oFilled    = oReader.GetText();
-						break;
-
-					case 'h':
-						if      ( _T("href") == wsName ) m_sHref = oReader.GetText();
-						break;
-
-					case 'i':
-						if      ( _T("id")       == wsName ) m_sId       = oReader.GetText();
-						else if ( _T("insetpen") == wsName ) m_oInsetPen = oReader.GetText();
-						break;
-
-					case 'o':
-						{
-							wchar_t wsChar2 = wsName[2]; // o:_
-							switch ( wsChar2 )
-							{
-							case 'a':
-								if      ( _T("o:allowincell")  == wsName ) m_oAllowInCell  = oReader.GetText();
-								else if ( _T("o:allowoverlap") == wsName ) m_oAllowOverlap = oReader.GetText();
-								else if ( _T("opacity")        == wsName ) m_oOpacity      = oReader.GetText();
-								break;
-							case 'b':
-								if      ( _T("o:borderbottomcolor") == wsName ) m_oBorderBottomColor = oReader.GetText();
-								else if ( _T("o:borderleftcolor")   == wsName ) m_oBorderLeftColor   = oReader.GetText();
-								else if ( _T("o:borderrightcolor")  == wsName ) m_oBorderRightColor  = oReader.GetText();
-								else if ( _T("o:bordertopcolor")    == wsName ) m_oBorderTopColor    = oReader.GetText();
-								else if ( _T("o:bullet")            == wsName ) m_oBullet            = oReader.GetText();
-								else if ( _T("o:button")            == wsName ) m_oButton            = oReader.GetText();
-								else if ( _T("o:bwmode")            == wsName ) m_oBwMode            = oReader.GetText();
-								else if ( _T("o:bwnormal")          == wsName ) m_oBwNormal           = oReader.GetText();
-								else if ( _T("o:bwpure")            == wsName ) m_oBwPure            = oReader.GetText();
-								break;
-							case 'c':  
-								if      ( _T("o:clip")          == wsName ) m_oClip          = oReader.GetText();
-								else if ( _T("o:cliptowrap")    == wsName ) m_oClipToWrap    = oReader.GetText();
-								else if ( _T("o:connectortype") == wsName ) m_oConnectorType = oReader.GetText();
-								break;
-							case 'd':
-								if      ( _T("o:doubleclicknotify") == wsName ) m_oDoubleClickNotify = oReader.GetText();
-								else if ( _T("o:dgmlayout")         == wsName ) m_oDgmLayout         = oReader.GetText();
-								else if ( _T("o:dgmlayoutmru")      == wsName ) m_oDgmLayoutMru      = oReader.GetText();
-								else if ( _T("o:dgmnodekind")       == wsName ) m_oDgmNodeKind       = oReader.GetText();
-								break;
-							case 'f':
-								if      ( _T("o:forcedash") == wsName ) m_oForceDash = oReader.GetText();
-								break;
-							case 'h':  
-								if      ( _T("o:hr")        == wsName ) m_oHr        = oReader.GetText();
-								else if ( _T("o:hralign")   == wsName ) m_oHrAlign   = oReader.GetText();
-								else if ( _T("o:hrnoshade") == wsName ) m_oHrNoShade = oReader.GetText();
-								else if ( _T("o:hrpct")     == wsName ) m_oHrPct     = oReader.GetText();
-								else if ( _T("o:hrstd")     == wsName ) m_oHrStd     = oReader.GetText();
-								break;
-							case 'i':
-								if      ( _T("o:insetmode") == wsName ) m_oInsetMode = oReader.GetText();
-								break;
-							case 'o':  
-								if      ( _T("o:ole")     == wsName ) m_oOle        = oReader.GetText();
-								else if ( _T("o:oleicon") == wsName ) m_oOleIcon    = oReader.GetText();
-								else if ( _T("o:oned")    == wsName ) m_oOned       = oReader.GetText();
-								break;
-							case 'p':
-								if      ( _T("o:preferrelative") == wsName ) m_oPreferRelative = oReader.GetText();
-								break;
-							case 'r':
-								if      ( _T("o:regroupid") == wsName ) m_oRegroupId = oReader.GetText();
-								break;
-							case 's':
-								if      ( _T("o:spid") == wsName ) m_sSpId = oReader.GetText();
-								else if ( _T("o:spt")  == wsName ) m_oSpt  = oReader.GetText();
-								break;
-							case 'u':
-								if      ( _T("o:userdrawn")  == wsName ) m_oUserDrawn  = oReader.GetText();
-								else if ( _T("o:userhidden") == wsName ) m_oUserHidden = oReader.GetText();
-								break;
-							}
-
-						break;
-						}
-
-					case 'p':
-						if      ( _T("print") == wsName ) m_oPrint = oReader.GetText();
-						break;
-					case 's':
-						if      ( _T("strokecolor")  == wsName ) m_oStrokeColor  = oReader.GetText();
-						else if ( _T("stroked")      == wsName ) m_oStroked      = oReader.GetText();
-						else if ( _T("strokeweight") == wsName ) m_oStrokeWeight = oReader.GetText();
-						else if ( _T("style")        == wsName ) m_oStyle        = oReader.GetText();
-						break;
-					case 't':
-						if      ( _T("target") == wsName ) m_sTarget = oReader.GetText();
-						else if ( _T("title")  == wsName ) m_sTitle  = oReader.GetText();
-						break;
-					case 'w':
-						if      ( _T("wrapcoords") == wsName ) m_oWrapCoords = oReader.GetText();
-						break;
-					}
-
-					if ( !oReader.MoveToNextAttribute() )
-						break;
-
-					wsName = oReader.GetName();
-				}
-				oReader.MoveToElement();
-			}
-
-		public:
-
+			
 			// 1 AG_AllCoreAttributes
 			// 1.1 AG_CoreAttributes
 			nullable<CString>                                               m_sId;
@@ -356,7 +77,7 @@ namespace OOX
 			nullable<SimpleTypes::CDiagramLayout<>>                         m_oDgmLayout;
 			nullable<CString>                                               m_oDgmNodeKind;
 			nullable<SimpleTypes::CDiagramLayout<>>                         m_oDgmLayoutMru;
-			SimpleTypes::CInsetMode<SimpleTypes::insetmodeCustom>           m_oInsetMode;
+			SimpleTypes::CInsetMode<SimpleTypes::insetmodeAuto>			    m_oInsetMode;
 			// 2 AG_AllShapeAttributes
 			// 2.1 AG_ShapeAttributes
 			nullable<SimpleTypes::CColorType<>>                             m_oChromaKey;
@@ -368,8 +89,8 @@ namespace OOX
 			SimpleTypes::CEmu                                               m_oStrokeWeight;
 			nullable<SimpleTypes::CTrueFalse<>>                             m_oInsetPen;
 			// 2.2 AG_OfficeShapeAttributes
-			SimpleTypes::CDouble                                            m_oSpt;
-			SimpleTypes::CConnectorType<SimpleTypes::connectortypeStraight> m_oConnectorType;
+			SimpleTypes::CDecimalNumber<>									m_oSpt;
+			SimpleTypes::CConnectorType<SimpleTypes::connectortypeNone>		m_oConnectorType;
 			nullable<SimpleTypes::CBWMode<>>                                m_oBwMode;
 			nullable<SimpleTypes::CBWMode<>>                                m_oBwPure;
 			nullable<SimpleTypes::CBWMode<>>                                m_oBwNormal;
@@ -379,65 +100,23 @@ namespace OOX
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oPreferRelative;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oClipToWrap;
 			nullable<SimpleTypes::CTrueFalse<>>                             m_oClip;
+
+			void	ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void	ReadElements(XmlUtils::CXmlLiteReader& oReader) ;
+
+			CString WriteAttributes() const;
+			CString WriteElements() const;
 		};
-		//--------------------------------------------------------------------------------
-		// CVmlShapeElements: базовый класс, для чтения элементов vml
-		//--------------------------------------------------------------------------------	
-		class CVmlShapeElements : public virtual WritingElement
-		{
-		public:
-			WritingElement_AdditionConstructors(CVmlShapeElements)
-			CVmlShapeElements()
-			{
-			}
-			virtual ~CVmlShapeElements()
-			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
 
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
-			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
-			virtual EElementType getType() const
-			{
-				return OOX::et_Unknown;
-			}
-
-		public:
-
-			CSimpleArray<WritingElement*> m_arrItems;
-		};
-	} // Vml
-} // OOX
-
-namespace OOX
-{
-	namespace Vml
-	{
 		//--------------------------------------------------------------------------------
 		// CArc 14.1.2.1 (Part4)
 		//--------------------------------------------------------------------------------	
-		class CArc : public CVmlAttributes, public CVmlShapeElements
+		class CArc : public CVmlCommonElements
 		{
 		public:
 			WritingElement_AdditionConstructors(CArc)
-			CArc()
-			{
-			}
-			virtual ~CArc()
-			{
-			}
-
+			CArc(){}
+			virtual ~CArc(){}
 		public:
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
@@ -447,20 +126,20 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
-				CVmlAttributes::fromXML( oReader );
-
-				CVmlShapeElements::fromXML( oReader );
+				
+				CVmlCommonElements::ReadAttributes( oReader );
+				CVmlCommonElements::ReadElements( oReader );
 			}
 			virtual CString      toXML() const
 			{
 				CString sResult = _T("<v:arc ");
 
-				sResult += CVmlAttributes::toXML();
+				sResult += CVmlCommonElements::WriteAttributes();
 
 				sResult += _T("startangle=\"") + m_oStartAngle.ToString() + _T("\" ");
 				sResult += _T("endangle=\"")   + m_oEndAngle.ToString()   + _T("\">");
 
-				sResult += CVmlShapeElements::toXML();
+				sResult += CVmlCommonElements::WriteElements();
 
 				sResult += _T("</v:arc>");
 
@@ -515,17 +194,12 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CCurve 14.1.2.3 (Part4)
 		//--------------------------------------------------------------------------------	
-		class CCurve : public CVmlAttributes, public CVmlShapeElements
+		class CCurve : public CVmlCommonElements
 		{
 		public:
 			WritingElement_AdditionConstructors(CCurve)
-			CCurve()
-			{
-			}
-			virtual ~CCurve()
-			{
-			}
-
+			CCurve(){}
+			virtual ~CCurve(){}
 		public:
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
@@ -535,22 +209,21 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
-				CVmlAttributes::fromXML( oReader );
-
-				CVmlShapeElements::fromXML( oReader );
+				CVmlCommonElements::ReadAttributes( oReader );
+				CVmlCommonElements::ReadElements( oReader );
 			}
 			virtual CString      toXML() const
 			{
 				CString sResult = _T("<v:curve ");
 
-				sResult += CVmlAttributes::toXML();
+				sResult += CVmlCommonElements::WriteAttributes();
 
 				sResult += _T("from=\"")     + m_oFrom.ToString()     + _T("\" ");
 				sResult += _T("control1=\"") + m_oControl1.ToString() + _T("\" ");
 				sResult += _T("control2=\"") + m_oControl2.ToString() + _T("\" ");
 				sResult += _T("to=\"")       + m_oTo.ToString()       + _T("\">");
 
-				sResult += CVmlShapeElements::toXML();
+				sResult += CVmlCommonElements::WriteElements();
 
 				sResult += _T("</v:curve>");
 
@@ -1115,215 +788,7 @@ namespace OOX
 			CSimpleArray<OOX::Vml::CF> m_arrF;
 
 		};
-		//--------------------------------------------------------------------------------
-		// CGroup 14.1.2.7 (Part4)
-		//--------------------------------------------------------------------------------	
-		class CGroup : public WritingElement
-		{
-		public:
-			WritingElement_AdditionConstructors(CGroup)
-			CGroup()
-			{
-			}
-			virtual ~CGroup()
-			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
 
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
-			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
-			virtual EElementType getType() const
-			{
-				return OOX::et_v_group;
-			}
-
-		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Выставляем значения по умолчанию
-				m_oHrPct.SetValue( 0 );
-
-				// Читаем атрибуты
-				if ( oReader.GetAttributesCount() <= 0 )
-					return;
-				
-				if ( !oReader.MoveToFirstAttribute() )
-					return;
-				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
-				{
-					wchar_t wsChar = wsName[0];
-					switch ( wsChar )
-					{
-					case 'a':
-						if      ( _T("alt") == wsName ) m_sAlt = oReader.GetText();
-						break;
-
-					case 'c':
-						if      ( _T("class")       == wsName ) m_sClass       = oReader.GetText();
-						else if ( _T("coordorigin") == wsName ) m_oCoordOrigin = oReader.GetText();
-						else if ( _T("coordsize")   == wsName ) m_oCoordSize   = oReader.GetText();
-						break;
-
-					case 'e':
-						if      ( _T("editas") == wsName ) m_oEditAs = oReader.GetText();
-						break;
-
-					case 'f':
-						if      ( _T("fillcolor") == wsName ) m_oFillColor = oReader.GetText();
-						else if ( _T("filled")    == wsName ) m_oFilled    = oReader.GetText();
-						break;
-
-					case 'h':
-						if      ( _T("href") == wsName ) m_sHref = oReader.GetText();
-						break;
-
-					case 'i':
-						if      ( _T("id")       == wsName ) m_sId       = oReader.GetText();
-						break;
-
-					case 'o':
-						{
-							wchar_t wsChar2 = wsName[2]; // o:_
-							switch ( wsChar2 )
-							{
-							case 'a':
-								if      ( _T("o:allowincell")  == wsName ) m_oAllowInCell  = oReader.GetText();
-								else if ( _T("o:allowoverlap") == wsName ) m_oAllowOverlap = oReader.GetText();
-								break;
-							case 'b':
-								if      ( _T("o:borderbottomcolor") == wsName ) m_oBorderBottomColor = oReader.GetText();
-								else if ( _T("o:borderleftcolor")   == wsName ) m_oBorderLeftColor   = oReader.GetText();
-								else if ( _T("o:borderrightcolor")  == wsName ) m_oBorderRightColor  = oReader.GetText();
-								else if ( _T("o:bordertopcolor")    == wsName ) m_oBorderTopColor    = oReader.GetText();
-								else if ( _T("o:bullet")            == wsName ) m_oBullet            = oReader.GetText();
-								else if ( _T("o:button")            == wsName ) m_oButton            = oReader.GetText();
-								break;
-							case 'd':
-								if      ( _T("o:doubleclicknotify") == wsName ) m_oDoubleClickNotify = oReader.GetText();
-								else if ( _T("o:dgmlayout")         == wsName ) m_oDgmLayout         = oReader.GetText();
-								else if ( _T("o:dgmlayoutmru")      == wsName ) m_oDgmLayoutMru      = oReader.GetText();
-								else if ( _T("o:dgmnodekind")       == wsName ) m_oDgmNodeKind       = oReader.GetText();
-								break;
-							case 'h':  
-								if      ( _T("o:hr")        == wsName ) m_oHr        = oReader.GetText();
-								else if ( _T("o:hralign")   == wsName ) m_oHrAlign   = oReader.GetText();
-								else if ( _T("o:hrnoshade") == wsName ) m_oHrNoShade = oReader.GetText();
-								else if ( _T("o:hrpct")     == wsName ) m_oHrPct     = oReader.GetText();
-								else if ( _T("o:hrstd")     == wsName ) m_oHrStd     = oReader.GetText();
-								break;
-							case 'i':
-								if      ( _T("o:insetmode") == wsName ) m_oInsetMode = oReader.GetText();
-								break;
-							case 'o':  
-								if      ( _T("o:oned")    == wsName ) m_oOned       = oReader.GetText();
-								break;
-							case 'r':
-								if      ( _T("o:regroupid") == wsName ) m_oRegroupId = oReader.GetText();
-								break;
-							case 's':
-								if      ( _T("o:spid") == wsName ) m_sSpId = oReader.GetText();
-								break;
-							case 't':
-								if      ( _T("o:tableproperties")  == wsName ) m_oTableProperties = oReader.GetText();
-								else if ( _T("o:tablelimits")      == wsName ) m_oTableLimits     = oReader.GetText();
-								break;
-							case 'u':
-								if      ( _T("o:userdrawn")  == wsName ) m_oUserDrawn  = oReader.GetText();
-								else if ( _T("o:userhidden") == wsName ) m_oUserHidden = oReader.GetText();
-								break;
-							}
-
-						break;
-						}
-
-					case 'p':
-						if      ( _T("print") == wsName ) m_oPrint = oReader.GetText();
-						break;
-					case 's':
-						if      ( _T("style") == wsName ) m_oStyle = oReader.GetText();
-						break;
-					case 't':
-						if      ( _T("target") == wsName ) m_sTarget = oReader.GetText();
-						else if ( _T("title")  == wsName ) m_sTitle  = oReader.GetText();
-						break;
-					case 'w':
-						if      ( _T("wrapcoords") == wsName ) m_oWrapCoords = oReader.GetText();
-						break;
-					}
-
-					if ( !oReader.MoveToNextAttribute() )
-						break;
-
-					wsName = oReader.GetName();
-				}
-				oReader.MoveToElement();
-			}
-
-		public:
-
-
-			// Attributes
-
-			// AG_AllCoreAttributes
-			nullable<CString>                                               m_sId;
-			nullable<SimpleTypes::Vml::CCssStyle>                           m_oStyle;
-			nullable<CString>                                               m_sHref;
-			nullable<CString>                                               m_sTarget;
-			nullable<CString>                                               m_sClass;
-			nullable<CString>                                               m_sTitle;
-			nullable<CString>                                               m_sAlt;
-			nullable<SimpleTypes::Vml::CVml_Vector2D>                       m_oCoordSize;
-			nullable<SimpleTypes::Vml::CVml_Vector2D>                       m_oCoordOrigin;
-			nullable<SimpleTypes::Vml::CVml_Polygon2D>                      m_oWrapCoords;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>               m_oPrint;
-			nullable<CString>                                               m_sSpId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oOned;
-			nullable<SimpleTypes::CDecimalNumber<>>                         m_oRegroupId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oDoubleClickNotify;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oButton;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oUserHidden;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oBullet;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oHr;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oHrStd;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oHrNoShade;
-			SimpleTypes::CDouble                                            m_oHrPct;
-			SimpleTypes::CHrAlign<SimpleTypes::hralignLeft>                 m_oHrAlign;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oAllowInCell;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oAllowOverlap;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oUserDrawn;
-			nullable<SimpleTypes::CColorType<>>                             m_oBorderTopColor;
-			nullable<SimpleTypes::CColorType<>>                             m_oBorderLeftColor;
-			nullable<SimpleTypes::CColorType<>>                             m_oBorderBottomColor;
-			nullable<SimpleTypes::CColorType<>>                             m_oBorderRightColor;
-			nullable<SimpleTypes::CDiagramLayout<>>                         m_oDgmLayout;
-			nullable<CString>                                               m_oDgmNodeKind;
-			nullable<SimpleTypes::CDiagramLayout<>>                         m_oDgmLayoutMru;
-			SimpleTypes::CInsetMode<SimpleTypes::insetmodeCustom>           m_oInsetMode;
-
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>               m_oFilled;
-			SimpleTypes::CColorType<SimpleTypes::colortypeWhite>            m_oFillColor;
-			nullable<SimpleTypes::CEditAs<>>                                m_oEditAs;
-			nullable<SimpleTypes::Vml::CVml_TableLimits>                    m_oTableLimits;
-			SimpleTypes::Vml::CVml_TableProperties<0>                       m_oTableProperties;                 
-
-			// Childs
-			CSimpleArray<WritingElement*>                                   m_arrItems;
-
-		};
 		//--------------------------------------------------------------------------------
 		// CH 14.1.2.8 (Part4)
 		//--------------------------------------------------------------------------------	
@@ -1528,16 +993,12 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CImage 14.1.2.10 (Part4)
 		//--------------------------------------------------------------------------------	
-		class CImage : public CVmlAttributes, public CVmlShapeElements
+		class CImage : public CVmlCommonElements
 		{
 		public:
 			WritingElement_AdditionConstructors(CImage)
-			CImage()
-			{
-			}
-			virtual ~CImage()
-			{
-			}
+			CImage(){}
+			virtual ~CImage(){}
 
 		public:
 
@@ -1548,15 +1009,14 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
-				CVmlAttributes::fromXML( oReader );
-
-				CVmlShapeElements::fromXML( oReader );
+				CVmlCommonElements::ReadAttributes( oReader );
+				CVmlCommonElements::ReadElements( oReader );
 			}
 			virtual CString      toXML() const
 			{
 				CString sResult = _T("<v:image ");
 
-				sResult += CVmlAttributes::toXML();
+				sResult += CVmlCommonElements::WriteAttributes();
 
 				if ( _T("") !=  m_sSrc )
 					sResult += _T("src=\"") + m_sSrc + _T("\" ");
@@ -1590,7 +1050,7 @@ namespace OOX
 
 				sResult += _T(">");
 
-				sResult += CVmlShapeElements::toXML();
+				sResult += CVmlCommonElements::WriteElements();
 
 				sResult += _T("</v:image>");
 
@@ -1895,17 +1355,12 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CLine 14.1.2.12 (Part4)
 		//--------------------------------------------------------------------------------	
-		class CLine : public CVmlAttributes, public CVmlShapeElements
+		class CLine : public CVmlCommonElements
 		{
 		public:
 			WritingElement_AdditionConstructors(CLine)
-			CLine()
-			{
-			}
-			virtual ~CLine()
-			{
-			}
-
+			CLine(){}
+			virtual ~CLine(){}
 		public:
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
@@ -1915,20 +1370,19 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
-				CVmlAttributes::fromXML( oReader );
-
-				CVmlShapeElements::fromXML( oReader );
+				CVmlCommonElements::ReadAttributes( oReader );
+				CVmlCommonElements::ReadElements( oReader );
 			}
 			virtual CString      toXML() const
 			{
 				CString sResult = _T("<v:line ");
 
-				sResult += CVmlAttributes::toXML();
+				sResult += CVmlCommonElements::WriteAttributes();
 
 				sResult += _T("from=\"") + m_oFrom.ToString() + _T("\" ");
 				sResult += _T("to=\"")   + m_oTo.ToString()   + _T("\">");
 
-				sResult += CVmlShapeElements::toXML();
+				sResult += CVmlCommonElements::WriteElements();
 
 				sResult += _T("</v:line>");
 
@@ -1987,17 +1441,12 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// COval 14.1.2.13 (Part4)
 		//--------------------------------------------------------------------------------	
-		class COval : public CVmlAttributes, public CVmlShapeElements
+		class COval : public CVmlCommonElements
 		{
 		public:
 			WritingElement_AdditionConstructors(COval)
-			COval()
-			{
-			}
-			virtual ~COval()
-			{
-			}
-
+			COval(){}
+			virtual ~COval(){}
 		public:
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
@@ -2006,19 +1455,18 @@ namespace OOX
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				CVmlAttributes::fromXML( oReader );
-
-				CVmlShapeElements::fromXML( oReader );
+				CVmlCommonElements::ReadAttributes( oReader );
+				CVmlCommonElements::ReadElements( oReader );
 			}
 			virtual CString      toXML() const
 			{
 				CString sResult = _T("<v:oval ");
 
-				sResult += CVmlAttributes::toXML();
+				sResult += CVmlCommonElements::WriteAttributes();
 
 				sResult += _T(">");
 
-				sResult += CVmlShapeElements::toXML();
+				sResult += CVmlCommonElements::WriteElements();
 
 				sResult += _T("</v:oval>");
 
@@ -2213,21 +1661,21 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CPolyLine 14.1.2.15 (Part4)
 		//--------------------------------------------------------------------------------	
-		class CPolyLine : public CVmlAttributes, public CVmlShapeElements
+		class CPolyLine : public CVmlCommonElements
 		{
 		public:
 			WritingElement_AdditionConstructors(CPolyLine)
-			CPolyLine()
-			{
-			}
-			virtual ~CPolyLine()
-			{
-			}
-
+			CPolyLine(){}
+			virtual ~CPolyLine(){}
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode){}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+				CVmlCommonElements::ReadAttributes( oReader );
+				CVmlCommonElements::ReadElements( oReader );
+			}
 			virtual CString      toXML() const;
 			virtual EElementType getType() const
 			{
@@ -2276,17 +1724,12 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CRect 14.1.2.16 (Part4)
 		//--------------------------------------------------------------------------------	
-		class CRect : public CVmlAttributes, public CVmlShapeElements
+		class CRect : public CVmlCommonElements
 		{
 		public:
 			WritingElement_AdditionConstructors(CRect)
-			CRect()
-			{
-			}
-			virtual ~CRect()
-			{
-			}
-
+			CRect(){}
+			virtual ~CRect(){}
 		public:
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
@@ -2295,19 +1738,18 @@ namespace OOX
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				CVmlAttributes::fromXML( oReader );
-
-				CVmlShapeElements::fromXML( oReader );
+				CVmlCommonElements::ReadAttributes( oReader );
+				CVmlCommonElements::ReadElements( oReader );
 			}
 			virtual CString      toXML() const
 			{
 				CString sResult = _T("<v:rect ");
 
-				sResult += CVmlAttributes::toXML();
+				sResult += CVmlCommonElements::WriteAttributes();
 
 				sResult += _T(">");
 
-				sResult += CVmlShapeElements::toXML();
+				sResult += CVmlCommonElements::WriteElements();
 
 				sResult += _T("</v:rect>");
 
@@ -2322,17 +1764,12 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CRoundRect 14.1.2.17 (Part4)
 		//--------------------------------------------------------------------------------	
-		class CRoundRect : public CVmlAttributes, public CVmlShapeElements
+		class CRoundRect : public CVmlCommonElements
 		{
 		public:
 			WritingElement_AdditionConstructors(CRoundRect)
-			CRoundRect()
-			{
-			}
-			virtual ~CRoundRect()
-			{
-			}
-
+			CRoundRect(){}
+			virtual ~CRoundRect(){}
 		public:
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
@@ -2342,19 +1779,18 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
-				CVmlAttributes::fromXML( oReader );
-
-				CVmlShapeElements::fromXML( oReader );
+				CVmlCommonElements::ReadAttributes( oReader );
+				CVmlCommonElements::ReadElements( oReader );
 			}
 			virtual CString      toXML() const
 			{
 				CString sResult = _T("<v:roundrect ");
 
-				sResult += CVmlAttributes::toXML();
+				sResult += CVmlCommonElements::WriteAttributes();
 
 				sResult += _T("arcsize=\"") + m_oArcSize.ToString() + _T("\" ");
 
-				sResult += CVmlShapeElements::toXML();
+				sResult += CVmlCommonElements::WriteElements();
 
 				sResult += _T("</v:roundrect>");
 
@@ -2551,21 +1987,22 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CShape 14.1.2.19 (Part4)
 		//--------------------------------------------------------------------------------	
-		class CShape : public CVmlAttributes, public CVmlShapeElements
+		class CShape : public CVmlCommonElements
 		{
 		public:
 			WritingElement_AdditionConstructors(CShape)
-			CShape()
-			{
-			}
-			virtual ~CShape()
-			{
-			}
+			CShape(){}
+			virtual ~CShape(){}
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode){}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+				CVmlCommonElements::ReadAttributes( oReader );
+				CVmlCommonElements::ReadElements( oReader );
+			}
 			virtual CString      toXML() const;
 			virtual EElementType getType() const
 			{
@@ -2628,21 +2065,22 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CShapeType 14.1.2.20 (Part4)
 		//--------------------------------------------------------------------------------	
-		class CShapeType : public CVmlAttributes, public CVmlShapeElements
+		class CShapeType : public CVmlCommonElements
 		{
 		public:
 			WritingElement_AdditionConstructors(CShapeType)
-			CShapeType()
-			{
-			}
-			virtual ~CShapeType()
-			{
-			}
+			CShapeType(){}
+			virtual ~CShapeType(){}
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode){}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+				CVmlCommonElements::ReadAttributes( oReader );
+				CVmlCommonElements::ReadElements( oReader );
+			}
 			virtual CString      toXML() const;
 			virtual EElementType getType() const
 			{
@@ -2690,7 +2128,6 @@ namespace OOX
 			}
 
 		public:
-
 			// Attributes
 			nullable<CString>                                  m_oAdj;
 			nullable<SimpleTypes::Vml::CVmlPath>               m_oPath;
@@ -2795,14 +2232,16 @@ namespace OOX
 				if ( 1 != m_oWeight.GetValue() )
 					sResult += _T("weight=\"") + m_oWeight.ToString() + _T("\" ");
 
-				if ( SimpleTypes::colortypeBlack != m_oColor.GetValue() )
-					sResult += _T("color=\"") + m_oColor.ToString() + _T("\" ");
+				//if ( SimpleTypes::colortypeBlack != m_oColor.GetValue() )
+				//	sResult += _T("color=\"") + m_oColor.ToString() + _T("\" ");
+				ComplexTypes_WriteAttribute ( _T("color=\""), m_oColor );
 
 				if ( 1 != m_oOpacity.GetValue() )
 					sResult += _T("opacity=\"") + m_oOpacity.ToString() + _T("\" ");
 
-				if ( SimpleTypes::strokelinestyleSingle != m_oLineStyle.GetValue() )
-					sResult += _T("linestyle=\"") + m_oLineStyle.ToString() + _T("\" ");
+				//if ( SimpleTypes::strokelinestyleSingle != m_oLineStyle.GetValue() )
+				//	sResult += _T("linestyle=\"") + m_oLineStyle.ToString() + _T("\" ");
+				ComplexTypes_WriteAttribute ( _T("linestyle=\""), m_oLineStyle );
 				
 				if ( 8 != m_oMiterLimit.GetValue() )
 					sResult += _T("miterlimit=\"") + m_oMiterLimit.ToString() + _T("\" ");
@@ -2977,7 +2416,7 @@ namespace OOX
 			// Attributes
 			nullable<CString>                                                     m_oId;
 			nullable<CString>                                                     m_sAltHref;
-			SimpleTypes::CColorType<SimpleTypes::colortypeBlack>                  m_oColor;
+			nullable<SimpleTypes::CColorType<SimpleTypes::colortypeBlack>>        m_oColor;
 			nullable<SimpleTypes::CColorType<SimpleTypes::colortypeBlack>>        m_oColor2;
 			SimpleTypes::Vml::CVmlDashStyle<SimpleTypes::Vml::vmldashstyleSolid>  m_oDahsStyle;
 			SimpleTypes::CStrokeArrowType<SimpleTypes::strokearrowtypeNone>       m_oEndArrow;
@@ -2993,7 +2432,7 @@ namespace OOX
 			nullable<SimpleTypes::Vml::CVml_Vector2D_Units>                       m_oImageSize; 
 			nullable<SimpleTypes::CTrueFalse<>>                                   m_oInsetPen;
 			SimpleTypes::CStrokeJoinStyle<SimpleTypes::strokejoinstyleRound>      m_oJoinStyle;
-			SimpleTypes::CStrokeLineStyle<SimpleTypes::strokelinestyleSingle>     m_oLineStyle;
+			nullable<SimpleTypes::CStrokeLineStyle<SimpleTypes::strokelinestyleSingle>>	m_oLineStyle;
 			SimpleTypes::CDecimalNumber<8>                                        m_oMiterLimit;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>                     m_oOn;
 			SimpleTypes::CDouble                                                  m_oOpacity;
@@ -3248,6 +2687,215 @@ namespace OOX
 			nullable<SimpleTypes::Vml::CCssStyle>                 m_oStyle;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oTrim;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oXScale;
+		};
+		//--------------------------------------------------------------------------------
+		// CGroup 14.1.2.7 (Part4)
+		//--------------------------------------------------------------------------------	
+		class CGroup : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CGroup)
+			CGroup()
+			{
+			}
+			virtual ~CGroup()
+			{
+				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				{
+					if ( m_arrItems[nIndex] )
+						delete m_arrItems[nIndex];
+
+					m_arrItems[nIndex] = NULL;
+				}
+
+				m_arrItems.RemoveAll();
+			}
+
+		public:
+
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual CString      toXML() const;
+			virtual EElementType getType() const
+			{
+				return OOX::et_v_group;
+			}
+
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Выставляем значения по умолчанию
+				m_oHrPct.SetValue( 0 );
+
+				// Читаем атрибуты
+				if ( oReader.GetAttributesCount() <= 0 )
+					return;
+				
+				if ( !oReader.MoveToFirstAttribute() )
+					return;
+				
+				CWCharWrapper wsName = oReader.GetName();
+				while( !wsName.IsNull() )
+				{
+					wchar_t wsChar = wsName[0];
+					switch ( wsChar )
+					{
+					case 'a':
+						if      ( _T("alt") == wsName ) m_sAlt = oReader.GetText();
+						break;
+
+					case 'c':
+						if      ( _T("class")       == wsName ) m_sClass       = oReader.GetText();
+						else if ( _T("coordorigin") == wsName ) m_oCoordOrigin = oReader.GetText();
+						else if ( _T("coordsize")   == wsName ) m_oCoordSize   = oReader.GetText();
+						break;
+
+					case 'e':
+						if      ( _T("editas") == wsName ) m_oEditAs = oReader.GetText();
+						break;
+
+					case 'f':
+						if      ( _T("fillcolor") == wsName ) m_oFillColor = oReader.GetText();
+						else if ( _T("filled")    == wsName ) m_oFilled    = oReader.GetText();
+						break;
+
+					case 'h':
+						if      ( _T("href") == wsName ) m_sHref = oReader.GetText();
+						break;
+
+					case 'i':
+						if      ( _T("id")       == wsName ) m_sId       = oReader.GetText();
+						break;
+
+					case 'o':
+						{
+							wchar_t wsChar2 = wsName[2]; // o:_
+							switch ( wsChar2 )
+							{
+							case 'a':
+								if      ( _T("o:allowincell")  == wsName ) m_oAllowInCell  = oReader.GetText();
+								else if ( _T("o:allowoverlap") == wsName ) m_oAllowOverlap = oReader.GetText();
+								break;
+							case 'b':
+								if      ( _T("o:borderbottomcolor") == wsName ) m_oBorderBottomColor = oReader.GetText();
+								else if ( _T("o:borderleftcolor")   == wsName ) m_oBorderLeftColor   = oReader.GetText();
+								else if ( _T("o:borderrightcolor")  == wsName ) m_oBorderRightColor  = oReader.GetText();
+								else if ( _T("o:bordertopcolor")    == wsName ) m_oBorderTopColor    = oReader.GetText();
+								else if ( _T("o:bullet")            == wsName ) m_oBullet            = oReader.GetText();
+								else if ( _T("o:button")            == wsName ) m_oButton            = oReader.GetText();
+								break;
+							case 'd':
+								if      ( _T("o:doubleclicknotify") == wsName ) m_oDoubleClickNotify = oReader.GetText();
+								else if ( _T("o:dgmlayout")         == wsName ) m_oDgmLayout         = oReader.GetText();
+								else if ( _T("o:dgmlayoutmru")      == wsName ) m_oDgmLayoutMru      = oReader.GetText();
+								else if ( _T("o:dgmnodekind")       == wsName ) m_oDgmNodeKind       = oReader.GetText();
+								break;
+							case 'h':  
+								if      ( _T("o:hr")        == wsName ) m_oHr        = oReader.GetText();
+								else if ( _T("o:hralign")   == wsName ) m_oHrAlign   = oReader.GetText();
+								else if ( _T("o:hrnoshade") == wsName ) m_oHrNoShade = oReader.GetText();
+								else if ( _T("o:hrpct")     == wsName ) m_oHrPct     = oReader.GetText();
+								else if ( _T("o:hrstd")     == wsName ) m_oHrStd     = oReader.GetText();
+								break;
+							case 'i':
+								if      ( _T("o:insetmode") == wsName ) m_oInsetMode = oReader.GetText();
+								break;
+							case 'o':  
+								if      ( _T("o:oned")    == wsName ) m_oOned       = oReader.GetText();
+								break;
+							case 'r':
+								if      ( _T("o:regroupid") == wsName ) m_oRegroupId = oReader.GetText();
+								break;
+							case 's':
+								if      ( _T("o:spid") == wsName ) m_sSpId = oReader.GetText();
+								break;
+							case 't':
+								if      ( _T("o:tableproperties")  == wsName ) m_oTableProperties = oReader.GetText();
+								else if ( _T("o:tablelimits")      == wsName ) m_oTableLimits     = oReader.GetText();
+								break;
+							case 'u':
+								if      ( _T("o:userdrawn")  == wsName ) m_oUserDrawn  = oReader.GetText();
+								else if ( _T("o:userhidden") == wsName ) m_oUserHidden = oReader.GetText();
+								break;
+							}
+
+						break;
+						}
+
+					case 'p':
+						if      ( _T("print") == wsName ) m_oPrint = oReader.GetText();
+						break;
+					case 's':
+						if      ( _T("style") == wsName ) m_oStyle = oReader.GetText();
+						break;
+					case 't':
+						if      ( _T("target") == wsName ) m_sTarget = oReader.GetText();
+						else if ( _T("title")  == wsName ) m_sTitle  = oReader.GetText();
+						break;
+					case 'w':
+						if      ( _T("wrapcoords") == wsName ) m_oWrapCoords = oReader.GetText();
+						break;
+					}
+
+					if ( !oReader.MoveToNextAttribute() )
+						break;
+
+					wsName = oReader.GetName();
+				}
+				oReader.MoveToElement();
+			}
+
+		public:
+
+
+			// Attributes
+
+			// AG_AllCoreAttributes
+			nullable<CString>                                               m_sId;
+			nullable<SimpleTypes::Vml::CCssStyle>                           m_oStyle;
+			nullable<CString>                                               m_sHref;
+			nullable<CString>                                               m_sTarget;
+			nullable<CString>                                               m_sClass;
+			nullable<CString>                                               m_sTitle;
+			nullable<CString>                                               m_sAlt;
+			nullable<SimpleTypes::Vml::CVml_Vector2D>                       m_oCoordSize;
+			nullable<SimpleTypes::Vml::CVml_Vector2D>                       m_oCoordOrigin;
+			nullable<SimpleTypes::Vml::CVml_Polygon2D>                      m_oWrapCoords;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>               m_oPrint;
+			nullable<CString>                                               m_sSpId;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oOned;
+			nullable<SimpleTypes::CDecimalNumber<>>                         m_oRegroupId;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oDoubleClickNotify;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oButton;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oUserHidden;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oBullet;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oHr;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oHrStd;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oHrNoShade;
+			SimpleTypes::CDouble                                            m_oHrPct;
+			SimpleTypes::CHrAlign<SimpleTypes::hralignLeft>                 m_oHrAlign;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oAllowInCell;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oAllowOverlap;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oUserDrawn;
+			nullable<SimpleTypes::CColorType<>>                             m_oBorderTopColor;
+			nullable<SimpleTypes::CColorType<>>                             m_oBorderLeftColor;
+			nullable<SimpleTypes::CColorType<>>                             m_oBorderBottomColor;
+			nullable<SimpleTypes::CColorType<>>                             m_oBorderRightColor;
+			nullable<SimpleTypes::CDiagramLayout<>>                         m_oDgmLayout;
+			nullable<CString>                                               m_oDgmNodeKind;
+			nullable<SimpleTypes::CDiagramLayout<>>                         m_oDgmLayoutMru;
+			SimpleTypes::CInsetMode<SimpleTypes::insetmodeCustom>           m_oInsetMode;
+
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>               m_oFilled;
+			SimpleTypes::CColorType<SimpleTypes::colortypeWhite>            m_oFillColor;
+			nullable<SimpleTypes::CEditAs<>>                                m_oEditAs;
+			nullable<SimpleTypes::Vml::CVml_TableLimits>                    m_oTableLimits;
+			SimpleTypes::Vml::CVml_TableProperties<0>                       m_oTableProperties;                 
+
+//childs
+			CSimpleArray<WritingElement*>	m_arrItems;
+
 		};
 	} // namespace Vml
 } // namespace OOX

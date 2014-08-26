@@ -409,6 +409,8 @@ namespace OOX
 						m_oShapeStyle = oReader;	
 					else if (_T("wps:txbx") == sName)
 						m_oTxBody = oReader; 		
+					else if (_T("wps:bodyPr") == sName)
+						m_oTxBodyProperties = oReader; 
 				}
 			}
 
@@ -429,6 +431,7 @@ namespace OOX
 			nullable<OOX::Drawing::CShapeProperties>		m_oSpPr;
 			nullable<OOX::Drawing::CShapeStyle>				m_oShapeStyle;
 			nullable<OOX::Logic::CTextBody>					m_oTxBody;	
+			nullable<OOX::Drawing::CTextBodyProperties>		m_oTxBodyProperties;	
 		};
 
 		//--------------------------------------------------------------------------------
@@ -477,13 +480,19 @@ namespace OOX
 
 					if ( _T("wpg:grpSpPr") == sName )
 						m_oGroupSpPr = oReader;
+					else if ( _T("wpg:cNvPr") == sName )
+						m_oCNvPr = oReader;
 					else if ( _T("wpg:cNvGrpSpPr") == sName )
 						m_oCNvGroupSpPr = oReader;
 
 					else if ( _T("wps:wsp") == sName )
-						m_arrItems.Add( new CShape( oReader ));
-					else if ( _T("wpg:wgp") == sName )
-						m_arrItems.Add( new CGroupShape( oReader ));		
+						m_arrItems.Add( new OOX::Logic::CShape( oReader ));
+					else if ( _T("c:chart") == sName ) //??? 
+						m_arrItems.Add( new OOX::Drawing::CChart( oReader ));
+					else if ( _T("pic:pic") == sName )
+						m_arrItems.Add( new OOX::Drawing::CPicture( oReader ));
+					else if ( _T("wpg:grpSp") == sName )
+						m_arrItems.Add( new OOX::Logic::CGroupShape( oReader ));	
 				}
 			}
 
@@ -499,6 +508,84 @@ namespace OOX
 		public:
 			nullable<OOX::Drawing::CGroupShapeProperties>	m_oGroupSpPr;
 			nullable<CNonVisualGroupShapeDrawingProps>		m_oCNvGroupSpPr;
+			nullable<OOX::Drawing::CNonVisualDrawingProps>	m_oCNvPr;
+
+		};
+		//--------------------------------------------------------------------------------
+		//		20.4.2.41 wpc (WordprocessingML Drawing Canvas)
+		//--------------------------------------------------------------------------------
+		class CLockedCanvas : public WritingElementWithChilds<WritingElement>
+		{
+		public:
+			CLockedCanvas(XmlUtils::CXmlNode &oNode)
+			{
+				fromXML( oNode );
+			}
+			CLockedCanvas(XmlUtils::CXmlLiteReader& oReader)
+			{
+				fromXML( oReader );
+			}
+			CLockedCanvas()
+			{
+			}
+			virtual ~CLockedCanvas()
+			{
+			}
+
+		public:
+			virtual CString      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					CWCharWrapper sName = oReader.GetName();
+
+					//if ( _T("wpg:grpSpPr") == sName )
+					//	m_oGroupSpPr = oReader;
+					//else if ( _T("wpg:cNvPr") == sName )
+					//	m_oCNvPr = oReader;
+					//else if ( _T("wpg:cNvGrpSpPr") == sName )
+					//	m_oCNvGroupSpPr = oReader;
+
+					if ( _T("wps:wsp") == sName )
+						m_arrItems.Add( new OOX::Logic::CShape( oReader ));
+					else if ( _T("c:chart") == sName ) //??? 
+						m_arrItems.Add( new OOX::Drawing::CChart( oReader ));
+					else if ( _T("pic:pic") == sName )
+						m_arrItems.Add( new OOX::Drawing::CPicture( oReader ));
+					else if ( _T("wpg:grpSp") == sName )
+						m_arrItems.Add( new OOX::Logic::CGroupShape( oReader ));	
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_w_LockedCanvas;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
+		public:
+			//nullable<OOX::Drawing::CGroupShapeProperties>	m_oGroupSpPr;
+			//nullable<CNonVisualGroupShapeDrawingProps>		m_oCNvGroupSpPr;
+			//nullable<OOX::Drawing::CNonVisualDrawingProps>	m_oCNvPr;
 
 		};
 	} //Logic

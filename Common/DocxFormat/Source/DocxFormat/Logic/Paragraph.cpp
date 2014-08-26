@@ -29,6 +29,8 @@ namespace OOX
 
 		void    CParagraph::fromXML(XmlUtils::CXmlNode& oNode)
 		{
+			m_oParagraphProperty = NULL;
+
 			oNode.ReadAttributeBase( _T("w:rsidDel"),      m_oRsidDel );
 			oNode.ReadAttributeBase( _T("w:rsidP"),        m_oRsidP );
 			oNode.ReadAttributeBase( _T("w:rsidR"),        m_oRsidR );
@@ -105,7 +107,9 @@ namespace OOX
 						else if ( _T("w:permStart") == sName )
 							pItem = new CPermStart( oItem );
 						else if ( _T("w:pPr") == sName )
-							pItem = new CParagraphProperty( oItem );
+						{
+							pItem = m_oParagraphProperty  = new CParagraphProperty( oItem );
+						}
 						else if ( _T("w:proofErr") == sName )
 							pItem = new CProofErr( oItem );
 						else if ( _T("w:r") == sName )
@@ -127,6 +131,8 @@ namespace OOX
 
 		void    CParagraph::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
+			m_oParagraphProperty = NULL;
+			
 			ReadAttributes( oReader );
 
 			if ( oReader.IsEmptyNode() )
@@ -197,7 +203,9 @@ namespace OOX
 				else if ( _T("w:permStart") == sName )
 					pItem = new CPermStart( oReader );
 				else if ( _T("w:pPr") == sName )
-					pItem = new CParagraphProperty( oReader );
+				{
+					pItem = m_oParagraphProperty = new CParagraphProperty( oReader );// c копией  .. для быстрого доступа/анализа
+				}
 				else if ( _T("w:proofErr") == sName )
 					pItem = new CProofErr( oReader );
 				else if ( _T("w:r") == sName )

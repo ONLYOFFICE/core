@@ -166,7 +166,7 @@ namespace OOX
 				for(int i = 0, length = pLegacyDrawing->m_arrItems.GetSize(); i < length; ++i)
 				{
 					OOX::Vml::CShape* pShape = pLegacyDrawing->m_arrItems[i];
-					for(int j = 0, length2 = pShape->m_arrItems.GetSize(); j < length2; ++j)
+					for(int j = 0, length2 = pShape->m_arrItems.size(); j < length2; ++j)
 					{
 						OOX::WritingElement* pElem = pShape->m_arrItems[j];
 						if( OOX::et_v_ClientData == pElem->getType())

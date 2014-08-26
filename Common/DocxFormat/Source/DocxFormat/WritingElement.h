@@ -4,6 +4,8 @@
 #include "../XML/xmlutils.h"
 //#include "atlstr.h"
 
+#include <vector>
+
 namespace OOX
 {
 #define WritingElement_AdditionConstructors(Class) \
@@ -740,7 +742,7 @@ namespace OOX
 				m_arrItems[nIndex] = NULL;
 			}
 
-			m_arrItems.RemoveAll();
+			m_arrItems.clear();
 		}
         std::vector<ElemType *>     m_arrItems;
         //CSimpleArray<ElemType *>         m_arrItems;

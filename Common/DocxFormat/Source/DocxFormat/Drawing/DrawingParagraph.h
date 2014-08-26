@@ -537,9 +537,9 @@ namespace OOX
 					 if ( _T("a:pPr") == sName )
 						m_oParagraphProperty = oReader; 
 					else if ( _T("a:r") == sName )
-						m_arrItems.Add( new CRun( oReader ));
+						m_arrItems.push_back( new CRun( oReader ));
 					else if ( _T("a:br") == sName )
-						m_arrItems.Add( new CTextLineBreak( oReader ));
+						m_arrItems.push_back( new CTextLineBreak( oReader ));
 					//else if ( _T("a:fld") == sName )
 					//	pItem = new CField( oReader );
 					//else if ( _T("a:endParaRPr") == sName )

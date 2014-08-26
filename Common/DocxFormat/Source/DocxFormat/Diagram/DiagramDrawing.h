@@ -118,7 +118,7 @@ namespace Diagram
 				WritingElement *pItem = NULL;
 
 				if ( _T("dsp:sp") == sName )
-					m_arrItems.Add( new Diagram::CShape( oReader ));
+					m_arrItems.push_back( new Diagram::CShape( oReader ));
 				//else if ( _T("dsp:nvGrpSpPr") == sName )
 				//	m_oGroupShapeNonVisual = oReader;
 				else if ( _T("dsp:grpSpPr") == sName )

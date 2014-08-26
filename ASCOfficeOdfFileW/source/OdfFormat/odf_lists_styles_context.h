@@ -40,6 +40,7 @@ public:
 			style_list_level_label_alignment	* get_list_level_alignment_properties();
 			style_text_properties				* get_text_properties();
 
+			void set_bullet_image_size(double size);
 			void set_bullet_image	(std::wstring ref);
 			void set_bullet_char	(std::wstring val);
 			void set_start_number	(int val);

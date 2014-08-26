@@ -29,6 +29,7 @@ namespace OOX
 		class CGroupShape;
 		class CShape;
 		class CPicture;
+		class CObject;
 		class CPBdr;
 		class CHyperlink;
 		class CFldChar;
@@ -141,6 +142,7 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CShape					*oox_shape);
 		void convert(OOX::Logic::CPicture				*oox_picture);
 		void convert(OOX::Logic::CLockedCanvas			*oox_canvas);
+		void convert(OOX::Logic::CObject				*oox_obj);
 		
 		void convert(OOX::Drawing::CAnchor				*oox_anchor);
 		void convert(OOX::Drawing::CInline				*oox_inline);

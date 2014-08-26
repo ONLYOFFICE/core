@@ -240,6 +240,11 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 			OOX::Logic::CPicture* pPic = static_cast<OOX::Logic::CPicture*>(oox_unknown);
 			convert(pPic);
 		}break;
+		case OOX::et_w_object:
+		{
+			OOX::Logic::CObject* pObj = static_cast<OOX::Logic::CObject*>(oox_unknown);
+			convert(pObj);
+		}break;
 		case OOX::et_pic_pic:
 		{
 			OOX::Drawing::CPicture* pPic = static_cast<OOX::Drawing::CPicture*>(oox_unknown);
@@ -1723,6 +1728,62 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 
 	odt_context->end_drawings();
 }
+void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
+{
+	if (oox_obj == NULL) return;
+
+	odt_context->start_drawings();
+			
+	if (odt_context->table_context()->empty())
+		odf_context()->drawing_context()->set_anchor(odf::anchor_type::AsChar);//default
+	else
+	{
+		odf_context()->drawing_context()->set_anchor(odf::anchor_type::Paragraph);
+		odf_context()->drawing_context()->set_object_background(true);
+	}
+
+	if (oox_obj->m_oShape.IsInit())
+		OoxConverter::convert(oox_obj->m_oShape->m_oStyle.GetPointer());
+		
+	odf_context()->drawing_context()->start_drawing();
+		
+	bool bSet = false;
+	if (oox_obj->m_oShape.IsInit())
+	{
+		OOX::Vml::SptType sptType = static_cast<OOX::Vml::SptType>(oox_obj->m_oShape->m_oSpt.GetValue());
+		if (sptType != OOX::Vml::SptType::sptNotPrimitive)
+		{
+			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + boost::lexical_cast<std::wstring>(sptType));
+			odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
+			bSet = true;
+		}
+		else if (oox_obj->m_oShape->m_oConnectorType.GetValue() != SimpleTypes::connectortypeNone)
+		{
+			odf_context()->drawing_context()->set_name(L"Connector");
+			odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeStraightConnector1);
+			odf_context()->drawing_context()->set_line_width(1.);
+			bSet = true;
+		}
+		else if (oox_obj->m_oShape->m_oPath.IsInit())
+		{
+			odf_context()->drawing_context()->set_name(L"Path");
+			odf_context()->drawing_context()->start_shape(1001);
+			odf_context()->drawing_context()->set_line_width(1.);
+			bSet = true;
+		}
+	}
+	if (!bSet)
+	{
+		odf_context()->drawing_context()->set_name(L"Rect");
+		odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);			
+	}
+	OoxConverter::convert(oox_obj->m_oShape.GetPointer()); 			
+	odf_context()->drawing_context()->end_shape(); 
+
+	odf_context()->drawing_context()->end_drawing();
+
+	odt_context->end_drawings();
+}
 ///////////////////////////////////////////////
 void DocxConverter::convert(OOX::Logic::CDrawing *oox_drawing)
 {
@@ -2432,6 +2493,7 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 	//nullable<ComplexTypes::Word::CLvlLegacy                      > m_oLegacy;
 	//nullable<ComplexTypes::Word::CString_                        > m_oPStyle;
 
+	double  size_bullet_number_marker = 0;
 	if (oox_num_lvl->m_oLvlJc.IsInit())
 	{
 	}
@@ -2475,7 +2537,7 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 	}
 	if (oox_num_lvl->m_oRPr.IsInit())//для обозначений списка
 	{
-		odf::odf_style_context* styles_context = /*odt_context->styles_context();*/odf_context()->page_layout_context()->get_local_styles_context();
+		odf::odf_style_context* styles_context = odf_context()->page_layout_context()->get_local_styles_context();
 		
 		odf::style_text_properties *text_props = odt_context->styles_context()->lists_styles().get_text_properties();
 		convert(oox_num_lvl->m_oRPr.GetPointer(), text_props);
@@ -2489,6 +2551,24 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 			
 			odf::style_text_properties	* text_props_2 = style_state->get_text_properties();			
 			if (text_props_2)text_props_2->apply_from(text_props);
+		}
+
+		if ((text_props) && (text_props->content().fo_font_size_))
+		{
+			size_bullet_number_marker = text_props->content().fo_font_size_->get_length().get_value();
+		}
+	}
+	if (size_bullet_number_marker < 0.01 && (type_list == 2 || type_list == 3))
+	{
+		//выдернем из дефолтного
+		odf::odf_style_state_ptr state;
+		if ((odf_context()->styles_context()->find_odf_default_style_state(odf::style_family::Paragraph,  state)) && (state))
+		{
+			odf::style_text_properties *text_props = state->get_text_properties();
+			if ((text_props) && (text_props->content().fo_font_size_))
+			{
+				size_bullet_number_marker = text_props->content().fo_font_size_->get_length().get_value();
+			}
 		}
 	}
 	//nullable<ComplexTypes::Word::CDecimalNumber                  > m_oStart;
@@ -2521,6 +2601,9 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 		}
 
 	}
+	if (type_list == 2 || type_list == 3)
+		odt_context->styles_context()->lists_styles().set_bullet_image_size(size_bullet_number_marker);
+
 	if (oox_num_lvl->m_oLvlRestart.IsInit() && oox_num_lvl->m_oLvlRestart->m_oVal.IsInit() && type_list == 1)
 	{
 		 odt_context->styles_context()->lists_styles().set_start_number(oox_num_lvl->m_oLvlRestart->m_oVal->GetValue());

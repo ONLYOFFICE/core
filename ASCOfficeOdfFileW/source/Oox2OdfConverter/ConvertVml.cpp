@@ -507,12 +507,6 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 		odf_context()->drawing_context()->set_position(vml_common->m_oCoordSize->GetX(), vml_common->m_oCoordSize->GetY());
 	}	
 
-	if (vml_common->m_oInsetMode.GetValue() == SimpleTypes::insetmodeCustom)
-	{
-		//odf_context()->drawing_context()->set_textarea_padding(vml_common->m_oInset.GetLeft(0), vml_common->m_oInset.GetTop(0), 
-		//														vml_common->m_oInset.GetRight(0), vml_common->m_oInset.GetBottom(0));	
-	}
-
 }
 void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 {

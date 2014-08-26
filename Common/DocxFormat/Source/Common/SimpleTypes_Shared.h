@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SimpleTypes_Base.h"
+#include "SimpleTypes_Word.h"
 
 // Здесь представлены все простые типы SharedML из спецификации Office Open Xml (22.8)
 namespace SimpleTypes

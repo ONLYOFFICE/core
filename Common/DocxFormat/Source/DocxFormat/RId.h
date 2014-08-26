@@ -50,12 +50,14 @@ namespace OOX
 			
 			return *this;
 		}
+#ifdef _WIN32
 		const RId& operator= (const BSTR& rid)
 		{
 			(*this) = (CString)rid;
 			
 			return *this;
 		}
+#endif
 		const RId& operator= (const RId& oSrc)
 		{
 			m_id = oSrc.m_id;

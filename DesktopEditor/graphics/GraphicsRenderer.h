@@ -411,7 +411,7 @@ public:
             case 0:
             {
                 // left
-                double _left = __x1 + 0.5;
+                double _left = (int)__x1 + 0.5;
 				_left = _left + pen_w / 2.0 - 0.5;
 
 				m_pPath->Reset();
@@ -423,7 +423,7 @@ public:
             case 1:
             {
                 // center
-				double _center = __x1 + 0.5;
+				double _center = (int)__x1 + 0.5;
                 
 				m_pPath->Reset();
                 if (0 == (pen_w % 2))
@@ -443,7 +443,7 @@ public:
             case 2:
             {
 				// right
-				double _right = __x1 + 0.5;
+				double _right = (int)__x1 + 0.5;
 				_right = _right - pen_w / 2.0 + 0.5;
 
 				m_pPath->Reset();
@@ -486,14 +486,7 @@ public:
             }
             else
             {
-                if ((pen_mw % 2) == 0)
-                {
-                    _x = _center + ((pen_mw >> 1) - 1.0);
-                }
-                else
-                {
-                    _x = _center + (pen_mw >> 1);
-                }
+				_x = _center + ((pen_mw - 1) >> 1);
             }
         }
         if (rightMW != 0)
@@ -510,14 +503,7 @@ public:
             }
             else
             {
-                if ((pen_mw % 2) == 0)
-                {
-                    _r = _center + (pen_mw >> 1) - 1.0;
-                }
-                else
-                {
-                    _r = _center + (pen_mw >> 1);
-                }
+				_r = _center + ((pen_mw - 1) >> 1);
             }
         }
 

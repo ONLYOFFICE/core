@@ -908,9 +908,8 @@ namespace SimpleTypes
 	public:
 		CColorType()
 		{
-			m_unR = 0;
-			m_unB = 0;
-			m_unG = 0;
+			SetRGB();
+			m_sValue.Format( _T("#%02X%02X%02X"), m_unR, m_unG, m_unB );
 		}
 
 		virtual EColorType FromString(CString& sValue)
@@ -978,128 +977,136 @@ namespace SimpleTypes
 			m_unG = hexColor.Get_G();
 			m_unB = hexColor.Get_B();
 		}
-
+		void SetRGB()
+		{
+			switch(this->m_eValue)
+			{
+				case  colortypeAqua:
+				{
+					m_unR = 0x00;
+					m_unG = 0xff;
+					m_unB = 0xff;
+				}break;
+				case  colortypeBlack:
+				{
+					m_unR = 0x00;
+					m_unG = 0x00;
+					m_unB = 0x00;
+				}break;
+				case  colortypeBlue:
+				{
+					m_unR = 0x00;
+					m_unG = 0x00;
+					m_unB = 0xff;
+				}break;
+				case  colortypeFuchsia:
+				{
+					m_unR = 0xff;
+					m_unG = 0x00;
+					m_unB = 0xff;
+				}break;
+				case  colortypeGray:
+				{
+					m_unR = 0x80;
+					m_unG = 0x80;
+					m_unB = 0x80;
+				}break;
+				case  colortypeGreen:
+				{
+					m_unR = 0x00;
+					m_unG = 0x80;
+					m_unB = 0x00;
+				}break;
+				case  colortypeLime:
+				{
+					m_unR = 0x00;
+					m_unG = 0xff;
+					m_unB = 0x00;
+				}break;
+				case  colortypeMaroon:
+				{
+					m_unR = 0x80;
+					m_unG = 0x00;
+					m_unB = 0x00;
+				}break;
+				case  colortypeNavy:
+				{
+					m_unR = 0x00;
+					m_unG = 0x00;
+					m_unB = 0x80;
+				}break;
+				case  colortypeOlive:
+				{
+					m_unR = 0x80;
+					m_unG = 0x80;
+					m_unB = 0x00;
+				}break;
+				case  colortypePurple:
+				{
+					m_unR = 0x80;
+					m_unG = 0x00;
+					m_unB = 0x80;
+				}break;
+				case  colortypeRed:
+				{
+					m_unR = 0xff;
+					m_unG = 0x00;
+					m_unB = 0x00;
+				}break;
+				case  colortypeSilver:
+				{
+					m_unR = 0xc0;
+					m_unG = 0xc0;
+					m_unB = 0xc0;
+				}break;
+				case  colortypeTeal:
+				{
+					m_unR = 0x00;
+					m_unG = 0x80;
+					m_unB = 0x80;
+				}break;
+				case  colortypeWhite:
+				{
+					m_unR = 0xff;
+					m_unG = 0xff;
+					m_unB = 0xff;
+				}break;
+				case  colortypeYellow:
+				{
+					m_unR = 0xff;
+					m_unG = 0xff;
+					m_unB = 0;
+				}break;
+				case  colortypeNone:
+				default:
+				{
+					m_unR = 0;
+					m_unG = 0;
+					m_unB = 0;
+				}break;
+			}
+		}
 		void ByColorName(CString& sValue)
 		{
-			if      (_T("aqua")		== sValue)
-			{
-                this->m_eValue = colortypeAqua;
-				m_unR = 0x00;
-				m_unG = 0xff;
-				m_unB = 0xff;
-			}
-			else if (_T("black")	== sValue)
-			{
-                this->m_eValue = colortypeBlack;
-				m_unR = 0x00;
-				m_unG = 0x00;
-				m_unB = 0x00;
-			}
-			else if (_T("blue")		== sValue)
-			{
-                this->m_eValue = colortypeBlue;
-				m_unR = 0x00;
-				m_unG = 0x00;
-				m_unB = 0xff;
-			}
-			else if (_T("fuchsia")	== sValue)
-			{
-                this->m_eValue = colortypeFuchsia;
-				m_unR = 0xff;
-				m_unG = 0x00;
-				m_unB = 0xff;
-			}
-			else if (_T("gray")		== sValue)
-			{
-                this->m_eValue = colortypeGray;
-				m_unR = 0x80;
-				m_unG = 0x80;
-				m_unB = 0x80;
-			}
-			else if (_T("green")	== sValue)
-			{
-                this->m_eValue = colortypeGreen;
-				m_unR = 0x00;
-				m_unG = 0x80;
-				m_unB = 0x00;
-			}
-			else if (_T("lime")		== sValue)
-			{
-                this->m_eValue = colortypeLime;
-				m_unR = 0x00;
-				m_unG = 0xff;
-				m_unB = 0x00;
-			}
-			else if (_T("maroon")	== sValue)
-			{
-                this->m_eValue = colortypeMaroon;
-				m_unR = 0x80;
-				m_unG = 0x00;
-				m_unB = 0x00;
-			}
-			else if (_T("navy")		== sValue)
-			{
-                this->m_eValue = colortypeNavy;
-				m_unR = 0x00;
-				m_unG = 0x00;
-				m_unB = 0x80;
-			}
-			else if (_T("olive")	== sValue)
-			{
-                this->m_eValue = colortypeOlive;
-				m_unR = 0x80;
-				m_unG = 0x80;
-				m_unB = 0x00;
-			}
-			else if (_T("purple")	== sValue)
-			{
-                this->m_eValue = colortypePurple;
-				m_unR = 0x80;
-				m_unG = 0x00;
-				m_unB = 0x80;
-			}
-			else if (_T("red")		== sValue)
-			{
-                this->m_eValue = colortypeRed;
-				m_unR = 0xff;
-				m_unG = 0x00;
-				m_unB = 0x00;
-			}
-			else if (_T("silver")	== sValue)
-			{
-                this->m_eValue = colortypeSilver;
-				m_unR = 0xc0;
-				m_unG = 0xc0;
-				m_unB = 0xc0;
-			}
-			else if (_T("teal")		== sValue)
-			{
-                this->m_eValue = colortypeTeal;
-				m_unR = 0x00;
-				m_unG = 0x80;
-				m_unB = 0x80;
-			}
-			else if (_T("white")	== sValue)
-			{
-                this->m_eValue = colortypeWhite;
-				m_unR = 0xff;
-				m_unG = 0xff;
-				m_unB = 0xff;
-			}
-			else if (_T("yellow")	== sValue)
-			{
-                this->m_eValue = colortypeYellow;
-				m_unR = 0xff;
-				m_unG = 0xff;
-				m_unB = 0;
-			}
-			else
-			{
-                this->m_eValue = colortypeNone;
-				m_unR = 0;
-				m_unG = 0;
-				m_unB = 0;
-			}
+			if      (_T("aqua")		== sValue)this->m_eValue = colortypeAqua;
+			else if (_T("black")	== sValue)this->m_eValue = colortypeBlack;
+			else if (_T("blue")		== sValue)this->m_eValue = colortypeBlue;
+			else if (_T("fuchsia")	== sValue)this->m_eValue = colortypeFuchsia;
+			else if (_T("gray")		== sValue)this->m_eValue = colortypeGray;
+			else if (_T("green")	== sValue)this->m_eValue = colortypeGreen;
+			else if (_T("lime")		== sValue)this->m_eValue = colortypeLime;
+			else if (_T("maroon")	== sValue)this->m_eValue = colortypeMaroon;
+			else if (_T("navy")		== sValue)this->m_eValue = colortypeNavy;
+			else if (_T("olive")	== sValue)this->m_eValue = colortypeOlive;
+			else if (_T("purple")	== sValue)this->m_eValue = colortypePurple;
+			else if (_T("red")		== sValue)this->m_eValue = colortypeRed;
+			else if (_T("silver")	== sValue)this->m_eValue = colortypeSilver;
+			else if (_T("teal")		== sValue)this->m_eValue = colortypeTeal;
+			else if (_T("white")	== sValue)this->m_eValue = colortypeWhite;
+			else if (_T("yellow")	== sValue)this->m_eValue = colortypeYellow;
+			else this->m_eValue = colortypeNone;
+
+			SetRGB();
 		}
 
 	private:

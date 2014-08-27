@@ -173,7 +173,7 @@ void _CheckNextChange(const v8::FunctionCallbackInfo<v8::Value>& args)
 	CNativeControl* pNative = unwrap_nativeobject(args.This());
 
 	pNative->m_nCurrentChangesNumber++;
-	if (-1 != pNative->m_nCurrentChangesNumber)
+	if (-1 != pNative->m_nMaxChangesNumber)
 	{
 		if (pNative->m_nCurrentChangesNumber >= pNative->m_nMaxChangesNumber)
 		{

@@ -279,9 +279,7 @@ namespace OOX
 		{
 			// Выставляем значения по умолчанию
 			m_oHrPct.SetValue( 0 );
-			m_oOpacity.SetValue( 1.0 );
 			m_oSpt.SetValue( 0 );
-			m_oStrokeWeight.FromPoints( 1 );
 
 			// Читаем атрибуты
 			if ( oReader.GetAttributesCount() <= 0 )
@@ -506,19 +504,16 @@ namespace OOX
 			if ( SimpleTypes::booleanTrue != m_oFilled.GetValue() )
 				sResult += _T("filled=\"false\" ");
 
-			if ( SimpleTypes::colortypeWhite != m_oFillColor.GetValue() )
-				sResult += _T("fillcolor=\"") + m_oFillColor.ToString() + _T("\" ");
-
-			if ( 1 != m_oOpacity.GetValue() )
-				sResult += _T("opacity=\"") + m_oOpacity.ToString() + _T("\" ");
+			ComplexTypes_WriteAttribute ( _T("fillcolor=\""),		m_oFillColor );
+			ComplexTypes_WriteAttribute ( _T("opacity=\""),			m_oOpacity );
 
 			ComplexTypes_WriteAttribute ( _T("stroked=\""), m_oStroked );
 
 			if ( SimpleTypes::colortypeBlack != m_oStrokeColor.GetValue() )
 				sResult += _T("strokecolor=\"") + m_oStrokeColor.ToString() + _T("\" ");
 
-			if ( 1 != m_oStrokeWeight.GetValue() )
-				sResult += _T("strokeweight=\"") + m_oStrokeWeight.ToString() + _T("\" ");
+			if ( m_oStrokeWeight.IsInit() )
+				sResult += _T("strokeweight=\"") + m_oStrokeWeight->ToString() + _T("\" ");
 
 			ComplexTypes_WriteAttribute ( _T("insetpen=\""),  m_oInsetPen );
 
@@ -841,10 +836,9 @@ namespace OOX
 			if ( SimpleTypes::booleanTrue != m_oFilled.GetValue() )
 				sResult += _T("filled=\"false\" ");
 
-			if ( SimpleTypes::colortypeWhite != m_oFillColor.GetValue() )
-				sResult += _T("fillcolor=\"") + m_oFillColor.ToString() + _T("\" ");
+			ComplexTypes_WriteAttribute ( _T("fillcolor=\""),		m_oFillColor );
+			ComplexTypes_WriteAttribute ( _T("editas=\""),			m_oEditAs );
 
-			ComplexTypes_WriteAttribute ( _T("editas=\""),     m_oEditAs );
 			if ( 0 != m_oTableProperties.GetValue() )
 				sResult += _T("o:tableproperties=\"") + m_oTableProperties.ToString() + _T("\" ");
 

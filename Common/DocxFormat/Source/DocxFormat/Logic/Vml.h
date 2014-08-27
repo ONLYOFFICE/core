@@ -82,11 +82,11 @@ namespace OOX
 			// 2.1 AG_ShapeAttributes
 			nullable<SimpleTypes::CColorType<>>                             m_oChromaKey;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>               m_oFilled;
-			SimpleTypes::CColorType<SimpleTypes::colortypeWhite>            m_oFillColor;
-			SimpleTypes::Vml::CVml_1_65536                                  m_oOpacity;
+			nullable<SimpleTypes::CColorType<>>					            m_oFillColor;
+			nullable<SimpleTypes::Vml::CVml_1_65536>                        m_oOpacity;
 			nullable<SimpleTypes::CTrueFalse<>>                             m_oStroked;
 			SimpleTypes::CColorType<SimpleTypes::colortypeBlack>            m_oStrokeColor;
-			SimpleTypes::CEmu                                               m_oStrokeWeight;
+			nullable<SimpleTypes::CEmu>                                     m_oStrokeWeight;
 			nullable<SimpleTypes::CTrueFalse<>>                             m_oInsetPen;
 			// 2.2 AG_OfficeShapeAttributes
 			SimpleTypes::CDecimalNumber<>									m_oSpt;
@@ -405,8 +405,8 @@ namespace OOX
 				if ( SimpleTypes::colortypeWhite != m_oColor.GetValue() )
 					sResult += _T("color=\"") + m_oColor.ToString() + _T("\" ");
 
-				if ( 1 != m_oOpacity.GetValue() )
-					sResult += _T("opacity=\"") + m_oOpacity.ToString() + _T("\" ");
+				if (  m_oOpacity.IsInit() )
+					sResult += _T("opacity=\"") + m_oOpacity->ToString() + _T("\" ");
 
 				if ( SimpleTypes::colortypeWhite != m_oColor2.GetValue() )
 					sResult += _T("color2=\"") + m_oColor2.ToString() + _T("\" ");
@@ -443,8 +443,8 @@ namespace OOX
 				ComplexTypes_WriteAttribute ( _T("o:detectmouseclick=\""), m_oDetectMouseClick );
 				ComplexTypes_WriteAttribute2( _T("o:title=\""),            m_sTitle );
 
-				if ( 1 != m_oOpacity2.GetValue() )
-					sResult += _T("o:opacity2=\"") + m_oOpacity2.ToString() + _T("\" ");
+				if ( m_oOpacity2.IsInit() )
+					sResult += _T("o:opacity2=\"") + m_oOpacity2->ToString() + _T("\" ");
 
 				if ( SimpleTypes::booleanFalse != m_oRecolor.GetValue() )
 					sResult += _T("recolor=\"true\" ");
@@ -474,8 +474,6 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Выставляем значения по умолчанию
-				m_oOpacity.SetValue( 1.0 );
-				m_oOpacity2.SetValue( 1.0 );
 				m_oFocus.SetValue( 0 );
 				m_oFocusPosition.SetValue( 0.0, 0.0 );
 				m_oFocusSize.SetValue( 0.0, 0.0 );
@@ -587,8 +585,8 @@ namespace OOX
 			nullable<CString>                                         m_sId;
 			SimpleTypes::CFillMethod<SimpleTypes::fillmethodSigma>    m_oMethod;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oOn;
-			SimpleTypes::Vml::CVml_1_65536                            m_oOpacity;
-			SimpleTypes::Vml::CVml_1_65536                            m_oOpacity2;
+			nullable<SimpleTypes::Vml::CVml_1_65536>                  m_oOpacity;
+			nullable<SimpleTypes::Vml::CVml_1_65536>                  m_oOpacity2;
 			nullable<SimpleTypes::Vml::CVml_Vector2D_1_65536>         m_oOrigin;
 			nullable<SimpleTypes::Vml::CVml_Vector2D_1_65536>         m_oPosition;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oRecolor;
@@ -647,13 +645,11 @@ namespace OOX
 				if ( SimpleTypes::booleanTrue != m_oFilled.GetValue() )
 					sResult += _T("filled=\"false\" ");
 
-				if ( SimpleTypes::colortypeWhite != m_oFillColor.GetValue() )
-					sResult += _T("fillcolor=\"") + m_oFillColor.ToString() + _T("\" ");
-
-				ComplexTypes_WriteAttribute ( _T("o:bwmode=\""),           m_oBwMode );
-				ComplexTypes_WriteAttribute ( _T("o:bwpure=\""),           m_oBwPure );
-				ComplexTypes_WriteAttribute ( _T("o:bwnormal=\""),         m_oBwNormal );
-				ComplexTypes_WriteAttribute ( _T("o:targetscreensize=\""), m_oTargetScreenSize );
+				ComplexTypes_WriteAttribute ( _T("fillcolor=\""),			m_oFillColor );
+				ComplexTypes_WriteAttribute ( _T("o:bwmode=\""),			m_oBwMode );
+				ComplexTypes_WriteAttribute ( _T("o:bwpure=\""),			m_oBwPure );
+				ComplexTypes_WriteAttribute ( _T("o:bwnormal=\""),			m_oBwNormal );
+				ComplexTypes_WriteAttribute ( _T("o:targetscreensize=\""),	m_oTargetScreenSize );
 
 				sResult += _T(">");
 
@@ -720,7 +716,7 @@ namespace OOX
 			nullable<SimpleTypes::CBWMode<>>                     m_oBwMode;
 			nullable<SimpleTypes::CBWMode<>>                     m_oBwNormal;
 			nullable<SimpleTypes::CBWMode<>>                     m_oBwPure;
-			SimpleTypes::CColorType<SimpleTypes::colortypeWhite> m_oFillColor;
+			nullable<SimpleTypes::CColorType<>>					 m_oFillColor;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>    m_oFilled;
 			nullable<CString>                                    m_sId;
 			nullable<SimpleTypes::CScreenSize<>>                 m_oTargetScreenSize;
@@ -1885,8 +1881,8 @@ namespace OOX
 				if ( 128 != m_oColor.Get_R() || 128 != m_oColor.Get_G() || 128 != m_oColor.Get_B() )
 					sResult += _T("color=\"") + m_oColor.ToString() + _T("\" ");
 
-				if ( 1 != m_oOpacity.GetValue() )
-					sResult += _T("opacity=\"") + m_oOpacity.ToString() + _T("\" ");
+				if (m_oOpacity.IsInit())
+					sResult += _T("opacity=\"") + m_oOpacity->ToString() + _T("\" ");
 
 				sResult += _T("offset=\"") + m_oOffset.ToString() + _T("\" ");
 
@@ -1918,7 +1914,6 @@ namespace OOX
 				m_oColor2.SetRGB( 203, 203, 203 );
 				m_oOffset.SetValue_Points( 2, 2 );
 				m_oOffset2.SetValue_Points( -2, -2 );
-				m_oOpacity.SetValue( 1.0 );
 				m_oOrigin.SetValue( 0, 0 );
 
 				// Читаем атрибуты
@@ -1980,7 +1975,7 @@ namespace OOX
 			SimpleTypes::Vml::CVml_Vector2D_Units_Or_Percentage       m_oOffset;
 			SimpleTypes::Vml::CVml_Vector2D_Units_Or_Percentage       m_oOffset2;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oOn;
-			SimpleTypes::Vml::CVml_1_65536                            m_oOpacity;
+			nullable<SimpleTypes::Vml::CVml_1_65536>                  m_oOpacity;
 			SimpleTypes::Vml::CVml_Vector2D_Percentage                m_oOrigin;
 			SimpleTypes::CShadowType<SimpleTypes::shadowtypeSingle>   m_oType;
 		};
@@ -2236,8 +2231,8 @@ namespace OOX
 				//	sResult += _T("color=\"") + m_oColor.ToString() + _T("\" ");
 				ComplexTypes_WriteAttribute ( _T("color=\""), m_oColor );
 
-				if ( 1 != m_oOpacity.GetValue() )
-					sResult += _T("opacity=\"") + m_oOpacity.ToString() + _T("\" ");
+				if (m_oOpacity.IsInit() )
+					sResult += _T("opacity=\"") + m_oOpacity->ToString() + _T("\" ");
 
 				//if ( SimpleTypes::strokelinestyleSingle != m_oLineStyle.GetValue() )
 				//	sResult += _T("linestyle=\"") + m_oLineStyle.ToString() + _T("\" ");
@@ -2330,8 +2325,6 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Выставляем значения по умолчанию
-				m_oOpacity.SetValue( 1.0 );
-				m_oWeight.SetValue( 1.0 );
 
 				// Читаем атрибуты
 				if ( oReader.GetAttributesCount() <= 0 )
@@ -2435,7 +2428,7 @@ namespace OOX
 			nullable<SimpleTypes::CStrokeLineStyle<SimpleTypes::strokelinestyleSingle>>	m_oLineStyle;
 			SimpleTypes::CDecimalNumber<8>                                        m_oMiterLimit;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>                     m_oOn;
-			SimpleTypes::CDouble                                                  m_oOpacity;
+			nullable<SimpleTypes::CDouble>										  m_oOpacity;
 			nullable<SimpleTypes::CRelationshipId>                                m_oRelId;
 			nullable<CString>                                                     m_sSrc;
 			SimpleTypes::CStrokeArrowType<SimpleTypes::strokearrowtypeNone>       m_oStartArrow;
@@ -2888,7 +2881,7 @@ namespace OOX
 			SimpleTypes::CInsetMode<SimpleTypes::insetmodeCustom>           m_oInsetMode;
 
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>               m_oFilled;
-			SimpleTypes::CColorType<SimpleTypes::colortypeWhite>            m_oFillColor;
+			nullable<SimpleTypes::CColorType<>>					            m_oFillColor;
 			nullable<SimpleTypes::CEditAs<>>                                m_oEditAs;
 			nullable<SimpleTypes::Vml::CVml_TableLimits>                    m_oTableLimits;
 			SimpleTypes::Vml::CVml_TableProperties<0>                       m_oTableProperties;                 

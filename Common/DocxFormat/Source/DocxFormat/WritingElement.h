@@ -50,8 +50,8 @@ namespace OOX
 		return;\
 	if ( !Reader.MoveToFirstAttribute() )\
 		return;\
-	CWCharWrapper wsName = Reader.GetName();\
-	while( !wsName.IsNull() )\
+    CString wsName = Reader.GetName();\
+    while( !wsName.IsEmpty() )\
 	{
 
 #define WritingElement_ReadAttributes_Start_No_NS(Reader) \

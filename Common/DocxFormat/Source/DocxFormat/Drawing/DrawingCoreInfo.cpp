@@ -17,7 +17,7 @@ namespace OOX
 		{
 			m_eType = et_Unknown;
 
-			CWCharWrapper sName = oReader.GetName();
+            CString sName = oReader.GetName();
 			if ( _T("a:cNvPicPr") == sName )
 				m_eType = et_a_cNvPicPr;
 			else if ( _T("p:cNvPicPr") == sName )
@@ -86,7 +86,7 @@ namespace OOX
 			ReadAttributes( oReader );
 			
 			m_eType = et_Unknown;
-			CWCharWrapper sName = oReader.GetName();
+            CString sName = oReader.GetName();
 
 			if ( _T("wp:docPr") == sName )
 				m_eType = et_wp_docPr;
@@ -191,7 +191,7 @@ namespace OOX
 		void CHyperlink::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			// Определим тип текущей ноды
-			CWCharWrapper sName = oReader.GetName();
+            CString sName = oReader.GetName();
 			if ( _T("a:hlinkClick") == sName  )
 				m_eType = et_a_hlinkClick;
 			else if ( _T("a:hlinkHover") == sName )
@@ -206,7 +206,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+                CString sName = oReader.GetName();
 				if ( _T("a:extLst") == sName )
 					m_oExtLst = oReader;
 				else if ( _T("a:snd") == sName )

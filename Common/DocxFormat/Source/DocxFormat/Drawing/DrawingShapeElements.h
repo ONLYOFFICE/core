@@ -1110,7 +1110,7 @@ namespace OOX
 					if ( _T("a:path") == sName )
 					{
 						OOX::Drawing::CPath2D oPath = oReader;
-						m_arrPath.Add( oPath );
+						m_arrPath.push_back( oPath );
 					}
 				}
 			}
@@ -1118,7 +1118,7 @@ namespace OOX
 			{
 				CString sResult = _T("<a:pathLst>");
 
-				for ( int nIndex = 0; nIndex < m_arrPath.GetSize(); nIndex++ )
+				for ( int nIndex = 0; nIndex < m_arrPath.size(); nIndex++ )
 					sResult += m_arrPath[nIndex].toXML();
 
 				sResult += _T("</a:pathLst>");
@@ -1227,7 +1227,7 @@ namespace OOX
 					m_arrItems[nIndex] = NULL;
 				}
 
-				m_arrItems.RemoveAll();
+				m_arrItems.clear();
 			}
 
 		public:

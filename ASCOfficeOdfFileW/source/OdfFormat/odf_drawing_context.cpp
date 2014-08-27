@@ -903,6 +903,9 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 {
 	if (!impl_->current_graphic_properties)return;
 
+	if (hexColor.length() >0 && hexColor.substr(0,1) == std::wstring(L"#"))
+		hexColor = hexColor.substr(1,hexColor.length());
+
 	switch(impl_->current_drawing_part_)
 	{
 	case Area:
@@ -913,8 +916,10 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 		break;
 	case Line:
 		impl_->current_graphic_properties->content().svg_stroke_color_ = color(std::wstring(L"#") + hexColor);
-		impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::Solid);//default
-		impl_->current_graphic_properties->content().svg_stroke_width_ = length(length(0.08,length::pt).get_value_unit(length::cm),length::cm);//default
+		if (!impl_->current_graphic_properties->content().draw_stroke_)
+			impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::Solid);//default
+		if (!impl_->current_graphic_properties->content().svg_stroke_width_)
+			impl_->current_graphic_properties->content().svg_stroke_width_ = length(length(1,length::pt).get_value_unit(length::cm),length::cm);//default
 		break;
 	}
 }
@@ -1677,7 +1682,31 @@ void odf_drawing_context::end_image()
 }
 void odf_drawing_context::end_text_box()
 {
+	if (impl_->current_drawing_state_.elements_.size() < 1) return;
+	draw_text_box* draw = dynamic_cast<draw_text_box*>(impl_->current_drawing_state_.elements_.back().elm.get());
+
+	if (!draw->draw_text_box_attlist_.fo_min_height_)
+	{
+		draw->draw_text_box_attlist_.fo_min_height_= impl_->current_drawing_state_.svg_height_;
+	}
+	
 	end_element();
+
+	if (impl_->current_graphic_properties->content().svg_stroke_width_)
+	{
+		std::wstringstream ss;
+		ss << impl_->current_graphic_properties->content().svg_stroke_width_->get_length();
+
+		if (impl_->current_graphic_properties->content().draw_stroke_) 
+			ss << L" " << *impl_->current_graphic_properties->content().draw_stroke_;
+		else ss << L" solid";
+
+		if (impl_->current_graphic_properties->content().svg_stroke_color_) 
+			ss << L" " << *impl_->current_graphic_properties->content().svg_stroke_color_;
+		else ss << L" #000000";
+
+		impl_->current_graphic_properties->content().common_border_attlist_.fo_border_ = ss.str();
+	}
 
 	end_frame();
 }
@@ -1752,8 +1781,11 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 			{
 				//line
 				impl_->current_graphic_properties->content().svg_stroke_color_	= color_;
-				impl_->current_graphic_properties->content().draw_stroke_		= line_style(line_style::Solid);
-				impl_->current_graphic_properties->content().svg_stroke_width_	= length(0.08,length::pt);
+				if (!impl_->current_graphic_properties->content().draw_stroke_)
+					impl_->current_graphic_properties->content().draw_stroke_		= line_style(line_style::Solid);
+				if (!impl_->current_graphic_properties->content().svg_stroke_width_)
+					impl_->current_graphic_properties->content().svg_stroke_width_	= length(1,length::pt);
+				
 				impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::none);
 			}
 			else

@@ -29,7 +29,7 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 	
 	//m_oPreferRelative//типо можно менять размер 
 
-	for (long i=0 ; i < vml_shape_type->m_arrItems.GetSize();i++)
+	for (long i=0 ; i < vml_shape_type->m_arrItems.size();i++)
 	{
 		convert(vml_shape_type->m_arrItems[i]);
 	}
@@ -137,7 +137,7 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 				if (group)
 					odf_context()->drawing_context()->set_group_rotate(180 + vml_style->m_arrProperties[i].get_Value().dValue);
 				else
-					odf_context()->drawing_context()->set_rotate(180 + vml_style->m_arrProperties[i].get_Value().dValue);
+					odf_context()->drawing_context()->set_rotate(360 - vml_style->m_arrProperties[i].get_Value().dValue);
 			}break;
 		}
 	}
@@ -173,10 +173,9 @@ void OoxConverter::convert(OOX::Vml::CShape *vml_shape)
 		odf_context()->drawing_context()->set_path(string2std_string(vml_shape->m_oPath->GetValue()));
 	}
 
-	for (long i=0 ; i < vml_shape->m_arrItems.GetSize();i++)
-	{
-		convert(vml_shape->m_arrItems[i]);
-	}
+	OOX::Vml::CVmlCommonElements *vml_common = static_cast<OOX::Vml::CVmlCommonElements *>(vml_shape);
+	convert(vml_common);
+
 }
 void OoxConverter::convert(OOX::Vml::CImage *vml_image)
 {
@@ -231,8 +230,22 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 
 	odf_context()->drawing_context()->start_area_properties();
 		
-	if (vml_fill->m_oOpacity.GetValue() > 0)
-		odf_context()->drawing_context()->set_opacity(100 - vml_fill->m_oOpacity.GetValue() * 100);
+	if (vml_fill->m_oOpacity.IsInit() && vml_fill->m_oOpacity2.IsInit() )
+	{
+		odf_context()->drawing_context()->start_opacity_style();
+			odf_context()->drawing_context()->set_opacity_start(100 - vml_fill->m_oOpacity->GetValue() * 100);
+			odf_context()->drawing_context()->set_opacity_end  (100 - vml_fill->m_oOpacity2->GetValue() * 100);
+			//.....
+		odf_context()->drawing_context()->end_opacity_style();
+	}
+	else if (vml_fill->m_oOpacity.IsInit()) 
+	{
+		odf_context()->drawing_context()->set_opacity(100 - vml_fill->m_oOpacity->GetValue() * 100);
+	}
+	else if (vml_fill->m_oOpacity2.IsInit()) 
+	{
+		odf_context()->drawing_context()->set_opacity(100 - vml_fill->m_oOpacity2->GetValue() * 100);
+	}
 
 	odf_context()->drawing_context()->end_area_properties();
 }
@@ -305,7 +318,9 @@ void OoxConverter::convert(OOX::Vml::CShadow *vml_shadow)
 	if (vml_shadow->m_oOn.GetValue() == false) return;
 
 	std::wstring hexColor = string2std_string(vml_shadow->m_oColor.ToString());
-	_CP_OPT(double) opacity = 100 - 100 * vml_shadow->m_oOpacity.GetValue();
+	_CP_OPT(double) opacity;
+	
+	if (vml_shadow->m_oOpacity.IsInit()) opacity = 100 - 100 * vml_shadow->m_oOpacity->GetValue();
 
 	double offset_x = vml_shadow->m_oOffset.IsXinPoints() ? vml_shadow->m_oOffset.GetX() : -1;
 	double offset_y = vml_shadow->m_oOffset.IsYinPoints() ? vml_shadow->m_oOffset.GetY() : -1;
@@ -337,7 +352,10 @@ void OoxConverter::convert(OOX::Vml::CStroke *vml_stroke)
 		odf_context()->drawing_context()->set_solid_fill(hexColor);
 	}
 
-	odf_context()->drawing_context()->set_opacity(100 - vml_stroke->m_oOpacity.GetValue() * 100);
+	if (vml_stroke->m_oOpacity.IsInit())
+	{
+		odf_context()->drawing_context()->set_opacity(100 - vml_stroke->m_oOpacity->GetValue() * 100);
+	}
 	odf_context()->drawing_context()->set_line_width(vml_stroke->m_oWeight.GetValue());
 
 	switch(vml_stroke->m_oStartArrow.GetValue())
@@ -506,6 +524,26 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 	{
 		odf_context()->drawing_context()->set_position(vml_common->m_oCoordSize->GetX(), vml_common->m_oCoordSize->GetY());
 	}	
+
+	if (vml_common->m_oStrokeWeight.IsInit() || (vml_common->m_oStroked.IsInit() && vml_common->m_oStroked->GetValue()))
+	{
+		odf_context()->drawing_context()->start_line_properties();
+			if (vml_common->m_oStrokeWeight.IsInit()) 
+				odf_context()->drawing_context()->set_line_width(vml_common->m_oStrokeWeight->ToPoints());
+
+			odf_context()->drawing_context()->set_solid_fill(string2std_string(vml_common->m_oStrokeColor.ToString()));
+		odf_context()->drawing_context()->end_line_properties();
+	}
+	if (vml_common->m_oFillColor.IsInit() &&  vml_common->m_oFilled.GetValue())
+	{
+		odf_context()->drawing_context()->start_area_properties();
+			odf_context()->drawing_context()->set_solid_fill(string2std_string(vml_common->m_oFillColor->ToString()));
+		odf_context()->drawing_context()->end_area_properties();
+	}
+	for (long i=0 ; i < vml_common->m_arrItems.size();i++)
+	{
+		convert(vml_common->m_arrItems[i]);
+	}
 
 }
 void OoxConverter::convert(OOX::Vml::CGroup *vml_group)

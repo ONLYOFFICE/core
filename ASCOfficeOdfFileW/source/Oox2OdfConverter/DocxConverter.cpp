@@ -700,7 +700,7 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 		if (outline_level > 0) paragraph_properties->content().outline_level_ =  outline_level /*+1*/;
 		odt_context->text_context()->set_outline_level (outline_level);
 	}
-	if (oox_paragraph_pr->m_oPageBreakBefore.IsInit())
+	if (oox_paragraph_pr->m_oPageBreakBefore.IsInit() && oox_paragraph_pr->m_oPageBreakBefore->m_oVal.ToBool())
 	{
 		paragraph_properties->content().fo_break_before_ = odf::fo_break(odf::fo_break::Page);
 		odt_context->text_context()->set_type_break(1, 0); //page, clear_all
@@ -1364,7 +1364,13 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf::style_tex
 		else
 			text_properties->content().fo_font_weight_ = odf::font_weight(odf::font_weight::WNormal);
 	}
-	convert(oox_run_pr->m_oColor.GetPointer(),text_properties->content().fo_color_);
+	if (oox_run_pr->m_oColor.IsInit())
+	{
+		if(oox_run_pr->m_oColor->m_oVal.IsInit() && oox_run_pr->m_oColor->m_oVal->GetValue() == SimpleTypes::hexcolorAuto)
+			text_properties->content().fo_color_ = odf::color(L"#000000");
+		else
+		   convert(oox_run_pr->m_oColor.GetPointer(),text_properties->content().fo_color_);
+	}
 
 	text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::None);
 	if (oox_run_pr->m_oU.IsInit())
@@ -1837,6 +1843,19 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 		else
 			odt_context->drawing_context()->set_horizontal_pos(SimpleTypes::alignhLeft);
 	}
+	if (oox_anchor->m_oBehindDoc.IsInit())
+	{
+		if (oox_anchor->m_oBehindDoc->ToBool())
+		{
+			odt_context->drawing_context()->set_object_background(true);
+			//odt_context->drawing_context()->set_object_foreground(true);
+		}
+		else
+		{
+			//z - order foreground
+			odt_context->drawing_context()->set_object_foreground(true);
+		}
+	}
 	if (oox_anchor->m_oWrapSquare.IsInit())
 	{
 		if (oox_anchor->m_oWrapSquare->m_oWrapText.IsInit() && oox_anchor->m_oWrapSquare->m_oWrapText->GetValue() == SimpleTypes::wraptextLargest)
@@ -1859,25 +1878,6 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 	else if (oox_anchor->m_oAllowOverlap.IsInit())
 	{
 		odt_context->drawing_context()->set_overlap(oox_anchor->m_oAllowOverlap->ToBool());
-	}
-
-	if (oox_anchor->m_oBehindDoc.IsInit())
-	{
-		if (oox_anchor->m_oBehindDoc->ToBool())
-		{
-			odt_context->drawing_context()->set_object_background(true);
-			//odt_context->drawing_context()->set_object_foreground(true);
-		}
-		else
-		{
-			//z - order foreground
-			odt_context->drawing_context()->set_object_foreground(true);
-		}
-	}
-	else
-	{
-		//always ??? foreground ????
-		//odt_context->drawing_context()->set_object_background(true);
 	}
 	OoxConverter::convert(oox_anchor->m_oDocPr.GetPointer());
 	convert(oox_anchor->m_oGraphic.GetPointer());
@@ -1917,7 +1917,7 @@ void DocxConverter::convert(OOX::Drawing::CGraphic *oox_graphic)
 {
 	if (oox_graphic == NULL)return;
 
-	for (long i = 0 ; i < oox_graphic->m_arrItems.GetSize(); i++)
+	for (long i = 0 ; i < oox_graphic->m_arrItems.size(); i++)
 	{
 		convert(oox_graphic->m_arrItems[i]);
 	}
@@ -2084,7 +2084,7 @@ void DocxConverter::convert(OOX::Drawing::CChart * oox_chart)
 void DocxConverter::convert(OOX::Logic::CGroupShape	 *oox_group_shape)
 {
 	if (oox_group_shape == NULL)return;
-	if (oox_group_shape->m_arrItems.GetSize() < 1) return;
+	if (oox_group_shape->m_arrItems.size() < 1) return;
 
 	odt_context->drawing_context()->start_group();
 		if (oox_group_shape->m_oCNvPr.IsInit())
@@ -2096,7 +2096,7 @@ void DocxConverter::convert(OOX::Logic::CGroupShape	 *oox_group_shape)
 		}
 		OoxConverter::convert(oox_group_shape->m_oGroupSpPr.GetPointer());
 
-		for (long i=0; i < oox_group_shape->m_arrItems.GetSize(); i++)
+		for (long i=0; i < oox_group_shape->m_arrItems.size(); i++)
 		{
 			convert(oox_group_shape->m_arrItems[i]);
 		}
@@ -2111,7 +2111,7 @@ void DocxConverter::convert(OOX::Logic::CLockedCanvas	 *oox_canvas)
 	
 	odf_context()->drawing_context()->set_group_position(0,0, 0, 0);
 
-	for (long i=0; i < oox_canvas->m_arrItems.GetSize(); i++)
+	for (long i=0; i < oox_canvas->m_arrItems.size(); i++)
 	{
 		convert(oox_canvas->m_arrItems[i]);
 	}
@@ -2324,7 +2324,6 @@ void DocxConverter::convert_lists_styles()
 			//parent ??? 
 			//create_new_style (in automatic main document??? )
 		}
-		else
 		{
 			int abstr_num = 0;
 			if (lists_styles->m_arrNum[i].m_oAbstractNumId.IsInit() &&  lists_styles->m_arrNum[i].m_oAbstractNumId->m_oVal.IsInit())
@@ -2596,7 +2595,10 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 				{
 					convert(lists_styles->m_arrNumPicBullet[i]->m_oVmlDrawing.GetPointer());
 				}
-				odt_context->styles_context()->lists_styles().set_bullet_image(odt_context->mediaitems()->items().back().odf_ref);
+				if (odt_context->mediaitems()->items().size() > 0)
+				{
+					odt_context->styles_context()->lists_styles().set_bullet_image(odt_context->mediaitems()->items().back().odf_ref);
+				}
 			}
 		}
 

@@ -253,7 +253,7 @@ void OoxConverter::convert(OOX::Drawing::CShape	*oox_shape)
 			odf_context()->start_text_context();
 		
 			convert(oox_shape->m_oTxSp->m_oTxBody->m_oBodyPr.GetPointer());
-			for (long i=0 ; i < oox_shape->m_oTxSp->m_oTxBody->m_arrItems.GetSize();i++)
+			for (long i=0 ; i < oox_shape->m_oTxSp->m_oTxBody->m_arrItems.size();i++)
 			{
 				convert(oox_shape->m_oTxSp->m_oTxBody->m_arrItems[i]);
 			}
@@ -281,7 +281,7 @@ void OoxConverter::convert(OOX::Drawing::CLockedCanvas  *oox_canvas)
 		convert(oox_canvas->m_oGroupSpPr.GetPointer());
 		convert(oox_canvas->m_oSpPr.GetPointer());
 
-		for (long i=0; i < oox_canvas->m_arrItems.GetSize(); i++)
+		for (long i=0; i < oox_canvas->m_arrItems.size(); i++)
 		{
 			convert(oox_canvas->m_arrItems[i]);
 		}
@@ -535,11 +535,11 @@ void OoxConverter::convert(OOX::Drawing::CCustomGeometry2D *oox_cust_geom)
 {
 	if (!oox_cust_geom)return;
 
-	for (long i=0; i< oox_cust_geom->m_oPthLst.m_arrPath.GetSize();i++)
+	for (long i=0; i< oox_cust_geom->m_oPthLst.m_arrPath.size();i++)
 	{
 		convert(&oox_cust_geom->m_oPthLst.m_arrPath[i]);
 	}
-	for (long i=0; i< oox_cust_geom->m_oPthLst.m_arrPath.GetSize();i++)
+	for (long i=0; i< oox_cust_geom->m_oPthLst.m_arrPath.size();i++)
 	{
 		convert(&oox_cust_geom->m_oPthLst.m_arrPath[i]);
 	}
@@ -606,7 +606,7 @@ void OoxConverter::convert(OOX::Drawing::CPresetGeometry2D *oox_prst_geom)
 
 	if (oox_prst_geom->m_oAvLst.IsInit())
 	{
-		for (long i=0; i<oox_prst_geom->m_oAvLst->m_arrGd.GetSize(); i++)
+		for (long i=0; i<oox_prst_geom->m_oAvLst->m_arrGd.size(); i++)
 		{
 			odf_context()->drawing_context()->add_modifier(string2std_string(oox_prst_geom->m_oAvLst->m_arrGd[i].m_oFmla.GetValue()));
 		}
@@ -618,7 +618,7 @@ void OoxConverter::convert(OOX::Drawing::CPath2D *oox_geom_path)
 
 	odf_context()->drawing_context()->set_viewBox(oox_geom_path->m_oW.GetValue(), oox_geom_path->m_oH.GetValue());
 
-	for (long i =0 ; i< oox_geom_path->m_arrItems.GetSize(); i++)
+	for (long i =0 ; i< oox_geom_path->m_arrItems.size(); i++)
 	{
 		convert(oox_geom_path->m_arrItems[i]);
 	}
@@ -628,7 +628,7 @@ void OoxConverter::convert(OOX::Drawing::CEffectList *oox_effect_list, CString *
 {
 	if (oox_effect_list == NULL) return;
 
-	for (long i=0;i< oox_effect_list->m_arrEffects.GetSize(); i++)
+	for (long i=0;i< oox_effect_list->m_arrEffects.size(); i++)
 	{
 		switch(oox_effect_list->m_arrEffects[i]->getType())
 		{
@@ -726,7 +726,7 @@ void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill,	C
 				sID = oox_bitmap_fill->m_oBlip->m_oLink.GetValue();
 				//...
 			}
-			for (long i=0 ; i < oox_bitmap_fill->m_oBlip->m_arrEffects.GetSize(); i++)
+			for (long i=0 ; i < oox_bitmap_fill->m_oBlip->m_arrEffects.size(); i++)
 				convert(oox_bitmap_fill->m_oBlip->m_arrEffects[i]);
 		}
 		if (oox_bitmap_fill->m_oSrcRect.IsInit() && Width >0  && Height >0)//часть изображения
@@ -797,7 +797,7 @@ void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill,
 		}	
 		odf_context()->drawing_context()->set_gradient_type(grad_style);
 
-		if (oox_grad_fill->m_oGsLst.IsInit() && oox_grad_fill->m_oGsLst->m_arrGs.GetSize()>1)
+		if (oox_grad_fill->m_oGsLst.IsInit() && oox_grad_fill->m_oGsLst->m_arrGs.size()>1)
 		{
 			std::wstring hexColorStart, hexColorEnd;
 			_CP_OPT(double) opacityStart, opacityEnd;
@@ -805,9 +805,9 @@ void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill,
 			if (change_sheme_color && oox_grad_fill->m_oGsLst->m_arrGs[0].m_eType == OOX::Drawing::colorSheme)
 			{
 				oox_grad_fill->m_oGsLst->m_arrGs[0].m_oShemeClr.m_oVal.FromString(*change_sheme_color);
-				oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.GetSize()-1].m_oShemeClr.m_oVal.FromString(*change_sheme_color);
+				oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.size()-1].m_oShemeClr.m_oVal.FromString(*change_sheme_color);
 			}
-			convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.GetSize()-1]),hexColorStart, opacityStart);
+			convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.size()-1]),hexColorStart, opacityStart);
 			convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[0]),hexColorEnd, opacityEnd);
 			
 			odf_context()->drawing_context()->set_gradient_start(hexColorStart, opacityStart);
@@ -1069,7 +1069,7 @@ void OoxConverter::convert(OOX::Drawing::CTextBodyProperties	*oox_bodyPr)
 	}
 	if (oox_bodyPr->m_oFromWordArt.ToBool() && oox_bodyPr->m_oPrstTxWrap.IsInit())
 	{
-		for (long i=0; i< oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd.GetSize(); i++)
+		for (long i=0; i< oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd.size(); i++)
 		{
 			odf_context()->drawing_context()->add_modifier(string2std_string(oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd[i].m_oFmla.GetValue()));
 		}
@@ -1328,7 +1328,7 @@ void OoxConverter::convert(OOX::Drawing::CParagraph		*oox_paragraph)
 	
 	odf_context()->text_context()->start_paragraph(styled);
 
-	for (long i=0; i< oox_paragraph->m_arrItems.GetSize();i++)
+	for (long i=0; i< oox_paragraph->m_arrItems.size();i++)
 	{
 		convert(oox_paragraph->m_arrItems[i]);
 	}

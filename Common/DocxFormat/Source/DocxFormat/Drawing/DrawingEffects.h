@@ -80,7 +80,7 @@ namespace OOX
 
 			void Clear()
 			{
-				for ( int nIndex = 0; nIndex < m_arrEffects.GetSize(); nIndex++ )
+                for ( int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
 				{
 					if ( m_arrEffects[nIndex] )
 						delete m_arrEffects[nIndex];
@@ -88,7 +88,7 @@ namespace OOX
 					m_arrEffects[nIndex] = NULL;
 				}
 
-				m_arrEffects.RemoveAll();
+                m_arrEffects.clear();
 			}
 
 		public:
@@ -101,7 +101,7 @@ namespace OOX
 			SimpleTypes::CEffectContainerType<> m_oType;
 
 			// Childs
-			CSimpleArray<WritingElement*>       m_arrEffects;
+            std::vector<WritingElement*>       m_arrEffects;
 
 		};
 
@@ -784,7 +784,7 @@ namespace OOX
 
 			void Clear()
 			{
-				for ( int nIndex = 0; nIndex < m_arrEffects.GetSize(); nIndex++ )
+                for ( int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
 				{
 					if ( m_arrEffects[nIndex] )
 						delete m_arrEffects[nIndex];
@@ -792,7 +792,7 @@ namespace OOX
 					m_arrEffects[nIndex] = NULL;
 				}
 
-				m_arrEffects.RemoveAll();
+                m_arrEffects.clear();
 			}
 
 		public:
@@ -804,7 +804,7 @@ namespace OOX
 
 			// Childs
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
-			CSimpleArray<WritingElement*>                   m_arrEffects;
+            std::vector<WritingElement*>                   m_arrEffects;
 		};	
 		//-----------------------------------------------------------------------
 		// BlipFillProperties 20.1.8.14 (Part 1)
@@ -1202,7 +1202,7 @@ namespace OOX
 					if ( _T("a:ds") == sName )
 					{
 						CDashStop oDs = oReader;
-						m_arrDs.Add( oDs );
+                        m_arrDs.push_back( oDs );
 					}
 				}
 			}
@@ -1211,7 +1211,7 @@ namespace OOX
 			{
 				CString sResult = _T("<a:custDash>");
 
-				for ( int nIndex = 0; nIndex < m_arrDs.GetSize(); nIndex++ )
+                for ( int nIndex = 0; nIndex < m_arrDs.size(); nIndex++ )
 					sResult += m_arrDs[nIndex].toXML();
 
 				sResult += _T("</a:custDash>");
@@ -1226,7 +1226,7 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<CDashStop> m_arrDs;
+            std::vector<CDashStop> m_arrDs;
 
 		};
         //-----------------------------------------------------------------------
@@ -1835,7 +1835,7 @@ namespace OOX
 					if ( _T("a:gs") == sName )
 					{
 						CGradientStop oGs = oReader;
-						m_arrGs.Add( oGs );
+                        m_arrGs.push_back( oGs );
 					}
 				}
 			}
@@ -1844,7 +1844,7 @@ namespace OOX
 			{
 				CString sResult = _T("<a:gsLst>");
 
-				for ( int nIndex = 0; nIndex < m_arrGs.GetSize(); nIndex++ )
+                for ( int nIndex = 0; nIndex < m_arrGs.size(); nIndex++ )
 					sResult += m_arrGs[nIndex].toXML();
 
 				sResult += _T("</a:gsLst>");
@@ -1859,7 +1859,7 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<CGradientStop> m_arrGs;
+            std::vector<CGradientStop> m_arrGs;
 
 		};
 		//-----------------------------------------------------------------------

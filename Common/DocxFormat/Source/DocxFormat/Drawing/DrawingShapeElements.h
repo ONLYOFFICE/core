@@ -601,7 +601,7 @@ namespace OOX
 					if ( _T("a:cxn") == sName )
 					{
 						OOX::Drawing::CConnectionSite oCxn = oReader;
-						m_arrCxn.Add( oCxn );
+                        m_arrCxn.push_back( oCxn );
 					}
 				}
 			}
@@ -609,7 +609,7 @@ namespace OOX
 			{
 				CString sResult = _T("<a:cxnLst>");
 
-				for ( int nIndex = 0; nIndex < m_arrCxn.GetSize(); nIndex++ )
+                for ( int nIndex = 0; nIndex < m_arrCxn.size(); nIndex++ )
 					sResult += m_arrCxn[nIndex].toXML();
 
 				sResult += _T("</a:cxnLst>");
@@ -624,7 +624,7 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<OOX::Drawing::CConnectionSite> m_arrCxn;
+            std::vector<OOX::Drawing::CConnectionSite> m_arrCxn;
 		};
 		//--------------------------------------------------------------------------------
 		// CGeomGuide 20.1.9.11 (Part 1)
@@ -725,7 +725,7 @@ namespace OOX
 					if ( _T("a:gd") == sName )
 					{
 						OOX::Drawing::CGeomGuide oGd = oReader;
-						m_arrGd.Add( oGd );
+                        m_arrGd.push_back( oGd );
 					}
 				}
 			}
@@ -741,7 +741,7 @@ namespace OOX
 					return _T("");
 									
 
-				for ( int nIndex = 0; nIndex < m_arrGd.GetSize(); nIndex++ )
+                for ( int nIndex = 0; nIndex < m_arrGd.size(); nIndex++ )
 					sResult += m_arrGd[nIndex].toXML();
 
 				if ( et_a_avLst == m_eType )
@@ -761,7 +761,7 @@ namespace OOX
 			EElementType                           m_eType;
 
 			// Childs
-			CSimpleArray<OOX::Drawing::CGeomGuide> m_arrGd;
+            std::vector<OOX::Drawing::CGeomGuide> m_arrGd;
 		};
 		//--------------------------------------------------------------------------------
 		// CPath2DLineTo 20.1.9.13 (Part 1)
@@ -951,7 +951,7 @@ namespace OOX
 				m_oStroke      = oOther.m_oStroke;
 				m_oW           = oOther.m_oW;
 
-				for ( int nIndex = 0; nIndex < oOther.m_arrItems.GetSize(); nIndex++ )
+                for ( int nIndex = 0; nIndex < oOther.m_arrItems.size(); nIndex++ )
 				{
 					OOX::EElementType eType = oOther.m_arrItems[nIndex]->getType();
 
@@ -967,7 +967,7 @@ namespace OOX
 					}
 
 					if ( NULL != pItem )
-						m_arrItems.Add( pItem );
+                        m_arrItems.push_back ( pItem );
 				}
 			}
 			virtual ~CPath2D()
@@ -1008,7 +1008,7 @@ namespace OOX
 						pItem = new CPath2DQuadBezierTo( oReader );
 
 					if ( pItem )
-						m_arrItems.Add( pItem );
+                        m_arrItems.push_back( pItem );
 				}
 			}
 			virtual CString      toXML() const
@@ -1020,7 +1020,7 @@ namespace OOX
 									 + _T("\" extrusionOk=\"") + m_oExtrusionOk.ToString() 
 									 + _T("\">");
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+                for ( int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 						sResult += m_arrItems[nIndex]->toXML();
@@ -1053,7 +1053,7 @@ namespace OOX
 
 			void Clear()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+                for ( int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 						delete m_arrItems[nIndex];
@@ -1061,7 +1061,7 @@ namespace OOX
 					m_arrItems[nIndex] = NULL;
 				}
 
-				m_arrItems.RemoveAll();
+                m_arrItems.clear();
 			}
 
 		public:
@@ -1074,7 +1074,7 @@ namespace OOX
 			SimpleTypes::CPositiveCoordinate<0>                       m_oW;
 
 			// Childs
-			CSimpleArray<WritingElement*>                             m_arrItems;
+            std::vector<WritingElement*>                             m_arrItems;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -1133,7 +1133,7 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<OOX::Drawing::CPath2D> m_arrPath;
+            std::vector<OOX::Drawing::CPath2D> m_arrPath;
 		};
 		//--------------------------------------------------------------------------------
 		// CAdjustHandleList 20.1.9.1 (Part 1)
@@ -1147,7 +1147,7 @@ namespace OOX
 			}
 			CAdjustHandleList(const CAdjustHandleList& oOther)
 			{
-				for ( int nIndex = 0; nIndex < oOther.m_arrItems.GetSize(); nIndex++ )
+                for ( int nIndex = 0; nIndex < oOther.m_arrItems.size(); nIndex++ )
 				{
 					OOX::EElementType eType = oOther.m_arrItems[nIndex]->getType();
 
@@ -1159,7 +1159,7 @@ namespace OOX
 					}
 
 					if ( NULL != pItem )
-						m_arrItems.Add( pItem );
+                        m_arrItems.push_back( pItem );
 				}
 
 			}
@@ -1192,14 +1192,14 @@ namespace OOX
 						pElement = new CXYAdjustHandle( oReader );
 
 					if ( pElement )
-						m_arrItems.Add( pElement );
+                        m_arrItems.push_back( pElement );
 				}
 			}
 			virtual CString      toXML() const
 			{
 				CString sResult = _T("<a:ahLst>");
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+                for ( int nIndex = 0; nIndex < m_arrItems.size (); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 						sResult += m_arrItems[nIndex]->toXML();
@@ -1219,7 +1219,7 @@ namespace OOX
 
 			void Clear()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+                for ( int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 						delete m_arrItems[nIndex];
@@ -1233,7 +1233,7 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<WritingElement*> m_arrItems;
+            std::vector<WritingElement*> m_arrItems;
 		};
 		//--------------------------------------------------------------------------------
 		// CPresetGeometry2D 20.1.9.18 (Part 1)

@@ -4661,7 +4661,7 @@ namespace BinDocxRW
 						OOX::WritingElement* we = pGraphic->m_arrItems[i];
 						if(OOX::et_c_chart == we->getType())
 						{
-							pChart = static_cast<OOX::Drawing::CChart*>(item);
+							pChart = static_cast<OOX::Drawing::CChart*>(we);
 							break;
 						}
 					}

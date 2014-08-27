@@ -3005,15 +3005,7 @@ public:
 			CHyperlink oHyperlink;
 			res = Read1(length, &Binary_DocumentTableReader::ReadHyperlink, this, &oHyperlink);
 			if(!oHyperlink.sLink.IsEmpty())
-			{
-				long rId;
-				BSTR bstrHref = oHyperlink.sLink.AllocSysString();
-				m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"), bstrHref, _T("External"), &rId);
-				SysFreeString(bstrHref);
-				CString srId;srId.Format(_T("rId%d"), rId);
-				oHyperlink.rId = srId;
 				oHyperlink.Write(GetRunStringWriter());
-			}
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

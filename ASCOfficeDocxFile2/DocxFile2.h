@@ -63,6 +63,7 @@ public:
 	CAVSOfficeDocxFile2()
 	{
 		m_oBinaryFileWriter = NULL;
+		m_pCurFileWriter = NULL;
 		m_bSaveChartAsImg = false;
 		m_bIsNoBase64Save = false;
 	}

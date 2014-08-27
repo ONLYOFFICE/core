@@ -16,7 +16,7 @@ namespace OOX
 			m_oLink   = oOther.m_oLink;
 			m_oExtLst = oOther.m_oExtLst;
 
-			for ( int nIndex = 0; nIndex < oOther.m_arrEffects.GetSize(); nIndex++ )
+            for ( int nIndex = 0; nIndex < oOther.m_arrEffects.size(); nIndex++ )
 			{
 				OOX::EElementType eType = oOther.m_arrEffects[nIndex]->getType();
 
@@ -44,7 +44,7 @@ namespace OOX
 				}
 
 				if ( NULL != pEffect )
-					m_arrEffects.Add( pEffect );
+                    m_arrEffects.push_back( pEffect );
 			}
 		}
 		void CBlip::fromXML(XmlUtils::CXmlNode& oNode)
@@ -156,7 +156,7 @@ namespace OOX
 				}
 
 				if ( NULL != pEffect )
-					m_arrEffects.Add( pEffect );
+                    m_arrEffects.push_back( pEffect );
 			}
 		}
 		CString CBlip::toXML() const
@@ -172,7 +172,7 @@ namespace OOX
 
 			sResult += _T(">");
 
-			for ( int nIndex = 0; nIndex < m_arrEffects.GetSize(); nIndex++ )
+            for ( int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
 				sResult += m_arrEffects[nIndex]->toXML();
 
 			if ( m_oExtLst.IsInit() )
@@ -284,7 +284,7 @@ namespace OOX
 			m_sName = oOther.m_sName;
 			m_oType = oOther.m_oType;
 
-			for ( int nIndex = 0; nIndex < oOther.m_arrEffects.GetSize(); nIndex++ )
+            for ( int nIndex = 0; nIndex < oOther.m_arrEffects.size(); nIndex++ )
 			{
 				OOX::EElementType eType = oOther.m_arrEffects[nIndex]->getType();
 
@@ -325,7 +325,7 @@ namespace OOX
 				}
 
 				if ( NULL != pEffect )
-					m_arrEffects.Add( pEffect );
+                    m_arrEffects.push_back( pEffect );
 			}
 		}
 		void CEffectContainer::fromXML(XmlUtils::CXmlNode& oNode)
@@ -504,7 +504,7 @@ namespace OOX
 				}
 
 				if ( NULL != pEffect )
-					m_arrEffects.Add( pEffect );
+                    m_arrEffects.push_back( pEffect );
 			}
 		}
 
@@ -528,7 +528,7 @@ namespace OOX
 
 			sResult += _T("type=\"") + m_oType.ToString() + _T("\">");
 
-			for ( int nIndex = 0; nIndex < m_arrEffects.GetSize(); nIndex++ )
+            for ( int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
 				sResult += m_arrEffects[nIndex]->toXML();
 
 			if ( et_a_cont == m_eType )

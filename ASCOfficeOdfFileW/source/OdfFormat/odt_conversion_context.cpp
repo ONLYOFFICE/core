@@ -463,24 +463,30 @@ void odt_conversion_context::start_list_item(int level, std::wstring style_name 
 	{
 		text_context()->end_list();
 	}
+
+	if (text_context()->list_state_.levels.size() < 1)
+	{
+		text_context()->list_state_.started_list = false;
+		text_context()->list_state_.style_name = L"";
+	}
+
 	if (text_context()->list_state_.started_list == false)
 	{
 		text_context()->start_list(style_name);
 		//text_context()->set_list_continue(true); //??? держать в памяти все списки????
 		add_to_root();
-		text_context()->start_list_item();
+		
 	}
-	else
-	{
-		text_context()->start_list_item();
+	text_context()->start_list_item();
 
-		while (text_context()->list_state_.levels.size() < level)
-		{
-			text_context()->start_list(L"");
-			text_context()->start_list_item();
-		}
-	}
-	
+	if (text_context()->list_state_.style_name == style_name)
+		style_name = L"";
+
+	while (text_context()->list_state_.levels.size() < level)
+	{
+		text_context()->start_list(style_name);
+		text_context()->start_list_item();
+	}	
 }
 void odt_conversion_context::end_list_item()
 {
@@ -791,6 +797,7 @@ void odt_conversion_context::start_table_cell(int col, bool covered, bool styled
 }
 void odt_conversion_context::end_table_cell()
 {
+	set_no_list();
 	table_context()->end_cell();
 	text_context()->end_element();
 }

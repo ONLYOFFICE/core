@@ -388,6 +388,10 @@ void odf_text_context::start_list(std::wstring style_name) //todoooo add new_num
 		}
 		list_state_.style_name = style_name;
 	}
+	else
+	{
+		level = level;
+	}
 	text_elements_list_.push_back(state);
 	
 	if (current_level_.size()>0)

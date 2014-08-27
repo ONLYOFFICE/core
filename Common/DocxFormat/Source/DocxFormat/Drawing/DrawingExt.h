@@ -103,7 +103,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:ext") == sName )
 					{
 						OOX::Drawing::COfficeArtExtension oExt = oReader;

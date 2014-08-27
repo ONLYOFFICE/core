@@ -41,7 +41,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
-				CWCharWrapper sName = oReader.GetName();
+                CString sName = oReader.GetName();
 
 				if ( _T("a:pos") == sName )
 					m_eType = et_a_pos;
@@ -119,7 +119,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:pos") == sName )
 						m_oPos = oReader;
 				}
@@ -241,7 +241,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:pos") == sName )
 						m_oPos = oReader;
 				}
@@ -459,7 +459,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					if ( 0 == nPtCount && _T("a:pt") == sName )
 					{
@@ -532,7 +532,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					if ( _T("a:pos") == sName )
 						m_oPos = oReader;
@@ -596,7 +596,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					if ( _T("a:cxn") == sName )
 					{
@@ -705,7 +705,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
-				CWCharWrapper sName = oReader.GetName();
+                CString sName = oReader.GetName();
 
 				if ( _T("a:avLst") == sName )
 					m_eType = et_a_avLst;
@@ -791,7 +791,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					if ( _T("a:pt") == sName )
 						m_oPt = oReader;
@@ -843,7 +843,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					if ( _T("a:pt") == sName )
 						m_oPt = oReader;
@@ -897,7 +897,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					if ( 0 == nPtCount && _T("a:pt") == sName )
 					{
@@ -991,7 +991,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					WritingElement* pItem = NULL;
 
 					if ( _T("a:arcTo") == sName )
@@ -1105,7 +1105,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					if ( _T("a:path") == sName )
 					{
@@ -1182,7 +1182,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					WritingElement* pElement = NULL;
 
@@ -1265,7 +1265,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					WritingElement* pItem = NULL;
 
 					if ( _T("a:avLst") == sName )
@@ -1336,7 +1336,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					WritingElement* pItem = NULL;
 
 					if ( _T("a:avLst") == sName )
@@ -1467,7 +1467,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					if ( _T("a:ahLst") == sName )
 						m_oAhLst = oReader;

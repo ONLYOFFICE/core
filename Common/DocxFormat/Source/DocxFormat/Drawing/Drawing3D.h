@@ -100,7 +100,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
-				CWCharWrapper sName = oReader.GetName();
+                CString sName = oReader.GetName();
 
 				if ( _T("a:norm") == sName )
 					m_eType = et_a_norm;
@@ -186,7 +186,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:anchor") == sName )
 						m_oAnchor = oReader;
 					else if ( _T("a:extLst") == sName )
@@ -251,7 +251,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
-				CWCharWrapper sName = oReader.GetName();
+                CString sName = oReader.GetName();
 
 				if ( _T("a:bevel") == sName )
 					m_eType = et_a_bevel;
@@ -406,7 +406,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:rot") == sName )
 						m_oRot = oReader;
 				}
@@ -630,7 +630,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					if ( _T("a:rot") == sName )
 						m_oRot = oReader;
@@ -703,7 +703,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					if ( _T("a:bevelB") == sName )
 						m_oBevelB = oReader;

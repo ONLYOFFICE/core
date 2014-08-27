@@ -37,7 +37,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
-				CWCharWrapper sName = oReader.GetName();
+                CString sName = oReader.GetName();
 				if ( _T("a:xfrm") == sName )
 					m_eType = et_a_xfrm;
 				else
@@ -161,7 +161,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
-				CWCharWrapper sName = oReader.GetName();
+                CString sName = oReader.GetName();
 				if ( _T("a:xfrm") == sName )
 					m_eType = et_a_xfrm;
 				else

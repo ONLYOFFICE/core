@@ -1494,7 +1494,7 @@ namespace OOX
 					int nCurDepth = oReader.GetDepth();
 					while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 					{
-						CWCharWrapper sName = oReader.GetName();
+                        CString sName = oReader.GetName();
 
 						WritingElement *pTransform = NULL;
 						if ( _T("a:alpha") == sName )
@@ -2479,7 +2479,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:hslClr") == sName )
 					{
 						m_oHslClr = oReader;

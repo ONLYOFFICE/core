@@ -358,7 +358,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:cont") == sName )
 						m_oCont = oReader;
 				}
@@ -703,7 +703,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:cont") == sName )
 						m_oCont = oReader;
 				}
@@ -1038,7 +1038,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:clrFrom") == sName )
 						m_oClrFrom = oReader;
 					else if ( _T("a:clrTo") == sName )
@@ -1198,7 +1198,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:ds") == sName )
 					{
 						CDashStop oDs = oReader;
@@ -1258,7 +1258,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:hslClr") == sName )
 					{
 						unsigned char unR = 0, unG = 0, unB = 0, unA = 255;
@@ -1466,7 +1466,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
-				CWCharWrapper sName = oReader.GetName();
+                CString sName = oReader.GetName();
 				if ( _T("a:fillRect") == sName )
 					m_eType = et_a_fillRect;
 				else if ( _T("a:fillToRect") == sName )
@@ -1831,7 +1831,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:gs") == sName )
 					{
 						CGradientStop oGs = oReader;
@@ -1887,7 +1887,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
-				CWCharWrapper sName = oReader.GetName();
+                CString sName = oReader.GetName();
 				if ( _T("a:tailEnd") == sName )
 					m_eType = et_a_tailEnd;
 				else if ( _T("a:headEnd") == sName )
@@ -2419,7 +2419,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:fillToRect") == sName )
 						m_oFillToRect = oReader;
 				}
@@ -2499,7 +2499,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:bgClr") == sName )
 						m_oBgClr = oReader;
 					else if ( _T("a:fgClr") == sName )
@@ -2996,7 +2996,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:fillRect") == sName )
 						m_oFillRect = oReader;
 				}
@@ -3321,7 +3321,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:blipFill") == sName )
 					{
 						m_oBlipFill = oReader;
@@ -3427,7 +3427,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:blipFill") == sName )
 					{
 						m_oBlipFill = oReader;

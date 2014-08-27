@@ -1954,6 +1954,15 @@ namespace NSEditorApi
 			if (NULL != Data && Release)
 				delete [] Data;
 		}
+
+		CAscImageRaw& operator=(const CAscImageRaw& oSrc)
+		{
+			Data	= oSrc.Data;
+			Width	= oSrc.Width;
+			Height	= oSrc.Height;
+			Release = false;
+			return *this;
+		}
 	};
 
 	class CAscInsertImage
@@ -2012,35 +2021,25 @@ namespace NSEditorApi
 
 namespace NSEditorApi
 {
-	class CAscParagraphStyleImage
+	class CAscStyleImage
 	{
 	public:
 		std::wstring	Name;
-		int				Type;
-		int				Priority;
-
 		CAscImageRaw	Image;
 
 	public:
-		CAscParagraphStyleImage()
+		CAscStyleImage()
 		{
-			Type		= c_oAscStyleImage_Default;
-			Priority	= 0;
 		}
 	};
 
-	class CAscTableStyleImage
+	class CAscStyleImages
 	{
 	public:
-		std::wstring	Name;
-		int				Type;
+		std::vector<CAscStyleImage> m_arStyles;
 
-		CAscImageRaw	Image;
-
-	public:
-		CAscTableStyleImage()
+		CAscStyleImages()
 		{
-			Type		= c_oAscStyleImage_Default;
 		}
 	};
 }

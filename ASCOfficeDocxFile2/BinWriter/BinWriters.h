@@ -4656,7 +4656,7 @@ namespace BinDocxRW
 				OOX::Drawing::CChart* pChart = NULL;
 				if(NULL != pGraphic)
 				{
-					for(int i = 0; i < pGraphic->m_arrItems.GetSize(); i++)
+					for(int i = 0; i < pGraphic->m_arrItems.size(); i++)
 					{
 						OOX::WritingElement* we = pGraphic->m_arrItems[i];
 						if(OOX::et_c_chart == we->getType())

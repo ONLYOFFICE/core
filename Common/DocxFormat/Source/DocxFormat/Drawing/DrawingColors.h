@@ -1555,7 +1555,7 @@ namespace OOX
 							pTransform = new CTintTransform( oReader );
 
 						if ( pTransform )
-							m_arrTransform.Add( pTransform );
+                            m_arrTransform.push_back ( pTransform );
 					}
 				}
 
@@ -1563,7 +1563,7 @@ namespace OOX
 				{
 					CString sResult;
 					
-					for ( int nIndex = 0; nIndex < m_arrTransform.GetSize(); nIndex++ )
+                    for ( int nIndex = 0; nIndex < m_arrTransform.size(); nIndex++ )
 						sResult += m_arrTransform[nIndex]->toXML();
 
 					return sResult;
@@ -1624,7 +1624,7 @@ namespace OOX
 
 					// Применяем преобразования к цвету
 
-					int nCount = m_arrTransform.GetSize();
+                    int nCount = m_arrTransform.size();
 					for ( int nIndex = 0; nIndex < nCount; ++nIndex )
 					{
 						WritingElement* pTransform = m_arrTransform[nIndex];
@@ -2035,7 +2035,7 @@ namespace OOX
 				unsigned char m_unB; //
 
 				// Childs
-				CSimpleArray<WritingElement*> m_arrTransform;
+                std::vector<WritingElement*> m_arrTransform;
 
 			};
 

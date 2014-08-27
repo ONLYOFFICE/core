@@ -136,7 +136,7 @@ namespace OOX
 
 			void Clear()
 			{
-				for ( int nIndex = 0; nIndex < m_arrEffects.GetSize(); nIndex++ )
+                for ( int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
 				{
 					if ( m_arrEffects[nIndex] )
 						delete m_arrEffects[nIndex];
@@ -144,13 +144,13 @@ namespace OOX
 					m_arrEffects[nIndex] = NULL;
 				}
 
-				m_arrEffects.RemoveAll();
+                m_arrEffects.clear();
 			}
 
 		public:
 
 			// Childs
-			CSimpleArray<WritingElement*>       m_arrEffects;
+            std::vector<WritingElement*>       m_arrEffects;
 
 		};
 

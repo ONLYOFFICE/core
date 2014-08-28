@@ -1563,7 +1563,7 @@ namespace OOX
 				{
 					CString sResult;
 					
-                    for ( int nIndex = 0; nIndex < m_arrTransform.size(); nIndex++ )
+                    for ( unsigned int nIndex = 0; nIndex < m_arrTransform.size(); nIndex++ )
 						sResult += m_arrTransform[nIndex]->toXML();
 
 					return sResult;

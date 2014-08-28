@@ -115,7 +115,7 @@ namespace OOX
 			{
 				CString sResult = _T("<a:extLst>");
 				
-                for ( int nIndex = 0; nIndex < m_arrExt.size(); nIndex++ )
+                for ( unsigned int nIndex = 0; nIndex < m_arrExt.size(); nIndex++ )
 					sResult += m_arrExt[nIndex].toXML();
 
 				sResult += _T("</a:extLst>");

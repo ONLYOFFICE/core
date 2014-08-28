@@ -417,7 +417,7 @@ namespace OOX
 		{
 			CString sResult;
 
-			for ( int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+			for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
 				if ( m_arrItems[nIndex] )
 					sResult += m_arrItems[nIndex]->toXML();

@@ -16,7 +16,7 @@ namespace OOX
 			m_oLink   = oOther.m_oLink;
 			m_oExtLst = oOther.m_oExtLst;
 
-            for ( int nIndex = 0; nIndex < oOther.m_arrEffects.size(); nIndex++ )
+            for ( unsigned int nIndex = 0; nIndex < oOther.m_arrEffects.size(); nIndex++ )
 			{
 				OOX::EElementType eType = oOther.m_arrEffects[nIndex]->getType();
 
@@ -172,7 +172,7 @@ namespace OOX
 
 			sResult += _T(">");
 
-            for ( int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
+            for ( unsigned int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
 				sResult += m_arrEffects[nIndex]->toXML();
 
 			if ( m_oExtLst.IsInit() )
@@ -284,7 +284,7 @@ namespace OOX
 			m_sName = oOther.m_sName;
 			m_oType = oOther.m_oType;
 
-            for ( int nIndex = 0; nIndex < oOther.m_arrEffects.size(); nIndex++ )
+            for ( unsigned int nIndex = 0; nIndex < oOther.m_arrEffects.size(); nIndex++ )
 			{
 				OOX::EElementType eType = oOther.m_arrEffects[nIndex]->getType();
 
@@ -528,7 +528,7 @@ namespace OOX
 
 			sResult += _T("type=\"") + m_oType.ToString() + _T("\">");
 
-            for ( int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
+            for ( unsigned int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
 				sResult += m_arrEffects[nIndex]->toXML();
 
 			if ( et_a_cont == m_eType )
@@ -546,7 +546,7 @@ namespace OOX
 		{
 			Clear();
 
-            for ( int nIndex = 0; nIndex < oOther.m_arrEffects.size(); nIndex++ )
+            for ( unsigned int nIndex = 0; nIndex < oOther.m_arrEffects.size(); nIndex++ )
 			{
 				OOX::EElementType eType = oOther.m_arrEffects[nIndex]->getType();
 
@@ -652,7 +652,7 @@ namespace OOX
 		{
 			CString sResult = _T("<a:effectLst>");
 
-            for ( int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
+            for ( unsigned int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
 				sResult += m_arrEffects[nIndex]->toXML();
 
 			sResult += _T("</a:effectLst>");

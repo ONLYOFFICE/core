@@ -80,7 +80,7 @@ namespace OOX
 
 			void Clear()
 			{
-                for ( int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
+                for ( unsigned int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
 				{
 					if ( m_arrEffects[nIndex] )
 						delete m_arrEffects[nIndex];
@@ -136,7 +136,7 @@ namespace OOX
 
 			void Clear()
 			{
-                for ( int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
+                for ( unsigned int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
 				{
 					if ( m_arrEffects[nIndex] )
 						delete m_arrEffects[nIndex];
@@ -784,7 +784,7 @@ namespace OOX
 
 			void Clear()
 			{
-                for ( int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
+                for ( unsigned int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
 				{
 					if ( m_arrEffects[nIndex] )
 						delete m_arrEffects[nIndex];
@@ -1211,7 +1211,7 @@ namespace OOX
 			{
 				CString sResult = _T("<a:custDash>");
 
-                for ( int nIndex = 0; nIndex < m_arrDs.size(); nIndex++ )
+                for ( unsigned int nIndex = 0; nIndex < m_arrDs.size(); nIndex++ )
 					sResult += m_arrDs[nIndex].toXML();
 
 				sResult += _T("</a:custDash>");
@@ -1844,7 +1844,7 @@ namespace OOX
 			{
 				CString sResult = _T("<a:gsLst>");
 
-                for ( int nIndex = 0; nIndex < m_arrGs.size(); nIndex++ )
+                for ( unsigned int nIndex = 0; nIndex < m_arrGs.size(); nIndex++ )
 					sResult += m_arrGs[nIndex].toXML();
 
 				sResult += _T("</a:gsLst>");

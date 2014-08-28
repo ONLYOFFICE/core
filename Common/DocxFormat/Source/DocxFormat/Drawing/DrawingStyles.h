@@ -424,6 +424,15 @@ namespace OOX
 			}
 			virtual ~CEffectStyleList()
 			{
+				for (unsigned int nIndex = 0; nIndex < m_arrEffectStyle.size(); nIndex++ )
+				{
+					if ( m_arrEffectStyle[nIndex] )
+						delete m_arrEffectStyle[nIndex];
+
+					m_arrEffectStyle[nIndex] = NULL;
+				}
+
+				m_arrEffectStyle.clear();
 			}
 
 		public:
@@ -443,8 +452,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("a:effectStyle") == sName )
 					{
-						OOX::Drawing::CEffectStyleItem oEffectStyle = oReader;
-						m_arrEffectStyle.Add( oEffectStyle );
+						OOX::Drawing::CEffectStyleItem *oEffectStyle = new OOX::Drawing::CEffectStyleItem(oReader);
+						if (oEffectStyle )m_arrEffectStyle.push_back( oEffectStyle );
 					}
 				}
 			}
@@ -452,8 +461,11 @@ namespace OOX
 			{
 				CString sResult = _T("<a:effectStyleLst>"); 
 
-				for ( int nIndex = 0; nIndex < m_arrEffectStyle.GetSize(); nIndex++ )
-					sResult += m_arrEffectStyle[nIndex].toXML();
+				for (unsigned int nIndex = 0; nIndex < m_arrEffectStyle.size(); nIndex++ )
+				{
+					if (m_arrEffectStyle[nIndex])
+						sResult += m_arrEffectStyle[nIndex]->toXML();
+				}
 
 				sResult += _T("</a:effectStyleLst>"); 
 
@@ -467,7 +479,7 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<OOX::Drawing::CEffectStyleItem> m_arrEffectStyle;
+			std::vector<OOX::Drawing::CEffectStyleItem*> m_arrEffectStyle;
 		};
 
  		//--------------------------------------------------------------------------------

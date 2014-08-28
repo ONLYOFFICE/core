@@ -609,7 +609,7 @@ namespace OOX
 			{
 				CString sResult = _T("<a:cxnLst>");
 
-                for ( int nIndex = 0; nIndex < m_arrCxn.size(); nIndex++ )
+                for ( unsigned int nIndex = 0; nIndex < m_arrCxn.size(); nIndex++ )
 					sResult += m_arrCxn[nIndex].toXML();
 
 				sResult += _T("</a:cxnLst>");
@@ -741,7 +741,7 @@ namespace OOX
 					return _T("");
 									
 
-                for ( int nIndex = 0; nIndex < m_arrGd.size(); nIndex++ )
+                for ( unsigned int nIndex = 0; nIndex < m_arrGd.size(); nIndex++ )
 					sResult += m_arrGd[nIndex].toXML();
 
 				if ( et_a_avLst == m_eType )
@@ -951,7 +951,7 @@ namespace OOX
 				m_oStroke      = oOther.m_oStroke;
 				m_oW           = oOther.m_oW;
 
-                for ( int nIndex = 0; nIndex < oOther.m_arrItems.size(); nIndex++ )
+                for ( unsigned int nIndex = 0; nIndex < oOther.m_arrItems.size(); nIndex++ )
 				{
 					OOX::EElementType eType = oOther.m_arrItems[nIndex]->getType();
 
@@ -1020,7 +1020,7 @@ namespace OOX
 									 + _T("\" extrusionOk=\"") + m_oExtrusionOk.ToString() 
 									 + _T("\">");
 
-                for ( int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+                for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 						sResult += m_arrItems[nIndex]->toXML();
@@ -1053,7 +1053,7 @@ namespace OOX
 
 			void Clear()
 			{
-                for ( int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+                for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 						delete m_arrItems[nIndex];
@@ -1118,7 +1118,7 @@ namespace OOX
 			{
 				CString sResult = _T("<a:pathLst>");
 
-				for ( int nIndex = 0; nIndex < m_arrPath.size(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrPath.size(); nIndex++ )
 					sResult += m_arrPath[nIndex].toXML();
 
 				sResult += _T("</a:pathLst>");
@@ -1147,7 +1147,7 @@ namespace OOX
 			}
 			CAdjustHandleList(const CAdjustHandleList& oOther)
 			{
-                for ( int nIndex = 0; nIndex < oOther.m_arrItems.size(); nIndex++ )
+                for ( unsigned int nIndex = 0; nIndex < oOther.m_arrItems.size(); nIndex++ )
 				{
 					OOX::EElementType eType = oOther.m_arrItems[nIndex]->getType();
 
@@ -1199,7 +1199,7 @@ namespace OOX
 			{
 				CString sResult = _T("<a:ahLst>");
 
-                for ( int nIndex = 0; nIndex < m_arrItems.size (); nIndex++ )
+                for ( unsigned int nIndex = 0; nIndex < m_arrItems.size (); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 						sResult += m_arrItems[nIndex]->toXML();
@@ -1219,7 +1219,7 @@ namespace OOX
 
 			void Clear()
 			{
-                for ( int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+                for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 						delete m_arrItems[nIndex];

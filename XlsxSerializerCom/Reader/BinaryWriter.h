@@ -2483,22 +2483,22 @@ namespace BinXlsxRW {
 				if(pPair->m_value->IsValid())
 				{
 					OOX::Spreadsheet::CCommentItem& oComment = *pPair->m_value;
-					CAtlArray<SerializeCommon::CommentData*> aCommentDatas;
+					std::vector<SerializeCommon::CommentData*> aCommentDatas;
 					getSavedComment(oComment, aCommentDatas);
 					nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Comment);
 					//записываем тот обьект, который был в бинарнике, подменяем только текст, который мог быть отредактирован в Excel
 					WriteComment(oComment, aCommentDatas, oComment.m_oText);
 					m_oBcw.WriteItemEnd(nCurPos);
 
-					for(int i = 0, length = aCommentDatas.GetCount(); i < length; ++i)
+					for(int i = 0, length = aCommentDatas.size(); i < length; ++i)
 					{
 						RELEASEOBJECT(aCommentDatas[i]);
 					}
-					aCommentDatas.RemoveAll();
+					aCommentDatas.clear();
 				}
 			}
 		};
-		void getSavedComment(OOX::Spreadsheet::CCommentItem& oComment, CAtlArray<SerializeCommon::CommentData*>& aDatas)
+		void getSavedComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aDatas)
 		{
 			if(oComment.m_sGfxdata.IsInit())
 			{
@@ -2529,7 +2529,7 @@ namespace BinXlsxRW {
 				}
 			}
 		}
-		void WriteComment(OOX::Spreadsheet::CCommentItem& oComment, CAtlArray<SerializeCommon::CommentData*>& aCommentDatas, nullable<OOX::Spreadsheet::CSi>& oCommentText)
+		void WriteComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas, nullable<OOX::Spreadsheet::CSi>& oCommentText)
 		{
 			int nCurPos = 0;
 			int nRow = 0;
@@ -2639,12 +2639,12 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBool(oComment.m_bSize.get());
 			}
 		}
-		void WriteCommentData(OOX::Spreadsheet::CCommentItem& oComment, CAtlArray<SerializeCommon::CommentData*>& aCommentDatas, nullable<OOX::Spreadsheet::CSi>& oCommentText)
+		void WriteCommentData(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas, nullable<OOX::Spreadsheet::CSi>& oCommentText)
 		{
 			int nCurPos = 0;
-			if(aCommentDatas.GetCount() > 0)
+			if(aCommentDatas.size() > 0)
 			{
-				for(int i = 0, length = aCommentDatas.GetCount(); i < length; ++i)
+				for(int i = 0, length = aCommentDatas.size(); i < length; ++i)
 				{
 					nCurPos = m_oBcw.WriteItemStart(c_oSer_Comments::CommentData);
 					if(0 == i)
@@ -2714,7 +2714,7 @@ namespace BinXlsxRW {
 					m_oBcw.m_oStream.WriteBool(pCommentData->Document);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
-				if(pCommentData->aReplies.GetCount() > 0)
+				if(pCommentData->aReplies.size() > 0)
 				{
 					nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentData::Replies);
 					WriteCommentReplies(pCommentData->aReplies);
@@ -2730,10 +2730,10 @@ namespace BinXlsxRW {
 				}
 			}
 		}
-		void WriteCommentReplies(CAtlArray<SerializeCommon::CommentData*>& aReplies)
+		void WriteCommentReplies(std::vector<SerializeCommon::CommentData*>& aReplies)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = aReplies.GetCount(); i < length; i++)
+			for(int i = 0, length = aReplies.size(); i < length; i++)
 			{
 				SerializeCommon::CommentData* pReply = aReplies[i];
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentData::Reply);

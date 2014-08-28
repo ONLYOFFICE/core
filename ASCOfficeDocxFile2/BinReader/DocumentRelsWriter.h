@@ -8,7 +8,7 @@ namespace Writers
 		XmlUtils::CStringWriter  m_oWriter;
 		CString	m_sDir;
 		int m_nRid;
-		CAtlArray<CString> m_aRels;
+		std::vector<CString> m_aRels;
 		bool bDocumentRels;
 	public:
 		DocumentRelsWriter(CString sDir, bool bDocumentRels, int nRid = 1):m_sDir(sDir),bDocumentRels(bDocumentRels)
@@ -32,7 +32,7 @@ namespace Writers
 			if(m_nRid > 1)
 			{
 				m_oWriter.WriteString(s_dr_Start);
-				for(int i = 0, length = m_aRels.GetCount(); i < length; ++i)
+				for(int i = 0, length = m_aRels.size(); i < length; ++i)
 				{
 					m_oWriter.WriteString(m_aRels[i]);
 				}
@@ -55,7 +55,7 @@ namespace Writers
 			else
 				sRels.Format(_T("<Relationship Id=\"%s\" Type=\"%s\" Target=\"%s\"/>"), srId, sType, sTarget);
 			m_nRid++;
-			m_aRels.Add(sRels);
+			m_aRels.push_back(sRels);
 			return srId;
 		}
 	};

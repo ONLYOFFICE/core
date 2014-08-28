@@ -37,13 +37,13 @@ namespace Writers
 			if(g_nCurFormatVersion < 5)
 			{
 				bool bevenAndOddHeaders = false;
-				for(int i = 0, length = m_oHeaderFooterWriter.m_aHeaders.GetCount(); i < length; ++i)
+				for(int i = 0, length = m_oHeaderFooterWriter.m_aHeaders.size(); i < length; ++i)
 				{
 					HdrFtrItem* pHeader = m_oHeaderFooterWriter.m_aHeaders[i];
 					if(SimpleTypes::hdrftrEven == pHeader->eType)
 						bevenAndOddHeaders = true;
 				}
-				for(int i = 0, length = m_oHeaderFooterWriter.m_aFooters.GetCount(); i < length; ++i)
+				for(int i = 0, length = m_oHeaderFooterWriter.m_aFooters.size(); i < length; ++i)
 				{
 					HdrFtrItem* pFooter = m_oHeaderFooterWriter.m_aFooters[i];
 					if(SimpleTypes::hdrftrEven == pFooter->eType)

@@ -1531,12 +1531,12 @@ namespace BinXlsxRW {
 		int ReadCommentDatasExternal(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
-			CAtlArray<SerializeCommon::CommentData*>* pCommentDatas = static_cast<CAtlArray<SerializeCommon::CommentData*>*>(poResult);
+			std::vector<SerializeCommon::CommentData*>* pCommentDatas = static_cast<std::vector<SerializeCommon::CommentData*>*>(poResult);
 			if ( c_oSer_Comments::CommentData == type )
 			{
 				SerializeCommon::CommentData* oCommentData = new SerializeCommon::CommentData();
 				res = Read1(length, &BinaryCommentReader::ReadCommentData, this, oCommentData);
-				pCommentDatas->Add(oCommentData);
+				pCommentDatas->push_back(oCommentData);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1697,12 +1697,12 @@ namespace BinXlsxRW {
 		int ReadCommentReplies(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
-			CAtlArray<SerializeCommon::CommentData*>* pComments = static_cast<CAtlArray<SerializeCommon::CommentData*>*>(poResult);
+			std::vector<SerializeCommon::CommentData*>* pComments = static_cast<std::vector<SerializeCommon::CommentData*>*>(poResult);
 			if ( c_oSer_CommentData::Reply == type )
 			{
 				SerializeCommon::CommentData* pCommentData = new SerializeCommon::CommentData();
 				res = Read1(length, &BinaryCommentReader::ReadCommentData, this, pCommentData);
-				pComments->Add(pCommentData);
+				pComments->push_back(pCommentData);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1912,7 +1912,7 @@ namespace BinXlsxRW {
 							{
 								const CString& sAuthor = pCommentItem->m_sAuthor.get();
 								CAtlMap<CString, unsigned int>::CPair* pair = mapAuthors.Lookup(sAuthor);
-								unsigned int nAuthorId;
+								int nAuthorId;
 								if(NULL != pair)
 									nAuthorId = pair->m_value;
 								else
@@ -2826,7 +2826,7 @@ namespace BinXlsxRW {
 	class BinaryOtherTableReader : public Binary_CommonReader<BinaryOtherTableReader>
 	{
 		CAtlMap<long, ImageObject*>& m_mapMedia;
-		CSimpleArray<CString>& m_aDeleteFiles;
+		std::vector<CString>& m_aDeleteFiles;
 		CString& m_sFileInDir;
 		long m_nCurId;
 		CString m_sCurSrc;
@@ -2835,7 +2835,7 @@ namespace BinXlsxRW {
 		LPSAFEARRAY m_pArray;
 		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
 	public:
-		BinaryOtherTableReader(Streams::CBufferedStream& oBufferedStream, CAtlMap<long, ImageObject*>& mapMedia, CString& sFileInDir, CSimpleArray<CString>& aDeleteFiles, SaveParams& oSaveParams, LPSAFEARRAY pArray, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream), m_mapMedia(mapMedia),m_aDeleteFiles(aDeleteFiles),m_sFileInDir(sFileInDir),m_oSaveParams(oSaveParams),m_pArray(pArray),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
+		BinaryOtherTableReader(Streams::CBufferedStream& oBufferedStream, CAtlMap<long, ImageObject*>& mapMedia, CString& sFileInDir, std::vector<CString>& aDeleteFiles, SaveParams& oSaveParams, LPSAFEARRAY pArray, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream), m_mapMedia(mapMedia),m_aDeleteFiles(aDeleteFiles),m_sFileInDir(sFileInDir),m_oSaveParams(oSaveParams),m_pArray(pArray),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 		{
 			m_nCurId = 0;
 			m_sCurSrc = _T("");
@@ -2930,7 +2930,7 @@ namespace BinXlsxRW {
 				{
 					m_sCurSrc = sImageSrc;
 					if(bAddToDelete)
-						m_aDeleteFiles.Add(sImageSrc);
+						m_aDeleteFiles.push_back(sImageSrc);
 				}
 			}
 			else if(c_oSer_OtherType::MediaId == type)
@@ -3032,7 +3032,7 @@ namespace BinXlsxRW {
 								sDstPath += _T("Temp");
 
 							OOX::Spreadsheet::CXlsx oXlsx;
-							CSimpleArray<CString> aDeleteFiles;
+							std::vector<CString> aDeleteFiles;
 							SaveParams oSaveParams(sDstPath + _T("\\") + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + _T("\\") + OOX::FileTypes::Theme.DefaultDirectory().GetPath());
 							ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, aDeleteFiles, oSaveParams, pArray, pOfficeDrawingConverter);
 							CString sAdditionalContentTypes = oSaveParams.sAdditionalContentTypes;
@@ -3057,7 +3057,7 @@ namespace BinXlsxRW {
 							}
 
 							//удаляем временные файлы
-							for(int i = 0, length = aDeleteFiles.GetSize(); i < length; ++i)
+							for(int i = 0, length = aDeleteFiles.size(); i < length; ++i)
 								DeleteFile(aDeleteFiles[i]);
 							bResultOk = true;
 						}
@@ -3067,7 +3067,7 @@ namespace BinXlsxRW {
 				}
 				return S_OK;
 			}
-			int ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, Streams::CBufferedStream& oBufferedStream, CString& sFileInDir, CString& sOutDir, CSimpleArray<CString>& aDeleteFiles, SaveParams& oSaveParams, LPSAFEARRAY pArray, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter)
+			int ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, Streams::CBufferedStream& oBufferedStream, CString& sFileInDir, CString& sOutDir, std::vector<CString>& aDeleteFiles, SaveParams& oSaveParams, LPSAFEARRAY pArray, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter)
 			{
 				long res = c_oSerConstants::ReadOk;
 				//mtLen
@@ -3075,8 +3075,8 @@ namespace BinXlsxRW {
 				if(c_oSerConstants::ReadOk != res)
 					return res;
 				long nOtherOffset = -1;
-				CAtlArray<BYTE> aTypes;
-				CAtlArray<long> aOffBits;
+				std::vector<BYTE> aTypes;
+				std::vector<long> aOffBits;
 				long nOtherOffBits = -1;
 				long nSharedStringsOffBits = -1;
 				BYTE mtLen = oBufferedStream.ReadByte();
@@ -3094,8 +3094,8 @@ namespace BinXlsxRW {
 						nSharedStringsOffBits = mtiOffBits;
 					else
 					{
-						aTypes.Add(mtiType);
-						aOffBits.Add(mtiOffBits);
+						aTypes.push_back(mtiType);
+						aOffBits.push_back(mtiOffBits);
 					}
 				}
 				CAtlMap<long, ImageObject*> mapMedia;
@@ -3117,7 +3117,7 @@ namespace BinXlsxRW {
 				}
 
 				OOX::Spreadsheet::CWorkbook* pWorkbook = oXlsx.CreateWorkbook();
-				for(int i = 0, length = aTypes.GetCount(); i < length; ++i)
+				for(int i = 0, length = aTypes.size(); i < length; ++i)
 				{
 					BYTE mtiType = aTypes[i];
 					long mtiOffBits = aOffBits[i];

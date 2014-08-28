@@ -9,7 +9,7 @@ namespace Writers
 		CString	m_sDir;
 		CString	m_sMediaDir;
 	public:
-		CAtlArray<CString> m_aImageNames;
+		std::vector<CString> m_aImageNames;
 		long nImageCount;
 	public:
 		MediaWriter(CString sDir):m_sDir(sDir)
@@ -31,7 +31,7 @@ namespace Writers
 			sNewImg += _T("\\") + sNewImgName;
 			
 			CopyFile(sImg, sNewImg, FALSE);
-			m_aImageNames.Add(sNewImgName);
+			m_aImageNames.push_back(sNewImgName);
 
 			//CString sNewImgRel;sNewImgRel = _T("media\\") + sNewImgName;
 			//CorrectString(sNewImgRel);

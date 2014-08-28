@@ -630,7 +630,7 @@ public:
 			{
 				Tabs oTabs;
 				res = Read2(length, &Binary_pPrReader::ReadTabs, this, &oTabs);
-				int nLen = oTabs.m_aTabs.GetCount();
+				int nLen = oTabs.m_aTabs.size();
 				if(nLen > 0)
 				{
 					pCStringWriter->WriteString(CString(_T("<w:tabs>")));
@@ -797,7 +797,7 @@ public:
 		{
 			Tab oTabItem;
 			res = Read2(length, &Binary_pPrReader::ReadTabItem, this, &oTabItem);
-			poTabs->m_aTabs.Add(oTabItem);
+			poTabs->m_aTabs.push_back(oTabItem);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1111,7 +1111,7 @@ public:
 		if( c_oSerProp_secPrType::hdrftrelem == type )
 		{
 			int nHdrFtrIndex = m_oBufferedStream.ReadLong();
-			if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.GetCount())
+			if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.size())
 			{
 				Writers::HdrFtrItem* pHdrFtrItem = m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders[nHdrFtrIndex];
 				pHdrFtrItem->m_sFilename;
@@ -1136,7 +1136,7 @@ public:
 		if( c_oSerProp_secPrType::hdrftrelem == type )
 		{
 			int nHdrFtrIndex = m_oBufferedStream.ReadLong();
-			if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters.GetCount())
+			if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters.size())
 			{
 				Writers::HdrFtrItem* pHdrFtrItem = oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters[nHdrFtrIndex];
 				pHdrFtrItem->m_sFilename;
@@ -1175,7 +1175,7 @@ protected:
 	Binary_CommonReader2 oBinary_CommonReader2;
 public:
 	CString m_sCurTableShd;
-	CAtlArray<double> m_aCurTblGrid;
+	std::vector<double> m_aCurTblGrid;
 	bool bCellShd;
 public:
 	Binary_tblPrReader(Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),oBinary_CommonReader2(poBufferedStream),oBinary_pPrReader(poBufferedStream, oFileWriter)
@@ -1508,7 +1508,7 @@ public:
 			if(true == orowPrAfterBefore.bGridAfter && orowPrAfterBefore.nGridAfter > 0 && false == orowPrAfterBefore.oAfterWidth.bW)
 			{
 				//ищем по tblGrid
-				long nGridLength = m_aCurTblGrid.GetCount();
+				long nGridLength = m_aCurTblGrid.size();
 				if(orowPrAfterBefore.nGridAfter < nGridLength)
 				{
 					double nSumW = 0;
@@ -1529,7 +1529,7 @@ public:
 			if(true == orowPrAfterBefore.bGridAfter && orowPrAfterBefore.nGridAfter > 0 && false == orowPrAfterBefore.oAfterWidth.bW)
 			{
 				//ищем по tblGrid
-				if(orowPrAfterBefore.nGridAfter < m_aCurTblGrid.GetCount())
+				if(orowPrAfterBefore.nGridAfter < m_aCurTblGrid.size())
 				{
 					double nSumW = 0;
 					for(int i = 0; i < orowPrAfterBefore.nGridAfter; i++)
@@ -1783,8 +1783,8 @@ class Binary_NumberingTableReader : public Binary_CommonReader<Binary_NumberingT
 	Binary_rPrReader oBinary_rPrReader;
 	Writers::NumberingWriter& oNumberingWriters;
 	Writers::FontTableWriter& m_oFontTableWriter;
-	CSimpleArray<docNum*> m_aDocNums;
-	CSimpleArray<docANum*> m_aDocANums;
+	std::vector<docNum*> m_aDocNums;
+	std::vector<docANum*> m_aDocANums;
 	CAtlMap<int, int> m_mapANumToNum;
 public:
 	Binary_NumberingTableReader(Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),oNumberingWriters(oFileWriter.m_oNumberingWriter),m_oFontTableWriter(oFileWriter.m_oFontTableWriter),oBinary_pPrReader(poBufferedStream, oFileWriter),oBinary_rPrReader(poBufferedStream)
@@ -1793,19 +1793,19 @@ public:
 	int Read()
 	{
 		int res = ReadTable(&Binary_NumberingTableReader::ReadNumberingContent, this);
-		for(int i = 0, length = m_aDocANums.GetSize(); i < length; ++i)
+		for(int i = 0, length = m_aDocANums.size(); i < length; ++i)
 		{
 			docANum* pdocANum = m_aDocANums[i];
 			pdocANum->Write(oNumberingWriters.m_oANum);
 			delete m_aDocANums[i];
 		}
-		m_aDocANums.RemoveAll();
-		for(int i = 0, length = m_aDocNums.GetSize(); i < length; ++i)
+		m_aDocANums.clear();
+		for(int i = 0, length = m_aDocNums.size(); i < length; ++i)
 		{
 			m_aDocNums[i]->Write(oNumberingWriters.m_oNumList);
 			delete m_aDocNums[i];
 		}
-		m_aDocNums.RemoveAll();
+		m_aDocNums.clear();
 		return res;
 	};
 	int ReadNumberingContent(BYTE type, long length, void* poResult)
@@ -1832,7 +1832,7 @@ public:
 			res = Read2(length, &Binary_NumberingTableReader::ReadNum, this, pdocNum);
 			if(pdocNum->bAId && pdocNum->bId)
 				m_mapANumToNum.SetAt(pdocNum->AId, pdocNum->Id);
-			m_aDocNums.Add(pdocNum);
+			m_aDocNums.push_back(pdocNum);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1863,7 +1863,7 @@ public:
 		{
 			docANum* pdocANum = new docANum();
 			res = Read1(length, &Binary_NumberingTableReader::ReadAbstractNum, this, pdocANum);
-			m_aDocANums.Add(pdocANum);
+			m_aDocANums.push_back(pdocANum);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1902,7 +1902,7 @@ public:
 		{
 			docLvl* odocLvl = new docLvl();
 			res = Read2(length, &Binary_NumberingTableReader::ReadLevel, this, odocLvl);
-			odocANum->Lvls.Add(odocLvl);
+			odocANum->Lvls.push_back(odocLvl);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1974,7 +1974,7 @@ public:
 		{
 			docLvlText* odocLvlText = new docLvlText();
 			res = Read1(length, &Binary_NumberingTableReader::ReadLevelTextItem, this, odocLvlText);
-			odocLvl->Text.Add(odocLvlText);
+			odocLvl->Text.push_back(odocLvlText);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -2198,7 +2198,7 @@ public:
 				}
 				oCStringWriter.Write(otblStylePr.Writer);
 				oCStringWriter.WriteString(CString(_T("</w:tblStylePr>")));
-				odocStyle->TblStylePr.Add(oCStringWriter.GetData());
+				odocStyle->TblStylePr.push_back(oCStringWriter.GetData());
 			}
 		}
 		else
@@ -2417,12 +2417,12 @@ public:
 	int ReadReplies(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CAtlArray<CComment*>* paComments = static_cast<CAtlArray<CComment*>*>(poResult);
+		std::vector<CComment*>* paComments = static_cast<std::vector<CComment*>*>(poResult);
 		if ( c_oSer_CommentsType::Comment == type )
 		{
 			CComment* pNewComment = new CComment(m_oComments.m_oParaIdCounter, m_oComments.m_oFormatIdCounter);
 			res = Read1(length, &Binary_CommentsTableReader::ReadCommentContent, this, pNewComment);
-			paComments->Add(pNewComment);
+			paComments->push_back(pNewComment);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4560,7 +4560,7 @@ public:
 	{
 		CString strRes = _T("");
 		CString strVal((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
-		for (unsigned int i = 0, length = strVal.GetLength(); i < length; ++i )
+		for (int i = 0, length = strVal.GetLength(); i < length; ++i )
 		{
 			WCHAR sChr = strVal.GetAt(i);
 			if ( true == IsUnicodeSymbol( sChr ) )
@@ -5382,7 +5382,7 @@ public:
 		}
 		else if( c_oSerDocTableType::tblGrid == type )
 		{
-			oBinary_tblPrReader.m_aCurTblGrid.RemoveAll();
+			oBinary_tblPrReader.m_aCurTblGrid.clear();
 			pCStringWriter->WriteString(CString(_T("<w:tblGrid>")));
 			res = Read2(length, &Binary_DocumentTableReader::Read_tblGrid, this, poResult);
 			pCStringWriter->WriteString(CString(_T("</w:tblGrid>")));
@@ -5402,7 +5402,7 @@ public:
 		if( c_oSerDocTableType::tblGrid_Item == type )
 		{
 			double dgridCol = m_oBufferedStream.ReadDouble2();
-			oBinary_tblPrReader.m_aCurTblGrid.Add(dgridCol);
+			oBinary_tblPrReader.m_aCurTblGrid.push_back(dgridCol);
 			long ngridCol = Round( g_dKoef_mm_to_twips * dgridCol);
 			CString sgridCol;sgridCol.Format(_T("<w:gridCol w:w=\"%d\"/>"), ngridCol);
 			pCStringWriter->WriteString(sgridCol);
@@ -5861,7 +5861,7 @@ public:
 		{
 			CDrawingPropertyWrapPoint* pWrapPoint = new CDrawingPropertyWrapPoint();
 			res = Read2(length, &Binary_DocumentTableReader::ReadPolygonPoint, this, pWrapPoint);
-			pDrawingPropertyWrap->Points.Add(pWrapPoint);
+			pDrawingPropertyWrap->Points.push_back(pWrapPoint);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5942,13 +5942,13 @@ int Binary_HdrFtrTableReader::ReadHdrFtrItem(BYTE type, long length, void* poRes
 		{
 			if(nCurType == c_oSerHdrFtrTypes::Header)
 			{
-				m_oHeaderFooterWriter.m_aHeaders.Add(poHdrFtrItem);
-				poHdrFtrItem->m_sFilename.Format(_T("header%d.xml"), m_oHeaderFooterWriter.m_aHeaders.GetCount());
+				m_oHeaderFooterWriter.m_aHeaders.push_back(poHdrFtrItem);
+				poHdrFtrItem->m_sFilename.Format(_T("header%d.xml"), m_oHeaderFooterWriter.m_aHeaders.size());
 			}
 			else
 			{
-				m_oHeaderFooterWriter.m_aFooters.Add(poHdrFtrItem);
-				poHdrFtrItem->m_sFilename.Format(_T("footer%d.xml"), m_oHeaderFooterWriter.m_aFooters.GetCount());
+				m_oHeaderFooterWriter.m_aFooters.push_back(poHdrFtrItem);
+				poHdrFtrItem->m_sFilename.Format(_T("footer%d.xml"), m_oHeaderFooterWriter.m_aFooters.size());
 			}
 			m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
 			Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, poHdrFtrItem->Header, NULL);
@@ -5997,8 +5997,8 @@ public: BinaryFileReader(CString& sFileInDir, Streams::CBufferedStream& oBuffere
 			long nSettingsOffset = -1;
 			long nDocumentOffset = -1;
 			long nCommentsOffset = -1;
-			CAtlArray<BYTE> aTypes;
-			CAtlArray<long> aOffBits;
+			std::vector<BYTE> aTypes;
+			std::vector<long> aOffBits;
 			BYTE mtLen = m_oBufferedStream.ReadByte();
 			for(int i = 0; i < mtLen; ++i)
 			{
@@ -6027,8 +6027,8 @@ public: BinaryFileReader(CString& sFileInDir, Streams::CBufferedStream& oBuffere
 				}
 				else
 				{
-					aTypes.Add(mtiType);
-					aOffBits.Add(mtiOffBits);
+					aTypes.push_back(mtiType);
+					aOffBits.push_back(mtiOffBits);
 				}
 			}
 			if(-1 != nOtherOffset)
@@ -6067,7 +6067,7 @@ public: BinaryFileReader(CString& sFileInDir, Streams::CBufferedStream& oBuffere
 					return res;
 			}
 			Binary_CommentsTableReader oBinary_CommentsTableReader(m_oBufferedStream, m_oFileWriter);
-			for(int i = 0, length = aTypes.GetCount(); i < length; ++i)
+			for(int i = 0, length = aTypes.size(); i < length; ++i)
 			{
 				BYTE mtiType = aTypes[i];
 				long mtiOffBits = aOffBits[i];
@@ -6116,7 +6116,7 @@ public: BinaryFileReader(CString& sFileInDir, Streams::CBufferedStream& oBuffere
 					long rId;
 					m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering"), _T("numbering.xml"), NULL, &rId);
 				}
-				for(int i = 0, length = m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.GetCount(); i < length; ++i)
+				for(int i = 0, length = m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.size(); i < length; ++i)
 				{
 					Writers::HdrFtrItem* pHeader = m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders[i];
 					if(false == pHeader->IsEmpty())
@@ -6128,7 +6128,7 @@ public: BinaryFileReader(CString& sFileInDir, Streams::CBufferedStream& oBuffere
 						pHeader->rId.Format(_T("rId%d"), rId);
 					}
 				}
-				for(int i = 0, length = m_oFileWriter.m_oHeaderFooterWriter.m_aFooters.GetCount(); i < length; ++i)
+				for(int i = 0, length = m_oFileWriter.m_oHeaderFooterWriter.m_aFooters.size(); i < length; ++i)
 				{
 					Writers::HdrFtrItem* pFooter = m_oFileWriter.m_oHeaderFooterWriter.m_aFooters[i];
 					if(false == pFooter->IsEmpty())

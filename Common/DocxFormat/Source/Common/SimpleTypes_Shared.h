@@ -347,7 +347,10 @@ namespace SimpleTypes
 		virtual int     FromString(CString &sValue)
 		{
 			if ( 6 <= sValue.GetLength() )
-				Parse( sValue.Mid( 0, 6 ) );
+            {
+                CString midString = sValue.Mid( 0, 6 );
+                Parse( midString );
+            }
 			else
                 this->m_eValue = nDefValue;
 

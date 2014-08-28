@@ -227,6 +227,12 @@ namespace OOX
 			}
 			virtual ~CAutoCaptions()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrAutoCaption.size(); nIndex++ )
+				{
+					if (m_arrAutoCaption[nIndex] ) delete m_arrAutoCaption[nIndex];
+					m_arrAutoCaption[nIndex] = NULL;
+				}
+				m_arrAutoCaption.clear();
 			}
 
 		public:
@@ -247,8 +253,8 @@ namespace OOX
 
 					if ( _T("w:autoCaption") == sName )
 					{
-						OOX::Settings::CAutoCaption oAC = oReader;
-						m_arrAutoCaption.Add( oAC );
+						OOX::Settings::CAutoCaption *oAC = new OOX::Settings::CAutoCaption(oReader);
+						if (oAC) m_arrAutoCaption.push_back( oAC );
 					}
 				}
 			}
@@ -256,8 +262,11 @@ namespace OOX
 			{
 				CString sResult = _T("<w:autoCaptions>");
 
-				for ( int nIndex = 0; nIndex < m_arrAutoCaption.GetSize(); nIndex++ )
-					sResult += m_arrAutoCaption[nIndex].toXML();
+				for ( unsigned int nIndex = 0; nIndex < m_arrAutoCaption.size(); nIndex++ )
+				{
+					if (m_arrAutoCaption[nIndex])
+						sResult += m_arrAutoCaption[nIndex]->toXML();
+				}
 
 				sResult += _T("</w:autoCaptions>");
 
@@ -272,7 +281,7 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<OOX::Settings::CAutoCaption> m_arrAutoCaption;
+			std::vector<OOX::Settings::CAutoCaption*> m_arrAutoCaption;
 		};
 		//--------------------------------------------------------------------------------
 		// CCaption 17.15.1.16 (Part 1)
@@ -398,6 +407,12 @@ namespace OOX
 			}
 			virtual ~CCaptions()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrCaption.size(); nIndex++ )
+				{
+					if ( m_arrCaption[nIndex] ) delete m_arrCaption[nIndex];
+					m_arrCaption[nIndex] = NULL;
+				}
+				m_arrCaption.clear();
 			}
 
 		public:
@@ -418,8 +433,8 @@ namespace OOX
 
 					if ( _T("w:caption") == sName )
 					{
-						OOX::Settings::CCaption oC = oReader;
-						m_arrCaption.Add( oC );
+						OOX::Settings::CCaption *oC = new OOX::Settings::CCaption(oReader);
+						if (oC) m_arrCaption.push_back( oC );
 					}
 					else if ( _T("w:autoCaptions") == sName )
 						m_oAutoCaptions = oReader;
@@ -429,8 +444,11 @@ namespace OOX
 			{
 				CString sResult = _T("<w:captions>");
 
-				for ( int nIndex = 0; nIndex < m_arrCaption.GetSize(); nIndex++ )
-					sResult += m_arrCaption[nIndex].toXML();
+				for ( unsigned int nIndex = 0; nIndex < m_arrCaption.size(); nIndex++ )
+				{
+					if (m_arrCaption[nIndex])
+						sResult += m_arrCaption[nIndex]->toXML();
+				}
 
 				if ( m_oAutoCaptions.IsInit() )
 					sResult += m_oAutoCaptions->toXML();
@@ -448,7 +466,7 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<OOX::Settings::CCaption>  m_arrCaption;
+			std::vector<OOX::Settings::CCaption*>  m_arrCaption;
 			nullable<OOX::Settings::CAutoCaptions> m_oAutoCaptions;
 
 		};
@@ -765,6 +783,12 @@ namespace OOX
 			}
 			virtual ~CCompat()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrCompatSettings.size(); nIndex++ )
+				{
+					if ( m_arrCompatSettings[nIndex] ) delete m_arrCompatSettings[nIndex];
+					m_arrCompatSettings[nIndex] = NULL;
+				}
+				m_arrCompatSettings.clear();
 			}
 
 		public:
@@ -791,8 +815,8 @@ namespace OOX
 						m_oBalanceSingleByDoubleWidth = oReader;
 					else if ( _T("w:compatSetting") == sName )
 					{
-						OOX::Settings::CCompatSetting oCS = oReader;
-						m_arrCompatSettings.Add( oCS );
+						OOX::Settings::CCompatSetting *oCS = new OOX::Settings::CCompatSetting(oReader);
+						if (oCS)m_arrCompatSettings.push_back( oCS );
 					}
 					else if ( _T("w:doNotExpandShiftReturn") == sName )
 						m_oDoNotExpandShiftReturn = oReader;
@@ -857,8 +881,11 @@ namespace OOX
 					sResult += _T("/>");
 				}
 
-				for ( int nIndex = 0; nIndex < m_arrCompatSettings.GetSize(); nIndex++ )
-					sResult += m_arrCompatSettings[nIndex].toXML();
+				for ( unsigned int nIndex = 0; nIndex < m_arrCompatSettings.size(); nIndex++ )
+				{
+					if (m_arrCompatSettings[nIndex])
+						sResult += m_arrCompatSettings[nIndex]->toXML();
+				}
 
 				sResult += _T("</w:compat>");
 
@@ -878,7 +905,7 @@ namespace OOX
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oAdjustLineHeightInTable;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oApplyBreakingRules;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oBalanceSingleByDoubleWidth;
-			CSimpleArray<OOX::Settings::CCompatSetting>                   m_arrCompatSettings;
+			std::vector<OOX::Settings::CCompatSetting*>                   m_arrCompatSettings;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotExpandShiftReturn;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDoNotLeaveBackslaskAlone;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSpaceForUL;
@@ -1173,6 +1200,12 @@ namespace OOX
 			}
 			virtual ~CDocVars()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrDocVar.size(); nIndex++ )
+				{
+					if ( m_arrDocVar[nIndex] ) delete m_arrDocVar[nIndex];
+					m_arrDocVar[nIndex] = NULL;
+				}
+				m_arrDocVar.clear();
 			}
 
 		public:
@@ -1193,8 +1226,8 @@ namespace OOX
 
 					if ( _T("w:docVar") == sName )
 					{
-						OOX::Settings::CDocVar oDV = oReader;
-						m_arrDocVar.Add( oDV );
+						OOX::Settings::CDocVar *oDV = new OOX::Settings::CDocVar(oReader);
+						if (oDV) m_arrDocVar.push_back( oDV );
 					}
 				}
 			}
@@ -1202,8 +1235,11 @@ namespace OOX
 			{
 				CString sResult = _T("<w:docVars>");
 
-				for ( int nIndex = 0; nIndex < m_arrDocVar.GetSize(); nIndex++ )
-					sResult += m_arrDocVar[nIndex].toXML();
+				for (unsigned int nIndex = 0; nIndex < m_arrDocVar.size(); nIndex++ )
+				{
+					if (m_arrDocVar[nIndex])
+						sResult += m_arrDocVar[nIndex]->toXML();
+				}
 
 				sResult += _T("</w:docVars>");
 
@@ -1218,7 +1254,7 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<OOX::Settings::CDocVar> m_arrDocVar;
+			std::vector<OOX::Settings::CDocVar*> m_arrDocVar;
 		};
 		//--------------------------------------------------------------------------------
 		// CKinsoku 17.15.1.58 (Part 1)
@@ -1624,6 +1660,12 @@ namespace OOX
 			}
 			virtual ~CDocRsids()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrRsid.size(); nIndex++ )
+				{
+					if ( m_arrRsid[nIndex] ) delete m_arrRsid[nIndex];
+					m_arrRsid[nIndex] = NULL;
+				}
+				m_arrRsid.clear();
 			}
 
 		public:
@@ -1644,8 +1686,8 @@ namespace OOX
 
 					if ( _T("w:rsid") == sName )
 					{
-						ComplexTypes::Word::CLongHexNumber oRsid = oReader;
-						m_arrRsid.Add( oRsid );
+						ComplexTypes::Word::CLongHexNumber *oRsid = new ComplexTypes::Word::CLongHexNumber(oReader);
+						if (oRsid) m_arrRsid.push_back( oRsid );
 					}
 					else if ( _T("w:rsidRoot") == sName )
 						m_oRsidRoot = oReader;
@@ -1662,10 +1704,11 @@ namespace OOX
 					sResult += _T("/>");
 				}
 
-				for ( int nIndex = 0; nIndex < m_arrRsid.GetSize(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrRsid.size(); nIndex++ )
 				{
 					sResult += _T("<w:rsid ");
-					sResult += m_arrRsid[nIndex].ToString();
+					if (m_arrRsid[nIndex])
+						sResult += m_arrRsid[nIndex]->ToString();
 					sResult += _T("/>");
 				}
 
@@ -1683,7 +1726,7 @@ namespace OOX
 
 			// Childs
 			nullable<ComplexTypes::Word::CLongHexNumber>     m_oRsidRoot;
-			CSimpleArray<ComplexTypes::Word::CLongHexNumber> m_arrRsid;
+			std::vector<ComplexTypes::Word::CLongHexNumber*> m_arrRsid;
 		};
 		//--------------------------------------------------------------------------------
 		// CSaveThroughXslt 17.15.1.76 (Part 1)
@@ -2325,6 +2368,12 @@ namespace OOX
 			}
 			virtual ~CEdnDocProps()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrEndnote.size(); nIndex++ )
+				{
+					if ( m_arrEndnote[nIndex] ) delete m_arrEndnote[nIndex];
+					m_arrEndnote[nIndex] = NULL;
+				}
+				m_arrEndnote.clear();
 			}
 		public:
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
@@ -2351,8 +2400,8 @@ namespace OOX
 						m_oPos = oReader;
 					else if ( _T("w:endnote") == sName )
 					{
-						OOX::CFtnEdnSepRef oFE = oReader;
-						m_arrEndnote.Add( oFE );
+						OOX::CFtnEdnSepRef *oFE = new OOX::CFtnEdnSepRef(oReader);
+						if (oFE) m_arrEndnote.push_back( oFE );
 					}
 				}
 			}
@@ -2360,8 +2409,11 @@ namespace OOX
 			{
 				CString sResult = _T("<w:endnotePr>");
 
-				for ( int nIndex = 0; nIndex < m_arrEndnote.GetSize(); nIndex++ )
-					sResult += m_arrEndnote[nIndex].toXML();
+				for ( unsigned int nIndex = 0; nIndex < m_arrEndnote.size(); nIndex++ )
+				{
+					if (m_arrEndnote[nIndex])
+						sResult += m_arrEndnote[nIndex]->toXML();
+				}
 
 				if ( m_oNumFmt.IsInit() )
 				{
@@ -2402,7 +2454,7 @@ namespace OOX
 			}
 		public:
 
-			CSimpleArray<OOX::CFtnEdnSepRef             > m_arrEndnote;
+			std::vector<OOX::CFtnEdnSepRef*             > m_arrEndnote;
 			nullable<ComplexTypes::Word::CNumFmt        > m_oNumFmt;
 			nullable<ComplexTypes::Word::CNumRestart    > m_oNumRestart;
 			nullable<ComplexTypes::Word::CDecimalNumber > m_oNumStart;
@@ -2420,6 +2472,12 @@ namespace OOX
 			}
 			virtual ~CFtnDocProps()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrFootnote.size(); nIndex++ )
+				{
+					if ( m_arrFootnote[nIndex] ) delete m_arrFootnote[nIndex];
+					m_arrFootnote[nIndex] = NULL;
+				}
+				m_arrFootnote.clear();
 			}
 
 		public:
@@ -2447,8 +2505,8 @@ namespace OOX
 						m_oPos = oReader;
 					else if ( _T("w:footnote") == sName )
 					{
-						OOX::CFtnEdnSepRef oFE = oReader;
-						m_arrFootnote.Add( oFE );
+						OOX::CFtnEdnSepRef *oFE = new OOX::CFtnEdnSepRef(oReader);
+						if (oFE) m_arrFootnote.push_back( oFE );
 					}
 				}
 			}
@@ -2456,8 +2514,11 @@ namespace OOX
 			{
 				CString sResult = _T("<w:footnotePr>");
 
-				for ( int nIndex = 0; nIndex < m_arrFootnote.GetSize(); nIndex++ )
-					sResult += m_arrFootnote[nIndex].toXML();
+				for ( unsigned int nIndex = 0; nIndex < m_arrFootnote.size(); nIndex++ )
+				{
+					if (m_arrFootnote[nIndex])
+						sResult += m_arrFootnote[nIndex]->toXML();
+				}
 
 				if ( m_oNumFmt.IsInit() )
 				{
@@ -2498,7 +2559,7 @@ namespace OOX
 			}
 		public:
 
-			CSimpleArray<OOX::CFtnEdnSepRef             > m_arrFootnote;
+			std::vector<OOX::CFtnEdnSepRef*				> m_arrFootnote;
 			nullable<ComplexTypes::Word::CNumFmt        > m_oNumFmt;
 			nullable<ComplexTypes::Word::CNumRestart    > m_oNumRestart;
 			nullable<ComplexTypes::Word::CDecimalNumber > m_oNumStart;
@@ -2603,6 +2664,12 @@ namespace OOX
 			}
 			virtual ~CSchemaLibrary()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrSchema.size(); nIndex++ )
+				{
+					if ( m_arrSchema[nIndex] ) delete m_arrSchema[nIndex];
+					m_arrSchema[nIndex] = NULL;
+				}
+				m_arrSchema.clear();
 			}
 
 		public:
@@ -2623,8 +2690,8 @@ namespace OOX
 
 					if ( _T("sl:schema") == sName )
 					{
-						OOX::Settings::CSchema oSchema = oReader;
-						m_arrSchema.Add( oSchema );
+						OOX::Settings::CSchema *oSchema = new OOX::Settings::CSchema(oReader);
+						if (oSchema) m_arrSchema.push_back( oSchema );
 					}
 				}
 			}
@@ -2632,8 +2699,11 @@ namespace OOX
 			{
 				CString sResult = _T("<sl:schemaLibrary>");
 
-				for ( int nIndex = 0; nIndex < m_arrSchema.GetSize(); nIndex++ )
-					sResult += m_arrSchema[nIndex].toXML();
+				for ( unsigned int nIndex = 0; nIndex < m_arrSchema.size(); nIndex++ )
+				{
+					if (m_arrSchema[nIndex])
+						sResult += m_arrSchema[nIndex]->toXML();
+				}
 
 				sResult += _T("</sl:schemaLibrary>");
 
@@ -2648,7 +2718,7 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<OOX::Settings::CSchema> m_arrSchema;
+			std::vector<OOX::Settings::CSchema*> m_arrSchema;
 		};
 	} // Settings
 } // OOX
@@ -2855,6 +2925,13 @@ namespace OOX
 		}
 		virtual ~CSettings()
 		{
+			for ( unsigned int nIndex = 0; nIndex < m_arrSmartTagType.size(); nIndex++ )
+			{
+				if ( m_arrSmartTagType[nIndex] )delete m_arrSmartTagType[nIndex];
+				m_arrSmartTagType[nIndex] = NULL;
+			}
+
+			m_arrSmartTagType.clear();
 		}
 
 	public:
@@ -2996,8 +3073,8 @@ namespace OOX
 							else if ( _T("w:showXMLTags")                == sName ) m_oShowXMLTags                = oReader;
 							else if ( _T("w:smartTagType")               == sName )
 							{
-								OOX::Settings::CSmartTagType oSTT = oReader;
-								m_arrSmartTagType.Add( oSTT );
+								OOX::Settings::CSmartTagType *oSTT = new OOX::Settings::CSmartTagType(oReader);
+								if (oSTT) m_arrSmartTagType.push_back( oSTT );
 							}
 							else if ( _T("w:strictFirstAndLastChars")    == sName ) m_oStrictFirstAndLastChars    = oReader;
 							else if ( _T("w:styleLockQFSet")             == sName ) m_oStyleLockQFSet             = oReader;
@@ -3420,8 +3497,11 @@ namespace OOX
 				sXml += m_oReadModeInkLockDown->toXML();
 
 			// 94
-			for ( int nIndex = 0; nIndex < m_arrSmartTagType.GetSize(); nIndex++ )
-				sXml += m_arrSmartTagType[nIndex].toXML();
+			for ( unsigned int nIndex = 0; nIndex < m_arrSmartTagType.size(); nIndex++ )
+			{
+				if (m_arrSmartTagType[nIndex])
+					sXml += m_arrSmartTagType[nIndex]->toXML();
+			}
 
 			// 95
 			if ( m_oSchemaLibrary.IsInit() )
@@ -3550,7 +3630,7 @@ namespace OOX
 		nullable<OOX::Settings::CShapeDefaults>                       m_oShapeDefaults;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oShowEnvelope;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oShowXMLTags;
-		CSimpleArray<OOX::Settings::CSmartTagType>                    m_arrSmartTagType;
+		std::vector<OOX::Settings::CSmartTagType*>                    m_arrSmartTagType;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oStrictFirstAndLastChars;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oStyleLockQFSet;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oStyleLockTheme;

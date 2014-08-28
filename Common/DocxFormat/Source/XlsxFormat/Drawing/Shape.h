@@ -47,7 +47,7 @@ namespace OOX
 					//if ( _T("a:lstStyle") == sName )
 					//	m_oLstStyle = oReader;
 					else if ( _T("a:p") == sName )
-						m_arrItems.Add( new Drawing::CParagraph( oReader ));
+						m_arrItems.push_back( new Drawing::CParagraph( oReader ));
 				}
 			}
 
@@ -584,15 +584,15 @@ namespace OOX
 						m_oGroupSpPr = oReader;
 
 					else if ( _T("xdr:sp") == sName )
-						m_arrItems.Add( new OOX::Spreadsheet::CShape( oReader ));
+						m_arrItems.push_back( new OOX::Spreadsheet::CShape( oReader ));
 					else if ( _T("xdr:cxnSp") == sName )
-						m_arrItems.Add( new OOX::Spreadsheet::CConnShape( oReader ));
+						m_arrItems.push_back( new OOX::Spreadsheet::CConnShape( oReader ));
 					else if ( _T("xdr:graphicFrame") == sName )
-						m_arrItems.Add( new OOX::Spreadsheet::CGraphicFrame( oReader ));
+						m_arrItems.push_back( new OOX::Spreadsheet::CGraphicFrame( oReader ));
 					else if ( _T("xdr:pic") == sName )
-						m_arrItems.Add( new OOX::Spreadsheet::CPic( oReader ));
+						m_arrItems.push_back( new OOX::Spreadsheet::CPic( oReader ));
 					else if ( _T("xdr:grpSp") == sName )
-						m_arrItems.Add( new OOX::Spreadsheet::CGroupShape( oReader ));		
+						m_arrItems.push_back( new OOX::Spreadsheet::CGroupShape( oReader ));		
 				}
 			}
 

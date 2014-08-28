@@ -107,7 +107,7 @@ namespace OOX
 							sName = oReader.GetName();
 
 							if ( _T("c") == sName )
-								m_arrItems.Add(new CCalcCell(oReader));
+								m_arrItems.push_back(new CCalcCell(oReader));
 						}
 					}
 				}		
@@ -136,7 +136,7 @@ namespace OOX
 			CPath									m_oReadPath;
 			void ClearItems()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 						delete m_arrItems[nIndex];
@@ -144,14 +144,14 @@ namespace OOX
 					m_arrItems[nIndex] = NULL;
 				}
 
-				m_arrItems.RemoveAll();
+				m_arrItems.clear();
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
 
 		public:
-			CSimpleArray<CCalcCell *>         m_arrItems;
+			std::vector<CCalcCell *>         m_arrItems;
 		};
 	} //Spreadsheet
 } // namespace OOX

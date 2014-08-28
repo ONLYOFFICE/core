@@ -107,7 +107,7 @@ namespace OOX
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				if(m_oRef.IsInit() && m_arrItems.GetSize() > 0)
+				if(m_oRef.IsInit() && m_arrItems.size() > 0)
 				{
 					CString sXml;
 					sXml.Format(_T("<sortState ref=\"%s\""), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
@@ -116,7 +116,7 @@ namespace OOX
 					sXml.Append(_T(">"));
 					writer.WriteString(sXml);
 
-					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					writer.WriteString(CString(_T("</sortState>")));
@@ -135,7 +135,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("sortCondition") == sName )
-						m_arrItems.Add(new CSortCondition(oReader));
+						m_arrItems.push_back(new CSortCondition(oReader));
 				}
 			}
 
@@ -356,13 +356,13 @@ namespace OOX
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				if(m_arrItems.GetSize() > 0)
+				if(m_arrItems.size() > 0)
 				{
 					writer.WriteString(CString(_T("<customFilters")));
 					if(m_oAnd.IsInit() && true == m_oAnd->ToBool())
 						writer.WriteString(CString(_T(" and=\"1\"")));
 					writer.WriteString(CString(_T(">")));
-					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 					writer.WriteString(CString(_T("</customFilters>")));
 				}
@@ -380,7 +380,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("customFilter") == sName )
-						m_arrItems.Add( new CCustomFilter(oReader));
+						m_arrItems.push_back( new CCustomFilter(oReader));
 				}
 			}
 
@@ -575,7 +575,7 @@ namespace OOX
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				if(m_arrItems.GetSize() > 0)
+				if(m_arrItems.size() > 0)
 				{
 					writer.WriteString(_T("<filters"));
 					if(m_oBlank.IsInit())
@@ -586,7 +586,7 @@ namespace OOX
 					}
 					writer.WriteString(_T(">"));
 
-					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					writer.WriteString(_T("</filters>"));
@@ -605,9 +605,9 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("dateGroupItem") == sName )
-						m_arrItems.Add( new CDateGroupItem(oReader));
+						m_arrItems.push_back( new CDateGroupItem(oReader));
 					if ( _T("filter") == sName )
-						m_arrItems.Add( new CFilter(oReader));
+						m_arrItems.push_back( new CFilter(oReader));
 				}
 			}
 
@@ -822,7 +822,7 @@ namespace OOX
 					CString sXml;
 					sXml.Format(_T("<autoFilter ref=\"%s\">"), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
 					writer.WriteString(sXml);
-					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 					if(m_oSortState.IsInit())
 						m_oSortState->toXML(writer);
@@ -842,7 +842,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("filterColumn") == sName )
-						m_arrItems.Add(new CFilterColumn(oReader));
+						m_arrItems.push_back(new CFilterColumn(oReader));
 					else if ( _T("sortState") == sName )
 						m_oSortState = oReader;
 				}

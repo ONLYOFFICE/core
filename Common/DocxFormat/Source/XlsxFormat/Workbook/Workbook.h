@@ -132,8 +132,8 @@ namespace OOX
 				//BookViews
 				if(false == m_oBookViews.IsInit())
 					m_oBookViews.Init();
-				if(0 == m_oBookViews->m_arrItems.GetSize())
-					m_oBookViews->m_arrItems.Add(new OOX::Spreadsheet::CWorkbookView());
+				if(0 == m_oBookViews->m_arrItems.size())
+					m_oBookViews->m_arrItems.push_back(new OOX::Spreadsheet::CWorkbookView());
 				OOX::Spreadsheet::CWorkbookView* pWorkbookView = m_oBookViews->m_arrItems[0];
 				if(false == pWorkbookView->m_oXWindow.IsInit())
 				{

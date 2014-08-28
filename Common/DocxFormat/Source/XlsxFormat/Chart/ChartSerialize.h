@@ -930,7 +930,7 @@ namespace OOX{
 					if ( _T("a:bodyPr") == sName )
 						m_oBodyPr = oReader;
 					else if ( _T("a:p") == sName )
-						m_arrItems.Add( new Drawing::CParagraph( oReader ));
+						m_arrItems.push_back( new Drawing::CParagraph( oReader ));
 				}
 			}
 
@@ -986,7 +986,7 @@ namespace OOX{
 					if ( _T("a:bodyPr") == sName )
 						m_oBodyPr = oReader;
 					else if ( _T("a:p") == sName )
-						m_arrItems.Add( new Drawing::CParagraph( oReader ));
+						m_arrItems.push_back( new Drawing::CParagraph( oReader ));
 				}
 			}
 

@@ -222,12 +222,12 @@ namespace OOX
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				if(m_arrItems.GetSize() > 0)
+				if(m_arrItems.size() > 0)
 				{
 					CString sRoot;
-					sRoot.Format(_T("<tableColumns count=\"%d\">"), m_arrItems.GetSize());
+					sRoot.Format(_T("<tableColumns count=\"%d\">"), m_arrItems.size());
 					writer.WriteString(sRoot);
-					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 					writer.WriteString(CString(_T("</tableColumns>")));
 				}
@@ -245,7 +245,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("tableColumn") == sName )
-						m_arrItems.Add(new CTableColumn(oReader));
+						m_arrItems.push_back(new CTableColumn(oReader));
 				}
 			}
 
@@ -434,12 +434,12 @@ namespace OOX
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				if(m_arrItems.GetSize() > 0)
+				if(m_arrItems.size() > 0)
 				{
 					CString sXml;
-					sXml.Format(_T("<tableParts count=\"%d\">"), m_arrItems.GetSize());
+					sXml.Format(_T("<tableParts count=\"%d\">"), m_arrItems.size());
 					writer.WriteString(sXml);
-					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 					writer.WriteString(CString(_T("</tableParts>")));	
 				}
@@ -457,7 +457,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("tablePart") == sName )
-						m_arrItems.Add(new CTablePart(oReader));
+						m_arrItems.push_back(new CTablePart(oReader));
 				}
 			}
 

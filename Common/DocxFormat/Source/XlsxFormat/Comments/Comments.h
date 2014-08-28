@@ -59,7 +59,7 @@ namespace OOX
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				writer.WriteString(CString("<authors>"));
-				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 				{
 					CString sAuthor;sAuthor.Format(_T("<author>%s</author>"), XmlUtils::EncodeXmlString(*m_arrItems[i]));
 					writer.WriteString(sAuthor);
@@ -79,7 +79,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("author") == sName )
-						m_arrItems.Add(new CString(oReader.GetText2()));
+						m_arrItems.push_back(new CString(oReader.GetText2()));
 				}
 			}
 
@@ -190,7 +190,7 @@ namespace OOX
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				writer.WriteString(CString("<commentList>"));
-				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 				{
 					m_arrItems[i]->toXML(writer);
 				}
@@ -209,7 +209,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("comment") == sName )
-						m_arrItems.Add(new CComment(oReader));
+						m_arrItems.push_back(new CComment(oReader));
 				}
 			}
 
@@ -411,7 +411,7 @@ namespace OOX
 								pItem = new OOX::Vml::CShape( oReader );
 
 								if ( pItem )
-									m_arrItems.Add( pItem );
+									m_arrItems.push_back( pItem );
 							}
 						}
 					}
@@ -507,7 +507,7 @@ namespace OOX
 			}
 			void ClearItems()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 						delete m_arrItems[nIndex];
@@ -515,11 +515,11 @@ namespace OOX
 					m_arrItems[nIndex] = NULL;
 				}
 
-				m_arrItems.RemoveAll();
+				m_arrItems.clear();
 			}
 
 		public:
-			CSimpleArray<OOX::Vml::CShape *>         m_arrItems;
+			std::vector<OOX::Vml::CShape *>         m_arrItems;
 			CAtlMap<CString, OOX::Spreadsheet::CCommentItem*>* m_mapComments;
 		};
 	} //Spreadsheet

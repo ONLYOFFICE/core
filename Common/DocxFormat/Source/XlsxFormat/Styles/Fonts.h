@@ -217,7 +217,7 @@ namespace OOX
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T(">"));
-				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</fonts>"));
 			}
@@ -234,7 +234,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("font") == sName )
-						m_arrItems.Add( new CFont( oReader ));
+						m_arrItems.push_back( new CFont( oReader ));
 				}
 			}
 
@@ -244,10 +244,10 @@ namespace OOX
 			}
 			void AddFont (CFont* pFont)
 			{
-				m_arrItems.Add(pFont);
+				m_arrItems.push_back(pFont);
 				if(false == m_oCount.IsInit())
 					m_oCount.Init();
-				m_oCount->SetValue(m_arrItems.GetSize());
+				m_oCount->SetValue(m_arrItems.size());
 			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

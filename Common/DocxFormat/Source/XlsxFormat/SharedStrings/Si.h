@@ -32,25 +32,25 @@ namespace OOX
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				writer.WriteString(_T("<si>"));
-				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</si>"));
 			}
 			virtual void toXML2(XmlUtils::CStringWriter& writer) const
 			{
-				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 			}
 			CString ToString()
 			{
 				CString sRes;
-				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 				{
 					WritingElement* we = m_arrItems[i];
 					if(OOX::Spreadsheet::et_r == we->getType())
 					{
 						CRun* pRun = static_cast<CRun*>(we);
-						for(int j = 0, length2 = pRun->m_arrItems.GetSize(); j < length2; ++j)
+						for(unsigned int j = 0, length2 = pRun->m_arrItems.size(); j < length2; ++j)
 						{
 							CText* pText = pRun->m_arrItems[j];
 							sRes.Append(pText->ToString());
@@ -87,7 +87,7 @@ namespace OOX
 						pItem = new CText( oReader );
 
 					if ( NULL != pItem )
-						m_arrItems.Add( pItem );
+						m_arrItems.push_back( pItem );
 				}
 			}
 

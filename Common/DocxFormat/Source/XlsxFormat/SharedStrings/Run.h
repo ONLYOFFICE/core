@@ -33,7 +33,7 @@ namespace OOX
 				writer.WriteString(_T("<r>"));
 				if(m_oRPr.IsInit())
 					m_oRPr->toXML(writer);
-				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</r>"));
 			}
@@ -52,7 +52,7 @@ namespace OOX
 					if ( _T("rPr") == sName )
 						m_oRPr = oReader;
 					else if ( _T("t") == sName )
-						m_arrItems.Add( new CText( oReader ));
+						m_arrItems.push_back( new CText( oReader ));
 				}
 			}
 

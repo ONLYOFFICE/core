@@ -112,10 +112,10 @@ namespace OOX
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				if(m_arrItems.GetSize() > 0)
+				if(m_arrItems.size() > 0)
 				{
 					writer.WriteString(_T("<hyperlinks>"));
-					for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 					writer.WriteString(_T("</hyperlinks>"));
 				}
@@ -133,7 +133,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("hyperlink") == sName )
-						m_arrItems.Add( new CHyperlink( oReader ));
+						m_arrItems.push_back( new CHyperlink( oReader ));
 				}
 			}
 

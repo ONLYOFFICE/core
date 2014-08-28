@@ -1251,6 +1251,7 @@ DesktopEditor/cximage/png/pngbar.png svn_mime_002dtype=application%2Foctet-strea
 DesktopEditor/cximage/png/pngnow.png svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/cximage/png/pngtest.png svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/cximage/zlib/zlib.3.pdf svn_mime_002dtype=application%2Foctet-stream
+DesktopEditor/editor/GLplatform svnc_tsvn_003alogminsize=5
 DesktopEditor/editor/build/windows/Test/break_one.bmp svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/editor/build/windows/Test/break_two.bmp svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/editor/build/windows/Test/cont_one.bmp svn_mime_002dtype=application%2Foctet-stream

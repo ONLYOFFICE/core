@@ -169,7 +169,7 @@ namespace OOX
 		}
 		virtual ~CDocument()
 		{
-			for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+			for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
 				if ( m_arrItems[nIndex] )
 					delete m_arrItems[nIndex];
@@ -177,7 +177,7 @@ namespace OOX
 				m_arrItems[nIndex] = NULL;
 			}
 
-			m_arrItems.RemoveAll();
+			m_arrItems.clear();
 		}
 	public:
 
@@ -281,7 +281,7 @@ namespace OOX
 									pItem = new Logic::CTbl( oReader );
 
 								if ( pItem )
-									m_arrItems.Add( pItem );
+									m_arrItems.push_back( pItem );
 							}
 						}
 						else if ( _T("w:background") == sName )
@@ -309,7 +309,7 @@ namespace OOX
 					if ( oBody.GetNodes( _T("*"), oBodyChilds ) )
 					{
 						XmlUtils::CXmlNode oItem;
-						for ( int nIndex = 0; nIndex < oBodyChilds.GetCount(); nIndex++ )
+						for (unsigned  int nIndex = 0; nIndex < oBodyChilds.GetCount(); nIndex++ )
 						{
 							if ( oBodyChilds.GetAt( nIndex, oItem ) )
 							{
@@ -380,7 +380,7 @@ namespace OOX
 									pItem = new Logic::CTbl( oItem );
 
 								if ( pItem )
-									m_arrItems.Add( pItem );
+									m_arrItems.push_back( pItem );
 							}
 						}
 					}
@@ -406,7 +406,7 @@ namespace OOX
 
 			sXml += _T("<w:body>");
 
-			for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+			for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
 				if ( m_arrItems[nIndex] )
 				{
@@ -444,15 +444,12 @@ namespace OOX
 
 		void ClearItems()
 		{
-			for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+			for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
-				if ( m_arrItems[nIndex] )
-					delete m_arrItems[nIndex];
-
+				if ( m_arrItems[nIndex] )delete m_arrItems[nIndex];
 				m_arrItems[nIndex] = NULL;
 			}
-
-			m_arrItems.RemoveAll();
+			m_arrItems.clear();
 		}
 		void AddImage(const CPath& oImagePath, const long lWidth, const long lHeight)
 		{
@@ -465,7 +462,7 @@ namespace OOX
 
 			//// Добавить добавление картинки в параграф
 
-			//m_arrItems.Add( pPara );
+			//m_arrItems.push_back( pPara );
 		}
 		void AddImage(const CPath& oImagePath, const long lEmuX, const CString& sHRelativeFrom, const long lEmuY, const CString& sVRelativeFrom, const long lWidthEmu, const long lHeightEmu)
 		{
@@ -478,7 +475,7 @@ namespace OOX
 
 			//// Добавить добавление картинки в параграф
 
-			//m_arrItems.Add( pPara );
+			//m_arrItems.push_back( pPara );
 		}
 		void AddImageInBegin(const CPath& oImagePath, const long lWidth, const long lHeight)
 		{
@@ -493,13 +490,13 @@ namespace OOX
 
 			//// Добавить добавление картинки в параграф
 
-			//m_arrItems.Add( pPara );
+			//m_arrItems.push_back( pPara );
 		}
 		void AddSpaceToLast(const int nCount)
 		{
-			if ( m_arrItems.GetSize() > 0 && et_w_p == m_arrItems[m_arrItems.GetSize() - 1]->getType() )
+			if ( m_arrItems.size() > 0 && et_w_p == m_arrItems[m_arrItems.size() - 1]->getType() )
 			{
-				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems[m_arrItems.GetSize() - 1];
+				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems[m_arrItems.size() - 1];
 				pPara->AddSpace( nCount );
 			}
 		}
@@ -512,7 +509,7 @@ namespace OOX
 			Logic::CParagraph* pPara = (Logic::CParagraph*)pNewElement;
 			pPara->AddBreak( SimpleTypes::brtypePage );
 
-			m_arrItems.Add( pNewElement );
+			m_arrItems.push_back( pNewElement );
 		}
 		void AddText(CString& sText)
 		{
@@ -523,13 +520,13 @@ namespace OOX
 			Logic::CParagraph* pPara = (Logic::CParagraph*)pNewElement;
 			pPara->AddText( sText );
 
-			m_arrItems.Add( pNewElement );
+			m_arrItems.push_back( pNewElement );
 		}
 		void AddTextToLast(CString& sText)
 		{
-			if ( m_arrItems.GetSize() > 0 && et_w_p == m_arrItems[m_arrItems.GetSize() - 1]->getType() )
+			if ( m_arrItems.size() > 0 && et_w_p == m_arrItems[m_arrItems.size() - 1]->getType() )
 			{
-				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems[m_arrItems.GetSize() - 1];
+				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems[m_arrItems.size() - 1];
 				pPara->AddText( sText );
 			}
 		}
@@ -547,13 +544,13 @@ namespace OOX
 			// TO DO: Сделать добавление гиперссылок в параграфах
 			//pPara->AddHyperlink( rId, sText );
 
-			m_arrItems.Add( pNewElement );
+			m_arrItems.push_back( pNewElement );
 		}
 		void AddHyperlinkToLast(CString& sNameHref, CString& sText)
 		{
-			if ( m_arrItems.GetSize() > 0 && et_w_p == m_arrItems[m_arrItems.GetSize() - 1]->getType() )
+			if ( m_arrItems.size() > 0 && et_w_p == m_arrItems[m_arrItems.size() - 1]->getType() )
 			{
-				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems[m_arrItems.GetSize() - 1];
+				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems[m_arrItems.size() - 1];
 
 				smart_ptr<OOX::File> oHyperlink = smart_ptr<OOX::File>( new OOX::HyperLink( sNameHref ) );
 				const OOX::RId rId = Add( oHyperlink );
@@ -580,8 +577,8 @@ namespace OOX
 		nullable<OOX::Logic::CSectionProperty> m_oSectPr;
 		nullable<OOX::Logic::CBackground     > m_oBackground;
 
-		CSimpleArray<WritingElement *>         m_arrItems;
-		CSimpleArray<CString>				m_arrShapeTypes;
+		std::vector<WritingElement *>			m_arrItems;
+		std::vector<CString>					m_arrShapeTypes;
 
 	};
 

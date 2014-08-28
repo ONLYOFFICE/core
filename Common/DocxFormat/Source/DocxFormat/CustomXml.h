@@ -59,7 +59,7 @@ namespace OOX
 			CString m_sUri;
 		};
 
-		class CShemaRefs : public WritingElement
+		class CShemaRefs : public WritingElementWithChilds<CShemaRef>
 		{
 		public:
 			CShemaRefs()
@@ -93,8 +93,8 @@ namespace OOX
 					{
 						if ( oNodes.GetAt( nIndex, oItem ) )
 						{
-							CShemaRef oShemeRef = oItem;
-							m_arrShemeRef.Add( oShemeRef );
+							CShemaRef *oShemeRef = new CShemaRef(oItem);
+							if (oShemeRef) m_arrItems.push_back( oShemeRef );
 						}
 					}
 				}
@@ -117,7 +117,6 @@ namespace OOX
 
 		public:
 
-			CSimpleArray<CShemaRef> m_arrShemeRef;
 		};
 
 	public:

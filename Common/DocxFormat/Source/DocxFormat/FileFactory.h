@@ -17,6 +17,7 @@ namespace OOX
 namespace OOX
 {
 	const NSCommon::smart_ptr<OOX::File> CreateFile(const CPath& oPath, const OOX::Rels::CRelationShip& oRelation);
+	const NSCommon::smart_ptr<OOX::File> CreateFile(const CPath& oPath, OOX::Rels::CRelationShip* pRelation);
 } // namespace OOX
 
 #endif // OOX_FILE_FACTORY_INCLUDE_H_

@@ -1433,6 +1433,12 @@ namespace OOX
 			}
 			virtual ~CHeaders()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrHeaders.size(); nIndex++ )
+				{
+					if ( m_arrHeaders[nIndex] ) delete m_arrHeaders[nIndex];
+					m_arrHeaders[nIndex] = NULL;
+				}
+				m_arrHeaders.clear();
 			}
 
 		public:
@@ -1450,8 +1456,8 @@ namespace OOX
 					{
 						if ( oHeaders.GetAt( nIndex, oHeader ) )
 						{
-							ComplexTypes::Word::CString_ oHead = oHeader;
-							m_arrHeaders.Add( oHead );
+							ComplexTypes::Word::CString_ *oHead = new ComplexTypes::Word::CString_(oHeader);
+							if (oHead) m_arrHeaders.push_back( oHead );
 						}
 					}
 				}
@@ -1468,8 +1474,8 @@ namespace OOX
 
 					if ( _T("w:header") == sName )
 					{
-						ComplexTypes::Word::CString_ oHead = oReader;
-						m_arrHeaders.Add( oHead );
+						ComplexTypes::Word::CString_ *oHead = new ComplexTypes::Word::CString_(oReader);
+						if (oHead) m_arrHeaders.push_back( oHead );
 					}
 				}
 			}
@@ -1477,10 +1483,11 @@ namespace OOX
 			{
 				CString sResult = _T("<w:headers>");
 
-				for ( int nIndex = 0; nIndex < m_arrHeaders.GetSize(); nIndex++ )
+				for (unsigned int nIndex = 0; nIndex < m_arrHeaders.size(); nIndex++ )
 				{		
 					sResult += _T("<w:header ");
-					sResult += m_arrHeaders[nIndex].ToString();
+					if (m_arrHeaders[nIndex])
+						sResult += m_arrHeaders[nIndex]->ToString();
 					sResult += _T("/>");
 				}
 
@@ -1495,7 +1502,7 @@ namespace OOX
 			}
 		public:
 
-			CSimpleArray<ComplexTypes::Word::CString_ > m_arrHeaders;
+			std::vector<ComplexTypes::Word::CString_ *> m_arrHeaders;
 		};
 
 		//--------------------------------------------------------------------------------

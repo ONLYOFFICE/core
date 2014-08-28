@@ -15,7 +15,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// smartTag 17.5.1.9 (Part 1)
 		//--------------------------------------------------------------------------------	
-		class CSmartTag : public WritingElement
+		class CSmartTag : public WritingElementWithChilds<>
 		{
 		public:
 			CSmartTag()
@@ -31,46 +31,21 @@ namespace OOX
 			}
 			virtual ~CSmartTag()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
 			}
 
 		public:
 
 			const CSmartTag &operator =(const XmlUtils::CXmlNode& oNode)
 			{
-				Clear();
+				ClearItems();
 				fromXML( (XmlUtils::CXmlNode&)oNode );
 				return *this;
 			}
 			const CSmartTag &operator =(const XmlUtils::CXmlLiteReader& oReader)
 			{
-				Clear();
+				ClearItems();
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
-			}
-
-			void Clear()
-			{
-				m_sElement.reset();
-				m_sUri.reset();
-				
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
 			}
 
 		public:
@@ -115,7 +90,6 @@ namespace OOX
 			nullable<CString> m_sUri;
 
 			// Childs
-			CSimpleArray<WritingElement *>                          m_arrItems;
 		};
 	} // namespace Logic
 } // namespace OOX

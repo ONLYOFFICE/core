@@ -50,7 +50,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CRichText* rich)
 	odf_context()->chart_context()->start_text();
 	OoxConverter::convert(rich->m_oBodyPr.GetPointer());
 	
-	for (long i=0 ; i < rich->m_arrItems.GetSize();i++)
+	for (unsigned int i=0 ; i < rich->m_arrItems.GetSize();i++)
 	{
 		OoxConverter::convert(rich->m_arrItems[i]);
 	}
@@ -63,7 +63,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CTextProperties* txPr)
 	odf_context()->chart_context()->start_text();
 	OoxConverter::convert(txPr->m_oBodyPr.GetPointer());
 	
-	for (long i=0 ; i < txPr->m_arrItems.GetSize();i++)
+	for (unsigned int i=0 ; i < txPr->m_arrItems.GetSize();i++)
 	{
 		OoxConverter::convert(txPr->m_arrItems[i]);
 	}
@@ -137,7 +137,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_PlotArea* ct_plotArea)
 
 	convert(ct_plotArea->m_layout);
 ///////////////////////
-	for (long i=0; i< ct_plotArea->m_Items1.GetCount(); i++)
+	for (unsigned int i=0; i< ct_plotArea->m_Items1.GetCount(); i++)
 	{
 		if (!ct_plotArea->m_ItemsElementName1[i]) continue;
 		switch(*ct_plotArea->m_ItemsElementName1[i])
@@ -148,7 +148,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_PlotArea* ct_plotArea)
 			case OOX::Spreadsheet::itemschoicetype6VALAX:	convert((OOX::Spreadsheet::CT_ValAx*)ct_plotArea->m_Items1[i]);break;				
 		}
 	}
-	for (long i=0; i< ct_plotArea->m_Items.GetCount(); i++)//
+	for (unsigned int i=0; i< ct_plotArea->m_Items.GetCount(); i++)//
 	{
 		if (!ct_plotArea->m_ItemsElementName0[i]) continue;
 		switch(*ct_plotArea->m_ItemsElementName0[i])
@@ -376,7 +376,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Area3DChart *chart)
 	if (chart->m_grouping && chart->m_grouping->m_val)
 		odf_context()->chart_context()->set_chart_grouping(*chart->m_grouping->m_val);
 
-	for (long i=0; i< chart->m_ser.GetCount(); i++)
+	for (unsigned int i=0; i< chart->m_ser.GetCount(); i++)
 	{
 		convert(chart->m_ser[i]);
 	}
@@ -395,11 +395,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_AreaChart *chart)
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
 
-		for (long i=0; i< chart->m_ser.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_ser.GetCount(); i++)
 		{
 			convert(chart->m_ser[i]);
 		}
-		for (long i=0; i< chart->m_axId.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_axId.GetCount(); i++)
 		{
 			odf_context()->chart_context()->add_axis_group_series(*chart->m_axId[i]->m_val);
 		}		
@@ -430,11 +430,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Bar3DChart *chart)
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
 
-		for (long i=0; i< chart->m_ser.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_ser.GetCount(); i++)
 		{
 			convert(chart->m_ser[i]);
 		}
-		for (long i=0; i< chart->m_axId.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_axId.GetCount(); i++)
 		{
 			odf_context()->chart_context()->add_axis_group_series(*chart->m_axId[i]->m_val);
 		}		
@@ -461,11 +461,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_BarChart *chart)
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
 
-		for (long i=0; i< chart->m_ser.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_ser.GetCount(); i++)
 		{
 			convert(chart->m_ser[i]);
 		}
-		for (long i=0; i< chart->m_axId.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_axId.GetCount(); i++)
 		{
 			odf_context()->chart_context()->add_axis_group_series(*chart->m_axId[i]->m_val);
 		}		
@@ -483,11 +483,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Line3DChart *chart)
 
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
-		for (long i=0; i< chart->m_ser.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_ser.GetCount(); i++)
 		{
 			convert(chart->m_ser[i]);
 		}
-		for (long i=0; i< chart->m_axId.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_axId.GetCount(); i++)
 		{
 			odf_context()->chart_context()->add_axis_group_series(*chart->m_axId[i]->m_val);
 		}		
@@ -509,11 +509,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_LineChart *chart)
 
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
-		for (long i=0; i< chart->m_ser.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_ser.GetCount(); i++)
 		{
 			convert(chart->m_ser[i]);
 		}
-		for (long i=0; i< chart->m_axId.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_axId.GetCount(); i++)
 		{
 			odf_context()->chart_context()->add_axis_group_series(*chart->m_axId[i]->m_val);
 		}		
@@ -528,7 +528,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Pie3DChart *chart)
 	
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
-		for (long i=0; i< chart->m_ser.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_ser.GetCount(); i++)
 		{
 			convert(chart->m_ser[i]);
 		}
@@ -546,7 +546,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_PieChart *chart)
 	
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
-		for (long i=0; i< chart->m_ser.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_ser.GetCount(); i++)
 		{
 			convert(chart->m_ser[i]);
 		}
@@ -564,11 +564,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Surface3DChart *chart)
 	odf_context()->chart_context()->set_chart_3D(true);
 	
 	odf_context()->chart_context()->start_group_series();
-		for (long i=0; i< chart->m_ser.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_ser.GetCount(); i++)
 		{
 			convert(chart->m_ser[i]);
 		}
-		for (long i=0; i< chart->m_axId.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_axId.GetCount(); i++)
 		{
 			odf_context()->chart_context()->add_axis_group_series(*chart->m_axId[i]->m_val);
 		}		
@@ -581,11 +581,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_SurfaceChart *chart)
 	odf_context()->chart_context()->set_chart_type(L"surface");
 	
 	odf_context()->chart_context()->start_group_series();
-		for (long i=0; i< chart->m_ser.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_ser.GetCount(); i++)
 		{
 			convert(chart->m_ser[i]);
 		}
-		for (long i=0; i< chart->m_axId.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_axId.GetCount(); i++)
 		{
 			odf_context()->chart_context()->add_axis_group_series(*chart->m_axId[i]->m_val);
 		}		
@@ -599,11 +599,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_BubbleChart *chart)
 	
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
-		for (long i=0; i< chart->m_ser.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_ser.GetCount(); i++)
 		{
 			convert(chart->m_ser[i]);
 		}
-		for (long i=0; i< chart->m_axId.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_axId.GetCount(); i++)
 		{
 			odf_context()->chart_context()->add_axis_group_series(*chart->m_axId[i]->m_val);
 		}		
@@ -619,7 +619,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_DoughnutChart *chart)
 	
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
-		for (long i=0; i< chart->m_ser.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_ser.GetCount(); i++)
 		{
 			convert(chart->m_ser[i]);
 		}
@@ -638,11 +638,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ScatterChart *chart)
 	
 
 	odf_context()->chart_context()->start_group_series();
-		for (long i=0; i< chart->m_ser.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_ser.GetCount(); i++)
 		{
 			convert(chart->m_ser[i]);
 		}
-		for (long i=0; i< chart->m_axId.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_axId.GetCount(); i++)
 		{
 			odf_context()->chart_context()->add_axis_group_series(*chart->m_axId[i]->m_val);
 		}		
@@ -659,7 +659,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_RadarChart *chart)
 	
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
-		for (long i=0; i< chart->m_ser.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_ser.GetCount(); i++)
 		{
 			convert(chart->m_ser[i]);
 		}		
@@ -677,11 +677,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_StockChart *chart)
 	
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
-		for (long i=0; i< chart->m_ser.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_ser.GetCount(); i++)
 		{
 			convert(chart->m_ser[i]);
 		}
-		for (long i=0; i< chart->m_axId.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_axId.GetCount(); i++)
 		{
 			odf_context()->chart_context()->add_axis_group_series(*chart->m_axId[i]->m_val);
 		}		
@@ -725,7 +725,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_OfPieChart *chart)
 
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
-		for (long i=0; i< chart->m_ser.GetCount(); i++)
+		for (unsigned int i=0; i< chart->m_ser.GetCount(); i++)
 		{
 			convert(chart->m_ser[i]);
 		}
@@ -871,7 +871,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker, CAtlArray<OOX::S
 	long count_point = odf_context()->chart_context()->get_count_data_points_series();
 	long current_point = 0;
 	long set_point;
-	for (long i =0 ;i < dPt.GetCount(); i++)
+	for (unsigned int i =0 ;i < dPt.GetCount(); i++)
 	{
 		if (dPt[i] == NULL)continue;
 
@@ -913,7 +913,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_DLbls* ser_lbls)
 {
 	if (ser_lbls == NULL)return;
 
-	for (long i=0; i< ser_lbls->m_Items.GetCount(); i++)
+	for (unsigned int i=0; i< ser_lbls->m_Items.GetCount(); i++)
 	{
 		bool boolVal = false;
 
@@ -1057,7 +1057,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_NumData	*num_data)
 	//std::vector<double> data;
 	std::vector<std::wstring> data;
 
-	for (long i=0; i < num_data->m_pt.GetCount(); i++)
+	for (unsigned int i=0; i < num_data->m_pt.GetCount(); i++)
 	{
 
 		if (num_data->m_pt[i] && num_data->m_pt[i]->m_v)
@@ -1083,7 +1083,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_StrData *str_data, bool label)
 	if (str_data == NULL)return;
 	std::vector<std::wstring> data;
 
-	for (long i=0; i < str_data->m_pt.GetCount(); i++)
+	for (unsigned int i=0; i < str_data->m_pt.GetCount(); i++)
 	{
 		if (str_data->m_pt[i] && str_data->m_pt[i]->m_v)
 			data.push_back(string2std_string(*str_data->m_pt[i]->m_v));

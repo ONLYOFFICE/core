@@ -13,7 +13,7 @@ namespace OOX
 		// CTxbxContent 9.8.1.1 (Part 4)
 		// 20.4.2.38 txbxContent (Rich Text Box Content Container)
 		//--------------------------------------------------------------------------------	
-		class CTxbxContent : public WritingElement
+		class CTxbxContent : public WritingElementWithChilds<>
 		{
 		public:
 			CTxbxContent()
@@ -29,15 +29,7 @@ namespace OOX
 			}
 			virtual ~CTxbxContent()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
 
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
 			}
 
 		public:
@@ -68,7 +60,6 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<WritingElement *> m_arrItems;
 		};
 
 		//--------------------------------------------------------------------------------

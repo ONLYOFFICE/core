@@ -575,7 +575,7 @@ namespace OOX
 			SimpleTypes::CImageAspect<SimpleTypes::imageaspectIgnore> m_oAspect;
 			SimpleTypes::CColorType<SimpleTypes::colortypeWhite>      m_oColor;
 			SimpleTypes::CColorType<SimpleTypes::colortypeWhite>      m_oColor2;
-			CSimpleArray<TIntermediateColor>                          m_arrColors;
+			std::vector<TIntermediateColor*>                          m_arrColors;
 			nullable<SimpleTypes::CTrueFalse<>>                       m_oDetectMouseClick;
 			SimpleTypes::CFixedPercentage                             m_oFocus;
 			SimpleTypes::Vml::CVml_Vector2D_Percentage                m_oFocusPosition;
@@ -728,7 +728,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CFormulas 14.1.2.6 (Part4)
 		//--------------------------------------------------------------------------------	
-		class CFormulas : public WritingElement
+		class CFormulas : public WritingElementWithChilds<OOX::Vml::CF>
 		{
 		public:
 			WritingElement_AdditionConstructors(CFormulas)
@@ -756,8 +756,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("v:f") == sName )
 					{
-						OOX::Vml::CF oF = oReader;
-						m_arrF.Add( oF );
+						OOX::Vml::CF *oF = new OOX::Vml::CF(oReader);
+						if (oF) m_arrItems.push_back( oF );
 					}
 				}
 			}
@@ -765,8 +765,11 @@ namespace OOX
 			{
 				CString sResult = _T("<v:formulas>");
 
-				for ( int nIndex = 0; nIndex < m_arrF.GetSize(); nIndex++ )
-					sResult += m_arrF[nIndex].toXML();
+				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				{
+					if (m_arrItems[nIndex])
+						sResult += m_arrItems[nIndex]->toXML();
+				}
 
 				sResult += _T("</v:formulas>");
 
@@ -781,7 +784,6 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<OOX::Vml::CF> m_arrF;
 
 		};
 
@@ -930,7 +932,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CHandles 14.1.2.9 (Part4)
 		//--------------------------------------------------------------------------------	
-		class CHandles : public WritingElement
+		class CHandles : public WritingElementWithChilds<OOX::Vml::CH>
 		{
 		public:
 			WritingElement_AdditionConstructors(CHandles)
@@ -958,8 +960,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("v:h") == sName )
 					{
-						OOX::Vml::CH oH = oReader;
-						m_arrH.Add( oH );
+						OOX::Vml::CH *oH = new OOX::Vml::CH(oReader);
+						if (oH) m_arrItems.push_back( oH );
 					}
 				}
 			}
@@ -967,8 +969,11 @@ namespace OOX
 			{
 				CString sResult = _T("<v:handles>");
 
-				for ( int nIndex = 0; nIndex < m_arrH.GetSize(); nIndex++ )
-					sResult += m_arrH[nIndex].toXML();
+				for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				{
+					if (m_arrItems[nIndex])
+						sResult += m_arrItems[nIndex]->toXML();
+				}
 
 				sResult += _T("</v:handles>");
 
@@ -983,7 +988,6 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<OOX::Vml::CH> m_arrH;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -2684,25 +2688,13 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CGroup 14.1.2.7 (Part4)
 		//--------------------------------------------------------------------------------	
-		class CGroup : public WritingElement
+		class CGroup : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CGroup)
-			CGroup()
-			{
-			}
-			virtual ~CGroup()
-			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
-			}
+			WritingElement_AdditionConstructors(CGroup);
+			
+			CGroup(){}
+			virtual ~CGroup(){}
 
 		public:
 
@@ -2885,10 +2877,6 @@ namespace OOX
 			nullable<SimpleTypes::CEditAs<>>                                m_oEditAs;
 			nullable<SimpleTypes::Vml::CVml_TableLimits>                    m_oTableLimits;
 			SimpleTypes::Vml::CVml_TableProperties<0>                       m_oTableProperties;                 
-
-//childs
-			CSimpleArray<WritingElement*>	m_arrItems;
-
 		};
 	} // namespace Vml
 } // namespace OOX

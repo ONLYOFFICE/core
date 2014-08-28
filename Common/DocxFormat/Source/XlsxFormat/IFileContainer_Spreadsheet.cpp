@@ -32,12 +32,12 @@ namespace OOX
 
 		void IFileContainer::Read (const OOX::CRels& oRels, const OOX::CPath& oPath)
 		{
-			int nCount = oRels.m_arrRelations.GetSize();
+			unsigned int nCount = oRels.m_arrRelations.size();
 
-			for ( int nIndex = 0; nIndex < nCount; ++nIndex )
+			for (unsigned int nIndex = 0; nIndex < nCount; ++nIndex )
 			{
 				smart_ptr<OOX::File>& pFile = OOX::Spreadsheet::CreateFile( oPath, oRels.m_arrRelations[nIndex] );
-				Add( oRels.m_arrRelations[nIndex].rId(), pFile );
+				Add( oRels.m_arrRelations[nIndex]->rId(), pFile );
 			}
 		}
 

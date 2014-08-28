@@ -19,6 +19,7 @@ namespace OOX
 	namespace Spreadsheet
 	{
 		NSCommon::smart_ptr<OOX::File> CreateFile(const CPath& oPath, const OOX::Rels::CRelationShip& oRelation);
+		NSCommon::smart_ptr<OOX::File> CreateFile(const OOX::CPath& oPath,  OOX::Rels::CRelationShip* pRelation);
 	}
 } // namespace OOX
 

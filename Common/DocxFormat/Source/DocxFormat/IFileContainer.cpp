@@ -30,15 +30,18 @@ namespace OOX
 
 	void IFileContainer::Read (const OOX::CRels& oRels, const OOX::CPath& oPath)
 	{
-		int nCount = oRels.m_arrRelations.GetSize();
+		unsigned int nCount = oRels.m_arrRelations.size();
 
-		for ( int nIndex = 0; nIndex < nCount; ++nIndex )
+		for ( unsigned int nIndex = 0; nIndex < nCount; ++nIndex )
 		{
-			const Rels::CRelationShip& oCurRels = oRels.m_arrRelations[nIndex];
+			Rels::CRelationShip *oCurRels = oRels.m_arrRelations[nIndex];
+
+			if (oCurRels == NULL) continue;
+			
 			smart_ptr<OOX::File> oFile = OOX::CreateFile( oPath, oCurRels );
 			if(oFile.IsInit() && FileTypes::Unknow == oFile->type())
 				oFile = OOX::Spreadsheet::CreateFile( oPath, oCurRels );
-			Add( oCurRels.rId(), oFile );
+			Add( oCurRels->rId(), oFile );
 		}
 	}
 

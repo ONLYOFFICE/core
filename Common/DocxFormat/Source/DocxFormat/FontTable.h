@@ -26,13 +26,22 @@ namespace OOX
 
 		virtual ~CFontTable()
 		{
+            for ( unsigned int nIndex = 0; nIndex < m_arrFonts.size(); nIndex++ )
+			{
+				if (m_arrFonts[nIndex] )
+					delete m_arrFonts[nIndex];
+
+				m_arrFonts[nIndex] = NULL;
+			}
+
+			m_arrFonts.clear();
 		}
 
-		bool Find(CString &sFontName, CFont &oFont)
+		bool Find(CString &sFontName, CFont *oFont)
 		{
-			for ( int nIndex = 0; nIndex < m_arrFonts.GetSize(); nIndex++ )
+			for (unsigned int nIndex = 0; nIndex < m_arrFonts.size(); nIndex++ )
 			{
-				if ( sFontName == m_arrFonts[nIndex].m_sName )
+				if ((m_arrFonts[nIndex]) && ( sFontName == m_arrFonts[nIndex]->m_sName ))
 				{
 					oFont = m_arrFonts[nIndex];
 					return true;
@@ -60,9 +69,12 @@ namespace OOX
 					XmlUtils::CXmlNode oFontNode;
 					if ( oFontList.GetAt( nFontIndex, oFontNode ) )
 					{
-						CFont oFont;
-						oFont.fromXML( oFontNode );
-						m_arrFonts.Add( oFont );
+						CFont *oFont = new CFont();
+						if (oFont)
+						{
+							oFont->fromXML(oFontNode);
+							m_arrFonts.push_back( oFont );
+						}
 					}
 				}
 			}
@@ -71,10 +83,10 @@ namespace OOX
 		{
 			CString sXml;
 			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:fonts xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">");
-			for ( int nIndex = 0; nIndex < m_arrFonts.GetSize(); nIndex++ )
+			for (unsigned int nIndex = 0; nIndex < m_arrFonts.size(); nIndex++ )
 			{
-				const CFont &oFont = m_arrFonts[nIndex];
-				sXml += oFont.toXML();
+				if (m_arrFonts[nIndex])
+					sXml += m_arrFonts[nIndex]->toXML();
 			}
 			sXml += _T("</w:fonts>");
 
@@ -99,7 +111,7 @@ namespace OOX
 
 	public:
 
-		CSimpleArray<CFont> m_arrFonts;
+		std::vector<CFont*> m_arrFonts;
 
 	};
 

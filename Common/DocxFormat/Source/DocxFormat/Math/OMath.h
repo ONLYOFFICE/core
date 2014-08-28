@@ -9,7 +9,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// COMath 22.1.2.77 
 		//--------------------------------------------------------------------------------	
-		class CMathArgNodes : public WritingElement
+		class CMathArgNodes : public WritingElementWithChilds<>
 		{
 		public:
 			CMathArgNodes()
@@ -26,43 +26,21 @@ namespace OOX
 			}
 			virtual ~CMathArgNodes()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
 			}
 
 		public:
 
 			const CMathArgNodes &operator =(const XmlUtils::CXmlNode& oNode)
 			{
-				Clear();
+				ClearItems();
 				fromXML( (XmlUtils::CXmlNode&)oNode );
 				return *this;
 			}
 			const CMathArgNodes &operator =(const XmlUtils::CXmlLiteReader& oReader)
 			{
-				Clear();
+				ClearItems();
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
-			}
-
-			void Clear()
-			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
 			}
 
 		public:
@@ -75,7 +53,7 @@ namespace OOX
 			{
 				CString sResult = _T("<") + sNodeName + _T(">");
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex])
 					{
@@ -98,7 +76,6 @@ namespace OOX
 
 		public:
 			// Childs
-			CSimpleArray<WritingElement *> m_arrItems;
 		};
 
 		

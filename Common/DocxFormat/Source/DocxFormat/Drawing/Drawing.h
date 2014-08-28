@@ -473,6 +473,12 @@ namespace OOX
 			}
 			virtual ~CWrapPath()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrLineTo.size(); nIndex++ )
+				{
+					if ( m_arrLineTo[nIndex] )delete m_arrLineTo[nIndex];
+					m_arrLineTo[nIndex] = NULL;
+				}
+				m_arrLineTo.clear();
 			}
 
 		public:
@@ -501,8 +507,8 @@ namespace OOX
 					}
 					else if ( bStart && _T("wp:lineTo") == sName )
 					{
-						ComplexTypes::Drawing::CPoint2D oPoint = oReader;
-						m_arrLineTo.Add( oPoint );
+						ComplexTypes::Drawing::CPoint2D *oPoint = new ComplexTypes::Drawing::CPoint2D(oReader);
+						if (oPoint) m_arrLineTo.push_back( oPoint );
 					}
 				}
 			}
@@ -541,11 +547,11 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::COnOff<> >              m_oEdited;
+			nullable<SimpleTypes::COnOff<> >				m_oEdited;
 
 			// Childs
-			nullable<ComplexTypes::Drawing::CPoint2D>               m_oStart;
-			CSimpleArray<ComplexTypes::Drawing::CPoint2D> m_arrLineTo;
+			nullable<ComplexTypes::Drawing::CPoint2D>       m_oStart;
+			std::vector<ComplexTypes::Drawing::CPoint2D*>	m_arrLineTo;
 		};
 		//--------------------------------------------------------------------------------
 		// CWrapThrough 20.4.2.18 (Part 1)

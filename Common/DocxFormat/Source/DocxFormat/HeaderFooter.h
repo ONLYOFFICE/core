@@ -39,7 +39,7 @@ namespace OOX
 		}
 		virtual ~CHdrFtr()
 		{
-			for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+			for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
 				if ( m_arrItems[nIndex] )
 					delete m_arrItems[nIndex];
@@ -47,7 +47,7 @@ namespace OOX
 				m_arrItems[nIndex] = NULL;
 			}
 
-			m_arrItems.RemoveAll();
+			m_arrItems.clear();
 		}
 
 
@@ -146,7 +146,7 @@ namespace OOX
 						pItem = new Logic::CTbl( oReader );
 
 					if ( pItem )
-						m_arrItems.Add( pItem );
+						m_arrItems.push_back( pItem );
 				}
 			}
 #else
@@ -233,7 +233,7 @@ namespace OOX
 							pItem = new Logic::CTbl( oItem );
 
 						if ( pItem )
-							m_arrItems.Add( pItem );
+							m_arrItems.push_back( pItem );
 					}
 				}
 			}
@@ -250,7 +250,7 @@ namespace OOX
 			else
 				return;
 
-			for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+			for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
 				if ( m_arrItems[nIndex] )
 				{
@@ -296,15 +296,15 @@ namespace OOX
 
 		void AddParagraph(Logic::CParagraph *pPara)
 		{
-			m_arrItems.Add( (WritingElement*)pPara );
+			m_arrItems.push_back( (WritingElement*)pPara );
 		}
 	public:
 		CPath							m_oReadPath;
-		OOX::EElementType              m_eType;
+		OOX::EElementType				m_eType;
 
 		// Childs
-		CSimpleArray<WritingElement* > m_arrItems;
-		CSimpleArray<CString>				m_arrShapeTypes;
+		std::vector<WritingElement* >	m_arrItems;
+		std::vector<CString>			m_arrShapeTypes;
 	};
 
 } // namespace OOX

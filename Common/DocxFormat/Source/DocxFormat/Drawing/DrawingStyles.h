@@ -153,7 +153,7 @@ namespace OOX
  		//--------------------------------------------------------------------------------
 		// CBackgroundFillStyleList 20.1.4.1.7 (Part 1)
 		//--------------------------------------------------------------------------------	
-		class CBackgroundFillStyleList : public WritingElement
+		class CBackgroundFillStyleList : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionConstructors(CBackgroundFillStyleList)
@@ -162,7 +162,7 @@ namespace OOX
 			}
 			CBackgroundFillStyleList(const CBackgroundFillStyleList& oOther)
 			{
-				for ( int nIndex = 0; nIndex < oOther.m_arrItems.GetSize(); nIndex++ )
+				for (unsigned int nIndex = 0; nIndex < oOther.m_arrItems.size(); nIndex++ )
 				{
 					OOX::EElementType eType = oOther.m_arrItems[nIndex]->getType();
 
@@ -178,12 +178,11 @@ namespace OOX
 					}
 
 					if ( NULL != pItem )
-						m_arrItems.Add( pItem );
+						m_arrItems.push_back( pItem );
 				}
 			}
 			virtual ~CBackgroundFillStyleList()
 			{
-				Clear();
 			}
 
 		public:
@@ -194,6 +193,8 @@ namespace OOX
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{		
+				ClearItems();
+
 				if ( oReader.IsEmptyNode() )
 					return;
 
@@ -217,14 +218,14 @@ namespace OOX
 						pItem = new OOX::Drawing::CSolidColorFillProperties( oReader );
 
 					if ( pItem )
-						m_arrItems.Add( pItem );
+						m_arrItems.push_back( pItem );
 				}
 			}
 			virtual CString      toXML() const
 			{
 				CString sResult = _T("<a:bgFillStyleLst>"); 
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 					{
@@ -244,23 +245,7 @@ namespace OOX
 
 		public:
 
-			void Clear()
-			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
-			}
-
-		public:
-
 			// Childs
-			CSimpleArray<WritingElement*> m_arrItems;
 		};
 		//-----------------------------------------------------------------------
         // CCustomColor 20.1.4.1.8
@@ -485,7 +470,7 @@ namespace OOX
  		//--------------------------------------------------------------------------------
 		// CFillStyleList 20.1.4.1.13 (Part 1)
 		//--------------------------------------------------------------------------------	
-		class CFillStyleList : public WritingElement
+		class CFillStyleList : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionConstructors(CFillStyleList)
@@ -494,7 +479,7 @@ namespace OOX
 			}
 			CFillStyleList(const CFillStyleList& oOther)
 			{
-				for ( int nIndex = 0; nIndex < oOther.m_arrItems.GetSize(); nIndex++ )
+				for (unsigned  int nIndex = 0; nIndex < oOther.m_arrItems.size(); nIndex++ )
 				{
 					OOX::EElementType eType = oOther.m_arrItems[nIndex]->getType();
 
@@ -510,20 +495,11 @@ namespace OOX
 					}
 
 					if ( NULL != pItem )
-						m_arrItems.Add( pItem );
+						m_arrItems.push_back( pItem );
 				}
 			}
 			virtual ~CFillStyleList()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
 			}
 
 		public:
@@ -533,7 +509,7 @@ namespace OOX
 				// TO DO: Реализовать CFillStyleList::fromXML(XmlUtils::CXmlNode& oNode)
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{		
+			{	
 				if ( oReader.IsEmptyNode() )
 					return;
 
@@ -557,14 +533,14 @@ namespace OOX
 						pItem = new OOX::Drawing::CSolidColorFillProperties( oReader );
 
 					if ( pItem )
-						m_arrItems.Add( pItem );
+						m_arrItems.push_back( pItem );
 				}
 			}
 			virtual CString      toXML() const
 			{
 				CString sResult = _T("<a:fillStyleLst>"); 
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 					{
@@ -584,7 +560,6 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<WritingElement*> m_arrItems;
 		};
 		//--------------------------------------------------------------------------------
 		// CSupplementalFont 20.1.4.1.16 (Part 1)
@@ -782,6 +757,12 @@ namespace OOX
 			}
 			virtual ~CLineStyleList()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrLn.size(); nIndex++ )
+				{
+					if ( m_arrLn[nIndex] ) delete m_arrLn[nIndex];
+					m_arrLn[nIndex] = NULL;
+				}
+				m_arrLn.clear();
 			}
 
 		public:
@@ -801,8 +782,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("a:ln") == sName )
 					{
-						OOX::Drawing::CLineProperties oLP = oReader;
-						m_arrLn.Add( oLP );
+						OOX::Drawing::CLineProperties *oLP = new OOX::Drawing::CLineProperties(oReader);
+						m_arrLn.push_back( oLP );
 					}
 				}
 			}
@@ -810,8 +791,11 @@ namespace OOX
 			{
 				CString sResult = _T("<a:lnStyleLst>"); 
 
-				for ( int nIndex = 0; nIndex < m_arrLn.GetSize(); nIndex++ )
-					sResult += m_arrLn[nIndex].toXML();
+				for (unsigned int nIndex = 0; nIndex < m_arrLn.size(); nIndex++ )
+				{
+					if (m_arrLn[nIndex])
+						sResult += m_arrLn[nIndex]->toXML();
+				}
 
 				sResult += _T("</a:lnStyleLst>"); 
 
@@ -825,7 +809,7 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<OOX::Drawing::CLineProperties> m_arrLn;
+			std::vector<OOX::Drawing::CLineProperties*> m_arrLn;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -841,6 +825,15 @@ namespace OOX
 			}
 			virtual ~CFontCollection()
 			{
+	            for ( unsigned int nIndex = 0; nIndex < m_arrFont.size(); nIndex++ )
+				{
+					if ( m_arrFont[nIndex] )
+						delete m_arrFont[nIndex];
+
+					m_arrFont[nIndex] = NULL;
+				}
+
+				m_arrFont.clear();
 			}
 
 		public:
@@ -876,8 +869,8 @@ namespace OOX
 						m_oExtLst = oReader;
 					else if ( _T("a:font") == sName )
 					{
-						OOX::Drawing::CSupplementalFont oFont = oReader;
-						m_arrFont.Add( oFont );
+						OOX::Drawing::CSupplementalFont *oFont = new OOX::Drawing::CSupplementalFont(oReader);
+						if (oFont) m_arrFont.push_back( oFont );
 					}
 					else if ( _T("a:latin") == sName )
 						m_oLatin = oReader;
@@ -898,8 +891,11 @@ namespace OOX
 				sResult += m_oEa.toXML();
 				sResult += m_oCs.toXML();
 
-				for ( int nIndex = 0; nIndex < m_arrFont.GetSize(); nIndex++ )
-					sResult += m_arrFont[nIndex].toXML();
+				for (unsigned int nIndex = 0; nIndex < m_arrFont.size(); nIndex++ )
+				{
+					if (m_arrFont[nIndex])
+						sResult += m_arrFont[nIndex]->toXML();
+				}
 
 				if ( m_oExtLst.IsInit() )
 					sResult += m_oExtLst->toXML();
@@ -925,7 +921,7 @@ namespace OOX
 			OOX::Drawing::CTextFont                         m_oCs;
 			OOX::Drawing::CTextFont                         m_oEa;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
-			CSimpleArray<OOX::Drawing::CSupplementalFont>   m_arrFont;
+			std::vector<OOX::Drawing::CSupplementalFont*>	m_arrFont;
 			OOX::Drawing::CTextFont                         m_oLatin;
 		};
 

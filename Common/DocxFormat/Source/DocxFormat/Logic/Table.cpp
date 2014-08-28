@@ -298,7 +298,7 @@ namespace OOX
 							pItem = new CTr( oItem );
 
 						if ( pItem )
-							m_arrItems.Add( pItem );
+							m_arrItems.push_back( pItem );
 					}
 				}
 			}
@@ -383,7 +383,7 @@ namespace OOX
 				}
 
 				if ( pItem )
-					m_arrItems.Add( pItem );
+					m_arrItems.push_back( pItem );
 			}
 		}
 
@@ -397,7 +397,7 @@ namespace OOX
 				sResult += m_oTblGrid->toXML();
 			}
 
-			for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+			for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
 				if ( m_arrItems[nIndex] )
 				{
@@ -520,7 +520,7 @@ namespace OOX
 						}
 
 						if ( pItem )
-							m_arrItems.Add( pItem );
+							m_arrItems.push_back( pItem );
 					}
 				}
 			}
@@ -623,7 +623,7 @@ namespace OOX
 				}
 
 				if ( pItem )
-					m_arrItems.Add( pItem );
+					m_arrItems.push_back( pItem );
 			}
 		}
 
@@ -639,7 +639,7 @@ namespace OOX
 
 				sResult += _T(">");
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 					{
@@ -752,7 +752,7 @@ namespace OOX
 						}
 
 						if ( pItem )
-							m_arrItems.Add( pItem );
+							m_arrItems.push_back( pItem );
 					}
 				}
 			}
@@ -838,7 +838,7 @@ namespace OOX
 				}
 
 				if ( pItem )
-					m_arrItems.Add( pItem );
+					m_arrItems.push_back( pItem );
 			}
 		}
 
@@ -855,7 +855,7 @@ namespace OOX
 				else
 					sResult = _T("<w:tc>");
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 					{

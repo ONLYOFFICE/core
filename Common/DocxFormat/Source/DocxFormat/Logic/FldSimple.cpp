@@ -113,7 +113,7 @@ namespace OOX
 						//	pItem = new CSubDoc( oItem );
 
 						if ( pItem )
-							m_arrItems.Add( pItem );
+							m_arrItems.push_back( pItem );
 					}
 				}
 			}
@@ -203,7 +203,7 @@ namespace OOX
 				//	pItem = new CSubDoc( oReader );
 
 				if ( pItem )
-					m_arrItems.Add( pItem );
+					m_arrItems.push_back( pItem );
 			}
 		}
 
@@ -228,7 +228,7 @@ namespace OOX
 
 				sResult += _T(">");
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 					{

@@ -16,7 +16,7 @@
 
 namespace OOX
 {
-	class CComment : public WritingElement
+	class CComment : public WritingElementWithChilds<>
 	{
 	public:
 		WritingElement_AdditionConstructors(CComment)
@@ -25,15 +25,6 @@ namespace OOX
 		}
 		virtual ~CComment()
 		{
-			for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-			{
-				if ( m_arrItems[nIndex] )
-					delete m_arrItems[nIndex];
-
-				m_arrItems[nIndex] = NULL;
-			}
-
-			m_arrItems.RemoveAll();
 		}
 
 	public:
@@ -115,7 +106,7 @@ namespace OOX
 					pItem = new Logic::CTbl( oReader );
 
 				if ( pItem )
-					m_arrItems.Add( pItem );
+					m_arrItems.push_back( pItem );
 			}
 		}
 		virtual CString      toXML() const
@@ -135,12 +126,14 @@ namespace OOX
 			return sRes;
 		}
 	private:
-		CString getTextArr(const CSimpleArray<WritingElement* >& arrItems, bool& bFirstPar) const
+		CString getTextArr(const std::vector<WritingElement* > & arrItems, bool& bFirstPar) const
 		{
 			CString sRes;
-			for(int i = 0, length = arrItems.GetSize(); i < length; ++i)
+			for(unsigned int i = 0, length = arrItems.size(); i < length; ++i)
 			{
 				WritingElement* item = arrItems[i];
+				if (item == NULL) continue;
+
 				switch(item->getType())
 				{
 				case OOX::et_w_sdt:
@@ -237,6 +230,7 @@ namespace OOX
 			}
 			return sRes;
 		}
+
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			// Читаем атрибуты
@@ -258,8 +252,6 @@ namespace OOX
 		nullable<CString > m_oInitials;
 
 		// Childs
-		CSimpleArray<WritingElement* > m_arrItems;
-
 	};
 
 	class CComments : public OOX::File
@@ -274,9 +266,9 @@ namespace OOX
 		}
 		virtual ~CComments()
 		{
-			for(int i = 0, length = m_arrComments.GetSize(); i < length; ++i)
-				delete m_arrComments[i];
-			m_arrComments.RemoveAll();
+			for(unsigned int i = 0, length = m_arrComments.size(); i < length; ++i)
+				if (m_arrComments[i]) delete m_arrComments[i];
+			m_arrComments.clear();
 		}
 	public:
 
@@ -300,7 +292,7 @@ namespace OOX
 				{
 					sName = oReader.GetName();
 					if ( _T("w:comment") == sName )
-						m_arrComments.Add( new CComment(oReader) );
+						m_arrComments.push_back( new CComment(oReader) );
 				}
 			}
 #endif
@@ -327,7 +319,7 @@ namespace OOX
 
 	public:
 
-		CSimpleArray<CComment*> m_arrComments;
+		std::vector<CComment*> m_arrComments;
 
 	};
 	class CCommentExt : public WritingElement
@@ -394,9 +386,9 @@ namespace OOX
 		}
 		virtual ~CCommentsExt()
 		{
-			for(int i = 0, length = m_arrComments.GetSize(); i < length; ++i)
-				delete m_arrComments[i];
-			m_arrComments.RemoveAll();
+			for(unsigned int i = 0, length = m_arrComments.size(); i < length; ++i)
+				if (m_arrComments[i]) delete m_arrComments[i];
+			m_arrComments.clear();
 		}
 	public:
 
@@ -420,7 +412,7 @@ namespace OOX
 				{
 					sName = oReader.GetName();
 					if ( _T("w15:commentEx") == sName )
-						m_arrComments.Add( new CCommentExt(oReader) );
+						m_arrComments.push_back( new CCommentExt(oReader) );
 				}
 			}
 #endif
@@ -447,7 +439,7 @@ namespace OOX
 
 	public:
 
-		CSimpleArray<CCommentExt*> m_arrComments;
+		std::vector<CCommentExt*> m_arrComments;
 
 	};
 
@@ -569,9 +561,9 @@ namespace OOX
 		}
 		virtual ~CPeople()
 		{
-			for(int i = 0, length = m_arrPeoples.GetSize(); i < length; ++i)
-				delete m_arrPeoples[i];
-			m_arrPeoples.RemoveAll();
+			for(unsigned int i = 0, length = m_arrPeoples.size() ; i < length; ++i)
+				if (m_arrPeoples[i]) delete m_arrPeoples[i];
+			m_arrPeoples.clear();
 		}
 	public:
 
@@ -594,7 +586,7 @@ namespace OOX
 				{
 					sName = oReader.GetName();
 					if ( _T("w15:person") == sName )
-						m_arrPeoples.Add( new CPerson(oReader) );
+						m_arrPeoples.push_back( new CPerson(oReader) );
 				}
 			}
 #endif
@@ -621,7 +613,7 @@ namespace OOX
 
 	public:
 
-		CSimpleArray<CPerson*> m_arrPeoples;
+		std::vector<CPerson*> m_arrPeoples;
 	};
 
 } // namespace OOX

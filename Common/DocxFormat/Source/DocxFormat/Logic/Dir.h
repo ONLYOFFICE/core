@@ -9,7 +9,7 @@ namespace OOX
 {
 	namespace Logic
 	{
-		class CDir : public WritingElement
+		class CDir : public WritingElementWithChilds<>
 		{
 		public:
 			CDir()
@@ -25,37 +25,22 @@ namespace OOX
 			}
 			virtual ~CDir()
 			{
-				Clear();
 			}
 
 		public:
 
 			const CDir &operator =(const XmlUtils::CXmlNode& oNode)
 			{
-				Clear();
+				ClearItems();
 				fromXML( (XmlUtils::CXmlNode&)oNode );
 				return *this;
 			}
 			const CDir &operator =(const XmlUtils::CXmlLiteReader& oReader)
 			{
-				Clear();
+				ClearItems();
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
-
-			void Clear()
-			{		
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
-			}
-
 
 		public:
 
@@ -77,7 +62,6 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::CDirVal<>> m_oVal;
 			// Childs
-			CSimpleArray<WritingElement *> m_arrItems;
 		};
 	} // namespace Logic
 } // namespace OOX

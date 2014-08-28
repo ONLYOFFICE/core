@@ -213,12 +213,14 @@ namespace OOX
 									if(pClientData->m_oSizeWithCells.IsInit())
 										pCommentItem->m_bSize = pClientData->m_oSizeWithCells->ToBool();
 
-									for(int k = 0 ,length3 = pShape->m_oStyle->m_arrProperties.GetSize(); k < length3; ++k)
+									for(int k = 0 ,length3 = pShape->m_oStyle->m_arrProperties.size(); k < length3; ++k)
 									{
-										SimpleTypes::Vml::CCssProperty oProperty = pShape->m_oStyle->m_arrProperties[k];
-										if(SimpleTypes::Vml::cssptMarginLeft == oProperty.get_Type())
+										if (pShape->m_oStyle->m_arrProperties[k] == NULL) continue;
+
+										SimpleTypes::Vml::CCssProperty *oProperty = pShape->m_oStyle->m_arrProperties[k];
+										if(SimpleTypes::Vml::cssptMarginLeft == oProperty->get_Type())
 										{
-											SimpleTypes::Vml::UCssValue oUCssValue= oProperty.get_Value();
+											SimpleTypes::Vml::UCssValue oUCssValue= oProperty->get_Value();
 											if(SimpleTypes::Vml::cssunitstypeUnits == oUCssValue.oValue.eType)
 											{
 												SimpleTypes::CPoint oPoint;
@@ -226,9 +228,9 @@ namespace OOX
 												pCommentItem->m_dLeftMM = oPoint.ToMm();
 											}
 										}
-										else if(SimpleTypes::Vml::cssptMarginTop == oProperty.get_Type())
+										else if(SimpleTypes::Vml::cssptMarginTop == oProperty->get_Type())
 										{
-											SimpleTypes::Vml::UCssValue oUCssValue= oProperty.get_Value();
+											SimpleTypes::Vml::UCssValue oUCssValue= oProperty->get_Value();
 											if(SimpleTypes::Vml::cssunitstypeUnits == oUCssValue.oValue.eType)
 											{
 												SimpleTypes::CPoint oPoint;
@@ -236,9 +238,9 @@ namespace OOX
 												pCommentItem->m_dTopMM = oPoint.ToMm();
 											}
 										}
-										else if(SimpleTypes::Vml::cssptWidth == oProperty.get_Type())
+										else if(SimpleTypes::Vml::cssptWidth == oProperty->get_Type())
 										{
-											SimpleTypes::Vml::UCssValue oUCssValue= oProperty.get_Value();
+											SimpleTypes::Vml::UCssValue oUCssValue= oProperty->get_Value();
 											if(SimpleTypes::Vml::cssunitstypeUnits == oUCssValue.oValue.eType)
 											{
 												SimpleTypes::CPoint oPoint;
@@ -246,9 +248,9 @@ namespace OOX
 												pCommentItem->m_dWidthMM = oPoint.ToMm();
 											}
 										}
-										else if(SimpleTypes::Vml::cssptHeight == oProperty.get_Type())
+										else if(SimpleTypes::Vml::cssptHeight == oProperty->get_Type())
 										{
-											SimpleTypes::Vml::UCssValue oUCssValue= oProperty.get_Value();
+											SimpleTypes::Vml::UCssValue oUCssValue= oProperty->get_Value();
 											if(SimpleTypes::Vml::cssunitstypeUnits == oUCssValue.oValue.eType)
 											{
 												SimpleTypes::CPoint oPoint;

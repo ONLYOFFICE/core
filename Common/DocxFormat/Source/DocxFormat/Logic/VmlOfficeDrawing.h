@@ -415,6 +415,12 @@ namespace OOX
 			}
 			virtual ~CColorMru()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrColors.size(); nIndex++ )
+				{
+					if ( m_arrColors[nIndex] ) delete m_arrColors[nIndex];
+					m_arrColors[nIndex] = NULL;
+				}
+				m_arrColors.clear();
 			}
 
 		public:
@@ -437,9 +443,12 @@ namespace OOX
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
 				sResult += _T("colors=\"");
 
-				for ( int nIndex = 0; nIndex < m_arrColors.GetSize(); nIndex++ )
+				for (unsigned int nIndex = 0; nIndex < m_arrColors.size(); nIndex++ )
 				{
-					sResult += m_arrColors[nIndex].ToString() + _T(",");
+					if (m_arrColors[nIndex])
+					{
+						sResult += m_arrColors[nIndex]->ToString() + _T(",");
+					}
 				}
 
 				sResult += _T("\"/>");
@@ -469,28 +478,34 @@ namespace OOX
 					int nStartPos = 0;
 					int nEndPos = -1;
 					CString sColor;
-					SimpleTypes::CColorType<> oColor;
 					while ( -1 != ( nEndPos = sColors.Find( _T(","), nStartPos )  ) )
 					{
 						sColor = sColors.Mid( nStartPos, nEndPos - nStartPos );
-						oColor = sColor;
-						m_arrColors.Add( oColor );
+						SimpleTypes::CColorType<SimpleTypes::colortypeNone>* oColor = new SimpleTypes::CColorType<SimpleTypes::colortypeNone>();
+						if (oColor)
+						{
+							oColor->FromString(sColor);
+							m_arrColors.push_back( oColor );
+						}
 						nStartPos = nEndPos + 1;
 					}
 
 					nEndPos = sColors.GetLength();
 					sColor = sColors.Mid( nStartPos, nEndPos - nStartPos );
-					oColor = sColor;
-					if ( SimpleTypes::colortypeNone != oColor.GetValue() )
-						m_arrColors.Add( oColor );
+					SimpleTypes::CColorType<SimpleTypes::colortypeNone>* oColor = new SimpleTypes::CColorType<SimpleTypes::colortypeNone>();
+					if (oColor )
+					{
+						oColor->FromString(sColor);
+						if (SimpleTypes::colortypeNone != oColor->GetValue()) m_arrColors.push_back( oColor );
+					}
 				}
 			}
 
 		public:
 
 			// Attributes
-			CSimpleArray<SimpleTypes::CColorType<>> m_arrColors;
-			nullable<SimpleTypes::CExt<>>           m_oExt;
+			std::vector<SimpleTypes::CColorType<SimpleTypes::colortypeNone>*>	m_arrColors;
+			nullable<SimpleTypes::CExt<>>										m_oExt;
 		};
 		//--------------------------------------------------------------------------------
 		// CComplex 14.2.2.7 (Part 4)
@@ -625,6 +640,12 @@ namespace OOX
 			}
 			virtual ~CRelationTable()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrRel.size(); nIndex++ )
+				{
+					if ( m_arrRel[nIndex] ) delete m_arrRel[nIndex];
+					m_arrRel[nIndex] = NULL;
+				}
+				m_arrRel.clear();
 			}
 
 		public:
@@ -646,8 +667,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("o:rel") == sName )
 					{
-						OOX::VmlOffice::CRelation oRel = oReader;
-						m_arrRel.Add( oRel );
+						OOX::VmlOffice::CRelation *oRel = new OOX::VmlOffice::CRelation(oReader);
+						if (oRel) m_arrRel.push_back( oRel );
 					}
 				}
 			}
@@ -659,8 +680,11 @@ namespace OOX
 
 				sResult += _T("\">");
 
-				for ( int nIndex = 0; nIndex < m_arrRel.GetSize(); nIndex++ )
-					sResult += m_arrRel[nIndex].toXML();
+				for ( unsigned int nIndex = 0; nIndex < m_arrRel.size(); nIndex++ )
+				{
+					if (m_arrRel[nIndex])
+						sResult += m_arrRel[nIndex]->toXML();
+				}
 
 				sResult += _T("</o:relationtable>");
 
@@ -687,7 +711,7 @@ namespace OOX
 			nullable<SimpleTypes::CExt<>>     m_oExt;
 
 			// Childs
-			CSimpleArray<OOX::VmlOffice::CRelation> m_arrRel;
+			std::vector<OOX::VmlOffice::CRelation*> m_arrRel;
 		};
 
 
@@ -1756,6 +1780,12 @@ namespace OOX
 			}
 			virtual ~CR()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrProxy.size(); nIndex++ )
+				{
+					if ( m_arrProxy[nIndex] ) delete m_arrProxy[nIndex];
+					m_arrProxy[nIndex] = NULL;
+				}
+				m_arrProxy.clear();
 			}
 
 		public:
@@ -1777,8 +1807,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("o:proxy") == sName )
 					{
-						OOX::VmlOffice::CProxy oProxy = oReader;
-						m_arrProxy.Add( oProxy );
+						OOX::VmlOffice::CProxy *oProxy = new OOX::VmlOffice::CProxy(oReader);
+						if (oProxy )m_arrProxy.push_back( oProxy );
 					}
 				}
 			}
@@ -1792,8 +1822,11 @@ namespace OOX
 
 				sResult += _T(">");
 
-				for ( int nIndex = 0; nIndex < m_arrProxy.GetSize(); nIndex++ )
-					sResult += m_arrProxy[nIndex].toXML();
+				for ( unsigned int nIndex = 0; nIndex < m_arrProxy.size(); nIndex++ )
+				{
+					if (m_arrProxy[nIndex])
+						sResult += m_arrProxy[nIndex]->toXML();
+				}
 
 				sResult += _T("</o:r>");
 
@@ -1820,13 +1853,13 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CHow<>>   m_oHow;
-			CString                         m_sId;
-			nullable<CString>               m_sIdRef;
-			nullable<SimpleTypes::CRType<>> m_oType;
+			nullable<SimpleTypes::CHow<>>			m_oHow;
+			CString									m_sId;
+			nullable<CString>						m_sIdRef;
+			nullable<SimpleTypes::CRType<>>			m_oType;
 			
 			// Childs
-			CSimpleArray<OOX::VmlOffice::CProxy>  m_arrProxy;
+			std::vector<OOX::VmlOffice::CProxy*>	m_arrProxy;
 		};
 		//--------------------------------------------------------------------------------
 		// CRegroupTable 14.2.2.23 (Part 4)
@@ -1840,6 +1873,12 @@ namespace OOX
 			}
 			virtual ~CRegroupTable()
 			{
+	            for ( unsigned int nIndex = 0; nIndex < m_arrEntry.size(); nIndex++ )
+				{
+					if ( m_arrEntry[nIndex] ) delete m_arrEntry[nIndex];
+					m_arrEntry[nIndex] = NULL;
+				}
+				m_arrEntry.clear();
 			}
 
 		public:
@@ -1861,8 +1900,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("o:entry") == sName )
 					{
-						OOX::VmlOffice::CEntry oEntry = oReader;
-						m_arrEntry.Add( oEntry );
+						OOX::VmlOffice::CEntry *oEntry = new OOX::VmlOffice::CEntry (oReader);
+						if (oEntry) m_arrEntry.push_back( oEntry );
 					}
 				}
 			}
@@ -1874,8 +1913,11 @@ namespace OOX
 
 				sResult += _T(">");
 
-				for ( int nIndex = 0; nIndex < m_arrEntry.GetSize(); nIndex++ )
-					sResult += m_arrEntry[nIndex].toXML();
+				for ( unsigned int nIndex = 0; nIndex < m_arrEntry.size(); nIndex++ )
+				{
+					if (m_arrEntry[nIndex])
+						sResult += m_arrEntry[nIndex]->toXML();
+				}
 
 				sResult += _T("</o:regrouptable>");
 
@@ -1902,7 +1944,7 @@ namespace OOX
 			nullable<SimpleTypes::CExt<>>        m_oExt;
 			
 			// Childs
-			CSimpleArray<OOX::VmlOffice::CEntry> m_arrEntry;
+			std::vector<OOX::VmlOffice::CEntry*> m_arrEntry;
 		};
 		//--------------------------------------------------------------------------------
 		// CRules 14.2.2.27 (Part 4)
@@ -1916,6 +1958,12 @@ namespace OOX
 			}
 			virtual ~CRules()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrR.size(); nIndex++ )
+				{
+					if ( m_arrR[nIndex] ) delete m_arrR[nIndex];
+					m_arrR[nIndex] = NULL;
+				}
+				m_arrR.clear();
 			}
 
 		public:
@@ -1937,8 +1985,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("o:r") == sName )
 					{
-						OOX::VmlOffice::CR oR = oReader;
-						m_arrR.Add( oR );
+						OOX::VmlOffice::CR  *oR = new OOX::VmlOffice::CR (oReader);
+						if ( oR) m_arrR.push_back( oR );
 					}
 				}
 			}
@@ -1950,8 +1998,11 @@ namespace OOX
 
 				sResult += _T(">");
 
-				for ( int nIndex = 0; nIndex < m_arrR.GetSize(); nIndex++ )
-					sResult += m_arrR[nIndex].toXML();
+				for ( unsigned int nIndex = 0; nIndex < m_arrR.size(); nIndex++ )
+				{
+					if (m_arrR[nIndex])
+						sResult += m_arrR[nIndex]->toXML();
+				}
 
 				sResult += _T("</o:rules>");
 
@@ -1978,7 +2029,7 @@ namespace OOX
 			nullable<SimpleTypes::CExt<>>    m_oExt;
 			
 			// Childs
-			CSimpleArray<OOX::VmlOffice::CR> m_arrR;
+			std::vector<OOX::VmlOffice::CR*> m_arrR;
 		};
 		//--------------------------------------------------------------------------------
 		// CShapeLayout 14.2.2.29 (Part 4)

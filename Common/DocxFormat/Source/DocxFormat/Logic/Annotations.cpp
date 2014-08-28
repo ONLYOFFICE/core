@@ -109,7 +109,7 @@ namespace OOX
 				//	pItem = new CSubDoc( oReader );
 
 				if ( pItem )
-					m_arrItems.Add( pItem );
+					m_arrItems.push_back( pItem );
 			}
 		}
 		CString CIns::toXML() const
@@ -205,7 +205,7 @@ namespace OOX
 				//	pItem = new CSubDoc( oReader );
 
 				if ( pItem )
-					m_arrItems.Add( pItem );
+					m_arrItems.push_back( pItem );
 			}
 		}
 		CString CDel::toXML() const

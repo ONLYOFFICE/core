@@ -101,6 +101,7 @@ namespace OOX
 				return et_Default;
 			}
 
+			CString	m_sExtension;
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -111,16 +112,7 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
-		public:
 
-			const bool operator ==(const CString& rhs) const
-			{
-				return m_sExtension == rhs;
-			}
-
-		private:
-
-			CString	m_sExtension;
 		};
 		class COverride : public WritingElement
 		{
@@ -222,6 +214,12 @@ namespace OOX
 		}
 		~CContentTypes()
 		{
+            for ( unsigned int nIndex = 0; nIndex < m_arrDefault.size(); nIndex++ )
+			{
+				if ( m_arrDefault[nIndex] ) delete m_arrDefault[nIndex];
+				m_arrDefault[nIndex] = NULL;
+			}
+			m_arrDefault.clear();
 		}
 
 	public:
@@ -246,8 +244,13 @@ namespace OOX
 		{
 			CString sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
 
-			for ( int nIndex = 0; nIndex < m_arrDefault.GetSize(); nIndex++ )
-				sXml += m_arrDefault[nIndex].toXML();
+			for (unsigned  int nIndex = 0; nIndex < m_arrDefault.size(); nIndex++ )
+			{
+				if (m_arrDefault[nIndex])
+				{
+					sXml += m_arrDefault[nIndex]->toXML();
+				}
+			}
 
 			POSITION pos = m_arrOverride.GetStartPosition();
 			while ( NULL != pos )
@@ -277,19 +280,19 @@ namespace OOX
 			CString sExt = oPath.GetExtention();
 			const CString sExtension = sExt.Mid( 1 );
 
-			size_t nCount = m_arrDefault.GetSize();
+			size_t nCount = m_arrDefault.size();
 			size_t nIndex = 0;	
 
 			while ( nIndex < nCount )
 			{
-				if ( m_arrDefault[(int) nIndex] == sExtension )
+				if (( m_arrDefault[(int) nIndex]) && (m_arrDefault[(int) nIndex]->m_sExtension == sExtension ))
 					break;
 
 				++nIndex;
 			}
 
 			if ( nIndex == nCount )
-				m_arrDefault.Add( ContentTypes::CDefault( sExtension ) );
+				m_arrDefault.push_back(new ContentTypes::CDefault( sExtension ) );
 		}
 
 	private:
@@ -306,8 +309,8 @@ namespace OOX
 
 				if ( _T("Default") == sName )
 				{
-					ContentTypes::CDefault oDefault = oReader;
-					m_arrDefault.Add( oDefault );
+					ContentTypes::CDefault *oDefault = new ContentTypes::CDefault(oReader);
+					if (oDefault) m_arrDefault.push_back( oDefault );
 				}
 				else if ( _T("Override") == sName )
 				{
@@ -326,8 +329,8 @@ namespace OOX
 
 	public:
 
-		CSimpleArray<ContentTypes::CDefault>  m_arrDefault;
-		CAtlMap<CString, ContentTypes::COverride> m_arrOverride;
+		std::vector<ContentTypes::CDefault*>		m_arrDefault;
+		CAtlMap<CString, ContentTypes::COverride>	m_arrOverride;
 	};
 } // namespace OOX
 

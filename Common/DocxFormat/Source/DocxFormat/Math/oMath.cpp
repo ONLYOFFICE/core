@@ -137,7 +137,7 @@ namespace OOX
 					pItem = new OOX::Logic::CSSup( oReader );
 
 				if ( pItem )
-					m_arrItems.Add( pItem );
+					m_arrItems.push_back( pItem );
 			}
 		}
 	}//namespace Logic

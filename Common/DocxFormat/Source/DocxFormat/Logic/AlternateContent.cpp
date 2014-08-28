@@ -26,24 +26,30 @@ namespace OOX
 				if ( _T("mc:Choice") == sName )
 				{
 					CRun altRun(oSubReader);
-					for (int i = 0; i < altRun.m_arrItems.GetSize(); ++i)
-						m_arrChoiceItems.Add(altRun.m_arrItems[i]);
-					for (int i = 0; i < altRun.m_arrSpreadsheetItems.GetSize(); ++i)
-						m_arrSpreadsheetChoiceItems.Add(altRun.m_arrSpreadsheetItems[i]);
+					
+					for (unsigned int i = 0; i < altRun.m_arrItems.size(); ++i)
+						m_arrChoiceItems.push_back(altRun.m_arrItems[i]);
+
+					for (unsigned int i = 0; i < altRun.m_arrSpreadsheetItems.size(); ++i)
+						m_arrSpreadsheetChoiceItems.push_back(altRun.m_arrSpreadsheetItems[i]);
+					
 					//без RemoveAll они очистятся вместе с altRun
-					altRun.m_arrItems.RemoveAll();
-					altRun.m_arrSpreadsheetItems.RemoveAll();
+					altRun.m_arrItems.clear();
+					altRun.m_arrSpreadsheetItems.clear();
 				}
 				else if ( _T("mc:Fallback") == sName )
 				{
 					CRun altRun(oSubReader);
-					for (int i = 0; i < altRun.m_arrItems.GetSize(); ++i)
-						m_arrFallbackItems.Add(altRun.m_arrItems[i]);
-					for (int i = 0; i < altRun.m_arrSpreadsheetItems.GetSize(); ++i)
-						m_arrSpreadsheetFallbackItems.Add(altRun.m_arrSpreadsheetItems[i]);
+					
+					for (unsigned int i = 0; i < altRun.m_arrItems.size(); ++i)
+						m_arrFallbackItems.push_back(altRun.m_arrItems[i]);
+
+					for (unsigned int i = 0; i < altRun.m_arrSpreadsheetItems.size(); ++i)
+						m_arrSpreadsheetFallbackItems.push_back(altRun.m_arrSpreadsheetItems[i]);
+					
 					//без RemoveAll они очистятся вместе с altRun
-					altRun.m_arrItems.RemoveAll();
-					altRun.m_arrSpreadsheetItems.RemoveAll();
+					altRun.m_arrItems.clear();
+					altRun.m_arrSpreadsheetItems.clear();
 				}
 			}
 		}

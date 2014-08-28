@@ -2660,7 +2660,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CShapeDefaults 9.7.2.1;9.7.2.2 (Part 4)
 		//--------------------------------------------------------------------------------	
-		class CShapeDefaults : public WritingElement
+		class CShapeDefaults : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionConstructors(CShapeDefaults)
@@ -2670,15 +2670,6 @@ namespace OOX
 			}
 			virtual ~CShapeDefaults()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
 			}
 
 		public:
@@ -2801,7 +2792,7 @@ namespace OOX
 					}
 
 					if ( pItem )
-						m_arrItems.Add( pItem );
+						m_arrItems.push_back( pItem );
 				}
 			}
 
@@ -2816,7 +2807,7 @@ namespace OOX
 				else
 					return _T("");
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 						sResult += m_arrItems[nIndex]->toXML();
@@ -2841,7 +2832,6 @@ namespace OOX
 			EElementType                   m_eType;
 
 			// Childs
-			CSimpleArray<WritingElement*>  m_arrItems; 
 
 		};
 	} // Settings

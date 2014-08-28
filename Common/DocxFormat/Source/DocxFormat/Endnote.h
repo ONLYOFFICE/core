@@ -25,13 +25,13 @@ namespace OOX
 		}
 		virtual ~CEndnotes()
 		{
-			for ( int nIndex = 0; nIndex < m_arrEndnote.GetSize(); nIndex++ )
+			for (unsigned int nIndex = 0; nIndex < m_arrEndnote.size(); nIndex++ )
 			{
 				if ( m_arrEndnote[nIndex] )
 					delete m_arrEndnote[nIndex];
 			}
 
-			m_arrEndnote.RemoveAll();
+			m_arrEndnote.clear();
 		}
 	public:
 
@@ -53,7 +53,7 @@ namespace OOX
 					if ( oEndnoteList.GetAt( nIndex, oEndnoteNode ) )
 					{
 						CFtnEdn *pEndnote = new CFtnEdn( oEndnoteNode );
-						m_arrEndnote.Add( pEndnote );
+						m_arrEndnote.push_back( pEndnote );
 					}
 				}
 			}
@@ -62,7 +62,7 @@ namespace OOX
 		{
 			CString sXml;
 			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:endnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 wp14\">");
-			for ( int nIndex = 0; nIndex < m_arrEndnote.GetSize(); nIndex++ )
+			for ( unsigned int nIndex = 0; nIndex < m_arrEndnote.size(); nIndex++ )
 			{
 				if ( m_arrEndnote[nIndex] )
 					sXml += m_arrEndnote[nIndex]->toXML();
@@ -95,7 +95,7 @@ namespace OOX
 			if ( !oReference.m_oId.IsInit() )
 				return NULL;
 
-			for ( int nIndex = 0; nIndex < m_arrEndnote.GetSize(); nIndex++ )
+			for ( unsigned int nIndex = 0; nIndex < m_arrEndnote.size(); nIndex++ )
 			{
 				if ( m_arrEndnote[nIndex]->m_oId.IsInit() && ( m_arrEndnote[nIndex]->m_oId == oReference.m_oId ) )
 					return m_arrEndnote[nIndex];
@@ -105,16 +105,16 @@ namespace OOX
 		}
 		void       Add(OOX::CFtnEdn* pEndnote)
 		{
-			m_arrEndnote.Add( pEndnote );
+			m_arrEndnote.push_back( pEndnote );
 		}		
-		const int  GetCount() const
+		const unsigned int  GetCount() const
 		{
-			return m_arrEndnote.GetSize();
+			return m_arrEndnote.size();
 		}
 
 	public:
 
-		CSimpleArray<OOX::CFtnEdn*> m_arrEndnote;
+		std::vector<OOX::CFtnEdn*> m_arrEndnote;
 	};
 } // namespace OOX
 #endif // OOX_ENDNOTE_INCLUDE_H_

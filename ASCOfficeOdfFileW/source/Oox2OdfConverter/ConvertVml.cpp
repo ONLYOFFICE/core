@@ -29,7 +29,7 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 	
 	//m_oPreferRelative//типо можно менять размер 
 
-	for (long i=0 ; i < vml_shape_type->m_arrItems.size();i++)
+	for (unsigned int i=0 ; i < vml_shape_type->m_arrItems.size();i++)
 	{
 		convert(vml_shape_type->m_arrItems[i]);
 	}
@@ -52,15 +52,17 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 
 	_CP_OPT(double) width_pt, height_pt, x, y;
 
-	for (long i=0; i < vml_style->m_arrProperties.GetSize(); i++)
+	for (unsigned int i=0; i < vml_style->m_arrProperties.size(); i++)
 	{
-		switch(vml_style->m_arrProperties[i].get_Type())
+		if (vml_style->m_arrProperties[i] == NULL) continue;
+
+		switch(vml_style->m_arrProperties[i]->get_Type())
 		{
 		case SimpleTypes::Vml::cssptHeight:
-			height_pt = vml_style->m_arrProperties[i].get_Value().oValue.dValue;
+			height_pt = vml_style->m_arrProperties[i]->get_Value().oValue.dValue;
 			break;
 		case SimpleTypes::Vml::cssptWidth:
-			width_pt = vml_style->m_arrProperties[i].get_Value().oValue.dValue;
+			width_pt = vml_style->m_arrProperties[i]->get_Value().oValue.dValue;
 			break;
 		case SimpleTypes::Vml::cssptMarginBottom:
 			//odf_context()->drawing_context()->set_margin_bottom(vml_style->m_arrProperties[i].get_Value().oValue.dValue);
@@ -68,18 +70,18 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 			break;
 		case SimpleTypes::Vml::cssptMarginLeft:
 			//odf_context()->drawing_context()->set_margin_left (vml_style->m_arrProperties[i].get_Value().oValue.dValue);
-			x = vml_style->m_arrProperties[i].get_Value().oValue.dValue;
+			x = vml_style->m_arrProperties[i]->get_Value().oValue.dValue;
 			break;
 		case SimpleTypes::Vml::cssptMarginRight:
 			//odf_context()->drawing_context()->set_margin_right(vml_style->m_arrProperties[i].get_Value().oValue.dValue);
 			break;
 		case SimpleTypes::Vml::cssptMarginTop:
 			//odf_context()->drawing_context()->set_margin_top(vml_style->m_arrProperties[i].get_Value().oValue.dValue);
-			y = vml_style->m_arrProperties[i].get_Value().oValue.dValue;
+			y = vml_style->m_arrProperties[i]->get_Value().oValue.dValue;
 			break;
 ////////////////////////////////////////////////////////////////
 		case SimpleTypes::Vml::cssptMsoPositionHorizontal:
-			switch(vml_style->m_arrProperties[i].get_Value().eMsoPosHor)
+			switch(vml_style->m_arrProperties[i]->get_Value().eMsoPosHor)
 			{
 			case SimpleTypes::Vml::cssmsoposhorAbsolute:	odf_context()->drawing_context()->set_horizontal_pos(2); break;
 			case SimpleTypes::Vml::cssmsoposhorLeft:		odf_context()->drawing_context()->set_horizontal_pos(2); break;
@@ -90,7 +92,7 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 			}
 			break;
 		case SimpleTypes::Vml::cssptMsoPositionHorizontalRelative:
-			switch(vml_style->m_arrProperties[i].get_Value().eMsoPosHorRel)
+			switch(vml_style->m_arrProperties[i]->get_Value().eMsoPosHorRel)
 			{
 			case SimpleTypes::Vml::cssmsoposhorrelMargin:	odf_context()->drawing_context()->set_horizontal_rel(2); break; 
 			case SimpleTypes::Vml::cssmsoposhorrelPage:		odf_context()->drawing_context()->set_horizontal_rel(6); break;
@@ -99,7 +101,7 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 			}
 			break;
 		case SimpleTypes::Vml::cssptMsoPositionVertical:
-			switch(vml_style->m_arrProperties[i].get_Value().eMsoPosVer)
+			switch(vml_style->m_arrProperties[i]->get_Value().eMsoPosVer)
 			{
 			case SimpleTypes::Vml::cssmsoposverAbsolute:	odf_context()->drawing_context()->set_vertical_pos(2); break;
 			case SimpleTypes::Vml::cssmsoposverTop:			odf_context()->drawing_context()->set_vertical_pos(4); break;
@@ -110,7 +112,7 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 			}
 			break;
 		case SimpleTypes::Vml::cssptMsoPositionVerticalRelative:
-			switch(vml_style->m_arrProperties[i].get_Value().eMsoPosVerRel)
+			switch(vml_style->m_arrProperties[i]->get_Value().eMsoPosVerRel)
 			{
 			case SimpleTypes::Vml::cssmsoposverrelMargin:	odf_context()->drawing_context()->set_vertical_rel(3); break;//3 ???
 			case SimpleTypes::Vml::cssmsoposverrelPage:		odf_context()->drawing_context()->set_vertical_rel(5); break;
@@ -120,12 +122,12 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 			break;
 		case SimpleTypes::Vml::cssptZIndex:
 			{
-				if (vml_style->m_arrProperties[i].get_Value().oZIndex.eType == SimpleTypes::Vml::csszindextypeOrder)
-				odf_context()->drawing_context()->set_z_order(vml_style->m_arrProperties[i].get_Value().oZIndex.nOrder);
+				if (vml_style->m_arrProperties[i]->get_Value().oZIndex.eType == SimpleTypes::Vml::csszindextypeOrder)
+				odf_context()->drawing_context()->set_z_order(vml_style->m_arrProperties[i]->get_Value().oZIndex.nOrder);
 			}break;
 		case SimpleTypes::Vml::cssptPosition:
 			{
-				switch (vml_style->m_arrProperties[i].get_Value().ePosition)
+				switch (vml_style->m_arrProperties[i]->get_Value().ePosition)
 				{
 				case SimpleTypes::Vml::csspositionStatic:	break;
 				case SimpleTypes::Vml::csspositionAbsolute:	break;
@@ -135,9 +137,9 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 		case SimpleTypes::Vml::cssptRotation:
 			{
 				if (group)
-					odf_context()->drawing_context()->set_group_rotate(180 + vml_style->m_arrProperties[i].get_Value().dValue);
+					odf_context()->drawing_context()->set_group_rotate(180 + vml_style->m_arrProperties[i]->get_Value().dValue);
 				else
-					odf_context()->drawing_context()->set_rotate(360 - vml_style->m_arrProperties[i].get_Value().dValue);
+					odf_context()->drawing_context()->set_rotate(360 - vml_style->m_arrProperties[i]->get_Value().dValue);
 			}break;
 		}
 	}
@@ -396,7 +398,7 @@ void OoxConverter::convert(OOX::Vml::CTextbox *vml_textbox)
 {
 	if (vml_textbox == NULL) return;
 	if (vml_textbox->m_oTxtbxContent.IsInit() == false) return;
-	if (vml_textbox->m_oTxtbxContent->m_arrItems.GetSize() < 1) return;
+	if (vml_textbox->m_oTxtbxContent->m_arrItems.size() < 1) return;
 
 	convert(vml_textbox->m_oStyle.GetPointer());
 
@@ -413,7 +415,7 @@ void OoxConverter::convert(OOX::Vml::CTextbox *vml_textbox)
 	DocxConverter *docx_converter = dynamic_cast<DocxConverter*>(this);
 
 	odf_context()->start_text_context();
-	for (long i=0 ; i < vml_textbox->m_oTxtbxContent->m_arrItems.GetSize();i++)
+	for (unsigned int i=0 ; i < vml_textbox->m_oTxtbxContent->m_arrItems.size();i++)
 	{
 		if (docx_converter)docx_converter->convert(vml_textbox->m_oTxtbxContent->m_arrItems[i]);
 	}
@@ -540,7 +542,7 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 			odf_context()->drawing_context()->set_solid_fill(string2std_string(vml_common->m_oFillColor->ToString()));
 		odf_context()->drawing_context()->end_area_properties();
 	}
-	for (long i=0 ; i < vml_common->m_arrItems.size();i++)
+	for (unsigned int i=0 ; i < vml_common->m_arrItems.size();i++)
 	{
 		convert(vml_common->m_arrItems[i]);
 	}
@@ -558,8 +560,10 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 		
 		convert(vml_group->m_oStyle.GetPointer(), true);
 
-		for (long i=0; i < vml_group->m_arrItems.GetSize(); i++)
+		for (unsigned int i=0; i < vml_group->m_arrItems.size(); i++)
 		{
+			if (vml_group->m_arrItems[i] == NULL) continue;
+
 			if (vml_group->m_arrItems[i]->getType() == OOX::et_v_group)
 			{
 				OOX::Vml::CGroup * vml = static_cast<OOX::Vml::CGroup*>(vml_group->m_arrItems[i]);
@@ -567,7 +571,7 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 				continue;
 			}
 			
-			OOX::Vml::CVmlCommonElements * vml_common = static_cast<OOX::Vml::CVmlCommonElements*>(vml_group->m_arrItems[i]);
+			OOX::Vml::CVmlCommonElements * vml_common = dynamic_cast<OOX::Vml::CVmlCommonElements*>(vml_group->m_arrItems[i]);
 
 			if (vml_common == NULL) continue; // не элемент
 

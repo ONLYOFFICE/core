@@ -13,6 +13,24 @@
 //#define _CAN_USE_COM_THREADS
 #endif
 
+#ifdef WIN32
+typedef DWORD ASC_THREAD_ID;
+#else
+typedef pthread_t ASC_THREAD_ID;
+#endif
+
+namespace NSThreads
+{
+    static ASC_THREAD_ID GetCurrentThreadId()
+    {
+#ifdef WIN32
+        return ::GetCurrentThreadId();
+#else
+        return pthread_self();
+#endif
+    }
+}
+
 namespace NSTimers
 {
 #ifdef _MAC

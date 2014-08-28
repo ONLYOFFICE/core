@@ -123,7 +123,7 @@ namespace OOX
 				//cellXfs
 				if(m_oCellXfs.IsInit())
 				{
-					for(int i = 0, length = m_oCellXfs->m_arrItems.GetSize(); i < length; ++i)
+					for(unsigned int i = 0, length = m_oCellXfs->m_arrItems.size(); i < length; ++i)
 					{
 						OOX::Spreadsheet::CXfs* xfs = m_oCellXfs->m_arrItems[i];
 						if (false == xfs->m_oXfId.IsInit())
@@ -141,15 +141,15 @@ namespace OOX
 					m_oCellStyles->m_oCount.Init();
 					m_oCellStyles->m_oCount->SetValue(1);
 				}
-				if(0 == m_oCellStyles->m_arrItems.GetSize())
+				if(0 == m_oCellStyles->m_arrItems.size())
 				{
 					CCellStyle* pCellStyle = new CCellStyle();
-					pCellStyle->m_oName = _T("Normal");
-					pCellStyle->m_oXfId.Init();
-					pCellStyle->m_oXfId->SetValue(0);
-					pCellStyle->m_oBuiltinId.Init();
-					pCellStyle->m_oBuiltinId->SetValue(0);
-					m_oCellStyles->m_arrItems.Add(pCellStyle);
+						pCellStyle->m_oName = _T("Normal");
+						pCellStyle->m_oXfId.Init();
+						pCellStyle->m_oXfId->SetValue(0);
+						pCellStyle->m_oBuiltinId.Init();
+						pCellStyle->m_oBuiltinId->SetValue(0);
+					m_oCellStyles->m_arrItems.push_back(pCellStyle);
 				}
 				//cellStyleXfs
 				if(false == m_oCellStyleXfs.IsInit())
@@ -159,18 +159,18 @@ namespace OOX
 					m_oCellStyleXfs->m_oCount.Init();
 					m_oCellStyleXfs->m_oCount->SetValue(1);
 				}
-				if(0 == m_oCellStyleXfs->m_arrItems.GetSize())
+				if(0 == m_oCellStyleXfs->m_arrItems.size())
 				{
 					CXfs* pXfs = new CXfs();
-					pXfs->m_oNumFmtId.Init();
-					pXfs->m_oNumFmtId->SetValue(0);
-					pXfs->m_oFontId.Init();
-					pXfs->m_oFontId->SetValue(0);
-					pXfs->m_oFillId.Init();
-					pXfs->m_oFillId->SetValue(0);
-					pXfs->m_oBorderId.Init();
-					pXfs->m_oBorderId->SetValue(0);
-					m_oCellStyleXfs->m_arrItems.Add(pXfs);
+						pXfs->m_oNumFmtId.Init();
+						pXfs->m_oNumFmtId->SetValue(0);
+						pXfs->m_oFontId.Init();
+						pXfs->m_oFontId->SetValue(0);
+						pXfs->m_oFillId.Init();
+						pXfs->m_oFillId->SetValue(0);
+						pXfs->m_oBorderId.Init();
+						pXfs->m_oBorderId->SetValue(0);
+					m_oCellStyleXfs->m_arrItems.push_back(pXfs);
 				}
 				//dxfs
 				if(false == m_oDxfs.IsInit())

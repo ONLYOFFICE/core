@@ -50,7 +50,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CRichText* rich)
 	odf_context()->chart_context()->start_text();
 	OoxConverter::convert(rich->m_oBodyPr.GetPointer());
 	
-	for (unsigned int i=0 ; i < rich->m_arrItems.GetSize();i++)
+	for (unsigned int i=0 ; i < rich->m_arrItems.size();i++)
 	{
 		OoxConverter::convert(rich->m_arrItems[i]);
 	}
@@ -63,7 +63,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CTextProperties* txPr)
 	odf_context()->chart_context()->start_text();
 	OoxConverter::convert(txPr->m_oBodyPr.GetPointer());
 	
-	for (unsigned int i=0 ; i < txPr->m_arrItems.GetSize();i++)
+	for (unsigned int i=0 ; i < txPr->m_arrItems.size();i++)
 	{
 		OoxConverter::convert(txPr->m_arrItems[i]);
 	}

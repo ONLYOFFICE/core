@@ -92,7 +92,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("t") == sName )
-						m_arrItems.Add( new CText( oReader ));
+						m_arrItems.push_back( new CText( oReader ));
 				}
 			}
 

@@ -345,7 +345,7 @@ namespace OOX
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T(">"));
-				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</row>"));
 			}
@@ -362,7 +362,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("c") == sName )
-						m_arrItems.Add( new CCell( oReader ));
+						m_arrItems.push_back( new CCell( oReader ));
 				}
 			}
 
@@ -429,7 +429,7 @@ namespace OOX
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				writer.WriteString(_T("<sheetData>"));
-				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</sheetData>"));
 			}
@@ -446,7 +446,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("row") == sName )
-						m_arrItems.Add(new CRow( oReader ));
+						m_arrItems.push_back(new CRow( oReader ));
 				}
 			}
 

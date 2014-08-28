@@ -123,7 +123,7 @@ namespace OOX
 							}
 
 							if ( pItem )
-									m_arrItems.Add( pItem );
+									m_arrItems.push_back( pItem );
 						}
 					}
 				}		
@@ -132,7 +132,7 @@ namespace OOX
 			{
 				XmlUtils::CStringWriter sXml;
 				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><xdr:wsDr xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">"));
-				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(sXml);
 				sXml.WriteString(_T("</xdr:wsDr>"));				
 
@@ -169,7 +169,7 @@ namespace OOX
 			}
 			void ClearItems()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 						delete m_arrItems[nIndex];
@@ -177,11 +177,11 @@ namespace OOX
 					m_arrItems[nIndex] = NULL;
 				}
 
-				m_arrItems.RemoveAll();
+				m_arrItems.clear();
 			}
 
 		public:
-			CSimpleArray<CCellAnchor *>         m_arrItems;
+			std::vector<CCellAnchor *>         m_arrItems;
 		};
 	} //Spreadsheet
 } // namespace OOX

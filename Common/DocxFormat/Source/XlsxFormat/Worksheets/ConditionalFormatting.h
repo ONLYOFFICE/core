@@ -95,12 +95,12 @@ namespace OOX
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				if (3 < m_arrItems.GetSize()) // min 2 + 2
+				if (3 < m_arrItems.size()) // min 2 + 2
 				{
 					CString sValue;
 					writer.WriteString(_T("<colorScale>"));
 
-					for (int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+					for (unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					writer.WriteString(_T("</colorScale>"));
@@ -116,9 +116,9 @@ namespace OOX
 				{
 					CWCharWrapper sName = oReader.GetName();
 					if (_T("cfvo") == sName)
-						m_arrItems.Add(new CConditionalFormatValueObject(oReader));
+						m_arrItems.push_back(new CConditionalFormatValueObject(oReader));
 					else if (_T("color") == sName)
-						m_arrItems.Add(new CColor(oReader));
+						m_arrItems.push_back(new CColor(oReader));
 				}
 			}
 
@@ -148,7 +148,7 @@ namespace OOX
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				if (2 == m_arrItems.GetSize() && m_oColor.IsInit())
+				if (2 == m_arrItems.size() && m_oColor.IsInit())
 				{
 					CString sValue;
 					writer.WriteString(_T("<dataBar"));
@@ -169,7 +169,7 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+					for (unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					m_oColor->toXML2(writer, _T("color"));
@@ -189,7 +189,7 @@ namespace OOX
 				{
 					CWCharWrapper sName = oReader.GetName();
 					if (_T("cfvo") == sName)
-						m_arrItems.Add(new CConditionalFormatValueObject(oReader));
+						m_arrItems.push_back(new CConditionalFormatValueObject(oReader));
 					else if (_T("color") == sName)
 						m_oColor = oReader;
 				}
@@ -279,7 +279,7 @@ namespace OOX
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				if (1 < m_arrItems.GetSize()) // min value = 2
+				if (1 < m_arrItems.size()) // min value = 2
 				{
 					CString sValue;
 					writer.WriteString(_T("<iconSet"));
@@ -303,7 +303,7 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+					for (unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					writer.WriteString(_T("</iconSet>"));
@@ -321,7 +321,7 @@ namespace OOX
 				{
 					CWCharWrapper sName = oReader.GetName();
 					if (_T("cfvo") == sName)
-						m_arrItems.Add(new CConditionalFormatValueObject(oReader));
+						m_arrItems.push_back(new CConditionalFormatValueObject(oReader));
 				}
 			}
 
@@ -372,7 +372,7 @@ namespace OOX
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				if (m_oType.IsInit() && m_oPriority.IsInit() && 0 < m_arrItems.GetSize())
+				if (m_oType.IsInit() && m_oPriority.IsInit() && 0 < m_arrItems.size())
 				{
 					CString sValue;
 					CString sRoot;
@@ -421,7 +421,7 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+					for (unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					writer.WriteString(_T("</cfRule>"));
@@ -439,13 +439,13 @@ namespace OOX
 				{
 					CWCharWrapper sName = oReader.GetName();
 					if (_T("colorScale") == sName)
-						m_arrItems.Add(new CColorScale(oReader));
+						m_arrItems.push_back(new CColorScale(oReader));
 					else if (_T("dataBar") == sName)
-						m_arrItems.Add(new CDataBar(oReader));
+						m_arrItems.push_back(new CDataBar(oReader));
 					else if (_T("formula") == sName)
-						m_arrItems.Add(new CFormulaCF(oReader));
+						m_arrItems.push_back(new CFormulaCF(oReader));
 					else if (_T("iconSet") == sName)
-						m_arrItems.Add(new CIconSet(oReader));
+						m_arrItems.push_back(new CIconSet(oReader));
 				}
 			}
 
@@ -514,7 +514,7 @@ namespace OOX
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				if (m_oSqRef.IsInit() && 0 < m_arrItems.GetSize())
+				if (m_oSqRef.IsInit() && 0 < m_arrItems.size())
 				{
 					CString sRoot;
 					sRoot.Format(_T("<conditionalFormatting sqref=\"%s\""), m_oSqRef->GetValue());
@@ -527,7 +527,7 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+					for (unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					writer.WriteString(_T("</conditionalFormatting>"));
@@ -546,7 +546,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if (_T("cfRule") == sName)
-						m_arrItems.Add(new CConditionalFormattingRule(oReader));
+						m_arrItems.push_back(new CConditionalFormattingRule(oReader));
 				}
 			}
 

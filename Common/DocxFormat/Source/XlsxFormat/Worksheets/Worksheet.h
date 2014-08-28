@@ -103,7 +103,7 @@ namespace OOX
 							else if ( _T("sheetData") == sName )
 								m_oSheetData = oReader;
 							else if (_T("conditionalFormatting") == sName)
-								m_arrConditionalFormatting.Add(new CConditionalFormatting(oReader));
+								m_arrConditionalFormatting.push_back(new CConditionalFormatting(oReader));
 							else if ( _T("sheetFormatPr") == sName )
 								m_oSheetFormatPr = oReader;
 							else if ( _T("sheetViews") == sName )
@@ -134,11 +134,11 @@ namespace OOX
 			}
 			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::Spreadsheet::CLegacyDrawing* pLegacyDrawing)
 			{
-				CSimpleArray<CString*> aAuthors = pComments->m_oAuthors->m_arrItems;
+				std::vector<CString*> & aAuthors = pComments->m_oAuthors->m_arrItems;
 				if(pComments->m_oCommentList.IsInit())
 				{
-					CSimpleArray<OOX::Spreadsheet::CComment*> aComments = pComments->m_oCommentList->m_arrItems;
-					for(int i = 0, length = aComments.GetSize(); i < length; ++i)
+					std::vector<OOX::Spreadsheet::CComment*> & aComments = pComments->m_oCommentList->m_arrItems;
+					for(unsigned int i = 0, length = aComments.size(); i < length; ++i)
 					{
 						OOX::Spreadsheet::CComment* pComment = aComments[i];
 						if(pComment->m_oRef.IsInit() && pComment->m_oAuthorId.IsInit())
@@ -151,7 +151,7 @@ namespace OOX
 								pCommentItem->m_nCol = nCol - 1;
 
 								unsigned int nAuthorId = pComment->m_oAuthorId->GetValue();
-								if(nAuthorId < (unsigned int)aAuthors.GetSize())
+								if(nAuthorId < aAuthors.size())
 									pCommentItem->m_sAuthor = *aAuthors[nAuthorId];
 
 								OOX::Spreadsheet::CSi* pSi = pComment->m_oText.GetPointerEmptyNullable();
@@ -163,10 +163,12 @@ namespace OOX
 						}
 					}
 				}
-				for(int i = 0, length = pLegacyDrawing->m_arrItems.GetSize(); i < length; ++i)
+				for(unsigned int i = 0, length = pLegacyDrawing->m_arrItems.size(); i < length; ++i)
 				{
 					OOX::Vml::CShape* pShape = pLegacyDrawing->m_arrItems[i];
-					for(int j = 0, length2 = pShape->m_arrItems.size(); j < length2; ++j)
+					if (pShape == NULL) continue;
+
+					for(unsigned int j = 0, length2 = pShape->m_arrItems.size(); j < length2; ++j)
 					{
 						OOX::WritingElement* pElem = pShape->m_arrItems[j];
 						if( OOX::et_v_ClientData == pElem->getType())
@@ -186,16 +188,16 @@ namespace OOX
 									if(pClientData->m_oAnchor.IsInit())
 									{
 										const CString& sAnchor = pClientData->m_oAnchor.get();
-										CSimpleArray<int> m_aAnchor;
+										std::vector<int> m_aAnchor;
 										int nTokenPos = 0;
 										CString strToken = sAnchor.Tokenize(_T(","), nTokenPos);
 										while (!strToken.IsEmpty())
 										{
 											strToken.Trim();
-											m_aAnchor.Add(_wtoi(strToken));
+											m_aAnchor.push_back(_wtoi(strToken));
 											strToken = sAnchor.Tokenize(_T(","), nTokenPos);
 										}
-										if(8 == m_aAnchor.GetSize())
+										if(8 == m_aAnchor.size())
 										{
 											pCommentItem->m_nLeft = m_aAnchor[0];
 											pCommentItem->m_nLeftOffset = m_aAnchor[1];
@@ -213,7 +215,7 @@ namespace OOX
 									if(pClientData->m_oSizeWithCells.IsInit())
 										pCommentItem->m_bSize = pClientData->m_oSizeWithCells->ToBool();
 
-									for(int k = 0 ,length3 = pShape->m_oStyle->m_arrProperties.size(); k < length3; ++k)
+									for(unsigned int k = 0 ,length3 = pShape->m_oStyle->m_arrProperties.size(); k < length3; ++k)
 									{
 										if (pShape->m_oStyle->m_arrProperties[k] == NULL) continue;
 
@@ -276,8 +278,8 @@ namespace OOX
 				}
 				if(false == m_oSheetViews.IsInit())
 					m_oSheetViews.Init();
-				if(0 == m_oSheetViews->m_arrItems.GetSize())
-					m_oSheetViews->m_arrItems.Add(new CSheetView());
+				if(0 == m_oSheetViews->m_arrItems.size())
+					m_oSheetViews->m_arrItems.push_back(new CSheetView());
 				CSheetView* pSheetView = m_oSheetViews->m_arrItems[0];
 				if(false == pSheetView->m_oWorkbookViewId.IsInit())
 				{
@@ -299,7 +301,7 @@ namespace OOX
 					m_oCols->toXML(sXml);
 				if(m_oSheetData.IsInit())
 					m_oSheetData->toXML(sXml);
-				for (int nIndex = 0, nLength = (int)m_arrConditionalFormatting.GetCount(); nIndex < nLength; ++nIndex)
+				for (unsigned int nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
 					m_arrConditionalFormatting[nIndex]->toXML();
 				if(m_oAutofilter.IsInit())
 					m_oAutofilter->toXML(sXml);
@@ -414,7 +416,7 @@ namespace OOX
 				m_mapComments.RemoveAll();
 
 				// delete Conditional Formatting
-				m_arrConditionalFormatting.FreeAll();
+				m_arrConditionalFormatting.clear();
 			}
 		private:
 			CPath									m_oReadPath;
@@ -435,7 +437,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CTableParts> m_oTableParts;
 			nullable<OOX::Spreadsheet::CLegacyDrawingWorksheet> m_oLegacyDrawingWorksheet;
 			CAtlMap<CString, CCommentItem*> m_mapComments;
-			CPtrAtlArray<OOX::Spreadsheet::CConditionalFormatting*> m_arrConditionalFormatting;
+			std::vector<OOX::Spreadsheet::CConditionalFormatting*> m_arrConditionalFormatting;
 			nullable<OOX::Spreadsheet::CSheetPr> m_oSheetPr;
 		};
 	} //Spreadsheet

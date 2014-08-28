@@ -107,7 +107,7 @@ namespace OOX
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				writer.WriteString(_T("<sheets>"));
-				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</sheets>"));
 			}
@@ -124,7 +124,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("sheet") == sName )
-						m_arrItems.Add( new CSheet( oReader ));
+						m_arrItems.push_back( new CSheet( oReader ));
 
 				}
 			}

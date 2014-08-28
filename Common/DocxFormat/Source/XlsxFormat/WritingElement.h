@@ -344,17 +344,15 @@ namespace Spreadsheet
 		virtual ~WritingElementWithChilds() {ClearItems();}
 		virtual void ClearItems()
 		{
-			for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+			for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
-				if ( m_arrItems[nIndex] )
-					delete m_arrItems[nIndex];
-
+				if ( m_arrItems[nIndex] )delete m_arrItems[nIndex];
 				m_arrItems[nIndex] = NULL;
 			}
 
-			m_arrItems.RemoveAll();
+			m_arrItems.clear();
 		}
-		CSimpleArray<ElemType *>         m_arrItems;
+		std::vector<ElemType *>         m_arrItems;
 	};
 }
 }

@@ -58,7 +58,7 @@ namespace OOX
 								pItem = new CSi( oReader );
 
 							if ( pItem )
-									m_arrItems.Add( pItem );
+								m_arrItems.push_back( pItem );
 						}
 					}
 				}		
@@ -79,7 +79,7 @@ namespace OOX
 				}
 				sXml.WriteString(_T(">"));
 
-				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(sXml);
 
 				sXml.WriteString(_T("</sst>"));
@@ -105,23 +105,21 @@ namespace OOX
 			}
 			const int AddSi(CSi* pSi)
 			{
-				int nIndex = m_arrItems.GetSize();
-				m_arrItems.Add( pSi );
+				int nIndex = m_arrItems.size();
+				m_arrItems.push_back( pSi );
 				return nIndex;
 			}
 		private:
 			CPath									m_oReadPath;
 			void ClearItems()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
+					if ( m_arrItems[nIndex] )delete m_arrItems[nIndex];
 
 					m_arrItems[nIndex] = NULL;
 				}
-
-				m_arrItems.RemoveAll();
+				m_arrItems.clear();
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -138,7 +136,7 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oUniqueCount;
 
-			CSimpleArray<WritingElement *>         m_arrItems;
+			std::vector<WritingElement *>         m_arrItems;
 
 		};
 	} //Spreadsheet

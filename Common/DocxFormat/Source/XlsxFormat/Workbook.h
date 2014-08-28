@@ -64,7 +64,7 @@ namespace OOX
 
 		public:
 
-			CSimpleArray<WritingElement *>         m_arrItems;
+			std::vector<WritingElement *>         m_arrItems;
 
 		};
 	} //Spreadsheet

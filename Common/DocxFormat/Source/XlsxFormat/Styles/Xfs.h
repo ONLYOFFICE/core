@@ -343,7 +343,7 @@ namespace OOX
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T(">"));
-				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</cellXfs>"));
 			}
@@ -360,7 +360,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("xf") == sName )
-						m_arrItems.Add( new CXfs( oReader ));
+						m_arrItems.push_back( new CXfs( oReader ));
 				}
 			}
 
@@ -407,7 +407,7 @@ namespace OOX
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T(">"));
-				for(int i = 0, length = m_arrItems.GetSize(); i < length; ++i)
+				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</cellStyleXfs>"));
 			}
@@ -424,7 +424,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("xf") == sName )
-						m_arrItems.Add( new CXfs( oReader ));
+						m_arrItems.push_back( new CXfs( oReader ));
 				}
 			}
 

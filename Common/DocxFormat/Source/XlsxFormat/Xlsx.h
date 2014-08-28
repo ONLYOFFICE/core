@@ -142,7 +142,7 @@ namespace OOX
 				pApp->SetHyperlinksChanged(false);
 
 				smart_ptr<OOX::File> pAppFile(pApp);
-				const OOX::RId oAppRId = Add(pAppFile);
+				const OOX::RId oAppRId =  Add(pAppFile);
 				//CCore
 				OOX::CCore* pCore = new OOX::CCore();
 				pCore->SetCreator(_T(""));
@@ -181,7 +181,7 @@ namespace OOX
 				smart_ptr<OOX::File> pThemeFile(pTheme);
 				m_pWorkbook->Add(pThemeFile);
 				//SharedStrings
-				if(NULL != m_pSharedStrings && m_pSharedStrings->m_arrItems.GetSize() > 0)
+				if(NULL != m_pSharedStrings && m_pSharedStrings->m_arrItems.size() > 0)
 				{
 					smart_ptr<OOX::File> pSharedStringsFile(m_pSharedStrings);
 					bDeleteSharedStrings = false;
@@ -282,7 +282,7 @@ namespace OOX
 					pWorkbookView->m_oWindowWidth->SetValue(27795);
 					pWorkbookView->m_oWindowHeight.Init();
 					pWorkbookView->m_oWindowHeight->SetValue(12585);
-					m_pWorkbook->m_oBookViews->m_arrItems.Add(pWorkbookView);
+					m_pWorkbook->m_oBookViews->m_arrItems.push_back(pWorkbookView);
 				}
 				//добавл€ем sheet, если нет ни одного
 				if(0 == m_aWorksheets.GetCount())
@@ -297,7 +297,7 @@ namespace OOX
 					pSheetView->m_oTabSelected->FromBool(true);
 					pSheetView->m_oWorkbookViewId.Init();
 					pSheetView->m_oWorkbookViewId->SetValue(0);
-					pWorksheet->m_oSheetViews->m_arrItems.Add(pSheetView);
+					pWorksheet->m_oSheetViews->m_arrItems.push_back(pSheetView);
 					pWorksheet->m_oSheetFormatPr.Init();
 					pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight.Init();
 					pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight->SetValue(15);
@@ -325,7 +325,7 @@ namespace OOX
 					pSheet->m_oSheetId->SetValue(1);
 					pSheet->m_oRid.Init();
 					pSheet->m_oRid->SetValue(oRId.ToString());
-					m_pWorkbook->m_oSheets->m_arrItems.Add(pSheet);
+					m_pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
 				}
 				//делаем так чтобы всегда были нулевые стили и первый font всегда имел шрифт и размер
 				if(NULL != m_pStyles )
@@ -333,7 +333,7 @@ namespace OOX
 					//Fonts
 					if(false == m_pStyles->m_oFonts.IsInit())
 						m_pStyles->m_oFonts.Init();
-					if(m_pStyles->m_oFonts->m_arrItems.GetSize() == 0)
+					if(m_pStyles->m_oFonts->m_arrItems.size() == 0)
 						m_pStyles->m_oFonts->AddFont(new OOX::Spreadsheet::CFont());
 					OOX::Spreadsheet::CFont* pFont = m_pStyles->m_oFonts->m_arrItems[0];
 					if(false == pFont->m_oRFont.IsInit())
@@ -350,8 +350,8 @@ namespace OOX
 					//Fills
 					if(false == m_pStyles->m_oFills.IsInit())
 						m_pStyles->m_oFills.Init();
-					if(m_pStyles->m_oFills->m_arrItems.GetSize() == 0)
-						m_pStyles->m_oFills->m_arrItems.Add(new OOX::Spreadsheet::CFill());
+					if(m_pStyles->m_oFills->m_arrItems.size() == 0)
+						m_pStyles->m_oFills->m_arrItems.push_back(new OOX::Spreadsheet::CFill());
 						OOX::Spreadsheet::CFill* pFill = m_pStyles->m_oFills->m_arrItems[0];
 						if(false == pFill->m_oGradientFill.IsInit())
 						{
@@ -363,14 +363,14 @@ namespace OOX
 						}
 					if(false == m_pStyles->m_oBorders.IsInit())
 						m_pStyles->m_oBorders.Init();
-					if(m_pStyles->m_oBorders->m_arrItems.GetSize() == 0)
-						m_pStyles->m_oBorders->m_arrItems.Add(new OOX::Spreadsheet::CBorder());
+					if(m_pStyles->m_oBorders->m_arrItems.size() == 0)
+						m_pStyles->m_oBorders->m_arrItems.push_back(new OOX::Spreadsheet::CBorder());
 
 					//Xfs
 					if(false == m_pStyles->m_oCellXfs.IsInit())
 						m_pStyles->m_oCellXfs.Init();
-					if(m_pStyles->m_oCellXfs->m_arrItems.GetSize() == 0)
-						m_pStyles->m_oCellXfs->m_arrItems.Add(new OOX::Spreadsheet::CXfs());
+					if(m_pStyles->m_oCellXfs->m_arrItems.size() == 0)
+						m_pStyles->m_oCellXfs->m_arrItems.push_back(new OOX::Spreadsheet::CXfs());
 
 					OOX::Spreadsheet::CXfs* pXfs = m_pStyles->m_oCellXfs->m_arrItems[0];
 					if(false == pXfs->m_oBorderId.IsInit())
@@ -408,12 +408,12 @@ namespace OOX
 			{
 				if(pWorksheet->m_oSheetData.IsInit())
 				{
-					CSimpleArray<OOX::Spreadsheet::CRow*>& aRows = pWorksheet->m_oSheetData->m_arrItems;
-					for(int i = 0, length = aRows.GetSize(); i < length; ++i)
+					std::vector<OOX::Spreadsheet::CRow*>& aRows = pWorksheet->m_oSheetData->m_arrItems;
+					for(unsigned int i = 0, length = aRows.size(); i < length; ++i)
 					{
 						OOX::Spreadsheet::CRow* pRow = aRows[i];
-						CSimpleArray<OOX::Spreadsheet::CCell*>& aCells = pRow->m_arrItems;
-						for(int j = 0, length2 = aCells.GetSize(); j < length2; ++j)
+						std::vector<OOX::Spreadsheet::CCell*> & aCells = pRow->m_arrItems;
+						for(unsigned int j = 0, length2 = aCells.size(); j < length2; ++j)
 						{
 							OOX::Spreadsheet::CCell* pCell = aCells[j];
 							if(pCell->m_oType.IsInit())
@@ -447,7 +447,7 @@ namespace OOX
 									CSi* pSi = new CSi();
 									CText* pText =  new CText();
 									pText->m_sText = sValue;
-									pSi->m_arrItems.Add(pText);
+									pSi->m_arrItems.push_back(pText);
 									int nIndex = pSharedStrings->AddSi(pSi);
 									//мен€ем значение €чейки
 									pCell->m_oValue.Init();

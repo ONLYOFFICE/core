@@ -84,7 +84,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("rgbColor") == sName )
-						m_arrItems.Add( new CRgbColor( oReader ));
+						m_arrItems.push_back( new CRgbColor( oReader ));
 				}
 			}
 
@@ -450,7 +450,7 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("color") == sName )
-						m_arrItems.Add( new CColor( oReader ));
+						m_arrItems.push_back( new CColor( oReader ));
 				}
 			}
 

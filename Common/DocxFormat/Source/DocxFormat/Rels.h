@@ -144,6 +144,13 @@ namespace OOX
 		}
 		~CRels()
 		{
+            for ( unsigned int nIndex = 0; nIndex < m_arrRelations.size(); nIndex++ )
+			{
+				if ( m_arrRelations[nIndex] ) delete m_arrRelations[nIndex];
+				m_arrRelations[nIndex] = NULL;
+			}
+			m_arrRelations.clear();
+
 		}
 
 	public:
@@ -175,8 +182,8 @@ namespace OOX
 							sName = oReader.GetName();
 							if ( _T("Relationship") == sName )
 							{
-								Rels::CRelationShip oRel = oReader;
-								m_arrRelations.Add( oRel );
+								Rels::CRelationShip *oRel = new Rels::CRelationShip(oReader);
+								if (oRel) m_arrRelations.push_back( oRel );
 							}
 						}
 					}
@@ -206,7 +213,7 @@ namespace OOX
 		}
 		void Write(const CPath& oFilePath) const
 		{
-			if ( 0 < m_arrRelations.GetSize() )
+			if ( 0 < m_arrRelations.size() )
 			{
 				CPath oFile = CreateFileName( oFilePath );
 				CSystemUtility::CreateDirectories( oFile.GetDirectory() );
@@ -216,8 +223,11 @@ namespace OOX
 				oWriter.WriteAttribute( _T("xmlns"), _T("http://schemas.openxmlformats.org/package/2006/relationships") );
 				oWriter.WriteNodeEnd( _T("Relationships"), TRUE, FALSE );
 
-				for ( int nIndex = 0; nIndex < m_arrRelations.GetSize(); nIndex++ )
-					oWriter.WriteString( m_arrRelations[nIndex].toXML() );
+				for ( unsigned int nIndex = 0; nIndex < m_arrRelations.size(); nIndex++ )
+				{
+					if ( m_arrRelations[nIndex])
+						oWriter.WriteString( m_arrRelations[nIndex]->toXML() );
+				}
 
 				oWriter.WriteNodeEnd(_T("Relationships") );
 
@@ -239,34 +249,33 @@ namespace OOX
 					if ( oType.RelationType() == _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject") )
 					{
 						strFileName += L".bin";
-						m_arrRelations.Add( Rels::CRelationShip( rId, oType.RelationType(), strDir + strFileName ) );
+						m_arrRelations.push_back(new Rels::CRelationShip( rId, oType.RelationType(), strDir + strFileName ) );
 					}
 					else if ( oType.RelationType() == _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image") )
 					{
 						strFileName += L".wmf" ;
-						m_arrRelations.Add( Rels::CRelationShip( rId, oType.RelationType(), strDir + strFileName ) );
+						m_arrRelations.push_back(new Rels::CRelationShip( rId, oType.RelationType(), strDir + strFileName ) );
 					}
 				}
 				else
 				{
-					m_arrRelations.Add( Rels::CRelationShip( rId, oType.RelationType(), oPath.GetPath()) );
-					//m_arrRelations.Add( Rels::CRelationShip( rId, oType.RelationType(),  replace_extension( oPath, L"svm", L"png") );
+					m_arrRelations.push_back(new Rels::CRelationShip( rId, oType.RelationType(), oPath.GetPath()) );
+					//m_arrRelations.push_back( Rels::CRelationShip( rId, oType.RelationType(),  replace_extension( oPath, L"svm", L"png") );
 				}
 			}
 		}
 		void Registration(const RId& rId, const smart_ptr<External> pExternal)
 		{
-			m_arrRelations.Add( Rels::CRelationShip( rId, pExternal ) );
+			m_arrRelations.push_back( new Rels::CRelationShip( rId, pExternal ) );
 		}
 		void GetRel(const RId& rId, Rels::CRelationShip** ppRelationShip)
 		{
 			(*ppRelationShip) = NULL;
-			for(int i = 0, length = m_arrRelations.GetSize(); i < length; ++i)
+			for( unsigned int i = 0, length = m_arrRelations.size(); i < length; ++i)
 			{
-				Rels::CRelationShip& oCurRel = m_arrRelations[i];
-				if(oCurRel.rId() == rId)
+				if ((m_arrRelations[i]) && (m_arrRelations[i]->rId() == rId))
 				{
-					(*ppRelationShip) = new Rels::CRelationShip(oCurRel);
+					(*ppRelationShip) = new Rels::CRelationShip(*m_arrRelations[i]);
 				}
 			}
 		}
@@ -288,7 +297,7 @@ namespace OOX
 
 	public:
 
-		CSimpleArray<Rels::CRelationShip> m_arrRelations;
+		std::vector<Rels::CRelationShip*> m_arrRelations;
 	};
 
 } // namespace OOX

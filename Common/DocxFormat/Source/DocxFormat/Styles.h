@@ -366,6 +366,12 @@ namespace OOX
 		}
 		virtual ~CLatentStyles()
 		{
+            for ( unsigned int nIndex = 0; nIndex < m_arrLsdException.size(); nIndex++ )
+			{
+				if ( m_arrLsdException[nIndex] ) delete m_arrLsdException[nIndex];
+				m_arrLsdException[nIndex] = NULL;
+			}
+			m_arrLsdException.clear();
 		}
 		const CLatentStyles& operator=(const XmlUtils::CXmlNode &oNode)
 		{
@@ -399,8 +405,8 @@ namespace OOX
 				{
 					if ( oList.GetAt( nIndex, oLsdNode ) )
 					{
-						ComplexTypes::Word::CLsdException oLsdException = oLsdNode;
-						m_arrLsdException.Add( oLsdException );
+						ComplexTypes::Word::CLsdException *oLsdException = new ComplexTypes::Word::CLsdException(oLsdNode);
+						if (oLsdException ) m_arrLsdException.push_back( oLsdException );
 					}
 				}
 			}
@@ -418,8 +424,8 @@ namespace OOX
 				CWCharWrapper sName = oReader.GetName();
 				if ( _T("w:lsdException") == sName )
 				{
-					ComplexTypes::Word::CLsdException oLsdException = oReader;
-					m_arrLsdException.Add( oLsdException );
+					ComplexTypes::Word::CLsdException *oLsdException = new ComplexTypes::Word::CLsdException (oReader);
+					if (oLsdException) m_arrLsdException.push_back( oLsdException );
 				}
 			}
 		}
@@ -428,10 +434,11 @@ namespace OOX
 			CString sResult;
 			sResult.Format( _T("<w:latentStyles w:count=\"%d\" w:defLockedState=\"%s\" w:defQFormat=\"%s\" w:defSemiHidden=\"%s\" w:defUIPriority=\"%d\" w:defUnhideWhenUsed=\"%s\">"), m_oCount.GetValue(), m_oDefLockedState.ToString(), m_oDefQFormat.ToString(), m_oDefSemiHidden.ToString(), m_oDefUiPriority.GetValue(), m_oDefUnhideWhenUsed.ToString() );
 
-			for ( int nIndex = 0; nIndex < m_arrLsdException.GetSize(); nIndex++ )
+			for (unsigned int nIndex = 0; nIndex < m_arrLsdException.size(); nIndex++ )
 			{
 				sResult += _T("<w:lsdException ");
-				sResult += m_arrLsdException[nIndex].ToString();
+				if (m_arrLsdException[nIndex])
+					sResult += m_arrLsdException[nIndex]->ToString();
 				sResult += _T("/>");
 			}
 
@@ -473,7 +480,7 @@ namespace OOX
 
 		// Childs
 
-		CSimpleArray<ComplexTypes::Word::CLsdException> m_arrLsdException;
+		std::vector<ComplexTypes::Word::CLsdException*> m_arrLsdException;
 	};
 
 	//--------------------------------------------------------------------------------
@@ -496,14 +503,26 @@ namespace OOX
 		}
 		virtual ~CStyle()
 		{
+			ClearItems();
+		}
+		void ClearItems()
+		{
+            for ( unsigned int nIndex = 0; nIndex < m_arrTblStylePr.size(); nIndex++ )
+			{
+				if ( m_arrTblStylePr[nIndex] ) delete m_arrTblStylePr[nIndex];
+				m_arrTblStylePr[nIndex] = NULL;
+			}
+			m_arrTblStylePr.clear();
 		}
 		const CStyle& operator=(const XmlUtils::CXmlNode &oNode)
 		{
+			ClearItems();
 			fromXML( (XmlUtils::CXmlNode &)oNode );
 			return *this;
 		}
 		const CStyle& operator=(const XmlUtils::CXmlLiteReader& oReader)
 		{
+			ClearItems();
 			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 			return *this;
 		}
@@ -547,8 +566,8 @@ namespace OOX
 				{
 					if ( oList.GetAt( nIndex, oTblStylePrNode ) )
 					{
-						OOX::Logic::CTableStyleProperties oTblStylePr = oTblStylePrNode;
-						m_arrTblStylePr.Add( oTblStylePr );
+						OOX::Logic::CTableStyleProperties *oTblStylePr = new OOX::Logic::CTableStyleProperties(oTblStylePrNode);
+						if (oTblStylePr) m_arrTblStylePr.push_back( oTblStylePr );
 					}
 				}
 			}
@@ -589,8 +608,8 @@ namespace OOX
 				else if ( _T("w:tblPr")          == sName ) m_oTblPr = oReader;
 				else if ( _T("w:tblStylePr")     == sName )
 				{
-					OOX::Logic::CTableStyleProperties oTblStylePr = oReader;
-					m_arrTblStylePr.Add( oTblStylePr );
+					OOX::Logic::CTableStyleProperties *oTblStylePr = new OOX::Logic::CTableStyleProperties(oReader);
+					m_arrTblStylePr.push_back( oTblStylePr );
 				}
 				else if ( _T("w:tcPr")           == sName ) m_oTcPr = oReader;
 				else if ( _T("w:trPr")           == sName ) m_oTrPr = oReader;
@@ -632,9 +651,10 @@ namespace OOX
 			WritingElement_WriteNode_1( _T("<w:semiHidden "),      m_oSemiHidden );
 			WritingElement_WriteNode_2( m_oTblPr );
 
-			for ( int nIndex = 0; nIndex < m_arrTblStylePr.GetSize(); nIndex++ )
+			for ( unsigned int nIndex = 0; nIndex < m_arrTblStylePr.size(); nIndex++ )
 			{
-				sResult += m_arrTblStylePr[nIndex].toXML();
+				if (m_arrTblStylePr[nIndex])
+					sResult += m_arrTblStylePr[nIndex]->toXML();
 			}
 
 			WritingElement_WriteNode_2( m_oTcPr );
@@ -691,7 +711,7 @@ namespace OOX
 		nullable<ComplexTypes::Word::CLongHexNumber                 > m_oRsid;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oSemiHidden;
 		nullable<OOX::Logic::CTableProperty                         > m_oTblPr;		
-		CSimpleArray<OOX::Logic::CTableStyleProperties              > m_arrTblStylePr;
+		std::vector<OOX::Logic::CTableStyleProperties              *> m_arrTblStylePr;
 		nullable<OOX::Logic::CTableCellProperties                   > m_oTcPr;
 		nullable<OOX::Logic::CTableRowProperties                    > m_oTrPr;
 		nullable<ComplexTypes::Word::CDecimalNumber                 > m_oUiPriority;
@@ -715,6 +735,12 @@ namespace OOX
 		}
 		virtual ~CStyles()
 		{
+			for (unsigned int nIndex = 0; nIndex < m_arrStyle.size(); nIndex++ )
+			{
+				if ( m_arrStyle[nIndex] )delete m_arrStyle[nIndex];
+				m_arrStyle[nIndex] = NULL;
+			}
+			m_arrStyle.clear();
 		}
 
 	public:
@@ -740,8 +766,8 @@ namespace OOX
 
 					if ( _T("w:style") == sName )
 					{
-						OOX::CStyle oStyle = oReader;
-						m_arrStyle.Add( oStyle );
+						OOX::CStyle *oStyle = new OOX::CStyle (oReader);
+						if (oStyle) m_arrStyle.push_back( oStyle );
 					}
 					else if ( _T("w:docDefaults") == sName )
 						m_oDocDefaults = oReader;
@@ -789,9 +815,10 @@ namespace OOX
 			if ( m_oLatentStyles.IsInit() )
 				sXml += m_oLatentStyles->toXML();
 
-			for ( int nIndex = 0; nIndex < m_arrStyle.GetSize(); nIndex++ )
+			for (unsigned int nIndex = 0; nIndex < m_arrStyle.size(); nIndex++ )
 			{
-				sXml += m_arrStyle[nIndex].toXML();
+				if (m_arrStyle[nIndex])
+					sXml += m_arrStyle[nIndex]->toXML();
 			}
 			sXml += _T("</w:styles>");
 
@@ -816,7 +843,7 @@ namespace OOX
 
 		nullable<OOX::CDocDefaults  > m_oDocDefaults;
 		nullable<OOX::CLatentStyles > m_oLatentStyles;
-		CSimpleArray<OOX::CStyle    > m_arrStyle;
+		std::vector<OOX::CStyle    *> m_arrStyle;
 
 	};
 } // namespace OOX

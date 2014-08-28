@@ -325,6 +325,12 @@ namespace OOX
 			}
 			virtual ~CCustomColorList()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrCustClr.size(); nIndex++ )
+				{
+					if ( m_arrCustClr[nIndex] ) delete m_arrCustClr[nIndex];
+					m_arrCustClr[nIndex] = NULL;
+				}
+				m_arrCustClr.clear();
 			}
 
 		public:
@@ -344,8 +350,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("a:custClr") == sName )
 					{
-						OOX::Drawing::CCustomColor oCustClr = oReader;
-						m_arrCustClr.Add( oCustClr );
+						OOX::Drawing::CCustomColor *oCustClr = new OOX::Drawing::CCustomColor(oReader);
+						if (oCustClr) m_arrCustClr.push_back( oCustClr );
 					}
 				}
 			}
@@ -353,8 +359,11 @@ namespace OOX
 			{
 				CString sResult = _T("<a:custClrLst>");
 
-				for ( int nIndex = 0; nIndex < m_arrCustClr.GetSize(); nIndex++ )
-					sResult += m_arrCustClr[nIndex].toXML();
+				for ( unsigned int nIndex = 0; nIndex < m_arrCustClr.size(); nIndex++ )
+				{
+					if (m_arrCustClr[nIndex])
+						sResult += m_arrCustClr[nIndex]->toXML();
+				}
 
 				sResult += _T("</a:custClrLst>");
 
@@ -368,7 +377,7 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<OOX::Drawing::CCustomColor> m_arrCustClr;
+			std::vector<OOX::Drawing::CCustomColor*> m_arrCustClr;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -443,6 +452,12 @@ namespace OOX
 			}
 			virtual ~CColorSchemeList()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrExtraClrScheme.size(); nIndex++ )
+				{
+					if ( m_arrExtraClrScheme[nIndex] ) delete m_arrExtraClrScheme[nIndex];
+					m_arrExtraClrScheme[nIndex] = NULL;
+				}
+				m_arrExtraClrScheme.clear();
 			}
 
 		public:
@@ -462,8 +477,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("a:extraClrScheme") == sName )
 					{
-						OOX::Drawing::CColorSchemeAndMapping oExtra = oReader;
-						m_arrExtraClrScheme.Add( oExtra );
+						OOX::Drawing::CColorSchemeAndMapping *oExtra = new OOX::Drawing::CColorSchemeAndMapping(oReader);
+						if (oExtra) m_arrExtraClrScheme.push_back( oExtra );
 					}
 				}
 			}
@@ -471,8 +486,11 @@ namespace OOX
 			{
 				CString sResult = _T("<a:extraClrSchemeLst>");
 
-				for ( int nIndex = 0; nIndex < m_arrExtraClrScheme.GetSize(); nIndex++ )
-					sResult += m_arrExtraClrScheme[nIndex].toXML();
+				for (unsigned  int nIndex = 0; nIndex < m_arrExtraClrScheme.size(); nIndex++ )
+				{
+					if (m_arrExtraClrScheme[nIndex])
+						sResult += m_arrExtraClrScheme[nIndex]->toXML();
+				}
 
 				sResult += _T("</a:extraClrSchemeLst>");
 
@@ -486,7 +504,7 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<OOX::Drawing::CColorSchemeAndMapping> m_arrExtraClrScheme;
+			std::vector<OOX::Drawing::CColorSchemeAndMapping*> m_arrExtraClrScheme;
 		};
 
 		//--------------------------------------------------------------------------------

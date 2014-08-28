@@ -338,6 +338,12 @@ namespace OOX
 			}
 			virtual ~CAbstractNum()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrLvl.size(); nIndex++ )
+				{
+					if ( m_arrLvl[nIndex] ) delete m_arrLvl[nIndex];
+					m_arrLvl[nIndex] = NULL;
+				}
+				m_arrLvl.clear();
 			}
 
 		public:
@@ -365,8 +371,8 @@ namespace OOX
 					{
 						if ( oLvlList.GetAt( nIndex, oLvlNode ) )
 						{
-							OOX::Numbering::CLvl oLvl = oLvlNode;
-							m_arrLvl.Add( oLvl );
+							OOX::Numbering::CLvl *oLvl = new OOX::Numbering::CLvl(oLvlNode);
+							if (oLvl)m_arrLvl.push_back( oLvl );
 						}
 					}
 				}
@@ -384,8 +390,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("w:lvl") == sName )
 					{
-						OOX::Numbering::CLvl oLvl = oReader;
-						m_arrLvl.Add( oLvl );
+						OOX::Numbering::CLvl *oLvl = new OOX::Numbering::CLvl(oReader);
+						if (oLvl)m_arrLvl.push_back( oLvl );
 					}
 					else if ( _T("w:multiLevelType") == sName ) m_oMultiLevelType = oReader;
 					else if ( _T("w:name")           == sName ) m_oName = oReader;
@@ -410,9 +416,10 @@ namespace OOX
 				WritingElement_WriteNode_1( _T("<w:styleLink "),      m_oStyleLink );
 				WritingElement_WriteNode_1( _T("<w:tmpl "),           m_oTmpl );
 
-				for ( int nIndex = 0; nIndex < m_arrLvl.GetSize(); nIndex++ )
+				for (unsigned int nIndex = 0; nIndex < m_arrLvl.size(); nIndex++ )
 				{
-					sResult += m_arrLvl[nIndex].toXML();
+					if (m_arrLvl[nIndex])
+						sResult += m_arrLvl[nIndex]->toXML();
 				}
 
 	
@@ -442,7 +449,7 @@ namespace OOX
 			nullable<SimpleTypes::CDecimalNumber<> > m_oAbstractNumId;
 
 			// Childs
-			CSimpleArray<OOX::Numbering::CLvl                            > m_arrLvl;
+			std::vector<OOX::Numbering::CLvl*                            > m_arrLvl;
 			nullable<ComplexTypes::Word::CMultiLevelType                 > m_oMultiLevelType;
 			nullable<ComplexTypes::Word::CString_                        > m_oName;
 			nullable<ComplexTypes::Word::CLongHexNumber                  > m_oNsid;
@@ -546,6 +553,12 @@ namespace OOX
 			}
 			virtual ~CNum()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrLvlOverride.size(); nIndex++ )
+				{
+					if ( m_arrLvlOverride[nIndex] ) delete m_arrLvlOverride[nIndex];
+					m_arrLvlOverride[nIndex] = NULL;
+				}
+				m_arrLvlOverride.clear();
 			}
 
 		public:
@@ -568,8 +581,9 @@ namespace OOX
 					{
 						if ( oLvlList.GetAt( nIndex, oLvlNode ) )
 						{
-							OOX::Numbering::CNumLvl oNumLvl = oLvlNode;
-							m_arrLvlOverride.Add( oNumLvl );
+							OOX::Numbering::CNumLvl *oNumLvl = new OOX::Numbering::CNumLvl (oLvlNode);
+							if (oNumLvl) m_arrLvlOverride.push_back( oNumLvl );
+
 						}
 					}
 				}
@@ -587,8 +601,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("w:lvlOverride") == sName )
 					{
-						OOX::Numbering::CNumLvl oNumLvl = oReader;
-						m_arrLvlOverride.Add( oNumLvl );
+						OOX::Numbering::CNumLvl *oNumLvl = new OOX::Numbering::CNumLvl (oReader);
+						if (oNumLvl) m_arrLvlOverride.push_back( oNumLvl );
 					}
 					else if ( _T("w:abstractNumId") == sName )
 						m_oAbstractNumId = oReader;
@@ -604,8 +618,11 @@ namespace OOX
 
 				WritingElement_WriteNode_1( _T("<w:abstractNumId "), m_oAbstractNumId );
 
-				for ( int nIndex = 0; nIndex < m_arrLvlOverride.GetSize(); nIndex++ )
-					sResult += m_arrLvlOverride[nIndex].toXML();
+				for (unsigned int nIndex = 0; nIndex < m_arrLvlOverride.size(); nIndex++ )
+				{
+					if (m_arrLvlOverride[nIndex])
+						sResult += m_arrLvlOverride[nIndex]->toXML();
+				}
 
 				sResult += _T("</w:num>");
 
@@ -630,11 +647,11 @@ namespace OOX
 
 			// Attributes
 
-			nullable<SimpleTypes::CDecimalNumber<> > m_oNumId;
+			nullable<SimpleTypes::CDecimalNumber<> >		m_oNumId;
 
 			// Childs
-			nullable<ComplexTypes::Word::CDecimalNumber > m_oAbstractNumId;
-			CSimpleArray<OOX::Numbering::CNumLvl        > m_arrLvlOverride;
+			nullable<ComplexTypes::Word::CDecimalNumber >	m_oAbstractNumId;
+			std::vector<OOX::Numbering::CNumLvl*        >	m_arrLvlOverride;
 		};
 		//--------------------------------------------------------------------------------
 		// NumPicBullet 17.9.21 (Part 1)
@@ -733,15 +750,26 @@ namespace OOX
 		}
 		virtual ~CNumbering()
 		{
-			for ( int nIndex = 0; nIndex < m_arrNumPicBullet.GetSize(); nIndex++ )
+			for ( unsigned int nIndex = 0; nIndex < m_arrNumPicBullet.size(); nIndex++ )
 			{
 				if (m_arrNumPicBullet[nIndex])delete m_arrNumPicBullet[nIndex];
 				m_arrNumPicBullet[nIndex] = NULL;
 			}
-			m_arrNumPicBullet.RemoveAll();
+			m_arrNumPicBullet.clear();
 
-			 m_arrNum.RemoveAll();
-			 m_arrAbstractNum.RemoveAll();
+			for ( unsigned int nIndex = 0; nIndex < m_arrNum.size(); nIndex++ )
+			{
+				if (m_arrNum[nIndex])delete m_arrNum[nIndex];
+				m_arrNum[nIndex] = NULL;
+			}
+			m_arrNum.clear();
+			for ( unsigned int nIndex = 0; nIndex < m_arrAbstractNum.size(); nIndex++ )
+			{
+				if (m_arrAbstractNum[nIndex])delete m_arrAbstractNum[nIndex];
+				m_arrAbstractNum[nIndex] = NULL;
+			}
+
+			m_arrAbstractNum.clear();
 		}
 	public:
 
@@ -767,20 +795,20 @@ namespace OOX
 					sName = oReader.GetName();
 					if ( _T("w:abstractNum") == sName )
 					{
-						OOX::Numbering::CAbstractNum oAbstractNum = oReader;
-						m_arrAbstractNum.Add( oAbstractNum );
+						OOX::Numbering::CAbstractNum *oAbstractNum = new OOX::Numbering::CAbstractNum(oReader);
+						if (oAbstractNum) m_arrAbstractNum.push_back( oAbstractNum );
 					}
 					else if ( _T("w:num") == sName )
 					{
-						OOX::Numbering::CNum oNum = oReader;
-						m_arrNum.Add( oNum );
+						OOX::Numbering::CNum *oNum = new OOX::Numbering::CNum(oReader);
+						if (oNum) m_arrNum.push_back( oNum );
 					}
 					else if ( _T("w:numIdMacAtCleanup") == sName )
 						m_oNumIdMacAtCleanup = oReader;
 					else if ( _T("w:numPicBullet") == sName )
 					{
 						OOX::Numbering::CNumPicBullet *oNumPic =  new OOX::Numbering::CNumPicBullet(oReader);
-						if (oNumPic) m_arrNumPicBullet.Add( oNumPic );
+						if (oNumPic) m_arrNumPicBullet.push_back( oNumPic );
 					}
 				}
 			}
@@ -843,14 +871,16 @@ namespace OOX
 			CString sXml;
 			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:numbering xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" mc:Ignorable=\"w14\">");
 
-			for ( int nIndex = 0; nIndex < m_arrAbstractNum.GetSize(); nIndex++ )
+			for (unsigned int nIndex = 0; nIndex < m_arrAbstractNum.size(); nIndex++ )
 			{
-				sXml += m_arrAbstractNum[nIndex].toXML();
+				if (m_arrAbstractNum[nIndex])
+					sXml += m_arrAbstractNum[nIndex]->toXML();
 			}
 
-			for ( int nIndex = 0; nIndex < m_arrNum.GetSize(); nIndex++ )
+			for (unsigned  int nIndex = 0; nIndex < m_arrNum.size(); nIndex++ )
 			{
-				sXml += m_arrNum[nIndex].toXML();
+				if (m_arrNum[nIndex])
+					sXml += m_arrNum[nIndex]->toXML();
 			}
 
 			if ( m_oNumIdMacAtCleanup.IsInit() )
@@ -860,7 +890,7 @@ namespace OOX
 				sXml += _T("/>");
 			}
 
-			for ( int nIndex = 0; nIndex < m_arrNumPicBullet.GetSize(); nIndex++ )
+			for (unsigned int nIndex = 0; nIndex < m_arrNumPicBullet.size(); nIndex++ )
 			{
 				if (m_arrNumPicBullet[nIndex])
 					sXml += m_arrNumPicBullet[nIndex]->toXML();
@@ -888,10 +918,10 @@ namespace OOX
 
 	public:
 
-		CSimpleArray<OOX::Numbering::CAbstractNum   > m_arrAbstractNum;
-		CSimpleArray<OOX::Numbering::CNum           > m_arrNum;
-		nullable<ComplexTypes::Word::CDecimalNumber > m_oNumIdMacAtCleanup;
-		CSimpleArray<OOX::Numbering::CNumPicBullet *> m_arrNumPicBullet;
+		std::vector<OOX::Numbering::CAbstractNum  *> m_arrAbstractNum;
+		std::vector<OOX::Numbering::CNum          *> m_arrNum;
+		nullable<ComplexTypes::Word::CDecimalNumber> m_oNumIdMacAtCleanup;
+		std::vector<OOX::Numbering::CNumPicBullet *> m_arrNumPicBullet;
 
 	};
 } // namespace OOX

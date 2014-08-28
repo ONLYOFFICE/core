@@ -122,7 +122,7 @@ namespace OOX
 						//	pItem = new CSubDoc( oItem );
 
 						if ( pItem )
-							m_arrItems.Add( pItem );
+							m_arrItems.push_back( pItem );
 					}
 				}
 			}
@@ -218,7 +218,7 @@ namespace OOX
 				//	pItem = new CSubDoc( oReader );
 
 				if ( pItem )
-					m_arrItems.Add( pItem );
+					m_arrItems.push_back( pItem );
 			}
 		}
 		CString CParagraph::toXML() const
@@ -235,7 +235,7 @@ namespace OOX
 
 			sResult += _T(">");
 
-			for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+			for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
 				if ( m_arrItems[nIndex] )
 				{
@@ -265,7 +265,7 @@ namespace OOX
 		}
 		void CParagraph::AddRun(CRun *pRun)
 		{
-			m_arrItems.Add( (WritingElement*)pRun );
+			m_arrItems.push_back( (WritingElement*)pRun );
 		}
 		void CParagraph::AddText(CString& sText)
 		{
@@ -286,9 +286,9 @@ namespace OOX
 			pText->m_oSpace->SetValue( SimpleTypes::xmlspacePreserve );
 
 
-			((CRun*)pR)->m_arrItems.Add( pT );
+			((CRun*)pR)->m_arrItems.push_back( pT );
 
-			m_arrItems.Add( pR );
+			m_arrItems.push_back( pR );
 		}
 		void CParagraph::AddText(CString& sText, CRunProperty *pProperty)
 		{
@@ -309,11 +309,11 @@ namespace OOX
 			pText->m_oSpace->SetValue( SimpleTypes::xmlspacePreserve );
 
 			if ( pProperty )
-				((CRun*)pR)->m_arrItems.Add( (WritingElement*)pProperty );
+				((CRun*)pR)->m_arrItems.push_back( (WritingElement*)pProperty );
 
-			((CRun*)pR)->m_arrItems.Add( pT );
+			((CRun*)pR)->m_arrItems.push_back( pT );
 
-			m_arrItems.Add( pR );
+			m_arrItems.push_back( pR );
 		}
 		void CParagraph::AddTab()
 		{
@@ -328,9 +328,9 @@ namespace OOX
 				return;
 			}
 
-			((CRun*)pR)->m_arrItems.Add( pTab );
+			((CRun*)pR)->m_arrItems.push_back( pTab );
 
-			m_arrItems.Add( pR );
+			m_arrItems.push_back( pR );
 		}
 
 
@@ -347,11 +347,11 @@ namespace OOX
 				return;
 			}
 			if ( pProperty )
-				((CRun*)pR)->m_arrItems.Add( (WritingElement*)pProperty );
+				((CRun*)pR)->m_arrItems.push_back( (WritingElement*)pProperty );
 
-			((CRun*)pR)->m_arrItems.Add( pTab );
+			((CRun*)pR)->m_arrItems.push_back( pTab );
 
-			m_arrItems.Add( pR );
+			m_arrItems.push_back( pR );
 		}
 
 
@@ -370,9 +370,9 @@ namespace OOX
 
 			((CBr*)pBr)->m_oType.SetValue( eType );
 
-			((CRun*)pR)->m_arrItems.Add( pBr );
+			((CRun*)pR)->m_arrItems.push_back( pBr );
 
-			m_arrItems.Add( pR );
+			m_arrItems.push_back( pR );
 		}
 
 
@@ -398,9 +398,9 @@ namespace OOX
 			pText->m_oSpace = new SimpleTypes::CXmlSpace<>();
 			pText->m_oSpace->SetValue( SimpleTypes::xmlspacePreserve );
 
-			((CRun*)pR)->m_arrItems.Add( pT );
+			((CRun*)pR)->m_arrItems.push_back( pT );
 
-			m_arrItems.Add( pR );
+			m_arrItems.push_back( pR );
 		}
 		void CParagraph::AddSpace(const int nCount, CRunProperty *pProperty)
 		{
@@ -425,11 +425,11 @@ namespace OOX
 			pText->m_oSpace->SetValue( SimpleTypes::xmlspacePreserve );
 
 			if ( pProperty )
-				((CRun*)pR)->m_arrItems.Add( (WritingElement*)pProperty );
+				((CRun*)pR)->m_arrItems.push_back( (WritingElement*)pProperty );
 
-			((CRun*)pR)->m_arrItems.Add( pT );
+			((CRun*)pR)->m_arrItems.push_back( pT );
 
-			m_arrItems.Add( pR );
+			m_arrItems.push_back( pR );
 		}
 
 
@@ -443,7 +443,7 @@ namespace OOX
 			((CBookmarkStart*)pBS)->m_oId->SetValue( nId );
 			((CBookmarkStart*)pBS)->m_sName = sName;
 
-			m_arrItems.Add( pBS );
+			m_arrItems.push_back( pBS );
 		}	
 		void CParagraph::AddBookmarkEnd  (int nId)
 		{
@@ -454,7 +454,7 @@ namespace OOX
 			((CBookmarkEnd*)pBE)->m_oId = new SimpleTypes::CDecimalNumber<>();
 			((CBookmarkEnd*)pBE)->m_oId->SetValue( nId );
 
-			m_arrItems.Add( pBE );
+			m_arrItems.push_back( pBE );
 		}
 
 

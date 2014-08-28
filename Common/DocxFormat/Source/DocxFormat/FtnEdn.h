@@ -26,7 +26,7 @@ namespace OOX
 	//--------------------------------------------------------------------------------
 	// CFtnEdn 17.11.2 && 17.11.10 (Part 1)
 	//--------------------------------------------------------------------------------	
-	class CFtnEdn : public WritingElement
+	class CFtnEdn : public WritingElementWithChilds<>
 	{
 	public:
 		CFtnEdn()
@@ -40,119 +40,24 @@ namespace OOX
 		}
 		virtual ~CFtnEdn()
 		{
-			for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-			{
-				if ( m_arrItems[nIndex] )
-					delete m_arrItems[nIndex];
-
-				m_arrItems[nIndex] = NULL;
-			}
-
-			m_arrItems.RemoveAll();
 		}
 	public:
 
 		const CFtnEdn& operator =(const XmlUtils::CXmlNode& oNode)
 		{
+			ClearItems();
+
 			fromXML( (XmlUtils::CXmlNode&)oNode );
 			return *this;
 		}
-
-		//const CFtnEdn& operator =(const CFtnEdn& oOther)
-		//{
-		//	Clear();
-
-		//	m_eType = oOther.m_eType;
-		//	m_oId   = oOther.m_oId;
-		//	m_oType = oOther.m_oType;
-
-		//	for ( int nIndex = 0; nIndex < oOther.m_arrItems.GetSize(); nIndex++ )
-		//	{
-		//		WritingElement *pItem = oOther.m_arrItems[nIndex];
-		//		WritingElement *pNewItem = NULL;
-
-		//		/*if ( et_w_altChunk == pItem->getType() )
-		//			pNewItem = new Logic::AltChunk( (Logic::AltChunk*)pItem );
-		//		else */if ( et_w_bookmarkEnd == pItem->getType() )
-		//			pNewItem = new Logic::CBookmarkEnd( (Logic::CBookmarkEnd*)pItem );
-		//		else if ( et_w_bookmarkStart == pItem->getType() )
-		//			pNewItem = new Logic::CBookmarkStart( (Logic::CBookmarkStart*)pItem );
-		//		else if ( et_w_commentRangeEnd == pItem->getType() )
-		//			pNewItem = new Logic::CCommentRangeEnd( (Logic::CCommentRangeEnd*)pItem );
-		//		else if ( et_w_commentRangeStart == pItem->getType() )
-		//			pNewItem = new Logic::CCommentRangeStart( (Logic::CCommentRangeStart*)pItem );
-		//		//else if ( et_w_customXml == pItem->getType() )
-		//		//	pNewItem = new Logic::CCustomXml( (Logic::CCustomXml*)pItem );
-		//		else if ( et_w_customXmlDelRangeEnd == pItem->getType() )
-		//			pNewItem = new Logic::CCustomXmlDelRangeEnd( (Logic::CCustomXmlDelRangeEnd*)pItem );
-		//		else if ( et_w_customXmlDelRangeStart == pItem->getType() )
-		//			pNewItem = new Logic::CCustomXmlDelRangeStart( (Logic::CCustomXmlDelRangeStart*)pItem );
-		//		else if ( et_w_customXmlInsRangeEnd == pItem->getType() )
-		//			pNewItem = new Logic::CCustomXmlInsRangeEnd( (Logic::CCustomXmlInsRangeEnd*)pItem );
-		//		else if ( et_w_customXmlInsRangeStart == pItem->getType() )
-		//			pNewItem = new Logic::CCustomXmlInsRangeStart( (Logic::CCustomXmlInsRangeStart*)pItem );
-		//		else if ( et_w_customXmlMoveFromRangeEnd == pItem->getType() ) 
-		//			pNewItem = new Logic::CCustomXmlMoveFromRangeEnd( (Logic::CCustomXmlMoveFromRangeEnd*)pItem );
-		//		else if ( et_w_customXmlMoveFromRangeStart == pItem->getType() )
-		//			pNewItem = new Logic::CCustomXmlMoveFromRangeStart( (Logic::CCustomXmlMoveFromRangeStart*)pItem );
-		//		else if ( et_w_customXmlMoveToRangeEnd == pItem->getType() ) 
-		//			pNewItem = new Logic::CCustomXmlMoveToRangeEnd( (Logic::CCustomXmlMoveToRangeEnd*)pItem );
-		//		else if ( et_w_customXmlMoveToRangeStart == pItem->getType() )
-		//			pNewItem = new Logic::CCustomXmlMoveToRangeStart( (Logic::CCustomXmlMoveToRangeStart*)pItem );
-		//		//else if ( et_w_del == pItem->getType() )
-		//		//	pNewItem = new Logic::CDel( (Logic::CDel*)pItem );
-		//		//else if ( et_w_ins == pItem->getType() )
-		//		//	pNewItem = new Logic::CIns( (Logic::CIns*)pItem );
-		//		//else if ( et_w_moveFrom == pItem->getType() )
-		//		//	pNewItem = new Logic::CMoveFrom( (Logic::CMoveFrom*)pItem );
-		//		else if ( et_w_moveFromRangeEnd == pItem->getType() )
-		//			pNewItem = new Logic::CMoveToRangeEnd( (Logic::CMoveToRangeEnd*)pItem );
-		//		else if ( et_w_moveFromRangeStart == pItem->getType() )
-		//			pNewItem = new Logic::CMoveToRangeStart( (Logic::CMoveToRangeStart*)pItem );
-		//		//else if ( et_w_moveTo == pItem->getType() )
-		//		//	pNewItem = new Logic::CMoveTo( (Logic::CMoveTo*)pItem );
-		//		else if ( et_w_moveToRangeEnd == pItem->getType() )
-		//			pNewItem = new Logic::CMoveToRangeEnd( (Logic::CMoveToRangeEnd*)pItem );
-		//		else if ( et_w_moveToRangeStart == pItem->getType() )
-		//			pNewItem = new Logic::CMoveToRangeStart( (Logic::CMoveToRangeStart*)pItem );
-		//		//else if ( et_w_oMath == pItem->getType() )
-		//		//	pNewItem = new Logic::COMath( (Logic::COMath*)pItem );
-		//		//else if ( et_w_oMathPara == pItem->getType() )
-		//		//	pNewItem = new Logic::COMathPara( (Logic::COMathPara*)pItem );
-		//		else if ( et_w_p == pItem->getType() )
-		//			pNewItem = new Logic::CParagraph( (Logic::CParagraph*)pItem );
-		//		else if ( et_w_permEnd == pItem->getType() )
-		//			pNewItem = new Logic::CPermEnd( (Logic::CPermEnd*)pItem );
-		//		else if ( et_w_permStart == pItem->getType() )
-		//			pNewItem = new Logic::CPermStart( (Logic::CPermStart*)pItem );
-		//		else if ( et_w_proofErr == pItem->getType() )
-		//			pNewItem = new Logic::CProofErr( (Logic::CProofErr*)pItem );
-		//		else if ( et_w_sdt == pItem->getType() )
-		//			pNewItem = new Logic::CSdt( (Logic::CSdt*)pItem );
-		//		else if ( et_w_tbl == pItem->getType() )
-		//			pNewItem = new Logic::CTbl( (Logic::CTbl*)pItem );
-
-		//		if ( pItem )
-		//			m_arrItems.Add( pItem );
-		//	}
-		//	return *this;
-		//}
-		void Clear()
+		virtual void ClearItems()
 		{
 			m_eType = et_Unknown;
 
 			m_oId.reset();
 			m_oType.reset();
 
-			for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-			{
-				if ( m_arrItems[nIndex] )
-					delete m_arrItems[nIndex];
-
-				m_arrItems[nIndex] = NULL;
-			}
-
-			m_arrItems.RemoveAll();
+			WritingElementWithChilds::ClearItems();
 		}
 
 	public:
@@ -242,7 +147,7 @@ namespace OOX
 							pItem = new Logic::CTbl( oItem );
 
 						if ( pItem )
-							m_arrItems.Add( pItem );
+							m_arrItems.push_back( pItem );
 					}
 				}
 			}
@@ -263,7 +168,7 @@ namespace OOX
 
 			sResult += _T(">");
 
-			for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+			for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
 				if ( m_arrItems[nIndex] )
 				{
@@ -287,7 +192,7 @@ namespace OOX
 
 		void AddParagraph(Logic::CParagraph *pPara)
 		{
-			m_arrItems.Add( (WritingElement*)pPara );
+			m_arrItems.push_back( (WritingElement*)pPara );
 		}
 
 	public:
@@ -299,7 +204,6 @@ namespace OOX
 		nullable<SimpleTypes::CFtnEdn<>        > m_oType;
 
 		// Childs
-		CSimpleArray<WritingElement*           > m_arrItems;
 	};
 
 	//--------------------------------------------------------------------------------

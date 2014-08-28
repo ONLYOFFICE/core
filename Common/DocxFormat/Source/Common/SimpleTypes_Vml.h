@@ -3,6 +3,8 @@
 #include "SimpleTypes_Base.h"
 #include "SimpleTypes_Drawing.h"
 
+#include <vector>
+
 // Здесь представлены все простые типы Vml из спецификации Office Open Xml Part4 14
 namespace SimpleTypes
 {
@@ -3017,14 +3019,14 @@ namespace SimpleTypes
 
 			int GetX(int nIndex) const
 			{
-				if ( nIndex < 0 || nIndex >= m_arrPoints.GetSize()  )
+				if ( nIndex < 0 || nIndex >= (int)m_arrPoints.size()  )
 					return 0;
 
 				return m_arrPoints[nIndex].nX;
 			}
 			int GetY(int nIndex) const
 			{
-				if ( nIndex < 0 || nIndex >= m_arrPoints.GetSize()  )
+				if ( nIndex < 0 || nIndex >= (int)m_arrPoints.size()  )
 					return 0;
 
 				return m_arrPoints[nIndex].nY;
@@ -3033,12 +3035,12 @@ namespace SimpleTypes
 			void   AddPoint(int nX, int nY)
 			{
 				TPoint oPt( nX, nY );
-				m_arrPoints.Add( oPt );
+				m_arrPoints.push_back( oPt );
 			}
 
 			virtual double FromString(CString &sValue)
 			{
-				m_arrPoints.RemoveAll();
+				m_arrPoints.clear();
 
 				int nLen = sValue.GetLength();
 				if ( nLen <= 0 )
@@ -3058,7 +3060,7 @@ namespace SimpleTypes
 
 					int nX = _wtoi( sValue.Mid( nStartPos, nMidPos - nStartPos ) );
 					int nY = _wtoi( sValue.Mid( nMidPos + 1, nEndPos - nMidPos - 1 ) );
-					m_arrPoints.Add( TPoint( nX, nY ) );
+					m_arrPoints.push_back( TPoint( nX, nY ) );
 
 					nStartPos = nEndPos + 1;
 				}
@@ -3071,7 +3073,7 @@ namespace SimpleTypes
 			{
 				CString sResult;
 
-				int nLen = m_arrPoints.GetSize();
+				int nLen = m_arrPoints.size();
 				for ( int nIndex = 0; nIndex < nLen; nIndex++ )
 				{
 					CString sTemp;
@@ -3102,7 +3104,7 @@ namespace SimpleTypes
 				}
 			};
 
-			CSimpleArray<TPoint> m_arrPoints;
+			std::vector<TPoint> m_arrPoints;
 		};
 		//------------------------------------------------------------------------------------------
 		// CCssProperty
@@ -3971,10 +3973,24 @@ namespace SimpleTypes
 			CCssStyle() 
 			{
 			}
+			~CCssStyle()
+			{
+				Clear();
+			}
+			void Clear()
+			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrProperties.size(); nIndex++ )
+				{
+					if ( m_arrProperties[nIndex] )delete m_arrProperties[nIndex];
+					m_arrProperties[nIndex] = NULL;
+				}
+				m_arrProperties.clear();
+			}
 
 			CString FromString(CString &sValue)
 			{
-				m_arrProperties.RemoveAll();
+				Clear();
+
 				m_sCss = sValue;
 				ParseProperties();
 
@@ -3999,18 +4015,22 @@ namespace SimpleTypes
 					int nPos = sTemp.Find( ';' );
 					if ( -1 == nPos )
 					{
-						CCssProperty oProperty(sTemp);
-						if ( cssptUnknown != oProperty.get_Type() )
-							m_arrProperties.Add( oProperty );
+						CCssProperty *oProperty = new CCssProperty(sTemp);
+						if ((oProperty) && (cssptUnknown != oProperty->get_Type()) )
+						{
+							m_arrProperties.push_back( oProperty );
+						}
 
 						sTemp.Empty();
 						continue;
 					}
 					else
 					{
-						CCssProperty oProperty( sTemp.Mid( 0, nPos ) );
-						if ( cssptUnknown != oProperty.get_Type() )
-							m_arrProperties.Add( oProperty );
+						CCssProperty *oProperty = new  CCssProperty( sTemp.Mid( 0, nPos ) );
+						if ((oProperty) &&  (cssptUnknown != oProperty->get_Type()) )
+						{
+							m_arrProperties.push_back( oProperty );
+						}
 
 						sTemp = sTemp.Mid( nPos + 1, sTemp.GetLength() - nPos - 1 );
 					}
@@ -4021,7 +4041,7 @@ namespace SimpleTypes
 
 		public:
 
-			CSimpleArray<SimpleTypes::Vml::CCssProperty>  m_arrProperties;
+			std::vector<SimpleTypes::Vml::CCssProperty*>  m_arrProperties;
 			CString                                       m_sCss;
 		};
 		//--------------------------------------------------------------------------------
@@ -4229,13 +4249,13 @@ namespace SimpleTypes
 			{
 			}
 
-			int GetSize() const
+			unsigned int GetSize() const
 			{
-				return m_arrLimits.GetSize();
+				return m_arrLimits.size();
 			}
 			double GetAt(int nIndex) const
 			{
-				if ( nIndex < 0 || nIndex >= m_arrLimits.GetSize() )
+				if ( nIndex < 0 || nIndex >= (int)m_arrLimits.size() )
 					return 0;
 
 				return m_arrLimits[nIndex];
@@ -4243,7 +4263,7 @@ namespace SimpleTypes
 
 			void AddValue(double dValue)
 			{
-				m_arrLimits.Add( dValue );
+				m_arrLimits.push_back( dValue );
 			}
 
 			int FromString(CString &sValue)
@@ -4269,7 +4289,7 @@ namespace SimpleTypes
 					SimpleTypes::CPoint oPoint = sValue.Mid( nPos, nSpacePos - nPos );
 					nPos = nSpacePos + 1;
 
-					m_arrLimits.Add( oPoint.ToPoints() );
+					m_arrLimits.push_back( oPoint.ToPoints() );
 				}
 
 				return 0;
@@ -4279,7 +4299,7 @@ namespace SimpleTypes
 			{
 				CString sResult;
 
-				for ( int nIndex = 0; nIndex < m_arrLimits.GetSize(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrLimits.size(); nIndex++ )
 				{
 					CString sTemp;
 					sTemp.Format( _T("%fpt "), m_arrLimits[nIndex] );
@@ -4294,7 +4314,7 @@ namespace SimpleTypes
 
 		private:
 
-			CSimpleArray<double> m_arrLimits;
+			std::vector<double> m_arrLimits;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -4611,14 +4631,14 @@ namespace SimpleTypes
 			}
 			double GetX(int nIndex) const
 			{
-				if ( nIndex < 0 || nIndex >= m_arrPoints.GetSize()  )
+				if ( nIndex < 0 || nIndex >= (int)m_arrPoints.size()  )
 					return 0;
 
 				return m_arrPoints[nIndex].dX;
 			}
 			double GetY(int nIndex) const
 			{
-				if ( nIndex < 0 || nIndex >= m_arrPoints.GetSize()  )
+				if ( nIndex < 0 || nIndex >= (int)m_arrPoints.size()  )
 					return 0;
 
 				return m_arrPoints[nIndex].dY;
@@ -4627,12 +4647,12 @@ namespace SimpleTypes
 			void   AddPoint(double dX, double dY)
 			{
 				TPoint oPt( dX, dY );
-				m_arrPoints.Add( oPt );
+				m_arrPoints.push_back( oPt );
 			}
 
 			virtual double FromString(CString &sValue)
 			{
-				m_arrPoints.RemoveAll();
+				m_arrPoints.clear();
 
 				int nLen = sValue.GetLength();
 				if ( nLen <= 0 )
@@ -4652,7 +4672,7 @@ namespace SimpleTypes
 
 					int nX = _wtoi( sValue.Mid( nStartPos, nMidPos - nStartPos ) );
 					int nY = _wtoi( sValue.Mid( nMidPos + 1, nEndPos - nMidPos - 1 ) );
-					m_arrPoints.Add( TPoint( nX, nY ) );
+					m_arrPoints.push_back( TPoint( nX, nY ) );
 
 					nStartPos = nEndPos + 1;
 				}
@@ -4665,7 +4685,7 @@ namespace SimpleTypes
 			{
 				CString sResult;
 
-				int nLen = m_arrPoints.GetSize();
+				int nLen = m_arrPoints.size();
 				for ( int nIndex = 0; nIndex < nLen; nIndex++ )
 				{
 					CString sTemp;
@@ -4694,7 +4714,7 @@ namespace SimpleTypes
 				}
 			};
 
-			CSimpleArray<TPoint> m_arrPoints;
+			std::vector<TPoint> m_arrPoints;
 			wchar_t              m_wcDelimiter; // Разделитель, по умолчнию пробел ' '
 		};
 		//--------------------------------------------------------------------------------

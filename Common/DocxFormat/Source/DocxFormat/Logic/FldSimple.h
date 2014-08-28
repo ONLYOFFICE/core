@@ -15,7 +15,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CFldSimple 17.16.19 (Part 1)
 		//--------------------------------------------------------------------------------	
-		class CFldSimple : public WritingElement
+		class CFldSimple : public WritingElementWithChilds<>
 		{
 		public:
 			CFldSimple()
@@ -31,48 +31,31 @@ namespace OOX
 			}
 			virtual ~CFldSimple()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
 			}
 
 		public:
 
 			const CFldSimple &operator =(const XmlUtils::CXmlNode& oNode)
 			{
-				Clear();
+				ClearItems();
 				fromXML( (XmlUtils::CXmlNode&)oNode );
 				return *this;
 			}
 
 			const CFldSimple &operator =(const XmlUtils::CXmlLiteReader& oReader)
 			{
-				Clear();
+				ClearItems();
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
 
-			void Clear()
+			virtual void ClearItems()
 			{
 				m_oDirty.SetValue( SimpleTypes::onoffFalse );
 				m_oFldLock.SetValue( SimpleTypes::onoffFalse );
 				m_sInstr.reset();
-				
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
 
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
+				WritingElementWithChilds::ClearItems();
 			}
 
 
@@ -106,7 +89,6 @@ namespace OOX
 			nullable<CString >                           m_sInstr;
 
 			// Childs
-			CSimpleArray<WritingElement *>           m_arrItems;
 		};
 
 	} // namespace Logic

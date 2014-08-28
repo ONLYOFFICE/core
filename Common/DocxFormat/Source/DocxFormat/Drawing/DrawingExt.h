@@ -130,7 +130,7 @@ namespace OOX
 		public:
 
 			// Childs
-            //CSimpleArray<OOX::Drawing::COfficeArtExtension> m_arrExt;
+            //std::vector<OOX::Drawing::COfficeArtExtension> m_arrExt;
             std::vector<OOX::Drawing::COfficeArtExtension> m_arrExt;
 		};
 	} // namespace Drawing

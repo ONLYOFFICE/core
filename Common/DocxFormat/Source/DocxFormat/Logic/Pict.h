@@ -100,27 +100,16 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CPicture 9.2.2.2 (Part 4)
 		//--------------------------------------------------------------------------------	
-		class CPicture : public WritingElement
+		class CPicture : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionConstructors(CPicture)
 			CPicture() {}
 			virtual ~CPicture() 
 			{
-				Clear();
 			}
 
 		public:
-			void Clear()
-			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )delete m_arrItems[nIndex];
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
-			}
 			virtual void         fromXML(XmlUtils::CXmlNode &oNode)
 			{
 				// TO DO: Реализовать CPicture::fromXML(XmlUtils::CXmlNode &oNode)
@@ -353,7 +342,7 @@ namespace OOX
 
 					if ( pItem )
 					{
-						m_arrItems.Add( pItem );
+						m_arrItems.push_back( pItem );
 					}
 				}
 			}
@@ -362,7 +351,7 @@ namespace OOX
 			{
 				CString sResult = _T("<w:pict>");
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 						sResult += m_arrItems[nIndex]->toXML();
@@ -400,8 +389,6 @@ namespace OOX
 			nullable<OOX::Vml::CGroup>		m_oShapeGroup;
 			
 			nullable<OOX::Vml::CShape>		m_oShape;
-//minor childs
-			CSimpleArray<WritingElement*>	m_arrItems;
 			
 			// TO DO: Добавить класс, читающий movie
 		};
@@ -410,27 +397,16 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CObject 17.3.3.19 (Part 1)
 		//--------------------------------------------------------------------------------	
-		class CObject : public WritingElement
+		class CObject : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionConstructors(CObject)
 			CObject() {}
 			virtual ~CObject() 
 			{
-				Clear();
 			}
 	
 		public:
-			void Clear()
-			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )delete m_arrItems[nIndex];
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
-			}
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
@@ -608,7 +584,7 @@ namespace OOX
 
 					if ( pItem )
 					{
-						m_arrItems.Add( pItem );
+						m_arrItems.push_back( pItem );
 					}
 				}
 			}
@@ -631,7 +607,6 @@ namespace OOX
 			
 			nullable<OOX::Vml::CShape>				m_oShape;
 //minor childs
-			CSimpleArray<WritingElement*>			m_arrItems;
 
 		};
 

@@ -22,7 +22,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CParagraph 17.3.1.22 (Part 1)
 		//--------------------------------------------------------------------------------	
-		class CParagraph : public WritingElement
+		class CParagraph : public WritingElementWithChilds<>
 		{
 		public:
 			CParagraph()
@@ -39,15 +39,6 @@ namespace OOX
 			}
 			virtual ~CParagraph()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
 				m_oParagraphProperty = NULL;
 			}
 
@@ -77,7 +68,7 @@ namespace OOX
 				m_oRsidRDefault.reset();
 				m_oRsidRPr.reset();
 				
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 						delete m_arrItems[nIndex];
@@ -85,7 +76,7 @@ namespace OOX
 					m_arrItems[nIndex] = NULL;
 				}
 
-				m_arrItems.RemoveAll();
+				m_arrItems.clear();
 				m_oParagraphProperty = NULL;
 			}
 
@@ -125,7 +116,6 @@ namespace OOX
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRPr;
 
 			// Childs
-			CSimpleArray<WritingElement *>           m_arrItems;
 			CParagraphProperty *					 m_oParagraphProperty; // копия того что в m_arrItems...  - для быстрого доступа/анализа
 			// по идее нужно сделать как в Drawing::Paragraph - то есть единственные подобъекты вынести отдельно
 		};

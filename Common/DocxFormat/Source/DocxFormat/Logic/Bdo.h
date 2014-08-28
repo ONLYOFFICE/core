@@ -12,7 +12,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CBdo 17.3.2.3 (Part 1)
 		//--------------------------------------------------------------------------------	
-		class CBdo : public WritingElement
+		class CBdo : public WritingElementWithChilds<>
 		{
 		public:
 			CBdo()
@@ -28,47 +28,22 @@ namespace OOX
 			}
 			virtual ~CBdo()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
 			}
 
 		public:
 
 			const CBdo &operator =(const XmlUtils::CXmlNode& oNode)
 			{
-				Clear();
+				ClearItems();
 				fromXML( (XmlUtils::CXmlNode&)oNode );
 				return *this;
 			}
 			const CBdo &operator =(const XmlUtils::CXmlLiteReader& oReader)
 			{
-				Clear();
+				ClearItems();
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
-
-			void Clear()
-			{
-				m_oVal.SetValue( SimpleTypes::directionLTR );
-				
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
-			}
-
 		public:
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
@@ -95,7 +70,6 @@ namespace OOX
 			SimpleTypes::CDirection<SimpleTypes::directionLTR> m_oVal;
 
 			// Childs
-			CSimpleArray<WritingElement *>                     m_arrItems;
 		};
 	} // namespace Logic
 } // namespace OOX

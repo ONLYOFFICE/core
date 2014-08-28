@@ -15,7 +15,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CHyperlink 17.16.22 (Part 1)
 		//--------------------------------------------------------------------------------	
-		class CHyperlink : public WritingElement
+		class CHyperlink : public WritingElementWithChilds<>
 		{
 		public:
 			CHyperlink()
@@ -31,33 +31,24 @@ namespace OOX
 			}
 			virtual ~CHyperlink()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
 			}
 
 		public:
 
 			const CHyperlink &operator =(const XmlUtils::CXmlNode& oNode)
 			{
-				Clear();
+				ClearItems();
 				fromXML( (XmlUtils::CXmlNode&)oNode );
 				return *this;
 			}
 			const CHyperlink &operator =(const XmlUtils::CXmlLiteReader& oReader)
 			{
-				Clear();
+				ClearItems();
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
 
-			void Clear()
+			virtual void ClearItems()
 			{
 				m_sAnchor.reset();
 				m_sDocLocation.reset();
@@ -65,16 +56,8 @@ namespace OOX
 				m_oId.reset();
 				m_sTgtFrame.reset();
 				m_sTooltip.reset();
-				
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
 
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
+				WritingElementWithChilds::ClearItems();
 			}
 
 		public:
@@ -113,7 +96,6 @@ namespace OOX
 			nullable<CString                                      > m_sTooltip;
 
 			// Childs
-			CSimpleArray<WritingElement *>                          m_arrItems;
 		};
 	} // namespace Logic
 } // namespace OOX

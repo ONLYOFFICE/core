@@ -1624,8 +1624,8 @@ namespace OOX
 
 					// Применяем преобразования к цвету
 
-                    int nCount = m_arrTransform.size();
-					for ( int nIndex = 0; nIndex < nCount; ++nIndex )
+                    unsigned int nCount = m_arrTransform.size();
+					for (unsigned  int nIndex = 0; nIndex < nCount; ++nIndex )
 					{
 						WritingElement* pTransform = m_arrTransform[nIndex];
 						if ( !pTransform )

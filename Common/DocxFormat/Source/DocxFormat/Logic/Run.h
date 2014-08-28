@@ -19,7 +19,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CRun 17.3.2.25 (Part 1)
 		//--------------------------------------------------------------------------------	
-		class CRun : public WritingElement
+		class CRun : public WritingElementWithChilds<>
 		{
 		public:
 			CRun()
@@ -59,26 +59,21 @@ namespace OOX
 				m_oRsidDel.reset();
 				m_oRsidR.reset();
 				m_oRsidRPr.reset();
+				m_oRunProperty = NULL;
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for (unsigned int nIndex = 0; nIndex < m_arrSpreadsheetItems.size(); nIndex++ )
 				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-				m_arrItems.RemoveAll();
-
-				for ( int nIndex = 0; nIndex < m_arrSpreadsheetItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrSpreadsheetItems[nIndex];
-
+					if ( m_arrItems[nIndex] )delete m_arrSpreadsheetItems[nIndex];
 					m_arrSpreadsheetItems[nIndex] = NULL;
 				}
+				m_arrSpreadsheetItems.clear();				
 
-				m_arrSpreadsheetItems.RemoveAll();
-				m_oRunProperty = NULL;
+				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				{
+					if ( m_arrItems[nIndex] )delete m_arrItems[nIndex];
+					m_arrItems[nIndex] = NULL;
+				}
+				m_arrItems.clear();
 			}
 
 		public:
@@ -174,7 +169,7 @@ namespace OOX
 								pItem = new CYearShort( oItem );
 
 							if ( pItem )
-								m_arrItems.Add( pItem );
+								m_arrItems.push_back( pItem );
 						}
 					}
 				}
@@ -267,9 +262,9 @@ namespace OOX
 						pItem = new CYearLong( oReader );
 
 					if ( pItem )
-						m_arrItems.Add( pItem );
+						m_arrItems.push_back( pItem );
 					if ( pSpreadsheetItem )
-						m_arrSpreadsheetItems.Add( pSpreadsheetItem );
+						m_arrSpreadsheetItems.push_back( pSpreadsheetItem );
 				}
 			}
 			virtual CString      toXML() const
@@ -282,14 +277,14 @@ namespace OOX
 
 				sResult += _T(">");
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 					{
 						sResult += m_arrItems[nIndex]->toXML();
 					}
 				}
-				for ( int nIndex = 0; nIndex < m_arrSpreadsheetItems.GetSize(); nIndex++ )
+				for (unsigned int nIndex = 0; nIndex < m_arrSpreadsheetItems.size(); nIndex++ )
 				{
 					if ( m_arrSpreadsheetItems[nIndex] )
 					{
@@ -344,8 +339,7 @@ namespace OOX
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRPr;
 
 			// Childs
-			CSimpleArray<WritingElement *>					 m_arrItems;
-			CSimpleArray<OOX::Spreadsheet::WritingElement *> m_arrSpreadsheetItems;
+			std::vector<OOX::Spreadsheet::WritingElement *> m_arrSpreadsheetItems;
 
 			OOX::Logic::CRunProperty						*m_oRunProperty;	// копия того что в m_arrItems...  - для быстрого доступа/анализа
 			// по идее нужно сделать как в Drawing::Run - то есть единственные подобъекты вынести отдельно

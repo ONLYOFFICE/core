@@ -164,9 +164,9 @@ namespace Diagram
 		}
 		virtual ~CDiagramDrawing()
 		{
-			for(int i = 0, length = m_arrShapeTree.GetSize(); i < length; ++i)
+			for(int i = 0, length = m_arrShapeTree.size(); i < length; ++i)
 				delete m_arrShapeTree[i];
-			m_arrShapeTree.RemoveAll();
+			m_arrShapeTree.clear();
 		}
 	public:
 
@@ -190,7 +190,7 @@ namespace Diagram
 				{
 					sName = oReader.GetName();
 					if ( _T("dsp:spTree") == sName )
-						m_arrShapeTree.Add( new Diagram::CShapeTree(oReader) );
+						m_arrShapeTree.push_back( new Diagram::CShapeTree(oReader) );
 				}
 			}
 #endif
@@ -217,7 +217,7 @@ namespace Diagram
 
 	public:
 
-		CSimpleArray<Diagram::CShapeTree*> m_arrShapeTree;
+		std::vector<Diagram::CShapeTree*> m_arrShapeTree;
 
 	};
 } // namespace OOX

@@ -25,34 +25,34 @@ namespace OOX
 			}
 			void Clear()
 			{
-				for ( int nIndex = 0; nIndex < m_arrChoiceItems.GetSize(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrChoiceItems.size(); nIndex++ )
 				{
 					if ( m_arrChoiceItems[nIndex] )
 						delete m_arrChoiceItems[nIndex];
 					m_arrChoiceItems[nIndex] = NULL;
 				}
-				m_arrChoiceItems.RemoveAll();
-				for ( int nIndex = 0; nIndex < m_arrFallbackItems.GetSize(); nIndex++ )
+				m_arrChoiceItems.clear();
+				for (unsigned int nIndex = 0; nIndex < m_arrFallbackItems.size(); nIndex++ )
 				{
 					if ( m_arrFallbackItems[nIndex] )
 						delete m_arrFallbackItems[nIndex];
 					m_arrFallbackItems[nIndex] = NULL;
 				}
-				m_arrFallbackItems.RemoveAll();
-				for ( int nIndex = 0; nIndex < m_arrSpreadsheetChoiceItems.GetSize(); nIndex++ )
+				m_arrFallbackItems.clear();
+				for (unsigned int nIndex = 0; nIndex < m_arrSpreadsheetChoiceItems.size(); nIndex++ )
 				{
 					if ( m_arrSpreadsheetChoiceItems[nIndex] )
 						delete m_arrSpreadsheetChoiceItems[nIndex];
 					m_arrSpreadsheetChoiceItems[nIndex] = NULL;
 				}
-				m_arrSpreadsheetChoiceItems.RemoveAll();
-				for ( int nIndex = 0; nIndex < m_arrSpreadsheetFallbackItems.GetSize(); nIndex++ )
+				m_arrSpreadsheetChoiceItems.clear();
+				for (unsigned int nIndex = 0; nIndex < m_arrSpreadsheetFallbackItems.size(); nIndex++ )
 				{
 					if ( m_arrSpreadsheetFallbackItems[nIndex] )
 						delete m_arrSpreadsheetFallbackItems[nIndex];
 					m_arrSpreadsheetFallbackItems[nIndex] = NULL;
 				}
-				m_arrSpreadsheetFallbackItems.RemoveAll();
+				m_arrSpreadsheetFallbackItems.clear();
 			}
 		public:
 
@@ -70,10 +70,12 @@ namespace OOX
 			}
 		public:
 			nullable<CString > m_sXml;
-			CSimpleArray<WritingElement *> m_arrChoiceItems;
-			CSimpleArray<WritingElement *> m_arrFallbackItems;
-			CSimpleArray<OOX::Spreadsheet::WritingElement *> m_arrSpreadsheetChoiceItems;
-			CSimpleArray<OOX::Spreadsheet::WritingElement *> m_arrSpreadsheetFallbackItems;
+			
+			std::vector<WritingElement *> m_arrChoiceItems;
+			std::vector<WritingElement *> m_arrFallbackItems;
+			
+			std::vector<OOX::Spreadsheet::WritingElement *> m_arrSpreadsheetChoiceItems;
+			std::vector<OOX::Spreadsheet::WritingElement *> m_arrSpreadsheetFallbackItems;
 		};
 	} // namespace Words
 } // namespace OOX

@@ -936,6 +936,12 @@ namespace OOX
 			}
 			virtual ~CTabs()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrTabs.size(); nIndex++ )
+				{
+					if ( m_arrTabs[nIndex] ) delete m_arrTabs[nIndex];
+					m_arrTabs[nIndex] = NULL;
+				}
+				m_arrTabs.clear();
 			}
 		public:
 
@@ -952,8 +958,8 @@ namespace OOX
 					{
 						if ( oTabs.GetAt( nIndex, oTab ) )
 						{
-							ComplexTypes::Word::CTabStop oTabStop = oTab;
-							m_arrTabs.Add( oTabStop );
+							ComplexTypes::Word::CTabStop *oTabStop = new ComplexTypes::Word::CTabStop(oTab);
+							if (oTabStop) m_arrTabs.push_back( oTabStop );
 						}
 					}
 				}
@@ -969,8 +975,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("w:tab") == sName )
 					{
-						ComplexTypes::Word::CTabStop oTabStop = oReader;
-						m_arrTabs.Add( oTabStop );
+						ComplexTypes::Word::CTabStop *oTabStop = new ComplexTypes::Word::CTabStop(oReader);
+						if (oTabStop) m_arrTabs.push_back( oTabStop );
 					}
 				}
 			}
@@ -978,10 +984,11 @@ namespace OOX
 			{
 				CString sResult = _T("<w:tabs>");
 
-				for ( int nIndex = 0; nIndex < m_arrTabs.GetSize(); nIndex++ )
+				for (unsigned int nIndex = 0; nIndex < m_arrTabs.size(); nIndex++ )
 				{
 					sResult += _T("<w:tab ");
-					sResult += m_arrTabs[nIndex].ToString();
+					if (m_arrTabs[nIndex])
+						sResult += m_arrTabs[nIndex]->ToString();
 					sResult += _T("/>");
 				}
 
@@ -996,7 +1003,7 @@ namespace OOX
 			}
 		public:
 
-			CSimpleArray<ComplexTypes::Word::CTabStop> m_arrTabs;
+			std::vector<ComplexTypes::Word::CTabStop*> m_arrTabs;
 		};
 		//--------------------------------------------------------------------------------
 		// CParagraphProperty

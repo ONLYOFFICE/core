@@ -7,12 +7,7 @@
 
 namespace Common
 {
-#ifdef _WIN32
-    void readAllShapeTypes(const OOX::CPath& oPath, CSimpleArray<CString>& aShapetypes);
-#else
-	void readAllShapeTypes(const OOX::CPath& oPath, std::vector<CString>& aShapetypes);
-#endif
-
+void readAllShapeTypes(const OOX::CPath& oPath, std::vector<CString>& aShapetypes);
 } // namespace Common
 
 #endif // COMMON_UTILS_INCLUDE_H_

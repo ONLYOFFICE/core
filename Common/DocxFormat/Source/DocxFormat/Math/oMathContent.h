@@ -656,7 +656,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CDelimiter 22.1.2.24 (Delimiter Object) 
 		//--------------------------------------------------------------------------------
-		class CDelimiter : public WritingElement
+		class CDelimiter : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionConstructors(CDelimiter)
@@ -665,7 +665,6 @@ namespace OOX
 			}
 			virtual ~CDelimiter()
 			{
-				Clear();
 			}
 
 		public:
@@ -694,7 +693,7 @@ namespace OOX
 					}
 
 					if ( pItem )
-						m_arrItems.Add( pItem );
+						m_arrItems.push_back( pItem );
 					
 				}
 			}
@@ -702,7 +701,7 @@ namespace OOX
 			{
 				CString sResult = _T("<m:d>");
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex])
 					{
@@ -714,27 +713,12 @@ namespace OOX
 
 				return sResult;
 			}
-
-			void Clear()
-			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
-			}
-
 			virtual EElementType getType() const
 			{
 				return et_m_d;
 			}
 		public:
 			// Childs
-			CSimpleArray<WritingElement *> m_arrItems;
 			LONG						   m_lColumn;
 		};
 		//--------------------------------------------------------------------------------
@@ -820,7 +804,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CEqArr 22.1.2.34 (Array Object)  
 		//--------------------------------------------------------------------------------
-		class CEqArr : public WritingElement
+		class CEqArr : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionConstructors(CEqArr)
@@ -829,7 +813,6 @@ namespace OOX
 			}
 			virtual ~CEqArr()
 			{
-				Clear();
 			}
 
 		public:
@@ -858,7 +841,7 @@ namespace OOX
 
 
 					if ( pItem )
-						m_arrItems.Add( pItem );
+						m_arrItems.push_back( pItem );
 					
 				}
 			}
@@ -866,7 +849,7 @@ namespace OOX
 			{
 				CString sResult = _T("<m:eqArr>");
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex])
 					{
@@ -879,26 +862,12 @@ namespace OOX
 				return sResult;
 			}
 
-			void Clear()
-			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
-			}
-
 			virtual EElementType getType() const
 			{
 				return et_m_eqArr;
 			}
 		public:
 			// Childs
-			CSimpleArray<WritingElement *>	m_arrItems;
 			LONG							m_lRow;
 		};				
 		//--------------------------------------------------------------------------------
@@ -1467,7 +1436,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CMathPr 22.1.2.62 (Math Properties) 
 		//--------------------------------------------------------------------------------
-		class CMathPr : public WritingElement
+		class CMathPr : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionConstructors(CMathPr)
@@ -1476,7 +1445,6 @@ namespace OOX
 			}
 			virtual ~CMathPr()
 			{
-				Clear();
 			}
 
 		public:
@@ -1528,7 +1496,7 @@ namespace OOX
 						pItem = new CWrapRight( oReader );
 
 					if ( pItem )
-						m_arrItems.Add( pItem );
+						m_arrItems.push_back( pItem );
 					
 				}
 			}
@@ -1536,7 +1504,7 @@ namespace OOX
 			{
 				CString sResult = _T("<m:mathPr>");
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex])
 					{
@@ -1549,26 +1517,12 @@ namespace OOX
 				return sResult;
 			}
 
-			void Clear()
-			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
-			}
-
 			virtual EElementType getType() const
 			{
 				return et_m_mathPr;
 			}
 		public:
 			// Childs
-			CSimpleArray<WritingElement *> m_arrItems;
 		};		
 		//--------------------------------------------------------------------------------
 		// CMc 22.1.2.64  (Matrix Column)
@@ -1670,7 +1624,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CMcs 22.1.2.67 (Matrix Columns) 
 		//--------------------------------------------------------------------------------
-		class CMcs : public WritingElement
+		class CMcs : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionConstructors(CMcs)
@@ -1679,7 +1633,6 @@ namespace OOX
 			}
 			virtual ~CMcs()
 			{
-				Clear();
 			}
 
 		public:
@@ -1701,7 +1654,7 @@ namespace OOX
 						pItem = new Logic::CMc( oReader );
 
 					if ( pItem )
-						m_arrItems.Add( pItem );
+						m_arrItems.push_back( pItem );
 					
 				}
 			}
@@ -1710,7 +1663,7 @@ namespace OOX
 			{
 				CString sResult = _T("<m:mcs>");
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex])
 					{
@@ -1723,18 +1676,6 @@ namespace OOX
 				return sResult;
 			}
 
-			void Clear()
-			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
-			}
 
 			virtual EElementType getType() const
 			{
@@ -1742,7 +1683,6 @@ namespace OOX
 			}
 		public:				
 			//Childs
-			CSimpleArray<WritingElement *> m_arrItems;
 		};
 		//--------------------------------------------------------------------------------
 		// CMPr 22.1.2.68   (Matrix Properties) 
@@ -1843,7 +1783,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CMr 22.1.2.69 (Matrix Row)
 		//--------------------------------------------------------------------------------
-		class CMr : public WritingElement
+		class CMr : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionConstructors(CMr)
@@ -1852,7 +1792,6 @@ namespace OOX
 			}
 			virtual ~CMr()
 			{
-				Clear();
 			}
 
 		public:
@@ -1875,7 +1814,7 @@ namespace OOX
 						pItem = new Logic::CElement( oReader );
 
 					if ( pItem )
-						m_arrItems.Add( pItem );
+						m_arrItems.push_back( pItem );
 					
 				}
 			}
@@ -1883,7 +1822,7 @@ namespace OOX
 			{
 				CString sResult = _T("<m:mr>");
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex])
 					{
@@ -1895,32 +1834,17 @@ namespace OOX
 
 				return sResult;
 			}
-
-			void Clear()
-			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
-			}
-
 			virtual EElementType getType() const
 			{
 				return et_m_mr;
 			}
 		public:				
 			// Childs
-			CSimpleArray<WritingElement *> m_arrItems;
 		};
 		//--------------------------------------------------------------------------------
 		// CMatrix 22.1.2.60 (Matrix Object) 
 		//--------------------------------------------------------------------------------
-		class CMatrix : public WritingElement
+		class CMatrix : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionConstructors(CMatrix)
@@ -1929,7 +1853,6 @@ namespace OOX
 			}
 			virtual ~CMatrix()
 			{
-				Clear();
 			}
 
 		public:
@@ -1958,7 +1881,7 @@ namespace OOX
 					}
 
 					if ( pItem )
-						m_arrItems.Add( pItem );
+						m_arrItems.push_back( pItem );
 					
 				}
 			}
@@ -1966,7 +1889,7 @@ namespace OOX
 			{
 				CString sResult = _T("<m:m>");
 
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex])
 					{
@@ -1979,26 +1902,12 @@ namespace OOX
 				return sResult;
 			}
 
-			void Clear()
-			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
-			}
-
 			virtual EElementType getType() const
 			{
 				return et_m_m;
 			}
 		public:				
 			// Childs
-			CSimpleArray<WritingElement *> m_arrItems;
 			LONG						   m_lRow;
 		};
 		//--------------------------------------------------------------------------------

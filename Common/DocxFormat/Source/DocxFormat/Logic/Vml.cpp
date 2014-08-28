@@ -30,6 +30,8 @@ namespace OOX
 		}
 		void CTxbxContent::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
+			ClearItems();
+			
 			if ( oReader.IsEmptyNode() )
 				return;
 
@@ -101,14 +103,14 @@ namespace OOX
 					pItem = new CTbl( oReader );
 
 				if ( pItem )
-					m_arrItems.Add( pItem );
+					m_arrItems.push_back( pItem );
 			}
 		}
 		CString CTxbxContent::toXML() const
 		{
 			CString sResult = _T("<w:txbxContent>");
 
-			for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+			for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
 				if ( m_arrItems[nIndex] )
 				{
@@ -756,7 +758,7 @@ namespace OOX
 				}
 
 				if ( NULL != pItem )
-					m_arrItems.Add( pItem );
+					m_arrItems.push_back( pItem );
 			}
 		}
 		CString CGroup::toXML() const
@@ -846,7 +848,7 @@ namespace OOX
 
 			sResult += _T(">");
 
-			for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+			for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
 				if ( m_arrItems[nIndex] )
 					sResult += m_arrItems[nIndex]->toXML();

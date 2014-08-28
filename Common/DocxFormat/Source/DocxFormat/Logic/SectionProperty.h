@@ -1055,6 +1055,12 @@ namespace OOX
 			}
 			virtual ~CColumns()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrColumns.size(); nIndex++ )
+				{
+					if ( m_arrColumns[nIndex] )	delete m_arrColumns[nIndex];
+					m_arrColumns[nIndex] = NULL;
+				}
+				m_arrColumns.clear();
 			}
 
 		public:
@@ -1074,13 +1080,13 @@ namespace OOX
 						XmlUtils::CXmlNode oCol;
 						if ( oCols.GetAt( nIndex, oCol ) )
 						{
-							ComplexTypes::Word::CColumn oColumn = oCol;
-							m_arrColumns.Add( oColumn );
+							ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn(oCol);
+							if (oColumn) m_arrColumns.push_back( oColumn );
 						}
 					}
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void  fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
@@ -1093,8 +1099,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("w:col") == sName )
 					{
-						ComplexTypes::Word::CColumn oColumn = oReader;
-						m_arrColumns.Add( oColumn );
+						ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn(oReader);
+						if (oColumn) m_arrColumns.push_back( oColumn );
 					}
 				}
 			}
@@ -1132,11 +1138,11 @@ namespace OOX
 
 				sResult += _T(">");
 
-				for ( int nIndex = 0; nIndex < m_arrColumns.GetSize(); nIndex++ )
+				for ( unsigned int nIndex = 0; nIndex < m_arrColumns.size(); nIndex++ )
 				{
-					ComplexTypes::Word::CColumn oColumn = m_arrColumns[nIndex];
 					sResult += _T("<w:col ");
-					sResult += oColumn.ToString();
+					if (m_arrColumns[nIndex])
+						sResult += m_arrColumns[nIndex]->ToString();
 					sResult += _T("/>");
 				}
 
@@ -1170,7 +1176,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>           > m_oSep;
 			nullable<SimpleTypes::CTwipsMeasure      > m_oSpace;
 
-			CSimpleArray<ComplexTypes::Word::CColumn > m_arrColumns;
+			std::vector<ComplexTypes::Word::CColumn *> m_arrColumns;
 		};
 		//--------------------------------------------------------------------------------
 		// EdnProps 17.11.5 (Part 1)
@@ -1571,16 +1577,37 @@ namespace OOX
 				m_bSectPrChange = false;
 				fromXML( oReader );
 			}
-			virtual ~CSectionProperty() {}
+			virtual ~CSectionProperty() 
+			{
+				ClearItems();
+			}
+			void ClearItems()
+			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrFooterReference.size(); nIndex++ )
+				{
+					if ( m_arrFooterReference[nIndex] ) delete m_arrFooterReference[nIndex];
+					m_arrFooterReference[nIndex] = NULL;
+				}
+				m_arrFooterReference.clear();
+			
+				for ( unsigned int nIndex = 0; nIndex < m_arrHeaderReference.size(); nIndex++ )
+				{
+					if ( m_arrHeaderReference[nIndex] ) delete m_arrHeaderReference[nIndex];
+					m_arrHeaderReference[nIndex] = NULL;
+				}
+				m_arrHeaderReference.clear();
+			}
 		public:
 			const CSectionProperty& operator =(const XmlUtils::CXmlNode &oNode)
 			{
+				ClearItems();
 				fromXML( (XmlUtils::CXmlNode &)oNode );
 				return *this;
 			}
 
 			const CSectionProperty& operator =(const XmlUtils::CXmlLiteReader& oReader)
 			{
+				ClearItems();
 				fromXML( (XmlUtils::CXmlNode &)oReader );
 				return *this;
 			}
@@ -1621,8 +1648,8 @@ namespace OOX
 						{
 							if ( oNodes.GetAt( nIndex, oFooterNode ) )
 							{
-								ComplexTypes::Word::CHdrFtrRef oFooter = oFooterNode;
-								m_arrFooterReference.Add( oFooter );
+								ComplexTypes::Word::CHdrFtrRef *oFooter = new ComplexTypes::Word::CHdrFtrRef(oFooterNode);
+								if (oFooter) m_arrFooterReference.push_back( oFooter );
 							}
 						}
 					}
@@ -1644,8 +1671,8 @@ namespace OOX
 						{
 							if ( oNodes.GetAt( nIndex, oHeaderNode ) )
 							{
-								ComplexTypes::Word::CHdrFtrRef oHeader = oHeaderNode;
-								m_arrHeaderReference.Add( oHeader );
+								ComplexTypes::Word::CHdrFtrRef *oHeader = new ComplexTypes::Word::CHdrFtrRef(oHeaderNode);
+								if (oHeader) m_arrHeaderReference.push_back( oHeader );
 							}
 						}
 					}
@@ -1714,8 +1741,8 @@ namespace OOX
 						m_oEndnotePr = oReader;
 					else if ( !m_bSectPrChange && _T("w:footerReference") == sName )
 					{
-						ComplexTypes::Word::CHdrFtrRef oFooter = oReader;
-						m_arrFooterReference.Add( oFooter );
+						ComplexTypes::Word::CHdrFtrRef *oFooter = new ComplexTypes::Word::CHdrFtrRef(oReader);
+						if (oFooter) m_arrFooterReference.push_back( oFooter );
 					}
 					else if ( _T("w:footnotePr") == sName )
 						m_oFootnotePr = oReader;
@@ -1723,8 +1750,8 @@ namespace OOX
 						m_oFormProt = oReader;
 					else if ( !m_bSectPrChange && _T("w:headerReference") == sName )
 					{
-						ComplexTypes::Word::CHdrFtrRef oHeader = oReader;
-						m_arrHeaderReference.Add( oHeader );
+						ComplexTypes::Word::CHdrFtrRef *oHeader = new ComplexTypes::Word::CHdrFtrRef( oReader);
+						if (oHeader) m_arrHeaderReference.push_back( oHeader );
 					}
 					else if ( _T("w:lnNumType") == sName )
 						m_oLnNumType = oReader;
@@ -1812,10 +1839,11 @@ namespace OOX
 
 				if ( !m_bSectPrChange )
 				{
-					for ( int nIndex = 0; nIndex < m_arrFooterReference.GetSize(); nIndex++ )
+					for (unsigned int nIndex = 0; nIndex < m_arrFooterReference.size(); nIndex++ )
 					{
 						sResult += _T("<w:footerReference ");
-						sResult += m_arrFooterReference[nIndex].ToString();
+						if (m_arrFooterReference[nIndex])
+							sResult += m_arrFooterReference[nIndex]->ToString();
 						sResult += _T("/>");
 					}
 				}
@@ -1832,10 +1860,11 @@ namespace OOX
 
 				if ( !m_bSectPrChange )
 				{
-					for ( int nIndex = 0; nIndex < m_arrHeaderReference.GetSize(); nIndex++ )
+					for (unsigned int nIndex = 0; nIndex < m_arrHeaderReference.size(); nIndex++ )
 					{
 						sResult += _T("<w:headerReference ");
-						sResult += m_arrHeaderReference[nIndex].ToString();
+						if (m_arrHeaderReference[nIndex])
+							sResult += m_arrHeaderReference[nIndex]->ToString();
 						sResult += _T("/>");
 					}
 				}
@@ -1968,10 +1997,10 @@ namespace OOX
 			nullable<OOX::Logic::CColumns                                > m_oCols;
 			nullable<ComplexTypes::Word::CDocGrid                        > m_oDocGrid;
 			nullable<OOX::Logic::CEdnProps                               > m_oEndnotePr;
-			CSimpleArray<ComplexTypes::Word::CHdrFtrRef                  > m_arrFooterReference;
+			std::vector<ComplexTypes::Word::CHdrFtrRef*                  > m_arrFooterReference;
 			nullable<OOX::Logic::CFtnProps                               > m_oFootnotePr;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oFormProt;
-			CSimpleArray<ComplexTypes::Word::CHdrFtrRef                  > m_arrHeaderReference;
+			std::vector<ComplexTypes::Word::CHdrFtrRef*                  > m_arrHeaderReference;
 			nullable<ComplexTypes::Word::CLineNumber                     > m_oLnNumType;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oNoEndnote;
 			nullable<ComplexTypes::Word::CPaperSource                    > m_oPaperSrc;

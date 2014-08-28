@@ -366,11 +366,22 @@ namespace OOX
 			}
 			virtual ~CFFDDList()
 			{
+				ClearItems();
+			}
+			void ClearItems()
+			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrListEntry.size(); nIndex++ )
+				{
+					if ( m_arrListEntry[nIndex] ) delete m_arrListEntry[nIndex];
+					m_arrListEntry[nIndex] = NULL;
+				}
+				m_arrListEntry.clear();
 			}
 
 		public:
 			const CFFDDList &operator=(const XmlUtils::CXmlNode &oNode)
 			{
+				ClearItems();
 				fromXML( (XmlUtils::CXmlNode&) oNode );
 				return *this;
 			}
@@ -396,8 +407,8 @@ namespace OOX
 					{
 						if ( oListEntryNodes.GetAt( nIndex, oListEntryNode ) )
 						{
-							ComplexTypes::Word::CString_ oListEntry = oListEntryNode;
-							m_arrListEntry.Add( oListEntry );
+							ComplexTypes::Word::CString_ *oListEntry = new ComplexTypes::Word::CString_(oListEntryNode);
+							if (oListEntry) m_arrListEntry.push_back( oListEntry );
 						}
 					}
 				}
@@ -417,8 +428,8 @@ namespace OOX
 						m_oResult = oReader;
 					else if ( _T("w:listEntry") == sName )
 					{
-						ComplexTypes::Word::CString_ oListEntry = oReader;
-						m_arrListEntry.Add( oListEntry );
+						ComplexTypes::Word::CString_ *oListEntry = new ComplexTypes::Word::CString_(oReader);
+						if (oListEntry) m_arrListEntry.push_back( oListEntry );
 					}
 				}
 			}				
@@ -429,10 +440,11 @@ namespace OOX
 				WritingElement_WriteNode_1( _T("<w:default "), m_oDefault );
 				WritingElement_WriteNode_1( _T("<w:result "),  m_oResult );
 
-				for ( int nIndex = 0; nIndex < m_arrListEntry.GetSize(); nIndex++ )
+				for (unsigned int nIndex = 0; nIndex < m_arrListEntry.size(); nIndex++ )
 				{
 					sResult += _T("<w:listEntry ");
-					sResult += m_arrListEntry[nIndex].ToString();
+					if (m_arrListEntry[nIndex])
+						sResult += m_arrListEntry[nIndex]->ToString();
 					sResult += _T("/>");
 				}
 
@@ -448,9 +460,9 @@ namespace OOX
 		public:
 
 			// Childs
-			nullable<ComplexTypes::Word::CDecimalNumber > m_oDefault;
-			nullable<ComplexTypes::Word::CDecimalNumber > m_oResult;
-			CSimpleArray<ComplexTypes::Word::CString_   > m_arrListEntry;
+			nullable<ComplexTypes::Word::CDecimalNumber >	m_oDefault;
+			nullable<ComplexTypes::Word::CDecimalNumber >	m_oResult;
+			std::vector<ComplexTypes::Word::CString_  *>	m_arrListEntry;
 		};
 
 		//--------------------------------------------------------------------------------

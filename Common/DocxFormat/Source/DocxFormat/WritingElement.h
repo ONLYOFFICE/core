@@ -736,12 +736,9 @@ namespace OOX
 		{
             for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
-				if ( m_arrItems[nIndex] )
-					delete m_arrItems[nIndex];
-
+				if ( m_arrItems[nIndex] ) delete m_arrItems[nIndex];
 				m_arrItems[nIndex] = NULL;
 			}
-
 			m_arrItems.clear();
 		}
         std::vector<ElemType *>     m_arrItems;

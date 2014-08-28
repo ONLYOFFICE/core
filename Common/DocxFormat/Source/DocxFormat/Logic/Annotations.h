@@ -1385,7 +1385,7 @@ namespace OOX
 	} // Logic
 	namespace Logic
 	{
-		class CIns : public WritingElement
+		class CIns : public WritingElementWithChilds<>
 		{
 		public:
 			CIns()
@@ -1401,13 +1401,12 @@ namespace OOX
 			}
 			virtual ~CIns()
 			{
-				Clear();
 			}
 
 		public:
 			void Clear()
 			{		
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 						delete m_arrItems[nIndex];
@@ -1415,7 +1414,7 @@ namespace OOX
 					m_arrItems[nIndex] = NULL;
 				}
 
-				m_arrItems.RemoveAll();
+				m_arrItems.clear();
 			}
 
 		public:
@@ -1448,9 +1447,8 @@ namespace OOX
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
 
 			// Childs
-			CSimpleArray<WritingElement *>                     m_arrItems;
 		};
-		class CDel : public WritingElement
+		class CDel : public WritingElementWithChilds<>
 		{
 		public:
 			CDel()
@@ -1466,13 +1464,12 @@ namespace OOX
 			}
 			virtual ~CDel()
 			{
-				Clear();
 			}
 
 		public:
 			void Clear()
 			{		
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
+				for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )
 						delete m_arrItems[nIndex];
@@ -1480,7 +1477,7 @@ namespace OOX
 					m_arrItems[nIndex] = NULL;
 				}
 
-				m_arrItems.RemoveAll();
+				m_arrItems.clear();
 			}
 
 		public:
@@ -1513,7 +1510,6 @@ namespace OOX
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
 
 			// Childs
-			CSimpleArray<WritingElement *>                     m_arrItems;
 		};
 	} // Logic
 	// Revisions 17.13.5

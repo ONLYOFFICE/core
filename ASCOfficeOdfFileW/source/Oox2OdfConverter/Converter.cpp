@@ -253,7 +253,7 @@ void OoxConverter::convert(OOX::Drawing::CShape	*oox_shape)
 			odf_context()->start_text_context();
 		
 			convert(oox_shape->m_oTxSp->m_oTxBody->m_oBodyPr.GetPointer());
-			for (long i=0 ; i < oox_shape->m_oTxSp->m_oTxBody->m_arrItems.size();i++)
+			for (unsigned int i=0 ; i < oox_shape->m_oTxSp->m_oTxBody->m_arrItems.size();i++)
 			{
 				convert(oox_shape->m_oTxSp->m_oTxBody->m_arrItems[i]);
 			}
@@ -281,7 +281,7 @@ void OoxConverter::convert(OOX::Drawing::CLockedCanvas  *oox_canvas)
 		convert(oox_canvas->m_oGroupSpPr.GetPointer());
 		convert(oox_canvas->m_oSpPr.GetPointer());
 
-		for (long i=0; i < oox_canvas->m_arrItems.size(); i++)
+		for (unsigned int i=0; i < oox_canvas->m_arrItems.size(); i++)
 		{
 			convert(oox_canvas->m_arrItems[i]);
 		}
@@ -364,7 +364,7 @@ void OoxConverter::convert(OOX::Drawing::CFontCollection *style_font, CString *s
 	odf_context()->drawing_context()->set_textarea_font(font_latin,font_ea,font_cs);
 
 	//nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
-	//CSimpleArray<OOX::Drawing::CSupplementalFont>   m_arrFont;
+	//std::vector<OOX::Drawing::CSupplementalFont>   m_arrFont;
 }
 void OoxConverter::convert(OOX::Drawing::CStyleMatrixReference *style_matrix_ref)
 {
@@ -379,7 +379,7 @@ void OoxConverter::convert(OOX::Drawing::CStyleMatrixReference *style_matrix_ref
 	
 	if (style_matrix_ref->getType() == OOX::et_a_fillRef)
 	{
-		if (fmt_index < 1000 && fmt_index < theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems.GetSize()) 
+		if (fmt_index < 1000 && fmt_index < theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems.size()) 
 		{
 			switch(theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index]->getType())
 			{
@@ -395,7 +395,7 @@ void OoxConverter::convert(OOX::Drawing::CStyleMatrixReference *style_matrix_ref
 					odf_context()->drawing_context()->set_no_fill();break;
 			}
 		}
-		else if (fmt_index > 1000 && ((fmt_index-1000) < theme->m_oThemeElements.m_oFmtScheme.m_oBgFillStyleLst.m_arrItems.GetSize()))
+		else if (fmt_index > 1000 && ((fmt_index-1000) < theme->m_oThemeElements.m_oFmtScheme.m_oBgFillStyleLst.m_arrItems.size()))
 		{
 			fmt_index -= 1000; 
 			switch(theme->m_oThemeElements.m_oFmtScheme.m_oBgFillStyleLst.m_arrItems[fmt_index]->getType())
@@ -414,9 +414,9 @@ void OoxConverter::convert(OOX::Drawing::CStyleMatrixReference *style_matrix_ref
 		}
 	}
 
-	if (style_matrix_ref->getType() == OOX::et_a_lnRef && fmt_index < theme->m_oThemeElements.m_oFmtScheme.m_oLineStyleLst.m_arrLn.GetSize())
+	if (style_matrix_ref->getType() == OOX::et_a_lnRef && fmt_index < theme->m_oThemeElements.m_oFmtScheme.m_oLineStyleLst.m_arrLn.size())
 	{
-		convert(&theme->m_oThemeElements.m_oFmtScheme.m_oLineStyleLst.m_arrLn[fmt_index], &color);
+		convert(theme->m_oThemeElements.m_oFmtScheme.m_oLineStyleLst.m_arrLn[fmt_index], &color);
 	}
 
 	if (style_matrix_ref->getType() == OOX::et_a_effectRef && fmt_index < theme->m_oThemeElements.m_oFmtScheme.m_oEffectStyleLst.m_arrEffectStyle.size())
@@ -537,11 +537,11 @@ void OoxConverter::convert(OOX::Drawing::CCustomGeometry2D *oox_cust_geom)
 {
 	if (!oox_cust_geom)return;
 
-	for (long i=0; i< oox_cust_geom->m_oPthLst.m_arrPath.size();i++)
+	for (unsigned int i=0; i< oox_cust_geom->m_oPthLst.m_arrPath.size();i++)
 	{
 		convert(&oox_cust_geom->m_oPthLst.m_arrPath[i]);
 	}
-	for (long i=0; i< oox_cust_geom->m_oPthLst.m_arrPath.size();i++)
+	for (unsigned int i=0; i< oox_cust_geom->m_oPthLst.m_arrPath.size();i++)
 	{
 		convert(&oox_cust_geom->m_oPthLst.m_arrPath[i]);
 	}
@@ -608,7 +608,7 @@ void OoxConverter::convert(OOX::Drawing::CPresetGeometry2D *oox_prst_geom)
 
 	if (oox_prst_geom->m_oAvLst.IsInit())
 	{
-		for (long i=0; i<oox_prst_geom->m_oAvLst->m_arrGd.size(); i++)
+		for (unsigned int i=0; i<oox_prst_geom->m_oAvLst->m_arrGd.size(); i++)
 		{
 			odf_context()->drawing_context()->add_modifier(string2std_string(oox_prst_geom->m_oAvLst->m_arrGd[i].m_oFmla.GetValue()));
 		}
@@ -620,7 +620,7 @@ void OoxConverter::convert(OOX::Drawing::CPath2D *oox_geom_path)
 
 	odf_context()->drawing_context()->set_viewBox(oox_geom_path->m_oW.GetValue(), oox_geom_path->m_oH.GetValue());
 
-	for (long i =0 ; i< oox_geom_path->m_arrItems.size(); i++)
+	for (unsigned int i =0 ; i< oox_geom_path->m_arrItems.size(); i++)
 	{
 		convert(oox_geom_path->m_arrItems[i]);
 	}
@@ -630,7 +630,7 @@ void OoxConverter::convert(OOX::Drawing::CEffectList *oox_effect_list, CString *
 {
 	if (oox_effect_list == NULL) return;
 
-	for (long i=0;i< oox_effect_list->m_arrEffects.size(); i++)
+	for (unsigned int i=0;i< oox_effect_list->m_arrEffects.size(); i++)
 	{
 		switch(oox_effect_list->m_arrEffects[i]->getType())
 		{
@@ -728,7 +728,7 @@ void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill,	C
 				sID = oox_bitmap_fill->m_oBlip->m_oLink.GetValue();
 				//...
 			}
-			for (long i=0 ; i < oox_bitmap_fill->m_oBlip->m_arrEffects.size(); i++)
+			for (unsigned int i=0 ; i < oox_bitmap_fill->m_oBlip->m_arrEffects.size(); i++)
 				convert(oox_bitmap_fill->m_oBlip->m_arrEffects[i]);
 		}
 		if (oox_bitmap_fill->m_oSrcRect.IsInit() && Width >0  && Height >0)//часть изображения
@@ -1071,7 +1071,7 @@ void OoxConverter::convert(OOX::Drawing::CTextBodyProperties	*oox_bodyPr)
 	}
 	if (oox_bodyPr->m_oFromWordArt.ToBool() && oox_bodyPr->m_oPrstTxWrap.IsInit())
 	{
-		for (long i=0; i< oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd.size(); i++)
+		for (unsigned int i=0; i< oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd.size(); i++)
 		{
 			odf_context()->drawing_context()->add_modifier(string2std_string(oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd[i].m_oFmla.GetValue()));
 		}
@@ -1330,7 +1330,7 @@ void OoxConverter::convert(OOX::Drawing::CParagraph		*oox_paragraph)
 	
 	odf_context()->text_context()->start_paragraph(styled);
 
-	for (long i=0; i< oox_paragraph->m_arrItems.size();i++)
+	for (unsigned int i=0; i< oox_paragraph->m_arrItems.size();i++)
 	{
 		convert(oox_paragraph->m_arrItems[i]);
 	}

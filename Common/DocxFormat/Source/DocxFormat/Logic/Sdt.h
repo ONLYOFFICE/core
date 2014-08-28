@@ -302,6 +302,15 @@ namespace OOX
 			}
 			virtual ~CSdtComboBox()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
+				{
+					if ( m_arrListItem[nIndex] )
+						delete m_arrListItem[nIndex];
+
+					m_arrListItem[nIndex] = NULL;
+				}
+
+				m_arrListItem.clear();
 			}
 
 		public:
@@ -318,8 +327,8 @@ namespace OOX
 					{
 						if ( oChilds.GetAt( nIndex, oItemNode ) )
 						{
-							ComplexTypes::Word::CSdtListItem oListItem = oItemNode;
-							m_arrListItem.Add( oListItem );
+							ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem(oItemNode);
+							if (oListItem) m_arrListItem.push_back( oListItem );
 						}
 					}
 				}
@@ -338,8 +347,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("w:listItem") == sName )
 					{
-						ComplexTypes::Word::CSdtListItem oListItem = oReader;
-						m_arrListItem.Add( oListItem );
+						ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem(oReader);
+						m_arrListItem.push_back( oListItem );
 					}
 				}
 			}
@@ -356,10 +365,11 @@ namespace OOX
 				else
 					sResult = _T("<w:comboBox>");
 
-				for ( int nIndex = 0; nIndex < m_arrListItem.GetSize(); nIndex++ )
+				for (unsigned  int nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
 				{
 					sResult += _T("<w:listItem ");
-					sResult += m_arrListItem[nIndex].ToString();
+					if (m_arrListItem[nIndex])
+						sResult += m_arrListItem[nIndex]->ToString();
 					sResult += _T("/>");
 				}
 
@@ -389,7 +399,7 @@ namespace OOX
 			nullable<CString >                             m_sLastValue;
 
 			// Nodes
-			CSimpleArray<ComplexTypes::Word::CSdtListItem> m_arrListItem;
+			std::vector<ComplexTypes::Word::CSdtListItem*> m_arrListItem;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -568,6 +578,15 @@ namespace OOX
 			}
 			virtual ~CSdtDropDownList()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
+				{
+					if ( m_arrListItem[nIndex] )
+						delete m_arrListItem[nIndex];
+
+					m_arrListItem[nIndex] = NULL;
+				}
+
+				m_arrListItem.clear();
 			}
 
 		public:
@@ -584,8 +603,8 @@ namespace OOX
 					{
 						if ( oChilds.GetAt( nIndex, oItemNode ) )
 						{
-							ComplexTypes::Word::CSdtListItem oListItem = oItemNode;
-							m_arrListItem.Add( oListItem );
+							ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem(oItemNode);
+							if (oListItem) m_arrListItem.push_back( oListItem );
 						}
 					}
 				}
@@ -604,8 +623,8 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("w:listItem") == sName )
 					{
-						ComplexTypes::Word::CSdtListItem oListItem = oReader;
-						m_arrListItem.Add( oListItem );
+						ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem(oReader);
+						if (oListItem)m_arrListItem.push_back( oListItem );
 					}
 				}
 			}
@@ -622,10 +641,11 @@ namespace OOX
 				else
 					sResult = _T("<w:dropDownList>");
 
-				for ( int nIndex = 0; nIndex < m_arrListItem.GetSize(); nIndex++ )
+				for (unsigned  int nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
 				{
 					sResult += _T("<w:listItem ");
-					sResult += m_arrListItem[nIndex].ToString();
+					if (m_arrListItem[nIndex])
+						sResult += m_arrListItem[nIndex]->ToString();
 					sResult += _T("/>");
 				}
 
@@ -652,9 +672,8 @@ namespace OOX
 
 			// Attributes
 			nullable<CString >                             m_sLastValue;
-
 			// Nodes
-			CSimpleArray<ComplexTypes::Word::CSdtListItem> m_arrListItem;
+			std::vector<ComplexTypes::Word::CSdtListItem*> m_arrListItem;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1108,7 +1127,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// SdtContent 17.5.2.38 (Part 1)
 		//--------------------------------------------------------------------------------
-		class CSdtContent : public WritingElement
+		class CSdtContent : public WritingElementWithChilds<>
 		{
 		public:
 			CSdtContent()
@@ -1124,45 +1143,22 @@ namespace OOX
 			}
 			virtual ~CSdtContent()
 			{
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
 			}
 
 		public:
 
 			const CSdtContent &operator =(const XmlUtils::CXmlNode& oNode)
 			{
-				Clear();
+				ClearItems();
 				fromXML( (XmlUtils::CXmlNode&)oNode );
 				return *this;
 			}
 			const CSdtContent &operator =(const XmlUtils::CXmlLiteReader& oReader)
 			{
-				Clear();
+				ClearItems();
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
-
-			void Clear()
-			{		
-				for ( int nIndex = 0; nIndex < m_arrItems.GetSize(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.RemoveAll();
-			}
-
 
 		public:
 
@@ -1176,7 +1172,6 @@ namespace OOX
 		public:
 
 			// Childs
-			CSimpleArray<WritingElement *> m_arrItems;
 		};
 
 		//--------------------------------------------------------------------------------

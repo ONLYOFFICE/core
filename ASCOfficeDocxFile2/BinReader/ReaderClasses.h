@@ -268,7 +268,7 @@ public:
 class Tabs
 {
 public:
-	CAtlArray<Tab> m_aTabs;
+	std::vector<Tab> m_aTabs;
 };
 class rPr
 {
@@ -663,7 +663,7 @@ public:
 	CString TablePr;
 	CString RowPr;
 	CString CellPr;
-	CAtlArray<CString> TblStylePr;
+	std::vector<CString> TblStylePr;
 
 	bool bqFormat;
 	bool buiPriority;
@@ -772,7 +772,7 @@ public:
 				pCStringWriter->WriteString(CellPr);
 				pCStringWriter->WriteString(CString(_T("</w:tcPr>")));
 			}
-			for(int i = 0, length = TblStylePr.GetCount(); i < length; ++i)
+			for(int i = 0, length = TblStylePr.size(); i < length; ++i)
 			{
 				pCStringWriter->WriteString(TblStylePr[i]);
 			}
@@ -1103,7 +1103,7 @@ class docLvl
 public:
 	long Format;
 	BYTE Jc;
-	CAtlArray<docLvlText*> Text;
+	std::vector<docLvlText*> Text;
 	long Restart;
 	long Start;
 	BYTE Suff;
@@ -1134,7 +1134,7 @@ public:
 	}
 	~docLvl()
 	{
-		for(int i = 0,length = Text.GetCount(); i < length; i++)
+		for(int i = 0,length = Text.size(); i < length; i++)
 		{
 			delete Text[i];
 		}
@@ -1184,7 +1184,7 @@ public:
 		if(bText)
 		{
 			CString sText;
-			for(int i = 0, length = Text.GetCount(); i < length; ++i)
+			for(int i = 0, length = Text.size(); i < length; ++i)
 			{
 				docLvlText* item = Text[i];
 				if(item->bText)
@@ -1233,7 +1233,7 @@ public:
 	long Id;
 	CString NumStyleLink;
 	CString StyleLink;
-	CAtlArray<docLvl*> Lvls;
+	std::vector<docLvl*> Lvls;
 
 	bool bId;
 	docANum()
@@ -1242,7 +1242,7 @@ public:
 	}
 	~docANum()
 	{
-		for(int i = 0, length = Lvls.GetCount(); i < length; i++)
+		for(int i = 0, length = Lvls.size(); i < length; i++)
 		{
 			delete Lvls[i];
 		}
@@ -1267,7 +1267,7 @@ public:
 				CString sXml;sXml.Format(_T("<w:numStyleLink w:val=\"%s\"/>"), sCorrectNumStyleLink);
 				oWriterANum.WriteString(sXml);
 			}
-			for(int i = 0, length = Lvls.GetCount(); i < length; ++i)
+			for(int i = 0, length = Lvls.size(); i < length; ++i)
 			{
 				Lvls[i]->Write(oWriterANum, i);
 			}
@@ -1338,7 +1338,7 @@ public:
             bool bNextLink = false;
             bool bNextTooltip = false;
             //разбиваем по пробелам, но с учетом кавычек
-			CAtlArray<CString> aItems;
+			std::vector<CString> aItems;
             CString sCurItem;
             bool bDQuot = false;
 			for(int i = 0, length = fld.GetLength(); i < length; ++i)
@@ -1355,7 +1355,7 @@ public:
                 {
                     if(sCurItem.GetLength() > 0)
                     {
-						aItems.Add(sCurItem);
+						aItems.push_back(sCurItem);
                         sCurItem = _T("");
                     }
                 }
@@ -1363,8 +1363,8 @@ public:
                     sCurItem += sCurLetter;
             }
             if(sCurItem.GetLength() > 0)
-                aItems.Add(sCurItem);
-			for(int i = 0, length = aItems.GetCount(); i < length; ++i)
+                aItems.push_back(sCurItem);
+			for(int i = 0, length = aItems.size(); i < length; ++i)
             {
                 CString item = aItems[i];
 				if(bNextLink)
@@ -1455,7 +1455,7 @@ public:
 	CString Text;
 	CString m_sParaId;
 	CString m_sParaIdParent;
-	CAtlArray<CComment*> replies;
+	std::vector<CComment*> replies;
 
 	bool bIdOpen;
 	bool bIdFormat;
@@ -1469,21 +1469,21 @@ public:
 	}
 	~CComment()
 	{
-		for(int i = 0, length = replies.GetCount(); i < length; ++i)
+		for(int i = 0, length = replies.size(); i < length; ++i)
 		{
 			delete replies[i];
 		}
-		replies.RemoveAll();
+		replies.clear();
 	}
 	int getCount()
 	{
-		return replies.GetCount() + 1;
+		return replies.size() + 1;
 	}
 	void setFormatStart(int IdFormatStart)
 	{
 		bIdFormat = true;
 		IdFormat = IdFormatStart;
-		for(int i = 0, length = replies.GetCount(); i < length; ++i)
+		for(int i = 0, length = replies.size(); i < length; ++i)
 		{
 			CComment* pComment = replies[i];
 			pComment->bIdFormat = true;
@@ -1494,7 +1494,7 @@ public:
 	{
 		CString sRes;
 		sRes.Append(writeRef(this, sBefore, sRef, sAfter));
-		for(int i = 0, length = replies.GetCount(); i < length; ++i)
+		for(int i = 0, length = replies.size(); i < length; ++i)
 			sRes.Append(writeRef(replies[i], sBefore, sRef, sAfter));
 		return sRes;
 	}
@@ -1502,7 +1502,7 @@ public:
 	{
 		CString sRes;
 		sRes.Append(fReadFunction(this));
-		for(int i = 0, length = replies.GetCount(); i < length; ++i)
+		for(int i = 0, length = replies.size(); i < length; ++i)
 			sRes.Append(fReadFunction(replies[i]));
 		return sRes;
 	}
@@ -1607,7 +1607,7 @@ public:
 			else
 				sRes.AppendFormat(_T("<w15:commentEx w15:paraId=\"%s\" w15:done=\"%s\"/>"), pComment->m_sParaId, sDone);
 			//расставляем paraIdParent
-			for(int i = 0, length = pComment->replies.GetCount(); i < length; i++)
+			for(int i = 0, length = pComment->replies.size(); i < length; i++)
 				pComment->replies[i]->m_sParaIdParent = pComment->m_sParaId;
 		}
 		return sRes;
@@ -1653,7 +1653,7 @@ public:
 		{
 			m_mapComments[pComment->IdOpen] = pComment;
 			addAuthor(pComment);
-			for(int i = 0, length = pComment->replies.GetCount(); i < length; i++)
+			for(int i = 0, length = pComment->replies.size(); i < length; i++)
 				addAuthor(pComment->replies[i]);
 		}
 	}
@@ -1814,7 +1814,7 @@ public:
 	BYTE WrappingType;
 	bool Edited;
 	CDrawingPropertyWrapPoint Start;
-	CAtlArray<CDrawingPropertyWrapPoint*> Points;
+	std::vector<CDrawingPropertyWrapPoint*> Points;
 
 	bool bWrappingType;
 	bool bEdited;
@@ -1828,9 +1828,9 @@ public:
 	}
 	~CDrawingPropertyWrap()
 	{
-		for(int i = 0, length = Points.GetCount(); i < length; ++i)
+		for(int i = 0, length = Points.size(); i < length; ++i)
 			delete Points[i];
-		Points.RemoveAll();
+		Points.clear();
 	}
 };
 class CDrawingProperty
@@ -2072,7 +2072,7 @@ public:
 						case c_oSerImageType2::WrapTight:sTagName = _T("wrapTight");break;
 						case c_oSerImageType2::WrapTopAndBottom:sTagName = _T("wrapTopAndBottom");break;
 						}
-						if(DrawingPropertyWrap.bStart || DrawingPropertyWrap.Points.GetCount() > 0)
+						if(DrawingPropertyWrap.bStart || DrawingPropertyWrap.Points.size() > 0)
 						{
 							if(c_oSerImageType2::WrapSquare == DrawingPropertyWrap.WrappingType || c_oSerImageType2::WrapThrough == DrawingPropertyWrap.WrappingType || c_oSerImageType2::WrapTight == DrawingPropertyWrap.WrappingType)
 								sXml.AppendFormat(_T("<wp:%s wrapText=\"bothSides\">"), sTagName);
@@ -2089,7 +2089,7 @@ public:
 								__int64 emuY = (__int64)(g_dKoef_mm_to_emu * DrawingPropertyWrap.Start.Y);
 								sXml.AppendFormat(_T("<wp:start x=\"%I64d\" y=\"%I64d\"/>"), emuX, emuY);
 							}
-							for(int i = 0, length = DrawingPropertyWrap.Points.GetCount(); i < length; ++i)
+							for(int i = 0, length = DrawingPropertyWrap.Points.size(); i < length; ++i)
 							{
 								CDrawingPropertyWrapPoint* pWrapPoint = DrawingPropertyWrap.Points[i];
 								if(pWrapPoint->bX && pWrapPoint->bY)

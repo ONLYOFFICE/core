@@ -32,7 +32,7 @@ namespace Writers
 			if(g_nCurFormatVersion < 5)
 			{
 				bool bTitlePage = false;
-				for(int i = 0, length = m_oHeaderFooterWriter.m_aHeaders.GetCount(); i < length; ++i)
+				for(int i = 0, length = m_oHeaderFooterWriter.m_aHeaders.size(); i < length; ++i)
 				{
 					HdrFtrItem* pHeader = m_oHeaderFooterWriter.m_aHeaders[i];
 					if(false == pHeader->rId.IsEmpty())
@@ -52,7 +52,7 @@ namespace Writers
 						}
 					}
 				}
-				for(int i = 0, length = m_oHeaderFooterWriter.m_aFooters.GetCount(); i < length; ++i)
+				for(int i = 0, length = m_oHeaderFooterWriter.m_aFooters.size(); i < length; ++i)
 				{
 					HdrFtrItem* pFooter = m_oHeaderFooterWriter.m_aFooters[i];
 					if(false == pFooter->rId.IsEmpty())

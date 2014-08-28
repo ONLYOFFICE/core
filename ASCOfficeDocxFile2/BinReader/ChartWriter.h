@@ -12,7 +12,7 @@ namespace Writers
 			CString filename;
 			int index;
 		};
-		CSimpleArray<ChartElem*> m_aCharts;
+		std::vector<ChartElem*> m_aCharts;
 		ContentTypesWriter& m_oContentTypesWriter;
 		int nChartCount;
 	public:
@@ -24,14 +24,14 @@ namespace Writers
 		}
 		~ChartWriter()
 		{
-			for(int i = 0, length = m_aCharts.GetSize(); i < length; ++i)
+			for(int i = 0, length = m_aCharts.size(); i < length; ++i)
 			{
 				delete m_aCharts[i];
 			}
 		}
 		bool IsEmpty()
 		{
-			return 0 == m_aCharts.GetSize();
+			return 0 == m_aCharts.size();
 		}
 		void Write()
 		{
@@ -39,7 +39,7 @@ namespace Writers
 			{
 				CString sChartDir = m_sDir + _T("/word/charts");
 				CreateDirectory(sChartDir, NULL);
-				for(int i = 0, length = m_aCharts.GetSize(); i < length; ++i)
+				for(int i = 0, length = m_aCharts.size(); i < length; ++i)
 				{
 					ChartElem* elem = m_aCharts[i];
 					CString sRelPath = _T("/word/charts/") + elem->filename;
@@ -66,7 +66,7 @@ namespace Writers
 			sFileName = pChartElem->filename;
 			index = pChartElem->index;
 
-			m_aCharts.Add(pChartElem);
+			m_aCharts.push_back(pChartElem);
 		}
 		int getChartCount()
 		{

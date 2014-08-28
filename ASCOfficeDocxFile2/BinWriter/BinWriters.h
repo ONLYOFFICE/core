@@ -401,16 +401,16 @@ namespace BinDocxRW
 		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
 	public:
 		OOX::IFileContainer* m_oDocumentRels;
-		CAtlArray<OOX::CHdrFtr*> m_aHeaders;
-		CAtlArray<SimpleTypes::EHdrFtr> m_aHeaderTypes;
-		CAtlArray<OOX::Logic::CSectionProperty*> m_aHeaderSectPrs;
-		CAtlArray<OOX::CHdrFtr*> m_aFooters;
-		CAtlArray<SimpleTypes::EHdrFtr> m_aFooterTypes;
-		CAtlArray<OOX::Logic::CSectionProperty*> m_aFooterSectPrs;
+		std::vector<OOX::CHdrFtr*> m_aHeaders;
+		std::vector<SimpleTypes::EHdrFtr> m_aHeaderTypes;
+		std::vector<OOX::Logic::CSectionProperty*> m_aHeaderSectPrs;
+		std::vector<OOX::CHdrFtr*> m_aFooters;
+		std::vector<SimpleTypes::EHdrFtr> m_aFooterTypes;
+		std::vector<OOX::Logic::CSectionProperty*> m_aFooterSectPrs;
 	public:
 		BinaryHeaderFooterTableWriter(ParamsWriter& oParamsWriter, OOX::IFileContainer* oDocumentRels);
 		void Write();
-		void WriteHdrFtrContent(CAtlArray<OOX::CHdrFtr*>& aHdrFtrs, CAtlArray<SimpleTypes::EHdrFtr>& aHdrFtrTypes, CAtlArray<OOX::Logic::CSectionProperty*>& aHdrSectPrs, bool bHdr);
+		void WriteHdrFtrContent(std::vector<OOX::CHdrFtr*>& aHdrFtrs, std::vector<SimpleTypes::EHdrFtr>& aHdrFtrTypes, std::vector<OOX::Logic::CSectionProperty*>& aHdrSectPrs, bool bHdr);
 		void WriteHdrFtrItem(OOX::Logic::CSectionProperty* pSectPr, OOX::CHdrFtr* pHdrFtr, bool bHdr);
 	};
 	class BinarySigTableWriter
@@ -1317,17 +1317,17 @@ namespace BinDocxRW
 							OOX::CHdrFtr* pHdrFtr = (OOX::CHdrFtr*)oFile.operator->();
 							if(bHdr)
 							{
-								nIndex = m_oBinaryHeaderFooterTableWriter->m_aHeaders.GetCount();
-								m_oBinaryHeaderFooterTableWriter->m_aHeaders.Add(pHdrFtr);
-								m_oBinaryHeaderFooterTableWriter->m_aHeaderTypes.Add(oRef.m_oType->GetValue());
-								m_oBinaryHeaderFooterTableWriter->m_aHeaderSectPrs.Add(pSectPr);
+								nIndex = m_oBinaryHeaderFooterTableWriter->m_aHeaders.size();
+								m_oBinaryHeaderFooterTableWriter->m_aHeaders.push_back(pHdrFtr);
+								m_oBinaryHeaderFooterTableWriter->m_aHeaderTypes.push_back(oRef.m_oType->GetValue());
+								m_oBinaryHeaderFooterTableWriter->m_aHeaderSectPrs.push_back(pSectPr);
 							}
 							else
 							{
-								nIndex = m_oBinaryHeaderFooterTableWriter->m_aFooters.GetCount();
-								m_oBinaryHeaderFooterTableWriter->m_aFooters.Add(pHdrFtr);
-								m_oBinaryHeaderFooterTableWriter->m_aFooterTypes.Add(oRef.m_oType->GetValue());
-								m_oBinaryHeaderFooterTableWriter->m_aFooterSectPrs.Add(pSectPr);
+								nIndex = m_oBinaryHeaderFooterTableWriter->m_aFooters.size();
+								m_oBinaryHeaderFooterTableWriter->m_aFooters.push_back(pHdrFtr);
+								m_oBinaryHeaderFooterTableWriter->m_aFooterTypes.push_back(oRef.m_oType->GetValue());
+								m_oBinaryHeaderFooterTableWriter->m_aFooterSectPrs.push_back(pSectPr);
 							}
 							nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::hdrftrelem);
 							m_oBcw.m_oStream.WriteLong(nIndex);
@@ -2422,7 +2422,7 @@ namespace BinDocxRW
 
 		//для fldChar
 		//todo в документации описан случай если нет fldchartypeEnd, у нас работает не так.
-		CSimpleArray<FldStruct*> m_aFldChars;
+		std::vector<FldStruct*> m_aFldChars;
 		int m_nSkipFldChar;
 		CString m_sFldChar;
 		SimpleTypes::EFldCharType m_eFldState;
@@ -2443,7 +2443,7 @@ namespace BinDocxRW
 		};
 		~BinaryDocumentTableWriter()
 		{
-			for(int i = 0, length = m_aFldChars.GetSize(); i < length; ++i)
+			for(int i = 0, length = m_aFldChars.size(); i < length; ++i)
 			{
 				RELEASEOBJECT(m_aFldChars[i]);
 			}
@@ -4369,7 +4369,7 @@ namespace BinDocxRW
 				if(false == bHyperlink)
 				{
 					//Случай если Hyperlink задан как field
-					for(int i = 0, length = m_aFldChars.GetSize(); i < length; ++i)
+					for(int i = 0, length = m_aFldChars.size(); i < length; ++i)
 						if(fieldstruct_hyperlink == m_aFldChars[i]->GetType() || fieldstruct_locallink == m_aFldChars[i]->GetType())
 						{
 							bHyperlink = true;
@@ -4379,7 +4379,7 @@ namespace BinDocxRW
 				if(bHyperlink)
 				{
 					bool bInTOC = false;
-					for(int i = 0, length = m_aFldChars.GetSize(); i < length; ++i)
+					for(int i = 0, length = m_aFldChars.size(); i < length; ++i)
 					{
 						if(fieldstruct_toc == m_aFldChars[i]->GetType())
 						{
@@ -4491,9 +4491,9 @@ namespace BinDocxRW
 								m_eFldState = SimpleTypes::fldchartypeEnd;
 								if(m_nSkipFldChar > 0)
 									m_nSkipFldChar--;
-								if(m_aFldChars.GetSize() > 0)
+								if(m_aFldChars.size() > 0)
 								{
-									int nIndex = m_aFldChars.GetSize() - 1;
+									int nIndex = m_aFldChars.size() - 1;
 									FldStruct* pFldStruct = m_aFldChars[nIndex];
 									if( fieldstruct_hyperlink == pFldStruct->GetType())
 									{
@@ -4501,7 +4501,7 @@ namespace BinDocxRW
 										m_oBcw.m_oStream.WriteLong(c_oSerPropLenType::Null);
 									}
 									RELEASEOBJECT(pFldStruct);
-									m_aFldChars.RemoveAt(nIndex);
+									m_aFldChars.erase(m_aFldChars.begin() + nIndex);
 								}
 							}
 							else if(SimpleTypes::fldchartypeSeparate == pFldChar->m_oFldCharType.get().GetValue())
@@ -4510,7 +4510,7 @@ namespace BinDocxRW
 								FldStruct* pFldStruct = NULL;
 								if(WriteField(m_sFldChar, &pFldStruct, false) )
 									m_nSkipFldChar++;
-								m_aFldChars.Add(pFldStruct);
+								m_aFldChars.push_back(pFldStruct);
 							}
 						}
 					}
@@ -5525,14 +5525,14 @@ namespace BinDocxRW
 		int nStart = m_oBcw.WriteItemWithLengthStart();
 		int nCurPos = 0;
 		//Header
-		if(m_aHeaders.GetCount() > 0)
+		if(m_aHeaders.size() > 0)
 		{
 			nCurPos = m_oBcw.WriteItemStart(c_oSerHdrFtrTypes::Header);
 			WriteHdrFtrContent(m_aHeaders, m_aHeaderTypes, m_aHeaderSectPrs, true);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		//Footer
-		if(m_aFooters.GetCount() > 0)
+		if(m_aFooters.size() > 0)
 		{
 			nCurPos = m_oBcw.WriteItemStart(c_oSerHdrFtrTypes::Footer);
 			WriteHdrFtrContent(m_aFooters, m_aFooterTypes, m_aFooterSectPrs, false);
@@ -5540,10 +5540,10 @@ namespace BinDocxRW
 		}
 		m_oBcw.WriteItemWithLengthEnd(nStart);
 	};
-	void BinaryHeaderFooterTableWriter::WriteHdrFtrContent(CAtlArray<OOX::CHdrFtr*>& aHdrFtrs, CAtlArray<SimpleTypes::EHdrFtr>& aHdrFtrTypes, CAtlArray<OOX::Logic::CSectionProperty*>& aHdrSectPrs, bool bHdr)
+	void BinaryHeaderFooterTableWriter::WriteHdrFtrContent(std::vector<OOX::CHdrFtr*>& aHdrFtrs, std::vector<SimpleTypes::EHdrFtr>& aHdrFtrTypes, std::vector<OOX::Logic::CSectionProperty*>& aHdrSectPrs, bool bHdr)
 	{
 		int nCurPos = 0;
-		for(int i = 0, length = aHdrFtrs.GetCount(); i < length; ++i)
+		for(int i = 0, length = aHdrFtrs.size(); i < length; ++i)
 		{
 			OOX::CHdrFtr* pHdrFtr = aHdrFtrs[i];
 			SimpleTypes::EHdrFtr eType = aHdrFtrTypes[i];
@@ -5581,7 +5581,7 @@ namespace BinDocxRW
 			OOX::CComment* pComment;
 			nullable<bool> bDone;
 			nullable<CString> sUserId;
-			CAtlArray<CCommentWriteTemp*> aReplies;
+			std::vector<CCommentWriteTemp*> aReplies;
 		};
 		BinaryCommonWriter m_oBcw;
 	public:
@@ -5599,7 +5599,7 @@ namespace BinDocxRW
 			CAtlMap<CString, CString> mapAuthorToUserId;
 			CAtlMap<int, CCommentWriteTemp*> mapParaIdToComment;
 			CAtlMap<int, bool> mapCommentsIgnore;
-			CAtlArray<CCommentWriteTemp*> aCommentsToWrite;
+			std::vector<CCommentWriteTemp*> aCommentsToWrite;
 			//map author -> userId
 			if(NULL != pPeople)
 			{
@@ -5632,7 +5632,7 @@ namespace BinDocxRW
 							mapParaIdToComment[pParagraph->m_oParaId->GetValue()] = pNewCommentWriteTemp;
 					}
 				}
-				aCommentsToWrite.Add(pNewCommentWriteTemp);
+				aCommentsToWrite.push_back(pNewCommentWriteTemp);
 			}
 			//разбираемся с reply и done
 			if(NULL != pCommentsExt)
@@ -5656,7 +5656,7 @@ namespace BinDocxRW
 								if(NULL != pPairParent)
 								{
 									CCommentWriteTemp* pCommentWriteTempParent = pPairParent->m_value;
-									pCommentWriteTempParent->aReplies.Add(pCommentWriteTemp);
+									pCommentWriteTempParent->aReplies.push_back(pCommentWriteTemp);
 									if(NULL != pComment && pComment->m_oId.IsInit())
 										mapIgnoreComments[pComment->m_oId->GetValue()] = true;
 								}
@@ -5667,7 +5667,7 @@ namespace BinDocxRW
 			}
 			int nCurPos = 0;
 
-			for(int i = 0, length = aCommentsToWrite.GetCount(); i < length; ++i)
+			for(int i = 0, length = aCommentsToWrite.size(); i < length; ++i)
 			{
 				CCommentWriteTemp* pCommentWriteTemp = aCommentsToWrite[i];
 				if(NULL != pCommentWriteTemp && NULL != pCommentWriteTemp->pComment && pCommentWriteTemp->pComment->m_oId.IsInit() && NULL == mapIgnoreComments.Lookup(pCommentWriteTemp->pComment->m_oId->GetValue()))
@@ -5678,7 +5678,7 @@ namespace BinDocxRW
 				}
 			}
 
-			for(int i = 0, length = aCommentsToWrite.GetCount(); i < length; ++i)
+			for(int i = 0, length = aCommentsToWrite.size(); i < length; ++i)
 				delete aCommentsToWrite[i];
 		};
 		void WriteComment(CCommentWriteTemp& oComment)
@@ -5722,7 +5722,7 @@ namespace BinDocxRW
 					m_oBcw.m_oStream.WriteBool(oComment.bDone.get2());
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
-				if(oComment.aReplies.GetCount() > 0)
+				if(oComment.aReplies.size() > 0)
 				{
 					nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentsType::Replies);
 					WriteReplies(oComment.aReplies);
@@ -5731,10 +5731,10 @@ namespace BinDocxRW
 			}
 
 		};
-		void WriteReplies(CAtlArray<CCommentWriteTemp*>& aCommentWriteTemp)
+		void WriteReplies(std::vector<CCommentWriteTemp*>& aCommentWriteTemp)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = aCommentWriteTemp.GetCount(); i < length; i++)
+			for(int i = 0, length = aCommentWriteTemp.size(); i < length; i++)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentsType::Comment);
 				WriteComment(*aCommentWriteTemp[i]);

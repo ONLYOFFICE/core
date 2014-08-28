@@ -36,24 +36,24 @@ namespace Writers
 		CString	m_sDir;
 		ContentTypesWriter& m_oContentTypesWriter;
 	public:
-		CAtlArray<HdrFtrItem*> m_aHeaders;
-		CAtlArray<HdrFtrItem*> m_aFooters;
+		std::vector<HdrFtrItem*> m_aHeaders;
+		std::vector<HdrFtrItem*> m_aFooters;
 	public:
 		HeaderFooterWriter(CString sDir, ContentTypesWriter& oContentTypesWriter):m_sDir(sDir),m_oContentTypesWriter(oContentTypesWriter)
 		{
 		}
 		~HeaderFooterWriter()
 		{
-			for(int i = 0, length = m_aHeaders.GetCount(); i < length; ++i)
+			for(int i = 0, length = m_aHeaders.size(); i < length; ++i)
 				delete m_aHeaders[i];
-			m_aHeaders.RemoveAll();
-			for(int i = 0, length = m_aFooters.GetCount(); i < length; ++i)
+			m_aHeaders.clear();
+			for(int i = 0, length = m_aFooters.size(); i < length; ++i)
 				delete m_aFooters[i];
-			m_aFooters.RemoveAll();
+			m_aFooters.clear();
 		}
 		void Write()
 		{
-			for(int i = 0, length = m_aHeaders.GetCount(); i < length; ++i)
+			for(int i = 0, length = m_aHeaders.size(); i < length; ++i)
 			{
 				HdrFtrItem* pHeader = m_aHeaders[i];
 				if(false == pHeader->IsEmpty())
@@ -61,7 +61,7 @@ namespace Writers
 					WriteItem(_T("header"), pHeader->m_sFilename, pHeader->Header, true);
 				}
 			}
-			for(int i = 0, length = m_aFooters.GetCount(); i < length; ++i)
+			for(int i = 0, length = m_aFooters.size(); i < length; ++i)
 			{
 				HdrFtrItem* pFooter = m_aFooters[i];
 				if(false == pFooter->IsEmpty())

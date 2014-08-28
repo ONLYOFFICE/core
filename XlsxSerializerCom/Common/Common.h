@@ -108,7 +108,7 @@ namespace SerializeCommon
 
 		bool bSolved;
 		bool bDocument;
-		CAtlArray<CommentData*> aReplies;
+		std::vector<CommentData*> aReplies;
 		CommentData()
 		{
 			bSolved = false;
@@ -116,9 +116,9 @@ namespace SerializeCommon
 		}
 		~CommentData()
 		{
-			for(int i = 0, length = aReplies.GetCount(); i < length; ++i)
+			for(int i = 0, length = aReplies.size(); i < length; ++i)
 				delete aReplies[i];
-			aReplies.RemoveAll();
+			aReplies.clear();
 		}
 	};
 	void ReadFileType(CString& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter)

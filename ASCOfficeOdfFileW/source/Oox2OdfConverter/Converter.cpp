@@ -539,11 +539,11 @@ void OoxConverter::convert(OOX::Drawing::CCustomGeometry2D *oox_cust_geom)
 
 	for (unsigned int i=0; i< oox_cust_geom->m_oPthLst.m_arrPath.size();i++)
 	{
-		convert(&oox_cust_geom->m_oPthLst.m_arrPath[i]);
+		convert(oox_cust_geom->m_oPthLst.m_arrPath[i]);
 	}
 	for (unsigned int i=0; i< oox_cust_geom->m_oPthLst.m_arrPath.size();i++)
 	{
-		convert(&oox_cust_geom->m_oPthLst.m_arrPath[i]);
+		convert(oox_cust_geom->m_oPthLst.m_arrPath[i]);
 	}
 }
 void OoxConverter::convert(OOX::Drawing::CLineProperties *oox_line_prop, CString *change_sheme_color )
@@ -610,7 +610,8 @@ void OoxConverter::convert(OOX::Drawing::CPresetGeometry2D *oox_prst_geom)
 	{
 		for (unsigned int i=0; i<oox_prst_geom->m_oAvLst->m_arrGd.size(); i++)
 		{
-			odf_context()->drawing_context()->add_modifier(string2std_string(oox_prst_geom->m_oAvLst->m_arrGd[i].m_oFmla.GetValue()));
+			if (oox_prst_geom->m_oAvLst->m_arrGd[i] == NULL) continue;
+			odf_context()->drawing_context()->add_modifier(string2std_string(oox_prst_geom->m_oAvLst->m_arrGd[i]->m_oFmla.GetValue()));
 		}
 	}
 }
@@ -799,18 +800,22 @@ void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill,
 		}	
 		odf_context()->drawing_context()->set_gradient_type(grad_style);
 
-		if (oox_grad_fill->m_oGsLst.IsInit() && oox_grad_fill->m_oGsLst->m_arrGs.size()>1)
+		if (oox_grad_fill->m_oGsLst.IsInit() && oox_grad_fill->m_oGsLst->m_arrGs.size()>1 &&
+											change_sheme_color && oox_grad_fill->m_oGsLst->m_arrGs[0])
 		{
 			std::wstring hexColorStart, hexColorEnd;
 			_CP_OPT(double) opacityStart, opacityEnd;
 			
-			if (change_sheme_color && oox_grad_fill->m_oGsLst->m_arrGs[0].m_eType == OOX::Drawing::colorSheme)
+			if (change_sheme_color && oox_grad_fill->m_oGsLst->m_arrGs[0]->m_eType == OOX::Drawing::colorSheme)
 			{
-				oox_grad_fill->m_oGsLst->m_arrGs[0].m_oShemeClr.m_oVal.FromString(*change_sheme_color);
-				oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.size()-1].m_oShemeClr.m_oVal.FromString(*change_sheme_color);
+				oox_grad_fill->m_oGsLst->m_arrGs[0]->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
+				
+				if (oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.size()-1])
+					oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.size()-1]->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
 			}
-			convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.size()-1]),hexColorStart, opacityStart);
-			convert((OOX::Drawing::CColor*)(&oox_grad_fill->m_oGsLst->m_arrGs[0]),hexColorEnd, opacityEnd);
+			convert((OOX::Drawing::CColor*)(oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.size()-1]),hexColorStart, opacityStart);
+			
+			convert((OOX::Drawing::CColor*)(oox_grad_fill->m_oGsLst->m_arrGs[0]),hexColorEnd, opacityEnd);
 			
 			odf_context()->drawing_context()->set_gradient_start(hexColorStart, opacityStart);
 			odf_context()->drawing_context()->set_gradient_end	(hexColorEnd,	opacityEnd);
@@ -1073,7 +1078,8 @@ void OoxConverter::convert(OOX::Drawing::CTextBodyProperties	*oox_bodyPr)
 	{
 		for (unsigned int i=0; i< oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd.size(); i++)
 		{
-			odf_context()->drawing_context()->add_modifier(string2std_string(oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd[i].m_oFmla.GetValue()));
+			if (oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd[i] == NULL) continue;
+			odf_context()->drawing_context()->add_modifier(string2std_string(oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd[i]->m_oFmla.GetValue()));
 		}
 	}
 }

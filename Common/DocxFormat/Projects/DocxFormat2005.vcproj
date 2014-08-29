@@ -629,30 +629,6 @@
 					<Filter
 						Name="Pict"
 						>
-						<File
-							RelativePath="..\Source\DocxFormat\Logic\Pict.h"
-							>
-						</File>
-						<Filter
-							Name="Vml"
-							>
-							<File
-								RelativePath="..\Source\DocxFormat\Logic\Vml.cpp"
-								>
-							</File>
-							<File
-								RelativePath="..\Source\DocxFormat\Logic\Vml.h"
-								>
-							</File>
-							<File
-								RelativePath="..\Source\DocxFormat\Logic\VmlOfficeDrawing.h"
-								>
-							</File>
-							<File
-								RelativePath="..\Source\DocxFormat\Logic\VmlWord.h"
-								>
-							</File>
-						</Filter>
 					</Filter>
 				</Filter>
 			</Filter>
@@ -672,9 +648,33 @@
 				Name="Drawing"
 				>
 				<File
+					RelativePath="..\Source\DocxFormat\Logic\Pict.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\DocxFormat\Logic\Shape.h"
 					>
 				</File>
+				<Filter
+					Name="Vml"
+					>
+					<File
+						RelativePath="..\Source\DocxFormat\Logic\Vml.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Source\DocxFormat\Logic\Vml.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Source\DocxFormat\Logic\VmlOfficeDrawing.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Source\DocxFormat\Logic\VmlWord.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Sections"

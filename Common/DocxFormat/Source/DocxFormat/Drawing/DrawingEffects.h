@@ -1182,6 +1182,12 @@ namespace OOX
 			}
 			virtual ~CDashStopList()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrDs.size(); nIndex++ )
+				{
+					if ( m_arrDs[nIndex] ) delete m_arrDs[nIndex];
+					m_arrDs[nIndex] = NULL;
+				}
+				m_arrDs.clear();
 			}
 
 		public:
@@ -1201,8 +1207,8 @@ namespace OOX
                     CString sName = oReader.GetName();
 					if ( _T("a:ds") == sName )
 					{
-						CDashStop oDs = oReader;
-                        m_arrDs.push_back( oDs );
+						CDashStop *oDs = new CDashStop (oReader);
+                        if (oDs) m_arrDs.push_back( oDs );
 					}
 				}
 			}
@@ -1212,7 +1218,10 @@ namespace OOX
 				CString sResult = _T("<a:custDash>");
 
                 for ( unsigned int nIndex = 0; nIndex < m_arrDs.size(); nIndex++ )
-					sResult += m_arrDs[nIndex].toXML();
+				{
+					if (m_arrDs[nIndex])
+						sResult += m_arrDs[nIndex]->toXML();
+				}
 
 				sResult += _T("</a:custDash>");
 
@@ -1226,7 +1235,7 @@ namespace OOX
 		public:
 
 			// Childs
-            std::vector<CDashStop> m_arrDs;
+            std::vector<CDashStop*> m_arrDs;
 
 		};
         //-----------------------------------------------------------------------
@@ -1815,6 +1824,12 @@ namespace OOX
 			}
 			virtual ~CGradientStopList()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrGs.size(); nIndex++ )
+				{
+					if ( m_arrGs[nIndex] ) delete m_arrGs[nIndex];
+					m_arrGs[nIndex] = NULL;
+				}
+				m_arrGs.clear();
 			}
 
 		public:
@@ -1834,8 +1849,8 @@ namespace OOX
                     CString sName = oReader.GetName();
 					if ( _T("a:gs") == sName )
 					{
-						CGradientStop oGs = oReader;
-                        m_arrGs.push_back( oGs );
+						CGradientStop *oGs = new CGradientStop(oReader);
+                        if (oGs) m_arrGs.push_back( oGs );
 					}
 				}
 			}
@@ -1845,7 +1860,10 @@ namespace OOX
 				CString sResult = _T("<a:gsLst>");
 
                 for ( unsigned int nIndex = 0; nIndex < m_arrGs.size(); nIndex++ )
-					sResult += m_arrGs[nIndex].toXML();
+				{
+					if (m_arrGs[nIndex])
+						sResult += m_arrGs[nIndex]->toXML();
+				}
 
 				sResult += _T("</a:gsLst>");
 
@@ -1859,7 +1877,7 @@ namespace OOX
 		public:
 
 			// Childs
-            std::vector<CGradientStop> m_arrGs;
+            std::vector<CGradientStop*> m_arrGs;
 
 		};
 		//-----------------------------------------------------------------------

@@ -27,7 +27,7 @@ namespace CSVReader
 			pCell->m_oRichText.Init();
 			OOX::Spreadsheet::CText *pText = new OOX::Spreadsheet::CText();
 			pText->m_sText = sText;
-			pCell->m_oRichText->m_arrItems.Add(pText);
+			pCell->m_oRichText->m_arrItems.push_back(pText);
 		}
 		else
 		{
@@ -45,7 +45,7 @@ namespace CSVReader
 
 		pCell->m_oRef.Init();
 		pCell->m_oRef = OOX::Spreadsheet::CWorksheet::combineRef(nRow, nCol);
-		oRow.m_arrItems.Add(pCell);
+		oRow.m_arrItems.push_back(pCell);
 	}
 	void ReadFromCsvToXlsx(CString &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, CONST WCHAR wcDelimiter)
 	{
@@ -71,7 +71,7 @@ namespace CSVReader
 		pXfs->m_oFontId->SetValue(0);
 		pXfs->m_oNumFmtId.Init();
 		pXfs->m_oNumFmtId->SetValue(0);
-		pStyles->m_oCellXfs->m_arrItems.Add(pXfs);
+		pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
 
 		// Wrap style
 		pXfs = new OOX::Spreadsheet::CXfs();
@@ -89,7 +89,7 @@ namespace CSVReader
 		pXfs->m_oAligment.Init();
 		pXfs->m_oAligment->m_oWrapText.Init();
 		pXfs->m_oAligment->m_oWrapText->SetValue(SimpleTypes::onoffTrue);
-		pStyles->m_oCellXfs->m_arrItems.Add(pXfs);
+		pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
 
 		CString sSheetRId = _T("rId1");
 		OOX::Spreadsheet::CWorksheet* pWorksheet = new OOX::Spreadsheet::CWorksheet();
@@ -104,7 +104,7 @@ namespace CSVReader
 
 		OOX::Spreadsheet::CWorkbook *pWorkbook = oXlsx.GetWorkbook();
 		pWorkbook->m_oSheets.Init();
-		pWorkbook->m_oSheets->m_arrItems.Add(pSheet);
+		pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
 
 		MemoryMapping::CMappingFile oMappingFile = MemoryMapping::CMappingFile();
 		if(FALSE != oMappingFile.Open(sFileName))
@@ -148,7 +148,7 @@ namespace CSVReader
 					nStartCell = nIndex + 1;
 					if (nStartCell == nSize)
 					{
-						pWorksheet->m_oSheetData->m_arrItems.Add(pRow);
+						pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
 						pRow = NULL;
 					}
 				}
@@ -176,7 +176,7 @@ namespace CSVReader
 					
 					nStartCell = nIndex + 1;
 
-					pWorksheet->m_oSheetData->m_arrItems.Add(pRow);
+					pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
 					pRow = new OOX::Spreadsheet::CRow();
 					pRow->m_oR.Init();
 					pRow->m_oR->SetValue(++nIndexRow + 1);
@@ -215,7 +215,7 @@ namespace CSVReader
 				// New line
 				CString sCellText(pTemp + nStartCell, nSize - nStartCell);
 				AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
-				pWorksheet->m_oSheetData->m_arrItems.Add(pRow);
+				pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
 			}
 			else
 			{

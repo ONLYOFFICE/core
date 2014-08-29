@@ -87,6 +87,12 @@ namespace OOX
 			}
 			virtual ~COfficeArtExtensionList()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrExt.size(); nIndex++ )
+				{
+					if ( m_arrExt[nIndex] ) delete m_arrExt[nIndex];
+					m_arrExt[nIndex] = NULL;
+				}
+				m_arrExt.clear();
 			}
 
 		public:
@@ -106,8 +112,8 @@ namespace OOX
                     CString sName = oReader.GetName();
 					if ( _T("a:ext") == sName )
 					{
-						OOX::Drawing::COfficeArtExtension oExt = oReader;
-                        m_arrExt.push_back( oExt );
+						OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension(oReader);
+                        if (oExt) m_arrExt.push_back( oExt );
 					}
 				}
 			}
@@ -116,7 +122,10 @@ namespace OOX
 				CString sResult = _T("<a:extLst>");
 				
                 for ( unsigned int nIndex = 0; nIndex < m_arrExt.size(); nIndex++ )
-					sResult += m_arrExt[nIndex].toXML();
+				{
+					if (m_arrExt[nIndex])
+						sResult += m_arrExt[nIndex]->toXML();
+				}
 
 				sResult += _T("</a:extLst>");
 
@@ -130,8 +139,7 @@ namespace OOX
 		public:
 
 			// Childs
-            //std::vector<OOX::Drawing::COfficeArtExtension> m_arrExt;
-            std::vector<OOX::Drawing::COfficeArtExtension> m_arrExt;
+            std::vector<OOX::Drawing::COfficeArtExtension*> m_arrExt;
 		};
 	} // namespace Drawing
 } // namespace OOX

@@ -580,6 +580,12 @@ namespace OOX
 			}
 			virtual ~CConnectionSiteList()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrCxn.size(); nIndex++ )
+				{
+					if ( m_arrCxn[nIndex] ) delete m_arrCxn[nIndex];
+					m_arrCxn[nIndex] = NULL;
+				}
+				m_arrCxn.clear();
 			}
 
 		public:
@@ -600,8 +606,8 @@ namespace OOX
 
 					if ( _T("a:cxn") == sName )
 					{
-						OOX::Drawing::CConnectionSite oCxn = oReader;
-                        m_arrCxn.push_back( oCxn );
+						OOX::Drawing::CConnectionSite *oCxn = new OOX::Drawing::CConnectionSite(oReader);
+                        if (oCxn) m_arrCxn.push_back( oCxn );
 					}
 				}
 			}
@@ -610,7 +616,10 @@ namespace OOX
 				CString sResult = _T("<a:cxnLst>");
 
                 for ( unsigned int nIndex = 0; nIndex < m_arrCxn.size(); nIndex++ )
-					sResult += m_arrCxn[nIndex].toXML();
+				{
+					if (m_arrCxn[nIndex])
+						sResult += m_arrCxn[nIndex]->toXML();
+				}
 
 				sResult += _T("</a:cxnLst>");
 
@@ -624,7 +633,7 @@ namespace OOX
 		public:
 
 			// Childs
-            std::vector<OOX::Drawing::CConnectionSite> m_arrCxn;
+            std::vector<OOX::Drawing::CConnectionSite*> m_arrCxn;
 		};
 		//--------------------------------------------------------------------------------
 		// CGeomGuide 20.1.9.11 (Part 1)
@@ -693,6 +702,12 @@ namespace OOX
 			}
 			virtual ~CGeomGuideList()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrGd.size(); nIndex++ )
+				{
+					if ( m_arrGd[nIndex] ) delete m_arrGd[nIndex];
+					m_arrGd[nIndex] = NULL;
+				}
+				m_arrGd.clear();
 			}
 
 		public:
@@ -724,8 +739,8 @@ namespace OOX
 
 					if ( _T("a:gd") == sName )
 					{
-						OOX::Drawing::CGeomGuide oGd = oReader;
-                        m_arrGd.push_back( oGd );
+						OOX::Drawing::CGeomGuide *oGd = new OOX::Drawing::CGeomGuide(oReader);
+                        if (oGd) m_arrGd.push_back( oGd );
 					}
 				}
 			}
@@ -742,7 +757,10 @@ namespace OOX
 									
 
                 for ( unsigned int nIndex = 0; nIndex < m_arrGd.size(); nIndex++ )
-					sResult += m_arrGd[nIndex].toXML();
+				{
+					if (m_arrGd[nIndex])
+						sResult += m_arrGd[nIndex]->toXML();
+				}
 
 				if ( et_a_avLst == m_eType )
 					sResult += _T("</a:avLst>");
@@ -761,7 +779,7 @@ namespace OOX
 			EElementType                           m_eType;
 
 			// Childs
-            std::vector<OOX::Drawing::CGeomGuide> m_arrGd;
+            std::vector<OOX::Drawing::CGeomGuide*> m_arrGd;
 		};
 		//--------------------------------------------------------------------------------
 		// CPath2DLineTo 20.1.9.13 (Part 1)
@@ -1089,6 +1107,12 @@ namespace OOX
 			}
 			virtual ~CPath2DList()
 			{
+				for ( unsigned int nIndex = 0; nIndex < m_arrPath.size(); nIndex++ )
+				{
+					if ( m_arrPath[nIndex] ) delete m_arrPath[nIndex];
+					m_arrPath[nIndex] = NULL;
+				}
+				m_arrPath.clear();
 			}
 
 		public:
@@ -1109,8 +1133,8 @@ namespace OOX
 
 					if ( _T("a:path") == sName )
 					{
-						OOX::Drawing::CPath2D oPath = oReader;
-						m_arrPath.push_back( oPath );
+						OOX::Drawing::CPath2D *oPath = new OOX::Drawing::CPath2D(oReader);
+						if (oPath) m_arrPath.push_back( oPath );
 					}
 				}
 			}
@@ -1119,7 +1143,10 @@ namespace OOX
 				CString sResult = _T("<a:pathLst>");
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrPath.size(); nIndex++ )
-					sResult += m_arrPath[nIndex].toXML();
+				{
+					if (m_arrPath[nIndex])
+						sResult += m_arrPath[nIndex]->toXML();
+				}
 
 				sResult += _T("</a:pathLst>");
 
@@ -1133,7 +1160,7 @@ namespace OOX
 		public:
 
 			// Childs
-            std::vector<OOX::Drawing::CPath2D> m_arrPath;
+            std::vector<OOX::Drawing::CPath2D*> m_arrPath;
 		};
 		//--------------------------------------------------------------------------------
 		// CAdjustHandleList 20.1.9.1 (Part 1)

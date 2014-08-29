@@ -30,7 +30,7 @@ namespace BinXlsxRW {
 		}
 		void setFontTable(const OOX::Spreadsheet::CFonts& oFonts)
 		{
-			for (int i = 0, length = oFonts.m_arrItems.GetSize(); i < length; ++i)
+			for (int i = 0, length = oFonts.m_arrItems.size(); i < length; ++i)
 			{
 					OOX::Spreadsheet::CFont* pFont = oFonts.m_arrItems[i];
 					if(NULL != pFont)

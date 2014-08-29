@@ -99,7 +99,7 @@ namespace BinXlsxRW {
 				const OOX::RId oRId = pWorksheet->Add(pTableFile);
 				pTablePart->m_oRId.Init();
 				pTablePart->m_oRId->SetValue(oRId.get());
-				pWorksheet->m_oTableParts->m_arrItems.Add(pTablePart);
+				pWorksheet->m_oTableParts->m_arrItems.push_back(pTablePart);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -183,7 +183,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CFilterColumn* pFilterColumn = new OOX::Spreadsheet::CFilterColumn();
 				res = Read1(length, &BinaryTableReader::ReadFilterColumn, this, pFilterColumn);
-				pAutofilter->m_arrItems.Add(pFilterColumn);
+				pAutofilter->m_arrItems.push_back(pFilterColumn);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -245,13 +245,13 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CFilter* pFilter = new OOX::Spreadsheet::CFilter();
 				res = Read1(length, &BinaryTableReader::ReadFilterFilter, this, pFilter);
-				pFilters->m_arrItems.Add(pFilter);
+				pFilters->m_arrItems.push_back(pFilter);
 			}
 			else if(c_oSer_FilterColumn::DateGroupItem == type)
 			{
 				OOX::Spreadsheet::CDateGroupItem* pDateGroupItem = new OOX::Spreadsheet::CDateGroupItem();
 				res = Read2(length, &BinaryTableReader::ReadDateGroupItem, this, pDateGroupItem);
-				pFilters->m_arrItems.Add(pDateGroupItem);
+				pFilters->m_arrItems.push_back(pDateGroupItem);
 			}
 			else if(c_oSer_FilterColumn::FiltersBlank == type)
 			{
@@ -343,7 +343,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CCustomFilter* pCustomFilter = new OOX::Spreadsheet::CCustomFilter();
 				res = Read2(length, &BinaryTableReader::ReadCustomFiltersItem, this, pCustomFilter);
-				pCustomFilters->m_arrItems.Add(pCustomFilter);
+				pCustomFilters->m_arrItems.push_back(pCustomFilter);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -466,7 +466,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CSortCondition* pSortCondition = new OOX::Spreadsheet::CSortCondition();
 				res = Read2(length, &BinaryTableReader::ReadSortCondition, this, pSortCondition);
-				pSortState->m_arrItems.Add(pSortCondition);
+				pSortState->m_arrItems.push_back(pSortCondition);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -509,8 +509,8 @@ namespace BinXlsxRW {
 				OOX::Spreadsheet::CTableColumn* pTableColumn = new OOX::Spreadsheet::CTableColumn();
 				res = Read1(length, &BinaryTableReader::ReadTableColumn, this, pTableColumn);
 				pTableColumn->m_oId.Init();
-				pTableColumn->m_oId->SetValue(pTableColumns->m_arrItems.GetSize() + 1);
-				pTableColumns->m_arrItems.Add(pTableColumn);
+				pTableColumn->m_oId->SetValue(pTableColumns->m_arrItems.size() + 1);
+				pTableColumns->m_arrItems.push_back(pTableColumn);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -600,9 +600,9 @@ namespace BinXlsxRW {
 		{
 			int res = ReadTable(&BinarySharedStringTableReader::ReadSharedStringTableContent, this);
 			m_oSharedStrings.m_oCount.Init();
-			m_oSharedStrings.m_oCount->SetValue(m_oSharedStrings.m_arrItems.GetSize());
+			m_oSharedStrings.m_oCount->SetValue(m_oSharedStrings.m_arrItems.size());
 			m_oSharedStrings.m_oUniqueCount.Init();
-			m_oSharedStrings.m_oUniqueCount->SetValue(m_oSharedStrings.m_arrItems.GetSize());
+			m_oSharedStrings.m_oUniqueCount->SetValue(m_oSharedStrings.m_arrItems.size());
 			return res;
 		};
 		int ReadSharedStringTableContent(BYTE type, long length, void* poResult)
@@ -612,7 +612,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CSi* pSi = new OOX::Spreadsheet::CSi();
 				res = Read1(length, &BinarySharedStringTableReader::ReadSi, this, pSi);
-				m_oSharedStrings.m_arrItems.Add(pSi);
+				m_oSharedStrings.m_arrItems.push_back(pSi);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -626,7 +626,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CRun* pRun = new OOX::Spreadsheet::CRun();
 				res = Read1(length, &BinarySharedStringTableReader::ReadRun, this, pRun);
-				pSi->m_arrItems.Add(pRun);
+				pSi->m_arrItems.push_back(pRun);
 			}
 			else if(c_oSerSharedStringTypes::Text == type)
 			{
@@ -638,7 +638,7 @@ namespace BinXlsxRW {
 					pText->m_oSpace.Init();
 					pText->m_oSpace->SetValue(SimpleTypes::xmlspacePreserve);
 				}
-				pSi->m_arrItems.Add(pText);
+				pSi->m_arrItems.push_back(pText);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -663,7 +663,7 @@ namespace BinXlsxRW {
 					pText->m_oSpace.Init();
 					pText->m_oSpace->SetValue(SimpleTypes::xmlspacePreserve);
 				}
-				pRun->m_arrItems.Add(pText);
+				pRun->m_arrItems.push_back(pText);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -753,56 +753,56 @@ namespace BinXlsxRW {
 				m_oStyles.m_oBorders.Init();
 				res = Read1(length, &BinaryStyleTableReader::ReadBorders, this, poResult);
 				m_oStyles.m_oBorders->m_oCount.Init();
-				m_oStyles.m_oBorders->m_oCount->SetValue(m_oStyles.m_oBorders->m_arrItems.GetSize());
+				m_oStyles.m_oBorders->m_oCount->SetValue(m_oStyles.m_oBorders->m_arrItems.size());
 			}
 			else if(c_oSerStylesTypes::Fills == type)
 			{
 				m_oStyles.m_oFills.Init();
 				res = Read1(length, &BinaryStyleTableReader::ReadFills, this, poResult);
 				m_oStyles.m_oFills->m_oCount.Init();
-				m_oStyles.m_oFills->m_oCount->SetValue(m_oStyles.m_oFills->m_arrItems.GetSize());
+				m_oStyles.m_oFills->m_oCount->SetValue(m_oStyles.m_oFills->m_arrItems.size());
 			}
 			else if(c_oSerStylesTypes::Fonts == type)
 			{
 				m_oStyles.m_oFonts.Init();
 				res = Read1(length, &BinaryStyleTableReader::ReadFonts, this, poResult);
 				m_oStyles.m_oFonts->m_oCount.Init();
-				m_oStyles.m_oFonts->m_oCount->SetValue(m_oStyles.m_oFonts->m_arrItems.GetSize());
+				m_oStyles.m_oFonts->m_oCount->SetValue(m_oStyles.m_oFonts->m_arrItems.size());
 			}
 			else if(c_oSerStylesTypes::NumFmts == type)
 			{
 				m_oStyles.m_oNumFmts.Init();
 				res = Read1(length, &BinaryStyleTableReader::ReadNumFmts, this, poResult);
 				m_oStyles.m_oNumFmts->m_oCount.Init();
-				m_oStyles.m_oNumFmts->m_oCount->SetValue(m_oStyles.m_oNumFmts->m_arrItems.GetSize());
+				m_oStyles.m_oNumFmts->m_oCount->SetValue(m_oStyles.m_oNumFmts->m_arrItems.size());
 			}
 			else if(c_oSerStylesTypes::CellStyleXfs == type)
 			{
 				m_oStyles.m_oCellStyleXfs.Init();
 				res = Read1(length, &BinaryStyleTableReader::ReadCellStyleXfs, this, poResult);
 				m_oStyles.m_oCellStyleXfs->m_oCount.Init();
-				m_oStyles.m_oCellStyleXfs->m_oCount->SetValue(m_oStyles.m_oCellStyleXfs->m_arrItems.GetSize());
+				m_oStyles.m_oCellStyleXfs->m_oCount->SetValue(m_oStyles.m_oCellStyleXfs->m_arrItems.size());
 			}
 			else if(c_oSerStylesTypes::CellXfs == type)
 			{
 				m_oStyles.m_oCellXfs.Init();
 				res = Read1(length, &BinaryStyleTableReader::ReadCellXfs, this, poResult);
 				m_oStyles.m_oCellXfs->m_oCount.Init();
-				m_oStyles.m_oCellXfs->m_oCount->SetValue(m_oStyles.m_oCellXfs->m_arrItems.GetSize());
+				m_oStyles.m_oCellXfs->m_oCount->SetValue(m_oStyles.m_oCellXfs->m_arrItems.size());
 			}
 			else if(c_oSerStylesTypes::CellStyles == type)
 			{
 				m_oStyles.m_oCellStyles.Init();
 				res = Read1(length, &BinaryStyleTableReader::ReadCellStyles, this, poResult);
 				m_oStyles.m_oCellStyles->m_oCount.Init();
-				m_oStyles.m_oCellStyles->m_oCount->SetValue(m_oStyles.m_oCellStyles->m_arrItems.GetSize());
+				m_oStyles.m_oCellStyles->m_oCount->SetValue(m_oStyles.m_oCellStyles->m_arrItems.size());
 			}
 			else if(c_oSerStylesTypes::Dxfs == type)
 			{
 				m_oStyles.m_oDxfs.Init();
 				res = Read1(length, &BinaryStyleTableReader::ReadDxfs, this, m_oStyles.m_oDxfs.GetPointer());
 				m_oStyles.m_oDxfs->m_oCount.Init();
-				m_oStyles.m_oDxfs->m_oCount->SetValue(m_oStyles.m_oDxfs->m_arrItems.GetSize());
+				m_oStyles.m_oDxfs->m_oCount->SetValue(m_oStyles.m_oDxfs->m_arrItems.size());
 			}
 			else if(c_oSerStylesTypes::TableStyles == type)
 			{
@@ -825,7 +825,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CBorder* pBorder = new OOX::Spreadsheet::CBorder();
 				res = Read1(length, &BinaryStyleTableReader::ReadBorder, this, pBorder);
-				m_oStyles.m_oBorders->m_arrItems.Add(pBorder);
+				m_oStyles.m_oBorders->m_arrItems.push_back(pBorder);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -918,7 +918,7 @@ namespace BinXlsxRW {
 				pFill->m_oPatternFill->m_oPatternType.Init();
 				pFill->m_oPatternFill->m_oPatternType->SetValue(SimpleTypes::Spreadsheet::patterntypeNone);
 				res = Read1(length, &BinaryStyleTableReader::ReadFill, this, pFill);
-				m_oStyles.m_oFills->m_arrItems.Add(pFill);
+				m_oStyles.m_oFills->m_arrItems.push_back(pFill);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -963,7 +963,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CFont* pFont = new OOX::Spreadsheet::CFont();
 				res = Read2(length, &BinaryStyleTableReader::ReadFont, this, pFont);
-				m_oStyles.m_oFonts->m_arrItems.Add(pFont);
+				m_oStyles.m_oFonts->m_arrItems.push_back(pFont);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1035,7 +1035,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CNumFmt* pNumFmt = new OOX::Spreadsheet::CNumFmt();
 				res = Read2(length, &BinaryStyleTableReader::ReadNumFmt, this, pNumFmt);
-				m_oStyles.m_oNumFmts->m_arrItems.Add(pNumFmt);
+				m_oStyles.m_oNumFmts->m_arrItems.push_back(pNumFmt);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1067,7 +1067,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CXfs* pXfs = new OOX::Spreadsheet::CXfs();
 				res = Read2(length, &BinaryStyleTableReader::ReadXfs, this, pXfs);
-				m_oStyles.m_oCellStyleXfs->m_arrItems.Add(pXfs);
+				m_oStyles.m_oCellStyleXfs->m_arrItems.push_back(pXfs);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1080,7 +1080,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CXfs* pXfs = new OOX::Spreadsheet::CXfs();
 				res = Read2(length, &BinaryStyleTableReader::ReadXfs, this, pXfs);
-				m_oStyles.m_oCellXfs->m_arrItems.Add(pXfs);
+				m_oStyles.m_oCellXfs->m_arrItems.push_back(pXfs);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1205,7 +1205,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CDxf* pDxf = new OOX::Spreadsheet::CDxf();
 				res = Read1(length, &BinaryStyleTableReader::ReadDxf, this, pDxf);
-				pDxfs->m_arrItems.Add(pDxf);
+				pDxfs->m_arrItems.push_back(pDxf);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1251,7 +1251,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CCellStyle* pCellStyle = new OOX::Spreadsheet::CCellStyle();
 				res = Read1(length, &BinaryStyleTableReader::ReadCellStyle, this, pCellStyle);
-				m_oStyles.m_oCellStyles->m_arrItems.Add(pCellStyle);
+				m_oStyles.m_oCellStyles->m_arrItems.push_back(pCellStyle);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1313,7 +1313,7 @@ namespace BinXlsxRW {
 			{
 				res = Read1(length, &BinaryStyleTableReader::ReadTableCustomStyles, this, pTableStyles);
 				pTableStyles->m_oCount.Init();
-				pTableStyles->m_oCount->SetValue(pTableStyles->m_arrItems.GetSize());
+				pTableStyles->m_oCount->SetValue(pTableStyles->m_arrItems.size());
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1327,7 +1327,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CTableStyle* pTableStyle = new OOX::Spreadsheet::CTableStyle();
 				res = Read1(length, &BinaryStyleTableReader::ReadTableCustomStyle, this, pTableStyle);
-				pTableStyles->m_arrItems.Add(pTableStyle);
+				pTableStyles->m_arrItems.push_back(pTableStyle);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1356,7 +1356,7 @@ namespace BinXlsxRW {
 			{
 				res = Read1(length, &BinaryStyleTableReader::ReadTableCustomStyleElements, this, pTableStyle);
 				pTableStyle->m_oCount.Init();
-				pTableStyle->m_oCount->SetValue(pTableStyle->m_arrItems.GetSize());
+				pTableStyle->m_oCount->SetValue(pTableStyle->m_arrItems.size());
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1370,7 +1370,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CTableStyleElement* pTableStyleElement = new OOX::Spreadsheet::CTableStyleElement();
 				res = Read2(length, &BinaryStyleTableReader::ReadTableCustomStyleElement, this, pTableStyleElement);
-				pTableStyle->m_arrItems.Add(pTableStyleElement);
+				pTableStyle->m_arrItems.push_back(pTableStyleElement);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1457,7 +1457,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CWorkbookView* pWorkbookView = new OOX::Spreadsheet::CWorkbookView();
 				res = Read2(length, &BinaryWorkbookTableReader::ReadWorkbookView, this, pWorkbookView);
-				m_oWorkbook.m_oBookViews->m_arrItems.Add(pWorkbookView);
+				m_oWorkbook.m_oBookViews->m_arrItems.push_back(pWorkbookView);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1483,7 +1483,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CDefinedName* pDefinedName = new OOX::Spreadsheet::CDefinedName();
 				res = Read1(length, &BinaryWorkbookTableReader::ReadDefinedName, this, pDefinedName);
-				m_oWorkbook.m_oDefinedNames->m_arrItems.Add(pDefinedName);
+				m_oWorkbook.m_oDefinedNames->m_arrItems.push_back(pDefinedName);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1725,8 +1725,8 @@ namespace BinXlsxRW {
 				OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
 				pText->m_sText.Append(pCommentData->sText);
 
-				pRun->m_arrItems.Add(pText);
-				oSi.m_arrItems.Add(pRun);
+				pRun->m_arrItems.push_back(pText);
+				oSi.m_arrItems.push_back(pRun);
 			}
 		}
 	};
@@ -1778,7 +1778,7 @@ namespace BinXlsxRW {
 					m_pCurSheet->m_oRid.Init();
 					m_pCurSheet->m_oRid->SetValue(oRId.get());
 					m_mapWorksheets.SetAt(m_pCurSheet->m_oName.get(), m_pCurWorksheet);
-					m_oWorkbook.m_oSheets->m_arrItems.Add(m_pCurSheet);
+					m_oWorkbook.m_oSheets->m_arrItems.push_back(m_pCurSheet);
 				}
 			}
 			else
@@ -1837,7 +1837,7 @@ namespace BinXlsxRW {
 				m_pCurWorksheet->m_oMergeCells.Init();
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadMergeCells, this, poResult);
 				m_pCurWorksheet->m_oMergeCells->m_oCount.Init();
-				m_pCurWorksheet->m_oMergeCells->m_oCount->SetValue(m_pCurWorksheet->m_oMergeCells->m_arrItems.GetSize());
+				m_pCurWorksheet->m_oMergeCells->m_oCount->SetValue(m_pCurWorksheet->m_oMergeCells->m_arrItems.size());
 			}
 			else if(c_oSerWorksheetsTypes::Drawings == type)
 			{
@@ -1890,9 +1890,9 @@ namespace BinXlsxRW {
 					CAtlMap<CString, unsigned int> mapAuthors;
 					OOX::Spreadsheet::CComments* pComments = new OOX::Spreadsheet::CComments();
 					pComments->m_oCommentList.Init();
-					CSimpleArray<OOX::Spreadsheet::CComment*>& aComments = pComments->m_oCommentList->m_arrItems;
+					std::vector<OOX::Spreadsheet::CComment*>& aComments = pComments->m_oCommentList->m_arrItems;
 					pComments->m_oAuthors.Init();
-					CSimpleArray<CString*>& aAuthors = pComments->m_oAuthors->m_arrItems;
+					std::vector<CString*>& aAuthors = pComments->m_oAuthors->m_arrItems;
 
 					POSITION pos = m_pCurWorksheet->m_mapComments.GetStartPosition();
 					while ( NULL != pos )
@@ -1919,7 +1919,7 @@ namespace BinXlsxRW {
 								{
 									nAuthorId = mapAuthors.GetCount();
 									mapAuthors.SetAt(sAuthor, nAuthorId);
-									aAuthors.Add(new CString(sAuthor));
+									aAuthors.push_back(new CString(sAuthor));
 								}
 								pNewComment->m_oAuthorId.Init();
 								pNewComment->m_oAuthorId->SetValue(nAuthorId);
@@ -1928,7 +1928,7 @@ namespace BinXlsxRW {
 							OOX::Spreadsheet::CSi* pSi = pCommentItem->m_oText.GetPointerEmptyNullable();
 							if(NULL != pSi)
 								pNewComment->m_oText.reset(pSi);
-							aComments.Add(pNewComment);
+							aComments.push_back(pNewComment);
 						}
 					}
 
@@ -1948,7 +1948,7 @@ namespace BinXlsxRW {
 				m_pCurWorksheet->m_oTableParts.Init();
 				oBinaryTableReader.Read(length, m_pCurWorksheet);
 				m_pCurWorksheet->m_oTableParts->m_oCount.Init();
-				m_pCurWorksheet->m_oTableParts->m_oCount->SetValue(m_pCurWorksheet->m_oTableParts->m_arrItems.GetSize());
+				m_pCurWorksheet->m_oTableParts->m_oCount->SetValue(m_pCurWorksheet->m_oTableParts->m_arrItems.size());
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1984,7 +1984,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CCol* pCol = new OOX::Spreadsheet::CCol();
 				res = Read2(length, &BinaryWorksheetsTableReader::ReadWorksheetCol, this, pCol);
-				m_pCurWorksheet->m_oCols->m_arrItems.Add(pCol);
+				m_pCurWorksheet->m_oCols->m_arrItems.push_back(pCol);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -2045,7 +2045,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CSheetView* pSheetView = new OOX::Spreadsheet::CSheetView();
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadSheetView, this, pSheetView);
-				m_pCurWorksheet->m_oSheetViews->m_arrItems.Add(pSheetView);
+				m_pCurWorksheet->m_oSheetViews->m_arrItems.push_back(pSheetView);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -2281,7 +2281,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CHyperlink* pHyperlink = new OOX::Spreadsheet::CHyperlink();
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadHyperlink, this, pHyperlink);
-				m_pCurWorksheet->m_oHyperlinks->m_arrItems.Add(pHyperlink);
+				m_pCurWorksheet->m_oHyperlinks->m_arrItems.push_back(pHyperlink);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -2329,7 +2329,7 @@ namespace BinXlsxRW {
 				OOX::Spreadsheet::CMergeCell* pMergeCell = new OOX::Spreadsheet::CMergeCell();
 				pMergeCell->m_oRef.Init();
 				pMergeCell->m_oRef->Append(sRef);
-				m_pCurWorksheet->m_oMergeCells->m_arrItems.Add(pMergeCell);
+				m_pCurWorksheet->m_oMergeCells->m_arrItems.push_back(pMergeCell);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -2343,7 +2343,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CCellAnchor* pCellAnchor = new OOX::Spreadsheet::CCellAnchor();
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadDrawing, this, pCellAnchor);
-				pDrawing->m_arrItems.Add(pCellAnchor);
+				pDrawing->m_arrItems.push_back(pCellAnchor);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -2586,7 +2586,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CRow* pRow = new OOX::Spreadsheet::CRow();
 				res = Read2(length, &BinaryWorksheetsTableReader::ReadRow, this, pRow);
-				m_pCurWorksheet->m_oSheetData->m_arrItems.Add(pRow);
+				m_pCurWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -2659,10 +2659,10 @@ namespace BinXlsxRW {
 					if(bMoveText)
 					{
 						int nValue = _wtoi(pCell->m_oValue->ToString());
-						if(nValue >=0 && nValue < m_pSharedStrings->m_arrItems.GetSize())
+						if(nValue >=0 && nValue < m_pSharedStrings->m_arrItems.size())
 						{
 							OOX::Spreadsheet::CSi *pSi = static_cast<OOX::Spreadsheet::CSi *>(m_pSharedStrings->m_arrItems[nValue]);
-							if(NULL != pSi && pSi->m_arrItems.GetSize() > 0)
+							if(NULL != pSi && pSi->m_arrItems.size() > 0)
 							{
 								OOX::Spreadsheet::WritingElement* pWe = pSi->m_arrItems[0];
 								if(OOX::Spreadsheet::et_t == pWe->getType())
@@ -2675,7 +2675,7 @@ namespace BinXlsxRW {
 						}
 					}
 				}
-				pRow->m_arrItems.Add(pCell);
+				pRow->m_arrItems.push_back(pCell);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -2819,8 +2819,8 @@ namespace BinXlsxRW {
 			OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
 			pText->m_sText.Append(_T("\n"));
 
-			pRun->m_arrItems.Add(pText);
-			oSi.m_arrItems.Add(pRun);
+			pRun->m_arrItems.push_back(pText);
+			oSi.m_arrItems.push_back(pRun);
 		}
 	};
 	class BinaryOtherTableReader : public Binary_CommonReader<BinaryOtherTableReader>

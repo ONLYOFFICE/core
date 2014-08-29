@@ -46,7 +46,7 @@ namespace BinXlsxRW {
 			if(color.m_oIndexed.IsInit())
 			{
 				int nIndex = (int)color.m_oIndexed->GetValue();
-				if(NULL != pIndexedColors && nIndex < pIndexedColors->m_arrItems.GetSize())
+				if(NULL != pIndexedColors && nIndex < pIndexedColors->m_arrItems.size())
 				{
 					OOX::Spreadsheet::CRgbColor* pRgbColor = pIndexedColors->m_arrItems[nIndex];
 					if(pRgbColor->m_oRgb.IsInit())

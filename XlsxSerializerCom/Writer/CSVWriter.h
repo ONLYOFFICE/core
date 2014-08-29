@@ -76,7 +76,7 @@ namespace CSVWriter
 		if (NULL != pWorkbook)
 		{
 			// Get active sheet
-			if (pWorkbook->m_oBookViews.IsInit() && 0 < pWorkbook->m_oBookViews->m_arrItems.GetSize())
+			if (pWorkbook->m_oBookViews.IsInit() && 0 < pWorkbook->m_oBookViews->m_arrItems.size())
 			{
 				if (pWorkbook->m_oBookViews->m_arrItems[0]->m_oActiveTab.IsInit())
 				{
@@ -87,9 +87,9 @@ namespace CSVWriter
 			}
 
 			// Get active sheet rId
-			if (pWorkbook->m_oSheets.IsInit() && 0 <= pWorkbook->m_oSheets->m_arrItems.GetSize())
+			if (pWorkbook->m_oSheets.IsInit() && 0 <= pWorkbook->m_oSheets->m_arrItems.size())
 			{
-				if (lActiveSheet <= pWorkbook->m_oSheets->m_arrItems.GetSize())
+				if (lActiveSheet <= pWorkbook->m_oSheets->m_arrItems.size())
 					sSheetRId = pWorkbook->m_oSheets->m_arrItems[lActiveSheet]->m_oName.get2();
 				else
 					sSheetRId = pWorkbook->m_oSheets->m_arrItems[0]->m_oName.get2();
@@ -113,7 +113,7 @@ namespace CSVWriter
 					WCHAR *pWriteBuffer = NULL;
 
 					INT nRowCurrent = 1;
-					for (INT i = 0; i < pWorksheet->m_oSheetData->m_arrItems.GetSize(); ++i)
+					for (INT i = 0; i < pWorksheet->m_oSheetData->m_arrItems.size(); ++i)
 					{
 						OOX::Spreadsheet::CRow *pRow = static_cast<OOX::Spreadsheet::CRow *>(pWorksheet->m_oSheetData->m_arrItems[i]);
 						INT nRow = pRow->m_oR.IsInit() ? pRow->m_oR->GetValue() : 0 == i ? nRowCurrent : nRowCurrent + 1;
@@ -126,7 +126,7 @@ namespace CSVWriter
 						}
 
 						INT nColCurrent = 1;
-						for (INT j = 0; j < pRow->m_arrItems.GetSize(); ++j)
+						for (INT j = 0; j < pRow->m_arrItems.size(); ++j)
 						{
 							INT nRowTmp = 0;
 							INT nCol = 0;
@@ -149,11 +149,11 @@ namespace CSVWriter
 								if (pCell->m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeNumber != pCell->m_oType->GetValue())
 								{
 									int nValue = _wtoi(pCell->m_oValue->ToString());
-									if (0 <= nValue && nValue < pSharedStrings->m_arrItems.GetSize())
+									if (0 <= nValue && nValue < pSharedStrings->m_arrItems.size())
 									{
 										OOX::Spreadsheet::CSi *pSi = static_cast<OOX::Spreadsheet::CSi *>(pSharedStrings->m_arrItems[nValue]);
-										if (NULL != pSi && pSi->m_arrItems.GetSize() > 0)
-											if(NULL != pSi && pSi->m_arrItems.GetSize() > 0)
+										if (NULL != pSi && pSi->m_arrItems.size() > 0)
+											if(NULL != pSi && pSi->m_arrItems.size() > 0)
 											{
 												OOX::Spreadsheet::WritingElement* pWe = pSi->m_arrItems[0];
 												if(OOX::Spreadsheet::et_t == pWe->getType())

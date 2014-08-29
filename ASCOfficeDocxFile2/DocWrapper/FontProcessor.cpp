@@ -20,8 +20,8 @@ namespace DocWrapper {
 		initFontManager();
 	}
 	void FontProcessor::setFontTable(OOX::CFontTable* fontTable) {
-		for (int i = 0; i < fontTable->m_arrFonts.GetSize(); ++i)
-			addToFontMap(fontTable->m_arrFonts[i]);
+		for (int i = 0; i < fontTable->m_arrFonts.size(); ++i)
+			addToFontMap(*fontTable->m_arrFonts[i]);
 	}
 	
 	CString FontProcessor::getFont(const CString& name) {

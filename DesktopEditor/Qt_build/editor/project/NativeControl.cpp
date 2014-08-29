@@ -26,7 +26,8 @@ public:
     }
 };
 
-#ifdef _USE_QT_SHARING_GL_
+// TODO: убрать, как только проверить линукс!!!
+#if 0
 void CVideoMemory::Init()
 {
     CTemporaryCS oCS(&m_oCS);
@@ -72,8 +73,9 @@ void CVideoMemory::SetCurrentCtx()
 void CVideoMemory::UnSetCurrentCtx()
 {
 }
-
 #endif
+
+
 
 // Native control
 void CNativeCtrl::slot_threadRepaint()
@@ -525,8 +527,8 @@ void COpenGLSceneCtrl::drawBackground(QPainter *painter, const QRectF &rect)
 
     NSCriticalSection::CRITICAL_SECTION* pCS_GL = pVRAM_Worker->m_oFrame.GetLocker();
 
-    pCS_GL->Enter();
-    pVRAM_Worker->m_oFrame.SetCurrentCtx();
+    //pCS_GL->Enter();
+    //pVRAM_Worker->m_oFrame.SetCurrentCtx();
 
     DWORD dwTime1 = NSTimers::GetTickCount();
 
@@ -633,9 +635,9 @@ void COpenGLSceneCtrl::drawBackground(QPainter *painter, const QRectF &rect)
 
     glFlush();
 
-    pVRAM_Worker->m_oFrame.UnSetCurrentCtx();
+    //pVRAM_Worker->m_oFrame.UnSetCurrentCtx();
 
-    pCS_GL->Leave();
+    //pCS_GL->Leave();
 
     RELEASEOBJECT(pCS);
 
@@ -653,6 +655,18 @@ void COpenGLSceneCtrl::OpenFile(const std::wstring& sFilePath)
 {
     m_pWrapper->InternalOpenFile(sFilePath);
     m_pWrapper->InternalCalculateFile();
+}
+
+void COpenGLSceneCtrl::LockGL()
+{
+    if (m_pWrapper)
+        m_pWrapper->m_oDevicePainter.m_oFrameControls.m_oFrame.GetLocker()->Enter();
+}
+
+void COpenGLSceneCtrl::UnlockGL()
+{
+    if (m_pWrapper)
+        m_pWrapper->m_oDevicePainter.m_oFrameControls.m_oFrame.GetLocker()->Leave();
 }
 
 #endif

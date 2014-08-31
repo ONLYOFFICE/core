@@ -354,7 +354,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row)
 	{
 		int xfd_id = oox_row->m_oS->GetValue();
 
-		style_cell_name  = ods_context->styles_context()->find_odf_style_name(xfd_id,odf::style_family::TableCell);
+		style_cell_name  = ods_context->styles_context()->find_odf_style_name(xfd_id,odf::style_family::TableCell,false,true);
 	}else
 	{
 		//style_cell_name  = ods_context->styles_context()->find_odf_style_name_default(odf::style_family::TableCell);
@@ -693,7 +693,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 	{	
 		int xfd_id = oox_column->m_oStyle->GetValue();
 
-		style_cell_name  = ods_context->styles_context()->find_odf_style_name(xfd_id,odf::style_family::TableCell);
+		style_cell_name  = ods_context->styles_context()->find_odf_style_name(xfd_id,odf::style_family::TableCell,false,true);
 	}
 	else
 	{
@@ -797,11 +797,16 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 				//nullable<SimpleTypes::COnOff<>>					m_oThickBottom;
 				//nullable<SimpleTypes::COnOff<>>					m_oThickTop;
 				//nullable<SimpleTypes::COnOff<>>					m_oZeroHeight;
-//пока не красиво :(
 //Cell default////////////////////////////
+	////пока не красиво :(  и главное Ќ≈ѕ–ј¬»Ћ№Ќќ c чегой то раз первый - то и делтный ???? - Ќ≈‘»√ј - хз чЄ делать :(
+	//odf::odf_style_state_ptr default_cell_style;
+	//ods_context->styles_context()->find_odf_style_state(0,odf::style_family::TableCell, default_cell_style, true);
+	//if (default_cell_style)	ods_context->styles_context()->add_default(default_cell_style);
+
 	odf::odf_style_state_ptr default_cell_style;
-	ods_context->styles_context()->find_odf_style_state(0,odf::style_family::TableCell, default_cell_style, true);
+	ods_context->styles_context()->find_odf_style_state(0, odf::style_family::TableCell, default_cell_style, true,true); 
 	if (default_cell_style)	ods_context->styles_context()->add_default(default_cell_style);
+
 ///Column///////////////////////////////////////////////////////////////////////////////////////
 	ods_context->styles_context()->create_style(L"",odf::style_family::TableColumn, true, false, -1);		
 	{	
@@ -868,19 +873,22 @@ void XlsxConverter::convert_styles()
 /////////////стили €чеек
 	for (unsigned int i=0; xlsx_styles->m_oCellStyleXfs.IsInit() && i< xlsx_styles->m_oCellStyleXfs->m_oCount->GetValue(); i++)
 	{
-		//non automatical, root - noname - Ќ”∆Ќќ —ƒ≈Ћј“№ »’ — –џ“џћ»
-		convert(xlsx_styles->m_oCellStyleXfs->m_arrItems[i] , i, false, true);//их надо сделать "невидимыми" дл€ программ
+		//automatical, root - noname - они тока дл€ named
+		convert(xlsx_styles->m_oCellStyleXfs->m_arrItems[i] , i, true, true);
 	}
+	for (unsigned int i=0; xlsx_styles->m_oCellStyles.IsInit() && i< xlsx_styles->m_oCellStyles->m_oCount->GetValue(); i++)//styles.xml
+	{
+		//non automatical, root - named 
+		convert(xlsx_styles->m_oCellStyles->m_arrItems[i]); 
+	}	
+	
+	//кастомные стили €чеек
 	for (unsigned int i=0; xlsx_styles->m_oCellXfs.IsInit() && i< xlsx_styles->m_oCellXfs->m_oCount->GetValue(); i++)
 	{
 		//automatical, non root
 		convert(xlsx_styles->m_oCellXfs->m_arrItems[i],i, true,false);
 	}	
-	for (unsigned int i=0; xlsx_styles->m_oCellStyles.IsInit() && i< xlsx_styles->m_oCellStyles->m_oCount->GetValue(); i++)//styles.xml
-	{
-		//non automatical, root - named - ¬»ƒ»ћџ≈
-		convert(xlsx_styles->m_oCellStyles->m_arrItems[i],i); 
-	}
+
 ////////////стили условного форматировани€ 
 	for (unsigned int i=0; xlsx_styles->m_oDxfs.IsInit() && i< xlsx_styles->m_oDxfs->m_oCount->GetValue(); i++)
 	{
@@ -1306,26 +1314,49 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf::color)
 		}
 	}
 }
-void XlsxConverter::convert(OOX::Spreadsheet::CCellStyle * cell_style, int oox_id)
+void XlsxConverter::convert(OOX::Spreadsheet::CCellStyle * cell_style)
 {
 	if (cell_style == NULL)return;
 	
 	bool automatic = false;
 	bool root = true;
+	int parent_id = cell_style->m_oXfId.IsInit() ? cell_style->m_oXfId->GetValue() : -1;
+	int oox_id = parent_id; //
 
 	std::wstring style_name = L"";
 	if (cell_style->m_oName.IsInit())style_name = string2std_string(cell_style->m_oName.get());
 
 	ods_context->styles_context()->create_style(style_name,odf::style_family::TableCell, automatic, root, oox_id);
 
-	if (style_name.length() > 0)ods_context->styles_context()->last_state()->set_display_name(style_name);
+	odf::odf_style_state_ptr style_state = ods_context->styles_context()->last_state(odf::style_family::TableCell);
 
-	int parent_id = cell_style->m_oXfId.IsInit() ? cell_style->m_oXfId->GetValue() : -1;
+	if(!style_state)return; 
+	if (style_name.length() > 0)style_state->set_display_name(style_name);
 
-	if (parent_id >=0) 
-		ods_context->styles_context()->last_state()->set_parent_style_name(ods_context->styles_context()->find_odf_style_name(parent_id, odf::style_family::TableCell,true));
+	//if (parent_id >=0) 
+	//	ods_context->styles_context()->last_state()->set_parent_style_name(ods_context->styles_context()->find_odf_style_name(parent_id, odf::style_family::TableCell,true, true));
 	
-	//m_oBuiltinId, m_oCustomBuiltin, m_oHidden, m_oILevel;	???????
+	//фишечка либры и оо - они Ќ≈ „»“јё“ автоматические стили дл€ стилей
+	//придетс€ копировать свойства все .. они автоматические стили удалить (не сохран€ть в файл)
+
+	odf::odf_style_state_ptr parent_style_state;
+	if (ods_context->styles_context()->find_odf_style_state(parent_id, odf::style_family::TableCell,parent_style_state, true, true) && parent_style_state)
+	{
+		parent_style_state->set_dont_write(true);
+
+		odf::style_text_properties			*text_props	= style_state->get_text_properties();
+		odf::style_paragraph_properties		*para_props	= style_state->get_paragraph_properties() ;
+		odf::style_table_cell_properties	*cell_props	= style_state->get_table_cell_properties();
+
+		odf::style_text_properties			*parent_text_props	= parent_style_state->get_text_properties();
+		odf::style_paragraph_properties		*parent_para_props	= parent_style_state->get_paragraph_properties() ;
+		odf::style_table_cell_properties	*parent_cell_props	= parent_style_state->get_table_cell_properties();
+
+		if (text_props) text_props->apply_from(parent_text_props);
+		if (para_props) para_props->apply_from(parent_para_props);
+		if (cell_props) cell_props->apply_from(parent_cell_props);
+	}
+
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CDxf *dxFmt, int oox_id)
 {
@@ -1403,15 +1434,28 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 	if (id_parent >=0)
 	{
 		odf::odf_style_state_ptr parent_style_state;
-		ods_context->styles_context()->find_odf_style_state(id_parent, odf::style_family::TableCell,parent_style_state, true );
-
-		if (parent_style_state)
+	
+		if (ods_context->styles_context()->find_odf_style_state(id_parent, odf::style_family::TableCell,parent_style_state, true, false) 
+			 && parent_style_state) // сначала в поименованных
 		{
 			ods_context->styles_context()->last_state()->set_parent_style_name(parent_style_state->get_name());
 
 			if (numFmt_id < 0)
 			{
 				ods_context->styles_context()->last_state()->set_number_format(parent_style_state->get_number_format());
+			}
+		}
+		else
+		{
+			if (ods_context->styles_context()->find_odf_style_state(id_parent, odf::style_family::TableCell,parent_style_state, true, true) 
+				 && parent_style_state)
+			{
+				ods_context->styles_context()->last_state()->set_parent_style_name(parent_style_state->get_name());
+
+				if (numFmt_id < 0)
+				{
+					ods_context->styles_context()->last_state()->set_number_format(parent_style_state->get_number_format());
+				}
 			}
 		}
 	}

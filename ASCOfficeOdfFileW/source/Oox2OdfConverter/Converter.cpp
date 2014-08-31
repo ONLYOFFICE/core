@@ -232,11 +232,15 @@ void OoxConverter::convert(OOX::Drawing::CShape	*oox_shape)
 
 		if (type == SimpleTypes::shapetypeRect && oox_shape->m_oTxSp.IsInit() && oox_shape->m_oTxSp->m_oTxBody.IsInit()) type = 2000;
 
-		if (type == 2000 && oox_shape->m_oTxSp->m_oTxBody->m_oBodyPr.IsInit() && oox_shape->m_oTxSp->m_oTxBody->m_oBodyPr->m_oFromWordArt.ToBool())
+		if ((type == 2000 || type == SimpleTypes::shapetypeRect )	&& oox_shape->m_oTxSp->m_oTxBody->m_oBodyPr.IsInit() 
+																	&& oox_shape->m_oTxSp->m_oTxBody->m_oBodyPr->m_oPrstTxWrap.IsInit())
 		{
-			int wordart_type = convert(oox_shape->m_oTxSp->m_oTxBody->m_oBodyPr->m_oPrstTxWrap.GetPointer());
+			if (oox_shape->m_oTxSp->m_oTxBody->m_oBodyPr->m_oFromWordArt.ToBool())
+			{
+				int wordart_type = convert(oox_shape->m_oTxSp->m_oTxBody->m_oBodyPr->m_oPrstTxWrap.GetPointer());
 
-			if (wordart_type >0)type = wordart_type;
+				if (wordart_type >0)type = wordart_type;
+			}else type = 2000;
 		}
 
 		if (type < 0)return;
@@ -443,20 +447,25 @@ void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr, OOX::Dra
 	{
 		if (oox_spPr->m_oXfrm->m_oOff.IsInit())
 		{
-			odf_context()->drawing_context()->set_position(oox_spPr->m_oXfrm->m_oOff->m_oX.ToPoints(),
-															oox_spPr->m_oXfrm->m_oOff->m_oY.ToPoints());
+			_CP_OPT(double) x = oox_spPr->m_oXfrm->m_oOff->m_oX.ToPoints();
+			_CP_OPT(double) y = oox_spPr->m_oXfrm->m_oOff->m_oY.ToPoints();
+			
+			odf_context()->drawing_context()->set_position( x, y);
 		}
 		if (oox_spPr->m_oXfrm->m_oExt.IsInit())
 		{
-			odf_context()->drawing_context()->set_size(	oox_spPr->m_oXfrm->m_oExt->m_oCx.ToPoints(),
-														oox_spPr->m_oXfrm->m_oExt->m_oCy.ToPoints());					
+			_CP_OPT(double) width = oox_spPr->m_oXfrm->m_oExt->m_oCx.ToPoints();
+			_CP_OPT(double) height = oox_spPr->m_oXfrm->m_oExt->m_oCy.ToPoints();
+			
+			odf_context()->drawing_context()->set_size(	width, height);					
 		}
 		if (oox_spPr->m_oXfrm->m_oFlipH.GetValue() == SimpleTypes::onoffTrue)
 			odf_context()->drawing_context()->set_flip_H(true);
 		if (oox_spPr->m_oXfrm->m_oFlipV.GetValue() == SimpleTypes::onoffTrue)
 			odf_context()->drawing_context()->set_flip_V(true);
+		
 		if (oox_spPr->m_oXfrm->m_oRot.GetValue() > 0)
-			odf_context()->drawing_context()->set_rotate(180. - oox_spPr->m_oXfrm->m_oRot.GetValue()/60000.);
+			odf_context()->drawing_context()->set_rotate(360. - oox_spPr->m_oXfrm->m_oRot.GetValue()/60000.);
 	}
 	switch(oox_spPr->m_eGeomType)
 	{
@@ -1087,7 +1096,7 @@ void OoxConverter::convert(OOX::Drawing::CTextBodyProperties	*oox_bodyPr)
 int OoxConverter::convert(OOX::Drawing::CPresetTextShape *oox_text_preset)
 {
 	if (oox_text_preset == NULL) return -1;
-	if (oox_text_preset->m_oPrst.GetValue() ==  SimpleTypes::textshapetypeTextNoShape) return -1;
+	if (oox_text_preset->m_oPrst.GetValue() ==  SimpleTypes::textshapetypeTextNoShape) return 2000;
 
 	return 2001 + oox_text_preset->m_oPrst.GetValue();
 }

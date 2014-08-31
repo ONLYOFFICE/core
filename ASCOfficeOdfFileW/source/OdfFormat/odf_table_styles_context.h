@@ -49,6 +49,10 @@ struct table_format_state
 	_style_properties seCell_;
 	_style_properties swCell_;
 	_style_properties wholeTable_; //???
+
+	_CP_OPT(std::wstring)	insizeH;
+	_CP_OPT(std::wstring)	insizeV;
+
 };
 
 class odf_table_styles_context
@@ -87,6 +91,9 @@ public:
 	style_text_properties		*get_text_properties();
 	style_table_properties		*get_table_properties();
 
+	void set_table_insideV(std::wstring border);
+	void set_table_insideH(std::wstring border);
+
 //-----------------------------------------------
 // output
 //-----------------------------------------------
@@ -95,9 +102,14 @@ public:
 		void set_flags(int val);
 
 		void get_table_properties		(					style_table_properties		*props);
+		void get_table_cell_properties	(					style_table_cell_properties *props);
 		void get_table_cell_properties	(int col, int row,	style_table_cell_properties *props);
 		void get_text_properties		(int col, int row,	style_text_properties		*props);
 		void get_paragraph_properties	(int col, int row,	style_paragraph_properties	*props);
+		
+		_CP_OPT(std::wstring)  get_table_insideV();
+		_CP_OPT(std::wstring)  get_table_insideH();
+
 	void end_table();
 
 private:

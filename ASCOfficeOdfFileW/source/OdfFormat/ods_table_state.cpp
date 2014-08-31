@@ -105,8 +105,8 @@ ods_table_state::ods_table_state(odf_conversion_context * Context, office_elemen
 
 //default 	dimension
 
-	dimension_columns = 1024;
-	dimension_row = 1024;
+	dimension_columns = 64;
+	dimension_row = 64;
 
 
 	defaut_row_height_ = 9;

@@ -102,8 +102,8 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-	void set_size( double width_pt, double height_pt);
-	void set_position(double x_pt, double y_pt);
+	void set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt);
+	void set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt);
 	
 	void get_size( double & width_pt, double & height_pt);
 	

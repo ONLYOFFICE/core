@@ -488,9 +488,36 @@ void odf_text_context::add_tab()
 }
 void odf_text_context::save_property_break()
 {
-	if (paragraph_properties_ == NULL) return;
 	if (!need_break_) return;
 
+	if (paragraph_properties_ == NULL)
+	{
+		for (unsigned int i = current_level_.size()-1; i>=0; i--)
+		{
+			office_element_ptr & elm = current_level_[i].elm;
+
+			text_p* p = dynamic_cast<text_p*>(elm.get());
+			
+			text_h* h = dynamic_cast<text_h*>(elm.get());
+
+			if ((p || h) && !current_level_[i].style_elm)
+			{
+				styles_context_->create_style(L"",odf::style_family::Paragraph, true, false, -1);					
+				odf_style_state_ptr style_ = styles_context_->last_state();
+				if (style_)
+				{
+					paragraph_properties_			= style_->get_paragraph_properties();
+					current_level_[i].style_elm		= style_->get_office_element();
+					current_level_[i].style_name	= style_->get_name();
+					
+					if (p) p->paragraph_.paragraph_attrs_.text_style_name_ = current_level_[i].style_name;
+					if (h) h->paragraph_.paragraph_attrs_.text_style_name_ = current_level_[i].style_name;
+				}
+				break;
+			}
+		}
+	}
+	if (paragraph_properties_ == NULL) return;
 	paragraph_properties_->content().fo_break_before_ = need_break_;
 	need_break_ = boost::none;
 

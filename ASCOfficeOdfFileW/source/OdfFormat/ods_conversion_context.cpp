@@ -279,7 +279,7 @@ void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 	if ( xfd_style >=0)
 	{
 		odf_style_state_ptr  style_state;
-		styles_context()->find_odf_style_state(xfd_style, style_family::TableCell,style_state);
+		styles_context()->find_odf_style_state(xfd_style, style_family::TableCell,style_state, false, true);
 		if (style_state)
 		{
 			style_elm = style_state->get_office_element();
@@ -330,7 +330,7 @@ void ods_conversion_context::end_columns()
 	//if (current_table().current_column() < 1 )
 	//	add_column(current_table().current_column()+1,1024,0,true);
 	//else
-	int repeat = current_table().dimension_columns - current_table().current_column();
+	int repeat = max(current_table().dimension_columns,1024) - current_table().current_column();
 	if (repeat < 0) repeat = 1;
 	
 	add_column(current_table().current_column()+1,repeat,0,true);
@@ -341,7 +341,7 @@ void ods_conversion_context::start_rows()
 void ods_conversion_context::end_rows()
 {
 	//add default last row
-	int repeat = max(current_table().dimension_row,1024) - current_table().current_row();
+	int repeat = max(current_table().dimension_row,64) - current_table().current_row();
 	if (repeat < 0) repeat = 1;
 
 	start_row(current_table().current_row()+1,repeat,0,true);

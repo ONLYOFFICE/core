@@ -41,9 +41,6 @@ public:
 
 	void reset_defaults();	
 	void add_default(odf_style_state_ptr & state)	{current_default_styles_.push_back(state);}
-
-	std::wstring 			find_odf_style_name			(int oox_id_style, style_family::type family, bool root = false);
-	office_element_ptr		find_odf_style				(int oox_id_style, style_family::type family, bool root = false);
 	
 	std::wstring			find_odf_style_name_default	(style_family::type family);
 	office_element_ptr		find_odf_style_default		(style_family::type family);
@@ -51,12 +48,10 @@ public:
 	std::wstring 			find_conditional_style_name	(int oox_id_style, style_family::type family);
 	office_element_ptr		find_conditional_style		(int oox_id_style, style_family::type family);
 	
-	bool find_odf_style_state(int oox_id_style, style_family::type family, odf_style_state_ptr & state, bool root = false);
 	bool find_odf_default_style_state(style_family::type family, odf_style_state_ptr & state);
 	
 	bool find_odf_style(std::wstring style_name, style_family::type family, style *& style_);
 
-	
 	odf_style_state_ptr	last_state(style_family::type family = style_family::None);
 
 	odf_number_styles_context & numbers_styles() {return number_styles_context_;}
@@ -67,6 +62,10 @@ public:
 
 //////////////////////////////////////////////////////////////////////
 	void calc_paragraph_properties(std::wstring style_name, style_family::type family, paragraph_format_properties * result);
+
+//////////////////////////////////////////////////////////////////////
+	std::wstring find_odf_style_name (int oox_id_style, style_family::type family, bool root, bool automatic);//xlsx only
+	bool		 find_odf_style_state(int oox_id_style, style_family::type family, odf_style_state_ptr & state, bool root, bool automatic);//xlsx only
 
 private:
 	odf_table_styles_context	table_styles_context_;
@@ -81,7 +80,6 @@ private:
 
 	odf_conversion_context *	odf_context_;
 
-	int style_family_counts_[26];//согласно количеству разных стилей
 };
 
 

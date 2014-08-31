@@ -41,7 +41,7 @@ public:
 		std::wstring target =target1;
 
 		int res = target.rfind(L"/");
-		if (res+1==target.length())
+		if (res >=0 && res+1==target.length())
 		{
 			target.resize(target.length()-1);
 		}

@@ -479,11 +479,15 @@ void odf_drawing_context::end_drawing()
 
 	if (draw && !impl_->current_drawing_state_.in_group)
 		draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_text_spreadsheet_shape_attlist_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
-//if (impl_->current_drawing_state_.in_group == false)
-//{
+
 	impl_->current_graphic_properties->content().style_wrap_ = impl_->anchor_settings_.style_wrap_;
 	impl_->current_graphic_properties->content().style_run_through_ = impl_->anchor_settings_.run_through_;
-//}
+
+	//if (impl_->anchor_settings_.anchor_type_ && impl_->anchor_settings_.anchor_type_->get_type()== anchor_type::AsChar)
+	//{
+	//	draw->common_draw_attlists_.position_.svg_x_ = boost::none;
+	//	draw->common_draw_attlists_.position_.svg_y_ = boost::none;
+	//}
 ///////////////////////////////////////////////////		
 	impl_->drawing_list_.push_back(impl_->current_drawing_state_);
 	
@@ -660,6 +664,7 @@ void odf_drawing_context::end_shape()
 			line->draw_line_attlist_.svg_y2_ = impl_->current_drawing_state_.svg_y_.get() + impl_->current_drawing_state_.svg_height_.get();
 		
 		impl_->current_drawing_state_.svg_height_ = boost::none;
+		impl_->current_drawing_state_.svg_width_ = boost::none;
 	}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -903,9 +908,6 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 {
 	if (!impl_->current_graphic_properties)return;
 
-	if (hexColor.length() >0 && hexColor.substr(0,1) == std::wstring(L"#"))
-		hexColor = hexColor.substr(1,hexColor.length());
-
 	switch(impl_->current_drawing_part_)
 	{
 	case Area:
@@ -933,7 +935,7 @@ void odf_drawing_context::set_z_order(int id)
 	//	id += (impl_->current_group_->level+1) *100;
 	//}
 
-	impl_->current_drawing_state_.z_order_ =id;
+	impl_->current_drawing_state_.z_order_ = id + 1;
 }
 void odf_drawing_context::set_path(std::wstring path_string)
 {
@@ -1077,7 +1079,7 @@ void odf_drawing_context::set_vertical_rel(int from)
 	{
 	case 0:	type = vertical_rel::Baseline;										break;//	relfromvBottomMargin ???
 	case 1:	type = vertical_rel::PageContent;									break;//	relfromvInsideMargin ???
-	case 2:	type = vertical_rel::Line;											break;//	relfromvLine          
+	case 2:	type = vertical_rel::Baseline;											break;//	relfromvLine          
 	case 3:	type = vertical_rel::PageContent;									break;//	relfromvMargin     
 	case 4:	type = vertical_rel::Baseline;										break;//	relfromvOutsideMargin ???
 	case 5:	type = vertical_rel::Page;		set_anchor(anchor_type::Page);		break;//	relfromvPage          
@@ -1214,7 +1216,7 @@ void odf_drawing_context::set_group_size( double cx, double cy, double ch_cx, do
 	else
 	{
 		double first_scale_x = impl_->width/ cx;
-		double first_scale_y = impl_->height/ cx;
+		double first_scale_y = impl_->height/ cy;
 		
 		impl_->current_group_->scale_cx *= first_scale_x;
 		impl_->current_group_->scale_cy *= first_scale_y;
@@ -1274,33 +1276,27 @@ void odf_drawing_context::set_group_rotate(int iVal)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void odf_drawing_context::set_position(double x_pt, double y_pt)
+void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt)
 {
-	if (impl_->group_list_.size() < 1)return;
+	//if (impl_->group_list_.size() < 1)return;
 
 	if (!impl_->current_drawing_state_.svg_x_ || impl_->current_drawing_state_.in_group) 
 	{
 		if (impl_->current_drawing_state_.in_group && impl_->current_group_)
 		{
-			x_pt *= impl_->current_group_->scale_cx;
-			
-			x_pt += impl_->current_group_->shift_x ;
+			if (x_pt) x_pt = *x_pt * impl_->current_group_->scale_cx + impl_->current_group_->shift_x ;			
 				// +  (impl_->current_group_->flipH ? (impl_->current_group_->cx - 2 * x_pt): 0);
 		}
-
-		impl_->current_drawing_state_.svg_x_ = length(length(x_pt,length::pt).get_value_unit(length::cm),length::cm);
+		if (x_pt) impl_->current_drawing_state_.svg_x_ = length(length(*x_pt,length::pt).get_value_unit(length::cm),length::cm);
 	}
 	if (!impl_->current_drawing_state_.svg_y_ || impl_->current_drawing_state_.in_group) 
 	{
 		if (impl_->current_drawing_state_.in_group && impl_->current_group_)
 		{
-			y_pt *= impl_->current_group_->scale_cy;
-			
-			y_pt += impl_->current_group_->shift_y ;
+			if (y_pt) y_pt = *y_pt * impl_->current_group_->scale_cy + impl_->current_group_->shift_y;
 				 //+  (impl_->current_group_->flipV ? (impl_->current_group_->cy - 2 * y_pt): 0);
 		}
-
-		impl_->current_drawing_state_.svg_y_ = length(length(y_pt,length::pt).get_value_unit(length::cm),length::cm);
+		if (y_pt) impl_->current_drawing_state_.svg_y_ = length(length(*y_pt,length::pt).get_value_unit(length::cm),length::cm);
 	}
 }
 void odf_drawing_context::get_size( double & width_pt, double & height_pt)
@@ -1317,17 +1313,17 @@ void odf_drawing_context::get_size( double & width_pt, double & height_pt)
 	}
 
 }
-void odf_drawing_context::set_size( double width_pt, double height_pt)
+void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt)
 {
 	if (impl_->current_drawing_state_.in_group)
 	{
-		width_pt  *= impl_->group_list_.back()->scale_cx;
-		height_pt *= impl_->group_list_.back()->scale_cy;
+		if (width_pt) width_pt  = *width_pt * impl_->group_list_.back()->scale_cx;
+		if (height_pt)height_pt = *height_pt * impl_->group_list_.back()->scale_cy;
 	}
 	//if (!impl_->current_drawing_state_.svg_width_)	
-	if (width_pt >= 0) impl_->current_drawing_state_.svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);
+	if (width_pt) impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm),length::cm);
 	//if (!impl_->current_drawing_state_.svg_height_)
-	if (height_pt >=0) impl_->current_drawing_state_.svg_height_= length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);	
+	if (height_pt) impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm),length::cm);	
 }
 void odf_drawing_context::set_line_width(double pt)
 {

@@ -151,10 +151,9 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 	}
 	else
 	{
-		odf_context()->drawing_context()->set_drawings_rect(x, y, width_pt, height_pt);
-		//odf_context()->drawing_context()->set_size(width_pt.get_value_or(0), height_pt.get_value_or(0));
-		//
-		//odf_context()->drawing_context()->set_position(x.get_value_or(0), y.get_value_or(0));
+		//odf_context()->drawing_context()->set_drawings_rect(x, y, width_pt, height_pt);/// - только для предварительного задания размеров и положения - перед стартом объкта
+		odf_context()->drawing_context()->set_size		(width_pt, height_pt);		
+		odf_context()->drawing_context()->set_position	(x, y);
 
 	}
 
@@ -257,6 +256,16 @@ void OoxConverter::convert(OOX::Vml::CLine	*vml_line)
 	
 	OOX::Vml::CVmlCommonElements *vml_common = static_cast<OOX::Vml::CVmlCommonElements *>(vml_line);
 	convert(vml_common);
+
+	_CP_OPT(double) x = vml_line->m_oFrom.GetX();
+	_CP_OPT(double) y = vml_line->m_oFrom.GetY();
+
+	_CP_OPT(double) width	= (vml_line->m_oTo.GetX() - vml_line->m_oFrom.GetX());
+	_CP_OPT(double) height	= (vml_line->m_oTo.GetY() - vml_line->m_oFrom.GetY());
+
+	odf_context()->drawing_context()->set_position(x, y);
+	odf_context()->drawing_context()->set_size(width, height);
+	
 }
 void OoxConverter::convert(OOX::Vml::COval	*vml_oval)
 {
@@ -449,40 +458,41 @@ void OoxConverter::convert(OOX::VmlWord::CWrap	*vml_wrap)
 {
 	if (vml_wrap == NULL) return;
 
-	if (vml_wrap->m_oType.IsInit() == false) return;
-
-	switch(vml_wrap->m_oType->GetValue())
+	if (vml_wrap->m_oType.IsInit())
 	{
-		case SimpleTypes::wraptypeNone  :
+		switch(vml_wrap->m_oType->GetValue())
 		{
-			odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::None);
-		}break;
-		case SimpleTypes::wraptypeSquare:
-		{
-			if (vml_wrap->m_oSide.IsInit())
+			case SimpleTypes::wraptypeNone  :
 			{
-				if (vml_wrap->m_oSide->GetValue() == SimpleTypes::wrapsideLargest)
-					odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Dynamic);
-				else if (vml_wrap->m_oSide->GetValue() == SimpleTypes::wrapsideLeft)
-					odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Left);
-				else if (vml_wrap->m_oSide->GetValue() == SimpleTypes::wrapsideRight)
-					odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Right);
-				else
-					odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Parallel);
-			}
-		}break;
-		case SimpleTypes::wraptypeThrough:
-		{
-			odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::RunThrough);
-		}break;
-		case SimpleTypes::wraptypeTight:
-		{
-			odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Parallel);
-		}break;
-		case SimpleTypes::wraptypeTopAndBottom:
-		{
-			odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Parallel);
-		}break;
+				odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::None);
+			}break;
+			case SimpleTypes::wraptypeSquare:
+			{
+				if (vml_wrap->m_oSide.IsInit())
+				{
+					if (vml_wrap->m_oSide->GetValue() == SimpleTypes::wrapsideLargest)
+						odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Dynamic);
+					else if (vml_wrap->m_oSide->GetValue() == SimpleTypes::wrapsideLeft)
+						odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Left);
+					else if (vml_wrap->m_oSide->GetValue() == SimpleTypes::wrapsideRight)
+						odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Right);
+					else
+						odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Parallel);
+				}
+			}break;
+			case SimpleTypes::wraptypeThrough:
+			{
+				odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::RunThrough);
+			}break;
+			case SimpleTypes::wraptypeTight:
+			{
+				odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Parallel);
+			}break;
+			case SimpleTypes::wraptypeTopAndBottom:
+			{
+				odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Parallel);
+			}break;
+		}
 	}
 	if (vml_wrap->m_oAnchorX.IsInit())
 	{
@@ -524,24 +534,55 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 	
 	if (vml_common->m_oCoordSize.IsInit())
 	{
-		odf_context()->drawing_context()->set_position(vml_common->m_oCoordSize->GetX(), vml_common->m_oCoordSize->GetY());
+		_CP_OPT(double) x = vml_common->m_oCoordSize->GetX();
+		_CP_OPT(double) y = vml_common->m_oCoordSize->GetY();
+	
+		odf_context()->drawing_context()->set_position( x, y);
 	}	
 
-	if (vml_common->m_oStrokeWeight.IsInit() || (vml_common->m_oStroked.IsInit() && vml_common->m_oStroked->GetValue()))
+	odf_context()->drawing_context()->start_line_properties();
 	{
-		odf_context()->drawing_context()->start_line_properties();
+		if (vml_common->m_oStrokeWeight.IsInit() || (vml_common->m_oStroked.IsInit() && vml_common->m_oStroked->GetValue()))
+		{
 			if (vml_common->m_oStrokeWeight.IsInit()) 
 				odf_context()->drawing_context()->set_line_width(vml_common->m_oStrokeWeight->ToPoints());
 
-			odf_context()->drawing_context()->set_solid_fill(string2std_string(vml_common->m_oStrokeColor.ToString()));
-		odf_context()->drawing_context()->end_line_properties();
+			if (vml_common->m_oStrokeColor.IsInit())
+			{
+				unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
+				ucR = vml_common->m_oStrokeColor->Get_R(); 
+				ucB = vml_common->m_oStrokeColor->Get_B(); 
+				ucG = vml_common->m_oStrokeColor->Get_G(); 
+				SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
+				if (oRgbColor)
+				{		
+					odf_context()->drawing_context()->set_solid_fill(string2std_string(oRgbColor->ToString().Right(6)));
+					delete oRgbColor;
+				}			
+			}
+		}else if (vml_common->m_oStroked->GetValue() == SimpleTypes::booleanFalse)
+			odf_context()->drawing_context()->set_no_fill();
 	}
-	if (vml_common->m_oFillColor.IsInit() &&  vml_common->m_oFilled.GetValue())
+	odf_context()->drawing_context()->end_line_properties();
+	odf_context()->drawing_context()->start_area_properties();
 	{
-		odf_context()->drawing_context()->start_area_properties();
-			odf_context()->drawing_context()->set_solid_fill(string2std_string(vml_common->m_oFillColor->ToString()));
-		odf_context()->drawing_context()->end_area_properties();
+		if (vml_common->m_oFillColor.IsInit() &&  vml_common->m_oFilled.GetValue())
+		{
+			unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
+			ucR = vml_common->m_oFillColor->Get_R(); 
+			ucB = vml_common->m_oFillColor->Get_B(); 
+			ucG = vml_common->m_oFillColor->Get_G(); 
+			SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
+			if (oRgbColor)
+			{		
+				odf_context()->drawing_context()->set_solid_fill(string2std_string(oRgbColor->ToString().Right(6)));
+				delete oRgbColor;
+			}			
+		}
+		else if (vml_common->m_oFilled.GetValue() == SimpleTypes::booleanFalse)
+			odf_context()->drawing_context()->set_no_fill();
 	}
+	odf_context()->drawing_context()->end_area_properties();
 	for (unsigned int i=0 ; i < vml_common->m_arrItems.size();i++)
 	{
 		convert(vml_common->m_arrItems[i]);

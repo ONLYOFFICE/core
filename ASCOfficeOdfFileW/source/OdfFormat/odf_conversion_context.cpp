@@ -195,6 +195,17 @@ void odf_conversion_context::process_styles(_object & object, bool isRoot)
 	object.style_context->process_automatic_styles(object.content_styles.back());
 
 }
+office_element_ptr odf_conversion_context::start_tabs()
+{
+	return temporary_.elm;
+}
 
+void odf_conversion_context::end_tabs()
+{
+	//temporary_.elm			= NULL;
+	//temporary_.style_elm	= NULL;
+	//temporary_.style_name	= L"";
+
+}
 }
 }

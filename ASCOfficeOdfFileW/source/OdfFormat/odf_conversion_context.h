@@ -73,7 +73,13 @@ public:
 	std::wstring			get_next_name_object();
 	office_element_ptr &	get_current_object_element();
 
+	office_element_ptr start_tabs();
+
+	void end_tabs();
+
 private:
+	odf_element_state temporary_;
+
 	std::vector<_object>	objects_;//"0" = root
 
 	odf_chart_context		chart_context_;

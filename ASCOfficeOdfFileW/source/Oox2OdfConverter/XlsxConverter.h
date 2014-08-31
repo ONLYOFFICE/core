@@ -142,7 +142,7 @@ namespace Oox2Odf
 																		odf::style_table_cell_properties * cell_properties);
 		
 		void convert(OOX::Spreadsheet::CXfs					*cell_style, int oox_id, bool automatic=true, bool root = false);
-		void convert(OOX::Spreadsheet::CCellStyle			*cell_style, int oox_id);
+		void convert(OOX::Spreadsheet::CCellStyle			*cell_style);
 		void convert(OOX::Spreadsheet::CNumFmt				*numFmt);
 		void convert(OOX::Spreadsheet::CDxf					*dxFmt, int oox_id);
 

@@ -39,6 +39,8 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 	case SimpleTypes::shapetypeStar32:			return boost::make_shared<oox_shape_star32>();
 
 	case SimpleTypes::shapetypePlaque:			return boost::make_shared<oox_shape_Plaque>();
+	case SimpleTypes::shapetypeDoubleWave:		return boost::make_shared<oox_shape_DoubleWave>();
+		
 
 	//case (2001 + SimpleTypes::textshapetypeTextArchDown): 
 	//case (2001 + SimpleTypes::textshapetypeTextArchDownPour): 

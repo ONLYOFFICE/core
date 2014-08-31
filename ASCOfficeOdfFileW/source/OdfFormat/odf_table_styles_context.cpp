@@ -125,6 +125,16 @@ void odf_table_styles_context::add_wholeTable()
 	table_format_array_.back().wholeTable_.is=true;
 	current = &table_format_array_.back().wholeTable_;
 }
+void odf_table_styles_context::set_table_insideV(std::wstring border)
+{
+	table_format_array_.back().insizeV = border;
+}
+
+void odf_table_styles_context::set_table_insideH(std::wstring border)
+{
+	table_format_array_.back().insizeH = border;
+}
+
 bool odf_table_styles_context::start_table(std::wstring name)
 {
 	for (long i=0; i < table_format_array_.size(); i++)
@@ -165,6 +175,16 @@ void odf_table_styles_context::end_table()
 {
 	if (current_used_.size() > 0) 
 		current_used_.pop_back();
+}
+_CP_OPT(std::wstring)  odf_table_styles_context::get_table_insideV()
+{
+	table_format_state & state = table_format_array_[current_used_.back().table_style_];
+	return state.insizeV;
+}
+_CP_OPT(std::wstring)  odf_table_styles_context::get_table_insideH()
+{
+	table_format_state & state = table_format_array_[current_used_.back().table_style_];
+	return state.insizeH;
 }
 void odf_table_styles_context::get_table_cell_properties (int col, int row, style_table_cell_properties* cell_props)
 {
@@ -228,9 +248,17 @@ void odf_table_styles_context::get_table_properties (style_table_properties* tab
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 
-
 	table_props->apply_from(dynamic_cast<style_table_properties *>(state.table_.table_props.get()));
+}
 
+void odf_table_styles_context::get_table_cell_properties (style_table_cell_properties* table_cell_props)
+{
+	if (current_used_.size() < 1) return;
+	if (table_cell_props == NULL)	  return;
+
+	table_format_state & state = table_format_array_[current_used_.back().table_style_];
+
+	table_cell_props->apply_from(dynamic_cast<style_table_cell_properties *>(state.table_.table_cell_props.get()));
 }
 void odf_table_styles_context::get_text_properties (int col, int row, style_text_properties* text_props)
 {

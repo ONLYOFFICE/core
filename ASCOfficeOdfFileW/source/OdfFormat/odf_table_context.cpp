@@ -35,6 +35,7 @@ namespace odf
 			current_column = 0;
 			count_header_row = 0;
 			styled = false;
+			count_rows = 0;
 
 			table_width = 0;
 		}
@@ -47,12 +48,18 @@ namespace odf
 		__int32 current_row;
 		__int32 current_column;
 
+		__int32 count_rows;
+
 		__int32 count_header_row;
 
 		bool styled;
 
 		double table_width;
 		std::wstring default_cell_properties;
+
+		_CP_OPT(std::wstring) border_inside_v_;
+		_CP_OPT(std::wstring) border_inside_h_;
+
 	};
 
 class odf_table_context::Impl
@@ -222,6 +229,30 @@ void odf_table_context::add_column(office_element_ptr &elm, bool styled)
 	impl_->current_table().columns.push_back(state);
 
 }
+
+void odf_table_context::set_table_inside_v(_CP_OPT(std::wstring) border)
+{
+	if (impl_->empty()) return;
+	impl_->current_table().border_inside_v_ = border;
+}
+
+void odf_table_context::set_table_inside_h(_CP_OPT(std::wstring) border)
+{
+	if (impl_->empty()) return;
+	impl_->current_table().border_inside_h_ = border;
+}
+_CP_OPT(std::wstring) odf_table_context::get_table_inside_v()
+{
+	_CP_OPT(std::wstring) none;
+	if (impl_->empty()) return none; 
+	return impl_->current_table().border_inside_v_;
+}
+_CP_OPT(std::wstring) odf_table_context::get_table_inside_h()
+{
+	_CP_OPT(std::wstring) none;
+	if (impl_->empty()) return none; 
+	return impl_->current_table().border_inside_h_;
+}
 void odf_table_context::set_default_cell_properties(std::wstring style_name)
 {
 	impl_->default_cell_properties = style_name;
@@ -284,12 +315,23 @@ int odf_table_context::current_row ()
 	
 	return impl_->current_table().current_row;
 }
-int odf_table_context::count_column ()
+int odf_table_context::count_columns ()
 {
 	if (impl_->empty()) return 0;
 
 	return impl_->current_table().columns.size();
+}
+int odf_table_context::count_rows ()
+{
+	if (impl_->empty()) return 0;
 
+	return impl_->current_table().count_rows;
+}
+void odf_table_context::count_rows (int count)
+{
+	if (impl_->empty()) return;
+
+	impl_->current_table().count_rows = count;
 }
 void odf_table_context::start_cell(office_element_ptr &elm, bool styled)
 {

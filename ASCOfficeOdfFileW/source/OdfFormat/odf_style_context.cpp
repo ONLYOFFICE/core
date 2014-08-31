@@ -15,6 +15,9 @@
 namespace cpdoccore {
 namespace odf {
 
+static int style_family_counts_[26]={};//согласно количеству разных стилей
+
+
 void calc_paragraph_properties_content(std::vector<style_paragraph_properties*> & parProps, paragraph_format_properties * result)
 {
 	if (result == NULL)return;
@@ -28,7 +31,7 @@ void calc_paragraph_properties_content(std::vector<style_paragraph_properties*> 
 
 odf_style_context::odf_style_context()
 {    
-	memset(style_family_counts_,0,sizeof(style_family_counts_)); 
+	//memset(style_family_counts_,0,sizeof(style_family_counts_)); 
 }
 
 void odf_style_context::set_odf_context(odf_conversion_context * Context)
@@ -137,14 +140,16 @@ void odf_style_context::process_office_styles(office_element_ptr root )
 	
 	lists_styles_context_.process_styles(root );
 }
-std::wstring odf_style_context::find_odf_style_name(int oox_id_style, style_family::type family, bool root)
+std::wstring odf_style_context::find_odf_style_name(int oox_id_style, style_family::type family, bool root, bool automatic)
 {
 	for (long i =0; i < style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i]->odf_style_)
 		{
-			if (style_state_list_[i]->get_family_type() == family && 
-				style_state_list_[i]->root_ == root && style_state_list_[i]->conditional_ == false)
+			if (style_state_list_[i]->get_family_type() == family	 && 
+				style_state_list_[i]->root_				== root		 &&
+				style_state_list_[i]->automatic_		== automatic &&
+				style_state_list_[i]->conditional_		== false)
 			{
 				if (oox_id_style >=0 && style_state_list_[i]->style_oox_id_ == oox_id_style)	
 					return style_state_list_[i]->get_name();
@@ -154,24 +159,26 @@ std::wstring odf_style_context::find_odf_style_name(int oox_id_style, style_fami
 	}
 	return L"";
 }
-office_element_ptr odf_style_context::find_odf_style(int oox_id_style, style_family::type family, bool root)
-{
-	//for (std::list<odf_style_state>::iterator it = style_state_list_.begin(); it != style_state_list_.end(); it++)
-	for (int i=0;i<style_state_list_.size(); i++)
-	{
-		if (style_state_list_[i]->odf_style_)
-		{
-			if (style_state_list_[i]->get_family_type() == family && 
-				style_state_list_[i]->root_ == root && style_state_list_[i]->conditional_ == false)
-			{
-				if (oox_id_style >=0 && style_state_list_[i]->style_oox_id_ == oox_id_style)
-					return style_state_list_[i]->get_office_element();
-			}
-				
-		}
-	}
-	return office_element_ptr();
-}
+//office_element_ptr odf_style_context::find_odf_style(int oox_id_style, style_family::type family, bool root, _CP_OPT(bool) automatic)
+//{
+//	//for (std::list<odf_style_state>::iterator it = style_state_list_.begin(); it != style_state_list_.end(); it++)
+//	for (int i=0;i<style_state_list_.size(); i++)
+//	{
+//		if (style_state_list_[i]->odf_style_)
+//		{
+//			if (style_state_list_[i]->get_family_type() == family && 
+//				style_state_list_[i]->root_				== root &&
+//				(!automatic || (automatic && style_state_list_[i]->automatic_ == *automatic)) &&
+//				style_state_list_[i]->conditional_		== false)
+//			{
+//				if (oox_id_style >=0 && style_state_list_[i]->style_oox_id_ == oox_id_style)
+//					return style_state_list_[i]->get_office_element();
+//			}
+//				
+//		}
+//	}
+//	return office_element_ptr();
+//}
 std::wstring odf_style_context::find_conditional_style_name(int oox_id_style, style_family::type family)
 {
 	for (long i =0; i < style_state_list_.size(); i++)
@@ -206,14 +213,17 @@ office_element_ptr odf_style_context::find_conditional_style(int oox_id_style, s
 	}
 	return office_element_ptr();
 }
-bool odf_style_context::find_odf_style_state(int oox_id_style, style_family::type family, odf_style_state_ptr & state, bool root)
+bool odf_style_context::find_odf_style_state(int oox_id_style, style_family::type family, odf_style_state_ptr & state, bool root, bool automatic)
 {
 	for (int i=0;i<style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i]->odf_style_)
 		{
-			if (style_state_list_[i]->get_family_type() == family && 
-				style_state_list_[i]->root_ == root && style_state_list_[i]->conditional_ == false && style_state_list_[i]->default_ == false)
+			if (style_state_list_[i]->get_family_type() == family	&& 
+				style_state_list_[i]->root_				== root		&&
+				style_state_list_[i]->automatic_ == automatic		&&
+				style_state_list_[i]->conditional_		== false	&&
+				style_state_list_[i]->default_			== false)
 			{
 				if (oox_id_style >=0 && style_state_list_[i]->style_oox_id_ == oox_id_style)
 				{
@@ -316,6 +326,8 @@ std::wstring odf_style_context::get_name_family(style_family::type family)
 	}
 	return L"UnknownStyle";
 }
+
+
 std::wstring odf_style_context::find_free_name(style_family::type  family)
 {
 	std::wstring name = get_name_family(family);

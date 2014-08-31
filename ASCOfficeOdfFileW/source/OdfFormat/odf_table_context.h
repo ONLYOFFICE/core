@@ -30,7 +30,9 @@ public:
 
 	int current_column ();
 	int current_row ();
-	int count_column ();
+	int count_columns ();
+	int count_rows ();
+	void count_rows (int count);
 
 	void start_table(office_element_ptr &elm, bool styled = false);
 		void set_default_column_width(double width);
@@ -40,6 +42,12 @@ public:
 	std::wstring get_default_cell_properties();
 	
 	double		 get_table_width();
+
+	void set_table_inside_v(_CP_OPT(std::wstring) border);
+	void set_table_inside_h(_CP_OPT(std::wstring) border);
+	
+	_CP_OPT(std::wstring) get_table_inside_v();
+	_CP_OPT(std::wstring) get_table_inside_h();
 
 	void start_row(office_element_ptr &elm, bool styled = false);
 	void end_row();

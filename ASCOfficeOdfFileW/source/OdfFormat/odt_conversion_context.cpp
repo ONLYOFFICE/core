@@ -803,7 +803,7 @@ void odt_conversion_context::end_table_cell()
 }
 void odt_conversion_context::end_table_row()
 {
-	for (int i=table_context()->current_column() ; i < table_context()->count_column(); i++)
+	for (int i=table_context()->current_column() ; i < table_context()->count_columns(); i++)
 	{
 		add_default_cell();
 	}

@@ -14,7 +14,7 @@
 
 namespace OOX
 {
-	// TO DO: Нехватающие классы:
+// TO DO: Нехватающие классы:
 	//        <w:altChunk>
 	//        <w:customXml>
 	//        <w:moveFrom>
@@ -511,8 +511,7 @@ namespace OOX
 
 			ComplexTypes_WriteAttribute ( _T("stroked=\""), m_oStroked );
 
-			if ( SimpleTypes::colortypeBlack != m_oStrokeColor.GetValue() )
-				sResult += _T("strokecolor=\"") + m_oStrokeColor.ToString() + _T("\" ");
+			ComplexTypes_WriteAttribute ( _T("strokecolor=\""), m_oStrokeColor);
 
 			if ( m_oStrokeWeight.IsInit() )
 				sResult += _T("strokeweight=\"") + m_oStrokeWeight->ToString() + _T("\" ");

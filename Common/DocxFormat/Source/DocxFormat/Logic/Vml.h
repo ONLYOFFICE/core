@@ -85,7 +85,7 @@ namespace OOX
 			nullable<SimpleTypes::CColorType<>>					            m_oFillColor;
 			nullable<SimpleTypes::Vml::CVml_1_65536>                        m_oOpacity;
 			nullable<SimpleTypes::CTrueFalse<>>                             m_oStroked;
-			SimpleTypes::CColorType<SimpleTypes::colortypeBlack>            m_oStrokeColor;
+			nullable<SimpleTypes::CColorType<>>					            m_oStrokeColor;
 			nullable<SimpleTypes::CEmu>                                     m_oStrokeWeight;
 			nullable<SimpleTypes::CTrueFalse<>>                             m_oInsetPen;
 			// 2.2 AG_OfficeShapeAttributes

@@ -62,17 +62,17 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 
-    length style_position_;
-    _CP_OPT(style_type) style_type_;
-    _CP_OPT(wchar_t) style_char_;
+    _CP_OPT(length)				style_position_;
+    _CP_OPT(style_type)			style_type_;
+    _CP_OPT(wchar_t)			style_char_;
 
-    _CP_OPT(line_type) style_leader_type_;
-    _CP_OPT(line_style) style_leader_style_;
-    _CP_OPT(line_width) style_leader_width_;
+    _CP_OPT(line_type)			style_leader_type_;
+    _CP_OPT(line_style)			style_leader_style_;
+    _CP_OPT(line_width)			style_leader_width_;
     _CP_OPT(style_leader_color) style_leader_color_;
 
-    _CP_OPT( ::std::wstring ) style_leader_text_;
-    _CP_OPT( style_ref ) style_leader_text_style_;            
+    _CP_OPT( ::std::wstring )	style_leader_text_;
+    _CP_OPT( style_ref )		style_leader_text_style_;            
 
 };
 
@@ -92,7 +92,7 @@ public:
     size_t size() const { return style_tab_stops_.size(); }
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
-	virtual void add_child_element(office_element_ptr & child){}
+	virtual void add_child_element(office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm);
 
@@ -161,7 +161,7 @@ class paragraph_format_properties
 {
 public:
 	void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name,odf_conversion_context * Context);
-	void add_child_element(office_element_ptr & child){}
+	void add_child_element(office_element_ptr & child);
 
 	void serialize(std::wostream & strm, const wchar_t * ns, const wchar_t * name );
 
@@ -343,7 +343,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-	virtual void add_child_element(office_element_ptr & child){}
+	virtual void add_child_element(office_element_ptr & child);
 
 	void apply_from(style_paragraph_properties * Other);
 

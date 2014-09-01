@@ -332,7 +332,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 	std::wstring list_style_name;
 
 	if(oox_paragraph->m_oParagraphProperty && oox_paragraph->m_oParagraphProperty->m_oNumPr.IsInit() 
-									&& odt_context->text_context()->get_list_item_state() == false)
+									&& odt_context->text_context()->get_list_item_state() == false )
 	{
 		bListItemNeed = true;
 	}
@@ -644,11 +644,14 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 		if (oox_paragraph_pr->m_oInd->m_oFirstLine.IsInit())
 		{
  			_CP_OPT(odf::length_or_percent) length;
-			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oInd->m_oEnd.GetPointer()), length);
+			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oInd->m_oFirstLine.GetPointer()), length);
 			paragraph_properties->content().fo_text_indent_ = length;
 		}
 		if (oox_paragraph_pr->m_oInd->m_oHanging.IsInit())
-		{
+		{//first line ignored
+ 			_CP_OPT(odf::length) length;
+			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oInd->m_oHanging.GetPointer()), length);
+			if (length) paragraph_properties->content().fo_text_indent_ = odf::length(-length->get_value_unit(odf::length::cm), odf::length::cm);
 		}
 			//nullable<SimpleTypes::CDecimalNumber<>    > m_oEndChars;
 			//nullable<SimpleTypes::CDecimalNumber<>    > m_oFirstLineChars;
@@ -734,9 +737,22 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 
 	if (oox_paragraph_pr->m_oTabs.IsInit())
 	{
-		//paragraph_properties->add_child_element(odf_context()->start_tabs());
+		paragraph_properties->add_child_element(odf_context()->start_tabs());
+		for (unsigned int i = 0; i < oox_paragraph_pr->m_oTabs->m_arrTabs.size(); i++)
+		{
+			if (oox_paragraph_pr->m_oTabs->m_arrTabs[i] == NULL) continue;
+			_CP_OPT(int) type;
+			_CP_OPT(odf::length) length;
 
-		//paragraph_properties->odf_context()->end_tabs();
+			if (oox_paragraph_pr->m_oTabs->m_arrTabs[i]->m_oVal.IsInit())
+				type = oox_paragraph_pr->m_oTabs->m_arrTabs[i]->m_oVal->GetValue();
+			if (type == 2) continue; //clear tab
+
+			convert(oox_paragraph_pr->m_oTabs->m_arrTabs[i]->m_oPos.GetPointer(), length);
+
+			odf_context()->add_tab(type, length);
+		}
+		odf_context()->end_tabs();
 	}
 }
 
@@ -779,17 +795,44 @@ void DocxConverter::apply_from(OOX::Logic::CSectionProperty *props, OOX::Logic::
 	if (other->m_oVAlign.IsInit())			props->m_oVAlign		= other->m_oVAlign;
 	if (other->m_oTitlePg.IsInit())			props->m_oTitlePg		= other->m_oTitlePg;
 
-
-	//todooo память  !!!!
 	if (other->m_arrFooterReference.size() > 0)
 	{
+		for (unsigned int i =0 ; i < props->m_arrFooterReference.size() ; i++)
+		{
+			if (props->m_arrFooterReference[i]) delete props->m_arrFooterReference[i];
+			props->m_arrFooterReference[i] = NULL;
+		}
 		props->m_arrFooterReference.clear();
-		props->m_arrFooterReference = other->m_arrFooterReference;
+
+		for (unsigned int i =0 ; i < other->m_arrFooterReference.size() ; i++)
+		{
+			ComplexTypes::Word::CHdrFtrRef* ref = new ComplexTypes::Word::CHdrFtrRef();
+
+			ref->m_oId= other->m_arrFooterReference[i]->m_oId;
+			ref->m_oType= other->m_arrFooterReference[i]->m_oType;
+
+			props->m_arrFooterReference.push_back(ref);
+		}
+		
 	}
 	if (other->m_arrHeaderReference.size() > 0)
 	{
+		for (unsigned int i =0 ; i < props->m_arrHeaderReference.size() ; i++)
+		{
+			if (props->m_arrHeaderReference[i]) delete props->m_arrHeaderReference[i];
+			props->m_arrHeaderReference[i] = NULL;
+		}
 		props->m_arrHeaderReference.clear();
 		props->m_arrHeaderReference = other->m_arrHeaderReference;
+		for (unsigned int i =0 ; i < other->m_arrHeaderReference.size() ; i++)
+		{
+			ComplexTypes::Word::CHdrFtrRef* ref = new ComplexTypes::Word::CHdrFtrRef();
+			
+			ref->m_oId= other->m_arrHeaderReference[i]->m_oId;
+			ref->m_oType= other->m_arrHeaderReference[i]->m_oType;
+
+			props->m_arrHeaderReference.push_back(ref);
+		}
 	}
 }
 void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool root)
@@ -2578,6 +2621,15 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 	}
 	if (oox_num_lvl->m_oPPr.IsInit())
 	{
+		if (oox_num_lvl->m_oPPr->m_oTabs.IsInit())
+		{
+			if ((oox_num_lvl->m_oPPr->m_oTabs->m_arrTabs.size() >0) && (oox_num_lvl->m_oPPr->m_oTabs->m_arrTabs[0]))
+			{
+				_CP_OPT(odf::length) length;
+				convert(oox_num_lvl->m_oPPr->m_oTabs->m_arrTabs[0]->m_oPos.GetPointer(), length);
+				if (length) aligment_props->text_list_tab_stop_position_ = odf::length(length->get_value_unit(odf::length::cm),odf::length::cm);
+			}
+		}
 		if (oox_num_lvl->m_oPPr->m_oInd.IsInit())
 		{
 			_CP_OPT(odf::length) length_indent;
@@ -2589,29 +2641,21 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 			_CP_OPT(odf::length) length_margin;
 			if (oox_num_lvl->m_oPPr->m_oInd->m_oStart.IsInit())
 			{
-				convert(oox_num_lvl->m_oPPr->m_oInd->m_oStart.GetPointer(), length_margin);
-				if (length_margin && length_indent)	length_margin = *length_margin + *length_indent;
-
+				if (oox_num_lvl->m_oPPr->m_oInd->m_oStart.IsInit()) convert(oox_num_lvl->m_oPPr->m_oInd->m_oStart.GetPointer(), length_margin);
+				
 				if (length_margin) aligment_props->fo_margin_left_ = odf::length(length_margin->get_value_unit(odf::length::cm),odf::length::cm);
 			}
 			if (oox_num_lvl->m_oPPr->m_oInd->m_oEnd.IsInit())
 			{
 				convert(oox_num_lvl->m_oPPr->m_oInd->m_oEnd.GetPointer(), length_margin);
-
-				if (length_margin && length_indent)	length_margin = *length_margin + *length_indent;
 			
 				if (length_margin) aligment_props->fo_margin_right_  = odf::length(length_margin->get_value_unit(odf::length::cm),odf::length::cm);
-			}
-			
+			}	
+		}else
+		{
+			aligment_props->fo_text_indent_ = odf::length(0,odf::length::cm);
+			aligment_props->fo_margin_left_ = odf::length(0,odf::length::cm);
 
-			//level_props->text_space_before_ = odf::length(length_margin->get_value_unit(odf::length::cm),odf::length::cm);
-			//nullable<SimpleTypes::CDecimalNumber<>    > m_oEndChars;
-			//nullable<SimpleTypes::CTwipsMeasure       > m_oFirstLine;
-			//nullable<SimpleTypes::CDecimalNumber<>    > m_oFirstLineChars;
-			//nullable<SimpleTypes::CDecimalNumber<>    > m_oHangingChars;
-			//nullable<SimpleTypes::CDecimalNumber<>    > m_oStartChars;
-
-			//level_props->text_min_label_width_
 		}
 	}
 	if (oox_num_lvl->m_oRPr.IsInit())//для обозначений списка

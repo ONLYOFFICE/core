@@ -542,7 +542,9 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 
 	odf_context()->drawing_context()->start_line_properties();
 	{
-		if (vml_common->m_oStrokeWeight.IsInit() || (vml_common->m_oStroked.IsInit() && vml_common->m_oStroked->GetValue()))
+		if (vml_common->m_oStroked.IsInit() && vml_common->m_oStroked->GetValue() == SimpleTypes::booleanFalse)
+			odf_context()->drawing_context()->set_no_fill();
+		else if (vml_common->m_oStrokeWeight.IsInit() || (vml_common->m_oStroked.IsInit() && vml_common->m_oStroked->GetValue()))
 		{
 			if (vml_common->m_oStrokeWeight.IsInit()) 
 				odf_context()->drawing_context()->set_line_width(vml_common->m_oStrokeWeight->ToPoints());
@@ -560,8 +562,7 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 					delete oRgbColor;
 				}			
 			}
-		}else if (vml_common->m_oStroked->GetValue() == SimpleTypes::booleanFalse)
-			odf_context()->drawing_context()->set_no_fill();
+		}
 	}
 	odf_context()->drawing_context()->end_line_properties();
 	odf_context()->drawing_context()->start_area_properties();

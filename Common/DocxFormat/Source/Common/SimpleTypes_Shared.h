@@ -1091,22 +1091,22 @@ namespace SimpleTypes
 		}
 		void ByColorName(CString& sValue)
 		{
-			if      (_T("aqua")		== sValue)this->m_eValue = colortypeAqua;
-			else if (_T("black")	== sValue)this->m_eValue = colortypeBlack;
-			else if (_T("blue")		== sValue)this->m_eValue = colortypeBlue;
-			else if (_T("fuchsia")	== sValue)this->m_eValue = colortypeFuchsia;
-			else if (_T("gray")		== sValue)this->m_eValue = colortypeGray;
-			else if (_T("green")	== sValue)this->m_eValue = colortypeGreen;
-			else if (_T("lime")		== sValue)this->m_eValue = colortypeLime;
-			else if (_T("maroon")	== sValue)this->m_eValue = colortypeMaroon;
-			else if (_T("navy")		== sValue)this->m_eValue = colortypeNavy;
-			else if (_T("olive")	== sValue)this->m_eValue = colortypeOlive;
-			else if (_T("purple")	== sValue)this->m_eValue = colortypePurple;
-			else if (_T("red")		== sValue)this->m_eValue = colortypeRed;
-			else if (_T("silver")	== sValue)this->m_eValue = colortypeSilver;
-			else if (_T("teal")		== sValue)this->m_eValue = colortypeTeal;
-			else if (_T("white")	== sValue)this->m_eValue = colortypeWhite;
-			else if (_T("yellow")	== sValue)this->m_eValue = colortypeYellow;
+			if      (sValue.Find(_T("aqua"))	>= 0)this->m_eValue = colortypeAqua;
+			else if (sValue.Find(_T("black"))	>= 0)this->m_eValue = colortypeBlack;
+			else if (sValue.Find(_T("blue"))	>= 0)this->m_eValue = colortypeBlue;
+			else if (sValue.Find(_T("fuchsia")) >= 0)this->m_eValue = colortypeFuchsia;
+			else if (sValue.Find(_T("gray"))	>= 0)this->m_eValue = colortypeGray;
+			else if (sValue.Find(_T("green"))	>= 0)this->m_eValue = colortypeGreen;
+			else if (sValue.Find(_T("lime"))	>= 0)this->m_eValue = colortypeLime;
+			else if (sValue.Find(_T("maroon"))	>= 0)this->m_eValue = colortypeMaroon;
+			else if (sValue.Find(_T("navy"))	>= 0)this->m_eValue = colortypeNavy;
+			else if (sValue.Find(_T("olive"))	>= 0)this->m_eValue = colortypeOlive;
+			else if (sValue.Find(_T("purple"))	>= 0)this->m_eValue = colortypePurple;
+			else if (sValue.Find(_T("red"))		>= 0)this->m_eValue = colortypeRed;
+			else if (sValue.Find(_T("silver"))	>= 0)this->m_eValue = colortypeSilver;
+			else if (sValue.Find(_T("teal"))	>= 0)this->m_eValue = colortypeTeal;
+			else if (sValue.Find(_T("white"))	>= 0)this->m_eValue = colortypeWhite;
+			else if (sValue.Find(_T("yellow"))	>= 0)this->m_eValue = colortypeYellow;
 			else this->m_eValue = colortypeNone;
 
 			SetRGB();

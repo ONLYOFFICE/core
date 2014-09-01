@@ -52,7 +52,7 @@ namespace OOX
 				if ( oReader.IsEmptyNode() )
 					return;
 
-				m_oRef = oReader.GetText2();
+				m_oRef = oReader.GetText2().GetString();
 			}
 
 			virtual EElementType getType () const

@@ -966,15 +966,15 @@ namespace OOX
 				CWCharWrapper sName = oReader.GetName();
 
 				if ( _T("x:MoveWithCells") == sName )
-					m_oMoveWithCells = oReader.GetText2();
+					m_oMoveWithCells = oReader.GetText2().GetString();
 				else if ( _T("x:SizeWithCells") == sName )
-					m_oSizeWithCells = oReader.GetText2();
+					m_oSizeWithCells = oReader.GetText2().GetString();
 				else if ( _T("x:Anchor") == sName )
-					m_oAnchor = oReader.GetText2();
+					m_oAnchor = oReader.GetText2().GetString();
 				else if ( _T("x:Row") == sName )
-					m_oRow = oReader.GetText2();
+					m_oRow = oReader.GetText2().GetString();
 				else if ( _T("x:Column") == sName )
-					m_oColumn = oReader.GetText2();
+					m_oColumn = oReader.GetText2().GetString();
 			}
 		}
 		CString CClientData::toXML() const

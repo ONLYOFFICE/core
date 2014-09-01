@@ -4020,6 +4020,8 @@ namespace SimpleTypes
 						{
 							m_arrProperties.push_back( oProperty );
 						}
+						else
+							delete oProperty;
 
 						sTemp.Empty();
 						continue;
@@ -4031,6 +4033,8 @@ namespace SimpleTypes
 						{
 							m_arrProperties.push_back( oProperty );
 						}
+						else
+							delete oProperty;
 
 						sTemp = sTemp.Mid( nPos + 1, sTemp.GetLength() - nPos - 1 );
 					}

@@ -67,13 +67,13 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("xdr:col") == sName )
-						m_oCol = oReader.GetText2();
+						m_oCol = oReader.GetText2().GetString();
 					else if ( _T("xdr:colOff") == sName )
-						m_oColOff = oReader.GetText2();
+						m_oColOff = oReader.GetText2().GetString();
 					else if ( _T("xdr:row") == sName )
-						m_oRow = oReader.GetText2();
+						m_oRow = oReader.GetText2().GetString();
 					else if ( _T("xdr:rowOff") == sName )
-						m_oRowOff = oReader.GetText2();
+						m_oRowOff = oReader.GetText2().GetString();
 				}
 			}
 

@@ -170,9 +170,9 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("totalsRowFormula") == sName )
-						m_oTotalsRowFormula = oReader.GetText2();
+						m_oTotalsRowFormula = oReader.GetText2().GetString();
 					else if ( _T("calculatedColumnFormula") == sName )
-						m_oCalculatedColumnFormula = oReader.GetText2();
+						m_oCalculatedColumnFormula = oReader.GetText2().GetString();
 				}
 			}
 

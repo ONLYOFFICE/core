@@ -10,6 +10,7 @@
 #include "odf_conversion_context.h"
 #include "odf_rels.h"
 
+#include "style_paragraph_properties.h"
 
 namespace cpdoccore { 
 namespace odf {
@@ -197,14 +198,47 @@ void odf_conversion_context::process_styles(_object & object, bool isRoot)
 }
 office_element_ptr odf_conversion_context::start_tabs()
 {
+	create_element(L"style", L"tab-stops", temporary_.elm, this,true);
 	return temporary_.elm;
+}
+
+void odf_conversion_context::add_tab(_CP_OPT(int) type, _CP_OPT(length) _length)
+{
+	if (!temporary_.elm) return;
+
+	office_element_ptr elm;
+	create_element(L"style", L"tab-stop", elm, this,true);
+
+	style_tab_stop* tab = dynamic_cast<style_tab_stop*>(elm.get());
+	if (tab)
+	{
+		if (_length)
+			tab->style_position_ = length(_length->get_value_unit(length::cm),length::cm);
+
+		if (type)
+		{
+			switch(*type)
+			{
+				case 0:	tab->style_type_ = style_type::Left;	break;//tabjcBar     = 0,
+				case 1: tab->style_type_ = style_type::Center;	break;//tabjcCenter  = 1,
+				case 2: tab->style_type_ = style_type::Left;	break;//tabjcClear   = 2,
+				case 3: tab->style_type_ = style_type::Left;	break;//tabjcDecimal = 3,
+				case 4: tab->style_type_ = style_type::Right;	break;//tabjcEnd     = 4,
+				case 5: tab->style_type_ = style_type::Left;	break;//tabjcNum     = 5,
+				case 6: tab->style_type_ = style_type::Left;	break;//tabjcStart   = 6,
+				case 7: tab->style_type_ = style_type::Right;	break;//tabjcRight   = 7,
+				case 8: tab->style_type_ = style_type::Left;	break;//tabjcLeft    = 8
+			}
+		}
+		temporary_.elm->add_child_element(elm);
+	}
 }
 
 void odf_conversion_context::end_tabs()
 {
-	//temporary_.elm			= NULL;
-	//temporary_.style_elm	= NULL;
-	//temporary_.style_name	= L"";
+	temporary_.elm			= office_element_ptr();
+	temporary_.style_elm	= office_element_ptr();
+	temporary_.style_name	= L"";
 
 }
 }

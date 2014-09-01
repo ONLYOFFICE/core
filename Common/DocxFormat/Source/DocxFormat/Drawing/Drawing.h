@@ -183,12 +183,12 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("wp:align") == sName )
 					{
-						m_oAlign = oReader.GetText2();
+						m_oAlign = oReader.GetText2().GetString();
 						m_bAlign = true;
 					}
 					else if ( _T("wp:posOffset") == sName )
 					{
-						m_oPosOffset = oReader.GetText2();
+						m_oPosOffset = oReader.GetText2().GetString();
 						m_bAlign = false;
 					}
 				}
@@ -281,12 +281,12 @@ namespace OOX
 					CWCharWrapper sName = oReader.GetName();
 					if ( _T("wp:align") == sName )
 					{
-						m_oAlign = oReader.GetText2();
+						m_oAlign = oReader.GetText2().GetString();
 						m_bAlign = true;
 					}
 					else if ( _T("wp:posOffset") == sName )
 					{
-						m_oPosOffset = oReader.GetText2();
+						m_oPosOffset = oReader.GetText2().GetString();
 						m_bAlign = false;
 					}
 				}

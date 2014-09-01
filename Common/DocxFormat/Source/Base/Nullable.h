@@ -96,31 +96,35 @@ namespace NSCommon
                 this->m_pPointer = new Type( (const Type&)*(oOther.m_pPointer) );
 		}
 
-		AVSINLINE void operator=(XmlUtils::CXmlNode& oNode)
+		nullable<Type>& operator=(XmlUtils::CXmlNode& oNode)
 		{
             RELEASEOBJECT(this->m_pPointer);
 			if (oNode.IsValid())
                 this->m_pPointer = new Type(oNode);
+			return *this;
 		}
 	#ifdef _USE_XMLLITE_READER_
-		AVSINLINE void operator=(XmlUtils::CXmlLiteReader& oReader)
+		nullable<Type>& operator=(XmlUtils::CXmlLiteReader& oReader)
 		{
 			RELEASEOBJECT(m_pPointer);
 			if (oReader.IsValid())
 				m_pPointer = new Type(oReader);
+			return *this;
 		}
 	#endif
-		AVSINLINE void operator=(const wchar_t* &cwsValue)
+		nullable<Type>& operator=(const wchar_t* cwsValue)
 		{
             RELEASEOBJECT(this->m_pPointer);
 			if (NULL != cwsValue)
                 this->m_pPointer = new Type( cwsValue );
+			return *this;
 		}
-		AVSINLINE void operator=(const BSTR &value)
+		nullable<Type>& operator=(const BSTR &value)
 		{
             RELEASEOBJECT(this->m_pPointer);
 			if (NULL != value)
                 this->m_pPointer = new Type( value );
+			return *this;
 		}
 
 		nullable<Type>& operator=(const nullable<Type> &oOther)

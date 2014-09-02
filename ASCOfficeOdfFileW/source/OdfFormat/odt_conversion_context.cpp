@@ -87,7 +87,7 @@ void odt_conversion_context::end_document()
 	current_root_elements_.clear();
 	
 	odf_conversion_context::end_document();
-}
+} 
 
 odf_drawing_context* odt_conversion_context::drawing_context()	
 {

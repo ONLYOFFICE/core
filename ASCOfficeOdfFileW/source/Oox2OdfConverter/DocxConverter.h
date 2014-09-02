@@ -17,6 +17,7 @@ namespace OOX
 
 	namespace Logic
 	{
+		class CSmartTag;
 		class CIns;
 		class CParagraph;
 		class CParagraphProperty;
@@ -137,6 +138,7 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CHyperlink				*oox_hyperlink);
 		void convert(OOX::Logic::CSym					*oox_sym);
 		void convert(OOX::Logic::CIns					*oox_ins);
+		void convert(OOX::Logic::CSmartTag				*oox_tag);		
 		
 		void convert(OOX::Logic::CAlternateContent		*oox_alt_content);
 		void convert(OOX::Logic::CDrawing				*oox_drawing);

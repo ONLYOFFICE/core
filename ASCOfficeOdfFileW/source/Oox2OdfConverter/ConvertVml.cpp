@@ -64,6 +64,12 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 		case SimpleTypes::Vml::cssptWidth:
 			width_pt = vml_style->m_arrProperties[i]->get_Value().oValue.dValue;
 			break;
+		case SimpleTypes::Vml::cssptTop:
+			y = vml_style->m_arrProperties[i]->get_Value().oValue.dValue;
+			break;
+		case SimpleTypes::Vml::cssptLeft:
+			x = vml_style->m_arrProperties[i]->get_Value().oValue.dValue;
+			break;
 		case SimpleTypes::Vml::cssptMarginBottom:
 			//odf_context()->drawing_context()->set_margin_bottom(vml_style->m_arrProperties[i].get_Value().oValue.dValue);
 			//x = vml_style->m_arrProperties[i].get_Value().oValue.dValue;
@@ -145,13 +151,13 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 	}
 	if (group)
 	{
-		double w = width_pt ? *width_pt:0;
-		double h = height_pt ? *height_pt:0;
-		odf_context()->drawing_context()->set_group_size(w, h, 1. ,1. );
+		_CP_OPT(double) not_set;
+		odf_context()->drawing_context()->set_group_size(width_pt, height_pt, not_set ,not_set);
+
+		odf_context()->drawing_context()->set_group_position(x, y, not_set , not_set );
 	}
 	else
 	{
-		//odf_context()->drawing_context()->set_drawings_rect(x, y, width_pt, height_pt);/// - только для предварительного задания размеров и положения - перед стартом объкта
 		odf_context()->drawing_context()->set_size		(width_pt, height_pt);		
 		odf_context()->drawing_context()->set_position	(x, y);
 
@@ -532,14 +538,6 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 
 	convert(vml_common->m_oStyle.GetPointer());
 	
-	if (vml_common->m_oCoordSize.IsInit())
-	{
-		_CP_OPT(double) x = vml_common->m_oCoordSize->GetX();
-		_CP_OPT(double) y = vml_common->m_oCoordSize->GetY();
-	
-		odf_context()->drawing_context()->set_position( x, y);
-	}	
-
 	odf_context()->drawing_context()->start_line_properties();
 	{
 		if (vml_common->m_oStroked.IsInit() && vml_common->m_oStroked->GetValue() == SimpleTypes::booleanFalse)
@@ -595,12 +593,18 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 	if (vml_group == NULL) return;
 
 	odf_context()->drawing_context()->start_group();
-		if (vml_group->m_oCoordSize.IsInit())
-		{
-			odf_context()->drawing_context()->set_group_position(vml_group->m_oCoordSize->GetX(), vml_group->m_oCoordSize->GetY(),0,0);
-		}	
 		
 		convert(vml_group->m_oStyle.GetPointer(), true);
+			
+		if (vml_group->m_oCoordSize.IsInit())
+		{
+			odf_context()->drawing_context()->set_group_scale(vml_group->m_oCoordSize->GetX(), vml_group->m_oCoordSize->GetY());
+		}	
+
+		if (vml_group->m_oCoordOrigin.IsInit())
+		{
+			odf_context()->drawing_context()->set_group_shift(vml_group->m_oCoordOrigin->GetX(), vml_group->m_oCoordOrigin->GetY());
+		}		
 
 		for (unsigned int i=0; i < vml_group->m_arrItems.size(); i++)
 		{
@@ -614,15 +618,10 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 			}
 			
 			OOX::Vml::CVmlCommonElements * vml_common = dynamic_cast<OOX::Vml::CVmlCommonElements*>(vml_group->m_arrItems[i]);
-
 			if (vml_common == NULL) continue; // не элемент
 
-			convert(vml_common);
 			odf_context()->drawing_context()->start_drawing();						
 			
-			//OOX::Vml::CVmlShapeElements * vml_elm = static_cast<OOX::Vml::CVmlShapeElements*>(oox_unknown);
-			//if (vml_elm) vml_elm-> convert(vml_common);
-
 			switch(vml_group->m_arrItems[i]->getType())
 			{
 				case OOX::et_v_shape:
@@ -694,7 +693,8 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 						OoxConverter::convert(vml);					
 					odf_context()->drawing_context()->end_shape();
 				}break;	
-				default: convert(vml_group->m_arrItems[i]);
+				default: 
+					convert(vml_group->m_arrItems[i]);
 			}
 			odf_context()->drawing_context()->end_drawing();
 		}

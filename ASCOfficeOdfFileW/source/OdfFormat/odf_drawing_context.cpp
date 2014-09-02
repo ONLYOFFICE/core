@@ -633,22 +633,17 @@ void odf_drawing_context::end_shape()
 	{
 		if (!connector->draw_connector_attlist_.draw_type_) connector->draw_connector_attlist_.draw_type_ = L"line";
 
-		if (impl_->current_drawing_state_.svg_x_)connector->draw_line_attlist_.svg_x1_ = impl_->current_drawing_state_.svg_x_;
-		else connector->draw_line_attlist_.svg_x1_ = length(0,length::cm);
-
-		if (impl_->current_drawing_state_.svg_y_)connector->draw_line_attlist_.svg_y1_ = impl_->current_drawing_state_.svg_y_;
-		else connector->draw_line_attlist_.svg_y1_ = length(0,length::cm);
-
-		connector->draw_line_attlist_.svg_x2_ = connector->draw_line_attlist_.svg_x1_;
-		connector->draw_line_attlist_.svg_y2_ = connector->draw_line_attlist_.svg_y1_;
+		connector->draw_line_attlist_.svg_x1_ = impl_->current_drawing_state_.svg_x_;
+		connector->draw_line_attlist_.svg_y1_ = impl_->current_drawing_state_.svg_y_;
 		
-		if (impl_->current_drawing_state_.svg_width_)
-			connector->draw_line_attlist_.svg_x2_ = connector->draw_line_attlist_.svg_x2_.get() + impl_->current_drawing_state_.svg_width_.get();
+		if (impl_->current_drawing_state_.svg_x_ && impl_->current_drawing_state_.svg_width_)
+			connector->draw_line_attlist_.svg_x2_ = impl_->current_drawing_state_.svg_x_.get() + impl_->current_drawing_state_.svg_width_.get();
 		
-		if (impl_->current_drawing_state_.svg_height_)
-			connector->draw_line_attlist_.svg_y2_ = connector->draw_line_attlist_.svg_y2_.get() + impl_->current_drawing_state_.svg_height_.get();
-
+		if (impl_->current_drawing_state_.svg_y_ && impl_->current_drawing_state_.svg_height_)
+			connector->draw_line_attlist_.svg_y2_ = impl_->current_drawing_state_.svg_y_.get() + impl_->current_drawing_state_.svg_height_.get();
+		
 		impl_->current_drawing_state_.svg_height_ = boost::none;
+		impl_->current_drawing_state_.svg_width_ = boost::none;
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////
 	draw_line* line = dynamic_cast<draw_line*>(impl_->current_level_.back().get());
@@ -1169,61 +1164,104 @@ void odf_drawing_context::set_overlap (bool val)
 	}
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void odf_drawing_context::set_group_position(double x, double y, double ch_x, double ch_y)
+void odf_drawing_context::set_group_position(_CP_OPT(double) x, _CP_OPT(double) y, _CP_OPT(double) change_x, _CP_OPT(double) change_y)
 {
 	if (impl_->group_list_.size()<1)return;
 
-	impl_->current_group_->x = ch_x; 
-	impl_->current_group_->y = ch_y; 
+	if (!change_y && !change_x)
+	{
+		if (x)impl_->current_group_->x = *x;
+		if (y)impl_->current_group_->y = *y;
+
+		return;
+	}
+	impl_->current_group_->x = *change_x;
+	impl_->current_group_->y = *change_y; 
+
+	if (!x || !y)return;
 
 	if (impl_->current_group_->prev_group)
 	{
-		//impl_->group_list_.back()->x *= impl_->current_group_->prev_group->scale_cx;
-		//impl_->group_list_.back()->y *= impl_->current_group_->prev_group->scale_cy;
-	
-		double x1= (x-ch_x/*-x*/)* impl_->current_group_->prev_group->scale_cx;
-		double y1= (y-ch_y/*-y*/)* impl_->current_group_->prev_group->scale_cy;
+		double x1= (*x - *change_x)* impl_->current_group_->prev_group->scale_cx;
+		double y1= (*y - *change_y)* impl_->current_group_->prev_group->scale_cy;
 
 		double x2= impl_->current_group_->prev_group->shift_x ;
 		double y2= impl_->current_group_->prev_group->shift_y ;
 
 		impl_->current_group_->shift_x = x2 + x1  
-								+(impl_->current_group_->prev_group->flipH ? (impl_->current_group_->prev_group->cx - 2 *x1) : 0) ;
+								+(impl_->current_group_->prev_group->flipH ? (impl_->current_group_->prev_group->cx - 2 * x1) : 0) ;
 		impl_->current_group_->shift_y = y2 + y1 
-								+(impl_->current_group_->prev_group->flipV ? (impl_->current_group_->prev_group->cy - 2 *y1) : 0) ;
+								+(impl_->current_group_->prev_group->flipV ? (impl_->current_group_->prev_group->cy - 2 * y1) : 0) ;
 	}else
 	{
-		impl_->current_group_->shift_x = impl_->x + (x-ch_x) ;
-		impl_->current_group_->shift_y = impl_->y + (y-ch_y);
+		impl_->current_group_->shift_x = impl_->x + (*x - *change_x) ;
+		impl_->current_group_->shift_y = impl_->y + (*y - *change_y);
 	}
 
 }
-void odf_drawing_context::set_group_size( double cx, double cy, double ch_cx, double ch_cy)
+void odf_drawing_context::set_group_scale(double cx, double cy)
 {
 	if (impl_->group_list_.size()<1)return;
 
-	impl_->current_group_->scale_cx = cx ;
-	if (ch_cx > 0) impl_->current_group_->scale_cx /= ch_cx;
-	
-	impl_->current_group_->scale_cy = cy ;
-	if (ch_cy > 0) impl_->current_group_->scale_cy /= ch_cy;
+	impl_->current_group_->scale_cy = impl_->current_group_->cy / cy;
+	impl_->current_group_->scale_cx = impl_->current_group_->cx / cx;
 
 	if(impl_->current_group_->prev_group)
 	{
 		impl_->current_group_->scale_cx *= impl_->current_group_->prev_group->scale_cx;
 		impl_->current_group_->scale_cy *= impl_->current_group_->prev_group->scale_cy;
 	}
-	else
+}
+void odf_drawing_context::set_group_shift(double x, double y)
+{
+	if (impl_->group_list_.size()<1)return;
+
+	impl_->current_group_->shift_y = (impl_->current_group_->y - y) * impl_->current_group_->scale_cy;
+	impl_->current_group_->shift_x = (impl_->current_group_->x - x) * impl_->current_group_->scale_cx;
+
+	if(impl_->current_group_->prev_group)
 	{
-		double first_scale_x = impl_->width/ cx;
-		double first_scale_y = impl_->height/ cy;
+		impl_->current_group_->shift_x += impl_->current_group_->prev_group->shift_x;
+		impl_->current_group_->shift_y += impl_->current_group_->prev_group->shift_y;
+	}
+}
+void odf_drawing_context::set_group_size( _CP_OPT(double) cx, _CP_OPT(double) cy, _CP_OPT(double) change_cx, _CP_OPT(double) change_cy)
+{
+	if (impl_->group_list_.size()<1)return;
+	
+	if (!change_cy && !change_cx)
+	{
+		if (cx)	impl_->current_group_->cx = *cx;
+		if (cy)	impl_->current_group_->cy = *cy;
+		return;
+	}
+
+	if (change_cx && cx)
+		impl_->current_group_->scale_cx = *cx / *change_cx;
+	
+	if (change_cy && cy)
+		impl_->current_group_->scale_cy = *cy / *change_cy;
+
+	if(impl_->current_group_->prev_group && change_cx && change_cy)
+	{
+		impl_->current_group_->scale_cx *= impl_->current_group_->prev_group->scale_cx;
+		impl_->current_group_->scale_cy *= impl_->current_group_->prev_group->scale_cy;
+	}
+	else if (change_cx && change_cy)
+	{
+		double first_scale_x = 1;
+		double first_scale_y = 1;
+
+		if (impl_->width > 0) first_scale_x = impl_->width  / *change_cx;
+		if (impl_->height > 0)first_scale_y = impl_->height / *change_cy;
 		
 		impl_->current_group_->scale_cx *= first_scale_x;
 		impl_->current_group_->scale_cy *= first_scale_y;
 	}
 
-	impl_->current_group_->cx = ch_cx * impl_->current_group_->scale_cx;
-	impl_->current_group_->cy = ch_cy * impl_->current_group_->scale_cy;
+	impl_->current_group_->cx = *change_cx * impl_->current_group_->scale_cx;
+	
+	impl_->current_group_->cy = *change_cy * impl_->current_group_->scale_cy;
 
 }
 void odf_drawing_context::set_group_flip_V(bool bVal)
@@ -1279,6 +1317,9 @@ void odf_drawing_context::set_group_rotate(int iVal)
 void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt)
 {
 	//if (impl_->group_list_.size() < 1)return;
+
+	double x = x_pt ? *x_pt : 0;
+	double y = y_pt ? *y_pt : 0;
 
 	if (!impl_->current_drawing_state_.svg_x_ || impl_->current_drawing_state_.in_group) 
 	{

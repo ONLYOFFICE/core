@@ -67,8 +67,11 @@ public:
 		void set_group_name		(std::wstring name);
 
 		void set_group_rotate	(int iVal);
-		void set_group_size		(double cx, double cy, double ch_cx, double ch_cy);
-		void set_group_position	(double x, double y, double ch_x, double ch_y);
+		void set_group_size		(_CP_OPT(double) cx, _CP_OPT(double) cy, _CP_OPT(double) change_cx, _CP_OPT(double) change_cy);
+		void set_group_position	(_CP_OPT(double) x, _CP_OPT(double) y, _CP_OPT(double) change_x, _CP_OPT(double) change_y);
+
+		void set_group_scale	(double cx, double cy);
+		void set_group_shift	(double x, double y);
 	void end_group();
 
 	void start_shape(int type);

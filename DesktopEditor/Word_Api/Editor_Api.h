@@ -21,6 +21,38 @@
 
 namespace NSEditorApi
 {
+	class IMenuEventDataBase
+	{
+	protected:
+		ULONG m_lRef;
+
+	public:
+		IMenuEventDataBase()
+		{
+			m_lRef = 1;
+		}
+
+		virtual ~IMenuEventDataBase()
+		{
+		}
+
+		virtual ULONG AddRef() 
+		{ 
+			++m_lRef;
+			return m_lRef;
+		}
+		virtual ULONG Release()
+		{
+			ULONG ret = --m_lRef;
+			if (0 == m_lRef)
+				delete this;
+			return ret;
+		}
+	};
+}
+
+namespace NSEditorApi
+{
 
 #define LINK_PROPERTY_INT(memberName)					\
 	inline int get_##memberName()						\
@@ -181,7 +213,7 @@ namespace NSEditorApi
 	}
 
 template<typename Type>
-class js_wrapper
+class js_wrapper : public NSEditorApi::IMenuEventDataBase
 {
 protected:
 	Type* m_pPointer;
@@ -292,11 +324,10 @@ public:
 
 }
 
-
 // colors
 namespace NSEditorApi
 {
-	class CAscColorSimple
+	class CAscColorSimple : public IMenuEventDataBase
 	{
 	public:
 		unsigned char R;
@@ -312,9 +343,12 @@ namespace NSEditorApi
 			B = 0;
 			A = 0;
 		}
+		virtual ~CAscColorSimple()
+		{
+		}
 	};
 
-	class CColorMod
+	class CColorMod : public IMenuEventDataBase
 	{
 	private:
 		std::string m_sName;
@@ -326,12 +360,15 @@ namespace NSEditorApi
 			m_sName		= "";
 			m_nValue	= 0;
 		}
+		virtual ~CColorMod()
+		{
+		}
 
 		LINK_PROPERTY_STRINGA(Name)
 		LINK_PROPERTY_INT(Value)
 	};
 
-	class CColorMods
+	class CColorMods : public IMenuEventDataBase
 	{
 	private:
 		CColorMod* m_pMods;
@@ -343,7 +380,7 @@ namespace NSEditorApi
 			m_pMods = NULL;
 			m_lCount = 0;
 		}
-		~CColorMods()
+		virtual ~CColorMods()
 		{
 			if (NULL != m_pMods)
 				delete [] m_pMods;
@@ -359,7 +396,7 @@ namespace NSEditorApi
 		}
 	};
 
-	class CAscColor
+	class CAscColor	: public IMenuEventDataBase
 	{
 	private:
 		js_wrapper<int> m_nType; // c_oAscColor_COLOR_TYPE
@@ -380,7 +417,7 @@ namespace NSEditorApi
 		CAscColor()
 		{
 		}
-		~CAscColor()
+		virtual ~CAscColor()
 		{
 		}
 
@@ -399,7 +436,7 @@ namespace NSEditorApi
 // document
 namespace NSEditorApi
 {
-	class CAscEditorPermissions
+	class CAscEditorPermissions	: public IMenuEventDataBase
 	{
 	private:
 		bool m_bCanEdit;
@@ -419,6 +456,9 @@ namespace NSEditorApi
 			m_bIsAutosaveEnabled	= true;
 			m_nAutosaveMinInterval	= 300;
 		}
+		virtual ~CAscEditorPermissions()
+		{
+		}
 
 	public:
 		LINK_PROPERTY_BOOL(CanEdit)
@@ -429,7 +469,7 @@ namespace NSEditorApi
 		LINK_PROPERTY_INT(AutosaveMinInterval)
 	};
 
-	class CAscLicense
+	class CAscLicense : public IMenuEventDataBase
 	{
 	private:
 		js_wrapper<std::wstring> m_sCustomer;
@@ -449,6 +489,9 @@ namespace NSEditorApi
 			m_sCustomerInfo.SetNull();
 			m_sCustomerLogo.SetNull();
 		}
+		virtual ~CAscLicense()
+		{
+		}
 
 		LINK_PROPERTY_STRING_JS(Customer)
 		LINK_PROPERTY_STRING_JS(CustomerAddr)
@@ -458,7 +501,7 @@ namespace NSEditorApi
 		LINK_PROPERTY_STRING_JS(CustomerLogo)
 	};
 
-	class CAscDocumentOpenProgress
+	class CAscDocumentOpenProgress : public IMenuEventDataBase
 	{
 	private:
 		int m_nType;
@@ -480,6 +523,9 @@ namespace NSEditorApi
 			m_nImagesCount = 0;
 			m_nImageCurrent = 0;
 		}
+		virtual ~CAscDocumentOpenProgress()
+		{
+		}
 
 		LINK_PROPERTY_INT(Type)
 		LINK_PROPERTY_INT(FontsCount)
@@ -488,7 +534,7 @@ namespace NSEditorApi
 		LINK_PROPERTY_INT(ImageCurrent)
 	};
 
-	class CAscDocumentInfo
+	class CAscDocumentInfo : public IMenuEventDataBase
 	{
 	private:
 		js_wrapper<std::wstring> m_sId;
@@ -509,6 +555,9 @@ namespace NSEditorApi
 			m_sVKey.SetNull();
 			m_sUserId.SetNull();
 			m_sUserName.SetNull();
+		}
+		virtual ~CAscDocumentInfo()
+		{
 		}
 
 		LINK_PROPERTY_STRING_JS(Id)
@@ -709,7 +758,7 @@ namespace NSEditorApi
 		LINK_PROPERTY_INT_JS(PathType)
 	};
 
-	class CAscFill
+	class CAscFill : public IMenuEventDataBase
 	{
 	private:
 		js_wrapper<int>				m_nType;
@@ -718,6 +767,9 @@ namespace NSEditorApi
 
 	public:
 		CAscFill()
+		{
+		}
+		virtual ~CAscFill()
 		{
 		}
 
@@ -731,7 +783,7 @@ namespace NSEditorApi
 // stroke
 namespace NSEditorApi
 {
-	class CAscStroke
+	class CAscStroke : public IMenuEventDataBase
 	{
 	private:
 		js_wrapper<int>			m_nType;
@@ -754,6 +806,9 @@ namespace NSEditorApi
 		{
 			m_bCanChangeArrows = false;
 		}
+		virtual ~CAscStroke()
+		{
+		}
 
 		LINK_PROPERTY_OBJECT_JS(CAscColor, Color)
 
@@ -774,7 +829,7 @@ namespace NSEditorApi
 // shape/image/chart props
 namespace NSEditorApi
 {
-	class CAscShapeProp
+	class CAscShapeProp : public IMenuEventDataBase
 	{
 		js_wrapper<std::wstring>	m_sType;
 
@@ -791,6 +846,9 @@ namespace NSEditorApi
 		{
 			m_bCanFill = true;
 			m_bFromChart = false;
+		}
+		virtual ~CAscShapeProp()
+		{
 		}
 
 		LINK_PROPERTY_STRING_JS(Type)
@@ -943,7 +1001,7 @@ namespace NSEditorApi
 		LINK_PROPERTY_INT_JS(AxisType)
     };
 
-	class CAscChartProperties
+	class CAscChartProperties : public IMenuEventDataBase
 	{
 	private:
 		js_wrapper<int>				m_nStyle;
@@ -985,6 +1043,9 @@ namespace NSEditorApi
 		CAscChartProperties()
 		{
 		}
+		virtual ~CAscChartProperties()
+		{
+		}
 
 		LINK_PROPERTY_INT_JS(Style)
 		LINK_PROPERTY_INT_JS(Title)
@@ -1020,7 +1081,7 @@ namespace NSEditorApi
 		LINK_PROPERTY_BOOL_JS(Smooth)
 	};
 
-	class CAscImageProp
+	class CAscImageProp : public IMenuEventDataBase
 	{
 	private:
 		js_wrapper<bool> m_bCanBeFlow;
@@ -1058,6 +1119,13 @@ namespace NSEditorApi
 		js_wrapper<int> m_nVerticalTextAlign;
 
 	public:
+		CAscImageProp()
+		{
+		}
+		virtual ~CAscImageProp()
+		{
+		}
+
 		LINK_PROPERTY_BOOL_JS(CanBeFlow)
 		
 		LINK_PROPERTY_DOUBLE_JS(Width)
@@ -1096,7 +1164,7 @@ namespace NSEditorApi
 // section
 namespace NSEditorApi
 {
-	class CAscSection
+	class CAscSection : public IMenuEventDataBase
 	{
 	private:
 		js_wrapper<double> m_dPageWidth;
@@ -1117,6 +1185,9 @@ namespace NSEditorApi
 			m_dMarginRight	= (double)0;
 			m_dMarginTop	= (double)0;
 			m_dMarginBottom = (double)0;
+		}
+		virtual ~CAscSection()
+		{
 		}
 
 		LINK_PROPERTY_DOUBLE_JS(PageWidth)
@@ -1170,7 +1241,7 @@ namespace NSEditorApi
 		LINK_PROPERTY_INT_JS(Index)
 	};
 
-	class CAscTextPr
+	class CAscTextPr : public IMenuEventDataBase
 	{
 	private:
 		js_wrapper<bool> m_bBold;
@@ -1195,6 +1266,9 @@ namespace NSEditorApi
 
 		CAscTextPr()
 		{			
+		}
+		virtual ~CAscTextPr()
+		{
 		}
 
 		LINK_PROPERTY_BOOL_JS(Bold)
@@ -1419,7 +1493,7 @@ namespace NSEditorApi
 		LINK_PROPERTY_OBJECT_JS(CAscTextFontFamily, FontFamily)
 	};
 
-	class CAscParagraphPr
+	class CAscParagraphPr : public IMenuEventDataBase
 	{
 	private:
 		js_wrapper<bool>		m_bContextualSpacing;
@@ -1462,6 +1536,9 @@ namespace NSEditorApi
 	public:
 
 		CAscParagraphPr()
+		{
+		}
+		virtual ~CAscParagraphPr()
 		{
 		}
 
@@ -1698,7 +1775,7 @@ namespace NSEditorApi
 		}
 	};
 
-	class CAscTableProperties
+	class CAscTableProperties : public IMenuEventDataBase
 	{
 	private:
 		js_wrapper<bool>			m_bCanBeFlow;
@@ -1746,6 +1823,9 @@ namespace NSEditorApi
 		{
 			m_bCellSelect = false;
 			m_bLocked = false;
+		}
+		virtual ~CAscTableProperties()
+		{
 		}
 
 		LINK_PROPERTY_BOOL_JS(CanBeFlow)
@@ -1801,7 +1881,7 @@ namespace NSEditorApi
 // header/footer
 namespace NSEditorApi
 {
-	class CAscHeaderFooterPr
+	class CAscHeaderFooterPr : public IMenuEventDataBase
 	{
 	private:
 		js_wrapper<int>		m_nType;
@@ -1814,6 +1894,9 @@ namespace NSEditorApi
 	public:
 
 		CAscHeaderFooterPr()
+		{
+		}
+		virtual ~CAscHeaderFooterPr()
 		{
 		}
 
@@ -1829,7 +1912,7 @@ namespace NSEditorApi
 // hyperlink
 namespace NSEditorApi
 {
-	class CAscHyperlinkPr
+	class CAscHyperlinkPr : public IMenuEventDataBase
 	{
 	private:
 		js_wrapper<std::wstring> m_sText;
@@ -1839,6 +1922,9 @@ namespace NSEditorApi
 	public:
 
 		CAscHyperlinkPr()
+		{
+		}
+		virtual ~CAscHyperlinkPr()
 		{
 		}
 
@@ -1851,7 +1937,7 @@ namespace NSEditorApi
 // common
 namespace NSEditorApi
 {
-	class CAscColorScheme
+	class CAscColorScheme : public IMenuEventDataBase
 	{
 	private:
 		std::wstring m_sName;
@@ -1868,7 +1954,7 @@ namespace NSEditorApi
 			m_pColors		= NULL;
 			m_lColorsCount	= 0;
 		}
-		~CAscColorScheme()
+		virtual ~CAscColorScheme()
 		{
 			if (m_bIsDelete)
 			{
@@ -1910,7 +1996,7 @@ namespace NSEditorApi
 		}
 	};
 
-	class CAscTexture
+	class CAscTexture : public IMenuEventDataBase
 	{
 	private:
 		int m_nId;
@@ -1921,6 +2007,9 @@ namespace NSEditorApi
 		{
 			m_nId = 0;
 			m_sImage = L"";
+		}
+		virtual ~CAscTexture()
+		{
 		}
 
 		LINK_PROPERTY_INT(Id)
@@ -1965,7 +2054,7 @@ namespace NSEditorApi
 		}
 	};
 
-	class CAscInsertImage
+	class CAscInsertImage : public IMenuEventDataBase
 	{
 	private:
 		js_wrapper<CAscImageRaw>	m_oRaw;
@@ -1976,13 +2065,16 @@ namespace NSEditorApi
 		CAscInsertImage()
 		{
 		}
+		virtual ~CAscInsertImage()
+		{
+		}
 
 		LINK_PROPERTY_OBJECT_JS(CAscImageRaw, Raw)
 		LINK_PROPERTY_STRING_JS(Path)
 		LINK_PROPERTY_STRINGA_JS(Base64)
 	};
 
-	class CAscInsertTable
+	class CAscInsertTable : public IMenuEventDataBase
 	{
 	private:
 		js_wrapper<std::wstring>	m_sStyle;
@@ -1991,6 +2083,9 @@ namespace NSEditorApi
 
 	public:
 		CAscInsertTable()
+		{
+		}
+		virtual ~CAscInsertTable()
 		{
 		}
 
@@ -2002,13 +2097,16 @@ namespace NSEditorApi
 	typedef CAscShapeProp CAscInsertShape;
 	typedef CAscHyperlinkPr CAscInsertHyperlink;
 
-	class CAscMethodParamInt
+	class CAscMethodParamInt : public IMenuEventDataBase
 	{
 	private:
 		js_wrapper<int>	m_nValue;
 
 	public:
 		CAscMethodParamInt()
+		{
+		}
+		virtual ~CAscMethodParamInt()
 		{
 		}
 
@@ -2033,7 +2131,7 @@ namespace NSEditorApi
 		}
 	};
 
-	class CAscStyleImages
+	class CAscStyleImages : public IMenuEventDataBase
 	{
 	public:
 		std::vector<CAscStyleImage> m_arStyles;
@@ -2041,36 +2139,19 @@ namespace NSEditorApi
 		CAscStyleImages()
 		{
 		}
-	};
-}
-
-namespace NSEditorApi
-{
-	class CAscStylesTemplate
-	{
-	public:
-		std::vector<std::wstring>	m_names;
-		int							m_nWidth;
-		int							m_nHeight;
-		CAscImageRaw				m_oImage;
-
-	public:
-		CAscStylesTemplate()
+		virtual ~CAscStyleImages()
 		{
 		}
 	};
-
-	typedef CAscStylesTemplate CAscParagraphStyles;
-	typedef CAscStylesTemplate CAscTableStyles;
 }
 
 namespace NSEditorApi
 {
-	class CAscMenuEvent
+	class CAscMenuEvent : public IMenuEventDataBase
 	{
 	public:
-		int		m_nType;
-		void*	m_pData;
+		int					m_nType;
+		IMenuEventDataBase*	m_pData;
 
 	public:
 		CAscMenuEvent()
@@ -2078,14 +2159,14 @@ namespace NSEditorApi
 			m_nType = -1;
 			m_pData = NULL;
 		}
-		~CAscMenuEvent()
+		virtual ~CAscMenuEvent()
 		{
 			if (NULL != m_pData)
 				delete m_pData;
 		}
 	};
 
-	class CAscMenuEventStackData
+	class CAscMenuEventStackData : public IMenuEventDataBase
 	{
 	public:
 		std::vector<CAscMenuEvent*> m_data;
@@ -2094,7 +2175,7 @@ namespace NSEditorApi
 		CAscMenuEventStackData()
 		{
 		}
-		~CAscMenuEventStackData()
+		virtual ~CAscMenuEventStackData()
 		{
 			for (std::vector<CAscMenuEvent*>::iterator i = m_data.begin(); i != m_data.end(); ++i)
 			{

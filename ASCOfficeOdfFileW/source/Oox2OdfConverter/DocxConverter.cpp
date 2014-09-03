@@ -2298,8 +2298,8 @@ void DocxConverter::convert(OOX::Logic::CShape	 *oox_shape)
 			if (oox_shape->m_oTxBodyProperties->m_oFromWordArt.ToBool())
 			{
 				int wordart_type = OoxConverter::convert(oox_shape->m_oTxBodyProperties->m_oPrstTxWrap.GetPointer());
-				if (wordart_type >0)type = wordart_type;
-			}else type = 2000;
+				if (wordart_type >=0)type = wordart_type;
+			}
 		}
 		if (type < 0)return;
 	/////////////////////////////////////////////////////////////////////////////////
@@ -2522,17 +2522,26 @@ void DocxConverter::convert_styles()
 void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
 {
 	if (oox_hyperlink == NULL)return;
-	if (oox_hyperlink->m_oId.IsInit() == false) return;
-
-	std::wstring ref = find_link_by_id(oox_hyperlink->m_oId->GetValue(),2);
-
-	odt_context->start_hyperlink(ref);
-	
-	for (unsigned int i=0; i< oox_hyperlink->m_arrItems.size(); i++)
+	if (oox_hyperlink->m_oId.IsInit()) //гиперлинк
 	{
-		convert(oox_hyperlink->m_arrItems[i]);
+		std::wstring ref = find_link_by_id(oox_hyperlink->m_oId->GetValue(),2);
+
+		odt_context->start_hyperlink(ref);
+		
+		for (unsigned int i=0; i< oox_hyperlink->m_arrItems.size(); i++)
+		{
+			convert(oox_hyperlink->m_arrItems[i]);
+		}
+		odt_context->end_hyperlink();
 	}
-	odt_context->end_hyperlink();
+	else
+	{//ссылка внутри дока
+		//anchor todooo
+		for (unsigned int i=0; i< oox_hyperlink->m_arrItems.size(); i++)
+		{
+			convert(oox_hyperlink->m_arrItems[i]);
+		}
+	}
 	//nullable<CString                                      > m_sAnchor;
 	//nullable<CString                                      > m_sDocLocation;
 	//nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oHistory;
@@ -3231,8 +3240,16 @@ void DocxConverter::convert(OOX::Logic::CTblGrid	*oox_table_grid)
 		{
 			width = oox_table_grid->m_arrGridCol[i]->m_oW->ToPoints();
 		}
-		
+
 		odt_context->add_table_column(width);
+
+		if (width > 0 && width < 5) 
+		{
+			odt_context->table_context()->set_column_optimal(true);
+			width *=10;
+			//2222010_53102Reader final.docx 
+		}
+			
 	}	
 	odt_context->end_table_columns();
 }
@@ -3574,6 +3591,12 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 			table_cell_properties->style_table_cell_properties_attlist_.fo_wrap_option_ = odf::wrap_option(odf::wrap_option::NoWrap);
 		else
 			table_cell_properties->style_table_cell_properties_attlist_.fo_wrap_option_ = odf::wrap_option(odf::wrap_option::Wrap);
+	}
+	if (oox_table_cell_pr->m_oTcW.IsInit() && oox_table_cell_pr->m_oTcW->m_oW.IsInit() &&
+		oox_table_cell_pr->m_oTcW->m_oType.IsInit() && oox_table_cell_pr->m_oTcW->m_oType->GetValue() == SimpleTypes::tblwidthDxa)
+	{
+		//кастомна€ ширина €чейки :( //2222010_53102Reader final.docx - все равно кривоватенько
+		odt_context->table_context()->change_current_column_width(oox_table_cell_pr->m_oTcW->m_oW->GetValue()/ 20.);//dxa type
 	}
 	
 	

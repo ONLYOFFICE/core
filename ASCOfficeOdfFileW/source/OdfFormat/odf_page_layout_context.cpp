@@ -26,6 +26,8 @@ odf_page_layout_context::odf_page_layout_context(odf_conversion_context * Contex
 
 
 	even_and_left_headers_ = true;
+
+	current_page_width_ = 0;
 }
 
 odf_page_layout_context::~odf_page_layout_context()
@@ -495,8 +497,10 @@ void odf_page_layout_context::set_page_size(_CP_OPT(length) width, _CP_OPT(lengt
 	if (!props)return;
 
 	if (width)
+	{
 		props->style_page_layout_properties_attlist_.fo_page_width_ = 
 												length(width->get_value_unit(length::cm),length::cm);
+	}
 	if (height)
 		props->style_page_layout_properties_attlist_.fo_page_height_ = 
 												length(height->get_value_unit(length::cm),length::cm);

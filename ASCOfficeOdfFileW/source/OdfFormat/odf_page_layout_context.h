@@ -71,6 +71,7 @@ public:
 
 	void set_background(_CP_OPT(color) & color, int type);
 
+	double current_page_width_;
 private:
 
 	bool even_and_left_headers_;

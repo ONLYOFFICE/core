@@ -757,6 +757,16 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_BubbleSer* ser)
 		convert(ser->m_oSpPr.GetPointer());
 		convert(ser->m_dLbls);
 		convert(ser->m_xVal, 2);
+		convert(ser->m_tx);
+		if (ser->m_dPt.GetCount() > 0)
+		{
+			convert(NULL, ser->m_dPt);
+		}
+	odf_context()->chart_context()->end_series();
+
+	odf_context()->chart_context()->start_series(L"bubble");
+		convert(ser->m_oSpPr.GetPointer());
+		convert(ser->m_dLbls);
 		convert(ser->m_yVal);
 		convert(ser->m_tx);
 		if (ser->m_dPt.GetCount() > 0)
@@ -764,6 +774,17 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_BubbleSer* ser)
 			convert(NULL, ser->m_dPt);
 		}
 	odf_context()->chart_context()->end_series();
+
+	odf_context()->chart_context()->start_series(L"bubble");
+		convert(ser->m_oSpPr.GetPointer());
+		convert(ser->m_dLbls);
+		convert(ser->m_bubbleSize);
+		convert(ser->m_tx);
+		if (ser->m_dPt.GetCount() > 0)
+		{
+			convert(NULL, ser->m_dPt);
+		}
+	odf_context()->chart_context()->end_series();	
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_SurfaceSer* ser)
 {
@@ -823,7 +844,17 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ScatterSer* ser)
 	odf_context()->chart_context()->start_series(L"scatter");
 		convert(ser->m_oSpPr.GetPointer());
 		convert(ser->m_dLbls);
-		convert(ser->m_xVal,2);//domain
+		convert(ser->m_xVal, 2);//domain
+		convert(ser->m_tx);
+		if (ser->m_marker || ser->m_dPt.GetCount() > 0)
+		{
+			convert(ser->m_marker, ser->m_dPt);
+		}
+	odf_context()->chart_context()->end_series();
+
+	odf_context()->chart_context()->start_series(L"scatter");
+		convert(ser->m_oSpPr.GetPointer());
+		convert(ser->m_dLbls);
 		convert(ser->m_yVal);
 		convert(ser->m_tx);
 		if (ser->m_marker || ser->m_dPt.GetCount() > 0)

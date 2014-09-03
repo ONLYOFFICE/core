@@ -147,6 +147,22 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 				else
 					odf_context()->drawing_context()->set_rotate(360 - vml_style->m_arrProperties[i]->get_Value().dValue);
 			}break;
+		case SimpleTypes::Vml::cssptFlip:
+			{
+				switch(vml_style->m_arrProperties[i]->get_Value().eFlip)
+				{
+				case SimpleTypes::Vml::cssflipX:
+					odf_context()->drawing_context()->set_flip_H(true); break;
+				case SimpleTypes::Vml::cssflipY:
+					odf_context()->drawing_context()->set_flip_V(true); break;
+				case SimpleTypes::Vml::cssflipXY:
+					odf_context()->drawing_context()->set_flip_H(true); 
+					odf_context()->drawing_context()->set_flip_V(true); break;
+				case SimpleTypes::Vml::cssflipYX:
+					odf_context()->drawing_context()->set_flip_V(true); 
+					odf_context()->drawing_context()->set_flip_H(true); break;
+				}
+			}break;
 		}
 	}
 	if (group)
@@ -271,6 +287,8 @@ void OoxConverter::convert(OOX::Vml::CLine	*vml_line)
 
 	odf_context()->drawing_context()->set_position(x, y);
 	odf_context()->drawing_context()->set_size(width, height);
+
+	odf_context()->drawing_context()->set_anchor(2);
 	
 }
 void OoxConverter::convert(OOX::Vml::COval	*vml_oval)

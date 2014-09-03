@@ -219,7 +219,7 @@ namespace XmlUtils
 		sResult.Replace(_T("\""),	_T("&quot;"));
 		return sResult;
 	}
-#ifndef _USE_LIBXML2_READER_
+//#ifndef _USE_LIBXML2_READER_
 	class CStringWriter
 	{
 	private:
@@ -285,7 +285,7 @@ namespace XmlUtils
 
 	public:
 
-        AVSINLINE void WriteString(wchar_t* pString, size_t& nLen)
+        AVSINLINE void WriteString(wchar_t* pString, size_t nLen)
 		{
 			AddSize(nLen);
 			//memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
@@ -456,5 +456,5 @@ namespace XmlUtils
 			return m_arTableUnicodes[c];
 		}
 	};	
-#endif // ifndef _USE_LIBXML2_READER_
+//#endif // ifndef _USE_LIBXML2_READER_
 }

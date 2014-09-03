@@ -1349,6 +1349,62 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="Base"
+			>
+			<File
+				RelativePath="..\Source\Base\ASCString.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\Base\Base.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\Base\Nullable.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\Base\SmartPtr.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\Base\unicode_util.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\Base\unicode_util.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="XML"
+			>
+			<File
+				RelativePath="..\Source\XML\stringcommon.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\XML\stringcommon.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\XML\StringWriter.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\XML\Utils.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\XML\XmlSimple.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\XML\xmlutils.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath="..\Source\SystemUtility\FileSystem\Directory.cpp"
 			>

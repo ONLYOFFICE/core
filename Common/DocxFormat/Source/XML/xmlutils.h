@@ -1,8 +1,296 @@
 
 #pragma once
-
 #include "Utils.h"
+#include "stringcommon.h"
 
+#include "../Base/Base.h"
+class CWCharWrapper
+{
+public:
+
+	CWCharWrapper():m_cwsString(NULL) 
+	{
+	}
+
+	CWCharWrapper(const wchar_t* cwsString):m_cwsString(cwsString)
+	{
+	}
+
+	CWCharWrapper(const std::wstring& cwsString):m_cwsString(cwsString.c_str())
+	{
+	}
+
+    AVSINLINE const CWCharWrapper operator=(const wchar_t* cwsOther)
+	{
+		m_cwsString = cwsOther;
+		return *this;
+	}
+
+    AVSINLINE const bool operator==(const wchar_t* cwsOther)
+	{
+		if ( 0 == WStrCmp( m_cwsString, cwsOther ) )
+			return true;
+
+		return false;
+	}
+
+    AVSINLINE const bool operator!=(const wchar_t* cwsOther)
+	{
+		if ( 0 != WStrCmp( m_cwsString, cwsOther ) )
+			return true;
+
+		return false;
+	}
+
+    AVSINLINE const wchar_t operator[](const int nIndex) const
+	{
+		int nLen = GetLength();
+
+		if ( nIndex >= nLen )
+			return '\0';
+
+		return m_cwsString[nIndex];
+	}
+    AVSINLINE const bool IsNull() const
+	{
+		return (m_cwsString == NULL);
+	}
+
+
+    AVSINLINE const int  GetLength() const
+	{
+		if ( NULL == m_cwsString )
+			return 0;
+
+		return (const int)wcslen( m_cwsString );
+	}
+public:
+    static AVSINLINE int WStrCmp(const wchar_t* cwsStr1, const wchar_t* cwsStr2)
+	{
+		if ( NULL == cwsStr1 && NULL == cwsStr2 )
+			return 0;
+		else if ( NULL == cwsStr1 || NULL == cwsStr2 )
+			return -1;
+
+		return wcscmp( cwsStr1, cwsStr2 );
+	}
+
+public:
+
+	const wchar_t* m_cwsString;
+};
+
+AVSINLINE const bool operator==(const wchar_t* cwsStr1, const CWCharWrapper& cwsStr2)
+{
+	if ( 0 == CWCharWrapper::WStrCmp( cwsStr2.m_cwsString, cwsStr1 ) )
+		return true;
+
+	return false;
+}
+
+AVSINLINE const bool operator!=(const wchar_t* cwsStr1, const CWCharWrapper& cwsStr2)
+{
+	if ( 0 != CWCharWrapper::WStrCmp( cwsStr2.m_cwsString, cwsStr1 ) )
+		return true;
+
+	return false;
+}
+
+namespace XmlUtils
+{
+	AVSINLINE CString GetNamespace(CString& strNodeName)
+	{
+		int nFind = strNodeName.Find(TCHAR(':'));
+		if (-1 == nFind)
+			return _T("");
+		return strNodeName.Mid(0, nFind);
+	}
+	AVSINLINE CString GetNameNoNS(const CString& strNodeName)
+	{
+		int nFind = strNodeName.Find(TCHAR(':'));
+		if (-1 == nFind)
+			return strNodeName;
+		return strNodeName.Mid(nFind + 1);
+	}
+	// classes
+	class CXmlWriter
+	{
+		CString m_str;
+	
+	public:
+
+		CXmlWriter()
+		{
+			m_str.Empty();
+		}
+		
+		CString GetXmlString()
+		{
+			return m_str;
+		}
+		void SetXmlString(const CString& strValue)
+		{
+			m_str = strValue;
+		}
+		
+		BOOL SaveToFile(const CString& strFilePath, BOOL bEncodingToUTF8 = FALSE)
+		{
+			FILE* pFile = _tfopen(strFilePath, _T("wt"));
+
+			if (!pFile)
+				return FALSE;
+
+			CStringA str; str = m_str;
+			if (bEncodingToUTF8)
+#ifdef _UNICODE
+				str = EncodingUnicodeToUTF8();
+#else
+				str = EncodingASCIIToUTF8();
+#endif
+
+			fprintf(pFile, str);
+
+			fclose(pFile);
+
+			return TRUE;
+		}
+#ifdef _UNICODE
+        CStringA EncodingUnicodeToUTF8()
+        {
+            int nLength = m_str.GetLength();
+
+			// Encoding Unicode to UTF-8
+			CStringA saStr; 
+			WideCharToMultiByte(CP_UTF8, 0, m_str.GetBuffer(), nLength + 1, saStr.GetBuffer(nLength*3 + 1), nLength*3, NULL, NULL);
+			saStr.ReleaseBuffer();    
+			return saStr;
+        }
+#else
+		CString EncodingASCIIToUTF8()
+        {
+            int nLength = m_str.GetLength();
+
+			wchar_t* pWStr = new wchar_t[nLength + 1];
+			if (!pWStr)
+				return _T("");
+
+			// set end string
+			pWStr[nLength] = 0;
+
+			// Encoding ASCII to Unicode
+            MultiByteToWideChar(CP_ACP, 0, m_str, nLength, pWStr, nLength);
+
+            int nLengthW = (int) wcslen(pWStr);
+
+			// Encoding Unicode to UTF-8
+			CString cStr; 
+            WideCharToMultiByte(CP_UTF8, 0, pWStr, nLengthW + 1, cStr.GetBuffer(nLengthW*3 + 1), nLengthW*3, NULL, NULL);
+			cStr.ReleaseBuffer();
+    
+		    delete[] pWStr;
+
+            return cStr;
+        }
+#endif
+
+
+		void WriteString(const CString& strValue)
+		{
+			m_str += strValue;
+		}
+		void WriteInteger(int Value, int Base = 10)
+		{
+			char str[33];
+			
+			_itoa(Value, str, Base);
+
+			m_str += str;
+		}
+		void WriteDouble(double Value)
+		{
+			CString str;
+			
+			str.Format(_T("%lf"), Value);
+
+			m_str += str;
+		}
+		void WriteBoolean(BOOL Value)
+		{
+			if (Value)
+				m_str += _T("true");
+			else
+				m_str += _T("false");
+		}
+		void WriteNodeBegin(const CString& strNodeName, BOOL bAttributed = FALSE)
+		{
+			m_str += _T("<") + strNodeName;
+
+			if (!bAttributed)
+				m_str += _T(">");
+		}
+		void WriteNodeEnd(const CString& strNodeName, BOOL bEmptyNode = FALSE, BOOL bEndNode = TRUE)
+		{
+			if (bEmptyNode)
+			{
+				if (bEndNode)
+					m_str += _T(" />");
+				else
+					m_str += _T(">");
+			}
+			else
+				m_str += _T("</") + strNodeName + _T(">");
+		}
+		void WriteNode(const CString& strNodeName, const CString& strNodeValue)
+		{
+			if (strNodeValue.GetLength() == 0)
+				m_str += _T("<") + strNodeName + _T("/>");
+			else
+				m_str += _T("<") + strNodeName + _T(">") + strNodeValue + _T("</") + strNodeName + _T(">");
+		}
+		void WriteNode(const CString& strNodeName, int nValue, int nBase = 10, const CString& strTextBeforeValue = _T(""), const CString& strTextAfterValue = _T(""))
+		{
+			WriteNodeBegin(strNodeName);
+			WriteString(strTextBeforeValue);
+			WriteInteger(nValue, nBase);
+			WriteString(strTextAfterValue);
+			WriteNodeEnd(strNodeName);
+		}
+		void WriteNode(const CString& strNodeName, double dValue)
+		{
+			WriteNodeBegin(strNodeName);
+			WriteDouble(dValue);
+			WriteNodeEnd(strNodeName);
+		}
+		void WriteAttribute(const CString& strAttributeName, const CString& strAttributeValue)
+		{
+			m_str += _T(" ") + strAttributeName + _T("=\"") + strAttributeValue + _T("\"");
+		}
+		void WriteAttribute(const CString& strAttributeName, int nValue, int nBase = 10, const CString& strTextBeforeValue = _T(""), const CString& strTextAfterValue = _T(""))
+		{
+			WriteString(_T(" ") + strAttributeName + _T("="));
+			WriteString(_T("\""));
+			WriteString(strTextBeforeValue);
+			WriteInteger(nValue, nBase);
+			WriteString(strTextAfterValue);
+			WriteString(_T("\""));
+		}
+		void WriteAttribute(const CString& strAttributeName, double dValue)
+		{
+			WriteString(_T(" ") + strAttributeName + _T("="));
+			WriteString(_T("\""));
+			WriteDouble(dValue);
+			WriteString(_T("\""));
+		}
+	};
+}
+
+//#define _USE_LIBXML2_READER_
+
+#ifdef _USE_LIBXML2_READER_
+
+#include "libxml2/libxml2.h"
+
+#else
 #ifdef _WIN32
 #import <msxml3.dll> rename_namespace("XML")
 
@@ -317,176 +605,6 @@ namespace XmlUtils
 		return FALSE;
 	}
 	
-	// classes
-	class CXmlWriter
-	{
-		CString m_str;
-	
-	public:
-
-		CXmlWriter()
-		{
-			m_str.Empty();
-		}
-		
-		CString GetXmlString()
-		{
-			return m_str;
-		}
-		void SetXmlString(const CString& strValue)
-		{
-			m_str = strValue;
-		}
-		
-		BOOL SaveToFile(const CString& strFilePath, BOOL bEncodingToUTF8 = FALSE)
-		{
-			FILE* pFile = _tfopen(strFilePath, _T("wt"));
-
-			if (!pFile)
-				return FALSE;
-
-			CStringA str; str = m_str;
-			if (bEncodingToUTF8)
-#ifdef _UNICODE
-				str = EncodingUnicodeToUTF8();
-#else
-				str = EncodingASCIIToUTF8();
-#endif
-
-			fprintf(pFile, str);
-
-			fclose(pFile);
-
-			return TRUE;
-		}
-#ifdef _UNICODE
-        CStringA EncodingUnicodeToUTF8()
-        {
-            int nLength = m_str.GetLength();
-
-			// Encoding Unicode to UTF-8
-			CStringA saStr; 
-			WideCharToMultiByte(CP_UTF8, 0, m_str.GetBuffer(), nLength + 1, saStr.GetBuffer(nLength*3 + 1), nLength*3, NULL, NULL);
-			saStr.ReleaseBuffer();    
-			return saStr;
-        }
-#else
-		CString EncodingASCIIToUTF8()
-        {
-            int nLength = m_str.GetLength();
-
-			wchar_t* pWStr = new wchar_t[nLength + 1];
-			if (!pWStr)
-				return _T("");
-
-			// set end string
-			pWStr[nLength] = 0;
-
-			// Encoding ASCII to Unicode
-            MultiByteToWideChar(CP_ACP, 0, m_str, nLength, pWStr, nLength);
-
-            int nLengthW = (int) wcslen(pWStr);
-
-			// Encoding Unicode to UTF-8
-			CString cStr; 
-            WideCharToMultiByte(CP_UTF8, 0, pWStr, nLengthW + 1, cStr.GetBuffer(nLengthW*3 + 1), nLengthW*3, NULL, NULL);
-			cStr.ReleaseBuffer();
-    
-		    delete[] pWStr;
-
-            return cStr;
-        }
-#endif
-
-
-		void WriteString(const CString& strValue)
-		{
-			m_str += strValue;
-		}
-		void WriteInteger(int Value, int Base = 10)
-		{
-			char str[33];
-			
-			_itoa(Value, str, Base);
-
-			m_str += str;
-		}
-		void WriteDouble(double Value)
-		{
-			CString str;
-			
-			str.Format(_T("%lf"), Value);
-
-			m_str += str;
-		}
-		void WriteBoolean(BOOL Value)
-		{
-			if (Value)
-				m_str += _T("true");
-			else
-				m_str += _T("false");
-		}
-		void WriteNodeBegin(const CString& strNodeName, BOOL bAttributed = FALSE)
-		{
-			m_str += _T("<") + strNodeName;
-
-			if (!bAttributed)
-				m_str += _T(">");
-		}
-		void WriteNodeEnd(const CString& strNodeName, BOOL bEmptyNode = FALSE, BOOL bEndNode = TRUE)
-		{
-			if (bEmptyNode)
-			{
-				if (bEndNode)
-					m_str += _T(" />");
-				else
-					m_str += _T(">");
-			}
-			else
-				m_str += _T("</") + strNodeName + _T(">");
-		}
-		void WriteNode(const CString& strNodeName, const CString& strNodeValue)
-		{
-			if (strNodeValue.GetLength() == 0)
-				m_str += _T("<") + strNodeName + _T("/>");
-			else
-				m_str += _T("<") + strNodeName + _T(">") + strNodeValue + _T("</") + strNodeName + _T(">");
-		}
-		void WriteNode(const CString& strNodeName, int nValue, int nBase = 10, const CString& strTextBeforeValue = _T(""), const CString& strTextAfterValue = _T(""))
-		{
-			WriteNodeBegin(strNodeName);
-			WriteString(strTextBeforeValue);
-			WriteInteger(nValue, nBase);
-			WriteString(strTextAfterValue);
-			WriteNodeEnd(strNodeName);
-		}
-		void WriteNode(const CString& strNodeName, double dValue)
-		{
-			WriteNodeBegin(strNodeName);
-			WriteDouble(dValue);
-			WriteNodeEnd(strNodeName);
-		}
-		void WriteAttribute(const CString& strAttributeName, const CString& strAttributeValue)
-		{
-			m_str += _T(" ") + strAttributeName + _T("=\"") + strAttributeValue + _T("\"");
-		}
-		void WriteAttribute(const CString& strAttributeName, int nValue, int nBase = 10, const CString& strTextBeforeValue = _T(""), const CString& strTextAfterValue = _T(""))
-		{
-			WriteString(_T(" ") + strAttributeName + _T("="));
-			WriteString(_T("\""));
-			WriteString(strTextBeforeValue);
-			WriteInteger(nValue, nBase);
-			WriteString(strTextAfterValue);
-			WriteString(_T("\""));
-		}
-		void WriteAttribute(const CString& strAttributeName, double dValue)
-		{
-			WriteString(_T(" ") + strAttributeName + _T("="));
-			WriteString(_T("\""));
-			WriteDouble(dValue);
-			WriteString(_T("\""));
-		}
-	};
 	class CXmlReader
 	{
 		CString m_str;
@@ -1450,21 +1568,6 @@ namespace XmlUtils
 // Расширение для простого чтения xml через классы
 namespace XmlUtils
 {
-	AVSINLINE CString GetNamespace(CString& strNodeName)
-	{
-		int nFind = strNodeName.Find(TCHAR(':'));
-		if (-1 == nFind)
-			return _T("");
-		return strNodeName.Mid(0, nFind);
-	}
-	AVSINLINE CString GetNameNoNS(const CString& strNodeName)
-	{
-		int nFind = strNodeName.Find(TCHAR(':'));
-		if (-1 == nFind)
-			return strNodeName;
-		return strNodeName.Mid(nFind + 1);
-	}
-
 	class IXmlNode
 	{
 	public:
@@ -2690,105 +2793,6 @@ namespace XmlUtils
 }
 
 #endif // #ifdef _WIN32
-
-#include "../Base/Base.h"
-class CWCharWrapper
-{
-public:
-
-	CWCharWrapper():m_cwsString(NULL) 
-	{
-	}
-
-	CWCharWrapper(const wchar_t* cwsString):m_cwsString(cwsString)
-	{
-	}
-
-    AVSINLINE const CWCharWrapper operator=(const wchar_t* cwsOther)
-	{
-		m_cwsString = cwsOther;
-		return *this;
-	}
-
-    AVSINLINE const bool operator==(const wchar_t* cwsOther)
-	{
-		if ( 0 == WStrCmp( m_cwsString, cwsOther ) )
-			return true;
-
-		return false;
-	}
-
-    AVSINLINE const bool operator!=(const wchar_t* cwsOther)
-	{
-		if ( 0 != WStrCmp( m_cwsString, cwsOther ) )
-			return true;
-
-		return false;
-	}
-
-    AVSINLINE const wchar_t operator[](const int nIndex) const
-	{
-		int nLen = GetLength();
-
-		if ( nIndex >= nLen )
-			return '\0';
-
-		return m_cwsString[nIndex];
-	}
-    AVSINLINE const bool IsNull() const
-	{
-		return (m_cwsString == NULL);
-	}
-
-
-    AVSINLINE const int  GetLength() const
-	{
-		if ( NULL == m_cwsString )
-			return 0;
-
-		return (const int)wcslen( m_cwsString );
-	}
-public:
-    static AVSINLINE int WStrCmp(const wchar_t* cwsStr1, const wchar_t* cwsStr2)
-	{
-		if ( NULL == cwsStr1 && NULL == cwsStr2 )
-			return 0;
-		else if ( NULL == cwsStr1 || NULL == cwsStr2 )
-			return -1;
-
-		return wcscmp( cwsStr1, cwsStr2 );
-	}
-
-public:
-
-	const wchar_t* m_cwsString;
-};
-
-AVSINLINE const bool operator==(const wchar_t* cwsStr1, const CWCharWrapper& cwsStr2)
-{
-	if ( 0 == CWCharWrapper::WStrCmp( cwsStr2.m_cwsString, cwsStr1 ) )
-		return true;
-
-	return false;
-}
-
-AVSINLINE const bool operator!=(const wchar_t* cwsStr1, const CWCharWrapper& cwsStr2)
-{
-	if ( 0 != CWCharWrapper::WStrCmp( cwsStr2.m_cwsString, cwsStr1 ) )
-		return true;
-
-	return false;
-}
-
-
-
-//#define _USE_LIBXML2_READER_
-
-#ifdef _USE_LIBXML2_READER_
-
-#include "libxml2/libxml2.h"
-
-#else
 
 #ifdef _USE_XMLLITE_READER_
 namespace XmlUtils

@@ -1,22 +1,22 @@
-#include "LIBXML2_LIB/stdafx.h"
+//#include "LIBXML2_LIB/stdafx.h"
 #include "./libxml2.h"
 
 #include <list>
 
 namespace XmlUtils
 {
-	std::wstring CXmlNodeBase::GetXml()
+	CString CXmlNodeBase::GetXml()
 	{
-		std::wstring sXml = L"<";
+		CString sXml = L"<";
 		sXml += m_sName;
 		
-		std::map<std::string, std::string>::iterator p;
+		std::map<CStringA, CStringA>::iterator p;
 		for (p = m_attributes.begin(); p != m_attributes.end(); ++p)
 		{
 			sXml += L" ";
-			sXml += NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.c_str(), p->first.length(), TRUE);
+			sXml += std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.GetString(), p->first.GetLength(), TRUE));
 			sXml += L"='";
-			sXml += NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.c_str(), p->second.length(), TRUE);
+			sXml += std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.GetString(), p->second.GetLength(), TRUE));
 			sXml += L"'";
 		}
 
@@ -42,13 +42,13 @@ namespace XmlUtils
 		oWriter.WriteString(L"<", 1);
 		oWriter.WriteString(m_sName);
 		
-		std::map<std::string, std::string>::iterator p;
+		std::map<CStringA, CStringA>::iterator p;
 		for (p = m_attributes.begin(); p != m_attributes.end(); ++p)
 		{
 			oWriter.WriteString(L" ", 1);
-			oWriter.WriteString(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.c_str(), p->first.length(), TRUE));
+			oWriter.WriteString(std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.GetString(), p->first.GetLength(), TRUE)));
 			oWriter.WriteString(L"='", 2);
-			oWriter.WriteString(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.c_str(), p->second.length(), TRUE));
+			oWriter.WriteString(std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.GetString(), p->second.GetLength(), TRUE)));
 			oWriter.WriteString(L"'", 1);
 		}
 
@@ -113,8 +113,8 @@ namespace XmlUtils
 			if (GetAttributesCount() > 0)
 			{
 				MoveToFirstAttribute();
-				std::string sName = GetNameA();
-				while (!sName.empty())
+				CStringA sName = GetNameA();
+				while (!sName.IsEmpty())
 				{
 					m_pCurrentNode->m_attributes.insert(std::make_pair(sName, GetTextA()));
 
@@ -202,13 +202,13 @@ namespace XmlUtils
 			m_pBase->AddRef();
 	}
 
-	std::wstring CXmlNode::private_GetXml()
+	CString CXmlNode::private_GetXml()
 	{
 		if (NULL == m_pBase)
 			return L"";
 		return m_pBase->GetXml();
 	}
-	std::wstring CXmlNode::private_GetXmlFast()
+	CString CXmlNode::private_GetXmlFast()
 	{
 		if (NULL == m_pBase)
 			return L"";
@@ -217,8 +217,9 @@ namespace XmlUtils
 		return oWriter.GetData();
 	}
 
-	bool CXmlNode::FromXmlFile(const std::wstring& sFile)
+	bool CXmlNode::FromXmlFile(const std::wstring& sFile, bool bRemoveRootNode)
 	{
+		//ignore bRemoveRootNode
 		CXmlDOMDocument* m_pDocument = new CXmlDOMDocument();
 		BOOL bRes = m_pDocument->FromFile(sFile);
 		
@@ -270,158 +271,238 @@ namespace XmlUtils
 		return FromXmlStringA(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sString.c_str(), (LONG)sString.length()));
 	}
 
-	std::string CXmlNode::GetAttributeA(const std::string& sName, const std::string& _default)
-	{
-		if (!IsValid())
-			return _default;
-
-		std::map<std::string, std::string>::const_iterator pFind = m_pBase->m_attributes.find(sName);
-		if (pFind == m_pBase->m_attributes.end())
-			return _default;
-
-		return pFind->second;
-	}
-	std::string CXmlNode::GetAttributeA(const std::wstring& sName, const std::string& _default)
-	{
-		if (!IsValid())
-			return _default;
-
-		std::map<std::string, std::string>::const_iterator pFind = 
-			m_pBase->m_attributes.find(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.c_str(), sName.length()));
-
-		if (pFind == m_pBase->m_attributes.end())
-			return _default;
-
-		return pFind->second;
-	}
-
-	std::wstring CXmlNode::GetAttribute(const std::string& sName, const std::wstring& _default)
-	{
-		if (!IsValid())
-			return _default;
-
-		std::map<std::string, std::string>::const_iterator pFind = m_pBase->m_attributes.find(sName);
-		if (pFind == m_pBase->m_attributes.end())
-			return _default;
-
-		return NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second.c_str(), pFind->second.length(), TRUE);
-	}
-	std::wstring CXmlNode::GetAttribute(const std::wstring& sName, const std::wstring& _default)
-	{
-		if (!IsValid())
-			return _default;
-
-		std::map<std::string, std::string>::const_iterator pFind = 
-			m_pBase->m_attributes.find(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.c_str(), sName.length()));
-
-		if (pFind == m_pBase->m_attributes.end())
-			return _default;
-
-		return NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second.c_str(), pFind->second.length(), TRUE);
-	}
-
-	int CXmlNode::GetAttributeInt(const std::string& sName, const int& _default)
-	{
-		if (!IsValid())
-			return _default;
-
-		std::map<std::string, std::string>::const_iterator pFind = m_pBase->m_attributes.find(sName);
-
-		if (pFind == m_pBase->m_attributes.end())
-			return _default;
-
-		if (0 == pFind->second.length())
-			return _default;
-
-		return atoi(pFind->second.c_str());
-	}
-	int CXmlNode::GetAttributeInt(const std::wstring& sName, const int& _default)
-	{
-		if (!IsValid())
-			return _default;
-
-		std::map<std::string, std::string>::const_iterator pFind = 
-			m_pBase->m_attributes.find(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.c_str(), sName.length()));
-
-		if (pFind == m_pBase->m_attributes.end())
-			return _default;
-
-		if (0 == pFind->second.length())
-			return _default;
-
-		return atoi(pFind->second.c_str());
-	}
-
-	double CXmlNode::GetAttributeDouble(const std::string& sName, const double& _default)
-	{
-		if (!IsValid())
-			return _default;
-
-		std::map<std::string, std::string>::const_iterator pFind = m_pBase->m_attributes.find(sName);
-
-		if (pFind == m_pBase->m_attributes.end())
-			return _default;
-
-		if (0 == pFind->second.length())
-			return _default;
-
-		return atof(pFind->second.c_str());
-	}
-	double CXmlNode::GetAttributeDouble(const std::wstring& sName, const double& _default)
-	{
-		if (!IsValid())
-			return _default;
-
-		std::map<std::string, std::string>::const_iterator pFind = 
-			m_pBase->m_attributes.find(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.c_str(), (LONG)sName.length()));
-
-		if (pFind == m_pBase->m_attributes.end())
-			return _default;
-
-		if (0 == pFind->second.length())
-			return _default;
-
-		return atof(pFind->second.c_str());
-	}
-
-	std::wstring CXmlNode::GetText()
+	CString CXmlNode::GetText()
 	{
 		return (IsValid() ? m_pBase->m_sText : L"");
+	}
+
+	CString CXmlNode::GetName()
+	{
+		return (IsValid() ? m_pBase->m_sName : L"");
 	}
 
 	bool CXmlNode::IsValid()
 	{
 		return (NULL != m_pBase);
 	}
+	void CXmlNode::Clear()
+	{
+		if (NULL != m_pBase)
+			m_pBase->Release();
+	}
 
-	CXmlNode CXmlNode::GetNode(const std::wstring& sName)
+	CString CXmlNode::ReadAttributeBase(const wchar_t* bstrName)
+	{
+		return GetAttribute(CString(bstrName));
+	}
+	
+	CString CXmlNode::ReadAttribute(const CString& strAttibuteName)
+	{
+		return GetAttribute(strAttibuteName);
+	}
+
+	CStringA CXmlNode::GetAttributeA(const CStringA& sName, const CStringA& _default)
+	{
+		if (!IsValid())
+			return _default;
+
+		std::map<CStringA, CStringA>::const_iterator pFind = m_pBase->m_attributes.find(sName);
+		if (pFind == m_pBase->m_attributes.end())
+			return _default;
+
+		return pFind->second;
+	}
+	CStringA CXmlNode::GetAttributeA(const CString& sName, const CStringA& _default)
+	{
+		if (!IsValid())
+			return _default;
+
+		std::map<CStringA, CStringA>::const_iterator pFind = 
+			m_pBase->m_attributes.find(std_string2string(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.GetString(), sName.GetLength())));
+
+		if (pFind == m_pBase->m_attributes.end())
+			return _default;
+
+		return pFind->second;
+	}
+
+	CString CXmlNode::GetAttribute(const CStringA& sName, const CString& _default)
+	{
+		if (!IsValid())
+			return _default;
+
+		std::map<CStringA, CStringA>::const_iterator pFind = m_pBase->m_attributes.find(sName);
+		if (pFind == m_pBase->m_attributes.end())
+			return _default;
+
+		return std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second.GetString(), pFind->second.GetLength(), TRUE));
+	}
+	CString CXmlNode::GetAttribute(const CString& sName, const CString& _default)
+	{
+		if (!IsValid())
+			return _default;
+
+		std::map<CStringA, CStringA>::const_iterator pFind = 
+			m_pBase->m_attributes.find(std_string2string(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.GetString(), sName.GetLength())));
+
+		if (pFind == m_pBase->m_attributes.end())
+			return _default;
+
+		return std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second.GetString(), pFind->second.GetLength(), TRUE));
+	}
+	CString CXmlNode::GetAttribute(const wchar_t* sName, const CString& _default)
+	{
+		return GetAttribute(CString(sName), _default);
+	}
+
+	int CXmlNode::GetAttributeInt(const CStringA& sName, const int& _default)
+	{
+		if (!IsValid())
+			return _default;
+
+		std::map<CStringA, CStringA>::const_iterator pFind = m_pBase->m_attributes.find(sName);
+
+		if (pFind == m_pBase->m_attributes.end())
+			return _default;
+
+		if (0 == pFind->second.GetLength())
+			return _default;
+
+		return atoi(pFind->second.GetString());
+	}
+	int CXmlNode::GetAttributeInt(const CString& sName, const int& _default)
+	{
+		if (!IsValid())
+			return _default;
+
+		std::map<CStringA, CStringA>::const_iterator pFind = 
+			m_pBase->m_attributes.find(std_string2string(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.GetString(), sName.GetLength())));
+
+		if (pFind == m_pBase->m_attributes.end())
+			return _default;
+
+		if (0 == pFind->second.GetLength())
+			return _default;
+
+		return atoi(pFind->second.GetString());
+	}
+	int CXmlNode::ReadAttributeInt(const CString& str, const int& nDef)
+	{
+		return GetAttributeInt(str, nDef);
+	}
+
+	double CXmlNode::GetAttributeDouble(const CStringA& sName, const double& _default)
+	{
+		if (!IsValid())
+			return _default;
+
+		std::map<CStringA, CStringA>::const_iterator pFind = m_pBase->m_attributes.find(sName);
+
+		if (pFind == m_pBase->m_attributes.end())
+			return _default;
+
+		if (0 == pFind->second.GetLength())
+			return _default;
+
+		return atof(pFind->second.GetString());
+	}
+	double CXmlNode::GetAttributeDouble(const CString& sName, const double& _default)
+	{
+		if (!IsValid())
+			return _default;
+
+		std::map<CStringA, CStringA>::const_iterator pFind = 
+			m_pBase->m_attributes.find(std_string2string(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.GetString(), (LONG)sName.GetLength())));
+
+		if (pFind == m_pBase->m_attributes.end())
+			return _default;
+
+		if (0 == pFind->second.GetLength())
+			return _default;
+
+		return atof(pFind->second.GetString());
+	}
+
+	CString CXmlNode::ReadNodeTextBase(const wchar_t* bsName)
+	{
+		return ReadNodeText(CString(bsName));
+	}
+	CString CXmlNode::ReadNodeText(const CString& strName)
+	{
+		return ReadValueString(strName);
+	}
+	CString CXmlNode::ReadValueString(const CString& sName, const CString& nDef)
+	{
+		CString sRes;
+		CXmlNode oTemp;
+		if(GetNode(sName, oTemp))
+			sRes = oTemp.GetText();
+		return sRes;
+	}
+
+	CXmlNode CXmlNode::ReadNode(const CString& strNodeName)
 	{
 		CXmlNode oNode;
-		if (!IsValid())
-			return oNode;
-
-		int nCount = (int)m_pBase->m_nodes.size();
-		for (int i = 0; i < nCount; ++i)
+		GetNode(strNodeName, oNode);
+		return oNode;
+	}
+	CXmlNode CXmlNode::ReadNodeNoNS(const CString& strNodeName)
+	{
+		CXmlNodes oNodes;
+		if (GetNodes(_T("*"), oNodes))
 		{
-			if (sName == m_pBase->m_nodes[i]->m_sName)
+			int nCount = oNodes.GetCount();
+			for (int i = 0; i < nCount; ++i)
 			{
-				CXmlNodeBase* pBase = m_pBase->m_nodes[i];
-				pBase->AddRef();
-				oNode.m_pBase = pBase;
-				break;
+				CXmlNode node;
+				oNodes.GetAt(i, node);
+
+				if (strNodeName == GetNameNoNS(node.GetName()))
+					return node;
 			}
 		}
 
+		CXmlNode node;
+		return node;
+	}
+
+	CXmlNode CXmlNode::GetNode(const CString& sName)
+	{
+		CXmlNode oNode;
+		GetNode(sName, oNode);
 		return oNode;
 	}
-	CXmlNodes CXmlNode::GetNodes(const std::wstring& sName)
+	bool CXmlNode::GetNode(const CString& sName, CXmlNode& oNode)
+	{
+		bool bRes = false;
+		if (IsValid())
+		{
+			int nCount = (int)m_pBase->m_nodes.size();
+			for (int i = 0; i < nCount; ++i)
+			{
+				if (sName == m_pBase->m_nodes[i]->m_sName)
+				{
+					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
+					pBase->AddRef();
+					oNode.m_pBase = pBase;
+					bRes = true;
+					break;
+				}
+			}
+		}
+		return bRes;
+	}
+	CXmlNodes CXmlNode::GetNodes(const CString& sName)
 	{
 		CXmlNodes oNodes;
 
+		bool bGetAll = false;
+		if(_T("*") == sName)
+			bGetAll = true;
 		int nCount = (int)m_pBase->m_nodes.size();
 		for (int i = 0; i < nCount; ++i)
 		{
-			if (sName == m_pBase->m_nodes[i]->m_sName)
+			if (bGetAll || sName == m_pBase->m_nodes[i]->m_sName)
 			{
 				CXmlNode oNode;
 				oNode.m_pBase = m_pBase->m_nodes[i];
@@ -434,12 +515,7 @@ namespace XmlUtils
 		return oNodes;
 	}
 
-	bool CXmlNode::GetNode(const std::wstring& sName, CXmlNode& oNode)
-	{
-		oNode = GetNode(sName);
-		return oNode.IsValid();
-	}
-	bool CXmlNode::GetNodes(const std::wstring& sName, CXmlNodes& oNodes)
+	bool CXmlNode::GetNodes(const CString& sName, CXmlNodes& oNodes)
 	{
 		oNodes = GetNodes(sName);
 		return (0 != oNodes.GetCount());
@@ -452,5 +528,19 @@ namespace XmlUtils
 			m_pBase->AddRef();			
 		
 		return *this;
+	}
+	CString CXmlNode::GetNamespace(const CString& strNodeName)
+	{
+		int nFind = strNodeName.Find(TCHAR(':'));
+		if (-1 == nFind)
+			return CString(_T(""));
+		return strNodeName.Mid(0, nFind);
+	}
+	CString CXmlNode::GetNameNoNS(const CString& strNodeName)
+	{
+		int nFind= strNodeName.Find(TCHAR(':'));
+		if (-1 == nFind)
+			return strNodeName;
+		return strNodeName.Mid(nFind + 1);
 	}
 }

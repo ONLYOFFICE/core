@@ -24,7 +24,7 @@ namespace NSEditorApi
 	class IMenuEventDataBase
 	{
 	protected:
-		ULONG m_lRef;
+		unsigned int m_lRef;
 
 	public:
 		IMenuEventDataBase()
@@ -36,14 +36,14 @@ namespace NSEditorApi
 		{
 		}
 
-		virtual ULONG AddRef() 
+		virtual unsigned int AddRef()
 		{ 
 			++m_lRef;
 			return m_lRef;
 		}
-		virtual ULONG Release()
+		virtual unsigned int Release()
 		{
-			ULONG ret = --m_lRef;
+			unsigned int ret = --m_lRef;
 			if (0 == m_lRef)
 				delete this;
 			return ret;

@@ -1,5 +1,7 @@
 //Generated code
-#pragma once
+#ifndef CHART_FROM_TO_BINARY
+#define CHART_FROM_TO_BINARY
+
 #include "CommonWriter.h"
 #include "..\..\Common\DocxFormat\Source\XlsxFormat\Chart\ChartSerialize.h"
 #include "..\Writer\BinaryCommonReader.h"
@@ -315,3 +317,4 @@ namespace BinXlsxRW {
 	public: void WriteAlternateContentFallback(AlternateContentFallback& oVal);
 	};
 }
+#endif	// #ifndef CHART_FROM_TO_BINARY

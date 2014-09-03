@@ -1,4 +1,3 @@
-#pragma once
 #ifndef BINREADER_COMMON
 #define BINREADER_COMMON 
 

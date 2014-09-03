@@ -1,18 +1,11 @@
 #pragma once
 
 #include "resource.h"       // main symbols
-#include "..\Common\ASCUtils.h"
-#include "..\Common\MappingFile.h"
-#include "BinWriter/BinWriters.h"
-#include "BinReader/Readers.h"
+#include "DocWrapper/DocxSerializer.h"
 
 #if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
 #endif
-
-int g_nCurFormatVersion = 0;
-
-#define BUFFER_GROW_SIZE 1 * 1024 * 1024
 
 // IAVSOfficeDocxFile2
 [ object, uuid("98B1ECA8-9575-4eec-B327-8F8BA3FA232C"), dual, pointer_default(unique) ]
@@ -48,119 +41,30 @@ public:
 	__event __interface _IAVSOfficeDocxFile2Events;
 
 private:
-	CString mediaDir;
-	CString fontDir;
-	CString m_strEmbeddedFontsDirectory;
-	BinDocxRW::BinaryFileWriter* m_oBinaryFileWriter;
-	CString m_sFontDir;
-	bool m_bSaveChartAsImg;
-	Writers::FileWriter* m_pCurFileWriter;
-
-	bool m_bIsNoBase64Save;
+	BinDocxRW::CDocxSerializer m_oCDocxSerializer;
+	IUnknown* m_pThis;
 public:
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
 	
 	CAVSOfficeDocxFile2()
 	{
-		m_oBinaryFileWriter = NULL;
-		m_pCurFileWriter = NULL;
-		m_bSaveChartAsImg = false;
-		m_bIsNoBase64Save = false;
+		m_pThis = NULL;
 	}
 	~CAVSOfficeDocxFile2()
 	{
+		RELEASEINTERFACE(m_pThis);
 	}
 
 public:
 	STDMETHOD(OpenFile)(BSTR bsInputDir, BSTR bsFileDst)
 	{
-		if (mediaDir == _T("")) {
-			OOX::CPath path(bsFileDst);
-			mediaDir = path.GetDirectory() + _T("/media/");
-			CreateDirectoryW(mediaDir, NULL);
-		}
-		Streams::CBuffer oBuffer;
-		oBuffer.Create(BUFFER_GROW_SIZE, BUFFER_GROW_SIZE);
-		Streams::CBufferedStream oBufferedStream;
-		oBufferedStream.SetBuffer(&oBuffer);
-
-		DocWrapper::FontProcessor fp;
-		fp.setFontDir(fontDir);
-		PPTXFile::IOfficeFontPicker* pFontPicker = NULL;
-		CoCreateInstance(__uuidof(PPTXFile::COfficeFontPicker), NULL, CLSCTX_ALL, __uuidof(PPTXFile::IOfficeFontPicker), (void**)(&pFontPicker));
-		BSTR bstrFontDir1 = fontDir.AllocSysString();
-		pFontPicker->Init(bstrFontDir1);
-		SysFreeString(bstrFontDir1);
-		NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager = NULL;
-		if(false == m_strEmbeddedFontsDirectory.IsEmpty())
+		if(NULL == m_pThis)
 		{
-			CreateDirectoryW(m_strEmbeddedFontsDirectory, NULL);
-
-			BSTR bstrEmbeddedFontsDirectory = m_strEmbeddedFontsDirectory.AllocSysString();
-			pFontPicker->SetEmbeddedFontsDirectory(bstrEmbeddedFontsDirectory);
-			SysFreeString(bstrEmbeddedFontsDirectory);
-
-			VARIANT vt;
-			pFontPicker->GetAdditionalParam(_T("NativeCutter"), &vt);
-			pEmbeddedFontsManager = (NSFontCutter::CEmbeddedFontsManager*)vt.pvRecord;
-
-			//добавл€ем весь латинский алфавит дл€ списков.
-			pEmbeddedFontsManager->CheckString(CString(_T("abcdefghijklmnopqrstuvwxyz")));
-
-			//добавим мега шрифт
-			pEmbeddedFontsManager->CheckFont(_T("Wingdings 3"), fp.getFontManager());
-			pEmbeddedFontsManager->CheckFont(_T("Arial"), fp.getFontManager());
-			//pEmbeddedFontsManager добавл€ютс€ все цифры
+			this->QueryInterface( __uuidof(IUnknown), (void**)&m_pThis );
+			m_oCDocxSerializer.setComInterface(m_pThis);
 		}
-		PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter;
-		CoCreateInstance(__uuidof(PPTXFile::CAVSOfficeDrawingConverter), NULL, CLSCTX_ALL, __uuidof(PPTXFile::IAVSOfficeDrawingConverter), (void**)(&pOfficeDrawingConverter));
-
-		BSTR bstrFontDir = fontDir.AllocSysString();
-		pOfficeDrawingConverter->SetFontDir(bstrFontDir);
-		SysFreeString(bstrFontDir);
-		VARIANT vt;
-		vt.vt = VT_UNKNOWN;
-		vt.punkVal = pFontPicker;
-		pOfficeDrawingConverter->SetAdditionalParam(_T("FontPicker"), vt);
-		IUnknown* pThis = NULL;
-		this->QueryInterface( __uuidof(IUnknown), (void**)&pThis );
-		pOfficeDrawingConverter->SetMainDocument(pThis);
-		RELEASEINTERFACE(pThis);
-		BSTR bstrMediaDir = mediaDir.AllocSysString();
-		pOfficeDrawingConverter->SetMediaDstPath(bstrMediaDir);
-		SysFreeString(bstrMediaDir);
-
-		BinDocxRW::ParamsWriter oParamsWriter(oBufferedStream, fp, pOfficeDrawingConverter, pEmbeddedFontsManager);
-		m_oBinaryFileWriter = new BinDocxRW::BinaryFileWriter(oParamsWriter);
-		m_oBinaryFileWriter->intoBindoc(CString(bsInputDir));
-
-		BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
-		int nBinBufferLen = oBufferedStream.GetPosition();
-
-		if (m_bIsNoBase64Save)
-		{
-			CFile oFile;
-			oFile.CreateFileW(bsFileDst);
-			oFile.WriteFile(pbBinBuffer, nBinBufferLen);
-			oFile.CloseFile();
-		}
-		else
-		{
-			int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
-			BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
-			if(TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
-			{
-				CFile oFile;
-				oFile.CreateFileW(bsFileDst);
-				oFile.WriteStringUTF8(m_oBinaryFileWriter->WriteFileHeader(nBinBufferLen));
-				oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
-				oFile.CloseFile();
-			}
-		}
-		RELEASEOBJECT(m_oBinaryFileWriter);
-		RELEASEINTERFACE(pFontPicker);
-		RELEASEINTERFACE(pOfficeDrawingConverter);
-		return S_OK;
+		bool bRes = m_oCDocxSerializer.saveToFile(BstrToStdString(bsFileDst), BstrToStdString(bsInputDir), std::wstring(_T("")));
+		return bRes ? S_OK : S_FALSE;
 	}
 	STDMETHOD(GetJfdoc)(BSTR bsInputDir, BSTR* bsJfdoc)
 	{
@@ -168,18 +72,17 @@ public:
 	}
 	STDMETHOD(SetMediaDir)(BSTR bsMediaDir)
 	{
-		mediaDir = bsMediaDir;
 		return S_OK;
 	}
 	STDMETHOD(SetFontDir)(BSTR bsFontDir)
 	{
-		fontDir = bsFontDir;
+		m_oCDocxSerializer.setFontDir(BstrToStdString(bsFontDir));
 		return S_OK;
 	}
 
 	STDMETHOD(SetUseSystemFonts)(BOOL useSystemFonts)
 	{
-		DocWrapper::FontProcessor::useSystemFonts = (useSystemFonts == TRUE);
+		//DocWrapper::FontProcessor::useSystemFonts = (useSystemFonts == TRUE);
 		return S_OK;
 	}
 
@@ -188,20 +91,20 @@ public:
 		CString sParamName; sParamName = ParamName;
 		if (_T("EmbeddedFontsDirectory") == sParamName && ParamValue.vt == VT_BSTR)
 		{		
-			m_strEmbeddedFontsDirectory = ParamValue.bstrVal;
+			m_oCDocxSerializer.setEmbeddedFontsDir(BstrToStdString(ParamValue.bstrVal));
 			return S_OK;
 		}
 		else if (_T("FontDir") == sParamName && ParamValue.vt == VT_BSTR)
 		{
-			m_sFontDir =  CString(ParamValue.bstrVal);
+			m_oCDocxSerializer.setFontDir(BstrToStdString(ParamValue.bstrVal));
 		}
 		else if (_T("SaveChartAsImg") == sParamName && ParamValue.vt == VT_BOOL)
 		{
-			m_bSaveChartAsImg = VARIANT_TRUE == ParamValue.boolVal;
+			m_oCDocxSerializer.setSaveChartAsImg(VARIANT_FALSE != ParamValue.boolVal);
 		}
 		else if (_T("NoBase64Save") == sParamName && ParamValue.vt == VT_BOOL)
 		{
-			m_bIsNoBase64Save = (VARIANT_TRUE == ParamValue.boolVal);
+			m_oCDocxSerializer.setIsNoBase64Save(VARIANT_FALSE != ParamValue.boolVal);
 		}
 		return S_OK;
 	}
@@ -211,210 +114,55 @@ public:
 	}
 	STDMETHOD(GetBinaryContent)(BSTR bsTxContent, SAFEARRAY** ppBinary)
 	{
-		if(NULL == m_oBinaryFileWriter)
-			return S_FALSE;
-		Streams::CBuffer oBuffer;
-		oBuffer.Create(BUFFER_GROW_SIZE, BUFFER_GROW_SIZE);
-		Streams::CBufferedStream oBufferedStream;
-		oBufferedStream.SetBuffer(&oBuffer);
-
-		XmlUtils::CXmlLiteReader oReader;
-		oReader.FromString(CString(bsTxContent));
-		oReader.ReadNextNode();//v:textbox
-		CString sRootName = oReader.GetName();
-		if(_T("v:textbox") == sRootName)
-			oReader.ReadNextNode();//w:txbxContent
-
-		OOX::Logic::CSdtContent oSdtContent;
-		oSdtContent.fromXML(oReader);
-		BinDocxRW::ParamsWriter oCurParamsWriter(m_oBinaryFileWriter->m_oParamsWriter);
-		BinDocxRW::ParamsWriter oParamsWriter(oBufferedStream, oCurParamsWriter.m_oFontProcessor, oCurParamsWriter.m_pOfficeDrawingConverter, oCurParamsWriter.m_pEmbeddedFontsManager);
-		oParamsWriter.m_poTheme = oCurParamsWriter.m_poTheme;
-		oParamsWriter.m_oSettings = oCurParamsWriter.m_oSettings;
-		oParamsWriter.m_pCurRels = oCurParamsWriter.m_pCurRels;
-		oParamsWriter.m_sCurDocumentPath = oCurParamsWriter.m_sCurDocumentPath;
-
-		BinDocxRW::BinaryCommonWriter oBinaryCommonWriter(oParamsWriter);
-		int nCurPos = oBinaryCommonWriter.WriteItemWithLengthStart();
-		BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(oParamsWriter, BinDocxRW::ParamsDocumentWriter(oParamsWriter.m_pCurRels, oParamsWriter.m_sCurDocumentPath), NULL, NULL);
-		oBinaryDocumentTableWriter.WriteDocumentContent(oSdtContent.m_arrItems);
-		oBinaryCommonWriter.WriteItemWithLengthEnd(nCurPos);
-
-		if (NULL != ppBinary)
+		if(NULL == m_pThis)
 		{
-			long lBinarySize = oBufferedStream.GetPosition();
+			this->QueryInterface( __uuidof(IUnknown), (void**)&m_pThis );
+			m_oCDocxSerializer.setComInterface(m_pThis);
+		}
+		unsigned char* pData = NULL;
+		long lDataSize = 0;
+		bool bRes = m_oCDocxSerializer.GetBinaryContent(BstrToStdString(bsTxContent), &pData, lDataSize);
+		if(NULL != pData && lDataSize > 0)
+		{
 			SAFEARRAYBOUND	rgsabound[1];
 			rgsabound[0].lLbound = 0;
-			rgsabound[0].cElements = lBinarySize;
+			rgsabound[0].cElements = lDataSize;
 			LPSAFEARRAY pArray = SafeArrayCreate(VT_UI1, 1, rgsabound);
 
 			BYTE* pDataD = (BYTE*)pArray->pvData;
-			BYTE* pDataS = oBufferedStream.GetBuffer();
-			memcpy(pDataD, pDataS, lBinarySize);
+			BYTE* pDataS = pData;
+			memcpy(pDataD, pDataS, lDataSize);
 
 			*ppBinary = pArray;
 		}
-		return S_OK;
+		RELEASEARRAYOBJECTS(pData);
+		return bRes ? S_OK : S_FALSE;
 	}
 	STDMETHOD(Write)(BSTR bstrFileIn, BSTR bstrDirectoryOut)
 	{
-		bool bResultOk = false;
-		MemoryMapping::CMappingFile oMappingFile = MemoryMapping::CMappingFile();
-		if(FALSE != oMappingFile.Open(CString(bstrFileIn)))
+		if(NULL == m_pThis)
 		{
-			long nBase64DataSize = oMappingFile.GetSize();
-			BYTE* pBase64Data = oMappingFile.GetData();
-
-			//провер€ем формат
-			bool bValidFormat = false;
-			CString sSignature(BinDocxRW::g_sFormatSignature);
-			int nSigLength = sSignature.GetLength();
-			if(nBase64DataSize > nSigLength)
-			{
-				CStringA sCurSig((char*)pBase64Data, nSigLength);
-				if((CStringA)sSignature == sCurSig)
-				{
-					bValidFormat = true;
-				}
-			}
-			if(bValidFormat)
-			{
-				//„итаем из файла версию и длину base64
-				int nIndex = nSigLength;
-				int nType = 0;
-				CStringA version = "";
-				CStringA dst_len = "";
-				while (true)
-				{
-					nIndex++;
-					BYTE _c = pBase64Data[nIndex];
-					if (_c == ';')
-					{
-
-						if(0 == nType)
-						{
-							nType = 1;
-							continue;
-						}
-						else
-						{
-							nIndex++;
-							break;
-						}
-					}
-					if(0 == nType)
-						version.AppendChar(_c);
-					else
-						dst_len.AppendChar(_c);
-				}
-				int nDataSize = atoi(dst_len);
-
-				SAFEARRAYBOUND	rgsabound[1];
-				rgsabound[0].lLbound = 0;
-				rgsabound[0].cElements = nDataSize;
-				LPSAFEARRAY pArray = SafeArrayCreate(VT_UI1, 1, rgsabound);
-				if(FALSE != Base64::Base64Decode((LPCSTR)(pBase64Data + nIndex), nBase64DataSize - nIndex, (BYTE*)pArray->pvData, &nDataSize))
-				{
-					Streams::CBuffer oBuffer;
-					Streams::CBufferedStream oBufferedStream;
-					oBufferedStream.SetBuffer(&oBuffer);
-					oBufferedStream.Create((BYTE*)pArray->pvData, nDataSize);
-
-					CString sDirectoryOut = CString(bstrDirectoryOut);
-					CString sThemePath;
-					CString sMediaPath;
-					CreateDocument(sDirectoryOut, sThemePath, sMediaPath);
-
-					int nVersion = BinDocxRW::g_nFormatVersion;
-					if(version.GetLength() > 0)
-					{
-						version = version.Right(version.GetLength() - 1);
-						int nTempVersion = atoi(version);
-						if(0 != nTempVersion)
-						{
-							g_nCurFormatVersion = nVersion = nTempVersion;
-						}
-					}
-					PPTXFile::IAVSOfficeDrawingConverter* pDrawingConverter = NULL;
-					CoCreateInstance(__uuidof(PPTXFile::CAVSOfficeDrawingConverter), NULL, CLSCTX_ALL, __uuidof(PPTXFile::IAVSOfficeDrawingConverter), (void**) &pDrawingConverter);
-					IUnknown* pThis = NULL;
-					this->QueryInterface( __uuidof(IUnknown), (void**)&pThis );
-					pDrawingConverter->SetMainDocument(pThis);
-					RELEASEINTERFACE(pThis);
-					BSTR bstrMediaPath = sMediaPath.AllocSysString();
-					pDrawingConverter->SetMediaDstPath(bstrMediaPath);
-					SysFreeString(bstrMediaPath);
-					m_pCurFileWriter = new Writers::FileWriter(sDirectoryOut, m_sFontDir, nVersion, m_bSaveChartAsImg, pDrawingConverter, pArray, sThemePath);
-
-					//папка с картинками
-					TCHAR tFolder[256];
-					TCHAR tDrive[256];
-					_tsplitpath( bstrFileIn, tDrive, tFolder, NULL, NULL );
-					CString sFolder = CString(tFolder);
-					CString sDrive = CString(tDrive);
-					CString sFileInDir = sDrive + sFolder;
-
-					VARIANT var;
-					var.vt = VT_BSTR;
-					var.bstrVal = sFileInDir.AllocSysString();
-					pDrawingConverter->SetAdditionalParam(L"SourceFileDir", var);
-					RELEASESYSSTRING(var.bstrVal);
-
-					BinDocxRW::BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter);
-					oBinaryFileReader.ReadFile();
-
-					if(NULL != pDrawingConverter)
-					{
-						VARIANT vt;
-						pDrawingConverter->GetAdditionalParam(_T("ContentTypes"), &vt);
-						if(VT_BSTR == vt.vt)
-							m_pCurFileWriter->m_oContentTypesWriter.AddOverrideRaw(CString(vt.bstrVal));
-					}
-
-					m_pCurFileWriter->m_oCommentsWriter.Write();
-					m_pCurFileWriter->m_oChartWriter.Write();
-					m_pCurFileWriter->m_oStylesWriter.Write();
-					m_pCurFileWriter->m_oNumberingWriter.Write();
-					m_pCurFileWriter->m_oFontTableWriter.Write();
-					m_pCurFileWriter->m_oHeaderFooterWriter.Write();
-					//Setting пишем после HeaderFooter, чтобы заполнить evenAndOddHeaders
-					m_pCurFileWriter->m_oSettingWriter.Write();
-					//Document пишем после HeaderFooter, чтобы заполнить sectPr
-					m_pCurFileWriter->m_oDocumentWriter.Write();
-					//Rels и ContentTypes пишем в конце
-					//m_pCurFileWriter->m_oDocumentRelsWriter.Write(_T("document.xml.rels"));
-					m_pCurFileWriter->m_oContentTypesWriter.Write();
-
-					//CSerializer oSerializer = CSerializer();
-					//if(false != oSerializer.Write(oBufferedStream, sDirectoryOut))
-					//{
-					bResultOk = true;
-					//}
-					RELEASEINTERFACE(pDrawingConverter);
-				}
-				RELEASEARRAY(pArray);
-			}
-			oMappingFile.Close();
+			this->QueryInterface( __uuidof(IUnknown), (void**)&m_pThis );
+			m_oCDocxSerializer.setComInterface(m_pThis);
 		}
-		return bResultOk ? S_OK : S_FALSE;
+		CString sDirectoryOut = bstrDirectoryOut;
+		CString sThemePath;
+		CString sMediaPath;
+		CreateDocument(sDirectoryOut, sThemePath, sMediaPath);
+		bool bRes = m_oCDocxSerializer.loadFromFile(BstrToStdString(bstrFileIn), BstrToStdString(bstrDirectoryOut), std::wstring(_T("")), std::wstring(sThemePath.GetString()), std::wstring(sMediaPath.GetString()));
+		return bRes ? S_OK : S_FALSE;
 	}
 	STDMETHOD(GetXmlContent)(SAFEARRAY* pBinaryObj, LONG lStart, LONG lLength, BSTR* bsXml)
 	{
-		Streams::CBuffer oBuffer;
-		Streams::CBufferedStream oBufferedStream;
-		oBufferedStream.SetBuffer(&oBuffer);
-		oBufferedStream.Create((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-
-		oBufferedStream.Seek(lStart);
-		long nLength = oBufferedStream.ReadLong();
-
-		Writers::ContentWriter oTempContentWriter;
-		BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter, NULL);
-		int res = oBinary_DocumentTableReader.Read1(nLength, &BinDocxRW::Binary_DocumentTableReader::ReadDocumentContent, &oBinary_DocumentTableReader, NULL);
-
-		(*bsXml) = oTempContentWriter.m_oContent.GetData().AllocSysString();
-
-		return S_OK;
+		if(NULL == m_pThis)
+		{
+			this->QueryInterface( __uuidof(IUnknown), (void**)&m_pThis );
+			m_oCDocxSerializer.setComInterface(m_pThis);
+		}
+		std::wstring sRes;
+		bool bRes = m_oCDocxSerializer.GetXmlContent((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements, lStart, lLength, sRes);
+		(*bsXml) = CString(sRes.c_str()).AllocSysString();
+		return bRes ? S_OK : S_FALSE;
 	}
 private:
 	void CreateDocument(CString strDirectory, CString& sThemePath, CString& sMediaPath)
@@ -473,4 +221,8 @@ private:
 		UnlockResource(hGlobal);
 		FreeResource(hGlobal);
 	}	
+	std::wstring BstrToStdString(BSTR sVal)
+	{
+		return std::wstring(sVal, SysStringLen(sVal));
+	}
 };

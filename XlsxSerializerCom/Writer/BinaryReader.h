@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BINARY_READER
+#define BINARY_READER
+
 #include "../../Common/FileWriter.h"
 #include "../../Common/MappingFile.h"
 #include "../../Common/Base64.h"
@@ -3160,3 +3162,4 @@ namespace BinXlsxRW {
 			}
 	};
 };
+#endif	// #ifndef BINARY_READER

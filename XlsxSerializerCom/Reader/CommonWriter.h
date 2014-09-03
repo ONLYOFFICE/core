@@ -1,4 +1,6 @@
-#pragma once
+#ifndef COMMON_WRITER
+#define COMMON_WRITER
+
 #include "../../ASCOfficeDocxFile2/BinWriter/StreamUtils.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 
@@ -16,3 +18,4 @@ namespace BinXlsxRW {
 		void WriteSafeArray(SAFEARRAY* pBinaryObj);
 	};
 }
+#endif	// #ifndef COMMON_WRITER

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BIN_WRITERS
+#define BIN_WRITERS
+
 #include "StreamUtils.h"
 #include "BinReaderWriterDefines.h"
 #include "../DocWrapper/FontProcessor.h"
@@ -6269,3 +6271,4 @@ namespace BinDocxRW
 	};
 
 }
+#endif	// #ifndef BIN_WRITERS

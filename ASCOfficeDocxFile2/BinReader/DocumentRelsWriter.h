@@ -1,4 +1,6 @@
-#pragma once
+#ifndef DOCUMENT_RELS_WRITER
+#define DOCUMENT_RELS_WRITER
+
 #include "Common.h"
 
 namespace Writers
@@ -60,3 +62,4 @@ namespace Writers
 		}
 	};
 }
+#endif	// #ifndef DOCUMENT_RELS_WRITER

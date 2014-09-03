@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CHART_WRITER
+#define CHART_WRITER
+
 #include "Common.h"
 
 namespace Writers
@@ -78,3 +80,4 @@ namespace Writers
 		}
 	};
 }
+#endif	// #ifndef CHART_WRITER

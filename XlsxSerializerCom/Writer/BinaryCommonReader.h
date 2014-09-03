@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BINARY_COMMON_READER
+#define BINARY_COMMON_READER
+
 #include "../../ASCOfficeDocxFile2/BinWriter/StreamUtils.h"
 
 namespace BinXlsxRW {
@@ -86,3 +88,4 @@ namespace BinXlsxRW {
 		}
 	};
 }
+#endif	// #ifndef BINARY_COMMON_READER

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CONTENT_TYPES_WRITER
+#define CONTENT_TYPES_WRITER
+
 #include "Common.h"
 
 namespace Writers
@@ -41,3 +43,4 @@ namespace Writers
 		}
 	};
 }
+#endif	// #ifndef CONTENT_TYPES_WRITER

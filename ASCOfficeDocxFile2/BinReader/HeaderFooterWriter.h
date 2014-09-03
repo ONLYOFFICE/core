@@ -1,4 +1,6 @@
-#pragma once
+#ifndef HEADER_FOOTER_WRITER
+#define HEADER_FOOTER_WRITER
+
 #include "Common.h"
 
 namespace Writers
@@ -93,3 +95,4 @@ namespace Writers
 		}
 	};
 }
+#endif	// #ifndef HEADER_FOOTER_WRITER

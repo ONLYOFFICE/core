@@ -1,4 +1,6 @@
-#pragma once
+#ifndef NUMBERING_WRITER
+#define NUMBERING_WRITER
+
 #include "ContentTypesWriter.h"
 #include "DocumentRelsWriter.h"
 
@@ -45,3 +47,4 @@ namespace Writers
 		}
 	};
 }
+#endif	// #ifndef NUMBERING_WRITER

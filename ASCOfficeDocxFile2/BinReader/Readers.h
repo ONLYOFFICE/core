@@ -1,4 +1,6 @@
-#pragma once
+#ifndef READERS
+#define READERS
+
 #include "../BinWriter/StreamUtils.h"
 #include "FileWriter.h"
 #include "../BinWriter/BinReaderWriterDefines.h"
@@ -6175,3 +6177,4 @@ public: BinaryFileReader(CString& sFileInDir, Streams::CBufferedStream& oBuffere
 		}
 };
 }
+#endif	// #ifndef READERS

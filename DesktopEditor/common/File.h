@@ -499,6 +499,17 @@ namespace NSFile
 			size_t nCountWrite = fwrite((void*)pData, 1, nBytesCount, m_pFile);
 			return true;
 		}
+		void WriteStringUTF8(std::wstring& strXml, bool bIsBOM = false)
+		{
+			BYTE* pData = NULL;
+			LONG lLen = 0;
+
+			CUtf8Converter::GetUtf8StringFromUnicode(strXml.c_str(), strXml.size(), pData, lLen, bIsBOM);
+
+			WriteFile(pData, lLen);
+
+			RELEASEARRAYOBJECTS(pData);
+		}
 	};
 }
 

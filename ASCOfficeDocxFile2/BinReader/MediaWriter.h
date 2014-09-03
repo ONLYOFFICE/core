@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MEDIA_WRITER
+#define MEDIA_WRITER
+
 #include "Common.h"
 
 namespace Writers
@@ -40,3 +42,4 @@ namespace Writers
 		}
 	};
 }
+#endif	// #ifndef MEDIA_WRITER

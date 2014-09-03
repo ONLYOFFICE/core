@@ -9,241 +9,240 @@
 #include <map>
 #include <string>
 
+#include "../../XML/stringcommon.h"
 #include "../../../../../DesktopEditor/common/File.h"
 #include "../Utils.h"
 
 namespace XmlUtils
 {
+	//class CStringWriter
+	//{
+	//private:
+	//	wchar_t*	m_pData;
+	//	size_t		m_lSize;
 
-	class CStringWriter
-	{
-	private:
-		wchar_t*	m_pData;
-		size_t		m_lSize;
+	//	wchar_t*	m_pDataCur;
+	//	size_t		m_lSizeCur;
 
-		wchar_t*	m_pDataCur;
-		size_t		m_lSizeCur;
+	//	int			m_lBinaryFactor;
 
-		int			m_lBinaryFactor;
+	//public:
+	//	CStringWriter()
+	//	{
+	//		m_pData = NULL;
+	//		m_lSize = 0;
 
-	public:
-		CStringWriter()
-		{
-			m_pData = NULL;
-			m_lSize = 0;
+	//		m_pDataCur	= m_pData;
+	//		m_lSizeCur	= m_lSize;
 
-			m_pDataCur	= m_pData;
-			m_lSizeCur	= m_lSize;
+	//		m_bInitTable = FALSE;
 
-			m_bInitTable = FALSE;
+	//		m_lBinaryFactor = (((sizeof(wchar_t)) >> 1));
+	//	}
+	//	~CStringWriter()
+	//	{
+	//		RELEASEMEM(m_pData);
+	//	}
 
-			m_lBinaryFactor = (((sizeof(wchar_t)) >> 1));
-		}
-		~CStringWriter()
-		{
-			RELEASEMEM(m_pData);
-		}
+ //       AVSINLINE void AddSize(size_t nSize)
+	//	{
+	//		if (NULL == m_pData)
+	//		{
+	//			m_lSize = max(nSize, 1000);				
+	//			m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
 
-        AVSINLINE void AddSize(size_t nSize)
-		{
-			if (NULL == m_pData)
-			{
-				m_lSize = max(nSize, 1000);				
-				m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
+	//			m_lSizeCur = 0;
+	//			m_pDataCur = m_pData;
+	//			return;
+	//		}
 
-				m_lSizeCur = 0;
-				m_pDataCur = m_pData;
-				return;
-			}
+	//		if ((m_lSizeCur + nSize) > m_lSize)
+	//		{
+	//			while ((m_lSizeCur + nSize) > m_lSize)
+	//			{
+	//				m_lSize *= 2;
+	//			}
 
-			if ((m_lSizeCur + nSize) > m_lSize)
-			{
-				while ((m_lSizeCur + nSize) > m_lSize)
-				{
-					m_lSize *= 2;
-				}
+	//			wchar_t* pRealloc = (wchar_t*)realloc(m_pData, m_lSize * sizeof(wchar_t));
+	//			if (NULL != pRealloc)
+	//			{
+	//				// реаллок сработал
+	//				m_pData		= pRealloc;
+	//				m_pDataCur	= m_pData + m_lSizeCur;
+	//			}
+	//			else
+	//			{
+	//				wchar_t* pMalloc = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
+	//				memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(wchar_t));
 
-				wchar_t* pRealloc = (wchar_t*)realloc(m_pData, m_lSize * sizeof(wchar_t));
-				if (NULL != pRealloc)
-				{
-					// реаллок сработал
-					m_pData		= pRealloc;
-					m_pDataCur	= m_pData + m_lSizeCur;
-				}
-				else
-				{
-					wchar_t* pMalloc = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-					memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(wchar_t));
+	//				free(m_pData);
+	//				m_pData		= pMalloc;
+	//				m_pDataCur	= m_pData + m_lSizeCur;
+	//			}
+	//		}
+	//	}
 
-					free(m_pData);
-					m_pData		= pMalloc;
-					m_pDataCur	= m_pData + m_lSizeCur;
-				}
-			}
-		}
+	//public:
 
-	public:
+ //       AVSINLINE void WriteString(const wchar_t* pString, const size_t& nLen)
+	//	{
+	//		AddSize(nLen);
+	//		memcpy(m_pDataCur, pString, nLen << m_lBinaryFactor);
+	//		m_pDataCur += nLen;
+	//		m_lSizeCur += nLen;
+	//	}
+ //       AVSINLINE void WriteString(const std::wstring& bsString)
+	//	{
+	//		WriteString(bsString.c_str(), (size_t)bsString.length());
+	//	}
+	//	
+ //       AVSINLINE void AddCharSafe(const TCHAR& _c)
+	//	{
+	//		AddSize(1);
+	//		*m_pDataCur++ = _c;
+	//		++m_lSizeCur;
+	//	}
+ //       AVSINLINE void AddChar2Safe(const TCHAR _c1, const TCHAR& _c2)
+	//	{
+	//		AddSize(2);
+	//		*m_pDataCur++ = _c1;
+	//		*m_pDataCur++ = _c2;
+	//		m_lSizeCur += 2;
+	//	}
 
-        AVSINLINE void WriteString(const wchar_t* pString, const size_t& nLen)
-		{
-			AddSize(nLen);
-			memcpy(m_pDataCur, pString, nLen << m_lBinaryFactor);
-			m_pDataCur += nLen;
-			m_lSizeCur += nLen;
-		}
-        AVSINLINE void WriteString(const std::wstring& bsString)
-		{
-			WriteString(bsString.c_str(), (size_t)bsString.length());
-		}
-		
-        AVSINLINE void AddCharSafe(const TCHAR& _c)
-		{
-			AddSize(1);
-			*m_pDataCur++ = _c;
-			++m_lSizeCur;
-		}
-        AVSINLINE void AddChar2Safe(const TCHAR _c1, const TCHAR& _c2)
-		{
-			AddSize(2);
-			*m_pDataCur++ = _c1;
-			*m_pDataCur++ = _c2;
-			m_lSizeCur += 2;
-		}
+	//	inline void WriteEncodeXmlString(const std::wstring& _string)
+	//	{
+	//		WriteEncodeXmlString(_string.c_str());
+	//	}
 
-		inline void WriteEncodeXmlString(const std::wstring& _string)
-		{
-			WriteEncodeXmlString(_string.c_str());
-		}
+	//	inline void WriteEncodeXmlString(const wchar_t* pString)
+	//	{
+	//		const wchar_t* pData = pString;
+	//		while (*pData != 0)
+	//		{
+	//			BYTE _code = CheckCode(*pData);
 
-		inline void WriteEncodeXmlString(const wchar_t* pString)
-		{
-			const wchar_t* pData = pString;
-			while (*pData != 0)
-			{
-				BYTE _code = CheckCode(*pData);
+	//			switch (_code)
+	//			{
+	//			case 1:
+	//				AddCharSafe(*pData);
+	//				break;
+	//			case 0:
+	//				AddCharSafe((WCHAR)' ');
+	//				break;
+	//			case 2:
+	//				AddSize(5);
+	//				*m_pDataCur++ = (WCHAR)('&');
+	//				*m_pDataCur++ = (WCHAR)('a');
+	//				*m_pDataCur++ = (WCHAR)('m');
+	//				*m_pDataCur++ = (WCHAR)('p');
+	//				*m_pDataCur++ = (WCHAR)(';');
+	//				m_lSizeCur += 5;
+	//				break;
+	//			case 3:
+	//				AddSize(6);
+	//				*m_pDataCur++ = (WCHAR)('&');
+	//				*m_pDataCur++ = (WCHAR)('a');
+	//				*m_pDataCur++ = (WCHAR)('p');
+	//				*m_pDataCur++ = (WCHAR)('o');
+	//				*m_pDataCur++ = (WCHAR)('s');
+	//				*m_pDataCur++ = (WCHAR)(';');
+	//				m_lSizeCur += 6;
+	//				break;
+	//			case 4:
+	//				AddSize(4);
+	//				*m_pDataCur++ = (WCHAR)('&');
+	//				*m_pDataCur++ = (WCHAR)('l');
+	//				*m_pDataCur++ = (WCHAR)('t');
+	//				*m_pDataCur++ = (WCHAR)(';');
+	//				m_lSizeCur += 4;
+	//				break;
+	//			case 5:
+	//				AddSize(4);
+	//				*m_pDataCur++ = (WCHAR)('&');
+	//				*m_pDataCur++ = (WCHAR)('g');
+	//				*m_pDataCur++ = (WCHAR)('t');
+	//				*m_pDataCur++ = (WCHAR)(';');
+	//				m_lSizeCur += 4;
+	//				break;
+	//			case 6:
+	//				AddSize(6);
+	//				*m_pDataCur++ = (WCHAR)('&');
+	//				*m_pDataCur++ = (WCHAR)('q');
+	//				*m_pDataCur++ = (WCHAR)('u');
+	//				*m_pDataCur++ = (WCHAR)('o');
+	//				*m_pDataCur++ = (WCHAR)('t');
+	//				*m_pDataCur++ = (WCHAR)(';');
+	//				m_lSizeCur += 6;
+	//				break;
+	//			default:
+	//				break;						
+	//			}
+	//		
+	//			++pData;
+	//		}
+	//	}
 
-				switch (_code)
-				{
-				case 1:
-					AddCharSafe(*pData);
-					break;
-				case 0:
-					AddCharSafe((WCHAR)' ');
-					break;
-				case 2:
-					AddSize(5);
-					*m_pDataCur++ = (WCHAR)('&');
-					*m_pDataCur++ = (WCHAR)('a');
-					*m_pDataCur++ = (WCHAR)('m');
-					*m_pDataCur++ = (WCHAR)('p');
-					*m_pDataCur++ = (WCHAR)(';');
-					m_lSizeCur += 5;
-					break;
-				case 3:
-					AddSize(6);
-					*m_pDataCur++ = (WCHAR)('&');
-					*m_pDataCur++ = (WCHAR)('a');
-					*m_pDataCur++ = (WCHAR)('p');
-					*m_pDataCur++ = (WCHAR)('o');
-					*m_pDataCur++ = (WCHAR)('s');
-					*m_pDataCur++ = (WCHAR)(';');
-					m_lSizeCur += 6;
-					break;
-				case 4:
-					AddSize(4);
-					*m_pDataCur++ = (WCHAR)('&');
-					*m_pDataCur++ = (WCHAR)('l');
-					*m_pDataCur++ = (WCHAR)('t');
-					*m_pDataCur++ = (WCHAR)(';');
-					m_lSizeCur += 4;
-					break;
-				case 5:
-					AddSize(4);
-					*m_pDataCur++ = (WCHAR)('&');
-					*m_pDataCur++ = (WCHAR)('g');
-					*m_pDataCur++ = (WCHAR)('t');
-					*m_pDataCur++ = (WCHAR)(';');
-					m_lSizeCur += 4;
-					break;
-				case 6:
-					AddSize(6);
-					*m_pDataCur++ = (WCHAR)('&');
-					*m_pDataCur++ = (WCHAR)('q');
-					*m_pDataCur++ = (WCHAR)('u');
-					*m_pDataCur++ = (WCHAR)('o');
-					*m_pDataCur++ = (WCHAR)('t');
-					*m_pDataCur++ = (WCHAR)(';');
-					m_lSizeCur += 6;
-					break;
-				default:
-					break;						
-				}
-			
-				++pData;
-			}
-		}
+ //       AVSINLINE size_t GetCurSize()
+	//	{
+	//		return m_lSizeCur;
+	//	}
 
-        AVSINLINE size_t GetCurSize()
-		{
-			return m_lSizeCur;
-		}
+ //       AVSINLINE void Write(CStringWriter& oWriter)
+	//	{
+	//		WriteString(oWriter.m_pData, oWriter.m_lSizeCur);
+	//	}
 
-        AVSINLINE void Write(CStringWriter& oWriter)
-		{
-			WriteString(oWriter.m_pData, oWriter.m_lSizeCur);
-		}
+	//	inline void Clear()
+	//	{
+	//		RELEASEMEM(m_pData);
 
-		inline void Clear()
-		{
-			RELEASEMEM(m_pData);
+	//		m_pData = NULL;
+	//		m_lSize = 0;
 
-			m_pData = NULL;
-			m_lSize = 0;
+	//		m_pDataCur	= m_pData;
+	//		m_lSizeCur	= 0;
+	//	}
+	//	inline void ClearNoAttack()
+	//	{
+	//		m_pDataCur	= m_pData;
+	//		m_lSizeCur	= 0;
+	//	}
 
-			m_pDataCur	= m_pData;
-			m_lSizeCur	= 0;
-		}
-		inline void ClearNoAttack()
-		{
-			m_pDataCur	= m_pData;
-			m_lSizeCur	= 0;
-		}
+	//	std::wstring GetData()
+	//	{
+	//		std::wstring str(m_pData, (int)m_lSizeCur);
+	//		return str;
+	//	}
 
-		std::wstring GetData()
-		{
-			std::wstring str(m_pData, (int)m_lSizeCur);
-			return str;
-		}
+	//protected:
+	//	BYTE m_arTableUnicodes[65536];
+	//	BOOL m_bInitTable;
 
-	protected:
-		BYTE m_arTableUnicodes[65536];
-		BOOL m_bInitTable;
+	//protected:
+	//	BYTE CheckCode(const WCHAR& c)
+	//	{
+	//		if (!m_bInitTable)
+	//		{
+	//			memset(m_arTableUnicodes, 0, 65536);
+	//			m_arTableUnicodes[0x0009] = 1;
+	//			m_arTableUnicodes[0x000A] = 1;
+	//			m_arTableUnicodes[0x000D] = 1;
 
-	protected:
-		BYTE CheckCode(const WCHAR& c)
-		{
-			if (!m_bInitTable)
-			{
-				memset(m_arTableUnicodes, 0, 65536);
-				m_arTableUnicodes[0x0009] = 1;
-				m_arTableUnicodes[0x000A] = 1;
-				m_arTableUnicodes[0x000D] = 1;
+	//			memset(m_arTableUnicodes + 0x0020, 1, 0xD7FF - 0x0020 + 1);
+	//			memset(m_arTableUnicodes + 0xE000, 1, 0xFFFD - 0xE000 + 1);
 
-				memset(m_arTableUnicodes + 0x0020, 1, 0xD7FF - 0x0020 + 1);
-				memset(m_arTableUnicodes + 0xE000, 1, 0xFFFD - 0xE000 + 1);
+	//			m_arTableUnicodes['&'] = 2;
+	//			m_arTableUnicodes['\''] = 3;
+	//			m_arTableUnicodes['<'] = 4;
+	//			m_arTableUnicodes['>'] = 5;
+	//			m_arTableUnicodes['\"'] = 6;
 
-				m_arTableUnicodes['&'] = 2;
-				m_arTableUnicodes['\''] = 3;
-				m_arTableUnicodes['<'] = 4;
-				m_arTableUnicodes['>'] = 5;
-				m_arTableUnicodes['\"'] = 6;
-
-				m_bInitTable = TRUE;
-			}
-			return m_arTableUnicodes[c];
-		}
-	};	
-
+	//			m_bInitTable = TRUE;
+	//		}
+	//		return m_arTableUnicodes[c];
+	//	}
+	//};	
 
 	typedef 
 	enum XmlNodeType
@@ -276,6 +275,8 @@ namespace XmlUtils
 		
 		BYTE*				m_pStream;
 		LONG				m_lStreamLen;
+		std::wstring		m_sTemp;
+		std::string			m_sTempA;
 	public:
 
 		CXmlLiteReader()
@@ -306,6 +307,10 @@ namespace XmlUtils
 			return ( NULL != reader );
 		}
 
+		inline BOOL FromFile(const wchar_t* sFilePath)
+		{
+			return FromFile(std::wstring(sFilePath));
+		}
 		inline BOOL FromFile(const std::wstring& sFilePath)
 		{
 			Clear();
@@ -321,6 +326,10 @@ namespace XmlUtils
 			reader = xmlReaderForMemory((char*)m_pStream, m_lStreamLen, NULL, NULL, 0);
 
 			return TRUE;
+		}
+		inline BOOL FromString(const wchar_t* sXml)
+		{
+			return FromString(std::wstring(sXml));
 		}
 		inline BOOL FromString(const std::wstring& sXml)
 		{
@@ -360,7 +369,7 @@ namespace XmlUtils
 			
 			while ( XmlNodeType_Element != oNodeType )
 			{
-				if (!xmlTextReaderRead(reader))
+				if (1 != xmlTextReaderRead(reader))
 					break;
 
 				oNodeType = (XmlNodeType)xmlTextReaderNodeType(reader);
@@ -428,7 +437,7 @@ namespace XmlUtils
 
 			return TRUE;
 		}
-		inline std::wstring GetName()
+		inline const wchar_t* GetName()
 		{
 			if ( !IsValid() )
 				return L"";
@@ -437,11 +446,11 @@ namespace XmlUtils
 			if (NULL == pName)
 				return L"";
 
-			std::wstring s = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pName, (LONG)strlen((const char*)pName));
+			m_sTemp = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pName, (LONG)strlen((const char*)pName));
 			delete [] pName;
-			return s;
+			return m_sTemp.c_str();
 		}
-		inline std::string GetNameA()
+		inline const char* GetNameA()
 		{
 			if ( !IsValid() )
 				return "";
@@ -451,9 +460,9 @@ namespace XmlUtils
 				return "";
 
 			//return std::string((const char*)pName);
-			std::string s((const char*)pName);
+			m_sTempA = (const char*)pName;
 			delete [] pName;
-			return s;
+			return m_sTempA.c_str();
 		}
 		inline int GetDepth()
 		{
@@ -470,7 +479,7 @@ namespace XmlUtils
 			return xmlTextReaderIsEmptyElement(reader);
 		}
 
-		inline std::wstring GetText()
+		inline const wchar_t* GetText()
 		{
 			if ( !IsValid() )
 				return NULL;
@@ -479,11 +488,11 @@ namespace XmlUtils
 			if (NULL == pValue)
 				return L"";
 			
-			std::wstring s = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen((const char*)pValue));
+			m_sTemp = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen((const char*)pValue));
 			delete [] pValue;
-			return s;
+			return m_sTemp.c_str();
 		}
-		inline std::string GetTextA()
+		inline const char* GetTextA()
 		{
 			if ( !IsValid() )
 				return NULL;
@@ -492,17 +501,17 @@ namespace XmlUtils
 			if (NULL == pValue)
 				return "";
 
-			std::string s((const char*)pValue);
+			m_sTempA = (const char*)pValue;
 			delete [] pValue;
-			return s;
+			return m_sTempA.c_str();
 		}
 
-		inline std::wstring GetText2()
+		inline CString GetText2()
 		{
 			if ( !IsValid() )
 				return _T("");
 
-			std::wstring sResult;
+			CString sResult;
 
 			if ( xmlTextReaderIsEmptyElement(reader) )
 				return sResult;
@@ -517,11 +526,11 @@ namespace XmlUtils
 
 			return sResult;
 		}
-		inline std::wstring GetOuterXml()
+		inline CString GetOuterXml()
 		{
 			return GetXml(false);
 		}
-		inline std::wstring GetInnerXml()
+		inline CString GetInnerXml()
 		{
 			return GetXml(true);
 		}
@@ -555,7 +564,7 @@ namespace XmlUtils
 			return (BOOL)xmlTextReaderMoveToElement(reader);
 		}
 	private:
-		inline std::wstring GetXml(bool bInner)
+		inline CString GetXml(bool bInner)
 		{
 			if ( !IsValid() )
 				return L"";
@@ -570,7 +579,7 @@ namespace XmlUtils
 				XmlNodeType eNodeType = XmlNodeType_None;
 
 				int nCurDepth = -1;
-				// У закрывающего тэга глубина на 1 больше, чем у открывающего
+				// У закрывающего тэга глубина такая же как у открывающегося
 				while( TRUE )
 				{
 					if ( 0 == xmlTextReaderRead(reader) )
@@ -585,7 +594,7 @@ namespace XmlUtils
 						WriteElement(oResult);
 					else if(eNodeType == XmlNodeType_EndElement)
 					{
-						if(false == bInner || nCurDepth != nDepth + 1)
+						if(false == bInner || nCurDepth != nDepth)
 						{
 							oResult.AddChar2Safe(TCHAR('<'), TCHAR('/'));
 							oResult.WriteEncodeXmlString(GetName());
@@ -666,10 +675,10 @@ namespace XmlUtils
 	public:
 		IXmlDOMDocument* m_pDocument;
 
-		std::map<std::string, std::string> m_attributes;
+		std::map<CStringA, CStringA> m_attributes;
 		std::vector<CXmlNodeBase*> m_nodes;
-		std::wstring m_sText;
-		std::wstring m_sName;
+		CString m_sText;
+		CString m_sName;
 
 	public:
 		CXmlNodeBase() : IXmlDOMDocument()
@@ -703,7 +712,7 @@ namespace XmlUtils
 				m_pDocument->Release();
 		}
 
-		std::wstring GetXml();
+		CString GetXml();
 		void GetXml(CStringWriter& oWriter);
 	};
 
@@ -720,43 +729,114 @@ namespace XmlUtils
 		}
 		~CXmlNode()
 		{
-			if (NULL != m_pBase)
-				m_pBase->Release();
+			Clear();
 		}
 		CXmlNode(const CXmlNode& oSrc);
 
 	public:
-		bool FromXmlFile(const std::wstring& sFile);
+		bool FromXmlFile(const wchar_t* sFile, bool bRemoveRootNode = false)
+		{
+			return FromXmlFile(std::wstring(sFile), bRemoveRootNode);
+		}
+		bool FromXmlFile(const std::wstring& sFile, bool bRemoveRootNode = false);
 		bool FromXmlStringA(const std::string& sString);
+		bool FromXmlString(const wchar_t* sString)
+		{
+			return FromXmlFile(std::wstring(sString));
+		}
 		bool FromXmlString(const std::wstring& sString);
 
-		std::string GetAttributeA(const std::string& sName, const std::string& _default = "");
-		std::string GetAttributeA(const std::wstring& sName, const std::string& _default = "");
-
-		std::wstring GetAttribute(const std::string& sName, const std::wstring& _default = L"");
-		std::wstring GetAttribute(const std::wstring& sName, const std::wstring& _default = L"");
-
-		int GetAttributeInt(const std::string& sName, const int& _default = 0);
-		int GetAttributeInt(const std::wstring& sName, const int& _default = 0);
-
-		double GetAttributeDouble(const std::string& sName, const double& _default = 0);
-		double GetAttributeDouble(const std::wstring& sName, const double& _default = 0);
-
-		std::wstring GetText();
-
 		bool IsValid();
+		void Clear();
+		CString GetName();
+		CString GetText();
 
-		CXmlNode GetNode(const std::wstring& sName);
-		CXmlNodes GetNodes(const std::wstring& sName);
+		CString ReadAttributeBase(const wchar_t* bstrName);
+		template<typename T>
+		void ReadAttributeBase(const wchar_t* bsName, T& value)
+		{
+			value = GetAttribute(CString(bsName)).GetString();
+		}
+		CString ReadAttribute(const CString& strAttibuteName);
+		template<typename T>
+		void ReadAllAttributes(T& strNames, T& strValues)
+		{
+			if (!IsValid())
+				return;
 
-		bool GetNode(const std::wstring& sName, CXmlNode& oNode);
-		bool GetNodes(const std::wstring& sName, CXmlNodes& oNodes);
+			std::map<CStringA, CStringA>::iterator p;
+			for (p = m_attributes.begin(); p != m_attributes.end(); ++p)
+			{
+				p->first.c_str(), p->first.length()
+					strNames.push_back(p->first);
+				strValues.push_back(p->second);
+			}
+		}
+		
+		CStringA GetAttributeA(const CStringA& sName, const CStringA& _default = "");
+		CStringA GetAttributeA(const CString& sName, const CStringA& _default = "");
+
+		CString GetAttribute(const CStringA& sName, const CString& _default = L"");
+		CString GetAttribute(const CString& sName, const CString& _default = L"");
+		CString GetAttribute(const wchar_t* sName, const CString& _default = L"");
+		
+		int GetAttributeInt(const CStringA& sName, const int& _default = 0);
+		int GetAttributeInt(const CString& sName, const int& _default = 0);
+		int ReadAttributeInt(const CString& str, const int& nDef = 0);
+
+		double GetAttributeDouble(const CStringA& sName, const double& _default = 0);
+		double GetAttributeDouble(const CString& sName, const double& _default = 0);
+		
+
+		CString ReadNodeTextBase(const wchar_t* bsName);
+		template <typename T>
+		void ReadNodeValueBase(const wchar_t* bsName, T& value)
+		{
+			value = ReadNodeTextBase(bsName);
+		}
+		CString ReadNodeText(const CString& strName);
+		CString ReadValueString(const CString& sName, const CString& nDef = _T(""));
+
+		template <typename T>
+		void LoadArray(const CString& sName, std::vector<T>& arList)
+		{
+			CXmlNodes oNodes;
+			if (GetNodes(sName, oNodes))
+			{
+				int nCount = oNodes.GetCount();
+				for (int i = 0; i < nCount; ++i)
+				{
+					CXmlNode oItem;
+					oNodes.GetAt(i, oItem);
+
+					arList.reserve(arList.size() + 1);
+					arList[i].fromXML(oItem);
+				}
+			}
+		}
+		template <typename T>
+		void LoadArray(const CString& sName, const CString& sSubName, std::vector<T>& arList)
+		{
+			CXmlNode oNode;
+			if (GetNode(sName, oNode))
+				oNode.LoadArray(sSubName, arList);
+		}
+		CXmlNode ReadNode(const CString& strNodeName);
+		CXmlNode ReadNodeNoNS(const CString& strNodeName);
+
+		CXmlNode GetNode(const CString& sName);
+		CXmlNodes GetNodes(const CString& sName);
+
+		bool GetNode(const CString& sName, CXmlNode& oNode);
+		bool GetNodes(const CString& sName, CXmlNodes& oNodes);
 
 		CXmlNode& operator=(const CXmlNode& oSrc);
-
+	private:
+		CString GetNamespace(const CString& strNodeName);
+		CString GetNameNoNS(const CString& strNodeName);
 	public:
-		std::wstring private_GetXml();
-		std::wstring private_GetXmlFast();
+		CString private_GetXml();
+		CString private_GetXmlFast();
 	};
 
 	class CXmlNodes

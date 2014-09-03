@@ -1,4 +1,6 @@
-#pragma once
+#ifndef DOCUMENT_WRITER
+#define DOCUMENT_WRITER
+
 #include "Common.h"
 #include "../BinWriter/BinReaderWriterDefines.h";
 namespace Writers
@@ -79,3 +81,4 @@ namespace Writers
 		}
 	};
 }
+#endif	// #ifndef DOCUMENT_WRITER

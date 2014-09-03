@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SETTING_WRITER
+#define SETTING_WRITER
+
 #include "Common.h"
 
 namespace Writers
@@ -55,3 +57,4 @@ namespace Writers
 		}
 	};
 }
+#endif	// #ifndef SETTING_WRITER

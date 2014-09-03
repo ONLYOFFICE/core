@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BIN_READER_WRITER_DEFINES
+#define BIN_READER_WRITER_DEFINES
+
 extern int g_nCurFormatVersion;
 namespace BinDocxRW
 {
@@ -799,3 +801,5 @@ const int g_nFormatVersion = 5;
 		Shade = 3
 	};}
 }
+
+#endif	// #ifndef BIN_READER_WRITER_DEFINES

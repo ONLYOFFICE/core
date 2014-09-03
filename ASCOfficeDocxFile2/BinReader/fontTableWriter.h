@@ -1,4 +1,6 @@
-#pragma once
+#ifndef FONT_TABLE_WRITER
+#define FONT_TABLE_WRITER
+
 #include "Common.h"
 
 namespace Writers
@@ -118,3 +120,4 @@ namespace Writers
 		}
 	};
 }
+#endif	// #ifndef FONT_TABLE_WRITER

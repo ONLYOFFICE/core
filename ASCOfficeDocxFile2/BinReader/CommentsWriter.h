@@ -1,4 +1,6 @@
-#pragma once
+#ifndef COMMENTS_WRITER
+#define COMMENTS_WRITER
+
 #include "Common.h"
 
 namespace Writers
@@ -72,3 +74,4 @@ namespace Writers
 		}
 	};
 }
+#endif	// #ifndef COMMENTS_WRITER

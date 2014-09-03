@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BINARY_WRITER
+#define BINARY_WRITER
+
 #include "../../ASCOfficePPTXFile/Editor/BinReaderWriterDefines.h"
 
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
@@ -3702,3 +3704,5 @@ namespace BinXlsxRW {
 	}
 #endif
 }
+
+#endif	// #ifndef BINARY_WRITER

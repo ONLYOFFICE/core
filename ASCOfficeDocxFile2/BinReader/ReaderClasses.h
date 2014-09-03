@@ -1,4 +1,5 @@
-#pragma once
+#ifndef READER_CLASSES
+#define READER_CLASSES
 
 namespace BinDocxRW {
 
@@ -2407,3 +2408,4 @@ public:
 	}
 };
 }
+#endif	// #ifndef READER_CLASSES

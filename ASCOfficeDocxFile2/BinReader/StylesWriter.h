@@ -1,4 +1,6 @@
-#pragma once
+#ifndef STYLES_WRITER
+#define STYLES_WRITER
+
 #include "Common.h"
 
 namespace Writers
@@ -53,3 +55,4 @@ namespace Writers
 		}
 	};
 }
+#endif	// #ifndef STYLES_WRITER

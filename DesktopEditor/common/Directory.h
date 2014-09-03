@@ -45,6 +45,14 @@ namespace NSDirectory
 
 		return oArray;
 	}
+	static void CreateDirectory(std::wstring& strDirectory)
+	{
+#ifdef WIN32
+		::CreateDirectoryW(strDirectory.c_str(), NULL);
+#elif LINUX
+#elif MAC
+#endif
+	}
 }
 
 #endif //_BUILD_DIRECTORY_CROSSPLATFORM_H_

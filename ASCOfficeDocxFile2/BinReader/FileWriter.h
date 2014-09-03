@@ -1,4 +1,6 @@
-#pragma once
+#ifndef FILE_WRITER
+#define FILE_WRITER
+
 #include "NumberingWriter.h"
 #include "FontTableWriter.h"
 #include "HeaderFooterWriter.h"
@@ -16,7 +18,7 @@ namespace Writers
 	public:
 		PPTXFile::IAVSOfficeDrawingConverter* m_pDrawingConverter;
 		LPSAFEARRAY m_pArray;
-		CString& m_sThemePath;
+		CString m_sThemePath;
 		bool m_bSaveChartAsImg;
 		ContentTypesWriter m_oContentTypesWriter;
 		FontTableWriter m_oFontTableWriter;
@@ -30,7 +32,7 @@ namespace Writers
 		ChartWriter m_oChartWriter;
 		int m_nDocPrIndex;
 	public:
-		FileWriter(CString sDirOutput,CString sFontDir, int nVersion, bool bSaveChartAsImg, PPTXFile::IAVSOfficeDrawingConverter* pDrawingConverter, LPSAFEARRAY pArray, CString& sThemePath):
+		FileWriter(CString sDirOutput,CString sFontDir, int nVersion, bool bSaveChartAsImg, PPTXFile::IAVSOfficeDrawingConverter* pDrawingConverter, LPSAFEARRAY pArray, CString sThemePath):
 										m_pDrawingConverter(pDrawingConverter),m_pArray(pArray),m_sThemePath(sThemePath),m_bSaveChartAsImg(bSaveChartAsImg),
 										m_oContentTypesWriter(sDirOutput), m_oFontTableWriter(sDirOutput, sFontDir),
 										m_oHeaderFooterWriter(sDirOutput, m_oContentTypesWriter),
@@ -51,3 +53,4 @@ namespace Writers
 			}
 	};
 }
+#endif	// #ifndef FILE_WRITER

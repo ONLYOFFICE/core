@@ -362,7 +362,7 @@ public:
 	void serialize(CP_ATTR_NODE);   
 };
 /////////////////////////////////////////////////////////////////////////
-class draw_connector : public draw_shape
+class draw_connector : public draw_line
 {
 public:
     static const wchar_t * ns;
@@ -374,7 +374,6 @@ public:
 	virtual void serialize(std::wostream & _Wostream);
 
     draw_connector_attlist draw_connector_attlist_;
-    draw_line_attlist draw_line_attlist_;
 
 	void reset_svg_path();
 	void reset_svg_attributes();

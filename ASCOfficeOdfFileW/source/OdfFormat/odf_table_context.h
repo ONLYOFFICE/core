@@ -36,6 +36,7 @@ public:
 
 	void start_table(office_element_ptr &elm, bool styled = false);
 		void set_default_column_width(double width);
+		void change_current_column_width(double width);
 	void end_table();
 	
 	void		 set_default_cell_properties(std::wstring style_name);
@@ -60,6 +61,7 @@ public:
 
 	void add_column(office_element_ptr &elm, bool styled = false);
 		void set_column_width(double width);
+		void set_column_optimal(bool val);
 
 
 

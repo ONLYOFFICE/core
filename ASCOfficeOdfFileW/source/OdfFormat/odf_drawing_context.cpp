@@ -627,24 +627,6 @@ void odf_drawing_context::end_shape()
 		if (impl_->current_drawing_state_.path_.length()>1) 	path->draw_path_attlist_.svg_d_ = impl_->current_drawing_state_.path_;
 		if (impl_->current_drawing_state_.view_box_.length()>1)	path->draw_path_attlist_.svg_viewbox_ = impl_->current_drawing_state_.view_box_;
 	}
-////////////////////////////////////////////////////////////////////////////////////
-	draw_connector* connector = dynamic_cast<draw_connector*>(impl_->current_level_.back().get());
-	if (connector)
-	{
-		if (!connector->draw_connector_attlist_.draw_type_) connector->draw_connector_attlist_.draw_type_ = L"line";
-
-		connector->draw_line_attlist_.svg_x1_ = impl_->current_drawing_state_.svg_x_;
-		connector->draw_line_attlist_.svg_y1_ = impl_->current_drawing_state_.svg_y_;
-		
-		if (impl_->current_drawing_state_.svg_x_ && impl_->current_drawing_state_.svg_width_)
-			connector->draw_line_attlist_.svg_x2_ = impl_->current_drawing_state_.svg_x_.get() + impl_->current_drawing_state_.svg_width_.get();
-		
-		if (impl_->current_drawing_state_.svg_y_ && impl_->current_drawing_state_.svg_height_)
-			connector->draw_line_attlist_.svg_y2_ = impl_->current_drawing_state_.svg_y_.get() + impl_->current_drawing_state_.svg_height_.get();
-		
-		impl_->current_drawing_state_.svg_height_ = boost::none;
-		impl_->current_drawing_state_.svg_width_ = boost::none;
-	}
 ////////////////////////////////////////////////////////////////////////////////////////////
 	draw_line* line = dynamic_cast<draw_line*>(impl_->current_level_.back().get());
 	if (line)
@@ -660,6 +642,30 @@ void odf_drawing_context::end_shape()
 		
 		impl_->current_drawing_state_.svg_height_ = boost::none;
 		impl_->current_drawing_state_.svg_width_ = boost::none;
+	
+		if (impl_->current_drawing_state_.flipV)
+		{
+			_CP_OPT(length) tmp;
+			
+			tmp = line->draw_line_attlist_.svg_y1_;
+			line->draw_line_attlist_.svg_y1_ = line->draw_line_attlist_.svg_y2_;
+			line->draw_line_attlist_.svg_y2_ = tmp;
+		}
+		if (impl_->current_drawing_state_.flipH)
+		{
+			_CP_OPT(length) tmp;
+			
+			tmp = line->draw_line_attlist_.svg_x1_;
+			line->draw_line_attlist_.svg_x1_ = line->draw_line_attlist_.svg_x2_;
+			line->draw_line_attlist_.svg_x2_ = tmp;
+		}
+	}
+
+////////////////////////////////////////////////////////////////////////////////////
+	draw_connector* connector = dynamic_cast<draw_connector*>(impl_->current_level_.back().get());
+	if (connector)
+	{
+		if (!connector->draw_connector_attlist_.draw_type_) connector->draw_connector_attlist_.draw_type_ = L"line";
 	}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -972,6 +978,8 @@ void odf_drawing_context::set_viewBox(double W, double H)
 }
 void odf_drawing_context::set_flip_H(bool bVal)
 {
+	impl_->current_drawing_state_.flipH = bVal;
+
 	if (impl_->current_graphic_properties == NULL) return;
 	if (bVal == false)return;
 //for image 
@@ -979,11 +987,11 @@ void odf_drawing_context::set_flip_H(bool bVal)
 		impl_->current_graphic_properties->content().style_mirror_ = *impl_->current_graphic_properties->content().style_mirror_ + std::wstring(L" horizontal");
 	else
 		impl_->current_graphic_properties->content().style_mirror_ = std::wstring(L"horizontal");
-//else	
-	impl_->current_drawing_state_.flipH = bVal;
 }
 void odf_drawing_context::set_flip_V(bool bVal)
 {
+	impl_->current_drawing_state_.flipV = bVal;
+
 	if (impl_->current_graphic_properties == NULL) return;
 	if (bVal == false)return;
 //for image 
@@ -991,8 +999,6 @@ void odf_drawing_context::set_flip_V(bool bVal)
 		impl_->current_graphic_properties->content().style_mirror_ = *impl_->current_graphic_properties->content().style_mirror_ + std::wstring(L" vertical");
 	else
 		impl_->current_graphic_properties->content().style_mirror_ = std::wstring(L"vertical");
-//else
-	impl_->current_drawing_state_.flipV = bVal;
 }
 
 void odf_drawing_context::set_rotate(double dVal)
@@ -1063,7 +1069,11 @@ void odf_drawing_context::set_anchor(int  type)
 	if (impl_->is_footer_header_ && type == anchor_type::Page)
 		type = anchor_type::Paragraph;
 	impl_->anchor_settings_.anchor_type_ = anchor_type((anchor_type::type)type);
-
+}
+anchor_type::type odf_drawing_context::get_anchor()
+{
+	if (impl_->anchor_settings_.anchor_type_) impl_->anchor_settings_.anchor_type_->get_type();
+	else return anchor_type::AsChar;
 }
 //////////////////////////////////////////////////////////////////////////////////////
 void odf_drawing_context::set_vertical_rel(int from)
@@ -1085,8 +1095,9 @@ void odf_drawing_context::set_vertical_rel(int from)
 	if (impl_->is_footer_header_ && ( from ==3 /*|| 5*/))
 	{
 		set_anchor(anchor_type::Paragraph);
-		//подозгительно на подложку страницы
+		//подозрительно на подложку страницы
 		impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
+		impl_->anchor_settings_.run_through_ = run_through(run_through::Background);
 	}
 
 	impl_->anchor_settings_.style_vertical_rel_ = vertical_rel(type);
@@ -1120,7 +1131,7 @@ void odf_drawing_context::set_horizontal_rel(int from)
 	{
 		case 0:	type = horizontal_rel::Char;				break;	//	relfromhCharacter     = 0,
 		case 1:	type = horizontal_rel::Paragraph;			break;	//	relfromhColumn        = 1,
-		case 2:	type = horizontal_rel::ParagraphStartMargin;break;	//	relfromhInsideMargin  = 2, ???
+		case 2:	type = horizontal_rel::Paragraph;			break;	//	relfromhInsideMargin  = 2, ???
 		case 3:	type = horizontal_rel::PageStartMargin;		break;	//	relfromhLeftMargin    = 3,
 		case 4:	type = horizontal_rel::ParagraphStartMargin;break;	//	relfromhMargin        = 4, ???
 		case 5:	type = horizontal_rel::ParagraphEndMargin;	break;	//	relfromhOutsideMargin = 5,

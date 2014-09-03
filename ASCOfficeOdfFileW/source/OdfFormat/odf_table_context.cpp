@@ -271,6 +271,46 @@ void odf_table_context::set_default_column_width(double width)
 {
 	impl_->default_column_width = width;
 }
+void odf_table_context::set_column_optimal(bool val)
+{
+	if (impl_->empty()) return;
+	if (impl_->current_table().columns.size() < 1)return;
+
+	style *style_ = dynamic_cast<style*>(impl_->current_table().columns.back().style_elm.get());
+
+	if (style_ == NULL) return;
+	style_table_column_properties *properties = style_->style_content_.get_style_table_column_properties();
+	if (properties == NULL) return;
+
+	properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = val;
+}
+
+void odf_table_context::change_current_column_width(double width)
+{
+	if (impl_->empty()) return;
+	if (impl_->current_table().columns.size() < 1)return;
+
+	int index = impl_->current_table().current_column ;
+	if (index < 0) return;
+
+	style *style_ = dynamic_cast<style*>(impl_->current_table().columns[index].style_elm.get());
+
+	if (style_ == NULL) return;
+	style_table_column_properties *properties = style_->style_content_.get_style_table_column_properties();
+	if (properties == NULL) return;
+
+	length length_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
+	
+	if (!properties->style_table_column_properties_attlist_.style_column_width_)
+		properties->style_table_column_properties_attlist_.style_column_width_ = length_;
+	else
+	{
+		double old_width = properties->style_table_column_properties_attlist_.style_column_width_->get_value_unit(length::pt);
+		if (old_width < width/* && width < impl_->odf_context_->page_layout_context()->current_page_width_*/)
+			properties->style_table_column_properties_attlist_.style_column_width_ = length_;
+	}
+}
+
 void odf_table_context::set_column_width(double width)
 {
 	if (impl_->empty()) return;

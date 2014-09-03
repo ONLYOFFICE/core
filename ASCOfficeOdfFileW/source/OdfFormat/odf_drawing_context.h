@@ -37,7 +37,8 @@ public:
 	void set_margin_top		(double valPt);
 	void set_margin_bottom	(double valPt);
 
-	void set_anchor	(int type);//anchor_type
+	void				set_anchor(int type);//anchor_type
+	anchor_type::type	get_anchor();
 
 	void set_object_background(bool Val);
 	void set_object_foreground(bool Val);

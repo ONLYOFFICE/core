@@ -187,19 +187,42 @@ void odt_conversion_context::start_drawings()
 
 	drawing_context_.push_back(new_drawing_context_);
 }
-void odt_conversion_context::end_drawings(bool delete_only)
+void odt_conversion_context::end_drawings()
 {
 	if (drawing_context_.size() < 1) return;
 
 	office_element_ptr & elm = drawing_context()->get_root_element();
-	if (elm && text_context()->current_level_.size() > 0)
+
+	if (elm && text_context()->current_level_.size() > 0)//add to p or h !!!!!
 	{
-		if (!delete_only)text_context()->current_level_.back().elm->add_child_element(elm);
+		anchor_type::type anchor = drawing_context()->get_anchor();
+
+		bool bSet = false;
+		if ( anchor == anchor_type::Page || anchor == anchor_type::Paragraph)
+		{
+			for (long i = text_context()->current_level_.size()-1; i>=0; i--)
+			{
+				text_p *p = dynamic_cast<text_p*>(text_context()->current_level_[i].elm.get());
+				text_h *h = dynamic_cast<text_h*>(text_context()->current_level_[i].elm.get());
+
+				if (p || h)
+				{
+					bSet = true;
+					text_context()->current_level_[i].elm->add_child_element(elm);
+					break;
+				}
+			}
+		}
+		if (!bSet) text_context()->current_level_.back().elm->add_child_element(elm);
+		
 		drawing_context()->clear();
 		drawing_context_.pop_back();
 	}
-	else// if (delete_only)
+	else
 	{		
+		text_context()->start_element(elm);
+		text_context()->end_element();
+
 		drawing_context()->clear();
 		drawing_context_.pop_back();
 	}
@@ -312,10 +335,11 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 		current_field_.type = 3;
 	}	
 	res1 = instr.find(L"PAGEREF");
-	if (res1 >=0 && current_field_.type == 0)	//это не поле - это bookmark
+	if (res1 >=0 && current_field_.type == 0 )	//это не поле - это bookmark
 	{
 		current_field_.type = 5;
-		current_field_.value = instr.substr(9, instr.length()-5);
+		if (instr.length() > 9)
+			current_field_.value = instr.substr(9, instr.length()-5);
 	}
 	res1 = instr.find(L"PAGE");
 	if (res1 >=0 && current_field_.type == 0)

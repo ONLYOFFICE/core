@@ -233,7 +233,7 @@ void OoxConverter::convert(OOX::Drawing::CShape	*oox_shape)
 		if (type == SimpleTypes::shapetypeRect && oox_shape->m_oTxSp.IsInit() && oox_shape->m_oTxSp->m_oTxBody.IsInit()) type = 2000;
 
 		if ((type == 2000 || type == SimpleTypes::shapetypeRect )	&& oox_shape->m_oTxSp->m_oTxBody->m_oBodyPr.IsInit() 
-																	&& oox_shape->m_oTxSp->m_oTxBody->m_oBodyPr->m_oPrstTxWrap.IsInit())
+																	/*&& oox_shape->m_oTxSp->m_oTxBody->m_oBodyPr->m_oPrstTxWrap.IsInit()*/)
 		{
 			if (oox_shape->m_oTxSp->m_oTxBody->m_oBodyPr->m_oFromWordArt.ToBool())
 			{
@@ -818,8 +818,7 @@ void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill,
 		}	
 		odf_context()->drawing_context()->set_gradient_type(grad_style);
 
-		if (oox_grad_fill->m_oGsLst.IsInit() && oox_grad_fill->m_oGsLst->m_arrGs.size()>1 &&
-											change_sheme_color && oox_grad_fill->m_oGsLst->m_arrGs[0])
+		if (oox_grad_fill->m_oGsLst.IsInit() && oox_grad_fill->m_oGsLst->m_arrGs.size()>1 && oox_grad_fill->m_oGsLst->m_arrGs[0])
 		{
 			std::wstring hexColorStart, hexColorEnd;
 			_CP_OPT(double) opacityStart, opacityEnd;

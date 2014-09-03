@@ -47,7 +47,7 @@ public:
 	odf_table_context				* table_context();
 	
 	void start_drawings();
-	void end_drawings(bool delete_only = false);
+	void end_drawings();
 
 	virtual void start_image(std::wstring & image_file_name);
 	void add_text_content	(std::wstring & text);

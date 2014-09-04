@@ -2054,12 +2054,32 @@ namespace NSEditorApi
 		}
 	};
 
+	class CAscBinaryData
+	{
+	public:
+		unsigned char*	Data;
+		int				Size;
+
+	public:
+		CAscBinaryData()
+		{
+			Data = NULL;
+			Size = 0;
+		}
+		~CAscBinaryData()
+		{
+			if (NULL != Data)
+				delete [] Data;
+		}		
+	};
+
 	class CAscInsertImage : public IMenuEventDataBase
 	{
 	private:
 		js_wrapper<CAscImageRaw>	m_oRaw;
 		js_wrapper<std::wstring>	m_sPath;
 		js_wrapper<std::string>		m_sBase64;	
+		js_wrapper<CAscBinaryData>	m_oBinaryData;
 
 	public:
 		CAscInsertImage()
@@ -2072,6 +2092,7 @@ namespace NSEditorApi
 		LINK_PROPERTY_OBJECT_JS(CAscImageRaw, Raw)
 		LINK_PROPERTY_STRING_JS(Path)
 		LINK_PROPERTY_STRINGA_JS(Base64)
+		LINK_PROPERTY_OBJECT_JS(CAscBinaryData, BinaryData)
 	};
 
 	class CAscInsertTable : public IMenuEventDataBase

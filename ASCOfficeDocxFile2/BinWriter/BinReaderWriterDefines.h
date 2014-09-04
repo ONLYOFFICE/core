@@ -764,7 +764,9 @@ const int g_nFormatVersion = 5;
 		Sub = 55,
 		Sup = 56,
 		MText = 57,
-		CtrlPr = 58
+		CtrlPr = 58,
+		pagebreak = 59,
+		linebreak = 60
 	};}
 	namespace c_oSer_FramePrType{ enum c_oSer_FramePrType
 	{		

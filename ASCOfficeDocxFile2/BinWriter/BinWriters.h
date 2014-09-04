@@ -2716,12 +2716,8 @@ namespace BinDocxRW
 				/*case OOX::et_m_oMathPara:
 					{
 						OOX::Logic::COMathPara* pOMathPara = static_cast<OOX::Logic::COMathPara*>(item);
-
-						int nCurPos = m_oBcw.WriteItemStart(c_oSerParType::OMathPara);
-						if ( pOMathPara->m_oOMath.IsInit() )
-							WriteMathOMath(pOMathPara->m_oOMath.get());
-						if ( pOMathPara->m_oOMathParaPr.IsInit() )
-							WriteMathOMathParaPr(pOMathPara->m_oOMathParaPr.get());
+						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::OMathPara);
+						WriteMathOMathPara(pOMathPara->m_arrItems);			
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}
@@ -3086,10 +3082,7 @@ namespace BinDocxRW
 						OOX::Logic::COMathPara* pOMathPara = static_cast<OOX::Logic::COMathPara*>(item);
 						nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::OMathPara);
 
-						if ( pOMathPara->m_oOMath.IsInit() )
-							WriteMathOMath(pOMathPara->m_oOMath.get());
-						if ( pOMathPara->m_oOMathParaPr.IsInit() )
-							WriteMathOMathParaPr(pOMathPara->m_oOMathParaPr.get());
+						WriteMathOMathPara(pOMathPara->m_arrItems);	
 											
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
@@ -3121,7 +3114,23 @@ namespace BinDocxRW
 							m_oBcw.WriteItemEnd(nCurPos2);
 						}
 						if ( pMRun->m_oMText.IsInit() )
-							WriteMathText(pMRun->m_oMText.get());						
+							WriteMathText(pMRun->m_oMText.get());
+
+						if ( pMRun->m_oBr.IsInit() )
+						{
+							int nBreakType = -1;
+							switch(pMRun->m_oBr->m_oType.GetValue())
+							{
+							case SimpleTypes::brtypeColumn:
+							case SimpleTypes::brtypePage: nBreakType = c_oSer_OMathContentType::pagebreak;break;
+							case SimpleTypes::brtypeTextWrapping: nBreakType = c_oSer_OMathContentType::linebreak;break;
+							}
+							if(-1 != nBreakType)
+							{
+								m_oBcw.m_oStream.WriteByte(nBreakType);
+								m_oBcw.m_oStream.WriteLong(c_oSerPropLenType::Null);
+							}					
+						}
 											
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
@@ -3989,16 +3998,30 @@ namespace BinDocxRW
 			WriteMathArgNodes(pOMath.m_arrItems);			
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		void WriteMathOMathPara(const OOX::Logic::COMathPara &pOMathPara)
+		void WriteMathOMathPara(const std::vector<OOX::WritingElement*>& m_arrItems)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::OMathPara);
+			for(int i = 0; i< m_arrItems.size(); ++i)
+			{
+				OOX::WritingElement* item = m_arrItems[i];
+				OOX::EElementType eType = item->getType();
+				int nCurPos = 0;
+				if (eType == OOX::et_m_oMath)
+				{
+					OOX::Logic::COMath* pOMath = static_cast<OOX::Logic::COMath*>(item);
+					int nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::OMath);
+					WriteMathArgNodes(pOMath->m_arrItems);
+					m_oBcw.WriteItemEnd(nCurPos);
+				}
+				else if (eType == OOX::et_m_oMathParaPr)
+				{
+					OOX::Logic::COMathParaPr* pOMathParaPr = static_cast<OOX::Logic::COMathParaPr*>(item);
+					nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::OMathParaPr);
 
-			if ( pOMathPara.m_oOMath.IsInit() )
-				WriteMathOMath(pOMathPara.m_oOMath.get());
-			if ( pOMathPara.m_oOMathParaPr.IsInit() )
-				WriteMathOMathParaPr(pOMathPara.m_oOMathParaPr.get());
-								
-			m_oBcw.WriteItemEnd(nCurPos);
+					if ( pOMathParaPr->m_oMJc.IsInit() )
+						WriteMathMJc(pOMathParaPr->m_oMJc.get());
+					m_oBcw.WriteItemEnd(nCurPos);
+				}
+			}
 		}
 		void WriteMathOMathParaPr(const OOX::Logic::COMathParaPr &pOMathParaPr)
 		{

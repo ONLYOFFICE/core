@@ -3930,6 +3930,8 @@ public:
 			CString sVal = _T("<m:grow");
 			if (!bVal)
 				sVal += _T(" m:val=\"false\" />");
+			else
+				sVal += _T(" m:val=\"true\" />");
 
 			GetRunStringWriter().WriteString(sVal);
 		}
@@ -4601,6 +4603,14 @@ public:
 			GetRunStringWriter().WriteString(CString(_T("<m:rPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathMRPr, this, poResult);
 			GetRunStringWriter().WriteString(CString(_T("</m:rPr>")));
+		}
+		else if (c_oSer_OMathContentType::pagebreak == type)
+		{
+			GetRunStringWriter().WriteString(CString(_T("<w:br w:type=\"page\"/>")));
+		}
+		else if (c_oSer_OMathContentType::linebreak == type)
+		{
+			GetRunStringWriter().WriteString(CString(_T("<w:br />")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

@@ -1180,13 +1180,6 @@ namespace NSEditorApi
 	public:
 		CAscSection()
 		{
-			m_dPageWidth	= (double)0;
-			m_dPageHeight	= (double)0;
-
-			m_dMarginLeft	= (double)0;
-			m_dMarginRight	= (double)0;
-			m_dMarginTop	= (double)0;
-			m_dMarginBottom = (double)0;
 		}
 		virtual ~CAscSection()
 		{

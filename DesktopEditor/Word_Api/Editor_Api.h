@@ -2168,6 +2168,50 @@ namespace NSEditorApi
 
 namespace NSEditorApi
 {
+	class CAscSearchFindText : public IMenuEventDataBase
+	{
+	private:
+		std::wstring	m_sText;
+		bool			m_bIsNext;
+		bool			m_bIsMatchCase;
+
+	public:
+		CAscSearchFindText()
+		{
+		}
+		virtual ~CAscSearchFindText()
+		{
+		}
+
+		LINK_PROPERTY_STRING(Text)
+		LINK_PROPERTY_BOOL(IsNext)
+		LINK_PROPERTY_BOOL(IsMatchCase)
+	};
+	class CAscSearchReplaceText : public IMenuEventDataBase
+	{
+	private:
+		std::wstring	m_sText;
+		std::wstring	m_sReplaceWith;
+		bool			m_bIsReplaceAll;
+		bool			m_bIsMatchCase;
+
+	public:
+		CAscSearchReplaceText()
+		{
+		}
+		virtual ~CAscSearchReplaceText()
+		{
+		}
+
+		LINK_PROPERTY_STRING(Text)
+		LINK_PROPERTY_STRING(ReplaceWith)
+		LINK_PROPERTY_BOOL(IsReplaceAll)
+		LINK_PROPERTY_BOOL(IsMatchCase)
+	};
+}
+
+namespace NSEditorApi
+{
 	class CAscMenuEvent : public IMenuEventDataBase
 	{
 	public:

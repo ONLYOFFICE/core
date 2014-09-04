@@ -2565,7 +2565,13 @@ namespace SimpleTypes
 					m_sValue = sValue.Mid( 0, 6 );
 					Parse();
 				}
-                else                                this->m_eValue = eDefValue;
+ 				else if ( 3 == sValue.GetLength() )// a la #339 (Compo 3AP.docx)
+				{
+                    this->m_eValue = hexcolorRGB;
+					m_sValue = sValue;
+					Parse3();
+				}
+				else   this->m_eValue = eDefValue;
 			}
 
             return this->m_eValue;
@@ -2640,7 +2646,15 @@ namespace SimpleTypes
 			m_unG = HexToInt( (int)m_sValue[3] ) + (unsigned char)(HexToInt( (int)m_sValue[2] ) << 4);
 			m_unB = HexToInt( (int)m_sValue[5] ) + (unsigned char)(HexToInt( (int)m_sValue[4] ) << 4);
 		}
+		void Parse3()
+		{
+			if ( m_sValue.GetLength() < 3 )
+				return;
 
+			m_unR = HexToInt( (int)m_sValue[0] ) + (unsigned char)(HexToInt( (int)m_sValue[0]) << 4);
+			m_unG = HexToInt( (int)m_sValue[1] ) + (unsigned char)(HexToInt( (int)m_sValue[1]) << 4);
+			m_unB = HexToInt( (int)m_sValue[2] ) + (unsigned char)(HexToInt( (int)m_sValue[2]) << 4);
+		}
 		int	HexToInt(int nHex)
 		{
 			if ( nHex >= '0' && nHex <= '9' ) return (nHex - '0');

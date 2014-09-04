@@ -42,7 +42,11 @@ public:
 
 			void set_bullet_image_size(double size);
 			void set_bullet_image	(std::wstring ref);
+			
 			void set_bullet_char	(std::wstring val);
+			
+			void set_numeric_format (std::wstring val);
+			
 			void set_start_number	(int val);
 			void set_text_style_name(std::wstring val);
 		void end_style_level();

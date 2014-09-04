@@ -79,6 +79,7 @@ void graphic_format_properties::serialize(std::wostream & _Wostream ,const wchar
 			common_text_anchor_attlist_.serialize(CP_GET_XML_NODE());
 			common_border_attlist_.serialize(CP_GET_XML_NODE());
 			common_border_line_width_attlist_.serialize(CP_GET_XML_NODE());
+			common_shadow_attlist_.serialize(CP_GET_XML_NODE());
 			common_padding_attlist_.serialize(CP_GET_XML_NODE());
 			common_background_color_attlist_.serialize(CP_GET_XML_NODE());
 		}

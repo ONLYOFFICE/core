@@ -631,17 +631,20 @@ void odf_drawing_context::end_shape()
 	draw_line* line = dynamic_cast<draw_line*>(impl_->current_level_.back().get());
 	if (line)
 	{
-		line->draw_line_attlist_.svg_x1_ = impl_->current_drawing_state_.svg_x_;
-		line->draw_line_attlist_.svg_y1_ = impl_->current_drawing_state_.svg_y_;
+		if (!line->draw_line_attlist_.svg_x1_) line->draw_line_attlist_.svg_x1_ = impl_->current_drawing_state_.svg_x_;
+		if (!line->draw_line_attlist_.svg_y1_) line->draw_line_attlist_.svg_y1_ = impl_->current_drawing_state_.svg_y_;
 		
-		if (impl_->current_drawing_state_.svg_x_ && impl_->current_drawing_state_.svg_width_)
-			line->draw_line_attlist_.svg_x2_ = impl_->current_drawing_state_.svg_x_.get() + impl_->current_drawing_state_.svg_width_.get();
+		if (line->draw_line_attlist_.svg_x1_ && impl_->current_drawing_state_.svg_width_ && !line->draw_line_attlist_.svg_x2_)
+			line->draw_line_attlist_.svg_x2_ = line->draw_line_attlist_.svg_x1_.get() + impl_->current_drawing_state_.svg_width_.get();
 		
-		if (impl_->current_drawing_state_.svg_y_ && impl_->current_drawing_state_.svg_height_)
-			line->draw_line_attlist_.svg_y2_ = impl_->current_drawing_state_.svg_y_.get() + impl_->current_drawing_state_.svg_height_.get();
+		if (line->draw_line_attlist_.svg_y1_ && impl_->current_drawing_state_.svg_height_ && !line->draw_line_attlist_.svg_y2_)
+			line->draw_line_attlist_.svg_y2_ = line->draw_line_attlist_.svg_y1_.get() + impl_->current_drawing_state_.svg_height_.get();
 		
 		impl_->current_drawing_state_.svg_height_ = boost::none;
 		impl_->current_drawing_state_.svg_width_ = boost::none;
+		
+		impl_->current_drawing_state_.svg_x_ = boost::none;
+		impl_->current_drawing_state_.svg_y_ = boost::none;
 	
 		if (impl_->current_drawing_state_.flipV)
 		{
@@ -878,16 +881,17 @@ void odf_drawing_context::set_shadow(int type, std::wstring hexColor, _CP_OPT(do
 {
 	if (!impl_->current_graphic_properties)return;
 
+	impl_->current_graphic_properties->content().draw_shadow_offset_x_ = length(length(dist_pt,length::pt).get_value_unit(length::cm),length::cm);
+	
+	if (dist_pt_y > 0)
+		impl_->current_graphic_properties->content().draw_shadow_offset_y_ = length(length(dist_pt_y,length::pt).get_value_unit(length::cm),length::cm);
+	else
+		impl_->current_graphic_properties->content().draw_shadow_offset_y_ = length(length(dist_pt,length::pt).get_value_unit(length::cm),length::cm);
+	
 	impl_->current_graphic_properties->content().draw_shadow_ = shadow_type1(shadow_type1::Visible);
 	if (opacity) impl_->current_graphic_properties->content().draw_shadow_opacity_ = *opacity;
 
 	impl_->current_graphic_properties->content().draw_shadow_color_ = hexColor;
-	impl_->current_graphic_properties->content().draw_shadow_offset_y_ = length(length(dist_pt,length::pt).get_value_unit(length::cm),length::cm);
-	
-	if (dist_pt_y > 0)
-		impl_->current_graphic_properties->content().draw_shadow_offset_x_ = length(length(dist_pt_y,length::pt).get_value_unit(length::cm),length::cm);
-	else
-		impl_->current_graphic_properties->content().draw_shadow_offset_x_ = length(length(dist_pt,length::pt).get_value_unit(length::cm),length::cm);
 }
 
 void odf_drawing_context::set_no_fill()
@@ -1325,10 +1329,44 @@ void odf_drawing_context::set_group_rotate(int iVal)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void odf_drawing_context::set_position_line(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt, _CP_OPT(double) & x2_pt, _CP_OPT(double) & y2_pt)
+{
+	draw_line* line = dynamic_cast<draw_line*>(impl_->current_level_.back().get());
+	if (line == NULL) return;
+
+	if (impl_->current_drawing_state_.in_group && impl_->current_group_)
+	{
+		if (x_pt) x_pt = *x_pt * impl_->current_group_->scale_cx + impl_->current_group_->shift_x ;			
+			// +  (impl_->current_group_->flipH ? (impl_->current_group_->cx - 2 * x_pt): 0);
+	}
+	if (x_pt && !line->draw_line_attlist_.svg_x1_) line->draw_line_attlist_.svg_x1_ = length(length(*x_pt,length::pt).get_value_unit(length::cm),length::cm);
+
+	if (impl_->current_drawing_state_.in_group && impl_->current_group_)
+	{
+		if (y_pt) y_pt = *y_pt * impl_->current_group_->scale_cy + impl_->current_group_->shift_y;
+			 //+  (impl_->current_group_->flipV ? (impl_->current_group_->cy - 2 * y_pt): 0);
+	}
+	if (y_pt && !line->draw_line_attlist_.svg_y1_) line->draw_line_attlist_.svg_y1_ = length(length(*y_pt,length::pt).get_value_unit(length::cm),length::cm);
+
+///////////////////////////////////////
+	if (impl_->current_drawing_state_.in_group && impl_->current_group_)
+	{
+		if (x2_pt) x_pt = *x2_pt * impl_->current_group_->scale_cx + impl_->current_group_->shift_x ;			
+			// +  (impl_->current_group_->flipH ? (impl_->current_group_->cx - 2 * x_pt): 0);
+	}
+	if (x2_pt && !line->draw_line_attlist_.svg_x2_) line->draw_line_attlist_.svg_x2_ = length(length(*x2_pt,length::pt).get_value_unit(length::cm),length::cm);
+
+	if (impl_->current_drawing_state_.in_group && impl_->current_group_)
+	{
+		if (y2_pt) y_pt = *y2_pt * impl_->current_group_->scale_cy + impl_->current_group_->shift_y;
+			 //+  (impl_->current_group_->flipV ? (impl_->current_group_->cy - 2 * y_pt): 0);
+	}
+	if (y2_pt && !line->draw_line_attlist_.svg_y2_) line->draw_line_attlist_.svg_y2_ = length(length(*y2_pt,length::pt).get_value_unit(length::cm),length::cm);
+
+}
+
 void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt)
 {
-	//if (impl_->group_list_.size() < 1)return;
-
 	double x = x_pt ? *x_pt : 0;
 	double y = y_pt ? *y_pt : 0;
 
@@ -1740,7 +1778,8 @@ void odf_drawing_context::end_text_box()
 	
 	end_element();
 
-	if (impl_->current_graphic_properties->content().svg_stroke_width_)
+	if (impl_->current_graphic_properties->content().svg_stroke_width_ || 
+		(impl_->current_graphic_properties->content().draw_stroke_ && impl_->current_graphic_properties->content().draw_stroke_->get_type() != line_style::None))
 	{
 		std::wstringstream ss;
 		ss << impl_->current_graphic_properties->content().svg_stroke_width_->get_length();
@@ -1755,7 +1794,30 @@ void odf_drawing_context::end_text_box()
 
 		impl_->current_graphic_properties->content().common_border_attlist_.fo_border_ = ss.str();
 	}
+	
+	if (impl_->current_graphic_properties->content().draw_shadow_)
+	{
+		std::wstringstream shadow_style;
+		
+		if (impl_->current_graphic_properties->content().draw_shadow_color_)
+			shadow_style << *impl_->current_graphic_properties->content().draw_shadow_color_;
+		else shadow_style << L"#000000";
 
+		shadow_style << L" ";	
+		shadow_style << *impl_->current_graphic_properties->content().draw_shadow_offset_x_;
+		shadow_style << L" ";
+		shadow_style << *impl_->current_graphic_properties->content().draw_shadow_offset_y_;
+
+		impl_->current_graphic_properties->content().common_shadow_attlist_.style_shadow_ = shadow_style.str();
+
+		impl_->current_graphic_properties->content().draw_shadow_offset_x_	= boost::none;
+		impl_->current_graphic_properties->content().draw_shadow_offset_y_	= boost::none;
+		impl_->current_graphic_properties->content().draw_shadow_color_		= boost::none;
+		impl_->current_graphic_properties->content().draw_shadow_			= boost::none;
+
+		if (!impl_->current_graphic_properties->content().common_border_attlist_.fo_border_)
+			impl_->current_graphic_properties->content().common_border_attlist_.fo_border_ = std::wstring(L"#000000 solid 0.06pt");
+	}
 	end_frame();
 }
 void odf_drawing_context::end_object()

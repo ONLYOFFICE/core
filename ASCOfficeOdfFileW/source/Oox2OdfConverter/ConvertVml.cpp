@@ -177,6 +177,9 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 		odf_context()->drawing_context()->set_size		(width_pt, height_pt);		
 		odf_context()->drawing_context()->set_position	(x, y);
 
+		if (x && y) 
+			odf_context()->drawing_context()->set_anchor(2);
+
 	}
 
 	//if (width_pt && height_pt)
@@ -231,6 +234,19 @@ void OoxConverter::convert(OOX::Vml::CImageData *vml_image_data)
 			if (gain > 1)
 				odf_context()->drawing_context()->set_opacity(gain/1000.);
 
+			if (vml_image_data->m_oCropLeft.IsInit() || vml_image_data->m_oCropRight.IsInit()
+				|| vml_image_data->m_oCropTop.IsInit() || vml_image_data->m_oCropBottom.IsInit())
+			{
+				double l_pt = 0,t_pt =0 ,r_pt = 0, b_pt = 0;
+			
+				if (vml_image_data->m_oCropLeft.IsInit())	l_pt = vml_image_data->m_oCropLeft->GetValue()	* Width;
+				if (vml_image_data->m_oCropTop.IsInit())	t_pt = vml_image_data->m_oCropTop->GetValue()	* Height;
+				if (vml_image_data->m_oCropRight.IsInit())	r_pt = vml_image_data->m_oCropRight->GetValue() * Width;
+				if (vml_image_data->m_oCropBottom.IsInit()) b_pt = vml_image_data->m_oCropBottom->GetValue()* Height;
+
+				odf_context()->drawing_context()->set_image_client_rect(l_pt ,t_pt ,r_pt, b_pt);
+			}
+
 		odf_context()->drawing_context()->end_bitmap_style();
 	odf_context()->drawing_context()->end_area_properties();
 }
@@ -270,6 +286,25 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 		odf_context()->drawing_context()->set_opacity(100 - vml_fill->m_oOpacity2->GetValue() * 100);
 	}
 
+	if (vml_fill->m_rId.IsInit())
+	{
+		//bitmap fill
+		odf_context()->drawing_context()->start_bitmap_style();
+		{
+			double Width=0, Height = 0;
+			CString sID = vml_fill->m_rId->GetValue();
+			CString pathImage = find_link_by_id(sID,1);
+
+			if (pathImage.GetLength() > 0)
+			{
+				odf_context()->drawing_context()->set_bitmap_link(string2std_string(pathImage));
+				_gdi_graphics_::GetResolution(pathImage, Width, Height);
+			}
+			odf_context()->drawing_context()->set_image_style_repeat(1);
+		}
+		odf_context()->drawing_context()->end_bitmap_style();
+	}
+
 	odf_context()->drawing_context()->end_area_properties();
 }
 void OoxConverter::convert(OOX::Vml::CLine	*vml_line)
@@ -282,11 +317,10 @@ void OoxConverter::convert(OOX::Vml::CLine	*vml_line)
 	_CP_OPT(double) x = vml_line->m_oFrom.GetX();
 	_CP_OPT(double) y = vml_line->m_oFrom.GetY();
 
-	_CP_OPT(double) width	= (vml_line->m_oTo.GetX() - vml_line->m_oFrom.GetX());
-	_CP_OPT(double) height	= (vml_line->m_oTo.GetY() - vml_line->m_oFrom.GetY());
+	_CP_OPT(double) x1	= vml_line->m_oTo.GetX();
+	_CP_OPT(double) y1	= vml_line->m_oTo.GetY();
 
-	odf_context()->drawing_context()->set_position(x, y);
-	odf_context()->drawing_context()->set_size(width, height);
+	odf_context()->drawing_context()->set_position_line(x, y, x1, y1);
 
 	odf_context()->drawing_context()->set_anchor(2);
 	
@@ -560,11 +594,13 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 	{
 		if (vml_common->m_oStroked.IsInit() && vml_common->m_oStroked->GetValue() == SimpleTypes::booleanFalse)
 			odf_context()->drawing_context()->set_no_fill();
-		else if (vml_common->m_oStrokeWeight.IsInit() || (vml_common->m_oStroked.IsInit() && vml_common->m_oStroked->GetValue()))
+		else
 		{
-			if (vml_common->m_oStrokeWeight.IsInit()) 
-				odf_context()->drawing_context()->set_line_width(vml_common->m_oStrokeWeight->ToPoints());
-
+			if (vml_common->m_oStrokeWeight.IsInit() || (vml_common->m_oStroked.IsInit() && vml_common->m_oStroked->GetValue()))
+			{
+				if (vml_common->m_oStrokeWeight.IsInit()) 
+					odf_context()->drawing_context()->set_line_width(vml_common->m_oStrokeWeight->ToPoints());
+			}
 			if (vml_common->m_oStrokeColor.IsInit())
 			{
 				unsigned char ucA=0, ucR=0, ucG=0, ucB=0;

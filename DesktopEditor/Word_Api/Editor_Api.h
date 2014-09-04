@@ -1175,6 +1175,8 @@ namespace NSEditorApi
 		js_wrapper<double> m_dMarginTop;
 		js_wrapper<double> m_dMarginBottom;
 
+		js_wrapper<bool>   m_bPortrait;
+
 	public:
 		CAscSection()
 		{
@@ -1196,6 +1198,7 @@ namespace NSEditorApi
 		LINK_PROPERTY_DOUBLE_JS(MarginRight)
 		LINK_PROPERTY_DOUBLE_JS(MarginTop)
 		LINK_PROPERTY_DOUBLE_JS(MarginBottom)
+		LINK_PROPERTY_BOOL_JS(Portrait)
 	};
 }
 
@@ -2276,5 +2279,47 @@ namespace NSEditorApi
 		}
 	};
 }
+
+namespace NSEditorApi
+{
+	class CAscEditorSettings : public IMenuEventDataBase
+	{
+	public:
+		js_wrapper<int>		ParagraphStyleThumbnailWidth;
+		js_wrapper<int>		ParagraphStyleThumbnailHeight;
+
+		js_wrapper<int>		TableStyleThumbnailWidth;
+		js_wrapper<int>		TableStyleThumbnailHeight;
+
+		CAscEditorSettings()
+		{
+		}
+
+		CAscEditorSettings(const CAscEditorSettings& oSrc)
+		{
+			ParagraphStyleThumbnailWidth	= oSrc.ParagraphStyleThumbnailWidth;
+			ParagraphStyleThumbnailHeight	= oSrc.ParagraphStyleThumbnailHeight;
+
+			TableStyleThumbnailWidth		= oSrc.TableStyleThumbnailWidth;
+			TableStyleThumbnailHeight		= oSrc.TableStyleThumbnailHeight;
+		}
+
+		CAscEditorSettings& operator=(const CAscEditorSettings& oSrc)
+		{
+			ParagraphStyleThumbnailWidth	= oSrc.ParagraphStyleThumbnailWidth;
+			ParagraphStyleThumbnailHeight	= oSrc.ParagraphStyleThumbnailHeight;
+
+			TableStyleThumbnailWidth		= oSrc.TableStyleThumbnailWidth;
+			TableStyleThumbnailHeight		= oSrc.TableStyleThumbnailHeight;
+
+			return *this;
+		}
+
+		virtual ~CAscEditorSettings()
+		{
+		}
+	};
+}
+
 
 #endif //_BUILD_EDITOR_API_CROSSPLATFORM_H_

@@ -85,6 +85,9 @@ void odf_style_context::add_style(office_element_ptr elm, bool automatic, bool r
 	
 	style_state_list_.back()->set_automatic(automatic);
 	style_state_list_.back()->set_root(root);
+
+	style_family_counts_[(int)family]++;
+
 }
 
 void odf_style_context::create_default_style(style_family::type family)
@@ -246,6 +249,24 @@ bool odf_style_context::find_odf_default_style_state(style_family::type family, 
 		{
 			state = style_state_list_[i];
 			return true;
+		}
+	}
+	return false;
+}
+
+bool odf_style_context::find_odf_style_state(std::wstring style_name, style_family::type family, odf_style_state_ptr & state)
+{
+	for (int i=0;i<style_state_list_.size(); i++)
+	{
+		if (style_state_list_[i]->odf_style_)
+		{
+			if (style_state_list_[i]->get_family_type() == family && style_state_list_[i]->get_name() == style_name)
+			{
+				state = style_state_list_[i];
+
+				return true;
+			}
+				
 		}
 	}
 	return false;

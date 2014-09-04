@@ -51,6 +51,7 @@ public:
 	bool find_odf_default_style_state(style_family::type family, odf_style_state_ptr & state);
 	
 	bool find_odf_style(std::wstring style_name, style_family::type family, style *& style_);
+	bool find_odf_style_state(std::wstring style_name, style_family::type family, odf_style_state_ptr & state); //имена в odf сделаны полностью уникальными
 
 	odf_style_state_ptr	last_state(style_family::type family = style_family::None);
 

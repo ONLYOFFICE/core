@@ -1169,17 +1169,10 @@ namespace OOX
 				if ( _T("") !=  m_sSrc )
 					sResult += _T("src=\"") + m_sSrc + _T("\" ");
 
-				if ( 0 != m_oCropLeft.GetValue() )
-					sResult += _T("cropleft=\"") + m_oCropLeft.ToString() + _T("\" ");
-
-				if ( 0 != m_oCropTop.GetValue() )
-					sResult += _T("croptop=\"") + m_oCropTop.ToString() + _T("\" ");
-
-				if ( 0 != m_oCropRight.GetValue() )
-					sResult += _T("cropright=\"") + m_oCropRight.ToString() + _T("\" ");
-
-				if ( 0 != m_oCropBottom.GetValue() )
-					sResult += _T("cropbottom=\"") + m_oCropBottom.ToString() + _T("\" ");
+				ComplexTypes_WriteAttribute( _T("cropleft=\""),		m_oCropLeft);
+				ComplexTypes_WriteAttribute( _T("croptop=\""),		m_oCropTop);
+				ComplexTypes_WriteAttribute( _T("cropright=\""),	m_oCropRight);
+				ComplexTypes_WriteAttribute( _T("cropbottom=\""),	m_oCropBottom);
 
 				if ( 1 != m_oGain.GetValue() )
 					sResult += _T("gain=\"") + m_oGain.ToString() + _T("\" ");
@@ -1226,10 +1219,6 @@ namespace OOX
 			{
 				// Выставляем значения по умолчанию
 				m_oBlackLevel.SetValue( 0.0 );
-				m_oCropLeft.SetValue( 0.0 );
-				m_oCropRight.SetValue( 0.0 );
-				m_oCropBottom.SetValue( 0.0 );
-				m_oCropTop.SetValue( 0.0 );
 				m_oGain.SetValue( 1.0 );
 				m_oGamma.SetValue( 1.0 );
 
@@ -1331,10 +1320,10 @@ namespace OOX
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oBiLevel;
 			SimpleTypes::CDouble                                      m_oBlackLevel;
 			nullable<SimpleTypes::CColorType<>>                       m_oChromaKey;
-			SimpleTypes::Vml::CVml_1_65536                            m_oCropLeft;
-			SimpleTypes::Vml::CVml_1_65536                            m_oCropTop;
-			SimpleTypes::Vml::CVml_1_65536                            m_oCropRight;
-			SimpleTypes::Vml::CVml_1_65536                            m_oCropBottom;
+			nullable<SimpleTypes::Vml::CVml_1_65536>                  m_oCropLeft;
+			nullable<SimpleTypes::Vml::CVml_1_65536>                  m_oCropTop;
+			nullable<SimpleTypes::Vml::CVml_1_65536>                  m_oCropRight;
+			nullable<SimpleTypes::Vml::CVml_1_65536>                  m_oCropBottom;
 			nullable<SimpleTypes::CTrueFalse<>>                       m_oDetectMouseClick;
 			nullable<SimpleTypes::CColorType<>>                       m_oEmbossColor;
 			SimpleTypes::CDouble                                      m_oGain;

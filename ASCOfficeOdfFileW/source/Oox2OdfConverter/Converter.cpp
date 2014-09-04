@@ -176,6 +176,11 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 				OOX::Vml::CStroke *vml = static_cast<OOX::Vml::CStroke*>(oox_unknown);
 				convert(vml);
 			}break;
+			case OOX::et_v_shadow:
+			{
+				OOX::Vml::CShadow *vml = static_cast<OOX::Vml::CShadow*>(oox_unknown);
+				convert(vml);
+			}break;
 			case OOX::et_v_image:
 			{
 				OOX::Vml::CImage *vml = static_cast<OOX::Vml::CImage*>(oox_unknown);

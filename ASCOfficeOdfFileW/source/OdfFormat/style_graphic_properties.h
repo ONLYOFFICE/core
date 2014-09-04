@@ -88,6 +88,8 @@ public:
 	common_border_attlist				common_border_attlist_;
     common_border_line_width_attlist	common_border_line_width_attlist_;
 
+	common_shadow_attlist				common_shadow_attlist_;
+
     common_padding_attlist				common_padding_attlist_;
     
     common_background_color_attlist		common_background_color_attlist_;    

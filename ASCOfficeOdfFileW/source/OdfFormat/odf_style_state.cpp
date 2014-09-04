@@ -33,6 +33,10 @@ namespace odf {
 	{
 		default_style_->style_family_ = style_family(style_family_);
 	}
+
+	list_style_exist = false;
+	list_style_level = -1;
+	list_style_id	 = -1;
 }
 
 office_element_ptr & odf_style_state::get_office_element()
@@ -125,7 +129,33 @@ void odf_style_state::set_conditional(bool val)
 {
 	conditional_ = val;
 }
+//------------------------------------------------------------------------------------
+bool odf_style_state::get_list_style_exist()
+{
+	return list_style_exist;
+}
+int	odf_style_state::get_list_style_level()
+{
+	return list_style_level;
+}
+int odf_style_state::get_list_style_id()
+{
+	return list_style_id;
+}
 
+void odf_style_state::set_list_style_exist(bool val)
+{
+	list_style_exist = val;
+}
+void odf_style_state::set_list_style_level(int val)
+{
+	list_style_level = val;
+}
+void odf_style_state::set_list_style_id(int val)
+{
+	list_style_id = val;
+}
+//------------------------------------------------------------------------------------
 void odf_style_state::apply_from(style* other_style)
 {
 	if (other_style == NULL)return;

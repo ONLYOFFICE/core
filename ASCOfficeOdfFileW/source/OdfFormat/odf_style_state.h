@@ -71,7 +71,15 @@ public:
     style_table_column_properties * get_table_column_properties() ;
     style_chart_properties *		get_chart_properties() ;
 	//style_drawing_page_properties*	get_drawing_page_properties();
-	
+
+	bool	get_list_style_exist();
+	int		get_list_style_level();
+	int		get_list_style_id();
+
+	void	set_list_style_exist(bool val);
+	void	set_list_style_level(int val);
+	void	set_list_style_id(int val);
+
 private:
 	std::wstring	odf_style_name_;
 	std::wstring	oox_style_name_;
@@ -92,6 +100,10 @@ private:
 	office_element_ptr	odf_style_;
 
 	friend class odf_style_context;
+
+	bool	list_style_exist;
+	int		list_style_level;
+	int		list_style_id;
 };
 
 

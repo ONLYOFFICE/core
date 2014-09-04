@@ -127,7 +127,7 @@ namespace MathEquation
 			WriteIntAttribute("value", nSize);
 			WriteNodeEnd(true);
 		}
-		virtual void BeginChar(uint8_t nVAlign, MMATRIXHORALIGN eHorAlign, MMATRIXVERALIGN eVerAlign, bool bEqualRows, bool bEqualCols, uint8_t nRows, uint8_t nCols, uint8_t* pVerBorders, uint8_t* pHorBorders)
+		virtual void BeginMatrix(uint8_t nVAlign, MMATRIXHORALIGN eHorAlign, MMATRIXVERALIGN eVerAlign, bool bEqualRows, bool bEqualCols, uint8_t nRows, uint8_t nCols, uint8_t* pVerBorders, uint8_t* pHorBorders)
 		{
 			CMatrixCommand* pCommand = (CMatrixCommand*)PushCommand(commandMatrix);
 			pCommand->SetProps(nRows, nCols);

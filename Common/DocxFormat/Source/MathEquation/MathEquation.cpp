@@ -620,7 +620,7 @@ int CEquationReader::HandleMatrix()
 		}
 	}
 
-	pOutputDev->BeginChar(nVAlign, (MMATRIXHORALIGN)nHorAlign, (MMATRIXVERALIGN)nVerAlign, bEqualRows, bEqualCols, nRows, nCols, pVerBorders, pHorBorders);
+	pOutputDev->BeginMatrix(nVAlign, (MMATRIXHORALIGN)nHorAlign, (MMATRIXVERALIGN)nVerAlign, bEqualRows, bEqualCols, nRows, nCols, pVerBorders, pHorBorders);
 
 	delete []pVerBorders;
 	delete []pHorBorders;

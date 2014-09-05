@@ -55,7 +55,9 @@ namespace codegen
 
             //from/to xml
             m_oDocxSerH.AppendFormat("#pragma once\r\n#ifndef OOX_CHARTGEN_FILE_INCLUDE_H_\r\n#define OOX_CHARTGEN_FILE_INCLUDE_H_\r\n");
+            m_oDocxSerH.AppendFormat("\r\n");
             m_oDocxSerH.AppendFormat("#include \"../CommonInclude.h\"\r\n");
+            m_oDocxSerH.AppendFormat("\r\n");
             m_oDocxSerH.AppendFormat("namespace OOX{{\r\nnamespace Spreadsheet{{\r\n");
             m_oDocxSerCPP.AppendFormat("#include \"{0}\"\r\nnamespace OOX{{\r\nnamespace Spreadsheet{{\r\n", sFileDocxSerH);
             
@@ -185,12 +187,17 @@ namespace codegen
                 m_oDocxSerH.AppendFormat("void fromXML(XmlUtils::CXmlLiteReader& oReader);\r\n");
                 m_oDocxSerH.AppendFormat("void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;\r\n");
                 m_oDocxSerH.AppendFormat("EElementType getType();\r\n");
+                List<GenMember> aAttributes = new List<GenMember>();
                 for (int i = 0; i < oGenClass.aMembers.Count; ++i)
                 {
                     GenMember oGenMember = oGenClass.aMembers[i];
                     if (null != oGenMember.aArrayTypes)
                         m_oDocxSerH.AppendFormat("private: void toXML(XmlUtils::CStringWriter& writer, bool bIsAttribute, {0} eType, void* pVal) const;\r\n", oGenMember.sArrayTypesEnumName);
+                    if (!oGenMember.bInternal && oGenMember.bIsAttribute)
+                            aAttributes.Add(oGenMember);
                 }
+                if (aAttributes.Count > 0)
+                    m_oDocxSerH.AppendFormat("private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);\r\n");
                 m_oDocxSerH.AppendFormat("}};\r\n");
                 //.cpp
                 ProcessConstructor(m_oDocxSerCPP, oGenClass);
@@ -207,6 +214,14 @@ namespace codegen
                     GenMember oGenMember = oGenClass.aMembers[i];
                     if (null != oGenMember.aArrayTypes)
                         ProcessArrayTypesToXml(m_oDocxSerCPP, oGenClass, oGenMember, oGenClass.sName);
+                }
+                if (aAttributes.Count > 0)
+                {
+                    m_oDocxSerCPP.AppendFormat("void {0}::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){{\r\n", oGenClass.sName);
+                    m_oDocxSerCPP.AppendFormat("WritingElement_ReadAttributes_Start_No_NS( oReader )\r\n");
+                    ProcessMembersFromXml(m_oDocxSerCPP, aAttributes, "wsName");
+                    m_oDocxSerCPP.AppendFormat("WritingElement_ReadAttributes_End( oReader )\r\n");
+                    m_oDocxSerCPP.AppendFormat("}}\r\n");
                 }
             }
         }
@@ -308,11 +323,7 @@ namespace codegen
                 }
             }
             if (aAttributes.Count > 0)
-            {
-                sb.AppendFormat("WritingElement_ReadAttributes_Start_No_NS( oReader )\r\n");
-                ProcessMembersFromXml(sb, aAttributes, "wsName");
-                sb.AppendFormat("WritingElement_ReadAttributes_End( oReader )\r\n");
-            }
+                sb.AppendFormat("ReadAttributes(oReader);\r\n");
             sb.AppendFormat("if ( oReader.IsEmptyNode() )\r\n");
             sb.AppendFormat("return;\r\n");
             if (aMembers.Count > 0)

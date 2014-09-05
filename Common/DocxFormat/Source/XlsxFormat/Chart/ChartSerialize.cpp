@@ -1243,21 +1243,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_Boolean::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					bool* pNewElem = new bool;
-					CString sVal = oReader.GetText();
-					CString sValLower = sVal.MakeLower();
-					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
-						*pNewElem = false;
-					else
-						*pNewElem = true;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -1278,6 +1265,21 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_Boolean::getType(){return et_ct_boolean;}
+		void CT_Boolean::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					bool* pNewElem = new bool;
+					CString sVal = oReader.GetText();
+					CString sValLower = sVal.MakeLower();
+					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
+						*pNewElem = false;
+					else
+						*pNewElem = true;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_RelId::CT_RelId()
 		{
 			m_id = NULL;
@@ -1288,18 +1290,8 @@ namespace OOX{
 				delete m_id;
 		}
 		void CT_RelId::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("id") == wsName)
-				{
-					//todo
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_id = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -1319,6 +1311,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_RelId::getType(){return et_ct_relid;}
+		void CT_RelId::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("id") == wsName)
+				{
+					//todo
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_id = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_PageSetup::CT_PageSetup()
 		{
 			/*m_paperSize = new unsigned long;
@@ -1413,100 +1417,8 @@ namespace OOX{
 				delete m_copies;
 		}
 		void CT_PageSetup::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("paperSize") == wsName)
-				{
-					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_paperSize = pNewElem;
-				}
-				else if(_T("paperHeight") == wsName)
-				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_paperHeight = pNewElem;
-				}
-				else if(_T("paperWidth") == wsName)
-				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_paperWidth = pNewElem;
-				}
-				else if(_T("firstPageNumber") == wsName)
-				{
-					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_firstPageNumber = pNewElem;
-				}
-				else if(_T("orientation") == wsName)
-				{
-					ST_PageSetupOrientation* pNewElem = new ST_PageSetupOrientation;
-					ST_PageSetupOrientation eVal;
-					if(FromXml_ST_PageSetupOrientation(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_orientation = pNewElem;
-				}
-				else if(_T("blackAndWhite") == wsName)
-				{
-					bool* pNewElem = new bool;
-					CString sVal = oReader.GetText();
-					CString sValLower = sVal.MakeLower();
-					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
-						*pNewElem = false;
-					else
-						*pNewElem = true;
-					m_blackAndWhite = pNewElem;
-				}
-				else if(_T("draft") == wsName)
-				{
-					bool* pNewElem = new bool;
-					CString sVal = oReader.GetText();
-					CString sValLower = sVal.MakeLower();
-					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
-						*pNewElem = false;
-					else
-						*pNewElem = true;
-					m_draft = pNewElem;
-				}
-				else if(_T("useFirstPageNumber") == wsName)
-				{
-					bool* pNewElem = new bool;
-					CString sVal = oReader.GetText();
-					CString sValLower = sVal.MakeLower();
-					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
-						*pNewElem = false;
-					else
-						*pNewElem = true;
-					m_useFirstPageNumber = pNewElem;
-				}
-				else if(_T("horizontalDpi") == wsName)
-				{
-					long* pNewElem = new long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_horizontalDpi = pNewElem;
-				}
-				else if(_T("verticalDpi") == wsName)
-				{
-					long* pNewElem = new long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_verticalDpi = pNewElem;
-				}
-				else if(_T("copies") == wsName)
-				{
-					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_copies = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -1615,6 +1527,100 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_PageSetup::getType(){return et_ct_pagesetup;}
+		void CT_PageSetup::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("paperSize") == wsName)
+				{
+					unsigned long* pNewElem = new unsigned long;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_paperSize = pNewElem;
+				}
+				else if(_T("paperHeight") == wsName)
+				{
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_paperHeight = pNewElem;
+				}
+				else if(_T("paperWidth") == wsName)
+				{
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_paperWidth = pNewElem;
+				}
+				else if(_T("firstPageNumber") == wsName)
+				{
+					unsigned long* pNewElem = new unsigned long;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_firstPageNumber = pNewElem;
+				}
+				else if(_T("orientation") == wsName)
+				{
+					ST_PageSetupOrientation* pNewElem = new ST_PageSetupOrientation;
+					ST_PageSetupOrientation eVal;
+					if(FromXml_ST_PageSetupOrientation(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_orientation = pNewElem;
+				}
+				else if(_T("blackAndWhite") == wsName)
+				{
+					bool* pNewElem = new bool;
+					CString sVal = oReader.GetText();
+					CString sValLower = sVal.MakeLower();
+					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
+						*pNewElem = false;
+					else
+						*pNewElem = true;
+					m_blackAndWhite = pNewElem;
+				}
+				else if(_T("draft") == wsName)
+				{
+					bool* pNewElem = new bool;
+					CString sVal = oReader.GetText();
+					CString sValLower = sVal.MakeLower();
+					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
+						*pNewElem = false;
+					else
+						*pNewElem = true;
+					m_draft = pNewElem;
+				}
+				else if(_T("useFirstPageNumber") == wsName)
+				{
+					bool* pNewElem = new bool;
+					CString sVal = oReader.GetText();
+					CString sValLower = sVal.MakeLower();
+					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
+						*pNewElem = false;
+					else
+						*pNewElem = true;
+					m_useFirstPageNumber = pNewElem;
+				}
+				else if(_T("horizontalDpi") == wsName)
+				{
+					long* pNewElem = new long;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_horizontalDpi = pNewElem;
+				}
+				else if(_T("verticalDpi") == wsName)
+				{
+					long* pNewElem = new long;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_verticalDpi = pNewElem;
+				}
+				else if(_T("copies") == wsName)
+				{
+					unsigned long* pNewElem = new unsigned long;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_copies = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_PageMargins::CT_PageMargins()
 		{
 			m_l = NULL;
@@ -1640,52 +1646,8 @@ namespace OOX{
 				delete m_footer;
 		}
 		void CT_PageMargins::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("l") == wsName)
-				{
-					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
-					m_l = pNewElem;
-				}
-				else if(_T("r") == wsName)
-				{
-					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
-					m_r = pNewElem;
-				}
-				else if(_T("t") == wsName)
-				{
-					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
-					m_t = pNewElem;
-				}
-				else if(_T("b") == wsName)
-				{
-					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
-					m_b = pNewElem;
-				}
-				else if(_T("header") == wsName)
-				{
-					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
-					m_header = pNewElem;
-				}
-				else if(_T("footer") == wsName)
-				{
-					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
-					m_footer = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -1743,6 +1705,52 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_PageMargins::getType(){return et_ct_pagemargins;}
+		void CT_PageMargins::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("l") == wsName)
+				{
+					double* pNewElem = new double;
+					CString sVal = oReader.GetText();
+					*pNewElem = _tstof(sVal);
+					m_l = pNewElem;
+				}
+				else if(_T("r") == wsName)
+				{
+					double* pNewElem = new double;
+					CString sVal = oReader.GetText();
+					*pNewElem = _tstof(sVal);
+					m_r = pNewElem;
+				}
+				else if(_T("t") == wsName)
+				{
+					double* pNewElem = new double;
+					CString sVal = oReader.GetText();
+					*pNewElem = _tstof(sVal);
+					m_t = pNewElem;
+				}
+				else if(_T("b") == wsName)
+				{
+					double* pNewElem = new double;
+					CString sVal = oReader.GetText();
+					*pNewElem = _tstof(sVal);
+					m_b = pNewElem;
+				}
+				else if(_T("header") == wsName)
+				{
+					double* pNewElem = new double;
+					CString sVal = oReader.GetText();
+					*pNewElem = _tstof(sVal);
+					m_header = pNewElem;
+				}
+				else if(_T("footer") == wsName)
+				{
+					double* pNewElem = new double;
+					CString sVal = oReader.GetText();
+					*pNewElem = _tstof(sVal);
+					m_footer = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_HeaderFooter::CT_HeaderFooter()
 		{
 			m_oddHeader = NULL;
@@ -1804,41 +1812,8 @@ namespace OOX{
 				delete m_differentFirst;
 		}
 		void CT_HeaderFooter::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("alignWithMargins") == wsName)
-				{
-					bool* pNewElem = new bool;
-					CString sVal = oReader.GetText();
-					CString sValLower = sVal.MakeLower();
-					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
-						*pNewElem = false;
-					else
-						*pNewElem = true;
-					m_alignWithMargins = pNewElem;
-				}
-				else if(_T("differentOddEven") == wsName)
-				{
-					bool* pNewElem = new bool;
-					CString sVal = oReader.GetText();
-					CString sValLower = sVal.MakeLower();
-					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
-						*pNewElem = false;
-					else
-						*pNewElem = true;
-					m_differentOddEven = pNewElem;
-				}
-				else if(_T("differentFirst") == wsName)
-				{
-					bool* pNewElem = new bool;
-					CString sVal = oReader.GetText();
-					CString sValLower = sVal.MakeLower();
-					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
-						*pNewElem = false;
-					else
-						*pNewElem = true;
-					m_differentFirst = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
+				ReadAttributes(oReader);
+
 					if ( oReader.IsEmptyNode() )
 						return;
 				int nParentDepth = oReader.GetDepth();
@@ -1997,6 +1972,43 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 		}
 		EElementType CT_HeaderFooter::getType(){return et_ct_headerfooter;}
+		void CT_HeaderFooter::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("alignWithMargins") == wsName)
+				{
+					bool* pNewElem = new bool;
+					CString sVal = oReader.GetText();
+					CString sValLower = sVal.MakeLower();
+					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
+						*pNewElem = false;
+					else
+						*pNewElem = true;
+					m_alignWithMargins = pNewElem;
+				}
+				else if(_T("differentOddEven") == wsName)
+				{
+					bool* pNewElem = new bool;
+					CString sVal = oReader.GetText();
+					CString sValLower = sVal.MakeLower();
+					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
+						*pNewElem = false;
+					else
+						*pNewElem = true;
+					m_differentOddEven = pNewElem;
+				}
+				else if(_T("differentFirst") == wsName)
+				{
+					bool* pNewElem = new bool;
+					CString sVal = oReader.GetText();
+					CString sValLower = sVal.MakeLower();
+					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
+						*pNewElem = false;
+					else
+						*pNewElem = true;
+					m_differentFirst = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_PrintSettings::CT_PrintSettings()
 		{
 			m_headerFooter = NULL;
@@ -2073,16 +2085,8 @@ namespace OOX{
 				delete m_id;
 		}
 		void CT_ExternalData::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("id") == wsName)
-				{
-					//todo
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_id = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
+				ReadAttributes(oReader);
+
 					if ( oReader.IsEmptyNode() )
 						return;
 				int nParentDepth = oReader.GetDepth();
@@ -2119,6 +2123,18 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 		}
 		EElementType CT_ExternalData::getType(){return et_ct_externaldata;}
+		void CT_ExternalData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("id") == wsName)
+				{
+					//todo
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_id = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_DispBlanksAs::CT_DispBlanksAs()
 		{
 			/*m_val = new ST_DispBlanksAs;
@@ -2131,18 +2147,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_DispBlanksAs::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_DispBlanksAs* pNewElem = new ST_DispBlanksAs;
-					ST_DispBlanksAs eVal;
-					if(FromXml_ST_DispBlanksAs(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -2162,6 +2168,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_DispBlanksAs::getType(){return et_ct_dispblanksas;}
+		void CT_DispBlanksAs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_DispBlanksAs* pNewElem = new ST_DispBlanksAs;
+					ST_DispBlanksAs eVal;
+					if(FromXml_ST_DispBlanksAs(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_LegendEntry::CT_LegendEntry()
 		{
 			m_idx = NULL;
@@ -2250,17 +2268,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_UnsignedInt::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -2278,6 +2287,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_UnsignedInt::getType(){return et_ct_unsignedint;}
+		void CT_UnsignedInt::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					unsigned long* pNewElem = new unsigned long;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_Extension::CT_Extension()
 		{
 			m_Any = NULL;
@@ -2291,15 +2311,8 @@ namespace OOX{
 				delete m_uri;
 		}
 		void CT_Extension::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("uri") == wsName)
-				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_uri = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
+				ReadAttributes(oReader);
+
 					if ( oReader.IsEmptyNode() )
 						return;
 				int nParentDepth = oReader.GetDepth();
@@ -2343,6 +2356,17 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 		}
 		EElementType CT_Extension::getType(){return et_ct_extension;}
+		void CT_Extension::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("uri") == wsName)
+				{
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_uri = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_LegendPos::CT_LegendPos()
 		{
 			/*m_val = new ST_LegendPos;
@@ -2355,18 +2379,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_LegendPos::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_LegendPos* pNewElem = new ST_LegendPos;
-					ST_LegendPos eVal;
-					if(FromXml_ST_LegendPos(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -2386,6 +2400,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_LegendPos::getType(){return et_ct_legendpos;}
+		void CT_LegendPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_LegendPos* pNewElem = new ST_LegendPos;
+					ST_LegendPos eVal;
+					if(FromXml_ST_LegendPos(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_Legend::CT_Legend()
 		{
 			m_legendPos = NULL;
@@ -2725,18 +2751,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_LayoutTarget::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_LayoutTarget* pNewElem = new ST_LayoutTarget;
-					ST_LayoutTarget eVal;
-					if(FromXml_ST_LayoutTarget(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -2756,6 +2772,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_LayoutTarget::getType(){return et_ct_layouttarget;}
+		void CT_LayoutTarget::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_LayoutTarget* pNewElem = new ST_LayoutTarget;
+					ST_LayoutTarget eVal;
+					if(FromXml_ST_LayoutTarget(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_LayoutMode::CT_LayoutMode()
 		{
 			/*m_val = new ST_LayoutMode;
@@ -2768,18 +2796,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_LayoutMode::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_LayoutMode* pNewElem = new ST_LayoutMode;
-					ST_LayoutMode eVal;
-					if(FromXml_ST_LayoutMode(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -2799,6 +2817,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_LayoutMode::getType(){return et_ct_layoutmode;}
+		void CT_LayoutMode::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_LayoutMode* pNewElem = new ST_LayoutMode;
+					ST_LayoutMode eVal;
+					if(FromXml_ST_LayoutMode(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_Double::CT_Double()
 		{
 			m_val = NULL;
@@ -2809,17 +2839,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_Double::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -2837,6 +2858,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_Double::getType(){return et_ct_double;}
+		void CT_Double::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					double* pNewElem = new double;
+					CString sVal = oReader.GetText();
+					*pNewElem = _tstof(sVal);
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_DTable::CT_DTable()
 		{
 			m_showHorzBorder = NULL;
@@ -3330,17 +3362,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_LogBase::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -3358,6 +3381,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_LogBase::getType(){return et_ct_logbase;}
+		void CT_LogBase::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					double* pNewElem = new double;
+					CString sVal = oReader.GetText();
+					*pNewElem = _tstof(sVal);
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_Orientation::CT_Orientation()
 		{
 			/*m_val = new ST_Orientation;
@@ -3370,18 +3404,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_Orientation::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_Orientation* pNewElem = new ST_Orientation;
-					ST_Orientation eVal;
-					if(FromXml_ST_Orientation(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -3401,6 +3425,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_Orientation::getType(){return et_ct_orientation;}
+		void CT_Orientation::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_Orientation* pNewElem = new ST_Orientation;
+					ST_Orientation eVal;
+					if(FromXml_ST_Orientation(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_AxPos::CT_AxPos()
 		{
 			m_val = NULL;
@@ -3411,18 +3447,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_AxPos::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_AxPos* pNewElem = new ST_AxPos;
-					ST_AxPos eVal;
-					if(FromXml_ST_AxPos(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -3442,6 +3468,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_AxPos::getType(){return et_ct_axpos;}
+		void CT_AxPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_AxPos* pNewElem = new ST_AxPos;
+					ST_AxPos eVal;
+					if(FromXml_ST_AxPos(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_ChartLines::CT_ChartLines()
 		{
 			m_spPr = NULL;
@@ -3812,15 +3850,8 @@ namespace OOX{
 				delete m_idx;
 		}
 		void CT_StrVal::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("idx") == wsName)
-				{
-					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_idx = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
+				ReadAttributes(oReader);
+
 					if ( oReader.IsEmptyNode() )
 						return;
 				int nParentDepth = oReader.GetDepth();
@@ -3864,6 +3895,17 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 		}
 		EElementType CT_StrVal::getType(){return et_ct_strval;}
+		void CT_StrVal::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("idx") == wsName)
+				{
+					unsigned long* pNewElem = new unsigned long;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_idx = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_NumFmt::CT_NumFmt()
 		{
 			m_formatCode = NULL;
@@ -3877,28 +3919,8 @@ namespace OOX{
 				delete m_sourceLinked;
 		}
 		void CT_NumFmt::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("formatCode") == wsName)
-				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_formatCode = pNewElem;
-				}
-				else if(_T("sourceLinked") == wsName)
-				{
-					bool* pNewElem = new bool;
-					CString sVal = oReader.GetText();
-					CString sValLower = sVal.MakeLower();
-					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
-						*pNewElem = false;
-					else
-						*pNewElem = true;
-					m_sourceLinked = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -3927,6 +3949,28 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_NumFmt::getType(){return et_ct_numfmt;}
+		void CT_NumFmt::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("formatCode") == wsName)
+				{
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_formatCode = pNewElem;
+				}
+				else if(_T("sourceLinked") == wsName)
+				{
+					bool* pNewElem = new bool;
+					CString sVal = oReader.GetText();
+					CString sValLower = sVal.MakeLower();
+					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
+						*pNewElem = false;
+					else
+						*pNewElem = true;
+					m_sourceLinked = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_TickMark::CT_TickMark()
 		{
 			/*m_val = new ST_TickMark;
@@ -3939,18 +3983,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_TickMark::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_TickMark* pNewElem = new ST_TickMark;
-					ST_TickMark eVal;
-					if(FromXml_ST_TickMark(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -3970,6 +4004,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_TickMark::getType(){return et_ct_tickmark;}
+		void CT_TickMark::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_TickMark* pNewElem = new ST_TickMark;
+					ST_TickMark eVal;
+					if(FromXml_ST_TickMark(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_TickLblPos::CT_TickLblPos()
 		{
 			/*m_val = new ST_TickLblPos;
@@ -3982,18 +4028,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_TickLblPos::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_TickLblPos* pNewElem = new ST_TickLblPos;
-					ST_TickLblPos eVal;
-					if(FromXml_ST_TickLblPos(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -4013,6 +4049,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_TickLblPos::getType(){return et_ct_ticklblpos;}
+		void CT_TickLblPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_TickLblPos* pNewElem = new ST_TickLblPos;
+					ST_TickLblPos eVal;
+					if(FromXml_ST_TickLblPos(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_Crosses::CT_Crosses()
 		{
 			m_val = NULL;
@@ -4023,18 +4071,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_Crosses::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_Crosses* pNewElem = new ST_Crosses;
-					ST_Crosses eVal;
-					if(FromXml_ST_Crosses(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -4054,6 +4092,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_Crosses::getType(){return et_ct_crosses;}
+		void CT_Crosses::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_Crosses* pNewElem = new ST_Crosses;
+					ST_Crosses eVal;
+					if(FromXml_ST_Crosses(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_Skip::CT_Skip()
 		{
 			m_val = NULL;
@@ -4064,17 +4114,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_Skip::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -4092,6 +4133,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_Skip::getType(){return et_ct_skip;}
+		void CT_Skip::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					unsigned long* pNewElem = new unsigned long;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_TimeUnit::CT_TimeUnit()
 		{
 			/*m_val = new ST_TimeUnit;
@@ -4104,18 +4156,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_TimeUnit::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_TimeUnit* pNewElem = new ST_TimeUnit;
-					ST_TimeUnit eVal;
-					if(FromXml_ST_TimeUnit(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -4135,6 +4177,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_TimeUnit::getType(){return et_ct_timeunit;}
+		void CT_TimeUnit::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_TimeUnit* pNewElem = new ST_TimeUnit;
+					ST_TimeUnit eVal;
+					if(FromXml_ST_TimeUnit(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_DateAx::CT_DateAx()
 		{
 			m_axId = NULL;
@@ -4490,17 +4544,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_LblOffset::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -4518,6 +4563,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_LblOffset::getType(){return et_ct_lbloffset;}
+		void CT_LblOffset::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_AxisUnit::CT_AxisUnit()
 		{
 			m_val = NULL;
@@ -4528,17 +4584,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_AxisUnit::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -4556,6 +4603,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_AxisUnit::getType(){return et_ct_axisunit;}
+		void CT_AxisUnit::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					double* pNewElem = new double;
+					CString sVal = oReader.GetText();
+					*pNewElem = _tstof(sVal);
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_LblAlgn::CT_LblAlgn()
 		{
 			m_val = NULL;
@@ -4566,18 +4624,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_LblAlgn::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_LblAlgn* pNewElem = new ST_LblAlgn;
-					ST_LblAlgn eVal;
-					if(FromXml_ST_LblAlgn(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -4597,6 +4645,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_LblAlgn::getType(){return et_ct_lblalgn;}
+		void CT_LblAlgn::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_LblAlgn* pNewElem = new ST_LblAlgn;
+					ST_LblAlgn eVal;
+					if(FromXml_ST_LblAlgn(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_CatAx::CT_CatAx()
 		{
 			m_axId = NULL;
@@ -5016,18 +5076,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_BuiltInUnit::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_BuiltInUnit* pNewElem = new ST_BuiltInUnit;
-					ST_BuiltInUnit eVal;
-					if(FromXml_ST_BuiltInUnit(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -5047,6 +5097,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_BuiltInUnit::getType(){return et_ct_builtinunit;}
+		void CT_BuiltInUnit::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_BuiltInUnit* pNewElem = new ST_BuiltInUnit;
+					ST_BuiltInUnit eVal;
+					if(FromXml_ST_BuiltInUnit(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_DispUnits::CT_DispUnits()
 		{
 			m_builtInUnit = NULL;
@@ -5133,18 +5195,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_CrossBetween::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_CrossBetween* pNewElem = new ST_CrossBetween;
-					ST_CrossBetween eVal;
-					if(FromXml_ST_CrossBetween(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -5164,6 +5216,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_CrossBetween::getType(){return et_ct_crossbetween;}
+		void CT_CrossBetween::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_CrossBetween* pNewElem = new ST_CrossBetween;
+					ST_CrossBetween eVal;
+					if(FromXml_ST_CrossBetween(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_ValAx::CT_ValAx()
 		{
 			m_axId = NULL;
@@ -5477,18 +5541,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_SizeRepresents::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_SizeRepresents* pNewElem = new ST_SizeRepresents;
-					ST_SizeRepresents eVal;
-					if(FromXml_ST_SizeRepresents(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -5508,6 +5562,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_SizeRepresents::getType(){return et_ct_sizerepresents;}
+		void CT_SizeRepresents::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_SizeRepresents* pNewElem = new ST_SizeRepresents;
+					ST_SizeRepresents eVal;
+					if(FromXml_ST_SizeRepresents(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_BubbleScale::CT_BubbleScale()
 		{
 			/*m_val = new CString;
@@ -5523,17 +5589,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_BubbleScale::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -5551,6 +5608,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_BubbleScale::getType(){return et_ct_bubblescale;}
+		void CT_BubbleScale::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_BubbleSer::CT_BubbleSer()
 		{
 			m_idx = NULL;
@@ -6047,18 +6115,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_MarkerStyle::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_MarkerStyle* pNewElem = new ST_MarkerStyle;
-					ST_MarkerStyle eVal;
-					if(FromXml_ST_MarkerStyle(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -6078,6 +6136,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_MarkerStyle::getType(){return et_ct_markerstyle;}
+		void CT_MarkerStyle::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_MarkerStyle* pNewElem = new ST_MarkerStyle;
+					ST_MarkerStyle eVal;
+					if(FromXml_ST_MarkerStyle(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_MarkerSize::CT_MarkerSize()
 		{
 			/*m_val = new unsigned char;
@@ -6093,17 +6163,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_MarkerSize::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					unsigned char* pNewElem = new unsigned char;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -6121,6 +6182,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_MarkerSize::getType(){return et_ct_markersize;}
+		void CT_MarkerSize::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					unsigned char* pNewElem = new unsigned char;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_PictureOptions::CT_PictureOptions()
 		{
 			m_applyToFront = NULL;
@@ -6220,18 +6292,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_PictureFormat::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_PictureFormat* pNewElem = new ST_PictureFormat;
-					ST_PictureFormat eVal;
-					if(FromXml_ST_PictureFormat(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -6251,6 +6313,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_PictureFormat::getType(){return et_ct_pictureformat;}
+		void CT_PictureFormat::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_PictureFormat* pNewElem = new ST_PictureFormat;
+					ST_PictureFormat eVal;
+					if(FromXml_ST_PictureFormat(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_PictureStackUnit::CT_PictureStackUnit()
 		{
 			m_val = NULL;
@@ -6261,17 +6335,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_PictureStackUnit::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -6289,6 +6354,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_PictureStackUnit::getType(){return et_ct_picturestackunit;}
+		void CT_PictureStackUnit::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					double* pNewElem = new double;
+					CString sVal = oReader.GetText();
+					*pNewElem = _tstof(sVal);
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_DLbls::CT_DLbls()
 		{
 			m_extLst = NULL;
@@ -6987,18 +7063,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_DLblPos::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_DLblPos* pNewElem = new ST_DLblPos;
-					ST_DLblPos eVal;
-					if(FromXml_ST_DLblPos(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -7018,6 +7084,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_DLblPos::getType(){return et_ct_dlblpos;}
+		void CT_DLblPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_DLblPos* pNewElem = new ST_DLblPos;
+					ST_DLblPos eVal;
+					if(FromXml_ST_DLblPos(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_Trendline::CT_Trendline()
 		{
 			m_name = NULL;
@@ -7220,18 +7298,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_TrendlineType::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_TrendlineType* pNewElem = new ST_TrendlineType;
-					ST_TrendlineType eVal;
-					if(FromXml_ST_TrendlineType(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -7251,6 +7319,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_TrendlineType::getType(){return et_ct_trendlinetype;}
+		void CT_TrendlineType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_TrendlineType* pNewElem = new ST_TrendlineType;
+					ST_TrendlineType eVal;
+					if(FromXml_ST_TrendlineType(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_Order::CT_Order()
 		{
 			/*m_val = new unsigned char;
@@ -7266,17 +7346,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_Order::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					unsigned char* pNewElem = new unsigned char;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -7294,6 +7365,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_Order::getType(){return et_ct_order;}
+		void CT_Order::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					unsigned char* pNewElem = new unsigned char;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_Period::CT_Period()
 		{
 			/*m_val = new unsigned long;
@@ -7309,17 +7391,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_Period::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -7337,6 +7410,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_Period::getType(){return et_ct_period;}
+		void CT_Period::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					unsigned long* pNewElem = new unsigned long;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_TrendlineLbl::CT_TrendlineLbl()
 		{
 			m_layout = NULL;
@@ -7596,18 +7680,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_ErrDir::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_ErrDir* pNewElem = new ST_ErrDir;
-					ST_ErrDir eVal;
-					if(FromXml_ST_ErrDir(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -7627,6 +7701,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_ErrDir::getType(){return et_ct_errdir;}
+		void CT_ErrDir::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_ErrDir* pNewElem = new ST_ErrDir;
+					ST_ErrDir eVal;
+					if(FromXml_ST_ErrDir(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_ErrBarType::CT_ErrBarType()
 		{
 			/*m_val = new ST_ErrBarType;
@@ -7639,18 +7725,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_ErrBarType::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_ErrBarType* pNewElem = new ST_ErrBarType;
-					ST_ErrBarType eVal;
-					if(FromXml_ST_ErrBarType(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -7670,6 +7746,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_ErrBarType::getType(){return et_ct_errbartype;}
+		void CT_ErrBarType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_ErrBarType* pNewElem = new ST_ErrBarType;
+					ST_ErrBarType eVal;
+					if(FromXml_ST_ErrBarType(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_ErrValType::CT_ErrValType()
 		{
 			/*m_val = new ST_ErrValType;
@@ -7682,18 +7770,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_ErrValType::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_ErrValType* pNewElem = new ST_ErrValType;
-					ST_ErrValType eVal;
-					if(FromXml_ST_ErrValType(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -7713,6 +7791,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_ErrValType::getType(){return et_ct_errvaltype;}
+		void CT_ErrValType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_ErrValType* pNewElem = new ST_ErrValType;
+					ST_ErrValType eVal;
+					if(FromXml_ST_ErrValType(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_NumDataSource::CT_NumDataSource()
 		{
 			m_numLit = NULL;
@@ -7867,22 +7957,8 @@ namespace OOX{
 				delete m_formatCode;
 		}
 		void CT_NumVal::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("idx") == wsName)
-				{
-					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_idx = pNewElem;
-				}
-				else if(_T("formatCode") == wsName)
-				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_formatCode = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
+				ReadAttributes(oReader);
+
 					if ( oReader.IsEmptyNode() )
 						return;
 				int nParentDepth = oReader.GetDepth();
@@ -7934,6 +8010,24 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 		}
 		EElementType CT_NumVal::getType(){return et_ct_numval;}
+		void CT_NumVal::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("idx") == wsName)
+				{
+					unsigned long* pNewElem = new unsigned long;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_idx = pNewElem;
+				}
+				else if(_T("formatCode") == wsName)
+				{
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_formatCode = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_NumRef::CT_NumRef()
 		{
 			m_f = NULL;
@@ -8841,17 +8935,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_SecondPieSize::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -8869,6 +8954,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_SecondPieSize::getType(){return et_ct_secondpiesize;}
+		void CT_SecondPieSize::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_SplitType::CT_SplitType()
 		{
 			/*m_val = new ST_SplitType;
@@ -8881,18 +8977,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_SplitType::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_SplitType* pNewElem = new ST_SplitType;
-					ST_SplitType eVal;
-					if(FromXml_ST_SplitType(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -8912,6 +8998,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_SplitType::getType(){return et_ct_splittype;}
+		void CT_SplitType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_SplitType* pNewElem = new ST_SplitType;
+					ST_SplitType eVal;
+					if(FromXml_ST_SplitType(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_OfPieType::CT_OfPieType()
 		{
 			/*m_val = new ST_OfPieType;
@@ -8924,18 +9022,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_OfPieType::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_OfPieType* pNewElem = new ST_OfPieType;
-					ST_OfPieType eVal;
-					if(FromXml_ST_OfPieType(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -8955,6 +9043,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_OfPieType::getType(){return et_ct_ofpietype;}
+		void CT_OfPieType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_OfPieType* pNewElem = new ST_OfPieType;
+					ST_OfPieType eVal;
+					if(FromXml_ST_OfPieType(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_custSplit::CT_custSplit()
 		{
 		}
@@ -9346,17 +9446,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_GapAmount::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -9374,6 +9465,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_GapAmount::getType(){return et_ct_gapamount;}
+		void CT_GapAmount::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_Bar3DChart::CT_Bar3DChart()
 		{
 			m_barDir = NULL;
@@ -9548,18 +9650,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_BarDir::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_BarDir* pNewElem = new ST_BarDir;
-					ST_BarDir eVal;
-					if(FromXml_ST_BarDir(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -9579,6 +9671,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_BarDir::getType(){return et_ct_bardir;}
+		void CT_BarDir::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_BarDir* pNewElem = new ST_BarDir;
+					ST_BarDir eVal;
+					if(FromXml_ST_BarDir(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_BarGrouping::CT_BarGrouping()
 		{
 			/*m_val = new ST_BarGrouping;
@@ -9591,18 +9695,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_BarGrouping::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_BarGrouping* pNewElem = new ST_BarGrouping;
-					ST_BarGrouping eVal;
-					if(FromXml_ST_BarGrouping(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -9622,6 +9716,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_BarGrouping::getType(){return et_ct_bargrouping;}
+		void CT_BarGrouping::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_BarGrouping* pNewElem = new ST_BarGrouping;
+					ST_BarGrouping eVal;
+					if(FromXml_ST_BarGrouping(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_BarSer::CT_BarSer()
 		{
 			m_idx = NULL;
@@ -9850,18 +9956,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_Shape::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_Shape* pNewElem = new ST_Shape;
-					ST_Shape eVal;
-					if(FromXml_ST_Shape(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -9881,6 +9977,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_Shape::getType(){return et_ct_shape;}
+		void CT_Shape::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_Shape* pNewElem = new ST_Shape;
+					ST_Shape eVal;
+					if(FromXml_ST_Shape(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_Overlap::CT_Overlap()
 		{
 			/*m_val = new CString;
@@ -9896,17 +10004,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_Overlap::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -9924,6 +10023,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_Overlap::getType(){return et_ct_overlap;}
+		void CT_Overlap::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_BarChart::CT_BarChart()
 		{
 			m_barDir = NULL;
@@ -10105,17 +10215,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_HoleSize::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -10133,6 +10234,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_HoleSize::getType(){return et_ct_holesize;}
+		void CT_HoleSize::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_DoughnutChart::CT_DoughnutChart()
 		{
 			m_varyColors = NULL;
@@ -10254,17 +10366,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_FirstSliceAng::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -10282,6 +10385,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_FirstSliceAng::getType(){return et_ct_firstsliceang;}
+		void CT_FirstSliceAng::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					unsigned long* pNewElem = new unsigned long;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_Pie3DChart::CT_Pie3DChart()
 		{
 			m_varyColors = NULL;
@@ -10674,18 +10788,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_ScatterStyle::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_ScatterStyle* pNewElem = new ST_ScatterStyle;
-					ST_ScatterStyle eVal;
-					if(FromXml_ST_ScatterStyle(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -10705,6 +10809,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_ScatterStyle::getType(){return et_ct_scatterstyle;}
+		void CT_ScatterStyle::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_ScatterStyle* pNewElem = new ST_ScatterStyle;
+					ST_ScatterStyle eVal;
+					if(FromXml_ST_ScatterStyle(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_ScatterChart::CT_ScatterChart()
 		{
 			m_scatterStyle = NULL;
@@ -10987,18 +11103,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_RadarStyle::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_RadarStyle* pNewElem = new ST_RadarStyle;
-					ST_RadarStyle eVal;
-					if(FromXml_ST_RadarStyle(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -11018,6 +11124,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_RadarStyle::getType(){return et_ct_radarstyle;}
+		void CT_RadarStyle::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_RadarStyle* pNewElem = new ST_RadarStyle;
+					ST_RadarStyle eVal;
+					if(FromXml_ST_RadarStyle(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_RadarChart::CT_RadarChart()
 		{
 			m_radarStyle = NULL;
@@ -11717,18 +11835,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_Grouping::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_Grouping* pNewElem = new ST_Grouping;
-					ST_Grouping eVal;
-					if(FromXml_ST_Grouping(CString(oReader.GetText()), eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -11748,6 +11856,18 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_Grouping::getType(){return et_ct_grouping;}
+		void CT_Grouping::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					ST_Grouping* pNewElem = new ST_Grouping;
+					ST_Grouping eVal;
+					if(FromXml_ST_Grouping(CString(oReader.GetText()), eVal))
+						*pNewElem = eVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_LineChart::CT_LineChart()
 		{
 			m_grouping = NULL;
@@ -12876,17 +12996,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_Thickness::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -12904,6 +13015,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_Thickness::getType(){return et_ct_thickness;}
+		void CT_Thickness::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_Surface::CT_Surface()
 		{
 			m_thickness = NULL;
@@ -12997,17 +13119,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_Perspective::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					unsigned char* pNewElem = new unsigned char;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -13025,6 +13138,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_Perspective::getType(){return et_ct_perspective;}
+		void CT_Perspective::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					unsigned char* pNewElem = new unsigned char;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_DepthPercent::CT_DepthPercent()
 		{
 			/*m_val = new CString;
@@ -13040,17 +13164,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_DepthPercent::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -13068,6 +13183,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_DepthPercent::getType(){return et_ct_depthpercent;}
+		void CT_DepthPercent::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_RotY::CT_RotY()
 		{
 			/*m_val = new unsigned long;
@@ -13083,17 +13209,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_RotY::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -13111,6 +13228,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_RotY::getType(){return et_ct_roty;}
+		void CT_RotY::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					unsigned long* pNewElem = new unsigned long;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_HPercent::CT_HPercent()
 		{
 			/*m_val = new CString;
@@ -13126,17 +13254,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_HPercent::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -13154,6 +13273,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_HPercent::getType(){return et_ct_hpercent;}
+		void CT_HPercent::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_RotX::CT_RotX()
 		{
 			/*m_val = new char;
@@ -13169,17 +13299,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_RotX::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					char* pNewElem = new char;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -13197,6 +13318,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_RotX::getType(){return et_ct_rotx;}
+		void CT_RotX::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					char* pNewElem = new char;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_View3D::CT_View3D()
 		{
 			m_rotX = NULL;
@@ -13826,17 +13958,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_Style1::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					unsigned char* pNewElem = new unsigned char;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -13854,6 +13977,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_Style1::getType(){return et_ct_style1;}
+		void CT_Style1::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					unsigned char* pNewElem = new unsigned char;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_Style::CT_Style()
 		{
 			m_val = NULL;
@@ -13864,17 +13998,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_Style::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					unsigned char* pNewElem = new unsigned char;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -13892,6 +14017,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_Style::getType(){return et_ct_style;}
+		void CT_Style::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					unsigned char* pNewElem = new unsigned char;
+					CString sVal = oReader.GetText();
+					*pNewElem = _ttoi(sVal);
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		CT_TextLanguageID::CT_TextLanguageID()
 		{
 			m_val = NULL;
@@ -13902,17 +14038,8 @@ namespace OOX{
 				delete m_val;
 		}
 		void CT_TextLanguageID::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
-					if ( oReader.IsEmptyNode() )
-						return;
+				ReadAttributes(oReader);
+
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
@@ -13930,6 +14057,17 @@ namespace OOX{
 			writer.WriteString(CString(_T("/>")));
 		}
 		EElementType CT_TextLanguageID::getType(){return et_ct_textlanguageid;}
+		void CT_TextLanguageID::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("val") == wsName)
+				{
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_val = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		AlternateContent::AlternateContent()
 		{
 			m_Fallback = NULL;
@@ -13997,15 +14135,8 @@ namespace OOX{
 				delete m_Requires;
 		}
 		void AlternateContentChoice::fromXML(XmlUtils::CXmlLiteReader& oReader){
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("Requires") == wsName)
-				{
-					CString* pNewElem = new CString;
-					CString sVal = oReader.GetText();
-					*pNewElem = sVal;
-					m_Requires = pNewElem;
-				}
-				WritingElement_ReadAttributes_End( oReader )
+				ReadAttributes(oReader);
+
 					if ( oReader.IsEmptyNode() )
 						return;
 				int nParentDepth = oReader.GetDepth();
@@ -14041,6 +14172,17 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 		}
 		EElementType AlternateContentChoice::getType(){return et_alternatecontentchoice;}
+		void AlternateContentChoice::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				if(_T("Requires") == wsName)
+				{
+					CString* pNewElem = new CString;
+					CString sVal = oReader.GetText();
+					*pNewElem = sVal;
+					m_Requires = pNewElem;
+				}
+				WritingElement_ReadAttributes_End( oReader )
+		}
 		AlternateContentFallback::AlternateContentFallback()
 		{
 			m_style = NULL;

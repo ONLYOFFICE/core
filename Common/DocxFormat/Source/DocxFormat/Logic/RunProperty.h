@@ -36,16 +36,10 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				ReadAttributes(oReader);
 
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:combine"),         m_oCombine )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:combineBrackets"), m_oCombineBrackets )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),              m_oID )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:vert"),            m_oVert )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:vertCompress"),    m_oVertCompress )
-
-				WritingElement_ReadAttributes_End( oReader )
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
 			}
 			virtual CString ToString() const
 			{
@@ -88,6 +82,19 @@ namespace ComplexTypes
 
 				return sResult;
 			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:combine"),         m_oCombine )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:combineBrackets"), m_oCombineBrackets )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),              m_oID )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:vert"),            m_oVert )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:vertCompress"),    m_oVertCompress )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 
 		public:
 
@@ -118,10 +125,10 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
+				ReadAttributes(oReader);
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
 			}
 			virtual CString ToString() const
 			{
@@ -135,6 +142,15 @@ namespace ComplexTypes
 				}
 
 				return sResult;
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
@@ -163,10 +179,10 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
+				ReadAttributes(oReader);
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
 			}
 			virtual CString ToString() const
 			{
@@ -180,6 +196,15 @@ namespace ComplexTypes
 				}
 
 				return sResult;
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
@@ -209,11 +234,10 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:id"),  m_oID  )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
+				ReadAttributes(oReader);
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
 			}
 			virtual CString ToString() const
 			{
@@ -234,6 +258,16 @@ namespace ComplexTypes
 				}
 
 				return sResult;
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:id"),  m_oID  )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
@@ -263,10 +297,10 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
+				ReadAttributes(oReader);
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
 			}
 			virtual CString ToString() const
 			{
@@ -280,6 +314,15 @@ namespace ComplexTypes
 				}
 
 				return sResult;
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
@@ -315,20 +358,10 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				ReadAttributes(oReader);
 
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:ascii"),         m_sAscii )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:asciiTheme"),    m_oAsciiTheme )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:cs"),            m_sCs )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:cstheme"),       m_oCsTheme )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:eastAsia"),      m_sEastAsia )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:eastAsiaTheme"), m_oEastAsiaTheme )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:hAnsi"),         m_sHAnsi )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:hAnsiTheme"),    m_oHAnsiTheme )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:hint"),          m_oHint )
-
-				WritingElement_ReadAttributes_End( oReader )
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
 			}
 			virtual CString ToString() const
 			{			
@@ -399,6 +432,23 @@ namespace ComplexTypes
 
 				return sResult;
 			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:ascii"),         m_sAscii )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:asciiTheme"),    m_oAsciiTheme )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:cs"),            m_sCs )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:cstheme"),       m_oCsTheme )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:eastAsia"),      m_sEastAsia )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:eastAsiaTheme"), m_oEastAsiaTheme )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:hAnsi"),         m_sHAnsi )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:hAnsiTheme"),    m_oHAnsiTheme )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:hint"),          m_oHint )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 
 		public:
 
@@ -438,16 +488,10 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				ReadAttributes(oReader);
 
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:color"),      m_oColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeColor"), m_oThemeColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeShade"), m_oThemeShade )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeTint"),  m_oThemeTint )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"),        m_oVal )
-
-				WritingElement_ReadAttributes_End( oReader )
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
 			}
 			virtual CString ToString() const
 			{			
@@ -490,6 +534,19 @@ namespace ComplexTypes
 
 				return sResult;
 			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:color"),      m_oColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeColor"), m_oThemeColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeShade"), m_oThemeShade )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeTint"),  m_oThemeTint )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"),        m_oVal )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 
 		public:
 
@@ -519,10 +576,10 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
+				ReadAttributes(oReader);
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
 			}
 			virtual CString ToString() const
 			{			
@@ -536,6 +593,15 @@ namespace ComplexTypes
 				}
 
 				return sResult;
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
@@ -562,10 +628,10 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
+				ReadAttributes(oReader);
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
 			}
 			virtual CString ToString() const
 			{			
@@ -579,6 +645,15 @@ namespace ComplexTypes
 				}
 
 				return sResult;
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:

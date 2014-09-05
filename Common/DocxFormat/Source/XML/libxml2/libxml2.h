@@ -353,10 +353,14 @@ namespace XmlUtils
 			if ( !IsValid() )
 				return FALSE;
 
-			if ( 0 == xmlTextReaderRead(reader) )
+			if ( 1 != xmlTextReaderRead(reader) )
 				return FALSE;
 
-			oNodeType = (XmlNodeType)xmlTextReaderNodeType(reader);
+			int nTempType = xmlTextReaderNodeType(reader);
+			if(-1 == nTempType)
+				return FALSE;
+
+			oNodeType = (XmlNodeType)nTempType;
 
 			return TRUE;
 		}
@@ -372,7 +376,11 @@ namespace XmlUtils
 				if (1 != xmlTextReaderRead(reader))
 					break;
 
-				oNodeType = (XmlNodeType)xmlTextReaderNodeType(reader);
+				int nTempType = xmlTextReaderNodeType(reader);
+				if(-1 == nTempType)
+					break;
+
+				oNodeType = (XmlNodeType)nTempType;
 			}
 
 			if ( XmlNodeType_Element == oNodeType )
@@ -390,17 +398,22 @@ namespace XmlUtils
 			XmlNodeType eNodeType = XmlNodeType_None;
 			int nCurDepth = -1;
 			
-			while ( xmlTextReaderRead(reader) )
+			while ( 1 == xmlTextReaderRead(reader) )
 			{
-				eNodeType = (XmlNodeType)xmlTextReaderNodeType(reader);
-				nCurDepth = xmlTextReaderDepth(reader);
+				int nTempType = xmlTextReaderNodeType(reader);
+				int nTempDepth = xmlTextReaderDepth(reader);
+				if(-1 == nTempType || -1 == nTempDepth)
+					return FALSE;
+				eNodeType = (XmlNodeType)nTempType;
+				nCurDepth = nTempDepth;
 
-				if (nCurDepth <= nDepth)
+				// У закрывающего тэга глубина такая же как у открывающегося
+				if (nCurDepth < nDepth)
 					break;
 
 				if ( XmlNodeType_Element == eNodeType && nCurDepth == nDepth + 1 )
 					return TRUE;
-				else if ( XmlNodeType_EndElement == eNodeType && nCurDepth == nDepth + 1 )
+				else if ( XmlNodeType_EndElement == eNodeType && nCurDepth == nDepth )
 					return FALSE;
 			}
 
@@ -413,25 +426,28 @@ namespace XmlUtils
 
 			if ( -2 == nDepth )
 				nDepth = GetDepth();
-			else if ( nDepth == GetDepth() && xmlTextReaderIsEmptyElement(reader) )
+			else if ( nDepth == GetDepth() && 0 != xmlTextReaderIsEmptyElement(reader) )
 				return TRUE;
 
 			XmlNodeType eNodeType = XmlNodeType_None;
 
 			int nCurDepth = -1;
-			// У закрывающего тэга глубина на 1 больше, чем у открывающего
+			// У закрывающего тэга глубина такая же как у открывающегося
 			while( TRUE )
 			{
-				if ( 0 == xmlTextReaderRead(reader) )
+				if ( 1 != xmlTextReaderRead(reader) )
 					break;
 
-				eNodeType = (XmlNodeType)xmlTextReaderNodeType(reader);
-
+				int nTempType = xmlTextReaderNodeType(reader);
+				if(-1 == nTempType)
+					return FALSE;
+				eNodeType = (XmlNodeType)nTempType;
 				nCurDepth = GetDepth();
-				if ( nCurDepth <= nDepth )
+
+				if ( nCurDepth < nDepth )
 					break;
 				
-				if ( XmlNodeType_EndElement == eNodeType && nCurDepth == nDepth + 1 )
+				if ( XmlNodeType_EndElement == eNodeType && nCurDepth == nDepth )
 					break;
 			}
 
@@ -469,14 +485,17 @@ namespace XmlUtils
 			if ( !IsValid() )
 				return -1;
 
-			return xmlTextReaderDepth(reader);
+			int nTempDepth = xmlTextReaderDepth(reader);
+			if(-1 == nTempDepth)
+				return -1;
+			return nTempDepth;
 		}
 		inline BOOL IsEmptyNode()
 		{
 			if ( !IsValid() )
 				return FALSE;
 
-			return xmlTextReaderIsEmptyElement(reader);
+			return 0 != xmlTextReaderIsEmptyElement(reader) ? TRUE : FALSE;
 		}
 
 		inline const wchar_t* GetText()
@@ -513,7 +532,7 @@ namespace XmlUtils
 
 			CString sResult;
 
-			if ( xmlTextReaderIsEmptyElement(reader) )
+			if ( 0 != xmlTextReaderIsEmptyElement(reader) )
 				return sResult;
 
 			int nDepth = GetDepth();
@@ -546,14 +565,14 @@ namespace XmlUtils
 			if ( !IsValid() )
 				return FALSE;
 
-			return (BOOL)xmlTextReaderMoveToFirstAttribute(reader);
+			return 1 == xmlTextReaderMoveToFirstAttribute(reader) ? TRUE: FALSE;
 		}
 		inline BOOL MoveToNextAttribute()
 		{
 			if ( !IsValid() )
 				return FALSE;
 
-			return (BOOL)xmlTextReaderMoveToNextAttribute(reader);;
+			return 1 == xmlTextReaderMoveToNextAttribute(reader) ? TRUE: FALSE;
 		}
 
 		inline BOOL MoveToElement()
@@ -561,7 +580,7 @@ namespace XmlUtils
 			if ( !IsValid() )
 				return FALSE;
 
-			return (BOOL)xmlTextReaderMoveToElement(reader);
+			return 1 == xmlTextReaderMoveToElement(reader) ? TRUE: FALSE;
 		}
 	private:
 		inline CString GetXml(bool bInner)
@@ -582,10 +601,13 @@ namespace XmlUtils
 				// У закрывающего тэга глубина такая же как у открывающегося
 				while( TRUE )
 				{
-					if ( 0 == xmlTextReaderRead(reader) )
+					if ( 1 != xmlTextReaderRead(reader) )
 						break;
 
-					eNodeType = (XmlNodeType)xmlTextReaderNodeType(reader);
+					int nTempType = xmlTextReaderNodeType(reader);
+					if(-1 == nTempType)
+						break;
+					eNodeType = (XmlNodeType)nTempType;
 
 					nCurDepth = GetDepth();
 					if ( eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace )
@@ -603,7 +625,7 @@ namespace XmlUtils
 					}
 
 					nCurDepth = GetDepth();
-					if ( nCurDepth <= nDepth )
+					if ( nCurDepth < nDepth )
 						break;
 
 					if ( XmlNodeType_EndElement == eNodeType && nCurDepth == nDepth )
@@ -739,10 +761,11 @@ namespace XmlUtils
 			return FromXmlFile(std::wstring(sFile), bRemoveRootNode);
 		}
 		bool FromXmlFile(const std::wstring& sFile, bool bRemoveRootNode = false);
+		BOOL FromXmlFile2(const CString& strXmlFilePath);
 		bool FromXmlStringA(const std::string& sString);
 		bool FromXmlString(const wchar_t* sString)
 		{
-			return FromXmlFile(std::wstring(sString));
+			return FromXmlString(std::wstring(sString));
 		}
 		bool FromXmlString(const std::wstring& sString);
 
@@ -750,12 +773,17 @@ namespace XmlUtils
 		void Clear();
 		CString GetName();
 		CString GetText();
+		bool GetTextIfExist(CString& sOutput);
+		CString GetTextExt(const CString& strDefaultValue = _T(""));
+		CString GetXml(const CString& strDefaultValue = _T(""));
 
 		CString ReadAttributeBase(const wchar_t* bstrName);
 		template<typename T>
 		void ReadAttributeBase(const wchar_t* bsName, T& value)
 		{
-			value = GetAttribute(CString(bsName)).GetString();
+			CString sAttr;
+			if(GetAttributeIfExist(CString(bsName), sAttr))
+				value = sAttr.GetString();
 		}
 		CString ReadAttribute(const CString& strAttibuteName);
 		template<typename T>
@@ -765,11 +793,10 @@ namespace XmlUtils
 				return;
 
 			std::map<CStringA, CStringA>::iterator p;
-			for (p = m_attributes.begin(); p != m_attributes.end(); ++p)
+			for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
 			{
-				p->first.c_str(), p->first.length()
-					strNames.push_back(p->first);
-				strValues.push_back(p->second);
+				strNames.AddTail(std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.GetString(), p->first.GetLength(), TRUE)));
+				strValues.AddTail(std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.GetString(), p->second.GetLength(), TRUE)));
 			}
 		}
 		
@@ -779,7 +806,9 @@ namespace XmlUtils
 		CString GetAttribute(const CStringA& sName, const CString& _default = L"");
 		CString GetAttribute(const CString& sName, const CString& _default = L"");
 		CString GetAttribute(const wchar_t* sName, const CString& _default = L"");
-		
+		CString GetAttributeBase(const wchar_t* strAttributeName, const CString& strDefaultValue = _T(""));
+		bool GetAttributeIfExist(const CString& sName, CString& sOutput);
+
 		int GetAttributeInt(const CStringA& sName, const int& _default = 0);
 		int GetAttributeInt(const CString& sName, const int& _default = 0);
 		int ReadAttributeInt(const CString& str, const int& nDef = 0);
@@ -796,9 +825,12 @@ namespace XmlUtils
 		}
 		CString ReadNodeText(const CString& strName);
 		CString ReadValueString(const CString& sName, const CString& nDef = _T(""));
+		int ReadValueInt(const CString& str, const int& nDef = 0);
+
+		CString GetAttributeOrValue(const CString& strAttributeName, const CString& strDefaultValue = _T(""));
 
 		template <typename T>
-		void LoadArray(const CString& sName, std::vector<T>& arList)
+		void LoadArray(const CString& sName, CAtlArray<T>& arList)
 		{
 			CXmlNodes oNodes;
 			if (GetNodes(sName, oNodes))
@@ -809,13 +841,13 @@ namespace XmlUtils
 					CXmlNode oItem;
 					oNodes.GetAt(i, oItem);
 
-					arList.reserve(arList.size() + 1);
+					arList.Add();
 					arList[i].fromXML(oItem);
 				}
 			}
 		}
 		template <typename T>
-		void LoadArray(const CString& sName, const CString& sSubName, std::vector<T>& arList)
+		void LoadArray(const CString& sName, const CString& sSubName, CAtlArray<T>& arList)
 		{
 			CXmlNode oNode;
 			if (GetNode(sName, oNode))
@@ -826,6 +858,7 @@ namespace XmlUtils
 
 		CXmlNode GetNode(const CString& sName);
 		CXmlNodes GetNodes(const CString& sName);
+		BOOL GetChilds(CXmlNodes& oXmlNodes);
 
 		bool GetNode(const CString& sName, CXmlNode& oNode);
 		bool GetNodes(const CString& sName, CXmlNodes& oNodes);
@@ -836,7 +869,9 @@ namespace XmlUtils
 		CString GetNameNoNS(const CString& strNodeName);
 	public:
 		CString private_GetXml();
+		CString private_GetXml(const CString& strDefaultValue = _T(""));
 		CString private_GetXmlFast();
+		CString private_GetXmlFast(const CString& strDefaultValue);
 	};
 
 	class CXmlNodes
@@ -848,7 +883,10 @@ namespace XmlUtils
 		CXmlNodes() : m_nodes()
 		{
 		}
-
+		BOOL IsValid()
+		{
+			return TRUE;
+		}
 		int GetCount()
 		{
 			return (int)m_nodes.size();

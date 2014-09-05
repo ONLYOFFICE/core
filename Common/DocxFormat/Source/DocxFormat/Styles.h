@@ -39,15 +39,10 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:locked"),         m_oLocked )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:name"),           m_sName )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:qFormat"),        m_oQFormat )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:semiHidden"),     m_oSemiHidden )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:uiPriority"),     m_oUiPriority )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:unhideWhenUsed"), m_oUnhideWhenUsed )
-				WritingElement_ReadAttributes_End( oReader )
+				ReadAttributes(oReader);
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
 			}
 			virtual CString ToString() const
 			{
@@ -68,6 +63,20 @@ namespace ComplexTypes
 				ComplexTypes_WriteAttribute( _T("w:unhideWhenUsed=\""), m_oUnhideWhenUsed );
 
 				return sResult;
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:locked"),         m_oLocked )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:name"),           m_sName )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:qFormat"),        m_oQFormat )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:semiHidden"),     m_oSemiHidden )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:uiPriority"),     m_oUiPriority )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:unhideWhenUsed"), m_oUnhideWhenUsed )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:

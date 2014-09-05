@@ -119,6 +119,7 @@ namespace NSCommon
                 this->m_pPointer = new Type( cwsValue );
 			return *this;
 		}
+#ifdef _WIN32
 		nullable<Type>& operator=(const BSTR &value)
 		{
             RELEASEOBJECT(this->m_pPointer);
@@ -126,7 +127,7 @@ namespace NSCommon
                 this->m_pPointer = new Type( value );
 			return *this;
 		}
-
+#endif
 		nullable<Type>& operator=(const nullable<Type> &oOther)
 		{
             RELEASEOBJECT(this->m_pPointer);
@@ -319,6 +320,15 @@ namespace NSCommon
 					*m_pPointer = 0;
 			}
 		}
+		nullable_int& operator=(const wchar_t* cwsValue)
+		{
+			RELEASEOBJECT(m_pPointer);
+
+			if ( NULL != cwsValue )
+				m_pPointer = new int(XmlUtils::GetInteger(cwsValue));
+
+			return *this;
+		}
 #ifdef _WIN32
 		AVSINLINE void operator=(const BSTR& value)
 		{
@@ -391,13 +401,23 @@ namespace NSCommon
 					*m_pPointer = max;
 			}
 		}
+		nullable_sizet& operator=(const wchar_t* cwsValue)
+		{
+			RELEASEOBJECT(m_pPointer);
 
+			if ( NULL != cwsValue )
+				m_pPointer = new size_t(XmlUtils::GetUInteger(cwsValue));
+
+			return *this;
+		}
+#ifdef _WIN32
 		AVSINLINE void operator=(const BSTR& value)
 		{
 			RELEASEOBJECT(m_pPointer);
 			if (NULL != value)
 				m_pPointer = new size_t(XmlUtils::GetUInteger(value));
 		}
+#endif
 		AVSINLINE void operator=(const size_t& value)
 		{
 			RELEASEOBJECT(m_pPointer);
@@ -449,13 +469,23 @@ namespace NSCommon
 					*m_pPointer = max;
 			}
 		}
+		nullable_double& operator=(const wchar_t* cwsValue)
+		{
+			RELEASEOBJECT(m_pPointer);
 
+			if ( NULL != cwsValue )
+				m_pPointer = new double(XmlUtils::GetDouble(cwsValue));
+
+			return *this;
+		}
+#ifdef _WIN32
 		AVSINLINE void operator=(const BSTR& value)
 		{
 			RELEASEOBJECT(m_pPointer);
 			if (NULL != value)
 				m_pPointer = new double(XmlUtils::GetDouble(value));
 		}
+#endif
 		AVSINLINE void operator=(const double& value)
 		{
 			RELEASEOBJECT(m_pPointer);
@@ -505,13 +535,23 @@ namespace NSCommon
 			return false;
 		}
 	public:
+		nullable_bool& operator=(const wchar_t* cwsValue)
+		{
+			RELEASEOBJECT(m_pPointer);
 
+			if ( NULL != cwsValue )
+				m_pPointer = new bool(XmlUtils::GetBoolean2(cwsValue));
+
+			return *this;
+		}
+#ifdef _WIN32
 		AVSINLINE void operator=(const BSTR& value)
 		{
 			RELEASEOBJECT(m_pPointer);
 			if (NULL != value)
 				m_pPointer = new bool(set((CString)value));
 		}
+#endif
 		AVSINLINE void operator=(const bool& value)
 		{
 			RELEASEOBJECT(m_pPointer);

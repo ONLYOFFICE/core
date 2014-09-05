@@ -34,12 +34,10 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:legacy"),       m_oLegacy )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:legacyIndent"), m_oLegacyIndent )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:legacySpace"),  m_oLegacySpace )
-				WritingElement_ReadAttributes_End( oReader )
+				ReadAttributes(oReader);
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
 			}
 			virtual CString ToString() const
 			{
@@ -50,6 +48,17 @@ namespace ComplexTypes
 				ComplexTypes_WriteAttribute( _T("w:legacySpace=\""),  m_oLegacySpace );
 
 				return sResult;
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:legacy"),       m_oLegacy )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:legacyIndent"), m_oLegacyIndent )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:legacySpace"),  m_oLegacySpace )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
@@ -80,11 +89,10 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:null"), m_oNull )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"),  m_sVal )
-				WritingElement_ReadAttributes_End( oReader )
+				ReadAttributes(oReader);
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
 			}
 			virtual CString ToString() const
 			{
@@ -100,6 +108,16 @@ namespace ComplexTypes
 				}
 
 				return sResult;
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:null"), m_oNull )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"),  m_sVal )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
@@ -128,10 +146,10 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
+				ReadAttributes(oReader);
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
 			}
 			virtual CString ToString() const
 			{
@@ -140,6 +158,15 @@ namespace ComplexTypes
 				ComplexTypes_WriteAttribute( _T("w:val=\""), m_oVal );
 
 				return sResult;
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
@@ -167,10 +194,10 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
+				ReadAttributes(oReader);
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
 			}
 			virtual CString ToString() const
 			{
@@ -179,6 +206,15 @@ namespace ComplexTypes
 				ComplexTypes_WriteAttribute( _T("w:val=\""), m_oVal );
 
 				return sResult;
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:

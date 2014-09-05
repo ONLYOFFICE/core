@@ -105,12 +105,26 @@ namespace XmlUtils
 			return _T("");
 		return strNodeName.Mid(0, nFind);
 	}
+	AVSINLINE CString GetNamespace(const wchar_t* strNodeName)
+	{
+		const wchar_t* find = wcschr(strNodeName, TCHAR(':'));
+		if(NULL == find)
+			return _T("");
+		return CString(strNodeName, find - strNodeName);
+	}
 	AVSINLINE CString GetNameNoNS(const CString& strNodeName)
 	{
 		int nFind = strNodeName.Find(TCHAR(':'));
 		if (-1 == nFind)
 			return strNodeName;
 		return strNodeName.Mid(nFind + 1);
+	}
+	AVSINLINE CString GetNameNoNS(const wchar_t* strNodeName)
+	{
+		const wchar_t* find = wcschr(strNodeName, TCHAR(':'));
+		if(NULL == find)
+			return CString(strNodeName);
+		return CString(find + 1);
 	}
 	// classes
 	class CXmlWriter

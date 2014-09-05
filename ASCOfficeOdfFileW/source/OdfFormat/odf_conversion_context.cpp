@@ -202,7 +202,7 @@ office_element_ptr odf_conversion_context::start_tabs()
 	return temporary_.elm;
 }
 
-void odf_conversion_context::add_tab(_CP_OPT(int) type, _CP_OPT(length) _length)
+void odf_conversion_context::add_tab(_CP_OPT(int) type, _CP_OPT(length) _length, _CP_OPT(int) leader)
 {
 	if (!temporary_.elm) return;
 
@@ -228,6 +228,29 @@ void odf_conversion_context::add_tab(_CP_OPT(int) type, _CP_OPT(length) _length)
 				case 6: tab->style_type_ = style_type::Left;	break;//tabjcStart   = 6,
 				case 7: tab->style_type_ = style_type::Right;	break;//tabjcRight   = 7,
 				case 8: tab->style_type_ = style_type::Left;	break;//tabjcLeft    = 8
+			}
+		}
+		if (leader)
+		{
+			switch(*leader)
+			{
+			case 0: tab->style_leader_type_	= line_type::Single ; 
+					tab->style_leader_style_= line_style::Dotted;
+				break; //	tabtlcDot        = 0,
+			case 1: tab->style_leader_type_ = line_type::Single ; 
+					tab->style_leader_style_= line_style::Wave;
+				break; //	tabtlcHeavy      = 1,
+			case 2: tab->style_leader_type_ = line_type::Single ; 
+					tab->style_leader_style_= line_style::Dash;
+				break; //	tabtlcHyphen     = 2,
+			case 3: tab->style_leader_type_ = line_type::Single ; 
+					tab->style_leader_style_= line_style::LongDash;
+				break; //	tabtlcMiddleDot  = 3,
+			case 4: tab->style_leader_type_ = line_type::None;	
+				break; //	tabtlcNone       = 4,
+			case 5: tab->style_leader_type_ = line_type::Single; 
+					tab->style_leader_style_= line_style::Solid;
+				break; //	tabtlcUnderscore = 5
 			}
 		}
 		temporary_.elm->add_child_element(elm);

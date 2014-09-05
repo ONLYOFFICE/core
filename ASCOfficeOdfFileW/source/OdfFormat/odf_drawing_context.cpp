@@ -327,6 +327,7 @@ void odf_drawing_context::start_group()
 		impl_->anchor_settings_.anchor_type_ = boost::none;
 	}
 
+	set_group_position(impl_->x, impl_->y,impl_->x, impl_->y);
 
 //
 }
@@ -1076,7 +1077,7 @@ void odf_drawing_context::set_anchor(int  type)
 }
 anchor_type::type odf_drawing_context::get_anchor()
 {
-	if (impl_->anchor_settings_.anchor_type_) impl_->anchor_settings_.anchor_type_->get_type();
+	if (impl_->anchor_settings_.anchor_type_) return impl_->anchor_settings_.anchor_type_->get_type();
 	else return anchor_type::AsChar;
 }
 //////////////////////////////////////////////////////////////////////////////////////
@@ -1088,8 +1089,8 @@ void odf_drawing_context::set_vertical_rel(int from)
 	{
 	case 0:	type = vertical_rel::Baseline;										break;//	relfromvBottomMargin ???
 	case 1:	type = vertical_rel::PageContent;									break;//	relfromvInsideMargin ???
-	case 2:	type = vertical_rel::Baseline;											break;//	relfromvLine          
-	case 3:	type = vertical_rel::PageContent;									break;//	relfromvMargin     
+	case 2:	type = vertical_rel::Baseline;										break;//	relfromvLine          
+	case 3:	type = vertical_rel::PageContent;set_anchor(anchor_type::Paragraph);break;//	relfromvMargin     
 	case 4:	type = vertical_rel::Baseline;										break;//	relfromvOutsideMargin ???
 	case 5:	type = vertical_rel::Page;		set_anchor(anchor_type::Page);		break;//	relfromvPage          
 	case 6:	type = vertical_rel::Paragraph;	set_anchor(anchor_type::Paragraph);	break;//	relfromvParagraph    
@@ -1334,33 +1335,31 @@ void odf_drawing_context::set_position_line(_CP_OPT(double) & x_pt, _CP_OPT(doub
 	draw_line* line = dynamic_cast<draw_line*>(impl_->current_level_.back().get());
 	if (line == NULL) return;
 
-	if (impl_->current_drawing_state_.in_group && impl_->current_group_)
-	{
-		if (x_pt) x_pt = *x_pt * impl_->current_group_->scale_cx + impl_->current_group_->shift_x ;			
+	if (impl_->current_drawing_state_.in_group && impl_->current_group_ && x_pt)
+		x_pt = *x_pt * impl_->current_group_->scale_cx + impl_->current_group_->shift_x ;			
 			// +  (impl_->current_group_->flipH ? (impl_->current_group_->cx - 2 * x_pt): 0);
-	}
-	if (x_pt && !line->draw_line_attlist_.svg_x1_) line->draw_line_attlist_.svg_x1_ = length(length(*x_pt,length::pt).get_value_unit(length::cm),length::cm);
+	
+	if (x_pt && !line->draw_line_attlist_.svg_x1_) 
+		line->draw_line_attlist_.svg_x1_ = length(length(*x_pt,length::pt).get_value_unit(length::cm),length::cm);
 
-	if (impl_->current_drawing_state_.in_group && impl_->current_group_)
-	{
-		if (y_pt) y_pt = *y_pt * impl_->current_group_->scale_cy + impl_->current_group_->shift_y;
+	if (impl_->current_drawing_state_.in_group && impl_->current_group_ && y_pt)
+		y_pt = *y_pt * impl_->current_group_->scale_cy + impl_->current_group_->shift_y;
 			 //+  (impl_->current_group_->flipV ? (impl_->current_group_->cy - 2 * y_pt): 0);
-	}
-	if (y_pt && !line->draw_line_attlist_.svg_y1_) line->draw_line_attlist_.svg_y1_ = length(length(*y_pt,length::pt).get_value_unit(length::cm),length::cm);
+
+	if (y_pt && !line->draw_line_attlist_.svg_y1_) 
+		line->draw_line_attlist_.svg_y1_ = length(length(*y_pt,length::pt).get_value_unit(length::cm),length::cm);
 
 ///////////////////////////////////////
-	if (impl_->current_drawing_state_.in_group && impl_->current_group_)
-	{
-		if (x2_pt) x_pt = *x2_pt * impl_->current_group_->scale_cx + impl_->current_group_->shift_x ;			
+	if (impl_->current_drawing_state_.in_group && impl_->current_group_ && x2_pt)
+		x2_pt = *x2_pt * impl_->current_group_->scale_cx + impl_->current_group_->shift_x ;			
 			// +  (impl_->current_group_->flipH ? (impl_->current_group_->cx - 2 * x_pt): 0);
-	}
+
 	if (x2_pt && !line->draw_line_attlist_.svg_x2_) line->draw_line_attlist_.svg_x2_ = length(length(*x2_pt,length::pt).get_value_unit(length::cm),length::cm);
 
-	if (impl_->current_drawing_state_.in_group && impl_->current_group_)
-	{
-		if (y2_pt) y_pt = *y2_pt * impl_->current_group_->scale_cy + impl_->current_group_->shift_y;
+	if (impl_->current_drawing_state_.in_group && impl_->current_group_ && y2_pt)
+		y2_pt = *y2_pt * impl_->current_group_->scale_cy + impl_->current_group_->shift_y;
 			 //+  (impl_->current_group_->flipV ? (impl_->current_group_->cy - 2 * y_pt): 0);
-	}
+
 	if (y2_pt && !line->draw_line_attlist_.svg_y2_) line->draw_line_attlist_.svg_y2_ = length(length(*y2_pt,length::pt).get_value_unit(length::cm),length::cm);
 
 }
@@ -1369,24 +1368,24 @@ void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) &
 {
 	double x = x_pt ? *x_pt : 0;
 	double y = y_pt ? *y_pt : 0;
-
-	if (!impl_->current_drawing_state_.svg_x_ || impl_->current_drawing_state_.in_group) 
+	
+	if (impl_->current_drawing_state_.in_group && impl_->current_group_ && x_pt)
 	{
-		if (impl_->current_drawing_state_.in_group && impl_->current_group_)
-		{
-			if (x_pt) x_pt = *x_pt * impl_->current_group_->scale_cx + impl_->current_group_->shift_x ;			
-				// +  (impl_->current_group_->flipH ? (impl_->current_group_->cx - 2 * x_pt): 0);
-		}
-		if (x_pt) impl_->current_drawing_state_.svg_x_ = length(length(*x_pt,length::pt).get_value_unit(length::cm),length::cm);
+		x_pt = *x_pt * impl_->current_group_->scale_cx + impl_->current_group_->shift_x ;			
+			// +  (impl_->current_group_->flipH ? (impl_->current_group_->cx - 2 * x_pt): 0);
 	}
-	if (!impl_->current_drawing_state_.svg_y_ || impl_->current_drawing_state_.in_group) 
+	if (impl_->current_drawing_state_.in_group && impl_->current_group_ && y_pt)
 	{
-		if (impl_->current_drawing_state_.in_group && impl_->current_group_)
-		{
-			if (y_pt) y_pt = *y_pt * impl_->current_group_->scale_cy + impl_->current_group_->shift_y;
-				 //+  (impl_->current_group_->flipV ? (impl_->current_group_->cy - 2 * y_pt): 0);
-		}
-		if (y_pt) impl_->current_drawing_state_.svg_y_ = length(length(*y_pt,length::pt).get_value_unit(length::cm),length::cm);
+		y_pt = *y_pt * impl_->current_group_->scale_cy + impl_->current_group_->shift_y;
+			 //+  (impl_->current_group_->flipV ? (impl_->current_group_->cy - 2 * y_pt): 0);
+	}	
+	if (!impl_->current_drawing_state_.svg_x_ || impl_->current_drawing_state_.in_group && x_pt) 
+	{
+		impl_->current_drawing_state_.svg_x_ = length(length(*x_pt,length::pt).get_value_unit(length::cm),length::cm);
+	}
+	if (!impl_->current_drawing_state_.svg_y_ || impl_->current_drawing_state_.in_group && y_pt) 
+	{
+		impl_->current_drawing_state_.svg_y_ = length(length(*y_pt,length::pt).get_value_unit(length::cm),length::cm);
 	}
 }
 void odf_drawing_context::get_size( double & width_pt, double & height_pt)
@@ -1407,13 +1406,21 @@ void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 {
 	if (impl_->current_drawing_state_.in_group)
 	{
-		if (width_pt) width_pt  = *width_pt * impl_->group_list_.back()->scale_cx;
-		if (height_pt)height_pt = *height_pt * impl_->group_list_.back()->scale_cy;
+		if (width_pt)
+		{
+			width_pt  = *width_pt * impl_->group_list_.back()->scale_cx;
+			impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm),length::cm);
+		}
+		if (height_pt)
+		{
+			height_pt = *height_pt * impl_->group_list_.back()->scale_cy;
+			impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm),length::cm);	
+		}
+	}else
+	{
+		if (!impl_->current_drawing_state_.svg_width_) impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm),length::cm);
+		if (!impl_->current_drawing_state_.svg_height_) impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm),length::cm);	
 	}
-	//if (!impl_->current_drawing_state_.svg_width_)	
-	if (width_pt) impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm),length::cm);
-	//if (!impl_->current_drawing_state_.svg_height_)
-	if (height_pt) impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm),length::cm);	
 }
 void odf_drawing_context::set_line_width(double pt)
 {

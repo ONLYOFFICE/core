@@ -12,6 +12,7 @@
 #include "Shapes\oox_shapeRibbons.h"
 #include "Shapes\oox_shapeConnectors.h"
 #include "Shapes\oox_shapeWordArt.h"
+#include "Shapes\oox_shapeCurvedArrows.h"
 
 #include "..\..\..\Common\DocxFormat\Source\Common\SimpleTypes_Drawing.h"
 
@@ -37,6 +38,8 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 	case SimpleTypes::shapetypeStar12:			return boost::make_shared<oox_shape_star12>();
 	case SimpleTypes::shapetypeStar16:			return boost::make_shared<oox_shape_star16>();
 	case SimpleTypes::shapetypeStar32:			return boost::make_shared<oox_shape_star32>();
+	case SimpleTypes::shapetypeCurvedLeftArrow:	return boost::make_shared<oox_shape_curvedLeftArrow>();
+	case SimpleTypes::shapetypeCurvedDownArrow:	return boost::make_shared<oox_shape_curvedDownArrow>();
 
 	case SimpleTypes::shapetypePlaque:			return boost::make_shared<oox_shape_Plaque>();
 	case SimpleTypes::shapetypeDoubleWave:		return boost::make_shared<oox_shape_DoubleWave>();

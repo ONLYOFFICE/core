@@ -503,8 +503,7 @@ namespace OOX
 
 			ComplexTypes_WriteAttribute ( _T("chromakey=\""),  m_oChromaKey );
 
-			if ( SimpleTypes::booleanTrue != m_oFilled.GetValue() )
-				sResult += _T("filled=\"false\" ");
+			ComplexTypes_WriteAttribute ( _T("filled=\""),		m_oFilled );
 
 			ComplexTypes_WriteAttribute ( _T("fillcolor=\""),		m_oFillColor );
 			ComplexTypes_WriteAttribute ( _T("opacity=\""),			m_oOpacity );

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../IFileContainer.h"
 #include "../FileTypes.h"
 #include "../File.h"
 #include "../../Base/Nullable.h"
@@ -152,7 +153,7 @@ namespace Diagram
 		nullable<Drawing::CGroupShapeProperties>	m_oGroupShapeProperties;
 	};
 }
-	class CDiagramDrawing : public OOX::File
+	class CDiagramDrawing : public OOX::File, public OOX::IFileContainer
 	{
 	public:
 		CDiagramDrawing()
@@ -172,6 +173,7 @@ namespace Diagram
 
 		virtual void read(const CPath& oFilePath)
 		{
+			IFileContainer::Read( oFilePath );
 #ifdef USE_LITE_READER
 
 			XmlUtils::CXmlLiteReader oReader;

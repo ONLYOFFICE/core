@@ -75,6 +75,8 @@ public:
 	_CP_OPT(length) header_size_;
 	_CP_OPT(length) footer_size_;
 
+	_CP_OPT(std::wstring) page_number_format;
+
 private:
 	std::wstring	style_oox_name_;
 

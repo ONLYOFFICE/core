@@ -93,12 +93,9 @@ namespace PPTX
 
 					oNode.ReadAttributeBase(L"id", id);
 					
-					BSTR bsMem = oNode.ReadAttributeBase(L"spid");
-					if (NULL != bsMem)
-					{
+					CString bsMem = oNode.ReadAttributeBase(L"spid");
+					if (!bsMem.IsEmpty())
 						id = bsMem;
-						SysFreeString(bsMem);
-					}
 
 					if (id.IsInit())
 					{

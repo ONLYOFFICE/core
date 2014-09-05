@@ -482,6 +482,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_RelId
 		{
@@ -493,6 +494,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_PageSetup
 		{
@@ -524,6 +526,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_PageMargins
 		{
@@ -545,6 +548,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_HeaderFooter
 		{
@@ -572,6 +576,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_PrintSettings
 		{
@@ -600,6 +605,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_DispBlanksAs
 		{
@@ -611,6 +617,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_LegendEntry
 		{
@@ -639,6 +646,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_Extension
 		{
@@ -652,6 +660,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_LegendPos
 		{
@@ -663,6 +672,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_Legend
 		{
@@ -735,6 +745,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_LayoutMode
 		{
@@ -746,6 +757,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_Double
 		{
@@ -757,6 +769,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_DTable
 		{
@@ -840,6 +853,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_Orientation
 		{
@@ -851,6 +865,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_AxPos
 		{
@@ -862,6 +877,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_ChartLines
 		{
@@ -1061,6 +1077,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_NumFmt
 		{
@@ -1074,6 +1091,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_TickMark
 		{
@@ -1085,6 +1103,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_TickLblPos
 		{
@@ -1096,6 +1115,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_Crosses
 		{
@@ -1107,6 +1127,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_Skip
 		{
@@ -1118,6 +1139,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_TimeUnit
 		{
@@ -1129,6 +1151,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_DateAx
 		{
@@ -1198,6 +1221,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_AxisUnit
 		{
@@ -1209,6 +1233,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_LblAlgn
 		{
@@ -1220,6 +1245,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_CatAx
 		{
@@ -1305,6 +1331,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_DispUnits
 		{
@@ -1333,6 +1360,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_ValAx
 		{
@@ -1396,6 +1424,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_BubbleScale
 		{
@@ -1407,6 +1436,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_BubbleSer
 		{
@@ -1513,6 +1543,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_MarkerSize
 		{
@@ -1524,6 +1555,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_PictureOptions
 		{
@@ -1554,6 +1586,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_PictureStackUnit
 		{
@@ -1565,6 +1598,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_DLbls
 		{
@@ -1612,6 +1646,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_Trendline
 		{
@@ -1657,6 +1692,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_Order
 		{
@@ -1668,6 +1704,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_Period
 		{
@@ -1679,6 +1716,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_TrendlineLbl
 		{
@@ -1738,6 +1776,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_ErrBarType
 		{
@@ -1749,6 +1788,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_ErrValType
 		{
@@ -1760,6 +1800,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_NumDataSource
 		{
@@ -1805,6 +1846,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_NumRef
 		{
@@ -2005,6 +2047,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_SplitType
 		{
@@ -2016,6 +2059,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_OfPieType
 		{
@@ -2027,6 +2071,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_custSplit
 		{
@@ -2110,6 +2155,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_Bar3DChart
 		{
@@ -2150,6 +2196,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_BarGrouping
 		{
@@ -2161,6 +2208,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_BarSer
 		{
@@ -2210,6 +2258,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_Overlap
 		{
@@ -2221,6 +2270,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_BarChart
 		{
@@ -2261,6 +2311,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_DoughnutChart
 		{
@@ -2293,6 +2344,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_Pie3DChart
 		{
@@ -2376,6 +2428,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_ScatterChart
 		{
@@ -2438,6 +2491,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_RadarChart
 		{
@@ -2583,6 +2637,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_LineChart
 		{
@@ -2735,6 +2790,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_Surface
 		{
@@ -2764,6 +2820,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_DepthPercent
 		{
@@ -2775,6 +2832,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_RotY
 		{
@@ -2786,6 +2844,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_HPercent
 		{
@@ -2797,6 +2856,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_RotX
 		{
@@ -2808,6 +2868,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_View3D
 		{
@@ -2943,6 +3004,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_Style
 		{
@@ -2954,6 +3016,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_TextLanguageID
 		{
@@ -2965,6 +3028,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class AlternateContent
 		{
@@ -2991,6 +3055,7 @@ namespace OOX{
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class AlternateContentFallback
 		{

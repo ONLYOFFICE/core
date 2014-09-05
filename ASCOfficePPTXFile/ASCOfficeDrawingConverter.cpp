@@ -2105,7 +2105,7 @@ void CAVSOfficeDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem,
 			PPTX::Logic::BlipFill* pBlipFill = new PPTX::Logic::BlipFill();
 			pBlipFill->m_namespace = _T("a");
 			pBlipFill->blip = new PPTX::Logic::Blip();
-			pBlipFill->blip->embed = *sRid;
+			pBlipFill->blip->embed = new OOX::RId(*sRid);
 
 			if (sType.is_init() && ((*sType == _T("tile")) || (*sType == _T("pattern"))))
 			{
@@ -2161,7 +2161,7 @@ void CAVSOfficeDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem,
 				PPTX::Logic::BlipFill* pBlipFill = new PPTX::Logic::BlipFill();
 				pBlipFill->m_namespace = _T("a");
 				pBlipFill->blip = new PPTX::Logic::Blip();
-				pBlipFill->blip->embed = *sRid;
+				pBlipFill->blip->embed = new OOX::RId(*sRid);
 
 				if (sType.is_init() && *sType == _T("tile"))
 				{

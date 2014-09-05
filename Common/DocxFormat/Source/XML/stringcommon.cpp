@@ -1,3 +1,4 @@
+//#include "stdafx.h"
 #include "stringcommon.h"
 
 std::wstring string2std_string(const CString& val)

@@ -50,6 +50,9 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
+				
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
 			}
 
 			virtual EElementType getType () const

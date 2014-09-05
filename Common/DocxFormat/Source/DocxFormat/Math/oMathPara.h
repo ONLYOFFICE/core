@@ -29,14 +29,21 @@ namespace OOX
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CWCharWrapper sName = oReader.GetName();				
+					WritingElement *pItem = NULL;
+
 					if ( _T("m:oMath") == sName )
-						m_oOMath = oReader;
+						pItem = new COMath( oReader );
 					else if ( _T("m:oMathParaPr") == sName )
-						m_oOMathParaPr = oReader;
+						pItem = new COMathParaPr( oReader );
+
+					if ( pItem )
+						m_arrItems.push_back( pItem );
+					
 				}
 			}
 			virtual CString      toXML() const;
@@ -49,8 +56,7 @@ namespace OOX
 
 		public:				
 			//Childs
-			nullable<OOX::Logic::COMath>		m_oOMath;
-			nullable<OOX::Logic::COMathParaPr>  m_oOMathParaPr;
+			std::vector<WritingElement* >	m_arrItems;
 		};
 	}//namespace Logic
 }//namespace OOX

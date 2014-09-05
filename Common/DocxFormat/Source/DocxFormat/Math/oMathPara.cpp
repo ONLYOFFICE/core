@@ -7,12 +7,14 @@ namespace OOX
 		{
 			CString sResult = _T("<m:oMathPara>");
 
-			if ( m_oOMath.IsInit() )
-				sResult += m_oOMath->toXML();
-
-			if ( m_oOMathParaPr.IsInit() )
-				sResult += m_oOMathParaPr->toXML();
-
+			for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+			{
+				if ( m_arrItems[nIndex])
+				{
+					sResult += m_arrItems[nIndex]->toXML();
+				}
+			}
+			
 			sResult += _T("</m:oMathPara>");
 
 			return sResult;

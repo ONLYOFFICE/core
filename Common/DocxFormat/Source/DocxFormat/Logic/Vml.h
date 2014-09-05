@@ -81,7 +81,7 @@ namespace OOX
 			// 2 AG_AllShapeAttributes
 			// 2.1 AG_ShapeAttributes
 			nullable<SimpleTypes::CColorType<>>                             m_oChromaKey;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>               m_oFilled;
+			nullable<SimpleTypes::CTrueFalse<>>				                m_oFilled;
 			nullable<SimpleTypes::CColorType<>>					            m_oFillColor;
 			nullable<SimpleTypes::Vml::CVml_1_65536>                        m_oOpacity;
 			nullable<SimpleTypes::CTrueFalse<>>                             m_oStroked;

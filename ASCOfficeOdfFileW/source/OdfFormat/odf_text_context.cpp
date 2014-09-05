@@ -426,6 +426,12 @@ void odf_text_context::start_field(int type)
 		if (page_numb)
 		{
 			page_numb->text_select_page_ = L"current";
+
+			if ((odf_context_->page_layout_context()) && (odf_context_->page_layout_context()->last_layout().page_number_format))
+			{
+			
+				page_numb->common_num_format_attlist_.style_num_format_ = odf_context_->page_layout_context()->last_layout().page_number_format;
+			}
 		}	
 	}
 	if (type == 3)

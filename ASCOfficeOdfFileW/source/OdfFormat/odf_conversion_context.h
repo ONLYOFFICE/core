@@ -74,7 +74,7 @@ public:
 	office_element_ptr &	get_current_object_element();
 
 	office_element_ptr start_tabs();
-		void add_tab(_CP_OPT(int) type, _CP_OPT(length) length);
+		void add_tab(_CP_OPT(int) type, _CP_OPT(length) length, _CP_OPT(int) leader);
 	void end_tabs();
 
 private:

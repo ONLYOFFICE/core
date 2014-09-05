@@ -330,7 +330,12 @@ void common_border_attlist::add_attributes( const xml::attributes_wc_ptr & Attri
 }
 void common_border_attlist::apply_from(const common_border_attlist & Other)
 {
-    _CP_APPLY_PROP(fo_border_, Other.fo_border_);
+	if (fo_border_ && !Other.fo_border_)
+	{
+		fo_border_top_ = fo_border_bottom_ = fo_border_left_ = fo_border_right_ = fo_border_;
+		fo_border_ = Other.fo_border_;
+	}
+	_CP_APPLY_PROP(fo_border_, Other.fo_border_);
     _CP_APPLY_PROP(fo_border_top_, Other.fo_border_top_);
     _CP_APPLY_PROP(fo_border_bottom_, Other.fo_border_bottom_);
     _CP_APPLY_PROP(fo_border_left_, Other.fo_border_left_);

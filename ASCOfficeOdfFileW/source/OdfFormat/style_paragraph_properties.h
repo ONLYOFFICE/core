@@ -167,6 +167,8 @@ public:
 
     void apply_from( paragraph_format_properties & Other);
 
+	void clear();
+
 public:
     // 15.5.1 fo:line-height
     _CP_OPT(line_width) fo_line_height_;                 // +

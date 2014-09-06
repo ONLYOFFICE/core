@@ -1943,9 +1943,18 @@ namespace SimpleTypes
 			{
 				if ( -1 == nPos )
 				{
-					// Поправка 12.1.2.2 (Part4)
-					int nValue = _wtoi( sValue );
-					m_dValue = nValue / 1000.0;
+					//test
+					double dValue = _wtof(sValue);
+					if (dValue >= 0 && dValue <=1 )
+					{
+						m_dValue = dValue  ;
+					}
+					else
+					{
+						// Поправка 12.1.2.2 (Part4)
+						int nValue = _wtoi( sValue );
+						m_dValue = nValue / 1000.0;
+					}
 				}
 				else
 					m_dValue = 0;

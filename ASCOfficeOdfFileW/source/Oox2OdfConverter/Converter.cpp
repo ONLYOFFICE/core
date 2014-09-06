@@ -799,7 +799,7 @@ void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill,
 
 	odf_context()->drawing_context()->start_gradient_style();
 	{
-		odf::gradient_style grad_style = odf::gradient_style::linear;
+		odf::gradient_style::type grad_style = odf::gradient_style::linear;
 	
 		if (oox_grad_fill->m_eGradType == OOX::Drawing::gradfilltypeLinear && oox_grad_fill->m_oLin->m_oAng.IsInit())
 		{

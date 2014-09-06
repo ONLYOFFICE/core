@@ -198,8 +198,9 @@ public:
 		current_text_properties = NULL;
 
 		width = height = x = y = 0;
-
-		is_footer_header_ = false;  //некоторые свойства для объектов графики не поддерживаюися в редакторах Liber && OpenOffice.net
+		is_header_ = false;
+		is_footer_ = false;
+	  //некоторые свойства для объектов графики не поддерживаюися в редакторах Liber && OpenOffice.net
 									//в MS Office и в нашем - проблем таких нет.
 	} 
 	
@@ -211,7 +212,8 @@ public:
 	odf_style_context			*styles_context_;
 	odf_conversion_context		*odf_context_;
 
-	bool is_footer_header_;
+	bool is_footer_;
+	bool is_header_;
 
 	void create_draw_base(int type);
 	office_element_ptr create_draw_element(int type);
@@ -256,9 +258,13 @@ void odf_drawing_context::set_styles_context(odf_style_context*  styles_context)
 	impl_->styles_context_ = styles_context;
 }
 
-void odf_drawing_context::set_footer_header_state(bool Val)
+void odf_drawing_context::set_footer_state(bool Val)
 {
-	impl_->is_footer_header_ = Val;
+	impl_->is_footer_ = Val;
+}
+void odf_drawing_context::set_header_state(bool Val)
+{
+	impl_->is_header_ = Val;
 }
 
 void odf_drawing_context::start_group()
@@ -882,6 +888,9 @@ void odf_drawing_context::set_shadow(int type, std::wstring hexColor, _CP_OPT(do
 {
 	if (!impl_->current_graphic_properties)return;
 
+	int res = 0;
+	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+
 	impl_->current_graphic_properties->content().draw_shadow_offset_x_ = length(length(dist_pt,length::pt).get_value_unit(length::cm),length::cm);
 	
 	if (dist_pt_y > 0)
@@ -913,17 +922,20 @@ void odf_drawing_context::set_no_fill()
 void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 {
 	if (!impl_->current_graphic_properties)return;
+	
+	int res = 0;
+	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
 
 	switch(impl_->current_drawing_part_)
 	{
 	case Area:
-		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::solid;
-		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_ = color(std::wstring(L"#") + hexColor);
-		impl_->current_graphic_properties->content().common_background_color_attlist_.fo_background_color_ = color(std::wstring(L"#") + hexColor);
+		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_					= draw_fill::solid;
+		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_				= hexColor;
+		impl_->current_graphic_properties->content().common_background_color_attlist_.fo_background_color_	= color(hexColor);
 		//последнее нужно - что если будут вводить текст - под текстом будет цвет фона (или он поменяется в полях текста)
 		break;
 	case Line:
-		impl_->current_graphic_properties->content().svg_stroke_color_ = color(std::wstring(L"#") + hexColor);
+		impl_->current_graphic_properties->content().svg_stroke_color_ =  hexColor;
 		if (!impl_->current_graphic_properties->content().draw_stroke_)
 			impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::Solid);//default
 		if (!impl_->current_graphic_properties->content().svg_stroke_width_)
@@ -1071,8 +1083,10 @@ void odf_drawing_context::set_margin_bottom	(double valPt)
 }
 void odf_drawing_context::set_anchor(int  type)
 {
-	if (impl_->is_footer_header_ && type == anchor_type::Page)
+	if ((impl_->is_footer_|| impl_->is_header_) && type == anchor_type::Page)
+	{
 		type = anchor_type::Paragraph;
+	}
 	impl_->anchor_settings_.anchor_type_ = anchor_type((anchor_type::type)type);
 }
 anchor_type::type odf_drawing_context::get_anchor()
@@ -1090,19 +1104,22 @@ void odf_drawing_context::set_vertical_rel(int from)
 	case 0:	type = vertical_rel::Baseline;										break;//	relfromvBottomMargin ???
 	case 1:	type = vertical_rel::PageContent;									break;//	relfromvInsideMargin ???
 	case 2:	type = vertical_rel::Baseline;										break;//	relfromvLine          
-	case 3:	type = vertical_rel::PageContent;set_anchor(anchor_type::Paragraph);break;//	relfromvMargin     
+	case 3:	type = vertical_rel::Paragraph; set_anchor(anchor_type::Paragraph);	break;//	relfromvMargin     
 	case 4:	type = vertical_rel::Baseline;										break;//	relfromvOutsideMargin ???
 	case 5:	type = vertical_rel::Page;		set_anchor(anchor_type::Page);		break;//	relfromvPage          
 	case 6:	type = vertical_rel::Paragraph;	set_anchor(anchor_type::Paragraph);	break;//	relfromvParagraph    
 	case 7:	type = vertical_rel::Baseline;										break;//	relfromvTopMargin   ???  
 	}
 
-	if (impl_->is_footer_header_ && ( from ==3 /*|| 5*/))
+	if ((impl_->is_footer_ || impl_->is_header_) && ( from ==3 /*|| 5*/))
 	{
 		set_anchor(anchor_type::Paragraph);
 		//подозрительно на подложку страницы
 		impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
 		impl_->anchor_settings_.run_through_ = run_through(run_through::Background);
+
+		if (impl_->is_footer_)
+			set_vertical_pos(0);
 	}
 
 	impl_->anchor_settings_.style_vertical_rel_ = vertical_rel(type);
@@ -1142,6 +1159,7 @@ void odf_drawing_context::set_horizontal_rel(int from)
 		case 5:	type = horizontal_rel::ParagraphEndMargin;	break;	//	relfromhOutsideMargin = 5,
 		case 6:	type = horizontal_rel::Page;				break;	//	relfromhPage          = 6, ???
 		case 7:	type = horizontal_rel::PageEndMargin;		break;	//	relfromhRightMargin   = 7
+		case 8: type = horizontal_rel::PageContent;			break;
 	}
 	impl_->anchor_settings_.style_horizontal_rel_ = horizontal_rel(type);
 	
@@ -1158,7 +1176,10 @@ void odf_drawing_context::set_horizontal_pos(int align)
 	case 1:	type =	horizontal_pos::FromInside;	break;//alignhInside  = 1,
 	case 2:	type =	horizontal_pos::FromLeft;	break;//alignhLeft    = 2,
 	case 3:	type =	horizontal_pos::Outside;	break;//alignhOutside = 3,
-	case 4:	type =	horizontal_pos::Right;		break;//alignhRight   = 4
+	case 4:	type =	horizontal_pos::Right;		
+		if (impl_->anchor_settings_.style_horizontal_rel_ && impl_->anchor_settings_.style_horizontal_rel_->get_type() == horizontal_rel::ParagraphStartMargin)
+			impl_->anchor_settings_.style_horizontal_rel_ = horizontal_rel::ParagraphEndMargin;
+		break;//alignhRight   = 4
 	}
 	impl_->anchor_settings_.style_horizontal_pos_ = horizontal_pos(type);
 }
@@ -1598,7 +1619,10 @@ void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)
 
 	if (!impl_->current_text_properties) return;
 
-	impl_->current_text_properties->content().fo_color_ = color(std::wstring(L"#") + hexColor);
+	int res = 0;
+	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+
+	impl_->current_text_properties->content().fo_color_ = hexColor;
 }
 void odf_drawing_context::set_textarea_writing_mode(int mode)
 {
@@ -1732,7 +1756,7 @@ void odf_drawing_context::start_text_box()
 
 	start_element(text_box_elm);
 
-	if (impl_->is_footer_header_ ==false)
+	if (impl_->is_footer_ ==false && impl_->is_header_ ==false)
 		set_text_box_parent_style(L"Frame");
 
 	start_area_properties();
@@ -1933,12 +1957,15 @@ void odf_drawing_context::start_gradient_style()
 
 	gradient->draw_name_ = impl_->styles_context_->find_free_name(style_family::Gradient);
 	gradient->draw_display_name_ = std::wstring(L"User") + gradient->draw_name_.get() ;
+
+	gradient->draw_start_color_ = impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_;
+	if (gradient->draw_start_color_) gradient->draw_start_intensity_ = 100.;
 	
 	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_gradient_name_ = gradient->draw_name_;
 	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::gradient);
 
 }
-void odf_drawing_context::set_gradient_type(gradient_style style)
+void odf_drawing_context::set_gradient_type(gradient_style::type style)
 {
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
@@ -1950,7 +1977,10 @@ void odf_drawing_context::set_gradient_start(std::wstring hexColor, _CP_OPT(doub
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 
-	gradient->draw_start_color_ = color(std::wstring(L"#") + hexColor);
+	int res = 0;
+	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+	
+	gradient->draw_start_color_ = hexColor;
 	gradient->draw_start_intensity_ = 100.;
 }
 void odf_drawing_context::set_gradient_end  (std::wstring hexColor, _CP_OPT(double) & intensiv)
@@ -1958,7 +1988,10 @@ void odf_drawing_context::set_gradient_end  (std::wstring hexColor, _CP_OPT(doub
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 
-	gradient->draw_end_color_ = color(std::wstring(L"#") + hexColor);
+	int res = 0;
+	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+
+	gradient->draw_end_color_ = hexColor;
 	gradient->draw_end_intensity_ = 100.;
 }
 void odf_drawing_context::set_gradient_angle(double angle)
@@ -1976,8 +2009,23 @@ void odf_drawing_context::set_gradient_rect(double l, double t, double r,double 
 	gradient->draw_cy_ = percent((b-t)/2. + 50.);
 	gradient->draw_cx_ = percent((r-l)/2. + 50.);
 }
+void odf_drawing_context::set_gradient_center(double cx, double cy)
+{
+	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
+	if (!gradient) return;
+	
+	gradient->draw_cy_ = percent(cx * 100.);
+	gradient->draw_cx_ = percent(cy * 100.);
+}
 void odf_drawing_context::end_gradient_style()
 {
+	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
+	if (!gradient) return;
+
+	if (!gradient->draw_start_color_) 
+		gradient->draw_start_color_ = std::wstring(L"#ffffff");
+	if (!gradient->draw_start_color_) 
+		gradient->draw_start_color_ = std::wstring(L"#000000");
 }
 //-------------------------------------------------------------------------------------------------------------------------------------
 void odf_drawing_context::start_opacity_style()
@@ -2060,14 +2108,19 @@ void odf_drawing_context::set_hatch_line_color(std::wstring hexColor)
 	draw_hatch * hatch = dynamic_cast<draw_hatch *>(impl_->styles_context_->last_state()->get_office_element().get());
 	if (!hatch) return;
 
-	hatch->draw_color_ = color(std::wstring(L"#") + hexColor);
-
+	int res = 0;
+	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+	
+	hatch->draw_color_ =  hexColor;
 }
 void odf_drawing_context::set_hatch_area_color(std::wstring hexColor)
 {
 	if (!impl_->current_graphic_properties)return;
 
-	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_ = color(std::wstring(L"#") + hexColor);
+	int res = 0;
+	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+
+	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_ = hexColor;
 	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_hatch_solid_ = true;
 }
 void odf_drawing_context::set_hatch_type(int type)

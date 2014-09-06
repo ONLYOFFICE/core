@@ -43,7 +43,9 @@ odt_conversion_context::odt_conversion_context(package::odf_document * outputDoc
 	current_field_.in_span = false;
 	
 	is_hyperlink_		= false;
-	is_footer_header_	= false;
+
+	is_header_	= false;
+	is_footer_	= false;
 
 	drop_cap_state_.clear();
 }
@@ -183,7 +185,9 @@ void odt_conversion_context::start_drawings()
 	if (!new_drawing_context_)return;
 	
 	new_drawing_context_->set_styles_context(styles_context());
-	new_drawing_context_->set_footer_header_state(is_footer_header_);
+
+	new_drawing_context_->set_footer_state(is_footer_);
+	new_drawing_context_->set_header_state(is_header_);
 
 	drawing_context_.push_back(new_drawing_context_);
 }
@@ -862,7 +866,7 @@ bool odt_conversion_context::start_header(int type)
 
 	text_context()->start_element(page_layout_context()->last_master().get_last_element());
 
-	is_footer_header_ = true;
+	is_header_ = true;
 
 	return true;
 }
@@ -872,7 +876,8 @@ void odt_conversion_context::end_header_footer()
 	text_context()->end_element();
 	end_text_context();
 
-	is_footer_header_ = false;
+	is_header_ = false;
+	is_footer_ = false;
 }
 
 void odt_conversion_context::set_background(_CP_OPT(color) & color, int type)
@@ -891,7 +896,7 @@ bool odt_conversion_context::start_footer(int type)
 	
 	text_context()->start_element(page_layout_context()->last_master().get_last_element());
 
- 	is_footer_header_ = true;
+ 	is_footer_ = true;
 
 	return true;
 }

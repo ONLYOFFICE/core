@@ -530,7 +530,7 @@
 			Name="DocWrapper"
 			>
 			<File
-				RelativePath=".\DocWrapper\DocxSeializer.cpp"
+				RelativePath=".\DocWrapper\DocxSerializer.cpp"
 				>
 			</File>
 			<File

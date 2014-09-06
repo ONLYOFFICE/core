@@ -4171,13 +4171,13 @@ struct StdStringEqualsNoCaseA
 
 
 #ifndef _WIN32
-#ifdef UNICODE
 typedef CStdStringW CStringW;
+typedef CStdStringA CStringA;
+#ifdef UNICODE
 typedef CStringW CString;
 typedef CStringW BSTR;
 #define __T(x)      L ## x
 #else // UNICODE
-typedef CStdStringA CStringA;
 typedef CStringA CString;
 #define __T(x)      x
 #endif // UNICODE

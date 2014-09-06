@@ -36,7 +36,7 @@ namespace OOX
 			{
 				m_eType = et_Unknown;
 
-				CWCharWrapper sName = oReader.GetName();
+                CString sName = oReader.GetName();
 				if ( _T("pic:nvPicPr") == sName )
 					m_eType = et_pic_nvPicPr;
 				else
@@ -114,7 +114,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) ) 
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("pic:nvPicPr") == sName )
 						m_oNvPicPr = oReader;
 					else if ( _T("pic:blipFill") == sName )

@@ -871,7 +871,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth )  )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					WritingElement *pItem = NULL;
 
 					if ( _T("w:b") == sName )

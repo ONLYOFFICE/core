@@ -61,7 +61,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+                CString sName = oReader.GetName();
 
 				WritingElement *pEffect = NULL;
 
@@ -193,7 +193,7 @@ namespace OOX
 		void CBlipFillProperties::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			m_eType = et_Unknown;
-			CWCharWrapper sName = oReader.GetName();
+            CString sName = oReader.GetName();
 			if ( _T("a:blipFill") == sName )
 				m_eType = et_a_blipFill;
 			else if ( _T("pic:blipFill") == sName )
@@ -210,7 +210,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+                CString sName = oReader.GetName();
 				if ( _T("a:blip") == sName )
 					m_oBlip = oReader;
 				else if ( _T("a:srcRect") == sName )
@@ -336,7 +336,7 @@ namespace OOX
 		}
 		void CEffectContainer::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-			CWCharWrapper sName = oReader.GetName();
+            CString sName = oReader.GetName();
 			if ( _T("a:cont") == sName )
 				m_eType = et_a_cont;
 			else if ( _T("a:effectDag") == sName )
@@ -579,7 +579,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+                CString sName = oReader.GetName();
 				wchar_t wChar = sName[2]; // a:_
 
 				WritingElement* pEffect = NULL;
@@ -680,7 +680,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+                CString sName = oReader.GetName();
 				if ( _T("a:gsLst") == sName )
 					m_oGsLst = oReader;
 				else if ( _T("a:lin") == sName )

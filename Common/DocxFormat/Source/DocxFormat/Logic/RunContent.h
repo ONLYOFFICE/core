@@ -70,8 +70,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+                CString wsName = oReader.GetName();
+                while( !wsName.IsEmpty() )
 				{
 					if ( _T("w:type") == wsName )
 						m_oType = oReader.GetText();
@@ -149,12 +149,12 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+                CString wsName = oReader.GetName();
+                while( !wsName.IsEmpty() )
 				{
 					if ( _T("r:id") == wsName )
 					{
-						m_oId = oReader.GetText();
+                        m_oId = oReader.GetText().c_str();
 						break;
 					}
 
@@ -327,8 +327,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+                CString wsName = oReader.GetName();
+                while( !wsName.IsEmpty() )
 				{
 					if ( _T("xml:space") == wsName )
 					{
@@ -565,8 +565,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+                CString wsName = oReader.GetName();
+                while( !wsName.IsEmpty() )
 				{
 					if ( _T("w:alignment") == wsName )
 						m_oAlignment = oReader.GetText();
@@ -710,8 +710,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+                CString wsName = oReader.GetName();
+                while( !wsName.IsEmpty() )
 				{
 					if ( _T("w:char") == wsName )
 						m_oChar = oReader.GetText();
@@ -791,8 +791,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+                CString wsName = oReader.GetName();
+                while( !wsName.IsEmpty() )
 				{
 					if ( _T("xml:space") == wsName )
 					{
@@ -1002,8 +1002,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+                CString wsName = oReader.GetName();
+                while( !wsName.IsEmpty() )
 				{
 					if ( _T("w:id") == wsName )
 					{
@@ -1115,8 +1115,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+                CString wsName = oReader.GetName();
+                while( !wsName.IsEmpty() )
 				{
 					if ( _T("xml:space") == wsName )
 					{
@@ -1226,8 +1226,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+                CString wsName = oReader.GetName();
+                while( !wsName.IsEmpty() )
 				{
 					if ( _T("w:customMarkFollows") == wsName )
 						m_oCustomMarkFollows = oReader.GetText();
@@ -1335,8 +1335,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+                CString wsName = oReader.GetName();
+                while( !wsName.IsEmpty() )
 				{
 					if ( _T("w:customMarkFollows") == wsName )
 						m_oCustomMarkFollows = oReader.GetText();
@@ -1416,8 +1416,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+                CString wsName = oReader.GetName();
+                while( !wsName.IsEmpty() )
 				{
 					if ( _T("xml:space") == wsName )
 					{

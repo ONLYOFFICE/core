@@ -353,7 +353,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("w:checked") == sName )
 						m_oChecked = oReader;
 					else if ( _T("w:default") == sName )
@@ -466,7 +466,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("w:default") == sName )
 						m_oDefault = oReader;
 					else if ( _T("w:result") == sName )
@@ -561,7 +561,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("w:default") == sName )
 						m_oDefault = oReader;
 					else if ( _T("w:format") == sName )
@@ -659,7 +659,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					if      ( _T("w:calcOnExit") == sName ) m_oCalcOnExit = oReader;
 					else if ( _T("w:checkBox")   == sName ) m_oCheckBox = oReader;
@@ -773,7 +773,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth )  )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					WritingElement *pItem = NULL;
 
 					if ( _T("w:ffData") == sName )

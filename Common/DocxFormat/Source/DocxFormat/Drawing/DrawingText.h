@@ -49,7 +49,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					if ( _T("a:bodyPr") == sName )
 						m_oBodyPr = oReader;
@@ -110,7 +110,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					if ( _T("a:txBody") == sName )
 						m_oTxBody = oReader;

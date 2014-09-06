@@ -5,7 +5,7 @@
 
 #include <vector>
 
-// Здесь представлены все простые типы Vml из спецификации Office Open Xml Part4 14
+// Here are simple types Vml from spec Office Open Xml Part4 14
 namespace SimpleTypes
 {
 	//--------------------------------------------------------------------------------
@@ -29,7 +29,7 @@ namespace SimpleTypes
 		CEditAs() {}
 		virtual EEditAs FromString(CString &sValue)
 		{
-			m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
 				return m_eValue;
@@ -38,32 +38,32 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case 'b':
-				if      ( _T("bullseye") == sValue ) m_eValue = editasBullseye;
+                if      ( _T("bullseye") == sValue ) this->m_eValue = editasBullseye;
 				break;
 			case 'c':
-				if      ( _T("canvas")   == sValue ) m_eValue = editasCanvas;
-				else if ( _T("cycle")    == sValue ) m_eValue = editasCycle;
+                if      ( _T("canvas")   == sValue ) this->m_eValue = editasCanvas;
+                else if ( _T("cycle")    == sValue ) this->m_eValue = editasCycle;
 				break;
 			case 'o':
-				if      ( _T("orgchart") == sValue ) m_eValue = editasOrgchart;
+                if      ( _T("orgchart") == sValue ) this->m_eValue = editasOrgchart;
 				break;
 			case 'r':
-				if      ( _T("radial")   == sValue ) m_eValue = editasRadial;
+                if      ( _T("radial")   == sValue ) this->m_eValue = editasRadial;
 				break;
 			case 's':
-				if      ( _T("stacked")  == sValue ) m_eValue = editasStacked;
+                if      ( _T("stacked")  == sValue ) this->m_eValue = editasStacked;
 				break;
 			case 'v':
-				if      ( _T("venn")     == sValue ) m_eValue = editasVenn;
+                if      ( _T("venn")     == sValue ) this->m_eValue = editasVenn;
 				break;
 			}
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString  () const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case editasBullseye : return _T("bullseye");
 			case editasCanvas   : return _T("canvas");
@@ -99,31 +99,31 @@ namespace SimpleTypes
 		CExt() {}
 		virtual EExt    FromString(CString &sValue)
 		{
-			m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-				return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'b':
-				if      ( _T("backwardCompatible") == sValue ) m_eValue = extBackwardCompatible;
+                if      ( _T("backwardCompatible") == sValue ) this->m_eValue = extBackwardCompatible;
 				break;
 			case 'e':
-				if      ( _T("edit")               == sValue ) m_eValue = extEdit;
+                if      ( _T("edit")               == sValue ) this->m_eValue = extEdit;
 				break;
 			case 'v':
-				if      ( _T("view")               == sValue ) m_eValue = extView;
+                if      ( _T("view")               == sValue ) this->m_eValue = extView;
 				break;
 			}
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString  () const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case extBackwardCompatible : return _T("backwardCompatible");
 			case extEdit               : return _T("edit");
@@ -157,14 +157,14 @@ namespace SimpleTypes
 
 		virtual EFillMethod FromString(CString& sValue)
 		{
-			if		(_T("any")			== sValue)	m_eValue = fillmethodAny;
-			else if	(_T("linear")		== sValue)	m_eValue = fillmethodLinear;
-			else if	(_T("linear sigma")	== sValue)	m_eValue = fillmethodLinearSigma;
-			else if (_T("sigma")		== sValue)	m_eValue = fillmethodSigma;
-			else if (_T("none")			== sValue)	m_eValue = fillmethodNone;
-			else									m_eValue = eDefValue;
+            if		(_T("any")			== sValue)	this->m_eValue = fillmethodAny;
+            else if	(_T("linear")		== sValue)	this->m_eValue = fillmethodLinear;
+            else if	(_T("linear sigma")	== sValue)	this->m_eValue = fillmethodLinearSigma;
+            else if (_T("sigma")		== sValue)	this->m_eValue = fillmethodSigma;
+            else if (_T("none")			== sValue)	this->m_eValue = fillmethodNone;
+            else									this->m_eValue = eDefValue;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString() const
@@ -211,47 +211,47 @@ namespace SimpleTypes
 			{
 				if ( filltypeFrame == eValue || filltypeGradient == eValue || eValue == filltypeGradientRadial ||
 					 filltypePattern == eValue || filltypeSolid == eValue || filltypeTile == eValue )
-					 m_eValue = eValue;
+                     this->m_eValue = eValue;
 				else
-					m_eValue = eDefValue;
+                    this->m_eValue = eDefValue;
 			}
 			else
-				m_eValue = eValue;
+                this->m_eValue = eValue;
 		}
 		virtual EFillType FromString(CString &sValue)
 		{
 			if ( 0 == nType )
 			{
-				if      (_T("frame")			== sValue)	m_eValue = filltypeFrame;
-				else if (_T("gradient")			== sValue)	m_eValue = filltypeGradient;
-				else if (_T("gradientRadial")	== sValue)	m_eValue = filltypeGradientRadial;
-				else if (_T("pattern")			== sValue)	m_eValue = filltypePattern;
-				else if (_T("solid")			== sValue)	m_eValue = filltypeSolid;
-				else if (_T("tile")				== sValue)	m_eValue = filltypeTile;
-				else										m_eValue = eDefValue;
+                if      (_T("frame")			== sValue)	this->m_eValue = filltypeFrame;
+                else if (_T("gradient")			== sValue)	this->m_eValue = filltypeGradient;
+                else if (_T("gradientRadial")	== sValue)	this->m_eValue = filltypeGradientRadial;
+                else if (_T("pattern")			== sValue)	this->m_eValue = filltypePattern;
+                else if (_T("solid")			== sValue)	this->m_eValue = filltypeSolid;
+                else if (_T("tile")				== sValue)	this->m_eValue = filltypeTile;
+                else										this->m_eValue = eDefValue;
 			}
 			else
 			{
-				if      (_T("background")		== sValue)	m_eValue = filltypeBackground;
-				else if (_T("frame")			== sValue)	m_eValue = filltypeFrame;
-				else if (_T("gradient")			== sValue)	m_eValue = filltypeGradient;
-				else if (_T("gradientCenter")   == sValue)	m_eValue = filltypeGradientCenter;
-				else if (_T("gradientRadial")	== sValue)	m_eValue = filltypeGradientRadial;
-				else if (_T("gradientUnscaled") == sValue)	m_eValue = filltypeGradientUnscaled;
-				else if (_T("pattern")			== sValue)	m_eValue = filltypePattern;
-				else if (_T("solid")			== sValue)	m_eValue = filltypeSolid;
-				else if (_T("tile")				== sValue)	m_eValue = filltypeTile;
-				else										m_eValue = eDefValue;
+                if      (_T("background")		== sValue)	this->m_eValue = filltypeBackground;
+                else if (_T("frame")			== sValue)	this->m_eValue = filltypeFrame;
+                else if (_T("gradient")			== sValue)	this->m_eValue = filltypeGradient;
+                else if (_T("gradientCenter")   == sValue)	this->m_eValue = filltypeGradientCenter;
+                else if (_T("gradientRadial")	== sValue)	this->m_eValue = filltypeGradientRadial;
+                else if (_T("gradientUnscaled") == sValue)	this->m_eValue = filltypeGradientUnscaled;
+                else if (_T("pattern")			== sValue)	this->m_eValue = filltypePattern;
+                else if (_T("solid")			== sValue)	this->m_eValue = filltypeSolid;
+                else if (_T("tile")				== sValue)	this->m_eValue = filltypeTile;
+                else										this->m_eValue = eDefValue;
 			}
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString() const
 		{
 			if ( 0 == nType )
 			{
-				switch (m_eValue)
+                switch (this->m_eValue)
 				{
 				case filltypeFrame			: return _T("frame");
 				case filltypeGradient		: return _T("gradient");
@@ -264,7 +264,7 @@ namespace SimpleTypes
 			}
 			else
 			{
-				switch (m_eValue)
+                switch (this->m_eValue)
 				{
 				case filltypeBackground		  : return _T("background");
 				case filltypeFrame			  : return _T("frame");
@@ -301,29 +301,29 @@ namespace SimpleTypes
 		CImageAspect() {}
 		virtual EImageAspect FromString(CString &sValue)
 		{
-			m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-				return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'a':
-				if      ( _T("atLeast") == sValue ) m_eValue = imageaspectAtLeast;
-				else if ( _T("atMost")  == sValue ) m_eValue = imageaspectAtMost;
+                if      ( _T("atLeast") == sValue ) this->m_eValue = imageaspectAtLeast;
+                else if ( _T("atMost")  == sValue ) this->m_eValue = imageaspectAtMost;
 				break;
 			case 'i':
-				if      ( _T("ignore")  == sValue ) m_eValue = imageaspectIgnore;
+                if      ( _T("ignore")  == sValue ) this->m_eValue = imageaspectIgnore;
 				break;
 			}
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString      ToString  () const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case imageaspectAtLeast : return _T("atLeast");
 			case imageaspectAtMost  : return _T("atMost");
@@ -356,18 +356,18 @@ namespace SimpleTypes
 
 		virtual EShadowType FromString(CString &sValue)
 		{
-			if      (_T("double")		== sValue)	m_eValue = shadowtypeDouble;
-			else if (_T("emboss")		== sValue)	m_eValue = shadowtypeEmboss;
-			else if (_T("perspective")	== sValue)	m_eValue = shadowtypePerspective;
-			else if (_T("single")		== sValue)	m_eValue = shadowtypeSingle;
-			else									m_eValue = eDefValue;
+            if      (_T("double")		== sValue)	this->m_eValue = shadowtypeDouble;
+            else if (_T("emboss")		== sValue)	this->m_eValue = shadowtypeEmboss;
+            else if (_T("perspective")	== sValue)	this->m_eValue = shadowtypePerspective;
+            else if (_T("single")		== sValue)	this->m_eValue = shadowtypeSingle;
+            else									this->m_eValue = eDefValue;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString() const
 		{
-			switch (m_eValue)
+            switch (this->m_eValue)
 			{
 			case shadowtypeDouble	    : return _T("double");
 			case shadowtypeEmboss	    : return _T("emboss");
@@ -397,31 +397,31 @@ namespace SimpleTypes
 		CStrokeArrowLength() {}
 		virtual EStrokeArrowLength FromString(CString &sValue)
 		{
-			m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-				return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'l':
-				if      ( _T("long")   == sValue ) m_eValue = strokearrowlengthLong;
+                if      ( _T("long")   == sValue ) this->m_eValue = strokearrowlengthLong;
 				break;
 			case 'm':
-				if      ( _T("medium") == sValue ) m_eValue = strokearrowlengthMedium;
+                if      ( _T("medium") == sValue ) this->m_eValue = strokearrowlengthMedium;
 				break;
 			case 's':
-				if      ( _T("short")  == sValue ) m_eValue = strokearrowlengthShort;
+                if      ( _T("short")  == sValue ) this->m_eValue = strokearrowlengthShort;
 				break;
 			}
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString            ToString  () const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case strokearrowlengthLong   : return _T("long");
 			case strokearrowlengthMedium : return _T("medium");
@@ -456,38 +456,38 @@ namespace SimpleTypes
 		CStrokeArrowType() {}
 		virtual EStrokeArrowType FromString(CString &sValue)
 		{
-			m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-				return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'b':
-				if      ( _T("block")   == sValue ) m_eValue = strokearrowtypeBlock;
+                if      ( _T("block")   == sValue ) this->m_eValue = strokearrowtypeBlock;
 				break;
 			case 'c':
-				if      ( _T("classic") == sValue ) m_eValue = strokearrowtypeClassic;
+                if      ( _T("classic") == sValue ) this->m_eValue = strokearrowtypeClassic;
 				break;
 			case 'd':
-				if      ( _T("diamond") == sValue ) m_eValue = strokearrowtypeDiamond;
+                if      ( _T("diamond") == sValue ) this->m_eValue = strokearrowtypeDiamond;
 				break;
 			case 'n':
-				if      ( _T("none")    == sValue ) m_eValue = strokearrowtypeNone;
+                if      ( _T("none")    == sValue ) this->m_eValue = strokearrowtypeNone;
 				break;
 			case 'o':
-				if      ( _T("open")    == sValue ) m_eValue = strokearrowtypeOpen;
-				else if ( _T("oval")    == sValue ) m_eValue = strokearrowtypeOval;
+                if      ( _T("open")    == sValue ) this->m_eValue = strokearrowtypeOpen;
+                else if ( _T("oval")    == sValue ) this->m_eValue = strokearrowtypeOval;
 				break;
 			}
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString          ToString  () const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case strokearrowtypeBlock   : return _T("block");
 			case strokearrowtypeClassic : return _T("classic");
@@ -522,31 +522,31 @@ namespace SimpleTypes
 		CStrokeArrowWidth() {}
 		virtual EStrokeArrowWidth FromString(CString &sValue)
 		{
-			m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-				return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'm':
-				if      ( _T("medium") == sValue ) m_eValue = strokearrowwidthMedium;
+                if      ( _T("medium") == sValue ) this->m_eValue = strokearrowwidthMedium;
 				break;
 			case 'n':
-				if      ( _T("narrow") == sValue ) m_eValue = strokearrowwidthNarrow;
+                if      ( _T("narrow") == sValue ) this->m_eValue = strokearrowwidthNarrow;
 				break;
 			case 'w':
-				if      ( _T("wide")   == sValue ) m_eValue = strokearrowwidthWide;
+                if      ( _T("wide")   == sValue ) this->m_eValue = strokearrowwidthWide;
 				break;
 			}
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString           ToString  () const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case strokearrowwidthMedium : return _T("medium");
 			case strokearrowwidthNarrow : return _T("narrow");
@@ -578,31 +578,31 @@ namespace SimpleTypes
 		CStrokeEndCap() {}
 		virtual EStrokeEndCap FromString(CString &sValue)
 		{
-			m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-				return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'f':
-				if      ( _T("flat")   == sValue ) m_eValue = strokeendcapFlat;
+                if      ( _T("flat")   == sValue ) this->m_eValue = strokeendcapFlat;
 				break;
 			case 'r':
-				if      ( _T("round")  == sValue ) m_eValue = strokeendcapRound;
+                if      ( _T("round")  == sValue ) this->m_eValue = strokeendcapRound;
 				break;
 			case 's':
-				if      ( _T("square") == sValue ) m_eValue = strokeendcapSqaure;
+                if      ( _T("square") == sValue ) this->m_eValue = strokeendcapSqaure;
 				break;
 			}
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString       ToString  () const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case strokeendcapFlat   : return _T("flat");
 			case strokeendcapRound  : return _T("round");
@@ -634,17 +634,17 @@ namespace SimpleTypes
 
 		virtual EStrokeJoinStyle FromString(CString &sValue)
 		{
-			if      (_T("round")	== sValue)	m_eValue = strokejoinstyleRound;
-			else if (_T("miter")	== sValue)	m_eValue = strokejoinstyleMiter;
-			else if (_T("bevel")	== sValue)	m_eValue = strokejoinstyleMiter;
-			else								m_eValue = strokejoinstyleRound;
+            if      (_T("round")	== sValue)	this->m_eValue = strokejoinstyleRound;
+            else if (_T("miter")	== sValue)	this->m_eValue = strokejoinstyleMiter;
+            else if (_T("bevel")	== sValue)	this->m_eValue = strokejoinstyleMiter;
+            else								this->m_eValue = strokejoinstyleRound;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString() const
 		{
-			switch (m_eValue)
+            switch (this->m_eValue)
 			{
 			case strokejoinstyleRound	: return _T("round");
 			case strokejoinstyleMiter	: return _T("miter");
@@ -675,7 +675,7 @@ namespace SimpleTypes
 		CStrokeLineStyle() {}
 		virtual EStrokeLineStyle FromString(CString &sValue)
 		{
-			m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
 				return m_eValue;
@@ -684,22 +684,22 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case 's':
-				if      ( _T("single")           == sValue ) m_eValue = strokelinestyleSingle;
+                if      ( _T("single")           == sValue ) this->m_eValue = strokelinestyleSingle;
 				break;
 			case 't':
-				if      ( _T("thickBetweenThin") == sValue ) m_eValue = strokelinestyleThickBetweenThin;
-				else if ( _T("thickThin")        == sValue ) m_eValue = strokelinestyleThickThin;
-				else if ( _T("thinThick")        == sValue ) m_eValue = strokelinestyleThinThick;
-				else if ( _T("thinThin")         == sValue ) m_eValue = strokelinestyleThinThin;
+                if      ( _T("thickBetweenThin") == sValue ) this->m_eValue = strokelinestyleThickBetweenThin;
+                else if ( _T("thickThin")        == sValue ) this->m_eValue = strokelinestyleThickThin;
+                else if ( _T("thinThick")        == sValue ) this->m_eValue = strokelinestyleThinThick;
+                else if ( _T("thinThin")         == sValue ) this->m_eValue = strokelinestyleThinThin;
 				break;
 			}
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString          ToString  () const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case strokelinestyleSingle            : return _T("single");
 			case strokelinestyleThickBetweenThin  : return _T("thickBetweenThin");
@@ -736,28 +736,28 @@ namespace SimpleTypes
 
 		virtual EAlternateMathContentType FromString(CString &sValue)
 		{
-			m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-				return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case 'o':
-				if      ( _T("officeopenxmlmath") == sValue ) m_eValue = alternatemathcontenttypeOfficeOpenXmlMath;
+                if      ( _T("officeopenxmlmath") == sValue ) this->m_eValue = alternatemathcontenttypeOfficeOpenXmlMath;
 				break;
 			case 'm':
-				if      ( _T("mathml")            == sValue ) m_eValue = alternatemathcontenttypeMathMl;
+                if      ( _T("mathml")            == sValue ) this->m_eValue = alternatemathcontenttypeMathMl;
 				break;
 			}
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString                   ToString  () const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case alternatemathcontenttypeOfficeOpenXmlMath: return _T("officeopenxmlmath");			
 			case alternatemathcontenttypeMathMl:            return _T("mathml");			
@@ -791,29 +791,29 @@ namespace SimpleTypes
 
 		virtual EVmlAngle FromString(CString &sValue)
 		{
-			m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.GetLength() <= 0 )
-				return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue.GetAt(0);
 			switch ( wChar )
 			{
 			case '3':
-				if      ( _T("30")   == sValue ) m_eValue = vmlangle30;
+                if      ( _T("30")   == sValue ) this->m_eValue = vmlangle30;
 				break;
 			case '4':
-				if      ( _T("45")   == sValue ) m_eValue = vmlangle45;
+                if      ( _T("45")   == sValue ) this->m_eValue = vmlangle45;
 				break;
 			case '6':
-				if      ( _T("60")   == sValue ) m_eValue = vmlangle60;
+                if      ( _T("60")   == sValue ) this->m_eValue = vmlangle60;
 				break;
 			case '9':
-				if      ( _T("90")   == sValue ) m_eValue = vmlangle90;
+                if      ( _T("90")   == sValue ) this->m_eValue = vmlangle90;
 				break;
 			case 'a':  
-				if      ( _T("any")  == sValue ) m_eValue = vmlangleAny;
-				else if ( _T("auto") == sValue ) m_eValue = vmlangleAuto;
+                if      ( _T("any")  == sValue ) this->m_eValue = vmlangleAny;
+                else if ( _T("auto") == sValue ) this->m_eValue = vmlangleAuto;
 				break;
 
 			}

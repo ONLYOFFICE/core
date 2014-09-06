@@ -50,7 +50,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("a:extLst") == sName )
 						m_oExtLst = oReader;
 					else if ( _T("a:graphicFrameLocks") == sName )
@@ -180,7 +180,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("wp:align") == sName )
 					{
 						m_oAlign = oReader.GetText2().GetString();
@@ -278,7 +278,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("wp:align") == sName )
 					{
 						m_oAlign = oReader.GetText2().GetString();
@@ -407,7 +407,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("wp:effectExtents") == sName )
 						m_oEffectExtent = oReader;
 				}
@@ -499,7 +499,7 @@ namespace OOX
 				bool bStart = false;
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("wp:start") == sName )
 					{
 						m_oStart = oReader;
@@ -583,7 +583,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("wp:wrapPolygon") == sName )
 						m_oWrapPolygon = oReader;
 				}
@@ -660,7 +660,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("wp:wrapPolygon") == sName )
 						m_oWrapPolygon = oReader;
 				}
@@ -737,7 +737,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("wp:effectExtent") == sName )
 						m_oEffectExtent = oReader;
 				}
@@ -825,7 +825,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("wp:cNvGraphicFramePr") == sName )
 						m_oCNvGraphicFramePr = oReader;
 					else if ( _T("wp:docPr") == sName )
@@ -1073,7 +1073,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 					if ( _T("wp:cNvGraphicFramePr") == sName )
 						m_oCNvGraphicFramePr = oReader;
 					else if ( _T("wp:docPr") == sName )
@@ -1356,7 +1356,7 @@ namespace OOX
 				int nCurDepth = pReader->GetDepth();
 				while( pReader->ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = pReader->GetName();
+                    CString sName = pReader->GetName();
 					if ( _T("wp:inline") == sName )
 					{
 						m_oInline = *pReader;

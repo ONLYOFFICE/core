@@ -104,7 +104,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					if ( _T("w:txbxContent") == sName )
 						m_oTxtbxContent = oReader;				
@@ -168,7 +168,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					sName = oReader.GetName();
 					if ( _T("a:spLocks") == sName )
@@ -241,7 +241,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					sName = oReader.GetName();
 					if ( _T("a:extLst") == sName )
@@ -314,7 +314,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					sName = oReader.GetName();
 					if ( _T("a:picLocks") == sName )
@@ -386,7 +386,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					if ( _T("wps:cNvSpPr") == sName )
 						m_oCNvSpPr = oReader;
@@ -467,7 +467,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					if ( _T("wpg:grpSpPr") == sName )
 						m_oGroupSpPr = oReader;
@@ -544,7 +544,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+                    CString sName = oReader.GetName();
 
 					//if ( _T("wpg:grpSpPr") == sName )
 					//	m_oGroupSpPr = oReader;

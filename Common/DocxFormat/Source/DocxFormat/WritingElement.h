@@ -65,16 +65,18 @@ namespace OOX
 
 #define WritingElement_ReadAttributes_Read_if(Reader, AttrName, Value) \
 		if ( AttrName == wsName )\
-            Value = Reader.GetText();
+        {\
+            Value = Reader.GetText().c_str();\
+        }
 
 #define WritingElement_ReadAttributes_Read_else_if(Reader, AttrName, Value) \
 		else if ( AttrName == wsName )\
-            Value = Reader.GetText();
+            Value = Reader.GetText().c_str();
 
 #define WritingElement_ReadAttributes_ReadSingle(Reader, AttrName, Value) \
 		if ( AttrName == wsName )\
 		{\
-			Value = Reader.GetText();\
+            Value = Reader.GetText().c_str();\
 			break;\
 		}
 

@@ -2526,6 +2526,31 @@ namespace SimpleTypes
 		hexcolorRGB  = 1
 	};
 
+    //--------------------------------------------------------------------------------
+    // HighlightColor 17.18.40 (Part 1)
+    //--------------------------------------------------------------------------------
+
+    enum EHighlightColor
+    {
+        highlightcolorBlack       =  0,
+        highlightcolorBlue        =  1,
+        highlightcolorCyan        =  2,
+        highlightcolorDarkBlue    =  3,
+        highlightcolorDarkCyan    =  4,
+        highlightcolorDarkGray    =  5,
+        highlightcolorDarkGreen   =  6,
+        highlightcolorDarkMagenta =  7,
+        highlightcolorDarkRed     =  8,
+        highlightcolorDarkYellow  =  9,
+        highlightcolorGreen       = 10,
+        highlightcolorLightGray   = 11,
+        highlightcolorMagenta     = 12,
+        highlightcolorNone        = 13,
+        highlightcolorRed         = 14,
+        highlightcolorWhite       = 15,
+        highlightcolorYellow      = 16
+    };
+
 	template<EHexColor eDefValue = hexcolorAuto>
 	class CHexColor : public CSimpleType<EHexColor, eDefValue>
 	{
@@ -2544,14 +2569,22 @@ namespace SimpleTypes
 			m_unB = b;
 		}
 
+        //template <>
+        //class CHighlightColor;
+        //template<EHighlightColor>
+        //class CHighlightColor;
+
 		virtual EHexColor FromString(CString &sValue)
 		{
 			if      ( _T("auto") == sValue || _T("none") == sValue )
                 this->m_eValue = hexcolorAuto;
 			else
 			{
+
+                /*
 				//¬ документации не написано, что цвет может приходить строкой, но в реальных докуентах встречаетс€ и word это разруливает.
-				CHighlightColor<> oHighlightColor(sValue);
+                //CHighlightColor<highlightcolorNone> oHighlightColor(sValue);
+                CHighlightColor<> oHighlightColor(sValue);
 				if(SimpleTypes::highlightcolorNone != oHighlightColor.GetValue())
 				{
                     this->m_eValue = hexcolorRGB;
@@ -2572,6 +2605,7 @@ namespace SimpleTypes
 					Parse3();
 				}
 				else   this->m_eValue = eDefValue;
+                */
 			}
 
             return this->m_eValue;
@@ -2671,7 +2705,7 @@ namespace SimpleTypes
 		unsigned char m_unR;
 		unsigned char m_unG;
 		unsigned char m_unB;		
-	};
+    };
 
 	//--------------------------------------------------------------------------------
 	// HexColorAuto 17.18.39 (Part 1)
@@ -2706,26 +2740,7 @@ namespace SimpleTypes
 	// HighlightColor 17.18.40 (Part 1)
 	//--------------------------------------------------------------------------------		
 
-	enum EHighlightColor
-	{
-		highlightcolorBlack       =  0,
-		highlightcolorBlue        =  1,
-		highlightcolorCyan        =  2,
-		highlightcolorDarkBlue    =  3,
-		highlightcolorDarkCyan    =  4,
-		highlightcolorDarkGray    =  5,
-		highlightcolorDarkGreen   =  6,
-		highlightcolorDarkMagenta =  7,
-		highlightcolorDarkRed     =  8,
-		highlightcolorDarkYellow  =  9,
-		highlightcolorGreen       = 10,
-		highlightcolorLightGray   = 11,
-		highlightcolorMagenta     = 12,
-		highlightcolorNone        = 13,
-		highlightcolorRed         = 14,
-		highlightcolorWhite       = 15,
-		highlightcolorYellow      = 16
-	};
+
 
 	template<EHighlightColor eDefValue = highlightcolorNone>
 	class CHighlightColor : public CSimpleType<EHighlightColor, eDefValue>

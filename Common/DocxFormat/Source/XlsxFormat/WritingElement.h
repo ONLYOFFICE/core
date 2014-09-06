@@ -1,8 +1,9 @@
 #pragma once
 
 //#include "NamespaceOwn.h"
-#include "../XML/XmlUtils.h"
-#include "atlstr.h"
+//#include "../XML/XmlUtils.h"
+
+//#include "atlstr.h"
 
 namespace OOX
 {

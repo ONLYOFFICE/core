@@ -4838,9 +4838,17 @@ namespace SimpleTypes
 		}
 
 
+#ifndef _WIN32
+        static DWORD GetSysColor(const int nIndex)
+        {
+            // get color values from any windows theme
+            return 0;
+        }
+
+#endif
 		void SetRGBASys(int nIndex)
 		{
-			DWORD dwRGB = ::GetSysColor(nIndex);
+            DWORD dwRGB = GetSysColor(nIndex);
 
 			m_unB = static_cast<unsigned char>(dwRGB & 0xFF);
 			m_unG = static_cast<unsigned char>((dwRGB & 0xFF00)>>8);

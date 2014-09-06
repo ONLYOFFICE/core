@@ -237,6 +237,59 @@ void style_paragraph_properties::apply_from(style_paragraph_properties * Other)
 	style_paragraph_properties_content_.apply_from(Other->content());
 }
 
+void paragraph_format_properties::clear()
+{
+	fo_line_height_				= boost::none;
+	style_line_height_at_least_	= boost::none;
+	style_line_spacing_			= boost::none;
+	style_font_independent_line_spacing_= boost::none;
+	fo_text_align_				= boost::none;
+	fo_text_align_last_			= boost::none;
+	style_justify_single_word_	= boost::none;
+	fo_keep_together_			= boost::none;
+	fo_widows_					= boost::none;
+	fo_orphans_					= boost::none;
+	style_tab_stop_distance_	= boost::none;
+	fo_hyphenation_keep_		= boost::none;
+	fo_hyphenation_ladder_count_= boost::none;
+	style_register_true_		= boost::none;
+	fo_margin_left_			= boost::none;
+	fo_margin_right_		= boost::none; 
+	//fo_text_indent_			= boost::none;//заточено под буквицу
+	style_auto_text_indent_	= boost::none;
+	fo_margin_top_			= boost::none;
+	fo_margin_bottom_		= boost::none;
+	fo_margin_				= boost::none;
+	fo_break_before_		= boost::none;
+	fo_break_after_			= boost::none;
+	fo_background_color_	= boost::none;
+	fo_padding_				= boost::none;
+	fo_padding_top_			= boost::none;
+	fo_padding_bottom_		= boost::none;
+	fo_padding_left_		= boost::none;
+	fo_padding_right_		= boost::none;
+	outline_level_			= boost::none;
+	style_page_number_		= boost::none;
+	style_snap_to_layout_grid_= boost::none;
+	style_join_border_		= boost::none;
+	style_text_autospace_	= boost::none;
+	fo_keep_with_next_		= boost::none;
+	fo_background_color_	= boost::none;
+	style_vertical_align_	= boost::none;
+	style_writing_mode_		= boost::none;
+	style_writing_mode_automatic_= boost::none;
+	style_line_break_		= boost::none;
+	style_background_transparency_= boost::none;
+	style_text_autospace_= boost::none;
+	text_line_number_		= boost::none;
+	style_line_break_		= boost::none;
+	text_number_lines_		= boost::none; 
+	style_shadow_			= boost::none;
+
+
+		//todo borders !!!
+}
+
 void paragraph_format_properties::apply_from(paragraph_format_properties & Other)
 {
     apply_line_width(fo_line_height_, Other.fo_line_height_);
@@ -248,35 +301,26 @@ void paragraph_format_properties::apply_from(paragraph_format_properties & Other
     _CP_APPLY_PROP(style_justify_single_word_, Other.style_justify_single_word_);
     _CP_APPLY_PROP(fo_keep_together_, Other.fo_keep_together_);
     _CP_APPLY_PROP(fo_widows_, Other.fo_widows_);
-    _CP_APPLY_PROP(fo_orphans_, Other.fo_orphans_);
-
-    // TODO
-    _CP_APPLY_PROP(style_tab_stops_, Other.style_tab_stops_);
-
+	_CP_APPLY_PROP(fo_orphans_, Other.fo_orphans_);
     _CP_APPLY_PROP(style_tab_stop_distance_, Other.style_tab_stop_distance_);
     _CP_APPLY_PROP(fo_hyphenation_keep_, Other.fo_hyphenation_keep_);
     _CP_APPLY_PROP(fo_hyphenation_ladder_count_, Other.fo_hyphenation_ladder_count_);
     
-    // TODO
     _CP_APPLY_PROP(style_drop_cap_, Other.style_drop_cap_);
+    _CP_APPLY_PROP(style_tab_stops_, Other.style_tab_stops_);
     
     _CP_APPLY_PROP(style_register_true_, Other.style_register_true_);
     apply_length_or_percent(fo_margin_left_, Other.fo_margin_left_);
     apply_length_or_percent(fo_margin_right_, Other.fo_margin_right_);
     apply_length_or_percent(fo_text_indent_, Other.fo_text_indent_);
-
     _CP_APPLY_PROP(style_auto_text_indent_, Other.style_auto_text_indent_);
-
     apply_length_or_percent(fo_margin_top_, Other.fo_margin_top_);
     apply_length_or_percent(fo_margin_bottom_, Other.fo_margin_bottom_);
-    apply_length_or_percent(fo_margin_, Other.fo_margin_);
-    
+    apply_length_or_percent(fo_margin_, Other.fo_margin_);    
     _CP_APPLY_PROP(fo_break_before_, Other.fo_break_before_);
-    _CP_APPLY_PROP(fo_break_after_, Other.fo_break_after_);
-
+    _CP_APPLY_PROP(fo_break_after_, Other.fo_break_after_)
     _CP_APPLY_PROP(fo_background_color_, Other.fo_background_color_);
 
-    // TODO
     _CP_APPLY_PROP(style_background_image_, Other.style_background_image_);
 
 	common_border_attlist_.apply_from(Other.common_border_attlist_);

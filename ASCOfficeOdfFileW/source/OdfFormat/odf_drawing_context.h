@@ -30,7 +30,8 @@ public:
 	void clear();
 	void set_styles_context(odf_style_context*  styles_context);//для embedded 
 
-	void set_footer_header_state(bool Val);
+	void set_header_state(bool Val);
+	void set_footer_state(bool Val);
 
 	void set_margin_left	(double valPt);
 	void set_margin_right	(double valPt);
@@ -152,10 +153,11 @@ public:
 	void set_textarea_font(_CP_OPT(std::wstring) & latin, _CP_OPT(std::wstring) & cs, _CP_OPT(std::wstring) & ea);
 //////////////////////////////////////////////////////////////////////////////////////
 	void start_gradient_style();
-		void set_gradient_type(gradient_style style);
+		void set_gradient_type(gradient_style::type style);
 		void set_gradient_start(std::wstring hexColor, _CP_OPT(double) & intensiv);
 		void set_gradient_end  (std::wstring hexColor, _CP_OPT(double) & intensiv);
 		void set_gradient_rect(double l, double t, double r,double b);
+		void set_gradient_center(double cx, double cy);
 		void set_gradient_angle(double angle);
 	void end_gradient_style();
 ////////////////////////////////////////////////////////////////////////////////////////

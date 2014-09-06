@@ -59,9 +59,8 @@ public:
 	std::wstring get_style_name(int oox_style_num);
 	std::wstring get_style_name1(int oox_style_num);
 private:
-	std::vector<list_format_state> lists_format_array_;
-	
-	boost::unordered_map<int, std::wstring> link_format_map_;
+	std::vector<list_format_state>			lists_format_array_;	
+	boost::unordered_map<int, std::wstring>	link_format_map_;
 
 	//void create(int oox_num_fmt, std::wstring formatCode = L""); 	
 	//void create_default(int oox_num_fmt, std::wstring formatCode = L"");
@@ -71,9 +70,6 @@ private:
 
 ////////////////
 	odf_conversion_context			*odf_context_;
-	//std::vector<office_element_ptr>	styles_elments;
-
-
 };
 }
 }

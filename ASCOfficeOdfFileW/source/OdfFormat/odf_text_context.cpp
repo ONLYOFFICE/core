@@ -534,7 +534,11 @@ void odf_text_context::set_type_break(int type, int clear)
 		//brclearLeft  = 1,
 		//brclearNone  = 2,
 		//brclearRight = 3
-	if (type == 0)//brtypeColumn 
+	if (type == -1)
+	{
+		need_break_= boost::none;
+	}
+	else if (type == 0)//brtypeColumn 
 	{
 		need_break_= fo_break(fo_break::Column);
 	}

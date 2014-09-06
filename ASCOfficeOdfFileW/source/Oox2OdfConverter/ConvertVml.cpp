@@ -52,7 +52,7 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 
 	_CP_OPT(double) width_pt, height_pt, x, y;
 
-	bool position_set = false;
+	bool anchor_set = false;
 
 	for (unsigned int i=0; i < vml_style->m_arrProperties.size(); i++)
 	{
@@ -98,7 +98,6 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 			case SimpleTypes::Vml::cssmsoposhorInside:		odf_context()->drawing_context()->set_horizontal_pos(1); break;
 			case SimpleTypes::Vml::cssmsoposhorOutside :	odf_context()->drawing_context()->set_horizontal_pos(3); break;
 			}
-			position_set = true;
 			break;
 		case SimpleTypes::Vml::cssptMsoPositionHorizontalRelative:
 			switch(vml_style->m_arrProperties[i]->get_Value().eMsoPosHorRel)
@@ -108,7 +107,7 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 			case SimpleTypes::Vml::cssmsoposhorrelText:		odf_context()->drawing_context()->set_horizontal_rel(1); break;
 			case SimpleTypes::Vml::cssmsoposhorrelChar:		odf_context()->drawing_context()->set_horizontal_rel(0); break;
 			}
-			position_set = true;
+			anchor_set = true;
 			break;
 		case SimpleTypes::Vml::cssptMsoPositionVertical:
 			switch(vml_style->m_arrProperties[i]->get_Value().eMsoPosVer)
@@ -120,7 +119,6 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 			case SimpleTypes::Vml::cssmsoposverInside:		odf_context()->drawing_context()->set_vertical_pos(2); break;//??
 			case SimpleTypes::Vml::cssmsoposverOutside:		odf_context()->drawing_context()->set_vertical_pos(3); break;//??
 			}
-			position_set = true;
 			break;
 		case SimpleTypes::Vml::cssptMsoPositionVerticalRelative:
 			switch(vml_style->m_arrProperties[i]->get_Value().eMsoPosVerRel)
@@ -130,7 +128,7 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 			case SimpleTypes::Vml::cssmsoposverrelText:		odf_context()->drawing_context()->set_vertical_rel(6); break;
 			case SimpleTypes::Vml::cssmsoposverrelLine:		odf_context()->drawing_context()->set_vertical_rel(2); break;
 			}
-			position_set = true;
+			anchor_set= true;
 			break;
 		case SimpleTypes::Vml::cssptZIndex:
 			{
@@ -169,9 +167,33 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 					odf_context()->drawing_context()->set_flip_H(true); break;
 				}
 			}break;
+		case SimpleTypes::Vml::cssptLayoutFlow:
+			{
+				switch(vml_style->m_arrProperties[i]->get_Value().eLayoutFlow )
+				{
+				case SimpleTypes::Vml::csslayoutflowHorizontal            : break;
+				case SimpleTypes::Vml::csslayoutflowVertical              :odf_context()->drawing_context()->set_textarea_writing_mode(3); break;
+				case SimpleTypes::Vml::csslayoutflowVerticalIdeographic   :odf_context()->drawing_context()->set_textarea_writing_mode(0); break;
+				case SimpleTypes::Vml::csslayoutflowHorizontalIdeographic :break;
+				}
+			}break;
+		case SimpleTypes::Vml::cssptVTextAnchor:
+				switch(vml_style->m_arrProperties[i]->get_Value().eVTextAnchor)
+				{
+				case SimpleTypes::Vml::cssvtextanchorTop                  :	odf_context()->drawing_context()->set_textarea_vertical_align(4); break;
+				case SimpleTypes::Vml::cssvtextanchorMiddle               :	odf_context()->drawing_context()->set_textarea_vertical_align(1); break;
+				case SimpleTypes::Vml::cssvtextanchorBottom               :	odf_context()->drawing_context()->set_textarea_vertical_align(0); break;
+				case SimpleTypes::Vml::cssvtextanchorTopCenter            :	odf_context()->drawing_context()->set_textarea_vertical_align(4); break;
+				case SimpleTypes::Vml::cssvtextanchorMiddleCenter         :	odf_context()->drawing_context()->set_textarea_vertical_align(1); break;
+				case SimpleTypes::Vml::cssvtextanchorBottomCenter         :	odf_context()->drawing_context()->set_textarea_vertical_align(0); break;
+				case SimpleTypes::Vml::cssvtextanchorTopBaseline          :	odf_context()->drawing_context()->set_textarea_vertical_align(4); break;
+				case SimpleTypes::Vml::cssvtextanchorBottomBaseline       :	odf_context()->drawing_context()->set_textarea_vertical_align(0); break;
+				case SimpleTypes::Vml::cssvtextanchorTopCenterBaseline    :	odf_context()->drawing_context()->set_textarea_vertical_align(4); break;
+				case SimpleTypes::Vml::cssvtextanchorBottomCenterBaseline :	odf_context()->drawing_context()->set_textarea_vertical_align(0); break;
+				}
+			break;
 		}
 	}
-	if (x || y)  position_set = true;
 	if (group)
 	{
 		_CP_OPT(double) not_set;
@@ -184,9 +206,7 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 		odf_context()->drawing_context()->set_size		(width_pt, height_pt);		
 		odf_context()->drawing_context()->set_position	(x, y);
 
-		if (!position_set)
-			odf_context()->drawing_context()->set_anchor(4);
-		else if (x && y) 
+		if (x && y && !anchor_set) 
 			odf_context()->drawing_context()->set_anchor(2);
 
 	}
@@ -277,23 +297,6 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 	if (vml_fill == NULL) return;
 
 	odf_context()->drawing_context()->start_area_properties();
-		
-	if (vml_fill->m_oOpacity.IsInit() && vml_fill->m_oOpacity2.IsInit() )
-	{
-		odf_context()->drawing_context()->start_opacity_style();
-			odf_context()->drawing_context()->set_opacity_start(100 - vml_fill->m_oOpacity->GetValue() * 100);
-			odf_context()->drawing_context()->set_opacity_end  (100 - vml_fill->m_oOpacity2->GetValue() * 100);
-			//.....
-		odf_context()->drawing_context()->end_opacity_style();
-	}
-	else if (vml_fill->m_oOpacity.IsInit()) 
-	{
-		odf_context()->drawing_context()->set_opacity(100 - vml_fill->m_oOpacity->GetValue() * 100);
-	}
-	else if (vml_fill->m_oOpacity2.IsInit()) 
-	{
-		odf_context()->drawing_context()->set_opacity(100 - vml_fill->m_oOpacity2->GetValue() * 100);
-	}
 
 	if (vml_fill->m_rId.IsInit())
 	{
@@ -312,6 +315,68 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 			odf_context()->drawing_context()->set_image_style_repeat(1);
 		}
 		odf_context()->drawing_context()->end_bitmap_style();
+	}
+	else
+	{
+		switch (vml_fill->m_oType.GetValue())
+		{
+		case SimpleTypes::filltypeGradient       :
+		case SimpleTypes::filltypeGradientCenter :
+		case SimpleTypes::filltypeGradientRadial :
+		case SimpleTypes::filltypeGradientUnscaled:
+		{
+			odf_context()->drawing_context()->start_gradient_style();
+				if (SimpleTypes::filltypeGradient		== vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf::gradient_style::linear);
+				if (SimpleTypes::filltypeGradientRadial == vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf::gradient_style::radial);
+				if (SimpleTypes::filltypeGradientCenter == vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf::gradient_style::axial);
+				if (SimpleTypes::filltypeGradientUnscaled == vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf::gradient_style::square);
+
+				_CP_OPT(double) no_set;
+				if (vml_fill->m_oColor.IsInit())
+					odf_context()->drawing_context()->set_gradient_start(string2std_string(vml_fill->m_oColor->ToString()),no_set);
+				if (vml_fill->m_oColor2.IsInit())
+					odf_context()->drawing_context()->set_gradient_end(string2std_string(vml_fill->m_oColor2->ToString()),no_set);
+
+				odf_context()->drawing_context()->set_gradient_center(vml_fill->m_oFocusPosition.GetX(), vml_fill->m_oFocusPosition.GetY());
+			
+			odf_context()->drawing_context()->end_gradient_style();
+		}break;
+		case SimpleTypes::filltypePattern:
+		{
+			odf_context()->drawing_context()->start_hatch_style();
+				if (vml_fill->m_oColor2.IsInit())
+					odf_context()->drawing_context()->set_hatch_line_color(string2std_string(vml_fill->m_oColor2->ToString()));
+				if (vml_fill->m_oColor.IsInit())
+					odf_context()->drawing_context()->set_hatch_area_color(string2std_string(vml_fill->m_oColor->ToString()));
+				else
+					odf_context()->drawing_context()->set_hatch_area_color(L"#ffffff");
+
+			odf_context()->drawing_context()->end_hatch_style();
+
+		}break;
+		case SimpleTypes::filltypeSolid:
+		default:
+			if (vml_fill->m_oColor.IsInit())
+				odf_context()->drawing_context()->set_solid_fill(string2std_string(vml_fill->m_oColor->ToString()));
+			break;
+		}
+	}
+//--------------------------------------------------------------------------------------------------------------------
+	if (vml_fill->m_oOpacity.IsInit() && vml_fill->m_oOpacity2.IsInit() )
+	{
+		odf_context()->drawing_context()->start_opacity_style();
+			odf_context()->drawing_context()->set_opacity_start(100 - vml_fill->m_oOpacity->GetValue() * 100);
+			odf_context()->drawing_context()->set_opacity_end  (100 - vml_fill->m_oOpacity2->GetValue() * 100);
+			//.....
+		odf_context()->drawing_context()->end_opacity_style();
+	}
+	else if (vml_fill->m_oOpacity.IsInit()) 
+	{
+		odf_context()->drawing_context()->set_opacity(100 - vml_fill->m_oOpacity->GetValue() * 100);
+	}
+	else if (vml_fill->m_oOpacity2.IsInit()) 
+	{
+		odf_context()->drawing_context()->set_opacity(100 - vml_fill->m_oOpacity2->GetValue() * 100);
 	}
 
 	odf_context()->drawing_context()->end_area_properties();
@@ -626,35 +691,32 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 		}
 	}
 	odf_context()->drawing_context()->end_line_properties();
-	odf_context()->drawing_context()->start_area_properties();
+	if (vml_common->m_oFillColor.IsInit())
 	{
-		if (vml_common->m_oFilled.IsInit() && vml_common->m_oFilled->GetValue() == SimpleTypes::booleanFalse)
-		{
-			odf_context()->drawing_context()->set_no_fill();
-		}
-		else
-		{
-			if (vml_common->m_oFillColor.IsInit())
-			{
-				unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
-				ucR = vml_common->m_oFillColor->Get_R(); 
-				ucB = vml_common->m_oFillColor->Get_B(); 
-				ucG = vml_common->m_oFillColor->Get_G(); 
-				SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
-				if (oRgbColor)
-				{		
-					odf_context()->drawing_context()->set_solid_fill(string2std_string(oRgbColor->ToString().Right(6)));
-					delete oRgbColor;
-				}			
-			}
+		unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
+		ucR = vml_common->m_oFillColor->Get_R(); 
+		ucB = vml_common->m_oFillColor->Get_B(); 
+		ucG = vml_common->m_oFillColor->Get_G(); 
+		SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
+		if (oRgbColor)
+		{		
+			odf_context()->drawing_context()->start_area_properties();
+				odf_context()->drawing_context()->set_solid_fill(string2std_string(oRgbColor->ToString().Right(6)));
+			odf_context()->drawing_context()->end_area_properties();
+			delete oRgbColor;
 		}
 	}
-	odf_context()->drawing_context()->end_area_properties();
 	for (unsigned int i=0 ; i < vml_common->m_arrItems.size();i++)
 	{
 		convert(vml_common->m_arrItems[i]);
 	}
 
+	if (vml_common->m_oFilled.IsInit() && vml_common->m_oFilled->GetValue() == SimpleTypes::booleanFalse)
+	{
+		odf_context()->drawing_context()->start_area_properties();
+			odf_context()->drawing_context()->set_no_fill();
+		odf_context()->drawing_context()->end_area_properties();
+	}
 }
 void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 {

@@ -402,15 +402,11 @@ namespace OOX
 				if ( SimpleTypes::booleanTrue != m_oOn.GetValue() )
 					sResult += _T("on=\"false\" ");
 
-				if ( SimpleTypes::colortypeWhite != m_oColor.GetValue() )
-					sResult += _T("color=\"") + m_oColor.ToString() + _T("\" ");
-
 				if (  m_oOpacity.IsInit() )
 					sResult += _T("opacity=\"") + m_oOpacity->ToString() + _T("\" ");
 
-				if ( SimpleTypes::colortypeWhite != m_oColor2.GetValue() )
-					sResult += _T("color2=\"") + m_oColor2.ToString() + _T("\" ");
-
+				ComplexTypes_WriteAttribute (_T("color=\""), m_oColor);
+				ComplexTypes_WriteAttribute (_T("color2=\""),	  m_oColor2);
 				ComplexTypes_WriteAttribute2( _T("src=\""),       m_sSrc );
 				ComplexTypes_WriteAttribute2( _T("o:href=\""),    m_sHref );
 				ComplexTypes_WriteAttribute2( _T("o:althref=\""), m_sAltHref );
@@ -573,8 +569,8 @@ namespace OOX
 			nullable<CString>                                         m_sAltHref;
 			nullable<SimpleTypes::CDecimalNumber<>>                   m_oAngle;
 			SimpleTypes::CImageAspect<SimpleTypes::imageaspectIgnore> m_oAspect;
-			SimpleTypes::CColorType<SimpleTypes::colortypeWhite>      m_oColor;
-			SimpleTypes::CColorType<SimpleTypes::colortypeWhite>      m_oColor2;
+			nullable<SimpleTypes::CColorType<>>						  m_oColor;
+			nullable<SimpleTypes::CColorType<>>						  m_oColor2;
 			std::vector<TIntermediateColor*>                          m_arrColors;
 			nullable<SimpleTypes::CTrueFalse<>>                       m_oDetectMouseClick;
 			SimpleTypes::CFixedPercentage                             m_oFocus;

@@ -3776,10 +3776,13 @@ namespace SimpleTypes
 			}
 			void ReadValue_MsoPosVerRel(CString& sValue)
 			{
+				//bottom-margin-area ????
 				if      ( _T("margin") == sValue ) m_oValue.eMsoPosVerRel = cssmsoposverrelMargin;
 				else if ( _T("page")   == sValue ) m_oValue.eMsoPosVerRel = cssmsoposverrelPage;
 				else if ( _T("text")   == sValue ) m_oValue.eMsoPosVerRel = cssmsoposverrelText;
 				else if ( _T("line")   == sValue ) m_oValue.eMsoPosVerRel = cssmsoposverrelLine;
+				else if (sValue.Find(_T("margin")) >=0)
+												m_oValue.eMsoPosVerRel = cssmsoposverrelMargin;
 				else 
 					m_oValue.eMsoPosVerRel = cssmsoposverrelText;
 			}

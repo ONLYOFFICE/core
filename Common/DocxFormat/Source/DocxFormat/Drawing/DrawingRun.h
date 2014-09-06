@@ -37,7 +37,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
-                CString sName = oReader.GetName();
+				CWCharWrapper sName = oReader.GetName();
 				if ( _T("a:cs") == sName )
 					m_eType = et_a_cs;
 				else if ( _T("a:ea") == sName )
@@ -99,7 +99,7 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-                CString wsName = oReader.GetName();
+				CWCharWrapper wsName = oReader.GetName();
 				while( !wsName.IsNull() )
 				{
 					wchar_t wsChar0 = wsName[0]; 

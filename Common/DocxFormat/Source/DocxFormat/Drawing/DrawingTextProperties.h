@@ -109,7 +109,7 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-                CString wsName = oReader.GetName();
+				CWCharWrapper wsName = oReader.GetName();
 				while( !wsName.IsNull() )
 				{
 					wchar_t wsChar0 = wsName[0]; 
@@ -211,7 +211,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+					CWCharWrapper sName = oReader.GetName();
 
 					if ( _T("a:extLst") == sName )
 						m_oExtLst = oReader;

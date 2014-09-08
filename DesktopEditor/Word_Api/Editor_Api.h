@@ -1258,6 +1258,8 @@ namespace NSEditorApi
 		js_wrapper<bool> m_bCaps;
 		js_wrapper<bool> m_bSmallCaps;
 
+		js_wrapper<double> m_dSpacing;
+
 	public:
 
 		CAscTextPr()
@@ -1283,6 +1285,8 @@ namespace NSEditorApi
 		LINK_PROPERTY_BOOL_JS(DStrikeout)
 		LINK_PROPERTY_BOOL_JS(Caps)
 		LINK_PROPERTY_BOOL_JS(SmallCaps)
+
+		LINK_PROPERTY_DOUBLE_JS(Spacing)
 	};
 
 	class CAscParagraphInd

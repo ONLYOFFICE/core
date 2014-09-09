@@ -149,7 +149,20 @@ namespace XmlUtils
 		
 		BOOL SaveToFile(const CString& strFilePath, BOOL bEncodingToUTF8 = FALSE)
 		{
+#ifdef _WIN32
+            // win32 unicode and multibyte strings
 			FILE* pFile = _tfopen(strFilePath, _T("wt"));
+#else
+            // *nix build
+            #ifdef _UNICODE
+                std::string sFilePathUtf8 = stringWstingToUtf8String (strFilePath);
+                FILE* pFile = fopen(sFilePathUtf8.c_str(), "wt");
+            #else
+                // path is already utf8
+                std::string sFilePathUtf8 = strFilePath;
+                FILE* pFile = fopen(sFilePathUtf8.c_str(), "wt");
+            #endif
+#endif
 
 			if (!pFile)
 				return FALSE;
@@ -171,13 +184,20 @@ namespace XmlUtils
 #ifdef _UNICODE
         CStringA EncodingUnicodeToUTF8()
         {
-            int nLength = m_str.GetLength();
+            #ifdef _WIN32
+                int nLength = m_str.GetLength();
 
-			// Encoding Unicode to UTF-8
-			CStringA saStr; 
-			WideCharToMultiByte(CP_UTF8, 0, m_str.GetBuffer(), nLength + 1, saStr.GetBuffer(nLength*3 + 1), nLength*3, NULL, NULL);
-			saStr.ReleaseBuffer();    
-			return saStr;
+                // Encoding Unicode to UTF-8
+                CStringA saStr;
+                WideCharToMultiByte(CP_UTF8, 0, m_str.GetBuffer(), nLength + 1, saStr.GetBuffer(nLength*3 + 1), nLength*3, NULL, NULL);
+                saStr.ReleaseBuffer();
+                return saStr;
+            #else
+
+                std::string sStrTempUtf8 = stringWstingToUtf8String (m_str);
+                CStringA saStr = sStrTempUtf8;
+                return saStr;
+            #endif
         }
 #else
 		CString EncodingASCIIToUTF8()
@@ -216,7 +236,11 @@ namespace XmlUtils
 		{
 			char str[33];
 			
-			_itoa(Value, str, Base);
+#ifdef _WIN32
+            _itoa(Value, str, Base);
+#else
+            itoa(Value, str, Base);
+#endif
 
 			m_str += str;
 		}

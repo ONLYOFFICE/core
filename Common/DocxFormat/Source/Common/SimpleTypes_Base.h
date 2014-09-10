@@ -64,7 +64,7 @@ namespace SimpleTypes
 #define SimpleType_Operator_Equal(Class) \
 	Class(const BSTR &bsValue)\
 	{\
-		FromString( bsValue );\
+        /*FromString( bsValue );*/\
 	}\
 	Class(CString &sValue)\
 	{\
@@ -85,7 +85,7 @@ namespace SimpleTypes
 	}\
 	const Class &operator =(const BSTR &bsValue)\
 	{\
-		FromString( bsValue );\
+        /*FromString( bsValue );*/\
 		return *this;\
 	}\
 	const Class &operator =(const wchar_t* cwsString)\

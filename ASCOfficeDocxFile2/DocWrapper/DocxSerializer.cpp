@@ -16,7 +16,7 @@
 #include "../../DesktopEditor/common/Types.h"
 #endif
 
-int g_nCurFormatVersion = 0;
+int BinDocxRW::g_nCurFormatVersion = 0;
 
 #define BUFFER_GROW_SIZE 1 * 1024 * 1024 //1mb
 

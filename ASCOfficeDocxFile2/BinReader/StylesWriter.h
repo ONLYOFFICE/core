@@ -1,7 +1,7 @@
 #ifndef STYLES_WRITER
 #define STYLES_WRITER
 
-#include "Common.h"
+#include "../../XlsxSerializerCom/Common/Common.h"
 
 namespace Writers
 {

@@ -1,7 +1,7 @@
 #ifndef COMMENTS_WRITER
 #define COMMENTS_WRITER
 
-#include "Common.h"
+#include "../../XlsxSerializerCom/Common/Common.h"
 
 namespace Writers
 {

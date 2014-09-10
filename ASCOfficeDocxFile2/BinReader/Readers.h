@@ -245,7 +245,7 @@ public:
 		case c_oSerProp_rPrType::FontAscii:
 			{
 				CString sFontName((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
-				CorrectString(sFontName);
+				SerializeCommon::CorrectString(sFontName);
 				if(!sFontName.IsEmpty())
 				{
 					orPr->bFontAscii = true;
@@ -256,7 +256,7 @@ public:
 		case c_oSerProp_rPrType::FontHAnsi:
 			{
 				CString sFontName((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
-				CorrectString(sFontName);
+				SerializeCommon::CorrectString(sFontName);
 				if(!sFontName.IsEmpty())
 				{
 					orPr->bFontHAnsi = true;
@@ -267,7 +267,7 @@ public:
 		case c_oSerProp_rPrType::FontCS:
 			{
 				CString sFontName((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
-				CorrectString(sFontName);
+				SerializeCommon::CorrectString(sFontName);
 				if(!sFontName.IsEmpty())
 				{
 					orPr->bFontCS = true;
@@ -278,7 +278,7 @@ public:
 		case c_oSerProp_rPrType::FontAE:
 			{
 				CString sFontName((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
-				CorrectString(sFontName);
+				SerializeCommon::CorrectString(sFontName);
 				if(!sFontName.IsEmpty())
 				{
 					orPr->bFontAE = true;
@@ -559,19 +559,19 @@ public:
 						CString sLine;
 						if(linerule_Auto == bLineRule)
 						{
-							long nLine = Round(oSpacing.Line * 240);
+							long nLine = SerializeCommon::Round(oSpacing.Line * 240);
 							sLine.Format(_T(" w:line=\"%d\""), nLine);
 						}
 						else
 						{
-							long nLine = Round( g_dKoef_mm_to_twips * oSpacing.Line);
+							long nLine = SerializeCommon::Round( g_dKoef_mm_to_twips * oSpacing.Line);
 							sLine.Format(_T(" w:line=\"%d\""), nLine);
 						}
 						pCStringWriter->WriteString(sLine);
 					}
 					if(oSpacing.bAfter)
 					{
-						long After = Round( g_dKoef_mm_to_twips * oSpacing.After);
+						long After = SerializeCommon::Round( g_dKoef_mm_to_twips * oSpacing.After);
 						CString sAfter;
 						sAfter.Format(_T(" w:after=\"%d\""), After);
 						pCStringWriter->WriteString(sAfter);
@@ -585,7 +585,7 @@ public:
 					}
 					if(oSpacing.bBefore)
 					{
-						long Before = Round( g_dKoef_mm_to_twips * oSpacing.Before);
+						long Before = SerializeCommon::Round( g_dKoef_mm_to_twips * oSpacing.Before);
 						CString sBefore;
 						sBefore.Format(_T(" w:before=\"%d\""), Before);
 						pCStringWriter->WriteString(sBefore);
@@ -639,7 +639,7 @@ public:
 					for(int i = 0; i < nLen; ++i)
 					{
 						Tab& oTab = oTabs.m_aTabs[i];
-						long nTab = Round( g_dKoef_mm_to_twips * oTab.Pos);
+						long nTab = SerializeCommon::Round( g_dKoef_mm_to_twips * oTab.Pos);
 						CString sVal;
 						switch(oTab.Val)
 						{
@@ -659,7 +659,7 @@ public:
 		case c_oSerProp_pPrType::ParaStyle:
 			{
 				CString sStyleName((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
-				CorrectString(sStyleName);
+				SerializeCommon::CorrectString(sStyleName);
 				CString sStyle;sStyle.Format(_T("<w:pStyle w:val=\"%s\" />"), sStyleName);
 				pCStringWriter->WriteString(sStyle);
 				break;
@@ -722,7 +722,7 @@ public:
 		case c_oSerProp_pPrType::Ind_Left:
 			{
 				double dIndLeft = m_oBufferedStream.ReadDouble2();
-				long nIndLeft = Round(dIndLeft * g_dKoef_mm_to_twips);
+				long nIndLeft = SerializeCommon::Round(dIndLeft * g_dKoef_mm_to_twips);
 				CString sIndLeft;
 				sIndLeft.Format(_T(" w:left=\"%d\""), nIndLeft);
 				pCStringWriter->WriteString(sIndLeft);
@@ -731,7 +731,7 @@ public:
 		case c_oSerProp_pPrType::Ind_Right:
 			{
 				double dIndRight = m_oBufferedStream.ReadDouble2();
-				long nIndRight = Round(dIndRight * g_dKoef_mm_to_twips);
+				long nIndRight = SerializeCommon::Round(dIndRight * g_dKoef_mm_to_twips);
 				CString sIndRight;
 				sIndRight.Format(_T(" w:right=\"%d\""), nIndRight);
 				pCStringWriter->WriteString(sIndRight);
@@ -740,7 +740,7 @@ public:
 		case c_oSerProp_pPrType::Ind_FirstLine:
 			{
 				double dIndFirstLine = m_oBufferedStream.ReadDouble2();
-				long nIndFirstLine = Round(dIndFirstLine * g_dKoef_mm_to_twips);
+				long nIndFirstLine = SerializeCommon::Round(dIndFirstLine * g_dKoef_mm_to_twips);
 				CString sIndFirstLine;
 				if(nIndFirstLine > 0)
 					sIndFirstLine.Format(_T(" w:firstLine =\"%d\""), nIndFirstLine);
@@ -1205,7 +1205,7 @@ public:
 		else if( c_oSerProp_tblPrType::TableInd == type )
 		{
 			double dInd = m_oBufferedStream.ReadDouble2();
-			long nInd = Round( g_dKoef_mm_to_twips * dInd);
+			long nInd = SerializeCommon::Round( g_dKoef_mm_to_twips * dInd);
 			pWiterTblPr->TableInd.Format(_T("<w:tblInd w:w=\"%d\" w:type=\"dxa\"/>"), nInd);
 		}
 		else if( c_oSerProp_tblPrType::TableW == type )
@@ -1267,7 +1267,7 @@ public:
 		else if( c_oSerProp_tblPrType::Style == type )
 		{
 			CString Name((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
-			CorrectString(Name);
+			SerializeCommon::CorrectString(Name);
 			pWiterTblPr->Style.Format(_T("<w:tblStyle w:val=\"%s\"/>"), Name);
 		}
 		else if( c_oSerProp_tblPrType::Look == type )
@@ -1360,14 +1360,14 @@ public:
 		if( c_oSer_tblpPrType::X == type )
 		{
 			double dX = m_oBufferedStream.ReadDouble2();
-			long nX = Round( g_dKoef_mm_to_twips * dX);
+			long nX = SerializeCommon::Round( g_dKoef_mm_to_twips * dX);
 			CString sX;sX.Format(_T(" w:tblpX=\"%d\""), nX);
 			pCStringWriter->WriteString(sX);
 		}
 		else if( c_oSer_tblpPrType::Y == type )
 		{
 			double dY = m_oBufferedStream.ReadDouble2();
-			long nY = Round( g_dKoef_mm_to_twips * dY);
+			long nY = SerializeCommon::Round( g_dKoef_mm_to_twips * dY);
 			CString sY;sY.Format(_T(" w:tblpY=\"%d\""), nY);
 			pCStringWriter->WriteString(sY);
 		}
@@ -1378,28 +1378,28 @@ public:
 			if(oPaddings.bLeft)
 			{
 				double dLeft = oPaddings.Left;
-				long nLeft = Round( g_dKoef_mm_to_twips * dLeft);
+				long nLeft = SerializeCommon::Round( g_dKoef_mm_to_twips * dLeft);
 				CString sLeft;sLeft.Format(_T(" w:leftFromText=\"%d\""), nLeft);
 				pCStringWriter->WriteString(sLeft);
 			}
 			if(oPaddings.bTop)
 			{
 				double dTop = oPaddings.Top;
-				long nTop = Round( g_dKoef_mm_to_twips * dTop);
+				long nTop = SerializeCommon::Round( g_dKoef_mm_to_twips * dTop);
 				CString sTop;sTop.Format(_T(" w:topFromText=\"%d\""), nTop);
 				pCStringWriter->WriteString(sTop);
 			}
 			if(oPaddings.bRight)
 			{
 				double dRight = oPaddings.Right;
-				long nRight = Round( g_dKoef_mm_to_twips * dRight);
+				long nRight = SerializeCommon::Round( g_dKoef_mm_to_twips * dRight);
 				CString sRight;sRight.Format(_T(" w:rightFromText=\"%d\""), nRight);
 				pCStringWriter->WriteString(sRight);
 			}
 			if(oPaddings.bBottom)
 			{
 				double dBottom = oPaddings.Bottom;
-				long nBottom = Round( g_dKoef_mm_to_twips * dBottom);
+				long nBottom = SerializeCommon::Round( g_dKoef_mm_to_twips * dBottom);
 				CString sBottom;sBottom.Format(_T(" w:bottomFromText=\"%d\""), nBottom);
 				pCStringWriter->WriteString(sBottom);
 			}
@@ -1427,7 +1427,7 @@ public:
 		else if( c_oSer_tblpPrType2::TblpX == type )
 		{
 			double dX = m_oBufferedStream.ReadDouble2();
-			long nX = Round( g_dKoef_mm_to_twips * dX);
+			long nX = SerializeCommon::Round( g_dKoef_mm_to_twips * dX);
 			CString sXml;sXml.Format(_T(" w:tblpX=\"%d\""), nX);
 			pCStringWriter->WriteString(sXml);
 		}
@@ -1460,7 +1460,7 @@ public:
 		else if( c_oSer_tblpPrType2::TblpY == type )
 		{
 			double dY = m_oBufferedStream.ReadDouble2();
-			long nY = Round( g_dKoef_mm_to_twips * dY);
+			long nY = SerializeCommon::Round( g_dKoef_mm_to_twips * dY);
 			CString sXml;sXml.Format(_T(" w:tblpY=\"%d\""), nY);
 			pCStringWriter->WriteString(sXml);
 		}
@@ -1559,7 +1559,7 @@ public:
 		{
 			double dSpacing = m_oBufferedStream.ReadDouble2();
 			dSpacing /=2;
-			long nSpacing = Round( g_dKoef_mm_to_twips * dSpacing);
+			long nSpacing = SerializeCommon::Round( g_dKoef_mm_to_twips * dSpacing);
 			CString sSpacing;sSpacing.Format(_T("<w:tblCellSpacing w:w=\"%d\" w:type=\"dxa\"/>"), nSpacing);
 			pCStringWriter->WriteString(sSpacing);
 		}
@@ -1624,7 +1624,7 @@ public:
 		else */if( c_oSerProp_rowPrType::Height_Value == type )
 		{
 			double dHeight = m_oBufferedStream.ReadDouble2();
-			long nHeight = Round( g_dKoef_mm_to_twips * dHeight);
+			long nHeight = SerializeCommon::Round( g_dKoef_mm_to_twips * dHeight);
 			CString sHeight;sHeight.Format(_T("<w:trHeight w:val=\"%d\" />"), nHeight);
 			pCStringWriter->WriteString(sHeight);
 		}
@@ -1749,28 +1749,28 @@ public:
 		if (c_oSerPaddingType::left == type)
 		{
 			double dLeft = m_oBufferedStream.ReadDouble2();
-			long nLeft = Round( g_dKoef_mm_to_twips * dLeft);
+			long nLeft = SerializeCommon::Round( g_dKoef_mm_to_twips * dLeft);
 			CString sXml;sXml.Format(_T(" w:leftFromText=\"%d\""), nLeft);
 			pCStringWriter->WriteString(sXml);
 		}
 		else if (c_oSerPaddingType::top == type)
 		{
 			double dTop = m_oBufferedStream.ReadDouble2();
-			long nTop = Round( g_dKoef_mm_to_twips * dTop);
+			long nTop = SerializeCommon::Round( g_dKoef_mm_to_twips * dTop);
 			CString sXml;sXml.Format(_T(" w:topFromText=\"%d\""), nTop);
 			pCStringWriter->WriteString(sXml);
 		}
 		else if (c_oSerPaddingType::right == type)
 		{
 			double dRight = m_oBufferedStream.ReadDouble2();
-			long nRight = Round( g_dKoef_mm_to_twips * dRight);
+			long nRight = SerializeCommon::Round( g_dKoef_mm_to_twips * dRight);
 			CString sXml;sXml.Format(_T(" w:rightFromText=\"%d\""), nRight);
 			pCStringWriter->WriteString(sXml);
 		}
 		else if (c_oSerPaddingType::bottom == type)
 		{
 			double dBottom = m_oBufferedStream.ReadDouble2();
-			long nBottom = Round( g_dKoef_mm_to_twips * dBottom);
+			long nBottom = SerializeCommon::Round( g_dKoef_mm_to_twips * dBottom);
 			CString sXml;sXml.Format(_T(" w:bottomFromText=\"%d\""), nBottom);
 			pCStringWriter->WriteString(sXml);
 		}
@@ -2070,13 +2070,13 @@ public:
 		if(c_oSer_sts::Style_Name == type)
 		{
 			CString Name((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
-			CorrectString(Name);
+			SerializeCommon::CorrectString(Name);
 			odocStyle->Name = Name;
 		}
 		else if(c_oSer_sts::Style_Id == type)
 		{
 			CString Id((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
-			CorrectString(Id);
+			SerializeCommon::CorrectString(Id);
 			odocStyle->Id = Id;
 		}
 		else if(c_oSer_sts::Style_Type == type)
@@ -2090,13 +2090,13 @@ public:
 		else if(c_oSer_sts::Style_BasedOn == type)
 		{
 			CString BasedOn((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
-			CorrectString(BasedOn);
+			SerializeCommon::CorrectString(BasedOn);
 			odocStyle->BasedOn = BasedOn;
 		}
 		else if(c_oSer_sts::Style_Next == type)
 		{
 			CString NextId((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
-			CorrectString(NextId);
+			SerializeCommon::CorrectString(NextId);
 			odocStyle->NextId = NextId;
 		}
 		else if(c_oSer_sts::Style_qFormat == type)
@@ -2319,13 +2319,13 @@ public:
 				if ( 0 == GetTempFileNameA( sTempPath, "CSS", 0, sTempFile ) )
 					return S_FALSE;
 				sFilePath = CString(sTempFile);
-				convertBase64ToImage(sFilePath, sImage);
+				SerializeCommon::convertBase64ToImage(sFilePath, sImage);
 				bDeleteFile = true;
 			}
 			else if(0 == sImage.Find(_T("http:")) || 0 == sImage.Find(_T("https:")) || 0 == sImage.Find(_T("ftp:")) || 0 == sImage.Find(_T("www")))
 			{
 				//url
-				sFilePath = DownloadImage(sImage);
+				sFilePath = SerializeCommon::DownloadImage(sImage);
 				bDeleteFile = true;
 			}
 			else
@@ -2493,7 +2493,7 @@ public:
 		else if ( c_oSer_SettingsType::DefaultTabStop == type )
 		{
 			double dDefTabStop = m_oBufferedStream.ReadDouble2();
-			long nDefTabStop = Round(dDefTabStop * g_dKoef_mm_to_twips);
+			long nDefTabStop = SerializeCommon::Round(dDefTabStop * g_dKoef_mm_to_twips);
 			CString sXml;
 			sXml.Format(_T("<w:defaultTabStop w:val=\"%d\"/>"), nDefTabStop);
 			m_oFileWriter.m_oSettingWriter.AddSetting(sXml);
@@ -2729,7 +2729,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 				CString sFontName((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
-				CorrectString(sFontName);
+				SerializeCommon::CorrectString(sFontName);
 
 				CString sVal; sVal.Format(_T("<m:font m:val=\"%s\" />"), sFontName);
 				m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
@@ -3039,7 +3039,7 @@ public:
 			res = Read1(length, &Binary_DocumentTableReader::ReadParagraphContent, this, NULL);
 			long rId;
 			CString sHref = pHyperlink->sLink;
-			CorrectString(sHref);
+			SerializeCommon::CorrectString(sHref);
 			BSTR bstrHref = sHref.AllocSysString();
 			m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"), bstrHref, _T("External"), &rId);
 			SysFreeString(bstrHref);
@@ -4567,7 +4567,7 @@ public:
 		for (int i = 0, length = strVal.GetLength(); i < length; ++i )
 		{
 			WCHAR sChr = strVal.GetAt(i);
-			if ( true == IsUnicodeSymbol( sChr ) )
+			if ( true == SerializeCommon::IsUnicodeSymbol( sChr ) )
 			{
 				strRes += sChr;
 			}
@@ -5229,7 +5229,7 @@ public:
 		{
 			GetRunStringWriter().WriteString(CString(_T("<w:t xml:space=\"preserve\">")));
 			CString sText((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
-			CorrectString(sText);
+			SerializeCommon::CorrectString(sText);
 			GetRunStringWriter().WriteString(sText);
 			GetRunStringWriter().WriteString(CString(_T("</w:t>")));
 		}
@@ -5266,7 +5266,7 @@ public:
 			{
 				CString sNewImgName = m_oMediaWriter.m_aImageNames[odocImg.MediaId];
 				CString sNewImgRel;sNewImgRel = _T("media/") + sNewImgName;
-				CorrectString(sNewImgRel);
+				SerializeCommon::CorrectString(sNewImgRel);
 				long rId;
 				BSTR bstrNewImgRel = sNewImgRel.AllocSysString();
 				m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"), bstrNewImgRel, NULL, &rId);
@@ -5340,7 +5340,7 @@ public:
 		else if(c_oSerRunType::fldstart == type)
 		{
 			CString sField((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
-			CorrectString(sField);
+			SerializeCommon::CorrectString(sField);
 			GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));
 			if(m_oCur_rPr.IsNoEmpty())
 				m_oCur_rPr.Write(&GetRunStringWriter());
@@ -5415,7 +5415,7 @@ public:
 		{
 			double dgridCol = m_oBufferedStream.ReadDouble2();
 			oBinary_tblPrReader.m_aCurTblGrid.push_back(dgridCol);
-			long ngridCol = Round( g_dKoef_mm_to_twips * dgridCol);
+			long ngridCol = SerializeCommon::Round( g_dKoef_mm_to_twips * dgridCol);
 			CString sgridCol;sgridCol.Format(_T("<w:gridCol w:w=\"%d\"/>"), ngridCol);
 			pCStringWriter->WriteString(sgridCol);
 		}

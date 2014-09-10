@@ -1,7 +1,7 @@
 #ifndef SETTING_WRITER
 #define SETTING_WRITER
 
-#include "Common.h"
+#include "../../XlsxSerializerCom/Common/Common.h"
 
 namespace Writers
 {
@@ -36,7 +36,7 @@ namespace Writers
 		}
 		void Prepare()
 		{
-			if(g_nCurFormatVersion < 5)
+			if(BinDocxRW::g_nCurFormatVersion < 5)
 			{
 				bool bevenAndOddHeaders = false;
 				for(int i = 0, length = m_oHeaderFooterWriter.m_aHeaders.size(); i < length; ++i)

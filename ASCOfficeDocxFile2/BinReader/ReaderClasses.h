@@ -50,14 +50,14 @@ public:
 	CString Write()
 	{
 		CString sRes = _T("");
-		long nWidth = Round(W * g_dKoef_mm_to_twips);
-		long nHeight = Round(H * g_dKoef_mm_to_twips);
-		long nMLeft = Round(Left * g_dKoef_mm_to_twips);
-		long nMTop = Round(Top * g_dKoef_mm_to_twips);
-		long nMRight = Round(Right * g_dKoef_mm_to_twips);
-		long nMBottom = Round(Bottom * g_dKoef_mm_to_twips);
-		long nMHeader = Round(Header * g_dKoef_mm_to_twips);
-		long nMFooter = Round(Footer * g_dKoef_mm_to_twips);
+		long nWidth = SerializeCommon::Round(W * g_dKoef_mm_to_twips);
+		long nHeight = SerializeCommon::Round(H * g_dKoef_mm_to_twips);
+		long nMLeft = SerializeCommon::Round(Left * g_dKoef_mm_to_twips);
+		long nMTop = SerializeCommon::Round(Top * g_dKoef_mm_to_twips);
+		long nMRight = SerializeCommon::Round(Right * g_dKoef_mm_to_twips);
+		long nMBottom = SerializeCommon::Round(Bottom * g_dKoef_mm_to_twips);
+		long nMHeader = SerializeCommon::Round(Header * g_dKoef_mm_to_twips);
+		long nMFooter = SerializeCommon::Round(Footer * g_dKoef_mm_to_twips);
 		if(!sHeaderFooterReference.IsEmpty())
 			sRes.Append(sHeaderFooterReference);
 		if(bSectionType)
@@ -517,13 +517,13 @@ public:
 		}
 		if(bSpacing)
 		{
-			long nSpacing = Round( g_dKoef_mm_to_twips * Spacing);
+			long nSpacing = SerializeCommon::Round( g_dKoef_mm_to_twips * Spacing);
 			CString sSpacing;sSpacing.Format(_T("<w:spacing w:val=\"%d\"/>"), nSpacing);
 			pCStringWriter->WriteString(sSpacing);
 		}
 		if(bPosition)
 		{
-			long nPosition = Round( g_dKoef_mm_to_hps * Position);
+			long nPosition = SerializeCommon::Round( g_dKoef_mm_to_hps * Position);
 			CString sPosition;sPosition.Format(_T("<w:position w:val=\"%d\"/>"), nPosition);
 			pCStringWriter->WriteString(sPosition);
 		}
@@ -930,7 +930,7 @@ public:
 			if(bW)
 			{
 				sType = _T("dxa");
-				nVal = Round( g_dKoef_mm_to_twips * W);
+				nVal = SerializeCommon::Round( g_dKoef_mm_to_twips * W);
 			}
 			else
 			{
@@ -987,13 +987,13 @@ public:
 			}
 			if(bSize)
 			{
-				long nSize = Round(g_dKoef_mm_to_eightpoint * Size);
+				long nSize = SerializeCommon::Round(g_dKoef_mm_to_eightpoint * Size);
 				CString sSize;sSize.Format(_T(" w:sz=\"%d\""), nSize);
 				pCStringWriter->WriteString(sSize);
 			}
 			if(bSpace)
 			{
-				long nSpace = Round(g_dKoef_mm_to_pt * Space);
+				long nSpace = SerializeCommon::Round(g_dKoef_mm_to_pt * Space);
 				CString sSpace;sSpace.Format(_T(" w:space=\"%d\""), nSpace);
 				pCStringWriter->WriteString(sSpace);
 			}
@@ -1172,7 +1172,7 @@ public:
 		if(bPStyle)
 		{
 			CString sStyleName = PStyle;
-			CorrectString(sStyleName);
+			SerializeCommon::CorrectString(sStyleName);
 			CString sFormatXml;sFormatXml.Format(_T("<w:pStyle w:val=\"%s\"/>"), sStyleName);
 			oWriter.WriteString(sFormatXml);
 		}
@@ -1197,7 +1197,7 @@ public:
 					sText.AppendFormat(_T("%%%d"), (item->Number+1));
 				}
 			}
-			CorrectString(sText);
+			SerializeCommon::CorrectString(sText);
 			CString sTextXml;sTextXml.Format(_T("<w:lvlText w:val=\"%s\"/>"), sText);
 			oWriter.WriteString(sTextXml);
 		}
@@ -1257,14 +1257,14 @@ public:
 			if(!StyleLink.IsEmpty())
 			{
 				CString sCorrectStyleLink = StyleLink;
-				CorrectString(sCorrectStyleLink);
+				SerializeCommon::CorrectString(sCorrectStyleLink);
 				CString sXml;sXml.Format(_T("<w:styleLink w:val=\"%s\"/>"), sCorrectStyleLink);
 				oWriterANum.WriteString(sXml);
 			}
 			if(!NumStyleLink.IsEmpty())
 			{
 				CString sCorrectNumStyleLink = NumStyleLink;
-				CorrectString(sCorrectNumStyleLink);
+				SerializeCommon::CorrectString(sCorrectNumStyleLink);
 				CString sXml;sXml.Format(_T("<w:numStyleLink w:val=\"%s\"/>"), sCorrectNumStyleLink);
 				oWriterANum.WriteString(sXml);
 			}
@@ -1409,9 +1409,9 @@ public:
 			CString sCorrect_rId = rId;
 			CString sCorrect_tooltip = tooltip;
 			CString sCorrect_anchor = anchor;
-			CorrectString(sCorrect_rId);
-			CorrectString(sCorrect_tooltip);
-			CorrectString(sCorrect_anchor);
+			SerializeCommon::CorrectString(sCorrect_rId);
+			SerializeCommon::CorrectString(sCorrect_tooltip);
+			SerializeCommon::CorrectString(sCorrect_anchor);
 			CString sStart;
 			sStart.Format(_T("<w:hyperlink r:id=\"%s\""), sCorrect_rId);
 			if(false == tooltip.IsEmpty())
@@ -1550,7 +1550,7 @@ public:
 		if(false == pComment->UserName.IsEmpty())
 		{
 			CString sUserName = pComment->UserName;
-			CorrectString(sUserName);
+			SerializeCommon::CorrectString(sUserName);
 			sRes.AppendFormat(_T(" w:author=\"%s\""), sUserName);
 			//делаем initials
 			int nTokenPos = 0;
@@ -1566,12 +1566,12 @@ public:
 		if(false == pComment->Date.IsEmpty())
 		{
 			CString sDate = pComment->Date;
-			CorrectString(sDate);
+			SerializeCommon::CorrectString(sDate);
 			sRes.AppendFormat(_T(" w:date=\"%s\""), sDate);
 		}
 		if(false == sInitials.IsEmpty())
 		{
-			CorrectString(sInitials);
+			SerializeCommon::CorrectString(sInitials);
 			sRes.AppendFormat(_T(" w:initials=\"%s\""), sInitials);
 		}
 		sRes.Append(_T(">"));
@@ -1619,9 +1619,9 @@ public:
 		if(false == pComment->UserName.IsEmpty() && false == pComment->UserId.IsEmpty())
 		{
 			CString sUserName = pComment->UserName;
-			CorrectString(sUserName);
+			SerializeCommon::CorrectString(sUserName);
 			CString sUserId = pComment->UserId;
-			CorrectString(sUserId);
+			SerializeCommon::CorrectString(sUserId);
 			sRes.AppendFormat(_T("<w15:person w15:author=\"%s\"><w15:presenceInfo w15:providerId=\"Teamlab\" w15:userId=\"%s\"/></w15:person>"), sUserName, sUserId);
 		}
 		return sRes;
@@ -1742,19 +1742,19 @@ public:
 //			if(false == UserName.IsEmpty())
 //			{
 //				CString sUserName = UserName;
-//				CorrectString(sUserName);
+//				SerializeCommon::CorrectString(sUserName);
 //				sRes.AppendFormat(_T(" w:author=\"%s\""), sUserName);
 //			}
 //			if(false == Date.IsEmpty())
 //			{
 //				CString sDate = Date;
-//				CorrectString(sDate);
+//				SerializeCommon::CorrectString(sDate);
 //				sRes.AppendFormat(_T(" w:date=\"%s\""), sDate);
 //			}
 //			if(false == Initials.IsEmpty())
 //			{
 //				CString sInitials = Initials;
-//				CorrectString(sInitials);
+//				SerializeCommon::CorrectString(sInitials);
 //				sRes.AppendFormat(_T(" w:initials=\"%s\""), sInitials);
 //			}
 //			sRes.Append(_T(">"));
@@ -1771,12 +1771,12 @@ public:
 //		CString sRes;
 //		CString sFormat = _T("<w:p><w:pPr><w:spacing w:line=\"240\" w:after=\"0\" w:lineRule=\"auto\" w:before=\"0\"/><w:ind w:firstLine=\"0\" w:left=\"0\" w:right=\"0\"/><w:jc w:val=\"left\"/></w:pPr><w:r><w:rPr><w:rFonts w:eastAsia=\"Arial\" w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\"/><w:sz w:val=\"22\"/></w:rPr><w:t xml:space=\"preserve\">%s</w:t></w:r></w:p>");
 //		CString sName = pComment->UserName + _T(":");
-//		CorrectString(sName);
+//		SerializeCommon::CorrectString(sName);
 //		sRes.AppendFormat(sFormat, sName);
 //		if(false == pComment->Text.IsEmpty())
 //		{
 //			CString sText = pComment->Text;
-//			CorrectString(sText);
+//			SerializeCommon::CorrectString(sText);
 //			sRes.AppendFormat(sFormat, sText);
 //		}
 //		if(false == bCheckLast || pComment->replies.GetCount() > 0)
@@ -2391,9 +2391,9 @@ public:
 			CString sCorrect_rId = rId;
 			CString sCorrect_tooltip = sTooltip;
 			CString sCorrect_anchor = sAnchor;
-			CorrectString(sCorrect_rId);
-			CorrectString(sCorrect_tooltip);
-			CorrectString(sCorrect_anchor);
+			SerializeCommon::CorrectString(sCorrect_rId);
+			SerializeCommon::CorrectString(sCorrect_tooltip);
+			SerializeCommon::CorrectString(sCorrect_anchor);
 			CString sStart;
 			sStart.Format(_T("<w:hyperlink r:id=\"%s\""), sCorrect_rId);
 			if(false == sTooltip.IsEmpty())

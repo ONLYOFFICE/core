@@ -1,7 +1,7 @@
 #ifndef DOCUMENT_WRITER
 #define DOCUMENT_WRITER
 
-#include "Common.h"
+#include "../../XlsxSerializerCom/Common/Common.h"
 #include "../BinWriter/BinReaderWriterDefines.h";
 namespace Writers
 {
@@ -31,7 +31,7 @@ namespace Writers
 		CString WriteSectPrHdrFtr()
 		{
 			CString sResult;
-			if(g_nCurFormatVersion < 5)
+			if(BinDocxRW::g_nCurFormatVersion < 5)
 			{
 				bool bTitlePage = false;
 				for(int i = 0, length = m_oHeaderFooterWriter.m_aHeaders.size(); i < length; ++i)

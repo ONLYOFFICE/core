@@ -1,7 +1,7 @@
 #ifndef CONTENT_TYPES_WRITER
 #define CONTENT_TYPES_WRITER
 
-#include "Common.h"
+#include "../../XlsxSerializerCom/Common/Common.h"
 
 namespace Writers
 {

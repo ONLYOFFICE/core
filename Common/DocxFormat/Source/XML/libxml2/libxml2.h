@@ -738,7 +738,22 @@ namespace XmlUtils
 		void GetXml(CStringWriter& oWriter);
 	};
 
-	class CXmlNodes;
+    class CXmlNode;
+    class CXmlNodes
+    {
+    private:
+        std::vector<CXmlNode> m_nodes;
+
+    public:
+        CXmlNodes();
+        BOOL IsValid();
+        int GetCount();
+        bool GetAt(int nIndex, CXmlNode& oXmlNode);
+
+        friend class CXmlNode;
+    };
+
+
 	class CXmlNode
 	{
 	private:
@@ -829,25 +844,34 @@ namespace XmlUtils
 
 		CString GetAttributeOrValue(const CString& strAttributeName, const CString& strDefaultValue = _T(""));
 
+        /*
+        void LoadArray(const CString& sName, std::vector<T>& arList)
+        {
+            if (GetNodes(sName, oNodes))
+        }
+        */
+
 		template <typename T>
-		void LoadArray(const CString& sName, CAtlArray<T>& arList)
+        void LoadArray(const CString& sName, std::vector<T>& arList)
 		{
 			CXmlNodes oNodes;
 			if (GetNodes(sName, oNodes))
-			{
+            {
 				int nCount = oNodes.GetCount();
 				for (int i = 0; i < nCount; ++i)
 				{
 					CXmlNode oItem;
 					oNodes.GetAt(i, oItem);
 
-					arList.Add();
-					arList[i].fromXML(oItem);
+                    //arList.Add ();
+                    //arList[i].fromXML(oItem);
+                    arList.push_back(T());
+                    arList[i].fromXML(oItem);
 				}
 			}
 		}
 		template <typename T>
-		void LoadArray(const CString& sName, const CString& sSubName, CAtlArray<T>& arList)
+        void LoadArray(const CString& sName, const CString& sSubName, std::vector<T>& arList)
 		{
 			CXmlNode oNode;
 			if (GetNode(sName, oNode))
@@ -874,34 +898,7 @@ namespace XmlUtils
 		CString private_GetXmlFast(const CString& strDefaultValue);
 	};
 
-	class CXmlNodes
-	{
-	private:
-		std::vector<CXmlNode> m_nodes;
 
-	public:
-		CXmlNodes() : m_nodes()
-		{
-		}
-		BOOL IsValid()
-		{
-			return TRUE;
-		}
-		int GetCount()
-		{
-			return (int)m_nodes.size();
-		}
-		bool GetAt(int nIndex, CXmlNode& oXmlNode)
-		{
-			if (nIndex < 0 && nIndex >= GetCount())
-				return false;
-
-			oXmlNode = m_nodes[nIndex];
-			return true;
-		}
-
-		friend class CXmlNode;
-	};
 }
 
 #if 0

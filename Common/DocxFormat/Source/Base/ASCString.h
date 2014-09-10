@@ -4192,4 +4192,23 @@ typedef const wchar_t* LPCWSTR;
 
 #endif // _WIN32
 
+
+#ifndef itoa
+#include <cstdio>
+static void itoa (int value, char *str, int base) {
+    switch (base){
+    case 10:
+        sprintf(str, "%d", value);
+        break;
+    case 16:
+        sprintf(str, "%x", value);
+        break;
+    case 8:
+        sprintf(str, "%o", value);
+        break;
+    }
+}
+#endif
+
+
 #endif // ASCSTRING_H

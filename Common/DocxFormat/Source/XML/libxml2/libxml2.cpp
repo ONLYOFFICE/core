@@ -646,4 +646,25 @@ namespace XmlUtils
 			return strNodeName;
 		return strNodeName.Mid(nFind + 1);
 	}
+
+    // CXmlNodes
+    CXmlNodes::CXmlNodes() : m_nodes()
+    {
+    }
+    BOOL CXmlNodes::IsValid()
+    {
+        return TRUE;
+    }
+    int CXmlNodes::GetCount()
+    {
+        return (int)m_nodes.size();
+    }
+    bool CXmlNodes::GetAt(int nIndex, CXmlNode& oXmlNode)
+    {
+        if (nIndex < 0 && nIndex >= GetCount())
+            return false;
+
+        oXmlNode = m_nodes[nIndex];
+        return true;
+    }
 }

@@ -2581,7 +2581,7 @@ namespace SimpleTypes
 			else
 			{
 
-                /*
+
 				//¬ документации не написано, что цвет может приходить строкой, но в реальных докуентах встречаетс€ и word это разруливает.
                 //CHighlightColor<highlightcolorNone> oHighlightColor(sValue);
                 CHighlightColor<> oHighlightColor(sValue);
@@ -2605,7 +2605,7 @@ namespace SimpleTypes
 					Parse3();
 				}
 				else   this->m_eValue = eDefValue;
-                */
+
 			}
 
             return this->m_eValue;

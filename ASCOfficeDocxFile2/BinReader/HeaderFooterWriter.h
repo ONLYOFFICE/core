@@ -1,7 +1,7 @@
 #ifndef HEADER_FOOTER_WRITER
 #define HEADER_FOOTER_WRITER
 
-#include "Common.h"
+#include "../../XlsxSerializerCom/Common/Common.h"
 
 namespace Writers
 {

@@ -1,7 +1,7 @@
 #ifndef DOCUMENT_RELS_WRITER
 #define DOCUMENT_RELS_WRITER
 
-#include "Common.h"
+#include "../../XlsxSerializerCom/Common/Common.h"
 
 namespace Writers
 {
@@ -48,8 +48,8 @@ namespace Writers
 		}
 		CString AddRels(CString sType, CString sTarget, bool bExternal = false)
 		{
-			CorrectString(sType);
-			CorrectString(sTarget);
+			SerializeCommon::CorrectString(sType);
+			SerializeCommon::CorrectString(sTarget);
 			CString srId;srId.Format(_T("rId%d"), m_nRid);
 			CString sRels;
 			if(bExternal)

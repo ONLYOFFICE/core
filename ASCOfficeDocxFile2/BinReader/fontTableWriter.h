@@ -1,7 +1,7 @@
 #ifndef FONT_TABLE_WRITER
 #define FONT_TABLE_WRITER
 
-#include "Common.h"
+#include "../../XlsxSerializerCom/Common/Common.h"
 
 namespace Writers
 {
@@ -112,7 +112,7 @@ namespace Writers
 				RELEASEARRAY(psaArray);
 			}
 
-			CorrectString(sFontName);
+			SerializeCommon::CorrectString(sFontName);
 			m_oWriter.WriteString(_T("<w:font w:name=\"") + sFontName + _T("\">"));
 			if(!sPanose.IsEmpty())
 				m_oWriter.WriteString(_T("<w:panose1 w:val=\"")+sPanose+_T("\"/>"));

@@ -1,7 +1,7 @@
 #ifndef MEDIA_WRITER
 #define MEDIA_WRITER
 
-#include "Common.h"
+#include "../../XlsxSerializerCom/Common/Common.h"
 
 namespace Writers
 {

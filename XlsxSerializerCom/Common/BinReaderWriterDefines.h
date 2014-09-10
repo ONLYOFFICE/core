@@ -1,7 +1,5 @@
 #pragma once
 
-extern int g_nCurFormatVersion;
-
 namespace BinXlsxRW
 {
 	const double g_dKoef_mm_to_pt = 72 / (2.54 * 10);
@@ -11,6 +9,7 @@ namespace BinXlsxRW
 
 	const static TCHAR* g_sFormatSignature = _T("XLSY");
 	const int g_nFormatVersion = 2;
+	extern int g_nCurFormatVersion;
 
 	namespace c_oFileTypes{enum c_oFileTypes
 	{

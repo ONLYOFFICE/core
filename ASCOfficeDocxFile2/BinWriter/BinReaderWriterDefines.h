@@ -1,7 +1,6 @@
 #ifndef BIN_READER_WRITER_DEFINES
 #define BIN_READER_WRITER_DEFINES
 
-extern int g_nCurFormatVersion;
 namespace BinDocxRW
 {
 const double eps     = 0.001;
@@ -97,6 +96,7 @@ const double g_dKoef_mm_to_hps = 2 * g_dKoef_mm_to_pt;
 
 const static TCHAR* g_sFormatSignature = _T("DOCY");
 const int g_nFormatVersion = 5;
+extern int g_nCurFormatVersion;
 	namespace c_oAscWrapStyle{enum c_oSerFormat
 	{
 		Inline = 0,

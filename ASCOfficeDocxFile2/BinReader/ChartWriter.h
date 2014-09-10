@@ -1,7 +1,7 @@
 #ifndef CHART_WRITER
 #define CHART_WRITER
 
-#include "Common.h"
+#include "../../XlsxSerializerCom/Common/Common.h"
 
 namespace Writers
 {

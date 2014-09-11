@@ -47,6 +47,20 @@ class CFontsCache
 private:
 	std::map<std::string, CFontFile*>	m_mapFiles;
 	CApplicationFontStreams*			m_pApplicationFontStreams;
+    
+public:
+    CFontsCache()
+    {
+        m_pApplicationFontStreams = NULL;
+    }
+    ~CFontsCache()
+    {
+        for (std::map<std::string, CFontFile*>::iterator iter = m_mapFiles.begin(); iter != m_mapFiles.end(); ++iter)
+        {
+            CFontFile* pFile = iter->second;
+            RELEASEOBJECT(pFile);
+        }
+    }
 
 public:
 	inline void SetStreams(CApplicationFontStreams* pStreams) { m_pApplicationFontStreams = pStreams; }

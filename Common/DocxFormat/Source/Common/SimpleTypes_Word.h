@@ -2574,7 +2574,10 @@ namespace SimpleTypes
         //template<EHighlightColor>
         //class CHighlightColor;
 
-		virtual EHexColor FromString(CString &sValue)
+        void SetColorByString ();
+
+        virtual EHexColor FromString(CString &sValue);
+        /*
 		{
 			if      ( _T("auto") == sValue || _T("none") == sValue )
                 this->m_eValue = hexcolorAuto;
@@ -2610,6 +2613,7 @@ namespace SimpleTypes
 
             return this->m_eValue;
 		}
+        */
 
 		virtual CString   ToString  () const 
 		{

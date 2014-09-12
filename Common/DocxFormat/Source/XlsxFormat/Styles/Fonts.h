@@ -29,6 +29,21 @@ namespace OOX
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 				writer.WriteString(_T("<font>"));
+				if(m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
+				{
+					CString sVal;sVal.Format(_T("<name val=\"%s\"/>"), XmlUtils::EncodeXmlString(m_oRFont->m_sVal.get()));
+					writer.WriteString(sVal);
+				}			
+				if(m_oCharset.IsInit() && m_oCharset->m_oCharset.IsInit())
+				{
+					CString sVal;sVal.Format(_T("<charset val=\"%s\"/>"), m_oCharset->m_oCharset->ToString());
+					writer.WriteString(sVal);
+				}
+				if(m_oFamily.IsInit() && m_oFamily->m_oFontFamily.IsInit())
+				{
+					CString sVal;sVal.Format(_T("<family val=\"%s\"/>"), m_oFamily->m_oFontFamily->ToString());
+					writer.WriteString(sVal);
+				}
 				if(m_oBold.IsInit())
 				{
 					if(SimpleTypes::onoffTrue == m_oBold->m_oVal.GetValue())
@@ -36,13 +51,34 @@ namespace OOX
 					else
 						writer.WriteString(_T("<b val=\"0\"/>"));
 				}
-				if(m_oCharset.IsInit() && m_oCharset->m_oCharset.IsInit())
+				if(m_oItalic.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<charset val=\"%s\"/>"), m_oCharset->m_oCharset->ToString());
-					writer.WriteString(sVal);
+					if(SimpleTypes::onoffTrue == m_oItalic->m_oVal.GetValue())
+						writer.WriteString(_T("<i/>"));
+					else
+						writer.WriteString(_T("<i val=\"0\"/>"));
 				}
-				if(m_oColor.IsInit())
-					m_oColor->toXML2(writer, _T("color"));
+				if(m_oStrike.IsInit())
+				{
+					if(SimpleTypes::onoffTrue == m_oStrike->m_oVal.GetValue())
+						writer.WriteString(_T("<strike/>"));
+					else
+						writer.WriteString(_T("<strike val=\"0\"/>"));
+				}
+				if(m_oOutline.IsInit())
+				{
+					if(SimpleTypes::onoffTrue == m_oOutline->m_oVal.GetValue())
+						writer.WriteString(_T("<outline/>"));
+					else
+						writer.WriteString(_T("<outline val=\"0\"/>"));
+				}
+				if(m_oShadow.IsInit())
+				{
+					if(SimpleTypes::onoffTrue == m_oShadow->m_oVal.GetValue())
+						writer.WriteString(_T("<shadow/>"));
+					else
+						writer.WriteString(_T("<shadow val=\"0\"/>"));
+				}
 				if(m_oCondense.IsInit())
 				{
 					if(SimpleTypes::onoffTrue == m_oCondense->m_oVal.GetValue())
@@ -57,49 +93,8 @@ namespace OOX
 					else
 						writer.WriteString(_T("<extend val=\"0\"/>"));
 				}
-				if(m_oFamily.IsInit() && m_oFamily->m_oFontFamily.IsInit())
-				{
-					CString sVal;sVal.Format(_T("<family val=\"%s\"/>"), m_oFamily->m_oFontFamily->ToString());
-					writer.WriteString(sVal);
-				}
-				if(m_oItalic.IsInit())
-				{
-					if(SimpleTypes::onoffTrue == m_oItalic->m_oVal.GetValue())
-						writer.WriteString(_T("<i/>"));
-					else
-						writer.WriteString(_T("<i val=\"0\"/>"));
-				}
-				if(m_oOutline.IsInit())
-				{
-					if(SimpleTypes::onoffTrue == m_oOutline->m_oVal.GetValue())
-						writer.WriteString(_T("<outline/>"));
-					else
-						writer.WriteString(_T("<outline val=\"0\"/>"));
-				}
-				if(m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
-				{
-					CString sVal;sVal.Format(_T("<name val=\"%s\"/>"), XmlUtils::EncodeXmlString(m_oRFont->m_sVal.get()));
-					writer.WriteString(sVal);
-				}
-				if(m_oScheme.IsInit() && m_oScheme->m_oFontScheme.IsInit())
-				{
-					CString sVal;sVal.Format(_T("<scheme val=\"%s\"/>"), m_oScheme->m_oFontScheme->ToString());
-					writer.WriteString(sVal);
-				}
-				if(m_oShadow.IsInit())
-				{
-					if(SimpleTypes::onoffTrue == m_oShadow->m_oVal.GetValue())
-						writer.WriteString(_T("<shadow/>"));
-					else
-						writer.WriteString(_T("<shadow val=\"0\"/>"));
-				}
-				if(m_oStrike.IsInit())
-				{
-					if(SimpleTypes::onoffTrue == m_oStrike->m_oVal.GetValue())
-						writer.WriteString(_T("<strike/>"));
-					else
-						writer.WriteString(_T("<strike val=\"0\"/>"));
-				}
+				if(m_oColor.IsInit())
+					m_oColor->toXML2(writer, _T("color"));
 				if(m_oSz.IsInit() && m_oSz->m_oVal.IsInit())
 				{
 					CString sVal;sVal.Format(_T("<sz val=\"%s\"/>"), SpreadsheetCommon::WriteDouble(m_oSz->m_oVal->GetValue()));
@@ -117,6 +112,11 @@ namespace OOX
 				if(m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.IsInit())
 				{
 					CString sVal;sVal.Format(_T("<vertAlign val=\"%s\"/>"), m_oVertAlign->m_oVerticalAlign->ToString());
+					writer.WriteString(sVal);
+				}
+				if(m_oScheme.IsInit() && m_oScheme->m_oFontScheme.IsInit())
+				{
+					CString sVal;sVal.Format(_T("<scheme val=\"%s\"/>"), m_oScheme->m_oFontScheme->ToString());
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T("</font>"));

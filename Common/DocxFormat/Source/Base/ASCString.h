@@ -3925,6 +3925,15 @@ private:
     FmtArg<int>& operator=(const FmtArg<int>&) {return *this;}
 };
 template<>
+struct FmtArg<unsigned int>
+{
+    explicit FmtArg(const unsigned int& arg) : a_(arg) {}
+    const unsigned int& operator()() const { return a_; }
+    const unsigned int& a_;
+private:
+    FmtArg<unsigned int>& operator=(const FmtArg<unsigned int>&) {return *this;}
+};
+template<>
 struct FmtArg<float>
 {
     explicit FmtArg(const float& arg) : a_(arg) {}

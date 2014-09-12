@@ -15,7 +15,7 @@ namespace CSVWriter
 		if (NULL == *pWriteBuffer)
 		{
 			*pWriteBuffer = new WCHAR[c_nSize];
-			::ZeroMemory(*pWriteBuffer, nSizeWchar * c_nSize);
+			memset(*pWriteBuffer, 0, nSizeWchar * c_nSize);
 			nCurrentIndex = 0;
 		}
 
@@ -30,13 +30,13 @@ namespace CSVWriter
 			{
 				INT nSize = WideCharToMultiByte(nCodePage, 0, *pWriteBuffer, nCurrentIndex, NULL, NULL, NULL, NULL);
 				CHAR *pString = new CHAR [nSize];
-				::ZeroMemory (pString, sizeof (CHAR) * nSize);
+				memset(pString, 0, sizeof (CHAR) * nSize);
 				WideCharToMultiByte (CP_UTF8, 0, *pWriteBuffer, -1, pString, nSize, NULL, NULL);
 				pFile->WriteFile((BYTE*)pString, sizeof (CHAR) * nSize);
 				RELEASEARRAYOBJECTS(pString);
 			}	
 			
-			::ZeroMemory(*pWriteBuffer, nSizeWchar * c_nSize);
+			memset(*pWriteBuffer, 0, nSizeWchar * c_nSize);
 			nCurrentIndex = 0;
 		}
 		

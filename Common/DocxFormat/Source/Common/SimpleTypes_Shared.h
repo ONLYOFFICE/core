@@ -908,63 +908,66 @@ namespace SimpleTypes
 	template<EColorType eDefValue = colortypeNone>
 	class CColorType : public CSimpleType<EColorType, eDefValue>
 	{
-	public:
-		CColorType()
-		{
-			SetRGB();
-			m_sValue.Format( _T("#%02X%02X%02X"), m_unR, m_unG, m_unB );
-		}
+    public:
+        CColorType()
+        {
+            SetRGB();
+            m_sValue.Format( _T("#%02X%02X%02X"), m_unR, m_unG, m_unB );
+        }
 
-		virtual EColorType FromString(CString& sValue)
-		{
-			wchar_t wsFirstChar = 0;
-			if (sValue.GetLength() > 0)
-				wsFirstChar = sValue[0];
+        virtual EColorType FromString(CString& sValue)
+        {
+            wchar_t wsFirstChar = 0;
+            if (sValue.GetLength() > 0)
+                wsFirstChar = sValue[0];
 
-			m_sValue = sValue;
-			if (wsFirstChar == _T('#'))
-				ByHexColor(sValue.Mid(1));
-			else
-				ByColorName(sValue);
+            m_sValue = sValue;
+            if (wsFirstChar == _T('#'))
+            {
+                CString sHexColor = sValue.Mid(1);
+                ByHexColor(sHexColor);
+            }
+            else
+                ByColorName(sValue);
 
             return this->m_eValue;
-		}
+        }
 
-		virtual CString ToString() const
-		{
-			return m_sValue;			
-		}
+        virtual CString ToString() const
+        {
+            return m_sValue;
+        }
 
-		void SetRGB(unsigned char unR, unsigned char unG, unsigned char unB)
-		{
+        void SetRGB(unsigned char unR, unsigned char unG, unsigned char unB)
+        {
             this->m_eValue = colortypeRGB;
-			m_unR = unR;
-			m_unG = unG;
-			m_unB = unB;
+            m_unR = unR;
+            m_unG = unG;
+            m_unB = unB;
 
-			m_sValue.Format( _T("#%02X%02X%02X"), unR, unG, unB );
-		}
+            m_sValue.Format( _T("#%02X%02X%02X"), unR, unG, unB );
+        }
 
-		SimpleType_FromString     (EColorType)
-		SimpleType_Operator_Equal (CColorType)
+        SimpleType_FromString     (EColorType)
+        SimpleType_Operator_Equal (CColorType)
 
-		unsigned char Get_R() const
-		{
-			return m_unR;
-		}
-		unsigned char Get_G() const
-		{
-			return m_unG;
-		}
+        unsigned char Get_R() const
+        {
+            return m_unR;
+        }
+        unsigned char Get_G() const
+        {
+            return m_unG;
+        }
 
-		unsigned char Get_B() const
-		{
-			return m_unB;
-		}
-		unsigned char Get_A() const
-		{
-			return 255;
-		}
+        unsigned char Get_B() const
+        {
+            return m_unB;
+        }
+        unsigned char Get_A() const
+        {
+            return 255;
+        }
 
 
 
@@ -1118,7 +1121,7 @@ namespace SimpleTypes
 
 		unsigned char m_unR;
 		unsigned char m_unG;
-		unsigned char m_unB;
+        unsigned char m_unB;
 	};
 	//--------------------------------------------------------------------------------
 	// CTrueFalse 15.1.2.5 - 15.1.2.6 (Part 4)

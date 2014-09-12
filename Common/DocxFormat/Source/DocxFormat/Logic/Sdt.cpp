@@ -11,7 +11,7 @@
 #include "SmartTag.h"
 #include "Dir.h"
 #include "../Math/oMathPara.h"
-#include "../Math/oMath.h"
+#include "../Math/OMath.h"
 
 // TO DO: Нехватающие классы:
 //        <w:customXml>

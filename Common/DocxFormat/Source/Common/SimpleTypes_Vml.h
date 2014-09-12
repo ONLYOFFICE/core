@@ -348,7 +348,7 @@ namespace SimpleTypes
 		shadowtypePerspective,
 		shadowtypeSingle,
 	};
-	template<EShadowType eDefValue = shadowteprSingle>
+    template<EShadowType eDefValue = shadowtypeSingle>
 	class CShadowType : public CSimpleType<EShadowType, eDefValue>
 	{
 	public:

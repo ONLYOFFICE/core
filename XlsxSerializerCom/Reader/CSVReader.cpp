@@ -115,7 +115,7 @@ namespace CSVReader
 
 			INT nSize = MultiByteToWideChar(nCodePage, 0, pFileData, nFileSize, NULL, 0);
 			WCHAR *pTemp = new WCHAR [nSize];
-			::ZeroMemory (pTemp, sizeof(WCHAR) * nSize);
+			memset(pTemp, 0, sizeof(WCHAR) * nSize);
 			MultiByteToWideChar (nCodePage, 0, pFileData, nFileSize, pTemp, nSize);
 			oMappingFile.Close();
 

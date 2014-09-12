@@ -61,7 +61,7 @@ namespace SerializeCommon
 		{
 			INT nUTF8Len = WideCharToMultiByte (CP_UTF8, 0, pBase64, pBase64.GetLength (), NULL, NULL, NULL, NULL);
 			CHAR *pUTF8String = new CHAR [nUTF8Len + 1];
-			::ZeroMemory (pUTF8String, sizeof (CHAR) * (nUTF8Len + 1));
+			memset(pUTF8String, 0, sizeof (CHAR) * (nUTF8Len + 1));
 
 			WideCharToMultiByte (CP_UTF8, 0, pBase64, -1, pUTF8String, nUTF8Len, NULL, NULL);
 			CStringA sUnicode; sUnicode = pUTF8String;
@@ -78,7 +78,7 @@ namespace SerializeCommon
 			LONG lFileSize = sUnicode.GetLength () - nShift;
 			INT nDstLength = lFileSize;
 			BYTE *pBuffer = new BYTE [lFileSize];
-			::ZeroMemory (pBuffer, lFileSize);
+			memset(pBuffer, 0, lFileSize);
 			Base64::Base64Decode ((LPCSTR)sUnicode.GetBuffer () + nShift, lFileSize, pBuffer, &nDstLength);
 
 			// Ïטרול ג פאיכ

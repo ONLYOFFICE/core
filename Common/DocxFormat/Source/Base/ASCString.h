@@ -2233,6 +2233,12 @@ public:
         }
     #endif
 
+    MYTYPE& Append (const MYTYPE& str)
+    {
+       ssadd(*this, str);
+       return *this;
+    }
+
 
     // -------------------------------------------------------------------------
     // Case changing functions
@@ -2737,6 +2743,7 @@ public:
     {
         Fmt(szFmt, FmtArg<A1>(v)());
     }
+
     template<class A1, class A2>
     void Format(const CT* szFmt, const A1& v1, const A2& v2)
     {
@@ -3907,6 +3914,33 @@ struct FmtArg<std::wstring>
     const std::wstring& a_;
 private:
     FmtArg<std::wstring>& operator=(const FmtArg<std::wstring>&) {return *this;}
+};
+template<>
+struct FmtArg<int>
+{
+    explicit FmtArg(const int& arg) : a_(arg) {}
+    const int& operator()() const { return a_; }
+    const int& a_;
+private:
+    FmtArg<int>& operator=(const FmtArg<int>&) {return *this;}
+};
+template<>
+struct FmtArg<float>
+{
+    explicit FmtArg(const float& arg) : a_(arg) {}
+    const float& operator()() const { return a_; }
+    const float& a_;
+private:
+    FmtArg<float>& operator=(const FmtArg<float>&) {return *this;}
+};
+template<>
+struct FmtArg<double>
+{
+    explicit FmtArg(const double& arg) : a_(arg) {}
+    const double& operator()() const { return a_; }
+    const double& a_;
+private:
+    FmtArg<double>& operator=(const FmtArg<double>&) {return *this;}
 };
 #endif // #ifdef SS_SAFEFORMAT
 

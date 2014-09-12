@@ -11,7 +11,7 @@
 #include "Hyperlink.h"
 #include "SmartTag.h"
 #include "../Math/oMathPara.h"
-#include "../Math/oMath.h"
+#include "../Math/OMath.h"
 
 namespace OOX
 {
@@ -120,7 +120,13 @@ namespace OOX
 		{
 				CString sResult = _T("<w:dir");
 				if(m_oVal.IsInit())
-					sResult.AppendFormat(_T(" val=\"%s\""), m_oVal->ToString());
+                {
+#ifdef _WIN32
+                    sResult.AppendFormat(_T(" val=\"%s\""), m_oVal->ToString());
+#else
+                    sResult.AppendFormat(_T(" val=\"%s\""), m_oVal->ToString().c_str());
+#endif
+                }
 				sResult += _T(">");
 				
 				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )

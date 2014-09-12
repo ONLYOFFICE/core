@@ -12,7 +12,7 @@
 #include "SmartTag.h"
 #include "Dir.h"
 #include "Bdo.h"
-#include "../Math/OMathPara.h"
+#include "../Math/oMathPara.h"
 
 namespace OOX
 {

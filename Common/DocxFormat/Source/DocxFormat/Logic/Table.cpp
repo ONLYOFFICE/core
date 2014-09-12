@@ -3,7 +3,7 @@
 #include "Annotations.h"
 #include "Sdt.h"
 #include "../Math/oMathPara.h"
-#include "../Math/oMath.h"
+#include "../Math/OMath.h"
 
 namespace OOX
 {

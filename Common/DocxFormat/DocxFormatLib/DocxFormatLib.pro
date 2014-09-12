@@ -11,7 +11,7 @@ TEMPLATE = lib
 CONFIG += staticlib
 QMAKE_CXXFLAGS += -std=c++11
 
-DEFINES += UNICODE _UNICODE _USE_LIBXML2_READER_ _LINUX_QT
+DEFINES += UNICODE _UNICODE _USE_LIBXML2_READER_ _LINUX_QT _USE_XMLLITE_READER_
 
 LIBS += -lxml2
 
@@ -27,6 +27,7 @@ SOURCES += docxformatlib.cpp \
     ../Source/Common/Utils.cpp \
     ../Source/Common/Wrap.cpp \
     ../Source/Common/ZIndex.cpp \
+    ../Source/Common/SimpleTypes_Word.cpp \
     ../Source/DocxFormat/Drawing/DrawingCoreInfo.cpp \
     ../Source/DocxFormat/Drawing/DrawingEffects.cpp \
     ../Source/DocxFormat/Logic/AlternateContent.cpp \

@@ -106,9 +106,9 @@ namespace NSCommon
 	#ifdef _USE_XMLLITE_READER_
 		nullable<Type>& operator=(XmlUtils::CXmlLiteReader& oReader)
 		{
-			RELEASEOBJECT(m_pPointer);
+            RELEASEOBJECT(this->m_pPointer);
 			if (oReader.IsValid())
-				m_pPointer = new Type(oReader);
+                this->m_pPointer = new Type(oReader);
 			return *this;
 		}
 	#endif

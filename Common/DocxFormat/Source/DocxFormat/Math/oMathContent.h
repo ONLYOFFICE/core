@@ -3,7 +3,7 @@
 #include "../../Common/ComplexTypes.h"
 
 #include "oMathBottomNodes.h"
-#include "oMath.h"
+#include "OMath.h"
 
 #include "../Logic/RunContent.h"
 #include "../Logic/FldChar.h"

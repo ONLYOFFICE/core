@@ -25,16 +25,16 @@ namespace SimpleTypes
 
 		virtual EBreakBin FromString(CString &sValue)
 		{
-			if       ( _T("after")  == sValue ) m_eValue = breakBinAfter;
-			else if  ( _T("before") == sValue ) m_eValue = breakBinBefore;
-			else								m_eValue = breakBinRepeat;
+            if       ( _T("after")  == sValue ) this->m_eValue = breakBinAfter;
+            else if  ( _T("before") == sValue ) this->m_eValue = breakBinBefore;
+            else								this->m_eValue = breakBinRepeat;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString() const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case breakBinAfter   : return _T("after");
 			case breakBinBefore  : return _T("before");
@@ -67,16 +67,16 @@ namespace SimpleTypes
 
 		virtual EBreakBinSub FromString(CString &sValue)
 		{
-			if       ( _T("+-")  == sValue )	m_eValue = breakBinPlusMinus;
-			else if  ( _T("-+")  == sValue )	m_eValue = breakBinMinusPlus;
-			else								m_eValue = breakBinMinusMinus;
+            if       ( _T("+-")  == sValue )	this->m_eValue = breakBinPlusMinus;
+            else if  ( _T("-+")  == sValue )	this->m_eValue = breakBinMinusPlus;
+            else								this->m_eValue = breakBinMinusMinus;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString() const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case breakBinPlusMinus  : return _T("+-");
 			case breakBinMinusPlus  : return _T("-+");
@@ -150,17 +150,17 @@ namespace SimpleTypes
 
 		virtual EFType FromString(CString &sValue)
 		{
-			if       ( _T("bar")	== sValue )	m_eValue = fTypeBar;
-			else if  ( _T("lin")	== sValue )	m_eValue = fTypeLin;
-			else if  ( _T("noBar")  == sValue )	m_eValue = fTypeNoBar;
-			else								m_eValue = fTypeSkw;
+            if       ( _T("bar")	== sValue )	this->m_eValue = fTypeBar;
+            else if  ( _T("lin")	== sValue )	this->m_eValue = fTypeLin;
+            else if  ( _T("noBar")  == sValue )	this->m_eValue = fTypeNoBar;
+            else								this->m_eValue = fTypeSkw;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString() const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case fTypeBar	: return _T("bar");
 			case fTypeLin	: return _T("lin");
@@ -186,20 +186,20 @@ namespace SimpleTypes
 
 		virtual int FromString(CString &sValue)
 		{
-			m_eValue = _wtoi( sValue );
+            this->m_eValue = _wtoi( sValue );
 
-			if (m_eValue < -2)
-                m_eValue = -2;
-            if (m_eValue > 2)
-                m_eValue = 2;
+            if (this->m_eValue < -2)
+                this->m_eValue = -2;
+            if (this->m_eValue > 2)
+                this->m_eValue = 2;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString  () const 
 		{
 			CString sResult;
-			sResult.Format( _T("%d"), m_eValue);
+            sResult.Format( _T("%d"), this->m_eValue);
 
 			return sResult;
 		}
@@ -221,20 +221,20 @@ namespace SimpleTypes
 
 		virtual int FromString(CString &sValue)
 		{
-			m_eValue = _wtoi( sValue );
+            this->m_eValue = _wtoi( sValue );
 
-			if (m_eValue < 1)
-                m_eValue = 1;
-            if (m_eValue > 255)
-                m_eValue = 255;
+            if (this->m_eValue < 1)
+                this->m_eValue = 1;
+            if (this->m_eValue > 255)
+                this->m_eValue = 255;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString  () const 
 		{
 			CString sResult;
-			sResult.Format( _T("%d"), m_eValue);
+            sResult.Format( _T("%d"), this->m_eValue);
 
 			return sResult;
 		}
@@ -265,17 +265,17 @@ namespace SimpleTypes
 
 		virtual EMJc FromString(CString &sValue)
 		{
-			if       ( _T("center")		 == sValue ) m_eValue = mjcCenter;
-			else if  ( _T("centerGroup") == sValue ) m_eValue = mjcCenterGroup;
-			else if  ( _T("left")		 == sValue ) m_eValue = mjcLeft;
-			else									 m_eValue = mjcRight;
+            if       ( _T("center")		 == sValue ) this->m_eValue = mjcCenter;
+            else if  ( _T("centerGroup") == sValue ) this->m_eValue = mjcCenterGroup;
+            else if  ( _T("left")		 == sValue ) this->m_eValue = mjcLeft;
+            else									 this->m_eValue = mjcRight;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString() const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case mjcCenter		: return _T("center");
 			case mjcCenterGroup : return _T("centerGroup");
@@ -308,15 +308,15 @@ namespace SimpleTypes
 
 		virtual ELimLoc FromString(CString &sValue)
 		{
-			if       ( _T("subSup")		 == sValue ) m_eValue = limLocSubSup;
-			else									 m_eValue = limLocUndOvr;
+            if       ( _T("subSup")		 == sValue ) this->m_eValue = limLocSubSup;
+            else									 this->m_eValue = limLocUndOvr;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString() const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case limLocSubSup		: return _T("subSup");
 			case limLocUndOvr		: return _T("undOvr");
@@ -351,19 +351,19 @@ namespace SimpleTypes
 
 		virtual EScript FromString(CString &sValue)
 		{
-			if       ( _T("double-struck")		== sValue ) m_eValue = scriptDoubleStruck;
-			else if  ( _T("fraktur")			== sValue ) m_eValue = scriptFraktur;
-			else if  ( _T("monospace")			== sValue ) m_eValue = scriptMonospace;
-			else if  ( _T("roman")				== sValue ) m_eValue = scriptRoman;
-			else if  ( _T("sans-serif")			== sValue ) m_eValue = scriptSansSerif;
-			else											m_eValue = scriptScript;
+            if       ( _T("double-struck")		== sValue ) this->m_eValue = scriptDoubleStruck;
+            else if  ( _T("fraktur")			== sValue ) this->m_eValue = scriptFraktur;
+            else if  ( _T("monospace")			== sValue ) this->m_eValue = scriptMonospace;
+            else if  ( _T("roman")				== sValue ) this->m_eValue = scriptRoman;
+            else if  ( _T("sans-serif")			== sValue ) this->m_eValue = scriptSansSerif;
+            else											this->m_eValue = scriptScript;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString() const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case scriptDoubleStruck	: return _T("double-struck");
 			case scriptFraktur		: return _T("fraktur");
@@ -398,15 +398,15 @@ namespace SimpleTypes
 
 		virtual EShp FromString(CString &sValue)
 		{
-			if       ( _T("centered")	== sValue )	 m_eValue = shpCentered;
-			else									 m_eValue = shpMatch;
+            if       ( _T("centered")	== sValue )	 this->m_eValue = shpCentered;
+            else									 this->m_eValue = shpMatch;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString() const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case shpCentered		: return _T("centered");
 			case shpMatch			: return _T("match");
@@ -430,20 +430,20 @@ namespace SimpleTypes
 
 		virtual int FromString(CString &sValue)
 		{
-			m_eValue = _wtoi( sValue );
+            this->m_eValue = _wtoi( sValue );
 
-			if (m_eValue < 0)
-                m_eValue = 0;
-            if (m_eValue > 4)
-                m_eValue = 4;
+            if (this->m_eValue < 0)
+                this->m_eValue = 0;
+            if (this->m_eValue > 4)
+                this->m_eValue = 4;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString  () const 
 		{
 			CString sResult;
-			sResult.Format( _T("%d"), m_eValue);
+            sResult.Format( _T("%d"), this->m_eValue);
 
 			return sResult;
 		}
@@ -473,17 +473,17 @@ namespace SimpleTypes
 
 		virtual EStyle FromString(CString &sValue)
 		{
-			if       ( _T("b")			== sValue ) m_eValue = styleBold;
-			else if  ( _T("bi")			== sValue ) m_eValue = styleBoldItalic;
-			else if  ( _T("i")			== sValue ) m_eValue = styleItalic;
-			else									m_eValue = stylePlain;
+            if       ( _T("b")			== sValue ) this->m_eValue = styleBold;
+            else if  ( _T("bi")			== sValue ) this->m_eValue = styleBoldItalic;
+            else if  ( _T("i")			== sValue ) this->m_eValue = styleItalic;
+            else									this->m_eValue = stylePlain;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString() const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case styleBold			: return _T("b");
 			case styleBoldItalic	: return _T("bi");
@@ -516,15 +516,15 @@ namespace SimpleTypes
 
 		virtual ETopBot FromString(CString &sValue)
 		{
-			if       ( _T("bot")	== sValue )	m_eValue = tbBot;
-			else								m_eValue = tbTop;
+            if       ( _T("bot")	== sValue )	this->m_eValue = tbBot;
+            else								this->m_eValue = tbTop;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString ToString() const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case tbBot		: return _T("bot");
 			case tbTop		: return _T("top");
@@ -548,15 +548,15 @@ namespace SimpleTypes
 
 		virtual unsigned int FromString(CString &sValue)
 		{
-			m_eValue = _wtoi( sValue );
+            this->m_eValue = _wtoi( sValue );
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString      ToString  () const 
 		{
 			CString sResult;
-			sResult.Format( _T("%d"), m_eValue);
+            sResult.Format( _T("%d"), this->m_eValue);
 
 			return sResult;
 		}

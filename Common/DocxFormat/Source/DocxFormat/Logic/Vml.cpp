@@ -10,7 +10,7 @@
 #include "Hyperlink.h"
 #include "Table.h"
 #include "../Math/oMathPara.h"
-#include "../Math/oMath.h"
+#include "../Math/OMath.h"
 
 namespace OOX
 {

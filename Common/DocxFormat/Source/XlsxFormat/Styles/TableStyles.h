@@ -95,7 +95,7 @@ namespace OOX
 						sName.Format(_T(" name=\"%s\""), XmlUtils::EncodeXmlString(m_oName.get2()));
 						writer.WriteString(sName);
 					}
-					if(m_oPivot.IsInit() && true == m_oPivot->ToBool())
+					if((m_oPivot.IsInit() && true == m_oPivot->ToBool()) || (m_oTable.IsInit() && false == m_oTable->ToBool()))
 						writer.WriteString(_T(" table=\"0\""));
 					else
 						writer.WriteString(_T(" pivot=\"0\""));

@@ -136,10 +136,10 @@ namespace OOX
 					m_oDiagonal->toXML2(writer, _T("diagonal"));
 				else
 					writer.WriteString(_T("<diagonal/>"));
-				if(m_oHorizontal.IsInit() && false == m_oHorizontal->IsEmpty())
-					m_oHorizontal->toXML2(writer, _T("horizontal"));
 				if(m_oVertical.IsInit() && false == m_oVertical->IsEmpty())
 					m_oVertical->toXML2(writer, _T("vertical"));
+				if(m_oHorizontal.IsInit() && false == m_oHorizontal->IsEmpty())
+					m_oHorizontal->toXML2(writer, _T("horizontal"));
 				writer.WriteString(_T("</border>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)

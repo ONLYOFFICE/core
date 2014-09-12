@@ -1,5 +1,5 @@
-#ifndef BIN_READER_WRITER_DEFINES
-#define BIN_READER_WRITER_DEFINES
+#ifndef DOCX_BIN_READER_WRITER_DEFINES
+#define DOCX_BIN_READER_WRITER_DEFINES
 
 namespace BinDocxRW
 {
@@ -804,4 +804,4 @@ extern int g_nCurFormatVersion;
 	};}
 }
 
-#endif	// #ifndef BIN_READER_WRITER_DEFINES
+#endif	// #ifndef DOCX_BIN_READER_WRITER_DEFINES

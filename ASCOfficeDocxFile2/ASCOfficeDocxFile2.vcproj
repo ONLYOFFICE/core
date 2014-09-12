@@ -549,6 +549,14 @@
 		<Filter
 			Name="XLSX"
 			>
+			<File
+				RelativePath=".\DocWrapper\XlsxSerializer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DocWrapper\XlsxSerializer.h"
+				>
+			</File>
 			<Filter
 				Name="Common"
 				>
@@ -574,6 +582,10 @@
 				</File>
 				<File
 					RelativePath="..\XlsxSerializerCom\Writer\BinaryReader.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsxSerializerCom\Reader\CSVReader.cpp"
 					>
 				</File>
 				<File
@@ -606,6 +618,10 @@
 				</File>
 				<File
 					RelativePath="..\XlsxSerializerCom\Reader\CommonWriter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsxSerializerCom\Writer\CSVWriter.cpp"
 					>
 				</File>
 				<File
@@ -720,6 +736,10 @@
 		</File>
 		<File
 			RelativePath=".\stdafx.h"
+			>
+		</File>
+		<File
+			RelativePath=".\XlsxFile2.h"
 			>
 		</File>
 	</Files>

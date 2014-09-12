@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SERIALIZER_COMMON
+#define SERIALIZER_COMMON
 
 #ifdef _WIN32
 #include <atlbase.h>
@@ -9,6 +10,8 @@
 
 #include <string>
 #include <vector>
+
+#define BUFFER_GROW_SIZE 1 * 1024 * 1024 //1mb
 
 namespace SerializeCommon
 {
@@ -46,3 +49,5 @@ namespace SerializeCommon
 	};
 	void ReadFileType(CString& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter);
 }
+
+#endif //SERIALIZER_COMMON

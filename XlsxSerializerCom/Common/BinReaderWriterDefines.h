@@ -1,4 +1,5 @@
-#pragma once
+#ifndef XLSX_BIN_READER_WRITER_DEFINES
+#define XLSX_BIN_READER_WRITER_DEFINES
 
 namespace BinXlsxRW
 {
@@ -716,3 +717,5 @@ namespace BinXlsxRW
 		TabColor = 9
 	};}
 }
+
+#endif //

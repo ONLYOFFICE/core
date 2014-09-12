@@ -142,6 +142,7 @@ IDB_DEFAULT_DOC_APP					DOCXWR			"Resources\\app.xml"
 IDB_DEFAULT_DOC_CORE				DOCXWR			"Resources\\core.xml"
 IDB_DEFAULT_DOC_THEME				DOCXWR			"Resources\\theme.xml"
 IDB_DEFAULT_DOC_WEBSETTINGS			DOCXWR			"Resources\\webSettings.xml"
+IDB_DEFAULT_XLSX_THEME				XLSXSER			"..\\XlsxSerializerCom\\Resource\\theme1.xml"
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

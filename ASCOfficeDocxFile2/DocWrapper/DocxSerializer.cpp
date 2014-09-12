@@ -18,8 +18,6 @@
 
 int BinDocxRW::g_nCurFormatVersion = 0;
 
-#define BUFFER_GROW_SIZE 1 * 1024 * 1024 //1mb
-
 BinDocxRW::CDocxSerializer::CDocxSerializer()
 {
 	m_oBinaryFileWriter = NULL;
@@ -253,7 +251,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(std::wstring& sSrcFileName, std::w
 	}
 	return bResultOk;
 }
-bool BinDocxRW::CDocxSerializer::GetXmlContent(unsigned char* pBinaryObj, long lSize, long lStart, long lLength, std::wstring& sOutputXml)
+bool BinDocxRW::CDocxSerializer::getXmlContent(unsigned char* pBinaryObj, long lSize, long lStart, long lLength, std::wstring& sOutputXml)
 {
 	Streams::CBuffer oBuffer;
 	Streams::CBufferedStream oBufferedStream;
@@ -270,7 +268,7 @@ bool BinDocxRW::CDocxSerializer::GetXmlContent(unsigned char* pBinaryObj, long l
 	sOutputXml = oTempContentWriter.m_oContent.GetData().GetString();
 	return true;
 }
-bool BinDocxRW::CDocxSerializer::GetBinaryContent(std::wstring& bsTxContent, unsigned char** ppBinary, long &lDataSize)
+bool BinDocxRW::CDocxSerializer::getBinaryContent(std::wstring& bsTxContent, unsigned char** ppBinary, long &lDataSize)
 {
 	if(NULL == m_oBinaryFileWriter)
 		return false;

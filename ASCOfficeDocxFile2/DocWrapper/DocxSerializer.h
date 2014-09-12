@@ -28,8 +28,8 @@ namespace BinDocxRW {
 		CDocxSerializer();
 		bool loadFromFile(std::wstring& sSrcFileName, std::wstring& sDstPath, std::wstring& sXMLOptions, std::wstring& sThemePath, std::wstring& sMediaPath);
 		bool saveToFile(std::wstring& sSrcFileName, std::wstring& sDstPath, std::wstring& sXMLOptions);
-		bool GetXmlContent(unsigned char* pBinaryObj, long lSize, long lStart, long lLength, std::wstring& sOutputXml);
-		bool GetBinaryContent(std::wstring& bsTxContent, unsigned char** ppBinary, long& lDataSize);
+		bool getXmlContent(unsigned char* pBinaryObj, long lSize, long lStart, long lLength, std::wstring& sOutputXml);
+		bool getBinaryContent(std::wstring& bsTxContent, unsigned char** ppBinary, long& lDataSize);
 		void setFontDir(std::wstring& sFontDir);
 		void setEmbeddedFontsDir(std::wstring& sEmbeddedFontsDir);
 		void setIsNoBase64Save(bool bIsNoBase64Save);

@@ -10,6 +10,7 @@
 #define IDB_DEFAULT_DOC_CORE			203
 #define IDB_DEFAULT_DOC_THEME			204
 #define IDB_DEFAULT_DOC_WEBSETTINGS		205
+#define IDB_DEFAULT_XLSX_THEME			206
 
 // Next default values for new objects
 // 

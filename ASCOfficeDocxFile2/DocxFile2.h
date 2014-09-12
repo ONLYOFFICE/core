@@ -121,7 +121,7 @@ public:
 		}
 		unsigned char* pData = NULL;
 		long lDataSize = 0;
-		bool bRes = m_oCDocxSerializer.GetBinaryContent(BstrToStdString(bsTxContent), &pData, lDataSize);
+		bool bRes = m_oCDocxSerializer.getBinaryContent(BstrToStdString(bsTxContent), &pData, lDataSize);
 		if(NULL != pData && lDataSize > 0)
 		{
 			SAFEARRAYBOUND	rgsabound[1];
@@ -160,7 +160,7 @@ public:
 			m_oCDocxSerializer.setComInterface(m_pThis);
 		}
 		std::wstring sRes;
-		bool bRes = m_oCDocxSerializer.GetXmlContent((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements, lStart, lLength, sRes);
+		bool bRes = m_oCDocxSerializer.getXmlContent((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements, lStart, lLength, sRes);
 		(*bsXml) = CString(sRes.c_str()).AllocSysString();
 		return bRes ? S_OK : S_FALSE;
 	}

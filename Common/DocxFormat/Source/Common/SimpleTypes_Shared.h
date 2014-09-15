@@ -715,7 +715,11 @@ namespace SimpleTypes
 
 		virtual unsigned int FromString(CString &sValue)
 		{
+#ifndef _WIN32
             this->m_eValue = _wtoi( sValue.c_str() );
+#else
+			this->m_eValue = _wtoi( sValue );
+#endif
 
             return this->m_eValue;
 		}

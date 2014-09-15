@@ -12,7 +12,7 @@
 #include "Logic/Sdt.h"
 #include "Logic/Table.h"
 #include "Math/oMathPara.h"
-#include "Math/oMath.h"
+#include "Math/OMath.h"
 
 // TO DO: Нехватающие классы:
 //        <w:altChunk>

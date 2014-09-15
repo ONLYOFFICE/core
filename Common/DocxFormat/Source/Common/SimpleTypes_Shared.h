@@ -707,9 +707,15 @@ namespace SimpleTypes
 	public:
 		CUnsignedDecimalNumber() {}
 
+        CUnsignedDecimalNumber(const CUnsignedDecimalNumber& obj)
+        {
+            this->m_eValue = obj.m_eValue;
+
+        }
+
 		virtual unsigned int FromString(CString &sValue)
 		{
-            this->m_eValue = _wtoi( sValue );
+            this->m_eValue = _wtoi( sValue.c_str() );
 
             return this->m_eValue;
 		}
@@ -723,7 +729,7 @@ namespace SimpleTypes
 		}
 
 
-		SimpleType_FromString     (unsigned int)
+        SimpleType_FromString     (unsigned int)
 		SimpleType_Operator_Equal (CUnsignedDecimalNumber)
 	};
 

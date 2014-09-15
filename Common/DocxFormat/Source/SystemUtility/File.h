@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../XML/XmlUtils.h"
+#include "../XML/xmlutils.h"
 
 class CFile 
 {

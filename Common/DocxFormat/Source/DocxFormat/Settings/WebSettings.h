@@ -2,8 +2,8 @@
 #ifndef OOX_WEBSETTINGS_INCLUDE_H_
 #define OOX_WEBSETTINGS_INCLUDE_H_
 
-#include "File.h"
-#include "../Common/ComplexTypes.h"
+#include "../File.h"
+#include "../../Common/ComplexTypes.h"
 
 namespace SimpleTypes
 {	

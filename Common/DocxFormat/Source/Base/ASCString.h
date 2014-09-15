@@ -3915,6 +3915,8 @@ struct FmtArg<std::wstring>
 private:
     FmtArg<std::wstring>& operator=(const FmtArg<std::wstring>&) {return *this;}
 };
+
+/*
 template<>
 struct FmtArg<int>
 {
@@ -3942,6 +3944,7 @@ struct FmtArg<float>
 private:
     FmtArg<float>& operator=(const FmtArg<float>&) {return *this;}
 };
+
 template<>
 struct FmtArg<double>
 {
@@ -3951,6 +3954,17 @@ struct FmtArg<double>
 private:
     FmtArg<double>& operator=(const FmtArg<double>&) {return *this;}
 };
+*/
+/*
+template<>
+struct FmtArg<CUnsignedDecimalNumber>
+{
+    explicit FmtArg(const CUnsignedDecimalNumber& arg) : a_(arg) {}
+    const CUnsignedDecimalNumber& operator()() const { return a_; }
+    const CUnsignedDecimalNumber& a_;
+private:
+    FmtArg<CUnsignedDecimalNumber>& operator=(const FmtArg<CUnsignedDecimalNumber>&) {return *this;}
+};*/
 #endif // #ifdef SS_SAFEFORMAT
 
 #ifndef SS_ANSI

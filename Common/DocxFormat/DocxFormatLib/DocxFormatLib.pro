@@ -9,7 +9,7 @@ QT       -= core gui
 TARGET = DocxFormatLib
 TEMPLATE = lib
 CONFIG += staticlib
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++11 -Wall
 
 DEFINES += UNICODE _UNICODE _USE_LIBXML2_READER_ _LINUX_QT _USE_XMLLITE_READER_
 

@@ -3,7 +3,7 @@
 #ifndef OOX_FONT_INCLUDE_H_
 #define OOX_FONT_INCLUDE_H_
 
-#include "../Base/nullable.h"
+#include "../Base/Nullable.h"
 #include "WritingElement.h"
 
 #include "../Common/SimpleTypes_Word.h"

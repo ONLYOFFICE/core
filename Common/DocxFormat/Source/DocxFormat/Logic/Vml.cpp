@@ -992,12 +992,12 @@ namespace OOX
 			}
 			if(m_oRow.IsInit())
 			{
-				CString sRow;sRow.Format(_T("<x:Row>%d</x:Row>"), m_oRow.get());
+                CString sRow;sRow.Format(_T("<x:Row>%d</x:Row>"), m_oRow.get().GetValue());
 				sResult += sRow;
 			}
 			if(m_oColumn.IsInit())
 			{
-				CString sColumn;sColumn.Format(_T("<x:Column>%d</x:Column>"), m_oColumn.get());
+                CString sColumn;sColumn.Format(_T("<x:Column>%d</x:Column>"), m_oColumn.get().GetValue());
 				sResult += sColumn;
 			}
 			sResult = _T("</x:ClientData>");

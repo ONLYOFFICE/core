@@ -16,13 +16,13 @@
 #include "Styles.h"
 #include "Footnote.h"
 #include "Endnote.h"
-#include "Settings\WebSettings.h"
-#include "Settings\Settings.h"
-#include "External\HyperLink.h"
-#include "Media\Image.h"
-#include "Media\OleObject.h"
+#include "Settings/WebSettings.h"
+#include "Settings/Settings.h"
+#include "External/HyperLink.h"
+#include "Media/Image.h"
+#include "Media/OleObject.h"
 #include "HeaderFooter.h"
-#include "Theme\Theme.h"
+#include "Theme/Theme.h"
 
 namespace OOX
 {

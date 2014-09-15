@@ -4,10 +4,10 @@
 #include "ContentTypes.h"
 
 #include "FileType.h"
-#include "External\External.h"
-#include "External\HyperLink.h"
-#include "Media\Image.h"
-#include "Media\OleObject.h"
+#include "External/External.h"
+#include "External/HyperLink.h"
+#include "Media/Image.h"
+#include "Media/OleObject.h"
 #include "FileTypes.h"
 
 #include "../XlsxFormat/FileFactory_Spreadsheet.h"

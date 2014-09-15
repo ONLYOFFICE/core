@@ -51,7 +51,7 @@ SOURCES += docxformatlib.cpp \
     ../Source/DocxFormat/Docx.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
     ../Source/DocxFormat/IFileContainer.cpp \
-    ../Source/SystemUtility/FileSystem/Directory.cpp \
+    ../Source/SystemUtility/FileSystem/DirectoryPosix.cpp \
     ../Source/SystemUtility/FileSystem/File.cpp \
     ../Source/SystemUtility/Solution/FileSystemTest/AssemblyInfo.cpp \
     ../Source/SystemUtility/Solution/FileSystemTest/DirectoryTest.cpp \

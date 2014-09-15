@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Settings.h"
+
+#ifdef _WIN32
 #include <windows.h>
 
 #include <tchar.h>
@@ -10,6 +12,10 @@
 
 #include <tchar.h>
 #include <strsafe.h>
+#else
+#include "../../Base/ASCString.h"
+#endif
+
 
 namespace FileSystem {
 	class Directory {

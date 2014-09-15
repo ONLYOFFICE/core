@@ -8,11 +8,31 @@
 
 #include "unicode_util.h"
 #include <stdlib.h>
-#include <stdint.h>
+
+
 #include <string>
 #include <string.h>
 #include <string>
 #include <vector>
+
+#ifndef _WIN32
+#include <stdint.h>
+#ifndef itoa
+#include <cstdio>
+static void itoa (int value, char *str, int base) {
+    switch (base){
+    case 10:
+        sprintf(str, "%d", value);
+        break;
+    case 16:
+        sprintf(str, "%x", value);
+        break;
+    case 8:
+        sprintf(str, "%o", value);
+        break;
+    }
+}
+#endif
 
 static bool caseInsensitiveStringCompare(const std::wstring& str1, const std::wstring& str2) {
     if (str1.size() != str2.size()) {
@@ -142,7 +162,7 @@ static bool stringWStringToUtf16 (const std::wstring& aSrc, std::vector<UTF16> &
             return true;
 #endif
 }
-
+#endif // _WIN32
 
 // When using VC, turn off browser references
 // Turn off unavoidable compiler warnings
@@ -4250,22 +4270,7 @@ typedef const wchar_t* LPCWSTR;
 #endif // _WIN32
 
 
-#ifndef itoa
-#include <cstdio>
-static void itoa (int value, char *str, int base) {
-    switch (base){
-    case 10:
-        sprintf(str, "%d", value);
-        break;
-    case 16:
-        sprintf(str, "%x", value);
-        break;
-    case 8:
-        sprintf(str, "%o", value);
-        break;
-    }
-}
-#endif
+
 
 
 #endif // ASCSTRING_H

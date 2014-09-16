@@ -17,47 +17,49 @@ namespace OOX
 		public:
 			CExtensionTable()
 			{
-				m_mTable.SetAt( _T("bmp"),  _T("image/bmp"));
-				m_mTable.SetAt( _T("gif"),  _T("image/gif"));
-				m_mTable.SetAt( _T("png"),  _T("image/png"));
-				m_mTable.SetAt( _T("tif"),  _T("image/tiff"));
-				m_mTable.SetAt( _T("tiff"), _T("image/tiff"));
-				m_mTable.SetAt( _T("jpeg"), _T("image/jpeg"));
-				m_mTable.SetAt( _T("jpg"),  _T("image/jpeg"));
-				m_mTable.SetAt( _T("jpe"),  _T("image/jpeg"));
-				m_mTable.SetAt( _T("jfif"), _T("image/jpeg"));
-				m_mTable.SetAt( _T("rels"), _T("application/vnd.openxmlformats-package.relationships+xml"));
-				m_mTable.SetAt( _T("bin"),  _T("application/vnd.openxmlformats-officedocument.oleObject"));
-				m_mTable.SetAt( _T("xml"),  _T("application/xml"));
-				m_mTable.SetAt( _T("emf"),  _T("image/x-emf"));
-				m_mTable.SetAt( _T("emz"),  _T("image/x-emz"));
-				m_mTable.SetAt( _T("wmf"),  _T("image/x-wmf"));
-				m_mTable.SetAt( _T("svm"),  _T("image/svm"));
-				m_mTable.SetAt( _T("wav"),  _T("audio/wav"));
-				m_mTable.SetAt( _T("xls"),  _T("application/vnd.ms-excel"));
-				m_mTable.SetAt( _T("xlsm"), _T("application/vnd.ms-excel.sheet.macroEnabled.12"));
-				m_mTable.SetAt( _T("xlsb"), _T("application/vnd.ms-excel.sheet.binary.macroEnabled.12"));
-				m_mTable.SetAt( _T("xlsx"), _T("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-				m_mTable.SetAt( _T("ppt"),  _T("application/vnd.ms-powerpoint"));
-				m_mTable.SetAt( _T("pptm"), _T("application/vnd.ms-powerpoint.presentation.macroEnabled.12"));			
-				m_mTable.SetAt( _T("pptx"), _T("application/vnd.openxmlformats-officedocument.presentationml.presentation"));
-				m_mTable.SetAt( _T("sldm"), _T("application/vnd.ms-powerpoint.slide.macroEnabled.12"));			
-				m_mTable.SetAt( _T("sldx"), _T("application/vnd.openxmlformats-officedocument.presentationml.slide"));
-				m_mTable.SetAt( _T("doc"),  _T("application/msword"));
-				m_mTable.SetAt( _T("docm"), _T("aapplication/vnd.ms-word.document.macroEnabled.12"));
-				m_mTable.SetAt( _T("docx"), _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
-				m_mTable.SetAt( _T("vml"),  _T("application/vnd.openxmlformats-officedocument.vmlDrawing"));
+                m_mTable.insert( _T("bmp"),  _T("image/bmp"));
+                m_mTable.insert( _T("gif"),  _T("image/gif"));
+                m_mTable.insert( _T("png"),  _T("image/png"));
+                m_mTable.insert( _T("tif"),  _T("image/tiff"));
+                m_mTable.insert( _T("tiff"), _T("image/tiff"));
+                m_mTable.insert( _T("jpeg"), _T("image/jpeg"));
+                m_mTable.insert( _T("jpg"),  _T("image/jpeg"));
+                m_mTable.insert( _T("jpe"),  _T("image/jpeg"));
+                m_mTable.insert( _T("jfif"), _T("image/jpeg"));
+                m_mTable.insert( _T("rels"), _T("application/vnd.openxmlformats-package.relationships+xml"));
+                m_mTable.insert( _T("bin"),  _T("application/vnd.openxmlformats-officedocument.oleObject"));
+                m_mTable.insert( _T("xml"),  _T("application/xml"));
+                m_mTable.insert( _T("emf"),  _T("image/x-emf"));
+                m_mTable.insert( _T("emz"),  _T("image/x-emz"));
+                m_mTable.insert( _T("wmf"),  _T("image/x-wmf"));
+                m_mTable.insert( _T("svm"),  _T("image/svm"));
+                m_mTable.insert( _T("wav"),  _T("audio/wav"));
+                m_mTable.insert( _T("xls"),  _T("application/vnd.ms-excel"));
+                m_mTable.insert( _T("xlsm"), _T("application/vnd.ms-excel.sheet.macroEnabled.12"));
+                m_mTable.insert( _T("xlsb"), _T("application/vnd.ms-excel.sheet.binary.macroEnabled.12"));
+                m_mTable.insert( _T("xlsx"), _T("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+                m_mTable.insert( _T("ppt"),  _T("application/vnd.ms-powerpoint"));
+                m_mTable.insert( _T("pptm"), _T("application/vnd.ms-powerpoint.presentation.macroEnabled.12"));
+                m_mTable.insert( _T("pptx"), _T("application/vnd.openxmlformats-officedocument.presentationml.presentation"));
+                m_mTable.insert( _T("sldm"), _T("application/vnd.ms-powerpoint.slide.macroEnabled.12"));
+                m_mTable.insert( _T("sldx"), _T("application/vnd.openxmlformats-officedocument.presentationml.slide"));
+                m_mTable.insert( _T("doc"),  _T("application/msword"));
+                m_mTable.insert( _T("docm"), _T("aapplication/vnd.ms-word.document.macroEnabled.12"));
+                m_mTable.insert( _T("docx"), _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+                m_mTable.insert( _T("vml"),  _T("application/vnd.openxmlformats-officedocument.vmlDrawing"));
 			}
 			const CString operator[] (const CString& sExtension) const
 			{
-				const CAtlMap<CString, CString>::CPair* pPair = m_mTable.Lookup( sExtension );
-				if ( NULL == pPair )
-					return _T("");
-				return pPair->m_value;
+                std::map<CString, CString>::const_iterator it = m_mTable.find(sExtension);
+                if (it == m_mTable.end())
+                    return _T("");
+
+                return it->second;
 			}
 
 		private:
-			CAtlMap<CString, CString> m_mTable;
+            std::map <CString, CString> m_mTable;
+            //CAtlMap<CString, CString> m_mTable;
 		};
 		class CDefault : public WritingElement
 		{
@@ -252,12 +254,19 @@ namespace OOX
 				}
 			}
 
+
+            for (std::map<CString, ContentTypes::COverride>::const_iterator it = m_arrOverride.begin(); it != m_arrOverride.end(); ++it)
+            {
+                sXml += it->second.toXML();
+            }
+/*
 			POSITION pos = m_arrOverride.GetStartPosition();
 			while ( NULL != pos )
 			{
 				const CAtlMap<CString, ContentTypes::COverride>::CPair* pPair = m_arrOverride.GetNext( pos );
 				sXml += pPair->m_value.toXML();
 			}
+            */
 
 			sXml += _T("</Types>");
 
@@ -315,7 +324,7 @@ namespace OOX
 				else if ( _T("Override") == sName )
 				{
 					ContentTypes::COverride oOverride = oReader;
-					m_arrOverride.SetAt( oOverride.filename().GetPath(), oOverride );
+                    m_arrOverride [oOverride.filename().GetPath()] = oOverride;
 				}
 			}
 
@@ -324,13 +333,14 @@ namespace OOX
 		void AddOverride(const CString& sType, const CString& sPath)
 		{
 			ContentTypes::COverride oOverride( sType, sPath );
-			m_arrOverride.SetAt( oOverride.filename().GetPath(), oOverride );
+            m_arrOverride [oOverride.filename().GetPath()] = oOverride;
 		}
 
 	public:
 
 		std::vector<ContentTypes::CDefault*>		m_arrDefault;
-		CAtlMap<CString, ContentTypes::COverride>	m_arrOverride;
+        //CAtlMap<CString, ContentTypes::COverride>	m_arrOverride;
+        std::map<CString, ContentTypes::COverride>	m_arrOverride;
 	};
 } // namespace OOX
 

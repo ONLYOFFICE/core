@@ -3,7 +3,8 @@
 #include "xmlutils.h"
 #include "../Base/Nullable.h"
 
-#include "../SystemUtility/File.h"
+//#include "../SystemUtility/File.h"
+#include "../../../DesktopEditor/common/File.h"
 #include "../SystemUtility/SystemUtility.h"
 
 namespace XmlUtils
@@ -151,6 +152,7 @@ namespace XmlUtils
 			if (value.IsInit())
 				m_strValue += value->toXML();
 		}
+#ifdef _WIN32
 		template <typename T>
 		AVSINLINE void WriteArray(const CAtlArray<T>& oArray)
 		{
@@ -167,6 +169,24 @@ namespace XmlUtils
 				m_strValue += oArray[i].toXML();
 			m_strValue += (_T("</") + strNodeName + _T(">"));
 		}
+#endif
+
+        template <typename T>
+        AVSINLINE void WriteArray(const std::vector<T>& oArray)
+        {
+            size_t count = oArray.size();
+            for (size_t i = 0; i < count; ++i)
+                m_strValue += oArray[i].toXML();
+        }
+        template <typename T>
+        AVSINLINE void WriteArray(const CString& strNodeName, const std::vector<T>& oArray)
+        {
+            m_strValue += (_T("<") + strNodeName + _T(">"));
+            size_t count = oArray.size();
+            for (size_t i = 0; i < count; ++i)
+                m_strValue += oArray[i].toXML();
+            m_strValue += (_T("</") + strNodeName + _T(">"));
+        }
 
 		// --------------------------------------------------------------- //
 		AVSINLINE void Write2(const CString& strName, const int& value)

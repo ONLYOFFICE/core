@@ -113,7 +113,7 @@ namespace OOX
 			{
 				if ( !m_sMode.IsInit() )
 					return false;
-				return ( *m_sMode == "External" );
+                return ( *m_sMode == _T("External" ));
 			}
 			const RId     rId() const
 			{

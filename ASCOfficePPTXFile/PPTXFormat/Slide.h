@@ -97,12 +97,12 @@ namespace PPTX
 			if (timing.IsInit())
 				timing->SetParentFilePointer(this);
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("xmlns:a"), OOX::g_Namespaces.a.m_strLink);
-			oAttr.Write(_T("xmlns:r"), OOX::g_Namespaces.r.m_strLink);
-			oAttr.Write(_T("xmlns:p"), OOX::g_Namespaces.p.m_strLink);
+			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
+			oAttr.Write(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
+			oAttr.Write(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
 			oAttr.Write(_T("show"), show);
 			oAttr.Write(_T("showMasterPhAnim"), showMasterPhAnim);
 			oAttr.Write(_T("showMasterSp"), showMasterSp);
@@ -122,9 +122,9 @@ namespace PPTX
 		}
 		
 	public:
-		virtual const OOX::FileType type() const
+		virtual const PPTX::FileType type() const
 		{
-			return OOX::FileTypes::Slide;
+			return PPTX::FileTypes::Slide;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -167,28 +167,28 @@ namespace PPTX
 			}
 			return false;
 		}
-		virtual CString GetMediaFullPathNameFromRId(const OOX::RId& rid)const
+		virtual CString GetMediaFullPathNameFromRId(const PPTX::RId& rid)const
 		{
-			smart_ptr<OOX::Image> p = image(rid);
+			smart_ptr<PPTX::Image> p = image(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->filename().m_strFilename;
 		}
-		virtual CString GetFullHyperlinkNameFromRId(const OOX::RId& rid)const
+		virtual CString GetFullHyperlinkNameFromRId(const PPTX::RId& rid)const
 		{
-			smart_ptr<OOX::HyperLink> p = hyperlink(rid);
+			smart_ptr<PPTX::HyperLink> p = hyperlink(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->Uri().m_strFilename;
 		}
-		virtual CString GetLinkFromRId(const OOX::RId& rid)const
+		virtual CString GetLinkFromRId(const PPTX::RId& rid)const
 		{
 			//return relsTable.Links.GetTargetById(rid);
-			smart_ptr<OOX::External> pExt = find(rid).smart_dynamic_cast<OOX::External>();
+			smart_ptr<PPTX::External> pExt = find(rid).smart_dynamic_cast<PPTX::External>();
 			if (pExt.IsInit())
 				return pExt->Uri().m_strFilename;
 
-			smart_ptr<OOX::Media> pMedia = find(rid).smart_dynamic_cast<OOX::Media>();
+			smart_ptr<PPTX::Media> pMedia = find(rid).smart_dynamic_cast<PPTX::Media>();
 			if (pMedia.IsInit())
 				return pMedia->filename().m_strFilename;
 
@@ -253,9 +253,9 @@ namespace PPTX
 			pWriter->StartNode(_T("p:sld"));
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("xmlns:a"), OOX::g_Namespaces.a.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:r"), OOX::g_Namespaces.r.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:p"), OOX::g_Namespaces.p.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
 
 			pWriter->WriteAttribute(_T("showMasterPhAnim"), showMasterPhAnim);
 			pWriter->WriteAttribute(_T("showMasterSp"), showMasterSp);
@@ -364,17 +364,17 @@ namespace PPTX
 	public:
 		void ApplyRels()
 		{
-			Layout	= FileContainer::get(OOX::FileTypes::SlideLayout).smart_dynamic_cast<PPTX::SlideLayout>();//boost::shared_dynamic_cast<PPTX::SlideLayout, OOX::File>(FileContainer::get(OOX::FileTypes::SlideLayout));
-			Note	= FileContainer::get(OOX::FileTypes::NotesSlide).smart_dynamic_cast<PPTX::NotesSlide>();
-			comments = FileContainer::get(OOX::FileTypes::SlideComments).smart_dynamic_cast<PPTX::Comments>();
+			Layout	= FileContainer::get(PPTX::FileTypes::SlideLayout).smart_dynamic_cast<PPTX::SlideLayout>();//boost::shared_dynamic_cast<PPTX::SlideLayout, PPTX::File>(FileContainer::get(PPTX::FileTypes::SlideLayout));
+			Note	= FileContainer::get(PPTX::FileTypes::NotesSlide).smart_dynamic_cast<PPTX::NotesSlide>();
+			comments = FileContainer::get(PPTX::FileTypes::SlideComments).smart_dynamic_cast<PPTX::Comments>();
 			Master	= Layout->Master;
 			Theme	= Layout->Theme;
 			
-			TableStyles = Theme->Presentation->get(OOX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();//boost::shared_dynamic_cast<PPTX::TableStyles, OOX::File>(Theme->Presentation->get(OOX::FileTypes::TableStyles));
+			TableStyles = Theme->Presentation->get(PPTX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();//boost::shared_dynamic_cast<PPTX::TableStyles, PPTX::File>(Theme->Presentation->get(PPTX::FileTypes::TableStyles));
 
-			if (exist(OOX::FileTypes::VmlDrawing))
+			if (exist(PPTX::FileTypes::VmlDrawing))
 			{
-				Vml = FileContainer::get(OOX::FileTypes::VmlDrawing).smart_dynamic_cast<PPTX::VmlDrawing>();//boost::shared_dynamic_cast<PPTX::VmlDrawing, OOX::File>(FileContainer::get(OOX::FileTypes::VmlDrawing));
+				Vml = FileContainer::get(PPTX::FileTypes::VmlDrawing).smart_dynamic_cast<PPTX::VmlDrawing>();//boost::shared_dynamic_cast<PPTX::VmlDrawing, PPTX::File>(FileContainer::get(PPTX::FileTypes::VmlDrawing));
 				Vml->FillRIds();
 			}
 		}

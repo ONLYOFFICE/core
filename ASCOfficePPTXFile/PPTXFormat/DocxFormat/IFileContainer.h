@@ -6,16 +6,16 @@
 #include "UnknowTypeFile.h"
 #include "IFileBuilder.h"
 
-namespace OOX {class File;}
-namespace OOX {class FileType;}
-namespace OOX {namespace Rels {class File;}}
-namespace OOX {namespace ContentTypes {class File;}}
-namespace OOX {class Image;}
-namespace OOX {class HyperLink;}
-namespace OOX {class OleObject;}
+namespace PPTX {class File;}
+namespace PPTX {class FileType;}
+namespace PPTX {namespace Rels {class File;}}
+namespace PPTX {namespace ContentTypes {class File;}}
+namespace PPTX {class Image;}
+namespace PPTX {class HyperLink;}
+namespace PPTX {class OleObject;}
 
 
-namespace OOX
+namespace PPTX
 {
 	class IFileContainer
 	{
@@ -28,22 +28,22 @@ namespace OOX
 		{
 		}
 	protected:
-		CAtlMap<CString, smart_ptr<OOX::File>>	m_container;
+		CAtlMap<CString, smart_ptr<PPTX::File>>	m_container;
 		size_t m_lMaxRid;
 
 	protected:
 		void read(const OOX::CPath& filename);
-		void read(const Rels::File& rels, const CPath& path);
-		void write(const CPath& filename, const CPath& directory, ContentTypes::File& content) const;
-		void write(Rels::File& rels, const CPath& current, const CPath& directory, ContentTypes::File& content) const;
+		void read(const Rels::File& rels, const OOX::CPath& path);
+		void write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const;
+		void write(Rels::File& rels, const OOX::CPath& current, const OOX::CPath& directory, ContentTypes::File& content) const;
 
 	protected:
-		void Commit(const CPath& path);
-		void Finalize(const CPath& filename, const CPath& directory, ContentTypes::File& content);
-		void Finalize(Rels::File& rels, const CPath& current, const CPath& directory, ContentTypes::File& content);
+		void Commit(const OOX::CPath& path);
+		void Finalize(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content);
+		void Finalize(Rels::File& rels, const OOX::CPath& current, const OOX::CPath& directory, ContentTypes::File& content);
 
 	public:
-		void extractPictures(const CPath& path) const;
+		void extractPictures(const OOX::CPath& path) const;
 
 	public:
 		virtual smart_ptr<Image> image(const RId& rId) const;
@@ -54,20 +54,20 @@ namespace OOX
 	public:
 		template<typename T> const bool exist() const;
 		const bool exist(const FileType& type) const;
-		const bool exist(const OOX::RId& rId) const;
-		const bool isExternal(const OOX::RId& rId) const;
+		const bool exist(const PPTX::RId& rId) const;
+		const bool isExternal(const PPTX::RId& rId) const;
 
-		smart_ptr<OOX::File> get(const FileType& type);
-		const RId add(const smart_ptr<OOX::File>& file);
-		void add(const OOX::RId rId, const smart_ptr<OOX::File>& file);
+		smart_ptr<PPTX::File> get(const FileType& type);
+		const RId add(const smart_ptr<PPTX::File>& file);
+		void add(const PPTX::RId rId, const smart_ptr<PPTX::File>& file);
 
-		smart_ptr<OOX::File> find(const FileType& type) const;
+		smart_ptr<PPTX::File> find(const FileType& type) const;
 
-		smart_ptr<OOX::File> find(const OOX::RId& type) const;
+		smart_ptr<PPTX::File> find(const PPTX::RId& type) const;
 
-		smart_ptr<OOX::File> operator [](const OOX::RId rId);
+		smart_ptr<PPTX::File> operator [](const PPTX::RId rId);
 
-		smart_ptr<OOX::File> operator [](const FileType& type);
+		smart_ptr<PPTX::File> operator [](const FileType& type);
 
 		template<typename T> T& find();
 
@@ -93,6 +93,6 @@ namespace OOX
 		return dynamic_cast<T&>(find(file.type()));
 	}
 
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_IFILE_CONTAINER_INCLUDE_H_

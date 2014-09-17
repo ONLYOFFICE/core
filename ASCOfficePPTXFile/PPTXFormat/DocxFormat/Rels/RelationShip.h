@@ -6,18 +6,18 @@
 #include "./../RId.h"
 #include "./../External/External.h"
 
-namespace OOX
+namespace PPTX
 {
 	namespace Rels
 	{
 		class RelationShip : public WritingElement
 		{
 		public:
-			RelationShip(const OOX::RId& rId, const CString& type, const OOX::CPath& filename) : m_rId(rId), m_target(filename), m_type(type)
+			RelationShip(const PPTX::RId& rId, const CString& type, const OOX::CPath& filename) : m_rId(rId), m_target(filename), m_type(type)
 			{
 				m_target.m_strFilename.Replace(_T(" "), _T("_"));
 			}
-			RelationShip(const OOX::RId& rId, const smart_ptr<External> external): m_rId(rId), m_target(external->Uri()), 
+			RelationShip(const PPTX::RId& rId, const smart_ptr<External> external): m_rId(rId), m_target(external->Uri()), 
 				m_type(external->type().RelationType())
 			{
 				m_mode = new CString(_T("External"));
@@ -65,11 +65,11 @@ namespace OOX
 			{
 				return m_type;
 			}
-			const CPath filename() const
+			const OOX::CPath filename() const
 			{
 				return m_target;
 			}
-			const CPath target() const
+			const OOX::CPath target() const
 			{
 				return m_target;
 			}
@@ -86,11 +86,11 @@ namespace OOX
 
 		private:
 			RId						m_rId;
-			CPath					m_target;
+			OOX::CPath					m_target;
 			CString					m_type;
 			nullable_string			m_mode;
 		};
 	} // namespace Rels
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_RELS_RELATION_SHIP_INCLUDE_H_

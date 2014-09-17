@@ -6,7 +6,7 @@
 #include "FileTypes.h"
 
 
-namespace OOX
+namespace PPTX
 {
 	class UnknowTypeFile : public File
 	{
@@ -19,10 +19,10 @@ namespace OOX
 		}
 
 	public:
-		virtual void read(const CPath& filename)
+		virtual void read(const OOX::CPath& filename)
 		{
 		}
-		virtual void write(const CPath& filename, const CPath& directory, ContentTypes::File& content) const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const
 		{
 		}
 
@@ -31,11 +31,11 @@ namespace OOX
 		{
 			return FileTypes::Unknow;
 		}
-		virtual const CPath DefaultDirectory() const
+		virtual const OOX::CPath DefaultDirectory() const
 		{
 			return type().DefaultDirectory();
 		}
-		virtual const CPath DefaultFileName() const
+		virtual const OOX::CPath DefaultFileName() const
 		{
 			return type().DefaultFileName();
 		}

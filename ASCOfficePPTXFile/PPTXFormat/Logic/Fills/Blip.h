@@ -116,8 +116,8 @@ namespace PPTX
 			CAtlArray<UniEffect> Effects;
 
 			nullable_limit<Limit::BlipCompression> cstate;
-			nullable<OOX::RId> embed;
-			nullable<OOX::RId> link;
+			nullable<PPTX::RId> embed;
+			nullable<PPTX::RId> link;
 		//private:
 		public:
 			CString m_namespace;

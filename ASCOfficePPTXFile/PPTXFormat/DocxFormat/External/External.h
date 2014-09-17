@@ -6,7 +6,7 @@
 #include "../FileTypes.h"
 
 
-namespace OOX
+namespace PPTX
 {
 	class External : public File
 	{
@@ -14,7 +14,7 @@ namespace OOX
 		External()
 		{
 		}
-		External(const CPath& uri)
+		External(const OOX::CPath& uri)
 		{
 			read(uri);
 		}
@@ -23,23 +23,23 @@ namespace OOX
 		}
 
 	public:
-		virtual void read(const CPath& uri)
+		virtual void read(const OOX::CPath& uri)
 		{
 			m_uri = uri;
 		}
-		virtual void write(const CPath& filename, const CPath& directory, ContentTypes::File& content) const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const
 		{
 		}
 
 	public:
-		AVSINLINE CPath Uri() const
+		AVSINLINE OOX::CPath Uri() const
 		{
 			return m_uri;
 		}
 
 	protected:
-		CPath m_uri;
+		OOX::CPath m_uri;
 	};
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_EXTERNAL_INCLUDE_H_

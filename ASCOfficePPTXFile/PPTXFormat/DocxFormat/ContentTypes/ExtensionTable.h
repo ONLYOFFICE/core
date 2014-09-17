@@ -5,7 +5,7 @@
 #include "../../../../Common/DocxFormat/Source/Base/Base.h"
 
 
-namespace OOX
+namespace PPTX
 {
 	namespace ContentTypes
 	{
@@ -56,6 +56,6 @@ namespace OOX
 			CAtlMap<CString, CString>	m_table;
 		};
 	} // namespace ContentTypes
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_CONTENT_TYPES_EXTENSION_TABLE_INCLUDE_H_

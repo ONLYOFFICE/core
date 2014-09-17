@@ -5,7 +5,7 @@
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
 #include <atlstr.h>
 
-namespace OOX
+namespace PPTX
 {
 	class Namespace
 	{
@@ -98,6 +98,6 @@ namespace OOX
 		const Namespace xsd;
 		const Namespace xsi;
 	};
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_NAMESPACES_INCLUDE_H_

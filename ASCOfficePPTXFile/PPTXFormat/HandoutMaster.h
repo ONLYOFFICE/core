@@ -45,11 +45,11 @@ namespace PPTX
 			if (hf.is_init())
 				hf->SetParentFilePointer(this);
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("xmlns:a"), OOX::g_Namespaces.a.m_strLink);
-			oAttr.Write(_T("xmlns:r"), OOX::g_Namespaces.r.m_strLink);
+			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
+			oAttr.Write(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
 
 			XmlUtils::CNodeValue oValue;
 			oValue.Write(cSld);
@@ -65,9 +65,9 @@ namespace PPTX
 		}
 
 	public:
-		virtual const OOX::FileType type() const
+		virtual const PPTX::FileType type() const
 		{
-			return OOX::FileTypes::HandoutMaster;
+			return PPTX::FileTypes::HandoutMaster;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{

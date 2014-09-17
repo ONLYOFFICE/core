@@ -5,7 +5,7 @@
 #include "./../WritingElement.h"
 #include "../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 
-namespace OOX
+namespace PPTX
 {
 	namespace ContentTypes
 	{
@@ -15,7 +15,7 @@ namespace OOX
 			Override()
 			{
 			}
-			Override(const CString& type, const CPath& path) : m_type(type), m_part(path)
+			Override(const CString& type, const OOX::CPath& path) : m_type(type), m_part(path)
 			{
 			}
 			virtual ~Override()
@@ -65,6 +65,6 @@ namespace OOX
 			OOX::CPath					m_part;
 		};
 	} // namespace ContentTypes
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_CONTENT_TYPES_OVERRIDE_INCLUDE_H_

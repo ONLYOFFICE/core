@@ -5,7 +5,7 @@
 #include "Media.h"
 
 
-namespace OOX
+namespace PPTX
 {
 	class OleObject : public Media
 	{
@@ -39,11 +39,11 @@ namespace OOX
 		{
 			return FileTypes::OleObject;
 		}
-		virtual const CPath DefaultDirectory() const
+		virtual const OOX::CPath DefaultDirectory() const
 		{
 			return type().DefaultDirectory();
 		}
-		virtual const CPath DefaultFileName() const
+		virtual const OOX::CPath DefaultFileName() const
 		{
 			return m_filename.GetFilename();
 		}

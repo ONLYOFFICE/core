@@ -16,38 +16,38 @@ namespace PPTX
 		//not implement FileContainer.read
 	}
 
-	void FileContainer::read(const OOX::Rels::File& rels, const OOX::CPath& path)
+	void FileContainer::read(const PPTX::Rels::File& rels, const OOX::CPath& path)
 	{
 		//not implement FileContainer.read
 	}
 
 	void FileContainer::read(const OOX::CPath& filename, FileMap& map, IPPTXEvent* Event)
 	{
-		OOX::Rels::File rels(filename);
+		PPTX::Rels::File rels(filename);
 		OOX::CPath path = filename.GetDirectory();
 		read(rels, path, map, Event);
 	}
 
-	void FileContainer::read(const OOX::Rels::File& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event)
+	void FileContainer::read(const PPTX::Rels::File& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event)
 	{
 		bool bIsSlide = false;
-		OOX::File* pSrcFile = dynamic_cast<OOX::File*>(this);
+		PPTX::File* pSrcFile = dynamic_cast<PPTX::File*>(this);
 		if (NULL != pSrcFile)
-			bIsSlide = (pSrcFile->type() == OOX::FileTypes::Slide) ? true : false;
+			bIsSlide = (pSrcFile->type() == PPTX::FileTypes::Slide) ? true : false;
 
 		size_t nCount = rels.Relations.m_items.GetCount();
 		for (size_t i = 0; i < nCount; ++i)
 		{
-			const OOX::Rels::RelationShip* pRelation = &(rels.Relations.m_items[i]);
+			const PPTX::Rels::RelationShip* pRelation = &(rels.Relations.m_items[i]);
 			OOX::CPath normPath = path / pRelation->target();
 
-			CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = map.find(normPath);
+			CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = map.find(normPath);
 
-			if (bIsSlide && (pRelation->type() == OOX::FileTypes::Slide))
+			if (bIsSlide && (pRelation->type() == PPTX::FileTypes::Slide))
 			{
 				long percent = Event->GetPercent();
 
-				smart_ptr<OOX::File> file = smart_ptr<OOX::File>(new OOX::HyperLink(pRelation->target()));
+				smart_ptr<PPTX::File> file = smart_ptr<PPTX::File>(new PPTX::HyperLink(pRelation->target()));
 
 				bool res = Event->Progress(0, percent + m_lPercent);
 				if (res)
@@ -68,7 +68,7 @@ namespace PPTX
 				{
 					long percent = Event->GetPercent();
 
-					smart_ptr<OOX::File> file = PPTX::FileFactory::CreateFilePPTX(path, *pRelation, map);													
+					smart_ptr<PPTX::File> file = PPTX::FileFactory::CreateFilePPTX(path, *pRelation, map);													
 					bool res = Event->Progress(0, percent + m_lPercent);
 					if (res)
 					{
@@ -93,25 +93,25 @@ namespace PPTX
 		}
 	}
 
-	void FileContainer::write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::ContentTypes::File& content) const
+	void FileContainer::write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content) const
 	{
-		OOX::Rels::File rels;
+		PPTX::Rels::File rels;
 		OOX::CPath current = filename.GetDirectory();
 		write(rels, current, directory, content);
 		rels.write(filename);
 	}
 
-	void FileContainer::write(OOX::Rels::File& rels, const OOX::CPath& curdir, const OOX::CPath& directory, OOX::ContentTypes::File& content) const
+	void FileContainer::write(PPTX::Rels::File& rels, const OOX::CPath& curdir, const OOX::CPath& directory, PPTX::ContentTypes::File& content) const
 	{
 		CAtlMap<CString, size_t> namepair;
 
 		POSITION pos = m_container.GetStartPosition();
 		while (NULL != pos)
 		{
-			const CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = m_container.GetNext(pos);
+			const CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = m_container.GetNext(pos);
 
-			smart_ptr<OOX::File>		pFile	= pPair->m_value;
-			smart_ptr<OOX::External>	pExt	= pFile.smart_dynamic_cast<OOX::External>();
+			smart_ptr<PPTX::File>		pFile	= pPair->m_value;
+			smart_ptr<PPTX::External>	pExt	= pFile.smart_dynamic_cast<PPTX::External>();
 
 			if (!pExt.IsInit())
 			{
@@ -160,7 +160,7 @@ namespace PPTX
 		POSITION pos = m_container.GetStartPosition();
 		while (NULL != pos)
 		{
-			smart_ptr<OOX::File> pFile = m_container.GetNextValue(pos);
+			smart_ptr<PPTX::File> pFile = m_container.GetNextValue(pos);
 
 			smart_ptr<PPTX::WrapperFile>	pWrapFile = pFile.smart_dynamic_cast<PPTX::WrapperFile>();
 			smart_ptr<PPTX::FileContainer>	pWrapCont = pFile.smart_dynamic_cast<PPTX::FileContainer>();
@@ -177,21 +177,21 @@ namespace PPTX
 		}
 	}
 
-	void CCommonRels::_read(const OOX::Rels::File& rels, const OOX::CPath& path)
+	void CCommonRels::_read(const PPTX::Rels::File& rels, const OOX::CPath& path)
 	{
 		size_t nCount = rels.Relations.m_items.GetCount();
 		for (size_t i = 0; i < nCount; ++i)
 		{
-			const OOX::Rels::RelationShip* pRelation = &(rels.Relations.m_items[i]);
+			const PPTX::Rels::RelationShip* pRelation = &(rels.Relations.m_items[i]);
 
-			smart_ptr<OOX::File> _file = PPTX::FileFactory::CreateFilePPTX_OnlyMedia(path, *pRelation);
+			smart_ptr<PPTX::File> _file = PPTX::FileFactory::CreateFilePPTX_OnlyMedia(path, *pRelation);
 			add(pRelation->rId(), _file);	
 		}
 	}
 
 	void CCommonRels::_read(const OOX::CPath& filename)
 	{
-		OOX::Rels::File rels(filename);
+		PPTX::Rels::File rels(filename);
 		OOX::CPath path = filename.GetDirectory();
 		_read(rels, path);
 	}

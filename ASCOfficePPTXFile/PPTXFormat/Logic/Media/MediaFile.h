@@ -45,7 +45,7 @@ namespace PPTX
 			}
 		public:
 			CString				name;
-			OOX::RId			link;
+			PPTX::RId			link;
 			nullable_string		contentType;
 		protected:
 			virtual void FillParentPointersForChilds(){};

@@ -54,7 +54,7 @@ namespace PPTX
 			{
 				if (pRels != NULL)
 				{
-					smart_ptr<OOX::Image> p = pRels->image(*embed);
+					smart_ptr<PPTX::Image> p = pRels->image(*embed);
 					if (p.is_init())
 						return p->filename().m_strFilename;
 				}
@@ -73,7 +73,7 @@ namespace PPTX
 			{
 				if (pRels != NULL)
 				{
-					smart_ptr<OOX::Image> p = pRels->image(*link);
+					smart_ptr<PPTX::Image> p = pRels->image(*link);
 					if (p.is_init())
 						return p->filename().m_strFilename;
 				}

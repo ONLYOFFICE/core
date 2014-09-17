@@ -20,7 +20,7 @@
 
 namespace PPTX
 {
-	class WrapperWritingElement : public OOX::WritingElement
+	class WrapperWritingElement : public PPTX::WritingElement
 	{
 	public:
 		WrapperWritingElement() : parentElement(NULL), parentFile(NULL)
@@ -57,9 +57,9 @@ namespace PPTX
 			fromXML(oNode);
 		}
 
-		virtual OOX::EElementType getType() const
+		virtual PPTX::EElementType getType() const
 		{
-			return OOX::et_Unknown;
+			return PPTX::et_Unknown;
 		}
 
 

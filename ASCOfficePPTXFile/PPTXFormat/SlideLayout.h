@@ -75,13 +75,13 @@ namespace PPTX
 			oNode.ReadAttributeBase(L"type", attrType);
 			oNode.ReadAttributeBase(L"userDrawn", userDrawn);
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
 		{
 			XmlUtils::CAttribute oAttr;
 
-			oAttr.Write(_T("xmlns:a"), OOX::g_Namespaces.a.m_strLink);
-			oAttr.Write(_T("xmlns:r"), OOX::g_Namespaces.r.m_strLink);
-			oAttr.Write(_T("xmlns:p"), OOX::g_Namespaces.p.m_strLink);
+			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
+			oAttr.Write(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
+			oAttr.Write(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
 
 			oAttr.Write(_T("matchingName"), matchingName);
 			oAttr.Write(_T("preserve"), preserve);
@@ -106,9 +106,9 @@ namespace PPTX
 		}
 
 	public:
-		virtual const OOX::FileType type() const
+		virtual const PPTX::FileType type() const
 		{
-			return OOX::FileTypes::SlideLayout;
+			return PPTX::FileTypes::SlideLayout;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -216,16 +216,16 @@ namespace PPTX
 					Master->GetBackground(bg, ARGB);
 			}
 		}
-		virtual CString GetMediaFullPathNameFromRId(const OOX::RId& rid)const
+		virtual CString GetMediaFullPathNameFromRId(const PPTX::RId& rid)const
 		{
-			smart_ptr<OOX::Image> p = image(rid);
+			smart_ptr<PPTX::Image> p = image(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->filename().m_strFilename;
 		}
-		virtual CString GetFullHyperlinkNameFromRId(const OOX::RId& rid)const
+		virtual CString GetFullHyperlinkNameFromRId(const PPTX::RId& rid)const
 		{
-			smart_ptr<OOX::HyperLink> p = hyperlink(rid);
+			smart_ptr<PPTX::HyperLink> p = hyperlink(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->Uri().m_strFilename;
@@ -377,9 +377,9 @@ namespace PPTX
 			pWriter->StartNode(_T("p:sldLayout"));
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("xmlns:a"), OOX::g_Namespaces.a.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:r"), OOX::g_Namespaces.r.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:p"), OOX::g_Namespaces.p.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
 
 			pWriter->WriteAttribute(_T("matchingName"), matchingName);
 			pWriter->WriteAttribute(_T("preserve"), preserve);
@@ -426,7 +426,7 @@ namespace PPTX
 	public:
 		void ApplyRels()
 		{
-			smart_ptr<OOX::File> pFile = FileContainer::get(OOX::FileTypes::SlideMaster);
+			smart_ptr<PPTX::File> pFile = FileContainer::get(PPTX::FileTypes::SlideMaster);
 
 			Master = pFile.smart_dynamic_cast<PPTX::SlideMaster>();
 
@@ -435,7 +435,7 @@ namespace PPTX
 			
 			if (Theme.IsInit())
 			{	
-				TableStyles = Theme->Presentation->get(OOX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
+				TableStyles = Theme->Presentation->get(PPTX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
 			}
 		}
 		const OOX::CPath GetPathBySpid(const CString& spid)const

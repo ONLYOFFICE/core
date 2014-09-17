@@ -5,7 +5,7 @@
 #include "./../WritingVector.h"
 #include "Override.h"
 
-namespace OOX
+namespace PPTX
 {
 	namespace ContentTypes
 	{
@@ -41,6 +41,6 @@ namespace OOX
 			}
 		};
 	} // namespace ContentTypes
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_CONTENT_TYPES_OVERRIDE_TABLE_INCLUDE_H_

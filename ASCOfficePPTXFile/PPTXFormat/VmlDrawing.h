@@ -33,7 +33,7 @@ namespace PPTX
 
 			m_strDocument = oNode.GetXml();
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
 		{
 			XmlUtils::SaveToFile(filename.m_strFilename, m_strDocument);
 
@@ -44,9 +44,9 @@ namespace PPTX
 		}
 
 	public:
-		virtual const OOX::FileType type() const
+		virtual const PPTX::FileType type() const
 		{
-			return OOX::FileTypes::VmlDrawing;
+			return PPTX::FileTypes::VmlDrawing;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -89,7 +89,7 @@ namespace PPTX
 					}
 
 					nullable_string		id;
-					nullable<OOX::RId>	rid;
+					nullable<PPTX::RId>	rid;
 
 					oNode.ReadAttributeBase(L"id", id);
 					

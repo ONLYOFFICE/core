@@ -16,16 +16,16 @@ namespace PPTX
 		{
 		}
 	public:
-		CAtlMap<CString, smart_ptr<OOX::File>> m_map;
+		CAtlMap<CString, smart_ptr<PPTX::File>> m_map;
 
 	public:
 
-		AVSINLINE CAtlMap<CString, smart_ptr<OOX::File>>::CPair* find(const OOX::CPath& path)
+		AVSINLINE CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* find(const OOX::CPath& path)
 		{
 			return m_map.Lookup(path.m_strFilename);
 		}
 
-		AVSINLINE void add(const OOX::CPath& key, const smart_ptr<OOX::File>& value)
+		AVSINLINE void add(const OOX::CPath& key, const smart_ptr<PPTX::File>& value)
 		{
 			m_map.SetAt(key.m_strFilename, value);
 		}

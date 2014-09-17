@@ -140,14 +140,14 @@ namespace PPTX
 				m_arAuthors[m_arAuthors.GetCount() - 1].fromXML(oCm);
 			}		
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
 		{			
 		}
 		
 	public:
-		virtual const OOX::FileType type() const
+		virtual const PPTX::FileType type() const
 		{
-			return OOX::FileTypes::CommentAuthors;
+			return PPTX::FileTypes::CommentAuthors;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -169,9 +169,9 @@ namespace PPTX
 			pWriter->StartNode(_T("p:cmAuthorLst"));
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("xmlns:a"), OOX::g_Namespaces.a.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:r"), OOX::g_Namespaces.r.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:p"), OOX::g_Namespaces.p.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
 			pWriter->EndAttributes();
 
 			pWriter->WriteArray2(m_arAuthors);

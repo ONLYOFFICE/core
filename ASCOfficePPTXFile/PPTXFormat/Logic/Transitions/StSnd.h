@@ -42,7 +42,7 @@ namespace PPTX
 			}
 
 		public:
-			OOX::RId			embed;
+			PPTX::RId			embed;
 			nullable_string		name;
 			nullable_bool		loop;
 		protected:

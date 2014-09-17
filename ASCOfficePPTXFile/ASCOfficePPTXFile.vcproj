@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="ASCOfficePPTXFile"
 	ProjectGUID="{70078FE7-BE4F-493C-84F3-F98F151587F5}"
 	RootNamespace="ASCOfficePPTXFile"
@@ -53,8 +53,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\Addons\ZLib"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
+				AdditionalIncludeDirectories="..\..\..\..\Addons\ZLib;&quot;$(SolutionDir)/../Common/DocxFormat/Source/XML/libxml2/XML/include&quot;"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -81,7 +81,7 @@
 				AdditionalDependencies="Msimg32.lib"
 				OutputFile="$(OutDir)/ASCOfficePPTXFile.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories=""
+				AdditionalLibraryDirectories="$(SolutionDir)/../Common/DocxFormat/Source/XML/libxml2/win_build/Release"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD"
 				ModuleDefinitionFile=""
 				MergedIDLBaseFileName="_ASCOfficePPTXFile.idl"
@@ -441,6 +441,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ASCOfficePPTXFileRealization.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp"
+				>
+			</File>
+			<File
 				RelativePath="stdafx.cpp"
 				>
 				<FileConfiguration
@@ -476,6 +484,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath="..\Common\DocxFormat\Source\XML\stringcommon.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -486,7 +498,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ASCOfficeDrawingConverterComInterface.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ASCOfficePPTXFile.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ASCOfficePPTXFileComInterface.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\DocxFormat\Source\XML\libxml2\libxml2.h"
 				>
 			</File>
 			<File
@@ -495,6 +519,10 @@
 			</File>
 			<File
 				RelativePath="stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\DocxFormat\Source\XML\stringcommon.h"
 				>
 			</File>
 		</Filter>

@@ -12,7 +12,7 @@
 #include "../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 
 
-namespace OOX
+namespace PPTX
 {
 	namespace Rels
 	{
@@ -22,7 +22,7 @@ namespace OOX
 			File()
 			{
 			}
-			File(const CPath& filename)
+			File(const OOX::CPath& filename)
 			{
 				read(filename);
 			}
@@ -31,34 +31,34 @@ namespace OOX
 			}
 
 		public:
-			void read(const CPath& filename)
+			void read(const OOX::CPath& filename)
 			{
-				CPath strFile = createFileName(filename);
+				OOX::CPath strFile = createFileName(filename);
 
-				if (CSystemUtility::IsFileExist(strFile))
+				if (OOX::CSystemUtility::IsFileExist(strFile))
 				{
 					XmlUtils::CXmlNode oNode;
 					if (oNode.FromXmlFile2(strFile.GetPath()))
 						Relations = oNode;
 				}
 			}
-			void read2(const CPath& filename)
+			void read2(const OOX::CPath& filename)
 			{
-				CPath strFile = filename;
+				OOX::CPath strFile = filename;
 
-				if (CSystemUtility::IsFileExist(strFile))
+				if (OOX::CSystemUtility::IsFileExist(strFile))
 				{
 					XmlUtils::CXmlNode oNode;
 					if (oNode.FromXmlFile2(strFile.GetPath()))
 						Relations = oNode;
 				}
 			}
-			void write(const CPath& filename) const
+			void write(const OOX::CPath& filename) const
 			{
 				if (0 < Relations.m_items.GetCount())
 				{
-					CPath file = createFileName(filename);
-					CSystemUtility::CreateDirectories(file.GetDirectory());
+					OOX::CPath file = createFileName(filename);
+					OOX::CSystemUtility::CreateDirectories(file.GetDirectory());
 
 					XmlUtils::CXmlWriter oWriter;
 					oWriter.WriteNodeBegin(_T("Relationship"), TRUE);
@@ -78,7 +78,7 @@ namespace OOX
 			}
 
 		public:
-			void registration(const RId& rId, const FileType& type, const CPath& filename)
+			void registration(const RId& rId, const FileType& type, const OOX::CPath& filename)
 			{
 				if(!(type == FileTypes::Unknow))
 				{
@@ -109,7 +109,7 @@ namespace OOX
 			}
 
 		private:
-			const CPath createFileName(const CPath& filename) const
+			const OOX::CPath createFileName(const OOX::CPath& filename) const
 			{
 				CString strTemp = filename.GetDirectory() + _T("\\_rels\\");
 				if (filename.GetFilename() == _T(""))
@@ -123,6 +123,6 @@ namespace OOX
 			RelationTable Relations;
 		};
 	} // namespace Rels
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_RELS_FILE_INCLUDE_H_

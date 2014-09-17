@@ -5,7 +5,7 @@
 #include "FileType.h"
 
 
-namespace OOX
+namespace PPTX
 {
 	namespace FileTypes
 	{

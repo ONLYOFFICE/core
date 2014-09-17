@@ -5,7 +5,7 @@
 #include "ContentTypes/File.h"
 
 
-namespace OOX
+namespace PPTX
 {
 	class IFileBuilder
 	{
@@ -14,8 +14,8 @@ namespace OOX
 		virtual ~IFileBuilder();
 
 	public:
-	    virtual void Commit(const CPath& path)															= 0;
-		virtual void Finalize(const CPath& path, const CPath& directory, ContentTypes::File& content)	= 0;
+	    virtual void Commit(const OOX::CPath& path)															= 0;
+		virtual void Finalize(const OOX::CPath& path, const OOX::CPath& directory, ContentTypes::File& content)	= 0;
 	};
 } // namespace OOX
 

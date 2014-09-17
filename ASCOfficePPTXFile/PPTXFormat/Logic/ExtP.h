@@ -66,7 +66,7 @@ namespace PPTX
 
 		public:
 
-			OOX::RId				link;
+			PPTX::RId				link;
 
 			// trim
 			nullable_double			st;

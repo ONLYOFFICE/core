@@ -43,7 +43,7 @@
 #include <atlctl.h>
 #include <atlhost.h>
 #include <atlcoll.h>
-#include "../Common/atldefine.h"
+#include "../../Common/atldefine.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -60,37 +60,4 @@ using namespace ATL;
 #include "../../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
 #include "../../Common/Config.h"
 
-#import "../../Redist/ASCOfficeUtils.dll"			named_guids raw_interfaces_only rename_namespace("OfficeUtils")
-#import "../../Redist/ASCOfficeDocxFile2.dll"		named_guids raw_interfaces_only rename_namespace("DocxFile2")
-#import "../../Redist/XlsxSerializerCom.dll"		named_guids raw_interfaces_only rename_namespace("XlsxCom"), exclude("_IAVSOfficeFileTemplateEvents"), exclude("_IAVSOfficeFileTemplateEvents2")
-
-#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
-
-#import "../Redist/OfficeCore.dll"				named_guids raw_interfaces_only rename_namespace("OfficeCore")
-
-namespace MediaCore
-{
-	typedef OfficeCore::IUncompressedFrame IAVSUncompressedVideoFrame;
-	const GUID CLSID_CAVSUncompressedVideoFrame = OfficeCore::CLSID_CUncompressedFrame;
-	const GUID IID_IAVSUncompressedVideoFrame = OfficeCore::IID_IUncompressedFrame;
-}
-
-namespace ASCGraphics
-{
-	typedef OfficeCore::IWinFonts IASCFontManager;
-	const GUID CLSID_CASCFontManager = OfficeCore::CLSID_CWinFonts;
-	const GUID IID_IASCFontManager = OfficeCore::IID_IWinFonts;
-}
-
-#else
-
-#define AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
-
-#import "../../Redist/ASCMediaCore3.dll"			named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
-#import "../../Redist/ASCImageStudio3.dll"			named_guids raw_interfaces_only rename_namespace("ImageStudio"), exclude("IASCRenderer")
-#import "../../Redist/ASCHTMLRenderer.dll"			named_guids raw_interfaces_only rename_namespace("HtmlRenderer"), exclude("IASCRenderer")
-
-#import "../../Redist/ASCGraphics.dll"				named_guids raw_interfaces_only rename_namespace("ASCGraphics"), exclude("IASCRenderer")
-#import "../../Redist/ASCFontConverter.dll"		named_guids raw_interfaces_only rename_namespace("Fonts")
-
-#endif
+//#define AVS_USE_CONVERT_PPTX_TOCUSTOM_VML

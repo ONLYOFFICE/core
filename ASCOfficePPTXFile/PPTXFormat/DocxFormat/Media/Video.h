@@ -5,7 +5,7 @@
 #include "Media.h"
 
 
-namespace OOX
+namespace PPTX
 {
 	class Video : public Media
 	{
@@ -13,7 +13,7 @@ namespace OOX
 		Video()
 		{
 		}
-		Video(const CPath& filename)
+		Video(const OOX::CPath& filename)
 		{
 			read(filename);
 		}
@@ -26,15 +26,15 @@ namespace OOX
 		{
 			return FileTypes::Video;
 		}
-		virtual const CPath DefaultDirectory() const
+		virtual const OOX::CPath DefaultDirectory() const
 		{
 			return type().DefaultDirectory();
 		}
-		virtual const CPath DefaultFileName() const
+		virtual const OOX::CPath DefaultFileName() const
 		{
 			return m_filename.GetFilename();
 		}
 	};
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_VIDEO_INCLUDE_H_

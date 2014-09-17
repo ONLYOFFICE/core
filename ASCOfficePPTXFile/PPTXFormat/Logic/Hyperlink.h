@@ -176,7 +176,7 @@ namespace PPTX
 		public:
 			nullable<WavAudioFile>	snd;
 
-			nullable_string			id;//<OOX::RId> id;//  <xsd:attribute ref="r:id" use="optional"/>
+			nullable_string			id;//<PPTX::RId> id;//  <xsd:attribute ref="r:id" use="optional"/>
 			nullable_string			invalidUrl;//default=""
 			nullable_string			action;//default=""
 			nullable_string			tgtFrame;//default=""

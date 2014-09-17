@@ -88,10 +88,10 @@ namespace PPTX
 			for (size_t i = 0; i < count; ++i)
 				extraClrSchemeLst[i].SetParentFilePointer(this);
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("xmlns:a"), OOX::g_Namespaces.a.m_strLink);
+			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
 			oAttr.Write(_T("name"), name);
 
 			XmlUtils::CNodeValue oValue;
@@ -140,9 +140,9 @@ namespace PPTX
 				pWriter->StartNode(_T("a:themeOverride"));
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("xmlns:a"), OOX::g_Namespaces.a.m_strLink);
-				pWriter->WriteAttribute(_T("xmlns:r"), OOX::g_Namespaces.r.m_strLink);
-				pWriter->WriteAttribute(_T("xmlns:p"), OOX::g_Namespaces.p.m_strLink);
+				pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
+				pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
+				pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
 				pWriter->EndAttributes();
 
 				themeElements.clrScheme.toXmlWriter(pWriter);
@@ -156,9 +156,9 @@ namespace PPTX
 			pWriter->StartNode(_T("a:theme"));
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("xmlns:a"), OOX::g_Namespaces.a.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:r"), OOX::g_Namespaces.r.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:p"), OOX::g_Namespaces.p.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
 			pWriter->WriteAttribute2(_T("name"), name);
 			pWriter->EndAttributes();
 
@@ -248,9 +248,9 @@ namespace PPTX
 		}
 
 	public:
-		virtual const OOX::FileType type() const
+		virtual const PPTX::FileType type() const
 		{
-			return OOX::FileTypes::ThemePPTX;
+			return PPTX::FileTypes::ThemePPTX;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -315,16 +315,16 @@ namespace PPTX
 			props.SetMajorLatin(themeElements.fontScheme.majorFont.latin);
 			props.SetMinorLatin(themeElements.fontScheme.minorFont.latin);
 		}
-		virtual CString GetMediaFullPathNameFromRId(const OOX::RId& rid)const
+		virtual CString GetMediaFullPathNameFromRId(const PPTX::RId& rid)const
 		{
-			smart_ptr<OOX::Image> p = image(rid);
+			smart_ptr<PPTX::Image> p = image(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->filename().m_strFilename;
 		}
-		virtual CString GetFullHyperlinkNameFromRId(const OOX::RId& rid)const
+		virtual CString GetFullHyperlinkNameFromRId(const PPTX::RId& rid)const
 		{
-			smart_ptr<OOX::HyperLink> p = hyperlink(rid);
+			smart_ptr<PPTX::HyperLink> p = hyperlink(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->Uri().m_strFilename;

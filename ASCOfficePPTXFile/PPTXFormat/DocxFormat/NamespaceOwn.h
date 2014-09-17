@@ -4,7 +4,7 @@
 
 #include "Namespaces.h"
 
-namespace OOX
+namespace PPTX
 {
 	class NamespaceOwn
 	{
@@ -14,6 +14,6 @@ namespace OOX
 
 	//const Namespaces NamespaceOwn::ns;
 	static Namespaces g_Namespaces;
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_NAMESPACE_OWN_INCLUDE_H_

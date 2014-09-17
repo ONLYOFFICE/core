@@ -5,6 +5,7 @@
 #include "RId.h"
 #include "UnknowTypeFile.h"
 #include "IFileBuilder.h"
+#include <map>
 
 namespace OOX 
 {
@@ -30,8 +31,8 @@ namespace OOX
 		}
 	protected:
 
-        CAtlMap<CString, smart_ptr<OOX::File>> m_mContainer;
-        //std::map<CString, smart_ptr<OOX::File>> m_mContainer;
+        //CAtlMap<CString, smart_ptr<OOX::File>> m_mContainer;
+        std::map<CString, smart_ptr<OOX::File>> m_mContainer;
 		size_t                                m_lMaxRid;
 
 	protected:

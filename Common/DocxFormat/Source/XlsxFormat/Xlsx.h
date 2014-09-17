@@ -16,6 +16,8 @@
 #include "Worksheets/Worksheet.h"
 #include "CalcChain/CalcChain.h"
 
+#include <map>
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -160,7 +162,16 @@ namespace OOX
 					CString sAdditionalContentTypesWrapped;
 					sAdditionalContentTypesWrapped.Format(_T("<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">%s</Types>"), sAdditionalContentTypes);
 					OOX::CContentTypes oTempContentTypes;
+
 					oTempContentTypes.ReadFromString(sAdditionalContentTypesWrapped);
+
+					for (std::map<CString, ContentTypes::COverride>::const_iterator it = oTempContentTypes.m_arrOverride.begin(); it != oTempContentTypes.m_arrOverride.end(); ++it)
+					{
+						const ContentTypes::COverride& oOverride = it->second;
+						const OOX::CPath& oPath = oOverride.filename();
+						oContentTypes.Registration(oOverride.type(), oPath.GetDirectory(), oPath.GetFilename());
+					}
+/*
 					POSITION pos = oTempContentTypes.m_arrOverride.GetStartPosition();
 					while ( NULL != pos )
 					{
@@ -169,6 +180,8 @@ namespace OOX
 						const OOX::CPath& oPath = oOverride.filename();
 						oContentTypes.Registration(oOverride.type(), oPath.GetDirectory(), oPath.GetFilename());
 					}
+					*/
+
 				}
 				oContentTypes.Write(oDirPath);
 				return TRUE;

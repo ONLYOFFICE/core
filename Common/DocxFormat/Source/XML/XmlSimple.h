@@ -3,9 +3,9 @@
 #include "xmlutils.h"
 #include "../Base/Nullable.h"
 
-//#include "../SystemUtility/File.h"
-//#include "../SystemUtility/FileSystem/Directory.h"
-#include "../../../DesktopEditor/common/File.h"
+#include "../SystemUtility/File.h"
+#include "../SystemUtility/FileSystem/Directory.h"
+//#include "../../../DesktopEditor/common/File.h"
 //#include "../../../DesktopEditor/common/Directory.h"
 #include "../SystemUtility/SystemUtility.h"
 

@@ -6,6 +6,7 @@
 
 #include "FileType.h"
 #include "WritingElement.h"
+#include <map>
 
 
 namespace OOX
@@ -17,36 +18,36 @@ namespace OOX
 		public:
 			CExtensionTable()
 			{
-                m_mTable.insert( _T("bmp"),  _T("image/bmp"));
-                m_mTable.insert( _T("gif"),  _T("image/gif"));
-                m_mTable.insert( _T("png"),  _T("image/png"));
-                m_mTable.insert( _T("tif"),  _T("image/tiff"));
-                m_mTable.insert( _T("tiff"), _T("image/tiff"));
-                m_mTable.insert( _T("jpeg"), _T("image/jpeg"));
-                m_mTable.insert( _T("jpg"),  _T("image/jpeg"));
-                m_mTable.insert( _T("jpe"),  _T("image/jpeg"));
-                m_mTable.insert( _T("jfif"), _T("image/jpeg"));
-                m_mTable.insert( _T("rels"), _T("application/vnd.openxmlformats-package.relationships+xml"));
-                m_mTable.insert( _T("bin"),  _T("application/vnd.openxmlformats-officedocument.oleObject"));
-                m_mTable.insert( _T("xml"),  _T("application/xml"));
-                m_mTable.insert( _T("emf"),  _T("image/x-emf"));
-                m_mTable.insert( _T("emz"),  _T("image/x-emz"));
-                m_mTable.insert( _T("wmf"),  _T("image/x-wmf"));
-                m_mTable.insert( _T("svm"),  _T("image/svm"));
-                m_mTable.insert( _T("wav"),  _T("audio/wav"));
-                m_mTable.insert( _T("xls"),  _T("application/vnd.ms-excel"));
-                m_mTable.insert( _T("xlsm"), _T("application/vnd.ms-excel.sheet.macroEnabled.12"));
-                m_mTable.insert( _T("xlsb"), _T("application/vnd.ms-excel.sheet.binary.macroEnabled.12"));
-                m_mTable.insert( _T("xlsx"), _T("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-                m_mTable.insert( _T("ppt"),  _T("application/vnd.ms-powerpoint"));
-                m_mTable.insert( _T("pptm"), _T("application/vnd.ms-powerpoint.presentation.macroEnabled.12"));
-                m_mTable.insert( _T("pptx"), _T("application/vnd.openxmlformats-officedocument.presentationml.presentation"));
-                m_mTable.insert( _T("sldm"), _T("application/vnd.ms-powerpoint.slide.macroEnabled.12"));
-                m_mTable.insert( _T("sldx"), _T("application/vnd.openxmlformats-officedocument.presentationml.slide"));
-                m_mTable.insert( _T("doc"),  _T("application/msword"));
-                m_mTable.insert( _T("docm"), _T("aapplication/vnd.ms-word.document.macroEnabled.12"));
-                m_mTable.insert( _T("docx"), _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
-                m_mTable.insert( _T("vml"),  _T("application/vnd.openxmlformats-officedocument.vmlDrawing"));
+                m_mTable.insert( std::pair<CString,CString>( _T("bmp"),  _T("image/bmp")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("gif"),  _T("image/gif")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("png"),  _T("image/png")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("tif"),  _T("image/tiff")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("tiff"), _T("image/tiff")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("jpeg"), _T("image/jpeg")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("jpg"),  _T("image/jpeg")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("jpe"),  _T("image/jpeg")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("jfif"), _T("image/jpeg")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("rels"), _T("application/vnd.openxmlformats-package.relationships+xml")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("bin"),  _T("application/vnd.openxmlformats-officedocument.oleObject")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("xml"),  _T("application/xml")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("emf"),  _T("image/x-emf")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("emz"),  _T("image/x-emz")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("wmf"),  _T("image/x-wmf")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("svm"),  _T("image/svm")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("wav"),  _T("audio/wav")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("xls"),  _T("application/vnd.ms-excel")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("xlsm"), _T("application/vnd.ms-excel.sheet.macroEnabled.12")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("xlsb"), _T("application/vnd.ms-excel.sheet.binary.macroEnabled.12")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("xlsx"), _T("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("ppt"),  _T("application/vnd.ms-powerpoint")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("pptm"), _T("application/vnd.ms-powerpoint.presentation.macroEnabled.12")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("pptx"), _T("application/vnd.openxmlformats-officedocument.presentationml.presentation")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("sldm"), _T("application/vnd.ms-powerpoint.slide.macroEnabled.12")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("sldx"), _T("application/vnd.openxmlformats-officedocument.presentationml.slide")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("doc"),  _T("application/msword")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("docm"), _T("aapplication/vnd.ms-word.document.macroEnabled.12")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("docx"), _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document")));
+                m_mTable.insert( std::pair<CString,CString>(  _T("vml"),  _T("application/vnd.openxmlformats-officedocument.vmlDrawing")));
 			}
 			const CString operator[] (const CString& sExtension) const
 			{

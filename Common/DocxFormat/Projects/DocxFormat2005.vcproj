@@ -997,6 +997,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Source\Common\SimpleTypes_Word.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\Common\SimpleTypes_Word.h"
 				>
 			</File>

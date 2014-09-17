@@ -2,7 +2,6 @@
 
 namespace SimpleTypes
 {	
-    //template<EHexColor eDefValue = hexcolorAuto>
     template<>
     EHexColor CHexColor<EHexColor::hexcolorAuto>::FromString (CString &sValue)
     {

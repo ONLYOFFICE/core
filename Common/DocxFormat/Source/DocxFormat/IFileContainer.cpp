@@ -56,15 +56,18 @@ namespace OOX
 	}
 	void IFileContainer::Write(OOX::CRels& oRels, const OOX::CPath& oCurrent, const OOX::CPath& oDir, OOX::CContentTypes& oContent) const
 	{
-		CAtlMap<CString, size_t> mNamePair;
+//		CAtlMap<CString, size_t> mNamePair;
+        std::map<CString, size_t> mNamePair;
 
-		POSITION pos = m_mContainer.GetStartPosition();
+        //POSITION pos = m_mContainer.GetStartPosition();
 
-		while ( NULL != pos )
+        for (std::map<CString, size_t>::const_iterator it = mNamePair.begin(); it != mNamePair.end(); ++it)
+        {
+        //while ( NULL != pos )
 		{
-			const CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = m_mContainer.GetNext( pos );
+            //const CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = m_mContainer.GetNext( pos );
 			
-			smart_ptr<OOX::File>     pFile = pPair->m_value;
+            smart_ptr<OOX::File>     pFile = it->second; //pPair->m_value;
 			smart_ptr<OOX::External> pExt  = pFile.smart_dynamic_cast<OOX::External>();
 
 			if ( !pExt.IsInit() )
@@ -72,21 +75,24 @@ namespace OOX
 				OOX::CPath oDefDir = pFile->DefaultDirectory();
 				OOX::CPath oName   = pFile->DefaultFileName();
 		
-				CAtlMap<CString, size_t>::CPair* pNamePair = mNamePair.Lookup( oName.m_strFilename );
-				if ( NULL == pNamePair )
-					mNamePair.SetAt( oName.m_strFilename, 1 );
+                //CAtlMap<CString, size_t>::CPair* pNamePair = mNamePair.Lookup( oName.m_strFilename );
+                std::map<CString, size_t>::const_iterator pNamePair = mNamePair.find ( oName.m_strFilename );
+
+                if (pNamePair == mNamePair.end())
+                    mNamePair [oName.m_strFilename] = 1 ;
 				else
 					oName = oName + pNamePair->m_key;
 
 				OOX::CSystemUtility::CreateDirectories( oCurrent / oDefDir );
 				pFile->write( oCurrent / oDefDir / oName, oDir / oDefDir, oContent );
-				oRels.Registration( pPair->m_key, pFile->type(), oDefDir / oName );
+                oRels.Registration( it->first /*pPair->m_key*/, pFile->type(), oDefDir / oName );
 			}
 			else
 			{
-				oRels.Registration( pPair->m_key, pExt );
+                oRels.Registration( it->first /*pPair->m_key*/, pExt );
 			}
 		}
+        }
 	}
 
 

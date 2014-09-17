@@ -48,6 +48,18 @@ namespace OOX
 		Normalize();
         return *this;
     }
+    CPath& CPath::operator=(LPCSTR oSrc)
+    {
+        m_strFilename = oSrc;
+        Normalize();
+        return *this;
+    }
+    CPath& CPath::operator=(LPCWSTR oSrc)
+    {
+        m_strFilename = oSrc;
+        Normalize();
+        return *this;
+    }
 
 	AVSINLINE CString CPath::GetExtention(bool bIsPoint) const
     {

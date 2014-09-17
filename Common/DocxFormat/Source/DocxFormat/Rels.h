@@ -202,8 +202,9 @@ namespace OOX
 						{
 							if ( oNodes.GetAt( nIndex, oRelNode ) )
 							{
-								Rels::CRelationShip oRel = oRelNode;
-								m_arrRelations.Add( oRel );
+                                //Rels::CRelationShip oRel = oRelNode;
+                                Rels::CRelationShip *oRel = new Rels::CRelationShip (oRelNode);
+                                m_arrRelations.push_back( oRel );
 							}
 						}
 					}

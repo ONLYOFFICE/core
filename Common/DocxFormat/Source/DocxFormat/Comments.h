@@ -214,7 +214,9 @@ namespace OOX
 				case OOX::et_w_sym:
 					{
 						OOX::Logic::CSym* oSym = static_cast<OOX::Logic::CSym*>(item);
-						sRes.AppendChar(0x0FFF & oSym->m_oChar->GetValue());
+                        TCHAR oNewChar = 0x0FFF & oSym->m_oChar->GetValue();
+                        sRes += oNewChar;
+                        //sRes.AppendChar(0x0FFF & oSym->m_oChar->GetValue());
 					}
 					break;
 				case OOX::et_w_t:

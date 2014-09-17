@@ -192,7 +192,7 @@ namespace OOX
 
 namespace OOX
 {
-	static const CPath c_oContentTypeFileName = L"[Content_Types].xml";
+    static const CPath c_oContentTypeFileName (_T("[Content_Types].xml"));
 
 	class CContentTypes
 	{

@@ -7,6 +7,7 @@
 
 #include "../Drawing/DrawingStyles.h"
 #include "../Drawing/DrawingShared.h"
+#include "../../SystemUtility/SystemUtility.h"
 
 namespace OOX
 {

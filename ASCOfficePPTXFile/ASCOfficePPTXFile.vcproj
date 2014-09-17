@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="ASCOfficePPTXFile"
 	ProjectGUID="{70078FE7-BE4F-493C-84F3-F98F151587F5}"
 	RootNamespace="ASCOfficePPTXFile"
@@ -54,7 +54,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\..\..\Addons\ZLib;&quot;$(SolutionDir)/../Common/DocxFormat/Source/XML/libxml2/XML/include&quot;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -444,11 +444,6 @@
 				RelativePath=".\ASCOfficePPTXFileRealization.cpp"
 				>
 			</File>
-			<File
-				RelativePath="..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp"
-				>
-			</File>
-			<File
 				RelativePath="stdafx.cpp"
 				>
 				<FileConfiguration
@@ -484,10 +479,6 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath="..\Common\DocxFormat\Source\XML\stringcommon.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -509,20 +500,11 @@
 				RelativePath=".\ASCOfficePPTXFileComInterface.h"
 				>
 			</File>
-			<File
-				RelativePath="..\Common\DocxFormat\Source\XML\libxml2\libxml2.h"
-				>
-			</File>
-			<File
 				RelativePath="Resource.h"
 				>
 			</File>
 			<File
 				RelativePath="stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\DocxFormat\Source\XML\stringcommon.h"
 				>
 			</File>
 		</Filter>

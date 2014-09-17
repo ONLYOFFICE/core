@@ -19,6 +19,8 @@ namespace OOX
 
 		CPath& operator=(const CPath& oSrc);
 		CPath& operator=(const CString& oSrc);
+        CPath& operator=(LPCSTR oSrc);
+        CPath& operator=(LPCWSTR oSrc);
 
 		friend CPath operator/(const CPath& path1, const CPath& path2)
 		{

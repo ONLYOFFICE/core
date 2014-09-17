@@ -28,18 +28,18 @@ namespace SimpleTypes
 
 		virtual EOptimizeForBrowserTarget FromString(CString &sValue)
 		{
-			if       ( _T("W3C XHTML+CSS1") == sValue ) m_eValue = optforbrowserXhtmlCSS1;
-			else if  ( _T("W3C HTML4+CSS1") == sValue ) m_eValue = optforbrowserHtml4CSS1;
-			else if  ( _T("W3C XHTML+CSS2") == sValue ) m_eValue = optforbrowserXhtmlCSS2;
-			else if  ( _T("W3C HTML4+CSS2") == sValue ) m_eValue = optforbrowserHtml4CSS2;
-			else                                        m_eValue = eDefValue;
+            if       ( _T("W3C XHTML+CSS1") == sValue ) this->m_eValue = optforbrowserXhtmlCSS1;
+            else if  ( _T("W3C HTML4+CSS1") == sValue ) this->m_eValue = optforbrowserHtml4CSS1;
+            else if  ( _T("W3C XHTML+CSS2") == sValue ) this->m_eValue = optforbrowserXhtmlCSS2;
+            else if  ( _T("W3C HTML4+CSS2") == sValue ) this->m_eValue = optforbrowserHtml4CSS2;
+            else                                        this->m_eValue = eDefValue;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual CString                   ToString() const 
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case optforbrowserXhtmlCSS1 : return _T("W3C XHTML+CSS1");
 			case optforbrowserHtml4CSS1 : return _T("W3C HTML4+CSS1 ");

@@ -862,8 +862,9 @@ namespace OOX
 					XmlUtils::CXmlNode oAbstractNumNode;
 					if ( oAbstractNumList.GetAt( nIndex, oAbstractNumNode ) )
 					{
-						OOX::Numbering::CAbstractNum oAbstractNum = oAbstractNumNode;
-						m_arrAbstractNum.Add( oAbstractNum );
+                        //OOX::Numbering::CAbstractNum oAbstractNum = oAbstractNumNode;
+
+                        m_arrAbstractNum.push_back( /*oAbstractNum*/ new OOX::Numbering::CAbstractNum (oAbstractNumNode) );
 					}
 				}
 
@@ -875,8 +876,8 @@ namespace OOX
 					XmlUtils::CXmlNode oNumNode;
 					if ( oNumList.GetAt( nIndex, oNumNode ) )
 					{
-						OOX::Numbering::CNum oNum = oNumNode;
-						m_arrNum.Add( oNum );
+                        //OOX::Numbering::CNum oNum = oNumNode;
+                        m_arrNum.push_back( /*oNum*/ new OOX::Numbering::CNum (oNumNode) );
 					}
 				}
 
@@ -894,8 +895,8 @@ namespace OOX
 					XmlUtils::CXmlNode oNumNode;
 					if ( oNumPicList.GetAt( nIndex, oNumNode ) )
 					{
-						OOX::Numbering::CNumPicBullet oNum = oNumNode;
-						m_arrNumPicBullet.Add( oNum );
+                        //OOX::Numbering::CNumPicBullet oNum = oNumNode;
+                        m_arrNumPicBullet.push_back( /*oNum*/ new OOX::Numbering::CNumPicBullet (oNumNode) );
 					}
 				}
 			}

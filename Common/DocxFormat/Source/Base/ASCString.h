@@ -88,18 +88,6 @@ static std::string stringWstingToUtf8String (const std::wstring& aaSrc)
     std::wstring aSrc = aaSrc;
     UTF32 *pStrUtf32 = (UTF32 *) &aSrc[0];
 
-
-    const UTF32 *pStrUtf32Test = reinterpret_cast<const UTF32 *> (aSrc.c_str());
-    wchar_t *pStrUtf32Test2 = &aSrc[0];
-    void *pStrUtf32Test3 = pStrUtf32Test2;
-    UTF32 *pStrUtf32Test4 = (UTF32 *) pStrUtf32Test3;
-    uint32_t *pStrUtf32Test5 = (uint32_t *) pStrUtf32Test3;
-    uint64_t pStrUtf32Test6 = (uint64_t) pStrUtf32Test3;
-    uint64_t *pStrUtf32Test7 = (uint64_t *) pStrUtf32Test3;
-
-    UTF32 *pStrUtf32Test8 = (UTF32 *) pStrUtf32Test6;
-
-
     uint32_t nLength = aSrc.length();
     uint32_t nDstLength = 4*nLength + 1;
     UTF8 *pStrUtf8 = new UTF8 [nDstLength];

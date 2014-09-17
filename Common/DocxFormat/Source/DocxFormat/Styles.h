@@ -806,8 +806,8 @@ namespace OOX
 					XmlUtils::CXmlNode oStyleNode;
 					if ( oStyleList.GetAt( nStlyeIndex, oStyleNode ) )
 					{
-						OOX::CStyle oStyle = oStyleNode;
-						m_arrStyle.Add( oStyle );
+                        //OOX::CStyle oStyle = oStyleNode;
+                        m_arrStyle.push_back( /*oStyle*/ new OOX::CStyle (oStyleNode) );
 					}
 				}
 			}

@@ -63,8 +63,8 @@ namespace PPTX
 			virtual CString toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("xmlns:") + OOX::g_Namespaces.p.m_strName, OOX::g_Namespaces.p.m_strLink);
-				oAttr.Write(_T("xmlns:") + OOX::g_Namespaces.a.m_strName, OOX::g_Namespaces.a.m_strLink);
+				oAttr.Write(_T("xmlns:") + PPTX::g_Namespaces.p.m_strName, PPTX::g_Namespaces.p.m_strLink);
+				oAttr.Write(_T("xmlns:") + PPTX::g_Namespaces.a.m_strName, PPTX::g_Namespaces.a.m_strLink);
 
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(lnRef);

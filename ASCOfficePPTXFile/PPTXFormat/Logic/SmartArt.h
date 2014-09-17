@@ -57,7 +57,7 @@ namespace PPTX
 
 		public:
 
-			nullable<OOX::RId> id_data;
+			nullable<PPTX::RId> id_data;
 
 			nullable<PPTX::Logic::SpTree> diag;
 			smart_ptr<FileContainer> m_oCommonRels;
@@ -128,7 +128,7 @@ namespace PPTX
 
 		public:
 
-			nullable<OOX::RId> id_data;
+			nullable<PPTX::RId> id_data;
 
 			LONG m_lChartNumber;
 			LPSAFEARRAY m_pData;

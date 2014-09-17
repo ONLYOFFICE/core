@@ -1,6 +1,8 @@
 #pragma once
 #include "Converter.h"
 
+typedef void (*load_from_resource)(void*, int, CString&);
+
 namespace NSBinPptxRW
 {
 	class CPPTXWriter
@@ -37,13 +39,17 @@ namespace NSBinPptxRW
 
 		BOOL							m_bIsDefaultNoteMaster;
 		PPTX::NotesSlide				m_oDefaultNote;
-		
+
+		load_from_resource m_fCallback;
+		void* m_pCallbackArg;
 	public:
 
-		CPPTXWriter()
+		CPPTXWriter(load_from_resource fCallback, void* pCallbackArg)
 		{
 			m_strDstFolder = _T("");
 			m_bIsDefaultNoteMaster = TRUE;
+			m_fCallback = fCallback;
+			m_pCallbackArg = pCallbackArg;
 		}
 		~CPPTXWriter()
 		{
@@ -909,25 +915,7 @@ namespace NSBinPptxRW
 		}
 		void CreateDefaultNotesMasters(int nIndexTheme)
 		{
-			HINSTANCE hInst = _AtlBaseModule.GetModuleInstance();
-			
-			CString strThemeNotes = _T("");
-			strThemeNotes.Format(_T("\\ppt\\theme\\theme%d.xml"), (int)m_arThemes.GetCount() + 1);
-			LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_XML_NOTESTHEME), _T("PPTXW"), m_strDstFolder + strThemeNotes);
-
-			CDirectory::CreateDirectory(m_strDstFolder + _T("\\ppt\\notesMasters"));
-			LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_XML_NOTESMASTER), _T("PPTXW"), m_strDstFolder + _T("\\ppt\\notesMasters\\notesMaster1.xml"));
-
-			CDirectory::CreateDirectory(m_strDstFolder + _T("\\ppt\\notesMasters\\_rels"));
-			CString strThemeNotesNum = _T("");
-			strThemeNotesNum.Format(_T("%d"), (int)m_arThemes.GetCount() + 1);
-			CString strVal = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
-<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme") + strThemeNotesNum + _T(".xml\"/></Relationships>");
-			CFile oFileRels;
-			oFileRels.CreateFile(m_strDstFolder + _T("\\ppt\\notesMasters\\_rels\\notesMaster1.xml.rels"));
-			oFileRels.WriteStringUTF8(strVal);
-			oFileRels.CloseFile();
+			m_fCallback(m_pCallbackArg, nIndexTheme, m_strDstFolder);
 		}
 		void CreateDefaultNote()
 		{
@@ -976,26 +964,6 @@ namespace NSBinPptxRW
 			m_oDefaultNote.cSld.spTree.SpTreeElems[0].InitElem(pShape);
 
 			m_oDefaultNote.clrMapOvr = new PPTX::Logic::ClrMapOvr();
-		}
-
-	private:
-
-		void LoadResourceFile(HINSTANCE hInst, LPCTSTR sResName, LPCTSTR sResType, const CString& strDstFile)
-		{
-			HRSRC hrRes = FindResource(hInst, sResName, sResType);
-			if (!hrRes)
-				return;
-
-			HGLOBAL hGlobal = LoadResource(hInst, hrRes);
-			DWORD sz = SizeofResource(hInst, hrRes);
-			void* ptrRes = LockResource(hGlobal);
-			
-			CFile oFile;
-			oFile.CreateFile(strDstFile);
-			oFile.WriteFile(ptrRes, sz);
-
-			UnlockResource(hGlobal);
-			FreeResource(hGlobal);
 		}
 	};
 }

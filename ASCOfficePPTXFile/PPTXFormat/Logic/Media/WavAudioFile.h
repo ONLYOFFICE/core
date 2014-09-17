@@ -56,7 +56,7 @@ namespace PPTX
 
 		public:
 			nullable_string name;
-			OOX::RId		embed;
+			PPTX::RId		embed;
 		public:
 			CString			m_name;
 		protected:

@@ -398,7 +398,7 @@ namespace NSBinPptxRW
 		IUnknown* m_pMainDocument;
 
 		smart_ptr<PPTX::FileContainer>	ThemeDoc;
-		smart_ptr<OOX::WritingElement>	ClrMapDoc;
+		smart_ptr<PPTX::WritingElement>	ClrMapDoc;
 
 	private:
 		BYTE*		m_pStreamData;
@@ -1221,7 +1221,6 @@ namespace NSBinPptxRW
 		SAFEARRAY* m_pSourceArray;
 
 		LONG		m_lDocumentType;
-		IUnknown*	m_pDrawingConverter;
 
 		CRelsGenerator* m_pRels;
 		CAtlArray<CRelsGenerator*> m_stackRels;
@@ -1239,7 +1238,6 @@ namespace NSBinPptxRW
 			m_strContentTypes = _T("");
 
 			m_lDocumentType = XMLWRITER_DOC_TYPE_PPTX;
-			m_pDrawingConverter = NULL;
 
 			m_pRels = new CRelsGenerator();
 			m_nCurrentRelsStack = -1;

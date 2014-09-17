@@ -6,9 +6,9 @@
 #include "RelationShip.h"
 #include "./../RId.h"
 
-namespace OOX {class External;}
+namespace PPTX {class External;}
 
-namespace OOX
+namespace PPTX
 {
 	namespace Rels
 	{
@@ -32,16 +32,16 @@ namespace OOX
 			}
 
 		public:
-			void registration(const RId& rId, const CString& type, const CPath& filename)
+			void registration(const RId& rId, const CString& type, const OOX::CPath& filename)
 			{
 				m_items.Add(RelationShip(rId, type, filename));
 			}
-			void registration(const RId& rId, const smart_ptr<OOX::External> external)
+			void registration(const RId& rId, const smart_ptr<PPTX::External> external)
 			{
 				m_items.Add(RelationShip(rId, external));
 			}
 		};
 	} // namespace Rels
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_RELS_RELATION_TABLE_INCLUDE_H_

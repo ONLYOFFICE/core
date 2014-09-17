@@ -39,8 +39,8 @@ namespace PPTX
 			oNode.ReadNodeValueBase(_T("dcterms:modified"), modified);
 			oNode.ReadNodeValueBase(_T("dcterms:created"), created);
 
-	//		created = OOX::DateTime::Parse(document.Root.element("created").text().ToString());
-	//			modified = OOX::DateTime::Parse(document.Root.element("modified").text().ToString());
+	//		created = PPTX::DateTime::Parse(document.Root.element("created").text().ToString());
+	//			modified = PPTX::DateTime::Parse(document.Root.element("modified").text().ToString());
 	/*
 			category = document.Root.element("category").text();
 			contentStatus = document.Root.element("contentStatus").text();
@@ -48,18 +48,18 @@ namespace PPTX
 	//identifier - ???
 	//			keywords = document.Root.element("keywords").text();
 			language = document.Root.element("language").text();
-	//			lastPrinted = OOX::DateTime::Parse(document.Root.element("lastPrinted").text().ToString());
+	//			lastPrinted = PPTX::DateTime::Parse(document.Root.element("lastPrinted").text().ToString());
 			subject = document.Root.element("subject").text();
 			version = document.Root.element("version").text();
 	*/
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("xmlns:dc"), OOX::g_Namespaces.dc.m_strLink);
-			//oAttr.Write(_T("xmlns:cp"), OOX::g_Namespaces.cp.m_strLink);
-			oAttr.Write(_T("xmlns:dcterms"), OOX::g_Namespaces.dcterms.m_strLink);
-			oAttr.Write(_T("xmlns:xsi"), OOX::g_Namespaces.xsi.m_strLink);
+			oAttr.Write(_T("xmlns:dc"), PPTX::g_Namespaces.dc.m_strLink);
+			//oAttr.Write(_T("xmlns:cp"), PPTX::g_Namespaces.cp.m_strLink);
+			oAttr.Write(_T("xmlns:dcterms"), PPTX::g_Namespaces.dcterms.m_strLink);
+			oAttr.Write(_T("xmlns:xsi"), PPTX::g_Namespaces.xsi.m_strLink);
 
 			XmlUtils::CNodeValue oValue;
 			oValue.Write2(_T("dc:title"), title);
@@ -113,9 +113,9 @@ namespace PPTX
 		}
 
 	public:
-		virtual const OOX::FileType type() const
+		virtual const PPTX::FileType type() const
 		{
-			return OOX::FileTypes::Core;
+			return PPTX::FileTypes::Core;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -149,10 +149,10 @@ namespace PPTX
 
 			pWriter->StartAttributes();
 
-			pWriter->WriteAttribute(_T("xmlns:cp"), OOX::g_Namespaces.cp.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:dc"), OOX::g_Namespaces.dc.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:dcterms"), OOX::g_Namespaces.dcterms.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:xsi"), OOX::g_Namespaces.xsi.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:cp"), PPTX::g_Namespaces.cp.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:dc"), PPTX::g_Namespaces.dc.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:dcterms"), PPTX::g_Namespaces.dcterms.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:xsi"), PPTX::g_Namespaces.xsi.m_strLink);
 
 			pWriter->EndAttributes();
 
@@ -172,9 +172,9 @@ namespace PPTX
 		nullable_string		creator;
 		nullable_string		lastModifiedBy;
 		nullable_string		revision;
-//		nullable_property<OOX::DateTime> created;
+//		nullable_property<PPTX::DateTime> created;
 		nullable_string		created;
-//		nullable_property<OOX::DateTime> modified;
+//		nullable_property<PPTX::DateTime> modified;
 		nullable_string		modified;
 /*
 		nullable_property<std::string> category;
@@ -183,7 +183,7 @@ namespace PPTX
 //identifier - ???
 //			nullable_property<std::string> keywords;
 		nullable_property<std::string> language;
-		nullable_property<OOX::DateTime> lastPrinted;
+		nullable_property<PPTX::DateTime> lastPrinted;
 		nullable_property<std::string> subject;
 		nullable_property<std::string> version;
 */

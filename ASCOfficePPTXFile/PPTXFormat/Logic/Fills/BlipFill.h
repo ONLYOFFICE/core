@@ -323,7 +323,7 @@ namespace PPTX
 										if (!blip.is_init())
 											blip = new PPTX::Logic::Blip();
 
-										blip->embed = new OOX::RId((size_t)lId);
+										blip->embed = new PPTX::RId((size_t)lId);
 
 										pReader->Skip(1); // end attribute
 										break;

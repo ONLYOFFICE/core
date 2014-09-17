@@ -8,7 +8,7 @@
 #include "FileType.h"
 #include "ContentTypes/File.h"
 
-namespace OOX
+namespace PPTX
 {
 	class File
 	{
@@ -17,14 +17,14 @@ namespace OOX
 		virtual ~File(){}
 
 	public:
-		virtual void read(const CPath& filename)																	= 0;
-		virtual void write(const CPath& filename, const CPath& directory, ContentTypes::File& content) const		= 0;
+		virtual void read(const OOX::CPath& filename)																	= 0;
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const		= 0;
 
 	public:
-		virtual const OOX::FileType type() const																	= 0;
-		virtual const CPath DefaultDirectory() const																= 0;
-		virtual const CPath DefaultFileName() const																	= 0;
+		virtual const PPTX::FileType type() const																	= 0;
+		virtual const OOX::CPath DefaultDirectory() const																= 0;
+		virtual const OOX::CPath DefaultFileName() const																	= 0;
 	};
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_FILE_INCLUDE_H_

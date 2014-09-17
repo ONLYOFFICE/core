@@ -5,7 +5,7 @@
 #include "../../../Common/DocxFormat/Source/Utility/Utility.h"
 
 
-namespace OOX
+namespace PPTX
 {
 	class DateTime
 	{
@@ -46,6 +46,6 @@ namespace OOX
 	};
 
 	const CString DateTime::s_pattern = _T("%YYYY-%MM-%DDT%hh:%mm:%ssZ");
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_DATE_TIME_INCLUDE_H_

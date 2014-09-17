@@ -4,7 +4,7 @@
 
 #include "Media.h"
 
-namespace OOX
+namespace PPTX
 {
 	class Audio : public Media
 	{
@@ -12,7 +12,7 @@ namespace OOX
 		Audio()
 		{
 		}
-		Audio(const CPath& filename)
+		Audio(const OOX::CPath& filename)
 		{
 			read(filename);
 		}
@@ -25,15 +25,15 @@ namespace OOX
 		{
 			return FileTypes::Audio;
 		}
-		virtual const CPath DefaultDirectory() const
+		virtual const OOX::CPath DefaultDirectory() const
 		{
 			return type().DefaultDirectory();
 		}
-		virtual const CPath DefaultFileName() const
+		virtual const OOX::CPath DefaultFileName() const
 		{
 			return m_filename.GetFilename();
 		}
 	};
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_AUDIO_INCLUDE_H_

@@ -1,62 +1,28 @@
-// CAVSOfficePPTXFile.h : Declaration of the CAVSOfficePPTXFile
+#ifndef ASC_OFFICE_PPTX_FILE
+#define ASC_OFFICE_PPTX_FILE
 
-#pragma once
-#include "stdafx.h"
-#include "resource.h"       // main symbols
-
-#include "../Common/OfficeFileTemplate.h"
-
+//todo
+#include <atlbase.h>
+#include <atlstr.h>
+#include "../Common/DocxFormat/Source/Base/Base.h"
 #include "PPTXFormat/PPTXEvent.h"
-#include "../../../../Common/GdiPlusEx.h"
 
-#include <shellapi.h>
-#include <shlobj.h>
-#include <shlwapi.h>
-#pragma comment( lib, "shell32.lib" ) // добавить shell32.lib
+typedef void (*load_from_resource)(void*, int, CString&);
+typedef bool (*extract_to_directory)(void*, CString&, CString&);
+typedef bool (*compress_from_directory)(void*, CString&, CString&);
+typedef bool (*progress_operation)(void*, long, long);
 
-#include "Editor\PPTXWriter.h"
-
-// IAVSOfficePPTXFile
-[object, uuid("ED1EC17E-EE0E-4cae-9E63-1C57235CE286"), dual, pointer_default(unique)]
-__interface IAVSOfficePPTXFile : IAVSOfficeFileTemplate
+class CGdiPlusInit;
+namespace PPTX
 {
-//	[id(3), helpstring("method SaveAsDrawingXML")] HRESULT SaveAsDrawingXML([in] BSTR sSrcFileName, [in] BSTR sDestPath, [in] BSTR sDestXMLFileName);
+	class Folder;
+}
 
-	[propget, id(4), helpstring("property TempDirectory")] HRESULT TempDirectory([out, retval] BSTR* pVal);
-	[propput, id(4), helpstring("property TempDirectory")] HRESULT TempDirectory([in] BSTR newVal);
-	[id(5), helpstring("method GetDVDXml")] HRESULT GetDVDXml([out,retval] BSTR* pbstrPTTXml);
-	[id(6), helpstring("method GetBluRayXml")] HRESULT GetBluRayXml([out,retval] BSTR* pbstrDVDXml);
-	[propget, id(7), helpstring("property DrawingXml")] HRESULT DrawingXml([out, retval] BSTR* pVal);
-
-	[id(2000 + 0)] HRESULT SetAdditionalParam([in] BSTR ParamName, [in] VARIANT ParamValue);
-	[id(2001 + 1)] HRESULT GetAdditionalParam([in] BSTR ParamName, [out, retval] VARIANT* ParamValue);
-};
-
-// IAVSOfficePPTXFile2
-[object, uuid("4F4EA472-EC78-495c-B627-5798EA364468"), dual, pointer_default(unique)]
-__interface IAVSOfficePPTXFile2 : IDispatch
-{
-	[id(10000 + 0)] HRESULT OpenFileToPPTY([in] BSTR bsInputDir, [in] BSTR bsFileDst);
-	[id(10000 + 1)] HRESULT OpenDirectoryToPPTY([in] BSTR bsInputDir, [in] BSTR bsFileDst);
-
-	[id(10000 + 2)] HRESULT SetMediaDir([in] BSTR bsMediaDir);
-	[id(10000 + 3)] HRESULT SetFontDir([in] BSTR bsFontDir);
-
-	[id(10000 + 4)] HRESULT SetUseSystemFonts([in] VARIANT_BOOL useSystemFonts);
-	[id(10000 + 5)] HRESULT ConvertPPTYToPPTX([in] BSTR bsInputFile, [in] BSTR bsFileDst);
-
-	[id(10000 + 6)] HRESULT SetThemesDir([in] BSTR bsThemesPath);
-};
-
-// CAVSOfficePPTXFile
-[coclass, uuid("5731F488-94FF-44b7-8A3E-54CBB746F5B1"), event_source(com), threading(apartment), vi_progid("AVSOfficePPTXFile.OfficePPTXFile"), progid("AVSOfficePPTXFile.OfficePPTXFile.1"), version(1.0), registration_script("control.rgs")]
-class ATL_NO_VTABLE CAVSOfficePPTXFile 
-	:	public IAVSOfficePPTXFile
-	,	public IAVSOfficePPTXFile2
-	,	public PPTX::IPPTXEvent
+class CPPTXFile : public PPTX::IPPTXEvent
 {
 private:
-	OfficeUtils::IOfficeUtils*		m_pOfficeUtils;
+	//todo
+	//OfficeUtils::IOfficeUtils*		m_pOfficeUtils;
 	PPTX::Folder*					m_pFolder;
 	CStringW						m_strTempDir;
 	CString							m_strDirectory;
@@ -69,424 +35,42 @@ private:
 
 	CString		m_strFolderThemes;
 
-	CGdiPlusInit m_oInit;
-
+	CGdiPlusInit* m_pInit;
+	load_from_resource m_fCallbackResource;
+	extract_to_directory m_fCallbackExtract;
+	compress_from_directory m_fCallbackCompress;
+	progress_operation m_fCallbackProgress;
+	void* m_pCallbackArg;
 public:
 
-	__event __interface _IAVSOfficeFileTemplateEvents2;
-	CAVSOfficePPTXFile()
-	{
-		WCHAR buffer[4096];
-		GetTempPathW(4096, buffer);
-		m_strTempDir = CStringW(buffer);
-		GetLongPathNameW(m_strTempDir.GetString(), buffer, 4096);
-		m_strTempDir = CStringW(buffer) + CStringW("_PPTX\\");
+	CPPTXFile(load_from_resource fCallbackResource, extract_to_directory fCallbackExtract, compress_from_directory fCallbackCompress, progress_operation fCallbackProgress, void* pCallbackArg);
 
-		//
-		m_strFontDirectory = _T("");
-		m_strMediaDirectory = _T("");
-		m_bIsUseSystemFonts = FALSE;
-		m_strEmbeddedFontsDirectory = _T("");
-
-		m_strFolderThemes = _T("");
-	}
-
-	~CAVSOfficePPTXFile()
-	{
-	}
-
-	DECLARE_PROTECT_FINAL_CONSTRUCT()
-
-	HRESULT FinalConstruct()
-	{
-		m_pFolder		= NULL;
-		m_pOfficeUtils	= NULL;
-
-		if (S_OK != CoCreateInstance(__uuidof(OfficeUtils::COfficeUtils), NULL, CLSCTX_INPROC_SERVER, __uuidof(OfficeUtils::IOfficeUtils),(void**)&m_pOfficeUtils))
-			return S_FALSE;
-
-		m_oInit.Init();
-		return S_OK;
-	}
-
-	void FinalRelease()
-	{
-		RELEASEINTERFACE(m_pOfficeUtils);
-		RELEASEOBJECT(m_pFolder);
-	}
-
+	~CPPTXFile();
 public:
-	HRESULT LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions)
-	{
-		CStringW localTempDir(sDstPath);
-		if((sDstPath != NULL) || (localTempDir != ""))
-		{
-			int res = SHCreateDirectoryExW(NULL, localTempDir.GetString(), NULL);
-			if((res != ERROR_SUCCESS) && (res != ERROR_ALREADY_EXISTS) && (res != ERROR_FILE_EXISTS))
-				return S_FALSE;
-			put_TempDirectory(sDstPath);
-		}
-		else
-		{
-			int res = SHCreateDirectoryExW(NULL, m_strTempDir, NULL);
-			if((res != ERROR_SUCCESS) && (res != ERROR_ALREADY_EXISTS) && (res != ERROR_FILE_EXISTS))
-				return S_FALSE;
-		}
-		localTempDir = m_strTempDir;
-
-		/*
-		SHFILEOPSTRUCTW shfos;
-		ZeroMemory(&shfos, sizeof(shfos));
-		shfos.wFunc = FO_DELETE;
-		CStringW _local = localTempDir + CStringW(L"*.*");
-		_local.AppendChar(0);
-		_local.AppendChar(0);
-		shfos.pFrom = _local.GetString();
-		shfos.fFlags = FOF_SILENT + FOF_NOCONFIRMATION;
-		if(SHFileOperationW(&shfos) != 0)
-			return S_FALSE;
-		*/
-
-		if(m_pOfficeUtils == NULL)
-			return S_FALSE;
-
-		BSTR bsParam = localTempDir.AllocSysString();
-		HRESULT hr = m_pOfficeUtils->ExtractToDirectory( sSrcFileName, bsParam, NULL, 0);
-		SysFreeString(bsParam);
-		if(hr != S_OK)
-			return hr;
-
-		RELEASEOBJECT(m_pFolder);
-		m_pFolder = new PPTX::Folder();
-
-		if(!m_pFolder->isValid(localTempDir))
-		{
-			RELEASEOBJECT(m_pFolder);
-			return S_FALSE;
-		}
-		m_pFolder->read(localTempDir, (PPTX::IPPTXEvent*)this);
-		if(GetPercent() < 1000000)
-		{
-			RELEASEOBJECT(m_pFolder);
-			return S_FALSE;
-		}
-		smart_ptr<PPTX::Presentation> presentation = m_pFolder->get(OOX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
-		if (!presentation.is_init())
-		{
-			RemoveDirOrFile(m_strTempDir, false);
-			return S_FALSE;
-		}
-
-		m_strDirectory = (CString)sSrcFileName;
-		int nIndex = m_strDirectory.ReverseFind(TCHAR('\\'));
-		if (-1 != nIndex)
-			m_strDirectory = m_strDirectory.Mid(0, nIndex);
-
-		return S_OK;
-	}
+	HRESULT LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions);
 public:
-	HRESULT SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions)
-	{
-		if (NULL == m_pFolder)
-			return S_FALSE;
-
-		OOX::CPath oPath;
-		oPath.m_strFilename = CString(sSrcPath);
-		m_pFolder->write(oPath);
-
-		return m_pOfficeUtils->CompressFileOrDirectory( sSrcPath, sDstFileName, -1 );
-	}
-
+	HRESULT SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions);
 public:
-	STDMETHOD(get_TempDirectory)(BSTR* pVal)
-	{
-		*pVal = m_strTempDir.AllocSysString();
-		return S_OK;
-	}
-	STDMETHOD(put_TempDirectory)(BSTR newVal)
-	{
-		CStringW TempStr(newVal);
-		if(PathIsDirectoryW(TempStr.GetString()))
-		{
-			if(TempStr.Right(1) != L"\\")
-				TempStr += L"\\";
-			m_strTempDir = TempStr;
-			return S_OK;
-		}
-		return S_FALSE;
-	}
+	STDMETHOD(get_TempDirectory)(BSTR* pVal);
+	STDMETHOD(put_TempDirectory)(BSTR newVal);
 public:
-	STDMETHOD(GetDVDXml)(BSTR* pbstrPTTXml)
-	{
-		return S_OK;
-	}
-	STDMETHOD(GetBluRayXml)(BSTR* pbstrDVDXml)
-	{
-		return S_OK;
-	}
+	STDMETHOD(GetDVDXml)(BSTR* pbstrPTTXml);
+	STDMETHOD(GetBluRayXml)(BSTR* pbstrDVDXml);
 public:
-	STDMETHOD(get_DrawingXml)(BSTR* pVal)
-	{
-		if ((NULL == m_pFolder) || (NULL == pVal))
-			return S_FALSE;
-
-		return S_OK;
-	}
-
-	STDMETHOD(SetAdditionalParam)(BSTR ParamName, VARIANT ParamValue)
-	{
-		CString sParamName; sParamName = ParamName;
-		if (_T("EmbeddedFontsDirectory") == sParamName && ParamValue.vt == VT_BSTR)
-		{		
-			m_strEmbeddedFontsDirectory = ParamValue.bstrVal;
-			return S_OK;
-		}		
-		return S_OK;
-	}
-
-	STDMETHOD(GetAdditionalParam)(BSTR ParamName, VARIANT* ParamValue)
-	{
-		if (NULL == ParamValue)
-			return S_FALSE;
-
-		return S_OK;
-	}
-
-	virtual bool Progress(long ID, long Percent)
-	{
-		SHORT res = 0;
-		percent = Percent;
-		OnProgressEx(ID, Percent, &res);
-		return (res != 0);
-	}
-
+	STDMETHOD(get_DrawingXml)(BSTR* pVal);
+	STDMETHOD(SetAdditionalParam)(BSTR ParamName, VARIANT ParamValue);
+	STDMETHOD(GetAdditionalParam)(BSTR ParamName, VARIANT* ParamValue);
+	virtual bool Progress(long ID, long Percent);
 	// to PPTY
-	STDMETHOD(SetMediaDir)(BSTR bsMediaDir) 
-	{
-		m_strMediaDirectory = bsMediaDir;
-		return S_OK;
-	}
-	STDMETHOD(SetFontDir)(BSTR bsFontDir)
-	{
-		m_strFontDirectory = bsFontDir;
-		return S_OK;
-	}
-	STDMETHOD(SetThemesDir)(BSTR bsDir)
-	{
-		m_strFolderThemes = bsDir;
-		return S_OK;
-	}
-	STDMETHOD(SetUseSystemFonts)(VARIANT_BOOL useSystemFonts) 
-	{
-		m_bIsUseSystemFonts = (VARIANT_TRUE == useSystemFonts);
-		return S_OK;
-	}
-	STDMETHOD(OpenFileToPPTY)(BSTR bsInput, BSTR bsOutput)
-	{
-		int res = SHCreateDirectoryExW(NULL, m_strTempDir, NULL);
-		if((res != ERROR_SUCCESS) && (res != ERROR_ALREADY_EXISTS) && (res != ERROR_FILE_EXISTS))
-			return S_FALSE;
-
-		if (m_pOfficeUtils == NULL)
-			return S_FALSE;
-
-		BSTR localTempDir = m_strTempDir.AllocSysString();
-		HRESULT hr = m_pOfficeUtils->ExtractToDirectory(bsInput, localTempDir, NULL, 0);
-		if(hr != S_OK)
-			return hr;
-
-		SysFreeString(localTempDir);
-
-		RELEASEOBJECT(m_pFolder);
-		m_pFolder = new PPTX::Folder();
-
-		if (!m_pFolder->isValid(m_strTempDir))
-		{
-			RELEASEOBJECT(m_pFolder);
-			return S_FALSE;
-		}
-		m_pFolder->read(m_strTempDir, (PPTX::IPPTXEvent*)this);
-		if(GetPercent() < 1000000)
-		{
-			RELEASEOBJECT(m_pFolder);
-			return S_FALSE;
-		}
-		smart_ptr<PPTX::Presentation> presentation = m_pFolder->get(OOX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
-		if (!presentation.is_init())
-		{
-			RemoveDirOrFile(m_strTempDir, false);
-			return S_FALSE;
-		}
-
-		m_strDirectory = (CString)bsInput;
-		int nIndex = m_strDirectory.ReverseFind(TCHAR('\\'));
-		if (-1 != nIndex)
-			m_strDirectory = m_strDirectory.Mid(0, nIndex);
-
-		NSBinPptxRW::CBinaryFileWriter oBinaryWriter;
-		oBinaryWriter.m_oCommon.CheckFontPicker();
-		oBinaryWriter.m_oCommon.m_pNativePicker->Init(m_strFontDirectory);
-
-		CString sDstFileOutput = bsOutput;
-		m_strMediaDirectory = sDstFileOutput;
-		nIndex = m_strMediaDirectory.ReverseFind(TCHAR('\\'));
-		if (-1 != nIndex)
-			m_strMediaDirectory = m_strMediaDirectory.Mid(0, nIndex);
-
-		oBinaryWriter.m_strMainFolder = m_strMediaDirectory;
-		m_strMediaDirectory = m_strMediaDirectory + _T("\\media");
-		oBinaryWriter.m_oCommon.m_oImageManager.m_strDstMedia = m_strMediaDirectory;
-
-		CDirectory::CreateDirectory(m_strMediaDirectory);
-		
-		if (_T("") != m_strEmbeddedFontsDirectory)
-		{
-			CDirectory::CreateDirectory(m_strEmbeddedFontsDirectory);
-
-			if (NULL != oBinaryWriter.m_oCommon.m_pFontPicker)
-			{
-				oBinaryWriter.m_oCommon.m_pNativePicker->m_bIsEmbeddedFonts = TRUE;
-				oBinaryWriter.m_oCommon.m_pNativePicker->m_oEmbeddedFonts.m_strEmbeddedFontsFolder = m_strEmbeddedFontsDirectory;
-			}
-		}
-		
-		PPTX2EditorAdvanced::Convert(oBinaryWriter, *m_pFolder, m_strDirectory, sDstFileOutput);
-
-		return S_OK;
-
-	}
-	STDMETHOD(OpenDirectoryToPPTY)(BSTR bsInput, BSTR bsOutput)
-	{
-		RELEASEOBJECT(m_pFolder);
-		m_pFolder = new PPTX::Folder();
-
-		if (!m_pFolder->isValid((CString)bsInput))
-		{
-			RELEASEOBJECT(m_pFolder);
-			return S_FALSE;
-		}
-
-		m_pFolder->read((CString)bsInput, (PPTX::IPPTXEvent*)this);
-		if(GetPercent() < 1000000)
-		{
-			RELEASEOBJECT(m_pFolder);
-			return S_FALSE;
-		}
-		smart_ptr<PPTX::Presentation> presentation = m_pFolder->get(OOX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
-		if (!presentation.is_init())
-		{
-			RemoveDirOrFile(m_strTempDir, false);
-			return S_FALSE;
-		}
-
-		m_strDirectory = (CString)bsInput;
-		int nIndex = m_strDirectory.ReverseFind(TCHAR('\\'));
-		if (-1 != nIndex)
-			m_strDirectory = m_strDirectory.Mid(0, nIndex);
-
-		NSBinPptxRW::CBinaryFileWriter oBinaryWriter;
-		oBinaryWriter.m_oCommon.CheckFontPicker();
-		oBinaryWriter.m_oCommon.m_pNativePicker->Init(m_strFontDirectory);
-
-		CString sDstFileOutput = (CString)bsOutput;
-		m_strMediaDirectory = sDstFileOutput;
-		nIndex = m_strMediaDirectory.ReverseFind(TCHAR('\\'));
-		if (-1 != nIndex)
-			m_strMediaDirectory = m_strMediaDirectory.Mid(0, nIndex);
-
-		oBinaryWriter.m_strMainFolder = m_strMediaDirectory;
-		m_strMediaDirectory = m_strMediaDirectory + _T("\\media");
-		oBinaryWriter.m_oCommon.m_oImageManager.m_strDstMedia = m_strMediaDirectory;
-
-		CDirectory::CreateDirectory(m_strMediaDirectory);
-		
-		PPTX2EditorAdvanced::Convert(oBinaryWriter, *m_pFolder, m_strDirectory, sDstFileOutput);
-
-		return S_OK;
-	}
-
-	STDMETHOD(ConvertPPTYToPPTX)(BSTR bsInput, BSTR bsOutput)
-	{
-#ifdef _DEBUG
-		m_strTempDir = _T("C:\\PPTMemory\\PPTX_test");
-#endif
-
-		int len = m_strTempDir.GetLength();
-		while (len != 0 && m_strTempDir[len - 1] == (TCHAR)'\\')
-		{
-			m_strTempDir.Delete(len - 1);
-			--len;
-		}
-
-		NSBinPptxRW::CPPTXWriter oWriter;
-		oWriter.Init(m_strTempDir);
-		
-		CFile oFileBinary;
-		oFileBinary.OpenFile((CString)bsInput);
-		LONG lFileSize = (LONG)oFileBinary.GetFileSize();
-		BYTE* pSrcBuffer = new BYTE[lFileSize];
-		oFileBinary.ReadFile(pSrcBuffer, (DWORD)lFileSize);
-		oFileBinary.CloseFile();
-		CString srcFolder = CDirectory::GetFolderPath((CString)bsInput);
-		oWriter.OpenPPTY(pSrcBuffer, lFileSize, srcFolder, m_strFolderThemes);
-		RELEASEARRAYOBJECTS(pSrcBuffer);
-
-		BSTR bsInput2 = m_strTempDir.AllocSysString();
-		HRESULT hRes = m_pOfficeUtils->CompressFileOrDirectory(bsInput2, bsOutput, -1 );
-		SysFreeString(bsInput2);
-
-		// нужно удалить темповую папку
-		RemoveDirOrFile(m_strTempDir);
-
-		return hRes;
-	}
-
+	STDMETHOD(SetMediaDir)(BSTR bsMediaDir);
+	STDMETHOD(SetFontDir)(BSTR bsFontDir);
+	STDMETHOD(SetThemesDir)(BSTR bsDir);
+	STDMETHOD(SetUseSystemFonts)(VARIANT_BOOL useSystemFonts);
+	STDMETHOD(OpenFileToPPTY)(BSTR bsInput, BSTR bsOutput);
+	STDMETHOD(OpenDirectoryToPPTY)(BSTR bsInput, BSTR bsOutput);
+	STDMETHOD(ConvertPPTYToPPTX)(BSTR bsInput, BSTR bsOutput);
 private:
 
-	INT32 RemoveDirOrFile(CString sPath, bool bIsRemoveHead = true)
-	{
-		DWORD dwFileAttrib = ::GetFileAttributes( sPath );
-		if(  dwFileAttrib != INVALID_FILE_ATTRIBUTES )
-		{
-			DWORD dwResult = 0;
-			if( 0 != (FILE_ATTRIBUTE_DIRECTORY & dwFileAttrib) )
-			{
-				HANDLE Handle;
-				WIN32_FIND_DATA FindData;
-				DWORDLONG Result = 0;
-
-				Handle = FindFirstFile( ( sPath + _T("\\*.*") ), &FindData );
-				if ( Handle == INVALID_HANDLE_VALUE )
-					return 0;
-				do
-				{
-					BOOL bRes = TRUE;
-					if( ( CString( FindData.cFileName ) != _T(".") ) && ( CString( FindData.cFileName ) != _T("..") ) )
-						if( FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
-							Result += RemoveDirOrFile( sPath + _T("\\") + FindData.cFileName ); //
-						else
-							bRes = DeleteFile( sPath + _T("\\") + FindData.cFileName );
-					if( FALSE == bRes )
-						dwResult += 1;
-				}
-				while( FindNextFile( Handle, &FindData ) != 0 );
-				FindClose( Handle );
-
-				if (bIsRemoveHead)
-				{
-					BOOL bRes = RemoveDirectory( sPath );
-					if( FALSE == bRes )
-						dwResult += 1;
-				}
-			}
-			else
-			{
-				if( FALSE == DeleteFile( sPath ) )
-					dwResult = 1;
-			}
-
-			return dwResult;
-		}// 0 - все закончилось хорошо
-		return 0;
-	}
+	INT32 RemoveDirOrFile(CString sPath, bool bIsRemoveHead = true);
 };
+#endif //ASC_OFFICE_PPTX_FILE

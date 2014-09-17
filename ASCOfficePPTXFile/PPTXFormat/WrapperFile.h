@@ -10,7 +10,7 @@
 
 namespace PPTX
 {
-	class WrapperFile : public OOX::File
+	class WrapperFile : public PPTX::File
 	{
 	public:
 		WrapperFile()

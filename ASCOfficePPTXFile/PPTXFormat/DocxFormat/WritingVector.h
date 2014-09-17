@@ -4,7 +4,7 @@
 
 #include "WritingElement.h"
 
-namespace OOX
+namespace PPTX
 {
 	template <typename T>
 	class WritingVector : public WritingElement
@@ -61,6 +61,6 @@ namespace OOX
 			return et_Unknown;
 		}
 	};
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_WRITING_VECTOR_INCLUDE_H_

@@ -38,10 +38,10 @@ namespace PPTX
 			NvGraphicFramePr		nvGraphicFramePr;
 			Xfrm					xfrm;
 			//property<Graphic> grpahic;
-			//nullable_property<OOX::RId> dm;
-			//nullable_property<OOX::RId> lo;
-			//nullable_property<OOX::RId> qs;
-			//nullable_property<OOX::RId> cs;
+			//nullable_property<PPTX::RId> dm;
+			//nullable_property<PPTX::RId> lo;
+			//nullable_property<PPTX::RId> qs;
+			//nullable_property<PPTX::RId> cs;
 			nullable_string			spid;
 			nullable<Table>			Table;
 			nullable<SmartArt>		smartArt;

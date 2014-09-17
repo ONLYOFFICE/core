@@ -5,7 +5,7 @@
 #include "./../WritingElement.h"
 #include "ExtensionTable.h"
 
-namespace OOX
+namespace PPTX
 {
 	namespace ContentTypes
 	{
@@ -62,6 +62,6 @@ namespace OOX
 			CString	m_extension;
 		};
 	} // namespace ContentTypes
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_CONTENT_TYPES_DEFAULT_INCLUDE_H_

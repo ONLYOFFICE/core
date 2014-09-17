@@ -53,7 +53,7 @@ namespace PPTX
 				Styles.GetNextValue(pos).SetParentFilePointer(this);
 			}
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
 		{
 			CString strValue = _T("");
 			POSITION pos = Styles.GetStartPosition();
@@ -73,9 +73,9 @@ namespace PPTX
 		}
 
 	public:
-		virtual const OOX::FileType type() const
+		virtual const PPTX::FileType type() const
 		{
-			return OOX::FileTypes::TableStyles;
+			return PPTX::FileTypes::TableStyles;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -199,7 +199,7 @@ namespace PPTX
 
 			pWriter->StartAttributes();
 
-			pWriter->WriteAttribute(_T("xmlns:a"), OOX::g_Namespaces.a.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
 			pWriter->WriteAttribute(_T("def"), def);			
 
 			pWriter->EndAttributes();

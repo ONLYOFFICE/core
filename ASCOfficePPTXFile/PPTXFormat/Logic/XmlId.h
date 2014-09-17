@@ -52,7 +52,7 @@ namespace PPTX
 
 		public:
 			nullable_string			id;
-			OOX::RId				rid;
+			PPTX::RId				rid;
 		public:
 			CString					m_name;
 		protected:

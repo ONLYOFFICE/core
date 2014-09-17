@@ -4,7 +4,7 @@
 
 #include "Media.h"
 
-namespace OOX
+namespace PPTX
 {
 	class Image : public Media
 	{
@@ -12,7 +12,7 @@ namespace OOX
 		Image()
 		{
 		}
-		Image(const CPath& filename)
+		Image(const OOX::CPath& filename)
 		{
 			read(filename);
 		}
@@ -21,13 +21,13 @@ namespace OOX
 		}
 
 	public:
-		virtual void write(const CPath& filename, const CPath& directory, ContentTypes::File& content) const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const
 		{
 			CString newFilename = filename.GetFilename();
-			CPath newFilePath = filename.GetDirectory();
+			OOX::CPath newFilePath = filename.GetDirectory();
 
 			newFilename.Replace((TCHAR)' ', (TCHAR)'_');
-			if (CSystemUtility::IsFileExist(m_filename) && !CSystemUtility::IsFileExist(newFilePath/newFilename))	
+			if (OOX::CSystemUtility::IsFileExist(m_filename) && !OOX::CSystemUtility::IsFileExist(newFilePath/newFilename))	
 			{
 				//if (m_filename.GetExtention(true) == _T(".svm"))
 				//{
@@ -54,15 +54,15 @@ namespace OOX
 		{
 			return FileTypes::Image;
 		}
-		virtual const CPath DefaultDirectory() const
+		virtual const OOX::CPath DefaultDirectory() const
 		{
 			return type().DefaultDirectory();
 		}
-		virtual const CPath DefaultFileName() const
+		virtual const OOX::CPath DefaultFileName() const
 		{
 			return m_filename.GetFilename();
 		}
 	};
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_IMAGE_INCLUDE_H_

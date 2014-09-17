@@ -7,11 +7,11 @@
 #include "./../FileType.h"
 
 
-namespace OOX
+namespace PPTX
 {
 	namespace ContentTypes
 	{
-		static const CPath s_filename = L"[Content_Types].xml";
+		static const OOX::CPath s_filename = L"[Content_Types].xml";
 
 		class File
 		{
@@ -19,7 +19,7 @@ namespace OOX
 			File()
 			{
 			}
-			File(const CPath& path)
+			File(const OOX::CPath& path)
 			{
 				read(path);
 			}
@@ -28,7 +28,7 @@ namespace OOX
 			}
 
 		public:
-			virtual void read(const CPath& path)
+			virtual void read(const OOX::CPath& path)
 			{
 				OOX::CPath oPath = path / s_filename;
 				XmlUtils::CXmlNode oNode;
@@ -38,7 +38,7 @@ namespace OOX
 					Override	= oNode;
 				}
 			}
-			virtual void write(const CPath& path) const
+			virtual void write(const OOX::CPath& path) const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("xmlns"), _T("http://schemas.openxmlformats.org/package/2006/content-types"));
@@ -57,7 +57,7 @@ namespace OOX
 			}
 
 		public:
-			void registration(const CString& type, const CPath& directory, const CPath& filename)
+			void registration(const CString& type, const OOX::CPath& directory, const OOX::CPath& filename)
 			{
 				Override.add(type, directory / filename.m_strFilename);
 				Default.add(directory / filename.m_strFilename);
@@ -68,6 +68,6 @@ namespace OOX
 			DefaultTable	Default;
 		};
 	} // namespace ContentTypes
-} // namespace OOX
+} // namespace PPTX
 
 #endif // DOCX_CONTENT_TYPES_FILE_INCLUDE_H_

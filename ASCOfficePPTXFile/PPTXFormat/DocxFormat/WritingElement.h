@@ -4,7 +4,7 @@
 #include "../../../Common/DocxFormat/Source/XML/XmlUtils.h"
 #include "atlstr.h"
 
-namespace OOX
+namespace PPTX
 {
 #define WritingElement_AdditionConstructors(Class) \
 	Class(XmlUtils::CXmlNode& oNode)\
@@ -177,7 +177,7 @@ namespace OOX
         virtual CString      toXML() const                     = 0;
 		virtual EElementType getType() const
 		{
-			return OOX::et_Unknown;
+			return PPTX::et_Unknown;
 		}
 	};
 }

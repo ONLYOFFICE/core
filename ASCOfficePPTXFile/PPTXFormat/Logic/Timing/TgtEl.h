@@ -62,7 +62,7 @@ namespace PPTX
 
 			//sndTgt
 			nullable_string		name;
-			nullable<OOX::RId>	embed;
+			nullable<PPTX::RId>	embed;
 			nullable_bool		builtIn;
 
 			nullable<SpTgt>		spTgt;

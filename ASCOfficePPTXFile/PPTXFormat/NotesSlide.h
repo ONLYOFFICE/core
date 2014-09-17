@@ -42,12 +42,12 @@ namespace PPTX
 			if (clrMapOvr.IsInit())
 				clrMapOvr->SetParentFilePointer(this);
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("xmlns:a"), OOX::g_Namespaces.a.m_strLink);
-			oAttr.Write(_T("xmlns:r"), OOX::g_Namespaces.r.m_strLink);
-			oAttr.Write(_T("xmlns:p"), OOX::g_Namespaces.p.m_strLink);
+			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
+			oAttr.Write(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
+			oAttr.Write(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
 
 			oAttr.Write(_T("showMasterPhAnim"), showMasterPhAnim);
 			oAttr.Write(_T("showMasterSp"), showMasterSp);
@@ -65,9 +65,9 @@ namespace PPTX
 		}
 
 	public:
-		virtual const OOX::FileType type() const
+		virtual const PPTX::FileType type() const
 		{
-			return OOX::FileTypes::NotesSlide;
+			return PPTX::FileTypes::NotesSlide;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -97,9 +97,9 @@ namespace PPTX
 			pWriter->StartNode(_T("p:notes"));
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("xmlns:a"), OOX::g_Namespaces.a.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:r"), OOX::g_Namespaces.r.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:p"), OOX::g_Namespaces.p.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
 			pWriter->WriteAttribute(_T("showMasterPhAnim"), showMasterPhAnim);
 			pWriter->WriteAttribute(_T("showMasterSp"), showMasterSp);
 			pWriter->EndAttributes();

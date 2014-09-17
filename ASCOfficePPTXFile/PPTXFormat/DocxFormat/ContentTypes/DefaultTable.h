@@ -6,7 +6,7 @@
 #include "Default.h"
 
 
-namespace OOX
+namespace PPTX
 {
 	namespace ContentTypes
 	{
@@ -58,6 +58,6 @@ namespace OOX
 			}
 		};
 	} // namespace ContentTypes
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_CONTENT)TYPES_DEFAULT_TABLE_INCLUDE_H_

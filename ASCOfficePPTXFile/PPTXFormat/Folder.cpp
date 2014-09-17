@@ -24,7 +24,7 @@ namespace PPTX
 
 	void Folder::read(const OOX::CPath& path, IPPTXEvent* Event)
 	{
-		OOX::Rels::File rels(path);
+		PPTX::Rels::File rels(path);
 		PPTX::FileMap map;
 		long files = CountFiles(path);
 		if(files == 0)
@@ -35,19 +35,19 @@ namespace PPTX
 			return;
 
 		POSITION pos = NULL;
-		smart_ptr<PPTX::Presentation> _presentation = FileContainer::get(OOX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
+		smart_ptr<PPTX::Presentation> _presentation = FileContainer::get(PPTX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 		if (_presentation.is_init())
 		{
-			_presentation->commentAuthors = _presentation->get(OOX::FileTypes::CommentAuthors).smart_dynamic_cast<PPTX::Authors>();
+			_presentation->commentAuthors = _presentation->get(PPTX::FileTypes::CommentAuthors).smart_dynamic_cast<PPTX::Authors>();
 		}
 
 		pos = map.m_map.GetStartPosition();
 		while (NULL != pos)
 		{
-			CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = map.m_map.GetNext(pos);
-			const OOX::FileType& curType = pPair->m_value->type();
+			CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = map.m_map.GetNext(pos);
+			const PPTX::FileType& curType = pPair->m_value->type();
 
-			if (OOX::FileTypes::ThemePPTX == curType)
+			if (PPTX::FileTypes::ThemePPTX == curType)
 			{
 				smart_ptr<PPTX::Theme> pTheme = pPair->m_value.smart_dynamic_cast<PPTX::Theme>();
 				if (pTheme.IsInit())
@@ -58,10 +58,10 @@ namespace PPTX
 		pos = map.m_map.GetStartPosition();
 		while (NULL != pos)
 		{
-			CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = map.m_map.GetNext(pos);
-			const OOX::FileType& curType = pPair->m_value->type();
+			CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = map.m_map.GetNext(pos);
+			const PPTX::FileType& curType = pPair->m_value->type();
 
-			if (OOX::FileTypes::SlideMaster == curType)
+			if (PPTX::FileTypes::SlideMaster == curType)
 			{
 				smart_ptr<PPTX::SlideMaster> pointer = pPair->m_value.smart_dynamic_cast<PPTX::SlideMaster>();
 				if (pointer.is_init())
@@ -72,10 +72,10 @@ namespace PPTX
 		pos = map.m_map.GetStartPosition();
 		while (NULL != pos)
 		{
-			CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = map.m_map.GetNext(pos);
-			const OOX::FileType& curType = pPair->m_value->type();
+			CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = map.m_map.GetNext(pos);
+			const PPTX::FileType& curType = pPair->m_value->type();
 
-			if (OOX::FileTypes::SlideLayout == curType)
+			if (PPTX::FileTypes::SlideLayout == curType)
 			{
 				smart_ptr<PPTX::SlideLayout> pointer = pPair->m_value.smart_dynamic_cast<PPTX::SlideLayout>();
 				if (pointer.is_init())
@@ -86,10 +86,10 @@ namespace PPTX
 		pos = map.m_map.GetStartPosition();
 		while (NULL != pos)
 		{
-			CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = map.m_map.GetNext(pos);
-			const OOX::FileType& curType = pPair->m_value->type();
+			CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = map.m_map.GetNext(pos);
+			const PPTX::FileType& curType = pPair->m_value->type();
 
-			if (OOX::FileTypes::Slide == curType)
+			if (PPTX::FileTypes::Slide == curType)
 			{
 				smart_ptr<PPTX::Slide> pointer = pPair->m_value.smart_dynamic_cast<PPTX::Slide>();
 				if (pointer.is_init())
@@ -100,10 +100,10 @@ namespace PPTX
 		pos = map.m_map.GetStartPosition();
 		while (NULL != pos)
 		{
-			CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = map.m_map.GetNext(pos);
-			const OOX::FileType& curType = pPair->m_value->type();
+			CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = map.m_map.GetNext(pos);
+			const PPTX::FileType& curType = pPair->m_value->type();
 
-			if (OOX::FileTypes::NotesMaster == curType)
+			if (PPTX::FileTypes::NotesMaster == curType)
 			{
 				smart_ptr<PPTX::NotesMaster> pointer = pPair->m_value.smart_dynamic_cast<PPTX::NotesMaster>();
 				if (pointer.is_init())
@@ -118,8 +118,8 @@ namespace PPTX
 	{
 		OOX::CSystemUtility::CreateDirectories(path);
 
-		OOX::Rels::File rels;
-		OOX::ContentTypes::File content;
+		PPTX::Rels::File rels;
+		PPTX::ContentTypes::File content;
 
 		OOX::CPath dir = path;
 		FileContainer::write(rels, path, dir, content);
@@ -136,7 +136,7 @@ namespace PPTX
 
 	const bool Folder::isValid(const OOX::CPath& path) const
 	{
-		return true;//FileContainer::exist(OOX::FileTypes::Presentation);
+		return true;//FileContainer::exist(PPTX::FileTypes::Presentation);
 	}
 
 	void Folder::extractPictures(const OOX::CPath& path)

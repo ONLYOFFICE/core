@@ -80,11 +80,11 @@ namespace PPTX
 
 			Normalize();
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("xmlns"), OOX::g_Namespaces.xmlns.m_strLink);
-			oAttr.Write(_T("xmlns:vt"), OOX::g_Namespaces.vt.m_strLink);
+			oAttr.Write(_T("xmlns"), PPTX::g_Namespaces.xmlns.m_strLink);
+			oAttr.Write(_T("xmlns:vt"), PPTX::g_Namespaces.vt.m_strLink);
 
 			XmlUtils::CNodeValue oValue;
 			oValue.Write2(_T("Template"), Template);
@@ -144,9 +144,9 @@ namespace PPTX
 		}
 
 	public:
-		virtual const OOX::FileType type() const
+		virtual const PPTX::FileType type() const
 		{
-			return OOX::FileTypes::App;
+			return PPTX::FileTypes::App;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -192,8 +192,8 @@ namespace PPTX
 
 			pWriter->StartAttributes();
 
-			pWriter->WriteAttribute(_T("xmlns"), OOX::g_Namespaces.xmlns.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:vt"), OOX::g_Namespaces.vt.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns"), PPTX::g_Namespaces.xmlns.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:vt"), PPTX::g_Namespaces.vt.m_strLink);
 
 			pWriter->EndAttributes();
 

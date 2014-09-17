@@ -4,12 +4,12 @@
 
 #include "../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 
-namespace OOX
+namespace PPTX
 {
 	class FileType
 	{
 	public:
-		FileType(const CPath& defaultDirectory, const CPath& defaultFileName,
+		FileType(const OOX::CPath& defaultDirectory, const OOX::CPath& defaultFileName,
 							const CString& overrideType, 
 							const CString& relationType) : m_defaultDirectory(defaultDirectory),
 			m_defaultFileName(defaultFileName),
@@ -46,11 +46,11 @@ namespace OOX
 		{
 			return m_relationType;
 		}
-		inline const CPath DefaultDirectory() const
+		inline const OOX::CPath DefaultDirectory() const
 		{
 			return m_defaultDirectory;
 		}
-		inline const CPath DefaultFileName() const
+		inline const OOX::CPath DefaultFileName() const
 		{
 			return m_defaultFileName;
 		}
@@ -58,8 +58,8 @@ namespace OOX
 	private:
 		CString		m_overrideType;
 		CString		m_relationType;
-		CPath		m_defaultDirectory;
-		CPath		m_defaultFileName;
+	 OOX::CPath		m_defaultDirectory;
+	 OOX::CPath		m_defaultFileName;
 	};
 
 	static const bool operator ==(const CString& type, const FileType& file)
@@ -70,6 +70,6 @@ namespace OOX
 	{
 		return (file.RelationType() == type);
 	}
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_FILE_TYPE_INCLUDE_H_

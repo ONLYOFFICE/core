@@ -8,7 +8,7 @@
 
 namespace PPTX
 {
-	class FileContainer : public OOX::IFileContainer
+	class FileContainer : public PPTX::IFileContainer
 	{
 	public:
 		FileContainer()
@@ -21,12 +21,12 @@ namespace PPTX
 		}
 	protected:
 		void read(const OOX::CPath& filename);
-		void read(const OOX::Rels::File& rels, const OOX::CPath& path);
+		void read(const PPTX::Rels::File& rels, const OOX::CPath& path);
 
 		void read(const OOX::CPath& filename, FileMap& map, IPPTXEvent* Event);
-		void read(const OOX::Rels::File& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event);
-		void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::ContentTypes::File& content) const;
-		void write(OOX::Rels::File& rels, const OOX::CPath& current, const OOX::CPath& directory, OOX::ContentTypes::File& content) const;
+		void read(const PPTX::Rels::File& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event);
+		void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content) const;
+		void write(PPTX::Rels::File& rels, const OOX::CPath& current, const OOX::CPath& directory, PPTX::ContentTypes::File& content) const;
 
 		void WrittenSetFalse();
 
@@ -42,7 +42,7 @@ namespace PPTX
 		}
 	
 		void _read(const OOX::CPath& filename);
-		void _read(const OOX::Rels::File& rels, const OOX::CPath& path);
+		void _read(const PPTX::Rels::File& rels, const OOX::CPath& path);
 	};
 } // namespace PPTX
 

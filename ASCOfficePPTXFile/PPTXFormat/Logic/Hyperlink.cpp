@@ -14,7 +14,7 @@ namespace PPTX
 		{
 			if(id.IsInit() && *id != _T(""))
 			{
-				OOX::RId rid(*id);
+				PPTX::RId rid(*id);
 
 				CString sLink = _T("");
 				if(parentFileIs<Slide>())

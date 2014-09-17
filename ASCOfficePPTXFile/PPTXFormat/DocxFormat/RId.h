@@ -5,7 +5,7 @@
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../../Common/DocxFormat/Source/XML/XmlUtils.h"
 
-namespace OOX
+namespace PPTX
 {
 	class RId
 	{
@@ -98,6 +98,6 @@ namespace OOX
 	private:
 		CString m_id;
 	};
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_RID_INCLUDE_H_

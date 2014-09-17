@@ -11,7 +11,7 @@
 #endif
 
 
-namespace OOX
+namespace PPTX
 {
 	class Media : public File
 	{
@@ -19,7 +19,7 @@ namespace OOX
 		Media()
 		{
 		}
-		Media(const CPath& filename)
+		Media(const OOX::CPath& filename)
 		{
 			read(filename);
 		}
@@ -28,11 +28,11 @@ namespace OOX
 		}
 
 	public:
-		virtual void read(const CPath& filename)
+		virtual void read(const OOX::CPath& filename)
 		{
 			m_filename = filename;
 		}
-		virtual void write(const CPath& filename, const CPath& directory, ContentTypes::File& content) const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const
 		{
 			//std::wstring newFilename = filename.filename();
 			//boost::filesystem::wpath newFilePath = filename.parent_path();
@@ -51,11 +51,11 @@ namespace OOX
 		}
 
 	public:
-		const CPath filename() const
+		const OOX::CPath filename() const
 		{
 			return m_filename;
 		}
-		void copy_to(const CPath& path) const
+		void copy_to(const OOX::CPath& path) const
 		{
 			//std::wstring newFilename = m_filename.filename();
 			//boost::replace_all(newFilename, L" ", L"_");
@@ -65,8 +65,8 @@ namespace OOX
 		}
 
 	protected:
-		CPath	m_filename;
+		OOX::CPath	m_filename;
 	};
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_MEDIA_INCLUDE_H_

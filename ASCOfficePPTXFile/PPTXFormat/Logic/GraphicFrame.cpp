@@ -6,7 +6,7 @@
 #include "..\SlideLayout.h"
 #include "..\SlideMaster.h"
 
-#include "../../ASCOfficeDrawingConverter.h"
+//#include "../../ASCOfficeDrawingConverter.h"
 
 namespace PPTX
 {

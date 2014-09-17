@@ -5,7 +5,7 @@
 #include "External.h"
 
 
-namespace OOX
+namespace PPTX
 {
 	class ExternalImage : public External
 	{
@@ -13,7 +13,7 @@ namespace OOX
 		ExternalImage()
 		{
 		}
-		ExternalImage(const CPath& uri)
+		ExternalImage(const OOX::CPath& uri)
 		{
 			read(uri);
 		}
@@ -26,15 +26,15 @@ namespace OOX
 		{
 			return FileTypes::ExternalImage;
 		}
-		virtual const CPath DefaultDirectory() const
+		virtual const OOX::CPath DefaultDirectory() const
 		{
 			return type().DefaultDirectory();
 		}
-		virtual const CPath DefaultFileName() const
+		virtual const OOX::CPath DefaultFileName() const
 		{
 			return type().DefaultFileName();
 		}
 	};
-} // namespace OOX
+} // namespace PPTX
 
 #endif // OOX_EXTERNALIMAGE_INCLUDE_H_

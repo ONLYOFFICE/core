@@ -48,11 +48,11 @@ namespace PPTX
 			if (notesStyle.is_init())
 				notesStyle->SetParentFilePointer(this);
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("xmlns:a"), OOX::g_Namespaces.a.m_strLink);
-			oAttr.Write(_T("xmlns:r"), OOX::g_Namespaces.r.m_strLink);
+			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
+			oAttr.Write(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
 
 			XmlUtils::CNodeValue oValue;
 			oValue.Write(cSld);
@@ -69,9 +69,9 @@ namespace PPTX
 		}
 
 	public:
-		virtual const OOX::FileType type() const
+		virtual const PPTX::FileType type() const
 		{
-			return OOX::FileTypes::NotesMaster;
+			return PPTX::FileTypes::NotesMaster;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -84,12 +84,12 @@ namespace PPTX
 
 		void ApplyRels()
 		{
-			Theme = (FileContainer::get(OOX::FileTypes::ThemePPTX)).smart_dynamic_cast<PPTX::Theme>();
+			Theme = (FileContainer::get(PPTX::FileTypes::ThemePPTX)).smart_dynamic_cast<PPTX::Theme>();
 
 			if (Theme.IsInit())
 				Theme->SetColorMap(clrMap);
 
-			TableStyles = (Theme->Presentation->get(OOX::FileTypes::TableStyles)).smart_dynamic_cast<PPTX::TableStyles>();
+			TableStyles = (Theme->Presentation->get(PPTX::FileTypes::TableStyles)).smart_dynamic_cast<PPTX::TableStyles>();
 		}
 
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -109,8 +109,8 @@ namespace PPTX
 			pWriter->StartNode(_T("p:notesMaster"));
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("xmlns:a"), OOX::g_Namespaces.a.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:r"), OOX::g_Namespaces.r.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
 			pWriter->EndAttributes();
 
 			cSld.toXmlWriter(pWriter);

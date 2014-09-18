@@ -5,6 +5,7 @@
 #include "../DocxFormat/RId.h"
 #include "../DocxFormat/UnknowTypeFile.h"
 #include "../DocxFormat/IFileBuilder.h"
+#include <map>
 
 namespace OOX 
 {
@@ -35,9 +36,9 @@ namespace OOX
 			}
 		protected:
 
-			CAtlMap<CString, smart_ptr<OOX::File>> m_mContainer;
+			std::map<CString, smart_ptr<OOX::File>> m_mContainer;
 			size_t                                m_lMaxRid;
-			static CAtlMap<CString, size_t> m_mapEnumeratedGlobal;
+			static std::map<CString, size_t> m_mapEnumeratedGlobal;
 
 		protected:
 
@@ -72,7 +73,7 @@ namespace OOX
 			template<typename T> 
 			T&                   Find();
 			smart_ptr<OOX::File> Find(const FileType& type) const;
-			void FindAllByType(const FileType& oType, CAtlMap<CString, smart_ptr<OOX::File>>& aOutput) const;
+			void FindAllByType(const FileType& oType, std::map<CString, smart_ptr<OOX::File>>& aOutput) const;
 			smart_ptr<OOX::File> Find(const OOX::RId& type) const;
 
 			smart_ptr<OOX::File> operator [](const OOX::RId rId);
@@ -84,7 +85,7 @@ namespace OOX
 			static UnknowTypeFile Unknown;
 
 		private:
-			CAtlMap<CString, size_t> m_mapAddNamePair;
+			std::map<CString, size_t> m_mapAddNamePair;
 			OOX::CRels* m_pCurRels;
 			const RId GetMaxRId();
 		};

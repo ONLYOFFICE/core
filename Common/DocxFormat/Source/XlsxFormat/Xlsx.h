@@ -50,11 +50,10 @@ namespace OOX
 					RELEASEOBJECT(m_pCalcChain);
 				if(bDeleteWorksheets)
 				{
-					POSITION pos = m_aWorksheets.GetStartPosition();
-					while ( NULL != pos )
+					for (std::map<CString, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
 					{
-						const CAtlMap<CString, CWorksheet*>::CPair* pPair = m_aWorksheets.GetNext( pos );
-						if (pPair->m_value) delete pPair->m_value;
+						if (NULL != it->second)
+							delete it->second;
 					}
 				}
 			}
@@ -111,15 +110,13 @@ namespace OOX
 						m_pCalcChain = NULL;
 
 
-					CAtlMap<CString, smart_ptr<OOX::File>> aWorksheetsFiles;
+					std::map<CString, smart_ptr<OOX::File>> aWorksheetsFiles;
 					pDocumentContainer->FindAllByType(OOX::Spreadsheet::FileTypes::Worksheet, aWorksheetsFiles);
 					pDocumentContainer->FindAllByType(OOX::Spreadsheet::FileTypes::Chartsheets, aWorksheetsFiles);
 
-					POSITION pos = aWorksheetsFiles.GetStartPosition();
-					while ( NULL != pos )
+					for (std::map<CString, smart_ptr<OOX::File>>::const_iterator it = aWorksheetsFiles.begin(); it != aWorksheetsFiles.end(); ++it)
 					{
-						const CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = aWorksheetsFiles.GetNext( pos );
-						m_aWorksheets.SetAt(pPair->m_key, (OOX::Spreadsheet::CWorksheet*)pPair->m_value.operator->());
+						m_aWorksheets [it->first] = (OOX::Spreadsheet::CWorksheet*) it->second.operator->();
 					}
 				}
 
@@ -127,7 +124,7 @@ namespace OOX
 			}
 			BOOL Write(const CPath& oDirPath, CString& sAdditionalContentTypes)
 			{
-				if(NULL == m_pWorkbook || 0 == m_aWorksheets.GetCount())
+				if(NULL == m_pWorkbook || 0 == m_aWorksheets.size ())
 					return FALSE;
 				PrepareToWrite();
 
@@ -171,17 +168,6 @@ namespace OOX
 						const OOX::CPath& oPath = oOverride.filename();
 						oContentTypes.Registration(oOverride.type(), oPath.GetDirectory(), oPath.GetFilename());
 					}
-/*
-					POSITION pos = oTempContentTypes.m_arrOverride.GetStartPosition();
-					while ( NULL != pos )
-					{
-						CAtlMap<CString, ContentTypes::COverride>::CPair* pPair = oTempContentTypes.m_arrOverride.GetNext( pos );
-						ContentTypes::COverride& oOverride = pPair->m_value;
-						const OOX::CPath& oPath = oOverride.filename();
-						oContentTypes.Registration(oOverride.type(), oPath.GetDirectory(), oPath.GetFilename());
-					}
-					*/
-
 				}
 				oContentTypes.Write(oDirPath);
 				return TRUE;
@@ -220,11 +206,11 @@ namespace OOX
 					m_pWorkbook->PrepareToWrite();
 				if(NULL != m_pStyles)
 					m_pStyles->PrepareToWrite();
-				POSITION pos = m_aWorksheets.GetStartPosition();
-				while ( NULL != pos )
+
+				for (std::map<CString, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
 				{
-					const CAtlMap<CString, CWorksheet*>::CPair* pPair = m_aWorksheets.GetNext( pos );
-					pPair->m_value->PrepareToWrite();
+					if (NULL != it->second)
+						it->second->PrepareToWrite();
 				}
 			}
 		public:
@@ -272,13 +258,13 @@ namespace OOX
 			{
 				return m_pCalcChain;
 			}
-			CAtlMap<CString, CWorksheet*>  &GetWorksheets ()
+			std::map<CString, CWorksheet*>  &GetWorksheets ()
 			{
 				return m_aWorksheets;
 			}
 			void PrepareWorkbook()
 			{
-				IFileContainer::m_mapEnumeratedGlobal.RemoveAll();
+				IFileContainer::m_mapEnumeratedGlobal.clear();
 				if(NULL == m_pWorkbook)
 				{
 					m_pWorkbook = new OOX::Spreadsheet::CWorkbook();
@@ -298,7 +284,7 @@ namespace OOX
 					m_pWorkbook->m_oBookViews->m_arrItems.push_back(pWorkbookView);
 				}
 				//добавляем sheet, если нет ни одного
-				if(0 == m_aWorksheets.GetCount())
+				if (m_aWorksheets.empty())
 				{
 					OOX::Spreadsheet::CWorksheet* pWorksheet = new OOX::Spreadsheet::CWorksheet();
 					pWorksheet->m_oDimension.Init();
@@ -329,7 +315,7 @@ namespace OOX
 					pWorksheet->m_oPageMargins->m_oFooter->FromInches(0.3);
 					smart_ptr<OOX::File> pWorksheetFile(pWorksheet);
 					OOX::RId oRId = this->Add(pWorksheetFile);
-					m_aWorksheets.SetAt(oRId.ToString(), pWorksheet);
+					m_aWorksheets [oRId.ToString()] = pWorksheet;
 					m_pWorkbook->m_oSheets.Init();
 					OOX::Spreadsheet::CSheet* pSheet = new OOX::Spreadsheet::CSheet();
 					pSheet->m_oName.Init();
@@ -408,11 +394,9 @@ namespace OOX
 					}
 				}
 				//переносим теги <is> и ячейки с типом str в sharedString
-				POSITION pos = m_aWorksheets.GetStartPosition();
-				while ( NULL != pos )
+				for (std::map<CString, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
 				{
-					const CAtlMap<CString, CWorksheet*>::CPair* pPair = m_aWorksheets.GetNext( pos );
-					PrepareWorksheet(pPair->m_value);
+					PrepareWorksheet(it->second);
 				}
 				//todo парсим даты в формате iso 8601
 			}
@@ -504,7 +488,7 @@ namespace OOX
 			bool bDeleteTheme;
 			CCalcChain  *m_pCalcChain;
 			bool bDeleteCalcChain;
-			CAtlMap<CString, CWorksheet*> m_aWorksheets;
+			std::map<CString, CWorksheet*> m_aWorksheets;
 			bool bDeleteWorksheets;
 		};
 

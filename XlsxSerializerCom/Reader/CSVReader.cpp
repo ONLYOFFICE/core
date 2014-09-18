@@ -1,6 +1,7 @@
 #include "CSVReader.h"
 
 #include "../../Common/MappingFile.h"
+#include <map>
 
 namespace CSVReader
 {
@@ -226,7 +227,7 @@ namespace CSVReader
 			RELEASEARRAYOBJECTS(pTemp);
 		}
 
-		CAtlMap<CString, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();
-		arrWorksheets.SetAt(sSheetRId, pWorksheet);
+		std::map<CString, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();
+		arrWorksheets [sSheetRId] = pWorksheet;
 	}
 }

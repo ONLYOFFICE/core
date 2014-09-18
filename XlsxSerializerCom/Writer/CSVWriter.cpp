@@ -93,11 +93,11 @@ namespace CSVWriter
 					sSheetRId = pWorkbook->m_oSheets->m_arrItems[0]->m_oName.get2();
 			}
 
-			CAtlMap<CString, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();
-			CAtlMap<CString, OOX::Spreadsheet::CWorksheet*>::CPair* pPair = arrWorksheets.Lookup(sSheetRId);
-			if (NULL != pPair)
+			std::map<CString, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();
+			std::map<CString, OOX::Spreadsheet::CWorksheet*>::const_iterator pPair = arrWorksheets.find(sSheetRId);
+			if (pPair != arrWorksheets.end())
 			{
-				OOX::Spreadsheet::CWorksheet *pWorksheet = pPair->m_value;
+				OOX::Spreadsheet::CWorksheet *pWorksheet = pPair->second;
 				if (NULL != pWorksheet && pWorksheet->m_oSheetData.IsInit())
 				{
 					OOX::Spreadsheet::CSharedStrings *pSharedStrings = oXlsx.GetSharedStrings();

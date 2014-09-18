@@ -45,16 +45,16 @@
 #include <atlcoll.h>
 #include "../Common/atldefine.h"
 
-#define _USE_MATH_DEFINES
+//#define _USE_MATH_DEFINES
 #include <math.h>
 #include <wingdi.h>
 
-#define NODOCX
-#define PPTX_DEF
-
-#define PPT_DEF
-#define ENABLE_PPT_TO_PPTX_CONVERT
-#define _AVS_PPT_SHAPE_INCLUDE_
+//#define NODOCX
+//#define PPTX_DEF
+//
+//#define PPT_DEF
+//#define ENABLE_PPT_TO_PPTX_CONVERT
+//#define _AVS_PPT_SHAPE_INCLUDE_
 
 using namespace ATL;
 #include "../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
@@ -84,7 +84,7 @@ namespace ASCGraphics
 
 #else
 
-#define AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
+//#define AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 
 #import "../Redist/ASCMediaCore3.dll"			named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
 #import "../Redist/ASCImageStudio3.dll"			named_guids raw_interfaces_only rename_namespace("ImageStudio"), exclude("IASCRenderer")

@@ -1,4 +1,4 @@
-#include "./stdafx.h"
+//#include "./stdafx.h"
 
 #include "SchemeClr.h"
 #include "./../../Slide.h"

@@ -1,4 +1,4 @@
-#include "./stdafx.h"
+//#include "./stdafx.h"
 
 #include "UniEffect.h"
 #include "Effects/OuterShdw.h"		//1

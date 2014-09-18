@@ -4,7 +4,7 @@
 #define _USE_MATH_DEFINES
 #endif
 
-#include "stdafx.h"
+//#include "stdafx.h"
 #include <math.h>
 #include "./../Common.h"
 #include "./../../../../../Common/DocxFormat/Source/XML/XmlUtils.h"

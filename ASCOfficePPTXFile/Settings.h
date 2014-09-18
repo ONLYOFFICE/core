@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <atlbase.h>
 #include <atlstr.h>
 
 namespace FileSystem {

@@ -1,4 +1,5 @@
 #pragma once
+#include "../../../../ASCOfficePPTXFile/stdafx.h"
 
 const double ShapeSize		= 43200.0;
 const LONG ShapeSizeVML		= 21600;

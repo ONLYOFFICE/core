@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "./TxBody.h"
 #include "../Theme.h"
 #include "./ClrMap.h"

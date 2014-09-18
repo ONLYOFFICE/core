@@ -1,4 +1,4 @@
-#include "./stdafx.h"
+//#include "./stdafx.h"
 
 #include "ShapeProperties.h"
 #include "Fills/SolidFill.h"

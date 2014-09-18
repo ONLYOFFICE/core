@@ -1,4 +1,4 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "ASCOfficePPTXFile.h"
 
 #include "PPTXFormat/PPTXEvent.h"

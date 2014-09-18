@@ -1,12 +1,14 @@
 #ifndef ASC_OFFICE_DRAWING_CONVERTER
 #define ASC_OFFICE_DRAWING_CONVERTER
 
-//todo
+//todo ??
+#define _ATL_APARTMENT_THREADED
 #include <atlbase.h>
 #include <atlstr.h>
 #include "../Common/DocxFormat/Source/Base/Base.h"
 #include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/PPTShapeEnum.h"
 
+__interface IASCRenderer;
 class CShape;
 class CPPTShape;
 namespace XmlUtils

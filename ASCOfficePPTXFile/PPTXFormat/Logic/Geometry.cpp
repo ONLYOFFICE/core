@@ -1,4 +1,4 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 
 #ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 

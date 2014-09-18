@@ -1560,13 +1560,13 @@ namespace BinXlsxRW {
 		  m_oBcw(oCBufferedStream),m_pEmbeddedFontsManager(pEmbeddedFontsManager),m_pIndexedColors(pIndexedColors),m_pTheme(pTheme),m_oFontProcessor(oFontProcessor),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 		{
 		};
-		void Write(OOX::Spreadsheet::CWorkbook& workbook, CAtlMap<CString, OOX::Spreadsheet::CWorksheet*>& aWorksheets)
+		void Write(OOX::Spreadsheet::CWorkbook& workbook, std::map<CString, OOX::Spreadsheet::CWorksheet*>& aWorksheets)
 		{
 			int nStart = m_oBcw.WriteItemWithLengthStart();
 			WriteWorksheets(workbook, aWorksheets);
 			m_oBcw.WriteItemWithLengthEnd(nStart);
 		};
-		void WriteWorksheets(OOX::Spreadsheet::CWorkbook& workbook, CAtlMap<CString, OOX::Spreadsheet::CWorksheet*>& aWorksheets)
+		void WriteWorksheets(OOX::Spreadsheet::CWorkbook& workbook, std::map<CString, OOX::Spreadsheet::CWorksheet*>& aWorksheets)
 		{
 			int nCurPos;
 			//определяем порядок следования
@@ -1578,11 +1578,11 @@ namespace BinXlsxRW {
 					OOX::Spreadsheet::CSheet* pSheet = aWs[i];
 					if(pSheet->m_oRid.IsInit())
 					{
-						CAtlMap<CString, OOX::Spreadsheet::CWorksheet*>::CPair* pair = aWorksheets.Lookup(pSheet->m_oRid->GetValue());
-						if(NULL != pair)
+						std::map<CString, OOX::Spreadsheet::CWorksheet*>::const_iterator pair = aWorksheets.find(pSheet->m_oRid->GetValue());
+						if(aWorksheets.end() != pair)
 						{
 							nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Worksheet);
-							WriteWorksheet(*pSheet, *pair->m_value);
+							WriteWorksheet(*pSheet, *pair->second);
 							m_oBcw.WriteItemWithLengthEnd(nCurPos);
 						}
 					}

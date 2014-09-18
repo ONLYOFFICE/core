@@ -1,4 +1,4 @@
-#include "./stdafx.h"
+//#include "./stdafx.h"
 
 #include "CxnSp.h"
 #include "SpTree.h"

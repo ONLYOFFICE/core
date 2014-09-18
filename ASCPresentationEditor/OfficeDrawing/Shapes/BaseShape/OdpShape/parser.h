@@ -37,7 +37,7 @@
 			  additive_expression '-' multiplicative_expression
 */
 // Includes
-#include "stdafx.h"
+//#include "stdafx.h"
 #include <vector>
 using namespace std;
 

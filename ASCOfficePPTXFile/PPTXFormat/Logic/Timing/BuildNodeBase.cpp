@@ -1,4 +1,4 @@
-#include "./stdafx.h"
+//#include "./stdafx.h"
 
 #include "BuildNodeBase.h"
 #include "BldP.h"

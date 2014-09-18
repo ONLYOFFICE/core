@@ -1,4 +1,4 @@
-#include "./stdafx.h"
+//#include "./stdafx.h"
 
 #include "FileContainer.h"
 #include "DocxFormat/Rels/File.h"

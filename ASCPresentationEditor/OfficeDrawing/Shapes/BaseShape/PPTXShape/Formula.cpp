@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "Formula.h"
 
 double NSGuidesOOXML::CFormula::Calculate(NSGuidesOOXML::CFormulaManager& pManager)

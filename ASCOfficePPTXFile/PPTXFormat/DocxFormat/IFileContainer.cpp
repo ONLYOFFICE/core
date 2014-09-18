@@ -1,4 +1,4 @@
-#include "./stdafx.h"
+//#include "./stdafx.h"
 
 #include "IFileContainer.h"
 #include "Rels/File.h"

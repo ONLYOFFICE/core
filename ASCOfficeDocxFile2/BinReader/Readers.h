@@ -1787,7 +1787,7 @@ class Binary_NumberingTableReader : public Binary_CommonReader<Binary_NumberingT
 	Writers::FontTableWriter& m_oFontTableWriter;
 	std::vector<docNum*> m_aDocNums;
 	std::vector<docANum*> m_aDocANums;
-	CAtlMap<int, int> m_mapANumToNum;
+	std::map<int, int> m_mapANumToNum;
 public:
 	Binary_NumberingTableReader(Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),oNumberingWriters(oFileWriter.m_oNumberingWriter),m_oFontTableWriter(oFileWriter.m_oFontTableWriter),oBinary_pPrReader(poBufferedStream, oFileWriter),oBinary_rPrReader(poBufferedStream)
 	{
@@ -1833,7 +1833,7 @@ public:
 			docNum* pdocNum = new docNum();
 			res = Read2(length, &Binary_NumberingTableReader::ReadNum, this, pdocNum);
 			if(pdocNum->bAId && pdocNum->bId)
-				m_mapANumToNum.SetAt(pdocNum->AId, pdocNum->Id);
+				m_mapANumToNum[pdocNum->AId] = pdocNum->Id;
 			m_aDocNums.push_back(pdocNum);
 		}
 		else

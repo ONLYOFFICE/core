@@ -14,7 +14,7 @@ namespace Writers
 		CString	m_sDir;
 		ASCGraphics::IASCFontManager* m_pFontManager;
 	public:
-		CAtlMap<CString, int> m_mapFonts;
+		std::map<CString, int> m_mapFonts;
 	public:
 		FontTableWriter(CString sDir, CString sFontDir):m_sDir(sDir)
 		{
@@ -52,21 +52,16 @@ namespace Writers
 			bool bCalibri = false;
 			bool bTimes = false;
 			bool bCambria = false;
-			POSITION pos = m_mapFonts.GetStartPosition();
-			while(NULL != pos)
+			for (std::map<CString, int>::const_iterator it = m_mapFonts.begin(); it != m_mapFonts.end(); ++it)
 			{
-				CAtlMap<CString, int>::CPair* pair = m_mapFonts.GetNext(pos);
-				if(NULL != pair)
-				{
-					const CString& sFontName = pair->m_key;
-					if(_T("Calibri") == sFontName)
-						bCalibri = true;
-					else if(_T("Times New Roman") == sFontName)
-						bTimes = true;
-					else if(_T("Cambria") == sFontName)
-						bCambria = true;
-					WriteFont(sFontName);
-				}
+				const CString& sFontName = it->first;
+				if(_T("Calibri") == sFontName)
+					bCalibri = true;
+				else if(_T("Times New Roman") == sFontName)
+					bTimes = true;
+				else if(_T("Cambria") == sFontName)
+					bCambria = true;
+				WriteFont(sFontName);
 			}
 			if(false == bCalibri)
 				WriteFont(_T("Calibri"));

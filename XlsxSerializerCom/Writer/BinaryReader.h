@@ -22,7 +22,7 @@ namespace BinXlsxRW {
 	public:
 		CString sPath;
 		int nIndex;
-		CAtlMap<OOX::Spreadsheet::CDrawing*, CString> mapDrawings;
+		std::map<OOX::Spreadsheet::CDrawing*, CString> mapDrawings;
 		bool bNeedCreate;
 	public:
 		ImageObject()
@@ -1889,7 +1889,7 @@ namespace BinXlsxRW {
 					m_pCurWorksheet->m_oLegacyDrawingWorksheet->m_oId.Init();
 					m_pCurWorksheet->m_oLegacyDrawingWorksheet->m_oId->SetValue(oRId.get());
 
-					CAtlMap<CString, unsigned int> mapAuthors;
+					std::map<CString, unsigned int> mapAuthors;
 					OOX::Spreadsheet::CComments* pComments = new OOX::Spreadsheet::CComments();
 					pComments->m_oCommentList.Init();
 					std::vector<OOX::Spreadsheet::CComment*>& aComments = pComments->m_oCommentList->m_arrItems;
@@ -1913,14 +1913,14 @@ namespace BinXlsxRW {
 							if(pCommentItem->m_sAuthor.IsInit())
 							{
 								const CString& sAuthor = pCommentItem->m_sAuthor.get();
-								CAtlMap<CString, unsigned int>::CPair* pair = mapAuthors.Lookup(sAuthor);
+								std::map<CString, unsigned int>::const_iterator pair = mapAuthors.find(sAuthor);
 								int nAuthorId;
-								if(NULL != pair)
-									nAuthorId = pair->m_value;
+								if(mapAuthors.end() != pair)
+									nAuthorId = pair->second;
 								else
 								{
-									nAuthorId = mapAuthors.GetCount();
-									mapAuthors.SetAt(sAuthor, nAuthorId);
+									nAuthorId = mapAuthors.size();
+									mapAuthors[sAuthor] = nAuthorId;
 									aAuthors.push_back(new CString(sAuthor));
 								}
 								pNewComment->m_oAuthorId.Init();
@@ -2547,8 +2547,8 @@ namespace BinXlsxRW {
 				if(m_mapMedia.end() != pair)
 				{
 					CString sRId;
-					CAtlMap<OOX::Spreadsheet::CDrawing*, CString>::CPair* pPair = pair->second->mapDrawings.Lookup(m_pCurDrawing);
-					if(NULL == pPair)
+					std::map<OOX::Spreadsheet::CDrawing*, CString>::const_iterator pPair = pair->second->mapDrawings.find(m_pCurDrawing);
+					if(pair->second->mapDrawings.end() == pPair)
 					{
 						CString sNewImageName;
 						sNewImageName.Format(_T("image%d%s"), pair->second->nIndex, OOX::CPath(pair->second->sPath).GetExtention(true));
@@ -2569,10 +2569,10 @@ namespace BinXlsxRW {
 						SysFreeString(bstrNewImgRel);
 
 						sRId.Format(_T("rId%d"), rId);
-						pair->second->mapDrawings.SetAt(m_pCurDrawing, sRId);
+						pair->second->mapDrawings[m_pCurDrawing] = sRId;
 					}
 					else
-						sRId = pPair->m_value;
+						sRId = pPair->second;
 					pCellAnchor->m_oXml.Init();
 					pCellAnchor->m_oXml->AppendFormat(_T("<xdr:pic><xdr:nvPicPr><xdr:cNvPr id=\"1\" name=\"Image 1\"></xdr:cNvPr><xdr:cNvPicPr><a:picLocks noChangeAspect=\"1\"></a:picLocks></xdr:cNvPicPr></xdr:nvPicPr><xdr:blipFill><a:blip r:embed=\"%s\"></a:blip><a:stretch></a:stretch></xdr:blipFill><xdr:spPr><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/>"), sRId);
 				}

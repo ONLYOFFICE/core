@@ -274,7 +274,7 @@ public:
 class rPr
 {
 private:
-	CAtlMap<CString, int>& m_mapFonts;
+	std::map<CString, int>& m_mapFonts;
 public:
 	bool Bold;
 	bool Italic;
@@ -340,7 +340,7 @@ public:
 
 	bool bDoNotWriteNullProp;
 public:
-	rPr(CAtlMap<CString, int>& mapFonts) : m_mapFonts(mapFonts)
+	rPr(std::map<CString, int>& mapFonts) : m_mapFonts(mapFonts)
 	{
 		Reset();
 
@@ -407,22 +407,22 @@ public:
 			if(bFontAscii)
 			{
 				sFont.AppendFormat(_T(" w:ascii=\"%s\""), FontAscii);
-				m_mapFonts.SetAt(FontAscii, 1);
+				m_mapFonts[FontAscii] = 1;
 			}
 			if(bFontHAnsi)
 			{
 				sFont.AppendFormat(_T(" w:hAnsi=\"%s\""), FontHAnsi);
-				m_mapFonts.SetAt(FontHAnsi, 1);
+				m_mapFonts[FontHAnsi] = 1;
 			}
 			if(bFontCS)
 			{
 				sFont.AppendFormat(_T(" w:cs=\"%s\""), FontCS);
-				m_mapFonts.SetAt(FontCS, 1);
+				m_mapFonts[FontCS] = 1;
 			}
 			if(bFontAE)
 			{
 				sFont.AppendFormat(_T(" w:eastAsia=\"%s\""), FontAE);
-				m_mapFonts.SetAt(FontAE, 1);
+				m_mapFonts[FontAE] = 1;
 			}
 			switch(FontHint)
 			{
@@ -1629,8 +1629,8 @@ public:
 };
 class CComments
 {
-	CAtlMap<int, CComment*> m_mapComments;
-	CAtlMap<CString, CComment*> m_mapAuthors;
+	std::map<int, CComment*> m_mapComments;
+	std::map<CString, CComment*> m_mapAuthors;
 public:
 	IdCounter m_oFormatIdCounter;
 	IdCounter m_oParaIdCounter;
@@ -1640,13 +1640,11 @@ public:
 	}
 	~CComments()
 	{
-		POSITION pos = m_mapComments.GetStartPosition();
-		while ( NULL != pos )
+		for (std::map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
-			CAtlMap<int, CComment*>::CPair* pPair = m_mapComments.GetNext( pos );
-			delete pPair->m_value;
+			delete it->second;
 		}
-		m_mapComments.RemoveAll();
+		m_mapComments.clear();
 	}
 	void add(CComment* pComment)
 	{
@@ -1666,9 +1664,9 @@ public:
 	CComment* get(int nInd)
 	{
 		CComment* pRes = NULL;
-		CAtlMap<int, CComment*>::CPair* pair = m_mapComments.Lookup(nInd);
-		if(NULL != pair)
-			pRes = pair->m_value;
+		std::map<int, CComment*>::const_iterator pair = m_mapComments.find(nInd);
+		if(m_mapComments.end() != pair)
+			pRes = pair->second;
 		return pRes;
 	}
 	int getNextId(int nCount = 1)
@@ -1678,33 +1676,27 @@ public:
 	CString writeContent()
 	{
 		CString sRes;
-		POSITION pos = m_mapComments.GetStartPosition();
-		while ( NULL != pos )
+		for (std::map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
-			CAtlMap<int, CComment*>::CPair* pPair = m_mapComments.GetNext( pos );
-			sRes.Append(pPair->m_value->writeTemplates(CComment::writeContent));
+			sRes.Append(it->second->writeTemplates(CComment::writeContent));
 		}
 		return sRes;
 	}
 	CString writeContentExt()
 	{
 		CString sRes;
-		POSITION pos = m_mapComments.GetStartPosition();
-		while ( NULL != pos )
+		for (std::map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
-			CAtlMap<int, CComment*>::CPair* pPair = m_mapComments.GetNext( pos );
-			sRes.Append(pPair->m_value->writeTemplates(CComment::writeContentExt));
+			sRes.Append(it->second->writeTemplates(CComment::writeContentExt));
 		}
 		return sRes;
 	}
 	CString writePeople()
 	{
 		CString sRes;
-		POSITION pos = m_mapAuthors.GetStartPosition();
-		while ( NULL != pos )
+		for (std::map<CString, CComment*>::const_iterator it = m_mapAuthors.begin(); it != m_mapAuthors.end(); ++it)
 		{
-			CAtlMap<CString, CComment*>::CPair* pPair = m_mapAuthors.GetNext( pos );
-			sRes.Append(pPair->m_value->writePeople(pPair->m_value));
+			sRes.Append(it->second->writePeople(it->second));
 		}
 		return sRes;
 	}

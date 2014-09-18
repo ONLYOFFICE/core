@@ -8,7 +8,7 @@ namespace BinXlsxRW {
 
 	class FontProcessor {
 		ASCGraphics::IASCFontManager* m_pFontManager;
-		CAtlMap<CString, CString> m_mapFontMap;
+		std::map<CString, CString> m_mapFontMap;
 
 		CString m_sFontDir;
 
@@ -44,8 +44,8 @@ namespace BinXlsxRW {
 		CString getFont(const CString& name)
 		{
 			CString fontName = gc_sDefaultFontName;
-			CAtlMap<CString, CString>::CPair* pPair = m_mapFontMap.Lookup( name );
-			if ( NULL == pPair )
+			std::map<CString, CString>::const_iterator pPair = m_mapFontMap.find( name );
+			if ( m_mapFontMap.end() == pPair )
 			{
 				if(!name.IsEmpty())
 				{
@@ -53,13 +53,13 @@ namespace BinXlsxRW {
 					oFont.m_oRFont.Init();
 					oFont.m_oRFont->m_sVal = name;
 					addToFontMap(oFont);
-					pPair = m_mapFontMap.Lookup( name );
-					if (NULL != pPair)
-						fontName = pPair->m_value;
+					pPair = m_mapFontMap.find( name );
+					if (m_mapFontMap.end() != pPair)
+						fontName = pPair->second;
 				}
 			}
 			else
-				fontName = pPair->m_value;
+				fontName = pPair->second;
 			return fontName;
 		}		
 	private:
@@ -138,7 +138,7 @@ namespace BinXlsxRW {
 			SysFreeString(familyName);
 			SysFreeString(bstrParams);
 
-			m_mapFontMap.SetAt(sFontName, resFontName);
+			m_mapFontMap[sFontName] = resFontName;
 		}	
 	};
 

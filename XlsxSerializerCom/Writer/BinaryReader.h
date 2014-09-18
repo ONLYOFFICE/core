@@ -1737,8 +1737,8 @@ namespace BinXlsxRW {
 		Binary_CommonReader2 m_oBcr2;
 		OOX::Spreadsheet::CWorkbook& m_oWorkbook;
 		OOX::Spreadsheet::CSharedStrings* m_pSharedStrings;
-		CAtlMap<CString, OOX::Spreadsheet::CWorksheet*>&  m_mapWorksheets;
-		CAtlMap<long, ImageObject*>& m_mapMedia;
+		std::map<CString, OOX::Spreadsheet::CWorksheet*>&  m_mapWorksheets;
+		std::map<long, ImageObject*>& m_mapMedia;
 		OOX::Spreadsheet::CSheet* m_pCurSheet;
 		OOX::Spreadsheet::CWorksheet* m_pCurWorksheet;
 		OOX::Spreadsheet::CDrawing* m_pCurDrawing;
@@ -1750,8 +1750,8 @@ namespace BinXlsxRW {
 		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
 	public:
 		BinaryWorksheetsTableReader(Streams::CBufferedStream& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook,
-			OOX::Spreadsheet::CSharedStrings* pSharedStrings, CAtlMap<CString, OOX::Spreadsheet::CWorksheet*>& mapWorksheets,
-			CAtlMap<long, ImageObject*>& mapMedia, CString& sDestinationDir, SaveParams& oSaveParams, LPSAFEARRAY pArray,
+			OOX::Spreadsheet::CSharedStrings* pSharedStrings, std::map<CString, OOX::Spreadsheet::CWorksheet*>& mapWorksheets,
+			std::map<long, ImageObject*>& mapMedia, CString& sDestinationDir, SaveParams& oSaveParams, LPSAFEARRAY pArray,
 			PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter) : Binary_CommonReader(oBufferedStream), m_oWorkbook(oWorkbook),
 			m_oBcr2(oBufferedStream), m_mapWorksheets(mapWorksheets), m_mapMedia(mapMedia), m_sDestinationDir(sDestinationDir), m_sMediaDir(m_sDestinationDir + _T("\\xl\\media")), m_oSaveParams(oSaveParams), m_pSharedStrings(pSharedStrings)
 		{
@@ -1779,7 +1779,7 @@ namespace BinXlsxRW {
 					const OOX::RId& oRId = m_oWorkbook.Add(smart_ptr<OOX::File>(m_pCurWorksheet));
 					m_pCurSheet->m_oRid.Init();
 					m_pCurSheet->m_oRid->SetValue(oRId.get());
-					m_mapWorksheets.SetAt(m_pCurSheet->m_oName.get(), m_pCurWorksheet);
+					m_mapWorksheets [m_pCurSheet->m_oName.get()] = m_pCurWorksheet;
 					m_oWorkbook.m_oSheets->m_arrItems.push_back(m_pCurSheet);
 				}
 			}
@@ -2543,23 +2543,23 @@ namespace BinXlsxRW {
 			if(c_oSer_DrawingType::PicSrc == type)
 			{
 				long nId = m_oBufferedStream.ReadLong();
-				CAtlMap<long, ImageObject*>::CPair* pair = m_mapMedia.Lookup(nId);
-				if(NULL != pair)
+				std::map<long, ImageObject*>::const_iterator pair = m_mapMedia.find(nId);
+				if(m_mapMedia.end() != pair)
 				{
 					CString sRId;
-					CAtlMap<OOX::Spreadsheet::CDrawing*, CString>::CPair* pPair = pair->m_value->mapDrawings.Lookup(m_pCurDrawing);
+					CAtlMap<OOX::Spreadsheet::CDrawing*, CString>::CPair* pPair = pair->second->mapDrawings.Lookup(m_pCurDrawing);
 					if(NULL == pPair)
 					{
 						CString sNewImageName;
-						sNewImageName.Format(_T("image%d%s"), pair->m_value->nIndex, OOX::CPath(pair->m_value->sPath).GetExtention(true));
+						sNewImageName.Format(_T("image%d%s"), pair->second->nIndex, OOX::CPath(pair->second->sPath).GetExtention(true));
 						CString sNewImagePath = m_sMediaDir + _T("\\") + sNewImageName;
-						if(pair->m_value->bNeedCreate)
+						if(pair->second->bNeedCreate)
 						{
-							pair->m_value->bNeedCreate = false;
+							pair->second->bNeedCreate = false;
 							DWORD dwFileAttr = ::GetFileAttributes( m_sMediaDir );
 							if( dwFileAttr == INVALID_FILE_ATTRIBUTES )
 								OOX::CSystemUtility::CreateDirectories(m_sMediaDir);
-							::CopyFile(pair->m_value->sPath, sNewImagePath, FALSE);
+							::CopyFile(pair->second->sPath, sNewImagePath, FALSE);
 						}
 						long rId;
 						CString sNewImgRel;
@@ -2569,7 +2569,7 @@ namespace BinXlsxRW {
 						SysFreeString(bstrNewImgRel);
 
 						sRId.Format(_T("rId%d"), rId);
-						pair->m_value->mapDrawings.SetAt(m_pCurDrawing, sRId);
+						pair->second->mapDrawings.SetAt(m_pCurDrawing, sRId);
 					}
 					else
 						sRId = pPair->m_value;
@@ -2827,7 +2827,7 @@ namespace BinXlsxRW {
 	};
 	class BinaryOtherTableReader : public Binary_CommonReader<BinaryOtherTableReader>
 	{
-		CAtlMap<long, ImageObject*>& m_mapMedia;
+		std::map<long, ImageObject*>& m_mapMedia;
 		std::vector<CString>& m_aDeleteFiles;
 		CString& m_sFileInDir;
 		long m_nCurId;
@@ -2837,7 +2837,7 @@ namespace BinXlsxRW {
 		LPSAFEARRAY m_pArray;
 		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
 	public:
-		BinaryOtherTableReader(Streams::CBufferedStream& oBufferedStream, CAtlMap<long, ImageObject*>& mapMedia, CString& sFileInDir, std::vector<CString>& aDeleteFiles, SaveParams& oSaveParams, LPSAFEARRAY pArray, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream), m_mapMedia(mapMedia),m_aDeleteFiles(aDeleteFiles),m_sFileInDir(sFileInDir),m_oSaveParams(oSaveParams),m_pArray(pArray),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
+		BinaryOtherTableReader(Streams::CBufferedStream& oBufferedStream, std::map<long, ImageObject*>& mapMedia, CString& sFileInDir, std::vector<CString>& aDeleteFiles, SaveParams& oSaveParams, LPSAFEARRAY pArray, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream), m_mapMedia(mapMedia),m_aDeleteFiles(aDeleteFiles),m_sFileInDir(sFileInDir),m_oSaveParams(oSaveParams),m_pArray(pArray),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 		{
 			m_nCurId = 0;
 			m_sCurSrc = _T("");
@@ -2874,7 +2874,7 @@ namespace BinXlsxRW {
 				res = Read1(length, &BinaryOtherTableReader::ReadMediaItem, this, poResult);
 				if(-1 != m_nCurId && false == m_sCurSrc.IsEmpty())
 				{
-					m_mapMedia.SetAt(m_nCurId, new ImageObject(m_sCurSrc, m_nCurIndex));
+					m_mapMedia [m_nCurId] = new ImageObject(m_sCurSrc, m_nCurIndex);
 					m_nCurIndex++;
 				}
 			}
@@ -3100,7 +3100,7 @@ namespace BinXlsxRW {
 						aOffBits.push_back(mtiOffBits);
 					}
 				}
-				CAtlMap<long, ImageObject*> mapMedia;
+				std::map<long, ImageObject*> mapMedia;
 				if(-1 != nOtherOffBits)
 				{
 					oBufferedStream.Seek(nOtherOffBits);
@@ -3147,13 +3147,11 @@ namespace BinXlsxRW {
 					if(c_oSerConstants::ReadOk != res)
 						return res;
 				}
-				POSITION pos = mapMedia.GetStartPosition();
-				while ( NULL != pos )
+				for (std::map<long, ImageObject*>::const_iterator pPair = mapMedia.begin(); pPair != mapMedia.end(); ++pPair)
 				{
-					CAtlMap<long, ImageObject*>::CPair* pPair = mapMedia.GetNext( pos );
-					delete pPair->m_value;
+					delete pPair->second;
 				}
-				mapMedia.RemoveAll();
+				mapMedia.clear();
 				return res;
 			}
 			void initWorkbook(OOX::Spreadsheet::CWorkbook* pWorkbook)

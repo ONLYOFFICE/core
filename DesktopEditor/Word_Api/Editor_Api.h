@@ -2227,7 +2227,7 @@ namespace NSEditorApi
 		virtual ~CAscMenuEvent()
 		{
 			if (NULL != m_pData)
-				delete m_pData;
+				m_pData->Release();
 		}
 	};
 
@@ -2246,7 +2246,7 @@ namespace NSEditorApi
 			{
 				CAscMenuEvent* data = *i;
 				if (NULL != data)
-					delete data;
+					data->Release();
 			}
 		}
 	};
@@ -2258,7 +2258,7 @@ namespace NSEditorApi
 		virtual void OnEvent(CAscMenuEvent* pEvent)
 		{
 			if (NULL != pEvent)
-				delete pEvent;
+                pEvent->Release();
 		}
 		virtual bool IsSupportEvent(int nEventType)
 		{
@@ -2272,7 +2272,7 @@ namespace NSEditorApi
 		virtual void Apply(CAscMenuEvent* pEvent)
 		{
 			if (NULL != pEvent)
-				delete pEvent;
+                pEvent->Release();
 		}
 	};
 }

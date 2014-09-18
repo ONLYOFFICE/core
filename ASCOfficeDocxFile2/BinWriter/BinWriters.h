@@ -2429,13 +2429,13 @@ namespace BinDocxRW
 		CString m_sFldChar;
 		SimpleTypes::EFldCharType m_eFldState;
 		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
-		CAtlMap<int, bool>* m_mapIgnoreComments;
+		std::map<int, bool>* m_mapIgnoreComments;
 	public:
 		Binary_tblPrWriter btblPrs;
 		OOX::Logic::CSectionProperty* pSectPr;
 		bool m_bWriteSectPr;//Записывать ли свойства секции в данном экземпляре BinaryOtherTableWriter
 	public:
-		BinaryDocumentTableWriter(ParamsWriter& oParamsWriter, ParamsDocumentWriter& oParamsDocumentWriter, CAtlMap<int, bool>* mapIgnoreComments, BinaryHeaderFooterTableWriter* oBinaryHeaderFooterTableWriter):
+		BinaryDocumentTableWriter(ParamsWriter& oParamsWriter, ParamsDocumentWriter& oParamsDocumentWriter, std::map<int, bool>* mapIgnoreComments, BinaryHeaderFooterTableWriter* oBinaryHeaderFooterTableWriter):
 			m_oParamsWriter(oParamsWriter), m_oParamsDocumentWriter(oParamsDocumentWriter),m_oBcw(oParamsWriter),bpPrs(oParamsWriter, oBinaryHeaderFooterTableWriter),brPrs(oParamsWriter),btblPrs(oParamsWriter),m_oSettings(oParamsWriter.m_oSettings),m_pOfficeDrawingConverter(oParamsWriter.m_pOfficeDrawingConverter),m_mapIgnoreComments(mapIgnoreComments)
 		{
 			pSectPr = NULL;
@@ -2735,7 +2735,7 @@ namespace BinDocxRW
 		void WriteComment(OOX::EElementType eType, nullable<SimpleTypes::CDecimalNumber<>>& oId)
 		{
 			int nCurPos = 0;
-			if(oId.IsInit() && (NULL == m_mapIgnoreComments || NULL == m_mapIgnoreComments->Lookup(oId->GetValue())))
+			if(oId.IsInit() && (NULL == m_mapIgnoreComments || m_mapIgnoreComments->end() == m_mapIgnoreComments->find(oId->GetValue())))
 			{
 				switch(eType)
 				{
@@ -5613,17 +5613,17 @@ namespace BinDocxRW
 		BinaryCommentsTableWriter(ParamsWriter& oParamsWriter):m_oBcw(oParamsWriter)
 		{
 		};
-		void Write(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CPeople* pPeople, CAtlMap<int, bool>& mapIgnoreComments)
+		void Write(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CPeople* pPeople, std::map<int, bool>& mapIgnoreComments)
 		{
 			int nStart = m_oBcw.WriteItemWithLengthStart();
 			WriteCommentsContent(oComments, pCommentsExt, pPeople, mapIgnoreComments);
 			m_oBcw.WriteItemWithLengthEnd(nStart);
 		}
-		void WriteCommentsContent(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CPeople* pPeople, CAtlMap<int, bool>& mapIgnoreComments)
+		void WriteCommentsContent(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CPeople* pPeople, std::map<int, bool>& mapIgnoreComments)
 		{
-			CAtlMap<CString, CString> mapAuthorToUserId;
-			CAtlMap<int, CCommentWriteTemp*> mapParaIdToComment;
-			CAtlMap<int, bool> mapCommentsIgnore;
+			std::map<CString, CString> mapAuthorToUserId;
+			std::map<int, CCommentWriteTemp*> mapParaIdToComment;
+			std::map<int, bool> mapCommentsIgnore;
 			std::vector<CCommentWriteTemp*> aCommentsToWrite;
 			//map author -> userId
 			if(NULL != pPeople)
@@ -5643,9 +5643,9 @@ namespace BinDocxRW
 				pNewCommentWriteTemp->pComment = pComment;
 				if(pComment->m_oAuthor.IsInit())
 				{
-					CAtlMap<CString, CString>::CPair* pPair = mapAuthorToUserId.Lookup(pComment->m_oAuthor.get2());
-					if(NULL != pPair)
-						pNewCommentWriteTemp->sUserId = pPair->m_value;
+					std::map<CString, CString>::const_iterator pPair = mapAuthorToUserId.find(pComment->m_oAuthor.get2());
+					if(mapAuthorToUserId.end() != pPair)
+						pNewCommentWriteTemp->sUserId = pPair->second;
 				}
 				for(int j = 0, length2 = pComment->m_arrItems.size(); j < length2; j++)
 				{
@@ -5667,20 +5667,20 @@ namespace BinDocxRW
 					OOX::CCommentExt* pCommentExt = pCommentsExt->m_arrComments[i];
 					if(pCommentExt->m_oParaId.IsInit())
 					{
-						CAtlMap<int, CCommentWriteTemp*>::CPair* pPair = mapParaIdToComment.Lookup(pCommentExt->m_oParaId->GetValue());
-						if(NULL != pPair)
+						std::map<int, CCommentWriteTemp*>::const_iterator pPair = mapParaIdToComment.find(pCommentExt->m_oParaId->GetValue());
+						if(mapParaIdToComment.end() != pPair)
 						{
-							CCommentWriteTemp* pCommentWriteTemp = pPair->m_value;
+							CCommentWriteTemp* pCommentWriteTemp = pPair->second;
 							OOX::CComment* pComment = pCommentWriteTemp->pComment;
 							if(pCommentExt->m_oDone.IsInit())
 								pCommentWriteTemp->bDone = pCommentExt->m_oDone->ToBool();
 							if(pCommentExt->m_oParaIdParent.IsInit())
 							{
 								int nParaIdParent = pCommentExt->m_oParaIdParent->GetValue();
-								CAtlMap<int, CCommentWriteTemp*>::CPair* pPairParent = mapParaIdToComment.Lookup(nParaIdParent);
-								if(NULL != pPairParent)
+								std::map<int, CCommentWriteTemp*>::const_iterator pPairParent = mapParaIdToComment.find(nParaIdParent);
+								if(mapParaIdToComment.end() != pPairParent)
 								{
-									CCommentWriteTemp* pCommentWriteTempParent = pPairParent->m_value;
+									CCommentWriteTemp* pCommentWriteTempParent = pPairParent->second;
 									pCommentWriteTempParent->aReplies.push_back(pCommentWriteTemp);
 									if(NULL != pComment && pComment->m_oId.IsInit())
 										mapIgnoreComments[pComment->m_oId->GetValue()] = true;
@@ -5695,7 +5695,7 @@ namespace BinDocxRW
 			for(int i = 0, length = aCommentsToWrite.size(); i < length; ++i)
 			{
 				CCommentWriteTemp* pCommentWriteTemp = aCommentsToWrite[i];
-				if(NULL != pCommentWriteTemp && NULL != pCommentWriteTemp->pComment && pCommentWriteTemp->pComment->m_oId.IsInit() && NULL == mapIgnoreComments.Lookup(pCommentWriteTemp->pComment->m_oId->GetValue()))
+				if(NULL != pCommentWriteTemp && NULL != pCommentWriteTemp->pComment && pCommentWriteTemp->pComment->m_oId.IsInit() && mapIgnoreComments.end() == mapIgnoreComments.find(pCommentWriteTemp->pComment->m_oId->GetValue()))
 				{
 					int nStart = m_oBcw.WriteItemStart(c_oSer_CommentsType::Comment);
 					WriteComment(*aCommentsToWrite[i]);
@@ -6212,7 +6212,7 @@ namespace BinDocxRW
 				}
 
 				//Write Comments
-				CAtlMap<int, bool> mapIgnoreComments;
+				std::map<int, bool> mapIgnoreComments;
 				OOX::CComments* pComments = oDocx.GetComments();
 				OOX::CCommentsExt* pCommentsExt = oDocx.GetCommentsExt();
 				OOX::CPeople* pPeople = oDocx.GetPeople();

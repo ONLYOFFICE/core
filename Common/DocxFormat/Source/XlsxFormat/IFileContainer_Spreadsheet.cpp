@@ -16,7 +16,7 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		CAtlMap<CString, size_t> IFileContainer::m_mapEnumeratedGlobal;
+		std::map<CString, size_t> IFileContainer::m_mapEnumeratedGlobal;
 		UnknowTypeFile IFileContainer::Unknown;
 
 		void IFileContainer::Read (const OOX::CPath& oPath)
@@ -52,15 +52,9 @@ namespace OOX
 		}
 		void IFileContainer::Write(OOX::CRels& oRels, const OOX::CPath& oCurrent, const OOX::CPath& oDir, OOX::CContentTypes& oContent) const
 		{
-			CAtlMap<CString, size_t> mNamePair;
-
-			POSITION pos = m_mContainer.GetStartPosition();
-
-			while ( NULL != pos )
+			for (std::map<CString, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
 			{
-				const CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = m_mContainer.GetNext( pos );
-
-				smart_ptr<OOX::File>     pFile = pPair->m_value;
+				smart_ptr<OOX::File>     pFile = pPair->second;
 				smart_ptr<OOX::External> pExt  = pFile.smart_dynamic_cast<OOX::External>();
 
 				if ( !pExt.IsInit() )
@@ -73,11 +67,11 @@ namespace OOX
 					OOX::CSystemUtility::CreateDirectories( oCurrent / oDefDir );
 					pFile->write( oCurrent / oDefDir / oName, oDir / oDefDir, oContent );
 					if(true != pFile->m_bDoNotAddRels)
-						oRels.Registration( pPair->m_key, pFile->type(), oDefDir / oName );
+						oRels.Registration( pPair->first, pFile->type(), oDefDir / oName );
 				}
 				else
 				{
-					oRels.Registration( pPair->m_key, pExt );
+					oRels.Registration( pPair->first, pExt );
 				}
 			}
 		}
@@ -85,14 +79,11 @@ namespace OOX
 
 		void IFileContainer::Commit  (const OOX::CPath& oPath)
 		{
-			CAtlMap<CString, size_t> mNamepair;
+			std::map<CString, size_t> mNamepair;
 
-			POSITION pos = m_mContainer.GetStartPosition();
-			while ( NULL != pos )
+			for (std::map<CString, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
 			{
-				CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = m_mContainer.GetNext( pos );
-
-				smart_ptr<OOX::File>     pFile = pPair->m_value;
+				smart_ptr<OOX::File>     pFile = pPair->second;
 				smart_ptr<OOX::External> pExt  = pFile.smart_dynamic_cast<OOX::External>();
 
 				if (!pExt.IsInit())
@@ -100,15 +91,15 @@ namespace OOX
 					OOX::CPath oDefDir = pFile->DefaultDirectory();
 					OOX::CPath oName   = pFile->DefaultFileName();
 
-					CAtlMap<CString, size_t>::CPair* pNamePair = mNamepair.Lookup( oName.m_strFilename );
-					if (NULL == pNamePair)
-						mNamepair.SetAt( oName.m_strFilename, 1 );
+					std::map<CString, size_t>::const_iterator pNamePair = mNamepair.find( oName.m_strFilename );
+					if (pNamePair == mNamepair.end())
+						mNamepair [oName.m_strFilename] = 1;
 					else
-						oName = oName + pNamePair->m_key;
+						oName = oName + pNamePair->first;
 
 					OOX::CSystemUtility::CreateDirectories( oPath / oDefDir );
 
-					smart_ptr<OOX::IFileBuilder> pFileBuilder = pPair->m_value.smart_dynamic_cast<OOX::IFileBuilder>();
+					smart_ptr<OOX::IFileBuilder> pFileBuilder = pPair->second.smart_dynamic_cast<OOX::IFileBuilder>();
 					if ( pFileBuilder.is_init() )
 						pFileBuilder->Commit( oPath / oDefDir / oName );
 				}
@@ -126,14 +117,11 @@ namespace OOX
 		}	
 		void IFileContainer::Finalize(OOX::CRels& oRels, const OOX::CPath& oCurrent, const OOX::CPath& oDir, OOX::CContentTypes& oContent)
 		{
-			CAtlMap<CString, size_t> mNamepair;
+			std::map<CString, size_t> mNamepair;
 
-			POSITION pos = m_mContainer.GetStartPosition();
-			while ( NULL != pos )
+			for (std::map<CString, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
 			{
-				CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = m_mContainer.GetNext( pos );
-
-				smart_ptr<OOX::File>     pFile = pPair->m_value;
+				smart_ptr<OOX::File>     pFile = pPair->second;
 				smart_ptr<OOX::External> pExt  = pFile.smart_dynamic_cast<OOX::External>();
 
 				if ( !pExt.IsInit() )
@@ -141,11 +129,11 @@ namespace OOX
 					OOX::CPath oDefDir = pFile->DefaultDirectory();
 					OOX::CPath oName   = pFile->DefaultFileName();
 
-					CAtlMap<CString, size_t>::CPair* pNamePair = mNamepair.Lookup( oName.m_strFilename );
-					if ( NULL == pNamePair )
-						mNamepair.SetAt( oName.m_strFilename, 1 );
+					std::map<CString, size_t>::const_iterator pNamePair = mNamepair.find( oName.m_strFilename );
+					if (pNamePair == mNamepair.end())
+						mNamepair [oName.m_strFilename] = 1;
 					else
-						oName = oName + pNamePair->m_key;
+						oName = oName + pNamePair->first;
 
 					OOX::CSystemUtility::CreateDirectories( oCurrent / oDefDir );				
 					smart_ptr<OOX::IFileBuilder> pFileBuilder = pFile.smart_dynamic_cast<OOX::IFileBuilder>(); 
@@ -158,30 +146,28 @@ namespace OOX
 						pFile->write( oCurrent / oDefDir / oName, oDir / oDefDir, oContent );
 					}
 
-					oRels.Registration( pPair->m_key, pFile->type(), oDefDir / oName );
+					oRels.Registration( pPair->first, pFile->type(), oDefDir / oName );
 				}
 				else
 				{
-					oRels.Registration( pPair->m_key, pExt );
+					oRels.Registration( pPair->first, pExt );
 				}
 			}
 		}
 
 		const bool IFileContainer::IsExist(const FileType& oType) const
 		{
-			POSITION pos = m_mContainer.GetStartPosition();
-			while ( NULL != pos )
+			for (std::map<CString, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
 			{
-				const CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = m_mContainer.GetNext( pos );
-				if ( oType == pPair->m_value->type() )
+				if ( oType == pPair->second->type() )
 					return true;
 			}
 			return false;
 		}
 		const bool IFileContainer::IsExist(const RId& rId) const
 		{
-			const CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = m_mContainer.Lookup(rId.get());
-			return ( NULL != pPair );
+			std::map<CString, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.find( rId.get() );
+			return ( pPair != m_mContainer.end() );
 		}
 
 
@@ -193,27 +179,25 @@ namespace OOX
 		}
 		CString IFileContainer::IsExistHyperlink(smart_ptr<OOX::HyperLink>& pHyperLink)
 		{
-			POSITION pos = m_mContainer.GetStartPosition();
-			while ( NULL != pos )
+			for (std::map<CString, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
 			{
-				const CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = m_mContainer.GetNext( pos );
-				if(OOX::FileTypes::HyperLink == pPair->m_value->type())
+				if(OOX::FileTypes::HyperLink == pPair->second->type())
 				{
-					smart_ptr<OOX::HyperLink> pCurHyperlink = pPair->m_value.smart_dynamic_cast<OOX::HyperLink>();
+					smart_ptr<OOX::HyperLink> pCurHyperlink = pPair->second.smart_dynamic_cast<OOX::HyperLink>();
 					if(pCurHyperlink->Uri().GetPath() == pHyperLink->Uri().GetPath())
-						return pPair->m_key;
+						return pPair->first;
 				}
 			}
 			return CString();
 		}
 		const bool IFileContainer::IsExternal(const OOX::RId& rId) const
 		{
-			const CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = m_mContainer.Lookup(rId.get());
+			std::map<CString, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.find( rId.get() );
 
-			if ( NULL != pPair )
+			if ( pPair != m_mContainer.end() )
 			{
-				CString sType = pPair->m_value->type().RelationType();
-				CString sName = pPair->m_value->type().DefaultFileName().m_strFilename;
+				CString sType = pPair->second->type().RelationType();
+				CString sName = pPair->second->type().DefaultFileName().m_strFilename;
 
 				return (( ( sType == OOX::FileTypes::ExternalAudio.RelationType() ) || ( sType == OOX::FileTypes::ExternalImage.RelationType() ) || ( sType == OOX::FileTypes::ExternalVideo.RelationType() ) ) && ( sName == _T("") ) );
 			}
@@ -223,12 +207,10 @@ namespace OOX
 
 		smart_ptr<OOX::File> IFileContainer::Get(const FileType& oType)
 		{
-			POSITION pos = m_mContainer.GetStartPosition();
-			while ( NULL != pos )
+			for (std::map<CString, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
 			{
-				CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = m_mContainer.GetNext( pos );
-				if ( oType == pPair->m_value->type() )
-					return pPair->m_value;
+				if ( oType == pPair->second->type() )
+					return pPair->second;
 			}
 			return smart_ptr<OOX::File>(new UnknowTypeFile( Unknown ));
 		}
@@ -249,14 +231,21 @@ namespace OOX
 
 			if(true == bEnumeratedGlobal || true == bEnumerated)
 			{
-				CAtlMap<CString, size_t>::CPair* pNamePair = NULL;
-				if(true == bEnumeratedGlobal)
-					pNamePair = m_mapEnumeratedGlobal.Lookup( pFile->type().OverrideType() );
-				else
-					pNamePair = m_mapAddNamePair.Lookup( pFile->type().OverrideType() );
 				int nIndex = 0;
-				if(NULL != pNamePair)
-					nIndex = pNamePair->m_value;
+
+				if(true == bEnumeratedGlobal)
+				{
+					std::map<CString, size_t>::const_iterator pNamePair = m_mapEnumeratedGlobal.find (pFile->type().OverrideType());
+					if (pNamePair != m_mapEnumeratedGlobal.end())
+						nIndex = pNamePair->second;
+				}
+				else
+				{
+					std::map<CString, size_t>::const_iterator pNamePair = m_mapAddNamePair.find (pFile->type().OverrideType());
+					if (pNamePair != m_mapAddNamePair.end())
+						nIndex = pNamePair->second;	
+				}
+				
 				nIndex++;
 
 				if(true == bEnumeratedGlobal)
@@ -277,42 +266,39 @@ namespace OOX
 				}
 				pFile->m_sFilename = sPath;
 				if(true == bEnumeratedGlobal)
-					m_mapEnumeratedGlobal.SetAt( pFile->type().OverrideType(), nIndex );
+					m_mapEnumeratedGlobal [pFile->type().OverrideType()] = nIndex;
 				else
-					m_mapAddNamePair.SetAt( pFile->type().OverrideType(), nIndex );
+					m_mapAddNamePair [pFile->type().OverrideType()] = nIndex;
 			}
 
 			m_lMaxRid = max( m_lMaxRid, rId.getNumber() );
-			m_mContainer.SetAt( rId.get(), pFile );
+			m_mContainer [rId.get()] = pFile;
 		}
 		smart_ptr<OOX::File> IFileContainer::Find(const FileType& oType) const
 		{
-			POSITION pos = m_mContainer.GetStartPosition();
-			while ( NULL != pos )
+			for (std::map<CString, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
 			{
-				const CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = m_mContainer.GetNext( pos );
-				if ( oType == pPair->m_value->type() )
-					return pPair->m_value;
+				if ( oType == pPair->second->type() )
+					return pPair->second;
 			}
 			return smart_ptr<OOX::File>( (OOX::File*)new UnknowTypeFile() );
 		}
-		void IFileContainer::FindAllByType(const FileType& oType, CAtlMap<CString, smart_ptr<OOX::File>>& aOutput) const
+		void IFileContainer::FindAllByType(const FileType& oType, std::map<CString, smart_ptr<OOX::File>>& aOutput) const
 		{
-			POSITION pos = m_mContainer.GetStartPosition();
-			while ( NULL != pos )
+			for (std::map<CString, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
 			{
-				const CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = m_mContainer.GetNext( pos );
-				if ( oType == pPair->m_value->type() )
+				if ( oType == pPair->second->type() )
 				{
-					aOutput.SetAt(pPair->m_key, pPair->m_value);
+					aOutput [pPair->first] = pPair->second;
 				}
 			}
 		}
 		smart_ptr<OOX::File> IFileContainer::Find(const OOX::RId& rId) const
 		{
-			const CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = m_mContainer.Lookup(rId.get());
-			if ( NULL != pPair )
-				return pPair->m_value;
+			std::map<CString, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.find(rId.get());
+
+			if ( pPair != m_mContainer.end())
+				return pPair->second;
 
 			return smart_ptr<OOX::File>( (OOX::File*)new UnknowTypeFile() );
 		}
@@ -326,9 +312,9 @@ namespace OOX
 		}	
 		smart_ptr<OOX::File> IFileContainer::operator [](const OOX::RId rId)
 		{
-			CAtlMap<CString, smart_ptr<OOX::File>>::CPair* pPair = m_mContainer.Lookup(rId.get());
-			if ( NULL != pPair )
-				return pPair->m_value;
+			std::map<CString, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.find(rId.get());
+			if ( pPair != m_mContainer.end())
+				return pPair->second;
 
 			return smart_ptr<OOX::File>( (OOX::File*)new UnknowTypeFile() );
 		}
@@ -345,14 +331,14 @@ namespace OOX
 		}
 		void IFileContainer::SetGlobalNumberByType(const CString& sOverrideType, int val)
 		{
-			m_mapEnumeratedGlobal.SetAt( sOverrideType, val );
+			m_mapEnumeratedGlobal [sOverrideType] = val;
 		}
 		int IFileContainer::GetGlobalNumberByType(const CString& sOverrideType)
 		{
-			CAtlMap<CString, size_t>::CPair* pNamePair = m_mapEnumeratedGlobal.Lookup( sOverrideType );
+			std::map<CString, size_t>::const_iterator pNamePair = m_mapEnumeratedGlobal.find( sOverrideType );
 			int nRes = 0;
-			if(NULL != pNamePair)
-				nRes = pNamePair->m_value;
+			if(pNamePair != m_mapEnumeratedGlobal.end())
+				nRes = pNamePair->second;
 			return nRes;
 		}
 	}

@@ -54,7 +54,7 @@ namespace PPTX
 				if (oBlip.blip.is_init() && oBlip.blip->embed.is_init())
 				{
 					CString fopacity = _T("");
-					size_t eff_count = oBlip.blip->Effects.GetCount();
+					size_t eff_count = oBlip.blip->Effects.size();
 					for (size_t eff = 0; eff < eff_count; ++eff)
 					{
 
@@ -112,7 +112,7 @@ namespace PPTX
 			else if (fill.is<GradFill>())
 			{
 				GradFill& oGrad = fill.as<GradFill>();
-				if (oGrad.GsLst.GetCount() > 0)
+				if (oGrad.GsLst.size() > 0)
 				{
 					ARGB = oGrad.GsLst[0].color.GetRGBColor(_oTheme, _oClrMap, ARGB);
 					strAttr = _T(" fillcolor=\"") + GetHexColor(ARGB) + _T("\"");

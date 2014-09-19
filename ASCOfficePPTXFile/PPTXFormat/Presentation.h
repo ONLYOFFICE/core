@@ -63,24 +63,24 @@ namespace PPTX
 			if(defaultTextStyle.is_init())
 				defaultTextStyle->SetParentFilePointer(this);
 
-			embeddedFontLst.RemoveAll();
+			embeddedFontLst.clear();
 			XmlUtils::CXmlNode oNodeEmbeddedFonts;
 			if (oNode.GetNode(_T("p:embeddedFontLst"), oNodeEmbeddedFonts))
 			{
 				oNodeEmbeddedFonts.LoadArray(_T("p:embeddedFont"), embeddedFontLst);
 
-				size_t count = embeddedFontLst.GetCount();
+				size_t count = embeddedFontLst.size();
 				for (size_t i = 0; i < count; ++i)
 					embeddedFontLst[i].SetParentFilePointer(this);
 			}
 			
-			handoutMasterIdLst.RemoveAll();
+			handoutMasterIdLst.clear();
 			XmlUtils::CXmlNode oNodeHMList;
 			if (oNode.GetNode(_T("p:handoutMasterIdLst"), oNodeHMList))
 			{
 				oNodeHMList.LoadArray(_T("p:handoutMasterId"), handoutMasterIdLst);
 
-				size_t count = handoutMasterIdLst.GetCount();
+				size_t count = handoutMasterIdLst.size();
 				for (size_t i = 0; i < count; ++i)
 					handoutMasterIdLst[i].SetParentFilePointer(this);
 			}
@@ -91,13 +91,13 @@ namespace PPTX
 				kinsoku->SetParentFilePointer(this);
 			
 			//modifyVerifier (Modification Verifier)
-			notesMasterIdLst.RemoveAll();
+			notesMasterIdLst.clear();
 			XmlUtils::CXmlNode oNodeMIDList;
 			if (oNode.GetNode(_T("p:notesMasterIdLst"), oNodeMIDList))
 			{
 				oNodeMIDList.LoadArray(_T("p:notesMasterId"), notesMasterIdLst);
 
-				size_t count = notesMasterIdLst.GetCount();
+				size_t count = notesMasterIdLst.size();
 				for (size_t i = 0; i < count; ++i)
 					notesMasterIdLst[i].SetParentFilePointer(this);
 			}
@@ -110,24 +110,24 @@ namespace PPTX
 			if(photoAlbum.is_init())
 				photoAlbum->SetParentFilePointer(this);
 
-			sldIdLst.RemoveAll();
+			sldIdLst.clear();
 			XmlUtils::CXmlNode oNode_sldId;
 			if (oNode.GetNode(_T("p:sldIdLst"), oNode_sldId))
 			{
 				oNode_sldId.LoadArray(_T("p:sldId"), sldIdLst);
 
-				size_t count = sldIdLst.GetCount();
+				size_t count = sldIdLst.size();
 				for (size_t i = 0; i < count; ++i)
 					sldIdLst[i].SetParentFilePointer(this);
 			}
 
-			sldMasterIdLst.RemoveAll();
+			sldMasterIdLst.clear();
 			XmlUtils::CXmlNode oNode_sldM_Id;
 			if (oNode.GetNode(_T("p:sldMasterIdLst"), oNode_sldM_Id))
 			{
 				oNode_sldM_Id.LoadArray(_T("p:sldMasterId"), sldMasterIdLst);
 
-				size_t count = sldMasterIdLst.GetCount();
+				size_t count = sldMasterIdLst.size();
 				for (size_t i = 0; i < count; ++i)
 					sldMasterIdLst[i].SetParentFilePointer(this);
 			}
@@ -162,11 +162,11 @@ namespace PPTX
 			XmlUtils::CNodeValue oValue;
 			oValue.WriteArray(_T("p:sldMasterIdLst"), sldMasterIdLst);
 
-			if (!notesMasterIdLst.IsEmpty())
+			if (!notesMasterIdLst.empty())
 				oValue.WriteArray(_T("p:notesMasterIdLst"), notesMasterIdLst);
-			if (!handoutMasterIdLst.IsEmpty())
+			if (!handoutMasterIdLst.empty())
 				oValue.WriteArray(_T("p:handoutMasterIdLst"), handoutMasterIdLst);
-			if (!handoutMasterIdLst.IsEmpty())
+			if (!handoutMasterIdLst.empty())
 				oValue.WriteArray(_T("p:embeddedFontLst"), embeddedFontLst);
 
 			oValue.WriteArray(_T("p:sldIdLst"), sldIdLst);
@@ -393,15 +393,15 @@ namespace PPTX
 		//custDataLst (Customer Data List)
 		//property<std::list<Presentation::CustShow> > custShowLst (List of Custom Shows)
 		nullable<Logic::TextListStyle>			defaultTextStyle;
-		CAtlArray<nsPresentation::EmbeddedFont> embeddedFontLst;
-		CAtlArray<Logic::XmlId>					handoutMasterIdLst;
+		std::vector<nsPresentation::EmbeddedFont> embeddedFontLst;
+		std::vector<Logic::XmlId>					handoutMasterIdLst;
 		nullable<nsPresentation::Kinsoku>		kinsoku;
 		//modifyVerifier (Modification Verifier)
-		CAtlArray<Logic::XmlId>					notesMasterIdLst;
+		std::vector<Logic::XmlId>					notesMasterIdLst;
 		nullable<nsPresentation::NotesSz>		notesSz;
 		nullable<nsPresentation::PhotoAlbum>	photoAlbum;
-		CAtlArray<Logic::XmlId>					sldIdLst;
-		CAtlArray<Logic::XmlId>					sldMasterIdLst;
+		std::vector<Logic::XmlId>					sldIdLst;
+		std::vector<Logic::XmlId>					sldMasterIdLst;
 		nullable<nsPresentation::SldSz>			sldSz;
 		//smartTags (Smart Tags)
 

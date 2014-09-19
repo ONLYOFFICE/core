@@ -21,8 +21,8 @@ namespace PPTX
 				parentFile		= oSrc.parentFile;
 				parentElement	= oSrc.parentElement;
 
-				TableCols.Copy(oSrc.TableCols);
-				TableRows.Copy(oSrc.TableRows);
+				TableCols = oSrc.TableCols;
+				TableRows = oSrc.TableRows;
 
 				TableProperties = oSrc.TableProperties;
 				return *this;
@@ -81,7 +81,7 @@ namespace PPTX
 							for (LONG i = 0; i < lCount; ++i)
 							{
 								pReader->Skip(1);
-								TableCols.Add();
+								TableCols.push_back(TableCol());
 								TableCols[i].fromPPTY(pReader);
 							}
 							break;
@@ -93,7 +93,7 @@ namespace PPTX
 							for (LONG i = 0; i < lCount; ++i)
 							{
 								pReader->Skip(1);
-								TableRows.Add();
+								TableRows.push_back(TableRow());
 								TableRows[i].fromPPTY(pReader);
 							}
 						}
@@ -115,12 +115,12 @@ namespace PPTX
 				pWriter->Write(TableProperties);
 				
 				pWriter->WriteString(_T("<a:tblGrid>"));
-				size_t n1 = TableCols.GetCount();
+				size_t n1 = TableCols.size();
 				for (size_t i = 0; i < n1; ++i)
 					TableCols[i].toXmlWriter(pWriter);
 				pWriter->WriteString(_T("</a:tblGrid>"));
 
-				size_t n2 = TableRows.GetCount();
+				size_t n2 = TableRows.size();
 				for (size_t i = 0; i < n2; ++i)
 					TableRows[i].toXmlWriter(pWriter);
 
@@ -128,8 +128,8 @@ namespace PPTX
 			}
 			
 		public:
-			CAtlArray<TableCol>			TableCols;
-			CAtlArray<TableRow>			TableRows;
+			std::vector<TableCol>			TableCols;
+			std::vector<TableRow>			TableRows;
 			nullable<TableProperties>	TableProperties;
 		protected:
 			virtual void FillParentPointersForChilds()
@@ -137,7 +137,7 @@ namespace PPTX
 				if (TableProperties.IsInit())
 					TableProperties->SetParentPointer(this);
 				
-				size_t count = TableRows.GetCount();
+				size_t count = TableRows.size();
 				for (size_t i = 0; i < count; ++i)
 					TableRows[i].SetParentPointer(this);
 			}

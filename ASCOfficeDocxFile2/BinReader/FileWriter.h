@@ -16,7 +16,7 @@ namespace Writers
 	class FileWriter
 	{
 	public:
-		PPTXFile::IAVSOfficeDrawingConverter* m_pDrawingConverter;
+		NSBinPptxRW::CDrawingConverter* m_pDrawingConverter;
 		LPSAFEARRAY m_pArray;
 		CString m_sThemePath;
 		bool m_bSaveChartAsImg;
@@ -32,7 +32,7 @@ namespace Writers
 		ChartWriter m_oChartWriter;
 		int m_nDocPrIndex;
 	public:
-		FileWriter(CString sDirOutput,CString sFontDir, int nVersion, bool bSaveChartAsImg, PPTXFile::IAVSOfficeDrawingConverter* pDrawingConverter, LPSAFEARRAY pArray, CString sThemePath):
+		FileWriter(CString sDirOutput,CString sFontDir, int nVersion, bool bSaveChartAsImg, NSBinPptxRW::CDrawingConverter* pDrawingConverter, LPSAFEARRAY pArray, CString sThemePath):
 										m_pDrawingConverter(pDrawingConverter),m_pArray(pArray),m_sThemePath(sThemePath),m_bSaveChartAsImg(bSaveChartAsImg),
 										m_oContentTypesWriter(sDirOutput), m_oFontTableWriter(sDirOutput, sFontDir),
 										m_oHeaderFooterWriter(sDirOutput, m_oContentTypesWriter),

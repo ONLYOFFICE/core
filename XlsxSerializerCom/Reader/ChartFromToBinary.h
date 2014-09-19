@@ -5,6 +5,8 @@
 #include "CommonWriter.h"
 #include "..\..\Common\DocxFormat\Source\XlsxFormat\Chart\ChartSerialize.h"
 #include "..\Writer\BinaryCommonReader.h"
+#include "../../ASCOfficePPTXFile/ASCOfficeDrawingConverter.h"
+
 using namespace OOX::Spreadsheet;
 namespace BinXlsxRW {
 	class SaveParams{
@@ -18,10 +20,10 @@ namespace BinXlsxRW {
 	class BinaryChartReader : public Binary_CommonReader<BinaryChartReader>
 	{
 		LPSAFEARRAY m_pArray;
-		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
+		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 		SaveParams& m_oSaveParams;
 	public:
-		BinaryChartReader(Streams::CBufferedStream& oBufferedStream, SaveParams& oSaveParams, LPSAFEARRAY pArray, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter);
+		BinaryChartReader(Streams::CBufferedStream& oBufferedStream, SaveParams& oSaveParams, LPSAFEARRAY pArray, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
 	private: int ReadCT_extLst(BYTE type, long length, void* poResult);
 	public: int ReadCT_ChartSpace(long length, CT_ChartSpace* poResult);
 	private: int ReadCT_ChartSpace(BYTE type, long length, void* poResult);
@@ -168,9 +170,9 @@ namespace BinXlsxRW {
 	class BinaryChartWriter
 	{
 		BinaryCommonWriter m_oBcw;
-		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
+		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 	public:
-		BinaryChartWriter(Streams::CBufferedStream &oCBufferedStream, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter);
+		BinaryChartWriter(Streams::CBufferedStream &oCBufferedStream, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
 	public: void WriteCT_extLst(CT_extLst& oVal);
 	public: void WriteCT_ChartSpace(OOX::Spreadsheet::CChartSpace& ChartSpace);
 	public: void WriteCT_Boolean(CT_Boolean& oVal);

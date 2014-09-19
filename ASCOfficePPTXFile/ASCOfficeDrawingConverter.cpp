@@ -1,4 +1,4 @@
-//#include "stdafx.h"
+#include "stdafx.h"
 #include "ASCOfficeDrawingConverter.h"
 
 #include "./PPTXFormat/Logic/SpTreeElem.h"
@@ -813,7 +813,7 @@ CDrawingConverter::~CDrawingConverter()
 	RELEASEOBJECT(m_pTheme);
 	RELEASEOBJECT(m_pClrMap);
 }
-HRESULT CDrawingConverter::SetMainDocument(IUnknown* pDocument)
+HRESULT CDrawingConverter::SetMainDocument(BinDocxRW::CDocxSerializer* pDocument)
 {
 	m_pBinaryWriter->ClearNoAttack();
 	m_pBinaryWriter->m_oCommon.m_oImageManager.NewDocument();
@@ -2593,7 +2593,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 			oMod.name = _T("alpha");
 			int nA = (int)(lAlpha * 100000.0 / 255.0);
 			oMod.val = nA;
-			pShape->spPr.Fill.as<PPTX::Logic::SolidFill>().Color.Color->Modifiers.Add(oMod);
+			pShape->spPr.Fill.as<PPTX::Logic::SolidFill>().Color.Color->Modifiers.push_back(oMod);
 		}
 	}
 
@@ -2652,7 +2652,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 				oMod.name = _T("alpha");
 				int nA = (int)(lAlpha * 100000.0 / 255.0);
 				oMod.val = nA;
-				pShape->spPr.Fill.as<PPTX::Logic::SolidFill>().Color.Color->Modifiers.Add(oMod);
+				pShape->spPr.Fill.as<PPTX::Logic::SolidFill>().Color.Color->Modifiers.push_back(oMod);
 			}
 			else if (pShape->spPr.Fill.is<PPTX::Logic::BlipFill>())
 			{
@@ -2663,7 +2663,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 				PPTX::Logic::UniEffect oEff;
 				oEff.InitPointer(pAlphaMod);
 
-				pShape->spPr.Fill.as<PPTX::Logic::BlipFill>().blip->Effects.Add(oEff);
+				pShape->spPr.Fill.as<PPTX::Logic::BlipFill>().blip->Effects.push_back(oEff);
 			}
 		}
 	}
@@ -2747,7 +2747,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 			oMod.name = _T("alpha");
 			int nA = (int)(lAlpha * 100000.0 / 255.0);
 			oMod.val = nA;
-			pSolid->Color.Color->Modifiers.Add(oMod);
+			pSolid->Color.Color->Modifiers.push_back(oMod);
 		}
 	}
 }

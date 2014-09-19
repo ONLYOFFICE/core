@@ -19,14 +19,14 @@ namespace PPTX
 				parentFile		= oSrc.parentFile;
 				parentElement	= oSrc.parentElement;
 
-				Colors.Copy(oSrc.Colors);
+				Colors = oSrc.Colors;
 				return *this;
 			}
 
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				Colors.RemoveAll();
+				Colors.clear();
 				node.LoadArray(_T("*"), Colors);
 				FillParentPointersForChilds();
 			}
@@ -43,7 +43,7 @@ namespace PPTX
 			{
 				pWriter->StartRecord(EFFECT_TYPE_DUOTONE);
 
-				ULONG len = (ULONG)Colors.GetCount();
+				ULONG len = (ULONG)Colors.size();
 				pWriter->WriteULONG(len);
 				
 				for (ULONG i = 0; i < len; ++i)
@@ -55,11 +55,11 @@ namespace PPTX
 			}
 
 		public:
-			CAtlArray<UniColor> Colors;
+			std::vector<UniColor> Colors;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				size_t count = Colors.GetCount();
+				size_t count = Colors.size();
 				for (size_t i = 0; i < count; ++i)
 					Colors[i].SetParentPointer(this);
 			}

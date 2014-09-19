@@ -56,7 +56,7 @@ namespace PPTX
 
 			double dKoef = 635; // emu -> 20pt
 
-			size_t nCount = Paragrs.GetCount();
+			size_t nCount = Paragrs.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				PPTX::Logic::Paragraph& oPar = Paragrs[i];

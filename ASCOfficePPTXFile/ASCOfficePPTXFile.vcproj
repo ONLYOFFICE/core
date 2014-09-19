@@ -54,7 +54,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\..\..\Addons\ZLib;&quot;$(SolutionDir)/../Common/DocxFormat/Source/XML/libxml2/XML/include&quot;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_MATH_DEFINES;NODOCX;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;_AVS_PPT_SHAPE_INCLUDE_;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_MATH_DEFINES;NODOCX;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;_AVS_PPT_SHAPE_INCLUDE_;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -444,6 +444,11 @@
 				RelativePath=".\ASCOfficePPTXFileRealization.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp"
+				>
+			</File>
+			<File
 				RelativePath="stdafx.cpp"
 				>
 				<FileConfiguration
@@ -479,6 +484,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath="..\Common\DocxFormat\Source\XML\stringcommon.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -500,11 +509,20 @@
 				RelativePath=".\ASCOfficePPTXFileComInterface.h"
 				>
 			</File>
+			<File
+				RelativePath="..\Common\DocxFormat\Source\XML\libxml2\libxml2.h"
+				>
+			</File>
+			<File
 				RelativePath="Resource.h"
 				>
 			</File>
 			<File
 				RelativePath="stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Common\DocxFormat\Source\XML\stringcommon.h"
 				>
 			</File>
 		</Filter>

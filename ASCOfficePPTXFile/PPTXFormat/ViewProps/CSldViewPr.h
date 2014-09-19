@@ -25,7 +25,7 @@ namespace PPTX
 				attrSnapToGrid		= oSrc.attrSnapToGrid;
 				attrSnapToObjects	= oSrc.attrSnapToObjects;
 				
-				GuideLst.Copy(oSrc.GuideLst);
+				GuideLst = oSrc.GuideLst;
 
 				return *this;
 			}
@@ -33,7 +33,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				GuideLst.RemoveAll();
+				GuideLst.clear();
 
 				CViewPr = node.ReadNode(_T("p:cViewPr"));
 
@@ -70,7 +70,7 @@ namespace PPTX
 				pWriter->WriteRecord1(0, CViewPr);
 
 				pWriter->StartRecord(1);
-				ULONG len = (ULONG)GuideLst.GetCount();
+				ULONG len = (ULONG)GuideLst.size();
 				pWriter->WriteULONG(len);
 				for (ULONG i = 0; i < len; i++)
 				{
@@ -98,7 +98,7 @@ namespace PPTX
 
 		public:
 			nsViewProps::CViewPr	CViewPr;
-			CAtlArray<Guide>		GuideLst;
+			std::vector<Guide>		GuideLst;
 
 			nullable_bool			attrShowGuides;
 			nullable_bool			attrSnapToGrid;
@@ -108,7 +108,7 @@ namespace PPTX
 			{
 				CViewPr.SetParentPointer(this);
 
-				size_t count = GuideLst.GetCount();
+				size_t count = GuideLst.size();
 				for (size_t i = 0; i < count; ++i)
 					GuideLst[i].SetParentPointer(this);
 			}

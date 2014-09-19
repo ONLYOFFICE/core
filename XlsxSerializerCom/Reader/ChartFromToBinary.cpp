@@ -804,7 +804,7 @@ namespace BinXlsxRW{
 
 	BYTE c_oseralternatecontentfallbackSTYLE = 0;
 
-	BinaryChartReader::BinaryChartReader(Streams::CBufferedStream& oBufferedStream, SaveParams& oSaveParams, LPSAFEARRAY pArray, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream),m_oSaveParams(oSaveParams),m_pArray(pArray),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
+	BinaryChartReader::BinaryChartReader(Streams::CBufferedStream& oBufferedStream, SaveParams& oSaveParams, LPSAFEARRAY pArray, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream),m_oSaveParams(oSaveParams),m_pArray(pArray),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 	{}
 	int BinaryChartReader::ReadCT_extLst(BYTE type, long length, void* poResult)
 	{
@@ -6461,7 +6461,7 @@ namespace BinXlsxRW{
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	BinaryChartWriter::BinaryChartWriter(Streams::CBufferedStream &oBufferedStream, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter):m_oBcw(oBufferedStream),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
+	BinaryChartWriter::BinaryChartWriter(Streams::CBufferedStream &oBufferedStream, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):m_oBcw(oBufferedStream),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 	{}
 	void BinaryChartWriter::WriteCT_extLst(CT_extLst& oVal)
 	{

@@ -1554,9 +1554,9 @@ namespace BinXlsxRW {
 		OOX::Spreadsheet::CIndexedColors* m_pIndexedColors;
 		OOX::CTheme* m_pTheme;
 		BinXlsxRW::FontProcessor& m_oFontProcessor;
-		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
+		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 	public:
-		BinaryWorksheetTableWriter(Streams::CBufferedStream &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter):
+		BinaryWorksheetTableWriter(Streams::CBufferedStream &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):
 		  m_oBcw(oCBufferedStream),m_pEmbeddedFontsManager(pEmbeddedFontsManager),m_pIndexedColors(pIndexedColors),m_pTheme(pTheme),m_oFontProcessor(oFontProcessor),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 		{
 		};
@@ -3234,7 +3234,7 @@ namespace BinXlsxRW {
 			RELEASEOBJECT(m_oBcw);
 		}
 		void Open(CString& sInputDir, CString& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager,
-			PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter, CString& sXMLOptions)
+			NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, CString& sXMLOptions)
 		{
 			OOX::CPath path(sFileDst);
 			//создаем папку для media
@@ -3297,7 +3297,7 @@ namespace BinXlsxRW {
 			RELEASEOBJECT(pXlsx);
 		}
 	private:
-		void intoBindoc(OOX::Spreadsheet::CXlsx &oXlsx, Streams::CBufferedStream &oBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter)
+		void intoBindoc(OOX::Spreadsheet::CXlsx &oXlsx, Streams::CBufferedStream &oBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
 		{
 			int nCurPos;
 			WriteMainTableStart();

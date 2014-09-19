@@ -21,7 +21,7 @@ namespace PPTX
 				parentElement	= oSrc.parentElement;
 
 				CViewPr = oSrc.CViewPr;
-				SldLst.Copy(oSrc.SldLst);
+				SldLst = oSrc.SldLst;
 
 				return *this;
 			}
@@ -30,7 +30,7 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				CViewPr = node.ReadNode(_T("p:cViewPr"));
-				SldLst.RemoveAll();
+				SldLst.clear();
 
 				node.ReadNode(_T("p:sldLst")).LoadArray(_T("p:sld"), SldLst);
 			}
@@ -39,7 +39,7 @@ namespace PPTX
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(CViewPr);
 
-				if (0 < SldLst.GetCount())
+				if (0 < SldLst.size())
 					oValue.WriteArray(_T("p:sldLst"), SldLst);
 
 				return XmlUtils::CreateNode(_T("p:outlineViewPr"), oValue);
@@ -50,7 +50,7 @@ namespace PPTX
 				pWriter->WriteRecord1(0, CViewPr);
 
 				pWriter->StartRecord(1);
-				ULONG len = (ULONG)SldLst.GetCount();
+				ULONG len = (ULONG)SldLst.size();
 				pWriter->WriteULONG(len);
 				for (ULONG i = 0; i < len; i++)
 				{
@@ -72,13 +72,13 @@ namespace PPTX
 
 		public:
 			nsViewProps::CViewPr			CViewPr;
-			CAtlArray<nsViewProps::Sld>		SldLst;
+			std::vector<nsViewProps::Sld>		SldLst;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
 				CViewPr.SetParentPointer(this);
 
-				size_t count = SldLst.GetCount();
+				size_t count = SldLst.size();
 				for (size_t i = 0; i < count; ++i)
 					SldLst[i].SetParentPointer(this);
 			}

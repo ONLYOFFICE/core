@@ -19,7 +19,7 @@ namespace PPTX
 				parentFile		= oSrc.parentFile;
 				parentElement	= oSrc.parentElement;
 
-				list.Copy(oSrc.list);
+				list = oSrc.list;
 				return *this;
 			}
 
@@ -38,7 +38,7 @@ namespace PPTX
 				return XmlUtils::CreateNode(_T("p:attrNameLst"), oValue);
 			}
 		public:
-			CAtlArray<AttrName> list;
+			std::vector<AttrName> list;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

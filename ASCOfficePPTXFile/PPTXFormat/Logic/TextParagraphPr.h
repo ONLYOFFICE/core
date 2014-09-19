@@ -37,7 +37,7 @@ namespace PPTX
 				buTypeface		= oSrc.buTypeface;
 				ParagraphBullet	= oSrc.ParagraphBullet;
 
-				tabLst.Copy(oSrc.tabLst);
+				tabLst = oSrc.tabLst;
 				defRPr			= oSrc.defRPr;
 
 				algn			= oSrc.algn;
@@ -133,7 +133,7 @@ namespace PPTX
 				oValue.Write(ParagraphBullet);
 				oValue.WriteNullable(defRPr);
 				
-				if (0 != tabLst.GetCount())
+				if (0 != tabLst.size())
 					oValue.WriteArray(_T("a:tabLst"), tabLst);
 
 				return XmlUtils::CreateNode(m_name, oAttr, oValue);
@@ -374,12 +374,12 @@ namespace PPTX
 
 							if (0 != _c)
 							{
-								tabLst.RemoveAll();
+								tabLst.clear();
 								for (ULONG i = 0; i < _c; i++)
 								{
 									pReader->Skip(6); // type, len, start attr
-									size_t nIndex = tabLst.GetCount();
-									tabLst.Add();
+									size_t nIndex = tabLst.size();
+									tabLst.push_back(Tab());
 
 									while (true)
 									{
@@ -435,7 +435,7 @@ namespace PPTX
 			BulletTypeface			buTypeface;
 			Bullet					ParagraphBullet;
 
-			CAtlArray<Tab>			tabLst;// (Tab List)
+			std::vector<Tab>			tabLst;// (Tab List)
 			nullable<RunProperties> defRPr;
 
 			// Attribs

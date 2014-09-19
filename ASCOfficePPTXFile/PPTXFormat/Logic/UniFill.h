@@ -234,7 +234,7 @@ namespace PPTX
 															if (!pFill->blip.is_init())
 																pFill->blip = new PPTX::Logic::Blip();
 
-															pFill->blip->Effects.Add();
+															pFill->blip->Effects.push_back(UniEffect());
 															pFill->blip->Effects[0].InitPointer(pEffect);
 
 															pReader->Seek(_e22);
@@ -405,8 +405,8 @@ namespace PPTX
 											pReader->Skip(1); // type
 											pReader->Skip(4); // len
 
-											size_t _countGs = pFill->GsLst.GetCount();
-											pFill->GsLst.Add();
+											size_t _countGs = pFill->GsLst.size();
+											pFill->GsLst.push_back(Gs());
 
 											pReader->Skip(1); // start attr
 											pReader->Skip(1); // pos type

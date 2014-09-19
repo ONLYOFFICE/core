@@ -20,7 +20,7 @@ namespace PPTX
 				parentElement	= oSrc.parentElement;
 
 				Height = oSrc.Height;
-				Cells.Copy(oSrc.Cells);
+				Cells = oSrc.Cells;
 
 				return *this;
 			}
@@ -51,7 +51,7 @@ namespace PPTX
 				pWriter->WriteAttribute(L"h", Height);
 				pWriter->EndAttributes();
 
-				size_t len = Cells.GetCount();
+				size_t len = Cells.size();
 				for (size_t i = 0; i < len; ++i)
 					Cells[i].toXmlWriter(pWriter);
 
@@ -102,7 +102,7 @@ namespace PPTX
 							for (LONG i = 0; i < len; ++i)
 							{
 								pReader->Skip(1);
-								Cells.Add();
+								Cells.push_back(TableCell());
 								Cells[i].fromPPTY(pReader);
 							}
 							break;
@@ -117,11 +117,11 @@ namespace PPTX
 			
 		public:
 			int							Height;
-			CAtlArray<TableCell>		Cells;
+			std::vector<TableCell>		Cells;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				size_t count = Cells.GetCount();
+				size_t count = Cells.size();
 				for (size_t i = 0; i < count; ++i)
 					Cells[i].SetParentPointer(this);
 			}

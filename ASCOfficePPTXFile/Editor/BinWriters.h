@@ -15,6 +15,7 @@
 #include "./XmlWriter.h"
 #include "../PPTXFormat/FileContainer.h"
 #include "../PPTXFormat/DocxFormat/WritingElement.h"
+#include "../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
 
 namespace NSBinPptxRW
 {	
@@ -395,7 +396,7 @@ namespace NSBinPptxRW
 		CString m_strMainFolder;
 
 		smart_ptr<PPTX::FileContainer> m_pCommonRels;
-		IUnknown* m_pMainDocument;
+		BinDocxRW::CDocxSerializer* m_pMainDocument;
 
 		smart_ptr<PPTX::FileContainer>	ThemeDoc;
 		smart_ptr<PPTX::WritingElement>	ClrMapDoc;
@@ -465,11 +466,11 @@ namespace NSBinPptxRW
 			m_lHeightCurShape = 0;
 		}
 
-		AVSINLINE void SetMainDocument(IUnknown* pMainDoc)
+		AVSINLINE void SetMainDocument(BinDocxRW::CDocxSerializer* pMainDoc)
 		{
-			RELEASEINTERFACE(m_pMainDocument);
+			//RELEASEINTERFACE(m_pMainDocument);
 			m_pMainDocument = pMainDoc;
-			ADDREFINTERFACE(m_pMainDocument);
+			//ADDREFINTERFACE(m_pMainDocument);
 		}
 
 		AVSINLINE void ClearNoAttack()
@@ -614,7 +615,7 @@ namespace NSBinPptxRW
 		~CBinaryFileWriter()
 		{
 			RELEASEARRAYOBJECTS(m_pStreamData);
-			RELEASEINTERFACE(m_pMainDocument);
+			//RELEASEINTERFACE(m_pMainDocument);
 		}
 
 		void StartRecord(LONG lType)
@@ -802,6 +803,19 @@ namespace NSBinPptxRW
 			StartRecord(type);
 
 			ULONG len = (ULONG)val.GetCount();
+			WriteULONG(len);
+
+			for (ULONG i = 0; i < len; ++i)
+				WriteRecord1(subtype, val[i]);
+
+			EndRecord();
+		}
+		template<typename T>
+		void WriteRecordArray(int type, int subtype, const std::vector<T>& val)
+		{
+			StartRecord(type);
+
+			ULONG len = (ULONG)val.size();
 			WriteULONG(len);
 
 			for (ULONG i = 0; i < len; ++i)
@@ -1217,7 +1231,7 @@ namespace NSBinPptxRW
 		LONG m_lChartNumber;
 		CString m_strContentTypes;
 
-		IUnknown* m_pMainDocument;
+		BinDocxRW::CDocxSerializer* m_pMainDocument;
 		SAFEARRAY* m_pSourceArray;
 
 		LONG		m_lDocumentType;
@@ -1244,7 +1258,7 @@ namespace NSBinPptxRW
 		}
 		~CBinaryFileReader()
 		{
-			RELEASEINTERFACE(m_pMainDocument);
+			//RELEASEINTERFACE(m_pMainDocument);
 			RELEASEOBJECT(m_pRels);
 
 			size_t nCountStackRels = m_stackRels.GetCount();
@@ -1256,11 +1270,11 @@ namespace NSBinPptxRW
 			m_stackRels.RemoveAll();
 		}
 
-		AVSINLINE void SetMainDocument(IUnknown* pMainDoc)
+		AVSINLINE void SetMainDocument(BinDocxRW::CDocxSerializer* pMainDoc)
 		{
-			RELEASEINTERFACE(m_pMainDocument);
+			//RELEASEINTERFACE(m_pMainDocument);
 			m_pMainDocument = pMainDoc;
-			ADDREFINTERFACE(m_pMainDocument);
+			//ADDREFINTERFACE(m_pMainDocument);
 		}
 
 	public:

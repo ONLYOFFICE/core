@@ -34,11 +34,11 @@ namespace PPTX
 		public:
 			void registration(const RId& rId, const CString& type, const OOX::CPath& filename)
 			{
-				m_items.Add(RelationShip(rId, type, filename));
+				m_items.push_back(RelationShip(rId, type, filename));
 			}
 			void registration(const RId& rId, const smart_ptr<PPTX::External> external)
 			{
-				m_items.Add(RelationShip(rId, external));
+				m_items.push_back(RelationShip(rId, external));
 			}
 		};
 	} // namespace Rels

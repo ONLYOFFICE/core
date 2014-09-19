@@ -18,7 +18,7 @@ namespace PPTX
 			node.ReadAttributeBase(L"r:link", link);
 			node.ReadAttributeBase(L"cstate", cstate);
 
-			Effects.RemoveAll();
+			Effects.clear();
 			node.LoadArray(_T("*"), Effects);
 
 			FillParentPointersForChilds();
@@ -43,7 +43,7 @@ namespace PPTX
 
 		void Blip::FillParentPointersForChilds()
 		{
-			size_t count = Effects.GetCount();
+			size_t count = Effects.size();
 			for(size_t i = 0; i < count; ++i)
 				Effects[i].SetParentPointer(this);
 		}

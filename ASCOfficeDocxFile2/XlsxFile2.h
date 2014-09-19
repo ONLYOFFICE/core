@@ -58,12 +58,6 @@ public:
 public:
 	STDMETHOD(LoadFromFile)(BSTR sSrcFileName, BSTR sDstPath, BSTR bstrXMLOptions)
 	{
-		if(NULL == m_pThis)
-		{
-			this->QueryInterface( __uuidof(IUnknown), (void**)&m_pThis );
-			m_oXlsxSerializer.setComInterface(m_pThis);
-		}
-
 		CString sMediaDir = sDstPath;
 		sMediaDir.Append(_T("\\xl\\media"));
 		// File Type (Можно парсить не два раза, а один, если передавать в ReadFile не опции, а параметры)
@@ -91,21 +85,11 @@ public:
 	}
 	STDMETHOD(SaveToFile)(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions)
 	{
-		if(NULL == m_pThis)
-		{
-			this->QueryInterface( __uuidof(IUnknown), (void**)&m_pThis );
-			m_oXlsxSerializer.setComInterface(m_pThis);
-		}
 		bool bRes = m_oXlsxSerializer.saveToFile(CString(sDstFileName), CString(sSrcPath), CString(sXMLOptions)) ? S_OK : S_FALSE;
 		return bRes ? S_OK : S_FALSE;
 	}
 	STDMETHOD(LoadChart)(BSTR bsFilename, SAFEARRAY** ppBinary)
 	{
-		if(NULL == m_pThis)
-		{
-			this->QueryInterface( __uuidof(IUnknown), (void**)&m_pThis );
-			m_oXlsxSerializer.setComInterface(m_pThis);
-		}
 		unsigned char* pData = NULL;
 		long lDataSize = 0;
 		bool bRes = m_oXlsxSerializer.loadChart(CString(bsFilename), &pData, lDataSize);
@@ -127,11 +111,6 @@ public:
 	}
 	STDMETHOD(SaveChart)(SAFEARRAY* pBinaryObj, LONG lStart, LONG lLength, BSTR bsFilename, BSTR bsContentTypePath, BSTR* bsContentTypeElement)
 	{
-		if(NULL == m_pThis)
-		{
-			this->QueryInterface( __uuidof(IUnknown), (void**)&m_pThis );
-			m_oXlsxSerializer.setComInterface(m_pThis);
-		}
 		CString* sContentTypeElement = NULL;
 		bool bRes = m_oXlsxSerializer.saveChart(pBinaryObj, lStart, lLength, CString(bsFilename), CString(bsContentTypePath), &sContentTypeElement);
 		if(NULL != sContentTypeElement)
@@ -140,7 +119,7 @@ public:
 	}
 	STDMETHOD(SetDrawingConverter)(IUnknown* pDocument)
 	{
-		m_oXlsxSerializer.setDrawingConverter(pDocument);
+		//m_oXlsxSerializer.setDrawingConverter(pDocument);
 		return S_OK;
 	}
 	STDMETHOD(SetFontDir)(BSTR bsFontDir)

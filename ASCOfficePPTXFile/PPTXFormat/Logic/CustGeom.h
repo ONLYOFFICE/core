@@ -23,11 +23,11 @@ namespace PPTX
 				parentFile		= oSrc.parentFile;
 				parentElement	= oSrc.parentElement;
 
-				avLst.Copy(oSrc.avLst);
-				gdLst.Copy(oSrc.gdLst);
-				ahLst.Copy(oSrc.ahLst);
-				cxnLst.Copy(oSrc.cxnLst);
-				pathLst.Copy(oSrc.pathLst);
+				avLst = oSrc.avLst;
+				gdLst = oSrc.gdLst;
+				ahLst = oSrc.ahLst;
+				cxnLst = oSrc.cxnLst;
+				pathLst = oSrc.pathLst;
 
 				rect = oSrc.rect;
 
@@ -78,22 +78,22 @@ namespace PPTX
 				pWriter->StartNode(_T("a:custGeom"));
 				pWriter->EndAttributes();
 
-				if (avLst.GetCount() == 0)
+				if (avLst.size() == 0)
 					pWriter->WriteString(_T("<a:avLst/>"));
 				else
 					pWriter->WriteArray(_T("a:avLst"), avLst);
 				
-				if (gdLst.GetCount() == 0)
+				if (gdLst.size() == 0)
 					pWriter->WriteString(_T("<a:gdLst/>"));
 				else
 					pWriter->WriteArray(_T("a:gdLst"), gdLst);
 
-				if (ahLst.GetCount() == 0)
+				if (ahLst.size() == 0)
 					pWriter->WriteString(_T("<a:ahLst/>"));
 				else
 					pWriter->WriteArray(_T("a:ahLst"), ahLst);
 
-				if (cxnLst.GetCount() == 0)
+				if (cxnLst.size() == 0)
 					pWriter->WriteString(_T("<a:cxnLst/>"));
 				else
 					pWriter->WriteArray(_T("a:cxnLst"), cxnLst);		
@@ -122,34 +122,34 @@ namespace PPTX
 			}
 
 		public:
-			CAtlArray<Gd>			avLst;
-			CAtlArray<Gd>			gdLst;
-			CAtlArray<AhBase>		ahLst;
-			CAtlArray<Cxn>			cxnLst;
+			std::vector<Gd>			avLst;
+			std::vector<Gd>			gdLst;
+			std::vector<AhBase>		ahLst;
+			std::vector<Cxn>		cxnLst;
 			nullable<Rect>			rect;
-			CAtlArray<Path2D>		pathLst;
+			std::vector<Path2D>		pathLst;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
 				size_t count = 0;
 
-				count = avLst.GetCount();
+				count = avLst.size();
 				for (size_t i = 0; i < count; ++i)
 					avLst[i].SetParentPointer(this);			
 
-				count = gdLst.GetCount();
+				count = gdLst.size();
 				for (size_t i = 0; i < count; ++i)
 					gdLst[i].SetParentPointer(this);
 
-				count = ahLst.GetCount();
+				count = ahLst.size();
 				for (size_t i = 0; i < count; ++i)
 					ahLst[i].SetParentPointer(this);
 
-				count = cxnLst.GetCount();
+				count = cxnLst.size();
 				for (size_t i = 0; i < count; ++i)
 					cxnLst[i].SetParentPointer(this);
 
-				count = pathLst.GetCount();
+				count = pathLst.size();
 				for (size_t i = 0; i < count; ++i)
 					pathLst[i].SetParentPointer(this);
 
@@ -164,31 +164,31 @@ namespace PPTX
 				size_t nCount  = 0;
 				
 				strXml += _T("<avLst>");
-				nCount = avLst.GetCount();
+				nCount = avLst.size();
 				for (size_t i = 0; i < nCount; ++i)
 					strXml += avLst[i].GetODString();
 				strXml += _T("</avLst>");
 
 				strXml += _T("<gdLst>");
-				nCount = gdLst.GetCount();
+				nCount = gdLst.size();
 				for (size_t i = 0; i < nCount; ++i)
 					strXml += gdLst[i].GetODString();
 				strXml += _T("</gdLst>");
 
 				strXml += _T("<ahLst>");
-				nCount = ahLst.GetCount();
+				nCount = ahLst.size();
 				for (size_t i = 0; i < nCount; ++i)
 					strXml += ahLst[i].GetODString();
 				strXml += _T("</ahLst>");
 
 				strXml += _T("<cxnLst>");
-				nCount = cxnLst.GetCount();
+				nCount = cxnLst.size();
 				for (size_t i = 0; i < nCount; ++i)
 					strXml += cxnLst[i].GetODString();
 				strXml += _T("</cxnLst>");
 
 				strXml += _T("<pathLst>");
-				nCount = pathLst.GetCount();
+				nCount = pathLst.size();
 				for (size_t i = 0; i < nCount; ++i)
 					strXml += pathLst[i].GetODString();
 				strXml += _T("</pathLst>");

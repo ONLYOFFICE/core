@@ -20,7 +20,7 @@ namespace PPTX
 				parentFile		= oSrc.parentFile;
 				parentElement	= oSrc.parentElement;
 
-				avLst.Copy(oSrc.avLst);
+				avLst = oSrc.avLst;
 				prst = oSrc.prst;
 
 				return *this;
@@ -69,11 +69,11 @@ namespace PPTX
 
 		public:
 			Limit::TextShapeType prst;
-			CAtlArray<Gd>		 avLst;
+			std::vector<Gd>		 avLst;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				size_t count = avLst.GetCount();
+				size_t count = avLst.size();
 				for (size_t i = 0; i < count; ++i)
 					avLst[i].SetParentPointer(this);
 			}

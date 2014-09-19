@@ -55,7 +55,7 @@ namespace PPTX
 			}
 			void write(const OOX::CPath& filename) const
 			{
-				if (0 < Relations.m_items.GetCount())
+				if (0 < Relations.m_items.size())
 				{
 					OOX::CPath file = createFileName(filename);
 					OOX::CSystemUtility::CreateDirectories(file.GetDirectory());

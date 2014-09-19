@@ -19,7 +19,7 @@ namespace PPTX
 				parentFile		= oSrc.parentFile;
 				parentElement	= oSrc.parentElement;
 
-				list.Copy(oSrc.list);
+				list = oSrc.list;
 				return *this;
 			}
 
@@ -37,11 +37,11 @@ namespace PPTX
 				return XmlUtils::CreateNode(_T("p:bldLst"), oValue);
 			}
 		public:
-			CAtlArray<BuildNodeBase> list;
+			std::vector<BuildNodeBase> list;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				size_t count = list.GetCount();
+				size_t count = list.size();
 				for (size_t i = 0; i < count; ++i)
 					list[i].SetParentPointer(this);
 			}

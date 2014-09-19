@@ -24,7 +24,6 @@ BinDocxRW::CDocxSerializer::CDocxSerializer()
 	m_pCurFileWriter = NULL;
 	m_bIsNoBase64Save = false;
 	m_bSaveChartAsImg = false;
-	m_pInterface = NULL;
 }
 bool BinDocxRW::CDocxSerializer::saveToFile(std::wstring& sSrcFileName, std::wstring& sDstPath, std::wstring& sXMLOptions)
 {
@@ -67,21 +66,20 @@ bool BinDocxRW::CDocxSerializer::saveToFile(std::wstring& sSrcFileName, std::wst
 		pEmbeddedFontsManager->CheckFont(_T("Arial"), fp.getFontManager());
 		//pEmbeddedFontsManager добавл€ютс€ все цифры
 	}
-	PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter;
-	CoCreateInstance(__uuidof(PPTXFile::CAVSOfficeDrawingConverter), NULL, CLSCTX_ALL, __uuidof(PPTXFile::IAVSOfficeDrawingConverter), (void**)(&pOfficeDrawingConverter));
+	NSBinPptxRW::CDrawingConverter oDrawingConverter;
 
 	BSTR bstrFontDir = std_string2string(m_sFontDir).AllocSysString();
-	pOfficeDrawingConverter->SetFontDir(bstrFontDir);
+	oDrawingConverter.SetFontDir(bstrFontDir);
 	SysFreeString(bstrFontDir);
 	VARIANT vt;
 	vt.vt = VT_UNKNOWN;
 	vt.punkVal = pFontPicker;
-	pOfficeDrawingConverter->SetAdditionalParam(_T("FontPicker"), vt);
-	pOfficeDrawingConverter->SetMainDocument(m_pInterface);
+	oDrawingConverter.SetAdditionalParam(_T("FontPicker"), vt);
+	oDrawingConverter.SetMainDocument(this);
 	BSTR bstrMediaDir = mediaDir.AllocSysString();
-	pOfficeDrawingConverter->SetMediaDstPath(bstrMediaDir);
+	oDrawingConverter.SetMediaDstPath(bstrMediaDir);
 	SysFreeString(bstrMediaDir);
-	ParamsWriter oParamsWriter(oBufferedStream, fp, pOfficeDrawingConverter, pEmbeddedFontsManager);
+	ParamsWriter oParamsWriter(oBufferedStream, fp, &oDrawingConverter, pEmbeddedFontsManager);
 	m_oBinaryFileWriter = new BinaryFileWriter(oParamsWriter);
 	m_oBinaryFileWriter->intoBindoc(std_string2string(sDstPath));
 #endif
@@ -108,11 +106,8 @@ bool BinDocxRW::CDocxSerializer::saveToFile(std::wstring& sSrcFileName, std::wst
 			oFile.CloseFile();
 		}
 	}
-#ifdef _WIN32
 	RELEASEOBJECT(m_oBinaryFileWriter);
 	RELEASEINTERFACE(pFontPicker);
-	RELEASEINTERFACE(pOfficeDrawingConverter);
-#endif
 	return true;
 }
 bool BinDocxRW::CDocxSerializer::loadFromFile(std::wstring& sSrcFileName, std::wstring& sDstPath, std::wstring& sXMLOptions, std::wstring& sThemePath, std::wstring& sMediaPath)
@@ -191,13 +186,12 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(std::wstring& sSrcFileName, std::w
 						g_nCurFormatVersion = nVersion = nTempVersion;
 					}
 				}
-				PPTXFile::IAVSOfficeDrawingConverter* pDrawingConverter = NULL;
-				CoCreateInstance(__uuidof(PPTXFile::CAVSOfficeDrawingConverter), NULL, CLSCTX_ALL, __uuidof(PPTXFile::IAVSOfficeDrawingConverter), (void**) &pDrawingConverter);
-				pDrawingConverter->SetMainDocument(m_pInterface);
+				NSBinPptxRW::CDrawingConverter oDrawingConverter;
+				oDrawingConverter.SetMainDocument(this);
 				BSTR bstrMediaPath = std_string2string(sMediaPath).AllocSysString();
-				pDrawingConverter->SetMediaDstPath(bstrMediaPath);
+				oDrawingConverter.SetMediaDstPath(bstrMediaPath);
 				SysFreeString(bstrMediaPath);
-				m_pCurFileWriter = new Writers::FileWriter(std_string2string(sDstPath), std_string2string(m_sFontDir), nVersion, m_bSaveChartAsImg, pDrawingConverter, pArray, std_string2string(sThemePath));
+				m_pCurFileWriter = new Writers::FileWriter(std_string2string(sDstPath), std_string2string(m_sFontDir), nVersion, m_bSaveChartAsImg, &oDrawingConverter, pArray, std_string2string(sThemePath));
 
 				//папка с картинками
 				TCHAR tFolder[256];
@@ -210,19 +204,16 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(std::wstring& sSrcFileName, std::w
 				VARIANT var;
 				var.vt = VT_BSTR;
 				var.bstrVal = sFileInDir.AllocSysString();
-				pDrawingConverter->SetAdditionalParam(L"SourceFileDir", var);
+				oDrawingConverter.SetAdditionalParam(L"SourceFileDir", var);
 				RELEASESYSSTRING(var.bstrVal);
 
 				BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter);
 				oBinaryFileReader.ReadFile();
 
-				if(NULL != pDrawingConverter)
-				{
-					VARIANT vt;
-					pDrawingConverter->GetAdditionalParam(_T("ContentTypes"), &vt);
-					if(VT_BSTR == vt.vt)
-						m_pCurFileWriter->m_oContentTypesWriter.AddOverrideRaw(CString(vt.bstrVal));
-				}
+				VARIANT vt;
+				oDrawingConverter.GetAdditionalParam(_T("ContentTypes"), &vt);
+				if(VT_BSTR == vt.vt)
+					m_pCurFileWriter->m_oContentTypesWriter.AddOverrideRaw(CString(vt.bstrVal));
 
 				m_pCurFileWriter->m_oCommentsWriter.Write();
 				m_pCurFileWriter->m_oChartWriter.Write();
@@ -243,7 +234,6 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(std::wstring& sSrcFileName, std::w
 				//{
 				bResultOk = true;
 				//}
-				RELEASEINTERFACE(pDrawingConverter);
 			}
 			RELEASEARRAY(pArray);
 		}
@@ -324,9 +314,3 @@ void BinDocxRW::CDocxSerializer::setSaveChartAsImg(bool bSaveChartAsImg)
 {
 	m_bSaveChartAsImg = bSaveChartAsImg;
 }
-#ifdef _WIN32
-void BinDocxRW::CDocxSerializer::setComInterface(IUnknown* pInterface)
-{
-	m_pInterface = pInterface;
-}
-#endif

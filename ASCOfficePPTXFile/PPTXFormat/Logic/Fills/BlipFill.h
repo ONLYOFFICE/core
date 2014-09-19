@@ -248,7 +248,7 @@ namespace PPTX
 												if (!blip.is_init())
 													blip = new PPTX::Logic::Blip();
 
-												blip->Effects.Add();
+												blip->Effects.push_back(UniEffect());
 												blip->Effects[0].InitPointer(pEffect);
 
 												pReader->Seek(_e22);

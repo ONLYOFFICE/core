@@ -51,7 +51,7 @@ namespace PPTX
 				themeElements = oNode;
 				themeElements.SetParentFilePointer(this);
 
-				extraClrSchemeLst.RemoveAll();
+				extraClrSchemeLst.clear();
 				isThemeOverride = true;
 				return;
 			}
@@ -77,14 +77,14 @@ namespace PPTX
 					txDef->SetParentFilePointer(this);
 			}
 
-			extraClrSchemeLst.RemoveAll();
+			extraClrSchemeLst.clear();
 			XmlUtils::CXmlNode oNodeList;
 			if (oNode.GetNode(_T("a:extraClrSchemeLst"), oNodeList))
 			{
 				oNodeList.LoadArray(_T("a:extraClrScheme"), extraClrSchemeLst);
 			}
 
-			size_t count = extraClrSchemeLst.GetCount();
+			size_t count = extraClrSchemeLst.size();
 			for (size_t i = 0; i < count; ++i)
 				extraClrSchemeLst[i].SetParentFilePointer(this);
 		}
@@ -231,13 +231,13 @@ namespace PPTX
 					}
 					case 4:
 					{
-						extraClrSchemeLst.RemoveAll();
+						extraClrSchemeLst.clear();
 						pReader->Skip(4); // len
 						ULONG _len = pReader->GetULong();
 						for (ULONG i = 0; i < _len; ++i)
 						{
 							pReader->Skip(1); // type
-							extraClrSchemeLst.Add();
+							extraClrSchemeLst.push_back(nsTheme::ExtraClrScheme());
 							extraClrSchemeLst[i].fromPPTY(pReader);
 						}
 					}
@@ -345,7 +345,7 @@ namespace PPTX
 		nullable<Logic::DefaultShapeDefinition> lnDef;
 		nullable<Logic::DefaultShapeDefinition> txDef;
 		
-		CAtlArray<nsTheme::ExtraClrScheme>		extraClrSchemeLst;
+		std::vector<nsTheme::ExtraClrScheme>		extraClrSchemeLst;
 
 		bool									isThemeOverride;
 

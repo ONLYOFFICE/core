@@ -1705,15 +1705,14 @@ namespace BinXlsxRW {
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 			//Comments
-			if(oWorksheet.m_mapComments.GetCount() > 0)
+			if(oWorksheet.m_mapComments.size() > 0)
 			{
 				bool bIsEmpty = true;
 				int nCurPos = 0;
-				POSITION pos = oWorksheet.m_mapComments.GetStartPosition();
-				while ( NULL != pos )
+
+				for (std::map<CString, OOX::Spreadsheet::CCommentItem*>::const_iterator it = oWorksheet.m_mapComments.begin(); it != oWorksheet.m_mapComments.end(); ++it)
 				{
-					CAtlMap<CString, OOX::Spreadsheet::CCommentItem*>::CPair* pPair = oWorksheet.m_mapComments.GetNext( pos );
-					if(pPair->m_value->IsValid())
+					if(it->second->IsValid())
 					{
 						bIsEmpty = false;
 						break;
@@ -2475,16 +2474,15 @@ namespace BinXlsxRW {
 				}
 			}
 		};
-		void WriteComments(CAtlMap<CString, OOX::Spreadsheet::CCommentItem*>& mapComments)
+		void WriteComments(std::map<CString, OOX::Spreadsheet::CCommentItem*>& mapComments)
 		{
 			int nCurPos = 0;
-			POSITION pos = mapComments.GetStartPosition();
-			while ( NULL != pos )
+
+			for (std::map<CString, OOX::Spreadsheet::CCommentItem*>::const_iterator it = mapComments.begin(); it != mapComments.end(); ++it)
 			{
-				CAtlMap<CString, OOX::Spreadsheet::CCommentItem*>::CPair* pPair = mapComments.GetNext( pos );
-				if(pPair->m_value->IsValid())
+				if(it->second->IsValid())
 				{
-					OOX::Spreadsheet::CCommentItem& oComment = *pPair->m_value;
+					OOX::Spreadsheet::CCommentItem& oComment = *it->second;
 					std::vector<SerializeCommon::CommentData*> aCommentDatas;
 					getSavedComment(oComment, aCommentDatas);
 					nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Comment);

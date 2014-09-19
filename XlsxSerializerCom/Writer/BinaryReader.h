@@ -1555,7 +1555,7 @@ namespace BinXlsxRW {
 				if(NULL != m_pCurWorksheet && pNewComment->IsValid())
 				{
 					CString sId;sId.Format(_T("%d-%d"), pNewComment->m_nRow.get(), pNewComment->m_nCol.get());
-					m_pCurWorksheet->m_mapComments.SetAt(sId, pNewComment);
+					m_pCurWorksheet->m_mapComments [sId] = pNewComment;
 				}
 				else
 					RELEASEOBJECT(pNewComment);
@@ -1879,7 +1879,7 @@ namespace BinXlsxRW {
 			{
 				BinaryCommentReader oBinaryCommentReader(m_oBufferedStream, m_pCurWorksheet);
 				oBinaryCommentReader.Read(length, poResult);
-				if(m_pCurWorksheet->m_mapComments.GetCount() > 0)
+				if(m_pCurWorksheet->m_mapComments.size() > 0)
 				{
 					OOX::Spreadsheet::CLegacyDrawing* pLegacyDrawing = new OOX::Spreadsheet::CLegacyDrawing();
 					pLegacyDrawing->m_mapComments = &m_pCurWorksheet->m_mapComments;
@@ -1896,13 +1896,11 @@ namespace BinXlsxRW {
 					pComments->m_oAuthors.Init();
 					std::vector<CString*>& aAuthors = pComments->m_oAuthors->m_arrItems;
 
-					POSITION pos = m_pCurWorksheet->m_mapComments.GetStartPosition();
-					while ( NULL != pos )
+					for (std::map<CString, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_pCurWorksheet->m_mapComments.begin(); it != m_pCurWorksheet->m_mapComments.end(); ++it)
 					{
-						CAtlMap<CString, OOX::Spreadsheet::CCommentItem*>::CPair* pPair = m_pCurWorksheet->m_mapComments.GetNext( pos );
-						if(pPair->m_value->IsValid())
+						if(it->second->IsValid())
 						{
-							OOX::Spreadsheet::CCommentItem* pCommentItem = pPair->m_value;
+							OOX::Spreadsheet::CCommentItem* pCommentItem = it->second;
 							OOX::Spreadsheet::CComment* pNewComment = new OOX::Spreadsheet::CComment();
 							if(pCommentItem->m_nRow.IsInit() && pCommentItem->m_nCol.IsInit())
 							{

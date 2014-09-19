@@ -19,7 +19,7 @@ namespace PPTX
 				parentFile		= oSrc.parentFile;
 				parentElement	= oSrc.parentElement;
 
-				list.Copy(oSrc.list);
+				list = oSrc.list;
 				name = oSrc.name;
 
 				return *this;
@@ -42,12 +42,12 @@ namespace PPTX
 				return XmlUtils::CreateNode(_T("p:") + name, oValue);
 			}
 		public:
-			CAtlArray<Cond>			list;
+			std::vector<Cond>			list;
 			CString					name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				size_t count = list.GetCount();
+				size_t count = list.size();
 				for (size_t i = 0; i < count; ++i)
 					list[i].SetParentPointer(this);
 			}

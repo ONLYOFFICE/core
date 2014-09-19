@@ -11,19 +11,16 @@ namespace BinXlsxRW{
 
 	CXlsxSerializer::CXlsxSerializer()
 	{
-		m_pInterface = NULL;
 		m_pExternalDrawingConverter = NULL;
 	}
 	CXlsxSerializer::~CXlsxSerializer()
 	{
-		RELEASEINTERFACE(m_pExternalDrawingConverter);
 	}
 	bool CXlsxSerializer::loadFromFile(CString& sSrcFileName, CString& sDstPath, CString& sXMLOptions, CString& sMediaDir)
 	{
-		PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter;
-		CoCreateInstance(__uuidof(PPTXFile::CAVSOfficeDrawingConverter), NULL, CLSCTX_ALL, __uuidof(PPTXFile::IAVSOfficeDrawingConverter), (void**)(&pOfficeDrawingConverter));
+		NSBinPptxRW::CDrawingConverter oOfficeDrawingConverter;
 		BSTR bstrMediaDir = sMediaDir.AllocSysString();
-		pOfficeDrawingConverter->SetMediaDstPath(bstrMediaDir);
+		oOfficeDrawingConverter.SetMediaDstPath(bstrMediaDir);
 		SysFreeString(bstrMediaDir);
 
 		//папка с бинарников
@@ -37,12 +34,11 @@ namespace BinXlsxRW{
 		VARIANT var;
 		var.vt = VT_BSTR;
 		var.bstrVal = sFileInDir.AllocSysString();
-		pOfficeDrawingConverter->SetAdditionalParam(L"SourceFileDir2", var);
+		oOfficeDrawingConverter.SetAdditionalParam(L"SourceFileDir2", var);
 		RELEASESYSSTRING(var.bstrVal);
 
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;
-		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, pOfficeDrawingConverter, sXMLOptions);
-		RELEASEINTERFACE(pOfficeDrawingConverter);
+		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oOfficeDrawingConverter, sXMLOptions);
 		return true;
 	}
 	bool CXlsxSerializer::saveToFile(CString& sDstFileName, CString& sSrcPath, CString& sXMLOptions)
@@ -82,22 +78,20 @@ namespace BinXlsxRW{
 			pEmbeddedFontsManager->CheckString(CString(_T(".%E+-():")));
 		}
 
-		PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter;
-		CoCreateInstance(__uuidof(PPTXFile::CAVSOfficeDrawingConverter), NULL, CLSCTX_ALL, __uuidof(PPTXFile::IAVSOfficeDrawingConverter), (void**)(&pOfficeDrawingConverter));
+		NSBinPptxRW::CDrawingConverter oOfficeDrawingConverter;
 
 		BSTR bstrFontDir = m_sFontDir.AllocSysString();
-		pOfficeDrawingConverter->SetFontDir(bstrFontDir);
+		oOfficeDrawingConverter.SetFontDir(bstrFontDir);
 		SysFreeString(bstrFontDir);
 		VARIANT vt;
 		vt.vt = VT_UNKNOWN;
 		vt.punkVal = pFontPicker;
-		pOfficeDrawingConverter->SetAdditionalParam(_T("FontPicker"), vt);
+		oOfficeDrawingConverter.SetAdditionalParam(_T("FontPicker"), vt);
 
 		BinXlsxRW::BinaryFileWriter oBinaryFileWriter(fp);
-		oBinaryFileWriter.Open(sSrcPath, sDstFileName, pEmbeddedFontsManager, pOfficeDrawingConverter, sXMLOptions);
+		oBinaryFileWriter.Open(sSrcPath, sDstFileName, pEmbeddedFontsManager, &oOfficeDrawingConverter, sXMLOptions);
 
 		RELEASEINTERFACE(pFontPicker);
-		RELEASEINTERFACE(pOfficeDrawingConverter);
 		return true;
 	}
 	bool CXlsxSerializer::loadChart(CString& sChartPath, unsigned char** ppBinary, long& lDataSize)
@@ -206,15 +200,8 @@ namespace BinXlsxRW{
 	{
 		m_sEmbeddedFontsDir = sEmbeddedFontsDir;
 	}
-	void CXlsxSerializer::setDrawingConverter(IUnknown* pDocument)
+	void CXlsxSerializer::setDrawingConverter(NSBinPptxRW::CDrawingConverter* pDrawingConverter)
 	{
-		RELEASEINTERFACE(m_pExternalDrawingConverter);
-		pDocument->QueryInterface(__uuidof(PPTXFile::IAVSOfficeDrawingConverter), (void**)&m_pExternalDrawingConverter);
+		m_pExternalDrawingConverter = pDrawingConverter;
 	}
-#ifdef _WIN32
-	void CXlsxSerializer::setComInterface(IUnknown* pInterface)
-	{
-		m_pInterface = pInterface;
-	}
-#endif
 };

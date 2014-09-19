@@ -14,7 +14,7 @@ namespace BinDocxRW
 	public:
 		Streams::CBufferedStream& m_oCBufferedStream;
 		DocWrapper::FontProcessor& m_oFontProcessor;
-		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
+		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 		NSFontCutter::CEmbeddedFontsManager* m_pEmbeddedFontsManager;
 
 		OOX::CSettings* m_oSettings;
@@ -22,7 +22,7 @@ namespace BinDocxRW
 
 		OOX::IFileContainer* m_pCurRels;
 		CString m_sCurDocumentPath;
-	public: ParamsWriter(Streams::CBufferedStream& oCBufferedStream, DocWrapper::FontProcessor& oFontProcessor, PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager):
+	public: ParamsWriter(Streams::CBufferedStream& oCBufferedStream, DocWrapper::FontProcessor& oFontProcessor, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager):
 				m_oCBufferedStream(oCBufferedStream),m_oFontProcessor(oFontProcessor),m_pOfficeDrawingConverter(pOfficeDrawingConverter),m_pEmbeddedFontsManager(pEmbeddedFontsManager)
 		{
 		}
@@ -400,7 +400,7 @@ namespace BinDocxRW
 		OOX::CSettings* m_oSettings;
 		OOX::CTheme* m_poTheme;
 		DocWrapper::FontProcessor& m_oFontProcessor;
-		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
+		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 	public:
 		OOX::IFileContainer* m_oDocumentRels;
 		std::vector<OOX::CHdrFtr*> m_aHeaders;
@@ -2428,7 +2428,7 @@ namespace BinDocxRW
 		int m_nSkipFldChar;
 		CString m_sFldChar;
 		SimpleTypes::EFldCharType m_eFldState;
-		PPTXFile::IAVSOfficeDrawingConverter* m_pOfficeDrawingConverter;
+		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 		std::map<int, bool>* m_mapIgnoreComments;
 	public:
 		Binary_tblPrWriter btblPrs;
@@ -2450,7 +2450,7 @@ namespace BinDocxRW
 				RELEASEOBJECT(m_aFldChars[i]);
 			}
 		}
-		void prepareOfficeDrawingConverter(PPTXFile::IAVSOfficeDrawingConverter* pOfficeDrawingConverter, CString& sDocumentPath, std::vector<CString>& aShapeTypes)
+		void prepareOfficeDrawingConverter(NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, CString& sDocumentPath, std::vector<CString>& aShapeTypes)
 		{
 			BSTR bstrDocumentPath = sDocumentPath.AllocSysString();
 			pOfficeDrawingConverter->SetRelsPath(bstrDocumentPath);

@@ -25,7 +25,7 @@ namespace PPTX2EditorAdvanced
 		int cy = presentation->sldSz->cy;
 
 		// записываем все темы
-		size_t nCountMasters = presentation->sldMasterIdLst.GetCount();
+		size_t nCountMasters = presentation->sldMasterIdLst.size();
 		for (size_t nMaster = 0; nMaster < nCountMasters; ++nMaster)
 		{
 			smart_ptr<PPTX::SlideMaster> slideMaster = ((*presentation)[presentation->sldMasterIdLst[nMaster].rid.get()]).smart_dynamic_cast<PPTX::SlideMaster>();
@@ -61,7 +61,7 @@ namespace PPTX2EditorAdvanced
 				oMasterInfo.m_lThemeIndex = pSearchTh->m_value;
 			}
 
-			size_t nCountLayouts = slideMaster->sldLayoutIdLst.GetCount();
+			size_t nCountLayouts = slideMaster->sldLayoutIdLst.size();
 			for (size_t iLayout = 0; iLayout < nCountLayouts; ++iLayout)
 			{
 				smart_ptr<PPTX::SlideLayout> slideLayout = ((*slideMaster)[slideMaster->sldLayoutIdLst[iLayout].rid.get()]).smart_dynamic_cast<PPTX::SlideLayout>();
@@ -87,7 +87,7 @@ namespace PPTX2EditorAdvanced
 		}
 
 		// записываем все notesMasters
-		size_t nCountNoteMasters = presentation->notesMasterIdLst.GetCount();
+		size_t nCountNoteMasters = presentation->notesMasterIdLst.size();
 		for (size_t nNote = 0; nNote < nCountNoteMasters; ++nNote)
 		{
 			smart_ptr<PPTX::NotesMaster> noteMaster = ((*presentation)[presentation->notesMasterIdLst[nNote].rid.get()]).smart_dynamic_cast<PPTX::NotesMaster>();
@@ -117,7 +117,7 @@ namespace PPTX2EditorAdvanced
 		}
 
 		// записываем все слайды
-		size_t nCount = presentation->sldIdLst.GetCount();
+		size_t nCount = presentation->sldIdLst.size();
 		for (size_t i = 0; i < nCount; ++i)
 		{
 			smart_ptr<PPTX::Slide> slide = ((*presentation)[presentation->sldIdLst[i].rid.get()]).smart_dynamic_cast<PPTX::Slide>();

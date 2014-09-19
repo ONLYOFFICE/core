@@ -7,8 +7,8 @@
 
 #include <string>
 
-namespace PPTXFile{
-struct IAVSOfficeDrawingConverter;
+namespace NSBinPptxRW{
+	class CDrawingConverter;
 }
 
 namespace BinXlsxRW {
@@ -17,6 +17,7 @@ namespace BinXlsxRW {
 	private:
 		CString m_sFontDir;
 		CString m_sEmbeddedFontsDir;
+		NSBinPptxRW::CDrawingConverter* m_pExternalDrawingConverter;
 	public:
 		CXlsxSerializer();
 		~CXlsxSerializer();
@@ -26,14 +27,7 @@ namespace BinXlsxRW {
 		bool saveChart(SAFEARRAY* pBinaryObj, long lStart, long lLength, CString& sFilename, CString& sContentTypePath, CString** sContentTypeElement);
 		void setFontDir(CString& sFontDir);
 		void setEmbeddedFontsDir(CString& sEmbeddedFontsDir);
-		void setDrawingConverter(IUnknown* pDocument);
-
-		//todo
-#ifdef _WIN32
-		PPTXFile::IAVSOfficeDrawingConverter* m_pExternalDrawingConverter;
-		IUnknown* m_pInterface;
-		void setComInterface(IUnknown* pInterface);
-#endif
+		void setDrawingConverter(NSBinPptxRW::CDrawingConverter* pDrawingConverter);
 	};
 }
 #endif	// #ifndef XLSX_SERIALIZER

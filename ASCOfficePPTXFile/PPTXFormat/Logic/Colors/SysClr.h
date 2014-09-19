@@ -111,7 +111,7 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				val = node.GetAttribute(_T("val"));
-				Modifiers.RemoveAll();
+				Modifiers.clear();
 				node.LoadArray(_T("*"), Modifiers);
 			}
 
@@ -143,7 +143,7 @@ namespace PPTX
 				pWriter->WriteAttribute(_T("lastClr"), str);
 				pWriter->EndAttributes();
 
-				size_t nCount = Modifiers.GetCount();
+				size_t nCount = Modifiers.size();
 				for (size_t i = 0; i < nCount; ++i)
 					Modifiers[i].toXmlWriter(pWriter);
 				
@@ -169,7 +169,7 @@ namespace PPTX
 
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-				ULONG len = (ULONG)Modifiers.GetCount();
+				ULONG len = (ULONG)Modifiers.size();
 				if (len != 0)
 				{
 					pWriter->StartRecord(0);

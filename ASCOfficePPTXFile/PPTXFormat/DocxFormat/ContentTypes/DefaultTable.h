@@ -15,8 +15,8 @@ namespace PPTX
 		public:
 			DefaultTable()
 			{
-				m_items.Add(Default(_T("rels")));
-				m_items.Add(Default(_T("xml")));
+				m_items.push_back(Default(_T("rels")));
+				m_items.push_back(Default(_T("xml")));
 			}
 			virtual ~DefaultTable()
 			{
@@ -43,7 +43,7 @@ namespace PPTX
 				CString ext = path.GetExtention();
 				const CString extension = ext.Mid(1);
 				
-				size_t nCount = m_items.GetCount();
+				size_t nCount = m_items.size();
 				size_t nIndex = 0;	
 
 				while (nIndex < nCount)
@@ -54,7 +54,7 @@ namespace PPTX
 				}
 				
 				if (nIndex == nCount)
-					m_items.Add(Default(extension));
+					m_items.push_back(Default(extension));
 			}
 		};
 	} // namespace ContentTypes

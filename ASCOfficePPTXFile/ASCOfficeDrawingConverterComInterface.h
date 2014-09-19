@@ -135,8 +135,7 @@ public:
 public:
 	STDMETHOD(SetMainDocument)(IUnknown* pDocument)
 	{
-
-		return m_oDrawingConverter.SetMainDocument(pDocument);
+		return S_OK;//m_oDrawingConverter.SetMainDocument(pDocument);
 	}
 	STDMETHOD(SetRelsPath)(BSTR bsRelsPath)
 	{

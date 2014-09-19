@@ -21,7 +21,7 @@ namespace PPTX
 				parentFile		= oSrc.parentFile;
 				parentElement	= oSrc.parentElement;
 
-				Effects.Copy(oSrc.Effects);
+				Effects = oSrc.Effects;
 
 				cstate	= oSrc.cstate;
 				embed	= oSrc.embed;
@@ -50,7 +50,7 @@ namespace PPTX
 				pWriter->EndAttributes();
 
 				// TODO:
-				size_t nCount = Effects.GetCount();
+				size_t nCount = Effects.size();
 				for (size_t i = 0; i < nCount; ++i)
 				{
 					Effects[i].toXmlWriter(pWriter);
@@ -80,7 +80,7 @@ namespace PPTX
 					pWriter->WriteString1(11, link->get());
 
 				pWriter->StartRecord(2);
-				ULONG len = (ULONG)Effects.GetCount();
+				ULONG len = (ULONG)Effects.size();
 				pWriter->WriteULONG(len);
 
 				for (ULONG i = 0; i < len; ++i)
@@ -113,7 +113,7 @@ namespace PPTX
 		public:
 			virtual CString GetFullPicName(FileContainer* pRels = NULL)const;
 		public:
-			CAtlArray<UniEffect> Effects;
+			std::vector<UniEffect> Effects;
 
 			nullable_limit<Limit::BlipCompression> cstate;
 			nullable<PPTX::RId> embed;

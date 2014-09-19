@@ -27,7 +27,7 @@ namespace PPTX
 				stroke		= oSrc.stroke; 
 				w			= oSrc.w;
 
-				Paths.Copy(oSrc.Paths);
+				Paths = oSrc.Paths;
 
 				return *this;
 			}
@@ -41,7 +41,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"stroke", stroke);
 				node.ReadAttributeBase(L"w", w);
 
-				Paths.RemoveAll();
+				Paths.clear();
 				node.LoadArray(_T("*"), Paths);
 				
 				FillParentPointersForChilds();
@@ -72,7 +72,7 @@ namespace PPTX
 				pWriter->WriteAttribute(_T("extrusionOk"), extrusionOk);
 				pWriter->EndAttributes();
 
-				size_t nCount = Paths.GetCount();
+				size_t nCount = Paths.size();
 				for (size_t i = 0; i < nCount; ++i)
 					Paths[i].toXmlWriter(pWriter);
 
@@ -153,7 +153,7 @@ namespace PPTX
 								BYTE _type = pReader->GetUChar();
 								LONG _end = pReader->GetPos() + pReader->GetLong() + 4;
 
-								Paths.Add();
+								Paths.push_back(UniPath2D());
 								UniPath2D& oPath = Paths[j];
 
 								if (_type == GEOMETRY_TYPE_PATH_CLOZE)
@@ -251,11 +251,11 @@ namespace PPTX
 			nullable_bool							stroke; 
 			nullable_int							w;
 
-			CAtlArray<UniPath2D>					Paths;
+			std::vector<UniPath2D>					Paths;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				size_t count = Paths.GetCount();
+				size_t count = Paths.size();
 				for (size_t i = 0; i < count; ++i)
 					Paths[i].SetParentPointer(this);
 			}
@@ -270,7 +270,7 @@ namespace PPTX
 				oAttr.Write(_T("extrusionOk"), extrusionOk);
 
 				CString strXml = _T("");
-				size_t nCount = Paths.GetCount();
+				size_t nCount = Paths.size();
 				for (size_t i = 0; i < nCount; ++i)
 					strXml += Paths[i].GetODString();
 

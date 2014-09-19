@@ -10,7 +10,7 @@ namespace PPTX
 	class WritingVector : public WritingElement
 	{
 	public:
-		CAtlArray<T> m_items;
+		std::vector<T> m_items;
 
 	public:
 		WritingVector() : m_items()  {}
@@ -39,7 +39,7 @@ namespace PPTX
 					XmlUtils::CXmlNode nodeTemp;
 					oNodes.GetAt(i, nodeTemp);
 
-					m_items.Add(T(nodeTemp));
+					m_items.push_back(T(nodeTemp));
 				}			
 			}
 		}
@@ -47,7 +47,7 @@ namespace PPTX
 		virtual CString toXML() const
 		{
 			CString strResult = _T("");
-			size_t nCount = m_items.GetCount();
+			size_t nCount = m_items.size();
 
 			for (size_t i = 0; i < nCount; ++i)
 			{

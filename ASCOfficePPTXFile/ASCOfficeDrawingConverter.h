@@ -2,7 +2,6 @@
 #define ASC_OFFICE_DRAWING_CONVERTER
 
 //todo ??
-#define _ATL_APARTMENT_THREADED
 #include <atlbase.h>
 #include <atlstr.h>
 #include "../Common/DocxFormat/Source/Base/Base.h"
@@ -18,6 +17,10 @@ namespace XmlUtils
 namespace NSCommon
 {
 	template<typename Type> class smart_ptr;
+}
+namespace BinDocxRW
+{
+	class CDocxSerializer;
 }
 namespace NSBinPptxRW
 {
@@ -166,7 +169,7 @@ namespace NSBinPptxRW
 
 		~CDrawingConverter();
 	public:
-		STDMETHOD(SetMainDocument)(IUnknown* pDocument);
+		STDMETHOD(SetMainDocument)(BinDocxRW::CDocxSerializer* pDocument);
 		STDMETHOD(SetRelsPath)(BSTR bsRelsPath);
 		STDMETHOD(SetMediaDstPath)(BSTR bsMediaPath);
 

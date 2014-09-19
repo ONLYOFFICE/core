@@ -28,7 +28,7 @@ namespace PPTX
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlFile2(filename.m_strFilename);
 
-			ClrMru.RemoveAll();
+			ClrMru.clear();
 			XmlUtils::CXmlNode oNodeClr;
 			if (oNode.GetNode(_T("p:clrMru"), oNodeClr))
 				oNodeClr.LoadArray(_T("*"), ClrMru);
@@ -77,7 +77,7 @@ namespace PPTX
 		}
 
 	public:
-		CAtlArray<Logic::UniColor>	ClrMru;
+		std::vector<Logic::UniColor>	ClrMru;
 		//prnPr (Printing Properties)
 		//showPr (Presentation-wide Show Properties)
 	};

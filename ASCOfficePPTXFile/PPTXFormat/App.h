@@ -28,8 +28,8 @@ namespace PPTX
 	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
-			HeadingPairs.RemoveAll();
-			TitlesOfParts.RemoveAll();
+			HeadingPairs.clear();
+			TitlesOfParts.clear();
 
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlFile2(filename.m_strFilename);
@@ -214,7 +214,7 @@ namespace PPTX
 
 			pWriter->StartNode(_T("vt:vector"));
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("size"), (int)HeadingPairs.GetCount());
+			pWriter->WriteAttribute(_T("size"), (int)HeadingPairs.size());
 			pWriter->WriteAttribute(_T("baseType"), (CString)_T("variant"));
 			pWriter->EndAttributes();
 
@@ -228,7 +228,7 @@ namespace PPTX
 
 			pWriter->StartNode(_T("vt:vector"));
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("size"), (int)TitlesOfParts.GetCount());
+			pWriter->WriteAttribute(_T("size"), (int)TitlesOfParts.size());
 			pWriter->WriteAttribute(_T("baseType"), (CString)_T("lpstr"));
 			pWriter->EndAttributes();
 
@@ -258,8 +258,8 @@ namespace PPTX
 		nullable_int						HiddenSlides;			// (Number of Hidden Slides)
 		nullable_int						MMClips;				// (Total Number of Multimedia Clips)
 		nullable_bool						ScaleCrop;				// (Thumbnail Display Mode)
-		CAtlArray<Logic::HeadingVariant>	HeadingPairs;			// (Heading Pairs)
-		CAtlArray<Logic::PartTitle>			TitlesOfParts;			// (Part Titles)
+		std::vector<Logic::HeadingVariant>	HeadingPairs;			// (Heading Pairs)
+		std::vector<Logic::PartTitle>			TitlesOfParts;			// (Part Titles)
 		nullable_string						Company;				// (Name of Company)
 		nullable_bool						LinksUpToDate;			// (Links Up-to-Date)
 		nullable_bool						SharedDoc;				// (Shared Document)

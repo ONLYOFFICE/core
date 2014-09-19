@@ -21,7 +21,7 @@ namespace PPTX
 				green	= HexString2Int(val.Mid(2, 2));
 				blue	= HexString2Int(val.Mid(4, 2));
 
-				Modifiers.RemoveAll();
+				Modifiers.clear();
 				node.LoadArray(_T("*"), Modifiers);
 			}
 
@@ -50,7 +50,7 @@ namespace PPTX
 				pWriter->WriteAttribute(_T("val"), str);
 				pWriter->EndAttributes();
 
-				size_t nCount = Modifiers.GetCount();
+				size_t nCount = Modifiers.size();
 				for (size_t i = 0; i < nCount; ++i)
 					Modifiers[i].toXmlWriter(pWriter);
 				
@@ -67,7 +67,7 @@ namespace PPTX
 				pWriter->WriteBYTE(2); pWriter->WriteBYTE(blue);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-				ULONG len = (ULONG)Modifiers.GetCount();
+				ULONG len = (ULONG)Modifiers.size();
 				if (len != 0)
 				{
 					pWriter->StartRecord(0);

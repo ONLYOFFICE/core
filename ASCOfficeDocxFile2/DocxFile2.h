@@ -58,11 +58,6 @@ public:
 public:
 	STDMETHOD(OpenFile)(BSTR bsInputDir, BSTR bsFileDst)
 	{
-		if(NULL == m_pThis)
-		{
-			this->QueryInterface( __uuidof(IUnknown), (void**)&m_pThis );
-			m_oCDocxSerializer.setComInterface(m_pThis);
-		}
 		bool bRes = m_oCDocxSerializer.saveToFile(BstrToStdString(bsFileDst), BstrToStdString(bsInputDir), std::wstring(_T("")));
 		return bRes ? S_OK : S_FALSE;
 	}
@@ -114,11 +109,6 @@ public:
 	}
 	STDMETHOD(GetBinaryContent)(BSTR bsTxContent, SAFEARRAY** ppBinary)
 	{
-		if(NULL == m_pThis)
-		{
-			this->QueryInterface( __uuidof(IUnknown), (void**)&m_pThis );
-			m_oCDocxSerializer.setComInterface(m_pThis);
-		}
 		unsigned char* pData = NULL;
 		long lDataSize = 0;
 		bool bRes = m_oCDocxSerializer.getBinaryContent(BstrToStdString(bsTxContent), &pData, lDataSize);
@@ -140,11 +130,6 @@ public:
 	}
 	STDMETHOD(Write)(BSTR bstrFileIn, BSTR bstrDirectoryOut)
 	{
-		if(NULL == m_pThis)
-		{
-			this->QueryInterface( __uuidof(IUnknown), (void**)&m_pThis );
-			m_oCDocxSerializer.setComInterface(m_pThis);
-		}
 		CString sDirectoryOut = bstrDirectoryOut;
 		CString sThemePath;
 		CString sMediaPath;
@@ -154,11 +139,6 @@ public:
 	}
 	STDMETHOD(GetXmlContent)(SAFEARRAY* pBinaryObj, LONG lStart, LONG lLength, BSTR* bsXml)
 	{
-		if(NULL == m_pThis)
-		{
-			this->QueryInterface( __uuidof(IUnknown), (void**)&m_pThis );
-			m_oCDocxSerializer.setComInterface(m_pThis);
-		}
 		std::wstring sRes;
 		bool bRes = m_oCDocxSerializer.getXmlContent((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements, lStart, lLength, sRes);
 		(*bsXml) = CString(sRes.c_str()).AllocSysString();

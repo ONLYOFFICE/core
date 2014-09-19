@@ -35,7 +35,7 @@ namespace PPTX
 
 				bodyPr			= oSrc.bodyPr;
 				lstStyle		= oSrc.lstStyle;
-				Paragrs.Copy(oSrc.Paragrs);
+				Paragrs = oSrc.Paragrs;
 
 				return *this;
 			}
@@ -43,7 +43,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				Paragrs.RemoveAll();
+				Paragrs.clear();
 
 				bodyPr		= node.ReadNode(_T("a:bodyPr"));
 				lstStyle	= node.ReadNode(_T("a:lstStyle"));
@@ -74,7 +74,7 @@ namespace PPTX
 					lstStyle->m_name = _T("a:lstStyle");
 				pWriter->Write(lstStyle);
 				
-				size_t nCount = Paragrs.GetCount();
+				size_t nCount = Paragrs.size();
 				for (size_t i = 0; i < nCount; ++i)
 					Paragrs[i].toXmlWriter(pWriter);
 				
@@ -95,7 +95,7 @@ namespace PPTX
 					lstStyle->m_name = _T("a:lstStyle");
 				pWriter->Write(lstStyle);
 				
-				size_t nCount = Paragrs.GetCount();
+				size_t nCount = Paragrs.size();
 				for (size_t i = 0; i < nCount; ++i)
 					Paragrs[i].toXmlWriter(pWriter);
 				
@@ -107,7 +107,7 @@ namespace PPTX
 			CString GetText()const
 			{
 				CString result = _T("");
-				size_t count = Paragrs.GetCount();
+				size_t count = Paragrs.size();
 
 				for (size_t i = 0; i < count; ++i)
 					result += Paragrs[i].GetText();
@@ -156,8 +156,8 @@ namespace PPTX
 							for (ULONG i = 0; i < _c; ++i)
 							{
 								pReader->Skip(1); // type
-								Paragrs.Add();
-								Paragrs[Paragrs.GetCount() - 1].fromPPTY(pReader);								
+								Paragrs.push_back(Paragraph());
+								Paragrs[Paragrs.size() - 1].fromPPTY(pReader);								
 							}
 							break;
 						}
@@ -174,7 +174,7 @@ namespace PPTX
 		public:
 			BodyPr					bodyPr;
 			nullable<TextListStyle> lstStyle;
-			CAtlArray<Paragraph>	Paragrs;
+			std::vector<Paragraph>	Paragrs;
 
 			CString m_ns;
 		protected:
@@ -184,7 +184,7 @@ namespace PPTX
 				if(lstStyle.is_init())
 					lstStyle->SetParentPointer(this);
 				
-				size_t count = Paragrs.GetCount();
+				size_t count = Paragrs.size();
 				for (size_t i = 0; i < count; ++i)
 					Paragrs[i].SetParentPointer(this);
 			}

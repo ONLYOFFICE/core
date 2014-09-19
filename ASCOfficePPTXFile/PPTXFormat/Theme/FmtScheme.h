@@ -23,10 +23,10 @@ namespace PPTX
 
 				name	= oSrc.name;
 
-				fillStyleLst.Copy(oSrc.fillStyleLst);
-				lnStyleLst.Copy(oSrc.lnStyleLst);
-				effectStyleLst.Copy(oSrc.effectStyleLst);
-				bgFillStyleLst.Copy(oSrc.bgFillStyleLst);
+				fillStyleLst = oSrc.fillStyleLst;
+				lnStyleLst = oSrc.lnStyleLst;
+				effectStyleLst = oSrc.effectStyleLst;
+				bgFillStyleLst = oSrc.bgFillStyleLst;
 
 				return *this;
 			}
@@ -34,10 +34,10 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				fillStyleLst.RemoveAll();
-				lnStyleLst.RemoveAll();
-				effectStyleLst.RemoveAll();
-				bgFillStyleLst.RemoveAll();
+				fillStyleLst.clear();
+				lnStyleLst.clear();
+				effectStyleLst.clear();
+				bgFillStyleLst.clear();
 
 				name = node.GetAttribute(_T("name"));
 
@@ -97,7 +97,7 @@ namespace PPTX
 			void GetLineStyle(int number, Logic::Ln& lnStyle) const
 			{
 				int index = number - 1;
-				if ((index < 0) || (index >= (int)lnStyleLst.GetCount()))
+				if ((index < 0) || (index >= (int)lnStyleLst.size()))
 					return;
 
 				lnStyle = lnStyleLst[index];
@@ -110,7 +110,7 @@ namespace PPTX
 				if( (number >= 1) && (number <= 999) )
 				{
 					int index = number - 1;
-					if ((index < 0) || (index >= (int)fillStyleLst.GetCount()))
+					if ((index < 0) || (index >= (int)fillStyleLst.size()))
 						return;
 					
 					fillStyle = fillStyleLst[index];
@@ -120,7 +120,7 @@ namespace PPTX
 				else if(number >= 1001)
 				{
 					int index = number - 1001;
-					if ((index < 0) || (index >= (int)bgFillStyleLst.GetCount()))
+					if ((index < 0) || (index >= (int)bgFillStyleLst.size()))
 						return;
 
 					fillStyle = bgFillStyleLst[index];
@@ -172,7 +172,7 @@ namespace PPTX
 							for (ULONG i = 0; i < _c; ++i)
 							{
 								pReader->Skip(1); // type
-								fillStyleLst.Add();
+								fillStyleLst.push_back(Logic::UniFill());
 								fillStyleLst[i].fromPPTY(pReader);
 							}
 
@@ -186,7 +186,7 @@ namespace PPTX
 							for (ULONG i = 0; i < _c; ++i)
 							{
 								pReader->Skip(1); // type
-								lnStyleLst.Add();
+								lnStyleLst.push_back(Logic::Ln());
 								lnStyleLst[i].fromPPTY(pReader);
 							}
 
@@ -205,7 +205,7 @@ namespace PPTX
 							for (ULONG i = 0; i < _c; ++i)
 							{
 								pReader->Skip(1); // type
-								bgFillStyleLst.Add();
+								bgFillStyleLst.push_back(Logic::UniFill());
 								bgFillStyleLst[i].fromPPTY(pReader);
 							}
 
@@ -221,28 +221,28 @@ namespace PPTX
 
 		public:
 			CString name;
-			CAtlArray<Logic::UniFill>		fillStyleLst;
-			CAtlArray<Logic::Ln>			lnStyleLst;
-			CAtlArray<Logic::EffectStyle>	effectStyleLst;
-			CAtlArray<Logic::UniFill>		bgFillStyleLst;
+			std::vector<Logic::UniFill>		fillStyleLst;
+			std::vector<Logic::Ln>			lnStyleLst;
+			std::vector<Logic::EffectStyle>	effectStyleLst;
+			std::vector<Logic::UniFill>		bgFillStyleLst;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
 				size_t count = 0;
 
-				count = fillStyleLst.GetCount();
+				count = fillStyleLst.size();
 				for (size_t i = 0; i < count; ++i)
 					fillStyleLst[i].SetParentPointer(this);
 
-				count = lnStyleLst.GetCount();
+				count = lnStyleLst.size();
 				for (size_t i = 0; i < count; ++i)
 					lnStyleLst[i].SetParentPointer(this);
 
-				count = effectStyleLst.GetCount();
+				count = effectStyleLst.size();
 				for (size_t i = 0; i < count; ++i)
 					effectStyleLst[i].SetParentPointer(this);
 
-				count = bgFillStyleLst.GetCount();
+				count = bgFillStyleLst.size();
 				for (size_t i = 0; i < count; ++i)
 					bgFillStyleLst[i].SetParentPointer(this);
 			}

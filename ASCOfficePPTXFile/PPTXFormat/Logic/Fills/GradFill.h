@@ -27,7 +27,7 @@ namespace PPTX
 				flip		 = oSrc.flip;
 				rotWithShape = oSrc.rotWithShape;
 
-				GsLst.Copy(oSrc.GsLst);
+				GsLst = oSrc.GsLst;
 				lin			= oSrc.lin;
 				path		= oSrc.path;
 				tileRect	= oSrc.tileRect;
@@ -124,7 +124,7 @@ namespace PPTX
 
 				pWriter->StartRecord(0);
 
-				ULONG len = (ULONG)GsLst.GetCount();
+				ULONG len = (ULONG)GsLst.size();
 				pWriter->WriteULONG(len);
 
 				for (ULONG i = 0; i < len; ++i)
@@ -149,10 +149,10 @@ namespace PPTX
 					fill.rotWithShape = *rotWithShape;
 				if(tileRect.IsInit())
 					fill.tileRect = tileRect;
-				if(0 != GsLst.GetCount())
+				if(0 != GsLst.size())
 				{
-					fill.GsLst.RemoveAll();
-					fill.GsLst.Copy(GsLst);
+					fill.GsLst.clear();
+					fill.GsLst = GsLst;
 				}
 
 				if(lin.IsInit())
@@ -169,7 +169,7 @@ namespace PPTX
 
 			UniColor GetFrontColor()const
 			{
-				if (0 == GsLst.GetCount())
+				if (0 == GsLst.size())
 					return UniColor();
 				return GsLst[0].color;
 			}
@@ -178,7 +178,7 @@ namespace PPTX
 			nullable_limit<Limit::Flip> flip;
 			nullable_bool				rotWithShape;
 
-			CAtlArray<Gs>				GsLst;
+			std::vector<Gs>				GsLst;
 			nullable<Lin>				lin;
 			nullable<Path>				path;
 			nullable<Rect>				tileRect;
@@ -187,7 +187,7 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				size_t count = GsLst.GetCount();
+				size_t count = GsLst.size();
 				for (size_t i = 0; i < count; ++i)
 					GsLst[i].SetParentPointer(this);
 				

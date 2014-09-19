@@ -56,13 +56,13 @@ namespace PPTX
 			clrMap = oNode.ReadNode(_T("p:clrMap"));
 			clrMap.SetParentFilePointer(this);
 
-			sldLayoutIdLst.RemoveAll();
+			sldLayoutIdLst.clear();
 			XmlUtils::CXmlNode oNodeList;
 			if (oNode.GetNode(_T("p:sldLayoutIdLst"), oNodeList))
 			{
 				oNodeList.LoadArray(_T("p:sldLayoutId"), sldLayoutIdLst);
 
-				size_t count = sldLayoutIdLst.GetCount();
+				size_t count = sldLayoutIdLst.size();
 				for (size_t i = 0; i < count; ++i)
 					sldLayoutIdLst[i].SetParentFilePointer(this);
 			}
@@ -457,7 +457,7 @@ namespace PPTX
 	public:
 		Logic::CSld					cSld;
 		Logic::ClrMap				clrMap;
-		CAtlArray<Logic::XmlId>		sldLayoutIdLst;
+		std::vector<Logic::XmlId>		sldLayoutIdLst;
 		nullable<Logic::Transition> transition;
 		nullable<Logic::Timing>		timing;
 		nullable<Logic::HF>			hf;

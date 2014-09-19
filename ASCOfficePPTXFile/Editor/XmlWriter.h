@@ -685,9 +685,32 @@ namespace NSBinPptxRW
 			}
 		}
 		template<typename T>
+		AVSINLINE void WriteArray(const CString& strName, const std::vector<T>& arr)
+		{
+			size_t nCount = arr.size();
+			if (0 != nCount)
+			{
+				StartNode(strName);
+				m_oWriter.WriteString(g_bstr_nodeclose);
+				for (size_t i = 0; i < nCount; ++i)
+					arr[i].toXmlWriter(this);
+				EndNode(strName);
+			}
+		}
+		template<typename T>
 		AVSINLINE void WriteArray2(const CAtlArray<T>& arr)
 		{
 			size_t nCount = arr.GetCount();
+			if (0 != nCount)
+			{
+				for (size_t i = 0; i < nCount; ++i)
+					arr[i].toXmlWriter(this);
+			}
+		}
+		template<typename T>
+		AVSINLINE void WriteArray2(const std::vector<T>& arr)
+		{
+			size_t nCount = arr.size();
 			if (0 != nCount)
 			{
 				for (size_t i = 0; i < nCount; ++i)

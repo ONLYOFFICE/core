@@ -308,11 +308,11 @@ namespace NSBinPptxRW
 					m_oReader.m_pRels->StartMaster(i, m_arSlideMasters_Theme[i]);
 					m_arSlideMasters[i].fromPPTY(&m_oReader);
 					
-					CAtlArray<PPTX::Logic::XmlId>& arrLays = m_arSlideMasters[i].sldLayoutIdLst;
+					std::vector<PPTX::Logic::XmlId>& arrLays = m_arSlideMasters[i].sldLayoutIdLst;
 					LONG lLayouts = (LONG)m_arSlideMasters_Theme[i].m_arLayouts.GetCount();
 					for (LONG j = 0; j < lLayouts; ++j)
 					{
-						arrLays.Add();
+						arrLays.push_back(PPTX::Logic::XmlId());
 						
 						CString sId = _T("");
 						sId.Format(_T("%u"), 0x80000000 + __nCountLayouts + j + 1);
@@ -580,11 +580,11 @@ namespace NSBinPptxRW
 				m_oReader.Seek(pPair->m_value);
 				m_oPresentation.fromPPTY(&m_oReader);
 
-				m_oPresentation.sldMasterIdLst.RemoveAll();
+				m_oPresentation.sldMasterIdLst.clear();
 				LONG nCountLayouts = 0;
 				for (LONG i = 0; i < nCountMasters; ++i)
 				{
-					m_oPresentation.sldMasterIdLst.Add();
+					m_oPresentation.sldMasterIdLst.push_back(PPTX::Logic::XmlId());
 
 					CString sId = _T("");
 					sId.Format(_T("%u"), 0x80000000 + nCountLayouts);
@@ -599,10 +599,10 @@ namespace NSBinPptxRW
 
 				int nCurrentRels = m_oReader.m_pRels->GetNextId();
 
-				m_oPresentation.sldIdLst.RemoveAll();
+				m_oPresentation.sldIdLst.clear();
 				for (LONG i = 0; i < nCountSlides; ++i)
 				{
-					m_oPresentation.sldIdLst.Add();
+					m_oPresentation.sldIdLst.push_back(PPTX::Logic::XmlId());
 
 					CString sId = _T("");
 					sId.Format(_T("%u"), 256 + i);
@@ -615,8 +615,8 @@ namespace NSBinPptxRW
 				m_oReader.m_pRels->WriteSlides(nCountSlides);
 				m_oReader.m_pRels->EndPresentationRels(m_oPresentation.commentAuthors.is_init());
 
-				m_oPresentation.notesMasterIdLst.RemoveAll();
-				m_oPresentation.notesMasterIdLst.Add();
+				m_oPresentation.notesMasterIdLst.clear();
+				m_oPresentation.notesMasterIdLst.push_back(PPTX::Logic::XmlId());
 				m_oPresentation.notesMasterIdLst[0].m_name = _T("notesMasterId");
 				m_oPresentation.notesMasterIdLst[0].rid = (size_t)nCurrentRels;
 
@@ -830,16 +830,16 @@ namespace NSBinPptxRW
 			int nCountThemes = (int)m_arSlideMasters.GetCount();
 			int nCountSlides = (int)m_arSlides.GetCount();
 
-			m_oApp.HeadingPairs.Add();
+			m_oApp.HeadingPairs.push_back(PPTX::Logic::HeadingVariant());
 			m_oApp.HeadingPairs[0].m_type = _T("lpstr");
 			m_oApp.HeadingPairs[0].m_strContent = _T("Theme");
-			m_oApp.HeadingPairs.Add();
+			m_oApp.HeadingPairs.push_back(PPTX::Logic::HeadingVariant());
 			m_oApp.HeadingPairs[1].m_type = _T("i4");
 			m_oApp.HeadingPairs[1].m_iContent = nCountThemes;
-			m_oApp.HeadingPairs.Add();
+			m_oApp.HeadingPairs.push_back(PPTX::Logic::HeadingVariant());
 			m_oApp.HeadingPairs[2].m_type = _T("lpstr");
 			m_oApp.HeadingPairs[2].m_strContent = _T("Slide Titles");
-			m_oApp.HeadingPairs.Add();
+			m_oApp.HeadingPairs.push_back(PPTX::Logic::HeadingVariant());
 			m_oApp.HeadingPairs[3].m_type = _T("i4");
 			m_oApp.HeadingPairs[3].m_iContent = nCountSlides;
 
@@ -847,7 +847,7 @@ namespace NSBinPptxRW
 			{
 				CString s = _T("");
 				s.Format(_T("Theme %d"), i + 1);
-				m_oApp.TitlesOfParts.Add();
+				m_oApp.TitlesOfParts.push_back(PPTX::Logic::PartTitle());
 				m_oApp.TitlesOfParts[i].m_title = s;
 			}
 
@@ -855,7 +855,7 @@ namespace NSBinPptxRW
 			{
 				CString s = _T("");
 				s.Format(_T("Slide %d"), i + 1);
-				m_oApp.TitlesOfParts.Add();
+				m_oApp.TitlesOfParts.push_back(PPTX::Logic::PartTitle());
 				m_oApp.TitlesOfParts[nCountThemes + i].m_title = s;
 			}
 			
@@ -887,10 +887,10 @@ namespace NSBinPptxRW
 			m_oViewProps.SlideViewPr->CSldViewPr.CViewPr.Origin.x = -1236;
 			m_oViewProps.SlideViewPr->CSldViewPr.CViewPr.Origin.y = -90;
 
-			m_oViewProps.SlideViewPr->CSldViewPr.GuideLst.Add();
+			m_oViewProps.SlideViewPr->CSldViewPr.GuideLst.push_back(PPTX::nsViewProps::Guide());
 			m_oViewProps.SlideViewPr->CSldViewPr.GuideLst[0].orient = _T("horz");
 			m_oViewProps.SlideViewPr->CSldViewPr.GuideLst[0].pos = 2160;
-			m_oViewProps.SlideViewPr->CSldViewPr.GuideLst.Add();
+			m_oViewProps.SlideViewPr->CSldViewPr.GuideLst.push_back(PPTX::nsViewProps::Guide());
 			m_oViewProps.SlideViewPr->CSldViewPr.GuideLst[1].pos = 2880;
 
 			m_oViewProps.NotesTextViewPr = new PPTX::nsViewProps::NotesTextViewPr();
@@ -948,7 +948,7 @@ namespace NSBinPptxRW
 			pShape->nvSpPr.nvPr.ph->idx = _T("1");
 
 			PPTX::Logic::TxBody* pTxBody = new PPTX::Logic::TxBody();
-			pTxBody->Paragrs.Add();
+			pTxBody->Paragrs.push_back(PPTX::Logic::Paragraph());
 			
 			PPTX::Logic::Run* pTxRun = new PPTX::Logic::Run();
 			pTxRun->rPr = new PPTX::Logic::RunProperties();

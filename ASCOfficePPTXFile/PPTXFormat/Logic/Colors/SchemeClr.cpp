@@ -15,7 +15,7 @@ namespace PPTX
 		void SchemeClr::fromXML(XmlUtils::CXmlNode& node)
 		{
 			val = node.GetAttribute(_T("val"));
-			Modifiers.RemoveAll();
+			Modifiers.clear();
 			node.LoadArray(_T("*"), Modifiers);
 		}
 

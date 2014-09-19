@@ -13,6 +13,7 @@
 #include "Ln.h"
 
 //#include "../../../Common/DocxFormat/Source/Utility/Encoding.h"
+#include "../../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
 
 namespace PPTX
 {
@@ -64,23 +65,30 @@ namespace PPTX
 					if (TextBoxShape.is_init())
 					{					
 						LPSAFEARRAY psaData = NULL;
-						BSTR bsTxContent = TextBoxShape->AllocSysString();
+						unsigned char* pData = NULL;
+						long lDataSize = 0;
+						pWriter->m_pMainDocument->getBinaryContent(std::wstring(TextBoxShape->GetString()), &pData, lDataSize);
+						if(NULL != pData && lDataSize > 0)
+						{
+							SAFEARRAYBOUND	rgsabound[1];
+							rgsabound[0].lLbound = 0;
+							rgsabound[0].cElements = lDataSize;
+							psaData = SafeArrayCreate(VT_UI1, 1, rgsabound);
 
-						DocxFile2::IAVSOfficeDocxFile2* pDocxFile2 = NULL;
-						pWriter->m_pMainDocument->QueryInterface(DocxFile2::IID_IAVSOfficeDocxFile2, (void**)&pDocxFile2);
-						
-						ULONG lPos = pWriter->GetPosition();
+							BYTE* pDataD = (BYTE*)psaData->pvData;
+							BYTE* pDataS = pData;
+							memcpy(pDataD, pDataS, lDataSize);
 
-						pDocxFile2->GetBinaryContent(bsTxContent, &psaData);					
-						RELEASEINTERFACE(pDocxFile2);
 
-						pWriter->SetPosition(lPos);
+							ULONG lPos = pWriter->GetPosition();
+							pWriter->SetPosition(lPos);
 
-						pWriter->StartRecord(4);
-						pWriter->WriteBYTEArray((BYTE*)psaData->pvData, psaData->rgsabound[0].cElements);
-						pWriter->EndRecord();
-						SysFreeString(bsTxContent);
-						SafeArrayDestroy(psaData);
+							pWriter->StartRecord(4);
+							pWriter->WriteBYTEArray((BYTE*)psaData->pvData, psaData->rgsabound[0].cElements);
+							pWriter->EndRecord();
+							SafeArrayDestroy(psaData);
+						}
+						RELEASEARRAYOBJECTS(pData);
 
 						if (TextBoxBodyPr.is_init())
 						{
@@ -94,19 +102,26 @@ namespace PPTX
 						CString strContent = txBody->GetDocxTxBoxContent(pWriter, style);
 
 						LPSAFEARRAY psaData = NULL;
-						BSTR bsTxContent = strContent.AllocSysString();
+						unsigned char* pData = NULL;
+						long lDataSize = 0;
+						pWriter->m_pMainDocument->getBinaryContent(std::wstring(strContent.GetString()), &pData, lDataSize);
+						if(NULL != pData && lDataSize > 0)
+						{
+							SAFEARRAYBOUND	rgsabound[1];
+							rgsabound[0].lLbound = 0;
+							rgsabound[0].cElements = lDataSize;
+							psaData = SafeArrayCreate(VT_UI1, 1, rgsabound);
 
-						DocxFile2::IAVSOfficeDocxFile2* pDocxFile2 = NULL;
-						pWriter->m_pMainDocument->QueryInterface(DocxFile2::IID_IAVSOfficeDocxFile2, (void**)&pDocxFile2);
-						
-						pDocxFile2->GetBinaryContent(bsTxContent, &psaData);					
-						RELEASEINTERFACE(pDocxFile2);
+							BYTE* pDataD = (BYTE*)psaData->pvData;
+							BYTE* pDataS = pData;
+							memcpy(pDataD, pDataS, lDataSize);
 
-						pWriter->StartRecord(4);
-						pWriter->WriteBYTEArray((BYTE*)psaData->pvData, psaData->rgsabound[0].cElements);
-						pWriter->EndRecord();
-						SysFreeString(bsTxContent);
-						SafeArrayDestroy(psaData);
+							pWriter->StartRecord(4);
+							pWriter->WriteBYTEArray((BYTE*)psaData->pvData, psaData->rgsabound[0].cElements);
+							pWriter->EndRecord();
+							SafeArrayDestroy(psaData);
+						}
+						RELEASEARRAYOBJECTS(pData);
 
 						pWriter->WriteRecord1(5, txBody->bodyPr);
 					}
@@ -266,20 +281,14 @@ namespace PPTX
 								LONG lPosition = pReader->GetPos();
 								LONG lSize_Reader = pReader->GetSize();
 								BYTE* pData_Reader = pReader->GetData();
-
-								DocxFile2::IAVSOfficeDocxFile2* pDocxFile2 = NULL;
-								pReader->m_pMainDocument->QueryInterface(DocxFile2::IID_IAVSOfficeDocxFile2, (void**)&pDocxFile2);
-																
-								BSTR bsXmlContent = NULL;
-								pDocxFile2->GetXmlContent(pReader->m_pSourceArray, pReader->GetPos(), lLenRec, &bsXmlContent);					
-								RELEASEINTERFACE(pDocxFile2);
+				
+								std::wstring sXmlContent;
+								pReader->m_pMainDocument->getXmlContent((BYTE*)pReader->m_pSourceArray->pvData, pReader->m_pSourceArray->rgsabound[0].cElements, pReader->GetPos(), lLenRec, sXmlContent);
 
 								CString strC = _T("<w:txbxContent>");
-								strC += ((CString)(bsXmlContent));
+								strC += ((CString)(sXmlContent.c_str()));
 								strC += _T("</w:txbxContent>");
 								TextBoxShape = strC;
-
-								SysFreeString(bsXmlContent);
 
 								//pReader->Seek(lPosition + lLenRec);
 								pReader->Init(pData_Reader, lPosition + lLenRec, lSize_Reader - (lPosition + lLenRec));

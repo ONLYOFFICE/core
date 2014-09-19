@@ -1,5 +1,10 @@
 #pragma once
-#include "../../../../ASCOfficePPTXFile/stdafx.h"
+//todo убрать include
+#include <atlbase.h>
+#include <atlcom.h>
+#include "../../../../Common/atldefine.h"
+#include "../../../../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
+#import "../../../../Redist/ASCGraphics.dll"				named_guids raw_interfaces_only rename_namespace("ASCGraphics"), exclude("IASCRenderer")
 
 const double ShapeSize		= 43200.0;
 const LONG ShapeSizeVML		= 21600;

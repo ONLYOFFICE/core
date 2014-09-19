@@ -107,7 +107,7 @@ namespace PPTX
 				components[5] = saturation;
 				components[6] = luminance;
 
-				size_t nCount = Modifiers.GetCount();
+				size_t nCount = Modifiers.size();
 				for (size_t i = 0; i != nCount; ++i)
 				{
 					const Logic::ColorModifier* colorMod = &Modifiers[i];
@@ -516,7 +516,7 @@ namespace PPTX
 				return summa;
 			}
 		public:
-			CAtlArray<ColorModifier> Modifiers;
+			std::vector<ColorModifier> Modifiers;
 
 		public:
 			void ReadModsFromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -562,7 +562,7 @@ namespace PPTX
 								break;
 						}
 
-						Modifiers.Add(_mod);
+						Modifiers.push_back(_mod);
 					}
 
 					pReader->Seek(_e1);

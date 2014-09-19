@@ -35,7 +35,7 @@ namespace PPTX
 		if (NULL != pSrcFile)
 			bIsSlide = (pSrcFile->type() == PPTX::FileTypes::Slide) ? true : false;
 
-		size_t nCount = rels.Relations.m_items.GetCount();
+		size_t nCount = rels.Relations.m_items.size();
 		for (size_t i = 0; i < nCount; ++i)
 		{
 			const PPTX::Rels::RelationShip* pRelation = &(rels.Relations.m_items[i]);
@@ -179,7 +179,7 @@ namespace PPTX
 
 	void CCommonRels::_read(const PPTX::Rels::File& rels, const OOX::CPath& path)
 	{
-		size_t nCount = rels.Relations.m_items.GetCount();
+		size_t nCount = rels.Relations.m_items.size();
 		for (size_t i = 0; i < nCount; ++i)
 		{
 			const PPTX::Rels::RelationShip* pRelation = &(rels.Relations.m_items[i]);

@@ -22,7 +22,7 @@ namespace PPTX
 				parentFile		= oSrc.parentFile;
 				parentElement	= oSrc.parentElement;
 
-				Effects.Copy(oSrc.Effects);
+				Effects = oSrc.Effects;
 				name = oSrc.name;
 				type = oSrc.type;
 				m_name = oSrc.m_name;
@@ -35,7 +35,7 @@ namespace PPTX
 				m_name	= node.GetName();
 				node.ReadAttributeBase(L"name", name);
 				node.ReadAttributeBase(L"type", type);
-				Effects.RemoveAll();
+				Effects.clear();
 				node.LoadArray(_T("*"), Effects);
 
 				FillParentPointersForChilds();
@@ -63,7 +63,7 @@ namespace PPTX
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->StartRecord(0);
-				ULONG len = (ULONG)Effects.GetCount();
+				ULONG len = (ULONG)Effects.size();
 				pWriter->WriteULONG(len);
 				
 				for (ULONG i = 0; i < len; ++i)
@@ -77,14 +77,14 @@ namespace PPTX
 			}
 
 		public:
-			CAtlArray<UniEffect>						Effects;
+			std::vector<UniEffect>						Effects;
 			nullable_string								name;
 			nullable_limit<Limit::EffectContainerType>	type;
 			CString										m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				size_t count = Effects.GetCount();
+				size_t count = Effects.size();
 				for(size_t i = 0; i < count; ++i)
 					Effects[i].SetParentPointer(this);
 			}

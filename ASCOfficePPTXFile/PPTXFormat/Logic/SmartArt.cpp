@@ -5,7 +5,8 @@
 #include "..\SlideLayout.h"
 #include "..\SlideMaster.h"
 
-//#include "../../ASCOfficeDrawingConverter.h"
+#include "../../ASCOfficeDrawingConverter.h"
+#include "../../../ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.h"
 
 namespace PPTX
 {
@@ -97,89 +98,88 @@ namespace PPTX
 
 		void ChartRec::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
-			//todo
-			//LPSAFEARRAY pArray = NULL;
+			LPSAFEARRAY pArray = NULL;
 
-			//FileContainer* pRels = NULL;
-			//if (pWriter->m_pCommonRels.is_init())
-			//	pRels = pWriter->m_pCommonRels.operator ->();
+			FileContainer* pRels = NULL;
+			if (pWriter->m_pCommonRels.is_init())
+				pRels = pWriter->m_pCommonRels.operator ->();
 
-			//CString strDataPath = _T("");
-			//if(id_data.IsInit())
-			//{
-			//	if(parentFileIs<Slide>())
-			//		strDataPath = parentFileAs<Slide>().GetMediaFullPathNameFromRId(*id_data);
-			//	else if(parentFileIs<SlideLayout>())
-			//		strDataPath = parentFileAs<SlideLayout>().GetMediaFullPathNameFromRId(*id_data);
-			//	else if(parentFileIs<SlideMaster>())
-			//		strDataPath = parentFileAs<SlideMaster>().GetMediaFullPathNameFromRId(*id_data);
-			//	else if(parentFileIs<Theme>())
-			//		strDataPath = parentFileAs<Theme>().GetMediaFullPathNameFromRId(*id_data);
-			//	else if (pRels != NULL)
-			//	{
-			//		smart_ptr<PPTX::Image> p = pRels->image(*id_data);
-			//		if (p.is_init())
-			//			strDataPath = p->filename().m_strFilename;
-			//	}
-			//}
+			CString strDataPath = _T("");
+			if(id_data.IsInit())
+			{
+				if(parentFileIs<Slide>())
+					strDataPath = parentFileAs<Slide>().GetMediaFullPathNameFromRId(*id_data);
+				else if(parentFileIs<SlideLayout>())
+					strDataPath = parentFileAs<SlideLayout>().GetMediaFullPathNameFromRId(*id_data);
+				else if(parentFileIs<SlideMaster>())
+					strDataPath = parentFileAs<SlideMaster>().GetMediaFullPathNameFromRId(*id_data);
+				else if(parentFileIs<Theme>())
+					strDataPath = parentFileAs<Theme>().GetMediaFullPathNameFromRId(*id_data);
+				else if (pRels != NULL)
+				{
+					smart_ptr<PPTX::Image> p = pRels->image(*id_data);
+					if (p.is_init())
+						strDataPath = p->filename().m_strFilename;
+				}
+			}
 
-			//if (_T("") == strDataPath)
-			//	return;
+			if (_T("") == strDataPath)
+				return;
 
-			//DocxFile2::IAVSOfficeXlsxSerizer* pSerializer = NULL;
-			//if (!SUCCEEDED(CoCreateInstance(__uuidof(DocxFile2::CAVSOfficeXlsxSerizer), NULL, CLSCTX_ALL, __uuidof(DocxFile2::IAVSOfficeXlsxSerizer), (void**)&pSerializer)))
-			//	return;
+			BinXlsxRW::CXlsxSerializer oXlsxSerializer;
+			NSBinPptxRW::CDrawingConverter oDrawingConverter;
 
-			//IAVSOfficeDrawingConverter* pDrawingConverter = NULL;
-			//CoCreateInstance(__uuidof(CAVSOfficeDrawingConverter), NULL, CLSCTX_ALL, __uuidof(IAVSOfficeDrawingConverter), (void**)&pDrawingConverter);
-			//if (NULL == pDrawingConverter)
-			//{
-			//	RELEASEINTERFACE(pSerializer);
-			//	return;
-			//}
+			VARIANT var;
+			
+			var.vt = VT_UNKNOWN;
+			pWriter->m_oCommon.m_pFontPicker->QueryInterface(IID_IUnknown, (void**)&(var.punkVal));
+			oDrawingConverter.SetAdditionalParam(L"FontPicker", var);
+			RELEASEINTERFACE((var.punkVal));
 
-			//VARIANT var;
-			//
-			//var.vt = VT_UNKNOWN;
-			//pWriter->m_oCommon.m_pFontPicker->QueryInterface(IID_IUnknown, (void**)&(var.punkVal));
-			//pDrawingConverter->SetAdditionalParam(L"FontPicker", var);
-			//RELEASEINTERFACE((var.punkVal));
+			var.vt = VT_ARRAY;
 
-			//var.vt = VT_ARRAY;
+			NSBinPptxRW::CBinaryFileWriter oWriter;
+			LPSAFEARRAY pSerializeIM = oWriter.Serialize(&pWriter->m_oCommon.m_oImageManager);
+			var.parray = pSerializeIM;
+			oDrawingConverter.SetAdditionalParam(L"SerializeImageManager", var);
 
-			//NSBinPptxRW::CBinaryFileWriter oWriter;
-			//LPSAFEARRAY pSerializeIM = oWriter.Serialize(&pWriter->m_oCommon.m_oImageManager);
-			//var.parray = pSerializeIM;
-			//pDrawingConverter->SetAdditionalParam(L"SerializeImageManager", var);
+			RELEASEARRAY(pSerializeIM);
 
-			//RELEASEARRAY(pSerializeIM);
+			oXlsxSerializer.setDrawingConverter(&oDrawingConverter);
 
-			//pSerializer->SetDrawingConverter((IUnknown*)pDrawingConverter);
+			unsigned char* pData = NULL;
+			long lDataSize = 0;
+			oXlsxSerializer.loadChart(strDataPath, &pData, lDataSize);
+			if(NULL != pData && lDataSize > 0)
+			{
+				SAFEARRAYBOUND	rgsabound[1];
+				rgsabound[0].lLbound = 0;
+				rgsabound[0].cElements = lDataSize;
+				pArray = SafeArrayCreate(VT_UI1, 1, rgsabound);
 
-			//BSTR bsPath = strDataPath.AllocSysString();
-			//pSerializer->LoadChart(bsPath, &pArray);
-			//SysFreeString(bsPath);
+				BYTE* pDataD = (BYTE*)pArray->pvData;
+				BYTE* pDataS = pData;
+				memcpy(pDataD, pDataS, lDataSize);
+			}
+			RELEASEARRAYOBJECTS(pData);
 
-			//if (NULL != pArray)
-			//{
-			//	var.parray = NULL;
-			//	pDrawingConverter->GetAdditionalParam(L"SerializeImageManager", &var);
+			if (NULL != pArray)
+			{
+				var.parray = NULL;
+				oDrawingConverter.GetAdditionalParam(L"SerializeImageManager", &var);
 
-			//	if (var.parray != NULL)
-			//	{
-			//		NSBinPptxRW::CBinaryFileReader oReader;
-			//		oReader.Deserialize(&pWriter->m_oCommon.m_oImageManager, var.parray);
+				if (var.parray != NULL)
+				{
+					NSBinPptxRW::CBinaryFileReader oReader;
+					oReader.Deserialize(&pWriter->m_oCommon.m_oImageManager, var.parray);
 
-			//		RELEASEARRAY((var.parray));
-			//	}
+					RELEASEARRAY((var.parray));
+				}
 
-			//	pWriter->WriteBYTEArray((BYTE*)pArray->pvData, pArray->rgsabound[0].cElements);
-			//}
+				pWriter->WriteBYTEArray((BYTE*)pArray->pvData, pArray->rgsabound[0].cElements);
+			}
 
-			//RELEASEARRAY(pArray);
-
-			//RELEASEINTERFACE(pDrawingConverter);
-			//RELEASEINTERFACE(pSerializer);
+			RELEASEARRAY(pArray);
 		}
 
 		void ChartRec::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -195,88 +195,72 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 
 		void ChartRec::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
-			//ULONG lLen = pReader->GetLong();
-			//m_pData = pReader->GetArray(lLen);
+			ULONG lLen = pReader->GetLong();
+			m_pData = pReader->GetArray(lLen);
 
-			//m_lChartNumber = pReader->m_lChartNumber;
-			//pReader->m_lChartNumber++;
-			//int lId = pReader->m_pRels->WriteChart(m_lChartNumber, pReader->m_lDocumentType);
+			m_lChartNumber = pReader->m_lChartNumber;
+			pReader->m_lChartNumber++;
+			int lId = pReader->m_pRels->WriteChart(m_lChartNumber, pReader->m_lDocumentType);
 
-			//// теперь зачитывание бинарника
-			//DocxFile2::IAVSOfficeXlsxSerizer* pSerializer = NULL;
-			//if (!SUCCEEDED(CoCreateInstance(__uuidof(DocxFile2::CAVSOfficeXlsxSerizer), NULL, CLSCTX_ALL, __uuidof(DocxFile2::IAVSOfficeXlsxSerizer), (void**)&pSerializer)))
-			//	return;
+			BinXlsxRW::CXlsxSerializer oXlsxSerializer;
+			NSBinPptxRW::CDrawingConverter oDrawingConverter;
 
-			//IAVSOfficeDrawingConverter* pDrawingConverter = NULL;
-			//CoCreateInstance(__uuidof(CAVSOfficeDrawingConverter), NULL, CLSCTX_ALL, __uuidof(IAVSOfficeDrawingConverter), (void**)&pDrawingConverter);
-			//if (NULL == pDrawingConverter)
-			//{
-			//	RELEASEINTERFACE(pSerializer);
-			//	return;
-			//}
+			VARIANT varDir;
+			varDir.vt = VT_BSTR;
+			varDir.bstrVal = pReader->m_strFolder.AllocSysString();
+			oDrawingConverter.SetAdditionalParam(L"SourceFileDir2", varDir);
+			SysFreeString(varDir.bstrVal);
 
-			//VARIANT varDir;
-			//varDir.vt = VT_BSTR;
-			//varDir.bstrVal = pReader->m_strFolder.AllocSysString();
-			//pDrawingConverter->SetAdditionalParam(L"SourceFileDir2", varDir);
-			//SysFreeString(varDir.bstrVal);
+			VARIANT var;
+			var.vt = VT_ARRAY;
 
-			//VARIANT var;
-			//var.vt = VT_ARRAY;
+			NSBinPptxRW::CBinaryFileWriter oWriter;
+			LPSAFEARRAY pSerializeIM = oWriter.Serialize(pReader->m_pRels->m_pManager);
+			var.parray = pSerializeIM;
+			oDrawingConverter.SetAdditionalParam(L"SerializeImageManager2", var);
 
-			//NSBinPptxRW::CBinaryFileWriter oWriter;
-			//LPSAFEARRAY pSerializeIM = oWriter.Serialize(pReader->m_pRels->m_pManager);
-			//var.parray = pSerializeIM;
-			//pDrawingConverter->SetAdditionalParam(L"SerializeImageManager2", var);
+			RELEASEARRAY(pSerializeIM);
 
-			//RELEASEARRAY(pSerializeIM);
+			oXlsxSerializer.setDrawingConverter(&oDrawingConverter);
 
-			//pSerializer->SetDrawingConverter((IUnknown*)pDrawingConverter);
+			CString strDstChart = pReader->m_pRels->m_pManager->GetDstMedia();
+			int nPos = strDstChart.ReverseFind(TCHAR('m'));
+			if (-1 != nPos)
+				strDstChart = strDstChart.Mid(0, nPos);
 
-			//CString strDstChart = pReader->m_pRels->m_pManager->GetDstMedia();
-			//int nPos = strDstChart.ReverseFind(TCHAR('m'));
-			//if (-1 != nPos)
-			//	strDstChart = strDstChart.Mid(0, nPos);
+			strDstChart += _T("charts");
+			if (1 == m_lChartNumber)
+			{
+				CDirectory::CreateDirectory(strDstChart);
+			}
+			CString strChart = _T("");
+			strChart.Format(_T("chart%d.xml"), m_lChartNumber);
 
-			//strDstChart += _T("charts");
-			//if (1 == m_lChartNumber)
-			//{
-			//	CDirectory::CreateDirectory(strDstChart);
-			//}
-			//CString strChart = _T("");
-			//strChart.Format(_T("chart%d.xml"), m_lChartNumber);
+			strChart = strDstChart + _T("\\") + strChart;
 
-			//strChart = strDstChart + _T("\\") + strChart;
+			CString* sContentTypes = NULL;
+			if (pReader->m_lDocumentType == XMLWRITER_DOC_TYPE_DOCX)
+				oXlsxSerializer.saveChart(m_pData, 0, lLen, strChart, CString(L"/word/charts/"), &sContentTypes);
+			else if (pReader->m_lDocumentType == XMLWRITER_DOC_TYPE_XLSX)
+				oXlsxSerializer.saveChart(m_pData, 0, lLen, strChart, CString(L"/xl/charts/"), &sContentTypes);
+			else
+				oXlsxSerializer.saveChart(m_pData, 0, lLen, strChart, CString(L"/ppt/charts/"), &sContentTypes);
 
-			//BSTR bsFile = strChart.AllocSysString();
-			//BSTR bsContentTypes = NULL;
+			pReader->m_strContentTypes += (*sContentTypes);
+			RELEASEOBJECT(sContentTypes);
 
-			//if (pReader->m_lDocumentType == XMLWRITER_DOC_TYPE_DOCX)
-			//	pSerializer->SaveChart(m_pData, 0, lLen, bsFile, L"/word/charts/", &bsContentTypes);
-			//else if (pReader->m_lDocumentType == XMLWRITER_DOC_TYPE_XLSX)
-			//	pSerializer->SaveChart(m_pData, 0, lLen, bsFile, L"/xl/charts/", &bsContentTypes);
-			//else
-			//	pSerializer->SaveChart(m_pData, 0, lLen, bsFile, L"/ppt/charts/", &bsContentTypes);
+			var.parray = NULL;
+			oDrawingConverter.GetAdditionalParam(L"SerializeImageManager2", &var);
 
-			//pReader->m_strContentTypes += ((CString)bsContentTypes);
-			//SysFreeString(bsContentTypes);
-			//SysFreeString(bsFile);
+			if (var.parray != NULL)
+			{
+				NSBinPptxRW::CBinaryFileReader oReader;
+				oReader.Deserialize(pReader->m_pRels->m_pManager, var.parray);
 
-			//var.parray = NULL;
-			//pDrawingConverter->GetAdditionalParam(L"SerializeImageManager2", &var);
+				RELEASEARRAY((var.parray));
+			}				
 
-			//if (var.parray != NULL)
-			//{
-			//	NSBinPptxRW::CBinaryFileReader oReader;
-			//	oReader.Deserialize(pReader->m_pRels->m_pManager, var.parray);
-
-			//	RELEASEARRAY((var.parray));
-			//}				
-
-			//RELEASEINTERFACE(pDrawingConverter);
-			//RELEASEINTERFACE(pSerializer);
-
-			//id_data = new PPTX::RId((size_t)lId);
+			id_data = new PPTX::RId((size_t)lId);
 		}
 	} // namespace Logic
 } // namespace PPTX

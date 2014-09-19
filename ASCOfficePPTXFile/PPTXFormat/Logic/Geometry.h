@@ -95,7 +95,7 @@ namespace PPTX
 									for (ULONG i = 0; i < _c; ++i)
 									{
 										pReader->Skip(1);
-										pGeom->avLst.Add();
+										pGeom->avLst.push_back(Gd());
 										pGeom->avLst[i].fromPPTY(pReader);
 									}
 
@@ -127,7 +127,7 @@ namespace PPTX
 									for (ULONG i = 0; i < _c; ++i)
 									{
 										pReader->Skip(1);
-										pGeom->avLst.Add();
+										pGeom->avLst.push_back(Gd());
 										pGeom->avLst[i].fromPPTY(pReader);
 									}
 
@@ -142,7 +142,7 @@ namespace PPTX
 									for (ULONG i = 0; i < _c; ++i)
 									{
 										pReader->Skip(1);
-										pGeom->gdLst.Add();
+										pGeom->gdLst.push_back(Gd());
 										pGeom->gdLst[i].fromPPTY(pReader);
 									}
 
@@ -184,7 +184,7 @@ namespace PPTX
 													break;
 												}
 											}
-											pGeom->ahLst.Add();
+											pGeom->ahLst.push_back(AhBase());
 											pGeom->ahLst[i].ah.reset(p);
 										}
 										else
@@ -210,7 +210,7 @@ namespace PPTX
 													break;
 												}
 											}
-											pGeom->ahLst.Add();
+											pGeom->ahLst.push_back(AhBase());
 											pGeom->ahLst[i].ah.reset(p);
 										}
 									}
@@ -229,7 +229,7 @@ namespace PPTX
 										BYTE _type = pReader->GetUChar();
 										pReader->Skip(5); // len + start attributes
 
-										pGeom->cxnLst.Add();
+										pGeom->cxnLst.push_back(Cxn());
 										while (true)
 										{
 											BYTE _at2 = pReader->GetUChar();
@@ -264,7 +264,7 @@ namespace PPTX
 									for (ULONG i = 0; i < _c; ++i)
 									{
 										BYTE _type = pReader->GetUChar();
-										pGeom->pathLst.Add();
+										pGeom->pathLst.push_back(Path2D());
 										pGeom->pathLst[i].fromPPTY(pReader);
 									}
 

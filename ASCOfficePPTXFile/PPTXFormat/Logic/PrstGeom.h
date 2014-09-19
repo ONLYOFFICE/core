@@ -21,7 +21,7 @@ namespace PPTX
 				parentElement	= oSrc.parentElement;
 
 				prst = oSrc.prst;
-				avLst.Copy(oSrc.avLst);
+				avLst = oSrc.avLst;
 
 				return *this;
 			}
@@ -53,7 +53,7 @@ namespace PPTX
 				pWriter->WriteAttribute(_T("prst"), prst.get());
 				pWriter->EndAttributes();
 				
-				if (avLst.GetCount() == 0)
+				if (avLst.size() == 0)
 					pWriter->WriteString(_T("<a:avLst/>"));
 				else
 					pWriter->WriteArray(_T("a:avLst"), avLst);
@@ -76,11 +76,11 @@ namespace PPTX
 
 		public:
 			Limit::ShapeType	prst;
-			CAtlArray<Gd>		avLst;
+			std::vector<Gd>		avLst;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				size_t count = avLst.GetCount();
+				size_t count = avLst.size();
 				for (size_t i = 0; i < count; ++i)
 					avLst[i].SetParentPointer(this);
 			}
@@ -91,7 +91,7 @@ namespace PPTX
 				oAttr.Write(_T("prst"), prst.get());
 
 				CString strXml = _T("");
-				size_t nCount = avLst.GetCount();
+				size_t nCount = avLst.size();
 				for (size_t i = 0; i < nCount; ++i)
 					strXml += avLst[i].GetODString();
 

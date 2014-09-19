@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>564</width>
-    <height>361</height>
+    <width>567</width>
+    <height>391</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,8 +20,43 @@
       <x>10</x>
       <y>10</y>
       <width>541</width>
-      <height>281</height>
+      <height>311</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QSlider" name="horizontalSlider">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>330</y>
+      <width>451</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>50</number>
+    </property>
+    <property name="maximum">
+     <number>200</number>
+    </property>
+    <property name="sliderPosition">
+     <number>100</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>330</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Pages</string>
     </property>
    </widget>
   </widget>
@@ -30,27 +65,18 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>564</width>
-     <height>20</height>
+     <width>567</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-  </widget>
-  <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
    <class>NativeControl</class>
    <extends>QWidget</extends>
-   <header location="global">NativeControl.h</header>
+   <header location="global">../control/NativeControl.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

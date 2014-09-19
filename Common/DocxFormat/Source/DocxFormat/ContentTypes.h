@@ -60,7 +60,6 @@ namespace OOX
 
 		private:
             std::map <CString, CString> m_mTable;
-            //CAtlMap<CString, CString> m_mTable;
 		};
 		class CDefault : public WritingElement
 		{
@@ -260,14 +259,6 @@ namespace OOX
             {
                 sXml += it->second.toXML();
             }
-/*
-			POSITION pos = m_arrOverride.GetStartPosition();
-			while ( NULL != pos )
-			{
-				const CAtlMap<CString, ContentTypes::COverride>::CPair* pPair = m_arrOverride.GetNext( pos );
-				sXml += pPair->m_value.toXML();
-			}
-            */
 
 			sXml += _T("</Types>");
 
@@ -340,7 +331,6 @@ namespace OOX
 	public:
 
 		std::vector<ContentTypes::CDefault*>		m_arrDefault;
-        //CAtlMap<CString, ContentTypes::COverride>	m_arrOverride;
         std::map<CString, ContentTypes::COverride>	m_arrOverride;
 	};
 } // namespace OOX

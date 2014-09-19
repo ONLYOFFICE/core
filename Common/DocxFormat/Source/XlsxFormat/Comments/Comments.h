@@ -6,6 +6,8 @@
 #include "../../DocxFormat/Logic/Vml.h"
 #include "../SharedStrings/Si.h"
 
+#include <map>
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -419,18 +421,15 @@ namespace OOX
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-				if(NULL != m_mapComments && m_mapComments->GetCount() > 0)
+				if(NULL != m_mapComments && m_mapComments->size() > 0)
 				{
 					XmlUtils::CStringWriter sXml;
 					sXml.WriteString(_T("<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\"><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout><v:shapetype id=\"_x0000_t202\" coordsize=\"21600,21600\" o:spt=\"202\" path=\"m,l,21600r21600,l21600,xe\"><v:stroke joinstyle=\"miter\"/><v:path gradientshapeok=\"t\" o:connecttype=\"rect\"/></v:shapetype>"));
 					int nIndex = 1025;
-					POSITION pos = m_mapComments->GetStartPosition();
-					while ( NULL != pos )
+
+					for (std::map<CString, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_mapComments->begin(); it != m_mapComments->end(); ++it)
 					{
-						CAtlMap<CString, OOX::Spreadsheet::CCommentItem*>::CPair* pPair = m_mapComments->GetNext( pos );
-						if(NULL != pPair)
-						{
-							OOX::Spreadsheet::CCommentItem* comment = pPair->m_value;
+							OOX::Spreadsheet::CCommentItem* comment = it->second;
 							CString sStyle;
 							if(comment->m_dLeftMM.IsInit())
 							{
@@ -475,7 +474,6 @@ namespace OOX
 							CString sShape;sShape.Format(_T("<v:shape id=\"_x0000_s%d\" type=\"#_x0000_t202\" style='position:absolute;%sz-index:4;visibility:hidden' %s fillcolor=\"#ffffe1\" o:insetmode=\"auto\"><v:fill color2=\"#ffffe1\"/><v:shadow on=\"t\" color=\"black\" obscured=\"t\"/><v:path o:connecttype=\"none\"/><v:textbox style='mso-direction-alt:auto'><div style='text-align:left'></div></v:textbox>%s</v:shape>"), nIndex, sStyle, sGfxdata, sClientData);
 							sXml.WriteString(sShape);
 							nIndex++;
-						}
 					}
 					sXml.WriteString(_T("</xml>"));
 
@@ -520,7 +518,7 @@ namespace OOX
 
 		public:
 			std::vector<OOX::Vml::CShape *>         m_arrItems;
-			CAtlMap<CString, OOX::Spreadsheet::CCommentItem*>* m_mapComments;
+			std::map<CString, OOX::Spreadsheet::CCommentItem*>* m_mapComments;
 		};
 	} //Spreadsheet
 } // namespace OOX

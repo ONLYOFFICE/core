@@ -1289,12 +1289,18 @@ void odf_drawing_context::set_group_size( _CP_OPT(double) cx, _CP_OPT(double) cy
 		double first_scale_x = 1;
 		double first_scale_y = 1;
 
-		if (impl_->width > 0) first_scale_x = impl_->width  / *change_cx;
-		if (impl_->height > 0)first_scale_y = impl_->height / *change_cy;
-		
-		impl_->current_group_->scale_cx *= first_scale_x;
-		impl_->current_group_->scale_cy *= first_scale_y;
+		if (impl_->width > 0) 
+		{
+			first_scale_x = impl_->width  / *change_cx;
+			impl_->current_group_->scale_cx = first_scale_x;
+		}
+		if (impl_->height > 0)
+		{
+			first_scale_y = impl_->height / *change_cy;		
+			impl_->current_group_->scale_cy = first_scale_y;
+		}
 	}
+
 
 	impl_->current_group_->cx = *change_cx * impl_->current_group_->scale_cx;
 	
@@ -1770,8 +1776,8 @@ void odf_drawing_context::set_text_box_min_size(double w_pt, double h_pt)
 
 	if (draw)
 	{
-		if (h_pt >=0) draw->draw_text_box_attlist_.fo_min_height_= length(length(h_pt,length::pt).get_value_unit(length::cm), length::cm);
-		if (w_pt >=0) draw->draw_text_box_attlist_.fo_min_width_= length(length(w_pt,length::pt).get_value_unit(length::cm), length::cm);
+		if (h_pt >0) draw->draw_text_box_attlist_.fo_min_height_= length(length(h_pt,length::pt).get_value_unit(length::cm), length::cm);
+		if (w_pt >0) draw->draw_text_box_attlist_.fo_min_width_= length(length(w_pt,length::pt).get_value_unit(length::cm), length::cm);
 
 	}
 }
@@ -1806,6 +1812,7 @@ void odf_drawing_context::end_text_box()
 	{
 		draw->draw_text_box_attlist_.fo_min_height_= impl_->current_drawing_state_.svg_height_;
 	}
+	impl_->current_drawing_state_.svg_height_ = boost::none;///????
 	
 	end_element();
 

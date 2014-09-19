@@ -546,11 +546,7 @@ void OoxConverter::convert(OOX::Drawing::CNonVisualDrawingProps * oox_cnvPr)
 		std::wstring name = string2std_string(oox_cnvPr->m_sName.get());
 		odf_context()->drawing_context()->set_name(name);
 	}
-	if (oox_cnvPr->m_oId.IsInit())
-	{
-		int id =oox_cnvPr->m_oId->GetValue();
-		odf_context()->drawing_context()->set_z_order(id);
-	}
+
 	//nullable<CString>                               m_sDescr;
 	//nullable<SimpleTypes::COnOff<>>                 m_oHidden;
 	//nullable<CString>                               m_sTitle;

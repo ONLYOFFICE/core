@@ -25,7 +25,7 @@ using namespace cpdoccore;
 
 namespace Oox2Odf
 {
-
+ 
 XlsxConverter::XlsxConverter(const std::wstring & path, const ProgressCallback* CallBack) 
 {
 	const OOX::CPath oox_path(CString(path.c_str()));			
@@ -132,7 +132,7 @@ void XlsxConverter::convert_sheets()
 	const OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->GetWorkbook();
 	if (!Workbook) return;
 
-	CAtlMap<CString, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = xlsx_document->GetWorksheets();
+	std::map<CString, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = xlsx_document->GetWorksheets();
 	
 	if(Workbook->m_oSheets.IsInit())
 	{				
@@ -143,9 +143,9 @@ void XlsxConverter::convert_sheets()
 			if(pSheet->m_oRid.IsInit())
 			{
 				CString sSheetRId = pSheet->m_oRid.get2().ToString();
-				CAtlMap<CString, OOX::Spreadsheet::CWorksheet*>::CPair* pPairWorksheet = arrWorksheets.Lookup(sSheetRId);
+				std::map<CString, OOX::Spreadsheet::CWorksheet*>::iterator pItWorksheet = arrWorksheets.find(sSheetRId);
 				
-				if ((pPairWorksheet) && (pPairWorksheet->m_value))
+				if (pItWorksheet->second)
 				{
 					ods_context->start_sheet();
 						ods_context->current_table().set_table_name(string2std_string(pSheet->m_oName.get2()));						
@@ -153,7 +153,7 @@ void XlsxConverter::convert_sheets()
 															pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleVeryHidden))
 							ods_context->current_table().set_table_hidden(true);
 						
-						convert(pPairWorksheet->m_value);
+						convert(pItWorksheet->second);
 					ods_context->end_sheet();	
 				}
 			}
@@ -207,14 +207,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		convert(oox_sheet->m_oHyperlinks->m_arrItems[hyp],oox_sheet);
 	}	
 	//комментарии
-	if(oox_sheet->m_mapComments.GetCount() > 0)
+	std::map<CString, OOX::Spreadsheet::CCommentItem*>::iterator pos = oox_sheet->m_mapComments.begin();
+	while ( oox_sheet->m_mapComments.end() != pos )
 	{
-		POSITION pos = oox_sheet->m_mapComments.GetStartPosition();
-		while ( NULL != pos )
-		{
-			CAtlMap<CString, OOX::Spreadsheet::CCommentItem*>::CPair* pPair = oox_sheet->m_mapComments.GetNext( pos );
-			if(pPair->m_value->IsValid())convert(pPair->m_value);
-		}
+		convert(pos->second);
+		pos++;
 	}
 	//todooo для оптимизации - перенести мержи в начало
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	

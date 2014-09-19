@@ -1873,13 +1873,26 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 		}
 		else if (oox_pic->m_oShapeRect.IsInit())
 		{
-			odf_context()->drawing_context()->set_name(L"Rect");
-			odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);
-			
-			OoxConverter::convert(oox_pic->m_oShape.GetPointer());
-			OoxConverter::convert(oox_pic->m_oShapeRect.GetPointer());
-			
-			odf_context()->drawing_context()->end_shape(); 
+			if ((oox_pic->m_oShapeRect->m_oFilled.IsInit() && oox_pic->m_oShapeRect->m_oFilled->GetValue() == SimpleTypes::booleanFalse) && 
+				(oox_pic->m_oShapeRect->m_oStroked.IsInit() && oox_pic->m_oShapeRect->m_oStroked->GetValue() == SimpleTypes::booleanFalse))
+			{
+				odf_context()->drawing_context()->start_text_box();
+				
+				OoxConverter::convert(oox_pic->m_oShape.GetPointer());
+				OoxConverter::convert(oox_pic->m_oShapeRect.GetPointer());
+				
+				odf_context()->drawing_context()->end_text_box();
+			}
+			else
+			{
+				odf_context()->drawing_context()->set_name(L"Rect");
+				odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);
+				
+				OoxConverter::convert(oox_pic->m_oShape.GetPointer());
+				OoxConverter::convert(oox_pic->m_oShapeRect.GetPointer());
+				
+				odf_context()->drawing_context()->end_shape(); 
+			}
 		}
 		else if (oox_pic->m_oShapeRoundRect.IsInit())
 		{
@@ -2009,7 +2022,7 @@ void DocxConverter::convert(OOX::Logic::CDrawing *oox_drawing)
 		convert(oox_drawing->m_oInline.GetPointer());
 	odt_context->end_drawings();
 }
-void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
+void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor) 
 {
 	if (oox_anchor == NULL)return;
 
@@ -2053,12 +2066,15 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 			odt_context->drawing_context()->set_horizontal_pos(SimpleTypes::alignhLeft);
 	}
 
+	bool wrap_set = false;
 	if (oox_anchor->m_oWrapSquare.IsInit())
 	{
 		if (oox_anchor->m_oWrapSquare->m_oWrapText.IsInit() && oox_anchor->m_oWrapSquare->m_oWrapText->GetValue() == SimpleTypes::wraptextLargest)
 			odt_context->drawing_context()->set_wrap_style(odf::style_wrap::Dynamic);
 		else	
 			odt_context->drawing_context()->set_wrap_style(odf::style_wrap::Parallel);
+
+		wrap_set = true;
 	}	
 	else if (oox_anchor->m_oWrapThrough.IsInit())//style:wrap="run-through" draw:wrap-influence-on-position style:wrap-contour
 	{
@@ -2067,16 +2083,18 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 	else if (oox_anchor->m_oWrapTight.IsInit())
 	{
 		odt_context->drawing_context()->set_wrap_style(odf::style_wrap::Parallel);
+		wrap_set = true;
 	}
 	else if (oox_anchor->m_oWrapTopAndBottom.IsInit())
 	{
 		odt_context->drawing_context()->set_wrap_style(odf::style_wrap::Parallel);
+		wrap_set = true;
 	}
 	else if (oox_anchor->m_oAllowOverlap.IsInit())
 	{
 		odt_context->drawing_context()->set_overlap(oox_anchor->m_oAllowOverlap->ToBool());
 	}
-	if (oox_anchor->m_oBehindDoc.IsInit())
+	if (oox_anchor->m_oBehindDoc.IsInit() && !wrap_set)
 	{
 		if (oox_anchor->m_oBehindDoc->ToBool())
 		{
@@ -2088,6 +2106,11 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 			//z - order foreground
 			odt_context->drawing_context()->set_object_foreground(true);
 		}
+	}
+	if (oox_anchor->m_oRelativeHeight.IsInit())
+	{
+		int id = oox_anchor->m_oRelativeHeight->GetValue();
+		odf_context()->drawing_context()->set_z_order(id);
 	}
 	OoxConverter::convert(oox_anchor->m_oDocPr.GetPointer());
 	convert(oox_anchor->m_oGraphic.GetPointer());
@@ -3599,15 +3622,15 @@ void DocxConverter::convert(OOX::Logic::CTableRowProperties *oox_table_row_pr, o
 			switch(oox_table_row_pr->m_oTblHeight->m_oHRule->GetValue())
 			{
 				case SimpleTypes::heightruleAtLeast:
-					table_row_properties->style_table_row_properties_attlist_.style_min_row_height_ = length; break;
+					table_row_properties->style_table_row_properties_attlist_.style_min_row_height_ = odf::length(length->get_value_unit(odf::length::cm),odf::length::cm); break;
 				case SimpleTypes::heightruleExact:
-					table_row_properties->style_table_row_properties_attlist_.style_row_height_ = length; break;
+					table_row_properties->style_table_row_properties_attlist_.style_row_height_ = odf::length(length->get_value_unit(odf::length::cm),odf::length::cm); break;
 				case SimpleTypes::heightruleAuto:
 					table_row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = true; break;
 			}
 		}
 		else
-			table_row_properties->style_table_row_properties_attlist_.style_min_row_height_ = length;
+			table_row_properties->style_table_row_properties_attlist_.style_min_row_height_ = odf::length(length->get_value_unit(odf::length::cm),odf::length::cm);
 
 	}
 }

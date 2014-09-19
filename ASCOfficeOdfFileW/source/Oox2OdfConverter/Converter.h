@@ -8,10 +8,7 @@
 
 #include "..\progressCallback.h"
 
-static std::wstring string2std_string(CString val)
-{
-	return std::wstring(val.GetBuffer());
-}
+
 namespace cpdoccore
 {
 	namespace odf 

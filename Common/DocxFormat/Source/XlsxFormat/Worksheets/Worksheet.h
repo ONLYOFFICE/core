@@ -158,7 +158,7 @@ namespace OOX
 								if(NULL != pSi)
 									pCommentItem->m_oText.reset(pSi);
 								CString sNewId;sNewId.Format(_T("%d-%d"), pCommentItem->m_nRow.get(), pCommentItem->m_nCol.get());
-								m_mapComments.SetAt(sNewId, pCommentItem);
+								m_mapComments [sNewId] = pCommentItem;
 							}
 						}
 					}
@@ -179,10 +179,11 @@ namespace OOX
 								int nRow = pClientData->m_oRow->GetValue();
 								int nCol = pClientData->m_oColumn->GetValue();
 								CString sId;sId.Format(_T("%d-%d"), nRow, nCol);
-								CAtlMap<CString, CCommentItem*>::CPair* pPair = m_mapComments.Lookup(sId);
-								if(NULL != pPair)
+
+								std::map<CString, CCommentItem*>::const_iterator pPair = m_mapComments.find(sId);
+								if(pPair != m_mapComments.end())
 								{
-									CCommentItem* pCommentItem = pPair->m_value;
+									CCommentItem* pCommentItem = pPair->second;
 									if(pShape->m_oGfxData.IsInit())
 										pCommentItem->m_sGfxdata = pShape->m_oGfxData.get2();
 									if(pClientData->m_oAnchor.IsInit())
@@ -407,13 +408,12 @@ namespace OOX
 		private:
 			void ClearItems()
 			{
-				POSITION pos = m_mapComments.GetStartPosition();
-				while ( NULL != pos )
+				for (std::map<CString, CCommentItem*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 				{
-					CAtlMap<CString, CCommentItem*>::CPair* pPair = m_mapComments.GetNext( pos );
-					delete pPair->m_value;
+					delete it->second;
 				}
-				m_mapComments.RemoveAll();
+
+				m_mapComments.clear();
 
 				// delete Conditional Formatting
 				m_arrConditionalFormatting.clear();
@@ -436,7 +436,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CAutofilter> m_oAutofilter;
 			nullable<OOX::Spreadsheet::CTableParts> m_oTableParts;
 			nullable<OOX::Spreadsheet::CLegacyDrawingWorksheet> m_oLegacyDrawingWorksheet;
-			CAtlMap<CString, CCommentItem*> m_mapComments;
+			std::map<CString, CCommentItem*> m_mapComments;
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*> m_arrConditionalFormatting;
 			nullable<OOX::Spreadsheet::CSheetPr> m_oSheetPr;
 		};

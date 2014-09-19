@@ -55,6 +55,9 @@ public:
     void InitSDK(const std::wstring& sFontsPath, const std::wstring& sSdkPath);
     void OpenFile(const std::wstring& sFilePath);
 
+    void SetZoom(double dZoom);
+    void ChangeCountPagesInBlock();
+
 private:
     CEditorCtrlWrapper* m_pWrapper;
 };
@@ -123,6 +126,9 @@ public:
 
         connect(this, SIGNAL(signal_threadRepaint()), SLOT(slot_threadRepaint()), Qt::QueuedConnection);
     }
+
+    void LockGL();
+    void UnlockGL();
 
     void InitSDK(const std::wstring& sFontsPath, const std::wstring& sSdkPath);
     void OpenFile(const std::wstring& sFilePath);
@@ -255,6 +261,7 @@ public:
         QGraphicsView::closeEvent(e);
     }
 
+#if 0
     virtual void drawBackground(QPainter *painter, const QRectF &rect)
     {
         /*
@@ -262,13 +269,49 @@ public:
         QGraphicsView::drawBackground(painter, rect);
         m_pWidget->doneCurrent();
         */
+
+        m_pWidget->makeCurrent();
+        if (NULL != m_pScene)
+        {
+            m_pScene->LockGL();
+            m_pScene->drawBackground(painter, rect);
+            m_pScene->UnlockGL();
+        }
+        m_pWidget->makeCurrent();
+
+        /*
         m_pWidget->makeCurrent();
         if (NULL != m_pScene)
         {
             m_pScene->drawBackground(painter, rect);
         }
         m_pWidget->doneCurrent();
+        */
     }
+#endif
+
+#if 1
+
+    virtual void paintEvent(QPaintEvent *event)
+    {
+        if (NULL == m_pScene)
+        {
+            QGraphicsView::paintEvent(event);
+            return;
+        }
+
+        m_pScene->LockGL();
+
+        m_pWidget->makeCurrent();
+
+        QGraphicsView::paintEvent(event);
+
+        //m_pWidget->doneCurrent();
+
+        m_pScene->UnlockGL();
+    }
+
+#endif
 };
 
 #endif

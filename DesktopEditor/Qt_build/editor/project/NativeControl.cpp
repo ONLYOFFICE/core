@@ -115,6 +115,17 @@ void CNativeCtrl::OpenFile(const std::wstring& sFilePath)
     m_pWrapper->InternalCalculateFile();
 }
 
+void CNativeCtrl::SetZoom(double dZoom)
+{
+    m_pWrapper->SetZoom(dZoom);
+}
+
+void CNativeCtrl::ChangeCountPagesInBlock()
+{
+    int nCountOld = m_pWrapper->GetPagesInBlock();
+    m_pWrapper->SetPagesInBlock((nCountOld == 1) ? 2 : 1);
+}
+
 void CNativeCtrl::initializeGL()
 {
     m_pWrapper->m_oDevicePainter.m_oFrameControls.m_oFrame.Init();
@@ -128,18 +139,12 @@ void CNativeCtrl::paintGL()
 {
     CEditorCtrl* m_pCPlusPlusWrapper = (CEditorCtrl*)m_pWrapper;
 
-    CTemporaryCS* pCS = NULL;
     if (!m_pCPlusPlusWrapper || !m_pCPlusPlusWrapper->m_pSkin)
         return;
 
-    if (m_pCPlusPlusWrapper->m_bIsNeedCheckCSOnNativeBlitting)
-        pCS = new CTemporaryCS(&m_pCPlusPlusWrapper->m_oCS);
+    CTemporaryCS oCS(&m_pCPlusPlusWrapper->m_oCS_Places);
 
     CVideoFrameControls* pVRAM_Worker = &m_pCPlusPlusWrapper->m_oDevicePainter.m_oFrameControls;
-
-    NSCriticalSection::CRITICAL_SECTION* pCS_GL = pVRAM_Worker->m_oFrame.GetLocker();
-
-    pCS_GL->Enter();
 
 	pVRAM_Worker->m_oFrame.SetCurrentCtx();
 
@@ -185,34 +190,47 @@ void CNativeCtrl::paintGL()
                 oRect.Offset(m_pCPlusPlusWrapper->m_oViewer.X, m_pCPlusPlusWrapper->m_oViewer.Y);
 
                 {
-                    pVRAM_Worker->m_oFrame.UnSetCurrentCtx();
-                    pCS_GL->Leave();
                     m_pCPlusPlusWrapper->m_oCacheDocument.DrawGL(&m_pCPlusPlusWrapper->m_oDevicePainter,
                                           oClipRect,
                                           oRect,
                                           pBlock->m_arPages[j]->m_lPageIndex);
-                    pCS_GL->Enter();
-                    pVRAM_Worker->m_oFrame.SetCurrentCtx();
                 }
             }
         }
     }
 
     // overlay
-    if (m_pCPlusPlusWrapper->m_oOverlay.m_oBounds.max_x >= m_pCPlusPlusWrapper->m_oOverlay.m_oBounds.min_x &&
-        m_pCPlusPlusWrapper->m_oOverlay.m_oBounds.max_y >= m_pCPlusPlusWrapper->m_oOverlay.m_oBounds.min_y &&
-        NULL != pVRAM_Worker->m_pOverlay)
+    m_pCPlusPlusWrapper->m_oCS_Overlay.Enter();
+
+    if (NULL != m_pCPlusPlusWrapper->m_oOverlay.m_pBlitDIB)
     {
         //glEnable(GL_BLEND);
+
+        pVRAM_Worker->m_oFrame.SetCurrentCtx();
+
         glBlendFunc(GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
 
-        pVRAM_Worker->m_oFrame.DrawTexture(pVRAM_Worker->m_pOverlay,
-                                           m_pCPlusPlusWrapper->m_oViewer.X,
-                                           m_pCPlusPlusWrapper->m_oViewer.Y,
+        pVRAM_Worker->m_oFrame.UnSetCurrentCtx();
+
+        Aggplus::Rect oRectOverlay = m_pCPlusPlusWrapper->m_oOverlay.GetOverlayBlitRect();
+
+        pVRAM_Worker->m_oFrame.DrawTexture2(m_pCPlusPlusWrapper->m_oOverlay.m_pBlitDIB->m_pFrame,
+                                           oRectOverlay.X,
+                                           oRectOverlay.Y,
+                                           oRectOverlay.Width,
+                                           oRectOverlay.Height,
                                            true);
+
+        /*
+        pVRAM_Worker->m_oFrame.DrawTexture(m_pCPlusPlusWrapper->m_oOverlay.m_pBlitDIB->m_pFrame,
+                                           oRectOverlay.X,
+                                           oRectOverlay.Y,
+                                           true);
+        */
 
         //glDisable(GL_BLEND);
     }
+    m_pCPlusPlusWrapper->m_oCS_Overlay.Leave();
 
     // buttons
     pVRAM_Worker->m_oFrame.DrawTexture(pVRAM_Worker->m_pButtonRulers,
@@ -246,10 +264,6 @@ void CNativeCtrl::paintGL()
     glFlush();
 
     pVRAM_Worker->m_oFrame.UnSetCurrentCtx();
-
-    pCS_GL->Leave();
-
-    RELEASEOBJECT(pCS);
 
     DWORD dwTime2 = NSTimers::GetTickCount();
 

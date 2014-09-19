@@ -178,8 +178,8 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 				}
 			}break;
 		case SimpleTypes::Vml::cssptVTextAnchor:
-				switch(vml_style->m_arrProperties[i]->get_Value().eVTextAnchor)
-				{
+			switch(vml_style->m_arrProperties[i]->get_Value().eVTextAnchor)
+			{
 				case SimpleTypes::Vml::cssvtextanchorTop                  :	odf_context()->drawing_context()->set_textarea_vertical_align(4); break;
 				case SimpleTypes::Vml::cssvtextanchorMiddle               :	odf_context()->drawing_context()->set_textarea_vertical_align(1); break;
 				case SimpleTypes::Vml::cssvtextanchorBottom               :	odf_context()->drawing_context()->set_textarea_vertical_align(0); break;
@@ -190,8 +190,12 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 				case SimpleTypes::Vml::cssvtextanchorBottomBaseline       :	odf_context()->drawing_context()->set_textarea_vertical_align(0); break;
 				case SimpleTypes::Vml::cssvtextanchorTopCenterBaseline    :	odf_context()->drawing_context()->set_textarea_vertical_align(4); break;
 				case SimpleTypes::Vml::cssvtextanchorBottomCenterBaseline :	odf_context()->drawing_context()->set_textarea_vertical_align(0); break;
-				}
-			break;
+			}break;
+		case SimpleTypes::Vml::cssptMsoFitShapeToText:
+			if (vml_style->m_arrProperties[i]->get_Value().bValue == true)
+			{
+				odf_context()->drawing_context()->set_text_box_min_size(0,0);
+			}break;
 		}
 	}
 	if (group)
@@ -556,11 +560,13 @@ void OoxConverter::convert(OOX::Vml::CTextbox *vml_textbox)
 	DocxConverter *docx_converter = dynamic_cast<DocxConverter*>(this);
 
 	odf_context()->start_text_context();
-	for (unsigned int i=0 ; i < vml_textbox->m_oTxtbxContent->m_arrItems.size();i++)
 	{
-		if (docx_converter)docx_converter->convert(vml_textbox->m_oTxtbxContent->m_arrItems[i]);
+		for (unsigned int i=0 ; i < vml_textbox->m_oTxtbxContent->m_arrItems.size();i++)
+		{
+			if (docx_converter)docx_converter->convert(vml_textbox->m_oTxtbxContent->m_arrItems[i]);
+		}
+		odf_context()->drawing_context()->set_text( odf_context()->text_context());
 	}
-	odf_context()->drawing_context()->set_text( odf_context()->text_context());
 	odf_context()->end_text_context();	
 
 }

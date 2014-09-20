@@ -171,6 +171,8 @@ void CNativeCtrl::paintGL()
 
     glViewport(0, 0, _width, _height);
 
+    pVRAM_Worker->m_oFrame.UnSetCurrentCtx();
+
     pVRAM_Worker->m_oFrame.SetSizes((int)_width, (int)_height);
 
     // pages
@@ -293,15 +295,18 @@ void CNativeCtrl::paintGL()
                                            m_pWrapper->m_oHorScroll.Y, true);
     }
 
+    pVRAM_Worker->m_oFrame.SetCurrentCtx();
+
     glDisable(GL_BLEND);
 
     glPopMatrix();
 
     glFlush();
 
+    pVRAM_Worker->m_oFrame.UnSetCurrentCtx();
+
     m_pWrapper->m_oDevicePainter.LeavePaint();
 
-    pVRAM_Worker->m_oFrame.UnSetCurrentCtx();
 
     DWORD dwTime2 = NSTimers::GetTickCount();
 
@@ -404,8 +409,67 @@ void CNativeCtrl::keyPressEvent(QKeyEvent* e)
 {
     std::wstring s = e->text().toStdWString();
 
-    m_pWrapper->m_oKeyboardController.KeyCode   = e->key();
-    m_pWrapper->m_oKeyboardController.CharCode  = e->key();
+    int nKey = e->key();
+
+    int nKeyCorrect = -1;
+    switch (nKey)
+    {
+    case Qt::Key_Escape:
+        nKeyCorrect = 27;
+        break;
+    case Qt::Key_Enter:
+        nKeyCorrect = 13;
+        break;
+    case Qt::Key_Delete:
+        nKeyCorrect = 46;
+        break;
+    case Qt::Key_Backspace:
+        nKeyCorrect = 8;
+        break;
+    case Qt::Key_Insert:
+        nKeyCorrect = 45;
+        break;
+    case Qt::Key_Home:
+        nKeyCorrect = 36;
+        break;
+    case Qt::Key_End:
+        nKeyCorrect = 35;
+        break;
+    case Qt::Key_Tab:
+        nKeyCorrect = 9;
+        break;
+    case Qt::Key_PageUp:
+        nKeyCorrect = 33;
+        break;
+    case Qt::Key_PageDown:
+        nKeyCorrect = 34;
+        break;
+    case Qt::Key_Left:
+        nKeyCorrect = 37;
+        break;
+    case Qt::Key_Up:
+        nKeyCorrect = 38;
+        break;
+    case Qt::Key_Right:
+        nKeyCorrect = 39;
+        break;
+    case Qt::Key_Down:
+        nKeyCorrect = 40;
+        break;
+    default:
+        break;
+    }
+
+    if (nKeyCorrect != -1)
+    {
+        m_pWrapper->m_oKeyboardController.KeyCode   = nKeyCorrect;
+        m_pWrapper->m_oKeyboardController.CharCode  = nKeyCorrect;
+    }
+    else
+    {
+        m_pWrapper->m_oKeyboardController.KeyCode   = nKey;
+        m_pWrapper->m_oKeyboardController.CharCode  = nKey;
+    }
 
     Qt::KeyboardModifiers mods = e->modifiers();
 
@@ -413,7 +477,7 @@ void CNativeCtrl::keyPressEvent(QKeyEvent* e)
     m_pWrapper->m_oKeyboardController.CtrlKey = (0 != (mods & Qt::ControlModifier)) ? true : false;
     m_pWrapper->m_oKeyboardController.AltKey = (0 != (mods & Qt::AltModifier)) ? true : false;
 
-    if (s.length() == 0)
+    if (s.length() == 0 || -1 != nKeyCorrect)
     {
         m_pWrapper->InternalOnKeyDown();
     }
@@ -424,6 +488,8 @@ void CNativeCtrl::keyPressEvent(QKeyEvent* e)
         m_pWrapper->InternalOnKeyDown();
         m_pWrapper->InternalOnKeyPress();
     }
+
+    e->ignore();
 }
 
 void CNativeCtrl::keyReleaseEvent(QKeyEvent* e)

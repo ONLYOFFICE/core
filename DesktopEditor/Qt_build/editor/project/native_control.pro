@@ -63,6 +63,10 @@ SOURCES += \
     ../../../editor/Viewer.cpp \
     NativeControl.cpp
 
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    SOURCES += ../../../editor/GLplatform/gl_linux_qt.cpp
+}
+
 
 HEADERS += \
     ../../../editor/Buttons.h \

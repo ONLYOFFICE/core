@@ -29,7 +29,19 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     LINUX \
     _LINUX \
     _LINUX_QT
+}
 
+linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+    LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_base.x64
+    LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_snapshot
+    LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_nosnapshot.x64
+    LIBS += -L../../../../../../../../../v8/out/native/obj.target/third_party/icu -licui18n
+    LIBS += -L../../../../../../../../../v8/out/native/obj.target/third_party/icu -licuuc
+    LIBS += -L../../../../../../../../../v8/out/native/obj.target/third_party/icu -licudata
+
+    message(linux64)
+}
+linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
     LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_base.ia32
     LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_snapshot
     LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_nosnapshot.ia32
@@ -37,7 +49,7 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     LIBS += -L../../../../../../../../../v8/out/native/obj.target/third_party/icu -licuuc
     LIBS += -L../../../../../../../../../v8/out/native/obj.target/third_party/icu -licudata
 
-    message(linux)
+    message(linux32)
 }
 
 mac {
@@ -66,13 +78,25 @@ win32 {
 
     LIBS += -lwinmm
     LIBS += -ladvapi32
+}
+
+win32:contains(QMAKE_TARGET.arch, x86_64):{
     LIBS += -L../../../../../../../../../v8/build/Release/lib -lv8_base.x64
     LIBS += -L../../../../../../../../../v8/build/Release/lib -lv8_snapshot
     LIBS += -L../../../../../../../../../v8/build/Release/lib -lv8_nosnapshot.x64
     LIBS += -L../../../../../../../../../v8/build/Release/lib -licui18n
     LIBS += -L../../../../../../../../../v8/build/Release/lib -licuuc
 
-    message(windows)
+    message(windows64)
+}
+win32:!contains(QMAKE_TARGET.arch, x86_64):{
+    LIBS += -L../../../../../../../../../v8/build/Release/lib -lv8_base.ia32
+    LIBS += -L../../../../../../../../../v8/build/Release/lib -lv8_snapshot
+    LIBS += -L../../../../../../../../../v8/build/Release/lib -lv8_nosnapshot.ia32
+    LIBS += -L../../../../../../../../../v8/build/Release/lib -licui18n
+    LIBS += -L../../../../../../../../../v8/build/Release/lib -licuuc
+
+    message(windows32)
 }
 
 INCLUDEPATH += \

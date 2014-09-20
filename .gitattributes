@@ -2310,6 +2310,7 @@ SDK/lib/linux_32/libnative_control.a svn_mime_002dtype=application%2Foctet-strea
 SDK/lib/linux_32/libv8_base.ia32.a svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/linux_32/libv8_nosnapshot.ia32.a svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/linux_32/libv8_snapshot.a svn_mime_002dtype=application%2Foctet-stream
+SDK/lib/linux_64 svnc_tsvn_003alogminsize=5
 SDK/lib/mac_64 svnc_tsvn_003alogminsize=5
 SDK/lib/mac_64/libgraphics.a svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/mac_64/libicudata.a svn_mime_002dtype=application%2Foctet-stream

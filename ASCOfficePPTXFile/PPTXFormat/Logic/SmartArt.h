@@ -43,10 +43,10 @@ namespace PPTX
 			{
 				if (diag.is_init())
 				{
-					smart_ptr<PPTX::FileContainer> old = pWriter->m_pCommonRels;
-					pWriter->m_pCommonRels = m_oCommonRels;
+					smart_ptr<PPTX::FileContainer> old = *pWriter->m_pCommonRels;
+					*pWriter->m_pCommonRels = m_oCommonRels;
 					diag->toPPTY(pWriter);
-					pWriter->m_pCommonRels = old;
+					*pWriter->m_pCommonRels = old;
 				}
 			}
 

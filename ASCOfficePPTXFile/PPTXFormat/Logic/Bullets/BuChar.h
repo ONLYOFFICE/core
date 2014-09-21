@@ -53,8 +53,8 @@ namespace PPTX
 
 				pWriter->EndRecord();
 
-				if (pWriter->m_oCommon.m_pNativePicker->m_bIsEmbeddedFonts)
-					pWriter->m_oCommon.m_pNativePicker->m_oEmbeddedFonts.CheckString(Char);
+				if (pWriter->m_pCommon->m_pNativePicker->m_bIsEmbeddedFonts)
+					pWriter->m_pCommon->m_pNativePicker->m_oEmbeddedFonts.CheckString(Char);
 			}
 
 		public:

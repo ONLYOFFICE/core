@@ -23,7 +23,7 @@ namespace BinXlsxRW {
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 		SaveParams& m_oSaveParams;
 	public:
-		BinaryChartReader(Streams::CBufferedStream& oBufferedStream, SaveParams& oSaveParams, LPSAFEARRAY pArray, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
+		BinaryChartReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, SaveParams& oSaveParams, LPSAFEARRAY pArray, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
 	private: int ReadCT_extLst(BYTE type, long length, void* poResult);
 	public: int ReadCT_ChartSpace(long length, CT_ChartSpace* poResult);
 	private: int ReadCT_ChartSpace(BYTE type, long length, void* poResult);
@@ -172,7 +172,7 @@ namespace BinXlsxRW {
 		BinaryCommonWriter m_oBcw;
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 	public:
-		BinaryChartWriter(Streams::CBufferedStream &oCBufferedStream, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
+		BinaryChartWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
 	public: void WriteCT_extLst(CT_extLst& oVal);
 	public: void WriteCT_ChartSpace(OOX::Spreadsheet::CChartSpace& ChartSpace);
 	public: void WriteCT_Boolean(CT_Boolean& oVal);

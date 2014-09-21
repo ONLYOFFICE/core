@@ -17,8 +17,8 @@ namespace PPTX
 			CString strDataPath = _T("");
 
 			FileContainer* pRels = NULL;
-			if (pWriter->m_pCommonRels.is_init())
-				pRels = pWriter->m_pCommonRels.operator ->();
+			if (pWriter->m_pCommonRels->is_init())
+				pRels = pWriter->m_pCommonRels->operator ->();
 
 			if(id_data.IsInit())
 			{
@@ -101,8 +101,8 @@ namespace PPTX
 			LPSAFEARRAY pArray = NULL;
 
 			FileContainer* pRels = NULL;
-			if (pWriter->m_pCommonRels.is_init())
-				pRels = pWriter->m_pCommonRels.operator ->();
+			if (pWriter->m_pCommonRels->is_init())
+				pRels = pWriter->m_pCommonRels->operator ->();
 
 			CString strDataPath = _T("");
 			if(id_data.IsInit())
@@ -132,14 +132,14 @@ namespace PPTX
 			VARIANT var;
 			
 			var.vt = VT_UNKNOWN;
-			pWriter->m_oCommon.m_pFontPicker->QueryInterface(IID_IUnknown, (void**)&(var.punkVal));
+			pWriter->m_pCommon->m_pFontPicker->QueryInterface(IID_IUnknown, (void**)&(var.punkVal));
 			oDrawingConverter.SetAdditionalParam(L"FontPicker", var);
 			RELEASEINTERFACE((var.punkVal));
 
 			var.vt = VT_ARRAY;
 
 			NSBinPptxRW::CBinaryFileWriter oWriter;
-			LPSAFEARRAY pSerializeIM = oWriter.Serialize(&pWriter->m_oCommon.m_oImageManager);
+			LPSAFEARRAY pSerializeIM = oWriter.Serialize(pWriter->m_pCommon->m_pImageManager);
 			var.parray = pSerializeIM;
 			oDrawingConverter.SetAdditionalParam(L"SerializeImageManager", var);
 
@@ -171,7 +171,7 @@ namespace PPTX
 				if (var.parray != NULL)
 				{
 					NSBinPptxRW::CBinaryFileReader oReader;
-					oReader.Deserialize(&pWriter->m_oCommon.m_oImageManager, var.parray);
+					oReader.Deserialize(pWriter->m_pCommon->m_pImageManager, var.parray);
 
 					RELEASEARRAY((var.parray));
 				}

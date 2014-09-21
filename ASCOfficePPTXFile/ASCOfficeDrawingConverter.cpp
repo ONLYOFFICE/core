@@ -816,7 +816,7 @@ CDrawingConverter::~CDrawingConverter()
 HRESULT CDrawingConverter::SetMainDocument(BinDocxRW::CDocxSerializer* pDocument)
 {
 	m_pBinaryWriter->ClearNoAttack();
-	m_pBinaryWriter->m_oCommon.m_oImageManager.NewDocument();
+	m_pBinaryWriter->m_pCommon->m_pImageManager->NewDocument();
 	m_pBinaryWriter->SetMainDocument(pDocument);
 	m_pReader->SetMainDocument(pDocument);
 	m_lNextId = 1;
@@ -830,8 +830,8 @@ HRESULT CDrawingConverter::SetRelsPath(BSTR bsRelsPath)
 }
 HRESULT CDrawingConverter::SetMediaDstPath(BSTR bsMediaPath)
 {
-	m_pBinaryWriter->m_oCommon.m_oImageManager.m_strDstMedia = (CString)bsMediaPath;
-	m_pImageManager->SetDstMedia(m_pBinaryWriter->m_oCommon.m_oImageManager.m_strDstMedia);
+	m_pBinaryWriter->m_pCommon->m_pImageManager->m_strDstMedia = (CString)bsMediaPath;
+	m_pImageManager->SetDstMedia(m_pBinaryWriter->m_pCommon->m_pImageManager->m_strDstMedia);
 
 	CreateDirectory(bsMediaPath, NULL);
 	return S_OK;
@@ -923,7 +923,7 @@ HRESULT CDrawingConverter::AddObject(BSTR bsXml, BSTR* pMainProps, SAFEARRAY** p
 
 	strXml += _T("</main>");
 
-	m_pBinaryWriter->m_oCommon.CheckFontPicker();
+	m_pBinaryWriter->m_pCommon->CheckFontPicker();
 
 	++m_lCurrentObjectTop;
 	bool bResult = ParceObject(strXml, pMainProps, ppBinary);
@@ -1004,14 +1004,14 @@ bool CDrawingConverter::ParceObject(ATL::CString& strXml, BSTR* pMainProps, SAFE
 
 							CString strCurrentRelsPath = m_strCurrentRelsPath;
 
-							if (_T("dgm:relIds") == oNodeContent.GetName() && m_pBinaryWriter->m_pCommonRels.is_init())
+							if (_T("dgm:relIds") == oNodeContent.GetName() && m_pBinaryWriter->m_pCommonRels->is_init())
 							{
 								nullable<PPTX::RId> id_data;
 								oNodeContent.ReadAttributeBase(L"r:dm", id_data);
 
 								if (id_data.is_init())
 								{
-									smart_ptr<PPTX::Image> pDiagData = m_pBinaryWriter->m_pCommonRels->image(*id_data);
+									smart_ptr<PPTX::Image> pDiagData = (*m_pBinaryWriter->m_pCommonRels)->image(*id_data);
 									
 									if (pDiagData.is_init())
 									{
@@ -1038,7 +1038,7 @@ bool CDrawingConverter::ParceObject(ATL::CString& strXml, BSTR* pMainProps, SAFE
 
 											if (id_drawing.is_init())
 											{
-												smart_ptr<PPTX::Image> pDiagDW = m_pBinaryWriter->m_pCommonRels->image(*id_drawing);
+												smart_ptr<PPTX::Image> pDiagDW = (*m_pBinaryWriter->m_pCommonRels)->image(*id_drawing);
 
 												if (pDiagDW.is_init())
 												{
@@ -3057,7 +3057,7 @@ HRESULT CDrawingConverter::GetThemeBinary(BSTR bsThemeFilePath, SAFEARRAY** ppBi
 
 	//m_pBinaryWriter->ClearNoAttack();
 	ULONG lOldPos = m_pBinaryWriter->GetPosition();
-	m_pBinaryWriter->m_oCommon.CheckFontPicker();
+	m_pBinaryWriter->m_pCommon->CheckFontPicker();
 	pTheme->toPPTY(m_pBinaryWriter);
 
 	ULONG lBinarySize = m_pBinaryWriter->GetPosition() - lOldPos;
@@ -3071,7 +3071,7 @@ HRESULT CDrawingConverter::GetThemeBinary(BSTR bsThemeFilePath, SAFEARRAY** ppBi
 
 	m_pBinaryWriter->SetPosition(lOldPos);
 
-	m_pBinaryWriter->ThemeDoc = pTheme.smart_dynamic_cast<PPTX::FileContainer>();
+	*m_pBinaryWriter->ThemeDoc = pTheme.smart_dynamic_cast<PPTX::FileContainer>();
 	//m_pBinaryWriter->ThemeDoc.reset();
 
 	m_strCurrentRelsPath = strOldRels;
@@ -3607,8 +3607,8 @@ HRESULT CDrawingConverter::GetTxBodyBinary(BSTR bsXml, SAFEARRAY** ppBinary)
 
 	//m_pBinaryWriter->ClearNoAttack();
 	ULONG lOldPos = m_pBinaryWriter->GetPosition();
-	m_pBinaryWriter->m_oCommon.CheckFontPicker();
-	//m_pBinaryWriter->m_oCommon.m_pNativePicker->Init(m_strFontDirectory);
+	m_pBinaryWriter->m_pCommon->CheckFontPicker();
+	//m_pBinaryWriter->m_pCommon->m_pNativePicker->Init(m_strFontDirectory);
 
 	m_pBinaryWriter->WriteRecord1(0, oTxBody);
 
@@ -3733,7 +3733,7 @@ xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"");
 		return S_FALSE;
 
 	//m_pBinaryWriter->ClearNoAttack();
-	m_pBinaryWriter->m_oCommon.CheckFontPicker();
+	m_pBinaryWriter->m_pCommon->CheckFontPicker();
 
 	ULONG lOldPos = m_pBinaryWriter->GetPosition();
 
@@ -3883,7 +3883,7 @@ HRESULT CDrawingConverter::SetAdditionalParam(BSTR ParamName, VARIANT ParamValue
 	else if (name == _T("SerializeImageManager"))
 	{
 		NSBinPptxRW::CBinaryFileReader oReader;
-		oReader.Deserialize(&m_pBinaryWriter->m_oCommon.m_oImageManager, ParamValue.parray);
+		oReader.Deserialize(m_pBinaryWriter->m_pCommon->m_pImageManager, ParamValue.parray);
 	}
 	else if (name == _T("SerializeImageManager2"))
 	{
@@ -3895,7 +3895,7 @@ HRESULT CDrawingConverter::SetAdditionalParam(BSTR ParamName, VARIANT ParamValue
 		IOfficeFontPicker* pFontPicker = NULL;
 		ParamValue.punkVal->QueryInterface(__uuidof(IOfficeFontPicker), (void**)&pFontPicker);
 
-		m_pBinaryWriter->m_oCommon.CreateFontPicker(pFontPicker);
+		m_pBinaryWriter->m_pCommon->CreateFontPicker(pFontPicker);
 		RELEASEINTERFACE(pFontPicker);
 	}
 	else if (name == _T("DocumentChartsCount") && ParamValue.vt == VT_I4)
@@ -3912,7 +3912,7 @@ HRESULT CDrawingConverter::GetAdditionalParam(BSTR ParamName, VARIANT* ParamValu
 		NSBinPptxRW::CBinaryFileWriter oWriter;
 
 		ParamValue->vt = VT_ARRAY;
-		ParamValue->parray = oWriter.Serialize(&m_pBinaryWriter->m_oCommon.m_oImageManager);
+		ParamValue->parray = oWriter.Serialize(m_pBinaryWriter->m_pCommon->m_pImageManager);
 	}
 	else if (name == _T("SerializeImageManager2"))
 	{
@@ -3926,8 +3926,8 @@ HRESULT CDrawingConverter::GetAdditionalParam(BSTR ParamName, VARIANT* ParamValu
 		ParamValue->vt = VT_UNKNOWN;
 		ParamValue->punkVal = NULL;
 
-		if (NULL != m_pBinaryWriter->m_oCommon.m_pFontPicker)
-			m_pBinaryWriter->m_oCommon.m_pFontPicker->QueryInterface(IID_IUnknown, (void**)&(ParamValue->punkVal));
+		if (NULL != m_pBinaryWriter->m_pCommon->m_pFontPicker)
+			m_pBinaryWriter->m_pCommon->m_pFontPicker->QueryInterface(IID_IUnknown, (void**)&(ParamValue->punkVal));
 	}
 	else if (name == _T("DocumentChartsCount"))
 	{
@@ -3967,6 +3967,6 @@ HRESULT CDrawingConverter::SetCurrentRelsPath()
 		pPair->m_value->_read(filename);
 	}
 
-	m_pBinaryWriter->m_pCommonRels = pPair->m_value.smart_dynamic_cast<PPTX::FileContainer>();
+	*m_pBinaryWriter->m_pCommonRels = pPair->m_value.smart_dynamic_cast<PPTX::FileContainer>();
 	return S_OK;
 }

@@ -211,6 +211,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Editor\BinaryFileReaderWriter.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Elements.cpp"
 				>
 			</File>
@@ -2874,6 +2878,10 @@
 		<Filter
 			Name="Editor"
 			>
+			<File
+				RelativePath="..\Editor\BinaryFileReaderWriter.h"
+				>
+			</File>
 			<File
 				RelativePath="..\.\Editor\BinReaderWriterDefines.h"
 				>

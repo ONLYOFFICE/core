@@ -101,10 +101,7 @@ namespace BinXlsxRW{
 		OOX::Spreadsheet::CChartSpace oChart(sChartPath);
 		if(NULL != m_pExternalDrawingConverter)
 		{
-			Streams::CBuffer oBuffer;
-			oBuffer.Create(BUFFER_GROW_SIZE, BUFFER_GROW_SIZE);
-			Streams::CBufferedStream oBufferedStream;
-			oBufferedStream.SetBuffer(&oBuffer);
+			NSBinPptxRW::CBinaryFileWriter oBufferedStream;
 			BinXlsxRW::BinaryCommonWriter oBcw(oBufferedStream);
 
 			BSTR bstrChartPath = sChartPath.AllocSysString();
@@ -131,10 +128,8 @@ namespace BinXlsxRW{
 		*sContentTypeElement = NULL;
 		if(NULL != m_pExternalDrawingConverter)
 		{
-			Streams::CBuffer oBuffer;
-			Streams::CBufferedStream oBufferedStream;
-			oBufferedStream.SetBuffer(&oBuffer);
-			oBufferedStream.Create((BYTE*)pBinaryObj->pvData + lStart, lLength);
+			NSBinPptxRW::CBinaryFileReader oBufferedStream;
+			oBufferedStream.Init((BYTE*)pBinaryObj->pvData, lStart, lLength);
 
 			m_pExternalDrawingConverter->SetDstContentRels();
 

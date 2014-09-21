@@ -1,10 +1,6 @@
 #ifndef DOCX_SERIALIZER
 #define DOCX_SERIALIZER
 
-//todo
-#include <atlbase.h>
-#include <atlstr.h>
-
 #include <string>
 
 namespace Writers{

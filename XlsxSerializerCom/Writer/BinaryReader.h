@@ -68,7 +68,7 @@ namespace BinXlsxRW {
 			else if(c_oSer_ColorObjectType::Tint == type)
 			{
 				pColor->m_oTint.Init();
-				pColor->m_oTint->SetValue(m_poBufferedStream.GetDouble());
+				pColor->m_oTint->SetValue(m_poBufferedStream.GetDoubleReal());
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;

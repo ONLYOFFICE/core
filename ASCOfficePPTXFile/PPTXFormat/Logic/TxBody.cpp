@@ -36,8 +36,8 @@ namespace PPTX
 
 			strXml += _T(">");
 			
-			smart_ptr<PPTX::WrapperFile> pTheme				= pWriter->ThemeDoc.smart_dynamic_cast<PPTX::WrapperFile>();
-			smart_ptr<PPTX::WrapperWritingElement> pClrMap	= pWriter->ClrMapDoc.smart_dynamic_cast<PPTX::WrapperWritingElement>();
+			smart_ptr<PPTX::WrapperFile> pTheme				= pWriter->ThemeDoc->smart_dynamic_cast<PPTX::WrapperFile>();
+			smart_ptr<PPTX::WrapperWritingElement> pClrMap	= pWriter->ClrMapDoc->smart_dynamic_cast<PPTX::WrapperWritingElement>();
 
 			CString sThemeFont = _T("");
 			
@@ -231,7 +231,7 @@ namespace PPTX
 
 							if (pRPr->latin.is_init())
 							{
-								CString sPick = pWriter->m_oCommon.m_pNativePicker->GetTypefacePick(pRPr->latin.get2());
+								CString sPick = pWriter->m_pCommon->m_pNativePicker->GetTypefacePick(pRPr->latin.get2());
 
 								if (sPick == _T("minor") || sPick == _T("+mn-lt"))
 								{
@@ -251,7 +251,7 @@ namespace PPTX
 							}
 							if (pRPr->ea.is_init())
 							{
-								CString sPick = pWriter->m_oCommon.m_pNativePicker->GetTypefacePick(pRPr->ea.get2());
+								CString sPick = pWriter->m_pCommon->m_pNativePicker->GetTypefacePick(pRPr->ea.get2());
 
 								if (sPick == _T("minor") || sPick == _T("+mn-lt"))
 								{
@@ -268,7 +268,7 @@ namespace PPTX
 							}
 							if (pRPr->cs.is_init())
 							{
-								CString sPick = pWriter->m_oCommon.m_pNativePicker->GetTypefacePick(pRPr->cs.get2());
+								CString sPick = pWriter->m_pCommon->m_pNativePicker->GetTypefacePick(pRPr->cs.get2());
 
 								if (sPick == _T("minor") || sPick == _T("+mn-lt"))
 								{

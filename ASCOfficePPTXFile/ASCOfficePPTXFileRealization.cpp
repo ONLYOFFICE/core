@@ -235,8 +235,8 @@ HRESULT CPPTXFile::OpenFileToPPTY(BSTR bsInput, BSTR bsOutput)
 		m_strDirectory = m_strDirectory.Mid(0, nIndex);
 
 	NSBinPptxRW::CBinaryFileWriter oBinaryWriter;
-	oBinaryWriter.m_oCommon.CheckFontPicker();
-	oBinaryWriter.m_oCommon.m_pNativePicker->Init(m_strFontDirectory);
+	oBinaryWriter.m_pCommon->CheckFontPicker();
+	oBinaryWriter.m_pCommon->m_pNativePicker->Init(m_strFontDirectory);
 
 	CString sDstFileOutput = bsOutput;
 	m_strMediaDirectory = sDstFileOutput;
@@ -246,7 +246,7 @@ HRESULT CPPTXFile::OpenFileToPPTY(BSTR bsInput, BSTR bsOutput)
 
 	oBinaryWriter.m_strMainFolder = m_strMediaDirectory;
 	m_strMediaDirectory = m_strMediaDirectory + _T("\\media");
-	oBinaryWriter.m_oCommon.m_oImageManager.m_strDstMedia = m_strMediaDirectory;
+	oBinaryWriter.m_pCommon->m_pImageManager->m_strDstMedia = m_strMediaDirectory;
 
 	CDirectory::CreateDirectory(m_strMediaDirectory);
 
@@ -254,10 +254,10 @@ HRESULT CPPTXFile::OpenFileToPPTY(BSTR bsInput, BSTR bsOutput)
 	{
 		CDirectory::CreateDirectory(m_strEmbeddedFontsDirectory);
 
-		if (NULL != oBinaryWriter.m_oCommon.m_pFontPicker)
+		if (NULL != oBinaryWriter.m_pCommon->m_pFontPicker)
 		{
-			oBinaryWriter.m_oCommon.m_pNativePicker->m_bIsEmbeddedFonts = TRUE;
-			oBinaryWriter.m_oCommon.m_pNativePicker->m_oEmbeddedFonts.m_strEmbeddedFontsFolder = m_strEmbeddedFontsDirectory;
+			oBinaryWriter.m_pCommon->m_pNativePicker->m_bIsEmbeddedFonts = TRUE;
+			oBinaryWriter.m_pCommon->m_pNativePicker->m_oEmbeddedFonts.m_strEmbeddedFontsFolder = m_strEmbeddedFontsDirectory;
 		}
 	}
 
@@ -296,8 +296,8 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(BSTR bsInput, BSTR bsOutput)
 		m_strDirectory = m_strDirectory.Mid(0, nIndex);
 
 	NSBinPptxRW::CBinaryFileWriter oBinaryWriter;
-	oBinaryWriter.m_oCommon.CheckFontPicker();
-	oBinaryWriter.m_oCommon.m_pNativePicker->Init(m_strFontDirectory);
+	oBinaryWriter.m_pCommon->CheckFontPicker();
+	oBinaryWriter.m_pCommon->m_pNativePicker->Init(m_strFontDirectory);
 
 	CString sDstFileOutput = (CString)bsOutput;
 	m_strMediaDirectory = sDstFileOutput;
@@ -307,7 +307,7 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(BSTR bsInput, BSTR bsOutput)
 
 	oBinaryWriter.m_strMainFolder = m_strMediaDirectory;
 	m_strMediaDirectory = m_strMediaDirectory + _T("\\media");
-	oBinaryWriter.m_oCommon.m_oImageManager.m_strDstMedia = m_strMediaDirectory;
+	oBinaryWriter.m_pCommon->m_pImageManager->m_strDstMedia = m_strMediaDirectory;
 
 	CDirectory::CreateDirectory(m_strMediaDirectory);
 

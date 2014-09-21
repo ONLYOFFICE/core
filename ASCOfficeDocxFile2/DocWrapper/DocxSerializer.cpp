@@ -32,10 +32,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(std::wstring& sSrcFileName, std::wst
 	CString mediaDir = path.GetDirectory() + _T("media\\");
 	NSDirectory::CreateDirectory(string2std_string(mediaDir));
 
-	Streams::CBuffer oBuffer;
-	oBuffer.Create(BUFFER_GROW_SIZE, BUFFER_GROW_SIZE);
-	Streams::CBufferedStream oBufferedStream;
-	oBufferedStream.SetBuffer(&oBuffer);
+	NSBinPptxRW::CBinaryFileWriter oBufferedStream;
 
 #ifdef _WIN32
 	DocWrapper::FontProcessor fp;
@@ -171,10 +168,8 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(std::wstring& sSrcFileName, std::w
 			LPSAFEARRAY pArray = SafeArrayCreate(VT_UI1, 1, rgsabound);
 			if(FALSE != Base64::Base64Decode((LPCSTR)(pBase64Data + nIndex), nBase64DataSize - nIndex, (BYTE*)pArray->pvData, &nDataSize))
 			{
-				Streams::CBuffer oBuffer;
-				Streams::CBufferedStream oBufferedStream;
-				oBufferedStream.SetBuffer(&oBuffer);
-				oBufferedStream.Create((BYTE*)pArray->pvData, nDataSize);
+				NSBinPptxRW::CBinaryFileReader oBufferedStream;
+				oBufferedStream.Init((BYTE*)pArray->pvData, 0, nDataSize);
 
 				int nVersion = g_nFormatVersion;
 				if(version.GetLength() > 0)
@@ -243,13 +238,10 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(std::wstring& sSrcFileName, std::w
 }
 bool BinDocxRW::CDocxSerializer::getXmlContent(unsigned char* pBinaryObj, long lSize, long lStart, long lLength, std::wstring& sOutputXml)
 {
-	Streams::CBuffer oBuffer;
-	Streams::CBufferedStream oBufferedStream;
-	oBufferedStream.SetBuffer(&oBuffer);
-	oBufferedStream.Create(pBinaryObj, lSize);
+	NSBinPptxRW::CBinaryFileReader oBufferedStream;
+	oBufferedStream.Init(pBinaryObj, lStart, lSize);
 
-	oBufferedStream.Seek(lStart);
-	long nLength = oBufferedStream.ReadLong();
+	long nLength = oBufferedStream.GetLong();
 
 	Writers::ContentWriter oTempContentWriter;
 	BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter, NULL);
@@ -262,10 +254,7 @@ bool BinDocxRW::CDocxSerializer::getBinaryContent(std::wstring& bsTxContent, uns
 {
 	if(NULL == m_oBinaryFileWriter)
 		return false;
-	Streams::CBuffer oBuffer;
-	oBuffer.Create(BUFFER_GROW_SIZE, BUFFER_GROW_SIZE);
-	Streams::CBufferedStream oBufferedStream;
-	oBufferedStream.SetBuffer(&oBuffer);
+	NSBinPptxRW::CBinaryFileWriter oBufferedStream;
 
 	XmlUtils::CXmlLiteReader oReader;
 	oReader.FromString(std_string2string(bsTxContent));

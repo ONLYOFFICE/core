@@ -233,7 +233,7 @@ namespace PPTX
 				double dY = 0;
 				double dW = 200;
 				double dH = 200;
-				NSShapeImageGen::CImageInfo oId = pWriter->m_oCommon.m_oImageManager.WriteImage(GetPathBySpid().m_strFilename, dX, dY, dW, dH);
+				NSShapeImageGen::CImageInfo oId = pWriter->m_pCommon->m_pImageManager->WriteImage(GetPathBySpid().m_strFilename, dX, dY, dW, dH);
 				CString s = oId.GetPath2();
 
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);

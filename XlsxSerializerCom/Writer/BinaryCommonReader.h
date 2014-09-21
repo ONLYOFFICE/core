@@ -1,29 +1,29 @@
 #ifndef BINARY_COMMON_READER
 #define BINARY_COMMON_READER
 
-#include "../../ASCOfficeDocxFile2/BinWriter/StreamUtils.h"
+#include "../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
 
 namespace BinXlsxRW {
 	template <typename CallbackType >
 	class Binary_CommonReader
 	{
 	protected:
-		Streams::CBufferedStream& m_oBufferedStream;
+		NSBinPptxRW::CBinaryFileReader& m_oBufferedStream;
 		typedef int (CallbackType::*funcArg)(BYTE type, long length, void* arg);
 	public:
-		Binary_CommonReader(Streams::CBufferedStream& poBufferedStream):m_oBufferedStream(poBufferedStream)
+		Binary_CommonReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream):m_oBufferedStream(poBufferedStream)
 		{
 		}
 		int ReadTable(funcArg fReadFunction, void* poFuncObj, void* arg = NULL)
 		{
 			int res = c_oSerConstants::ReadOk;
 			//stLen
-			res = m_oBufferedStream.Peek(4) == FALSE ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
+			res = m_oBufferedStream.Peek(4) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
 			if(c_oSerConstants::ReadOk != res)
 				return res;
-			long stLen = m_oBufferedStream.ReadLong();
+			long stLen = m_oBufferedStream.GetLong();
 			//Смотрим есть ли данные под всю таблицу в дальнейшем спокойно пользуемся get функциями
-			res = m_oBufferedStream.Peek(stLen) == FALSE ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
+			res = m_oBufferedStream.Peek(stLen) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
 			if(c_oSerConstants::ReadOk != res)
 				return res;
 			return Read1(stLen, fReadFunction, poFuncObj, arg);
@@ -35,12 +35,12 @@ namespace BinXlsxRW {
 			while(stCurPos < stLen)
 			{
 				//stItem
-				BYTE type = m_oBufferedStream.ReadByte();
-				long length =  m_oBufferedStream.ReadLong();
+				BYTE type = m_oBufferedStream.GetUChar();
+				long length =  m_oBufferedStream.GetLong();
 				res = (((CallbackType*)poFuncObj)->*fReadFunction)(type, length, arg);
 				if(res == c_oSerConstants::ReadUnknown)
 				{
-					m_oBufferedStream.ReadPointer(length);
+					m_oBufferedStream.GetPointer(length);
 					res = c_oSerConstants::ReadOk;
 				}
 				else if(res != c_oSerConstants::ReadOk)
@@ -56,8 +56,8 @@ namespace BinXlsxRW {
 			while(stCurPos < stLen)
 			{
 				//stItem
-				BYTE type = m_oBufferedStream.ReadByte();
-				long lenType =  m_oBufferedStream.ReadByte();
+				BYTE type = m_oBufferedStream.GetUChar();
+				long lenType =  m_oBufferedStream.GetUChar();
 				int nCurPosShift = 2;
 				int nRealLen;
 				switch(lenType)
@@ -69,7 +69,7 @@ namespace BinXlsxRW {
 				case c_oSerPropLenType::Long: nRealLen = 4;break;
 				case c_oSerPropLenType::Double: nRealLen = 8;break;
 				case c_oSerPropLenType::Variable:
-					nRealLen = m_oBufferedStream.ReadLong();
+					nRealLen = m_oBufferedStream.GetLong();
 					nCurPosShift += 4;
 					break;
 				default:return c_oSerConstants::ErrorUnknown;
@@ -77,7 +77,7 @@ namespace BinXlsxRW {
 				res = (((CallbackType*)poFuncObj)->*fReadFunction)(type, nRealLen, arg);
 				if(res == c_oSerConstants::ReadUnknown)
 				{
-					m_oBufferedStream.ReadPointer(nRealLen);
+					m_oBufferedStream.GetPointer(nRealLen);
 					res = c_oSerConstants::ReadOk;
 				}
 				else if(res != c_oSerConstants::ReadOk)

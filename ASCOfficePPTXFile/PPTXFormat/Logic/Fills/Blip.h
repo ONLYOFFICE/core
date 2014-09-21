@@ -96,10 +96,10 @@ namespace PPTX
 				double dH = pWriter->GetHeightMM();
 
 				FileContainer* pRels = NULL;
-				if (pWriter->m_pCommonRels.is_init())
-					pRels = pWriter->m_pCommonRels.operator ->();
+				if (pWriter->m_pCommonRels->is_init())
+					pRels = pWriter->m_pCommonRels->operator ->();
 
-				NSShapeImageGen::CImageInfo oId = pWriter->m_oCommon.m_oImageManager.WriteImage(this->GetFullPicName(pRels), dX, dY, dW, dH);
+				NSShapeImageGen::CImageInfo oId = pWriter->m_pCommon->m_pImageManager->WriteImage(this->GetFullPicName(pRels), dX, dY, dW, dH);
 				CString s = oId.GetPath2();
 
 				pWriter->StartRecord(3);

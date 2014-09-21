@@ -57,7 +57,7 @@ namespace PPTX
 				pWriter->WriteString1(3, typeface);
 				*/
 
-				CString sPick = pWriter->m_oCommon.m_pNativePicker->GetTypefacePick(*this);
+				CString sPick = pWriter->m_pCommon->m_pNativePicker->GetTypefacePick(*this);
 				pWriter->WriteString1(3, sPick);
 
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);

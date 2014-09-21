@@ -1,7 +1,6 @@
 #ifndef READERS
 #define READERS
 
-#include "../BinWriter/StreamUtils.h"
 #include "FileWriter.h"
 #include "../BinWriter/BinReaderWriterDefines.h"
 #include "ReaderClasses.h"
@@ -30,22 +29,22 @@ enum ETblStyleOverrideType
 template <typename CallbackType > class Binary_CommonReader
 	{
 	protected:
-		Streams::CBufferedStream& m_oBufferedStream;
+		NSBinPptxRW::CBinaryFileReader& m_oBufferedStream;
 		typedef int (CallbackType::*funcArg)(BYTE type, long length, void* arg);
 	public:
-		Binary_CommonReader(Streams::CBufferedStream& poBufferedStream):m_oBufferedStream(poBufferedStream)
+		Binary_CommonReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream):m_oBufferedStream(poBufferedStream)
 		{
 		}
 		int ReadTable(funcArg fReadFunction, void* poFuncObj, void* arg = NULL)
 		{
 			int res = c_oSerConstants::ReadOk;
 			//stLen
-			res = m_oBufferedStream.Peek(4) == FALSE ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
+			res = m_oBufferedStream.Peek(4) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
 			if(c_oSerConstants::ReadOk != res)
 				return res;
-			long stLen = m_oBufferedStream.ReadLong();
+			long stLen = m_oBufferedStream.GetLong();
 			//Смотрим есть ли данные под всю таблицу в дальнейшем спокойно пользуемся get функциями
-			res = m_oBufferedStream.Peek(stLen) == FALSE ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
+			res = m_oBufferedStream.Peek(stLen) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
 			if(c_oSerConstants::ReadOk != res)
 				return res;
 			return Read1(stLen, fReadFunction, poFuncObj, arg);
@@ -57,12 +56,12 @@ template <typename CallbackType > class Binary_CommonReader
 			while(stCurPos < stLen)
 			{
 				//stItem
-				BYTE type = m_oBufferedStream.ReadByte();
-				long length =  m_oBufferedStream.ReadLong();
+				BYTE type = m_oBufferedStream.GetUChar();
+				long length =  m_oBufferedStream.GetLong();
 				res = (((CallbackType*)poFuncObj)->*fReadFunction)(type, length, arg);
 				if(res == c_oSerConstants::ReadUnknown)
 				{
-					m_oBufferedStream.ReadPointer(length);
+					m_oBufferedStream.GetPointer(length);
 					res = c_oSerConstants::ReadOk;
 				}
 				else if(res != c_oSerConstants::ReadOk)
@@ -78,8 +77,8 @@ template <typename CallbackType > class Binary_CommonReader
 			while(stCurPos < stLen)
 			{
 				//stItem
-				BYTE type = m_oBufferedStream.ReadByte();
-				long lenType =  m_oBufferedStream.ReadByte();
+				BYTE type = m_oBufferedStream.GetUChar();
+				long lenType =  m_oBufferedStream.GetUChar();
 				int nCurPosShift = 2;
 				int nRealLen;
 				switch(lenType)
@@ -91,7 +90,7 @@ template <typename CallbackType > class Binary_CommonReader
 				case c_oSerPropLenType::Long:
 				case c_oSerPropLenType::Double: nRealLen = 4;break;
 				case c_oSerPropLenType::Variable:
-					nRealLen = m_oBufferedStream.ReadLong();
+					nRealLen = m_oBufferedStream.GetLong();
 					nCurPosShift += 4;
 					break;
 				default:return c_oSerConstants::ErrorUnknown;
@@ -99,7 +98,7 @@ template <typename CallbackType > class Binary_CommonReader
 				res = (((CallbackType*)poFuncObj)->*fReadFunction)(type, nRealLen, arg);
 				if(res == c_oSerConstants::ReadUnknown)
 				{
-					m_oBufferedStream.ReadPointer(nRealLen);
+					m_oBufferedStream.GetPointer(nRealLen);
 					res = c_oSerConstants::ReadOk;
 				}
 				else if(res != c_oSerConstants::ReadOk)
@@ -112,15 +111,15 @@ template <typename CallbackType > class Binary_CommonReader
 class Binary_CommonReader2 : public Binary_CommonReader<Binary_CommonReader2>
 {
 public:
-	Binary_CommonReader2(Streams::CBufferedStream& poBufferedStream):Binary_CommonReader(poBufferedStream)
+	Binary_CommonReader2(NSBinPptxRW::CBinaryFileReader& poBufferedStream):Binary_CommonReader(poBufferedStream)
 	{
 	}
 	docRGB ReadColor()
 	{
 		docRGB oRGB;
-		oRGB.R = m_oBufferedStream.ReadByte();
-		oRGB.G = m_oBufferedStream.ReadByte();
-		oRGB.B = m_oBufferedStream.ReadByte();
+		oRGB.R = m_oBufferedStream.GetUChar();
+		oRGB.G = m_oBufferedStream.GetUChar();
+		oRGB.B = m_oBufferedStream.GetUChar();
 		return oRGB;
 	}
 	void ReadThemeColor(int length, CThemeColor& oCThemeColor)
@@ -138,15 +137,15 @@ public:
 			break;
 		case c_oSer_ColorThemeType::Color:
 			pCThemeColor->bColor = true;
-			pCThemeColor->Color = m_oBufferedStream.ReadByte();
+			pCThemeColor->Color = m_oBufferedStream.GetUChar();
 			break;
 		case c_oSer_ColorThemeType::Tint:
 			pCThemeColor->bTint = true;
-			pCThemeColor->Tint = m_oBufferedStream.ReadByte();
+			pCThemeColor->Tint = m_oBufferedStream.GetUChar();
 			break;
 		case c_oSer_ColorThemeType::Shade:
 			pCThemeColor->bShade = true;
-			pCThemeColor->Shade = m_oBufferedStream.ReadByte();
+			pCThemeColor->Shade = m_oBufferedStream.GetUChar();
 			break;
 		default:
 			res = c_oSerConstants::ReadUnknown;
@@ -165,7 +164,7 @@ private:
 		Shd* pShd = static_cast<Shd*>(poResult);
 		switch(type)
 		{
-		case c_oSerShdType::Value: pShd->Value = m_oBufferedStream.ReadByte();break;
+		case c_oSerShdType::Value: pShd->Value = m_oBufferedStream.GetUChar();break;
 		case c_oSerShdType::Color:
 			pShd->bColor = true;
 			pShd->Color = ReadColor();
@@ -189,7 +188,7 @@ class Binary_HdrFtrTableReader : public Binary_CommonReader<Binary_HdrFtrTableRe
 public:
 	Writers::HeaderFooterWriter& m_oHeaderFooterWriter;
 public:
-	Binary_HdrFtrTableReader(Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter);
+	Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
     int Read();
     int ReadHdrFtrContent(BYTE type, long length, void* poResult);
     int ReadHdrFtrFEO(BYTE type, long length, void* poResult);
@@ -201,7 +200,7 @@ class Binary_rPrReader : public Binary_CommonReader<Binary_rPrReader>
 protected:
 	Binary_CommonReader2 oBinary_CommonReader2;
 public:
-	Binary_rPrReader(Streams::CBufferedStream& poBufferedStream): Binary_CommonReader(poBufferedStream), oBinary_CommonReader2(poBufferedStream)
+	Binary_rPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream): Binary_CommonReader(poBufferedStream), oBinary_CommonReader2(poBufferedStream)
 	{
 	}
 	int Read(long stLen, void* poResult)
@@ -216,35 +215,35 @@ public:
 		{
 		case c_oSerProp_rPrType::Bold:
 			{
-				BYTE Bold = m_oBufferedStream.ReadByte();
+				BYTE Bold = m_oBufferedStream.GetUChar();
 				orPr->bBold = true;
 				orPr->Bold = (0 != Bold);
 				break;
 			}
 		case c_oSerProp_rPrType::Italic:
 			{
-				BYTE Italic = m_oBufferedStream.ReadByte();
+				BYTE Italic = m_oBufferedStream.GetUChar();
 				orPr->bItalic = true;
 				orPr->Italic = (0 != Italic);
 				break;
 			}
 		case c_oSerProp_rPrType::Underline:
 			{
-				BYTE Underline = m_oBufferedStream.ReadByte();
+				BYTE Underline = m_oBufferedStream.GetUChar();
 				orPr->bUnderline = true;
 				orPr->Underline = (0 != Underline);
 				break;
 			}
 		case c_oSerProp_rPrType::Strikeout:
 			{
-				BYTE Strikeout = m_oBufferedStream.ReadByte();
+				BYTE Strikeout = m_oBufferedStream.GetUChar();
 				orPr->bStrikeout = true;
 				orPr->Strikeout = (0 != Strikeout);
 				break;
 			}
 		case c_oSerProp_rPrType::FontAscii:
 			{
-				CString sFontName((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+				CString sFontName(m_oBufferedStream.GetString3(length));
 				SerializeCommon::CorrectString(sFontName);
 				if(!sFontName.IsEmpty())
 				{
@@ -255,7 +254,7 @@ public:
 			}
 		case c_oSerProp_rPrType::FontHAnsi:
 			{
-				CString sFontName((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+				CString sFontName(m_oBufferedStream.GetString3(length));
 				SerializeCommon::CorrectString(sFontName);
 				if(!sFontName.IsEmpty())
 				{
@@ -266,7 +265,7 @@ public:
 			}
 		case c_oSerProp_rPrType::FontCS:
 			{
-				CString sFontName((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+				CString sFontName(m_oBufferedStream.GetString3(length));
 				SerializeCommon::CorrectString(sFontName);
 				if(!sFontName.IsEmpty())
 				{
@@ -277,7 +276,7 @@ public:
 			}
 		case c_oSerProp_rPrType::FontAE:
 			{
-				CString sFontName((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+				CString sFontName(m_oBufferedStream.GetString3(length));
 				SerializeCommon::CorrectString(sFontName);
 				if(!sFontName.IsEmpty())
 				{
@@ -288,7 +287,7 @@ public:
 			}
 		case c_oSerProp_rPrType::FontSize:
 			{
-				long nFontSize = m_oBufferedStream.ReadLong();
+				long nFontSize = m_oBufferedStream.GetLong();
 				orPr->bFontSize = true;
 				orPr->FontSize = nFontSize;
 				break;
@@ -301,7 +300,7 @@ public:
 			}
 		case c_oSerProp_rPrType::VertAlign:
 			{
-				BYTE VertAlign = m_oBufferedStream.ReadByte();
+				BYTE VertAlign = m_oBufferedStream.GetUChar();
 				orPr->bVertAlign = true;
 				orPr->VertAlign = VertAlign;
 				break;
@@ -314,7 +313,7 @@ public:
 			}
 		case c_oSerProp_rPrType::HighLightTyped:
 			{
-				BYTE byteHighLightTyped = m_oBufferedStream.ReadByte();
+				BYTE byteHighLightTyped = m_oBufferedStream.GetUChar();
 				switch(byteHighLightTyped)
 				{
 				case c_oSer_ColorType::None:orPr->bHighLight = false;break;
@@ -334,7 +333,7 @@ public:
 			}
 		case c_oSerProp_rPrType::RStyle:
 			{
-				CString sRStyle((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+				CString sRStyle(m_oBufferedStream.GetString3(length));
 				orPr->bRStyle = true;
 				orPr->RStyle = sRStyle;
 			}
@@ -342,85 +341,85 @@ public:
 		case c_oSerProp_rPrType::Spacing:
 			{
 				orPr->bSpacing = true;
-				orPr->Spacing = m_oBufferedStream.ReadDouble2();
+				orPr->Spacing = m_oBufferedStream.GetDouble();
 			}
 			break;
 		case c_oSerProp_rPrType::DStrikeout:
 			{
 				orPr->bDStrikeout = true;
-				orPr->DStrikeout = (0 != m_oBufferedStream.ReadByte());
+				orPr->DStrikeout = (0 != m_oBufferedStream.GetUChar());
 			}
 			break;
 		case c_oSerProp_rPrType::Caps:
 			{
 				orPr->bCaps = true;
-				orPr->Caps = (0 != m_oBufferedStream.ReadByte());
+				orPr->Caps = (0 != m_oBufferedStream.GetUChar());
 			}
 			break;
 		case c_oSerProp_rPrType::SmallCaps:
 			{
 				orPr->bSmallCaps = true;
-				orPr->SmallCaps = (0 != m_oBufferedStream.ReadByte());
+				orPr->SmallCaps = (0 != m_oBufferedStream.GetUChar());
 			}
 			break;
 		case c_oSerProp_rPrType::Position:
 			{
 				orPr->bPosition = true;
-				orPr->Position = m_oBufferedStream.ReadDouble2();
+				orPr->Position = m_oBufferedStream.GetDouble();
 			}
 			break;
 		case c_oSerProp_rPrType::FontHint:
 			{
 				orPr->bFontHint = true;
-				orPr->FontHint = m_oBufferedStream.ReadByte();
+				orPr->FontHint = m_oBufferedStream.GetUChar();
 			}
 			break;
 		case c_oSerProp_rPrType::BoldCs:
 			{
 				orPr->bBoldCs = true;
-				orPr->BoldCs = m_oBufferedStream.ReadBool();
+				orPr->BoldCs = m_oBufferedStream.GetBool();
 			}
 			break;
 		case c_oSerProp_rPrType::ItalicCs:
 			{
 				orPr->bItalicCs = true;
-				orPr->ItalicCs = m_oBufferedStream.ReadBool();
+				orPr->ItalicCs = m_oBufferedStream.GetBool();
 			}
 			break;
 		case c_oSerProp_rPrType::FontSizeCs:
 			{
 				orPr->bFontSizeCs = true;
-				orPr->FontSizeCs = m_oBufferedStream.ReadLong();
+				orPr->FontSizeCs = m_oBufferedStream.GetLong();
 			}
 			break;
 		case c_oSerProp_rPrType::Cs:
 			{
 				orPr->bCs = true;
-				orPr->Cs = m_oBufferedStream.ReadBool();
+				orPr->Cs = m_oBufferedStream.GetBool();
 			}
 			break;
 		case c_oSerProp_rPrType::Rtl:
 			{
 				orPr->bRtl = true;
-				orPr->Rtl = m_oBufferedStream.ReadBool();
+				orPr->Rtl = m_oBufferedStream.GetBool();
 			}
 			break;
 		case c_oSerProp_rPrType::Lang:
 			{
 				orPr->bLang = true;
-				orPr->Lang = m_oBufferedStream.ReadString2(length);
+				orPr->Lang = m_oBufferedStream.GetString3(length);
 			}
 			break;
 		case c_oSerProp_rPrType::LangBidi:
 			{
 				orPr->bLangBidi = true;
-				orPr->LangBidi = m_oBufferedStream.ReadString2(length);
+				orPr->LangBidi = m_oBufferedStream.GetString3(length);
 			}
 			break;
 		case c_oSerProp_rPrType::LangEA:
 			{
 				orPr->bLangEA = true;
-				orPr->LangEA = m_oBufferedStream.ReadString2(length);
+				orPr->LangEA = m_oBufferedStream.GetString3(length);
 			}
 			break;
 		case c_oSerProp_rPrType::ColorTheme:
@@ -432,7 +431,7 @@ public:
 		case c_oSerProp_rPrType::Vanish:
 			{
 				orPr->bVanish = true;
-				orPr->Vanish = m_oBufferedStream.ReadBool();
+				orPr->Vanish = m_oBufferedStream.GetBool();
 			}
 			break;
 		default:
@@ -455,7 +454,7 @@ public:
 	long m_nCurNumId;
 	long m_nCurLvl;
 
-	Binary_pPrReader(Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter):
+	Binary_pPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):
 		m_oFontTableWriter(oFileWriter.m_oFontTableWriter),Binary_CommonReader(poBufferedStream),oBinary_CommonReader2(poBufferedStream),oBinary_rPrReader(poBufferedStream),oBinary_HdrFtrTableReader(poBufferedStream,oFileWriter),m_oFileWriter(oFileWriter)
 	{
 		bDoNotWriteNullProp = false;
@@ -474,7 +473,7 @@ public:
 		{
 		case c_oSerProp_pPrType::ContextualSpacing:
 			{
-				BYTE contextualSpacing = m_oBufferedStream.ReadByte();
+				BYTE contextualSpacing = m_oBufferedStream.GetUChar();
 				if(0 != contextualSpacing)
 					pCStringWriter->WriteString(CString(_T("<w:contextualSpacing w:val=\"true\"/>")));
 				else if(false == bDoNotWriteNullProp)
@@ -495,7 +494,7 @@ public:
 			}
 		case c_oSerProp_pPrType::Jc:
 			{
-				BYTE jc = m_oBufferedStream.ReadByte();
+				BYTE jc = m_oBufferedStream.GetUChar();
 				switch(jc)
 				{
 				case align_Right: pCStringWriter->WriteString(CString(_T("<w:jc w:val=\"right\" />")));break;
@@ -507,7 +506,7 @@ public:
 			}
 		case c_oSerProp_pPrType::KeepLines:
 			{
-				BYTE KeepLines = m_oBufferedStream.ReadByte();
+				BYTE KeepLines = m_oBufferedStream.GetUChar();
 				if(0 != KeepLines)
 					pCStringWriter->WriteString(CString(_T("<w:keepLines/>")));
 				else if(false == bDoNotWriteNullProp)
@@ -516,7 +515,7 @@ public:
 			}
 		case c_oSerProp_pPrType::KeepNext:
 			{
-				BYTE KeepNext = m_oBufferedStream.ReadByte();
+				BYTE KeepNext = m_oBufferedStream.GetUChar();
 				if(0 != KeepNext)
 					pCStringWriter->WriteString(CString(_T("<w:keepNext/>")));
 				else if(false == bDoNotWriteNullProp)
@@ -525,7 +524,7 @@ public:
 			}
 		case c_oSerProp_pPrType::PageBreakBefore:
 			{
-				BYTE pageBreakBefore = m_oBufferedStream.ReadByte();
+				BYTE pageBreakBefore = m_oBufferedStream.GetUChar();
 				if(0 != pageBreakBefore)
 					pCStringWriter->WriteString(CString(_T("<w:pageBreakBefore/>")));
 				else if(false == bDoNotWriteNullProp)
@@ -618,7 +617,7 @@ public:
 			}
 		case c_oSerProp_pPrType::WidowControl:
 			{
-				BYTE WidowControl = m_oBufferedStream.ReadByte();
+				BYTE WidowControl = m_oBufferedStream.GetUChar();
 				if(0 != WidowControl)
 				{
 					if(false == bDoNotWriteNullProp)
@@ -658,7 +657,7 @@ public:
 			}
 		case c_oSerProp_pPrType::ParaStyle:
 			{
-				CString sStyleName((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+				CString sStyleName(m_oBufferedStream.GetString3(length));
 				SerializeCommon::CorrectString(sStyleName);
 				CString sStyle;sStyle.Format(_T("<w:pStyle w:val=\"%s\" />"), sStyleName);
 				pCStringWriter->WriteString(sStyle);
@@ -721,7 +720,7 @@ public:
 		{
 		case c_oSerProp_pPrType::Ind_Left:
 			{
-				double dIndLeft = m_oBufferedStream.ReadDouble2();
+				double dIndLeft = m_oBufferedStream.GetDouble();
 				long nIndLeft = SerializeCommon::Round(dIndLeft * g_dKoef_mm_to_twips);
 				CString sIndLeft;
 				sIndLeft.Format(_T(" w:left=\"%d\""), nIndLeft);
@@ -730,7 +729,7 @@ public:
 			}
 		case c_oSerProp_pPrType::Ind_Right:
 			{
-				double dIndRight = m_oBufferedStream.ReadDouble2();
+				double dIndRight = m_oBufferedStream.GetDouble();
 				long nIndRight = SerializeCommon::Round(dIndRight * g_dKoef_mm_to_twips);
 				CString sIndRight;
 				sIndRight.Format(_T(" w:right=\"%d\""), nIndRight);
@@ -739,7 +738,7 @@ public:
 			}
 		case c_oSerProp_pPrType::Ind_FirstLine:
 			{
-				double dIndFirstLine = m_oBufferedStream.ReadDouble2();
+				double dIndFirstLine = m_oBufferedStream.GetDouble();
 				long nIndFirstLine = SerializeCommon::Round(dIndFirstLine * g_dKoef_mm_to_twips);
 				CString sIndFirstLine;
 				if(nIndFirstLine > 0)
@@ -763,27 +762,27 @@ public:
 		{
 		case c_oSerProp_pPrType::Spacing_Line:
 			pSpacing->bLine = true;
-			pSpacing->Line = m_oBufferedStream.ReadDouble2();
+			pSpacing->Line = m_oBufferedStream.GetDouble();
 			break;
 		case c_oSerProp_pPrType::Spacing_LineRule:
 			pSpacing->bLineRule = true;
-			pSpacing->LineRule = m_oBufferedStream.ReadByte();
+			pSpacing->LineRule = m_oBufferedStream.GetUChar();
 			break;
 		case c_oSerProp_pPrType::Spacing_Before:
 			pSpacing->bBefore = true;
-			pSpacing->Before = m_oBufferedStream.ReadDouble2();
+			pSpacing->Before = m_oBufferedStream.GetDouble();
 			break;
 		case c_oSerProp_pPrType::Spacing_After:
 			pSpacing->bAfter = true;
-			pSpacing->After = m_oBufferedStream.ReadDouble2();
+			pSpacing->After = m_oBufferedStream.GetDouble();
 			break;
 		case c_oSerProp_pPrType::Spacing_BeforeAuto:
 			pSpacing->bBeforeAuto = true;
-			pSpacing->BeforeAuto = (0 != m_oBufferedStream.ReadByte()) ? true : false;
+			pSpacing->BeforeAuto = (0 != m_oBufferedStream.GetUChar()) ? true : false;
 			break;
 		case c_oSerProp_pPrType::Spacing_AfterAuto:
 			pSpacing->bAfterAuto = true;
-			pSpacing->AfterAuto = (0 != m_oBufferedStream.ReadByte()) ? true : false;
+			pSpacing->AfterAuto = (0 != m_oBufferedStream.GetUChar()) ? true : false;
 			break;
 		default:
 			res = c_oSerConstants::ReadUnknown;
@@ -810,9 +809,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		Tab* poTabItem = static_cast<Tab*>(poResult);
 		if(c_oSerProp_pPrType::Tab_Item_Val == type)
-			poTabItem->Val = m_oBufferedStream.ReadByte();
+			poTabItem->Val = m_oBufferedStream.GetUChar();
 		else if(c_oSerProp_pPrType::Tab_Item_Pos == type)
-			poTabItem->Pos = m_oBufferedStream.ReadDouble2();
+			poTabItem->Pos = m_oBufferedStream.GetDouble();
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -823,14 +822,14 @@ public:
 		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if(c_oSerProp_pPrType::numPr_lvl == type)
 		{
-			long nLvl = m_oBufferedStream.ReadLong();
+			long nLvl = m_oBufferedStream.GetLong();
 			m_nCurLvl = nLvl;
 			CString sLvl;sLvl.Format(_T("<w:ilvl w:val=\"%d\" />"), nLvl);
 			pCStringWriter->WriteString(sLvl);
 		}
 		else if(c_oSerProp_pPrType::numPr_id == type)
 		{
-			long nnumId = m_oBufferedStream.ReadLong();
+			long nnumId = m_oBufferedStream.GetLong();
 			m_nCurNumId = nnumId;
 			CString snumId;snumId.Format(_T("<w:numId w:val=\"%d\" />"), nnumId);
 			pCStringWriter->WriteString(snumId);
@@ -898,17 +897,17 @@ public:
 		else if( c_oSerBorderType::Space == type )
 		{
 			odocBorder->bSpace = true;
-			odocBorder->Space = m_oBufferedStream.ReadDouble2();
+			odocBorder->Space = m_oBufferedStream.GetDouble();
 		}
 		else if( c_oSerBorderType::Size == type )
 		{
 			odocBorder->bSize = true;
-			odocBorder->Size = m_oBufferedStream.ReadDouble2();
+			odocBorder->Size = m_oBufferedStream.GetDouble();
 		}
 		else if( c_oSerBorderType::Value == type )
 		{
 			odocBorder->bValue = true;
-			odocBorder->Value = m_oBufferedStream.ReadByte();
+			odocBorder->Value = m_oBufferedStream.GetUChar();
 		}
 		else if( c_oSerBorderType::ColorTheme == type )
 		{
@@ -926,72 +925,72 @@ public:
 		if( c_oSer_FramePrType::DropCap == type )
 		{
 			oFramePr->bDropCap = true;
-			oFramePr->DropCap = m_oBufferedStream.ReadByte();
+			oFramePr->DropCap = m_oBufferedStream.GetUChar();
 		}
 		else if( c_oSer_FramePrType::H == type )
 		{
 			oFramePr->bH = true;
-			oFramePr->H = m_oBufferedStream.ReadLong();
+			oFramePr->H = m_oBufferedStream.GetLong();
 		}
 		else if( c_oSer_FramePrType::HAnchor == type )
 		{
 			oFramePr->bHAnchor = true;
-			oFramePr->HAnchor = m_oBufferedStream.ReadByte();
+			oFramePr->HAnchor = m_oBufferedStream.GetUChar();
 		}
 		else if( c_oSer_FramePrType::HRule == type )
 		{
 			oFramePr->bHRule = true;
-			oFramePr->HRule = m_oBufferedStream.ReadByte();
+			oFramePr->HRule = m_oBufferedStream.GetUChar();
 		}
 		else if( c_oSer_FramePrType::HSpace == type )
 		{
 			oFramePr->bHSpace = true;
-			oFramePr->HSpace = m_oBufferedStream.ReadLong();
+			oFramePr->HSpace = m_oBufferedStream.GetLong();
 		}
 		else if( c_oSer_FramePrType::Lines == type )
 		{
 			oFramePr->bLines = true;
-			oFramePr->Lines = m_oBufferedStream.ReadLong();
+			oFramePr->Lines = m_oBufferedStream.GetLong();
 		}
 		else if( c_oSer_FramePrType::VAnchor == type )
 		{
 			oFramePr->bVAnchor = true;
-			oFramePr->VAnchor = m_oBufferedStream.ReadByte();
+			oFramePr->VAnchor = m_oBufferedStream.GetUChar();
 		}
 		else if( c_oSer_FramePrType::VSpace == type )
 		{
 			oFramePr->bVSpace = true;
-			oFramePr->VSpace = m_oBufferedStream.ReadLong();
+			oFramePr->VSpace = m_oBufferedStream.GetLong();
 		}
 		else if( c_oSer_FramePrType::W == type )
 		{
 			oFramePr->bW = true;
-			oFramePr->W = m_oBufferedStream.ReadLong();
+			oFramePr->W = m_oBufferedStream.GetLong();
 		}
 		else if( c_oSer_FramePrType::Wrap == type )
 		{
 			oFramePr->bWrap = true;
-			oFramePr->Wrap = m_oBufferedStream.ReadByte();
+			oFramePr->Wrap = m_oBufferedStream.GetUChar();
 		}
 		else if( c_oSer_FramePrType::X == type )
 		{
 			oFramePr->bX = true;
-			oFramePr->X = m_oBufferedStream.ReadLong();
+			oFramePr->X = m_oBufferedStream.GetLong();
 		}
 		else if( c_oSer_FramePrType::XAlign == type )
 		{
 			oFramePr->bXAlign = true;
-			oFramePr->XAlign = m_oBufferedStream.ReadByte();
+			oFramePr->XAlign = m_oBufferedStream.GetUChar();
 		}
 		else if( c_oSer_FramePrType::Y == type )
 		{
 			oFramePr->bY = true;
-			oFramePr->Y = m_oBufferedStream.ReadLong();
+			oFramePr->Y = m_oBufferedStream.GetLong();
 		}
 		else if( c_oSer_FramePrType::YAlign == type )
 		{
 			oFramePr->bYAlign = true;
-			oFramePr->YAlign = m_oBufferedStream.ReadByte();
+			oFramePr->YAlign = m_oBufferedStream.GetUChar();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1035,15 +1034,15 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if( c_oSer_pgSzType::Orientation == type )
 		{
-			pSectPr->cOrientation = m_oBufferedStream.ReadByte();
+			pSectPr->cOrientation = m_oBufferedStream.GetUChar();
 		}
 		else if( c_oSer_pgSzType::W == type )
 		{
-			pSectPr->W = m_oBufferedStream.ReadDouble2();
+			pSectPr->W = m_oBufferedStream.GetDouble();
 		}
 		else if( c_oSer_pgSzType::H == type )
 		{
-			pSectPr->H = m_oBufferedStream.ReadDouble2();
+			pSectPr->H = m_oBufferedStream.GetDouble();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1055,29 +1054,29 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if( c_oSer_pgMarType::Left == type )
 		{
-			pSectPr->Left = m_oBufferedStream.ReadDouble2();
+			pSectPr->Left = m_oBufferedStream.GetDouble();
 		}
 		else if( c_oSer_pgMarType::Top == type )
 		{
-			pSectPr->Top = m_oBufferedStream.ReadDouble2();
+			pSectPr->Top = m_oBufferedStream.GetDouble();
 		}
 		else if( c_oSer_pgMarType::Right == type )
 		{
-			pSectPr->Right = m_oBufferedStream.ReadDouble2();
+			pSectPr->Right = m_oBufferedStream.GetDouble();
 		}
 		else if( c_oSer_pgMarType::Bottom == type )
 		{
-			pSectPr->Bottom = m_oBufferedStream.ReadDouble2();
+			pSectPr->Bottom = m_oBufferedStream.GetDouble();
 		}
 		else if( c_oSer_pgMarType::Header == type )
 		{
 			pSectPr->bHeader = true;
-			pSectPr->Header = m_oBufferedStream.ReadDouble2();
+			pSectPr->Header = m_oBufferedStream.GetDouble();
 		}
 		else if( c_oSer_pgMarType::Footer == type )
 		{
 			pSectPr->bFooter = true;
-			pSectPr->Footer = m_oBufferedStream.ReadDouble2();
+			pSectPr->Footer = m_oBufferedStream.GetDouble();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1090,17 +1089,17 @@ public:
 		if( c_oSerProp_secPrSettingsType::titlePg == type )
 		{
 			pSectPr->bTitlePg = true;
-			pSectPr->TitlePg = m_oBufferedStream.ReadBool();
+			pSectPr->TitlePg = m_oBufferedStream.GetBool();
 		}
 		else if( c_oSerProp_secPrSettingsType::EvenAndOddHeaders == type )
 		{
 			pSectPr->bEvenAndOddHeaders = true;
-			pSectPr->EvenAndOddHeaders = m_oBufferedStream.ReadBool();
+			pSectPr->EvenAndOddHeaders = m_oBufferedStream.GetBool();
 		}
 		else if( c_oSerProp_secPrSettingsType::SectionType == type )
 		{
 			pSectPr->bSectionType = true;
-			pSectPr->SectionType = m_oBufferedStream.ReadByte();
+			pSectPr->SectionType = m_oBufferedStream.GetUChar();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1112,7 +1111,7 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if( c_oSerProp_secPrType::hdrftrelem == type )
 		{
-			int nHdrFtrIndex = m_oBufferedStream.ReadLong();
+			int nHdrFtrIndex = m_oBufferedStream.GetLong();
 			if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.size())
 			{
 				Writers::HdrFtrItem* pHdrFtrItem = m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders[nHdrFtrIndex];
@@ -1137,7 +1136,7 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if( c_oSerProp_secPrType::hdrftrelem == type )
 		{
-			int nHdrFtrIndex = m_oBufferedStream.ReadLong();
+			int nHdrFtrIndex = m_oBufferedStream.GetLong();
 			if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters.size())
 			{
 				Writers::HdrFtrItem* pHdrFtrItem = oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters[nHdrFtrIndex];
@@ -1163,7 +1162,7 @@ public:
 		if( c_oSerProp_secPrPageNumType::start == type )
 		{
 			pSectPr->bPageNumStart = true;
-			pSectPr->PageNumStart = m_oBufferedStream.ReadLong();
+			pSectPr->PageNumStart = m_oBufferedStream.GetLong();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1180,7 +1179,7 @@ public:
 	std::vector<double> m_aCurTblGrid;
 	bool bCellShd;
 public:
-	Binary_tblPrReader(Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),oBinary_CommonReader2(poBufferedStream),oBinary_pPrReader(poBufferedStream, oFileWriter)
+	Binary_tblPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),oBinary_CommonReader2(poBufferedStream),oBinary_pPrReader(poBufferedStream, oFileWriter)
 	{
 	}
 	int Read_tblPrOut(long length, CWiterTblPr* pWiterTblPr)
@@ -1193,7 +1192,7 @@ public:
 		CWiterTblPr* pWiterTblPr = static_cast<CWiterTblPr*>(poResult);
 		if( c_oSerProp_tblPrType::Jc == type )
 		{
-			BYTE jc = m_oBufferedStream.ReadByte();
+			BYTE jc = m_oBufferedStream.GetUChar();
 			switch(jc)
 			{
 			case align_Right:pWiterTblPr->Jc = CString(_T("<w:jc w:val=\"right\" />"));break;
@@ -1204,7 +1203,7 @@ public:
 		}
 		else if( c_oSerProp_tblPrType::TableInd == type )
 		{
-			double dInd = m_oBufferedStream.ReadDouble2();
+			double dInd = m_oBufferedStream.GetDouble();
 			long nInd = SerializeCommon::Round( g_dKoef_mm_to_twips * dInd);
 			pWiterTblPr->TableInd.Format(_T("<w:tblInd w:w=\"%d\" w:type=\"dxa\"/>"), nInd);
 		}
@@ -1266,14 +1265,14 @@ public:
 		}
 		else if( c_oSerProp_tblPrType::Style == type )
 		{
-			CString Name((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+			CString Name(m_oBufferedStream.GetString3(length));
 			SerializeCommon::CorrectString(Name);
 			pWiterTblPr->Style.Format(_T("<w:tblStyle w:val=\"%s\"/>"), Name);
 		}
 		else if( c_oSerProp_tblPrType::Look == type )
 		{
 			//<w:tblLook  w:val="" w:firstRow="true" w:lastRow="true" w:noHBand="true" w:noVBand="true" /> 
-			long nLook = m_oBufferedStream.ReadLong();
+			long nLook = m_oBufferedStream.GetLong();
 			int nFC = (0 == (nLook & 0x0080)) ? 0 : 1;
 			int nFR = (0 == (nLook & 0x0020)) ? 0 : 1;
 			int nLC = (0 == (nLook & 0x0100)) ? 0 : 1;
@@ -1284,7 +1283,7 @@ public:
 		}
 		else if( c_oSerProp_tblPrType::Layout == type )
 		{
-			long nLayout = m_oBufferedStream.ReadByte();
+			long nLayout = m_oBufferedStream.GetUChar();
 			CString sLayout;
 			switch(nLayout)
 			{
@@ -1305,17 +1304,17 @@ public:
 		if( c_oSerWidthType::Type == type )
 		{
 			odocW->bType = true;
-			odocW->Type = m_oBufferedStream.ReadByte();
+			odocW->Type = m_oBufferedStream.GetUChar();
 		}
 		else if( c_oSerWidthType::W == type )
 		{
 			odocW->bW = true;
-			odocW->W = m_oBufferedStream.ReadDouble2();
+			odocW->W = m_oBufferedStream.GetDouble();
 		}
 		else if( c_oSerWidthType::WDocx == type )
 		{
 			odocW->bWDocx = true;
-			odocW->WDocx = m_oBufferedStream.ReadLong();
+			odocW->WDocx = m_oBufferedStream.GetLong();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1359,14 +1358,14 @@ public:
 		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSer_tblpPrType::X == type )
 		{
-			double dX = m_oBufferedStream.ReadDouble2();
+			double dX = m_oBufferedStream.GetDouble();
 			long nX = SerializeCommon::Round( g_dKoef_mm_to_twips * dX);
 			CString sX;sX.Format(_T(" w:tblpX=\"%d\""), nX);
 			pCStringWriter->WriteString(sX);
 		}
 		else if( c_oSer_tblpPrType::Y == type )
 		{
-			double dY = m_oBufferedStream.ReadDouble2();
+			double dY = m_oBufferedStream.GetDouble();
 			long nY = SerializeCommon::Round( g_dKoef_mm_to_twips * dY);
 			CString sY;sY.Format(_T(" w:tblpY=\"%d\""), nY);
 			pCStringWriter->WriteString(sY);
@@ -1415,7 +1414,7 @@ public:
 		if( c_oSer_tblpPrType2::HorzAnchor == type )
 		{
 			CString sXml;
-			switch(m_oBufferedStream.ReadByte())
+			switch(m_oBufferedStream.GetUChar())
 			{
 			case 0:sXml.Append(_T(" w:horzAnchor=\"margin\""));break;
 			case 1:sXml.Append(_T(" w:horzAnchor=\"page\""));break;
@@ -1426,7 +1425,7 @@ public:
 		}
 		else if( c_oSer_tblpPrType2::TblpX == type )
 		{
-			double dX = m_oBufferedStream.ReadDouble2();
+			double dX = m_oBufferedStream.GetDouble();
 			long nX = SerializeCommon::Round( g_dKoef_mm_to_twips * dX);
 			CString sXml;sXml.Format(_T(" w:tblpX=\"%d\""), nX);
 			pCStringWriter->WriteString(sXml);
@@ -1434,7 +1433,7 @@ public:
 		else if( c_oSer_tblpPrType2::TblpXSpec == type )
 		{
 			CString sXml;
-			switch(m_oBufferedStream.ReadByte())
+			switch(m_oBufferedStream.GetUChar())
 			{
 			case 0:sXml.Append(_T(" w:tblpXSpec=\"center\""));break;
 			case 1:sXml.Append(_T(" w:tblpXSpec=\"inside\""));break;
@@ -1448,7 +1447,7 @@ public:
 		else if( c_oSer_tblpPrType2::VertAnchor == type )
 		{
 			CString sXml;
-			switch(m_oBufferedStream.ReadByte())
+			switch(m_oBufferedStream.GetUChar())
 			{
 			case 0:sXml.Append(_T(" w:vertAnchor=\"margin\""));break;
 			case 1:sXml.Append(_T(" w:vertAnchor=\"page\""));break;
@@ -1459,7 +1458,7 @@ public:
 		}
 		else if( c_oSer_tblpPrType2::TblpY == type )
 		{
-			double dY = m_oBufferedStream.ReadDouble2();
+			double dY = m_oBufferedStream.GetDouble();
 			long nY = SerializeCommon::Round( g_dKoef_mm_to_twips * dY);
 			CString sXml;sXml.Format(_T(" w:tblpY=\"%d\""), nY);
 			pCStringWriter->WriteString(sXml);
@@ -1467,7 +1466,7 @@ public:
 		else if( c_oSer_tblpPrType2::TblpYSpec == type )
 		{
 			CString sXml;
-			switch(m_oBufferedStream.ReadByte())
+			switch(m_oBufferedStream.GetUChar())
 			{
 			case 0:sXml.Append(_T(" w:tblpYSpec=\"bottom\""));break;
 			case 1:sXml.Append(_T(" w:tblpYSpec=\"center\""));break;
@@ -1497,7 +1496,7 @@ public:
 		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSerProp_rowPrType::CantSplit == type )
 		{
-			BYTE CantSplit = m_oBufferedStream.ReadByte();
+			BYTE CantSplit = m_oBufferedStream.GetUChar();
 			if(0 != CantSplit)
 				pCStringWriter->WriteString(CString(_T("<w:cantSplit />")));
 			else
@@ -1546,7 +1545,7 @@ public:
 		}
 		else if( c_oSerProp_rowPrType::Jc == type )
 		{
-			BYTE jc = m_oBufferedStream.ReadByte();
+			BYTE jc = m_oBufferedStream.GetUChar();
 			switch(jc)
 			{
 			case align_Right: pCStringWriter->WriteString(CString(_T("<w:jc w:val=\"right\" />")));break;
@@ -1557,7 +1556,7 @@ public:
 		}
 		else if( c_oSerProp_rowPrType::TableCellSpacing == type )
 		{
-			double dSpacing = m_oBufferedStream.ReadDouble2();
+			double dSpacing = m_oBufferedStream.GetDouble();
 			dSpacing /=2;
 			long nSpacing = SerializeCommon::Round( g_dKoef_mm_to_twips * dSpacing);
 			CString sSpacing;sSpacing.Format(_T("<w:tblCellSpacing w:w=\"%d\" w:type=\"dxa\"/>"), nSpacing);
@@ -1569,7 +1568,7 @@ public:
 		}
 		else if( c_oSerProp_rowPrType::TableHeader == type )
 		{
-			BYTE tblHeader = m_oBufferedStream.ReadByte();
+			BYTE tblHeader = m_oBufferedStream.GetUChar();
 			if(0 != tblHeader)
 				pCStringWriter->WriteString(CString(_T("<w:tblHeader />")));
 			else
@@ -1586,7 +1585,7 @@ public:
 		if( c_oSerProp_rowPrType::GridAfter == type )
 		{
 			orowPrAfterBefore->bGridAfter = true;
-			orowPrAfterBefore->nGridAfter = m_oBufferedStream.ReadLong();
+			orowPrAfterBefore->nGridAfter = m_oBufferedStream.GetLong();
 		}
 		else if( c_oSerProp_rowPrType::WAfter == type )
 		{
@@ -1603,7 +1602,7 @@ public:
 		if( c_oSerProp_rowPrType::GridBefore == type )
 		{
 			orowPrAfterBefore->bGridAfter = true;
-			orowPrAfterBefore->nGridAfter = m_oBufferedStream.ReadLong();
+			orowPrAfterBefore->nGridAfter = m_oBufferedStream.GetLong();
 		}
 		else if( c_oSerProp_rowPrType::WBefore == type )
 		{
@@ -1623,7 +1622,7 @@ public:
 		}
 		else */if( c_oSerProp_rowPrType::Height_Value == type )
 		{
-			double dHeight = m_oBufferedStream.ReadDouble2();
+			double dHeight = m_oBufferedStream.GetDouble();
 			long nHeight = SerializeCommon::Round( g_dKoef_mm_to_twips * dHeight);
 			CString sHeight;sHeight.Format(_T("<w:trHeight w:val=\"%d\" />"), nHeight);
 			pCStringWriter->WriteString(sHeight);
@@ -1642,7 +1641,7 @@ public:
 		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSerProp_cellPrType::GridSpan == type )
 		{
-			long nGridSpan = m_oBufferedStream.ReadLong();
+			long nGridSpan = m_oBufferedStream.GetLong();
 			if(nGridSpan > 1)
 			{
 				CString sGridSpan;sGridSpan.Format(_T("<w:gridSpan w:val=\"%d\" />"), nGridSpan);
@@ -1689,7 +1688,7 @@ public:
 		}
 		else if( c_oSerProp_cellPrType::VAlign == type )
 		{
-			BYTE VAlign = m_oBufferedStream.ReadByte();
+			BYTE VAlign = m_oBufferedStream.GetUChar();
 			switch(VAlign)
 			{
 			case vertalignjc_Top:pCStringWriter->WriteString(CString(_T("<w:vAlign w:val=\"top\" />")));break;
@@ -1699,7 +1698,7 @@ public:
 		}
 		else if( c_oSerProp_cellPrType::VMerge == type )
 		{
-			BYTE VMerge = m_oBufferedStream.ReadByte();
+			BYTE VMerge = m_oBufferedStream.GetUChar();
 			switch(VMerge)
 			{
 			case vmerge_Restart:pCStringWriter->WriteString(CString(_T("<w:vMerge w:val=\"restart\" />")));break;
@@ -1721,22 +1720,22 @@ public:
 		if (c_oSerPaddingType::left == type)
 		{
 			oPaddings->bLeft = true;
-			oPaddings->Left = m_oBufferedStream.ReadDouble2();
+			oPaddings->Left = m_oBufferedStream.GetDouble();
 		}
 		else if (c_oSerPaddingType::top == type)
 		{
 			oPaddings->bTop = true;
-			oPaddings->Top = m_oBufferedStream.ReadDouble2();
+			oPaddings->Top = m_oBufferedStream.GetDouble();
 		}
 		else if (c_oSerPaddingType::right == type)
 		{
 			oPaddings->bRight = true;
-			oPaddings->Right = m_oBufferedStream.ReadDouble2();
+			oPaddings->Right = m_oBufferedStream.GetDouble();
 		}
 		else if (c_oSerPaddingType::bottom == type)
 		{
 			oPaddings->bBottom = true;
-			oPaddings->Bottom = m_oBufferedStream.ReadDouble2();
+			oPaddings->Bottom = m_oBufferedStream.GetDouble();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1748,28 +1747,28 @@ public:
 		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if (c_oSerPaddingType::left == type)
 		{
-			double dLeft = m_oBufferedStream.ReadDouble2();
+			double dLeft = m_oBufferedStream.GetDouble();
 			long nLeft = SerializeCommon::Round( g_dKoef_mm_to_twips * dLeft);
 			CString sXml;sXml.Format(_T(" w:leftFromText=\"%d\""), nLeft);
 			pCStringWriter->WriteString(sXml);
 		}
 		else if (c_oSerPaddingType::top == type)
 		{
-			double dTop = m_oBufferedStream.ReadDouble2();
+			double dTop = m_oBufferedStream.GetDouble();
 			long nTop = SerializeCommon::Round( g_dKoef_mm_to_twips * dTop);
 			CString sXml;sXml.Format(_T(" w:topFromText=\"%d\""), nTop);
 			pCStringWriter->WriteString(sXml);
 		}
 		else if (c_oSerPaddingType::right == type)
 		{
-			double dRight = m_oBufferedStream.ReadDouble2();
+			double dRight = m_oBufferedStream.GetDouble();
 			long nRight = SerializeCommon::Round( g_dKoef_mm_to_twips * dRight);
 			CString sXml;sXml.Format(_T(" w:rightFromText=\"%d\""), nRight);
 			pCStringWriter->WriteString(sXml);
 		}
 		else if (c_oSerPaddingType::bottom == type)
 		{
-			double dBottom = m_oBufferedStream.ReadDouble2();
+			double dBottom = m_oBufferedStream.GetDouble();
 			long nBottom = SerializeCommon::Round( g_dKoef_mm_to_twips * dBottom);
 			CString sXml;sXml.Format(_T(" w:bottomFromText=\"%d\""), nBottom);
 			pCStringWriter->WriteString(sXml);
@@ -1789,7 +1788,7 @@ class Binary_NumberingTableReader : public Binary_CommonReader<Binary_NumberingT
 	std::vector<docANum*> m_aDocANums;
 	std::map<int, int> m_mapANumToNum;
 public:
-	Binary_NumberingTableReader(Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),oNumberingWriters(oFileWriter.m_oNumberingWriter),m_oFontTableWriter(oFileWriter.m_oFontTableWriter),oBinary_pPrReader(poBufferedStream, oFileWriter),oBinary_rPrReader(poBufferedStream)
+	Binary_NumberingTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),oNumberingWriters(oFileWriter.m_oNumberingWriter),m_oFontTableWriter(oFileWriter.m_oFontTableWriter),oBinary_pPrReader(poBufferedStream, oFileWriter),oBinary_rPrReader(poBufferedStream)
 	{
 	}
 	int Read()
@@ -1847,12 +1846,12 @@ public:
 		if ( c_oSerNumTypes::Num_ANumId == type )
 		{
 			odocNum->bAId = true;
-			odocNum->AId = m_oBufferedStream.ReadLong();
+			odocNum->AId = m_oBufferedStream.GetLong();
 		}
 		else if ( c_oSerNumTypes::Num_NumId == type )
 		{
 			odocNum->bId = true;
-			odocNum->Id = m_oBufferedStream.ReadLong();
+			odocNum->Id = m_oBufferedStream.GetLong();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1882,12 +1881,12 @@ public:
 		else if ( c_oSerNumTypes::AbstractNum_Id == type )
 		{
 			odocANum->bId = true;
-			odocANum->Id = m_oBufferedStream.ReadLong();
+			odocANum->Id = m_oBufferedStream.GetLong();
 		}
 		else if ( c_oSerNumTypes::NumStyleLink == type )
-			odocANum->NumStyleLink = m_oBufferedStream.ReadString2(length);
+			odocANum->NumStyleLink = m_oBufferedStream.GetString3(length);
 		else if ( c_oSerNumTypes::StyleLink == type )
-			odocANum->StyleLink = m_oBufferedStream.ReadString2(length);
+			odocANum->StyleLink = m_oBufferedStream.GetString3(length);
 		//else if ( c_oSerNumTypes::AbstractNum_Type == type )
 		//{
 		//	oNewNum.Type = this.stream.GetUChar();
@@ -1917,12 +1916,12 @@ public:
 		if ( c_oSerNumTypes::lvl_Format == type )
 		{
 			odocLvl->bFormat = true;
-			odocLvl->Format = m_oBufferedStream.ReadLong();
+			odocLvl->Format = m_oBufferedStream.GetLong();
 		}
 		else if ( c_oSerNumTypes::lvl_Jc == type )
 		{
 			odocLvl->bJc = true;
-			odocLvl->Jc = m_oBufferedStream.ReadByte();
+			odocLvl->Jc = m_oBufferedStream.GetUChar();
 		}
 		else if ( c_oSerNumTypes::lvl_LvlText == type )
 		{
@@ -1932,22 +1931,22 @@ public:
 		else if ( c_oSerNumTypes::lvl_Restart == type )
 		{
 			odocLvl->bRestart = true;
-			odocLvl->Restart = m_oBufferedStream.ReadLong();
+			odocLvl->Restart = m_oBufferedStream.GetLong();
 		}
 		else if ( c_oSerNumTypes::lvl_Start == type )
 		{
 			odocLvl->bStart = true;
-			odocLvl->Start = m_oBufferedStream.ReadLong();
+			odocLvl->Start = m_oBufferedStream.GetLong();
 		}
 		else if ( c_oSerNumTypes::lvl_Suff == type )
 		{
 			odocLvl->bSuff = true;
-			odocLvl->Suff = m_oBufferedStream.ReadByte();
+			odocLvl->Suff = m_oBufferedStream.GetUChar();
 		}
 		else if ( c_oSerNumTypes::lvl_PStyle == type )
 		{
 			odocLvl->bPStyle = true;
-			odocLvl->PStyle = m_oBufferedStream.ReadString2(length);
+			odocLvl->PStyle = m_oBufferedStream.GetString3(length);
 		}
 		else if ( c_oSerNumTypes::lvl_ParaPr == type )
 		{
@@ -1988,14 +1987,14 @@ public:
 		docLvlText* odocLvlText = static_cast<docLvlText*>(poResult);
 		if ( c_oSerNumTypes::lvl_LvlTextItemText == type )
 		{
-			CString sText((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+			CString sText(m_oBufferedStream.GetString3(length));
 			odocLvlText->bText = true;
 			odocLvlText->Text = sText;
 		}
 		else if ( c_oSerNumTypes::lvl_LvlTextItemNum == type )
 		{
 			odocLvlText->bNumber = true;
-			odocLvlText->Number = m_oBufferedStream.ReadByte();
+			odocLvlText->Number = m_oBufferedStream.GetUChar();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -2010,7 +2009,7 @@ class BinaryStyleTableReader : public Binary_CommonReader<BinaryStyleTableReader
 	Writers::StylesWriter& m_oStylesWriter;
 	Writers::FontTableWriter& m_oFontTableWriter;
 public:
-	BinaryStyleTableReader(Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),m_oStylesWriter(oFileWriter.m_oStylesWriter),m_oFontTableWriter(oFileWriter.m_oFontTableWriter),oBinary_pPrReader(poBufferedStream, oFileWriter),oBinary_rPrReader(poBufferedStream),oBinary_tblPrReader(poBufferedStream, oFileWriter)
+	BinaryStyleTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),m_oStylesWriter(oFileWriter.m_oStylesWriter),m_oFontTableWriter(oFileWriter.m_oFontTableWriter),oBinary_pPrReader(poBufferedStream, oFileWriter),oBinary_rPrReader(poBufferedStream),oBinary_tblPrReader(poBufferedStream, oFileWriter)
 	{
 	}
 	int Read()
@@ -2069,60 +2068,60 @@ public:
 		docStyle* odocStyle = static_cast<docStyle*>(poResult);
 		if(c_oSer_sts::Style_Name == type)
 		{
-			CString Name((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+			CString Name(m_oBufferedStream.GetString3(length));
 			SerializeCommon::CorrectString(Name);
 			odocStyle->Name = Name;
 		}
 		else if(c_oSer_sts::Style_Id == type)
 		{
-			CString Id((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+			CString Id(m_oBufferedStream.GetString3(length));
 			SerializeCommon::CorrectString(Id);
 			odocStyle->Id = Id;
 		}
 		else if(c_oSer_sts::Style_Type == type)
 		{
-			odocStyle->byteType = m_oBufferedStream.ReadByte();
+			odocStyle->byteType = m_oBufferedStream.GetUChar();
 		}
 		else if(c_oSer_sts::Style_Default == type)
 		{
-			odocStyle->bDefault = (0 != m_oBufferedStream.ReadByte());
+			odocStyle->bDefault = (0 != m_oBufferedStream.GetUChar());
 		}
 		else if(c_oSer_sts::Style_BasedOn == type)
 		{
-			CString BasedOn((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+			CString BasedOn(m_oBufferedStream.GetString3(length));
 			SerializeCommon::CorrectString(BasedOn);
 			odocStyle->BasedOn = BasedOn;
 		}
 		else if(c_oSer_sts::Style_Next == type)
 		{
-			CString NextId((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+			CString NextId(m_oBufferedStream.GetString3(length));
 			SerializeCommon::CorrectString(NextId);
 			odocStyle->NextId = NextId;
 		}
 		else if(c_oSer_sts::Style_qFormat == type)
 		{
 			odocStyle->bqFormat = true;
-			odocStyle->qFormat = (0 != m_oBufferedStream.ReadByte()) ? true : false;
+			odocStyle->qFormat = (0 != m_oBufferedStream.GetUChar()) ? true : false;
 		}
 		else if(c_oSer_sts::Style_uiPriority == type)
 		{
 			odocStyle->buiPriority = true;
-			odocStyle->uiPriority = m_oBufferedStream.ReadLong();
+			odocStyle->uiPriority = m_oBufferedStream.GetLong();
 		}
 		else if(c_oSer_sts::Style_hidden == type)
 		{
 			odocStyle->bhidden = true;
-			odocStyle->hidden = (0 != m_oBufferedStream.ReadByte()) ? true : false;
+			odocStyle->hidden = (0 != m_oBufferedStream.GetUChar()) ? true : false;
 		}
 		else if(c_oSer_sts::Style_semiHidden == type)
 		{
 			odocStyle->bsemiHidden = true;
-			odocStyle->semiHidden = (0 != m_oBufferedStream.ReadByte()) ? true : false;
+			odocStyle->semiHidden = (0 != m_oBufferedStream.GetUChar()) ? true : false;
 		}
 		else if(c_oSer_sts::Style_unhideWhenUsed == type)
 		{
 			odocStyle->bunhideWhenUsed = true;
-			odocStyle->unhideWhenUsed = (0 != m_oBufferedStream.ReadByte()) ? true : false;
+			odocStyle->unhideWhenUsed = (0 != m_oBufferedStream.GetUChar()) ? true : false;
 		}
 		else if(c_oSer_sts::Style_TextPr == type)
 		{
@@ -2214,7 +2213,7 @@ public:
 		if(c_oSerProp_tblStylePrType::Type == type)
 		{
 			ptblStylePr->bType = true;
-			ptblStylePr->Type = m_oBufferedStream.ReadByte();
+			ptblStylePr->Type = m_oBufferedStream.GetUChar();
 
 		}
 		else if(c_oSerProp_tblStylePrType::RunPr == type)
@@ -2276,7 +2275,7 @@ class Binary_OtherTableReader : public Binary_CommonReader<Binary_OtherTableRead
 	Writers::FileWriter& m_oFileWriter;
 	CString m_sFileInDir;
 public:
-	Binary_OtherTableReader(CString sFileInDir, Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter):m_sFileInDir(sFileInDir),Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter)
+	Binary_OtherTableReader(CString sFileInDir, NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):m_sFileInDir(sFileInDir),Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter)
 	{
 	}
 	int Read()
@@ -2294,7 +2293,7 @@ public:
 		{
 			//переписываем взятую из ресурсов тему.
 			BSTR bstrThemePath = m_oFileWriter.m_sThemePath.AllocSysString();
-			m_oFileWriter.m_pDrawingConverter->SaveThemeXml(m_oFileWriter.m_pArray, m_oBufferedStream.GetPosition(), length, bstrThemePath);
+			m_oFileWriter.m_pDrawingConverter->SaveThemeXml(m_oFileWriter.m_pArray, m_oBufferedStream.GetPos(), length, bstrThemePath);
 			SysFreeString(bstrThemePath);
 			res = c_oSerConstants::ReadUnknown;
 		}
@@ -2307,7 +2306,7 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSerOtherTableTypes::ImageMap_Src == type )
 		{
-			CString sImage((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+			CString sImage(m_oBufferedStream.GetString3(length));
 			CString sFilePath;
 			bool bDeleteFile = false;
 			if(0 == sImage.Find(_T("data:")))
@@ -2353,7 +2352,7 @@ class Binary_CommentsTableReader : public Binary_CommonReader<Binary_CommentsTab
 public:
 	CComments m_oComments;
 public:
-	Binary_CommentsTableReader(Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream)
+	Binary_CommentsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream)
 	{
 	}
 	int Read()
@@ -2383,32 +2382,32 @@ public:
 		if ( c_oSer_CommentsType::Id == type )
 		{
 			pComment->bIdOpen = true;
-			pComment->IdOpen = m_oBufferedStream.ReadLong();
+			pComment->IdOpen = m_oBufferedStream.GetLong();
 		}
 		else if ( c_oSer_CommentsType::UserName == type )
 		{
-			CString UserName((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+			CString UserName(m_oBufferedStream.GetString3(length));
 			pComment->UserName = UserName;
 		}
 		else if ( c_oSer_CommentsType::UserId == type )
 		{
-			CString UserId((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+			CString UserId(m_oBufferedStream.GetString3(length));
 			pComment->UserId = UserId;
 		}
 		else if ( c_oSer_CommentsType::Date == type )
 		{
-			CString Date((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+			CString Date(m_oBufferedStream.GetString3(length));
 			pComment->Date = Date;
 		}
 		else if ( c_oSer_CommentsType::Text == type )
 		{
-			CString Text((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+			CString Text(m_oBufferedStream.GetString3(length));
 			pComment->Text = Text;
 		}
 		else if ( c_oSer_CommentsType::Solved == type )
 		{
 			pComment->bSolved = true;
-			pComment->Solved = m_oBufferedStream.ReadBool();
+			pComment->Solved = m_oBufferedStream.GetBool();
 		}
 		else if ( c_oSer_CommentsType::Replies == type )
 			res = Read1(length, &Binary_CommentsTableReader::ReadReplies, this, &pComment->replies);
@@ -2436,7 +2435,7 @@ class Binary_SettingsTableReader : public Binary_CommonReader<Binary_SettingsTab
 	Writers::SettingWriter& m_oSettingWriter;
 	Writers::FileWriter& m_oFileWriter;
 public:
-	Binary_SettingsTableReader(Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),m_oSettingWriter(oFileWriter.m_oSettingWriter),m_oFileWriter(oFileWriter)
+	Binary_SettingsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),m_oSettingWriter(oFileWriter.m_oSettingWriter),m_oFileWriter(oFileWriter)
 	{
 	}
 	int Read()
@@ -2492,7 +2491,7 @@ public:
 		}
 		else if ( c_oSer_SettingsType::DefaultTabStop == type )
 		{
-			double dDefTabStop = m_oBufferedStream.ReadDouble2();
+			double dDefTabStop = m_oBufferedStream.GetDouble();
 			long nDefTabStop = SerializeCommon::Round(dDefTabStop * g_dKoef_mm_to_twips);
 			CString sXml;
 			sXml.Format(_T("<w:defaultTabStop w:val=\"%d\"/>"), nDefTabStop);
@@ -2579,14 +2578,14 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}	
-	int ReadMathBrkBin(BYTE type, long length, void* poResult)//ReadByte
+	int ReadMathBrkBin(BYTE type, long length, void* poResult)//GetUChar
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE BrkBin;
 			CString sBrkBin (_T("repeat"));
-			BrkBin = m_oBufferedStream.ReadByte();			
+			BrkBin = m_oBufferedStream.GetUChar();			
 			switch(BrkBin)
 			{
 				case 0: sBrkBin = _T("after");break;
@@ -2601,14 +2600,14 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}	
-	int ReadMathBrkBinSub(BYTE type, long length, void* poResult)//ReadByte
+	int ReadMathBrkBinSub(BYTE type, long length, void* poResult)//GetUChar
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE BrkBinSub;
 			CString sBrkBinSub (_T("--"));
-			BrkBinSub = m_oBufferedStream.ReadByte();			
+			BrkBinSub = m_oBufferedStream.GetUChar();			
 			switch(BrkBinSub)
 			{
 				case 0: sBrkBinSub = _T("+-");break;
@@ -2622,14 +2621,14 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathDefJc(BYTE type, long length, void* poResult)//ReadByte
+	int ReadMathDefJc(BYTE type, long length, void* poResult)//GetUChar
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE DefJc;
 			CString sDefJc (_T("centerGroup"));
-			DefJc = m_oBufferedStream.ReadByte();			
+			DefJc = m_oBufferedStream.GetUChar();			
 			switch(DefJc)
 			{
 				case 0: sDefJc = _T("center");break;
@@ -2644,12 +2643,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathDispDef(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathDispDef(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:dispDef");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -2661,12 +2660,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}	
-	int ReadMathInterSp(BYTE type, long length, void* poResult)//ReadByte
+	int ReadMathInterSp(BYTE type, long length, void* poResult)//GetUChar
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			LONG lVal =  Mm_To_Dx(m_oBufferedStream.ReadDouble2());
+			LONG lVal =  Mm_To_Dx(m_oBufferedStream.GetDouble());
 			CString sXml;
 			sXml.Format(_T("<m:interSp m:val=\"%d\"/>"), lVal);
 			m_oFileWriter.m_oSettingWriter.AddSetting(sXml);
@@ -2675,14 +2674,14 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathIntLim(BYTE type, long length, void* poResult)//ReadByte
+	int ReadMathIntLim(BYTE type, long length, void* poResult)//GetUChar
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE IntLim;
 			CString sIntLim (_T("subSup"));
-			IntLim = m_oBufferedStream.ReadByte();			
+			IntLim = m_oBufferedStream.GetUChar();			
 			switch(IntLim)
 			{
 				case 0: sIntLim = _T("subSup");break;
@@ -2695,12 +2694,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathIntraSp(BYTE type, long length, void* poResult)//ReadByte
+	int ReadMathIntraSp(BYTE type, long length, void* poResult)//GetUChar
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			LONG lVal =  Mm_To_Dx(m_oBufferedStream.ReadDouble2());
+			LONG lVal =  Mm_To_Dx(m_oBufferedStream.GetDouble());
 			CString sXml;
 			sXml.Format(_T("<m:intraSp m:val=\"%d\"/>"), lVal);
 			m_oFileWriter.m_oSettingWriter.AddSetting(sXml);
@@ -2709,12 +2708,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathLMargin(BYTE type, long length, void* poResult)//ReadByte
+	int ReadMathLMargin(BYTE type, long length, void* poResult)//GetUChar
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			LONG lVal =  Mm_To_Dx(m_oBufferedStream.ReadDouble2());
+			LONG lVal =  Mm_To_Dx(m_oBufferedStream.GetDouble());
 			CString sXml;
 			sXml.Format(_T("<m:lMargin m:val=\"%d\"/>"), lVal);
 			m_oFileWriter.m_oSettingWriter.AddSetting(sXml);
@@ -2728,7 +2727,7 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-				CString sFontName((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+				CString sFontName(m_oBufferedStream.GetString3(length));
 				SerializeCommon::CorrectString(sFontName);
 
 				CString sVal; sVal.Format(_T("<m:font m:val=\"%s\" />"), sFontName);
@@ -2746,7 +2745,7 @@ public:
 		{
 			BYTE NaryLim;
 			CString sNaryLim (_T("subSup"));
-			NaryLim = m_oBufferedStream.ReadByte();			
+			NaryLim = m_oBufferedStream.GetUChar();			
 			switch(NaryLim)
 			{
 				case 0: sNaryLim = _T("subSup");break;
@@ -2764,7 +2763,7 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			LONG lVal =  Mm_To_Dx(m_oBufferedStream.ReadDouble2());
+			LONG lVal =  Mm_To_Dx(m_oBufferedStream.GetDouble());
 			CString sXml;
 			sXml.Format(_T("<m:postSp m:val=\"%d\"/>"), lVal);
 			m_oFileWriter.m_oSettingWriter.AddSetting(sXml);
@@ -2778,7 +2777,7 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			LONG lVal =  Mm_To_Dx(m_oBufferedStream.ReadDouble2());
+			LONG lVal =  Mm_To_Dx(m_oBufferedStream.GetDouble());
 			CString sXml;
 			sXml.Format(_T("<m:preSp m:val=\"%d\"/>"), lVal);
 			m_oFileWriter.m_oSettingWriter.AddSetting(sXml);
@@ -2792,7 +2791,7 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			LONG lVal =  Mm_To_Dx(m_oBufferedStream.ReadDouble2());
+			LONG lVal =  Mm_To_Dx(m_oBufferedStream.GetDouble());
 			CString sXml;
 			sXml.Format(_T("<m:rMargin m:val=\"%d\"/>"), lVal);
 			m_oFileWriter.m_oSettingWriter.AddSetting(sXml);
@@ -2801,12 +2800,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}	
-	int ReadMathSmallFrac(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathSmallFrac(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:smallFrac m:val=");
 			if (bVal)
 				sVal += _T("\"true\" />");
@@ -2823,7 +2822,7 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			LONG lVal =  Mm_To_Dx(m_oBufferedStream.ReadDouble2());
+			LONG lVal =  Mm_To_Dx(m_oBufferedStream.GetDouble());
 			CString sXml;
 			sXml.Format(_T("<m:wrapIndent m:val=\"%d\"/>"), lVal);
 			m_oFileWriter.m_oSettingWriter.AddSetting(sXml);
@@ -2832,12 +2831,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}	
-	int ReadMathWrapRight(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathWrapRight(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:wrapRight m:val=");
 			if (bVal)
 				sVal += _T("\"true\" />");
@@ -2855,7 +2854,7 @@ public:
 		int *paSchemeMapping = static_cast<int*>(poResult);
 		if ( c_oSer_ClrSchemeMappingType::Accent1 <= type && type <= c_oSer_ClrSchemeMappingType::T2)
 		{
-			paSchemeMapping[type] = m_oBufferedStream.ReadByte();
+			paSchemeMapping[type] = m_oBufferedStream.GetUChar();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -2879,7 +2878,7 @@ public:
 	Writers::ContentWriter& m_oDocumentWriter;
 	Writers::MediaWriter& m_oMediaWriter;
 public:
-	Binary_DocumentTableReader(Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter, CComments* pComments):Binary_CommonReader(poBufferedStream),m_oDocumentWriter(oDocumentWriter),m_oFileWriter(oFileWriter),m_oMediaWriter(oFileWriter.m_oMediaWriter),m_oFontTableWriter(oFileWriter.m_oFontTableWriter),oBinary_pPrReader(poBufferedStream, oFileWriter),oBinary_rPrReader(poBufferedStream), oBinary_tblPrReader(poBufferedStream, oFileWriter),m_oCur_rPr(m_oFontTableWriter.m_mapFonts),m_oMath_rPr(m_oFontTableWriter.m_mapFonts),m_pComments(pComments)
+	Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter, CComments* pComments):Binary_CommonReader(poBufferedStream),m_oDocumentWriter(oDocumentWriter),m_oFileWriter(oFileWriter),m_oMediaWriter(oFileWriter.m_oMediaWriter),m_oFontTableWriter(oFileWriter.m_oFontTableWriter),oBinary_pPrReader(poBufferedStream, oFileWriter),oBinary_rPrReader(poBufferedStream), oBinary_tblPrReader(poBufferedStream, oFileWriter),m_oCur_rPr(m_oFontTableWriter.m_mapFonts),m_oMath_rPr(m_oFontTableWriter.m_mapFonts),m_pComments(pComments)
 	{
 		m_byteLastElemType = c_oSerParType::Content;
 		m_pCurHyperlink = NULL;
@@ -3018,20 +3017,20 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		CHyperlink* pHyperlink = static_cast<CHyperlink*>(poResult);
 		if ( c_oSer_HyperlinkType::Link == type )
-			pHyperlink->sLink = m_oBufferedStream.ReadString2(length);
+			pHyperlink->sLink = m_oBufferedStream.GetString3(length);
 		else if ( c_oSer_HyperlinkType::Anchor == type )
-			pHyperlink->sAnchor = m_oBufferedStream.ReadString2(length);
+			pHyperlink->sAnchor = m_oBufferedStream.GetString3(length);
 		else if ( c_oSer_HyperlinkType::Tooltip == type )
-			pHyperlink->sTooltip = m_oBufferedStream.ReadString2(length);
+			pHyperlink->sTooltip = m_oBufferedStream.GetString3(length);
 		else if ( c_oSer_HyperlinkType::History == type )
 		{
 			pHyperlink->bHistory = true;
-			pHyperlink->History = m_oBufferedStream.ReadBool();
+			pHyperlink->History = m_oBufferedStream.GetBool();
 		}
 		else if ( c_oSer_HyperlinkType::DocLocation == type )
-			pHyperlink->sDocLocation = m_oBufferedStream.ReadString2(length);
+			pHyperlink->sDocLocation = m_oBufferedStream.GetString3(length);
 		else if ( c_oSer_HyperlinkType::TgtFrame == type )
-			pHyperlink->sTgtFrame = m_oBufferedStream.ReadString2(length);
+			pHyperlink->sTgtFrame = m_oBufferedStream.GetString3(length);
 		else if ( c_oSer_HyperlinkType::Content == type )
 		{
 			CHyperlink* pPrevHyperlink = m_pCurHyperlink;
@@ -3055,7 +3054,7 @@ public:
 	{		
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
-			LONG lVal = m_oBufferedStream.ReadLong();
+			LONG lVal = m_oBufferedStream.GetLong();
 		else
 			res = c_oSerConstants::ReadUnknown;
 
@@ -3249,12 +3248,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathAln(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathAln(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:aln");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -3266,12 +3265,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathAlnScr(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathAlnScr(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:alnScr");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -3294,13 +3293,13 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathArgSz(BYTE type, long length, void* poResult)//ReadLong
+	int ReadMathArgSz(BYTE type, long length, void* poResult)//GetLong
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			LONG lVal;
-			lVal = m_oBufferedStream.ReadLong();
+			lVal = m_oBufferedStream.GetLong();
 			CString sVal(_T("<m:argSz"));
 			if (lVal)
 			{
@@ -3357,7 +3356,7 @@ public:
 		{
 			BYTE BaseJc;
 			CString sBaseJc (_T("top"));
-			BaseJc = m_oBufferedStream.ReadByte();			
+			BaseJc = m_oBufferedStream.GetUChar();			
 			switch(BaseJc)
 			{
 				case 0: sBaseJc = _T("bottom");break;
@@ -3503,13 +3502,13 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathBrk(BYTE type, long length, void* poResult)//ReadLong
+	int ReadMathBrk(BYTE type, long length, void* poResult)//GetLong
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::AlnAt == type )
 		{
 			LONG lVal;
-			lVal = m_oBufferedStream.ReadLong();
+			lVal = m_oBufferedStream.GetLong();
 			CString sVal(_T("<m:brk"));
 			if (lVal)
 			{
@@ -3522,7 +3521,7 @@ public:
 		else if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BOOL bVal;
-			bVal = m_oBufferedStream.ReadBool();
+			bVal = m_oBufferedStream.GetBool();
 			CString sVal(_T("<m:brk/>"));
 				GetRunStringWriter().WriteString(sVal);
 		}
@@ -3530,13 +3529,13 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathCGp(BYTE type, long length, void* poResult)//ReadLong
+	int ReadMathCGp(BYTE type, long length, void* poResult)//GetLong
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			LONG lVal;
-			lVal = m_oBufferedStream.ReadLong();
+			lVal = m_oBufferedStream.GetLong();
 			CString sVal(_T("<m:cGp"));
 			if (lVal)
 			{
@@ -3551,13 +3550,13 @@ public:
 		return res;
 	}
 
-	int ReadMathCGpRule(BYTE type, long length, void* poResult)//ReadByte
+	int ReadMathCGpRule(BYTE type, long length, void* poResult)//GetUChar
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			LONG lVal;
-			lVal = m_oBufferedStream.ReadLong();
+			lVal = m_oBufferedStream.GetLong();
 			CString sVal(_T("<m:cGpRule"));
 			if (lVal)
 			{
@@ -3585,13 +3584,13 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathCount(BYTE type, long length, void* poResult)//ReadLong
+	int ReadMathCount(BYTE type, long length, void* poResult)//GetLong
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			LONG lVal;
-			lVal = m_oBufferedStream.ReadLong();
+			lVal = m_oBufferedStream.GetLong();
 			CString sVal(_T("<m:count"));
 			if (lVal)
 			{
@@ -3605,13 +3604,13 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathCSp(BYTE type, long length, void* poResult)//ReadLong
+	int ReadMathCSp(BYTE type, long length, void* poResult)//GetLong
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			LONG lVal;
-			lVal = m_oBufferedStream.ReadLong();
+			lVal = m_oBufferedStream.GetLong();
 			CString sVal(_T("<m:cSp"));
 			if (lVal)
 			{
@@ -3657,12 +3656,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}	
-	int ReadMathDegHide(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathDegHide(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:degHide");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -3674,12 +3673,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathDiff(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathDiff(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:diff");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -3921,12 +3920,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathGrow(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathGrow(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:grow");
 			if (!bVal)
 				sVal += _T(" m:val=\"false\" />");
@@ -3939,12 +3938,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathHideBot(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathHideBot(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:hideBot");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -3956,12 +3955,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathHideLeft(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathHideLeft(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:hideLeft");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -3973,12 +3972,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathHideRight(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathHideRight(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:hideRight");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -3990,12 +3989,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathHideTop(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathHideTop(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:hideTop");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -4007,14 +4006,14 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}		
-	int ReadMathMJc(BYTE type, long length, void* poResult)//ReadByte
+	int ReadMathMJc(BYTE type, long length, void* poResult)//GetUChar
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE MJc;
 			CString sMJc (_T("centerGroup"));
-			MJc = m_oBufferedStream.ReadByte();			
+			MJc = m_oBufferedStream.GetUChar();			
 			switch(MJc)
 			{
 				case 0: sMJc = _T("center");break;
@@ -4029,14 +4028,14 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathLimLoc(BYTE type, long length, void* poResult)//ReadByte
+	int ReadMathLimLoc(BYTE type, long length, void* poResult)//GetUChar
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE LimLoc;
 			CString sLimLoc (_T("subSup"));
-			LimLoc = m_oBufferedStream.ReadByte();	
+			LimLoc = m_oBufferedStream.GetUChar();	
 			switch(LimLoc)
 			{
 				case 0: sLimLoc = _T("subSup");break;
@@ -4126,12 +4125,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathLit(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathLit(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:lit");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -4162,12 +4161,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathMaxDist(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathMaxDist(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:maxDist");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -4192,14 +4191,14 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathMcJc(BYTE type, long length, void* poResult)//ReadByte
+	int ReadMathMcJc(BYTE type, long length, void* poResult)//GetUChar
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE McJc;
 			CString sMcJc (_T("center"));
-			McJc = m_oBufferedStream.ReadByte();			
+			McJc = m_oBufferedStream.GetUChar();			
 			switch(McJc)
 			{
 				case 0: sMcJc = _T("center");break;
@@ -4371,12 +4370,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathNoBreak(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathNoBreak(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:noBreak");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -4388,12 +4387,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathNor(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathNor(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:nor");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -4405,12 +4404,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathObjDist(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathObjDist(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:objDist");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -4452,12 +4451,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathOpEmu(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathOpEmu(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:opEmu");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -4521,12 +4520,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathPlcHide(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathPlcHide(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:plcHide");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -4545,7 +4544,7 @@ public:
 		{
 			BYTE Pos;
 			CString sPos(_T("bot"));
-			Pos = m_oBufferedStream.ReadByte();
+			Pos = m_oBufferedStream.GetUChar();
 			
 			switch(Pos)
 			{
@@ -4563,7 +4562,7 @@ public:
 	CString GetMathText (long length)
 	{
 		CString strRes = _T("");
-		CString strVal((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+		CString strVal(m_oBufferedStream.GetString3(length));
 		for (int i = 0, length = strVal.GetLength(); i < length; ++i )
 		{
 			WCHAR sChr = strVal.GetAt(i);
@@ -4689,13 +4688,13 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathRSp(BYTE type, long length, void* poResult)//ReadLong
+	int ReadMathRSp(BYTE type, long length, void* poResult)//GetLong
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			LONG lVal;
-			lVal = m_oBufferedStream.ReadLong();
+			lVal = m_oBufferedStream.GetLong();
 			CString sVal(_T("<m:rSp"));
 			if (lVal)
 			{
@@ -4709,13 +4708,13 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathRSpRule(BYTE type, long length, void* poResult)//ReadByte
+	int ReadMathRSpRule(BYTE type, long length, void* poResult)//GetUChar
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			LONG lVal;
-			lVal = m_oBufferedStream.ReadLong();
+			lVal = m_oBufferedStream.GetLong();
 			CString sVal(_T("<m:rSpRule"));
 			if (lVal)
 			{
@@ -4729,14 +4728,14 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathScr(BYTE type, long length, void* poResult)//ReadByte
+	int ReadMathScr(BYTE type, long length, void* poResult)//GetUChar
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE Scr;
 			CString sScr (_T("roman"));
-			Scr = m_oBufferedStream.ReadByte();			
+			Scr = m_oBufferedStream.GetUChar();			
 			switch(Scr)
 			{
 				case 0: sScr = _T("double-struck");break;
@@ -4766,12 +4765,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathShow(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathShow(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:show");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -4783,14 +4782,14 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathShp(BYTE type, long length, void* poResult)//ReadByte
+	int ReadMathShp(BYTE type, long length, void* poResult)//GetUChar
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE Shp;
 			CString sShp (_T("centered"));
-			Shp = m_oBufferedStream.ReadByte();			
+			Shp = m_oBufferedStream.GetUChar();			
 			switch(Shp)
 			{
 				case 0: sShp = _T("centered");break;
@@ -4971,12 +4970,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathStrikeBLTR(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathStrikeBLTR(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:strikeBLTR");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -4988,12 +4987,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathStrikeH(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathStrikeH(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:strikeH");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -5005,12 +5004,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathStrikeTLBR(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathStrikeTLBR(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:strikeTLBR");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -5022,12 +5021,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathStrikeV(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathStrikeV(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:strikeV");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -5039,14 +5038,14 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathSty(BYTE type, long length, void* poResult)//ReadByte
+	int ReadMathSty(BYTE type, long length, void* poResult)//GetUChar
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE Sty;
 			CString sSty (_T("i"));
-			Sty = m_oBufferedStream.ReadByte();			
+			Sty = m_oBufferedStream.GetUChar();	
 			switch(Sty)
 			{
 				case 0: sSty = _T("b");break;
@@ -5061,12 +5060,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathSubHide(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathSubHide(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:subHide");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -5078,12 +5077,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathSupHide(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathSupHide(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:supHide");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -5095,12 +5094,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathTransp(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathTransp(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:transp");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -5112,14 +5111,14 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathType(BYTE type, long length, void* poResult)//ReadByte
+	int ReadMathType(BYTE type, long length, void* poResult)//GetUChar
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE Type;
 			CString sType (_T("bar"));
-			Type = m_oBufferedStream.ReadByte();			
+			Type = m_oBufferedStream.GetUChar();			
 			switch(Type)
 			{
 				case 0: sType = _T("bar");break;
@@ -5134,14 +5133,14 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathVertJc(BYTE type, long length, void* poResult)//ReadByte
+	int ReadMathVertJc(BYTE type, long length, void* poResult)//GetUChar
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE VertJc;
 			CString sVertJc (_T("bot"));
-			VertJc = m_oBufferedStream.ReadByte();			
+			VertJc = m_oBufferedStream.GetUChar();			
 			switch(VertJc)
 			{
 				case 0: sVertJc = _T("bot");break;
@@ -5154,12 +5153,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathZeroAsc(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathZeroAsc(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:zeroAsc");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -5171,12 +5170,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathZeroDesc(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathZeroDesc(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:zaroDesc");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -5188,12 +5187,12 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadMathZeroWid(BYTE type, long length, void* poResult)//ReadBool
+	int ReadMathZeroWid(BYTE type, long length, void* poResult)//GetBool
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			bool bVal = m_oBufferedStream.ReadBool();
+			bool bVal = m_oBufferedStream.GetBool();
 			CString sVal = _T("<m:zeroWid");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
@@ -5228,7 +5227,7 @@ public:
 		if (c_oSerRunType::run == type)
 		{
 			GetRunStringWriter().WriteString(CString(_T("<w:t xml:space=\"preserve\">")));
-			CString sText((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+			CString sText(m_oBufferedStream.GetString3(length));
 			SerializeCommon::CorrectString(sText);
 			GetRunStringWriter().WriteString(sText);
 			GetRunStringWriter().WriteString(CString(_T("</w:t>")));
@@ -5339,7 +5338,7 @@ public:
 		}
 		else if(c_oSerRunType::fldstart == type)
 		{
-			CString sField((wchar_t*)m_oBufferedStream.ReadPointer(length), length / 2);
+			CString sField(m_oBufferedStream.GetString3(length));
 			SerializeCommon::CorrectString(sField);
 			GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));
 			if(m_oCur_rPr.IsNoEmpty())
@@ -5377,7 +5376,7 @@ public:
 		long* pVal = static_cast<long*>(poResult);
 		int res = c_oSerConstants::ReadOk;
 		if (c_oSer_CommentsType::Id == type)
-			*pVal = m_oBufferedStream.ReadLong();
+			*pVal = m_oBufferedStream.GetLong();
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -5413,7 +5412,7 @@ public:
 		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSerDocTableType::tblGrid_Item == type )
 		{
-			double dgridCol = m_oBufferedStream.ReadDouble2();
+			double dgridCol = m_oBufferedStream.GetDouble();
 			oBinary_tblPrReader.m_aCurTblGrid.push_back(dgridCol);
 			long ngridCol = SerializeCommon::Round( g_dKoef_mm_to_twips * dgridCol);
 			CString sgridCol;sgridCol.Format(_T("<w:gridCol w:w=\"%d\"/>"), ngridCol);
@@ -5511,32 +5510,32 @@ public:
 		if ( c_oSerImageType::MediaId == type )
 		{
 			odocImg->bMediaId = true;
-			odocImg->MediaId = m_oBufferedStream.ReadLong();
+			odocImg->MediaId = m_oBufferedStream.GetLong();
 		}
 		else if ( c_oSerImageType::Type == type )
 		{
 			odocImg->bType = true;
-			odocImg->Type = m_oBufferedStream.ReadByte();
+			odocImg->Type = m_oBufferedStream.GetUChar();
 		}
 		else if ( c_oSerImageType::Width == type )
 		{
 			odocImg->bWidth = true;
-			odocImg->Width = m_oBufferedStream.ReadDouble2();
+			odocImg->Width = m_oBufferedStream.GetDouble();
 		}
 		else if ( c_oSerImageType::Height == type )
 		{
 			odocImg->bHeight = true;
-			odocImg->Height = m_oBufferedStream.ReadDouble2();
+			odocImg->Height = m_oBufferedStream.GetDouble();
 		}
 		else if ( c_oSerImageType::X == type )
 		{
 			odocImg->bX = true;
-			odocImg->X = m_oBufferedStream.ReadDouble2();
+			odocImg->X = m_oBufferedStream.GetDouble();
 		}
 		else if ( c_oSerImageType::Y == type )
 		{
 			odocImg->bY = true;
-			odocImg->Y = m_oBufferedStream.ReadDouble2();
+			odocImg->Y = m_oBufferedStream.GetDouble();
 		}
 		else if ( c_oSerImageType::Padding == type )
 		{
@@ -5554,13 +5553,13 @@ public:
 		if ( c_oSerImageType2::Type == type )
 		{
 			pDrawingProperty->bType = true;
-			pDrawingProperty->Type = m_oBufferedStream.ReadByte();
+			pDrawingProperty->Type = m_oBufferedStream.GetUChar();
 		}
 		else if ( c_oSerImageType2::PptxData == type )
 		{
 			pDrawingProperty->bDataPos = true;
 			pDrawingProperty->bDataLength = true;
-			pDrawingProperty->DataPos = m_oBufferedStream.GetPosition();
+			pDrawingProperty->DataPos = m_oBufferedStream.GetPos();
 			pDrawingProperty->DataLength = length;
 			//сейчас пропуская, потому что перед чтение этого поля надо собрать остальные данные
 			res = c_oSerConstants::ReadUnknown;
@@ -5618,7 +5617,7 @@ public:
 			{
 				pDrawingProperty->bDataPos = true;
 				pDrawingProperty->bDataLength = true;
-				pDrawingProperty->DataPos = m_oBufferedStream.GetPosition();
+				pDrawingProperty->DataPos = m_oBufferedStream.GetPos();
 				pDrawingProperty->DataLength = length;
 				//сейчас пропуская, потому что перед чтение этого поля надо собрать остальные данные
 			}
@@ -5627,42 +5626,42 @@ public:
 		else if ( c_oSerImageType2::BehindDoc == type )
 		{
 			pDrawingProperty->bBehindDoc = true;
-			pDrawingProperty->BehindDoc = m_oBufferedStream.ReadBool();
+			pDrawingProperty->BehindDoc = m_oBufferedStream.GetBool();
 		}
 		else if ( c_oSerImageType2::DistL == type )
 		{
 			pDrawingProperty->bDistL = true;
-			pDrawingProperty->DistL = m_oBufferedStream.ReadDouble2();
+			pDrawingProperty->DistL = m_oBufferedStream.GetDouble();
 		}
 		else if ( c_oSerImageType2::DistT == type )
 		{
 			pDrawingProperty->bDistT = true;
-			pDrawingProperty->DistT = m_oBufferedStream.ReadDouble2();
+			pDrawingProperty->DistT = m_oBufferedStream.GetDouble();
 		}
 		else if ( c_oSerImageType2::DistR == type )
 		{
 			pDrawingProperty->bDistR = true;
-			pDrawingProperty->DistR = m_oBufferedStream.ReadDouble2();
+			pDrawingProperty->DistR = m_oBufferedStream.GetDouble();
 		}
 		else if ( c_oSerImageType2::DistB == type )
 		{
 			pDrawingProperty->bDistB = true;
-			pDrawingProperty->DistB = m_oBufferedStream.ReadDouble2();
+			pDrawingProperty->DistB = m_oBufferedStream.GetDouble();
 		}
 		else if ( c_oSerImageType2::LayoutInCell == type )
 		{
 			pDrawingProperty->bLayoutInCell = true;
-			pDrawingProperty->LayoutInCell = m_oBufferedStream.ReadBool();
+			pDrawingProperty->LayoutInCell = m_oBufferedStream.GetBool();
 		}
 		else if ( c_oSerImageType2::RelativeHeight == type )
 		{
 			pDrawingProperty->bRelativeHeight = true;
-			pDrawingProperty->RelativeHeight = m_oBufferedStream.ReadLong();
+			pDrawingProperty->RelativeHeight = m_oBufferedStream.GetLong();
 		}
 		else if ( c_oSerImageType2::BSimplePos == type )
 		{
 			pDrawingProperty->bBSimplePos = true;
-			pDrawingProperty->BSimplePos = m_oBufferedStream.ReadBool();
+			pDrawingProperty->BSimplePos = m_oBufferedStream.GetBool();
 		}
 		else if ( c_oSerImageType2::EffectExtent == type )
 		{
@@ -5729,22 +5728,22 @@ public:
 		if ( c_oSerEffectExtent::Left == type )
 		{
 			pDrawingProperty->bEffectExtentL = true;
-			pDrawingProperty->EffectExtentL = m_oBufferedStream.ReadDouble2();
+			pDrawingProperty->EffectExtentL = m_oBufferedStream.GetDouble();
 		}
 		else if ( c_oSerEffectExtent::Top == type )
 		{
 			pDrawingProperty->bEffectExtentT = true;
-			pDrawingProperty->EffectExtentT = m_oBufferedStream.ReadDouble2();
+			pDrawingProperty->EffectExtentT = m_oBufferedStream.GetDouble();
 		}
 		else if ( c_oSerEffectExtent::Right == type )
 		{
 			pDrawingProperty->bEffectExtentR = true;
-			pDrawingProperty->EffectExtentR = m_oBufferedStream.ReadDouble2();
+			pDrawingProperty->EffectExtentR = m_oBufferedStream.GetDouble();
 		}
 		else if ( c_oSerEffectExtent::Bottom == type )
 		{
 			pDrawingProperty->bEffectExtentB = true;
-			pDrawingProperty->EffectExtentB = m_oBufferedStream.ReadDouble2();
+			pDrawingProperty->EffectExtentB = m_oBufferedStream.GetDouble();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5757,12 +5756,12 @@ public:
 		if ( c_oSerExtent::Cx == type )
 		{
 			pDrawingProperty->bWidth = true;
-			pDrawingProperty->Width = m_oBufferedStream.ReadDouble2();
+			pDrawingProperty->Width = m_oBufferedStream.GetDouble();
 		}
 		else if ( c_oSerExtent::Cy == type )
 		{
 			pDrawingProperty->bHeight = true;
-			pDrawingProperty->Height = m_oBufferedStream.ReadDouble2();
+			pDrawingProperty->Height = m_oBufferedStream.GetDouble();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5775,17 +5774,17 @@ public:
 		if ( c_oSerPosHV::RelativeFrom == type )
 		{
 			pDrawingProperty->bPositionHRelativeFrom = true;
-			pDrawingProperty->PositionHRelativeFrom = m_oBufferedStream.ReadByte();
+			pDrawingProperty->PositionHRelativeFrom = m_oBufferedStream.GetUChar();
 		}
 		else if ( c_oSerPosHV::Align == type )
 		{
 			pDrawingProperty->bPositionHAlign = true;
-			pDrawingProperty->PositionHAlign = m_oBufferedStream.ReadByte();
+			pDrawingProperty->PositionHAlign = m_oBufferedStream.GetUChar();
 		}
 		else if ( c_oSerPosHV::PosOffset == type )
 		{
 			pDrawingProperty->bPositionHPosOffset = true;
-			pDrawingProperty->PositionHPosOffset = m_oBufferedStream.ReadDouble2();
+			pDrawingProperty->PositionHPosOffset = m_oBufferedStream.GetDouble();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5798,17 +5797,17 @@ public:
 		if ( c_oSerPosHV::RelativeFrom == type )
 		{
 			pDrawingProperty->bPositionVRelativeFrom = true;
-			pDrawingProperty->PositionVRelativeFrom = m_oBufferedStream.ReadByte();
+			pDrawingProperty->PositionVRelativeFrom = m_oBufferedStream.GetUChar();
 		}
 		else if ( c_oSerPosHV::Align == type )
 		{
 			pDrawingProperty->bPositionVAlign = true;
-			pDrawingProperty->PositionVAlign = m_oBufferedStream.ReadByte();
+			pDrawingProperty->PositionVAlign = m_oBufferedStream.GetUChar();
 		}
 		else if ( c_oSerPosHV::PosOffset == type )
 		{
 			pDrawingProperty->bPositionVPosOffset = true;
-			pDrawingProperty->PositionVPosOffset = m_oBufferedStream.ReadDouble2();
+			pDrawingProperty->PositionVPosOffset = m_oBufferedStream.GetDouble();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5821,12 +5820,12 @@ public:
 		if ( c_oSerSimplePos::X == type )
 		{
 			pDrawingProperty->bSimplePosX = true;
-			pDrawingProperty->SimplePosX = m_oBufferedStream.ReadDouble2();
+			pDrawingProperty->SimplePosX = m_oBufferedStream.GetDouble();
 		}
 		else if ( c_oSerSimplePos::Y == type )
 		{
 			pDrawingProperty->bSimplePosY = true;
-			pDrawingProperty->SimplePosY = m_oBufferedStream.ReadDouble2();
+			pDrawingProperty->SimplePosY = m_oBufferedStream.GetDouble();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5850,7 +5849,7 @@ public:
 		if ( c_oSerWrapPolygon::Edited == type )
 		{
 			pDrawingPropertyWrap->bEdited = true;
-			pDrawingPropertyWrap->Edited = m_oBufferedStream.ReadBool();
+			pDrawingPropertyWrap->Edited = m_oBufferedStream.GetBool();
 		}
 		else if ( c_oSerWrapPolygon::Start == type )
 		{
@@ -5886,12 +5885,12 @@ public:
 		if ( c_oSerPoint2D::X == type )
 		{
 			pWrapPoint->bX = true;
-			pWrapPoint->X = m_oBufferedStream.ReadDouble2();
+			pWrapPoint->X = m_oBufferedStream.GetDouble();
 		}
 		else if ( c_oSerPoint2D::Y == type )
 		{
 			pWrapPoint->bY = true;
-			pWrapPoint->Y = m_oBufferedStream.ReadDouble2();
+			pWrapPoint->Y = m_oBufferedStream.GetDouble();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5907,7 +5906,7 @@ public:
 		return oBinary_pPrReader.Read_SecPr(type, length, poResult);
 	}
 };
-Binary_HdrFtrTableReader::Binary_HdrFtrTableReader(Streams::CBufferedStream& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter),m_oHeaderFooterWriter(oFileWriter.m_oHeaderFooterWriter)
+Binary_HdrFtrTableReader::Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter),m_oHeaderFooterWriter(oFileWriter.m_oHeaderFooterWriter)
 {
 }
 int Binary_HdrFtrTableReader::Read()
@@ -5987,10 +5986,10 @@ int Binary_HdrFtrTableReader::ReadHdrFtrItemContent(BYTE type, long length, void
 class BinaryFileReader
 {
 private:
-	Streams::CBufferedStream& m_oBufferedStream;
+	NSBinPptxRW::CBinaryFileReader& m_oBufferedStream;
 	Writers::FileWriter& m_oFileWriter;
 	CString m_sFileInDir;
-public: BinaryFileReader(CString& sFileInDir, Streams::CBufferedStream& oBufferedStream, Writers::FileWriter& oFileWriter):m_sFileInDir(sFileInDir),m_oBufferedStream(oBufferedStream), m_oFileWriter(oFileWriter)
+public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter):m_sFileInDir(sFileInDir),m_oBufferedStream(oBufferedStream), m_oFileWriter(oFileWriter)
 		{
 		}
 		int ReadFile()
@@ -6001,7 +6000,7 @@ public: BinaryFileReader(CString& sFileInDir, Streams::CBufferedStream& oBuffere
 		{
 			long res = c_oSerConstants::ReadOk;
 			//mtLen
-			res = m_oBufferedStream.Peek(1) == FALSE ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
+			res = m_oBufferedStream.Peek(1) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
 			if(c_oSerConstants::ReadOk != res)
 				return res;
 			long nOtherOffset = -1;
@@ -6011,15 +6010,15 @@ public: BinaryFileReader(CString& sFileInDir, Streams::CBufferedStream& oBuffere
 			long nCommentsOffset = -1;
 			std::vector<BYTE> aTypes;
 			std::vector<long> aOffBits;
-			BYTE mtLen = m_oBufferedStream.ReadByte();
+			BYTE mtLen = m_oBufferedStream.GetUChar();
 			for(int i = 0; i < mtLen; ++i)
 			{
 				//mtItem
-				res = m_oBufferedStream.Peek(5) == FALSE ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
+				res = m_oBufferedStream.Peek(5) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
 				if(c_oSerConstants::ReadOk != res)
 					return res;
-				BYTE mtiType = m_oBufferedStream.ReadByte();
-				long mtiOffBits = m_oBufferedStream.ReadLong();
+				BYTE mtiType = m_oBufferedStream.GetUChar();
+				long mtiOffBits = m_oBufferedStream.GetLong();
 
 				if(c_oSerTableTypes::Other == mtiType)
 				{
@@ -6045,7 +6044,7 @@ public: BinaryFileReader(CString& sFileInDir, Streams::CBufferedStream& oBuffere
 			}
 			if(-1 != nOtherOffset)
 			{
-				int nOldPos = m_oBufferedStream.GetPosition();
+				int nOldPos = m_oBufferedStream.GetPos();
 				m_oBufferedStream.Seek(nOtherOffset);
 				res = Binary_OtherTableReader(m_sFileInDir, m_oBufferedStream, m_oFileWriter).Read();
 				if(c_oSerConstants::ReadOk != res)
@@ -6053,7 +6052,7 @@ public: BinaryFileReader(CString& sFileInDir, Streams::CBufferedStream& oBuffere
 			}
 			if(-1 != nSettingsOffset)
 			{
-				int nOldPos = m_oBufferedStream.GetPosition();
+				int nOldPos = m_oBufferedStream.GetPos();
 				m_oBufferedStream.Seek(nSettingsOffset);
 				res = Binary_SettingsTableReader(m_oBufferedStream, m_oFileWriter).Read();
 				if(c_oSerConstants::ReadOk != res)
@@ -6072,7 +6071,7 @@ public: BinaryFileReader(CString& sFileInDir, Streams::CBufferedStream& oBuffere
 			BinaryStyleTableReader oBinaryStyleTableReader(m_oBufferedStream, m_oFileWriter);
 			if(-1 != nStyleOffset)
 			{
-				int nOldPos = m_oBufferedStream.GetPosition();
+				int nOldPos = m_oBufferedStream.GetPos();
 				m_oBufferedStream.Seek(nStyleOffset);
 				res = oBinaryStyleTableReader.Read();
 				if(c_oSerConstants::ReadOk != res)

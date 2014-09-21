@@ -716,10 +716,6 @@
 					RelativePath=".\BinWriter\BinWriters.h"
 					>
 				</File>
-				<File
-					RelativePath=".\BinWriter\StreamUtils.h"
-					>
-				</File>
 			</Filter>
 		</Filter>
 		<File

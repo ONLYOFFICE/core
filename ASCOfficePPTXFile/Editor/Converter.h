@@ -11,7 +11,7 @@ namespace PPTX2EditorAdvanced
 	DWORD Convert(NSBinPptxRW::CBinaryFileWriter& oBinaryWriter, PPTX::Folder& oFolder, const CString& strSourceDirectory, const CString& strDstFile)
 	{	
 		// сначала соберем все объекты для конвертации и сформируем main-таблицы
-		NSBinPptxRW::CCommonWriter* pCommon = &oBinaryWriter.m_oCommon;
+		NSBinPptxRW::CCommonWriter* pCommon = oBinaryWriter.m_pCommon;
 
 		CAtlArray<smart_ptr<PPTX::Theme>>			_themes;
 		CAtlArray<smart_ptr<PPTX::SlideMaster>>		_slideMasters;
@@ -38,8 +38,8 @@ namespace PPTX2EditorAdvanced
 				continue;
 			}
 
-			oBinaryWriter.m_oCommon.m_oRels.Add();
-			CMasterSlideInfo& oMasterInfo = oBinaryWriter.m_oCommon.m_oRels[oBinaryWriter.m_oCommon.m_oRels.GetCount() - 1];
+			oBinaryWriter.m_pCommon->m_oRels.Add();
+			CMasterSlideInfo& oMasterInfo = oBinaryWriter.m_pCommon->m_oRels[oBinaryWriter.m_pCommon->m_oRels.GetCount() - 1];
 
 			// записываем mainMaster
 			LONG lCountSM = (LONG)_slideMasters.GetCount();
@@ -136,11 +136,11 @@ namespace PPTX2EditorAdvanced
 			if (NULL == pSearchL)
 			{
 				// такого быть не должно
-				oBinaryWriter.m_oCommon.m_oSlide_Layout_Rels.Add(0);				
+				oBinaryWriter.m_pCommon->m_oSlide_Layout_Rels.Add(0);
 			}
 			else
 			{
-				oBinaryWriter.m_oCommon.m_oSlide_Layout_Rels.Add(pSearchL->m_value);
+				oBinaryWriter.m_pCommon->m_oSlide_Layout_Rels.Add(pSearchL->m_value);
 			}
 
 			LONG lCountS = (LONG)_slides.GetCount();
@@ -272,7 +272,7 @@ namespace PPTX2EditorAdvanced
 		oBinaryWriter.StartRecord(NSMainTables::ImageMap);
 		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
-		CAtlMap<CString, NSShapeImageGen::CImageInfo>* pIMaps = &oBinaryWriter.m_oCommon.m_oImageManager.m_mapImagesFile;
+		CAtlMap<CString, NSShapeImageGen::CImageInfo>* pIMaps = &oBinaryWriter.m_pCommon->m_pImageManager->m_mapImagesFile;
 		POSITION pos1 = pIMaps->GetStartPosition();
 
 		LONG lIndexI = 0;
@@ -292,7 +292,7 @@ namespace PPTX2EditorAdvanced
 		oBinaryWriter.StartRecord(NSMainTables::FontMap);
 		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
-		CAtlMap<CString, CString>* pFMaps = &oBinaryWriter.m_oCommon.m_pNativePicker->m_mapPicks;
+		CAtlMap<CString, CString>* pFMaps = &oBinaryWriter.m_pCommon->m_pNativePicker->m_mapPicks;
 		POSITION pos2 = pFMaps->GetStartPosition();
 
 		LONG lIndexF = 0;
@@ -314,10 +314,10 @@ namespace PPTX2EditorAdvanced
 			oBinaryWriter.StartRecord(NSMainTables::SlideRels);
 			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
-			size_t _s_rels = oBinaryWriter.m_oCommon.m_oSlide_Layout_Rels.GetCount();
+			size_t _s_rels = oBinaryWriter.m_pCommon->m_oSlide_Layout_Rels.GetCount();
 			for (size_t i = 0; i < _s_rels; ++i)
 			{
-				oBinaryWriter.WriteInt1(0, oBinaryWriter.m_oCommon.m_oSlide_Layout_Rels[i]);
+				oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oSlide_Layout_Rels[i]);
 			}
 			
 			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
@@ -329,7 +329,7 @@ namespace PPTX2EditorAdvanced
 			oBinaryWriter.StartMainRecord(NSMainTables::ThemeRels);
 			oBinaryWriter.StartRecord(NSMainTables::ThemeRels);
 			
-			CAtlArray<NSBinPptxRW::CMasterSlideInfo>* th_rels = &oBinaryWriter.m_oCommon.m_oRels;
+			CAtlArray<NSBinPptxRW::CMasterSlideInfo>* th_rels = &oBinaryWriter.m_pCommon->m_oRels;
 			oBinaryWriter.WriteULONG((ULONG)th_rels->GetCount());
 
 			for (size_t i = 0; i < th_rels->GetCount(); i++)

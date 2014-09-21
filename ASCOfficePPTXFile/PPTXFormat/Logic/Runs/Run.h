@@ -97,8 +97,8 @@ namespace PPTX
 
 				pWriter->EndRecord();
 
-				if (pWriter->m_oCommon.m_pNativePicker->m_bIsEmbeddedFonts)
-					pWriter->m_oCommon.m_pNativePicker->m_oEmbeddedFonts.CheckString(text);
+				if (pWriter->m_pCommon->m_pNativePicker->m_bIsEmbeddedFonts)
+					pWriter->m_pCommon->m_pNativePicker->m_oEmbeddedFonts.CheckString(text);
 			}
 
 			virtual CString GetText()const{return text.get_value_or(_T(""));};

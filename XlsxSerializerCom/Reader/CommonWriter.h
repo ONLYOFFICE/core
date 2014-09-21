@@ -1,15 +1,15 @@
 #ifndef COMMON_WRITER
 #define COMMON_WRITER
 
-#include "../../ASCOfficeDocxFile2/BinWriter/StreamUtils.h"
+#include "../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 
 namespace BinXlsxRW {
 	class BinaryCommonWriter
 	{
 	public: 
-		Streams::CBufferedStream &m_oStream;
-		BinaryCommonWriter(Streams::CBufferedStream &oCBufferedStream);
+		NSBinPptxRW::CBinaryFileWriter &m_oStream;
+		BinaryCommonWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream);
 		int WriteItemStart(BYTE type);
 		void WriteItemEnd(int nStart);
 		int WriteItemWithLengthStart();

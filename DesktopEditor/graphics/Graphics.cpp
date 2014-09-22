@@ -633,6 +633,9 @@ namespace Aggplus
 					if (m_dDpiX > 1)
 						dKoef = 25.4 / m_dDpiX;
 
+					if (m_bIntegerGrid)
+						dKoef = 1.0;
+
 					for (LONG i = 0; i < lCount2; ++i)
 					{
 						if (0 == i)

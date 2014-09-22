@@ -1,4 +1,5 @@
 #pragma once
+#include <atlbase.h>
 
 // тип в DrawPath
 const long c_nStroke			= 0x0001;

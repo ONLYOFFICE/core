@@ -25,13 +25,6 @@ namespace BinXlsxRW {
 	static TCHAR* gc_sMediaDirName = _T("media");
 	static TCHAR* gc_sMimeName = _T("mimetype");
 
-#ifdef DEFAULT_TABLE_STYLES
-	CString WriteDefaultFileHeader(int nDataSize);
-	void getDefaultCellStyles(CString& sFileInput, CString& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor);
-	void getDefaultTableStyles(CString& sFileInput, CString& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor);
-	void writeTheme(LPSAFEARRAY pThemeData, CString& sFileOutput);
-#endif
-
 	class BinaryTableWriter
 	{
 		BinaryCommonWriter m_oBcw;
@@ -2360,15 +2353,11 @@ namespace BinXlsxRW {
 			}
 			if(NULL != bstrXml)
 			{
-				LPSAFEARRAY pBinaryObj = NULL;
 				BSTR bstrOutputXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->AddObject(bstrXml, &bstrOutputXml, &pBinaryObj);
-				if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);
-					m_oBcw.WriteSafeArray(pBinaryObj);
-				}
-				RELEASEARRAY(pBinaryObj);
+				m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);
+				int nCurPos = m_oBcw.WriteItemWithLengthStart();
+				HRESULT hRes = m_pOfficeDrawingConverter->AddObject(bstrXml, &bstrOutputXml);
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				SysFreeString(bstrOutputXml);
 				SysFreeString(bstrXml);
 			}
@@ -3183,9 +3172,10 @@ namespace BinXlsxRW {
 		};
 		BinaryCommonWriter m_oBcw;
 		NSFontCutter::CEmbeddedFontsManager* m_pEmbeddedFontsManager;
-		LPSAFEARRAY m_pThemeData;
+		OOX::CTheme* m_pTheme;
+		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 	public:
-		BinaryOtherTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, LPSAFEARRAY pThemeData):m_oBcw(oCBufferedStream),m_pEmbeddedFontsManager(pEmbeddedFontsManager),m_pThemeData(pThemeData)
+		BinaryOtherTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::CTheme* pTheme, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):m_oBcw(oCBufferedStream),m_pEmbeddedFontsManager(pEmbeddedFontsManager),m_pTheme(pTheme),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 		{
 		};
 		void Write()
@@ -3206,12 +3196,45 @@ namespace BinXlsxRW {
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 			//Theme
-			if(NULL != m_pThemeData)
+			if(NULL != m_pTheme)
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OtherType::Theme);
-				m_oBcw.WriteSafeArray(m_pThemeData);
+				nCurPos = m_oBcw.WriteItemWithLengthStart();
+#ifdef DEFAULT_TABLE_STYLES
+				long nThemeStartPos = m_oBcw.m_oStream.GetPosition();
+#endif
+				BSTR bstrThemePath = m_pTheme->m_oReadPath.GetPath().AllocSysString();
+				m_pOfficeDrawingConverter->GetThemeBinary(bstrThemePath);
+				SysFreeString(bstrThemePath);
+#ifdef DEFAULT_TABLE_STYLES
+				long nThemeLength = m_oBcw.m_oStream.GetPosition() - nThemeStartPos;
+				writeTheme(m_oBcw.m_oStream.GetBuffer(), nThemeStartPos, nThemeLength, CString(_T("c:\\defaultTheme.bin")));
+#endif
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 		};
+#ifdef DEFAULT_TABLE_STYLES
+		CString WriteDefaultFileHeader(int nDataSize)
+		{
+			CString sHeader;
+			sHeader.Format(_T("%s;;%d;"), g_sFormatSignature, nDataSize);
+			return sHeader;
+		}
+		void writeTheme(BYTE* pData, long nStart, long nLength, CString& sFileOutput)
+		{
+			int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nLength, Base64::B64_BASE64_FLAG_NOCRLF);
+			BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
+			if(TRUE == Base64::Base64Encode(pData + nStart, nLength, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
+			{
+				CFile oFile;
+				oFile.CreateFileW(sFileOutput);
+				oFile.WriteStringUTF8(WriteDefaultFileHeader(nLength));
+				oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
+				oFile.CloseFile();
+			}
+			RELEASEARRAYOBJECTS(pbBase64Buffer);
+		}
+#endif
 	};
 	class BinaryFileWriter {
 	private:
@@ -3250,7 +3273,7 @@ namespace BinXlsxRW {
 			//oMimeFile.CloseFile();
 
 			long nGrowSize = 1 * 1024 * 1024;//1мб
-			NSBinPptxRW::CBinaryFileWriter oBufferedStream;
+			NSBinPptxRW::CBinaryFileWriter& oBufferedStream = *pOfficeDrawingConverter->m_pBinaryWriter;
 
 			m_oBcw = new BinaryCommonWriter(oBufferedStream);
 
@@ -3347,25 +3370,13 @@ namespace BinXlsxRW {
 			}
 
 			//theme data
-			LPSAFEARRAY pThemeData = NULL;
 			OOX::CTheme* pTheme = oXlsx.GetTheme();
-			if(NULL != pTheme)
-			{
-				BSTR bstrThemePath = oXlsx.GetTheme()->m_oReadPath.GetPath().AllocSysString();
-				pOfficeDrawingConverter->GetThemeBinary(bstrThemePath, &pThemeData);
-				SysFreeString(bstrThemePath);
-			}
-
-#ifdef DEFAULT_TABLE_STYLES
-			writeTheme(pThemeData, CString(_T("c:\\defaultTheme.bin")));
-#endif
 
 			//OtherTable
 			nCurPos = WriteTableStart(c_oSerTableTypes::Other);
-			BinaryOtherTableWriter oBinaryOtherTableWriter(oBufferedStream, pEmbeddedFontsManager, pThemeData);
+			BinaryOtherTableWriter oBinaryOtherTableWriter(oBufferedStream, pEmbeddedFontsManager, pTheme, pOfficeDrawingConverter);
 			oBinaryOtherTableWriter.Write();
 			WriteTableEnd(nCurPos);
-			RELEASEARRAY(pThemeData);
 			
 			WriteMainTableEnd();
 		}
@@ -3420,275 +3431,257 @@ namespace BinXlsxRW {
 			//Seek вобратно в MainTable
 			m_oBcw->m_oStream.SetPosition(nCurPos);
 		}
-	};
 #ifdef DEFAULT_TABLE_STYLES
-	CString WriteDefaultFileHeader(int nDataSize)
-	{
-		CString sHeader;
-		sHeader.Format(_T("%s;;%d;"), g_sFormatSignature, nDataSize);
-		return sHeader;
-	}
-	void getDefaultCellStyles(CString& sFileInput, CString& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
-	{
-		enum Types
+		CString WriteDefaultFileHeader(int nDataSize)
 		{
-			Style =  0,
-			BuiltinId = 1,
-			Hidden = 2,
-			CellStyle = 3,
-			Xfs = 4,
-			Font = 5,
-			Fill = 6,
-			Border = 7,
-			NumFmts = 8
-		};
-		int BUFFER_GROW_SIZE = 1024;
-		NSBinPptxRW::CBinaryFileWriter oBufferedStream;
-		BinaryCommonWriter oBinaryCommonWriter(oBufferedStream);
-		BinaryStyleTableWriter oBinaryStyleTableWriter(oBufferedStream, pEmbeddedFontsManager);
-
-		XmlUtils::CXmlLiteReader oReader;
-		oReader.FromFile(sFileInput);
-		oReader.ReadNextNode();//presetCellStyles
-
-		if (oReader.IsEmptyNode())
-			return;
-
-		bool bIsWriteNormal = false;
-
-		int nAllPos = oBinaryCommonWriter.WriteItemWithLengthStart();
-		int nCurDepth = oReader.GetDepth();
-		while (oReader.ReadNextSiblingNode(nCurDepth))
+			CString sHeader;
+			sHeader.Format(_T("%s;;%d;"), g_sFormatSignature, nDataSize);
+			return sHeader;
+		}
+		void getDefaultCellStyles(CString& sFileInput, CString& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
 		{
-			CString sName = oReader.GetName(); //name of cell style
-
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	oBuiltinId;
-			nullable<SimpleTypes::COnOff<>>					oHidden;
-			nullable<OOX::Spreadsheet::CBorders>			oBorders;
-			nullable<OOX::Spreadsheet::CCellStyles>			oCellStyles;
-			nullable<OOX::Spreadsheet::CCellStyleXfs>		oCellStyleXfs;
-			nullable<OOX::Spreadsheet::CCellXfs>			oCellXfs;
-			nullable<OOX::Spreadsheet::CFills>				oFills;
-			nullable<OOX::Spreadsheet::CFonts>				oFonts;
-			nullable<OOX::Spreadsheet::CNumFmts>			oNumFmts;
-
-			WritingElement_ReadAttributes_Start(oReader)
-			WritingElement_ReadAttributes_Read_if		(oReader, _T("builtinId")	, oBuiltinId)
-			WritingElement_ReadAttributes_Read_else_if	(oReader, _T("hidden")		, oHidden)
-			WritingElement_ReadAttributes_End(oReader)
-
-			oReader.ReadNextNode(); //styleSheet
-
-			sName = oReader.GetName();
-			if (_T("styleSheet") == sName)
+			enum Types
 			{
-				if (!oReader.IsEmptyNode())
+				Style =  0,
+				BuiltinId = 1,
+				Hidden = 2,
+				CellStyle = 3,
+				Xfs = 4,
+				Font = 5,
+				Fill = 6,
+				Border = 7,
+				NumFmts = 8
+			};
+			NSBinPptxRW::CBinaryFileWriter oBufferedStream;
+			BinaryCommonWriter oBinaryCommonWriter(oBufferedStream);
+			BinaryStyleTableWriter oBinaryStyleTableWriter(oBufferedStream, pEmbeddedFontsManager);
+
+			XmlUtils::CXmlLiteReader oReader;
+			oReader.FromFile(sFileInput);
+			oReader.ReadNextNode();//presetCellStyles
+
+			if (oReader.IsEmptyNode())
+				return;
+
+			bool bIsWriteNormal = false;
+
+			int nAllPos = oBinaryCommonWriter.WriteItemWithLengthStart();
+			int nCurDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nCurDepth))
+			{
+				CString sName = oReader.GetName(); //name of cell style
+
+				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	oBuiltinId;
+				nullable<SimpleTypes::COnOff<>>					oHidden;
+				nullable<OOX::Spreadsheet::CBorders>			oBorders;
+				nullable<OOX::Spreadsheet::CCellStyles>			oCellStyles;
+				nullable<OOX::Spreadsheet::CCellStyleXfs>		oCellStyleXfs;
+				nullable<OOX::Spreadsheet::CCellXfs>			oCellXfs;
+				nullable<OOX::Spreadsheet::CFills>				oFills;
+				nullable<OOX::Spreadsheet::CFonts>				oFonts;
+				nullable<OOX::Spreadsheet::CNumFmts>			oNumFmts;
+
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if		(oReader, _T("builtinId")	, oBuiltinId)
+					WritingElement_ReadAttributes_Read_else_if	(oReader, _T("hidden")		, oHidden)
+					WritingElement_ReadAttributes_End(oReader)
+
+					oReader.ReadNextNode(); //styleSheet
+
+				sName = oReader.GetName();
+				if (_T("styleSheet") == sName)
 				{
-					int nStylesDepth = oReader.GetDepth();
-					while (oReader.ReadNextSiblingNode(nStylesDepth))
+					if (!oReader.IsEmptyNode())
 					{
-						sName = oReader.GetName();
-
-						if (_T("borders") == sName)
-							oBorders = oReader;
-						else if (_T("cellStyles") == sName)
-							oCellStyles = oReader;
-						else if (_T("cellStyleXfs") == sName)
-							oCellStyleXfs = oReader;
-						else if (_T("cellXfs") == sName)
-							oCellXfs = oReader;
-						else if (_T("fills") == sName)
-							oFills = oReader;
-						else if (_T("fonts") == sName)
-							oFonts = oReader;
-						else if (_T("numFmts") == sName)
-							oNumFmts = oReader;
-					}
-				}
-			}
-
-			int nCellStylePos = oBinaryCommonWriter.WriteItemStart(Types::Style);
-			int nCurPos = 0;
-
-			if (oBuiltinId.IsInit())
-			{
-				nCurPos = oBinaryCommonWriter.WriteItemStart(Types::BuiltinId);
-				oBinaryCommonWriter.m_oStream.WriteLONG(oBuiltinId->GetValue());
-				oBinaryCommonWriter.WriteItemEnd(nCurPos);
-			}
-			if (oHidden.IsInit())
-			{
-				nCurPos = oBinaryCommonWriter.WriteItemStart(Types::Hidden);
-				oBinaryCommonWriter.m_oStream.WriteBOOL(oHidden->ToBool());
-				oBinaryCommonWriter.WriteItemEnd(nCurPos);
-			}
-
-			for (int i = 0, nLength = oCellStyles->m_arrItems.GetSize(); i < nLength; ++i)
-			{
-				OOX::Spreadsheet::WritingElement* we = oCellStyles->m_arrItems[i];
-				if (OOX::Spreadsheet::et_CellStyle == we->getType())
-				{
-					OOX::Spreadsheet::CCellStyle* pCellStyle = static_cast<OOX::Spreadsheet::CCellStyle*>(we);
-					if (_T("Normal") == pCellStyle->m_oName.get2())
-					{
-						if (bIsWriteNormal)
-							continue;
-						else
+						int nStylesDepth = oReader.GetDepth();
+						while (oReader.ReadNextSiblingNode(nStylesDepth))
 						{
-							bIsWriteNormal = true;
-							i = nLength; //End after read normal
+							sName = oReader.GetName();
+
+							if (_T("borders") == sName)
+								oBorders = oReader;
+							else if (_T("cellStyles") == sName)
+								oCellStyles = oReader;
+							else if (_T("cellStyleXfs") == sName)
+								oCellStyleXfs = oReader;
+							else if (_T("cellXfs") == sName)
+								oCellXfs = oReader;
+							else if (_T("fills") == sName)
+								oFills = oReader;
+							else if (_T("fonts") == sName)
+								oFonts = oReader;
+							else if (_T("numFmts") == sName)
+								oNumFmts = oReader;
 						}
 					}
+				}
 
-					nCurPos = oBinaryCommonWriter.WriteItemStart(Types::CellStyle);
-					oBinaryStyleTableWriter.WriteCellStyle(*pCellStyle);
+				int nCellStylePos = oBinaryCommonWriter.WriteItemStart(Types::Style);
+				int nCurPos = 0;
+
+				if (oBuiltinId.IsInit())
+				{
+					nCurPos = oBinaryCommonWriter.WriteItemStart(Types::BuiltinId);
+					oBinaryCommonWriter.m_oStream.WriteLONG(oBuiltinId->GetValue());
 					oBinaryCommonWriter.WriteItemEnd(nCurPos);
+				}
+				if (oHidden.IsInit())
+				{
+					nCurPos = oBinaryCommonWriter.WriteItemStart(Types::Hidden);
+					oBinaryCommonWriter.m_oStream.WriteBOOL(oHidden->ToBool());
+					oBinaryCommonWriter.WriteItemEnd(nCurPos);
+				}
 
-					const OOX::Spreadsheet::CCellStyleXfs& oCellStyleXfsTmp = oCellStyleXfs.get();
-					OOX::Spreadsheet::WritingElement* weXfs = oCellStyleXfsTmp.m_arrItems[pCellStyle->m_oXfId->GetValue()];
-					if(OOX::Spreadsheet::et_Xfs == weXfs->getType())
+				for (int i = 0, nLength = oCellStyles->m_arrItems.size(); i < nLength; ++i)
+				{
+					OOX::Spreadsheet::WritingElement* we = oCellStyles->m_arrItems[i];
+					if (OOX::Spreadsheet::et_CellStyle == we->getType())
 					{
-						OOX::Spreadsheet::CXfs* pXfs = static_cast<OOX::Spreadsheet::CXfs*>(weXfs);
-						nCurPos = oBinaryCommonWriter.WriteItemStart(Types::Xfs);
-						oBinaryStyleTableWriter.WriteXfs(*pXfs);
+						OOX::Spreadsheet::CCellStyle* pCellStyle = static_cast<OOX::Spreadsheet::CCellStyle*>(we);
+						if (_T("Normal") == pCellStyle->m_oName.get2())
+						{
+							if (bIsWriteNormal)
+								continue;
+							else
+							{
+								bIsWriteNormal = true;
+								i = nLength; //End after read normal
+							}
+						}
+
+						nCurPos = oBinaryCommonWriter.WriteItemStart(Types::CellStyle);
+						oBinaryStyleTableWriter.WriteCellStyle(*pCellStyle);
 						oBinaryCommonWriter.WriteItemEnd(nCurPos);
 
-						if (pXfs->m_oFontId.IsInit())
+						const OOX::Spreadsheet::CCellStyleXfs& oCellStyleXfsTmp = oCellStyleXfs.get();
+						OOX::Spreadsheet::WritingElement* weXfs = oCellStyleXfsTmp.m_arrItems[pCellStyle->m_oXfId->GetValue()];
+						if(OOX::Spreadsheet::et_Xfs == weXfs->getType())
 						{
-							OOX::Spreadsheet::WritingElement* weFont = oFonts->m_arrItems[pXfs->m_oFontId->GetValue()];
-							if(OOX::Spreadsheet::et_Font == weFont->getType())
-							{
-								OOX::Spreadsheet::CFont* pFont = static_cast<OOX::Spreadsheet::CFont*>(weFont);
-								nCurPos = oBinaryCommonWriter.WriteItemStart(Types::Font);
-								oBinaryStyleTableWriter.WriteFont(*pFont, oIndexedColors, pTheme, oFontProcessor);
-								oBinaryCommonWriter.WriteItemEnd(nCurPos);
-							}
-						}
-						if (pXfs->m_oFillId.IsInit())
-						{
-							OOX::Spreadsheet::WritingElement* weFill = oFills->m_arrItems[pXfs->m_oFillId->GetValue()];
-							if(OOX::Spreadsheet::et_Fill == weFill->getType())
-							{
-								OOX::Spreadsheet::CFill* pFill = static_cast<OOX::Spreadsheet::CFill*>(weFill);
-								nCurPos = oBinaryCommonWriter.WriteItemStart(Types::Fill);
-								oBinaryStyleTableWriter.WriteFill(*pFill, oIndexedColors, pTheme);
-								oBinaryCommonWriter.WriteItemEnd(nCurPos);
-							}
-						}
-						if (pXfs->m_oBorderId.IsInit())
-						{
-							OOX::Spreadsheet::WritingElement* weBorder = oBorders->m_arrItems[pXfs->m_oBorderId->GetValue()];
-							if(OOX::Spreadsheet::et_Border == weBorder->getType())
-							{
-								OOX::Spreadsheet::CBorder* pBorder = static_cast<OOX::Spreadsheet::CBorder*>(weBorder);
-								nCurPos = oBinaryCommonWriter.WriteItemStart(Types::Border);
-								oBinaryStyleTableWriter.WriteBorder(*pBorder, oIndexedColors, pTheme);
-								oBinaryCommonWriter.WriteItemEnd(nCurPos);
-							}
-						}
-
-						if (oNumFmts.IsInit())
-						{
-							nCurPos = oBinaryCommonWriter.WriteItemStart(Types::NumFmts);
-							oBinaryStyleTableWriter.WriteNumFmts(oNumFmts.get());
+							OOX::Spreadsheet::CXfs* pXfs = static_cast<OOX::Spreadsheet::CXfs*>(weXfs);
+							nCurPos = oBinaryCommonWriter.WriteItemStart(Types::Xfs);
+							oBinaryStyleTableWriter.WriteXfs(*pXfs);
 							oBinaryCommonWriter.WriteItemEnd(nCurPos);
+
+							if (pXfs->m_oFontId.IsInit())
+							{
+								OOX::Spreadsheet::WritingElement* weFont = oFonts->m_arrItems[pXfs->m_oFontId->GetValue()];
+								if(OOX::Spreadsheet::et_Font == weFont->getType())
+								{
+									OOX::Spreadsheet::CFont* pFont = static_cast<OOX::Spreadsheet::CFont*>(weFont);
+									nCurPos = oBinaryCommonWriter.WriteItemStart(Types::Font);
+									oBinaryStyleTableWriter.WriteFont(*pFont, oIndexedColors, pTheme, oFontProcessor);
+									oBinaryCommonWriter.WriteItemEnd(nCurPos);
+								}
+							}
+							if (pXfs->m_oFillId.IsInit())
+							{
+								OOX::Spreadsheet::WritingElement* weFill = oFills->m_arrItems[pXfs->m_oFillId->GetValue()];
+								if(OOX::Spreadsheet::et_Fill == weFill->getType())
+								{
+									OOX::Spreadsheet::CFill* pFill = static_cast<OOX::Spreadsheet::CFill*>(weFill);
+									nCurPos = oBinaryCommonWriter.WriteItemStart(Types::Fill);
+									oBinaryStyleTableWriter.WriteFill(*pFill, oIndexedColors, pTheme);
+									oBinaryCommonWriter.WriteItemEnd(nCurPos);
+								}
+							}
+							if (pXfs->m_oBorderId.IsInit())
+							{
+								OOX::Spreadsheet::WritingElement* weBorder = oBorders->m_arrItems[pXfs->m_oBorderId->GetValue()];
+								if(OOX::Spreadsheet::et_Border == weBorder->getType())
+								{
+									OOX::Spreadsheet::CBorder* pBorder = static_cast<OOX::Spreadsheet::CBorder*>(weBorder);
+									nCurPos = oBinaryCommonWriter.WriteItemStart(Types::Border);
+									oBinaryStyleTableWriter.WriteBorder(*pBorder, oIndexedColors, pTheme);
+									oBinaryCommonWriter.WriteItemEnd(nCurPos);
+								}
+							}
+
+							if (oNumFmts.IsInit())
+							{
+								nCurPos = oBinaryCommonWriter.WriteItemStart(Types::NumFmts);
+								oBinaryStyleTableWriter.WriteNumFmts(oNumFmts.get());
+								oBinaryCommonWriter.WriteItemEnd(nCurPos);
+							}
 						}
 					}
 				}
+
+				oBinaryCommonWriter.WriteItemEnd(nCellStylePos);
 			}
-
-			oBinaryCommonWriter.WriteItemEnd(nCellStylePos);
+			oBinaryCommonWriter.WriteItemWithLengthEnd(nAllPos);
+			BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
+			int nBinBufferLen = oBufferedStream.GetPosition();
+			int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
+			BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
+			if (TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
+			{
+				CFile oFile;
+				oFile.CreateFileW(sFileOutput);
+				oFile.WriteStringUTF8(WriteDefaultFileHeader(nBinBufferLen));
+				oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
+				oFile.CloseFile();
+			}
+			RELEASEARRAYOBJECTS(pbBase64Buffer);
 		}
-		oBinaryCommonWriter.WriteItemWithLengthEnd(nAllPos);
-		BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
-		int nBinBufferLen = oBufferedStream.GetPosition();
-		int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
-		BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
-		if (TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
+		void getDefaultTableStyles(CString& sFileInput, CString& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
 		{
-			CFile oFile;
-			oFile.CreateFileW(sFileOutput);
-			oFile.WriteStringUTF8(WriteDefaultFileHeader(nBinBufferLen));
-			oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
-			oFile.CloseFile();
+			enum Types
+			{
+				Style =  0,
+				Dxf = 1,
+				tableStyles = 2
+			};
+			NSBinPptxRW::CBinaryFileWriter oBufferedStream;
+			BinaryCommonWriter oBinaryCommonWriter(oBufferedStream);
+			BinaryStyleTableWriter oBinaryStyleTableWriter(oBufferedStream, pEmbeddedFontsManager);
+
+			XmlUtils::CXmlLiteReader oReader;
+			oReader.FromFile(sFileInput);
+			oReader.ReadNextNode();//presetTableStyles
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nAllPos = oBinaryCommonWriter.WriteItemWithLengthStart();
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				CString sName = oReader.GetName();
+				int nStylePos = oBinaryCommonWriter.WriteItemStart(Types::Style);
+
+				//dxfs
+				int nDxfsPos = oBinaryCommonWriter.WriteItemStart(Types::Dxf);
+				oReader.ReadNextNode();
+				OOX::Spreadsheet::CDxfs oDxfs(oReader);
+				oBinaryStyleTableWriter.WriteDxfs(oDxfs, oIndexedColors, pTheme, oFontProcessor);
+				oBinaryCommonWriter.WriteItemEnd(nDxfsPos);
+
+				//tableStyles
+				int nTableStylesPos = oBinaryCommonWriter.WriteItemStart(Types::tableStyles);
+				oReader.ReadNextNode();
+				OOX::Spreadsheet::CTableStyles oTableStyles(oReader);
+				oBinaryStyleTableWriter.WriteTableStyles(oTableStyles);
+				oBinaryCommonWriter.WriteItemEnd(nTableStylesPos);
+
+				oBinaryCommonWriter.WriteItemEnd(nStylePos);
+			}
+			oBinaryCommonWriter.WriteItemWithLengthEnd(nAllPos);
+			BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
+			int nBinBufferLen = oBufferedStream.GetPosition();
+			int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
+			BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
+			if(TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
+			{
+				CFile oFile;
+				oFile.CreateFileW(sFileOutput);
+				oFile.WriteStringUTF8(WriteDefaultFileHeader(nBinBufferLen));
+				oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
+				oFile.CloseFile();
+			}
+			RELEASEARRAYOBJECTS(pbBase64Buffer);
 		}
-		RELEASEARRAYOBJECTS(pbBase64Buffer);
-	}
-	void getDefaultTableStyles(CString& sFileInput, CString& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
-	{
-		enum Types
-		{
-			Style =  0,
-			Dxf = 1,
-			tableStyles = 2
-		};
-		int BUFFER_GROW_SIZE = 1024;
-		NSBinPptxRW::CBinaryFileWriter oBufferedStream;
-		BinaryCommonWriter oBinaryCommonWriter(oBufferedStream);
-		BinaryStyleTableWriter oBinaryStyleTableWriter(oBufferedStream, pEmbeddedFontsManager);
-
-		XmlUtils::CXmlLiteReader oReader;
-		oReader.FromFile(sFileInput);
-		oReader.ReadNextNode();//presetTableStyles
-
-		if ( oReader.IsEmptyNode() )
-			return;
-
-		int nAllPos = oBinaryCommonWriter.WriteItemWithLengthStart();
-		int nCurDepth = oReader.GetDepth();
-		while( oReader.ReadNextSiblingNode( nCurDepth ) )
-		{
-			CString sName = oReader.GetName();
-			int nStylePos = oBinaryCommonWriter.WriteItemStart(Types::Style);
-
-			//dxfs
-			int nDxfsPos = oBinaryCommonWriter.WriteItemStart(Types::Dxf);
-			oReader.ReadNextNode();
-			OOX::Spreadsheet::CDxfs oDxfs(oReader);
-			oBinaryStyleTableWriter.WriteDxfs(oDxfs, oIndexedColors, pTheme, oFontProcessor);
-			oBinaryCommonWriter.WriteItemEnd(nDxfsPos);
-
-			//tableStyles
-			int nTableStylesPos = oBinaryCommonWriter.WriteItemStart(Types::tableStyles);
-			oReader.ReadNextNode();
-			OOX::Spreadsheet::CTableStyles oTableStyles(oReader);
-			oBinaryStyleTableWriter.WriteTableStyles(oTableStyles);
-			oBinaryCommonWriter.WriteItemEnd(nTableStylesPos);
-
-			oBinaryCommonWriter.WriteItemEnd(nStylePos);
-		}
-		oBinaryCommonWriter.WriteItemWithLengthEnd(nAllPos);
-		BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
-		int nBinBufferLen = oBufferedStream.GetPosition();
-		int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
-		BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
-		if(TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
-		{
-			CFile oFile;
-			oFile.CreateFileW(sFileOutput);
-			oFile.WriteStringUTF8(WriteDefaultFileHeader(nBinBufferLen));
-			oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
-			oFile.CloseFile();
-		}
-		RELEASEARRAYOBJECTS(pbBase64Buffer);
-	}
-	void writeTheme(LPSAFEARRAY pThemeData, CString& sFileOutput)
-	{
-		BYTE* pbBinBuffer = (BYTE *)pThemeData->pvData;
-		int nBinBufferLen = pThemeData->rgsabound[0].cElements;
-		int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
-		BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
-		if(TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
-		{
-			CFile oFile;
-			oFile.CreateFileW(sFileOutput);
-			oFile.WriteStringUTF8(WriteDefaultFileHeader(nBinBufferLen));
-			oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
-			oFile.CloseFile();
-		}
-		RELEASEARRAYOBJECTS(pbBase64Buffer);
-	}
 #endif
+	};
 }
 
 #endif	// #ifndef BINARY_WRITER

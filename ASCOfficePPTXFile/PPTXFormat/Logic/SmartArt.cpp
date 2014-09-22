@@ -98,8 +98,6 @@ namespace PPTX
 
 		void ChartRec::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
-			LPSAFEARRAY pArray = NULL;
-
 			FileContainer* pRels = NULL;
 			if (pWriter->m_pCommonRels->is_init())
 				pRels = pWriter->m_pCommonRels->operator ->();
@@ -147,39 +145,19 @@ namespace PPTX
 
 			oXlsxSerializer.setDrawingConverter(&oDrawingConverter);
 
-			unsigned char* pData = NULL;
+			var.parray = NULL;
+			oDrawingConverter.GetAdditionalParam(L"SerializeImageManager", &var);
+
+			if (var.parray != NULL)
+			{
+				NSBinPptxRW::CBinaryFileReader oReader;
+				oReader.Deserialize(pWriter->m_pCommon->m_pImageManager, var.parray);
+
+				RELEASEARRAY((var.parray));
+			}
+
 			long lDataSize = 0;
-			oXlsxSerializer.loadChart(strDataPath, &pData, lDataSize);
-			if(NULL != pData && lDataSize > 0)
-			{
-				SAFEARRAYBOUND	rgsabound[1];
-				rgsabound[0].lLbound = 0;
-				rgsabound[0].cElements = lDataSize;
-				pArray = SafeArrayCreate(VT_UI1, 1, rgsabound);
-
-				BYTE* pDataD = (BYTE*)pArray->pvData;
-				BYTE* pDataS = pData;
-				memcpy(pDataD, pDataS, lDataSize);
-			}
-			RELEASEARRAYOBJECTS(pData);
-
-			if (NULL != pArray)
-			{
-				var.parray = NULL;
-				oDrawingConverter.GetAdditionalParam(L"SerializeImageManager", &var);
-
-				if (var.parray != NULL)
-				{
-					NSBinPptxRW::CBinaryFileReader oReader;
-					oReader.Deserialize(pWriter->m_pCommon->m_pImageManager, var.parray);
-
-					RELEASEARRAY((var.parray));
-				}
-
-				pWriter->WriteBYTEArray((BYTE*)pArray->pvData, pArray->rgsabound[0].cElements);
-			}
-
-			RELEASEARRAY(pArray);
+			oXlsxSerializer.loadChart(strDataPath, *pWriter, lDataSize);
 		}
 
 		void ChartRec::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -240,11 +218,11 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 
 			CString* sContentTypes = NULL;
 			if (pReader->m_lDocumentType == XMLWRITER_DOC_TYPE_DOCX)
-				oXlsxSerializer.saveChart(m_pData, 0, lLen, strChart, CString(L"/word/charts/"), &sContentTypes);
+				oXlsxSerializer.saveChart(*pReader, lLen, strChart, CString(L"/word/charts/"), &sContentTypes);
 			else if (pReader->m_lDocumentType == XMLWRITER_DOC_TYPE_XLSX)
-				oXlsxSerializer.saveChart(m_pData, 0, lLen, strChart, CString(L"/xl/charts/"), &sContentTypes);
+				oXlsxSerializer.saveChart(*pReader, lLen, strChart, CString(L"/xl/charts/"), &sContentTypes);
 			else
-				oXlsxSerializer.saveChart(m_pData, 0, lLen, strChart, CString(L"/ppt/charts/"), &sContentTypes);
+				oXlsxSerializer.saveChart(*pReader, lLen, strChart, CString(L"/ppt/charts/"), &sContentTypes);
 
 			pReader->m_strContentTypes += (*sContentTypes);
 			RELEASEOBJECT(sContentTypes);

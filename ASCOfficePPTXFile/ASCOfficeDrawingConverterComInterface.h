@@ -152,38 +152,38 @@ public:
 	}
 	STDMETHOD(AddObject)(BSTR bsXml, BSTR* pMainProps, SAFEARRAY** ppBinary)
 	{
-		return m_oDrawingConverter.AddObject(bsXml, pMainProps, ppBinary);
+		return S_OK;//m_oDrawingConverter.AddObject(bsXml, pMainProps, ppBinary);
 	}
 	STDMETHOD(AddObject2)(BSTR bsXml, SAFEARRAY* pBinaryObj, BSTR* pXmlOutput)
 	{
-		return m_oDrawingConverter.AddObject2(bsXml, pBinaryObj, pXmlOutput);
+		return S_OK;
 	}
 
 	STDMETHOD(GetThemeBinary)(BSTR bsThemeFilePath, SAFEARRAY** ppBinary)
 	{
-		return m_oDrawingConverter.GetThemeBinary(bsThemeFilePath, ppBinary);
+		return S_OK;//m_oDrawingConverter.GetThemeBinary(bsThemeFilePath, ppBinary);
 	}
 
 	STDMETHOD(SaveThemeXml)(SAFEARRAY* pBinaryTheme, LONG lStart, LONG lLength, BSTR bsThemePath)
 	{
-		return m_oDrawingConverter.SaveThemeXml(pBinaryTheme, lStart, lLength, bsThemePath);
+		return S_OK;//m_oDrawingConverter.SaveThemeXml(pBinaryTheme, lStart, lLength, bsThemePath);
 	}
 	STDMETHOD(SaveObject)(SAFEARRAY* pBinaryObj, LONG lStart, LONG lLength, BSTR bsMainProps, BSTR* bsXml)
 	{
-		return m_oDrawingConverter.SaveObject(pBinaryObj, lStart, lLength, bsMainProps, bsXml);
+		return S_OK;//m_oDrawingConverter.SaveObject(pBinaryObj, lStart, lLength, bsMainProps, bsXml);
 	}
 	STDMETHOD(SaveObjectEx)(SAFEARRAY* pBinaryObj, LONG lStart, LONG lLength, BSTR bsMainProps, LONG lDocType, BSTR* bsXml)
 	{
-		return m_oDrawingConverter.SaveObjectEx(pBinaryObj, lStart, lLength, bsMainProps, lDocType, bsXml);
+		return S_OK;//m_oDrawingConverter.SaveObjectEx(pBinaryObj, lStart, lLength, bsMainProps, lDocType, bsXml);
 	}
 
 	STDMETHOD(GetRecordBinary)(LONG lRecordType, BSTR bsXml, SAFEARRAY** ppBinary)
 	{
-		return m_oDrawingConverter.GetRecordBinary(lRecordType, bsXml, ppBinary);
+		return S_OK;//m_oDrawingConverter.GetRecordBinary(lRecordType, bsXml, ppBinary);
 	}
 	STDMETHOD(GetRecordXml)(SAFEARRAY* pBinaryObj, LONG lStart, LONG lLength, LONG lRecType, LONG lDocType, BSTR* bsXml)
 	{
-		return m_oDrawingConverter.GetRecordXml(pBinaryObj, lStart, lLength, lRecType, lDocType, bsXml);
+		return S_OK;//m_oDrawingConverter.GetRecordXml(pBinaryObj, lStart, lLength, lRecType, lDocType, bsXml);
 	}
 
 	STDMETHOD(SetDstContentRels)()
@@ -206,11 +206,11 @@ public:
 
 	STDMETHOD(GetTxBodyBinary)(BSTR bsXml, SAFEARRAY** ppBinary)
 	{
-		return m_oDrawingConverter.GetTxBodyBinary(bsXml, ppBinary);
+		return S_OK;//m_oDrawingConverter.GetTxBodyBinary(bsXml, ppBinary);
 	}
 	STDMETHOD(GetTxBodyXml)(SAFEARRAY* pBinary, LONG lStart, LONG lLength, BSTR *pbstrXml)
 	{
-		return m_oDrawingConverter.GetTxBodyXml(pBinary, lStart, lLength, pbstrXml);
+		return S_OK;//m_oDrawingConverter.GetTxBodyXml(pBinary, lStart, lLength, pbstrXml);
 	}
 	STDMETHOD(SetFontDir)(BSTR bsFontDir)
 	{

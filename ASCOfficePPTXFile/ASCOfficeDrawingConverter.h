@@ -174,30 +174,29 @@ namespace NSBinPptxRW
 		STDMETHOD(SetMediaDstPath)(BSTR bsMediaPath);
 
 		STDMETHOD(AddShapeType)(BSTR bsXml);
-		STDMETHOD(AddObject)(BSTR bsXml, BSTR* pMainProps, SAFEARRAY** ppBinary);
-		STDMETHOD(AddObject2)(BSTR bsXml, SAFEARRAY* pBinaryObj, BSTR* pXmlOutput);
-		STDMETHOD(GetThemeBinary)(BSTR bsThemeFilePath, SAFEARRAY** ppBinary);
+		STDMETHOD(AddObject)(BSTR bsXml, BSTR* pMainProps);
+		STDMETHOD(GetThemeBinary)(BSTR bsThemeFilePath);
 
-		STDMETHOD(SaveThemeXml)(SAFEARRAY* pBinaryTheme, LONG lStart, LONG lLength, BSTR bsThemePath);
-		STDMETHOD(SaveObject)(SAFEARRAY* pBinaryObj, LONG lStart, LONG lLength, BSTR bsMainProps, BSTR* bsXml);
-		STDMETHOD(SaveObjectEx)(SAFEARRAY* pBinaryObj, LONG lStart, LONG lLength, BSTR bsMainProps, LONG lDocType, BSTR* bsXml);
+		STDMETHOD(SaveThemeXml)(LONG lStart, LONG lLength, BSTR bsThemePath);
+		STDMETHOD(SaveObject)(LONG lStart, LONG lLength, BSTR bsMainProps, BSTR* bsXml);
+		STDMETHOD(SaveObjectEx)(LONG lStart, LONG lLength, BSTR bsMainProps, LONG lDocType, BSTR* bsXml);
 
-		STDMETHOD(GetRecordBinary)(LONG lRecordType, BSTR bsXml, SAFEARRAY** ppBinary);
-		STDMETHOD(GetRecordXml)(SAFEARRAY* pBinaryObj, LONG lStart, LONG lLength, LONG lRecType, LONG lDocType, BSTR* bsXml);
+		STDMETHOD(GetRecordBinary)(LONG lRecordType, BSTR bsXml);
+		STDMETHOD(GetRecordXml)(LONG lStart, LONG lLength, LONG lRecType, LONG lDocType, BSTR* bsXml);
 
 		STDMETHOD(SetDstContentRels)();
 		STDMETHOD(SaveDstContentRels)(BSTR bsRelsPath);
 		STDMETHOD(WriteRels)(BSTR bsType, BSTR bsTarget, BSTR bsTargetMode, LONG* lId);
 		STDMETHOD(LoadClrMap)(BSTR bsXml);
 
-		STDMETHOD(GetTxBodyBinary)(BSTR bsXml, SAFEARRAY** ppBinary);
-		STDMETHOD(GetTxBodyXml)(SAFEARRAY* pBinary, LONG lStart, LONG lLength, BSTR *pbstrXml);
+		STDMETHOD(GetTxBodyBinary)(BSTR bsXml);
+		STDMETHOD(GetTxBodyXml)(LONG lStart, LONG lLength, BSTR *pbstrXml);
 		STDMETHOD(SetFontDir)(BSTR bsFontDir);
 
 		STDMETHOD(SetAdditionalParam)(BSTR ParamName, VARIANT ParamValue);
 		STDMETHOD(GetAdditionalParam)(BSTR ParamName, VARIANT* ParamValue);
 	protected:
-		bool ParceObject(CString& strXml, BSTR* pMainProps, SAFEARRAY** ppBinary);
+		bool ParceObject(CString& strXml, BSTR* pMainProps);
 		void SendMainProps(CString& strMainProps, BSTR*& pMainProps);
 
 		PPTX::Logic::SpTreeElem doc_LoadShape(XmlUtils::CXmlNode& oNode, BSTR*& pMainProps, bool bIsTop = true);

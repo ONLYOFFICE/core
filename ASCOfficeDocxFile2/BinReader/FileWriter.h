@@ -17,7 +17,6 @@ namespace Writers
 	{
 	public:
 		NSBinPptxRW::CDrawingConverter* m_pDrawingConverter;
-		LPSAFEARRAY m_pArray;
 		CString m_sThemePath;
 		bool m_bSaveChartAsImg;
 		ContentTypesWriter m_oContentTypesWriter;
@@ -32,8 +31,8 @@ namespace Writers
 		ChartWriter m_oChartWriter;
 		int m_nDocPrIndex;
 	public:
-		FileWriter(CString sDirOutput,CString sFontDir, int nVersion, bool bSaveChartAsImg, NSBinPptxRW::CDrawingConverter* pDrawingConverter, LPSAFEARRAY pArray, CString sThemePath):
-										m_pDrawingConverter(pDrawingConverter),m_pArray(pArray),m_sThemePath(sThemePath),m_bSaveChartAsImg(bSaveChartAsImg),
+		FileWriter(CString sDirOutput,CString sFontDir, int nVersion, bool bSaveChartAsImg, NSBinPptxRW::CDrawingConverter* pDrawingConverter, CString sThemePath):
+										m_pDrawingConverter(pDrawingConverter),m_sThemePath(sThemePath),m_bSaveChartAsImg(bSaveChartAsImg),
 										m_oContentTypesWriter(sDirOutput), m_oFontTableWriter(sDirOutput, sFontDir),
 										m_oHeaderFooterWriter(sDirOutput, m_oContentTypesWriter),
 										m_oMediaWriter(sDirOutput),

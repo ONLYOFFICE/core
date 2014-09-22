@@ -804,8 +804,42 @@ namespace BinXlsxRW{
 
 	BYTE c_oseralternatecontentfallbackSTYLE = 0;
 
-	BinaryChartReader::BinaryChartReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, SaveParams& oSaveParams, LPSAFEARRAY pArray, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream),m_oSaveParams(oSaveParams),m_pArray(pArray),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
+	BinaryChartReader::BinaryChartReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream),m_oSaveParams(oSaveParams),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 	{}
+	CString* BinaryChartReader::GetRecordXml(long length, int nRecordType)
+	{
+		CString* pNewElem = new CString;
+		if(length > 0)
+		{
+			long nCurPos = m_oBufferedStream.GetPos();
+			BSTR bstrXml = NULL;
+			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(nCurPos, length, nRecordType, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
+			if (S_OK == hRes && NULL != bstrXml)
+			{
+				*pNewElem = bstrXml;
+				SysFreeString(bstrXml);
+			}
+			m_oBufferedStream.Seek(nCurPos + length);
+		}
+		return pNewElem;
+	}
+	CString* BinaryChartReader::GetTxBodyXml(long length)
+	{
+		CString* pNewElem = new CString;
+		if(length > 0)
+		{
+			long nCurPos = m_oBufferedStream.GetPos();
+			BSTR bstrXml = NULL;
+			HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(nCurPos, length, &bstrXml);
+			if (S_OK == hRes && NULL != bstrXml)
+			{
+				*pNewElem = bstrXml;
+				SysFreeString(bstrXml);
+			}
+			m_oBufferedStream.Seek(nCurPos + length);
+		}
+		return pNewElem;
+	}
 	int BinaryChartReader::ReadCT_extLst(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -860,19 +894,7 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_chartspaceCLRMAPOVR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_CLRMAPOVR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_clrMapOvr = pNewElem;
+			poVal->m_clrMapOvr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_CLRMAPOVR);
 		}
 		else if(c_oserct_chartspacePIVOTSOURCE == type)
 		{
@@ -894,35 +916,11 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_chartspaceSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_chartspaceTXPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(m_pArray, m_oBufferedStream.GetPos(), length, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_txPr = pNewElem;
+			poVal->m_txPr = GetTxBodyXml(length);
 		}
 		//else if(c_oserct_chartspaceEXTERNALDATA == type)
 		//{
@@ -954,9 +952,12 @@ namespace BinXlsxRW{
 			CString sThemeOverrideRelsPath;sThemeOverrideRelsPath.Format(_T("../theme/%s"), sThemeOverrideName);
 			CString sThemeOverridePath;sThemeOverridePath.Format(_T("%s\\%s"), m_oSaveParams.sThemePath, sThemeOverrideName);
 
+			long nCurPos = m_oBufferedStream.GetPos();
 			BSTR bstrTempTheme = sThemeOverridePath.AllocSysString();
-			m_pOfficeDrawingConverter->SaveThemeXml(m_pArray, m_oBufferedStream.GetPos(), length, bstrTempTheme);
+			m_pOfficeDrawingConverter->SaveThemeXml(nCurPos, length, bstrTempTheme);
 			SysFreeString(bstrTempTheme);
+			m_oBufferedStream.Seek(nCurPos + length);
+
 			long rId;
 			BSTR bstrThemeOverrideRelsPath = sThemeOverrideRelsPath.AllocSysString();
 			m_pOfficeDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/themeOverride"), bstrThemeOverrideRelsPath, NULL, &rId);
@@ -1273,19 +1274,7 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_legendentryTXPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(m_pArray, m_oBufferedStream.GetPos(), length, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_txPr = pNewElem;
+			poVal->m_txPr = GetTxBodyXml(length);
 		}
 		else if(c_oserct_legendentryEXTLST == type)
 		{
@@ -1376,35 +1365,11 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_legendSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_legendTXPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(m_pArray, m_oBufferedStream.GetPos(), length, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_txPr = pNewElem;
+			poVal->m_txPr = GetTxBodyXml(length);
 		}
 		else if(c_oserct_legendEXTLST == type)
 		{
@@ -1578,35 +1543,11 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_dtableSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_dtableTXPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(m_pArray, m_oBufferedStream.GetPos(), length, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_txPr = pNewElem;
+			poVal->m_txPr = GetTxBodyXml(length);
 		}
 		else if(c_oserct_dtableEXTLST == type)
 		{
@@ -1690,35 +1631,11 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_seraxSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_seraxTXPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(m_pArray, m_oBufferedStream.GetPos(), length, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_txPr = pNewElem;
+			poVal->m_txPr = GetTxBodyXml(length);
 		}
 		else if(c_oserct_seraxCROSSAX == type)
 		{
@@ -1848,19 +1765,7 @@ namespace BinXlsxRW{
 		CT_ChartLines* poVal = static_cast<CT_ChartLines*>(poResult);
 		if(c_oserct_chartlinesSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1890,35 +1795,11 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_titleSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_titleTXPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(m_pArray, m_oBufferedStream.GetPos(), length, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_txPr = pNewElem;
+			poVal->m_txPr = GetTxBodyXml(length);
 		}
 		else if(c_oserct_titleEXTLST == type)
 		{
@@ -1936,19 +1817,7 @@ namespace BinXlsxRW{
 		CT_Tx* poVal = static_cast<CT_Tx*>(poResult);
 		if(c_oserct_txRICH == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(m_pArray, m_oBufferedStream.GetPos(), length, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_rich = pNewElem;
+			poVal->m_rich = GetTxBodyXml(length);
 		}
 		else if(c_oserct_txSTRREF == type)
 		{
@@ -2198,35 +2067,11 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_dateaxSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_dateaxTXPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(m_pArray, m_oBufferedStream.GetPos(), length, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_txPr = pNewElem;
+			poVal->m_txPr = GetTxBodyXml(length);
 		}
 		else if(c_oserct_dateaxCROSSAX == type)
 		{
@@ -2413,35 +2258,11 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_cataxSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_cataxTXPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(m_pArray, m_oBufferedStream.GetPos(), length, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_txPr = pNewElem;
+			poVal->m_txPr = GetTxBodyXml(length);
 		}
 		else if(c_oserct_cataxCROSSAX == type)
 		{
@@ -2525,35 +2346,11 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_dispunitslblSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_dispunitslblTXPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(m_pArray, m_oBufferedStream.GetPos(), length, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_txPr = pNewElem;
+			poVal->m_txPr = GetTxBodyXml(length);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -2693,35 +2490,11 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_valaxSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_valaxTXPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(m_pArray, m_oBufferedStream.GetPos(), length, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_txPr = pNewElem;
+			poVal->m_txPr = GetTxBodyXml(length);
 		}
 		else if(c_oserct_valaxCROSSAX == type)
 		{
@@ -2828,19 +2601,7 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_bubbleserSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_bubbleserINVERTIFNEGATIVE == type)
 		{
@@ -2962,19 +2723,7 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_dptSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_dptPICTUREOPTIONS == type)
 		{
@@ -3010,19 +2759,7 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_markerSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_markerEXTLST == type)
 		{
@@ -3250,41 +2987,17 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_dlblsSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
 			ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 			*eElemtype = itemschoicetype3SPPR;
 			poVal->m_ItemsElementName0.Add(eElemtype);
-			poVal->m_Items.Add(pNewElem);
+			poVal->m_Items.Add(GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR));
 		}
 		else if(c_oserct_dlblsTXPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(m_pArray, m_oBufferedStream.GetPos(), length, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
 			ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 			*eElemtype = itemschoicetype3TXPR;
 			poVal->m_ItemsElementName0.Add(eElemtype);
-			poVal->m_Items.Add(pNewElem);
+			poVal->m_Items.Add(GetTxBodyXml(length));
 		}
 		else if(c_oserct_dlblsEXTLST == type)
 		{
@@ -3407,22 +3120,10 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_dlblSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
 			ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 			*eElemtype = itemschoicetype4SPPR;
 			poVal->m_ItemsElementName0.Add(eElemtype);
-			poVal->m_Items.Add(pNewElem);
+			poVal->m_Items.Add(GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR));
 		}
 		else if(c_oserct_dlblTX == type)
 		{
@@ -3435,22 +3136,10 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_dlblTXPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(m_pArray, m_oBufferedStream.GetPos(), length, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
 			ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 			*eElemtype = itemschoicetype4TXPR;
 			poVal->m_ItemsElementName0.Add(eElemtype);
-			poVal->m_Items.Add(pNewElem);
+			poVal->m_Items.Add(GetTxBodyXml(length));
 		}
 		else if(c_oserct_dlblEXTLST == type)
 		{
@@ -3489,19 +3178,7 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_trendlineSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_trendlineTRENDLINETYPE == type)
 		{
@@ -3634,35 +3311,11 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_trendlinelblSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_trendlinelblTXPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(m_pArray, m_oBufferedStream.GetPos(), length, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_txPr = pNewElem;
+			poVal->m_txPr = GetTxBodyXml(length);
 		}
 		else if(c_oserct_trendlinelblEXTLST == type)
 		{
@@ -3722,19 +3375,7 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_errbarsSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_errbarsEXTLST == type)
 		{
@@ -4137,19 +3778,7 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_surfaceserSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_surfaceserCAT == type)
 		{
@@ -4185,19 +3814,7 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_bandfmtSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4397,19 +4014,7 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_pieserSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_pieserEXPLOSION == type)
 		{
@@ -4587,19 +4192,7 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_barserSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_barserINVERTIFNEGATIVE == type)
 		{
@@ -4928,19 +4521,7 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_scatterserSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_scatterserMARKER == type)
 		{
@@ -5083,19 +4664,7 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_radarserSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_radarserMARKER == type)
 		{
@@ -5270,19 +4839,7 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_lineserSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_lineserMARKER == type)
 		{
@@ -5380,19 +4937,7 @@ namespace BinXlsxRW{
 		CT_UpDownBar* poVal = static_cast<CT_UpDownBar*>(poResult);
 		if(c_oserct_updownbarSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5623,19 +5168,7 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_areaserSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_areaserPICTUREOPTIONS == type)
 		{
@@ -5937,19 +5470,7 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_plotareaSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_plotareaEXTLST == type)
 		{
@@ -5987,19 +5508,7 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_surfaceSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_surfacePICTUREOPTIONS == type)
 		{
@@ -6149,35 +5658,11 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_pivotfmtSPPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(m_pArray, m_oBufferedStream.GetPos(), length, XMLWRITER_RECORD_TYPE_SPPR, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_spPr = pNewElem;
+			poVal->m_spPr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		else if(c_oserct_pivotfmtTXPR == type)
 		{
-			CString* pNewElem = new CString;
-			if(length > 0)
-			{
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(m_pArray, m_oBufferedStream.GetPos(), length, &bstrXml);
-				if (S_OK == hRes && NULL != bstrXml)
-				{
-					*pNewElem = bstrXml;
-					SysFreeString(bstrXml);
-				}
-				m_oBufferedStream.Skip(length);
-			}
-			poVal->m_txPr = pNewElem;
+			poVal->m_txPr = GetTxBodyXml(length);
 		}
 		else if(c_oserct_pivotfmtMARKER == type)
 		{
@@ -6463,6 +5948,22 @@ namespace BinXlsxRW{
 	}
 	BinaryChartWriter::BinaryChartWriter(NSBinPptxRW::CBinaryFileWriter &oBufferedStream, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):m_oBcw(oBufferedStream),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 	{}
+	void BinaryChartWriter::GetRecordBinary(int nType, CString& sXml, int nRecordType)
+	{
+		int nCurPos = m_oBcw.WriteItemStart(nType);
+		BSTR bstrXml = sXml.AllocSysString();
+		HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(nRecordType, bstrXml);
+		SysFreeString(bstrXml);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	void BinaryChartWriter::GetTxBodyBinary(int nType, CString& sXml)
+	{
+		int nCurPos = m_oBcw.WriteItemStart(nType);
+		BSTR bstrXml = (_T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + sXml + _T("</c:rich>")).AllocSysString();
+		HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml);
+		SysFreeString(bstrXml);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 	void BinaryChartWriter::WriteCT_extLst(CT_extLst& oVal)
 	{
 		for(int i = 0, length = oVal.m_ext.GetCount(); i < length; ++i)
@@ -6511,15 +6012,7 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_clrMapOvr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceCLRMAPOVR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_clrMapOvr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_CLRMAPOVR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_chartspaceCLRMAPOVR, (*oVal.m_clrMapOvr), XMLWRITER_RECORD_TYPE_CLRMAPOVR);
 		}
 		if(NULL != oVal.m_pivotSource)
 		{
@@ -6541,27 +6034,11 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_chartspaceSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_txPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceTXPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (_T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + *oVal.m_txPr + _T("</c:rich>")).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetTxBodyBinary(c_oserct_chartspaceTXPR, (*oVal.m_txPr));
 		}
 		//if(NULL != oVal.m_externalData)
 		//{
@@ -6591,12 +6068,12 @@ namespace BinXlsxRW{
 		if (pFile.IsInit() && OOX::FileTypes::ThemeOverride == pFile->type())
 		{
 			OOX::CThemeOverride* pThemeOverride = static_cast<OOX::CThemeOverride*>(pFile.operator->());
-			LPSAFEARRAY pThemeData = NULL;
-			BSTR bstrThemePath = pThemeOverride->m_oReadPath.GetPath().AllocSysString();
-			m_pOfficeDrawingConverter->GetThemeBinary(bstrThemePath, &pThemeData);
-			SysFreeString(bstrThemePath);
 			m_oBcw.m_oStream.WriteBYTE(c_oserct_chartspaceTHEMEOVERRIDE);
-			m_oBcw.WriteSafeArray(pThemeData);
+			int nCurPos = m_oBcw.WriteItemWithLengthStart();
+			BSTR bstrThemePath = pThemeOverride->m_oReadPath.GetPath().AllocSysString();
+			m_pOfficeDrawingConverter->GetThemeBinary(bstrThemePath);
+			SysFreeString(bstrThemePath);
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 		}
 	}
 	void BinaryChartWriter::WriteCT_Boolean(CT_Boolean& oVal)
@@ -6847,15 +6324,7 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_txPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_legendentryTXPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (_T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + *oVal.m_txPr + _T("</c:rich>")).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetTxBodyBinary(c_oserct_legendentryTXPR, (*oVal.m_txPr));
 		}
 		if(NULL != oVal.m_extLst)
 		{
@@ -6930,27 +6399,11 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_legendSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_legendSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_txPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_legendTXPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (_T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + *oVal.m_txPr + _T("</c:rich>")).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetTxBodyBinary(c_oserct_legendTXPR, (*oVal.m_txPr));
 		}
 		if(NULL != oVal.m_extLst)
 		{
@@ -7094,27 +6547,11 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_dtableSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_dtableSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_txPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_dtableTXPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (_T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + *oVal.m_txPr + _T("</c:rich>")).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetTxBodyBinary(c_oserct_dtableTXPR, (*oVal.m_txPr));
 		}
 		if(NULL != oVal.m_extLst)
 		{
@@ -7193,27 +6630,11 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_seraxSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_seraxSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_txPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_seraxTXPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (_T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + *oVal.m_txPr + _T("</c:rich>")).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetTxBodyBinary(c_oserct_seraxTXPR, (*oVal.m_txPr));
 		}
 		if(NULL != oVal.m_crossAx)
 		{
@@ -7318,15 +6739,7 @@ namespace BinXlsxRW{
 	{
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartlinesSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_chartlinesSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 	}
 	void BinaryChartWriter::WriteCT_Title(CT_Title& oVal)
@@ -7351,27 +6764,11 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_titleSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_titleSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_txPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_titleTXPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (_T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + *oVal.m_txPr + _T("</c:rich>")).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetTxBodyBinary(c_oserct_titleTXPR, (*oVal.m_txPr));
 		}
 		if(NULL != oVal.m_extLst)
 		{
@@ -7384,15 +6781,7 @@ namespace BinXlsxRW{
 	{
 		if(NULL != oVal.m_rich)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_txRICH);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (_T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + *oVal.m_rich + _T("</c:rich>")).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetTxBodyBinary(c_oserct_txRICH, (*oVal.m_rich));
 		}
 		if(NULL != oVal.m_strRef)
 		{
@@ -7596,27 +6985,11 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_dateaxSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_dateaxSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_txPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_dateaxTXPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (_T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + *oVal.m_txPr + _T("</c:rich>")).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetTxBodyBinary(c_oserct_dateaxTXPR, (*oVal.m_txPr));
 		}
 		if(NULL != oVal.m_crossAx)
 		{
@@ -7783,27 +7156,11 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_cataxSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_cataxSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_txPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_cataxTXPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (_T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + *oVal.m_txPr + _T("</c:rich>")).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetTxBodyBinary(c_oserct_cataxTXPR, (*oVal.m_txPr));
 		}
 		if(NULL != oVal.m_crossAx)
 		{
@@ -7882,27 +7239,11 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_dispunitslblSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_dispunitslblSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_txPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_dispunitslblTXPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (_T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + *oVal.m_txPr + _T("</c:rich>")).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetTxBodyBinary(c_oserct_dispunitslblTXPR, (*oVal.m_txPr));
 		}
 	}
 	void BinaryChartWriter::WriteCT_BuiltInUnit(CT_BuiltInUnit& oVal)
@@ -8022,27 +7363,11 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_valaxSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_valaxSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_txPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_valaxTXPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (_T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + *oVal.m_txPr + _T("</c:rich>")).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetTxBodyBinary(c_oserct_valaxTXPR, (*oVal.m_txPr));
 		}
 		if(NULL != oVal.m_crossAx)
 		{
@@ -8134,15 +7459,7 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_bubbleserSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_bubbleserSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_invertIfNegative)
 		{
@@ -8266,15 +7583,7 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_dptSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_dptSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_pictureOptions)
 		{
@@ -8305,15 +7614,7 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_markerSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_markerSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_extLst)
 		{
@@ -8557,15 +7858,7 @@ namespace BinXlsxRW{
 				CString* pTypeVal = static_cast<CString*>(pVal);
 				if(NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblsSPPR);
-					LPSAFEARRAY pBinaryObj = NULL;
-					BSTR bstrXml = (*pTypeVal).AllocSysString();
-					HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-					SysFreeString(bstrXml);
-					if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-						m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-					RELEASEARRAY(pBinaryObj);
-					m_oBcw.WriteItemEnd(nCurPos);
+					GetRecordBinary(c_oserct_dlblsSPPR, (*pTypeVal), XMLWRITER_RECORD_TYPE_SPPR);
 				}
 			}
 			break;
@@ -8574,15 +7867,7 @@ namespace BinXlsxRW{
 				CString* pTypeVal = static_cast<CString*>(pVal);
 				if(NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblsTXPR);
-					LPSAFEARRAY pBinaryObj = NULL;
-					BSTR bstrXml = (_T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + *pTypeVal + _T("</c:rich>")).AllocSysString();
-					HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml, &pBinaryObj);
-					SysFreeString(bstrXml);
-					if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-						m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-					RELEASEARRAY(pBinaryObj);
-					m_oBcw.WriteItemEnd(nCurPos);
+					GetTxBodyBinary(c_oserct_dlblsTXPR, (*pTypeVal));
 				}
 			}
 			break;
@@ -8737,15 +8022,7 @@ namespace BinXlsxRW{
 				CString* pTypeVal = static_cast<CString*>(pVal);
 				if(NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSPPR);
-					LPSAFEARRAY pBinaryObj = NULL;
-					BSTR bstrXml = (*pTypeVal).AllocSysString();
-					HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-					SysFreeString(bstrXml);
-					if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-						m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-					RELEASEARRAY(pBinaryObj);
-					m_oBcw.WriteItemEnd(nCurPos);
+					GetRecordBinary(c_oserct_dlblSPPR, (*pTypeVal), XMLWRITER_RECORD_TYPE_SPPR);
 				}
 			}
 			break;
@@ -8765,15 +8042,7 @@ namespace BinXlsxRW{
 				CString* pTypeVal = static_cast<CString*>(pVal);
 				if(NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblTXPR);
-					LPSAFEARRAY pBinaryObj = NULL;
-					BSTR bstrXml = (_T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + *pTypeVal + _T("</c:rich>")).AllocSysString();
-					HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml, &pBinaryObj);
-					SysFreeString(bstrXml);
-					if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-						m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-					RELEASEARRAY(pBinaryObj);
-					m_oBcw.WriteItemEnd(nCurPos);
+					GetTxBodyBinary(c_oserct_dlblTXPR, (*pTypeVal));
 				}
 			}
 			break;
@@ -8799,15 +8068,7 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_trendlineSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_trendlineSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_trendlineType)
 		{
@@ -8920,27 +8181,11 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_trendlinelblSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_trendlinelblSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_txPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_trendlinelblTXPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (_T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + *oVal.m_txPr + _T("</c:rich>")).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetTxBodyBinary(c_oserct_trendlinelblTXPR, (*oVal.m_txPr));
 		}
 		if(NULL != oVal.m_extLst)
 		{
@@ -8995,15 +8240,7 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_errbarsSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_errbarsSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_extLst)
 		{
@@ -9363,15 +8600,7 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_surfaceserSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_surfaceserSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_cat)
 		{
@@ -9402,15 +8631,7 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_bandfmtSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_bandfmtSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 	}
 	void BinaryChartWriter::WriteCT_SurfaceChart(CT_SurfaceChart& oVal)
@@ -9595,15 +8816,7 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_pieserSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_pieserSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_explosion)
 		{
@@ -9768,15 +8981,7 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_barserSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_barserSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_invertIfNegative)
 		{
@@ -10092,15 +9297,7 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_scatterserSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_scatterserSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_marker)
 		{
@@ -10248,15 +9445,7 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_radarserSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_radarserSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_marker)
 		{
@@ -10431,15 +9620,7 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_lineserSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_lineserSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_marker)
 		{
@@ -10535,15 +9716,7 @@ namespace BinXlsxRW{
 	{
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_updownbarSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_updownbarSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 	}
 	void BinaryChartWriter::WriteCT_Line3DChart(CT_Line3DChart& oVal)
@@ -10773,15 +9946,7 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_areaserSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_areaserSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_pictureOptions)
 		{
@@ -10923,15 +10088,7 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_plotareaSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_plotareaSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_extLst)
 		{
@@ -11189,15 +10346,7 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_surfaceSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_surfaceSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_pictureOptions)
 		{
@@ -11312,27 +10461,11 @@ namespace BinXlsxRW{
 		}
 		if(NULL != oVal.m_spPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_pivotfmtSPPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (*oVal.m_spPr).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_SPPR, bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetRecordBinary(c_oserct_pivotfmtSPPR, (*oVal.m_spPr), XMLWRITER_RECORD_TYPE_SPPR);
 		}
 		if(NULL != oVal.m_txPr)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_pivotfmtTXPR);
-			LPSAFEARRAY pBinaryObj = NULL;
-			BSTR bstrXml = (_T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + *oVal.m_txPr + _T("</c:rich>")).AllocSysString();
-			HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml, &pBinaryObj);
-			SysFreeString(bstrXml);
-			if(S_OK == hRes && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-				m_oBcw.m_oStream.WriteBYTEArray((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			RELEASEARRAY(pBinaryObj);
-			m_oBcw.WriteItemEnd(nCurPos);
+			GetTxBodyBinary(c_oserct_pivotfmtTXPR, (*oVal.m_txPr));
 		}
 		if(NULL != oVal.m_marker)
 		{

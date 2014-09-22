@@ -1068,7 +1068,6 @@ namespace NSBinPptxRW
 	CBinaryFileReader::CBinaryFileReader()
 	{
 		m_pMainDocument = NULL;
-		m_pSourceArray = NULL;
 
 		m_lNextId = 0;
 

@@ -411,7 +411,6 @@ namespace NSBinPptxRW
 		CString m_strContentTypes;
 
 		BinDocxRW::CDocxSerializer* m_pMainDocument;
-		SAFEARRAY* m_pSourceArray;
 
 		LONG		m_lDocumentType;
 

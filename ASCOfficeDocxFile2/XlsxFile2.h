@@ -92,7 +92,8 @@ public:
 	{
 		unsigned char* pData = NULL;
 		long lDataSize = 0;
-		bool bRes = m_oXlsxSerializer.loadChart(CString(bsFilename), &pData, lDataSize);
+		bool bRes = true;
+		//m_oXlsxSerializer.loadChart(CString(bsFilename), &pData, lDataSize);
 		if(NULL != pData && lDataSize > 0)
 		{
 			SAFEARRAYBOUND	rgsabound[1];
@@ -112,7 +113,8 @@ public:
 	STDMETHOD(SaveChart)(SAFEARRAY* pBinaryObj, LONG lStart, LONG lLength, BSTR bsFilename, BSTR bsContentTypePath, BSTR* bsContentTypeElement)
 	{
 		CString* sContentTypeElement = NULL;
-		bool bRes = m_oXlsxSerializer.saveChart(pBinaryObj, lStart, lLength, CString(bsFilename), CString(bsContentTypePath), &sContentTypeElement);
+		bool bRes = true;
+		//m_oXlsxSerializer.saveChart(pBinaryObj, lStart, lLength, CString(bsFilename), CString(bsContentTypePath), &sContentTypeElement);
 		if(NULL != sContentTypeElement)
 			*bsContentTypeElement = sContentTypeElement->AllocSysString();
 		return bRes ? S_OK : S_FALSE;

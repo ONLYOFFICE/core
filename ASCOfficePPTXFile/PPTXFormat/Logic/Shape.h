@@ -64,32 +64,13 @@ namespace PPTX
 				{
 					if (TextBoxShape.is_init())
 					{					
-						LPSAFEARRAY psaData = NULL;
-						unsigned char* pData = NULL;
 						long lDataSize = 0;
-						pWriter->m_pMainDocument->getBinaryContent(std::wstring(TextBoxShape->GetString()), &pData, lDataSize);
-						if(NULL != pData && lDataSize > 0)
-						{
-							SAFEARRAYBOUND	rgsabound[1];
-							rgsabound[0].lLbound = 0;
-							rgsabound[0].cElements = lDataSize;
-							psaData = SafeArrayCreate(VT_UI1, 1, rgsabound);
-
-							BYTE* pDataD = (BYTE*)psaData->pvData;
-							BYTE* pDataS = pData;
-							memcpy(pDataD, pDataS, lDataSize);
-
-
-							ULONG lPos = pWriter->GetPosition();
-							pWriter->SetPosition(lPos);
-
-							pWriter->StartRecord(4);
-							pWriter->WriteBYTEArray((BYTE*)psaData->pvData, psaData->rgsabound[0].cElements);
-							pWriter->EndRecord();
-							SafeArrayDestroy(psaData);
-						}
-						RELEASEARRAYOBJECTS(pData);
-
+						ULONG lPos = pWriter->GetPosition();
+						pWriter->SetPosition(lPos);
+						pWriter->StartRecord(4);
+						pWriter->m_pMainDocument->getBinaryContent(TextBoxShape.get(), *pWriter, lDataSize);
+						pWriter->EndRecord();
+						
 						if (TextBoxBodyPr.is_init())
 						{
 							pWriter->StartRecord(5);
@@ -101,27 +82,12 @@ namespace PPTX
 					{
 						CString strContent = txBody->GetDocxTxBoxContent(pWriter, style);
 
-						LPSAFEARRAY psaData = NULL;
-						unsigned char* pData = NULL;
 						long lDataSize = 0;
-						pWriter->m_pMainDocument->getBinaryContent(std::wstring(strContent.GetString()), &pData, lDataSize);
-						if(NULL != pData && lDataSize > 0)
-						{
-							SAFEARRAYBOUND	rgsabound[1];
-							rgsabound[0].lLbound = 0;
-							rgsabound[0].cElements = lDataSize;
-							psaData = SafeArrayCreate(VT_UI1, 1, rgsabound);
-
-							BYTE* pDataD = (BYTE*)psaData->pvData;
-							BYTE* pDataS = pData;
-							memcpy(pDataD, pDataS, lDataSize);
-
-							pWriter->StartRecord(4);
-							pWriter->WriteBYTEArray((BYTE*)psaData->pvData, psaData->rgsabound[0].cElements);
-							pWriter->EndRecord();
-							SafeArrayDestroy(psaData);
-						}
-						RELEASEARRAYOBJECTS(pData);
+						ULONG lPos = pWriter->GetPosition();
+						pWriter->SetPosition(lPos);
+						pWriter->StartRecord(4);
+						pWriter->m_pMainDocument->getBinaryContent(strContent, *pWriter, lDataSize);
+						pWriter->EndRecord();
 
 						pWriter->WriteRecord1(5, txBody->bodyPr);
 					}
@@ -274,7 +240,7 @@ namespace PPTX
 						}
 						case 4:
 						{
-							if (NULL != pReader->m_pMainDocument && NULL != pReader->m_pSourceArray)
+							if (NULL != pReader->m_pMainDocument)
 							{
 								LONG lLenRec = pReader->GetLong();
 
@@ -282,11 +248,11 @@ namespace PPTX
 								LONG lSize_Reader = pReader->GetSize();
 								BYTE* pData_Reader = pReader->GetData();
 				
-								std::wstring sXmlContent;
-								pReader->m_pMainDocument->getXmlContent((BYTE*)pReader->m_pSourceArray->pvData, pReader->m_pSourceArray->rgsabound[0].cElements, pReader->GetPos(), lLenRec, sXmlContent);
+								CString sXmlContent;
+								pReader->m_pMainDocument->getXmlContent(*pReader, lLenRec, sXmlContent);
 
 								CString strC = _T("<w:txbxContent>");
-								strC += ((CString)(sXmlContent.c_str()));
+								strC += sXmlContent;
 								strC += _T("</w:txbxContent>");
 								TextBoxShape = strC;
 

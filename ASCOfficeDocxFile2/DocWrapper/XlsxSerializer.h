@@ -1,16 +1,20 @@
 #ifndef XLSX_SERIALIZER
 #define XLSX_SERIALIZER
 
-//todo
+#ifdef _WIN32
 #include <atlbase.h>
 #include <atlstr.h>
-
-#include <string>
+#else
+#include "../../Common/DocxFormat/Source/Base/ASCString.h"
+#endif
 
 namespace NSBinPptxRW{
 	class CDrawingConverter;
 }
-
+namespace NSBinPptxRW{
+	class CBinaryFileReader;
+	class CBinaryFileWriter;
+}
 namespace BinXlsxRW {
 
 	class CXlsxSerializer{
@@ -23,8 +27,8 @@ namespace BinXlsxRW {
 		~CXlsxSerializer();
 		bool loadFromFile(CString& sSrcFileName, CString& sDstPath, CString& sXMLOptions, CString& sMediaDir);
 		bool saveToFile(CString& sSrcFileName, CString& sDstPath, CString& sXMLOptions);
-		bool loadChart(CString& sChartPath, unsigned char** ppBinary, long& lDataSize);
-		bool saveChart(SAFEARRAY* pBinaryObj, long lStart, long lLength, CString& sFilename, CString& sContentTypePath, CString** sContentTypeElement);
+		bool loadChart(CString& sChartPath, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize);
+		bool saveChart(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sFilename, CString& sContentTypePath, CString** sContentTypeElement);
 		void setFontDir(CString& sFontDir);
 		void setEmbeddedFontsDir(CString& sEmbeddedFontsDir);
 		void setDrawingConverter(NSBinPptxRW::CDrawingConverter* pDrawingConverter);

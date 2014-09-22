@@ -1,12 +1,5 @@
 #include "DocxSerializer.h"
 
-#ifdef _WIN32
-#include <atlbase.h>
-#include <atlstr.h>
-#else
-#include "../../Common/DocxFormat/Source/Base/ASCString.h"
-#endif
-
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../BinWriter/BinWriters.h"
@@ -25,29 +18,30 @@ BinDocxRW::CDocxSerializer::CDocxSerializer()
 	m_bIsNoBase64Save = false;
 	m_bSaveChartAsImg = false;
 }
-bool BinDocxRW::CDocxSerializer::saveToFile(std::wstring& sSrcFileName, std::wstring& sDstPath, std::wstring& sXMLOptions)
+bool BinDocxRW::CDocxSerializer::saveToFile(CString& sSrcFileName, CString& sDstPath, CString& sXMLOptions)
 {
 	//create mediadir
-	OOX::CPath path(std_string2string(sSrcFileName));
+	OOX::CPath path(sSrcFileName);
 	CString mediaDir = path.GetDirectory() + _T("media\\");
 	NSDirectory::CreateDirectory(string2std_string(mediaDir));
 
-	NSBinPptxRW::CBinaryFileWriter oBufferedStream;
+	NSBinPptxRW::CDrawingConverter oDrawingConverter;
+	NSBinPptxRW::CBinaryFileWriter& oBufferedStream = *oDrawingConverter.m_pBinaryWriter;
 
 #ifdef _WIN32
 	DocWrapper::FontProcessor fp;
-	fp.setFontDir(std_string2string(m_sFontDir));
+	fp.setFontDir(m_sFontDir);
 	PPTXFile::IOfficeFontPicker* pFontPicker = NULL;
 	CoCreateInstance(__uuidof(PPTXFile::COfficeFontPicker), NULL, CLSCTX_ALL, __uuidof(PPTXFile::IOfficeFontPicker), (void**)(&pFontPicker));
-	BSTR bstrFontDir1 = std_string2string(m_sFontDir).AllocSysString();
+	BSTR bstrFontDir1 = m_sFontDir.AllocSysString();
 	pFontPicker->Init(bstrFontDir1);
 	SysFreeString(bstrFontDir1);
 	NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager = NULL;
-	if(false == std_string2string(m_sEmbeddedFontsDir).IsEmpty())
+	if(false == m_sEmbeddedFontsDir.IsEmpty())
 	{
-		NSDirectory::CreateDirectory(m_sEmbeddedFontsDir);
+		NSDirectory::CreateDirectory(string2std_string(m_sEmbeddedFontsDir));
 
-		BSTR bstrEmbeddedFontsDirectory = std_string2string(m_sEmbeddedFontsDir).AllocSysString();
+		BSTR bstrEmbeddedFontsDirectory = m_sEmbeddedFontsDir.AllocSysString();
 		pFontPicker->SetEmbeddedFontsDirectory(bstrEmbeddedFontsDirectory);
 		SysFreeString(bstrEmbeddedFontsDirectory);
 
@@ -63,9 +57,8 @@ bool BinDocxRW::CDocxSerializer::saveToFile(std::wstring& sSrcFileName, std::wst
 		pEmbeddedFontsManager->CheckFont(_T("Arial"), fp.getFontManager());
 		//pEmbeddedFontsManager добавл€ютс€ все цифры
 	}
-	NSBinPptxRW::CDrawingConverter oDrawingConverter;
 
-	BSTR bstrFontDir = std_string2string(m_sFontDir).AllocSysString();
+	BSTR bstrFontDir = m_sFontDir.AllocSysString();
 	oDrawingConverter.SetFontDir(bstrFontDir);
 	SysFreeString(bstrFontDir);
 	VARIANT vt;
@@ -78,7 +71,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(std::wstring& sSrcFileName, std::wst
 	SysFreeString(bstrMediaDir);
 	ParamsWriter oParamsWriter(oBufferedStream, fp, &oDrawingConverter, pEmbeddedFontsManager);
 	m_oBinaryFileWriter = new BinaryFileWriter(oParamsWriter);
-	m_oBinaryFileWriter->intoBindoc(std_string2string(sDstPath));
+	m_oBinaryFileWriter->intoBindoc(sDstPath);
 #endif
 	BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
 	int nBinBufferLen = oBufferedStream.GetPosition();
@@ -86,7 +79,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(std::wstring& sSrcFileName, std::wst
 	if (m_bIsNoBase64Save)
 	{
 		NSFile::CFileBinary oFile;
-		oFile.CreateFileW(sSrcFileName);
+		oFile.CreateFileW(string2std_string(sSrcFileName));
 		oFile.WriteFile(pbBinBuffer, nBinBufferLen);
 		oFile.CloseFile();
 	}
@@ -97,7 +90,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(std::wstring& sSrcFileName, std::wst
 		if(TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
 		{
 			NSFile::CFileBinary oFile;
-			oFile.CreateFileW(sSrcFileName);
+			oFile.CreateFileW(string2std_string(sSrcFileName));
 			oFile.WriteStringUTF8(string2std_string(m_oBinaryFileWriter->WriteFileHeader(nBinBufferLen)));
 			oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
 			oFile.CloseFile();
@@ -107,11 +100,11 @@ bool BinDocxRW::CDocxSerializer::saveToFile(std::wstring& sSrcFileName, std::wst
 	RELEASEINTERFACE(pFontPicker);
 	return true;
 }
-bool BinDocxRW::CDocxSerializer::loadFromFile(std::wstring& sSrcFileName, std::wstring& sDstPath, std::wstring& sXMLOptions, std::wstring& sThemePath, std::wstring& sMediaPath)
+bool BinDocxRW::CDocxSerializer::loadFromFile(CString& sSrcFileName, CString& sDstPath, CString& sXMLOptions, CString& sThemePath, CString& sMediaPath)
 {
 	bool bResultOk = false;
 	NSFile::CFileBinary oFile;
-	if(oFile.OpenFile(sSrcFileName))
+	if(oFile.OpenFile(string2std_string(sSrcFileName)))
 	{
 		DWORD nBase64DataSize = 0;
 		BYTE* pBase64Data = new BYTE[oFile.GetFileSize()];
@@ -161,15 +154,12 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(std::wstring& sSrcFileName, std::w
 					dst_len.AppendChar(_c);
 			}
 			int nDataSize = atoi(dst_len);
-
-			SAFEARRAYBOUND	rgsabound[1];
-			rgsabound[0].lLbound = 0;
-			rgsabound[0].cElements = nDataSize;
-			LPSAFEARRAY pArray = SafeArrayCreate(VT_UI1, 1, rgsabound);
-			if(FALSE != Base64::Base64Decode((LPCSTR)(pBase64Data + nIndex), nBase64DataSize - nIndex, (BYTE*)pArray->pvData, &nDataSize))
+			BYTE* pData = new BYTE[nDataSize];
+			if(FALSE != Base64::Base64Decode((LPCSTR)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
 			{
-				NSBinPptxRW::CBinaryFileReader oBufferedStream;
-				oBufferedStream.Init((BYTE*)pArray->pvData, 0, nDataSize);
+				NSBinPptxRW::CDrawingConverter oDrawingConverter;
+				NSBinPptxRW::CBinaryFileReader& oBufferedStream = *oDrawingConverter.m_pReader;
+				oBufferedStream.Init(pData, 0, nDataSize);
 
 				int nVersion = g_nFormatVersion;
 				if(version.GetLength() > 0)
@@ -181,17 +171,16 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(std::wstring& sSrcFileName, std::w
 						g_nCurFormatVersion = nVersion = nTempVersion;
 					}
 				}
-				NSBinPptxRW::CDrawingConverter oDrawingConverter;
 				oDrawingConverter.SetMainDocument(this);
-				BSTR bstrMediaPath = std_string2string(sMediaPath).AllocSysString();
+				BSTR bstrMediaPath = sMediaPath.AllocSysString();
 				oDrawingConverter.SetMediaDstPath(bstrMediaPath);
 				SysFreeString(bstrMediaPath);
-				m_pCurFileWriter = new Writers::FileWriter(std_string2string(sDstPath), std_string2string(m_sFontDir), nVersion, m_bSaveChartAsImg, &oDrawingConverter, pArray, std_string2string(sThemePath));
+				m_pCurFileWriter = new Writers::FileWriter(sDstPath, m_sFontDir, nVersion, m_bSaveChartAsImg, &oDrawingConverter, sThemePath);
 
 				//папка с картинками
 				TCHAR tFolder[256];
 				TCHAR tDrive[256];
-				_tsplitpath( sSrcFileName.c_str(), tDrive, tFolder, NULL, NULL );
+				_tsplitpath( sSrcFileName, tDrive, tFolder, NULL, NULL );
 				CString sFolder = CString(tFolder);
 				CString sDrive = CString(tDrive);
 				CString sFileInDir = sDrive + sFolder;
@@ -230,19 +219,14 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(std::wstring& sSrcFileName, std::w
 				bResultOk = true;
 				//}
 			}
-			RELEASEARRAY(pArray);
 		}
 		RELEASEARRAYOBJECTS(pBase64Data);
 	}
 	return bResultOk;
 }
-bool BinDocxRW::CDocxSerializer::getXmlContent(unsigned char* pBinaryObj, long lSize, long lStart, long lLength, std::wstring& sOutputXml)
+bool BinDocxRW::CDocxSerializer::getXmlContent(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sOutputXml)
 {
-	NSBinPptxRW::CBinaryFileReader oBufferedStream;
-	oBufferedStream.Init(pBinaryObj, lStart, lSize);
-
 	long nLength = oBufferedStream.GetLong();
-
 	Writers::ContentWriter oTempContentWriter;
 	BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter, NULL);
 	int res = oBinary_DocumentTableReader.Read1(nLength, &BinDocxRW::Binary_DocumentTableReader::ReadDocumentContent, &oBinary_DocumentTableReader, NULL);
@@ -250,14 +234,14 @@ bool BinDocxRW::CDocxSerializer::getXmlContent(unsigned char* pBinaryObj, long l
 	sOutputXml = oTempContentWriter.m_oContent.GetData().GetString();
 	return true;
 }
-bool BinDocxRW::CDocxSerializer::getBinaryContent(std::wstring& bsTxContent, unsigned char** ppBinary, long &lDataSize)
+bool BinDocxRW::CDocxSerializer::getBinaryContent(CString& bsTxContent, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize)
 {
 	if(NULL == m_oBinaryFileWriter)
 		return false;
-	NSBinPptxRW::CBinaryFileWriter oBufferedStream;
+	long nStartPos = oBufferedStream.GetPosition();
 
 	XmlUtils::CXmlLiteReader oReader;
-	oReader.FromString(std_string2string(bsTxContent));
+	oReader.FromString(bsTxContent);
 	oReader.ReadNextNode();//v:textbox
 	CString sRootName = oReader.GetName();
 	if(_T("v:textbox") == sRootName)
@@ -278,20 +262,15 @@ bool BinDocxRW::CDocxSerializer::getBinaryContent(std::wstring& bsTxContent, uns
 	oBinaryDocumentTableWriter.WriteDocumentContent(oSdtContent.m_arrItems);
 	oBinaryCommonWriter.WriteItemWithLengthEnd(nCurPos);
 
-	if (NULL != ppBinary)
-	{
-		lDataSize = oBufferedStream.GetPosition();
-		*ppBinary = new unsigned char[lDataSize];
-		BYTE* pDataS = oBufferedStream.GetBuffer();
-		memcpy(*ppBinary, pDataS, lDataSize);
-	}
+	long nEndPos = oBufferedStream.GetPosition();
+	lDataSize = nEndPos - nStartPos;
 	return true;
 }
-void BinDocxRW::CDocxSerializer::setFontDir(std::wstring& sFontDir)
+void BinDocxRW::CDocxSerializer::setFontDir(CString& sFontDir)
 {
 	m_sFontDir = sFontDir;
 }
-void BinDocxRW::CDocxSerializer::setEmbeddedFontsDir(std::wstring& sEmbeddedFontsDir)
+void BinDocxRW::CDocxSerializer::setEmbeddedFontsDir(CString& sEmbeddedFontsDir)
 {
 	m_sEmbeddedFontsDir = sEmbeddedFontsDir;
 }

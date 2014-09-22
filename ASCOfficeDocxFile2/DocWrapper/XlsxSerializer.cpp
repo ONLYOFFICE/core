@@ -94,14 +94,13 @@ namespace BinXlsxRW{
 		RELEASEINTERFACE(pFontPicker);
 		return true;
 	}
-	bool CXlsxSerializer::loadChart(CString& sChartPath, unsigned char** ppBinary, long& lDataSize)
+	bool CXlsxSerializer::loadChart(CString& sChartPath, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize)
 	{
 		bool bRes = false;
-		*ppBinary = NULL;
 		OOX::Spreadsheet::CChartSpace oChart(sChartPath);
 		if(NULL != m_pExternalDrawingConverter)
 		{
-			NSBinPptxRW::CBinaryFileWriter oBufferedStream;
+			long nStartPos = oBufferedStream.GetPosition();
 			BinXlsxRW::BinaryCommonWriter oBcw(oBufferedStream);
 
 			BSTR bstrChartPath = sChartPath.AllocSysString();
@@ -111,26 +110,18 @@ namespace BinXlsxRW{
 			BinXlsxRW::BinaryChartWriter oBinaryChartWriter(oBufferedStream, m_pExternalDrawingConverter);	
 			oBinaryChartWriter.WriteCT_ChartSpace(oChart);
 
-			if (NULL != ppBinary)
-			{
-				lDataSize = oBufferedStream.GetPosition();
-				*ppBinary = new unsigned char[lDataSize];
-				BYTE* pDataS = oBufferedStream.GetBuffer();
-				memcpy(*ppBinary, pDataS, lDataSize);
-				bRes = true;
-			}
+			long nEndPos = oBufferedStream.GetPosition();
+			lDataSize = nEndPos - nStartPos;
+			bRes = true;
 		}
 		return bRes;
 	}
-	bool CXlsxSerializer::saveChart(SAFEARRAY* pBinaryObj, long lStart, long lLength, CString& sFilepath, CString& sContentTypePath, CString** sContentTypeElement)
+	bool CXlsxSerializer::saveChart(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sFilepath, CString& sContentTypePath, CString** sContentTypeElement)
 	{
 		bool bRes = false;
 		*sContentTypeElement = NULL;
 		if(NULL != m_pExternalDrawingConverter)
 		{
-			NSBinPptxRW::CBinaryFileReader oBufferedStream;
-			oBufferedStream.Init((BYTE*)pBinaryObj->pvData, lStart, lLength);
-
 			m_pExternalDrawingConverter->SetDstContentRels();
 
 			//получаем sThemePath из bsFilename предполагая что папка theme находится на уровень выше bsFilename
@@ -144,7 +135,7 @@ namespace BinXlsxRW{
 			//todo theme path
 			BinXlsxRW::SaveParams oSaveParams(sThemePath);
 			OOX::Spreadsheet::CChartSpace oChartSpace;
-			BinXlsxRW::BinaryChartReader oBinaryChartReader(oBufferedStream, oSaveParams, pBinaryObj, m_pExternalDrawingConverter);
+			BinXlsxRW::BinaryChartReader oBinaryChartReader(oBufferedStream, oSaveParams, m_pExternalDrawingConverter);
 			oBinaryChartReader.ReadCT_ChartSpace(lLength, &oChartSpace.m_oChartSpace);
 
 			if(oChartSpace.isValid())

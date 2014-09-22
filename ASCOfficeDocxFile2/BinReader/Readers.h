@@ -2292,10 +2292,11 @@ public:
 		else if(c_oSerOtherTableTypes::DocxTheme == type)
 		{
 			//переписываем взятую из ресурсов тему.
+			long nCurPos = m_oBufferedStream.GetPos();
 			BSTR bstrThemePath = m_oFileWriter.m_sThemePath.AllocSysString();
-			m_oFileWriter.m_pDrawingConverter->SaveThemeXml(m_oFileWriter.m_pArray, m_oBufferedStream.GetPos(), length, bstrThemePath);
+			m_oFileWriter.m_pDrawingConverter->SaveThemeXml(nCurPos, length, bstrThemePath);
 			SysFreeString(bstrThemePath);
-			res = c_oSerConstants::ReadUnknown;
+			m_oBufferedStream.Seek(nCurPos + length);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5298,12 +5299,14 @@ public:
 					var.intVal = m_oFileWriter.m_oChartWriter.getChartCount();
 					m_oFileWriter.m_pDrawingConverter->SetAdditionalParam(_T("DocumentChartsCount"), var);
 
+					long nCurPos = m_oBufferedStream.GetPos();
 					BSTR bstrDrawingProperty = sDrawingProperty.AllocSysString();
 					BSTR bstrDrawingXml = NULL;
-					m_oFileWriter.m_pDrawingConverter->SaveObjectEx(m_oFileWriter.m_pArray, oCDrawingProperty.DataPos, oCDrawingProperty.DataLength, bstrDrawingProperty, XMLWRITER_DOC_TYPE_DOCX, &bstrDrawingXml);
+					m_oFileWriter.m_pDrawingConverter->SaveObjectEx(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength, bstrDrawingProperty, XMLWRITER_DOC_TYPE_DOCX, &bstrDrawingXml);
 					SysFreeString(bstrDrawingProperty);
-					CString sDrawingXml(bstrDrawingXml);
+					m_oBufferedStream.Seek(nCurPos);
 
+					CString sDrawingXml(bstrDrawingXml);
 					VARIANT vt;
 					m_oFileWriter.m_pDrawingConverter->GetAdditionalParam(_T("DocumentChartsCount"), &vt);
 					if(VT_I4 == vt.vt)
@@ -5581,7 +5584,7 @@ public:
 				if(-1 != nIndex)
 					sThemeDir = m_oFileWriter.m_sThemePath.Left(nIndex);
 				BinXlsxRW::SaveParams oSaveParams(sThemeDir);
-				BinXlsxRW::BinaryChartReader oBinaryChartReader(m_oBufferedStream, oSaveParams, m_oFileWriter.m_pArray, m_oFileWriter.m_pDrawingConverter);
+				BinXlsxRW::BinaryChartReader oBinaryChartReader(m_oBufferedStream, oSaveParams, m_oFileWriter.m_pDrawingConverter);
 				OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace();
 				oBinaryChartReader.ReadCT_ChartSpace(length, &pChartSpace->m_oChartSpace);
 

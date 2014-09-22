@@ -58,7 +58,7 @@ public:
 public:
 	STDMETHOD(OpenFile)(BSTR bsInputDir, BSTR bsFileDst)
 	{
-		bool bRes = m_oCDocxSerializer.saveToFile(BstrToStdString(bsFileDst), BstrToStdString(bsInputDir), std::wstring(_T("")));
+		bool bRes = m_oCDocxSerializer.saveToFile(CString(bsFileDst), CString(bsInputDir), CString(_T("")));
 		return bRes ? S_OK : S_FALSE;
 	}
 	STDMETHOD(GetJfdoc)(BSTR bsInputDir, BSTR* bsJfdoc)
@@ -71,7 +71,7 @@ public:
 	}
 	STDMETHOD(SetFontDir)(BSTR bsFontDir)
 	{
-		m_oCDocxSerializer.setFontDir(BstrToStdString(bsFontDir));
+		m_oCDocxSerializer.setFontDir(CString(bsFontDir));
 		return S_OK;
 	}
 
@@ -86,12 +86,12 @@ public:
 		CString sParamName; sParamName = ParamName;
 		if (_T("EmbeddedFontsDirectory") == sParamName && ParamValue.vt == VT_BSTR)
 		{		
-			m_oCDocxSerializer.setEmbeddedFontsDir(BstrToStdString(ParamValue.bstrVal));
+			m_oCDocxSerializer.setEmbeddedFontsDir(CString(ParamValue.bstrVal));
 			return S_OK;
 		}
 		else if (_T("FontDir") == sParamName && ParamValue.vt == VT_BSTR)
 		{
-			m_oCDocxSerializer.setFontDir(BstrToStdString(ParamValue.bstrVal));
+			m_oCDocxSerializer.setFontDir(CString(ParamValue.bstrVal));
 		}
 		else if (_T("SaveChartAsImg") == sParamName && ParamValue.vt == VT_BOOL)
 		{
@@ -111,7 +111,8 @@ public:
 	{
 		unsigned char* pData = NULL;
 		long lDataSize = 0;
-		bool bRes = m_oCDocxSerializer.getBinaryContent(BstrToStdString(bsTxContent), &pData, lDataSize);
+		bool bRes = true;
+		//m_oCDocxSerializer.getBinaryContent(CString(bsTxContent), &pData, lDataSize);
 		if(NULL != pData && lDataSize > 0)
 		{
 			SAFEARRAYBOUND	rgsabound[1];
@@ -134,14 +135,15 @@ public:
 		CString sThemePath;
 		CString sMediaPath;
 		CreateDocument(sDirectoryOut, sThemePath, sMediaPath);
-		bool bRes = m_oCDocxSerializer.loadFromFile(BstrToStdString(bstrFileIn), BstrToStdString(bstrDirectoryOut), std::wstring(_T("")), std::wstring(sThemePath.GetString()), std::wstring(sMediaPath.GetString()));
+		bool bRes = m_oCDocxSerializer.loadFromFile(CString(bstrFileIn), CString(bstrDirectoryOut), CString(_T("")), CString(sThemePath.GetString()), CString(sMediaPath.GetString()));
 		return bRes ? S_OK : S_FALSE;
 	}
 	STDMETHOD(GetXmlContent)(SAFEARRAY* pBinaryObj, LONG lStart, LONG lLength, BSTR* bsXml)
 	{
-		std::wstring sRes;
-		bool bRes = m_oCDocxSerializer.getXmlContent((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements, lStart, lLength, sRes);
-		(*bsXml) = CString(sRes.c_str()).AllocSysString();
+		CString sRes;
+		bool bRes = true;
+		//m_oCDocxSerializer.getXmlContent((BYTE*)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements, lStart, lLength, sRes);
+		(*bsXml) = sRes.AllocSysString();
 		return bRes ? S_OK : S_FALSE;
 	}
 private:
@@ -201,8 +203,4 @@ private:
 		UnlockResource(hGlobal);
 		FreeResource(hGlobal);
 	}	
-	std::wstring BstrToStdString(BSTR sVal)
-	{
-		return std::wstring(sVal, SysStringLen(sVal));
-	}
 };

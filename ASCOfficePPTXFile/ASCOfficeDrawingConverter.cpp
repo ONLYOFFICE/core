@@ -890,7 +890,7 @@ HRESULT CDrawingConverter::AddShapeType(BSTR bsXml)
 
 	return S_OK;
 }
-HRESULT CDrawingConverter::AddObject(BSTR bsXml, BSTR* pMainProps, SAFEARRAY** ppBinary)
+HRESULT CDrawingConverter::AddObject(BSTR bsXml, BSTR* pMainProps)
 {
 	CString strXml = _T("<main ");
 
@@ -926,22 +926,18 @@ HRESULT CDrawingConverter::AddObject(BSTR bsXml, BSTR* pMainProps, SAFEARRAY** p
 	m_pBinaryWriter->m_pCommon->CheckFontPicker();
 
 	++m_lCurrentObjectTop;
-	bool bResult = ParceObject(strXml, pMainProps, ppBinary);
+	bool bResult = ParceObject(strXml, pMainProps);
 	--m_lCurrentObjectTop;
 
-	if (0 == m_lCurrentObjectTop)
-	{
-		m_pBinaryWriter->ClearNoAttack();
-	}
+	//if (0 == m_lCurrentObjectTop)
+	//{
+	//	m_pBinaryWriter->ClearNoAttack();
+	//}
 
 	return bResult ? S_OK : S_FALSE;
 }
 
-HRESULT CDrawingConverter::AddObject2(BSTR bsXml, SAFEARRAY* pBinaryObj, BSTR* pXmlOutput)
-{
-	return S_OK;
-}
-bool CDrawingConverter::ParceObject(ATL::CString& strXml, BSTR* pMainProps, SAFEARRAY** ppBinary)
+bool CDrawingConverter::ParceObject(ATL::CString& strXml, BSTR* pMainProps)
 {
 	XmlUtils::CXmlNode oMainNode;
 	if (!oMainNode.FromXmlString(strXml))
@@ -951,7 +947,7 @@ bool CDrawingConverter::ParceObject(ATL::CString& strXml, BSTR* pMainProps, SAFE
 	if (!oMainNode.GetNodes(_T("*"), oNodes))
 		return NULL;
 
-	ULONG lCurrentPosition = m_pBinaryWriter->GetPosition();
+	//ULONG lCurrentPosition = m_pBinaryWriter->GetPosition();
 	m_pBinaryWriter->StartRecord(0);
 
 	m_pBinaryWriter->ClearShapeCurSizes();
@@ -1310,19 +1306,6 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 	}
 
 	m_pBinaryWriter->EndRecord();
-
-	if (NULL != ppBinary)
-	{
-		ULONG lBinarySize = m_pBinaryWriter->GetPosition() - lCurrentPosition;
-		SAFEARRAY* pArray = SafeArrayCreateVector(VT_UI1, lBinarySize);
-		
-		BYTE* pDataD = (BYTE*)pArray->pvData;
-		BYTE* pDataS = m_pBinaryWriter->GetBuffer();
-		memcpy(pDataD, pDataS + lCurrentPosition, lBinarySize);
-
-		*ppBinary = pArray;
-	}
-	
 	return true;
 }
 
@@ -3041,11 +3024,8 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils::
 	}
 }
 
-HRESULT CDrawingConverter::GetThemeBinary(BSTR bsThemeFilePath, SAFEARRAY** ppBinary)
+HRESULT CDrawingConverter::GetThemeBinary(BSTR bsThemeFilePath)
 {
-	if (ppBinary == NULL)
-		return S_FALSE;
-
 	CString strOldRels = m_strCurrentRelsPath;
 
 	m_strCurrentRelsPath = bsThemeFilePath;
@@ -3056,20 +3036,11 @@ HRESULT CDrawingConverter::GetThemeBinary(BSTR bsThemeFilePath, SAFEARRAY** ppBi
 	smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme(oPath, oFileMap);
 
 	//m_pBinaryWriter->ClearNoAttack();
-	ULONG lOldPos = m_pBinaryWriter->GetPosition();
+	//ULONG lOldPos = m_pBinaryWriter->GetPosition();
 	m_pBinaryWriter->m_pCommon->CheckFontPicker();
 	pTheme->toPPTY(m_pBinaryWriter);
 
-	ULONG lBinarySize = m_pBinaryWriter->GetPosition() - lOldPos;
-	SAFEARRAY* pArray = SafeArrayCreateVector(VT_UI1, lBinarySize);
-	
-	BYTE* pDataD = (BYTE*)pArray->pvData;
-	BYTE* pDataS = m_pBinaryWriter->GetBuffer() + lOldPos;
-	memcpy(pDataD, pDataS, lBinarySize);
-
-	*ppBinary = pArray;
-
-	m_pBinaryWriter->SetPosition(lOldPos);
+	//m_pBinaryWriter->SetPosition(lOldPos);
 
 	*m_pBinaryWriter->ThemeDoc = pTheme.smart_dynamic_cast<PPTX::FileContainer>();
 	//m_pBinaryWriter->ThemeDoc.reset();
@@ -3097,15 +3068,12 @@ HRESULT CDrawingConverter::LoadClrMap(BSTR bsXml)
 	return S_OK;
 }
 
-HRESULT CDrawingConverter::SaveThemeXml(SAFEARRAY* pBinaryTheme, LONG lStart, LONG lLength, BSTR bsThemePath)
+HRESULT CDrawingConverter::SaveThemeXml(LONG lStart, LONG lLength, BSTR bsThemePath)
 {
-	if (NULL == pBinaryTheme || NULL == bsThemePath)
+	if (NULL == bsThemePath)
 		return S_FALSE;
 
-	BYTE* pData = (BYTE*)pBinaryTheme->pvData;
-	
-	m_pReader->Init(pData, lStart, lLength);
-
+	m_pReader->Seek(lStart);
 	// reset rels
 	SetDstContentRels();
 
@@ -3139,9 +3107,9 @@ HRESULT CDrawingConverter::SaveThemeXml(SAFEARRAY* pBinaryTheme, LONG lStart, LO
 	return S_OK;
 }
 
-HRESULT CDrawingConverter::SaveObject(SAFEARRAY* pBinaryObj, LONG lStart, LONG lLength, BSTR bsMainProps, BSTR* bsXml)
+HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, BSTR bsMainProps, BSTR* bsXml)
 {
-	if (NULL == pBinaryObj || bsXml == NULL)
+	if (bsXml == NULL)
 		return S_OK;
 
 	bool bIsInline = false;
@@ -3169,17 +3137,7 @@ HRESULT CDrawingConverter::SaveObject(SAFEARRAY* pBinaryObj, LONG lStart, LONG l
 
 	strMainProps += _T("<wp:cNvGraphicFramePr/>");
 
-	if (0 == m_nCurrentIndexObject)
-	{
-		BYTE* pData = (BYTE*)pBinaryObj->pvData;
-		m_pReader->Init(pData, lStart, lLength);
-
-		m_pReader->m_pSourceArray = pBinaryObj;
-	}
-	else
-	{
-		m_pReader->Seek(lStart);
-	}
+	m_pReader->Seek(lStart);
 	
 	++m_nCurrentIndexObject;
 
@@ -3278,29 +3236,19 @@ HRESULT CDrawingConverter::SaveObject(SAFEARRAY* pBinaryObj, LONG lStart, LONG l
 	return S_OK;
 }
 
-HRESULT CDrawingConverter::SaveObjectEx(SAFEARRAY* pBinaryObj, LONG lStart, LONG lLength, BSTR bsMainProps, LONG lDocType, BSTR* bsXml)
+HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, BSTR bsMainProps, LONG lDocType, BSTR* bsXml)
 {
 	if (XMLWRITER_DOC_TYPE_DOCX == lDocType)
 	{
 		m_pImageManager->m_bIsWord = TRUE;
 		// нужно писать всякие inline/anchor + word2007 format
-		return SaveObject(pBinaryObj, lStart, lLength, bsMainProps, bsXml);
+		return SaveObject(lStart, lLength, bsMainProps, bsXml);
 	}
 
-	if (NULL == pBinaryObj || bsXml == NULL)
+	if (bsXml == NULL)
 		return S_OK;
 
-	if (0 == m_nCurrentIndexObject)
-	{
-		BYTE* pData = (BYTE*)pBinaryObj->pvData;
-		m_pReader->Init(pData, lStart, lLength);
-
-		m_pReader->m_pSourceArray = pBinaryObj;
-	}
-	else
-	{
-		m_pReader->Seek(lStart);
-	}
+	m_pReader->Seek(lStart);
 
 	if (lDocType != XMLWRITER_DOC_TYPE_DOCX)
 		m_pImageManager->m_bIsWord = FALSE;
@@ -3597,7 +3545,7 @@ void CDrawingConverter::ConvertMainPropsToVML(BSTR bsMainProps, NSBinPptxRW::CXm
 	pWriter.m_strStyleMain = oWriter.GetXmlString();
 }
 
-HRESULT CDrawingConverter::GetTxBodyBinary(BSTR bsXml, SAFEARRAY** ppBinary)
+HRESULT CDrawingConverter::GetTxBodyBinary(BSTR bsXml)
 {
 	XmlUtils::CXmlNode oNode;
 	if (!oNode.FromXmlString((CString)bsXml))
@@ -3606,41 +3554,28 @@ HRESULT CDrawingConverter::GetTxBodyBinary(BSTR bsXml, SAFEARRAY** ppBinary)
 	PPTX::Logic::TxBody oTxBody(oNode);
 
 	//m_pBinaryWriter->ClearNoAttack();
-	ULONG lOldPos = m_pBinaryWriter->GetPosition();
+	//ULONG lOldPos = m_pBinaryWriter->GetPosition();
 	m_pBinaryWriter->m_pCommon->CheckFontPicker();
 	//m_pBinaryWriter->m_pCommon->m_pNativePicker->Init(m_strFontDirectory);
 
 	m_pBinaryWriter->WriteRecord1(0, oTxBody);
 
-	if (NULL != ppBinary)
-	{
-		ULONG lBinarySize = m_pBinaryWriter->GetPosition() - lOldPos;
-		SAFEARRAY* pArray = SafeArrayCreateVector(VT_UI1, lBinarySize);
-		
-		BYTE* pDataD = (BYTE*)pArray->pvData;
-		BYTE* pDataS = m_pBinaryWriter->GetBuffer() + lOldPos;
-		memcpy(pDataD, pDataS, lBinarySize);
-
-		*ppBinary = pArray;
-	}
-
-	m_pBinaryWriter->SetPosition(lOldPos);
+	//m_pBinaryWriter->SetPosition(lOldPos);
 
 	//m_pBinaryWriter->ClearNoAttack();
 	return S_OK;
 }
 
-HRESULT CDrawingConverter::GetTxBodyXml(SAFEARRAY* pBinary, LONG lStart, LONG lLength, BSTR* pbstrXml)
+HRESULT CDrawingConverter::GetTxBodyXml(LONG lStart, LONG lLength, BSTR* pbstrXml)
 {
-	NSBinPptxRW::CBinaryFileReader oReader;
-	oReader.Init((BYTE*)pBinary->pvData, lStart, lLength);
+	m_pReader->Seek(lStart);
 
-	BYTE type = oReader.GetUChar();
+	BYTE type = m_pReader->GetUChar();
 	if (0 != type || NULL == pbstrXml)
 		return S_FALSE;
 
 	PPTX::Logic::TxBody oTxBody;
-	oTxBody.fromPPTY(&oReader);
+	oTxBody.fromPPTY(m_pReader);
 
 	NSBinPptxRW::CXmlWriter oWriter;
 	oTxBody.toXmlWriterExcel(&oWriter);
@@ -3657,9 +3592,9 @@ HRESULT CDrawingConverter::SetFontDir(BSTR bsFontDir)
 	return S_OK;
 }
 
-HRESULT CDrawingConverter::GetRecordBinary(LONG lRecordType, BSTR bsXml, SAFEARRAY** ppBinary)
+HRESULT CDrawingConverter::GetRecordBinary(LONG lRecordType, BSTR bsXml)
 {
-	if (NULL == bsXml || ppBinary == NULL)
+	if (NULL == bsXml)
 		return S_FALSE;
 
 	CString strXml = _T("<main ");
@@ -3735,29 +3670,21 @@ xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"");
 	//m_pBinaryWriter->ClearNoAttack();
 	m_pBinaryWriter->m_pCommon->CheckFontPicker();
 
-	ULONG lOldPos = m_pBinaryWriter->GetPosition();
+	//ULONG lOldPos = m_pBinaryWriter->GetPosition();
 
 	m_pBinaryWriter->WriteRecord1(0, *pWritingElem);
 	
-	ULONG lBinarySize = m_pBinaryWriter->GetPosition() - lOldPos;
-	SAFEARRAY* pArray = SafeArrayCreateVector(VT_UI1, lBinarySize);
-	
-	BYTE* pDataD = (BYTE*)pArray->pvData;
-	BYTE* pDataS = m_pBinaryWriter->GetBuffer() + lOldPos;
-	memcpy(pDataD, pDataS, lBinarySize);
-
-	*ppBinary = pArray;
 	
 	RELEASEOBJECT(pWritingElem);
 
-	m_pBinaryWriter->SetPosition(lOldPos);
+	//m_pBinaryWriter->SetPosition(lOldPos);
 
 	return S_OK;	
 }
 
-HRESULT CDrawingConverter::GetRecordXml(SAFEARRAY* pBinaryObj, LONG lStart, LONG lLength, LONG lRecType, LONG lDocType, BSTR* bsXml)
+HRESULT CDrawingConverter::GetRecordXml(LONG lStart, LONG lLength, LONG lRecType, LONG lDocType, BSTR* bsXml)
 {
-	if (NULL == pBinaryObj || bsXml == NULL)
+	if (bsXml == NULL)
 		return S_FALSE;
 
 	if (lDocType != XMLWRITER_DOC_TYPE_DOCX)
@@ -3765,9 +3692,7 @@ HRESULT CDrawingConverter::GetRecordXml(SAFEARRAY* pBinaryObj, LONG lStart, LONG
 	else
 		m_pReader->m_pRels->m_pManager->m_bIsWord = TRUE;
 
-	BYTE* pData = (BYTE*)pBinaryObj->pvData;
-	m_pReader->Init(pData, lStart, lLength);
-	m_pReader->m_pSourceArray = pBinaryObj;
+	m_pReader->Seek(lStart);
 	
 	BYTE typeRec1 = m_pReader->GetUChar();
 	

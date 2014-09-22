@@ -1745,19 +1745,17 @@ namespace BinXlsxRW {
 		CString& m_sDestinationDir;
 		CString m_sMediaDir;
 		SaveParams& m_oSaveParams;
-		LPSAFEARRAY m_pArray;
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 	public:
 		BinaryWorksheetsTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook,
 			OOX::Spreadsheet::CSharedStrings* pSharedStrings, std::map<CString, OOX::Spreadsheet::CWorksheet*>& mapWorksheets,
-			std::map<long, ImageObject*>& mapMedia, CString& sDestinationDir, SaveParams& oSaveParams, LPSAFEARRAY pArray,
+			std::map<long, ImageObject*>& mapMedia, CString& sDestinationDir, SaveParams& oSaveParams,
 			NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter) : Binary_CommonReader(oBufferedStream), m_oWorkbook(oWorkbook),
 			m_oBcr2(oBufferedStream), m_mapWorksheets(mapWorksheets), m_mapMedia(mapMedia), m_sDestinationDir(sDestinationDir), m_sMediaDir(m_sDestinationDir + _T("\\xl\\media")), m_oSaveParams(oSaveParams), m_pSharedStrings(pSharedStrings)
 		{
 			m_pCurSheet = NULL;
 			m_pCurWorksheet = NULL;
 			m_pCurDrawing = NULL;
-			m_pArray = pArray;
 			m_pOfficeDrawingConverter = pOfficeDrawingConverter;
 		}
 		int Read()
@@ -2394,9 +2392,10 @@ namespace BinXlsxRW {
 					m_pOfficeDrawingConverter->SetAdditionalParam(_T("DocumentChartsCount"), var);
 				}
 
+				long nCurPos = m_oBufferedStream.GetPos();
 				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->SaveObjectEx(m_pArray, m_oBufferedStream.GetPos(), length, NULL, XMLWRITER_DOC_TYPE_XLSX, &bstrXml);
-
+				HRESULT hRes = m_pOfficeDrawingConverter->SaveObjectEx(nCurPos, length, NULL, XMLWRITER_DOC_TYPE_XLSX, &bstrXml);
+				m_oBufferedStream.Seek(nCurPos + length);
 				if(NULL != m_pCurDrawing)
 				{
 					VARIANT vt;
@@ -2404,14 +2403,12 @@ namespace BinXlsxRW {
 					if(VT_I4 == vt.vt)
 						m_pCurDrawing->SetGlobalNumberByType(OOX::Spreadsheet::FileTypes::Charts.OverrideType(), vt.intVal);
 				}
-
 				if(S_OK == hRes && NULL != bstrXml)
 				{
 					pCellAnchor->m_oXml.Init();
 					pCellAnchor->m_oXml->AppendFormat(_T("%s<xdr:clientData/>"), bstrXml);
 					SysFreeString(bstrXml);
 				}
-				m_oBufferedStream.Skip(length);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -2432,7 +2429,7 @@ namespace BinXlsxRW {
 				m_pOfficeDrawingConverter->SetDstContentRels();
 
 				OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace();
-				BinaryChartReader oBinaryChartReader(m_oBufferedStream, m_oSaveParams, m_pArray, m_pOfficeDrawingConverter);
+				BinaryChartReader oBinaryChartReader(m_oBufferedStream, m_oSaveParams, m_pOfficeDrawingConverter);
 				oBinaryChartReader.ReadCT_ChartSpace(length, &pChartSpace->m_oChartSpace);
 				NSCommon::smart_ptr<OOX::File> pChartFile(pChartSpace);
 				pChartFile->m_bDoNotAddRels = true;
@@ -2831,10 +2828,9 @@ namespace BinXlsxRW {
 		CString m_sCurSrc;
 		long m_nCurIndex;
 		SaveParams& m_oSaveParams;
-		LPSAFEARRAY m_pArray;
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 	public:
-		BinaryOtherTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, std::map<long, ImageObject*>& mapMedia, CString& sFileInDir, std::vector<CString>& aDeleteFiles, SaveParams& oSaveParams, LPSAFEARRAY pArray, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream), m_mapMedia(mapMedia),m_aDeleteFiles(aDeleteFiles),m_sFileInDir(sFileInDir),m_oSaveParams(oSaveParams),m_pArray(pArray),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
+		BinaryOtherTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, std::map<long, ImageObject*>& mapMedia, CString& sFileInDir, std::vector<CString>& aDeleteFiles, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream), m_mapMedia(mapMedia),m_aDeleteFiles(aDeleteFiles),m_sFileInDir(sFileInDir),m_oSaveParams(oSaveParams),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 		{
 			m_nCurId = 0;
 			m_sCurSrc = _T("");
@@ -2852,10 +2848,11 @@ namespace BinXlsxRW {
 			else if(c_oSer_OtherType::Theme == type)
 			{
 				CString sThemePath;sThemePath.Format(_T("%s\\%s"), m_oSaveParams.sThemePath, OOX::FileTypes::Theme.DefaultFileName());
+				long nCurPos = m_oBufferedStream.GetPos();
 				BSTR bstrTempTheme = sThemePath.AllocSysString();
-				m_pOfficeDrawingConverter->SaveThemeXml(m_pArray, m_oBufferedStream.GetPos(), length, bstrTempTheme);
+				m_pOfficeDrawingConverter->SaveThemeXml(nCurPos, length, bstrTempTheme);
 				SysFreeString(bstrTempTheme);
-				res = c_oSerConstants::ReadUnknown;
+				m_oBufferedStream.Seek(nCurPos + length);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -2998,15 +2995,11 @@ namespace BinXlsxRW {
 								dst_len.AppendChar(_c);
 						}
 						int nDataSize = atoi(dst_len);
-
-						SAFEARRAYBOUND	rgsabound[1];
-						rgsabound[0].lLbound = 0;
-						rgsabound[0].cElements = nDataSize;
-						LPSAFEARRAY pArray = SafeArrayCreate(VT_UI1, 1, rgsabound);
-						if(FALSE != Base64::Base64Decode((LPCSTR)(pBase64Data + nIndex), nBase64DataSize - nIndex, (BYTE*)pArray->pvData, &nDataSize))
+						BYTE* pData = new BYTE[nDataSize];
+						if(FALSE != Base64::Base64Decode((LPCSTR)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
 						{
-							NSBinPptxRW::CBinaryFileReader oBufferedStream;
-							oBufferedStream.Init((BYTE*)pArray->pvData, 0, nDataSize);
+							NSBinPptxRW::CBinaryFileReader& oBufferedStream = *pOfficeDrawingConverter->m_pReader;
+							oBufferedStream.Init(pData, 0, nDataSize);
 
 							int nVersion = g_nFormatVersion;
 							if(version.GetLength() > 0)
@@ -3031,7 +3024,7 @@ namespace BinXlsxRW {
 							OOX::Spreadsheet::CXlsx oXlsx;
 							std::vector<CString> aDeleteFiles;
 							SaveParams oSaveParams(sDstPath + _T("\\") + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + _T("\\") + OOX::FileTypes::Theme.DefaultDirectory().GetPath());
-							ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, aDeleteFiles, oSaveParams, pArray, pOfficeDrawingConverter);
+							ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, aDeleteFiles, oSaveParams, pOfficeDrawingConverter);
 							CString sAdditionalContentTypes = oSaveParams.sAdditionalContentTypes;
 							if(NULL != pOfficeDrawingConverter)
 							{
@@ -3058,13 +3051,12 @@ namespace BinXlsxRW {
 								DeleteFile(aDeleteFiles[i]);
 							bResultOk = true;
 						}
-						RELEASEARRAY(pArray);
 					}
 					oMappingFile.Close();
 				}
 				return S_OK;
 			}
-			int ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW::CBinaryFileReader& oBufferedStream, CString& sFileInDir, CString& sOutDir, std::vector<CString>& aDeleteFiles, SaveParams& oSaveParams, LPSAFEARRAY pArray, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
+			int ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW::CBinaryFileReader& oBufferedStream, CString& sFileInDir, CString& sOutDir, std::vector<CString>& aDeleteFiles, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
 			{
 				long res = c_oSerConstants::ReadOk;
 				//mtLen
@@ -3099,7 +3091,7 @@ namespace BinXlsxRW {
 				if(-1 != nOtherOffBits)
 				{
 					oBufferedStream.Seek(nOtherOffBits);
-					res = BinaryOtherTableReader(oBufferedStream, mapMedia, sFileInDir, aDeleteFiles, oSaveParams, pArray, pOfficeDrawingConverter).Read();
+					res = BinaryOtherTableReader(oBufferedStream, mapMedia, sFileInDir, aDeleteFiles, oSaveParams, pOfficeDrawingConverter).Read();
 					if(c_oSerConstants::ReadOk != res)
 						return res;
 				}
@@ -3135,7 +3127,7 @@ namespace BinXlsxRW {
 						break;
 					case c_oSerTableTypes::Worksheets:
 						{
-							res = BinaryWorksheetsTableReader(oBufferedStream, *pWorkbook, pSharedStrings, oXlsx.GetWorksheets(), mapMedia, sOutDir, oSaveParams, pArray, pOfficeDrawingConverter).Read();
+							res = BinaryWorksheetsTableReader(oBufferedStream, *pWorkbook, pSharedStrings, oXlsx.GetWorksheets(), mapMedia, sOutDir, oSaveParams, pOfficeDrawingConverter).Read();
 						}
 						break;
 					}

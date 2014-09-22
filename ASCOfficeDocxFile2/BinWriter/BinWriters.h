@@ -2360,9 +2360,10 @@ namespace BinDocxRW
 			}
 		};
 		BinaryCommonWriter m_oBcw;
-		LPSAFEARRAY m_pTheme;
+		OOX::CTheme* m_pTheme;
+		ParamsWriter& m_oParamsWriter;
 	public:
-		BinaryOtherTableWriter(ParamsWriter& oParamsWriter, LPSAFEARRAY pTheme):m_oBcw(oParamsWriter),m_pTheme(pTheme)
+		BinaryOtherTableWriter(ParamsWriter& oParamsWriter, OOX::CTheme* pTheme):m_oParamsWriter(oParamsWriter),m_oBcw(oParamsWriter),m_pTheme(pTheme)
 		{
 		};
 		void Write()
@@ -2387,8 +2388,11 @@ namespace BinDocxRW
 			}
 			if(NULL != m_pTheme)
 			{
-				m_oBcw.m_oStream.WriteBYTE(c_oSerOtherTableTypes::DocxTheme);
-				m_oBcw.WriteSafeArray(m_pTheme);
+				int nStart = m_oBcw.WriteItemStart(c_oSerOtherTableTypes::DocxTheme);
+				BSTR bstrThemePath = m_pTheme->m_oReadPath.GetPath().AllocSysString();
+				m_oParamsWriter.m_pOfficeDrawingConverter->GetThemeBinary(bstrThemePath);
+				SysFreeString(bstrThemePath);
+				m_oBcw.WriteItemEnd(nStart);
 			}
 		};
 		//void WriteImageMapContent()
@@ -4704,7 +4708,7 @@ namespace BinDocxRW
 							SysFreeString(bstrChartPath);
 
 							int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
-							WriteDrawing(*pChartDrawing, NULL, pChartFile);
+							WriteDrawing(NULL, pChartDrawing, pChartFile);
 							m_oBcw.WriteItemEnd(nCurPos);
 
 							BSTR bstrDocumentRels = m_oParamsDocumentWriter.m_sDocumentPath.AllocSysString();
@@ -4715,241 +4719,226 @@ namespace BinDocxRW
 				}
 				else
 				{
-					BSTR bstrXml = pXml->AllocSysString();
-					BSTR bstrOutputXml = NULL;
-					LPSAFEARRAY pBinaryObj = NULL;
-					HRESULT hRes = m_pOfficeDrawingConverter->AddObject(bstrXml, &bstrOutputXml, &pBinaryObj);
-					if(S_OK == hRes && NULL != bstrOutputXml && NULL != pBinaryObj && pBinaryObj->rgsabound[0].cElements > 0)
-					{
-						CString sOutputXml(bstrOutputXml);
-						CString sDrawingXml;
-						sDrawingXml.Format(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\"><w:drawing>%s</w:drawing></root>"), sOutputXml);
-						XmlUtils::CXmlLiteReader oReader;
-						oReader.FromString(sDrawingXml);
-						oReader.ReadNextNode();//root
-						oReader.ReadNextNode();//drawing
-						OOX::Logic::CDrawing oDrawing;
-						oDrawing.fromXML2(oReader, true);
-
-						int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
-						WriteDrawing(oDrawing, pBinaryObj, NULL);
-						m_oBcw.WriteItemEnd(nCurPos);
-					}
-
-					RELEASEARRAY(pBinaryObj);
-					SysFreeString(bstrOutputXml);
-					SysFreeString(bstrXml);
+					int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
+					WriteDrawing(pXml, NULL, NULL);
+					m_oBcw.WriteItemEnd(nCurPos);
 				}
 			}
 		}
-		void WriteDrawing(OOX::Logic::CDrawing& img, SAFEARRAY* pBinaryObj, OOX::Spreadsheet::CChartSpace* pChart)
+		void WriteDrawing(CString* pXml, OOX::Logic::CDrawing* pDrawing, OOX::Spreadsheet::CChartSpace* pChart)
 		{
 			int nCurPos = 0;
-			if(img.m_oInline.IsInit())
+			bool bDeleteDrawing = false;
+			//pptxdata
+			if(NULL != pXml)
 			{
-				const OOX::Drawing::CInline& pInline = img.m_oInline.get();
-				if(pInline.m_oExtent.IsInit())
+				BSTR bstrXml = pXml->AllocSysString();
+				BSTR bstrOutputXml = NULL;
+				m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::PptxData);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+				nCurPos = m_oBcw.WriteItemWithLengthStart();
+				HRESULT hRes = m_pOfficeDrawingConverter->AddObject(bstrXml, &bstrOutputXml);
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				if(S_OK == hRes && NULL != bstrOutputXml)
 				{
-					//Type
+					CString sOutputXml(bstrOutputXml);
+					CString sDrawingXml;
+					sDrawingXml.Format(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\"><w:drawing>%s</w:drawing></root>"), sOutputXml);
+					XmlUtils::CXmlLiteReader oReader;
+					oReader.FromString(sDrawingXml);
+					oReader.ReadNextNode();//root
+					oReader.ReadNextNode();//drawing
+					pDrawing = new OOX::Logic::CDrawing();
+					pDrawing->fromXML2(oReader, true);
+					bDeleteDrawing = true;
+				}
+				SysFreeString(bstrOutputXml);
+				SysFreeString(bstrXml);
+			}
+			//chart
+			if(NULL != pChart)
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::Chart2);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+
+				int nCurPos = m_oBcw.WriteItemWithLengthStart();
+				BinXlsxRW::BinaryChartWriter oBinaryChartWriter(m_oBcw.m_oStream, m_pOfficeDrawingConverter);	
+				oBinaryChartWriter.WriteCT_ChartSpace(*pChart);
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(NULL != pDrawing)
+			{
+				OOX::Logic::CDrawing& img = *pDrawing;
+				if(img.m_oInline.IsInit())
+				{
+					const OOX::Drawing::CInline& pInline = img.m_oInline.get();
+					if(pInline.m_oExtent.IsInit())
+					{
+						//Type
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::Type);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+						m_oBcw.m_oStream.WriteBYTE(c_oAscWrapStyle::Inline);
+						//Extent
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::Extent);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+						nCurPos = m_oBcw.WriteItemWithLengthStart();
+						WriteExtent(pInline.m_oExtent.get());
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}
+				}
+				else if(img.m_oAnchor.IsInit() )
+				{
+					const OOX::Drawing::CAnchor& pAnchor = img.m_oAnchor.get();
 					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::Type);
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-					m_oBcw.m_oStream.WriteBYTE(c_oAscWrapStyle::Inline);
-					//Extent
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::Extent);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-					nCurPos = m_oBcw.WriteItemWithLengthStart();
-					WriteExtent(pInline.m_oExtent.get());
-					m_oBcw.WriteItemWithLengthEnd(nCurPos);
-					//pptxdata
-					if(NULL != pBinaryObj)
+					m_oBcw.m_oStream.WriteBYTE(c_oAscWrapStyle::Flow);
+					if(pAnchor.m_oAllowOverlap.IsInit())
 					{
-						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::PptxData);
-						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-						m_oBcw.WriteSafeArray(pBinaryObj);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::AllowOverlap);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+						m_oBcw.m_oStream.WriteBOOL(pAnchor.m_oAllowOverlap->ToBool());
 					}
-					//chart
-					if(NULL != pChart)
+					if(pAnchor.m_oBehindDoc.IsInit())
 					{
-						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::Chart2);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::BehindDoc);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+						m_oBcw.m_oStream.WriteBOOL(pAnchor.m_oBehindDoc->ToBool());
+					}
+					if(pAnchor.m_oDistL.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::DistL);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
+						m_oBcw.m_oStream.WriteDouble(pAnchor.m_oDistL->ToMM());
+					}
+					if(pAnchor.m_oDistT.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::DistT);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
+						m_oBcw.m_oStream.WriteDouble(pAnchor.m_oDistT->ToMM());
+					}
+					if(pAnchor.m_oDistR.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::DistR);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
+						m_oBcw.m_oStream.WriteDouble(pAnchor.m_oDistR->ToMM());
+					}
+					if(pAnchor.m_oDistB.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::DistB);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
+						m_oBcw.m_oStream.WriteDouble(pAnchor.m_oDistB->ToMM());
+					}
+					if(pAnchor.m_oHidden.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::Hidden);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+						m_oBcw.m_oStream.WriteBOOL(pAnchor.m_oHidden->ToBool());
+					}
+					if(pAnchor.m_oLayoutInCell.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::LayoutInCell);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+						m_oBcw.m_oStream.WriteBOOL(pAnchor.m_oLayoutInCell->ToBool());
+					}
+					if(pAnchor.m_oLocked.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::Locked);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+						m_oBcw.m_oStream.WriteBOOL(pAnchor.m_oLocked->ToBool());
+					}
+					if(pAnchor.m_oRelativeHeight.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::RelativeHeight);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+						m_oBcw.m_oStream.WriteLONG(pAnchor.m_oRelativeHeight->GetValue());
+					}
+					if(pAnchor.m_bSimplePos.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::BSimplePos);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+						m_oBcw.m_oStream.WriteBOOL(pAnchor.m_bSimplePos->ToBool());
+					}
+					if(pAnchor.m_oEffectExtent.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::EffectExtent);
 						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-
-						int nCurPos = m_oBcw.WriteItemWithLengthStart();
-						BinXlsxRW::BinaryChartWriter oBinaryChartWriter(m_oBcw.m_oStream, m_pOfficeDrawingConverter);	
-						oBinaryChartWriter.WriteCT_ChartSpace(*pChart);
+						nCurPos = m_oBcw.WriteItemWithLengthStart();
+						WriteEffectExtent(pAnchor.m_oEffectExtent.get());
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}
+					if(pAnchor.m_oExtent.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::Extent);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+						nCurPos = m_oBcw.WriteItemWithLengthStart();
+						WriteExtent(pAnchor.m_oExtent.get());
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}
+					if(pAnchor.m_oPositionH.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::PositionH);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+						nCurPos = m_oBcw.WriteItemWithLengthStart();
+						WritePositionH(pAnchor.m_oPositionH.get());
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}
+					if(pAnchor.m_oPositionV.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::PositionV);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+						nCurPos = m_oBcw.WriteItemWithLengthStart();
+						WritePositionV(pAnchor.m_oPositionV.get());
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}
+					if(pAnchor.m_oSimplePos.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::SimplePos);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+						nCurPos = m_oBcw.WriteItemWithLengthStart();
+						WriteSimplePos(pAnchor.m_oSimplePos.get());
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}
+					if(pAnchor.m_oWrapNone.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::WrapNone);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Null);
+					}
+					if(pAnchor.m_oWrapSquare.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::WrapSquare);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+						nCurPos = m_oBcw.WriteItemWithLengthStart();
+						WriteWrapSquare(pAnchor.m_oWrapSquare.get());
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}
+					if(pAnchor.m_oWrapThrough.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::WrapThrough);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+						nCurPos = m_oBcw.WriteItemWithLengthStart();
+						WriteWrapThrough(pAnchor.m_oWrapThrough.get());
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}
+					if(pAnchor.m_oWrapTight.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::WrapTight);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+						nCurPos = m_oBcw.WriteItemWithLengthStart();
+						WriteWrapTight(pAnchor.m_oWrapTight.get());
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}
+					if(pAnchor.m_oWrapTopAndBottom.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::WrapTopAndBottom);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+						nCurPos = m_oBcw.WriteItemWithLengthStart();
+						WriteWrapTopBottom(pAnchor.m_oWrapTopAndBottom.get());
 						m_oBcw.WriteItemWithLengthEnd(nCurPos);
 					}
 				}
 			}
-			else if(img.m_oAnchor.IsInit() )
-			{
-				const OOX::Drawing::CAnchor& pAnchor = img.m_oAnchor.get();
-				m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::Type);
-				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBYTE(c_oAscWrapStyle::Flow);
-				if(pAnchor.m_oAllowOverlap.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::AllowOverlap);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-					m_oBcw.m_oStream.WriteBOOL(pAnchor.m_oAllowOverlap->ToBool());
-				}
-				if(pAnchor.m_oBehindDoc.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::BehindDoc);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-					m_oBcw.m_oStream.WriteBOOL(pAnchor.m_oBehindDoc->ToBool());
-				}
-				if(pAnchor.m_oDistL.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::DistL);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
-					m_oBcw.m_oStream.WriteDouble(pAnchor.m_oDistL->ToMM());
-				}
-				if(pAnchor.m_oDistT.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::DistT);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
-					m_oBcw.m_oStream.WriteDouble(pAnchor.m_oDistT->ToMM());
-				}
-				if(pAnchor.m_oDistR.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::DistR);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
-					m_oBcw.m_oStream.WriteDouble(pAnchor.m_oDistR->ToMM());
-				}
-				if(pAnchor.m_oDistB.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::DistB);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
-					m_oBcw.m_oStream.WriteDouble(pAnchor.m_oDistB->ToMM());
-				}
-				if(pAnchor.m_oHidden.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::Hidden);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-					m_oBcw.m_oStream.WriteBOOL(pAnchor.m_oHidden->ToBool());
-				}
-				if(pAnchor.m_oLayoutInCell.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::LayoutInCell);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-					m_oBcw.m_oStream.WriteBOOL(pAnchor.m_oLayoutInCell->ToBool());
-				}
-				if(pAnchor.m_oLocked.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::Locked);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-					m_oBcw.m_oStream.WriteBOOL(pAnchor.m_oLocked->ToBool());
-				}
-				if(pAnchor.m_oRelativeHeight.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::RelativeHeight);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-					m_oBcw.m_oStream.WriteLONG(pAnchor.m_oRelativeHeight->GetValue());
-				}
-				if(pAnchor.m_bSimplePos.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::BSimplePos);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-					m_oBcw.m_oStream.WriteBOOL(pAnchor.m_bSimplePos->ToBool());
-				}
-				if(pAnchor.m_oEffectExtent.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::EffectExtent);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-					nCurPos = m_oBcw.WriteItemWithLengthStart();
-					WriteEffectExtent(pAnchor.m_oEffectExtent.get());
-					m_oBcw.WriteItemWithLengthEnd(nCurPos);
-				}
-				if(pAnchor.m_oExtent.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::Extent);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-					nCurPos = m_oBcw.WriteItemWithLengthStart();
-					WriteExtent(pAnchor.m_oExtent.get());
-					m_oBcw.WriteItemWithLengthEnd(nCurPos);
-				}
-				if(pAnchor.m_oPositionH.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::PositionH);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-					nCurPos = m_oBcw.WriteItemWithLengthStart();
-					WritePositionH(pAnchor.m_oPositionH.get());
-					m_oBcw.WriteItemWithLengthEnd(nCurPos);
-				}
-				if(pAnchor.m_oPositionV.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::PositionV);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-					nCurPos = m_oBcw.WriteItemWithLengthStart();
-					WritePositionV(pAnchor.m_oPositionV.get());
-					m_oBcw.WriteItemWithLengthEnd(nCurPos);
-				}
-				if(pAnchor.m_oSimplePos.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::SimplePos);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-					nCurPos = m_oBcw.WriteItemWithLengthStart();
-					WriteSimplePos(pAnchor.m_oSimplePos.get());
-					m_oBcw.WriteItemWithLengthEnd(nCurPos);
-				}
-				if(pAnchor.m_oWrapNone.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::WrapNone);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Null);
-				}
-				if(pAnchor.m_oWrapSquare.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::WrapSquare);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-					nCurPos = m_oBcw.WriteItemWithLengthStart();
-					WriteWrapSquare(pAnchor.m_oWrapSquare.get());
-					m_oBcw.WriteItemWithLengthEnd(nCurPos);
-				}
-				if(pAnchor.m_oWrapThrough.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::WrapThrough);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-					nCurPos = m_oBcw.WriteItemWithLengthStart();
-					WriteWrapThrough(pAnchor.m_oWrapThrough.get());
-					m_oBcw.WriteItemWithLengthEnd(nCurPos);
-				}
-				if(pAnchor.m_oWrapTight.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::WrapTight);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-					nCurPos = m_oBcw.WriteItemWithLengthStart();
-					WriteWrapTight(pAnchor.m_oWrapTight.get());
-					m_oBcw.WriteItemWithLengthEnd(nCurPos);
-				}
-				if(pAnchor.m_oWrapTopAndBottom.IsInit())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::WrapTopAndBottom);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-					nCurPos = m_oBcw.WriteItemWithLengthStart();
-					WriteWrapTopBottom(pAnchor.m_oWrapTopAndBottom.get());
-					m_oBcw.WriteItemWithLengthEnd(nCurPos);
-				}
-				
-				//pptxdata
-				if(NULL != pBinaryObj)
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::PptxData);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-					m_oBcw.WriteSafeArray(pBinaryObj);
-				}
-
-				//chart
-				if(NULL != pChart)
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::Chart2);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-
-					int nCurPos = m_oBcw.WriteItemWithLengthStart();
-					BinXlsxRW::BinaryChartWriter oBinaryChartWriter(m_oBcw.m_oStream, m_pOfficeDrawingConverter);	
-					oBinaryChartWriter.WriteCT_ChartSpace(*pChart);
-					m_oBcw.WriteItemWithLengthEnd(nCurPos);
-				}
-			}
+			if(bDeleteDrawing)
+				RELEASEOBJECT(pDrawing);
 		};
 		void WriteEffectExtent(const OOX::Drawing::CEffectExtent& oEffectExtent)
 		{
@@ -6134,7 +6123,7 @@ namespace BinDocxRW
 				oBinarySigTableWriter.Write();
 				WriteTableEnd(nCurPos);
 			}
-			void WriteMainTableEnd(LPSAFEARRAY pTheme)
+			void WriteMainTableEnd(OOX::CTheme* pTheme)
 			{
 				//OtherTable
 				int nCurPos = WriteTableStart(c_oSerTableTypes::Other);
@@ -6191,14 +6180,6 @@ namespace BinDocxRW
 				this->WriteMainTableStart();
 
 				int nCurPos = 0;
-
-				LPSAFEARRAY pThemeData = NULL;
-				if(NULL != m_oParamsWriter.m_poTheme)
-				{
-					BSTR bstrThemePath = m_oParamsWriter.m_poTheme->m_oReadPath.GetPath().AllocSysString();
-					m_oParamsWriter.m_pOfficeDrawingConverter->GetThemeBinary(bstrThemePath, &pThemeData);
-					SysFreeString(bstrThemePath);
-				}
 
 				//Write Settings
 				OOX::CSettings* pSettings = oDocx.GetSettings();
@@ -6262,7 +6243,7 @@ namespace BinDocxRW
 				oBinaryHeaderFooterTableWriter.Write();
 				this->WriteTableEnd(nCurPos);
 
-				this->WriteMainTableEnd(pThemeData);
+				this->WriteMainTableEnd(m_oParamsWriter.m_poTheme);
 			}
 			void ParagraphAddBreak(OOX::Logic::CParagraph* pParagraph)
 			{

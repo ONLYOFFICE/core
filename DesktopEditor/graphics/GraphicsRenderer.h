@@ -255,6 +255,10 @@ public:
 		PathCommandLineTo(x, y + h);
 		PathCommandClose();
 	}
+	inline Aggplus::CMatrix* GetCoordTransform()
+	{
+		return m_pRenderer->GetCoordTransform();
+	}
 	inline void Fill()
 	{
 		DrawPath(c_nWindingFillMode);

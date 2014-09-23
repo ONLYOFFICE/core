@@ -318,6 +318,7 @@ namespace Joiner
 				"Word/Editor/Styles.js",
 				"Word/Editor/FlowObjects.js",
 				"Word/Editor/ParagraphContent.js",
+                "Word/Editor/ParagraphContentBase.js",
 				"Word/Editor/Hyperlink.js",
 				"Word/Editor/Run.js",
 				"Word/Editor/Math.js",

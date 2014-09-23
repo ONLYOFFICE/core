@@ -24,6 +24,11 @@
 #include "HeaderFooter.h"
 #include "Theme/Theme.h"
 
+
+#ifndef _WIN32
+#include <sys/stat.h>
+#endif
+
 namespace OOX
 {
 	class CDocx : public OOX::IFileContainer
@@ -76,7 +81,12 @@ namespace OOX
 			return FALSE;
 
 			// Создаем папку
+#ifdef _WIN32
 			CreateDirectoryW( oFilePath.GetPath(), NULL );
+#else
+            std::string sFileParthUtf8 = stringWstingToUtf8String (oFilePath.GetPath());
+            mkdir (sFileParthUtf8.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+#endif
 
 			OOX::CRels         oRels;
 			OOX::CContentTypes oContent;

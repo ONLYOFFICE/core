@@ -430,6 +430,8 @@ inline const Type& SSMAX(const Type& arg1, const Type& arg2)
             #endif
             typedef wchar_t			OLECHAR;
 
+            typedef const TCHAR*		LPCTSTR;
+
         #endif	// #ifndef _WIN32
 
 

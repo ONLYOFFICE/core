@@ -709,6 +709,10 @@
 				Name="Writer"
 				>
 				<File
+					RelativePath=".\BinWriter\BinEquationWriter.h"
+					>
+				</File>
+				<File
 					RelativePath=".\BinWriter\BinReaderWriterDefines.h"
 					>
 				</File>

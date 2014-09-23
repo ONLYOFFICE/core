@@ -1409,6 +1409,34 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="Equation"
+			>
+			<File
+				RelativePath="..\Source\MathEquation\LEStream.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\MathEquation\MathEquation.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\MathEquation\MathEquation.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\MathEquation\OutputDev.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\MathEquation\String.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\MathEquation\Types.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath="..\Source\SystemUtility\FileSystem\Directory.cpp"
 			>

@@ -58,17 +58,13 @@ bool BinDocxRW::CDocxSerializer::saveToFile(CString& sSrcFileName, CString& sDst
 		//pEmbeddedFontsManager добавл€ютс€ все цифры
 	}
 
-	BSTR bstrFontDir = m_sFontDir.AllocSysString();
-	oDrawingConverter.SetFontDir(bstrFontDir);
-	SysFreeString(bstrFontDir);
+	oDrawingConverter.SetFontDir(m_sFontDir);
 	VARIANT vt;
 	vt.vt = VT_UNKNOWN;
 	vt.punkVal = pFontPicker;
-	oDrawingConverter.SetAdditionalParam(_T("FontPicker"), vt);
+	oDrawingConverter.SetAdditionalParam(CString(_T("FontPicker")), vt);
 	oDrawingConverter.SetMainDocument(this);
-	BSTR bstrMediaDir = mediaDir.AllocSysString();
-	oDrawingConverter.SetMediaDstPath(bstrMediaDir);
-	SysFreeString(bstrMediaDir);
+	oDrawingConverter.SetMediaDstPath(mediaDir);
 	ParamsWriter oParamsWriter(oBufferedStream, fp, &oDrawingConverter, pEmbeddedFontsManager);
 	m_oBinaryFileWriter = new BinaryFileWriter(oParamsWriter);
 	m_oBinaryFileWriter->intoBindoc(sDstPath);
@@ -172,9 +168,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(CString& sSrcFileName, CString& sD
 					}
 				}
 				oDrawingConverter.SetMainDocument(this);
-				BSTR bstrMediaPath = sMediaPath.AllocSysString();
-				oDrawingConverter.SetMediaDstPath(bstrMediaPath);
-				SysFreeString(bstrMediaPath);
+				oDrawingConverter.SetMediaDstPath(sMediaPath);
 				m_pCurFileWriter = new Writers::FileWriter(sDstPath, m_sFontDir, nVersion, m_bSaveChartAsImg, &oDrawingConverter, sThemePath);
 
 				//папка с картинками
@@ -188,14 +182,14 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(CString& sSrcFileName, CString& sD
 				VARIANT var;
 				var.vt = VT_BSTR;
 				var.bstrVal = sFileInDir.AllocSysString();
-				oDrawingConverter.SetAdditionalParam(L"SourceFileDir", var);
+				oDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir"), var);
 				RELEASESYSSTRING(var.bstrVal);
 
 				BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter);
 				oBinaryFileReader.ReadFile();
 
 				VARIANT vt;
-				oDrawingConverter.GetAdditionalParam(_T("ContentTypes"), &vt);
+				oDrawingConverter.GetAdditionalParam(CString(_T("ContentTypes")), &vt);
 				if(VT_BSTR == vt.vt)
 					m_pCurFileWriter->m_oContentTypesWriter.AddOverrideRaw(CString(vt.bstrVal));
 

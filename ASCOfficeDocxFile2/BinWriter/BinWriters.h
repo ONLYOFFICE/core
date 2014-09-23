@@ -2389,9 +2389,7 @@ namespace BinDocxRW
 			if(NULL != m_pTheme)
 			{
 				int nStart = m_oBcw.WriteItemStart(c_oSerOtherTableTypes::DocxTheme);
-				BSTR bstrThemePath = m_pTheme->m_oReadPath.GetPath().AllocSysString();
-				m_oParamsWriter.m_pOfficeDrawingConverter->GetThemeBinary(bstrThemePath);
-				SysFreeString(bstrThemePath);
+				m_oParamsWriter.m_pOfficeDrawingConverter->GetThemeBinary(m_pTheme->m_oReadPath.GetPath());
 				m_oBcw.WriteItemEnd(nStart);
 			}
 		};
@@ -2455,15 +2453,11 @@ namespace BinDocxRW
 		}
 		void prepareOfficeDrawingConverter(NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, CString& sDocumentPath, std::vector<CString>& aShapeTypes)
 		{
-			BSTR bstrDocumentPath = sDocumentPath.AllocSysString();
-			pOfficeDrawingConverter->SetRelsPath(bstrDocumentPath);
-			SysFreeString(bstrDocumentPath);
+			pOfficeDrawingConverter->SetRelsPath(sDocumentPath);
 			for(int i = 0, length = aShapeTypes.size(); i < length; ++i)
 			{
 				CString& sShapeType = aShapeTypes[i];
-				BSTR bstrShapeType = sShapeType.AllocSysString();
-				pOfficeDrawingConverter->AddShapeType(bstrShapeType);
-				SysFreeString(bstrShapeType);
+				pOfficeDrawingConverter->AddShapeType(sShapeType);
 			}
 		}
 		void Write(std::vector<OOX::WritingElement*>& aElems)
@@ -4703,17 +4697,13 @@ namespace BinDocxRW
 						{
 							OOX::Spreadsheet::CChartSpace* pChartFile = static_cast<OOX::Spreadsheet::CChartSpace*>(pFile.operator ->());
 							CString sChartPath = pChartFile->GetReadPath().GetPath();
-							BSTR bstrChartPath = sChartPath.AllocSysString();
-							m_pOfficeDrawingConverter->SetRelsPath(bstrChartPath);
-							SysFreeString(bstrChartPath);
+							m_pOfficeDrawingConverter->SetRelsPath(sChartPath);
 
 							int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
 							WriteDrawing(NULL, pChartDrawing, pChartFile);
 							m_oBcw.WriteItemEnd(nCurPos);
 
-							BSTR bstrDocumentRels = m_oParamsDocumentWriter.m_sDocumentPath.AllocSysString();
-							m_pOfficeDrawingConverter->SetRelsPath(bstrDocumentRels);
-							SysFreeString(bstrDocumentRels);
+							m_pOfficeDrawingConverter->SetRelsPath(m_oParamsDocumentWriter.m_sDocumentPath);
 						}
 					}
 				}
@@ -4732,18 +4722,16 @@ namespace BinDocxRW
 			//pptxdata
 			if(NULL != pXml)
 			{
-				BSTR bstrXml = pXml->AllocSysString();
-				BSTR bstrOutputXml = NULL;
+				CString* bstrOutputXml = NULL;
 				m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::PptxData);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 				nCurPos = m_oBcw.WriteItemWithLengthStart();
-				HRESULT hRes = m_pOfficeDrawingConverter->AddObject(bstrXml, &bstrOutputXml);
+				HRESULT hRes = m_pOfficeDrawingConverter->AddObject(*pXml, &bstrOutputXml);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				if(S_OK == hRes && NULL != bstrOutputXml)
 				{
-					CString sOutputXml(bstrOutputXml);
 					CString sDrawingXml;
-					sDrawingXml.Format(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\"><w:drawing>%s</w:drawing></root>"), sOutputXml);
+					sDrawingXml.Format(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\"><w:drawing>%s</w:drawing></root>"), *bstrOutputXml);
 					XmlUtils::CXmlLiteReader oReader;
 					oReader.FromString(sDrawingXml);
 					oReader.ReadNextNode();//root
@@ -4752,8 +4740,7 @@ namespace BinDocxRW
 					pDrawing->fromXML2(oReader, true);
 					bDeleteDrawing = true;
 				}
-				SysFreeString(bstrOutputXml);
-				SysFreeString(bstrXml);
+				RELEASEOBJECT(bstrOutputXml);
 			}
 			//chart
 			if(NULL != pChart)

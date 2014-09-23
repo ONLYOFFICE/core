@@ -2293,9 +2293,7 @@ public:
 		{
 			//переписываем взятую из ресурсов тему.
 			long nCurPos = m_oBufferedStream.GetPos();
-			BSTR bstrThemePath = m_oFileWriter.m_sThemePath.AllocSysString();
-			m_oFileWriter.m_pDrawingConverter->SaveThemeXml(nCurPos, length, bstrThemePath);
-			SysFreeString(bstrThemePath);
+			m_oFileWriter.m_pDrawingConverter->SaveThemeXml(nCurPos, length, m_oFileWriter.m_sThemePath);
 			m_oBufferedStream.Seek(nCurPos + length);
 		}
 		else
@@ -2486,9 +2484,7 @@ public:
 			}
 			sSchemeMapping.Append(_T("/>"));
 			m_oSettingWriter.AddSetting(sSchemeMapping);
-			BSTR bstrClrMap = sSchemeMapping.AllocSysString();
-			m_oFileWriter.m_pDrawingConverter->LoadClrMap(bstrClrMap);
-			SysFreeString(bstrClrMap);
+			m_oFileWriter.m_pDrawingConverter->LoadClrMap(sSchemeMapping);
 		}
 		else if ( c_oSer_SettingsType::DefaultTabStop == type )
 		{
@@ -3040,9 +3036,7 @@ public:
 			long rId;
 			CString sHref = pHyperlink->sLink;
 			SerializeCommon::CorrectString(sHref);
-			BSTR bstrHref = sHref.AllocSysString();
-			m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"), bstrHref, _T("External"), &rId);
-			SysFreeString(bstrHref);
+			m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink")), sHref, CString(_T("External")), &rId);
 			CString srId;srId.Format(_T("rId%d"), rId);
 			pHyperlink->rId = srId;
 			m_pCurHyperlink = pPrevHyperlink;
@@ -5268,9 +5262,7 @@ public:
 				CString sNewImgRel;sNewImgRel = _T("media/") + sNewImgName;
 				SerializeCommon::CorrectString(sNewImgRel);
 				long rId;
-				BSTR bstrNewImgRel = sNewImgRel.AllocSysString();
-				m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"), bstrNewImgRel, NULL, &rId);
-				SysFreeString(bstrNewImgRel);
+				m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")), sNewImgRel, CString(), &rId);
 				odocImg.srId.Format(_T("rId%d"), rId);
 				//odocImg.srId = m_oMediaWriter.m_poDocumentRelsWriter->AddRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"), sNewImgRel, false);
 				//odocImg.srId = m_oMediaWriter.m_aImageRels[odocImg.MediaId];
@@ -5297,26 +5289,23 @@ public:
 					VARIANT var;
 					var.vt = VT_I4;
 					var.intVal = m_oFileWriter.m_oChartWriter.getChartCount();
-					m_oFileWriter.m_pDrawingConverter->SetAdditionalParam(_T("DocumentChartsCount"), var);
+					m_oFileWriter.m_pDrawingConverter->SetAdditionalParam(CString(_T("DocumentChartsCount")), var);
 
 					long nCurPos = m_oBufferedStream.GetPos();
-					BSTR bstrDrawingProperty = sDrawingProperty.AllocSysString();
-					BSTR bstrDrawingXml = NULL;
-					m_oFileWriter.m_pDrawingConverter->SaveObjectEx(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength, bstrDrawingProperty, XMLWRITER_DOC_TYPE_DOCX, &bstrDrawingXml);
-					SysFreeString(bstrDrawingProperty);
+					CString* bstrDrawingXml = NULL;
+					m_oFileWriter.m_pDrawingConverter->SaveObjectEx(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength, sDrawingProperty, XMLWRITER_DOC_TYPE_DOCX, &bstrDrawingXml);
 					m_oBufferedStream.Seek(nCurPos);
 
-					CString sDrawingXml(bstrDrawingXml);
 					VARIANT vt;
-					m_oFileWriter.m_pDrawingConverter->GetAdditionalParam(_T("DocumentChartsCount"), &vt);
+					m_oFileWriter.m_pDrawingConverter->GetAdditionalParam(CString(_T("DocumentChartsCount")), &vt);
 					if(VT_I4 == vt.vt)
 						m_oFileWriter.m_oChartWriter.setChartCount(vt.intVal);
 
-					if(false == sDrawingXml.IsEmpty())
+					if(NULL != bstrDrawingXml && false == bstrDrawingXml->IsEmpty())
 					{
-						GetRunStringWriter().WriteString(sDrawingXml);
-						SysFreeString(bstrDrawingXml);
+						GetRunStringWriter().WriteString(*bstrDrawingXml);
 					}
+					RELEASEOBJECT(bstrDrawingXml);
 				}
 			}
 		}
@@ -5598,16 +5587,11 @@ public:
 				m_oFileWriter.m_oContentTypesWriter.AddOverrideRaw(oSaveParams.sAdditionalContentTypes);
 
 				CString sRelsPath;sRelsPath.Format(_T("%s\\%s.rels"), sRelsDir, sFilename);
-				BSTR bstrRelsPath = sRelsPath.AllocSysString();
-				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(bstrRelsPath);
-				SysFreeString(bstrRelsPath);
+				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(sRelsPath);
 
 				long rId;
-				BSTR bstrChartRelType = OOX::Spreadsheet::FileTypes::Charts.RelationType().AllocSysString();
-				BSTR bstrNewImgRel = sRelsName.AllocSysString();
-				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartRelType, bstrNewImgRel, NULL, &rId);
-				SysFreeString(bstrChartRelType);
-				SysFreeString(bstrNewImgRel);
+				CString bstrChartRelType = OOX::Spreadsheet::FileTypes::Charts.RelationType();
+				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartRelType, sRelsName, CString(), &rId);
 
 				pDrawingProperty->sChartRels.Format(_T("rId%d"), rId);
 			}
@@ -5971,9 +5955,7 @@ int Binary_HdrFtrTableReader::ReadHdrFtrItem(BYTE type, long length, void* poRes
 			if(false == poHdrFtrItem->IsEmpty())
 			{
 				CString sRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir + _T("\\word\\_rels\\") + poHdrFtrItem->m_sFilename + _T(".rels");
-				BSTR bstrRelsPath = sRelsPath.AllocSysString();
-				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(bstrRelsPath);
-				SysFreeString(bstrRelsPath);
+				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(sRelsPath);
 			}
 		}
 	}
@@ -6066,9 +6048,7 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 				m_oFileWriter.m_oSettingWriter.AddSetting(_T("<w:defaultTabStop w:val=\"708\"/>"));
 				CString sClrMap(_T("<w:clrSchemeMapping w:bg1=\"light1\" w:t1=\"dark1\" w:bg2=\"light2\" w:t2=\"dark2\" w:accent1=\"accent1\" w:accent2=\"accent2\" w:accent3=\"accent3\" w:accent4=\"accent4\" w:accent5=\"accent5\" w:accent6=\"accent6\" w:hyperlink=\"hyperlink\" w:followedHyperlink=\"followedHyperlink\"/>"));
 				m_oFileWriter.m_oSettingWriter.AddSetting(sClrMap);
-				BSTR bstrClrMap = sClrMap.AllocSysString();
-				m_oFileWriter.m_pDrawingConverter->LoadClrMap(bstrClrMap);
-				SysFreeString(bstrClrMap);
+				m_oFileWriter.m_pDrawingConverter->LoadClrMap(sClrMap);
 			}
 
 			BinaryStyleTableReader oBinaryStyleTableReader(m_oBufferedStream, m_oFileWriter);
@@ -6120,15 +6100,15 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 
 				m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
 				long stamdartRId;
-				m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles"), _T("styles.xml"), NULL, &stamdartRId);
-				m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings"), _T("settings.xml"), NULL, &stamdartRId);
-				m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings"), _T("webSettings.xml"), NULL, &stamdartRId);
-				m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable"), _T("fontTable.xml"), NULL, &stamdartRId);
-				m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme"), _T("theme/theme1.xml"), NULL, &stamdartRId);
+				m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles")), CString(_T("styles.xml")), CString(), &stamdartRId);
+				m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings")), CString(_T("settings.xml")), CString(), &stamdartRId);
+				m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings")), CString(_T("webSettings.xml")), CString(), &stamdartRId);
+				m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable")), CString(_T("fontTable.xml")), CString(), &stamdartRId);
+				m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme")), CString(_T("theme/theme1.xml")), CString(), &stamdartRId);
 				if(false == m_oFileWriter.m_oNumberingWriter.IsEmpty())
 				{
 					long rId;
-					m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering"), _T("numbering.xml"), NULL, &rId);
+					m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering")), CString(_T("numbering.xml")), CString(), &rId);
 				}
 				for(int i = 0, length = m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.size(); i < length; ++i)
 				{
@@ -6136,9 +6116,7 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 					if(false == pHeader->IsEmpty())
 					{
 						long rId;
-						BSTR bstrFilename = pHeader->m_sFilename.AllocSysString();
-						m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/header"), bstrFilename, NULL, &rId);
-						SysFreeString(bstrFilename);
+						m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/header")), pHeader->m_sFilename, CString(), &rId);
 						pHeader->rId.Format(_T("rId%d"), rId);
 					}
 				}
@@ -6148,9 +6126,7 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 					if(false == pFooter->IsEmpty())
 					{
 						long rId;
-						BSTR bstrFilename = pFooter->m_sFilename.AllocSysString();
-						m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer"), bstrFilename, NULL, &rId);
-						SysFreeString(bstrFilename);
+						m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer")), pFooter->m_sFilename, CString(), &rId);
 						pFooter->rId.Format(_T("rId%d"), rId);
 					}
 				}
@@ -6166,22 +6142,20 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 				if(false == oCommentsWriter.m_sComment.IsEmpty())
 				{
 					long rId;
-					m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments"), _T("comments.xml"), NULL, &rId);
+					m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments")), CString(_T("comments.xml")), CString(), &rId);
 				}
 				if(false == oCommentsWriter.m_sCommentExt.IsEmpty())
 				{
 					long rId;
-					m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.microsoft.com/office/2011/relationships/commentsExtended"), _T("commentsExtended.xml"), NULL, &rId);
+					m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.microsoft.com/office/2011/relationships/commentsExtended")), CString(_T("commentsExtended.xml")), CString(), &rId);
 				}
 				if(false == oCommentsWriter.m_sPeople.IsEmpty())
 				{
 					long rId;
-					m_oFileWriter.m_pDrawingConverter->WriteRels(_T("http://schemas.microsoft.com/office/2011/relationships/people"), _T("people.xml"), NULL, &rId);
+					m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.microsoft.com/office/2011/relationships/people")), CString(_T("people.xml")), CString(), &rId);
 				}
 
-				BSTR bstrRelsPath = sRelsPath.AllocSysString();
-				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(bstrRelsPath);
-				SysFreeString(bstrRelsPath);
+				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(sRelsPath);
 				if(c_oSerConstants::ReadOk != res)
 					return res;
 			}

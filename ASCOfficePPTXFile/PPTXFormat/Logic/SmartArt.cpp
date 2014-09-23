@@ -131,7 +131,7 @@ namespace PPTX
 			
 			var.vt = VT_UNKNOWN;
 			pWriter->m_pCommon->m_pFontPicker->QueryInterface(IID_IUnknown, (void**)&(var.punkVal));
-			oDrawingConverter.SetAdditionalParam(L"FontPicker", var);
+			oDrawingConverter.SetAdditionalParam(CString(L"FontPicker"), var);
 			RELEASEINTERFACE((var.punkVal));
 
 			var.vt = VT_ARRAY;
@@ -139,14 +139,14 @@ namespace PPTX
 			NSBinPptxRW::CBinaryFileWriter oWriter;
 			LPSAFEARRAY pSerializeIM = oWriter.Serialize(pWriter->m_pCommon->m_pImageManager);
 			var.parray = pSerializeIM;
-			oDrawingConverter.SetAdditionalParam(L"SerializeImageManager", var);
+			oDrawingConverter.SetAdditionalParam(CString(L"SerializeImageManager"), var);
 
 			RELEASEARRAY(pSerializeIM);
 
 			oXlsxSerializer.setDrawingConverter(&oDrawingConverter);
 
 			var.parray = NULL;
-			oDrawingConverter.GetAdditionalParam(L"SerializeImageManager", &var);
+			oDrawingConverter.GetAdditionalParam(CString(L"SerializeImageManager"), &var);
 
 			if (var.parray != NULL)
 			{
@@ -186,7 +186,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 			VARIANT varDir;
 			varDir.vt = VT_BSTR;
 			varDir.bstrVal = pReader->m_strFolder.AllocSysString();
-			oDrawingConverter.SetAdditionalParam(L"SourceFileDir2", varDir);
+			oDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir2"), varDir);
 			SysFreeString(varDir.bstrVal);
 
 			VARIANT var;
@@ -195,7 +195,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 			NSBinPptxRW::CBinaryFileWriter oWriter;
 			LPSAFEARRAY pSerializeIM = oWriter.Serialize(pReader->m_pRels->m_pManager);
 			var.parray = pSerializeIM;
-			oDrawingConverter.SetAdditionalParam(L"SerializeImageManager2", var);
+			oDrawingConverter.SetAdditionalParam(CString(L"SerializeImageManager2"), var);
 
 			RELEASEARRAY(pSerializeIM);
 
@@ -228,7 +228,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 			RELEASEOBJECT(sContentTypes);
 
 			var.parray = NULL;
-			oDrawingConverter.GetAdditionalParam(L"SerializeImageManager2", &var);
+			oDrawingConverter.GetAdditionalParam(CString(L"SerializeImageManager2"), &var);
 
 			if (var.parray != NULL)
 			{

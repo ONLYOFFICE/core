@@ -387,7 +387,7 @@ namespace NSBinPptxRW
 		int WriteImage(const CString& strImagePath, CString strBase64Image);
 		int WriteChart(int nChartNumber, LONG lDocType);
 
-		int WriteRels(const BSTR& bsType, const BSTR& bsTarget, const BSTR& bsTargetMode);
+		int WriteRels(const CString& bsType, const CString& bsTarget, const CString& bsTargetMode);
 
 		int WriteHyperlink(const CString& strLink, const bool& bIsActionInit);	
 	};

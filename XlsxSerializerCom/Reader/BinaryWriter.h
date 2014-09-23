@@ -1671,9 +1671,7 @@ namespace BinXlsxRW {
 				{
 					OOX::Spreadsheet::CDrawing* pDrawing = (OOX::Spreadsheet::CDrawing*)oFile.operator->();
 					CString sDrawingRelsPath = pDrawing->GetReadPath().GetPath();
-					BSTR bstrDrawing = sDrawingRelsPath.AllocSysString();
-					m_pOfficeDrawingConverter->SetRelsPath(bstrDrawing);
-					SysFreeString(bstrDrawing);
+					m_pOfficeDrawingConverter->SetRelsPath(sDrawingRelsPath);
 					
 					nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawings);
 					WriteDrawings(pDrawing, sDrawingRelsPath);
@@ -2336,10 +2334,10 @@ namespace BinXlsxRW {
 				WriteExt(pCellAnchor.m_oExt.get());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
-			BSTR bstrXml = NULL;
+			CString bstrXml;
 			//Pic, Sp, GraphicFrame
 			if(pCellAnchor.m_oXml.IsInit())
-				bstrXml = pCellAnchor.m_oXml->AllocSysString();
+				bstrXml = *pCellAnchor.m_oXml;
 			else if(pCellAnchor.m_oGraphicFrame.IsInit())
 			{
 				if(pCellAnchor.m_oGraphicFrame->m_oChartGraphic.IsInit() && pCellAnchor.m_oGraphicFrame->m_oChartGraphic->m_oGraphicData.IsInit() && pCellAnchor.m_oGraphicFrame->m_oChartGraphic->m_oGraphicData->m_oChart.IsInit())
@@ -2349,17 +2347,16 @@ namespace BinXlsxRW {
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
 				else if(pCellAnchor.m_oGraphicFrame->m_sXml.IsInit())
-					bstrXml = pCellAnchor.m_oGraphicFrame->m_sXml->AllocSysString();
+					bstrXml = *pCellAnchor.m_oGraphicFrame->m_sXml;
 			}
-			if(NULL != bstrXml)
+			if(!bstrXml.IsEmpty())
 			{
-				BSTR bstrOutputXml = NULL;
+				CString* bstrOutputXml = NULL;
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);
 				int nCurPos = m_oBcw.WriteItemWithLengthStart();
 				HRESULT hRes = m_pOfficeDrawingConverter->AddObject(bstrXml, &bstrOutputXml);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
-				SysFreeString(bstrOutputXml);
-				SysFreeString(bstrXml);
+				RELEASEOBJECT(bstrOutputXml);
 			}
 		};
 		void WriteFromTo(const OOX::Spreadsheet::CFromTo& oFromTo)
@@ -2444,9 +2441,7 @@ namespace BinXlsxRW {
 						//проверяем наличие файла
 						if( INVALID_FILE_ATTRIBUTES != ::GetFileAttributes( sChartPath ) )
 						{
-							BSTR bstrChartPath = sChartPath.AllocSysString();
-							m_pOfficeDrawingConverter->SetRelsPath(bstrChartPath);
-							SysFreeString(bstrChartPath);
+							m_pOfficeDrawingConverter->SetRelsPath(sChartPath);
 
 							int nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::Chart2);
 							OOX::Spreadsheet::CChartSpace oChart(oNormalizedPath);
@@ -2454,9 +2449,7 @@ namespace BinXlsxRW {
 							oBinaryChartWriter.WriteCT_ChartSpace(oChart);
 							m_oBcw.WriteItemEnd(nCurPos);
 
-							bstrChartPath = sDrawingRelsPath.AllocSysString();
-							m_pOfficeDrawingConverter->SetRelsPath(bstrChartPath);
-							SysFreeString(bstrChartPath);
+							m_pOfficeDrawingConverter->SetRelsPath(sDrawingRelsPath);
 						}
 					}
 				}
@@ -3203,9 +3196,7 @@ namespace BinXlsxRW {
 #ifdef DEFAULT_TABLE_STYLES
 				long nThemeStartPos = m_oBcw.m_oStream.GetPosition();
 #endif
-				BSTR bstrThemePath = m_pTheme->m_oReadPath.GetPath().AllocSysString();
-				m_pOfficeDrawingConverter->GetThemeBinary(bstrThemePath);
-				SysFreeString(bstrThemePath);
+				m_pOfficeDrawingConverter->GetThemeBinary(m_pTheme->m_oReadPath.GetPath());
 #ifdef DEFAULT_TABLE_STYLES
 				long nThemeLength = m_oBcw.m_oStream.GetPosition() - nThemeStartPos;
 				writeTheme(m_oBcw.m_oStream.GetBuffer(), nThemeStartPos, nThemeLength, CString(_T("c:\\defaultTheme.bin")));
@@ -3261,9 +3252,7 @@ namespace BinXlsxRW {
 			CString mediaDir = path.GetDirectory() + gc_sMediaDirName;
 			CreateDirectoryW(mediaDir, NULL);
 
-			BSTR bstrMediaDir = mediaDir.AllocSysString();
-			pOfficeDrawingConverter->SetMediaDstPath(bstrMediaDir);
-			SysFreeString(bstrMediaDir);
+			pOfficeDrawingConverter->SetMediaDstPath(mediaDir);
 
 			//mime-type
 			CString mimePath = path.GetDirectory() + gc_sMimeName;

@@ -139,16 +139,16 @@ public:
 	}
 	STDMETHOD(SetRelsPath)(BSTR bsRelsPath)
 	{
-		return m_oDrawingConverter.SetRelsPath(bsRelsPath);
+		return m_oDrawingConverter.SetRelsPath(CString(bsRelsPath));
 	}
 	STDMETHOD(SetMediaDstPath)(BSTR bsMediaPath)
 	{
-		return m_oDrawingConverter.SetMediaDstPath(bsMediaPath);
+		return m_oDrawingConverter.SetMediaDstPath(CString(bsMediaPath));
 	}
 	
 	STDMETHOD(AddShapeType)(BSTR bsXml)
 	{
-		return m_oDrawingConverter.AddShapeType(bsXml);
+		return m_oDrawingConverter.AddShapeType(CString(bsXml));
 	}
 	STDMETHOD(AddObject)(BSTR bsXml, BSTR* pMainProps, SAFEARRAY** ppBinary)
 	{
@@ -192,16 +192,16 @@ public:
 	}
 	STDMETHOD(SaveDstContentRels)(BSTR bsRelsPath)
 	{
-		return m_oDrawingConverter.SaveDstContentRels(bsRelsPath);
+		return m_oDrawingConverter.SaveDstContentRels(CString(bsRelsPath));
 	}
 	STDMETHOD(WriteRels)(BSTR bsType, BSTR bsTarget, BSTR bsTargetMode, LONG* lId)
 	{
-		return m_oDrawingConverter.WriteRels(bsType, bsTarget, bsTargetMode, lId);
+		return m_oDrawingConverter.WriteRels(CString(bsType), CString(bsTarget), CString(bsTargetMode), lId);
 	}
 
 	STDMETHOD(LoadClrMap)(BSTR bsXml)
 	{
-		return m_oDrawingConverter.LoadClrMap(bsXml);
+		return m_oDrawingConverter.LoadClrMap(CString(bsXml));
 	}
 
 	STDMETHOD(GetTxBodyBinary)(BSTR bsXml, SAFEARRAY** ppBinary)
@@ -214,15 +214,15 @@ public:
 	}
 	STDMETHOD(SetFontDir)(BSTR bsFontDir)
 	{
-		return m_oDrawingConverter.SetFontDir(bsFontDir);
+		return m_oDrawingConverter.SetFontDir(CString(bsFontDir));
 	}
 		
 	STDMETHOD(SetAdditionalParam)(BSTR ParamName, VARIANT ParamValue)
 	{
-		return m_oDrawingConverter.SetAdditionalParam(ParamName, ParamValue);
+		return m_oDrawingConverter.SetAdditionalParam(CString(ParamName), ParamValue);
 	}
 	STDMETHOD(GetAdditionalParam)(BSTR ParamName, VARIANT* ParamValue)
 	{
-		return m_oDrawingConverter.GetAdditionalParam(ParamName, ParamValue);
+		return m_oDrawingConverter.GetAdditionalParam(CString(ParamName), ParamValue);
 	}
 };

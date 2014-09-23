@@ -392,6 +392,12 @@ namespace BinDocxRW
 			m_oStream.WriteBYTEArray((BYTE *)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
 			WriteItemWithLengthEnd(nCurPos);
 		}
+		void WriteBytesArray(BYTE* pData, long nDataSize)
+		{
+			int nCurPos = WriteItemWithLengthStart();
+			m_oStream.WriteBYTEArray(pData, nDataSize);
+			WriteItemWithLengthEnd(nCurPos);
+		}
 	};
 
 	class BinaryHeaderFooterTableWriter
@@ -2362,10 +2368,11 @@ namespace BinDocxRW
 			}
 		};
 		BinaryCommonWriter m_oBcw;
-		OOX::CTheme* m_pTheme;
+		BYTE* m_pThemeData;
+		long m_nThemeDataSize;
 		ParamsWriter& m_oParamsWriter;
 	public:
-		BinaryOtherTableWriter(ParamsWriter& oParamsWriter, OOX::CTheme* pTheme):m_oParamsWriter(oParamsWriter),m_oBcw(oParamsWriter),m_pTheme(pTheme)
+		BinaryOtherTableWriter(ParamsWriter& oParamsWriter, BYTE* pThemeData, long nThemeDataSize):m_oParamsWriter(oParamsWriter),m_oBcw(oParamsWriter),m_pThemeData(pThemeData),m_nThemeDataSize(nThemeDataSize)
 		{
 		};
 		void Write()
@@ -2388,11 +2395,10 @@ namespace BinDocxRW
 				m_oBcw.m_pEmbeddedFontsManager->WriteEmbeddedFonts<EmbeddedBinaryWriter>(&oEmbeddedBinaryWriter);
 				m_oBcw.WriteItemEnd(nStart);
 			}
-			if(NULL != m_pTheme)
+			if(NULL != m_pThemeData)
 			{
-				int nStart = m_oBcw.WriteItemStart(c_oSerOtherTableTypes::DocxTheme);
-				m_oParamsWriter.m_pOfficeDrawingConverter->GetThemeBinary(m_pTheme->m_oReadPath.GetPath());
-				m_oBcw.WriteItemEnd(nStart);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerOtherTableTypes::DocxTheme);
+				m_oBcw.WriteBytesArray(m_pThemeData, m_nThemeDataSize);
 			}
 		};
 		//void WriteImageMapContent()
@@ -6135,11 +6141,11 @@ namespace BinDocxRW
 				oBinarySigTableWriter.Write();
 				WriteTableEnd(nCurPos);
 			}
-			void WriteMainTableEnd(OOX::CTheme* pTheme)
+			void WriteMainTableEnd(BYTE* pThemeData, long& nThemeDataSize)
 			{
 				//OtherTable
 				int nCurPos = WriteTableStart(c_oSerTableTypes::Other);
-				BinaryOtherTableWriter oBinaryOtherTableWriter(m_oParamsWriter, pTheme);
+				BinaryOtherTableWriter oBinaryOtherTableWriter(m_oParamsWriter, pThemeData, nThemeDataSize);
 				oBinaryOtherTableWriter.Write();
 				WriteTableEnd(nCurPos);
 
@@ -6192,6 +6198,11 @@ namespace BinDocxRW
 				this->WriteMainTableStart();
 
 				int nCurPos = 0;
+				//важно в начале записать Theme и ClrMap, потому что они используютс€ при дальнейшей записи дл€ получени€ rgb цветов
+				BYTE* pThemeData = NULL;
+				long nThemeDataSize = 0;
+				if(NULL != m_oParamsWriter.m_poTheme)
+					m_oParamsWriter.m_pOfficeDrawingConverter->GetThemeBinary(&pThemeData, nThemeDataSize, m_oParamsWriter.m_poTheme->m_oReadPath.GetPath());
 
 				//Write Settings
 				OOX::CSettings* pSettings = oDocx.GetSettings();
@@ -6255,7 +6266,8 @@ namespace BinDocxRW
 				oBinaryHeaderFooterTableWriter.Write();
 				this->WriteTableEnd(nCurPos);
 
-				this->WriteMainTableEnd(m_oParamsWriter.m_poTheme);
+				this->WriteMainTableEnd(pThemeData, nThemeDataSize);
+				RELEASEARRAYOBJECTS(pThemeData);
 			}
 			void ParagraphAddBreak(OOX::Logic::CParagraph* pParagraph)
 			{

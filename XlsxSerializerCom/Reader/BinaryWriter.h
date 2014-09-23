@@ -3165,10 +3165,11 @@ namespace BinXlsxRW {
 		};
 		BinaryCommonWriter m_oBcw;
 		NSFontCutter::CEmbeddedFontsManager* m_pEmbeddedFontsManager;
-		OOX::CTheme* m_pTheme;
+		BYTE* m_pThemeData;
+		long m_nThemeDataSize;
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 	public:
-		BinaryOtherTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::CTheme* pTheme, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):m_oBcw(oCBufferedStream),m_pEmbeddedFontsManager(pEmbeddedFontsManager),m_pTheme(pTheme),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
+		BinaryOtherTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, BYTE* pThemeData, long nThemeDataSize, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):m_oBcw(oCBufferedStream),m_pEmbeddedFontsManager(pEmbeddedFontsManager),m_pThemeData(pThemeData),m_nThemeDataSize(nThemeDataSize),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 		{
 		};
 		void Write()
@@ -3189,43 +3190,12 @@ namespace BinXlsxRW {
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 			//Theme
-			if(NULL != m_pTheme)
+			if(NULL != m_pThemeData)
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OtherType::Theme);
-				nCurPos = m_oBcw.WriteItemWithLengthStart();
-#ifdef DEFAULT_TABLE_STYLES
-				long nThemeStartPos = m_oBcw.m_oStream.GetPosition();
-#endif
-				m_pOfficeDrawingConverter->GetThemeBinary(m_pTheme->m_oReadPath.GetPath());
-#ifdef DEFAULT_TABLE_STYLES
-				long nThemeLength = m_oBcw.m_oStream.GetPosition() - nThemeStartPos;
-				writeTheme(m_oBcw.m_oStream.GetBuffer(), nThemeStartPos, nThemeLength, CString(_T("c:\\defaultTheme.bin")));
-#endif
-				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				m_oBcw.WriteBytesArray(m_pThemeData, m_nThemeDataSize);
 			}
 		};
-#ifdef DEFAULT_TABLE_STYLES
-		CString WriteDefaultFileHeader(int nDataSize)
-		{
-			CString sHeader;
-			sHeader.Format(_T("%s;;%d;"), g_sFormatSignature, nDataSize);
-			return sHeader;
-		}
-		void writeTheme(BYTE* pData, long nStart, long nLength, CString& sFileOutput)
-		{
-			int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nLength, Base64::B64_BASE64_FLAG_NOCRLF);
-			BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
-			if(TRUE == Base64::Base64Encode(pData + nStart, nLength, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
-			{
-				CFile oFile;
-				oFile.CreateFileW(sFileOutput);
-				oFile.WriteStringUTF8(WriteDefaultFileHeader(nLength));
-				oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
-				oFile.CloseFile();
-			}
-			RELEASEARRAYOBJECTS(pbBase64Buffer);
-		}
-#endif
 	};
 	class BinaryFileWriter {
 	private:
@@ -3313,7 +3283,16 @@ namespace BinXlsxRW {
 			OOX::Spreadsheet::CIndexedColors* pIndexedColors = NULL;
 			if(NULL != pStyle && pStyle->m_oColors.IsInit() && pStyle->m_oColors->m_oIndexedColors.IsInit())
 				pIndexedColors = pStyle->m_oColors->m_oIndexedColors.operator ->();
+
+			//важно в начале записать Theme и ClrMap, потому что они используютс€ при дальнейшей записи дл€ получени€ rgb цветов
+			OOX::CTheme* pTheme = oXlsx.GetTheme();
+			BYTE* pThemeData = NULL;
+			long nThemeDataSize = 0;
+			if(NULL != pTheme)
+				pOfficeDrawingConverter->GetThemeBinary(&pThemeData, nThemeDataSize, oXlsx.GetTheme()->m_oReadPath.GetPath());
+
 #ifdef DEFAULT_TABLE_STYLES
+			writeTheme(pThemeData, nThemeDataSize, CString(_T("c:\\defaultTheme.bin")));
 			getDefaultCellStyles(CString(_T("D:\\Projects\\AVS\\Sources\\TeamlabOffice\\trunk\\ServerComponents\\XlsxSerializerCom\\XlsxDefaults\\presetCellStylesNew.xml")), CString(_T("C:\\presetCellStyles_output.bin")), pEmbeddedFontsManager, pIndexedColors, oXlsx.GetTheme(), m_oFontProcessor);
 			getDefaultTableStyles(CString(_T("D:\\Projects\\AVS\\Sources\\TeamlabOffice\\trunk\\ServerComponents\\XlsxSerializerCom\\XlsxDefaults\\presetTableStyles.xml")), CString(_T("C:\\presetTableStyles_output.bin")), pEmbeddedFontsManager, pIndexedColors, oXlsx.GetTheme(), m_oFontProcessor);
 #endif
@@ -3358,16 +3337,14 @@ namespace BinXlsxRW {
 				WriteTableEnd(nCurPos);
 			}
 
-			//theme data
-			OOX::CTheme* pTheme = oXlsx.GetTheme();
-
 			//OtherTable
 			nCurPos = WriteTableStart(c_oSerTableTypes::Other);
-			BinaryOtherTableWriter oBinaryOtherTableWriter(oBufferedStream, pEmbeddedFontsManager, pTheme, pOfficeDrawingConverter);
+			BinaryOtherTableWriter oBinaryOtherTableWriter(oBufferedStream, pEmbeddedFontsManager, pThemeData, nThemeDataSize, pOfficeDrawingConverter);
 			oBinaryOtherTableWriter.Write();
 			WriteTableEnd(nCurPos);
 			
 			WriteMainTableEnd();
+			RELEASEARRAYOBJECTS(pThemeData);
 		}
 		CString WriteFileHeader(int nDataSize)
 		{
@@ -3426,6 +3403,20 @@ namespace BinXlsxRW {
 			CString sHeader;
 			sHeader.Format(_T("%s;;%d;"), g_sFormatSignature, nDataSize);
 			return sHeader;
+		}
+		void writeTheme(BYTE* pData, long nLength, CString& sFileOutput)
+		{
+			int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nLength, Base64::B64_BASE64_FLAG_NOCRLF);
+			BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
+			if(TRUE == Base64::Base64Encode(pData, nLength, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
+			{
+				CFile oFile;
+				oFile.CreateFileW(sFileOutput);
+				oFile.WriteStringUTF8(WriteDefaultFileHeader(nLength));
+				oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
+				oFile.CloseFile();
+			}
+			RELEASEARRAYOBJECTS(pbBase64Buffer);
 		}
 		void getDefaultCellStyles(CString& sFileInput, CString& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
 		{

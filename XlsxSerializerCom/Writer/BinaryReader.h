@@ -1858,9 +1858,7 @@ namespace BinXlsxRW {
 				CString sFilename = m_pCurDrawing->m_sFilename;
 				CString sRelsPath;
 				sRelsPath.Format(_T("%s\\%s.rels"), sRelsDir, sFilename);
-				BSTR bstrRelsPath = sRelsPath.AllocSysString();
-				m_pOfficeDrawingConverter->SaveDstContentRels(bstrRelsPath);
-				SysFreeString(bstrRelsPath);
+				m_pOfficeDrawingConverter->SaveDstContentRels(sRelsPath);
 			}
 			else if(c_oSerWorksheetsTypes::SheetData == type)
 			{
@@ -2389,26 +2387,26 @@ namespace BinXlsxRW {
 					VARIANT var;
 					var.vt = VT_I4;
 					var.intVal = m_pCurDrawing->GetGlobalNumberByType(OOX::Spreadsheet::FileTypes::Charts.OverrideType());
-					m_pOfficeDrawingConverter->SetAdditionalParam(_T("DocumentChartsCount"), var);
+					m_pOfficeDrawingConverter->SetAdditionalParam(CString(_T("DocumentChartsCount")), var);
 				}
 
 				long nCurPos = m_oBufferedStream.GetPos();
-				BSTR bstrXml = NULL;
-				HRESULT hRes = m_pOfficeDrawingConverter->SaveObjectEx(nCurPos, length, NULL, XMLWRITER_DOC_TYPE_XLSX, &bstrXml);
+				CString* bstrXml = NULL;
+				HRESULT hRes = m_pOfficeDrawingConverter->SaveObjectEx(nCurPos, length, CString(), XMLWRITER_DOC_TYPE_XLSX, &bstrXml);
 				m_oBufferedStream.Seek(nCurPos + length);
 				if(NULL != m_pCurDrawing)
 				{
 					VARIANT vt;
-					m_pOfficeDrawingConverter->GetAdditionalParam(_T("DocumentChartsCount"), &vt);
+					m_pOfficeDrawingConverter->GetAdditionalParam(CString(_T("DocumentChartsCount")), &vt);
 					if(VT_I4 == vt.vt)
 						m_pCurDrawing->SetGlobalNumberByType(OOX::Spreadsheet::FileTypes::Charts.OverrideType(), vt.intVal);
 				}
 				if(S_OK == hRes && NULL != bstrXml)
 				{
 					pCellAnchor->m_oXml.Init();
-					pCellAnchor->m_oXml->AppendFormat(_T("%s<xdr:clientData/>"), bstrXml);
-					SysFreeString(bstrXml);
+					pCellAnchor->m_oXml->AppendFormat(_T("%s<xdr:clientData/>"), *bstrXml);
 				}
+				RELEASEOBJECT(bstrXml);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -2436,16 +2434,12 @@ namespace BinXlsxRW {
 				m_pCurDrawing->Add(pChartFile);
 
 				CString sRelsPath;sRelsPath.Format(_T("%s\\%s.rels"), sRelsDir, pChartFile->m_sFilename);
-				BSTR bstrRelsPath = sRelsPath.AllocSysString();
-				m_pOfficeDrawingConverter->SaveDstContentRels(bstrRelsPath);
-				SysFreeString(bstrRelsPath);
+				m_pOfficeDrawingConverter->SaveDstContentRels(sRelsPath);
 
 				long rId;
 				CString sNewImgRel;
 				sNewImgRel.Format(_T("../charts/%s"), pChartFile->m_sFilename);
-				BSTR bstrNewImgRel = sNewImgRel.AllocSysString();
-				m_pOfficeDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart"), bstrNewImgRel, NULL, &rId);
-				SysFreeString(bstrNewImgRel);
+				m_pOfficeDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart")), sNewImgRel, CString(), &rId);
 				CString sNewRid;
 				sNewRid.Format(_T("rId%d"), rId);
 
@@ -2558,9 +2552,7 @@ namespace BinXlsxRW {
 						long rId;
 						CString sNewImgRel;
 						sNewImgRel.Format(_T("../media/%s"), sNewImageName);
-						BSTR bstrNewImgRel = sNewImgRel.AllocSysString();
-						m_pOfficeDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"), bstrNewImgRel, NULL, &rId);
-						SysFreeString(bstrNewImgRel);
+						m_pOfficeDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")), sNewImgRel, CString(), &rId);
 
 						sRId.Format(_T("rId%d"), rId);
 						pair->second->mapDrawings[m_pCurDrawing] = sRId;
@@ -2849,9 +2841,7 @@ namespace BinXlsxRW {
 			{
 				CString sThemePath;sThemePath.Format(_T("%s\\%s"), m_oSaveParams.sThemePath, OOX::FileTypes::Theme.DefaultFileName());
 				long nCurPos = m_oBufferedStream.GetPos();
-				BSTR bstrTempTheme = sThemePath.AllocSysString();
-				m_pOfficeDrawingConverter->SaveThemeXml(nCurPos, length, bstrTempTheme);
-				SysFreeString(bstrTempTheme);
+				m_pOfficeDrawingConverter->SaveThemeXml(nCurPos, length, sThemePath);
 				m_oBufferedStream.Seek(nCurPos + length);
 			}
 			else
@@ -3029,7 +3019,7 @@ namespace BinXlsxRW {
 							if(NULL != pOfficeDrawingConverter)
 							{
 								VARIANT vt;
-								pOfficeDrawingConverter->GetAdditionalParam(_T("ContentTypes"), &vt);
+								pOfficeDrawingConverter->GetAdditionalParam(CString(_T("ContentTypes")), &vt);
 								if(VT_BSTR == vt.vt)
 									sAdditionalContentTypes.Append(vt.bstrVal);
 							}

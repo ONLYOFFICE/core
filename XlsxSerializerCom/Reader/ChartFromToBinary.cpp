@@ -812,13 +812,13 @@ namespace BinXlsxRW{
 		if(length > 0)
 		{
 			long nCurPos = m_oBufferedStream.GetPos();
-			BSTR bstrXml = NULL;
+			CString* bstrXml = NULL;
 			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(nCurPos, length, nRecordType, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
 			if (S_OK == hRes && NULL != bstrXml)
 			{
-				*pNewElem = bstrXml;
-				SysFreeString(bstrXml);
+				*pNewElem = *bstrXml;
 			}
+			RELEASEOBJECT(bstrXml);
 			m_oBufferedStream.Seek(nCurPos + length);
 		}
 		return pNewElem;
@@ -829,13 +829,13 @@ namespace BinXlsxRW{
 		if(length > 0)
 		{
 			long nCurPos = m_oBufferedStream.GetPos();
-			BSTR bstrXml = NULL;
+			CString* bstrXml = NULL;
 			HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(nCurPos, length, &bstrXml);
 			if (S_OK == hRes && NULL != bstrXml)
 			{
-				*pNewElem = bstrXml;
-				SysFreeString(bstrXml);
+				*pNewElem = *bstrXml;
 			}
+			RELEASEOBJECT(bstrXml);
 			m_oBufferedStream.Seek(nCurPos + length);
 		}
 		return pNewElem;
@@ -953,15 +953,11 @@ namespace BinXlsxRW{
 			CString sThemeOverridePath;sThemeOverridePath.Format(_T("%s\\%s"), m_oSaveParams.sThemePath, sThemeOverrideName);
 
 			long nCurPos = m_oBufferedStream.GetPos();
-			BSTR bstrTempTheme = sThemeOverridePath.AllocSysString();
-			m_pOfficeDrawingConverter->SaveThemeXml(nCurPos, length, bstrTempTheme);
-			SysFreeString(bstrTempTheme);
+			m_pOfficeDrawingConverter->SaveThemeXml(nCurPos, length, sThemeOverridePath);
 			m_oBufferedStream.Seek(nCurPos + length);
 
 			long rId;
-			BSTR bstrThemeOverrideRelsPath = sThemeOverrideRelsPath.AllocSysString();
-			m_pOfficeDrawingConverter->WriteRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/themeOverride"), bstrThemeOverrideRelsPath, NULL, &rId);
-			SysFreeString(bstrThemeOverrideRelsPath);
+			m_pOfficeDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/themeOverride")), sThemeOverrideRelsPath, CString(), &rId);
 
 			CString sThemePathReverse = m_oSaveParams.sThemePath;sThemePathReverse.MakeReverse();
 			CString sContentTypesPath;
@@ -5951,17 +5947,14 @@ namespace BinXlsxRW{
 	void BinaryChartWriter::GetRecordBinary(int nType, CString& sXml, int nRecordType)
 	{
 		int nCurPos = m_oBcw.WriteItemStart(nType);
-		BSTR bstrXml = sXml.AllocSysString();
-		HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(nRecordType, bstrXml);
-		SysFreeString(bstrXml);
+		HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(nRecordType, sXml);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	void BinaryChartWriter::GetTxBodyBinary(int nType, CString& sXml)
 	{
 		int nCurPos = m_oBcw.WriteItemStart(nType);
-		BSTR bstrXml = (_T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + sXml + _T("</c:rich>")).AllocSysString();
+		CString bstrXml = _T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + sXml + _T("</c:rich>");
 		HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml);
-		SysFreeString(bstrXml);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	void BinaryChartWriter::WriteCT_extLst(CT_extLst& oVal)
@@ -6070,9 +6063,7 @@ namespace BinXlsxRW{
 			OOX::CThemeOverride* pThemeOverride = static_cast<OOX::CThemeOverride*>(pFile.operator->());
 			m_oBcw.m_oStream.WriteBYTE(c_oserct_chartspaceTHEMEOVERRIDE);
 			int nCurPos = m_oBcw.WriteItemWithLengthStart();
-			BSTR bstrThemePath = pThemeOverride->m_oReadPath.GetPath().AllocSysString();
-			m_pOfficeDrawingConverter->GetThemeBinary(bstrThemePath);
-			SysFreeString(bstrThemePath);
+			m_pOfficeDrawingConverter->GetThemeBinary(pThemeOverride->m_oReadPath.GetPath());
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 		}
 	}

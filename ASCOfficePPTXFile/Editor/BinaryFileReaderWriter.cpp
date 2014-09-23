@@ -1009,14 +1009,14 @@ namespace NSBinPptxRW
 		return m_lNextRelsID - 1;
 	}	
 
-	int CRelsGenerator::WriteRels(const BSTR& bsType, const BSTR& bsTarget, const BSTR& bsTargetMode)
+	int CRelsGenerator::WriteRels(const CString& bsType, const CString& bsTarget, const CString& bsTargetMode)
 	{
 		CString strRid = _T("");
 		strRid.Format(_T("rId%d"), m_lNextRelsID++);
 
-		CString strType = _T("Type=\"") + (CString)bsType + _T("\" ");
-		CString strTarget = _T("Target=\"") + (CString)bsTarget + _T("\" ");
-		CString strTargetMode = (NULL == bsTargetMode) ? _T("") : (_T("TargetMode=\"") + (CString)bsTargetMode + _T("\""));
+		CString strType = _T("Type=\"") + bsType + _T("\" ");
+		CString strTarget = _T("Target=\"") + bsTarget + _T("\" ");
+		CString strTargetMode = bsTargetMode.IsEmpty() ? _T("") : (_T("TargetMode=\"") + (CString)bsTargetMode + _T("\""));
 
 		CString strRels = _T("<Relationship Id=\"") + strRid + _T("\" ") + strType + strTarget + strTargetMode + _T("/>");
 		m_pWriter->WriteString(strRels);

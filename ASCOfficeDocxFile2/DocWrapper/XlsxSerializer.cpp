@@ -19,9 +19,7 @@ namespace BinXlsxRW{
 	bool CXlsxSerializer::loadFromFile(CString& sSrcFileName, CString& sDstPath, CString& sXMLOptions, CString& sMediaDir)
 	{
 		NSBinPptxRW::CDrawingConverter oOfficeDrawingConverter;
-		BSTR bstrMediaDir = sMediaDir.AllocSysString();
-		oOfficeDrawingConverter.SetMediaDstPath(bstrMediaDir);
-		SysFreeString(bstrMediaDir);
+		oOfficeDrawingConverter.SetMediaDstPath(sMediaDir);
 
 		//папка с бинарников
 		TCHAR tFolder[256];
@@ -34,7 +32,7 @@ namespace BinXlsxRW{
 		VARIANT var;
 		var.vt = VT_BSTR;
 		var.bstrVal = sFileInDir.AllocSysString();
-		oOfficeDrawingConverter.SetAdditionalParam(L"SourceFileDir2", var);
+		oOfficeDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir2"), var);
 		RELEASESYSSTRING(var.bstrVal);
 
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;
@@ -80,13 +78,11 @@ namespace BinXlsxRW{
 
 		NSBinPptxRW::CDrawingConverter oOfficeDrawingConverter;
 
-		BSTR bstrFontDir = m_sFontDir.AllocSysString();
-		oOfficeDrawingConverter.SetFontDir(bstrFontDir);
-		SysFreeString(bstrFontDir);
+		oOfficeDrawingConverter.SetFontDir(m_sFontDir);
 		VARIANT vt;
 		vt.vt = VT_UNKNOWN;
 		vt.punkVal = pFontPicker;
-		oOfficeDrawingConverter.SetAdditionalParam(_T("FontPicker"), vt);
+		oOfficeDrawingConverter.SetAdditionalParam(CString(_T("FontPicker")), vt);
 
 		BinXlsxRW::BinaryFileWriter oBinaryFileWriter(fp);
 		oBinaryFileWriter.Open(sSrcPath, sDstFileName, pEmbeddedFontsManager, &oOfficeDrawingConverter, sXMLOptions);
@@ -103,9 +99,7 @@ namespace BinXlsxRW{
 			long nStartPos = oBufferedStream.GetPosition();
 			BinXlsxRW::BinaryCommonWriter oBcw(oBufferedStream);
 
-			BSTR bstrChartPath = sChartPath.AllocSysString();
-			m_pExternalDrawingConverter->SetRelsPath(bstrChartPath);
-			SysFreeString(bstrChartPath);
+			m_pExternalDrawingConverter->SetRelsPath(sChartPath);
 
 			BinXlsxRW::BinaryChartWriter oBinaryChartWriter(oBufferedStream, m_pExternalDrawingConverter);	
 			oBinaryChartWriter.WriteCT_ChartSpace(oChart);
@@ -161,9 +155,7 @@ namespace BinXlsxRW{
 				CString sRelsPath;
 				sRelsPath.Format(_T("%s\\%s.rels"), sRelsDir, sFilename + sExt);
 
-				BSTR bstrRelsPath = sRelsPath.AllocSysString();
-				m_pExternalDrawingConverter->SaveDstContentRels(bstrRelsPath);
-				SysFreeString(bstrRelsPath);
+				m_pExternalDrawingConverter->SaveDstContentRels(sRelsPath);
 
 				CString sContentType(sContentTypePath);
 				sContentType.Append(sFilename);

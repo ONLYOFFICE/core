@@ -822,13 +822,13 @@ HRESULT CDrawingConverter::SetMainDocument(BinDocxRW::CDocxSerializer* pDocument
 	m_lNextId = 1;
 	return S_OK;
 }
-HRESULT CDrawingConverter::SetRelsPath(BSTR bsRelsPath)
+HRESULT CDrawingConverter::SetRelsPath(CString& bsRelsPath)
 {
 	// чтобы не переоткрывать рельсы - посмотрим - может у нас уже есть такой??
 	m_strCurrentRelsPath = bsRelsPath;
 	return SetCurrentRelsPath();
 }
-HRESULT CDrawingConverter::SetMediaDstPath(BSTR bsMediaPath)
+HRESULT CDrawingConverter::SetMediaDstPath(CString& bsMediaPath)
 {
 	m_pBinaryWriter->m_pCommon->m_pImageManager->m_strDstMedia = (CString)bsMediaPath;
 	m_pImageManager->SetDstMedia(m_pBinaryWriter->m_pCommon->m_pImageManager->m_strDstMedia);
@@ -836,7 +836,7 @@ HRESULT CDrawingConverter::SetMediaDstPath(BSTR bsMediaPath)
 	CreateDirectory(bsMediaPath, NULL);
 	return S_OK;
 }
-HRESULT CDrawingConverter::AddShapeType(BSTR bsXml)
+HRESULT CDrawingConverter::AddShapeType(CString& bsXml)
 {
 	CString strXml = _T("<main ");
 
@@ -890,7 +890,7 @@ HRESULT CDrawingConverter::AddShapeType(BSTR bsXml)
 
 	return S_OK;
 }
-HRESULT CDrawingConverter::AddObject(BSTR bsXml, BSTR* pMainProps)
+HRESULT CDrawingConverter::AddObject(CString& bsXml, CString** pMainProps)
 {
 	CString strXml = _T("<main ");
 
@@ -937,7 +937,7 @@ HRESULT CDrawingConverter::AddObject(BSTR bsXml, BSTR* pMainProps)
 	return bResult ? S_OK : S_FALSE;
 }
 
-bool CDrawingConverter::ParceObject(ATL::CString& strXml, BSTR* pMainProps)
+bool CDrawingConverter::ParceObject(ATL::CString& strXml, CString** pMainProps)
 {
 	XmlUtils::CXmlNode oMainNode;
 	if (!oMainNode.FromXmlString(strXml))
@@ -1309,7 +1309,7 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 	return true;
 }
 
-PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNode, BSTR*& pMainProps, bool bIsTop)
+PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNode, CString**& pMainProps, bool bIsTop)
 {
 	PPTX::Logic::SpTreeElem elem;
 
@@ -1679,7 +1679,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 	return elem;
 }
 
-PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadGroup(XmlUtils::CXmlNode& oNode, BSTR*& pMainProps, bool bIsTop)
+PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadGroup(XmlUtils::CXmlNode& oNode, CString**& pMainProps, bool bIsTop)
 {
 	PPTX::Logic::SpTreeElem elem;
 
@@ -2523,9 +2523,10 @@ CString CDrawingConverter::GetVMLShapeXml(CPPTShape* pPPTShape)
 	return oXmlWriter.GetXmlString();
 }
 
-void CDrawingConverter::SendMainProps(CString& strMainProps, BSTR*& pMainProps)
+void CDrawingConverter::SendMainProps(CString& strMainProps, CString**& pMainProps)
 {
-	*pMainProps = strMainProps.AllocSysString();
+	*pMainProps = new CString();
+	**pMainProps = strMainProps;
 }
 
 void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils::CXmlNode& oNode, PPTShapes::ShapeType eType, CPPTShape* pPPTShape)
@@ -3024,7 +3025,7 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils::
 	}
 }
 
-HRESULT CDrawingConverter::GetThemeBinary(BSTR bsThemeFilePath)
+HRESULT CDrawingConverter::GetThemeBinary(CString& bsThemeFilePath)
 {
 	CString strOldRels = m_strCurrentRelsPath;
 
@@ -3051,7 +3052,7 @@ HRESULT CDrawingConverter::GetThemeBinary(BSTR bsThemeFilePath)
 	return S_OK;
 }
 
-HRESULT CDrawingConverter::LoadClrMap(BSTR bsXml)
+HRESULT CDrawingConverter::LoadClrMap(CString& bsXml)
 {
 	smart_ptr<PPTX::Logic::ClrMap> pClrMap = new PPTX::Logic::ClrMap();
 	
@@ -3068,9 +3069,9 @@ HRESULT CDrawingConverter::LoadClrMap(BSTR bsXml)
 	return S_OK;
 }
 
-HRESULT CDrawingConverter::SaveThemeXml(LONG lStart, LONG lLength, BSTR bsThemePath)
+HRESULT CDrawingConverter::SaveThemeXml(LONG lStart, LONG lLength, CString& bsThemePath)
 {
-	if (NULL == bsThemePath)
+	if (bsThemePath.IsEmpty())
 		return S_FALSE;
 
 	m_pReader->Seek(lStart);
@@ -3097,9 +3098,7 @@ HRESULT CDrawingConverter::SaveThemeXml(LONG lStart, LONG lLength, BSTR bsThemeP
 	else
 		strTemp += (strFileName + _T(".rels"));
 	
-	BSTR bsTempSave = strTemp.AllocSysString();
-	SaveDstContentRels(bsTempSave);
-	SysFreeString(bsTempSave);
+	SaveDstContentRels(strTemp);
 
 	m_pXmlWriter->ClearNoAttack();
 
@@ -3107,7 +3106,7 @@ HRESULT CDrawingConverter::SaveThemeXml(LONG lStart, LONG lLength, BSTR bsThemeP
 	return S_OK;
 }
 
-HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, BSTR bsMainProps, BSTR* bsXml)
+HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, CString& bsMainProps, CString** bsXml)
 {
 	if (bsXml == NULL)
 		return S_OK;
@@ -3230,13 +3229,14 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, BSTR bsMainProp
 	--m_nCurrentIndexObject;
 
 	CString ret = oXmlWriter.GetXmlString();
-	*bsXml = ret.AllocSysString();
+	*bsXml = new CString();
+	**bsXml = ret;
 
 	m_pReader->Seek(_e);
 	return S_OK;
 }
 
-HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, BSTR bsMainProps, LONG lDocType, BSTR* bsXml)
+HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, CString& bsMainProps, LONG lDocType, CString** bsXml)
 {
 	if (XMLWRITER_DOC_TYPE_DOCX == lDocType)
 	{
@@ -3280,13 +3280,14 @@ HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, BSTR bsMainPr
 	--m_nCurrentIndexObject;
 
 	CString ret = oXmlWriter.GetXmlString();
-	*bsXml = ret.AllocSysString();
+	*bsXml = new CString();
+	**bsXml = ret;
 
 	m_pReader->Seek(_e);
 	return S_OK;
 }
 
-void CDrawingConverter::ConvertShapeVML(PPTX::Logic::SpTreeElem& oElem, BSTR bsMainProps, NSBinPptxRW::CXmlWriter& oWriter)
+void CDrawingConverter::ConvertShapeVML(PPTX::Logic::SpTreeElem& oElem, CString& bsMainProps, NSBinPptxRW::CXmlWriter& oWriter)
 {
 	if (bsMainProps)
 	{
@@ -3298,7 +3299,7 @@ void CDrawingConverter::ConvertShapeVML(PPTX::Logic::SpTreeElem& oElem, BSTR bsM
 	oShape.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap);
 }
 
-void CDrawingConverter::ConvertGroupVML(PPTX::Logic::SpTreeElem& oElem, BSTR bsMainProps, NSBinPptxRW::CXmlWriter& oWriter)
+void CDrawingConverter::ConvertGroupVML(PPTX::Logic::SpTreeElem& oElem, CString& bsMainProps, NSBinPptxRW::CXmlWriter& oWriter)
 {
 	if (bsMainProps)
 	{
@@ -3311,7 +3312,7 @@ void CDrawingConverter::ConvertGroupVML(PPTX::Logic::SpTreeElem& oElem, BSTR bsM
 	oGroup.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap);
 }
 
-void CDrawingConverter::ConvertMainPropsToVML(BSTR bsMainProps, NSBinPptxRW::CXmlWriter& pWriter, PPTX::Logic::SpTreeElem& oElem)
+void CDrawingConverter::ConvertMainPropsToVML(CString& bsMainProps, NSBinPptxRW::CXmlWriter& pWriter, PPTX::Logic::SpTreeElem& oElem)
 {
 	XmlUtils::CXmlNode oNode;
 	if (!oNode.FromXmlString((CString)bsMainProps))
@@ -3545,7 +3546,7 @@ void CDrawingConverter::ConvertMainPropsToVML(BSTR bsMainProps, NSBinPptxRW::CXm
 	pWriter.m_strStyleMain = oWriter.GetXmlString();
 }
 
-HRESULT CDrawingConverter::GetTxBodyBinary(BSTR bsXml)
+HRESULT CDrawingConverter::GetTxBodyBinary(CString& bsXml)
 {
 	XmlUtils::CXmlNode oNode;
 	if (!oNode.FromXmlString((CString)bsXml))
@@ -3566,7 +3567,7 @@ HRESULT CDrawingConverter::GetTxBodyBinary(BSTR bsXml)
 	return S_OK;
 }
 
-HRESULT CDrawingConverter::GetTxBodyXml(LONG lStart, LONG lLength, BSTR* pbstrXml)
+HRESULT CDrawingConverter::GetTxBodyXml(LONG lStart, LONG lLength, CString** pbstrXml)
 {
 	m_pReader->Seek(lStart);
 
@@ -3581,20 +3582,21 @@ HRESULT CDrawingConverter::GetTxBodyXml(LONG lStart, LONG lLength, BSTR* pbstrXm
 	oTxBody.toXmlWriterExcel(&oWriter);
 
 	CString strXml = oWriter.GetXmlString();
-	*pbstrXml = strXml.AllocSysString();
+	*pbstrXml = new CString();
+	**pbstrXml = strXml;
 
 	return S_OK;
 }
 
-HRESULT CDrawingConverter::SetFontDir(BSTR bsFontDir)
+HRESULT CDrawingConverter::SetFontDir(CString& bsFontDir)
 {
 	m_strFontDirectory = (CString)bsFontDir;
 	return S_OK;
 }
 
-HRESULT CDrawingConverter::GetRecordBinary(LONG lRecordType, BSTR bsXml)
+HRESULT CDrawingConverter::GetRecordBinary(LONG lRecordType, CString& bsXml)
 {
-	if (NULL == bsXml)
+	if (bsXml.IsEmpty())
 		return S_FALSE;
 
 	CString strXml = _T("<main ");
@@ -3682,7 +3684,7 @@ xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"");
 	return S_OK;	
 }
 
-HRESULT CDrawingConverter::GetRecordXml(LONG lStart, LONG lLength, LONG lRecType, LONG lDocType, BSTR* bsXml)
+HRESULT CDrawingConverter::GetRecordXml(LONG lStart, LONG lLength, LONG lRecType, LONG lDocType, CString** bsXml)
 {
 	if (bsXml == NULL)
 		return S_FALSE;
@@ -3729,7 +3731,8 @@ HRESULT CDrawingConverter::GetRecordXml(LONG lStart, LONG lLength, LONG lRecType
 	pWritingElem->toXmlWriter(&oXmlWriter);
 
 	CString ret = oXmlWriter.GetXmlString();
-	*bsXml = ret.AllocSysString();
+	*bsXml = new CString();
+	**bsXml = ret;
 
 	RELEASEOBJECT(pWritingElem);
 
@@ -3754,7 +3757,7 @@ HRESULT CDrawingConverter::SetDstContentRels()
 	}
 	return S_OK;
 }
-HRESULT CDrawingConverter::SaveDstContentRels(BSTR bsRelsPath)
+HRESULT CDrawingConverter::SaveDstContentRels(CString& bsRelsPath)
 {
 	m_pReader->m_pRels->CloseRels();
 	m_pReader->m_pRels->SaveRels((CString)bsRelsPath);
@@ -3778,7 +3781,7 @@ HRESULT CDrawingConverter::SaveDstContentRels(BSTR bsRelsPath)
 
 	return S_OK;
 }
-HRESULT CDrawingConverter::WriteRels(BSTR bsType, BSTR bsTarget, BSTR bsTargetMode, LONG* lId)
+HRESULT CDrawingConverter::WriteRels(CString& bsType, CString& bsTarget, CString& bsTargetMode, LONG* lId)
 {
 	if (NULL == lId)
 		return S_FALSE;
@@ -3786,7 +3789,7 @@ HRESULT CDrawingConverter::WriteRels(BSTR bsType, BSTR bsTarget, BSTR bsTargetMo
 	*lId = m_pReader->m_pRels->WriteRels(bsType, bsTarget, bsTargetMode);
 	return S_OK;
 }
-HRESULT CDrawingConverter::SetAdditionalParam(BSTR ParamName, VARIANT ParamValue)
+HRESULT CDrawingConverter::SetAdditionalParam(CString& ParamName, VARIANT ParamValue)
 {
 	CString name = (CString)ParamName;
 	if (name == _T("SourceFileDir"))
@@ -3829,7 +3832,7 @@ HRESULT CDrawingConverter::SetAdditionalParam(BSTR ParamName, VARIANT ParamValue
 	}		
 	return S_OK;
 }
-HRESULT CDrawingConverter::GetAdditionalParam(BSTR ParamName, VARIANT* ParamValue)
+HRESULT CDrawingConverter::GetAdditionalParam(CString& ParamName, VARIANT* ParamValue)
 {
 	CString name = (CString)ParamName;
 	if (name == _T("SerializeImageManager"))

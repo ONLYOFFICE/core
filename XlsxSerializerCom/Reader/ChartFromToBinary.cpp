@@ -6061,10 +6061,12 @@ namespace BinXlsxRW{
 		if (pFile.IsInit() && OOX::FileTypes::ThemeOverride == pFile->type())
 		{
 			OOX::CThemeOverride* pThemeOverride = static_cast<OOX::CThemeOverride*>(pFile.operator->());
+			BYTE* pThemeData = NULL;
+			long nThemeDataSize = 0;
+			m_pOfficeDrawingConverter->GetThemeBinary(&pThemeData, nThemeDataSize, pThemeOverride->m_oReadPath.GetPath());
 			m_oBcw.m_oStream.WriteBYTE(c_oserct_chartspaceTHEMEOVERRIDE);
-			int nCurPos = m_oBcw.WriteItemWithLengthStart();
-			m_pOfficeDrawingConverter->GetThemeBinary(pThemeOverride->m_oReadPath.GetPath());
-			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			m_oBcw.WriteBytesArray(pThemeData, nThemeDataSize);
+			RELEASEARRAYOBJECTS(pThemeData);
 		}
 	}
 	void BinaryChartWriter::WriteCT_Boolean(CT_Boolean& oVal)

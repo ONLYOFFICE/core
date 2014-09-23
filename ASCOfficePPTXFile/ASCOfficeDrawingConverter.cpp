@@ -3025,8 +3025,10 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils::
 	}
 }
 
-HRESULT CDrawingConverter::GetThemeBinary(CString& bsThemeFilePath)
+HRESULT CDrawingConverter::GetThemeBinary(BYTE** ppBinary, long& lBinarySize, CString& bsThemeFilePath)
 {
+	if(NULL == ppBinary)
+		return S_FALSE;
 	CString strOldRels = m_strCurrentRelsPath;
 
 	m_strCurrentRelsPath = bsThemeFilePath;
@@ -3037,11 +3039,18 @@ HRESULT CDrawingConverter::GetThemeBinary(CString& bsThemeFilePath)
 	smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme(oPath, oFileMap);
 
 	//m_pBinaryWriter->ClearNoAttack();
-	//ULONG lOldPos = m_pBinaryWriter->GetPosition();
+	ULONG lOldPos = m_pBinaryWriter->GetPosition();
 	m_pBinaryWriter->m_pCommon->CheckFontPicker();
 	pTheme->toPPTY(m_pBinaryWriter);
 
-	//m_pBinaryWriter->SetPosition(lOldPos);
+	lBinarySize = m_pBinaryWriter->GetPosition() - lOldPos;
+	*ppBinary = new BYTE[lBinarySize];
+	
+	BYTE* pDataD = *ppBinary;
+	BYTE* pDataS = m_pBinaryWriter->GetBuffer() + lOldPos;
+	memcpy(pDataD, pDataS, lBinarySize);
+
+	m_pBinaryWriter->SetPosition(lOldPos);
 
 	*m_pBinaryWriter->ThemeDoc = pTheme.smart_dynamic_cast<PPTX::FileContainer>();
 	//m_pBinaryWriter->ThemeDoc.reset();

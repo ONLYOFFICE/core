@@ -175,7 +175,7 @@ namespace NSBinPptxRW
 
 		STDMETHOD(AddShapeType)(CString& bsXml);
 		STDMETHOD(AddObject)(CString& bsXml, CString** pMainProps);
-		STDMETHOD(GetThemeBinary)(CString& bsThemeFilePath);
+		STDMETHOD(GetThemeBinary)(BYTE** ppBinary, long& lBinarySize, CString& bsThemeFilePath);
 
 		STDMETHOD(SaveThemeXml)(LONG lStart, LONG lLength, CString& bsThemePath);
 		STDMETHOD(SaveObject)(LONG lStart, LONG lLength, CString& bsMainProps, CString** bsXml);

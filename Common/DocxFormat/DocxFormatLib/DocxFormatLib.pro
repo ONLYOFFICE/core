@@ -53,9 +53,6 @@ SOURCES += docxformatlib.cpp \
     ../Source/DocxFormat/IFileContainer.cpp \
     ../Source/SystemUtility/FileSystem/DirectoryPosix.cpp \
     ../Source/SystemUtility/FileSystem/File.cpp \
-    ../Source/SystemUtility/Solution/FileSystemTest/AssemblyInfo.cpp \
-    ../Source/SystemUtility/Solution/FileSystemTest/DirectoryTest.cpp \
-    ../Source/SystemUtility/Solution/FileSystemTest/stdafx.cpp \
     ../Source/SystemUtility/SystemUtility.cpp \
     ../Source/Utility/codecvt.cpp \
     ../Source/Utility/DateTime.cpp \
@@ -287,9 +284,6 @@ HEADERS += docxformatlib.h \
     ../Source/SystemUtility/FileSystem/File.h \
     ../Source/SystemUtility/FileSystem/FileSystem.h \
     ../Source/SystemUtility/FileSystem/Settings.h \
-    ../Source/SystemUtility/Solution/FileSystemTest/resource.h \
-    ../Source/SystemUtility/Solution/FileSystemTest/stdafx.h \
-    ../Source/SystemUtility/File.h \
     ../Source/SystemUtility/SystemUtility.h \
     ../Source/Utility/codecvt.h \
     ../Source/Utility/DateTime.h \

@@ -2,6 +2,7 @@
 
 #include "../XML/xmlutils.h"
 
+#ifdef _WIN32
 class CFile 
 {
 public:
@@ -672,3 +673,24 @@ namespace StreamUtils
 		StreamSeek((long)(ulPos.LowPart - lCount), pStream);
 	}
 }
+#else
+
+namespace CDirectory
+{
+    static void SaveToFile(CString strFileName, CString strXml)
+    {
+        std::string aContentUtf8 = stringWstingToUtf8String (strXml);
+        std::string aFileNameUtf8 = stringWstingToUtf8String (strFileName);
+
+        FILE *pFile = fopen(aFileNameUtf8.c_str(), "wb");
+
+        if (NULL == pFile)
+        {
+            throw std::exception();
+        }
+        fwrite (aContentUtf8.c_str() , sizeof(char), aContentUtf8.size(), pFile);
+        fclose (pFile);
+    }
+
+}
+#endif

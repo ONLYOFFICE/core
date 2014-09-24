@@ -727,6 +727,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\PptxFile.h"
+			>
+		</File>
+		<File
 			RelativePath=".\stdafx.h"
 			>
 		</File>

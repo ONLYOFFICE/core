@@ -11,6 +11,8 @@
 #define IDB_DEFAULT_DOC_THEME			204
 #define IDB_DEFAULT_DOC_WEBSETTINGS		205
 #define IDB_DEFAULT_XLSX_THEME			206
+#define IDB_XML_NOTESTHEME				207
+#define IDB_XML_NOTESMASTER				208
 
 // Next default values for new objects
 // 

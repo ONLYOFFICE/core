@@ -68,7 +68,11 @@ namespace CSVWriter
 			oFile.WriteFile(arBigEndian, 2);
 		}
 
+		CString sNewLineN = _T("\n");
 		LONG lActiveSheet = 0;
+		INT nCurrentIndex = 0;
+		WCHAR *pWriteBuffer = NULL;
+
 		CString sSheetRId = _T("Sheet1"); // Читаем не по rId, а по имени листа
 		OOX::Spreadsheet::CWorkbook *pWorkbook = oXlsx.GetWorkbook();
 		if (NULL != pWorkbook)
@@ -101,14 +105,10 @@ namespace CSVWriter
 				if (NULL != pWorksheet && pWorksheet->m_oSheetData.IsInit())
 				{
 					OOX::Spreadsheet::CSharedStrings *pSharedStrings = oXlsx.GetSharedStrings();
-					CString sNewLineN = _T("\n");
 					CString sDelimiter = _T(""); sDelimiter += wcDelimiter;
 					CONST WCHAR wcQuote = _T('"');
 					CString sEscape = _T("\"\n");
 					sEscape += wcDelimiter;
-
-					INT nCurrentIndex = 0;
-					WCHAR *pWriteBuffer = NULL;
 
 					INT nRowCurrent = 1;
 					for (INT i = 0; i < pWorksheet->m_oSheetData->m_arrItems.size(); ++i)
@@ -178,13 +178,14 @@ namespace CSVWriter
 							WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sCellValue, nCodePage);
 						}
 					}
-
-					WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sNewLineN, nCodePage, TRUE);
-					RELEASEARRAYOBJECTS(pWriteBuffer);
 				}
 			}
 		}
 
+		// Теперь мы пишем как MS Excel (новую строку записываем в файл)
+		WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sNewLineN, nCodePage);
+		WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sNewLineN, nCodePage, TRUE);
+		RELEASEARRAYOBJECTS(pWriteBuffer);
 		oFile.CloseFile();
 	}
 }

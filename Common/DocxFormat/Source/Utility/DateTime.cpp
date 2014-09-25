@@ -9,7 +9,12 @@ DateTime::DateTime()
 	time_t oNow;
 	tm oLocal;
 	time( &oNow );
+
+#ifdef _WIN32
 	localtime_s( &oLocal, &oNow );
+#else
+    localtime_r( &oNow, &oLocal );
+#endif
 
 	m_nYear        = oLocal.tm_year + 1900;
 	m_nMonth       = oLocal.tm_mon + 1;

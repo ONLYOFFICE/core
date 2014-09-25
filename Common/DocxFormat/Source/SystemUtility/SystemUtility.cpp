@@ -100,17 +100,16 @@ namespace OOX
 {
     bool CSystemUtility::CreateFile(const CString& strFileName)
     {
-        BSTR strPath = strFileName.AllocSysString();
-        HANDLE hResult = ::CreateFile(strPath, GENERIC_READ, 0, NULL, 
-            CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-        SysFreeString(strPath);
+        std::string path_string = stringWstingToUtf8String(strFileName);
+        FILE * pFile = fopen (path_string.c_str(), "wb");
+        if (NULL != pFile)
+        {
+            fclose (pFile);
+            return true;
+        }
 
-        if (hResult == INVALID_HANDLE_VALUE)
-            return false;
-        if (!CloseHandle(hResult))
-            return false;
-        
-        return true;
+        return false;
+
     }
 
     bool CSystemUtility::IsFileExist(const CString& strFileName)

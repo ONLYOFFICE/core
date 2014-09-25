@@ -1,6 +1,10 @@
 #include "SystemUtility.h"
 
+#ifdef _WIN32
 #include <windows.h>
+#else
+#include "../Base/ASCString.h"
+#endif
 
 #include "FileSystem/FileSystem.h"
 

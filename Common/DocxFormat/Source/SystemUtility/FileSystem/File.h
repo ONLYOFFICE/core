@@ -1,7 +1,12 @@
 #pragma once
 
 #include "Settings.h"
+
+#ifdef _WIN32
 #include <windows.h>
+#else
+#include "../../Base/ASCString.h"
+#endif
 
 namespace FileSystem {
 	class File {

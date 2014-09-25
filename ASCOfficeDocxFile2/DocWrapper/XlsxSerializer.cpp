@@ -3,7 +3,6 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../XlsxSerializerCom/Reader/BinaryWriter.h"
-#include "../XlsxSerializerCom/Reader/FontProcessor.h"
 #include "../XlsxSerializerCom/Writer/BinaryReader.h"
 
 namespace BinXlsxRW{
@@ -41,7 +40,7 @@ namespace BinXlsxRW{
 	}
 	bool CXlsxSerializer::saveToFile(CString& sDstFileName, CString& sSrcPath, CString& sXMLOptions)
 	{
-		BinXlsxRW::FontProcessor fp;
+		DocWrapper::FontProcessor fp;
 		fp.setFontDir(m_sFontDir);
 		PPTXFile::IOfficeFontPicker* pFontPicker = NULL;
 		CoCreateInstance(__uuidof(PPTXFile::COfficeFontPicker), NULL, CLSCTX_ALL, __uuidof(PPTXFile::IOfficeFontPicker), (void**)(&pFontPicker));

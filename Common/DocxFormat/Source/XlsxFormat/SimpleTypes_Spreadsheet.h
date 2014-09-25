@@ -423,7 +423,7 @@ namespace SimpleTypes
 			virtual EFontFamily FromString(CString &sValue)
 			{
 				int nFontFamily = _wtoi(sValue);
-				switch(nThemeColor)
+				switch(nFontFamily)
 				{
 				case 0:m_eValue = fontfamilyNotApplicable;break;
 				case 1:m_eValue = fontfamilyRoman;break;
@@ -438,10 +438,24 @@ namespace SimpleTypes
 
 			virtual CString     ToString  () const 
 			{
+				CString sRes;
+				sRes.Format(_T("%d"), (int)m_eValue);
+				return sRes;
+			}
+			CString ToStringWord() const 
+			{
+				CString sRes;
 				switch(m_eValue)
 				{
-				default                          : return _T("0");
+				case fontfamilyNotApplicable:sRes = _T("auto");break;
+				case fontfamilyRoman:sRes = _T("roman");break;
+				case fontfamilySwiss:sRes = _T("swiss");break;
+				case fontfamilyModern:sRes = _T("modern");break;
+				case fontfamilyScript:sRes = _T("script");break;
+				case fontfamilyDecorative:sRes = _T("decorative");break;
+				default:sRes = _T("auto");
 				}
+				return sRes;
 			}
 
 			SimpleType_FromString     (EFontFamily)

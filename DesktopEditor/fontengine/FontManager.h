@@ -4,6 +4,8 @@
 #include "FontFile.h"
 #include <map>
 
+class CFontSelectFormat;
+class CFontInfo;
 class CFontStream
 {
 private:
@@ -131,6 +133,7 @@ public:
 	virtual int AddRef();
 	virtual int Release();
 
+	CFontInfo* GetFontInfoByParams(const CFontSelectFormat& oFormat);
 	INT LoadFontByName(const std::wstring& sName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY);
 	INT LoadFontFromFile(const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
 	INT LoadFontFromFile2(CFontsCache* pCache, const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);

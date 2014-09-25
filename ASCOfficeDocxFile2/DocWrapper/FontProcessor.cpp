@@ -1,31 +1,36 @@
 #include "stdafx.h"
 #include "FontProcessor.h"
 
+#include "../../Common/DocxFormat/Source/XlsxFormat/Styles/Fonts.h"
 #include "../../Common/ASCUtils.h"
 
-using SimpleTypes::EPitch;
-
 namespace DocWrapper {
-	
-	bool FontProcessor::useSystemFonts = false;
-	
-	FontProcessor::FontProcessor() 
-			: fontManager(NULL) {}
-	FontProcessor::~FontProcessor() {
+	TCHAR* gc_sNoNameFont = _T("NoNameFont");
+	TCHAR* gc_sDefaultFontName = _T("Arial");
+
+	FontProcessor::FontProcessor() : fontManager(NULL), m_pFontManager(NULL)
+	{
+	}
+	FontProcessor::~FontProcessor()
+	{
 		RELEASEINTERFACE(fontManager);
+		RELEASEOBJECT(m_pFontManager);
 	}
 	
-	void FontProcessor::setFontDir(const CString& fontDir) {
+	void FontProcessor::setFontDir(const CString& fontDir)
+	{
 		this->fontDir = fontDir;
 		initFontManager();
 	}
-	void FontProcessor::setFontTable(OOX::CFontTable* fontTable) {
+	void FontProcessor::setFontTable(OOX::CFontTable* fontTable)
+	{
 		for (int i = 0; i < fontTable->m_arrFonts.size(); ++i)
 			addToFontMap(*fontTable->m_arrFonts[i]);
 	}
 	
-	CString FontProcessor::getFont(const CString& name) {
-		CString fontName = _T("Arial");
+	CString FontProcessor::getFont(const CString& name)
+	{
+		CString fontName = gc_sDefaultFontName;
 		if (fontMap.find(name) != fontMap.end())
 			fontName = fontMap[name];
 		else
@@ -38,22 +43,53 @@ namespace DocWrapper {
 		}
 		return fontName;
 	}
-	void FontProcessor::getFonts(CAtlArray<CString>& fonts) {
-		fonts.RemoveAll();
-		std::map<CString, CString>::iterator it = fontMap.begin();
-		for (; it != fontMap.end(); ++it) {
-			bool contains = false;
-			for (int i = 0; i < (int) fonts.GetCount(); ++i)
-				if (fonts[i] == it->second) {
-					contains = true;
-					break;
-				}
-			if (!contains)
-				fonts.Add(it->second);
-		}
-	}
 	
-	void FontProcessor::initFontManager() {
+	CString FontProcessor::getFont(const NSCommon::nullable<OOX::Spreadsheet::CFontScheme>& oScheme, const NSCommon::nullable<ComplexTypes::Spreadsheet::CString_>& oRFont, const NSCommon::nullable<OOX::Spreadsheet::CCharset>& oCharset, const NSCommon::nullable<OOX::Spreadsheet::CFontFamily >& oFamily, OOX::CTheme* pTheme)
+	{
+		CFontSelectFormat oFontSelectFormat;
+		CString sFontName;
+		if(oScheme.IsInit() && oScheme->m_oFontScheme.IsInit())
+		{
+			//берем шрифт из темы
+			const SimpleTypes::Spreadsheet::EFontScheme eFontScheme = oScheme->m_oFontScheme->GetValue();
+			if(SimpleTypes::Spreadsheet::fontschemeMajor == eFontScheme)
+				sFontName = pTheme->GetMajorFont();
+			else if(SimpleTypes::Spreadsheet::fontschemeMinor == eFontScheme)
+				sFontName = pTheme->GetMinorFont();
+		}
+		if(sFontName.IsEmpty() && oRFont.IsInit() && oRFont->m_sVal.IsInit())
+			sFontName = oRFont->ToString2();
+		if(sFontName.IsEmpty())
+			sFontName = CString(gc_sNoNameFont);
+		oFontSelectFormat.wsName = new std::wstring;
+		*oFontSelectFormat.wsName = string2std_string(sFontName);
+		if(oCharset.IsInit() && oCharset->m_oCharset.IsInit())
+		{
+			SimpleTypes::Spreadsheet::EFontCharset eCharset = oCharset->m_oCharset->GetValue();
+			//на серверве на берем в расчет fontcharsetANSI и fontcharsetDefault, потому что он зависит от локали, а dll работает на сервере
+			if(SimpleTypes::fontcharsetANSI !=  eCharset && SimpleTypes::fontcharsetDefault != eCharset)
+			{
+				oFontSelectFormat.unCharset = new BYTE;
+				*oFontSelectFormat.unCharset = (BYTE)eCharset;
+			}
+		}
+		if(oFamily.IsInit() && oFamily->m_oFontFamily.IsInit())
+		{
+			oFontSelectFormat.wsFamilyClass = new std::wstring;
+			*oFontSelectFormat.wsFamilyClass = oFamily->m_oFontFamily->ToStringWord();
+		}
+
+		CString sRes;
+		CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
+		if(NULL != pFontInfo)
+			sRes = std_string2string(pFontInfo->m_wsFontName);
+		else
+			sRes = gc_sDefaultFontName;
+		fontMap[sFontName] = sRes;
+		return sRes;
+	}
+	void FontProcessor::initFontManager()
+	{
 		RELEASEINTERFACE(fontManager);
 
 		fontManager = NULL;
@@ -66,132 +102,107 @@ namespace DocWrapper {
 		fontManager->SetAdditionalParam(L"InitializeFromFolder", var);
 		RELEASESYSSTRING(var.bstrVal);
 
-		if (useSystemFonts) {
-			CString options = _T("<FontManagerOptions><FontDir path='") + fontDir + _T("' /></FontManagerOptions>");
-			BSTR bsOptions = options.AllocSysString();
-
-
-#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
-			fontManager->Init(bsOptions, VARIANT_TRUE, VARIANT_FALSE);
-#else
-			fontManager->Initialize(bsOptions);
-#endif
-
-
-			SysFreeString(bsOptions);
-		}
-
 #ifdef BUILD_CONFIG_FULL_VERSION
-		CString defaultFontName = _T("Arial");
-		BSTR defFontName = defaultFontName.AllocSysString();
-		fontManager->SetDefaultFont(defFontName);
-		SysFreeString(defFontName);
+		fontManager->SetDefaultFont(gc_sDefaultFontName);
 #endif
+
+		if(fontDir.IsEmpty())
+			m_oApplicationFonts.Initialize();
+		else
+			m_oApplicationFonts.InitializeFromFolder(string2std_string(fontDir));
+		m_pFontManager = m_oApplicationFonts.GenerateFontManager();
 	}
-	void FontProcessor::addToFontMap(OOX::CFont& font) {
-		XmlUtils::CStringWriter parw;
-		parw.WriteString(CString(_T("<FontProperties>")));
+	void FontProcessor::addToFontMap(OOX::CFont& font)
+	{
+		CFontSelectFormat oFontSelectFormat;
+		CString sFontName;
+		if(font.m_sName.IsEmpty())
+			sFontName = CString(gc_sNoNameFont);
+		else
+			sFontName = font.m_sName;
+		oFontSelectFormat.wsName = new std::wstring;
+		*oFontSelectFormat.wsName = string2std_string(sFontName);
+		if (font.m_oAltName.IsInit() && font.m_oAltName->GetLength() > 0)
+		{
+			oFontSelectFormat.wsAltName = new std::wstring;
+			*oFontSelectFormat.wsAltName = string2std_string(*font.m_oAltName);
+		}
 		if(font.m_oCharset.IsInit())
 		{
 			SimpleTypes::EFontCharset eCharset = font.m_oCharset->GetValue();
 			//на серверве на берем в расчет fontcharsetANSI и fontcharsetDefault, потому что он зависит от локали, а dll работает на сервере
 			if(SimpleTypes::fontcharsetANSI != eCharset && SimpleTypes::fontcharsetDefault != eCharset)
-				parw.WriteString(_T("<Charset value='") + font.m_oCharset->ToString() + _T("'/>"));
+			{
+				oFontSelectFormat.unCharset = new BYTE;
+				*oFontSelectFormat.unCharset = (BYTE)eCharset;
+			}
 		}
-		if(font.m_sName.IsEmpty())
-			parw.WriteString(CString(_T("<Name value='Arial'/>")));
-		else
+		if(font.m_oFamily.IsInit())
 		{
-			CString sName = font.m_sName;
-			ToXmlString(sName);
-			parw.WriteString(_T("<Name value='")+ sName + _T("'/>"));
+			oFontSelectFormat.wsFamilyClass = new std::wstring;
+			*oFontSelectFormat.wsFamilyClass = font.m_oFamily->ToString();
 		}
-		if (font.m_oAltName.IsInit())
-		{
-			CString sAltName = *font.m_oAltName;
-			ToXmlString(sAltName);
-			parw.WriteString(_T("<AltName value='") + sAltName + _T("'/>"));
-		}
-		parw.WriteString(_T("<FamilyClass name='") + font.m_oFamily.ToString() + _T("'/>"));
 		if(font.m_oPanose.IsInit())
-			parw.WriteString(_T("<Panose value='") + font.m_oPanose->ToString() + _T("'/>"));
-		if (font.m_oPitch.GetValue() == SimpleTypes::pitchFixed)
-			parw.WriteString(CString(_T("<FixedWidth value='1'/>")));
-		else
-			parw.WriteString(CString(_T("<FixedWidth value='0'/>")));
-		parw.WriteString(CString(_T("<UnicodeRange ")));
-		if (font.m_oUsb0.IsInit())
-			parw.WriteString(_T("range1='") + font.m_oUsb0->ToString() + _T("' "));
-		if (font.m_oUsb1.IsInit())
-			parw.WriteString(_T("range2='") + font.m_oUsb1->ToString() + _T("' "));
-		if (font.m_oUsb2.IsInit())
-			parw.WriteString(_T("range3='") + font.m_oUsb2->ToString() + _T("' "));
-		if (font.m_oUsb3.IsInit())
-			parw.WriteString(_T("range4='") + font.m_oUsb3->ToString() + _T("' "));
-		if (font.m_oCsb0.IsInit())
-			parw.WriteString(_T("coderange1='") + font.m_oCsb0->ToString() + _T("' "));
-		if (font.m_oCsb1.IsInit())
-			parw.WriteString(_T("coderange2='") + font.m_oCsb1->ToString() + _T("' "));
-		parw.WriteString(CString(_T("/>")));
-		parw.WriteString(CString(_T("</FontProperties>")));
-		CString params = parw.GetData();
-		
-		BSTR fontPath = NULL;
-		BSTR familyName = NULL;
-		long index = 0;
-		BSTR bstrParams = params.AllocSysString();
-
-#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
-		fontManager->GetWinFontByParams(bstrParams, &familyName, &fontPath, NULL, &index);
-#else
-		fontManager->GetWinFontByParams(bstrParams, &fontPath, &index);
-		int status = fontManager->LoadFontFromFile(fontPath, 12, 72, 72, index);
-		/*if (!CheckRange(fontManager))
 		{
-			params = _T("<FontProperties>");
-			CString charset;
-			charset.Format(_T("%x"), m_Charset);
-			params += _T("<Charset value='") + charset + _T("'/>");
-			params += _T("<Name value='") + m_Name + _T("'/>");
-			params += _T("<AltName value='") + m_AltName + _T("'/>");
-			params += _T("</FontProperties>");
+			bool bIsPanose = false;
+			oFontSelectFormat.pPanose = new BYTE[10];
+			for(int i = 0; i < 10; ++i)
+			{
+				unsigned char cCurVal = font.m_oPanose->Get_Number(i);
+				oFontSelectFormat.pPanose[i] = cCurVal;
+				// Если хоть одно значение не 0, то используем Panose
+				if ( 0 != cCurVal  )
+					bIsPanose = true;
+			}
+			if(!bIsPanose)
+				RELEASEARRAYOBJECTS(oFontSelectFormat.pPanose);
+		}
+		if(font.m_oPitch.IsInit())
+		{
+			oFontSelectFormat.bFixedWidth = new INT;
+			if (font.m_oPitch->GetValue() == SimpleTypes::pitchFixed)
+				*oFontSelectFormat.bFixedWidth = 1;
+			else
+				*oFontSelectFormat.bFixedWidth = 0;
+		}
+		ULONG ulRange1 = 0;
+		ULONG ulRange2 = 0;
+		ULONG ulRange3 = 0;
+		ULONG ulRange4 = 0;
+		ULONG ulCodeRange1 = 0;
+		ULONG ulCodeRange2 = 0;
+		if (font.m_oUsb0.IsInit())
+			ulRange1 = font.m_oUsb0->GetValue();
+		if (font.m_oUsb1.IsInit())
+			ulRange2 = font.m_oUsb1->GetValue();
+		if (font.m_oUsb2.IsInit())
+			ulRange3 = font.m_oUsb2->GetValue();
+		if (font.m_oUsb3.IsInit())
+			ulRange4 = font.m_oUsb3->GetValue();
+		if (font.m_oCsb0.IsInit())
+			ulCodeRange1 = font.m_oCsb0->GetValue();
+		if (font.m_oCsb1.IsInit())
+			ulCodeRange2 = font.m_oCsb1->GetValue();
+		if ( !(0 == ulRange1 && 0 == ulRange2 && 0 == ulRange3 && 0 == ulRange4 && 0 == ulCodeRange1 && 0 == ulCodeRange2) )
+		{
+			oFontSelectFormat.ulRange1 = new ULONG;
+			*oFontSelectFormat.ulRange1 = ulRange1;
+			oFontSelectFormat.ulRange2 = new ULONG;
+			*oFontSelectFormat.ulRange2 = ulRange2;
+			oFontSelectFormat.ulRange3 = new ULONG;
+			*oFontSelectFormat.ulRange3 = ulRange3;
+			oFontSelectFormat.ulRange4 = new ULONG;
+			*oFontSelectFormat.ulRange4 = ulRange4;
+			oFontSelectFormat.ulCodeRange1 = new ULONG;
+			*oFontSelectFormat.ulCodeRange1 = ulCodeRange1;
+			oFontSelectFormat.ulCodeRange2 = new ULONG;
+			*oFontSelectFormat.ulCodeRange2 = ulCodeRange2;
+		}
 
-			index = 0;
-			bstrParams = params.AllocSysString();
-			fontManager->GetWinFontByParams(bstrParams, &bstrFontPath, &index);
-			SysFreeString(bstrParams);
-			status = fontManager->LoadFontFromFile(bstrFontPath, 12, 72, 72, index);
-			SysFreeString(bstrFontPath);
-		}*/
-		fontManager->GetFamilyName(&familyName);		
-#endif
-
-		CString resFontName = familyName;
-
-		SysFreeString(bstrParams);
-		SysFreeString(fontPath);
-		SysFreeString(familyName);
-
-		fontMap[font.m_sName] = resFontName;
+		CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
+		if(NULL != pFontInfo)
+			fontMap[sFontName] = std_string2string(pFontInfo->m_wsFontName);
+		else
+			fontMap[sFontName] = gc_sDefaultFontName;
 	}
-	
-	bool FontProcessor::checkRange(OOX::CFont& font) {
-		return true;
-		/*unsigned char charset = (unsigned char) m_Charset;
-		unsigned long bit;
-		unsigned int index;
-		GetCodePageByCharset(charset, &bit, &index);
-		VARIANT_BOOL rangeSuits = VARIANT_FALSE;
-		fontManager->IsUnicodeRangeAvailable(bit, index, &rangeSuits);
-		return rangeSuits == VARIANT_TRUE;*/
-	}
-	void FontProcessor::ToXmlString(CString& strVal)
-	{
-		strVal.Replace(L"&",	L"&amp;");
-		strVal.Replace(L"'",	L"&apos;");
-		strVal.Replace(L"<",	L"&lt;");
-		strVal.Replace(L">",	L"&gt;");
-		strVal.Replace(L"\"",	L"&quot;");
-	}
-	
 }

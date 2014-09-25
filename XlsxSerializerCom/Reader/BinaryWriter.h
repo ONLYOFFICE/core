@@ -8,7 +8,7 @@
 #include "../../Common/OfficeFileFormats.h"
 #include "../../Common/Base64.h"
 
-#include "FontProcessor.h"
+#include "../../ASCOfficeDocxFile2/DocWrapper/FontProcessor.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../Common/BinReaderWriterDefines.h"
 #include "../Common/Common.h"
@@ -523,13 +523,13 @@ namespace BinXlsxRW {
 		BinaryStyleTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager):m_oBcw(oCBufferedStream),m_pEmbeddedFontsManager(pEmbeddedFontsManager)
 		{
 		};
-		void Write(OOX::Spreadsheet::CStyles& styles, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
+		void Write(OOX::Spreadsheet::CStyles& styles, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nStart = m_oBcw.WriteItemWithLengthStart();
 			WriteStylesContent(styles, pTheme, oFontProcessor);
 			m_oBcw.WriteItemWithLengthEnd(nStart);
 		};
-		void WriteStylesContent(OOX::Spreadsheet::CStyles& styles, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
+		void WriteStylesContent(OOX::Spreadsheet::CStyles& styles, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos;
 			OOX::Spreadsheet::CIndexedColors* pIndexedColors = NULL;
@@ -938,7 +938,7 @@ namespace BinXlsxRW {
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		};
-		void WriteFonts(const OOX::Spreadsheet::CFonts& fonts, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
+		void WriteFonts(const OOX::Spreadsheet::CFonts& fonts, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos = 0;
 			for(int i = 0, length = fonts.m_arrItems.size(); i < length; ++i)
@@ -949,7 +949,7 @@ namespace BinXlsxRW {
 					m_oBcw.WriteItemEnd(nCurPos);
 			}
 		};
-		void WriteFont(const OOX::Spreadsheet::CFont& font, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* theme, BinXlsxRW::FontProcessor& oFontProcessor)
+		void WriteFont(const OOX::Spreadsheet::CFont& font, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* theme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos = 0;
 			//Bold
@@ -976,21 +976,10 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBOOL(font.m_oItalic->m_oVal.ToBool());
 			}
 			//RFont
-			CString sFont;
-			if(NULL != theme && font.m_oScheme.IsInit() && font.m_oScheme->m_oFontScheme.IsInit())
-			{
-				SimpleTypes::Spreadsheet::EFontScheme eFontScheme = font.m_oScheme->m_oFontScheme->GetValue();
-				if(SimpleTypes::Spreadsheet::fontschemeMajor == eFontScheme)
-					sFont = theme->GetMajorFontOrEmpty();
-				else if(SimpleTypes::Spreadsheet::fontschemeMinor == eFontScheme)
-					sFont = theme->GetMinorFontOrEmpty();
-			}
-			if(sFont.IsEmpty() && font.m_oRFont.IsInit() && font.m_oRFont->m_sVal.IsInit())
-				sFont = font.m_oRFont->ToString2();
-			if(!sFont.IsEmpty())
+			if(font.m_oRFont.IsInit() && font.m_oRFont->m_sVal.IsInit())
 			{
 				//ןמהבטנאול רנטפע
-				sFont = oFontProcessor.getFont(sFont);
+				CString sFont = oFontProcessor.getFont(font.m_oScheme, font.m_oRFont, font.m_oCharset, font.m_oFamily, theme);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerFontTypes::RFont);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 				m_oBcw.m_oStream.WriteStringW(sFont);
@@ -1125,7 +1114,7 @@ namespace BinXlsxRW {
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
-		void WriteDxfs(const OOX::Spreadsheet::CDxfs& oDxfs, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
+		void WriteDxfs(const OOX::Spreadsheet::CDxfs& oDxfs, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos = 0;
 			for(int i = 0, length = oDxfs.m_arrItems.size(); i < length; ++i)
@@ -1136,7 +1125,7 @@ namespace BinXlsxRW {
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		};
-		void WriteDxf(const OOX::Spreadsheet::CDxf& oDxf, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
+		void WriteDxf(const OOX::Spreadsheet::CDxf& oDxf, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos = 0;
 			if(oDxf.m_oAlignment.IsInit())
@@ -1274,13 +1263,13 @@ namespace BinXlsxRW {
 		BinarySharedStringTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager):m_oBcw(oCBufferedStream),m_pEmbeddedFontsManager(pEmbeddedFontsManager)
 		{
 		};
-		void Write(OOX::Spreadsheet::CSharedStrings& sharedString, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
+		void Write(OOX::Spreadsheet::CSharedStrings& sharedString, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nStart = m_oBcw.WriteItemWithLengthStart();
 			WriteSharedStrings(sharedString, pIndexedColors, pTheme, oFontProcessor);
 			m_oBcw.WriteItemWithLengthEnd(nStart);
 		};
-		void WriteSharedStrings(OOX::Spreadsheet::CSharedStrings& sharedString, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
+		void WriteSharedStrings(OOX::Spreadsheet::CSharedStrings& sharedString, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos;
 			for(int i = 0, length = sharedString.m_arrItems.size(); i < length; ++i)
@@ -1295,7 +1284,7 @@ namespace BinXlsxRW {
 				}
 			}
 		};
-		void WriteSharedString(OOX::Spreadsheet::CSi& si, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
+		void WriteSharedString(OOX::Spreadsheet::CSi& si, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos;
 			for(int i = 0, length = si.m_arrItems.size(); i < length; ++i)
@@ -1319,7 +1308,7 @@ namespace BinXlsxRW {
 				}
 			}
 		};
-		void WriteRun(OOX::Spreadsheet::CRun& run, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
+		void WriteRun(OOX::Spreadsheet::CRun& run, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos;
 			//rPr
@@ -1343,7 +1332,7 @@ namespace BinXlsxRW {
 				}
 			}
 		};
-		void WriteRPr(const OOX::Spreadsheet::CRPr& rPr, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
+		void WriteRPr(const OOX::Spreadsheet::CRPr& rPr, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos = 0;
 			//Bold
@@ -1372,17 +1361,13 @@ namespace BinXlsxRW {
 			//RFont
 			if(false != rPr.m_oRFont.IsInit() && rPr.m_oRFont->m_sVal.IsInit())
 			{
-				CString sFont = rPr.m_oRFont->m_sVal.get();
-				if(!sFont.IsEmpty())
-				{
-					sFont = oFontProcessor.getFont(sFont);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerFontTypes::RFont);
-					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-					m_oBcw.m_oStream.WriteStringW(sFont);
+				CString sFont = oFontProcessor.getFont(rPr.m_oScheme, rPr.m_oRFont, rPr.m_oCharset, rPr.m_oFamily, pTheme);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerFontTypes::RFont);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+				m_oBcw.m_oStream.WriteStringW(sFont);
 
-					if(NULL != m_pEmbeddedFontsManager)
-						m_pEmbeddedFontsManager->CheckFont(sFont, oFontProcessor.getFontManager());
-				}
+				if(NULL != m_pEmbeddedFontsManager)
+					m_pEmbeddedFontsManager->CheckFont(sFont, oFontProcessor.getFontManager());
 			}
 			//Scheme
 			if(rPr.m_oScheme.IsInit() && rPr.m_oScheme->m_oFontScheme.IsInit())
@@ -1545,10 +1530,10 @@ namespace BinXlsxRW {
 		NSFontCutter::CEmbeddedFontsManager* m_pEmbeddedFontsManager;
 		OOX::Spreadsheet::CIndexedColors* m_pIndexedColors;
 		OOX::CTheme* m_pTheme;
-		BinXlsxRW::FontProcessor& m_oFontProcessor;
+		DocWrapper::FontProcessor& m_oFontProcessor;
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 	public:
-		BinaryWorksheetTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):
+		BinaryWorksheetTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):
 		  m_oBcw(oCBufferedStream),m_pEmbeddedFontsManager(pEmbeddedFontsManager),m_pIndexedColors(pIndexedColors),m_pTheme(pTheme),m_oFontProcessor(oFontProcessor),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 		{
 		};
@@ -3203,9 +3188,9 @@ namespace BinXlsxRW {
 		int m_nLastFilePos;
 		int m_nRealTableCount;
 		int m_nMainTableStart;
-		BinXlsxRW::FontProcessor& m_oFontProcessor;
+		DocWrapper::FontProcessor& m_oFontProcessor;
 	public:
-		BinaryFileWriter(BinXlsxRW::FontProcessor& oFontProcessor):m_oBcw(NULL),m_oFontProcessor(oFontProcessor)
+		BinaryFileWriter(DocWrapper::FontProcessor& oFontProcessor):m_oBcw(NULL),m_oFontProcessor(oFontProcessor)
 		{
 			m_nLastFilePos = 0;
 			m_nRealTableCount = 0;
@@ -3418,7 +3403,7 @@ namespace BinXlsxRW {
 			}
 			RELEASEARRAYOBJECTS(pbBase64Buffer);
 		}
-		void getDefaultCellStyles(CString& sFileInput, CString& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
+		void getDefaultCellStyles(CString& sFileInput, CString& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			enum Types
 			{
@@ -3603,7 +3588,7 @@ namespace BinXlsxRW {
 			}
 			RELEASEARRAYOBJECTS(pbBase64Buffer);
 		}
-		void getDefaultTableStyles(CString& sFileInput, CString& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, BinXlsxRW::FontProcessor& oFontProcessor)
+		void getDefaultTableStyles(CString& sFileInput, CString& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			enum Types
 			{

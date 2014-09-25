@@ -80,10 +80,12 @@ namespace OOX
 				sResult += m_oCharset->ToString();
 				sResult += _T("\"/>");
 			}
-
-			sResult += _T("<w:family w:val=\"");
-			sResult += m_oFamily.ToString();
-			sResult += _T("\"/>");
+			if(m_oFamily.IsInit())
+			{
+				sResult += _T("<w:family w:val=\"");
+				sResult += m_oFamily->ToString();
+				sResult += _T("\"/>");
+			}
 
 
 			if ( m_oNotTrueType.IsInit() )
@@ -99,10 +101,12 @@ namespace OOX
 				sResult += m_oPanose->ToString();
 				sResult += _T("\"/>");
 			}
-
-			sResult += _T("<w:pitch w:val=\"");
-			sResult += m_oPitch.ToString();
-			sResult += _T("\"/>");
+			if(m_oPitch.IsInit())
+			{
+				sResult += _T("<w:pitch w:val=\"");
+				sResult += m_oPitch->ToString();
+				sResult += _T("\"/>");
+			}
 
 			if ( m_oCsb0.IsInit() && m_oCsb1.IsInit() && m_oUsb0.IsInit() && m_oUsb1.IsInit() && m_oUsb2.IsInit() && m_oUsb3.IsInit() )
 			{
@@ -137,7 +141,9 @@ namespace OOX
 		void Reset()
 		{
 			m_sName = _T("Arial");
-
+			m_oCharset.reset();
+			m_oFamily.reset();
+			m_oPitch.reset();
 			m_oAltName.reset();
 			m_oNotTrueType.reset();
 			m_oPanose.reset();
@@ -152,9 +158,9 @@ namespace OOX
 	public:
 
 		CString                                                 m_sName;           
-		nullable<SimpleTypes::CFontCharset<SimpleTypes::fontcharsetANSI>> m_oCharset;  
-		SimpleTypes::CFontFamily <SimpleTypes::fontfamilyAuto > m_oFamily;
-		SimpleTypes::CPitch      <SimpleTypes::pitchDefault   > m_oPitch;
+		nullable<SimpleTypes::CFontCharset<SimpleTypes::fontcharsetANSI>>	m_oCharset;  
+		nullable<SimpleTypes::CFontFamily<SimpleTypes::fontfamilyAuto>>		m_oFamily;
+		nullable<SimpleTypes::CPitch<SimpleTypes::pitchDefault>>			m_oPitch;
 
 		nullable<CString                                      > m_oAltName;        
 		nullable<SimpleTypes::COnOff<>                        > m_oNotTrueType;

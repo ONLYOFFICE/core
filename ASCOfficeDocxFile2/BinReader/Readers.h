@@ -3002,8 +3002,7 @@ public:
 		{
 			CHyperlink oHyperlink;
 			res = Read1(length, &Binary_DocumentTableReader::ReadHyperlink, this, &oHyperlink);
-			if(!oHyperlink.sLink.IsEmpty())
-				oHyperlink.Write(GetRunStringWriter());
+			oHyperlink.Write(GetRunStringWriter());
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

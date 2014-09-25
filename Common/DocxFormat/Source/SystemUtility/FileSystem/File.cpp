@@ -2,6 +2,7 @@
 
 namespace FileSystem {
     bool File::Exists(LPCTSTR path) {
+#ifdef _WIN32
 		WIN32_FIND_DATA findData;
 		ZeroMemory(&findData, sizeof(findData));
 
@@ -13,6 +14,11 @@ namespace FileSystem {
 		FindClose(handle);
 
 		return fileExists;
+#else
+        std::wstring path_wstring;
+        std::wstring path_string;
+        return (-1 == access (fname, F_OK));
+#endif
 	}
     bool File::Exists(const String& path) {
         return Exists(path.c_str());

@@ -150,6 +150,47 @@ static bool stringWStringToUtf16 (const std::wstring& aSrc, std::vector<UTF16> &
             return true;
 #endif
 }
+
+
+static std::wstring stringUtf8ToWString (const std::string& aSrc)
+{
+#ifdef _WIN32
+    //#error "You don't need to convert std::wstring to utf16 on Windows"
+    return false;
+#else
+
+    uint32_t nLength = aSrc.length();
+
+    UTF32 *pStrUtf32 = new UTF32 [nLength];
+    memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (nLength));
+
+
+    UTF8 *pStrUtf8 = (UTF8 *) &aSrc[0];
+
+            // this values will be modificated
+            const UTF8 *pStrUtf8_Conv = pStrUtf8;
+            UTF32 *pStrUtf32_Conv = pStrUtf32;
+
+            ConversionResult eUnicodeConversionResult =
+                    ConvertUTF8toUTF32 (&pStrUtf8_Conv,
+                                         &pStrUtf8[nLength]
+                    , &pStrUtf32_Conv
+                    , &pStrUtf32 [nLength]
+                    , strictConversion);
+
+            if (conversionOK != eUnicodeConversionResult)
+            {
+                delete [] pStrUtf32;
+                return L"";
+            }
+            std::wstring wsEntryName ((wchar_t *) pStrUtf32);
+
+            delete [] pStrUtf32;
+            return wsEntryName;
+#endif
+}
+
+
 #endif // _WIN32
 
 // When using VC, turn off browser references
@@ -431,6 +472,7 @@ inline const Type& SSMAX(const Type& arg1, const Type& arg2)
             typedef wchar_t			OLECHAR;
 
             typedef const TCHAR*		LPCTSTR;
+            typedef TCHAR*              LPTSTR;
 
         #endif	// #ifndef _WIN32
 

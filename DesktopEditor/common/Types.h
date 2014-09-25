@@ -37,6 +37,11 @@ typedef wchar_t			WCHAR;
 #include <inttypes.h>
 typedef int64_t     T_LONG64;
 typedef uint64_t    T_ULONG64;
+typedef T_LONG64    __int64;
+
+typedef T_ULONG64   ULONG64;
+typedef T_LONG64    LONG64;
+typedef T_ULONG64     UINT64;
 #else
 
 #if (!defined (_MAC) && (!defined(MIDL_PASS) || defined(__midl)) && (!defined(_M_IX86) || (defined(_INTEGRAL_MAX_BITS) && _INTEGRAL_MAX_BITS >= 64)))
@@ -83,28 +88,12 @@ typedef long HRESULT;
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
-#define ADDREFINTERFACE(pinterface)\
-{\
-	if (pinterface!=NULL)\
-	{\
-		pinterface->AddRef();\
-	}\
-}
-#define RELEASEINTERFACE(pinterface)\
-{\
-	if (pinterface!=NULL)\
-	{\
-		pinterface->Release();\
-		pinterface=NULL;\
-	}\
-}
-#define QUERYINTERFACE(pinterface, pinterface_res, iid)\
-{\
-	if (pinterface!=NULL)\
-		pinterface->QueryInterface(iid, (void**)&pinterface_res);\
-	else\
-		pinterface_res=NULL;\
-}
+#ifndef RGB
+typedef int RGB;
+#define RGB(r,g,b) ((r)<<16|(g)<<8|(b))
+#endif
+
+
 #define RELEASEMEM(pobject)\
 {\
 	if (pobject!=NULL)\
@@ -128,6 +117,30 @@ typedef long HRESULT;
 		delete []pobject;\
 		pobject=NULL;\
 	}\
+}
+
+#ifdef _WIN32
+#define ADDREFINTERFACE(pinterface)\
+{\
+    if (pinterface!=NULL)\
+    {\
+        pinterface->AddRef();\
+    }\
+}
+#define RELEASEINTERFACE(pinterface)\
+{\
+    if (pinterface!=NULL)\
+    {\
+        pinterface->Release();\
+        pinterface=NULL;\
+    }\
+}
+#define QUERYINTERFACE(pinterface, pinterface_res, iid)\
+{\
+    if (pinterface!=NULL)\
+        pinterface->QueryInterface(iid, (void**)&pinterface_res);\
+    else\
+        pinterface_res=NULL;\
 }
 #define RELEASEHEAP(pmem)\
 {\
@@ -153,6 +166,7 @@ typedef long HRESULT;
 		pstring=NULL;\
 	}\
 }
+
 #define RELEASEHANDLE(phandle)\
 {\
 	if (phandle!=NULL)\
@@ -161,5 +175,7 @@ typedef long HRESULT;
 		phandle=NULL;\
 	}\
 }
+
+#endif // _WIN32
 
 #endif //_BUILD_TYPES_CROSSPLATFORM_H_

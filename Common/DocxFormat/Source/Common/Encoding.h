@@ -90,6 +90,7 @@ private:
 
         return sResult;
 #else
+        return stringUtf8ToWString (sLine);
 #endif
 	}
 

@@ -1,33 +1,80 @@
 #include "Directory.h"
 #include "../../Base/ASCString.h"
 
-//#include <shlobj.h>
+
+#include <unistd.h>
+#include <sys/stat.h>
+#include <dirent.h>
+
+#ifndef MAX_PATH
+#define MAX_PATH 512
+#endif
+
 
 namespace FileSystem {
+
+    // recursively make directories by path
+    // returns true if dir was created
+    static bool _mkdir (const char *dir) {
+            char tmp[MAX_PATH];
+            char *p = NULL;
+            size_t len;
+            bool res = true;
+
+            snprintf(tmp, sizeof(tmp),"%s",dir);
+            len = strlen(tmp);
+            if(tmp[len - 1] == '/')
+                    tmp[len - 1] = 0;
+            for(p = tmp + 1; *p; p++)
+                    if(*p == '/') {
+                            *p = 0;
+                            res = (0 == mkdir(tmp, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH));
+                            *p = '/';
+                            if (!res)
+                                break;
+                    }
+            if (res)
+                res = (0 == mkdir(tmp, S_IRWXU));
+            return res;
+    }
+
+
+    // FIXME: not thread safe (from win32 code, but there are no memory leaks)
     LPCTSTR Directory::GetCurrentDirectory() {
-        static const int bufferSize = MAX_PATH;
-        LPTSTR directory = new TCHAR[bufferSize];
+        char spc_current_dir [MAX_PATH];
+        static CString wspc_current_dir;
 
-        DWORD lenght = ::GetCurrentDirectory(bufferSize, directory);
-        if (lenght == 0) {
-            delete[] directory;
-            directory = NULL;
-        }
+        getcwd (spc_current_dir, MAX_PATH);
+        std::string sDir;
+        sDir = spc_current_dir;
+        wspc_current_dir = stringUtf8ToWString (sDir);
 
-        return directory;
+        return wspc_current_dir.c_str();
     }
     String Directory::GetCurrentDirectoryS() {
-        LPCTSTR directory = GetCurrentDirectory();
-        if (directory == NULL)
+        std::string sDir;
+        char * pc_current_dir = getcwd(NULL, 0);
+        if (NULL != pc_current_dir)
+        {
+            sDir = pc_current_dir;
+            free (pc_current_dir);
+        }
+        else
             return String();
 
-        return String(directory);
+        return stringUtf8ToWString (sDir);
     }
 
     bool Directory::CreateDirectory(LPCTSTR path) {
         bool directoryCreated = false;
-        if (::CreateDirectory(path, NULL) == TRUE)
+
+        std::wstring wsPath = path;
+        std::string sPathUtf8 = stringWstingToUtf8String (wsPath);
+
+        // read/write/search permissions for owner and group, and with read/search permissions for others
+        if (0 == mkdir (sPathUtf8.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH))
             directoryCreated = true;
+
         return directoryCreated;
     }
     bool Directory::CreateDirectory(const String& path) {
@@ -35,45 +82,83 @@ namespace FileSystem {
     }
     bool Directory::CreateDirectories(LPCTSTR path) 
 	{
-		int codeResult = ERROR_SUCCESS;
+        auto func = [] () { };
+            func(); // now call the function
 
-		codeResult = SHCreateDirectory(NULL, path);
-
-        bool created = false;
-        if (codeResult == ERROR_SUCCESS)
-            created = true;
-
-        return created;
+        std::wstring pathWstring;
+        pathWstring = path;
+        std::string pathUtf8 = stringWstingToUtf8String (pathWstring);
+        return _mkdir (pathUtf8.c_str());
     }
 
-    StringArray Directory::GetFilesInDirectory(LPCTSTR path, const bool& andSubdirectories) {
-        size_t pathLength = 0;
-        StringCchLength(path, MAX_PATH, &pathLength);
-        ++pathLength;
-        size_t pathToFilesLength = pathLength + 3;
-        LPTSTR pathToFiles = new TCHAR[pathToFilesLength];
+    // recursive directory scanning routine
+    bool listdir (const char* dirname, const bool recursive, std::vector<std::string>& files)
+    {
+      DIR* d_fh;
+      struct dirent* entry;
+      std::string longest_name;
 
-        StringCchCopy(pathToFiles, pathLength, path);
-        StringCchCat(pathToFiles, pathToFilesLength, TEXT("\\*"));
+      while ( (d_fh = opendir(dirname)) == NULL)
+      {
+        // Couldn't open directory
+        return false;
+      }
 
-        WIN32_FIND_DATA findData;
-        HANDLE findResult = FindFirstFile(pathToFiles, &findData);
-        delete[] pathToFiles;
+      while ((entry=readdir(d_fh)) != NULL) {
 
-        if (findResult == INVALID_HANDLE_VALUE)
-            return StringArray();
+        // Don't descend up the tree or include the current directory
+        if(strncmp(entry->d_name, "..", 2) != 0 &&
+           strncmp(entry->d_name, ".", 1) != 0)
+        {
+          // If it's a directory recurse into it
+          if (entry->d_type == DT_DIR)
+          {
+              if (recursive)
+              {
+                    // Prepend the current directory and recurse
+                    longest_name = dirname;
+                    longest_name += "/";
+                    longest_name += entry->d_name;
 
-        StringArray files;
-        do {
-            if (andSubdirectories || !(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-                String file = findData.cFileName;
-                files.insert(files.end(), file);
-            }
-        } while (FindNextFile(findResult, &findData));
+                    if (!listdir(longest_name.c_str(), recursive, files))
+                        return false;
+              }
+          }
+          else
+          {
+              // it's a file
+              std::string sFileName;
+              sFileName = dirname;
+              sFileName += "/";
+              sFileName += entry->d_name;
 
-        FindClose(findResult);
+              files.push_back(sFileName);
+          }
+        }
+      }
 
-        return files;
+      closedir(d_fh);
+
+      return true;
+    }
+
+
+    StringArray Directory::GetFilesInDirectory(LPCTSTR path, const bool& andSubdirectories)
+    {
+        std::wstring path_wstring = path;
+        std::string path_utf8 = stringWstingToUtf8String(path_wstring);
+
+        std::vector<std::string> files;
+        listdir (path_utf8.c_str(), andSubdirectories, files);
+
+        StringArray files_wstring;
+        std::for_each (std::begin(files), std::end(files), [&] (std::string file)
+        {
+            std::wstring file_wstring = stringUtf8ToWString (file);
+            files_wstring.push_back (file_wstring);
+        });
+
+        return files_wstring;
     }
     StringArray Directory::GetFilesInDirectory(const String& path, const bool& andSubdirectories) {
         LPCTSTR pathW = path.c_str();
@@ -81,29 +166,12 @@ namespace FileSystem {
     }
 
     int Directory::GetFilesCount(const CString& path, const bool& recursive) {
-        CString pathMask = path + _T("\\*");
 
-        WIN32_FIND_DATA findData;
-        HANDLE findResult = FindFirstFile(pathMask, &findData);
+        std::string path_utf8 = stringWstingToUtf8String(path.c_str());
 
-        int filesCount = 0;
-        do {
-            if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                if (!recursive)
-                    continue;
-                if ((CString) findData.cFileName == _T("."))
-                    continue;
-                if ((CString) findData.cFileName == _T(".."))
-                    continue;
-                CString innerPath = path + _T('\\') + (CString) findData.cFileName;
-                filesCount += GetFilesCount(innerPath, recursive);
-            }
-            else
-                ++filesCount;
-        } while (FindNextFile(findResult, &findData));
+        std::vector<std::string> files;
+        listdir (path_utf8.c_str(), recursive, files);
 
-        FindClose(findResult);
-
-        return filesCount;
+        return files.size();
     }
 }

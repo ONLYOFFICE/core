@@ -555,7 +555,7 @@ namespace OOX
 					WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CFontFamily<>>	m_oFontFamily;
+			nullable<SimpleTypes::Spreadsheet::CFontFamily<>>	m_oFontFamily;
 		};
 		class CFontScheme
 		{

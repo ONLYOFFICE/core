@@ -452,7 +452,10 @@ int CFontManager::Release()
 		delete this;
 	return ret;
 }
-
+CFontInfo* CFontManager::GetFontInfoByParams(const CFontSelectFormat& oFormat)
+{
+	return m_pApplication->GetList()->GetByParams(oFormat);
+}
 INT CFontManager::LoadFontByName(const std::wstring& sName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY)
 {
 	if (NULL == m_pApplication)

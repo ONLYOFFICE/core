@@ -52,7 +52,7 @@ SOURCES += docxformatlib.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
     ../Source/DocxFormat/IFileContainer.cpp \
     ../Source/SystemUtility/FileSystem/DirectoryPosix.cpp \
-    ../Source/SystemUtility/FileSystem/File.cpp \
+    ../Source/SystemUtility/FileSystem/FilePosix.cpp \
     ../Source/SystemUtility/SystemUtility.cpp \
     ../Source/Utility/codecvt.cpp \
     ../Source/Utility/DateTime.cpp \

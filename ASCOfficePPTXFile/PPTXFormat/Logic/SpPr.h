@@ -42,7 +42,12 @@ namespace PPTX
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART)
 					pWriter->StartNode(_T("c:spPr"));
 				else
-					pWriter->StartNode(_T("p:spPr"));
+				{
+					if (0 != (pWriter->m_lFlag & 0x04))//theme
+						pWriter->StartNode(_T("a:spPr"));
+					else
+						pWriter->StartNode(_T("p:spPr"));
+				}
 				
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("bwMode"), bwMode);
@@ -74,7 +79,12 @@ namespace PPTX
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART)
 					pWriter->EndNode(_T("c:spPr"));
 				else
-					pWriter->EndNode(_T("p:spPr"));
+				{
+					if (0 != (pWriter->m_lFlag & 0x04))//theme
+						pWriter->EndNode(_T("a:spPr"));
+					else
+						pWriter->EndNode(_T("p:spPr"));
+				}
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

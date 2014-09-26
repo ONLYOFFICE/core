@@ -102,7 +102,10 @@ namespace PPTX
 					pWriter->Write(rect);
 				else
 					pWriter->WriteString(_T("<a:rect l=\"0\" t=\"0\" r=\"r\" b=\"b\"/>"));
-				pWriter->WriteArray(_T("a:pathLst"), pathLst);
+				if (pathLst.size() == 0)
+					pWriter->WriteString(_T("<a:pathLst/>"));
+				else
+					pWriter->WriteArray(_T("a:pathLst"), pathLst);
 				
 				pWriter->EndNode(_T("a:custGeom"));
 			}

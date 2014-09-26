@@ -126,7 +126,9 @@ namespace PPTX
 				pWriter->StartNode(_T("a:") + m_name);
 				pWriter->EndAttributes();
 
+				pWriter->m_lFlag = 0x04;
 				spPr.toXmlWriter(pWriter);
+				pWriter->m_lFlag = 0;
 				bodyPr.toXmlWriter(pWriter);
 				lstStyle.toXmlWriter(pWriter);
 				pWriter->Write(style);

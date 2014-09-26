@@ -386,12 +386,6 @@ namespace BinDocxRW
 				m_oStream.WriteStringW(sFontName);
 			}
 		};
-		void WriteSafeArray(SAFEARRAY* pBinaryObj)
-		{
-			int nCurPos = WriteItemWithLengthStart();
-			m_oStream.WriteBYTEArray((BYTE *)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-			WriteItemWithLengthEnd(nCurPos);
-		}
 		void WriteBytesArray(BYTE* pData, long nDataSize)
 		{
 			int nCurPos = WriteItemWithLengthStart();

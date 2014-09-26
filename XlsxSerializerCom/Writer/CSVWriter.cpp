@@ -42,7 +42,7 @@ namespace CSVWriter
 		
 		if (!bIsEnd)
 		{
-			::CopyMemory(*pWriteBuffer + nCurrentIndex, sWriteString.GetBuffer(), nCountChars * nSizeWchar);
+			memcpy(*pWriteBuffer + nCurrentIndex, sWriteString.GetBuffer(), nCountChars * nSizeWchar);
 			nCurrentIndex += nCountChars;
 		}
 	}

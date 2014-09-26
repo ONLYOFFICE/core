@@ -96,12 +96,6 @@ namespace BinXlsxRW {
 			}
 		}
 	}
-	void BinaryCommonWriter::WriteSafeArray(SAFEARRAY* pBinaryObj)
-	{
-		int nCurPos = WriteItemWithLengthStart();
-		m_oStream.WriteBYTEArray((BYTE *)pBinaryObj->pvData, pBinaryObj->rgsabound[0].cElements);
-		WriteItemWithLengthEnd(nCurPos);
-	}
 	void BinaryCommonWriter::WriteBytesArray(BYTE* pData, long nDataSize)
 	{
 		int nCurPos = WriteItemWithLengthStart();

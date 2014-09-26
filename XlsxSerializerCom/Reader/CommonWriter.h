@@ -15,7 +15,6 @@ namespace BinXlsxRW {
 		int WriteItemWithLengthStart();
 		void WriteItemWithLengthEnd(int nStart);
 		void WriteColor(const OOX::Spreadsheet::CColor& color, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* theme);
-		void WriteSafeArray(SAFEARRAY* pBinaryObj);
 		void WriteBytesArray(BYTE* pData, long nDataSize);
 	};
 }

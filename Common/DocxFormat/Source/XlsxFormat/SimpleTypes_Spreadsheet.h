@@ -20,17 +20,17 @@ namespace SimpleTypes
 
 			virtual EVisibleType FromString(CString &sValue)
 			{
-				if      ( _T("hidden")            == sValue ) m_eValue = visibleHidden;
-				else if ( _T("veryHidden")      == sValue ) m_eValue = visibleVeryHidden;
-				else if ( _T("visible")    == sValue ) m_eValue = visibleVisible; 
-				else                                             m_eValue = eDefValue; 
+                if      ( _T("hidden")            == sValue ) this->m_eValue = visibleHidden;
+                else if ( _T("veryHidden")      == sValue ) this->m_eValue = visibleVeryHidden;
+                else if ( _T("visible")    == sValue ) this->m_eValue = visibleVisible;
+                else                                             this->m_eValue = eDefValue;
 
-				return m_eValue;
+                return this->m_eValue;
 			}
 
 			virtual CString       ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case visibleHidden : return _T("hidden");break;
 				case visibleVeryHidden : return _T("veryHidden");break;
@@ -60,13 +60,13 @@ namespace SimpleTypes
 
 			virtual EPhoneticAlignmentType FromString(CString &sValue)
 			{
-				if      ( _T("center")            == sValue ) m_eValue = phoneticalignmentCenter;
-				else if ( _T("distributed")      == sValue ) m_eValue = phoneticalignmentDistributed;
-				else if ( _T("left")    == sValue ) m_eValue = phoneticalignmentLeft; 
-				else if ( _T("noControl")    == sValue ) m_eValue = phoneticalignmentNoControl; 
-				else                                             m_eValue = eDefValue; 
+                if      ( _T("center")            == sValue ) this->m_eValue = phoneticalignmentCenter;
+                else if ( _T("distributed")      == sValue ) this->m_eValue = phoneticalignmentDistributed;
+                else if ( _T("left")    == sValue ) this->m_eValue = phoneticalignmentLeft;
+                else if ( _T("noControl")    == sValue ) this->m_eValue = phoneticalignmentNoControl;
+                else                                             this->m_eValue = eDefValue;
 
-				return m_eValue;
+                return this->m_eValue;
 			}
 
 			virtual CString       ToString  () const 
@@ -94,13 +94,13 @@ namespace SimpleTypes
 
 			virtual EPhoneticTypeType FromString(CString &sValue)
 			{
-				if      ( _T("fullwidthKatakana")            == sValue ) m_eValue = phonetictypeFullwidthKatakana;
-				else if ( _T("halfwidthKatakana")      == sValue ) m_eValue = phonetictypeHalfwidthKatakana;
-				else if ( _T("hiragana")    == sValue ) m_eValue = phonetictypeHiragana; 
-				else if ( _T("noConversion")    == sValue ) m_eValue = phonetictypeNoConversion; 
-				else                                             m_eValue = eDefValue; 
+                if      ( _T("fullwidthKatakana")            == sValue ) this->m_eValue = phonetictypeFullwidthKatakana;
+                else if ( _T("halfwidthKatakana")      == sValue ) this->m_eValue = phonetictypeHalfwidthKatakana;
+                else if ( _T("hiragana")    == sValue ) this->m_eValue = phonetictypeHiragana;
+                else if ( _T("noConversion")    == sValue ) this->m_eValue = phonetictypeNoConversion;
+                else                                             this->m_eValue = eDefValue;
 
-				return m_eValue;
+                return this->m_eValue;
 			}
 
 			virtual CString       ToString  () const 
@@ -149,41 +149,41 @@ namespace SimpleTypes
 				int nCharset = _wtoi(sValue);
 				switch(nCharset)
 				{
-				case 0: m_eValue = fontcharsetANSI;break;
-				case 1: m_eValue = fontcharsetDefault;break;
-				case 2: m_eValue = fontcharsetSymbol;break;
-				case 77: m_eValue = fontcharsetMacintosh;break;
-				case 128: m_eValue = fontcharsetShitJIS;break;
-				case 129: m_eValue = fontcharsetHangeul;break;
-				case 130: m_eValue = fontcharsetJohab;break;
-				case 134: m_eValue = fontcharsetGB2313;break;
-				case 136: m_eValue = fontcharsetChineseBig5;break;
-				case 161: m_eValue = fontcharsetGreek;break;
-				case 162: m_eValue = fontcharsetTurkish;break;
-				case 163: m_eValue = fontcharsetVietnamese;break;
-				case 177: m_eValue = fontcharsetHebrew;break;
-				case 178: m_eValue = fontcharsetArabic;break;
-				case 186: m_eValue = fontcharsetBaltic;break;
-				case 204: m_eValue = fontcharsetRussian;break;
-				case 222: m_eValue = fontcharsetThai;break;
-				case 238: m_eValue = fontcharsetEastEurope;break;
-				case 255: m_eValue = fontcharsetOEM;break;
-				default:m_eValue = eDefValue;
+                case 0: this->m_eValue = fontcharsetANSI;break;
+                case 1: this->m_eValue = fontcharsetDefault;break;
+                case 2: this->m_eValue = fontcharsetSymbol;break;
+                case 77: this->m_eValue = fontcharsetMacintosh;break;
+                case 128: this->m_eValue = fontcharsetShitJIS;break;
+                case 129: this->m_eValue = fontcharsetHangeul;break;
+                case 130: this->m_eValue = fontcharsetJohab;break;
+                case 134: this->m_eValue = fontcharsetGB2313;break;
+                case 136: this->m_eValue = fontcharsetChineseBig5;break;
+                case 161: this->m_eValue = fontcharsetGreek;break;
+                case 162: this->m_eValue = fontcharsetTurkish;break;
+                case 163: this->m_eValue = fontcharsetVietnamese;break;
+                case 177: this->m_eValue = fontcharsetHebrew;break;
+                case 178: this->m_eValue = fontcharsetArabic;break;
+                case 186: this->m_eValue = fontcharsetBaltic;break;
+                case 204: this->m_eValue = fontcharsetRussian;break;
+                case 222: this->m_eValue = fontcharsetThai;break;
+                case 238: this->m_eValue = fontcharsetEastEurope;break;
+                case 255: this->m_eValue = fontcharsetOEM;break;
+                default:this->m_eValue = eDefValue;
 				}
 
-				return m_eValue;
+                return this->m_eValue;
 			}
 
 			virtual CString       ToString  () const 
 			{
 				CString sRes;
-				sRes.Format(_T("%d"), (long)m_eValue);
+                sRes.Format(_T("%d"), (long)this->m_eValue);
 				return sRes;
 			}
 			virtual CString       ToHexString  () const 
 			{
 				CString sRes;
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case fontcharsetANSI: sRes = _T("00");break;
 				case fontcharsetDefault: sRes = _T("01");break;
@@ -239,21 +239,21 @@ namespace SimpleTypes
 				int nThemeColor = _wtoi(sValue);
 				switch(nThemeColor)
 				{
-				case 0:m_eValue = themecolorLight1;break;
-				case 1:m_eValue = themecolorDark1;break;
-				case 2:m_eValue = themecolorLight2;break;
-				case 3:m_eValue = themecolorDark2;break;
-				case 4:m_eValue = themecolorAccent1;break;
-				case 5:m_eValue = themecolorAccent2;break;
-				case 6:m_eValue = themecolorAccent3;break;
-				case 7:m_eValue = themecolorAccent4;break;
-				case 8:m_eValue = themecolorAccent5;break;
-				case 9:m_eValue = themecolorAccent6;break;
-				case 10:m_eValue = themecolorHyperlink;break;
-				case 11:m_eValue = themecolorFollowedHyperlink;break;
-				default:m_eValue = eDefValue;
+                case 0:this->m_eValue = themecolorLight1;break;
+                case 1:this->m_eValue = themecolorDark1;break;
+                case 2:this->m_eValue = themecolorLight2;break;
+                case 3:this->m_eValue = themecolorDark2;break;
+                case 4:this->m_eValue = themecolorAccent1;break;
+                case 5:this->m_eValue = themecolorAccent2;break;
+                case 6:this->m_eValue = themecolorAccent3;break;
+                case 7:this->m_eValue = themecolorAccent4;break;
+                case 8:this->m_eValue = themecolorAccent5;break;
+                case 9:this->m_eValue = themecolorAccent6;break;
+                case 10:this->m_eValue = themecolorHyperlink;break;
+                case 11:this->m_eValue = themecolorFollowedHyperlink;break;
+                default:this->m_eValue = eDefValue;
 				}
-				return m_eValue;
+                return this->m_eValue;
 			}
 			virtual CString     ToString  () const 
 			{
@@ -425,27 +425,27 @@ namespace SimpleTypes
 				int nFontFamily = _wtoi(sValue);
 				switch(nFontFamily)
 				{
-				case 0:m_eValue = fontfamilyNotApplicable;break;
-				case 1:m_eValue = fontfamilyRoman;break;
-				case 2:m_eValue = fontfamilySwiss;break;
-				case 3:m_eValue = fontfamilyModern;break;
-				case 4:m_eValue = fontfamilyScript;break;
-				case 5:m_eValue = fontfamilyDecorative;break;
-				default:m_eValue = eDefValue;
+                case 0:this->m_eValue = fontfamilyNotApplicable;break;
+                case 1:this->m_eValue = fontfamilyRoman;break;
+                case 2:this->m_eValue = fontfamilySwiss;break;
+                case 3:this->m_eValue = fontfamilyModern;break;
+                case 4:this->m_eValue = fontfamilyScript;break;
+                case 5:this->m_eValue = fontfamilyDecorative;break;
+                default:this->m_eValue = eDefValue;
 				}
-				return m_eValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
 				CString sRes;
-				sRes.Format(_T("%d"), (int)m_eValue);
+                sRes.Format(_T("%d"), (int)this->m_eValue);
 				return sRes;
 			}
 			CString ToStringWord() const 
 			{
 				CString sRes;
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case fontfamilyNotApplicable:sRes = _T("auto");break;
 				case fontfamilyRoman:sRes = _T("roman");break;
@@ -477,20 +477,20 @@ namespace SimpleTypes
 			virtual EFontScheme FromString(CString &sValue)
 			{
 				if(_T("major") == sValue)
-					m_eValue = fontschemeMajor;
+                    this->m_eValue = fontschemeMajor;
 				else if(_T("minor") == sValue)
-					m_eValue = fontschemeMinor;
+                    this->m_eValue = fontschemeMinor;
 				else if(_T("none") == sValue)
-					m_eValue = fontschemeNone;
+                    this->m_eValue = fontschemeNone;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
 				CString sRes;
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case fontschemeMajor: sRes = _T("major");break;
 				case fontschemeMinor: sRes = _T("minor");break;
@@ -519,23 +519,23 @@ namespace SimpleTypes
 			virtual EUnderline FromString(CString &sValue)
 			{
 				if(_T("double") == sValue)
-					m_eValue = underlineDouble;
+                    this->m_eValue = underlineDouble;
 				else if(_T("doubleAccounting") == sValue)
-					m_eValue = underlineDoubleAccounting;
+                    this->m_eValue = underlineDoubleAccounting;
 				else if(_T("none") == sValue)
-					m_eValue = underlineNone;
+                    this->m_eValue = underlineNone;
 				else if(_T("single") == sValue)
-					m_eValue = underlineSingle;
+                    this->m_eValue = underlineSingle;
 				else if(_T("singleAccounting") == sValue)
-					m_eValue = underlineSingleAccounting;
+                    this->m_eValue = underlineSingleAccounting;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case underlineDouble: return _T("double");break;
 				case underlineDoubleAccounting: return _T("doubleAccounting");break;
@@ -576,41 +576,41 @@ namespace SimpleTypes
 			virtual EBorderStyle FromString(CString &sValue)
 			{
 				if(_T("dashDot") == sValue)
-					m_eValue = borderstyleDashDot;
+                    this->m_eValue = borderstyleDashDot;
 				else if(_T("dashDotDot") == sValue)
-					m_eValue = borderstyleDashDotDot;
+                    this->m_eValue = borderstyleDashDotDot;
 				else if(_T("dashed") == sValue)
-					m_eValue = borderstyleDashed;
+                    this->m_eValue = borderstyleDashed;
 				else if(_T("dotted") == sValue)
-					m_eValue = borderstyleDotted;
+                    this->m_eValue = borderstyleDotted;
 				else if(_T("double") == sValue)
-					m_eValue = borderstyleDouble;
+                    this->m_eValue = borderstyleDouble;
 				else if(_T("hair") == sValue)
-					m_eValue = borderstyleHair;
+                    this->m_eValue = borderstyleHair;
 				else if(_T("medium") == sValue)
-					m_eValue = borderstyleMedium;
+                    this->m_eValue = borderstyleMedium;
 				else if(_T("mediumDashDot") == sValue)
-					m_eValue = borderstyleMediumDashDot;
+                    this->m_eValue = borderstyleMediumDashDot;
 				else if(_T("mediumDashDotDot") == sValue)
-					m_eValue = borderstyleMediumDashDotDot;
+                    this->m_eValue = borderstyleMediumDashDotDot;
 				else if(_T("mediumDashed") == sValue)
-					m_eValue = borderstyleMediumDashed;
+                    this->m_eValue = borderstyleMediumDashed;
 				else if(_T("none") == sValue)
-					m_eValue = borderstyleNone;
+                    this->m_eValue = borderstyleNone;
 				else if(_T("slantDashDot") == sValue)
-					m_eValue = borderstyleSlantDashDot;
+                    this->m_eValue = borderstyleSlantDashDot;
 				else if(_T("thick") == sValue)
-					m_eValue = borderstyleThick;
+                    this->m_eValue = borderstyleThick;
 				else if(_T("thin") == sValue)
-					m_eValue = borderstyleThin;
+                    this->m_eValue = borderstyleThin;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case borderstyleDashDot : return _T("dashDot");break;
 				case borderstyleDashed : return _T("dashed");break;
@@ -653,29 +653,29 @@ namespace SimpleTypes
 			virtual EHorizontalAlignment FromString(CString &sValue)
 			{
 				if(_T("center") == sValue)
-					m_eValue = horizontalalignmentCenter;
+                    this->m_eValue = horizontalalignmentCenter;
 				else if(_T("continuous") == sValue)
-					m_eValue = horizontalalignmentContinuous;
+                    this->m_eValue = horizontalalignmentContinuous;
 				else if(_T("distributed") == sValue)
-					m_eValue = horizontalalignmentDistributed;
+                    this->m_eValue = horizontalalignmentDistributed;
 				else if(_T("fill") == sValue)
-					m_eValue = horizontalalignmentFill;
+                    this->m_eValue = horizontalalignmentFill;
 				else if(_T("general") == sValue)
-					m_eValue = horizontalalignmentGeneral;
+                    this->m_eValue = horizontalalignmentGeneral;
 				else if(_T("justify") == sValue)
-					m_eValue = horizontalalignmentJustify;
+                    this->m_eValue = horizontalalignmentJustify;
 				else if(_T("left") == sValue)
-					m_eValue = horizontalalignmentLeft;
+                    this->m_eValue = horizontalalignmentLeft;
 				else if(_T("right") == sValue)
-					m_eValue = horizontalalignmentRight;
+                    this->m_eValue = horizontalalignmentRight;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case horizontalalignmentCenter : return _T("center"); break;
 				case horizontalalignmentContinuous : return _T("continuous"); break;
@@ -709,23 +709,23 @@ namespace SimpleTypes
 			virtual EVerticalAlignment FromString(CString &sValue)
 			{
 				if(_T("bottom") == sValue)
-					m_eValue = verticalalignmentBottom;
+                    this->m_eValue = verticalalignmentBottom;
 				else if(_T("center") == sValue)
-					m_eValue = verticalalignmentCenter;
+                    this->m_eValue = verticalalignmentCenter;
 				else if(_T("distributed") == sValue)
-					m_eValue = verticalalignmentDistributed;
+                    this->m_eValue = verticalalignmentDistributed;
 				else if(_T("justify") == sValue)
-					m_eValue = verticalalignmentJustify;
+                    this->m_eValue = verticalalignmentJustify;
 				else if(_T("top") == sValue)
-					m_eValue = verticalalignmentTop;
+                    this->m_eValue = verticalalignmentTop;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case verticalalignmentBottom : return _T("bottom"); break;
 				case verticalalignmentCenter : return _T("center"); break;
@@ -753,12 +753,12 @@ namespace SimpleTypes
 			virtual EGradientType FromString(CString &sValue)
 			{
 				if(_T("line") == sValue)
-					m_eValue = gradienttypeLine;
+                    this->m_eValue = gradienttypeLine;
 				else if(_T("path") == sValue)
-					m_eValue = gradienttypePath;
+                    this->m_eValue = gradienttypePath;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
@@ -800,51 +800,51 @@ namespace SimpleTypes
 			virtual EPatternType FromString(CString &sValue)
 			{
 				if(_T("darkDown") == sValue)
-					m_eValue = patterntypeDarkDown;
+                    this->m_eValue = patterntypeDarkDown;
 				else if(_T("darkGray") == sValue)
-					m_eValue = patterntypeDarkGray;
+                    this->m_eValue = patterntypeDarkGray;
 				else if(_T("darkGrid") == sValue)
-					m_eValue = patterntypeDarkGrid;
+                    this->m_eValue = patterntypeDarkGrid;
 				else if(_T("darkHorizontal") == sValue)
-					m_eValue = patterntypeDarkHorizontal;
+                    this->m_eValue = patterntypeDarkHorizontal;
 				else if(_T("darkTrellis") == sValue)
-					m_eValue = patterntypeDarkTrellis;
+                    this->m_eValue = patterntypeDarkTrellis;
 				else if(_T("darkUp") == sValue)
-					m_eValue = patterntypeDarkUp;
+                    this->m_eValue = patterntypeDarkUp;
 				else if(_T("darkVertical") == sValue)
-					m_eValue = patterntypeDarkVertical;
+                    this->m_eValue = patterntypeDarkVertical;
 				else if(_T("gray0625") == sValue)
-					m_eValue = patterntypeGray0625;
+                    this->m_eValue = patterntypeGray0625;
 				else if(_T("gray125") == sValue)
-					m_eValue = patterntypeGray125;
+                    this->m_eValue = patterntypeGray125;
 				else if(_T("lightDown") == sValue)
-					m_eValue = patterntypeLightDown;
+                    this->m_eValue = patterntypeLightDown;
 				else if(_T("lightGray") == sValue)
-					m_eValue = patterntypeLightGray;
+                    this->m_eValue = patterntypeLightGray;
 				else if(_T("lightGrid") == sValue)
-					m_eValue = patterntypeLightGrid;
+                    this->m_eValue = patterntypeLightGrid;
 				else if(_T("lightHorizontal") == sValue)
-					m_eValue = patterntypeLightHorizontal;
+                    this->m_eValue = patterntypeLightHorizontal;
 				else if(_T("lightTrellis") == sValue)
-					m_eValue = patterntypeLightTrellis;
+                    this->m_eValue = patterntypeLightTrellis;
 				else if(_T("lightUp") == sValue)
-					m_eValue = patterntypeLightUp;
+                    this->m_eValue = patterntypeLightUp;
 				else if(_T("lightVertical") == sValue)
-					m_eValue = patterntypeLightVertical;
+                    this->m_eValue = patterntypeLightVertical;
 				else if(_T("mediumGray") == sValue)
-					m_eValue = patterntypeMediumGray;
+                    this->m_eValue = patterntypeMediumGray;
 				else if(_T("none") == sValue)
-					m_eValue = patterntypeNone;
+                    this->m_eValue = patterntypeNone;
 				else if(_T("solid") == sValue)
-					m_eValue = patterntypeSolid;
+                    this->m_eValue = patterntypeSolid;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 					case patterntypeDarkDown:return _T("darkDown");break;
 					case patterntypeDarkGray:return _T("darkGray");break;
@@ -915,69 +915,69 @@ namespace SimpleTypes
 			virtual ETableStyleType FromString(CString &sValue)
 			{
 				if(_T("blankRow") == sValue)
-					m_eValue = tablestyletypeBlankRow;
+                    this->m_eValue = tablestyletypeBlankRow;
 				else if(_T("firstColumn") == sValue)
-					m_eValue = tablestyletypeFirstColumn;
+                    this->m_eValue = tablestyletypeFirstColumn;
 				else if(_T("firstColumnStripe") == sValue)
-					m_eValue = tablestyletypeFirstColumnStripe;
+                    this->m_eValue = tablestyletypeFirstColumnStripe;
 				else if(_T("firstColumnSubheading") == sValue)
-					m_eValue = tablestyletypeFirstColumnSubheading;
+                    this->m_eValue = tablestyletypeFirstColumnSubheading;
 				else if(_T("firstHeaderCell") == sValue)
-					m_eValue = tablestyletypeFirstHeaderCell;
+                    this->m_eValue = tablestyletypeFirstHeaderCell;
 				else if(_T("firstRowStripe") == sValue)
-					m_eValue = tablestyletypeFirstRowStripe;
+                    this->m_eValue = tablestyletypeFirstRowStripe;
 				else if(_T("firstRowSubheading") == sValue)
-					m_eValue = tablestyletypeFirstRowSubheading;
+                    this->m_eValue = tablestyletypeFirstRowSubheading;
 				else if(_T("firstSubtotalColumn") == sValue)
-					m_eValue = tablestyletypeFirstSubtotalColumn;
+                    this->m_eValue = tablestyletypeFirstSubtotalColumn;
 				else if(_T("firstSubtotalRow") == sValue)
-					m_eValue = tablestyletypeFirstSubtotalRow;
+                    this->m_eValue = tablestyletypeFirstSubtotalRow;
 				else if(_T("firstTotalCell") == sValue)
-					m_eValue = tablestyletypeFirstTotalCell;
+                    this->m_eValue = tablestyletypeFirstTotalCell;
 				else if(_T("headerRow") == sValue)
-					m_eValue = tablestyletypeHeaderRow;
+                    this->m_eValue = tablestyletypeHeaderRow;
 				else if(_T("lastColumn") == sValue)
-					m_eValue = tablestyletypeLastColumn;
+                    this->m_eValue = tablestyletypeLastColumn;
 				else if(_T("lastHeaderCell") == sValue)
-					m_eValue = tablestyletypeLastHeaderCell;
+                    this->m_eValue = tablestyletypeLastHeaderCell;
 				else if(_T("lastTotalCell") == sValue)
-					m_eValue = tablestyletypeLastTotalCell;
+                    this->m_eValue = tablestyletypeLastTotalCell;
 				else if(_T("pageFieldLabels") == sValue)
-					m_eValue = tablestyletypePageFieldLabels;
+                    this->m_eValue = tablestyletypePageFieldLabels;
 				else if(_T("pageFieldValues") == sValue)
-					m_eValue = tablestyletypePageFieldValues;
+                    this->m_eValue = tablestyletypePageFieldValues;
 				else if(_T("secondColumnStripe") == sValue)
-					m_eValue = tablestyletypeSecondColumnStripe;
+                    this->m_eValue = tablestyletypeSecondColumnStripe;
 				else if(_T("secondColumnSubheading") == sValue)
-					m_eValue = tablestyletypeSecondColumnSubheading;
+                    this->m_eValue = tablestyletypeSecondColumnSubheading;
 				else if(_T("secondRowStripe") == sValue)
-					m_eValue = tablestyletypeSecondRowStripe;
+                    this->m_eValue = tablestyletypeSecondRowStripe;
 				else if(_T("secondRowSubheading") == sValue)
-					m_eValue = tablestyletypeSecondRowSubheading;
+                    this->m_eValue = tablestyletypeSecondRowSubheading;
 				else if(_T("secondSubtotalColumn") == sValue)
-					m_eValue = tablestyletypeSecondSubtotalColumn;
+                    this->m_eValue = tablestyletypeSecondSubtotalColumn;
 				else if(_T("secondSubtotalRow") == sValue)
-					m_eValue = tablestyletypeSecondSubtotalRow;
+                    this->m_eValue = tablestyletypeSecondSubtotalRow;
 				else if(_T("thirdColumnSubheading") == sValue)
-					m_eValue = tablestyletypeThirdColumnSubheading;
+                    this->m_eValue = tablestyletypeThirdColumnSubheading;
 				else if(_T("thirdRowSubheading") == sValue)
-					m_eValue = tablestyletypeThirdRowSubheading;
+                    this->m_eValue = tablestyletypeThirdRowSubheading;
 				else if(_T("thirdSubtotalColumn") == sValue)
-					m_eValue = tablestyletypeThirdSubtotalColumn;
+                    this->m_eValue = tablestyletypeThirdSubtotalColumn;
 				else if(_T("thirdSubtotalRow") == sValue)
-					m_eValue = tablestyletypeThirdSubtotalRow;
+                    this->m_eValue = tablestyletypeThirdSubtotalRow;
 				else if(_T("totalRow") == sValue)
-					m_eValue = tablestyletypeTotalRow;
+                    this->m_eValue = tablestyletypeTotalRow;
 				else if(_T("wholeTable") == sValue)
-					m_eValue = tablestyletypeWholeTable;
+                    this->m_eValue = tablestyletypeWholeTable;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case tablestyletypeBlankRow: return _T("blankRow");break;
 				case tablestyletypeFirstColumn: return _T("firstColumn");break;
@@ -1031,21 +1031,21 @@ namespace SimpleTypes
 			virtual ECellFormulaType FromString(CString &sValue)
 			{
 				if(_T("array") == sValue)
-					m_eValue = cellformulatypeArray;
+                    this->m_eValue = cellformulatypeArray;
 				else if(_T("dataTable") == sValue)
-					m_eValue = cellformulatypeDataTable;
+                    this->m_eValue = cellformulatypeDataTable;
 				else if(_T("normal") == sValue)
-					m_eValue = cellformulatypeNormal;
+                    this->m_eValue = cellformulatypeNormal;
 				else if(_T("shared") == sValue)
-					m_eValue = cellformulatypeShared;
+                    this->m_eValue = cellformulatypeShared;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case cellformulatypeArray : return _T("array");break;
 				case cellformulatypeDataTable : return _T("dataTable");break;
@@ -1073,14 +1073,14 @@ namespace SimpleTypes
 			virtual EUpdateLinksType FromString(CString &sValue)
 			{
 				if(_T("always") == sValue)
-					m_eValue = updatelinksAlways;
+                    this->m_eValue = updatelinksAlways;
 				else if(_T("never") == sValue)
-					m_eValue = updatelinksNever;
+                    this->m_eValue = updatelinksNever;
 				else if(_T("userSet") == sValue)
-					m_eValue = updatelinksUserSet;
+                    this->m_eValue = updatelinksUserSet;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
@@ -1110,27 +1110,27 @@ namespace SimpleTypes
 			virtual ECellTypeType FromString(CString &sValue)
 			{
 				if(_T("b") == sValue)
-					m_eValue = celltypeBool;
+                    this->m_eValue = celltypeBool;
 				else if(_T("d") == sValue)
-					m_eValue = celltypeDate;
+                    this->m_eValue = celltypeDate;
 				else if(_T("e") == sValue)
-					m_eValue = celltypeError;
+                    this->m_eValue = celltypeError;
 				else if(_T("inlineStr") == sValue)
-					m_eValue = celltypeInlineStr;
+                    this->m_eValue = celltypeInlineStr;
 				else if(_T("n") == sValue)
-					m_eValue = celltypeNumber;
+                    this->m_eValue = celltypeNumber;
 				else if(_T("s") == sValue)
-					m_eValue = celltypeSharedString;
+                    this->m_eValue = celltypeSharedString;
 				else if(_T("str") == sValue)
-					m_eValue = celltypeStr;
+                    this->m_eValue = celltypeStr;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case celltypeBool: return _T("b");break;
 				case celltypeDate: return _T("d");break;
@@ -1161,19 +1161,19 @@ namespace SimpleTypes
 			virtual ECellAnchorType FromString(CString &sValue)
 			{
 				if(_T("absolute") == sValue)
-					m_eValue = cellanchorAbsolute;
+                    this->m_eValue = cellanchorAbsolute;
 				else if(_T("oneCell") == sValue)
-					m_eValue = cellanchorOneCell;
+                    this->m_eValue = cellanchorOneCell;
 				else if(_T("twoCell") == sValue)
-					m_eValue = cellanchorTwoCell;
+                    this->m_eValue = cellanchorTwoCell;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case cellanchorAbsolute: return _T("absolute"); break;
 				case cellanchorOneCell: return _T("oneCell"); break;
@@ -1201,19 +1201,19 @@ namespace SimpleTypes
 			virtual ESheetViewType FromString(CString &sValue)
 			{
 				if(_T("normal") == sValue)
-					m_eValue = sheetviewNormal;
+                    this->m_eValue = sheetviewNormal;
 				else if(_T("pageBreakPreview") == sValue)
-					m_eValue = sheetviewPageBreakPreview;
+                    this->m_eValue = sheetviewPageBreakPreview;
 				else if(_T("pageLayout") == sValue)
-					m_eValue = sheetviewPageLayout;
+                    this->m_eValue = sheetviewPageLayout;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case sheetviewNormal: return _T("normal"); break;
 				case sheetviewPageBreakPreview: return _T("pageBreakPreview"); break;
@@ -1242,23 +1242,23 @@ namespace SimpleTypes
 			virtual EChartLegendPos FromString(CString &sValue)
 			{
 				if(_T("l") == sValue)
-					m_eValue = chartlegendposLeft;
+                    this->m_eValue = chartlegendposLeft;
 				else if(_T("t") == sValue)
-					m_eValue = chartlegendposTop;
+                    this->m_eValue = chartlegendposTop;
 				else if(_T("r") == sValue)
-					m_eValue = chartlegendposRight;
+                    this->m_eValue = chartlegendposRight;
 				else if(_T("b") == sValue)
-					m_eValue = chartlegendposBottom;
+                    this->m_eValue = chartlegendposBottom;
 				else if(_T("tr") == sValue)
-					m_eValue = chartlegendposRightTop;
+                    this->m_eValue = chartlegendposRightTop;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case chartlegendposLeft: return _T("l"); break;
 				case chartlegendposTop: return _T("t"); break;
@@ -1286,17 +1286,17 @@ namespace SimpleTypes
 			virtual EChartHMode FromString(CString &sValue)
 			{
 				if(_T("factor") == sValue)
-					m_eValue = charthmodeFactor;
+                    this->m_eValue = charthmodeFactor;
 				else if(_T("edge") == sValue)
-					m_eValue = charthmodeEdge;
+                    this->m_eValue = charthmodeEdge;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case charthmodeFactor: return _T("factor"); break;
 				case charthmodeEdge: return _T("edge"); break;
@@ -1321,17 +1321,17 @@ namespace SimpleTypes
 			virtual EChartLayoutTarget FromString(CString &sValue)
 			{
 				if(_T("inner") == sValue)
-					m_eValue = chartlayouttargetInner;
+                    this->m_eValue = chartlayouttargetInner;
 				else if(_T("outer") == sValue)
-					m_eValue = chartlayouttargetOuter;
+                    this->m_eValue = chartlayouttargetOuter;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case chartlayouttargetInner: return _T("inner"); break;
 				case chartlayouttargetOuter: return _T("outer"); break;
@@ -1358,21 +1358,21 @@ namespace SimpleTypes
 			virtual EChartAxPos FromString(CString &sValue)
 			{
 				if(_T("l") == sValue)
-					m_eValue = chartaxposLeft;
+                    this->m_eValue = chartaxposLeft;
 				else if(_T("t") == sValue)
-					m_eValue = chartaxposTop;
+                    this->m_eValue = chartaxposTop;
 				else if(_T("r") == sValue)
-					m_eValue = chartaxposRight;
+                    this->m_eValue = chartaxposRight;
 				else if(_T("b") == sValue)
-					m_eValue = chartaxposBottom;
+                    this->m_eValue = chartaxposBottom;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case chartaxposLeft: return _T("l"); break;
 				case chartaxposTop: return _T("t"); break;
@@ -1401,21 +1401,21 @@ namespace SimpleTypes
 			virtual EChartBarGrouping FromString(CString &sValue)
 			{
 				if(_T("clustered") == sValue)
-					m_eValue = chartbargroupingClustered;
+                    this->m_eValue = chartbargroupingClustered;
 				else if(_T("percentStacked") == sValue)
-					m_eValue = chartbargroupingPercentStacked;
+                    this->m_eValue = chartbargroupingPercentStacked;
 				else if(_T("stacked") == sValue)
-					m_eValue = chartbargroupingStacked;
+                    this->m_eValue = chartbargroupingStacked;
 				else if(_T("standard") == sValue)
-					m_eValue = chartbargroupingStandard;
+                    this->m_eValue = chartbargroupingStandard;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case chartbargroupingClustered: return _T("clustered"); break;
 				case chartbargroupingPercentStacked: return _T("percentStacked"); break;
@@ -1442,17 +1442,17 @@ namespace SimpleTypes
 			virtual EChartBarDerection FromString(CString &sValue)
 			{
 				if(_T("bar") == sValue)
-					m_eValue = chartbardirectionBar;
+                    this->m_eValue = chartbardirectionBar;
 				else if(_T("col") == sValue)
-					m_eValue = chartbardirectionCol;
+                    this->m_eValue = chartbardirectionCol;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case chartbardirectionBar: return _T("bar"); break;
 				case chartbardirectionCol: return _T("col"); break;
@@ -1487,35 +1487,35 @@ namespace SimpleTypes
 			virtual EChartSymbol FromString(CString &sValue)
 			{
 				if(_T("circle") == sValue)
-					m_eValue = chartsymbolCircle;
+                    this->m_eValue = chartsymbolCircle;
 				else if(_T("dash") == sValue)
-					m_eValue = chartsymbolDash;
+                    this->m_eValue = chartsymbolDash;
 				else if(_T("diamond") == sValue)
-					m_eValue = chartsymbolDiamond;
+                    this->m_eValue = chartsymbolDiamond;
 				else if(_T("dot") == sValue)
-					m_eValue = chartsymbolDot;
+                    this->m_eValue = chartsymbolDot;
 				else if(_T("none") == sValue)
-					m_eValue = chartsymbolNone;
+                    this->m_eValue = chartsymbolNone;
 				else if(_T("picture") == sValue)
-					m_eValue = chartsymbolPicture;
+                    this->m_eValue = chartsymbolPicture;
 				else if(_T("plus") == sValue)
-					m_eValue = chartsymbolPlus;
+                    this->m_eValue = chartsymbolPlus;
 				else if(_T("square") == sValue)
-					m_eValue = chartsymbolSquare;
+                    this->m_eValue = chartsymbolSquare;
 				else if(_T("star") == sValue)
-					m_eValue = chartsymbolStare;
+                    this->m_eValue = chartsymbolStare;
 				else if(_T("triangle") == sValue)
-					m_eValue = chartsymbolTriangle;
+                    this->m_eValue = chartsymbolTriangle;
 				else if(_T("x") == sValue)
-					m_eValue = chartsymbolX;
+                    this->m_eValue = chartsymbolX;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case chartsymbolCircle: return _T("circle"); break;
 				case chartsymbolDash: return _T("dash"); break;
@@ -1613,14 +1613,14 @@ namespace SimpleTypes
 			virtual EPageSize FromString(CString &sValue)
 			{
 				int nCharset = _wtoi(sValue);
-				m_eValue = (EPageSize)nCharset;
-				return m_eValue;
+                this->m_eValue = (EPageSize)nCharset;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
 				CString sResult;
-				sResult.Format( _T("%d"), m_eValue );
+                sResult.Format( _T("%d"), this->m_eValue );
 				return sResult;
 			}
 
@@ -1649,34 +1649,34 @@ namespace SimpleTypes
 			virtual ETotalsRowFunction FromString(CString &sValue)
 			{
 				if(_T("average") == sValue)
-					m_eValue = totalrowfunctionAverage;
+                    this->m_eValue = totalrowfunctionAverage;
 				else if(_T("count") == sValue)
-					m_eValue = totalrowfunctionCount;
+                    this->m_eValue = totalrowfunctionCount;
 				else if(_T("countNums") == sValue)
-					m_eValue = totalrowfunctionCountNums;
+                    this->m_eValue = totalrowfunctionCountNums;
 				else if(_T("custom") == sValue)
-					m_eValue = totalrowfunctionCustom;
+                    this->m_eValue = totalrowfunctionCustom;
 				else if(_T("max") == sValue)
-					m_eValue = totalrowfunctionMax;
+                    this->m_eValue = totalrowfunctionMax;
 				else if(_T("min") == sValue)
-					m_eValue = totalrowfunctionMin;
+                    this->m_eValue = totalrowfunctionMin;
 				else if(_T("none") == sValue)
-					m_eValue = totalrowfunctionNone;
+                    this->m_eValue = totalrowfunctionNone;
 				else if(_T("stdDev") == sValue)
-					m_eValue = totalrowfunctionStdDev;
+                    this->m_eValue = totalrowfunctionStdDev;
 				else if(_T("sum") == sValue)
-					m_eValue = totalrowfunctionSum;
+                    this->m_eValue = totalrowfunctionSum;
 				else if(_T("var") == sValue)
-					m_eValue = totalrowfunctionVar;
+                    this->m_eValue = totalrowfunctionVar;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
 				CString sResult;
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case totalrowfunctionAverage: sResult="average";break;
 				case totalrowfunctionCount: sResult="count";break;
@@ -1711,22 +1711,22 @@ namespace SimpleTypes
 			virtual ESortBy FromString(CString &sValue)
 			{
 				if(_T("cellColor") == sValue)
-					m_eValue = sortbyCellColor;
+                    this->m_eValue = sortbyCellColor;
 				else if(_T("fontColor") == sValue)
-					m_eValue = sortbyFontColor;
+                    this->m_eValue = sortbyFontColor;
 				else if(_T("icon") == sValue)
-					m_eValue = sortbyIcon;
+                    this->m_eValue = sortbyIcon;
 				else if(_T("value") == sValue)
-					m_eValue = sortbyValue;
+                    this->m_eValue = sortbyValue;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
 				CString sResult;
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case sortbyCellColor: sResult="cellColor";break;
 				case sortbyFontColor: sResult="fontColor";break;
@@ -1757,26 +1757,26 @@ namespace SimpleTypes
 			virtual ECustomFilter FromString(CString &sValue)
 			{
 				if(_T("equal") == sValue)
-					m_eValue = customfilterEqual;
+                    this->m_eValue = customfilterEqual;
 				else if(_T("greaterThan") == sValue)
-					m_eValue = customfilterGreaterThan;
+                    this->m_eValue = customfilterGreaterThan;
 				else if(_T("greaterThanOrEqual") == sValue)
-					m_eValue = customfilterGreaterThanOrEqual;
+                    this->m_eValue = customfilterGreaterThanOrEqual;
 				else if(_T("lessThan") == sValue)
-					m_eValue = customfilterLessThan;
+                    this->m_eValue = customfilterLessThan;
 				else if(_T("lessThanOrEqual") == sValue)
-					m_eValue = customfilterLessThanOrEqual;
+                    this->m_eValue = customfilterLessThanOrEqual;
 				else if(_T("notEqual") == sValue)
-					m_eValue = customfilterNotEqual;
+                    this->m_eValue = customfilterNotEqual;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
 				CString sResult;
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case customfilterEqual: sResult="equal";break;
 				case customfilterGreaterThan: sResult="greaterThan";break;
@@ -1809,26 +1809,26 @@ namespace SimpleTypes
 			virtual EDateTimeGroup FromString(CString &sValue)
 			{
 				if(_T("day") == sValue)
-					m_eValue = datetimegroupDay;
+                    this->m_eValue = datetimegroupDay;
 				else if(_T("hour") == sValue)
-					m_eValue = datetimegroupHour;
+                    this->m_eValue = datetimegroupHour;
 				else if(_T("minute") == sValue)
-					m_eValue = datetimegroupMinute;
+                    this->m_eValue = datetimegroupMinute;
 				else if(_T("month") == sValue)
-					m_eValue = datetimegroupMonth;
+                    this->m_eValue = datetimegroupMonth;
 				else if(_T("second") == sValue)
-					m_eValue = datetimegroupSecond;
+                    this->m_eValue = datetimegroupSecond;
 				else if(_T("year") == sValue)
-					m_eValue = datetimegroupYear;
+                    this->m_eValue = datetimegroupYear;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
 				CString sResult;
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case datetimegroupDay: sResult="day";break;
 				case datetimegroupHour: sResult="hour";break;
@@ -1890,84 +1890,84 @@ namespace SimpleTypes
 			virtual EDynamicFilterType FromString(CString &sValue)
 			{
 				if(_T("aboveAverage") == sValue)
-					m_eValue = dynamicfiltertypeAboveAverage;
+                    this->m_eValue = dynamicfiltertypeAboveAverage;
 				else if(_T("belowAverage") == sValue)
-					m_eValue = dynamicfiltertypeBelowAverage;
+                    this->m_eValue = dynamicfiltertypeBelowAverage;
 				else if(_T("lastMonth") == sValue)
-					m_eValue = dynamicfiltertypeLastMonth;
+                    this->m_eValue = dynamicfiltertypeLastMonth;
 				else if(_T("lastQuarter") == sValue)
-					m_eValue = dynamicfiltertypeLastQuarter;
+                    this->m_eValue = dynamicfiltertypeLastQuarter;
 				else if(_T("lastWeek") == sValue)
-					m_eValue = dynamicfiltertypeLastWeek;
+                    this->m_eValue = dynamicfiltertypeLastWeek;
 				else if(_T("lastYear") == sValue)
-					m_eValue = dynamicfiltertypeLastYear;
+                    this->m_eValue = dynamicfiltertypeLastYear;
 				else if(_T("M1") == sValue)
-					m_eValue = dynamicfiltertypeM1;
+                    this->m_eValue = dynamicfiltertypeM1;
 				else if(_T("M10") == sValue)
-					m_eValue = dynamicfiltertypeM10;
+                    this->m_eValue = dynamicfiltertypeM10;
 				else if(_T("M11") == sValue)
-					m_eValue = dynamicfiltertypeM11;
+                    this->m_eValue = dynamicfiltertypeM11;
 				else if(_T("M12") == sValue)
-					m_eValue = dynamicfiltertypeM12;
+                    this->m_eValue = dynamicfiltertypeM12;
 				else if(_T("M2") == sValue)
-					m_eValue = dynamicfiltertypeM2;
+                    this->m_eValue = dynamicfiltertypeM2;
 				else if(_T("M3") == sValue)
-					m_eValue = dynamicfiltertypeM3;
+                    this->m_eValue = dynamicfiltertypeM3;
 				else if(_T("M4") == sValue)
-					m_eValue = dynamicfiltertypeM4;
+                    this->m_eValue = dynamicfiltertypeM4;
 				else if(_T("M5") == sValue)
-					m_eValue = dynamicfiltertypeM5;
+                    this->m_eValue = dynamicfiltertypeM5;
 				else if(_T("M6") == sValue)
-					m_eValue = dynamicfiltertypeM6;
+                    this->m_eValue = dynamicfiltertypeM6;
 				else if(_T("M7") == sValue)
-					m_eValue = dynamicfiltertypeM7;
+                    this->m_eValue = dynamicfiltertypeM7;
 				else if(_T("M8") == sValue)
-					m_eValue = dynamicfiltertypeM8;
+                    this->m_eValue = dynamicfiltertypeM8;
 				else if(_T("M9") == sValue)
-					m_eValue = dynamicfiltertypeM9;
+                    this->m_eValue = dynamicfiltertypeM9;
 				else if(_T("nextMonth") == sValue)
-					m_eValue = dynamicfiltertypeNextMonth;
+                    this->m_eValue = dynamicfiltertypeNextMonth;
 				else if(_T("nextQuarter") == sValue)
-					m_eValue = dynamicfiltertypeNextQuarter;
+                    this->m_eValue = dynamicfiltertypeNextQuarter;
 				else if(_T("nextWeek") == sValue)
-					m_eValue = dynamicfiltertypeNextWeek;
+                    this->m_eValue = dynamicfiltertypeNextWeek;
 				else if(_T("nextYear") == sValue)
-					m_eValue = dynamicfiltertypeNextYear;
+                    this->m_eValue = dynamicfiltertypeNextYear;
 				else if(_T("null") == sValue)
-					m_eValue = dynamicfiltertypeNull;
+                    this->m_eValue = dynamicfiltertypeNull;
 				else if(_T("Q1") == sValue)
-					m_eValue = dynamicfiltertypeQ1;
+                    this->m_eValue = dynamicfiltertypeQ1;
 				else if(_T("Q2") == sValue)
-					m_eValue = dynamicfiltertypeQ2;
+                    this->m_eValue = dynamicfiltertypeQ2;
 				else if(_T("Q3") == sValue)
-					m_eValue = dynamicfiltertypeQ3;
+                    this->m_eValue = dynamicfiltertypeQ3;
 				else if(_T("Q4") == sValue)
-					m_eValue = dynamicfiltertypeQ4;
+                    this->m_eValue = dynamicfiltertypeQ4;
 				else if(_T("thisMonth") == sValue)
-					m_eValue = dynamicfiltertypeThisMonth;
+                    this->m_eValue = dynamicfiltertypeThisMonth;
 				else if(_T("thisQuarter") == sValue)
-					m_eValue = dynamicfiltertypeThisQuarter;
+                    this->m_eValue = dynamicfiltertypeThisQuarter;
 				else if(_T("thisWeek") == sValue)
-					m_eValue = dynamicfiltertypeThisWeek;
+                    this->m_eValue = dynamicfiltertypeThisWeek;
 				else if(_T("thisYear") == sValue)
-					m_eValue = dynamicfiltertypeThisYear;
+                    this->m_eValue = dynamicfiltertypeThisYear;
 				else if(_T("today") == sValue)
-					m_eValue = dynamicfiltertypeToday;
+                    this->m_eValue = dynamicfiltertypeToday;
 				else if(_T("tomorrow") == sValue)
-					m_eValue = dynamicfiltertypeTomorrow;
+                    this->m_eValue = dynamicfiltertypeTomorrow;
 				else if(_T("yearToDate") == sValue)
-					m_eValue = dynamicfiltertypeYearToDate;
+                    this->m_eValue = dynamicfiltertypeYearToDate;
 				else if(_T("yesterday") == sValue)
-					m_eValue = dynamicfiltertypeYesterday;
+                    this->m_eValue = dynamicfiltertypeYesterday;
 				else
-					m_eValue = eDefValue;
-				return m_eValue;
+                    this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
 				CString sResult;
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 				case dynamicfiltertypeAboveAverage: sResult="aboveAverage";break;
 				case dynamicfiltertypeBelowAverage: sResult="belowAverage";break;
@@ -2042,30 +2042,30 @@ namespace SimpleTypes
 
 			virtual EIconSetType FromString(CString &sValue)
 			{
-				if(_T("3Arrows") == sValue)				m_eValue = Arrows3;
-				else if(_T("3ArrowsGray") == sValue)	m_eValue = Arrows3Gray;
-				else if(_T("3Flags") == sValue)			m_eValue = Flags3;
-				else if(_T("3Signs") == sValue)			m_eValue = Signs3;
-				else if(_T("3Symbols") == sValue)		m_eValue = Symbols3;
-				else if(_T("3Symbols2") == sValue)		m_eValue = Symbols3_2;
-				else if(_T("3TrafficLights1") == sValue)m_eValue = Traffic3Lights1;
-				else if(_T("3TrafficLights2") == sValue)m_eValue = Traffic3Lights2;
-				else if(_T("4Arrows") == sValue)		m_eValue = Arrows4;
-				else if(_T("4ArrowsGray") == sValue)	m_eValue = Arrows4Gray;
-				else if(_T("4Rating") == sValue)		m_eValue = Rating4;
-				else if(_T("4RedToBlack") == sValue)	m_eValue = RedToBlack4;
-				else if(_T("4TrafficLights") == sValue)	m_eValue = Traffic4Lights;
-				else if(_T("5Arrows") == sValue)		m_eValue = Arrows5;
-				else if(_T("5ArrowsGray") == sValue)	m_eValue = Arrows5Gray;
-				else if(_T("5Quarters") == sValue)		m_eValue = Quarters5;
-				else if(_T("5Rating") == sValue)		m_eValue = Rating5;
-				else 									m_eValue = eDefValue;
-				return m_eValue;
+                if(_T("3Arrows") == sValue)				this->m_eValue = Arrows3;
+                else if(_T("3ArrowsGray") == sValue)	this->m_eValue = Arrows3Gray;
+                else if(_T("3Flags") == sValue)			this->m_eValue = Flags3;
+                else if(_T("3Signs") == sValue)			this->m_eValue = Signs3;
+                else if(_T("3Symbols") == sValue)		this->m_eValue = Symbols3;
+                else if(_T("3Symbols2") == sValue)		this->m_eValue = Symbols3_2;
+                else if(_T("3TrafficLights1") == sValue)this->m_eValue = Traffic3Lights1;
+                else if(_T("3TrafficLights2") == sValue)this->m_eValue = Traffic3Lights2;
+                else if(_T("4Arrows") == sValue)		this->m_eValue = Arrows4;
+                else if(_T("4ArrowsGray") == sValue)	this->m_eValue = Arrows4Gray;
+                else if(_T("4Rating") == sValue)		this->m_eValue = Rating4;
+                else if(_T("4RedToBlack") == sValue)	this->m_eValue = RedToBlack4;
+                else if(_T("4TrafficLights") == sValue)	this->m_eValue = Traffic4Lights;
+                else if(_T("5Arrows") == sValue)		this->m_eValue = Arrows5;
+                else if(_T("5ArrowsGray") == sValue)	this->m_eValue = Arrows5Gray;
+                else if(_T("5Quarters") == sValue)		this->m_eValue = Quarters5;
+                else if(_T("5Rating") == sValue)		this->m_eValue = Rating5;
+                else 									this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 					case Arrows3		:	return _T("3Arrows");		break;
 					case Arrows3Gray	:	return _T("3ArrowsGray");	break;
@@ -2117,24 +2117,24 @@ namespace SimpleTypes
 
 			virtual ECfOperator FromString(CString &sValue)
 			{
-				if(_T("beginsWith") == sValue)				m_eValue = Operator_beginsWith;
-				else if(_T("between") == sValue)			m_eValue = Operator_between;
-				else if(_T("containsText") == sValue)		m_eValue = Operator_containsText;
-				else if(_T("endsWith") == sValue)			m_eValue = Operator_endsWith;
-				else if(_T("equal") == sValue)				m_eValue = Operator_equal;
-				else if(_T("greaterThan") == sValue)		m_eValue = Operator_greaterThan;
-				else if(_T("greaterThanOrEqual") == sValue)	m_eValue = Operator_greaterThanOrEqual;
-				else if(_T("lessThan") == sValue)			m_eValue = Operator_lessThan;
-				else if(_T("lessThanOrEqual") == sValue)	m_eValue = Operator_lessThanOrEqual;
-				else if(_T("notBetween") == sValue)			m_eValue = Operator_notBetween;
-				else if(_T("notContains") == sValue)		m_eValue = Operator_notContains;
-				else if(_T("notEqual") == sValue)			m_eValue = Operator_notEqual;
-				return m_eValue;
+                if(_T("beginsWith") == sValue)				this->m_eValue = Operator_beginsWith;
+                else if(_T("between") == sValue)			this->m_eValue = Operator_between;
+                else if(_T("containsText") == sValue)		this->m_eValue = Operator_containsText;
+                else if(_T("endsWith") == sValue)			this->m_eValue = Operator_endsWith;
+                else if(_T("equal") == sValue)				this->m_eValue = Operator_equal;
+                else if(_T("greaterThan") == sValue)		this->m_eValue = Operator_greaterThan;
+                else if(_T("greaterThanOrEqual") == sValue)	this->m_eValue = Operator_greaterThanOrEqual;
+                else if(_T("lessThan") == sValue)			this->m_eValue = Operator_lessThan;
+                else if(_T("lessThanOrEqual") == sValue)	this->m_eValue = Operator_lessThanOrEqual;
+                else if(_T("notBetween") == sValue)			this->m_eValue = Operator_notBetween;
+                else if(_T("notContains") == sValue)		this->m_eValue = Operator_notContains;
+                else if(_T("notEqual") == sValue)			this->m_eValue = Operator_notEqual;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 					case Operator_beginsWith		:	return _T("beginsWith");		break;			
 					case Operator_between			:	return _T("between");			break;
@@ -2186,30 +2186,30 @@ namespace SimpleTypes
 
 			virtual ECfType FromString(CString &sValue)
 			{
-				if(_T("aboveAverage") == sValue)			m_eValue = aboveAverage;
-				else if(_T("beginsWith") == sValue)			m_eValue = beginsWith;
-				else if(_T("cellIs") == sValue)				m_eValue = cellIs;
-				else if(_T("colorScale") == sValue)			m_eValue = colorScale;
-				else if(_T("containsBlanks") == sValue)		m_eValue = containsBlanks;
-				else if(_T("containsText") == sValue)		m_eValue = containsText;
-				else if(_T("containsErrors") == sValue)		m_eValue = containsErrors;
-				else if(_T("dataBar") == sValue)			m_eValue = dataBar;
-				else if(_T("duplicateValues") == sValue)	m_eValue = duplicateValues;
-				else if(_T("expression") == sValue)			m_eValue = expression;
-				else if(_T("iconSet") == sValue)			m_eValue = iconSet;
-				else if(_T("notContainsBlanks") == sValue)	m_eValue = notContainsBlanks;
-				else if(_T("notContainsErrors") == sValue)	m_eValue = notContainsErrors;
-				else if(_T("notContainsText") == sValue)	m_eValue = notContainsText;
-				else if(_T("timePeriod") == sValue)			m_eValue = timePeriod;
-				else if(_T("top10") == sValue)				m_eValue = top10;
-				else if(_T("uniqueValues") == sValue)		m_eValue = uniqueValues;
-				else 										m_eValue = eDefValue;
-				return m_eValue;
+                if(_T("aboveAverage") == sValue)			this->m_eValue = aboveAverage;
+                else if(_T("beginsWith") == sValue)			this->m_eValue = beginsWith;
+                else if(_T("cellIs") == sValue)				this->m_eValue = cellIs;
+                else if(_T("colorScale") == sValue)			this->m_eValue = colorScale;
+                else if(_T("containsBlanks") == sValue)		this->m_eValue = containsBlanks;
+                else if(_T("containsText") == sValue)		this->m_eValue = containsText;
+                else if(_T("containsErrors") == sValue)		this->m_eValue = containsErrors;
+                else if(_T("dataBar") == sValue)			this->m_eValue = dataBar;
+                else if(_T("duplicateValues") == sValue)	this->m_eValue = duplicateValues;
+                else if(_T("expression") == sValue)			this->m_eValue = expression;
+                else if(_T("iconSet") == sValue)			this->m_eValue = iconSet;
+                else if(_T("notContainsBlanks") == sValue)	this->m_eValue = notContainsBlanks;
+                else if(_T("notContainsErrors") == sValue)	this->m_eValue = notContainsErrors;
+                else if(_T("notContainsText") == sValue)	this->m_eValue = notContainsText;
+                else if(_T("timePeriod") == sValue)			this->m_eValue = timePeriod;
+                else if(_T("top10") == sValue)				this->m_eValue = top10;
+                else if(_T("uniqueValues") == sValue)		this->m_eValue = uniqueValues;
+                else 										this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 					case aboveAverage		:	return _T("aboveAverage");		break;			
 					case beginsWith			:	return _T("beginsWith");		break;
@@ -2255,19 +2255,19 @@ namespace SimpleTypes
 
 			virtual ECfvoType FromString(CString &sValue)
 			{
-				if(_T("formula") == sValue)			m_eValue = Formula;
-				else if(_T("max") == sValue)		m_eValue = Maximum;
-				else if(_T("min") == sValue)		m_eValue = Minimum;
-				else if(_T("num") == sValue)		m_eValue = Number;
-				else if(_T("percent") == sValue)	m_eValue = Percent;
-				else if(_T("percentile") == sValue)	m_eValue = Percentile;
-				else 								m_eValue = eDefValue;
-				return m_eValue;
+                if(_T("formula") == sValue)			this->m_eValue = Formula;
+                else if(_T("max") == sValue)		this->m_eValue = Maximum;
+                else if(_T("min") == sValue)		this->m_eValue = Minimum;
+                else if(_T("num") == sValue)		this->m_eValue = Number;
+                else if(_T("percent") == sValue)	this->m_eValue = Percent;
+                else if(_T("percentile") == sValue)	this->m_eValue = Percentile;
+                else 								this->m_eValue = eDefValue;
+                return this->m_eValue;
 			}
 
 			virtual CString     ToString  () const 
 			{
-				switch(m_eValue)
+                switch(this->m_eValue)
 				{
 					case Formula:	return _T("formula");		break;	
 					case Maximum:	return _T("min");			break;	

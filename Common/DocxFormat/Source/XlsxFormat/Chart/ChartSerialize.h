@@ -425,7 +425,7 @@ namespace OOX{
 		{
 		public:
 			//Member
-			CAtlArray<CT_Extension*> m_ext;
+            std::vector<CT_Extension*> m_ext;
 			CT_extLst();
 			~CT_extLst();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -678,7 +678,7 @@ namespace OOX{
 		{
 		public:
 			CT_LegendPos							*m_legendPos;
-			CAtlArray<CT_LegendEntry*>				 m_legendEntry;
+            std::vector<CT_LegendEntry*>				 m_legendEntry;
 			CT_Layout								*m_layout;
 			CT_Boolean								*m_overlay;
 			CString									*m_spPr;
@@ -1056,7 +1056,7 @@ namespace OOX{
 			//Member
 			CT_UnsignedInt* m_ptCount;
 			//Member
-			CAtlArray<CT_StrVal*> m_pt;
+            std::vector<CT_StrVal*> m_pt;
 			//Member
 			CT_extLst* m_extLst;
 			CT_StrData();
@@ -1453,13 +1453,13 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_invertIfNegative;
 			//Member
-			CAtlArray<CT_DPt*> m_dPt;
+            std::vector<CT_DPt*> m_dPt;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
-			CAtlArray<CT_Trendline*> m_trendline;
+            std::vector<CT_Trendline*> m_trendline;
 			//Member
-			CAtlArray<CT_ErrBars*> m_errBars;
+            std::vector<CT_ErrBars*> m_errBars;
 			//Member
 			CT_AxDataSource* m_xVal;
 			//Member
@@ -1604,11 +1604,11 @@ namespace OOX{
 		{
 		public:
 			//Member
-			CAtlArray<CT_DLbl*> m_dLbl;
+            std::vector<CT_DLbl*> m_dLbl;
 			//Member
-			CAtlArray<ItemsChoiceType3*> m_ItemsElementName0;
+            std::vector<ItemsChoiceType3*> m_ItemsElementName0;
 			//Member
-			CAtlArray<void*> m_Items;
+            std::vector<void*> m_Items;
 			//Member
 			CT_extLst* m_extLst;
 			CT_DLbls();
@@ -1624,9 +1624,9 @@ namespace OOX{
 			//Member
 			CT_UnsignedInt* m_idx;
 			//Member
-			CAtlArray<ItemsChoiceType4*> m_ItemsElementName0;
+            std::vector<ItemsChoiceType4*> m_ItemsElementName0;
 			//Member
-			CAtlArray<void*> m_Items;
+            std::vector<void*> m_Items;
 			//Member
 			CT_extLst* m_extLst;
 			CT_DLbl();
@@ -1823,7 +1823,7 @@ namespace OOX{
 			//Member
 			CT_UnsignedInt* m_ptCount;
 			//Member
-			CAtlArray<CT_NumVal*> m_pt;
+            std::vector<CT_NumVal*> m_pt;
 			//Member
 			CT_extLst* m_extLst;
 			CT_NumData();
@@ -1901,7 +1901,7 @@ namespace OOX{
 		{
 		public:
 			//Member
-			CAtlArray<CT_StrVal*> m_pt;
+            std::vector<CT_StrVal*> m_pt;
 			CT_lvl();
 			~CT_lvl();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1914,7 +1914,7 @@ namespace OOX{
 			//Member
 			CT_UnsignedInt* m_ptCount;
 			//Member
-			CAtlArray<CT_lvl*> m_lvl;
+            std::vector<CT_lvl*> m_lvl;
 			//Member
 			CT_extLst* m_extLst;
 			CT_MultiLvlStrData();
@@ -1929,7 +1929,7 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_varyColors;
 			//Member
-			CAtlArray<CT_BubbleSer*> m_ser;
+            std::vector<CT_BubbleSer*> m_ser;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
@@ -1941,7 +1941,7 @@ namespace OOX{
 			//Member
 			CT_SizeRepresents* m_sizeRepresents;
 			//Member
-			CAtlArray<CT_UnsignedInt*> m_axId;
+            std::vector<CT_UnsignedInt*> m_axId;
 			//Member
 			CT_extLst* m_extLst;
 			CT_BubbleChart();
@@ -1954,7 +1954,7 @@ namespace OOX{
 		{
 		public:
 			//Member
-			CAtlArray<CT_BandFmt*> m_bandFmt;
+            std::vector<CT_BandFmt*> m_bandFmt;
 			CT_bandFmts();
 			~CT_bandFmts();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1967,11 +1967,11 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_wireframe;
 			//Member
-			CAtlArray<CT_SurfaceSer*> m_ser;
+            std::vector<CT_SurfaceSer*> m_ser;
 			//Member
 			CT_bandFmts* m_bandFmts;
 			//Member
-			CAtlArray<CT_UnsignedInt*> m_axId;
+            std::vector<CT_UnsignedInt*> m_axId;
 			//Member
 			CT_extLst* m_extLst;
 			CT_Surface3DChart();
@@ -2024,11 +2024,11 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_wireframe;
 			//Member
-			CAtlArray<CT_SurfaceSer*> m_ser;
+            std::vector<CT_SurfaceSer*> m_ser;
 			//Member
 			CT_bandFmts* m_bandFmts;
 			//Member
-			CAtlArray<CT_UnsignedInt*> m_axId;
+            std::vector<CT_UnsignedInt*> m_axId;
 			//Member
 			CT_extLst* m_extLst;
 			CT_SurfaceChart();
@@ -2077,7 +2077,7 @@ namespace OOX{
 		{
 		public:
 			//Member
-			CAtlArray<CT_UnsignedInt*> m_secondPiePt;
+            std::vector<CT_UnsignedInt*> m_secondPiePt;
 			CT_custSplit();
 			~CT_custSplit();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2092,7 +2092,7 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_varyColors;
 			//Member
-			CAtlArray<CT_PieSer*> m_ser;
+            std::vector<CT_PieSer*> m_ser;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
@@ -2106,7 +2106,7 @@ namespace OOX{
 			//Member
 			CT_SecondPieSize* m_secondPieSize;
 			//Member
-			CAtlArray<CT_ChartLines*> m_serLines;
+            std::vector<CT_ChartLines*> m_serLines;
 			//Member
 			CT_extLst* m_extLst;
 			CT_OfPieChart();
@@ -2130,7 +2130,7 @@ namespace OOX{
 			//Member
 			CT_UnsignedInt* m_explosion;
 			//Member
-			CAtlArray<CT_DPt*> m_dPt;
+            std::vector<CT_DPt*> m_dPt;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
@@ -2167,7 +2167,7 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_varyColors;
 			//Member
-			CAtlArray<CT_BarSer*> m_ser;
+            std::vector<CT_BarSer*> m_ser;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
@@ -2177,7 +2177,7 @@ namespace OOX{
 			//Member
 			CT_Shape* m_shape;
 			//Member
-			CAtlArray<CT_UnsignedInt*> m_axId;
+            std::vector<CT_UnsignedInt*> m_axId;
 			//Member
 			CT_extLst* m_extLst;
 			CT_Bar3DChart();
@@ -2227,11 +2227,11 @@ namespace OOX{
 			//Member
 			CT_PictureOptions* m_pictureOptions;
 			//Member
-			CAtlArray<CT_DPt*> m_dPt;
+            std::vector<CT_DPt*> m_dPt;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
-			CAtlArray<CT_Trendline*> m_trendline;
+            std::vector<CT_Trendline*> m_trendline;
 			//Member
 			CT_ErrBars* m_errBars;
 			//Member
@@ -2282,7 +2282,7 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_varyColors;
 			//Member
-			CAtlArray<CT_BarSer*> m_ser;
+            std::vector<CT_BarSer*> m_ser;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
@@ -2290,9 +2290,9 @@ namespace OOX{
 			//Member
 			CT_Overlap* m_overlap;
 			//Member
-			CAtlArray<CT_ChartLines*> m_serLines;
+            std::vector<CT_ChartLines*> m_serLines;
 			//Member
-			CAtlArray<CT_UnsignedInt*> m_axId;
+            std::vector<CT_UnsignedInt*> m_axId;
 			//Member
 			CT_extLst* m_extLst;
 			CT_BarChart();
@@ -2319,7 +2319,7 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_varyColors;
 			//Member
-			CAtlArray<CT_PieSer*> m_ser;
+            std::vector<CT_PieSer*> m_ser;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
@@ -2352,7 +2352,7 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_varyColors;
 			//Member
-			CAtlArray<CT_PieSer*> m_ser;
+            std::vector<CT_PieSer*> m_ser;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
@@ -2369,7 +2369,7 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_varyColors;
 			//Member
-			CAtlArray<CT_PieSer*> m_ser;
+            std::vector<CT_PieSer*> m_ser;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
@@ -2397,13 +2397,13 @@ namespace OOX{
 			//Member
 			CT_Marker* m_marker;
 			//Member
-			CAtlArray<CT_DPt*> m_dPt;
+            std::vector<CT_DPt*> m_dPt;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
-			CAtlArray<CT_Trendline*> m_trendline;
+            std::vector<CT_Trendline*> m_trendline;
 			//Member
-			CAtlArray<CT_ErrBars*> m_errBars;
+            std::vector<CT_ErrBars*> m_errBars;
 			//Member
 			CT_AxDataSource* m_xVal;
 			//Member
@@ -2438,11 +2438,11 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_varyColors;
 			//Member
-			CAtlArray<CT_ScatterSer*> m_ser;
+            std::vector<CT_ScatterSer*> m_ser;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
-			CAtlArray<CT_UnsignedInt*> m_axId;
+            std::vector<CT_UnsignedInt*> m_axId;
 			//Member
 			CT_extLst* m_extLst;
 			CT_ScatterChart();
@@ -2466,7 +2466,7 @@ namespace OOX{
 			//Member
 			CT_Marker* m_marker;
 			//Member
-			CAtlArray<CT_DPt*> m_dPt;
+            std::vector<CT_DPt*> m_dPt;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
@@ -2501,11 +2501,11 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_varyColors;
 			//Member
-			CAtlArray<CT_RadarSer*> m_ser;
+            std::vector<CT_RadarSer*> m_ser;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
-			CAtlArray<CT_UnsignedInt*> m_axId;
+            std::vector<CT_UnsignedInt*> m_axId;
 			//Member
 			CT_extLst* m_extLst;
 			CT_RadarChart();
@@ -2518,7 +2518,7 @@ namespace OOX{
 		{
 		public:
 			//Member
-			CAtlArray<CT_LineSer*> m_ser;
+            std::vector<CT_LineSer*> m_ser;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
@@ -2528,7 +2528,7 @@ namespace OOX{
 			//Member
 			CT_UpDownBars* m_upDownBars;
 			//Member
-			CAtlArray<CT_UnsignedInt*> m_axId;
+            std::vector<CT_UnsignedInt*> m_axId;
 			//Member
 			CT_extLst* m_extLst;
 			CT_StockChart();
@@ -2552,11 +2552,11 @@ namespace OOX{
 			//Member
 			CT_Marker* m_marker;
 			//Member
-			CAtlArray<CT_DPt*> m_dPt;
+            std::vector<CT_DPt*> m_dPt;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
-			CAtlArray<CT_Trendline*> m_trendline;
+            std::vector<CT_Trendline*> m_trendline;
 			//Member
 			CT_ErrBars* m_errBars;
 			//Member
@@ -2610,7 +2610,7 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_varyColors;
 			//Member
-			CAtlArray<CT_LineSer*> m_ser;
+            std::vector<CT_LineSer*> m_ser;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
@@ -2618,7 +2618,7 @@ namespace OOX{
 			//Member
 			CT_GapAmount* m_gapDepth;
 			//Member
-			CAtlArray<CT_UnsignedInt*> m_axId;
+            std::vector<CT_UnsignedInt*> m_axId;
 			//Member
 			CT_extLst* m_extLst;
 			CT_Line3DChart();
@@ -2647,7 +2647,7 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_varyColors;
 			//Member
-			CAtlArray<CT_LineSer*> m_ser;
+            std::vector<CT_LineSer*> m_ser;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
@@ -2661,7 +2661,7 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_smooth;
 			//Member
-			CAtlArray<CT_UnsignedInt*> m_axId;
+            std::vector<CT_UnsignedInt*> m_axId;
 			//Member
 			CT_extLst* m_extLst;
 			CT_LineChart();
@@ -2678,7 +2678,7 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_varyColors;
 			//Member
-			CAtlArray<CT_AreaSer*> m_ser;
+            std::vector<CT_AreaSer*> m_ser;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
@@ -2686,7 +2686,7 @@ namespace OOX{
 			//Member
 			CT_GapAmount* m_gapDepth;
 			//Member
-			CAtlArray<CT_UnsignedInt*> m_axId;
+            std::vector<CT_UnsignedInt*> m_axId;
 			//Member
 			CT_extLst* m_extLst;
 			CT_Area3DChart();
@@ -2710,13 +2710,13 @@ namespace OOX{
 			//Member
 			CT_PictureOptions* m_pictureOptions;
 			//Member
-			CAtlArray<CT_DPt*> m_dPt;
+            std::vector<CT_DPt*> m_dPt;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
-			CAtlArray<CT_Trendline*> m_trendline;
+            std::vector<CT_Trendline*> m_trendline;
 			//Member
-			CAtlArray<CT_ErrBars*> m_errBars;
+            std::vector<CT_ErrBars*> m_errBars;
 			//Member
 			CT_AxDataSource* m_cat;
 			//Member
@@ -2737,13 +2737,13 @@ namespace OOX{
 			//Member
 			CT_Boolean* m_varyColors;
 			//Member
-			CAtlArray<CT_AreaSer*> m_ser;
+            std::vector<CT_AreaSer*> m_ser;
 			//Member
 			CT_DLbls* m_dLbls;
 			//Member
 			CT_ChartLines* m_dropLines;
 			//Member
-			CAtlArray<CT_UnsignedInt*> m_axId;
+            std::vector<CT_UnsignedInt*> m_axId;
 			//Member
 			CT_extLst* m_extLst;
 			CT_AreaChart();
@@ -2758,13 +2758,13 @@ namespace OOX{
 			//Member
 			CT_Layout* m_layout;
 			//Member
-			CAtlArray<ItemsChoiceType5*> m_ItemsElementName0;
+            std::vector<ItemsChoiceType5*> m_ItemsElementName0;
 			//Member
-			CAtlArray<void*> m_Items;
+            std::vector<void*> m_Items;
 			//Member
-			CAtlArray<ItemsChoiceType6*> m_ItemsElementName1;
+            std::vector<ItemsChoiceType6*> m_ItemsElementName1;
 			//Member
-			CAtlArray<void*> m_Items1;
+            std::vector<void*> m_Items1;
 			//Member
 			CT_DTable* m_dTable;
 			//Member
@@ -2918,7 +2918,7 @@ namespace OOX{
 		{
 		public:
 			//Member
-			CAtlArray<CT_PivotFmt*> m_pivotFmt;
+            std::vector<CT_PivotFmt*> m_pivotFmt;
 			CT_pivotFmts();
 			~CT_pivotFmts();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2987,7 +2987,7 @@ namespace OOX{
 			//Member
 			CT_UnsignedInt* m_fmtId;
 			//Member
-			CAtlArray<CT_extLst*> m_extLst;
+            std::vector<CT_extLst*> m_extLst;
 			CT_PivotSource();
 			~CT_PivotSource();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -3034,7 +3034,7 @@ namespace OOX{
 		{
 		public:
 			//Member
-			CAtlArray<AlternateContentChoice*> m_Choice;
+            std::vector<AlternateContentChoice*> m_Choice;
 			//Member
 			AlternateContentFallback* m_Fallback;
 			AlternateContent();

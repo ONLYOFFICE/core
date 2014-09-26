@@ -56,7 +56,7 @@ SOURCES += docxformatlib.cpp \
     ../Source/SystemUtility/SystemUtility.cpp \
     ../Source/Utility/codecvt.cpp \
     ../Source/Utility/DateTime.cpp \
-    ../Source/Utility/Encoding.cpp \
+    #../Source/Utility/Encoding.cpp \
     ../Source/Utility/TxtFile.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
     ../Source/XlsxFormat/Common.cpp \
@@ -287,7 +287,7 @@ HEADERS += docxformatlib.h \
     ../Source/SystemUtility/SystemUtility.h \
     ../Source/Utility/codecvt.h \
     ../Source/Utility/DateTime.h \
-    ../Source/Utility/Encoding.h \
+    #../Source/Utility/Encoding.h \
     ../Source/Utility/TxtFile.h \
     ../Source/Utility/Unit.h \
     ../Source/Utility/Utility.h \

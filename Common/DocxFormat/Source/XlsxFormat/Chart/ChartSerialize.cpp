@@ -963,9 +963,9 @@ namespace OOX{
 		}
 		CT_extLst::~CT_extLst()
 		{
-			for(int i = 0, length = m_ext.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ext.size(); i < length; ++i)
 				delete m_ext[i];
-			m_ext.RemoveAll();
+            m_ext.clear();
 		}
 		void CT_extLst::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -978,7 +978,7 @@ namespace OOX{
 				{
 					CT_Extension* pNewElem = new CT_Extension;
 					pNewElem->fromXML(oReader);
-					m_ext.Add(pNewElem);
+                    m_ext.push_back(pNewElem);
 				}
 			}
 		}
@@ -986,12 +986,13 @@ namespace OOX{
 			writer.WriteString(CString(_T("<")));
 			writer.WriteString(sNodeName);
 			writer.WriteString(CString(_T(">")));
-			for(int i = 0, length = m_ext.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ext.size(); i < length; ++i)
 			{
 				CT_Extension* pElem = m_ext[i];
 				if(NULL != pElem)
 				{
-					pElem->toXML(CString(_T("c:ext")), writer);
+                    CString sNodeName = _T("c:ext");
+                    pElem->toXML(sNodeName, writer);
 				}
 			}
 			writer.WriteString(CString(_T("</")));
@@ -1161,23 +1162,28 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_date1904)
 			{
-				m_date1904->toXML(CString(_T("c:date1904")), writer);
+                CString sNodeName = _T("c:date1904");
+                m_date1904->toXML(sNodeName, writer);
 			}
 			if(NULL != m_lang)
 			{
-				m_lang->toXML(CString(_T("c:lang")), writer);
+                CString sNodeName = _T("c:lang");
+                m_lang->toXML(sNodeName, writer);
 			}
 			if(NULL != m_roundedCorners)
 			{
-				m_roundedCorners->toXML(CString(_T("c:roundedCorners")), writer);
+                CString sNodeName = _T("c:roundedCorners");
+                m_roundedCorners->toXML(sNodeName, writer);
 			}
 			if(NULL != m_AlternateContent)
 			{
-				m_AlternateContent->toXML(CString(_T("mc:AlternateContent")), writer);
+                CString sNodeName = _T("mc:AlternateContent");
+                m_AlternateContent->toXML(sNodeName, writer);
 			}
 			if(NULL != m_style)
 			{
-				m_style->toXML(CString(_T("c:style")), writer);
+                CString sNodeName = _T("c:style");
+                m_style->toXML(sNodeName, writer);
 			}
 			if(NULL != m_clrMapOvr)
 			{
@@ -1185,15 +1191,18 @@ namespace OOX{
 			}
 			if(NULL != m_pivotSource)
 			{
-				m_pivotSource->toXML(CString(_T("c:pivotSource")), writer);
+                CString sNodeName = _T("c:pivotSource");
+                m_pivotSource->toXML(sNodeName, writer);
 			}
 			if(NULL != m_protection)
 			{
-				m_protection->toXML(CString(_T("c:protection")), writer);
+                CString sNodeName = _T("c:protection");
+                m_protection->toXML(sNodeName, writer);
 			}
 			if(NULL != m_chart)
 			{
-				m_chart->toXML(CString(_T("c:chart")), writer);
+                CString sNodeName = _T("c:chart");
+                m_chart->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
 			{
@@ -1205,19 +1214,23 @@ namespace OOX{
 			}
 			if(NULL != m_externalData)
 			{
-				m_externalData->toXML(CString(_T("c:externalData")), writer);
+                CString sNodeName = _T("c:externalData");
+                m_externalData->toXML(sNodeName, writer);
 			}
 			if(NULL != m_printSettings)
 			{
-				m_printSettings->toXML(CString(_T("c:printSettings")), writer);
+                CString sNodeName = _T("c:printSettings");
+                m_printSettings->toXML(sNodeName, writer);
 			}
 			if(NULL != m_userShapes)
 			{
-				m_userShapes->toXML(CString(_T("c:userShapes")), writer);
+                CString sNodeName = _T("c:userShapes");
+                m_userShapes->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-				m_extLst->toXML(CString(_T("c:extLst")), writer);
+                CString sNodeName = _T("c:extLst");
+                m_extLst->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -1271,7 +1284,8 @@ namespace OOX{
 				{
 					bool* pNewElem = new bool;
 					CString sVal = oReader.GetText();
-					CString sValLower = sVal.MakeLower();
+                    CString sValLower = sVal;
+                    sValLower.MakeLower();
 					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 						*pNewElem = false;
 					else
@@ -1561,7 +1575,9 @@ namespace OOX{
 				{
 					ST_PageSetupOrientation* pNewElem = new ST_PageSetupOrientation;
 					ST_PageSetupOrientation eVal;
-					if(FromXml_ST_PageSetupOrientation(CString(oReader.GetText()), eVal))
+
+                    CString sNodeName = oReader.GetText();
+                    if(FromXml_ST_PageSetupOrientation(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_orientation = pNewElem;
 				}
@@ -1569,7 +1585,8 @@ namespace OOX{
 				{
 					bool* pNewElem = new bool;
 					CString sVal = oReader.GetText();
-					CString sValLower = sVal.MakeLower();
+                    CString sValLower = sVal;
+                    sValLower.MakeLower();
 					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 						*pNewElem = false;
 					else
@@ -1580,7 +1597,8 @@ namespace OOX{
 				{
 					bool* pNewElem = new bool;
 					CString sVal = oReader.GetText();
-					CString sValLower = sVal.MakeLower();
+                    CString sValLower = sVal;
+                    sValLower.MakeLower();
 					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 						*pNewElem = false;
 					else
@@ -1591,7 +1609,8 @@ namespace OOX{
 				{
 					bool* pNewElem = new bool;
 					CString sVal = oReader.GetText();
-					CString sValLower = sVal.MakeLower();
+                    CString sValLower = sVal;
+                    sValLower.MakeLower();
 					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 						*pNewElem = false;
 					else
@@ -1978,7 +1997,8 @@ namespace OOX{
 				{
 					bool* pNewElem = new bool;
 					CString sVal = oReader.GetText();
-					CString sValLower = sVal.MakeLower();
+                    CString sValLower = sVal;
+                    sValLower.MakeLower();
 					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 						*pNewElem = false;
 					else
@@ -1989,7 +2009,8 @@ namespace OOX{
 				{
 					bool* pNewElem = new bool;
 					CString sVal = oReader.GetText();
-					CString sValLower = sVal.MakeLower();
+                    CString sValLower = sVal;
+                    sValLower.MakeLower();
 					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 						*pNewElem = false;
 					else
@@ -2000,7 +2021,8 @@ namespace OOX{
 				{
 					bool* pNewElem = new bool;
 					CString sVal = oReader.GetText();
-					CString sValLower = sVal.MakeLower();
+                    CString sValLower = sVal;
+                    sValLower.MakeLower();
 					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 						*pNewElem = false;
 					else
@@ -2057,15 +2079,18 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_headerFooter)
 			{
-				m_headerFooter->toXML(CString(_T("c:headerFooter")), writer);
+                CString sNodeName = _T("c:headerFooter");
+                m_headerFooter->toXML(sNodeName, writer);
 			}
 			if(NULL != m_pageMargins)
 			{
-				m_pageMargins->toXML(CString(_T("c:pageMargins")), writer);
+                CString sNodeName = _T("c:pageMargins");
+                m_pageMargins->toXML(sNodeName, writer);
 			}
 			if(NULL != m_pageSetup)
 			{
-				m_pageSetup->toXML(CString(_T("c:pageSetup")), writer);
+                CString sNodeName = _T("c:pageSetup");
+                m_pageSetup->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -2116,7 +2141,8 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_autoUpdate)
 			{
-				m_autoUpdate->toXML(CString(_T("c:autoUpdate")), writer);
+                CString sNodeName = _T("c:autoUpdate");
+                m_autoUpdate->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -2174,7 +2200,8 @@ namespace OOX{
 				{
 					ST_DispBlanksAs* pNewElem = new ST_DispBlanksAs;
 					ST_DispBlanksAs eVal;
-					if(FromXml_ST_DispBlanksAs(CString(oReader.GetText()), eVal))
+                    CString sNodeName = oReader.GetText();
+                    if(FromXml_ST_DispBlanksAs(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
@@ -2239,11 +2266,13 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_idx)
 			{
-				m_idx->toXML(CString(_T("c:idx")), writer);
+                CString sNodeName = _T("c:idx");
+                m_idx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_delete)
 			{
-				m_delete->toXML(CString(_T("c:delete")), writer);
+                CString sNodeName = _T("c:delete");
+                m_delete->toXML(sNodeName, writer);
 			}
 			if(NULL != m_txPr)
 			{
@@ -2251,7 +2280,8 @@ namespace OOX{
 			}
 			if(NULL != m_extLst)
 			{
-				m_extLst->toXML(CString(_T("c:extLst")), writer);
+                CString sNodeName = _T("c:extLst");
+                m_extLst->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -2273,7 +2303,7 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_UnsignedInt::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
+        void CT_UnsignedInt::toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const{
 			writer.WriteString(CString(_T("<")));
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -2406,7 +2436,9 @@ namespace OOX{
 				{
 					ST_LegendPos* pNewElem = new ST_LegendPos;
 					ST_LegendPos eVal;
-					if(FromXml_ST_LegendPos(CString(oReader.GetText()), eVal))
+
+                    CString sNodeName = oReader.GetText();
+                    if(FromXml_ST_LegendPos(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
@@ -2425,9 +2457,9 @@ namespace OOX{
 		{
 			if(NULL != m_legendPos)
 				delete m_legendPos;
-			for(int i = 0, length = m_legendEntry.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_legendEntry.size(); i < length; ++i)
 				delete m_legendEntry[i];
-			m_legendEntry.RemoveAll();
+            m_legendEntry.clear();
 			if(NULL != m_layout)
 				delete m_layout;
 			if(NULL != m_overlay)
@@ -2456,7 +2488,7 @@ namespace OOX{
 				{
 					CT_LegendEntry* pNewElem = new CT_LegendEntry;
 					pNewElem->fromXML(oReader);
-					m_legendEntry.Add(pNewElem);
+                    m_legendEntry.push_back(pNewElem);
 				}
 				else if(_T("layout") == sName)
 				{
@@ -2500,23 +2532,27 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_legendPos)
 			{
-				m_legendPos->toXML(CString(_T("c:legendPos")), writer);
+                CString sNodeName = _T("c:legendPos");
+                m_legendPos->toXML(sNodeName, writer);
 			}
-			for(int i = 0, length = m_legendEntry.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_legendEntry.size(); i < length; ++i)
 			{
 				CT_LegendEntry* pElem = m_legendEntry[i];
 				if(NULL != pElem)
 				{
-					pElem->toXML(CString(_T("c:legendEntry")), writer);
+                    CString sNodeName = _T("c:legendEntry");
+                    pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_layout)
 			{
-				m_layout->toXML(CString(_T("c:layout")), writer);
+                CString sNodeName = _T("c:layout");
+                m_layout->toXML(sNodeName, writer);
 			}
 			if(NULL != m_overlay)
 			{
-				m_overlay->toXML(CString(_T("c:overlay")), writer);
+                CString sNodeName = _T("c:overlay");
+                m_overlay->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
 			{
@@ -2528,7 +2564,8 @@ namespace OOX{
 			}
 			if(NULL != m_extLst)
 			{
-				m_extLst->toXML(CString(_T("c:extLst")), writer);
+                CString sNodeName = _T("c:extLst");
+                m_extLst->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -2574,11 +2611,13 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_manualLayout)
 			{
-				m_manualLayout->toXML(CString(_T("c:manualLayout")), writer);
+                CString sNodeName = _T("c:manualLayout");
+                m_manualLayout->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-				m_extLst->toXML(CString(_T("c:extLst")), writer);
+                CString sNodeName = _T("c:extLst");
+                m_extLst->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -2696,43 +2735,53 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_layoutTarget)
 			{
-				m_layoutTarget->toXML(CString(_T("c:layoutTarget")), writer);
+                CString sNodeName = _T("c:layoutTarget");
+                m_layoutTarget->toXML(sNodeName, writer);
 			}
 			if(NULL != m_xMode)
 			{
-				m_xMode->toXML(CString(_T("c:xMode")), writer);
+                CString sNodeName = _T("c:xMode");
+                m_xMode->toXML(sNodeName, writer);
 			}
 			if(NULL != m_yMode)
 			{
-				m_yMode->toXML(CString(_T("c:yMode")), writer);
+                CString sNodeName = _T("c:yMode");
+                m_yMode->toXML(sNodeName, writer);
 			}
 			if(NULL != m_wMode)
 			{
-				m_wMode->toXML(CString(_T("c:wMode")), writer);
+                CString sNodeName = _T("c:wMode");
+                m_wMode->toXML(sNodeName, writer);
 			}
 			if(NULL != m_hMode)
 			{
-				m_hMode->toXML(CString(_T("c:hMode")), writer);
+                CString sNodeName = _T("c:hMode");
+                m_hMode->toXML(sNodeName, writer);
 			}
 			if(NULL != m_x)
 			{
-				m_x->toXML(CString(_T("c:x")), writer);
+                CString sNodeName = _T("c:x");
+                m_x->toXML(sNodeName, writer);
 			}
 			if(NULL != m_y)
 			{
-				m_y->toXML(CString(_T("c:y")), writer);
+                CString sNodeName = _T("c:y");
+                m_y->toXML(sNodeName, writer);
 			}
 			if(NULL != m_w)
 			{
-				m_w->toXML(CString(_T("c:w")), writer);
+                CString sNodeName = _T("c:w");
+                m_w->toXML(sNodeName, writer);
 			}
 			if(NULL != m_h)
 			{
-				m_h->toXML(CString(_T("c:h")), writer);
+                CString sNodeName = _T("c:h");
+                m_h->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-				m_extLst->toXML(CString(_T("c:extLst")), writer);
+                CString sNodeName = _T("c:extLst");
+                m_extLst->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -2778,7 +2827,9 @@ namespace OOX{
 				{
 					ST_LayoutTarget* pNewElem = new ST_LayoutTarget;
 					ST_LayoutTarget eVal;
-					if(FromXml_ST_LayoutTarget(CString(oReader.GetText()), eVal))
+
+                    CString sNodeName = oReader.GetText();
+                    if(FromXml_ST_LayoutTarget(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
@@ -2823,7 +2874,10 @@ namespace OOX{
 				{
 					ST_LayoutMode* pNewElem = new ST_LayoutMode;
 					ST_LayoutMode eVal;
-					if(FromXml_ST_LayoutMode(CString(oReader.GetText()), eVal))
+
+                    CString sNodeName = oReader.GetText();
+
+                    if(FromXml_ST_LayoutMode(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
@@ -2957,19 +3011,23 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_showHorzBorder)
 			{
-				m_showHorzBorder->toXML(CString(_T("c:showHorzBorder")), writer);
+                CString sNodeName = _T("c:showHorzBorder");
+                m_showHorzBorder->toXML(sNodeName, writer);
 			}
 			if(NULL != m_showVertBorder)
 			{
-				m_showVertBorder->toXML(CString(_T("c:showVertBorder")), writer);
+                CString sNodeName = _T("c:showVertBorder");
+                m_showVertBorder->toXML(sNodeName, writer);
 			}
 			if(NULL != m_showOutline)
 			{
-				m_showOutline->toXML(CString(_T("c:showOutline")), writer);
+                CString sNodeName = _T("c:showOutline");
+                m_showOutline->toXML(sNodeName, writer);
 			}
 			if(NULL != m_showKeys)
 			{
-				m_showKeys->toXML(CString(_T("c:showKeys")), writer);
+                CString sNodeName = _T("c:showKeys");
+                m_showKeys->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
 			{
@@ -2981,7 +3039,8 @@ namespace OOX{
 			}
 			if(NULL != m_extLst)
 			{
-				m_extLst->toXML(CString(_T("c:extLst")), writer);
+                CString sNodeName = _T("c:extLst");
+                m_extLst->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -3184,47 +3243,58 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_axId)
 			{
-				m_axId->toXML(CString(_T("c:axId")), writer);
+                CString sNodeName = _T("c:axId");
+                m_axId->toXML(sNodeName, writer);
 			}
 			if(NULL != m_scaling)
 			{
-				m_scaling->toXML(CString(_T("c:scaling")), writer);
+                CString sNodeName = _T("c:scaling");
+                m_scaling->toXML(sNodeName, writer);
 			}
 			if(NULL != m_delete)
 			{
-				m_delete->toXML(CString(_T("c:delete")), writer);
+                CString sNodeName = _T("c:delete");
+                m_delete->toXML(sNodeName, writer);
 			}
 			if(NULL != m_axPos)
 			{
-				m_axPos->toXML(CString(_T("c:axPos")), writer);
+                CString sNodeName = _T("c:axPos");
+                m_axPos->toXML(sNodeName, writer);
 			}
 			if(NULL != m_majorGridlines)
 			{
-				m_majorGridlines->toXML(CString(_T("c:majorGridlines")), writer);
+                CString sNodeName = _T("c:majorGridlines");
+                m_majorGridlines->toXML(sNodeName, writer);
 			}
 			if(NULL != m_minorGridlines)
 			{
-				m_minorGridlines->toXML(CString(_T("c:minorGridlines")), writer);
+                CString sNodeName = _T("c:minorGridlines");
+                m_minorGridlines->toXML(sNodeName, writer);
 			}
 			if(NULL != m_title)
 			{
-				m_title->toXML(CString(_T("c:title")), writer);
+                CString sNodeName = _T("c:title");
+                m_title->toXML(sNodeName, writer);
 			}
 			if(NULL != m_numFmt)
 			{
-				m_numFmt->toXML(CString(_T("c:numFmt")), writer);
+                CString sNodeName = _T("c:numFmt");
+                m_numFmt->toXML(sNodeName, writer);
 			}
 			if(NULL != m_majorTickMark)
 			{
-				m_majorTickMark->toXML(CString(_T("c:majorTickMark")), writer);
+                CString sNodeName = _T("c:majorTickMark");
+                m_majorTickMark->toXML(sNodeName, writer);
 			}
 			if(NULL != m_minorTickMark)
 			{
-				m_minorTickMark->toXML(CString(_T("c:minorTickMark")), writer);
+                CString sNodeName = _T("c:minorTickMark");
+                m_minorTickMark->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tickLblPos)
 			{
-				m_tickLblPos->toXML(CString(_T("c:tickLblPos")), writer);
+                CString sNodeName = _T("c:tickLblPos");
+                m_tickLblPos->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
 			{
@@ -3236,27 +3306,33 @@ namespace OOX{
 			}
 			if(NULL != m_crossAx)
 			{
-				m_crossAx->toXML(CString(_T("c:crossAx")), writer);
+                CString sNodeName = _T("c:crossAx");
+                m_crossAx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_crosses)
 			{
-				m_crosses->toXML(CString(_T("c:crosses")), writer);
+                CString sNodeName = _T("c:crosses");
+                m_crosses->toXML(sNodeName, writer);
 			}
 			if(NULL != m_crossesAt)
 			{
-				m_crossesAt->toXML(CString(_T("c:crossesAt")), writer);
+                CString sNodeName = _T("c:crossesAt");
+                m_crossesAt->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tickLblSkip)
 			{
-				m_tickLblSkip->toXML(CString(_T("c:tickLblSkip")), writer);
+                CString sNodeName = _T("c:tickLblSkip");
+                m_tickLblSkip->toXML(sNodeName, writer);
 			}
 			if(NULL != m_tickMarkSkip)
 			{
-				m_tickMarkSkip->toXML(CString(_T("c:tickMarkSkip")), writer);
+                CString sNodeName = _T("c:tickMarkSkip");
+                m_tickMarkSkip->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-				m_extLst->toXML(CString(_T("c:extLst")), writer);
+                CString sNodeName = _T("c:extLst");
+                m_extLst->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -3329,23 +3405,28 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_logBase)
 			{
-				m_logBase->toXML(CString(_T("c:logBase")), writer);
+                CString sNodeName = _T("c:logBase");
+                m_logBase->toXML(sNodeName, writer);
 			}
 			if(NULL != m_orientation)
 			{
-				m_orientation->toXML(CString(_T("c:orientation")), writer);
+                CString sNodeName = _T("c:orientation");
+                m_orientation->toXML(sNodeName, writer);
 			}
 			if(NULL != m_max)
 			{
-				m_max->toXML(CString(_T("c:max")), writer);
+                CString sNodeName = _T("c:max");
+                m_max->toXML(sNodeName, writer);
 			}
 			if(NULL != m_min)
 			{
-				m_min->toXML(CString(_T("c:min")), writer);
+                CString sNodeName = _T("c:min");
+                m_min->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-				m_extLst->toXML(CString(_T("c:extLst")), writer);
+                CString sNodeName = _T("c:extLst");
+                m_extLst->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -3431,7 +3512,9 @@ namespace OOX{
 				{
 					ST_Orientation* pNewElem = new ST_Orientation;
 					ST_Orientation eVal;
-					if(FromXml_ST_Orientation(CString(oReader.GetText()), eVal))
+
+                    CString sNodeName = oReader.GetText();
+                    if(FromXml_ST_Orientation(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
@@ -3474,7 +3557,9 @@ namespace OOX{
 				{
 					ST_AxPos* pNewElem = new ST_AxPos;
 					ST_AxPos eVal;
-					if(FromXml_ST_AxPos(CString(oReader.GetText()), eVal))
+
+                    CString sNodeName = oReader.GetText();
+                    if(FromXml_ST_AxPos(sNodeName, eVal))
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
@@ -3598,15 +3683,18 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_tx)
 			{
-				m_tx->toXML(CString(_T("c:tx")), writer);
+                CString sNodeName = _T("c:tx");
+                m_tx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_layout)
 			{
-				m_layout->toXML(CString(_T("c:layout")), writer);
+                CString sNodeName = _T("c:layout");
+                m_layout->toXML(sNodeName, writer);
 			}
 			if(NULL != m_overlay)
 			{
-				m_overlay->toXML(CString(_T("c:overlay")), writer);
+                CString sNodeName = _T("c:overlay");
+                m_overlay->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
 			{
@@ -3618,7 +3706,8 @@ namespace OOX{
 			}
 			if(NULL != m_extLst)
 			{
-				m_extLst->toXML(CString(_T("c:extLst")), writer);
+                CString sNodeName = _T("c:extLst");
+                m_extLst->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -3692,7 +3781,8 @@ namespace OOX{
 			}
 			if(NULL != m_strRef)
 			{
-				m_strRef->toXML(CString(_T("c:strRef")), writer);
+                CString sNodeName = _T("c:strRef");
+                m_strRef->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -3759,11 +3849,13 @@ namespace OOX{
 			}
 			if(NULL != m_strCache)
 			{
-				m_strCache->toXML(CString(_T("c:strCache")), writer);
+                CString sNodeName = _T("c:strCache");
+                m_strCache->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-				m_extLst->toXML(CString(_T("c:extLst")), writer);
+                CString sNodeName = _T("c:extLst");
+                m_extLst->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -3779,9 +3871,9 @@ namespace OOX{
 		{
 			if(NULL != m_ptCount)
 				delete m_ptCount;
-			for(int i = 0, length = m_pt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_pt.size(); i < length; ++i)
 				delete m_pt[i];
-			m_pt.RemoveAll();
+            m_pt.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -3802,7 +3894,7 @@ namespace OOX{
 				{
 					CT_StrVal* pNewElem = new CT_StrVal;
 					pNewElem->fromXML(oReader);
-					m_pt.Add(pNewElem);
+                    m_pt.push_back(pNewElem);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -3820,7 +3912,7 @@ namespace OOX{
 			{
 				m_ptCount->toXML(CString(_T("c:ptCount")), writer);
 			}
-			for(int i = 0, length = m_pt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_pt.size(); i < length; ++i)
 			{
 				CT_StrVal* pElem = m_pt[i];
 				if(NULL != pElem)
@@ -3962,7 +4054,8 @@ namespace OOX{
 				{
 					bool* pNewElem = new bool;
 					CString sVal = oReader.GetText();
-					CString sValLower = sVal.MakeLower();
+                    CString sValLower = sVal;
+                    sValLower.MakeLower();
 					if(_T("false") == sValLower || _T("0") == sValLower || _T("off") == sValLower)
 						*pNewElem = false;
 					else
@@ -5645,17 +5738,17 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_invertIfNegative)
 				delete m_invertIfNegative;
-			for(int i = 0, length = m_dPt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_dPt.size(); i < length; ++i)
 				delete m_dPt[i];
-			m_dPt.RemoveAll();
+            m_dPt.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
-			for(int i = 0, length = m_trendline.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_trendline.size(); i < length; ++i)
 				delete m_trendline[i];
-			m_trendline.RemoveAll();
-			for(int i = 0, length = m_errBars.GetCount(); i < length; ++i)
+            m_trendline.clear();
+            for(int i = 0, length = m_errBars.size(); i < length; ++i)
 				delete m_errBars[i];
-			m_errBars.RemoveAll();
+            m_errBars.clear();
 			if(NULL != m_xVal)
 				delete m_xVal;
 			if(NULL != m_yVal)
@@ -5710,7 +5803,7 @@ namespace OOX{
 				{
 					CT_DPt* pNewElem = new CT_DPt;
 					pNewElem->fromXML(oReader);
-					m_dPt.Add(pNewElem);
+                    m_dPt.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -5722,13 +5815,13 @@ namespace OOX{
 				{
 					CT_Trendline* pNewElem = new CT_Trendline;
 					pNewElem->fromXML(oReader);
-					m_trendline.Add(pNewElem);
+                    m_trendline.push_back(pNewElem);
 				}
 				else if(_T("errBars") == sName)
 				{
 					CT_ErrBars* pNewElem = new CT_ErrBars;
 					pNewElem->fromXML(oReader);
-					m_errBars.Add(pNewElem);
+                    m_errBars.push_back(pNewElem);
 				}
 				else if(_T("xVal") == sName)
 				{
@@ -5786,7 +5879,7 @@ namespace OOX{
 			{
 				m_invertIfNegative->toXML(CString(_T("c:invertIfNegative")), writer);
 			}
-			for(int i = 0, length = m_dPt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_dPt.size(); i < length; ++i)
 			{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
@@ -5798,7 +5891,7 @@ namespace OOX{
 			{
 				m_dLbls->toXML(CString(_T("c:dLbls")), writer);
 			}
-			for(int i = 0, length = m_trendline.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_trendline.size(); i < length; ++i)
 			{
 				CT_Trendline* pElem = m_trendline[i];
 				if(NULL != pElem)
@@ -5806,7 +5899,7 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:trendline")), writer);
 				}
 			}
-			for(int i = 0, length = m_errBars.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_errBars.size(); i < length; ++i)
 			{
 				CT_ErrBars* pElem = m_errBars[i];
 				if(NULL != pElem)
@@ -6371,15 +6464,15 @@ namespace OOX{
 		}
 		CT_DLbls::~CT_DLbls()
 		{
-			for(int i = 0, length = m_dLbl.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_dLbl.size(); i < length; ++i)
 				delete m_dLbl[i];
-			m_dLbl.RemoveAll();
-			for(int i = 0, length = m_ItemsElementName0.GetCount(); i < length; ++i)
+            m_dLbl.clear();
+            for(int i = 0, length = m_ItemsElementName0.size(); i < length; ++i)
 				delete m_ItemsElementName0[i];
-			m_ItemsElementName0.RemoveAll();
-			for(int i = 0, length = m_Items.GetCount(); i < length; ++i)
+            m_ItemsElementName0.clear();
+            for(int i = 0, length = m_Items.size(); i < length; ++i)
 				delete m_Items[i];
-			m_Items.RemoveAll();
+            m_Items.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -6394,7 +6487,7 @@ namespace OOX{
 				{
 					CT_DLbl* pNewElem = new CT_DLbl;
 					pNewElem->fromXML(oReader);
-					m_dLbl.Add(pNewElem);
+                    m_dLbl.push_back(pNewElem);
 				}
 				else if(_T("dLblPos") == sName)
 				{
@@ -6402,8 +6495,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3DLBLPOS;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("delete") == sName)
 				{
@@ -6411,8 +6504,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3DELETE;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("leaderLines") == sName)
 				{
@@ -6420,8 +6513,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3LEADERLINES;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("numFmt") == sName)
 				{
@@ -6429,8 +6522,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3NUMFMT;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("separator") == sName)
 				{
@@ -6439,8 +6532,8 @@ namespace OOX{
 					*pNewElem = sVal;
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3SEPARATOR;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("showBubbleSize") == sName)
 				{
@@ -6448,8 +6541,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3SHOWBUBBLESIZE;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("showCatName") == sName)
 				{
@@ -6457,8 +6550,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3SHOWCATNAME;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("showLeaderLines") == sName)
 				{
@@ -6466,8 +6559,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3SHOWLEADERLINES;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("showLegendKey") == sName)
 				{
@@ -6475,8 +6568,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3SHOWLEGENDKEY;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("showPercent") == sName)
 				{
@@ -6484,8 +6577,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3SHOWPERCENT;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("showSerName") == sName)
 				{
@@ -6493,8 +6586,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3SHOWSERNAME;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("showVal") == sName)
 				{
@@ -6502,8 +6595,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3SHOWVAL;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("spPr") == sName)
 				{
@@ -6512,8 +6605,8 @@ namespace OOX{
 					*pNewElem = sVal;
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3SPPR;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("txPr") == sName)
 				{
@@ -6522,8 +6615,8 @@ namespace OOX{
 					*pNewElem = sVal;
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3TXPR;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -6537,7 +6630,7 @@ namespace OOX{
 			writer.WriteString(CString(_T("<")));
 			writer.WriteString(sNodeName);
 			writer.WriteString(CString(_T(">")));
-			for(int i = 0, length = m_dLbl.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_dLbl.size(); i < length; ++i)
 			{
 				CT_DLbl* pElem = m_dLbl[i];
 				if(NULL != pElem)
@@ -6545,7 +6638,7 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:dLbl")), writer);
 				}
 			}
-			for(int i = 0, length = m_Items.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_Items.size(); i < length; ++i)
 			{
 				ItemsChoiceType3 eType = *m_ItemsElementName0[i];
 				toXML(writer, false, eType, m_Items[i]);
@@ -6720,12 +6813,12 @@ namespace OOX{
 		{
 			if(NULL != m_idx)
 				delete m_idx;
-			for(int i = 0, length = m_ItemsElementName0.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ItemsElementName0.size(); i < length; ++i)
 				delete m_ItemsElementName0[i];
-			m_ItemsElementName0.RemoveAll();
-			for(int i = 0, length = m_Items.GetCount(); i < length; ++i)
+            m_ItemsElementName0.clear();
+            for(int i = 0, length = m_Items.size(); i < length; ++i)
 				delete m_Items[i];
-			m_Items.RemoveAll();
+            m_Items.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -6748,8 +6841,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4DLBLPOS;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("delete") == sName)
 				{
@@ -6757,8 +6850,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4DELETE;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("layout") == sName)
 				{
@@ -6766,8 +6859,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4LAYOUT;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("numFmt") == sName)
 				{
@@ -6775,8 +6868,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4NUMFMT;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("separator") == sName)
 				{
@@ -6785,8 +6878,8 @@ namespace OOX{
 					*pNewElem = sVal;
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4SEPARATOR;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("showBubbleSize") == sName)
 				{
@@ -6794,8 +6887,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4SHOWBUBBLESIZE;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("showCatName") == sName)
 				{
@@ -6803,8 +6896,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4SHOWCATNAME;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("showLegendKey") == sName)
 				{
@@ -6812,8 +6905,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4SHOWLEGENDKEY;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("showPercent") == sName)
 				{
@@ -6821,8 +6914,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4SHOWPERCENT;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("showSerName") == sName)
 				{
@@ -6830,8 +6923,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4SHOWSERNAME;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("showVal") == sName)
 				{
@@ -6839,8 +6932,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4SHOWVAL;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("spPr") == sName)
 				{
@@ -6849,8 +6942,8 @@ namespace OOX{
 					*pNewElem = sVal;
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4SPPR;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("tx") == sName)
 				{
@@ -6858,8 +6951,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4TX;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("txPr") == sName)
 				{
@@ -6868,8 +6961,8 @@ namespace OOX{
 					*pNewElem = sVal;
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4TXPR;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -6887,7 +6980,7 @@ namespace OOX{
 			{
 				m_idx->toXML(CString(_T("c:idx")), writer);
 			}
-			for(int i = 0, length = m_Items.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_Items.size(); i < length; ++i)
 			{
 				ItemsChoiceType4 eType = *m_ItemsElementName0[i];
 				toXML(writer, false, eType, m_Items[i]);
@@ -7865,9 +7958,9 @@ namespace OOX{
 				delete m_formatCode;
 			if(NULL != m_ptCount)
 				delete m_ptCount;
-			for(int i = 0, length = m_pt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_pt.size(); i < length; ++i)
 				delete m_pt[i];
-			m_pt.RemoveAll();
+            m_pt.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -7895,7 +7988,7 @@ namespace OOX{
 				{
 					CT_NumVal* pNewElem = new CT_NumVal;
 					pNewElem->fromXML(oReader);
-					m_pt.Add(pNewElem);
+                    m_pt.push_back(pNewElem);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -7924,7 +8017,7 @@ namespace OOX{
 			{
 				m_ptCount->toXML(CString(_T("c:ptCount")), writer);
 			}
-			for(int i = 0, length = m_pt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_pt.size(); i < length; ++i)
 			{
 				CT_NumVal* pElem = m_pt[i];
 				if(NULL != pElem)
@@ -8264,9 +8357,9 @@ namespace OOX{
 		}
 		CT_lvl::~CT_lvl()
 		{
-			for(int i = 0, length = m_pt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_pt.size(); i < length; ++i)
 				delete m_pt[i];
-			m_pt.RemoveAll();
+            m_pt.clear();
 		}
 		void CT_lvl::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -8279,7 +8372,7 @@ namespace OOX{
 				{
 					CT_StrVal* pNewElem = new CT_StrVal;
 					pNewElem->fromXML(oReader);
-					m_pt.Add(pNewElem);
+                    m_pt.push_back(pNewElem);
 				}
 			}
 		}
@@ -8287,7 +8380,7 @@ namespace OOX{
 			writer.WriteString(CString(_T("<")));
 			writer.WriteString(sNodeName);
 			writer.WriteString(CString(_T(">")));
-			for(int i = 0, length = m_pt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_pt.size(); i < length; ++i)
 			{
 				CT_StrVal* pElem = m_pt[i];
 				if(NULL != pElem)
@@ -8309,9 +8402,9 @@ namespace OOX{
 		{
 			if(NULL != m_ptCount)
 				delete m_ptCount;
-			for(int i = 0, length = m_lvl.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_lvl.size(); i < length; ++i)
 				delete m_lvl[i];
-			m_lvl.RemoveAll();
+            m_lvl.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -8332,7 +8425,7 @@ namespace OOX{
 				{
 					CT_lvl* pNewElem = new CT_lvl;
 					pNewElem->fromXML(oReader);
-					m_lvl.Add(pNewElem);
+                    m_lvl.push_back(pNewElem);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -8350,7 +8443,7 @@ namespace OOX{
 			{
 				m_ptCount->toXML(CString(_T("c:ptCount")), writer);
 			}
-			for(int i = 0, length = m_lvl.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_lvl.size(); i < length; ++i)
 			{
 				CT_lvl* pElem = m_lvl[i];
 				if(NULL != pElem)
@@ -8381,9 +8474,9 @@ namespace OOX{
 		{
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 				delete m_ser[i];
-			m_ser.RemoveAll();
+            m_ser.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
 			if(NULL != m_bubble3D)
@@ -8394,9 +8487,9 @@ namespace OOX{
 				delete m_showNegBubbles;
 			if(NULL != m_sizeRepresents)
 				delete m_sizeRepresents;
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 				delete m_axId[i];
-			m_axId.RemoveAll();
+            m_axId.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -8417,7 +8510,7 @@ namespace OOX{
 				{
 					CT_BubbleSer* pNewElem = new CT_BubbleSer;
 					pNewElem->fromXML(oReader);
-					m_ser.Add(pNewElem);
+                    m_ser.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -8453,7 +8546,7 @@ namespace OOX{
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
 					pNewElem->fromXML(oReader);
-					m_axId.Add(pNewElem);
+                    m_axId.push_back(pNewElem);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -8471,7 +8564,7 @@ namespace OOX{
 			{
 				m_varyColors->toXML(CString(_T("c:varyColors")), writer);
 			}
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_BubbleSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -8499,7 +8592,7 @@ namespace OOX{
 			{
 				m_sizeRepresents->toXML(CString(_T("c:sizeRepresents")), writer);
 			}
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -8521,9 +8614,9 @@ namespace OOX{
 		}
 		CT_bandFmts::~CT_bandFmts()
 		{
-			for(int i = 0, length = m_bandFmt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_bandFmt.size(); i < length; ++i)
 				delete m_bandFmt[i];
-			m_bandFmt.RemoveAll();
+            m_bandFmt.clear();
 		}
 		void CT_bandFmts::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -8536,7 +8629,7 @@ namespace OOX{
 				{
 					CT_BandFmt* pNewElem = new CT_BandFmt;
 					pNewElem->fromXML(oReader);
-					m_bandFmt.Add(pNewElem);
+                    m_bandFmt.push_back(pNewElem);
 				}
 			}
 		}
@@ -8544,7 +8637,7 @@ namespace OOX{
 			writer.WriteString(CString(_T("<")));
 			writer.WriteString(sNodeName);
 			writer.WriteString(CString(_T(">")));
-			for(int i = 0, length = m_bandFmt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_bandFmt.size(); i < length; ++i)
 			{
 				CT_BandFmt* pElem = m_bandFmt[i];
 				if(NULL != pElem)
@@ -8567,14 +8660,14 @@ namespace OOX{
 		{
 			if(NULL != m_wireframe)
 				delete m_wireframe;
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 				delete m_ser[i];
-			m_ser.RemoveAll();
+            m_ser.clear();
 			if(NULL != m_bandFmts)
 				delete m_bandFmts;
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 				delete m_axId[i];
-			m_axId.RemoveAll();
+            m_axId.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -8595,7 +8688,7 @@ namespace OOX{
 				{
 					CT_SurfaceSer* pNewElem = new CT_SurfaceSer;
 					pNewElem->fromXML(oReader);
-					m_ser.Add(pNewElem);
+                    m_ser.push_back(pNewElem);
 				}
 				else if(_T("bandFmts") == sName)
 				{
@@ -8607,7 +8700,7 @@ namespace OOX{
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
 					pNewElem->fromXML(oReader);
-					m_axId.Add(pNewElem);
+                    m_axId.push_back(pNewElem);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -8625,7 +8718,7 @@ namespace OOX{
 			{
 				m_wireframe->toXML(CString(_T("c:wireframe")), writer);
 			}
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_SurfaceSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -8637,7 +8730,7 @@ namespace OOX{
 			{
 				m_bandFmts->toXML(CString(_T("c:bandFmts")), writer);
 			}
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -8833,14 +8926,14 @@ namespace OOX{
 		{
 			if(NULL != m_wireframe)
 				delete m_wireframe;
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 				delete m_ser[i];
-			m_ser.RemoveAll();
+            m_ser.clear();
 			if(NULL != m_bandFmts)
 				delete m_bandFmts;
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 				delete m_axId[i];
-			m_axId.RemoveAll();
+            m_axId.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -8861,7 +8954,7 @@ namespace OOX{
 				{
 					CT_SurfaceSer* pNewElem = new CT_SurfaceSer;
 					pNewElem->fromXML(oReader);
-					m_ser.Add(pNewElem);
+                    m_ser.push_back(pNewElem);
 				}
 				else if(_T("bandFmts") == sName)
 				{
@@ -8873,7 +8966,7 @@ namespace OOX{
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
 					pNewElem->fromXML(oReader);
-					m_axId.Add(pNewElem);
+                    m_axId.push_back(pNewElem);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -8891,7 +8984,7 @@ namespace OOX{
 			{
 				m_wireframe->toXML(CString(_T("c:wireframe")), writer);
 			}
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_SurfaceSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -8903,7 +8996,7 @@ namespace OOX{
 			{
 				m_bandFmts->toXML(CString(_T("c:bandFmts")), writer);
 			}
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -9060,9 +9153,9 @@ namespace OOX{
 		}
 		CT_custSplit::~CT_custSplit()
 		{
-			for(int i = 0, length = m_secondPiePt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_secondPiePt.size(); i < length; ++i)
 				delete m_secondPiePt[i];
-			m_secondPiePt.RemoveAll();
+            m_secondPiePt.clear();
 		}
 		void CT_custSplit::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -9075,7 +9168,7 @@ namespace OOX{
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
 					pNewElem->fromXML(oReader);
-					m_secondPiePt.Add(pNewElem);
+                    m_secondPiePt.push_back(pNewElem);
 				}
 			}
 		}
@@ -9083,7 +9176,7 @@ namespace OOX{
 			writer.WriteString(CString(_T("<")));
 			writer.WriteString(sNodeName);
 			writer.WriteString(CString(_T(">")));
-			for(int i = 0, length = m_secondPiePt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_secondPiePt.size(); i < length; ++i)
 			{
 				CT_UnsignedInt* pElem = m_secondPiePt[i];
 				if(NULL != pElem)
@@ -9114,9 +9207,9 @@ namespace OOX{
 				delete m_ofPieType;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 				delete m_ser[i];
-			m_ser.RemoveAll();
+            m_ser.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
 			if(NULL != m_gapWidth)
@@ -9129,9 +9222,9 @@ namespace OOX{
 				delete m_custSplit;
 			if(NULL != m_secondPieSize)
 				delete m_secondPieSize;
-			for(int i = 0, length = m_serLines.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_serLines.size(); i < length; ++i)
 				delete m_serLines[i];
-			m_serLines.RemoveAll();
+            m_serLines.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -9158,7 +9251,7 @@ namespace OOX{
 				{
 					CT_PieSer* pNewElem = new CT_PieSer;
 					pNewElem->fromXML(oReader);
-					m_ser.Add(pNewElem);
+                    m_ser.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -9200,7 +9293,7 @@ namespace OOX{
 				{
 					CT_ChartLines* pNewElem = new CT_ChartLines;
 					pNewElem->fromXML(oReader);
-					m_serLines.Add(pNewElem);
+                    m_serLines.push_back(pNewElem);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -9222,7 +9315,7 @@ namespace OOX{
 			{
 				m_varyColors->toXML(CString(_T("c:varyColors")), writer);
 			}
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_PieSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -9254,7 +9347,7 @@ namespace OOX{
 			{
 				m_secondPieSize->toXML(CString(_T("c:secondPieSize")), writer);
 			}
-			for(int i = 0, length = m_serLines.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_serLines.size(); i < length; ++i)
 			{
 				CT_ChartLines* pElem = m_serLines[i];
 				if(NULL != pElem)
@@ -9295,9 +9388,9 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_explosion)
 				delete m_explosion;
-			for(int i = 0, length = m_dPt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_dPt.size(); i < length; ++i)
 				delete m_dPt[i];
-			m_dPt.RemoveAll();
+            m_dPt.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
 			if(NULL != m_cat)
@@ -9350,7 +9443,7 @@ namespace OOX{
 				{
 					CT_DPt* pNewElem = new CT_DPt;
 					pNewElem->fromXML(oReader);
-					m_dPt.Add(pNewElem);
+                    m_dPt.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -9402,7 +9495,7 @@ namespace OOX{
 			{
 				m_explosion->toXML(CString(_T("c:explosion")), writer);
 			}
-			for(int i = 0, length = m_dPt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_dPt.size(); i < length; ++i)
 			{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
@@ -9495,9 +9588,9 @@ namespace OOX{
 				delete m_grouping;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 				delete m_ser[i];
-			m_ser.RemoveAll();
+            m_ser.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
 			if(NULL != m_gapWidth)
@@ -9506,9 +9599,9 @@ namespace OOX{
 				delete m_gapDepth;
 			if(NULL != m_shape)
 				delete m_shape;
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 				delete m_axId[i];
-			m_axId.RemoveAll();
+            m_axId.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -9541,7 +9634,7 @@ namespace OOX{
 				{
 					CT_BarSer* pNewElem = new CT_BarSer;
 					pNewElem->fromXML(oReader);
-					m_ser.Add(pNewElem);
+                    m_ser.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -9571,7 +9664,7 @@ namespace OOX{
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
 					pNewElem->fromXML(oReader);
-					m_axId.Add(pNewElem);
+                    m_axId.push_back(pNewElem);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -9597,7 +9690,7 @@ namespace OOX{
 			{
 				m_varyColors->toXML(CString(_T("c:varyColors")), writer);
 			}
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_BarSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -9621,7 +9714,7 @@ namespace OOX{
 			{
 				m_shape->toXML(CString(_T("c:shape")), writer);
 			}
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -9757,14 +9850,14 @@ namespace OOX{
 				delete m_invertIfNegative;
 			if(NULL != m_pictureOptions)
 				delete m_pictureOptions;
-			for(int i = 0, length = m_dPt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_dPt.size(); i < length; ++i)
 				delete m_dPt[i];
-			m_dPt.RemoveAll();
+            m_dPt.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
-			for(int i = 0, length = m_trendline.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_trendline.size(); i < length; ++i)
 				delete m_trendline[i];
-			m_trendline.RemoveAll();
+            m_trendline.clear();
 			if(NULL != m_errBars)
 				delete m_errBars;
 			if(NULL != m_cat)
@@ -9825,7 +9918,7 @@ namespace OOX{
 				{
 					CT_DPt* pNewElem = new CT_DPt;
 					pNewElem->fromXML(oReader);
-					m_dPt.Add(pNewElem);
+                    m_dPt.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -9837,7 +9930,7 @@ namespace OOX{
 				{
 					CT_Trendline* pNewElem = new CT_Trendline;
 					pNewElem->fromXML(oReader);
-					m_trendline.Add(pNewElem);
+                    m_trendline.push_back(pNewElem);
 				}
 				else if(_T("errBars") == sName)
 				{
@@ -9899,7 +9992,7 @@ namespace OOX{
 			{
 				m_pictureOptions->toXML(CString(_T("c:pictureOptions")), writer);
 			}
-			for(int i = 0, length = m_dPt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_dPt.size(); i < length; ++i)
 			{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
@@ -9911,7 +10004,7 @@ namespace OOX{
 			{
 				m_dLbls->toXML(CString(_T("c:dLbls")), writer);
 			}
-			for(int i = 0, length = m_trendline.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_trendline.size(); i < length; ++i)
 			{
 				CT_Trendline* pElem = m_trendline[i];
 				if(NULL != pElem)
@@ -10052,21 +10145,21 @@ namespace OOX{
 				delete m_grouping;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 				delete m_ser[i];
-			m_ser.RemoveAll();
+            m_ser.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
 			if(NULL != m_gapWidth)
 				delete m_gapWidth;
 			if(NULL != m_overlap)
 				delete m_overlap;
-			for(int i = 0, length = m_serLines.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_serLines.size(); i < length; ++i)
 				delete m_serLines[i];
-			m_serLines.RemoveAll();
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            m_serLines.clear();
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 				delete m_axId[i];
-			m_axId.RemoveAll();
+            m_axId.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -10099,7 +10192,7 @@ namespace OOX{
 				{
 					CT_BarSer* pNewElem = new CT_BarSer;
 					pNewElem->fromXML(oReader);
-					m_ser.Add(pNewElem);
+                    m_ser.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -10123,13 +10216,13 @@ namespace OOX{
 				{
 					CT_ChartLines* pNewElem = new CT_ChartLines;
 					pNewElem->fromXML(oReader);
-					m_serLines.Add(pNewElem);
+                    m_serLines.push_back(pNewElem);
 				}
 				else if(_T("axId") == sName)
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
 					pNewElem->fromXML(oReader);
-					m_axId.Add(pNewElem);
+                    m_axId.push_back(pNewElem);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -10155,7 +10248,7 @@ namespace OOX{
 			{
 				m_varyColors->toXML(CString(_T("c:varyColors")), writer);
 			}
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_BarSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -10175,7 +10268,7 @@ namespace OOX{
 			{
 				m_overlap->toXML(CString(_T("c:overlap")), writer);
 			}
-			for(int i = 0, length = m_serLines.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_serLines.size(); i < length; ++i)
 			{
 				CT_ChartLines* pElem = m_serLines[i];
 				if(NULL != pElem)
@@ -10183,7 +10276,7 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:serLines")), writer);
 				}
 			}
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -10257,9 +10350,9 @@ namespace OOX{
 		{
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 				delete m_ser[i];
-			m_ser.RemoveAll();
+            m_ser.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
 			if(NULL != m_firstSliceAng)
@@ -10286,7 +10379,7 @@ namespace OOX{
 				{
 					CT_PieSer* pNewElem = new CT_PieSer;
 					pNewElem->fromXML(oReader);
-					m_ser.Add(pNewElem);
+                    m_ser.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -10322,7 +10415,7 @@ namespace OOX{
 			{
 				m_varyColors->toXML(CString(_T("c:varyColors")), writer);
 			}
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_PieSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -10406,9 +10499,9 @@ namespace OOX{
 		{
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 				delete m_ser[i];
-			m_ser.RemoveAll();
+            m_ser.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
 			if(NULL != m_extLst)
@@ -10431,7 +10524,7 @@ namespace OOX{
 				{
 					CT_PieSer* pNewElem = new CT_PieSer;
 					pNewElem->fromXML(oReader);
-					m_ser.Add(pNewElem);
+                    m_ser.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -10455,7 +10548,7 @@ namespace OOX{
 			{
 				m_varyColors->toXML(CString(_T("c:varyColors")), writer);
 			}
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_PieSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -10487,9 +10580,9 @@ namespace OOX{
 		{
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 				delete m_ser[i];
-			m_ser.RemoveAll();
+            m_ser.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
 			if(NULL != m_firstSliceAng)
@@ -10514,7 +10607,7 @@ namespace OOX{
 				{
 					CT_PieSer* pNewElem = new CT_PieSer;
 					pNewElem->fromXML(oReader);
-					m_ser.Add(pNewElem);
+                    m_ser.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -10544,7 +10637,7 @@ namespace OOX{
 			{
 				m_varyColors->toXML(CString(_T("c:varyColors")), writer);
 			}
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_PieSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -10594,17 +10687,17 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_marker)
 				delete m_marker;
-			for(int i = 0, length = m_dPt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_dPt.size(); i < length; ++i)
 				delete m_dPt[i];
-			m_dPt.RemoveAll();
+            m_dPt.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
-			for(int i = 0, length = m_trendline.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_trendline.size(); i < length; ++i)
 				delete m_trendline[i];
-			m_trendline.RemoveAll();
-			for(int i = 0, length = m_errBars.GetCount(); i < length; ++i)
+            m_trendline.clear();
+            for(int i = 0, length = m_errBars.size(); i < length; ++i)
 				delete m_errBars[i];
-			m_errBars.RemoveAll();
+            m_errBars.clear();
 			if(NULL != m_xVal)
 				delete m_xVal;
 			if(NULL != m_yVal)
@@ -10657,7 +10750,7 @@ namespace OOX{
 				{
 					CT_DPt* pNewElem = new CT_DPt;
 					pNewElem->fromXML(oReader);
-					m_dPt.Add(pNewElem);
+                    m_dPt.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -10669,13 +10762,13 @@ namespace OOX{
 				{
 					CT_Trendline* pNewElem = new CT_Trendline;
 					pNewElem->fromXML(oReader);
-					m_trendline.Add(pNewElem);
+                    m_trendline.push_back(pNewElem);
 				}
 				else if(_T("errBars") == sName)
 				{
 					CT_ErrBars* pNewElem = new CT_ErrBars;
 					pNewElem->fromXML(oReader);
-					m_errBars.Add(pNewElem);
+                    m_errBars.push_back(pNewElem);
 				}
 				else if(_T("xVal") == sName)
 				{
@@ -10727,7 +10820,7 @@ namespace OOX{
 			{
 				m_marker->toXML(CString(_T("c:marker")), writer);
 			}
-			for(int i = 0, length = m_dPt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_dPt.size(); i < length; ++i)
 			{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
@@ -10739,7 +10832,7 @@ namespace OOX{
 			{
 				m_dLbls->toXML(CString(_T("c:dLbls")), writer);
 			}
-			for(int i = 0, length = m_trendline.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_trendline.size(); i < length; ++i)
 			{
 				CT_Trendline* pElem = m_trendline[i];
 				if(NULL != pElem)
@@ -10747,7 +10840,7 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:trendline")), writer);
 				}
 			}
-			for(int i = 0, length = m_errBars.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_errBars.size(); i < length; ++i)
 			{
 				CT_ErrBars* pElem = m_errBars[i];
 				if(NULL != pElem)
@@ -10834,14 +10927,14 @@ namespace OOX{
 				delete m_scatterStyle;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 				delete m_ser[i];
-			m_ser.RemoveAll();
+            m_ser.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 				delete m_axId[i];
-			m_axId.RemoveAll();
+            m_axId.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -10868,7 +10961,7 @@ namespace OOX{
 				{
 					CT_ScatterSer* pNewElem = new CT_ScatterSer;
 					pNewElem->fromXML(oReader);
-					m_ser.Add(pNewElem);
+                    m_ser.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -10880,7 +10973,7 @@ namespace OOX{
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
 					pNewElem->fromXML(oReader);
-					m_axId.Add(pNewElem);
+                    m_axId.push_back(pNewElem);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -10902,7 +10995,7 @@ namespace OOX{
 			{
 				m_varyColors->toXML(CString(_T("c:varyColors")), writer);
 			}
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_ScatterSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -10914,7 +11007,7 @@ namespace OOX{
 			{
 				m_dLbls->toXML(CString(_T("c:dLbls")), writer);
 			}
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -10955,9 +11048,9 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_marker)
 				delete m_marker;
-			for(int i = 0, length = m_dPt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_dPt.size(); i < length; ++i)
 				delete m_dPt[i];
-			m_dPt.RemoveAll();
+            m_dPt.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
 			if(NULL != m_cat)
@@ -11010,7 +11103,7 @@ namespace OOX{
 				{
 					CT_DPt* pNewElem = new CT_DPt;
 					pNewElem->fromXML(oReader);
-					m_dPt.Add(pNewElem);
+                    m_dPt.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -11062,7 +11155,7 @@ namespace OOX{
 			{
 				m_marker->toXML(CString(_T("c:marker")), writer);
 			}
-			for(int i = 0, length = m_dPt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_dPt.size(); i < length; ++i)
 			{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
@@ -11149,14 +11242,14 @@ namespace OOX{
 				delete m_radarStyle;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 				delete m_ser[i];
-			m_ser.RemoveAll();
+            m_ser.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 				delete m_axId[i];
-			m_axId.RemoveAll();
+            m_axId.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -11183,7 +11276,7 @@ namespace OOX{
 				{
 					CT_RadarSer* pNewElem = new CT_RadarSer;
 					pNewElem->fromXML(oReader);
-					m_ser.Add(pNewElem);
+                    m_ser.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -11195,7 +11288,7 @@ namespace OOX{
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
 					pNewElem->fromXML(oReader);
-					m_axId.Add(pNewElem);
+                    m_axId.push_back(pNewElem);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -11217,7 +11310,7 @@ namespace OOX{
 			{
 				m_varyColors->toXML(CString(_T("c:varyColors")), writer);
 			}
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_RadarSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -11229,7 +11322,7 @@ namespace OOX{
 			{
 				m_dLbls->toXML(CString(_T("c:dLbls")), writer);
 			}
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -11256,9 +11349,9 @@ namespace OOX{
 		}
 		CT_StockChart::~CT_StockChart()
 		{
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 				delete m_ser[i];
-			m_ser.RemoveAll();
+            m_ser.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
 			if(NULL != m_dropLines)
@@ -11267,9 +11360,9 @@ namespace OOX{
 				delete m_hiLowLines;
 			if(NULL != m_upDownBars)
 				delete m_upDownBars;
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 				delete m_axId[i];
-			m_axId.RemoveAll();
+            m_axId.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -11284,7 +11377,7 @@ namespace OOX{
 				{
 					CT_LineSer* pNewElem = new CT_LineSer;
 					pNewElem->fromXML(oReader);
-					m_ser.Add(pNewElem);
+                    m_ser.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -11314,7 +11407,7 @@ namespace OOX{
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
 					pNewElem->fromXML(oReader);
-					m_axId.Add(pNewElem);
+                    m_axId.push_back(pNewElem);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -11328,7 +11421,7 @@ namespace OOX{
 			writer.WriteString(CString(_T("<")));
 			writer.WriteString(sNodeName);
 			writer.WriteString(CString(_T(">")));
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_LineSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -11352,7 +11445,7 @@ namespace OOX{
 			{
 				m_upDownBars->toXML(CString(_T("c:upDownBars")), writer);
 			}
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -11395,14 +11488,14 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_marker)
 				delete m_marker;
-			for(int i = 0, length = m_dPt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_dPt.size(); i < length; ++i)
 				delete m_dPt[i];
-			m_dPt.RemoveAll();
+            m_dPt.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
-			for(int i = 0, length = m_trendline.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_trendline.size(); i < length; ++i)
 				delete m_trendline[i];
-			m_trendline.RemoveAll();
+            m_trendline.clear();
 			if(NULL != m_errBars)
 				delete m_errBars;
 			if(NULL != m_cat)
@@ -11457,7 +11550,7 @@ namespace OOX{
 				{
 					CT_DPt* pNewElem = new CT_DPt;
 					pNewElem->fromXML(oReader);
-					m_dPt.Add(pNewElem);
+                    m_dPt.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -11469,7 +11562,7 @@ namespace OOX{
 				{
 					CT_Trendline* pNewElem = new CT_Trendline;
 					pNewElem->fromXML(oReader);
-					m_trendline.Add(pNewElem);
+                    m_trendline.push_back(pNewElem);
 				}
 				else if(_T("errBars") == sName)
 				{
@@ -11527,7 +11620,7 @@ namespace OOX{
 			{
 				m_marker->toXML(CString(_T("c:marker")), writer);
 			}
-			for(int i = 0, length = m_dPt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_dPt.size(); i < length; ++i)
 			{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
@@ -11539,7 +11632,7 @@ namespace OOX{
 			{
 				m_dLbls->toXML(CString(_T("c:dLbls")), writer);
 			}
-			for(int i = 0, length = m_trendline.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_trendline.size(); i < length; ++i)
 			{
 				CT_Trendline* pElem = m_trendline[i];
 				if(NULL != pElem)
@@ -11702,18 +11795,18 @@ namespace OOX{
 				delete m_grouping;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 				delete m_ser[i];
-			m_ser.RemoveAll();
+            m_ser.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
 			if(NULL != m_dropLines)
 				delete m_dropLines;
 			if(NULL != m_gapDepth)
 				delete m_gapDepth;
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 				delete m_axId[i];
-			m_axId.RemoveAll();
+            m_axId.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -11740,7 +11833,7 @@ namespace OOX{
 				{
 					CT_LineSer* pNewElem = new CT_LineSer;
 					pNewElem->fromXML(oReader);
-					m_ser.Add(pNewElem);
+                    m_ser.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -11764,7 +11857,7 @@ namespace OOX{
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
 					pNewElem->fromXML(oReader);
-					m_axId.Add(pNewElem);
+                    m_axId.push_back(pNewElem);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -11786,7 +11879,7 @@ namespace OOX{
 			{
 				m_varyColors->toXML(CString(_T("c:varyColors")), writer);
 			}
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_LineSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -11806,7 +11899,7 @@ namespace OOX{
 			{
 				m_gapDepth->toXML(CString(_T("c:gapDepth")), writer);
 			}
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -11886,9 +11979,9 @@ namespace OOX{
 				delete m_grouping;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 				delete m_ser[i];
-			m_ser.RemoveAll();
+            m_ser.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
 			if(NULL != m_dropLines)
@@ -11901,9 +11994,9 @@ namespace OOX{
 				delete m_marker;
 			if(NULL != m_smooth)
 				delete m_smooth;
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 				delete m_axId[i];
-			m_axId.RemoveAll();
+            m_axId.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -11930,7 +12023,7 @@ namespace OOX{
 				{
 					CT_LineSer* pNewElem = new CT_LineSer;
 					pNewElem->fromXML(oReader);
-					m_ser.Add(pNewElem);
+                    m_ser.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -11972,7 +12065,7 @@ namespace OOX{
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
 					pNewElem->fromXML(oReader);
-					m_axId.Add(pNewElem);
+                    m_axId.push_back(pNewElem);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -11994,7 +12087,7 @@ namespace OOX{
 			{
 				m_varyColors->toXML(CString(_T("c:varyColors")), writer);
 			}
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_LineSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -12026,7 +12119,7 @@ namespace OOX{
 			{
 				m_smooth->toXML(CString(_T("c:smooth")), writer);
 			}
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -12058,18 +12151,18 @@ namespace OOX{
 				delete m_grouping;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 				delete m_ser[i];
-			m_ser.RemoveAll();
+            m_ser.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
 			if(NULL != m_dropLines)
 				delete m_dropLines;
 			if(NULL != m_gapDepth)
 				delete m_gapDepth;
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 				delete m_axId[i];
-			m_axId.RemoveAll();
+            m_axId.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -12096,7 +12189,7 @@ namespace OOX{
 				{
 					CT_AreaSer* pNewElem = new CT_AreaSer;
 					pNewElem->fromXML(oReader);
-					m_ser.Add(pNewElem);
+                    m_ser.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -12120,7 +12213,7 @@ namespace OOX{
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
 					pNewElem->fromXML(oReader);
-					m_axId.Add(pNewElem);
+                    m_axId.push_back(pNewElem);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -12142,7 +12235,7 @@ namespace OOX{
 			{
 				m_varyColors->toXML(CString(_T("c:varyColors")), writer);
 			}
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_AreaSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -12162,7 +12255,7 @@ namespace OOX{
 			{
 				m_gapDepth->toXML(CString(_T("c:gapDepth")), writer);
 			}
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -12203,17 +12296,17 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_pictureOptions)
 				delete m_pictureOptions;
-			for(int i = 0, length = m_dPt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_dPt.size(); i < length; ++i)
 				delete m_dPt[i];
-			m_dPt.RemoveAll();
+            m_dPt.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
-			for(int i = 0, length = m_trendline.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_trendline.size(); i < length; ++i)
 				delete m_trendline[i];
-			m_trendline.RemoveAll();
-			for(int i = 0, length = m_errBars.GetCount(); i < length; ++i)
+            m_trendline.clear();
+            for(int i = 0, length = m_errBars.size(); i < length; ++i)
 				delete m_errBars[i];
-			m_errBars.RemoveAll();
+            m_errBars.clear();
 			if(NULL != m_cat)
 				delete m_cat;
 			if(NULL != m_val)
@@ -12264,7 +12357,7 @@ namespace OOX{
 				{
 					CT_DPt* pNewElem = new CT_DPt;
 					pNewElem->fromXML(oReader);
-					m_dPt.Add(pNewElem);
+                    m_dPt.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -12276,13 +12369,13 @@ namespace OOX{
 				{
 					CT_Trendline* pNewElem = new CT_Trendline;
 					pNewElem->fromXML(oReader);
-					m_trendline.Add(pNewElem);
+                    m_trendline.push_back(pNewElem);
 				}
 				else if(_T("errBars") == sName)
 				{
 					CT_ErrBars* pNewElem = new CT_ErrBars;
 					pNewElem->fromXML(oReader);
-					m_errBars.Add(pNewElem);
+                    m_errBars.push_back(pNewElem);
 				}
 				else if(_T("cat") == sName)
 				{
@@ -12328,7 +12421,7 @@ namespace OOX{
 			{
 				m_pictureOptions->toXML(CString(_T("c:pictureOptions")), writer);
 			}
-			for(int i = 0, length = m_dPt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_dPt.size(); i < length; ++i)
 			{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
@@ -12340,7 +12433,7 @@ namespace OOX{
 			{
 				m_dLbls->toXML(CString(_T("c:dLbls")), writer);
 			}
-			for(int i = 0, length = m_trendline.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_trendline.size(); i < length; ++i)
 			{
 				CT_Trendline* pElem = m_trendline[i];
 				if(NULL != pElem)
@@ -12348,7 +12441,7 @@ namespace OOX{
 					pElem->toXML(CString(_T("c:trendline")), writer);
 				}
 			}
-			for(int i = 0, length = m_errBars.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_errBars.size(); i < length; ++i)
 			{
 				CT_ErrBars* pElem = m_errBars[i];
 				if(NULL != pElem)
@@ -12387,16 +12480,16 @@ namespace OOX{
 				delete m_grouping;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 				delete m_ser[i];
-			m_ser.RemoveAll();
+            m_ser.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
 			if(NULL != m_dropLines)
 				delete m_dropLines;
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 				delete m_axId[i];
-			m_axId.RemoveAll();
+            m_axId.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -12423,7 +12516,7 @@ namespace OOX{
 				{
 					CT_AreaSer* pNewElem = new CT_AreaSer;
 					pNewElem->fromXML(oReader);
-					m_ser.Add(pNewElem);
+                    m_ser.push_back(pNewElem);
 				}
 				else if(_T("dLbls") == sName)
 				{
@@ -12441,7 +12534,7 @@ namespace OOX{
 				{
 					CT_UnsignedInt* pNewElem = new CT_UnsignedInt;
 					pNewElem->fromXML(oReader);
-					m_axId.Add(pNewElem);
+                    m_axId.push_back(pNewElem);
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -12463,7 +12556,7 @@ namespace OOX{
 			{
 				m_varyColors->toXML(CString(_T("c:varyColors")), writer);
 			}
-			for(int i = 0, length = m_ser.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_AreaSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -12479,7 +12572,7 @@ namespace OOX{
 			{
 				m_dropLines->toXML(CString(_T("c:dropLines")), writer);
 			}
-			for(int i = 0, length = m_axId.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_axId.size(); i < length; ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -12507,18 +12600,18 @@ namespace OOX{
 		{
 			if(NULL != m_layout)
 				delete m_layout;
-			for(int i = 0, length = m_ItemsElementName0.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_ItemsElementName0.size(); i < length; ++i)
 				delete m_ItemsElementName0[i];
-			m_ItemsElementName0.RemoveAll();
-			for(int i = 0, length = m_Items.GetCount(); i < length; ++i)
+            m_ItemsElementName0.clear();
+            for(int i = 0, length = m_Items.size(); i < length; ++i)
 				delete m_Items[i];
-			m_Items.RemoveAll();
-			for(int i = 0, length = m_ItemsElementName1.GetCount(); i < length; ++i)
+            m_Items.clear();
+            for(int i = 0, length = m_ItemsElementName1.size(); i < length; ++i)
 				delete m_ItemsElementName1[i];
-			m_ItemsElementName1.RemoveAll();
-			for(int i = 0, length = m_Items1.GetCount(); i < length; ++i)
+            m_ItemsElementName1.clear();
+            for(int i = 0, length = m_Items1.size(); i < length; ++i)
 				delete m_Items1[i];
-			m_Items1.RemoveAll();
+            m_Items1.clear();
 			if(NULL != m_dTable)
 				delete m_dTable;
 			if(NULL != m_spPr)
@@ -12545,8 +12638,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType5* eElemtype = new ItemsChoiceType5;
 					*eElemtype = itemschoicetype5AREA3DCHART;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("areaChart") == sName)
 				{
@@ -12554,8 +12647,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType5* eElemtype = new ItemsChoiceType5;
 					*eElemtype = itemschoicetype5AREACHART;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("bar3DChart") == sName)
 				{
@@ -12563,8 +12656,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType5* eElemtype = new ItemsChoiceType5;
 					*eElemtype = itemschoicetype5BAR3DCHART;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("barChart") == sName)
 				{
@@ -12572,8 +12665,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType5* eElemtype = new ItemsChoiceType5;
 					*eElemtype = itemschoicetype5BARCHART;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("bubbleChart") == sName)
 				{
@@ -12581,8 +12674,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType5* eElemtype = new ItemsChoiceType5;
 					*eElemtype = itemschoicetype5BUBBLECHART;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("doughnutChart") == sName)
 				{
@@ -12590,8 +12683,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType5* eElemtype = new ItemsChoiceType5;
 					*eElemtype = itemschoicetype5DOUGHNUTCHART;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("line3DChart") == sName)
 				{
@@ -12599,8 +12692,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType5* eElemtype = new ItemsChoiceType5;
 					*eElemtype = itemschoicetype5LINE3DCHART;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("lineChart") == sName)
 				{
@@ -12608,8 +12701,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType5* eElemtype = new ItemsChoiceType5;
 					*eElemtype = itemschoicetype5LINECHART;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("ofPieChart") == sName)
 				{
@@ -12617,8 +12710,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType5* eElemtype = new ItemsChoiceType5;
 					*eElemtype = itemschoicetype5OFPIECHART;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("pie3DChart") == sName)
 				{
@@ -12626,8 +12719,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType5* eElemtype = new ItemsChoiceType5;
 					*eElemtype = itemschoicetype5PIE3DCHART;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("pieChart") == sName)
 				{
@@ -12635,8 +12728,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType5* eElemtype = new ItemsChoiceType5;
 					*eElemtype = itemschoicetype5PIECHART;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("radarChart") == sName)
 				{
@@ -12644,8 +12737,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType5* eElemtype = new ItemsChoiceType5;
 					*eElemtype = itemschoicetype5RADARCHART;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("scatterChart") == sName)
 				{
@@ -12653,8 +12746,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType5* eElemtype = new ItemsChoiceType5;
 					*eElemtype = itemschoicetype5SCATTERCHART;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("stockChart") == sName)
 				{
@@ -12662,8 +12755,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType5* eElemtype = new ItemsChoiceType5;
 					*eElemtype = itemschoicetype5STOCKCHART;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("surface3DChart") == sName)
 				{
@@ -12671,8 +12764,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType5* eElemtype = new ItemsChoiceType5;
 					*eElemtype = itemschoicetype5SURFACE3DCHART;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("surfaceChart") == sName)
 				{
@@ -12680,8 +12773,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType5* eElemtype = new ItemsChoiceType5;
 					*eElemtype = itemschoicetype5SURFACECHART;
-					m_Items.Add(pNewElem);
-					m_ItemsElementName0.Add(eElemtype);
+                    m_Items.push_back(pNewElem);
+                    m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("catAx") == sName)
 				{
@@ -12689,8 +12782,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType6* eElemtype = new ItemsChoiceType6;
 					*eElemtype = itemschoicetype6CATAX;
-					m_Items1.Add(pNewElem);
-					m_ItemsElementName1.Add(eElemtype);
+                    m_Items1.push_back(pNewElem);
+                    m_ItemsElementName1.push_back(eElemtype);
 				}
 				else if(_T("dateAx") == sName)
 				{
@@ -12698,8 +12791,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType6* eElemtype = new ItemsChoiceType6;
 					*eElemtype = itemschoicetype6DATEAX;
-					m_Items1.Add(pNewElem);
-					m_ItemsElementName1.Add(eElemtype);
+                    m_Items1.push_back(pNewElem);
+                    m_ItemsElementName1.push_back(eElemtype);
 				}
 				else if(_T("serAx") == sName)
 				{
@@ -12707,8 +12800,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType6* eElemtype = new ItemsChoiceType6;
 					*eElemtype = itemschoicetype6SERAX;
-					m_Items1.Add(pNewElem);
-					m_ItemsElementName1.Add(eElemtype);
+                    m_Items1.push_back(pNewElem);
+                    m_ItemsElementName1.push_back(eElemtype);
 				}
 				else if(_T("valAx") == sName)
 				{
@@ -12716,8 +12809,8 @@ namespace OOX{
 					pNewElem->fromXML(oReader);
 					ItemsChoiceType6* eElemtype = new ItemsChoiceType6;
 					*eElemtype = itemschoicetype6VALAX;
-					m_Items1.Add(pNewElem);
-					m_ItemsElementName1.Add(eElemtype);
+                    m_Items1.push_back(pNewElem);
+                    m_ItemsElementName1.push_back(eElemtype);
 				}
 				else if(_T("dTable") == sName)
 				{
@@ -12749,12 +12842,12 @@ namespace OOX{
 			{
 				m_layout->toXML(CString(_T("c:layout")), writer);
 			}
-			for(int i = 0, length = m_Items.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_Items.size(); i < length; ++i)
 			{
 				ItemsChoiceType5 eType = *m_ItemsElementName0[i];
 				toXML(writer, false, eType, m_Items[i]);
 			}
-			for(int i = 0, length = m_Items1.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_Items1.size(); i < length; ++i)
 			{
 				ItemsChoiceType6 eType = *m_ItemsElementName1[i];
 				toXML(writer, false, eType, m_Items1[i]);
@@ -13555,9 +13648,9 @@ namespace OOX{
 		}
 		CT_pivotFmts::~CT_pivotFmts()
 		{
-			for(int i = 0, length = m_pivotFmt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_pivotFmt.size(); i < length; ++i)
 				delete m_pivotFmt[i];
-			m_pivotFmt.RemoveAll();
+            m_pivotFmt.clear();
 		}
 		void CT_pivotFmts::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -13570,7 +13663,7 @@ namespace OOX{
 				{
 					CT_PivotFmt* pNewElem = new CT_PivotFmt;
 					pNewElem->fromXML(oReader);
-					m_pivotFmt.Add(pNewElem);
+                    m_pivotFmt.push_back(pNewElem);
 				}
 			}
 		}
@@ -13578,7 +13671,7 @@ namespace OOX{
 			writer.WriteString(CString(_T("<")));
 			writer.WriteString(sNodeName);
 			writer.WriteString(CString(_T(">")));
-			for(int i = 0, length = m_pivotFmt.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_pivotFmt.size(); i < length; ++i)
 			{
 				CT_PivotFmt* pElem = m_pivotFmt[i];
 				if(NULL != pElem)
@@ -13884,9 +13977,9 @@ namespace OOX{
 				delete m_name;
 			if(NULL != m_fmtId)
 				delete m_fmtId;
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_extLst.size(); i < length; ++i)
 				delete m_extLst[i];
-			m_extLst.RemoveAll();
+            m_extLst.clear();
 		}
 		void CT_PivotSource::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -13912,7 +14005,7 @@ namespace OOX{
 				{
 					CT_extLst* pNewElem = new CT_extLst;
 					pNewElem->fromXML(oReader);
-					m_extLst.Add(pNewElem);
+                    m_extLst.push_back(pNewElem);
 				}
 			}
 		}
@@ -13935,7 +14028,7 @@ namespace OOX{
 			{
 				m_fmtId->toXML(CString(_T("c:fmtId")), writer);
 			}
-			for(int i = 0, length = m_extLst.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_extLst.size(); i < length; ++i)
 			{
 				CT_extLst* pElem = m_extLst[i];
 				if(NULL != pElem)
@@ -14074,9 +14167,9 @@ namespace OOX{
 		}
 		AlternateContent::~AlternateContent()
 		{
-			for(int i = 0, length = m_Choice.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_Choice.size(); i < length; ++i)
 				delete m_Choice[i];
-			m_Choice.RemoveAll();
+            m_Choice.clear();
 			if(NULL != m_Fallback)
 				delete m_Fallback;
 		}
@@ -14091,7 +14184,7 @@ namespace OOX{
 				{
 					AlternateContentChoice* pNewElem = new AlternateContentChoice;
 					pNewElem->fromXML(oReader);
-					m_Choice.Add(pNewElem);
+                    m_Choice.push_back(pNewElem);
 				}
 				else if(_T("Fallback") == sName)
 				{
@@ -14105,7 +14198,7 @@ namespace OOX{
 			writer.WriteString(CString(_T("<")));
 			writer.WriteString(sNodeName);
 			writer.WriteString(CString(_T(">")));
-			for(int i = 0, length = m_Choice.GetCount(); i < length; ++i)
+            for(int i = 0, length = m_Choice.size(); i < length; ++i)
 			{
 				AlternateContentChoice* pElem = m_Choice[i];
 				if(NULL != pElem)

@@ -764,7 +764,7 @@ CFontInfo* CFontList::GetByParams(const CFontSelectFormat& oSelect)
 		//	nCurPenalty += GetSigPenalty( arrCandRanges, arrReqRanges );
 		//}
 
-		unsigned char unCharset = 0; 
+		unsigned char unCharset = UNKNOWN_CHARSET; 
 		if (NULL != oSelect.unCharset)
 			unCharset = *oSelect.unCharset;
 

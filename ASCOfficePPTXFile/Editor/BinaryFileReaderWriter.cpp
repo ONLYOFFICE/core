@@ -298,7 +298,6 @@ namespace NSBinPptxRW
 		m_lPosition = lPosition;
 		m_pStreamCur = m_pStreamData + m_lPosition;
 	}
-	//todo add
 	void CBinaryFileWriter::Skip(const ULONG& lSize)
 	{
 		CheckBufferSize(lSize);
@@ -396,7 +395,6 @@ namespace NSBinPptxRW
 		m_lPosition += BYTE_SIZEOF;
 		m_pStreamCur += BYTE_SIZEOF;
 	}
-	//todo add
 	void CBinaryFileWriter::WriteBOOL(const bool& bValue)
 	{			
 		WriteBYTE((bValue == true) ? 1 : 0);
@@ -417,7 +415,6 @@ namespace NSBinPptxRW
 		m_lPosition += ULONG_SIZEOF;
 		m_pStreamCur += ULONG_SIZEOF;
 	}
-	//todo add
 	void CBinaryFileWriter::WriteLONG(const long& lValue)
 	{
 		CheckBufferSize(LONG_SIZEOF);
@@ -439,7 +436,6 @@ namespace NSBinPptxRW
 		long _val = (long)(dValue * 100000);
 		WriteLONG(_val);
 	}
-//todo add
 	void CBinaryFileWriter::WriteDoubleReal(const double& dValue)
 	{
 		CheckBufferSize(DOUBLE_SIZEOF);
@@ -495,7 +491,6 @@ namespace NSBinPptxRW
 		WCHAR* pChars = sBuffer.GetBuffer();
 		WriteStringW(pChars);
 	}
-//todo add
 	void CBinaryFileWriter::WriteStringW2(const WCHAR* sBuffer)
 	{
 		LONG lSize = __wstrlen(sBuffer);
@@ -511,12 +506,10 @@ namespace NSBinPptxRW
 		m_lPosition += lSizeMem;
 		m_pStreamCur += lSizeMem;
 	}
-//todo add
 	void CBinaryFileWriter::WriteStringW2(CString& sBuffer)
 	{
 		WriteStringW2(sBuffer.GetBuffer());
 	}
-//todo add
 	void CBinaryFileWriter::WriteStringW3(const WCHAR* sBuffer)
 	{
 		LONG lSize = __wstrlen(sBuffer);
@@ -528,7 +521,6 @@ namespace NSBinPptxRW
 		m_lPosition += lSizeMem;
 		m_pStreamCur += lSizeMem;
 	}
-//todo add
 	void CBinaryFileWriter::WriteStringW3(CString& sBuffer)
 	{
 		WriteStringW3(sBuffer.GetBuffer());
@@ -1127,7 +1119,6 @@ namespace NSBinPptxRW
 			return 1;
 		return Seek(m_lPos + _skip);
 	}
-///todo add
 	bool CBinaryFileReader::Peek(int nSizeToRead = 0)
 	{
 		return !(m_lPos + nSizeToRead > m_lSize);
@@ -1178,12 +1169,10 @@ namespace NSBinPptxRW
 	{
 		return (LONG)GetULong();			
 	}
-	//todo add
 	double CBinaryFileReader::GetDouble()
 	{
 		return 1.0 * GetLong() / 100000;
 	}
-	//todo add
 	// 8 byte
 	double CBinaryFileReader::GetDoubleReal()
 	{
@@ -1272,7 +1261,6 @@ namespace NSBinPptxRW
 	{
 		return m_pData;
 	}
-//todo add
 	BYTE* CBinaryFileReader::GetPointer(int nSize = 0)
 	{
 		if (m_lPos + nSize > m_lSize)

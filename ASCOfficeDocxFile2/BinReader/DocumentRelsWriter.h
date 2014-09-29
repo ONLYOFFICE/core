@@ -48,8 +48,8 @@ namespace Writers
 		}
 		CString AddRels(CString sType, CString sTarget, bool bExternal = false)
 		{
-			SerializeCommon::CorrectString(sType);
-			SerializeCommon::CorrectString(sTarget);
+			sType = XmlUtils::EncodeXmlString(sType);
+			sTarget = XmlUtils::EncodeXmlString(sTarget);
 			CString srId;srId.Format(_T("rId%d"), m_nRid);
 			CString sRels;
 			if(bExternal)

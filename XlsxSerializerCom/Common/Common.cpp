@@ -9,34 +9,6 @@
 
 namespace SerializeCommon
 {
-	bool IsUnicodeSymbol( WCHAR symbol )
-	{
-		bool result = false;
-
-		if ( ( 0x0009 == symbol ) || ( 0x000A == symbol ) || ( 0x000D == symbol ) ||
-			( ( 0x0020 <= symbol ) && ( 0xD7FF >= symbol ) ) || ( ( 0xE000 <= symbol ) && ( symbol <= 0xFFFD ) ) ||
-			( ( 0x10000 <= symbol ) && symbol ) )
-		{
-			result = true;
-		}
-
-		return result;		  
-	}
-	void CorrectString(CString& strValue)
-	{
-		for (unsigned int i = 0, length = strValue.GetLength(); i < length; ++i )
-		{
-			if ( false == IsUnicodeSymbol( strValue.GetAt(i) ) )
-			{
-				strValue.SetAt(i, ' ');
-			}
-		}
-		strValue.Replace(_T("&"),	_T("&amp;"));			
-		strValue.Replace(_T("'"),	_T("&apos;"));
-		strValue.Replace(_T("<"),	_T("&lt;"));
-		strValue.Replace(_T(">"),	_T("&gt;"));
-		strValue.Replace(_T("\""),	_T("&quot;"));
-	}
 	CString DownloadImage(const CString& strFile)
 	{
 		CFileDownloader oDownloader(strFile, FALSE);

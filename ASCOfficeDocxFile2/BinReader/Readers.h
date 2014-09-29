@@ -244,7 +244,7 @@ public:
 		case c_oSerProp_rPrType::FontAscii:
 			{
 				CString sFontName(m_oBufferedStream.GetString3(length));
-				SerializeCommon::CorrectString(sFontName);
+				sFontName = XmlUtils::EncodeXmlString(sFontName);
 				if(!sFontName.IsEmpty())
 				{
 					orPr->bFontAscii = true;
@@ -255,7 +255,7 @@ public:
 		case c_oSerProp_rPrType::FontHAnsi:
 			{
 				CString sFontName(m_oBufferedStream.GetString3(length));
-				SerializeCommon::CorrectString(sFontName);
+				sFontName = XmlUtils::EncodeXmlString(sFontName);
 				if(!sFontName.IsEmpty())
 				{
 					orPr->bFontHAnsi = true;
@@ -266,7 +266,7 @@ public:
 		case c_oSerProp_rPrType::FontCS:
 			{
 				CString sFontName(m_oBufferedStream.GetString3(length));
-				SerializeCommon::CorrectString(sFontName);
+				sFontName = XmlUtils::EncodeXmlString(sFontName);
 				if(!sFontName.IsEmpty())
 				{
 					orPr->bFontCS = true;
@@ -277,7 +277,7 @@ public:
 		case c_oSerProp_rPrType::FontAE:
 			{
 				CString sFontName(m_oBufferedStream.GetString3(length));
-				SerializeCommon::CorrectString(sFontName);
+				sFontName = XmlUtils::EncodeXmlString(sFontName);
 				if(!sFontName.IsEmpty())
 				{
 					orPr->bFontAE = true;
@@ -658,7 +658,7 @@ public:
 		case c_oSerProp_pPrType::ParaStyle:
 			{
 				CString sStyleName(m_oBufferedStream.GetString3(length));
-				SerializeCommon::CorrectString(sStyleName);
+				sStyleName = XmlUtils::EncodeXmlString(sStyleName);
 				CString sStyle;sStyle.Format(_T("<w:pStyle w:val=\"%s\" />"), sStyleName);
 				pCStringWriter->WriteString(sStyle);
 				break;
@@ -1266,7 +1266,7 @@ public:
 		else if( c_oSerProp_tblPrType::Style == type )
 		{
 			CString Name(m_oBufferedStream.GetString3(length));
-			SerializeCommon::CorrectString(Name);
+			Name = XmlUtils::EncodeXmlString(Name);
 			pWiterTblPr->Style.Format(_T("<w:tblStyle w:val=\"%s\"/>"), Name);
 		}
 		else if( c_oSerProp_tblPrType::Look == type )
@@ -2069,13 +2069,13 @@ public:
 		if(c_oSer_sts::Style_Name == type)
 		{
 			CString Name(m_oBufferedStream.GetString3(length));
-			SerializeCommon::CorrectString(Name);
+			Name = XmlUtils::EncodeXmlString(Name);
 			odocStyle->Name = Name;
 		}
 		else if(c_oSer_sts::Style_Id == type)
 		{
 			CString Id(m_oBufferedStream.GetString3(length));
-			SerializeCommon::CorrectString(Id);
+			Id = XmlUtils::EncodeXmlString(Id);
 			odocStyle->Id = Id;
 		}
 		else if(c_oSer_sts::Style_Type == type)
@@ -2089,13 +2089,13 @@ public:
 		else if(c_oSer_sts::Style_BasedOn == type)
 		{
 			CString BasedOn(m_oBufferedStream.GetString3(length));
-			SerializeCommon::CorrectString(BasedOn);
+			BasedOn = XmlUtils::EncodeXmlString(BasedOn);
 			odocStyle->BasedOn = BasedOn;
 		}
 		else if(c_oSer_sts::Style_Next == type)
 		{
 			CString NextId(m_oBufferedStream.GetString3(length));
-			SerializeCommon::CorrectString(NextId);
+			NextId = XmlUtils::EncodeXmlString(NextId);
 			odocStyle->NextId = NextId;
 		}
 		else if(c_oSer_sts::Style_qFormat == type)
@@ -2725,7 +2725,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 				CString sFontName(m_oBufferedStream.GetString3(length));
-				SerializeCommon::CorrectString(sFontName);
+				sFontName = XmlUtils::EncodeXmlString(sFontName);
 
 				CString sVal; sVal.Format(_T("<m:font m:val=\"%s\" />"), sFontName);
 				m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
@@ -3033,8 +3033,7 @@ public:
 			m_pCurHyperlink = pHyperlink;
 			res = Read1(length, &Binary_DocumentTableReader::ReadParagraphContent, this, NULL);
 			long rId;
-			CString sHref = pHyperlink->sLink;
-			SerializeCommon::CorrectString(sHref);
+			CString sHref = XmlUtils::EncodeXmlString(pHyperlink->sLink);
 			m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink")), sHref, CString(_T("External")), &rId);
 			CString srId;srId.Format(_T("rId%d"), rId);
 			pHyperlink->rId = srId;
@@ -4555,23 +4554,8 @@ public:
 	}
 	CString GetMathText (long length)
 	{
-		CString strRes = _T("");
 		CString strVal(m_oBufferedStream.GetString3(length));
-		for (int i = 0, length = strVal.GetLength(); i < length; ++i )
-		{
-			WCHAR sChr = strVal.GetAt(i);
-			if ( true == SerializeCommon::IsUnicodeSymbol( sChr ) )
-			{
-				strRes += sChr;
-			}
-		}
-		strRes.Replace(_T("&"),	_T("&amp;"));			
-		strRes.Replace(_T("'"),	_T("&apos;"));
-		strRes.Replace(_T("<"),	_T("&lt;"));
-		strRes.Replace(_T(">"),	_T("&gt;"));
-		strRes.Replace(_T("\""),_T("&quot;"));
-
-		return strRes;
+		return XmlUtils::EncodeXmlString(strVal, true);
 	}
 	int ReadMathMRun(BYTE type, long length, void* poResult)
 	{
@@ -5222,7 +5206,7 @@ public:
 		{
 			GetRunStringWriter().WriteString(CString(_T("<w:t xml:space=\"preserve\">")));
 			CString sText(m_oBufferedStream.GetString3(length));
-			SerializeCommon::CorrectString(sText);
+			sText = XmlUtils::EncodeXmlString(sText);
 			GetRunStringWriter().WriteString(sText);
 			GetRunStringWriter().WriteString(CString(_T("</w:t>")));
 		}
@@ -5259,7 +5243,7 @@ public:
 			{
 				CString sNewImgName = m_oMediaWriter.m_aImageNames[odocImg.MediaId];
 				CString sNewImgRel;sNewImgRel = _T("media/") + sNewImgName;
-				SerializeCommon::CorrectString(sNewImgRel);
+				sNewImgRel = XmlUtils::EncodeXmlString(sNewImgRel);
 				long rId;
 				m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")), sNewImgRel, CString(), &rId);
 				odocImg.srId.Format(_T("rId%d"), rId);
@@ -5330,7 +5314,7 @@ public:
 		else if(c_oSerRunType::fldstart == type)
 		{
 			CString sField(m_oBufferedStream.GetString3(length));
-			SerializeCommon::CorrectString(sField);
+			sField = XmlUtils::EncodeXmlString(sField);
 			GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));
 			if(m_oCur_rPr.IsNoEmpty())
 				m_oCur_rPr.Write(&GetRunStringWriter());

@@ -202,14 +202,53 @@ namespace XmlUtils
 
 		return result;		  
 	}
-	AVSINLINE static CString EncodeXmlString(const CString& string)
+	AVSINLINE static CString EncodeXmlString(const CString& string, bool bDeleteNoUnicode = false)
 	{
-		CString sResult = string;
-		for (unsigned int i = 0, length = sResult.GetLength(); i < length; ++i )
+		CString sResult;
+		if(bDeleteNoUnicode)
 		{
-			if ( false == IsUnicodeSymbol( sResult.GetAt(i) ) )
+			sResult = _T("");
+			for (unsigned int i = 0, length = string.GetLength(); i < length; ++i )
 			{
-				sResult.SetAt(i, ' ');
+				WCHAR symbol = string.GetAt(i);
+				if ( false == IsUnicodeSymbol( symbol ) )
+				{
+					if(0xD800 <= symbol && symbol <= 0xDFFF && i + 1 < length)
+					{
+						i++;
+						WCHAR symbol2 = string.GetAt(i);
+						if (symbol < 0xDC00 && symbol2 >= 0xDC00 && symbol2 <= 0xDFFF)
+						{
+							sResult.AppendChar(symbol);
+							sResult.AppendChar(symbol2);
+						}
+					}
+				}
+				else
+					sResult.AppendChar(symbol);
+			}
+		}
+		else
+		{
+			sResult = string;
+			for (unsigned int i = 0, length = string.GetLength(); i < length; ++i )
+			{
+				WCHAR symbol = string.GetAt(i);
+				if ( false == IsUnicodeSymbol( symbol ) )
+				{
+					if(0xD800 <= symbol && symbol <= 0xDFFF && i + 1 < length)
+					{
+						i++;
+						WCHAR symbol2 = string.GetAt(i);
+						if (!(symbol < 0xDC00 && symbol2 >= 0xDC00 && symbol2 <= 0xDFFF))
+						{
+							sResult.SetAt(i - 1, ' ');
+							sResult.SetAt(i, ' ');
+						}
+					}
+					else
+						sResult.SetAt(i, ' ');
+				}
 			}
 		}
 		sResult.Replace(_T("&"),	_T("&amp;"));			

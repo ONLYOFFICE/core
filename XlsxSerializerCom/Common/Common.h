@@ -15,8 +15,6 @@
 
 namespace SerializeCommon
 {
-	bool IsUnicodeSymbol( WCHAR symbol );
-	void CorrectString(CString& strValue);
 	CString DownloadImage(const CString& strFile);
 	VOID convertBase64ToImage (CString sImage, CString &pBase64);
 	long Round(double val);

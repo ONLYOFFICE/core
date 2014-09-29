@@ -107,7 +107,7 @@ namespace Writers
 				RELEASEARRAY(psaArray);
 			}
 
-			SerializeCommon::CorrectString(sFontName);
+			sFontName = XmlUtils::EncodeXmlString(sFontName);
 			m_oWriter.WriteString(_T("<w:font w:name=\"") + sFontName + _T("\">"));
 			if(!sPanose.IsEmpty())
 				m_oWriter.WriteString(_T("<w:panose1 w:val=\"")+sPanose+_T("\"/>"));

@@ -16,7 +16,6 @@ namespace MathEquation
 	{
 		public:
 			NSBinPptxRW::CBinaryFileWriter &m_oStream;
-			//Streams::CBufferedStream &m_oStream;
 			std::stack<int> m_aEquationStack;
 			std::stack<int> m_aNArrayStack;
 			std::stack<int> m_aRunStack;
@@ -26,6 +25,11 @@ namespace MathEquation
 			std::stack<int> m_aMatrixStack;
 			std::stack<int> m_aLimitStack;
 			std::stack<int> m_aLimitElemsStack;
+			std::stack<int> m_aScriptStack;
+			std::stack<int> m_aAccentStack;
+			
+			LONG nTextSize;
+			LONG nCtrlSize;
 		public:
 			BinaryEquationWriter(NSBinPptxRW::CBinaryFileWriter &oStream) : bEmbel(false), m_oStream(oStream)
 			{				
@@ -55,6 +59,49 @@ namespace MathEquation
 				m_oStream.SetPosition(nStart);
 				m_oStream.WriteLONG(nEnd - nStart - 4);
 				m_oStream.SetPosition(nEnd);
+			}
+			void WriteRPR(TMathFont* &pFont, LONG nSize, BOOL bIsOpen)
+			{
+				if (NULL != pFont)
+				{
+					int nCurPos;
+					if (bIsOpen)
+						nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::RPr);
+					else
+						nCurPos = WriteItemStart(BinDocxRW::c_oSerRunType::rPr);
+
+					if (false != pFont->bBold)
+					{
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::Bold);
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Byte);
+						m_oStream.WriteBOOL(true);
+					}
+					if (false != pFont->bItalic)
+					{
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::Italic);
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Byte);
+						m_oStream.WriteBOOL(true);
+					}
+					CString sFontName;
+					sFontName.Format(_T("%S"), pFont->sName.c_str());
+					if (sFontName)
+					{
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontAscii);
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
+						m_oStream.WriteStringW(sFontName);
+
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontHAnsi);
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
+						m_oStream.WriteStringW(sFontName);
+					}
+					if (nTextSize)
+					{
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontSize);
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
+						m_oStream.WriteLONG(nSize);
+					}
+					WriteItemEnd(nCurPos);
+				}
 			}
 
 
@@ -88,12 +135,32 @@ namespace MathEquation
 			}
 			virtual void SetSize(uint16_t nSize)
 			{
+				nTextSize = nSize*2;
+
+
+				if (!m_aCommandStack.empty())
+				{
+					ECommandType type; 
+					type = m_aCommandStack.top()->GetCommand();
+					int i = 1;
+				}
 			}
 			virtual void BeginChar(Unicode_t uChar, uint8_t nTypeFace, bool bSpecialSymbol)
 			{
+				BOOL bIsOpen;
+				if (!m_aCommandStack.empty())
+					bIsOpen = m_aCommandStack.top()->IsOpenNode(); //при false пишется ctrlPrp
+				else
+					bIsOpen = true;
+
 				if (m_aRunStack.empty());
 				{
-					int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MRun);
+					int nCurPos;
+					if (bIsOpen)
+						nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MRun);
+					else
+						nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::CtrlPr);
+
 					m_aRunStack.push(nCurPos);
 				}
 
@@ -114,58 +181,72 @@ namespace MathEquation
 					}
 					else
 						str.Insert(0,uChar);
-
+					
 					int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MText);
 					m_oStream.WriteStringW(str);
 					WriteItemEnd(nCurPos1);
 				}
-
-
 				TMathFont* pFont = GetFont(nTypeFace);
-
-				if (NULL != pFont)
-				{
-					int nCurPos2 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::RPr);
-					
-					if (false != pFont->bBold)
-					{
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::Bold);
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Byte);
-						m_oStream.WriteBOOL(true);
-					}
-					if (false != pFont->bItalic)
-					{
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::Italic);
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Byte);
-						m_oStream.WriteBOOL(true);
-					}
-					CString sFontName;
-					sFontName.Format(_T("%S"), pFont->sName.c_str());
-					if (sFontName)
-					{
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontAscii);
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
-						m_oStream.WriteStringW(sFontName);
-
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontHAnsi);
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
-						m_oStream.WriteStringW(sFontName);
-					}
-
-					WriteItemEnd(nCurPos2);
-				}
-
-				bEmbel = false;
-
+				WriteRPR(pFont, nTextSize, bIsOpen);				
 			}
 			virtual void AddCharEmbel(MEMBELTYPE eType)
 			{
+				bEmbel = true;
+				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Acc);
+				int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::AccPr);
+				CString str;
+				switch (eType)
+				{
+					/*case embelDot:       str.Insert(0," dot "); break;
+					case embelDDot:      str.Insert(0," ddot "); break;
+					case embelDDDot:     str.Insert(0," dddot "); break;
+					case embelPrime:     str.Insert(0," prime "); break;
+					case embelDPrime:    str.Insert(0," double prime "); break;
+					case embelLPrime:    str.Insert(0," left prime "); break;
+					case embelTilde:     str.Insert(0," tilde "); break;
+					case embelHat:       str.Insert(0," hat "); break;
+					case embelSlash:     str.Insert(0," slash "); break;
+					case embelLArrow:    str.Insert(0," left arrow "); break;
+					case embelRArrow:    str.Insert(0," right arrow "); break;*/
+					case embelDArrow:    str.Insert(0, 0x2194); break;
+					/*case embelLHarpoon:  str.Insert(0," left harpoon "); break;
+					case embelRHarpoon:  str.Insert(0," right harpoon "); break;
+					case embelStrikeout: str.Insert(0," strikeout "); break;
+					case embelBar:       str.Insert(0," bar "); break;
+					case embelTPrime:    str.Insert(0," triple prime "); break;
+					case embelFrown:     str.Insert(0," frown "); break;
+					case embelSmile:     str.Insert(0," smiple "); break;*/
+				}
+				WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
+				WriteItemEnd(nCurPos1);
+
+				int nCurPos2 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
+				m_aAccentStack.push(nCurPos2);
+				m_aAccentStack.push(nCurPos);
 			}
 			virtual void EndChar()
 			{
 				int nCurPos = m_aRunStack.top();
 				WriteItemEnd(nCurPos);
 				m_aRunStack.pop();
+
+				if (bEmbel)
+				{
+					int nCurPos;
+					if (!m_aAccentStack.empty())
+					{
+						nCurPos = m_aAccentStack.top();
+						m_aAccentStack.pop();
+						WriteItemEnd(nCurPos);
+					}
+					if (!m_aAccentStack.empty())
+					{
+						nCurPos = m_aAccentStack.top();
+						m_aAccentStack.pop();
+						WriteItemEnd(nCurPos);
+					}
+					bEmbel = false;
+				}
 			}
 			virtual void BeginMatrix(uint8_t nVAlign, MMATRIXHORALIGN eHorAlign, MMATRIXVERALIGN eVerAlign, bool bEqualRows, bool bEqualCols, uint8_t nRows, uint8_t nCols, uint8_t* pVerBorders, uint8_t* pHorBorders)
 			{
@@ -174,12 +255,14 @@ namespace MathEquation
 
 				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Matrix);
 				m_aMatrixStack.push(nCurPos);
+				int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MPr);
+				WriteItemValLong(BinDocxRW::c_oSer_OMathBottomNodesType::Row, nRows);
 
 				int nCurPos2 = WriteItemStart(BinDocxRW::c_oSer_OMathBottomNodesType::Mcs);
 				int nCurPos3 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Mc);
 				int nCurPos4 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::McPr);
 
-				WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::Count, nCols);
+				WriteItemValLong(BinDocxRW::c_oSer_OMathBottomNodesType::Count, nCols);
 
 				BYTE horAlign;
 				switch(eHorAlign)
@@ -195,7 +278,7 @@ namespace MathEquation
 				WriteItemEnd(nCurPos4);
 				WriteItemEnd(nCurPos3);
 				WriteItemEnd(nCurPos2);
-
+				WriteItemEnd(nCurPos1);
 
 			}
 			virtual void EndMatrix()
@@ -208,9 +291,22 @@ namespace MathEquation
 			}
 			virtual void StartPile(uint8_t nHAlign, uint8_t nVAlign)
 			{
+				if (!m_aCommandStack.empty())
+					m_aCommandStack.top()->SetPile(true);
 			}
 			virtual void EndPile()
 			{
+				if (!m_aCommandStack.empty())
+				{
+					m_aCommandStack.top()->SetPile(false);
+					CBaseCommand* pCommand = TopCommand();
+					pCommand->WriteEndBlock(this);
+
+					ECommandType type; 
+					type = pCommand->GetCommand();
+					if (type == commandIntegral || type == commandNArray)
+						pCommand->Next();
+				}
 			}
 			virtual void BeginBrackets(MBRACKETSTYPE eType, bool bOpen, bool bClose)
 			{
@@ -332,10 +428,54 @@ namespace MathEquation
 			{
 				CScriptCommand* pCommand = (CScriptCommand*)PushCommand(commandScript);
 				pCommand->SetProps(bInline, bBase, bSup, bSub);
+
+				int nCurPos;
+				int nCurPos1;
+				if (bBase)
+				{
+					switch(eAlign)
+					{
+						case scriptalignRight:
+							if (bSub)
+							{
+								if (bSup)
+								{
+									nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSubSup);
+									nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSubSupPr);
+								}
+								else
+								{
+									nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSub);
+									nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSubPr);
+								}
+							}
+							else if (bSup)
+							{
+								nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSup);
+								nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSupPr);
+							}
+							break;
+						case scriptalignCenter: break;
+						case scriptalignLeft:
+						{
+							nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SPre);
+							nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SPrePr);
+						}
+							break;
+					}
+					if (bInline)
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::AlnScr, true);
+					WriteItemEnd(nCurPos1);
+					m_aScriptStack.push(nCurPos);
+				}
 			}
 			virtual void EndScript  ()
 			{
 				PopCommand();
+
+				int nCurPos = m_aScriptStack.top();
+				WriteItemEnd(nCurPos);
+				m_aScriptStack.pop();
 			}
 			virtual void BeginBar(MBARTYPE eType, bool bTop)
 			{
@@ -648,13 +788,13 @@ namespace MathEquation
 					case narySumCSub:
 						str.Insert(0,0x2211);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case narySumCSubSup:
 						str.Insert(0,0x2211);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup); 
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr); 
 						break;
 					case narySum:
 						str.Insert(0,0x2211);
@@ -666,133 +806,133 @@ namespace MathEquation
 					case narySumRSub:
 						str.Insert(0,0x2211);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case narySumRSubSup:
 						str.Insert(0,0x2211);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
 						break;
 
 					case naryProdCSub:
 						str.Insert(0,0x220F);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryProdCSubSup:
 						str.Insert(0,0x220F);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup); 
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr); 
 						break;
 					case naryProd:
 						str.Insert(0,0x220F);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						break;
 					case naryProdRSub:
 						str.Insert(0,0x220F);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryProdRSubSup:
 						str.Insert(0,0x220F);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
 						break;
 
 					case naryCoProdCSub:
 						str.Insert(0,0x2210);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryCoProdCSubSup:
 						str.Insert(0,0x2210);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup); 
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr); 
 						break;
 					case naryCoProd:
 						str.Insert(0,0x2210);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						break;
 					case naryCoProdRSub:
 						str.Insert(0,0x2210);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryCoProdRSubSup:
 						str.Insert(0,0x2210);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
 						break;
 
 					case naryUnionCSub:
 						str.Insert(0,0x22C3);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryUnionCSubSup:
 						str.Insert(0,0x22C3);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup); 
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr); 
 						break;
 					case naryUnion:
 						str.Insert(0,0x22C3);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						break;
 					case naryUnionRSub:
 						str.Insert(0,0x22C3);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryUnionRSubSup:
 						str.Insert(0,0x22C3);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
 						break;
 
 					case naryIntersectCSub:
 						str.Insert(0,0x22C2);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryIntersectCSubSup:
 						str.Insert(0,0x22C2);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup); 
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr); 
 						break;
 					case naryIntersect:
 						str.Insert(0,0x22C2);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						break;
 					case naryIntersectRSub:
 						str.Insert(0,0x22C2);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryIntersectRSubSup:
 						str.Insert(0,0x22C2);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
 						break;
 
 				}
@@ -846,7 +986,7 @@ namespace MathEquation
 
 				WriteItemEnd(nCurPos);
 			}
-			void WriteItemVal(BYTE name, LONG val)
+			void WriteItemValLong(BYTE name, LONG val)
 			{
 				int nCurPos = WriteItemStart(name);
 
@@ -898,7 +1038,7 @@ namespace MathEquation
 		{
 		public:
 
-			CBaseCommand() : nBlockNum(-1)
+			CBaseCommand() : nBlockNum(-1), bPile(false), bEqArrayStart(false)
 			{
 			}
 
@@ -908,12 +1048,78 @@ namespace MathEquation
 
 			void Next() 
 			{
-				nBlockNum++;
+				BOOL bCurPile;
+				bCurPile = GetPile();
+				if (!bCurPile || (nBlockNum == -1))
+					nBlockNum++;
+			}
+
+			BOOL IsOpenNode()
+			{
+				return bOpenNode;
+			}
+			void SetPile(BOOL bSetPile)
+			{
+				bPile = bSetPile;
+				bEqArrayStart = !bSetPile;
+			}
+			bool GetPile()
+			{
+				return bPile;
 			}
 
 			int GetBlockNum()
 			{
 				return nBlockNum;
+			}
+			void WriteBeginNode(BinaryEquationWriter* pWriter, BYTE elem)
+			{
+				int nElemPos;
+				if (bEqArrayStart)
+					nElemPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
+				else
+					nElemPos = pWriter->WriteItemStart(elem);
+				m_aBaseStack.push(nElemPos);
+
+				if (bPile && !bEqArrayStart)
+				{
+					bEqArrayStart = true;
+					nElemPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::EqArr);
+					m_aBaseStack.push(nElemPos);
+
+					nElemPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::EqArrPr);
+					pWriter->WriteItemEnd(nElemPos);
+
+					nElemPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
+					m_aBaseStack.push(nElemPos);
+				}
+			}
+
+			void WriteEndNode(BinaryEquationWriter* pWriter)
+			{
+				int nCurPos;
+				if (!m_aBaseStack.empty())
+				{
+					nCurPos = m_aBaseStack.top();
+					m_aBaseStack.pop();
+				}
+
+				if (bPile && bEqArrayStart)
+					pWriter->WriteItemEnd(nCurPos);
+				else if (!bPile && !bEqArrayStart)
+					pWriter->WriteItemEnd(nCurPos);
+				else if (!bPile && bEqArrayStart)
+				{
+					bEqArrayStart = false;
+					pWriter->WriteItemEnd(nCurPos);//eqArr
+
+					if (!m_aBaseStack.empty())
+					{
+						nCurPos = m_aBaseStack.top();
+						m_aBaseStack.pop();
+					}
+					pWriter->WriteItemEnd(nCurPos);
+				}
 			}
 
 			virtual ECommandType GetCommand() = 0;
@@ -921,6 +1127,10 @@ namespace MathEquation
 			virtual void WriteEndBlock(BinaryEquationWriter* pWriter)   = 0;
 
 		protected:
+			std::stack<int> m_aBaseStack;
+			BOOL bOpenNode;
+			BOOL bPile;
+			BOOL bEqArrayStart;
 			int nBlockNum;
 		};
 
@@ -973,15 +1183,24 @@ namespace MathEquation
 			CBracketsCommand() {}
 			virtual ~CBracketsCommand() {}
 			virtual ECommandType GetCommand(){return commandBrackets;}
-
+			
 			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter)
 			{
-				nElemPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
+				Write(pWriter, true);
 			}
-
 			virtual void WriteEndBlock(BinaryEquationWriter* pWriter)
 			{
-				pWriter->WriteItemEnd(nElemPos);
+				Write(pWriter, false);
+			}
+			void Write(BinaryEquationWriter* pWriter, bool bBeginNode)
+			{
+				if (0 == nBlockNum)
+				{
+					if (bBeginNode)
+						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Element);
+					else
+						WriteEndNode(pWriter);
+				}
 			}
 		private:
 			int nElemPos;
@@ -992,19 +1211,31 @@ namespace MathEquation
 			CRootCommand() {}
 			virtual ~CRootCommand() {}
 			virtual ECommandType GetCommand(){return commandRoot;}
+			
 			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter)
-			{
-				if (0 == nBlockNum)
-					nElemPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
-				else if (1 == nBlockNum)
-					nDegPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Deg);	
+			{									
+				Write(pWriter, true);
 			}
 			virtual void WriteEndBlock(BinaryEquationWriter* pWriter)
 			{
+				Write(pWriter, false);
+			}
+			void Write(BinaryEquationWriter* pWriter, bool bBeginNode)
+			{
 				if (0 == nBlockNum)
-					pWriter->WriteItemEnd(nElemPos);
+				{
+					if (bBeginNode)
+						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Element);
+					else
+						WriteEndNode(pWriter);
+				}
 				else if (1 == nBlockNum)
-					pWriter->WriteItemEnd(nDegPos);	
+				{
+					if (bBeginNode)
+						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Deg);
+					else
+						WriteEndNode(pWriter);
+				}
 			}
 		private:
 			int nElemPos;
@@ -1016,23 +1247,32 @@ namespace MathEquation
 			CFractionCommand() {}
 			virtual ~CFractionCommand() {}
 			virtual ECommandType GetCommand(){return commandFraction;}
+			
 			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter)
-			{
-				if (0 == nBlockNum)
-					nNumPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Num);	
-				else if (1 == nBlockNum)
-					nDenPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Den);		
+			{									
+				Write(pWriter, true);
 			}
 			virtual void WriteEndBlock(BinaryEquationWriter* pWriter)
 			{
-				if (0 == nBlockNum)
-					pWriter->WriteItemEnd(nNumPos);
-				else if (1 == nBlockNum)
-					pWriter->WriteItemEnd(nDenPos);
+				Write(pWriter, false);
 			}
-		private:
-			int nNumPos;
-			int nDenPos;
+			void Write(BinaryEquationWriter* pWriter, bool bBeginNode)
+			{
+				if (0 == nBlockNum)
+				{
+					if (bBeginNode)
+						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Num);
+					else
+						WriteEndNode(pWriter);
+				}
+				else if (1 == nBlockNum)
+				{
+					if (bBeginNode)
+						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Den);
+					else
+						WriteEndNode(pWriter);
+				}
+			}
 		};
 		class CScriptCommand : public CBaseCommand
 		{
@@ -1048,7 +1288,7 @@ namespace MathEquation
 				this->bSub    = bSub;
 				this->bSup    = bSup;
 			}
-
+			
 			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter)
 			{									
 				Write(pWriter, true);
@@ -1057,7 +1297,6 @@ namespace MathEquation
 			{
 				Write(pWriter, false);
 			}
-
 		private:
 
 			void Write(BinaryEquationWriter* pWriter, bool bBegin)
@@ -1067,61 +1306,127 @@ namespace MathEquation
 					if (0 == nBlockNum)
 					{
 						if (bBase)
-							WriteNode("base", pWriter, bBegin);
+						{
+							if (bBegin)
+								WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Element);
+							else
+								WriteEndNode(pWriter);
+						}
 						else if (bSub)
-							WriteNode("sub", pWriter, bBegin);
+						{
+							if (bBegin)
+								WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Sub);
+							else
+								WriteEndNode(pWriter);
+						}
 						else if (bSup)
-							WriteNode("sup", pWriter, bBegin);
+						{
+							if (bBegin)
+								WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Sup);
+							else
+								WriteEndNode(pWriter);
+						}
 					}
 					else if (1 == nBlockNum)
 					{
 						if (bBase)
 						{
 							if (bSub)
-								WriteNode("sub", pWriter, bBegin);
+							{
+								if (bBegin)
+									WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Sub);
+								else
+									WriteEndNode(pWriter);
+							}
 							else if (bSup)
-								WriteNode("sup", pWriter, bBegin);
+							{
+								if (bBegin)
+									WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Sup);
+								else
+									WriteEndNode(pWriter);
+							}
 						}
 						else if (bSub && bSup)
 						{
-							WriteNode("sup", pWriter, bBegin);
+							if (bBegin)
+								WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Sup);
+							else
+								WriteEndNode(pWriter);
 						}
 					}
 					else if (2 == nBlockNum)
 					{
-						if (bBase && bSub && bSup)
-							WriteNode("sup", pWriter, bBegin);
+						if (bSup)
+						{
+							if (bBegin)
+								WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Sup);
+							else
+								WriteEndNode(pWriter);
+						}
 					}
 				}
 				else
 				{
-					if (0 == nBlockNum)
+					if (0 == nBlockNum) //sSubSup
 					{
 						if (bSub)
-							WriteNode("sub", pWriter, bBegin);
+						{
+							if (bBegin)
+								WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Sub);
+							else
+								WriteEndNode(pWriter);
+						}
 						else if (bSup)
-							WriteNode("sup", pWriter, bBegin);
+						{
+							if (bBegin)
+								WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Sup);
+							else
+								WriteEndNode(pWriter);
+						}
 						else if (bBase)
-							WriteNode("base", pWriter, bBegin);
+						{
+							if (bBegin)
+								WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Element);
+							else
+								WriteEndNode(pWriter);
+						}
 					}
 					else if (1 == nBlockNum)
 					{
 						if (bSub)
 						{
 							if (bSup)
-								WriteNode("sup", pWriter, bBegin);
+							{
+								if (bBegin)
+									WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Sup);
+								else
+									WriteEndNode(pWriter);
+							}
 							else if (bBase)
-								WriteNode("base", pWriter, bBegin);
+							{
+								if (bBegin)
+									WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Element);
+								else
+									WriteEndNode(pWriter);
+							}
 						}
 						else if (bSup && bBase)
 						{
-							WriteNode("base", pWriter, bBegin);
+							if (bBegin)
+								WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Element);
+							else
+								WriteEndNode(pWriter);
 						}
 					}
 					else if (2 == nBlockNum)
 					{
 						if (bBase && bSub && bSup)
-							WriteNode("base", pWriter, bBegin);
+						{
+							if (bBegin)
+								WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Element);
+							else
+								WriteEndNode(pWriter);
+						}
 					}
 				}
 			}
@@ -1193,7 +1498,6 @@ namespace MathEquation
 			{
 				Write(pWriter, false);
 			}
-
 		private:
 
 			void Write(BinaryEquationWriter* pWriter, bool bBeginNode)
@@ -1201,30 +1505,25 @@ namespace MathEquation
 				if (0 == nBlockNum)
 				{
 					if (bBeginNode)
-						nElemPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
+						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Element);
 					else
-						pWriter->WriteItemEnd(nElemPos);
+						WriteEndNode(pWriter);
 				}
 				else if (1 == nBlockNum)
 				{
 					if (bBeginNode)
-						nSubPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Sub);
+						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Sub);
 					else
-						pWriter->WriteItemEnd(nSubPos);
+						WriteEndNode(pWriter);
 				}
 				else if (2 == nBlockNum)
 				{
 					if (bBeginNode)
-						nSupPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Sup);
+						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Sup);
 					else
-						pWriter->WriteItemEnd(nSupPos);
+						WriteEndNode(pWriter);
 				}
 			}
-
-		private:
-			int nSubPos;
-			int nSupPos;
-			int nElemPos;
 		};
 		class CVerticalBraceCommand : public CBaseCommand
 		{
@@ -1277,38 +1576,36 @@ namespace MathEquation
 			{
 				return eType;
 			}
-
+			
 		private:
 
 			void Write(BinaryEquationWriter* pWriter, bool bBeginNode)
 			{
+				bOpenNode = bBeginNode;
 				if (0 == nBlockNum)
 				{
 					if (bBeginNode)
-						nElemPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
-					else
-						pWriter->WriteItemEnd(nElemPos);
+						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Element);						
+					else 
+						WriteEndNode(pWriter);
 				}
 				else if (1 == nBlockNum)
 				{
 					if (bBeginNode)
-						nSubPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Sub);
-					else
-						pWriter->WriteItemEnd(nSubPos);
+						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Sub);
+					else 
+						WriteEndNode(pWriter);
 				}
 				else if (2 == nBlockNum)
 				{
 					if (bBeginNode)
-						nSupPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Sup);
-					else
-						pWriter->WriteItemEnd(nSupPos);
+						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Sup);						
+					else 
+						WriteEndNode(pWriter);
 				}
 			}
 
-		private:
-			int nSubPos;
-			int nSupPos;
-			int nElemPos;
+		private:			
 			MNARRAYTYPE eType;
 		};
 
@@ -1334,6 +1631,8 @@ namespace MathEquation
 				else
 					pWriter->WriteNodeEnd("result");
 			}
+		private:
+			BOOL bPile;
 		};
 		class CBracketsWithSeparatorCommand : public CBaseCommand
 		{
@@ -1381,7 +1680,6 @@ namespace MathEquation
 					pWriter->WriteNodeEnd(sNodeName);
 			}
 		private:
-
 			MANGLEBRACKETSWITHSEPARATORTYPE eType;
 
 		};

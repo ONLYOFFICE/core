@@ -423,7 +423,7 @@ extern int g_nCurFormatVersion;
 		fldend = 10,
 		CommentReference = 11,
 		pptxDrawing = 12,
-		object = 13
+		object = 14
 	};}
 	namespace c_oSerImageType{enum c_oSerImageType
 	{

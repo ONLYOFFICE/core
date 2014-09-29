@@ -2712,7 +2712,7 @@ namespace BinDocxRW
 						WriteComment(OOX::et_w_commentRangeEnd, pCommentRangeEnd->m_oId);
 						break;
 					}
-				/*case OOX::et_m_oMathPara:
+				case OOX::et_m_oMathPara:
 					{
 						OOX::Logic::COMathPara* pOMathPara = static_cast<OOX::Logic::COMathPara*>(item);
 						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::OMathPara);
@@ -2727,7 +2727,7 @@ namespace BinDocxRW
 						WriteMathArgNodes( pOMath->m_arrItems );
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
-					}*/
+					}
 				}
 			}
 		};

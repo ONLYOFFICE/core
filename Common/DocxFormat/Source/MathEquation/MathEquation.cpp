@@ -210,12 +210,12 @@ int  CEquationReader::HandleChar(uint8_t nTag)
     if (nChar < 0x20)
         return nRet;
 
-	pOutputDev->BeginChar(nChar, nTypeFace, IsSpecialChar(nChar));
-
 	if (xfEMBELL(nTag))
 	{
 		nRet = HandleRecords();
 	}
+
+	pOutputDev->BeginChar(nChar, nTypeFace, IsSpecialChar(nChar));	
 
 	pOutputDev->EndChar();
 	return nRet;

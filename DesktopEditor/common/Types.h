@@ -119,7 +119,6 @@ typedef int RGB;
 	}\
 }
 
-#ifdef _WIN32
 #define ADDREFINTERFACE(pinterface)\
 {\
     if (pinterface!=NULL)\
@@ -135,47 +134,4 @@ typedef int RGB;
         pinterface=NULL;\
     }\
 }
-#define QUERYINTERFACE(pinterface, pinterface_res, iid)\
-{\
-    if (pinterface!=NULL)\
-        pinterface->QueryInterface(iid, (void**)&pinterface_res);\
-    else\
-        pinterface_res=NULL;\
-}
-#define RELEASEHEAP(pmem)\
-{\
-	if (pmem!=NULL)\
-	{\
-		HeapFree(GetProcessHeap(), 0, pmem);\
-		pmem=NULL;\
-	}\
-}
-#define RELEASEARRAY(parray)\
-{\
-	if (parray!=NULL)\
-	{\
-		SafeArrayDestroy(parray);\
-		parray=NULL;\
-	}\
-}
-#define RELEASESYSSTRING(pstring)\
-{\
-	if (pstring!=NULL)\
-	{\
-		SysFreeString(pstring);\
-		pstring=NULL;\
-	}\
-}
-
-#define RELEASEHANDLE(phandle)\
-{\
-	if (phandle!=NULL)\
-	{\
-		CloseHandle(phandle);\
-		phandle=NULL;\
-	}\
-}
-
-#endif // _WIN32
-
 #endif //_BUILD_TYPES_CROSSPLATFORM_H_

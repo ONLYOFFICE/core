@@ -41,7 +41,8 @@ namespace OOX
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-				write2(oPath.GetPath());
+                CString sPath = oPath.GetPath();
+                write2(sPath);
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write(oPath, oDirectory, oContent);
 			}
@@ -53,7 +54,8 @@ namespace OOX
 			}
 			void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				m_oChartSpace.toXML(CString(_T("c:chartSpace")), writer);
+                CString sNodeName = _T("c:chartSpace");
+                m_oChartSpace.toXML (sNodeName, writer);
 			}
 			bool isValid() const
 			{

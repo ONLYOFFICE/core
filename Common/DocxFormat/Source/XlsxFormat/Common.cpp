@@ -1,5 +1,12 @@
 #include "CommonInclude.h"
 #include "Common.h"
+
+#ifndef _gcvt
+#include "stdlib.h"
+#define _CVTBUFSIZE  128
+#define _gcvt gcvt
+#endif
+
 #define DBL_MAX 15
 #define DBL_MAXDIG10 17
 

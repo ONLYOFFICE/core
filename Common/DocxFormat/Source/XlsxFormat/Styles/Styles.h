@@ -8,7 +8,7 @@
 #include "CellStyles.h"
 #include "Xfs.h"
 #include "Colors.h"
-#include "Dxf.h"
+#include "dxf.h"
 #include "Fills.h"
 #include "Fonts.h"
 #include "NumFmts.h"

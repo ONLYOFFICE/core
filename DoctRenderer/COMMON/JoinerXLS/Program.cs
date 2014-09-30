@@ -323,6 +323,7 @@ namespace Joiner
 				"Word/Editor/Run.js",
 				"Word/Editor/Math.js",
 				"Word/Editor/Paragraph.js",
+                "Word/Editor/Paragraph_Recalculate.js",
 				"Word/Editor/Sections.js",
 				"Word/Editor/Numbering.js",
 				"Word/Editor/HeaderFooter.js",

@@ -12980,39 +12980,46 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_grouping)
 			{
-				m_grouping->toXML(CString(_T("c:grouping")), writer);
+                CString sNodeName = _T("c:grouping");
+                m_grouping->toXML(sNodeName, writer);
 			}
 			if(NULL != m_varyColors)
 			{
-				m_varyColors->toXML(CString(_T("c:varyColors")), writer);
+                CString sNodeName = _T("c:varyColors");
+                m_varyColors->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_AreaSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-					pElem->toXML(CString(_T("c:ser")), writer);
+                    CString sNodeName = _T("c:ser");
+                    pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-				m_dLbls->toXML(CString(_T("c:dLbls")), writer);
+                CString sNodeName = _T("c:dLbls");
+                m_dLbls->toXML(sNodeName, writer);
 			}
 			if(NULL != m_dropLines)
 			{
-				m_dropLines->toXML(CString(_T("c:dropLines")), writer);
+                CString sNodeName = _T("c:dropLines");
+                m_dropLines->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_axId.size(); i < length; ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
 				{
-					pElem->toXML(CString(_T("c:axId")), writer);
+                    CString sNodeName = _T("c:axId");
+                    pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_extLst)
 			{
-				m_extLst->toXML(CString(_T("c:extLst")), writer);
+                CString sNodeName = _T("c:extLst");
+                m_extLst->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -13270,7 +13277,8 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_layout)
 			{
-				m_layout->toXML(CString(_T("c:layout")), writer);
+                CString sNodeName = _T("c:layout");
+                m_layout->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_Items.size(); i < length; ++i)
 			{
@@ -13284,7 +13292,8 @@ namespace OOX{
 			}
 			if(NULL != m_dTable)
 			{
-				m_dTable->toXML(CString(_T("c:dTable")), writer);
+                CString sNodeName = _T("c:dTable");
+                m_dTable->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
 			{
@@ -13292,7 +13301,8 @@ namespace OOX{
 			}
 			if(NULL != m_extLst)
 			{
-				m_extLst->toXML(CString(_T("c:extLst")), writer);
+                CString sNodeName = _T("c:extLst");
+                m_extLst->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -13308,7 +13318,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:area3DChart")), writer);
+                        {
+                            CString sNodeName = _T("c:area3DChart");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13318,7 +13331,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:areaChart")), writer);
+                        {
+                            CString sNodeName = _T("c:areaChart");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13328,7 +13344,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:bar3DChart")), writer);
+                        {
+                            CString sNodeName = _T("c:bar3DChart");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13338,7 +13357,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:barChart")), writer);
+                        {
+                            CString sNodeName = _T("c:barChart");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13348,7 +13370,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:bubbleChart")), writer);
+                        {
+                            CString sNodeName = _T("c:bubbleChart");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13358,7 +13383,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:doughnutChart")), writer);
+                        {
+                            CString sNodeName = _T("c:doughnutChart");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13368,7 +13396,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:line3DChart")), writer);
+                        {
+                            CString sNodeName = _T("c:line3DChart");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13378,7 +13409,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:lineChart")), writer);
+                        {
+                            CString sNodeName = _T("c:lineChart");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13388,7 +13422,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:ofPieChart")), writer);
+                        {
+                            CString sNodeName = _T("c:ofPieChart");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13398,7 +13435,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:pie3DChart")), writer);
+                        {
+                            CString sNodeName = _T("c:pie3DChart");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13408,7 +13448,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:pieChart")), writer);
+                        {
+                            CString sNodeName = _T("c:pieChart");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13418,7 +13461,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:radarChart")), writer);
+                        {
+                            CString sNodeName = _T("c:radarChart");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13428,7 +13474,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:scatterChart")), writer);
+                        {
+                            CString sNodeName = _T("c:scatterChart");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13438,7 +13487,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:stockChart")), writer);
+                        {
+                            CString sNodeName = _T("c:stockChart");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13448,7 +13500,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:surface3DChart")), writer);
+                        {
+                            CString sNodeName = _T("c:surface3DChart");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13458,7 +13513,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:surfaceChart")), writer);
+                        {
+                            CString sNodeName = _T("c:surfaceChart");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13473,7 +13531,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:catAx")), writer);
+                        {
+                            CString sNodeName = _T("c:surfaceChart");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13483,7 +13544,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:dateAx")), writer);
+                        {
+                            CString sNodeName = _T("c:dateAx");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13493,7 +13557,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:serAx")), writer);
+                        {
+                            CString sNodeName = _T("c:serAx");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13503,7 +13570,10 @@ namespace OOX{
 					if(NULL != pTypeVal)
 					{
 						if(false == bIsAttribute)
-							pTypeVal->toXML(CString(_T("c:valAx")), writer);
+                        {
+                            CString sNodeName = _T("c:valAx");
+                            pTypeVal->toXML(sNodeName, writer);
+                        }
 					}
 				}
 				break;
@@ -13608,7 +13678,8 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_thickness)
 			{
-				m_thickness->toXML(CString(_T("c:thickness")), writer);
+                CString sNodeName = _T("c:thickness");
+                m_thickness->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
 			{
@@ -13616,11 +13687,13 @@ namespace OOX{
 			}
 			if(NULL != m_pictureOptions)
 			{
-				m_pictureOptions->toXML(CString(_T("c:pictureOptions")), writer);
+                CString sNodeName = _T("c:pictureOptions");
+                m_pictureOptions->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-				m_extLst->toXML(CString(_T("c:extLst")), writer);
+                CString sNodeName = _T("c:extLst");
+                m_extLst->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -13936,31 +14009,38 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_rotX)
 			{
-				m_rotX->toXML(CString(_T("c:rotX")), writer);
+                CString sNodeName = _T("c:rotX");
+                m_rotX->toXML(sNodeName, writer);
 			}
 			if(NULL != m_hPercent)
 			{
-				m_hPercent->toXML(CString(_T("c:hPercent")), writer);
+                CString sNodeName = _T("c:hPercent");
+                m_hPercent->toXML(sNodeName, writer);
 			}
 			if(NULL != m_rotY)
 			{
-				m_rotY->toXML(CString(_T("c:rotY")), writer);
+                CString sNodeName = _T("c:rotY");
+                m_rotY->toXML(sNodeName, writer);
 			}
 			if(NULL != m_depthPercent)
 			{
-				m_depthPercent->toXML(CString(_T("c:depthPercent")), writer);
+                CString sNodeName = _T("c:depthPercent");
+                m_depthPercent->toXML(sNodeName, writer);
 			}
 			if(NULL != m_rAngAx)
 			{
-				m_rAngAx->toXML(CString(_T("c:rAngAx")), writer);
+                CString sNodeName = _T("c:rAngAx");
+                m_rAngAx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_perspective)
 			{
-				m_perspective->toXML(CString(_T("c:perspective")), writer);
+                CString sNodeName = _T("c:perspective");
+                m_perspective->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-				m_extLst->toXML(CString(_T("c:extLst")), writer);
+                CString sNodeName = _T("c:extLst");
+                m_extLst->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -14046,7 +14126,8 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_idx)
 			{
-				m_idx->toXML(CString(_T("c:idx")), writer);
+                CString sNodeName = _T("c:idx");
+                m_idx->toXML(sNodeName, writer);
 			}
 			if(NULL != m_spPr)
 			{
@@ -14058,15 +14139,18 @@ namespace OOX{
 			}
 			if(NULL != m_marker)
 			{
-				m_marker->toXML(CString(_T("c:marker")), writer);
+                CString sNodeName = _T("c:marker");
+                m_marker->toXML(sNodeName, writer);
 			}
 			if(NULL != m_dLbl)
 			{
-				m_dLbl->toXML(CString(_T("c:dLbl")), writer);
+                CString sNodeName = _T("c:dLbl");
+                m_dLbl->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-				m_extLst->toXML(CString(_T("c:extLst")), writer);
+                CString sNodeName = _T("c:extLst");
+                m_extLst->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -14106,7 +14190,8 @@ namespace OOX{
 				CT_PivotFmt* pElem = m_pivotFmt[i];
 				if(NULL != pElem)
 				{
-					pElem->toXML(CString(_T("c:pivotFmt")), writer);
+                    CString sNodeName = _T("c:pivotFmt");
+                    pElem->toXML(sNodeName, writer);
 				}
 			}
 			writer.WriteString(CString(_T("</")));
@@ -14252,55 +14337,68 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_title)
 			{
-				m_title->toXML(CString(_T("c:title")), writer);
+                CString sNodeName = _T("c:title");
+                m_title->toXML(sNodeName, writer);
 			}
 			if(NULL != m_autoTitleDeleted)
 			{
-				m_autoTitleDeleted->toXML(CString(_T("c:autoTitleDeleted")), writer);
+                CString sNodeName = _T("c:autoTitleDeleted");
+                m_autoTitleDeleted->toXML(sNodeName, writer);
 			}
 			if(NULL != m_pivotFmts)
 			{
-				m_pivotFmts->toXML(CString(_T("c:pivotFmts")), writer);
+                CString sNodeName = _T("c:pivotFmts");
+                m_pivotFmts->toXML(sNodeName, writer);
 			}
 			if(NULL != m_view3D)
 			{
-				m_view3D->toXML(CString(_T("c:view3D")), writer);
+                CString sNodeName = _T("c:view3D");
+                m_view3D->toXML(sNodeName, writer);
 			}
 			if(NULL != m_floor)
 			{
-				m_floor->toXML(CString(_T("c:floor")), writer);
+                CString sNodeName = _T("c:floor");
+                m_floor->toXML(sNodeName, writer);
 			}
 			if(NULL != m_sideWall)
 			{
-				m_sideWall->toXML(CString(_T("c:sideWall")), writer);
+                CString sNodeName = _T("c:sideWall");
+                m_sideWall->toXML(sNodeName, writer);
 			}
 			if(NULL != m_backWall)
 			{
-				m_backWall->toXML(CString(_T("c:backWall")), writer);
+                CString sNodeName = _T("c:backWall");
+                m_backWall->toXML(sNodeName, writer);
 			}
 			if(NULL != m_plotArea)
 			{
-				m_plotArea->toXML(CString(_T("c:plotArea")), writer);
+                CString sNodeName = _T("c:plotArea");
+                m_plotArea->toXML(sNodeName, writer);
 			}
 			if(NULL != m_legend)
 			{
-				m_legend->toXML(CString(_T("c:legend")), writer);
+                CString sNodeName = _T("c:legend");
+                m_legend->toXML(sNodeName, writer);
 			}
 			if(NULL != m_plotVisOnly)
 			{
-				m_plotVisOnly->toXML(CString(_T("c:plotVisOnly")), writer);
+                CString sNodeName = _T("c:plotVisOnly");
+                m_plotVisOnly->toXML(sNodeName, writer);
 			}
 			if(NULL != m_dispBlanksAs)
 			{
-				m_dispBlanksAs->toXML(CString(_T("c:dispBlanksAs")), writer);
+                CString sNodeName = _T("c:dispBlanksAs");
+                m_dispBlanksAs->toXML(sNodeName, writer);
 			}
 			if(NULL != m_showDLblsOverMax)
 			{
-				m_showDLblsOverMax->toXML(CString(_T("c:showDLblsOverMax")), writer);
+                CString sNodeName = _T("c:showDLblsOverMax");
+                m_showDLblsOverMax->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{
-				m_extLst->toXML(CString(_T("c:extLst")), writer);
+                CString sNodeName = _T("c:extLst");
+                m_extLst->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -14373,23 +14471,28 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_chartObject)
 			{
-				m_chartObject->toXML(CString(_T("c:chartObject")), writer);
+                CString sNodeName = _T("c:chartObject");
+                m_chartObject->toXML(sNodeName, writer);
 			}
 			if(NULL != m_data)
 			{
-				m_data->toXML(CString(_T("c:data")), writer);
+                CString sNodeName = _T("c:data");
+                m_data->toXML(sNodeName, writer);
 			}
 			if(NULL != m_formatting)
 			{
-				m_formatting->toXML(CString(_T("c:formatting")), writer);
+                CString sNodeName = _T("c:formatting");
+                m_formatting->toXML(sNodeName, writer);
 			}
 			if(NULL != m_selection)
 			{
-				m_selection->toXML(CString(_T("c:selection")), writer);
+                CString sNodeName = _T("c:selection");
+                m_selection->toXML(sNodeName, writer);
 			}
 			if(NULL != m_userInterface)
 			{
-				m_userInterface->toXML(CString(_T("c:userInterface")), writer);
+                CString sNodeName = _T("c:userInterface");
+                m_userInterface->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -14456,14 +14559,16 @@ namespace OOX{
 			}
 			if(NULL != m_fmtId)
 			{
-				m_fmtId->toXML(CString(_T("c:fmtId")), writer);
+                CString sNodeName = _T("c:fmtId");
+                m_fmtId->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_extLst.size(); i < length; ++i)
 			{
 				CT_extLst* pElem = m_extLst[i];
 				if(NULL != pElem)
 				{
-					pElem->toXML(CString(_T("c:extLst")), writer);
+                    CString sNodeName = _T("c:extLst");
+                    pElem->toXML(sNodeName, writer);
 				}
 			}
 			writer.WriteString(CString(_T("</")));
@@ -14633,12 +14738,14 @@ namespace OOX{
 				AlternateContentChoice* pElem = m_Choice[i];
 				if(NULL != pElem)
 				{
-					pElem->toXML(CString(_T("mc:Choice")), writer);
+                    CString sNodeName = _T("c:Choice");
+                    pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_Fallback)
 			{
-				m_Fallback->toXML(CString(_T("mc:Fallback")), writer);
+                CString sNodeName = _T("c:Fallback");
+                m_Fallback->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -14688,7 +14795,8 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_style)
 			{
-				m_style->toXML(CString(_T("c14:style")), writer);
+                CString sNodeName = _T("c14:style");
+                m_style->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);
@@ -14736,7 +14844,8 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_style)
 			{
-				m_style->toXML(CString(_T("c:style")), writer);
+                CString sNodeName = _T("c:style");
+                m_style->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));
 			writer.WriteString(sNodeName);

@@ -90,9 +90,11 @@ typedef wchar_t WCHAR;
 #define _wtoi64(p) std::wcstoll((p),NULL,10)
 #ifdef UNICODE
 #define _ttoi _wtoi
+#define _tstof _wtof
 #define _stscanf swscanf
 #else
 #define _ttoi atoi
+#define _tstof atof
 #define _stscanf scanf
 #endif // #ifdef UNICODE
 #endif // #ifndef _wtof

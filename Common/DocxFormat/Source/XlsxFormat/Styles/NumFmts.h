@@ -28,7 +28,8 @@ namespace OOX
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				toXML2(writer, CString(_T("numFmt")));
+                CString sHeader = _T("numFmt");
+                toXML2(writer, sHeader);
 			}
 			void toXML2(XmlUtils::CStringWriter& writer, CString& sHeader) const
 			{

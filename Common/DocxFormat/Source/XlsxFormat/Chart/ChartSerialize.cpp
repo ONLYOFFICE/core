@@ -10730,27 +10730,32 @@ namespace OOX{
 			writer.WriteString(CString(_T(">")));
 			if(NULL != m_varyColors)
 			{
-				m_varyColors->toXML(CString(_T("c:varyColors")), writer);
+                CString sNodeName = _T("c:varyColors");
+                m_varyColors->toXML(sNodeName, writer);
 			}
             for(int i = 0, length = m_ser.size(); i < length; ++i)
 			{
 				CT_PieSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-					pElem->toXML(CString(_T("c:ser")), writer);
+                    CString sNodeName = _T("c:ser");
+                    pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_dLbls)
 			{
-				m_dLbls->toXML(CString(_T("c:dLbls")), writer);
+                CString sNodeName = _T("c:dLbls");
+                m_dLbls->toXML(sNodeName, writer);
 			}
 			if(NULL != m_firstSliceAng)
 			{
-				m_firstSliceAng->toXML(CString(_T("c:firstSliceAng")), writer);
+                CString sNodeName = _T("c:firstSliceAng");
+                m_firstSliceAng->toXML(sNodeName, writer);
 			}
 			if(NULL != m_holeSize)
 			{
-				m_holeSize->toXML(CString(_T("c:holeSize")), writer);
+                CString sNodeName = _T("c:holeSize");
+                m_holeSize->toXML(sNodeName, writer);
 			}
 			if(NULL != m_extLst)
 			{

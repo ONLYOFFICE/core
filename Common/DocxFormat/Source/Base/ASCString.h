@@ -2291,6 +2291,11 @@ public:
        return *this;
     }
 
+    void AppendChar (CT t)
+    {
+        this->append(1, t);
+    }
+
 
     // -------------------------------------------------------------------------
     // Case changing functions

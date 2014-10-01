@@ -2336,7 +2336,7 @@ namespace BinXlsxRW {
 			int res = c_oSerConstants::ReadOk;
 			if(c_oSerWorksheetsTypes::Drawing == type)
 			{
-				OOX::Spreadsheet::CCellAnchor* pCellAnchor = new OOX::Spreadsheet::CCellAnchor();
+				OOX::Spreadsheet::CCellAnchor* pCellAnchor = new OOX::Spreadsheet::CCellAnchor(SimpleTypes::Spreadsheet::CCellAnchorType<>());
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadDrawing, this, pCellAnchor);
 				pDrawing->m_arrItems.push_back(pCellAnchor);
 			}

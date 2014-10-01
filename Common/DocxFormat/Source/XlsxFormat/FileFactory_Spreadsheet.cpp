@@ -53,7 +53,7 @@ namespace OOX
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile() );
 		}
-		smart_ptr<OOX::File> CreateFile(const OOX::CPath& oPath,  OOX::Rels::CRelationShip* pRelation)
+        smart_ptr<OOX::File> CreateFile(const OOX::CPath& oPath,  OOX::Rels::CRelationShip* pRelation)
 		{
 			if (pRelation == NULL) return smart_ptr<OOX::File>( new UnknowTypeFile() );
 			

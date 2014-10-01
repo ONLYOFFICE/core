@@ -3338,6 +3338,54 @@ public:
                             static_cast<MYSIZE>(nCount));
     }
 
+    // works like CStringT::Tokenize ( http://msdn.microsoft.com/en-us/library/k4ftfkd2.aspx )
+
+    MYTYPE Tokenize (const CT* pTokens, int& iStart) const
+    {
+        if (iStart < 0 || NULL == pTokens)
+            return MYTYPE();
+
+        int nSize = static_cast<int>(this->size());
+        int nCurrentSymbolPos = iStart;
+
+        // iterate all the symbols from iStart pos
+        while (nCurrentSymbolPos < nSize)
+        {
+            CT nCurrentSymbol = this->at(nCurrentSymbolPos);
+            // iterate all the tokens
+            CT *pCurrentTokenPtr = const_cast <CT *> (pTokens);
+            while (*pCurrentTokenPtr != (CT) 0)
+            {
+                if (nCurrentSymbol == *pCurrentTokenPtr)
+                {
+                    // found
+                    int nOldStartValue = iStart;
+                    iStart = nCurrentSymbolPos + 1;
+                    int nCharsCount = nCurrentSymbolPos - nOldStartValue;
+
+                    if (0 == nCharsCount)
+                    {
+                        // skip this char
+                        break;
+                    }
+
+                    return Mid (nOldStartValue, nCurrentSymbolPos - nOldStartValue);
+                }
+
+                pCurrentTokenPtr++;
+            }
+            nCurrentSymbolPos++;
+        }
+        // return last string after last token
+        int nOldStartValue = iStart;
+        iStart = -1;
+        return Mid (nOldStartValue);
+    }
+    MYTYPE Tokenize (const MYTYPE &pTokens, int& iStart) const
+    {
+        return Tokenize (pTokens.c_str(), iStart);
+    }
+
     void ReleaseBuffer(int nNewLen=-1)
     {
         RelBuf(nNewLen);

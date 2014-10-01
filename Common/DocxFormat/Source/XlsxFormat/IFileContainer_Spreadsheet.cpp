@@ -36,7 +36,7 @@ namespace OOX
 
 			for (unsigned int nIndex = 0; nIndex < nCount; ++nIndex )
 			{
-				smart_ptr<OOX::File>& pFile = OOX::Spreadsheet::CreateFile( oPath, oRels.m_arrRelations[nIndex] );
+                const smart_ptr<OOX::File>& pFile = OOX::Spreadsheet::CreateFile( oPath, oRels.m_arrRelations[nIndex] );
 				Add( oRels.m_arrRelations[nIndex]->rId(), pFile );
 			}
 		}
@@ -224,7 +224,7 @@ namespace OOX
 		}
 
 
-		void      IFileContainer::Add(const OOX::RId& rId, smart_ptr<OOX::File>& pFile)
+        void      IFileContainer::Add(const OOX::RId& rId, const smart_ptr<OOX::File>& pFile)
 		{
 			bool bEnumerated = pFile->type().Enumerated();
 			bool bEnumeratedGlobal = pFile->type().EnumeratedGlobal();

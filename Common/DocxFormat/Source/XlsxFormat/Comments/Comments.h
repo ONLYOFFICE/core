@@ -434,22 +434,22 @@ namespace OOX
 							if(comment->m_dLeftMM.IsInit())
 							{
 								SimpleTypes::CPoint oPoint;oPoint.FromMm(comment->m_dLeftMM.get());
-								sStyle.AppendFormat(_T("margin-left:%spt;"), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()));
+                                sStyle.AppendFormat(_T("margin-left:%spt;"), (const TCHAR *) OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()));
 							}
 							if(comment->m_dTopMM.IsInit())
 							{
 								SimpleTypes::CPoint oPoint;oPoint.FromMm(comment->m_dTopMM.get());
-								sStyle.AppendFormat(_T("margin-top:%spt;"), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()));
+                                sStyle.AppendFormat(_T("margin-top:%spt;"), (const TCHAR *) OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()));
 							}
 							if(comment->m_dWidthMM.IsInit())
 							{
 								SimpleTypes::CPoint oPoint;oPoint.FromMm(comment->m_dWidthMM.get());
-								sStyle.AppendFormat(_T("width:%spt;"), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()));
+                                sStyle.AppendFormat(_T("width:%spt;"), (const TCHAR *) OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()));
 							}
 							if(comment->m_dHeightMM.IsInit())
 							{
 								SimpleTypes::CPoint oPoint;oPoint.FromMm(comment->m_dHeightMM.get());
-								sStyle.AppendFormat(_T("height:%spt;"), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()));
+                                sStyle.AppendFormat(_T("height:%spt;"), (const TCHAR *) OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()));
 							}
 							CString sClientData;
 							sClientData.Append(_T("<x:ClientData ObjectType=\"Note\">"));

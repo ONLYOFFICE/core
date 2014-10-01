@@ -33,7 +33,7 @@ namespace OOX
 				{
 					CString sValue;
 					CString sRoot;
-					sRoot.Format(_T("<cfvo type=\"%s\""), m_oType.get());
+                    sRoot.Format(_T("<cfvo type=\"%s\""), (const TCHAR *) m_oType.get().ToString());
 					writer.WriteString(sRoot);
 					if (m_oGte.IsInit() && false == m_oGte->ToBool())
 						writer.WriteString(_T (" gte=\"0\""));
@@ -288,7 +288,7 @@ namespace OOX
 					writer.WriteString(_T("<iconSet"));
 					if (m_oIconSet.IsInit())
 					{
-						sValue.Format(_T(" iconSet=\"%s\""), m_oIconSet.get());
+                        sValue.Format(_T(" iconSet=\"%s\""), (const TCHAR *) m_oIconSet.get().ToString());
 						writer.WriteString(sValue);
 					}
 					if (m_oPercent.IsInit() && false == m_oPercent->ToBool())
@@ -379,7 +379,7 @@ namespace OOX
 				{
 					CString sValue;
 					CString sRoot;
-					sRoot.Format(_T("<cfRule type=\"%s\" priority=\"%d\""), m_oType.get(), m_oPriority->GetValue());
+                    sRoot.Format(_T("<cfRule type=\"%s\" priority=\"%d\""), (const TCHAR *) m_oType.get().ToString(), m_oPriority->GetValue());
 					writer.WriteString(sRoot);
 					if (m_oAboveAverage.IsInit() && false == m_oAboveAverage->ToBool())
 						writer.WriteString(_T (" aboveAverage=\"0\""));
@@ -394,7 +394,7 @@ namespace OOX
 						writer.WriteString(_T (" equalAverage=\"1\""));
 					if (m_oOperator.IsInit())
 					{
-						sValue.Format(_T(" text=\"%s\""), m_oOperator.get());
+                        sValue.Format(_T(" text=\"%s\""), (const TCHAR *) m_oOperator.get().ToString());
 						writer.WriteString(sValue);
 					}
 					if (m_oPercent.IsInit() && true == m_oPercent->ToBool())

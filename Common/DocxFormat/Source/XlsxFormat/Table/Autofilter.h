@@ -112,7 +112,7 @@ namespace OOX
 					CString sXml;
 					sXml.Format(_T("<sortState ref=\"%s\""), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
 					if(m_oCaseSensitive.IsInit())
-						sXml.AppendFormat(_T(" caseSensitive=\"%s\""), m_oCaseSensitive->ToString2(SimpleTypes::onofftostring1));
+                        sXml.AppendFormat(_T(" caseSensitive=\"%s\""), (const TCHAR *) m_oCaseSensitive->ToString2(SimpleTypes::onofftostring1));
 					sXml.Append(_T(">"));
 					writer.WriteString(sXml);
 

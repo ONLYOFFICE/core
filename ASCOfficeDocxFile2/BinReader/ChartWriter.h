@@ -49,6 +49,7 @@ namespace Writers
 
 					CFile oFile;
 					oFile.CreateFile(sAbsPath);
+					oFile.WriteStringUTF8(CString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n")));
 					oFile.WriteStringUTF8(elem->content);
 					oFile.CloseFile();
 

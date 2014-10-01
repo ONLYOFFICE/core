@@ -98,10 +98,13 @@ namespace BinXlsxRW{
 			long nStartPos = oBufferedStream.GetPosition();
 			BinXlsxRW::BinaryCommonWriter oBcw(oBufferedStream);
 
+			CString sOldRelsPath = m_pExternalDrawingConverter->GetRelsPath();
 			m_pExternalDrawingConverter->SetRelsPath(sChartPath);
 
 			BinXlsxRW::BinaryChartWriter oBinaryChartWriter(oBufferedStream, m_pExternalDrawingConverter);	
 			oBinaryChartWriter.WriteCT_ChartSpace(oChart);
+
+			m_pExternalDrawingConverter->SetRelsPath(sOldRelsPath);
 
 			long nEndPos = oBufferedStream.GetPosition();
 			lDataSize = nEndPos - nStartPos;

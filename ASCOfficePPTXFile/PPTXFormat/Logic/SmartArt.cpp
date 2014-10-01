@@ -126,43 +126,21 @@ namespace PPTX
 
 			BinXlsxRW::CXlsxSerializer oXlsxSerializer;
 			NSBinPptxRW::CDrawingConverter oDrawingConverter;
-
-			VARIANT var;
-			
-			var.vt = VT_UNKNOWN;
-			pWriter->m_pCommon->m_pFontPicker->QueryInterface(IID_IUnknown, (void**)&(var.punkVal));
-			oDrawingConverter.SetAdditionalParam(CString(L"FontPicker"), var);
-			RELEASEINTERFACE((var.punkVal));
-
-			var.vt = VT_ARRAY;
-
-			NSBinPptxRW::CBinaryFileWriter oWriter;
-			LPSAFEARRAY pSerializeIM = oWriter.Serialize(pWriter->m_pCommon->m_pImageManager);
-			var.parray = pSerializeIM;
-			oDrawingConverter.SetAdditionalParam(CString(L"SerializeImageManager"), var);
-
-			RELEASEARRAY(pSerializeIM);
+			NSBinPptxRW::CBinaryFileWriter* pOldWriter = oDrawingConverter.m_pBinaryWriter;
+			oDrawingConverter.m_pBinaryWriter = pWriter;
+			NSCommon::smart_ptr<PPTX::FileContainer> pOldRels = *oDrawingConverter.m_pBinaryWriter->m_pCommonRels;
 
 			oXlsxSerializer.setDrawingConverter(&oDrawingConverter);
 
-			var.parray = NULL;
-			oDrawingConverter.GetAdditionalParam(CString(L"SerializeImageManager"), &var);
-
-			if (var.parray != NULL)
-			{
-				NSBinPptxRW::CBinaryFileReader oReader;
-				oReader.Deserialize(pWriter->m_pCommon->m_pImageManager, var.parray);
-
-				RELEASEARRAY((var.parray));
-			}
-
 			long lDataSize = 0;
 			oXlsxSerializer.loadChart(strDataPath, *pWriter, lDataSize);
+			*oDrawingConverter.m_pBinaryWriter->m_pCommonRels = pOldRels;
+			oDrawingConverter.m_pBinaryWriter = pOldWriter;
 		}
 
 		void ChartRec::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			if (!id_data.is_init() || NULL == m_pData)
+			if (!id_data.is_init() || NULL == m_bData)
 				return;
 			
 			CString strData = _T("<c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" \
@@ -174,7 +152,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 		void ChartRec::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			ULONG lLen = pReader->GetLong();
-			m_pData = pReader->GetArray(lLen);
+			m_bData = true;
 
 			m_lChartNumber = pReader->m_lChartNumber;
 			pReader->m_lChartNumber++;
@@ -183,21 +161,10 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 			BinXlsxRW::CXlsxSerializer oXlsxSerializer;
 			NSBinPptxRW::CDrawingConverter oDrawingConverter;
 
-			VARIANT varDir;
-			varDir.vt = VT_BSTR;
-			varDir.bstrVal = pReader->m_strFolder.AllocSysString();
-			oDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir2"), varDir);
-			SysFreeString(varDir.bstrVal);
-
-			VARIANT var;
-			var.vt = VT_ARRAY;
-
-			NSBinPptxRW::CBinaryFileWriter oWriter;
-			LPSAFEARRAY pSerializeIM = oWriter.Serialize(pReader->m_pRels->m_pManager);
-			var.parray = pSerializeIM;
-			oDrawingConverter.SetAdditionalParam(CString(L"SerializeImageManager2"), var);
-
-			RELEASEARRAY(pSerializeIM);
+			NSBinPptxRW::CImageManager2* pOldImageManager = oDrawingConverter.m_pImageManager;
+			oDrawingConverter.m_pImageManager = pReader->m_pRels->m_pManager;
+			NSBinPptxRW::CBinaryFileReader* pOldReader = oDrawingConverter.m_pReader;
+			oDrawingConverter.m_pReader = pReader;
 
 			oXlsxSerializer.setDrawingConverter(&oDrawingConverter);
 
@@ -227,16 +194,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 			pReader->m_strContentTypes += (*sContentTypes);
 			RELEASEOBJECT(sContentTypes);
 
-			var.parray = NULL;
-			oDrawingConverter.GetAdditionalParam(CString(L"SerializeImageManager2"), &var);
-
-			if (var.parray != NULL)
-			{
-				NSBinPptxRW::CBinaryFileReader oReader;
-				oReader.Deserialize(pReader->m_pRels->m_pManager, var.parray);
-
-				RELEASEARRAY((var.parray));
-			}				
+			oDrawingConverter.m_pReader = pOldReader;
+			oDrawingConverter.m_pImageManager = pOldImageManager;
 
 			id_data = new PPTX::RId((size_t)lId);
 		}

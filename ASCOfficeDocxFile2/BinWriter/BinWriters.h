@@ -4721,6 +4721,7 @@ namespace BinDocxRW
 						if (pFile.IsInit() && OOX::FileTypes::Chart == pFile->type())
 						{
 							OOX::Spreadsheet::CChartSpace* pChartFile = static_cast<OOX::Spreadsheet::CChartSpace*>(pFile.operator ->());
+							CString sOldRelsPath = m_pOfficeDrawingConverter->GetRelsPath();
 							CString sChartPath = pChartFile->GetReadPath().GetPath();
 							m_pOfficeDrawingConverter->SetRelsPath(sChartPath);
 
@@ -4728,7 +4729,7 @@ namespace BinDocxRW
 							WriteDrawing(NULL, pChartDrawing, pChartFile);
 							m_oBcw.WriteItemEnd(nCurPos);
 
-							m_pOfficeDrawingConverter->SetRelsPath(m_oParamsDocumentWriter.m_sDocumentPath);
+							m_pOfficeDrawingConverter->SetRelsPath(sOldRelsPath);
 						}
 					}
 				}

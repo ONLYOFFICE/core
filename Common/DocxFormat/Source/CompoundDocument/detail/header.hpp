@@ -30,6 +30,7 @@
 // header.hpp
 #pragma once
 #include "alloctable.hpp"
+#include <cstring>
 
 namespace POLE
 {

@@ -34,6 +34,7 @@
 #include <vector>
 #include <cassert>
 #include "util.hpp"
+#include <cstring>
 
 namespace POLE
 {

@@ -10970,7 +10970,7 @@ namespace OOX{
 				CT_PieSer* pElem = m_ser[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:varyColors");
+                    CString sNodeName = _T("c:ser");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
@@ -13532,7 +13532,7 @@ namespace OOX{
 					{
 						if(false == bIsAttribute)
                         {
-                            CString sNodeName = _T("c:surfaceChart");
+                            CString sNodeName = _T("c:catAx");
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
@@ -14738,13 +14738,13 @@ namespace OOX{
 				AlternateContentChoice* pElem = m_Choice[i];
 				if(NULL != pElem)
 				{
-                    CString sNodeName = _T("c:Choice");
+                    CString sNodeName = _T("mc:Choice");
                     pElem->toXML(sNodeName, writer);
 				}
 			}
 			if(NULL != m_Fallback)
 			{
-                CString sNodeName = _T("c:Fallback");
+                CString sNodeName = _T("mc:Fallback");
                 m_Fallback->toXML(sNodeName, writer);
 			}
 			writer.WriteString(CString(_T("</")));

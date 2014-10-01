@@ -171,6 +171,7 @@ namespace NSBinPptxRW
 	public:
 		STDMETHOD(SetMainDocument)(BinDocxRW::CDocxSerializer* pDocument);
 		STDMETHOD(SetRelsPath)(CString& bsRelsPath);
+		CString GetRelsPath();
 		STDMETHOD(SetMediaDstPath)(CString& bsMediaPath);
 
 		STDMETHOD(AddShapeType)(CString& bsXml);

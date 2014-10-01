@@ -77,12 +77,11 @@ namespace PPTX
 		public:
 			ChartRec()	
 			{
-				m_pData = NULL;
+				m_bData = false;
 				m_lChartNumber = 0;
 			}
 			virtual ~ChartRec() 
 			{
-				RELEASEARRAY(m_pData);
 			}
 			explicit ChartRec(XmlUtils::CXmlNode& node)	
 			{ 
@@ -109,7 +108,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				m_pData = NULL;
+				m_bData = false;
 
 				node.ReadAttributeBase(L"r:id", id_data);
 				FillParentPointersForChilds();
@@ -131,7 +130,7 @@ namespace PPTX
 			nullable<PPTX::RId> id_data;
 
 			LONG m_lChartNumber;
-			LPSAFEARRAY m_pData;
+			bool m_bData;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{				

@@ -828,6 +828,10 @@ HRESULT CDrawingConverter::SetRelsPath(CString& bsRelsPath)
 	m_strCurrentRelsPath = bsRelsPath;
 	return SetCurrentRelsPath();
 }
+CString CDrawingConverter::GetRelsPath()
+{
+	return m_strCurrentRelsPath;
+}
 HRESULT CDrawingConverter::SetMediaDstPath(CString& bsMediaPath)
 {
 	m_pBinaryWriter->m_pCommon->m_pImageManager->m_strDstMedia = (CString)bsMediaPath;

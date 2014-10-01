@@ -1655,12 +1655,15 @@ namespace BinXlsxRW {
 				if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Drawings == oFile->type())
 				{
 					OOX::Spreadsheet::CDrawing* pDrawing = (OOX::Spreadsheet::CDrawing*)oFile.operator->();
+					CString sOldRelsPath = m_pOfficeDrawingConverter->GetRelsPath();
 					CString sDrawingRelsPath = pDrawing->GetReadPath().GetPath();
 					m_pOfficeDrawingConverter->SetRelsPath(sDrawingRelsPath);
 					
 					nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawings);
 					WriteDrawings(pDrawing, sDrawingRelsPath);
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+
+					m_pOfficeDrawingConverter->SetRelsPath(sOldRelsPath);
 				}
 			}
 			//Autofilter
@@ -2426,6 +2429,7 @@ namespace BinXlsxRW {
 						//проверяем наличие файла
 						if( INVALID_FILE_ATTRIBUTES != ::GetFileAttributes( sChartPath ) )
 						{
+							CString sOldRelsPath = m_pOfficeDrawingConverter->GetRelsPath();
 							m_pOfficeDrawingConverter->SetRelsPath(sChartPath);
 
 							int nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::Chart2);
@@ -2434,7 +2438,7 @@ namespace BinXlsxRW {
 							oBinaryChartWriter.WriteCT_ChartSpace(oChart);
 							m_oBcw.WriteItemEnd(nCurPos);
 
-							m_pOfficeDrawingConverter->SetRelsPath(sDrawingRelsPath);
+							m_pOfficeDrawingConverter->SetRelsPath(sOldRelsPath);
 						}
 					}
 				}

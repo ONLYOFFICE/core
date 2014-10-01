@@ -68,7 +68,7 @@ namespace OOX
 
 			smart_ptr<OOX::File> Get(const FileType& oType);
 			const RId Add(smart_ptr<OOX::File>& pFile);
-            void      Add(const OOX::RId& rId, const smart_ptr<OOX::File>& pFile);
+            void      Add(const OOX::RId& rId, smart_ptr<OOX::File>& pFile);
 
 			template<typename T> 
 			T&                   Find();

@@ -37,6 +37,8 @@ namespace PPTX
 				lstStyle		= oSrc.lstStyle;
 				Paragrs = oSrc.Paragrs;
 
+				m_ns = oSrc.m_ns;
+
 				return *this;
 			}
 

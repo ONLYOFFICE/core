@@ -185,13 +185,13 @@ public: // Attributes
   // Returns the read pointer.
   std::streampos tellg() const
   {
-	  return impl ? impl->tellg() : 0;
+      return impl ? impl->tellg() : std::streampos();
   }
 
   // Returns the write pointer.
   std::streampos tellp() const
   {
-	  return impl ? impl->tellp() : 0;
+      return impl ? impl->tellp() : std::streampos();
   }
 
   // Return the Eof state of the stream

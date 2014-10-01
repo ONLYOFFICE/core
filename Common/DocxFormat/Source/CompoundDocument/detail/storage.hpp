@@ -34,6 +34,7 @@
 #include <list>
 #include "header.hpp"
 #include "dirtree.hpp"
+#include <cstring>
 
 #include "../../../../../DesktopEditor/common/File.h"
 
@@ -89,13 +90,21 @@ public:
 
 	void get_entry_childrens(size_t index, std::vector<size_t> result) const
 	{
-		_dirtree->children(index, result);
+        std::vector<ULONG32> result_ulong;
+        result_ulong.assign (result.begin(), result.end());
+
+        _dirtree->children(index, result_ulong);
 	}
 
 	void children( size_t index, std::vector<size_t>& result ) const
 	{
 		if (_dirtree)
-			_dirtree->children(index, result);
+        {
+            std::vector<ULONG32> result_ulong;
+            result_ulong.assign (result.begin(), result.end());
+
+            _dirtree->children(index, result_ulong);
+        }
 	}
 
 // Operations

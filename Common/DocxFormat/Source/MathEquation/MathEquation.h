@@ -1,7 +1,7 @@
 #ifndef _MATH_EQUATION_READER_H
 #define _MATH_EQUATION_READER_H
 
-#include "..\CompoundDocument\pole.h"
+#include "../CompoundDocument/pole.h"
 #include "Types.h"
 #include "LEStream.h"
 #include "String.h"

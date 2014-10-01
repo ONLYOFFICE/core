@@ -1,7 +1,7 @@
 #ifndef _MATHEQUATION_LESTREAM
 #define _MATHEQUATION_LESTREAM
 
-#include "..\CompoundDocument\pole.h"
+#include "../CompoundDocument/pole.h"
 #include "Types.h"
 
 namespace MathEquation
@@ -36,6 +36,35 @@ public :
 			delete pBuffer;
 	}
 
+    uint8_t  ReadUInt8()
+    {
+        if (pCur + 1 >= pEnd)
+            return 0;
+
+        uint8_t unResult = pCur[0];
+        pCur++;
+        return unResult;
+    }
+
+    uint16_t ReadUInt16()
+    {
+        if (pCur + 2 >= pEnd)
+            return 0;
+
+        uint16_t ushResult = (pCur[0]) | ((pCur[1]) << 8);
+        pCur += 2;
+        return ushResult;
+    }
+
+    uint32_t ReadUInt32()
+    {
+        if (pCur + 4 >= pEnd)
+            return 0;
+        uint32_t unResult = (uint32_t)((pCur[0]<< 0) | ((pCur[1]) << 8) | ((pCur[2]) << 16) | ((pCur[3]) << 24));
+        pCur += 4;
+        return unResult;
+    }
+
 	void operator>>(uint8_t  &nValue)
 	{
 		nValue = ReadUInt8();
@@ -58,7 +87,7 @@ public :
 
 	void operator>>(int16_t  &nValue)
 	{
-		nValue = Read_UInt16();
+        nValue = ReadUInt16();
 	}
 
 	bool IsValid() const
@@ -77,34 +106,7 @@ public :
 		return false;
 	}
 
-	uint8_t  ReadUInt8()
-	{
-		if (pCur + 1 >= pEnd)
-			return 0;
 
-		uint8_t unResult = pCur[0];
-		pCur++;
-		return unResult;
-	}
-
-	uint16_t ReadUInt16()
-	{
-		if (pCur + 2 >= pEnd)
-			return 0;
-
-		uint16_t ushResult = (pCur[0]) | ((pCur[1]) << 8);
-		pCur += 2;
-		return ushResult;
-	}
-
-	uint32_t ReadUInt32()
-	{
-		if (pCur + 4 >= pEnd)
-			return 0;
-		uint32_t unResult = (uint32_t)((pCur[0]<< 0) | ((pCur[1]) << 8) | ((pCur[2]) << 16) | ((pCur[3]) << 24));
-		pCur += 4;
-		return unResult;
-	}
 
 	uint32_t Tell()
 	{

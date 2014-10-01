@@ -1,6 +1,8 @@
 #ifndef _MATH_EQUATION_STRING_H
 #define _MATH_EQUATION_STRING_H
 
+#include <string>
+
 namespace MathEquation
 {
 #define STRING_NOTFOUND std::string::npos
@@ -93,10 +95,12 @@ namespace MathEquation
 
 		static String CreateFromInt32(int nValue)
 		{
-			char intStr[32];
-			_itoa_s(nValue, (char *)&intStr, 32, 10);
+            //char intStr[32];
+            //_itoa_s(nValue, (char *)&intStr, 32, 10);
 
-			return String(intStr);
+            return std::to_string(nValue);;
+
+            //return String(intStr);
 		}
 
 		std::string GetValue()

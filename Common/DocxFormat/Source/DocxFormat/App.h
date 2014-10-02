@@ -42,13 +42,13 @@ namespace OOX
 
 				if ( oProperties.GetNode( _T("Characters"), oItem ) )
 				{
-					SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
 					m_nCharacters = oNum.GetValue();
 				}
 
 				if ( oProperties.GetNode( _T("CharactersWithSpaces"), oItem ) )
 				{
-					SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
 					m_nCharactersWithSpaces = oNum.GetValue();
 				}
 
@@ -57,13 +57,13 @@ namespace OOX
 
 				if ( oProperties.GetNode( _T("DocSecurity"), oItem ) )
 				{
-					SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
 					m_nDocSecurity = oNum.GetValue();
 				}
 
 				if ( oProperties.GetNode( _T("HiddenSlides"), oItem ) )
 				{
-					SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
 					m_nHiddenSlides = oNum.GetValue();
 				}
 
@@ -72,19 +72,19 @@ namespace OOX
 
 				if ( oProperties.GetNode( _T("HyperlinksChanged"), oItem ) )
 				{
-					SimpleTypes::COnOff<> oBool = oItem.GetText();
+                    SimpleTypes::COnOff<> oBool = (const TCHAR *) oItem.GetText();
 					m_bHyperlinksChanged = (oBool.GetValue() == SimpleTypes::onoffTrue);
 				}
 
 				if ( oProperties.GetNode( _T("Lines"), oItem ) )
 				{
-					SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
 					m_nLines = oNum.GetValue();
 				}
 
 				if ( oProperties.GetNode( _T("LinksUpToDate"), oItem ) )
 				{
-					SimpleTypes::COnOff<> oBool = oItem.GetText();
+                    SimpleTypes::COnOff<> oBool = (const TCHAR *) oItem.GetText();
 					m_bLinksUpToDate = (oBool.GetValue() == SimpleTypes::onoffTrue);
 				}
 
@@ -93,43 +93,43 @@ namespace OOX
 
 				if ( oProperties.GetNode( _T("MMClips"), oItem ) )
 				{
-					SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
 					m_nMMClips = oNum.GetValue();
 				}
 
 				if ( oProperties.GetNode( _T("Notes"), oItem ) )
 				{
-					SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
 					m_nNotes = oNum.GetValue();
 				}
 
 				if ( oProperties.GetNode( _T("Pages"), oItem ) )
 				{
-					SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
 					m_nPages = oNum.GetValue();
 				}
 
 				if ( oProperties.GetNode( _T("Paragraphs"), oItem ) )
 				{
-					SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
 					m_nParagraphs = oNum.GetValue();
 				}
 
-				if ( oProperties.GetNode( _T("ScaleCrop"), oItem ) )
+                if ( oProperties.GetNode( _T("ScaleCrop"), oItem ) )
 				{
-					SimpleTypes::COnOff<> oBool = oItem.GetText();
+                    SimpleTypes::COnOff<> oBool = (const TCHAR *) oItem.GetText();
 					m_bScaleCrop = (oBool.GetValue() == SimpleTypes::onoffTrue);
 				}
 
 				if ( oProperties.GetNode( _T("SharedDoc"), oItem ) )
 				{
-					SimpleTypes::COnOff<> oBool = oItem.GetText();
+                    SimpleTypes::COnOff<> oBool = (const TCHAR *) oItem.GetText();
 					m_bSharedDoc = (oBool.GetValue() == SimpleTypes::onoffTrue);
 				}
 
 				if ( oProperties.GetNode( _T("Slides"), oItem ) )
 				{
-					SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
 					m_nSlides = oNum.GetValue();
 				}
 
@@ -138,13 +138,13 @@ namespace OOX
 
 				if ( oProperties.GetNode( _T("TotalTime"), oItem ) )
 				{
-					SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
 					m_nTotalTime = oNum.GetValue();
 				}
 
 				if ( oProperties.GetNode( _T("Words"), oItem ) )
 				{
-					SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
 					m_nWords = oNum.GetValue();
 				}
 			}

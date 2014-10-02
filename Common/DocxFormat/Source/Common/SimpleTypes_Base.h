@@ -61,10 +61,11 @@ namespace SimpleTypes
 		return false;\
 	}
 
+#ifdef _WIN32
 #define SimpleType_Operator_Equal(Class) \
 	Class(const BSTR &bsValue)\
 	{\
-        /*FromString( bsValue );*/\
+        FromString( bsValue );\
 	}\
 	Class(CString &sValue)\
 	{\
@@ -85,7 +86,7 @@ namespace SimpleTypes
 	}\
 	const Class &operator =(const BSTR &bsValue)\
 	{\
-        /*FromString( bsValue );*/\
+        FromString( bsValue );\
 		return *this;\
 	}\
 	const Class &operator =(const wchar_t* cwsString)\
@@ -98,7 +99,36 @@ namespace SimpleTypes
 		FromString( wsStr );\
 		return *this;\
 	}
-
+#else
+#define SimpleType_Operator_Equal(Class) \
+    Class(CString &sValue)\
+    {\
+        FromString( sValue );\
+    }\
+    Class(const wchar_t* cwsValue)\
+    {\
+        FromString( cwsValue );\
+    }\
+    Class(const CWCharWrapper& wsStr)\
+    {\
+        FromString( wsStr );\
+    }\
+    const Class &operator =(CString &sValue)\
+    {\
+        FromString( sValue );\
+        return *this;\
+    }\
+    const Class &operator =(const wchar_t* cwsString)\
+    {\
+        FromString( cwsString );\
+        return *this;\
+    }\
+    const Class &operator =(const CWCharWrapper& wsStr)\
+    {\
+        FromString( wsStr );\
+        return *this;\
+    }
+#endif
 
 	template<typename E, E DefValue = 0>
 	class CSimpleType

@@ -2862,7 +2862,7 @@ namespace SimpleTypes
                 this->m_eValue = eDefValue;
 
 				// Инициализируем цвет
-				FromString( ToString() );
+                FromString( ToString() );
 			}
 
             return this->m_eValue;

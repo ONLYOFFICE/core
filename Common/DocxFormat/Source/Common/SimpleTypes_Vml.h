@@ -4091,10 +4091,10 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 					return 0;
 
-				SimpleTypes::CPoint oPt1 = sValue.Mid( 0, nPos );
+                SimpleTypes::CPoint oPt1 = (const TCHAR *) sValue.Mid( 0, nPos );
 				m_dX = oPt1.GetValue();
 
-				SimpleTypes::CPoint oPt2 = sValue.Mid( nPos + 1, nLen - nPos - 1 );
+                SimpleTypes::CPoint oPt2 = (const TCHAR *) sValue.Mid( nPos + 1, nLen - nPos - 1 );
 				m_dY = oPt2.GetValue();
 
 				return 0;
@@ -4156,10 +4156,10 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 					return 0;
 
-				SimpleTypes::CPercentage oPerc1 = sValue.Mid( 0, nPos );
+                SimpleTypes::CPercentage oPerc1 = (const TCHAR *) sValue.Mid( 0, nPos );
 				m_dX = oPerc1.GetValue();
 
-				SimpleTypes::CPercentage oPerc2 = sValue.Mid( nPos + 1, nLen - nPos - 1 );
+                SimpleTypes::CPercentage oPerc2 = (const TCHAR *) sValue.Mid( nPos + 1, nLen - nPos - 1 );
 				m_dY = oPerc2.GetValue();
 
 				return 0;
@@ -4221,10 +4221,10 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 					return 0;
 
-				SimpleTypes::Vml::CVml_1_65536 oFraction1 = sValue.Mid( 0, nPos );
+                SimpleTypes::Vml::CVml_1_65536 oFraction1 = (const TCHAR *) sValue.Mid( 0, nPos );
 				m_dX = oFraction1.GetValue();
 
-				SimpleTypes::Vml::CVml_1_65536 oFraction2 = sValue.Mid( nPos + 1, nLen - nPos - 1 );
+                SimpleTypes::Vml::CVml_1_65536 oFraction2 = (const TCHAR *) sValue.Mid( nPos + 1, nLen - nPos - 1 );
 				m_dY = oFraction2.GetValue();
 
 				return 0;
@@ -4293,7 +4293,7 @@ namespace SimpleTypes
 					if ( -1 == nSpacePos )
 						nSpacePos = nLen;
 
-					SimpleTypes::CPoint oPoint = sValue.Mid( nPos, nSpacePos - nPos );
+                    SimpleTypes::CPoint oPoint = (const TCHAR *) sValue.Mid( nPos, nSpacePos - nPos );
 					nPos = nSpacePos + 1;
 
 					m_arrLimits.push_back( oPoint.ToPoints() );
@@ -5159,7 +5159,7 @@ namespace SimpleTypes
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
-				SimpleTypes::CPoint oPtLeft = sValue.Mid( nStartPos, nEndPos - nStartPos );
+                SimpleTypes::CPoint oPtLeft = (const TCHAR *) sValue.Mid( nStartPos, nEndPos - nStartPos );
 				m_dLeft = oPtLeft.GetValue();
 
 				// Top
@@ -5168,7 +5168,7 @@ namespace SimpleTypes
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
-				SimpleTypes::CPoint oPtTop = sValue.Mid( nStartPos, nEndPos - nStartPos );
+                SimpleTypes::CPoint oPtTop = (const TCHAR *) sValue.Mid( nStartPos, nEndPos - nStartPos );
 				m_dTop = oPtTop.GetValue();
 
 				// Right
@@ -5177,7 +5177,7 @@ namespace SimpleTypes
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
-				SimpleTypes::CPoint oPtRight = sValue.Mid( nStartPos, nEndPos - nStartPos );
+                SimpleTypes::CPoint oPtRight = (const TCHAR *) sValue.Mid( nStartPos, nEndPos - nStartPos );
 				m_dRight = oPtRight.GetValue();
 
 				// Bottom
@@ -5186,7 +5186,7 @@ namespace SimpleTypes
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
-				SimpleTypes::CPoint oPtBottom = sValue.Mid( nStartPos, nEndPos - nStartPos );
+                SimpleTypes::CPoint oPtBottom = (const TCHAR *) sValue.Mid( nStartPos, nEndPos - nStartPos );
 				m_dBottom = oPtBottom.GetValue();
 
 				return 0;

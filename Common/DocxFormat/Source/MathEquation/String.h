@@ -95,12 +95,13 @@ namespace MathEquation
 
 		static String CreateFromInt32(int nValue)
 		{
-            //char intStr[32];
-            //_itoa_s(nValue, (char *)&intStr, 32, 10);
-
-            return std::to_string(nValue);;
-
-            //return String(intStr);
+			#ifdef _WIN32
+				char intStr[32];
+				_itoa_s(nValue, (char *)&intStr, 32, 10);
+				return String(intStr);
+			#else
+				return std::to_string(nValue);;
+			#endif
 		}
 
 		std::string GetValue()

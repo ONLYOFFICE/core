@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 7.00.0555 */
-/* at Fri Sep 19 18:46:02 2014
+/* at Sun Oct 05 15:10:56 2014
  */
 /* Compiler settings for .\ASCOfficeOdfFileW.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 7.00.0555 

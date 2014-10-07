@@ -56,7 +56,6 @@ SOURCES += docxformatlib.cpp \
     ../Source/SystemUtility/SystemUtility.cpp \
     ../Source/Utility/codecvt.cpp \
     ../Source/Utility/DateTime.cpp \
-    #../Source/Utility/Encoding.cpp \
     ../Source/Utility/TxtFile.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
     ../Source/XlsxFormat/Common.cpp \
@@ -187,7 +186,6 @@ HEADERS += docxformatlib.h \
     ../Source/SystemUtility/SystemUtility.h \
     ../Source/Utility/codecvt.h \
     ../Source/Utility/DateTime.h \
-    #../Source/Utility/Encoding.h \
     ../Source/Utility/TxtFile.h \
     ../Source/Utility/Unit.h \
     ../Source/Utility/Utility.h \
@@ -244,77 +242,6 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Workbook.h \
     ../Source/XlsxFormat/WritingElement.h \
     ../Source/XlsxFormat/Xlsx.h \
-    #../Source/XML/libxml2/win_build/config.h \
-    #../Source/XML/libxml2/win_build/stdint.h \
-    #../Source/XML/libxml2/XML/include/libxml/c14n.h \
-    #../Source/XML/libxml2/XML/include/libxml/catalog.h \
-    #../Source/XML/libxml2/XML/include/libxml/chvalid.h \
-    #../Source/XML/libxml2/XML/include/libxml/debugXML.h \
-    #../Source/XML/libxml2/XML/include/libxml/dict.h \
-    #../Source/XML/libxml2/XML/include/libxml/DOCBparser.h \
-    #../Source/XML/libxml2/XML/include/libxml/encoding.h \
-    #../Source/XML/libxml2/XML/include/libxml/entities.h \
-    #../Source/XML/libxml2/XML/include/libxml/globals.h \
-    #../Source/XML/libxml2/XML/include/libxml/hash.h \
-    #../Source/XML/libxml2/XML/include/libxml/HTMLparser.h \
-    #../Source/XML/libxml2/XML/include/libxml/HTMLtree.h \
-    #../Source/XML/libxml2/XML/include/libxml/list.h \
-    #../Source/XML/libxml2/XML/include/libxml/nanoftp.h \
-    #../Source/XML/libxml2/XML/include/libxml/nanohttp.h \
-    #../Source/XML/libxml2/XML/include/libxml/parser.h \
-    #../Source/XML/libxml2/XML/include/libxml/parserInternals.h \
-    #../Source/XML/libxml2/XML/include/libxml/pattern.h \
-    #../Source/XML/libxml2/XML/include/libxml/relaxng.h \
-    #../Source/XML/libxml2/XML/include/libxml/SAX.h \
-    #../Source/XML/libxml2/XML/include/libxml/SAX2.h \
-    #../Source/XML/libxml2/XML/include/libxml/schemasInternals.h \
-    #../Source/XML/libxml2/XML/include/libxml/schematron.h \
-    #../Source/XML/libxml2/XML/include/libxml/threads.h \
-    #../Source/XML/libxml2/XML/include/libxml/tree.h \
-    #../Source/XML/libxml2/XML/include/libxml/uri.h \
-    #../Source/XML/libxml2/XML/include/libxml/valid.h \
-    #../Source/XML/libxml2/XML/include/libxml/xinclude.h \
-    #../Source/XML/libxml2/XML/include/libxml/xlink.h \
-    #../Source/XML/libxml2/XML/include/libxml/xmlautomata.h \
-    #../Source/XML/libxml2/XML/include/libxml/xmlerror.h \
-    #../Source/XML/libxml2/XML/include/libxml/xmlexports.h \
-    #../Source/XML/libxml2/XML/include/libxml/xmlIO.h \
-    #../Source/XML/libxml2/XML/include/libxml/xmlmemory.h \
-    #../Source/XML/libxml2/XML/include/libxml/xmlmodule.h \
-    #../Source/XML/libxml2/XML/include/libxml/xmlreader.h \
-    #../Source/XML/libxml2/XML/include/libxml/xmlregexp.h \
-    #../Source/XML/libxml2/XML/include/libxml/xmlsave.h \
-    #../Source/XML/libxml2/XML/include/libxml/xmlschemas.h \
-    #../Source/XML/libxml2/XML/include/libxml/xmlschemastypes.h \
-    #../Source/XML/libxml2/XML/include/libxml/xmlstring.h \
-    #../Source/XML/libxml2/XML/include/libxml/xmlunicode.h \
-    #../Source/XML/libxml2/XML/include/libxml/xmlversion.h \
-    #../Source/XML/libxml2/XML/include/libxml/xmlwin32version.h \
-    #../Source/XML/libxml2/XML/include/libxml/xmlwriter.h \
-    #../Source/XML/libxml2/XML/include/libxml/xpath.h \
-    #../Source/XML/libxml2/XML/include/libxml/xpathInternals.h \
-    #../Source/XML/libxml2/XML/include/libxml/xpointer.h \
-    #../Source/XML/libxml2/XML/include/win32config.h \
-    #../Source/XML/libxml2/XML/include/wsockcompat.h \
-    #../Source/XML/libxml2/XML/macos/src/config-mac.h \
-    #../Source/XML/libxml2/XML/macos/src/XMLTestPrefix.h \
-    #../Source/XML/libxml2/XML/macos/src/XMLTestPrefix2.h \
-    #../Source/XML/libxml2/XML/python/libxml_wrap.h \
-    #../Source/XML/libxml2/XML/win32/VC10/config.h \
-    #../Source/XML/libxml2/XML/win32/wince/wincecompat.h \
-    #../Source/XML/libxml2/XML/buf.h \
-    #../Source/XML/libxml2/XML/elfgcchack.h \
-    #../Source/XML/libxml2/XML/enc.h \
-    #../Source/XML/libxml2/XML/libxml.h \
-    #../Source/XML/libxml2/XML/save.h \
-    #../Source/XML/libxml2/XML/testOOMlib.h \
-    #../Source/XML/libxml2/XML/timsort.h \
-    #../Source/XML/libxml2/XML/trio.h \
-    #../Source/XML/libxml2/XML/triodef.h \
-    #../Source/XML/libxml2/XML/trionan.h \
-    #../Source/XML/libxml2/XML/triop.h \
-    #../Source/XML/libxml2/XML/triostr.h \
-    #../Source/XML/libxml2/XML/xzlib.h \
     ../Source/XML/libxml2/libxml2.h \
     ../Source/XML/StringWriter.h \
     ../Source/XML/Utils.h \

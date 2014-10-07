@@ -149,7 +149,11 @@ namespace NSThreads
 			}
 			virtual ~__native_thread()
 			{
-				RELEASEHANDLE(m_thread);
+				if (m_thread != NULL)
+				{
+					CloseHandle(m_thread);
+					m_thread = NULL;
+				}				
 			}
 		};
 #else

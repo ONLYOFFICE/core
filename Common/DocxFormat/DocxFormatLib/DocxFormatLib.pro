@@ -63,7 +63,8 @@ SOURCES += docxformatlib.cpp \
     ../Source/XlsxFormat/IFileContainer_Spreadsheet.cpp \
     ../Source/XML/libxml2/libxml2.cpp \
     ../Source/XML/stringcommon.cpp \
-    ../Source/MathEquation/MathEquation.cpp
+    ../Source/MathEquation/MathEquation.cpp \
+    ../Source/Base/unicode_util.cpp
 
 HEADERS += docxformatlib.h \
     ../Source/Base/Base.h \
@@ -264,7 +265,8 @@ HEADERS += docxformatlib.h \
     ../Source/MathEquation/OutputDev.h \
     ../Source/MathEquation/String.h \
     ../Source/MathEquation/StringOutput.h \
-    ../Source/MathEquation/Types.h
+    ../Source/MathEquation/Types.h \
+    ../Source/Base/unicode_util.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

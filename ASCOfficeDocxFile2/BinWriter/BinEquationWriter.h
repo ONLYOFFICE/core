@@ -27,6 +27,8 @@ namespace MathEquation
 			std::stack<int> m_aLimitElemsStack;
 			std::stack<int> m_aScriptStack;
 			std::stack<int> m_aAccentStack;
+			std::stack<int> m_aRowsCounter;
+			std::stack<int> m_aRowsPosCounter;
 			
 			LONG nTextSize;
 			LONG nCtrlSize;
@@ -197,25 +199,25 @@ namespace MathEquation
 				CString str;
 				switch (eType)
 				{
-					/*case embelDot:       str.Insert(0," dot "); break;
-					case embelDDot:      str.Insert(0," ddot "); break;
-					case embelDDDot:     str.Insert(0," dddot "); break;
-					case embelPrime:     str.Insert(0," prime "); break;
-					case embelDPrime:    str.Insert(0," double prime "); break;
-					case embelLPrime:    str.Insert(0," left prime "); break;
-					case embelTilde:     str.Insert(0," tilde "); break;
-					case embelHat:       str.Insert(0," hat "); break;
-					case embelSlash:     str.Insert(0," slash "); break;
-					case embelLArrow:    str.Insert(0," left arrow "); break;
-					case embelRArrow:    str.Insert(0," right arrow "); break;*/
+					case embelDot:       str.Insert(0, 0x0307); break;
+					case embelDDot:      str.Insert(0, 0x0308); break;
+					case embelDDDot:     str.Insert(0, 0x20DB); break;
+					case embelPrime:     str.Insert(0, 0x2032); break;
+					case embelDPrime:    str.Insert(0, 0x2033); break;
+					case embelLPrime:    str.Insert(0, 0x0300); break;
+					case embelTilde:     str.Insert(0, 0x007E); break;
+					case embelHat:       str.Insert(0, 0x005E); break;
+					case embelSlash:     str.Insert(0, 0x002F); break;
+					case embelLArrow:    str.Insert(0, 0x2190); break;
+					case embelRArrow:    str.Insert(0, 0x2192); break;
 					case embelDArrow:    str.Insert(0, 0x2194); break;
-					/*case embelLHarpoon:  str.Insert(0," left harpoon "); break;
-					case embelRHarpoon:  str.Insert(0," right harpoon "); break;
-					case embelStrikeout: str.Insert(0," strikeout "); break;
-					case embelBar:       str.Insert(0," bar "); break;
-					case embelTPrime:    str.Insert(0," triple prime "); break;
-					case embelFrown:     str.Insert(0," frown "); break;
-					case embelSmile:     str.Insert(0," smiple "); break;*/
+					case embelLHarpoon:  str.Insert(0, 0x21BC); break;
+					case embelRHarpoon:  str.Insert(0, 0x21C0); break;
+					case embelStrikeout: str.Insert(0, 0x0336); break;
+					case embelBar:       str.Insert(0, 0x0305); break;
+					case embelTPrime:    str.Insert(0, 0x2034); break;
+					case embelFrown:     str.Insert(0, 0x23DD); break;
+					case embelSmile:     str.Insert(0, 0x23DC); break;
 				}
 				WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
 				WriteItemEnd(nCurPos1);
@@ -301,6 +303,16 @@ namespace MathEquation
 					m_aCommandStack.top()->SetPile(false);
 					CBaseCommand* pCommand = TopCommand();
 					pCommand->WriteEndBlock(this);
+
+					int nRows = m_aRowsCounter.top();
+					int nPos = m_aRowsPosCounter.top();
+					m_aRowsCounter.pop();
+					m_aRowsPosCounter.pop();
+
+					int nEnd = m_oStream.GetPosition();
+					m_oStream.SetPosition(nPos);
+					m_oStream.WriteLONG(nRows);
+					m_oStream.SetPosition(nEnd);
 
 					ECommandType type; 
 					type = pCommand->GetCommand();
@@ -750,6 +762,7 @@ namespace MathEquation
 				
 
 				int nCurPos2 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
+				m_aLimitStack.push(nCurPos2);
 				int nCurPos3 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::GroupChr);
 
 				int nCurPos4 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::GroupChrPr);
@@ -764,6 +777,7 @@ namespace MathEquation
 				
 				WriteItemEnd(nCurPos3);
 				WriteItemEnd(nCurPos2);
+				
 			}
 			virtual void EndVerticalBrace  ()
 			{
@@ -1020,18 +1034,19 @@ namespace MathEquation
 		private:
 		enum ECommandType
 		{
-			commandMatrix        = 0x00,
-			commandBrackets      = 0x01,
-			commandRoot          = 0x02,
-			commandFraction      = 0x03,
-			commandScript        = 0x04,
-			commandBar           = 0x05,
-			commandArrow         = 0x06,
-			commandIntegral      = 0x07,
-			commandVerticalBrace = 0x08,
-			commandNArray        = 0x09,
-			commandLongDivision  = 0x0a,
-			commandBracketsSep   = 0x0b
+			commandMatrix			 = 0x00,
+			commandBrackets			 = 0x01,
+			commandRoot				 = 0x02,
+			commandFraction			 = 0x03,
+			commandScript			 = 0x04,
+			commandBar				 = 0x05,
+			commandArrow			 = 0x06,
+			commandIntegral			 = 0x07,
+			commandVerticalBrace	 = 0x08,
+			commandNArray			 = 0x09,
+			commandLongDivision		 = 0x0a,
+			commandBracketsSep		 = 0x0b,
+			commandVerticalBraceLim	 = 0x0c
 		};
 
 		class CBaseCommand
@@ -1076,7 +1091,10 @@ namespace MathEquation
 			{
 				int nElemPos;
 				if (bEqArrayStart)
+				{
 					nElemPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
+					nRows++;
+				}
 				else
 					nElemPos = pWriter->WriteItemStart(elem);
 				m_aBaseStack.push(nElemPos);
@@ -1087,10 +1105,20 @@ namespace MathEquation
 					nElemPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::EqArr);
 					m_aBaseStack.push(nElemPos);
 
+					
 					nElemPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::EqArrPr);
+					int nCurPos1 = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathBottomNodesType::Row);		
+					pWriter->m_oStream.WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
+					pWriter->m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
+
+					pWriter->m_aRowsPosCounter.push( pWriter->WriteItemWithLengthStart());
+					
+					pWriter->WriteItemEnd(nCurPos1);
+
 					pWriter->WriteItemEnd(nElemPos);
 
 					nElemPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
+					nRows = 1;
 					m_aBaseStack.push(nElemPos);
 				}
 			}
@@ -1110,6 +1138,7 @@ namespace MathEquation
 					pWriter->WriteItemEnd(nCurPos);
 				else if (!bPile && bEqArrayStart)
 				{
+					pWriter->m_aRowsCounter.push(nRows);
 					bEqArrayStart = false;
 					pWriter->WriteItemEnd(nCurPos);//eqArr
 
@@ -1127,6 +1156,7 @@ namespace MathEquation
 			virtual void WriteEndBlock(BinaryEquationWriter* pWriter)   = 0;
 
 		protected:
+			int nRows;
 			std::stack<int> m_aBaseStack;
 			BOOL bOpenNode;
 			BOOL bPile;
@@ -1533,19 +1563,70 @@ namespace MathEquation
 			virtual ECommandType GetCommand(){return commandVerticalBrace;}
 
 			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter)
-			{
-				if (0 == nBlockNum)
-					pWriter->WriteNodeBegin("base");
-				else
-					pWriter->WriteNodeBegin("brace-base");
+			{									
+				Write(pWriter, true);
 			}
-
 			virtual void WriteEndBlock(BinaryEquationWriter* pWriter)
 			{
+				Write(pWriter, false);
+			}
+
+			void Write(BinaryEquationWriter* pWriter, bool bBeginNode)
+			{
 				if (0 == nBlockNum)
-					pWriter->WriteNodeEnd("base");
-				else
-					pWriter->WriteNodeEnd("brace-base");
+				{
+					if (bBeginNode)
+						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Element);
+					else
+					{
+						WriteEndNode(pWriter);
+
+						/*if (!pWriter->m_aCommandStack.empty())
+						{
+							CBaseCommand* pCommand = pWriter->TopCommand();
+							pCommand->WriteEndBlock(pWriter);
+						}*/
+						pWriter->PopCommand();
+						int nCurPos = pWriter->m_aLimitStack.top();
+						pWriter->WriteItemEnd(nCurPos);
+
+						
+						pWriter->PushCommand(commandVerticalBraceLim);
+						CBaseCommand* pCommand = pWriter->TopCommand();
+						pCommand->Next();
+						pCommand->WriteBeginBlock(pWriter);
+					}
+				}
+			}
+		private:
+			int nBasePos;
+			int nBraceBasePos;
+		};
+		class CVerticalBraceLimCommand : public CBaseCommand
+		{
+		public:
+			CVerticalBraceLimCommand() {}
+			virtual ~CVerticalBraceLimCommand() {}
+			virtual ECommandType GetCommand(){return commandVerticalBraceLim;}
+
+			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter)
+			{									
+				Write(pWriter, true);
+			}
+			virtual void WriteEndBlock(BinaryEquationWriter* pWriter)
+			{
+				Write(pWriter, false);
+			}
+
+			void Write(BinaryEquationWriter* pWriter, bool bBeginNode)
+			{
+				if (0 == nBlockNum)
+				{
+					if (bBeginNode)
+						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Lim);
+					else
+						WriteEndNode(pWriter);
+				}
 			}
 		private:
 			int nBasePos;
@@ -1688,18 +1769,19 @@ namespace MathEquation
 			CBaseCommand* pCommand = NULL;
 			switch(eType)
 			{
-			case commandMatrix:        pCommand = new CMatrixCommand(); break;
-			case commandBrackets:      pCommand = new CBracketsCommand(); break;
-			case commandRoot:          pCommand = new CRootCommand(); break;
-			case commandFraction:      pCommand = new CFractionCommand(); break;
-			case commandScript:        pCommand = new CScriptCommand(); break;
-			case commandBar:           pCommand = new CBarCommand(); break;
-			case commandArrow:         pCommand = new CArrowCommand(); break;
-			case commandIntegral:      pCommand = new CIntegralCommand(); break;
-			case commandVerticalBrace: pCommand = new CVerticalBraceCommand(); break;
-			case commandNArray:        pCommand = new CNArrayCommand(); break;
-			case commandLongDivision:  pCommand = new CLongDivisionCommand(); break;
-			case commandBracketsSep:   pCommand = new CBracketsWithSeparatorCommand(); break;
+			case commandMatrix:				pCommand = new CMatrixCommand(); break;
+			case commandBrackets:			pCommand = new CBracketsCommand(); break;
+			case commandRoot:				pCommand = new CRootCommand(); break;
+			case commandFraction:			pCommand = new CFractionCommand(); break;
+			case commandScript:				pCommand = new CScriptCommand(); break;
+			case commandBar:				pCommand = new CBarCommand(); break;
+			case commandArrow:				pCommand = new CArrowCommand(); break;
+			case commandIntegral:			pCommand = new CIntegralCommand(); break;
+			case commandVerticalBrace:		pCommand = new CVerticalBraceCommand(); break;
+			case commandVerticalBraceLim:	pCommand = new CVerticalBraceLimCommand(); break;
+			case commandNArray:				pCommand = new CNArrayCommand(); break;
+			case commandLongDivision:		pCommand = new CLongDivisionCommand(); break;
+			case commandBracketsSep:		pCommand = new CBracketsWithSeparatorCommand(); break;
 			}
 
 			m_aCommandStack.push(pCommand);

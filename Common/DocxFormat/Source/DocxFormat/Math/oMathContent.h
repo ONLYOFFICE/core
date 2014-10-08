@@ -1804,6 +1804,8 @@ namespace OOX
 				if ( oReader.IsEmptyNode() )
 					return;
 
+				m_lCol = 0;
+
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
@@ -1811,7 +1813,10 @@ namespace OOX
 					WritingElement *pItem = NULL;
 
 					if ( _T("m:e") == sName )
+					{
 						pItem = new Logic::CElement( oReader );
+						m_lCol++;
+					}
 
 					if ( pItem )
 						m_arrItems.push_back( pItem );
@@ -1838,8 +1843,13 @@ namespace OOX
 			{
 				return et_m_mr;
 			}
-		public:				
+			LONG GetCol()
+			{
+				return m_lCol;
+			}
+		public:
 			// Childs
+			LONG	 m_lCol;
 		};
 		//--------------------------------------------------------------------------------
 		// CMatrix 22.1.2.60 (Matrix Object) 

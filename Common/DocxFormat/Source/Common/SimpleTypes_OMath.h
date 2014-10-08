@@ -517,6 +517,7 @@ namespace SimpleTypes
 		virtual ETopBot FromString(CString &sValue)
 		{
             if       ( _T("bot")	== sValue )	this->m_eValue = tbBot;
+			else if  ( _T("bottom")	== sValue )	this->m_eValue = tbBot;
             else								this->m_eValue = tbTop;
 
             return this->m_eValue;

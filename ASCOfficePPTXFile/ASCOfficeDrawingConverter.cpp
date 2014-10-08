@@ -789,9 +789,7 @@ CDrawingConverter::CDrawingConverter()
 	m_strFontDirectory = _T("");
 	m_lNextId = 1;
 	m_lCurrentObjectTop = 0;
-#ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 	m_pOOXToVMLRenderer = NULL;
-#endif
 	m_bIsUseConvertion2007 = TRUE;
 	m_pBinaryWriter = new NSBinPptxRW::CBinaryFileWriter();
 	m_pReader = new NSBinPptxRW::CBinaryFileReader();
@@ -802,10 +800,8 @@ CDrawingConverter::CDrawingConverter()
 }
 CDrawingConverter::~CDrawingConverter()
 {
-		Clear();
-#ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
-	RELEASEINTERFACE(m_pOOXToVMLRenderer);
-#endif
+	Clear();
+	RELEASEOBJECT(m_pOOXToVMLRenderer);
 	RELEASEOBJECT(m_pBinaryWriter);
 	RELEASEOBJECT(m_pReader);
 	RELEASEOBJECT(m_pImageManager);
@@ -3175,10 +3171,8 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, CString& bsMain
 
 #if defined(BUILD_CONFIG_FULL_VERSION) && defined(AVS_USE_CONVERT_PPTX_TOCUSTOM_VML)
 	if (NULL == m_pOOXToVMLRenderer)
-	{
-		CoCreateInstance(__uuidof(CAVSOOXToVMLGeometry), NULL, CLSCTX_ALL, __uuidof(IASCRenderer), (void**)&m_pOOXToVMLRenderer);		
-	}
-	m_pOOXToVMLRenderer->QueryInterface(__uuidof(IASCRenderer), (void**)(&(oXmlWriter.m_pOOXToVMLRenderer)));
+		m_pOOXToVMLRenderer = new COOXToVMLGeometry();
+	oXmlWriter.m_pOOXToVMLRenderer = m_pOOXToVMLRenderer;
 #endif
 	
 	BOOL bIsNeedConvert2007 = FALSE;
@@ -3910,4 +3904,9 @@ HRESULT CDrawingConverter::SetCurrentRelsPath()
 
 	*m_pBinaryWriter->m_pCommonRels = pPair->m_value.smart_dynamic_cast<PPTX::FileContainer>();
 	return S_OK;
+}
+void CDrawingConverter::SetFontManager(CFontManager* pFontManager)
+{
+	if(NULL != m_pBinaryWriter && NULL != m_pBinaryWriter->m_pCommon && NULL != m_pBinaryWriter->m_pCommon->m_pImageManager)
+		m_pBinaryWriter->m_pCommon->m_pImageManager->SetFontManager(pFontManager);
 }

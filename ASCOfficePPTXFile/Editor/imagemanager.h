@@ -13,6 +13,9 @@ using namespace NSFontCutter;
 #include "../../ASCPresentationEditor/PPTXWriter/FileDownloader.h"
 #include "WMFToImageConverter.h"
 #include "../../Common/MediaFormatDefine.h"
+#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../DesktopEditor/raster/BgraFrame.h"
+#include "../../DesktopEditor/graphics/Image.h"
 
 namespace NSShapeImageGen
 {
@@ -210,11 +213,11 @@ namespace NSShapeImageGen
 		}
 
 	public:
-		CImageInfo WriteImage(IUnknown* punkImage, double& x, double& y, double& width, double& height)
+		CImageInfo WriteImage(CBgraFrame& punkImage, double& x, double& y, double& width, double& height)
 		{
 			CImageInfo info;
-			if (NULL == punkImage)
-				return info;
+			//if (NULL == punkImage)
+			//	return info;
 			
 			if (height < 0)
 			{
@@ -274,190 +277,16 @@ namespace NSShapeImageGen
 				return GenerateImageID(strFile, width, height);
 			return GenerateImageID(strFile, max(1.0, width), max(1.0, height));
 		}
-	
+		void SetFontManager(CFontManager* pFontManager)
+		{
+			//todo
+		}
 	protected:
 		inline void CopyFile(CString& strFileSrc, CString& strFileDst)
 		{
 			_CopyFile(strFileSrc, strFileDst, NULL, NULL);
 		}
 
-#ifdef BUILD_CONFIG_OPENSOURCE_VERSION		
-		static IUnknown* CreateEmptyImage(int nWidth, int nHeight, BOOL bFlipVertical = TRUE)
-		{
-			if (nWidth < 1 || nHeight < 1)
-				return NULL;
-
-			MediaCore::IAVSUncompressedVideoFrame* pMediaData = NULL;
-			CoCreateInstance(MediaCore::CLSID_CAVSUncompressedVideoFrame, NULL, CLSCTX_ALL, MediaCore::IID_IAVSUncompressedVideoFrame, (void**)(&pMediaData));
-			if (NULL == pMediaData)
-				return NULL;
-
-			if (bFlipVertical)
-				pMediaData->put_ColorSpace(CSP_BGRA | CSP_VFLIP);
-			else
-				pMediaData->put_ColorSpace(CSP_BGRA);
-
-			// specify settings
-			pMediaData->put_Width(nWidth);
-			pMediaData->put_Height(nHeight);
-			pMediaData->put_AspectRatioX(nWidth);
-			pMediaData->put_AspectRatioY(nHeight);
-			pMediaData->put_Interlaced(VARIANT_FALSE);
-			pMediaData->put_Stride(0, 4*nWidth);
-			pMediaData->AllocateBuffer(4*nWidth*nHeight);
-			
-			// allocate necesasry buffer
-			BYTE* pBufferPtr = 0;
-			long nCreatedBufferSize = 0;
-			pMediaData->get_Buffer(&pBufferPtr);
-			pMediaData->get_BufferSize(&nCreatedBufferSize);
-			pMediaData->put_Plane(0, pBufferPtr);
-
-			// check for valid created buffer
-			if (!pBufferPtr || nCreatedBufferSize != 4*nWidth*nHeight)
-			{
-				RELEASEINTERFACE(pMediaData);
-				return NULL;
-			}
-			
-			// copy safearray's data to the buffer
-			memset(pBufferPtr, 0xFF, nCreatedBufferSize);
-
-			// save interface
-			IUnknown* punkInterface = NULL;
-			pMediaData->QueryInterface(IID_IUnknown, (void**)&punkInterface);
-			
-			RELEASEINTERFACE(pMediaData);
-			return punkInterface;
-		}
-
-		void SaveImage(CString& strFileSrc, CImageInfo& oInfo, LONG __width, LONG __height)
-		{
-			OfficeCore::IImageGdipFilePtr pImageFile;
-			pImageFile.CreateInstance(OfficeCore::CLSID_CImageGdipFile);
-
-			BSTR bsSrc = strFileSrc.AllocSysString();
-			pImageFile->OpenFile(bsSrc);
-			SysFreeString(bsSrc);
-
-			IUnknown* punkFrame = NULL;
-			pImageFile->get_Frame(&punkFrame);
-
-			if (NULL == punkFrame)
-				punkFrame = CreateEmptyImage(10, 10);
-
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			punkFrame->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
-
-			RELEASEINTERFACE(punkFrame);
-
-			LONG lWidth		= 0;
-			LONG lHeight	= 0;
-			pFrame->get_Width(&lWidth);
-			pFrame->get_Height(&lHeight);
-
-			oInfo.m_eType = GetImageType(pFrame);
-
-			RELEASEINTERFACE(pFrame);
-
-			LONG lMaxSize = min(max(lWidth, lHeight), m_lMaxSizeImage);
-
-			if ((lWidth > lMaxSize) || (lHeight > lMaxSize))
-			{
-				LONG lW = 0;
-				LONG lH = 0;
-				double dAspect = (double)lWidth / lHeight;
-
-				if (lWidth >= lHeight)
-				{
-					lW = lMaxSize;
-					lH = (LONG)((double)lW / dAspect);
-				}
-				else
-				{
-					lH = lMaxSize;
-					lW = (LONG)(dAspect * lH);
-				}
-
-				pImageFile->Resize(lW, lH, 3);
-			}
-
-			LONG lSaveType = 4;
-			CString strSaveItem = _T("");
-			strSaveItem.Format(_T("\\image%d."), oInfo.m_lID);
-			if (itJPG == oInfo.m_eType)
-			{
-				strSaveItem = m_strDstMedia + strSaveItem + _T("jpg");
-				lSaveType = 3;
-			}
-			else
-			{				
-				strSaveItem = m_strDstMedia + strSaveItem + _T("png");
-			}
-			BSTR bsDst = strSaveItem.AllocSysString();
-			pImageFile->SaveFile(bsDst, lSaveType);
-			SysFreeString(bsDst);
-		}
-		void SaveImage(IUnknown* punkImage, CImageInfo& oInfo, LONG __width, LONG __height)
-		{
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			punkImage->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
-
-			if (NULL == pFrame)
-				return;
-
-			LONG lWidth		= 0;
-			LONG lHeight	= 0;
-			pFrame->get_Width(&lWidth);
-			pFrame->get_Height(&lHeight);
-
-			oInfo.m_eType = GetImageType(pFrame);
-
-			RELEASEINTERFACE(pFrame);
-
-			OfficeCore::IImageGdipFilePtr pImageFile;
-			pImageFile.CreateInstance(OfficeCore::CLSID_CImageGdipFile);
-			pImageFile->put_Frame(punkImage);
-
-			LONG lMaxSize = min(max(lWidth, lHeight), m_lMaxSizeImage);
-
-			if ((lWidth > lMaxSize) || (lHeight > lMaxSize))
-			{
-				LONG lW = 0;
-				LONG lH = 0;
-				double dAspect = (double)lWidth / lHeight;
-
-				if (lWidth >= lHeight)
-				{
-					lW = lMaxSize;
-					lH = (LONG)((double)lW / dAspect);
-				}
-				else
-				{
-					lH = lMaxSize;
-					lW = (LONG)(dAspect * lH);
-				}
-
-				pImageFile->Resize(lW, lH, 3);
-			}
-
-			LONG lSaveType = 4;
-			CString strSaveItem = _T("");
-			strSaveItem.Format(_T("\\image%d."), oInfo.m_lID);
-			if (itJPG == oInfo.m_eType)
-			{
-				strSaveItem = m_strDstMedia + strSaveItem + _T("jpg");
-				lSaveType = 3;
-			}
-			else
-			{				
-				strSaveItem = m_strDstMedia + strSaveItem + _T("png");
-			}
-			BSTR bsDst = strSaveItem.AllocSysString();
-			pImageFile->SaveFile(bsDst, lSaveType);
-			SysFreeString(bsDst);
-		}
-#else
 		bool CheckImageSimpleCopy(CString& strFileSrc, CImageInfo& oInfo)
 		{
 			CFile oFile;
@@ -504,68 +333,34 @@ namespace NSShapeImageGen
 			if (CheckImageSimpleCopy(strFileSrc, oInfo))
 				return;
 
-			CString strLoadXml = _T("<transforms><ImageFile-LoadImage sourcepath=\"") + strFileSrc + _T("\"/></transforms>");
+			CBgraFrame oBgraFrame;
+			oBgraFrame.OpenFile(std::wstring(strFileSrc.GetString()));
 
-			ImageStudio::IImageTransforms* pTransform = NULL;
-			CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL, CLSCTX_INPROC_SERVER, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
+			SaveImage(oBgraFrame, oInfo, __width, __height);
+		}
+		void SaveImage(CBgraFrame& oBgraFrame, CImageInfo& oInfo, LONG __width, LONG __height)
+		{
+			LONG lWidth		= oBgraFrame.get_Width();
+			LONG lHeight	= oBgraFrame.get_Height();
 
-			VARIANT_BOOL vbRes = VARIANT_FALSE;
-			BSTR bsLoad = strLoadXml.AllocSysString();
-			pTransform->SetXml(bsLoad, &vbRes);
-			SysFreeString(bsLoad);
-
-			pTransform->Transform(&vbRes);
-
-			VARIANT var;
-			var.punkVal = NULL;
-			pTransform->GetResult(0, &var);
-
-			if (NULL == var.punkVal)
-			{
-				RELEASEINTERFACE(pTransform);
-				return;
-			}
-
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			var.punkVal->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
-
-			RELEASEINTERFACE((var.punkVal));
-
-			if (NULL == pFrame)
-			{
-				RELEASEINTERFACE(pTransform);
-				return;
-			}
-
-			LONG lWidth		= 0;
-			LONG lHeight	= 0;
-			pFrame->get_Width(&lWidth);
-			pFrame->get_Height(&lHeight);
-
-			oInfo.m_eType = GetImageType(pFrame);
-
-			RELEASEINTERFACE(pFrame);
+			oInfo.m_eType = GetImageType(oBgraFrame);
 
 			CString strSaveItem = _T("");
-			strSaveItem.Format(_T("\\image%d."), oInfo.m_lID);
+			uint32_t nOutputFormat;
 			if (itJPG == oInfo.m_eType)
 			{
-				strSaveItem = _T("<ImageFile-SaveAsJpeg destinationpath=\"") + m_strDstMedia + strSaveItem + _T("jpg\" format=\"888\"/>");
+				strSaveItem.Format(_T("%s\\image%d.jpg"), m_strDstMedia, oInfo.m_lID);
+				nOutputFormat = _CXIMAGE_FORMAT_JPG;
 			}
 			else
 			{
-				strSaveItem = _T("<ImageFile-SaveAsPng destinationpath=\"") + m_strDstMedia + strSaveItem + _T("png\" format=\"888\"/>");
+				strSaveItem.Format(_T("%s\\image%d.png"), m_strDstMedia, oInfo.m_lID);
+				nOutputFormat = _CXIMAGE_FORMAT_PNG;
 			}
-
-			CString strXml = _T("");
 
 			LONG lMaxSize = min(max(lWidth, lHeight), m_lMaxSizeImage);
 
-			if ((lWidth <= lMaxSize) && (lHeight <= lMaxSize))
-			{
-				strXml = _T("<transforms>") + strSaveItem + _T("</transforms>");
-			}
-			else
+			if (!((lWidth <= lMaxSize) && (lHeight <= lMaxSize)))
 			{
 				LONG lW = 0;
 				LONG lH = 0;
@@ -582,116 +377,23 @@ namespace NSShapeImageGen
 					lW = (LONG)(dAspect * lH);
 				}
 
-				CString strResize = _T("");
-				strResize.Format(_T("<ImageTransform-TransformResize type=\"65536\" width=\"%d\" height=\"%d\"/>"), lW, lH);
-
-				strXml = _T("<transforms>") + strResize + strSaveItem + _T("</transforms>");
+				oBgraFrame.Resize(lW, lH);
 			}
-			
-			VARIANT_BOOL vbSuccess = VARIANT_FALSE;
-			BSTR bsXml = strXml.AllocSysString();
-			pTransform->SetXml(bsXml, &vbSuccess);
-			SysFreeString(bsXml);
-
-			pTransform->Transform(&vbSuccess);
-
-			RELEASEINTERFACE(pTransform);
+			oBgraFrame.SaveFile(std::wstring(strSaveItem.GetString()), nOutputFormat);
 		}
-		void SaveImage(IUnknown* punkImage, CImageInfo& oInfo, LONG __width, LONG __height)
-		{
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			punkImage->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
 
-			if (NULL == pFrame)
-				return;
-
-			LONG lWidth		= 0;
-			LONG lHeight	= 0;
-			pFrame->get_Width(&lWidth);
-			pFrame->get_Height(&lHeight);
-
-			oInfo.m_eType = GetImageType(pFrame);
-
-			RELEASEINTERFACE(pFrame);
-			
-			ImageStudio::IImageTransforms* pTransform = NULL;
-			CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL ,CLSCTX_INPROC_SERVER, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
-
-			VARIANT var;
-			var.vt = VT_UNKNOWN;
-			var.punkVal = punkImage;
-			pTransform->SetSource(0, var);
-
-			CString strSaveItem = _T("");
-			strSaveItem.Format(_T("\\image%d."), oInfo.m_lID);
-			if (itJPG == oInfo.m_eType)
-			{
-				strSaveItem = _T("<ImageFile-SaveAsJpeg destinationpath=\"") + m_strDstMedia + strSaveItem + _T("jpg\" format=\"888\"/>");
-			}
-			else
-			{
-				strSaveItem = _T("<ImageFile-SaveAsPng destinationpath=\"") + m_strDstMedia + strSaveItem + _T("png\" format=\"888\"/>");
-			}
-
-			LONG lMaxSize = min(max(__width, __height), m_lMaxSizeImage);
-
-			CString strXml = _T("");
-			if ((lWidth <= lMaxSize) && (lHeight <= lMaxSize))
-			{
-				strXml = _T("<transforms>") + strSaveItem + _T("</transforms>");
-			}
-			else
-			{
-				LONG lW = 0;
-				LONG lH = 0;
-				double dAspect = (double)lWidth / lHeight;
-
-				if (lWidth >= lHeight)
-				{
-					lW = lMaxSize;
-					lH = (LONG)((double)lW / dAspect);
-				}
-				else
-				{
-					lH = lMaxSize;
-					lW = (LONG)(dAspect * lH);
-				}
-
-				CString strResize = _T("");
-				strResize.Format(_T("<ImageTransform-TransformResize type=\"65536\" width=\"%d\" height=\"%d\"/>"), lW, lH);
-
-				strXml = _T("<transforms>") + strResize + strSaveItem + _T("</transforms>");
-			}
-			
-			VARIANT_BOOL vbSuccess = VARIANT_FALSE;
-			BSTR bsXml = strXml.AllocSysString();
-			pTransform->SetXml(bsXml, &vbSuccess);
-			SysFreeString(bsXml);
-
-			pTransform->Transform(&vbSuccess);
-
-			RELEASEINTERFACE(pTransform);
-		}
-#endif
-
-		CImageInfo GenerateImageID(IUnknown* punkData, double dWidth, double dHeight)
+		CImageInfo GenerateImageID(CBgraFrame& punkData, double dWidth, double dHeight)
 		{
 			CImageInfo oInfo;
 
-			if (NULL == punkData)
-				return oInfo;
+			//if (NULL == punkData)
+			//	return oInfo;
 
 			LONG lWidth		= (LONG)(dWidth * 96 / 25.4);
 			LONG lHeight	= (LONG)(dHeight * 96 / 25.4);
 
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			punkData->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
-
-			BYTE* pBuffer = NULL;
-			LONG lLen = 0;
-
-			pFrame->get_Buffer(&pBuffer);
-			pFrame->get_BufferSize(&lLen);
+			BYTE* pBuffer = punkData.get_Data();
+			LONG lLen = 4 * punkData.get_Width() * punkData.get_Height();
 
 			DWORD dwSum = m_oCRC.Calc(pBuffer, lLen);
 
@@ -710,8 +412,6 @@ namespace NSShapeImageGen
 			{
 				oInfo = pPair->m_value;
 			}
-
-			RELEASEINTERFACE(pFrame);
 
 			return oInfo;
 		}
@@ -743,7 +443,7 @@ namespace NSShapeImageGen
 					bool bIsSuccess = m_oExt.Convert(strFileName, LONG(dWidth * dKoef), LONG(dHeight * dKoef), strSaveItem + _T("svg"));
 					if (bIsSuccess)
 					{
-						if (itWMF == lImageType)
+						if (itWMF == oInfo.m_eType)
 						{
 							CDirectory::CopyFile(strFileName, strSaveItem + _T("wmf"), NULL, NULL);
 						}
@@ -758,8 +458,29 @@ namespace NSShapeImageGen
 					}
 					else
 					{
-						--m_lNextIDImage;
-						oInfo.m_eType = itJPG;
+						//случай wmf/emf преобризованного в Bitmap или ошибки
+						NSHtmlRenderer::CASCImage oImage;
+						oImage.LoadFromFile(std::wstring(strFileName.GetString()));
+						Aggplus::CImage* pImage = oImage.get_BitmapImage();
+						if(NULL != pImage)
+						{
+							CBgraFrame oBgraFrame;
+							oBgraFrame.put_Width(pImage->GetWidth());
+							oBgraFrame.put_Height(pImage->GetHeight());
+							oBgraFrame.put_Stride(pImage->GetStride());
+							oBgraFrame.put_Data(pImage->GetData());
+							SaveImage(oBgraFrame, oInfo, lWidth, lHeight);
+							//чтобы в деструкторе не удалялось
+							oBgraFrame.put_Data(NULL);
+							m_mapImagesFile.SetAt(strFileName, oInfo);
+							m_listImages.AddTail(oInfo);
+							return oInfo;
+						}
+						else
+						{
+							--m_lNextIDImage;
+							oInfo.m_eType = itJPG;
+						}
 					}
 				}
 #endif
@@ -803,7 +524,7 @@ namespace NSShapeImageGen
 				bool bIsSuccess = m_oExt.Convert(strFileName, LONG(dWidth * dKoef), LONG(dHeight * dKoef), strSaveItem + _T("svg"));
 				if (bIsSuccess)
 				{
-					if (itWMF == lImageType)
+					if (itWMF == oInfo.m_eType)
 					{
 						CDirectory::CopyFile(strFileName, strSaveItem + _T("wmf"), NULL, NULL);
 					}
@@ -834,18 +555,14 @@ namespace NSShapeImageGen
 			return oInfo;
 		}
 
-		ImageType GetImageType(MediaCore::IAVSUncompressedVideoFrame* pFrame)
+		ImageType GetImageType(CBgraFrame& pFrame)
 		{
 			if (2 == m_lDstFormat)
 				return itJPG;
 
-			LONG lWidth		= 0;
-			LONG lHeight	= 0;
-			BYTE* pBuffer	= NULL;
-
-			pFrame->get_Width(&lWidth);
-			pFrame->get_Height(&lHeight);
-			pFrame->get_Buffer(&pBuffer);
+			LONG lWidth		= pFrame.get_Width();
+			LONG lHeight	= pFrame.get_Height();
+			BYTE* pBuffer	= pFrame.get_Data();
 
 			BYTE* pBufferMem = pBuffer + 3;
 			LONG lCountPix = lWidth * lHeight;
@@ -857,36 +574,21 @@ namespace NSShapeImageGen
 			}
 			return itJPG;
 		}
-
-		void FlipY(IUnknown* punkImage)
+		void FlipY(CBgraFrame& punkImage)
 		{
-			if (NULL == punkImage)
-				return;
+			//if (NULL == punkImage)
+			//	return;
 
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			punkImage->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
-
-			if (NULL == pFrame)
-				return;
-
-			BYTE* pBuffer	= NULL;
-			LONG lWidth		= 0;
-			LONG lHeight	= 0;
-			LONG lStride	= 0;
-
-			pFrame->get_Buffer(&pBuffer);
-			pFrame->get_Width(&lWidth);
-			pFrame->get_Height(&lHeight);
-			pFrame->get_Stride(0, &lStride);
+			BYTE* pBuffer	= punkImage.get_Data();
+			LONG lWidth		= punkImage.get_Width();
+			LONG lHeight	= punkImage.get_Height();
+			LONG lStride	= punkImage.get_Stride();
 
 			if (lStride < 0)
 				lStride = -lStride;
 			
 			if ((lWidth * 4) != lStride)
-			{
-				RELEASEINTERFACE(pFrame);
 				return;
-			}
 
 			BYTE* pBufferMem = new BYTE[lStride];
 
@@ -905,36 +607,23 @@ namespace NSShapeImageGen
 			}
 
 			RELEASEARRAYOBJECTS(pBufferMem);
-			RELEASEINTERFACE(pFrame);
 		}
 
-		void FlipX(IUnknown* punkImage)
+		void FlipX(CBgraFrame& punkImage)
 		{
-			if (NULL == punkImage)
-				return;
+			//if (NULL == punkImage)
+			//	return;
 
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			punkImage->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
-
-			if (NULL == pFrame)
-				return;
-
-			BYTE* pBuffer	= NULL;
-			LONG lWidth		= 0;
-			LONG lHeight	= 0;
-			LONG lStride	= 0;
-
-			pFrame->get_Buffer(&pBuffer);
-			pFrame->get_Width(&lWidth);
-			pFrame->get_Height(&lHeight);
-			pFrame->get_Stride(0, &lStride);
+			BYTE* pBuffer	= punkImage.get_Data();
+			LONG lWidth		= punkImage.get_Width();
+			LONG lHeight	= punkImage.get_Height();
+			LONG lStride	= punkImage.get_Stride();
 
 			if (lStride < 0)
 				lStride = -lStride;
 			
 			if ((lWidth * 4) != lStride)
 			{
-				RELEASEINTERFACE(pFrame);
 				return;
 			}
 
@@ -954,8 +643,6 @@ namespace NSShapeImageGen
 					*pMem2-- = dwMem;
 				}
 			}
-
-			RELEASEINTERFACE(pFrame);
 		}
 	};	
 }

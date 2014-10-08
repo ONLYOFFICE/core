@@ -25,12 +25,13 @@ bool BinDocxRW::CDocxSerializer::saveToFile(CString& sSrcFileName, CString& sDst
 	CString mediaDir = path.GetDirectory() + _T("media\\");
 	NSDirectory::CreateDirectory(string2std_string(mediaDir));
 
+	DocWrapper::FontProcessor fp;
+	fp.setFontDir(m_sFontDir);
 	NSBinPptxRW::CDrawingConverter oDrawingConverter;
+	oDrawingConverter.SetFontManager(fp.getFontManager2());
 	NSBinPptxRW::CBinaryFileWriter& oBufferedStream = *oDrawingConverter.m_pBinaryWriter;
 
 #ifdef _WIN32
-	DocWrapper::FontProcessor fp;
-	fp.setFontDir(m_sFontDir);
 	PPTXFile::IOfficeFontPicker* pFontPicker = NULL;
 	CoCreateInstance(__uuidof(PPTXFile::COfficeFontPicker), NULL, CLSCTX_ALL, __uuidof(PPTXFile::IOfficeFontPicker), (void**)(&pFontPicker));
 	BSTR bstrFontDir1 = m_sFontDir.AllocSysString();

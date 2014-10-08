@@ -7,9 +7,10 @@
 #include "../Common/DocxFormat/Source/Base/Base.h"
 #include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/PPTShapeEnum.h"
 
-__interface IASCRenderer;
+class IRenderer;
 class CShape;
 class CPPTShape;
+class CFontManager;
 namespace XmlUtils
 {
 	class CXmlNode;
@@ -153,10 +154,7 @@ namespace NSBinPptxRW
 		NSBinPptxRW::CImageManager2*			m_pImageManager;
 		NSBinPptxRW::CXmlWriter*				m_pXmlWriter;
 		int										m_nCurrentIndexObject;
-		//todo
-#ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
-		IASCRenderer*							m_pOOXToVMLRenderer;
-#endif
+		IRenderer*								m_pOOXToVMLRenderer;
 		BOOL									m_bIsUseConvertion2007;
 
 		NSCommon::smart_ptr<PPTX::WrapperFile>*				m_pTheme;
@@ -196,6 +194,8 @@ namespace NSBinPptxRW
 
 		STDMETHOD(SetAdditionalParam)(CString& ParamName, VARIANT ParamValue);
 		STDMETHOD(GetAdditionalParam)(CString& ParamName, VARIANT* ParamValue);
+	public:
+		void SetFontManager(CFontManager* pFontManager);
 	protected:
 		bool ParceObject(CString& strXml, CString** pMainProps);
 		void SendMainProps(CString& strMainProps, CString**& pMainProps);

@@ -12,7 +12,6 @@ typedef bool (*extract_to_directory)(void*, CString&, CString&);
 typedef bool (*compress_from_directory)(void*, CString&, CString&);
 typedef bool (*progress_operation)(void*, long, long);
 
-class CGdiPlusInit;
 namespace PPTX
 {
 	class Folder;
@@ -35,7 +34,6 @@ private:
 
 	CString		m_strFolderThemes;
 
-	CGdiPlusInit* m_pInit;
 	load_from_resource m_fCallbackResource;
 	extract_to_directory m_fCallbackExtract;
 	compress_from_directory m_fCallbackCompress;

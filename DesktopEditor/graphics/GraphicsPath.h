@@ -123,7 +123,7 @@ public:
 	bool PathCommandEnd();
 	bool PathCommandStart();
 	bool PathCommandGetCurrentPoint(double* fX, double* fY);
-	bool PathCommandText(std::wstring& bsText, CFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset);
+	bool PathCommandText(const std::wstring& bsText, CFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset);
 	bool PathCommandTextEx(std::wstring& bsText, std::wstring& bsGidText, CFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags);
 	bool PathCommandGetBounds(double& left, double& top, double& width, double &height);
 	
@@ -137,7 +137,7 @@ public:
 	bool _Start();
 
 protected:
-	bool AddString(std::wstring& bstrText, CFontManager* pFont, double x, double y);
+	bool AddString(const std::wstring& bstrText, CFontManager* pFont, double x, double y);
 
 	int EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection);
 	double AngToEllPrm(double fAngle, double fXRad, double fYRad);

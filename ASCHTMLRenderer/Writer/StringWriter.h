@@ -1,6 +1,5 @@
 #pragma once
-#include "..\stdafx.h"
-#include "File.h"
+#include "../../DesktopEditor/common/File.h"
 #include "TextItem.h"
 #include "Common.h"
 

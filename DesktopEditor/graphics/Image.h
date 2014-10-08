@@ -21,10 +21,14 @@ public:
 
 	DWORD GetWidth() const;
 	DWORD GetHeight() const;
+	long GetStride() const;
+	BYTE* GetData() const;
 	 
 	Status GetLastStatus() const;
 
 	void Create(const std::wstring& filename);
+	void Create(BYTE* pImgData, const DWORD& dwWidth, const DWORD& dwHeight, const long& nStride);
+	bool SaveFile(const std::wstring& strFileName, unsigned __int32 nFileType);
 	void Destroy();
 
 public:	

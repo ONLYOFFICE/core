@@ -809,7 +809,7 @@ namespace Aggplus
 		m_agg_ps.last_vertex(fX, fY);
 		return true;
 	}
-	bool CGraphicsPathSimpleConverter::PathCommandText(std::wstring& bsText, CFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
+	bool CGraphicsPathSimpleConverter::PathCommandText(const std::wstring& bsText, CFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
 	{
 		return AddString(bsText, pManager, fX, fY + fBaseLineOffset);
 	}
@@ -951,7 +951,7 @@ namespace Aggplus
 		return true;
 	}
 
-	bool CGraphicsPathSimpleConverter::AddString(std::wstring& bstrText, CFontManager* pFont, double x, double y)
+	bool CGraphicsPathSimpleConverter::AddString(const std::wstring& bstrText, CFontManager* pFont, double x, double y)
 	{
 		if (NULL == pFont)
 			return false;

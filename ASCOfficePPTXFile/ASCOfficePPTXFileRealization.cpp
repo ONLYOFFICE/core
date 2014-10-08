@@ -2,7 +2,6 @@
 #include "ASCOfficePPTXFile.h"
 
 #include "PPTXFormat/PPTXEvent.h"
-#include "../../../../Common/GdiPlusEx.h"
 
 #include <shellapi.h>
 #include <shlobj.h>
@@ -39,13 +38,10 @@ CPPTXFile::CPPTXFile(load_from_resource fCallbackResource, extract_to_directory 
 	//if (S_OK != CoCreateInstance(__uuidof(OfficeUtils::COfficeUtils), NULL, CLSCTX_INPROC_SERVER, __uuidof(OfficeUtils::IOfficeUtils),(void**)&m_pOfficeUtils))
 	//	return S_FALSE;
 
-	m_pInit = new CGdiPlusInit();
-	m_pInit->Init();
 }
 CPPTXFile::~CPPTXFile()
 {
 	RELEASEOBJECT(m_pFolder);
-	RELEASEOBJECT(m_pInit);
 }
 HRESULT CPPTXFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions)
 {

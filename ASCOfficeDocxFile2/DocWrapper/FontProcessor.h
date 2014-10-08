@@ -47,6 +47,9 @@ namespace DocWrapper {
 		ASCGraphics::IASCFontManager* getFontManager() {
 			return fontManager;
 		}
+		CFontManager* getFontManager2() {
+			return m_pFontManager;
+		}
 		
 	private:
 		void initFontManager();

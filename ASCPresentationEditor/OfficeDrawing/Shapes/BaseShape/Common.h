@@ -3,8 +3,7 @@
 #include <atlbase.h>
 #include <atlcom.h>
 #include "../../../../Common/atldefine.h"
-#include "../../../../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
-#import "../../../../Redist/ASCGraphics.dll"				named_guids raw_interfaces_only rename_namespace("ASCGraphics"), exclude("IASCRenderer")
+#include "../../../../DesktopEditor/graphics/GraphicsPath.h"
 
 const double ShapeSize		= 43200.0;
 const LONG ShapeSizeVML		= 21600;
@@ -390,15 +389,7 @@ namespace NSStringUtils
 
 #ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 
-#include "../../../../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
-
-#if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)
-#error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
-#endif
-
-// CAVSOOXToVMLGeometry
-[ coclass, default(IASCRenderer), threading(apartment), vi_progid("AVSPPTX.VMLShape"), progid("AVSPPTX.VMLShape.1"), version(1.0), uuid("3266F3E4-B6AB-4440-BC58-F38E78BBCCBD") ]
-class ATL_NO_VTABLE CAVSOOXToVMLGeometry : public IASCRenderer
+class COOXToVMLGeometry : public IRenderer
 {
 private:
 	class _CStringWriter
@@ -544,136 +535,129 @@ private:
 		}
 	};
 
-public:
-	DECLARE_PROTECT_FINAL_CONSTRUCT()
-	
-	CAVSOOXToVMLGeometry()
-	{
-	}
-	~CAVSOOXToVMLGeometry()
-	{
-	}
 
 public:
-	// ------------------------------------ renderer --------------------------------------------
-	STDMETHOD(get_Type)(LONG* lType) { return S_OK; }
-	//-------- Функции для работы со страницей --------------------------------------------------
-	STDMETHOD(NewPage)() { return S_OK; }
-	STDMETHOD(get_Height)(double* dHeight) { return S_OK; }
-	STDMETHOD(put_Height)(double dHeight) 
+	COOXToVMLGeometry()
+	{
+		m_bIsFillPart = FALSE;
+		m_bIsStrokePart = FALSE;
+		
+		m_dScaleX = 1.0;
+		m_dScaleY = 1.0;
+
+		m_pSimpleGraphicsConverter = new Aggplus::CGraphicsPathSimpleConverter();
+		m_pSimpleGraphicsConverter->SetRenderer(this);
+
+		m_lCountPathCommands = 0;
+	}
+	~COOXToVMLGeometry()
+	{
+		RELEASEOBJECT(m_pSimpleGraphicsConverter);
+	}
+// тип рендерера-----------------------------------------------------------------------------
+	virtual HRESULT get_Type(LONG* lType){ return S_OK; }
+//-------- Функции для работы со страницей --------------------------------------------------
+	virtual HRESULT NewPage(){ return S_OK; }
+	virtual HRESULT get_Height(double* dHeight){ return S_OK; }
+	virtual HRESULT put_Height(const double& dHeight)
 	{
 		m_dScaleY = dHeight;
-		return S_OK; 
+		return S_OK;
 	}
-	STDMETHOD(get_Width)(double* dWidth) { return S_OK; }
-	STDMETHOD(put_Width)(double dWidth) 
+	virtual HRESULT get_Width(double* dWidth){ return S_OK; }
+	virtual HRESULT put_Width(const double& dWidth)
 	{
 		m_dScaleX = dWidth;
 		return S_OK; 
 	}
+	virtual HRESULT get_DpiX(double* dDpiX){ return S_OK; }
+	virtual HRESULT get_DpiY(double* dDpiY){ return S_OK; }
 
-	STDMETHOD(get_DpiX)(double* dDpiX) { return S_OK; }
-	STDMETHOD(get_DpiY)(double* dDpiY) { return S_OK; }
 // pen --------------------------------------------------------------------------------------
-	STDMETHOD(SetPen)(BSTR bsXML) { return S_OK; }
-	STDMETHOD(get_PenColor)(LONG* lColor) { return S_OK; }
-	STDMETHOD(put_PenColor)(LONG lColor) { return S_OK; }
-	STDMETHOD(get_PenAlpha)(LONG* lAlpha) { return S_OK; }
-	STDMETHOD(put_PenAlpha)(LONG lAlpha) 
+	virtual HRESULT get_PenColor(LONG* lColor){ return S_OK; }
+	virtual HRESULT put_PenColor(const LONG& lColor){ return S_OK; }
+	virtual HRESULT get_PenAlpha(LONG* lAlpha){ return S_OK; }
+	virtual HRESULT put_PenAlpha(const LONG& lAlpha)
 	{
 		m_bIsStrokePart = (0 != lAlpha) ? TRUE : FALSE;
 		return S_OK; 
 	}
-	STDMETHOD(get_PenSize)(double* dSize) { return S_OK; }
-	STDMETHOD(put_PenSize)(double dSize) { return S_OK; }
-	STDMETHOD(get_PenDashStyle)(BYTE* val) { return S_OK; }
-	STDMETHOD(put_PenDashStyle)(BYTE val) { return S_OK; }
-	STDMETHOD(get_PenLineStartCap)(BYTE* val) { return S_OK; }
-	STDMETHOD(put_PenLineStartCap)(BYTE val) { return S_OK; }
-	STDMETHOD(get_PenLineEndCap)(BYTE* val) { return S_OK; }
-	STDMETHOD(put_PenLineEndCap)(BYTE val) { return S_OK; }
-	STDMETHOD(get_PenLineJoin)(BYTE* val) { return S_OK; }
-	STDMETHOD(put_PenLineJoin)(BYTE val) { return S_OK; }
-	STDMETHOD(get_PenDashOffset)(double* val) { return S_OK; }
-	STDMETHOD(put_PenDashOffset)(double val) { return S_OK; }
-	STDMETHOD(get_PenAlign)(LONG* val) { return S_OK; }
-	STDMETHOD(put_PenAlign)(LONG val) { return S_OK; }
-	STDMETHOD(get_PenMiterLimit)(double* val) { return S_OK; }
-	STDMETHOD(put_PenMiterLimit)(double val) { return S_OK; }
-	STDMETHOD(PenDashPattern)(SAFEARRAY* pPattern) { return S_OK; }
+	virtual HRESULT get_PenSize(double* dSize){ return S_OK; }
+	virtual HRESULT put_PenSize(const double& dSize){ return S_OK; }
+	virtual HRESULT get_PenDashStyle(BYTE* val){ return S_OK; }
+	virtual HRESULT put_PenDashStyle(const BYTE& val){ return S_OK; }
+	virtual HRESULT get_PenLineStartCap(BYTE* val){ return S_OK; }
+	virtual HRESULT put_PenLineStartCap(const BYTE& val){ return S_OK; }
+	virtual HRESULT get_PenLineEndCap(BYTE* val){ return S_OK; }
+	virtual HRESULT put_PenLineEndCap(const BYTE& val){ return S_OK; }
+	virtual HRESULT get_PenLineJoin(BYTE* val){ return S_OK; }
+	virtual HRESULT put_PenLineJoin(const BYTE& val){ return S_OK; }
+	virtual HRESULT get_PenDashOffset(double* dOffset){ return S_OK; }
+	virtual HRESULT put_PenDashOffset(const double& dOffset){ return S_OK; }
+	virtual HRESULT get_PenAlign(LONG* lAlign){ return S_OK; }
+	virtual HRESULT put_PenAlign(const LONG& lAlign){ return S_OK; }
+	virtual HRESULT get_PenMiterLimit(double* dOffset){ return S_OK; }
+	virtual HRESULT put_PenMiterLimit(const double& dOffset){ return S_OK; }
+	virtual HRESULT PenDashPattern(double* pPattern, LONG lCount){ return S_OK; }
+
 // brush ------------------------------------------------------------------------------------
-	STDMETHOD(SetBrush)(BSTR bsXML) { return S_OK; }
-	STDMETHOD(get_BrushType)(LONG* lType) { return S_OK; }
-	STDMETHOD(put_BrushType)(LONG lType) { return S_OK; }
-	STDMETHOD(get_BrushColor1)(LONG* lColor) { return S_OK; }
-	STDMETHOD(put_BrushColor1)(LONG lColor) { return S_OK; }
-	STDMETHOD(get_BrushAlpha1)(LONG* lAlpha) { return S_OK; }
-	STDMETHOD(put_BrushAlpha1)(LONG lAlpha) 
+	virtual HRESULT get_BrushType(LONG* lType){ return S_OK; }
+	virtual HRESULT put_BrushType(const LONG& lType){ return S_OK; }
+	virtual HRESULT get_BrushColor1(LONG* lColor){ return S_OK; }
+	virtual HRESULT put_BrushColor1(const LONG& lColor){ return S_OK; }
+	virtual HRESULT get_BrushAlpha1(LONG* lAlpha)
 	{
 		m_bIsFillPart = (0 != lAlpha) ? TRUE : FALSE;
 		return S_OK; 
 	}
-	STDMETHOD(get_BrushColor2)(LONG* lColor) { return S_OK; }
-	STDMETHOD(put_BrushColor2)(LONG lColor) { return S_OK; }
-	STDMETHOD(get_BrushAlpha2)(LONG* lAlpha) { return S_OK; }
-	STDMETHOD(put_BrushAlpha2)(LONG lAlpha) { return S_OK; }
-	STDMETHOD(get_BrushTexturePath)(BSTR* bsPath) { return S_OK; }
-	STDMETHOD(put_BrushTexturePath)(BSTR bsPath) { return S_OK; }
-	STDMETHOD(get_BrushTextureMode)(LONG* lMode) { return S_OK; }
-	STDMETHOD(put_BrushTextureMode)(LONG lMode) { return S_OK; }
-	STDMETHOD(get_BrushTextureAlpha)(LONG* lTxAlpha) { return S_OK; }
-	STDMETHOD(put_BrushTextureAlpha)(LONG lTxAlpha) { return S_OK; }
-	STDMETHOD(get_BrushLinearAngle)(double* dAngle) { return S_OK; }
-	STDMETHOD(put_BrushLinearAngle)(double dAngle) { return S_OK; }
-	STDMETHOD(BrushRect)(BOOL val, double left, double top, double width, double height) { return S_OK; }
+	virtual HRESULT put_BrushAlpha1(const LONG& lAlpha){ return S_OK; }
+	virtual HRESULT get_BrushColor2(LONG* lColor){ return S_OK; }
+	virtual HRESULT put_BrushColor2(const LONG& lColor){ return S_OK; }
+	virtual HRESULT get_BrushAlpha2(LONG* lAlpha){ return S_OK; }
+	virtual HRESULT put_BrushAlpha2(const LONG& lAlpha){ return S_OK; }
+	virtual HRESULT get_BrushTexturePath(std::wstring* bsPath){ return S_OK; }
+	virtual HRESULT put_BrushTexturePath(const std::wstring& bsPath){ return S_OK; }
+	virtual HRESULT get_BrushTextureMode(LONG* lMode){ return S_OK; }
+	virtual HRESULT put_BrushTextureMode(const LONG& lMode){ return S_OK; }
+	virtual HRESULT get_BrushTextureAlpha(LONG* lTxAlpha){ return S_OK; }
+	virtual HRESULT put_BrushTextureAlpha(const LONG& lTxAlpha){ return S_OK; }
+	virtual HRESULT get_BrushLinearAngle(double* dAngle){ return S_OK; }
+	virtual HRESULT put_BrushLinearAngle(const double& dAngle){ return S_OK; }
+	virtual HRESULT BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height){ return S_OK; }
+	virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height){ return S_OK; }
+
+	virtual HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount){ return S_OK; }
+
 // font -------------------------------------------------------------------------------------
-	STDMETHOD(SetFont)(BSTR bsXML) { return S_OK; }
-	STDMETHOD(get_FontName)(BSTR* bsName) { return S_OK; }
-	STDMETHOD(put_FontName)(BSTR bsName) { return S_OK; }
-	STDMETHOD(get_FontPath)(BSTR* bsName) { return S_OK; }
-	STDMETHOD(put_FontPath)(BSTR bsName) { return S_OK; }
-	STDMETHOD(get_FontSize)(double* dSize) { return S_OK; }
-	STDMETHOD(put_FontSize)(double dSize){ return S_OK; }
-	STDMETHOD(get_FontStyle)(LONG* lStyle) { return S_OK; }
-	STDMETHOD(put_FontStyle)(LONG lStyle) { return S_OK; }
-	STDMETHOD(get_FontStringGID)(BOOL* bGID) { return S_OK; }
-	STDMETHOD(put_FontStringGID)(BOOL bGID) { return S_OK; }
-	STDMETHOD(get_FontCharSpace)(double* dSpace) { return S_OK; }
-	STDMETHOD(put_FontCharSpace)(double dSpace) { return S_OK; }
-// shadow -----------------------------------------------------------------------------------
-	STDMETHOD(SetShadow)(BSTR bsXML) { return S_OK; }
-	STDMETHOD(get_ShadowDistanceX)(double* val) { return S_OK; }
-	STDMETHOD(put_ShadowDistanceX)(double val) { return S_OK; }
-	STDMETHOD(get_ShadowDistanceY)(double* val) { return S_OK; }
-	STDMETHOD(put_ShadowDistanceY)(double val) { return S_OK; }
-	STDMETHOD(get_ShadowBlurSize)(double* val) { return S_OK; }
-	STDMETHOD(put_ShadowBlurSize)(double val) { return S_OK; }
-	STDMETHOD(get_ShadowColor)(LONG* val) { return S_OK; }
-	STDMETHOD(put_ShadowColor)(LONG val) { return S_OK; }
-	STDMETHOD(get_ShadowAlpha)(LONG* val) { return S_OK; }
-	STDMETHOD(put_ShadowAlpha)(LONG val) { return S_OK; }
-	STDMETHOD(get_ShadowVisible)(BOOL* val) { return S_OK; }
-	STDMETHOD(put_ShadowVisible)(BOOL val) { return S_OK; }
-// edge -------------------------------------------------------------------------------------
-	STDMETHOD(SetEdgeText)(BSTR bsXML) { return S_OK; }
-	STDMETHOD(get_EdgeVisible)(LONG* val) { return S_OK; }
-	STDMETHOD(put_EdgeVisible)(LONG val) { return S_OK; }
-	STDMETHOD(get_EdgeColor)(LONG* val) { return S_OK; }
-	STDMETHOD(put_EdgeColor)(LONG val) { return S_OK; }
-	STDMETHOD(get_EdgeAlpha)(LONG* val) { return S_OK; }
-	STDMETHOD(put_EdgeAlpha)(LONG val) { return S_OK; }
-	STDMETHOD(get_EdgeDist)(double* val) { return S_OK; }
-	STDMETHOD(put_EdgeDist)(double val) { return S_OK; }
+	virtual HRESULT get_FontName(std::wstring* bsName){ return S_OK; }
+	virtual HRESULT put_FontName(const std::wstring& bsName){ return S_OK; }
+	virtual HRESULT get_FontPath(std::wstring* bsName){ return S_OK; }
+	virtual HRESULT put_FontPath(const std::wstring& bsName){ return S_OK; }
+	virtual HRESULT get_FontSize(double* dSize){ return S_OK; }
+	virtual HRESULT put_FontSize(const double& dSize){ return S_OK; }
+	virtual HRESULT get_FontStyle(LONG* lStyle){ return S_OK; }
+	virtual HRESULT put_FontStyle(const LONG& lStyle){ return S_OK; }
+	virtual HRESULT get_FontStringGID(INT* bGID){ return S_OK; }
+	virtual HRESULT put_FontStringGID(const INT& bGID){ return S_OK; }
+	virtual HRESULT get_FontCharSpace(double* dSpace){ return S_OK; }
+	virtual HRESULT put_FontCharSpace(const double& dSpace){ return S_OK; }
+	virtual HRESULT get_FontFaceIndex(int* lFaceIndex){ return S_OK; }
+	virtual HRESULT put_FontFaceIndex(const int& lFaceIndex){ return S_OK; }
+
 //-------- Функции для вывода текста --------------------------------------------------------
-	STDMETHOD(CommandDrawText)(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset) { return S_OK; }
-	STDMETHOD(CommandDrawTextEx)(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags) { return S_OK; }
+	virtual HRESULT CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset){ return S_OK; }
+	virtual HRESULT CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset){ return S_OK; }
+	
+	virtual HRESULT CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags){ return S_OK; }
+	virtual HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags){ return S_OK; }
+
 //-------- Маркеры для команд ---------------------------------------------------------------
-	STDMETHOD(BeginCommand)(DWORD lType) 
+	virtual HRESULT BeginCommand(const DWORD& lType)
 	{
 		m_lCurrentCommandType = lType;
 		return S_OK; 
 	}
-	STDMETHOD(EndCommand)(DWORD lType) 
+	virtual HRESULT EndCommand(const DWORD& lType)
 	{ 
 		m_lCurrentCommandType = -1;
 
@@ -695,61 +679,62 @@ public:
 
 		return S_OK; 
 	}
+
 //-------- Функции для работы с Graphics Path -----------------------------------------------
-	STDMETHOD(PathCommandMoveTo)(double fX, double fY) 
+	virtual HRESULT PathCommandMoveTo(const double& x, const double& y)
 	{
 		if (c_nSimpleGraphicType == m_lCurrentCommandType)
 		{
-			MoveTo(fX * m_dScaleX, fY * m_dScaleY);
+			MoveTo(x * m_dScaleX, y * m_dScaleY);
 		}
 		else
 		{
-			m_pSimpleGraphicsConverter->PathCommandMoveTo(fX, fY);
+			m_pSimpleGraphicsConverter->PathCommandMoveTo(x, y);
 		}
 		return S_OK;		
 	}
-	STDMETHOD(PathCommandLineTo)(double fX, double fY) 
+	virtual HRESULT PathCommandLineTo(const double& x, const double& y)
 	{ 
 		if (c_nSimpleGraphicType == m_lCurrentCommandType)
 		{
-			LineTo(fX * m_dScaleX, fY * m_dScaleY);
+			LineTo(x * m_dScaleX, y * m_dScaleY);
 		}
 		else
 		{
-			m_pSimpleGraphicsConverter->PathCommandLineTo(fX, fY);
+			m_pSimpleGraphicsConverter->PathCommandLineTo(x, y);
 		}
 
 		return S_OK;
 	}
-	STDMETHOD(PathCommandLinesTo)(SAFEARRAY* pPoints) 
+	virtual HRESULT PathCommandLinesTo(double* points, const int& count)
 	{ 
-		m_pSimpleGraphicsConverter->PathCommandLinesTo(pPoints);
+		m_pSimpleGraphicsConverter->PathCommandLinesTo(points, count);
 		return S_OK;
 	}
-	STDMETHOD(PathCommandCurveTo)(double fX1, double fY1, double fX2, double fY2, double fX3, double fY3) 
+	virtual HRESULT PathCommandCurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3)
 	{ 
 		if (c_nSimpleGraphicType == m_lCurrentCommandType)
 		{
-			CurveTo(fX1 * m_dScaleX, fY1 * m_dScaleY, fX2 * m_dScaleX, fY2 * m_dScaleY, fX3 * m_dScaleX, fY3 * m_dScaleY);
+			CurveTo(x1 * m_dScaleX, y1 * m_dScaleY, x2 * m_dScaleX, y2 * m_dScaleY, x3 * m_dScaleX, y3 * m_dScaleY);
 		}
 		else
 		{
-			m_pSimpleGraphicsConverter->PathCommandCurveTo(fX1, fY1, fX2, fY2, fX3, fY3);
+			m_pSimpleGraphicsConverter->PathCommandCurveTo(x1, y1, x2, y2, x3, y3);
 		}
 
 		return S_OK;
 	}
-	STDMETHOD(PathCommandCurvesTo)(SAFEARRAY* pPoints) 
+	virtual HRESULT PathCommandCurvesTo(double* points, const int& count)
 	{ 
-		m_pSimpleGraphicsConverter->PathCommandCurvesTo(pPoints);
+		m_pSimpleGraphicsConverter->PathCommandCurvesTo(points, count);
 		return S_OK;
 	}
-	STDMETHOD(PathCommandArcTo)(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle) 
+	virtual HRESULT PathCommandArcTo(const double& x, const double& y, const double& w, const double& h, const double& startAngle, const double& sweepAngle)
 	{ 
-		m_pSimpleGraphicsConverter->PathCommandArcTo(fX, fY, fWidth, fHeight, fStartAngle, fSweepAngle);
+		m_pSimpleGraphicsConverter->PathCommandArcTo(x, y, w, h, startAngle, sweepAngle);
 		return S_OK;
 	}
-	STDMETHOD(PathCommandClose)() 
+	virtual HRESULT PathCommandClose()
 	{
 		if (c_nSimpleGraphicType == m_lCurrentCommandType)
 		{
@@ -761,84 +746,55 @@ public:
 		}
 		return S_OK;
 	}
-	STDMETHOD(PathCommandEnd)() { return S_OK; }
-	STDMETHOD(DrawPath)(long nType) { return S_OK; }
-	STDMETHOD(PathCommandStart)() { return S_OK; }
-	STDMETHOD(PathCommandGetCurrentPoint)(double* fX, double* fY) 
+	virtual HRESULT PathCommandEnd(){ return S_OK; }
+	virtual HRESULT DrawPath(const LONG& nType){ return S_OK; }
+	virtual HRESULT PathCommandStart(){ return S_OK; }
+	virtual HRESULT PathCommandGetCurrentPoint(double* x, double* y)
 	{
 		if (NULL != m_pSimpleGraphicsConverter)
-			return m_pSimpleGraphicsConverter->PathCommandGetCurrentPoint(fX, fY);
+			return m_pSimpleGraphicsConverter->PathCommandGetCurrentPoint(x, y);
 		return S_OK; 
 	}
-	STDMETHOD(PathCommandText)(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset) { return S_OK; }
-	STDMETHOD(PathCommandTextEx)(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags) { return S_OK; }
+
+	virtual HRESULT PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset){ return S_OK; }
+	virtual HRESULT PathCommandText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset){ return S_OK; }
+	
+	virtual HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags){ return S_OK; }
+	virtual HRESULT PathCommandTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags){ return S_OK; }
+
 //-------- Функции для вывода изображений ---------------------------------------------------
-	STDMETHOD(DrawImage)(IUnknown* pInterface, double fX, double fY, double fWidth, double fHeight) { return S_OK; }
-	STDMETHOD(DrawImageFromFile)(BSTR bstrVal, double fX, double fY, double fWidth, double fHeight) { return S_OK; }
+	virtual HRESULT DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h){ return S_OK; }
+	virtual HRESULT DrawImageFromFile(const std::wstring&, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha = 255){ return S_OK; }	
+
 // transform --------------------------------------------------------------------------------
-	STDMETHOD(GetCommandParams)(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, DWORD* lFlags) { return S_OK; }
-	STDMETHOD(SetCommandParams)(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags) { return S_OK; }
-	STDMETHOD(SetTransform)(double dA, double dB, double dC, double dD, double dE, double dF) { return S_OK; }
-	STDMETHOD(GetTransform)(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF) { return S_OK; }
-	STDMETHOD(ResetTransform)(void) { return S_OK; }
+	virtual HRESULT SetTransform(const double& m1, const double& m2, const double& m3, const double& m4, const double& m5, const double& m6){ return S_OK; }
+	virtual HRESULT GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF){ return S_OK; }
+	virtual HRESULT ResetTransform(){ return S_OK; }
+
 // -----------------------------------------------------------------------------------------
-	STDMETHOD(get_ClipMode)(LONG* plMode) { return S_OK; }
-	STDMETHOD(put_ClipMode)(LONG lMode) { return S_OK; }
+	virtual HRESULT get_ClipMode(LONG* plMode){ return S_OK; }
+	virtual HRESULT put_ClipMode(const LONG& lMode){ return S_OK; }
+
 // additiaonal params ----------------------------------------------------------------------
-	STDMETHOD(SetAdditionalParam)(BSTR ParamName, VARIANT ParamValue) 
+	virtual HRESULT CommandLong(const LONG& lType, const LONG& lCommand){ return S_OK; }
+	virtual HRESULT CommandDouble(const LONG& lType, const double& dCommand){ return S_OK; }
+	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand){ return S_OK; }
+
+// additiaonal params ----------------------------------------------------------------------
+	HRESULT NewShape()
 	{
-		CString name = (CString)ParamName;
-		if (name == _T("NewShape"))
-		{
-			m_pSimpleGraphicsConverter->PathCommandEnd();
-			m_oWriter.ClearNoAttack();
-		}
-		return S_OK; 
-	}
-	STDMETHOD(GetAdditionalParam)(BSTR ParamName, VARIANT* ParamValue) 
-	{ 
-		CString name = (CString)ParamName;
-		if (name == _T("ResultPath") && NULL != ParamValue)
-		{
-			BSTR bs = m_oWriter.GetData().AllocSysString();
-			ParamValue->vt = VT_BSTR;
-			ParamValue->bstrVal = bs;
-		}
-		return S_OK; 
-	}
-// --------------------------------------------------------------------------------------------
-
-public:
-	HRESULT FinalConstruct()
-	{
-		m_bIsFillPart = FALSE;
-		m_bIsStrokePart = FALSE;
-		
-		m_dScaleX = 1.0;
-		m_dScaleY = 1.0;
-
-		m_pSimpleGraphicsConverter = NULL;
-		CoCreateInstance(ASCGraphics::CLSID_CASCGraphicSimpleComverter, NULL, CLSCTX_ALL, 
-			ASCGraphics::IID_IASCGraphicSimpleComverter, (void**)&m_pSimpleGraphicsConverter);
-
-		IUnknown* punkRenderer = NULL;
-		this->QueryInterface(IID_IUnknown, (void**)&punkRenderer);
-
-		m_pSimpleGraphicsConverter->put_Renderer(punkRenderer);
-		RELEASEINTERFACE(punkRenderer);
-
-		m_lCountPathCommands = 0;
-
+		m_pSimpleGraphicsConverter->PathCommandEnd();
+		m_oWriter.ClearNoAttack();
 		return S_OK;
 	}
-	void FinalRelease() 
+	HRESULT ResultPath(CString* bstrVal)
 	{
-		RELEASEINTERFACE(m_pSimpleGraphicsConverter);
+		*bstrVal = m_oWriter.GetData();
+		return S_OK;
 	}
-
 private:
 	
-	ASCGraphics::IASCGraphicSimpleComverter*	m_pSimpleGraphicsConverter;
+	Aggplus::CGraphicsPathSimpleConverter*	m_pSimpleGraphicsConverter;
 	BOOL m_bIsFillPart;
 	BOOL m_bIsStrokePart;
 

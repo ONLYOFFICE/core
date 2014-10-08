@@ -43,7 +43,29 @@ namespace Aggplus
 
 		oFrame.ClearNoAttack();
 	}
+	void CImage::Create(BYTE* pImgData, const DWORD& dwWidth, const DWORD& dwHeight, const long& nStride)
+	{
+		m_pImgData = pImgData;
+		m_dwWidth = dwWidth;
+		m_dwHeight = dwHeight;
+		m_nStride = nStride;
 
+		m_bExternalBuffer = false;
+		m_Status = Ok;
+	}
+
+	bool CImage::SaveFile(const std::wstring& strFileName, unsigned __int32 nFileType)
+	{
+		CBgraFrame oBgraFrame;
+		oBgraFrame.put_Width(m_dwWidth);
+		oBgraFrame.put_Height(m_dwHeight);
+		oBgraFrame.put_Stride(m_nStride);
+		oBgraFrame.put_Data(m_pImgData);
+		bool bRes = oBgraFrame.SaveFile(strFileName, nFileType);
+		//чтобы не удалялся на destructor
+		oBgraFrame.put_Data(NULL);
+		return bRes;
+	}
 	void CImage::Destroy()
 	{
 		if (NULL != m_pImgData)
@@ -65,6 +87,8 @@ namespace Aggplus
 
 	DWORD CImage::GetWidth() const { return(m_dwWidth); }
 	DWORD CImage::GetHeight() const { return(m_dwHeight); }
+	long CImage::GetStride() const { return(m_nStride); }
+	BYTE* CImage::GetData() const { return(m_pImgData); }
 	 
 	Status CImage::GetLastStatus() const { return(m_Status); }
 

@@ -15,46 +15,6 @@ namespace NSHtmlRenderer
 
 	const long g_lNewNoJustifySpace = 5;
 
-	inline LONG ConvertColor(LONG lBGR)
-	{
-		return (0x00FFFFFF & (((lBGR & 0xFF) << 16) | (lBGR & 0x0000FF00) | ((lBGR >> 16) & 0xFF)));
-	}
-	inline CString GetStringColor(LONG lBGR)
-	{
-		BYTE R = (BYTE)(lBGR & 0xFF);
-		BYTE G = (BYTE)((lBGR >> 8) & 0xFF);
-		BYTE B = (BYTE)((lBGR >> 16) & 0xFF);
-
-		CString strTemp = _T("");
-		strTemp.Format(g_string_css_color, R, G, B);
-		
-		return strTemp;
-	}
-	inline CString SetStrokeColor(LONG lBGR, LONG lA)
-	{
-		BYTE R = (BYTE)(lBGR & 0xFF);
-		BYTE G = (BYTE)((lBGR >> 8) & 0xFF);
-		BYTE B = (BYTE)((lBGR >> 16) & 0xFF);
-
-		CString strTemp = _T("");
-		strTemp.Format(g_string_canvas_StrokeColorA, R, G, B, (double)lA / 255);
-		
-		return strTemp;
-	}
-	inline CString SetFillColor(LONG lBGR, LONG lA)
-	{
-		BYTE R = (BYTE)(lBGR & 0xFF);
-		BYTE G = (BYTE)((lBGR >> 8) & 0xFF);
-		BYTE B = (BYTE)((lBGR >> 16) & 0xFF);
-
-		CString strTemp = _T("");
-		strTemp.Format(g_string_canvas_FillColorA, R, G, B, (double)lA / 255);
-
-		return strTemp;
-	}
-
-
-	
 	class CFontManager : public CFontManagerBase
 	{
 	public:

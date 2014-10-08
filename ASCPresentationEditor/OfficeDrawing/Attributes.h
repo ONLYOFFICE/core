@@ -9,7 +9,8 @@
 
 #include "Gdiplus.h"
 
-#include "../../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
+#include "../../desktopeditor/graphics/IRenderer.h"
+#include "../../desktopeditor/graphics/structures.h"
 
 namespace NSPresentationEditor
 {
@@ -224,68 +225,6 @@ namespace NSPresentationEditor
 		return str;
 	}
 
-		
-	// pen -----------------------------------------------------------
-	const long c_ag_LineCapFlat				= 0;
-	const long c_ag_LineCapSquare			= 1;
-	const long c_ag_LineCapTriangle			= 3;
-	const long c_ag_LineCapNoAnchor			= 16;
-	const long c_ag_LineCapSquareAnchor		= 17;
-	const long c_ag_LineCapRoundAnchor		= 18;
-	const long c_ag_LineCapDiamondAnchor	= 19;
-	const long c_ag_LineCapArrowAnchor		= 20;
-	const long c_ag_LineCapAnchorMask		= 240;
-	const long c_ag_LineCapCustom			= 255;
-
-	const long c_ag_DashCapFlat				= 0;
-	const long c_ag_DashCapRound			= 2;
-	const long c_ag_DashCapTriangle			= 3;
-
-	const long c_ag_LineJoinMiter			= 0;
-	const long c_ag_LineJoinBevel			= 1;
-	const long c_ag_LineJoinRound			= 2;
-	const long c_ag_LineJoinMiterClipped	= 3;
-
-	const long c_ag_PenAlignmentCenter		= 0;
-	const long c_ag_PenAlignmentInset		= 1;
-	const long c_ag_PenAlignmentOutset		= 2;
-	const long c_ag_PenAlignmentLeft		= 3;
-	const long c_ag_PenAlignmentRight		= 4;
-	// --------------------------------------------------------------
-	// brush --------------------------------------------------------
-	// old constants for brush type
-	const long c_BrushTypeSolid_				= 0;
-	const long c_BrushTypeHorizontal_			= 1;
-	const long c_BrushTypeVertical_				= 2;
-	const long c_BrushTypeDiagonal1_			= 3;
-	const long c_BrushTypeDiagonal2_			= 4;
-	const long c_BrushTypeCenter_				= 5;
-	const long c_BrushTypePathGradient1_		= 6;	
-	const long c_BrushTypePathGradient2_		= 7;
-	const long c_BrushTypeTexture_				= 8;
-	const long c_BrushTypeHatch1_				= 9;
-	const long c_BrushTypeHatch53_				= 61;
-	const long c_BrushTypeGradient1_			= 62;
-	const long c_BrushTypeGradient6_			= 70;
-
-	const long c_BrushTypeSolid					= 1000;
-	const long c_BrushTypeHorizontal			= 2001;
-	const long c_BrushTypeVertical				= 2002;
-	const long c_BrushTypeDiagonal1				= 2003;
-	const long c_BrushTypeDiagonal2				= 2004;
-	const long c_BrushTypeCenter				= 2005;
-	const long c_BrushTypePathGradient1			= 2006;	
-	const long c_BrushTypePathGradient2			= 2007;
-	const long c_BrushTypeCylinderHor			= 2008;
-	const long c_BrushTypeCylinderVer			= 2009;
-	const long c_BrushTypeTexture				= 3008;
-	const long c_BrushTypeHatch1				= 4009;
-	const long c_BrushTypeHatch53				= 4061;
-
-	const long c_BrushTextureModeStretch		= 0;
-	const long c_BrushTextureModeTile			= 1;
-	const long c_BrushTextureModeTileCenter		= 2;
-    
 	class CColor
 	{
 	public:
@@ -528,7 +467,7 @@ namespace NSPresentationEditor
 				(DashStyle == pPen->DashStyle) && (LineStartCap == pPen->LineStartCap) &&
 				(LineEndCap == pPen->LineEndCap) && (LineJoin == pPen->LineJoin));
 		}
-		void SetToRenderer(IASCRenderer *pRenderer)
+		void SetToRenderer(IRenderer *pRenderer)
 		{
 			if (-1 == Color.m_lSchemeIndex)
 				pRenderer->put_PenColor(Color.GetLONG());
@@ -555,7 +494,7 @@ namespace NSPresentationEditor
 				SAFEARRAY* pArray = SafeArrayCreate(VT_R8, 1, &rgsab);
 				memcpy(pArray->pvData, DashPattern, Count * sizeof(double));
 
-				pRenderer->PenDashPattern(pArray);
+				pRenderer->PenDashPattern(DashPattern, Count);
 
 				RELEASEARRAY(pArray);
 				pRenderer->put_PenDashOffset(DashOffset);
@@ -844,7 +783,7 @@ namespace NSPresentationEditor
 					(c_BrushTypeHatch1 <= Type && c_BrushTypeHatch53 >= Type));
 		}
 
-		void SetToRenderer(IASCRenderer *pRenderer)
+		void SetToRenderer(IRenderer *pRenderer)
 		{
 			Type = ConstantCompatible(Type);
 			pRenderer->put_BrushType(Type);
@@ -976,7 +915,7 @@ namespace NSPresentationEditor
 			Underline = (byte)(0x7C & lStyle) >> 2;
 			Strikeout = (byte)(0x0180 & lStyle) >> 7;
 		}
-		void SetToRenderer(IASCRenderer *pRenderer)
+		void SetToRenderer(IRenderer *pRenderer)
 		{
 			BSTR bstrName = Name.AllocSysString();			
 			pRenderer->put_FontName(bstrName);			

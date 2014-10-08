@@ -57,7 +57,7 @@
 //#define _AVS_PPT_SHAPE_INCLUDE_
 
 using namespace ATL;
-#include "../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
+//#include "../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
 #include "../Common/Config.h"
 
 #import "../Redist/ASCOfficeUtils.dll"			named_guids raw_interfaces_only rename_namespace("OfficeUtils")
@@ -86,11 +86,11 @@ namespace ASCGraphics
 
 //#define AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 
-#import "../Redist/ASCMediaCore3.dll"			named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
-#import "../Redist/ASCImageStudio3.dll"			named_guids raw_interfaces_only rename_namespace("ImageStudio"), exclude("IASCRenderer")
-#import "../Redist/ASCHTMLRenderer.dll"			named_guids raw_interfaces_only rename_namespace("HtmlRenderer"), exclude("IASCRenderer")
+//#import "../Redist/ASCMediaCore3.dll"			named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
+//#import "../Redist/ASCImageStudio3.dll"			named_guids raw_interfaces_only rename_namespace("ImageStudio"), exclude("IASCRenderer")
+//#import "../Redist/ASCHTMLRenderer.dll"			named_guids raw_interfaces_only rename_namespace("HtmlRenderer"), exclude("IASCRenderer")
 
-#import "../Redist/ASCGraphics.dll"				named_guids raw_interfaces_only rename_namespace("ASCGraphics"), exclude("IASCRenderer")
+#import "../Redist/ASCGraphics.dll"				named_guids raw_interfaces_only rename_namespace("ASCGraphics")
 #import "../Redist/ASCFontConverter.dll"		named_guids raw_interfaces_only rename_namespace("Fonts")
 
 #endif

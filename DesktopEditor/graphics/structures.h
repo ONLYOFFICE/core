@@ -2,6 +2,7 @@
 #define _BUILD_GRAPHICS_STRUCTURES_H_
 
 #include "../common/Array.h"
+#include "../graphics/aggplustypes.h"
 
 #include <string>
 #include <stdlib.h>
